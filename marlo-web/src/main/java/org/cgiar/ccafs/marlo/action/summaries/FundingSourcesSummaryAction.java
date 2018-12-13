@@ -84,6 +84,7 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
   private Boolean showPIEmail;
   private Boolean showIfpriDivision;
   private Boolean showSheet3;
+  private Boolean hasResearchHuman;
   private Set<Project> fundingSourceProjectsWithBudgets = new HashSet<>();
   private Set<FundingSource> currentCycleFundingSources = new HashSet<>();
   private List<Project> allProjects = new ArrayList<>();
@@ -155,6 +156,9 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
     masterReport.getParameterValues().put("i8nSheet3Title", this.getText("summaries.fundingSource.sheet3Title"));
     masterReport.getParameterValues().put("i8nSheet3Description",
       this.getText("summaries.fundingSource.sheet3Description", new String[] {String.valueOf(this.getSelectedYear())}));
+
+    masterReport.getParameterValues().put("i8nResearchHumanSubjects",
+      this.getText("fundingSource.doesResearchHumanSubjects"));
 
     return masterReport;
   }
@@ -355,8 +359,17 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
 
   }
 
+  public String getfundingSourceFilesResearchURL(Long fundingSourceID) {
+    return config.getDownloadURL() + "/" + this.getFundingSourceResearchUrlPath(fundingSourceID).replace('\\', '/');
+  }
+
   public String getFundingSourceFileURL() {
     return config.getDownloadURL() + "/" + this.getFundingSourceUrlPath().replace('\\', '/');
+  }
+
+  public String getFundingSourceResearchUrlPath(Long fundingSourceID) {
+    return config.getFundingSourceFolder(this.getCrpSession()) + File.separator + fundingSourceID + File.separator
+      + "fundingSourceFilesResearch" + File.separator;
   }
 
   private TypedTableModel getFundingSourcesNoProjectsTableModel() {
@@ -434,14 +447,15 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
     return model;
   }
 
+
   private TypedTableModel getFundingSourcesProjectsTableModel() {
     TypedTableModel model = new TypedTableModel(
       new String[] {"fs_title", "fs_id", "finance_code", "lead_partner", "fs_window", "project_id", "total_budget",
         "flagships", "coas", "donor", "directDonor", "global_dimension", "regional_dimension", "specific_countries",
-        "phaseID", "deliverables"},
+        "phaseID", "deliverables", "researchHumanSubjects", "hasresearchHumanSubjectsFile", "researchHumanSubjectsURL"},
       new Class[] {String.class, Long.class, String.class, String.class, String.class, String.class, Double.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, Long.class,
-        String.class},
+        String.class, String.class, Boolean.class, String.class},
       0);
 
     for (FundingSource fundingSource : currentCycleFundingSources) {
@@ -633,9 +647,30 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
             }
           }
         }
-        model.addRow(
-          new Object[] {fsTitle, fsId, financeCode, leadPartner, fsWindow, projectId, totalBudget, flagships, coas,
-            originalDonor, directDonor, globalDimension, regionalDimension, specificCountries, phaseID, deliverables});
+
+        String researchHumanSubjects = null;
+        String researchHumanSubjectsURL = null;
+        Boolean hasFileResearch = fundingSource.getFundingSourceInfo().getHasFileResearch();
+        Boolean hasresearchHumanSubjectsFile = false;
+        if (hasFileResearch != null) {
+          if (hasFileResearch) {
+            researchHumanSubjects = "Yes";
+            if (fundingSource.getFundingSourceInfo().getFileResearch() != null) {
+              hasresearchHumanSubjectsFile = true;
+              researchHumanSubjects = fundingSource.getFundingSourceInfo().getFileResearch().getFileName();
+              researchHumanSubjectsURL = this.getfundingSourceFilesResearchURL(fsId)
+                + fundingSource.getFundingSourceInfo().getFileResearch().getFileName();
+            } else {
+              researchHumanSubjects = "Yes, missing approval letter";
+            }
+          } else {
+            researchHumanSubjects = "No";
+          }
+        }
+
+        model.addRow(new Object[] {fsTitle, fsId, financeCode, leadPartner, fsWindow, projectId, totalBudget, flagships,
+          coas, originalDonor, directDonor, globalDimension, regionalDimension, specificCountries, phaseID,
+          deliverables, researchHumanSubjects, hasresearchHumanSubjectsFile, researchHumanSubjectsURL});
       }
     }
     return model;
@@ -647,11 +682,12 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
       new String[] {"fs_title", "fs_id", "finance_code", "lead_partner", "fs_window", "project_id", "total_budget",
         "summary", "start_date", "end_date", "contract", "status", "pi_name", "pi_email", "donor",
         "total_budget_projects", "contract_name", "flagships", "coas", "deliverables", "directDonor",
-        "global_dimension", "regional_dimension", "specific_countries", "extention_date", "phaseID"},
+        "global_dimension", "regional_dimension", "specific_countries", "extention_date", "phaseID",
+        "researchHumanSubjects", "hasresearchHumanSubjectsFile", "researchHumanSubjectsURL"},
       new Class[] {String.class, Long.class, String.class, String.class, String.class, String.class, Double.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         Double.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        String.class, String.class, Long.class},
+        String.class, String.class, Long.class, String.class, Boolean.class, String.class},
       0);
     SimpleDateFormat formatter = new SimpleDateFormat("MMM yyyy");
 
@@ -935,14 +971,33 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
         specificCountries = null;
       }
 
-      model.addRow(
-        new Object[] {fsTitle, fsId, financeCode, leadPartner, fsWindow, projectId, totalBudget, summary, starDate,
-          endDate, contract, status, piName, piEmail, originalDonor, totalBudgetProjects, contractName, flagships, coas,
-          deliverables, directDonor, globalDimension, regionalDimension, specificCountries, extentionDate, phaseID});
+      String researchHumanSubjects = null;
+      String researchHumanSubjectsURL = null;
+      Boolean hasFileResearch = fundingSource.getFundingSourceInfo().getHasFileResearch();
+      Boolean hasresearchHumanSubjectsFile = false;
+      if (hasFileResearch != null) {
+        if (hasFileResearch) {
+          researchHumanSubjects = "Yes";
+          if (fundingSource.getFundingSourceInfo().getFileResearch() != null) {
+            hasresearchHumanSubjectsFile = true;
+            researchHumanSubjects = fundingSource.getFundingSourceInfo().getFileResearch().getFileName();
+            researchHumanSubjectsURL = this.getfundingSourceFilesResearchURL(fsId)
+              + fundingSource.getFundingSourceInfo().getFileResearch().getFileName();
+          } else {
+            researchHumanSubjects = "Yes, missing approval letter";
+          }
+        } else {
+          researchHumanSubjects = "No";
+        }
+      }
+
+      model.addRow(new Object[] {fsTitle, fsId, financeCode, leadPartner, fsWindow, projectId, totalBudget, summary,
+        starDate, endDate, contract, status, piName, piEmail, originalDonor, totalBudgetProjects, contractName,
+        flagships, coas, deliverables, directDonor, globalDimension, regionalDimension, specificCountries,
+        extentionDate, phaseID, researchHumanSubjects, hasresearchHumanSubjectsFile, researchHumanSubjectsURL});
     }
     return model;
   }
-
 
   public String getFundingSourceUrlPath() {
     return config.getProjectsBaseFolder(this.getCrpSession()) + File.separator + "fundingSourceFiles" + File.separator;
@@ -958,11 +1013,12 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
 
   private TypedTableModel getMasterTableModel(String center, String date) {
     // Initialization of Model
-    TypedTableModel model =
-      new TypedTableModel(new String[] {"center", "date", "managingPPAField", "year", "showPIEmail", "cycle"},
-        new Class[] {String.class, String.class, String.class, Integer.class, Boolean.class, String.class});
+    TypedTableModel model = new TypedTableModel(
+      new String[] {"center", "date", "managingPPAField", "year", "showPIEmail", "cycle", "hasResearchHuman"},
+      new Class[] {String.class, String.class, String.class, Integer.class, Boolean.class, String.class,
+        Boolean.class});
     model.addRow(new Object[] {center, date, "Managing / PPA Partner", this.getSelectedYear(), showPIEmail,
-      this.getSelectedCycle()});
+      this.getSelectedCycle(), hasResearchHuman});
     return model;
   }
 
@@ -991,6 +1047,16 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
       this.showIfpriDivision = false;
     }
     hasW1W2Co = this.hasSpecificities(APConstants.CRP_FS_W1W2_COFINANCING);
+
+    // Get ResearchHuman crp_parameter
+    try {
+      this.hasResearchHuman = this.hasSpecificities(this.getText(APConstants.CRP_HAS_RESEARCH_HUMAN));
+    } catch (Exception e) {
+      LOG.warn("Failed to get " + APConstants.CRP_HAS_RESEARCH_HUMAN
+        + " parameter. Parameter will be set false. Exception: " + e.getMessage());
+      this.hasResearchHuman = false;
+    }
+
     // Calculate time to generate report
     startTime = System.currentTimeMillis();
     LOG.info(
