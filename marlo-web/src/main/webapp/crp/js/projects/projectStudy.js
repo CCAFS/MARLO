@@ -132,9 +132,12 @@ function onChangeRadioButton() {
 
 function addSelect2() {
 
-  $('select.statusSelect option[value="3"]').prop('disabled', true);
-  $('select.statusSelect option[value="4"]').prop('disabled', true);
-  $('select.statusSelect option[value="5"]').prop('disabled', true);
+  if(!reportingActive) {
+    $('select.statusSelect option[value="3"]').prop('disabled', true);
+    $('select.statusSelect option[value="4"]').prop('disabled', true);
+    $('select.statusSelect option[value="5"]').prop('disabled', true);
+  } else {
+  }
 
   $('form select').select2({
     width: '100%'
