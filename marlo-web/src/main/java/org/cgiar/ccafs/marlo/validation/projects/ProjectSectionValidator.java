@@ -718,13 +718,13 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
 
   }
 
-  public void validateProjectBudgetsFlagship(BaseAction action, Long projectID) {
+  public void validateProjectBudgetsFlagship(BaseAction action, Long projectID, boolean sMessage) {
     // Getting the project information.
     Project project = projectManager.getProjectById(projectID);
     project.setBudgetsFlagship(project.getProjectBudgetsFlagships().stream()
       .filter(c -> c.isActive() && c.getPhase().equals(action.getActualPhase())).collect(Collectors.toList()));
     if (!(project.getProjectBudgetsFlagships().isEmpty() || project.getProjectBudgetsFlagships().size() == 1)) {
-      projectBudgetsFlagshipValidator.validate(action, project, false);
+      projectBudgetsFlagshipValidator.validate(action, project, false, sMessage);
     }
 
   }

@@ -147,7 +147,7 @@ public class ValidateProjectSectionAction extends BaseAction {
           break;
 
         case BUDGETBYFLAGSHIP:
-          this.projectSectionValidator.validateProjectBudgetsFlagship(this, this.getProjectID());
+          this.projectSectionValidator.validateProjectBudgetsFlagship(this, this.getProjectID(), true);
           break;
         case DELIVERABLES:
           this.projectSectionValidator.validateProjectDeliverables(this, this.getProjectID());
@@ -389,9 +389,8 @@ public class ValidateProjectSectionAction extends BaseAction {
           section.put("sectionName", ProjectSectionStatusEnum.HIGHLIGHTS);
           section.put("missingFields", "");
 
-          List<ProjectHighlight> highlights = project
-            .getProjectHighligths().stream().filter(d -> d.isActive() && d
-              .getProjectHighlightInfo(this.getActualPhase()).getYear().intValue() == this.getActualPhase().getYear())
+          List<ProjectHighlight> highlights = project.getProjectHighligths().stream().filter(d -> d.isActive()
+            && d.getProjectHighlightInfo(this.getActualPhase()).getYear().intValue() == this.getActualPhase().getYear())
             .collect(Collectors.toList());
 
           for (ProjectHighlight highlight : highlights) {
