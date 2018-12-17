@@ -3,37 +3,38 @@
 [#assign menus= [
   { 'title': '1. Key Results', 'show': true,
     'items': [
-    { 'slug': 'crpProgress',          'name': 'AR2018.menu.crpProgress',          'action': 'crpProgress',        'active': true },
-    { 'slug': 'flagshipProgress',     'name': 'AR2018.menu.flagshipProgress',     'action': 'flagshipProgress',   'active': true, 'onlyFlagship': !flagship },
-    { 'slug': 'ccDimensions',         'name': 'AR2018.menu.ccDimensions',         'action': 'ccDimensions',       'active': true }
+    { 'slug': 'crpProgress',          'name': 'annualReport2018.menu.crpProgress',          'action': 'crpProgress',        'active': true },
+    { 'slug': 'flagshipProgress',     'name': 'annualReport2018.menu.flagshipProgress',     'action': 'flagshipProgress',   'active': true, 'onlyFlagship': !flagship },
+    { 'slug': 'ccDimensions',         'name': 'annualReport2018.menu.ccDimensions',         'action': 'ccDimensions',       'active': true }
     ]
   },
   { 'title': '2. Effectiveness and Efficiency', 'show': true,
     'items': [
-    [#-- { 'slug': 'plannedVariance',        'name': 'annualReport.menu.plannedVariance',      'action': 'plannedVariance',        'active': true, 'onlyPMU': !PMU },--]
-    { 'slug': 'governance',             'name': 'AR2018.menu.governance',             'action': 'governance',             'active': true, 'onlyPMU': !PMU }
-    { 'slug': 'externalPartnerships',   'name': 'AR2018.menu.externalPartnerships',   'action': 'externalPartnerships',   'active': true },
-    { 'slug': 'intellectualAssets',     'name': 'AR2018.menu.intellectualAssets',     'action': 'fundingUse',             'active': true, 'onlyPMU': !PMU },
-    { 'slug': 'melia',                  'name': 'AR2018.menu.melia',                  'action': 'melia',                  'active': true },
-    { 'slug': 'efficiency',             'name': 'AR2018.menu.efficiency',             'action': 'efficiency',             'active': true, 'onlyPMU': !PMU },
-    { 'slug': 'risks',                  'name': 'AR2018.menu.risks',                  'action': 'risks',                  'active': true, 'onlyPMU': !PMU },
-    { 'slug': 'fundingUse',             'name': 'AR2018.menu.fundingUse',             'action': 'fundingUse',             'active': true, 'onlyPMU': !PMU }
+    [#-- { 'slug': 'plannedVariance',        'name': 'annualReport.menu.plannedVariance',      'action': 'plannedVariance',        'active': true, 'onlyPMU': !PMU }, --]
+    { 'slug': 'governance',             'name': 'annualReport2018.menu.governance',             'action': 'governance',             'active': true, 'onlyPMU': !PMU }
+    { 'slug': 'externalPartnerships',   'name': 'annualReport2018.menu.externalPartnerships',   'action': 'externalPartnerships',   'active': true },
+    { 'slug': 'intellectualAssets',     'name': 'annualReport2018.menu.intellectualAssets',     'action': 'intellectualAssets',             'active': true, 'onlyPMU': !PMU },
+    [#-- { 'slug': 'crossPartnerships',      'name': 'annualReport.menu.crossPartnerships',    'action': 'crossPartnerships',      'active': true }, --]
+    { 'slug': 'melia',                  'name': 'annualReport2018.menu.melia',                  'action': 'melia',                  'active': true },
+    { 'slug': 'efficiency',             'name': 'annualReport2018.menu.efficiency',             'action': 'efficiency',             'active': true, 'onlyPMU': !PMU },
+    { 'slug': 'risks',                  'name': 'annualReport2018.menu.risks',                  'action': 'risks',                  'active': true, 'onlyPMU': !PMU },
+    { 'slug': 'fundingUse',             'name': 'annualReport2018.menu.fundingUse',             'action': 'fundingUse',             'active': true, 'onlyPMU': !PMU }
     ]
   },
   { 'title': '3. Financial Summary', 'show': true,
     'items': [
-    { 'slug': 'financial',    'name': 'AR2018.menu.financial',    'action': 'financial',    'active': true, 'onlyPMU': !PMU }
+    { 'slug': 'financial',    'name': 'annualReport2018.menu.financial',    'action': 'financial',    'active': true, 'onlyPMU': !PMU }
     ]
   },
   { 'title': '4. Reporting Indicators', 'show': true,
     'items': [
-    { 'slug': 'influence',    'name': 'AR2018.menu.influence',    'action': 'influence',  'active': true, 'onlyPMU': !PMU },
-    { 'slug': 'control',      'name': 'AR2018.menu.control',      'action': 'control',    'active': true, 'onlyPMU': !PMU }
+    { 'slug': 'influence',    'name': 'annualReport2018.menu.influence',    'action': 'influence',  'active': true, 'onlyPMU': !PMU },
+    { 'slug': 'control',      'name': 'annualReport2018.menu.control',      'action': 'control',    'active': true, 'onlyPMU': !PMU }
     ]
   },
   { 'title': '0. Narrative section', 'show': true,
     'items': [
-    { 'slug': 'influence',    'name': 'AR2018.menu.executiveSummary',    'action': 'influence',  'active': true, 'onlyPMU': !PMU }
+    { 'slug': 'narrative',    'name': 'annualReport2018.menu.executiveSummary',    'action': 'narrative',  'active': false, 'onlyPMU': !PMU }
     ]
   }
 ]/]

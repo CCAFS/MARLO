@@ -8,17 +8,20 @@
 [#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css"] /]
 
 [#assign breadCrumb = [
-  {"label":"${currentSection}", "nameSpace":"", "action":""},
-  {"label":"annualReport", "nameSpace":"annualReport", "action":"${crpSession}/crpProgress"},
-  {"label":"${currentStage}", "nameSpace":"annualReport", "action":"${crpSession}/{currentStage}"}
+  {"label":"${currentSection}",   "nameSpace":"",             "action":""},
+  {"label":"annualReport",        "nameSpace":"annualReport${annualReport2018?string('2018', '')}", "action":"${crpSession}/crpProgress"},
+  {"label":"${currentStage}",     "nameSpace":"annualReport${annualReport2018?string('2018', '')}", "action":"${crpSession}/{currentStage}"}
 ]/]
 
 [#import "/WEB-INF/global/macros/utils.ftl" as utilities /]
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
 
+[#assign customName= "reportSynthesis" /]
+[#assign customLabel= "annualReport2018.${currentStage}" /]
+
 [#-- Helptext --]
-[@utilities.helpBox name="annualReport.${currentStage}.help" /]
+[@utilities.helpBox name="${customLabel}.help" /]
     
 <section class="container">
   [#if !reportingActive]
@@ -29,16 +32,15 @@
     
     <div class="row">
       [#-- POWB Menu --]
-      <div class="col-md-3">
-        [#include "/WEB-INF/crp/views/annualReport2018/menu-AR2018.ftl" /]
-      </div> 
+      <div class="col-md-3">[#include "/WEB-INF/crp/views/annualReport2018/menu-AR2018.ftl" /]</div>
+      [#-- POWB Content --]
       <div class="col-md-9">
         [#-- Section Messages --]
         [#include "/WEB-INF/crp/views/annualReport2018/messages-AR2018.ftl" /]
         
         [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
           [#-- Title --]
-          <h3 class="headTitle">[@s.text name="annualReport.${currentStage}.title" /]</h3>
+          <h3 class="headTitle">[@s.text name="${customLabel}.title" /]</h3>
           <div class="borderBox">
           
           </div>
