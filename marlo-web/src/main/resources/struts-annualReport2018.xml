@@ -70,7 +70,7 @@
       </result>
     </action>
     
-    <!--  2.3 Key External Partnerships  -->
+    <!--  2.2 Partnerships  -->
     <action name="{crp}/externalPartnerships" class="org.cgiar.ccafs.marlo.action.annualReport.ExternalPartnershipsAction">
       <interceptor-ref name="editReportSynthesisStack" />
       <result name="input">/WEB-INF/crp/views/annualReport2018/AR2018_TEMPLATE.ftl</result>
@@ -83,20 +83,20 @@
       </result>
     </action>
     
-    <!--  2.4 Cross-CGIAR Partnerships (other CRPs and Platforms)  -->
-    <action name="{crp}/crossPartnerships" class="org.cgiar.ccafs.marlo.action.annualReport.CrossCgiarPartnershipAction">
+    <!--  2.3 Intellectual Assets   -->
+    <action name="{crp}/intellectualAssets" class="org.cgiar.ccafs.marlo.action.annualReport.ExternalPartnershipsAction">
       <interceptor-ref name="editReportSynthesisStack" />
       <result name="input">/WEB-INF/crp/views/annualReport2018/AR2018_TEMPLATE.ftl</result>
       <result name="success" type="redirectAction">
-        <param name="actionName">${crpSession}/crossPartnerships</param>
+        <param name="actionName">${crpSession}/intellectualAssets</param>
         <param name="liaisonInstitutionID">${liaisonInstitutionID}</param>
         <param name="synthesisID">${synthesisID}</param>
         <param name="phaseID">${phaseID}</param>
-        <param name="edit">true</param>        
+        <param name="edit">true</param>
       </result>
     </action>
     
-    <!--  2.5 Monitoring, Evaluation, Impact Assessment and Learning (MELIA)  -->
+    <!--  2.4 MELIA  -->
     <action name="{crp}/melia" class="org.cgiar.ccafs.marlo.action.annualReport.MeliaAction">
       <interceptor-ref name="editReportSynthesisStack" />
       <result name="input">/WEB-INF/crp/views/annualReport2018/AR2018_TEMPLATE.ftl</result>
