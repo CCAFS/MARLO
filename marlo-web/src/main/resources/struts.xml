@@ -479,6 +479,7 @@
 	<include file="struts-synthesis.xml" />
 	<include file="struts-powb.xml" />
 	<include file="struts-annualReport.xml" />
+	<include file="struts-annualReport2018.xml" />
 	<include file="struts-publications.xml" />
 	<include file="struts-studies.xml" />
 	<include file="struts-powb2019.xml" />

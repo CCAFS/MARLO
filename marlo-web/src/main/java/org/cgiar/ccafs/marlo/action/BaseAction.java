@@ -4065,10 +4065,26 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return securityContext.hasRole("Admin");
   }
 
+  /**
+   * Function to validate the annual report version the front will show
+   * 
+   * @return
+   */
+  public boolean isAnnualReport2018() {
+    try {
+      if (this.getCurrentCycleYear() >= 2018) {
+        return true;
+      }
+    } catch (Exception e) {
+      return false;
+    }
+    return false;
+  }
 
   public boolean isAvailabePhase() {
     return availabePhase;
   }
+
 
   public boolean isCanEdit() {
     return canEdit;
@@ -4078,7 +4094,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public boolean isCanEditPhase() {
     return canEditPhase;
   }
-
 
   public boolean isCanSwitchProject() {
     return canSwitchProject;
@@ -4138,6 +4153,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
     return true;
   }
+
 
   /**
    * ************************ CENTER METHOD *********************
@@ -4199,7 +4215,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return true;
   }
 
-
   public boolean isCompleteImpact(long crpProgramID) {
 
     List<SectionStatus> sectionsBD = sectionStatusManager.findAll();
@@ -4227,6 +4242,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
     return true;
   }
+
 
   /**
    * ************************ CENTER METHOD *********************
@@ -4273,7 +4289,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return true;
   }
 
-
   /**
    * Check if all the powb Synthesis Sections by Liaison Institution is completed
    * 
@@ -4313,6 +4328,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
 
   }
+
 
   /**
    * Check if all the annual Synthesis Sections by Liaison Institution is completed
@@ -4520,7 +4536,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
-
   public boolean isCompletePreProject(long projectID) {
 
     Project project = projectManager.getProjectById(projectID);
@@ -4584,6 +4599,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
     return true;
   }
+
 
   /**
    * This function is now handled from Front-End and is not used anymore. It was a decision of Andres valencia and
@@ -4920,7 +4936,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
-
   /**
    * Check if the annual Report is complete by the flagships or the PMU.
    * 
@@ -5087,6 +5102,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return true;
   }
 
+
   public boolean isCrpClosed() {
     try {
       // return Integer.parseInt(this.getSession().get(APConstants.CRP_CLOSED).toString()) == 1;
@@ -5098,7 +5114,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       return false;
     }
   }
-
 
   public boolean isCrpRefresh() {
     try {
@@ -5112,6 +5127,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       return false;
     }
   }
+
 
   public boolean isDataSaved() {
     return dataSaved;
@@ -5171,7 +5187,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
-
   public Boolean isDeliverableNew(long deliverableID) {
     /*
      * Deliverable deliverable = deliverableManager.getDeliverableById(deliverableID);
@@ -5221,10 +5236,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return isEditable;
   }
 
+
   public boolean isEditStatus() {
     return editStatus;
   }
-
 
   public boolean isEntityCenter() {
     if (this.getCurrentCrp() != null) {
@@ -5339,6 +5354,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return false;
   }
 
+
   public Boolean isI(long deliverableID) {
     try {
       Deliverable deliverableBD = deliverableManager.getDeliverableById(deliverableID);
@@ -5401,7 +5417,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
-
   public boolean isLessonsActive() {
     return Boolean.parseBoolean(this.getSession().get(APConstants.CRP_LESSONS_ACTIVE).toString());
   }
@@ -5430,6 +5445,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
   }
 
+
   public boolean isPlanningActive() {
     return this.getActualPhase().getDescription().equals(APConstants.PLANNING);
   }
@@ -5438,7 +5454,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public boolean isPlanningActiveParam() {
     return Boolean.parseBoolean(this.getSession().get(APConstants.CRP_PLANNING_ACTIVE).toString());
   }
-
 
   public boolean isPMU() {
     String roles = this.getRoles();

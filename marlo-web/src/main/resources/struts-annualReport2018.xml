@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.3//EN" "http://struts.apache.org/dtds/struts-2.3.dtd">
+<struts>
+   
+  <!-- CRP Annual Report -->
+  <package name="annualReport2018" namespace="/annualReport2018" extends="marlo-default">
+    
+    <!--  1.1 CRP Progress Towards Intermediate Outcomes and SLOs -->
+    <action name="{crp}/crpProgress" class="org.cgiar.ccafs.marlo.action.annualReport.CrpProgressAction">
+      <interceptor-ref name="editReportSynthesisStack" />
+      <result name="input">/WEB-INF/crp/views/annualReport2018/AR2018_TEMPLATE.ftl</result>
+      <result name="success" type="redirectAction">
+        <param name="actionName">${crpSession}/crpProgress</param>
+        <param name="liaisonInstitutionID">${liaisonInstitutionID}</param>
+        <param name="synthesisID">${synthesisID}</param>
+        <param name="phaseID">${phaseID}</param>
+        <param name="edit">true</param>
+      </result>
+    </action>
+
+    <!--  1.2 Progress by CRP Flagships  -->
+    <action name="{crp}/flagshipProgress" class="org.cgiar.ccafs.marlo.action.annualReport.FlagshipProgressAction">
+      <interceptor-ref name="editReportSynthesisStack" />
+      <result name="input">/WEB-INF/crp/views/annualReport2018/AR2018_TEMPLATE.ftl</result>
+      <result name="success" type="redirectAction">
+        <param name="actionName">${crpSession}/flagshipProgress</param>
+        <param name="liaisonInstitutionID">${liaisonInstitutionID}</param>
+        <param name="synthesisID">${synthesisID}</param>
+        <param name="phaseID">${phaseID}</param>
+        <param name="edit">true</param>        
+      </result>
+    </action>
+    
+    <!--  1.3 Cross-Cutting Dimensions  -->
+    <action name="{crp}/ccDimensions" class="org.cgiar.ccafs.marlo.action.annualReport.CrossCuttingDimensionAction">
+      <interceptor-ref name="editReportSynthesisStack" />
+      <result name="input">/WEB-INF/crp/views/annualReport2018/AR2018_TEMPLATE.ftl</result>
+      <result name="success" type="redirectAction">
+        <param name="actionName">${crpSession}/ccDimensions</param>
+        <param name="liaisonInstitutionID">${liaisonInstitutionID}</param>
+        <param name="synthesisID">${synthesisID}</param>
+        <param name="phaseID">${phaseID}</param>
+        <param name="edit">true</param>        
+      </result>
+    </action>
+    
+    <!--  2.1 Variance from Planned Program  -->
+    <action name="{crp}/plannedVariance" class="org.cgiar.ccafs.marlo.action.annualReport.ProgramVarianceAction">
+      <interceptor-ref name="editReportSynthesisStack" />
+      <result name="input">/WEB-INF/crp/views/annualReport2018/AR2018_TEMPLATE.ftl</result>
+      <result name="success" type="redirectAction">
+        <param name="actionName">${crpSession}/plannedVariance</param>
+        <param name="liaisonInstitutionID">${liaisonInstitutionID}</param>
+        <param name="synthesisID">${synthesisID}</param>
+        <param name="phaseID">${phaseID}</param>
+        <param name="edit">true</param>        
+      </result>
+    </action>
+    
+    <!--  2.2 Use of W1-2 Funding  -->
+    <action name="{crp}/fundingUse" class="org.cgiar.ccafs.marlo.action.annualReport.FundingUseAction">
+      <interceptor-ref name="editReportSynthesisStack" />
+      <result name="input">/WEB-INF/crp/views/annualReport2018/AR2018_TEMPLATE.ftl</result>
+      <result name="success" type="redirectAction">
+        <param name="actionName">${crpSession}/fundingUse</param>
+        <param name="liaisonInstitutionID">${liaisonInstitutionID}</param>
+        <param name="synthesisID">${synthesisID}</param>
+        <param name="phaseID">${phaseID}</param>
+        <param name="edit">true</param>        
+      </result>
+    </action>
+    
+    <!--  2.3 Key External Partnerships  -->
+    <action name="{crp}/externalPartnerships" class="org.cgiar.ccafs.marlo.action.annualReport.ExternalPartnershipsAction">
+      <interceptor-ref name="editReportSynthesisStack" />
+      <result name="input">/WEB-INF/crp/views/annualReport2018/AR2018_TEMPLATE.ftl</result>
+      <result name="success" type="redirectAction">
+        <param name="actionName">${crpSession}/externalPartnerships</param>
+        <param name="liaisonInstitutionID">${liaisonInstitutionID}</param>
+        <param name="synthesisID">${synthesisID}</param>
+        <param name="phaseID">${phaseID}</param>
+        <param name="edit">true</param>        
+      </result>
+    </action>
+    
+    <!--  2.4 Cross-CGIAR Partnerships (other CRPs and Platforms)  -->
+    <action name="{crp}/crossPartnerships" class="org.cgiar.ccafs.marlo.action.annualReport.CrossCgiarPartnershipAction">
+      <interceptor-ref name="editReportSynthesisStack" />
+      <result name="input">/WEB-INF/crp/views/annualReport2018/AR2018_TEMPLATE.ftl</result>
+      <result name="success" type="redirectAction">
+        <param name="actionName">${crpSession}/crossPartnerships</param>
+        <param name="liaisonInstitutionID">${liaisonInstitutionID}</param>
+        <param name="synthesisID">${synthesisID}</param>
+        <param name="phaseID">${phaseID}</param>
+        <param name="edit">true</param>        
+      </result>
+    </action>
+    
+    <!--  2.5 Monitoring, Evaluation, Impact Assessment and Learning (MELIA)  -->
+    <action name="{crp}/melia" class="org.cgiar.ccafs.marlo.action.annualReport.MeliaAction">
+      <interceptor-ref name="editReportSynthesisStack" />
+      <result name="input">/WEB-INF/crp/views/annualReport2018/AR2018_TEMPLATE.ftl</result>
+      <result name="success" type="redirectAction">
+        <param name="actionName">${crpSession}/melia</param>
+        <param name="liaisonInstitutionID">${liaisonInstitutionID}</param>
+        <param name="synthesisID">${synthesisID}</param>
+        <param name="phaseID">${phaseID}</param>
+        <param name="edit">true</param>        
+      </result>
+    </action>
+    
+    <!--  2.6 Improving Efficiency  -->
+    <action name="{crp}/efficiency" class="org.cgiar.ccafs.marlo.action.annualReport.EfficiencyAction">
+      <interceptor-ref name="editReportSynthesisStack" />
+      <result name="input">/WEB-INF/crp/views/annualReport2018/AR2018_TEMPLATE.ftl</result>
+      <result name="success" type="redirectAction">
+        <param name="actionName">${crpSession}/efficiency</param>
+        <param name="liaisonInstitutionID">${liaisonInstitutionID}</param>
+        <param name="synthesisID">${synthesisID}</param>
+        <param name="phaseID">${phaseID}</param>
+        <param name="edit">true</param>        
+      </result>
+    </action>
+    
+    <!--  3.1 CRP Management and Governance  -->
+    <action name="{crp}/governance" class="org.cgiar.ccafs.marlo.action.annualReport.ManagementGovernanceAction">
+      <interceptor-ref name="editReportSynthesisStack" />
+      <result name="input">/WEB-INF/crp/views/annualReport2018/AR2018_TEMPLATE.ftl</result>
+      <result name="success" type="redirectAction">
+        <param name="actionName">${crpSession}/governance</param>
+        <param name="liaisonInstitutionID">${liaisonInstitutionID}</param>
+        <param name="synthesisID">${synthesisID}</param>
+        <param name="phaseID">${phaseID}</param>
+        <param name="edit">true</param>        
+      </result>
+    </action>
+    
+    <!--  3.2 Management of Risks to Your CRP  -->
+    <action name="{crp}/risks" class="org.cgiar.ccafs.marlo.action.annualReport.RisksAction">
+      <interceptor-ref name="editReportSynthesisStack" />
+      <result name="input">/WEB-INF/crp/views/annualReport2018/AR2018_TEMPLATE.ftl</result>
+      <result name="success" type="redirectAction">
+        <param name="actionName">${crpSession}/risks</param>
+        <param name="liaisonInstitutionID">${liaisonInstitutionID}</param>
+        <param name="synthesisID">${synthesisID}</param>
+        <param name="phaseID">${phaseID}</param>
+        <param name="edit">true</param>        
+      </result>
+    </action>
+    
+    <!--  3.3 Financial Summary  -->
+    <action name="{crp}/financial" class="org.cgiar.ccafs.marlo.action.annualReport.FinancialSummaryAction">
+      <interceptor-ref name="editReportSynthesisStack" />
+      <result name="input">/WEB-INF/crp/views/annualReport2018/AR2018_TEMPLATE.ftl</result>
+      <result name="success" type="redirectAction">
+        <param name="actionName">${crpSession}/financial</param>
+        <param name="liaisonInstitutionID">${liaisonInstitutionID}</param>
+        <param name="synthesisID">${synthesisID}</param>
+        <param name="phaseID">${phaseID}</param>
+        <param name="edit">true</param>        
+      </result>
+    </action>
+    
+    <!--  Influence - Common reporting indicators  -->
+    <action name="{crp}/influence" class="org.cgiar.ccafs.marlo.action.annualReport.IndicatorsAction">
+      <interceptor-ref name="editReportSynthesisStack" />
+      <result name="input">/WEB-INF/crp/views/annualReport2018/AR2018_TEMPLATE.ftl</result>
+      <result name="success" type="redirectAction">
+        <param name="actionName">${crpSession}/influence</param>
+        <param name="liaisonInstitutionID">${liaisonInstitutionID}</param>
+        <param name="synthesisID">${synthesisID}</param>
+        <param name="phaseID">${phaseID}</param>
+        <param name="edit">true</param>        
+      </result>
+    </action>
+    
+    <!--  Control - Common reporting indicators  -->
+    <action name="{crp}/control" class="org.cgiar.ccafs.marlo.action.annualReport.IndicatorsAction">
+      <interceptor-ref name="editReportSynthesisStack" />
+      <result name="input">/WEB-INF/crp/views/annualReport2018/AR2018_TEMPLATE.ftl</result>
+      <result name="success" type="redirectAction">
+        <param name="actionName">${crpSession}/control</param>
+        <param name="liaisonInstitutionID">${liaisonInstitutionID}</param>
+        <param name="synthesisID">${synthesisID}</param>
+        <param name="phaseID">${phaseID}</param>
+        <param name="edit">true</param>        
+      </result>
+    </action>
+    
+  </package>
+</struts>
