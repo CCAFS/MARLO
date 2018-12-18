@@ -56,7 +56,7 @@
         
         <div class="simpleBox form-group">
           <label for="">Research Topic:<span class="red">*</span></label>
-          <select name="researchTopics" id="researchTopics">
+          <select name="researchTopics" id="researchTopics" class="form-control ">
             <option value="-1" >View All</option>
             [#list researchTopics as researchTopic]
               <option value="${researchTopic.id}"[#if (selectedResearchTopic.id)?has_content && (selectedResearchTopic.id== researchTopic.id)] selected="selected"[/#if]] >${researchTopic.researchTopic}</option>
