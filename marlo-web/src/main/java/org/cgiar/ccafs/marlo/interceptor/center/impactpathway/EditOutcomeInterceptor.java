@@ -106,7 +106,7 @@ public class EditOutcomeInterceptor extends AbstractInterceptor implements Seria
         areaID = program.getResearchArea().getId();
 
         // String params[] = {researchCenter.getAcronym(), areaID + "", programID + ""};
-        if (baseAction.canAccessSuperAdmin()) {
+        if (baseAction.canAccessSuperAdmin() || baseAction.canEditCrpAdmin()) {
           canEdit = true;
         } else {
 
@@ -118,6 +118,10 @@ public class EditOutcomeInterceptor extends AbstractInterceptor implements Seria
           // baseAction.generatePermissionCenter(Permission.RESEARCH_PROGRAM_FULL_PRIVILEGES, params))) {
           // canEdit = true;
           // }
+
+          if (baseAction.isSubmitIP(programID)) {
+            canEdit = false;
+          }
         }
 
         if (parameters.get(APConstants.EDITABLE_REQUEST).isDefined()) {
@@ -139,9 +143,6 @@ public class EditOutcomeInterceptor extends AbstractInterceptor implements Seria
               researchCenter.getAcronym(), programID + ""));
         }
 
-        if (baseAction.isSubmitIP(programID)) {
-          canEdit = false;
-        }
 
         // Set the variable that indicates if the user can edit the section
         baseAction.setEditableParameter(hasPermissionToEdit && canEdit);

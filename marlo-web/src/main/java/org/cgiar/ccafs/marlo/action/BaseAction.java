@@ -6558,6 +6558,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * @return false if has missing fields.
    */
   public boolean validateCenterOutcome(CrpProgram program) {
+    boolean hasOutcomes = false;
     if (program != null) {
       List<CenterTopic> topics =
         new ArrayList<>(program.getResearchTopics().stream().filter(rt -> rt.isActive()).collect(Collectors.toList()));
@@ -6566,6 +6567,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
           List<CenterOutcome> outcomes = new ArrayList<>(
             researchTopic.getResearchOutcomes().stream().filter(ro -> ro.isActive()).collect(Collectors.toList()));
           if (outcomes != null && !outcomes.isEmpty()) {
+            hasOutcomes = true;
             for (CenterOutcome researchOutcome : outcomes) {
               CenterSectionStatus sectionStatus = this.getCenterOutcomeStatus(researchOutcome.getId());
               if (sectionStatus == null) {
@@ -6576,8 +6578,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
                 }
               }
             }
-          } else {
-            return false;
           }
         }
       } else {
@@ -6586,8 +6586,11 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     } else {
       return false;
     }
-
-    return true;
+    if (hasOutcomes) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   /**
