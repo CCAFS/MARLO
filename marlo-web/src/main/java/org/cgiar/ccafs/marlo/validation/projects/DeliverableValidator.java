@@ -137,8 +137,8 @@ public class DeliverableValidator extends BaseValidator {
       }
 
 
-      if (action.isReportingActive()) {
-        if (deliverable.getDeliverableInfo(action.getActualPhase()).getStatus() != null
+      if (action.isReportingActive() || action.isUpKeepActive()) {
+        if (action.isReportingActive() && deliverable.getDeliverableInfo(action.getActualPhase()).getStatus() != null
           && deliverable.getDeliverableInfo(action.getActualPhase()).getStatus().intValue() == Integer
             .parseInt(ProjectStatusEnum.Ongoing.getStatusId())) {
 

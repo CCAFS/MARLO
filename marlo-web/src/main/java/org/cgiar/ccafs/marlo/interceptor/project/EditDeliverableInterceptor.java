@@ -250,7 +250,7 @@ public class EditDeliverableInterceptor extends AbstractInterceptor implements S
         }
       }
 
-      if (baseAction
+      if (!baseAction.isUpKeepActive() && baseAction
         .hasPermission(baseAction.generatePermission(Permission.PROJECT_DELIVERABLE_EDIT_PERMISSION, params))) {
         if (deliverable.getDeliverableInfo(baseAction.getActualPhase()).getStatus() != null) {
           if (deliverable.getDeliverableInfo(baseAction.getActualPhase()).getStatus().intValue() == Integer
@@ -260,7 +260,7 @@ public class EditDeliverableInterceptor extends AbstractInterceptor implements S
         }
 
 
-        if (baseAction.isReportingActive()
+        if ((baseAction.isReportingActive() || baseAction.isUpKeepActive())
           && deliverable.getDeliverableInfo(baseAction.getActualPhase()).getStatus() != null
           && deliverable.getDeliverableInfo(baseAction.getActualPhase()).getStatus().intValue() == Integer
             .parseInt(ProjectStatusEnum.Complete.getStatusId())
@@ -269,7 +269,7 @@ public class EditDeliverableInterceptor extends AbstractInterceptor implements S
           canEdit = true;
         }
 
-        if (baseAction.isReportingActive()
+        if ((baseAction.isReportingActive() || baseAction.isUpKeepActive())
           && deliverable.getDeliverableInfo(baseAction.getActualPhase()).getStatus() != null
           && deliverable.getDeliverableInfo(baseAction.getActualPhase()).getStatus().intValue() == Integer
             .parseInt(ProjectStatusEnum.Complete.getStatusId())
@@ -293,7 +293,7 @@ public class EditDeliverableInterceptor extends AbstractInterceptor implements S
         canEdit = false;
       }
 
-      if (baseAction.isPlanningActive()) {
+      if (baseAction.isPlanningActive() && !baseAction.isUpKeepActive()) {
         if (!this.canEditDeliverable(deliverable, phase)) {
           canEdit = false;
           baseAction.setEditStatus(true);
@@ -313,7 +313,7 @@ public class EditDeliverableInterceptor extends AbstractInterceptor implements S
         canEdit = false;
       }
 
-      if (baseAction.isPlanningActive()) {
+      if (baseAction.isPlanningActive() && !baseAction.isUpKeepActive()) {
         if (deliverable.getDeliverableInfo(baseAction.getActualPhase()).getStatus().longValue() == Long
           .parseLong(ProjectStatusEnum.Cancelled.getStatusId())
 

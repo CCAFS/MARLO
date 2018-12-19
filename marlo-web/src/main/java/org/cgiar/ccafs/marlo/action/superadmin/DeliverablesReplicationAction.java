@@ -209,7 +209,7 @@ public class DeliverablesReplicationAction extends BaseAction {
             relationsName.add(APConstants.PROJECT_DELIVERABLE_FUNDING_RELATION);
             relationsName.add(APConstants.PROJECT_DELIVERABLE_GENDER_LEVELS);
             relationsName.add(APConstants.PROJECT_DELIVERABLE_LOCATIONS);
-            if (this.isReportingActive() || (this.isPlanningActive() && phase.getUpkeep())) {
+            if (phase.isReporting() || phase.getUpkeep()) {
               relationsName.add(APConstants.PROJECT_DELIVERABLE_QUALITY_CHECK);
               relationsName.add(APConstants.PROJECT_DELIVERABLE_METADATA_ELEMENT);
               relationsName.add(APConstants.PROJECT_DELIVERABLE_DATA_SHARING_FILES);
@@ -269,7 +269,7 @@ public class DeliverablesReplicationAction extends BaseAction {
             }
 
             // Reporting and upkeep
-            if (phase.isReporting() || (!phase.isReporting() && phase.getUpkeep())) {
+            if (phase.isReporting() || phase.getUpkeep()) {
 
               // Deliverable Quality check
               DeliverableQualityCheck deliverableQualityCheck = deliverableQualityCheckManager
