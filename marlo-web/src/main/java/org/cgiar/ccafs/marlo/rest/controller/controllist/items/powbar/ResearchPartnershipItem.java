@@ -17,8 +17,8 @@ package org.cgiar.ccafs.marlo.rest.controller.controllist.items.powbar;
 
 import org.cgiar.ccafs.marlo.data.manager.RepIndPhaseResearchPartnershipManager;
 import org.cgiar.ccafs.marlo.data.model.RepIndPhaseResearchPartnership;
-import org.cgiar.ccafs.marlo.rest.dto.ResearchPartnershipsDTO;
-import org.cgiar.ccafs.marlo.rest.mappers.ResearchPartnershipsMapper;
+import org.cgiar.ccafs.marlo.rest.dto.ResearchPartnershipDTO;
+import org.cgiar.ccafs.marlo.rest.mappers.ResearchPartnershipMapper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,15 +32,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 @Named
-public class ResearchPartnershipsItem<T> {
+public class ResearchPartnershipItem<T> {
 
 
   private RepIndPhaseResearchPartnershipManager repIndPhaseResearchPartnershipManager;
-  private ResearchPartnershipsMapper researchPartnershipsMapper;
+  private ResearchPartnershipMapper researchPartnershipsMapper;
 
   @Inject
-  public ResearchPartnershipsItem(RepIndPhaseResearchPartnershipManager repIndPhaseResearchPartnershipManager,
-    ResearchPartnershipsMapper researchPartnershipsMapper) {
+  public ResearchPartnershipItem(RepIndPhaseResearchPartnershipManager repIndPhaseResearchPartnershipManager,
+    ResearchPartnershipMapper researchPartnershipsMapper) {
     this.repIndPhaseResearchPartnershipManager = repIndPhaseResearchPartnershipManager;
     this.researchPartnershipsMapper = researchPartnershipsMapper;
   }
@@ -51,7 +51,7 @@ public class ResearchPartnershipsItem<T> {
    * @param id
    * @return a ResearchPartnershipDTO with the Research Partnership data.
    */
-  public ResponseEntity<ResearchPartnershipsDTO> findResearchPartnershipById(Long id) {
+  public ResponseEntity<ResearchPartnershipDTO> findResearchPartnershipById(Long id) {
     RepIndPhaseResearchPartnership repIndPhaseResearchPartnership =
       repIndPhaseResearchPartnershipManager.getRepIndPhaseResearchPartnershipById(id);
     return Optional.ofNullable(repIndPhaseResearchPartnership)
@@ -65,11 +65,11 @@ public class ResearchPartnershipsItem<T> {
    * 
    * @return a List of InnovationTypesDTO with all repIndInnovationType Items.
    */
-  public List<ResearchPartnershipsDTO> getAllResearchPartnerships() {
+  public List<ResearchPartnershipDTO> getAllResearchPartnerships() {
     if (repIndPhaseResearchPartnershipManager.findAll() != null) {
       List<RepIndPhaseResearchPartnership> repIndPhaseResearchPartnerships =
         new ArrayList<>(repIndPhaseResearchPartnershipManager.findAll());
-      List<ResearchPartnershipsDTO> researchPartnershipsDTOs = repIndPhaseResearchPartnerships.stream()
+      List<ResearchPartnershipDTO> researchPartnershipsDTOs = repIndPhaseResearchPartnerships.stream()
         .map(repIndPhaseResearchPartnershipEntity -> researchPartnershipsMapper
           .repIndPhaseResearchPartnershipToResearchPartnershipsDTO(repIndPhaseResearchPartnershipEntity))
         .collect(Collectors.toList());

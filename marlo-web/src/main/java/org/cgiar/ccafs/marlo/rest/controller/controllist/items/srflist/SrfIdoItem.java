@@ -55,7 +55,7 @@ public class SrfIdoItem<T> {
    * @param id
    * @return a SrfIdoDTO with the SRL-SLO data.
    */
-  public ResponseEntity<SrfIdoDTO> findSrfIdobyMARLOId(Long id) {
+  public ResponseEntity<SrfIdoDTO> findSrfIdobyId(Long id) {
     SrfIdo srfIdo = srfIdoManager.getSrfIdoById(id);
     return Optional.ofNullable(srfIdo).map(srfIdoMapper::srfIdoToSrfIdoDTO)
       .map(result -> new ResponseEntity<>(result, HttpStatus.OK)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));

@@ -17,8 +17,8 @@ package org.cgiar.ccafs.marlo.rest.controller.controllist.items.powbar;
 
 import org.cgiar.ccafs.marlo.data.manager.RepIndGenderYouthFocusLevelManager;
 import org.cgiar.ccafs.marlo.data.model.RepIndGenderYouthFocusLevel;
-import org.cgiar.ccafs.marlo.rest.dto.CrossCuttingMarkersDTO;
-import org.cgiar.ccafs.marlo.rest.mappers.CrossCuttingMarkersMapper;
+import org.cgiar.ccafs.marlo.rest.dto.CrossCuttingMarkerDTO;
+import org.cgiar.ccafs.marlo.rest.mappers.CrossCuttingMarkerMapper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,15 +32,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 @Named
-public class CrossCuttingMarkersItem<T> {
+public class CrossCuttingMarkerItem<T> {
 
 
   private RepIndGenderYouthFocusLevelManager repIndGenderYouthFocusLevelManager;
-  private CrossCuttingMarkersMapper crossCuttingMarkersMapper;
+  private CrossCuttingMarkerMapper crossCuttingMarkersMapper;
 
   @Inject
-  public CrossCuttingMarkersItem(RepIndGenderYouthFocusLevelManager repIndGenderYouthFocusLevelManager,
-    CrossCuttingMarkersMapper crossCuttingMarkersMapper) {
+  public CrossCuttingMarkerItem(RepIndGenderYouthFocusLevelManager repIndGenderYouthFocusLevelManager,
+    CrossCuttingMarkerMapper crossCuttingMarkersMapper) {
     this.repIndGenderYouthFocusLevelManager = repIndGenderYouthFocusLevelManager;
     this.crossCuttingMarkersMapper = crossCuttingMarkersMapper;
   }
@@ -51,7 +51,7 @@ public class CrossCuttingMarkersItem<T> {
    * @param id
    * @return a CrossCuttingMarkersDTO with the Cross Cutting Marker data.
    */
-  public ResponseEntity<CrossCuttingMarkersDTO> findCrossCuttingMarkerById(Long id) {
+  public ResponseEntity<CrossCuttingMarkerDTO> findCrossCuttingMarkerById(Long id) {
     RepIndGenderYouthFocusLevel repIndGenderYouthFocusLevel =
       repIndGenderYouthFocusLevelManager.getRepIndGenderYouthFocusLevelById(id);
     return Optional.ofNullable(repIndGenderYouthFocusLevel)
@@ -65,11 +65,11 @@ public class CrossCuttingMarkersItem<T> {
    * 
    * @return a List of CrossCuttingMarkersDTO with all RepIndGenderYouthFocusLevel Items.
    */
-  public List<CrossCuttingMarkersDTO> getAllCrossCuttingMarkers() {
+  public List<CrossCuttingMarkerDTO> getAllCrossCuttingMarkers() {
     if (repIndGenderYouthFocusLevelManager.findAll() != null) {
       List<RepIndGenderYouthFocusLevel> repIndGenderYouthFocusLevels =
         new ArrayList<>(repIndGenderYouthFocusLevelManager.findAll());
-      List<CrossCuttingMarkersDTO> crossCuttingMarkersDTOs = repIndGenderYouthFocusLevels.stream()
+      List<CrossCuttingMarkerDTO> crossCuttingMarkersDTOs = repIndGenderYouthFocusLevels.stream()
         .map(repIndGenderYouthFocusLevelsEntity -> crossCuttingMarkersMapper
           .repIndGenderYouthFocusLevelToCrossCuttingMarkersDTO(repIndGenderYouthFocusLevelsEntity))
         .collect(Collectors.toList());

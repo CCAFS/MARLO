@@ -16,6 +16,8 @@
 package org.cgiar.ccafs.marlo.rest.controller.controllist;
 
 import org.cgiar.ccafs.marlo.rest.controller.controllist.items.locations.CountryItem;
+import org.cgiar.ccafs.marlo.rest.controller.controllist.items.locations.GeographicScopeItem;
+import org.cgiar.ccafs.marlo.rest.dto.GeographicScopeDTO;
 import org.cgiar.ccafs.marlo.rest.dto.LocElementDTO;
 import org.cgiar.ccafs.marlo.security.Permission;
 
@@ -38,17 +40,19 @@ import org.springframework.web.bind.annotation.RestController;
  * @author Hermes Jiménez - CIAT/CCAFS
  */
 @RestController
-@Api(tags = "3. Locations")
+@Api(tags = "Locations")
 @Named
 public class Locations {
 
   private static final Logger LOG = LoggerFactory.getLogger(Locations.class);
 
   private CountryItem<Locations> countryItem;
+  private GeographicScopeItem<Locations> geographicScopeItem;
 
   @Inject
-  public Locations(CountryItem<Locations> countryItem) {
+  public Locations(CountryItem<Locations> countryItem, GeographicScopeItem<Locations> geographicScopeItem) {
     this.countryItem = countryItem;
+    this.geographicScopeItem = geographicScopeItem;
   }
 
   /**
@@ -62,6 +66,20 @@ public class Locations {
   public List<LocElementDTO> getAllContries() {
     LOG.debug("REST request to get Contries");
     return countryItem.getAllCountries();
+  }
+
+
+  /**
+   * Get All the Geographic Scope items *
+   * 
+   * @return a List of GeographicScopeDTO with all RepIndGeographicScope Items.
+   */
+  @ApiOperation(value = "View all Geographic Scopes", response = GeographicScopeDTO.class, responseContainer = "List")
+  @RequiresPermissions(Permission.CRP_PROGRAM_READ_REST_API_PERMISSION)
+  @RequestMapping(value = "/geographicScopes", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+  public List<GeographicScopeDTO> getAllGeographicScopes() {
+    LOG.debug("REST request to get Geographic Scopes");
+    return geographicScopeItem.getAllGeographicScopes();
   }
 
 }
