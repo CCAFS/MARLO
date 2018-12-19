@@ -54,6 +54,7 @@ public class ProjectBudgetsFlagshipValidator extends BaseValidator {
   private final BudgetTypeManager budgetTypeManager;
   private final ProjectManager projectManager;
   private final GlobalUnitManager crpManager;
+  private boolean sMessage;
 
   @Inject
   public ProjectBudgetsFlagshipValidator(ProjectValidator projectValidator, BudgetTypeManager budgetTypeManager,
@@ -103,8 +104,16 @@ public class ProjectBudgetsFlagshipValidator extends BaseValidator {
     return bd.doubleValue();
   }
 
-  public void validate(BaseAction action, Project project, boolean saving) {
+  public void validate(BaseAction action, Project project, boolean saving, boolean sMessage) {
+
+    if (!sMessage) {
+      action.setMissingFields(new StringBuilder());
+    }
+
+    this.sMessage = sMessage;
+
     action.setInvalidFields(new HashMap<>());
+
     if (project != null) {
       if (!saving) {
         Path path = this.getAutoSaveFilePath(project, action.getCrpID(), action);
@@ -169,16 +178,24 @@ public class ProjectBudgetsFlagshipValidator extends BaseValidator {
         } else {
           // Check if there are budget allocated
           if (hasW1W2Budget || hasW3Budget || hasBilateralBudget || hasCenterFundsBudget) {
+
             action.addMessage(action.getText("project.budgets.flagship"));
+            if (sMessage) {
+              action.getInvalidFields().put("project.budgets", action.getText("project.budgets.flagship"));
+            }
           }
         }
       }
 
       if (!action.getFieldErrors().isEmpty()) {
-        action.addActionError(action.getText("saving.fields.required"));
+        if (sMessage) {
+          action.addActionError(action.getText("saving.fields.required"));
+        }
       } else if (action.getValidationMessage().length() > 0) {
-        action.addActionMessage(
-          " " + action.getText("saving.missingFields", new String[] {action.getValidationMessage().toString()}));
+        if (sMessage) {
+          action.addActionMessage(
+            " " + action.getText("saving.missingFields", new String[] {action.getValidationMessage().toString()}));
+        }
       }
 
       this.saveMissingFields(project, action.getActualPhase().getDescription(), action.getActualPhase().getYear(),
@@ -198,8 +215,11 @@ public class ProjectBudgetsFlagshipValidator extends BaseValidator {
       amount = this.round(amount, 2);
     }
     if (amount != 100) {
-      action.getInvalidFields().put("project.budget.flagship.amount", "project.budget.flagship.amount");
+      if (sMessage) {
+        action.getInvalidFields().put("project.budget.flagship.amount", "project.budget.flagship.amount");
+      }
       action.addMessage(action.getText("project.budget.flagship.amount", params));
+
     }
   }
 

@@ -64,7 +64,6 @@
 
 [#assign submission = (action.isProjectSubmitted(projectID))!false /]
 [#assign canSubmit = (action.hasPersmissionSubmit(projectID))!false /]
-[#-- assign completed = (action.isCompleteProject(projectID))!false /--]
 [#assign canUnSubmit = ((action.hasPersmissionUnSubmit(projectID))!false)/]
 
 
