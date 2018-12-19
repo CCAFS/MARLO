@@ -49,6 +49,7 @@
           </td>
           [#-- Delete Outcome--]
           <td class="text-center">
+
           [#--  ${action.outcomeCanBeDeleted(outcome.id)?string} --]
             [#if canEdit && action.outcomeCanBeDeleted(outcome.id)!false]
               <a id="removeOutcome-${outcome.id}" class="removeOutcome" href="#" title="">

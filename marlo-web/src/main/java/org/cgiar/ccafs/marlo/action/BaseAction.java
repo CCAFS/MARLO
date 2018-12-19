@@ -16,8 +16,8 @@ package org.cgiar.ccafs.marlo.action;
 
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.IAuditLog;
-import org.cgiar.ccafs.marlo.data.dao.CenterOutputsOutcomeDAO;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
+import org.cgiar.ccafs.marlo.data.manager.CenterOutputsOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpClusterKeyOutputManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpClusterKeyOutputOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpClusterOfActivityManager;
@@ -281,6 +281,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   @Inject
   private PhaseManager phaseManager;
+
+  private CenterOutputsOutcomeManager centerOutputsOutcomeManager;
 
   @Inject
   private CrpClusterKeyOutputManager crpClusterKeyOutputManager;
@@ -6075,34 +6077,42 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   public boolean outcomeCanBeDeleted(long id) {
+    boolean canBeDeleted = false;
+
     // Verify CenterOutcome Model
     try {
-      /*
-       * System.out.println("Holi");
-       * CenterOutcome outcome = outcomeService.getResearchOutcomeById(id);
-       * List<CenterOutput> outputs = new ArrayList<>();
-       * List<CenterOutputsOutcome> centerOutputsOutcomes = new ArrayList<>(outcome.getCenterOutputsOutcomes().stream()
-       * .filter(ro -> ro.isActive() && ro.getCenterOutcome().getId() == id).collect(Collectors.toList()));
-       * for (CenterOutputsOutcome centerOutputsOutcome : centerOutputsOutcomes) {
-       * outputs.add(centerOutputsOutcome.getCenterOutput());
-       * }
-       * if (outputs != null) {
-       * if (!outputs.isEmpty()) {
-       * return false;
-       * }
-       * }
-       */
-      CenterOutputsOutcomeDAO centerOutputsOutcomeDao = null;
-      List<CenterOutputsOutcome> centerOutputsOutcomeList = new ArrayList<CenterOutputsOutcome>();
-      centerOutputsOutcomeList =
-        centerOutputsOutcomeDao.findAll().stream().filter(ro -> ro.isActive()).collect(Collectors.toList());
+      CenterOutputsOutcome centerOutputsOutcome = centerOutputsOutcomeManager.getCenterOutputsOutcomeById(id);
 
-      return true;
+      if (centerOutputsOutcome != null) {
+        if (!centerOutputsOutcome.isActive()) {
+          canBeDeleted = true;
+        }
+
+      } else {
+        canBeDeleted = false;
+      }
+      return canBeDeleted;
     } catch (Exception e) {
-      System.out.println("false");
+      System.out.println(e + "error");
       return false;
     }
 
+    /*
+     * if (clazz == CenterOutcome.class) {
+     * CenterOutcome outcome = outcomeService.getResearchOutcomeById(id);
+     * List<CenterOutput> outputs = new ArrayList<>();
+     * List<CenterOutputsOutcome> centerOutputsOutcomes = new ArrayList<>(
+     * outcome.getCenterOutputsOutcomes().stream().filter(ro -> ro.isActive()).collect(Collectors.toList()));
+     * for (CenterOutputsOutcome centerOutputsOutcome : centerOutputsOutcomes) {
+     * outputs.add(centerOutputsOutcome.getCenterOutput());
+     * }
+     * if (outputs != null) {
+     * if (!outputs.isEmpty()) {
+     * return false;
+     * }
+     * }
+     * }
+     */
   }
 
 
