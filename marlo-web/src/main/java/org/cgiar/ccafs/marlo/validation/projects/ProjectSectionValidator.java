@@ -896,7 +896,7 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
           .filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList()));
 
 
-        if (action.isReportingActive() || (action.isPlanningActive() && action.getActualPhase().getUpkeep())) {
+        if (action.isReportingActive() || action.isUpKeepActive()) {
 
           DeliverableQualityCheck deliverableQualityCheck =
             deliverableQualityCheckManager.getDeliverableQualityCheckByDeliverable(deliverable.getId(), phase.getId());

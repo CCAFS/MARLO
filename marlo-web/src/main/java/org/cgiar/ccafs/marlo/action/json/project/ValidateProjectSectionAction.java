@@ -294,7 +294,7 @@ public class ValidateProjectSectionAction extends BaseAction {
               }
 
 
-              if (this.isPlanningActive()) {
+              if (this.isPlanningActive() && this.isUpKeepActive()) {
                 if (deliverable.getDeliverableInfo(phase).getStatus() != null && deliverable.getDeliverableInfo(phase)
                   .getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())) {
                   sectionStatus.setMissingFields("");
