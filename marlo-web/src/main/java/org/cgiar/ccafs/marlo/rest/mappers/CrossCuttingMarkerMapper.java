@@ -15,18 +15,23 @@
 
 package org.cgiar.ccafs.marlo.rest.mappers;
 
-import org.cgiar.ccafs.marlo.data.model.RepIndInnovationType;
-import org.cgiar.ccafs.marlo.rest.dto.InnovationTypesDTO;
+import org.cgiar.ccafs.marlo.data.model.RepIndGenderYouthFocusLevel;
+import org.cgiar.ccafs.marlo.rest.dto.CrossCuttingMarkerDTO;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.Mappings;
 
 @Mapper(componentModel = "jsr330")
-public interface InnovationTypesMapper {
+public interface CrossCuttingMarkerMapper {
 
-  public abstract RepIndInnovationType innovationTypesDTOToRepIndInnovationType(InnovationTypesDTO innovationTypesDTO);
+  @Mappings({@Mapping(target = "powbName", source = "crossCuttingMarkersDTO.name")})
+  public abstract RepIndGenderYouthFocusLevel
+    crossCuttingMarkersDTOToRepIndGenderYouthFocusLevel(CrossCuttingMarkerDTO crossCuttingMarkersDTO);
 
-  public abstract InnovationTypesDTO
-    repIndInnovationTypeToInnovationTypesDTO(RepIndInnovationType repIndInnovationType);
+  @Mappings({@Mapping(target = "name", source = "repIndGenderYouthFocusLevel.powbName")})
+  public abstract CrossCuttingMarkerDTO
+    repIndGenderYouthFocusLevelToCrossCuttingMarkersDTO(RepIndGenderYouthFocusLevel repIndGenderYouthFocusLevel);
 
 
 }

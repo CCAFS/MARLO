@@ -50,21 +50,8 @@ public class SrfSloItem<T> {
    * @param id
    * @return a SrfSloDTO with the SRL-SLO data.
    */
-  public ResponseEntity<SrfSloDTO> findSrfSlobyMARLOId(Long id) {
+  public ResponseEntity<SrfSloDTO> findSrfSlobyId(Long id) {
     SrfSlo srfSlo = srfSloManager.getSrfSloById(id);
-    return Optional.ofNullable(srfSlo).map(srfSloMapper::SrfSloToSrfSloDTO)
-      .map(result -> new ResponseEntity<>(result, HttpStatus.OK)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
-  }
-
-
-  /**
-   * Find a SRF-SLO requesting a SMO Code
-   * 
-   * @param id
-   * @return a SrfSloDTO with the SRL-SLO data.
-   */
-  public ResponseEntity<SrfSloDTO> findSrfSlobySmoCode(String smoCode) {
-    SrfSlo srfSlo = srfSloManager.findBySmoCode(smoCode);
     return Optional.ofNullable(srfSlo).map(srfSloMapper::SrfSloToSrfSloDTO)
       .map(result -> new ResponseEntity<>(result, HttpStatus.OK)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
   }
