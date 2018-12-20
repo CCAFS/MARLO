@@ -103,7 +103,9 @@
             <div class="form-group" style="margin-top: 15px;">
               [@customForm.textArea name="outcome.monitorings[${outcome_index}].whatChanged" i18nkey="outcome.narrative.whatChanged"  required=true className="outcome-narrative limitWords-100" editable=editable /]
             </div>
+            <input type="hidden" name="outcome.monitorings[${outcome_index}].year" value="${(outcome.year)!}" />
            </div>
+              
           
           <div class="col-md-12">
             <h5 class="sectionSubTitle">Progress Towards Outcome Milestones:</h5>
