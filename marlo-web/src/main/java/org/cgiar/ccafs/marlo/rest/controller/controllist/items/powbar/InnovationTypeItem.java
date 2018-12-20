@@ -17,8 +17,8 @@ package org.cgiar.ccafs.marlo.rest.controller.controllist.items.powbar;
 
 import org.cgiar.ccafs.marlo.data.manager.RepIndInnovationTypeManager;
 import org.cgiar.ccafs.marlo.data.model.RepIndInnovationType;
-import org.cgiar.ccafs.marlo.rest.dto.InnovationTypesDTO;
-import org.cgiar.ccafs.marlo.rest.mappers.InnovationTypesMapper;
+import org.cgiar.ccafs.marlo.rest.dto.InnovationTypeDTO;
+import org.cgiar.ccafs.marlo.rest.mappers.InnovationTypeMapper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,15 +32,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 @Named
-public class InnovationTypesItem<T> {
+public class InnovationTypeItem<T> {
 
 
   private RepIndInnovationTypeManager repIndInnovationTypeManager;
-  private InnovationTypesMapper innovationTypesMapper;
+  private InnovationTypeMapper innovationTypesMapper;
 
   @Inject
-  public InnovationTypesItem(RepIndInnovationTypeManager repIndInnovationTypeManager,
-    InnovationTypesMapper innovationTypesMapper) {
+  public InnovationTypeItem(RepIndInnovationTypeManager repIndInnovationTypeManager,
+    InnovationTypeMapper innovationTypesMapper) {
     this.repIndInnovationTypeManager = repIndInnovationTypeManager;
     this.innovationTypesMapper = innovationTypesMapper;
   }
@@ -51,7 +51,7 @@ public class InnovationTypesItem<T> {
    * @param id
    * @return a InnovationTypeDTO with the Innovation Type data.
    */
-  public ResponseEntity<InnovationTypesDTO> findInnovationTypeById(Long id) {
+  public ResponseEntity<InnovationTypeDTO> findInnovationTypeById(Long id) {
     RepIndInnovationType repIndInnovationType = repIndInnovationTypeManager.getRepIndInnovationTypeById(id);
     return Optional.ofNullable(repIndInnovationType)
       .map(innovationTypesMapper::repIndInnovationTypeToInnovationTypesDTO)
@@ -64,10 +64,10 @@ public class InnovationTypesItem<T> {
    * 
    * @return a List of InnovationTypesDTO with all repIndInnovationType Items.
    */
-  public List<InnovationTypesDTO> getAllInnovationTypes() {
+  public List<InnovationTypeDTO> getAllInnovationTypes() {
     if (repIndInnovationTypeManager.findAll() != null) {
       List<RepIndInnovationType> repIndInnovationTypes = new ArrayList<>(repIndInnovationTypeManager.findAll());
-      List<InnovationTypesDTO> innovationTypesDTOs =
+      List<InnovationTypeDTO> innovationTypesDTOs =
         repIndInnovationTypes.stream().map(repIndInnovationTypesEntity -> innovationTypesMapper
           .repIndInnovationTypeToInnovationTypesDTO(repIndInnovationTypesEntity)).collect(Collectors.toList());
       return innovationTypesDTOs;

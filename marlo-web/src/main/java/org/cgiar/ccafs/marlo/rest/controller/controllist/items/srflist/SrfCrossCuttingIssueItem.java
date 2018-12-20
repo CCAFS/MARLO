@@ -56,7 +56,7 @@ public class SrfCrossCuttingIssueItem<T> {
    * @param id
    * @return a SrfCrossCuttingIssueDTO with the SRL-SLO data.
    */
-  public ResponseEntity<SrfCrossCuttingIssueDTO> findSrfCrossCuttingIssuebyMARLOId(Long id) {
+  public ResponseEntity<SrfCrossCuttingIssueDTO> findSrfCrossCuttingIssuebyId(Long id) {
     SrfCrossCuttingIssue srfCrossCuttingIssue = srfCrossCuttingIssueManager.getSrfCrossCuttingIssueById(id);
     return Optional.ofNullable(srfCrossCuttingIssue)
       .map(srfCrossCuttingIssueMapper::srfCrossCuttingIssueToSrfCrossCuttingIssueDTO)

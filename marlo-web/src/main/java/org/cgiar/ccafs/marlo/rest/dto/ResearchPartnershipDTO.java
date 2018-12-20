@@ -19,17 +19,19 @@ import javax.validation.constraints.NotNull;
 
 import io.swagger.annotations.ApiModelProperty;
 
-public class CrossCuttingMarkersDTO {
+public class ResearchPartnershipDTO {
 
-  @ApiModelProperty(notes = "The Generated Cross Cutting Marker ID")
+  @ApiModelProperty(notes = "The Generated Research Partnership ID")
   @NotNull
   private Long id;
 
-  @ApiModelProperty(notes = "Cross Cutting Marker name")
+
+  @ApiModelProperty(notes = "Research Partnership name")
   @NotNull
   private String name;
 
-  @ApiModelProperty(notes = "Cross Cutting Marker definition")
+
+  @ApiModelProperty(notes = "Research Partnership definition")
   private String definition;
 
 
@@ -46,6 +48,7 @@ public class CrossCuttingMarkersDTO {
   public String getName() {
     return name;
   }
+
 
   public void setDefinition(String definition) {
     this.definition = definition;

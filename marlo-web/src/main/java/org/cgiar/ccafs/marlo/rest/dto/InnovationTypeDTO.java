@@ -13,21 +13,53 @@
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
 
-package org.cgiar.ccafs.marlo.rest.mappers;
+package org.cgiar.ccafs.marlo.rest.dto;
 
-import org.cgiar.ccafs.marlo.data.model.RepIndPhaseResearchPartnership;
-import org.cgiar.ccafs.marlo.rest.dto.ResearchPartnershipsDTO;
+import javax.validation.constraints.NotNull;
 
-import org.mapstruct.Mapper;
+import io.swagger.annotations.ApiModelProperty;
 
-@Mapper(componentModel = "jsr330")
-public interface ResearchPartnershipsMapper {
+public class InnovationTypeDTO {
 
-  public abstract ResearchPartnershipsDTO repIndPhaseResearchPartnershipToResearchPartnershipsDTO(
-    RepIndPhaseResearchPartnership repIndPhaseResearchPartnership);
+  @ApiModelProperty(notes = "The Generated Innovation Type ID")
+  @NotNull
+  private Long id;
 
-  public abstract RepIndPhaseResearchPartnership
-    researchPartnershipsDTOToRepIndPhaseResearchPartnership(ResearchPartnershipsDTO researchPartnershipsDTO);
 
+  @ApiModelProperty(notes = "Innovation Type name")
+  @NotNull
+  private String name;
+
+
+  @ApiModelProperty(notes = "Innovation Type definition")
+  private String definition;
+
+
+  public String getDefinition() {
+    return definition;
+  }
+
+
+  public Long getId() {
+    return id;
+  }
+
+
+  public String getName() {
+    return name;
+  }
+
+
+  public void setDefinition(String definition) {
+    this.definition = definition;
+  }
+
+  public void setId(Long id) {
+    this.id = id;
+  }
+
+  public void setName(String name) {
+    this.name = name;
+  }
 
 }

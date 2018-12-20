@@ -62,7 +62,6 @@ import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudySrfTarget;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudySubIdo;
 import org.cgiar.ccafs.marlo.data.model.ProjectPhase;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
-import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.RepIndGenderYouthFocusLevel;
 import org.cgiar.ccafs.marlo.data.model.RepIndGeographicScope;
 import org.cgiar.ccafs.marlo.data.model.RepIndOrganizationType;
@@ -71,6 +70,7 @@ import org.cgiar.ccafs.marlo.data.model.RepIndStageProcess;
 import org.cgiar.ccafs.marlo.data.model.RepIndStageStudy;
 import org.cgiar.ccafs.marlo.data.model.SrfSloIndicator;
 import org.cgiar.ccafs.marlo.data.model.SrfSubIdo;
+import org.cgiar.ccafs.marlo.data.model.StudiesStatusPlanningEnum;
 import org.cgiar.ccafs.marlo.data.model.StudyType;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
@@ -631,8 +631,8 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
       // Getting The list
       statuses = new HashMap<>();
-      List<ProjectStatusEnum> listStatus = Arrays.asList(ProjectStatusEnum.values());
-      for (ProjectStatusEnum globalStatusEnum : listStatus) {
+      List<StudiesStatusPlanningEnum> listStatus = Arrays.asList(StudiesStatusPlanningEnum.values());
+      for (StudiesStatusPlanningEnum globalStatusEnum : listStatus) {
         statuses.put(Integer.parseInt(globalStatusEnum.getStatusId()), globalStatusEnum.getStatus());
       }
 

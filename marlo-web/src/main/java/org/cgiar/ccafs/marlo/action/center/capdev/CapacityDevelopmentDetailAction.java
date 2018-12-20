@@ -565,6 +565,9 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
       && rl.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()).collect(Collectors.toList());
     Collections.sort(researchPrograms, (r1, r2) -> r1.getName().compareTo(r2.getName()));
 
+    System.out.println(researchPrograms.size() + " research program size");
+
+
     participantList = new ArrayList<>();
     capdevCountries = new ArrayList<>();
     capdevRegions = new ArrayList<>();

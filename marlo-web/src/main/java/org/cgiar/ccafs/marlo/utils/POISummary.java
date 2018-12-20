@@ -512,7 +512,7 @@ public class POISummary {
     for (int x = 0; x < table.getNumberOfRows(); x++) {
       if (x > 0) {
         XWPFTableRow row = table.getRow(x);
-        for (int y = 0; y < 10; y++) {
+        for (int y = 0; y < 11; y++) {
           XWPFTableCell cell = row.getCell(y);
 
           if (cell.getCTTc() == null) {
@@ -612,18 +612,18 @@ public class POISummary {
   }
 
   public void tableAPowbStyle(XWPFTable table) {
-    /* Horizontal merge, From format tables E */
+    /* Horizontal merge, From format tables A */
     CTHMerge hMerge = CTHMerge.Factory.newInstance();
     CTHMerge hMerge1 = CTHMerge.Factory.newInstance();
 
-    /* Vertical merge, From format tables E */
+    /* Vertical merge, From format tables A */
     CTVMerge vmerge = CTVMerge.Factory.newInstance();
     CTVMerge vmerge1 = CTVMerge.Factory.newInstance();
 
 
     XWPFTableRow row = table.getRow(0);
     int numberOfCell = row.getTableCells().size();
-    for (int y = 0; y < numberOfCell - 1; y++) {
+    for (int y = 0; y < numberOfCell; y++) {
       XWPFTableCell cell = row.getCell(y);
       if (cell.getCTTc() == null) {
         ((CTTc) cell).addNewTcPr();
@@ -645,7 +645,7 @@ public class POISummary {
     for (int x = 0; x < table.getNumberOfRows(); x++) {
       if (x >= 0) {
         XWPFTableRow row1 = table.getRow(x);
-        for (int y = 0; y < 6; y++) {
+        for (int y = 0; y <= 6; y++) {
           XWPFTableCell cell = row1.getCell(y);
 
           if (cell.getCTTc() == null) {

@@ -54,6 +54,7 @@ public class ProjectBudgetsFlagshipValidator extends BaseValidator {
   private final BudgetTypeManager budgetTypeManager;
   private final ProjectManager projectManager;
   private final GlobalUnitManager crpManager;
+  private boolean sMessage;
 
   @Inject
   public ProjectBudgetsFlagshipValidator(ProjectValidator projectValidator, BudgetTypeManager budgetTypeManager,
@@ -78,7 +79,7 @@ public class ProjectBudgetsFlagshipValidator extends BaseValidator {
     Project projectBD = projectManager.getProjectById(projectID);
     List<ProjectBudget> budgets = projectBD.getProjectBudgets().stream()
       .filter(c -> c.isActive() && c.getYear() == year && c.getBudgetType().getId().longValue() == type.longValue()
-        && (c.getAmount() != null && c.getAmount() >= 0) && c.getPhase() != null && c.getPhase().equals(actualPhase))
+        && (c.getAmount() != null && c.getAmount() > 0) && c.getPhase() != null && c.getPhase().equals(actualPhase))
       .collect(Collectors.toList());
 
     return budgets.size() > 0;
@@ -103,8 +104,16 @@ public class ProjectBudgetsFlagshipValidator extends BaseValidator {
     return bd.doubleValue();
   }
 
-  public void validate(BaseAction action, Project project, boolean saving) {
+  public void validate(BaseAction action, Project project, boolean saving, boolean sMessage) {
+
+    if (!sMessage) {
+      action.setMissingFields(new StringBuilder());
+    }
+
+    this.sMessage = sMessage;
+
     action.setInvalidFields(new HashMap<>());
+
     if (project != null) {
       if (!saving) {
         Path path = this.getAutoSaveFilePath(project, action.getCrpID(), action);
@@ -124,8 +133,16 @@ public class ProjectBudgetsFlagshipValidator extends BaseValidator {
           && pf.getPhase() != null && pf.getPhase().equals(action.getActualPhase()))
         .collect(Collectors.toList()));
       if (!projectFocuses.isEmpty()) {
+        Boolean hasW1W2Budget =
+          this.hasBudgets(new Long(1), action.getCurrentCycleYear(), project.getId(), action.getActualPhase());
+        Boolean hasW3Budget =
+          this.hasBudgets(new Long(2), action.getCurrentCycleYear(), project.getId(), action.getActualPhase());
+        Boolean hasBilateralBudget =
+          this.hasBudgets(new Long(3), action.getCurrentCycleYear(), project.getId(), action.getActualPhase());
+        Boolean hasCenterFundsBudget =
+          this.hasBudgets(new Long(4), action.getCurrentCycleYear(), project.getId(), action.getActualPhase());
         if (CollectionUtils.isNotEmpty(project.getBudgetsFlagship())) {
-          if (this.hasBudgets(new Long(1), action.getCurrentCycleYear(), project.getId(), action.getActualPhase())) {
+          if (hasW1W2Budget) {
             List<ProjectBudgetsFlagship> w1w2List = project.getBudgetsFlagship().stream()
               .filter(c -> c != null && (c.getBudgetType().getId().longValue() == 1)
                 && (c.getYear() == action.getCurrentCycleYear())
@@ -133,7 +150,7 @@ public class ProjectBudgetsFlagshipValidator extends BaseValidator {
               .collect(Collectors.toList());
             this.validateBudgets(action, w1w2List, new Long(1));
           }
-          if (this.hasBudgets(new Long(2), action.getCurrentCycleYear(), project.getId(), action.getActualPhase())) {
+          if (hasW3Budget) {
             List<ProjectBudgetsFlagship> w3List =
               project.getBudgetsFlagship().stream()
                 .filter(c -> c.getBudgetType().getId().longValue() == 2 && c.getYear() == action.getCurrentCycleYear()
@@ -141,7 +158,7 @@ public class ProjectBudgetsFlagshipValidator extends BaseValidator {
                 .collect(Collectors.toList());
             this.validateBudgets(action, w3List, new Long(2));
           }
-          if (this.hasBudgets(new Long(3), action.getCurrentCycleYear(), project.getId(), action.getActualPhase())) {
+          if (hasBilateralBudget) {
             List<ProjectBudgetsFlagship> bilateralList =
               project.getBudgetsFlagship().stream()
                 .filter(c -> c.getBudgetType().getId().longValue() == 3 && c.getYear() == action.getCurrentCycleYear()
@@ -149,7 +166,7 @@ public class ProjectBudgetsFlagshipValidator extends BaseValidator {
                 .collect(Collectors.toList());
             this.validateBudgets(action, bilateralList, new Long(3));
           }
-          if (this.hasBudgets(new Long(4), action.getCurrentCycleYear(), project.getId(), action.getActualPhase())) {
+          if (hasCenterFundsBudget) {
             List<ProjectBudgetsFlagship> centerFundsList =
               project.getBudgetsFlagship().stream()
                 .filter(c -> c.getBudgetType().getId().longValue() == 4 && c.getYear() == action.getCurrentCycleYear()
@@ -159,15 +176,26 @@ public class ProjectBudgetsFlagshipValidator extends BaseValidator {
           }
 
         } else {
-          action.addMessage(action.getText("project.budgets.flagship"));
+          // Check if there are budget allocated
+          if (hasW1W2Budget || hasW3Budget || hasBilateralBudget || hasCenterFundsBudget) {
+
+            action.addMessage(action.getText("project.budgets.flagship"));
+            if (sMessage) {
+              action.getInvalidFields().put("project.budgets", action.getText("project.budgets.flagship"));
+            }
+          }
         }
       }
 
       if (!action.getFieldErrors().isEmpty()) {
-        action.addActionError(action.getText("saving.fields.required"));
+        if (sMessage) {
+          action.addActionError(action.getText("saving.fields.required"));
+        }
       } else if (action.getValidationMessage().length() > 0) {
-        action.addActionMessage(
-          " " + action.getText("saving.missingFields", new String[] {action.getValidationMessage().toString()}));
+        if (sMessage) {
+          action.addActionMessage(
+            " " + action.getText("saving.missingFields", new String[] {action.getValidationMessage().toString()}));
+        }
       }
 
       this.saveMissingFields(project, action.getActualPhase().getDescription(), action.getActualPhase().getYear(),
@@ -187,8 +215,11 @@ public class ProjectBudgetsFlagshipValidator extends BaseValidator {
       amount = this.round(amount, 2);
     }
     if (amount != 100) {
-      action.getInvalidFields().put("project.budget.flagship.amount", "project.budget.flagship.amount");
+      if (sMessage) {
+        action.getInvalidFields().put("project.budget.flagship.amount", "project.budget.flagship.amount");
+      }
       action.addMessage(action.getText("project.budget.flagship.amount", params));
+
     }
   }
 

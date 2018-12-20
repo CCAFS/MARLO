@@ -311,16 +311,6 @@ public class ProjectBudgetByClusterOfActivitiesAction extends BaseAction {
     return transaction;
   }
 
-  public boolean hasBudgets(Long type, int year) {
-    Project projectBD = projectManager.getProjectById(projectID);
-    List<ProjectBudget> budgets = projectBD.getProjectBudgets().stream()
-      .filter(c -> c.isActive() && c.getYear() == year && c.getPhase().equals(this.getActualPhase())
-        && c.getBudgetType().getId().longValue() == type.longValue() && (c.getAmount() != null && c.getAmount() >= 0))
-      .collect(Collectors.toList());
-
-    return budgets.size() > 0;
-  }
-
 
   @Override
   public void prepare() throws Exception {

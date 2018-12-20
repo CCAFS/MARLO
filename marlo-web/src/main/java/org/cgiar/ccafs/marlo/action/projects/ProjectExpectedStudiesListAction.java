@@ -27,8 +27,8 @@ import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInfo;
-import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.SectionStatus;
+import org.cgiar.ccafs.marlo.data.model.StudiesStatusPlanningEnum;
 import org.cgiar.ccafs.marlo.data.model.StudyType;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -229,14 +229,16 @@ public class ProjectExpectedStudiesListAction extends BaseAction {
             && ps.getProjectExpectedStudyInfo().getStatus() != null
             && ps.getProjectExpectedStudyInfo().getYear() >= this.getActualPhase().getYear() - 1
             && ps.getProjectExpectedStudyInfo().getYear() >= 2018
-            && ((ProjectStatusEnum.getValue(ps.getProjectExpectedStudyInfo().getStatus()).getStatus()
-              .equals(ProjectStatusEnum.Ongoing.getStatus())
-              || ProjectStatusEnum.getValue(ps.getProjectExpectedStudyInfo().getStatus()).getStatus()
-                .equals(ProjectStatusEnum.Extended.getStatus()))
-              || ((ProjectStatusEnum.getValue(ps.getProjectExpectedStudyInfo().getStatus()).getStatus()
-                .equals(ProjectStatusEnum.Complete.getStatus())
-                || ProjectStatusEnum.getValue(ps.getProjectExpectedStudyInfo().getStatus()).getStatus()
-                  .equals(ProjectStatusEnum.Cancelled.getStatus()))
+            && ((StudiesStatusPlanningEnum.getValue(ps.getProjectExpectedStudyInfo().getStatus()).getStatus()
+              .equals(StudiesStatusPlanningEnum.Ongoing.getStatus())
+              || StudiesStatusPlanningEnum.getValue(ps.getProjectExpectedStudyInfo().getStatus()).getStatus()
+                .equals(StudiesStatusPlanningEnum.Extended.getStatus())
+              || StudiesStatusPlanningEnum.getValue(ps.getProjectExpectedStudyInfo().getStatus()).getStatus()
+                .equals(StudiesStatusPlanningEnum.New.getStatus()))
+              || ((StudiesStatusPlanningEnum.getValue(ps.getProjectExpectedStudyInfo().getStatus()).getStatus()
+                .equals(StudiesStatusPlanningEnum.Complete.getStatus())
+                || StudiesStatusPlanningEnum.getValue(ps.getProjectExpectedStudyInfo().getStatus()).getStatus()
+                  .equals(StudiesStatusPlanningEnum.Cancelled.getStatus()))
                 && ps.getProjectExpectedStudyInfo().getYear() >= this.getActualPhase().getYear())))
           .collect(Collectors.toList());
 

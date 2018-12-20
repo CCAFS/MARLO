@@ -290,7 +290,7 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
 
   public String getStatusName() {
     if (this.getStatus() != null) {
-      return ProjectStatusEnum.getValue(this.getStatus()).getStatus();
+      return StudiesStatusPlanningEnum.getValue(this.getStatus()).getStatus();
     }
     return null;
   }

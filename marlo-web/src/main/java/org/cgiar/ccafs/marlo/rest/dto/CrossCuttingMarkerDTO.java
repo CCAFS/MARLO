@@ -13,25 +13,50 @@
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
 
-package org.cgiar.ccafs.marlo.rest.mappers;
+package org.cgiar.ccafs.marlo.rest.dto;
 
-import org.cgiar.ccafs.marlo.data.model.RepIndGenderYouthFocusLevel;
-import org.cgiar.ccafs.marlo.rest.dto.CrossCuttingMarkersDTO;
+import javax.validation.constraints.NotNull;
 
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.Mappings;
+import io.swagger.annotations.ApiModelProperty;
 
-@Mapper(componentModel = "jsr330")
-public interface CrossCuttingMarkersMapper {
+public class CrossCuttingMarkerDTO {
 
-  @Mappings({@Mapping(target = "powbName", source = "crossCuttingMarkersDTO.name")})
-  public abstract RepIndGenderYouthFocusLevel
-    crossCuttingMarkersDTOToRepIndGenderYouthFocusLevel(CrossCuttingMarkersDTO crossCuttingMarkersDTO);
+  @ApiModelProperty(notes = "The Generated Cross Cutting Marker ID")
+  @NotNull
+  private Long id;
 
-  @Mappings({@Mapping(target = "name", source = "repIndGenderYouthFocusLevel.powbName")})
-  public abstract CrossCuttingMarkersDTO
-    repIndGenderYouthFocusLevelToCrossCuttingMarkersDTO(RepIndGenderYouthFocusLevel repIndGenderYouthFocusLevel);
+  @ApiModelProperty(notes = "Cross Cutting Marker name")
+  @NotNull
+  private String name;
 
+  @ApiModelProperty(notes = "Cross Cutting Marker definition")
+  private String definition;
+
+
+  public String getDefinition() {
+    return definition;
+  }
+
+
+  public Long getId() {
+    return id;
+  }
+
+
+  public String getName() {
+    return name;
+  }
+
+  public void setDefinition(String definition) {
+    this.definition = definition;
+  }
+
+  public void setId(Long id) {
+    this.id = id;
+  }
+
+  public void setName(String name) {
+    this.name = name;
+  }
 
 }

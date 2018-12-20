@@ -76,14 +76,14 @@
                   [#-- Budgest cannot be editable message --]
                   [#if !isYearEditable(year)]<div class="note">Percentages for ${year} cannot be editable.</div>[/#if]
                   
-                  [#if action.hasBudgets(1,year) || action.hasBudgets(2,year) || action.hasBudgets(3,year) || action.hasBudgets(4,year) || action.hasBudgets(5,year)]
+                  [#if action.hasBudgets(1,year, projectID) || action.hasBudgets(2,year, projectID) || action.hasBudgets(3,year, projectID) || action.hasBudgets(4,year, projectID) || action.hasBudgets(5,year, projectID)]
                   
                     <div class="overallYearBudget fieldset clearfix">
                       <h5 class="title">Remaining ${year} total budget amount</h5>
                       <div class="row">
                         [#list budgetTypesList as budgetType]
                           [#-- Budget Type--]
-                          [#if action.hasBudgets(budgetType.id, year) ]
+                          [#if action.hasBudgets(budgetType.id, year, projectID) ]
                             <div class="col-md-3">
                               <p class="subTitle"><strong>${budgetType.name}</strong> <br /> <small> <span class="context-total totalByYear-${budgetType.id}">${(action.getRemaining(budgetType.id,year))!}%</span> </small></p>
                             </div>
@@ -96,7 +96,7 @@
                       <div class="row">
                         [#list budgetTypesList as budgetType]
                           [#-- Budget Type--]
-                          [#if action.hasBudgets(budgetType.id, year) ]
+                          [#if action.hasBudgets(budgetType.id, year, projectID) ]
                             <div class="col-md-3">
                               <p class="subTitle"><strong>${budgetType.name}</strong> <br /> <small><span class="context-gender totalByYear-${budgetType.id}">${(action.getRemainingGender(budgetType.id,year))!}%</span></small></p>
                             </div>
@@ -155,7 +155,7 @@
             <th class="amountType"> </th>
             [#list budgetTypesList as budgetType]
               [#-- Budget Type--]
-              [#if action.hasBudgets(budgetType.id, selectedYear)]
+              [#if action.hasBudgets(budgetType.id, selectedYear, projectID)]
                 <th class="text-center">${budgetType.name}</th>
               [/#if]
             [/#list]
@@ -167,7 +167,7 @@
             <td class="amountType"> % of total</td>
             [#list budgetTypesList as budgetType]
               [#-- Budget Type--]
-              [#if action.hasBudgets(budgetType.id, selectedYear)]
+              [#if action.hasBudgets(budgetType.id, selectedYear, projectID)]
                 <td class="budgetColumn">
                   [#assign budgetIndex= action.getIndexBudget(element.identifier,selectedYear, budgetType.id) /]
                   [#assign budgetObject= action.getBudget(element.identifier,selectedYear, budgetType.id) /]
@@ -194,7 +194,7 @@
             <td class="amountType"> % of gender</td>
             [#list budgetTypesList as budgetType]
               [#-- Budget Type--]
-              [#if action.hasBudgets(budgetType.id, selectedYear)]
+              [#if action.hasBudgets(budgetType.id, selectedYear, projectID)]
               <td class="budgetColumn">
                 [#assign budgetIndex= action.getIndexBudget(element.identifier,selectedYear, budgetType.id) /]
                 [#assign budgetObject= action.getBudget(element.identifier,selectedYear, budgetType.id) /]
