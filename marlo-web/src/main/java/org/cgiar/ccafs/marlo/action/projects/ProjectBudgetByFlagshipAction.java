@@ -303,30 +303,6 @@ public class ProjectBudgetByFlagshipAction extends BaseAction {
     return transaction;
   }
 
-  /**
-   * @param type
-   * @param year
-   * @return
-   */
-  public boolean hasBudgets(Long type, int year) {
-    Project projectBD = projectManager.getProjectById(projectID);
-    List<ProjectBudget> budgets = projectBD.getProjectBudgets().stream()
-      .filter(c -> c.isActive() && c.getYear() == year && c.getPhase().equals(this.getActualPhase())
-        && c.getBudgetType().getId().longValue() == type.longValue() && (c.getAmount() != null && c.getAmount() >= 0))
-      .collect(Collectors.toList());
-
-    boolean haveBudget = false;
-    if (budgets != null) {
-
-      for (ProjectBudget projectBudget : budgets) {
-        if (projectBudget.getAmount() > 0) {
-          haveBudget = true;
-        }
-      }
-    }
-
-    return haveBudget;
-  }
 
   @Override
   public void prepare() throws Exception {
@@ -568,7 +544,7 @@ public class ProjectBudgetByFlagshipAction extends BaseAction {
   @Override
   public void validate() {
     if (save) {
-      validator.validate(this, project, true);
+      validator.validate(this, project, true, true);
     }
   }
 

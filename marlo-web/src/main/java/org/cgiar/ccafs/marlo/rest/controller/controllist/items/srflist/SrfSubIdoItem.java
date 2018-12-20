@@ -15,12 +15,66 @@
 
 package org.cgiar.ccafs.marlo.rest.controller.controllist.items.srflist;
 
+import org.cgiar.ccafs.marlo.data.manager.SrfSubIdoManager;
+import org.cgiar.ccafs.marlo.data.model.SrfSubIdo;
+import org.cgiar.ccafs.marlo.rest.dto.SrfSubIdoDTO;
+import org.cgiar.ccafs.marlo.rest.mappers.SrfSubIdoMapper;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import javax.inject.Inject;
+import javax.inject.Named;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  */
 
-
+@Named
 public class SrfSubIdoItem<T> {
+
+  private SrfSubIdoManager srfSubIdoManager;
+  private SrfSubIdoMapper srfSubIdoMapper;
+
+  @Inject
+  public SrfSubIdoItem(SrfSubIdoManager srfSubIdoManager, SrfSubIdoMapper srfSubIdoMapper) {
+    super();
+    this.srfSubIdoManager = srfSubIdoManager;
+    this.srfSubIdoMapper = srfSubIdoMapper;
+  }
+
+  /**
+   * Find a SRF-SubIdo requesting an Id
+   * 
+   * @param id
+   * @return a SrfSubIdoDTO with the SRF-SubIdo data.
+   */
+  public ResponseEntity<SrfSubIdoDTO> findSrfSubIdoById(Long id) {
+    SrfSubIdo srfSubIdo = srfSubIdoManager.getSrfSubIdoById(id);
+    return Optional.ofNullable(srfSubIdo).map(srfSubIdoMapper::srfSubIdoToSrfSubIdoDTO)
+      .map(result -> new ResponseEntity<>(result, HttpStatus.OK)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+  }
+
+  /**
+   * Get All the SRF-SubIdo items
+   * 
+   * @return a List of SrfSubIdoDTO with all SRF-SubIdo Items.
+   */
+  public List<SrfSubIdoDTO> getAllSrfSubIdos() {
+    if (srfSubIdoManager.findAll() != null) {
+      List<SrfSubIdo> SrfSubIdos = new ArrayList<>(srfSubIdoManager.findAll());
+      List<SrfSubIdoDTO> SrfSubIdoDTOs = SrfSubIdos.stream()
+        .map(srfSubIdoEntity -> srfSubIdoMapper.srfSubIdoToSrfSubIdoDTO(srfSubIdoEntity)).collect(Collectors.toList());
+      return SrfSubIdoDTOs;
+    } else {
+      return null;
+    }
+  }
+
 
 }

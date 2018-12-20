@@ -858,7 +858,7 @@ public class FundingSourceAction extends BaseAction {
       fundingSourceInfoDB.setHasFileResearch(fundingSource.getFundingSourceInfo().getHasFileResearch());
       fundingSourceInfoDB.setGrantAmount(fundingSource.getFundingSourceInfo().getGrantAmount());
 
-      fundingSourceInfoDB.setFinanceCode(fundingSource.getFundingSourceInfo().getFinanceCode());
+      fundingSourceInfoDB.setFinanceCode(fundingSource.getFundingSourceInfo().getFinanceCode().toUpperCase());
       fundingSourceInfoDB.setContactPersonEmail(fundingSource.getFundingSourceInfo().getContactPersonEmail());
       fundingSourceInfoDB.setContactPersonName(fundingSource.getFundingSourceInfo().getContactPersonName());
       fundingSourceInfoDB.setBudgetType(fundingSource.getFundingSourceInfo().getBudgetType());
@@ -1294,5 +1294,10 @@ public class FundingSourceAction extends BaseAction {
       validator.validate(this, fundingSource, true);
 
     }
+  }
+
+  public boolean w1Permission() {
+    return this.hasPermissionNoBase(
+      this.generatePermission(Permission.PROJECT_FUNDING_W1_BASE_PERMISSION, loggedCrp.getAcronym()));
   }
 }

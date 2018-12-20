@@ -156,7 +156,7 @@ function filterResearchProgram(researchAreaID,researchProgramSelected) {
         success: function(data) {
           $('.capdevResearchProgram').removeAttr('disabled');
           var length = data.length;
-          $('.capdevResearchProgram').empty();
+          // $('.capdevResearchProgram').empty();
           $('.capdevResearchProgram').append('<option value= -1>Select option... </option>');
           for(var i = 0; i < length; i++) {
             $('.capdevResearchProgram').append(
@@ -175,7 +175,7 @@ function filterResearchProgram(researchAreaID,researchProgramSelected) {
     })
   } else {
     // $('.capdevResearchProgram').attr('disabled', 'disabled');
-    $('.capdevResearchProgram').empty();
+    // $('.capdevResearchProgram').empty();
     $('.capdevResearchProgram').append('<option value= -1>Select option... </option>');
 
   }
