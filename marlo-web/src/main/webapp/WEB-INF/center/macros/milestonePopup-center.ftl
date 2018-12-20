@@ -30,7 +30,7 @@
             </div>
             [#-- Target Value --]
             <div class="col-md-4 targetValue-block" style="display:none;">
-              [@customForm.input name="targetValuePopup" type="text"  i18nkey="outcome.milestone.index.inputTargetValue" placeholder="outcome.milestone.index..placeholder" className="targetValuePopup" required=true editable=editable /]
+              [@customForm.input name="targetValuePopup" type="text"  i18nkey="outcome.milestone.index.inputTargetValue" placeholder="outcome.milestone.index.placeholder" className="targetValuePopup" required=true editable=editable /]
             </div>
             [#-- Target Year --]
             <div class="col-md-4" >
