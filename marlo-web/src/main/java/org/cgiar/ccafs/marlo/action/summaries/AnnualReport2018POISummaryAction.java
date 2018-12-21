@@ -108,11 +108,11 @@ import org.openxmlformats.schemas.wordprocessingml.x2006.main.STPageOrientation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class AnualReportPOISummaryAction extends BaseSummariesAction implements Summary {
+public class AnnualReport2018POISummaryAction extends BaseSummariesAction implements Summary {
 
   private static final long serialVersionUID = 2828551630719082089L;
   // private static final String ProgramType = null;
-  private static Logger LOG = LoggerFactory.getLogger(AnualReportPOISummaryAction.class);
+  private static Logger LOG = LoggerFactory.getLogger(AnnualReport2018POISummaryAction.class);
 
   public static double round(double value, int places) {
     if (places < 0) {
@@ -162,7 +162,7 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
   // DOC bytes
   private byte[] bytesDOC;
 
-  public AnualReportPOISummaryAction(APConfig config, GlobalUnitManager crpManager, PhaseManager phaseManager,
+  public AnnualReport2018POISummaryAction(APConfig config, GlobalUnitManager crpManager, PhaseManager phaseManager,
     PowbExpenditureAreasManager powbExpenditureAreasManager, ReportSynthesisManager reportSynthesisManager,
     ReportSynthesisCrpProgressTargetManager reportSynthesisCrpProgressTargetManager,
     RepIndSynthesisIndicatorManager repIndSynthesisIndicatorManager, ProjectManager projectManager,
@@ -1547,8 +1547,8 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
 
       CTDocument1 doc = document.getDocument();
       CTBody body = doc.getBody();
+      poiSummary.pageHeader(document, this.getText("summaries.annualReport2018.header"));
 
-      poiSummary.pageHeader(document, this.getText("summaries.annualReport.header"));
       // Get datetime
       ZonedDateTime timezone = ZonedDateTime.now();
       String zone = timezone.getOffset() + "";
