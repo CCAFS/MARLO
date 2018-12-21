@@ -1549,6 +1549,9 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
       CTBody body = doc.getBody();
       poiSummary.pageHeader(document, this.getText("summaries.annualReport2018.header"));
 
+      // Table of contents
+      document.createTOC();
+
       // Get datetime
       ZonedDateTime timezone = ZonedDateTime.now();
       String zone = timezone.getOffset() + "";
@@ -1556,7 +1559,6 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         zone = "+0";
       }
 
-      //
       this.createPageFooter();
       // poiSummary.pageFooter(document, "This report was generated on " + currentDate);
 

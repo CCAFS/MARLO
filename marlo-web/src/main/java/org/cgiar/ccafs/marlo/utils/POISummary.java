@@ -398,6 +398,20 @@ public class POISummary {
   }
 
 
+  public void pageCenterBoldHeader(XWPFDocument document, String text) throws IOException {
+    CTSectPr sectPr = document.getDocument().getBody().addNewSectPr();
+    XWPFHeaderFooterPolicy policy = new XWPFHeaderFooterPolicy(document, sectPr);
+    CTP ctpHeader = CTP.Factory.newInstance();
+    CTR ctrHeader = ctpHeader.addNewR();
+    CTText ctHeader = ctrHeader.addNewT();
+    ctHeader.setStringValue(text);
+    XWPFParagraph headerParagraph = new XWPFParagraph(ctpHeader, document);
+    headerParagraph.setAlignment(ParagraphAlignment.LEFT);
+    XWPFParagraph[] parsHeader = new XWPFParagraph[1];
+    parsHeader[0] = headerParagraph;
+    policy.createHeader(XWPFHeaderFooterPolicy.DEFAULT, parsHeader);
+  }
+
   /**
    * Footer title
    * 
