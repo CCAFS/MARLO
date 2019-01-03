@@ -176,7 +176,7 @@ $(document).ready(function() {
 
   // Animate help text
   function showHelpText() {
-    // $('.helpMessage').addClass('animated flipInX');
+    $('.helpMessage').addClass('animated flipInX');
     $('.helpMessage').show();
   }
 
@@ -401,7 +401,7 @@ $('input').on("keypress", function(event) {
 
 function setViewMore() {
   var element = $('.helpText');
-  if($(element).height() < 100) {
+  if($('.helpMessage').height() < 100) {
     $(element).find('.viewMore').hide();
   } else {
     $(element).css({
