@@ -1564,7 +1564,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
 
       // Cover
       poiSummary.textLineBreak(document, 10);
-      poiSummary.textHeadCoverTitle(document.createParagraph(), this.getText("summaries.annualReport.mainTitle"));
+      poiSummary.textHeadCoverTitle(document.createParagraph(), this.getText("summaries.annualReport2018.mainTitle"));
 
       // First page
       poiSummary.textLineBreak(document, 17);
