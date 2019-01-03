@@ -463,14 +463,17 @@ function justificationByStatus(statusId) {
     $statusDescription.show().hide(400);
   }
 
+  var newExpectedYear = $('#newExpectedYear select').val();
+  console.log(newExpectedYear);
   var isCompletedWithoutExpectedYear =
-      (!reportingActive && isStatusComplete(statusId) && ($('#newExpectedYear select').val() != ""));
+      ((!reportingActive) && isStatusComplete(statusId) && ((newExpectedYear != "") || newExpectedYear != "-1"));
 
   if(isStatusExtended(statusId) || isCompletedWithoutExpectedYear) {
     $('#newExpectedYear').show();
     $('#newExpectedYear select').attr('disabled', false);
     if(isCompletedWithoutExpectedYear) {
       $('#newExpectedYear select').attr('disabled', true);
+      $('#newExpectedYear').hide();
     } else {
       $('#newExpectedYear select').attr('disabled', false);
     }
