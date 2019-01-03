@@ -74,8 +74,7 @@ public class SrfLists {
    */
   @ApiOperation(value = "Search an SRF-SubIdo with an ID", response = SrfSubIdoDTO.class)
   @RequiresPermissions(Permission.CRP_PROGRAM_READ_REST_API_PERMISSION)
-  @RequestMapping(value = "/v2/srfSubIdos/{id}", method = RequestMethod.GET,
-    produces = MediaType.APPLICATION_JSON_VALUE)
+  @RequestMapping(value = "/srfSubIdos/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<SrfSubIdoDTO> findSrfSubIdoById(@PathVariable Long id) {
     LOG.debug("REST request to get SRF-SubIdo : {}", id);
     return srfSubIdoItem.findSrfSubIdoById(id);
@@ -88,7 +87,7 @@ public class SrfLists {
    */
   @ApiOperation(value = "View all Srf IDO", response = SrfIdoDTO.class, responseContainer = "List", position = 1)
   @RequiresPermissions(Permission.CRP_PROGRAM_READ_REST_API_PERMISSION)
-  @RequestMapping(value = "/v2/srfIdos", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+  @RequestMapping(value = "/srfIdos", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
   public List<SrfIdoDTO> getAllSrfIdos() {
     LOG.debug("REST request to get SRF IDOs");
     return srfIdoItem.getAllSrfIdos();
@@ -102,7 +101,7 @@ public class SrfLists {
    */
   @ApiOperation(value = "View all Srf-SLO", response = SrfSloDTO.class, responseContainer = "List", position = 2)
   @RequiresPermissions(Permission.CRP_PROGRAM_READ_REST_API_PERMISSION)
-  @RequestMapping(value = "/v2/srfSlos", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+  @RequestMapping(value = "/srfSlos", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
   public List<SrfSloDTO> getAllSrfSlos() {
     LOG.debug("REST request to get SRF-SLOs");
     return srfSloItem.getAllSrfSlos();
@@ -116,7 +115,7 @@ public class SrfLists {
   @ApiOperation(value = "View all SRF Cross Cutting Issue", response = SrfCrossCuttingIssueDTO.class,
     responseContainer = "List")
   @RequiresPermissions(Permission.CRP_PROGRAM_READ_REST_API_PERMISSION)
-  @RequestMapping(value = "/v2/srfCrossCuttingIssues", method = RequestMethod.GET,
+  @RequestMapping(value = "/srfCrossCuttingIssues", method = RequestMethod.GET,
     produces = MediaType.APPLICATION_JSON_VALUE)
   public List<SrfCrossCuttingIssueDTO> getAllSrfSrfCrossCuttingIssues() {
     LOG.debug("REST request to get SRF Cross Cutting Issues");
@@ -131,7 +130,7 @@ public class SrfLists {
    */
   @ApiOperation(value = "View all SRF-SubIdo", response = SrfSubIdoDTO.class, responseContainer = "List", position = 2)
   @RequiresPermissions(Permission.CRP_PROGRAM_READ_REST_API_PERMISSION)
-  @RequestMapping(value = "/v2/srfSubIdos", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+  @RequestMapping(value = "/srfSubIdos", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
   public List<SrfSubIdoDTO> getAllSrfSubIdos() {
     LOG.debug("REST request to get SRF-SubIdos");
     return srfSubIdoItem.getAllSrfSubIdos();
@@ -145,7 +144,7 @@ public class SrfLists {
    */
   @ApiOperation(value = "Search an SRF IDO with an ID", response = SrfIdoDTO.class)
   @RequiresPermissions(Permission.CRP_PROGRAM_READ_REST_API_PERMISSION)
-  @RequestMapping(value = "/v2/srfIdo/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+  @RequestMapping(value = "/srfIdo/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<SrfIdoDTO> getSrfIdoById(@PathVariable Long id) {
     LOG.debug("REST request to get SRF-SLO : {}", id);
     return srfIdoItem.findSrfIdobyId(id);
@@ -159,7 +158,7 @@ public class SrfLists {
    */
   @ApiOperation(value = "Search an SRF-SLO with an ID", response = SrfSloDTO.class)
   @RequiresPermissions(Permission.CRP_PROGRAM_READ_REST_API_PERMISSION)
-  @RequestMapping(value = "/v2/srfSlo/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+  @RequestMapping(value = "/srfSlo/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<SrfSloDTO> getSrfSloById(@PathVariable Long id) {
     LOG.debug("REST request to get SRF-SLO : {}", id);
     return srfSloItem.findSrfSlobyId(id);
@@ -173,7 +172,7 @@ public class SrfLists {
    */
   @ApiOperation(value = "Search an SRF Cross Cutting Issue with an ID", response = SrfCrossCuttingIssueDTO.class)
   @RequiresPermissions(Permission.CRP_PROGRAM_READ_REST_API_PERMISSION)
-  @RequestMapping(value = "/v2/srfCrossCuttingIssue/{id}", method = RequestMethod.GET,
+  @RequestMapping(value = "/srfCrossCuttingIssue/{id}", method = RequestMethod.GET,
     produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<SrfCrossCuttingIssueDTO> getSrfSrfCrossCuttingIssueById(@PathVariable Long id) {
     LOG.debug("REST request to get SRF Cross Cutting Issue : {}", id);
