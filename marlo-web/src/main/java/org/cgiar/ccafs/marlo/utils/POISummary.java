@@ -1175,6 +1175,16 @@ public class POISummary {
     h1Run.setFontSize(26);
   }
 
+  public void textHeadCoverTitleAR2018(XWPFParagraph h1, String text) {
+    h1.setAlignment(ParagraphAlignment.CENTER);
+    XWPFRun h1Run = h1.createRun();
+    this.addParagraphTextBreak(h1Run, text);
+    h1Run.setColor(TEXT_FONT_COLOR);
+    h1Run.setBold(true);
+    h1Run.setFontFamily(FONT_TYPE);
+    h1Run.setFontSize(28);
+  }
+
   public void textHeadPrincipalTitle(XWPFParagraph h1, String text) {
     h1.setAlignment(ParagraphAlignment.LEFT);
     XWPFRun h1Run = h1.createRun();
