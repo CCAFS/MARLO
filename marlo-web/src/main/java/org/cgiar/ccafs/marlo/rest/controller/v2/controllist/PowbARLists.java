@@ -13,15 +13,15 @@
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
 
-package org.cgiar.ccafs.marlo.rest.controller.controllist;
+package org.cgiar.ccafs.marlo.rest.controller.v2.controllist;
 
-import org.cgiar.ccafs.marlo.rest.controller.controllist.items.powbar.ContributionOfCrpItem;
-import org.cgiar.ccafs.marlo.rest.controller.controllist.items.powbar.CrossCuttingMarkerItem;
-import org.cgiar.ccafs.marlo.rest.controller.controllist.items.powbar.DegreeOfInnovationItem;
-import org.cgiar.ccafs.marlo.rest.controller.controllist.items.powbar.InnovationTypeItem;
-import org.cgiar.ccafs.marlo.rest.controller.controllist.items.powbar.MaturityOfChangeItem;
-import org.cgiar.ccafs.marlo.rest.controller.controllist.items.powbar.ResearchPartnershipItem;
-import org.cgiar.ccafs.marlo.rest.controller.controllist.items.powbar.StageOfInnovationItem;
+import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.powbar.ContributionOfCrpItem;
+import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.powbar.CrossCuttingMarkerItem;
+import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.powbar.DegreeOfInnovationItem;
+import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.powbar.InnovationTypeItem;
+import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.powbar.MaturityOfChangeItem;
+import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.powbar.ResearchPartnershipItem;
+import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.powbar.StageOfInnovationItem;
 import org.cgiar.ccafs.marlo.rest.dto.ContributionOfCrpDTO;
 import org.cgiar.ccafs.marlo.rest.dto.CrossCuttingMarkerDTO;
 import org.cgiar.ccafs.marlo.rest.dto.DegreeOfInnovationDTO;
@@ -52,7 +52,6 @@ import org.springframework.web.bind.annotation.RestController;
 @Api(tags = "POWB/AR Lists")
 @Named
 public class PowbARLists {
-
 
   private static final Logger LOG = LoggerFactory.getLogger(PowbARLists.class);
   private CrossCuttingMarkerItem<PowbARLists> crossCuttingMarkersItem;
@@ -86,7 +85,7 @@ public class PowbARLists {
    */
   @ApiOperation(value = "Search a Contribution of CRP with an ID", response = ContributionOfCrpDTO.class)
   @RequiresPermissions(Permission.CRP_PROGRAM_READ_REST_API_PERMISSION)
-  @RequestMapping(value = "/contributionOfCrp/{id}", method = RequestMethod.GET,
+  @RequestMapping(value = "/v2/contributionOfCrp/{id}", method = RequestMethod.GET,
     produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<ContributionOfCrpDTO> findContributionOfCrpById(@PathVariable Long id) {
     LOG.debug("REST request to get Innovation Type : {}", id);
@@ -101,7 +100,7 @@ public class PowbARLists {
    */
   @ApiOperation(value = "Search a Degree of Innovation with an ID", response = DegreeOfInnovationDTO.class)
   @RequiresPermissions(Permission.CRP_PROGRAM_READ_REST_API_PERMISSION)
-  @RequestMapping(value = "/degreeOfInnovation/{id}", method = RequestMethod.GET,
+  @RequestMapping(value = "/v2/degreeOfInnovation/{id}", method = RequestMethod.GET,
     produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<DegreeOfInnovationDTO> findDegreeOfInnovationById(@PathVariable Long id) {
     LOG.debug("REST request to get Degree of Innovation : {}", id);
@@ -116,7 +115,7 @@ public class PowbARLists {
    */
   @ApiOperation(value = "Search a Maturity of Change with an ID", response = MaturityOfChangeDTO.class)
   @RequiresPermissions(Permission.CRP_PROGRAM_READ_REST_API_PERMISSION)
-  @RequestMapping(value = "/maturityOfChange/{id}", method = RequestMethod.GET,
+  @RequestMapping(value = "/v2/maturityOfChange/{id}", method = RequestMethod.GET,
     produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<MaturityOfChangeDTO> findMaturityOfChangeById(@PathVariable Long id) {
     LOG.debug("REST request to get Maturity of Change : {}", id);
@@ -131,7 +130,7 @@ public class PowbARLists {
    */
   @ApiOperation(value = "Search a Stage of Innovation with an ID", response = StageOfInnovationDTO.class)
   @RequiresPermissions(Permission.CRP_PROGRAM_READ_REST_API_PERMISSION)
-  @RequestMapping(value = "/stageOfInnovation/{id}", method = RequestMethod.GET,
+  @RequestMapping(value = "/v2/stageOfInnovation/{id}", method = RequestMethod.GET,
     produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<StageOfInnovationDTO> findStageOfInnovationById(@PathVariable Long id) {
     LOG.debug("REST request to get Stage of Innovation : {}", id);
@@ -146,7 +145,7 @@ public class PowbARLists {
   @ApiOperation(value = "View all The Contribution of CRP to Innovation Types", response = ContributionOfCrpDTO.class,
     responseContainer = "List", position = 1)
   @RequiresPermissions(Permission.CRP_PROGRAM_READ_REST_API_PERMISSION)
-  @RequestMapping(value = "/contributionOfCrps", method = RequestMethod.GET,
+  @RequestMapping(value = "/v2/contributionOfCrps", method = RequestMethod.GET,
     produces = MediaType.APPLICATION_JSON_VALUE)
   public List<ContributionOfCrpDTO> getAllContributionOfCrps() {
     LOG.debug("REST request to get Contribution of CRP");
@@ -161,7 +160,7 @@ public class PowbARLists {
   @ApiOperation(value = "View all The Cross Cutting Markers", response = CrossCuttingMarkerDTO.class,
     responseContainer = "List", position = 1)
   @RequiresPermissions(Permission.CRP_PROGRAM_READ_REST_API_PERMISSION)
-  @RequestMapping(value = "/crossCuttingMarkers", method = RequestMethod.GET,
+  @RequestMapping(value = "/v2/crossCuttingMarkers", method = RequestMethod.GET,
     produces = MediaType.APPLICATION_JSON_VALUE)
   public List<CrossCuttingMarkerDTO> getAllCrossCuttingMarkers() {
     LOG.debug("REST request to get Cross Cutting Markers");
@@ -177,7 +176,7 @@ public class PowbARLists {
   @ApiOperation(value = "View all The Degree of Innovations", response = DegreeOfInnovationDTO.class,
     responseContainer = "List", position = 1)
   @RequiresPermissions(Permission.CRP_PROGRAM_READ_REST_API_PERMISSION)
-  @RequestMapping(value = "/degreeOfInnovations", method = RequestMethod.GET,
+  @RequestMapping(value = "/v2/degreeOfInnovations", method = RequestMethod.GET,
     produces = MediaType.APPLICATION_JSON_VALUE)
   public List<DegreeOfInnovationDTO> getAllDegreeOfInnovations() {
     LOG.debug("REST request to get  Degree of Innovations");
@@ -193,7 +192,8 @@ public class PowbARLists {
   @ApiOperation(value = "View all The Innovation Types", response = InnovationTypeDTO.class, responseContainer = "List",
     position = 1)
   @RequiresPermissions(Permission.CRP_PROGRAM_READ_REST_API_PERMISSION)
-  @RequestMapping(value = "/innovationTypes", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+  @RequestMapping(value = "/v2/innovationTypes", method = RequestMethod.GET,
+    produces = MediaType.APPLICATION_JSON_VALUE)
   public List<InnovationTypeDTO> getAllInnovationTypes() {
     LOG.debug("REST request to get Innovation Types");
     return innovationTypesItem.getAllInnovationTypes();
@@ -208,7 +208,8 @@ public class PowbARLists {
   @ApiOperation(value = "View all The Maturity of Changes", response = MaturityOfChangeDTO.class,
     responseContainer = "List", position = 1)
   @RequiresPermissions(Permission.CRP_PROGRAM_READ_REST_API_PERMISSION)
-  @RequestMapping(value = "/maturityOfChange", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+  @RequestMapping(value = "/v2/maturityOfChange", method = RequestMethod.GET,
+    produces = MediaType.APPLICATION_JSON_VALUE)
   public List<MaturityOfChangeDTO> getAllMaturityOfChanges() {
     LOG.debug("REST request to get  Maturity of Change");
     return maturityOfChangeItem.getAllMaturityOfChanges();
@@ -222,7 +223,7 @@ public class PowbARLists {
   @ApiOperation(value = "View all The Research Partnerships", response = ResearchPartnershipDTO.class,
     responseContainer = "List", position = 1)
   @RequiresPermissions(Permission.CRP_PROGRAM_READ_REST_API_PERMISSION)
-  @RequestMapping(value = "/researchPartnerships", method = RequestMethod.GET,
+  @RequestMapping(value = "/v2/researchPartnerships", method = RequestMethod.GET,
     produces = MediaType.APPLICATION_JSON_VALUE)
   public List<ResearchPartnershipDTO> getAllResearchPartnerships() {
     LOG.debug("REST request to get ResearchPartnerships");
@@ -238,7 +239,7 @@ public class PowbARLists {
   @ApiOperation(value = "View all The Stage of Innovations", response = StageOfInnovationDTO.class,
     responseContainer = "List", position = 1)
   @RequiresPermissions(Permission.CRP_PROGRAM_READ_REST_API_PERMISSION)
-  @RequestMapping(value = "/stageOfInnovations", method = RequestMethod.GET,
+  @RequestMapping(value = "/v2/stageOfInnovations", method = RequestMethod.GET,
     produces = MediaType.APPLICATION_JSON_VALUE)
   public List<StageOfInnovationDTO> getAllStageOfInnovations() {
     LOG.debug("REST request to get  Stage of Innovations");
@@ -254,7 +255,7 @@ public class PowbARLists {
    */
   @ApiOperation(value = "Search a Cross Cutting Marker with an ID", response = CrossCuttingMarkerDTO.class)
   @RequiresPermissions(Permission.CRP_PROGRAM_READ_REST_API_PERMISSION)
-  @RequestMapping(value = "/crossCuttingMarker/{id}", method = RequestMethod.GET,
+  @RequestMapping(value = "/v2/crossCuttingMarker/{id}", method = RequestMethod.GET,
     produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<CrossCuttingMarkerDTO> getCrossCuttingMarkerById(@PathVariable Long id) {
     LOG.debug("REST request to get Cross Cutting Marker : {}", id);
@@ -269,7 +270,7 @@ public class PowbARLists {
    */
   @ApiOperation(value = "Search a Innovation Type with an ID", response = InnovationTypeDTO.class)
   @RequiresPermissions(Permission.CRP_PROGRAM_READ_REST_API_PERMISSION)
-  @RequestMapping(value = "/innovationType/{id}", method = RequestMethod.GET,
+  @RequestMapping(value = "/v2/innovationType/{id}", method = RequestMethod.GET,
     produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<InnovationTypeDTO> getInnovationTypeById(@PathVariable Long id) {
     LOG.debug("REST request to get Innovation Type : {}", id);
@@ -285,7 +286,7 @@ public class PowbARLists {
    */
   @ApiOperation(value = "Search a Research Partnerships with an ID", response = ResearchPartnershipDTO.class)
   @RequiresPermissions(Permission.CRP_PROGRAM_READ_REST_API_PERMISSION)
-  @RequestMapping(value = "/researchPartnership/{id}", method = RequestMethod.GET,
+  @RequestMapping(value = "/v2/researchPartnership/{id}", method = RequestMethod.GET,
     produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<ResearchPartnershipDTO> getResearchPartnershipById(@PathVariable Long id) {
     LOG.debug("REST request to get ResearchPartnership : {}", id);

@@ -13,7 +13,7 @@
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
 
-package org.cgiar.ccafs.marlo.rest.controller.todo;
+package org.cgiar.ccafs.marlo.rest.controller.v2.todo;
 
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionLocationManager;
@@ -166,7 +166,7 @@ public class Institutions {
 
   @ApiOperation(value = "View a List of Institutions", response = InstitutionDTO.class, responseContainer = "List")
   @RequiresPermissions(Permission.INSTITUTIONS_READ_REST_API_PERMISSION)
-  @RequestMapping(value = "/institutions", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+  @RequestMapping(value = "/v2/institutions", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
   public List<InstitutionDTO> getAllInstitutions() {
     LOG.debug("REST request to get Institutions");
     List<Institution> institutions = institutionManager.findAll();
@@ -178,7 +178,8 @@ public class Institutions {
   @ApiOperation(value = "View a List of Institution Types", response = InstitutionTypeDTO.class,
     responseContainer = "List")
   @RequiresPermissions(Permission.INSTITUTIONS_READ_REST_API_PERMISSION)
-  @RequestMapping(value = "/institutionTypes", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+  @RequestMapping(value = "/v2/institutionTypes", method = RequestMethod.GET,
+    produces = MediaType.APPLICATION_JSON_VALUE)
   public List<InstitutionTypeDTO> getAllInstitutionsTypes() {
     LOG.debug("REST request to get Institution Types");
     List<InstitutionType> institutions = institutionTypeManager.findAll();
@@ -197,7 +198,8 @@ public class Institutions {
 
   @ApiOperation(value = "Search an Institution with an ID", response = InstitutionDTO.class)
   @RequiresPermissions(Permission.INSTITUTIONS_READ_REST_API_PERMISSION)
-  @RequestMapping(value = "/institution/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+  @RequestMapping(value = "/v2/institution/{id}", method = RequestMethod.GET,
+    produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<InstitutionDTO> getInstitution(@PathVariable Long id) {
     LOG.debug("REST request to get Institution : {}", id);
     Institution institution = institutionManager.getInstitutionById(id);
@@ -207,7 +209,7 @@ public class Institutions {
 
   @ApiOperation(value = "Search an Institution Type with an ID", response = InstitutionDTO.class)
   @RequiresPermissions(Permission.INSTITUTIONS_READ_REST_API_PERMISSION)
-  @RequestMapping(value = "/institutionType/{id}", method = RequestMethod.GET,
+  @RequestMapping(value = "/v2/institutionType/{id}", method = RequestMethod.GET,
     produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<InstitutionTypeDTO> getInstitutionType(@PathVariable Long id) {
     LOG.debug("REST request to get Institution : {}", id);
