@@ -13,10 +13,10 @@
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
 
-package org.cgiar.ccafs.marlo.rest.controller.controllist;
+package org.cgiar.ccafs.marlo.rest.controller.v2.controllist;
 
-import org.cgiar.ccafs.marlo.rest.controller.controllist.items.locations.CountryItem;
-import org.cgiar.ccafs.marlo.rest.controller.controllist.items.locations.GeographicScopeItem;
+import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.locations.CountryItem;
+import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.locations.GeographicScopeItem;
 import org.cgiar.ccafs.marlo.rest.dto.GeographicScopeDTO;
 import org.cgiar.ccafs.marlo.rest.dto.LocElementDTO;
 import org.cgiar.ccafs.marlo.security.Permission;
@@ -62,7 +62,7 @@ public class Locations {
    */
   @ApiOperation(value = "View all Conutries", response = LocElementDTO.class, responseContainer = "List")
   @RequiresPermissions(Permission.CRP_PROGRAM_READ_REST_API_PERMISSION)
-  @RequestMapping(value = "/countries", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+  @RequestMapping(value = "/v2/countries", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
   public List<LocElementDTO> getAllContries() {
     LOG.debug("REST request to get Contries");
     return countryItem.getAllCountries();
@@ -76,7 +76,8 @@ public class Locations {
    */
   @ApiOperation(value = "View all Geographic Scopes", response = GeographicScopeDTO.class, responseContainer = "List")
   @RequiresPermissions(Permission.CRP_PROGRAM_READ_REST_API_PERMISSION)
-  @RequestMapping(value = "/geographicScopes", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+  @RequestMapping(value = "/v2/geographicScopes", method = RequestMethod.GET,
+    produces = MediaType.APPLICATION_JSON_VALUE)
   public List<GeographicScopeDTO> getAllGeographicScopes() {
     LOG.debug("REST request to get Geographic Scopes");
     return geographicScopeItem.getAllGeographicScopes();
