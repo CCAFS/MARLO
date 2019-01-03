@@ -62,7 +62,7 @@ public class Locations {
    */
   @ApiOperation(value = "View all Conutries", response = LocElementDTO.class, responseContainer = "List")
   @RequiresPermissions(Permission.CRP_PROGRAM_READ_REST_API_PERMISSION)
-  @RequestMapping(value = "/v2/countries", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+  @RequestMapping(value = "/countries", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
   public List<LocElementDTO> getAllContries() {
     LOG.debug("REST request to get Contries");
     return countryItem.getAllCountries();
@@ -76,8 +76,7 @@ public class Locations {
    */
   @ApiOperation(value = "View all Geographic Scopes", response = GeographicScopeDTO.class, responseContainer = "List")
   @RequiresPermissions(Permission.CRP_PROGRAM_READ_REST_API_PERMISSION)
-  @RequestMapping(value = "/v2/geographicScopes", method = RequestMethod.GET,
-    produces = MediaType.APPLICATION_JSON_VALUE)
+  @RequestMapping(value = "/geographicScopes", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
   public List<GeographicScopeDTO> getAllGeographicScopes() {
     LOG.debug("REST request to get Geographic Scopes");
     return geographicScopeItem.getAllGeographicScopes();
