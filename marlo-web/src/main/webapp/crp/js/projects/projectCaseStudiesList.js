@@ -42,6 +42,7 @@ function addJustificationPopUp() {
             }
           }
       },
+      closeText: ''
   });
   // Event to open dialog to remove deliverable
   $("a.removeElementList").on("click", removeElementList);

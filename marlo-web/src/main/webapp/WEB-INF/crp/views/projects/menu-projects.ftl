@@ -64,7 +64,6 @@
 
 [#assign submission = (action.isProjectSubmitted(projectID))!false /]
 [#assign canSubmit = (action.hasPersmissionSubmit(projectID))!false /]
-[#-- assign completed = (action.isCompleteProject(projectID))!false /--]
 [#assign canUnSubmit = ((action.hasPersmissionUnSubmit(projectID))!false)/]
 
 
@@ -150,7 +149,7 @@
     <div id="progressbar-${projectID}" class="progressbar" style="display:none"></div>
   [/#if]
   
-  [#assign enableUnsubmitButton = true ]
+  [#assign enableUnsubmitButton = !upKeepActive ]
   [#-- Submit button --]
   [#if enableUnsubmitButton && canEdit]
     [#assign showSubmit=(canSubmit && !submission && completed)]
