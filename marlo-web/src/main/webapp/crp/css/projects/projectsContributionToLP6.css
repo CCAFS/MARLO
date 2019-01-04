@@ -1,3 +1,9 @@
+.lp6-pdf{
+  float:right;
+  font-weight:bold;
+  cursor: pointer;
+}
+
 .lp6-view-more {
   cursor: pointer;
   color: #337ab7;

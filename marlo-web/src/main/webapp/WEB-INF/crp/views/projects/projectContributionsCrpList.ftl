@@ -222,13 +222,14 @@
 
 [#macro contributionToLP6]  
   <div id="projectContributionToLP6" class="borderBox">
-   <h4>[@s.text name="projects.LP6Contribution.title" /]</h4><img src="${baseUrl}/global/images/pdf.png" height="25" title="Explanatory PDF" />
+   <a class="lp6-pdf"><img src="${baseUrl}/global/images/pdf.png" height="25"/>[[@s.text name="projects.LP6Contribution.explanatoryPDF" /]]</a><h4>[@s.text name="projects.LP6Contribution.title" /]</h4>
    <p class="text-justify note"><small>[@s.text name="projects.LP6Contribution.infoText"/] (<span class="lp6-view-more" data-toggle="modal" data-target=".lp6info-modal">view more</span>)</small></p>
    <div class="form-group"><strong>[@s.text name="projects.LP6Contribution.contribution"/][@customForm.req required=true /]</strong>
+   [#local contributesToLP6 = false /]
    [@customForm.radioFlat id="lp6Contribution-yes" name="lp6Contribution-yes" label="Yes" value="true" checked=false cssClassLabel="radio-label-yes"/]
    [@customForm.radioFlat id="lp6Contribution-no" name="lp6Contribution-no" label="No" value="false" checked=false cssClassLabel="radio-label-no"/]</div>
   </div>
-  [#-- On-going Extended table (Modal) --]
+  [#-- LP6 Help Text expanded --]
     <div class="modal fade extended-table-modal lp6info-modal" tabindex="-1" role="dialog" aria-labelledby="extendedTableModal" aria-hidden="true">
       <div class="modal-dialog modal-lg">
          <div class="modal-content">
