@@ -1,0 +1,13 @@
+.lp6-view-more {
+  cursor: pointer;
+  color: #337ab7;
+}
+
+.lp6-view-more:hover{
+  text-decoration:underline;
+}
+
+.lp6info-modal .modal-content {
+  padding: 20px;
+  text-align: justify;
+}

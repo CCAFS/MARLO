@@ -7,7 +7,10 @@
   "${baseUrl}/global/js/fieldsValidation.js"
   ] 
 /]
-[#assign customCSS = ["${baseUrlMedia}/css/projects/projectContributionsCrpList.css"] /]
+[#assign customCSS = [
+  "${baseUrlMedia}/css/projects/projectContributionsCrpList.css",
+  "${baseUrlMedia}/css/projects/projectsContributionToLP6.css"
+  ] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "contributionsCrpList" /]
 [#assign isListSection = true /]
@@ -21,6 +24,7 @@
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
 [#import "/WEB-INF/crp/macros/relationsPopupMacro.ftl" as popUps /]
+[#import "/WEB-INF/global/macros/utils.ftl" as utilities /]
 
 [#assign startYear = (project.projectInfo.startDate?string.yyyy)?number /]
 [#assign endYear = (project.projectInfo.endDate?string.yyyy)?number /]
@@ -99,7 +103,7 @@
               </div>
             [/#if] 
           </div> 
-      
+      [@contributionToLP6 /]
       </div>
     </div>  
 </section>
@@ -214,6 +218,26 @@
       </div>
     </div>
   </div> 
+[/#macro]
+
+[#macro contributionToLP6]  
+  <div id="projectContributionToLP6" class="borderBox">
+   <h4>[@s.text name="projects.LP6Contribution.title" /]</h4>
+   <p class="text-justify note"><small>[@s.text name="projects.LP6Contribution.infoText"/] (<span class="lp6-view-more" data-toggle="modal" data-target=".lp6info-modal">view more</span>)</p>
+   <strong>[@s.text name="projects.LP6Contribution.contribution"/][@customForm.req required=true /]</strong>
+   [@customForm.radioFlat id="yes" name="yes" label="Yes" value="true" checked=false cssClassLabel="radio-label-yes"/]
+   [@customForm.radioFlat id="no" name="no" label="No" value="false" checked=false cssClassLabel="radio-label-no"/]
+  </div>
+  
+  [#-- On-going Extended table (Modal) --]
+    <div class="modal fade extended-table-modal lp6info-modal" tabindex="-1" role="dialog" aria-labelledby="extendedTableModal" aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+         <div class="modal-content">
+           <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+             [@s.text name="projects.LP6Contribution.helpText"/]
+          </div>
+      </div>
+    </div>
 [/#macro]
 
 [#-- Get if the year is required--]
