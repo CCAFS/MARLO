@@ -10,6 +10,8 @@ function init() {
 
   $('form input.initialBaseLine').integerInput();
 
+  $('form input.achievedNumber').numericInput();
+
 }
 
 function attachEvents() {

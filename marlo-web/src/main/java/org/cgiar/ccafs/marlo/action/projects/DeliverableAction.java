@@ -332,7 +332,7 @@ public class DeliverableAction extends BaseAction {
       return false;
     }
 
-    if (this.isReportingActive()) {
+    if (this.isReportingActive() || this.isUpKeepActive()) {
       if (((deliverable.getDeliverableInfo(this.getActualPhase()).getNewExpectedYear() != null
         && deliverable.getDeliverableInfo(this.getActualPhase()).getNewExpectedYear() != -1)
         && deliverable.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
@@ -1296,7 +1296,7 @@ public class DeliverableAction extends BaseAction {
           .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList()));
 
 
-        if (this.isReportingActive() || (this.isPlanningActive() && this.getActualPhase().getUpkeep())) {
+        if (this.isReportingActive() || this.isUpKeepActive()) {
 
           DeliverableQualityCheck deliverableQualityCheck = deliverableQualityCheckManager
             .getDeliverableQualityCheckByDeliverable(deliverable.getId(), this.getActualPhase().getId());
@@ -1465,11 +1465,13 @@ public class DeliverableAction extends BaseAction {
 
       status = new HashMap<>();
       List<ProjectStatusEnum> list = Arrays.asList(ProjectStatusEnum.values());
+      // Add all status
       for (ProjectStatusEnum projectStatusEnum : list) {
-
         status.put(projectStatusEnum.getStatusId(), projectStatusEnum.getStatus());
       }
-      if (this.isPlanningActive()) {
+
+      // Status rules for planning
+      if (this.isPlanningActive() && !this.isUpKeepActive()) {
         if (deliverable.getDeliverableInfo(this.getActualPhase()).getStatus() != null) {
           if (deliverable.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() != Integer
             .parseInt(ProjectStatusEnum.Complete.getStatusId())) {
@@ -1669,7 +1671,7 @@ public class DeliverableAction extends BaseAction {
           this.crossCuttingDimensions.add(score);
         }
       }
-      if (this.isReportingActive() || (this.isPlanningActive() && this.getActualPhase().getUpkeep())) {
+      if (this.isReportingActive() || this.isUpKeepActive()) {
         if (metadataElementManager.findAll() != null) {
           deliverable.setMetadata(new ArrayList<>(metadataElementManager.findAll()));
         }
@@ -1900,7 +1902,7 @@ public class DeliverableAction extends BaseAction {
       this.saveDeliverableCountries(deliverableManagedState);
 
       // Reporting and upkeep
-      if (this.isReportingActive() || (this.isPlanningActive() && this.getActualPhase().getUpkeep())) {
+      if (this.isReportingActive() || this.isUpKeepActive()) {
         if (deliverable.getQualityCheck() != null) {
           this.saveQualityCheck();
         }
@@ -1924,7 +1926,7 @@ public class DeliverableAction extends BaseAction {
       relationsName.add(APConstants.PROJECT_DELIVERABLE_LOCATIONS);
       relationsName.add(APConstants.PROJECT_DELIVERABLE_FUNDING_RELATION);
       relationsName.add(APConstants.PROJECT_DELIVERABLE_GENDER_LEVELS);
-      if (this.isReportingActive() || (this.isPlanningActive() && this.getActualPhase().getUpkeep())) {
+      if (this.isReportingActive() || this.isUpKeepActive()) {
         relationsName.add(APConstants.PROJECT_DELIVERABLE_QUALITY_CHECK);
         relationsName.add(APConstants.PROJECT_DELIVERABLE_METADATA_ELEMENT);
         relationsName.add(APConstants.PROJECT_DELIVERABLE_DATA_SHARING_FILES);
@@ -2935,7 +2937,7 @@ public class DeliverableAction extends BaseAction {
       deliverableInfoDb.setNewExpectedYear(deliverable.getDeliverableInfo(this.getActualPhase()).getNewExpectedYear());
     }
 
-    if (this.isPlanningActive()) {
+    if (this.isPlanningActive() && !this.isUpKeepActive()) {
       if (deliverable.getDeliverableInfo(this.getActualPhase()).getStatus() == Integer
         .parseInt(ProjectStatusEnum.Extended.getStatusId())
         && deliverable.getDeliverableInfo(this.getActualPhase()).getNewExpectedYear() != null) {
@@ -3014,7 +3016,7 @@ public class DeliverableAction extends BaseAction {
 
     deliverableInfoDb
       .setStatusDescription(deliverable.getDeliverableInfo(this.getActualPhase()).getStatusDescription());
-    if (this.isReportingActive() || (this.isPlanningActive() && this.getActualPhase().getUpkeep())) {
+    if (this.isReportingActive() || this.isUpKeepActive()) {
 
       if (deliverable.getDeliverableInfo(this.getActualPhase()).getAdoptedLicense() != null) {
         deliverableInfoDb.setAdoptedLicense(deliverable.getDeliverableInfo(this.getActualPhase()).getAdoptedLicense());

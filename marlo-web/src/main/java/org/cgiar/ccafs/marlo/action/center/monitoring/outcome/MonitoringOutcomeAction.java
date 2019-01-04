@@ -41,6 +41,7 @@ import org.cgiar.ccafs.marlo.data.model.SrfTargetUnit;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
+import org.cgiar.ccafs.marlo.validation.center.monitoring.project.MonitoringOutcomeValidator;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -121,6 +122,7 @@ public class MonitoringOutcomeAction extends BaseAction {
   private long outcomeID;
   private String transaction;
   private CenterOutcome outcomeDB;
+  private MonitoringOutcomeValidator validator;
 
   private int currentYear;
 
@@ -129,7 +131,7 @@ public class MonitoringOutcomeAction extends BaseAction {
     SrfTargetUnitManager targetUnitService, CrpProgramManager programService, ICenterMilestoneManager milestoneService,
     AuditLogManager auditLogService, ICenterMonitoringOutcomeManager monitoringOutcomeService,
     ICenterMonitoringMilestoneManager monitoringMilestoneService,
-    ICenterMonitoringOutcomeEvidenceManager evidenceService) {
+    ICenterMonitoringOutcomeEvidenceManager evidenceService, MonitoringOutcomeValidator validator) {
     super(config);
     this.centerService = centerService;
     this.outcomeService = outcomeService;
@@ -140,6 +142,7 @@ public class MonitoringOutcomeAction extends BaseAction {
     this.evidenceService = evidenceService;
     this.monitoringMilestoneService = monitoringMilestoneService;
     this.monitoringOutcomeService = monitoringOutcomeService;
+    this.validator = validator;
   }
 
   @Override
@@ -466,9 +469,6 @@ public class MonitoringOutcomeAction extends BaseAction {
   public String save() {
 
 
-    this.setInvalidFields(new HashMap<>());
-
-
     outcomeService.saveResearchOutcome(outcomeDB);
 
     if (outcome.getMonitorings() != null || !outcome.getMonitorings().isEmpty()) {
@@ -686,4 +686,10 @@ public class MonitoringOutcomeAction extends BaseAction {
     return sortedMap;
   }
 
+  @Override
+  public void validate() {
+    if (save) {
+      validator.validate(this, outcome, selectedProgram, true);
+    }
+  }
 }

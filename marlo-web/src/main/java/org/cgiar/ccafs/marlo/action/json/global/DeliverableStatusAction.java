@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.dispatcher.Parameter;
 
@@ -72,7 +73,7 @@ public class DeliverableStatusAction extends BaseAction {
 
       status.put(projectStatusEnum.getStatusId(), projectStatusEnum.getStatus());
     }
-    if (this.isPlanningActive()) {
+    if (this.isPlanningActive() && !this.isUpKeepActive()) {
 
       if (deliverable.getDeliverableInfo(this.getActualPhase()).getStatus() != null
         && deliverable.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() != Integer

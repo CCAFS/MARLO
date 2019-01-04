@@ -149,7 +149,7 @@ public class DeliverableListAction extends BaseAction {
 
   public boolean canEdit(long deliverableID) {
     Deliverable deliverable = deliverableManager.getDeliverableById(deliverableID);
-    if (this.isPlanningActive()) {
+    if (this.isPlanningActive() && !this.isUpKeepActive()) {
       if (deliverable.getDeliverableInfo(this.getActualPhase()).getYear() >= this.getCurrentCycleYear()) {
         return true;
       }
@@ -209,7 +209,7 @@ public class DeliverableListAction extends BaseAction {
 
     try {
       if (open) {
-        if (this.isPlanningActive()) {
+        if (this.isPlanningActive() && !this.isUpKeepActive()) {
           List<Deliverable> openA = deliverables.stream()
             .filter(a -> a.isActive() && a.getDeliverableInfo(this.getActualPhase()) != null
               && ((a.getDeliverableInfo(this.getActualPhase()).getStatus() == null
@@ -415,7 +415,7 @@ public class DeliverableListAction extends BaseAction {
       }
 
 
-      if (this.isReportingActive()) {
+      if (this.isReportingActive() || this.isUpKeepActive()) {
         deliverables.sort(
           (p1, p2) -> p1.getDeliverableInfo(this.getActualPhase()).isRequieriedReporting(this.getCurrentCycleYear())
             .compareTo(p2.getDeliverableInfo(this.getActualPhase()).isRequieriedReporting(this.getCurrentCycleYear())));
