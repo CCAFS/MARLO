@@ -114,18 +114,9 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
   // private static final String ProgramType = null;
   private static Logger LOG = LoggerFactory.getLogger(AnualReportPOISummaryAction.class);
 
-  public static double round(double value, int places) {
-    if (places < 0) {
-      throw new IllegalArgumentException();
-    }
-
-    BigDecimal bd = new BigDecimal(value);
-    bd = bd.setScale(places, RoundingMode.HALF_UP);
-    return bd.doubleValue();
-  }
-
   // Managers
   private PowbExpenditureAreasManager powbExpenditureAreasManager;
+
   private ReportSynthesisManager reportSynthesisManager;
   private ReportSynthesisCrpProgressTargetManager reportSynthesisCrpProgressTargetManager;
   private RepIndSynthesisIndicatorManager repIndSynthesisIndicatorManager;
@@ -138,9 +129,9 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
   private ReportSynthesisCrossCuttingDimensionManager reportSynthesisCrossCuttingDimensionManager;
   private ReportSynthesisCrpProgressManager reportSynthesisCrpProgressManager;
   private CrpProgramManager crpProgramManager;
-
   // Parameters
   private POISummary poiSummary;
+
   private LiaisonInstitution pmuInstitution;
   private ReportSynthesis reportSynthesisPMU;
   private long startTime;
@@ -152,13 +143,12 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
   private List<PowbEvidencePlannedStudyDTO> flagshipPlannedList;
   private List<LiaisonInstitution> flagshipLiaisonInstitutions;
   private List<ReportSynthesisCrossCuttingInnovationDTO> flagshipPlannedInnovations;
-
-
   Double totalw1w2 = 0.0, totalw1w2Planned = 0.0, totalCenter = 0.0, grandTotal = 0.0, totalw1w2Actual = 0.0,
     totalW3Actual = 0.0, totalW3Bilateral = 0.0, totalW3Planned = 0.0, grandTotalPlanned = 0.0, grandTotalActual = 0.0;
+
+
   // Streams
   private InputStream inputStream;
-
   // DOC bytes
   private byte[] bytesDOC;
 
@@ -192,6 +182,16 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
     this.reportSynthesisCrossCuttingDimensionManager = reportSynthesisCrossCuttingDimensionManager;
     this.reportSynthesisCrpProgressManager = reportSynthesisCrpProgressManager;
     this.crpProgramManager = crpProgramManager;
+  }
+
+  public static double round(double value, int places) {
+    if (places < 0) {
+      throw new IllegalArgumentException();
+    }
+
+    BigDecimal bd = new BigDecimal(value);
+    bd = bd.setScale(places, RoundingMode.HALF_UP);
+    return bd.doubleValue();
   }
 
   private void addAdjustmentDescription() {

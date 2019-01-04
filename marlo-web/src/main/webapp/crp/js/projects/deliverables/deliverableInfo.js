@@ -205,12 +205,12 @@ function init() {
     }
   });
 
-  $('input#gender, input#youth, input#capacity').on('change', function() {
+  $('input.crosscutingDimension').on('change', function() {
     $('input#na').prop("checked", false);
   });
 
   $('input#na').on('change', function() {
-    $('input#gender, input#youth, input#capacity').prop("checked", false);
+    $('input.crosscutingDimension').prop("checked", false);
     $('#gender-levels').slideUp();
     $('.ccDimension').slideUp();
   });
