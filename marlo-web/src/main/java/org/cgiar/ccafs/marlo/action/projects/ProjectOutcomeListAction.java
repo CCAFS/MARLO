@@ -32,6 +32,7 @@ import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
+import org.cgiar.ccafs.marlo.data.model.ProjectLp6Contribution;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.security.Permission;
@@ -64,6 +65,7 @@ public class ProjectOutcomeListAction extends BaseAction {
   private SectionStatusManager sectionStatusManager;
   private GlobalUnitProjectManager globalUnitProjectManager;
 
+
   // Front-end
   private long projectID;
   private long projectOutcomeID;
@@ -72,6 +74,7 @@ public class ProjectOutcomeListAction extends BaseAction {
   private long outcomeId;
   private List<CrpProgramOutcome> outcomes;
   private long sharedPhaseID;
+  private ProjectLp6Contribution projectLp6Contribution;
 
   @Inject
   public ProjectOutcomeListAction(APConfig config, ProjectManager projectManager, GlobalUnitManager crpManager,
@@ -122,7 +125,6 @@ public class ProjectOutcomeListAction extends BaseAction {
     return outcomeId;
   }
 
-
   public List<CrpProgramOutcome> getOutcomes() {
     return outcomes;
   }
@@ -135,6 +137,11 @@ public class ProjectOutcomeListAction extends BaseAction {
 
   public long getProjectID() {
     return projectID;
+  }
+
+
+  public ProjectLp6Contribution getProjectLp6Contribution() {
+    return projectLp6Contribution;
   }
 
 
@@ -211,6 +218,7 @@ public class ProjectOutcomeListAction extends BaseAction {
     this.outcomeId = outcomeId;
   }
 
+
   public void setOutcomes(List<CrpProgramOutcome> outcomes) {
     this.outcomes = outcomes;
   }
@@ -221,6 +229,10 @@ public class ProjectOutcomeListAction extends BaseAction {
 
   public void setProjectID(long projectID) {
     this.projectID = projectID;
+  }
+
+  public void setProjectLp6Contribution(ProjectLp6Contribution projectLp6Contribution) {
+    this.projectLp6Contribution = projectLp6Contribution;
   }
 
 
