@@ -222,13 +222,12 @@
 
 [#macro contributionToLP6]  
   <div id="projectContributionToLP6" class="borderBox">
-   <h4>[@s.text name="projects.LP6Contribution.title" /]</h4>
-   <p class="text-justify note"><small>[@s.text name="projects.LP6Contribution.infoText"/] (<span class="lp6-view-more" data-toggle="modal" data-target=".lp6info-modal">view more</span>)</p>
-   <strong>[@s.text name="projects.LP6Contribution.contribution"/][@customForm.req required=true /]</strong>
-   [@customForm.radioFlat id="yes" name="yes" label="Yes" value="true" checked=false cssClassLabel="radio-label-yes"/]
-   [@customForm.radioFlat id="no" name="no" label="No" value="false" checked=false cssClassLabel="radio-label-no"/]
+   <h4>[@s.text name="projects.LP6Contribution.title" /]</h4><img src="${baseUrl}/global/images/pdf.png" height="25" title="Explanatory PDF" />
+   <p class="text-justify note"><small>[@s.text name="projects.LP6Contribution.infoText"/] (<span class="lp6-view-more" data-toggle="modal" data-target=".lp6info-modal">view more</span>)</small></p>
+   <div class="form-group"><strong>[@s.text name="projects.LP6Contribution.contribution"/][@customForm.req required=true /]</strong>
+   [@customForm.radioFlat id="lp6Contribution-yes" name="lp6Contribution-yes" label="Yes" value="true" checked=false cssClassLabel="radio-label-yes"/]
+   [@customForm.radioFlat id="lp6Contribution-no" name="lp6Contribution-no" label="No" value="false" checked=false cssClassLabel="radio-label-no"/]</div>
   </div>
-  
   [#-- On-going Extended table (Modal) --]
     <div class="modal fade extended-table-modal lp6info-modal" tabindex="-1" role="dialog" aria-labelledby="extendedTableModal" aria-hidden="true">
       <div class="modal-dialog modal-lg">
