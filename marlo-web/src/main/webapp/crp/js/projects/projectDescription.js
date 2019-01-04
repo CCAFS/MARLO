@@ -213,12 +213,12 @@ $(document).ready(function() {
     }
   });
 
-  $('input#gender, input#youth, input#capacity').on('change', function() {
+  $('input.ccMarker').on('change', function() {
     $('input#na').prop("checked", false);
   });
 
   $('input#na').on('change', function() {
-    $('input#gender, input#youth, input#capacity').prop("checked", false);
+    $('input.ccMarker').prop("checked", false);
     $('#gender-question').slideDown();
   });
 

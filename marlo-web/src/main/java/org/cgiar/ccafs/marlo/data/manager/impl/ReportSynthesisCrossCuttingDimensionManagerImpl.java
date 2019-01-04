@@ -133,11 +133,10 @@ public class ReportSynthesisCrossCuttingDimensionManagerImpl implements ReportSy
     Phase phase = phaseManager.getPhaseById(phaseID);
 
     if (deliverableIntellectualAssetManager.findAll() != null) {
-      List<DeliverableIntellectualAsset> intellectualAssets =
-        new ArrayList<>(deliverableIntellectualAssetManager.findAll()
-          .stream().filter(ps -> ps.getDeliverable().isActive() && ps.getPhase() != null
-            && ps.getPhase().getId() == phaseID && ps.getHasPatentPvp() != null && ps.getHasPatentPvp())
-          .collect(Collectors.toList()));
+      List<DeliverableIntellectualAsset> intellectualAssets = new ArrayList<>(deliverableIntellectualAssetManager
+        .findAll().stream().filter(ps -> ps.getDeliverable().isActive() && ps.getPhase() != null
+          && ps.getPhase().getId() == phaseID && ps.getHasPatentPvp() != null && ps.getHasPatentPvp())
+        .collect(Collectors.toList()));
 
       for (DeliverableIntellectualAsset intellectualAsset : intellectualAssets) {
         ReportSynthesisCrossCuttingAssetDTO dto = new ReportSynthesisCrossCuttingAssetDTO();
@@ -361,7 +360,9 @@ public class ReportSynthesisCrossCuttingDimensionManagerImpl implements ReportSy
     int iCapDevPrincipal = 0;
     int iCapDevSignificant = 0;
     int iCapDevNa = 0;
-
+    int iClimatePrincipal = 0;
+    int iClimateSignificant = 0;
+    int iClimateNa = 0;
 
     for (GlobalUnitProject globalUnitProject : globalUnit.getGlobalUnitProjects().stream()
       .filter(p -> p.isActive() && p.getProject() != null && p.getProject().isActive()
@@ -413,10 +414,12 @@ public class ReportSynthesisCrossCuttingDimensionManagerImpl implements ReportSy
           boolean bGender = false;
           boolean bYouth = false;
           boolean bCapDev = false;
+          boolean bClimate = false;
           if (deliverableInfo.getCrossCuttingNa() != null && deliverableInfo.getCrossCuttingNa()) {
             iGenderNa++;
             iYouthNa++;
             iCapDevNa++;
+            iClimateNa++;
           } else {
             // Gender
             if (deliverableInfo.getCrossCuttingGender() != null && deliverableInfo.getCrossCuttingGender()) {
@@ -460,6 +463,20 @@ public class ReportSynthesisCrossCuttingDimensionManagerImpl implements ReportSy
               }
             }
 
+            // Climate Change
+            if (deliverableInfo.getCrossCuttingClimate() != null && deliverableInfo.getCrossCuttingClimate()) {
+              bClimate = true;
+              if (deliverableInfo.getCrossCuttingScoreClimate() != null
+                && deliverableInfo.getCrossCuttingScoreClimate() == 1) {
+                iClimateSignificant++;
+              } else if (deliverableInfo.getCrossCuttingScoreClimate() != null
+                && deliverableInfo.getCrossCuttingScoreClimate() == 2) {
+                iClimatePrincipal++;
+              } else if (deliverableInfo.getCrossCuttingScoreClimate() == null) {
+                iClimateNa++;
+              }
+            }
+
             if (!bGender) {
               iGenderNa++;
             }
@@ -468,6 +485,9 @@ public class ReportSynthesisCrossCuttingDimensionManagerImpl implements ReportSy
             }
             if (!bCapDev) {
               iCapDevNa++;
+            }
+            if (!bClimate) {
+              iClimateNa++;
             }
           }
         }
