@@ -227,8 +227,8 @@
    <p class="text-justify note"><small>[@s.text name="projects.LP6Contribution.infoText"/] (<span class="lp6-view-more" data-toggle="modal" data-target=".lp6info-modal">view more</span>)</small></p>
    <div class="form-group"><strong>[@s.text name="projects.LP6Contribution.contribution"/][@customForm.req required=true /]</strong>
    [#local contributesToLP6 = false /]
-   [@customForm.radioFlat id="lp6Contribution-yes" name="lp6Contribution-yes" label="Yes" value="true" checked=false cssClassLabel="radio-label-yes"/]
-   [@customForm.radioFlat id="lp6Contribution-no" name="lp6Contribution-no" label="No" value="false" checked=false cssClassLabel="radio-label-no"/]</div>
+   [@customForm.radioFlat id="lp6Contribution-yes" name="lp6Contribution-yes" label="Yes" value=" ${(projectLp6Contribution.contribution?string)!}" checked=false cssClassLabel="radio-label-yes"/]
+   [@customForm.radioFlat id="lp6Contribution-no" name="lp6Contribution-no" label="No" value=" ${(projectLp6Contribution.contribution?string)!}" checked=false cssClassLabel="radio-label-no"/]</div>
   </div>
   [#-- LP6 Help Text expanded --]
     <div class="modal fade extended-table-modal lp6info-modal" tabindex="-1" role="dialog" aria-labelledby="extendedTableModal" aria-hidden="true">
@@ -239,7 +239,6 @@
           </div>
       </div>
     </div>
-    
     ${(projectLp6Contribution.contribution?string)!}
  [/#if]
 [/#macro]
