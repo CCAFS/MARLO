@@ -13,10 +13,10 @@
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
 
-package org.cgiar.ccafs.marlo.rest.controller.controllist;
+package org.cgiar.ccafs.marlo.rest.controller.v2.controllist;
 
-import org.cgiar.ccafs.marlo.rest.controller.controllist.items.locations.CountryItem;
-import org.cgiar.ccafs.marlo.rest.controller.controllist.items.locations.GeographicScopeItem;
+import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.locations.CountryItem;
+import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.locations.GeographicScopeItem;
 import org.cgiar.ccafs.marlo.rest.dto.GeographicScopeDTO;
 import org.cgiar.ccafs.marlo.rest.dto.LocElementDTO;
 import org.cgiar.ccafs.marlo.security.Permission;

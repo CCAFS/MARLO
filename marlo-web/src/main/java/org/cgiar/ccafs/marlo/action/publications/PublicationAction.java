@@ -937,6 +937,7 @@ public class PublicationAction extends BaseAction {
         deliverable.getDeliverableInfo(deliverable.getPhase()).setDeliverableType(null);
         deliverable.getDeliverableInfo(deliverable.getPhase()).setCrossCuttingGender(null);
         deliverable.getDeliverableInfo(deliverable.getPhase()).setCrossCuttingCapacity(null);
+        deliverable.getDeliverableInfo(deliverable.getPhase()).setCrossCuttingClimate(null);
         deliverable.getDeliverableInfo(deliverable.getPhase()).setCrossCuttingNa(null);
         deliverable.getDeliverableInfo(deliverable.getPhase()).setCrossCuttingYouth(null);
         deliverable.getDeliverableInfo(deliverable.getPhase()).setIsLocationGlobal(null);
@@ -1773,6 +1774,7 @@ public class PublicationAction extends BaseAction {
       deliverableInfoDb.setNewExpectedYear(deliverable.getDeliverableInfo().getNewExpectedYear());
     }
 
+    // Capacity Development
     if (deliverable.getDeliverableInfo().getCrossCuttingCapacity() == null) {
       deliverableInfoDb.setCrossCuttingCapacity(false);
       deliverableInfoDb.setCrossCuttingScoreCapacity(APConstants.CROSS_CUTTING_NOT_TARGETED);
@@ -1780,11 +1782,21 @@ public class PublicationAction extends BaseAction {
       deliverableInfoDb.setCrossCuttingCapacity(true);
       deliverableInfoDb.setCrossCuttingScoreCapacity(deliverable.getDeliverableInfo().getCrossCuttingScoreCapacity());
     }
+    // Climate Change
+    if (deliverable.getDeliverableInfo().getCrossCuttingClimate() == null) {
+      deliverableInfoDb.setCrossCuttingClimate(false);
+      deliverableInfoDb.setCrossCuttingScoreClimate(APConstants.CROSS_CUTTING_NOT_TARGETED);
+    } else {
+      deliverableInfoDb.setCrossCuttingClimate(true);
+      deliverableInfoDb.setCrossCuttingScoreClimate(deliverable.getDeliverableInfo().getCrossCuttingScoreClimate());
+    }
+    // N/A
     if (deliverable.getDeliverableInfo().getCrossCuttingNa() == null) {
       deliverableInfoDb.setCrossCuttingNa(false);
     } else {
       deliverableInfoDb.setCrossCuttingNa(true);
     }
+    // Gender
     if (deliverable.getDeliverableInfo().getCrossCuttingGender() == null) {
       deliverableInfoDb.setCrossCuttingGender(false);
       deliverableInfoDb.setCrossCuttingScoreGender(APConstants.CROSS_CUTTING_NOT_TARGETED);
@@ -1792,6 +1804,7 @@ public class PublicationAction extends BaseAction {
       deliverableInfoDb.setCrossCuttingGender(true);
       deliverableInfoDb.setCrossCuttingScoreGender(deliverable.getDeliverableInfo().getCrossCuttingScoreGender());
     }
+    // Youth
     if (deliverable.getDeliverableInfo().getCrossCuttingYouth() == null) {
       deliverableInfoDb.setCrossCuttingYouth(false);
       deliverableInfoDb.setCrossCuttingScoreYouth(APConstants.CROSS_CUTTING_NOT_TARGETED);

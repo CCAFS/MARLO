@@ -13,7 +13,7 @@
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
 
-package org.cgiar.ccafs.marlo.rest.controller.todo;
+package org.cgiar.ccafs.marlo.rest.controller.v2.todo;
 
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionLocationManager;

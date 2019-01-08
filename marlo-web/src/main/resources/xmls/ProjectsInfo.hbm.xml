@@ -88,6 +88,9 @@
         <property name="crossCuttingCapacity" type="java.lang.Boolean">
             <column name="cross_cutting_capacity" />
         </property>
+        <property name="crossCuttingClimate" type="java.lang.Boolean">
+            <column name="cross_cutting_climate" />
+        </property>
         <property name="crossCuttingNa" type="java.lang.Boolean">
             <column name="cross_cutting_na" />
         </property>

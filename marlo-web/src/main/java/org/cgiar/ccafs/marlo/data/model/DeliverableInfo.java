@@ -42,6 +42,8 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
   @Expose
   private Boolean crossCuttingCapacity;
   @Expose
+  private Boolean crossCuttingClimate;
+  @Expose
   private Boolean crossCuttingNa;
   @Expose
   private Boolean adoptedLicense;
@@ -58,21 +60,20 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
   @Expose
   private Long crossCuttingScoreCapacity;
   @Expose
+  private Long crossCuttingScoreClimate;
+  @Expose
   private Boolean isLocationGlobal;
   @Expose
   private RepIndGeographicScope geographicScope;
   @Expose
   private RepIndRegion region;
 
-
   public DeliverableInfo() {
   }
-
 
   public Boolean getAdoptedLicense() {
     return adoptedLicense;
   }
-
 
   public Boolean getAllowModifications() {
     return allowModifications;
@@ -96,6 +97,12 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
     return crossCuttingCapacity;
   }
 
+
+  public Boolean getCrossCuttingClimate() {
+    return crossCuttingClimate;
+  }
+
+
   public Boolean getCrossCuttingGender() {
     return crossCuttingGender;
   }
@@ -104,8 +111,13 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
     return crossCuttingNa;
   }
 
+
   public Long getCrossCuttingScoreCapacity() {
     return crossCuttingScoreCapacity;
+  }
+
+  public Long getCrossCuttingScoreClimate() {
+    return crossCuttingScoreClimate;
   }
 
   public Long getCrossCuttingScoreGender() {
@@ -115,7 +127,6 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
   public Long getCrossCuttingScoreYouth() {
     return crossCuttingScoreYouth;
   }
-
 
   public Boolean getCrossCuttingYouth() {
     return crossCuttingYouth;
@@ -134,15 +145,14 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
     return deliverable;
   }
 
+
   public DeliverableType getDeliverableType() {
     return deliverableType;
   }
 
-
   public String getDescription() {
     return description;
   }
-
 
   public String getGenderScoreName() {
     if (this.crossCuttingScoreGender != null) {
@@ -192,6 +202,7 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
     return sb.toString();
   }
 
+
   public Integer getNewExpectedYear() {
     return newExpectedYear;
   }
@@ -201,10 +212,10 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
     return otherLicense;
   }
 
-
   public Phase getPhase() {
     return phase;
   }
+
 
   public RepIndRegion getRegion() {
     return region;
@@ -214,7 +225,6 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
   public Integer getStatus() {
     return status;
   }
-
 
   public String getStatusDescription() {
     return statusDescription;
@@ -332,6 +342,11 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
   }
 
 
+  public void setCrossCuttingClimate(Boolean crossCuttingClimate) {
+    this.crossCuttingClimate = crossCuttingClimate;
+  }
+
+
   public void setCrossCuttingGender(Boolean crossCuttingGender) {
     this.crossCuttingGender = crossCuttingGender;
   }
@@ -344,6 +359,11 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
 
   public void setCrossCuttingScoreCapacity(Long crossCuttingScoreCapacity) {
     this.crossCuttingScoreCapacity = crossCuttingScoreCapacity;
+  }
+
+
+  public void setCrossCuttingScoreClimate(Long crossCuttingScoreClimate) {
+    this.crossCuttingScoreClimate = crossCuttingScoreClimate;
   }
 
 
@@ -447,6 +467,7 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
     this.setAdoptedLicense(update.getAdoptedLicense());
     this.setAllowModifications(update.getAllowModifications());
     this.setCrossCuttingCapacity(update.getCrossCuttingCapacity());
+    this.setCrossCuttingClimate(update.getCrossCuttingClimate());
     this.setCrossCuttingNa(update.getCrossCuttingNa());
     this.setCrossCuttingYouth(update.getCrossCuttingYouth());
     this.setCrpClusterKeyOutput(update.getCrpClusterKeyOutput());

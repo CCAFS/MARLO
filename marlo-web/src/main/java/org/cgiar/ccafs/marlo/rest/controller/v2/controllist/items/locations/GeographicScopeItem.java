@@ -13,7 +13,7 @@
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
 
-package org.cgiar.ccafs.marlo.rest.controller.controllist.items.locations;
+package org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.locations;
 
 import org.cgiar.ccafs.marlo.data.manager.RepIndGeographicScopeManager;
 import org.cgiar.ccafs.marlo.data.model.RepIndGeographicScope;

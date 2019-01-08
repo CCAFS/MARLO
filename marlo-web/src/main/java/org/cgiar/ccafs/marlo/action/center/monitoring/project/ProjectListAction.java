@@ -493,6 +493,12 @@ public class ProjectListAction extends BaseAction {
       crosscutingThemeSave.setCapacityDevelopment(true);
     }
 
+    if (project.getProjecInfoPhase(phase).getCrossCuttingClimate() != null
+      && project.getProjecInfoPhase(phase).getCrossCuttingClimate()) {
+      hasChanges = true;
+      crosscutingThemeSave.setClimate(true);
+    }
+
     if (hasChanges) {
       crosscutingThemeSave.setProject(centerProject);
       projectCrosscutingService.saveProjectCrosscutingTheme(crosscutingThemeSave);
