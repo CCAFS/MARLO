@@ -34,7 +34,6 @@ import javax.inject.Named;
 
 import com.opensymphony.xwork2.LocalizedTextProvider;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.struts2.dispatcher.Parameter;
 
 
 @Named
@@ -124,8 +123,6 @@ public class ProjectCollaborationValue extends BaseAction {
       Boolean.parseBoolean(StringUtils.trim(this.getRequest().getParameter(APConstants.CRP_LP6_CONTRIBUTION_VALUE)));
 
     phase = this.getActualPhase();
-
-    Map<String, Parameter> parameters = this.getParameters();
   }
 
 
