@@ -17,7 +17,6 @@ package org.cgiar.ccafs.marlo.action.json.project;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.config.MarloLocalizedTextProvider;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectLp6ContributionManager;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
@@ -27,7 +26,6 @@ import org.cgiar.ccafs.marlo.data.model.ProjectLp6Contribution;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -36,7 +34,6 @@ import javax.inject.Named;
 
 import com.opensymphony.xwork2.LocalizedTextProvider;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.dispatcher.Parameter;
 
 
@@ -70,12 +67,12 @@ public class ProjectCollaborationValue extends BaseAction {
   @Override
   public String execute() throws Exception {
     status = new HashMap<String, Object>();
-    try {
+    status.put("status", contributionValue);
 
-      this.setProjectLp6Contribution(
+    try {
+      projectLp6Contribution =
         projectLp6ContributionManager.findAll().stream().filter(c -> c.isActive() && c.getProject().getId() == projectID
-          && c.getPhase().getId() == this.getActualPhase().getId()).collect(Collectors.toList()).get(0));
-      status.put("status", contributionValue);
+          && c.getPhase().getId() == this.getActualPhase().getId()).collect(Collectors.toList()).get(0);
       if (contributionValue == true) {
 
         if (projectLp6Contribution == null) {
@@ -106,78 +103,10 @@ public class ProjectCollaborationValue extends BaseAction {
   }
 
 
-  public long getProjectId() {
-    return projectId;
-  }
-
-
-  public ProjectLp6Contribution getProjectLp6Contribution() {
-    return projectLp6Contribution;
-  }
-
   public Map<String, Object> getStatus() {
     return status;
   }
 
-  @Override
-  public String getText(String aTextName) {
-    String language = APConstants.CUSTOM_LAGUAGE;
-
-
-    Locale locale = new Locale(language);
-
-    return localizedTextProvider.findDefaultText(aTextName, locale);
-  }
-
-  @Override
-  public String getText(String key, String[] args) {
-    String language = APConstants.CUSTOM_LAGUAGE;
-
-
-    Locale locale = new Locale(language);
-
-    return localizedTextProvider.findDefaultText(key, locale, args);
-
-  }
-
-  public boolean isContributionValue() {
-    return contributionValue;
-  }
-
-  public void loadProvider(Map<String, Object> session) {
-    String language = APConstants.CUSTOM_LAGUAGE;
-    String pathFile = APConstants.PATH_CUSTOM_FILES;
-    if (session.containsKey(APConstants.CRP_LANGUAGE)) {
-      language = (String) session.get(APConstants.CRP_LANGUAGE);
-    }
-
-    Locale locale = new Locale(language);
-
-    ((MarloLocalizedTextProvider) this.localizedTextProvider).resetResourceBundles();
-
-    this.localizedTextProvider.addDefaultResourceBundle(APConstants.CUSTOM_FILE);
-
-
-    try {
-      ServletActionContext.getContext().setLocale(locale);
-    } catch (Exception e) {
-
-    }
-
-    if (session.containsKey(APConstants.SESSION_CRP)) {
-
-      if (session.containsKey(APConstants.CRP_CUSTOM_FILE)) {
-        pathFile = pathFile + session.get(APConstants.CRP_CUSTOM_FILE);
-        this.localizedTextProvider.addDefaultResourceBundle(pathFile);
-      } else if (session.containsKey(APConstants.CENTER_CUSTOM_FILE)) {
-        pathFile = pathFile + session.get(APConstants.CENTER_CUSTOM_FILE);
-        this.localizedTextProvider.addDefaultResourceBundle(pathFile);
-      } else {
-
-        this.localizedTextProvider.addDefaultResourceBundle(APConstants.CUSTOM_FILE);
-      }
-    }
-  }
 
   @Override
   public void prepare() throws Exception {
@@ -200,17 +129,6 @@ public class ProjectCollaborationValue extends BaseAction {
     projectId = Long.parseLong(StringUtils.trim(parameters.get(APConstants.PROJECT_REQUEST_ID).getMultipleValues()[0]));
   }
 
-  public void setContributionValue(boolean contributionValue) {
-    this.contributionValue = contributionValue;
-  }
-
-  public void setProjectId(long projectId) {
-    this.projectId = projectId;
-  }
-
-  public void setProjectLp6Contribution(ProjectLp6Contribution projectLp6Contribution) {
-    this.projectLp6Contribution = projectLp6Contribution;
-  }
 
   public void setStatus(Map<String, Object> status) {
     this.status = status;
