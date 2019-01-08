@@ -235,6 +235,16 @@
         <param name="root">status</param>
       </result>
     </action>
+    
+    <action name="projectCollaborationValue"
+      class="org.cgiar.ccafs.marlo.action.json.project.ProjectCollaborationValue">
+      <result type="json">
+        <param name="noCache">true</param>
+        <param name="excludeNullProperties">true</param>
+        <param name="root">status</param>
+      </result>
+    </action>
+    
 
     <action name="SubIDObyIDO"
       class="org.cgiar.ccafs.marlo.action.json.impactpathway.SubIDOListAction">
