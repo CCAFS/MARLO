@@ -36,15 +36,20 @@ public class CenterProjectCrosscutingTheme extends MarloAuditableEntity implemen
   @Expose
   private Boolean capacityDevelopment;
 
+  @Expose
+  private Boolean climate;
 
   @Expose
   private Boolean bigData;
 
+
   @Expose
   private Boolean na;
 
+
   @Expose
   private Boolean impactAssessment;
+
 
   public CenterProjectCrosscutingTheme() {
   }
@@ -57,6 +62,10 @@ public class CenterProjectCrosscutingTheme extends MarloAuditableEntity implemen
     return capacityDevelopment;
   }
 
+  public Boolean getClimate() {
+    return climate;
+  }
+
   public Boolean getClimateChange() {
     return climateChange;
   }
@@ -64,7 +73,6 @@ public class CenterProjectCrosscutingTheme extends MarloAuditableEntity implemen
   public Boolean getGender() {
     return gender;
   }
-
 
   public Boolean getImpactAssessment() {
     return impactAssessment;
@@ -98,12 +106,17 @@ public class CenterProjectCrosscutingTheme extends MarloAuditableEntity implemen
     return youth;
   }
 
+
   public void setBigData(Boolean bigData) {
     this.bigData = bigData;
   }
 
   public void setCapacityDevelopment(Boolean capacityDevelopment) {
     this.capacityDevelopment = capacityDevelopment;
+  }
+
+  public void setClimate(Boolean climate) {
+    this.climate = climate;
   }
 
   public void setClimateChange(Boolean climateChange) {

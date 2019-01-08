@@ -56,6 +56,7 @@ public class TestJsonCompare {
     jsonNew.append("      \"cgiarUser\":false");
     jsonNew.append("   },");
     jsonNew.append("   \"crossCuttingCapacity\":true,");
+    jsonNew.append("   \"crossCuttingClimate\":true,");
     jsonNew.append("   \"crossCuttingGender\":true,");
     jsonNew.append("   \"crossCuttingNa\":false,");
     jsonNew.append("   \"reporting\":true,");
@@ -277,6 +278,7 @@ public class TestJsonCompare {
     jsonOlder.append("      \"cgiarUser\":false");
     jsonOlder.append("   },");
     jsonOlder.append("   \"crossCuttingCapacity\":true,");
+    jsonOlder.append("   \"crossCuttingClimate\":true,");
     jsonOlder.append("   \"crossCuttingGender\":true,");
     jsonOlder.append("   \"crossCuttingNa\":false,");
     jsonOlder.append("   \"reporting\":true,");

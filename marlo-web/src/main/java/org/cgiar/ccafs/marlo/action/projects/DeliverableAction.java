@@ -1718,6 +1718,7 @@ public class DeliverableAction extends BaseAction {
         deliverable.getDeliverableInfo(this.getActualPhase()).setDeliverableType(null);
         deliverable.getDeliverableInfo(this.getActualPhase()).setCrossCuttingGender(null);
         deliverable.getDeliverableInfo(this.getActualPhase()).setCrossCuttingCapacity(null);
+        deliverable.getDeliverableInfo(this.getActualPhase()).setCrossCuttingClimate(null);
         deliverable.getDeliverableInfo(this.getActualPhase()).setCrossCuttingNa(null);
         deliverable.getDeliverableInfo(this.getActualPhase()).setCrossCuttingYouth(null);
         deliverable.getDeliverableInfo(this.getActualPhase()).setLicense(null);
@@ -2959,6 +2960,7 @@ public class DeliverableAction extends BaseAction {
       }
     }
 
+    // Capacity Development
     if (deliverable.getDeliverableInfo(this.getActualPhase()).getCrossCuttingCapacity() == null) {
       deliverableInfoDb.setCrossCuttingCapacity(false);
       deliverableInfoDb.setCrossCuttingScoreCapacity(APConstants.CROSS_CUTTING_NOT_TARGETED);
@@ -2967,11 +2969,22 @@ public class DeliverableAction extends BaseAction {
       deliverableInfoDb.setCrossCuttingScoreCapacity(
         deliverable.getDeliverableInfo(this.getActualPhase()).getCrossCuttingScoreCapacity());
     }
+    // Climate Change
+    if (deliverable.getDeliverableInfo(this.getActualPhase()).getCrossCuttingClimate() == null) {
+      deliverableInfoDb.setCrossCuttingClimate(false);
+      deliverableInfoDb.setCrossCuttingScoreClimate(APConstants.CROSS_CUTTING_NOT_TARGETED);
+    } else {
+      deliverableInfoDb.setCrossCuttingClimate(true);
+      deliverableInfoDb.setCrossCuttingScoreClimate(
+        deliverable.getDeliverableInfo(this.getActualPhase()).getCrossCuttingScoreClimate());
+    }
+    // NA
     if (deliverable.getDeliverableInfo(this.getActualPhase()).getCrossCuttingNa() == null) {
       deliverableInfoDb.setCrossCuttingNa(false);
     } else {
       deliverableInfoDb.setCrossCuttingNa(true);
     }
+    // Gender
     if (deliverable.getDeliverableInfo(this.getActualPhase()).getCrossCuttingGender() == null) {
       deliverableInfoDb.setCrossCuttingGender(false);
       deliverableInfoDb.setCrossCuttingScoreGender(APConstants.CROSS_CUTTING_NOT_TARGETED);
@@ -2980,6 +2993,7 @@ public class DeliverableAction extends BaseAction {
       deliverableInfoDb
         .setCrossCuttingScoreGender(deliverable.getDeliverableInfo(this.getActualPhase()).getCrossCuttingScoreGender());
     }
+    // Youth
     if (deliverable.getDeliverableInfo(this.getActualPhase()).getCrossCuttingYouth() == null) {
       deliverableInfoDb.setCrossCuttingYouth(false);
       deliverableInfoDb.setCrossCuttingScoreYouth(APConstants.CROSS_CUTTING_NOT_TARGETED);

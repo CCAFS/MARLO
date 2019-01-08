@@ -13,12 +13,12 @@
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
 
-package org.cgiar.ccafs.marlo.rest.controller.controllist;
+package org.cgiar.ccafs.marlo.rest.controller.v2.controllist;
 
-import org.cgiar.ccafs.marlo.rest.controller.controllist.items.srflist.SrfCrossCuttingIssueItem;
-import org.cgiar.ccafs.marlo.rest.controller.controllist.items.srflist.SrfIdoItem;
-import org.cgiar.ccafs.marlo.rest.controller.controllist.items.srflist.SrfSloItem;
-import org.cgiar.ccafs.marlo.rest.controller.controllist.items.srflist.SrfSubIdoItem;
+import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.srflist.SrfCrossCuttingIssueItem;
+import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.srflist.SrfIdoItem;
+import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.srflist.SrfSloItem;
+import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.srflist.SrfSubIdoItem;
 import org.cgiar.ccafs.marlo.rest.dto.SrfCrossCuttingIssueDTO;
 import org.cgiar.ccafs.marlo.rest.dto.SrfIdoDTO;
 import org.cgiar.ccafs.marlo.rest.dto.SrfSloDTO;

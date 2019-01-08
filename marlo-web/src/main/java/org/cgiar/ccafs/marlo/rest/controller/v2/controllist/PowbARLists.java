@@ -13,15 +13,15 @@
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
 
-package org.cgiar.ccafs.marlo.rest.controller.controllist;
+package org.cgiar.ccafs.marlo.rest.controller.v2.controllist;
 
-import org.cgiar.ccafs.marlo.rest.controller.controllist.items.powbar.ContributionOfCrpItem;
-import org.cgiar.ccafs.marlo.rest.controller.controllist.items.powbar.CrossCuttingMarkerItem;
-import org.cgiar.ccafs.marlo.rest.controller.controllist.items.powbar.DegreeOfInnovationItem;
-import org.cgiar.ccafs.marlo.rest.controller.controllist.items.powbar.InnovationTypeItem;
-import org.cgiar.ccafs.marlo.rest.controller.controllist.items.powbar.MaturityOfChangeItem;
-import org.cgiar.ccafs.marlo.rest.controller.controllist.items.powbar.ResearchPartnershipItem;
-import org.cgiar.ccafs.marlo.rest.controller.controllist.items.powbar.StageOfInnovationItem;
+import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.powbar.ContributionOfCrpItem;
+import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.powbar.CrossCuttingMarkerItem;
+import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.powbar.DegreeOfInnovationItem;
+import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.powbar.InnovationTypeItem;
+import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.powbar.MaturityOfChangeItem;
+import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.powbar.ResearchPartnershipItem;
+import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.powbar.StageOfInnovationItem;
 import org.cgiar.ccafs.marlo.rest.dto.ContributionOfCrpDTO;
 import org.cgiar.ccafs.marlo.rest.dto.CrossCuttingMarkerDTO;
 import org.cgiar.ccafs.marlo.rest.dto.DegreeOfInnovationDTO;
@@ -52,7 +52,6 @@ import org.springframework.web.bind.annotation.RestController;
 @Api(tags = "POWB/AR Lists")
 @Named
 public class PowbARLists {
-
 
   private static final Logger LOG = LoggerFactory.getLogger(PowbARLists.class);
   private CrossCuttingMarkerItem<PowbARLists> crossCuttingMarkersItem;

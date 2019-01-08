@@ -536,6 +536,9 @@ public class CrossCuttingDimensionsAction extends BaseAction {
     int iCapDevPrincipal = 0;
     int iCapDevSignificant = 0;
     int iCapDevNa = 0;
+    int iClimatePrincipal = 0;
+    int iClimateSignificant = 0;
+    int iClimateNa = 0;
 
 
     for (GlobalUnitProject globalUnitProject : this.getLoggedCrp().getGlobalUnitProjects().stream()
@@ -572,10 +575,12 @@ public class CrossCuttingDimensionsAction extends BaseAction {
           boolean bGender = false;
           boolean bYouth = false;
           boolean bCapDev = false;
+          boolean bClimate = false;
           if (deliverableInfo.getCrossCuttingNa() != null && deliverableInfo.getCrossCuttingNa()) {
             iGenderNa++;
             iYouthNa++;
             iCapDevNa++;
+            iClimateNa++;
           } else {
             // Gender
             if (deliverableInfo.getCrossCuttingGender() != null && deliverableInfo.getCrossCuttingGender()) {
@@ -619,6 +624,20 @@ public class CrossCuttingDimensionsAction extends BaseAction {
               }
             }
 
+            // Climate Change
+            if (deliverableInfo.getCrossCuttingClimate() != null && deliverableInfo.getCrossCuttingClimate()) {
+              bClimate = true;
+              if (deliverableInfo.getCrossCuttingClimate() != null
+                && deliverableInfo.getCrossCuttingScoreClimate() == 1) {
+                iClimateSignificant++;
+              } else if (deliverableInfo.getCrossCuttingClimate() != null
+                && deliverableInfo.getCrossCuttingScoreClimate() == 2) {
+                iClimatePrincipal++;
+              } else if (deliverableInfo.getCrossCuttingClimate() == null) {
+                iClimateNa++;
+              }
+            }
+
             if (!bGender) {
               iGenderNa++;
             }
@@ -627,6 +646,9 @@ public class CrossCuttingDimensionsAction extends BaseAction {
             }
             if (!bCapDev) {
               iCapDevNa++;
+            }
+            if (!bClimate) {
+              iClimateNa++;
             }
           }
         }

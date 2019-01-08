@@ -13,7 +13,7 @@
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
 
-package org.cgiar.ccafs.marlo.rest.controller.controllist.items.srflist;
+package org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.srflist;
 
 import org.cgiar.ccafs.marlo.data.manager.SrfSloManager;
 import org.cgiar.ccafs.marlo.data.model.SrfSlo;
