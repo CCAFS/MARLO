@@ -65,7 +65,7 @@ public interface ProjectLp6ContributionManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public ProjectLp6Contribution saveProjectScope(ProjectLp6Contribution projectLp6Contribution);
+  public ProjectLp6Contribution saveProjectLp6Contribution(ProjectLp6Contribution projectLp6Contribution);
 
 
 }

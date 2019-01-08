@@ -15,7 +15,7 @@
 package org.cgiar.ccafs.marlo.data.manager.impl;
 
 
-import org.cgiar.ccafs.marlo.data.dao.ProjectScopeDAO;
+import org.cgiar.ccafs.marlo.data.dao.ProjectLp6ContributionDAO;
 import org.cgiar.ccafs.marlo.data.manager.ProjectLp6ContributionManager;
 import org.cgiar.ccafs.marlo.data.model.ProjectLp6Contribution;
 
@@ -25,54 +25,41 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 @Named
-public class ProjectLp6ContributionImpl implements ProjectLp6ContributionManager {
+public class ProjectLp6ContributionManagerImpl implements ProjectLp6ContributionManager {
 
 
-  private ProjectScopeDAO projectScopeDAO;
+  private ProjectLp6ContributionDAO projectLp6ContributionDAO;
   // Managers
 
 
   @Inject
-  public ProjectLp6ContributionImpl(ProjectScopeDAO projectScopeDAO) {
-    this.projectScopeDAO = projectScopeDAO;
-
-
+  public ProjectLp6ContributionManagerImpl(ProjectLp6ContributionDAO projectLp6ContributionDAO) {
+    this.projectLp6ContributionDAO = projectLp6ContributionDAO;
   }
-
 
   @Override
   public void deleteProjectLp6Contribution(long projectLp6ContributionId) {
-    // TODO Auto-generated method stub
-
+    projectLp6ContributionDAO.deleteProjectLp6Contribution(projectLp6ContributionId);
   }
-
 
   @Override
   public boolean existProjectLp6Contribution(long projectLp6ContributionId) {
-    // TODO Auto-generated method stub
-    return false;
+    return projectLp6ContributionDAO.existProjectLp6Contribution(projectLp6ContributionId);
   }
-
 
   @Override
   public List<ProjectLp6Contribution> findAll() {
-    // TODO Auto-generated method stub
-    return null;
+    return projectLp6ContributionDAO.findAll();
   }
-
 
   @Override
   public ProjectLp6Contribution getProjectLp6ContributionById(long projectLp6ContributionId) {
-    // TODO Auto-generated method stub
-    return null;
+    return projectLp6ContributionDAO.find(projectLp6ContributionId);
   }
-
 
   @Override
-  public ProjectLp6Contribution saveProjectScope(ProjectLp6Contribution projectLp6Contribution) {
-    // TODO Auto-generated method stub
-    return null;
+  public ProjectLp6Contribution saveProjectLp6Contribution(ProjectLp6Contribution projectLp6Contribution) {
+    return projectLp6ContributionDAO.save(projectLp6Contribution);
   }
-
 
 }
