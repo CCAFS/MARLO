@@ -79,6 +79,9 @@ function attachReportingEvents() {
   $('.addOtherContribution').on('click', addOtherContribution);
 
   $('.removeElement').on('click', removeOtherContribution);
+
+
+  $('input[name="lp6Contribution"]').on('change', contributionToLP6);
 }
 
 function addOtherContribution() {
@@ -97,3 +100,26 @@ function removeOtherContribution() {
 
   });
 }
+
+function contributionToLP6(){
+
+  var projectID = $(this).parents('.borderBox').classParam('project');
+  var phaseID = $(this).parents('.borderBox').classParam('phase');
+  var contributionValue = this.value;
+  console.log(projectID);
+  console.log(phaseID);
+  console.log(contributionValue);
+
+   $.ajax({
+     url: baseURL + '/projectCollaborationValue.do',
+     data: {
+        projectID: projectID,
+        phaseID: phaseID,
+        "crp_lp6_contribution_value": contributionValue
+     },
+     success: function (data) {
+       console.log(data);
+     }
+   });
+
+};
