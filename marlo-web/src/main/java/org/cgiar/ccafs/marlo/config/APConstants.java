@@ -113,6 +113,7 @@ public final class APConstants {
   public static final String CRP_HAS_RESEARCH_HUMAN = "crp_has_research_human";
   public static final String CRP_CONTACT_POINT_EDIT_PROJECT = "crp_contact_point_edit_project";
   public static final String CRP_LP6_ACTIVE = "crp_lp6_active";
+  public static final String CRP_LP6_CONTRIBUTION_VALUE = "crp_lp6_contribution_value";
 
 
   // Email parameters to copy to FL FM CL

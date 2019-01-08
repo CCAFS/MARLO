@@ -40,6 +40,7 @@ import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -66,7 +67,7 @@ public class ProjectOutcomeListAction extends BaseAction {
   private ProjectOutcomeManager projectOutcomeManager;
   private SectionStatusManager sectionStatusManager;
   private GlobalUnitProjectManager globalUnitProjectManager;
-
+  private ProjectLp6ContributionManager projectLp6ContributionManager;
 
   // Front-end
   private long projectID;
@@ -75,17 +76,18 @@ public class ProjectOutcomeListAction extends BaseAction {
   private Project project;
   private long outcomeId;
   private List<CrpProgramOutcome> outcomes;
-  private long sharedPhaseID;
   private ProjectLp6Contribution projectLp6Contribution;
   private Map<String, Object> status;
   private boolean contributionValue;
   private long phaseID;
+  private Phase phase;
 
 
   @Inject
   public ProjectOutcomeListAction(APConfig config, ProjectManager projectManager, GlobalUnitManager crpManager,
     CrpProgramOutcomeManager crpProgramOutcomeManager, SectionStatusManager sectionStatusManager,
-    ProjectOutcomeManager projectOutcomeManager, GlobalUnitProjectManager globalUnitProjectManager) {
+    ProjectOutcomeManager projectOutcomeManager, GlobalUnitProjectManager globalUnitProjectManager,
+    ProjectLp6ContributionManager projectLp6ContributionManager) {
     super(config);
     this.projectManager = projectManager;
     this.sectionStatusManager = sectionStatusManager;
@@ -93,9 +95,8 @@ public class ProjectOutcomeListAction extends BaseAction {
     this.crpProgramOutcomeManager = crpProgramOutcomeManager;
     this.projectOutcomeManager = projectOutcomeManager;
     this.globalUnitProjectManager = globalUnitProjectManager;
-
+    this.projectLp6ContributionManager = projectLp6ContributionManager;
   }
-
 
   public String addProjectOutcome() {
     if (this.hasPermission("add")) {
@@ -110,7 +111,6 @@ public class ProjectOutcomeListAction extends BaseAction {
     } else {
       return NOT_AUTHORIZED;
     }
-
   }
 
   public String deleteProjectOutcome() {
@@ -126,13 +126,46 @@ public class ProjectOutcomeListAction extends BaseAction {
     }
   }
 
-  /*
-   * @Override
-   * public String execute() throws Exception {
-   * status = new HashMap<String, Object>();
-   * return Action.SUCCESS;
-   * }
-   */
+
+  @Override
+  public String execute() throws Exception {
+    status = new HashMap<String, Object>();
+    try {
+
+      this.setProjectLp6Contribution(
+        projectLp6ContributionManager.findAll().stream().filter(c -> c.isActive() && c.getProject().getId() == projectID
+          && c.getPhase().getId() == this.getActualPhase().getId()).collect(Collectors.toList()).get(0));
+      status.put("status", contributionValue);
+      if (contributionValue == true) {
+
+        if (projectLp6Contribution == null) {
+          projectLp6Contribution = new ProjectLp6Contribution();
+          projectLp6Contribution.setActive(true);
+          projectLp6Contribution.setPhase(phase);
+          projectLp6Contribution.setProject(project);
+          projectLp6Contribution.setContribution(contributionValue);
+          projectLp6ContributionManager.saveProjectLp6Contribution(projectLp6Contribution);
+        } else {
+          projectLp6Contribution.setContribution(contributionValue);
+          projectLp6ContributionManager.saveProjectLp6Contribution(projectLp6Contribution);
+        }
+
+      } else {
+
+        /*
+         * If contribution value is false update the value to existent projectLp6contribution
+         */
+        if (projectLp6Contribution != null) {
+          projectLp6Contribution.setContribution(contributionValue);
+          projectLp6ContributionManager.saveProjectLp6Contribution(projectLp6Contribution);
+        }
+      }
+
+    } catch (Exception e) {
+    }
+    return SUCCESS;
+  }
+
 
   public Long getOutcomeId() {
     return outcomeId;
@@ -146,6 +179,7 @@ public class ProjectOutcomeListAction extends BaseAction {
   public Long getPhaseID() {
     return phaseID;
   }
+
 
   public Project getProject() {
     return project;
@@ -184,29 +218,19 @@ public class ProjectOutcomeListAction extends BaseAction {
 
     }
 
-    Phase phase = this.getActualPhase();
-    sharedPhaseID = phase.getId();
+    contributionValue =
+      Boolean.parseBoolean(StringUtils.trim(this.getRequest().getParameter(APConstants.CRP_LP6_CONTRIBUTION_VALUE)));
 
-    try {
-      ProjectLp6ContributionManager projectLp6ContributionManager = null;
-      projectLp6ContributionManager.findAll().stream().filter(c -> c.isActive() && c.getProject().getId() == projectID
-        && c.getPhase().getId() == this.getActualPhase().getId()).collect(Collectors.toList());
-
-    } catch (Exception e) {
-
-    }
+    phase = this.getActualPhase();
 
     project = projectManager.getProjectById(projectID);
     project.setProjectInfo(project.getProjecInfoPhase(phase));
     List<ProjectOutcome> projectOutcomes = project.getProjectOutcomes().stream()
       .filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList());
 
-
     GlobalUnitProject gp = globalUnitProjectManager.findByProjectId(project.getId());
 
     project.setOutcomes(projectOutcomes);
-
-    System.out.println(project.getOutcomes().size());
 
     outcomes = new ArrayList<CrpProgramOutcome>();
     for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
@@ -230,11 +254,8 @@ public class ProjectOutcomeListAction extends BaseAction {
     }
     project.setFlagships(programs);
 
-
-    System.out.println(project.getOutcomes().size());
     String params[] = {gp.getGlobalUnit().getAcronym(), project.getId() + ""};
     this.setBasePermission(this.getText(Permission.PROJECT_CONTRIBRUTIONCRP_BASE_PERMISSION, params));
-
   }
 
 
