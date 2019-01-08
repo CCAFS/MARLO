@@ -126,7 +126,6 @@ public class ProjectCollaborationValue extends BaseAction {
     phase = this.getActualPhase();
 
     Map<String, Parameter> parameters = this.getParameters();
-    projectId = Long.parseLong(StringUtils.trim(parameters.get(APConstants.PROJECT_REQUEST_ID).getMultipleValues()[0]));
   }
 
 
