@@ -1424,21 +1424,24 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       allPhases = (Map<Long, Phase>) this.getSession().get(APConstants.ALL_PHASES);
 
 
-      if (this.getPhaseID() != null) {
-        long phaseID = this.getPhaseID();
-        Phase phase = allPhases.get(new Long(phaseID));
-        if (phase == null) {
-          phase = phaseManager.getPhaseById(phaseID);
+      Long phaseID = this.getPhaseID();
+      if (phaseID != null) {
+        if (phaseID != 0L) {
+          Phase phase = allPhases.get(new Long(phaseID));
+          if (phase == null) {
+            phase = phaseManager.getPhaseById(phaseID);
+            return phase;
+          }
+
           return phase;
         }
-        return phase;
       }
 
       Map<String, Parameter> parameters = this.getParameters();
       if (parameters != null && parameters.containsKey(APConstants.PHASE_ID)) {
         Phase phase;
         try {
-          long phaseID = Long.parseLong(StringUtils.trim(parameters.get(APConstants.PHASE_ID).getMultipleValues()[0]));
+          phaseID = Long.parseLong(StringUtils.trim(parameters.get(APConstants.PHASE_ID).getMultipleValues()[0]));
           phase = allPhases.get(new Long(phaseID));
           return phase;
         } catch (Exception e) {
@@ -1456,6 +1459,11 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
       if (this.getSession().containsKey(APConstants.CURRENT_PHASE)) {
         Phase phase = (Phase) this.getSession().get(APConstants.CURRENT_PHASE);
+        if (phase.getId() != null) {
+          phase = phaseManager.getPhaseById(phase.getId());
+        } else {
+          phase = phaseManager.getPhaseById(this.getCurrentPhaseParam());
+        }
         return phase;
 
       } else {
