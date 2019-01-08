@@ -6818,3 +6818,12 @@ span.doc-badge {
   color: #8a8a8a;
   margin-left: 3px;
 }
+
+
+.no-sort::after { display: none!important; }
+.no-sort { pointer-events: none!important; cursor: default!important; }
+
+.removeJustification {
+    display: block !important;
+    width: 100% !important;
+}
