@@ -5,11 +5,10 @@
 [#if (selectedProgram??)!false]${(selectedProgram.acronym)!} - [/#if]
 [#-- Project > Deliverable --]
 [#if (project??)!false]P${(project.id)!} - 
-  [#if (deliverable??)!false]D${(deliverable.id)!} - [/#if]
-  [#if (expectedID??)!false]S${(expectedID)!} - [/#if]
-  [#if (innovationID??)!false]I${(innovationID)!} - [/#if]
-  [#if (highlightID??)!false]H${(highlightID)!} - [/#if]
-  
+  [#if (deliverable?? && deliverable.id != 0)!false]D${(deliverable.id)!} - [/#if]
+  [#if (expectedID?? && expectedID != 0)!false]S${(expectedID)!} - [/#if]
+  [#if (innovationID?? && innovationID != 0)!false]I${(innovationID)!} - [/#if]
+  [#if (highlightID?? && highlightID != 0)!false]H${(highlightID)!} - [/#if]
 [/#if]
 [#-- Funding Source--]
 [#if (fundingSource??)!false]FS${(fundingSource.id)!} - [/#if]

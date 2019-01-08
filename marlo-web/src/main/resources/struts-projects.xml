@@ -921,6 +921,52 @@
         <param name="projectID">${projectID}</param>
       </result>
     </action>
+    
+    <!-- PROJECT POLICIES-->
+    
+    <!--  Policies list  -->
+    <action name="{crp}/policies" class="org.cgiar.ccafs.marlo.action.projects.ProjectExpectedStudiesListAction">
+      <interceptor-ref name="editProjectsStack" />
+      <result name="input">/WEB-INF/crp/views/projects/projectPolicies.ftl</result>
+    </action>
+    
+    <!--  Remove Policy  -->
+    <action name="{crp}/deletePolicy" method="delete" class="org.cgiar.ccafs.marlo.action.projects.ProjectExpectedStudiesListAction">
+      <interceptor-ref name="editProjectListStack" />
+      <!--<interceptor-ref name="editExpectedStudy" />-->
+      <interceptor-ref name="defaultStack" />
+      <result name="success" type="redirectAction">
+        <param name="actionName">${crpSession}/policies</param>
+        <param name="projectID">${projectID}</param>
+        <param name="phaseID">${phaseID}</param>
+      </result>
+      <result name="redirect" type="redirectAction">
+        <param name="actionName">${url}</param>
+        <param name="edit">true</param>
+        <param name="phaseID">${phaseID}</param>
+        <param name="projectID">${projectID}</param>
+      </result>
+    </action>
+    
+    <!--  Policy Information  -->
+    <action name="{crp}/policy" class="org.cgiar.ccafs.marlo.action.projects.ProjectPolicyAction">
+      <interceptor-ref name="editProjectListStack" />
+      <!--<interceptor-ref name="editExpectedStudy" />-->
+      <interceptor-ref name="defaultStack" />
+      <result name="input">/WEB-INF/crp/views/projects/projectPolicy.ftl</result>
+      <result name="success" type="redirectAction">
+        <param name="actionName">${crpSession}/policy</param>
+        <param name="edit">true</param>
+        <param name="policyID">${policy.id}</param>
+        <param name="phaseID">${phaseID}</param>
+      </result>
+      <result name="redirect" type="redirectAction">
+        <param name="actionName">${url}</param>
+        <param name="edit">true</param>
+        <param name="phaseID">${phaseID}</param>
+        <param name="projectID">${projectID}</param>
+      </result>
+    </action>
 
     <action name="{crp}/budgetByFlagship"
       class="org.cgiar.ccafs.marlo.action.projects.ProjectBudgetByFlagshipAction">

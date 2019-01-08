@@ -32,6 +32,7 @@ public final class APConstants {
 
   public static final String STUDY_TYPE_REQUEST_ID = "studyTypeID";
   public static final String EXPECTED_REQUEST_ID = "expectedID";
+  public static final String POLICY_REQUEST_ID = "policyID";
   public static final String INNOVATION_REQUEST_ID = "innovationID";
   public static final String BUDGET_TYPE_REQUEST_ID = "budgetTypeID";
   public static final String CASE_STUDY_REQUEST_ID = "caseStudyID";
