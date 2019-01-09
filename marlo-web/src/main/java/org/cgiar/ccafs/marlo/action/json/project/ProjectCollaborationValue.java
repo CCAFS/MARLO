@@ -68,35 +68,41 @@ public class ProjectCollaborationValue extends BaseAction {
     status = new HashMap<String, Object>();
     status.put("status", contributionValue);
 
-    try {
-      projectLp6Contribution =
-        projectLp6ContributionManager.findAll().stream().filter(c -> c.isActive() && c.getProject().getId() == projectID
-          && c.getPhase().getId() == this.getActualPhase().getId()).collect(Collectors.toList()).get(0);
-      if (contributionValue == true) {
+    if (this.getActualPhase() != null && projectID != 0) {
+      System.out.println(
+        "phase " + this.getActualPhase() + " projectID " + projectID + " contributionvalue " + contributionValue);
 
-        if (projectLp6Contribution == null) {
-          projectLp6Contribution = new ProjectLp6Contribution();
-          projectLp6Contribution.setActive(true);
-          projectLp6Contribution.setPhase(phase);
-          projectLp6Contribution.setProject(project);
-          projectLp6Contribution.setContribution(contributionValue);
-          projectLp6ContributionManager.saveProjectLp6Contribution(projectLp6Contribution);
+      try {
+        projectLp6Contribution = projectLp6ContributionManager.findAll().stream().filter(c -> c.isActive()
+          && c.getProject().getId() == projectID && c.getPhase().getId() == this.getActualPhase().getId())
+          .collect(Collectors.toList()).get(0);
+        if (contributionValue == true) {
+
+          if (projectLp6Contribution == null) {
+            projectLp6Contribution = new ProjectLp6Contribution();
+            projectLp6Contribution.setActive(true);
+            projectLp6Contribution.setPhase(phase);
+            projectLp6Contribution.setProject(project);
+            projectLp6Contribution.setContribution(contributionValue);
+            projectLp6ContributionManager.saveProjectLp6Contribution(projectLp6Contribution);
+          } else {
+            projectLp6Contribution.setContribution(contributionValue);
+            projectLp6ContributionManager.saveProjectLp6Contribution(projectLp6Contribution);
+          }
+
         } else {
-          projectLp6Contribution.setContribution(contributionValue);
-          projectLp6ContributionManager.saveProjectLp6Contribution(projectLp6Contribution);
+          /*
+           * If contribution value is false update the value to existent projectLp6contribution
+           */
+          if (projectLp6Contribution != null) {
+            projectLp6Contribution.setContribution(contributionValue);
+            projectLp6ContributionManager.saveProjectLp6Contribution(projectLp6Contribution);
+          }
         }
 
-      } else {
-        /*
-         * If contribution value is false update the value to existent projectLp6contribution
-         */
-        if (projectLp6Contribution != null) {
-          projectLp6Contribution.setContribution(contributionValue);
-          projectLp6ContributionManager.saveProjectLp6Contribution(projectLp6Contribution);
-        }
+      } catch (Exception e) {
+        System.out.println("error" + e);
       }
-
-    } catch (Exception e) {
     }
     return SUCCESS;
   }
