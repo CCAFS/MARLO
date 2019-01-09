@@ -286,6 +286,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   private PhaseManager phaseManager;
   private CenterOutputsOutcomeManager centerOutputsOutcomeManager;
 
+  @Inject
   private ProjectLp6ContributionManager projectLp6ContributionManager;
 
   @Inject
@@ -2996,19 +2997,24 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
   }
 
-  public Boolean getProjectLp6ContributionValue(long projectID, long phaseId) {
+  public Boolean getProjectLp6ContributionValue(long projectID, long phaseID) {
     try {
-      ProjectLp6Contribution projectLp6Contribution =
-        projectLp6ContributionManager.findAll().stream().filter(c -> c.isActive() && c.getProject().getId() == projectID
-          && c.getPhase().getId() == this.getActualPhase().getId()).collect(Collectors.toList()).get(0);
+      ProjectLp6Contribution projectLp6Contribution = new ProjectLp6Contribution();
+      Boolean value = null;
+      if (projectID != 0 && phaseID != 0) {
+        projectLp6Contribution = projectLp6ContributionManager.findAll().stream()
+          .filter(c -> c.isActive() && c.getProject().getId() == projectID && c.getPhase().getId() == phaseID)
+          .collect(Collectors.toList()).get(0);
 
-      return projectLp6Contribution.isContribution();
+        if (projectLp6Contribution != null) {
+          value = projectLp6Contribution.isContribution();
+        }
+      }
+      return value;
     } catch (Exception e) {
       return null;
     }
-
   }
-
 
   public SectionStatus getProjectOutcomeStatus(long projectOutcomeID) {
     ProjectOutcome projectOutcome = projectOutcomeManager.getProjectOutcomeById(projectOutcomeID);

@@ -214,8 +214,16 @@ public class ProjectOutcomeListAction extends BaseAction {
 
     String params[] = {gp.getGlobalUnit().getAcronym(), project.getId() + ""};
     this.setBasePermission(this.getText(Permission.PROJECT_CONTRIBRUTIONCRP_BASE_PERMISSION, params));
-  }
 
+    if (this.getActualPhase() != null && projectID != 0) {
+      try {
+        this.setProjectLp6Contribution(projectLp6ContributionManager.findAll().stream().filter(c -> c.isActive()
+          && c.getProject().getId() == projectID && c.getPhase().getId() == this.getActualPhase().getId())
+          .collect(Collectors.toList()).get(0));
+      } catch (Exception e) {
+      }
+    }
+  }
 
   public void setContributionValue(boolean contributionValue) {
     this.contributionValue = contributionValue;
