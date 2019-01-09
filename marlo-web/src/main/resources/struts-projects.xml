@@ -949,7 +949,7 @@
     </action>
     
     <!--  Policy Information  -->
-    <action name="{crp}/policy" class="org.cgiar.ccafs.marlo.action.projects.ProjectPolicyAction">
+    <action name="{crp}/policy" class="org.cgiar.ccafs.marlo.action.projects.ProjectExpectedStudiesListAction">
       <interceptor-ref name="editProjectListStack" />
       <!--<interceptor-ref name="editExpectedStudy" />-->
       <interceptor-ref name="defaultStack" />
