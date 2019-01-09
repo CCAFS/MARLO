@@ -73,9 +73,9 @@ public class ProjectCollaborationValue extends BaseAction {
 
     if (this.getActualPhase() != null && projectID != 0) {
       try {
-        projectLp6Contribution = projectLp6ContributionManager.findAll().stream().filter(c -> c.isActive()
+        this.setProjectLp6Contribution(projectLp6ContributionManager.findAll().stream().filter(c -> c.isActive()
           && c.getProject().getId() == projectID && c.getPhase().getId() == this.getActualPhase().getId())
-          .collect(Collectors.toList()).get(0);
+          .collect(Collectors.toList()).get(0));
       } catch (Exception e) {
       }
 
@@ -88,10 +88,7 @@ public class ProjectCollaborationValue extends BaseAction {
           projectLp6Contribution.setPhase(phase);
           projectLp6Contribution.setProject(project);
           projectLp6Contribution.setContribution(contributionValue);
-          System.out.println("beforefsave");
-
           projectLp6ContributionManager.saveProjectLp6Contribution(projectLp6Contribution);
-          System.out.println("aftersave");
 
         } else {
           projectLp6Contribution.setContribution(contributionValue);
@@ -114,10 +111,13 @@ public class ProjectCollaborationValue extends BaseAction {
   }
 
 
+  public ProjectLp6Contribution getProjectLp6Contribution() {
+    return projectLp6Contribution;
+  }
+
   public Map<String, Object> getStatus() {
     return status;
   }
-
 
   @Override
   public void prepare() throws Exception {
@@ -137,6 +137,10 @@ public class ProjectCollaborationValue extends BaseAction {
     phase = this.getActualPhase();
   }
 
+
+  public void setProjectLp6Contribution(ProjectLp6Contribution projectLp6Contribution) {
+    this.projectLp6Contribution = projectLp6Contribution;
+  }
 
   public void setStatus(Map<String, Object> status) {
     this.status = status;
