@@ -25,15 +25,7 @@ import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
-import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyCountryManager;
-import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyCrpManager;
-import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyFlagshipManager;
-import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyInfoManager;
-import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyManager;
-import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyRegionManager;
-import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudySrfTargetManager;
-import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudySubIdoManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndGenderYouthFocusLevelManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndGeographicScopeManager;
@@ -49,7 +41,6 @@ import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
-import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
@@ -76,20 +67,13 @@ import javax.inject.Inject;
  */
 public class ProjectPolicyAction extends BaseAction {
 
-
-  /**
-   * 
-   */
   private static final long serialVersionUID = 597647662288518417L;
-
 
   // Managers
   private GlobalUnitManager crpManager;
 
   // Variables
-  private ProjectExpectedStudiesValidator projectExpectedStudiesValidator;
   private GlobalUnit loggedCrp;
-
   private Project project;
   private long projectID;
   private long expectedID;
@@ -123,18 +107,9 @@ public class ProjectPolicyAction extends BaseAction {
     StudyTypeManager studyTypeManager, FileDBManager fileDBManager, RepIndGeographicScopeManager geographicScopeManager,
     RepIndRegionManager repIndRegionManager, RepIndOrganizationTypeManager organizationTypeManager,
     RepIndGenderYouthFocusLevelManager focusLevelManager, RepIndPolicyInvestimentTypeManager investimentTypeManager,
-    RepIndStageProcessManager stageProcessManager, RepIndStageStudyManager stageStudyManager,
-    ProjectExpectedStudyInfoManager projectExpectedStudyInfoManager,
-    ProjectExpectedStudySubIdoManager projectExpectedStudySubIdoManager,
-    ProjectExpectedStudyFlagshipManager projectExpectedStudyFlagshipManager,
-    ProjectExpectedStudyCrpManager projectExpectedStudyCrpManager,
-    ProjectExpectedStudyInstitutionManager projectExpectedStudyInstitutionManager,
-    ProjectExpectedStudySrfTargetManager projectExpectedStudySrfTargetManager,
-    ProjectExpectedStudyCountryManager projectExpectedStudyCountryManager,
-    ProjectExpectedStudyRegionManager projectExpectedStudyRegionManager) {
+    RepIndStageProcessManager stageProcessManager, RepIndStageStudyManager stageStudyManager) {
     super(config);
     this.crpManager = crpManager;
-    this.projectExpectedStudiesValidator = projectExpectedStudiesValidator;
   }
 
   public List<LocElement> getCountries() {
@@ -257,92 +232,17 @@ public class ProjectPolicyAction extends BaseAction {
     return NOT_AUTHORIZED;
   }
 
-  /**
-   * Save Expected Studies Crps Information
-   * 
-   * @param projectExpectedStudy
-   * @param phase
-   */
-  public void saveCrps(ProjectExpectedStudy projectExpectedStudy, Phase phase) {
-  }
-
-  /**
-   * Save Expected Studies Flagships Information
-   * 
-   * @param projectExpectedStudy
-   * @param phase
-   */
-  public void saveFlagships(ProjectExpectedStudy projectExpectedStudy, Phase phase) {
-  }
-
-  /**
-   * Save Expected Studies Institutions Information
-   * 
-   * @param projectExpectedStudy
-   * @param phase
-   */
-  public void saveInstitutions(ProjectExpectedStudy projectExpectedStudy, Phase phase) {
-  }
-
-  /**
-   * Save Expected Studies Projects Information
-   * 
-   * @param projectExpectedStudy
-   * @param phase
-   */
-  public void saveProjects(ProjectExpectedStudy projectExpectedStudy, Phase phase) {
-  }
-
-  /**
-   * Save Expected Studies Regions Information
-   * 
-   * @param projectExpectedStudy
-   * @param phase
-   */
-  public void saveRegions(ProjectExpectedStudy projectExpectedStudy, Phase phase) {
-  }
-
-  /**
-   * Save Expected Studies Srf Targets Information
-   * 
-   * @param projectExpectedStudy
-   * @param phase
-   */
-  public void saveSrfTargets(ProjectExpectedStudy projectExpectedStudy, Phase phase) {
-  }
-
-  /**
-   * Save Expected Studies Geographic Regions Information
-   * 
-   * @param projectExpectedStudy
-   * @param phase
-   */
-  public void saveStudyRegions(ProjectExpectedStudy projectExpectedStudy, Phase phase) {
-  }
-
-  /**
-   * Save Expected Studies SubIdos Information
-   * 
-   * @param projectExpectedStudy
-   * @param phase
-   */
-  public void saveSubIdos(ProjectExpectedStudy projectExpectedStudy, Phase phase) {
-  }
-
   public void setCountries(List<LocElement> countries) {
     this.countries = countries;
   }
-
 
   public void setCrps(List<GlobalUnit> crps) {
     this.crps = crps;
   }
 
-
   public void setExpectedID(long expectedID) {
     this.expectedID = expectedID;
   }
-
 
   public void setExpectedStudy(ProjectExpectedStudy expectedStudy) {
     this.expectedStudy = expectedStudy;
@@ -359,7 +259,6 @@ public class ProjectPolicyAction extends BaseAction {
   public void setGeographicScopes(List<RepIndGeographicScope> geographicScopes) {
     this.geographicScopes = geographicScopes;
   }
-
 
   public void setInstitutions(List<Institution> institutions) {
     this.institutions = institutions;
@@ -385,41 +284,33 @@ public class ProjectPolicyAction extends BaseAction {
     this.project = project;
   }
 
-
   public void setProjectID(long projectID) {
     this.projectID = projectID;
   }
-
 
   public void setRegionList(List<CrpProgram> regionList) {
     this.regionList = regionList;
   }
 
-
   public void setRegions(List<LocElement> regions) {
     this.regions = regions;
   }
-
 
   public void setStageProcesses(List<RepIndStageProcess> stageProcesses) {
     this.stageProcesses = stageProcesses;
   }
 
-
   public void setStageStudies(List<RepIndStageStudy> stageStudies) {
     this.stageStudies = stageStudies;
   }
-
 
   public void setStatuses(Map<Integer, String> statuses) {
     this.statuses = statuses;
   }
 
-
   public void setStudyTypes(List<StudyType> studyTypes) {
     this.studyTypes = studyTypes;
   }
-
 
   public void setSubIdos(List<SrfSubIdo> subIdos) {
     this.subIdos = subIdos;
@@ -436,7 +327,7 @@ public class ProjectPolicyAction extends BaseAction {
   @Override
   public void validate() {
     if (save) {
-      projectExpectedStudiesValidator.validate(this, project, expectedStudy, true);
+
     }
   }
 
