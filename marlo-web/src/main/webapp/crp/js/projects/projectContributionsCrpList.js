@@ -116,6 +116,7 @@ function contributionToLP6(){
      },
      success: function (data) {
        console.log(data.status);
+       location.reload();
      }
    });
 
