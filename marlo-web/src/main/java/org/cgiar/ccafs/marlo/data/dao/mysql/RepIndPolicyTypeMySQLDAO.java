@@ -58,7 +58,7 @@ public class RepIndPolicyTypeMySQLDAO extends AbstractMarloDAO<RepIndPolicyType,
 
   @Override
   public List<RepIndPolicyType> findAll() {
-    String query = "from " + RepIndPolicyType.class.getName() + " where is_active=1";
+    String query = "from " + RepIndPolicyType.class.getName();
     List<RepIndPolicyType> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
