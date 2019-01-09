@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Generated Jan 8, 2019 3:50:56 PM by Hibernate Tools 5.3.6.Final -->
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping auto-import="true"
+	default-access="property" default-cascade="none" default-lazy="true">
+	<class dynamic-insert="false"
+		dynamic-update="false" mutable="true"
+		name="org.cgiar.ccafs.marlo.data.model.ProjectPolicyInfo" optimistic-lock="version"
+		polymorphism="implicit" select-before-update="false"
+		table="project_policy_info">
+		<id name="id" type="java.lang.Long">
+			<column name="id" />
+			<generator class="identity" />
+		</id>
+		<many-to-one class="org.cgiar.ccafs.marlo.data.model.Phase" embed-xml="true"
+			fetch="select" insert="true" name="phase" not-found="exception"
+			optimistic-lock="true" unique="false" update="true">
+			<column name="id_phase" />
+		</many-to-one>
+		<many-to-one class="org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy"
+			embed-xml="true" fetch="select" insert="true"
+			name="projectExpectedStudy" not-found="exception"
+			optimistic-lock="true" unique="false" update="true">
+			<column name="project_expected_study_id" />
+		</many-to-one>
+		<many-to-one class="org.cgiar.ccafs.marlo.data.model.ProjectPolicy"
+			embed-xml="true" fetch="select" insert="true" name="projectPolicy"
+			not-found="exception" optimistic-lock="true" unique="false"
+			update="true">
+			<column name="project_policy_id" />
+		</many-to-one>
+		<many-to-one class="org.cgiar.ccafs.marlo.data.model.RepIndGeographicScope"
+			embed-xml="true" fetch="select" insert="true"
+			name="repIndGeographicScope" not-found="exception"
+			optimistic-lock="true" unique="false" update="true">
+			<column name="rep_ind_geographic_scope_id" />
+		</many-to-one>
+		<many-to-one class="org.cgiar.ccafs.marlo.data.model.RepIndOrganizationType"
+			embed-xml="true" fetch="select" insert="true"
+			name="repIndOrganizationType" not-found="exception"
+			optimistic-lock="true" unique="false" update="true">
+			<column name="rep_ind_organization_type_id" />
+		</many-to-one>
+		<many-to-one class="org.cgiar.ccafs.marlo.data.model.RepIndPolicyInvestimentType"
+			embed-xml="true" fetch="select" insert="true"
+			name="repIndPolicyInvestimentType" not-found="exception"
+			optimistic-lock="true" unique="false" update="true">
+			<column name="rep_ind_policy_investment_type_id" />
+		</many-to-one>
+		<many-to-one class="org.cgiar.ccafs.marlo.data.model.RepIndStageProcess"
+			embed-xml="true" fetch="select" insert="true"
+			name="repIndStageProcess" not-found="exception"
+			optimistic-lock="true" unique="false" update="true">
+			<column name="rep_ind_stage_process_id" />
+		</many-to-one>
+		<property generated="never" lazy="false" name="year"
+			optimistic-lock="true" type="java.lang.Long" unique="false">
+			<column name="year" />
+		</property>
+		<property generated="never" lazy="false" name="title"
+			optimistic-lock="true" type="string" unique="false">
+			<column length="65535" name="title" />
+		</property>
+		<property generated="never" lazy="false" name="amount"
+			optimistic-lock="true" type="java.lang.Double" unique="false">
+			<column name="amount" precision="30" />
+		</property>
+	</class>
+</hibernate-mapping>
