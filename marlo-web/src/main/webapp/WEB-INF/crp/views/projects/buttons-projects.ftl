@@ -1,14 +1,14 @@
 [#ftl]
 [#-- Project identifier --]
-<input name="projectID" type="hidden" value="${project.id}" />
-<input type="hidden"  name="className" value="${(project.class.name)!}"/>
-<input type="hidden"  name="id" value="${(project.id)!}"/>
-<input type="hidden"  name="project.projectInfo.id" class="projectInfo" value="${(project.projectInfo.id)!}" />
-<input type="hidden"  name="modifiedBy.id" value="${(currentUser.id)!}"/>
-<input type="hidden"  name="actionName" value="${(actionName)!}"/>
-<input type="hidden"  name="phaseID" value="${(actualPhase.id)!}"/>
-<input id="redirectionUrl" type="hidden" name="url" value="" />
-<input name="project.type" type="hidden" value="${(project.type)!}" />
+<input type="hidden"  name="projectID"              value="${project.id}" />
+<input type="hidden"  name="className"              value="${(project.class.name)!}"/>
+<input type="hidden"  name="id"                     value="${(project.id)!}"/>
+<input type="hidden"  name="project.projectInfo.id" value="${(project.projectInfo.id)!}"  class="projectInfo" />
+<input type="hidden"  name="modifiedBy.id"          value="${(currentUser.id)!}"/>
+<input type="hidden"  name="actionName"             value="${(actionName)!}"/>
+<input type="hidden"  name="phaseID"                value="${(actualPhase.id)!}"/>
+<input type="hidden"  name="url"                    value=""                              id="redirectionUrl" />
+<input type="hidden"  name="project.type"           value="${(project.type)!}" />
 
 [#assign recordsList = (action.getListLog(project))!{} /]
 

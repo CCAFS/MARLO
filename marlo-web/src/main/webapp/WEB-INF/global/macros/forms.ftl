@@ -530,10 +530,14 @@
   [#return '']
 [/#function]
 
-[#macro elementsListComponent name elementType id="" elementList=[] label="" listName="" keyFieldName="" displayFieldName="" maxLimit=0 indexLevel=1 required=true ]
+[#macro elementsListComponent name elementType id="" elementList=[] label="" paramText="" help="" helpIcon=true listName="" keyFieldName="" displayFieldName="" maxLimit=0 indexLevel=1 required=true ]
   [#local composedID = "${elementType}${id}" /]
   <div class="panel tertiary" listname="${name}" style="position:relative">
-    <div class="panel-head"><label for="">[@s.text name=label /]:[@req required=required && editable /]</label></div>
+    <div class="panel-head">
+      <label for="">[@s.text name=label /]:[@req required=required && editable /]
+        [#--  Help Text --]
+        [@helpLabel name="${help}" paramText="${paramText}" showIcon=helpIcon editable=editable/]
+      </label></div>
     <div class="panel-body" style="min-height: 30px;">
       <div class="loading listComponentLoading" style="display:none"></div>
       <ul class="list listType-${composedID}">
