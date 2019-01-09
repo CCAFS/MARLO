@@ -18,7 +18,6 @@ package org.cgiar.ccafs.marlo.data.dao.mysql;
 
 import org.cgiar.ccafs.marlo.data.dao.ProjectLp6ContributionDAO;
 import org.cgiar.ccafs.marlo.data.model.ProjectLp6Contribution;
-import org.cgiar.ccafs.marlo.data.model.ProjectMilestone;
 
 import java.util.List;
 
@@ -51,24 +50,21 @@ public class ProjectLp6ContributionMySQLDAO extends AbstractMarloDAO<ProjectLp6C
       return false;
     }
     return true;
-
   }
 
   @Override
   public ProjectLp6Contribution find(long id) {
     return super.find(ProjectLp6Contribution.class, id);
-
   }
 
   @Override
   public List<ProjectLp6Contribution> findAll() {
-    String query = "from " + ProjectMilestone.class.getName() + " where is_active=1";
+    String query = "from " + ProjectLp6Contribution.class.getName() + " where is_active=1";
     List<ProjectLp6Contribution> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
     return null;
-
   }
 
   @Override
@@ -78,8 +74,6 @@ public class ProjectLp6ContributionMySQLDAO extends AbstractMarloDAO<ProjectLp6C
     } else {
       projectLp6Contribution = super.update(projectLp6Contribution);
     }
-
-
     return projectLp6Contribution;
   }
 
