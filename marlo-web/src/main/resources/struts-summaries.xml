@@ -98,6 +98,14 @@
 				<param name="contentDisposition">filename="${fileName}"</param>
 			</result>
 		</action>
+		
+		<action name="{crp}/userSummary"
+      class="org.cgiar.ccafs.marlo.action.summaries.UserSummaryAction">
+      <interceptor-ref name="unloggedStack" />
+      <result name="input">/WEB-INF/crp/views/summaries/boardSummaries.ftl
+      </result>
+    </action>		
+		
 	</package>
 
 </struts>
