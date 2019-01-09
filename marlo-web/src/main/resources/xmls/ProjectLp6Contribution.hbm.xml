@@ -14,16 +14,13 @@
 			<column name="project_id" not-null="true" />
 		</many-to-one>
 		<many-to-one name="phase" class="org.cgiar.ccafs.marlo.data.model.Phase" fetch="select">
-            <column name="id_phase" />
-        </many-to-one>
+            <column name="phase_id" />
+    </many-to-one>
 		<property name="active" type="boolean">
 			<column name="is_active" not-null="true" />
 		</property>
 		<property name="contribution" type="boolean">
-      <column name="is_active" not-null="false" />
-    </property>
-		<property name="active" type="boolean">
-      <column name="is_active" not-null="true" />
+      <column name="contribution" not-null="false" />
     </property>
 		<property name="activeSince" type="timestamp" update="false">
 			<column name="active_since" length="19" not-null="true" />

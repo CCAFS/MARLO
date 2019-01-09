@@ -320,5 +320,6 @@
     <mapping resource="xmls/DeliverableGeographicRegions.hbm.xml"/>
     <mapping resource="xmls/PowbCollaborationGlobalUnitPmus.hbm.xml"/>
     <mapping resource="xmls/PowbProgramChanges.hbm.xml"/>    
+    <mapping resource="xmls/ProjectLp6Contribution.hbm.xml"/>    
 	</session-factory>
 </hibernate-configuration>

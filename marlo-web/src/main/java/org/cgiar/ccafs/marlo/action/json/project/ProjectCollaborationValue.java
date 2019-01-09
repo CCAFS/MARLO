@@ -19,6 +19,7 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectLp6ContributionManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
@@ -41,8 +42,9 @@ public class ProjectCollaborationValue extends BaseAction {
 
   private static final long serialVersionUID = -7458726524471438475L;
   private GlobalUnitManager crpManager;
-  private long projectId;
   private ProjectLp6ContributionManager projectLp6ContributionManager;
+  private ProjectManager projectManager;
+
 
   // Front-end
   private long projectID;
@@ -55,12 +57,13 @@ public class ProjectCollaborationValue extends BaseAction {
   private final LocalizedTextProvider localizedTextProvider;
 
   @Inject
-  public ProjectCollaborationValue(APConfig config, GlobalUnitManager crpManager,
+  public ProjectCollaborationValue(APConfig config, GlobalUnitManager crpManager, ProjectManager projectManager,
     LocalizedTextProvider localizedTextProvider, ProjectLp6ContributionManager projectLp6ContributionManager) {
     super(config);
     this.localizedTextProvider = localizedTextProvider;
     this.projectLp6ContributionManager = projectLp6ContributionManager;
     this.crpManager = crpManager;
+    this.projectManager = projectManager;
   }
 
   @Override
@@ -69,40 +72,43 @@ public class ProjectCollaborationValue extends BaseAction {
     status.put("status", contributionValue);
 
     if (this.getActualPhase() != null && projectID != 0) {
-      System.out.println(
-        "phase " + this.getActualPhase() + " projectID " + projectID + " contributionvalue " + contributionValue);
-
       try {
         projectLp6Contribution = projectLp6ContributionManager.findAll().stream().filter(c -> c.isActive()
           && c.getProject().getId() == projectID && c.getPhase().getId() == this.getActualPhase().getId())
           .collect(Collectors.toList()).get(0);
-        if (contributionValue == true) {
+      } catch (Exception e) {
+      }
 
-          if (projectLp6Contribution == null) {
-            projectLp6Contribution = new ProjectLp6Contribution();
-            projectLp6Contribution.setActive(true);
-            projectLp6Contribution.setPhase(phase);
-            projectLp6Contribution.setProject(project);
-            projectLp6Contribution.setContribution(contributionValue);
-            projectLp6ContributionManager.saveProjectLp6Contribution(projectLp6Contribution);
-          } else {
-            projectLp6Contribution.setContribution(contributionValue);
-            projectLp6ContributionManager.saveProjectLp6Contribution(projectLp6Contribution);
-          }
+      if (contributionValue == true) {
+
+        if (projectLp6Contribution == null) {
+          Project project = projectManager.getProjectById(projectID);
+          projectLp6Contribution = new ProjectLp6Contribution();
+          projectLp6Contribution.setActive(true);
+          projectLp6Contribution.setPhase(phase);
+          projectLp6Contribution.setProject(project);
+          projectLp6Contribution.setContribution(contributionValue);
+          System.out.println("beforefsave");
+
+          projectLp6ContributionManager.saveProjectLp6Contribution(projectLp6Contribution);
+          System.out.println("aftersave");
 
         } else {
-          /*
-           * If contribution value is false update the value to existent projectLp6contribution
-           */
-          if (projectLp6Contribution != null) {
-            projectLp6Contribution.setContribution(contributionValue);
-            projectLp6ContributionManager.saveProjectLp6Contribution(projectLp6Contribution);
-          }
+          projectLp6Contribution.setContribution(contributionValue);
+          projectLp6ContributionManager.saveProjectLp6Contribution(projectLp6Contribution);
         }
 
-      } catch (Exception e) {
-        System.out.println("error" + e);
+      } else {
+        /*
+         * If contribution value is false update the value to existent projectLp6contribution
+         */
+        if (projectLp6Contribution != null) {
+          projectLp6Contribution.setContribution(contributionValue);
+          projectLp6ContributionManager.saveProjectLp6Contribution(projectLp6Contribution);
+        }
       }
+
+
     }
     return SUCCESS;
   }
