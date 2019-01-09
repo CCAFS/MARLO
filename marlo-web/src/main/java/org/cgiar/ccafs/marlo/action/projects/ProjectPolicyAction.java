@@ -18,49 +18,43 @@ package org.cgiar.ccafs.marlo.action.projects;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
-import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
-import org.cgiar.ccafs.marlo.data.manager.ExpectedStudyProjectManager;
-import org.cgiar.ccafs.marlo.data.manager.FileDBManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
-import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyInfoManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndGenderYouthFocusLevelManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndGeographicScopeManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndOrganizationTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndPolicyInvestimentTypeManager;
-import org.cgiar.ccafs.marlo.data.manager.RepIndRegionManager;
+import org.cgiar.ccafs.marlo.data.manager.RepIndPolicyTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndStageProcessManager;
-import org.cgiar.ccafs.marlo.data.manager.RepIndStageStudyManager;
-import org.cgiar.ccafs.marlo.data.manager.SrfSloIndicatorManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfSubIdoManager;
-import org.cgiar.ccafs.marlo.data.manager.StudyTypeManager;
-import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
-import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
-import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
+import org.cgiar.ccafs.marlo.data.model.ProjectPolicy;
 import org.cgiar.ccafs.marlo.data.model.RepIndGenderYouthFocusLevel;
 import org.cgiar.ccafs.marlo.data.model.RepIndGeographicScope;
 import org.cgiar.ccafs.marlo.data.model.RepIndOrganizationType;
 import org.cgiar.ccafs.marlo.data.model.RepIndPolicyInvestimentType;
+import org.cgiar.ccafs.marlo.data.model.RepIndPolicyType;
 import org.cgiar.ccafs.marlo.data.model.RepIndStageProcess;
-import org.cgiar.ccafs.marlo.data.model.RepIndStageStudy;
-import org.cgiar.ccafs.marlo.data.model.SrfSloIndicator;
 import org.cgiar.ccafs.marlo.data.model.SrfSubIdo;
-import org.cgiar.ccafs.marlo.data.model.StudyType;
+import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
-import org.cgiar.ccafs.marlo.validation.projects.ProjectExpectedStudiesValidator;
 
-import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
+
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * @author Sebastian Amariles - CIAT/CCAFS
@@ -70,112 +64,132 @@ public class ProjectPolicyAction extends BaseAction {
   private static final long serialVersionUID = 597647662288518417L;
 
   // Managers
-  private GlobalUnitManager crpManager;
+  private GlobalUnitManager globalUnitManager;
+  private ProjectPolicyManager projectPolicyManager;
+  private ProjectPolicyInfoManager projectPolicyInfoManager;
+  private ProjectManager projectManager;
+  private PhaseManager phaseManager;
+  private RepIndGeographicScopeManager repIndGeographicScopeManager;
+  private LocElementManager locElementManager;
+  private RepIndGenderYouthFocusLevelManager focusLevelManager;
+  private RepIndOrganizationTypeManager repIndOrganizationTypeManager;
+  private RepIndPolicyInvestimentTypeManager repIndPolicyInvestimentTypeManager;
+  private RepIndStageProcessManager repIndStageProcessManager;
+  private RepIndPolicyTypeManager repIndPolicyTypeManager;
+  private SrfSubIdoManager srfSubIdoManager;
+  private AuditLogManager auditLogManager;
+  private ProjectExpectedStudyManager projectExpectedStudyManager;
 
   // Variables
   private GlobalUnit loggedCrp;
   private Project project;
   private long projectID;
-  private long expectedID;
-  private ProjectExpectedStudy expectedStudy;
-  private Map<Integer, String> statuses;
+  private long policyID;
+  private long year;
+  private ProjectPolicy policy;
+  private ProjectPolicy policyDB;
   private List<RepIndGeographicScope> geographicScopes;
   private List<LocElement> regions;
   private List<RepIndOrganizationType> organizationTypes;
   private List<RepIndGenderYouthFocusLevel> focusLevels;
   private List<RepIndPolicyInvestimentType> policyInvestimentTypes;
   private List<RepIndStageProcess> stageProcesses;
-  private List<RepIndStageStudy> stageStudies;
-  private List<StudyType> studyTypes;
+  private List<RepIndPolicyType> policyTypes;
   private List<LocElement> countries;
   private List<SrfSubIdo> subIdos;
-  private List<SrfSloIndicator> targets;
   private List<GlobalUnit> crps;
-  private List<CrpProgram> flagshipList;
-  private List<CrpProgram> regionList;
-  private List<Institution> institutions;
-  private List<Project> myProjects;
+  private List<ProjectExpectedStudy> expectedStudyList;
   private String transaction;
 
+
   @Inject
-  public ProjectPolicyAction(APConfig config, ProjectManager projectManager, GlobalUnitManager crpManager,
-    ProjectExpectedStudyManager projectExpectedStudyManager, SrfSloIndicatorManager srfSloIndicatorManager,
+  public ProjectPolicyAction(APConfig config, GlobalUnitManager globalUnitManager,
+    ProjectPolicyManager projectPolicyManager, ProjectPolicyInfoManager projectPolicyInfoManager,
+    ProjectManager projectManager, PhaseManager phaseManager, RepIndGeographicScopeManager repIndGeographicScopeManager,
+    LocElementManager locElementManager, RepIndGenderYouthFocusLevelManager focusLevelManager,
+    RepIndOrganizationTypeManager repIndOrganizationTypeManager,
+    RepIndPolicyInvestimentTypeManager repIndPolicyInvestimentTypeManager,
+    RepIndStageProcessManager repIndStageProcessManager, RepIndPolicyTypeManager repIndPolicyTypeManager,
     SrfSubIdoManager srfSubIdoManager, AuditLogManager auditLogManager,
-    ExpectedStudyProjectManager expectedStudyProjectManager,
-    ProjectExpectedStudiesValidator projectExpectedStudiesValidator, PhaseManager phaseManager,
-    CrpProgramManager crpProgramManager, InstitutionManager institutionManager, LocElementManager locElementManager,
-    StudyTypeManager studyTypeManager, FileDBManager fileDBManager, RepIndGeographicScopeManager geographicScopeManager,
-    RepIndRegionManager repIndRegionManager, RepIndOrganizationTypeManager organizationTypeManager,
-    RepIndGenderYouthFocusLevelManager focusLevelManager, RepIndPolicyInvestimentTypeManager investimentTypeManager,
-    RepIndStageProcessManager stageProcessManager, RepIndStageStudyManager stageStudyManager) {
+    ProjectExpectedStudyManager projectExpectedStudyManager) {
     super(config);
-    this.crpManager = crpManager;
+    this.globalUnitManager = globalUnitManager;
+    this.projectPolicyManager = projectPolicyManager;
+    this.projectPolicyInfoManager = projectPolicyInfoManager;
+    this.projectManager = projectManager;
+    this.phaseManager = phaseManager;
+    this.repIndGeographicScopeManager = repIndGeographicScopeManager;
+    this.locElementManager = locElementManager;
+    this.focusLevelManager = focusLevelManager;
+    this.repIndOrganizationTypeManager = repIndOrganizationTypeManager;
+    this.repIndPolicyInvestimentTypeManager = repIndPolicyInvestimentTypeManager;
+    this.repIndStageProcessManager = repIndStageProcessManager;
+    this.repIndPolicyTypeManager = repIndPolicyTypeManager;
+    this.srfSubIdoManager = srfSubIdoManager;
+    this.auditLogManager = auditLogManager;
+    this.projectExpectedStudyManager = projectExpectedStudyManager;
   }
 
   public List<LocElement> getCountries() {
     return countries;
   }
 
+
   public List<GlobalUnit> getCrps() {
     return crps;
   }
 
-  public long getExpectedID() {
-    return expectedID;
+
+  public List<ProjectExpectedStudy> getExpectedStudyList() {
+    return expectedStudyList;
   }
 
-  public ProjectExpectedStudy getExpectedStudy() {
-    return expectedStudy;
-  }
-
-  public List<CrpProgram> getFlagshipList() {
-    return flagshipList;
-  }
 
   public List<RepIndGenderYouthFocusLevel> getFocusLevels() {
     return focusLevels;
   }
 
+
   public List<RepIndGeographicScope> getGeographicScopes() {
     return geographicScopes;
-  }
-
-  public List<Institution> getInstitutions() {
-    return institutions;
   }
 
   public GlobalUnit getLoggedCrp() {
     return loggedCrp;
   }
 
-  public List<Project> getMyProjects() {
-    return myProjects;
-  }
 
   public List<RepIndOrganizationType> getOrganizationTypes() {
     return organizationTypes;
   }
 
-  public String getPath() {
-    return config.getDownloadURL() + "/" + this.getStudiesSourceFolder().replace('\\', '/');
+
+  public ProjectPolicy getPolicy() {
+    return policy;
   }
 
 
+  public long getPolicyID() {
+    return policyID;
+  }
+
   public List<RepIndPolicyInvestimentType> getPolicyInvestimentTypes() {
     return policyInvestimentTypes;
+  }
+
+  public List<RepIndPolicyType> getPolicyTypes() {
+    return policyTypes;
   }
 
   public Project getProject() {
     return project;
   }
 
+
   public long getProjectID() {
     return projectID;
   }
 
-  public List<CrpProgram> getRegionList() {
-    return regionList;
-  }
 
   public List<LocElement> getRegions() {
     return regions;
@@ -186,32 +200,10 @@ public class ProjectPolicyAction extends BaseAction {
   }
 
 
-  public List<RepIndStageStudy> getStageStudies() {
-    return stageStudies;
-  }
-
-  public Map<Integer, String> getStatuses() {
-    return statuses;
-  }
-
-  private String getStudiesSourceFolder() {
-    return APConstants.STUDIES_FOLDER.concat(File.separator).concat(this.getCrpSession()).concat(File.separator)
-      .concat(File.separator).concat(this.getCrpSession() + "_")
-      .concat(ProjectSectionStatusEnum.EXPECTEDSTUDY.getStatus()).concat(File.separator);
-  }
-
-
-  public List<StudyType> getStudyTypes() {
-    return studyTypes;
-  }
-
   public List<SrfSubIdo> getSubIdos() {
     return subIdos;
   }
 
-  public List<SrfSloIndicator> getTargets() {
-    return targets;
-  }
 
   public String getTransaction() {
     return transaction;
@@ -221,7 +213,158 @@ public class ProjectPolicyAction extends BaseAction {
   public void prepare() throws Exception {
 
     loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
-    loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
+    loggedCrp = globalUnitManager.getGlobalUnitById(loggedCrp.getId());
+
+    policyID = Integer.parseInt(StringUtils.trim(this.getRequest().getParameter(APConstants.POLICY_REQUEST_ID)));
+
+    if (this.getRequest().getParameter(APConstants.TRANSACTION_ID) != null) {
+
+      transaction = StringUtils.trim(this.getRequest().getParameter(APConstants.TRANSACTION_ID));
+      ProjectPolicy history = (ProjectPolicy) auditLogManager.getHistory(transaction);
+
+      if (history != null) {
+        policy = history;
+      } else {
+        this.transaction = null;
+
+        this.setTransaction("-1");
+      }
+      if (policy.getProjectPolicyInfo() == null) {
+        policy.getProjectPolicyInfo(this.getActualPhase());
+      }
+      // load relations
+      if (policy.getProjectPolicyInfo() != null) {
+
+        // // load PhaseResearchPartnership
+        // if (policy.getProjectPolicyInfo().getRepIndOrganizationType() != null
+        // && policy.getProjectPolicyInfo().getRepIndOrganizationType().getId() != null) {
+        // policy.getProjectPolicyInfo().setRepIndPhaseResearchPartnership(
+        // repIndPhaseResearchPartnershipManager.getRepIndPhaseResearchPartnershipById(
+        // innovation.getProjectInnovationInfo().getRepIndPhaseResearchPartnership().getId()));
+        // }
+        //
+        // // load StageInnovation
+        // if (innovation.getProjectInnovationInfo().getRepIndStageInnovation() != null
+        // && innovation.getProjectInnovationInfo().getRepIndStageInnovation().getId() != null) {
+        // innovation.getProjectInnovationInfo().setRepIndStageInnovation(repIndStageInnovationManager
+        // .getRepIndStageInnovationById(innovation.getProjectInnovationInfo().getRepIndStageInnovation().getId()));
+        // }
+        //
+        // // load GeographicScope
+        // if (innovation.getProjectInnovationInfo().getRepIndGeographicScope() != null
+        // && innovation.getProjectInnovationInfo().getRepIndGeographicScope().getId() != null) {
+        // innovation.getProjectInnovationInfo().setRepIndGeographicScope(repIndGeographicScopeManager
+        // .getRepIndGeographicScopeById(innovation.getProjectInnovationInfo().getRepIndGeographicScope().getId()));
+        // }
+        //
+        // // load Region
+        // if (innovation.getProjectInnovationInfo().getRepIndRegion() != null
+        // && innovation.getProjectInnovationInfo().getRepIndRegion().getId() != null) {
+        // innovation.getProjectInnovationInfo().setRepIndRegion(
+        // repIndRegionManager.getRepIndRegionById(innovation.getProjectInnovationInfo().getRepIndRegion().getId()));
+        // }
+        //
+        // // load InnovationType
+        // if (innovation.getProjectInnovationInfo().getRepIndInnovationType() != null
+        // && innovation.getProjectInnovationInfo().getRepIndInnovationType().getId() != null) {
+        // innovation.getProjectInnovationInfo().setRepIndInnovationType(repIndInnovationTypeManager
+        // .getRepIndInnovationTypeById(innovation.getProjectInnovationInfo().getRepIndInnovationType().getId()));
+        // }
+        //
+        // // load ContributionOfCrp
+        // if (innovation.getProjectInnovationInfo().getRepIndContributionOfCrp() != null
+        // && innovation.getProjectInnovationInfo().getRepIndContributionOfCrp().getId() != null) {
+        // innovation.getProjectInnovationInfo()
+        // .setRepIndContributionOfCrp(repIndContributionOfCrpManager.getRepIndContributionOfCrpById(
+        // innovation.getProjectInnovationInfo().getRepIndContributionOfCrp().getId()));
+        // }
+        //
+        // // load DegreeInnovation
+        // if (innovation.getProjectInnovationInfo().getRepIndDegreeInnovation() != null
+        // && innovation.getProjectInnovationInfo().getRepIndDegreeInnovation().getId() != null) {
+        // innovation.getProjectInnovationInfo().setRepIndDegreeInnovation(repIndDegreeInnovationManager
+        // .getRepIndDegreeInnovationById(innovation.getProjectInnovationInfo().getRepIndDegreeInnovation().getId()));
+        // }
+        //
+        // // load InnovationDeliverables
+        // if (innovation.getProjectInnovationDeliverables() != null
+        // && !innovation.getProjectInnovationDeliverables().isEmpty()) {
+        // for (ProjectInnovationDeliverable projectInnovationDeliverable : innovation
+        // .getProjectInnovationDeliverables()) {
+        // if (projectInnovationDeliverable.getDeliverable() != null
+        // && projectInnovationDeliverable.getDeliverable().getId() != null) {
+        //
+        // if (deliverableManager
+        // .getDeliverableById(projectInnovationDeliverable.getDeliverable().getId()) != null) {
+        // Deliverable deliverable =
+        // deliverableManager.getDeliverableById(projectInnovationDeliverable.getDeliverable().getId());
+        // projectInnovationDeliverable.setDeliverable(deliverable);
+        // projectInnovationDeliverable.getDeliverable().getDeliverableInfo(this.getActualPhase());
+        // }
+        //
+        // }
+        //
+        // }
+        // }
+
+      }
+
+    } else {
+      policy = projectPolicyManager.getProjectPolicyById(policyID);
+
+    }
+
+    if (policy != null) {
+
+      projectID = policy.getProject().getId();
+      project = projectManager.getProjectById(projectID);
+
+
+      Phase phase = phaseManager.getPhaseById(this.getActualPhase().getId());
+      project.getProjecInfoPhase(phase);
+
+      // Getting The list
+      countries = locElementManager.findAll().stream()
+        .filter(c -> c.getLocElementType().getId().intValue() == 2 && c.isActive()).collect(Collectors.toList());
+
+      geographicScopes = repIndGeographicScopeManager.findAll();
+      regions = locElementManager.findAll().stream()
+        .filter(c -> c.getLocElementType().getId().intValue() == 1 && c.isActive() && c.getIsoNumeric() != null)
+        .collect(Collectors.toList());
+
+      organizationTypes = repIndOrganizationTypeManager.findAll();
+
+      stageProcesses = new ArrayList<>(repIndStageProcessManager.findAll().stream()
+        .filter(p -> p.getYear() == this.getCurrentCycleYear()).collect(Collectors.toList()));
+
+      policyInvestimentTypes = repIndPolicyInvestimentTypeManager.findAll();
+
+      policyTypes = repIndPolicyTypeManager.findAll();
+
+      subIdos = srfSubIdoManager.findAll();
+
+      focusLevels = focusLevelManager.findAll();
+      expectedStudyList = new ArrayList<>();
+      List<ProjectExpectedStudy> expectedStudies = projectExpectedStudyManager.findAll().stream()
+        .filter(ex -> ex.isActive() && ex.getProjectExpectedStudyInfo(phase) != null
+          && ex.getProjectExpectedStudyInfo().getStudyType() != null
+          && ex.getProjectExpectedStudyInfo().getStudyType().getId().intValue() == 1 && ex.getProject() != null
+          && ex.getProject().getId() == project.getId())
+        .collect(Collectors.toList());
+      for (ProjectExpectedStudy study : expectedStudies) {
+        expectedStudyList.add(study);
+      }
+
+      crps = globalUnitManager.findAll().stream()
+        .filter(gu -> gu.isActive() && (gu.getGlobalUnitType().getId() == 1 || gu.getGlobalUnitType().getId() == 3))
+        .collect(Collectors.toList());
+
+    }
+
+    policyDB = projectPolicyManager.getProjectPolicyById(policyID);
+
+    String params[] = {loggedCrp.getAcronym(), project.getId() + ""};
+    this.setBasePermission(this.getText(Permission.PROJECT_POLICIES_BASE_PERMISSION, params));
 
 
   }
@@ -240,57 +383,56 @@ public class ProjectPolicyAction extends BaseAction {
     this.crps = crps;
   }
 
-  public void setExpectedID(long expectedID) {
-    this.expectedID = expectedID;
+
+  public void setExpectedStudyList(List<ProjectExpectedStudy> expectedStudyList) {
+    this.expectedStudyList = expectedStudyList;
   }
 
-  public void setExpectedStudy(ProjectExpectedStudy expectedStudy) {
-    this.expectedStudy = expectedStudy;
-  }
-
-  public void setFlagshipList(List<CrpProgram> flagshipList) {
-    this.flagshipList = flagshipList;
-  }
 
   public void setFocusLevels(List<RepIndGenderYouthFocusLevel> focusLevels) {
     this.focusLevels = focusLevels;
   }
 
+
   public void setGeographicScopes(List<RepIndGeographicScope> geographicScopes) {
     this.geographicScopes = geographicScopes;
   }
 
-  public void setInstitutions(List<Institution> institutions) {
-    this.institutions = institutions;
-  }
 
   public void setLoggedCrp(GlobalUnit loggedCrp) {
     this.loggedCrp = loggedCrp;
-  }
-
-  public void setMyProjects(List<Project> myProjects) {
-    this.myProjects = myProjects;
   }
 
   public void setOrganizationTypes(List<RepIndOrganizationType> organizationTypes) {
     this.organizationTypes = organizationTypes;
   }
 
+  public void setPolicy(ProjectPolicy policy) {
+    this.policy = policy;
+  }
+
+  public void setPolicyID(long policyID) {
+    this.policyID = policyID;
+  }
+
   public void setPolicyInvestimentTypes(List<RepIndPolicyInvestimentType> policyInvestimentTypes) {
     this.policyInvestimentTypes = policyInvestimentTypes;
   }
+
+  public void setPolicyTypes(List<RepIndPolicyType> policyTypes) {
+    this.policyTypes = policyTypes;
+  }
+
 
   public void setProject(Project project) {
     this.project = project;
   }
 
+
   public void setProjectID(long projectID) {
     this.projectID = projectID;
   }
 
-  public void setRegionList(List<CrpProgram> regionList) {
-    this.regionList = regionList;
-  }
 
   public void setRegions(List<LocElement> regions) {
     this.regions = regions;
@@ -300,25 +442,10 @@ public class ProjectPolicyAction extends BaseAction {
     this.stageProcesses = stageProcesses;
   }
 
-  public void setStageStudies(List<RepIndStageStudy> stageStudies) {
-    this.stageStudies = stageStudies;
-  }
-
-  public void setStatuses(Map<Integer, String> statuses) {
-    this.statuses = statuses;
-  }
-
-  public void setStudyTypes(List<StudyType> studyTypes) {
-    this.studyTypes = studyTypes;
-  }
-
   public void setSubIdos(List<SrfSubIdo> subIdos) {
     this.subIdos = subIdos;
   }
 
-  public void setTargets(List<SrfSloIndicator> targets) {
-    this.targets = targets;
-  }
 
   public void setTransaction(String transaction) {
     this.transaction = transaction;

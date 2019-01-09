@@ -36,6 +36,14 @@ public class ProjectPolicyInfo extends MarloBaseEntity implements java.io.Serial
   }
 
 
+  public ProjectPolicyInfo(Phase phase, ProjectPolicy projectPolicy, Long year) {
+    super();
+    this.phase = phase;
+    this.projectPolicy = projectPolicy;
+    this.year = year;
+  }
+
+
   public Double getAmount() {
     return amount;
   }
