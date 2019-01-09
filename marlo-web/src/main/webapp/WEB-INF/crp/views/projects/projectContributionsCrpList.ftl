@@ -238,7 +238,6 @@
           </div>
       </div>
     </div>
-    ${(projectLp6Contribution.contribution?string)!}
 [/#if]
 [/#macro]
 
