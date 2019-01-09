@@ -106,9 +106,6 @@ function contributionToLP6(){
   var projectID = $(this).parents('.borderBox').classParam('project');
   var phaseID = $(this).parents('.borderBox').classParam('phase');
   var contributionValue = this.value;
-  console.log(projectID);
-  console.log(phaseID);
-  console.log(contributionValue);
 
    $.ajax({
      url: baseURL + '/projectCollaborationValue.do',
@@ -118,7 +115,7 @@ function contributionToLP6(){
         "crp_lp6_contribution_value": contributionValue
      },
      success: function (data) {
-       console.log(data);
+       console.log(data.status);
      }
    });
 

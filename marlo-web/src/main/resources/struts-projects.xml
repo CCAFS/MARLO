@@ -599,6 +599,19 @@
         <param name="projectOutcomeID">${projectOutcomeID}</param>
       </result>
     </action>
+    
+        <action name="{crp}/contributionsLP6"
+      class="org.cgiar.ccafs.marlo.action.projects.ProjectOutcomeListAction">
+      <interceptor-ref name="editProjectsStack" />
+      <result name="input">/WEB-INF/crp/views/projects/projectContributionToLP6.ftl
+      </result>
+      <result name="redirect" type="redirectAction">
+        <param name="actionName">${url}</param>
+        <param name="edit">true</param>
+        <param name="phaseID">${phaseID}</param>
+        <param name="projectID">${projectID}</param>
+      </result>
+    </action>
 
     <action name="{crp}/partnerSave"
       class="org.cgiar.ccafs.marlo.action.projects.PartnersSaveAction">
