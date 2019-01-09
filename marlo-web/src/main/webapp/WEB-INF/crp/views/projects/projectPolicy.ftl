@@ -81,11 +81,11 @@
   [#local customName = "${name}"/]
   [#local customId = "policy-${template?string('template',index)}" /]
 
-  <div id="${customId}" class="caseStudy" style="display:${template?string('none','block')}">
+  <div id="${customId}" class="policy" style="display:${template?string('none','block')}">
     
     [#-- Title (up to 50 words) --]
     <div class="form-group">
-      [@customForm.input name="${customName}.projectPolicyInfo.title" i18nkey="policy.title" help="policy.title.help" className="limitWords-50"required=true editable=editable /]
+      [@customForm.input name="${customName}.projectPolicyInfo.title" i18nkey="policy.title" help="policy.title.help" helpIcon=false className="limitWords-50"required=true editable=editable /]
     </div>
     
     <div class="form-group row">
@@ -102,11 +102,11 @@
     <div class="form-group row">
       [#-- Implementing Organization Type --]
       <div class="col-md-6">
-        [@customForm.select name="${customName}.projectPolicyInfo.repIndPolicyInvestimentType.id" className="setSelect2 policyInvestimentTypes" i18nkey="policy.organizationType" listName="policyInvestimentTypes" keyFieldName="id"  displayFieldName="name" required=true editable=editable/]
+        [@customForm.select name="${customName}.projectPolicyInfo.repIndPolicyInvestimentType.id" className="setSelect2 policyInvestimentTypes" i18nkey="policy.organizationType" help="policy.organizationType.help" listName="policyInvestimentTypes" keyFieldName="id"  displayFieldName="name" required=true editable=editable/]
       </div>
       [#-- Level of Maturity of the Process: (Before Stage in Process) --]
       <div class="col-md-6">
-        [@customForm.select name="${customName}.projectPolicyInfo.repIndMaturityLevel.id" className="setSelect2" i18nkey="policy.maturityLevel" help="policy.maturityLevel.help" listName="maturityLevels" keyFieldName="id"  displayFieldName="name" required=true editable=editable/]
+        [@customForm.select name="${customName}.projectPolicyInfo.repIndMaturityLevel.id" className="setSelect2" i18nkey="policy.maturityLevel" help="policy.maturityLevel.help" help="policy.maturityLevel.help" listName="maturityLevels" keyFieldName="id"  displayFieldName="name" required=true editable=editable/]
       </div>
     </div>
     
@@ -121,28 +121,29 @@
     
     [#-- Evidence (OICR)  --]
     <div class="form-group">
-      [@customForm.select name="${customName}.projectPolicyInfo.evidence.id" className="setSelect2" i18nkey="policy.evidence" listName="evidencesList" keyFieldName="id"  displayFieldName="name" required=true editable=editable/]
+      [@customForm.select name="${customName}.projectPolicyInfo.evidence.id" className="setSelect2" i18nkey="policy.evidence" help="policy.evidence.help" listName="evidencesList" keyFieldName="id"  displayFieldName="name" helpIcon=false required=true editable=editable/]
     </div>
     
     <hr />
     
     [#-- Contributing CRPs/PTFs  --]
     <div class="form-group">
-      [@customForm.elementsListComponent name="${customName}.contributingCrpsPtfs" elementType="elementType" elementList=[] label="policy.contributingCrpsPtfs"  listName="crpsPtfsList" keyFieldName="id" displayFieldName="description"/]
+      [@customForm.elementsListComponent name="${customName}.contributingCrpsPtfs" elementType="elementType" elementList=[] label="policy.contributingCrpsPtfs"  listName="crpsPtfsList" keyFieldName="id" displayFieldName="description" /]
     </div>
     
     [#-- Sub IDOs (maxLimit=2) --]
     <div class="form-group">
-      [@customForm.elementsListComponent name="${customName}.subIdos" elementType="srfSubIdo" elementList=element.subIdos label="policy.subIDOs"  listName="subIdos" maxLimit=2 keyFieldName="id" displayFieldName="description"/]
+      [@customForm.elementsListComponent name="${customName}.subIdos" elementType="srfSubIdo" elementList=element.subIdos label="policy.subIDOs" help="policy.subIDOs.help" listName="subIdos" maxLimit=2 keyFieldName="id" displayFieldName="description"/]
     </div>
     
-    [#-- Sub IDOs (maxLimit=2) --]
+    [#-- CGIAR Cross-cutting Markers  --]
     <div class="form-group">
       <h5>[@s.text name="policy.crossCuttingMarkers" /]</h5>
       <div class="row">
-        [#list [ "Gender", "Youth", "CapDev", "Climate Change"] as marker]
+        [#list [ "Gender", "Youth", "Climate Change"] as marker]
           <div class="col-md-3">
-            <input type="hidden"  name="${customName}.crossCuttingMarkers[${marker_index}].id" value="${marker}"/>
+            <input type="hidden"  name="${customName}.crossCuttingMarkers[${marker_index}].id" value=""/>
+            <input type="hidden"  name="${customName}.crossCuttingMarkers[${marker_index}].crossCuttingMarker.id" value="${marker}"/>
             [@customForm.select   name="${customName}.crossCuttingMarkers[${marker_index}].crossCuttingLevel.id" className="setSelect2" i18nkey="${marker}" listName="crossCuttingLevels" keyFieldName="id"  displayFieldName="name" required=true editable=editable/]
           </div>
         [/#list]
@@ -150,32 +151,31 @@
     </div>
     
     [#--  Geographic scope  --]
-      <div class="form-group geographicScopeBlock">
-        [#local geographicScope = ((element.projectExpectedStudyInfo.repIndGeographicScope.id)!-1) ]
-        
-        [#local isRegional = ((geographicScope == action.reportingIndGeographicScopeRegional)!false) ]
-        [#local isMultiNational = ((geographicScope == action.reportingIndGeographicScopeMultiNational)!false) ]
-        [#local isNational = ((geographicScope == action.reportingIndGeographicScopeNational)!false) ]
-        [#local isSubNational = ((geographicScope == action.reportingIndGeographicScopeSubNational)!false) ]
-        
-         
-        <div class="form-group">
-          <div class="form-group row">
-            <div class="col-md-6">
-              [#-- Geographic Scope --]
-              [@customForm.select name="${customName}.projectPolicyInfo.repIndGeographicScope.id" className="setSelect2 geographicScopeSelect" i18nkey="policy.geographicScope" listName="geographicScopes" keyFieldName="id"  displayFieldName="name" editable=editable required=true /]
-            </div>
-          </div>
-          <div class="form-group regionalBlock" style="display:${(isRegional)?string('block','none')}">
-            [#-- Regional scope --]
-            [@customForm.elementsListComponent name="${customName}.regions" elementType="locElement" elementList=element.studyRegions label="policy.regions"  listName="regions" keyFieldName="id" displayFieldName="name" required=false /]
-          </div>
-          <div class="form-group nationalBlock" style="display:${(isMultiNational || isNational || isSubNational)?string('block','none')}">
-            [#-- Multinational, National and Subnational scope --]
-            [@customForm.select name="${customName}.countriesIds" label="" i18nkey="policy.countries" listName="countries" keyFieldName="isoAlpha2"  displayFieldName="name" value="${customName}.countriesIds" multiple=true required=true className="countriesSelect" disabled=!editable/]
+    <div class="form-group geographicScopeBlock">
+      [#local geographicScope = ((element.projectExpectedStudyInfo.repIndGeographicScope.id)!-1) ]
+      
+      [#local isRegional = ((geographicScope == action.reportingIndGeographicScopeRegional)!false) ]
+      [#local isMultiNational = ((geographicScope == action.reportingIndGeographicScopeMultiNational)!false) ]
+      [#local isNational = ((geographicScope == action.reportingIndGeographicScopeNational)!false) ]
+      [#local isSubNational = ((geographicScope == action.reportingIndGeographicScopeSubNational)!false) ]
+      
+      <div class="form-group">
+        <div class="form-group row">
+          <div class="col-md-6">
+            [#-- Geographic Scope --]
+            [@customForm.select name="${customName}.projectPolicyInfo.repIndGeographicScope.id" className="setSelect2 geographicScopeSelect" i18nkey="policy.geographicScope" help="policy.geographicScope.help" listName="geographicScopes" keyFieldName="id"  displayFieldName="name" editable=editable required=true /]
           </div>
         </div>
+        <div class="form-group regionalBlock" style="display:${(isRegional)?string('block','none')}">
+          [#-- Regional scope --]
+          [@customForm.elementsListComponent name="${customName}.regions" elementType="locElement" elementList=element.studyRegions label="policy.regions"  listName="regions" keyFieldName="id" displayFieldName="name" required=false /]
+        </div>
+        <div class="form-group nationalBlock" style="display:${(isMultiNational || isNational || isSubNational)?string('block','none')}">
+          [#-- Multinational, National and Subnational scope --]
+          [@customForm.select name="${customName}.countriesIds" label="" i18nkey="policy.countries" listName="countries" keyFieldName="isoAlpha2"  displayFieldName="name" value="${customName}.countriesIds" multiple=true required=true className="countriesSelect" disabled=!editable/]
+        </div>
       </div>
+    </div>
     
   </div>
 [/#macro]

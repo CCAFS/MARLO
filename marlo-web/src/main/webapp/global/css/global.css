@@ -1106,6 +1106,7 @@ select#partnerSave_activityPartner_partner_type_id {
   border: 1px solid rgba(0,0,0,0.2);
   border-radius: 0;
   /* margin-bottom: 0; */
+  box-shadow: 0 0 0;
 }
 
 .panel.secondary .panel-head {
