@@ -102,8 +102,8 @@ public class ProjectLp6Contribution extends MarloAuditableEntity implements java
 
   @Override
   public String toString() {
-    return "ProjectLp6Contribution [id=" + this.getId() + ", project=" + project + ", phase=" + phase + ", contribution"
-      + contribution + "]";
+    return "ProjectLp6Contribution [id=" + this.getId() + ", project=" + project + ", phase=" + phase
+      + ", contribution=" + contribution + "]";
   }
 
 }
