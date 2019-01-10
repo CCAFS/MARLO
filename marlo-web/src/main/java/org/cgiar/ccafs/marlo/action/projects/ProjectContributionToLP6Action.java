@@ -20,6 +20,7 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpClusterOfActivityManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitProjectManager;
@@ -41,6 +42,7 @@ import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.manager.impl.CenterOutcomeManager;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
+import org.cgiar.ccafs.marlo.data.model.DeliverableInfo;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
@@ -98,6 +100,7 @@ public class ProjectContributionToLP6Action extends BaseAction {
   private List<LocElement> countries;
   private List<Deliverable> deliverables;
   private DeliverableManager deliverableManager;
+  private DeliverableInfoManager deliverableInfoManager;
 
 
   // Front-end
@@ -124,7 +127,7 @@ public class ProjectContributionToLP6Action extends BaseAction {
     GlobalUnitProjectManager globalUnitProjectManager, CenterOutcomeManager centerOutcomeManager,
     ProjectCenterOutcomeManager projectCenterOutcomeManager,
     ProjectLp6ContributionManager projectLp6ContributionManager, LocElementManager locElementManager,
-    DeliverableManager deliverableManager) {
+    DeliverableManager deliverableManager, DeliverableInfoManager deliverableInfoManager) {
     super(config);
     this.repIndGeographicScopeManager = repIndGeographicScopeManager;
     this.projectManager = projectManager;
@@ -136,6 +139,7 @@ public class ProjectContributionToLP6Action extends BaseAction {
     this.auditLogManager = auditLogManager;
     this.locElementManager = locElementManager;
     this.deliverableManager = deliverableManager;
+    this.deliverableInfoManager = deliverableInfoManager;
   }
 
 
@@ -300,16 +304,22 @@ public class ProjectContributionToLP6Action extends BaseAction {
     /*
      * List of deliverables for the actual project and phase
      */
-    try {
+    deliverables = new ArrayList<>();
+    System.out.println("phase " + this.getActualPhase() + " project " + projectID);
+    if (project.getDeliverables() != null) {
+      List<DeliverableInfo> infos =
+        deliverableInfoManager.getDeliverablesInfoByProjectAndPhase(this.getActualPhase(), project);
       deliverables = new ArrayList<>();
-      deliverables = (deliverableManager.findAll().stream()
-        .filter(d -> d.isActive() && d.getProject().getId() == projectID
-          && d.getDeliverableInfo(this.getActualPhase()) != null
-          && d.getDeliverableInfo(this.getActualPhase()).getId() == this.getActualPhase().getId())
-        .collect(Collectors.toList()));
-    } catch (Exception e) {
-
+      if (infos != null && !infos.isEmpty()) {
+        for (DeliverableInfo deliverableInfo : infos) {
+          Deliverable deliverable = deliverableInfo.getDeliverable();
+          deliverable.setDeliverableInfo(deliverableInfo);
+          deliverables.add(deliverable);
+        }
+      }
     }
+
+
   }
 
 
@@ -339,7 +349,7 @@ public class ProjectContributionToLP6Action extends BaseAction {
             projectLp6Contribution.setUndertakingEffortsCsaNarrative(undertakingEffortsCSANarrative);
             projectLp6ContributionManager.saveProjectLp6Contribution(projectLp6Contribution);
           } catch (Exception e) {
-            System.out.println("saving error " + e);
+            System.out.println(e);
           }
         }
       }
