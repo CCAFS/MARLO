@@ -47,11 +47,7 @@
       [#-- Policies list --]
       <h3 class="headTitle">[@s.text name="projectPolicies.title" /] <br /> <small>([@s.text name="projectPolicies.subTitle" /])</small></h3>
       <div id="" class="simpleBox">
-        [@policiesTable list=[ 
-          { "title": "", "subIdos": [ { "name": "Item #1"}, { "name": "Item #2"} ] }, 
-          { "title": "Policy Title" } 
-          ]  
-        /]
+        [@policiesTable list=(project.policies)![] /]
       </div>
       
       [#-- Add a new item --]
