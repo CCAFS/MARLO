@@ -31,6 +31,29 @@ public class ProjectLp6Contribution extends MarloAuditableEntity implements java
 
   private boolean contribution;
 
+  private String narrative;
+
+  private String workingAcrossFlagships;
+
+  private boolean isWorkingAcrossFlagships;
+
+  private String undertakingEffortsLeading;
+
+  private boolean isUndertakingEffortsLeading;
+
+  private String topThreePartnerships;
+
+  private boolean isProvidingPathways;
+
+  private String undertakingEffortsCsa;
+
+  private boolean isUndertakingEffortsCsa;
+
+  private String initiative_related;
+
+  private boolean isInitiativeRelated;
+
+
   public ProjectLp6Contribution() {
   }
 
@@ -56,6 +79,10 @@ public class ProjectLp6Contribution extends MarloAuditableEntity implements java
     return true;
   }
 
+  public String getInitiative_related() {
+    return initiative_related;
+  }
+
   @Override
   public String getLogDeatil() {
     StringBuilder sb = new StringBuilder();
@@ -66,6 +93,10 @@ public class ProjectLp6Contribution extends MarloAuditableEntity implements java
     return sb.toString();
   }
 
+  public String getNarrative() {
+    return narrative;
+  }
+
   public Phase getPhase() {
     return phase;
   }
@@ -73,6 +104,24 @@ public class ProjectLp6Contribution extends MarloAuditableEntity implements java
   public Project getProject() {
     return project;
   }
+
+
+  public String getTopThreePartnerships() {
+    return topThreePartnerships;
+  }
+
+  public String getUndertakingEffortsCsa() {
+    return undertakingEffortsCsa;
+  }
+
+  public String getUndertakingEffortsLeading() {
+    return undertakingEffortsLeading;
+  }
+
+  public String getWorkingAcrossFlagships() {
+    return workingAcrossFlagships;
+  }
+
 
   @Override
   public int hashCode() {
@@ -82,14 +131,56 @@ public class ProjectLp6Contribution extends MarloAuditableEntity implements java
     return result;
   }
 
+
   public boolean isContribution() {
     return contribution;
+  }
+
+
+  public boolean isInitiativeRelated() {
+    return isInitiativeRelated;
+  }
+
+
+  public boolean isProvidingPathways() {
+    return isProvidingPathways;
+  }
+
+
+  public boolean isUndertakingEffortsCsa() {
+    return isUndertakingEffortsCsa;
+  }
+
+
+  public boolean isUndertakingEffortsLeading() {
+    return isUndertakingEffortsLeading;
+  }
+
+
+  public boolean isWorkingAcrossFlagships() {
+    return isWorkingAcrossFlagships;
   }
 
 
   public void setContribution(boolean contribution) {
     this.contribution = contribution;
   }
+
+
+  public void setInitiative_related(String initiative_related) {
+    this.initiative_related = initiative_related;
+  }
+
+
+  public void setInitiativeRelated(boolean isInitiativeRelated) {
+    this.isInitiativeRelated = isInitiativeRelated;
+  }
+
+
+  public void setNarrative(String narrative) {
+    this.narrative = narrative;
+  }
+
 
   public void setPhase(Phase phase) {
     this.phase = phase;
@@ -98,6 +189,46 @@ public class ProjectLp6Contribution extends MarloAuditableEntity implements java
 
   public void setProject(Project project) {
     this.project = project;
+  }
+
+
+  public void setProvidingPathways(boolean isProvidingPathways) {
+    this.isProvidingPathways = isProvidingPathways;
+  }
+
+
+  public void setTopThreePartnerships(String topThreePartnerships) {
+    this.topThreePartnerships = topThreePartnerships;
+  }
+
+
+  public void setUndertakingEffortsCsa(boolean isUndertakingEffortsCsa) {
+    this.isUndertakingEffortsCsa = isUndertakingEffortsCsa;
+  }
+
+
+  public void setUndertakingEffortsCsa(String undertakingEffortsCsa) {
+    this.undertakingEffortsCsa = undertakingEffortsCsa;
+  }
+
+
+  public void setUndertakingEffortsLeading(boolean isUndertakingEffortsLeading) {
+    this.isUndertakingEffortsLeading = isUndertakingEffortsLeading;
+  }
+
+
+  public void setUndertakingEffortsLeading(String undertakingEffortsLeading) {
+    this.undertakingEffortsLeading = undertakingEffortsLeading;
+  }
+
+
+  public void setWorkingAcrossFlagships(boolean isWorkingAcrossFlagships) {
+    this.isWorkingAcrossFlagships = isWorkingAcrossFlagships;
+  }
+
+
+  public void setWorkingAcrossFlagships(String workingAcrossFlagships) {
+    this.workingAcrossFlagships = workingAcrossFlagships;
   }
 
   @Override

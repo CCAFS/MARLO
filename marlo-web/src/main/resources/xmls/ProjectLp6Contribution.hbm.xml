@@ -37,5 +37,55 @@
       fetch="select">
       <column name="modified_by" />
     </many-to-one>
+    
+    <property name="narrative" type="string">
+      <column name="narrative" sql-type="TEXT"
+        not-null="true" />
+    </property>
+    
+    <property name="workingAcrossFlagships" type="string">
+      <column name="working_across_flagships" sql-type="TEXT"
+        not-null="true" />
+    </property>
+    
+    <property name="isWorkingAcrossFlagships" type="boolean">
+      <column name="is_working_across_flagships" not-null="true" />
+    </property>
+    
+    <property name="undertakingEffortsLeading" type="string">
+      <column name="undertaking_efforts_leading" sql-type="TEXT"
+        not-null="true" />
+    </property>
+    
+    <property name="isUndertakingEffortsLeading" type="boolean">
+      <column name="is_undertaking_efforts_leading" not-null="true" />
+    </property>
+    
+    <property name="isProvidingPathways" type="boolean">
+      <column name="is_providing_pathways" not-null="true" />
+    </property>
+    
+    <property name="topThreePartnerships" type="string">
+      <column name="top_three_partnerships" sql-type="TEXT"
+        not-null="true" />
+    </property>
+    
+    <property name="undertakingEffortsCsa" type="string">
+      <column name="undertaking_efforts_csa" sql-type="TEXT"
+        not-null="true" />
+    </property>
+    
+    <property name="isUndertakingEffortsCsa" type="boolean">
+      <column name="is_undertaking_efforts_csa" not-null="true" />
+    </property>
+    
+    <property name="initiativeRelated" type="string">
+      <column name="initiative_related" sql-type="TEXT"
+        not-null="true" />
+    </property>
+    
+    <property name="isInitiativeRelated" type="boolean">
+      <column name="is_initiative_related" not-null="true" />
+    </property>
 	</class>
 </hibernate-mapping>
