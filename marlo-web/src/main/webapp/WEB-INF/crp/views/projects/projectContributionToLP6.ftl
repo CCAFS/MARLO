@@ -31,89 +31,77 @@
           <div class="form-group">
             [#-- Contribution to LP6 narrative --]
             [@customForm.textArea name="projects.LP6Contribution.narrativeContribution"  i18nkey="projects.LP6Contribution.narrativeContribution"  className="limitWords-100" required=true editable=canEdit /]
+            [#-- Deliverables --]
+             <div class="form-group simpleBox stageProcessOne">
+               [@customForm.elementsListComponent name="projects.LP6Contribution.evidenceDeliverables" elementType="" elementList="" label="projects.LP6Contribution.evidenceDeliverables" listName="" keyFieldName="id" displayFieldName="title" required=editable/]
+             </div>
+             <p class="note">[@s.text name="projects.LP6Contribution.deliverablesTooltip" /] <a href="">clicking here.</a></p>
           </div>
-          <div class="form-group row">
+
             [#-- Geographic Scope --]
-            <div class="col-md-6">
-              [@customForm.select name="projects.LP6Contribution.scope" label=""  i18nkey="projects.LP6Contribution.geographicScope" listName="" className="" editable=canEdit /]
+            <div class="form-group geographicScopeBlock">        
+              [#assign isRegional = true ]
+              [#assign isMultiNational = true ]
+              [#assign isNational = false ]
+              [#assign isSubNational = false ]
+              
+              <div class="form-group simpleBox">
+                <div class="form-group row">
+                  <div class="col-md-6">
+                    [#-- Geographic Scope --]
+                    [@customForm.select name="projects.LP6Contribution.geographicScope" className="setSelect2 geographicScopeSelect" i18nkey="projects.LP6Contribution.geographicScope" listName="" keyFieldName="id"  displayFieldName="name" editable=editable/]
+                  </div>
+                </div>
+                <div class="form-group regionalBlock" style="display:${(isRegional)?string('block','none')}">
+                  [#-- Regional scope --]
+                    [@customForm.elementsListComponent name="projects.LP6Contribution.region" elementType="locElement" elementList="" label="projects.LP6Contribution.region"  listName="" keyFieldName="id" displayFieldName="name" required=false /]
+                </div>
+                <div class="form-group nationalBlock" style="display:${(isMultiNational || isNational || isSubNational)?string('block','none')}">
+                  [#-- Multinational, National and Subnational scope --]
+                  [@customForm.select name="projects.LP6Contribution.countries" label="" i18nkey="projects.LP6Contribution.countries" listName="" keyFieldName="isoAlpha2"  displayFieldName="name" value="" multiple=true className="countriesSelect" disabled=!editable/]
+                </div>
+              </div>
             </div>
-          </div>
-          <div class="form-group row">
+
             [#-- Work across flagships --]
-            <div class="col-md-9"> 
-              <label>[@s.text name="projects.LP6Contribution.workingAcrossFlagships"/][@customForm.req required=true /]</label>
-            </div>
-            <div class="col-md-3">
-                [@customForm.radioFlat id="flagshipLevels-yes" name="flagshipLevels" label="Yes" value="true" checked=false cssClassLabel="radio-label-yes" editable=canEdit/]
-                [@customForm.radioFlat id="flagshipLevels-no" name="flagshipLevels" label="No" value="false" checked=false cssClassLabel="radio-label-no" editable=canEdit/]
-            </div>
-          </div>
-          <div class=form-group">
-            [@customForm.textArea name="projects.LP6Contribution.workingAcrossFlagships.question"  i18nkey=""  className="limitWords-100" required=true editable=canEdit/]
-          </div>
-          <div class="form-group row">
+            [@contributionForm name="flagshipLevels" className="limitWords-100"/]
             [#-- Efforts to position CGIAR --]
-            <div class="col-md-9"> 
-              <label>[@s.text name="projects.LP6Contribution.positionCGIAR"/][@customForm.req required=true /]</label>
-            </div>
-            <div class="col-md-3">
-                [@customForm.radioFlat id="cgiarPosition-yes" name="cgiarPosition" label="Yes" value="true" checked=false cssClassLabel="radio-label-yes" editable=canEdit/]
-                [@customForm.radioFlat id="cgiarPosition-no" name="cgiarPosition" label="No" value="false" checked=false cssClassLabel="radio-label-no" editable=canEdit/]
-            </div>
-          </div>
-          <div class=form-group">
-            [@customForm.textArea name="projects.LP6Contribution.positionCGIAR.question"  i18nkey=""  className="limitWords-100" required=true editable=canEdit/]
-          </div>
-          <div class="form-group row">
+            [@contributionForm name="positionCGIAR" className="limitWords-100"/]
             [#-- Innovative Pathways / Tools --]
-            <div class="col-md-9"> 
-              <label>[@s.text name="projects.LP6Contribution.pathways"/][@customForm.req required=true /]</label>
-            </div>
-            <div class="col-md-3">
-                [@customForm.radioFlat id="innovativePathways-yes" name="innovativePathways" label="Yes" value="true" checked=false cssClassLabel="radio-label-yes" editable=canEdit/]
-                [@customForm.radioFlat id="innovativePathways-no" name="innovativePathways" label="No" value="false" checked=false cssClassLabel="radio-label-no" editable=canEdit/]
-            </div>
-          </div>
-          <div class=form-group">
-            [@customForm.textArea name="projects.LP6Contribution.pathways.question"  i18nkey=""  className="limitWords-100" required=true editable=canEdit /]
-          </div>
+            [@contributionForm name="innovativePathways" className="limitWords-100"/]
           <div class="form-group">
             [#-- Top 3 Partners --]
             [@customForm.textArea name="projects.LP6Contribution.partnerships"  i18nkey="projects.LP6Contribution.partnerships"  className="limitWords-100" required=true editable=canEdit /]
           </div>
-          <div class="form-group row">
-            <div class="col-md-9"> 
-              [#-- Scaling CSA --]
-              <label>[@s.text name="projects.LP6Contribution.CSA"/][@customForm.req required=true /]</label>
-            </div>
-            <div class="col-md-3">
-                [@customForm.radioFlat id="scalingCSA-yes" name="scalingCSA" label="Yes" value="true" checked=false cssClassLabel="radio-label-yes" editable=canEdit /]
-                [@customForm.radioFlat id="scalingCSA-no" name="scalingCSA" label="No" value="false" checked=false cssClassLabel="radio-label-no" editable=canEdit /]
-            </div>
-          </div>
-          <div class=form-group">
-            [@customForm.textArea name="projects.LP6Contribution.CSA.question"  i18nkey=""  className="limitWords-100" required=true editable=canEdit /]
-          </div>
-          <div class="form-group row">
+            [#-- Scaling CSA --]
+            [@contributionForm name="scalingCSA" className="limitWords-100"/]
             [#-- Climate finance --]
-            <div class="col-md-9"> 
-              <label>[@s.text name="projects.LP6Contribution.climateFinance"/][@customForm.req required=true /]</label>
-            </div>
-            <div class="col-md-3">
-                [@customForm.radioFlat id="climateFinance-yes" name="climateFinance" label="Yes" value="true" checked=false cssClassLabel="radio-label-yes" editable=canEdit /]
-                [@customForm.radioFlat id="climateFinance-no" name="climateFinance" label="No" value="false" checked=false cssClassLabel="radio-label-no" editable=canEdit /]
-            </div>
-          </div>
-          <div class=form-group">
-            [@customForm.textArea name="projects.LP6Contribution.climateFinance.question"  i18nkey=""  className="limitWords-100" required=true editable=canEdit /]
-          </div>
-        </div>
+            [@contributionForm name="climateFinance" className="limitWords-100"/]
        </div>
        [#-- Section Buttons & hidden inputs--]
        [#include "/WEB-INF/crp/views/projects/buttons-projects.ftl" /]  
        [/@s.form]
-     </div>
  </section>
 
 [#include "/WEB-INF/global/pages/footer.ftl"]
 
+
+[#macro contributionForm name className]
+[#local customName = "${name}" /]
+[#local className = "${className}" /]
+  
+  <div class="form-group row">
+    [#-- Climate finance --]
+    <div class="col-md-9"> 
+       <label>[@s.text name="projects.LP6Contribution.${customName}"/][@customForm.req required=true /]</label>
+    </div>
+    <div class="col-md-3">
+       [@customForm.radioFlat id="${customName}-yes" name="${customName}" label="Yes" value="true" checked=false cssClassLabel="radio-label-yes" editable=canEdit /]
+       [@customForm.radioFlat id="${customName}-no" name="${customName}" label="No" value="false" checked=false cssClassLabel="radio-label-no" editable=canEdit /]
+    </div>
+  </div>
+  <div class=form-group">
+     [@customForm.textArea name="projects.LP6Contribution.${customName}.question"  i18nkey=""  className="${className}" required=true editable=canEdit /]
+  </div>
+  
+[/#macro]
