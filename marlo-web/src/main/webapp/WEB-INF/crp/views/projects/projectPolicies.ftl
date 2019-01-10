@@ -93,16 +93,16 @@
               <a href="${dlurl}">${(item.id)!'ID'}</a>
             </td> 
             <td class="">
-              <a href="${dlurl}"}>[@utils.tableText value=(item.title)!"" /]</a>
+              <a href="${dlurl}"}>[@utils.tableText value=(item.projectPolicyInfo.title)!"" /]</a>
             </td>
             <td class="">
-              [@utils.tableText value=(item.typeName)!"" /]
+              [@utils.tableText value=(item.projectPolicyInfo.typeName)!"" /]
             </td>
             <td class="">
               [@utils.tableList list=(item.subIdos)![] displayFieldName="name" /]
             </td>
             <td class="">
-              [@utils.tableText value=(item.maturity)!"" /]
+              [@utils.tableText value=(item.projectPolicyInfo.maturity)!"" /]
             </td>
             <td class="text-center">
               [@utils.tableCheckIcon state=(isThisComplete || ((item.year lt  currentCycleYear)!false)) /]
@@ -119,7 +119,7 @@
                       [@s.form action="deletePolicy"]
                         <div class="modal-header">
                           <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                          <h4 class="modal-title">Remove this item <br /> <small>${(item.title)!}</small> </h4>
+                          <h4 class="modal-title">Remove this item <br /> <small>${(item.projectPolicyInfo.title)!}</small> </h4>
                         </div>
                         <div class="modal-body">
                           [@customForm.textArea name="justification" i18nkey="projectPolicies.removeJustification" required=true className="removeJustification"/]
