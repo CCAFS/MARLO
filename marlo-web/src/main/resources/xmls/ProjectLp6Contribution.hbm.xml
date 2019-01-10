@@ -43,48 +43,48 @@
         not-null="true" />
     </property>
     
-    <property name="workingAcrossFlagships" type="string">
+    <property name="workingAcrossFlagshipsNarrative" type="string">
       <column name="working_across_flagships" sql-type="TEXT"
         not-null="true" />
     </property>
-    
-    <property name="isWorkingAcrossFlagships" type="boolean">
+  
+    <property name="workingAcrossFlagships" type="boolean">
       <column name="is_working_across_flagships" not-null="true" />
     </property>
-    
-    <property name="undertakingEffortsLeading" type="string">
+
+    <property name="undertakingEffortsLeadingNarrative" type="string">
       <column name="undertaking_efforts_leading" sql-type="TEXT"
         not-null="true" />
     </property>
     
-    <property name="isUndertakingEffortsLeading" type="boolean">
+    <property name="undertakingEffortsLeading" type="boolean">
       <column name="is_undertaking_efforts_leading" not-null="true" />
     </property>
     
-    <property name="isProvidingPathways" type="boolean">
+    <property name="providingPathways" type="boolean">
       <column name="is_providing_pathways" not-null="true" />
     </property>
     
-    <property name="topThreePartnerships" type="string">
+    <property name="topThreePartnershipsNarrative" type="string">
       <column name="top_three_partnerships" sql-type="TEXT"
         not-null="true" />
     </property>
     
-    <property name="undertakingEffortsCsa" type="string">
+    <property name="undertakingEffortsCsaNarrative" type="string">
       <column name="undertaking_efforts_csa" sql-type="TEXT"
         not-null="true" />
     </property>
     
-    <property name="isUndertakingEffortsCsa" type="boolean">
+    <property name="undertakingEffortsCsa" type="boolean">
       <column name="is_undertaking_efforts_csa" not-null="true" />
     </property>
     
-    <property name="initiativeRelated" type="string">
+    <property name="initiativeRelatedNarrative" type="string">
       <column name="initiative_related" sql-type="TEXT"
         not-null="true" />
     </property>
     
-    <property name="isInitiativeRelated" type="boolean">
+    <property name="initiativeRelated" type="boolean">
       <column name="is_initiative_related" not-null="true" />
     </property>
 	</class>

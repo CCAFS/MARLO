@@ -601,7 +601,7 @@
     </action>
     
         <action name="{crp}/contributionsLP6"
-      class="org.cgiar.ccafs.marlo.action.projects.ProjectContributionToLP6">
+      class="org.cgiar.ccafs.marlo.action.projects.ProjectContributionToLP6Action">
       <interceptor-ref name="editProjectsStack" />
       <result name="input">/WEB-INF/crp/views/projects/projectContributionToLP6.ftl
       </result>
