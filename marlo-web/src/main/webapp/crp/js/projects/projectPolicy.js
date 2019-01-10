@@ -29,6 +29,18 @@ function init() {
 
 function attachEvents() {
 
+  $('select.elementType-repIndPolicyType').on("addElement removeElement", function(event,id,name) {
+    // Other Please Specify
+    if(id == 4) {
+      if(event.type == "addElement") {
+        $('.block-pleaseSpecify').slideDown();
+      }
+      if(event.type == "removeElement") {
+        $('.block-pleaseSpecify').slideUp();
+      }
+    }
+  });
+
   // On change policyInvestimentTypes
   $('select.policyInvestimentTypes').on('change', function() {
     console.log(this.value);
