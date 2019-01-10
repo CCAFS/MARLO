@@ -35,14 +35,12 @@ public class ProjectPolicyInfo extends MarloBaseEntity implements java.io.Serial
   public ProjectPolicyInfo() {
   }
 
-
   public ProjectPolicyInfo(Phase phase, ProjectPolicy projectPolicy, Long year) {
     super();
     this.phase = phase;
     this.projectPolicy = projectPolicy;
     this.year = year;
   }
-
 
   public Double getAmount() {
     return amount;
@@ -152,10 +150,10 @@ public class ProjectPolicyInfo extends MarloBaseEntity implements java.io.Serial
     this.repIndGeographicScope = repIndGeographicScope;
   }
 
+
   public void setRepIndOrganizationType(RepIndOrganizationType repIndOrganizationType) {
     this.repIndOrganizationType = repIndOrganizationType;
   }
-
 
   public void setRepIndPolicyInvestimentType(RepIndPolicyInvestimentType repIndPolicyInvestimentType) {
     this.repIndPolicyInvestimentType = repIndPolicyInvestimentType;
@@ -174,6 +172,13 @@ public class ProjectPolicyInfo extends MarloBaseEntity implements java.io.Serial
 
   public void setYear(Long year) {
     this.year = year;
+  }
+
+
+  @Override
+  public String toString() {
+    return "ProjectPolicyInfo [projectPolicy=" + projectPolicy + ", phase=" + phase + ", title=" + title + ", year="
+      + year + "]";
   }
 
 
