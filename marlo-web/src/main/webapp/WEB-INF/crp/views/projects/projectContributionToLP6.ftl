@@ -33,7 +33,7 @@
             [@customForm.textArea name="narrativeLP6Contribution" i18nkey="projects.LP6Contribution.narrativeContribution"  i18nkey="projects.LP6Contribution.narrativeContribution"  className="limitWords-100" required=true editable=canEdit /]
             [#-- Deliverables --]
              <div class="form-group simpleBox stageProcessOne">
-               [@customForm.elementsListComponent name="projects.LP6Contribution.evidenceDeliverables" elementType="locElement" elementList="" label="projects.LP6Contribution.evidenceDeliverables" listName="deliverables" keyFieldName="id" displayFieldName="title" required=editable/]
+               [@customForm.elementsListComponent name="projects.LP6Contribution.evidenceDeliverables" elementType="locElement" elementList="" label="projects.LP6Contribution.evidenceDeliverables" listName="deliverables" keyFieldName="id" displayFieldName="composedName" required=editable/]
              </div>
              <p class="note">[@s.text name="projects.LP6Contribution.deliverablesTooltip" /] <a href="">clicking here.</a></p>
           </div>
@@ -54,7 +54,7 @@
                 </div>
                 <div class="form-group regionalBlock" style="display:${(isRegional)?string('block','none')}">
                   [#-- Regional scope --]
-                    [@customForm.elementsListComponent name="projects.LP6Contribution.region" elementType="locElement" elementList="" label="projects.LP6Contribution.region"  listName="repIndRegions" keyFieldName="id" displayFieldName="name" required=false /]
+                    [@customForm.elementsListComponent name="projects.LP6Contribution.region" elementType="locElement" id="region" elementList=(projects.LP6Contribution.regions)![] label="projects.LP6Contribution.region"  listName="repIndRegions" keyFieldName="id" displayFieldName="name" required=false /]
                 </div>
                 <div class="form-group nationalBlock" style="display:${(isMultiNational || isNational || isSubNational)?string('block','none')}">
                   [#-- Multinational, National and Subnational scope --]
