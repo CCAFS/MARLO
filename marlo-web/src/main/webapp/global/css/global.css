@@ -66,7 +66,7 @@ a.addLink {
   background-position: 0 1px;
 }
 
-a#btn-revokeChoice{
+a#btn-revokeChoice {
   cursor: pointer;
 }
 
@@ -2060,6 +2060,12 @@ h1.sectionTitle {
   font-size: 2em;
   font-weight: lighter;
   margin: 14px 0 16px 0;
+}
+
+.labelheader {
+  padding: 2px 0 5px 0;
+  margin-bottom: 4px;
+  border-bottom: 1px solid #DBDBDB;
 }
 
 h1#error {
@@ -6820,11 +6826,16 @@ span.doc-badge {
   margin-left: 3px;
 }
 
+.no-sort::after {
+  display: none!important;
+}
 
-.no-sort::after { display: none!important; }
-.no-sort { pointer-events: none!important; cursor: default!important; }
+.no-sort {
+  pointer-events: none!important;
+  cursor: default!important;
+}
 
 .removeJustification {
-    display: block !important;
-    width: 100% !important;
+  display: block !important;
+  width: 100% !important;
 }
