@@ -33,7 +33,7 @@
             [@customForm.textArea name="narrativeLP6Contribution" i18nkey="projects.LP6Contribution.narrativeContribution"  i18nkey="projects.LP6Contribution.narrativeContribution"  className="limitWords-100" required=true editable=canEdit /]
             [#-- Deliverables --]
              <div class="form-group simpleBox stageProcessOne">
-               [@customForm.elementsListComponent name="projects.LP6Contribution.evidenceDeliverables" elementType="" elementList="" label="projects.LP6Contribution.evidenceDeliverables" listName="" keyFieldName="id" displayFieldName="title" required=editable/]
+               [@customForm.elementsListComponent name="projects.LP6Contribution.evidenceDeliverables" elementType="locElement" elementList="" label="projects.LP6Contribution.evidenceDeliverables" listName="deliverables" keyFieldName="id" displayFieldName="title" required=editable/]
              </div>
              <p class="note">[@s.text name="projects.LP6Contribution.deliverablesTooltip" /] <a href="">clicking here.</a></p>
           </div>
@@ -49,16 +49,16 @@
                 <div class="form-group row">
                   <div class="col-md-6">
                     [#-- Geographic Scope --]
-                    [@customForm.select name="projects.LP6Contribution.geographicScope" className="setSelect2 geographicScopeSelect" i18nkey="projects.LP6Contribution.geographicScope" listName="" keyFieldName="id"  displayFieldName="name" editable=editable/]
+                    [@customForm.select name="projects.LP6Contribution.geographicScope" className="setSelect2 geographicScopeSelect" i18nkey="projects.LP6Contribution.geographicScope" listName="repIndGeographicScopes" keyFieldName="id"  displayFieldName="name" editable=editable/]
                   </div>
                 </div>
                 <div class="form-group regionalBlock" style="display:${(isRegional)?string('block','none')}">
                   [#-- Regional scope --]
-                    [@customForm.elementsListComponent name="projects.LP6Contribution.region" elementType="locElement" elementList="" label="projects.LP6Contribution.region"  listName="" keyFieldName="id" displayFieldName="name" required=false /]
+                    [@customForm.elementsListComponent name="projects.LP6Contribution.region" elementType="locElement" elementList="" label="projects.LP6Contribution.region"  listName="repIndRegions" keyFieldName="id" displayFieldName="name" required=false /]
                 </div>
                 <div class="form-group nationalBlock" style="display:${(isMultiNational || isNational || isSubNational)?string('block','none')}">
                   [#-- Multinational, National and Subnational scope --]
-                  [@customForm.select name="projects.LP6Contribution.countries" label="" i18nkey="projects.LP6Contribution.countries" listName="" keyFieldName="isoAlpha2"  displayFieldName="name" value="" multiple=true className="countriesSelect" disabled=!editable/]
+                  [@customForm.select name="projects.LP6Contribution.countries" label="" i18nkey="projects.LP6Contribution.countries" listName="countries" keyFieldName="isoAlpha2"  displayFieldName="name" value="" multiple=true className="countriesSelect" disabled=!editable/]
                 </div>
               </div>
             </div>
