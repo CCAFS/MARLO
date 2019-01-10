@@ -20,6 +20,7 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpClusterOfActivityManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
@@ -39,6 +40,7 @@ import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.manager.impl.CenterOutcomeManager;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
+import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
@@ -50,6 +52,7 @@ import org.cgiar.ccafs.marlo.utils.HistoryComparator;
 import org.cgiar.ccafs.marlo.validation.projects.ProjectDescriptionValidator;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -93,6 +96,8 @@ public class ProjectContributionToLP6Action extends BaseAction {
   private LocElementManager locElementManager;
   private List<LocElement> repIndRegions;
   private List<LocElement> countries;
+  private List<Deliverable> deliverables;
+  private DeliverableManager deliverableManager;
 
 
   // Front-end
@@ -118,7 +123,8 @@ public class ProjectContributionToLP6Action extends BaseAction {
     ProjectInfoManager projectInfoManagerManager, ProjectBudgetsCluserActvityManager projectBudgetsCluserActvityManager,
     GlobalUnitProjectManager globalUnitProjectManager, CenterOutcomeManager centerOutcomeManager,
     ProjectCenterOutcomeManager projectCenterOutcomeManager,
-    ProjectLp6ContributionManager projectLp6ContributionManager, LocElementManager locElementManager) {
+    ProjectLp6ContributionManager projectLp6ContributionManager, LocElementManager locElementManager,
+    DeliverableManager deliverableManager) {
     super(config);
     this.repIndGeographicScopeManager = repIndGeographicScopeManager;
     this.projectManager = projectManager;
@@ -129,6 +135,7 @@ public class ProjectContributionToLP6Action extends BaseAction {
     this.validator = validator;
     this.auditLogManager = auditLogManager;
     this.locElementManager = locElementManager;
+    this.deliverableManager = deliverableManager;
   }
 
 
@@ -144,6 +151,11 @@ public class ProjectContributionToLP6Action extends BaseAction {
 
   public List<LocElement> getCountries() {
     return countries;
+  }
+
+
+  public List<Deliverable> getDeliverables() {
+    return deliverables;
   }
 
 
@@ -166,10 +178,10 @@ public class ProjectContributionToLP6Action extends BaseAction {
     return narrativeLP6Contribution;
   }
 
-
   public List<CrpProgram> getProgramFlagships() {
     return programFlagships;
   }
+
 
   public Project getProject() {
     return project;
@@ -205,10 +217,10 @@ public class ProjectContributionToLP6Action extends BaseAction {
     return repIndRegions;
   }
 
-
   public String getTop3Partnerships() {
     return top3Partnerships;
   }
+
 
   public String getTransaction() {
     return transaction;
@@ -224,10 +236,10 @@ public class ProjectContributionToLP6Action extends BaseAction {
     return undertakingEffortsLeadingNarrative;
   }
 
-
   public String getWorkingAcrossFlagshipsNarrative() {
     return workingAcrossFlagshipsNarrative;
   }
+
 
   private String getWorkplanRelativePath() {
 
@@ -245,7 +257,6 @@ public class ProjectContributionToLP6Action extends BaseAction {
     return isInitiativeRelated;
   }
 
-
   public boolean isProvidingPathways() {
     return isProvidingPathways;
   }
@@ -253,6 +264,7 @@ public class ProjectContributionToLP6Action extends BaseAction {
   public boolean isUndertakingEffortsCSA() {
     return isUndertakingEffortsCSA;
   }
+
 
   public boolean isUndertakingEffortsLeading() {
     return isUndertakingEffortsLeading;
@@ -262,6 +274,7 @@ public class ProjectContributionToLP6Action extends BaseAction {
   public boolean isWorkingAcrossFlagships() {
     return isWorkingAcrossFlagships;
   }
+
 
   @Override
   public void prepare() throws Exception {
@@ -277,6 +290,9 @@ public class ProjectContributionToLP6Action extends BaseAction {
       LOG.error("unable to parse projectID", e);
     }
 
+    /*
+     * Geographic scope for lp6 contribution
+     */
     this.setRepIndGeographicScopes(repIndGeographicScopeManager.findAll().stream()
       .sorted((g1, g2) -> g1.getName().compareTo(g2.getName())).collect(Collectors.toList()));
     repIndRegions = locElementManager.findAll().stream()
@@ -285,6 +301,13 @@ public class ProjectContributionToLP6Action extends BaseAction {
     this.setCountries(locElementManager.findAll().stream()
       .filter(c -> c.isActive() && c.getLocElementType().getId() == 2).collect(Collectors.toList()));
 
+    /*
+     * List of deliverables for the actual project and phase
+     */
+    deliverables = new ArrayList<>();
+    deliverables = (deliverableManager.findAll().stream().filter(
+      d -> d.isActive() && d.getProject().getId() == projectID && d.getPhase().getId() == this.getActualPhase().getId())
+      .collect(Collectors.toList()));
   }
 
 
@@ -324,8 +347,13 @@ public class ProjectContributionToLP6Action extends BaseAction {
 
   }
 
+
   public void setCountries(List<LocElement> countries) {
     this.countries = countries;
+  }
+
+  public void setDeliverables(List<Deliverable> deliverables) {
+    this.deliverables = deliverables;
   }
 
   public void setInitiativeRelated(boolean isInitiativeRelated) {
