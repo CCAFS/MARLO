@@ -195,21 +195,6 @@ public class ProjectContributionToLP6Action extends BaseAction {
     return regionFlagships;
   }
 
-
-  public long[] getRegionsIds() {
-
-    List<CrpProgram> projectFocuses = project.getRegions();
-
-    if (projectFocuses != null) {
-      long[] ids = new long[projectFocuses.size()];
-      for (int c = 0; c < ids.length; c++) {
-        ids[c] = projectFocuses.get(c).getId();
-      }
-      return ids;
-    }
-    return null;
-  }
-
   public String getTop3Partnerships() {
     return top3Partnerships;
   }
@@ -274,11 +259,14 @@ public class ProjectContributionToLP6Action extends BaseAction {
     // Get current CRP
     loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
     loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
+
     try {
       projectID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_REQUEST_ID)));
+      this.setProject(projectManager.getProjectById(projectID));
     } catch (Exception e) {
       LOG.error("unable to parse projectID", e);
     }
+
   }
 
 
@@ -296,6 +284,7 @@ public class ProjectContributionToLP6Action extends BaseAction {
         }
 
         if (projectLp6Contribution == null) {
+
           projectLp6Contribution = new ProjectLp6Contribution();
           projectLp6Contribution.setNarrative(narrativeLP6Contribution);
           projectLp6Contribution.setWorkingAcrossFlagshipsNarrative(workingAcrossFlagshipsNarrative);
