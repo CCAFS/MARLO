@@ -24,6 +24,7 @@ import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonUserManager;
+import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectBudgetsCluserActvityManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectCenterOutcomeManager;
@@ -33,14 +34,17 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectLp6ContributionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectScopeManager;
+import org.cgiar.ccafs.marlo.data.manager.RepIndGeographicScopeManager;
 import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.manager.impl.CenterOutcomeManager;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
+import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectLp6Contribution;
+import org.cgiar.ccafs.marlo.data.model.RepIndGeographicScope;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.HistoryComparator;
 import org.cgiar.ccafs.marlo.validation.projects.ProjectDescriptionValidator;
@@ -78,24 +82,18 @@ public class ProjectContributionToLP6Action extends BaseAction {
   private String undertakingEffortsCSANarrative;
   private boolean isInitiativeRelated;
   private String initiativeRelatedNarrative;
-
-
+  private List<RepIndGeographicScope> repIndGeographicScopes;
   private ProjectLp6ContributionManager projectLp6ContributionManager;
   private ProjectLp6Contribution projectLp6Contribution;
-
-
   private GlobalUnitManager crpManager;
-
   private CrpProgramManager programManager;
-
-  private GlobalUnitProjectManager globalUnitProjectManager;
-
   private AuditLogManager auditLogManager;
-  private LocElementTypeManager locationTypeManager;
   private String transaction;
-  private LiaisonInstitutionManager liaisonInstitutionManager;
-  private CenterOutcomeManager centerOutcomeManager;
-  private LiaisonUserManager liaisonUserManager;
+  private RepIndGeographicScopeManager repIndGeographicScopeManager;
+  private LocElementManager locElementManager;
+  private List<LocElement> repIndRegions;
+  private List<LocElement> countries;
+
 
   // Front-end
   private long projectID;
@@ -112,27 +110,25 @@ public class ProjectContributionToLP6Action extends BaseAction {
   public ProjectContributionToLP6Action(APConfig config, ProjectManager projectManager, GlobalUnitManager crpManager,
     CrpProgramManager programManager, LiaisonUserManager liaisonUserManager,
     LiaisonInstitutionManager liaisonInstitutionManager, UserManager userManager,
-    SectionStatusManager sectionStatusManager, ProjectFocusManager projectFocusManager, AuditLogManager auditLogManager,
-    ProjectDescriptionValidator validator, ProjectClusterActivityManager projectClusterActivityManager,
+    RepIndGeographicScopeManager repIndGeographicScopeManager, SectionStatusManager sectionStatusManager,
+    ProjectFocusManager projectFocusManager, AuditLogManager auditLogManager, ProjectDescriptionValidator validator,
+    ProjectClusterActivityManager projectClusterActivityManager,
     CrpClusterOfActivityManager crpClusterOfActivityManager, LocElementTypeManager locationManager,
     ProjectScopeManager projectLocationManager, HistoryComparator historyComparator,
     ProjectInfoManager projectInfoManagerManager, ProjectBudgetsCluserActvityManager projectBudgetsCluserActvityManager,
     GlobalUnitProjectManager globalUnitProjectManager, CenterOutcomeManager centerOutcomeManager,
     ProjectCenterOutcomeManager projectCenterOutcomeManager,
-    ProjectLp6ContributionManager projectLp6ContributionManager) {
+    ProjectLp6ContributionManager projectLp6ContributionManager, LocElementManager locElementManager) {
     super(config);
+    this.repIndGeographicScopeManager = repIndGeographicScopeManager;
     this.projectManager = projectManager;
     this.projectLp6ContributionManager = projectLp6ContributionManager;
     this.programManager = programManager;
     this.crpManager = crpManager;
-    this.liaisonInstitutionManager = liaisonInstitutionManager;
     this.projectManager = projectManager;
     this.validator = validator;
     this.auditLogManager = auditLogManager;
-    this.liaisonUserManager = liaisonUserManager;
-    this.locationTypeManager = locationManager;
-    this.globalUnitProjectManager = globalUnitProjectManager;
-    this.centerOutcomeManager = centerOutcomeManager;
+    this.locElementManager = locElementManager;
   }
 
 
@@ -143,6 +139,11 @@ public class ProjectContributionToLP6Action extends BaseAction {
 
   public String getAnualReportURL() {
     return config.getDownloadURL() + "/" + this.getAnualReportRelativePath().replace('\\', '/');
+  }
+
+
+  public List<LocElement> getCountries() {
+    return countries;
   }
 
 
@@ -170,7 +171,6 @@ public class ProjectContributionToLP6Action extends BaseAction {
     return programFlagships;
   }
 
-
   public Project getProject() {
     return project;
   }
@@ -195,10 +195,20 @@ public class ProjectContributionToLP6Action extends BaseAction {
     return regionFlagships;
   }
 
+
+  public List<RepIndGeographicScope> getRepIndGeographicScopes() {
+    return repIndGeographicScopes;
+  }
+
+
+  public List<LocElement> getRepIndRegions() {
+    return repIndRegions;
+  }
+
+
   public String getTop3Partnerships() {
     return top3Partnerships;
   }
-
 
   public String getTransaction() {
     return transaction;
@@ -214,10 +224,10 @@ public class ProjectContributionToLP6Action extends BaseAction {
     return undertakingEffortsLeadingNarrative;
   }
 
+
   public String getWorkingAcrossFlagshipsNarrative() {
     return workingAcrossFlagshipsNarrative;
   }
-
 
   private String getWorkplanRelativePath() {
 
@@ -235,6 +245,7 @@ public class ProjectContributionToLP6Action extends BaseAction {
     return isInitiativeRelated;
   }
 
+
   public boolean isProvidingPathways() {
     return isProvidingPathways;
   }
@@ -243,15 +254,14 @@ public class ProjectContributionToLP6Action extends BaseAction {
     return isUndertakingEffortsCSA;
   }
 
-
   public boolean isUndertakingEffortsLeading() {
     return isUndertakingEffortsLeading;
   }
 
+
   public boolean isWorkingAcrossFlagships() {
     return isWorkingAcrossFlagships;
   }
-
 
   @Override
   public void prepare() throws Exception {
@@ -266,6 +276,14 @@ public class ProjectContributionToLP6Action extends BaseAction {
     } catch (Exception e) {
       LOG.error("unable to parse projectID", e);
     }
+
+    this.setRepIndGeographicScopes(repIndGeographicScopeManager.findAll().stream()
+      .sorted((g1, g2) -> g1.getName().compareTo(g2.getName())).collect(Collectors.toList()));
+    repIndRegions = locElementManager.findAll().stream()
+      .filter(c -> c.getLocElementType().getId().intValue() == 1 && c.isActive() && c.getIsoNumeric() != null)
+      .collect(Collectors.toList());
+    this.setCountries(locElementManager.findAll().stream()
+      .filter(c -> c.isActive() && c.getLocElementType().getId() == 2).collect(Collectors.toList()));
 
   }
 
@@ -306,6 +324,10 @@ public class ProjectContributionToLP6Action extends BaseAction {
 
   }
 
+  public void setCountries(List<LocElement> countries) {
+    this.countries = countries;
+  }
+
   public void setInitiativeRelated(boolean isInitiativeRelated) {
     this.isInitiativeRelated = isInitiativeRelated;
   }
@@ -319,6 +341,7 @@ public class ProjectContributionToLP6Action extends BaseAction {
     this.liaisonInstitutions = liaisonInstitutions;
   }
 
+
   public void setLoggedCrp(GlobalUnit loggedCrp) {
     this.loggedCrp = loggedCrp;
   }
@@ -327,15 +350,14 @@ public class ProjectContributionToLP6Action extends BaseAction {
     this.narrativeLP6Contribution = narrativeLP6Contribution;
   }
 
+
   public void setProgramFlagships(List<CrpProgram> programFlagships) {
     this.programFlagships = programFlagships;
   }
 
-
   public void setProject(Project project) {
     this.project = project;
   }
-
 
   public void setProjectID(long projectID) {
     this.projectID = projectID;
@@ -351,12 +373,22 @@ public class ProjectContributionToLP6Action extends BaseAction {
     this.isProvidingPathways = isProvidingPathways;
   }
 
+
   public void setProvidingPathwaysNarative(String providingPathwaysNarative) {
     this.providingPathwaysNarative = providingPathwaysNarative;
   }
 
+
   public void setRegionFlagships(List<CrpProgram> regionFlagships) {
     this.regionFlagships = regionFlagships;
+  }
+
+  public void setRepIndGeographicScopes(List<RepIndGeographicScope> repIndGeographicScopes) {
+    this.repIndGeographicScopes = repIndGeographicScopes;
+  }
+
+  public void setRepIndRegions(List<LocElement> repIndRegions) {
+    this.repIndRegions = repIndRegions;
   }
 
   public void setTop3Partnerships(String top3Partnerships) {
