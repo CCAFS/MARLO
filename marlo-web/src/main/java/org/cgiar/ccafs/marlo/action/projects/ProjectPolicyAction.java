@@ -18,6 +18,7 @@ package org.cgiar.ccafs.marlo.action.projects;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
+import org.cgiar.ccafs.marlo.data.manager.CgiarCrossCuttingMarkerManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
@@ -32,6 +33,7 @@ import org.cgiar.ccafs.marlo.data.manager.RepIndPolicyInvestimentTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndPolicyTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndStageProcessManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfSubIdoManager;
+import org.cgiar.ccafs.marlo.data.model.CgiarCrossCuttingMarker;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.Phase;
@@ -79,6 +81,7 @@ public class ProjectPolicyAction extends BaseAction {
   private SrfSubIdoManager srfSubIdoManager;
   private AuditLogManager auditLogManager;
   private ProjectExpectedStudyManager projectExpectedStudyManager;
+  private CgiarCrossCuttingMarkerManager cgiarCrossCuttingMarkerManager;
 
   // Variables
   private GlobalUnit loggedCrp;
@@ -99,6 +102,7 @@ public class ProjectPolicyAction extends BaseAction {
   private List<SrfSubIdo> subIdos;
   private List<GlobalUnit> crps;
   private List<ProjectExpectedStudy> expectedStudyList;
+  private List<CgiarCrossCuttingMarker> cgiarCrossCuttingMarkers;
   private String transaction;
 
 
@@ -111,7 +115,8 @@ public class ProjectPolicyAction extends BaseAction {
     RepIndPolicyInvestimentTypeManager repIndPolicyInvestimentTypeManager,
     RepIndStageProcessManager repIndStageProcessManager, RepIndPolicyTypeManager repIndPolicyTypeManager,
     SrfSubIdoManager srfSubIdoManager, AuditLogManager auditLogManager,
-    ProjectExpectedStudyManager projectExpectedStudyManager) {
+    ProjectExpectedStudyManager projectExpectedStudyManager,
+    CgiarCrossCuttingMarkerManager cgiarCrossCuttingMarkerManager) {
     super(config);
     this.globalUnitManager = globalUnitManager;
     this.projectPolicyManager = projectPolicyManager;
@@ -128,12 +133,17 @@ public class ProjectPolicyAction extends BaseAction {
     this.srfSubIdoManager = srfSubIdoManager;
     this.auditLogManager = auditLogManager;
     this.projectExpectedStudyManager = projectExpectedStudyManager;
+    this.cgiarCrossCuttingMarkerManager = cgiarCrossCuttingMarkerManager;
   }
+
+  public List<CgiarCrossCuttingMarker> getCgiarCrossCuttingMarkers() {
+    return cgiarCrossCuttingMarkers;
+  }
+
 
   public List<LocElement> getCountries() {
     return countries;
   }
-
 
   public List<GlobalUnit> getCrps() {
     return crps;
@@ -154,10 +164,10 @@ public class ProjectPolicyAction extends BaseAction {
     return geographicScopes;
   }
 
+
   public GlobalUnit getLoggedCrp() {
     return loggedCrp;
   }
-
 
   public List<RepIndOrganizationType> getOrganizationTypes() {
     return organizationTypes;
@@ -173,6 +183,7 @@ public class ProjectPolicyAction extends BaseAction {
     return policyID;
   }
 
+
   public List<RepIndPolicyInvestimentType> getPolicyInvestimentTypes() {
     return policyInvestimentTypes;
   }
@@ -185,7 +196,6 @@ public class ProjectPolicyAction extends BaseAction {
     return project;
   }
 
-
   public long getProjectID() {
     return projectID;
   }
@@ -195,10 +205,10 @@ public class ProjectPolicyAction extends BaseAction {
     return regions;
   }
 
+
   public List<RepIndStageProcess> getStageProcesses() {
     return stageProcesses;
   }
-
 
   public List<SrfSubIdo> getSubIdos() {
     return subIdos;
@@ -208,6 +218,7 @@ public class ProjectPolicyAction extends BaseAction {
   public String getTransaction() {
     return transaction;
   }
+
 
   @Override
   public void prepare() throws Exception {
@@ -357,6 +368,9 @@ public class ProjectPolicyAction extends BaseAction {
       // Cross Cutting Values List
       focusLevels = focusLevelManager.findAll();
 
+      // Cross Cutting Markers
+      cgiarCrossCuttingMarkers = cgiarCrossCuttingMarkerManager.findAll();
+
       // Evidences List
       expectedStudyList = new ArrayList<>();
       List<ProjectExpectedStudy> expectedStudies = projectExpectedStudyManager.findAll().stream()
@@ -374,6 +388,7 @@ public class ProjectPolicyAction extends BaseAction {
         .filter(gu -> gu.isActive() && (gu.getGlobalUnitType().getId() == 1 || gu.getGlobalUnitType().getId() == 3))
         .collect(Collectors.toList());
 
+
     }
 
     policyDB = projectPolicyManager.getProjectPolicyById(policyID);
@@ -388,6 +403,10 @@ public class ProjectPolicyAction extends BaseAction {
   public String save() {
 
     return NOT_AUTHORIZED;
+  }
+
+  public void setCgiarCrossCuttingMarkers(List<CgiarCrossCuttingMarker> cgiarCrossCuttingMarkers) {
+    this.cgiarCrossCuttingMarkers = cgiarCrossCuttingMarkers;
   }
 
   public void setCountries(List<LocElement> countries) {

@@ -322,6 +322,7 @@
     <mapping resource="xmls/PowbProgramChanges.hbm.xml"/> 
     <mapping resource="xmls/RepIndPolicyTypes.hbm.xml"/> 
     <mapping resource="xmls/ProjectPolicies.hbm.xml"/>
-    <mapping resource="xmls/ProjectPolicyInfo.hbm.xml"/>    
+    <mapping resource="xmls/ProjectPolicyInfo.hbm.xml"/>
+    <mapping resource="xmls/CgiarCrossCuttingMarkers.hbm.xml"/>       
 	</session-factory>
 </hibernate-configuration>
