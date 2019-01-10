@@ -220,14 +220,17 @@
   </div> 
 [/#macro]
 
-[#macro contributionToLP6 template=false isEditable=true] 
+[#macro contributionToLP6 template=false] 
+[#assign Editable=true/]
 [#if action.hasSpecificities('crp_lp6_active')]
   <div id="projectContributionToLP6" class="borderBox project-${project.id} phase-${actualPhase.id}">
    <a class="lp6-pdf"><img src="${baseUrl}/global/images/pdf.png" height="25"/>[[@s.text name="projects.LP6Contribution.explanatoryPDF" /]]</a><h4>[@s.text name="projects.LP6Contribution.title" /]</h4>
    <p class="text-justify note"><small>[@s.text name="projects.LP6Contribution.infoText"/] (<span class="lp6-view-more" data-toggle="modal" data-target=".lp6info-modal">view more</span>)</small></p>
-   <div class="form-group"><label>[@s.text name="projects.LP6Contribution.contribution"/][@customForm.req required=true /]</label>
-   [@customForm.radioFlat id="lp6Contribution-yes" name="lp6Contribution" label="Yes" value="true" checked=(projectLp6Contribution.contribution)!false cssClassLabel="radio-label-yes"/]
-   [@customForm.radioFlat id="lp6Contribution-no" name="lp6Contribution" label="No" value="false" checked=!((projectLp6Contribution.contribution)!true) cssClassLabel="radio-label-no"/]</div>
+   <div class="form-group">
+       <label>[@s.text name="projects.LP6Contribution.contribution"/][@customForm.req required=true /]</label>
+       [@customForm.radioFlat id="lp6Contribution-yes" name="lp6Contribution" label="Yes" value="true" checked=(projectLp6Contribution.contribution)!false cssClassLabel="radio-label-yes" editable=Editable /]
+       [@customForm.radioFlat id="lp6Contribution-no" name="lp6Contribution" label="No" value="false" checked=!((projectLp6Contribution.contribution)!true) cssClassLabel="radio-label-no" editable=Editable /]
+  </div>
   </div>
   [#-- LP6 Help Text expanded --]
     <div class="modal fade extended-table-modal lp6info-modal" tabindex="-1" role="dialog" aria-labelledby="extendedTableModal" aria-hidden="true">
