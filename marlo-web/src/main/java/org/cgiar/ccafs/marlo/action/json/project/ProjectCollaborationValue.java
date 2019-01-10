@@ -104,8 +104,6 @@ public class ProjectCollaborationValue extends BaseAction {
           projectLp6ContributionManager.saveProjectLp6Contribution(projectLp6Contribution);
         }
       }
-
-
     }
     return SUCCESS;
   }
