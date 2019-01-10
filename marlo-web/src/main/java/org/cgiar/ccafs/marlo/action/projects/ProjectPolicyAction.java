@@ -324,26 +324,40 @@ public class ProjectPolicyAction extends BaseAction {
       project.getProjecInfoPhase(phase);
 
       // Getting The list
-      countries = locElementManager.findAll().stream()
-        .filter(c -> c.getLocElementType().getId().intValue() == 2 && c.isActive()).collect(Collectors.toList());
 
+      // Geographic Scope List
       geographicScopes = repIndGeographicScopeManager.findAll();
+
+      // Regions for Geographic Scope Regional Selection
       regions = locElementManager.findAll().stream()
         .filter(c -> c.getLocElementType().getId().intValue() == 1 && c.isActive() && c.getIsoNumeric() != null)
         .collect(Collectors.toList());
 
+      // Countries for Geographic Scope National - Multinational Selection
+      countries = locElementManager.findAll().stream()
+        .filter(c -> c.getLocElementType().getId().intValue() == 2 && c.isActive()).collect(Collectors.toList());
+
+
+      // Organization Type List
       organizationTypes = repIndOrganizationTypeManager.findAll();
 
+      // Level of Maturity List
       stageProcesses = new ArrayList<>(repIndStageProcessManager.findAll().stream()
         .filter(p -> p.getYear() == this.getCurrentCycleYear()).collect(Collectors.toList()));
 
+      // Policy/Investment Type List
       policyInvestimentTypes = repIndPolicyInvestimentTypeManager.findAll();
 
+      // Whose Policy is This ? List
       policyTypes = repIndPolicyTypeManager.findAll();
 
+      // SubIdos List
       subIdos = srfSubIdoManager.findAll();
 
+      // Cross Cutting Values List
       focusLevels = focusLevelManager.findAll();
+
+      // Evidences List
       expectedStudyList = new ArrayList<>();
       List<ProjectExpectedStudy> expectedStudies = projectExpectedStudyManager.findAll().stream()
         .filter(ex -> ex.isActive() && ex.getProjectExpectedStudyInfo(phase) != null
@@ -355,6 +369,7 @@ public class ProjectPolicyAction extends BaseAction {
         expectedStudyList.add(study);
       }
 
+      // Crps/Platforms List
       crps = globalUnitManager.findAll().stream()
         .filter(gu -> gu.isActive() && (gu.getGlobalUnitType().getId() == 1 || gu.getGlobalUnitType().getId() == 3))
         .collect(Collectors.toList());
