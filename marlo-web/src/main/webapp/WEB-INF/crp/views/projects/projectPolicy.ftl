@@ -5,7 +5,7 @@
 
 
 [#assign title = "Project Policy" /]
-[#assign currentSectionString = "project-${actionName?replace('/','-')}-${expectedID}-phase-${(actualPhase.id)!}" /]
+[#assign currentSectionString = "project-${actionName?replace('/','-')}-${policyID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = [ "select2", "blueimp-file-upload" "flat-flags", "components-font-awesome"] /]
 [#assign customJS = [
   "${baseUrlMedia}/js/projects/projectPolicy.js",
@@ -88,13 +88,14 @@
       [@customForm.input name="${customName}.projectPolicyInfo.title" i18nkey="policy.title" help="policy.title.help" helpIcon=false className="limitWords-50"required=true editable=editable /]
     </div>
     
-    <div class="form-group row">
+    <div class="form-group row ">
+      [#local isBudgetInvestment = ((element.projectPolicyInfo.repIndPolicyInvestimentType.id == 3))!false]
       [#-- Policy/Investment Type --]
       <div class="col-md-6">
         [@customForm.select name="${customName}.projectPolicyInfo.repIndPolicyInvestimentType.id" className="setSelect2 policyInvestimentTypes" i18nkey="policy.policyType" listName="policyInvestimentTypes" keyFieldName="id"  displayFieldName="name" required=true editable=editable/]
       </div>
       [#-- Amount (Only for Budget or Investment) --]
-      <div class="col-md-6">
+      <div class="col-md-6 block-budgetInvestment" style="display:${isBudgetInvestment?string('block', 'none')}">
         [@customForm.input name="${customName}.projectPolicyInfo.policyAmount" i18nkey="policy.amount" help="policy.amount.help" className="currencyInput" required=true editable=editable /]
       </div>
     </div>
@@ -102,18 +103,18 @@
     <div class="form-group row">
       [#-- Implementing Organization Type --]
       <div class="col-md-6">
-        [@customForm.select name="${customName}.projectPolicyInfo.repIndPolicyInvestimentType.id" className="setSelect2 policyInvestimentTypes" i18nkey="policy.organizationType" help="policy.organizationType.help" listName="policyInvestimentTypes" keyFieldName="id"  displayFieldName="name" required=true editable=editable/]
+        [@customForm.select name="${customName}.projectPolicyInfo.repIndPolicyInvestimentType.id" className="setSelect2 policyInvestimentTypes" i18nkey="policy.organizationType" help="policy.organizationType.help" listName="organizationTypes" keyFieldName="id"  displayFieldName="name" required=true editable=editable/]
       </div>
       [#-- Level of Maturity of the Process: (Before Stage in Process) --]
       <div class="col-md-6">
-        [@customForm.select name="${customName}.projectPolicyInfo.repIndMaturityLevel.id" className="setSelect2" i18nkey="policy.maturityLevel" help="policy.maturityLevel.help" help="policy.maturityLevel.help" listName="maturityLevels" keyFieldName="id"  displayFieldName="name" required=true editable=editable/]
+        [@customForm.select name="${customName}.projectPolicyInfo.repIndMaturityLevel.id" className="setSelect2" i18nkey="policy.maturityLevel" help="policy.maturityLevel.help" help="policy.maturityLevel.help" listName="stageProcesses" keyFieldName="id"  displayFieldName="description" required=true editable=editable/]
       </div>
     </div>
     
     <div class="row">
       [#-- Whose policy is this? (Max 2): --]
       <div class="col-md-6">
-        [@customForm.elementsListComponent name="${customName}.policyOwners" elementType="elementType" elementList=[] label="policy.policyOwners"  listName="policyOwners" maxLimit=2 keyFieldName="id" displayFieldName="description"/]
+        [@customForm.elementsListComponent name="${customName}.policyOwners" elementType="repIndPolicyType" elementList=[] label="policy.policyOwners"  listName="policyTypes" maxLimit=2 keyFieldName="id" displayFieldName="name"/]
       </div>
       <div class="col-md-6">
       </div>
@@ -121,14 +122,14 @@
     
     [#-- Evidence (OICR)  --]
     <div class="form-group">
-      [@customForm.select name="${customName}.projectPolicyInfo.evidence.id" className="setSelect2" i18nkey="policy.evidence" help="policy.evidence.help" listName="evidencesList" keyFieldName="id"  displayFieldName="name" helpIcon=false required=true editable=editable/]
+      [@customForm.select name="${customName}.projectPolicyInfo.evidence.id" className="setSelect2" i18nkey="policy.evidence" help="policy.evidence.help" listName="expectedStudyList" keyFieldName="id"  displayFieldName="name" helpIcon=false required=true editable=editable/]
     </div>
     
     <hr />
     
     [#-- Contributing CRPs/PTFs  --]
     <div class="form-group">
-      [@customForm.elementsListComponent name="${customName}.contributingCrpsPtfs" elementType="elementType" elementList=[] label="policy.contributingCrpsPtfs"  listName="crpsPtfsList" keyFieldName="id" displayFieldName="description" /]
+      [@customForm.elementsListComponent name="${customName}.contributingCrpsPtfs" elementType="globalUnit" elementList=[] label="policy.contributingCrpsPtfs"  listName="crps" keyFieldName="id" displayFieldName="composedName" /]
     </div>
     
     [#-- Sub IDOs (maxLimit=2) --]
@@ -140,7 +141,7 @@
     <div class="form-group">
       <h5>[@s.text name="policy.crossCuttingMarkers" /]</h5>
       <div class="row">
-        [#list [ "Gender", "Youth", "Climate Change"] as marker]
+        [#list [ "Gender", "Youth", "CapDev", "Climate Change"] as marker]
           <div class="col-md-3">
             <input type="hidden"  name="${customName}.crossCuttingMarkers[${marker_index}].id" value=""/>
             <input type="hidden"  name="${customName}.crossCuttingMarkers[${marker_index}].crossCuttingMarker.id" value="${marker}"/>
