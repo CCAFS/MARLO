@@ -148,21 +148,17 @@ public class ProjectContributionToLP6Action extends BaseAction {
     return config.getDownloadURL() + "/" + this.getAnualReportRelativePath().replace('\\', '/');
   }
 
-
   public List<LocElement> getCountries() {
     return countries;
   }
-
 
   public List<Deliverable> getDeliverables() {
     return deliverables;
   }
 
-
   public String getInitiativeRelatedNarrative() {
     return initiativeRelatedNarrative;
   }
-
 
   public List<LiaisonInstitution> getLiaisonInstitutions() {
     return liaisonInstitutions;
@@ -304,10 +300,16 @@ public class ProjectContributionToLP6Action extends BaseAction {
     /*
      * List of deliverables for the actual project and phase
      */
-    deliverables = new ArrayList<>();
-    deliverables = (deliverableManager.findAll().stream().filter(
-      d -> d.isActive() && d.getProject().getId() == projectID && d.getPhase().getId() == this.getActualPhase().getId())
-      .collect(Collectors.toList()));
+    try {
+      deliverables = new ArrayList<>();
+      deliverables = (deliverableManager.findAll().stream()
+        .filter(d -> d.isActive() && d.getProject().getId() == projectID
+          && d.getDeliverableInfo(this.getActualPhase()) != null
+          && d.getDeliverableInfo(this.getActualPhase()).getId() == this.getActualPhase().getId())
+        .collect(Collectors.toList()));
+    } catch (Exception e) {
+
+    }
   }
 
 
@@ -325,17 +327,20 @@ public class ProjectContributionToLP6Action extends BaseAction {
         }
 
         if (projectLp6Contribution == null) {
-
-          projectLp6Contribution = new ProjectLp6Contribution();
-          projectLp6Contribution.setNarrative(narrativeLP6Contribution);
-          projectLp6Contribution.setWorkingAcrossFlagshipsNarrative(workingAcrossFlagshipsNarrative);
-          projectLp6Contribution.setWorkingAcrossFlagships(isWorkingAcrossFlagships);
-          projectLp6Contribution.setUndertakingEffortsCsa(isUndertakingEffortsCSA);
-          projectLp6Contribution.setUndertakingEffortsCsaNarrative(undertakingEffortsCSANarrative);
-          projectLp6Contribution.setTopThreePartnershipsNarrative(top3Partnerships);
-          projectLp6Contribution.setProvidingPathways(isProvidingPathways);
-          projectLp6Contribution.setUndertakingEffortsCsaNarrative(undertakingEffortsCSANarrative);
-          projectLp6ContributionManager.saveProjectLp6Contribution(projectLp6Contribution);
+          try {
+            projectLp6Contribution = new ProjectLp6Contribution();
+            projectLp6Contribution.setNarrative(narrativeLP6Contribution);
+            projectLp6Contribution.setWorkingAcrossFlagshipsNarrative(workingAcrossFlagshipsNarrative);
+            projectLp6Contribution.setWorkingAcrossFlagships(isWorkingAcrossFlagships);
+            projectLp6Contribution.setUndertakingEffortsCsa(isUndertakingEffortsCSA);
+            projectLp6Contribution.setUndertakingEffortsCsaNarrative(undertakingEffortsCSANarrative);
+            projectLp6Contribution.setTopThreePartnershipsNarrative(top3Partnerships);
+            projectLp6Contribution.setProvidingPathways(isProvidingPathways);
+            projectLp6Contribution.setUndertakingEffortsCsaNarrative(undertakingEffortsCSANarrative);
+            projectLp6ContributionManager.saveProjectLp6Contribution(projectLp6Contribution);
+          } catch (Exception e) {
+            System.out.println("saving error " + e);
+          }
         }
       }
       return SUCCESS;
