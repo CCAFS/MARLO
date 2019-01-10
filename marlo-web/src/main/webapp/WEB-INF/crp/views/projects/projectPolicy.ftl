@@ -1,9 +1,4 @@
 [#ftl]
-
-[#assign canEdit = true /]
-[#assign editable = true /]
-
-
 [#assign title = "Project Policy" /]
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${policyID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = [ "select2", "blueimp-file-upload" "flat-flags", "components-font-awesome"] /]
@@ -112,17 +107,18 @@
     </div>
     
     <div class="row">
-      [#-- Whose policy is this? (Max 2): --]
+      [#-- Whose policy is this? (Max 2)  --]
       <div class="col-md-6">
         [@customForm.elementsListComponent name="${customName}.policyOwners" elementType="repIndPolicyType" elementList=[] label="policy.policyOwners"  listName="policyTypes" maxLimit=2 keyFieldName="id" displayFieldName="name"/]
       </div>
-      <div class="col-md-6">
+      <div class="col-md-6 block-pleaseSpecify" style="display:none">
+        [@customForm.input name="${customName}.projectPolicyInfo.otherOwner" i18nkey="policy.otherOwner" className="" required=false editable=editable /]
       </div>
     </div>
     
     [#-- Evidence (OICR)  --]
     <div class="form-group">
-      [@customForm.select name="${customName}.projectPolicyInfo.evidence.id" className="setSelect2" i18nkey="policy.evidence" help="policy.evidence.help" listName="expectedStudyList" keyFieldName="id"  displayFieldName="name" helpIcon=false required=true editable=editable/]
+      [@customForm.select name="${customName}.projectPolicyInfo.evidence.id" className="setSelect2" i18nkey="policy.evidence" help="policy.evidence.help" listName="expectedStudyList" keyFieldName="id"  displayFieldName="composedName" helpIcon=false required=true editable=editable/]
     </div>
     
     <hr />

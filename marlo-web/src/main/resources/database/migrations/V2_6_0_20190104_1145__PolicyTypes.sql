@@ -16,5 +16,5 @@ CREATE TABLE `rep_ind_policy_types` (
 INSERT INTO `rep_ind_policy_types` VALUES ('1', 'Funder');
 INSERT INTO `rep_ind_policy_types` VALUES ('2', 'Public Sector');
 INSERT INTO `rep_ind_policy_types` VALUES ('3', 'Private Sector');
-INSERT INTO `rep_ind_policy_types` VALUES ('4', 'Other : Please specify');
+INSERT INTO `rep_ind_policy_types` VALUES ('4', 'Other');
 SET FOREIGN_KEY_CHECKS=1;

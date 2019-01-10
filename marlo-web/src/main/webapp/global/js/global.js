@@ -581,8 +581,6 @@ function onSelectElement() {
   // Clone the new element
   var $element = $('#relationElement-' + elementType + '-template').clone(true).removeAttr("id");
 
-  console.log($element);
-
   // Remove template tag
   $element.find('input').each(function(i,e) {
     e.name = (e.name).replace("_TEMPLATE_", "");
@@ -594,6 +592,10 @@ function onSelectElement() {
   // Show the element
   $element.appendTo($list).hide().show('slow', function() {
     $select.val('-1').trigger('change.select2');
+
+    $select.trigger("addElement", [
+        $element.find(".elementRelationID").val(), $element.find(".elementName").text()
+    ]);
   });
 
   // Update indexes
@@ -606,8 +608,12 @@ function onSelectElement() {
 function onClickRemoveElement() {
   var removeElementType = $(this).classParam('removeElementType');
   var $parent = $(this).parent();
+  var $select = $(this).parents(".panel-body").find('select');
   var $list = $('.listType-' + removeElementType);
   $parent.slideUp(100, function() {
+    $select.trigger("removeElement", [
+        $parent.find(".elementRelationID").val(), $parent.find(".elementName").text()
+    ]);
     $parent.remove();
 
     // Update indexes
