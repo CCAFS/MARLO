@@ -22,10 +22,6 @@
   {"label":"policy", "nameSpace":"/projects", "action":""}
 ] /]
 
-[#assign params = {
-  "caseStudies": {"id":"caseStudiesName", "name":"project.caseStudies"}
-  }
-/] 
 
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /] 
@@ -65,9 +61,6 @@
       </div>
     </div>  
 </section>
-
-[#-- Internal parameters --]
-[#list params?keys as prop]<input id="${params[prop].id}" type="hidden" value="${params[prop].name}" />[/#list]
 
 [#include "/WEB-INF/global/pages/footer.ftl"]
 
@@ -141,7 +134,7 @@
           <div class="col-md-3">
             <input type="hidden"  name="${customName}.crossCuttingMarkers[${marker_index}].id" value=""/>
             <input type="hidden"  name="${customName}.crossCuttingMarkers[${marker_index}].cgiarCrossCuttingMarker.id" value="${marker.id}"/>
-            [@customForm.select   name="${customName}.crossCuttingMarkers[${marker_index}].crossCuttingScoring.id" className="setSelect2" i18nkey="${marker.name}" listName="crossCuttingLevels" keyFieldName="id"  displayFieldName="name" required=true editable=editable/]
+            [@customForm.select   name="${customName}.crossCuttingMarkers[${marker_index}].crossCuttingScoring.id" className="setSelect2" i18nkey="${marker.name}" listName="focusLevels" keyFieldName="id"  displayFieldName="name" required=true editable=editable/]
           </div>
         [/#list]
       </div>
