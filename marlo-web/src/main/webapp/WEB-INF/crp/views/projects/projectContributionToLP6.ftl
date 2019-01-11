@@ -33,7 +33,7 @@
             [@customForm.textArea name="narrativeLP6Contribution" i18nkey="projects.LP6Contribution.narrativeContribution"  i18nkey="projects.LP6Contribution.narrativeContribution"  className="limitWords-100" required=true editable=canEdit /]
             [#-- Deliverables --]
              <div class="form-group simpleBox stageProcessOne">
-               [@customForm.elementsListComponent name="projects.LP6Contribution.evidenceDeliverables" elementType="locElement" elementList="" label="projects.LP6Contribution.evidenceDeliverables" listName="deliverables" keyFieldName="id" displayFieldName="composedName" required=editable/]
+               [@customForm.elementsListComponent id="deliverableSelect" name="projects.LP6Contribution.evidenceDeliverables" elementType="locElement" elementList="" label="projects.LP6Contribution.evidenceDeliverables" listName="deliverables" keyFieldName="id" displayFieldName="composedName" required=editable/]
              </div>
              <p class="note">[@s.text name="projects.LP6Contribution.deliverablesTooltip" /] <a href="">clicking here.</a></p>
           </div>
