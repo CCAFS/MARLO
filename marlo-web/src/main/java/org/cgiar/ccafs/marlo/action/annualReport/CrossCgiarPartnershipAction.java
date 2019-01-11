@@ -443,7 +443,6 @@ public class CrossCgiarPartnershipAction extends BaseAction {
 
       crossCgiarDB = reportSynthesisCrossCgiarManager.saveReportSynthesisCrossCgiar(crossCgiarDB);
 
-
       List<String> relationsName = new ArrayList<>();
       reportSynthesis = reportSynthesisManager.getReportSynthesisById(synthesisID);
 
@@ -454,7 +453,6 @@ public class CrossCgiarPartnershipAction extends BaseAction {
       this.setModificationJustification(reportSynthesis);
 
       reportSynthesisManager.save(reportSynthesis, this.getActionName(), relationsName, this.getActualPhase());
-
 
       Path path = this.getAutoSaveFilePath();
       if (path.toFile().exists()) {
