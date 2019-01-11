@@ -7,8 +7,7 @@ public class RepIndPolicyType extends MarloBaseEntity implements java.io.Seriali
 
 
   private static final long serialVersionUID = -127424378127879204L;
-  @Expose
-  private Long id;
+
   @Expose
   private String name;
 
@@ -19,19 +18,11 @@ public class RepIndPolicyType extends MarloBaseEntity implements java.io.Seriali
     this.name = name;
   }
 
-  @Override
-  public Long getId() {
-    return this.id;
-  }
 
   public String getName() {
     return this.name;
   }
 
-  @Override
-  public void setId(Long id) {
-    this.id = id;
-  }
 
   public void setName(String name) {
     this.name = name;
