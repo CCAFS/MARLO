@@ -17,6 +17,7 @@ package org.cgiar.ccafs.marlo.data.manager.impl;
 
 import org.cgiar.ccafs.marlo.data.dao.ProjectPolicyDAO;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyManager;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicy;
 
 import java.util.List;
@@ -71,6 +72,12 @@ public class ProjectPolicyManagerImpl implements ProjectPolicyManager {
   public ProjectPolicy saveProjectPolicy(ProjectPolicy projectPolicy) {
 
     return projectPolicyDAO.save(projectPolicy);
+  }
+
+  @Override
+  public ProjectPolicy saveProjectPolicy(ProjectPolicy projectPolicy, String section, List<String> relationsName,
+    Phase phase) {
+    return projectPolicyDAO.save(projectPolicy, section, relationsName, phase);
   }
 
 

@@ -56,6 +56,15 @@ public interface ProjectPolicyCountryDAO {
 
 
   /**
+   * This method gets a projectPolicyCountry object list by a given policy and phase identifier.
+   * 
+   * @param policyID is the policy identifier.
+   * @param phaseID is the phase identifier.
+   * @return a projectPolicyCountry object list.
+   */
+  public List<ProjectPolicyCountry> getPolicyCountrybyPhase(long policyID, long phaseID);
+
+  /**
    * This method saves the information of the given projectPolicyCountry
    * 
    * @param projectPolicyCountry - is the projectPolicyCountry object with the new information to be added/updated.

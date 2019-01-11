@@ -382,5 +382,45 @@
       </key>
       <one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectPolicyInfo" />
     </set>
+    <set name="projectPolicyCountries" table="project_policy_countries"
+      inverse="true" lazy="true" fetch="select">
+      <key>
+        <column name="id_phase" />
+      </key>
+      <one-to-many
+        class="org.cgiar.ccafs.marlo.data.model.ProjectPolicyCountry" />
+    </set>
+    <set name="projectPolicyOwners" table="project_policy_owners"
+      inverse="true" lazy="true" fetch="select">
+      <key>
+        <column name="id_phase" />
+      </key>
+      <one-to-many
+        class="org.cgiar.ccafs.marlo.data.model.ProjectPolicyOwner" />
+    </set>
+    <set name="projectPolicyCrps" table="project_policy_crps"
+      inverse="true" lazy="true" fetch="select">
+      <key>
+        <column name="id_phase" />
+      </key>
+      <one-to-many
+        class="org.cgiar.ccafs.marlo.data.model.ProjectPolicyCrp" />
+    </set>
+    <set name="projectPolicySubIdos" table="project_policy_sub_idos"
+      inverse="true" lazy="true" fetch="select">
+      <key>
+        <column name="id_phase" />
+      </key>
+      <one-to-many
+        class="org.cgiar.ccafs.marlo.data.model.ProjectPolicySubIdo" />
+    </set>
+    <set name="projectPolicyCrossCuttingMarkers" table="project_policy_cross_cutting_markers"
+      inverse="true" lazy="true" fetch="select">
+      <key>
+        <column name="id_phase" />
+      </key>
+      <one-to-many
+        class="org.cgiar.ccafs.marlo.data.model.ProjectPolicyCrossCuttingMarker" />
+    </set>
 	</class>
 </hibernate-mapping>

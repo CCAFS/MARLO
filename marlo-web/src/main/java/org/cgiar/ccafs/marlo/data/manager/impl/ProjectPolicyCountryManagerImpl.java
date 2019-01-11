@@ -15,11 +15,15 @@
 package org.cgiar.ccafs.marlo.data.manager.impl;
 
 
+import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.dao.PhaseDAO;
 import org.cgiar.ccafs.marlo.data.dao.ProjectPolicyCountryDAO;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyCountryManager;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicyCountry;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -33,19 +37,45 @@ public class ProjectPolicyCountryManagerImpl implements ProjectPolicyCountryMana
 
   private ProjectPolicyCountryDAO projectPolicyCountryDAO;
   // Managers
+  private PhaseDAO phaseDAO;
 
 
   @Inject
-  public ProjectPolicyCountryManagerImpl(ProjectPolicyCountryDAO projectPolicyCountryDAO) {
+  public ProjectPolicyCountryManagerImpl(ProjectPolicyCountryDAO projectPolicyCountryDAO, PhaseDAO phaseDAO) {
     this.projectPolicyCountryDAO = projectPolicyCountryDAO;
-
-
+    this.phaseDAO = phaseDAO;
   }
+
 
   @Override
   public void deleteProjectPolicyCountry(long projectPolicyCountryId) {
 
+
+    ProjectPolicyCountry projectPolicyCountry = this.getProjectPolicyCountryById(projectPolicyCountryId);
+
+    if (projectPolicyCountry.getPhase().getNext() != null) {
+      this.deleteProjectPolicyCountryPhase(projectPolicyCountry.getPhase().getNext(),
+        projectPolicyCountry.getProjectPolicy().getId(), projectPolicyCountry);
+    }
+
     projectPolicyCountryDAO.deleteProjectPolicyCountry(projectPolicyCountryId);
+  }
+
+  public void deleteProjectPolicyCountryPhase(Phase next, long policyID, ProjectPolicyCountry projectPolicyCountry) {
+    Phase phase = phaseDAO.find(next.getId());
+
+    List<ProjectPolicyCountry> projectPolicyCountries =
+      phase.getProjectPolicyCountries().stream()
+        .filter(c -> c.isActive() && c.getProjectPolicy().getId().longValue() == policyID
+          && c.getLocElement().getId().equals(projectPolicyCountry.getLocElement().getId()))
+        .collect(Collectors.toList());
+    for (ProjectPolicyCountry projectPolicyCountryDB : projectPolicyCountries) {
+      projectPolicyCountryDAO.deleteProjectPolicyCountry(projectPolicyCountryDB.getId());
+    }
+
+    if (phase.getNext() != null) {
+      this.deleteProjectPolicyCountryPhase(phase.getNext(), policyID, projectPolicyCountry);
+    }
   }
 
   @Override
@@ -62,6 +92,11 @@ public class ProjectPolicyCountryManagerImpl implements ProjectPolicyCountryMana
   }
 
   @Override
+  public List<ProjectPolicyCountry> getPolicyCountrybyPhase(long policyID, long phaseID) {
+    return projectPolicyCountryDAO.getPolicyCountrybyPhase(policyID, phaseID);
+  }
+
+  @Override
   public ProjectPolicyCountry getProjectPolicyCountryById(long projectPolicyCountryID) {
 
     return projectPolicyCountryDAO.find(projectPolicyCountryID);
@@ -70,7 +105,40 @@ public class ProjectPolicyCountryManagerImpl implements ProjectPolicyCountryMana
   @Override
   public ProjectPolicyCountry saveProjectPolicyCountry(ProjectPolicyCountry projectPolicyCountry) {
 
-    return projectPolicyCountryDAO.save(projectPolicyCountry);
+
+    ProjectPolicyCountry country = projectPolicyCountryDAO.save(projectPolicyCountry);
+
+    Phase phase = phaseDAO.find(country.getPhase().getId());
+    if (phase.getDescription().equals(APConstants.REPORTING)) {
+      if (country.getPhase().getNext() != null) {
+        this.saveProjectPolicyCountryPhase(country.getPhase().getNext(), country.getProjectPolicy().getId(),
+          projectPolicyCountry);
+      }
+    }
+    return country;
+  }
+
+  public void saveProjectPolicyCountryPhase(Phase next, long policyID, ProjectPolicyCountry projectPolicyCountry) {
+    Phase phase = phaseDAO.find(next.getId());
+
+    List<ProjectPolicyCountry> projectPolicyCountries =
+      phase.getProjectPolicyCountries().stream()
+        .filter(c -> c.getProjectPolicy().getId().longValue() == policyID
+          && c.getLocElement().getId().equals(projectPolicyCountry.getLocElement().getId()))
+        .collect(Collectors.toList());
+
+    if (projectPolicyCountries.isEmpty()) {
+      ProjectPolicyCountry projectPolicyCountryAdd = new ProjectPolicyCountry();
+      projectPolicyCountryAdd.setProjectPolicy(projectPolicyCountry.getProjectPolicy());
+      projectPolicyCountryAdd.setPhase(phase);
+      projectPolicyCountryAdd.setLocElement(projectPolicyCountry.getLocElement());
+      projectPolicyCountryDAO.save(projectPolicyCountryAdd);
+    }
+
+
+    if (phase.getNext() != null) {
+      this.saveProjectPolicyCountryPhase(phase.getNext(), policyID, projectPolicyCountry);
+    }
   }
 
 

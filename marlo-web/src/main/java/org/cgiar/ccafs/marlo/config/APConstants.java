@@ -401,6 +401,20 @@ public final class APConstants {
   public static final String PROJECT_DELIVERABLE_CRP_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.ProjectInnovation.projectInnovationDeliverables)";
 
+  // Project Policies Relations
+  public static final String PROJECT_POLICY_INFOS_RELATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.ProjectPolicy.projectPolicyInfos)";
+  public static final String PROJECT_POLICY_COUNTRY_RELATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.ProjectPolicy.ProjectPolicyCountries)";
+  public static final String PROJECT_POLICY_CRP_RELATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.ProjectPolicy.projectPolicyCrps)";
+  public static final String PROJECT_POLICY_OWNER_RELATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.ProjectPolicy.projectPolicyOwners)";
+  public static final String PROJECT_POLICY_SUB_IDO_RELATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.ProjectPolicy.projectPolicySubIdos)";
+  public static final String PROJECT_POLICY_CROSS_CUTTING_RELATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.ProjectPolicy.projectPolicyCrossCuttingMarkers)";
+
 
   // End
   public static final String PROJECT_REQUEST_ID = "projectID";

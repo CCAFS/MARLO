@@ -17,6 +17,7 @@
 package org.cgiar.ccafs.marlo.data.dao.mysql;
 
 import org.cgiar.ccafs.marlo.data.dao.ProjectPolicyDAO;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicy;
 
 import java.util.List;
@@ -78,6 +79,16 @@ public class ProjectPolicyMySQLDAO extends AbstractMarloDAO<ProjectPolicy, Long>
     }
 
 
+    return projectPolicy;
+  }
+
+  @Override
+  public ProjectPolicy save(ProjectPolicy projectPolicy, String section, List<String> relationsName, Phase phase) {
+    if (projectPolicy.getId() == null) {
+      super.saveEntity(projectPolicy, section, relationsName, phase);
+    } else {
+      projectPolicy = super.update(projectPolicy, section, relationsName, phase);
+    }
     return projectPolicy;
   }
 
