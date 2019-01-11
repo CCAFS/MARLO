@@ -8,7 +8,7 @@
 		name="org.cgiar.ccafs.marlo.data.model.ProjectPolicyCountry" optimistic-lock="version"
 		polymorphism="implicit" select-before-update="false"
 		table="project_policy_countries">
-		<id name="id" type="java.lang.Integer">
+		<id name="id" type="java.lang.Long">
 			<column name="id" />
 			<generator class="identity" />
 		</id>
