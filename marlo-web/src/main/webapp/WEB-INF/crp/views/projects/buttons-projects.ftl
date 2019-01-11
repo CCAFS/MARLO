@@ -1,12 +1,14 @@
 [#ftl]
 
 [#-- Project identifiers --]
-[#assign auditObject = (project)!{} ]
-[#assign auditObjectID = auditObject['id'] ]
-[#assign auditObjectName = "projectID" ]
-<input type="hidden"  name="projectID"              value="${(project.id)!}" />
-<input type="hidden"  name="project.projectInfo.id" value="${(project.projectInfo.id)!}"  class="projectInfo" />
-<input type="hidden"  name="project.type"           value="${(project.type)!}" />
+[#if (project.id?has_content)!false]
+  [#assign auditObject = (project)!{} ]
+  [#assign auditObjectID = auditObject['id'] ]
+  [#assign auditObjectName = "projectID" ]
+  <input type="hidden"  name="${auditObjectName}"   value="${(auditObjectID)!}" />
+  <input type="hidden"  name="project.projectInfo.id" value="${(project.projectInfo.id)!}"  class="projectInfo" />
+  <input type="hidden"  name="project.type"           value="${(project.type)!}" />
+[/#if]
 
 [#-- Policy identifiers --]
 [#if (policy.id?has_content)!false]
