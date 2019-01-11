@@ -43,6 +43,7 @@ import org.cgiar.ccafs.marlo.data.manager.impl.CenterOutcomeManager;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableInfo;
+import org.cgiar.ccafs.marlo.data.model.DeliverableLocation;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
@@ -98,6 +99,7 @@ public class ProjectContributionToLP6Action extends BaseAction {
   private LocElementManager locElementManager;
   private List<LocElement> repIndRegions;
   private List<LocElement> countries;
+  private List<String> countriesIds;
   private List<Deliverable> deliverables;
   private DeliverableManager deliverableManager;
   private DeliverableInfoManager deliverableInfoManager;
@@ -312,6 +314,12 @@ public class ProjectContributionToLP6Action extends BaseAction {
       .collect(Collectors.toList());
     this.setCountries(locElementManager.findAll().stream()
       .filter(c -> c.isActive() && c.getLocElementType().getId() == 2).collect(Collectors.toList()));
+
+    if (this.getCountries() != null) {
+      for (DeliverableLocation country : deliverable.getCountries()) {
+        countriesIds.add(country.getLocElement().getIsoAlpha2());
+      }
+    }
 
 
     /*

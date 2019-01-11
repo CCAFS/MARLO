@@ -606,7 +606,7 @@
       <result name="input">/WEB-INF/crp/views/projects/projectContributionToLP6.ftl
       </result>
       <result name="success" type="redirectAction">
-        <param name="actionName">${crp}/contributionsLP6</param>
+        <param name="actionName">${crpSession}/contributionsLP6</param>
         <param name="edit">true</param>
         <param name="phaseID">${phaseID}</param>
         <param name="projectID">${projectID}</param>
