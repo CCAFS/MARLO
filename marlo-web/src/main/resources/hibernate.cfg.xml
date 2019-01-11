@@ -323,6 +323,11 @@
     <mapping resource="xmls/RepIndPolicyTypes.hbm.xml"/> 
     <mapping resource="xmls/ProjectPolicies.hbm.xml"/>
     <mapping resource="xmls/ProjectPolicyInfo.hbm.xml"/>
-    <mapping resource="xmls/CgiarCrossCuttingMarkers.hbm.xml"/>       
+    <mapping resource="xmls/CgiarCrossCuttingMarkers.hbm.xml"/>
+    <mapping resource="xmls/ProjectPolicyCountries.hbm.xml"/>
+    <mapping resource="xmls/ProjectPolicyOwners.hbm.xml"/>  
+    <mapping resource="xmls/ProjectPolicyCrps.hbm.xml"/>
+    <mapping resource="xmls/ProjectPolicySubIdos.hbm.xml"/>
+    <mapping resource="xmls/ProjectPolicyCrossCuttingMarkers.hbm.xml"/>                    
 	</session-factory>
 </hibernate-configuration>

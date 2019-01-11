@@ -51,6 +51,15 @@ public interface ProjectPolicyCountryManager {
    */
   public List<ProjectPolicyCountry> findAll();
 
+  /**
+   * This method gets a projectPolicyCountry object list by a given policy and phase identifier.
+   * 
+   * @param policyID is the policy identifier.
+   * @param phaseID is the phase identifier.
+   * @return a projectPolicyCountry object list.
+   */
+  public List<ProjectPolicyCountry> getPolicyCountrybyPhase(long policyID, long phaseID);
+
 
   /**
    * This method gets a projectPolicyCountry object by a given projectPolicyCountry identifier.

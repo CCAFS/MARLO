@@ -14,6 +14,7 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.manager;
 
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicy;
 
 import java.util.List;
@@ -69,6 +70,9 @@ public interface ProjectPolicyManager {
    *         or -1 is some error occurred.
    */
   public ProjectPolicy saveProjectPolicy(ProjectPolicy projectPolicy);
+
+  public ProjectPolicy saveProjectPolicy(ProjectPolicy projectPolicy, String section, List<String> relationsName,
+    Phase phase);
 
 
 }

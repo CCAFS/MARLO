@@ -51,6 +51,46 @@
 			<one-to-many
 				class="org.cgiar.ccafs.marlo.data.model.ProjectPolicyInfo"
 				embed-xml="true" not-found="exception" />
-		</set>
+		</set>		
+		<set embed-xml="true" fetch="select" inverse="true" lazy="true"
+      mutable="true" name="ProjectPolicyCountries" optimistic-lock="true"
+      sort="unsorted" table="project_policy_info">
+      <key on-delete="noaction">
+        <column name="project_policy_id" />
+      </key>
+      <one-to-many
+        class="org.cgiar.ccafs.marlo.data.model.ProjectPolicyCountry"
+        embed-xml="true" not-found="exception" />
+    </set>    
+    <set embed-xml="true" fetch="select" inverse="true" lazy="true"
+      mutable="true" name="projectPolicyOwners" optimistic-lock="true"
+      sort="unsorted" table="project_policy_info">
+      <key on-delete="noaction">
+        <column name="project_policy_id" />
+      </key>
+      <one-to-many
+        class="org.cgiar.ccafs.marlo.data.model.ProjectPolicyOwner"
+        embed-xml="true" not-found="exception" />
+    </set>    
+    <set embed-xml="true" fetch="select" inverse="true" lazy="true"
+      mutable="true" name="projectPolicyCrps" optimistic-lock="true"
+      sort="unsorted" table="project_policy_info">
+      <key on-delete="noaction">
+        <column name="project_policy_id" />
+      </key>
+      <one-to-many
+        class="org.cgiar.ccafs.marlo.data.model.ProjectPolicyCrp"
+        embed-xml="true" not-found="exception" />
+    </set>    
+    <set embed-xml="true" fetch="select" inverse="true" lazy="true"
+      mutable="true" name="projectPolicySubIdos" optimistic-lock="true"
+      sort="unsorted" table="project_policy_info">
+      <key on-delete="noaction">
+        <column name="project_policy_id" />
+      </key>
+      <one-to-many
+        class="org.cgiar.ccafs.marlo.data.model.ProjectPolicySubIdo"
+        embed-xml="true" not-found="exception" />
+    </set>
 	</class>
 </hibernate-mapping>

@@ -19,7 +19,9 @@ package org.cgiar.ccafs.marlo.data.dao.mysql;
 import org.cgiar.ccafs.marlo.data.dao.ProjectPolicyCountryDAO;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicyCountry;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -66,6 +68,29 @@ public class ProjectPolicyCountryMySQLDAO extends AbstractMarloDAO<ProjectPolicy
     }
     return null;
 
+  }
+
+  @Override
+  public List<ProjectPolicyCountry> getPolicyCountrybyPhase(long policyID, long phaseID) {
+    StringBuilder query = new StringBuilder();
+    query.append("SELECT project_policy_countries.id as contryId FROM project_policies ");
+    query.append(
+      "INNER JOIN project_policy_countries ON project_policy_countries.project_policy_id = project_policies.id ");
+    query.append("INNER JOIN phases ON project_policy_countries.id_phase = phases.id ");
+    query.append("WHERE project_policies.id = ");
+    query.append(policyID);
+    query.append(" AND phases.id = ");
+    query.append(phaseID);
+    List<Map<String, Object>> list = super.findCustomQuery(query.toString());
+
+    List<ProjectPolicyCountry> projectPolicyCountries = new ArrayList<ProjectPolicyCountry>();
+    for (Map<String, Object> map : list) {
+      String contryId = map.get("contryId").toString();
+      long longContryId = Long.parseLong(contryId);
+      ProjectPolicyCountry projectPolicyCountry = this.find(longContryId);
+      projectPolicyCountries.add(projectPolicyCountry);
+    }
+    return projectPolicyCountries;
   }
 
   @Override
