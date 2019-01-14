@@ -581,10 +581,10 @@ public class ProjectPolicyAction extends BaseAction {
 
       policy.setProject(project);
 
-      // TODO Save List
       this.saveCrps(policyDB, phase);
       this.saveOwners(policyDB, phase);
       this.saveSubIdos(policyDB, phase);
+      this.saveCrossCutting(policyDB, phase);
 
 
       List<String> relationsName = new ArrayList<>();
