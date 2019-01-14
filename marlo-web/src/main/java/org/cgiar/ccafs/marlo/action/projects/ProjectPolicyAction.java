@@ -233,6 +233,19 @@ public class ProjectPolicyAction extends BaseAction {
   }
 
 
+  public Long getPolicyCrossCuttingMarkerId(long markerID) {
+    ProjectPolicyCrossCuttingMarker crossCuttingMarker = new ProjectPolicyCrossCuttingMarker();
+
+    crossCuttingMarker = projectPolicyCrossCuttingMarkerManager.getPolicyCrossCountryMarkerId(policyID, markerID,
+      this.getActualPhase().getId());
+
+    if (crossCuttingMarker != null) {
+      return crossCuttingMarker.getId();
+    } else {
+      return null;
+    }
+  }
+
   public long getPolicyID() {
     return policyID;
   }
@@ -245,6 +258,7 @@ public class ProjectPolicyAction extends BaseAction {
     return policyTypes;
   }
 
+
   public Project getProject() {
     return project;
   }
@@ -254,10 +268,10 @@ public class ProjectPolicyAction extends BaseAction {
     return projectID;
   }
 
-
   public List<LocElement> getRegions() {
     return regions;
   }
+
 
   public List<RepIndStageProcess> getStageProcesses() {
     return stageProcesses;
@@ -267,7 +281,6 @@ public class ProjectPolicyAction extends BaseAction {
   public List<SrfSubIdo> getSubIdos() {
     return subIdos;
   }
-
 
   public String getTransaction() {
     return transaction;
@@ -686,6 +699,87 @@ public class ProjectPolicyAction extends BaseAction {
   }
 
   /**
+   * Save Project Policy CrossCutting Information
+   * 
+   * @param projectPolicy
+   * @param phase
+   */
+  public void saveCrossCutting(ProjectPolicy projectPolicy, Phase phase) {
+
+    // Search and deleted form Information
+    if (projectPolicy.getProjectPolicyCrossCuttingMarkers() != null
+      && projectPolicy.getProjectPolicyCrossCuttingMarkers().size() > 0) {
+
+      List<ProjectPolicyCrossCuttingMarker> crossCuttingPrev =
+        new ArrayList<>(projectPolicy.getProjectPolicyCrossCuttingMarkers().stream()
+          .filter(nu -> nu.isActive() && nu.getPhase().getId() == phase.getId()).collect(Collectors.toList()));
+
+      for (ProjectPolicyCrossCuttingMarker crossCuttingOwner : crossCuttingPrev) {
+        if (policy.getCrossCuttingMarkers() == null || !policy.getCrossCuttingMarkers().contains(crossCuttingOwner)) {
+          projectPolicyCrossCuttingMarkerManager.deleteProjectPolicyCrossCuttingMarker(crossCuttingOwner.getId());
+        }
+      }
+    }
+
+    // Save form Information
+    if (policy.getCrossCuttingMarkers() != null) {
+      for (ProjectPolicyCrossCuttingMarker crossCuttingOwner : policy.getCrossCuttingMarkers()) {
+        if (crossCuttingOwner.getId() == null) {
+          ProjectPolicyCrossCuttingMarker crossCuttingOwnerSave = new ProjectPolicyCrossCuttingMarker();
+          crossCuttingOwnerSave.setProjectPolicy(projectPolicy);
+          crossCuttingOwnerSave.setPhase(phase);
+
+          CgiarCrossCuttingMarker cgiarCrossCuttingMarker = cgiarCrossCuttingMarkerManager
+            .getCgiarCrossCuttingMarkerById(crossCuttingOwner.getCgiarCrossCuttingMarker().getId());
+
+          crossCuttingOwnerSave.setCgiarCrossCuttingMarker(cgiarCrossCuttingMarker);
+
+          if (crossCuttingOwner.getRepIndGenderYouthFocusLevel().getId() != null
+            && crossCuttingOwner.getRepIndGenderYouthFocusLevel().getId() != -1) {
+            RepIndGenderYouthFocusLevel focusLevel = focusLevelManager
+              .getRepIndGenderYouthFocusLevelById(crossCuttingOwner.getRepIndGenderYouthFocusLevel().getId());
+            crossCuttingOwnerSave.setRepIndGenderYouthFocusLevel(focusLevel);
+          } else {
+            crossCuttingOwnerSave.setRepIndGenderYouthFocusLevel(null);
+          }
+
+
+          projectPolicyCrossCuttingMarkerManager.saveProjectPolicyCrossCuttingMarker(crossCuttingOwnerSave);
+          // This is to add innovationCrpSave to generate correct auditlog.
+          policy.getCrossCuttingMarkers().add(crossCuttingOwnerSave);
+        } else {
+          boolean hasChanges = false;
+          ProjectPolicyCrossCuttingMarker crossCuttingOwnerSave =
+            projectPolicyCrossCuttingMarkerManager.getProjectPolicyCrossCuttingMarkerById(crossCuttingOwner.getId());
+
+          if (crossCuttingOwner.getRepIndGenderYouthFocusLevel().getId() != null
+            && crossCuttingOwner.getRepIndGenderYouthFocusLevel().getId() != -1) {
+
+            if (crossCuttingOwner.getRepIndGenderYouthFocusLevel().getId() != crossCuttingOwnerSave
+              .getRepIndGenderYouthFocusLevel().getId()) {
+              RepIndGenderYouthFocusLevel focusLevel = focusLevelManager
+                .getRepIndGenderYouthFocusLevelById(crossCuttingOwner.getRepIndGenderYouthFocusLevel().getId());
+              crossCuttingOwnerSave.setRepIndGenderYouthFocusLevel(focusLevel);
+              hasChanges = true;
+            }
+
+          } else {
+            crossCuttingOwnerSave.setRepIndGenderYouthFocusLevel(null);
+            hasChanges = true;
+          }
+
+          if (hasChanges) {
+            projectPolicyCrossCuttingMarkerManager.saveProjectPolicyCrossCuttingMarker(crossCuttingOwnerSave);
+          }
+          // This is to add innovationCrpSave to generate correct auditlog.
+          policy.getCrossCuttingMarkers().add(crossCuttingOwnerSave);
+
+        }
+      }
+    }
+  }
+
+  /**
    * Save Project Policy Crp Information
    * 
    * @param projectPolicy
@@ -814,6 +908,7 @@ public class ProjectPolicyAction extends BaseAction {
     this.cgiarCrossCuttingMarkers = cgiarCrossCuttingMarkers;
   }
 
+
   public void setCountries(List<LocElement> countries) {
     this.countries = countries;
   }
@@ -832,7 +927,6 @@ public class ProjectPolicyAction extends BaseAction {
   public void setFocusLevels(List<RepIndGenderYouthFocusLevel> focusLevels) {
     this.focusLevels = focusLevels;
   }
-
 
   public void setGeographicScopes(List<RepIndGeographicScope> geographicScopes) {
     this.geographicScopes = geographicScopes;
@@ -854,6 +948,7 @@ public class ProjectPolicyAction extends BaseAction {
     this.policyID = policyID;
   }
 
+
   public void setPolicyInvestimentTypes(List<RepIndPolicyInvestimentType> policyInvestimentTypes) {
     this.policyInvestimentTypes = policyInvestimentTypes;
   }
@@ -868,7 +963,6 @@ public class ProjectPolicyAction extends BaseAction {
     this.project = project;
   }
 
-
   public void setProjectID(long projectID) {
     this.projectID = projectID;
   }
@@ -877,10 +971,10 @@ public class ProjectPolicyAction extends BaseAction {
     this.regions = regions;
   }
 
+
   public void setStageProcesses(List<RepIndStageProcess> stageProcesses) {
     this.stageProcesses = stageProcesses;
   }
-
 
   public void setSubIdos(List<SrfSubIdo> subIdos) {
     this.subIdos = subIdos;

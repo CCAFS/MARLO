@@ -19,7 +19,9 @@ package org.cgiar.ccafs.marlo.data.dao.mysql;
 import org.cgiar.ccafs.marlo.data.dao.ProjectPolicyCrossCuttingMarkerDAO;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicyCrossCuttingMarker;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -65,6 +67,35 @@ public class ProjectPolicyCrossCuttingMarkerMySQLDAO extends AbstractMarloDAO<Pr
       return list;
     }
     return null;
+
+  }
+
+  @Override
+  public ProjectPolicyCrossCuttingMarker getPolicyCrossCountryMarkerId(long policyID, long cgiarCrossCuttingMarkerID,
+    long phaseID) {
+    StringBuilder query = new StringBuilder();
+    query.append("SELECT id as markerId FROM project_policy_cross_cutting_markers ");
+    query.append("WHERE project_policy_id = ");
+    query.append(policyID);
+    query.append(" AND cgiar_cross_cutting_marker_id.id = ");
+    query.append(cgiarCrossCuttingMarkerID);
+    query.append(" AND phases.id = ");
+    query.append(phaseID);
+    List<Map<String, Object>> list = super.findCustomQuery(query.toString());
+
+    List<ProjectPolicyCrossCuttingMarker> projectPolicyCrossCuttingMarkers =
+      new ArrayList<ProjectPolicyCrossCuttingMarker>();
+    for (Map<String, Object> map : list) {
+      String markerId = map.get("markerId").toString();
+      long longMarkerId = Long.parseLong(markerId);
+      ProjectPolicyCrossCuttingMarker projectPolicyCrossCuttingMarker = this.find(longMarkerId);
+      projectPolicyCrossCuttingMarkers.add(projectPolicyCrossCuttingMarker);
+    }
+    if (projectPolicyCrossCuttingMarkers.size() > 0) {
+      return projectPolicyCrossCuttingMarkers.get(0);
+    } else {
+      return null;
+    }
 
   }
 
