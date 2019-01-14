@@ -221,7 +221,6 @@
 [/#macro]
 
 [#macro contributionToLP6 template=false] 
-[#assign Editable=true/]
 [#if action.hasSpecificities('crp_lp6_active')]
   <div id="projectContributionToLP6" class="borderBox project-${project.id} phase-${actualPhase.id}">
    <a class="lp6-pdf"><img src="${baseUrl}/global/images/pdf.png" height="25"/>[[@s.text name="projects.LP6Contribution.explanatoryPDF" /]]</a><h4>[@s.text name="projects.LP6Contribution.title" /]</h4>
