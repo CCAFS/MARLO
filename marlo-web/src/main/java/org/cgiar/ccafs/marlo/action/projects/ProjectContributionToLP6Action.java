@@ -473,20 +473,21 @@ public class ProjectContributionToLP6Action extends BaseAction {
             }
           }
 
-          // save project Lp6 Contribution deliverable
-          // if (selectedDeliverables != null && !selectedDeliverables.isEmpty()) {
-          // for (ProjectLp6ContributionDeliverable selectedDeliverable : selectedDeliverables) {
-          // projectLp6ContributionDeliverable = new ProjectLp6ContributionDeliverable();
-          // projectLp6ContributionDeliverable.setPhase(this.getActualPhase());
-          // projectLp6ContributionDeliverable.setProjectLp6Contribution(projectLp6Contribution);
-          // projectLp6ContributionDeliverable.setDeliverable(selectedDeliverable.getDeliverable());
-          // projectLp6ContributionDeliverableManager
-          // .saveProjectLp6ContributionDeliverable(projectLp6ContributionDeliverable);
-          // }
-          // }
-
 
         }
+
+        // save project Lp6 Contribution deliverable
+        // if (selectedDeliverables != null && !selectedDeliverables.isEmpty()) {
+        // for (ProjectLp6ContributionDeliverable selectedDeliverable : selectedDeliverables) {
+        // projectLp6ContributionDeliverable = new ProjectLp6ContributionDeliverable();
+        // projectLp6ContributionDeliverable.setPhase(this.getActualPhase());
+        // projectLp6ContributionDeliverable.setProjectLp6Contribution(projectLp6Contribution);
+        // projectLp6ContributionDeliverable.setDeliverable(selectedDeliverable.getDeliverable());
+        // projectLp6ContributionDeliverableManager
+        // .saveProjectLp6ContributionDeliverable(projectLp6ContributionDeliverable);
+        // }
+        // }
+
       } catch (Exception e) {
         LOG.error("saving error", e);
         this.addActionMessage("");
