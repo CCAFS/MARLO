@@ -117,6 +117,7 @@ public class ProjectContributionToLP6Action extends BaseAction {
   private List<CrpProgram> regionFlagships;
   private List<LiaisonInstitution> liaisonInstitutions;
   private List<ProjectLp6ContributionDeliverable> selectedDeliverables;
+  private List<Lp6ContributionGeographicScope> contributionSelectedCountries;
   private List<LocElement> repIndRegions;
   private List<LocElement> countries;
   private List<String> countriesIds;
@@ -177,6 +178,11 @@ public class ProjectContributionToLP6Action extends BaseAction {
     // return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
+  public List<Lp6ContributionGeographicScope> getContributionSelectedCountries() {
+    return contributionSelectedCountries;
+  }
+
+
   public List<LocElement> getCountries() {
     return countries;
   }
@@ -184,6 +190,7 @@ public class ProjectContributionToLP6Action extends BaseAction {
   public List<String> getCountriesIds() {
     return countriesIds;
   }
+
 
   public List<Deliverable> getDeliverables() {
     return deliverables;
@@ -213,10 +220,10 @@ public class ProjectContributionToLP6Action extends BaseAction {
     return programFlagships;
   }
 
-
   public Project getProject() {
     return project;
   }
+
 
   public long getProjectID() {
     return projectID;
@@ -242,10 +249,10 @@ public class ProjectContributionToLP6Action extends BaseAction {
     return repIndRegions;
   }
 
-
   public List<ProjectLp6ContributionDeliverable> getSelectedDeliverables() {
     return selectedDeliverables;
   }
+
 
   public String getTop3Partnerships() {
     return top3Partnerships;
@@ -288,10 +295,10 @@ public class ProjectContributionToLP6Action extends BaseAction {
     return isUndertakingEffortsCSA;
   }
 
-
   public Boolean isUndertakingEffortsLeading() {
     return isUndertakingEffortsLeading;
   }
+
 
   public Boolean isWorkingAcrossFlagships() {
     return isWorkingAcrossFlagships;
@@ -300,6 +307,7 @@ public class ProjectContributionToLP6Action extends BaseAction {
   @Override
   public void prepare() throws Exception {
 
+    contributionSelectedCountries = new ArrayList<>();
     countriesIds = new ArrayList<String>();
     selectedDeliverables = new ArrayList<ProjectLp6ContributionDeliverable>();
 
@@ -373,10 +381,19 @@ public class ProjectContributionToLP6Action extends BaseAction {
 
     // Get selected deliverables
     if (projectLp6Contribution != null) {
-      this.setSelectedDeliverables(
-        projectLp6ContributionDeliverableManager.findAll().stream().filter(d -> d.getPhase() == this.getActualPhase()
-          && d.getProjectLp6Contribution().getId() == projectLp6Contribution.getId()).collect(Collectors.toList()));
+      if (projectLp6ContributionDeliverableManager.findAll() != null) {
+        this
+          .setSelectedDeliverables(
+            projectLp6ContributionDeliverableManager.findAll().stream()
+              .filter(d -> d.getPhase() == this.getActualPhase()
+                && d.getProjectLp6Contribution().getId() == projectLp6Contribution.getId())
+              .collect(Collectors.toList()));
+      }
     }
+
+    // get selected countries
+    this.setContributionSelectedCountries(lp6ContributionGeographicScopeManager
+      .getLp6ContributionGeographicScopebyPhase(projectLp6Contribution.getId(), this.getActualPhase().getId()));
 
     try {
       if (!this.isDraft()) {
@@ -390,7 +407,6 @@ public class ProjectContributionToLP6Action extends BaseAction {
       LOG.error("error getting contriesIds " + e);
     }
   }
-
 
   @Override
   public String save() {
@@ -421,13 +437,7 @@ public class ProjectContributionToLP6Action extends BaseAction {
         // Save the Countries List (ProjectExpectedStudyCountry)
         if (countriesIds != null && !countriesIds.isEmpty()) {
 
-          List<Lp6ContributionGeographicScope> countriesLp6 = lp6ContributionGeographicScopeManager
-            .getLp6ContributionGeographicScopebyPhase(projectLp6Contribution.getId(), this.getActualPhase().getId());
-
           List<Lp6ContributionGeographicScope> countriesSave = new ArrayList<>();
-          for (String countryIds : countriesIds) {
-
-          }
 
           for (String countryIds : countriesIds) {
             Lp6ContributionGeographicScope countryInn = new Lp6ContributionGeographicScope();
@@ -435,12 +445,17 @@ public class ProjectContributionToLP6Action extends BaseAction {
             countryInn.setPhase(this.getActualPhase());
             countryInn.setProjectLp6Contribution(projectLp6Contribution);
             countriesSave.add(countryInn);
-            if (!countriesLp6.contains(countryInn) || countriesLp6.isEmpty() || countriesLp6 == null) {
+            if (contributionSelectedCountries != null) {
+              if (!contributionSelectedCountries.contains(countryInn)) {
+                lp6ContributionGeographicScopeManager.saveLp6ContributionGeographicScope(countryInn);
+              }
+            } else {
               lp6ContributionGeographicScopeManager.saveLp6ContributionGeographicScope(countryInn);
             }
+
           }
 
-          for (Lp6ContributionGeographicScope lp6ContributionGeographicScope : countriesLp6) {
+          for (Lp6ContributionGeographicScope lp6ContributionGeographicScope : contributionSelectedCountries) {
             if (!countriesSave.contains(lp6ContributionGeographicScope)) {
               lp6ContributionGeographicScopeManager
                 .deleteLp6ContributionGeographicScope(lp6ContributionGeographicScope.getId());
@@ -494,6 +509,11 @@ public class ProjectContributionToLP6Action extends BaseAction {
       return NOT_AUTHORIZED;
     }
 
+  }
+
+
+  public void setContributionSelectedCountries(List<Lp6ContributionGeographicScope> contributionSelectedCountries) {
+    this.contributionSelectedCountries = contributionSelectedCountries;
   }
 
 
