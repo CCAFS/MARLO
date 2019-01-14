@@ -308,7 +308,7 @@ public class ProjectContributionToLP6Action extends BaseAction {
   public void prepare() throws Exception {
 
     contributionSelectedCountries = new ArrayList<>();
-    countriesIds = new ArrayList<String>();
+    // TODO countriesIds = new ArrayList<String>();
     selectedDeliverables = new ArrayList<ProjectLp6ContributionDeliverable>();
 
 
@@ -450,7 +450,7 @@ public class ProjectContributionToLP6Action extends BaseAction {
 
           List<Lp6ContributionGeographicScope> countriesSave = new ArrayList<>();
 
-          for (String countryIds : countriesIds) {
+          for (String countryIds : projectLp6Contribution.getCountriesIds()) {
             Lp6ContributionGeographicScope countryInn = new Lp6ContributionGeographicScope();
             countryInn.setLocElement(locElementManager.getLocElementByISOCode(countryIds));
             countryInn.setPhase(this.getActualPhase());
