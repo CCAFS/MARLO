@@ -15,6 +15,7 @@
 package org.cgiar.ccafs.marlo.data.manager.impl;
 
 
+import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.dao.PhaseDAO;
 import org.cgiar.ccafs.marlo.data.dao.ProjectPolicyCrossCuttingMarkerDAO;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyCrossCuttingMarkerManager;
@@ -147,7 +148,17 @@ public class ProjectPolicyCrossCuttingMarkerManagerImpl implements ProjectPolicy
   public ProjectPolicyCrossCuttingMarker
     saveProjectPolicyCrossCuttingMarker(ProjectPolicyCrossCuttingMarker projectPolicyCrossCuttingMarker) {
 
-    return projectPolicyCrossCuttingMarkerDAO.save(projectPolicyCrossCuttingMarker);
+    ProjectPolicyCrossCuttingMarker marker = projectPolicyCrossCuttingMarkerDAO.save(projectPolicyCrossCuttingMarker);
+
+    Phase phase = phaseDAO.find(marker.getPhase().getId());
+    if (phase.getDescription().equals(APConstants.REPORTING)) {
+      if (marker.getPhase().getNext() != null) {
+        this.savePolicyCrossCuttingMarkerAddPhase(marker.getPhase().getNext(), marker.getProjectPolicy().getId(),
+          projectPolicyCrossCuttingMarker);
+      }
+    }
+    return marker;
+
   }
 
 
