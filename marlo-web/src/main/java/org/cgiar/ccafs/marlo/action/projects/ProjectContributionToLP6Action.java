@@ -366,42 +366,50 @@ public class ProjectContributionToLP6Action extends BaseAction {
       }
     }
 
-    if (projectLp6Contribution != null) {
-      narrativeLP6Contribution = projectLp6Contribution.getNarrative();
-      workingAcrossFlagshipsNarrative = projectLp6Contribution.getWorkingAcrossFlagshipsNarrative();
-      isWorkingAcrossFlagships = projectLp6Contribution.isWorkingAcrossFlagships();
-      isUndertakingEffortsCSA = projectLp6Contribution.isUndertakingEffortsCsa();
-      undertakingEffortsLeadingNarrative = projectLp6Contribution.getUndertakingEffortsLeadingNarrative();
-      isUndertakingEffortsLeading = projectLp6Contribution.isUndertakingEffortsLeading();
-      top3Partnerships = projectLp6Contribution.getTopThreePartnershipsNarrative();
-      isInitiativeRelated = projectLp6Contribution.isInitiativeRelated();
-      initiativeRelatedNarrative = projectLp6Contribution.getInitiativeRelatedNarrative();
-      providingPathwaysNarrative = projectLp6Contribution.getProvidingPathwaysNarrative();
-      isProvidingPathways = projectLp6Contribution.isProvidingPathways();
-      undertakingEffortsCSANarrative = projectLp6Contribution.getUndertakingEffortsCsaNarrative();
-    }
+    // if (projectLp6Contribution != null) {
+    // narrativeLP6Contribution = projectLp6Contribution.getNarrative();
+    // workingAcrossFlagshipsNarrative = projectLp6Contribution.getWorkingAcrossFlagshipsNarrative();
+    // isWorkingAcrossFlagships = projectLp6Contribution.isWorkingAcrossFlagships();
+    // isUndertakingEffortsCSA = projectLp6Contribution.isUndertakingEffortsCsa();
+    // undertakingEffortsLeadingNarrative = projectLp6Contribution.getUndertakingEffortsLeadingNarrative();
+    // isUndertakingEffortsLeading = projectLp6Contribution.isUndertakingEffortsLeading();
+    // top3Partnerships = projectLp6Contribution.getTopThreePartnershipsNarrative();
+    // isInitiativeRelated = projectLp6Contribution.isInitiativeRelated();
+    // initiativeRelatedNarrative = projectLp6Contribution.getInitiativeRelatedNarrative();
+    // providingPathwaysNarrative = projectLp6Contribution.getProvidingPathwaysNarrative();
+    // isProvidingPathways = projectLp6Contribution.isProvidingPathways();
+    // undertakingEffortsCSANarrative = projectLp6Contribution.getUndertakingEffortsCsaNarrative();
+    // }
 
-    // Get selected deliverables
+
     if (projectLp6Contribution != null) {
-      if (projectLp6ContributionDeliverableManager.findAll() != null) {
-        this
-          .setSelectedDeliverables(
-            projectLp6ContributionDeliverableManager.findAll().stream()
-              .filter(d -> d.getPhase() == this.getActualPhase()
-                && d.getProjectLp6Contribution().getId() == projectLp6Contribution.getId())
-              .collect(Collectors.toList()));
+
+      // Get selected deliverables
+      if (projectLp6Contribution.getProjectLp6ContributionDeliverable() != null) {
+        projectLp6Contribution
+          .setDeliverables(new ArrayList<>(projectLp6Contribution.getProjectLp6ContributionDeliverable().stream()
+            .filter(o -> o.isActive() && o.getPhase().getId() == this.getActualPhase().getId())
+            .collect(Collectors.toList())));
       }
+
     }
 
     // get selected countries
-    this.setContributionSelectedCountries(lp6ContributionGeographicScopeManager
-      .getLp6ContributionGeographicScopebyPhase(projectLp6Contribution.getId(), this.getActualPhase().getId()));
+    // Policy Countries List
+    if (projectLp6Contribution.getLp6ContributionGeographicScopes() == null) {
+      projectLp6Contribution.setCountries(new ArrayList<>());
+    } else {
+      List<Lp6ContributionGeographicScope> countries = lp6ContributionGeographicScopeManager
+        .getLp6ContributionGeographicScopebyPhase(projectLp6Contribution.getId(), this.getActualPhase().getId());
+      projectLp6Contribution.setCountries(countries);
+    }
+
 
     try {
       if (!this.isDraft()) {
         if (countries != null) {
           for (LocElement country : countries) {
-            this.getCountriesIds().add(country.getLocElement().getIsoAlpha2());
+            projectLp6Contribution.getCountriesIds().add(country.getLocElement().getIsoAlpha2());
           }
         }
       }
@@ -422,18 +430,19 @@ public class ProjectContributionToLP6Action extends BaseAction {
           projectLp6Contribution = new ProjectLp6Contribution();
         }
 
-        projectLp6Contribution.setNarrative(narrativeLP6Contribution);
-        projectLp6Contribution.setWorkingAcrossFlagshipsNarrative(workingAcrossFlagshipsNarrative);
-        projectLp6Contribution.setWorkingAcrossFlagships(isWorkingAcrossFlagships);
-        projectLp6Contribution.setUndertakingEffortsCsa(isUndertakingEffortsCSA);
-        projectLp6Contribution.setUndertakingEffortsLeadingNarrative(undertakingEffortsLeadingNarrative);
-        projectLp6Contribution.setUndertakingEffortsLeading(isUndertakingEffortsLeading);
-        projectLp6Contribution.setTopThreePartnershipsNarrative(top3Partnerships);
-        projectLp6Contribution.setInitiativeRelated(isInitiativeRelated);
-        projectLp6Contribution.setInitiativeRelatedNarrative(initiativeRelatedNarrative);
-        projectLp6Contribution.setProvidingPathways(isProvidingPathways);
-        projectLp6Contribution.setProvidingPathwaysNarrative(providingPathwaysNarrative);
-        projectLp6Contribution.setUndertakingEffortsCsaNarrative(undertakingEffortsCSANarrative);
+        // projectLp6Contribution.setNarrative(projectLp6Contribution.getNarrative());
+        // projectLp6Contribution.setWorkingAcrossFlagshipsNarrative(workingAcrossFlagshipsNarrative);
+        // projectLp6Contribution.setWorkingAcrossFlagships(isWorkingAcrossFlagships);
+        // projectLp6Contribution.setUndertakingEffortsCsa(isUndertakingEffortsCSA);
+        // projectLp6Contribution.setUndertakingEffortsLeadingNarrative(undertakingEffortsLeadingNarrative);
+        // projectLp6Contribution.setUndertakingEffortsLeading(isUndertakingEffortsLeading);
+        // projectLp6Contribution.setTopThreePartnershipsNarrative(top3Partnerships);
+        // projectLp6Contribution.setInitiativeRelated(isInitiativeRelated);
+        // projectLp6Contribution.setInitiativeRelatedNarrative(initiativeRelatedNarrative);
+        // projectLp6Contribution.setProvidingPathways(isProvidingPathways);
+        // projectLp6Contribution.setProvidingPathwaysNarrative(providingPathwaysNarrative);
+        // projectLp6Contribution.setUndertakingEffortsCsaNarrative(undertakingEffortsCSANarrative);
+
         projectLp6ContributionManager.saveProjectLp6Contribution(projectLp6Contribution);
 
         // Save the Countries List (ProjectExpectedStudyCountry)
@@ -465,16 +474,16 @@ public class ProjectContributionToLP6Action extends BaseAction {
           }
 
           // save project Lp6 Contribution deliverable
-          if (selectedDeliverables != null && !selectedDeliverables.isEmpty()) {
-            for (ProjectLp6ContributionDeliverable selectedDeliverable : selectedDeliverables) {
-              projectLp6ContributionDeliverable = new ProjectLp6ContributionDeliverable();
-              projectLp6ContributionDeliverable.setPhase(this.getActualPhase());
-              projectLp6ContributionDeliverable.setProjectLp6Contribution(projectLp6Contribution);
-              projectLp6ContributionDeliverable.setDeliverable(selectedDeliverable.getDeliverable());
-              projectLp6ContributionDeliverableManager
-                .saveProjectLp6ContributionDeliverable(projectLp6ContributionDeliverable);
-            }
-          }
+          // if (selectedDeliverables != null && !selectedDeliverables.isEmpty()) {
+          // for (ProjectLp6ContributionDeliverable selectedDeliverable : selectedDeliverables) {
+          // projectLp6ContributionDeliverable = new ProjectLp6ContributionDeliverable();
+          // projectLp6ContributionDeliverable.setPhase(this.getActualPhase());
+          // projectLp6ContributionDeliverable.setProjectLp6Contribution(projectLp6Contribution);
+          // projectLp6ContributionDeliverable.setDeliverable(selectedDeliverable.getDeliverable());
+          // projectLp6ContributionDeliverableManager
+          // .saveProjectLp6ContributionDeliverable(projectLp6ContributionDeliverable);
+          // }
+          // }
 
 
         }
