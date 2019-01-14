@@ -53,6 +53,15 @@ public interface ProjectPolicyCrossCuttingMarkerManager {
 
 
   /**
+   * @param policyID
+   * @param cgiarCrossCuttingMarkerID
+   * @param phaseID
+   * @return
+   */
+  public ProjectPolicyCrossCuttingMarker getPolicyCrossCountryMarkerId(long policyID, long cgiarCrossCuttingMarkerID,
+    long phaseID);
+
+  /**
    * This method gets a projectPolicyCrossCuttingMarker object by a given projectPolicyCrossCuttingMarker identifier.
    * 
    * @param projectPolicyCrossCuttingMarkerID is the projectPolicyCrossCuttingMarker identifier.
@@ -63,12 +72,15 @@ public interface ProjectPolicyCrossCuttingMarkerManager {
   /**
    * This method saves the information of the given projectPolicyCrossCuttingMarker
    * 
-   * @param projectPolicyCrossCuttingMarker - is the projectPolicyCrossCuttingMarker object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the projectPolicyCrossCuttingMarker was
+   * @param projectPolicyCrossCuttingMarker - is the projectPolicyCrossCuttingMarker object with the new information to
+   *        be added/updated.
+   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the
+   *         projectPolicyCrossCuttingMarker was
    *         updated
    *         or -1 is some error occurred.
    */
-  public ProjectPolicyCrossCuttingMarker saveProjectPolicyCrossCuttingMarker(ProjectPolicyCrossCuttingMarker projectPolicyCrossCuttingMarker);
+  public ProjectPolicyCrossCuttingMarker
+    saveProjectPolicyCrossCuttingMarker(ProjectPolicyCrossCuttingMarker projectPolicyCrossCuttingMarker);
 
 
 }

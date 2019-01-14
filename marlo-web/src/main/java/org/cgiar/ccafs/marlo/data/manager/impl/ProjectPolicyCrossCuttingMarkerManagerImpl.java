@@ -99,6 +99,13 @@ public class ProjectPolicyCrossCuttingMarkerManagerImpl implements ProjectPolicy
   }
 
   @Override
+  public ProjectPolicyCrossCuttingMarker getPolicyCrossCountryMarkerId(long policyID, long cgiarCrossCuttingMarkerID,
+    long phaseID) {
+    return projectPolicyCrossCuttingMarkerDAO.getPolicyCrossCountryMarkerId(policyID, cgiarCrossCuttingMarkerID,
+      phaseID);
+  }
+
+  @Override
   public ProjectPolicyCrossCuttingMarker
     getProjectPolicyCrossCuttingMarkerById(long projectPolicyCrossCuttingMarkerID) {
 
@@ -134,6 +141,7 @@ public class ProjectPolicyCrossCuttingMarkerManagerImpl implements ProjectPolicy
       this.savePolicyCrossCuttingMarkerAddPhase(phase.getNext(), policyID, projectPolicyCrossCuttingMarker);
     }
   }
+
 
   @Override
   public ProjectPolicyCrossCuttingMarker
