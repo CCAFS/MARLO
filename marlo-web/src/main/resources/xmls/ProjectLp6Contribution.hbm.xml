@@ -64,14 +64,14 @@
     <property name="providingPathways" type="boolean">
       <column name="is_providing_pathways" not-null="true" />
     </property>
-    
+       
     <property name="topThreePartnershipsNarrative" type="string">
       <column name="top_three_partnerships" sql-type="TEXT"
         not-null="true" />
     </property>
     
-    <property name="undertakingEffortsCsaNarrative" type="string">
-      <column name="undertaking_efforts_csa" sql-type="TEXT"
+    <property name="providingPathwaysNarrative" type="string">
+      <column name="providing_pathways_narrative" sql-type="TEXT"
         not-null="true" />
     </property>
     
