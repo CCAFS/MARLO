@@ -62,21 +62,20 @@
                 </div>
               </div>
             </div>
-
             [#-- Work across flagships --]
-            [@contributionForm name="isWorkingAcrossFlagships" textName="workingAcrossFlagshipsNarrative" i18nkey="flagshipLevels" className="limitWords-100"/]
+            [@contributionForm name="isWorkingAcrossFlagships" textName="workingAcrossFlagshipsNarrative" i18nkey="flagshipLevels" checkedValue=(projectLp6Contribution.workingAcrossFlagships)! className="limitWords-100"/] 
             [#-- Efforts to position CGIAR --]
-            [@contributionForm name="isUndertakingEffortsLeading" textName="undertakingEffortsLeadingNarrative" i18nkey="positionCGIAR" className="limitWords-100"/]
+            [@contributionForm name="isUndertakingEffortsLeading" textName="undertakingEffortsLeadingNarrative" i18nkey="positionCGIAR" checkedValue=(projectLp6Contribution.undertakingEffortsLeading)! className="limitWords-100"/]
             [#-- Innovative Pathways / Tools --]
-            [@contributionForm name="isProvidingPathways" textName="providingPathwaysNarative" i18nkey="innovativePathways" className="limitWords-100"/]
+            [@contributionForm name="isProvidingPathways" textName="providingPathwaysNarative" i18nkey="innovativePathways" checkedValue=(projectLp6Contribution.providingPathways)! className="limitWords-100"/]
           <div class="form-group">
             [#-- Top 3 Partners --]
             [@customForm.textArea name="top3Partnerships" i18nkey="projects.LP6Contribution.partnerships"  i18nkey="projects.LP6Contribution.partnerships"  className="limitWords-100" required=true editable=canEdit /]
           </div>
             [#-- Scaling CSA --]
-            [@contributionForm name="isUndertakingEffortsCSA" textName="undertakingEffortsCSANarrative" i18nkey="scalingCSA" className="limitWords-100"/]
+            [@contributionForm name="isUndertakingEffortsCSA" textName="undertakingEffortsCSANarrative" i18nkey="scalingCSA" checkedValue=(projectLp6Contribution.undertakingEffortsCSA)! className="limitWords-100"/]
             [#-- Climate finance --]
-            [@contributionForm name="isInitiativeRelated" textName="initiativeRelatedNarrative" i18nkey="climateFinance" className="limitWords-100"/]
+            [@contributionForm name="isInitiativeRelated" textName="initiativeRelatedNarrative" i18nkey="climateFinance" checkedValue=(projectLp6Contribution.initiativeRelated)! className="limitWords-100"/]
        </div>
        [#-- Section Buttons & hidden inputs--]
        [#include "/WEB-INF/crp/views/projects/buttons-projects.ftl" /]  
@@ -86,24 +85,30 @@
 [#include "/WEB-INF/global/pages/footer.ftl"]
 
 
-[#macro contributionForm name textName i18nkey className]
+[#macro contributionForm name textName i18nkey className checkedValue]
 [#local questionName = "${name}" /]
 [#local textName = "${textName}"]
 [#local customName = "${i18nkey}" /]
 [#local className = "${className}" /]
-  
+[#if checkedValue?has_content]
+[#local checkedValueYes = checkedValue /]
+[#local checkedValueNo = !(checkedValue) /]
+[#else]
+[#local checkedValueYes = false /]
+[#local checkedValueNo = false /]
+[/#if]
   <div class="form-group row">
-    [#-- Climate finance --]
+    [#-- Radio buttons --]
     <div class="col-md-9"> 
        <label>[@s.text name="projects.LP6Contribution.${customName}"/][@customForm.req required=true /]</label>
     </div>
     <div class="col-md-3">
-       [@customForm.radioFlat id="${customName}-yes" name="${questionName}" label="Yes" value="true" checked=false cssClassLabel="radio-label-yes" editable=canEdit /]
-       [@customForm.radioFlat id="${customName}-no" name="${questionName}" label="No" value="false" checked=false cssClassLabel="radio-label-no" editable=canEdit /]
+       [@customForm.radioFlat id="${customName}-yes" name="projectLp6Contribution.${questionName}" label="Yes" value="true" checked=checkedValueYes cssClassLabel="radio-label-yes" editable=canEdit /]
+       [@customForm.radioFlat id="${customName}-no" name="projectLp6Contribution.${questionName}" label="No" value="false" checked=checkedValueNo cssClassLabel="radio-label-no" editable=canEdit /]
     </div>
   </div>
+  [#-- Text --]
   <div class=form-group">
-     [@customForm.textArea name="${textName}"  i18nkey="projects.LP6Contribution.${customName}.question"  className="${className}" required=true editable=canEdit /]
+     [@customForm.textArea name="projectLp6Contribution.${textName}"  i18nkey="projects.LP6Contribution.${customName}.question"  className="${className}" required=true editable=canEdit /]
   </div>
-  
 [/#macro]
