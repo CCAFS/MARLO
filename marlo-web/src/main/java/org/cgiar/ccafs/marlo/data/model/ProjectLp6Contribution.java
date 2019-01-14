@@ -29,29 +29,29 @@ public class ProjectLp6Contribution extends MarloAuditableEntity implements java
 
   private Phase phase;
 
-  private boolean contribution;
+  private Boolean contribution;
 
   private String narrative;
 
   private String workingAcrossFlagshipsNarrative;
 
-  private boolean workingAcrossFlagships;
+  private Boolean workingAcrossFlagships;
 
   private String undertakingEffortsLeadingNarrative;
 
-  private boolean undertakingEffortsLeading;
+  private Boolean undertakingEffortsLeading;
 
   private String topThreePartnershipsNarrative;
 
-  private boolean providingPathways;
+  private Boolean providingPathways;
 
   private String undertakingEffortsCsaNarrative;
 
-  private boolean undertakingEffortsCsa;
+  private Boolean undertakingEffortsCsa;
 
   private String initiativeRelatedNarrative;
 
-  private boolean initiativeRelated;
+  private Boolean initiativeRelated;
 
 
   public ProjectLp6Contribution() {
@@ -137,42 +137,42 @@ public class ProjectLp6Contribution extends MarloAuditableEntity implements java
   }
 
 
-  public boolean isContribution() {
+  public Boolean isContribution() {
     return contribution;
   }
 
 
-  public boolean isInitiativeRelated() {
+  public Boolean isInitiativeRelated() {
     return initiativeRelated;
   }
 
 
-  public boolean isProvidingPathways() {
+  public Boolean isProvidingPathways() {
     return providingPathways;
   }
 
 
-  public boolean isUndertakingEffortsCsa() {
+  public Boolean isUndertakingEffortsCsa() {
     return undertakingEffortsCsa;
   }
 
 
-  public boolean isUndertakingEffortsLeading() {
+  public Boolean isUndertakingEffortsLeading() {
     return undertakingEffortsLeading;
   }
 
 
-  public boolean isWorkingAcrossFlagships() {
+  public Boolean isWorkingAcrossFlagships() {
     return workingAcrossFlagships;
   }
 
 
-  public void setContribution(boolean contribution) {
+  public void setContribution(Boolean contribution) {
     this.contribution = contribution;
   }
 
 
-  public void setInitiativeRelated(boolean initiativeRelated) {
+  public void setInitiativeRelated(Boolean initiativeRelated) {
     this.initiativeRelated = initiativeRelated;
   }
 
@@ -196,7 +196,7 @@ public class ProjectLp6Contribution extends MarloAuditableEntity implements java
   }
 
 
-  public void setProvidingPathways(boolean providingPathways) {
+  public void setProvidingPathways(Boolean providingPathways) {
     this.providingPathways = providingPathways;
   }
 
@@ -206,7 +206,7 @@ public class ProjectLp6Contribution extends MarloAuditableEntity implements java
   }
 
 
-  public void setUndertakingEffortsCsa(boolean undertakingEffortsCsa) {
+  public void setUndertakingEffortsCsa(Boolean undertakingEffortsCsa) {
     this.undertakingEffortsCsa = undertakingEffortsCsa;
   }
 
@@ -216,7 +216,7 @@ public class ProjectLp6Contribution extends MarloAuditableEntity implements java
   }
 
 
-  public void setUndertakingEffortsLeading(boolean undertakingEffortsLeading) {
+  public void setUndertakingEffortsLeading(Boolean undertakingEffortsLeading) {
     this.undertakingEffortsLeading = undertakingEffortsLeading;
   }
 
@@ -226,7 +226,7 @@ public class ProjectLp6Contribution extends MarloAuditableEntity implements java
   }
 
 
-  public void setWorkingAcrossFlagships(boolean workingAcrossFlagships) {
+  public void setWorkingAcrossFlagships(Boolean workingAcrossFlagships) {
     this.workingAcrossFlagships = workingAcrossFlagships;
   }
 

@@ -80,16 +80,16 @@ public class ProjectContributionToLP6Action extends BaseAction {
   // Managers
   private ProjectManager projectManager;
   private String narrativeLP6Contribution;
-  private boolean isWorkingAcrossFlagships;
+  private Boolean isWorkingAcrossFlagships;
   private String workingAcrossFlagshipsNarrative;
-  private boolean isUndertakingEffortsLeading;
+  private Boolean isUndertakingEffortsLeading;
   private String undertakingEffortsLeadingNarrative;
-  private boolean isProvidingPathways;
+  private Boolean isProvidingPathways;
   private String providingPathwaysNarative;
   private String top3Partnerships;
-  private boolean isUndertakingEffortsCSA;
+  private Boolean isUndertakingEffortsCSA;
   private String undertakingEffortsCSANarrative;
-  private boolean isInitiativeRelated;
+  private Boolean isInitiativeRelated;
   private String initiativeRelatedNarrative;
   private List<RepIndGeographicScope> repIndGeographicScopes;
   private ProjectLp6ContributionManager projectLp6ContributionManager;
@@ -271,24 +271,24 @@ public class ProjectContributionToLP6Action extends BaseAction {
     return config.getDownloadURL() + "/" + this.getWorkplanRelativePath().replace('\\', '/');
   }
 
-  public boolean isInitiativeRelated() {
+  public Boolean isInitiativeRelated() {
     return isInitiativeRelated;
   }
 
-  public boolean isProvidingPathways() {
+  public Boolean isProvidingPathways() {
     return isProvidingPathways;
   }
 
-  public boolean isUndertakingEffortsCSA() {
+  public Boolean isUndertakingEffortsCSA() {
     return isUndertakingEffortsCSA;
   }
 
-  public boolean isUndertakingEffortsLeading() {
+  public Boolean isUndertakingEffortsLeading() {
     return isUndertakingEffortsLeading;
   }
 
 
-  public boolean isWorkingAcrossFlagships() {
+  public Boolean isWorkingAcrossFlagships() {
     return isWorkingAcrossFlagships;
   }
 
@@ -405,9 +405,7 @@ public class ProjectContributionToLP6Action extends BaseAction {
           if (countriesIds != null || !countriesIds.isEmpty()) {
 
             List<Lp6ContributionGeographicScope> countriesLp6 = lp6ContributionGeographicScopeManager
-              .getLp6ContributionGeographicScopebyPhase(projectLp6Contribution.getId(), this.getActualPhase().getId())
-              .stream().filter(le -> le.isActive() && le.getLocElement().getLocElementType().getId() == 2)
-              .collect(Collectors.toList());
+              .getLp6ContributionGeographicScopebyPhase(projectLp6Contribution.getId(), this.getActualPhase().getId());
 
             List<Lp6ContributionGeographicScope> countriesSave = new ArrayList<>();
             for (String countryIds : countriesIds) {
@@ -416,7 +414,7 @@ public class ProjectContributionToLP6Action extends BaseAction {
               countryInn.setPhase(this.getActualPhase());
               countryInn.setProjectLp6Contribution(projectLp6Contribution);
               countriesSave.add(countryInn);
-              if (!countriesLp6.contains(countryInn)) {
+              if (!countriesLp6.contains(countryInn) || countriesLp6.isEmpty() || countriesLp6 == null) {
                 lp6ContributionGeographicScopeManager.saveLp6ContributionGeographicScope(countryInn);
               }
             }
@@ -434,7 +432,8 @@ public class ProjectContributionToLP6Action extends BaseAction {
             projectLp6ContributionDeliverable.setProjectLp6Contribution(projectLp6Contribution);
             // projectLp6ContributionDeliverable.setDeliverable(deliverable);
 
-            // projectLp6ContributionDeliverableManager.saveProjectLp6ContributionDeliverable(projectLp6ContributionDeliverable);
+            projectLp6ContributionDeliverableManager
+              .saveProjectLp6ContributionDeliverable(projectLp6ContributionDeliverable);
 
 
           }
@@ -487,7 +486,7 @@ public class ProjectContributionToLP6Action extends BaseAction {
   }
 
 
-  public void setInitiativeRelated(boolean isInitiativeRelated) {
+  public void setInitiativeRelated(Boolean isInitiativeRelated) {
     this.isInitiativeRelated = isInitiativeRelated;
   }
 
@@ -531,7 +530,7 @@ public class ProjectContributionToLP6Action extends BaseAction {
   }
 
 
-  public void setProvidingPathways(boolean isProvidingPathways) {
+  public void setProvidingPathways(Boolean isProvidingPathways) {
     this.isProvidingPathways = isProvidingPathways;
   }
 
@@ -562,7 +561,7 @@ public class ProjectContributionToLP6Action extends BaseAction {
     this.transaction = transaction;
   }
 
-  public void setUndertakingEffortsCSA(boolean isUndertakingEffortsCSA) {
+  public void setUndertakingEffortsCSA(Boolean isUndertakingEffortsCSA) {
     this.isUndertakingEffortsCSA = isUndertakingEffortsCSA;
   }
 
@@ -571,7 +570,7 @@ public class ProjectContributionToLP6Action extends BaseAction {
   }
 
 
-  public void setUndertakingEffortsLeading(boolean isUndertakingEffortsLeading) {
+  public void setUndertakingEffortsLeading(Boolean isUndertakingEffortsLeading) {
     this.isUndertakingEffortsLeading = isUndertakingEffortsLeading;
   }
 
@@ -579,7 +578,7 @@ public class ProjectContributionToLP6Action extends BaseAction {
     this.undertakingEffortsLeadingNarrative = undertakingEffortsLeadingNarrative;
   }
 
-  public void setWorkingAcrossFlagships(boolean isWorkingAcrossFlagships) {
+  public void setWorkingAcrossFlagships(Boolean isWorkingAcrossFlagships) {
     this.isWorkingAcrossFlagships = isWorkingAcrossFlagships;
   }
 
