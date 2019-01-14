@@ -34,6 +34,7 @@
       { 'slug': 'contributionsLP6',  'name': 'projects.menu.contributionLP6',  'action': 'contributionsLP6',  'active': true, 'show': ((action.getProjectLp6ContributionValue(project.id, actualPhase.id))!false) && action.hasSpecificities('crp_lp6_active') && !reportingActive, "showCheck": isGlobalUnitProject},
       { 'slug': 'projectOutcomes',  'name': 'projects.menu.projectOutcomes',  'action': 'outcomesPandR',  'active': true, 'show':  phaseOne && !project.projectInfo.administrative , "showCheck": isGlobalUnitProject},
       { 'slug': 'ccafsOutcomes',  'name': 'projects.menu.ccafsOutcomes',  'action': 'ccafsOutcomes',  'active': true, 'show': phaseOne && !project.projectInfo.administrative , "showCheck": isGlobalUnitProject },
+      { 'slug': 'projectPolicies',  'name': 'projects.menu.policies',           'action': 'policies',  'active': true, 'show': reportingActive , "showCheck": isGlobalUnitProject },
       { 'slug': 'projectStudies',  'name': 'projects.menu.expectedStudies',  'action': 'studies',  'active': true, 'show': !centerGlobalUnit && !reportingActive , "showCheck": isGlobalUnitProject },
       { 'slug': 'projectStudies',  'name': 'projects.menu.studies',           'action': 'studies',  'active': true, 'show': reportingActive , "showCheck": isGlobalUnitProject }
       ]

@@ -117,6 +117,13 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
   private Set<DeliverableLocation> deliverableLocations = new HashSet<DeliverableLocation>(0);
   private Set<ProjectExpectedStudyRegion> projectExpectedStudyRegions = new HashSet<ProjectExpectedStudyRegion>(0);
   private Set<DeliverableGeographicRegion> deliverableGeographicRegions = new HashSet<DeliverableGeographicRegion>(0);
+  private Set<ProjectPolicyInfo> projectPolicyInfos = new HashSet<ProjectPolicyInfo>(0);
+  private Set<ProjectPolicyCountry> projectPolicyCountries = new HashSet<ProjectPolicyCountry>(0);
+  private Set<ProjectPolicyOwner> projectPolicyOwners = new HashSet<ProjectPolicyOwner>(0);
+  private Set<ProjectPolicyCrp> projectPolicyCrps = new HashSet<ProjectPolicyCrp>(0);
+  private Set<ProjectPolicySubIdo> projectPolicySubIdos = new HashSet<ProjectPolicySubIdo>(0);
+  private Set<ProjectPolicyCrossCuttingMarker> projectPolicyCrossCuttingMarkers =
+    new HashSet<ProjectPolicyCrossCuttingMarker>(0);
   private Set<Lp6ContributionGeographicScope> Lp6ContributionGeographicScopes =
     new HashSet<Lp6ContributionGeographicScope>(0);
   private Set<ProjectLp6ContributionDeliverable> ProjectLp6ContributionDeliverables =
@@ -409,6 +416,32 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
     return this.projectPhases;
   }
 
+
+  public Set<ProjectPolicyCountry> getProjectPolicyCountries() {
+    return projectPolicyCountries;
+  }
+
+  public Set<ProjectPolicyCrossCuttingMarker> getProjectPolicyCrossCuttingMarkers() {
+    return projectPolicyCrossCuttingMarkers;
+  }
+
+  public Set<ProjectPolicyCrp> getProjectPolicyCrps() {
+    return projectPolicyCrps;
+  }
+
+  public Set<ProjectPolicyInfo> getProjectPolicyInfos() {
+    return projectPolicyInfos;
+  }
+
+  public Set<ProjectPolicyOwner> getProjectPolicyOwners() {
+    return projectPolicyOwners;
+  }
+
+  public Set<ProjectPolicySubIdo> getProjectPolicySubIdos() {
+    return projectPolicySubIdos;
+  }
+
+
   public Set<ReportSynthesis> getReportSynthesis() {
     return reportSynthesis;
   }
@@ -660,6 +693,7 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
   public void setProjectInfos(Set<ProjectInfo> projectInfos) {
     this.projectInfos = projectInfos;
   }
+
 
   public void setProjectInnovationCountries(Set<ProjectInnovationCountry> projectInnovationCountries) {
     this.projectInnovationCountries = projectInnovationCountries;
