@@ -71,7 +71,7 @@ function addSelect2() {
       templateSelection: formatList
   });
 
-  $('form select.countriesIds').select2({
+  $('form select.countriesSelect').select2({
       maximumSelectionLength: 0,
       placeholder: "Select a country(ies)",
       templateResult: formatStateCountries,
@@ -80,10 +80,10 @@ function addSelect2() {
   });
 
   $('form #deliverableSelect').select2({
-    templateResult: formatState,
-    templateSelection: formatState,
-    width: '100%'
-});
+      templateResult: formatState,
+      templateSelection: formatState,
+      width: '100%'
+  });
 
 }
 
@@ -96,6 +96,7 @@ function formatList(state) {
 };
 
 function formatStateCountries(state) {
+  console.log(state);
   if(!state.id) {
     return state.text;
   }
@@ -103,6 +104,20 @@ function formatStateCountries(state) {
   var $state;
   if(state.id != -1) {
     $state = $('<span>' + flag + state.text + '</span>');
+  } else {
+    $state = $('<span>' + state.text + '</span>');
+  }
+  return $state;
+};
+
+function formatState(state) {
+  if(!state.id) {
+    return state.text;
+  }
+  var $state = "";
+  if(state.element.value != "-1") {
+    $state =
+        $('<span> <i class="flag-sm flag-sm-' + state.element.value.toUpperCase() + '"></i>  ' + state.text + '</span>');
   } else {
     $state = $('<span>' + state.text + '</span>');
   }
