@@ -92,5 +92,25 @@
     <property name="initiativeRelated" type="boolean">
       <column name="is_initiative_related" not-null="true" />
     </property>
+    <set embed-xml="true" fetch="select" inverse="true" lazy="true"
+      mutable="true" name="projectLp6ContributionDeliverable" optimistic-lock="true"
+      sort="unsorted" table="project_lp6_contribution_delievrables">
+      <key on-delete="noaction">
+        <column name="lp6_contribution_id" />
+      </key>
+      <one-to-many
+        class="org.cgiar.ccafs.marlo.data.model.ProjectLp6ContributionDeliverable"
+        embed-xml="true" not-found="exception" />
+    </set> 
+    <set embed-xml="true" fetch="select" inverse="true" lazy="true"
+      mutable="true" name="lp6ContributionGeographicScopes" optimistic-lock="true"
+      sort="unsorted" table="lp6_contrubution_geographic_scope">
+      <key on-delete="noaction">
+        <column name="lp6_contribution_id" />
+      </key>
+      <one-to-many
+        class="org.cgiar.ccafs.marlo.data.model.Lp6ContributionGeographicScope"
+        embed-xml="true" not-found="exception" />
+    </set> 
 	</class>
 </hibernate-mapping>
