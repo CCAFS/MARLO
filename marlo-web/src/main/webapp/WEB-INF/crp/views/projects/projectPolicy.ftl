@@ -132,7 +132,8 @@
       <div class="row">
         [#list cgiarCrossCuttingMarkers as marker]
           <div class="col-md-3">
-            <input type="hidden"  name="${customName}.crossCuttingMarkers[${marker_index}].id" value=""/>
+            [#local markerElement = (action.getPolicyCrossCuttingMarkerId(marker.id))!{} ]
+            <input type="hidden"  name="${customName}.crossCuttingMarkers[${marker_index}].id" value="${(markerElement.id)!}"/>
             <input type="hidden"  name="${customName}.crossCuttingMarkers[${marker_index}].cgiarCrossCuttingMarker.id" value="${marker.id}"/>
             [@customForm.select   name="${customName}.crossCuttingMarkers[${marker_index}].crossCuttingScoring.id" className="setSelect2" i18nkey="${marker.name}" listName="focusLevels" keyFieldName="id"  displayFieldName="name" required=true editable=editable/]
           </div>
@@ -142,7 +143,7 @@
     
     [#--  Geographic scope  --]
     <div class="form-group geographicScopeBlock">
-      [#local geographicScope = ((element.projectExpectedStudyInfo.repIndGeographicScope.id)!-1) ]
+      [#local geographicScope = ((element.projectPolicyInfo.repIndGeographicScope.id)!-1) ]
       
       [#local isRegional = ((geographicScope == action.reportingIndGeographicScopeRegional)!false) ]
       [#local isMultiNational = ((geographicScope == action.reportingIndGeographicScopeMultiNational)!false) ]
@@ -162,6 +163,7 @@
         </div>
         <div class="form-group nationalBlock" style="display:${(isMultiNational || isNational || isSubNational)?string('block','none')}">
           [#-- Multinational, National and Subnational scope --]
+          ${(element.countriesIds)!'null'}
           [@customForm.select name="${customName}.countriesIds" label="" i18nkey="policy.countries" listName="countries" keyFieldName="isoAlpha2"  displayFieldName="name" value="${customName}.countriesIds" multiple=true required=true className="countriesSelect" disabled=!editable/]
         </div>
       </div>
