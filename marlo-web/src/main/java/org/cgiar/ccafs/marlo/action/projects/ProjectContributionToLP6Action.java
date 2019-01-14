@@ -373,7 +373,9 @@ public class ProjectContributionToLP6Action extends BaseAction {
 
     // Get selected deliverables
     if (projectLp6Contribution != null) {
-      this.setSelectedDeliverables(projectLp6ContributionDeliverableManager.findAll());
+      this.setSelectedDeliverables(
+        projectLp6ContributionDeliverableManager.findAll().stream().filter(d -> d.getPhase() == this.getActualPhase()
+          && d.getProjectLp6Contribution().getId() == projectLp6Contribution.getId()).collect(Collectors.toList()));
     }
 
     try {
