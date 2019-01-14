@@ -14,5 +14,11 @@
         <property name="description" type="string">
             <column name="description" sql-type="TEXT" />
         </property>
+        <property name="year" type="java.lang.Long">
+            <column name="year" />
+        </property>
+        <many-to-one name="repIndStageStudy" class="org.cgiar.ccafs.marlo.data.model.RepIndStageStudy" fetch="select">
+            <column name="rep_ind_stage_studies_id" />
+        </many-to-one>
     </class>
 </hibernate-mapping>

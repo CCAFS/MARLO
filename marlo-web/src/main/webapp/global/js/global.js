@@ -537,6 +537,17 @@ function notificationError(message) {
 
 /* Set elementsListComponent function to the functioning of the customForm macro */
 function setElementsListComponent() {
+
+  // Disabled elements already selected
+  $('select[class*="elementType-"]').each(function(i,e) {
+    var $parent = $(e).parents('.elementsListComponent');
+    var $select = $parent.find('select');
+    $parent.find("ul.list li").each(function(index,domElement) {
+      var id = $(domElement).find('.elementRelationID').val();
+      $select.find('option[value="' + id + '"]').prop("disabled", true);
+    });
+  });
+
   // On select element
   $('select[class*="elementType-"]').on('change', onSelectElement);
 
@@ -581,19 +592,28 @@ function onSelectElement() {
   // Clone the new element
   var $element = $('#relationElement-' + elementType + '-template').clone(true).removeAttr("id");
 
-  console.log($element);
-
   // Remove template tag
   $element.find('input').each(function(i,e) {
     e.name = (e.name).replace("_TEMPLATE_", "");
     e.id = (e.id).replace("_TEMPLATE_", "");
   });
   // Set attributes
-  $element.find('.elementRelationID').val($option.val());
-  $element.find('.elementName').html($option.text());
+  var id = $option.val();
+  var name = $option.text();
+  $element.find('.elementRelationID').val(id);
+  $element.find('.elementName').html(name);
   // Show the element
-  $element.appendTo($list).hide().show('slow', function() {
+  $element.appendTo($list).hide().show(350, function() {
     $select.val('-1').trigger('change.select2');
+
+    // Disabled option in select component
+    $select.find('option[value="' + id + '"]').prop("disabled", true);
+    $select.select2();
+
+    // Create event addElement
+    $select.trigger("addElement", [
+        id, name
+    ]);
   });
 
   // Update indexes
@@ -606,9 +626,21 @@ function onSelectElement() {
 function onClickRemoveElement() {
   var removeElementType = $(this).classParam('removeElementType');
   var $parent = $(this).parent();
+  var $select = $(this).parents(".panel-body").find('select');
   var $list = $('.listType-' + removeElementType);
+  var id = $parent.find(".elementRelationID").val();
+  var name = $parent.find(".elementName").text();
   $parent.slideUp(100, function() {
     $parent.remove();
+
+    // Create event removeElement
+    $select.trigger("removeElement", [
+        id, name
+    ]);
+
+    // Enabled option in select component
+    $select.find('option[value="' + id + '"]').prop("disabled", false);
+    $select.select2();
 
     // Update indexes
     $list.find('li.relationElement').each(function(i,element) {
