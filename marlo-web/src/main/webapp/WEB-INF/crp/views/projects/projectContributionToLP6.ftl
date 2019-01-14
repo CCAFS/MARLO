@@ -30,10 +30,10 @@
         <div id="projectContributionToLP6" class="borderBox">
           <div class="form-group">
             [#-- Contribution to LP6 narrative --]
-            [@customForm.textArea name="projectsLp6Contribution.narrativeLP6Contribution" i18nkey="projects.LP6Contribution.narrativeContribution"  className="limitWords-100" required=true editable=canEdit /]
+            [@customForm.textArea name="projectLp6Contribution.narrative" i18nkey="projects.LP6Contribution.narrativeContribution"  className="limitWords-100" required=true editable=canEdit /]
             [#-- Deliverables --]
              <div class="form-group simpleBox">
-               [@customForm.elementsListComponent id="projectsLp6Contribution.deliverableSelect" name="projectsLp6Contribution.selectedDeliverables" elementType="deliverable" elementList=(projectsLp6Contribution.selectedDeliverables)![] label="projects.LP6Contribution.evidenceDeliverables" listName="deliverables" keyFieldName="id" displayFieldName="composedName" required=editable/]
+               [@customForm.elementsListComponent id="deliverableSelect" name="projectsLp6Contribution.selectedDeliverables" elementType="deliverable" elementList=(projectsLp6Contribution.selectedDeliverables)![] label="projects.LP6Contribution.evidenceDeliverables" listName="deliverables" keyFieldName="id" displayFieldName="composedName" required=editable/]
              <p class="note">[@s.text name="projects.LP6Contribution.deliverablesTooltip" /] <a href="[@s.url action="${crpSession}/deliverableList"][@s.param name="projectID" value=projectID /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">clicking here.</a></p>
              </div>
           </div>
@@ -48,16 +48,16 @@
                 <div class="form-group row">
                   <div class="col-md-6">
                     [#-- Geographic Scope --]
-                    [@customForm.select name="projectsLp6Contribution.geographicScope.id" className="setSelect2 geographicScopeSelect" i18nkey="projects.LP6Contribution.geographicScope" listName="repIndGeographicScopes" keyFieldName="id"  displayFieldName="name" className="geographicScopeSelect" editable=editable/]
+                    [@customForm.select name="projectLp6Contribution.geographicScope.id" className="setSelect2 geographicScopeSelect" i18nkey="projects.LP6Contribution.geographicScope" listName="repIndGeographicScopes" keyFieldName="id"  displayFieldName="name" className="geographicScopeSelect" editable=editable/]
                   </div>
                 </div>
                 <div class="form-group regionalBlock" style="display:${(isRegional)?string('block','none')}">
                   [#-- Regional scope --]
-                    [@customForm.elementsListComponent name="projectsLp6Contribution.region.id" elementType="locElement" id="region" elementList=(projects.LP6Contribution.regions)![] label="projects.LP6Contribution.region"  listName="repIndRegions" keyFieldName="id" displayFieldName="name" required=false /]
+                    [@customForm.elementsListComponent name="projectLp6Contribution.region.id" elementType="locElement" id="region" elementList=(projects.LP6Contribution.regions)![] label="projects.LP6Contribution.region"  listName="repIndRegions" keyFieldName="id" displayFieldName="name" required=false /]
                 </div>
                 <div class="form-group nationalBlock" style="display:${(isMultiNational || isNational || isSubNational)?string('block','none')}">
                   [#-- Multinational, National and Subnational scope --]
-                  [@customForm.select name="projectsLp6Contribution.countries.id" label="" i18nkey="projects.LP6Contribution.countries" listName="countries" keyFieldName="isoAlpha2"  displayFieldName="name" value="projectsLp6Contribution.countriesIds" multiple=true className="countriesSelect" disabled=!editable/]
+                  [@customForm.select name="projectLp6Contribution.countries.id" label="" i18nkey="projects.LP6Contribution.countries" listName="countries" keyFieldName="isoAlpha2"  displayFieldName="name" value="projectsLp6Contribution.countriesIds" multiple=true className="countriesSelect" disabled=!editable/]
                 </div>
               </div>
             </div>
@@ -69,7 +69,7 @@
             [@contributionForm name="isProvidingPathways" textName="providingPathwaysNarrative" i18nkey="innovativePathways" checkedValue=(projectLp6Contribution.providingPathways)! className="limitWords-100"/]
           <div class="form-group">
             [#-- Top 3 Partners --]
-            [@customForm.textArea name="projectsLp6Contribution.top3Partnerships" i18nkey="projects.LP6Contribution.partnerships" className="limitWords-100" required=true editable=canEdit /]
+            [@customForm.textArea name="projectLp6Contribution.topThreePartnershipsNarrative" i18nkey="projects.LP6Contribution.partnerships" className="limitWords-100" required=true editable=canEdit /]
           </div>
             [#-- Scaling CSA --]
             [@contributionForm name="isUndertakingEffortsCSA" textName="undertakingEffortsCSANarrative" i18nkey="scalingCSA" checkedValue=(projectLp6Contribution.undertakingEffortsCSA)! className="limitWords-100"/]
@@ -100,12 +100,12 @@
        <label>[@s.text name="projects.LP6Contribution.${i18nkey}"/][@customForm.req required=true /]</label>
     </div>
     <div class="col-md-3">
-       [@customForm.radioFlat id="${i18nkey}-yes" name="projectsLp6Contribution.${name}" label="Yes" value="true" checked=checkedValueYes cssClassLabel="radio-label-yes" editable=canEdit /]
-       [@customForm.radioFlat id="${i18nkey}-no" name="projectsLp6Contribution.${name}" label="No" value="false" checked=checkedValueNo cssClassLabel="radio-label-no" editable=canEdit /]
+       [@customForm.radioFlat id="${i18nkey}-yes" name="projectLp6Contribution.${name}" label="Yes" value="true" checked=checkedValueYes cssClassLabel="radio-label-yes" editable=canEdit /]
+       [@customForm.radioFlat id="${i18nkey}-no" name="projectLp6Contribution.${name}" label="No" value="false" checked=checkedValueNo cssClassLabel="radio-label-no" editable=canEdit /]
     </div>
   </div>
   [#-- Text --]
   <div class=form-group">
-     [@customForm.textArea name="projectsLp6Contribution.${textName}"  i18nkey="projects.LP6Contribution.${i18nkey}.question"  className="${className}" required=true editable=canEdit /]
+     [@customForm.textArea name="projectLp6Contribution.${textName}"  i18nkey="projects.LP6Contribution.${i18nkey}.question"  className="${className}" required=true editable=canEdit /]
   </div>
 [/#macro]
