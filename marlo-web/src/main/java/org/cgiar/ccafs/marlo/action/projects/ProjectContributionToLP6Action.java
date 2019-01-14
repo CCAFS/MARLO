@@ -85,7 +85,7 @@ public class ProjectContributionToLP6Action extends BaseAction {
   private Boolean isUndertakingEffortsLeading;
   private String undertakingEffortsLeadingNarrative;
   private Boolean isProvidingPathways;
-  private String providingPathwaysNarative;
+  private String providingPathwaysNarrative;
   private String top3Partnerships;
   private Boolean isUndertakingEffortsCSA;
   private String undertakingEffortsCSANarrative;
@@ -116,7 +116,7 @@ public class ProjectContributionToLP6Action extends BaseAction {
   private List<CrpProgram> programFlagships;
   private List<CrpProgram> regionFlagships;
   private List<LiaisonInstitution> liaisonInstitutions;
-  private List<Deliverable> selectedDeliverables;
+  private List<ProjectLp6ContributionDeliverable> selectedDeliverables;
   private List<LocElement> repIndRegions;
   private List<LocElement> countries;
   private List<String> countriesIds;
@@ -226,8 +226,8 @@ public class ProjectContributionToLP6Action extends BaseAction {
     return projectLp6Contribution;
   }
 
-  public String getProvidingPathwaysNarative() {
-    return providingPathwaysNarative;
+  public String getProvidingPathwaysNarrative() {
+    return providingPathwaysNarrative;
   }
 
   public List<CrpProgram> getRegionFlagships() {
@@ -243,7 +243,7 @@ public class ProjectContributionToLP6Action extends BaseAction {
   }
 
 
-  public List<Deliverable> getSelectedDeliverables() {
+  public List<ProjectLp6ContributionDeliverable> getSelectedDeliverables() {
     return selectedDeliverables;
   }
 
@@ -301,7 +301,8 @@ public class ProjectContributionToLP6Action extends BaseAction {
   public void prepare() throws Exception {
 
     countriesIds = new ArrayList<String>();
-    selectedDeliverables = new ArrayList<Deliverable>();
+    selectedDeliverables = new ArrayList<ProjectLp6ContributionDeliverable>();
+
 
     // Get current CRP
     loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
@@ -365,9 +366,16 @@ public class ProjectContributionToLP6Action extends BaseAction {
       top3Partnerships = projectLp6Contribution.getTopThreePartnershipsNarrative();
       isInitiativeRelated = projectLp6Contribution.isInitiativeRelated();
       initiativeRelatedNarrative = projectLp6Contribution.getInitiativeRelatedNarrative();
+      providingPathwaysNarrative = projectLp6Contribution.getProvidingPathwaysNarrative();
       isProvidingPathways = projectLp6Contribution.isProvidingPathways();
       undertakingEffortsCSANarrative = projectLp6Contribution.getUndertakingEffortsCsaNarrative();
     }
+
+    // Get selected deliverables
+    if (projectLp6Contribution != null) {
+      this.setSelectedDeliverables(projectLp6ContributionDeliverableManager.findAll());
+    }
+
     try {
       if (!this.isDraft()) {
         if (countries != null) {
@@ -387,69 +395,77 @@ public class ProjectContributionToLP6Action extends BaseAction {
 
     if (this.hasPermission("canEdit")) {
 
-      if (projectLp6Contribution != null) {
-        try {
+      try {
 
-          projectLp6Contribution.setNarrative(narrativeLP6Contribution);
-          projectLp6Contribution.setWorkingAcrossFlagshipsNarrative(workingAcrossFlagshipsNarrative);
-          projectLp6Contribution.setWorkingAcrossFlagships(isWorkingAcrossFlagships);
-          projectLp6Contribution.setUndertakingEffortsCsa(isUndertakingEffortsCSA);
-          projectLp6Contribution.setUndertakingEffortsLeadingNarrative(undertakingEffortsLeadingNarrative);
-          projectLp6Contribution.setUndertakingEffortsLeading(isUndertakingEffortsLeading);
-          projectLp6Contribution.setTopThreePartnershipsNarrative(top3Partnerships);
-          projectLp6Contribution.setInitiativeRelated(isInitiativeRelated);
-          projectLp6Contribution.setInitiativeRelatedNarrative(initiativeRelatedNarrative);
-          projectLp6Contribution.setProvidingPathways(isProvidingPathways);
-          projectLp6Contribution.setUndertakingEffortsCsaNarrative(undertakingEffortsCSANarrative);
-          projectLp6ContributionManager.saveProjectLp6Contribution(projectLp6Contribution);
 
-          // Save the Countries List (ProjectExpectedStudyCountry)
-          if (countriesIds != null || !countriesIds.isEmpty()) {
+        if (projectLp6Contribution == null) {
+          projectLp6Contribution = new ProjectLp6Contribution();
+        }
 
-            List<Lp6ContributionGeographicScope> countriesLp6 = lp6ContributionGeographicScopeManager
-              .getLp6ContributionGeographicScopebyPhase(projectLp6Contribution.getId(), this.getActualPhase().getId());
+        projectLp6Contribution.setNarrative(narrativeLP6Contribution);
+        projectLp6Contribution.setWorkingAcrossFlagshipsNarrative(workingAcrossFlagshipsNarrative);
+        projectLp6Contribution.setWorkingAcrossFlagships(isWorkingAcrossFlagships);
+        projectLp6Contribution.setUndertakingEffortsCsa(isUndertakingEffortsCSA);
+        projectLp6Contribution.setUndertakingEffortsLeadingNarrative(undertakingEffortsLeadingNarrative);
+        projectLp6Contribution.setUndertakingEffortsLeading(isUndertakingEffortsLeading);
+        projectLp6Contribution.setTopThreePartnershipsNarrative(top3Partnerships);
+        projectLp6Contribution.setInitiativeRelated(isInitiativeRelated);
+        projectLp6Contribution.setInitiativeRelatedNarrative(initiativeRelatedNarrative);
+        projectLp6Contribution.setProvidingPathways(isProvidingPathways);
+        projectLp6Contribution.setProvidingPathwaysNarrative(providingPathwaysNarrative);
+        projectLp6Contribution.setUndertakingEffortsCsaNarrative(undertakingEffortsCSANarrative);
+        projectLp6ContributionManager.saveProjectLp6Contribution(projectLp6Contribution);
 
-            List<Lp6ContributionGeographicScope> countriesSave = new ArrayList<>();
-            for (String countryIds : countriesIds) {
-              Lp6ContributionGeographicScope countryInn = new Lp6ContributionGeographicScope();
-              countryInn.setLocElement(locElementManager.getLocElementByISOCode(countryIds));
-              countryInn.setPhase(this.getActualPhase());
-              countryInn.setProjectLp6Contribution(projectLp6Contribution);
-              countriesSave.add(countryInn);
-              if (!countriesLp6.contains(countryInn) || countriesLp6.isEmpty() || countriesLp6 == null) {
-                lp6ContributionGeographicScopeManager.saveLp6ContributionGeographicScope(countryInn);
-              }
-            }
+        // Save the Countries List (ProjectExpectedStudyCountry)
+        if (countriesIds != null && !countriesIds.isEmpty()) {
 
-            for (Lp6ContributionGeographicScope lp6ContributionGeographicScope : countriesLp6) {
-              if (!countriesSave.contains(lp6ContributionGeographicScope)) {
-                lp6ContributionGeographicScopeManager
-                  .deleteLp6ContributionGeographicScope(lp6ContributionGeographicScope.getId());
-              }
-            }
+          List<Lp6ContributionGeographicScope> countriesLp6 = lp6ContributionGeographicScopeManager
+            .getLp6ContributionGeographicScopebyPhase(projectLp6Contribution.getId(), this.getActualPhase().getId());
 
-            // save project Lp6 Contribution deliverable
-            if (selectedDeliverables != null || !selectedDeliverables.isEmpty()) {
-              for (Deliverable selectedDeliverable : selectedDeliverables) {
-                projectLp6ContributionDeliverable = new ProjectLp6ContributionDeliverable();
-                projectLp6ContributionDeliverable.setPhase(this.getActualPhase());
-                projectLp6ContributionDeliverable.setProjectLp6Contribution(projectLp6Contribution);
-                projectLp6ContributionDeliverable.setDeliverable(selectedDeliverable);
-
-                projectLp6ContributionDeliverableManager
-                  .saveProjectLp6ContributionDeliverable(projectLp6ContributionDeliverable);
-              }
-            }
-
+          List<Lp6ContributionGeographicScope> countriesSave = new ArrayList<>();
+          for (String countryIds : countriesIds) {
 
           }
-        } catch (Exception e) {
-          LOG.error("saving error", e);
-          this.addActionMessage("");
-          this.setActionMessages(null);
-          return REDIRECT;
+
+          for (String countryIds : countriesIds) {
+            Lp6ContributionGeographicScope countryInn = new Lp6ContributionGeographicScope();
+            countryInn.setLocElement(locElementManager.getLocElementByISOCode(countryIds));
+            countryInn.setPhase(this.getActualPhase());
+            countryInn.setProjectLp6Contribution(projectLp6Contribution);
+            countriesSave.add(countryInn);
+            if (!countriesLp6.contains(countryInn) || countriesLp6.isEmpty() || countriesLp6 == null) {
+              lp6ContributionGeographicScopeManager.saveLp6ContributionGeographicScope(countryInn);
+            }
+          }
+
+          for (Lp6ContributionGeographicScope lp6ContributionGeographicScope : countriesLp6) {
+            if (!countriesSave.contains(lp6ContributionGeographicScope)) {
+              lp6ContributionGeographicScopeManager
+                .deleteLp6ContributionGeographicScope(lp6ContributionGeographicScope.getId());
+            }
+          }
+
+          // save project Lp6 Contribution deliverable
+          if (selectedDeliverables != null && !selectedDeliverables.isEmpty()) {
+            for (ProjectLp6ContributionDeliverable selectedDeliverable : selectedDeliverables) {
+              projectLp6ContributionDeliverable = new ProjectLp6ContributionDeliverable();
+              projectLp6ContributionDeliverable.setPhase(this.getActualPhase());
+              projectLp6ContributionDeliverable.setProjectLp6Contribution(projectLp6Contribution);
+              projectLp6ContributionDeliverable.setDeliverable(selectedDeliverable.getDeliverable());
+              projectLp6ContributionDeliverableManager
+                .saveProjectLp6ContributionDeliverable(projectLp6ContributionDeliverable);
+            }
+          }
+
+
         }
+      } catch (Exception e) {
+        LOG.error("saving error", e);
+        this.addActionMessage("");
+        this.setActionMessages(null);
+        return REDIRECT;
       }
+
 
       /*
        * Path path = this.getAutoSaveFilePath();
@@ -541,8 +557,8 @@ public class ProjectContributionToLP6Action extends BaseAction {
   }
 
 
-  public void setProvidingPathwaysNarative(String providingPathwaysNarative) {
-    this.providingPathwaysNarative = providingPathwaysNarative;
+  public void setProvidingPathwaysNarrative(String providingPathwaysNarrative) {
+    this.providingPathwaysNarrative = providingPathwaysNarrative;
   }
 
 
@@ -560,7 +576,7 @@ public class ProjectContributionToLP6Action extends BaseAction {
     this.repIndRegions = repIndRegions;
   }
 
-  public void setSelectedDeliverables(List<Deliverable> selectedDeliverables) {
+  public void setSelectedDeliverables(List<ProjectLp6ContributionDeliverable> selectedDeliverables) {
     this.selectedDeliverables = selectedDeliverables;
   }
 
