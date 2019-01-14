@@ -30,10 +30,10 @@
         <div id="projectContributionToLP6" class="borderBox">
           <div class="form-group">
             [#-- Contribution to LP6 narrative --]
-            [@customForm.textArea name="narrativeLP6Contribution" i18nkey="projects.LP6Contribution.narrativeContribution"  i18nkey="projects.LP6Contribution.narrativeContribution"  className="limitWords-100" required=true editable=canEdit /]
+            [@customForm.textArea name="narrativeLP6Contribution" i18nkey="projects.LP6Contribution.narrativeContribution"  className="limitWords-100" required=true editable=canEdit /]
             [#-- Deliverables --]
              <div class="form-group simpleBox stageProcessOne">
-               [@customForm.elementsListComponent id="deliverableSelect" name="projects.LP6Contribution.evidenceDeliverables" elementType="locElement" elementList="" label="projects.LP6Contribution.evidenceDeliverables" listName="deliverables" keyFieldName="id" displayFieldName="composedName" required=editable/]
+               [@customForm.elementsListComponent id="deliverableSelect" name="projects.LP6Contribution.evidenceDeliverables" elementType="" elementList=(projects.LP6Contribution.selectedDeliverables)![] label="projects.LP6Contribution.evidenceDeliverables" listName="deliverables" keyFieldName="id" displayFieldName="composedName" required=editable/]
              </div>
              <p class="note">[@s.text name="projects.LP6Contribution.deliverablesTooltip" /] <a href="">clicking here.</a></p>
           </div>
@@ -63,7 +63,7 @@
               </div>
             </div>
             [#-- Work across flagships --]
-            [@contributionForm name="isWorkingAcrossFlagships" textName="workingAcrossFlagshipsNarrative" i18nkey="flagshipLevels" checkedValue=(projectLp6Contribution.workingAcrossFlagships)! className="limitWords-100"/] 
+            [@contributionForm name="isWorkingAcrossFlagships" textName="workingAcrossFlagshipsNarrative" i18nkey="flagshipLevels" checkedValue=(projectLp6Contribution.workingAcrossFlagships)! className="limitWords-100"/]
             [#-- Efforts to position CGIAR --]
             [@contributionForm name="isUndertakingEffortsLeading" textName="undertakingEffortsLeadingNarrative" i18nkey="positionCGIAR" checkedValue=(projectLp6Contribution.undertakingEffortsLeading)! className="limitWords-100"/]
             [#-- Innovative Pathways / Tools --]
@@ -86,10 +86,7 @@
 
 
 [#macro contributionForm name textName i18nkey className checkedValue]
-[#local questionName = "${name}" /]
-[#local textName = "${textName}"]
-[#local customName = "${i18nkey}" /]
-[#local className = "${className}" /]
+
 [#if checkedValue?has_content]
 [#local checkedValueYes = checkedValue /]
 [#local checkedValueNo = !(checkedValue) /]
@@ -97,18 +94,19 @@
 [#local checkedValueYes = false /]
 [#local checkedValueNo = false /]
 [/#if]
+
   <div class="form-group row">
     [#-- Radio buttons --]
     <div class="col-md-9"> 
-       <label>[@s.text name="projects.LP6Contribution.${customName}"/][@customForm.req required=true /]</label>
+       <label>[@s.text name="projects.LP6Contribution.${i18nkey}"/][@customForm.req required=true /]</label>
     </div>
     <div class="col-md-3">
-       [@customForm.radioFlat id="${customName}-yes" name="projectLp6Contribution.${questionName}" label="Yes" value="true" checked=checkedValueYes cssClassLabel="radio-label-yes" editable=canEdit /]
-       [@customForm.radioFlat id="${customName}-no" name="projectLp6Contribution.${questionName}" label="No" value="false" checked=checkedValueNo cssClassLabel="radio-label-no" editable=canEdit /]
+       [@customForm.radioFlat id="${i18nkey}-yes" name="${name}" label="Yes" value="true" checked=checkedValueYes cssClassLabel="radio-label-yes" editable=canEdit /]
+       [@customForm.radioFlat id="${i18nkey}-no" name="${name}" label="No" value="false" checked=checkedValueNo cssClassLabel="radio-label-no" editable=canEdit /]
     </div>
   </div>
   [#-- Text --]
   <div class=form-group">
-     [@customForm.textArea name="projectLp6Contribution.${textName}"  i18nkey="projects.LP6Contribution.${customName}.question"  className="${className}" required=true editable=canEdit /]
+     [@customForm.textArea name="${textName}"  i18nkey="projects.LP6Contribution.${i18nkey}.question"  className="${className}" required=true editable=canEdit /]
   </div>
 [/#macro]
