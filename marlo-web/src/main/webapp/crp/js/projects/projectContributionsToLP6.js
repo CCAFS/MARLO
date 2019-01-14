@@ -10,7 +10,58 @@ $(document).ready(function() {
 
 function attachEvents() {
 
+  // Check the stage of innovation
+  $('select.stageInnovationSelect').on('change', function() {
+    var isStageFour = this.value == 4;
+    if(isStageFour) {
+      $('.stageFourBlock').slideDown();
+    } else {
+      $('.stageFourBlock').slideUp();
+    }
+  });
 
+  // Check geographicScopeSelect
+  $('select.geographicScopeSelect').on('change', function() {
+    var $regionalBlock = $('.regionalBlock');
+    var $nationalBlock = $('.nationalBlock');
+
+    var isRegional = this.value == 2;
+    var isMultiNational = this.value == 3;
+    var isNational = this.value == 4;
+    var isSubNational = this.value == 5;
+
+    // Regions
+    if(isRegional) {
+      $regionalBlock.show();
+    } else {
+      $regionalBlock.hide();
+    }
+
+    // Countries
+    $nationalBlock.find("select").val(null).trigger('change');
+    if(isMultiNational || isNational || isSubNational) {
+      if(isMultiNational) {
+        $nationalBlock.find("select").select2({
+            maximumSelectionLength: 0,
+            placeholder: "Select a country(ies)",
+            templateResult: formatStateCountries,
+            templateSelection: formatStateCountries,
+            width: '100%'
+        });
+      } else {
+        $nationalBlock.find("select").select2({
+            maximumSelectionLength: 1,
+            placeholder: "Select a country(ies)",
+            templateResult: formatStateCountries,
+            templateSelection: formatStateCountries,
+            width: '100%'
+        });
+      }
+      $nationalBlock.show();
+    } else {
+      $nationalBlock.hide();
+    }
+  });
 }
 
 function addSelect2() {
