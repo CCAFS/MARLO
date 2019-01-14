@@ -57,6 +57,11 @@
         not-null="true" />
     </property>
     
+      <property name="undertakingEffortsCSANarrative" type="string">
+      <column name="undertaking_efforts_csa" sql-type="TEXT"
+        not-null="true" />
+    </property>
+    
     <property name="undertakingEffortsLeading" type="boolean">
       <column name="is_undertaking_efforts_leading" not-null="true" />
     </property>
