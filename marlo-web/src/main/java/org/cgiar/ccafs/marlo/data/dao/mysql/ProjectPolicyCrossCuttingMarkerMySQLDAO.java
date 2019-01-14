@@ -77,9 +77,9 @@ public class ProjectPolicyCrossCuttingMarkerMySQLDAO extends AbstractMarloDAO<Pr
     query.append("SELECT id as markerId FROM project_policy_cross_cutting_markers ");
     query.append("WHERE project_policy_id = ");
     query.append(policyID);
-    query.append(" AND cgiar_cross_cutting_marker_id.id = ");
+    query.append(" AND cgiar_cross_cutting_marker_id = ");
     query.append(cgiarCrossCuttingMarkerID);
-    query.append(" AND phases.id = ");
+    query.append(" AND id_phase = ");
     query.append(phaseID);
     List<Map<String, Object>> list = super.findCustomQuery(query.toString());
 
