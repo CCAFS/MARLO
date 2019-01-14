@@ -28,11 +28,13 @@ import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonUserManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementTypeManager;
+import org.cgiar.ccafs.marlo.data.manager.Lp6ContributionGeographicScopeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectBudgetsCluserActvityManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectCenterOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectClusterActivityManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectFocusManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInfoManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectLp6ContributionDeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectLp6ContributionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectScopeManager;
@@ -46,8 +48,10 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableInfo;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
+import org.cgiar.ccafs.marlo.data.model.Lp6ContributionGeographicScope;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectLp6Contribution;
+import org.cgiar.ccafs.marlo.data.model.ProjectLp6ContributionDeliverable;
 import org.cgiar.ccafs.marlo.data.model.RepIndGeographicScope;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.HistoryComparator;
@@ -89,7 +93,11 @@ public class ProjectContributionToLP6Action extends BaseAction {
   private String initiativeRelatedNarrative;
   private List<RepIndGeographicScope> repIndGeographicScopes;
   private ProjectLp6ContributionManager projectLp6ContributionManager;
+  private Lp6ContributionGeographicScopeManager lp6ContributionGeographicScopeManager;
   private ProjectLp6Contribution projectLp6Contribution;
+  private Lp6ContributionGeographicScope lp6ContributionGeographicScope;
+  private ProjectLp6ContributionDeliverableManager projectLp6ContributionDeliverableManager;
+  private ProjectLp6ContributionDeliverable projectLp6ContributionDeliverable;
   private GlobalUnitManager crpManager;
   private CrpProgramManager programManager;
   private AuditLogManager auditLogManager;
@@ -118,8 +126,8 @@ public class ProjectContributionToLP6Action extends BaseAction {
 
   @Inject
   public ProjectContributionToLP6Action(APConfig config, ProjectManager projectManager, GlobalUnitManager crpManager,
-    CrpProgramManager programManager, LiaisonUserManager liaisonUserManager,
-    LiaisonInstitutionManager liaisonInstitutionManager, UserManager userManager,
+    CrpProgramManager programManager, Lp6ContributionGeographicScopeManager lp6ContributionGeographicScopeManager,
+    LiaisonUserManager liaisonUserManager, LiaisonInstitutionManager liaisonInstitutionManager, UserManager userManager,
     RepIndGeographicScopeManager repIndGeographicScopeManager, SectionStatusManager sectionStatusManager,
     ProjectFocusManager projectFocusManager, AuditLogManager auditLogManager, ProjectDescriptionValidator validator,
     ProjectClusterActivityManager projectClusterActivityManager,
@@ -128,6 +136,7 @@ public class ProjectContributionToLP6Action extends BaseAction {
     ProjectInfoManager projectInfoManagerManager, ProjectBudgetsCluserActvityManager projectBudgetsCluserActvityManager,
     GlobalUnitProjectManager globalUnitProjectManager, CenterOutcomeManager centerOutcomeManager,
     ProjectCenterOutcomeManager projectCenterOutcomeManager,
+    ProjectLp6ContributionDeliverableManager projectLp6ContributionDeliverableManager,
     ProjectLp6ContributionManager projectLp6ContributionManager, LocElementManager locElementManager,
     DeliverableManager deliverableManager, DeliverableInfoManager deliverableInfoManager) {
     super(config);
@@ -142,6 +151,8 @@ public class ProjectContributionToLP6Action extends BaseAction {
     this.locElementManager = locElementManager;
     this.deliverableManager = deliverableManager;
     this.deliverableInfoManager = deliverableInfoManager;
+    this.projectLp6ContributionDeliverableManager = projectLp6ContributionDeliverableManager;
+    this.lp6ContributionGeographicScopeManager = lp6ContributionGeographicScopeManager;
   }
 
 
@@ -169,6 +180,10 @@ public class ProjectContributionToLP6Action extends BaseAction {
     return countries;
   }
 
+  public List<String> getCountriesIds() {
+    return countriesIds;
+  }
+
   public List<Deliverable> getDeliverables() {
     return deliverables;
   }
@@ -177,20 +192,21 @@ public class ProjectContributionToLP6Action extends BaseAction {
     return initiativeRelatedNarrative;
   }
 
-
   public List<LiaisonInstitution> getLiaisonInstitutions() {
     return liaisonInstitutions;
   }
-
 
   public GlobalUnit getLoggedCrp() {
     return loggedCrp;
   }
 
+  public Lp6ContributionGeographicScope getLp6ContributionGeographicScope() {
+    return lp6ContributionGeographicScope;
+  }
+
   public String getNarrativeLP6Contribution() {
     return narrativeLP6Contribution;
   }
-
 
   public List<CrpProgram> getProgramFlagships() {
     return programFlagships;
@@ -201,26 +217,21 @@ public class ProjectContributionToLP6Action extends BaseAction {
     return project;
   }
 
-
   public long getProjectID() {
     return projectID;
   }
-
 
   public ProjectLp6Contribution getProjectLp6Contribution() {
     return projectLp6Contribution;
   }
 
-
   public String getProvidingPathwaysNarative() {
     return providingPathwaysNarative;
   }
 
-
   public List<CrpProgram> getRegionFlagships() {
     return regionFlagships;
   }
-
 
   public List<RepIndGeographicScope> getRepIndGeographicScopes() {
     return repIndGeographicScopes;
@@ -235,11 +246,9 @@ public class ProjectContributionToLP6Action extends BaseAction {
     return top3Partnerships;
   }
 
-
   public String getTransaction() {
     return transaction;
   }
-
 
   public String getUndertakingEffortsCSANarrative() {
     return undertakingEffortsCSANarrative;
@@ -249,18 +258,14 @@ public class ProjectContributionToLP6Action extends BaseAction {
     return undertakingEffortsLeadingNarrative;
   }
 
-
   public String getWorkingAcrossFlagshipsNarrative() {
     return workingAcrossFlagshipsNarrative;
   }
 
-
   private String getWorkplanRelativePath() {
-
     return config.getProjectsBaseFolder(loggedCrp.getAcronym()) + File.separator + project.getId() + File.separator
       + config.getProjectWorkplanFolder() + File.separator;
   }
-
 
   public String getWorkplanURL() {
     return config.getDownloadURL() + "/" + this.getWorkplanRelativePath().replace('\\', '/');
@@ -274,11 +279,9 @@ public class ProjectContributionToLP6Action extends BaseAction {
     return isProvidingPathways;
   }
 
-
   public boolean isUndertakingEffortsCSA() {
     return isUndertakingEffortsCSA;
   }
-
 
   public boolean isUndertakingEffortsLeading() {
     return isUndertakingEffortsLeading;
@@ -289,8 +292,11 @@ public class ProjectContributionToLP6Action extends BaseAction {
     return isWorkingAcrossFlagships;
   }
 
+
   @Override
   public void prepare() throws Exception {
+
+    countriesIds = new ArrayList<String>();
 
     // Get current CRP
     loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
@@ -357,8 +363,17 @@ public class ProjectContributionToLP6Action extends BaseAction {
       isProvidingPathways = projectLp6Contribution.isProvidingPathways();
       undertakingEffortsCSANarrative = projectLp6Contribution.getUndertakingEffortsCsaNarrative();
     }
-
-
+    try {
+      if (!this.isDraft()) {
+        if (countries != null) {
+          for (LocElement country : countries) {
+            this.getCountriesIds().add(country.getLocElement().getIsoAlpha2());
+          }
+        }
+      }
+    } catch (Exception e) {
+      LOG.error("error getting contriesIds " + e);
+    }
   }
 
 
@@ -385,8 +400,44 @@ public class ProjectContributionToLP6Action extends BaseAction {
           projectLp6Contribution.setUndertakingEffortsCsaNarrative(undertakingEffortsCSANarrative);
           projectLp6ContributionManager.saveProjectLp6Contribution(projectLp6Contribution);
 
-          // Deliverable deliverableManagedState = this.updateDeliverableInfo();
 
+          // Save the Countries List (ProjectExpectedStudyCountry)
+          if (countriesIds != null || !countriesIds.isEmpty()) {
+
+            List<Lp6ContributionGeographicScope> countriesLp6 = lp6ContributionGeographicScopeManager
+              .getLp6ContributionGeographicScopebyPhase(projectLp6Contribution.getId(), this.getActualPhase().getId())
+              .stream().filter(le -> le.isActive() && le.getLocElement().getLocElementType().getId() == 2)
+              .collect(Collectors.toList());
+
+            List<Lp6ContributionGeographicScope> countriesSave = new ArrayList<>();
+            for (String countryIds : countriesIds) {
+              Lp6ContributionGeographicScope countryInn = new Lp6ContributionGeographicScope();
+              countryInn.setLocElement(locElementManager.getLocElementByISOCode(countryIds));
+              countryInn.setPhase(this.getActualPhase());
+              countryInn.setProjectLp6Contribution(projectLp6Contribution);
+              countriesSave.add(countryInn);
+              if (!countriesLp6.contains(countryInn)) {
+                lp6ContributionGeographicScopeManager.saveLp6ContributionGeographicScope(countryInn);
+              }
+            }
+
+            for (Lp6ContributionGeographicScope lp6ContributionGeographicScope : countriesLp6) {
+              if (!countriesSave.contains(lp6ContributionGeographicScope)) {
+                lp6ContributionGeographicScopeManager
+                  .deleteLp6ContributionGeographicScope(lp6ContributionGeographicScope.getId());
+              }
+            }
+
+            // save project Lp6 Contribution deliverable
+            projectLp6ContributionDeliverable = new ProjectLp6ContributionDeliverable();
+            projectLp6ContributionDeliverable.setPhase(this.getActualPhase());
+            projectLp6ContributionDeliverable.setProjectLp6Contribution(projectLp6Contribution);
+            // projectLp6ContributionDeliverable.setDeliverable(deliverable);
+
+            // projectLp6ContributionDeliverableManager.saveProjectLp6ContributionDeliverable(projectLp6ContributionDeliverable);
+
+
+          }
         } catch (Exception e) {
           LOG.error("saving error", e);
           this.addActionMessage("");
@@ -427,9 +478,14 @@ public class ProjectContributionToLP6Action extends BaseAction {
   }
 
 
+  public void setCountriesIds(List<String> countriesIds) {
+    this.countriesIds = countriesIds;
+  }
+
   public void setDeliverables(List<Deliverable> deliverables) {
     this.deliverables = deliverables;
   }
+
 
   public void setInitiativeRelated(boolean isInitiativeRelated) {
     this.isInitiativeRelated = isInitiativeRelated;
@@ -443,9 +499,13 @@ public class ProjectContributionToLP6Action extends BaseAction {
     this.liaisonInstitutions = liaisonInstitutions;
   }
 
-
   public void setLoggedCrp(GlobalUnit loggedCrp) {
     this.loggedCrp = loggedCrp;
+  }
+
+
+  public void setLp6ContributionGeographicScope(Lp6ContributionGeographicScope lp6ContributionGeographicScope) {
+    this.lp6ContributionGeographicScope = lp6ContributionGeographicScope;
   }
 
 
@@ -509,6 +569,7 @@ public class ProjectContributionToLP6Action extends BaseAction {
   public void setUndertakingEffortsCSANarrative(String undertakingEffortsCSANarrative) {
     this.undertakingEffortsCSANarrative = undertakingEffortsCSANarrative;
   }
+
 
   public void setUndertakingEffortsLeading(boolean isUndertakingEffortsLeading) {
     this.isUndertakingEffortsLeading = isUndertakingEffortsLeading;

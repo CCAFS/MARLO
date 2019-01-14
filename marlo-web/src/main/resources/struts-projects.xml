@@ -611,6 +611,12 @@
         <param name="phaseID">${phaseID}</param>
         <param name="projectID">${projectID}</param>
       </result>
+      <result name="redirect" type="redirectAction">
+        <param name="actionName">${crpSession}/contributionsLP6</param>
+        <param name="edit">true</param>
+        <param name="phaseID">${phaseID}</param>
+        <param name="projectID">${projectID}</param>
+      </result>
     </action>
 
     <action name="{crp}/partnerSave"
