@@ -104,10 +104,6 @@ public class ProjectContributionToLP6Action extends BaseAction {
   private String transaction;
   private RepIndGeographicScopeManager repIndGeographicScopeManager;
   private LocElementManager locElementManager;
-  private List<LocElement> repIndRegions;
-  private List<LocElement> countries;
-  private List<String> countriesIds;
-  private List<Deliverable> deliverables;
   private DeliverableManager deliverableManager;
   private DeliverableInfoManager deliverableInfoManager;
   private Deliverable deliverable;
@@ -120,6 +116,11 @@ public class ProjectContributionToLP6Action extends BaseAction {
   private List<CrpProgram> programFlagships;
   private List<CrpProgram> regionFlagships;
   private List<LiaisonInstitution> liaisonInstitutions;
+  private List<Deliverable> selectedDeliverables;
+  private List<LocElement> repIndRegions;
+  private List<LocElement> countries;
+  private List<String> countriesIds;
+  private List<Deliverable> deliverables;
 
 
   private ProjectDescriptionValidator validator;
@@ -242,6 +243,10 @@ public class ProjectContributionToLP6Action extends BaseAction {
   }
 
 
+  public List<Deliverable> getSelectedDeliverables() {
+    return selectedDeliverables;
+  }
+
   public String getTop3Partnerships() {
     return top3Partnerships;
   }
@@ -283,20 +288,20 @@ public class ProjectContributionToLP6Action extends BaseAction {
     return isUndertakingEffortsCSA;
   }
 
+
   public Boolean isUndertakingEffortsLeading() {
     return isUndertakingEffortsLeading;
   }
-
 
   public Boolean isWorkingAcrossFlagships() {
     return isWorkingAcrossFlagships;
   }
 
-
   @Override
   public void prepare() throws Exception {
 
     countriesIds = new ArrayList<String>();
+    selectedDeliverables = new ArrayList<Deliverable>();
 
     // Get current CRP
     loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
@@ -385,8 +390,6 @@ public class ProjectContributionToLP6Action extends BaseAction {
       if (projectLp6Contribution != null) {
         try {
 
-          System.out.println(
-            "is working flagships " + isWorkingAcrossFlagships + " is providing patways " + isProvidingPathways);
           projectLp6Contribution.setNarrative(narrativeLP6Contribution);
           projectLp6Contribution.setWorkingAcrossFlagshipsNarrative(workingAcrossFlagshipsNarrative);
           projectLp6Contribution.setWorkingAcrossFlagships(isWorkingAcrossFlagships);
@@ -399,7 +402,6 @@ public class ProjectContributionToLP6Action extends BaseAction {
           projectLp6Contribution.setProvidingPathways(isProvidingPathways);
           projectLp6Contribution.setUndertakingEffortsCsaNarrative(undertakingEffortsCSANarrative);
           projectLp6ContributionManager.saveProjectLp6Contribution(projectLp6Contribution);
-
 
           // Save the Countries List (ProjectExpectedStudyCountry)
           if (countriesIds != null || !countriesIds.isEmpty()) {
@@ -427,13 +429,17 @@ public class ProjectContributionToLP6Action extends BaseAction {
             }
 
             // save project Lp6 Contribution deliverable
-            projectLp6ContributionDeliverable = new ProjectLp6ContributionDeliverable();
-            projectLp6ContributionDeliverable.setPhase(this.getActualPhase());
-            projectLp6ContributionDeliverable.setProjectLp6Contribution(projectLp6Contribution);
-            // projectLp6ContributionDeliverable.setDeliverable(deliverable);
+            if (selectedDeliverables != null || !selectedDeliverables.isEmpty()) {
+              for (Deliverable selectedDeliverable : selectedDeliverables) {
+                projectLp6ContributionDeliverable = new ProjectLp6ContributionDeliverable();
+                projectLp6ContributionDeliverable.setPhase(this.getActualPhase());
+                projectLp6ContributionDeliverable.setProjectLp6Contribution(projectLp6Contribution);
+                projectLp6ContributionDeliverable.setDeliverable(selectedDeliverable);
 
-            projectLp6ContributionDeliverableManager
-              .saveProjectLp6ContributionDeliverable(projectLp6ContributionDeliverable);
+                projectLp6ContributionDeliverableManager
+                  .saveProjectLp6ContributionDeliverable(projectLp6ContributionDeliverable);
+              }
+            }
 
 
           }
@@ -472,23 +478,24 @@ public class ProjectContributionToLP6Action extends BaseAction {
 
   }
 
+
   public void setCountries(List<LocElement> countries) {
     this.countries = countries;
   }
-
 
   public void setCountriesIds(List<String> countriesIds) {
     this.countriesIds = countriesIds;
   }
 
+
   public void setDeliverables(List<Deliverable> deliverables) {
     this.deliverables = deliverables;
   }
 
-
   public void setInitiativeRelated(Boolean isInitiativeRelated) {
     this.isInitiativeRelated = isInitiativeRelated;
   }
+
 
   public void setInitiativeRelatedNarrative(String initiativeRelatedNarrative) {
     this.initiativeRelatedNarrative = initiativeRelatedNarrative;
@@ -502,7 +509,6 @@ public class ProjectContributionToLP6Action extends BaseAction {
     this.loggedCrp = loggedCrp;
   }
 
-
   public void setLp6ContributionGeographicScope(Lp6ContributionGeographicScope lp6ContributionGeographicScope) {
     this.lp6ContributionGeographicScope = lp6ContributionGeographicScope;
   }
@@ -512,14 +518,15 @@ public class ProjectContributionToLP6Action extends BaseAction {
     this.narrativeLP6Contribution = narrativeLP6Contribution;
   }
 
+
   public void setProgramFlagships(List<CrpProgram> programFlagships) {
     this.programFlagships = programFlagships;
   }
 
-
   public void setProject(Project project) {
     this.project = project;
   }
+
 
   public void setProjectID(long projectID) {
     this.projectID = projectID;
@@ -528,7 +535,6 @@ public class ProjectContributionToLP6Action extends BaseAction {
   public void setProjectLp6Contribution(ProjectLp6Contribution projectLp6Contribution) {
     this.projectLp6Contribution = projectLp6Contribution;
   }
-
 
   public void setProvidingPathways(Boolean isProvidingPathways) {
     this.isProvidingPathways = isProvidingPathways;
@@ -549,8 +555,13 @@ public class ProjectContributionToLP6Action extends BaseAction {
     this.repIndGeographicScopes = repIndGeographicScopes;
   }
 
+
   public void setRepIndRegions(List<LocElement> repIndRegions) {
     this.repIndRegions = repIndRegions;
+  }
+
+  public void setSelectedDeliverables(List<Deliverable> selectedDeliverables) {
+    this.selectedDeliverables = selectedDeliverables;
   }
 
   public void setTop3Partnerships(String top3Partnerships) {
