@@ -57,7 +57,7 @@
         not-null="true" />
     </property>
     
-      <property name="undertakingEffortsCSANarrative" type="string">
+      <property name="undertakingEffortsCsaNarrative" type="string">
       <column name="undertaking_efforts_csa" sql-type="TEXT"
         not-null="true" />
     </property>
