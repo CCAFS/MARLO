@@ -91,7 +91,7 @@
     <div class="form-group row">
       [#-- Implementing Organization Type --]
       <div class="col-md-6">
-        [@customForm.select name="${customName}.projectPolicyInfo.repIndOrganizationType.id" className="setSelect2 policyInvestimentTypes" i18nkey="policy.organizationType" help="policy.organizationType.help" listName="organizationTypes" keyFieldName="id"  displayFieldName="name" required=true editable=editable/]
+        [@customForm.select name="${customName}.projectPolicyInfo.repIndOrganizationType.id" className="setSelect2 policyOrganizationType" i18nkey="policy.organizationType" help="policy.organizationType.help" listName="organizationTypes" keyFieldName="id"  displayFieldName="name" required=true editable=editable/]
       </div>
       [#-- Level of Maturity of the Process: (Before Stage in Process) --]
       <div class="col-md-6">
@@ -102,7 +102,7 @@
     <div class="row">
       [#-- Whose policy is this? (Max 2)  --]
       <div class="col-md-6">
-        [@customForm.elementsListComponent name="${customName}.policyOwners" elementType="repIndPolicyType" elementList=[] label="policy.policyOwners" help="policy.policyOwners.help"  listName="policyTypes" maxLimit=2 keyFieldName="id" displayFieldName="name"/]
+        [@customForm.elementsListComponent name="${customName}.owners" elementType="repIndPolicyType" elementList=(element.owners)![] label="policy.policyOwners" help="policy.policyOwners.help"  listName="policyTypes" maxLimit=2 keyFieldName="id" displayFieldName="name"/]
       </div>
       <div class="col-md-6 block-pleaseSpecify" style="display:none">
         [@customForm.input name="${customName}.projectPolicyInfo.otherOwner" i18nkey="policy.otherOwner" className="" required=false editable=editable /]
@@ -135,7 +135,7 @@
             [#local markerElement = (action.getPolicyCrossCuttingMarkerId(marker.id))! ]
             <input type="hidden"  name="${customName}.crossCuttingMarkers[${marker_index}].id" value="${(markerElement)!}"/>
             <input type="hidden"  name="${customName}.crossCuttingMarkers[${marker_index}].cgiarCrossCuttingMarker.id" value="${marker.id}"/>
-            [@customForm.select   name="${customName}.crossCuttingMarkers[${marker_index}].crossCuttingScoring.id" className="setSelect2" i18nkey="${marker.name}" listName="focusLevels" keyFieldName="id"  displayFieldName="name" required=true editable=editable/]
+            [@customForm.select   name="${customName}.crossCuttingMarkers[${marker_index}].crossCuttingScoring.id" className="setSelect2" i18nkey="${marker.name}" listName="focusLevels" keyFieldName="id"  displayFieldName="powbName" required=true editable=editable/]
           </div>
         [/#list]
       </div>
@@ -163,7 +163,6 @@
         </div>
         <div class="form-group nationalBlock" style="display:${(isMultiNational || isNational || isSubNational)?string('block','none')}">
           [#-- Multinational, National and Subnational scope --]
-          ${(element.countriesIds)!'null'}
           [@customForm.select name="${customName}.countriesIds" label="" i18nkey="policy.countries" listName="countries" keyFieldName="isoAlpha2"  displayFieldName="name" value="${customName}.countriesIds" multiple=true required=true className="countriesSelect" disabled=!editable/]
         </div>
       </div>
