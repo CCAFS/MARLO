@@ -475,6 +475,14 @@ public class ProjectPolicyAction extends BaseAction {
 
       }
 
+      if (!this.isDraft()) {
+        if (policy.getCountries() != null) {
+          for (ProjectPolicyCountry country : policy.getCountries()) {
+            policy.getCountriesIds().add(country.getLocElement().getIsoAlpha2());
+          }
+        }
+      }
+
 
       // Getting The lists
 
