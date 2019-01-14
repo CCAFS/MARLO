@@ -22,7 +22,6 @@ import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
-import org.cgiar.ccafs.marlo.data.manager.ProjectLp6ContributionDeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
@@ -34,7 +33,6 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableType;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
-import org.cgiar.ccafs.marlo.data.model.ProjectLp6ContributionDeliverable;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.security.Permission;
@@ -69,7 +67,6 @@ public class DeliverableListAction extends BaseAction {
   private DeliverableInfoManager deliverableInfoManager;
   private ProjectManager projectManager;
   private SectionStatusManager sectionStatusManager;
-  private ProjectLp6ContributionDeliverableManager projectLp6ContributionDeliverableManager;
 
 
   // Front-end
@@ -80,13 +77,11 @@ public class DeliverableListAction extends BaseAction {
   private GlobalUnit loggedCrp;
   private Project project;
   private long projectID;
-  private List<ProjectLp6ContributionDeliverable> selectedDeliverables;
 
 
   @Inject
   public DeliverableListAction(APConfig config, ProjectManager projectManager, GlobalUnitManager crpManager,
-    DeliverableTypeManager deliverableTypeManager, DeliverableManager deliverableManager,
-    ProjectLp6ContributionDeliverableManager projectLp6ContributionDeliverableManager, PhaseManager phaseManager,
+    DeliverableTypeManager deliverableTypeManager, DeliverableManager deliverableManager, PhaseManager phaseManager,
     DeliverableInfoManager deliverableInfoManager, SectionStatusManager sectionStatusManager) {
     super(config);
     this.projectManager = projectManager;
@@ -94,7 +89,6 @@ public class DeliverableListAction extends BaseAction {
     this.crpManager = crpManager;
     this.deliverableInfoManager = deliverableInfoManager;
     this.deliverableTypeManager = deliverableTypeManager;
-    this.projectLp6ContributionDeliverableManager = projectLp6ContributionDeliverableManager;
     this.deliverableManager = deliverableManager;
     this.phaseManager = phaseManager;
   }
@@ -133,13 +127,13 @@ public class DeliverableListAction extends BaseAction {
       }
     }
 
-
     if (deliverableID > 0) {
       return SUCCESS;
     }
 
     return INPUT;
   }
+
 
   public void addDeliverablePhase(Phase phase, Deliverable deliverable) {
     phase = phaseManager.getPhaseById(phase.getId());
@@ -155,6 +149,7 @@ public class DeliverableListAction extends BaseAction {
     }
   }
 
+
   public boolean canEdit(long deliverableID) {
     Deliverable deliverable = deliverableManager.getDeliverableById(deliverableID);
     if (this.isPlanningActive() && !this.isUpKeepActive()) {
@@ -165,7 +160,6 @@ public class DeliverableListAction extends BaseAction {
     }
     return true;
   }
-
 
   @Override
   public String delete() {
@@ -199,10 +193,10 @@ public class DeliverableListAction extends BaseAction {
     return allYears;
   }
 
-
   public long getDeliverableID() {
     return deliverableID;
   }
+
 
   public List<Deliverable> getDeliverables() {
     return deliverables;
@@ -361,10 +355,10 @@ public class DeliverableListAction extends BaseAction {
 
   }
 
-
   public GlobalUnit getLoggedCrp() {
     return loggedCrp;
   }
+
 
   public Project getProject() {
     return project;
@@ -432,25 +426,11 @@ public class DeliverableListAction extends BaseAction {
       String params[] = {loggedCrp.getAcronym(), project.getId() + ""};
       this.setBasePermission(this.getText(Permission.PROJECT_DELIVERABLE_LIST_BASE_PERMISSION, params));
 
-      // Get selected deliverables
-      if (projectLp6ContributionDeliverableManager.findAll() != null) {
-
-        selectedDeliverables = projectLp6ContributionDeliverableManager.findAll().stream()
-          .filter(d -> d.getPhase() == this.getActualPhase() && d.getDeliverable().getId() == deliverableID)
-          .collect(Collectors.toList());
-      }
-
-      if (selectedDeliverables.size() > 0) {
-
-      }
-
-
     } catch (Exception e) {
       projectID = -1;
     }
 
   }
-
 
   private DeliverablePartnership responsiblePartner(Deliverable deliverable) {
     try {
@@ -464,11 +444,11 @@ public class DeliverableListAction extends BaseAction {
     }
   }
 
+
   @Override
   public String save() {
     return SUCCESS;
   }
-
 
   public void setAllYears(List<Integer> allYears) {
     this.allYears = allYears;

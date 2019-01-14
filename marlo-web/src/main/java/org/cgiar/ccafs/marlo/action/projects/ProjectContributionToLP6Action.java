@@ -361,6 +361,8 @@ public class ProjectContributionToLP6Action extends BaseAction {
           && c.getProject().getId() == projectID && c.getPhase().getId() == this.getActualPhase().getId())
           .collect(Collectors.toList()).get(0));
       } catch (Exception e) {
+        LOG.error("error setting projectLp6 contribution " + e);
+
       }
     }
 
