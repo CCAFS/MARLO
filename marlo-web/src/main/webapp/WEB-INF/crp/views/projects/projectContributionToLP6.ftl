@@ -33,7 +33,7 @@
             [@customForm.textArea name="projectLp6Contribution.narrative" i18nkey="projects.LP6Contribution.narrativeContribution"  className="limitWords-100" required=true editable=canEdit /]
             [#-- Deliverables --]
              <div class="form-group simpleBox">
-               [@customForm.elementsListComponent id="deliverableSelect" name="projectsLp6Contribution.selectedDeliverables" elementType="deliverable" elementList=(projectsLp6Contribution.selectedDeliverables)![] label="projects.LP6Contribution.evidenceDeliverables" listName="deliverables" keyFieldName="id" displayFieldName="composedName" required=editable/]
+               [@customForm.elementsListComponent id="deliverableSelect" name="selectedDeliverables" elementType="deliverable" elementList=(selectedDeliverables) label="projects.LP6Contribution.evidenceDeliverables" listName="deliverables" keyFieldName="id" displayFieldName="composedName" required=editable/]
              <p class="note">[@s.text name="projects.LP6Contribution.deliverablesTooltip" /] <a href="[@s.url action="${crpSession}/deliverableList"][@s.param name="projectID" value=projectID /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">clicking here.</a></p>
              </div>
           </div>
@@ -62,19 +62,19 @@
               </div>
             </div>
             [#-- Work across flagships --]
-            [@contributionForm name="isWorkingAcrossFlagships" textName="workingAcrossFlagshipsNarrative" i18nkey="flagshipLevels" checkedValue=(projectLp6Contribution.workingAcrossFlagships)! className="limitWords-100"/]
+            [@contributionForm name="workingAcrossFlagships" textName="workingAcrossFlagshipsNarrative" i18nkey="flagshipLevels" checkedValue=(projectLp6Contribution.workingAcrossFlagships)! className="limitWords-100"/]
             [#-- Efforts to position CGIAR --]
-            [@contributionForm name="isUndertakingEffortsLeading" textName="undertakingEffortsLeadingNarrative" i18nkey="positionCGIAR" checkedValue=(projectLp6Contribution.undertakingEffortsLeading)! className="limitWords-100"/]
+            [@contributionForm name="undertakingEffortsLeading" textName="undertakingEffortsLeadingNarrative" i18nkey="positionCGIAR" checkedValue=(projectLp6Contribution.undertakingEffortsLeading)! className="limitWords-100"/]
             [#-- Innovative Pathways / Tools --]
-            [@contributionForm name="isProvidingPathways" textName="providingPathwaysNarrative" i18nkey="innovativePathways" checkedValue=(projectLp6Contribution.providingPathways)! className="limitWords-100"/]
+            [@contributionForm name="providingPathways" textName="providingPathwaysNarrative" i18nkey="innovativePathways" checkedValue=(projectLp6Contribution.providingPathways)! className="limitWords-100"/]
           <div class="form-group">
             [#-- Top 3 Partners --]
             [@customForm.textArea name="projectLp6Contribution.topThreePartnershipsNarrative" i18nkey="projects.LP6Contribution.partnerships" className="limitWords-100" required=true editable=canEdit /]
           </div>
             [#-- Scaling CSA --]
-            [@contributionForm name="isUndertakingEffortsCSA" textName="undertakingEffortsCSANarrative" i18nkey="scalingCSA" checkedValue=(projectLp6Contribution.undertakingEffortsCSA)! className="limitWords-100"/]
+            [@contributionForm name="undertakingEffortsCsa" textName="undertakingEffortsCsaNarrative" i18nkey="scalingCSA" checkedValue=(projectLp6Contribution.undertakingEffortsCsa)! className="limitWords-100"/]
             [#-- Climate finance --]
-            [@contributionForm name="isInitiativeRelated" textName="initiativeRelatedNarrative" i18nkey="climateFinance" checkedValue=(projectLp6Contribution.initiativeRelated)! className="limitWords-100"/]
+            [@contributionForm name="initiativeRelated" textName="initiativeRelatedNarrative" i18nkey="climateFinance" checkedValue=(projectLp6Contribution.initiativeRelated)! className="limitWords-100"/]
        </div>
        [#-- Section Buttons & hidden inputs--]
        [#include "/WEB-INF/crp/views/projects/buttons-projects.ftl" /]  
@@ -91,7 +91,7 @@
 [#local checkedValueNo = !(checkedValue) /]
 [#else]
 [#local checkedValueYes = false /]
-[#local checkedValueNo = false /]
+[#local checkedValueNo = true /]
 [/#if]
 
   <div class="form-group row">
