@@ -54,11 +54,10 @@ public class ProjectPolicyCrossCuttingMarkerManagerImpl implements ProjectPolicy
 
     List<ProjectPolicyCrossCuttingMarker> projectPolicyCrossCuttingMarkers =
       phase.getProjectPolicyCrossCuttingMarkers().stream()
-        .filter(c -> c.isActive() && c.getProjectPolicy().getId().longValue() == policyID
-          && c.getCgiarCrossCuttingMarker().getId()
-            .equals(projectPolicyCrossCuttingMarker.getCgiarCrossCuttingMarker().getId())
-          && c.getRepIndGenderYouthFocusLevel().getId()
-            .equals(projectPolicyCrossCuttingMarker.getRepIndGenderYouthFocusLevel().getId()))
+        .filter(
+          c -> c.isActive() && c.getProjectPolicy().getId().longValue() == policyID
+            && c.getCgiarCrossCuttingMarker().getId()
+              .equals(projectPolicyCrossCuttingMarker.getCgiarCrossCuttingMarker().getId()))
         .collect(Collectors.toList());
 
     for (ProjectPolicyCrossCuttingMarker projectPolicyCrossCuttingMarkerDB : projectPolicyCrossCuttingMarkers) {
@@ -120,21 +119,20 @@ public class ProjectPolicyCrossCuttingMarkerManagerImpl implements ProjectPolicy
 
     List<ProjectPolicyCrossCuttingMarker> projectPolicyCrossCuttingMarkers =
       phase.getProjectPolicyCrossCuttingMarkers().stream()
-        .filter(c -> c.isActive() && c.getProjectPolicy().getId().longValue() == policyID
-          && c.getCgiarCrossCuttingMarker().getId()
-            .equals(projectPolicyCrossCuttingMarker.getCgiarCrossCuttingMarker().getId())
-          && c.getRepIndGenderYouthFocusLevel().getId()
-            .equals(projectPolicyCrossCuttingMarker.getRepIndGenderYouthFocusLevel().getId()))
+        .filter(
+          c -> c.isActive() && c.getProjectPolicy().getId().longValue() == policyID
+            && c.getCgiarCrossCuttingMarker().getId()
+              .equals(projectPolicyCrossCuttingMarker.getCgiarCrossCuttingMarker().getId()))
         .collect(Collectors.toList());
 
     if (projectPolicyCrossCuttingMarkers.isEmpty()) {
       ProjectPolicyCrossCuttingMarker projectPolicyCrossCuttingMarkerAdd = new ProjectPolicyCrossCuttingMarker();
-      projectPolicyCrossCuttingMarkerAdd.setProjectPolicy(projectPolicyCrossCuttingMarkerAdd.getProjectPolicy());
+      projectPolicyCrossCuttingMarkerAdd.setProjectPolicy(projectPolicyCrossCuttingMarker.getProjectPolicy());
       projectPolicyCrossCuttingMarkerAdd.setPhase(phase);
       projectPolicyCrossCuttingMarkerAdd
-        .setRepIndGenderYouthFocusLevel(projectPolicyCrossCuttingMarkerAdd.getRepIndGenderYouthFocusLevel());
+        .setRepIndGenderYouthFocusLevel(projectPolicyCrossCuttingMarker.getRepIndGenderYouthFocusLevel());
       projectPolicyCrossCuttingMarkerAdd
-        .setCgiarCrossCuttingMarker(projectPolicyCrossCuttingMarkerAdd.getCgiarCrossCuttingMarker());
+        .setCgiarCrossCuttingMarker(projectPolicyCrossCuttingMarker.getCgiarCrossCuttingMarker());
       projectPolicyCrossCuttingMarkerDAO.save(projectPolicyCrossCuttingMarkerAdd);
     }
 
