@@ -97,7 +97,7 @@
     </div>
   </div>
   [#-- Text --]
-  <div class="form-group narrativeBlock" style="display:${(checkedValue)('block','none')}">
+  <div class="form-group narrativeBlock">
      [@customForm.textArea name="projectLp6Contribution.${textName}"  i18nkey="projects.LP6Contribution.${i18nkey}.question"  className="${className}" required=true editable=canEdit /]
   </div>
   </div>
