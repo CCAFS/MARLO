@@ -132,10 +132,10 @@
       <div class="row">
         [#list cgiarCrossCuttingMarkers as marker]
           <div class="col-md-3">
-            [#local markerElement = (action.getPolicyCrossCuttingMarkerId(marker.id))! ]
-            <input type="hidden"  name="${customName}.crossCuttingMarkers[${marker_index}].id" value="${(markerElement)!}"/>
+            [#local markerElement = (action.getPolicyCrossCuttingMarker(marker.id))!{} ]
+            <input type="hidden"  name="${customName}.crossCuttingMarkers[${marker_index}].id" value="${(markerElement.id)!}"/>
             <input type="hidden"  name="${customName}.crossCuttingMarkers[${marker_index}].cgiarCrossCuttingMarker.id" value="${marker.id}"/>
-            [@customForm.select   name="${customName}.crossCuttingMarkers[${marker_index}].crossCuttingScoring.id" className="setSelect2" i18nkey="${marker.name}" listName="focusLevels" keyFieldName="id"  displayFieldName="powbName" required=true editable=editable/]
+            [@customForm.select   name="${customName}.crossCuttingMarkers[${marker_index}].repIndGenderYouthFocusLevel.id" value="${(markerElement.repIndGenderYouthFocusLevel.id)!-1}" className="setSelect2" i18nkey="${marker.name}" listName="focusLevels" keyFieldName="id"  displayFieldName="powbName" required=true editable=editable/]
           </div>
         [/#list]
       </div>
