@@ -5,7 +5,6 @@ $(document).ready(function() {
 
   // Attach Events
   attachEvents();
-
 });
 
 function attachEvents() {
@@ -64,10 +63,10 @@ function attachEvents() {
     var $parent = $(this).parents(".contributionForm");
     var $narrativeBlock = $parent.find(".narrativeBlock")
 
-    if(value == "false"){
-      $narrativeBlock.hide();
-    }else{
+    if(value == "true"){
       $narrativeBlock.show();
+    }else{
+      $narrativeBlock.hide();
     }
 
    });
