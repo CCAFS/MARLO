@@ -133,8 +133,8 @@
   [#if action.hasSpecificities('crp_lp6_active') && ((action.getProjectLp6ContributionValue(project.id, actualPhase.id))!false) ]
     <div class="form-group">
          <label>[@s.text name="projects.LP6Contribution.contribution"/][@customForm.req required=true /]</label>
-         [@customForm.radioFlat id="lp6Contribution-yes" name="lp6Contribution" label="Yes" value="true" checked=(projectLp6Contribution.contribution)!false cssClassLabel="radio-label-yes" editable=editable /]
-         [@customForm.radioFlat id="lp6Contribution-no" name="lp6Contribution" label="No" value="false" checked=!((projectLp6Contribution.contribution)!true) cssClassLabel="radio-label-no" editable=editable /]
+         [@customForm.radioFlat id="lp6Contribution-yes" name="lp6Contribution" label="Yes" value="true" checked=(contribution)!false cssClassLabel="radio-label-yes" editable=editable /]
+         [@customForm.radioFlat id="lp6Contribution-no" name="lp6Contribution" label="No" value="false" checked=!((contribution)!true) cssClassLabel="radio-label-no" editable=editable /]
     </div>
   [/#if]
   

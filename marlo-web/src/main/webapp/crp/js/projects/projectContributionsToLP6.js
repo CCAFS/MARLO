@@ -10,14 +10,10 @@ $(document).ready(function() {
 
 function attachEvents() {
 
-  // Check the stage of innovation
-  $('select.stageInnovationSelect').on('change', function() {
-    var isStageFour = this.value == 4;
-    if(isStageFour) {
-      $('.stageFourBlock').slideDown();
-    } else {
-      $('.stageFourBlock').slideUp();
-    }
+  $("#deliverableSelect").select2({
+    templateResult: formatState,
+    templateSelection: formatState,
+    width: "100%"
   });
 
   // Check geographicScopeSelect
@@ -62,6 +58,20 @@ function attachEvents() {
       $nationalBlock.hide();
     }
   });
+
+  $('input.input-yn').on('change', function(){
+    var value = this.value;
+    var $parent = $(this).parents(".contributionForm");
+    var $narrativeBlock = $parent.find(".narrativeBlock")
+
+    if(value == "false"){
+      $narrativeBlock.hide();
+    }else{
+      $narrativeBlock.show();
+    }
+
+   });
+
 }
 
 function addSelect2() {
@@ -76,12 +86,6 @@ function addSelect2() {
       placeholder: "Select a country(ies)",
       templateResult: formatStateCountries,
       templateSelection: formatStateCountries,
-      width: '100%'
-  });
-
-  $('form #deliverableSelect').select2({
-      templateResult: formatState,
-      templateSelection: formatState,
       width: '100%'
   });
 
