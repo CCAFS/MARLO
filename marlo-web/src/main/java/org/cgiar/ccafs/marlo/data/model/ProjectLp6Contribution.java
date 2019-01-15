@@ -60,6 +60,11 @@ public class ProjectLp6Contribution extends MarloAuditableEntity implements java
 
   private Boolean initiativeRelated;
 
+  @Expose
+  private RepIndGeographicScope geographicScope;
+  @Expose
+  private RepIndRegion region;
+
   private Set<ProjectLp6ContributionDeliverable> projectLp6ContributionDeliverable =
     new HashSet<ProjectLp6ContributionDeliverable>(0);
 
@@ -117,12 +122,19 @@ public class ProjectLp6Contribution extends MarloAuditableEntity implements java
     return countriesIds;
   }
 
+
   public String getCountriesIdsText() {
     return countriesIdsText;
   }
 
+
   public List<ProjectLp6ContributionDeliverable> getDeliverables() {
     return deliverables;
+  }
+
+
+  public RepIndGeographicScope getGeographicScope() {
+    return geographicScope;
   }
 
 
@@ -130,11 +142,9 @@ public class ProjectLp6Contribution extends MarloAuditableEntity implements java
     return initiativeRelated;
   }
 
-
   public String getInitiativeRelatedNarrative() {
     return initiativeRelatedNarrative;
   }
-
 
   @Override
   public String getLogDeatil() {
@@ -151,9 +161,11 @@ public class ProjectLp6Contribution extends MarloAuditableEntity implements java
     return lp6ContributionGeographicScopes;
   }
 
+
   public String getNarrative() {
     return narrative;
   }
+
 
   public Phase getPhase() {
     return phase;
@@ -164,18 +176,22 @@ public class ProjectLp6Contribution extends MarloAuditableEntity implements java
     return project;
   }
 
-
   public Set<ProjectLp6ContributionDeliverable> getProjectLp6ContributionDeliverable() {
     return projectLp6ContributionDeliverable;
   }
-
 
   public Boolean getProvidingPathways() {
     return providingPathways;
   }
 
+
   public String getProvidingPathwaysNarrative() {
     return providingPathwaysNarrative;
+  }
+
+
+  public RepIndRegion getRegion() {
+    return region;
   }
 
 
@@ -201,14 +217,15 @@ public class ProjectLp6Contribution extends MarloAuditableEntity implements java
     return undertakingEffortsLeadingNarrative;
   }
 
-
   public Boolean getWorkingAcrossFlagships() {
     return workingAcrossFlagships;
   }
 
+
   public String getWorkingAcrossFlagshipsNarrative() {
     return workingAcrossFlagshipsNarrative;
   }
+
 
   @Override
   public int hashCode() {
@@ -218,11 +235,9 @@ public class ProjectLp6Contribution extends MarloAuditableEntity implements java
     return result;
   }
 
-
   public Boolean isContribution() {
     return contribution;
   }
-
 
   public Boolean isInitiativeRelated() {
     return initiativeRelated;
@@ -238,6 +253,7 @@ public class ProjectLp6Contribution extends MarloAuditableEntity implements java
     return undertakingEffortsCsa;
   }
 
+
   public Boolean isUndertakingEffortsLeading() {
     return undertakingEffortsLeading;
   }
@@ -246,7 +262,6 @@ public class ProjectLp6Contribution extends MarloAuditableEntity implements java
   public Boolean isWorkingAcrossFlagships() {
     return workingAcrossFlagships;
   }
-
 
   public void setContribution(Boolean contribution) {
     this.contribution = contribution;
@@ -270,6 +285,11 @@ public class ProjectLp6Contribution extends MarloAuditableEntity implements java
 
   public void setDeliverables(List<ProjectLp6ContributionDeliverable> deliverables) {
     this.deliverables = deliverables;
+  }
+
+
+  public void setGeographicScope(RepIndGeographicScope geographicScope) {
+    this.geographicScope = geographicScope;
   }
 
 
@@ -308,12 +328,17 @@ public class ProjectLp6Contribution extends MarloAuditableEntity implements java
     this.projectLp6ContributionDeliverable = projectLp6ContributionDeliverable;
   }
 
+
   public void setProvidingPathways(Boolean providingPathways) {
     this.providingPathways = providingPathways;
   }
 
   public void setProvidingPathwaysNarrative(String providingPathwaysNarrative) {
     this.providingPathwaysNarrative = providingPathwaysNarrative;
+  }
+
+  public void setRegion(RepIndRegion region) {
+    this.region = region;
   }
 
 

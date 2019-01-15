@@ -49,7 +49,6 @@ import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.Lp6ContributionGeographicScope;
-import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectLp6Contribution;
 import org.cgiar.ccafs.marlo.data.model.ProjectLp6ContributionDeliverable;
@@ -350,13 +349,11 @@ public class ProjectContributionToLP6Action extends BaseAction {
 
       try {
 
-        if (projectLp6Contribution == null) {
-          projectLp6Contribution = new ProjectLp6Contribution();
-        }
 
         projectLp6ContributionManager.saveProjectLp6Contribution(projectLp6Contribution);
-        this.saveProjectDeliverables(this.getActualPhase());
-        // Save the Countries List (ProjectExpectedStudyCountry)
+        this.saveProjectDeliverables();
+
+        // Save the Countries Lis
 
         if (countriesIds != null && !countriesIds.isEmpty()) {
 
@@ -420,10 +417,11 @@ public class ProjectContributionToLP6Action extends BaseAction {
 
   }
 
-  public void saveProjectDeliverables(Phase phase) {
-    // Save the deliverables list
+  public void saveProjectDeliverables() {
 
-    if (selectedDeliverables != null && !selectedDeliverables.isEmpty()) {
+    // Save the deliverables list
+    System.out.println("selected deliverables " + selectedDeliverables.size());
+    if (selectedDeliverables != null || !selectedDeliverables.isEmpty()) {
 
       if (projectLp6Contribution.getDeliverables() != null || !projectLp6Contribution.getDeliverables().isEmpty()) {
         for (ProjectLp6ContributionDeliverable projectLp6ContributionDeliverable : projectLp6Contribution
@@ -439,9 +437,18 @@ public class ProjectContributionToLP6Action extends BaseAction {
 
       for (ProjectLp6ContributionDeliverable contributionDeliverables : selectedDeliverables) {
 
-        contributionDeliverables.setPhase(phase);
+        contributionDeliverables.setPhase(this.getActualPhase());
         contributionDeliverables.setProjectLp6Contribution(projectLp6Contribution);
         projectLp6ContributionDeliverableManager.saveProjectLp6ContributionDeliverable(contributionDeliverables);
+      }
+    } else {
+      System.out.println("hi else ");
+
+      for (ProjectLp6ContributionDeliverable projectLp6ContributionDeliverable : projectLp6Contribution
+        .getDeliverables()) {
+        projectLp6ContributionDeliverableManager
+          .deleteProjectLp6ContributionDeliverable(projectLp6ContributionDeliverable.getId());
+
       }
     }
   }
