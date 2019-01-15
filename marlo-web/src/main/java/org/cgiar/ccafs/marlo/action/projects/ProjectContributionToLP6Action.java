@@ -375,7 +375,6 @@ public class ProjectContributionToLP6Action extends BaseAction {
             } else {
               lp6ContributionGeographicScopeManager.saveLp6ContributionGeographicScope(countryInn);
             }
-
           }
 
           for (Lp6ContributionGeographicScope lp6ContributionGeographicScope : contributionSelectedCountries) {
@@ -385,7 +384,6 @@ public class ProjectContributionToLP6Action extends BaseAction {
             }
           }
         }
-
 
       } catch (Exception e) {
         LOG.error("saving error", e);
@@ -427,15 +425,20 @@ public class ProjectContributionToLP6Action extends BaseAction {
 
     if (selectedDeliverables != null && !selectedDeliverables.isEmpty()) {
 
-      for (ProjectLp6ContributionDeliverable projectLp6ContributionDeliverable : projectLp6Contribution
-        .getDeliverables()) {
-        if (selectedDeliverables.contains(projectLp6ContributionDeliverable)) {
-          projectLp6ContributionDeliverableManager
-            .deleteProjectLp6ContributionDeliverable(projectLp6ContributionDeliverable.getId());
+      if (projectLp6Contribution.getDeliverables() != null || !projectLp6Contribution.getDeliverables().isEmpty()) {
+        for (ProjectLp6ContributionDeliverable projectLp6ContributionDeliverable : projectLp6Contribution
+          .getDeliverables()) {
+          if (selectedDeliverables.contains(projectLp6ContributionDeliverable)) {
+            /*
+             * projectLp6ContributionDeliverableManager
+             * .deleteProjectLp6ContributionDeliverable(projectLp6ContributionDeliverable.getId());
+             */
+          }
         }
       }
 
       for (ProjectLp6ContributionDeliverable contributionDeliverables : selectedDeliverables) {
+
         contributionDeliverables.setPhase(phase);
         contributionDeliverables.setProjectLp6Contribution(projectLp6Contribution);
         projectLp6ContributionDeliverableManager.saveProjectLp6ContributionDeliverable(contributionDeliverables);

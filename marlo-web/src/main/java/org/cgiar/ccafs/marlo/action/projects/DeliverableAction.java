@@ -762,14 +762,18 @@ public class DeliverableAction extends BaseAction {
     return projectID;
   }
 
+  public ProjectLp6Contribution getProjectLp6Contribution() {
+    return projectLp6Contribution;
+  }
+
   public List<ProjectOutcome> getProjectOutcome() {
     return projectOutcome;
   }
 
+
   public List<ProjectFocus> getProjectPrograms() {
     return projectPrograms;
   }
-
 
   public List<RepIndFillingType> getRepIndFillingTypes() {
     return repIndFillingTypes;
@@ -787,6 +791,7 @@ public class DeliverableAction extends BaseAction {
     return repIndRegions;
   }
 
+
   public List<RepIndTypeActivity> getRepIndTypeActivities() {
     return repIndTypeActivities;
   }
@@ -796,15 +801,14 @@ public class DeliverableAction extends BaseAction {
     return repIndTypeParticipants;
   }
 
-
   public List<RepositoryChannel> getRepositoryChannels() {
     return repositoryChannels;
   }
 
+
   public List<ProjectLp6ContributionDeliverable> getSelectedDeliverables() {
     return selectedDeliverables;
   }
-
 
   public List<ProjectPartner> getSelectedPartners() {
 
@@ -826,6 +830,7 @@ public class DeliverableAction extends BaseAction {
     return deliverablePartnerPersons;
 
   }
+
 
   public List<Long> getSelectedPersons(long partnerID) {
 
@@ -852,7 +857,6 @@ public class DeliverableAction extends BaseAction {
     return projectPartnerPersonIds;
   }
 
-
   public Map<String, String> getStatus() {
     return status;
   }
@@ -860,6 +864,7 @@ public class DeliverableAction extends BaseAction {
   public Map<String, String> getStatuses() {
     return statuses;
   }
+
 
   public String getTransaction() {
     return transaction;
@@ -1841,6 +1846,7 @@ public class DeliverableAction extends BaseAction {
 
   }
 
+
   public void removeOthersDeliverablePartnerships(Deliverable deliverablePrew) {
     if (deliverablePrew.getDeliverablePartnerships() != null
       && deliverablePrew.getDeliverablePartnerships().size() > 0) {
@@ -1991,9 +1997,38 @@ public class DeliverableAction extends BaseAction {
         relationsName.add(APConstants.PROJECT_DELIVERABLES_PARTICIPANT_RELATION);
       }
 
+      ProjectLp6ContributionDeliverable projectLp6ContributionDeliverableSave = null;
+
+      try {
+        projectLp6ContributionDeliverableSave = projectLp6ContributionDeliverableManager.findAll().stream()
+          .filter(d -> d.getPhase() == this.getActualPhase() && d.getDeliverable().getId() == deliverable.getId())
+          .collect(Collectors.toList()).get(0);
+      } catch (Exception e) {
+        System.out.println(e);
+      }
+
       // Save colaboration value
-      projectLp6Contribution.setContribution(contribution);
-      projectLp6ContributionManager.saveProjectLp6Contribution(projectLp6Contribution);
+      if (contribution == true) {
+        if (projectLp6ContributionDeliverableSave == null) {
+          projectLp6ContributionDeliverableSave = new ProjectLp6ContributionDeliverable();
+
+          if (projectLp6Contribution != null) {
+            projectLp6ContributionDeliverableSave.setProjectLp6Contribution(projectLp6Contribution);
+          }
+
+          projectLp6ContributionDeliverableSave.setPhase(this.getActualPhase());
+          projectLp6ContributionDeliverableSave.setDeliverable(deliverable);
+          projectLp6ContributionDeliverableManager
+            .saveProjectLp6ContributionDeliverable(projectLp6ContributionDeliverableSave);
+        }
+      }
+      if (contribution == false) {
+
+        if (projectLp6ContributionDeliverableSave != null) {
+          projectLp6ContributionDeliverableManager
+            .deleteProjectLp6ContributionDeliverable(projectLp6ContributionDeliverableSave.getId());
+        }
+      }
 
 
       /**
@@ -2064,7 +2099,6 @@ public class DeliverableAction extends BaseAction {
       }
     }
   }
-
 
   public void saveDataSharing() {
     if (deliverable.getFiles() == null) {
@@ -2225,6 +2259,7 @@ public class DeliverableAction extends BaseAction {
     }
 
   }
+
 
   public void saveDissemination() {
     if (deliverable.getDissemination() != null) {
@@ -2478,7 +2513,6 @@ public class DeliverableAction extends BaseAction {
     }
   }
 
-
   private void saveParticipant() {
     if (deliverable.getDeliverableParticipant() != null
       && deliverable.getDeliverableParticipant().getHasParticipants() != null) {
@@ -2588,6 +2622,7 @@ public class DeliverableAction extends BaseAction {
 
     }
   }
+
 
   public void saveQualityCheck() {
     DeliverableQualityCheck qualityCheck;
@@ -2797,7 +2832,6 @@ public class DeliverableAction extends BaseAction {
     }
   }
 
-
   public void setAnswers(List<DeliverableQualityAnswer> answers) {
     this.answers = answers;
   }
@@ -2812,6 +2846,7 @@ public class DeliverableAction extends BaseAction {
     this.countries = countries;
   }
 
+
   public void setcrossCuttingDimensions(List<CrossCuttingScoring> crossCuttingScores) {
     this.crossCuttingDimensions = crossCuttingScores;
   }
@@ -2819,7 +2854,6 @@ public class DeliverableAction extends BaseAction {
   public void setCrossCuttingScoresMap(Map<Long, String> crossCuttingScoresMap) {
     this.crossCuttingScoresMap = crossCuttingScoresMap;
   }
-
 
   public void setCrps(ArrayList<GlobalUnit> crps) {
     this.crps = crps;
@@ -2835,10 +2869,10 @@ public class DeliverableAction extends BaseAction {
     this.deliverableID = deliverableID;
   }
 
+
   public void setDeliverableSubTypes(List<DeliverableType> deliverableSubTypes) {
     this.deliverableSubTypes = deliverableSubTypes;
   }
-
 
   public void setDeliverableTypeParent(List<DeliverableType> deliverableTypeParent) {
     this.deliverableTypeParent = deliverableTypeParent;
@@ -2849,19 +2883,19 @@ public class DeliverableAction extends BaseAction {
     this.divisions = divisions;
   }
 
+
   public void setFundingSources(List<FundingSource> fundingSources) {
     this.fundingSources = fundingSources;
   }
-
 
   public void setGenderLevels(List<GenderType> genderLevels) {
     this.genderLevels = genderLevels;
   }
 
+
   public void setIndexTab(int indexTab) {
     this.indexTab = indexTab;
   }
-
 
   public void setKeyOutputs(List<CrpClusterKeyOutput> keyOutputs) {
     this.keyOutputs = keyOutputs;
@@ -2871,6 +2905,7 @@ public class DeliverableAction extends BaseAction {
   public void setLoggedCrp(GlobalUnit loggedCrp) {
     this.loggedCrp = loggedCrp;
   }
+
 
   public void setPartnerPersons(List<ProjectPartnerPerson> partnerPersons) {
     this.partnerPersons = partnerPersons;
@@ -2890,6 +2925,10 @@ public class DeliverableAction extends BaseAction {
 
   public void setProjectID(long projectID) {
     this.projectID = projectID;
+  }
+
+  public void setProjectLp6Contribution(ProjectLp6Contribution projectLp6Contribution) {
+    this.projectLp6Contribution = projectLp6Contribution;
   }
 
   public void setProjectOutcome(List<ProjectOutcome> projectOutcome) {
