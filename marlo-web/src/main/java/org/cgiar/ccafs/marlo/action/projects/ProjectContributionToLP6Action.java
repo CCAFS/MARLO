@@ -104,7 +104,6 @@ public class ProjectContributionToLP6Action extends BaseAction {
   private List<CrpProgram> programFlagships;
   private List<CrpProgram> regionFlagships;
   private List<LiaisonInstitution> liaisonInstitutions;
-  private List<ProjectLp6ContributionDeliverable> selectedDeliverables;
   private List<Lp6ContributionGeographicScope> contributionSelectedCountries;
   private List<LocElement> repIndRegions;
   private List<LocElement> countries;
@@ -225,10 +224,6 @@ public class ProjectContributionToLP6Action extends BaseAction {
     return repIndRegions;
   }
 
-  public List<ProjectLp6ContributionDeliverable> getSelectedDeliverables() {
-    return selectedDeliverables;
-  }
-
   public String getTransaction() {
     return transaction;
   }
@@ -248,7 +243,6 @@ public class ProjectContributionToLP6Action extends BaseAction {
 
     contributionSelectedCountries = new ArrayList<>();
     // TODO countriesIds = new ArrayList<String>();
-    selectedDeliverables = new ArrayList<ProjectLp6ContributionDeliverable>();
 
 
     // Get current CRP
@@ -316,7 +310,6 @@ public class ProjectContributionToLP6Action extends BaseAction {
       }
     }
 
-    this.setSelectedDeliverables(projectLp6Contribution.getDeliverables());
 
     // get selected countries
     // Policy Countries List
@@ -340,6 +333,13 @@ public class ProjectContributionToLP6Action extends BaseAction {
     } catch (Exception e) {
       LOG.error("error getting contriesIds " + e);
     }
+
+    if (this.isHttpPost()) {
+      if (projectLp6Contribution.getDeliverables() != null) {
+        projectLp6Contribution.getDeliverables().clear();
+      }
+    }
+
   }
 
   @Override
@@ -420,13 +420,13 @@ public class ProjectContributionToLP6Action extends BaseAction {
   public void saveProjectDeliverables() {
 
     // Save the deliverables list
-    System.out.println("selected deliverables " + selectedDeliverables.size());
-    if (selectedDeliverables != null || !selectedDeliverables.isEmpty()) {
+    System.out.println("selected deliverables " + projectLp6Contribution.getDeliverables().size());
+    if (projectLp6Contribution.getDeliverables() != null && !projectLp6Contribution.getDeliverables().isEmpty()) {
 
       if (projectLp6Contribution.getDeliverables() != null || !projectLp6Contribution.getDeliverables().isEmpty()) {
         for (ProjectLp6ContributionDeliverable projectLp6ContributionDeliverable : projectLp6Contribution
           .getDeliverables()) {
-          if (selectedDeliverables.contains(projectLp6ContributionDeliverable)) {
+          if (projectLp6Contribution.getDeliverables().contains(projectLp6ContributionDeliverable)) {
             /*
              * projectLp6ContributionDeliverableManager
              * .deleteProjectLp6ContributionDeliverable(projectLp6ContributionDeliverable.getId());
@@ -435,21 +435,26 @@ public class ProjectContributionToLP6Action extends BaseAction {
         }
       }
 
-      for (ProjectLp6ContributionDeliverable contributionDeliverables : selectedDeliverables) {
+      for (ProjectLp6ContributionDeliverable contributionDeliverables : projectLp6Contribution.getDeliverables()) {
 
         contributionDeliverables.setPhase(this.getActualPhase());
         contributionDeliverables.setProjectLp6Contribution(projectLp6Contribution);
         projectLp6ContributionDeliverableManager.saveProjectLp6ContributionDeliverable(contributionDeliverables);
       }
     } else {
-      System.out.println("hi else ");
 
-      for (ProjectLp6ContributionDeliverable projectLp6ContributionDeliverable : projectLp6Contribution
-        .getDeliverables()) {
-        projectLp6ContributionDeliverableManager
-          .deleteProjectLp6ContributionDeliverable(projectLp6ContributionDeliverable.getId());
+      List<ProjectLp6ContributionDeliverable> projectLp6ContributionDeliverables =
+        projectLp6Contribution.getProjectLp6ContributionDeliverable().stream()
+          .filter(o -> o.isActive() && o.getPhase().getId() == this.getActualPhase().getId())
+          .collect(Collectors.toList());
 
+      if (projectLp6ContributionDeliverables != null && !projectLp6ContributionDeliverables.isEmpty()) {
+        for (ProjectLp6ContributionDeliverable projectLp6ContributionDeliverable : projectLp6ContributionDeliverables) {
+          projectLp6ContributionDeliverableManager
+            .deleteProjectLp6ContributionDeliverable(projectLp6ContributionDeliverable.getId());
+        }
       }
+
     }
   }
 
@@ -515,9 +520,6 @@ public class ProjectContributionToLP6Action extends BaseAction {
     this.repIndRegions = repIndRegions;
   }
 
-  public void setSelectedDeliverables(List<ProjectLp6ContributionDeliverable> selectedDeliverables) {
-    this.selectedDeliverables = selectedDeliverables;
-  }
 
   public void setTransaction(String transaction) {
     this.transaction = transaction;
