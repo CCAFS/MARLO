@@ -31,12 +31,13 @@
           <div class="form-group">
             [#-- Contribution to LP6 narrative --]
             [@customForm.textArea name="projectLp6Contribution.narrative" i18nkey="projects.LP6Contribution.narrativeContribution"  className="limitWords-100" required=true editable=canEdit /]
+           <br>
+           </div>
             [#-- Deliverables --]
              <div class="form-group simpleBox">
                [@customForm.elementsListComponent id="deliverableSelect" name="projectLp6Contribution.deliverables" elementType="deliverable" elementList=(projectLp6Contribution.deliverables) label="projects.LP6Contribution.evidenceDeliverables" listName="deliverables" keyFieldName="id" displayFieldName="composedName" required=editable/]
-             <p class="note">[@s.text name="projects.LP6Contribution.deliverablesTooltip" /] <a href="[@s.url action="${crpSession}/deliverableList"][@s.param name="projectID" value=projectID /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">clicking here.</a></p>
+              <p class="note">[@s.text name="projects.LP6Contribution.deliverablesTooltip" /] <a href="[@s.url action="${crpSession}/deliverableList"][@s.param name="projectID" value=projectID /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">clicking here.</a></p>
              </div>
-          </div>
             [#-- Geographic Scope --]
             <div class="form-group geographicScopeBlock">        
               [#assign isRegional = ((projectsLp6Contribution.repIndGeographicScope.id == action.reportingIndGeographicScopeRegional)!false) ]
@@ -86,19 +87,19 @@
 
 [#macro contributionForm name textName i18nkey className checkedValue=""]
   <div class="contributionForm">
-  <div class="form-group row">
-    [#-- Radio buttons --]
-    <div class="col-md-9"> 
-       <label>[@s.text name="projects.LP6Contribution.${i18nkey}"/][@customForm.req required=true /]</label>
+    <div class="form-group row">
+      [#-- Radio buttons --]
+      <div class="col-md-9"> 
+         <label>[@s.text name="projects.LP6Contribution.${i18nkey}"/][@customForm.req required=true /]</label>
+      </div>
+      <div class="col-md-3">
+         [@customForm.radioFlat id="${i18nkey}-yes" name="projectLp6Contribution.${name}" label="Yes" value="true" checked=(checkedValue == "true") cssClass="input-yn" cssClassLabel="radio-label-yes" editable=canEdit /]
+         [@customForm.radioFlat id="${i18nkey}-no" name="projectLp6Contribution.${name}" label="No" value="false" checked=(checkedValue == "false") cssClass="input-yn" cssClassLabel="radio-label-no" editable=canEdit /]
+      </div>
     </div>
-    <div class="col-md-3">
-       [@customForm.radioFlat id="${i18nkey}-yes" name="projectLp6Contribution.${name}" label="Yes" value="true" checked=(checkedValue == "true") cssClass="input-yn" cssClassLabel="radio-label-yes" editable=canEdit /]
-       [@customForm.radioFlat id="${i18nkey}-no" name="projectLp6Contribution.${name}" label="No" value="false" checked=(checkedValue == "false") cssClass="input-yn" cssClassLabel="radio-label-no" editable=canEdit /]
+    [#-- Text --]
+    <div class="form-group narrativeBlock" style="display:${((checkedValue == "true"))?string('block','none')}">
+       [@customForm.textArea name="projectLp6Contribution.${textName}"  i18nkey="projects.LP6Contribution.${i18nkey}.question"  className="${className}" required=true editable=canEdit /]
     </div>
-  </div>
-  [#-- Text --]
-  <div class="form-group narrativeBlock">
-     [@customForm.textArea name="projectLp6Contribution.${textName}"  i18nkey="projects.LP6Contribution.${i18nkey}.question"  className="${className}" required=true editable=canEdit /]
-  </div>
   </div>
 [/#macro]
