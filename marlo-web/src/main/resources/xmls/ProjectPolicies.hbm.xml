@@ -23,7 +23,7 @@
 		</property>
 		<property generated="never" lazy="false" name="activeSince"
 			optimistic-lock="true" type="timestamp" unique="false">
-			<column length="19" name="active_since" not-null="true" />
+			<column length="19" name="active_since" />
 		</property>
 		<many-to-one class="org.cgiar.ccafs.marlo.data.model.User"
 			embed-xml="true" fetch="select" insert="true" name="createdBy"
