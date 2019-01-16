@@ -1736,6 +1736,27 @@ public class DeliverableAction extends BaseAction {
         }
       }
 
+
+      // Get selected deliverables
+      selectedDeliverables = new ArrayList<ProjectLp6ContributionDeliverable>();
+      if (projectLp6ContributionDeliverableManager.findAll() != null) {
+
+        selectedDeliverables = projectLp6ContributionDeliverableManager.findAll().stream()
+          .filter(d -> d.isActive() && d.getPhase() == this.getActualPhase() && d.getDeliverable().getId() == deliverableID)
+          .collect(Collectors.toList());
+      }
+
+      projectLp6Contribution = (projectLp6ContributionManager.findAll().stream().filter(c -> c.isActive()
+        && c.getProject().getId() == projectID && c.getPhase().getId() == this.getActualPhase().getId())
+        .collect(Collectors.toList()).get(0));
+
+      if (selectedDeliverables.size() > 0) {
+        this.setContribution(true);
+      } else {
+        this.setContribution(false);
+      }
+
+
       if (this.isHttpPost()) {
         if (deliverableTypeParent != null) {
           deliverableTypeParent.clear();
@@ -1808,31 +1829,6 @@ public class DeliverableAction extends BaseAction {
         if (deliverable.getCountries() != null) {
           deliverable.getCountries().clear();
         }
-      }
-
-
-      // Get selected deliverables
-      selectedDeliverables = new ArrayList<ProjectLp6ContributionDeliverable>();
-      if (projectLp6ContributionDeliverableManager.findAll() != null) {
-
-        selectedDeliverables = projectLp6ContributionDeliverableManager.findAll().stream()
-          .filter(d -> d.getPhase() == this.getActualPhase() && d.getDeliverable().getId() == deliverableID)
-          .collect(Collectors.toList());
-      }
-
-      try {
-        projectLp6Contribution = (projectLp6ContributionManager.findAll().stream().filter(c -> c.isActive()
-          && c.getProject().getId() == projectID && c.getPhase().getId() == this.getActualPhase().getId())
-          .collect(Collectors.toList()).get(0));
-
-        if (selectedDeliverables.size() > 0) {
-          this.setContribution(true);
-        } else {
-          this.setContribution(false);
-
-        }
-      } catch (Exception e) {
-        System.out.println(e);
       }
 
 
