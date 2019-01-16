@@ -69,7 +69,7 @@
               [#local pYear = (project.projectInfo.endDate)?date?string('yyyy')?number ]
               [#local validDate = (pYear >= actualPhase.year)!false ]
               <p class="${(!validDate)?string('fieldError', '')}" title="${(!validDate)?string('Invalid End Date', '')}">
-                <small class="text-gray">(${(project.projectInfo.startDate)!} - ${(project.projectInfo.endDate)!})</small>
+                <small class="">(${(project.projectInfo.startDate)!} - ${(project.projectInfo.endDate)!})</small>
               </p>
             [/#if]
           </td>
