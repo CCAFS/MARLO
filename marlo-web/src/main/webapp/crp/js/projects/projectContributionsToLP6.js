@@ -9,12 +9,6 @@ $(document).ready(function() {
 
 function attachEvents() {
 
-  $("#deliverableSelect").select2({
-    templateResult: formatState,
-    templateSelection: formatState,
-    width: "100%"
-  });
-
   // Check geographicScopeSelect
   $('select.geographicScopeSelect').on('change', function() {
     var $regionalBlock = $('.regionalBlock');
@@ -71,6 +65,10 @@ function attachEvents() {
 
    });
 
+  $('select.elementType-deliverabledeliverableSelect').on("addElement removeElement", function(event,id,name) {
+      addSelect2();
+  });
+
 }
 
 function addSelect2() {
@@ -86,6 +84,12 @@ function addSelect2() {
       templateResult: formatStateCountries,
       templateSelection: formatStateCountries,
       width: '100%'
+  });
+
+  $("form #deliverableSelect").select2({
+    templateResult: formatState,
+    templateSelection: formatState,
+    width: "100%"
   });
 
 }
@@ -114,15 +118,9 @@ function formatStateCountries(state) {
 };
 
 function formatState(state) {
-  if(!state.id) {
+  if(!state.id || (state.id == "-1")) {
     return state.text;
   }
-  var $state = "";
-  if(state.element.value != "-1") {
-    $state =
-        $('<span> <i class="flag-sm flag-sm-' + state.element.value.toUpperCase() + '"></i>  ' + state.text + '</span>');
-  } else {
-    $state = $('<span>' + state.text + '</span>');
-  }
-  return $state;
+  var result = "<span>" + state.text + "</span>";
+  return $(result);
 };
