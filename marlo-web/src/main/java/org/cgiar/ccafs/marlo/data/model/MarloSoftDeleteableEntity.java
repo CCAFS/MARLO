@@ -36,7 +36,7 @@ public class MarloSoftDeleteableEntity extends MarloBaseEntity {
 
 
   public boolean isActive() {
-    return active;
+    return this.active;
   }
 
 
