@@ -139,6 +139,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectHighlight;
 import org.cgiar.ccafs.marlo.data.model.ProjectInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
 import org.cgiar.ccafs.marlo.data.model.ProjectLp6Contribution;
+import org.cgiar.ccafs.marlo.data.model.ProjectLp6ContributionDeliverable;
 import org.cgiar.ccafs.marlo.data.model.ProjectMilestone;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
@@ -2511,6 +2512,18 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
+  public Boolean getHasLp6ContributionDeliverable(long deliverableID, long phaseID) {
+    Deliverable deliverable = deliverableManager.getDeliverableById(deliverableID);
+    // Get selected deliverables
+    List<ProjectLp6ContributionDeliverable> projectLp6ContributionDeliverables = deliverable.getDeliverableLp6s()
+      .stream().filter(dl -> dl.isActive() && dl.getPhase().getId().equals(phaseID)).collect(Collectors.toList());
+    if (projectLp6ContributionDeliverables != null && !projectLp6ContributionDeliverables.isEmpty()) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   /**
    * Get the folder path according if the user navigate in center,crp or platform sections.
    * 
@@ -2534,6 +2547,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return APConstants.IFPRI_ID;
   }
 
+
   public boolean getImpactSectionStatus(String section, long crpProgramID) {
     SectionStatus sectionStatus = sectionStatusManager.getSectionStatusByCrpProgam(crpProgramID, section,
       this.getActualPhase().getDescription(), this.getActualPhase().getYear(), this.getActualPhase().getUpkeep());
@@ -2556,7 +2570,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return justification;
   }
 
-
   public String getLiasons() {
     String liasonsUsers = "";
     User u = userManager.getUser(this.getCurrentUser().getId());
@@ -2572,6 +2585,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return liasonsUsers;
   }
 
+
   public List<GlobalUnitType> getListGlobalUnitTypes() {
 
     List<GlobalUnitType> globalUnitTypes = globalUnitTypeManager.findAll();
@@ -2584,7 +2598,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return globalUnitTypes;
 
   }
-
 
   public List<GlobalUnitType> getListGlobalUnitTypesUser() {
     if (this.getSession().containsKey(APConstants.AVAILABLES_GLOBAL_TYPES)) {
@@ -2641,10 +2654,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return Locale.ENGLISH;
   }
 
+
   public StringBuilder getMissingFields() {
     return missingFields;
   }
-
 
   public String getNamespace() {
     return ServletActionContext.getActionMapping().getNamespace();
@@ -2661,6 +2674,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
     return 0;
   }
+
 
   public String getOnlyReadHtmlText(String htmlText) {
     Document doc = Jsoup.parse(htmlText);
@@ -2717,11 +2731,11 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
-
   public Map<String, Parameter> getParameters() {
     parameters = ActionContext.getContext().getParameters();
     return parameters;
   }
+
 
   public String getParameterValue(String param) {
     Object paramObj = this.getParameters().get(param);
@@ -2731,10 +2745,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return ((String[]) paramObj)[0];
   }
 
-
   public Long getPhaseID() {
     return phaseID;
   }
+
 
   /**
    * validate if the list of phases are on session if not, will be find on bd
@@ -2791,7 +2805,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
   }
 
-
   public String getPhasesImpactJson() {
     List<Phase> phases;
     if (this.getSession().containsKey(APConstants.PHASES_IMPACT)) {
@@ -2809,6 +2822,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     Gson gson = builder.create();
     return gson.toJson(phases);
   }
+
 
   /**
    * validate if the list of phases are on session if not, will be find on bd on json format
@@ -2831,11 +2845,11 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return gson.toJson(phases);
   }
 
-
   public int getPlanningYear() {
     return Integer.parseInt(this.getSession().get(APConstants.CRP_PLANNING_YEAR).toString());
 
   }
+
 
   public List<GlobalUnit> getPlatformsList() {
     List<GlobalUnit> centers = new ArrayList<>();
@@ -2857,7 +2871,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         .collect(Collectors.toList());
     }
   }
-
 
   /**
    * Check the powb Synthesis Section Status
@@ -2973,6 +2986,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return returnValue;
   }
 
+
   public List<Submission> getPowbSynthesisSubmissions(long powbSynthesisID) {
     PowbSynthesis powbSynthesis = powbSynthesisManager.getPowbSynthesisById(powbSynthesisID);
     List<Submission> submissions = powbSynthesis
@@ -2984,7 +2998,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
     return submissions;
   }
-
 
   public List<CrpPpaPartner> getPpaPartners() {
     List<CrpPpaPartner> crpPpaPartners = phaseManager.getPhaseById(this.getActualPhase().getId()).getCrpPpaPartner()
@@ -3015,6 +3028,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       return null;
     }
   }
+
 
   public SectionStatus getProjectOutcomeStatus(long projectOutcomeID) {
     ProjectOutcome projectOutcome = projectOutcomeManager.getProjectOutcomeById(projectOutcomeID);
