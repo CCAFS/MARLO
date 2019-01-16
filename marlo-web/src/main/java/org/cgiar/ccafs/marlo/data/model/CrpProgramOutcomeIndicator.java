@@ -28,7 +28,6 @@ public class CrpProgramOutcomeIndicator extends MarloAuditableEntity implements 
   }
 
   public CrpProgramOutcomeIndicator(Long id) {
-    super();
     this.setId(id);
   }
 
