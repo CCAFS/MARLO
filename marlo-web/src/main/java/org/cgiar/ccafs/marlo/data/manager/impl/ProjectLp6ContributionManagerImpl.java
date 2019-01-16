@@ -37,8 +37,9 @@ public class ProjectLp6ContributionManagerImpl implements ProjectLp6Contribution
 
 
   @Inject
-  public ProjectLp6ContributionManagerImpl(ProjectLp6ContributionDAO projectLp6ContributionDAO) {
+  public ProjectLp6ContributionManagerImpl(ProjectLp6ContributionDAO projectLp6ContributionDAO, PhaseDAO phaseDAO) {
     this.projectLp6ContributionDAO = projectLp6ContributionDAO;
+    this.phaseDAO = phaseDAO;
   }
 
   @Override
@@ -63,38 +64,29 @@ public class ProjectLp6ContributionManagerImpl implements ProjectLp6Contribution
 
   @Override
   public ProjectLp6Contribution saveProjectLp6Contribution(ProjectLp6Contribution projectLp6Contribution) {
-    ProjectLp6Contribution ProjectLp6Contribution = projectLp6ContributionDAO.save(projectLp6Contribution);
+    ProjectLp6Contribution projectLp6ContributionSave = projectLp6ContributionDAO.save(projectLp6Contribution);
 
-    Phase phase = phaseDAO.find(projectLp6Contribution.getPhase().getId());
-    if (ProjectLp6Contribution.getPhase().getNext() != null) {
-      this.saveProjectLp6ContributionPhase(projectLp6Contribution.getPhase().getNext(), ProjectLp6Contribution.getId(),
+    Phase phase = phaseDAO.find(projectLp6ContributionSave.getPhase().getId());
+    if (phase.getNext() != null) {
+      this.saveProjectLp6ContributionPhase(phase.getNext(), projectLp6ContributionSave.getProject().getId(),
         projectLp6Contribution);
     }
-    return ProjectLp6Contribution;
+    return projectLp6ContributionSave;
 
   }
 
-  public void saveProjectLp6ContributionPhase(Phase next, long projectLp6ContributionID,
+  public void saveProjectLp6ContributionPhase(Phase next, long projectID,
     ProjectLp6Contribution projectLp6Contribution) {
     Phase phase = phaseDAO.find(next.getId());
 
     List<ProjectLp6Contribution> projectLp6Contributions = phase.getProjectLp6Contributions().stream()
-      .filter(c -> c.getId().longValue() == projectLp6ContributionID).collect(Collectors.toList());
+      .filter(c -> c.getProject().getId().longValue() == projectID).collect(Collectors.toList());
 
     if (projectLp6Contributions.isEmpty()) {
       ProjectLp6Contribution projectLp6ContributionAdd = new ProjectLp6Contribution();
-      projectLp6ContributionAdd
-        .setProjectLp6ContributionDeliverable(projectLp6Contribution.getProjectLp6ContributionDeliverable());
-      projectLp6ContributionAdd
-        .setLp6ContributionGeographicScopes(projectLp6Contribution.getLp6ContributionGeographicScopes());
       projectLp6ContributionAdd.setPhase(phase);
       projectLp6ContributionAdd.setContribution(projectLp6Contribution.getContribution());
-      projectLp6ContributionAdd.setCountries(projectLp6Contribution.getCountries());
-      projectLp6ContributionAdd.setCountriesIds(projectLp6Contribution.getCountriesIds());
-      projectLp6ContributionAdd.setCountriesIdsText(projectLp6Contribution.getCountriesIdsText());
-      projectLp6ContributionAdd.setDeliverables(projectLp6Contribution.getDeliverables());
       projectLp6ContributionAdd.setGeographicScope(projectLp6Contribution.getGeographicScope());
-      projectLp6ContributionAdd.setId(projectLp6Contribution.getId());
       projectLp6ContributionAdd.setInitiativeRelated(projectLp6Contribution.getInitiativeRelated());
       projectLp6ContributionAdd.setInitiativeRelatedNarrative(projectLp6Contribution.getInitiativeRelatedNarrative());
       projectLp6ContributionAdd.setNarrative(projectLp6Contribution.getNarrative());
@@ -103,7 +95,6 @@ public class ProjectLp6ContributionManagerImpl implements ProjectLp6Contribution
         .setProjectLp6ContributionDeliverable(projectLp6Contribution.getProjectLp6ContributionDeliverable());
       projectLp6ContributionAdd.setProvidingPathways(projectLp6Contribution.getProvidingPathways());
       projectLp6ContributionAdd.setProvidingPathwaysNarrative(projectLp6Contribution.getProvidingPathwaysNarrative());
-      projectLp6ContributionAdd.setRegion(projectLp6Contribution.getRegion());
       projectLp6ContributionAdd
         .setTopThreePartnershipsNarrative(projectLp6Contribution.getTopThreePartnershipsNarrative());
       projectLp6ContributionAdd.setUndertakingEffortsCsa(projectLp6Contribution.getUndertakingEffortsCsa());
@@ -115,14 +106,14 @@ public class ProjectLp6ContributionManagerImpl implements ProjectLp6Contribution
       projectLp6ContributionAdd.setWorkingAcrossFlagships(projectLp6Contribution.getWorkingAcrossFlagships());
       projectLp6ContributionAdd
         .setWorkingAcrossFlagshipsNarrative(projectLp6Contribution.getWorkingAcrossFlagshipsNarrative());
-      projectLp6ContributionDAO.save(projectLp6ContributionAdd);
       projectLp6ContributionAdd.setModifiedBy(projectLp6Contribution.getModifiedBy());
       projectLp6ContributionAdd.setModificationJustification(projectLp6Contribution.getModificationJustification());
+      projectLp6ContributionDAO.save(projectLp6ContributionAdd);
+      // TODO: Add relations
     }
 
-
     if (phase.getNext() != null) {
-      this.saveProjectLp6ContributionPhase(phase.getNext(), projectLp6ContributionID, projectLp6Contribution);
+      this.saveProjectLp6ContributionPhase(phase.getNext(), projectID, projectLp6Contribution);
     }
   }
 
