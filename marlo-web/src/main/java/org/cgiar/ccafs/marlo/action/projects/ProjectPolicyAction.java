@@ -233,14 +233,14 @@ public class ProjectPolicyAction extends BaseAction {
   }
 
 
-  public Long getPolicyCrossCuttingMarkerId(long markerID) {
+  public ProjectPolicyCrossCuttingMarker getPolicyCrossCuttingMarker(long markerID) {
     ProjectPolicyCrossCuttingMarker crossCuttingMarker = new ProjectPolicyCrossCuttingMarker();
 
     crossCuttingMarker = projectPolicyCrossCuttingMarkerManager.getPolicyCrossCountryMarkerId(policyID, markerID,
       this.getActualPhase().getId());
 
     if (crossCuttingMarker != null) {
-      return crossCuttingMarker.getId();
+      return crossCuttingMarker;
     } else {
       return null;
     }
@@ -768,8 +768,15 @@ public class ProjectPolicyAction extends BaseAction {
             if (crossCuttingOwner.getRepIndGenderYouthFocusLevel().getId() != null
               && crossCuttingOwner.getRepIndGenderYouthFocusLevel().getId() != -1) {
 
-              if (crossCuttingOwner.getRepIndGenderYouthFocusLevel().getId() != crossCuttingOwnerSave
-                .getRepIndGenderYouthFocusLevel().getId()) {
+              if (crossCuttingOwnerSave.getRepIndGenderYouthFocusLevel() != null) {
+                if (crossCuttingOwner.getRepIndGenderYouthFocusLevel().getId() != crossCuttingOwnerSave
+                  .getRepIndGenderYouthFocusLevel().getId()) {
+                  RepIndGenderYouthFocusLevel focusLevel = focusLevelManager
+                    .getRepIndGenderYouthFocusLevelById(crossCuttingOwner.getRepIndGenderYouthFocusLevel().getId());
+                  crossCuttingOwnerSave.setRepIndGenderYouthFocusLevel(focusLevel);
+                  hasChanges = true;
+                }
+              } else {
                 RepIndGenderYouthFocusLevel focusLevel = focusLevelManager
                   .getRepIndGenderYouthFocusLevelById(crossCuttingOwner.getRepIndGenderYouthFocusLevel().getId());
                 crossCuttingOwnerSave.setRepIndGenderYouthFocusLevel(focusLevel);

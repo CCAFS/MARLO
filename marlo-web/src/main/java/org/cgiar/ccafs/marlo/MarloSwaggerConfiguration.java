@@ -38,7 +38,7 @@ public class MarloSwaggerConfiguration extends WebMvcConfigurerAdapter {
   // Config required for Swagger UI if not using Spring Boot.
   @Override
   public void addResourceHandlers(ResourceHandlerRegistry registry) {
-    registry.addResourceHandler("**").addResourceLocations("classpath:/swagger/dist/");
+    registry.addResourceHandler("**").addResourceLocations("/WEB-INF/swagger/dist/");
 
     registry.addResourceHandler("/webjars/**").addResourceLocations("classpath:/META-INF/resources/webjars/");
   }
