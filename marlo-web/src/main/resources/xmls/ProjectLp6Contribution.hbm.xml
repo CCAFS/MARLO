@@ -46,10 +46,6 @@
 			fetch="select">
 			<column name="geographic_scope_id" />
 		</many-to-one>
-		<many-to-one name="region"
-			class="org.cgiar.ccafs.marlo.data.model.RepIndRegion" fetch="select">
-			<column name="region_id" />
-		</many-to-one>
 
 		<property name="narrative" type="string">
 			<column name="narrative" sql-type="TEXT" not-null="true" />

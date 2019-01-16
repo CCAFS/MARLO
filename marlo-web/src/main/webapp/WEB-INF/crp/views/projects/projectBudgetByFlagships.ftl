@@ -95,7 +95,10 @@
                   </table>
                   [#if project.flagships?has_content]
                     [#list project.flagships as budgetFlagship]
-                      [@BudgetByFlagshipsMacro element=budgetFlagship name="project.flagships" index=flagships_index selectedYear=year/]
+                    [#if action.existOnYear(budgetFlagship.id,year)]
+                    [@BudgetByFlagshipsMacro element=budgetFlagship name="project.flagships" index=flagships_index selectedYear=year/]
+                    [/#if]
+                      
                     [/#list]
                   [#else]
                     <div class="simpleBox emptyMessage text-center"> [@s.text name="projectBudgetByFlagships.beforeEnteringBudgetInformation" /] <a href="[@s.url action="${crpSession}/description"][@s.param name="projectID" value=projectID /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">description section</a></div>
