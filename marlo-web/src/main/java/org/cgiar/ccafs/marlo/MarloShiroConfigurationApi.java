@@ -49,7 +49,6 @@ public class MarloShiroConfigurationApi {
     ShiroFilterFactoryBean shiroFilterFactoryBean = new ShiroFilterFactoryBean();
     shiroFilterFactoryBean.setSecurityManager(securityManager);
 
-    shiroFilterFactoryBean.setLoginUrl("/login.do");
     shiroFilterFactoryBean.setSuccessUrl("/");
     shiroFilterFactoryBean.setUnauthorizedUrl("/403");
 

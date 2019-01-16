@@ -164,7 +164,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -2453,18 +2452,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return differences;
   }
 
-  public String getDomainName(String url) {
-    URI uri;
-    try {
-      uri = new URI(url);
-      String domain = uri.getHost();
-      return domain.startsWith("www.") ? domain.substring(4) : domain;
-    } catch (URISyntaxException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
-    return null;
-  }
 
   public FileDB getFileDB(FileDB preview, File file, String fileFileName, String path) {
 
@@ -2538,18 +2525,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
 
 
-  }
-
-
-  public String getHost() {
-    try {
-      String url = request.getRequestURL() + "";
-      return url;
-    } catch (Exception e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
-    return null;
   }
 
 
@@ -5834,10 +5809,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   @Override
   public void prepare() throws Exception {
-    String hostDomain = this.getDomainName(this.getHost());
-    if (hostDomain.equals("clarisa.cgiar.org")) {
 
-    }
   }
 
 
