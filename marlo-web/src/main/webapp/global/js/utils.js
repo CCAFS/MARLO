@@ -4,11 +4,16 @@ $(function() {
     $("#accordion").accordion({
       heightStyle: "content"
     });
-    $('body').on('click', function() {
-      $('.getSerializeForm').html(getSerializeForm());
-    });
+    // Update control debug panel
+    $('body').on('click', updateSerializeForm);
+    $(document).on('updateComponent', updateSerializeForm);
+    $('form:first :input').on('keyup change', updateSerializeForm);
   }
 });
+
+function updateSerializeForm() {
+  $('.getSerializeForm').html(getSerializeForm());
+}
 
 /**
  * Jquery Plugins

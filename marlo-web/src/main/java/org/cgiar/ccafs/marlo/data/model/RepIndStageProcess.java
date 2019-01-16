@@ -17,6 +17,13 @@ public class RepIndStageProcess extends MarloBaseEntity implements java.io.Seria
   @Expose
   private String description;
 
+  @Expose
+  private Long year;
+
+
+  @Expose
+  private RepIndStageStudy repIndStageStudy;
+
 
   public RepIndStageProcess() {
   }
@@ -26,6 +33,7 @@ public class RepIndStageProcess extends MarloBaseEntity implements java.io.Seria
     return this.name + ": " + this.description;
   }
 
+
   public String getDescription() {
     return description;
   }
@@ -34,12 +42,30 @@ public class RepIndStageProcess extends MarloBaseEntity implements java.io.Seria
     return name;
   }
 
+
+  public RepIndStageStudy getRepIndStageStudy() {
+    return repIndStageStudy;
+  }
+
+
+  public Long getYear() {
+    return year;
+  }
+
   public void setDescription(String description) {
     this.description = description;
   }
 
   public void setName(String name) {
     this.name = name;
+  }
+
+  public void setRepIndStageStudy(RepIndStageStudy repIndStageStudy) {
+    this.repIndStageStudy = repIndStageStudy;
+  }
+
+  public void setYear(Long year) {
+    this.year = year;
   }
 
 
