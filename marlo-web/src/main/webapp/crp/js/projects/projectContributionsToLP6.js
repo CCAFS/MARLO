@@ -103,7 +103,6 @@ function formatList(state) {
 };
 
 function formatStateCountries(state) {
-  console.log(state);
   if(!state.id) {
     return state.text;
   }

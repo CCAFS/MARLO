@@ -1,6 +1,4 @@
 [#ftl]
-[#assign canEdit = true /]
-[#assign editable = true /]
 [#assign title = "Project Contributions to LP6" /]
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2", "font-awesome", "flat-flags"] /]
@@ -10,7 +8,7 @@
   "${baseUrl}/global/js/fieldsValidation.js"
   ] /]
 [#assign customCSS = [
-  "${baseUrlMedia}/css/projects/projectsContributionToLP6.css"
+  "${baseUrlMedia}/css/projects/projectContributionsCrpList.css"
   ] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "contributionsLP6" /]
@@ -28,14 +26,13 @@
       <div class="col-md-9">
         <h3 class="headTitle">[@s.text name="projects.LP6Contribution.contributionTitle" /]</h3>  
         <div id="projectContributionToLP6" class="borderBox">
-          <div class="form-group">
+          <div class="form-group contributionNarrative">
             [#-- Contribution to LP6 narrative --]
-            [@customForm.textArea name="projectLp6Contribution.narrative" i18nkey="projects.LP6Contribution.narrativeContribution"  className="limitWords-100" required=true editable=canEdit /]
-           <br>
+            [@customForm.textArea name="projectLp6Contribution.narrative" i18nkey="projects.LP6Contribution.narrativeContribution"  className="limitWords-100" required=true editable=editable /]
            </div>
             [#-- Deliverables --]
              <div class="form-group simpleBox">
-               [@customForm.elementsListComponent id="deliverableSelect" name="projectLp6Contribution.deliverables" elementType="deliverable" elementList=(projectLp6Contribution.deliverables) label="projects.LP6Contribution.evidenceDeliverables" listName="deliverables" keyFieldName="id" displayFieldName="composedName" required=editable/]
+               [@customForm.elementsListComponent id="deliverableSelect" name="projectLp6Contribution.deliverables" elementType="deliverable" elementList=(projectLp6Contribution.deliverables) label="projects.LP6Contribution.evidenceDeliverables" listName="deliverables" keyFieldName="id" displayFieldName="composedName" required=false/]
               <p class="note">[@s.text name="projects.LP6Contribution.deliverablesTooltip" /] <a href="[@s.url action="${crpSession}/deliverableList"][@s.param name="projectID" value=projectID /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">clicking here.</a></p>
              </div>
             [#-- Geographic Scope --]
@@ -49,7 +46,7 @@
                 <div class="form-group row">
                   <div class="col-md-6">
                     [#-- Geographic Scope --]
-                    [@customForm.select name="projectLp6Contribution.geographicScope.id" className="setSelect2 geographicScopeSelect" i18nkey="projects.LP6Contribution.geographicScope" listName="repIndGeographicScopes" keyFieldName="id"  displayFieldName="name" className="geographicScopeSelect" editable=editable/]
+                    [@customForm.select name="projectLp6Contribution.geographicScope.id" className="setSelect2 geographicScopeSelect" i18nkey="projects.LP6Contribution.geographicScope" listName="repIndGeographicScopes" keyFieldName="id"  displayFieldName="name" required=false className="geographicScopeSelect" editable=editable/]
                   </div>
                 </div>
                 <div class="form-group regionalBlock" style="display:${(isRegional)?string('block','none')}">
@@ -58,7 +55,7 @@
                 </div>
                 <div class="form-group nationalBlock" style="display:${(isMultiNational || isNational || isSubNational)?string('block','none')}">
                   [#-- Multinational, National and Subnational scope --]
-                  [@customForm.select name="countriesIds" label="" i18nkey="projects.LP6Contribution.countries" listName="countries" keyFieldName="isoAlpha2"  displayFieldName="name" value="projectsLp6Contribution.countriesIds" multiple=true className="countriesSelect" disabled=!editable/]
+                  [@customForm.select name="projectLp6Contribution.countriesIds" label="" i18nkey="projects.LP6Contribution.countries" listName="countries" keyFieldName="isoAlpha2"  displayFieldName="name" value="projectsLp6Contribution.countriesIds" multiple=true required=false className="countriesSelect" disabled=!editable/]
                 </div>
               </div>
             </div>
@@ -70,7 +67,7 @@
             [@contributionForm name="providingPathways" textName="providingPathwaysNarrative" i18nkey="innovativePathways" checkedValue=(projectLp6Contribution.providingPathways?string)!"" className="limitWords-100"/]
           <div class="form-group">
             [#-- Top 3 Partners --]
-            [@customForm.textArea name="projectLp6Contribution.topThreePartnershipsNarrative" i18nkey="projects.LP6Contribution.partnerships" className="limitWords-100" required=true editable=canEdit /]
+            [@customForm.textArea name="projectLp6Contribution.topThreePartnershipsNarrative" i18nkey="projects.LP6Contribution.partnerships" className="limitWords-100" required=true editable=editable /]
           </div>
             [#-- Scaling CSA --]
             [@contributionForm name="undertakingEffortsCsa" textName="undertakingEffortsCsaNarrative" i18nkey="scalingCSA" checkedValue=(projectLp6Contribution.undertakingEffortsCsa?string)!"" className="limitWords-100"/]
@@ -92,14 +89,14 @@
       <div class="col-md-9"> 
          <label>[@s.text name="projects.LP6Contribution.${i18nkey}"/][@customForm.req required=true /]</label>
       </div>
-      <div class="col-md-3">
-         [@customForm.radioFlat id="${i18nkey}-yes" name="projectLp6Contribution.${name}" label="Yes" value="true" checked=(checkedValue == "true") cssClass="input-yn" cssClassLabel="radio-label-yes" editable=canEdit /]
-         [@customForm.radioFlat id="${i18nkey}-no" name="projectLp6Contribution.${name}" label="No" value="false" checked=(checkedValue == "false") cssClass="input-yn" cssClassLabel="radio-label-no" editable=canEdit /]
+      <div class="col-md-3 radio-yes-no">
+         [@customForm.radioFlat id="${i18nkey}-yes" name="projectLp6Contribution.${name}" label="Yes" value="true" checked=(checkedValue == "true") cssClass="input-yn" cssClassLabel="radio-label-yes" editable=editable /]
+         [@customForm.radioFlat id="${i18nkey}-no" name="projectLp6Contribution.${name}" label="No" value="false" checked=(checkedValue == "false") cssClass="input-yn" cssClassLabel="radio-label-no" editable=editable /]
       </div>
     </div>
     [#-- Text --]
     <div class="form-group narrativeBlock" style="display:${((checkedValue == "true"))?string('block','none')}">
-       [@customForm.textArea name="projectLp6Contribution.${textName}"  i18nkey="projects.LP6Contribution.${i18nkey}.question"  className="${className}" required=true editable=canEdit /]
+       [@customForm.textArea name="projectLp6Contribution.${textName}"  i18nkey="projects.LP6Contribution.${i18nkey}.question"  className="${className}" required=true editable=editable /]
     </div>
   </div>
 [/#macro]
