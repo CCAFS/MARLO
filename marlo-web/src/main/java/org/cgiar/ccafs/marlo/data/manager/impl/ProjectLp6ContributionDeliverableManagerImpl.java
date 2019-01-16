@@ -15,7 +15,6 @@
 package org.cgiar.ccafs.marlo.data.manager.impl;
 
 
-import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.dao.PhaseDAO;
 import org.cgiar.ccafs.marlo.data.dao.ProjectLp6ContributionDeliverableDAO;
 import org.cgiar.ccafs.marlo.data.manager.ProjectLp6ContributionDeliverableManager;
@@ -114,12 +113,11 @@ public class ProjectLp6ContributionDeliverableManagerImpl implements ProjectLp6C
       projectLp6ContributionDeliverableDAO.save(projectLp6ContributionDeliverable);
 
     Phase phase = phaseDAO.find(deliverable.getPhase().getId());
-    if (phase.getDescription().equals(APConstants.REPORTING)) {
-      if (deliverable.getPhase().getNext() != null) {
-        this.saveProjectLp6ContributionDeliverablePhase(deliverable.getPhase().getNext(),
-          deliverable.getProjectLp6Contribution().getId(), projectLp6ContributionDeliverable);
-      }
+    if (deliverable.getPhase().getNext() != null) {
+      this.saveProjectLp6ContributionDeliverablePhase(deliverable.getPhase().getNext(),
+        deliverable.getProjectLp6Contribution().getId(), projectLp6ContributionDeliverable);
     }
+
     return deliverable;
 
   }
@@ -141,6 +139,8 @@ public class ProjectLp6ContributionDeliverableManagerImpl implements ProjectLp6C
         .setProjectLp6Contribution(projectLp6ContributionDeliverable.getProjectLp6Contribution());
       projectLp6ContributionDeliverableAdd.setPhase(phase);
       projectLp6ContributionDeliverableAdd.setDeliverable(projectLp6ContributionDeliverable.getDeliverable());
+      projectLp6ContributionDeliverableAdd.setId(projectLp6ContributionDeliverable.getId());
+      projectLp6ContributionDeliverableAdd.setModifiedBy(projectLp6ContributionDeliverable.getModifiedBy());
       projectLp6ContributionDeliverableDAO.save(projectLp6ContributionDeliverableAdd);
     }
 

@@ -122,15 +122,14 @@ public class Lp6ContributionGeographicScopeManagerImpl implements Lp6Contributio
         lp6ContributionGeographicScope);
     }
 
-    if (currentPhase.getDescription().equals(APConstants.REPORTING)) {
-      if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {
-        Phase upkeepPhase = currentPhase.getNext().getNext();
-        if (upkeepPhase != null) {
-          this.saveLp6ContributionGeographicScopePhase(upkeepPhase, region.getProjectLp6Contribution().getId(),
-            lp6ContributionGeographicScope);
-        }
+    if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {
+      Phase upkeepPhase = currentPhase.getNext().getNext();
+      if (upkeepPhase != null) {
+        this.saveLp6ContributionGeographicScopePhase(upkeepPhase, region.getProjectLp6Contribution().getId(),
+          lp6ContributionGeographicScope);
       }
     }
+
 
     return region;
   }

@@ -54,16 +54,26 @@ import org.cgiar.ccafs.marlo.data.model.ProjectLp6Contribution;
 import org.cgiar.ccafs.marlo.data.model.ProjectLp6ContributionDeliverable;
 import org.cgiar.ccafs.marlo.data.model.RepIndGeographicScope;
 import org.cgiar.ccafs.marlo.utils.APConfig;
+import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
 import org.cgiar.ccafs.marlo.utils.HistoryComparator;
 import org.cgiar.ccafs.marlo.validation.projects.ProjectDescriptionValidator;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -156,13 +166,15 @@ public class ProjectContributionToLP6Action extends BaseAction {
   }
 
 
-  private void getAutoSaveFilePath() {
-    // return path
-    String composedClassName = project.getClass().getSimpleName();
+  private Path getAutoSaveFilePath() {
+    // get the class simple name
+    String composedClassName = projectLp6Contribution.getClass().getSimpleName();
+    // get the action name and replace / for _
     String actionFile = this.getActionName().replace("/", "_");
-    String autoSaveFile = project.getId() + "_" + composedClassName + "_" + actionFile + ".json";
-
-    // return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
+    // concatenate name and add the .json extension
+    String autoSaveFile = projectLp6Contribution.getId() + "_" + composedClassName + "_"
+      + this.getActualPhase().getName() + "_" + this.getActualPhase().getYear() + "_" + actionFile + ".json";
+    return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
   public List<Lp6ContributionGeographicScope> getContributionSelectedCountries() {
@@ -244,11 +256,9 @@ public class ProjectContributionToLP6Action extends BaseAction {
     contributionSelectedCountries = new ArrayList<>();
     // TODO countriesIds = new ArrayList<String>();
 
-
     // Get current CRP
     loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
     loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
-
 
     projectID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_REQUEST_ID)));
     this.setProject(projectManager.getProjectById(projectID));
@@ -314,15 +324,44 @@ public class ProjectContributionToLP6Action extends BaseAction {
       projectLp6Contribution.setCountries(countries);
     }
 
+    Path path = this.getAutoSaveFilePath();
+    if (path.toFile().exists() && this.getCurrentUser().isAutoSave()) {
 
-    if (!this.isDraft()) {
-      if (countries != null) {
-        for (LocElement country : countries) {
+      // Autosave File in
+      BufferedReader reader = null;
+      reader = new BufferedReader(new FileReader(path.toFile()));
+      Gson gson = new GsonBuilder().create();
+      JsonObject jReader = gson.fromJson(reader, JsonObject.class);
+      reader.close();
+
+      AutoSaveReader autoSaveReader = new AutoSaveReader();
+
+      projectLp6Contribution = (ProjectLp6Contribution) autoSaveReader.readFromJson(jReader);
+
+      // Project LP6 contribution Countries List AutoSave
+      if (projectLp6Contribution.getCountriesIdsText() != null) {
+        String[] countriesText =
+          projectLp6Contribution.getCountriesIdsText().replace("[", "").replace("]", "").split(",");
+        List<String> countries = new ArrayList<>();
+        for (String value : Arrays.asList(countriesText)) {
+          countries.add(value.trim());
+        }
+        projectLp6Contribution.setCountriesIds(countries);
+      }
+      this.setDraft(true);
+    } else {
+      this.setDraft(false);
+    }
+
+    if (!this.isDraft())
+
+    {
+      if (projectLp6Contribution.getCountries() != null && !projectLp6Contribution.getCountries().isEmpty()) {
+        for (Lp6ContributionGeographicScope country : projectLp6Contribution.getCountries()) {
           projectLp6Contribution.getCountriesIds().add(country.getLocElement().getIsoAlpha2());
         }
       }
     }
-
 
     if (this.isHttpPost()) {
       if (projectLp6Contribution.getDeliverables() != null) {
@@ -337,70 +376,70 @@ public class ProjectContributionToLP6Action extends BaseAction {
 
     if (this.hasPermission("canEdit")) {
 
-      try {
 
-        projectLp6ContributionManager.saveProjectLp6Contribution(projectLp6Contribution);
-        this.saveProjectDeliverables();
+      // Save the actual project Lp6 contribution
+      projectLp6ContributionManager.saveProjectLp6Contribution(projectLp6Contribution);
 
-        // Save the Countries Lis
+      // Save project Lp6 deliverables
+      this.saveProjectDeliverables();
 
-        if (countriesIds != null && !countriesIds.isEmpty()) {
+      // Save the Countries List selected
+      List<Lp6ContributionGeographicScope> countries = projectLp6Contribution.getLp6ContributionGeographicScopes()
+        .stream().filter(c -> c.isActive() && c.getPhase() == this.getActualPhase()).collect(Collectors.toList());
 
-          List<Lp6ContributionGeographicScope> countriesSave = new ArrayList<>();
+      if (projectLp6Contribution.getCountriesIds() != null && !projectLp6Contribution.getCountriesIds().isEmpty()) {
 
-          for (String countryIds : projectLp6Contribution.getCountriesIds()) {
-            Lp6ContributionGeographicScope countryInn = new Lp6ContributionGeographicScope();
-            countryInn.setLocElement(locElementManager.getLocElementByISOCode(countryIds));
-            countryInn.setPhase(this.getActualPhase());
-            countryInn.setProjectLp6Contribution(projectLp6Contribution);
-            countriesSave.add(countryInn);
-            if (contributionSelectedCountries != null) {
-              if (!contributionSelectedCountries.contains(countryInn)) {
-                lp6ContributionGeographicScopeManager.saveLp6ContributionGeographicScope(countryInn);
-              }
-            } else {
-              lp6ContributionGeographicScopeManager.saveLp6ContributionGeographicScope(countryInn);
-            }
-          }
+        List<Lp6ContributionGeographicScope> countriesSave = new ArrayList<>();
 
-          for (Lp6ContributionGeographicScope lp6ContributionGeographicScope : contributionSelectedCountries) {
-            if (!countriesSave.contains(lp6ContributionGeographicScope)) {
-              lp6ContributionGeographicScopeManager
-                .deleteLp6ContributionGeographicScope(lp6ContributionGeographicScope.getId());
-            }
+        for (String countryIds : projectLp6Contribution.getCountriesIds()) {
+          Lp6ContributionGeographicScope countryInn = new Lp6ContributionGeographicScope();
+          countryInn.setLocElement(locElementManager.getLocElementByISOCode(countryIds));
+          countryInn.setPhase(this.getActualPhase());
+          countryInn.setProjectLp6Contribution(projectLp6Contribution);
+          if (!countries.contains(countryInn)) {
+            lp6ContributionGeographicScopeManager.saveLp6ContributionGeographicScope(countryInn);
           }
         }
 
-      } catch (Exception e) {
-        LOG.error("saving error", e);
+        for (Lp6ContributionGeographicScope lp6ContributionGeographicScope : countries) {
+          if (!countriesSave.contains(lp6ContributionGeographicScope)) {
+            lp6ContributionGeographicScope.setPhase(this.getActualPhase());
+            lp6ContributionGeographicScopeManager
+              .deleteLp6ContributionGeographicScope(lp6ContributionGeographicScope.getId());
+          }
+        }
+      } else {
+        // If the selected countries is empty, it will be deleted from database
+        if (countries != null && !countries.isEmpty()) {
+          for (Lp6ContributionGeographicScope lp6ContributionGeographicScope : countries) {
+            lp6ContributionGeographicScopeManager
+              .deleteLp6ContributionGeographicScope(lp6ContributionGeographicScope.getId());
+          }
+        }
+      }
+
+
+      if (this.getUrl() == null || this.getUrl().isEmpty()) {
+        Collection<String> messages = this.getActionMessages();
+        if (!this.getInvalidFields().isEmpty()) {
+          this.setActionMessages(null);
+          List<String> keys = new ArrayList<String>(this.getInvalidFields().keySet());
+          for (String key : keys) {
+            this.addActionMessage(key + ": " + this.getInvalidFields().get(key));
+          }
+
+        } else {
+          this.addActionMessage("message:" + this.getText("saving.saved"));
+        }
+        return SUCCESS;
+      } else {
         this.addActionMessage("");
         this.setActionMessages(null);
         return REDIRECT;
       }
-
-
-      /*
-       * Path path = this.getAutoSaveFilePath();
-       * if (path.toFile().exists()) {
-       * path.toFile().delete();
-       * }
-       */
-      /*
-       * Collection<String> messages = this.getActionMessages();
-       * if (!this.getInvalidFields().isEmpty()) {
-       * this.setActionMessages(null);
-       * List<String> keys = new ArrayList<String>(this.getInvalidFields().keySet());
-       * for (String key : keys) {
-       * this.addActionMessage(key + ": " + this.getInvalidFields().get(key));
-       * }
-       * } else {
-       * this.addActionMessage("message:" + this.getText("saving.saved"));
-       * }
-       */
-      return SUCCESS;
-
     } else {
-      // no permissions to edit
+
+
       return NOT_AUTHORIZED;
     }
 
@@ -413,33 +452,19 @@ public class ProjectContributionToLP6Action extends BaseAction {
     List<ProjectLp6ContributionDeliverable> projectLp6ContributionDeliverables = projectLp6Contribution
       .getProjectLp6ContributionDeliverable().stream()
       .filter(o -> o.isActive() && o.getPhase().getId() == this.getActualPhase().getId()).collect(Collectors.toList());
-    System.out.println("test 1");
 
     if (projectLp6Contribution.getDeliverables() != null && !projectLp6Contribution.getDeliverables().isEmpty()) {
 
-      System.out.println("test 2");
-
       if (projectLp6ContributionDeliverables != null && !projectLp6ContributionDeliverables.isEmpty()) {
-        System.out.println("test 3");
-
 
         for (ProjectLp6ContributionDeliverable projectLp6ContributionDeliverable : projectLp6ContributionDeliverables) {
-          System.out.println("test 4");
 
           if (!projectLp6Contribution.getDeliverables().contains(projectLp6ContributionDeliverable)) {
-            // If the deliverable in bd is deleted in front end, it will be deleted of database
-            System.out.println("test 5" + " id " + projectLp6ContributionDeliverable.getId() + " phase "
-              + projectLp6ContributionDeliverable.getPhase() + " active "
-              + projectLp6ContributionDeliverable.isActive());
-
+            // If the deliverable in bd is deleted in front end, it will be deleted from database
             projectLp6ContributionDeliverable.setPhase(this.getActualPhase());
             projectLp6ContributionDeliverable.setDeliverable(deliverable);
-
-
             projectLp6ContributionDeliverableManager
               .deleteProjectLp6ContributionDeliverable(projectLp6ContributionDeliverable.getId());
-            System.out.println("test 6");
-
           }
         }
       }
