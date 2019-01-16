@@ -105,7 +105,7 @@
 		<set embed-xml="true" fetch="select" inverse="true" lazy="true"
 			mutable="true" name="projectLp6ContributionDeliverable"
 			optimistic-lock="true" sort="unsorted"
-			table="project_lp6_contribution_delievrables">
+			table="project_lp6_contribution_deliverables">
 			<key on-delete="noaction">
 				<column name="lp6_contribution_id" />
 			</key>

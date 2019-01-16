@@ -80,7 +80,7 @@ public class ProjectLp6ContributionManagerImpl implements ProjectLp6Contribution
     Phase phase = phaseDAO.find(next.getId());
 
     List<ProjectLp6Contribution> projectLp6Contributions = phase.getProjectLp6Contributions().stream()
-      .filter(c -> c.getProject().getId().longValue() == projectID).collect(Collectors.toList());
+      .filter(c -> c.isActive() && c.getProject().getId() == projectID).collect(Collectors.toList());
 
     if (projectLp6Contributions.isEmpty()) {
       ProjectLp6Contribution projectLp6ContributionAdd = new ProjectLp6Contribution();
@@ -91,8 +91,6 @@ public class ProjectLp6ContributionManagerImpl implements ProjectLp6Contribution
       projectLp6ContributionAdd.setInitiativeRelatedNarrative(projectLp6Contribution.getInitiativeRelatedNarrative());
       projectLp6ContributionAdd.setNarrative(projectLp6Contribution.getNarrative());
       projectLp6ContributionAdd.setProject(projectLp6Contribution.getProject());
-      projectLp6ContributionAdd
-        .setProjectLp6ContributionDeliverable(projectLp6Contribution.getProjectLp6ContributionDeliverable());
       projectLp6ContributionAdd.setProvidingPathways(projectLp6Contribution.getProvidingPathways());
       projectLp6ContributionAdd.setProvidingPathwaysNarrative(projectLp6Contribution.getProvidingPathwaysNarrative());
       projectLp6ContributionAdd

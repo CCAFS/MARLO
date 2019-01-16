@@ -27,6 +27,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectLp6Contribution;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -72,38 +73,32 @@ public class ProjectCollaborationValue extends BaseAction {
     status.put("status", contributionValue);
 
     if (this.getActualPhase() != null && projectID != 0) {
-      try {
-        this.setProjectLp6Contribution(projectLp6ContributionManager.findAll().stream().filter(c -> c.isActive()
-          && c.getProject().getId() == projectID && c.getPhase().getId() == this.getActualPhase().getId())
-          .collect(Collectors.toList()).get(0));
-      } catch (Exception e) {
+
+      Project project = projectManager.getProjectById(projectID);
+
+      List<ProjectLp6Contribution> projectLp6Contributions = project.getProjectLp6Contributions().stream()
+        .filter(pl -> pl.isActive() && pl.getPhase().equals(this.getActualPhase())).collect(Collectors.toList());
+
+
+      if (projectLp6Contributions != null && !projectLp6Contributions.isEmpty()) {
+        this.setProjectLp6Contribution(projectLp6Contributions.get(0));
       }
 
-      if (contributionValue == true) {
 
-        if (projectLp6Contribution == null) {
-          Project project = projectManager.getProjectById(projectID);
-          projectLp6Contribution = new ProjectLp6Contribution();
-          projectLp6Contribution.setActive(true);
-          projectLp6Contribution.setPhase(phase);
-          projectLp6Contribution.setProject(project);
-          projectLp6Contribution.setContribution(contributionValue);
-          projectLp6ContributionManager.saveProjectLp6Contribution(projectLp6Contribution);
+      if (projectLp6Contribution == null) {
 
-        } else {
-          projectLp6Contribution.setContribution(contributionValue);
-          projectLp6ContributionManager.saveProjectLp6Contribution(projectLp6Contribution);
-        }
+        projectLp6Contribution = new ProjectLp6Contribution();
+        projectLp6Contribution.setActive(true);
+        projectLp6Contribution.setPhase(phase);
+        projectLp6Contribution.setProject(project);
+        projectLp6Contribution.setContribution(contributionValue);
+        projectLp6ContributionManager.saveProjectLp6Contribution(projectLp6Contribution);
 
       } else {
-        /*
-         * If contribution value is false update the value to existent projectLp6contribution
-         */
-        if (projectLp6Contribution != null) {
-          projectLp6Contribution.setContribution(contributionValue);
-          projectLp6ContributionManager.saveProjectLp6Contribution(projectLp6Contribution);
-        }
+        projectLp6Contribution.setContribution(contributionValue);
+        projectLp6ContributionManager.saveProjectLp6Contribution(projectLp6Contribution);
       }
+
     }
     return SUCCESS;
   }
