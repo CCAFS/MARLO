@@ -1,5 +1,5 @@
 [#ftl]
-[#assign title = "MARLO Studies" /]
+[#assign title = "MARLO Evidences" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["datatables.net", "datatables.net-bs"] /]
 [#assign customJS = ["${baseUrlMedia}/js/studies/studiesList.js?20180725" ] /]
