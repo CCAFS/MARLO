@@ -243,18 +243,18 @@ public abstract class AbstractMarloDAO<T, ID extends Serializable> {
    * @return the user id
    */
   public long getTemTableUserId() {
-    long id = -1;
+    long idT = -1;
     StringBuilder builder = new StringBuilder();
-    builder.append("select DISTINCT id from user_permission");
+    builder.append("select DISTINCT id as idT from user_permission");
     try {
       List<Map<String, Object>> list = this.findCustomQuery(builder.toString());
       for (Map<String, Object> map : list) {
-        id = Long.parseLong(map.get("id").toString());
+        idT = Long.parseLong(map.get("idT").toString());
       }
     } catch (Exception e) {
-      return id;
+      return idT;
     }
-    return id;
+    return idT;
   }
 
 
