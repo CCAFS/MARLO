@@ -422,5 +422,12 @@
       <one-to-many
         class="org.cgiar.ccafs.marlo.data.model.ProjectPolicyCrossCuttingMarker" />
     </set>
+    <set name="projectLp6Contributions" table="project_lp6_contribution" inverse="true"
+      order-by="id" lazy="true" fetch="select">
+      <key>
+        <column name="phase_id" not-null="true" />
+      </key>
+      <one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectLp6Contribution" />
+    </set>
 	</class>
 </hibernate-mapping>

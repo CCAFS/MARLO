@@ -142,7 +142,7 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
     new HashSet<ProjectLp6ContributionDeliverable>(0);
 
 
-  private Set<ProjectLp6Contribution> ProjectLp6Contributions = new HashSet<ProjectLp6Contribution>(0);
+  private Set<ProjectLp6Contribution> projectLp6Contributions = new HashSet<ProjectLp6Contribution>(0);
 
 
   public Phase() {
@@ -423,7 +423,7 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
 
 
   public Set<ProjectLp6Contribution> getProjectLp6Contributions() {
-    return ProjectLp6Contributions;
+    return projectLp6Contributions;
   }
 
   public Set<ProjectOutcome> getProjectOutcomes() {
@@ -750,7 +750,7 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
   }
 
   public void setProjectLp6Contributions(Set<ProjectLp6Contribution> projectLp6Contributions) {
-    ProjectLp6Contributions = projectLp6Contributions;
+    projectLp6Contributions = projectLp6Contributions;
   }
 
   public void setProjectOutcomes(Set<ProjectOutcome> projectOutcomes) {
