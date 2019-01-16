@@ -249,12 +249,9 @@ public class ProjectContributionToLP6Action extends BaseAction {
     loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
     loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
 
-    try {
-      projectID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_REQUEST_ID)));
-      this.setProject(projectManager.getProjectById(projectID));
-    } catch (Exception e) {
-      LOG.error("unable to parse projectID", e);
-    }
+
+    projectID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_REQUEST_ID)));
+    this.setProject(projectManager.getProjectById(projectID));
 
     /*
      * Geographic scope for lp6 contribution
@@ -289,14 +286,10 @@ public class ProjectContributionToLP6Action extends BaseAction {
      * Get the actual projectLp6Contribution
      */
     if (this.getActualPhase() != null && projectID != 0) {
-      try {
-        this.setProjectLp6Contribution(projectLp6ContributionManager.findAll().stream().filter(c -> c.isActive()
-          && c.getProject().getId() == projectID && c.getPhase().getId() == this.getActualPhase().getId())
-          .collect(Collectors.toList()).get(0));
-      } catch (Exception e) {
-        LOG.error("error setting projectLp6 contribution " + e);
 
-      }
+      this.setProjectLp6Contribution(
+        projectLp6ContributionManager.findAll().stream().filter(c -> c.isActive() && c.getProject().getId() == projectID
+          && c.getPhase().getId() == this.getActualPhase().getId()).collect(Collectors.toList()).get(0));
     }
 
     if (projectLp6Contribution != null) {
@@ -322,17 +315,14 @@ public class ProjectContributionToLP6Action extends BaseAction {
     }
 
 
-    try {
-      if (!this.isDraft()) {
-        if (countries != null) {
-          for (LocElement country : countries) {
-            projectLp6Contribution.getCountriesIds().add(country.getLocElement().getIsoAlpha2());
-          }
+    if (!this.isDraft()) {
+      if (countries != null) {
+        for (LocElement country : countries) {
+          projectLp6Contribution.getCountriesIds().add(country.getLocElement().getIsoAlpha2());
         }
       }
-    } catch (Exception e) {
-      LOG.error("error getting contriesIds " + e);
     }
+
 
     if (this.isHttpPost()) {
       if (projectLp6Contribution.getDeliverables() != null) {
@@ -348,7 +338,6 @@ public class ProjectContributionToLP6Action extends BaseAction {
     if (this.hasPermission("canEdit")) {
 
       try {
-
 
         projectLp6ContributionManager.saveProjectLp6Contribution(projectLp6Contribution);
         this.saveProjectDeliverables();
@@ -420,17 +409,37 @@ public class ProjectContributionToLP6Action extends BaseAction {
   public void saveProjectDeliverables() {
 
     // Save the deliverables list
-    System.out.println("selected deliverables " + projectLp6Contribution.getDeliverables().size());
+
+    List<ProjectLp6ContributionDeliverable> projectLp6ContributionDeliverables = projectLp6Contribution
+      .getProjectLp6ContributionDeliverable().stream()
+      .filter(o -> o.isActive() && o.getPhase().getId() == this.getActualPhase().getId()).collect(Collectors.toList());
+    System.out.println("test 1");
+
     if (projectLp6Contribution.getDeliverables() != null && !projectLp6Contribution.getDeliverables().isEmpty()) {
 
-      if (projectLp6Contribution.getDeliverables() != null || !projectLp6Contribution.getDeliverables().isEmpty()) {
-        for (ProjectLp6ContributionDeliverable projectLp6ContributionDeliverable : projectLp6Contribution
-          .getDeliverables()) {
-          if (projectLp6Contribution.getDeliverables().contains(projectLp6ContributionDeliverable)) {
-            /*
-             * projectLp6ContributionDeliverableManager
-             * .deleteProjectLp6ContributionDeliverable(projectLp6ContributionDeliverable.getId());
-             */
+      System.out.println("test 2");
+
+      if (projectLp6ContributionDeliverables != null && !projectLp6ContributionDeliverables.isEmpty()) {
+        System.out.println("test 3");
+
+
+        for (ProjectLp6ContributionDeliverable projectLp6ContributionDeliverable : projectLp6ContributionDeliverables) {
+          System.out.println("test 4");
+
+          if (!projectLp6Contribution.getDeliverables().contains(projectLp6ContributionDeliverable)) {
+            // If the deliverable in bd is deleted in front end, it will be deleted of database
+            System.out.println("test 5" + " id " + projectLp6ContributionDeliverable.getId() + " phase "
+              + projectLp6ContributionDeliverable.getPhase() + " active "
+              + projectLp6ContributionDeliverable.isActive());
+
+            projectLp6ContributionDeliverable.setPhase(this.getActualPhase());
+            projectLp6ContributionDeliverable.setDeliverable(deliverable);
+
+
+            projectLp6ContributionDeliverableManager
+              .deleteProjectLp6ContributionDeliverable(projectLp6ContributionDeliverable.getId());
+            System.out.println("test 6");
+
           }
         }
       }
@@ -442,19 +451,13 @@ public class ProjectContributionToLP6Action extends BaseAction {
         projectLp6ContributionDeliverableManager.saveProjectLp6ContributionDeliverable(contributionDeliverables);
       }
     } else {
-
-      List<ProjectLp6ContributionDeliverable> projectLp6ContributionDeliverables =
-        projectLp6Contribution.getProjectLp6ContributionDeliverable().stream()
-          .filter(o -> o.isActive() && o.getPhase().getId() == this.getActualPhase().getId())
-          .collect(Collectors.toList());
-
+      // If the list of selected deliverables is empty
       if (projectLp6ContributionDeliverables != null && !projectLp6ContributionDeliverables.isEmpty()) {
         for (ProjectLp6ContributionDeliverable projectLp6ContributionDeliverable : projectLp6ContributionDeliverables) {
           projectLp6ContributionDeliverableManager
             .deleteProjectLp6ContributionDeliverable(projectLp6ContributionDeliverable.getId());
         }
       }
-
     }
   }
 

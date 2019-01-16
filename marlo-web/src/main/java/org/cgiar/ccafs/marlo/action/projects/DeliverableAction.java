@@ -1714,8 +1714,6 @@ public class DeliverableAction extends BaseAction {
         }
       }
 
-      System.out.println(deliverable.getContribution());
-
       if (this.isHttpPost()) {
         if (deliverable.getContribution() != null) {
           deliverable.setContribution(null);
