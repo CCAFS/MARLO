@@ -96,13 +96,13 @@
               <a href="${dlurl}"}>[@utils.tableText value=(item.projectPolicyInfo.title)!"" /]</a>
             </td>
             <td class="">
-              [@utils.tableText value=(item.projectPolicyInfo.typeName)!"" /]
+              [@utils.tableText value=(item.projectPolicyInfo.repIndPolicyInvestimentType.name)!"" /]
             </td>
             <td class="">
               [@utils.tableList list=(item.subIdos)![] displayFieldName="name" /]
             </td>
             <td class="">
-              [@utils.tableText value=(item.projectPolicyInfo.maturity)!"" /]
+              [@utils.tableText value=(item.projectPolicyInfo.repIndStageProcess.name)!"" /]
             </td>
             <td class="text-center">
               [@utils.tableCheckIcon state=(isThisComplete || ((item.year lt  currentCycleYear)!false)) /]
@@ -116,7 +116,7 @@
                 <div id="removeItem-${item_index}" class="modal fade" tabindex="-1" role="dialog">
                   <div class="modal-dialog" role="document">
                     <div class="modal-content">
-                      [@s.form action="deletePolicy"]
+                      [@s.form action="deletePolicy.do"]
                         <div class="modal-header">
                           <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                           <h4 class="modal-title">Remove this item <br /> <small>${(item.projectPolicyInfo.title)!}</small> </h4>
@@ -124,6 +124,7 @@
                         <div class="modal-body">
                           [@customForm.textArea name="justification" i18nkey="projectPolicies.removeJustification" required=true className="removeJustification"/]
                           <input type="hidden"  name="policyID" value="${(item.id)!}" />
+                          <input type="hidden"  name="projectID" value="${(projectID)!}" />
                           <input type="hidden"  name="phaseID"  value="${(actualPhase.id)!}"/>
                         </div>
                         <div class="modal-footer">
