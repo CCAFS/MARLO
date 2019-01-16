@@ -44,42 +44,43 @@ import org.springframework.web.bind.annotation.RestController;
 @Named
 public class Locations {
 
-  private static final Logger LOG = LoggerFactory.getLogger(Locations.class);
+	private static final Logger LOG = LoggerFactory.getLogger(Locations.class);
 
-  private CountryItem<Locations> countryItem;
-  private GeographicScopeItem<Locations> geographicScopeItem;
+	private CountryItem<Locations> countryItem;
+	private GeographicScopeItem<Locations> geographicScopeItem;
 
-  @Inject
-  public Locations(CountryItem<Locations> countryItem, GeographicScopeItem<Locations> geographicScopeItem) {
-    this.countryItem = countryItem;
-    this.geographicScopeItem = geographicScopeItem;
-  }
+	@Inject
+	public Locations(CountryItem<Locations> countryItem, GeographicScopeItem<Locations> geographicScopeItem) {
+		this.countryItem = countryItem;
+		this.geographicScopeItem = geographicScopeItem;
+	}
 
-  /**
-   * Get All the Country items *
-   * 
-   * @return a List of LocElementDTO with all LocElements Items.
-   */
-  @ApiOperation(value = "View all Conutries", response = LocElementDTO.class, responseContainer = "List")
-  @RequiresPermissions(Permission.CRP_PROGRAM_READ_REST_API_PERMISSION)
-  @RequestMapping(value = "/countries", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-  public List<LocElementDTO> getAllContries() {
-    LOG.debug("REST request to get Contries");
-    return countryItem.getAllCountries();
-  }
+	/**
+	 * Get All the Country items *
+	 * 
+	 * @return a List of LocElementDTO with all LocElements Items.
+	 */
+	@ApiOperation(value = "View all Conutries", response = LocElementDTO.class, responseContainer = "List")
+	@RequiresPermissions(Permission.CRP_PROGRAM_READ_REST_API_PERMISSION)
+	@RequestMapping(value = "/countries", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public List<LocElementDTO> getAllContries() {
+		LOG.debug("REST request to get Contries");
+		return this.countryItem.getAllCountries();
+	}
 
+	/**
+	 * Get All the Geographic Scope items *
+	 * 
+	 * @return a List of GeographicScopeDTO with all RepIndGeographicScope
+	 * Items.
+	 */
 
-  /**
-   * Get All the Geographic Scope items *
-   * 
-   * @return a List of GeographicScopeDTO with all RepIndGeographicScope Items.
-   */
-  @ApiOperation(value = "View all Geographic Scopes", response = GeographicScopeDTO.class, responseContainer = "List")
-  @RequiresPermissions(Permission.CRP_PROGRAM_READ_REST_API_PERMISSION)
-  @RequestMapping(value = "/geographicScopes", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-  public List<GeographicScopeDTO> getAllGeographicScopes() {
-    LOG.debug("REST request to get Geographic Scopes");
-    return geographicScopeItem.getAllGeographicScopes();
-  }
+	@ApiOperation(value = "View all Geographic Scopes", response = GeographicScopeDTO.class, responseContainer = "List")
+	@RequiresPermissions(Permission.CRP_PROGRAM_READ_REST_API_PERMISSION)
+	@RequestMapping(value = "/geographic-scopes", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public List<GeographicScopeDTO> getAllGeographicScopes() {
+		LOG.debug("REST request to get Geographic Scopes");
+		return this.geographicScopeItem.getAllGeographicScopes();
+	}
 
 }
