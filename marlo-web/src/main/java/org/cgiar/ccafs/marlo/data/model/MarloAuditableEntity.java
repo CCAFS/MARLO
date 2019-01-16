@@ -44,17 +44,17 @@ public abstract class MarloAuditableEntity extends MarloSoftDeleteableEntity {
 
 
   public Date getActiveSince() {
-    return activeSince;
+    return this.activeSince;
   }
 
 
   public User getCreatedBy() {
-    return createdBy;
+    return this.createdBy;
   }
 
 
   public String getModificationJustification() {
-    return modificationJustification;
+    return this.modificationJustification;
   }
 
 
