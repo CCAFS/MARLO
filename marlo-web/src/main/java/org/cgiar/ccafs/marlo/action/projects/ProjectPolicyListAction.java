@@ -139,6 +139,14 @@ public class ProjectPolicyListAction extends BaseAction {
     project.setPolicies(new ArrayList<ProjectPolicy>());
     for (ProjectPolicy projectPolicy : policies) {
       if (projectPolicy.getProjectPolicyInfo(this.getActualPhase()) != null) {
+
+        // SubIdos List
+        if (projectPolicy.getProjectPolicySubIdos() != null) {
+          projectPolicy.setSubIdos(new ArrayList<>(projectPolicy.getProjectPolicySubIdos().stream()
+            .filter(o -> o.isActive() && o.getPhase().getId() == this.getActualPhase().getId())
+            .collect(Collectors.toList())));
+        }
+
         project.getPolicies().add(projectPolicy);
       }
     }
