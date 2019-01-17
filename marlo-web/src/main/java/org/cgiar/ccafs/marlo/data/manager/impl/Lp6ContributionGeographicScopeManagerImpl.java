@@ -15,7 +15,6 @@
 package org.cgiar.ccafs.marlo.data.manager.impl;
 
 
-import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.dao.Lp6ContributionGeographicScopeDAO;
 import org.cgiar.ccafs.marlo.data.dao.PhaseDAO;
 import org.cgiar.ccafs.marlo.data.manager.Lp6ContributionGeographicScopeManager;
@@ -52,20 +51,10 @@ public class Lp6ContributionGeographicScopeManagerImpl implements Lp6Contributio
       this.getLp6ContributionGeographicScopeById(lp6ContributionGeographicScopeID);
     Phase currentPhase = lp6ContributionGeographicScope.getPhase();
 
-    if (currentPhase.getDescription().equals(APConstants.PLANNING) && currentPhase.getNext() != null) {
-      this.deleteLp6ContributionGeographicScopePhase(currentPhase.getNext(),
-        lp6ContributionGeographicScope.getProjectLp6Contribution().getId(), lp6ContributionGeographicScope);
-    }
 
-    if (currentPhase.getDescription().equals(APConstants.REPORTING)) {
-      if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {
-        Phase upkeepPhase = currentPhase.getNext().getNext();
-        if (upkeepPhase != null) {
-          this.deleteLp6ContributionGeographicScopePhase(upkeepPhase.getNext(),
-            lp6ContributionGeographicScope.getProjectLp6Contribution().getId(), lp6ContributionGeographicScope);
-        }
-      }
-    }
+    this.deleteLp6ContributionGeographicScopePhase(currentPhase.getNext(),
+      lp6ContributionGeographicScope.getProjectLp6Contribution().getId(), lp6ContributionGeographicScope);
+
 
     lp6ContributionGeographicScopeDAO.deleteLp6ContributionGeographicScope(lp6ContributionGeographicScopeID);
   }
