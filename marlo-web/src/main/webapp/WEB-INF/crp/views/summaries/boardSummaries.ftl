@@ -94,6 +94,15 @@
       "action": "${crpSession}/projectsSummary",
       "formats": [ "Excel" ],
       "cycles": [ "Planning", "Reporting" ]
+    },
+    { "active": action.hasSpecificities('crp_lp6_active'),
+      "available": true,
+      "title": "summaries.board.report.contributionToLP6", 
+      "description": "",
+      "namespace": "/projects",
+      "action": "${crpSession}/projectsSummary",
+      "formats": [ "Excel" ],
+      "cycles": [ "Reporting" ]
     }
   ]},
   [#-- PARTNERS REPORTS --]
