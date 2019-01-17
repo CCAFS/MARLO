@@ -55,7 +55,7 @@ function attachEvents() {
   $('input.input-yn').on('change', function(){
     var value = this.value;
     var $parent = $(this).parents(".contributionForm");
-    var $narrativeBlock = $parent.find(".narrativeBlock")
+    var $narrativeBlock = $parent.find(".narrativeBlock");
 
     if(value == "true"){
       $narrativeBlock.show();
