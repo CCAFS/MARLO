@@ -31,33 +31,33 @@ public class ProjectLp6Contribution extends MarloAuditableEntity implements java
 
   @Expose
   private Project project;
-
+  @Expose
   private Phase phase;
-
+  @Expose
   private Boolean contribution;
-
+  @Expose
   private String narrative;
-
+  @Expose
   private String workingAcrossFlagshipsNarrative;
-
+  @Expose
   private Boolean workingAcrossFlagships;
-
+  @Expose
   private String undertakingEffortsLeadingNarrative;
-
+  @Expose
   private Boolean undertakingEffortsLeading;
-
+  @Expose
   private String topThreePartnershipsNarrative;
-
+  @Expose
   private Boolean providingPathways;
-
+  @Expose
   private String providingPathwaysNarrative;
-
+  @Expose
   private String undertakingEffortsCsaNarrative;
-
+  @Expose
   private Boolean undertakingEffortsCsa;
-
+  @Expose
   private String initiativeRelatedNarrative;
-
+  @Expose
   private Boolean initiativeRelated;
 
   @Expose
