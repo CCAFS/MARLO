@@ -38,11 +38,12 @@
               [/#if]
              </div>
             [#-- Geographic Scope --]
-            <div class="form-group geographicScopeBlock">        
-              [#assign isRegional = ((projectsLp6Contribution.repIndGeographicScope.id == action.reportingIndGeographicScopeRegional)!false) ]
-              [#assign isMultiNational = ((projectsLp6Contribution.repIndGeographicScope.id == action.reportingIndGeographicScopeMultiNational)!false) ]
-              [#assign isNational = ((projectsLp6Contribution.repIndGeographicScope.id == action.reportingIndGeographicScopeNational)!false) ]
-              [#assign isSubNational = ((projectsLp6Contribution.repIndGeographicScope.id == action.reportingIndGeographicScopeSubNational)!false) ]
+            <div class="form-group geographicScopeBlock">      
+              [#assign geographicScope = ((projectLp6Contribution.geographicScope.id)!-1) ]
+              [#assign isRegional = ((geographicScope == action.reportingIndGeographicScopeRegional)!false) ]
+              [#assign isMultiNational = ((geographicScope == action.reportingIndGeographicScopeMultiNational)!false) ]
+              [#assign isNational = ((geographicScope == action.reportingIndGeographicScopeNational)!false) ]
+              [#assign isSubNational = ((geographicScope == action.reportingIndGeographicScopeSubNational)!false) ]
               
               <div class="form-group simpleBox">
                 <div class="form-group row">
