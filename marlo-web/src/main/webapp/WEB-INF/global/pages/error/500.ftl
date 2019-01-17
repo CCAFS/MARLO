@@ -9,6 +9,15 @@
   <br />
   <article class="container">
     <div class="content ">
+    
+      [#if config.debug]
+        <div class="grayBox">
+          <strong>Debug mode:</strong>
+          <br />
+          <code>${exception}</code>
+        </div>
+        <br />
+      [/#if]
       <div  class="borderBox errorContent">
         <div  class="text-center" id="info">
           <div>
@@ -21,14 +30,16 @@
 
           Please report this problem at the online <br />
           technical chat or by sending an email to <br />
-          Hector Tobon < h.f.tobon@cgiar.org >. <br /><br />
+          MARLO Support < marlosupport@cgiar.org >. <br /><br />
 
           Thank you for helping us improve the platform!</p>
+          
           </div>          
           <div onclick="history.go(-1);" class="button-goBack block-center">Go back!</div>
         </div>
         
       </div>
+      
     </div>
   </article>
 </section>

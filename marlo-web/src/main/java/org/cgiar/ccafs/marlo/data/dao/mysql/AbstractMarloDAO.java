@@ -81,7 +81,9 @@ public abstract class AbstractMarloDAO<T, ID extends Serializable> {
    * @param sqlQuery is a string representing an SQL query.
    */
   public List<Map<String, Object>> excuteStoreProcedure(String storeProcedure, String sqlQuery) {
-    this.sessionFactory.getCurrentSession().createSQLQuery(storeProcedure).executeUpdate();
+    Query queryProcd = this.sessionFactory.getCurrentSession().createSQLQuery(storeProcedure);
+    queryProcd.setFlushMode(FlushMode.COMMIT);
+    queryProcd.executeUpdate();
     Query query = this.sessionFactory.getCurrentSession().createSQLQuery(sqlQuery);
     query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
     query.setFlushMode(FlushMode.COMMIT);
