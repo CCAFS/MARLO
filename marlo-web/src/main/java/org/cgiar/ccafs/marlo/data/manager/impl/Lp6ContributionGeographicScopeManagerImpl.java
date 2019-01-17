@@ -114,24 +114,18 @@ public class Lp6ContributionGeographicScopeManagerImpl implements Lp6Contributio
   @Override
   public Lp6ContributionGeographicScope
     saveLp6ContributionGeographicScope(Lp6ContributionGeographicScope lp6ContributionGeographicScope) {
-    Lp6ContributionGeographicScope region = lp6ContributionGeographicScopeDAO.save(lp6ContributionGeographicScope);
-    Phase currentPhase = phaseDAO.find(region.getPhase().getId());
 
-    if (currentPhase.getDescription().equals(APConstants.PLANNING) && currentPhase.getNext() != null) {
-      this.saveLp6ContributionGeographicScopePhase(currentPhase.getNext(), region.getProjectLp6Contribution().getId(),
-        lp6ContributionGeographicScope);
+    Lp6ContributionGeographicScope country = lp6ContributionGeographicScopeDAO.save(lp6ContributionGeographicScope);
+
+    // Phase phase = phaseDAO.find(country.getPhase().getId());
+
+    // if (phase.getDescription().equals(APConstants.REPORTING)) {
+    if (country.getPhase().getNext() != null) {
+      this.saveLp6ContributionGeographicScopePhase(country.getPhase().getNext(),
+        country.getProjectLp6Contribution().getId(), lp6ContributionGeographicScope);
     }
-
-    if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {
-      Phase upkeepPhase = currentPhase.getNext().getNext();
-      if (upkeepPhase != null) {
-        this.saveLp6ContributionGeographicScopePhase(upkeepPhase, region.getProjectLp6Contribution().getId(),
-          lp6ContributionGeographicScope);
-      }
-    }
-
-
-    return region;
+    // }
+    return country;
   }
 
   public void saveLp6ContributionGeographicScopePhase(Phase next, long lp6ContributionGeographicScopeID,

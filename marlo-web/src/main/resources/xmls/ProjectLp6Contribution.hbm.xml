@@ -116,7 +116,7 @@
 		<set embed-xml="true" fetch="select" inverse="true" lazy="true"
 			mutable="true" name="lp6ContributionGeographicScopes"
 			optimistic-lock="true" sort="unsorted"
-			table="lp6_contrubution_geographic_scope">
+			table="lp6_contribution_geographic_scope">
 			<key on-delete="noaction">
 				<column name="lp6_contribution_id" />
 			</key>

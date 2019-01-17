@@ -108,16 +108,16 @@ public class ProjectLp6ContributionDeliverableManagerImpl implements ProjectLp6C
   @Override
   public ProjectLp6ContributionDeliverable
     saveProjectLp6ContributionDeliverable(ProjectLp6ContributionDeliverable projectLp6ContributionDeliverable) {
-
+    System.out.println("before save " + projectLp6ContributionDeliverable.getPhase());
     ProjectLp6ContributionDeliverable deliverable =
       projectLp6ContributionDeliverableDAO.save(projectLp6ContributionDeliverable);
 
-    Phase phase = phaseDAO.find(deliverable.getPhase().getId());
-    if (deliverable.getPhase().getNext() != null) {
-      this.saveProjectLp6ContributionDeliverablePhase(deliverable.getPhase().getNext(),
-        deliverable.getProjectLp6Contribution().getId(), projectLp6ContributionDeliverable);
-    }
-
+    /*
+     * if (projectLp6ContributionDeliverable.getPhase().getNext() != null) {
+     * this.saveProjectLp6ContributionDeliverablePhase(projectLp6ContributionDeliverable.getPhase().getNext(),
+     * projectLp6ContributionDeliverable.getProjectLp6Contribution().getId(), projectLp6ContributionDeliverable);
+     * }
+     */
     return deliverable;
 
   }
