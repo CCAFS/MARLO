@@ -41,7 +41,7 @@ public class ProjectPolicyCountryMySQLDAO extends AbstractMarloDAO<ProjectPolicy
   @Override
   public void deleteProjectPolicyCountry(long projectPolicyCountryId) {
     ProjectPolicyCountry projectPolicyCountry = this.find(projectPolicyCountryId);
-    this.delete(projectPolicyCountry.getId());
+    this.delete(projectPolicyCountry);
   }
 
   @Override

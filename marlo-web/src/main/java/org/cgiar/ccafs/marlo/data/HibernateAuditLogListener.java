@@ -395,6 +395,7 @@ public class HibernateAuditLogListener
   @Override
   public void onFlush(FlushEvent flushEvent) throws HibernateException {
     /** Sometimes good to know when a Flush event happens **/
+
     LOG.debug("begin onFlushEvent");
   }
 
