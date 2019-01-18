@@ -61,7 +61,7 @@ import org.springframework.web.bind.annotation.RestController;
 import springfox.documentation.annotations.ApiIgnore;
 
 @RestController
-@Api(tags = "Institutions")
+@Api(tags = "_Institutions")
 public class Institutions {
 
 	private static final Logger LOG = LoggerFactory.getLogger(Institutions.class);

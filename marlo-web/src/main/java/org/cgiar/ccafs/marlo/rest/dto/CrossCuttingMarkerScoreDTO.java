@@ -19,7 +19,7 @@ import javax.validation.constraints.NotNull;
 
 import io.swagger.annotations.ApiModelProperty;
 
-public class CrossCuttingMarkerDTO {
+public class CrossCuttingMarkerScoreDTO {
 
   @ApiModelProperty(notes = "The Generated Cross Cutting Marker ID")
   @NotNull
