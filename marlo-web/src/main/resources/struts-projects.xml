@@ -184,7 +184,17 @@
         <param name="contentDisposition">filename="${fileName}"</param>
       </result>
     </action>
-    <action name="{crp}/projectsSummary"
+    <action name="{crp}/projectContributionLp6Summary"
+      class="org.cgiar.ccafs.marlo.action.summaries.ProjectContributionLp6SummaryAction">
+      <interceptor-ref name="homeStack" />
+      <result name="success" type="stream">
+        <param name="inputName">inputStream</param>
+        <param name="contentType">${contentType}</param>               
+        <param name="contentDisposition">filename="${fileName}"</param>
+      </result>
+    </action>
+    
+    <action name="{crp}/projectContributionLP6"
       class="org.cgiar.ccafs.marlo.action.summaries.ProjectsSummaryAction">
       <interceptor-ref name="homeStack" />
       <result name="success" type="stream">
