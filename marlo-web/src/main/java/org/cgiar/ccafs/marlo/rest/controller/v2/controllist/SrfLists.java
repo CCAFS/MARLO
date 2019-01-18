@@ -47,7 +47,7 @@ import springfox.documentation.annotations.ApiIgnore;
  * @author Hermes Jiménez - CIAT/CCAFS
  */
 @RestController
-@Api(tags = "SRF Lists")
+@Api(tags = "_SRF Lists")
 @Named
 public class SrfLists {
 
@@ -73,10 +73,10 @@ public class SrfLists {
 	 * @param id
 	 * @return a SrfSubIdoDTO with the SRF-SubIdo data.
 	 */
-	@ApiIgnore
-	@ApiOperation(value = "Search an SRF-SubIdo with an ID", response = SrfSubIdoDTO.class)
+
+	@ApiOperation(tags = "Policies", value = "Search an SRF-SubIdo with an ID", response = SrfSubIdoDTO.class)
 	@RequiresPermissions(Permission.CRP_PROGRAM_READ_REST_API_PERMISSION)
-	@RequestMapping(value = "/srfSubIdos/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/srf-sub-idos/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<SrfSubIdoDTO> findSrfSubIdoById(@PathVariable Long id) {
 		LOG.debug("REST request to get SRF-SubIdo : {}", id);
 		return this.srfSubIdoItem.findSrfSubIdoById(id);
@@ -131,7 +131,7 @@ public class SrfLists {
 	 * @return a List of SrfSubIdoDTO with all SRF-SubIdo Items.
 	 */
 
-	@ApiOperation(value = "Get all SRF-SubIdo", response = SrfSubIdoDTO.class, responseContainer = "List")
+	@ApiOperation(tags = "Policies", value = "Get all SRF-SubIdo", response = SrfSubIdoDTO.class, responseContainer = "List")
 	@RequiresPermissions(Permission.CRP_PROGRAM_READ_REST_API_PERMISSION)
 	@RequestMapping(value = "/srf-sub-idos", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public List<SrfSubIdoDTO> getAllSrfSubIdos() {

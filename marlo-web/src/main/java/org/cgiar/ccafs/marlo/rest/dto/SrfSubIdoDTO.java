@@ -19,42 +19,47 @@ import io.swagger.annotations.ApiModelProperty;
 
 public class SrfSubIdoDTO {
 
-  @ApiModelProperty(notes = "The Generated SRF SubIDO ID")
-  private Long id;
+	@ApiModelProperty(notes = "SRF Sub-IDO ID")
+	private Long id;
 
+	@ApiModelProperty(notes = "SRF Sub-IDO CODE")
+	private String code;
 
-  private SrfIdoDTO srfIdo;
+	@ApiModelProperty(notes = "SRF Sub-IDO description ")
+	private String description;
 
+	private SrfIdoDTO srfIdo;
 
-  @ApiModelProperty(notes = "The SRF SubIDO description ")
-  private String description;
+	public String getCode() {
+		return this.code;
+	}
 
+	public String getDescription() {
+		return this.description;
+	}
 
-  public String getDescription() {
-    return description;
-  }
+	public Long getId() {
+		return this.id;
+	}
 
+	public SrfIdoDTO getSrfIdo() {
+		return this.srfIdo;
+	}
 
-  public Long getId() {
-    return id;
-  }
+	public void setCode(String code) {
+		this.code = code;
+	}
 
+	public void setDescription(String description) {
+		this.description = description;
+	}
 
-  public SrfIdoDTO getSrfIdo() {
-    return srfIdo;
-  }
+	public void setId(Long id) {
+		this.id = id;
+	}
 
-
-  public void setDescription(String description) {
-    this.description = description;
-  }
-
-  public void setId(Long id) {
-    this.id = id;
-  }
-
-  public void setSrfIdo(SrfIdoDTO srfIdo) {
-    this.srfIdo = srfIdo;
-  }
+	public void setSrfIdo(SrfIdoDTO srfIdo) {
+		this.srfIdo = srfIdo;
+	}
 
 }

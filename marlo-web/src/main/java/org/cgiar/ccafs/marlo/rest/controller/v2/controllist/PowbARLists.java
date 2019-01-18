@@ -16,14 +16,14 @@
 package org.cgiar.ccafs.marlo.rest.controller.v2.controllist;
 
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.powbar.ContributionOfCrpItem;
-import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.powbar.CrossCuttingMarkerItem;
+import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.powbar.CrossCuttingMarkerScoreItem;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.powbar.DegreeOfInnovationItem;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.powbar.InnovationTypeItem;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.powbar.MaturityOfChangeItem;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.powbar.ResearchPartnershipItem;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.powbar.StageOfInnovationItem;
 import org.cgiar.ccafs.marlo.rest.dto.ContributionOfCrpDTO;
-import org.cgiar.ccafs.marlo.rest.dto.CrossCuttingMarkerDTO;
+import org.cgiar.ccafs.marlo.rest.dto.CrossCuttingMarkerScoreDTO;
 import org.cgiar.ccafs.marlo.rest.dto.DegreeOfInnovationDTO;
 import org.cgiar.ccafs.marlo.rest.dto.InnovationTypeDTO;
 import org.cgiar.ccafs.marlo.rest.dto.MaturityOfChangeDTO;
@@ -50,12 +50,13 @@ import org.springframework.web.bind.annotation.RestController;
 import springfox.documentation.annotations.ApiIgnore;
 
 @RestController
-@Api(tags = "POWB/AR Lists")
+@Api(tags = "_POWB/AR control Lists")
+
 @Named
 public class PowbARLists {
 
 	private static final Logger LOG = LoggerFactory.getLogger(PowbARLists.class);
-	private CrossCuttingMarkerItem<PowbARLists> crossCuttingMarkersItem;
+	private CrossCuttingMarkerScoreItem<PowbARLists> crossCuttingMarkerScoreItem;
 	private InnovationTypeItem<PowbARLists> innovationTypesItem;
 	private ResearchPartnershipItem<PowbARLists> researchPartnershipsItem;
 	private StageOfInnovationItem<PowbARLists> stageOfInnovationItem;
@@ -64,14 +65,14 @@ public class PowbARLists {
 	private MaturityOfChangeItem<PowbARLists> maturityOfChangeItem;
 
 	@Inject
-	public PowbARLists(CrossCuttingMarkerItem<PowbARLists> crossCuttingMarkersItem,
+	public PowbARLists(CrossCuttingMarkerScoreItem<PowbARLists> crossCuttingMarkerScoreItem,
 			InnovationTypeItem<PowbARLists> innovationTypesItem,
 			ResearchPartnershipItem<PowbARLists> researchPartnershipsItem,
 			StageOfInnovationItem<PowbARLists> stageOfInnovationItem,
 			ContributionOfCrpItem<PowbARLists> contributionOfCrpItem,
 			DegreeOfInnovationItem<PowbARLists> degreeOfInnovationItem,
 			MaturityOfChangeItem<PowbARLists> maturityOfChangeItem) {
-		this.crossCuttingMarkersItem = crossCuttingMarkersItem;
+		this.crossCuttingMarkerScoreItem = crossCuttingMarkerScoreItem;
 		this.innovationTypesItem = innovationTypesItem;
 		this.researchPartnershipsItem = researchPartnershipsItem;
 		this.stageOfInnovationItem = stageOfInnovationItem;
@@ -161,12 +162,13 @@ public class PowbARLists {
 	 * @return a List of CrossCuttingMarkersDTO with all Cross Cutting Markers
 	 * Items.
 	 */
-	@ApiOperation(value = "View all The Cross Cutting Markers", response = CrossCuttingMarkerDTO.class, responseContainer = "List", position = 1)
+
+	@ApiOperation(tags = "Policies", value = "View all The Cross Cutting Markers", response = CrossCuttingMarkerScoreDTO.class, responseContainer = "List")
 	@RequiresPermissions(Permission.CRP_PROGRAM_READ_REST_API_PERMISSION)
 	@RequestMapping(value = "/cross-cutting-marker-scores", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public List<CrossCuttingMarkerDTO> getAllCrossCuttingMarkers() {
+	public List<CrossCuttingMarkerScoreDTO> getAllCrossCuttingMarkerScores() {
 		LOG.debug("REST request to get Cross Cutting Markers");
-		return this.crossCuttingMarkersItem.getAllCrossCuttingMarkers();
+		return this.crossCuttingMarkerScoreItem.getAllCrossCuttingMarkers();
 	}
 
 	/**
@@ -189,7 +191,7 @@ public class PowbARLists {
 	 * 
 	 * @return a List of InnovationTypesDTO with all Innovation Types Items.
 	 */
-
+	@ApiIgnore
 	@ApiOperation(value = "View all The Innovation Types", response = InnovationTypeDTO.class, responseContainer = "List", position = 1)
 	@RequiresPermissions(Permission.CRP_PROGRAM_READ_REST_API_PERMISSION)
 	@RequestMapping(value = "/innovation-types", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -203,10 +205,10 @@ public class PowbARLists {
 	 * 
 	 * @return a List of MaturityOfChangeDTO with all RepIndStageStudy Items.
 	 */
-
+	@ApiIgnore
 	@ApiOperation(value = "View all The Maturity of Changes", response = MaturityOfChangeDTO.class, responseContainer = "List", position = 1)
 	@RequiresPermissions(Permission.CRP_PROGRAM_READ_REST_API_PERMISSION)
-	@RequestMapping(value = "/2-maturity-of-changes", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/maturity-of-changes", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public List<MaturityOfChangeDTO> getAllMaturityOfChanges() {
 		LOG.debug("REST request to get  Maturity of Change");
 		return this.maturityOfChangeItem.getAllMaturityOfChanges();
@@ -218,10 +220,10 @@ public class PowbARLists {
 	 * @return a List of ResearchPartnershipsDTO with all ResearchPartnerships
 	 * Items.
 	 */
-
+	@ApiIgnore
 	@ApiOperation(value = "View all The Research Partnerships", response = ResearchPartnershipDTO.class, responseContainer = "List", position = 1)
 	@RequiresPermissions(Permission.CRP_PROGRAM_READ_REST_API_PERMISSION)
-	@RequestMapping(value = "/1-research-partnerships", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/research-partnerships", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public List<ResearchPartnershipDTO> getAllResearchPartnerships() {
 		LOG.debug("REST request to get ResearchPartnerships");
 		return this.researchPartnershipsItem.getAllResearchPartnerships();
@@ -248,12 +250,12 @@ public class PowbARLists {
 	 * @param id
 	 * @return a CrossCuttingMarkersDTO with the Cross Cutting Marker data.
 	 */
-	@ApiOperation(value = "Search a Cross Cutting Marker with an ID", response = CrossCuttingMarkerDTO.class)
+	@ApiOperation(tags = "Policies", value = "Search a Cross Cutting Marker with an ID", response = CrossCuttingMarkerScoreDTO.class)
 	@RequiresPermissions(Permission.CRP_PROGRAM_READ_REST_API_PERMISSION)
 	@RequestMapping(value = "/cross-cutting-marker-scores/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<CrossCuttingMarkerDTO> getCrossCuttingMarkerById(@PathVariable Long id) {
+	public ResponseEntity<CrossCuttingMarkerScoreDTO> getCrossCuttingMarkerScoreById(@PathVariable Long id) {
 		LOG.debug("REST request to get Cross Cutting Marker : {}", id);
-		return this.crossCuttingMarkersItem.findCrossCuttingMarkerById(id);
+		return this.crossCuttingMarkerScoreItem.findCrossCuttingMarkerScoreById(id);
 	}
 
 	/**

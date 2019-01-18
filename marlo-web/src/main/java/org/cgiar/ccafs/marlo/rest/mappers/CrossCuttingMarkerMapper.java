@@ -16,7 +16,7 @@
 package org.cgiar.ccafs.marlo.rest.mappers;
 
 import org.cgiar.ccafs.marlo.data.model.RepIndGenderYouthFocusLevel;
-import org.cgiar.ccafs.marlo.rest.dto.CrossCuttingMarkerDTO;
+import org.cgiar.ccafs.marlo.rest.dto.CrossCuttingMarkerScoreDTO;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -27,10 +27,10 @@ public interface CrossCuttingMarkerMapper {
 
   @Mappings({@Mapping(target = "powbName", source = "crossCuttingMarkersDTO.name")})
   public abstract RepIndGenderYouthFocusLevel
-    crossCuttingMarkersDTOToRepIndGenderYouthFocusLevel(CrossCuttingMarkerDTO crossCuttingMarkersDTO);
+    crossCuttingMarkersDTOToRepIndGenderYouthFocusLevel(CrossCuttingMarkerScoreDTO crossCuttingMarkersDTO);
 
   @Mappings({@Mapping(target = "name", source = "repIndGenderYouthFocusLevel.powbName")})
-  public abstract CrossCuttingMarkerDTO
+  public abstract CrossCuttingMarkerScoreDTO
     repIndGenderYouthFocusLevelToCrossCuttingMarkersDTO(RepIndGenderYouthFocusLevel repIndGenderYouthFocusLevel);
 
 

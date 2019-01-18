@@ -15,7 +15,6 @@
 package org.cgiar.ccafs.marlo.data.model;
 // Generated May 26, 2016 9:42:28 AM by Hibernate Tools 4.3.1.Final
 
-
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 
 import java.util.HashSet;
@@ -28,102 +27,111 @@ import com.google.gson.annotations.Expose;
  */
 public class SrfSubIdo extends MarloAuditableEntity implements java.io.Serializable, IAuditLog {
 
+	private static final long serialVersionUID = -6590673724952913143L;
 
-  private static final long serialVersionUID = -6590673724952913143L;
+	@Expose
+	private SrfIdo srfIdo;
 
-  @Expose
-  private SrfIdo srfIdo;
+	@Expose
+	private String description;
 
-  @Expose
-  private String description;
+	private String smoCode;
 
-  private Set<CrpOutcomeSubIdo> crpOutcomeSubIdos = new HashSet<CrpOutcomeSubIdo>(0);
+	private Set<CrpOutcomeSubIdo> crpOutcomeSubIdos = new HashSet<CrpOutcomeSubIdo>(0);
 
-  private Set<CrpSubIdosContribution> crpSubIdosContributions = new HashSet<CrpSubIdosContribution>(0);
+	private Set<CrpSubIdosContribution> crpSubIdosContributions = new HashSet<CrpSubIdosContribution>(0);
 
-  private Set<CenterImpact> centerImpacts = new HashSet<CenterImpact>(0);
+	private Set<CenterImpact> centerImpacts = new HashSet<CenterImpact>(0);
 
-  public SrfSubIdo() {
-  }
+	public SrfSubIdo() {
+	}
 
-  @Override
-  public boolean equals(Object obj) {
-    if (this == obj) {
-      return true;
-    }
-    if (obj == null) {
-      return false;
-    }
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
 
-    SrfSubIdo other = (SrfSubIdo) obj;
-    if (this.getId() == null) {
-      if (other.getId() != null) {
-        return false;
-      }
-    } else if (!this.getId().equals(other.getId())) {
-      return false;
-    }
-    return true;
-  }
+		SrfSubIdo other = (SrfSubIdo) obj;
+		if (this.getId() == null) {
+			if (other.getId() != null) {
+				return false;
+			}
+		} else if (!this.getId().equals(other.getId())) {
+			return false;
+		}
+		return true;
+	}
 
-  public Set<CenterImpact> getCenterImpacts() {
-    return centerImpacts;
-  }
+	public Set<CenterImpact> getCenterImpacts() {
+		return this.centerImpacts;
+	}
 
-  public Set<CrpOutcomeSubIdo> getCrpOutcomeSubIdos() {
-    return this.crpOutcomeSubIdos;
-  }
+	public Set<CrpOutcomeSubIdo> getCrpOutcomeSubIdos() {
+		return this.crpOutcomeSubIdos;
+	}
 
-  public Set<CrpSubIdosContribution> getCrpSubIdosContributions() {
-    return this.crpSubIdosContributions;
-  }
+	public Set<CrpSubIdosContribution> getCrpSubIdosContributions() {
+		return this.crpSubIdosContributions;
+	}
 
-  public String getDescription() {
-    return this.description;
-  }
+	public String getDescription() {
+		return this.description;
+	}
 
-  @Override
-  public String getLogDeatil() {
-    StringBuilder sb = new StringBuilder();
-    sb.append("Id : ").append(this.getId());
-    return sb.toString();
-  }
+	@Override
+	public String getLogDeatil() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("Id : ").append(this.getId());
+		return sb.toString();
+	}
 
-  public SrfIdo getSrfIdo() {
-    return this.srfIdo;
-  }
+	public String getSmoCode() {
+		return this.smoCode;
+	}
 
-  @Override
-  public int hashCode() {
-    final int prime = 31;
-    int result = 1;
-    result = prime * result + ((this.getId() == null) ? 0 : this.getId().hashCode());
-    return result;
-  }
+	public SrfIdo getSrfIdo() {
+		return this.srfIdo;
+	}
 
-  public void setCenterImpacts(Set<CenterImpact> centerImpacts) {
-    this.centerImpacts = centerImpacts;
-  }
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((this.getId() == null) ? 0 : this.getId().hashCode());
+		return result;
+	}
 
-  public void setCrpOutcomeSubIdos(Set<CrpOutcomeSubIdo> crpOutcomeSubIdos) {
-    this.crpOutcomeSubIdos = crpOutcomeSubIdos;
-  }
+	public void setCenterImpacts(Set<CenterImpact> centerImpacts) {
+		this.centerImpacts = centerImpacts;
+	}
 
-  public void setCrpSubIdosContributions(Set<CrpSubIdosContribution> crpSubIdosContributions) {
-    this.crpSubIdosContributions = crpSubIdosContributions;
-  }
+	public void setCrpOutcomeSubIdos(Set<CrpOutcomeSubIdo> crpOutcomeSubIdos) {
+		this.crpOutcomeSubIdos = crpOutcomeSubIdos;
+	}
 
-  public void setDescription(String description) {
-    this.description = description;
-  }
+	public void setCrpSubIdosContributions(Set<CrpSubIdosContribution> crpSubIdosContributions) {
+		this.crpSubIdosContributions = crpSubIdosContributions;
+	}
 
-  public void setSrfIdo(SrfIdo srfIdos) {
-    this.srfIdo = srfIdos;
-  }
+	public void setDescription(String description) {
+		this.description = description;
+	}
 
-  @Override
-  public String toString() {
-    return "SrfSubIdo [id=" + this.getId() + ", srfIdo=" + srfIdo + ", description=" + description + "]";
-  }
+	public void setSmoCode(String smoCode) {
+		this.smoCode = smoCode;
+	}
+
+	public void setSrfIdo(SrfIdo srfIdos) {
+		this.srfIdo = srfIdos;
+	}
+
+	@Override
+	public String toString() {
+		return "SrfSubIdo [id=" + this.getId() + ", smoCode=" + this.smoCode + ", srfIdo=" + this.srfIdo
+				+ ", description=" + this.description + "]";
+	}
 }
-
