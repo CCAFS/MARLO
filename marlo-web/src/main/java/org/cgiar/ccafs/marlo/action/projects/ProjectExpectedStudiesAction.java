@@ -797,10 +797,11 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       // Save the Countries List (ProjectExpectedStudyCountry)
       if (expectedStudy.getCountriesIds() != null || !expectedStudy.getCountriesIds().isEmpty()) {
 
-        List<ProjectExpectedStudyCountry> countries =
-          projectExpectedStudyCountryManager.getProjectExpectedStudyCountrybyPhase(expectedStudy.getId(), phase.getId())
-            .stream().filter(le -> le.isActive() && le.getLocElement().getLocElementType().getId() == 2)
-            .collect(Collectors.toList());
+        List<ProjectExpectedStudyCountry> countries = projectExpectedStudyCountryManager
+          .getProjectExpectedStudyCountrybyPhase(expectedStudy.getId(), phase.getId()).stream()
+          .filter(le -> le != null && le.isActive() && le.getLocElement() != null
+            && le.getLocElement().getLocElementType() != null && le.getLocElement().getLocElementType().getId() == 2)
+          .collect(Collectors.toList());
         List<ProjectExpectedStudyCountry> countriesSave = new ArrayList<>();
         for (String countryIds : expectedStudy.getCountriesIds()) {
           ProjectExpectedStudyCountry countryInn = new ProjectExpectedStudyCountry();
@@ -1233,18 +1234,12 @@ public class ProjectExpectedStudiesAction extends BaseAction {
    */
   public void saveStudyRegions(ProjectExpectedStudy projectExpectedStudy, Phase phase) {
 
+    List<ProjectExpectedStudyCountry> regionPrev = projectExpectedStudyCountryManager
+      .getProjectExpectedStudyCountrybyPhase(expectedStudy.getId(), phase.getId()).stream()
+      .filter(le -> le.isActive() && le.getLocElement().getLocElementType().getId() == 1).collect(Collectors.toList());
+
     // Search and deleted form Information
-    if (projectExpectedStudy.getProjectExpectedStudyRegions() != null
-      && projectExpectedStudy.getProjectExpectedStudyRegions().size() > 0) {
-
-      List<ProjectExpectedStudyCountry> regionPrev =
-        projectExpectedStudyCountryManager.getProjectExpectedStudyCountrybyPhase(expectedStudy.getId(), phase.getId())
-          .stream().filter(le -> le.isActive() && le.getLocElement().getLocElementType().getId() == 1)
-          .collect(Collectors.toList());
-      //
-      // new ArrayList<>(projectExpectedStudy.getProjectExpectedStudyRegions().stream()
-      // .filter(nu -> nu.isActive() && nu.getPhase().getId() == phase.getId()).collect(Collectors.toList()));
-
+    if (regionPrev != null && regionPrev.size() > 0) {
       for (ProjectExpectedStudyCountry studyRegion : regionPrev) {
         if (expectedStudy.getStudyRegions() == null || !expectedStudy.getStudyRegions().contains(studyRegion)) {
           projectExpectedStudyCountryManager.deleteProjectExpectedStudyCountry(studyRegion.getId());
