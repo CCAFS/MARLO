@@ -130,9 +130,9 @@ public class ProjectContributionLp6SummaryAction extends BaseSummariesAction imp
   private MasterReport addi8nParameters(MasterReport masterReport) {
     if (partnerType.equals("All")) {
       masterReport.getParameterValues().put("i8nSummaryDescription",
-        this.getText("summaries.partners.description", new String[] {this.getSelectedCycle()}));
+        this.getText("summaries.lp6Contribution.description", new String[] {this.getSelectedCycle()}));
       masterReport.getParameterValues().put("i8nHeader",
-        this.getText("summaries.partners.header", new String[] {this.getLoggedCrp().getAcronym()}));
+        this.getText("summaries.lp6Contribution.header", new String[] {this.getLoggedCrp().getAcronym()}));
     } else {
       masterReport.getParameterValues().put("i8nSummaryDescription",
         this.getText("summaries.partners.leader.description", new String[] {this.getSelectedCycle()}));
@@ -140,14 +140,27 @@ public class ProjectContributionLp6SummaryAction extends BaseSummariesAction imp
         this.getText("summaries.partners.leader.header", new String[] {this.getLoggedCrp().getAcronym()}));
     }
 
-    masterReport.getParameterValues().put("i8nName", this.getText("summaries.partners.name"));
-    masterReport.getParameterValues().put("i8nAcronym", this.getText("summaries.partners.acronym"));
-    masterReport.getParameterValues().put("i8nWebSite", this.getText("summaries.partners.website"));
-    masterReport.getParameterValues().put("i8nType", this.getText("summaries.partners.type"));
-    masterReport.getParameterValues().put("i8nCountry", this.getText("summaries.partners.country"));
-    masterReport.getParameterValues().put("i8nProjects", this.getText("caseStudy.projects"));
-    masterReport.getParameterValues().put("i8nProjectsTitle", this.getText("summaries.partners.projectTitle"));
-    masterReport.getParameterValues().put("i8nProjectCountry", "Project " + this.getText("partner.countryOffices"));
+    masterReport.getParameterValues().put("i8nName", this.getText("summaries.lp6contribution.projectName"));
+    masterReport.getParameterValues().put("i8nAcronym", this.getText("summaries.lp6contribution.narrative"));
+    masterReport.getParameterValues().put("i8nWebSite", this.getText("summaries.lp6contribution.deliverables"));
+    masterReport.getParameterValues().put("i8nType", this.getText("summaries.lp6contribution.geographicScope"));
+    masterReport.getParameterValues().put("i8nCountry",
+      this.getText("summaries.lp6contribution.isWorkingAcrossFlagships"));
+    masterReport.getParameterValues().put("i8nProjects",
+      this.getText("summaries.lp6contribution.workingAcrossFlagships"));
+    masterReport.getParameterValues().put("i8nProjectsTitle",
+      this.getText("summaries.lp6contribution.isUndertakingEfforts"));
+    masterReport.getParameterValues().put("i8nProjectCountry",
+      "Project " + this.getText("summaries.lp6contribution.effortsUndertaking"));
+    masterReport.getParameterValues().put("i8nName", this.getText("summaries.lp6contribution.isProvidingPathways"));
+    masterReport.getParameterValues().put("i8nName", this.getText("summaries.lp6contribution.keyLearnings"));
+    masterReport.getParameterValues().put("i8nName", this.getText("summaries.lp6contribution.top3Partnerts"));
+    masterReport.getParameterValues().put("i8nName", this.getText("summaries.lp6contribution.isUndertakingEffortsCSA"));
+    masterReport.getParameterValues().put("i8nName", this.getText("summaries.lp6contribution.undertakingEffortsCSA"));
+    masterReport.getParameterValues().put("i8nName", this.getText("summaries.lp6contribution.isUndertakingInitiative"));
+    masterReport.getParameterValues().put("i8nName", this.getText("summaries.lp6contribution.undertakingInitiative"));
+
+
     return masterReport;
   }
 
@@ -401,11 +414,9 @@ public class ProjectContributionLp6SummaryAction extends BaseSummariesAction imp
   @Override
   public String getFileName() {
     StringBuffer fileName = new StringBuffer();
-    if (partnerType.equals("All")) {
-      fileName.append("ProjectPartnersSummary-");
-    } else {
-      fileName.append("ProjectLeadingInstitutionsSummary-");
-    }
+
+    fileName.append("ProjectContributionToLP6-");
+
     fileName.append(this.getLoggedCrp().getAcronym() + "-");
     fileName.append(this.getSelectedCycle() + "-");
     fileName.append(this.getSelectedYear() + "_");
