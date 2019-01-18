@@ -116,7 +116,6 @@ public class MARLOCustomPersistFilter extends OncePerRequestFilter {
       // fresh data... what you do here depends on your applications design.
       throw staleEx;
     } catch (Throwable ex) {
-      ex.printStackTrace();
       httpRequest.getSession().setAttribute("exception", ex);
       // Rollback only
       LOG.error("Exception occurred when trying to commit transaction");
