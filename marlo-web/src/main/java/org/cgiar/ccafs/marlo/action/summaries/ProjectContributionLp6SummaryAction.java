@@ -23,13 +23,11 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectLp6ContributionDeliverableManag
 import org.cgiar.ccafs.marlo.data.manager.ProjectLp6ContributionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.Institution;
-import org.cgiar.ccafs.marlo.data.model.InstitutionLocation;
 import org.cgiar.ccafs.marlo.data.model.InstitutionType;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.Project;
-import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
-import org.cgiar.ccafs.marlo.data.model.ProjectPartnerLocation;
-import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
+import org.cgiar.ccafs.marlo.data.model.ProjectLp6Contribution;
+import org.cgiar.ccafs.marlo.data.model.ProjectLp6ContributionDeliverable;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.io.ByteArrayInputStream;
@@ -102,6 +100,10 @@ public class ProjectContributionLp6SummaryAction extends BaseSummariesAction imp
   Set<Project> projects = new HashSet<>();
 
   private String partnerType;
+  private ProjectLp6Contribution projectLp6Contribution;
+  private List<ProjectLp6Contribution> projectLp6Contributions;
+
+
   // XLSX bytes
   private byte[] bytesXLSX;
 
@@ -130,9 +132,9 @@ public class ProjectContributionLp6SummaryAction extends BaseSummariesAction imp
   private MasterReport addi8nParameters(MasterReport masterReport) {
     if (partnerType.equals("All")) {
       masterReport.getParameterValues().put("i8nSummaryDescription",
-        this.getText("summaries.lp6Contribution.description", new String[] {this.getSelectedCycle()}));
+        this.getText("summaries.lp6contribution.description", new String[] {this.getSelectedCycle()}));
       masterReport.getParameterValues().put("i8nHeader",
-        this.getText("summaries.lp6Contribution.header", new String[] {this.getLoggedCrp().getAcronym()}));
+        this.getText("summaries.lp6contribution.header", new String[] {this.getLoggedCrp().getAcronym()}));
     } else {
       masterReport.getParameterValues().put("i8nSummaryDescription",
         this.getText("summaries.partners.leader.description", new String[] {this.getSelectedCycle()}));
@@ -140,122 +142,42 @@ public class ProjectContributionLp6SummaryAction extends BaseSummariesAction imp
         this.getText("summaries.partners.leader.header", new String[] {this.getLoggedCrp().getAcronym()}));
     }
 
-    masterReport.getParameterValues().put("i8nName", this.getText("summaries.lp6contribution.projectName"));
-    masterReport.getParameterValues().put("i8nAcronym", this.getText("summaries.lp6contribution.narrative"));
-    masterReport.getParameterValues().put("i8nWebSite", this.getText("summaries.lp6contribution.deliverables"));
-    masterReport.getParameterValues().put("i8nType", this.getText("summaries.lp6contribution.geographicScope"));
-    masterReport.getParameterValues().put("i8nCountry",
+    masterReport.getParameterValues().put("i8nProject", this.getText("summaries.lp6contribution.projectName"));
+    masterReport.getParameterValues().put("i8nNarrative", this.getText("summaries.lp6contribution.narrative"));
+    masterReport.getParameterValues().put("i8nDeliverables", this.getText("summaries.lp6contribution.deliverables"));
+    masterReport.getParameterValues().put("i8nGeographicScope",
+      this.getText("summaries.lp6contribution.geographicScope"));
+
+    masterReport.getParameterValues().put("i8nWorkingAcross",
       this.getText("summaries.lp6contribution.isWorkingAcrossFlagships"));
-    masterReport.getParameterValues().put("i8nProjects",
+
+    masterReport.getParameterValues().put("i8nWorkingAcrossNarrative",
       this.getText("summaries.lp6contribution.workingAcrossFlagships"));
-    masterReport.getParameterValues().put("i8nProjectsTitle",
+
+    masterReport.getParameterValues().put("i8nUndertakingEfforts",
       this.getText("summaries.lp6contribution.isUndertakingEfforts"));
-    masterReport.getParameterValues().put("i8nProjectCountry",
+
+    masterReport.getParameterValues().put("i8nUndertakingEffortsNarrative",
       "Project " + this.getText("summaries.lp6contribution.effortsUndertaking"));
-    masterReport.getParameterValues().put("i8nName", this.getText("summaries.lp6contribution.isProvidingPathways"));
-    masterReport.getParameterValues().put("i8nName", this.getText("summaries.lp6contribution.keyLearnings"));
-    masterReport.getParameterValues().put("i8nName", this.getText("summaries.lp6contribution.top3Partnerts"));
-    masterReport.getParameterValues().put("i8nName", this.getText("summaries.lp6contribution.isUndertakingEffortsCSA"));
-    masterReport.getParameterValues().put("i8nName", this.getText("summaries.lp6contribution.undertakingEffortsCSA"));
-    masterReport.getParameterValues().put("i8nName", this.getText("summaries.lp6contribution.isUndertakingInitiative"));
-    masterReport.getParameterValues().put("i8nName", this.getText("summaries.lp6contribution.undertakingInitiative"));
+
+    masterReport.getParameterValues().put("i8nProviding",
+      this.getText("summaries.lp6contribution.isProvidingPathways"));
+    masterReport.getParameterValues().put("i8nKeyLearnings", this.getText("summaries.lp6contribution.keyLearnings"));
+    masterReport.getParameterValues().put("i8nTop3", this.getText("summaries.lp6contribution.top3Partnerts"));
+    masterReport.getParameterValues().put("i8nUndertakingCSA",
+      this.getText("summaries.lp6contribution.isUndertakingEffortsCSA"));
+    masterReport.getParameterValues().put("i8nUndertakingCSAN",
+      this.getText("summaries.lp6contribution.undertakingEffortsCSA"));
+    masterReport.getParameterValues().put("i8nUndertaking",
+      this.getText("summaries.lp6contribution.isUndertakingInitiative"));
+    masterReport.getParameterValues().put("i8nUndertakingN",
+      this.getText("summaries.lp6contribution.undertakingInitiative"));
 
 
     return masterReport;
   }
 
   private void createIntitutionsProjectsList() {
-
-    // Status of projects
-    String[] statuses = {ProjectStatusEnum.Ongoing.getStatusId(), ProjectStatusEnum.Extended.getStatusId()};
-
-    // Get projects with the status defined
-    List<Project> projectList =
-      this.getActiveProjectsByPhase(this.getSelectedPhase(), this.getSelectedYear(), statuses);
-
-    for (Project project : projectList) {
-
-      List<ProjectPartner> projectPartnerList = project.getProjectPartners().stream()
-        .filter(pp -> pp.isActive() && pp.getPhase() != null && pp.getPhase().equals(this.getSelectedPhase()))
-        .collect(Collectors.toList());
-
-
-      if (!partnerType.equals("All")) {
-        List<ProjectPartner> projectPartnerLeaderList = new ArrayList<>();
-        for (ProjectPartner projectPartner : projectPartnerList) {
-          projectPartner.setPartnerPersons(projectPartner.getProjectPartnerPersons().stream()
-            .filter(ppp -> ppp.isActive()).collect(Collectors.toList()));
-          if (projectPartner.isLeader()) {
-            projectPartnerLeaderList.add(projectPartner);
-          }
-        }
-        projectPartnerList = projectPartnerLeaderList;
-      }
-
-      for (ProjectPartner projectPartner : projectPartnerList) {
-        if (projectPartner.getInstitution() != null) {
-          Institution institution = projectPartner.getInstitution();
-          InstitutionType institutionType = institution.getInstitutionType();
-          List<InstitutionLocation> institutionLocation = institution.getInstitutionsLocations().stream()
-            .filter(l -> l.isActive() && l.isHeadquater()).collect(Collectors.toList());
-          if (institutionLocation != null && institutionLocation.size() > 0) {
-            countries.add(institutionLocation.get(0).getLocElement());
-          }
-          projects.add(project);
-          // institutionsPerType
-          if (institutionsPerType.containsKey(institutionType)) {
-            Set<Institution> institutionSet = institutionsPerType.get(institutionType);
-            institutionSet.add(institution);
-            institutionsPerType.put(institutionType, institutionSet);
-          } else {
-            Set<Institution> institutionSet = new HashSet<>();
-            institutionSet.add(institution);
-            institutionsPerType.put(institutionType, institutionSet);
-          }
-
-          // projectsPerInstitution
-          if (projectsPerInstitution.containsKey(institution)) {
-            Set<Project> projectSet = projectsPerInstitution.get(institution);
-            projectSet.add(project);
-            projectsPerInstitution.put(institution, projectSet);
-          } else {
-            Set<Project> projectSet = new HashSet<>();
-            projectSet.add(project);
-            projectsPerInstitution.put(institution, projectSet);
-          }
-
-          // countriesPerInstitution
-          List<ProjectPartnerLocation> projectPartnerLocations = projectPartner.getProjectPartnerLocations().stream()
-            .filter(ppl -> ppl.isActive()).collect(Collectors.toList());
-          if (countriesPerInstitution.containsKey(institution)) {
-            Set<LocElement> countriesSet = countriesPerInstitution.get(institution);
-            if (projectPartnerLocations != null && !projectPartnerLocations.isEmpty()) {
-
-              for (ProjectPartnerLocation projectPartnerLocation : projectPartnerLocations) {
-                if (projectPartnerLocation.getInstitutionLocation() != null) {
-                  countriesSet.add(projectPartnerLocation.getInstitutionLocation().getLocElement());
-                  countries.add(projectPartnerLocation.getInstitutionLocation().getLocElement());
-                }
-              }
-            }
-
-            countriesPerInstitution.put(institution, countriesSet);
-          } else {
-            Set<LocElement> countriesSet = new HashSet<>();
-            if (projectPartnerLocations != null && !projectPartnerLocations.isEmpty()) {
-              for (ProjectPartnerLocation projectPartnerLocation : projectPartnerLocations) {
-                if (projectPartnerLocation.getInstitutionLocation() != null) {
-                  countriesSet.add(projectPartnerLocation.getInstitutionLocation().getLocElement());
-                  countries.add(projectPartnerLocation.getInstitutionLocation().getLocElement());
-                }
-              }
-            }
-            countriesPerInstitution.put(institution, countriesSet);
-          }
-
-        }
-      }
-    }
   }
 
   @Override
@@ -268,7 +190,7 @@ public class ProjectContributionLp6SummaryAction extends BaseSummariesAction imp
     ByteArrayOutputStream os = new ByteArrayOutputStream();
     try {
       Resource reportResource = resourceManager
-        .createDirectly(this.getClass().getResource("/pentaho/crp/ProjectPartners.prpt"), MasterReport.class);
+        .createDirectly(this.getClass().getResource("/pentaho/crp/ProjectLp6Contribution.prpt"), MasterReport.class);
 
       MasterReport masterReport = (MasterReport) reportResource.getResource();
       // Set Main_Query
@@ -287,12 +209,8 @@ public class ProjectContributionLp6SummaryAction extends BaseSummariesAction imp
       // method to get all the subreports in the prpt and store in the HashMap
       this.getAllSubreports(hm, masteritemBand);
       this.createIntitutionsProjectsList();
-      masterReport.getParameterValues().put("total_inst", projectsPerInstitution.size());
-      masterReport.getParameterValues().put("total_countries", countries.size());
-      masterReport.getParameterValues().put("total_projects", projects.size());
-      this.fillSubreport((SubReport) hm.get("details"), "details");
+
       this.fillSubreport((SubReport) hm.get("summary"), "summary");
-      this.fillSubreport((SubReport) hm.get("institution_types"), "institution_types");
       ExcelReportUtil.createXLSX(masterReport, os);
       bytesXLSX = os.toByteArray();
       os.close();
@@ -318,7 +236,7 @@ public class ProjectContributionLp6SummaryAction extends BaseSummariesAction imp
         model = this.getDetailsTableModel();
         break;
       case "summary":
-        model = this.getSummaryTableModel();
+        model = this.getDetailsTableModel();
         break;
       case "institution_types":
         model = this.getInstitutionTypesTableModel();
@@ -340,66 +258,86 @@ public class ProjectContributionLp6SummaryAction extends BaseSummariesAction imp
 
   private TypedTableModel getDetailsTableModel() {
     TypedTableModel model = new TypedTableModel(
-      new String[] {"ins_name", "ins_acr", "web_site", "ins_type", "country", "Projects", "projectCountry"},
-      new Class[] {String.class, String.class, String.class, String.class, String.class, String.class, String.class},
+      new String[] {"project", "narrative", "deliverables", "geographicScope", "workingAcross",
+        "workingAcrossNarrative", "undertakingEfforts", "undertakingEffortsNarrative", "providing", "keyLearnings",
+        "top3", "undertakingCSA", "undertakingCSAN", "undertaking", "undertakingN"},
+      new Class[] {String.class, String.class, String.class, String.class, String.class, String.class, String.class,
+        String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class},
       0);
 
     Map<Institution, Set<Project>> result = projectsPerInstitution.entrySet().stream()
       .sorted((s1, s2) -> s1.getKey().getName().compareTo(s2.getKey().getName())).collect(
         Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (oldValue, newValue) -> oldValue, LinkedHashMap::new));
 
-    for (Institution institution : result.keySet()) {
-      String insName = "", insAcr = "", webSite = "", insType = "", country = "", projects = "", projectCountry = "";
-      insName = institution.getName() != null && !institution.getName().trim().isEmpty() ? institution.getName() : null;
-      insAcr = institution.getAcronym() != null && !institution.getAcronym().trim().isEmpty() ? institution.getAcronym()
-        : null;
-      webSite = institution.getWebsiteLink() != null && !institution.getWebsiteLink().trim().isEmpty()
-        ? institution.getWebsiteLink() : null;
-      insType = institution.getInstitutionType().getName() != null
-        && !institution.getInstitutionType().getName().trim().isEmpty() ? institution.getInstitutionType().getName()
-          : null;
-      List<InstitutionLocation> locations = institution.getInstitutionsLocations().stream()
-        .filter(l -> l.isActive() && l.isHeadquater()).collect(Collectors.toList());
-      if (locations != null && !locations.isEmpty()) {
-        country = locations.get(0).getLocElement().getName();
-      }
-      if (country.isEmpty()) {
-        country = null;
-      }
 
-      Set<Project> projectSet = projectsPerInstitution.get(institution);
-      if (projectSet != null && !projectSet.isEmpty()) {
-        List<Project> projectList =
-          projectSet.stream().sorted((p1, p2) -> p1.getId().compareTo(p2.getId())).collect(Collectors.toList());
-        for (Project project : projectList) {
-          if (projects.isEmpty()) {
-            projects += "P" + project.getId();
-          } else {
-            projects += ", P" + project.getId();
-          }
+    for (ProjectLp6Contribution projectLp6Contribution : projectLp6Contributions) {
+      String projectId = "", narrativeLp6 = "", deliverables = "", geographicScope = "", workingAcross = "",
+        workingAcrossNarrative = "", undertakingEfforts = "", undertakingEffortsNarrative = "", providing = "",
+        keyOutputs = "", top3 = "", undertakingCSA = "", undertakingCSANarrative = "", initiativeRelated = "",
+        initiativeRelatedNarrative = "";
+
+      projectId = projectLp6Contribution.getProject() != null && projectLp6Contribution.getProject().getId() != null
+        ? projectLp6Contribution.getProject().getId() + "" : null;
+
+      narrativeLp6 =
+        projectLp6Contribution.getNarrative() != null && !projectLp6Contribution.getNarrative().trim().isEmpty()
+          ? projectLp6Contribution.getNarrative() : null;
+      if (projectLp6Contribution.getDeliverables() != null && !projectLp6Contribution.getDeliverables().isEmpty()) {
+        for (ProjectLp6ContributionDeliverable deliverable : projectLp6Contribution.getDeliverables()) {
+          deliverables += deliverable + ", ";
         }
       }
-      if (projects.isEmpty()) {
-        projects = null;
-      }
-      Set<LocElement> locationSet = countriesPerInstitution.get(institution);
-      if (locationSet != null && !locationSet.isEmpty()) {
-        List<LocElement> locationList =
-          locationSet.stream().sorted((p1, p2) -> p1.getName().compareTo(p2.getName())).collect(Collectors.toList());
-        for (LocElement locElement : locationList) {
-          if (projectCountry.isEmpty()) {
-            projectCountry += locElement.getName();
-          } else {
-            projectCountry += ", " + locElement.getName();
-          }
-        }
-      }
-      if (projectCountry.isEmpty()) {
-        projectCountry = null;
-      }
 
-      model.addRow(new Object[] {insName, insAcr, webSite, insType, country, projects, projectCountry});
+      geographicScope = projectLp6Contribution.getGeographicScope() != null
+        && projectLp6Contribution.getGeographicScope().getName() != null
+        && !projectLp6Contribution.getGeographicScope().getName().isEmpty()
+          ? projectLp6Contribution.getGeographicScope().getName() : null;
+
+      workingAcross = projectLp6Contribution.isWorkingAcrossFlagships() != null
+        ? projectLp6Contribution.isWorkingAcrossFlagships() + "" : null;
+
+      workingAcrossNarrative = projectLp6Contribution.getWorkingAcrossFlagshipsNarrative() != null
+        && !projectLp6Contribution.getWorkingAcrossFlagshipsNarrative().isEmpty()
+          ? projectLp6Contribution.getWorkingAcrossFlagshipsNarrative() : null;
+
+      undertakingEfforts = projectLp6Contribution.isUndertakingEffortsLeading() != null
+        ? projectLp6Contribution.isUndertakingEffortsLeading() + "" : null;
+
+      undertakingEffortsNarrative = projectLp6Contribution.getUndertakingEffortsLeadingNarrative() != null
+        && !projectLp6Contribution.getUndertakingEffortsLeadingNarrative().isEmpty()
+          ? projectLp6Contribution.getUndertakingEffortsLeadingNarrative() + "" : null;
+
+      providing =
+        projectLp6Contribution.isProvidingPathways() != null ? projectLp6Contribution.isProvidingPathways() + "" : null;
+
+
+      keyOutputs = projectLp6Contribution.getProvidingPathwaysNarrative() != null
+        && !projectLp6Contribution.getProvidingPathwaysNarrative().isEmpty()
+          ? projectLp6Contribution.getProvidingPathwaysNarrative() + "" : null;
+
+      top3 = projectLp6Contribution.getTopThreePartnershipsNarrative() != null
+        && !projectLp6Contribution.getTopThreePartnershipsNarrative().isEmpty()
+          ? projectLp6Contribution.getTopThreePartnershipsNarrative() + "" : null;
+
+      undertakingCSA = projectLp6Contribution.isUndertakingEffortsCsa() != null
+        ? projectLp6Contribution.isUndertakingEffortsCsa() + "" : null;
+
+      undertakingCSANarrative = projectLp6Contribution.getUndertakingEffortsCsaNarrative() != null
+        && !projectLp6Contribution.getUndertakingEffortsCsaNarrative().isEmpty()
+          ? projectLp6Contribution.getUndertakingEffortsCsaNarrative() + "" : null;
+
+      initiativeRelated = projectLp6Contribution.isInitiativeRelated() != null
+        ? projectLp6Contribution.isUndertakingEffortsCsa() + "" : null;
+
+      initiativeRelatedNarrative = projectLp6Contribution.getInitiativeRelatedNarrative() != null
+        && !projectLp6Contribution.getInitiativeRelatedNarrative().isEmpty()
+          ? projectLp6Contribution.getInitiativeRelatedNarrative() + "" : null;
+
+      model.addRow(new Object[] {projectId, narrativeLp6, deliverables, geographicScope, workingAcross,
+        workingAcrossNarrative, undertakingEfforts, undertakingEffortsNarrative, providing, keyOutputs, top3,
+        undertakingCSA, undertakingCSANarrative, initiativeRelated, initiativeRelatedNarrative});
     }
+
     return model;
   }
 
@@ -477,31 +415,32 @@ public class ProjectContributionLp6SummaryAction extends BaseSummariesAction imp
     return model;
   }
 
-  private TypedTableModel getSummaryTableModel() {
-    TypedTableModel model = new TypedTableModel(new String[] {"ins_name", "acronym", "projects"},
-      new Class[] {String.class, String.class, Integer.class}, 0);
-    Map<Institution, Set<Project>> result = projectsPerInstitution.entrySet().stream()
-      .sorted((i1, i2) -> new Integer(i2.getValue().size()).compareTo(new Integer(i1.getValue().size()))).collect(
-        Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (oldValue, newValue) -> oldValue, LinkedHashMap::new));
-    int count = 0;
-    for (Institution institution : result.keySet()) {
-      if (count > 9) {
-        break;
-      }
-      String insName = "", insAcr = "";
-      Integer projects = null;
-      insName = institution.getName();
-      insAcr = institution.getAcronym();
-      projects = projectsPerInstitution.get(institution).size();
-      model.addRow(new Object[] {insName, insAcr, projects});
-      count++;
-    }
-    return model;
-  }
-
-
   @Override
   public void prepare() {
+    projectLp6Contributions = new ArrayList<>();
+    List<ProjectLp6Contribution> projectLp6ContributionsTemp = new ArrayList<>();
+    projectLp6ContributionsTemp =
+      projectLp6ContributionManager.findAll().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+    for (ProjectLp6Contribution projectLp6Contribution : projectLp6ContributionsTemp) {
+
+      if (projectLp6Contributions.size() == 0
+        && (projectLp6Contributions.isEmpty() || projectLp6Contributions == null)) {
+        projectLp6Contributions.add(projectLp6Contribution);
+      } else {
+        if (projectLp6Contributions != null && !projectLp6Contributions.isEmpty()) {
+
+          for (ProjectLp6Contribution projectLp6ContributionAdd : projectLp6Contributions) {
+            if (projectLp6ContributionAdd.getId() != projectLp6Contribution.getId()) {
+              projectLp6Contributions.add(projectLp6Contribution);
+            }
+          }
+        }
+      }
+
+    }
+
+    System.out.println("phase " + this.getActualPhase() + " selectedPhase " + this.getSelectedPhase());
+
     try {
       Map<String, Parameter> parameters = this.getParameters();
       partnerType = StringUtils.trim(parameters.get(APConstants.SUMMARY_PARTNER_TYPE).getMultipleValues()[0]);

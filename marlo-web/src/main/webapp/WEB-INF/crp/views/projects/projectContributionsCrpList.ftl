@@ -221,7 +221,7 @@
 [/#macro]
 
 [#macro contributionToLP6 template=false] 
-[#if action.hasSpecificities('crp_lp6_active') && !reportingActive]
+[#if action.hasSpecificities('crp_lp6_active') && reportingActive]
   <div id="projectContributionToLP6" class="borderBox project-${project.id} phase-${actualPhase.id}">
    <a class="lp6-pdf"><img src="${baseUrl}/global/images/pdf.png" height="25"/>[[@s.text name="projects.LP6Contribution.explanatoryPDF" /]]</a><h4>[@s.text name="projects.LP6Contribution.title" /]</h4>
    <p class="text-justify note"><small>[@s.text name="projects.LP6Contribution.infoText"/] (<span class="lp6-view-more" data-toggle="modal" data-target=".lp6info-modal">view more</span>)</small></p>

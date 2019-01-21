@@ -106,16 +106,22 @@ public class ProjectLp6ContributionDeliverableManagerImpl implements ProjectLp6C
   }
 
   @Override
+  public List<ProjectLp6ContributionDeliverable>
+    getProjectLp6ContributionDeliverablebyPhase(long projectLp6ContributionID, long phaseID) {
+    return projectLp6ContributionDeliverableDAO.getProjectLp6ContributionDeliverablebyPhase(projectLp6ContributionID,
+      phaseID);
+  }
+
+
+  @Override
   public ProjectLp6ContributionDeliverable
     saveProjectLp6ContributionDeliverable(ProjectLp6ContributionDeliverable projectLp6ContributionDeliverable) {
-    System.out.println("before save " + projectLp6ContributionDeliverable.getPhase());
     ProjectLp6ContributionDeliverable deliverable =
       projectLp6ContributionDeliverableDAO.save(projectLp6ContributionDeliverable);
-
     /*
-     * if (projectLp6ContributionDeliverable.getPhase().getNext() != null) {
-     * this.saveProjectLp6ContributionDeliverablePhase(projectLp6ContributionDeliverable.getPhase().getNext(),
-     * projectLp6ContributionDeliverable.getProjectLp6Contribution().getId(), projectLp6ContributionDeliverable);
+     * if (deliverable.getPhase().getNext() != null) {
+     * this.saveProjectLp6ContributionDeliverablePhase(deliverable.getPhase().getNext(),
+     * deliverable.getProjectLp6Contribution().getId(), projectLp6ContributionDeliverable);
      * }
      */
     return deliverable;
@@ -123,17 +129,41 @@ public class ProjectLp6ContributionDeliverableManagerImpl implements ProjectLp6C
   }
 
 
-  public void saveProjectLp6ContributionDeliverablePhase(Phase next, long projectLp6ContributionDeliverableID,
+  public void saveProjectLp6ContributionDeliverablePhase(Phase next, long projectLp6ContributionID,
     ProjectLp6ContributionDeliverable projectLp6ContributionDeliverable) {
     Phase phase = phaseDAO.find(next.getId());
-
-    List<ProjectLp6ContributionDeliverable> projectLp6ContributionDeliverables =
-      phase.getProjectLp6ContributionDeliverables().stream()
-        .filter(c -> c.getProjectLp6Contribution().getId().longValue() == projectLp6ContributionDeliverableID
-          && c.getDeliverable().getId().equals(projectLp6ContributionDeliverable.getDeliverable().getId()))
+    /*
+     * if (phase.getProjectLp6ContributionDeliverables() != null) {
+     * System.out.println("largo  phase.getProjectLp6ContributionDeliverables(): "
+     * + phase.getProjectLp6ContributionDeliverables().size());
+     * }
+     * List<ProjectLp6ContributionDeliverable> projectLp6ContributionDeliverables =
+     * phase.getProjectLp6ContributionDeliverables().stream()
+     * .filter(c -> c.getProjectLp6Contribution().getId().longValue() == projectLp6ContributionID
+     * && c.getDeliverable().getId().equals(projectLp6ContributionDeliverable.getDeliverable().getId()))
+     * .collect(Collectors.toList());
+     */
+    List<ProjectLp6ContributionDeliverable> projectLp6ContributionDeliverables2 =
+      projectLp6ContributionDeliverableDAO.findAll().stream()
+        .filter(
+          c -> c.getPhase() == phase && c.getProjectLp6Contribution().getId().longValue() == projectLp6ContributionID
+            && c.getDeliverable().getId().equals(projectLp6ContributionDeliverable.getDeliverable().getId()))
         .collect(Collectors.toList());
 
-    if (projectLp6ContributionDeliverables.isEmpty()) {
+    /*
+     * if (projectLp6ContributionDeliverables2 != null) {
+     * System.out.println("lista 2 largo " + projectLp6ContributionDeliverables2.size());
+     * System.out.println("projectLp6ContributionID " + projectLp6ContributionID
+     * + " projectLp6ContributionDeliverable.getDeliverable().getId(): "
+     * + projectLp6ContributionDeliverable.getDeliverable().getId() + " phase " + phase);
+     * System.out.println("projectLp6ContributionDeliverables2.getProjectLp6Contribution().getId() "
+     * + projectLp6ContributionDeliverables2.get(0).getId()
+     * + " projectLp6ContributionDeliverable2.getDeliverable().getId(): "
+     * + projectLp6ContributionDeliverables2.get(0).getDeliverable().getId() + " phase "
+     * + projectLp6ContributionDeliverables2.get(0).getPhase());
+     * }
+     */
+    if (projectLp6ContributionDeliverables2.isEmpty()) {
       ProjectLp6ContributionDeliverable projectLp6ContributionDeliverableAdd = new ProjectLp6ContributionDeliverable();
       projectLp6ContributionDeliverableAdd
         .setProjectLp6Contribution(projectLp6ContributionDeliverable.getProjectLp6Contribution());
@@ -146,7 +176,7 @@ public class ProjectLp6ContributionDeliverableManagerImpl implements ProjectLp6C
 
 
     if (phase.getNext() != null) {
-      this.saveProjectLp6ContributionDeliverablePhase(phase.getNext(), projectLp6ContributionDeliverableID,
+      this.saveProjectLp6ContributionDeliverablePhase(phase.getNext(), projectLp6ContributionID,
         projectLp6ContributionDeliverable);
     }
   }
