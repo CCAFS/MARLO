@@ -418,26 +418,8 @@ public class ProjectContributionLp6SummaryAction extends BaseSummariesAction imp
   @Override
   public void prepare() {
     projectLp6Contributions = new ArrayList<>();
-    List<ProjectLp6Contribution> projectLp6ContributionsTemp = new ArrayList<>();
-    projectLp6ContributionsTemp =
+    projectLp6Contributions =
       projectLp6ContributionManager.findAll().stream().filter(c -> c.isActive()).collect(Collectors.toList());
-    for (ProjectLp6Contribution projectLp6Contribution : projectLp6ContributionsTemp) {
-
-      if (projectLp6Contributions.size() == 0
-        && (projectLp6Contributions.isEmpty() || projectLp6Contributions == null)) {
-        projectLp6Contributions.add(projectLp6Contribution);
-      } else {
-        if (projectLp6Contributions != null && !projectLp6Contributions.isEmpty()) {
-
-          for (ProjectLp6Contribution projectLp6ContributionAdd : projectLp6Contributions) {
-            if (projectLp6ContributionAdd.getId() != projectLp6Contribution.getId()) {
-              projectLp6Contributions.add(projectLp6Contribution);
-            }
-          }
-        }
-      }
-
-    }
 
     System.out.println("phase " + this.getActualPhase() + " selectedPhase " + this.getSelectedPhase());
 
