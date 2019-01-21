@@ -96,11 +96,11 @@
       "cycles": [ "Planning", "Reporting" ]
     },
     { "active": action.hasSpecificities('crp_lp6_active'),
-      "available": false,
+      "available": !config.production,
       "title": "summaries.board.report.contributionToLP6", 
       "description": "",
       "namespace": "/projects",
-      "action": "${crpSession}/projectsSummary",
+      "action": "${crpSession}/projectContributionLp6Summary",
       "formats": [ "Excel" ],
       "cycles": [ "Reporting" ]
     }
