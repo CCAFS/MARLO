@@ -67,6 +67,10 @@ public interface ProjectLp6ContributionDeliverableManager {
    *         updated
    *         or -1 is some error occurred.
    */
+
+  public List<ProjectLp6ContributionDeliverable>
+    getProjectLp6ContributionDeliverablebyPhase(long projectLp6ContributionID, long phaseID);
+
   public ProjectLp6ContributionDeliverable
     saveProjectLp6ContributionDeliverable(ProjectLp6ContributionDeliverable projectLp6ContributionDeliverable);
 

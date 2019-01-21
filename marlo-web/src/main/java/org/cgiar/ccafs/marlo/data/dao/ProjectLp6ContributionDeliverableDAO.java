@@ -65,5 +65,9 @@ public interface ProjectLp6ContributionDeliverableDAO {
    *         updated
    *         or -1 is some error occurred.
    */
+  public List<ProjectLp6ContributionDeliverable>
+    getProjectLp6ContributionDeliverablebyPhase(long projectLp6ContributionID, long phaseID);
+
+
   public ProjectLp6ContributionDeliverable save(ProjectLp6ContributionDeliverable projectLp6ContributionDeliverable);
 }

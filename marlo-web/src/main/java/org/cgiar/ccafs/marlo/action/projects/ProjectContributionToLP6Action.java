@@ -348,12 +348,22 @@ public class ProjectContributionToLP6Action extends BaseAction {
       }
 
       // Get selected deliverables
-      if (projectLp6Contribution.getProjectLp6ContributionDeliverable() != null) {
-        projectLp6Contribution
-          .setDeliverables(new ArrayList<>(projectLp6Contribution.getProjectLp6ContributionDeliverable().stream()
-            .filter(o -> o.isActive() && o.getPhase().getId() == this.getActualPhase().getId())
-            .collect(Collectors.toList())));
+      if (projectLp6Contribution.getProjectLp6ContributionDeliverable() == null) {
+        projectLp6Contribution.setDeliverables(new ArrayList<>());
+      } else {
+        List<ProjectLp6ContributionDeliverable> deliverables = projectLp6ContributionDeliverableManager
+          .getProjectLp6ContributionDeliverablebyPhase(projectLp6Contribution.getId(), this.getActualPhase().getId());
+        projectLp6Contribution.setDeliverables(deliverables);
       }
+
+      /*
+       * if (projectLp6Contribution.getProjectLp6ContributionDeliverable() != null) {
+       * projectLp6Contribution
+       * .setDeliverables(new ArrayList<>(projectLp6Contribution.getProjectLp6ContributionDeliverable().stream()
+       * .filter(o -> o.isActive() && o.getPhase().getId() == this.getActualPhase().getId())
+       * .collect(Collectors.toList())));
+       * }
+       */
     }
 
     Path path = this.getAutoSaveFilePath();
@@ -453,41 +463,9 @@ public class ProjectContributionToLP6Action extends BaseAction {
       this.saveProjectDeliverables();
 
       // Save the Countries List selected
-      List<Lp6ContributionGeographicScope> countries = lp6ContributionGeographicScopeManager
-        .getLp6ContributionGeographicScopebyPhase(projectLp6Contribution.getId(), this.getActualPhase().getId());
-      List<Lp6ContributionGeographicScope> countriesSave = new ArrayList<>();
-
-      if (projectLp6Contribution.getCountriesIds() != null && !projectLp6Contribution.getCountriesIds().isEmpty()) {
-
-        for (String countryIds : projectLp6Contribution.getCountriesIds()) {
-          Lp6ContributionGeographicScope countryInn = new Lp6ContributionGeographicScope();
-          countryInn.setLocElement(locElementManager.getLocElementByISOCode(countryIds));
-          countryInn.setPhase(this.getActualPhase());
-          countryInn.setProjectLp6Contribution(projectLp6Contribution);
-          countriesSave.add(countryInn);
-          if (!countries.contains(countryInn)) {
-            lp6ContributionGeographicScopeManager.saveLp6ContributionGeographicScope(countryInn);
-          }
-        }
-
-        for (Lp6ContributionGeographicScope lp6ContributionGeographicScope : countries) {
-          if (!countriesSave.contains(lp6ContributionGeographicScope)) {
-            lp6ContributionGeographicScopeManager
-              .deleteLp6ContributionGeographicScope(lp6ContributionGeographicScope.getId());
-          }
-        }
-      } else {
-        // If the selected countries is empty, it will be deleted from database
-        if (countries != null && !countries.isEmpty()) {
-          for (Lp6ContributionGeographicScope lp6ContributionGeographicScope : countries) {
-            lp6ContributionGeographicScopeManager
-              .deleteLp6ContributionGeographicScope(lp6ContributionGeographicScope.getId());
-          }
-        }
-      }
+      this.saveGeographicScope();
 
       // Validate negative Values
-
       if (projectLp6Contribution.getGeographicScope() != null) {
         if (projectLp6Contribution.getGeographicScope().getId() == -1) {
           projectLp6Contribution.setGeographicScope(null);
@@ -526,13 +504,45 @@ public class ProjectContributionToLP6Action extends BaseAction {
 
   }
 
+  public void saveGeographicScope() {
+    List<Lp6ContributionGeographicScope> countries = lp6ContributionGeographicScopeManager
+      .getLp6ContributionGeographicScopebyPhase(projectLp6Contribution.getId(), this.getActualPhase().getId());
+    List<Lp6ContributionGeographicScope> countriesSave = new ArrayList<>();
+
+    if (projectLp6Contribution.getCountriesIds() != null && !projectLp6Contribution.getCountriesIds().isEmpty()) {
+
+      for (String countryIds : projectLp6Contribution.getCountriesIds()) {
+        Lp6ContributionGeographicScope countryInn = new Lp6ContributionGeographicScope();
+        countryInn.setLocElement(locElementManager.getLocElementByISOCode(countryIds));
+        countryInn.setPhase(this.getActualPhase());
+        countryInn.setProjectLp6Contribution(projectLp6Contribution);
+        countriesSave.add(countryInn);
+        if (!countries.contains(countryInn)) {
+          lp6ContributionGeographicScopeManager.saveLp6ContributionGeographicScope(countryInn);
+        }
+      }
+
+      for (Lp6ContributionGeographicScope lp6ContributionGeographicScope : countries) {
+        if (!countriesSave.contains(lp6ContributionGeographicScope)) {
+          lp6ContributionGeographicScopeManager
+            .deleteLp6ContributionGeographicScope(lp6ContributionGeographicScope.getId());
+        }
+      }
+    } else {
+      // If the selected countries is empty, it will be deleted from database
+      if (countries != null && !countries.isEmpty()) {
+        for (Lp6ContributionGeographicScope lp6ContributionGeographicScope : countries) {
+          lp6ContributionGeographicScopeManager
+            .deleteLp6ContributionGeographicScope(lp6ContributionGeographicScope.getId());
+        }
+      }
+    }
+  }
+
   public void saveProjectDeliverables() {
-
-    // Save the deliverables list
-
-    List<ProjectLp6ContributionDeliverable> projectLp6ContributionDeliverables = projectLp6Contribution
-      .getProjectLp6ContributionDeliverable().stream()
-      .filter(o -> o.isActive() && o.getPhase().getId() == this.getActualPhase().getId()).collect(Collectors.toList());
+    List<ProjectLp6ContributionDeliverable> projectLp6ContributionDeliverables =
+      projectLp6ContributionDeliverableManager
+        .getProjectLp6ContributionDeliverablebyPhase(projectLp6Contribution.getId(), this.getActualPhase().getId());
 
     if (projectLp6Contribution.getDeliverables() != null && !projectLp6Contribution.getDeliverables().isEmpty()) {
 
@@ -542,8 +552,6 @@ public class ProjectContributionToLP6Action extends BaseAction {
 
           if (!projectLp6Contribution.getDeliverables().contains(projectLp6ContributionDeliverable)) {
             // If the deliverable in bd is deleted in front end, it will be deleted from database
-            projectLp6ContributionDeliverable.setPhase(this.getActualPhase());
-            projectLp6ContributionDeliverable.setDeliverable(deliverable);
             projectLp6ContributionDeliverableManager
               .deleteProjectLp6ContributionDeliverable(projectLp6ContributionDeliverable.getId());
           }
@@ -551,7 +559,6 @@ public class ProjectContributionToLP6Action extends BaseAction {
       }
 
       for (ProjectLp6ContributionDeliverable contributionDeliverables : projectLp6Contribution.getDeliverables()) {
-
         contributionDeliverables.setPhase(this.getActualPhase());
         contributionDeliverables.setProjectLp6Contribution(projectLp6Contribution);
         projectLp6ContributionDeliverableManager.saveProjectLp6ContributionDeliverable(contributionDeliverables);

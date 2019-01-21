@@ -106,14 +106,11 @@ public class Lp6ContributionGeographicScopeManagerImpl implements Lp6Contributio
 
     Lp6ContributionGeographicScope country = lp6ContributionGeographicScopeDAO.save(lp6ContributionGeographicScope);
 
-    // Phase phase = phaseDAO.find(country.getPhase().getId());
-
-    // if (phase.getDescription().equals(APConstants.REPORTING)) {
     if (country.getPhase().getNext() != null) {
       this.saveLp6ContributionGeographicScopePhase(country.getPhase().getNext(),
         country.getProjectLp6Contribution().getId(), lp6ContributionGeographicScope);
     }
-    // }
+
     return country;
   }
 

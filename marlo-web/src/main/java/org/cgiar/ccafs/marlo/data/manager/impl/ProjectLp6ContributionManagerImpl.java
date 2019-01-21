@@ -64,12 +64,12 @@ public class ProjectLp6ContributionManagerImpl implements ProjectLp6Contribution
 
   @Override
   public ProjectLp6Contribution saveProjectLp6Contribution(ProjectLp6Contribution projectLp6Contribution) {
+
     ProjectLp6Contribution projectLp6ContributionSave = projectLp6ContributionDAO.save(projectLp6Contribution);
 
-    Phase phase = phaseDAO.find(projectLp6Contribution.getPhase().getId());
-    if (phase.getNext() != null) {
-      this.saveProjectLp6ContributionPhase(phase.getNext(), projectLp6Contribution.getProject().getId(),
-        projectLp6Contribution);
+    if (projectLp6ContributionSave.getPhase().getNext() != null) {
+      this.saveProjectLp6ContributionPhase(projectLp6ContributionSave.getPhase().getNext(),
+        projectLp6ContributionSave.getProject().getId(), projectLp6Contribution);
     }
     return projectLp6ContributionSave;
 

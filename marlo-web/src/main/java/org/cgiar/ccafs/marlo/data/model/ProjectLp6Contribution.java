@@ -324,8 +324,8 @@ public class ProjectLp6Contribution extends MarloAuditableEntity implements java
 
 
   public void
-    setProjectLp6ContributionDeliverable(Set<ProjectLp6ContributionDeliverable> projectLp6ContributionDeliverable) {
-    this.projectLp6ContributionDeliverable = projectLp6ContributionDeliverable;
+    setProjectLp6ContributionDeliverable(Set<ProjectLp6ContributionDeliverable> projectLp6ContributionDeliverables) {
+    this.projectLp6ContributionDeliverable = projectLp6ContributionDeliverables;
   }
 
 

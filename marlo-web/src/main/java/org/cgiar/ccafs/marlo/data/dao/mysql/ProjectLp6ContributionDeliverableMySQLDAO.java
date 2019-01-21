@@ -19,7 +19,9 @@ package org.cgiar.ccafs.marlo.data.dao.mysql;
 import org.cgiar.ccafs.marlo.data.dao.ProjectLp6ContributionDeliverableDAO;
 import org.cgiar.ccafs.marlo.data.model.ProjectLp6ContributionDeliverable;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -68,7 +70,32 @@ public class ProjectLp6ContributionDeliverableMySQLDAO extends AbstractMarloDAO<
       return list;
     }
     return null;
+  }
 
+  @Override
+  public List<ProjectLp6ContributionDeliverable>
+    getProjectLp6ContributionDeliverablebyPhase(long projectLp6ContributionID, long phaseID) {
+    StringBuilder query = new StringBuilder();
+    query.append(
+      "SELECT project_lp6_contribution_deliverables.id as projectLp6DeliverableID FROM project_lp6_contribution ");
+    query.append(
+      "INNER JOIN project_lp6_contribution_deliverables ON project_lp6_contribution_deliverables.lp6_contribution_id = project_lp6_contribution.id ");
+    query.append("INNER JOIN phases ON project_lp6_contribution_deliverables.id_phase = phases.id ");
+    query.append("WHERE project_lp6_contribution.id = ");
+    query.append(projectLp6ContributionID);
+    query.append(" AND phases.id = ");
+    query.append(phaseID);
+    List<Map<String, Object>> list = super.findCustomQuery(query.toString());
+
+    List<ProjectLp6ContributionDeliverable> projectLp6ContributionDeliverables =
+      new ArrayList<ProjectLp6ContributionDeliverable>();
+    for (Map<String, Object> map : list) {
+      String projectLp6DeliverableID = map.get("projectLp6DeliverableID").toString();
+      long longProjectLp6DeliverableID = Long.parseLong(projectLp6DeliverableID);
+      ProjectLp6ContributionDeliverable projectLp6Deliverable = this.find(longProjectLp6DeliverableID);
+      projectLp6ContributionDeliverables.add(projectLp6Deliverable);
+    }
+    return projectLp6ContributionDeliverables;
   }
 
   @Override
