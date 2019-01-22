@@ -19,7 +19,6 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Project;
-import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
 import org.cgiar.ccafs.marlo.data.model.ProjectLp6Contribution;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
@@ -50,7 +49,7 @@ public class ProjectLP6Validator extends BaseValidator {
   private Path getAutoSaveFilePath(ProjectLp6Contribution projectLp6Contribution, long crpID, BaseAction action) {
     GlobalUnit crp = crpManager.getGlobalUnitById(crpID);
     String composedClassName = projectLp6Contribution.getClass().getSimpleName();
-    String actionFile = ProjectSectionStatusEnum.POLICY.getStatus().replace("/", "_");
+    String actionFile = ProjectSectionStatusEnum.CONTRIBUTIONLP6.getStatus().replace("/", "_");
     String autoSaveFile =
       projectLp6Contribution.getId() + "_" + composedClassName + "_" + action.getActualPhase().getName() + "_"
         + action.getActualPhase().getYear() + "_" + crp.getAcronym() + "_" + actionFile + ".json";
@@ -65,11 +64,13 @@ public class ProjectLP6Validator extends BaseValidator {
 
     if (!saving) {
       Path path = this.getAutoSaveFilePath(projectLp6Contribution, action.getCrpID(), action);
+
       if (path.toFile().exists()) {
         action.addMissingField("draft");
       }
     }
 
+    this.validateContributionLp6(action, projectLp6Contribution);
 
     if (!action.getFieldErrors().isEmpty()) {
       action.addActionError(action.getText("saving.fields.required"));
@@ -77,275 +78,106 @@ public class ProjectLP6Validator extends BaseValidator {
       action.addActionMessage(
         " " + action.getText("saving.missingFields", new String[] {action.getValidationMessage().toString()}));
     }
-    // this.saveMissingFields(project, innovation, action.getActualPhase().getDescription(),
-    // action.getActualPhase().getYear(), action.getActualPhase().getUpkeep(),
-    // ProjectSectionStatusEnum.INNOVATIONS.getStatus(), action);
+    this.saveMissingFields(project, projectLp6Contribution, action.getActualPhase().getDescription(),
+      action.getActualPhase().getYear(), action.getActualPhase().getUpkeep(),
+      ProjectSectionStatusEnum.CONTRIBUTIONLP6.getStatus(), action);
   }
 
-  private void validateProjectInnovation(BaseAction action, ProjectInnovation projectInnovation) {
-
-    // Validate Title
-    if (!this.isValidString(projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getTitle())
-      && this.wordCount(projectInnovation.getProjectInnovationInfo(action.getActualPhase()).getTitle()) <= 20) {
-      action.addMessage(action.getText("Title"));
-      action.addMissingField("projectInnovations.title");
-      action.getInvalidFields().put("input-innovation.projectInnovationInfo.title", InvalidFieldsMessages.EMPTYFIELD);
-    }
+  private void validateContributionLp6(BaseAction action, ProjectLp6Contribution projectLp6Contribution) {
 
     // Validate Narrative
-    if (!this.isValidString(projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getNarrative())
-      && this.wordCount(projectInnovation.getProjectInnovationInfo(action.getActualPhase()).getNarrative()) <= 50) {
-      action.addMessage(action.getText("Narrative of The Innovation"));
-      action.addMissingField("projectInnovations.narrative");
-      action.getInvalidFields().put("input-innovation.projectInnovationInfo.narrative",
+    if (!this.isValidString(projectLp6Contribution.getNarrative())
+      && this.wordCount(projectLp6Contribution.getNarrative()) <= 100) {
+      action.addMessage(action.getText("projects.LP6Contribution.narrativeContribution.readText"));
+      action.getInvalidFields().put("input-projectLp6Contribution.narrative", InvalidFieldsMessages.EMPTYFIELD);
+    }
+
+    // Validate TopThreePartnershipsNarrative
+    if (!this.isValidString(projectLp6Contribution.getTopThreePartnershipsNarrative())
+      && this.wordCount(projectLp6Contribution.getTopThreePartnershipsNarrative()) <= 100) {
+      action.addMessage(action.getText("projects.LP6Contribution.partnerships.readText"));
+      action.getInvalidFields().put("input-projectLp6Contribution.topThreePartnershipsNarrative",
         InvalidFieldsMessages.EMPTYFIELD);
     }
 
-    // Validate Phase Research
-    if (projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase())
-      .getRepIndPhaseResearchPartnership() != null) {
-      if (projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getRepIndPhaseResearchPartnership()
-        .getId() == null
-        || projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getRepIndPhaseResearchPartnership()
-          .getId() == -1) {
-        action.addMessage(action.getText("Phase of Research"));
-        action.addMissingField("projectInnovations.phase");
-        action.getInvalidFields().put("input-innovation.projectInnovationInfo.repIndPhaseResearchPartnership.id",
-          InvalidFieldsMessages.EMPTYFIELD);
-      }
-    } else {
-      action.addMessage(action.getText("Phase of Research"));
-      action.addMissingField("projectInnovations.phase");
-      action.getInvalidFields().put("input-innovation.projectInnovationInfo.repIndPhaseResearchPartnership.id",
-        InvalidFieldsMessages.EMPTYFIELD);
-    }
-
-    // Validate Contribution of CRP
-    if (projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getRepIndContributionOfCrp() != null) {
-      if (projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getRepIndContributionOfCrp()
-        .getId() == null
-        || projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getRepIndContributionOfCrp()
-          .getId() == -1) {
-        action.addMessage(action.getText("Contribution Of Crp"));
-        action.addMissingField("projectInnovations.contributionOfCrp");
-        action.getInvalidFields().put("input-innovation.projectInnovationInfo.repIndContributionOfCrp.id",
-          InvalidFieldsMessages.EMPTYFIELD);
-      }
-    } else {
-      action.addMessage(action.getText("Contribution Of Crp"));
-      action.addMissingField("projectInnovations.contributionOfCrp");
-      action.getInvalidFields().put("input-innovation.projectInnovationInfo.repIndContributionOfCrp.id",
-        InvalidFieldsMessages.EMPTYFIELD);
-    }
-
-    // Validate Degree of Innovation
-    if (projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getRepIndDegreeInnovation() != null) {
-      if (projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getRepIndDegreeInnovation()
-        .getId() == null
-        || projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getRepIndDegreeInnovation()
-          .getId() == -1) {
-        action.addMessage(action.getText("Degree of Innovation"));
-        action.addMissingField("projectInnovations.degreeInnovation");
-        action.getInvalidFields().put("input-innovation.projectInnovationInfo.repIndDegreeInnovation.id",
-          InvalidFieldsMessages.EMPTYFIELD);
-      }
-    } else {
-      action.addMessage(action.getText("Degree of Innovation"));
-      action.addMissingField("projectInnovations.degreeInnovation");
-      action.getInvalidFields().put("input-innovation.projectInnovationInfo.repIndDegreeInnovation.id",
-        InvalidFieldsMessages.EMPTYFIELD);
-    }
-
-    // Validate Stage of Innovation
-    if (projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getRepIndStageInnovation() != null) {
-      if (projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getRepIndStageInnovation()
-        .getId() == null
-        || projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getRepIndStageInnovation()
-          .getId() == -1) {
-        action.addMessage(action.getText("Stage of innovation"));
-        action.addMissingField("projectInnovations.stage");
-        action.getInvalidFields().put("input-innovation.projectInnovationInfo.repIndStageInnovation.id",
-          InvalidFieldsMessages.EMPTYFIELD);
-      } else {
-        // Validate if Stage is = 4 and review if the innovation has an Organization Types and Outcome Case Study
-        if (projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getRepIndStageInnovation()
-          .getId() == 4) {
-          // Validate Organization Types
-          if (projectInnovation.getOrganizations() == null || projectInnovation.getOrganizations().isEmpty()) {
-            action.addMessage(action.getText("Organization Types"));
-            action.addMissingField("projectInnovations.nextUserOrganizationalType");
-            action.getInvalidFields().put("list-innovation.organizations",
-              action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Organization Types"}));
-          }
-
-          // Validate Outcome Case Study
-          if (projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase())
-            .getProjectExpectedStudy() != null) {
-            if (projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getProjectExpectedStudy()
-              .getId() == null
-              || projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getProjectExpectedStudy()
-                .getId() == -1) {
-              action.addMessage(action.getText("Outcome Case Study"));
-              action.addMissingField("projectInnovations.outcomeCaseStudy");
-              action.getInvalidFields().put("input-innovation.projectInnovationInfo.projectExpectedStudy.id",
-                InvalidFieldsMessages.EMPTYFIELD);
-            }
-          } else {
-            action.addMessage(action.getText("Outcome Case Study"));
-            action.addMissingField("projectInnovations.outcomeCaseStudy");
-            action.getInvalidFields().put("input-innovation.projectInnovationInfo.projectExpectedStudy.id",
-              InvalidFieldsMessages.EMPTYFIELD);
-          }
+    // Validate Working Across Flagships
+    if (projectLp6Contribution.getWorkingAcrossFlagships() != null) {
+      if (projectLp6Contribution.getWorkingAcrossFlagships()) {
+        if (!this.isValidString(projectLp6Contribution.getWorkingAcrossFlagshipsNarrative())
+          && this.wordCount(projectLp6Contribution.getWorkingAcrossFlagshipsNarrative()) <= 100) {
+          action.addMessage(action.getText("projects.LP6Contribution.workingAcrossFlagships.question.readText"));
+          action.getInvalidFields().put("input-projectLp6Contribution.workingAcrossFlagshipsNarrative",
+            InvalidFieldsMessages.EMPTYFIELD);
         }
       }
     } else {
-      action.addMessage(action.getText("Stage of innovation"));
-      action.addMissingField("projectInnovations.stage");
-      action.getInvalidFields().put("input-innovation.projectInnovationInfo.repIndStageInnovation.id",
+      action.addMessage(action.getText("projects.LP6Contribution.flagshipLevels"));
+      action.getInvalidFields().put("input-projectLp6Contribution.workingAcrossFlagships",
         InvalidFieldsMessages.EMPTYFIELD);
     }
 
-
-    // Validate Geographic Scope
-    if (projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getRepIndGeographicScope() != null) {
-      if (projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getRepIndGeographicScope()
-        .getId() == null
-        || projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getRepIndGeographicScope()
-          .getId() == -1) {
-        action.addMessage(action.getText("Geographic Scope"));
-        action.addMissingField("projectInnovations.geographicScope");
-        action.getInvalidFields().put("input-innovation.projectInnovationInfo.repIndGeographicScope.id",
-          InvalidFieldsMessages.EMPTYFIELD);
-      } else {
-        // Validate if Scope is Multi-national, National or Sub-National and review if the innovation has Countries
-        if (projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getRepIndGeographicScope().getId()
-          .equals(action.getReportingIndGeographicScopeMultiNational())
-          || projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getRepIndGeographicScope().getId()
-            .equals(action.getReportingIndGeographicScopeNational())
-          || projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getRepIndGeographicScope().getId()
-            .equals(action.getReportingIndGeographicScopeSubNational())) {
-          // Validate Countries
-          if (projectInnovation.getCountriesIds() == null || projectInnovation.getCountriesIds().isEmpty()) {
-            action.addMessage(action.getText("Countries"));
-            action.addMissingField("projectInnovations.countries");
-            action.getInvalidFields().put("list-projectInnovations.countries",
-              action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Countries"}));
-          }
-        }
-
-        // Validate if Scope is Regional and review if The innovation has a region
-        if (projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getRepIndGeographicScope().getId()
-          .equals(action.getReportingIndGeographicScopeRegional())) {
-          // Validate Region
-          if (projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getRepIndRegion() != null) {
-            if (projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getRepIndRegion()
-              .getId() == null
-              || projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getRepIndRegion()
-                .getId() == -1) {
-              action.addMessage(action.getText("Region"));
-              action.addMissingField("projectInnovations.region");
-              action.getInvalidFields().put("input-innovation.projectInnovationInfo.repIndRegion.id",
-                InvalidFieldsMessages.EMPTYFIELD);
-            }
-          } else {
-            action.addMessage(action.getText("Region"));
-            action.addMissingField("projectInnovations.region");
-            action.getInvalidFields().put("input-innovation.projectInnovationInfo.repIndRegion.id",
-              InvalidFieldsMessages.EMPTYFIELD);
-          }
+    // Validate Undertaking Efforts Leading
+    if (projectLp6Contribution.getUndertakingEffortsLeading() != null) {
+      if (projectLp6Contribution.getUndertakingEffortsLeading()) {
+        if (!this.isValidString(projectLp6Contribution.getUndertakingEffortsLeadingNarrative())
+          && this.wordCount(projectLp6Contribution.getUndertakingEffortsLeadingNarrative()) <= 100) {
+          action.addMessage(action.getText("projects.LP6Contribution.positionCGIAR.question.readText"));
+          action.getInvalidFields().put("input-projectLp6Contribution.workingAcrossFlagshipsNarrative",
+            InvalidFieldsMessages.EMPTYFIELD);
         }
       }
     } else {
-      action.addMessage(action.getText("Geographic Scope"));
-      action.addMissingField("projectInnovations.geographicScope");
-      action.getInvalidFields().put("input-innovation.projectInnovationInfo.repIndGeographicScope.id",
+      action.addMessage(action.getText("projects.LP6Contribution.positionCGIAR"));
+      action.getInvalidFields().put("input-projectLp6Contribution.undertakingEffortsLeading",
         InvalidFieldsMessages.EMPTYFIELD);
     }
 
-
-    // Validate Innovation Type
-    if (projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getRepIndInnovationType() != null) {
-      if (projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getRepIndInnovationType()
-        .getId() == null
-        || projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getRepIndInnovationType()
-          .getId() == -1) {
-        action.addMessage(action.getText("Innovation Type"));
-        action.addMissingField("projectInnovations.innovationType");
-        action.getInvalidFields().put("input-innovation.projectInnovationInfo.repIndInnovationType.id",
-          InvalidFieldsMessages.EMPTYFIELD);
+    // Validate Providing Pathways
+    if (projectLp6Contribution.getProvidingPathways() != null) {
+      if (projectLp6Contribution.getProvidingPathways()) {
+        if (!this.isValidString(projectLp6Contribution.getProvidingPathwaysNarrative())
+          && this.wordCount(projectLp6Contribution.getProvidingPathwaysNarrative()) <= 100) {
+          action.addMessage(action.getText("projects.LP6Contribution.innovativePathways.question.readText"));
+          action.getInvalidFields().put("input-projectLp6Contribution.providingPathwaysNarrative",
+            InvalidFieldsMessages.EMPTYFIELD);
+        }
       }
     } else {
-      action.addMessage(action.getText("Innovation Type"));
-      action.addMissingField("projectInnovations.innovationType");
-      action.getInvalidFields().put("input-innovation.projectInnovationInfo.repIndInnovationType.id",
+      action.addMessage(action.getText("projects.LP6Contribution.innovativePathways"));
+      action.getInvalidFields().put("input-projectLp6Contribution.providingPathways", InvalidFieldsMessages.EMPTYFIELD);
+    }
+
+    // Validate Undertaking Efforts Csa
+    if (projectLp6Contribution.getUndertakingEffortsCsa() != null) {
+      if (projectLp6Contribution.getUndertakingEffortsCsa()) {
+        if (!this.isValidString(projectLp6Contribution.getUndertakingEffortsCsaNarrative())
+          && this.wordCount(projectLp6Contribution.getUndertakingEffortsCsaNarrative()) <= 100) {
+          action.addMessage(action.getText("projects.LP6Contribution.scalingCSA.question.readText"));
+          action.getInvalidFields().put("input-projectLp6Contribution.undertakingEffortsCsaNarrative",
+            InvalidFieldsMessages.EMPTYFIELD);
+        }
+      }
+    } else {
+      action.addMessage(action.getText("projects.LP6Contribution.scalingCSA"));
+      action.getInvalidFields().put("input-projectLp6Contribution.undertakingEffortsCsa",
         InvalidFieldsMessages.EMPTYFIELD);
     }
 
-    // Validate Description Stage
-    if (!this
-      .isValidString(projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getDescriptionStage())
-      && this
-        .wordCount(projectInnovation.getProjectInnovationInfo(action.getActualPhase()).getDescriptionStage()) <= 50) {
-      action.addMessage(action.getText("Description Stage"));
-      action.addMissingField("projectInnovations.stageDescription");
-      action.getInvalidFields().put("input-innovation.projectInnovationInfo.descriptionStage",
-        InvalidFieldsMessages.EMPTYFIELD);
+    // Validate Initiative Related
+    if (projectLp6Contribution.getInitiativeRelated() != null) {
+      if (projectLp6Contribution.getInitiativeRelated()) {
+        if (!this.isValidString(projectLp6Contribution.getInitiativeRelatedNarrative())
+          && this.wordCount(projectLp6Contribution.getInitiativeRelatedNarrative()) <= 100) {
+          action.addMessage(action.getText("projects.LP6Contribution.climateFinance.question.readText"));
+          action.getInvalidFields().put("input-projectLp6Contribution.initiativeRelatedNarrative",
+            InvalidFieldsMessages.EMPTYFIELD);
+        }
+      }
+    } else {
+      action.addMessage(action.getText("projects.LP6Contribution.climateFinance"));
+      action.getInvalidFields().put("input-projectLp6Contribution.initiativeRelated", InvalidFieldsMessages.EMPTYFIELD);
     }
 
-    // Validate Evidence Link (URL)
-    if (!this.isValidString(projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getEvidenceLink())
-      && !this.isValidUrl(projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getEvidenceLink())) {
-      action.addMessage(action.getText("Evidence Link"));
-      action.addMissingField("projectInnovations.evidenceLink");
-      action.getInvalidFields().put("input-innovation.projectInnovationInfo.evidenceLink",
-        InvalidFieldsMessages.EMPTYFIELD);
-    }
-
-    // Validate Crps
-    if (projectInnovation.getCrps() == null || projectInnovation.getCrps().isEmpty()) {
-      action.addMessage(action.getText("Crps"));
-      action.addMissingField("projectInnovations.contributing");
-      action.getInvalidFields().put("list-innovation.crps",
-        action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Crps"}));
-    }
-
-    // Validate Gender relevance radio Button
-    if (projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getGenderFocusLevel() == null) {
-      action.addMessage(action.getText("Gender Relevance"));
-      action.addMissingField("projectInnovations.genderRelevance");
-      action.getInvalidFields().put("input-innovation.projectInnovationInfo.genderFocusLevel.id",
-        InvalidFieldsMessages.EMPTYFIELD);
-    }
-
-    // Validate Gender Explaniation
-    if (!this
-      .isValidString(projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getGenderExplaniation())
-      && this.wordCount(
-        projectInnovation.getProjectInnovationInfo(action.getActualPhase()).getGenderExplaniation()) <= 100) {
-      action.addMessage(action.getText("Gender explaniation"));
-      action.addMissingField("projectInnovations.genderRelevance.explanation");
-      action.getInvalidFields().put("input-innovation.projectInnovationInfo.genderExplaniation",
-        InvalidFieldsMessages.EMPTYFIELD);
-    }
-
-    // Validate Youth relevance radio Button
-    if (projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getYouthFocusLevel() == null) {
-      action.addMessage(action.getText("Youth Relevance"));
-      action.addMissingField("projectInnovations.youthRelevance");
-      action.getInvalidFields().put("input-innovation.projectInnovationInfo.youthFocusLevel.id",
-        InvalidFieldsMessages.EMPTYFIELD);
-    }
-
-    // Validate Gender Explaniation
-    if (!this
-      .isValidString(projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getYouthExplaniation())
-      && this
-        .wordCount(projectInnovation.getProjectInnovationInfo(action.getActualPhase()).getYouthExplaniation()) <= 100) {
-      action.addMessage(action.getText("Youth explaniation"));
-      action.addMissingField("projectInnovations.youthRelevance.explanation");
-      action.getInvalidFields().put("input-innovation.projectInnovationInfo.youthExplaniation",
-        InvalidFieldsMessages.EMPTYFIELD);
-    }
   }
 
 
