@@ -159,7 +159,7 @@
         </div>
         <div class="form-group regionalBlock" style="display:${(isRegional)?string('block','none')}">
           [#-- Regional scope --]
-          [@customForm.elementsListComponent name="${customName}.regions" elementType="locElement" elementList=element.studyRegions label="policy.regions"  listName="regions" keyFieldName="id" displayFieldName="name" required=false /]
+          [@customForm.elementsListComponent name="${customName}.regions" elementType="locElement" elementList=element.regions label="policy.regions"  listName="regions" keyFieldName="id" displayFieldName="name" required=false /]
         </div>
         <div class="form-group nationalBlock" style="display:${(isMultiNational || isNational || isSubNational)?string('block','none')}">
           [#-- Multinational, National and Subnational scope --]

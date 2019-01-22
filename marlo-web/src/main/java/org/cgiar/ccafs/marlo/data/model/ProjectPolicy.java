@@ -40,6 +40,8 @@ public class ProjectPolicy extends MarloAuditableEntity implements java.io.Seria
   private List<ProjectPolicySubIdo> subIdos;
   private List<ProjectPolicyCrossCuttingMarker> crossCuttingMarkers;
 
+  private List<ProjectPolicyCountry> regions;
+
 
   public ProjectPolicy() {
   }
@@ -124,17 +126,22 @@ public class ProjectPolicy extends MarloAuditableEntity implements java.io.Seria
     }
   }
 
+
   public Set<ProjectPolicyInfo> getProjectPolicyInfos() {
     return projectPolicyInfos;
   }
+
 
   public Set<ProjectPolicyOwner> getProjectPolicyOwners() {
     return projectPolicyOwners;
   }
 
-
   public Set<ProjectPolicySubIdo> getProjectPolicySubIdos() {
     return projectPolicySubIdos;
+  }
+
+  public List<ProjectPolicyCountry> getRegions() {
+    return regions;
   }
 
 
@@ -172,6 +179,7 @@ public class ProjectPolicy extends MarloAuditableEntity implements java.io.Seria
     this.owners = owners;
   }
 
+
   public void setProject(Project project) {
     this.project = project;
   }
@@ -203,6 +211,10 @@ public class ProjectPolicy extends MarloAuditableEntity implements java.io.Seria
 
   public void setProjectPolicySubIdos(Set<ProjectPolicySubIdo> projectPolicySubIdos) {
     this.projectPolicySubIdos = projectPolicySubIdos;
+  }
+
+  public void setRegions(List<ProjectPolicyCountry> regions) {
+    this.regions = regions;
   }
 
   public void setSubIdos(List<ProjectPolicySubIdo> subIdos) {
