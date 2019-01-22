@@ -52,7 +52,7 @@ import org.springframework.web.bind.annotation.RestController;
 import springfox.documentation.annotations.ApiIgnore;
 
 @RestController
-@Api(tags = "_All AR 2018 Control Lists")
+@Api(tags = "All AR 2018 Control Lists")
 
 @Named
 public class ARControlLists {
@@ -169,7 +169,7 @@ public class ARControlLists {
 	 * Items.
 	 */
 
-	@ApiOperation(tags = "Policies", value = "View all The Cross Cutting Markers", response = CrossCuttingMarkerScoreDTO.class, responseContainer = "List")
+	@ApiOperation(tags = "Table2 - CRP Policies", value = "View all The Cross Cutting Markers", response = CrossCuttingMarkerScoreDTO.class, responseContainer = "List")
 	@RequiresPermissions(Permission.CRP_PROGRAM_READ_REST_API_PERMISSION)
 	@RequestMapping(value = "/cross-cutting-marker-scores", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public List<CrossCuttingMarkerScoreDTO> getAllCrossCuttingMarkerScores() {
@@ -226,7 +226,7 @@ public class ARControlLists {
 	 * @return a List of policyInvestmentTypeDTO with all
 	 * RepIndPolicyInvestimentType Items.
 	 */
-	@ApiOperation(tags = "Policies", value = "View all policy investiment types", response = PolicyInvestimentTypeDTO.class, responseContainer = "List", position = 1)
+	@ApiOperation(tags = "Table2 - CRP Policies", value = "View all policy investiment types", response = PolicyInvestimentTypeDTO.class, responseContainer = "List", position = 1)
 	@RequiresPermissions(Permission.CRP_PROGRAM_READ_REST_API_PERMISSION)
 	@RequestMapping(value = "/policy-investiment-types", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public List<PolicyInvestimentTypeDTO> getAllPolicyInvestimentType() {
@@ -270,7 +270,7 @@ public class ARControlLists {
 	 * @param id
 	 * @return a CrossCuttingMarkersDTO with the Cross Cutting Marker data.
 	 */
-	@ApiOperation(tags = "Policies", value = "Search a Cross Cutting Marker with an ID", response = CrossCuttingMarkerScoreDTO.class)
+	@ApiOperation(tags = "Table2 - CRP Policies", value = "Search a Cross Cutting Marker with an ID", response = CrossCuttingMarkerScoreDTO.class)
 	@RequiresPermissions(Permission.CRP_PROGRAM_READ_REST_API_PERMISSION)
 	@RequestMapping(value = "/cross-cutting-marker-scores/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<CrossCuttingMarkerScoreDTO> getCrossCuttingMarkerScoreById(@PathVariable Long id) {
@@ -299,7 +299,7 @@ public class ARControlLists {
 	 * @param id
 	 * @return a policyInvestmentTypeDTO with the Cross Cutting Marker data.
 	 */
-	@ApiOperation(tags = "Policies", value = "Search a Cross Cutting Marker with an ID", response = PolicyInvestimentTypeDTO.class)
+	@ApiOperation(tags = "Table2 - CRP Policies", value = "Search a Cross Cutting Marker with an ID", response = PolicyInvestimentTypeDTO.class)
 	@RequiresPermissions(Permission.CRP_PROGRAM_READ_REST_API_PERMISSION)
 	@RequestMapping(value = "/policy-investiment-types/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<PolicyInvestimentTypeDTO> getPolicyInvestimentTypesById(@PathVariable Long id) {

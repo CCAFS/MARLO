@@ -40,7 +40,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @author Hermes Jiménez - CIAT/CCAFS
  */
 @RestController
-@Api(tags = "_General Control Lists")
+@Api(tags = "General Control Lists")
 @Named
 public class GeneralLists {
 
@@ -60,7 +60,7 @@ public class GeneralLists {
 	 * 
 	 * @return a List of LocElementDTO with all LocElements Items.
 	 */
-	@ApiOperation(tags = "Policies", value = "View all Conutries", response = LocElementDTO.class, responseContainer = "List")
+	@ApiOperation(tags = "Table2 - CRP Policies", value = "View all Conutries", response = LocElementDTO.class, responseContainer = "List")
 	@RequiresPermissions(Permission.CRP_PROGRAM_READ_REST_API_PERMISSION)
 	@RequestMapping(value = "/countries", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public List<LocElementDTO> getAllContries() {
@@ -75,7 +75,7 @@ public class GeneralLists {
 	 * Items.
 	 */
 
-	@ApiOperation(tags = "Policies", value = "View all Geographic Scopes", response = GeographicScopeDTO.class, responseContainer = "List")
+	@ApiOperation(tags = "Table2 - CRP Policies", value = "View all Geographic Scopes", response = GeographicScopeDTO.class, responseContainer = "List")
 	@RequiresPermissions(Permission.CRP_PROGRAM_READ_REST_API_PERMISSION)
 	@RequestMapping(value = "/geographic-scopes", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public List<GeographicScopeDTO> getAllGeographicScopes() {

@@ -61,7 +61,7 @@ import org.springframework.web.bind.annotation.RestController;
 import springfox.documentation.annotations.ApiIgnore;
 
 @RestController
-@Api(tags = "_Institutions")
+@Api(tags = "Institutions Lists")
 public class Institutions {
 
 	private static final Logger LOG = LoggerFactory.getLogger(Institutions.class);
@@ -165,7 +165,6 @@ public class Institutions {
 		return ResponseEntity.ok().build();
 	}
 
-	@ApiIgnore
 	@ApiOperation(value = "View a List of Institutions", response = InstitutionDTO.class, responseContainer = "List")
 	@RequiresPermissions(Permission.INSTITUTIONS_READ_REST_API_PERMISSION)
 	@RequestMapping(value = "/institutions", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -178,7 +177,6 @@ public class Institutions {
 		return institutionDTOs;
 	}
 
-	@ApiIgnore
 	@ApiOperation(value = "View a List of Institution Types", response = InstitutionTypeDTO.class, responseContainer = "List")
 	@RequiresPermissions(Permission.INSTITUTIONS_READ_REST_API_PERMISSION)
 	@RequestMapping(value = "/institutionTypes", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -198,7 +196,6 @@ public class Institutions {
 		return user;
 	}
 
-	@ApiIgnore
 	@ApiOperation(value = "Search an Institution with an ID", response = InstitutionDTO.class)
 	@RequiresPermissions(Permission.INSTITUTIONS_READ_REST_API_PERMISSION)
 	@RequestMapping(value = "/institution/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
