@@ -22,68 +22,47 @@ import io.swagger.annotations.ApiModelProperty;
  */
 public class SrfIdoDTO {
 
+	private SrfCrossCuttingIssueDTO srfCrossCuttingIssue;
 
-  @ApiModelProperty(notes = "The Generated SRF IDO ID")
-  private Long id;
+	@ApiModelProperty(notes = "TheCode for SRF IDO")
+	private String code;
 
+	@ApiModelProperty(notes = "The SRF IDO description ")
+	private String description;
 
-  private SrfCrossCuttingIssueDTO srfCrossCuttingIssue;
+	@ApiModelProperty(notes = "Indicator if the SRF IDO is a Cross Cutting Issue")
+	private boolean isCrossCutting;
 
+	public String getDescription() {
+		return this.description;
+	}
 
-  @ApiModelProperty(notes = "The SRF IDO description ")
-  private String description;
+	public SrfCrossCuttingIssueDTO getSrfCrossCuttingIssue() {
+		return this.srfCrossCuttingIssue;
+	}
 
+	public boolean isCrossCutting() {
+		return this.isCrossCutting;
+	}
 
-  @ApiModelProperty(notes = "Indicator if the SRF IDO is a Cross Cutting Issue")
-  private boolean isCrossCutting;
+	public void setCrossCutting(boolean isCrossCutting) {
+		this.isCrossCutting = isCrossCutting;
+	}
 
+	public void setDescription(String description) {
+		this.description = description;
+	}
 
-  @ApiModelProperty(notes = "The Generated SMO Code for SRF IDO")
-  private String smoCode;
+	public void setSrfCrossCuttingIssue(SrfCrossCuttingIssueDTO srfCrossCuttingIssue) {
+		this.srfCrossCuttingIssue = srfCrossCuttingIssue;
+	}
 
+	public String getCode() {
+		return code;
+	}
 
-  public String getDescription() {
-    return description;
-  }
-
-
-  public Long getId() {
-    return id;
-  }
-
-
-  public String getSmoCode() {
-    return smoCode;
-  }
-
-
-  public SrfCrossCuttingIssueDTO getSrfCrossCuttingIssue() {
-    return srfCrossCuttingIssue;
-  }
-
-
-  public boolean isCrossCutting() {
-    return isCrossCutting;
-  }
-
-  public void setCrossCutting(boolean isCrossCutting) {
-    this.isCrossCutting = isCrossCutting;
-  }
-
-  public void setDescription(String description) {
-    this.description = description;
-  }
-
-  public void setId(Long id) {
-    this.id = id;
-  }
-
-  public void setSmoCode(String smoCode) {
-    this.smoCode = smoCode;
-  }
-
-  public void setSrfCrossCuttingIssue(SrfCrossCuttingIssueDTO srfCrossCuttingIssue) {
-    this.srfCrossCuttingIssue = srfCrossCuttingIssue;
-  }
+	public void setCode(String code) {
+		this.code = code;
+	}
 
 }

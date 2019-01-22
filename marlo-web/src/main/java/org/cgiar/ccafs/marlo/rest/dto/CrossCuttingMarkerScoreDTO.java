@@ -13,29 +13,50 @@
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
 
-package org.cgiar.ccafs.marlo.rest.mappers;
+package org.cgiar.ccafs.marlo.rest.dto;
 
-import org.cgiar.ccafs.marlo.data.model.SrfIdo;
-import org.cgiar.ccafs.marlo.data.model.SrfSubIdo;
-import org.cgiar.ccafs.marlo.rest.dto.SrfIdoDTO;
-import org.cgiar.ccafs.marlo.rest.dto.SrfSubIdoDTO;
+import javax.validation.constraints.NotNull;
 
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.Mappings;
+import io.swagger.annotations.ApiModelProperty;
 
-/**
- * @author Hermes Jiménez - CIAT/CCAFS
- */
+public class CrossCuttingMarkerScoreDTO {
 
-@Mapper(componentModel = "jsr330")
-public interface SrfSubIdoMapper {
+  @ApiModelProperty(notes = "The Generated Cross Cutting Marker ID")
+  @NotNull
+  private Long id;
 
-	@Mappings({ @Mapping(source = "srfIdo.smoCode", target = "code") })
-	public abstract SrfIdoDTO srfIdoToSrfIdoDTO(SrfIdo srfIdo);
+  @ApiModelProperty(notes = "Cross Cutting Marker name")
+  @NotNull
+  private String name;
 
-	public abstract SrfSubIdo srfSubIdoDTOToSrfSubIdo(SrfSubIdoDTO srfSubIdoDTO);
+  @ApiModelProperty(notes = "Cross Cutting Marker definition")
+  private String definition;
 
-	@Mappings({ @Mapping(source = "srfSubIdo.smoCode", target = "code") })
-	public abstract SrfSubIdoDTO srfSubIdoToSrfSubIdoDTO(SrfSubIdo srfSubIdo);
+
+  public String getDefinition() {
+    return definition;
+  }
+
+
+  public Long getId() {
+    return id;
+  }
+
+
+  public String getName() {
+    return name;
+  }
+
+  public void setDefinition(String definition) {
+    this.definition = definition;
+  }
+
+  public void setId(Long id) {
+    this.id = id;
+  }
+
+  public void setName(String name) {
+    this.name = name;
+  }
+
 }
