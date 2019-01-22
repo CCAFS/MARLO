@@ -15,7 +15,6 @@
 package org.cgiar.ccafs.marlo.data.model;
 // Generated May 26, 2016 9:42:28 AM by Hibernate Tools 4.3.1.Final
 
-
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 
 import java.util.HashSet;
@@ -29,129 +28,123 @@ import com.google.gson.annotations.Expose;
  */
 public class SrfIdo extends MarloAuditableEntity implements java.io.Serializable, IAuditLog {
 
+	private static final long serialVersionUID = 8353586687845581811L;
 
-  private static final long serialVersionUID = 8353586687845581811L;
+	@Expose
+	private SrfCrossCuttingIssue srfCrossCuttingIssue;
 
+	@Expose
+	private String description;
 
-  @Expose
-  private SrfCrossCuttingIssue srfCrossCuttingIssue;
+	@Expose
+	private boolean isCrossCutting;
 
-  @Expose
-  private String description;
+	@Expose
+	private String smoCode;
 
-  @Expose
-  private boolean isCrossCutting;
+	private Set<SrfSloIdo> srfSloIdos = new HashSet<SrfSloIdo>(0);
 
-  @Expose
-  private String smoCode;
+	private Set<SrfSubIdo> srfSubIdos = new HashSet<SrfSubIdo>(0);
 
-  private Set<SrfSloIdo> srfSloIdos = new HashSet<SrfSloIdo>(0);
+	private List<SrfSubIdo> subIdos;
 
-  private Set<SrfSubIdo> srfSubIdos = new HashSet<SrfSubIdo>(0);
+	public SrfIdo() {
+	}
 
-  private List<SrfSubIdo> subIdos;
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
 
-  public SrfIdo() {
-  }
+		SrfIdo other = (SrfIdo) obj;
+		if (this.getId() == null) {
+			if (other.getId() != null) {
+				return false;
+			}
+		} else if (!this.getId().equals(other.getId())) {
+			return false;
+		}
+		return true;
+	}
 
+	public String getDescription() {
+		return this.description;
+	}
 
-  @Override
-  public boolean equals(Object obj) {
-    if (this == obj) {
-      return true;
-    }
-    if (obj == null) {
-      return false;
-    }
+	@Override
+	public String getLogDeatil() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("Id : ").append(this.getId());
+		return sb.toString();
+	}
 
-    SrfIdo other = (SrfIdo) obj;
-    if (this.getId() == null) {
-      if (other.getId() != null) {
-        return false;
-      }
-    } else if (!this.getId().equals(other.getId())) {
-      return false;
-    }
-    return true;
-  }
+	public String getSmoCode() {
+		return this.smoCode;
+	}
 
-  public String getDescription() {
-    return this.description;
-  }
+	public SrfCrossCuttingIssue getSrfCrossCuttingIssue() {
+		return this.srfCrossCuttingIssue;
+	}
 
-  @Override
-  public String getLogDeatil() {
-    StringBuilder sb = new StringBuilder();
-    sb.append("Id : ").append(this.getId());
-    return sb.toString();
-  }
+	public Set<SrfSloIdo> getSrfSloIdos() {
+		return this.srfSloIdos;
+	}
 
-  public String getSmoCode() {
-    return smoCode;
-  }
+	public Set<SrfSubIdo> getSrfSubIdos() {
+		return this.srfSubIdos;
+	}
 
-  public SrfCrossCuttingIssue getSrfCrossCuttingIssue() {
-    return this.srfCrossCuttingIssue;
-  }
+	public List<SrfSubIdo> getSubIdos() {
+		return this.subIdos;
+	}
 
-  public Set<SrfSloIdo> getSrfSloIdos() {
-    return this.srfSloIdos;
-  }
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((this.getId() == null) ? 0 : this.getId().hashCode());
+		return result;
+	}
 
-  public Set<SrfSubIdo> getSrfSubIdos() {
-    return this.srfSubIdos;
-  }
+	public boolean isIsCrossCutting() {
+		return this.isCrossCutting;
+	}
 
-  public List<SrfSubIdo> getSubIdos() {
-    return subIdos;
-  }
+	public void setDescription(String description) {
+		this.description = description;
+	}
 
-  @Override
-  public int hashCode() {
-    final int prime = 31;
-    int result = 1;
-    result = prime * result + ((this.getId() == null) ? 0 : this.getId().hashCode());
-    return result;
-  }
+	public void setIsCrossCutting(boolean isCrossCutting) {
+		this.isCrossCutting = isCrossCutting;
+	}
 
-  public boolean isIsCrossCutting() {
-    return this.isCrossCutting;
-  }
+	public void setSmoCode(String smoCode) {
+		this.smoCode = smoCode;
+	}
 
+	public void setSrfCrossCuttingIssue(SrfCrossCuttingIssue srfCrossCuttingIssues) {
+		this.srfCrossCuttingIssue = srfCrossCuttingIssues;
+	}
 
-  public void setDescription(String description) {
-    this.description = description;
-  }
+	public void setSrfSloIdos(Set<SrfSloIdo> srfSloIdos) {
+		this.srfSloIdos = srfSloIdos;
+	}
 
-  public void setIsCrossCutting(boolean isCrossCutting) {
-    this.isCrossCutting = isCrossCutting;
-  }
+	public void setSrfSubIdos(Set<SrfSubIdo> srfSubIdos) {
+		this.srfSubIdos = srfSubIdos;
+	}
 
-  public void setSmoCode(String smoCode) {
-    this.smoCode = smoCode;
-  }
+	public void setSubIdos(List<SrfSubIdo> subIdos) {
+		this.subIdos = subIdos;
+	}
 
-
-  public void setSrfCrossCuttingIssue(SrfCrossCuttingIssue srfCrossCuttingIssues) {
-    this.srfCrossCuttingIssue = srfCrossCuttingIssues;
-  }
-
-  public void setSrfSloIdos(Set<SrfSloIdo> srfSloIdos) {
-    this.srfSloIdos = srfSloIdos;
-  }
-
-  public void setSrfSubIdos(Set<SrfSubIdo> srfSubIdos) {
-    this.srfSubIdos = srfSubIdos;
-  }
-
-  public void setSubIdos(List<SrfSubIdo> subIdos) {
-    this.subIdos = subIdos;
-  }
-
-  @Override
-  public String toString() {
-    return "SrfIdo [id=" + this.getId() + ", srfCrossCuttingIssue=" + srfCrossCuttingIssue + ", description="
-      + description + ", isCrossCutting=" + isCrossCutting + "]";
-  }
+	@Override
+	public String toString() {
+		return "SrfIdo [id=" + this.getId() + ", srfCrossCuttingIssue=" + this.srfCrossCuttingIssue + ", description="
+				+ this.description + ", smoCode=" + this.smoCode + ", isCrossCutting=" + this.isCrossCutting + "]";
+	}
 }
-

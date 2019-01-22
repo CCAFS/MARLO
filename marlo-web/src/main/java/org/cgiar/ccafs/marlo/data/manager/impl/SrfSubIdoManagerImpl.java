@@ -14,15 +14,14 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.manager.impl;
 
-
 import org.cgiar.ccafs.marlo.data.dao.SrfSubIdoDAO;
 import org.cgiar.ccafs.marlo.data.manager.SrfSubIdoManager;
 import org.cgiar.ccafs.marlo.data.model.SrfSubIdo;
 
 import java.util.List;
 
-import javax.inject.Named;
 import javax.inject.Inject;
+import javax.inject.Named;
 
 /**
  * @author Christian Garcia
@@ -30,48 +29,50 @@ import javax.inject.Inject;
 @Named
 public class SrfSubIdoManagerImpl implements SrfSubIdoManager {
 
+	private SrfSubIdoDAO srfSubIdoDAO;
+	// Managers
 
-  private SrfSubIdoDAO srfSubIdoDAO;
-  // Managers
+	@Inject
+	public SrfSubIdoManagerImpl(SrfSubIdoDAO srfSubIdoDAO) {
+		this.srfSubIdoDAO = srfSubIdoDAO;
 
+	}
 
-  @Inject
-  public SrfSubIdoManagerImpl(SrfSubIdoDAO srfSubIdoDAO) {
-    this.srfSubIdoDAO = srfSubIdoDAO;
+	@Override
+	public void deleteSrfSubIdo(long srfSubIdoId) {
 
+		this.srfSubIdoDAO.deleteSrfSubIdo(srfSubIdoId);
+	}
 
-  }
+	@Override
+	public boolean existSrfSubIdo(long srfSubIdoID) {
 
-  @Override
-  public void deleteSrfSubIdo(long srfSubIdoId) {
+		return this.srfSubIdoDAO.existSrfSubIdo(srfSubIdoID);
+	}
 
-    srfSubIdoDAO.deleteSrfSubIdo(srfSubIdoId);
-  }
+	@Override
+	public List<SrfSubIdo> findAll() {
 
-  @Override
-  public boolean existSrfSubIdo(long srfSubIdoID) {
+		return this.srfSubIdoDAO.findAll();
 
-    return srfSubIdoDAO.existSrfSubIdo(srfSubIdoID);
-  }
+	}
 
-  @Override
-  public List<SrfSubIdo> findAll() {
+	@Override
+	public SrfSubIdo getSrfSubIdoByCode(String srfSubIdocode) {
 
-    return srfSubIdoDAO.findAll();
+		return this.srfSubIdoDAO.findBySmoCode(srfSubIdocode);
+	}
 
-  }
+	@Override
+	public SrfSubIdo getSrfSubIdoById(long srfSubIdoID) {
 
-  @Override
-  public SrfSubIdo getSrfSubIdoById(long srfSubIdoID) {
+		return this.srfSubIdoDAO.find(srfSubIdoID);
+	}
 
-    return srfSubIdoDAO.find(srfSubIdoID);
-  }
+	@Override
+	public SrfSubIdo saveSrfSubIdo(SrfSubIdo srfSubIdo) {
 
-  @Override
-  public SrfSubIdo saveSrfSubIdo(SrfSubIdo srfSubIdo) {
-
-    return srfSubIdoDAO.save(srfSubIdo);
-  }
-
+		return this.srfSubIdoDAO.save(srfSubIdo);
+	}
 
 }

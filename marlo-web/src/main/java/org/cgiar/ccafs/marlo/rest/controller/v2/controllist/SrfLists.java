@@ -74,12 +74,12 @@ public class SrfLists {
 	 * @return a SrfSubIdoDTO with the SRF-SubIdo data.
 	 */
 
-	@ApiOperation(tags = "Policies", value = "Search an SRF-SubIdo with an ID", response = SrfSubIdoDTO.class)
+	@ApiOperation(tags = "Policies", value = "Search an SRF-SubIdo with an Code", response = SrfSubIdoDTO.class)
 	@RequiresPermissions(Permission.CRP_PROGRAM_READ_REST_API_PERMISSION)
-	@RequestMapping(value = "/srf-sub-idos/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<SrfSubIdoDTO> findSrfSubIdoById(@PathVariable Long id) {
-		LOG.debug("REST request to get SRF-SubIdo : {}", id);
-		return this.srfSubIdoItem.findSrfSubIdoById(id);
+	@RequestMapping(value = "/srf-sub-idos/{code:.+}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<SrfSubIdoDTO> findSrfSubIdoByCode(@PathVariable String code) {
+		LOG.debug("REST request to get SRF-SubIdo : {}", code);
+		return this.srfSubIdoItem.findSrfSubIdoBycode(code);
 	}
 
 	/**
@@ -87,7 +87,7 @@ public class SrfLists {
 	 * 
 	 * @return a List of SrfIdoDTO with all SRF IDO Items.
 	 */
-	@ApiIgnore
+
 	@ApiOperation(value = "View all Srf IDO", response = SrfIdoDTO.class, responseContainer = "List", position = 1)
 	@RequiresPermissions(Permission.CRP_PROGRAM_READ_REST_API_PERMISSION)
 	@RequestMapping(value = "/srfIdos", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)

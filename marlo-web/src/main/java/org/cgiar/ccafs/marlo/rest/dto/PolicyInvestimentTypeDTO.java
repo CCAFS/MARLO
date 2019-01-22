@@ -13,29 +13,51 @@
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
 
-package org.cgiar.ccafs.marlo.rest.mappers;
+package org.cgiar.ccafs.marlo.rest.dto;
 
-import org.cgiar.ccafs.marlo.data.model.SrfIdo;
-import org.cgiar.ccafs.marlo.data.model.SrfSubIdo;
-import org.cgiar.ccafs.marlo.rest.dto.SrfIdoDTO;
-import org.cgiar.ccafs.marlo.rest.dto.SrfSubIdoDTO;
+import javax.validation.constraints.NotNull;
 
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.Mappings;
+import io.swagger.annotations.ApiModelProperty;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  */
 
-@Mapper(componentModel = "jsr330")
-public interface SrfSubIdoMapper {
+public class PolicyInvestimentTypeDTO {
 
-	@Mappings({ @Mapping(source = "srfIdo.smoCode", target = "code") })
-	public abstract SrfIdoDTO srfIdoToSrfIdoDTO(SrfIdo srfIdo);
+	@ApiModelProperty(notes = "The Generated policy insvestiment type ID")
+	@NotNull
+	private Long id;
 
-	public abstract SrfSubIdo srfSubIdoDTOToSrfSubIdo(SrfSubIdoDTO srfSubIdoDTO);
+	@ApiModelProperty(notes = "policy insvestiment type name")
+	@NotNull
+	private String name;
 
-	@Mappings({ @Mapping(source = "srfSubIdo.smoCode", target = "code") })
-	public abstract SrfSubIdoDTO srfSubIdoToSrfSubIdoDTO(SrfSubIdo srfSubIdo);
+	@ApiModelProperty(notes = "policy insvestiment type definition")
+	private String definition;
+
+	public String getDefinition() {
+		return this.definition;
+	}
+
+	public Long getId() {
+		return this.id;
+	}
+
+	public String getName() {
+		return this.name;
+	}
+
+	public void setDefinition(String definition) {
+		this.definition = definition;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
 }

@@ -20,6 +20,7 @@ import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.powbar.CrossCu
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.powbar.DegreeOfInnovationItem;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.powbar.InnovationTypeItem;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.powbar.MaturityOfChangeItem;
+import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.powbar.PolicyInvestimentTypeItem;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.powbar.ResearchPartnershipItem;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.powbar.StageOfInnovationItem;
 import org.cgiar.ccafs.marlo.rest.dto.ContributionOfCrpDTO;
@@ -27,6 +28,7 @@ import org.cgiar.ccafs.marlo.rest.dto.CrossCuttingMarkerScoreDTO;
 import org.cgiar.ccafs.marlo.rest.dto.DegreeOfInnovationDTO;
 import org.cgiar.ccafs.marlo.rest.dto.InnovationTypeDTO;
 import org.cgiar.ccafs.marlo.rest.dto.MaturityOfChangeDTO;
+import org.cgiar.ccafs.marlo.rest.dto.PolicyInvestimentTypeDTO;
 import org.cgiar.ccafs.marlo.rest.dto.ResearchPartnershipDTO;
 import org.cgiar.ccafs.marlo.rest.dto.StageOfInnovationDTO;
 import org.cgiar.ccafs.marlo.security.Permission;
@@ -50,28 +52,30 @@ import org.springframework.web.bind.annotation.RestController;
 import springfox.documentation.annotations.ApiIgnore;
 
 @RestController
-@Api(tags = "_POWB/AR control Lists")
+@Api(tags = "_All AR 2018 Control Lists")
 
 @Named
-public class PowbARLists {
+public class ARControlLists {
 
-	private static final Logger LOG = LoggerFactory.getLogger(PowbARLists.class);
-	private CrossCuttingMarkerScoreItem<PowbARLists> crossCuttingMarkerScoreItem;
-	private InnovationTypeItem<PowbARLists> innovationTypesItem;
-	private ResearchPartnershipItem<PowbARLists> researchPartnershipsItem;
-	private StageOfInnovationItem<PowbARLists> stageOfInnovationItem;
-	private ContributionOfCrpItem<PowbARLists> contributionOfCrpItem;
-	private DegreeOfInnovationItem<PowbARLists> degreeOfInnovationItem;
-	private MaturityOfChangeItem<PowbARLists> maturityOfChangeItem;
+	private static final Logger LOG = LoggerFactory.getLogger(ARControlLists.class);
+	private CrossCuttingMarkerScoreItem<ARControlLists> crossCuttingMarkerScoreItem;
+	private InnovationTypeItem<ARControlLists> innovationTypesItem;
+	private ResearchPartnershipItem<ARControlLists> researchPartnershipsItem;
+	private StageOfInnovationItem<ARControlLists> stageOfInnovationItem;
+	private ContributionOfCrpItem<ARControlLists> contributionOfCrpItem;
+	private DegreeOfInnovationItem<ARControlLists> degreeOfInnovationItem;
+	private MaturityOfChangeItem<ARControlLists> maturityOfChangeItem;
+	private PolicyInvestimentTypeItem<ARControlLists> policyInvestimentTypeItem;
 
 	@Inject
-	public PowbARLists(CrossCuttingMarkerScoreItem<PowbARLists> crossCuttingMarkerScoreItem,
-			InnovationTypeItem<PowbARLists> innovationTypesItem,
-			ResearchPartnershipItem<PowbARLists> researchPartnershipsItem,
-			StageOfInnovationItem<PowbARLists> stageOfInnovationItem,
-			ContributionOfCrpItem<PowbARLists> contributionOfCrpItem,
-			DegreeOfInnovationItem<PowbARLists> degreeOfInnovationItem,
-			MaturityOfChangeItem<PowbARLists> maturityOfChangeItem) {
+	public ARControlLists(CrossCuttingMarkerScoreItem<ARControlLists> crossCuttingMarkerScoreItem,
+			InnovationTypeItem<ARControlLists> innovationTypesItem,
+			ResearchPartnershipItem<ARControlLists> researchPartnershipsItem,
+			StageOfInnovationItem<ARControlLists> stageOfInnovationItem,
+			ContributionOfCrpItem<ARControlLists> contributionOfCrpItem,
+			DegreeOfInnovationItem<ARControlLists> degreeOfInnovationItem,
+			MaturityOfChangeItem<ARControlLists> maturityOfChangeItem,
+			PolicyInvestimentTypeItem<ARControlLists> policyInvestimentTypeItem) {
 		this.crossCuttingMarkerScoreItem = crossCuttingMarkerScoreItem;
 		this.innovationTypesItem = innovationTypesItem;
 		this.researchPartnershipsItem = researchPartnershipsItem;
@@ -79,6 +83,8 @@ public class PowbARLists {
 		this.contributionOfCrpItem = contributionOfCrpItem;
 		this.degreeOfInnovationItem = degreeOfInnovationItem;
 		this.maturityOfChangeItem = maturityOfChangeItem;
+		this.policyInvestimentTypeItem = policyInvestimentTypeItem;
+
 	}
 
 	/**
@@ -215,6 +221,20 @@ public class PowbARLists {
 	}
 
 	/**
+	 * get all policy investiment types
+	 * 
+	 * @return a List of policyInvestmentTypeDTO with all
+	 * RepIndPolicyInvestimentType Items.
+	 */
+	@ApiOperation(tags = "Policies", value = "View all policy investiment types", response = PolicyInvestimentTypeDTO.class, responseContainer = "List", position = 1)
+	@RequiresPermissions(Permission.CRP_PROGRAM_READ_REST_API_PERMISSION)
+	@RequestMapping(value = "/policy-investiment-types", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public List<PolicyInvestimentTypeDTO> getAllPolicyInvestimentType() {
+		LOG.debug("REST request to get  Degree of Innovations");
+		return this.policyInvestimentTypeItem.getAllPolicyInvestimentType();
+	}
+
+	/**
 	 * Get All the Research Partnerships items
 	 * 
 	 * @return a List of ResearchPartnershipsDTO with all ResearchPartnerships
@@ -271,6 +291,20 @@ public class PowbARLists {
 	public ResponseEntity<InnovationTypeDTO> getInnovationTypeById(@PathVariable Long id) {
 		LOG.debug("REST request to get Innovation Type : {}", id);
 		return this.innovationTypesItem.findInnovationTypeById(id);
+	}
+
+	/**
+	 * Find a Policy Investment type by id
+	 * 
+	 * @param id
+	 * @return a policyInvestmentTypeDTO with the Cross Cutting Marker data.
+	 */
+	@ApiOperation(tags = "Policies", value = "Search a Cross Cutting Marker with an ID", response = PolicyInvestimentTypeDTO.class)
+	@RequiresPermissions(Permission.CRP_PROGRAM_READ_REST_API_PERMISSION)
+	@RequestMapping(value = "/policy-investiment-types/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<PolicyInvestimentTypeDTO> getPolicyInvestimentTypesById(@PathVariable Long id) {
+		LOG.debug("REST request to get Cross Cutting Marker : {}", id);
+		return this.policyInvestimentTypeItem.PolicyInvestimentTypeById(id);
 	}
 
 	/**

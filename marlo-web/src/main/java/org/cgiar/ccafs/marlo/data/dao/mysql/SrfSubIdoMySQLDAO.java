@@ -13,7 +13,6 @@
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
 
-
 package org.cgiar.ccafs.marlo.data.dao.mysql;
 
 import org.cgiar.ccafs.marlo.data.dao.SrfSubIdoDAO;
@@ -21,62 +20,71 @@ import org.cgiar.ccafs.marlo.data.model.SrfSubIdo;
 
 import java.util.List;
 
-import javax.inject.Named;
 import javax.inject.Inject;
+import javax.inject.Named;
+
 import org.hibernate.SessionFactory;
 
 @Named
 public class SrfSubIdoMySQLDAO extends AbstractMarloDAO<SrfSubIdo, Long> implements SrfSubIdoDAO {
 
+	@Inject
+	public SrfSubIdoMySQLDAO(SessionFactory sessionFactory) {
+		super(sessionFactory);
+	}
 
-  @Inject
-  public SrfSubIdoMySQLDAO(SessionFactory sessionFactory) {
-    super(sessionFactory);
-  }
+	@Override
+	public void deleteSrfSubIdo(long srfSubIdoId) {
+		SrfSubIdo srfSubIdo = this.find(srfSubIdoId);
+		srfSubIdo.setActive(false);
+		this.save(srfSubIdo);
+	}
 
-  @Override
-  public void deleteSrfSubIdo(long srfSubIdoId) {
-    SrfSubIdo srfSubIdo = this.find(srfSubIdoId);
-    srfSubIdo.setActive(false);
-    this.save(srfSubIdo);
-  }
+	@Override
+	public boolean existSrfSubIdo(long srfSubIdoID) {
+		SrfSubIdo srfSubIdo = this.find(srfSubIdoID);
+		if (srfSubIdo == null) {
+			return false;
+		}
+		return true;
 
-  @Override
-  public boolean existSrfSubIdo(long srfSubIdoID) {
-    SrfSubIdo srfSubIdo = this.find(srfSubIdoID);
-    if (srfSubIdo == null) {
-      return false;
-    }
-    return true;
+	}
 
-  }
+	@Override
+	public SrfSubIdo find(long id) {
+		return super.find(SrfSubIdo.class, id);
 
-  @Override
-  public SrfSubIdo find(long id) {
-    return super.find(SrfSubIdo.class, id);
+	}
 
-  }
+	@Override
+	public List<SrfSubIdo> findAll() {
+		String query = "from " + SrfSubIdo.class.getName() + " where is_active=1";
+		List<SrfSubIdo> list = super.findAll(query);
+		if (list.size() > 0) {
+			return list;
+		}
+		return null;
 
-  @Override
-  public List<SrfSubIdo> findAll() {
-    String query = "from " + SrfSubIdo.class.getName() + " where is_active=1";
-    List<SrfSubIdo> list = super.findAll(query);
-    if (list.size() > 0) {
-      return list;
-    }
-    return null;
+	}
 
-  }
+	@Override
+	public SrfSubIdo findBySmoCode(String smoCode) {
+		String query = "from " + SrfSubIdo.class.getName() + " where is_active=1 and smo_code='" + smoCode + "'";
+		List<SrfSubIdo> list = super.findAll(query);
+		if (list.size() > 0) {
+			return list.get(0);
+		}
+		return null;
+	}
 
-  @Override
-  public SrfSubIdo save(SrfSubIdo srfSubIdo) {
-    if (srfSubIdo.getId() == null) {
-      super.saveEntity(srfSubIdo);
-    } else {
-      srfSubIdo = super.update(srfSubIdo);
-    }
-    return srfSubIdo;
-  }
-
+	@Override
+	public SrfSubIdo save(SrfSubIdo srfSubIdo) {
+		if (srfSubIdo.getId() == null) {
+			super.saveEntity(srfSubIdo);
+		} else {
+			srfSubIdo = super.update(srfSubIdo);
+		}
+		return srfSubIdo;
+	}
 
 }

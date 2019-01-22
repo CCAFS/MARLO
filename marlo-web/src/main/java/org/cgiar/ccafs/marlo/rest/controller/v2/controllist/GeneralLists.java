@@ -40,17 +40,17 @@ import org.springframework.web.bind.annotation.RestController;
  * @author Hermes Jiménez - CIAT/CCAFS
  */
 @RestController
-@Api(tags = "_Locations")
+@Api(tags = "_General Control Lists")
 @Named
-public class Locations {
+public class GeneralLists {
 
-	private static final Logger LOG = LoggerFactory.getLogger(Locations.class);
+	private static final Logger LOG = LoggerFactory.getLogger(GeneralLists.class);
 
-	private CountryItem<Locations> countryItem;
-	private GeographicScopeItem<Locations> geographicScopeItem;
+	private CountryItem<GeneralLists> countryItem;
+	private GeographicScopeItem<GeneralLists> geographicScopeItem;
 
 	@Inject
-	public Locations(CountryItem<Locations> countryItem, GeographicScopeItem<Locations> geographicScopeItem) {
+	public GeneralLists(CountryItem<GeneralLists> countryItem, GeographicScopeItem<GeneralLists> geographicScopeItem) {
 		this.countryItem = countryItem;
 		this.geographicScopeItem = geographicScopeItem;
 	}
