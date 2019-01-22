@@ -106,6 +106,7 @@ public class ProjectsSummaryAction extends BaseSummariesAction implements Summar
   private MasterReport addi8nParameters(MasterReport masterReport) {
     masterReport.getParameterValues().put("i8nProjectId", this.getText("searchTerms.projectId"));
     masterReport.getParameterValues().put("i8nProjectTitle", this.getText("project.title.readText"));
+    masterReport.getParameterValues().put("i8nStatus", this.getText("project.status"));
     masterReport.getParameterValues().put("i8nManagementLiaison", this.getText("project.liaisonInstitution"));
     masterReport.getParameterValues().put("i8nFlagships", this.getText("project.Flagships"));
     masterReport.getParameterValues().put("i8nRegions", this.getText("project.Regions"));
@@ -247,10 +248,11 @@ public class ProjectsSummaryAction extends BaseSummariesAction implements Summar
 
   private TypedTableModel getProjecsDetailsTableModel() {
     TypedTableModel model = new TypedTableModel(
-      new String[] {"projectId", "projectTitle", "managementLiaison", "flagships", "regions", "institutionLeader",
-        "projectLeader", "activitiesOnGoing", "expectedDeliverables", "outcomes", "expectedStudies", "phaseID"},
+      new String[] {"projectId", "projectTitle", "status", "managementLiaison", "flagships", "regions",
+        "institutionLeader", "projectLeader", "activitiesOnGoing", "expectedDeliverables", "outcomes",
+        "expectedStudies", "phaseID"},
       new Class[] {Long.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        Integer.class, Integer.class, Integer.class, Integer.class, Long.class},
+        String.class, Integer.class, Integer.class, Integer.class, Integer.class, Long.class},
       0);
     // Status of projects
     String[] statuses = null;
@@ -368,8 +370,33 @@ public class ProjectsSummaryAction extends BaseSummariesAction implements Summar
       }
       Integer expectedStudies = projectExpectedStudySet.size();
 
-      model.addRow(new Object[] {projectId, projectTitle, managementLiaison, flagships, regions, institutionLeader,
-        projectLeaderName, activitiesOnGoing, expectedDeliverables, outcomes, expectedStudies,
+      String status = "";
+      project.setProjectInfo(project.getProjecInfoPhase(this.getSelectedPhase()));
+      if (project.getProjectInfo() != null && project.getProjectInfo().getStatus() != null) {
+
+        if (project.getProjectInfo().getStatus().intValue() == Integer
+          .parseInt(ProjectStatusEnum.Ongoing.getStatusId())) {
+          status = ProjectStatusEnum.Ongoing.getStatus();
+        }
+
+        if (project.getProjectInfo().getStatus().intValue() == Integer
+          .parseInt(ProjectStatusEnum.Complete.getStatusId())) {
+          status = ProjectStatusEnum.Complete.getStatus();
+        }
+
+        if (project.getProjectInfo().getStatus().intValue() == Integer
+          .parseInt(ProjectStatusEnum.Cancelled.getStatusId())) {
+          status = ProjectStatusEnum.Cancelled.getStatus();
+        }
+
+        if (project.getProjectInfo().getStatus().intValue() == Integer
+          .parseInt(ProjectStatusEnum.Extended.getStatusId())) {
+          status = ProjectStatusEnum.Extended.getStatus();
+        }
+      }
+
+      model.addRow(new Object[] {projectId, projectTitle, status, managementLiaison, flagships, regions,
+        institutionLeader, projectLeaderName, activitiesOnGoing, expectedDeliverables, outcomes, expectedStudies,
         this.getSelectedPhase().getId()});
     }
     return model;
