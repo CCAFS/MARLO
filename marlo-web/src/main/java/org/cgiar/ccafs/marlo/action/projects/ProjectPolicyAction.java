@@ -379,14 +379,33 @@ public class ProjectPolicyAction extends BaseAction {
 
         policy = (ProjectPolicy) autoSaveReader.readFromJson(jReader);
 
-        // Innovation Countries List AutoSave
-        if (policy.getCountriesIdsText() != null) {
-          String[] countriesText = policy.getCountriesIdsText().replace("[", "").replace("]", "").split(",");
-          List<String> countries = new ArrayList<>();
-          for (String value : Arrays.asList(countriesText)) {
-            countries.add(value.trim());
+        // Policy Geographic Scope List AutoSave
+        if (policy.getProjectPolicyInfo().getRepIndGeographicScope() != null) {
+          if (policy.getProjectPolicyInfo().getRepIndGeographicScope().getId() != null
+            && policy.getProjectPolicyInfo().getRepIndGeographicScope().getId() != -1) {
+            // If the Geographic Scope is not Global
+            if (policy.getProjectPolicyInfo().getRepIndGeographicScope().getId() != 1) {
+              if (policy.getProjectPolicyInfo().getRepIndGeographicScope().getId() == 2) {
+                // Load Regions
+                if (policy.getRegions() != null) {
+                  for (ProjectPolicyCountry projectPolicyCountry : policy.getRegions()) {
+                    projectPolicyCountry
+                      .setLocElement(locElementManager.getLocElementById(projectPolicyCountry.getLocElement().getId()));
+                  }
+                }
+              } else {
+                // Load Countries
+                if (policy.getCountriesIdsText() != null) {
+                  String[] countriesText = policy.getCountriesIdsText().replace("[", "").replace("]", "").split(",");
+                  List<String> countries = new ArrayList<>();
+                  for (String value : Arrays.asList(countriesText)) {
+                    countries.add(value.trim());
+                  }
+                  policy.setCountriesIds(countries);
+                }
+              }
+            }
           }
-          policy.setCountriesIds(countries);
         }
 
 
@@ -439,14 +458,32 @@ public class ProjectPolicyAction extends BaseAction {
           policy.getProjectPolicyInfo(phase);
         }
 
-        // Policy Countries List
-        if (policy.getProjectPolicyCountries() == null) {
-          policy.setCountries(new ArrayList<>());
-        } else {
-          List<ProjectPolicyCountry> countries =
-            projectPolicyCountryManager.getPolicyCountrybyPhase(policy.getId(), phase.getId());
-          policy.setCountries(countries);
+
+        // Setup Geographic Scope
+        if (policy.getProjectPolicyInfo().getRepIndGeographicScope() != null) {
+          // If the Geographic Scope is not Global
+          if (policy.getProjectPolicyInfo().getRepIndGeographicScope().getId() != 1) {
+
+            // Policy Countries List
+            if (policy.getProjectPolicyCountries() == null) {
+              policy.setCountries(new ArrayList<>());
+              policy.setRegions(new ArrayList<>());
+            } else {
+              List<ProjectPolicyCountry> geographics =
+                projectPolicyCountryManager.getPolicyCountrybyPhase(policy.getId(), phase.getId());
+              if (policy.getProjectPolicyInfo().getRepIndGeographicScope().getId() == 2) {
+                // Load Regions
+                policy.setRegions(geographics.stream().filter(sc -> sc.getLocElement().getLocElementType().getId() == 1)
+                  .collect(Collectors.toList()));
+              } else {
+                // Load Countries
+                policy.setCountries(geographics.stream()
+                  .filter(sc -> sc.getLocElement().getLocElementType().getId() == 2).collect(Collectors.toList()));
+              }
+            }
+          }
         }
+
 
         // Policy Type ( Whose Policy is This ? ) List
         if (policy.getProjectPolicyOwners() != null) {
@@ -645,6 +682,10 @@ public class ProjectPolicyAction extends BaseAction {
         if (policy.getProjectPolicyInfo().getRepIndGeographicScope().getId() == -1) {
           policy.getProjectPolicyInfo().setRepIndGeographicScope(null);
         }
+      } else {
+        // Save Geographic Scope Data
+
+
       }
 
       if (policy.getProjectPolicyInfo().getRepIndOrganizationType() != null) {
@@ -882,6 +923,47 @@ public class ProjectPolicyAction extends BaseAction {
           projectPolicyOwnerManager.saveProjectPolicyOwner(policyOwnerSave);
           // This is to add innovationCrpSave to generate correct auditlog.
           policy.getProjectPolicyOwners().add(policyOwnerSave);
+        }
+      }
+    }
+  }
+
+  /**
+   * Save Project Policy Geographic Scope When Regions is Selected Information
+   * 
+   * @param projectPolicy
+   * @param phase
+   */
+  public void saveRegions(ProjectPolicy projectPolicy, Phase phase) {
+
+    // Search and deleted form Information
+    if (projectPolicy.getProjectPolicyCountries() != null && projectPolicy.getProjectPolicyCountries().size() > 0) {
+
+      List<ProjectPolicyCountry> regionPrev = new ArrayList<>(projectPolicy.getProjectPolicyCountries().stream()
+        .filter(nu -> nu.isActive() && nu.getPhase().getId() == phase.getId()).collect(Collectors.toList()));
+
+      // for (ProjectPolicyCountry policyRegion : regionPrev) {
+      // if (policy.getCrps() == null || !policy.getCrps().contains(policyCrp)) {
+      // projectPolicyCrpManager.deleteProjectPolicyCrp(policyCrp.getId());
+      // }
+      // }
+    }
+
+    // Save form Information
+    if (policy.getCrps() != null) {
+      for (ProjectPolicyCrp policyCrp : policy.getCrps()) {
+        if (policyCrp.getId() == null) {
+          ProjectPolicyCrp policyCrpSave = new ProjectPolicyCrp();
+          policyCrpSave.setProjectPolicy(projectPolicy);
+          policyCrpSave.setPhase(phase);
+
+          GlobalUnit globalUnit = globalUnitManager.getGlobalUnitById(policyCrp.getGlobalUnit().getId());
+
+          policyCrpSave.setGlobalUnit(globalUnit);
+
+          projectPolicyCrpManager.saveProjectPolicyCrp(policyCrpSave);
+          // This is to add innovationCrpSave to generate correct auditlog.
+          policy.getProjectPolicyCrps().add(policyCrpSave);
         }
       }
     }
