@@ -40,7 +40,8 @@ public class ProjectPolicyCrossCuttingMarkerMySQLDAO extends AbstractMarloDAO<Pr
 
   @Override
   public void deleteProjectPolicyCrossCuttingMarker(long projectPolicyCrossCuttingMarkerId) {
-    this.delete(projectPolicyCrossCuttingMarkerId);
+    ProjectPolicyCrossCuttingMarker projectPolicyCrossCuttingMarker = this.find(projectPolicyCrossCuttingMarkerId);
+    this.delete(projectPolicyCrossCuttingMarker);
   }
 
   @Override
