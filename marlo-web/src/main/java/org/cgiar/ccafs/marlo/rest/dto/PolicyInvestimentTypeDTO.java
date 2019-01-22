@@ -19,44 +19,45 @@ import javax.validation.constraints.NotNull;
 
 import io.swagger.annotations.ApiModelProperty;
 
-public class CrossCuttingMarkerDTO {
+/**
+ * @author Hermes Jiménez - CIAT/CCAFS
+ */
 
-  @ApiModelProperty(notes = "The Generated Cross Cutting Marker ID")
-  @NotNull
-  private Long id;
+public class PolicyInvestimentTypeDTO {
 
-  @ApiModelProperty(notes = "Cross Cutting Marker name")
-  @NotNull
-  private String name;
+	@ApiModelProperty(notes = "The Generated policy insvestiment type ID")
+	@NotNull
+	private Long id;
 
-  @ApiModelProperty(notes = "Cross Cutting Marker definition")
-  private String definition;
+	@ApiModelProperty(notes = "policy insvestiment type name")
+	@NotNull
+	private String name;
 
+	@ApiModelProperty(notes = "policy insvestiment type definition")
+	private String definition;
 
-  public String getDefinition() {
-    return definition;
-  }
+	public String getDefinition() {
+		return this.definition;
+	}
 
+	public Long getId() {
+		return this.id;
+	}
 
-  public Long getId() {
-    return id;
-  }
+	public String getName() {
+		return this.name;
+	}
 
+	public void setDefinition(String definition) {
+		this.definition = definition;
+	}
 
-  public String getName() {
-    return name;
-  }
+	public void setId(Long id) {
+		this.id = id;
+	}
 
-  public void setDefinition(String definition) {
-    this.definition = definition;
-  }
-
-  public void setId(Long id) {
-    this.id = id;
-  }
-
-  public void setName(String name) {
-    this.name = name;
-  }
+	public void setName(String name) {
+		this.name = name;
+	}
 
 }
