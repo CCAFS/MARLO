@@ -1090,7 +1090,6 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
     Phase phase = action.getActualPhase();
     for (ProjectExpectedStudy expectedStudy : project.getExpectedStudies()) {
 
-
       if (expectedStudy.getProjectExpectedStudyInfo() == null) {
         expectedStudy.getProjectExpectedStudyInfo(phase);
       }
@@ -1099,27 +1098,29 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
       if (expectedStudy.getProjectExpectedStudyCountries() == null) {
         expectedStudy.setCountries(new ArrayList<>());
       } else {
-        List<ProjectExpectedStudyCountry> countries = projectExpectedStudyCountryManager
-          .getProjectExpectedStudyCountrybyPhase(expectedStudy.getId(), phase.getId());
+        List<ProjectExpectedStudyCountry> countries =
+          projectExpectedStudyCountryManager.getProjectExpectedStudyCountrybyPhase(expectedStudy.getId(), phase.getId())
+            .stream().filter(le -> le.isActive() && le.getLocElement().getLocElementType().getId() == 2)
+            .collect(Collectors.toList());
         expectedStudy.setCountries(countries);
       }
 
       // Expected Study SubIdos List
       if (expectedStudy.getProjectExpectedStudySubIdos() != null) {
         expectedStudy.setSubIdos(new ArrayList<>(expectedStudy.getProjectExpectedStudySubIdos().stream()
-          .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
+          .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
       }
 
       // Expected Study Flagship List
       if (expectedStudy.getProjectExpectedStudyFlagships() != null) {
         expectedStudy.setFlagships(new ArrayList<>(expectedStudy.getProjectExpectedStudyFlagships().stream()
-          .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
+          .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
       }
 
       // Expected Study Regions List
       if (expectedStudy.getProjectExpectedStudyFlagships() != null) {
         expectedStudy.setRegions(new ArrayList<>(expectedStudy.getProjectExpectedStudyFlagships().stream()
-          .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()
+          .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())
             && o.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue())
           .collect(Collectors.toList())));
       }
@@ -1135,25 +1136,25 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
       // Expected Study Crp List
       if (expectedStudy.getProjectExpectedStudyCrps() != null) {
         expectedStudy.setCrps(new ArrayList<>(expectedStudy.getProjectExpectedStudyCrps().stream()
-          .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
+          .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
       }
 
       // Expected Study Institutions List
       if (expectedStudy.getProjectExpectedStudyInstitutions() != null) {
         expectedStudy.setInstitutions(new ArrayList<>(expectedStudy.getProjectExpectedStudyInstitutions().stream()
-          .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
+          .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
       }
 
       // Expected Study Srf Target List
       if (expectedStudy.getProjectExpectedStudySrfTargets() != null) {
         expectedStudy.setSrfTargets(new ArrayList<>(expectedStudy.getProjectExpectedStudySrfTargets().stream()
-          .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
+          .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
       }
 
       // Expected Study Projects List
       if (expectedStudy.getExpectedStudyProjects() != null) {
         expectedStudy.setProjects(new ArrayList<>(expectedStudy.getExpectedStudyProjects().stream()
-          .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
+          .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
       }
 
       if (expectedStudy.getCountries() != null) {

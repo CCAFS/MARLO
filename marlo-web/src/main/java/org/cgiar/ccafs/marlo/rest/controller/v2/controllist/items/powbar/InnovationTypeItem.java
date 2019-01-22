@@ -34,47 +34,47 @@ import org.springframework.http.ResponseEntity;
 @Named
 public class InnovationTypeItem<T> {
 
+	private RepIndInnovationTypeManager repIndInnovationTypeManager;
+	private InnovationTypeMapper innovationTypesMapper;
 
-  private RepIndInnovationTypeManager repIndInnovationTypeManager;
-  private InnovationTypeMapper innovationTypesMapper;
+	@Inject
+	public InnovationTypeItem(RepIndInnovationTypeManager repIndInnovationTypeManager,
+			InnovationTypeMapper innovationTypesMapper) {
+		this.repIndInnovationTypeManager = repIndInnovationTypeManager;
+		this.innovationTypesMapper = innovationTypesMapper;
+	}
 
-  @Inject
-  public InnovationTypeItem(RepIndInnovationTypeManager repIndInnovationTypeManager,
-    InnovationTypeMapper innovationTypesMapper) {
-    this.repIndInnovationTypeManager = repIndInnovationTypeManager;
-    this.innovationTypesMapper = innovationTypesMapper;
-  }
+	/**
+	 * Find a Innovation Type requesting a MARLO id
+	 * 
+	 * @param id
+	 * @return a InnovationTypeDTO with the Innovation Type data.
+	 */
+	public ResponseEntity<InnovationTypeDTO> findInnovationTypeById(Long id) {
+		RepIndInnovationType repIndInnovationType = this.repIndInnovationTypeManager.getRepIndInnovationTypeById(id);
+		return Optional.ofNullable(repIndInnovationType)
+				.map(this.innovationTypesMapper::repIndInnovationTypeToInnovationTypesDTO)
+				.map(result -> new ResponseEntity<>(result, HttpStatus.OK))
+				.orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+	}
 
-  /**
-   * Find a Innovation Type requesting a MARLO id
-   * 
-   * @param id
-   * @return a InnovationTypeDTO with the Innovation Type data.
-   */
-  public ResponseEntity<InnovationTypeDTO> findInnovationTypeById(Long id) {
-    RepIndInnovationType repIndInnovationType = repIndInnovationTypeManager.getRepIndInnovationTypeById(id);
-    return Optional.ofNullable(repIndInnovationType)
-      .map(innovationTypesMapper::repIndInnovationTypeToInnovationTypesDTO)
-      .map(result -> new ResponseEntity<>(result, HttpStatus.OK)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
-  }
-
-
-  /**
-   * Get All the Innovation Types Items *
-   * 
-   * @return a List of InnovationTypesDTO with all repIndInnovationType Items.
-   */
-  public List<InnovationTypeDTO> getAllInnovationTypes() {
-    if (repIndInnovationTypeManager.findAll() != null) {
-      List<RepIndInnovationType> repIndInnovationTypes = new ArrayList<>(repIndInnovationTypeManager.findAll());
-      List<InnovationTypeDTO> innovationTypesDTOs =
-        repIndInnovationTypes.stream().map(repIndInnovationTypesEntity -> innovationTypesMapper
-          .repIndInnovationTypeToInnovationTypesDTO(repIndInnovationTypesEntity)).collect(Collectors.toList());
-      return innovationTypesDTOs;
-    } else {
-      return null;
-    }
-  }
-
+	/**
+	 * Get All the Innovation Types Items *
+	 * 
+	 * @return a List of InnovationTypesDTO with all repIndInnovationType Items.
+	 */
+	public List<InnovationTypeDTO> getAllInnovationTypes() {
+		if (this.repIndInnovationTypeManager.findAll() != null) {
+			List<RepIndInnovationType> repIndInnovationTypes = new ArrayList<>(
+					this.repIndInnovationTypeManager.findAll());
+			List<InnovationTypeDTO> innovationTypesDTOs = repIndInnovationTypes.stream()
+					.map(repIndInnovationTypesEntity -> this.innovationTypesMapper
+							.repIndInnovationTypeToInnovationTypesDTO(repIndInnovationTypesEntity))
+					.collect(Collectors.toList());
+			return innovationTypesDTOs;
+		} else {
+			return null;
+		}
+	}
 
 }

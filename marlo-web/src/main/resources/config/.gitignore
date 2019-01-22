@@ -1,1 +1,4 @@
 marlo-dev.properties
+/marlo-api.properties
+/marlo-pro.properties
+/marlo-test.properties
