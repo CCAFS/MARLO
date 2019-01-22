@@ -15,27 +15,18 @@
 
 package org.cgiar.ccafs.marlo.rest.mappers;
 
-import org.cgiar.ccafs.marlo.data.model.SrfIdo;
-import org.cgiar.ccafs.marlo.data.model.SrfSubIdo;
-import org.cgiar.ccafs.marlo.rest.dto.SrfIdoDTO;
-import org.cgiar.ccafs.marlo.rest.dto.SrfSubIdoDTO;
+import org.cgiar.ccafs.marlo.data.model.RepIndPolicyInvestimentType;
+import org.cgiar.ccafs.marlo.rest.dto.PolicyInvestimentTypeDTO;
 
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.Mappings;
-
-/**
- * @author Hermes Jiménez - CIAT/CCAFS
- */
 
 @Mapper(componentModel = "jsr330")
-public interface SrfSubIdoMapper {
+public interface PolicyInvestimentTypeMapper {
 
-	@Mappings({ @Mapping(source = "srfIdo.smoCode", target = "code") })
-	public abstract SrfIdoDTO srfIdoToSrfIdoDTO(SrfIdo srfIdo);
+	public abstract RepIndPolicyInvestimentType policyInvestimentTypeDTOToRepIndPolicyInvestimentType(
+			PolicyInvestimentTypeDTO policyInvestimentTypeDTO);
 
-	public abstract SrfSubIdo srfSubIdoDTOToSrfSubIdo(SrfSubIdoDTO srfSubIdoDTO);
+	public abstract PolicyInvestimentTypeDTO RepIndPolicyInvestimentTypeToPolicyInvestimentTypeDTO(
+			RepIndPolicyInvestimentType repIndPolicyInvestimentType);
 
-	@Mappings({ @Mapping(source = "srfSubIdo.smoCode", target = "code") })
-	public abstract SrfSubIdoDTO srfSubIdoToSrfSubIdoDTO(SrfSubIdo srfSubIdo);
 }
