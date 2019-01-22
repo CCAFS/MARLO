@@ -189,12 +189,8 @@ public class ProjectLP6Validator extends BaseValidator {
       && projectLp6Contribution.getGeographicScope().getId() != -1
       && !projectLp6Contribution.getGeographicScope().getId().equals(action.getReportingIndGeographicScopeGlobal())) {
 
-      if (projectLp6Contribution.getGeographicScope().getId().equals(action.getReportingIndGeographicScopeRegional())) {
-        if (projectLp6Contribution.getCountries() == null) {
-          action.addMessage(action.getText("projects.LP6Contribution.region"));
-          action.getInvalidFields().put("input-projectLp6Contribution.region", InvalidFieldsMessages.EMPTYFIELD);
-        }
-      }
+      // TODO: Add regions validator
+
       if (projectLp6Contribution.getGeographicScope().getId()
         .equals(action.getReportingIndGeographicScopeMultiNational())
         || projectLp6Contribution.getGeographicScope().getId().equals(action.getReportingIndGeographicScopeNational())
