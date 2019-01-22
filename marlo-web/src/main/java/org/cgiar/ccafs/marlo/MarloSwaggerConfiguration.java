@@ -25,6 +25,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.service.ApiInfo;
+import springfox.documentation.service.Tag;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
@@ -35,30 +36,37 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @EnableSwagger2
 public class MarloSwaggerConfiguration extends WebMvcConfigurerAdapter {
 
-  // Config required for Swagger UI if not using Spring Boot.
-  @Override
-  public void addResourceHandlers(ResourceHandlerRegistry registry) {
-    registry.addResourceHandler("**").addResourceLocations("/WEB-INF/swagger/dist/");
+	// Config required for Swagger UI if not using Spring Boot.
+	@Override
+	public void addResourceHandlers(ResourceHandlerRegistry registry) {
+		registry.addResourceHandler("**").addResourceLocations("/WEB-INF/swagger/dist/");
 
-    registry.addResourceHandler("/webjars/**").addResourceLocations("classpath:/META-INF/resources/webjars/");
-  }
+		registry.addResourceHandler("/webjars/**").addResourceLocations("classpath:/META-INF/resources/webjars/");
+	}
 
-  @Bean
-  public Docket api() {
-    return new Docket(DocumentationType.SWAGGER_2).select()
-      .apis(RequestHandlerSelectors.basePackage("org.cgiar.ccafs.marlo.rest")).paths(PathSelectors.any()).build()
-      .apiInfo(this.apiInfo());
+	@Bean
+	public Docket api() {
+		return new Docket(DocumentationType.SWAGGER_2).select()
+				.apis(RequestHandlerSelectors.basePackage("org.cgiar.ccafs.marlo.rest")).paths(PathSelectors.any())
+				.build().apiInfo(this.apiInfo()).tags(new Tag("All AR 2018 Control Lists",
+						"All control list used to populate all tables of AR 2018", 100), this.getTags());
+	}
 
+	private ApiInfo apiInfo() {
 
-  }
+		ApiInfo apiInfo = new ApiInfo(null, null, null, null, null, null, null, Collections.emptyList());
 
+		return apiInfo;
+	}
 
-  private ApiInfo apiInfo() {
-
-    ApiInfo apiInfo = new ApiInfo(null, null, null, null, null, null, null, Collections.emptyList());
-
-    return apiInfo;
-  }
-
+	private Tag[] getTags() {
+		Tag[] tags = new Tag[4];
+		tags[0] = new Tag("Table2 - CRP Policies",
+				"Control list used to populate the policies indicator as per the AR2018 template", 1);
+		tags[1] = new Tag("General Control Lists", "General pourpose control List ", 101);
+		tags[2] = new Tag("SRF Lists", "All SRF related control List ", 102);
+		tags[3] = new Tag("Institutions Lists", "All control List about MARLO intitutions ", 103);
+		return tags;
+	}
 
 }
