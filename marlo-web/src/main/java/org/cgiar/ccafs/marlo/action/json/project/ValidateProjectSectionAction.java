@@ -140,12 +140,10 @@ public class ValidateProjectSectionAction extends BaseAction {
           if (this.isPlanningActive()) {
             this.projectSectionValidator.validateProjectBudgets(this, this.getProjectID());
           }
-
           break;
         case BUDGETBYCOA:
           this.projectSectionValidator.validateProjectBudgetsCoAs(this, this.getProjectID(), true);
           break;
-
         case BUDGETBYFLAGSHIP:
           this.projectSectionValidator.validateProjectBudgetsFlagship(this, this.getProjectID(), true);
           break;
@@ -158,15 +156,12 @@ public class ValidateProjectSectionAction extends BaseAction {
         case LEVERAGES:
           this.projectSectionValidator.validateLeverage(this, this.getProjectID());
           break;
-
         case HIGHLIGHTS:
           this.projectSectionValidator.validateHighlight(this, this.getProjectID());
           break;
-
         case CASESTUDIES:
           this.projectSectionValidator.validateCaseStduies(this, this.getProjectID());
           break;
-
         case CCAFSOUTCOMES:
           this.projectSectionValidator.validateCCAFSOutcomes(this, this.getProjectID());
           break;
@@ -174,9 +169,11 @@ public class ValidateProjectSectionAction extends BaseAction {
           this.projectSectionValidator.validateOutcomesPandR(this, this.getProjectID());
         case OUTPUTS:
           this.projectSectionValidator.validateOutputs(this, this.getProjectID());
-
         case OTHERCONTRIBUTIONS:
           this.projectSectionValidator.validateOtherContributions(this, this.getProjectID());
+          break;
+        case CONTRIBUTIONLP6:
+          this.projectSectionValidator.validateContributionLp6(this, this.getProjectID());
           break;
         default:
           break;

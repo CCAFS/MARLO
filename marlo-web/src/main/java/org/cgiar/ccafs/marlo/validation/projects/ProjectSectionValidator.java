@@ -77,6 +77,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCountry;
 import org.cgiar.ccafs.marlo.data.model.ProjectLeverage;
 import org.cgiar.ccafs.marlo.data.model.ProjectLocation;
 import org.cgiar.ccafs.marlo.data.model.ProjectLocationElementType;
+import org.cgiar.ccafs.marlo.data.model.ProjectLp6Contribution;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerContribution;
@@ -164,6 +165,8 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
 
   private final ProjectCenterMappingValidator projectCenterMappingValidator;
 
+  private final ProjectLP6Validator projectLP6Validator;
+
   private final DeliverableTypeManager deliverableTypeManager;
 
   private final DeliverableInfoManager deliverableInfoManager;
@@ -197,7 +200,7 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
     GlobalUnitProjectManager globalUnitProjectManager, DeliverableTypeManager deliverableTypeManager,
     DeliverableInfoManager deliverableInfoManager, DeliverableLocationManager deliverableLocationManager,
     DeliverableGeographicRegionManager deliverableGeographicRegionManager,
-    DeliverablePartnershipManager deliverablePartnershipManager) {
+    DeliverablePartnershipManager deliverablePartnershipManager, ProjectLP6Validator projectLP6Validator) {
     this.projectManager = projectManager;
     this.locationValidator = locationValidator;
     this.projectBudgetsValidator = projectBudgetsValidator;
@@ -234,6 +237,7 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
     this.deliverableLocationManager = deliverableLocationManager;
     this.deliverableGeographicRegionManager = deliverableGeographicRegionManager;
     this.deliverablePartnershipManager = deliverablePartnershipManager;
+    this.projectLP6Validator = projectLP6Validator;
   }
 
 
@@ -505,7 +509,6 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
 
   }
 
-
   public void validateCCAFSOutcomes(BaseAction action, Long projectID) {
     // Getting the project information.
     Project project = projectManager.getProjectById(projectID);
@@ -515,6 +518,19 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
     projectCCAFSOutcomeValidator.validate(action, project, false);
 
 
+  }
+
+  public void validateContributionLp6(BaseAction action, Long projectID) {
+    // Getting the project information.
+    Project project = projectManager.getProjectById(projectID);
+
+    List<ProjectLp6Contribution> lp6Contributions = project.getProjectLp6Contributions().stream()
+      .filter(pl -> pl.isActive() && pl.getPhase().equals(action.getActualPhase())).collect(Collectors.toList());
+
+    if (lp6Contributions != null && lp6Contributions.size() > 0) {
+      ProjectLp6Contribution projectLp6Contribution = lp6Contributions.get(0);
+      projectLP6Validator.validate(action, project, projectLp6Contribution, false);
+    }
   }
 
   public void validateHighlight(BaseAction action, Long projectID) {
