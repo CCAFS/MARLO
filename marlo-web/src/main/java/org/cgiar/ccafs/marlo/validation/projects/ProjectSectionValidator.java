@@ -29,6 +29,7 @@ import org.cgiar.ccafs.marlo.data.manager.FundingSourceManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementTypeManager;
+import org.cgiar.ccafs.marlo.data.manager.Lp6ContributionGeographicScopeManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyCountryManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationCountryManager;
@@ -58,6 +59,7 @@ import org.cgiar.ccafs.marlo.data.model.FundingSourceLocation;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.LocElementType;
+import org.cgiar.ccafs.marlo.data.model.Lp6ContributionGeographicScope;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
@@ -166,6 +168,7 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
   private final ProjectCenterMappingValidator projectCenterMappingValidator;
 
   private final ProjectLP6Validator projectLP6Validator;
+  private final Lp6ContributionGeographicScopeManager lp6ContributionGeographicScopeManager;
 
   private final DeliverableTypeManager deliverableTypeManager;
 
@@ -200,7 +203,8 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
     GlobalUnitProjectManager globalUnitProjectManager, DeliverableTypeManager deliverableTypeManager,
     DeliverableInfoManager deliverableInfoManager, DeliverableLocationManager deliverableLocationManager,
     DeliverableGeographicRegionManager deliverableGeographicRegionManager,
-    DeliverablePartnershipManager deliverablePartnershipManager, ProjectLP6Validator projectLP6Validator) {
+    DeliverablePartnershipManager deliverablePartnershipManager, ProjectLP6Validator projectLP6Validator,
+    Lp6ContributionGeographicScopeManager lp6ContributionGeographicScopeManager) {
     this.projectManager = projectManager;
     this.locationValidator = locationValidator;
     this.projectBudgetsValidator = projectBudgetsValidator;
@@ -238,6 +242,7 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
     this.deliverableGeographicRegionManager = deliverableGeographicRegionManager;
     this.deliverablePartnershipManager = deliverablePartnershipManager;
     this.projectLP6Validator = projectLP6Validator;
+    this.lp6ContributionGeographicScopeManager = lp6ContributionGeographicScopeManager;
   }
 
 
@@ -529,6 +534,21 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
 
     if (lp6Contributions != null && lp6Contributions.size() > 0) {
       ProjectLp6Contribution projectLp6Contribution = lp6Contributions.get(0);
+
+      // LP6 Contributions Countries List
+      if (projectLp6Contribution.getLp6ContributionGeographicScopes() == null) {
+        projectLp6Contribution.setCountries(new ArrayList<>());
+      } else {
+        List<Lp6ContributionGeographicScope> countries = lp6ContributionGeographicScopeManager
+          .getLp6ContributionGeographicScopebyPhase(projectLp6Contribution.getId(), action.getActualPhase().getId());
+        projectLp6Contribution.setCountries(countries);
+      }
+
+      if (projectLp6Contribution.getCountries() != null) {
+        for (Lp6ContributionGeographicScope country : projectLp6Contribution.getCountries()) {
+          projectLp6Contribution.getCountriesIds().add(country.getLocElement().getIsoAlpha2());
+        }
+      }
       projectLP6Validator.validate(action, project, projectLp6Contribution, false);
     }
   }
