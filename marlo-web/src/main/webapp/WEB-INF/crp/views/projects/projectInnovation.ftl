@@ -53,22 +53,22 @@
         <div class="">
           [#-- Title --] 
           <div class="form-group">
-            [@customForm.input name="innovation.projectInnovationInfo.title" type="text" i18nkey="projectInnovations.title"  placeholder="" className="limitWords-20" required=true editable=editable /]
+            [@customForm.input name="innovation.projectInnovationInfo.title" type="text" i18nkey="projectInnovations.title"  placeholder="" className="limitWords-30" help="projectInnovations.title.helpText" required=true editable=editable /]
           </div>
         
           [#-- Narrative --] 
           <div class="form-group">
-            [@customForm.textArea name="innovation.projectInnovationInfo.narrative"  i18nkey="projectInnovations.narrative"  placeholder="" className="limitWords-50" required=true editable=editable /]
+            [@customForm.textArea name="innovation.projectInnovationInfo.narrative"  i18nkey="projectInnovations.narrative"  placeholder="" className="limitWords-75" help="projectInnovations.narrative.helpText" required=false editable=editable /]
           </div>
         
           [#-- Phase of research and Stage of innovation --] 
           <div class="form-group row">
             <div class="col-md-6 ">
-              [@customForm.select name="innovation.projectInnovationInfo.repIndPhaseResearchPartnership.id" label=""  i18nkey="projectInnovations.phase" listName="phaseResearchList" keyFieldName="id"  displayFieldName="name"   required=true  className="" editable=editable/]
-            </div>
-            <div class="col-md-6 ">
               [@customForm.select name="innovation.projectInnovationInfo.repIndStageInnovation.id" label=""  i18nkey="projectInnovations.stage" listName="stageInnovationList" keyFieldName="id"  displayFieldName="name"   required=true  className="stageInnovationSelect" editable=editable/]
               [#assign isStageFour = (innovation.projectInnovationInfo.repIndStageInnovation.id == 4)!false]
+            </div>
+            <div class="col-md-6 ">
+              [@customForm.select name="innovation.projectInnovationInfo.repIndInnovationType.id" label=""  i18nkey="projectInnovations.innovationType" listName="innovationTypeList" keyFieldName="id"  displayFieldName="name" required=true  className="" editable=editable/]
             </div>
           </div>
         
@@ -78,7 +78,7 @@
               [@customForm.select name="innovation.projectInnovationInfo.repIndGeographicScope.id" label=""  i18nkey="projectInnovations.geographicScope" listName="geographicScopeList" keyFieldName="id"  displayFieldName="name" required=true  className="geographicScopeSelect" editable=editable/]
             </div>
             <div class="col-md-6 ">
-              [@customForm.select name="innovation.projectInnovationInfo.repIndInnovationType.id" label=""  i18nkey="projectInnovations.innovationType" listName="innovationTypeList" keyFieldName="id"  displayFieldName="name" required=true  className="" editable=editable/]
+              [@customForm.select name="innovation.projectInnovationInfo.repIndDegreeInnovation.id" label=""  i18nkey="projectInnovations.degreeInnovation" listName="degreeInnovationList" keyFieldName="id"  displayFieldName="name" required=true  className="" editable=editable/]
             </div>
           </div>
           
@@ -86,9 +86,6 @@
           <div class="form-group row">
             <div class="col-md-6 ">
               [@customForm.select name="innovation.projectInnovationInfo.repIndContributionOfCrp.id" label=""  i18nkey="projectInnovations.contributionOfCrp" listName="contributionCrpList" keyFieldName="id"  displayFieldName="name" required=true  className="" editable=editable/]
-            </div>
-            <div class="col-md-6 ">
-              [@customForm.select name="innovation.projectInnovationInfo.repIndDegreeInnovation.id" label=""  i18nkey="projectInnovations.degreeInnovation" listName="degreeInnovationList" keyFieldName="id"  displayFieldName="name" required=true  className="" editable=editable/]
             </div>
           </div>
           
@@ -127,6 +124,21 @@
             [@customForm.textArea name="innovation.projectInnovationInfo.descriptionStage" i18nkey="projectInnovations.stageDescription" help="projectInnovations.stageDescription.help" placeholder="" className="limitWords-50" required=true editable=editable /]
           </div>
           
+          [#-- Lead Organization --]
+          <div class="form-group"">
+            [@customForm.select name="innovation.projectInnovationInfo.leadOrganization.id" label=""  i18nkey="projectInnovations.leadOrganization" listName="" keyFieldName="id"  displayFieldName="" required=true  className="" editable=editable/]
+          </div>
+          
+          [#-- Top Five Contributing Organizations --]
+          <div class="form-group"">
+            [@customForm.elementsListComponent name="innovation.projectInnovationInfo.contributingOrganizations" elementType="" elementList="" label="projectInnovations.contributingOrganizations"  listName="" keyFieldName="id" displayFieldName=""/]
+          </div>
+          
+          [#-- Novel or Adaptive research --]
+          <div class="form-group">
+            [@customForm.textArea name="innovation.projectInnovationInfo.novelOrAdaptive" i18nkey="projectInnovations.novelOrAdaptative" placeholder="" className="" required=false editable=editable /]
+          </div>
+          
           [#-- Specify next user organizational type (Only if stage 4) --]
           <div class="form-group stageFourBlock" style="display:${isStageFour?string('block','none')}">
             [@customForm.elementsListComponent name="innovation.organizations" elementType="repIndOrganizationType" elementList=innovation.organizations label="projectInnovations.nextUserOrganizationalType"  listName="organizationTypeList" keyFieldName="id" displayFieldName="name"/]
@@ -151,38 +163,7 @@
           <div class="form-group">
             [@customForm.elementsListComponent name="innovation.crps" elementType="globalUnit" elementList=innovation.crps label="projectInnovations.contributing"  listName="crpList" keyFieldName="id" displayFieldName="composedName"/]
           </div>
-          
-          [#-- Gender Relevance --]
-          <div class="form-group">
-            <label for="">[@s.text name="projectInnovations.genderRelevance" /]:[@customForm.req required=editable /]</label>
-            <div class="simpleBox">
-              <div class="form-group">
-                [#list focusLevelList as level]
-                  <p>[@customForm.radioFlat id="genderLevel-${level.id}" name="innovation.projectInnovationInfo.genderFocusLevel.id" label="${level.name}" value="${level.id}" checked=(innovation.projectInnovationInfo.genderFocusLevel.id == level.id)!false cssClass="" cssClassLabel=""/]</p> 
-                [/#list]
-              </div>
-              [#-- Brief explanation and evidence --] 
-              <div class="form-group">
-                [@customForm.textArea name="innovation.projectInnovationInfo.genderExplaniation" i18nkey="projectInnovations.genderRelevance.explanation"  placeholder="" className="" required=true editable=editable /]
-              </div>
-            </div>
-          </div>
-          
-          [#-- Youth Relevance --]
-          <div class="form-group">
-            <label for="">[@s.text name="projectInnovations.youthRelevance" /]:[@customForm.req required=editable /]</label>
-            <div class="simpleBox">
-              <div class="form-group">
-                [#list focusLevelList as level]
-                  <p>[@customForm.radioFlat id="youthLevel-${level.id}" name="innovation.projectInnovationInfo.youthFocusLevel.id" label="${level.name}" value="${level.id}" checked=(innovation.projectInnovationInfo.youthFocusLevel.id == level.id)!false cssClass="" cssClassLabel=""/]</p> 
-                [/#list]
-              </div>
-              [#-- Brief explanation and evidence --] 
-              <div class="form-group">
-                [@customForm.textArea name="innovation.projectInnovationInfo.youthExplaniation" i18nkey="projectInnovations.youthRelevance.explanation" placeholder="" className="" required=true editable=editable /]
-              </div>
-            </div>
-          </div>
+        
         </div>
       </div>
         
