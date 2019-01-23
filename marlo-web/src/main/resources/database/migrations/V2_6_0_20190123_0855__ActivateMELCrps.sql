@@ -1,0 +1,1 @@
+UPDATE global_units SET is_active = 1, is_marlo = 1, login=0 WHERE id in (17,28,27);
