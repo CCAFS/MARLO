@@ -68,7 +68,7 @@ public class CountryItem<T> {
 	 * @param Numeric iso code
 	 * @return a List of LocElementDTO with all LocElements Items.
 	 */
-	public ResponseEntity<LocElementDTO> getContryByCode(Long ISOCode) {
+	public ResponseEntity<LocElementDTO> getContryByNumericISOCode(Long ISOCode) {
 		LocElement locElement = this.locElementManager.getLocElementByNumericISOCode(ISOCode);
 		return Optional.ofNullable(locElement).map(this.locElementMapper::locElementToLocElementDTO)
 				.map(result -> new ResponseEntity<>(result, HttpStatus.OK))

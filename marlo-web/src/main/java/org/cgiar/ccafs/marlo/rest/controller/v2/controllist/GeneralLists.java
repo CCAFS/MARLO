@@ -17,6 +17,7 @@ package org.cgiar.ccafs.marlo.rest.controller.v2.controllist;
 
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.locations.CountryItem;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.locations.GeographicScopeItem;
+import org.cgiar.ccafs.marlo.rest.dto.ContributionOfCrpDTO;
 import org.cgiar.ccafs.marlo.rest.dto.GeographicScopeDTO;
 import org.cgiar.ccafs.marlo.rest.dto.LocElementDTO;
 import org.cgiar.ccafs.marlo.security.Permission;
@@ -32,6 +33,8 @@ import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -44,45 +47,58 @@ import org.springframework.web.bind.annotation.RestController;
 @Named
 public class GeneralLists {
 
-  private static final Logger LOG = LoggerFactory.getLogger(GeneralLists.class);
+	private static final Logger LOG = LoggerFactory.getLogger(GeneralLists.class);
 
-  private CountryItem<GeneralLists> countryItem;
-  private GeographicScopeItem<GeneralLists> geographicScopeItem;
+	private CountryItem<GeneralLists> countryItem;
+	private GeographicScopeItem<GeneralLists> geographicScopeItem;
 
-  @Inject
-  public GeneralLists(CountryItem<GeneralLists> countryItem, GeographicScopeItem<GeneralLists> geographicScopeItem) {
-    this.countryItem = countryItem;
-    this.geographicScopeItem = geographicScopeItem;
-  }
+	@Inject
+	public GeneralLists(CountryItem<GeneralLists> countryItem, GeographicScopeItem<GeneralLists> geographicScopeItem) {
+		this.countryItem = countryItem;
+		this.geographicScopeItem = geographicScopeItem;
+	}
 
-  /**
-   * Get All the Country items *
-   * 
-   * @return a List of LocElementDTO with all LocElements Items.
-   */
-  @ApiOperation(tags = "Table2 - CRP Policies", value = "View all Conutries", response = LocElementDTO.class,
-    responseContainer = "List")
-  @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
-  @RequestMapping(value = "/countries", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-  public List<LocElementDTO> getAllContries() {
-    LOG.debug("REST request to get Contries");
-    return this.countryItem.getAllCountries();
-  }
+	/**
+	 * Find a country requesting numeric ISO Codeby id
+	 * 
+	 * @param numeric ISO Code
+	 * @return a LocElementDTO with the country founded.
+	 */
 
-  /**
-   * Get All the Geographic Scope items *
-   * 
-   * @return a List of GeographicScopeDTO with all RepIndGeographicScope
-   *         Items.
-   */
+	@ApiOperation(tags = "Table2 - CRP Policies", value = "Search a country by Numeric ISO code", response = ContributionOfCrpDTO.class)
+	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
+	@RequestMapping(value = "/countries/{code}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LocElementDTO> findCountryByNumericISOCode(@PathVariable Long code) {
+		LOG.debug("REST request country requesting numeric ISO Codeby id : {}", code);
+		return this.countryItem.getContryByNumericISOCode(code);
+	}
 
-  @ApiOperation(tags = "Table2 - CRP Policies", value = "View all Geographic Scopes",
-    response = GeographicScopeDTO.class, responseContainer = "List")
-  @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
-  @RequestMapping(value = "/geographic-scopes", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-  public List<GeographicScopeDTO> getAllGeographicScopes() {
-    LOG.debug("REST request to get Geographic Scopes");
-    return this.geographicScopeItem.getAllGeographicScopes();
-  }
+	/**
+	 * Get All the Country items *
+	 * 
+	 * @return a List of LocElementDTO with all LocElements Items.
+	 */
+	@ApiOperation(tags = "Table2 - CRP Policies", value = "View all Countries", response = LocElementDTO.class, responseContainer = "List")
+	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
+	@RequestMapping(value = "/countries", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public List<LocElementDTO> getAllContries() {
+		LOG.debug("REST request to get Contries");
+		return this.countryItem.getAllCountries();
+	}
+
+	/**
+	 * Get All the Geographic Scope items *
+	 * 
+	 * @return a List of GeographicScopeDTO with all RepIndGeographicScope
+	 * Items.
+	 */
+
+	@ApiOperation(tags = "Table2 - CRP Policies", value = "View all Geographic Scopes", response = GeographicScopeDTO.class, responseContainer = "List")
+	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
+	@RequestMapping(value = "/geographic-scopes", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public List<GeographicScopeDTO> getAllGeographicScopes() {
+		LOG.debug("REST request to get Geographic Scopes");
+		return this.geographicScopeItem.getAllGeographicScopes();
+	}
 
 }
