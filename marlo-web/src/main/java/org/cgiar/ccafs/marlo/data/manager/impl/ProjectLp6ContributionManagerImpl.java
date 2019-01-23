@@ -104,8 +104,7 @@ public class ProjectLp6ContributionManagerImpl implements ProjectLp6Contribution
       projectLp6ContributionAdd.setWorkingAcrossFlagships(projectLp6Contribution.getWorkingAcrossFlagships());
       projectLp6ContributionAdd
         .setWorkingAcrossFlagshipsNarrative(projectLp6Contribution.getWorkingAcrossFlagshipsNarrative());
-      projectLp6ContributionAdd.setModifiedBy(projectLp6Contribution.getModifiedBy());
-      projectLp6ContributionAdd.setModificationJustification(projectLp6Contribution.getModificationJustification());
+     
       projectLp6ContributionDAO.save(projectLp6ContributionAdd);
       // TODO: Add relations
     }
