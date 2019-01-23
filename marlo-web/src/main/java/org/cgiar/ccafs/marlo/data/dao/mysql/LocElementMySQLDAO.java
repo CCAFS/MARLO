@@ -13,7 +13,6 @@
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
 
-
 package org.cgiar.ccafs.marlo.data.dao.mysql;
 
 import org.cgiar.ccafs.marlo.data.dao.LocElementDAO;
@@ -21,82 +20,91 @@ import org.cgiar.ccafs.marlo.data.model.LocElement;
 
 import java.util.List;
 
-import javax.inject.Named;
 import javax.inject.Inject;
+import javax.inject.Named;
+
 import org.hibernate.SessionFactory;
 
 @Named
 public class LocElementMySQLDAO extends AbstractMarloDAO<LocElement, Long> implements LocElementDAO {
 
+	@Inject
+	public LocElementMySQLDAO(SessionFactory sessionFactory) {
+		super(sessionFactory);
+	}
 
-  @Inject
-  public LocElementMySQLDAO(SessionFactory sessionFactory) {
-    super(sessionFactory);
-  }
+	@Override
+	public void deleteLocElement(long locElementId) {
+		LocElement locElement = this.find(locElementId);
+		locElement.setActive(false);
+		this.save(locElement);
+	}
 
-  @Override
-  public void deleteLocElement(long locElementId) {
-    LocElement locElement = this.find(locElementId);
-    locElement.setActive(false);
-    this.save(locElement);
-  }
+	@Override
+	public boolean existLocElement(long locElementID) {
+		LocElement locElement = this.find(locElementID);
+		if (locElement == null) {
+			return false;
+		}
+		return true;
 
-  @Override
-  public boolean existLocElement(long locElementID) {
-    LocElement locElement = this.find(locElementID);
-    if (locElement == null) {
-      return false;
-    }
-    return true;
+	}
 
-  }
+	@Override
+	public LocElement find(long id) {
+		return super.find(LocElement.class, id);
 
-  @Override
-  public LocElement find(long id) {
-    return super.find(LocElement.class, id);
+	}
 
-  }
+	@Override
+	public List<LocElement> findAll() {
+		String query = "from " + LocElement.class.getName() + " where is_active=1";
+		List<LocElement> list = super.findAll(query);
+		if (list.size() > 0) {
+			return list;
+		}
+		return null;
 
-  @Override
-  public List<LocElement> findAll() {
-    String query = "from " + LocElement.class.getName() + " where is_active=1";
-    List<LocElement> list = super.findAll(query);
-    if (list.size() > 0) {
-      return list;
-    }
-    return null;
+	}
 
-  }
+	@Override
+	public LocElement findISOCode(String ISOcode) {
+		String query = "from " + LocElement.class.getName() + " where iso_alpha_2='" + ISOcode + "'";
+		List<LocElement> list = super.findAll(query);
+		if (list.size() > 0) {
+			return list.get(0);
+		}
+		return null;
+	}
 
-  @Override
-  public LocElement findISOCode(String ISOcode) {
-    String query = "from " + LocElement.class.getName() + " where iso_alpha_2='" + ISOcode + "'";
-    List<LocElement> list = super.findAll(query);
-    if (list.size() > 0) {
-      return list.get(0);
-    }
-    return null;
-  }
+	@Override
+	public List<LocElement> findLocElementByParent(Long parentId) {
+		String query = "from " + LocElement.class.getName() + " where parent_id='" + parentId + "'";
+		List<LocElement> list = super.findAll(query);
+		if (list.size() > 0) {
+			return list;
+		}
+		return null;
+	}
 
-  @Override
-  public List<LocElement> findLocElementByParent(Long parentId) {
-    String query = "from " + LocElement.class.getName() + " where parent_id='" + parentId + "'";
-    List<LocElement> list = super.findAll(query);
-    if (list.size() > 0) {
-      return list;
-    }
-    return null;
-  }
+	@Override
+	public LocElement findNumericISOCode(Long ISOcode) {
+		String query = "from " + LocElement.class.getName() + " where iso_numeric=" + ISOcode;
+		List<LocElement> list = super.findAll(query);
+		if (list.size() > 0) {
+			return list.get(0);
+		}
+		return null;
+	}
 
-  @Override
-  public LocElement save(LocElement locElement) {
-    if (locElement.getId() == null) {
-      super.saveEntity(locElement);
-    } else {
-      locElement = super.update(locElement);
-    }
-    return locElement;
-  }
-
+	@Override
+	public LocElement save(LocElement locElement) {
+		if (locElement.getId() == null) {
+			super.saveEntity(locElement);
+		} else {
+			locElement = super.update(locElement);
+		}
+		return locElement;
+	}
 
 }

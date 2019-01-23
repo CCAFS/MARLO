@@ -25,6 +25,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.service.ApiInfo;
+import springfox.documentation.service.BasicAuth;
+import springfox.documentation.service.SecurityScheme;
 import springfox.documentation.service.Tag;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
@@ -46,10 +48,12 @@ public class MarloSwaggerConfiguration extends WebMvcConfigurerAdapter {
 
 	@Bean
 	public Docket api() {
-		return new Docket(DocumentationType.SWAGGER_2).select()
-				.apis(RequestHandlerSelectors.basePackage("org.cgiar.ccafs.marlo.rest")).paths(PathSelectors.any())
-				.build().apiInfo(this.apiInfo()).tags(new Tag("All AR 2018 Control Lists",
+
+		return new Docket(DocumentationType.SWAGGER_2).securitySchemes(Collections.singletonList(this.securityScheme()))
+				.select().apis(RequestHandlerSelectors.basePackage("org.cgiar.ccafs.marlo.rest"))
+				.paths(PathSelectors.any()).build().apiInfo(this.apiInfo()).tags(new Tag("All AR 2018 Control Lists",
 						"All control list used to populate all tables of AR 2018", 100), this.getTags());
+
 	}
 
 	private ApiInfo apiInfo() {
@@ -67,6 +71,10 @@ public class MarloSwaggerConfiguration extends WebMvcConfigurerAdapter {
 		tags[2] = new Tag("SRF Lists", "All SRF related control List ", 102);
 		tags[3] = new Tag("Institutions Lists", "All control List about MARLO intitutions ", 103);
 		return tags;
+	}
+
+	private SecurityScheme securityScheme() {
+		return new BasicAuth("basicAuth");
 	}
 
 }
