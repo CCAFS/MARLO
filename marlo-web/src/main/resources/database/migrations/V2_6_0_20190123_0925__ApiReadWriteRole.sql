@@ -8,5 +8,5 @@ FROM
 global_units AS g
 WHERE
 g.is_active = 1 AND
-g.is_marlo = 1 AND
+g.is_marlo = 1
 
