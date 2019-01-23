@@ -135,24 +135,26 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
     new HashSet<ProjectPolicyCrossCuttingMarker>(0);
 
 
-  private Set<Lp6ContributionGeographicScope> Lp6ContributionGeographicScopes =
+  private Set<Lp6ContributionGeographicScope> lp6ContributionGeographicScopes =
     new HashSet<Lp6ContributionGeographicScope>(0);
 
-  private Set<ProjectLp6ContributionDeliverable> ProjectLp6ContributionDeliverables =
+
+  private Set<ProjectLp6ContributionDeliverable> projectLp6ContributionDeliverables =
     new HashSet<ProjectLp6ContributionDeliverable>(0);
 
 
   private Set<ProjectLp6Contribution> projectLp6Contributions = new HashSet<ProjectLp6Contribution>(0);
 
-
   public Phase() {
   }
+
 
   public Phase(GlobalUnit crp, String description, int year) {
     this.crp = crp;
     this.description = description;
     this.year = year;
   }
+
 
   public Phase(GlobalUnit crp, String description, int year, Set<ProjectPhase> projectPhases) {
     this.crp = crp;
@@ -211,11 +213,9 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
     return deliverableInfos;
   }
 
-
   public Set<DeliverableIntellectualAsset> getDeliverableIntellectualAssets() {
     return deliverableIntellectualAssets;
   }
-
 
   public Set<DeliverableLocation> getDeliverableLocations() {
     return deliverableLocations;
@@ -231,9 +231,11 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
     return this.description;
   }
 
+
   public Boolean getEditable() {
     return editable;
   }
+
 
   public Date getEndDate() {
     return endDate;
@@ -267,7 +269,7 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
   }
 
   public Set<Lp6ContributionGeographicScope> getLp6ContributionGeographicScopes() {
-    return Lp6ContributionGeographicScopes;
+    return lp6ContributionGeographicScopes;
   }
 
   @Override
@@ -283,6 +285,7 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
     u.setId(new Long(3));
     return u;
   }
+
 
   public String getName() {
     return name;
@@ -332,19 +335,19 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
     return projectExpectedStudyCountries;
   }
 
-
   public Set<ProjectExpectedStudyCrp> getProjectExpectedStudyCrps() {
     return projectExpectedStudyCrps;
   }
+
 
   public Set<ProjectExpectedStudyFlagship> getProjectExpectedStudyFlagships() {
     return projectExpectedStudyFlagships;
   }
 
-
   public Set<ProjectExpectedStudyInfo> getProjectExpectedStudyInfos() {
     return projectExpectedStudyInfos;
   }
+
 
   public Set<ProjectExpectedStudyInstitution> getProjectExpectedStudyInstitutions() {
     return projectExpectedStudyInstitutions;
@@ -354,10 +357,10 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
     return projectExpectedStudyRegions;
   }
 
-
   public Set<ProjectExpectedStudySrfTarget> getProjectExpectedStudySrfTargets() {
     return projectExpectedStudySrfTargets;
   }
+
 
   public Set<ProjectExpectedStudySubIdo> getProjectExpectedStudySubIdos() {
     return projectExpectedStudySubIdos;
@@ -391,7 +394,6 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
     return projectInnovationCrps;
   }
 
-
   public Set<ProjectInnovationDeliverable> getProjectInnovationDeliverables() {
     return projectInnovationDeliverables;
   }
@@ -418,7 +420,7 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
 
 
   public Set<ProjectLp6ContributionDeliverable> getProjectLp6ContributionDeliverables() {
-    return ProjectLp6ContributionDeliverables;
+    return projectLp6ContributionDeliverables;
   }
 
 
@@ -589,9 +591,8 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
 
 
   public void setLp6ContributionGeographicScopes(Set<Lp6ContributionGeographicScope> lp6ContributionGeographicScopes) {
-    Lp6ContributionGeographicScopes = lp6ContributionGeographicScopes;
+    this.lp6ContributionGeographicScopes = lp6ContributionGeographicScopes;
   }
-
 
   @Override
   public void setModifiedBy(User modifiedBy) {
@@ -623,7 +624,6 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
     this.powbSynthesis = powbSynthesis;
   }
 
-
   public void setProjectActivites(Set<Activity> projectActivites) {
     this.projectActivites = projectActivites;
   }
@@ -632,14 +632,15 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
     this.projectBudgets = projectBudgets;
   }
 
+
   public void setProjectBudgetsActivities(Set<ProjectBudgetsCluserActvity> projectBudgetsActivities) {
     this.projectBudgetsActivities = projectBudgetsActivities;
   }
 
-
   public void setProjectBudgetsFlagships(Set<ProjectBudgetsFlagship> projectBudgetsFlagships) {
     this.projectBudgetsFlagships = projectBudgetsFlagships;
   }
+
 
   public void setProjectClusters(Set<ProjectClusterActivity> projectClusters) {
     this.projectClusters = projectClusters;
@@ -649,7 +650,6 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
   public void setProjectExpectedStudies(Set<ProjectExpectedStudy> projectExpectedStudies) {
     this.projectExpectedStudies = projectExpectedStudies;
   }
-
 
   public void setProjectExpectedStudyCountries(Set<ProjectExpectedStudyCountry> projectExpectedStudyCountries) {
     this.projectExpectedStudyCountries = projectExpectedStudyCountries;
@@ -662,6 +662,7 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
   public void setProjectExpectedStudyFlagships(Set<ProjectExpectedStudyFlagship> projectExpectedStudyFlagships) {
     this.projectExpectedStudyFlagships = projectExpectedStudyFlagships;
   }
+
 
   public void setProjectExpectedStudyInfos(Set<ProjectExpectedStudyInfo> projectExpectedStudyInfos) {
     this.projectExpectedStudyInfos = projectExpectedStudyInfos;
@@ -683,10 +684,10 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
     this.projectExpectedStudySrfTargets = projectExpectedStudySrfTargets;
   }
 
-
   public void setProjectExpectedStudySubIdos(Set<ProjectExpectedStudySubIdo> projectExpectedStudySubIdos) {
     this.projectExpectedStudySubIdos = projectExpectedStudySubIdos;
   }
+
 
   public void setProjectFocuses(Set<ProjectFocus> projectFocuses) {
     this.projectFocuses = projectFocuses;
@@ -702,15 +703,14 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
     this.projectHighlightInfos = projectHighlightInfos;
   }
 
-
   public void setProjectHighligthsTypes(Set<ProjectHighlightType> projectHighligthsTypes) {
     this.projectHighligthsTypes = projectHighligthsTypes;
   }
 
+
   public void setProjectInfos(Set<ProjectInfo> projectInfos) {
     this.projectInfos = projectInfos;
   }
-
 
   public void setProjectInnovationCountries(Set<ProjectInnovationCountry> projectInnovationCountries) {
     this.projectInnovationCountries = projectInnovationCountries;
@@ -719,6 +719,7 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
   public void setProjectInnovationCrps(Set<ProjectInnovationCrp> projectInnovationCrps) {
     this.projectInnovationCrps = projectInnovationCrps;
   }
+
 
   public void setProjectInnovationDeliverables(Set<ProjectInnovationDeliverable> projectInnovationDeliverables) {
     this.projectInnovationDeliverables = projectInnovationDeliverables;
@@ -734,10 +735,10 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
     this.projectInnovationOrganizations = projectInnovationOrganizations;
   }
 
-
   public void setProjectLeverages(Set<ProjectLeverage> projectLeverages) {
     this.projectLeverages = projectLeverages;
   }
+
 
   public void setProjectLocations(Set<ProjectLocation> projectLocations) {
     this.projectLocations = projectLocations;
@@ -746,11 +747,11 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
 
   public void
     setProjectLp6ContributionDeliverables(Set<ProjectLp6ContributionDeliverable> projectLp6ContributionDeliverables) {
-    ProjectLp6ContributionDeliverables = projectLp6ContributionDeliverables;
+    this.projectLp6ContributionDeliverables = projectLp6ContributionDeliverables;
   }
 
   public void setProjectLp6Contributions(Set<ProjectLp6Contribution> projectLp6Contributions) {
-    projectLp6Contributions = projectLp6Contributions;
+    this.projectLp6Contributions = projectLp6Contributions;
   }
 
   public void setProjectOutcomes(Set<ProjectOutcome> projectOutcomes) {

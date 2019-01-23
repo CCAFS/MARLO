@@ -429,5 +429,13 @@
       </key>
       <one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectLp6Contribution" />
     </set>
+    <set name="projectLp6ContributionDeliverables" table="project_lp6_contribution_deliverables" inverse="true"
+      order-by="id" lazy="true" fetch="select">
+      <key>
+        <column name="id_phase" not-null="true" />
+      </key>
+      <one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectLp6ContributionDeliverable" />
+    </set>
+    
 	</class>
 </hibernate-mapping>

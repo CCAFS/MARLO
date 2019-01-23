@@ -216,11 +216,13 @@ public class ProjectOutcomeListAction extends BaseAction {
     this.setBasePermission(this.getText(Permission.PROJECT_CONTRIBRUTIONCRP_BASE_PERMISSION, params));
 
     if (this.getActualPhase() != null && projectID != 0) {
-      try {
-        this.setProjectLp6Contribution(projectLp6ContributionManager.findAll().stream().filter(c -> c.isActive()
-          && c.getProject().getId() == projectID && c.getPhase().getId() == this.getActualPhase().getId())
-          .collect(Collectors.toList()).get(0));
-      } catch (Exception e) {
+
+      List<ProjectLp6Contribution> projectLp6Contributions = projectLp6ContributionManager.findAll().stream()
+        .filter(
+          c -> c.isActive() && c.getProject().getId().equals(projectID) && c.getPhase().equals(this.getActualPhase()))
+        .collect(Collectors.toList());
+      if (projectLp6Contributions != null && !projectLp6Contributions.isEmpty()) {
+        this.setProjectLp6Contribution(projectLp6Contributions.get(0));
       }
     }
   }

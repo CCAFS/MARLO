@@ -79,8 +79,11 @@ public class ProjectLp6ContributionManagerImpl implements ProjectLp6Contribution
     ProjectLp6Contribution projectLp6Contribution) {
     Phase phase = phaseDAO.find(next.getId());
 
+    List<ProjectLp6Contribution> allProjectLp6Contributions =
+      phase.getProjectLp6Contributions().stream().collect(Collectors.toList());
+
     List<ProjectLp6Contribution> projectLp6Contributions = phase.getProjectLp6Contributions().stream()
-      .filter(c -> c.isActive() && c.getProject().getId() == projectID).collect(Collectors.toList());
+      .filter(c -> c.isActive() && c.getProject().getId().equals(projectID)).collect(Collectors.toList());
 
     if (projectLp6Contributions.isEmpty()) {
       ProjectLp6Contribution projectLp6ContributionAdd = new ProjectLp6Contribution();
@@ -104,7 +107,7 @@ public class ProjectLp6ContributionManagerImpl implements ProjectLp6Contribution
       projectLp6ContributionAdd.setWorkingAcrossFlagships(projectLp6Contribution.getWorkingAcrossFlagships());
       projectLp6ContributionAdd
         .setWorkingAcrossFlagshipsNarrative(projectLp6Contribution.getWorkingAcrossFlagshipsNarrative());
-     
+
       projectLp6ContributionDAO.save(projectLp6ContributionAdd);
       // TODO: Add relations
     }
