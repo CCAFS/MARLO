@@ -99,7 +99,7 @@
               [@utils.tableText value=(item.projectPolicyInfo.repIndPolicyInvestimentType.name)!"" /]
             </td>
             <td class="">
-              [@utils.tableList list=(item.subIdos)![] displayFieldName="name" /]
+              [@utils.tableList list=(item.subIdos)![] displayFieldName="srfSubIdo.description" /]
             </td>
             <td class="">
               [@utils.tableText value=(item.projectPolicyInfo.repIndStageProcess.name)!"" /]

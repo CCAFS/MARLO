@@ -77,11 +77,14 @@
 [/#macro]
 
 [#macro tableList list displayFieldName="title"]
+  [#local levels = displayFieldName?split(".")]
   [#if (list?has_content)!false]
     <ul style="padding: 0;">
-    [#list list as item]
-      <li style="list-style-position: inside;">${(item[displayFieldName])!'null'}</li>
-    [/#list]
+      [#list list as item]
+        [#local itemValue = (item)!'null' /]
+        [#list levels as level][#local itemValue = (itemValue[level])!'null' /][/#list]
+        <li style="list-style-position: inside;">${itemValue}</li>
+      [/#list]
     </ul>
   [#else]
     <i style="opacity:0.8">[@s.text name="global.notDefined"/]</i>
