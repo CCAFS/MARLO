@@ -26,6 +26,7 @@ import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
+import org.cgiar.ccafs.marlo.data.model.ProjectPolicy;
 import org.cgiar.ccafs.marlo.utils.AuditLogContext;
 import org.cgiar.ccafs.marlo.utils.AuditLogContextProvider;
 
@@ -548,7 +549,7 @@ public class HibernateAuditLogListener
        */
       if (hasPhase || entity instanceof Project || entity instanceof FundingSource || entity instanceof Deliverable
         || entity instanceof ProjectOutcome || entity instanceof CrpProgram || entity instanceof ProjectExpectedStudy
-        || entity instanceof ProjectInnovation) {
+        || entity instanceof ProjectInnovation || entity instanceof ProjectPolicy) {
         if (hasPhase && (entity instanceof Deliverable == false)) {
           if (AuditLogContextProvider.getAuditLogContext().getPhase().equals(phaseObject)) {
             updateRecord.put(IAuditLog.ENTITY, entity);
