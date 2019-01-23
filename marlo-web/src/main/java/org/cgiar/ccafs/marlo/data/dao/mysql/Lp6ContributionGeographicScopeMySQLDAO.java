@@ -73,16 +73,15 @@ public class Lp6ContributionGeographicScopeMySQLDAO extends AbstractMarloDAO<Lp6
   }
 
   @Override
-  public List<Lp6ContributionGeographicScope>
-    getLp6ContributionGeographicScopebyPhase(long Lp6ContributionGeographicScopeID, long phaseID) {
+  public List<Lp6ContributionGeographicScope> getLp6ContributionGeographicScopebyPhase(long projectLp6ContributionID,
+    long phaseID) {
     StringBuilder query = new StringBuilder();
-    query.append(
-      "SELECT lp6_contribution_geographic_scope.id as lp6ContributionGeographicScopeID FROM project_lp6_contribution ");
+    query.append("SELECT lp6_contribution_geographic_scope.id as contryId FROM project_lp6_contribution ");
     query.append(
       "INNER JOIN lp6_contribution_geographic_scope ON lp6_contribution_geographic_scope.lp6_contribution_id = project_lp6_contribution.id ");
     query.append("INNER JOIN phases ON lp6_contribution_geographic_scope.id_phase = phases.id ");
     query.append("WHERE project_lp6_contribution.id = ");
-    query.append(Lp6ContributionGeographicScopeID);
+    query.append(projectLp6ContributionID);
     query.append(" AND phases.id = ");
     query.append(phaseID);
     List<Map<String, Object>> list = super.findCustomQuery(query.toString());
@@ -90,10 +89,10 @@ public class Lp6ContributionGeographicScopeMySQLDAO extends AbstractMarloDAO<Lp6
     List<Lp6ContributionGeographicScope> projectLp6ContributionLocations =
       new ArrayList<Lp6ContributionGeographicScope>();
     for (Map<String, Object> map : list) {
-      String deliverableLocationID = map.get("lp6ContributionGeographicScopeID").toString();
-      long longDeliverableLocationID = Long.parseLong(deliverableLocationID);
-      Lp6ContributionGeographicScope deliverableLocation = this.find(longDeliverableLocationID);
-      projectLp6ContributionLocations.add(deliverableLocation);
+      String contryId = map.get("contryId").toString();
+      long longContryId = Long.parseLong(contryId);
+      Lp6ContributionGeographicScope projectLp6Geographic = this.find(longContryId);
+      projectLp6ContributionLocations.add(projectLp6Geographic);
     }
     return projectLp6ContributionLocations;
   }

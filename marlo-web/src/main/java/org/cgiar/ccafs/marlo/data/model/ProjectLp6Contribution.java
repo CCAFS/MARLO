@@ -62,8 +62,8 @@ public class ProjectLp6Contribution extends MarloAuditableEntity implements java
 
   @Expose
   private RepIndGeographicScope geographicScope;
-  @Expose
-  private RepIndRegion region;
+
+  private List<Lp6ContributionGeographicScope> regions;
 
   private Set<ProjectLp6ContributionDeliverable> projectLp6ContributionDeliverable =
     new HashSet<ProjectLp6ContributionDeliverable>(0);
@@ -122,16 +122,13 @@ public class ProjectLp6Contribution extends MarloAuditableEntity implements java
     return countriesIds;
   }
 
-
   public String getCountriesIdsText() {
     return countriesIdsText;
   }
 
-
   public List<ProjectLp6ContributionDeliverable> getDeliverables() {
     return deliverables;
   }
-
 
   public RepIndGeographicScope getGeographicScope() {
     return geographicScope;
@@ -142,9 +139,11 @@ public class ProjectLp6Contribution extends MarloAuditableEntity implements java
     return initiativeRelated;
   }
 
+
   public String getInitiativeRelatedNarrative() {
     return initiativeRelatedNarrative;
   }
+
 
   @Override
   public String getLogDeatil() {
@@ -156,11 +155,9 @@ public class ProjectLp6Contribution extends MarloAuditableEntity implements java
     return sb.toString();
   }
 
-
   public Set<Lp6ContributionGeographicScope> getLp6ContributionGeographicScopes() {
     return lp6ContributionGeographicScopes;
   }
-
 
   public String getNarrative() {
     return narrative;
@@ -176,22 +173,22 @@ public class ProjectLp6Contribution extends MarloAuditableEntity implements java
     return project;
   }
 
+
   public Set<ProjectLp6ContributionDeliverable> getProjectLp6ContributionDeliverable() {
     return projectLp6ContributionDeliverable;
   }
+
 
   public Boolean getProvidingPathways() {
     return providingPathways;
   }
 
-
   public String getProvidingPathwaysNarrative() {
     return providingPathwaysNarrative;
   }
 
-
-  public RepIndRegion getRegion() {
-    return region;
+  public List<Lp6ContributionGeographicScope> getRegions() {
+    return regions;
   }
 
 
@@ -199,28 +196,28 @@ public class ProjectLp6Contribution extends MarloAuditableEntity implements java
     return topThreePartnershipsNarrative;
   }
 
+
   public Boolean getUndertakingEffortsCsa() {
     return undertakingEffortsCsa;
   }
-
 
   public String getUndertakingEffortsCsaNarrative() {
     return undertakingEffortsCsaNarrative;
   }
 
+
   public Boolean getUndertakingEffortsLeading() {
     return undertakingEffortsLeading;
   }
-
 
   public String getUndertakingEffortsLeadingNarrative() {
     return undertakingEffortsLeadingNarrative;
   }
 
+
   public Boolean getWorkingAcrossFlagships() {
     return workingAcrossFlagships;
   }
-
 
   public String getWorkingAcrossFlagshipsNarrative() {
     return workingAcrossFlagshipsNarrative;
@@ -235,6 +232,7 @@ public class ProjectLp6Contribution extends MarloAuditableEntity implements java
     return result;
   }
 
+
   public Boolean isContribution() {
     return contribution;
   }
@@ -242,7 +240,6 @@ public class ProjectLp6Contribution extends MarloAuditableEntity implements java
   public Boolean isInitiativeRelated() {
     return initiativeRelated;
   }
-
 
   public Boolean isProvidingPathways() {
     return providingPathways;
@@ -263,10 +260,10 @@ public class ProjectLp6Contribution extends MarloAuditableEntity implements java
     return workingAcrossFlagships;
   }
 
+
   public void setContribution(Boolean contribution) {
     this.contribution = contribution;
   }
-
 
   public void setCountries(List<Lp6ContributionGeographicScope> countries) {
     this.countries = countries;
@@ -333,14 +330,14 @@ public class ProjectLp6Contribution extends MarloAuditableEntity implements java
     this.providingPathways = providingPathways;
   }
 
+
   public void setProvidingPathwaysNarrative(String providingPathwaysNarrative) {
     this.providingPathwaysNarrative = providingPathwaysNarrative;
   }
 
-  public void setRegion(RepIndRegion region) {
-    this.region = region;
+  public void setRegions(List<Lp6ContributionGeographicScope> regions) {
+    this.regions = regions;
   }
-
 
   public void setTopThreePartnershipsNarrative(String topThreePartnershipsNarrative) {
     this.topThreePartnershipsNarrative = topThreePartnershipsNarrative;

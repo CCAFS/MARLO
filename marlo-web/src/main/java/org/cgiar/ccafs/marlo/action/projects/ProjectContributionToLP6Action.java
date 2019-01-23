@@ -49,6 +49,7 @@ import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.Lp6ContributionGeographicScope;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectLp6Contribution;
 import org.cgiar.ccafs.marlo.data.model.ProjectLp6ContributionDeliverable;
@@ -93,6 +94,7 @@ public class ProjectContributionToLP6Action extends BaseAction {
   private ProjectLp6ContributionManager projectLp6ContributionManager;
   private Lp6ContributionGeographicScopeManager lp6ContributionGeographicScopeManager;
   private ProjectLp6Contribution projectLp6Contribution;
+  private ProjectLp6Contribution projectLp6ContributionDB;
   private Lp6ContributionGeographicScope lp6ContributionGeographicScope;
   private ProjectLp6ContributionDeliverableManager projectLp6ContributionDeliverableManager;
   private ProjectLp6ContributionDeliverable projectLp6ContributionDeliverable;
@@ -189,11 +191,23 @@ public class ProjectContributionToLP6Action extends BaseAction {
 
   }
 
-  private void deleteProjectLp6Locations(List<Lp6ContributionGeographicScope> locationsDB) {
-    if (locationsDB != null) {
-      for (Lp6ContributionGeographicScope lp6ContributionGeographicScope : locationsDB) {
-        lp6ContributionGeographicScopeManager
-          .deleteLp6ContributionGeographicScope(lp6ContributionGeographicScope.getId());
+  /**
+   * Delete all LocElements Records when Geographic Scope is Global or NULL
+   * 
+   * @param projectLp6Contribution
+   * @param phase
+   */
+  public void deleteLocElements(ProjectLp6Contribution projectLp6, Phase phase) {
+    if (projectLp6.getLp6ContributionGeographicScopes() != null
+      && projectLp6.getLp6ContributionGeographicScopes().size() > 0) {
+
+      List<Lp6ContributionGeographicScope> regionPrev = new ArrayList<>(projectLp6.getLp6ContributionGeographicScopes()
+        .stream().filter(nu -> nu.isActive() && nu.getPhase().getId() == phase.getId()).collect(Collectors.toList()));
+
+      for (Lp6ContributionGeographicScope projectRegion : regionPrev) {
+
+        lp6ContributionGeographicScopeManager.deleteLp6ContributionGeographicScope(projectRegion.getId());
+
       }
     }
   }
@@ -203,10 +217,10 @@ public class ProjectContributionToLP6Action extends BaseAction {
       + config.getAnualReportFolder();
   }
 
+
   public String getAnualReportURL() {
     return config.getDownloadURL() + "/" + this.getAnualReportRelativePath().replace('\\', '/');
   }
-
 
   private Path getAutoSaveFilePath() {
     // get the class simple name
@@ -234,6 +248,7 @@ public class ProjectContributionToLP6Action extends BaseAction {
   public List<RepIndGeographicScope> getGeographicScopes() {
     return geographicScopes;
   }
+
 
   public List<LiaisonInstitution> getLiaisonInstitutions() {
     return liaisonInstitutions;
@@ -264,7 +279,6 @@ public class ProjectContributionToLP6Action extends BaseAction {
     return projectID;
   }
 
-
   public ProjectLp6Contribution getProjectLp6Contribution() {
     return projectLp6Contribution;
   }
@@ -294,6 +308,7 @@ public class ProjectContributionToLP6Action extends BaseAction {
       + config.getProjectWorkplanFolder() + File.separator;
   }
 
+
   public String getWorkplanURL() {
     return config.getDownloadURL() + "/" + this.getWorkplanRelativePath().replace('\\', '/');
   }
@@ -310,7 +325,6 @@ public class ProjectContributionToLP6Action extends BaseAction {
 
     projectID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_REQUEST_ID)));
     this.setProject(projectManager.getProjectById(projectID));
-
 
     /*
      * List of deliverables for the actual project and phase
@@ -337,7 +351,12 @@ public class ProjectContributionToLP6Action extends BaseAction {
       this.setProjectLp6Contribution(
         projectLp6ContributionManager.findAll().stream().filter(c -> c.isActive() && c.getProject().getId() == projectID
           && c.getPhase().getId() == this.getActualPhase().getId()).collect(Collectors.toList()).get(0));
+
+      projectLp6ContributionDB =
+        projectLp6ContributionManager.findAll().stream().filter(c -> c.isActive() && c.getProject().getId() == projectID
+          && c.getPhase().getId() == this.getActualPhase().getId()).collect(Collectors.toList()).get(0);
     }
+
 
     if (projectLp6Contribution != null) {
 
@@ -380,34 +399,73 @@ public class ProjectContributionToLP6Action extends BaseAction {
 
       projectLp6Contribution = (ProjectLp6Contribution) autoSaveReader.readFromJson(jReader);
 
-      // Project LP6 contribution Countries List AutoSave
-      if (projectLp6Contribution.getCountriesIdsText() != null) {
-        String[] countriesText =
-          projectLp6Contribution.getCountriesIdsText().replace("[", "").replace("]", "").split(",");
-        List<String> countries = new ArrayList<>();
-        for (String value : Arrays.asList(countriesText)) {
-          countries.add(value.trim());
+
+      // Project Lp6 contribution Scope List AutoSave
+      if (projectLp6Contribution.getGeographicScope() != null) {
+        if (projectLp6Contribution.getGeographicScope().getId() != null
+          && projectLp6Contribution.getGeographicScope().getId() != -1) {
+          // If the Geographic Scope is not Global
+          if (projectLp6Contribution.getGeographicScope().getId() != 1) {
+            if (projectLp6Contribution.getGeographicScope().getId() == 2) {
+              // Load Regions
+              if (projectLp6Contribution.getRegions() != null) {
+                for (Lp6ContributionGeographicScope lp6ContributionGeographicScope : projectLp6Contribution
+                  .getRegions()) {
+                  lp6ContributionGeographicScope.setLocElement(
+                    locElementManager.getLocElementById(lp6ContributionGeographicScope.getLocElement().getId()));
+                }
+              }
+            } else {
+              // Load Countries
+              if (projectLp6Contribution.getCountriesIdsText() != null) {
+                String[] countriesText =
+                  projectLp6Contribution.getCountriesIdsText().replace("[", "").replace("]", "").split(",");
+                List<String> countries = new ArrayList<>();
+                for (String value : Arrays.asList(countriesText)) {
+                  countries.add(value.trim());
+                }
+                projectLp6Contribution.setCountriesIds(countries);
+              }
+            }
+          }
         }
-        projectLp6Contribution.setCountriesIds(countries);
       }
+
+
       this.setDraft(true);
     } else {
       this.setDraft(false);
 
-      // Project contribution Countries List
-      if (projectLp6Contribution.getLp6ContributionGeographicScopes() == null) {
-        projectLp6Contribution.setCountries(new ArrayList<>());
-      } else {
-        List<Lp6ContributionGeographicScope> countries = lp6ContributionGeographicScopeManager
-          .getLp6ContributionGeographicScopebyPhase(projectLp6Contribution.getId(), this.getActualPhase().getId());
-        projectLp6Contribution.setCountries(countries);
+
+      // Setup Geographic Scope
+      if (projectLp6Contribution.getGeographicScope() != null) {
+        // If the Geographic Scope is not Global
+        if (projectLp6Contribution.getGeographicScope().getId() != 1) {
+
+          // Project Lp6 contribution Countries List
+          if (projectLp6Contribution.getLp6ContributionGeographicScopes() == null) {
+            projectLp6Contribution.setCountries(new ArrayList<>());
+            projectLp6Contribution.setRegions(new ArrayList<>());
+          } else {
+            List<Lp6ContributionGeographicScope> geographics = lp6ContributionGeographicScopeManager
+              .getLp6ContributionGeographicScopebyPhase(projectLp6Contribution.getId(), this.getActualPhase().getId());
+            if (projectLp6Contribution.getGeographicScope().getId() == 2) {
+              // Load Regions
+              projectLp6Contribution.setRegions(geographics.stream()
+                .filter(sc -> sc.getLocElement().getLocElementType().getId() == 1).collect(Collectors.toList()));
+            } else {
+              // Load Countries
+              projectLp6Contribution.setCountries(geographics.stream()
+                .filter(sc -> sc.getLocElement().getLocElementType().getId() == 2).collect(Collectors.toList()));
+            }
+          }
+        }
       }
+
     }
 
-    if (!this.isDraft())
-
-    {
-      if (projectLp6Contribution.getCountries() != null && !projectLp6Contribution.getCountries().isEmpty()) {
+    if (!this.isDraft()) {
+      if (projectLp6Contribution.getCountries() != null) {
         for (Lp6ContributionGeographicScope country : projectLp6Contribution.getCountries()) {
           projectLp6Contribution.getCountriesIds().add(country.getLocElement().getIsoAlpha2());
         }
@@ -442,12 +500,20 @@ public class ProjectContributionToLP6Action extends BaseAction {
         projectLp6Contribution.getDeliverables().clear();
       }
 
-      projectLp6Contribution.setGeographicScope(null);
+      if (projectLp6Contribution.getRegions() != null) {
+        projectLp6Contribution.getRegions().clear();
+      }
 
+      if (projectLp6Contribution.getCountries() != null) {
+        projectLp6Contribution.getCountries().clear();
+      }
+
+      // HTTP Post info Values
+      projectLp6Contribution.setLp6ContributionGeographicScopes(null);
+      projectLp6Contribution.setProjectLp6ContributionDeliverable(null);
     }
 
   }
-
 
   @Override
   public String save() {
@@ -462,16 +528,63 @@ public class ProjectContributionToLP6Action extends BaseAction {
       // Save project Lp6 deliverables
       this.saveProjectDeliverables();
 
-      // Save the Countries List selected
-      this.saveGeographicScope();
-
       // Validate negative Values
       if (projectLp6Contribution.getGeographicScope() != null) {
         if (projectLp6Contribution.getGeographicScope().getId() == -1) {
           projectLp6Contribution.setGeographicScope(null);
+          // delete all locElements in geographic scope
+          this.deleteLocElements(projectLp6ContributionDB, this.getActualPhase());
+        } else {
+
+
+          // Save Geographic Scope Data
+
+          if (projectLp6Contribution.getGeographicScope().getId() != 1) {
+            if (projectLp6Contribution.getGeographicScope().getId() == 2) {
+              // Save the Regions List (Lp6ProjectContributionCountry)
+              this.saveRegions(projectLp6ContributionDB, this.getActualPhase());
+
+            } else {
+
+              // Save the Countries List (Lp6ProjectContributionCountry)
+              if (projectLp6Contribution.getCountriesIds() != null
+                || !projectLp6Contribution.getCountriesIds().isEmpty()) {
+
+                List<Lp6ContributionGeographicScope> countries =
+                  lp6ContributionGeographicScopeManager.getLp6ContributionGeographicScopebyPhase(
+                    projectLp6Contribution.getId(), this.getActualPhase().getId());
+                List<Lp6ContributionGeographicScope> countriesSave = new ArrayList<>();
+                for (String countryIds : projectLp6Contribution.getCountriesIds()) {
+                  Lp6ContributionGeographicScope countryInn = new Lp6ContributionGeographicScope();
+                  countryInn.setLocElement(locElementManager.getLocElementByISOCode(countryIds));
+                  countryInn.setProjectLp6Contribution(projectLp6Contribution);
+                  countryInn.setPhase(this.getActualPhase());
+                  countriesSave.add(countryInn);
+                  if (!countries.contains(countryInn)) {
+                    lp6ContributionGeographicScopeManager.saveLp6ContributionGeographicScope(countryInn);
+                  }
+                }
+
+                for (Lp6ContributionGeographicScope lp6ContributionGeographicScope : countries) {
+                  if (!countriesSave.contains(lp6ContributionGeographicScope)) {
+                    lp6ContributionGeographicScopeManager
+                      .deleteLp6ContributionGeographicScope(lp6ContributionGeographicScope.getId());
+                  }
+                }
+              }
+            }
+
+          } else {
+            // delete all locElements in geographic scope
+            this.deleteLocElements(projectLp6ContributionDB, this.getActualPhase());
+          }
         }
       }
 
+      // Save the Countries List selected
+      // this.saveGeographicScope2();
+
+      projectLp6Contribution.setPhase(this.getActualPhase());
       projectLp6ContributionManager.saveProjectLp6Contribution(projectLp6Contribution);
 
       if (path.toFile().exists()) {
@@ -574,10 +687,53 @@ public class ProjectContributionToLP6Action extends BaseAction {
     }
   }
 
+  /**
+   * Save Project Lp6 Geographic Scope When Regions is Selected Information
+   * 
+   * @param projectLp6Contribution
+   * @param phase
+   */
+  public void saveRegions(ProjectLp6Contribution projectLp6, Phase phase) {
+
+    // Search and deleted form Information
+    if (projectLp6.getLp6ContributionGeographicScopes() != null
+      && projectLp6.getLp6ContributionGeographicScopes().size() > 0) {
+
+      List<Lp6ContributionGeographicScope> regionPrev = new ArrayList<>(projectLp6.getLp6ContributionGeographicScopes()
+        .stream().filter(nu -> nu.isActive() && nu.getPhase().getId() == phase.getId()).collect(Collectors.toList()));
+      System.out.println("save regions " + regionPrev.size());
+      for (Lp6ContributionGeographicScope projectRegion : regionPrev) {
+        if (projectLp6Contribution.getRegions() == null
+          || !projectLp6Contribution.getRegions().contains(projectRegion)) {
+          lp6ContributionGeographicScopeManager.deleteLp6ContributionGeographicScope(projectRegion.getId());
+        }
+      }
+    }
+
+    // Save form Information
+    if (projectLp6Contribution.getRegions() != null) {
+      for (Lp6ContributionGeographicScope projectRegion : projectLp6Contribution.getRegions()) {
+        if (projectRegion.getId() == null) {
+          Lp6ContributionGeographicScope projectRegionSave = new Lp6ContributionGeographicScope();
+          projectRegionSave.setProjectLp6Contribution(projectLp6);
+          projectRegionSave.setPhase(phase);
+
+          LocElement locElement = locElementManager.getLocElementById(projectRegion.getLocElement().getId());
+
+          projectRegionSave.setLocElement(locElement);
+
+          lp6ContributionGeographicScopeManager.saveLp6ContributionGeographicScope(projectRegionSave);
+          // This is to add **** to generate correct auditlog.
+          // projectLp6Contribution.getLp6ContributionGeographicScopes().add(projectRegionSave);
+        }
+      }
+    }
+  }
 
   public void setContributionSelectedCountries(List<Lp6ContributionGeographicScope> contributionSelectedCountries) {
     this.contributionSelectedCountries = contributionSelectedCountries;
   }
+
 
   public void setCountries(List<LocElement> countries) {
     this.countries = countries;
@@ -587,7 +743,6 @@ public class ProjectContributionToLP6Action extends BaseAction {
   public void setDeliverables(List<Deliverable> deliverables) {
     this.deliverables = deliverables;
   }
-
 
   public void setGeographicScopes(List<RepIndGeographicScope> geographicScopes) {
     this.geographicScopes = geographicScopes;

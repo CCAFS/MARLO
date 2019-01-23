@@ -54,7 +54,7 @@
                 </div>
                 <div class="form-group regionalBlock" style="display:${(isRegional)?string('block','none')}">
                   [#-- Regional scope --]
-                    [@customForm.elementsListComponent name="projectLp6Contribution.region" elementType="locElement" id="region" elementList=(projectLp6Contribution.region)![] label="projects.LP6Contribution.region"  listName="regions" keyFieldName="id" displayFieldName="name" required=false /]
+                    [@customForm.elementsListComponent name="projectLp6Contribution.regions" elementType="locElement" id="region" elementList=(projectLp6Contribution.regions)![] label="projects.LP6Contribution.region"  listName="regions" keyFieldName="id" displayFieldName="name" required=false /]
                 </div>
                 <div class="form-group nationalBlock" style="display:${(isMultiNational || isNational || isSubNational)?string('block','none')}">
                   [#-- Multinational, National and Subnational scope --]

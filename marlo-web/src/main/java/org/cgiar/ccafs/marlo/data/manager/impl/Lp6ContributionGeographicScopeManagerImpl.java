@@ -47,14 +47,14 @@ public class Lp6ContributionGeographicScopeManagerImpl implements Lp6Contributio
 
   @Override
   public void deleteLp6ContributionGeographicScope(long lp6ContributionGeographicScopeID) {
+
     Lp6ContributionGeographicScope lp6ContributionGeographicScope =
       this.getLp6ContributionGeographicScopeById(lp6ContributionGeographicScopeID);
-    Phase currentPhase = lp6ContributionGeographicScope.getPhase();
 
-
-    this.deleteLp6ContributionGeographicScopePhase(currentPhase.getNext(),
-      lp6ContributionGeographicScope.getProjectLp6Contribution().getId(), lp6ContributionGeographicScope);
-
+    if (lp6ContributionGeographicScope.getPhase().getNext() != null) {
+      this.deleteLp6ContributionGeographicScopePhase(lp6ContributionGeographicScope.getPhase().getNext(),
+        lp6ContributionGeographicScope.getProjectLp6Contribution().getId(), lp6ContributionGeographicScope);
+    }
 
     lp6ContributionGeographicScopeDAO.deleteLp6ContributionGeographicScope(lp6ContributionGeographicScopeID);
   }
