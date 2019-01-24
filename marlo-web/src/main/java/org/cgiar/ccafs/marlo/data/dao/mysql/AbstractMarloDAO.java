@@ -156,7 +156,6 @@ public abstract class AbstractMarloDAO<T, ID extends Serializable> {
    */
   protected List<T> findAll(String hibernateQuery) {
     Query query = sessionFactory.getCurrentSession().createQuery(hibernateQuery);
-    query.setFlushMode(FlushMode.COMMIT);
     return this.findAll(query);
   }
 
