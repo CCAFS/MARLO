@@ -47,11 +47,13 @@ public class WebAppInitializer implements WebApplicationInitializer {
   public void onStartup(ServletContext servletContext) throws ServletException {
     AnnotationConfigWebApplicationContext appContext = new AnnotationConfigWebApplicationContext();
     appContext.register(ApplicationContextConfig.class, MarloDatabaseConfiguration.class, MarloShiroConfiguration.class,
-      MarloBusinessIntelligenceConfiguration.class, MarloShiroConfigurationApi.class);
+      MarloBusinessIntelligenceConfiguration.class);
 
     ContextLoaderListener contextLoaderListener = new ContextLoaderListener(appContext);
     servletContext.addListener(contextLoaderListener);
 
+    // Get the Actual Spring environment
+    String activeEnv = appContext.getEnvironment().getActiveProfiles()[0];
 
     FilterRegistration.Dynamic removeSessionFromUrlFilter =
       servletContext.addFilter("RemoveSessionFromUrlFilter", new DelegatingFilterProxy("RemoveSessionFromUrlFilter"));
@@ -80,33 +82,42 @@ public class WebAppInitializer implements WebApplicationInitializer {
       servletContext.addFilter("AddUserIdFilter", new DelegatingFilterProxy("AddUserIdFilter"));
     addUserIdFilter.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true, NON_STATIC_RESOURCE_REQUESTS);
 
+    // Check the Spring Profile to charge the Struts Map Filter , REST-API Map filter or Both..
+    if (!activeEnv.equals(ApplicationContextConfig.SPRING_PROFILE_API)) {
 
-    /** This should ignore the /api/* mapping **/
-    FilterRegistration.Dynamic struts2Filter =
-      servletContext.addFilter("StrutsDispatcher", new StrutsPrepareAndExecuteFilter());
-    struts2Filter.setInitParameter("actionPackages", "com.concretepage.action");
-    struts2Filter.setInitParameter("targetFilterLifecycle", "true");
-    struts2Filter.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true, STRUTS2_REQUESTS);
+      /** This should ignore the /api/* mapping **/
+      FilterRegistration.Dynamic struts2Filter =
+        servletContext.addFilter("StrutsDispatcher", new StrutsPrepareAndExecuteFilter());
+      struts2Filter.setInitParameter("actionPackages", "com.concretepage.action");
+      struts2Filter.setInitParameter("targetFilterLifecycle", "true");
+      struts2Filter.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true, STRUTS2_REQUESTS);
+    }
 
-    /** Catch any REST errors in case the Spring MVC dispatcher servlet has not been executed **/
-    FilterRegistration.Dynamic exceptionHandlerFilter =
-      servletContext.addFilter("ExceptionHandlerFilter", new DelegatingFilterProxy("ExceptionHandlerFilter"));
-    exceptionHandlerFilter.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true, REST_API_REQUESTS);
+    if (!activeEnv.equals(ApplicationContextConfig.SPRING_PROFILE_PRODUCTION)) {
 
-    /** Ensure our REST requests have a valid session values for authorization **/
-    FilterRegistration.Dynamic addSessionToRestRequestFilter = servletContext.addFilter("AddSessionToRestRequestFilter",
-      new DelegatingFilterProxy("AddSessionToRestRequestFilter"));
-    addSessionToRestRequestFilter.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true, REST_API_REQUESTS);
+      /** Catch any REST errors in case the Spring MVC dispatcher servlet has not been executed **/
+      FilterRegistration.Dynamic exceptionHandlerFilter =
+        servletContext.addFilter("ExceptionHandlerFilter", new DelegatingFilterProxy("ExceptionHandlerFilter"));
+      exceptionHandlerFilter.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true, REST_API_REQUESTS);
 
-    /** Now add the Spring MVC dispatacher servlet config for our REST api **/
-    AnnotationConfigWebApplicationContext dispatcherContext = new AnnotationConfigWebApplicationContext();
-    dispatcherContext.register(MarloRestApiConfig.class, MarloSwaggerConfiguration.class);
-    dispatcherContext.setParent(appContext);
+      /** Ensure our REST requests have a valid session values for authorization **/
+      FilterRegistration.Dynamic addSessionToRestRequestFilter = servletContext
+        .addFilter("AddSessionToRestRequestFilter", new DelegatingFilterProxy("AddSessionToRestRequestFilter"));
+      addSessionToRestRequestFilter.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true,
+        REST_API_REQUESTS);
 
-    ServletRegistration.Dynamic dispatcher =
-      servletContext.addServlet("dispatcher", new DispatcherServlet(dispatcherContext));
-    dispatcher.setLoadOnStartup(1);
-    dispatcher.addMapping(REST_API_REQUESTS);
+      /** Now add the Spring MVC dispatacher servlet config for our REST api **/
+      AnnotationConfigWebApplicationContext dispatcherContext = new AnnotationConfigWebApplicationContext();
+      dispatcherContext.register(MarloRestApiConfig.class, MarloSwaggerConfiguration.class);
+      dispatcherContext.setParent(appContext);
+
+      ServletRegistration.Dynamic dispatcher =
+        servletContext.addServlet("dispatcher", new DispatcherServlet(dispatcherContext));
+      dispatcher.setLoadOnStartup(1);
+      dispatcher.addMapping(REST_API_REQUESTS);
+
+    }
+    // End Check Spring Profile filters
 
 
   }

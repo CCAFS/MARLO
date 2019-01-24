@@ -30,6 +30,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.hibernate.Cache;
 import org.hibernate.SessionFactory;
 import org.hibernate.StaleObjectStateException;
+import org.hibernate.Transaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -98,7 +99,9 @@ public class MARLOCustomPersistFilter extends OncePerRequestFilter {
       chain.doFilter(httpRequest, response);
 
       if (sessionFactory.getCurrentSession() != null && sessionFactory.getCurrentSession().getTransaction() != null) {
-        sessionFactory.getCurrentSession().getTransaction().commit();
+
+        Transaction tr = sessionFactory.getCurrentSession().getTransaction();
+        tr.commit();
 
       }
 
@@ -113,7 +116,6 @@ public class MARLOCustomPersistFilter extends OncePerRequestFilter {
       // fresh data... what you do here depends on your applications design.
       throw staleEx;
     } catch (Throwable ex) {
-
       httpRequest.getSession().setAttribute("exception", ex);
       // Rollback only
       LOG.error("Exception occurred when trying to commit transaction");

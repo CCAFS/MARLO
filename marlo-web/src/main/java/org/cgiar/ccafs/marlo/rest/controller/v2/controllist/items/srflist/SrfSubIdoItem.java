@@ -38,43 +38,44 @@ import org.springframework.http.ResponseEntity;
 @Named
 public class SrfSubIdoItem<T> {
 
-  private SrfSubIdoManager srfSubIdoManager;
-  private SrfSubIdoMapper srfSubIdoMapper;
+	private SrfSubIdoManager srfSubIdoManager;
+	private SrfSubIdoMapper srfSubIdoMapper;
 
-  @Inject
-  public SrfSubIdoItem(SrfSubIdoManager srfSubIdoManager, SrfSubIdoMapper srfSubIdoMapper) {
-    super();
-    this.srfSubIdoManager = srfSubIdoManager;
-    this.srfSubIdoMapper = srfSubIdoMapper;
-  }
+	@Inject
+	public SrfSubIdoItem(SrfSubIdoManager srfSubIdoManager, SrfSubIdoMapper srfSubIdoMapper) {
+		super();
+		this.srfSubIdoManager = srfSubIdoManager;
+		this.srfSubIdoMapper = srfSubIdoMapper;
+	}
 
-  /**
-   * Find a SRF-SubIdo requesting an Id
-   * 
-   * @param id
-   * @return a SrfSubIdoDTO with the SRF-SubIdo data.
-   */
-  public ResponseEntity<SrfSubIdoDTO> findSrfSubIdoById(Long id) {
-    SrfSubIdo srfSubIdo = srfSubIdoManager.getSrfSubIdoById(id);
-    return Optional.ofNullable(srfSubIdo).map(srfSubIdoMapper::srfSubIdoToSrfSubIdoDTO)
-      .map(result -> new ResponseEntity<>(result, HttpStatus.OK)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
-  }
+	/**
+	 * Find a SRF-SubIdo requesting an smo code
+	 * 
+	 * @param id
+	 * @return a SrfSubIdoDTO with the SRF-SubIdo data.
+	 */
+	public ResponseEntity<SrfSubIdoDTO> findSrfSubIdoBycode(String smoCode) {
+		SrfSubIdo srfSubIdo = this.srfSubIdoManager.getSrfSubIdoByCode(smoCode);
+		return Optional.ofNullable(srfSubIdo).map(this.srfSubIdoMapper::srfSubIdoToSrfSubIdoDTO)
+				.map(result -> new ResponseEntity<>(result, HttpStatus.OK))
+				.orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+	}
 
-  /**
-   * Get All the SRF-SubIdo items
-   * 
-   * @return a List of SrfSubIdoDTO with all SRF-SubIdo Items.
-   */
-  public List<SrfSubIdoDTO> getAllSrfSubIdos() {
-    if (srfSubIdoManager.findAll() != null) {
-      List<SrfSubIdo> SrfSubIdos = new ArrayList<>(srfSubIdoManager.findAll());
-      List<SrfSubIdoDTO> SrfSubIdoDTOs = SrfSubIdos.stream()
-        .map(srfSubIdoEntity -> srfSubIdoMapper.srfSubIdoToSrfSubIdoDTO(srfSubIdoEntity)).collect(Collectors.toList());
-      return SrfSubIdoDTOs;
-    } else {
-      return null;
-    }
-  }
-
+	/**
+	 * Get All the SRF-SubIdo items
+	 * 
+	 * @return a List of SrfSubIdoDTO with all SRF-SubIdo Items.
+	 */
+	public List<SrfSubIdoDTO> getAllSrfSubIdos() {
+		if (this.srfSubIdoManager.findAll() != null) {
+			List<SrfSubIdo> SrfSubIdos = new ArrayList<>(this.srfSubIdoManager.findAll());
+			List<SrfSubIdoDTO> SrfSubIdoDTOs = SrfSubIdos.stream()
+					.map(srfSubIdoEntity -> this.srfSubIdoMapper.srfSubIdoToSrfSubIdoDTO(srfSubIdoEntity))
+					.collect(Collectors.toList());
+			return SrfSubIdoDTOs;
+		} else {
+			return null;
+		}
+	}
 
 }

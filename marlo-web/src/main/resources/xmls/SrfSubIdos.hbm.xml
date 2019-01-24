@@ -13,6 +13,10 @@
 			<column name="modification_justification" sql-type="TEXT"
 				not-null="true" />
 		</property>
+		<property name="smoCode" type="string">
+      <column name="smo_code" sql-type="TEXT"   
+      not-null="true" />
+    </property>
 		<property name="activeSince" type="timestamp" update="false">
 			<column name="active_since" length="19" not-null="true" />
 		</property>

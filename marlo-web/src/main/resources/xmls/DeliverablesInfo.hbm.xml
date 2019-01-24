@@ -68,6 +68,9 @@
 		<property name="crossCuttingCapacity" type="java.lang.Boolean">
 			<column name="cross_cutting_capacity" />
 		</property>
+		<property name="crossCuttingClimate" type="java.lang.Boolean">
+      <column name="cross_cutting_climate" />
+    </property>
 		<property name="crossCuttingNa" type="java.lang.Boolean">
 			<column name="cross_cutting_na" />
 		</property>
@@ -92,6 +95,9 @@
 		<property name="crossCuttingScoreCapacity" type="java.lang.Long">
 			<column name="cross_cutting_score_capacity" />
 		</property>
+		<property name="crossCuttingScoreClimate" type="java.lang.Long">
+      <column name="cross_cutting_score_climate" />
+    </property>
 		<many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User"
 			fetch="select" update="false">
 			<column name="created_by" not-null="true" />

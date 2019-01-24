@@ -146,6 +146,12 @@ public class SectionStatusManagerImpl implements SectionStatusManager {
   }
 
   @Override
+  public SectionStatus getSectionStatusByProjectPolicy(long projectPolicyID, String cycle, int year, Boolean upkeep,
+    String sectionName) {
+    return sectionStatusDAO.getSectionStatusByProjectPolicy(projectPolicyID, cycle, year, upkeep, sectionName);
+  }
+
+  @Override
   public SectionStatus getSectionStatusByReportSynthesis(long powbSynthesisID, String cycle, int year, Boolean upkeep,
     String sectionName) {
     return sectionStatusDAO.getSectionStatusByReportSynthesis(powbSynthesisID, cycle, year, upkeep, sectionName);

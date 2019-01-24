@@ -511,13 +511,14 @@
 [/#macro]
 
 [#macro helpLabel name="" paramText="" showIcon=true editable=true]
+  [#local nameValue][@s.text name="${name}"][@s.param]${paramText}[/@s.param][/@s.text][/#local]
   [#--  Help Text --]
-  [#if name != "" && editable]
+  [#if nameValue?has_content && editable]
     [#if showIcon]
-      <img src="${baseUrl}/global/images/icon-help2.png" title="[@s.text name="${name}"][@s.param]${paramText}[/@s.param][/@s.text]" />
-      <span class="hint" style="display:none" title="[@s.text name="${name}"][@s.param]${paramText}[/@s.param][/@s.text]"> [HINT] </span>
+      <img src="${baseUrl}/global/images/icon-help2.png" title="${nameValue}" />
+      <span class="hint" style="display:none" title="${nameValue}"> [HINT] </span>
     [#else]
-      <br /><i class="helpLabel">[@s.text name="${name}"][@s.param]${paramText}[/@s.param][/@s.text]</i>
+      <br /><i class="helpLabel">${nameValue}</i>
     [/#if]
   [/#if]
 [/#macro]
@@ -530,10 +531,14 @@
   [#return '']
 [/#function]
 
-[#macro elementsListComponent name elementType id="" elementList=[] label="" listName="" keyFieldName="" displayFieldName="" maxLimit=0 indexLevel=1 required=true ]
+[#macro elementsListComponent name elementType id="" elementList=[] label="" paramText="" help="" helpIcon=true listName="" keyFieldName="" displayFieldName="" maxLimit=0 indexLevel=1 required=true ]
   [#local composedID = "${elementType}${id}" /]
-  <div class="panel tertiary" listname="${name}" style="position:relative">
-    <div class="panel-head"><label for="">[@s.text name=label /]:[@req required=required && editable /]</label></div>
+  <div class="panel tertiary elementsListComponent" listname="${name}" style="position:relative">
+    <div class="panel-head">
+      <label for="">[@s.text name=label /]:[@req required=required && editable /]
+        [#--  Help Text --]
+        [@helpLabel name="${help}" paramText="${paramText}" showIcon=helpIcon editable=editable/]
+      </label></div>
     <div class="panel-body" style="min-height: 30px;">
       <div class="loading listComponentLoading" style="display:none"></div>
       <ul class="list listType-${composedID}">

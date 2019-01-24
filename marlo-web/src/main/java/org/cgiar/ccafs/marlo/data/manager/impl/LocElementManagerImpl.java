@@ -14,15 +14,14 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.manager.impl;
 
-
 import org.cgiar.ccafs.marlo.data.dao.LocElementDAO;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 
 import java.util.List;
 
-import javax.inject.Named;
 import javax.inject.Inject;
+import javax.inject.Named;
 
 /**
  * @author Christian Garcia
@@ -30,60 +29,62 @@ import javax.inject.Inject;
 @Named
 public class LocElementManagerImpl implements LocElementManager {
 
+	private LocElementDAO locElementDAO;
+	// Managers
 
-  private LocElementDAO locElementDAO;
-  // Managers
+	@Inject
+	public LocElementManagerImpl(LocElementDAO locElementDAO) {
+		this.locElementDAO = locElementDAO;
 
+	}
 
-  @Inject
-  public LocElementManagerImpl(LocElementDAO locElementDAO) {
-    this.locElementDAO = locElementDAO;
+	@Override
+	public void deleteLocElement(long locElementId) {
 
+		this.locElementDAO.deleteLocElement(locElementId);
+	}
 
-  }
+	@Override
+	public boolean existLocElement(long locElementID) {
 
-  @Override
-  public void deleteLocElement(long locElementId) {
+		return this.locElementDAO.existLocElement(locElementID);
+	}
 
-    locElementDAO.deleteLocElement(locElementId);
-  }
+	@Override
+	public List<LocElement> findAll() {
 
-  @Override
-  public boolean existLocElement(long locElementID) {
+		return this.locElementDAO.findAll();
 
-    return locElementDAO.existLocElement(locElementID);
-  }
+	}
 
-  @Override
-  public List<LocElement> findAll() {
+	@Override
+	public List<LocElement> findLocElementByParent(long parentId) {
 
-    return locElementDAO.findAll();
+		return this.locElementDAO.findLocElementByParent(parentId);
+	}
 
-  }
+	@Override
+	public LocElement getLocElementById(long locElementID) {
 
-  @Override
-  public List<LocElement> findLocElementByParent(long parentId) {
+		return this.locElementDAO.find(locElementID);
+	}
 
-    return locElementDAO.findLocElementByParent(parentId);
-  }
+	@Override
+	public LocElement getLocElementByISOCode(String ISOCode) {
 
-  @Override
-  public LocElement getLocElementById(long locElementID) {
+		return this.locElementDAO.findISOCode(ISOCode);
+	}
 
-    return locElementDAO.find(locElementID);
-  }
+	@Override
+	public LocElement getLocElementByNumericISOCode(Long ISOCode) {
 
-  @Override
-  public LocElement getLocElementByISOCode(String ISOCode) {
+		return this.locElementDAO.findNumericISOCode(ISOCode);
+	}
 
-    return locElementDAO.findISOCode(ISOCode);
-  }
+	@Override
+	public LocElement saveLocElement(LocElement locElement) {
 
-  @Override
-  public LocElement saveLocElement(LocElement locElement) {
-
-    return locElementDAO.save(locElement);
-  }
-
+		return this.locElementDAO.save(locElement);
+	}
 
 }

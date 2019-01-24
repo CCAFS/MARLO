@@ -60,13 +60,14 @@ public class ProjectInfo extends MarloAuditableEntity implements java.io.Seriali
   private String statusJustification;
   @Expose
   private String genderAnalysis;
-
   @Expose
   private Boolean crossCuttingGender;
   @Expose
   private Boolean crossCuttingYouth;
   @Expose
   private Boolean crossCuttingCapacity;
+  @Expose
+  private Boolean crossCuttingClimate;
   @Expose
   private Boolean crossCuttingNa;
   @Expose
@@ -89,7 +90,6 @@ public class ProjectInfo extends MarloAuditableEntity implements java.io.Seriali
     return administrative;
   }
 
-
   public List<Integer> getAllYears() {
     List<Integer> allYears = new ArrayList<>();
     if (startDate != null && endDate != null) {
@@ -111,7 +111,6 @@ public class ProjectInfo extends MarloAuditableEntity implements java.io.Seriali
 
     return allYears;
   }
-
 
   /**
    * This method calculates all the years between the start date and the end date. (Only for year greater or equal to
@@ -142,14 +141,20 @@ public class ProjectInfo extends MarloAuditableEntity implements java.io.Seriali
     return allYears;
   }
 
+
   public Boolean getCrossCuttingCapacity() {
     return crossCuttingCapacity;
   }
 
 
+  public Boolean getCrossCuttingClimate() {
+    return crossCuttingClimate;
+  }
+
   public Boolean getCrossCuttingGender() {
     return crossCuttingGender;
   }
+
 
   public Boolean getCrossCuttingNa() {
     return crossCuttingNa;
@@ -159,10 +164,10 @@ public class ProjectInfo extends MarloAuditableEntity implements java.io.Seriali
     return crossCuttingYouth;
   }
 
-
   public String getDimension() {
     return dimension;
   }
+
 
   public Date getEndDate() {
     return endDate;
@@ -172,10 +177,10 @@ public class ProjectInfo extends MarloAuditableEntity implements java.io.Seriali
     return genderAnalysis;
   }
 
-
   public String getLeaderResponsabilities() {
     return leaderResponsabilities;
   }
+
 
   public LiaisonInstitution getLiaisonInstitution() {
     return liaisonInstitution;
@@ -184,7 +189,6 @@ public class ProjectInfo extends MarloAuditableEntity implements java.io.Seriali
   public LiaisonInstitution getLiaisonInstitutionCenter() {
     return liaisonInstitutionCenter;
   }
-
 
   public LiaisonUser getLiaisonUser() {
     return liaisonUser;
@@ -200,13 +204,13 @@ public class ProjectInfo extends MarloAuditableEntity implements java.io.Seriali
     return locationRegional;
   }
 
+
   @Override
   public String getLogDeatil() {
     StringBuilder sb = new StringBuilder();
     sb.append("Id : ").append(this.getId());
     return sb.toString();
   }
-
 
   public String getNewPartnershipsPlanned() {
     return newPartnershipsPlanned;
@@ -296,14 +300,15 @@ public class ProjectInfo extends MarloAuditableEntity implements java.io.Seriali
     return summary;
   }
 
+
   public String getTitle() {
     return title;
   }
 
-
   public String getType() {
     return type;
   }
+
 
   public List<Integer> getYears(int year) {
     List<Integer> allYears = new ArrayList<>();
@@ -323,7 +328,6 @@ public class ProjectInfo extends MarloAuditableEntity implements java.io.Seriali
 
     return allYears;
   }
-
 
   @Override
   public boolean isActive() {
@@ -353,6 +357,11 @@ public class ProjectInfo extends MarloAuditableEntity implements java.io.Seriali
 
   public void setCrossCuttingCapacity(Boolean crossCuttingCapacity) {
     this.crossCuttingCapacity = crossCuttingCapacity;
+  }
+
+
+  public void setCrossCuttingClimate(Boolean crossCuttingClimate) {
+    this.crossCuttingClimate = crossCuttingClimate;
   }
 
 
@@ -500,6 +509,7 @@ public class ProjectInfo extends MarloAuditableEntity implements java.io.Seriali
     this.setAdministrative(update.getAdministrative());
     this.setCofinancing(update.isCofinancing());
     this.setCrossCuttingCapacity(update.getCrossCuttingCapacity());
+    this.setCrossCuttingClimate(update.getCrossCuttingClimate());
     this.setCrossCuttingGender(update.getCrossCuttingGender());
     this.setCrossCuttingNa(update.getCrossCuttingNa());
     this.setCrossCuttingYouth(update.getCrossCuttingYouth());
