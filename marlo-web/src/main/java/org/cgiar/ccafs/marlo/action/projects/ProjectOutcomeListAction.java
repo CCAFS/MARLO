@@ -217,12 +217,14 @@ public class ProjectOutcomeListAction extends BaseAction {
 
     if (this.getActualPhase() != null && projectID != 0) {
 
-      List<ProjectLp6Contribution> projectLp6Contributions = projectLp6ContributionManager.findAll().stream()
-        .filter(
-          c -> c.isActive() && c.getProject().getId().equals(projectID) && c.getPhase().equals(this.getActualPhase()))
-        .collect(Collectors.toList());
-      if (projectLp6Contributions != null && !projectLp6Contributions.isEmpty()) {
-        this.setProjectLp6Contribution(projectLp6Contributions.get(0));
+      if (projectLp6ContributionManager.findAll() != null) {
+        List<ProjectLp6Contribution> projectLp6Contributions = projectLp6ContributionManager.findAll().stream()
+          .filter(
+            c -> c.isActive() && c.getProject().getId().equals(projectID) && c.getPhase().equals(this.getActualPhase()))
+          .collect(Collectors.toList());
+        if (projectLp6Contributions != null && !projectLp6Contributions.isEmpty()) {
+          this.setProjectLp6Contribution(projectLp6Contributions.get(0));
+        }
       }
     }
   }
