@@ -419,7 +419,7 @@
       <div class="col-md-8">
         [#if editable]
           [#list (repositoryChannels)![]  as channel]
-            [#if channel.shortName != "other"]
+            [#if channel.shortName != "other" && channel.shortName != "Internal (Dropbox, etc)"]
               [#-- Examples & instructions --]
               [@channelExampleMacro name=channel.shortName url=channel.urlExample /]
             [/#if]
@@ -432,7 +432,7 @@
   [#assign channelsArray = [] /] 
   <ul id="channelsList" style="display:none">
     [#list (repositoryChannels)![]  as channel]
-      [#if channel.shortName != "other"]
+      [#if channel.shortName != "other" && channel.shortName != "Internal (Dropbox, etc)"]
         <li>
           [#assign channelsArray = [ channel.shortName ] + channelsArray  /]
           <span class="id">${channel.shortName}</span>
@@ -442,7 +442,7 @@
     [/#list]
   </ul>
   [#local channelSelected = (deliverable.dissemination.disseminationChannel)!'-1' /]
-  <div id="disseminationUrl" style="display:[#if channelsArray?seq_contains(channelSelected) || (channelSelected == "other") ]block[#else]none[/#if];">
+  <div id="disseminationUrl" style="display:[#if channelsArray?seq_contains(channelSelected) || (channelSelected == "other") || (channelSelected == "Internal (Dropbox, etc)") ]block[#else]none[/#if];">
     <div class="form-group" > 
       <div class="url-field">
         [@customForm.input name="${customName}.disseminationUrl" type="text" i18nkey="project.deliverable.dissemination.disseminationUrl"  placeholder="" className="deliverableDisseminationUrl" required=true readOnly=isSynced editable=editable /]
