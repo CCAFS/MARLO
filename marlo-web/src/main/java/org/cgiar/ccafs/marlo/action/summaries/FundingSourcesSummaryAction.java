@@ -473,13 +473,15 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
         directDonor = fundingSource.getFundingSourceInfo().getDirectDonor().getComposedName();
       }
 
+      String fsWindow = "";
+      if (fundingSource.getFundingSourceInfo().getBudgetType() != null) {
+        fsWindow = fundingSource.getFundingSourceInfo().getBudgetType().getName();
+      }
 
-      String fsWindow = fundingSource.getFundingSourceInfo().getBudgetType().getName();
       if (hasW1W2Co && fundingSource.getFundingSourceInfo().getW1w2() != null
         && fundingSource.getFundingSourceInfo().getW1w2()) {
         fsWindow = "W1/W2 Co-Financing";
       }
-
 
       for (ProjectBudget projectBudget : fundingSource.getProjectBudgets().stream()
         .filter(pb -> pb.isActive() && pb.getPhase() != null && pb.getPhase().equals(this.getSelectedPhase())
@@ -928,9 +930,9 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
       String regionalDimension = "";
       // Regions
       for (FundingSourceLocation fundingSourceLocation : fundingSource.getFundingSourceLocations().stream()
-        .filter(
-          fl -> fl.isActive() && fl.getLocElementType() == null && fl.getLocElement().getLocElementType().getId() == 1
-            && fl.getPhase() != null && fl.getPhase().equals(this.getSelectedPhase()))
+        .filter(fl -> fl.isActive() && fl.getLocElement() != null && fl.getLocElementType() == null
+          && fl.getLocElement().getLocElementType().getId() == 1 && fl.getPhase() != null
+          && fl.getPhase().equals(this.getSelectedPhase()))
         .collect(Collectors.toList())) {
         if (regionalDimension.isEmpty()) {
           regionalDimension += fundingSourceLocation.getLocElement().getName();
@@ -956,9 +958,9 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
 
       String specificCountries = "";
       for (FundingSourceLocation fundingSourceLocation : fundingSource.getFundingSourceLocations().stream()
-        .filter(
-          fl -> fl.isActive() && fl.getLocElementType() == null && fl.getLocElement().getLocElementType().getId() == 2
-            && fl.getPhase() != null && fl.getPhase().equals(this.getSelectedPhase()))
+        .filter(fl -> fl.isActive() && fl.getLocElement() != null && fl.getLocElement().getLocElementType() != null
+          && fl.getLocElementType() == null && fl.getLocElement().getLocElementType().getId() == 2
+          && fl.getPhase() != null && fl.getPhase().equals(this.getSelectedPhase()))
         .collect(Collectors.toList())) {
         if (specificCountries.isEmpty()) {
           specificCountries += fundingSourceLocation.getLocElement().getName();
