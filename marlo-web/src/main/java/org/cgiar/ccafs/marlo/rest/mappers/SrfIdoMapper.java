@@ -19,7 +19,9 @@ import org.cgiar.ccafs.marlo.data.model.SrfIdo;
 import org.cgiar.ccafs.marlo.rest.dto.SrfIdoDTO;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
+import org.mapstruct.Mappings;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
@@ -27,10 +29,11 @@ import org.mapstruct.MappingTarget;
 @Mapper(componentModel = "jsr330")
 public interface SrfIdoMapper {
 
-  public abstract SrfIdo srfIdoDTOToSrfIdo(SrfIdoDTO srfIdoDTO);
+	public abstract SrfIdo srfIdoDTOToSrfIdo(SrfIdoDTO srfIdoDTO);
 
-  public abstract SrfIdoDTO srfIdoToSrfIdoDTO(SrfIdo srfIdo);
+	@Mappings({ @Mapping(source = "srfIdo.smoCode", target = "code") })
+	public abstract SrfIdoDTO srfIdoToSrfIdoDTO(SrfIdo srfIdo);
 
-  public abstract SrfIdo updateSrfIdoFromSrfIdoDto(SrfIdoDTO srfIdoDTO, @MappingTarget SrfIdo srfIdo);
+	public abstract SrfIdo updateSrfIdoFromSrfIdoDto(SrfIdoDTO srfIdoDTO, @MappingTarget SrfIdo srfIdo);
 
 }

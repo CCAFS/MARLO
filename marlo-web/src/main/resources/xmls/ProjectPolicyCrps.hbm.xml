@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Generated Jan 10, 2019 2:33:41 PM by Hibernate Tools 5.3.6.Final -->
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping auto-import="true"
+	default-access="property" default-cascade="none" default-lazy="true">
+	<class dynamic-insert="false"
+		dynamic-update="false" mutable="true"
+		name="org.cgiar.ccafs.marlo.data.model.ProjectPolicyCrp" optimistic-lock="version"
+		polymorphism="implicit" select-before-update="false"
+		table="project_policy_crps">
+		<id name="id" type="java.lang.Long">
+			<column name="id" />
+			<generator class="identity" />
+		</id>
+		<many-to-one class="org.cgiar.ccafs.marlo.data.model.GlobalUnit" embed-xml="true"
+			fetch="select" insert="true" name="globalUnit" not-found="exception"
+			optimistic-lock="true" unique="false" update="true">
+			<column name="global_unit_id" />
+		</many-to-one>
+		<many-to-one class="org.cgiar.ccafs.marlo.data.model.Phase" embed-xml="true"
+			fetch="select" insert="true" name="phase" not-found="exception"
+			optimistic-lock="true" unique="false" update="true">
+			<column name="id_phase" />
+		</many-to-one>
+		<many-to-one class="org.cgiar.ccafs.marlo.data.model.ProjectPolicy"
+			embed-xml="true" fetch="select" insert="true" name="projectPolicy"
+			not-found="exception" optimistic-lock="true" unique="false"
+			update="true">
+			<column name="project_policy_id" />
+		</many-to-one>
+	</class>
+</hibernate-mapping>

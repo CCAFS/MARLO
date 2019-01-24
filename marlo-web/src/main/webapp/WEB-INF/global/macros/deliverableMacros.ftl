@@ -37,19 +37,30 @@
     <label for="">[@customForm.text name=label readText=!editable/] [@customForm.req required=editable/]</label>
     <div class="row">
       <div class="col-md-12">
+        [#assign crossCuttingMarkers = [
+            { "id":"gender",    "name": "crossCuttingGender",   "scoreName": "crossCuttingScoreGender" },
+            { "id":"youth",     "name": "crossCuttingYouth",    "scoreName": "crossCuttingScoreYouth" },
+            { "id":"capacity",  "name": "crossCuttingCapacity", "scoreName": "crossCuttingScoreCapacity" },
+            { "id":"climate",   "name": "crossCuttingClimate",  "scoreName": "crossCuttingScoreClimate" },
+            { "id":"na",        "name": "crossCuttingNa" }
+          ] 
+        /]
         [#if editable]
-          <label class="checkbox-inline"><input type="checkbox" name="deliverable.deliverableInfo.crossCuttingGender"   class="crosscutingDimension"  id="gender"   value="true" [#if (deliverable.deliverableInfo.crossCuttingGender)!false ]checked="checked"[/#if]> Gender</label>
-          <label class="checkbox-inline"><input type="checkbox" name="deliverable.deliverableInfo.crossCuttingYouth"    class="crosscutingDimension"  id="youth"    value="true" [#if (deliverable.deliverableInfo.crossCuttingYouth)!false ]checked="checked"[/#if]> Youth</label>
-          <label class="checkbox-inline"><input type="checkbox" name="deliverable.deliverableInfo.crossCuttingCapacity" class="crosscutingDimension"  id="capacity" value="true" [#if (deliverable.deliverableInfo.crossCuttingCapacity)!false ]checked="checked"[/#if]> Capacity Development</label>
-          <label class="checkbox-inline"><input type="checkbox" name="deliverable.deliverableInfo.crossCuttingNa"       class=""                      id="na"       value="true" [#if (deliverable.deliverableInfo.crossCuttingNa)!false ]checked="checked"[/#if]> N/A</label>
+          [#list crossCuttingMarkers as marker]
+            <label class="checkbox-inline"><input type="checkbox" name="deliverable.deliverableInfo.${marker.name}" class="[#if marker.id != "na"]crosscutingDimension[/#if]" id="${marker.id}" value="true" [#if (deliverable.deliverableInfo[marker.name])!false ]checked="checked"[/#if]> [@s.text name="crossCuttingMarker.${marker.id}" /]</label>
+          [/#list]
         [#else]
-          [#if (deliverable.deliverableInfo.crossCuttingGender)!false ] <p class="checked"> Gender</p> <input type="hidden" name="deliverable.deliverableInfo.crossCuttingGender" value="true">[/#if]
-          [#if (deliverable.deliverableInfo.crossCuttingYouth)!false ] <p class="checked"> Youth</p><input type="hidden" name="deliverable.deliverableInfo.crossCuttingYouth" value="true">[/#if]
-          [#if (deliverable.deliverableInfo.crossCuttingCapacity)!false ] <p class="checked"> Capacity Development</p><input type="hidden" name="deliverable.deliverableInfo.crossCuttingCapacity" value="true">[/#if]
-          [#if (deliverable.deliverableInfo.crossCuttingNa)!false ] <p class="checked"> N/A</p><input type="hidden" name="deliverable.deliverableInfo.crossCuttingNa" value="true">[/#if]
-          
+          [#assign checkedItems = false /]
+          [#list crossCuttingMarkers as marker]
+            [#if (deliverable.deliverableInfo[marker.name])!false ]
+              <div class="${customForm.changedField('deliverable.deliverableInfo.${marker.name}')}">
+                <p class="checked"> [@s.text name="crossCuttingMarker.${marker.id}" /]</p> <input type="hidden" name="deliverable.deliverableInfo.${marker.name}" value="true">
+              </div>
+              [#assign checkedItems = true /]
+            [/#if] 
+          [/#list]
           [#-- Message when there's nothing to show -> "Prefilled if avaible" --]
-          [#if (!deliverable.deliverableInfo.crossCuttingGender?has_content) && (!deliverable.deliverableInfo.crossCuttingYouth?has_content) && (!deliverable.deliverableInfo.crossCuttingCapacity?has_content) && (!deliverable.deliverableInfo.crossCuttingNa?has_content)]<p>[@s.text name="form.values.fieldEmpty" /]</p>[/#if]
+          [#if !checkedItems]<div class="input"><p>[@s.text name="form.values.fieldEmpty" /]</p></div>[/#if]
         [/#if]
       </div>
     </div>
@@ -85,14 +96,14 @@
   </div>
   
   [#-- Cross-cutting dimensions blocks --]
-  <div id="ccDimension-gender"    class="form-group ccDimension" style="display:${((deliverable.deliverableInfo.crossCuttingGender)!false)?string('block','none')}">
-    [@customForm.select name="deliverable.deliverableInfo.crossCuttingScoreGender" label="" i18nkey="deliverable.ccDimension.gender" help="deliverable.ccDimension.gender.help" listName="crossCuttingScoresMap" required=true header=false className="crossCuttingDimensionsSelect" editable=editable/]
-  </div>
-  <div id="ccDimension-youth"     class="form-group ccDimension" style="display:${((deliverable.deliverableInfo.crossCuttingYouth)!false)?string('block','none')}">
-    [@customForm.select name="deliverable.deliverableInfo.crossCuttingScoreYouth" label="" i18nkey="deliverable.ccDimension.youth" help="deliverable.ccDimension.youth.help" listName="crossCuttingScoresMap"  required=true header=false className="crossCuttingDimensionsSelect" editable=editable/]
-  </div>
-  <div id="ccDimension-capacity"  class="form-group ccDimension" style="display:${((deliverable.deliverableInfo.crossCuttingCapacity)!false)?string('block','none')}">
-    [@customForm.select name="deliverable.deliverableInfo.crossCuttingScoreCapacity" label="" i18nkey="deliverable.ccDimension.capacity" listName="crossCuttingScoresMap" required=true header=false className="crossCuttingDimensionsSelect" editable=editable/]
+  <div class="row">
+  [#list crossCuttingMarkers as marker]
+    [#if marker.scoreName??]
+      <div id="ccDimension-${marker.id}"  class="col-md-3 ccDimension" style="display:${((deliverable.deliverableInfo[marker.name])!false)?string('block-inline','none')}">
+        [@customForm.select name="deliverable.deliverableInfo.${marker.scoreName}" label="" i18nkey="crossCuttingMarker.${marker.id}" help="deliverable.ccDimension.${marker.id}.help" listName="crossCuttingScoresMap" required=true header=false className="crossCuttingDimensionsSelect" editable=editable/]
+      </div>
+    [/#if]
+  [/#list]
   </div>
   
   [#-- Gender Types List --]

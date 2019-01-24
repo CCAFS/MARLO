@@ -229,16 +229,17 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
 
   public boolean existOnYear(Long partnerId, int year) {
 
-
     GlobalUnitProject gp = globalUnitProjectManager.findByProjectId(project.getId());
-
     ProjectPartner projectPartner = projectPartnerManager.getProjectPartnerById(partnerId.longValue());
-    Phase phase = phaseManager.findCycle(this.getActualPhase().getDescription(), year,
-      this.getActualPhase().getUpkeep(), gp.getGlobalUnit().getId());
-    if (phase == null) {
-      phase = phaseManager.findCycle(APConstants.PLANNING, APConstants.FIRST_YEAR, this.getActualPhase().getUpkeep(),
-        gp.getGlobalUnit().getId());
+    Phase phase = phaseManager.getPhaseById(this.getActualPhase().getId());
+
+    if (year < this.getActualPhase().getYear()) {
+      phase = phaseManager.findCycle(this.getActualPhase().getDescription(), year, true, gp.getGlobalUnit().getId());
+      if (phase == null) {
+        phase = phaseManager.findCycle(this.getActualPhase().getDescription(), year, false, gp.getGlobalUnit().getId());
+      }
     }
+
     if (phase != null) {
       List<ProjectPartner> partners = phase.getPartners().stream()
         .filter(c -> c.getProject().getId().longValue() == projectID
@@ -247,8 +248,6 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
       if (!partners.isEmpty()) {
         return true;
       }
-
-
     }
     return false;
   }

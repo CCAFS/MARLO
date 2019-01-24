@@ -258,18 +258,30 @@
                 <label for="">[@customForm.text name="project.crossCuttingDimensions"  readText=!editable/] [@customForm.req required=editable/]</label>
                 <div class="row">
                   <div class="col-md-12">
+                    [#assign crossCuttingMarkers = [
+                        { "id":"gender", "name": "crossCuttingGender" },
+                        { "id":"youth", "name": "crossCuttingYouth" },
+                        { "id":"capacity", "name": "crossCuttingCapacity" },
+                        { "id":"climate", "name": "crossCuttingClimate" },
+                        { "id":"na", "name": "crossCuttingNa" }
+                      ] 
+                    /]
                     [#if editable]
-                      <label class="checkbox-inline"><input type="checkbox" name="project.projectInfo.crossCuttingGender"   id="gender"   value="true" [#if (project.projectInfo.crossCuttingGender)!false ]checked="checked"[/#if]> Gender</label>
-                      <label class="checkbox-inline"><input type="checkbox" name="project.projectInfo.crossCuttingYouth"    id="youth"    value="true" [#if (project.projectInfo.crossCuttingYouth)!false ]checked="checked"[/#if]> Youth</label>
-                      <label class="checkbox-inline"><input type="checkbox" name="project.projectInfo.crossCuttingCapacity" id="capacity" value="true" [#if (project.projectInfo.crossCuttingCapacity)!false ]checked="checked"[/#if]> Capacity Development</label>
-                      <label class="checkbox-inline"><input type="checkbox" name="project.projectInfo.crossCuttingNa"       id="na"       value="true" [#if (project.projectInfo.crossCuttingNa)!false ]checked="checked"[/#if]> N/A</label>
+                      [#list crossCuttingMarkers as marker]
+                        <label class="checkbox-inline"><input type="checkbox" name="project.projectInfo.${marker.name}" id="${marker.id}" class="[#if marker.id != "na"]ccMarker[/#if]" value="true" [#if (project.projectInfo[marker.name])!false ]checked="checked"[/#if]>[@s.text name="crossCuttingMarker.${marker.id}" /]</label>
+                      [/#list]
                     [#else]
-                      <div class="${customForm.changedField('project.projectInfo.crossCuttingGender')}">[#if (project.projectInfo.crossCuttingGender)!false ] <p class="checked"> Gender</p><input type="hidden" name="project.projectInfo.crossCuttingGender" value="true">[/#if] </div>
-                      <div class="${customForm.changedField('project.projectInfo.crossCuttingYouth')}">[#if (project.projectInfo.crossCuttingYouth)!false ] <p class="checked"> Youth</p><input type="hidden" name="project.projectInfo.crossCuttingYouth" value="true">[/#if]</div>
-                      <div class="${customForm.changedField('project.projectInfo.crossCuttingCapacity')}">[#if (project.projectInfo.crossCuttingCapacity)!false ] <p class="checked"> Capacity Development</p><input type="hidden" name="project.projectInfo.crossCuttingCapacity" value="true">[/#if]</div>
-                      <div class="${customForm.changedField('project.projectInfo.crossCuttingNa')}">[#if (project.projectInfo.crossCuttingNa)!false ] <p class="checked"> N/A</p><input type="hidden" name="project.projectInfo.crossCuttingNa" value="true">[/#if]</div>
+                      [#assign checkedItems = false /]
+                      [#list crossCuttingMarkers as marker]
+                        [#if (project.projectInfo[marker.name])!false ]
+                          <div class="${customForm.changedField('project.projectInfo.${marker.name}')}">
+                            <p class="checked"> [@s.text name="crossCuttingMarker.${marker.id}" /]</p> <input type="hidden" name="project.projectInfo.${marker.name}" value="true">
+                          </div>
+                          [#assign checkedItems = true /]
+                        [/#if] 
+                      [/#list]
                       [#-- Message when there's nothing to show -> "Prefilled if avaible" --]
-                      [#if ((!project.crossCuttingGender)!false) && ((!project.crossCuttingYouth)!false) && ((!project.crossCuttingCapacity)!false) && ((!project.crossCuttingNa)!false)]<p>[@s.text name="form.values.fieldEmpty" /]</p>[/#if]
+                      [#if !checkedItems]<div class="input"><p>[@s.text name="form.values.fieldEmpty" /]</p></div>[/#if]
                     [/#if]
                   </div>
                 </div>

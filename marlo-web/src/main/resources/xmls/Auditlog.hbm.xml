@@ -5,7 +5,7 @@
 <hibernate-mapping>
 	<class name="org.cgiar.ccafs.marlo.data.model.Auditlog" table="auditlog"
 		optimistic-lock="none">
-		<id name="auditLogId" type="java.lang.Long">
+		<id name="id" type="java.lang.Long">
 			<column name="AUDIT_LOG_ID" />
 			<generator class="identity" />
 		</id>

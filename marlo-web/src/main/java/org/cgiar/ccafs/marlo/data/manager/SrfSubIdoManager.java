@@ -18,57 +18,60 @@ import org.cgiar.ccafs.marlo.data.model.SrfSubIdo;
 
 import java.util.List;
 
-
 /**
  * @author Christian Garcia
  */
 
 public interface SrfSubIdoManager {
 
+	/**
+	 * This method removes a specific srfSubIdo value from the database.
+	 * 
+	 * @param srfSubIdoId is the srfSubIdo identifier.
+	 * @return true if the srfSubIdo was successfully deleted, false otherwise.
+	 */
+	public void deleteSrfSubIdo(long srfSubIdoId);
 
-  /**
-   * This method removes a specific srfSubIdo value from the database.
-   * 
-   * @param srfSubIdoId is the srfSubIdo identifier.
-   * @return true if the srfSubIdo was successfully deleted, false otherwise.
-   */
-  public void deleteSrfSubIdo(long srfSubIdoId);
+	/**
+	 * This method validate if the srfSubIdo identify with the given id exists
+	 * in the system.
+	 * 
+	 * @param srfSubIdoID is a srfSubIdo identifier.
+	 * @return true if the srfSubIdo exists, false otherwise.
+	 */
+	public boolean existSrfSubIdo(long srfSubIdoID);
 
+	/**
+	 * This method gets a list of srfSubIdo that are active
+	 * 
+	 * @return a list from SrfSubIdo null if no exist records
+	 */
+	public List<SrfSubIdo> findAll();
 
-  /**
-   * This method validate if the srfSubIdo identify with the given id exists in the system.
-   * 
-   * @param srfSubIdoID is a srfSubIdo identifier.
-   * @return true if the srfSubIdo exists, false otherwise.
-   */
-  public boolean existSrfSubIdo(long srfSubIdoID);
+	/**
+	 * This method gets a srfSubIdo object by a given SMO Code
+	 * 
+	 * @param srfSubIdocode is the smo code identifier.
+	 * @return a SrfSubIdo object.
+	 */
+	public SrfSubIdo getSrfSubIdoByCode(String srfSubIdocode);
 
+	/**
+	 * This method gets a srfSubIdo object by a given srfSubIdo identifier.
+	 * 
+	 * @param srfSubIdoID is the srfSubIdo identifier.
+	 * @return a SrfSubIdo object.
+	 */
+	public SrfSubIdo getSrfSubIdoById(long srfSubIdoID);
 
-  /**
-   * This method gets a list of srfSubIdo that are active
-   * 
-   * @return a list from SrfSubIdo null if no exist records
-   */
-  public List<SrfSubIdo> findAll();
-
-
-  /**
-   * This method gets a srfSubIdo object by a given srfSubIdo identifier.
-   * 
-   * @param srfSubIdoID is the srfSubIdo identifier.
-   * @return a SrfSubIdo object.
-   */
-  public SrfSubIdo getSrfSubIdoById(long srfSubIdoID);
-
-  /**
-   * This method saves the information of the given srfSubIdo
-   * 
-   * @param srfSubIdo - is the srfSubIdo object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the srfSubIdo was
-   *         updated
-   *         or -1 is some error occurred.
-   */
-  public SrfSubIdo saveSrfSubIdo(SrfSubIdo srfSubIdo);
-
+	/**
+	 * This method saves the information of the given srfSubIdo
+	 * 
+	 * @param srfSubIdo - is the srfSubIdo object with the new information to be
+	 * added/updated.
+	 * @return a number greater than 0 representing the new ID assigned by the
+	 * database, 0 if the srfSubIdo was updated or -1 is some error occurred.
+	 */
+	public SrfSubIdo saveSrfSubIdo(SrfSubIdo srfSubIdo);
 
 }

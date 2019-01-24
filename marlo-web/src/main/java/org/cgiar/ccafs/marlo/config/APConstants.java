@@ -32,6 +32,7 @@ public final class APConstants {
 
   public static final String STUDY_TYPE_REQUEST_ID = "studyTypeID";
   public static final String EXPECTED_REQUEST_ID = "expectedID";
+  public static final String POLICY_REQUEST_ID = "policyID";
   public static final String INNOVATION_REQUEST_ID = "innovationID";
   public static final String BUDGET_TYPE_REQUEST_ID = "budgetTypeID";
   public static final String CASE_STUDY_REQUEST_ID = "caseStudyID";
@@ -399,6 +400,20 @@ public final class APConstants {
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.ProjectInnovation.projectInnovationCrps)";
   public static final String PROJECT_DELIVERABLE_CRP_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.ProjectInnovation.projectInnovationDeliverables)";
+
+  // Project Policies Relations
+  public static final String PROJECT_POLICY_INFOS_RELATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.ProjectPolicy.projectPolicyInfos)";
+  public static final String PROJECT_POLICY_COUNTRY_RELATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.ProjectPolicy.ProjectPolicyCountries)";
+  public static final String PROJECT_POLICY_CRP_RELATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.ProjectPolicy.projectPolicyCrps)";
+  public static final String PROJECT_POLICY_OWNER_RELATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.ProjectPolicy.projectPolicyOwners)";
+  public static final String PROJECT_POLICY_SUB_IDO_RELATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.ProjectPolicy.projectPolicySubIdos)";
+  public static final String PROJECT_POLICY_CROSS_CUTTING_RELATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.ProjectPolicy.projectPolicyCrossCuttingMarkers)";
 
 
   // End

@@ -71,3 +71,33 @@
 [/#macro]
 
 [#macro prefilledTag]<i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>[/#macro]
+
+[#macro tableText value]
+  [#if (value?trim?has_content)!false]${value}[#else]<i style="opacity:0.8">[@s.text name="global.notDefined"/]</i>[/#if]
+[/#macro]
+
+[#macro tableList list displayFieldName="title"]
+  [#local levels = displayFieldName?split(".")]
+  [#if (list?has_content)!false]
+    <ul style="padding: 0;">
+      [#list list as item]
+        [#local itemValue = (item)!'null' /]
+        [#list levels as level][#local itemValue = (itemValue[level])!'null' /][/#list]
+        <li style="list-style-position: inside;">${itemValue}</li>
+      [/#list]
+    </ul>
+  [#else]
+    <i style="opacity:0.8">[@s.text name="global.notDefined"/]</i>
+  [/#if]
+[/#macro]
+
+[#macro tableCheckIcon state stateMessage="Complete"]
+  [#if state ]
+    <span class="icon-20 icon-check" title="${stateMessage}"></span> 
+  [#else]
+    <span class="icon-20 icon-uncheck" title=""></span> 
+  [/#if]
+[/#macro]
+
+
+

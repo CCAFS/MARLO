@@ -702,3 +702,7 @@ tr:hover .icon-container {
 [class^="block-"] {
  padding:0 1em;
 }
+
+div#ccDimension-capacity {
+    font-size: 0.95em;
+}

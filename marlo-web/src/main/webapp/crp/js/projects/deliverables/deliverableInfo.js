@@ -10,6 +10,8 @@ function init() {
   // Take out the 0 - Not Targeted Dimension
   $('.crossCuttingDimensionsSelect option[value=0]').remove();
 
+  selectKeyOutput();
+
   /* Init Select2 plugin */
   $('form select').select2({
     width: '100%'
@@ -205,12 +207,12 @@ function init() {
     }
   });
 
-  $('input#gender, input#youth, input#capacity').on('change', function() {
+  $('input.crosscutingDimension').on('change', function() {
     $('input#na').prop("checked", false);
   });
 
   $('input#na').on('change', function() {
-    $('input#gender, input#youth, input#capacity').prop("checked", false);
+    $('input.crosscutingDimension').prop("checked", false);
     $('#gender-levels').slideUp();
     $('.ccDimension').slideUp();
   });
@@ -629,4 +631,17 @@ function hasDeliverableRule(rule,arrValues) {
 function getDeliverableTypesByRule(rule) {
   var result = $('#getDeliverableTypesByRule-' + rule).val().split(", ");
   return result;
+}
+
+function selectKeyOutput() {
+  var $keyOutputList = $('.selectList').find('.keyOutput');
+  var keyOutputOptions = $keyOutputList.find('option')
+  var keyOutputsLength = keyOutputOptions.length;
+
+  if( keyOutputsLength == 2 ) {
+    var optionValue = keyOutputOptions[1].value;
+    $keyOutputList.val(optionValue);
+    $keyOutputList.trigger('change');
+  }
+
 }

@@ -197,7 +197,8 @@ public class PublicationValidator extends BaseValidator {
     }
 
     if (deliverableInfo.getCrossCuttingGender() == null && deliverableInfo.getCrossCuttingYouth() == null
-      && deliverableInfo.getCrossCuttingCapacity() == null && deliverableInfo.getCrossCuttingNa() == null) {
+      && deliverableInfo.getCrossCuttingCapacity() == null && deliverableInfo.getCrossCuttingClimate() == null
+      && deliverableInfo.getCrossCuttingNa() == null) {
       action.addMessage(action.getText("project.crossCuttingDimensions.readText"));
       action.getInvalidFields().put("input-deliverable.deliverableInfo.crossCuttingNa",
         action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Cross Cutting"}));

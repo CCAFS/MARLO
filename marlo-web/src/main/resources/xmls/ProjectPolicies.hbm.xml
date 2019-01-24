@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Generated Jan 8, 2019 3:50:56 PM by Hibernate Tools 5.3.6.Final -->
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping auto-import="true"
+	default-access="property" default-cascade="none" default-lazy="true">
+	<class dynamic-insert="false" dynamic-update="false"
+		mutable="true" name="org.cgiar.ccafs.marlo.data.model.ProjectPolicy"
+		optimistic-lock="version" polymorphism="implicit"
+		select-before-update="false" table="project_policies">
+		<id name="id" type="java.lang.Long">
+			<column name="id" />
+			<generator class="identity" />
+		</id>
+		<many-to-one
+			class="org.cgiar.ccafs.marlo.data.model.Project" embed-xml="true"
+			fetch="select" insert="true" name="project" not-found="exception"
+			optimistic-lock="true" unique="false" update="true">
+			<column name="project_id" />
+		</many-to-one>
+		<property generated="never" lazy="false" name="active"
+			optimistic-lock="true" type="boolean" unique="false">
+			<column name="is_active" not-null="true" />
+		</property>
+		<property generated="never" lazy="false" name="activeSince"
+			optimistic-lock="true" type="timestamp" unique="false">
+			<column length="19" name="active_since" />
+		</property>
+		<many-to-one class="org.cgiar.ccafs.marlo.data.model.User"
+			embed-xml="true" fetch="select" insert="true" name="createdBy"
+			not-found="exception" optimistic-lock="true" unique="false"
+			update="true">
+			<column name="created_by" />
+		</many-to-one>
+		<many-to-one class="org.cgiar.ccafs.marlo.data.model.User"
+			embed-xml="true" fetch="select" insert="true" name="modifiedBy"
+			not-found="exception" optimistic-lock="true" unique="false"
+			update="true">
+			<column name="modified_by" />
+		</many-to-one>
+		<property generated="never" lazy="false"
+			name="modificationJustification" optimistic-lock="true" type="string"
+			unique="false">
+			<column length="65535" name="modification_justification" />
+		</property>
+		<set embed-xml="true" fetch="select" inverse="true" lazy="true"
+			mutable="true" name="projectPolicyInfos" optimistic-lock="true"
+			sort="unsorted" table="project_policy_info">
+			<key on-delete="noaction">
+				<column name="project_policy_id" />
+			</key>
+			<one-to-many
+				class="org.cgiar.ccafs.marlo.data.model.ProjectPolicyInfo"
+				embed-xml="true" not-found="exception" />
+		</set>		
+		<set embed-xml="true" fetch="select" inverse="true" lazy="true"
+      mutable="true" name="ProjectPolicyCountries" optimistic-lock="true"
+      sort="unsorted" table="project_policy_info">
+      <key on-delete="noaction">
+        <column name="project_policy_id" />
+      </key>
+      <one-to-many
+        class="org.cgiar.ccafs.marlo.data.model.ProjectPolicyCountry"
+        embed-xml="true" not-found="exception" />
+    </set>    
+    <set embed-xml="true" fetch="select" inverse="true" lazy="true"
+      mutable="true" name="projectPolicyOwners" optimistic-lock="true"
+      sort="unsorted" table="project_policy_info">
+      <key on-delete="noaction">
+        <column name="project_policy_id" />
+      </key>
+      <one-to-many
+        class="org.cgiar.ccafs.marlo.data.model.ProjectPolicyOwner"
+        embed-xml="true" not-found="exception" />
+    </set>    
+    <set embed-xml="true" fetch="select" inverse="true" lazy="true"
+      mutable="true" name="projectPolicyCrps" optimistic-lock="true"
+      sort="unsorted" table="project_policy_info">
+      <key on-delete="noaction">
+        <column name="project_policy_id" />
+      </key>
+      <one-to-many
+        class="org.cgiar.ccafs.marlo.data.model.ProjectPolicyCrp"
+        embed-xml="true" not-found="exception" />
+    </set>    
+    <set embed-xml="true" fetch="select" inverse="true" lazy="true"
+      mutable="true" name="projectPolicySubIdos" optimistic-lock="true"
+      sort="unsorted" table="project_policy_info">
+      <key on-delete="noaction">
+        <column name="project_policy_id" />
+      </key>
+      <one-to-many
+        class="org.cgiar.ccafs.marlo.data.model.ProjectPolicySubIdo"
+        embed-xml="true" not-found="exception" />
+    </set>
+	</class>
+</hibernate-mapping>
