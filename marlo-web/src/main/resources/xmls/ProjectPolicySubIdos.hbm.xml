@@ -3,29 +3,26 @@
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 <hibernate-mapping auto-import="true"
 	default-access="property" default-cascade="none" default-lazy="true">
-	<class dynamic-insert="false"
-		dynamic-update="false" mutable="true"
-		name="org.cgiar.ccafs.marlo.data.model.ProjectPolicySubIdo" optimistic-lock="version"
-		polymorphism="implicit" select-before-update="false"
-		table="project_policy_sub_idos">
+	<class
+		name="org.cgiar.ccafs.marlo.data.model.ProjectPolicySubIdo"
+		optimistic-lock="none" table="project_policy_sub_idos">
 		<id name="id" type="java.lang.Long">
 			<column name="id" />
 			<generator class="identity" />
 		</id>
-		<many-to-one class="org.cgiar.ccafs.marlo.data.model.Phase" embed-xml="true"
-			fetch="select" insert="true" name="phase" not-found="exception"
-			optimistic-lock="true" unique="false" update="true">
+		<many-to-one
+			class="org.cgiar.ccafs.marlo.data.model.Phase" fetch="select"
+			name="phase">
 			<column name="id_phase" />
 		</many-to-one>
-		<many-to-one class="org.cgiar.ccafs.marlo.data.model.ProjectPolicy"
-			embed-xml="true" fetch="select" insert="true" name="projectPolicy"
-			not-found="exception" optimistic-lock="true" unique="false"
-			update="true">
+		<many-to-one
+			class="org.cgiar.ccafs.marlo.data.model.ProjectPolicy" fetch="select"
+			name="projectPolicy">
 			<column name="project_policy_id" />
 		</many-to-one>
-		<many-to-one class="org.cgiar.ccafs.marlo.data.model.SrfSubIdo" embed-xml="true"
-			fetch="select" insert="true" name="srfSubIdo" not-found="exception"
-			optimistic-lock="true" unique="false" update="true">
+		<many-to-one
+			class="org.cgiar.ccafs.marlo.data.model.SrfSubIdo" fetch="select"
+			name="srfSubIdo">
 			<column name="sub_ido_id" />
 		</many-to-one>
 	</class>
