@@ -251,32 +251,26 @@ public class CrossCuttingDimensionAction extends BaseAction {
         }
 
       }
-
-      for (Deliverable deliverable : deliverables) {
-
-
-        // Setup deliverable intellectual assets
-        if (deliverable.getDeliverableIntellectualAssets() != null
-          && !deliverable.getDeliverableIntellectualAssets().isEmpty()
-          && deliverable.getDeliverableIntellectualAssets().size() > 0) {
-          List<DeliverableIntellectualAsset> list = deliverable.getDeliverableIntellectualAssets().stream()
-            .filter(i -> i.isActive() && i.getHasPatentPvp() != null && i.getHasPatentPvp())
-            .collect(Collectors.toList());
-          if (list != null && !list.isEmpty()) {
-            DeliverableIntellectualAsset deliverableIntellectualAsset = list.get(0);
-            if (deliverableIntellectualAsset != null) {
-              assetsList.add(deliverableIntellectualAsset);
+      if (this.hasSpecificities(this.crpDeliverableIntellectualAsset())) {
+        for (Deliverable deliverable : deliverables) {
+          // Setup deliverable intellectual assets
+          if (deliverable.getDeliverableIntellectualAssets() != null
+            && !deliverable.getDeliverableIntellectualAssets().isEmpty()
+            && deliverable.getDeliverableIntellectualAssets().size() > 0) {
+            List<DeliverableIntellectualAsset> list = deliverable.getDeliverableIntellectualAssets().stream()
+              .filter(i -> i.isActive() && i.getHasPatentPvp() != null && i.getHasPatentPvp())
+              .collect(Collectors.toList());
+            if (list != null && !list.isEmpty()) {
+              DeliverableIntellectualAsset deliverableIntellectualAsset = list.get(0);
+              if (deliverableIntellectualAsset != null) {
+                assetsList.add(deliverableIntellectualAsset);
+              }
             }
           }
-
         }
-
       }
 
-
     }
-
-
   }
 
 
@@ -573,17 +567,20 @@ public class CrossCuttingDimensionAction extends BaseAction {
 
           // Deliverable Intellectual Assets
           reportSynthesis.getReportSynthesisCrossCuttingDimension().setAssets(new ArrayList<>());
-          if (reportSynthesis.getReportSynthesisCrossCuttingDimension()
-            .getReportSynthesisCrossCuttingDimensionAssets() != null
-            && !reportSynthesis.getReportSynthesisCrossCuttingDimension()
-              .getReportSynthesisCrossCuttingDimensionAssets().isEmpty()) {
-            for (ReportSynthesisCrossCuttingDimensionAsset dimensionAsset : reportSynthesis
-              .getReportSynthesisCrossCuttingDimension().getReportSynthesisCrossCuttingDimensionAssets().stream()
-              .filter(a -> a.isActive()).collect(Collectors.toList())) {
-              reportSynthesis.getReportSynthesisCrossCuttingDimension().getAssets()
-                .add(dimensionAsset.getDeliverableIntellectualAsset());
+          if (this.hasSpecificities(this.crpDeliverableIntellectualAsset())) {
+            if (reportSynthesis.getReportSynthesisCrossCuttingDimension()
+              .getReportSynthesisCrossCuttingDimensionAssets() != null
+              && !reportSynthesis.getReportSynthesisCrossCuttingDimension()
+                .getReportSynthesisCrossCuttingDimensionAssets().isEmpty()) {
+              for (ReportSynthesisCrossCuttingDimensionAsset dimensionAsset : reportSynthesis
+                .getReportSynthesisCrossCuttingDimension().getReportSynthesisCrossCuttingDimensionAssets().stream()
+                .filter(a -> a.isActive()).collect(Collectors.toList())) {
+                reportSynthesis.getReportSynthesisCrossCuttingDimension().getAssets()
+                  .add(dimensionAsset.getDeliverableIntellectualAsset());
+              }
             }
           }
+
         }
       }
     }
@@ -607,8 +604,10 @@ public class CrossCuttingDimensionAction extends BaseAction {
         .getPlannedInnovationList(liaisonInstitutions, phase.getId(), loggedCrp, this.liaisonInstitution);
 
       // Table E Intellectual Assets
-      flagshipPlannedAssets = reportSynthesisCrossCuttingDimensionManager.getPlannedAssetsList(liaisonInstitutions,
-        phase.getId(), loggedCrp, this.liaisonInstitution);
+      if (this.hasSpecificities(this.crpDeliverableIntellectualAsset())) {
+        flagshipPlannedAssets = reportSynthesisCrossCuttingDimensionManager.getPlannedAssetsList(liaisonInstitutions,
+          phase.getId(), loggedCrp, this.liaisonInstitution);
+      }
 
 
     }
@@ -620,7 +619,7 @@ public class CrossCuttingDimensionAction extends BaseAction {
 
     // ADD PMU as liasion Institution too
     liaisonInstitutions.addAll(loggedCrp.getLiaisonInstitutions().stream()
-      .filter(c -> c.getCrpProgram() == null && c.isActive() && c.getAcronym().equals("PMU"))
+      .filter(c -> c.getCrpProgram() == null && c.isActive() && c.getAcronym() != null && c.getAcronym().equals("PMU"))
       .collect(Collectors.toList()));
 
 
@@ -658,7 +657,9 @@ public class CrossCuttingDimensionAction extends BaseAction {
         }
 
         this.saveInnovations(crossCuttingDimensionDB);
-        this.saveAssets(crossCuttingDimensionDB);
+        if (this.hasSpecificities(this.crpDeliverableIntellectualAsset())) {
+          this.saveAssets(crossCuttingDimensionDB);
+        }
 
       }
 
@@ -675,8 +676,10 @@ public class CrossCuttingDimensionAction extends BaseAction {
       crossCuttingDimensionDB.setCapDev(reportSynthesis.getReportSynthesisCrossCuttingDimension().getCapDev());
 
       if (this.isPMU()) {
-        crossCuttingDimensionDB
-          .setIntellectualAssets(reportSynthesis.getReportSynthesisCrossCuttingDimension().getIntellectualAssets());
+        if (this.hasSpecificities(this.crpDeliverableIntellectualAsset())) {
+          crossCuttingDimensionDB
+            .setIntellectualAssets(reportSynthesis.getReportSynthesisCrossCuttingDimension().getIntellectualAssets());
+        }
         crossCuttingDimensionDB.setOpenData(reportSynthesis.getReportSynthesisCrossCuttingDimension().getOpenData());
       }
 
@@ -728,10 +731,10 @@ public class CrossCuttingDimensionAction extends BaseAction {
 
     List<Long> selectedPs = new ArrayList<>();
     List<Long> studiesIds = new ArrayList<>();
-
     for (DeliverableIntellectualAsset std : assetsList) {
       studiesIds.add(std.getId());
     }
+
 
     if (reportSynthesis.getReportSynthesisCrossCuttingDimension().getAssetsValue() != null
       && reportSynthesis.getReportSynthesisCrossCuttingDimension().getAssetsValue().length() > 0) {

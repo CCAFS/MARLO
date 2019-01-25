@@ -207,7 +207,9 @@
       </div>
       
       [#--  Intellectual Asset--]
-      [@deliverableMacros.intellectualAsset /]
+      [#if action.hasSpecificities(action.crpDeliverableIntellectualAsset())]
+        [@deliverableMacros.intellectualAsset /]
+      [/#if]
       
       [#--  Does this deliverable involve Participants and Trainees? --]
       [@deliverableMacros.deliverableParticipantsMacro /]

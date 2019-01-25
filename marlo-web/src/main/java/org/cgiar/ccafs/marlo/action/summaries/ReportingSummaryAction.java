@@ -2097,85 +2097,88 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           intellectualAssetDateRegistration = null, intellectualAssetDateExpiry = null,
           intellectualAssetAdditionalInformation = null, intellectualAssetLinkPublished = null,
           intellectualAssetCommunication = null;
+        if (this.hasSpecificities(this.crpDeliverableIntellectualAsset())) {
+          List<DeliverableIntellectualAsset> intellectualAssets =
+            deliverable.getDeliverableIntellectualAssets().stream()
+              .filter(c -> c.isActive() && c.getPhase().equals(this.getSelectedPhase())).collect(Collectors.toList());
 
-        List<DeliverableIntellectualAsset> intellectualAssets = deliverable.getDeliverableIntellectualAssets().stream()
-          .filter(c -> c.isActive() && c.getPhase().equals(this.getSelectedPhase())).collect(Collectors.toList());
+          if (intellectualAssets != null && intellectualAssets.size() > 0) {
+            DeliverableIntellectualAsset asset = intellectualAssets.get(0);
+            if (asset.getHasPatentPvp() != null) {
+              hasIntellectualAsset = asset.getHasPatentPvp();
+              if (asset.getHasPatentPvp()) {
+                hasIntellectualAssetText = "Yes";
+                if (asset.getApplicant() != null && !asset.getApplicant().isEmpty()) {
+                  intellectualAssetApplicants = asset.getApplicant();
+                }
+                if (asset.getType() != null && asset.getType().intValue() != -1) {
+                  intellectualAssetType = DeliverableIntellectualAssetTypeEnum.getValue(asset.getType()).getType();
 
-        if (intellectualAssets != null && intellectualAssets.size() > 0) {
-          DeliverableIntellectualAsset asset = intellectualAssets.get(0);
-          if (asset.getHasPatentPvp() != null) {
-            hasIntellectualAsset = asset.getHasPatentPvp();
-            if (asset.getHasPatentPvp()) {
-              hasIntellectualAssetText = "Yes";
-              if (asset.getApplicant() != null && !asset.getApplicant().isEmpty()) {
-                intellectualAssetApplicants = asset.getApplicant();
-              }
-              if (asset.getType() != null && asset.getType().intValue() != -1) {
-                intellectualAssetType = DeliverableIntellectualAssetTypeEnum.getValue(asset.getType()).getType();
+                  if (DeliverableIntellectualAssetTypeEnum.getValue(asset.getType())
+                    .equals(DeliverableIntellectualAssetTypeEnum.Patent)) {
+                    // Patent
+                    isPantent = true;
+                    if (asset.getFillingType() != null && asset.getFillingType().getId() != -1) {
+                      intellectualAssetFillingType = asset.getFillingType().getName();
+                    }
+                    if (asset.getPatentStatus() != null && asset.getPatentStatus().getId() != -1) {
+                      intellectualAssetPantentStatus = asset.getPatentStatus().getName();
+                    }
+                    if (asset.getPatentType() != null && asset.getPatentType().intValue() != -1) {
+                      intellectualAssetPatentType =
+                        DeliverableIntellectualAssetPantentTypeEnum.getValue(asset.getPatentType()).getType();
+                    }
+                  } else if (DeliverableIntellectualAssetTypeEnum.getValue(asset.getType())
+                    .equals(DeliverableIntellectualAssetTypeEnum.PVP)) {
+                    // PVP
+                    isPvp = true;
+                    if (asset.getVarietyName() != null && !asset.getVarietyName().isEmpty()) {
+                      intellectualAssetPvpVarietyName = asset.getVarietyName();
+                    }
 
-                if (DeliverableIntellectualAssetTypeEnum.getValue(asset.getType())
-                  .equals(DeliverableIntellectualAssetTypeEnum.Patent)) {
-                  // Patent
-                  isPantent = true;
-                  if (asset.getFillingType() != null && asset.getFillingType().getId() != -1) {
-                    intellectualAssetFillingType = asset.getFillingType().getName();
-                  }
-                  if (asset.getPatentStatus() != null && asset.getPatentStatus().getId() != -1) {
-                    intellectualAssetPantentStatus = asset.getPatentStatus().getName();
-                  }
-                  if (asset.getPatentType() != null && asset.getPatentType().intValue() != -1) {
-                    intellectualAssetPatentType =
-                      DeliverableIntellectualAssetPantentTypeEnum.getValue(asset.getPatentType()).getType();
-                  }
-                } else if (DeliverableIntellectualAssetTypeEnum.getValue(asset.getType())
-                  .equals(DeliverableIntellectualAssetTypeEnum.PVP)) {
-                  // PVP
-                  isPvp = true;
-                  if (asset.getVarietyName() != null && !asset.getVarietyName().isEmpty()) {
-                    intellectualAssetPvpVarietyName = asset.getVarietyName();
-                  }
-
-                  if (asset.getStatus() != null && asset.getStatus() != -1) {
-                    intellectualAssetPvpStatus = ProjectStatusEnum.getValue(asset.getStatus()).getStatus();
-                  }
-                  if (asset.getCountry() != null && !asset.getCountry().getIsoAlpha2().equals("-1")) {
-                    intellectualAssetPvpCountry = asset.getCountry().getName();
-                  }
-                  if (asset.getAppRegNumber() != null) {
-                    intellectualAssetPvpApplicationNumber = asset.getAppRegNumber() + "";
-                  }
-                  if (asset.getBreederCrop() != null && !asset.getBreederCrop().isEmpty()) {
-                    intellectualAssetPvpBreederCrop = intellectualAssetPvpVarietyName = asset.getBreederCrop();
+                    if (asset.getStatus() != null && asset.getStatus() != -1) {
+                      intellectualAssetPvpStatus = ProjectStatusEnum.getValue(asset.getStatus()).getStatus();
+                    }
+                    if (asset.getCountry() != null && !asset.getCountry().getIsoAlpha2().equals("-1")) {
+                      intellectualAssetPvpCountry = asset.getCountry().getName();
+                    }
+                    if (asset.getAppRegNumber() != null) {
+                      intellectualAssetPvpApplicationNumber = asset.getAppRegNumber() + "";
+                    }
+                    if (asset.getBreederCrop() != null && !asset.getBreederCrop().isEmpty()) {
+                      intellectualAssetPvpBreederCrop = intellectualAssetPvpVarietyName = asset.getBreederCrop();
+                    }
                   }
                 }
-              }
-              if (asset.getTitle() != null && !asset.getTitle().isEmpty()) {
-                intellectualAssetTitle = asset.getTitle();
-              }
-              if (asset.getDateFilling() != null) {
-                intellectualAssetDateFilling = formatter.format(asset.getDateFilling());
-              }
-              if (asset.getDateRegistration() != null) {
-                intellectualAssetDateRegistration = formatter.format(asset.getDateRegistration());
-              }
-              if (asset.getDateExpiry() != null) {
-                intellectualAssetDateExpiry = formatter.format(asset.getDateExpiry());
-              }
-              if (asset.getAdditionalInformation() != null && !asset.getAdditionalInformation().isEmpty()) {
-                intellectualAssetAdditionalInformation = asset.getAdditionalInformation();
-              }
-              if (asset.getLink() != null && !asset.getLink().isEmpty()) {
-                intellectualAssetLinkPublished = asset.getLink();
-              }
-              if (asset.getPublicCommunication() != null && !asset.getPublicCommunication().isEmpty()) {
-                intellectualAssetCommunication = asset.getPublicCommunication();
-              }
+                if (asset.getTitle() != null && !asset.getTitle().isEmpty()) {
+                  intellectualAssetTitle = asset.getTitle();
+                }
+                if (asset.getDateFilling() != null) {
+                  intellectualAssetDateFilling = formatter.format(asset.getDateFilling());
+                }
+                if (asset.getDateRegistration() != null) {
+                  intellectualAssetDateRegistration = formatter.format(asset.getDateRegistration());
+                }
+                if (asset.getDateExpiry() != null) {
+                  intellectualAssetDateExpiry = formatter.format(asset.getDateExpiry());
+                }
+                if (asset.getAdditionalInformation() != null && !asset.getAdditionalInformation().isEmpty()) {
+                  intellectualAssetAdditionalInformation = asset.getAdditionalInformation();
+                }
+                if (asset.getLink() != null && !asset.getLink().isEmpty()) {
+                  intellectualAssetLinkPublished = asset.getLink();
+                }
+                if (asset.getPublicCommunication() != null && !asset.getPublicCommunication().isEmpty()) {
+                  intellectualAssetCommunication = asset.getPublicCommunication();
+                }
 
-            } else {
-              hasIntellectualAssetText = "No";
+              } else {
+                hasIntellectualAssetText = "No";
+              }
             }
           }
         }
+
 
         // Participants
         Boolean hasParticipants = false, isAcademicDegree = false;
@@ -3452,10 +3455,11 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     // Initialization of Model
     TypedTableModel model = new TypedTableModel(
       new String[] {"title", "center", "current_date", "project_submission", "cycle", "isNew", "isAdministrative",
-        "type", "isGlobal", "isPhaseOne", "budget_gender", "hasTargetUnit", "hasW1W2Co", "hasActivities", "phaseID"},
+        "type", "isGlobal", "isPhaseOne", "budget_gender", "hasTargetUnit", "hasW1W2Co", "hasActivities", "phaseID",
+        "hasSpecificitiesDeliverableIntellectualAsset"},
       new Class[] {String.class, String.class, String.class, String.class, String.class, Boolean.class, Boolean.class,
         String.class, Boolean.class, Boolean.class, Boolean.class, Boolean.class, Boolean.class, Boolean.class,
-        Long.class});
+        Long.class, Boolean.class});
     // Filling title
     String title = "";
     if (projectLeader != null) {
@@ -3577,9 +3581,12 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
 
     Long phaseID = this.getSelectedPhase().getId();
 
+    Boolean hasSpecificitiesDeliverableIntellectualAsset =
+      this.hasSpecificities(this.crpDeliverableIntellectualAsset());
+
     model.addRow(new Object[] {title, centerURL, currentDate, submission, this.getSelectedCycle(), isNew,
       isAdministrative, type, projectInfo.getLocationGlobal(), this.isPhaseOne(), hasGender, hasTargetUnit, hasW1W2Co,
-      hasActivities, phaseID});
+      hasActivities, phaseID, hasSpecificitiesDeliverableIntellectualAsset});
     return model;
   }
 

@@ -1362,37 +1362,42 @@ public class DeliverableAction extends BaseAction {
             deliverable.getFiles().add(deFile);
           }
 
-          if (deliverable.getDeliverableIntellectualAssets() != null) {
-            List<DeliverableIntellectualAsset> intellectualAssets =
-              deliverable.getDeliverableIntellectualAssets().stream()
-                .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList());
+          if (this.hasSpecificities(this.crpDeliverableIntellectualAsset())) {
 
-            if (intellectualAssets.size() > 0) {
-              DeliverableIntellectualAsset asset = deliverableIntellectualAssetManager
-                .getDeliverableIntellectualAssetById(intellectualAssets.get(0).getId());
-              deliverable.setIntellectualAsset(deliverableIntellectualAssetManager
-                .getDeliverableIntellectualAssetById(intellectualAssets.get(0).getId()));
-              if (this.transaction != null && !this.transaction.equals("-1")) {
-                if (deliverable.getIntellectualAsset().getFillingType() != null
-                  && deliverable.getIntellectualAsset().getFillingType().getId() != null) {
-                  deliverable.getIntellectualAsset().setFillingType(repIndFillingTypeManager
-                    .getRepIndFillingTypeById(deliverable.getIntellectualAsset().getFillingType().getId()));
+            if (deliverable.getDeliverableIntellectualAssets() != null) {
+              List<DeliverableIntellectualAsset> intellectualAssets =
+                deliverable.getDeliverableIntellectualAssets().stream()
+                  .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList());
+
+              if (intellectualAssets.size() > 0) {
+                DeliverableIntellectualAsset asset = deliverableIntellectualAssetManager
+                  .getDeliverableIntellectualAssetById(intellectualAssets.get(0).getId());
+                deliverable.setIntellectualAsset(deliverableIntellectualAssetManager
+                  .getDeliverableIntellectualAssetById(intellectualAssets.get(0).getId()));
+                if (this.transaction != null && !this.transaction.equals("-1")) {
+                  if (deliverable.getIntellectualAsset().getFillingType() != null
+                    && deliverable.getIntellectualAsset().getFillingType().getId() != null) {
+                    deliverable.getIntellectualAsset().setFillingType(repIndFillingTypeManager
+                      .getRepIndFillingTypeById(deliverable.getIntellectualAsset().getFillingType().getId()));
+                  }
+                  if (deliverable.getIntellectualAsset().getPatentStatus() != null
+                    && deliverable.getIntellectualAsset().getPatentStatus().getId() != null) {
+                    deliverable.getIntellectualAsset().setPatentStatus(repIndPatentStatusManager
+                      .getRepIndPatentStatusById(deliverable.getIntellectualAsset().getPatentStatus().getId()));
+                  }
+                  if (deliverable.getIntellectualAsset().getCountry() != null
+                    && deliverable.getIntellectualAsset().getCountry().getId() != null) {
+                    deliverable.getIntellectualAsset().setCountry(
+                      locElementManager.getLocElementById(deliverable.getIntellectualAsset().getCountry().getId()));
+                  }
                 }
-                if (deliverable.getIntellectualAsset().getPatentStatus() != null
-                  && deliverable.getIntellectualAsset().getPatentStatus().getId() != null) {
-                  deliverable.getIntellectualAsset().setPatentStatus(repIndPatentStatusManager
-                    .getRepIndPatentStatusById(deliverable.getIntellectualAsset().getPatentStatus().getId()));
-                }
-                if (deliverable.getIntellectualAsset().getCountry() != null
-                  && deliverable.getIntellectualAsset().getCountry().getId() != null) {
-                  deliverable.getIntellectualAsset().setCountry(
-                    locElementManager.getLocElementById(deliverable.getIntellectualAsset().getCountry().getId()));
-                }
+              } else {
+                deliverable.setIntellectualAsset(new DeliverableIntellectualAsset());
               }
-            } else {
-              deliverable.setIntellectualAsset(new DeliverableIntellectualAsset());
             }
+
           }
+
           if (deliverable.getDeliverableParticipants() != null) {
             List<DeliverableParticipant> deliverableParticipants = deliverable.getDeliverableParticipants().stream()
               .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList());
@@ -1768,9 +1773,11 @@ public class DeliverableAction extends BaseAction {
           deliverable.getDeliverableParticipant().setRepIndTypeActivity(null);
           deliverable.getDeliverableParticipant().setRepIndTypeParticipant(null);
         }
-        if (deliverable.getIntellectualAsset() != null) {
-          deliverable.getIntellectualAsset().setFillingType(null);
-          deliverable.getIntellectualAsset().setPatentStatus(null);
+        if (this.hasSpecificities(this.crpDeliverableIntellectualAsset())) {
+          if (deliverable.getIntellectualAsset() != null) {
+            deliverable.getIntellectualAsset().setFillingType(null);
+            deliverable.getIntellectualAsset().setPatentStatus(null);
+          }
         }
 
         if (deliverable.getCountries() != null) {
@@ -1914,7 +1921,9 @@ public class DeliverableAction extends BaseAction {
         // Data Sharing is not longer used.
         this.saveDataSharing();
         this.saveUsers();
-        this.saveIntellectualAsset();
+        if (this.hasSpecificities(this.crpDeliverableIntellectualAsset())) {
+          this.saveIntellectualAsset();
+        }
         this.saveParticipant();
       }
 
@@ -1935,7 +1944,9 @@ public class DeliverableAction extends BaseAction {
         relationsName.add(APConstants.PROJECT_DELIVERABLE_DISEMINATIONS);
         relationsName.add(APConstants.PROJECT_DELIVERABLE_CRPS);
         relationsName.add(APConstants.PROJECT_DELIVERABLE_USERS);
-        relationsName.add(APConstants.PROJECT_DELIVERABLES_INTELLECTUAL_RELATION);
+        if (this.hasSpecificities(this.crpDeliverableIntellectualAsset())) {
+          relationsName.add(APConstants.PROJECT_DELIVERABLES_INTELLECTUAL_RELATION);
+        }
         relationsName.add(APConstants.PROJECT_DELIVERABLES_PARTICIPANT_RELATION);
       }
       /**
