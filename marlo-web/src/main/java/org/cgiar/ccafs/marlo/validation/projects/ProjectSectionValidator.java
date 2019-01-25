@@ -961,20 +961,23 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
             deliverable.getFiles().add(deFile);
           }
 
-          if (deliverable.getDeliverableIntellectualAssets() != null) {
-            List<DeliverableIntellectualAsset> intellectualAssets = deliverable.getDeliverableIntellectualAssets()
-              .stream().filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList());
+          if (action.hasSpecificities(action.crpDeliverableIntellectualAsset())) {
+            if (deliverable.getDeliverableIntellectualAssets() != null) {
+              List<DeliverableIntellectualAsset> intellectualAssets = deliverable.getDeliverableIntellectualAssets()
+                .stream().filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList());
 
-            if (intellectualAssets.size() > 0) {
-              DeliverableIntellectualAsset asset = deliverableIntellectualAssetManager
-                .getDeliverableIntellectualAssetById(intellectualAssets.get(0).getId());
-              deliverable.setIntellectualAsset(deliverableIntellectualAssetManager
-                .getDeliverableIntellectualAssetById(intellectualAssets.get(0).getId()));
+              if (intellectualAssets.size() > 0) {
+                DeliverableIntellectualAsset asset = deliverableIntellectualAssetManager
+                  .getDeliverableIntellectualAssetById(intellectualAssets.get(0).getId());
+                deliverable.setIntellectualAsset(deliverableIntellectualAssetManager
+                  .getDeliverableIntellectualAssetById(intellectualAssets.get(0).getId()));
 
-            } else {
-              deliverable.setIntellectualAsset(new DeliverableIntellectualAsset());
+              } else {
+                deliverable.setIntellectualAsset(new DeliverableIntellectualAsset());
+              }
             }
           }
+
           if (deliverable.getDeliverableParticipants() != null) {
             List<DeliverableParticipant> deliverableParticipants = deliverable.getDeliverableParticipants().stream()
               .filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList());

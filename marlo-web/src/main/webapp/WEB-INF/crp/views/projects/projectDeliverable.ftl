@@ -119,8 +119,10 @@
                 [#-- Have you adopted a license?  --]
                 [@deliverableMacros.deliverableLicenseMacro /]
                 
-                [#--  Intellectual Asset--]
+                [#--  Intellectual Asset--]                
+                [#if action.hasSpecificities(action.crpDeliverableIntellectualAsset())]
                 [@deliverableMacros.intellectualAsset /]
+                 [/#if]
                 
                 [#--  Does this deliverable involve Participants and Trainees? --]
                 [@deliverableMacros.deliverableParticipantsMacro /]

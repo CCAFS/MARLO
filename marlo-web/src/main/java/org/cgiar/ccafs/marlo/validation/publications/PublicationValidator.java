@@ -123,12 +123,15 @@ public class PublicationValidator extends BaseValidator {
       }
 
       // Validate Intellectual Asset
-      if (deliverable.getIntellectualAsset() != null && deliverable.getIntellectualAsset().getHasPatentPvp() != null) {
-        this.validateIntellectualAsset(deliverable.getIntellectualAsset(), action);
-      } else {
-        action.addMessage(action.getText("deliverable.intellectualAsset.hasPatentPvp"));
-        action.getInvalidFields().put("input-deliverable.intellectualAsset.hasPatentPvp",
-          InvalidFieldsMessages.EMPTYFIELD);
+      if (action.hasSpecificities(action.crpDeliverableIntellectualAsset())) {
+        if (deliverable.getIntellectualAsset() != null
+          && deliverable.getIntellectualAsset().getHasPatentPvp() != null) {
+          this.validateIntellectualAsset(deliverable.getIntellectualAsset(), action);
+        } else {
+          action.addMessage(action.getText("deliverable.intellectualAsset.hasPatentPvp"));
+          action.getInvalidFields().put("input-deliverable.intellectualAsset.hasPatentPvp",
+            InvalidFieldsMessages.EMPTYFIELD);
+        }
       }
 
       // Validate Deliverable Participant

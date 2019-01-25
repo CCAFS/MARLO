@@ -202,16 +202,19 @@ public class DeliverableValidator extends BaseValidator {
             }
           }
         }
-        DeliverableIntellectualAsset asset = deliverable.getIntellectualAsset();
-        // Validate Intellectual Asset
-        if (deliverable.getIntellectualAsset() != null
-          && deliverable.getIntellectualAsset().getHasPatentPvp() != null) {
-          this.validateIntellectualAsset(deliverable.getIntellectualAsset(), action);
-        } else {
-          action.addMessage(action.getText("intellectualAsset.applicants"));
-          action.getInvalidFields().put("input-deliverable.intellectualAsset.hasPatentPvp",
-            InvalidFieldsMessages.EMPTYFIELD);
+        if (action.hasSpecificities(action.crpDeliverableIntellectualAsset())) {
+          DeliverableIntellectualAsset asset = deliverable.getIntellectualAsset();
+          // Validate Intellectual Asset
+          if (deliverable.getIntellectualAsset() != null
+            && deliverable.getIntellectualAsset().getHasPatentPvp() != null) {
+            this.validateIntellectualAsset(deliverable.getIntellectualAsset(), action);
+          } else {
+            action.addMessage(action.getText("intellectualAsset.applicants"));
+            action.getInvalidFields().put("input-deliverable.intellectualAsset.hasPatentPvp",
+              InvalidFieldsMessages.EMPTYFIELD);
+          }
         }
+
 
         // Validate Deliverable Participant
         if (deliverable.getDeliverableParticipant() != null

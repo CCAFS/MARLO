@@ -217,7 +217,9 @@ public class DeliverablesReplicationAction extends BaseAction {
               relationsName.add(APConstants.PROJECT_DELIVERABLE_DISEMINATIONS);
               relationsName.add(APConstants.PROJECT_DELIVERABLE_CRPS);
               relationsName.add(APConstants.PROJECT_DELIVERABLE_USERS);
-              relationsName.add(APConstants.PROJECT_DELIVERABLES_INTELLECTUAL_RELATION);
+              if (this.hasSpecificities(this.crpDeliverableIntellectualAsset())) {
+                relationsName.add(APConstants.PROJECT_DELIVERABLES_INTELLECTUAL_RELATION);
+              }
               relationsName.add(APConstants.PROJECT_DELIVERABLES_PARTICIPANT_RELATION);
             }
 
@@ -331,15 +333,18 @@ public class DeliverablesReplicationAction extends BaseAction {
               }
 
               // Deliverable Intellectual asset
-              List<DeliverableIntellectualAsset> intellectualAssets = deliverable.getDeliverableIntellectualAssets()
-                .stream().filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList());
-              if (intellectualAssets != null && !intellectualAssets.isEmpty()) {
-                if (intellectualAssets.size() > 1) {
-                  logger.warn("There is more than 1 intellectual assets for deliverable: " + deliverable.getId()
-                    + " and phase: " + phase.getId());
+              if (this.hasSpecificities(this.crpDeliverableIntellectualAsset())) {
+                List<DeliverableIntellectualAsset> intellectualAssets = deliverable.getDeliverableIntellectualAssets()
+                  .stream().filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList());
+                if (intellectualAssets != null && !intellectualAssets.isEmpty()) {
+                  if (intellectualAssets.size() > 1) {
+                    logger.warn("There is more than 1 intellectual assets for deliverable: " + deliverable.getId()
+                      + " and phase: " + phase.getId());
+                  }
+                  deliverableIntellectualAssetManager.saveDeliverableIntellectualAsset(intellectualAssets.get(0));
                 }
-                deliverableIntellectualAssetManager.saveDeliverableIntellectualAsset(intellectualAssets.get(0));
               }
+
 
               // Deliverable Participant
               List<DeliverableParticipant> deliverableParticipants = deliverable.getDeliverableParticipants().stream()
