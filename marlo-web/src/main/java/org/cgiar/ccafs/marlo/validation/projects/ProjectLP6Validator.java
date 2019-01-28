@@ -124,7 +124,7 @@ public class ProjectLP6Validator extends BaseValidator {
         if (!this.isValidString(projectLp6Contribution.getUndertakingEffortsLeadingNarrative())
           && this.wordCount(projectLp6Contribution.getUndertakingEffortsLeadingNarrative()) <= 100) {
           action.addMessage(action.getText("projects.LP6Contribution.positionCGIAR.question.readText"));
-          action.getInvalidFields().put("input-projectLp6Contribution.workingAcrossFlagshipsNarrative",
+          action.getInvalidFields().put("input-projectLp6Contribution.undertakingEffortsLeadingNarrative",
             InvalidFieldsMessages.EMPTYFIELD);
         }
       }
