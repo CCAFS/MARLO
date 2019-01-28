@@ -18,6 +18,15 @@
   <input type="hidden"  name="${auditObjectName}"   value="${(auditObjectID)!}" />
 [/#if]
 
+[#-- Project LP6--]
+[#if (projectLp6Contribution.id?has_content)!false]
+  [#assign auditObject = (projectLp6Contribution)!{} ]
+  [#assign auditObjectID = auditObject['id'] ]
+  [#assign auditObjectName = "projectLp6ContributionID" ]
+  <input type="hidden"  name="${auditObjectName}"   value="${(auditObjectID)!}" />
+[/#if]
+
+
 [#-- General identifiers --]
 <input type="hidden"  name="id"                     value="${(auditObjectID)!}"/>
 <input type="hidden"  name="className"              value="${(auditObject.class.name)!}"/>

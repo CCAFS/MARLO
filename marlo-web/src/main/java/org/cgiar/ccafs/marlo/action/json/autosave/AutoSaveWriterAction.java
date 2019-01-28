@@ -32,6 +32,7 @@ import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.data.model.ProjectHighlight;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
+import org.cgiar.ccafs.marlo.data.model.ProjectLp6Contribution;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicy;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
@@ -201,6 +202,10 @@ public class AutoSaveWriterAction extends BaseAction {
       if (nameClass.equals(ReportSynthesis.class.getName())) {
         jSon = jSon.replaceAll("reportSynthesis\\.", "");
       }
+      if (nameClass.equals(ProjectLp6Contribution.class.getName())) {
+        jSon = jSon.replaceAll("projectLp6Contribution\\.", "");
+      }
+
 
       /****************************************************
        ******************** CENTER SECTIONS*****************

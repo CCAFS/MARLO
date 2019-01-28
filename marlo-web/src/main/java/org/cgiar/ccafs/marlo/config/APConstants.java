@@ -417,6 +417,9 @@ public final class APConstants {
   public static final String PROJECT_POLICY_CROSS_CUTTING_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.ProjectPolicy.projectPolicyCrossCuttingMarkers)";
 
+  // Project Contribution To LP6 Relations
+  public static final String PROJECT_CONTRIBUTION_LP6_RELATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.Project.projectLp6Contributions)";
 
   // End
   public static final String PROJECT_REQUEST_ID = "projectID";
