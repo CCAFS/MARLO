@@ -106,6 +106,7 @@ public class ProjectsSummaryAction extends BaseSummariesAction implements Summar
   private MasterReport addi8nParameters(MasterReport masterReport) {
     masterReport.getParameterValues().put("i8nProjectId", this.getText("searchTerms.projectId"));
     masterReport.getParameterValues().put("i8nProjectTitle", this.getText("project.title.readText"));
+    masterReport.getParameterValues().put("i8nProjectSummary", this.getText("project.summary"));
     masterReport.getParameterValues().put("i8nStatus", this.getText("project.status"));
     masterReport.getParameterValues().put("i8nManagementLiaison", this.getText("project.liaisonInstitution"));
     masterReport.getParameterValues().put("i8nFlagships", this.getText("project.Flagships"));
@@ -248,11 +249,11 @@ public class ProjectsSummaryAction extends BaseSummariesAction implements Summar
 
   private TypedTableModel getProjecsDetailsTableModel() {
     TypedTableModel model = new TypedTableModel(
-      new String[] {"projectId", "projectTitle", "status", "managementLiaison", "flagships", "regions",
-        "institutionLeader", "projectLeader", "activitiesOnGoing", "expectedDeliverables", "outcomes",
+      new String[] {"projectId", "projectTitle", "projectSummary", "status", "managementLiaison", "flagships",
+        "regions", "institutionLeader", "projectLeader", "activitiesOnGoing", "expectedDeliverables", "outcomes",
         "expectedStudies", "phaseID"},
       new Class[] {Long.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        String.class, Integer.class, Integer.class, Integer.class, Integer.class, Long.class},
+        String.class, String.class, Integer.class, Integer.class, Integer.class, Integer.class, Long.class},
       0);
     // Status of projects
     String[] statuses = null;
@@ -263,6 +264,12 @@ public class ProjectsSummaryAction extends BaseSummariesAction implements Summar
       Long projectId = project.getId();
       String projectTitle = project.getProjectInfo().getTitle();
       String managementLiaison = null;
+
+      String projectSummary = "";
+
+      if (project.getProjectInfo().getSummary() != null && !project.getProjectInfo().getSummary().isEmpty()) {
+        projectSummary = project.getProjectInfo().getSummary();
+      }
       if (project.getProjectInfo().getLiaisonInstitution() != null) {
         managementLiaison = project.getProjectInfo().getLiaisonInstitution().getComposedName();
         if (project.getProjectInfo().getLiaisonUser() != null) {
@@ -395,7 +402,7 @@ public class ProjectsSummaryAction extends BaseSummariesAction implements Summar
         }
       }
 
-      model.addRow(new Object[] {projectId, projectTitle, status, managementLiaison, flagships, regions,
+      model.addRow(new Object[] {projectId, projectTitle, projectSummary, status, managementLiaison, flagships, regions,
         institutionLeader, projectLeaderName, activitiesOnGoing, expectedDeliverables, outcomes, expectedStudies,
         this.getSelectedPhase().getId()});
     }
