@@ -1,5 +1,5 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning &
+ * This file is part of Managing Agricultural Research for Learning & 
  * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -12,47 +12,54 @@
  * You should have received a copy of the GNU General Public License
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
-
 package org.cgiar.ccafs.marlo.rest.dto;
 
 import io.swagger.annotations.ApiModelProperty;
 
-public class SrfSubIdoDTO {
+public class RegionDTO {
 
-	/*
-	 * @ApiModelProperty(notes = "SRF Sub-IDO ID") private Long id;
-	 */
+	@ApiModelProperty(notes = "The ISO Region code")
+	private Long code;
 
-	@ApiModelProperty(notes = "SRF Sub-IDO CODE")
-	private String code;
+	@ApiModelProperty(notes = "The ISO Alpha 2 letters region code")
+	private String isoAlpha2;
 
-	@ApiModelProperty(notes = "SRF Sub-IDO description ")
-	private String description;
+	@ApiModelProperty(notes = "Region Name")
+	private String name;
 
-	private SrfIdoDTO srfIdoDTO;
+	@ApiModelProperty(notes = "Parent Region")
+	private RegionDTO parentRegion;
 
-	public String getCode() {
+	public Long getCode() {
 		return this.code;
 	}
 
-	public String getDescription() {
-		return this.description;
+	public String getIsoAlpha2() {
+		return this.isoAlpha2;
 	}
 
-	public SrfIdoDTO getSrfIdoDTO() {
-		return this.srfIdoDTO;
+	public String getName() {
+		return this.name;
 	}
 
-	public void setCode(String code) {
+	public RegionDTO getParentRegion() {
+		return this.parentRegion;
+	}
+
+	public void setCode(Long code) {
 		this.code = code;
 	}
 
-	public void setDescription(String description) {
-		this.description = description;
+	public void setIsoAlpha2(String isoAlpha2) {
+		this.isoAlpha2 = isoAlpha2;
 	}
 
-	public void setSrfIdoDTO(SrfIdoDTO srfIdoDTO) {
-		this.srfIdoDTO = srfIdoDTO;
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public void setParentRegion(RegionDTO parentRegion) {
+		this.parentRegion = parentRegion;
 	}
 
 }

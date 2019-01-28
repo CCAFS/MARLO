@@ -19,26 +19,32 @@ import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.rest.dto.GlobalUnitDTO;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
+import org.mapstruct.Mappings;
 
 /**
- * Maps Crp domain entites to GlobalUnitDTO objects. As JSON serialization frameworks will try and serialize all
- * relations (including bi-directional assocations which can lead to infinite loops unless mitigated against) we
- * either have to create DTO objects or give the JSON serialization framework instructions on which fields to
- * serialize and which ones to not serialize.
- * We use the MapStruct framework here, all we need to do is create our DTO object and our interface mapper and
- * MapStruct will create the implementation for us.
+ * Maps Crp domain entites to GlobalUnitDTO objects. As JSON serialization
+ * frameworks will try and serialize all relations (including bi-directional
+ * assocations which can lead to infinite loops unless mitigated against) we
+ * either have to create DTO objects or give the JSON serialization framework
+ * instructions on which fields to serialize and which ones to not serialize. We
+ * use the MapStruct framework here, all we need to do is create our DTO object
+ * and our interface mapper and MapStruct will create the implementation for us.
  * 
  * @author GrantL
  */
 @Mapper(componentModel = "jsr330")
 public interface GlobalUnitMapper {
 
-  public GlobalUnit globalUnitDTOToGlobalUnit(GlobalUnitDTO globalUnitDTO);
+	public GlobalUnit globalUnitDTOToGlobalUnit(GlobalUnitDTO globalUnitDTO);
 
-  public GlobalUnitDTO globalUnitToGlobalUnitDTO(GlobalUnit globalUnit);
+	@Mappings({ @Mapping(source = "globalUnit.smoCode", target = "code"),
+			@Mapping(source = "globalUnitType.id", target = "globalUnitTypeDTO.id"),
+			@Mapping(source = "globalUnitType.name", target = "globalUnitTypeDTO.name") })
+	public GlobalUnitDTO globalUnitToGlobalUnitDTO(GlobalUnit globalUnit);
 
-  public GlobalUnit updateGlobalUnitFromGlobalUnitDto(GlobalUnitDTO globalUnitDTO,
-    @MappingTarget GlobalUnit globalUnit);
+	public GlobalUnit updateGlobalUnitFromGlobalUnitDto(GlobalUnitDTO globalUnitDTO,
+			@MappingTarget GlobalUnit globalUnit);
 
 }

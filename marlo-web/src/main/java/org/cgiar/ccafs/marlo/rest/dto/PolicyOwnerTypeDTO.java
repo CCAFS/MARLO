@@ -15,61 +15,34 @@
 
 package org.cgiar.ccafs.marlo.rest.dto;
 
-import java.io.Serializable;
-
 import javax.validation.constraints.NotNull;
 
 import io.swagger.annotations.ApiModelProperty;
 
-public class GlobalUnitDTO implements Serializable {
+public class PolicyOwnerTypeDTO {
 
-	private static final long serialVersionUID = 1L;
+	@ApiModelProperty(notes = "Policy Owner Type ID")
+	@NotNull
+	private Long id;
 
-	@ApiModelProperty(notes = "Code of CGIAR entity")
-	private String code;
-
-	@ApiModelProperty(notes = "CGIAR entity name")
+	@ApiModelProperty(notes = "Policy Owner Type name")
 	@NotNull
 	private String name;
 
-	@ApiModelProperty(notes = "Acronym of CGIAR entity")
-	@NotNull
-	private String acronym;
-
-	@ApiModelProperty(notes = "CGIAR entity type")
-	@NotNull
-	private GlobalUnitTypeDTO globalUnitTypeDTO;
-
-	public String getAcronym() {
-		return this.acronym;
-	}
-
-	public String getCode() {
-		return this.code;
+	public Long getId() {
+		return this.id;
 	}
 
 	public String getName() {
 		return this.name;
 	}
 
-	public void setAcronym(String acronym) {
-		this.acronym = acronym;
-	}
-
-	public void setCode(String code) {
-		this.code = code;
+	public void setId(Long id) {
+		this.id = id;
 	}
 
 	public void setName(String name) {
 		this.name = name;
-	}
-
-	public GlobalUnitTypeDTO getGlobalUnitTypeDTO() {
-		return globalUnitTypeDTO;
-	}
-
-	public void setGlobalUnitTypeDTO(GlobalUnitTypeDTO globalUnitTypeDTO) {
-		this.globalUnitTypeDTO = globalUnitTypeDTO;
 	}
 
 }
