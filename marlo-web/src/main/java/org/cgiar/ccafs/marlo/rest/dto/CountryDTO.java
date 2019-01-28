@@ -20,7 +20,7 @@ import io.swagger.annotations.ApiModelProperty;
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  */
-public class LocElementDTO {
+public class CountryDTO {
 
 	@ApiModelProperty(notes = "The ISO country code")
 	private Long code;
@@ -32,7 +32,7 @@ public class LocElementDTO {
 	private String name;
 
 	@ApiModelProperty(notes = "Region")
-	private LocElementDTO region;
+	private RegionDTO regionDTO;
 
 	public Long getCode() {
 		return this.code;
@@ -46,8 +46,8 @@ public class LocElementDTO {
 		return this.name;
 	}
 
-	public LocElementDTO getRegion() {
-		return this.region;
+	public RegionDTO getRegionDTO() {
+		return this.regionDTO;
 	}
 
 	public void setCode(Long code) {
@@ -62,8 +62,8 @@ public class LocElementDTO {
 		this.name = name;
 	}
 
-	public void setRegion(LocElementDTO region) {
-		this.region = region;
+	public void setRegionDTO(RegionDTO regionDTO) {
+		this.regionDTO = regionDTO;
 	}
 
 }

@@ -43,7 +43,7 @@ public class PartnerRequestDTO {
   private Boolean acepted;
 
 
-  LocElementDTO locElementDTO;
+  CountryDTO locElementDTO;
 
 
   InstitutionTypeDTO institutionTypeDTO;
@@ -77,7 +77,7 @@ public class PartnerRequestDTO {
   }
 
 
-  public LocElementDTO getLocElementDTO() {
+  public CountryDTO getLocElementDTO() {
     return locElementDTO;
   }
 
@@ -111,7 +111,7 @@ public class PartnerRequestDTO {
     this.institutionTypeDTO = institutionTypeDTO;
   }
 
-  public void setLocElementDTO(LocElementDTO locElementDTO) {
+  public void setLocElementDTO(CountryDTO locElementDTO) {
     this.locElementDTO = locElementDTO;
   }
 

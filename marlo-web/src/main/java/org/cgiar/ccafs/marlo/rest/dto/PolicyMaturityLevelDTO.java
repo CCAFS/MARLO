@@ -23,21 +23,21 @@ import io.swagger.annotations.ApiModelProperty;
  * @author Hermes Jiménez - CIAT/CCAFS
  */
 
-public class PolicyInvestimentTypeDTO {
+public class PolicyMaturityLevelDTO {
 
-	@ApiModelProperty(notes = "The Generated policy insvestiment type ID")
+	@ApiModelProperty(notes = "Level of maturity of policy ID")
 	@NotNull
 	private Long id;
 
-	@ApiModelProperty(notes = "policy insvestiment type name")
+	@ApiModelProperty(notes = "Level of maturity of policy name")
 	@NotNull
 	private String name;
 
-	@ApiModelProperty(notes = "policy insvestiment type definition")
-	private String definition;
+	@ApiModelProperty(notes = "Level of maturity of policy definition")
+	private String description;
 
-	public String getDefinition() {
-		return this.definition;
+	public String getDescription() {
+		return this.description;
 	}
 
 	public Long getId() {
@@ -48,8 +48,8 @@ public class PolicyInvestimentTypeDTO {
 		return this.name;
 	}
 
-	public void setDefinition(String definition) {
-		this.definition = definition;
+	public void setDescription(String description) {
+		this.description = description;
 	}
 
 	public void setId(Long id) {

@@ -15,61 +15,55 @@
 
 package org.cgiar.ccafs.marlo.rest.dto;
 
-import java.io.Serializable;
-
-import javax.validation.constraints.NotNull;
-
 import io.swagger.annotations.ApiModelProperty;
 
-public class GlobalUnitDTO implements Serializable {
+/**
+ * @author Hermes Jiménez - CIAT/CCAFS
+ */
+public class SrfSloIndicatorTargetDTO {
 
-	private static final long serialVersionUID = 1L;
-
-	@ApiModelProperty(notes = "Code of CGIAR entity")
+	@ApiModelProperty(notes = "SLO target indicator code")
 	private String code;
 
-	@ApiModelProperty(notes = "CGIAR entity name")
-	@NotNull
-	private String name;
+	@ApiModelProperty(notes = "SLO target indicator narrative")
+	private String narrative;
 
-	@ApiModelProperty(notes = "Acronym of CGIAR entity")
-	@NotNull
-	private String acronym;
+	@ApiModelProperty(notes = "SLO of target indicator ")
+	private SrfSloDTO srfSloDTO;
 
-	@ApiModelProperty(notes = "CGIAR entity type")
-	@NotNull
-	private GlobalUnitTypeDTO globalUnitTypeDTO;
-
-	public String getAcronym() {
-		return this.acronym;
-	}
+	@ApiModelProperty(notes = "SLO target indicator year")
+	private String year;
 
 	public String getCode() {
 		return this.code;
 	}
 
-	public String getName() {
-		return this.name;
+	public String getNarrative() {
+		return this.narrative;
 	}
 
-	public void setAcronym(String acronym) {
-		this.acronym = acronym;
+	public SrfSloDTO getSrfSloDTO() {
+		return this.srfSloDTO;
+	}
+
+	public String getYear() {
+		return this.year;
 	}
 
 	public void setCode(String code) {
 		this.code = code;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setNarrative(String narrative) {
+		this.narrative = narrative;
 	}
 
-	public GlobalUnitTypeDTO getGlobalUnitTypeDTO() {
-		return globalUnitTypeDTO;
+	public void setSrfSloDTO(SrfSloDTO srfSloDTO) {
+		this.srfSloDTO = srfSloDTO;
 	}
 
-	public void setGlobalUnitTypeDTO(GlobalUnitTypeDTO globalUnitTypeDTO) {
-		this.globalUnitTypeDTO = globalUnitTypeDTO;
+	public void setYear(String year) {
+		this.year = year;
 	}
 
 }

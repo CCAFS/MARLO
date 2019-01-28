@@ -15,61 +15,49 @@
 
 package org.cgiar.ccafs.marlo.rest.dto;
 
-import java.io.Serializable;
-
 import javax.validation.constraints.NotNull;
 
 import io.swagger.annotations.ApiModelProperty;
 
-public class GlobalUnitDTO implements Serializable {
+/**
+ * @author Hermes Jiménez - CIAT/CCAFS
+ */
 
-	private static final long serialVersionUID = 1L;
+public class PolicyInvestmentTypeDTO {
 
-	@ApiModelProperty(notes = "Code of CGIAR entity")
-	private String code;
+	@ApiModelProperty(notes = "The Generated policy insvestiment type ID")
+	@NotNull
+	private Long id;
 
-	@ApiModelProperty(notes = "CGIAR entity name")
+	@ApiModelProperty(notes = "policy insvestiment type name")
 	@NotNull
 	private String name;
 
-	@ApiModelProperty(notes = "Acronym of CGIAR entity")
-	@NotNull
-	private String acronym;
+	@ApiModelProperty(notes = "policy insvestiment type definition")
+	private String definition;
 
-	@ApiModelProperty(notes = "CGIAR entity type")
-	@NotNull
-	private GlobalUnitTypeDTO globalUnitTypeDTO;
-
-	public String getAcronym() {
-		return this.acronym;
+	public String getDefinition() {
+		return this.definition;
 	}
 
-	public String getCode() {
-		return this.code;
+	public Long getId() {
+		return this.id;
 	}
 
 	public String getName() {
 		return this.name;
 	}
 
-	public void setAcronym(String acronym) {
-		this.acronym = acronym;
+	public void setDefinition(String definition) {
+		this.definition = definition;
 	}
 
-	public void setCode(String code) {
-		this.code = code;
+	public void setId(Long id) {
+		this.id = id;
 	}
 
 	public void setName(String name) {
 		this.name = name;
-	}
-
-	public GlobalUnitTypeDTO getGlobalUnitTypeDTO() {
-		return globalUnitTypeDTO;
-	}
-
-	public void setGlobalUnitTypeDTO(GlobalUnitTypeDTO globalUnitTypeDTO) {
-		this.globalUnitTypeDTO = globalUnitTypeDTO;
 	}
 
 }

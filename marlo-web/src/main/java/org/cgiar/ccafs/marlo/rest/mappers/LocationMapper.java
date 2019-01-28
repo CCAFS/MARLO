@@ -15,8 +15,9 @@
 
 package org.cgiar.ccafs.marlo.rest.mappers;
 
-import org.cgiar.ccafs.marlo.data.model.SrfSubIdo;
-import org.cgiar.ccafs.marlo.rest.dto.SrfSubIdoDTO;
+import org.cgiar.ccafs.marlo.data.model.LocElement;
+import org.cgiar.ccafs.marlo.rest.dto.CountryDTO;
+import org.cgiar.ccafs.marlo.rest.dto.RegionDTO;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -25,17 +26,25 @@ import org.mapstruct.Mappings;
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  */
-
 @Mapper(componentModel = "jsr330")
-public interface SrfSubIdoMapper {
+public interface LocationMapper {
 
-//
-//	@Mappings({ @Mapping(source = "srfIdo.smoCode", target = "code") })
-//	public abstract SrfIdoDTO srfIdoToSrfIdoDTO(SrfIdo srfIdo);
+	@Mappings({ @Mapping(source = "code", target = "isoNumeric") })
+	public abstract LocElement countryDTOToLocElement(CountryDTO countryDTO);
 
-	public abstract SrfSubIdo srfSubIdoDTOToSrfSubIdo(SrfSubIdoDTO srfSubIdoDTO);
+	@Mappings({ @Mapping(source = "isoNumeric", target = "code"),
+			@Mapping(source = "locElement", target = "regionDTO") })
+	public abstract CountryDTO locElementToCountryDTO(LocElement locElement);
 
-	@Mappings({ @Mapping(source = "srfSubIdo.smoCode", target = "code"),
-			@Mapping(source = "srfSubIdo.srfIdo.smoCode", target = "srfIdoDTO.code") })
-	public abstract SrfSubIdoDTO srfSubIdoToSrfSubIdoDTO(SrfSubIdo srfSubIdo);
+	@Mappings({ @Mapping(source = "isoNumeric", target = "code"),
+			@Mapping(source = "locElement", target = "parentRegion") })
+	public abstract RegionDTO locElementToRegionDTO(LocElement regElement);
+
+	/*
+	 * public abstract LocElement updateLocElementFromLocElementDto(CountryDTO
+	 * locElementDTO,
+	 * 
+	 * @MappingTarget LocElement locElement);
+	 */
+
 }
