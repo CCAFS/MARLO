@@ -50,6 +50,31 @@
       </div>
       [/#if]
       
+      [#-- 3. Outcome story for communications use. NEW --]
+      [#if isOutcomeCaseStudy]
+      <div class="form-group">
+        [@customForm.textArea name="${customName}.projectExpectedStudyInfo.outcomestory" i18nkey="study.outcomestory" help="study.outcomestory.help" className="limitWords-400" helpIcon=false required=true editable=editable /]
+      
+        <br />
+        <label for="">[@s.text name="study.outcomestoryLinks" /]:[@customForm.req required=editable /][@customForm.helpLabel name="study.outcomestoryLinks.help" showIcon=false editable=editable/]</label>
+        <div class="linksBlock simpleBox">
+          <div class="linksList">
+            [#list (element.links)![{}] as link ]
+              [@studyLink name="study.links" element=link index=link_index /]
+            [/#list]
+          </div>
+          [#if editable]
+          <div class="addButtonLink button-green pull-right"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> Add Link </div>
+          <div class="clearfix"></div>
+          [/#if]
+        </div>
+        [#-- Element item Template --]
+        <div style="display:none">
+          [@studyLink name="study.links" element={} index=-1 template=true /]
+        </div>
+      </div>
+      [/#if]
+      
       [#-- 3. Link to Common Results Reporting Indicator #I3 --]
       [#if isOutcomeCaseStudy]
       <div class="form-group">
@@ -63,27 +88,9 @@
         
         [#-- Disaggregates for CGIAR Indicator I3  --]
         <div class="form-group simpleBox block-${studyIndicatorThree}" style="display:${((element.projectExpectedStudyInfo.isContribution)!false)?string('block','none')}">
-          [#local isBudgetInvestment = ((element.projectExpectedStudyInfo.repIndPolicyInvestimentType.id == 3))!false]
-          <div class="form-group row">
-            <div class="col-md-6">
-              [#-- Policy/Investment Type --]
-              [@customForm.select name="${customName}.projectExpectedStudyInfo.repIndPolicyInvestimentType.id" className="setSelect2 policyInvestimentTypes" i18nkey="study.reportingIndicatorThree.policyType" listName="policyInvestimentTypes" keyFieldName="id"  displayFieldName="name" required=true editable=editable/]
-            </div>
-            <div class="col-md-6 block-budgetInvestment" style="display:${isBudgetInvestment?string('block', 'none')}">
-              [#-- Amount (Only for Budget or Investment) --]
-              [@customForm.input name="${customName}.projectExpectedStudyInfo.policyAmount" i18nkey="study.reportingIndicatorThree.amount" help="study.reportingIndicatorThree.amount.help" className="currencyInput" required=true editable=editable /]
-            </div>
-          </div>
-          <div class="form-group row">
-            <div class="col-md-6">
-              [#-- Implementing Organization Type --]
-              [@customForm.select name="${customName}.projectExpectedStudyInfo.repIndOrganizationType.id" className="setSelect2" i18nkey="study.reportingIndicatorThree.organizationType" listName="organizationTypes" keyFieldName="id"  displayFieldName="name" required=true  editable=editable/]
-            </div>
-            <div class="col-md-6">
-              [#-- Stage in Process --]
-              [@customForm.select name="${customName}.projectExpectedStudyInfo.repIndStageProcess.id" className="setSelect2 stageProcess" i18nkey="study.reportingIndicatorThree.stage" listName="stageProcesses" keyFieldName="id"  displayFieldName="composedName" required=true editable=editable /]
-            </div>
-          </div>
+          [@customForm.elementsListComponent name="${customName}.policies" elementType="projectPolicy" elementList=element.policies label="study.policies"  listName="policiesList" keyFieldName="id" displayFieldName="description"/]
+          
+          <div class="note"></div>
         </div>
       </div>
       [/#if]
@@ -355,3 +362,16 @@
 [#macro tag name=""]
   [#-- <span class="label label-info pull-right"> <i class="fas fa-tag"></i> ${name} </span> --]
 [/#macro]
+
+[#macro studyLink name element index=-1 template=false]
+  [#local customName = "${template?string('_TEMPLATE_', '')}${name}[${index}]"]
+  <div id="studyLink-${(template?string('template', ''))}" class="studyLink form-group grayBox">
+    <input type="hidden" name="${customName}.id" value="${(element.id)!}" />
+    <span class="pull-left" style="width:4%"><strong><span class="indexTag">${index + 1}</span>.</strong></span>
+    <span class="pull-left" style="width:90%">[@customForm.input name="${customName}.value" placeholder="global.webSiteLink.placeholder" showTitle=false i18nkey="" className="" editable=editable /]</span>
+    [#if editable]<div class="removeElement sm removeIcon removeLink" title="Remove"></div>[/#if]
+    <div class="clearfix"></div>
+  </div>
+[/#macro]
+
+

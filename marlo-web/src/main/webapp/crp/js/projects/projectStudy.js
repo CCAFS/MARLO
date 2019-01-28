@@ -118,6 +118,42 @@ function attachEvents() {
 
   });
 
+  // On add/remove link
+  $('.addButtonLink').on('click', function() {
+    var $list = $(this).parents('.linksBlock').find('.linksList');
+    var $element = $('#studyLink-template').clone(true).removeAttr("id");
+
+    // Remove template tag
+    $element.find('input').each(function(i,e) {
+      e.name = (e.name).replace("_TEMPLATE_", "");
+      e.id = (e.id).replace("_TEMPLATE_", "");
+    });
+
+    // Show the element
+    $element.appendTo($list).hide().show(350);
+
+    // Update indexes
+    updateIndexesLink();
+  });
+
+  $('.removeLink').on('click', function(i,e) {
+    var $parent = $(this).parents('.studyLink ');
+    $parent.hide(500, function() {
+      // Remove DOM element
+      $parent.remove();
+      // Update indexes
+      updateIndexesLink();
+    });
+  });
+
+}
+
+function updateIndexesLink() {
+  // Update indexes
+  $('.linksList').find('.studyLink').each(function(i,element) {
+    $(element).find('.indexTag').text(i + 1)
+    $(element).setNameIndexes(1, i);
+  });
 }
 
 function onChangeRadioButton() {
