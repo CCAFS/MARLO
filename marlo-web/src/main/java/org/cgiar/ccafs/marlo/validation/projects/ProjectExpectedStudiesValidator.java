@@ -161,7 +161,7 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
 
     // Validate Status
     if (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getStatus() != null) {
-      if (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getStatus() == -1) {
+      if (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getStatus().getId() == -1) {
         action.addMessage(action.getText("Status"));
         action.addMissingField("study.status");
         action.getInvalidFields().put("input-expectedStudy.projectExpectedStudyInfo.status",

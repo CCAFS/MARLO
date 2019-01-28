@@ -4289,7 +4289,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         }
         // Status
         if (studyinfo.getStatus() != null) {
-          status = ProjectStatusEnum.getValue(studyinfo.getStatus()).getStatus();
+          status = studyinfo.getStatus().getName();
         }
         // Type
         if (studyinfo.getStudyType() != null) {

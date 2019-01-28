@@ -351,7 +351,7 @@ public class StudiesSummaryAction extends BaseSummariesAction implements Summary
         }
         // Status
         if (projectExpectedStudyInfo.getStatus() != null) {
-          status = StudiesStatusPlanningEnum.getValue(projectExpectedStudyInfo.getStatus()).getStatus();
+          status = projectExpectedStudyInfo.getStatus().getName();
         }
         // Type
         if (projectExpectedStudyInfo.getStudyType() != null) {
