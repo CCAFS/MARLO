@@ -221,22 +221,27 @@
 [/#macro]
 
 [#macro contributionToLP6 template=false] 
+[#assign isContributing = ((action.getProjectLp6ContributionValue(project.id, actualPhase.id))!false) ]
 [#if action.hasSpecificities('crp_lp6_active') && reportingActive]
   <div id="projectContributionToLP6" class="borderBox project-${project.id} phase-${actualPhase.id}">
-   <a class="lp6-pdf"><img src="${baseUrl}/global/images/pdf.png" height="25"/>[[@s.text name="projects.LP6Contribution.explanatoryPDF" /]]</a><h4>[@s.text name="projects.LP6Contribution.title" /]</h4>
-   <p class="text-justify note"><small>[@s.text name="projects.LP6Contribution.infoText"/] (<span class="lp6-view-more" data-toggle="modal" data-target=".lp6info-modal">view more</span>)</small></p>
+   <a class="btn lp6-pdf btn-link" role="button" data-toggle="popover" data-trigger="focus" title="[@s.text name="projects.LP6Contribution.disabledPDF"/]"><img src="${baseUrl}/global/images/pdf.png" height="25"/>[[@s.text name="projects.LP6Contribution.explanatoryPDF" /]]</a><h4>[@s.text name="projects.LP6Contribution.title" /]</h4>
+   <p class="note lp6-contribution-note"><small>[@s.text name="projects.LP6Contribution.infoText"/] (<span class="lp6-view-more" data-toggle="modal" data-target=".lp6info-modal">view more</span>)</small></p>
    <div class="form-group">
        <label>[@s.text name="projects.LP6Contribution.contribution"/][@customForm.req required=true /]</label>
        [@customForm.radioFlat id="lp6Contribution-yes" name="lp6Contribution" label="Yes" value="true" checked=(projectLp6Contribution.contribution)!false cssClassLabel="radio-label-yes" editable=Editable /]
        [@customForm.radioFlat id="lp6Contribution-no" name="lp6Contribution" label="No" value="false" checked=!((projectLp6Contribution.contribution)!true) cssClassLabel="radio-label-no" editable=Editable /]
   </div>
+  <div class="form-group contributionNote note" style="display:${(isContributing)?string('block','none')}">
+     [@s.text name="projects.LP6Contribution.contributionNote"/] <a href="[@s.url action="${crpSession}/contributionsLP6"][@s.param name="projectID" value=projectID /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">clicking here</a>.
   </div>
+  </div>
+
   [#-- LP6 Help Text expanded --]
     <div class="modal fade extended-table-modal lp6info-modal" tabindex="-1" role="dialog" aria-labelledby="extendedTableModal" aria-hidden="true">
       <div class="modal-dialog modal-lg">
          <div class="modal-content">
-           <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-             [@s.text name="projects.LP6Contribution.helpText"/]
+           <button type="button" class="close lp6-close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+             <div class="lp6-help">[@s.text name="projects.LP6Contribution.helpText"/]</div>
           </div>
       </div>
     </div>
