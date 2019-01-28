@@ -20,11 +20,22 @@
           [@customForm.select name="${customName}.projectExpectedStudyInfo.year" className="setSelect2" i18nkey="study.year" listName="years" header=false required=true editable=editable /]
         </div>
       </div>
+      
+      [#if isOutcomeCaseStudy]
+        <hr />
+        [#-- Tags --]
+        <div class="form-group">
+          <label for="">[@s.text name="study.tags" /]:[@customForm.req required=editable /][@customForm.helpLabel name="study.tags.help" showIcon=false editable=editable/]</label>
+          [#list ["tagNew", "tagUpdateSame", "tagUpdateNew"] as tag]
+            <br /> [@customForm.radioFlat id="tag-${tag_index}" name="${customName}.tag" i18nkey="study.${tag}" value="${tag_index + 1}" checked=false cssClass="radioType-tags" cssClassLabel="font-normal" editable=editable /] 
+          [/#list]
+        </div>
+      [/#if]
     </div>
     <div class="borderBox">
-      [#-- 1. Title (up to 20 words) --]
+      [#-- 1. Title (up to 25 words) --]
       <div class="form-group">
-        [@customForm.input name="${customName}.projectExpectedStudyInfo.title" i18nkey="study.title" help="study.title.help" className="limitWords-20" helpIcon=!isOutcomeCaseStudy required=true editable=editable /]
+        [@customForm.input name="${customName}.projectExpectedStudyInfo.title" i18nkey="study.title" help="study.title.help" className="limitWords-25" helpIcon=!isOutcomeCaseStudy required=true editable=editable /]
       </div>
       
       [#-- Who is commissioning this study --]
