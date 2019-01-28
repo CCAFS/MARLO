@@ -528,6 +528,9 @@ public class ProjectContributionToLP6Action extends BaseAction {
       // Save project Lp6 deliverables
       this.saveProjectDeliverables();
 
+      // Save project Lp6 phase
+      projectLp6Contribution.setPhase(this.getActualPhase());
+
       // Validate negative Values
       if (projectLp6Contribution.getGeographicScope() != null) {
         if (projectLp6Contribution.getGeographicScope().getId() == -1) {
@@ -584,7 +587,7 @@ public class ProjectContributionToLP6Action extends BaseAction {
       // Save the Countries List selected
       // this.saveGeographicScope2();
 
-      projectLp6Contribution.setPhase(this.getActualPhase());
+
       projectLp6ContributionManager.saveProjectLp6Contribution(projectLp6Contribution);
 
       if (path.toFile().exists()) {
