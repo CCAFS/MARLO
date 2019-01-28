@@ -14,7 +14,7 @@
           [@customForm.select name="${customName}.projectExpectedStudyInfo.studyType.id" value="${(element.projectExpectedStudyInfo.studyType.id)!-1}" className="setSelect2 studyType" i18nkey="study.type" listName="studyTypes" keyFieldName="id"  displayFieldName="name" required=true editable=editable && !isOutcomeCaseStudy /]
         </div>
         <div class="col-md-4">
-          [@customForm.select name="${customName}.projectExpectedStudyInfo.status" className="setSelect2 statusSelect" i18nkey="study.status" listName="statuses" header=false required=true editable=editable /]
+          [@customForm.select name="${customName}.projectExpectedStudyInfo.status.id" className="setSelect2 statusSelect" i18nkey="study.status" listName="statuses" keyFieldName="id"  displayFieldName="name" header=false required=true editable=editable /]
         </div>
         <div class="col-md-4">
           [@customForm.select name="${customName}.projectExpectedStudyInfo.year" className="setSelect2" i18nkey="study.year" listName="years" header=false required=true editable=editable /]
