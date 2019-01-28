@@ -22,9 +22,13 @@ import org.cgiar.ccafs.marlo.rest.mappers.LocElementMapper;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.inject.Named;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
@@ -32,30 +36,44 @@ import javax.inject.Named;
 @Named
 public class CountryItem<T> {
 
-  private LocElementManager locElementManager;
-  private LocElementMapper locElementMapper;
+	private LocElementManager locElementManager;
+	private LocElementMapper locElementMapper;
 
+	public CountryItem(LocElementManager locElementManager, LocElementMapper locElementMapper) {
+		this.locElementManager = locElementManager;
+		this.locElementMapper = locElementMapper;
+	}
 
-  public CountryItem(LocElementManager locElementManager, LocElementMapper locElementMapper) {
-    this.locElementManager = locElementManager;
-    this.locElementMapper = locElementMapper;
-  }
+	/**
+	 * Get All the Country items *
+	 * 
+	 * @return a List of LocElementDTO with all LocElements Items.
+	 */
+	public List<LocElementDTO> getAllCountries() {
+		if (this.locElementManager.findAll() != null) {
+			List<LocElement> countries = new ArrayList<>(this.locElementManager.findAll().stream()
+					.filter(c -> c.isActive() && c.getLocElementType().getId() == 2).collect(Collectors.toList()));
+			List<LocElementDTO> countryDTOs = countries.stream()
+					.map(countryEntity -> this.locElementMapper.locElementToLocElementDTO(countryEntity))
+					.collect(Collectors.toList());
+			return countryDTOs;
+		} else {
+			return null;
+		}
+	}
 
-  /**
-   * Get All the Country items *
-   * 
-   * @return a List of LocElementDTO with all LocElements Items.
-   */
-  public List<LocElementDTO> getAllCountries() {
-    if (locElementManager.findAll() != null) {
-      List<LocElement> countries = new ArrayList<>(locElementManager.findAll().stream()
-        .filter(c -> c.isActive() && c.getLocElementType().getId() == 2).collect(Collectors.toList()));
-      List<LocElementDTO> countryDTOs = countries.stream()
-        .map(countryEntity -> locElementMapper.locElementToLocElementDTO(countryEntity)).collect(Collectors.toList());
-      return countryDTOs;
-    } else {
-      return null;
-    }
-  }
+	/**
+	 * Get the country by numeric ISO Code
+	 * 
+	 * @param Numeric iso code
+	 * @return a List of LocElementDTO with all LocElements Items.
+	 */
+	public ResponseEntity<LocElementDTO> getContryByCode(Long ISOCode) {
+		LocElement locElement = this.locElementManager.getLocElementByNumericISOCode(ISOCode);
+		return Optional.ofNullable(locElement).map(this.locElementMapper::locElementToLocElementDTO)
+				.map(result -> new ResponseEntity<>(result, HttpStatus.OK))
+				.orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+
+	}
 
 }

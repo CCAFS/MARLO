@@ -185,10 +185,13 @@ public class APCustomRealm extends AuthorizingRealm {
       }
       authorizationInfo.addStringPermissions(userManager.getPermission(user.getId().intValue(), crp.getAcronym()));
       return authorizationInfo;
+    } else {
+      for (UserRole userRole : user.getUserRoles()) {
+        authorizationInfo.addRole(userRole.getRole().getAcronym());
+      }
+      authorizationInfo.addStringPermissions(userManager.getPermission(user.getId().intValue(), null));
+      return authorizationInfo;
     }
-
-
-    return null;
 
 
   }
