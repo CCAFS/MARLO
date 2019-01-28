@@ -223,6 +223,7 @@ public class Permission {
   public static final String FULL_UPDATE_REST_API_PERMISSION = "api:*:update";
   public static final String FULL_DELETE_REST_API_PERMISSION = "api:*:delete";
 
+  // TODO Probably, Clarisa only use Read and Write Permissions.
   // Institutions
   public static final String INSTITUTIONS_READ_REST_API_PERMISSION = "api:institutions:read";
   public static final String INSTITUTIONS_CREATE_REST_API_PERMISSION = "api:institutions:create";

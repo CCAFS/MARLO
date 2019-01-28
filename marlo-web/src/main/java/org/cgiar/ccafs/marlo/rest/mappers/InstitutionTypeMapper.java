@@ -24,11 +24,10 @@ import org.mapstruct.MappingTarget;
 @Mapper(componentModel = "jsr330")
 public interface InstitutionTypeMapper {
 
+	public InstitutionType institutionTypeDTOToInstitutionType(InstitutionTypeDTO institutionTypeDTO);
 
-  public InstitutionType institutionTypeDTOToInstitutionType(InstitutionTypeDTO institutionTypeDTO);
+	public InstitutionTypeDTO institutionTypeToInstitutionTypeDTO(InstitutionType institutionType);
 
-  public InstitutionTypeDTO institutionTypeToInstitutionTypeDTO(InstitutionType institutionType);
-
-  public InstitutionType updateInstitutionTypeFromInstitutionTypeDto(InstitutionTypeDTO institutionTypeDTO,
-    @MappingTarget InstitutionType institutionType);
+	public InstitutionType updateInstitutionTypeFromInstitutionTypeDto(InstitutionTypeDTO institutionTypeDTO,
+			@MappingTarget InstitutionType institutionType);
 }

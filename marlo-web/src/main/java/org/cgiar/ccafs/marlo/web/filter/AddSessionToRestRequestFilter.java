@@ -75,16 +75,6 @@ public class AddSessionToRestRequestFilter extends OncePerRequestFilter {
     if (session.getAttribute(APConstants.SESSION_CRP) == null) {
 
       GlobalUnit globalUnit = globalUnitManager.findGlobalUnitByAcronym(globalUnitAcronym);
-      /*
-       * There are case or service that not is necessary get the crp, for example the list of all institutions.
-       * TODO : we need create a "public global unit"?
-       */
-      if (globalUnit == null) {
-        globalUnit = globalUnitManager.findGlobalUnitByAcronym("ccafs");
-        // throw new IllegalArgumentException("globalUnit with acronymn: " + globalUnitAcronym + ", could not be
-        // found");
-      }
-
 
       session.setAttribute(APConstants.SESSION_CRP, globalUnit);
 

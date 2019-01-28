@@ -151,8 +151,8 @@
     }
   ]},
   [#-- BUDGET REPORTS --]
-  { "slug": "budget", "active": !centerGlobalUnit, "title":"summaries.board.options.budget", "reportsList": [
-    { "active": true,
+  { "slug": "budget", "active": true, "title":"summaries.board.options.budget", "reportsList": [
+    { "active": !centerGlobalUnit,
       "available": true,
       "title": "summaries.board.report.powb", 
       "description": "summaries.board.report.powb.description",
@@ -161,7 +161,7 @@
       "formats": [ "Excel" ],
       "cycles": [ "Planning" ]
     },
-    { "active": true,
+    { "active": !centerGlobalUnit,
       "available": true,
       "title": "summaries.board.report.powbMOG", 
       "description": "summaries.board.report.powbMOG.description",
