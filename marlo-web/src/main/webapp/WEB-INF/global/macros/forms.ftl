@@ -443,11 +443,11 @@
 
 
 
-[#macro radioFlat id name label="" disabled=false editable=true value="" checked=true cssClass="" cssClassLabel=""]
+[#macro radioFlat id name i18nkey="" label="" disabled=false editable=true value="" checked=true cssClass="" cssClassLabel=""]
   [#if editable]
   <div class="radioFlat radio-inline">
     <input id="${id}" class="radio-input ${cssClass}" type="radio" name="${name}" value="${value}" [#if checked]checked[/#if] />
-    <label for="${id}" class="radio-label ${cssClassLabel}"> ${label} </label>
+    <label for="${id}" class="radio-label ${cssClassLabel}">[#if i18nkey?has_content][@s.text name=i18nkey /][#else]${label}[/#if]</label>
   </div>
   [#elseif checked]
     <p>${label}</p>
