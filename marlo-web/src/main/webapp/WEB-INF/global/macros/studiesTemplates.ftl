@@ -89,8 +89,8 @@
         [#-- Disaggregates for CGIAR Indicator I3  --]
         <div class="form-group simpleBox block-${studyIndicatorThree}" style="display:${((element.projectExpectedStudyInfo.isContribution)!false)?string('block','none')}">
           [@customForm.elementsListComponent name="${customName}.policies" elementType="projectPolicy" elementList=element.policies label="study.policies"  listName="policiesList" keyFieldName="id" displayFieldName="description"/]
-          
-          <div class="note"></div>
+          [#-- Note --]
+          <div class="note">[@s.text name="study.policies.note"][@s.param] <a href="[@s.url namespace="/projects" action='${crpSession}/policies'][@s.param name='projectID']${(projectID)!}[/@s.param][/@s.url]">clicking here</a>[/@][/@]</div>
         </div>
       </div>
       [/#if]
@@ -126,7 +126,14 @@
         
         [#-- SRF Targets  --]
         <div class="form-group simpleBox stageProcessOne">
-          [@customForm.elementsListComponent name="${customName}.srfTargets" elementType="srfSloIndicator" elementList=element.srfTargets label="study.stratgicResultsLink.srfTargets" listName="targets" keyFieldName="id" displayFieldName="title" required=editable && !(isPolicy && stageProcessOne)/]
+          <label for="">[@s.text name="study.targetsOption" /]:[@customForm.req required=editable /][@customForm.helpLabel name="study.targetsOption.help" showIcon=false editable=editable/]</label><br />
+          [#list ["targetsOptionYes", "targetsOptionNo", "targetsOptionTooEarlyToSay"] as option]
+            [@customForm.radioFlat id="option-${option}" name="${customName}.projectExpectedStudyInfo.targetsOption" i18nkey="study.${option}" value="${option}" checked=false cssClass="radioType-targetsOption" cssClassLabel="font-normal" editable=editable /] 
+          [/#list]
+          [#local showTargetsComponent = (element.projectExpectedStudyInfo.targetsOption == "targetsOptionYes")!false /]
+          <div class="srfTargetsComponent" style="display:${showTargetsComponent?string('block', 'none')}">
+            [@customForm.elementsListComponent name="${customName}.srfTargets" elementType="srfSloIndicator" elementList=element.srfTargets label="study.stratgicResultsLink.srfTargets" listName="targets" keyFieldName="id" displayFieldName="title" required=editable && !(isPolicy && stageProcessOne)/]          
+          </div>
         </div>
         
         [#-- Comments  --]
