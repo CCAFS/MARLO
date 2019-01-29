@@ -56,7 +56,7 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
   private StudyType studyType;
 
   @Expose
-  private Integer status;
+  private GeneralStatus status;
 
   @Expose
   private String title;
@@ -283,14 +283,14 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
   }
 
 
-  public Integer getStatus() {
+  public GeneralStatus getStatus() {
     return status;
   }
 
 
   public String getStatusName() {
     if (this.getStatus() != null) {
-      return StudiesStatusPlanningEnum.getValue(this.getStatus()).getStatus();
+      return this.getStatus().getName();
     }
     return null;
   }
@@ -300,7 +300,6 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
     return studyType;
   }
 
-
   public String getTitle() {
     return title;
   }
@@ -309,6 +308,7 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
   public String getTopLevelComments() {
     return topLevelComments;
   }
+
 
   public Integer getYear() {
     return year;
@@ -355,10 +355,10 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
     this.elaborationOutcomeImpactStatement = elaborationOutcomeImpactStatement;
   }
 
-
   public void setGenderLevel(RepIndGenderYouthFocusLevel genderLevel) {
     this.genderLevel = genderLevel;
   }
+
 
   public void setIsContribution(Boolean isContribution) {
     this.isContribution = isContribution;
@@ -393,10 +393,10 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
     this.projectExpectedStudy = projectExpectedStudy;
   }
 
-
   public void setQuantification(String quantification) {
     this.quantification = quantification;
   }
+
 
   public void setReferencesFile(FileDB referencesFile) {
     this.referencesFile = referencesFile;
@@ -430,13 +430,12 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
     this.repIndStageStudy = repIndStageStudy;
   }
 
-
   public void setScopeComments(String scopeComments) {
     this.scopeComments = scopeComments;
   }
 
 
-  public void setStatus(Integer status) {
+  public void setStatus(GeneralStatus status) {
     this.status = status;
   }
 

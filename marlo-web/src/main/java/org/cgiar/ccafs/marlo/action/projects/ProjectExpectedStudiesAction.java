@@ -21,6 +21,7 @@ import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.ExpectedStudyProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.FileDBManager;
+import org.cgiar.ccafs.marlo.data.manager.GeneralStatusManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
@@ -47,6 +48,7 @@ import org.cgiar.ccafs.marlo.data.manager.SrfSubIdoManager;
 import org.cgiar.ccafs.marlo.data.manager.StudyTypeManager;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.ExpectedStudyProject;
+import org.cgiar.ccafs.marlo.data.model.GeneralStatus;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
@@ -70,7 +72,6 @@ import org.cgiar.ccafs.marlo.data.model.RepIndStageProcess;
 import org.cgiar.ccafs.marlo.data.model.RepIndStageStudy;
 import org.cgiar.ccafs.marlo.data.model.SrfSloIndicator;
 import org.cgiar.ccafs.marlo.data.model.SrfSubIdo;
-import org.cgiar.ccafs.marlo.data.model.StudiesStatusPlanningEnum;
 import org.cgiar.ccafs.marlo.data.model.StudyType;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
@@ -88,7 +89,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -141,6 +141,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
   private ProjectExpectedStudySrfTargetManager projectExpectedStudySrfTargetManager;
   private ExpectedStudyProjectManager expectedStudyProjectManager;
   private ProjectExpectedStudyRegionManager projectExpectedStudyRegionManager;
+  private GeneralStatusManager generalStatusManager;
   // Variables
   private ProjectExpectedStudiesValidator projectExpectedStudiesValidator;
   private GlobalUnit loggedCrp;
@@ -150,7 +151,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
   private long expectedID;
   private ProjectExpectedStudy expectedStudy;
   private ProjectExpectedStudy expectedStudyDB;
-  private Map<Integer, String> statuses;
+  private List<GeneralStatus> statuses;
   private List<RepIndGeographicScope> geographicScopes;
   private List<LocElement> regions;
   private List<RepIndOrganizationType> organizationTypes;
@@ -187,7 +188,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     ProjectExpectedStudyInstitutionManager projectExpectedStudyInstitutionManager,
     ProjectExpectedStudySrfTargetManager projectExpectedStudySrfTargetManager,
     ProjectExpectedStudyCountryManager projectExpectedStudyCountryManager,
-    ProjectExpectedStudyRegionManager projectExpectedStudyRegionManager) {
+    ProjectExpectedStudyRegionManager projectExpectedStudyRegionManager, GeneralStatusManager generalStatusManager) {
     super(config);
     this.projectManager = projectManager;
     this.crpManager = crpManager;
@@ -220,6 +221,8 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     this.projectExpectedStudyCountryManager = projectExpectedStudyCountryManager;
     this.projectExpectedStudySrfTargetManager = projectExpectedStudySrfTargetManager;
     this.projectExpectedStudyRegionManager = projectExpectedStudyRegionManager;
+
+    this.generalStatusManager = generalStatusManager;
 
   }
 
@@ -311,16 +314,17 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     return stageStudies;
   }
 
-  public Map<Integer, String> getStatuses() {
+
+  public List<GeneralStatus> getStatuses() {
     return statuses;
   }
+
 
   private String getStudiesSourceFolder() {
     return APConstants.STUDIES_FOLDER.concat(File.separator).concat(this.getCrpSession()).concat(File.separator)
       .concat(File.separator).concat(this.getCrpSession() + "_")
       .concat(ProjectSectionStatusEnum.EXPECTEDSTUDY.getStatus()).concat(File.separator);
   }
-
 
   public List<StudyType> getStudyTypes() {
     return studyTypes;
@@ -407,6 +411,13 @@ public class ProjectExpectedStudiesAction extends BaseAction {
           expectedStudy.getProjectExpectedStudyInfo()
             .setRepIndGeographicScope(geographicScopeManager.getRepIndGeographicScopeById(
               expectedStudy.getProjectExpectedStudyInfo().getRepIndGeographicScope().getId()));
+        }
+
+        // Load Status
+        if (expectedStudy.getProjectExpectedStudyInfo().getStatus() != null
+          && expectedStudy.getProjectExpectedStudyInfo().getStatus().getId() != null) {
+          expectedStudy.getProjectExpectedStudyInfo().setStatus(
+            generalStatusManager.getGeneralStatusById(expectedStudy.getProjectExpectedStudyInfo().getStatus().getId()));
         }
 
         // Load region
@@ -630,11 +641,8 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
 
       // Getting The list
-      statuses = new HashMap<>();
-      List<StudiesStatusPlanningEnum> listStatus = Arrays.asList(StudiesStatusPlanningEnum.values());
-      for (StudiesStatusPlanningEnum globalStatusEnum : listStatus) {
-        statuses.put(Integer.parseInt(globalStatusEnum.getStatusId()), globalStatusEnum.getStatus());
-      }
+      statuses = generalStatusManager.findAll();
+
 
       countries = locElementManager.findAll().stream()
         .filter(c -> c.getLocElementType().getId().intValue() == 2 && c.isActive()).collect(Collectors.toList());
@@ -753,6 +761,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
       expectedStudy.getProjectExpectedStudyInfo().setOutcomeFile(null);
       expectedStudy.getProjectExpectedStudyInfo().setReferencesFile(null);
+      expectedStudy.getProjectExpectedStudyInfo().setStatus(null);
 
     }
 
@@ -914,7 +923,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       }
 
       if (expectedStudy.getProjectExpectedStudyInfo().getStatus() != null) {
-        if (expectedStudy.getProjectExpectedStudyInfo().getStatus() == -1) {
+        if (expectedStudy.getProjectExpectedStudyInfo().getStatus().getId() == -1) {
           expectedStudy.getProjectExpectedStudyInfo().setStatus(null);
         }
       }
@@ -1312,6 +1321,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
   }
 
+
   public void setCountries(List<LocElement> countries) {
     this.countries = countries;
   }
@@ -1326,7 +1336,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     this.expectedID = expectedID;
   }
 
-
   public void setExpectedStudy(ProjectExpectedStudy expectedStudy) {
     this.expectedStudy = expectedStudy;
   }
@@ -1339,10 +1348,10 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     this.focusLevels = focusLevels;
   }
 
+
   public void setGeographicScopes(List<RepIndGeographicScope> geographicScopes) {
     this.geographicScopes = geographicScopes;
   }
-
 
   public void setInstitutions(List<Institution> institutions) {
     this.institutions = institutions;
@@ -1363,6 +1372,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
   public void setPolicyInvestimentTypes(List<RepIndPolicyInvestimentType> policyInvestimentTypes) {
     this.policyInvestimentTypes = policyInvestimentTypes;
   }
+
 
   public void setProject(Project project) {
     this.project = project;
@@ -1394,10 +1404,9 @@ public class ProjectExpectedStudiesAction extends BaseAction {
   }
 
 
-  public void setStatuses(Map<Integer, String> statuses) {
+  public void setStatuses(List<GeneralStatus> statuses) {
     this.statuses = statuses;
   }
-
 
   public void setStudyTypes(List<StudyType> studyTypes) {
     this.studyTypes = studyTypes;

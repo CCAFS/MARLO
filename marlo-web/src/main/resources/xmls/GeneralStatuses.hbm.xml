@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Generated Jan 28, 2019 1:24:57 PM by Hibernate Tools 5.3.6.Final --><!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping auto-import="true"
+	default-access="property" default-cascade="none" default-lazy="true">
+	<class dynamic-insert="false" dynamic-update="false"
+		mutable="true" name="org.cgiar.ccafs.marlo.data.model.GeneralStatus"
+		optimistic-lock="none" polymorphism="implicit"
+		select-before-update="false" table="general_statuses">
+		<id name="id" type="long">
+			<column name="id" />
+			<generator class="assigned" />
+		</id>
+		<many-to-one class="org.cgiar.ccafs.marlo.data.model.User" embed-xml="true"
+			fetch="select" insert="true" name="createdBy"
+			not-found="exception" optimistic-lock="true" unique="false"
+			update="true">
+			<column name="created_by" />
+		</many-to-one>
+		<many-to-one class="org.cgiar.ccafs.marlo.data.model.User" embed-xml="true"
+			fetch="select" insert="true" name="modifiedBy"
+			not-found="exception" optimistic-lock="true" unique="false"
+			update="true">
+			<column name="modified_by" />
+		</many-to-one>
+		<property generated="never" lazy="false" name="name"
+			optimistic-lock="true" type="string" unique="false">
+			<column length="65535" name="name" />
+		</property>
+		<property generated="never" lazy="false"
+			name="iatiEquivalence" optimistic-lock="true" type="java.lang.Long"
+			unique="false">
+			<column name="iati_equivalence" />
+		</property>
+		<property generated="never" lazy="false" name="active"
+			optimistic-lock="true" type="java.lang.Boolean" unique="false">
+			<column name="is_active" />
+		</property>
+		<property generated="never" lazy="false" name="activeSince"
+			optimistic-lock="true" type="timestamp" unique="false">
+			<column length="19" name="active_since" />
+		</property>
+		<property generated="never" lazy="false"
+			name="modificationJustification" optimistic-lock="true" type="string"
+			unique="false">
+			<column length="65535" name="modification_justification" />
+		</property>		
+	</class>
+</hibernate-mapping>

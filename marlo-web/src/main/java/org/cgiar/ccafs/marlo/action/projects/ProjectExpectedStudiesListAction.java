@@ -23,6 +23,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.manager.StudyTypeManager;
 import org.cgiar.ccafs.marlo.data.model.ExpectedStudyProject;
+import org.cgiar.ccafs.marlo.data.model.GeneralStatus;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
@@ -106,7 +107,9 @@ public class ProjectExpectedStudiesListAction extends BaseAction {
     projectExpectedStudyInfo.setYear(this.getActualPhase().getYear());
 
     // when a project expected study is created, it is assigned by default status 2 = On going
-    projectExpectedStudyInfo.setStatus(2);
+    GeneralStatus status = new GeneralStatus();
+    status.setId(new Long(2));
+    projectExpectedStudyInfo.setStatus(status);
 
     long studyTypeID = -1;
     try {
@@ -224,22 +227,20 @@ public class ProjectExpectedStudiesListAction extends BaseAction {
         // Editable project studies: Current cycle year-1 will be editable except Complete and Cancelled.
         // Every study of the current cycle year will be editable
         projectStudies = new ArrayList<ProjectExpectedStudy>();
-        projectStudies = allProjectStudies.stream()
-          .filter(ps -> ps.getProjectExpectedStudyInfo().getYear() != null
-            && ps.getProjectExpectedStudyInfo().getStatus() != null
-            && ps.getProjectExpectedStudyInfo().getYear() >= this.getActualPhase().getYear() - 1
-            && ps.getProjectExpectedStudyInfo().getYear() >= 2018
-            && ((StudiesStatusPlanningEnum.getValue(ps.getProjectExpectedStudyInfo().getStatus()).getStatus()
-              .equals(StudiesStatusPlanningEnum.Ongoing.getStatus())
-              || StudiesStatusPlanningEnum.getValue(ps.getProjectExpectedStudyInfo().getStatus()).getStatus()
-                .equals(StudiesStatusPlanningEnum.Extended.getStatus())
-              || StudiesStatusPlanningEnum.getValue(ps.getProjectExpectedStudyInfo().getStatus()).getStatus()
-                .equals(StudiesStatusPlanningEnum.New.getStatus()))
-              || ((StudiesStatusPlanningEnum.getValue(ps.getProjectExpectedStudyInfo().getStatus()).getStatus()
-                .equals(StudiesStatusPlanningEnum.Complete.getStatus())
-                || StudiesStatusPlanningEnum.getValue(ps.getProjectExpectedStudyInfo().getStatus()).getStatus()
-                  .equals(StudiesStatusPlanningEnum.Cancelled.getStatus()))
-                && ps.getProjectExpectedStudyInfo().getYear() >= this.getActualPhase().getYear())))
+        projectStudies = allProjectStudies.stream().filter(ps -> ps.getProjectExpectedStudyInfo().getYear() != null
+          && ps.getProjectExpectedStudyInfo().getStatus() != null
+          && ps.getProjectExpectedStudyInfo().getYear() >= this.getActualPhase().getYear() - 1
+          && ps.getProjectExpectedStudyInfo().getYear() >= 2018
+          && ((ps.getProjectExpectedStudyInfo().getStatus().getId()
+            .equals(Long.parseLong(StudiesStatusPlanningEnum.Ongoing.getStatusId()))
+            || ps.getProjectExpectedStudyInfo().getStatus().getId()
+              .equals(Long.parseLong(StudiesStatusPlanningEnum.Extended.getStatusId()))
+            || ps.getProjectExpectedStudyInfo().getStatus().getId().equals(StudiesStatusPlanningEnum.New.getStatusId()))
+            || ((ps.getProjectExpectedStudyInfo().getStatus().getId()
+              .equals(Long.parseLong(StudiesStatusPlanningEnum.Complete.getStatusId()))
+              || ps.getProjectExpectedStudyInfo().getStatus().getId()
+                .equals(Long.parseLong(StudiesStatusPlanningEnum.Cancelled.getStatusId())))
+              && ps.getProjectExpectedStudyInfo().getYear() >= this.getActualPhase().getYear())))
           .collect(Collectors.toList());
 
         // Non Editable project studies
