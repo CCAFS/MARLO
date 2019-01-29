@@ -27,6 +27,7 @@ import org.mapstruct.Mappings;
  * @author Hermes Jiménez - CIAT/CCAFS
  */
 @Mapper(componentModel = "jsr330")
+
 public interface LocationMapper {
 
 	@Mappings({ @Mapping(source = "code", target = "isoNumeric") })
