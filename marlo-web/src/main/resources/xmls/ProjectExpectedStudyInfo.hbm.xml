@@ -13,6 +13,10 @@
 			class="org.cgiar.ccafs.marlo.data.model.RepIndGeographicScope" fetch="select">
 			<column name="rep_ind_geographic_scope_id" />
 		</many-to-one>
+		<many-to-one name="status"
+      class="org.cgiar.ccafs.marlo.data.model.GeneralStatus" fetch="select">
+      <column name="status" />
+    </many-to-one>
 		<many-to-one name="repIndRegion"
 			class="org.cgiar.ccafs.marlo.data.model.RepIndRegion" fetch="select">
 			<column name="rep_ind_region_id" />
@@ -70,9 +74,6 @@
 			class="org.cgiar.ccafs.marlo.data.model.StudyType" fetch="select">
 			<column name="study_type_id" />
 		</many-to-one>
-		<property name="status" type="java.lang.Integer">
-			<column name="status" />
-		</property>
 		<property name="title" type="string">
 			<column name="title" sql-type="TEXT" />
 		</property>
