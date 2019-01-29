@@ -146,6 +146,17 @@ function attachEvents() {
     });
   });
 
+  $('input.radioType-targetsOption').on('change', function() {
+    var hasTargets = $(this).val() == "targetsOptionYes";
+
+    if(hasTargets) {
+      // Show
+      $('.srfTargetsComponent').slideDown();
+    } else {
+      // Hide
+      $('.srfTargetsComponent').slideUp();
+    }
+  });
 }
 
 function updateIndexesLink() {
