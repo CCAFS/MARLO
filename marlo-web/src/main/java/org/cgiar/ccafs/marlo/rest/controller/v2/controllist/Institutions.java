@@ -15,24 +15,32 @@
 
 package org.cgiar.ccafs.marlo.rest.controller.v2.controllist;
 
+import org.cgiar.ccafs.marlo.data.manager.UserManager;
+import org.cgiar.ccafs.marlo.data.model.User;
+import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.generallists.GlobalUnitItem;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.institutions.InstitutionItem;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.institutions.InstitutionTypeItem;
 import org.cgiar.ccafs.marlo.rest.dto.InstitutionDTO;
 import org.cgiar.ccafs.marlo.rest.dto.InstitutionTypeDTO;
+import org.cgiar.ccafs.marlo.rest.dto.PartnerRequestDTO;
 import org.cgiar.ccafs.marlo.security.Permission;
 
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.validation.Valid;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.apache.shiro.subject.Subject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -45,12 +53,32 @@ public class Institutions {
 
 	private InstitutionTypeItem<InstitutionTypeDTO> institutionTypeItem;
 	private InstitutionItem<InstitutionDTO> institutionItem;
+	private final UserManager userManager;
 
 	@Inject
 	public Institutions(InstitutionTypeItem<InstitutionTypeDTO> institutionTypeItem,
-			InstitutionItem<InstitutionDTO> institutionItem) {
+			InstitutionItem<InstitutionDTO> institutionItem, GlobalUnitItem<InstitutionDTO> globalUnitItem,
+			UserManager userManager) {
 		this.institutionTypeItem = institutionTypeItem;
 		this.institutionItem = institutionItem;
+		this.userManager = userManager;
+	}
+
+	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
+	@RequestMapping(value = "/{entityAcronym}/institutions", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<PartnerRequestDTO> createInstitution(@PathVariable String entityAcronym,
+			@Valid @RequestBody InstitutionDTO institutionDTO) {
+		LOG.debug("Create a new institution with : {}", institutionDTO);
+
+		/**
+		 * For an institution to be accepted it needs to be reviewed. We have a
+		 * separate entity for this (not sure this is a good idea), so we will
+		 * use the same institutionDTO and hide the complexity from them and map
+		 * back and forth between the institutionDTO and the PartnerRequest.
+		 * Question - how to handle the ids - do we leave blank?
+		 */
+		return this.institutionItem.createPartnerRequest(institutionDTO, entityAcronym, this.getCurrentUser());
+
 	}
 
 	@ApiOperation(value = "View a List of Institutions", response = InstitutionDTO.class, responseContainer = "List")
@@ -69,6 +97,13 @@ public class Institutions {
 		return this.institutionTypeItem.getAllInstitutionTypes();
 	}
 
+	private User getCurrentUser() {
+		Subject subject = SecurityUtils.getSubject();
+		Long principal = (Long) subject.getPrincipal();
+		User user = this.userManager.getUser(principal);
+		return user;
+	}
+
 	@ApiOperation(value = "Search an Institution with an ID", response = InstitutionDTO.class)
 	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
 	@RequestMapping(value = "/institution/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -76,5 +111,4 @@ public class Institutions {
 		LOG.debug("REST request to get Institution : {}", id);
 		return this.institutionItem.findInstitutionById(id);
 	}
-
 }

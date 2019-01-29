@@ -22,105 +22,92 @@ import io.swagger.annotations.ApiModelProperty;
  */
 public class PartnerRequestDTO {
 
+	@ApiModelProperty(notes = "The id of the Partner Request")
+	private Long id;
 
-  @ApiModelProperty(notes = "The Generated SRF IDO ID")
-  private Long id;
+	@ApiModelProperty(notes = "Name of institution")
+	private String partnerName;
 
+	@ApiModelProperty(notes = "Acronym of institution")
+	private String acronym;
 
-  @ApiModelProperty(notes = "The Generated SRF IDO ID")
-  private String partnerName;
+	@ApiModelProperty(notes = "Web Page of institution")
+	private String webPage;
 
+	@ApiModelProperty(notes = "Partner Request Status")
+	private Boolean acepted;
 
-  @ApiModelProperty(notes = "The Generated SRF IDO ID")
-  private String acronym;
+	@ApiModelProperty(notes = "Country of partner request")
+	CountryDTO locElementDTO;
 
+	@ApiModelProperty(notes = "Institution type")
+	InstitutionTypeDTO institutionTypeDTO;
 
-  @ApiModelProperty(notes = "The Generated SRF IDO ID")
-  private String webPage;
+	@ApiModelProperty(notes = "Intitution created")
+	InstitutionDTO institutionDTO;
 
+	public Boolean getAcepted() {
+		return this.acepted;
+	}
 
-  @ApiModelProperty(notes = "The Generated SRF IDO ID")
-  private Boolean acepted;
+	public String getAcronym() {
+		return this.acronym;
+	}
 
+	public Long getId() {
+		return this.id;
+	}
 
-  CountryDTO locElementDTO;
+	public InstitutionDTO getInstitutionDTO() {
+		return this.institutionDTO;
+	}
 
+	public InstitutionTypeDTO getInstitutionTypeDTO() {
+		return this.institutionTypeDTO;
+	}
 
-  InstitutionTypeDTO institutionTypeDTO;
+	public CountryDTO getLocElementDTO() {
+		return this.locElementDTO;
+	}
 
+	public String getPartnerName() {
+		return this.partnerName;
+	}
 
-  InstitutionDTO institutionDTO;
+	public String getWebPage() {
+		return this.webPage;
+	}
 
+	public void setAcepted(Boolean acepted) {
+		this.acepted = acepted;
+	}
 
-  public Boolean getAcepted() {
-    return acepted;
-  }
+	public void setAcronym(String acronym) {
+		this.acronym = acronym;
+	}
 
+	public void setId(Long id) {
+		this.id = id;
+	}
 
-  public String getAcronym() {
-    return acronym;
-  }
+	public void setInstitutionDTO(InstitutionDTO institutionDTO) {
+		this.institutionDTO = institutionDTO;
+	}
 
+	public void setInstitutionTypeDTO(InstitutionTypeDTO institutionTypeDTO) {
+		this.institutionTypeDTO = institutionTypeDTO;
+	}
 
-  public Long getId() {
-    return id;
-  }
+	public void setLocElementDTO(CountryDTO locElementDTO) {
+		this.locElementDTO = locElementDTO;
+	}
 
+	public void setPartnerName(String partnerName) {
+		this.partnerName = partnerName;
+	}
 
-  public InstitutionDTO getInstitutionDTO() {
-    return institutionDTO;
-  }
-
-
-  public InstitutionTypeDTO getInstitutionTypeDTO() {
-    return institutionTypeDTO;
-  }
-
-
-  public CountryDTO getLocElementDTO() {
-    return locElementDTO;
-  }
-
-
-  public String getPartnerName() {
-    return partnerName;
-  }
-
-
-  public String getWebPage() {
-    return webPage;
-  }
-
-  public void setAcepted(Boolean acepted) {
-    this.acepted = acepted;
-  }
-
-  public void setAcronym(String acronym) {
-    this.acronym = acronym;
-  }
-
-  public void setId(Long id) {
-    this.id = id;
-  }
-
-  public void setInstitutionDTO(InstitutionDTO institutionDTO) {
-    this.institutionDTO = institutionDTO;
-  }
-
-  public void setInstitutionTypeDTO(InstitutionTypeDTO institutionTypeDTO) {
-    this.institutionTypeDTO = institutionTypeDTO;
-  }
-
-  public void setLocElementDTO(CountryDTO locElementDTO) {
-    this.locElementDTO = locElementDTO;
-  }
-
-  public void setPartnerName(String partnerName) {
-    this.partnerName = partnerName;
-  }
-
-  public void setWebPage(String webPage) {
-    this.webPage = webPage;
-  }
+	public void setWebPage(String webPage) {
+		this.webPage = webPage;
+	}
 
 }

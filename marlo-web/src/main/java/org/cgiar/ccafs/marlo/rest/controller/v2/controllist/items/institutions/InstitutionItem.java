@@ -15,9 +15,17 @@
 
 package org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.institutions;
 
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
+import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
+import org.cgiar.ccafs.marlo.data.manager.PartnerRequestManager;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Institution;
+import org.cgiar.ccafs.marlo.data.model.LocElement;
+import org.cgiar.ccafs.marlo.data.model.PartnerRequest;
+import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.rest.dto.InstitutionDTO;
+import org.cgiar.ccafs.marlo.rest.dto.PartnerRequestDTO;
 import org.cgiar.ccafs.marlo.rest.mappers.InstitutionMapper;
 
 import java.util.List;
@@ -34,16 +42,60 @@ import org.springframework.http.ResponseEntity;
 public class InstitutionItem<T> {
 
 	private InstitutionManager institutionManager;
+	private LocElementManager locElementManager;
 	private InstitutionMapper institutionMapper;
+	private PartnerRequestManager partnerRequestManager;
+	private GlobalUnitManager globalUnitManager;
 
 	@Inject
-	public InstitutionItem(InstitutionManager institutionManager, InstitutionMapper institutionMapper) {
+	public InstitutionItem(InstitutionManager institutionManager, InstitutionMapper institutionMapper,
+			LocElementManager locElementManager, PartnerRequestManager partnerRequestManager,
+			GlobalUnitManager globalUnitManager) {
 		this.institutionManager = institutionManager;
 		this.institutionMapper = institutionMapper;
+		this.locElementManager = locElementManager;
+		this.partnerRequestManager = partnerRequestManager;
+		this.globalUnitManager = globalUnitManager;
+	}
+
+	public ResponseEntity<PartnerRequestDTO> createPartnerRequest(InstitutionDTO institutionDTO, String entityAcronym,
+			User user) {
+
+		GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitByAcronym(entityAcronym);
+
+		// CountryDTO countryDTO = institutionDTO.getCountryDTO().get(0);
+		LocElement locElement = this.locElementManager
+				.getLocElementByNumericISOCode(institutionDTO.getCountryDTO().get(0).getCode());
+		PartnerRequest partnerRequestParent = this.institutionMapper.institutionDTOToPartnerRequest(institutionDTO,
+				globalUnitEntity, locElement, user);
+
+		partnerRequestParent = this.partnerRequestManager.savePartnerRequest(partnerRequestParent);
+
+		/**
+		 * Need to create a parent child relationship for the partnerRequest to
+		 * display. That design might need to be re-visited.
+		 */
+		PartnerRequest partnerRequestChild = this.institutionMapper.institutionDTOToPartnerRequest(institutionDTO,
+				globalUnitEntity, locElement, user);
+
+		partnerRequestChild.setPartnerRequest(partnerRequestParent);
+
+		partnerRequestChild = this.partnerRequestManager.savePartnerRequest(partnerRequestChild);
+
+		return new ResponseEntity<PartnerRequestDTO>(
+				this.institutionMapper.partnerRequestToPartnerRequestDTO(partnerRequestChild), HttpStatus.CREATED);
+//
+//		// Return an institutionDTO with a blank id - so that the user doesn't
+//		// try and look up the institution straight
+//		// away.
+//		return new ResponseEntity<InstitutionDTO>(
+//				this.institutionMapper.partnerRequestToInstitutionDTO(partnerRequestParent), HttpStatus.CREATED);
+
 	}
 
 	/**
 	 * Find a institution requesting a MARLO id
+	 * 
 	 * 
 	 * @param id
 	 * @return a InstitutionDTO with the Institution Type data.

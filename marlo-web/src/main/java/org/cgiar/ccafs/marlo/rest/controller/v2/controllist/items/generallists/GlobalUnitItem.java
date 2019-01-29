@@ -44,6 +44,19 @@ public class GlobalUnitItem<T> {
 	}
 
 	/**
+	 * Find a Global Unit by Acronym
+	 * 
+	 * @param CRP Acronym
+	 * @return a GlobalUnitDTO with the smoCode
+	 */
+	public ResponseEntity<GlobalUnitDTO> findGlobalUnitByAcronym(String acronym) {
+		GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitByAcronym(acronym);
+		return Optional.ofNullable(globalUnitEntity).map(this.globalUnitMapper::globalUnitToGlobalUnitDTO)
+				.map(result -> new ResponseEntity<>(result, HttpStatus.OK))
+				.orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+	}
+
+	/**
 	 * Find a Global Unit by CGIAR code
 	 * 
 	 * @param CGIAR id
