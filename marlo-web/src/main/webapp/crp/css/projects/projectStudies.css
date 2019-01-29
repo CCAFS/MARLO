@@ -36,3 +36,7 @@ table#projectHighlights {
 .panel .panel-body { 
   min-height: 38px;
 }
+
+.quantification {
+  padding-top: 20px;
+}
