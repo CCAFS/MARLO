@@ -115,40 +115,11 @@ function attachEvents() {
     } else {
       $nationalBlock.hide();
     }
-
   });
 
-  // On add/remove link
-  $('.addButtonLink').on('click', function() {
-    var $list = $(this).parents('.linksBlock').find('.linksList');
-    var $element = $('#studyLink-template').clone(true).removeAttr("id");
-
-    // Remove template tag
-    $element.find('input').each(function(i,e) {
-      e.name = (e.name).replace("_TEMPLATE_", "");
-      e.id = (e.id).replace("_TEMPLATE_", "");
-    });
-
-    // Show the element
-    $element.appendTo($list).hide().show(350);
-
-    // Update indexes
-    updateIndexesLink();
-  });
-
-  $('.removeLink').on('click', function(i,e) {
-    var $parent = $(this).parents('.studyLink ');
-    $parent.hide(500, function() {
-      // Remove DOM element
-      $parent.remove();
-      // Update indexes
-      updateIndexesLink();
-    });
-  });
-
+  // SRF Targets validation
   $('input.radioType-targetsOption').on('change', function() {
     var hasTargets = $(this).val() == "targetsOptionYes";
-
     if(hasTargets) {
       // Show
       $('.srfTargetsComponent').slideDown();
@@ -157,14 +128,95 @@ function attachEvents() {
       $('.srfTargetsComponent').slideUp();
     }
   });
-}
 
-function updateIndexesLink() {
-  // Update indexes
-  $('.linksList').find('.studyLink').each(function(i,element) {
-    $(element).find('.indexTag').text(i + 1)
-    $(element).setNameIndexes(1, i);
-  });
+  /**
+   * Links Component
+   */
+  (function() {
+    // Events
+    $('.addButtonLink').on('click', addItem);
+    $('.removeLink').on('click', removeItem);
+
+    // Functions
+    function addItem() {
+      var $list = $(this).parents('.linksBlock').find('.linksList');
+      var $element = $('#studyLink-template').clone(true).removeAttr("id");
+      // Remove template tag
+      $element.find('input, textarea').each(function(i,e) {
+        e.name = (e.name).replace("_TEMPLATE_", "");
+        e.id = (e.id).replace("_TEMPLATE_", "");
+      });
+      // Show the element
+      $element.appendTo($list).hide().show(350);
+      // Update indexes
+      updateIndexes();
+    }
+    function removeItem() {
+      var $parent = $(this).parents('.studyLink');
+      $parent.hide(500, function() {
+        // Remove DOM element
+        $parent.remove();
+        // Update indexes
+        updateIndexes();
+      });
+    }
+    function updateIndexes() {
+      $('.linksList').find('.studyLink').each(function(i,element) {
+        $(element).find('.indexTag').text(i + 1);
+        $(element).setNameIndexes(1, i);
+      });
+    }
+
+  })();
+
+  /**
+   * Qualification Component
+   */
+  (function() {
+    // Events
+    $('.addStudyQualification').on('click', addItem);
+    $('.removeQuantification').on('click', removeItem);
+
+    // Functions
+    function addItem() {
+      var $list = $(this).parents('.quantificationsBlock').find('.quantificationsList');
+      var $element = $('#quantification-template').clone(true).removeAttr("id");
+      // Remove template tag
+      $element.find('input, textarea').each(function(i,e) {
+        e.name = (e.name).replace("_TEMPLATE_", "");
+        e.id = (e.id).replace("_TEMPLATE_", "");
+      });
+      // Show the element
+      $element.appendTo($list).hide().show(350);
+      // Update indexes
+      updateIndexes();
+    }
+    function removeItem() {
+      var $parent = $(this).parents('.quantification');
+      $parent.hide(500, function() {
+        // Remove DOM element
+        $parent.remove();
+        // Update indexes
+        updateIndexes();
+      });
+    }
+    function updateIndexes() {
+      $('.quantificationsList').find('.quantification').each(function(i,element) {
+        $(element).find('span.index').text(i + 1);
+        $(element).setNameIndexes(1, i);
+
+        // Update Radios
+        $(element).find('.radioFlat ').each(function(j,item) {
+          var radioName = 'quantificationRadio-' + i + '-' + j;
+          $(item).find('input').attr('id', radioName);
+          $(item).find('label').attr('for', radioName);
+        });
+
+      });
+    }
+
+  })();
+
 }
 
 function onChangeRadioButton() {
