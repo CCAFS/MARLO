@@ -20,6 +20,7 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
+import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyManager;
@@ -42,6 +43,7 @@ import org.cgiar.ccafs.marlo.data.manager.RepIndStageInnovationManager;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableInfo;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
+import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
@@ -112,6 +114,7 @@ public class ProjectInnovationAction extends BaseAction {
   private ProjectInnovationDeliverableManager projectInnovationDeliverableManager;
   private ProjectInnovationCountryManager projectInnovationCountryManager;
   private RepIndOrganizationTypeManager repIndOrganizationTypeManager;
+  private InstitutionManager institutionManager;
   private AuditLogManager auditLogManager;
   private DeliverableManager deliverableManager;
 
@@ -131,6 +134,7 @@ public class ProjectInnovationAction extends BaseAction {
   private List<RepIndDegreeInnovation> degreeInnovationList;
   private List<RepIndRegion> regionList;
   private List<LocElement> countries;
+  private List<Institution> institutions;
   private List<ProjectExpectedStudy> expectedStudyList;
   private List<Deliverable> deliverableList;
   private List<GlobalUnit> crpList;
@@ -153,7 +157,8 @@ public class ProjectInnovationAction extends BaseAction {
     ProjectInnovationCountryManager projectInnovationCountryManager,
     RepIndOrganizationTypeManager repIndOrganizationTypeManager, ProjectInnovationValidator validator,
     AuditLogManager auditLogManager, RepIndContributionOfCrpManager repIndContributionOfCrpManager,
-    RepIndDegreeInnovationManager repIndDegreeInnovationManager, DeliverableManager deliverableManager) {
+    RepIndDegreeInnovationManager repIndDegreeInnovationManager, DeliverableManager deliverableManager,
+    InstitutionManager institutionManager) {
     super(config);
     this.projectInnovationManager = projectInnovationManager;
     this.globalUnitManager = globalUnitManager;
@@ -179,6 +184,7 @@ public class ProjectInnovationAction extends BaseAction {
     this.repIndContributionOfCrpManager = repIndContributionOfCrpManager;
     this.repIndDegreeInnovationManager = repIndDegreeInnovationManager;
     this.deliverableManager = deliverableManager;
+    this.institutionManager = institutionManager;
   }
 
   /**
@@ -244,10 +250,14 @@ public class ProjectInnovationAction extends BaseAction {
     return innovationTypeList;
   }
 
+  public List<Institution> getInstitutions() {
+    return institutions;
+  }
+
+
   public GlobalUnit getLoggedCrp() {
     return loggedCrp;
   }
-
 
   public List<RepIndOrganizationType> getOrganizationTypeList() {
     return organizationTypeList;
@@ -487,9 +497,12 @@ public class ProjectInnovationAction extends BaseAction {
         }
       }
 
-      // Getting The list
+      // Getting The list of countries
       countries = locElementManager.findAll().stream().filter(c -> c.getLocElementType().getId().intValue() == 2)
         .collect(Collectors.toList());
+
+      // Getting the list of institution
+      institutions = institutionManager.findAll().stream().filter(i -> i.isActive()).collect(Collectors.toList());
 
 
       phaseResearchList = repIndPhaseResearchPartnershipManager.findAll();
@@ -764,6 +777,7 @@ public class ProjectInnovationAction extends BaseAction {
     }
   }
 
+
   public void saveDeliverables(ProjectInnovation projectInnovation, Phase phase) {
 
     // Search and deleted form Information
@@ -801,7 +815,6 @@ public class ProjectInnovationAction extends BaseAction {
       }
     }
   }
-
 
   /**
    * Save Project Innovation Organization Information
@@ -859,10 +872,10 @@ public class ProjectInnovationAction extends BaseAction {
     this.crpList = crpList;
   }
 
-
   public void setDegreeInnovationList(List<RepIndDegreeInnovation> degreeInnovationList) {
     this.degreeInnovationList = degreeInnovationList;
   }
+
 
   public void setDeliverableList(List<Deliverable> deliverableList) {
     this.deliverableList = deliverableList;
@@ -890,6 +903,10 @@ public class ProjectInnovationAction extends BaseAction {
 
   public void setInnovationTypeList(List<RepIndInnovationType> innovationTypeList) {
     this.innovationTypeList = innovationTypeList;
+  }
+
+  public void setInstitutions(List<Institution> institutions) {
+    this.institutions = institutions;
   }
 
   public void setLoggedCrp(GlobalUnit loggedCrp) {

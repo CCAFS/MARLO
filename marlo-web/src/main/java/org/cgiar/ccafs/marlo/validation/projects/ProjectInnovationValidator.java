@@ -83,38 +83,19 @@ public class ProjectInnovationValidator extends BaseValidator {
   private void validateProjectInnovation(BaseAction action, ProjectInnovation projectInnovation) {
 
     // Validate Title
-    if (!this.isValidString(projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getTitle())
-      && this.wordCount(projectInnovation.getProjectInnovationInfo(action.getActualPhase()).getTitle()) <= 20) {
+    if (!(this.isValidString(projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getTitle())
+      && this.wordCount(projectInnovation.getProjectInnovationInfo(action.getActualPhase()).getTitle()) <= 30)) {
       action.addMessage(action.getText("Title"));
       action.addMissingField("projectInnovations.title");
       action.getInvalidFields().put("input-innovation.projectInnovationInfo.title", InvalidFieldsMessages.EMPTYFIELD);
     }
 
     // Validate Narrative
-    if (!this.isValidString(projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getNarrative())
-      && this.wordCount(projectInnovation.getProjectInnovationInfo(action.getActualPhase()).getNarrative()) <= 50) {
+    if (!(this.isValidString(projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getNarrative())
+      && this.wordCount(projectInnovation.getProjectInnovationInfo(action.getActualPhase()).getNarrative()) <= 75)) {
       action.addMessage(action.getText("Narrative of The Innovation"));
       action.addMissingField("projectInnovations.narrative");
       action.getInvalidFields().put("input-innovation.projectInnovationInfo.narrative",
-        InvalidFieldsMessages.EMPTYFIELD);
-    }
-
-    // Validate Phase Research
-    if (projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase())
-      .getRepIndPhaseResearchPartnership() != null) {
-      if (projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getRepIndPhaseResearchPartnership()
-        .getId() == null
-        || projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getRepIndPhaseResearchPartnership()
-          .getId() == -1) {
-        action.addMessage(action.getText("Phase of Research"));
-        action.addMissingField("projectInnovations.phase");
-        action.getInvalidFields().put("input-innovation.projectInnovationInfo.repIndPhaseResearchPartnership.id",
-          InvalidFieldsMessages.EMPTYFIELD);
-      }
-    } else {
-      action.addMessage(action.getText("Phase of Research"));
-      action.addMissingField("projectInnovations.phase");
-      action.getInvalidFields().put("input-innovation.projectInnovationInfo.repIndPhaseResearchPartnership.id",
         InvalidFieldsMessages.EMPTYFIELD);
     }
 
@@ -305,44 +286,6 @@ public class ProjectInnovationValidator extends BaseValidator {
       action.addMissingField("projectInnovations.contributing");
       action.getInvalidFields().put("list-innovation.crps",
         action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Crps"}));
-    }
-
-    // Validate Gender relevance radio Button
-    if (projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getGenderFocusLevel() == null) {
-      action.addMessage(action.getText("Gender Relevance"));
-      action.addMissingField("projectInnovations.genderRelevance");
-      action.getInvalidFields().put("input-innovation.projectInnovationInfo.genderFocusLevel.id",
-        InvalidFieldsMessages.EMPTYFIELD);
-    }
-
-    // Validate Gender Explaniation
-    if (!this
-      .isValidString(projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getGenderExplaniation())
-      && this.wordCount(
-        projectInnovation.getProjectInnovationInfo(action.getActualPhase()).getGenderExplaniation()) <= 100) {
-      action.addMessage(action.getText("Gender explaniation"));
-      action.addMissingField("projectInnovations.genderRelevance.explanation");
-      action.getInvalidFields().put("input-innovation.projectInnovationInfo.genderExplaniation",
-        InvalidFieldsMessages.EMPTYFIELD);
-    }
-
-    // Validate Youth relevance radio Button
-    if (projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getYouthFocusLevel() == null) {
-      action.addMessage(action.getText("Youth Relevance"));
-      action.addMissingField("projectInnovations.youthRelevance");
-      action.getInvalidFields().put("input-innovation.projectInnovationInfo.youthFocusLevel.id",
-        InvalidFieldsMessages.EMPTYFIELD);
-    }
-
-    // Validate Gender Explaniation
-    if (!this
-      .isValidString(projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getYouthExplaniation())
-      && this
-        .wordCount(projectInnovation.getProjectInnovationInfo(action.getActualPhase()).getYouthExplaniation()) <= 100) {
-      action.addMessage(action.getText("Youth explaniation"));
-      action.addMissingField("projectInnovations.youthRelevance.explanation");
-      action.getInvalidFields().put("input-innovation.projectInnovationInfo.youthExplaniation",
-        InvalidFieldsMessages.EMPTYFIELD);
     }
   }
 

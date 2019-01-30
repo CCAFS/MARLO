@@ -126,12 +126,12 @@
           
           [#-- Lead Organization --]
           <div class="form-group"">
-            [@customForm.select name="innovation.projectInnovationInfo.leadOrganization.id" label=""  i18nkey="projectInnovations.leadOrganization" listName="" keyFieldName="id"  displayFieldName="" required=true  className="" editable=editable/]
+            [@customForm.select name="innovation.projectInnovationInfo.leadOrganization.id" label=""  i18nkey="projectInnovations.leadOrganization" listName="institutions" keyFieldName="id"  displayFieldName="name" required=true  className="" editable=editable/]
           </div>
           
           [#-- Top Five Contributing Organizations --]
           <div class="form-group"">
-            [@customForm.elementsListComponent name="innovation.projectInnovationInfo.contributingOrganizations" elementType="" elementList="" label="projectInnovations.contributingOrganizations"  listName="" keyFieldName="id" displayFieldName=""/]
+            [@customForm.elementsListComponent name="innovation.projectInnovationInfo.contributingOrganizations" elementType="" elementList="" label="projectInnovations.contributingOrganizations"  listName="intitutions" keyFieldName="id" displayFieldName="name"/]
           </div>
           
           [#-- Novel or Adaptive research --]
