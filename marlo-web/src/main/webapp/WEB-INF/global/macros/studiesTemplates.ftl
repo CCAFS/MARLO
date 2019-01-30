@@ -227,7 +227,7 @@
       [#if isOutcomeCaseStudy]
       <div class="form-group stageProcessOne">
         [@customForm.textArea name="${customName}.projectExpectedStudyInfo.innovationsNarrative" i18nkey="study.innovationsNarrative" help="study.innovationsNarrative.help" helpIcon=false className="" required=editable && !(isPolicy && stageProcessOne) editable=editable /]
-        <br />
+         
         [@customForm.elementsListComponent name="${customName}.innovations" elementType="projectInnovation" elementList=element.innovations label="study.innovationsList"  listName="innovationsList" keyFieldName="id" displayFieldName="composedName" required=false /]
       </div>
       [/#if]
@@ -340,14 +340,22 @@
       </div>
       [/#if]
       
-      [#-- 12. Other cross-cutting dimensions   --]
+      [#--  Other cross-cutting dimensions   --]
       [#if isOutcomeCaseStudy]
       <div class="form-group stageProcessOne">
-        [@customForm.textArea name="${customName}.projectExpectedStudyInfo.otherCrossCuttingDimensions" i18nkey="study.otherCrossCutting" help="study.otherCrossCutting.help" helpIcon=false className="limitWords-100" required=false editable=editable /]
+        <label for="">[@s.text name="study.otherCrossCutting" /]:</label> 
+        [@customForm.helpLabel name="study.otherCrossCuttingOptions" showIcon=false editable=editable/]<br />
+        [#list ["Yes", "No", "NA"] as option]
+          [@customForm.radioFlat id="option-${option}" name="${customName}.projectExpectedStudyInfo.otherCrossCuttingOption" i18nkey="study.otherCrossCutting${option}" value="${option}" checked=false cssClass="radioType-otherCrossCuttingOption" cssClassLabel="font-normal" editable=editable /] 
+        [/#list]
+        [#local showOtherCrossCuttingOptionsComponent = true /]
+        <div class="otherCrossCuttingOptionsComponent form-group" style="display:${showOtherCrossCuttingOptionsComponent?string('block', 'none')}">
+          [@customForm.textArea name="${customName}.projectExpectedStudyInfo.otherCrossCuttingDimensions" i18nkey="study.otherCrossCutting.comments" help="study.otherCrossCutting.comments.help" helpIcon=false  className="limitWords-200" required=false editable=editable /]
+        </div>
       </div>
       [/#if]
       
-      [#-- 13. Communications materials    --]
+      [#--  Communications materials    --]
       [#if isOutcomeCaseStudy]
       <div class="form-group stageProcessOne">
         <div class="form-group">
@@ -367,14 +375,14 @@
       </div>
       [/#if]
 
-      [#-- 14. Contact person    --]
+      [#--  Contact person    --]
       [#if isOutcomeCaseStudy]
       <div class="form-group stageProcessOne">
         [@customForm.textArea name="${customName}.projectExpectedStudyInfo.contacts" i18nkey="study.contacts" help="study.contacts.help" className="" helpIcon=false required=editable && !(isPolicy && stageProcessOne) editable=editable /]
       </div>
       [/#if]
       
-      [#-- Comments for other studies--]
+      [#--  Comments for other studies--]
       [#if !isOutcomeCaseStudy]
       <div class="form-group stageProcessOne">
         [@customForm.textArea name="${customName}.projectExpectedStudyInfo.topLevelComments" i18nkey="study.comments"  placeholder="" className="limitWords-100" required=editable && !(isPolicy && stageProcessOne) editable=editable /]
@@ -383,10 +391,30 @@
       
     </div>
     
+    [#-- Private Option --]
+    [#if isOutcomeCaseStudy]
+    <div class="borderBox">
+      <label for="">[@s.text name="study.public" /]:[@customForm.helpLabel name="study.public.help" showIcon=false editable=editable/]</label> <br />
+      [#local isPublic = (element.projectExpectedStudyInfo.public == "true")!true /]
+      [@customForm.radioFlat id="optionPublic-yes"  name="${customName}.projectExpectedStudyInfo.public" i18nkey="Yes"  value="true"  checked=isPublic  cssClass="radioType-optionPublic" cssClassLabel="font-normal radio-label-yes" editable=editable /] 
+      [@customForm.radioFlat id="optionPublic-no"   name="${customName}.projectExpectedStudyInfo.public" i18nkey="No"   value="false" checked=!isPublic cssClass="radioType-optionPublic" cssClassLabel="font-normal radio-label-no"  editable=editable /] 
+      
+      <div class="optionPublicComponent form-group" style="display:${isPublic?string('block', 'none')}">         
+        <br />
+        <div class="input-group">
+          <span class="input-group-btn">
+            <button class="btn btn-default btn-sm" type="button"> <span class="glyphicon glyphicon-link"></span> Copy URL </button>
+          </span>
+          <input type="text" class="form-control input-sm" value="${baseUrl}/projects/${crpSession}/studySummary.do?studyID=${(element.id)!}&cycle=Reporting&year=${(actualPhase.year)!}" readonly>
+        </div>
+      </div>
+    </div>
+    [/#if]
+    
+    [#-- Projects shared --]
     [#if fromProject]
     <h3 class="headTitle"> Share Study </h3>
     <div class="borderBox">
-      [#-- Projects shared --]
       [@customForm.elementsListComponent name="${customName}.projects" elementType="project" elementList=element.projects label="study.sharedProjects"  listName="myProjects" keyFieldName="id" displayFieldName="composedName" required=false /]
     </div>
     [/#if]
