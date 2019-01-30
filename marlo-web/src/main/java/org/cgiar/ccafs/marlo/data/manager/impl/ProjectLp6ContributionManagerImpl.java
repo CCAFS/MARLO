@@ -16,6 +16,7 @@ package org.cgiar.ccafs.marlo.data.manager.impl;
 
 
 import org.cgiar.ccafs.marlo.data.dao.PhaseDAO;
+import org.cgiar.ccafs.marlo.data.dao.ProjectDAO;
 import org.cgiar.ccafs.marlo.data.dao.ProjectLp6ContributionDAO;
 import org.cgiar.ccafs.marlo.data.manager.ProjectLp6ContributionManager;
 import org.cgiar.ccafs.marlo.data.model.Phase;
@@ -32,14 +33,17 @@ public class ProjectLp6ContributionManagerImpl implements ProjectLp6Contribution
 
 
   private ProjectLp6ContributionDAO projectLp6ContributionDAO;
+  private ProjectDAO projectDAO;
   // Managers
   private PhaseDAO phaseDAO;
 
 
   @Inject
-  public ProjectLp6ContributionManagerImpl(ProjectLp6ContributionDAO projectLp6ContributionDAO, PhaseDAO phaseDAO) {
+  public ProjectLp6ContributionManagerImpl(ProjectLp6ContributionDAO projectLp6ContributionDAO, PhaseDAO phaseDAO,
+    ProjectDAO projectDAO) {
     this.projectLp6ContributionDAO = projectLp6ContributionDAO;
     this.phaseDAO = phaseDAO;
+    this.projectDAO = projectDAO;
   }
 
   @Override
@@ -79,37 +83,19 @@ public class ProjectLp6ContributionManagerImpl implements ProjectLp6Contribution
     ProjectLp6Contribution projectLp6Contribution) {
     Phase phase = phaseDAO.find(next.getId());
 
-    List<ProjectLp6Contribution> allProjectLp6Contributions =
-      phase.getProjectLp6Contributions().stream().collect(Collectors.toList());
-
     List<ProjectLp6Contribution> projectLp6Contributions = phase.getProjectLp6Contributions().stream()
       .filter(c -> c.isActive() && c.getProject().getId().equals(projectID)).collect(Collectors.toList());
 
     if (projectLp6Contributions.isEmpty()) {
       ProjectLp6Contribution projectLp6ContributionAdd = new ProjectLp6Contribution();
-      projectLp6ContributionAdd.setPhase(phase);
-      projectLp6ContributionAdd.setContribution(projectLp6Contribution.getContribution());
-      projectLp6ContributionAdd.setGeographicScope(projectLp6Contribution.getGeographicScope());
-      projectLp6ContributionAdd.setInitiativeRelated(projectLp6Contribution.getInitiativeRelated());
-      projectLp6ContributionAdd.setInitiativeRelatedNarrative(projectLp6Contribution.getInitiativeRelatedNarrative());
-      projectLp6ContributionAdd.setNarrative(projectLp6Contribution.getNarrative());
-      projectLp6ContributionAdd.setProject(projectLp6Contribution.getProject());
-      projectLp6ContributionAdd.setProvidingPathways(projectLp6Contribution.getProvidingPathways());
-      projectLp6ContributionAdd.setProvidingPathwaysNarrative(projectLp6Contribution.getProvidingPathwaysNarrative());
-      projectLp6ContributionAdd
-        .setTopThreePartnershipsNarrative(projectLp6Contribution.getTopThreePartnershipsNarrative());
-      projectLp6ContributionAdd.setUndertakingEffortsCsa(projectLp6Contribution.getUndertakingEffortsCsa());
-      projectLp6ContributionAdd
-        .setUndertakingEffortsCsaNarrative(projectLp6Contribution.getUndertakingEffortsCsaNarrative());
-      projectLp6ContributionAdd.setUndertakingEffortsLeading(projectLp6Contribution.getUndertakingEffortsLeading());
-      projectLp6ContributionAdd
-        .setUndertakingEffortsLeadingNarrative(projectLp6Contribution.getUndertakingEffortsLeadingNarrative());
-      projectLp6ContributionAdd.setWorkingAcrossFlagships(projectLp6Contribution.getWorkingAcrossFlagships());
-      projectLp6ContributionAdd
-        .setWorkingAcrossFlagshipsNarrative(projectLp6Contribution.getWorkingAcrossFlagshipsNarrative());
-
+      projectLp6ContributionAdd.setProject(projectDAO.find(projectID));
+      projectLp6ContributionAdd.updateProjectLp6Contribution(projectLp6Contribution, phase);
       projectLp6ContributionDAO.save(projectLp6ContributionAdd);
-      // TODO: Add relations
+    } else {
+      for (ProjectLp6Contribution projectLp6ContributionPhase : projectLp6Contributions) {
+        projectLp6ContributionPhase.updateProjectLp6Contribution(projectLp6Contribution, phase);
+        projectLp6ContributionDAO.save(projectLp6ContributionPhase);
+      }
     }
 
     if (phase.getNext() != null) {

@@ -379,4 +379,29 @@ public class ProjectLp6Contribution extends MarloAuditableEntity implements java
       + ", contribution=" + contribution + "]";
   }
 
+  /**
+   * Add the save information to reply the next Phase
+   * 
+   * @param projectInnovationInfoUpdate - a ProjectInnovationInfo object.
+   * @param phase - The next Phase
+   */
+  public void updateProjectLp6Contribution(ProjectLp6Contribution projectLp6ContributionUpdate, Phase phase) {
+    this.setPhase(phase);
+    this.setContribution(projectLp6ContributionUpdate.getContribution());
+    this.setGeographicScope(projectLp6ContributionUpdate.getGeographicScope());
+    this.setInitiativeRelated(projectLp6ContributionUpdate.getInitiativeRelated());
+    this.setInitiativeRelatedNarrative(projectLp6ContributionUpdate.getInitiativeRelatedNarrative());
+    this.setNarrative(projectLp6ContributionUpdate.getNarrative());
+    this.setProject(projectLp6ContributionUpdate.getProject());
+    this.setProvidingPathways(projectLp6ContributionUpdate.getProvidingPathways());
+    this.setProvidingPathwaysNarrative(projectLp6ContributionUpdate.getProvidingPathwaysNarrative());
+    this.setTopThreePartnershipsNarrative(projectLp6ContributionUpdate.getTopThreePartnershipsNarrative());
+    this.setUndertakingEffortsCsa(projectLp6ContributionUpdate.getUndertakingEffortsCsa());
+    this.setUndertakingEffortsCsaNarrative(projectLp6ContributionUpdate.getUndertakingEffortsCsaNarrative());
+    this.setUndertakingEffortsLeading(projectLp6ContributionUpdate.getUndertakingEffortsLeading());
+    this.setUndertakingEffortsLeadingNarrative(projectLp6ContributionUpdate.getUndertakingEffortsLeadingNarrative());
+    this.setWorkingAcrossFlagships(projectLp6ContributionUpdate.getWorkingAcrossFlagships());
+    this.setWorkingAcrossFlagshipsNarrative(projectLp6ContributionUpdate.getWorkingAcrossFlagshipsNarrative());
+  }
+
 }

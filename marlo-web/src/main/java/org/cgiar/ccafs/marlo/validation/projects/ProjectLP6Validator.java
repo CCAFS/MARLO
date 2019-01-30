@@ -91,14 +91,14 @@ public class ProjectLP6Validator extends BaseValidator {
     if (!this.isValidString(projectLp6Contribution.getNarrative())
       && this.wordCount(projectLp6Contribution.getNarrative()) <= 100) {
       action.addMessage(action.getText("projects.LP6Contribution.narrativeContribution.readText"));
-      action.getInvalidFields().put("input-projectLp6Contribution.narrative", InvalidFieldsMessages.EMPTYFIELD);
+      action.getInvalidFields().put("input-project.projectLp6Contribution.narrative", InvalidFieldsMessages.EMPTYFIELD);
     }
 
     // Validate TopThreePartnershipsNarrative
     if (!this.isValidString(projectLp6Contribution.getTopThreePartnershipsNarrative())
       && this.wordCount(projectLp6Contribution.getTopThreePartnershipsNarrative()) <= 100) {
       action.addMessage(action.getText("projects.LP6Contribution.partnerships.readText"));
-      action.getInvalidFields().put("input-projectLp6Contribution.topThreePartnershipsNarrative",
+      action.getInvalidFields().put("input-project.projectLp6Contribution.topThreePartnershipsNarrative",
         InvalidFieldsMessages.EMPTYFIELD);
     }
 
@@ -108,13 +108,13 @@ public class ProjectLP6Validator extends BaseValidator {
         if (!this.isValidString(projectLp6Contribution.getWorkingAcrossFlagshipsNarrative())
           && this.wordCount(projectLp6Contribution.getWorkingAcrossFlagshipsNarrative()) <= 100) {
           action.addMessage(action.getText("projects.LP6Contribution.workingAcrossFlagships.question.readText"));
-          action.getInvalidFields().put("input-projectLp6Contribution.workingAcrossFlagshipsNarrative",
+          action.getInvalidFields().put("input-project.projectLp6Contribution.workingAcrossFlagshipsNarrative",
             InvalidFieldsMessages.EMPTYFIELD);
         }
       }
     } else {
       action.addMessage(action.getText("projects.LP6Contribution.flagshipLevels"));
-      action.getInvalidFields().put("input-projectLp6Contribution.workingAcrossFlagships",
+      action.getInvalidFields().put("input-project.projectLp6Contribution.workingAcrossFlagships",
         InvalidFieldsMessages.EMPTYFIELD);
     }
 
@@ -124,13 +124,13 @@ public class ProjectLP6Validator extends BaseValidator {
         if (!this.isValidString(projectLp6Contribution.getUndertakingEffortsLeadingNarrative())
           && this.wordCount(projectLp6Contribution.getUndertakingEffortsLeadingNarrative()) <= 100) {
           action.addMessage(action.getText("projects.LP6Contribution.positionCGIAR.question.readText"));
-          action.getInvalidFields().put("input-projectLp6Contribution.undertakingEffortsLeadingNarrative",
+          action.getInvalidFields().put("input-project.projectLp6Contribution.undertakingEffortsLeadingNarrative",
             InvalidFieldsMessages.EMPTYFIELD);
         }
       }
     } else {
       action.addMessage(action.getText("projects.LP6Contribution.positionCGIAR"));
-      action.getInvalidFields().put("input-projectLp6Contribution.undertakingEffortsLeading",
+      action.getInvalidFields().put("input-project.projectLp6Contribution.undertakingEffortsLeading",
         InvalidFieldsMessages.EMPTYFIELD);
     }
 
@@ -140,13 +140,14 @@ public class ProjectLP6Validator extends BaseValidator {
         if (!this.isValidString(projectLp6Contribution.getProvidingPathwaysNarrative())
           && this.wordCount(projectLp6Contribution.getProvidingPathwaysNarrative()) <= 100) {
           action.addMessage(action.getText("projects.LP6Contribution.innovativePathways.question.readText"));
-          action.getInvalidFields().put("input-projectLp6Contribution.providingPathwaysNarrative",
+          action.getInvalidFields().put("input-project.projectLp6Contribution.providingPathwaysNarrative",
             InvalidFieldsMessages.EMPTYFIELD);
         }
       }
     } else {
       action.addMessage(action.getText("projects.LP6Contribution.innovativePathways"));
-      action.getInvalidFields().put("input-projectLp6Contribution.providingPathways", InvalidFieldsMessages.EMPTYFIELD);
+      action.getInvalidFields().put("input-project.projectLp6Contribution.providingPathways",
+        InvalidFieldsMessages.EMPTYFIELD);
     }
 
     // Validate Undertaking Efforts Csa
@@ -155,13 +156,13 @@ public class ProjectLP6Validator extends BaseValidator {
         if (!this.isValidString(projectLp6Contribution.getUndertakingEffortsCsaNarrative())
           && this.wordCount(projectLp6Contribution.getUndertakingEffortsCsaNarrative()) <= 100) {
           action.addMessage(action.getText("projects.LP6Contribution.scalingCSA.question.readText"));
-          action.getInvalidFields().put("input-projectLp6Contribution.undertakingEffortsCsaNarrative",
+          action.getInvalidFields().put("input-project.projectLp6Contribution.undertakingEffortsCsaNarrative",
             InvalidFieldsMessages.EMPTYFIELD);
         }
       }
     } else {
       action.addMessage(action.getText("projects.LP6Contribution.scalingCSA"));
-      action.getInvalidFields().put("input-projectLp6Contribution.undertakingEffortsCsa",
+      action.getInvalidFields().put("input-project.projectLp6Contribution.undertakingEffortsCsa",
         InvalidFieldsMessages.EMPTYFIELD);
     }
 
@@ -171,13 +172,14 @@ public class ProjectLP6Validator extends BaseValidator {
         if (!this.isValidString(projectLp6Contribution.getInitiativeRelatedNarrative())
           && this.wordCount(projectLp6Contribution.getInitiativeRelatedNarrative()) <= 100) {
           action.addMessage(action.getText("projects.LP6Contribution.climateFinance.question.readText"));
-          action.getInvalidFields().put("input-projectLp6Contribution.initiativeRelatedNarrative",
+          action.getInvalidFields().put("input-project.projectLp6Contribution.initiativeRelatedNarrative",
             InvalidFieldsMessages.EMPTYFIELD);
         }
       }
     } else {
       action.addMessage(action.getText("projects.LP6Contribution.climateFinance"));
-      action.getInvalidFields().put("input-projectLp6Contribution.initiativeRelated", InvalidFieldsMessages.EMPTYFIELD);
+      action.getInvalidFields().put("input-project.projectLp6Contribution.initiativeRelated",
+        InvalidFieldsMessages.EMPTYFIELD);
     }
 
   }
@@ -189,7 +191,14 @@ public class ProjectLP6Validator extends BaseValidator {
       && projectLp6Contribution.getGeographicScope().getId() != -1
       && !projectLp6Contribution.getGeographicScope().getId().equals(action.getReportingIndGeographicScopeGlobal())) {
 
-      // TODO: Add regions validator
+
+      if (projectLp6Contribution.getGeographicScope().getId().equals(action.getReportingIndGeographicScopeRegional())) {
+        if (projectLp6Contribution.getRegions() == null || projectLp6Contribution.getRegions().isEmpty()) {
+          action.addMessage(action.getText("projects.LP6Contribution.region"));
+          action.getInvalidFields().put("list-project.projectLp6Contribution.regions",
+            InvalidFieldsMessages.EMPTYFIELD);
+        }
+      }
 
       if (projectLp6Contribution.getGeographicScope().getId()
         .equals(action.getReportingIndGeographicScopeMultiNational())
@@ -198,7 +207,8 @@ public class ProjectLP6Validator extends BaseValidator {
           .equals(action.getReportingIndGeographicScopeSubNational())) {
         if (projectLp6Contribution.getCountriesIds() == null || projectLp6Contribution.getCountriesIds().isEmpty()) {
           action.addMessage(action.getText("projects.LP6Contribution.countries"));
-          action.getInvalidFields().put("input-projectLp6Contribution.countriesIds", InvalidFieldsMessages.EMPTYFIELD);
+          action.getInvalidFields().put("input-project.projectLp6Contribution.countriesIds",
+            InvalidFieldsMessages.EMPTYFIELD);
         }
       }
     }
