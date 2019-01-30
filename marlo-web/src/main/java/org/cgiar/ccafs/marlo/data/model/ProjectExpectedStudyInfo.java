@@ -112,8 +112,24 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
   @Expose
   private Integer year;
 
+  // AR 2018 New fileds
+  @Expose
+  private EvidenceTag evidenceTag;
+  @Expose
+  private String outcomeStory;
+  @Expose
+  private Boolean isSrfTarget;
+  @Expose
+  private String cgiarInnovation;
+  @Expose
+  private String otherCrossCuttingSelection;
+  @Expose
+  private Boolean isPublic;
+
+
   public ProjectExpectedStudyInfo() {
   }
+
 
   public ProjectExpectedStudyInfo(Phase phase, ProjectExpectedStudy projectExpectedStudy, String title,
     String outcomeImpactStatement, String topLevelComments, String scopeComments,
@@ -139,25 +155,36 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
     this.year = year;
   }
 
+
   public RepIndGenderYouthFocusLevel getCapdevLevel() {
     return capdevLevel;
   }
+
+
+  public String getCgiarInnovation() {
+    return cgiarInnovation;
+  }
+
 
   public String getCommissioningStudy() {
     return commissioningStudy;
   }
 
+
   public String getComunicationsMaterial() {
     return comunicationsMaterial;
   }
+
 
   public String getContacts() {
     return contacts;
   }
 
+
   public String getDescribeCapdev() {
     return describeCapdev;
   }
+
 
   public String getDescribeGender() {
     return describeGender;
@@ -174,13 +201,24 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
   }
 
 
+  public EvidenceTag getEvidenceTag() {
+    return evidenceTag;
+  }
+
   public RepIndGenderYouthFocusLevel getGenderLevel() {
     return genderLevel;
   }
 
-
   public Boolean getIsContribution() {
     return isContribution;
+  }
+
+  public Boolean getIsPublic() {
+    return isPublic;
+  }
+
+  public Boolean getIsSrfTarget() {
+    return isSrfTarget;
   }
 
   @Override
@@ -190,12 +228,10 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
     return sb.toString();
   }
 
-
   @Override
   public String getModificationJustification() {
     return "";
   }
-
 
   @Override
   public User getModifiedBy() {
@@ -204,9 +240,13 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
     return u;
   }
 
-
   public String getOtherCrossCuttingDimensions() {
     return otherCrossCuttingDimensions;
+  }
+
+
+  public String getOtherCrossCuttingSelection() {
+    return otherCrossCuttingSelection;
   }
 
 
@@ -220,6 +260,10 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
   }
 
 
+  public String getOutcomeStory() {
+    return outcomeStory;
+  }
+
   public Phase getPhase() {
     return phase;
   }
@@ -229,9 +273,11 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
     return policyAmount;
   }
 
+
   public ProjectExpectedStudy getProjectExpectedStudy() {
     return projectExpectedStudy;
   }
+
 
   public String getQuantification() {
     return quantification;
@@ -257,11 +303,9 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
     return repIndOrganizationType;
   }
 
-
   public RepIndPolicyInvestimentType getRepIndPolicyInvestimentType() {
     return repIndPolicyInvestimentType;
   }
-
 
   public RepIndRegion getRepIndRegion() {
     return repIndRegion;
@@ -300,6 +344,7 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
     return studyType;
   }
 
+
   public String getTitle() {
     return title;
   }
@@ -314,22 +359,31 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
     return year;
   }
 
+
   public RepIndGenderYouthFocusLevel getYouthLevel() {
     return youthLevel;
   }
+
 
   @Override
   public boolean isActive() {
     return true;
   }
 
+
   public void setCapdevLevel(RepIndGenderYouthFocusLevel capdevLevel) {
     this.capdevLevel = capdevLevel;
   }
 
+  public void setCgiarInnovation(String cgiarInnovation) {
+    this.cgiarInnovation = cgiarInnovation;
+  }
+
+
   public void setCommissioningStudy(String commissioningStudy) {
     this.commissioningStudy = commissioningStudy;
   }
+
 
   public void setComunicationsMaterial(String comunicationsMaterial) {
     this.comunicationsMaterial = comunicationsMaterial;
@@ -355,13 +409,24 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
     this.elaborationOutcomeImpactStatement = elaborationOutcomeImpactStatement;
   }
 
+  public void setEvidenceTag(EvidenceTag evidenceTag) {
+    this.evidenceTag = evidenceTag;
+  }
+
   public void setGenderLevel(RepIndGenderYouthFocusLevel genderLevel) {
     this.genderLevel = genderLevel;
   }
 
-
   public void setIsContribution(Boolean isContribution) {
     this.isContribution = isContribution;
+  }
+
+  public void setIsPublic(Boolean isPublic) {
+    this.isPublic = isPublic;
+  }
+
+  public void setIsSrfTarget(Boolean isSrfTarget) {
+    this.isSrfTarget = isSrfTarget;
   }
 
   @Override
@@ -369,8 +434,13 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
 
   }
 
+
   public void setOtherCrossCuttingDimensions(String otherCrossCuttingDimensions) {
     this.otherCrossCuttingDimensions = otherCrossCuttingDimensions;
+  }
+
+  public void setOtherCrossCuttingSelection(String otherCrossCuttingSelection) {
+    this.otherCrossCuttingSelection = otherCrossCuttingSelection;
   }
 
   public void setOutcomeFile(FileDB outcomeFile) {
@@ -379,6 +449,10 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
 
   public void setOutcomeImpactStatement(String outcomeImpactStatement) {
     this.outcomeImpactStatement = outcomeImpactStatement;
+  }
+
+  public void setOutcomeStory(String outcomeStory) {
+    this.outcomeStory = outcomeStory;
   }
 
   public void setPhase(Phase phase) {
@@ -503,6 +577,12 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
     this.setContacts(projectExpectedStudyInfoUpdate.getContacts());
     this.setCommissioningStudy(projectExpectedStudyInfoUpdate.getCommissioningStudy());
     this.setYear(projectExpectedStudyInfoUpdate.getYear());
+    this.setEvidenceTag(projectExpectedStudyInfoUpdate.getEvidenceTag());
+    this.setOutcomeStory(projectExpectedStudyInfoUpdate.getOutcomeStory());
+    this.setIsSrfTarget(projectExpectedStudyInfoUpdate.getIsSrfTarget());
+    this.setCgiarInnovation(projectExpectedStudyInfoUpdate.getCgiarInnovation());
+    this.setOtherCrossCuttingSelection(projectExpectedStudyInfoUpdate.getOtherCrossCuttingSelection());
+    this.setIsPublic(projectExpectedStudyInfoUpdate.getIsPublic());
 
 
   }

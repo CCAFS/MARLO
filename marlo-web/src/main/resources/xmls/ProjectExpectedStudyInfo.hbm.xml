@@ -74,6 +74,10 @@
 			class="org.cgiar.ccafs.marlo.data.model.StudyType" fetch="select">
 			<column name="study_type_id" />
 		</many-to-one>
+		<many-to-one name="evidenceTag"
+      class="org.cgiar.ccafs.marlo.data.model.EvidenceTag" fetch="select">
+      <column name="evidence_tag_id" />
+    </many-to-one>
 		<property name="title" type="string">
 			<column name="title" sql-type="TEXT" />
 		</property>
@@ -125,5 +129,20 @@
 		<property name="year" type="java.lang.Integer">
 			<column name="year" />
 		</property>
+		<property name="outcomeStory" type="string">
+      <column name="outcome_story" sql-type="TEXT" />
+    </property>
+    <property name="isSrfTarget" type="java.lang.Boolean">
+      <column name="is_srf_target" />
+    </property>
+    <property name="cgiarInnovation" type="string">
+      <column name="cgiar_innovation" sql-type="TEXT" />
+    </property>
+    <property name="otherCrossCuttingSelection" type="string">
+      <column name="other_cross_cutting_selection" sql-type="TEXT" />
+    </property>
+    <property name="isPublic" type="java.lang.Boolean">
+      <column name="is_public" />
+    </property>
 	</class>
 </hibernate-mapping>
