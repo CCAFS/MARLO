@@ -131,17 +131,23 @@ public class ProjectContributionLp6SummaryAction extends BaseSummariesAction imp
    */
   private MasterReport addi8nParameters(MasterReport masterReport) {
     if (partnerType.equals("All")) {
-      masterReport.getParameterValues().put("i8nSummaryDescription",
-        this.getText("summaries.lp6contribution.description", new String[] {this.getSelectedCycle()}));
+      /*
+       * masterReport.getParameterValues().put("i8nSummaryDescription",
+       * this.getText("summaries.lp6contribution.description", new String[] {this.getSelectedCycle()}));
+       */
       masterReport.getParameterValues().put("i8nHeader",
         this.getText("summaries.lp6contribution.header", new String[] {this.getLoggedCrp().getAcronym()}));
     } else {
-      masterReport.getParameterValues().put("i8nSummaryDescription",
-        this.getText("summaries.partners.leader.description", new String[] {this.getSelectedCycle()}));
+      /*
+       * masterReport.getParameterValues().put("i8nSummaryDescription",
+       * this.getText("summaries.partners.leader.description", new String[] {this.getSelectedCycle()}));
+       */
       masterReport.getParameterValues().put("i8nHeader",
         this.getText("summaries.partners.leader.header", new String[] {this.getLoggedCrp().getAcronym()}));
     }
 
+    masterReport.getParameterValues().put("i8nSummaryDescription",
+      this.getText("summaries.lp6contribution.description"));
     masterReport.getParameterValues().put("i8nProject", this.getText("summaries.lp6contribution.projectName"));
     masterReport.getParameterValues().put("i8nNarrative", this.getText("summaries.lp6contribution.narrative"));
     masterReport.getParameterValues().put("i8nDeliverables", this.getText("summaries.lp6contribution.deliverables"));
@@ -418,10 +424,11 @@ public class ProjectContributionLp6SummaryAction extends BaseSummariesAction imp
   @Override
   public void prepare() {
     projectLp6Contributions = new ArrayList<>();
-    projectLp6Contributions =
-      projectLp6ContributionManager.findAll().stream().filter(c -> c.isActive()).collect(Collectors.toList());
 
-    System.out.println("phase " + this.getActualPhase() + " selectedPhase " + this.getSelectedPhase());
+    if (projectLp6ContributionManager.findAll() != null && !projectLp6ContributionManager.findAll().isEmpty()) {
+      projectLp6Contributions =
+        projectLp6ContributionManager.findAll().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+    }
 
     try {
       Map<String, Parameter> parameters = this.getParameters();
