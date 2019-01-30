@@ -3203,15 +3203,19 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         project = projectManager.getProjectById(projectID);
 
         // Validate LP6 Contribution question
-        List<ProjectLp6Contribution> projectLp6Contributions = project.getProjectLp6Contributions().stream()
-          .filter(pl -> pl.isActive() && pl.getPhase().equals(this.getActualPhase())).collect(Collectors.toList());
-        if (projectLp6Contributions != null && !projectLp6Contributions.isEmpty()) {
-          ProjectLp6Contribution projectLp6Contribution = projectLp6Contributions.get(0);
-          if (projectLp6Contribution.getContribution() == null) {
+        if (this.hasSpecificities(APConstants.CRP_LP6_ACTIVE) && this.isReportingActive()) {
+
+          List<ProjectLp6Contribution> projectLp6Contributions = project.getProjectLp6Contributions().stream()
+            .filter(pl -> pl.isActive() && pl.getPhase().equals(this.getActualPhase())).collect(Collectors.toList());
+          if (projectLp6Contributions != null && !projectLp6Contributions.isEmpty()) {
+            ProjectLp6Contribution projectLp6Contribution = projectLp6Contributions.get(0);
+            if (projectLp6Contribution.getContribution() == null) {
+              return false;
+            }
+          } else {
             return false;
           }
-        } else {
-          return false;
+
         }
 
         List<ProjectOutcome> projectOutcomes = project.getProjectOutcomes().stream()
