@@ -224,7 +224,9 @@
 [#assign isContributing = ((action.getProjectLp6ContributionValue(project.id, actualPhase.id))!false) ]
 [#if action.hasSpecificities('crp_lp6_active') && reportingActive]
   <div id="projectContributionToLP6" class="borderBox project-${project.id} phase-${actualPhase.id}">
-   <a class="btn lp6-pdf btn-link" role="button" data-toggle="popover" data-trigger="focus" title="[@s.text name="projects.LP6Contribution.disabledPDF"/]"><img src="${baseUrl}/global/images/pdf.png" height="25"/>[[@s.text name="projects.LP6Contribution.explanatoryPDF" /]]</a><h4>[@s.text name="projects.LP6Contribution.title" /]</h4>
+  
+   [#-- <a class="btn lp6-pdf btn-link" role="button" data-toggle="popover" data-trigger="focus" title="[@s.text name="projects.LP6Contribution.disabledPDF"/]"><img src="${baseUrl}/global/images/pdf.png" height="25"/>[[@s.text name="projects.LP6Contribution.explanatoryPDF" /]]</a>--]
+   <h4>[@s.text name="projects.LP6Contribution.title" /]</h4>
    <p class="note lp6-contribution-note"><small>[@s.text name="projects.LP6Contribution.infoText"/] (<span class="lp6-view-more" data-toggle="modal" data-target=".lp6info-modal">view more</span>)</small></p>
    <div class="form-group">
        <label>[@s.text name="projects.LP6Contribution.contribution"/][@customForm.req required=true /]</label>
