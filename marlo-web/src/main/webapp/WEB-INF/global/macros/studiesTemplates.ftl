@@ -89,8 +89,8 @@
         [#-- Disaggregates for CGIAR Indicator I3  --]
         <div class="form-group simpleBox block-${studyIndicatorThree}" style="display:${((element.projectExpectedStudyInfo.isContribution)!false)?string('block','none')}">
           [@customForm.elementsListComponent name="${customName}.policies" elementType="projectPolicy" elementList=element.policies label="study.policies"  listName="policiesList" keyFieldName="id" displayFieldName="description"/]
-          
-          <div class="note"></div>
+          [#-- Note --]
+          <div class="note">[@s.text name="study.policies.note"][@s.param] <a href="[@s.url namespace="/projects" action='${crpSession}/policies'][@s.param name='projectID']${(projectID)!}[/@s.param][/@s.url]">clicking here</a>[/@][/@]</div>
         </div>
       </div>
       [/#if]
@@ -124,9 +124,16 @@
           [@customForm.elementsListComponent name="${customName}.subIdos" elementType="srfSubIdo" elementList=element.subIdos label="study.stratgicResultsLink.subIDOs"  listName="subIdos" maxLimit=2 keyFieldName="id" displayFieldName="description"/]
         </div>
         
-        [#-- SRF Targets  --]
+        [#-- SRF Targets (maxLimit=2)  --]
         <div class="form-group simpleBox stageProcessOne">
-          [@customForm.elementsListComponent name="${customName}.srfTargets" elementType="srfSloIndicator" elementList=element.srfTargets label="study.stratgicResultsLink.srfTargets" listName="targets" keyFieldName="id" displayFieldName="title" required=editable && !(isPolicy && stageProcessOne)/]
+          <label for="">[@s.text name="study.targetsOption" /]:[@customForm.req required=editable /][@customForm.helpLabel name="study.targetsOption.help" showIcon=false editable=editable/]</label><br />
+          [#list ["targetsOptionYes", "targetsOptionNo", "targetsOptionTooEarlyToSay"] as option]
+            [@customForm.radioFlat id="option-${option}" name="${customName}.projectExpectedStudyInfo.targetsOption" i18nkey="study.${option}" value="${option}" checked=false cssClass="radioType-targetsOption" cssClassLabel="font-normal" editable=editable /] 
+          [/#list]
+          [#local showTargetsComponent = (element.projectExpectedStudyInfo.targetsOption == "targetsOptionYes")!false /]
+          <div class="srfTargetsComponent" style="display:${showTargetsComponent?string('block', 'none')}">
+            [@customForm.elementsListComponent name="${customName}.srfTargets" elementType="srfSloIndicator" elementList=element.srfTargets label="study.stratgicResultsLink.srfTargets" listName="targets" maxLimit=2  keyFieldName="id" displayFieldName="title" required=editable && !(isPolicy && stageProcessOne)/]          
+          </div>
         </div>
         
         [#-- Comments  --]
@@ -216,7 +223,16 @@
         [/#if]
       </div>
       
-      [#-- 8. Elaboration of Outcome/Impact Statement  --]
+      [#--  CGIAR innovation(s) or findings that have resulted in this outcome or impact.   --]
+      [#if isOutcomeCaseStudy]
+      <div class="form-group stageProcessOne">
+        [@customForm.textArea name="${customName}.projectExpectedStudyInfo.innovationsNarrative" i18nkey="study.innovationsNarrative" help="study.innovationsNarrative.help" helpIcon=false className="" required=editable && !(isPolicy && stageProcessOne) editable=editable /]
+        <br />
+        [@customForm.elementsListComponent name="${customName}.innovations" elementType="projectInnovation" elementList=element.innovations label="study.innovationsList"  listName="innovationsList" keyFieldName="id" displayFieldName="composedName" required=false /]
+      </div>
+      [/#if]
+      
+      [#--  Elaboration of Outcome/Impact Statement  --]
       [#if isOutcomeCaseStudy]
       <div class="form-group stageProcessOne">
         [@customForm.textArea name="${customName}.projectExpectedStudyInfo.elaborationOutcomeImpactStatement" i18nkey="study.elaborationStatement" help="study.elaborationStatement.help" helpIcon=false className="limitWords-400" required=editable && !(isPolicy && stageProcessOne) editable=editable /]
@@ -227,7 +243,7 @@
       [#if isOutcomeCaseStudy]
       <div class="form-group stageProcessOne">
         <div class="form-group">
-          [@customForm.textArea name="${customName}.projectExpectedStudyInfo.referencesText" i18nkey="study.referencesCited" help="study.referencesCited.help" helpIcon=false className="" required=editable && !(isPolicy && stageProcessOne) editable=editable /]
+          [@customForm.textArea name="${customName}.projectExpectedStudyInfo.referencesText" i18nkey="study.referencesCited" help="study.referencesCited.help2" helpIcon=false className="" required=editable && !(isPolicy && stageProcessOne) editable=editable /]
         </div>
         <div class="form-group" style="position:relative" listname="">
           [@customForm.fileUploadAjax 
@@ -247,7 +263,25 @@
       [#-- 10. Quantification (where data is available)  --]
       [#if isOutcomeCaseStudy]
       <div class="form-group stageProcessOne">
+        [#--
         [@customForm.textArea name="${customName}.projectExpectedStudyInfo.quantification" i18nkey="study.quantification" help="study.quantification.help" helpIcon=false className=" " required=editable && !(isPolicy && stageProcessOne) editable=editable /]
+        --]
+        <label for="">[@s.text name="study.quantification" /]:[@customForm.helpLabel name="study.quantification.help" showIcon=false editable=editable/]</label><br />
+        <div class="quantificationsBlock">
+          <div class="quantificationsList">
+          [#list (element.quantifications)![] as item]
+            [@quantificationMacro name="${customName}.quantifications" element=item index=item_index /]
+          [/#list]
+          </div>
+          [#if editable]
+            <div class="addStudyQualification bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>[@s.text name="form.buttons.addStudyQualification"/]</div>
+          [/#if]
+        </div>
+        [#-- Element item Template --]
+        <div style="display:none">
+          [@quantificationMacro name="${customName}.quantifications" element={} index=-1 template=true /]
+        </div>
+        <br />
       </div>
       [/#if]
       
@@ -371,6 +405,40 @@
     <span class="pull-left" style="width:90%">[@customForm.input name="${customName}.value" placeholder="global.webSiteLink.placeholder" showTitle=false i18nkey="" className="" editable=editable /]</span>
     [#if editable]<div class="removeElement sm removeIcon removeLink" title="Remove"></div>[/#if]
     <div class="clearfix"></div>
+  </div>
+[/#macro]
+
+[#macro quantificationMacro name element index=-1 template=false]
+  [#local customName = "${template?string('_TEMPLATE_', '')}${name}[${index}]"]
+  <div id="quantification-${(template?string('template', ''))}" class="quantification form-group simpleBox">
+    <input type="hidden" name="${customName}.id" value="${(element.id)!}" />
+    <div class="form-group">
+      [#-- Index --]
+      <div class="leftHead gray sm">
+        <span class="index">${index+1}</span>
+      </div>
+      [#-- Remove Button --]
+      [#if editable]<div class="removeIcon removeElement removeQuantification" title="Remove"></div>[/#if]
+      [#-- Quantification type --]
+      <div class="form-group">
+        <label for="">[@s.text name="study.quantificationType" /]:[@customForm.req required=editable /]</label>
+        <br />[@customForm.radioFlat id="quantificationType-1" name="${customName}.type" i18nkey="study.quantification.quantificationType-1" value="1" checked=((element.type == "1")!false) cssClass="" cssClassLabel="font-normal" editable=editable /]
+        <br />[@customForm.radioFlat id="quantificationType-2" name="${customName}.type" i18nkey="study.quantification.quantificationType-2" value="2" checked=((element.type == "2")!false) cssClass="" cssClassLabel="font-normal" editable=editable /]
+      </div>
+    </div>
+    [#-- Units --]
+    <div class="form-group row">
+      <div class="col-md-4">
+        [@customForm.input name="${customName}.number" i18nkey="study.quantification.number" help="study.quantification.number.help" className="" required=true editable=editable /]
+      </div>
+      <div class="col-md-4"> 
+        [@customForm.input name="${customName}.targetUnit" i18nkey="study.quantification.targetUnit" help="study.quantification.targetUnit.help" className="" required=true editable=editable /]
+      </div> 
+    </div>
+    [#-- Comments --]
+    <div class="form-group">
+      [@customForm.textArea name="${customName}.comments" i18nkey="study.quantification.comments" help="study.quantification.comments.help"  placeholder="" className="" required=true editable=editable /]
+    </div>
   </div>
 [/#macro]
 
