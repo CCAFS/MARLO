@@ -330,7 +330,7 @@
     <mapping resource="xmls/ProjectPolicySubIdos.hbm.xml"/>
     <mapping resource="xmls/ProjectPolicyCrossCuttingMarkers.hbm.xml"/>
     <mapping resource="xmls/GeneralStatuses.hbm.xml"/>
-    <mapping resource="xmls/DeliverableCrossCuttingMarkers.hbm.xml "/> 
-    <mapping resource="xmls/EvidenceTags.hbm.xml"/>                          
+    <mapping resource="xmls/EvidenceTags.hbm.xml"/>
+    <mapping resource="xmls/DeliverableCrossCuttingMarkers.hbm.xml "/>      
 	</session-factory>
 </hibernate-configuration>
