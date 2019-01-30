@@ -35,6 +35,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.data.model.ProjectHighlight;
 import org.cgiar.ccafs.marlo.data.model.ProjectInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
+import org.cgiar.ccafs.marlo.data.model.ProjectLp6Contribution;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
@@ -225,6 +226,18 @@ public class ValidateProjectSectionAction extends BaseAction {
           section = new HashMap<String, Object>();
           section.put("sectionName", ProjectSectionStatusEnum.OUTCOMES);
           section.put("missingFields", "");
+
+          // Validate LP6 Contribution question
+          List<ProjectLp6Contribution> projectLp6Contributions = project.getProjectLp6Contributions().stream()
+            .filter(pl -> pl.isActive() && pl.getPhase().equals(this.getActualPhase())).collect(Collectors.toList());
+          if (projectLp6Contributions != null && !projectLp6Contributions.isEmpty()) {
+            ProjectLp6Contribution projectLp6Contribution = projectLp6Contributions.get(0);
+            if (projectLp6Contribution.getContribution() == null) {
+              section.put("missingFields", this.getText("projects.LP6Contribution.contribution"));
+            }
+          } else {
+            section.put("missingFields", this.getText("projects.LP6Contribution.contribution"));
+          }
 
           List<ProjectOutcome> projectOutcomes = project.getProjectOutcomes().stream()
             .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList());
