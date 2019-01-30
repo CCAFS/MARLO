@@ -248,7 +248,7 @@ public class EfficiencyAction extends BaseAction {
                     break;
                   }
                 } else {
-                  if (institution.getAcronym().equals("PMU")) {
+                  if (institution.getAcronym() != null && institution.getAcronym().equals("PMU")) {
                     liaisonInstitutionID = institution.getId();
                     isLeader = true;
                     break;
@@ -332,13 +332,14 @@ public class EfficiencyAction extends BaseAction {
 
     // ADD PMU as liaison Institution too
     liaisonInstitutions.addAll(loggedCrp.getLiaisonInstitutions().stream()
-      .filter(c -> c.getCrpProgram() == null && c.isActive() && c.getAcronym().equals("PMU"))
+      .filter(c -> c.getCrpProgram() == null && c.isActive() && c.getAcronym() != null && c.getAcronym().equals("PMU"))
       .collect(Collectors.toList()));
 
 
     if (this.isFlagship()) {
       LiaisonInstitution pmuInstitution = loggedCrp.getLiaisonInstitutions().stream()
-        .filter(c -> c.getCrpProgram() == null && c.getAcronym().equals("PMU")).collect(Collectors.toList()).get(0);
+        .filter(c -> c.getCrpProgram() == null && c.getAcronym() != null && c.getAcronym().equals("PMU"))
+        .collect(Collectors.toList()).get(0);
       ReportSynthesis reportSynthesisDB = reportSynthesisManager.findSynthesis(phase.getId(), pmuInstitution.getId());
       if (reportSynthesisDB != null) {
         if (reportSynthesisDB.getReportSynthesisEfficiency() != null) {
