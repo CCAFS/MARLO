@@ -251,7 +251,7 @@
 				<interceptor-ref name="defaultStack" />
 			</interceptor-stack>
 			
-			<interceptor-stack name="editProjectLp6Contribution">
+			<interceptor-stack name="editProjectLp6ContributionStack">
         <interceptor-ref name="i18nFile" />
         <interceptor-ref name="validCrp" />
         <interceptor-ref name="requireUser" />
