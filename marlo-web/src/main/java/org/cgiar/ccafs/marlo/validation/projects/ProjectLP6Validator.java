@@ -88,8 +88,8 @@ public class ProjectLP6Validator extends BaseValidator {
   private void validateContributionLp6(BaseAction action, ProjectLp6Contribution projectLp6Contribution) {
 
     // Validate Narrative
-    if (!this.isValidString(projectLp6Contribution.getNarrative())
-      && this.wordCount(projectLp6Contribution.getNarrative()) <= 100) {
+    if (!(this.isValidString(projectLp6Contribution.getNarrative())
+      && this.wordCount(projectLp6Contribution.getNarrative()) <= 100)) {
       action.addMessage(action.getText("projects.LP6Contribution.narrativeContribution.readText"));
       action.getInvalidFields().put("input-project.projectLp6Contribution.narrative", InvalidFieldsMessages.EMPTYFIELD);
     }
