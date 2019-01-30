@@ -32,7 +32,6 @@ import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.data.model.ProjectHighlight;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
-import org.cgiar.ccafs.marlo.data.model.ProjectLp6Contribution;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicy;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
@@ -144,7 +143,12 @@ public class AutoSaveWriterAction extends BaseAction {
         jSon = jSon.replaceAll("project\\.", "");
         jSon = jSon.replaceAll("partnershipLocationsIsos", "partnershipLocationsIsosText");
         jSon = jSon.replaceAll("researchPhasesIds", "researchPhasesIdsText");
+        jSon = jSon.replaceAll("projectLp6Contribution.deliverables", "projectLp6ContributionDeliverables");
+        jSon = jSon.replaceAll("projectLp6Contribution.countriesIds", "projectLp6ContributionCountriesIdsText");
+        jSon = jSon.replaceAll("projectLp6Contribution.regions", "projectLp6ContributionRegions");
+
       }
+
       /*
        * if (nameClass.equals(ProjectBilateralCofinancing.class.getName())) {
        * jSon = jSon.replaceAll("project\\.", "");
@@ -201,9 +205,6 @@ public class AutoSaveWriterAction extends BaseAction {
       }
       if (nameClass.equals(ReportSynthesis.class.getName())) {
         jSon = jSon.replaceAll("reportSynthesis\\.", "");
-      }
-      if (nameClass.equals(ProjectLp6Contribution.class.getName())) {
-        jSon = jSon.replaceAll("projectLp6Contribution\\.", "");
       }
 
 

@@ -194,7 +194,7 @@
       </result>
     </action>
     
-    <action name="{crp}/projectContributionLP6"
+    <action name="{crp}/projectsSummary"
       class="org.cgiar.ccafs.marlo.action.summaries.ProjectsSummaryAction">
       <interceptor-ref name="homeStack" />
       <result name="success" type="stream">
@@ -612,7 +612,7 @@
     
     <action name="{crp}/contributionsLP6"
       class="org.cgiar.ccafs.marlo.action.projects.ProjectContributionToLP6Action">
-      <interceptor-ref name="editProjectsStack" />
+      <interceptor-ref name="editProjectLp6Contribution" /> 
       <result name="input">/WEB-INF/crp/views/projects/projectContributionToLP6.ftl
       </result>
       <result name="success" type="redirectAction">
