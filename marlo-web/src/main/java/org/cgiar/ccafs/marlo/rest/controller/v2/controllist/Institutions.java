@@ -64,21 +64,13 @@ public class Institutions {
 		this.userManager = userManager;
 	}
 
+	@ApiOperation(value = "Create a partner Request by id", response = PartnerRequestDTO.class)
 	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
-	@RequestMapping(value = "/{entityAcronym}/institutions", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<PartnerRequestDTO> createInstitution(@PathVariable String entityAcronym,
+	@RequestMapping(value = "/institutions/{entityAcronym}/partner-requests", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<PartnerRequestDTO> createPartnerRequest(@PathVariable String entityAcronym,
 			@Valid @RequestBody InstitutionDTO institutionDTO) {
-		LOG.debug("Create a new institution with : {}", institutionDTO);
-
-		/**
-		 * For an institution to be accepted it needs to be reviewed. We have a
-		 * separate entity for this (not sure this is a good idea), so we will
-		 * use the same institutionDTO and hide the complexity from them and map
-		 * back and forth between the institutionDTO and the PartnerRequest.
-		 * Question - how to handle the ids - do we leave blank?
-		 */
+		LOG.debug("Create a new institution (Partner Request) with : {}", institutionDTO);
 		return this.institutionItem.createPartnerRequest(institutionDTO, entityAcronym, this.getCurrentUser());
-
 	}
 
 	@ApiOperation(value = "View a List of Institutions", response = InstitutionDTO.class, responseContainer = "List")
@@ -110,5 +102,14 @@ public class Institutions {
 	public ResponseEntity<InstitutionDTO> getInstitution(@PathVariable Long id) {
 		LOG.debug("REST request to get Institution : {}", id);
 		return this.institutionItem.findInstitutionById(id);
+	}
+
+	@ApiOperation(value = "Search a partner Request by id", response = PartnerRequestDTO.class)
+	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
+	@RequestMapping(value = "/institutions/{entityAcronym}/partner-requests/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<PartnerRequestDTO> getPartnerRequestById(@PathVariable String entityAcronym,
+			@PathVariable Long id) {
+		LOG.debug("Get a partner request with : {}", id);
+		return this.institutionItem.getPartnerRequest(id, entityAcronym);
 	}
 }
