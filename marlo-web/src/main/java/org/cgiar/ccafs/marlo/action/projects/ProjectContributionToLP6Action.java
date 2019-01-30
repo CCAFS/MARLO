@@ -541,7 +541,7 @@ public class ProjectContributionToLP6Action extends BaseAction {
        */
 
       this.setModificationJustification(project);
-      projectManager.saveProject(project, this.getActionName(), relationsName, this.getActualPhase());
+      // projectManager.saveProject(project, this.getActionName(), relationsName, this.getActualPhase());
 
       if (path.toFile().exists()) {
         path.toFile().delete();
