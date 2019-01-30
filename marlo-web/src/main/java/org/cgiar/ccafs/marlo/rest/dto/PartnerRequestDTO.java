@@ -37,6 +37,9 @@ public class PartnerRequestDTO {
 	@ApiModelProperty(notes = "Partner Request Status")
 	private Boolean acepted;
 
+	@ApiModelProperty(notes = "Reject justification")
+	private String rejectJustification;
+
 	@ApiModelProperty(notes = "Country of partner request")
 	CountryDTO locElementDTO;
 
@@ -74,6 +77,10 @@ public class PartnerRequestDTO {
 		return this.partnerName;
 	}
 
+	public String getRejectJustification() {
+		return this.rejectJustification;
+	}
+
 	public String getWebPage() {
 		return this.webPage;
 	}
@@ -104,6 +111,10 @@ public class PartnerRequestDTO {
 
 	public void setPartnerName(String partnerName) {
 		this.partnerName = partnerName;
+	}
+
+	public void setRejectJustification(String rejectJustification) {
+		this.rejectJustification = rejectJustification;
 	}
 
 	public void setWebPage(String webPage) {

@@ -35,6 +35,7 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -56,6 +57,11 @@ public class InstitutionItem<T> {
 		this.locElementManager = locElementManager;
 		this.partnerRequestManager = partnerRequestManager;
 		this.globalUnitManager = globalUnitManager;
+		try {
+			ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext(new String[] { "spring-bean.xml" });
+		} catch (Throwable e) {
+			System.out.println(e);
+		}
 	}
 
 	public ResponseEntity<PartnerRequestDTO> createPartnerRequest(InstitutionDTO institutionDTO, String entityAcronym,
@@ -84,12 +90,8 @@ public class InstitutionItem<T> {
 
 		return new ResponseEntity<PartnerRequestDTO>(
 				this.institutionMapper.partnerRequestToPartnerRequestDTO(partnerRequestChild), HttpStatus.CREATED);
-//
-//		// Return an institutionDTO with a blank id - so that the user doesn't
-//		// try and look up the institution straight
-//		// away.
-//		return new ResponseEntity<InstitutionDTO>(
-//				this.institutionMapper.partnerRequestToInstitutionDTO(partnerRequestParent), HttpStatus.CREATED);
+
+		// TODO: SEND THE MAIL
 
 	}
 
@@ -119,5 +121,102 @@ public class InstitutionItem<T> {
 				.collect(Collectors.toList());
 		return institutionDTOs;
 	}
+
+	/**
+	 * Get a partner request by an id *
+	 * 
+	 * @return PartnerRequestDTO founded
+	 */
+	public ResponseEntity<PartnerRequestDTO> getPartnerRequest(Long id, String entityAcronym) {
+		PartnerRequest partnerRequest = this.partnerRequestManager.getPartnerRequestById(id);
+		if (partnerRequest != null && partnerRequest.getPartnerRequest() == null) {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
+		return Optional.ofNullable(partnerRequest).map(this.institutionMapper::partnerRequestToPartnerRequestDTO)
+				.map(result -> new ResponseEntity<>(result, HttpStatus.OK))
+				.orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+
+	}
+
+//	private Boolean sendPartnerRequestEmail(PartnerRequest partnerRequest) {
+//		String institutionName, institutionAcronym, institutionTypeName, countryId, countryName, partnerWebPage;
+//		String subject;
+//		StringBuilder message = new StringBuilder();
+//
+//		// message subject
+//
+//		subject = this.getText("marloRequestInstitution.email.subject",
+//				new String[] { this.getCrpSession().toUpperCase(), institutionName });
+//		// Message content
+//		message.append(this.getCurrentUser().getFirstName() + " " + this.getCurrentUser().getLastName() + " ");
+//		message.append("(" + this.getCurrentUser().getEmail() + ") ");
+//		message.append("is requesting to add the following partner information:");
+//		message.append("</br></br>");
+//		message.append("Partner Name: ");
+//		message.append(institutionName);
+//		message.append("</br>");
+//		message.append("Acronym: ");
+//		message.append(institutionAcronym);
+//		message.append(" </br>");
+//		message.append("Partner type: ");
+//		message.append(institutionTypeName);
+//		message.append(" </br>");
+//
+//		message.append("Headquarter country location: ");
+//		message.append(countryName);
+//		message.append(" </br>");
+//
+//		// Is there a web page?
+//		if (partnerWebPage != null && !partnerWebPage.isEmpty()) {
+//			message.append("Web Page: ");
+//			message.append(partnerWebPage);
+//			message.append(" </br>");
+//		}
+//		message.append(" </br>");
+//
+//		switch (pageRequestName) {
+//		case "projects":
+//			this.addProjectMessage(message, partnerRequest, partnerRequestModifications);
+//			break;
+//
+//		case "fundingSources":
+//			this.addFunginMessage(message, partnerRequest, partnerRequestModifications);
+//			break;
+//
+//		case "studies":
+//			this.addStudyMessage(message, partnerRequest, partnerRequestModifications);
+//			break;
+//
+//		case "capdev":
+//			this.addCapDevMessage(message, partnerRequest, partnerRequestModifications);
+//			break;
+//
+//		case "powbSynthesis":
+//			this.addPowbSynthesisMessage(message, partnerRequest, partnerRequestModifications);
+//			break;
+//
+//		}
+//
+//		partnerRequest = this.partnerRequestManager.savePartnerRequest(partnerRequest);
+//		partnerRequestModifications.setPartnerRequest(partnerRequest);
+//		partnerRequestModifications.setModified(false);
+//		partnerRequestModifications = this.partnerRequestManager.savePartnerRequest(partnerRequestModifications);
+//
+//		message.append(".</br>");
+//		message.append("</br>");
+//		try {
+//			sendMail.send(config.getEmailNotification(), null, config.getEmailNotification(), subject,
+//					message.toString(), null, null, null, true);
+//		} catch (Exception e) {
+//			LOG.error("unable to send mail", e);
+//			/**
+//			 * Original code swallows the exception and didn't even log it. Now
+//			 * we at least log it, but we need to revisit to see if we should
+//			 * continue processing or re-throw the exception.
+//			 */
+//		}
+//		messageSent = true;
+//
+//	}
 
 }
