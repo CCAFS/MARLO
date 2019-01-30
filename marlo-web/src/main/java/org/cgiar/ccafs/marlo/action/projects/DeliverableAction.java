@@ -18,6 +18,7 @@ package org.cgiar.ccafs.marlo.action.projects;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
+import org.cgiar.ccafs.marlo.data.manager.CgiarCrossCuttingMarkerManager;
 import org.cgiar.ccafs.marlo.data.manager.CrossCuttingScoringManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpClusterKeyOutputManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
@@ -51,12 +52,14 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerPersonManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndFillingTypeManager;
+import org.cgiar.ccafs.marlo.data.manager.RepIndGenderYouthFocusLevelManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndGeographicScopeManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndPatentStatusManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndRegionManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndTypeActivityManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndTypeParticipantManager;
 import org.cgiar.ccafs.marlo.data.manager.RepositoryChannelManager;
+import org.cgiar.ccafs.marlo.data.model.CgiarCrossCuttingMarker;
 import org.cgiar.ccafs.marlo.data.model.CrossCuttingScoring;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutput;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutputOutcome;
@@ -99,6 +102,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.RepIndFillingType;
+import org.cgiar.ccafs.marlo.data.model.RepIndGenderYouthFocusLevel;
 import org.cgiar.ccafs.marlo.data.model.RepIndGeographicScope;
 import org.cgiar.ccafs.marlo.data.model.RepIndPatentStatus;
 import org.cgiar.ccafs.marlo.data.model.RepIndTypeActivity;
@@ -191,10 +195,11 @@ public class DeliverableAction extends BaseAction {
   private RepIndPatentStatusManager repIndPatentStatusManager;
   private DeliverableLocationManager deliverableLocationManager;
   private CrpClusterKeyOutputManager crpClusterKeyOutputManager;
+  private RepIndGenderYouthFocusLevelManager repIndGenderYouthFocusLevelManager;
+  private CgiarCrossCuttingMarkerManager cgiarCrossCuttingMarkerManager;
   // Parameters
   private List<DeliverableQualityAnswer> answers;
   private List<RepositoryChannel> repositoryChannels;
-
   private ArrayList<GlobalUnit> crps;
   private ArrayList<CrpProgram> programs;
   private Deliverable deliverable;
@@ -229,6 +234,8 @@ public class DeliverableAction extends BaseAction {
   private List<RepIndPatentStatus> repIndPatentStatuses;
   private Map<String, String> statuses;
   private DeliverableGeographicRegionManager deliverableGeographicRegionManager;
+  private List<CgiarCrossCuttingMarker> cgiarCrossCuttingMarkers;
+  private List<RepIndGenderYouthFocusLevel> focusLevels;
 
   @Inject
   public DeliverableAction(APConfig config, DeliverableTypeManager deliverableTypeManager,
@@ -254,7 +261,9 @@ public class DeliverableAction extends BaseAction {
     RepIndFillingTypeManager repIndFillingTypeManager, RepIndPatentStatusManager repIndPatentStatusManager,
     DeliverableLocationManager deliverableLocationManager,
     DeliverableGeographicRegionManager deliverableGeographicRegionManager,
-    CrpClusterKeyOutputManager crpClusterKeyOutputManager) {
+    CrpClusterKeyOutputManager crpClusterKeyOutputManager,
+    RepIndGenderYouthFocusLevelManager repIndGenderYouthFocusLevelManager,
+    CgiarCrossCuttingMarkerManager cgiarCrossCuttingMarkerManager) {
     super(config);
     this.deliverableManager = deliverableManager;
     this.deliverableTypeManager = deliverableTypeManager;
@@ -297,6 +306,8 @@ public class DeliverableAction extends BaseAction {
     this.deliverableLocationManager = deliverableLocationManager;
     this.deliverableGeographicRegionManager = deliverableGeographicRegionManager;
     this.crpClusterKeyOutputManager = crpClusterKeyOutputManager;
+    this.repIndGenderYouthFocusLevelManager = repIndGenderYouthFocusLevelManager;
+    this.cgiarCrossCuttingMarkerManager = cgiarCrossCuttingMarkerManager;
   }
 
   @Override
@@ -323,7 +334,6 @@ public class DeliverableAction extends BaseAction {
 
     return SUCCESS;
   }
-
 
   public Boolean candEditExpectedYear(long deliverableID) {
     Deliverable deliverable = deliverableManager.getDeliverableById(deliverableID);
@@ -355,7 +365,6 @@ public class DeliverableAction extends BaseAction {
     return false;
 
   }
-
 
   public Boolean candEditYear(long deliverableID) {
     Deliverable deliverable = deliverableManager.getDeliverableById(deliverableID);
@@ -535,14 +544,20 @@ public class DeliverableAction extends BaseAction {
 
   }
 
+
+  public List<CgiarCrossCuttingMarker> getCgiarCrossCuttingMarkers() {
+    return cgiarCrossCuttingMarkers;
+  }
+
+
   public List<LocElement> getCountries() {
     return countries;
   }
 
-
   public List<CrossCuttingScoring> getCrossCuttingDimensions() {
     return crossCuttingDimensions;
   }
+
 
   public Map<Long, String> getCrossCuttingScoresMap() {
     return crossCuttingScoresMap;
@@ -559,7 +574,6 @@ public class DeliverableAction extends BaseAction {
   public long getDeliverableID() {
     return deliverableID;
   }
-
 
   public DeliverablePartnership getDeliverablePartnership(long projectPersonID) {
 
@@ -602,6 +616,7 @@ public class DeliverableAction extends BaseAction {
     return partnershipResponsible;
   }
 
+
   public List<Map<String, Object>> getDeliverablesSubTypes(long deliverableTypeID) {
     List<Map<String, Object>> subTypes = new ArrayList<>();
     Map<String, Object> keyOutput;
@@ -624,15 +639,14 @@ public class DeliverableAction extends BaseAction {
 
   }
 
-
   public List<DeliverableType> getDeliverableSubTypes() {
     return deliverableSubTypes;
   }
 
+
   public List<DeliverableType> getDeliverableTypeParent() {
     return deliverableTypeParent;
   }
-
 
   public String getDeliverableUrl(String fileType) {
     return config.getDownloadURL() + "/" + this.getDeliverableUrlPath(fileType).replace('\\', '/');
@@ -644,8 +658,13 @@ public class DeliverableAction extends BaseAction {
       + "deliverable" + File.separator + fileType + File.separator;
   }
 
+
   public List<PartnerDivision> getDivisions() {
     return divisions;
+  }
+
+  public List<RepIndGenderYouthFocusLevel> getFocusLevels() {
+    return focusLevels;
   }
 
   public List<FundingSource> getFundingSources() {
@@ -1676,6 +1695,14 @@ public class DeliverableAction extends BaseAction {
           this.crossCuttingDimensions.add(score);
         }
       }
+
+
+      // Cross Cutting Values List
+      focusLevels = repIndGenderYouthFocusLevelManager.findAll();
+
+      // Cross Cutting Markers
+      cgiarCrossCuttingMarkers = cgiarCrossCuttingMarkerManager.findAll();
+
       if (this.isReportingActive() || this.isUpKeepActive()) {
         if (metadataElementManager.findAll() != null) {
           deliverable.setMetadata(new ArrayList<>(metadataElementManager.findAll()));
@@ -1795,6 +1822,7 @@ public class DeliverableAction extends BaseAction {
 
   }
 
+
   public void removeOthersDeliverablePartnerships(Deliverable deliverablePrew) {
     if (deliverablePrew.getDeliverablePartnerships() != null
       && deliverablePrew.getDeliverablePartnerships().size() > 0) {
@@ -1827,6 +1855,7 @@ public class DeliverableAction extends BaseAction {
       }
     }
   }
+
 
   private DeliverablePartnership responsiblePartnerAutoSave() {
     try {
@@ -1988,7 +2017,6 @@ public class DeliverableAction extends BaseAction {
 
   }
 
-
   public void saveCrps() {
     if (deliverable.getCrps() == null) {
       deliverable.setCrps(new ArrayList<>());
@@ -2104,6 +2132,7 @@ public class DeliverableAction extends BaseAction {
 
   }
 
+
   private void saveDeliverableGenderLevels(Deliverable deliverablePrew) {
     if (deliverable.getGenderLevels() != null) {
       if (deliverablePrew.getDeliverableGenderLevels() != null
@@ -2134,6 +2163,7 @@ public class DeliverableAction extends BaseAction {
       }
     }
   }
+
 
   public void saveDeliverableRegions(Deliverable deliverable, Phase phase, Deliverable deliverableManagedState) {
 
@@ -2309,7 +2339,6 @@ public class DeliverableAction extends BaseAction {
     }
   }
 
-
   private void saveIntellectualAsset() {
     if (deliverable.getIntellectualAsset() != null && deliverable.getIntellectualAsset().getHasPatentPvp() != null) {
       DeliverableIntellectualAsset intellectualAsset = new DeliverableIntellectualAsset();
@@ -2419,7 +2448,6 @@ public class DeliverableAction extends BaseAction {
     }
   }
 
-
   public void saveMetadata() {
     if (deliverable.getMetadataElements() != null) {
       for (DeliverableMetadataElement deliverableMetadataElement : deliverable.getMetadataElements()) {
@@ -2518,6 +2546,7 @@ public class DeliverableAction extends BaseAction {
     }
   }
 
+
   /**
    * All we are doing here is setting the modification justification.
    */
@@ -2528,6 +2557,7 @@ public class DeliverableAction extends BaseAction {
     projectDB.setModificationJustification(this.getJustification());
     // No need to call save as hibernate will detect the changes and auto flush.
   }
+
 
   public void savePublicationMetadata() {
     if (deliverable.getPublication() != null) {
@@ -2681,7 +2711,6 @@ public class DeliverableAction extends BaseAction {
     return partnership;
   }
 
-
   /**
    * Save, update or delete partnership's responsible
    * 
@@ -2726,7 +2755,6 @@ public class DeliverableAction extends BaseAction {
     }
   }
 
-
   public void saveUsers() {
     if (deliverable.getUsers() == null) {
 
@@ -2756,6 +2784,12 @@ public class DeliverableAction extends BaseAction {
     this.answers = answers;
   }
 
+
+  public void setCgiarCrossCuttingMarkers(List<CgiarCrossCuttingMarker> cgiarCrossCuttingMarkers) {
+    this.cgiarCrossCuttingMarkers = cgiarCrossCuttingMarkers;
+  }
+
+
   public void setCountries(List<LocElement> countries) {
     this.countries = countries;
   }
@@ -2763,7 +2797,6 @@ public class DeliverableAction extends BaseAction {
   public void setcrossCuttingDimensions(List<CrossCuttingScoring> crossCuttingScores) {
     this.crossCuttingDimensions = crossCuttingScores;
   }
-
 
   public void setCrossCuttingScoresMap(Map<Long, String> crossCuttingScoresMap) {
     this.crossCuttingScoresMap = crossCuttingScoresMap;
@@ -2779,10 +2812,10 @@ public class DeliverableAction extends BaseAction {
     this.deliverable = deliverable;
   }
 
+
   public void setDeliverableID(long deliverableID) {
     this.deliverableID = deliverableID;
   }
-
 
   public void setDeliverableSubTypes(List<DeliverableType> deliverableSubTypes) {
     this.deliverableSubTypes = deliverableSubTypes;
@@ -2793,8 +2826,13 @@ public class DeliverableAction extends BaseAction {
     this.deliverableTypeParent = deliverableTypeParent;
   }
 
+
   public void setDivisions(List<PartnerDivision> divisions) {
     this.divisions = divisions;
+  }
+
+  public void setFocusLevels(List<RepIndGenderYouthFocusLevel> focusLevels) {
+    this.focusLevels = focusLevels;
   }
 
 
