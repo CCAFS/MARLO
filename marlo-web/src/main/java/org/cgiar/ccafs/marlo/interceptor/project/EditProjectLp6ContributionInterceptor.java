@@ -33,7 +33,6 @@ import org.cgiar.ccafs.marlo.data.model.ProjectLp6Contribution;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
-import org.cgiar.ccafs.marlo.data.model.SharedProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.NoPhaseException;
@@ -162,13 +161,12 @@ public class EditProjectLp6ContributionInterceptor extends AbstractInterceptor i
             canEdit = true;
           } else {
             // List<Project> projects = projectManager.getUserProjects(user.getId(), crp.getAcronym());
-            if (baseAction.hasPermission(baseAction.generatePermission(Permission.PROJECT__PERMISSION, params))) {
+            if (baseAction
+              .hasPermission(baseAction.generatePermission(Permission.PROJECT_LP6_EDIT_PERMISSION, params))) {
               canEdit = true;
 
             }
             if (project.getProjecInfoPhase(baseAction.getActualPhase()) != null) {
-
-
               if (!project.getProjecInfoPhase(baseAction.getActualPhase()).isProjectEditLeader()
                 && !baseAction.hasPermission(baseAction.generatePermission(Permission.PROJECT__SWITCH, params))) {
                 canEdit = false;
@@ -268,24 +266,6 @@ public class EditProjectLp6ContributionInterceptor extends AbstractInterceptor i
             canEdit = false;
             baseAction.setEditStatus(false);
           }
-          /*
-           * List<ProjectPhase> projectPhases = phase.getProjectPhases().stream()
-           * .filter(c -> c.isActive() && c.getProject().getId().longValue() == projectId).collect(Collectors.toList());
-           * if (projectPhases.isEmpty()) {
-           * List<ProjectInfo> infos =
-           * project.getProjectInfos().stream().filter(c -> c.isActive()).collect(Collectors.toList());
-           * infos.sort((p1, p2) -> p1.getId().compareTo(p2.getId()));
-           * // baseAction.setActualPhase(infos.get(0).getPhase());
-           * baseAction.setAvailabePhase(false);
-           * }
-           * if (!baseAction.getActualPhase().getEditable()) {
-           * canEdit = false;
-           * }
-           */
-
-          // String paramsPermissions[] = {loggedCrp.getAcronym(), project.getId() + ""};
-          // baseAction
-          // .setBasePermission(baseAction.getText(Permission.PROJECT_DESCRIPTION_BASE_PERMISSION, paramsPermissions));
 
 
           // Validate is the project is new
@@ -313,24 +293,6 @@ public class EditProjectLp6ContributionInterceptor extends AbstractInterceptor i
             baseAction.setCanEditPhase(false);
           }
 
-          // Check if is a Shared project (Crp to Center)
-          if (!globalUnitProject.isOrigin()) {
-            canEdit = false;
-            if (actionName.equals(SharedProjectSectionStatusEnum.CENTER_MAPPING.getStatus())) {
-              if (baseAction
-                .hasPermission(baseAction.generatePermission(Permission.SHARED_PROJECT_PERMISSION, params))) {
-                canEdit = true;
-              }
-            }
-
-          }
-
-          if (baseAction.getActionName().replaceAll(crp.getAcronym() + "/", "")
-            .equals(ProjectSectionStatusEnum.BUDGET)) {
-            if (baseAction.isReportingActive()) {
-              canEdit = false;
-            }
-          }
           if (!editParameter) {
             baseAction.setEditStatus(false);
           }

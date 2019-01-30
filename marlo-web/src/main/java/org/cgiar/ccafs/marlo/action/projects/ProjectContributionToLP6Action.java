@@ -52,6 +52,7 @@ import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectLp6Contribution;
 import org.cgiar.ccafs.marlo.data.model.ProjectLp6ContributionDeliverable;
 import org.cgiar.ccafs.marlo.data.model.RepIndGeographicScope;
+import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
 import org.cgiar.ccafs.marlo.utils.HistoryComparator;
@@ -498,6 +499,9 @@ public class ProjectContributionToLP6Action extends BaseAction {
         }
       }
     }
+
+    String params[] = {loggedCrp.getAcronym(), project.getId() + ""};
+    this.setBasePermission(this.getText(Permission.PROJECT_LP6_BASE_PERMISSION, params));
 
     if (this.isHttpPost()) {
       if (project.getProjectLp6Contribution().getDeliverables() != null) {

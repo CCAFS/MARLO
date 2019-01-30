@@ -612,7 +612,7 @@
     
     <action name="{crp}/contributionsLP6"
       class="org.cgiar.ccafs.marlo.action.projects.ProjectContributionToLP6Action">
-      <interceptor-ref name="editProjectLp6Contribution" /> 
+      <interceptor-ref name="editProjectLp6ContributionStack" /> 
       <result name="input">/WEB-INF/crp/views/projects/projectContributionToLP6.ftl
       </result>
       <result name="success" type="redirectAction">
