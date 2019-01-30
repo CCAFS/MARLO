@@ -58,11 +58,9 @@ function attachEvents() {
     var stageProcessOne = ($('select.stageProcess').val() == 1);
 
     if(isPolicy && stageProcessOne) {
-      $('.stageProcessOne span.requiredTag').slideUp();
-      // Hide asterix
+      // $('.stageProcessOne span.requiredTag').slideUp();
     } else {
-      // Hide asterix
-      $('.stageProcessOne span.requiredTag').slideDown();
+      // $('.stageProcessOne span.requiredTag').slideDown();
     }
   });
 
@@ -119,13 +117,31 @@ function attachEvents() {
 
   // SRF Targets validation
   $('input.radioType-targetsOption').on('change', function() {
-    var hasTargets = $(this).val() == "targetsOptionYes";
-    if(hasTargets) {
-      // Show
-      $('.srfTargetsComponent').slideDown();
+    var showComponent = $(this).val() == "targetsOptionYes";
+    if(showComponent) {
+      $('.srfTargetsComponent').slideDown(); // Show
     } else {
-      // Hide
-      $('.srfTargetsComponent').slideUp();
+      $('.srfTargetsComponent').slideUp(); // Hide
+    }
+  });
+
+  // Other CrossCutting Component validation
+  $('input.radioType-otherCrossCuttingOption').on('change', function() {
+    var showComponent = $(this).val() == "Yes";
+    if(showComponent) {
+      // $('.otherCrossCuttingOptionsComponent').slideDown(); // Show
+    } else {
+      // $('.otherCrossCuttingOptionsComponent').slideUp(); // Hide
+    }
+  });
+
+  // Public link
+  $('input.radioType-optionPublic').on('change', function() {
+    var showComponent = $(this).val() == "true";
+    if(showComponent) {
+      $('.optionPublicComponent').slideDown(); // Show
+    } else {
+      $('.optionPublicComponent').slideUp(); // Hide
     }
   });
 
@@ -324,3 +340,4 @@ function formatStateCountries(state) {
   }
   return $state;
 };
+

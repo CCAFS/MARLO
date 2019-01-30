@@ -198,7 +198,15 @@
 			</key>
 			<one-to-many
 				class="org.cgiar.ccafs.marlo.data.model.DeliverableLocation" />
-		</set>
+		</set>		
+		<set name="deliverableCrossCuttingMarkers" table="deliverable_cross_cutting_markers"
+      inverse="true" lazy="true" fetch="select">
+      <key>
+        <column name="deliverable_id" />
+      </key>
+      <one-to-many
+        class="org.cgiar.ccafs.marlo.data.model.DeliverableCrossCuttingMarker" />
+    </set>		
 		<many-to-one name="modifiedBy" class="org.cgiar.ccafs.marlo.data.model.User"
       fetch="select">
       <column name="modified_by" />
