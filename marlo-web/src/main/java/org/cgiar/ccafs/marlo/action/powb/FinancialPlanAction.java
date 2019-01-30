@@ -598,7 +598,7 @@ public class FinancialPlanAction extends BaseAction {
     // Get the list of liaison institutions Flagships and PMU.
     liaisonInstitutions = this.getFlagships();
     liaisonInstitutions.addAll(loggedCrp.getLiaisonInstitutions().stream()
-      .filter(c -> c.getCrpProgram() == null && c.getAcronym().equals("PMU") && c.isActive())
+      .filter(c -> c.getCrpProgram() == null && c.getAcronym() != null && c.getAcronym().equals("PMU") && c.isActive())
       .collect(Collectors.toList()));
     liaisonInstitutions.sort(Comparator.comparing(LiaisonInstitution::getAcronym));
     powbExpenditureAreas = new ArrayList<>();
@@ -813,7 +813,8 @@ public class FinancialPlanAction extends BaseAction {
         Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.LIAISON_INSTITUTION_REQUEST_ID)));
     } catch (NumberFormatException e) {
       List<LiaisonInstitution> pmuList = loggedCrp.getLiaisonInstitutions().stream()
-        .filter(c -> c.getCrpProgram() == null && c.getAcronym().equals("PMU") && c.isActive())
+        .filter(
+          c -> c.getCrpProgram() == null && c.getAcronym() != null && c.getAcronym().equals("PMU") && c.isActive())
         .collect(Collectors.toList());
       if (pmuList != null && !pmuList.isEmpty()) {
         liaisonInstitutionID = pmuList.get(0).getId();
@@ -859,7 +860,7 @@ public class FinancialPlanAction extends BaseAction {
 
   private void setPowbSynthesisIdParameter() {
     List<LiaisonInstitution> pmuList = loggedCrp.getLiaisonInstitutions().stream()
-      .filter(c -> c.getCrpProgram() == null && c.getAcronym().equals("PMU") && c.isActive())
+      .filter(c -> c.getCrpProgram() == null && c.getAcronym() != null && c.getAcronym().equals("PMU") && c.isActive())
       .collect(Collectors.toList());
     if (pmuList != null && !pmuList.isEmpty()) {
       Long liaisonInstitutionID = pmuList.get(0).getId();

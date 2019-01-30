@@ -273,7 +273,7 @@ public class FundingUseAction extends BaseAction {
                     break;
                   }
                 } else {
-                  if (institution.getAcronym().equals("PMU")) {
+                  if (institution.getAcronym() != null && institution.getAcronym().equals("PMU")) {
                     liaisonInstitutionID = institution.getId();
                     isLeader = true;
                     break;
@@ -316,7 +316,8 @@ public class FundingUseAction extends BaseAction {
     if (reportSynthesis != null) {
       // reportSynthesisPMU: Used to calculate FLagships values
       LiaisonInstitution pmuInstitution = loggedCrp.getLiaisonInstitutions().stream()
-        .filter(c -> c.getCrpProgram() == null && c.getAcronym().equals("PMU")).collect(Collectors.toList()).get(0);
+        .filter(c -> c.getCrpProgram() == null && c.getAcronym() != null && c.getAcronym().equals("PMU"))
+        .collect(Collectors.toList()).get(0);
       reportSynthesisPMU = reportSynthesisManager.findSynthesis(phase.getId(), pmuInstitution.getId());
 
       ReportSynthesis reportSynthesisDB = reportSynthesisManager.getReportSynthesisById(reportSynthesis.getId());
@@ -387,7 +388,7 @@ public class FundingUseAction extends BaseAction {
 
     // ADD PMU as liasion Institution too
     liaisonInstitutions.addAll(loggedCrp.getLiaisonInstitutions().stream()
-      .filter(c -> c.getCrpProgram() == null && c.isActive() && c.getAcronym().equals("PMU"))
+      .filter(c -> c.getCrpProgram() == null && c.isActive() && c.getAcronym() != null && c.getAcronym().equals("PMU"))
       .collect(Collectors.toList()));
 
     // Informative table to Flagships

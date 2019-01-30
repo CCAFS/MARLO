@@ -776,7 +776,7 @@ public class PlannedColaborationAction extends BaseAction {
                     break;
                   }
                 } else {
-                  if (institution.getAcronym().equals("PMU")) {
+                  if (institution.getAcronym() != null && institution.getAcronym().equals("PMU")) {
                     liaisonInstitutionID = institution.getId();
                     isLeader = true;
                     break;
@@ -976,7 +976,7 @@ public class PlannedColaborationAction extends BaseAction {
 
 
     liaisonInstitutions.addAll(loggedCrp.getLiaisonInstitutions().stream()
-      .filter(c -> c.getCrpProgram() == null && c.isActive() && c.getAcronym().equals("PMU"))
+      .filter(c -> c.getCrpProgram() == null && c.isActive() && c.getAcronym() != null && c.getAcronym().equals("PMU"))
       .collect(Collectors.toList()));
 
     // Collaborator Types
