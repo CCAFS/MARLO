@@ -42,7 +42,6 @@ $(document).ready(function() {
   /* Reporting events */
   attachReportingEvents();
 
-
   lp6menu();
 });
 
@@ -83,7 +82,6 @@ function attachReportingEvents() {
 
   $('.removeElement').on('click', removeOtherContribution);
 
-
   $('input[name="lp6Contribution"]').on('change', contributionToLP6);
 
 }
@@ -105,35 +103,29 @@ function removeOtherContribution() {
   });
 }
 
-function contributionToLP6(){
+function contributionToLP6() {
 
   var projectID = $(this).parents('.borderBox').classParam('project');
   var phaseID = $(this).parents('.borderBox').classParam('phase');
   var contributionValue = this.value;
 
-   $.ajax({
-     url: baseURL + '/projectCollaborationValue.do',
-     data: {
-        projectID: projectID,
-        phaseID: phaseID,
-        "crp_lp6_contribution_value": contributionValue
-     },
-     success: function (data) {
-       console.log(data.status);
-       location.reload();
-     }
-   });
+  $.ajax({
+      url: baseURL + '/projectCollaborationValue.do',
+      data: {
+          projectID: projectID,
+          phaseID: phaseID,
+          "crp_lp6_contribution_value": contributionValue
+      },
+      success: function(data) {
+        window.location.href = window.location.href;
+      }
+  });
 
 };
 
 function lp6menu() {
-
-  var menu = $("#menu-contributionsLP6");
-
-  menu.animate({
-    opacity: 1
-  }, {
-    duration: "slow"
-  });
-
+  var $menu = $("#menu-contributionsLP6");
+  if($menu.hasClass('toSubmit')) {
+    $menu.animateCss('rubberBand');
+  }
 }
