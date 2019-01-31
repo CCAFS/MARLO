@@ -401,6 +401,7 @@
       
       <div class="optionPublicComponent form-group" style="display:${isPublic?string('block', 'none')}">         
         <br />
+       
         <div class="input-group">
           <span class="input-group-btn">
             <button class="btn btn-default btn-sm" type="button"> <span class="glyphicon glyphicon-link"></span> Copy URL </button>

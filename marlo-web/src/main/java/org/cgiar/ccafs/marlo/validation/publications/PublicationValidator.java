@@ -517,7 +517,10 @@ public class PublicationValidator extends BaseValidator {
     if (action.hasDeliverableRule(deliverableInfo, APConstants.DELIVERABLE_RULE_PUBLICATION_METADATA)) {
       if (deliverablePublicationMetadata != null && deliverablePublicationMetadata.getId() != null
         && deliverablePublicationMetadata.getId().intValue() != -1) {
+
+
         if (action.hasDeliverableRule(deliverableInfo, APConstants.DELIVERABLE_RULE_JORNAL_ARTICLES)) {
+          // Validation of Volume or Issue or Pages
           if (!this.isValidString(deliverablePublicationMetadata.getVolume())
             && !this.isValidString(deliverablePublicationMetadata.getIssue())
             && !this.isValidString(deliverablePublicationMetadata.getPages())) {
@@ -530,10 +533,18 @@ public class PublicationValidator extends BaseValidator {
           }
         }
 
+        // Validation of Journal Article Name
         if (!(this.isValidString(deliverablePublicationMetadata.getJournal())
           && this.wordCount(deliverablePublicationMetadata.getJournal()) <= 100)) {
           action.addMessage(action.getText("project.deliverable.publication.v.journal"));
           action.getInvalidFields().put("input-deliverable.publication.journal", InvalidFieldsMessages.EMPTYFIELD);
+        }
+
+        // Validation of ISI Question
+        if (deliverablePublicationMetadata.getIsiPublication() == null) {
+          action.addMessage(action.getText("deliverable.isiPublication"));
+          action.getInvalidFields().put("input-deliverable.publication.isiPublication",
+            InvalidFieldsMessages.EMPTYFIELD);
         }
       }
     }
