@@ -126,6 +126,6 @@ function contributionToLP6() {
 function lp6menu() {
   var $menu = $("#menu-contributionsLP6");
   if($menu.hasClass('toSubmit')) {
-    $menu.animateCss('rubberBand');
+    // $menu.animateCss('rubberBand');
   }
 }
