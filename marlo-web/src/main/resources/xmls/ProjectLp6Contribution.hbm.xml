@@ -92,6 +92,12 @@
 			<column name="initiative_related" sql-type="TEXT"
 				not-null="true" />
 		</property>
+		
+		<property name="geographicScopeNarrative" type="string">
+      <column name="geographic_scope_narrative" sql-type="TEXT"
+        not-null="true" />
+    </property>
+		
 
 		<property name="initiativeRelated" type="boolean">
 			<column name="is_initiative_related" not-null="true" />
