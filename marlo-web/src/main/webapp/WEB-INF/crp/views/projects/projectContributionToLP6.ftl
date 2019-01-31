@@ -41,29 +41,8 @@
                 [/#if]
                </div>
               [#-- Geographic Scope --]
-              <div class="form-group geographicScopeBlock">      
-                [#assign geographicScope = ((project.projectLp6Contribution.geographicScope.id)!-1) ]
-                [#assign isRegional = ((geographicScope == action.reportingIndGeographicScopeRegional)!false) ]
-                [#assign isMultiNational = ((geographicScope == action.reportingIndGeographicScopeMultiNational)!false) ]
-                [#assign isNational = ((geographicScope == action.reportingIndGeographicScopeNational)!false) ]
-                [#assign isSubNational = ((geographicScope == action.reportingIndGeographicScopeSubNational)!false) ]
-                
-                <div class="form-group simpleBox">
-                  <div class="form-group row">
-                    <div class="col-md-6">
-                      [#-- Geographic Scope --]
-                      [@customForm.select name="project.projectLp6Contribution.geographicScope.id" className="setSelect2 geographicScopeSelect" i18nkey="projects.LP6Contribution.geographicScope" listName="geographicScopes" keyFieldName="id"  displayFieldName="name" required=false className="geographicScopeSelect" editable=editable/]
-                    </div>
-                  </div>
-                  <div class="form-group regionalBlock" style="display:${(isRegional)?string('block','none')}">
-                    [#-- Regional scope --]
-                      [@customForm.elementsListComponent name="project.projectLp6Contribution.regions" elementType="locElement" id="region" elementList=(project.projectLp6Contribution.regions)![] label="projects.LP6Contribution.region"  listName="regions" keyFieldName="id" displayFieldName="name" required=false /]
-                  </div>
-                  <div class="form-group nationalBlock" style="display:${(isMultiNational || isNational || isSubNational)?string('block','none')}">
-                    [#-- Multinational, National and Subnational scope --]
-                    [@customForm.select name="project.projectLp6Contribution.countriesIds" label="" i18nkey="projects.LP6Contribution.countries" listName="countries" keyFieldName="isoAlpha2"  displayFieldName="name" value="project.projectLp6Contribution.countriesIds" multiple=true required=false className="countriesSelect" disabled=!editable/]
-                  </div>
-                </div>
+              <div class="form-group">
+                [@customForm.textArea name="project.projectLp6Contribution.geographicScope"  i18nkey="projects.LP6Contribution.geographicScope" className="limitWords-100" required=true editable=editable /] 
               </div>
               [#-- Work across flagships --]
               [@contributionForm name="workingAcrossFlagships" textName="workingAcrossFlagshipsNarrative" i18nkey="flagshipLevels" checkedValue=(project.projectLp6Contribution.workingAcrossFlagships?string)!"" className="limitWords-100"/]
