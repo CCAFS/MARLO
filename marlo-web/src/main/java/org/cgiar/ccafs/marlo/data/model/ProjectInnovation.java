@@ -33,6 +33,9 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
 
   private Set<ProjectInnovationCountry> projectInnovationCountries = new HashSet<ProjectInnovationCountry>(0);
 
+  private Set<ProjectInnovationContributingOrganization> projectInnovationContributingOrganization =
+    new HashSet<ProjectInnovationContributingOrganization>(0);
+
 
   private Set<ProjectInnovationOrganization> projectInnovationOrganizations =
     new HashSet<ProjectInnovationOrganization>(0);
@@ -52,11 +55,17 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
 
   private List<ProjectInnovationDeliverable> deliverables;
 
+  private List<ProjectInnovationContributingOrganization> contributingOrganizations;
+
 
   private List<ProjectInnovationCrp> crps;
   private List<ProjectInnovationCountry> countries;
   private String countriesIdsText;
 
+
+  public List<ProjectInnovationContributingOrganization> getContributingOrganizations() {
+    return contributingOrganizations;
+  }
 
   public List<ProjectInnovationCountry> getCountries() {
     return countries;
@@ -66,19 +75,19 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
     return countriesIds;
   }
 
+
   public String getCountriesIdsText() {
     return countriesIdsText;
   }
-
 
   public List<ProjectInnovationCrp> getCrps() {
     return crps;
   }
 
+
   public List<ProjectInnovationDeliverable> getDeliverables() {
     return deliverables;
   }
-
 
   @Override
   public String getLogDeatil() {
@@ -87,6 +96,7 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
     return sb.toString();
   }
 
+
   public List<ProjectInnovationOrganization> getOrganizations() {
     return organizations;
   }
@@ -94,6 +104,11 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
 
   public Project getProject() {
     return project;
+  }
+
+
+  public Set<ProjectInnovationContributingOrganization> getProjectInnovationContributingOrganization() {
+    return projectInnovationContributingOrganization;
   }
 
   public Set<ProjectInnovationCountry> getProjectInnovationCountries() {
@@ -140,6 +155,10 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
     return sectionStatuses;
   }
 
+  public void setContributingOrganizations(List<ProjectInnovationContributingOrganization> contributingOrganizations) {
+    this.contributingOrganizations = contributingOrganizations;
+  }
+
   public void setCountries(List<ProjectInnovationCountry> countries) {
     this.countries = countries;
   }
@@ -148,10 +167,10 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
     this.countriesIds = countriesIds;
   }
 
-
   public void setCountriesIdsText(String countriesIdsText) {
     this.countriesIdsText = countriesIdsText;
   }
+
 
   public void setCrps(List<ProjectInnovationCrp> crps) {
     this.crps = crps;
@@ -161,13 +180,18 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
     this.deliverables = deliverables;
   }
 
-
   public void setOrganizations(List<ProjectInnovationOrganization> organizations) {
     this.organizations = organizations;
   }
 
+
   public void setProject(Project project) {
     this.project = project;
+  }
+
+  public void setProjectInnovationContributingOrganization(
+    Set<ProjectInnovationContributingOrganization> projectInnovationContributingOrganization) {
+    this.projectInnovationContributingOrganization = projectInnovationContributingOrganization;
   }
 
   public void setProjectInnovationCountries(Set<ProjectInnovationCountry> projectInnovationCountries) {
