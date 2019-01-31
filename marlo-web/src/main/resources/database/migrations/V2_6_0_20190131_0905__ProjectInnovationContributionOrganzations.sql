@@ -1,8 +1,9 @@
 CREATE TABLE `project_innovation_contributing_organizations` (
-`id`  bigint(20) NOT NULL AUTO_INCREMENT ,
+`id`  bigint(20) NOT NULL AUTO_INCREMENT , 
 `project_innovation_id`  bigint(20) NULL ,
 `id_phase`  bigint(20) NULL ,
 `institution_id`  bigint(20) NULL ,
+PRIMARY KEY (`id`),
 CONSTRAINT `project_innovation_contributing_organizations_ibfk_1` FOREIGN KEY (`project_innovation_id`) REFERENCES `project_innovations` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
 CONSTRAINT `project_innovation_contributing_organizations_ibfk_2` FOREIGN KEY (`id_phase`) REFERENCES `phases` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
 CONSTRAINT `project_innovation_contributing_organizations_ibfk_3` FOREIGN KEY (`institution_id`) REFERENCES `institutions` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
