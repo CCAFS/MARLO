@@ -64,8 +64,8 @@ public class Institutions {
 		this.userManager = userManager;
 	}
 
-	@ApiOperation(value = "Create a partner Request by id", response = PartnerRequestDTO.class)
-	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
+	@ApiOperation(value = "Create a partner request by id", response = PartnerRequestDTO.class)
+	@RequiresPermissions(Permission.FULL_CREATE_REST_API_PERMISSION)
 	@RequestMapping(value = "/institutions/{entityAcronym}/partner-requests", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<PartnerRequestDTO> createPartnerRequest(@PathVariable String entityAcronym,
 			@Valid @RequestBody InstitutionDTO institutionDTO) {
@@ -73,7 +73,7 @@ public class Institutions {
 		return this.institutionItem.createPartnerRequest(institutionDTO, entityAcronym, this.getCurrentUser());
 	}
 
-	@ApiOperation(value = "View a List of Institutions", response = InstitutionDTO.class, responseContainer = "List")
+	@ApiOperation(value = "View a list of institutions", response = InstitutionDTO.class, responseContainer = "List")
 	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
 	@RequestMapping(value = "/institutions", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public List<InstitutionDTO> getAllInstitutions() {
@@ -81,7 +81,7 @@ public class Institutions {
 		return this.institutionItem.getAllInstitutions();
 	}
 
-	@ApiOperation(value = "View a List of Institution Types", response = InstitutionTypeDTO.class, responseContainer = "List")
+	@ApiOperation(value = "View a list of institution types", response = InstitutionTypeDTO.class, responseContainer = "List")
 	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
 	@RequestMapping(value = "/institution-types", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public List<InstitutionTypeDTO> getAllInstitutionsTypes() {
@@ -96,7 +96,7 @@ public class Institutions {
 		return user;
 	}
 
-	@ApiOperation(value = "Search an Institution with an ID", response = InstitutionDTO.class)
+	@ApiOperation(value = "Search an institution with an ID", response = InstitutionDTO.class)
 	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
 	@RequestMapping(value = "/institution/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<InstitutionDTO> getInstitution(@PathVariable Long id) {
@@ -104,7 +104,7 @@ public class Institutions {
 		return this.institutionItem.findInstitutionById(id);
 	}
 
-	@ApiOperation(value = "Search a partner Request by id", response = PartnerRequestDTO.class)
+	@ApiOperation(value = "Search a partner request by id", response = PartnerRequestDTO.class)
 	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
 	@RequestMapping(value = "/institutions/{entityAcronym}/partner-requests/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<PartnerRequestDTO> getPartnerRequestById(@PathVariable String entityAcronym,

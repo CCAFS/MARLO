@@ -17,7 +17,7 @@ package org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.srflist;
 
 import org.cgiar.ccafs.marlo.data.manager.SrfSloIndicatorTargetManager;
 import org.cgiar.ccafs.marlo.data.model.SrfSloIndicatorTarget;
-import org.cgiar.ccafs.marlo.rest.dto.SrfSloIndicatorTargetDTO;
+import org.cgiar.ccafs.marlo.rest.dto.SrfSloTargetDTO;
 import org.cgiar.ccafs.marlo.rest.mappers.SrfSloIndicatorTargetMapper;
 
 import java.util.ArrayList;
@@ -35,7 +35,7 @@ import org.springframework.http.ResponseEntity;
  * @author Hermes Jiménez - CIAT/CCAFS
  */
 @Named
-public class SrfSloIndicatorTargetItem<T> {
+public class SrfSloTargetItem<T> {
 
 	// Managers
 	private SrfSloIndicatorTargetManager srfSloIndicatorTargetManager;
@@ -44,7 +44,7 @@ public class SrfSloIndicatorTargetItem<T> {
 	private SrfSloIndicatorTargetMapper srfSloIndicatorTargetMapper;
 
 	@Inject
-	public SrfSloIndicatorTargetItem(SrfSloIndicatorTargetManager srfSloIndicatorTargetManager,
+	public SrfSloTargetItem(SrfSloIndicatorTargetManager srfSloIndicatorTargetManager,
 			SrfSloIndicatorTargetMapper srfSloIndicatorTargetMapper) {
 		this.srfSloIndicatorTargetManager = srfSloIndicatorTargetManager;
 		this.srfSloIndicatorTargetMapper = srfSloIndicatorTargetMapper;
@@ -57,7 +57,7 @@ public class SrfSloIndicatorTargetItem<T> {
 	 * @return a SrfSloIndicatorTargetDTO with SRF slo target Indicator
 	 * requesting data.
 	 */
-	public ResponseEntity<SrfSloIndicatorTargetDTO> findSrfSloIndicatorTargetbyId(String code) {
+	public ResponseEntity<SrfSloTargetDTO> findSrfSloIndicatorTargetbyId(String code) {
 		SrfSloIndicatorTarget SrfSloIndicatorTarget = this.srfSloIndicatorTargetManager.findbyTargetIndicatorCode(code);
 
 		return Optional.ofNullable(SrfSloIndicatorTarget)
@@ -72,7 +72,7 @@ public class SrfSloIndicatorTargetItem<T> {
 	 * @return a List of SrfSloIndicatorTargetDTO with all slo target Indicator
 	 * Items.
 	 */
-	public ResponseEntity<List<SrfSloIndicatorTargetDTO>> getAllSrfSloIndicatorTargets(Long year) {
+	public ResponseEntity<List<SrfSloTargetDTO>> getAllSrfSloIndicatorTargets(Long year) {
 		List<SrfSloIndicatorTarget> SrfSloIndicatorTargets;
 
 		if (this.srfSloIndicatorTargetManager.findAll() != null) {
@@ -82,17 +82,17 @@ public class SrfSloIndicatorTargetItem<T> {
 			} else {
 				SrfSloIndicatorTargets = new ArrayList<>(this.srfSloIndicatorTargetManager.findAll());
 			}
-			List<SrfSloIndicatorTargetDTO> srfSloIndicatorTargetDTOs = SrfSloIndicatorTargets.stream()
+			List<SrfSloTargetDTO> srfSloIndicatorTargetDTOs = SrfSloIndicatorTargets.stream()
 					.map(srfSloIndicatorTargetEntity -> this.srfSloIndicatorTargetMapper
 							.srfSloIndicatorTargetToSrfSloIndicatorTargetDTO(srfSloIndicatorTargetEntity))
 					.collect(Collectors.toList());
-			if (srfSloIndicatorTargetDTOs == null) {
-				return new ResponseEntity<List<SrfSloIndicatorTargetDTO>>(HttpStatus.NOT_FOUND);
+			if (srfSloIndicatorTargetDTOs == null || srfSloIndicatorTargetDTOs.size() == 0) {
+				return new ResponseEntity<List<SrfSloTargetDTO>>(HttpStatus.NOT_FOUND);
 			} else {
-				return new ResponseEntity<List<SrfSloIndicatorTargetDTO>>(srfSloIndicatorTargetDTOs, HttpStatus.OK);
+				return new ResponseEntity<List<SrfSloTargetDTO>>(srfSloIndicatorTargetDTOs, HttpStatus.OK);
 			}
 		} else {
-			return new ResponseEntity<List<SrfSloIndicatorTargetDTO>>(HttpStatus.NOT_FOUND);
+			return new ResponseEntity<List<SrfSloTargetDTO>>(HttpStatus.NOT_FOUND);
 		}
 	}
 

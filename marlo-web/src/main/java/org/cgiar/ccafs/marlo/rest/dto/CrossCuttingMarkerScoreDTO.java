@@ -29,23 +29,12 @@ public class CrossCuttingMarkerScoreDTO {
 	@NotNull
 	private String name;
 
-	@ApiModelProperty(notes = "Cross Cutting Marker Score definition")
-	private String definition;
-
-	public String getDefinition() {
-		return this.definition;
-	}
-
 	public Long getId() {
 		return this.id;
 	}
 
 	public String getName() {
 		return this.name;
-	}
-
-	public void setDefinition(String definition) {
-		this.definition = definition;
 	}
 
 	public void setId(Long id) {

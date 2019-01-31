@@ -20,7 +20,7 @@ import javax.validation.constraints.NotNull;
 
 import io.swagger.annotations.ApiModelProperty;
 
-public class GlobalUnitTypeDTO implements Serializable {
+public class CGIAREntityTypeDTO implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 

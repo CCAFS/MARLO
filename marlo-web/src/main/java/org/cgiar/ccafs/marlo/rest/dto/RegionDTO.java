@@ -19,24 +19,13 @@ import io.swagger.annotations.ApiModelProperty;
 public class RegionDTO {
 
 	@ApiModelProperty(notes = "The ISO Region code")
-	private Long code;
-
-	@ApiModelProperty(notes = "The ISO Alpha 2 letters region code")
-	private String isoAlpha2;
+	private Long UM49Code;
 
 	@ApiModelProperty(notes = "Region Name")
 	private String name;
 
 	@ApiModelProperty(notes = "Parent Region")
 	private RegionDTO parentRegion;
-
-	public Long getCode() {
-		return this.code;
-	}
-
-	public String getIsoAlpha2() {
-		return this.isoAlpha2;
-	}
 
 	public String getName() {
 		return this.name;
@@ -46,12 +35,8 @@ public class RegionDTO {
 		return this.parentRegion;
 	}
 
-	public void setCode(Long code) {
-		this.code = code;
-	}
-
-	public void setIsoAlpha2(String isoAlpha2) {
-		this.isoAlpha2 = isoAlpha2;
+	public Long getUM49Code() {
+		return this.UM49Code;
 	}
 
 	public void setName(String name) {
@@ -60,6 +45,10 @@ public class RegionDTO {
 
 	public void setParentRegion(RegionDTO parentRegion) {
 		this.parentRegion = parentRegion;
+	}
+
+	public void setUM49Code(Long uM49Code) {
+		this.UM49Code = uM49Code;
 	}
 
 }

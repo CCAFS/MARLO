@@ -17,7 +17,7 @@ package org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.generallists;
 
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
-import org.cgiar.ccafs.marlo.rest.dto.GlobalUnitDTO;
+import org.cgiar.ccafs.marlo.rest.dto.CGIAREntityDTO;
 import org.cgiar.ccafs.marlo.rest.mappers.GlobalUnitMapper;
 
 import java.util.ArrayList;
@@ -49,7 +49,7 @@ public class GlobalUnitItem<T> {
 	 * @param CRP Acronym
 	 * @return a GlobalUnitDTO with the smoCode
 	 */
-	public ResponseEntity<GlobalUnitDTO> findGlobalUnitByAcronym(String acronym) {
+	public ResponseEntity<CGIAREntityDTO> findGlobalUnitByAcronym(String acronym) {
 		GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitByAcronym(acronym);
 		return Optional.ofNullable(globalUnitEntity).map(this.globalUnitMapper::globalUnitToGlobalUnitDTO)
 				.map(result -> new ResponseEntity<>(result, HttpStatus.OK))
@@ -62,7 +62,7 @@ public class GlobalUnitItem<T> {
 	 * @param CGIAR id
 	 * @return a GlobalUnitDTO with the smoCode
 	 */
-	public ResponseEntity<GlobalUnitDTO> findGlobalUnitByCGIRARId(String smoCode) {
+	public ResponseEntity<CGIAREntityDTO> findGlobalUnitByCGIRARId(String smoCode) {
 		GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitBySMOCode(smoCode);
 		return Optional.ofNullable(globalUnitEntity).map(this.globalUnitMapper::globalUnitToGlobalUnitDTO)
 				.map(result -> new ResponseEntity<>(result, HttpStatus.OK))
@@ -74,7 +74,7 @@ public class GlobalUnitItem<T> {
 	 * 
 	 * @return a List of global units
 	 */
-	public ResponseEntity<List<GlobalUnitDTO>> getAllGlobaUnits(Long typeId) {
+	public ResponseEntity<List<CGIAREntityDTO>> getAllGlobaUnits(Long typeId) {
 		//
 		List<GlobalUnit> globalUnits;
 
@@ -86,22 +86,17 @@ public class GlobalUnitItem<T> {
 			} else {
 				globalUnits = this.globalUnitManager.findAll();
 			}
-			List<GlobalUnitDTO> globalUnitDTOs = globalUnits.stream()
+			List<CGIAREntityDTO> globalUnitDTOs = globalUnits.stream()
 					.map(globalUnitEntity -> this.globalUnitMapper.globalUnitToGlobalUnitDTO(globalUnitEntity))
 					.collect(Collectors.toList());
 			if (globalUnitDTOs == null) {
-				return new ResponseEntity<List<GlobalUnitDTO>>(HttpStatus.NOT_FOUND);
+				return new ResponseEntity<List<CGIAREntityDTO>>(HttpStatus.NOT_FOUND);
 			} else {
-				return new ResponseEntity<List<GlobalUnitDTO>>(globalUnitDTOs, HttpStatus.OK);
+				return new ResponseEntity<List<CGIAREntityDTO>>(globalUnitDTOs, HttpStatus.OK);
 			}
 
-//			List<GlobalUnitDTO> globalUnitDTOs = globalUnits.stream()
-//					.map(globalUnitEntity -> this.globalUnitMapper.globalUnitToGlobalUnitDTO(globalUnitEntity))
-//					.collect(Collectors.toList());
-//			return globalUnitDTOs;
-
 		} else {
-			return new ResponseEntity<List<GlobalUnitDTO>>(HttpStatus.NOT_FOUND);
+			return new ResponseEntity<List<CGIAREntityDTO>>(HttpStatus.NOT_FOUND);
 		}
 	}
 }

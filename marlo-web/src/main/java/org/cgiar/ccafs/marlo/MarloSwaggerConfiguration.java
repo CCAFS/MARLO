@@ -69,14 +69,13 @@ public class MarloSwaggerConfiguration extends WebMvcConfigurerAdapter {
 	private Tag[] getTags() {
 		Tag[] tags = new Tag[5];
 		tags[0] = new Tag("Table 1 - Evidence on Progress towards SRF targets",
-				"This table has available high-quality evidences on progress that was published or made available in 2018",
-				5);
+				"Control list used to populate the table 1 indicator as per the AR2018 template", 5);
 		tags[1] = new Tag("Table 2 - CRP Policies",
 				"Control list used to populate the policies indicator as per the AR2018 template", 10);
-		tags[2] = new Tag("Institutions Lists", "All control List about MARLO intitutions ", 100);
+		tags[2] = new Tag("Institutions Lists", "All control List about MARLO intitutions ", 110);
 
-		tags[3] = new Tag("General Control Lists", "General pourpose control List ", 105);
-		tags[4] = new Tag("SRF Lists", "All SRF related control List ", 110);
+		tags[3] = new Tag("General Control Lists", "General pourpose control List ", 115);
+		tags[4] = new Tag("SRF Lists", "All SRF related control List ", 120);
 
 		return tags;
 	}

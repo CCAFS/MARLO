@@ -17,13 +17,13 @@ package org.cgiar.ccafs.marlo.rest.controller.v2.controllist;
 
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.srflist.SrfCrossCuttingIssueItem;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.srflist.SrfIdoItem;
-import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.srflist.SrfSloIndicatorTargetItem;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.srflist.SrfSloItem;
+import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.srflist.SrfSloTargetItem;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.srflist.SrfSubIdoItem;
 import org.cgiar.ccafs.marlo.rest.dto.SrfCrossCuttingIssueDTO;
 import org.cgiar.ccafs.marlo.rest.dto.SrfIdoDTO;
 import org.cgiar.ccafs.marlo.rest.dto.SrfSloDTO;
-import org.cgiar.ccafs.marlo.rest.dto.SrfSloIndicatorTargetDTO;
+import org.cgiar.ccafs.marlo.rest.dto.SrfSloTargetDTO;
 import org.cgiar.ccafs.marlo.rest.dto.SrfSubIdoDTO;
 import org.cgiar.ccafs.marlo.security.Permission;
 
@@ -60,12 +60,12 @@ public class SrfLists {
 	private SrfIdoItem<SrfLists> srfIdoItem;
 	private SrfCrossCuttingIssueItem<SrfLists> srfCrossCuttingIssueItem;
 	private SrfSubIdoItem<SrfLists> srfSubIdoItem;
-	private SrfSloIndicatorTargetItem<SrfLists> srfSloIndicatorTargetItem;
+	private SrfSloTargetItem<SrfLists> srfSloIndicatorTargetItem;
 
 	@Inject
 	public SrfLists(SrfSloItem<SrfLists> srfSloItem, SrfIdoItem<SrfLists> srfIdoItem,
 			SrfCrossCuttingIssueItem<SrfLists> srfCrossCuttingIssueItem, SrfSubIdoItem<SrfLists> srfSubIdoItem,
-			SrfSloIndicatorTargetItem<SrfLists> srfSloIndicatorTargetItem) {
+			SrfSloTargetItem<SrfLists> srfSloIndicatorTargetItem) {
 		this.srfSloItem = srfSloItem;
 		this.srfIdoItem = srfIdoItem;
 		this.srfCrossCuttingIssueItem = srfCrossCuttingIssueItem;
@@ -81,10 +81,10 @@ public class SrfLists {
 	 * @return a SrfSloIndicatorTargetDTO with the SLO indicator Target data.
 	 */
 
-	@ApiOperation(tags = "Table 1 - Evidence on Progress towards SRF targets", value = "Search an SLO indicator Target by code", response = SrfSloIndicatorTargetDTO.class)
+	@ApiOperation(tags = "Table 1 - Evidence on Progress towards SRF targets", value = "Search a SLO Target by code", response = SrfSloTargetDTO.class)
 	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
-	@RequestMapping(value = "/slo-indicator-targets/{code:.+}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<SrfSloIndicatorTargetDTO> findSrfSloIndicatorTargetByCode(@PathVariable String code) {
+	@RequestMapping(value = "/slo-targets/{code:.+}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<SrfSloTargetDTO> findSrfSloTargetByCode(@PathVariable String code) {
 		LOG.debug("REST request to get SrfSloIndicatorTarget : {}", code);
 		return this.srfSloIndicatorTargetItem.findSrfSloIndicatorTargetbyId(code);
 	}
@@ -96,7 +96,7 @@ public class SrfLists {
 	 * @return a SrfSubIdoDTO with the SRF-SubIdo data.
 	 */
 
-	@ApiOperation(tags = "Table 2 - CRP Policies", value = "Search an SRF-SubIdo with an Code", response = SrfSubIdoDTO.class)
+	@ApiOperation(tags = "Table 2 - CRP Policies", value = "Search an SRF sub intermediate level objective(sub-IDO) by Code", response = SrfSubIdoDTO.class)
 	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
 	@RequestMapping(value = "/srf-sub-idos/{code:.+}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<SrfSubIdoDTO> findSrfSubIdoByCode(@PathVariable String code) {
@@ -110,7 +110,7 @@ public class SrfLists {
 	 * @return a List of SrfIdoDTO with all SRF IDO Items.
 	 */
 
-	@ApiOperation(value = "View all Srf IDO", response = SrfIdoDTO.class, responseContainer = "List", position = 1)
+	@ApiOperation(value = "View all SRF intermediate level objective(IDO)", response = SrfIdoDTO.class, responseContainer = "List")
 	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
 	@RequestMapping(value = "/srfIdos", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public List<SrfIdoDTO> getAllSrfIdos() {
@@ -124,11 +124,11 @@ public class SrfLists {
 	 * @return a List of SrfIdoDTO with all SRF IDO Items.
 	 */
 
-	@ApiOperation(tags = "Table 1 - Evidence on Progress towards SRF targets", value = "View all SlO indicator Targets", response = SrfSloIndicatorTargetDTO.class, responseContainer = "List")
+	@ApiOperation(tags = "Table 1 - Evidence on Progress towards SRF targets", value = "View all SLO Targets", response = SrfSloTargetDTO.class, responseContainer = "List")
 	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
-	@RequestMapping(value = "/slo-indicator-targets", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<SrfSloIndicatorTargetDTO>> getAllSrfSloIndicatorTarget(
-			@RequestParam(required = false, value = "year") Long year) {
+	@RequestMapping(value = "/slo-targets", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<SrfSloTargetDTO>> getAllSrfSloIndicatorTarget(
+			@RequestParam(required = false, value = "target year (2022 or 2030)") Long year) {
 		LOG.debug("REST request to get SLO indicator Target");
 		return this.srfSloIndicatorTargetItem.getAllSrfSloIndicatorTargets(year);
 	}
@@ -139,7 +139,7 @@ public class SrfLists {
 	 * @return a List of SrfSloDTO with all SRF-SLO Items.
 	 */
 	@ApiIgnore
-	@ApiOperation(value = "View all Srf-SLO", response = SrfSloDTO.class, responseContainer = "List", position = 2)
+	@ApiOperation(value = "View all intermediate level objectives (IDOs)", response = SrfSloDTO.class, responseContainer = "List")
 	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
 	@RequestMapping(value = "/srfSlos", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public List<SrfSloDTO> getAllSrfSlos() {
@@ -154,7 +154,7 @@ public class SrfLists {
 	 * Issue Items.
 	 */
 	@ApiIgnore
-	@ApiOperation(value = "View all SRF Cross Cutting Issue", response = SrfCrossCuttingIssueDTO.class, responseContainer = "List")
+	@ApiOperation(value = "View all SRF cross cutting issues", response = SrfCrossCuttingIssueDTO.class, responseContainer = "List")
 	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
 	@RequestMapping(value = "/srfCrossCuttingIssues", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public List<SrfCrossCuttingIssueDTO> getAllSrfSrfCrossCuttingIssues() {
@@ -168,7 +168,7 @@ public class SrfLists {
 	 * @return a List of SrfSubIdoDTO with all SRF-SubIdo Items.
 	 */
 
-	@ApiOperation(tags = "Table 2 - CRP Policies", value = "Get all SRF-SubIdo", response = SrfSubIdoDTO.class, responseContainer = "List")
+	@ApiOperation(tags = "Table 2 - CRP Policies", value = "Get all sub intermediate level objectives (sub-IDOs)", response = SrfSubIdoDTO.class, responseContainer = "List")
 	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
 	@RequestMapping(value = "/srf-sub-idos", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public List<SrfSubIdoDTO> getAllSrfSubIdos() {
@@ -183,7 +183,7 @@ public class SrfLists {
 	 * @return a SrfIdoDTO with the SRL IDO data.
 	 */
 	@ApiIgnore
-	@ApiOperation(value = "Search an SRF IDO with an ID", response = SrfIdoDTO.class)
+	@ApiOperation(value = "Search an SRF intermediate level objective(sub-IDO) by ID", response = SrfIdoDTO.class)
 	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
 	@RequestMapping(value = "/srfIdo/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<SrfIdoDTO> getSrfIdoById(@PathVariable Long id) {
