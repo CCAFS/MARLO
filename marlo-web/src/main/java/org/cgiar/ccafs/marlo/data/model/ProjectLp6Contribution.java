@@ -17,7 +17,6 @@ package org.cgiar.ccafs.marlo.data.model;
 
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -60,25 +59,10 @@ public class ProjectLp6Contribution extends MarloAuditableEntity implements java
   @Expose
   private Boolean initiativeRelated;
 
-  @Expose
-  private RepIndGeographicScope geographicScope;
-
-  private List<Lp6ContributionGeographicScope> regions;
-
   private Set<ProjectLp6ContributionDeliverable> projectLp6ContributionDeliverable =
     new HashSet<ProjectLp6ContributionDeliverable>(0);
 
   private List<ProjectLp6ContributionDeliverable> deliverables;
-
-  private Set<Lp6ContributionGeographicScope> lp6ContributionGeographicScopes =
-    new HashSet<Lp6ContributionGeographicScope>(0);
-
-  private List<String> countriesIds = new ArrayList<>();
-
-  private List<Lp6ContributionGeographicScope> countries;
-
-
-  private String countriesIdsText;
 
 
   public ProjectLp6Contribution() {
@@ -112,28 +96,9 @@ public class ProjectLp6Contribution extends MarloAuditableEntity implements java
     return contribution;
   }
 
-
-  public List<Lp6ContributionGeographicScope> getCountries() {
-    return countries;
-  }
-
-
-  public List<String> getCountriesIds() {
-    return countriesIds;
-  }
-
-  public String getCountriesIdsText() {
-    return countriesIdsText;
-  }
-
   public List<ProjectLp6ContributionDeliverable> getDeliverables() {
     return deliverables;
   }
-
-  public RepIndGeographicScope getGeographicScope() {
-    return geographicScope;
-  }
-
 
   public Boolean getInitiativeRelated() {
     return initiativeRelated;
@@ -153,10 +118,6 @@ public class ProjectLp6Contribution extends MarloAuditableEntity implements java
 
 
     return sb.toString();
-  }
-
-  public Set<Lp6ContributionGeographicScope> getLp6ContributionGeographicScopes() {
-    return lp6ContributionGeographicScopes;
   }
 
   public String getNarrative() {
@@ -186,11 +147,6 @@ public class ProjectLp6Contribution extends MarloAuditableEntity implements java
   public String getProvidingPathwaysNarrative() {
     return providingPathwaysNarrative;
   }
-
-  public List<Lp6ContributionGeographicScope> getRegions() {
-    return regions;
-  }
-
 
   public String getTopThreePartnershipsNarrative() {
     return topThreePartnershipsNarrative;
@@ -265,28 +221,9 @@ public class ProjectLp6Contribution extends MarloAuditableEntity implements java
     this.contribution = contribution;
   }
 
-  public void setCountries(List<Lp6ContributionGeographicScope> countries) {
-    this.countries = countries;
-  }
-
-
-  public void setCountriesIds(List<String> countriesIds) {
-    this.countriesIds = countriesIds;
-  }
-
-
-  public void setCountriesIdsText(String countriesIdsText) {
-    this.countriesIdsText = countriesIdsText;
-  }
-
 
   public void setDeliverables(List<ProjectLp6ContributionDeliverable> deliverables) {
     this.deliverables = deliverables;
-  }
-
-
-  public void setGeographicScope(RepIndGeographicScope geographicScope) {
-    this.geographicScope = geographicScope;
   }
 
 
@@ -297,11 +234,6 @@ public class ProjectLp6Contribution extends MarloAuditableEntity implements java
 
   public void setInitiativeRelatedNarrative(String initiativeRelatedNarrative) {
     this.initiativeRelatedNarrative = initiativeRelatedNarrative;
-  }
-
-
-  public void setLp6ContributionGeographicScopes(Set<Lp6ContributionGeographicScope> lp6ContributionGeographicScopes) {
-    this.lp6ContributionGeographicScopes = lp6ContributionGeographicScopes;
   }
 
 
@@ -335,9 +267,6 @@ public class ProjectLp6Contribution extends MarloAuditableEntity implements java
     this.providingPathwaysNarrative = providingPathwaysNarrative;
   }
 
-  public void setRegions(List<Lp6ContributionGeographicScope> regions) {
-    this.regions = regions;
-  }
 
   public void setTopThreePartnershipsNarrative(String topThreePartnershipsNarrative) {
     this.topThreePartnershipsNarrative = topThreePartnershipsNarrative;
@@ -388,7 +317,6 @@ public class ProjectLp6Contribution extends MarloAuditableEntity implements java
   public void updateProjectLp6Contribution(ProjectLp6Contribution projectLp6ContributionUpdate, Phase phase) {
     this.setPhase(phase);
     this.setContribution(projectLp6ContributionUpdate.getContribution());
-    this.setGeographicScope(projectLp6ContributionUpdate.getGeographicScope());
     this.setInitiativeRelated(projectLp6ContributionUpdate.getInitiativeRelated());
     this.setInitiativeRelatedNarrative(projectLp6ContributionUpdate.getInitiativeRelatedNarrative());
     this.setNarrative(projectLp6ContributionUpdate.getNarrative());

@@ -17,15 +17,9 @@ package org.cgiar.ccafs.marlo.action.summaries;
 
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
-import org.cgiar.ccafs.marlo.data.manager.Lp6ContributionGeographicScopeManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
-import org.cgiar.ccafs.marlo.data.manager.ProjectLp6ContributionDeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectLp6ContributionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
-import org.cgiar.ccafs.marlo.data.model.Institution;
-import org.cgiar.ccafs.marlo.data.model.InstitutionType;
-import org.cgiar.ccafs.marlo.data.model.LocElement;
-import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectLp6Contribution;
 import org.cgiar.ccafs.marlo.data.model.ProjectLp6ContributionDeliverable;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -36,24 +30,17 @@ import java.io.File;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.struts2.dispatcher.Parameter;
 import org.pentaho.reporting.engine.classic.core.CompoundDataFactory;
 import org.pentaho.reporting.engine.classic.core.Element;
 import org.pentaho.reporting.engine.classic.core.ItemBand;
@@ -88,39 +75,22 @@ public class ProjectContributionLp6SummaryAction extends BaseSummariesAction imp
   // Managers
   private final ResourceManager resourceManager;
   private final ProjectLp6ContributionManager projectLp6ContributionManager;
-  private final ProjectLp6ContributionDeliverableManager projectLp6ContributionDeliverableManager;
-  private final Lp6ContributionGeographicScopeManager lp6ContributionGeographicScopeManager;
 
   // Parameters
   private long startTime;
-  HashMap<InstitutionType, Set<Institution>> institutionsPerType = new HashMap<InstitutionType, Set<Institution>>();
-  HashMap<Institution, Set<Project>> projectsPerInstitution = new HashMap<Institution, Set<Project>>();
-  HashMap<Institution, Set<LocElement>> countriesPerInstitution = new HashMap<Institution, Set<LocElement>>();
-  Set<LocElement> countries = new HashSet<>();
-  Set<Project> projects = new HashSet<>();
-
-  private String partnerType;
-  private ProjectLp6Contribution projectLp6Contribution;
   private List<ProjectLp6Contribution> projectLp6Contributions;
-
-
   // XLSX bytes
   private byte[] bytesXLSX;
-
   // Streams
   InputStream inputStream;
 
   @Inject
   public ProjectContributionLp6SummaryAction(APConfig config, GlobalUnitManager crpManager, PhaseManager phaseManager,
     ResourceManager resourceManager, ProjectManager projectManager,
-    ProjectLp6ContributionManager projectLp6ContributionManager,
-    ProjectLp6ContributionDeliverableManager projectLp6ContributionDeliverableManager,
-    Lp6ContributionGeographicScopeManager lp6ContributionGeographicScopeManager) {
+    ProjectLp6ContributionManager projectLp6ContributionManager) {
     super(config, crpManager, phaseManager, projectManager);
     this.resourceManager = resourceManager;
     this.projectLp6ContributionManager = projectLp6ContributionManager;
-    this.projectLp6ContributionDeliverableManager = projectLp6ContributionDeliverableManager;
-    this.lp6ContributionGeographicScopeManager = lp6ContributionGeographicScopeManager;
   }
 
   /**
@@ -130,21 +100,9 @@ public class ProjectContributionLp6SummaryAction extends BaseSummariesAction imp
    * @return masterReport with i8n parameters added
    */
   private MasterReport addi8nParameters(MasterReport masterReport) {
-    if (partnerType.equals("All")) {
-      /*
-       * masterReport.getParameterValues().put("i8nSummaryDescription",
-       * this.getText("summaries.lp6contribution.description", new String[] {this.getSelectedCycle()}));
-       */
-      masterReport.getParameterValues().put("i8nHeader",
-        this.getText("summaries.lp6contribution.header", new String[] {this.getLoggedCrp().getAcronym()}));
-    } else {
-      /*
-       * masterReport.getParameterValues().put("i8nSummaryDescription",
-       * this.getText("summaries.partners.leader.description", new String[] {this.getSelectedCycle()}));
-       */
-      masterReport.getParameterValues().put("i8nHeader",
-        this.getText("summaries.partners.leader.header", new String[] {this.getLoggedCrp().getAcronym()}));
-    }
+
+    masterReport.getParameterValues().put("i8nHeader",
+      this.getText("summaries.lp6contribution.header", new String[] {this.getLoggedCrp().getAcronym()}));
 
     masterReport.getParameterValues().put("i8nSummaryDescription",
       this.getText("summaries.lp6contribution.description"));
@@ -179,12 +137,9 @@ public class ProjectContributionLp6SummaryAction extends BaseSummariesAction imp
     masterReport.getParameterValues().put("i8nUndertakingN",
       this.getText("summaries.lp6contribution.undertakingInitiative"));
 
-
     return masterReport;
   }
 
-  private void createIntitutionsProjectsList() {
-  }
 
   @Override
   public String execute() throws Exception {
@@ -214,14 +169,13 @@ public class ProjectContributionLp6SummaryAction extends BaseSummariesAction imp
       HashMap<String, Element> hm = new HashMap<String, Element>();
       // method to get all the subreports in the prpt and store in the HashMap
       this.getAllSubreports(hm, masteritemBand);
-      this.createIntitutionsProjectsList();
 
       this.fillSubreport((SubReport) hm.get("summary"), "summary");
       ExcelReportUtil.createXLSX(masterReport, os);
       bytesXLSX = os.toByteArray();
       os.close();
     } catch (Exception e) {
-      LOG.error("Error generating Institutions " + e.getMessage());
+      LOG.error("Error generating ProjectLp6Contribution " + e.getMessage());
       throw e;
     }
     // Calculate time of generation
@@ -238,14 +192,8 @@ public class ProjectContributionLp6SummaryAction extends BaseSummariesAction imp
     TableDataFactory sdf = (TableDataFactory) cdf.getDataFactoryForQuery(query);
     TypedTableModel model = null;
     switch (query) {
-      case "details":
-        model = this.getDetailsTableModel();
-        break;
       case "summary":
         model = this.getDetailsTableModel();
-        break;
-      case "institution_types":
-        model = this.getInstitutionTypesTableModel();
         break;
     }
     sdf.addTable(query, model);
@@ -271,11 +219,6 @@ public class ProjectContributionLp6SummaryAction extends BaseSummariesAction imp
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class},
       0);
 
-    Map<Institution, Set<Project>> result = projectsPerInstitution.entrySet().stream()
-      .sorted((s1, s2) -> s1.getKey().getName().compareTo(s2.getKey().getName())).collect(
-        Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (oldValue, newValue) -> oldValue, LinkedHashMap::new));
-
-
     for (ProjectLp6Contribution projectLp6Contribution : projectLp6Contributions) {
       String projectId = "", narrativeLp6 = "", deliverables = "", geographicScope = "", workingAcross = "",
         workingAcrossNarrative = "", undertakingEfforts = "", undertakingEffortsNarrative = "", providing = "",
@@ -294,10 +237,7 @@ public class ProjectContributionLp6SummaryAction extends BaseSummariesAction imp
         }
       }
 
-      geographicScope = projectLp6Contribution.getGeographicScope() != null
-        && projectLp6Contribution.getGeographicScope().getName() != null
-        && !projectLp6Contribution.getGeographicScope().getName().isEmpty()
-          ? projectLp6Contribution.getGeographicScope().getName() : null;
+      // TODO: Add location input geographicScope
 
       workingAcross = projectLp6Contribution.isWorkingAcrossFlagships() != null
         ? projectLp6Contribution.isWorkingAcrossFlagships() + "" : null;
@@ -377,32 +317,6 @@ public class ProjectContributionLp6SummaryAction extends BaseSummariesAction imp
     return inputStream;
   }
 
-  private TypedTableModel getInstitutionTypesTableModel() {
-    TypedTableModel model =
-      new TypedTableModel(new String[] {"count_ins", "name_percentage"}, new Class[] {Integer.class, String.class}, 0);
-    Map<InstitutionType, Set<Institution>> result = institutionsPerType.entrySet().stream()
-      .sorted((s1, s2) -> new Integer(s2.getValue().size()).compareTo(new Integer(s1.getValue().size()))).collect(
-        Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (oldValue, newValue) -> oldValue, LinkedHashMap::new));
-    int totalInstitutions = projectsPerInstitution.size();
-    DecimalFormat percentageFormat = new DecimalFormat("##.##%");
-
-    for (InstitutionType institutionType : result.keySet()) {
-      String namePercentage = "";
-      Integer countIns = null;
-      countIns = institutionsPerType.get(institutionType).size();
-      namePercentage = institutionType.getName();
-      Double percentajeOfTotal = 0.0;
-      if (totalInstitutions > 0) {
-        percentajeOfTotal = countIns * 100.0 / totalInstitutions;
-      } else {
-        percentajeOfTotal = 0.0;
-      }
-
-      model.addRow(
-        new Object[] {countIns, namePercentage + " - " + percentageFormat.format(round(percentajeOfTotal / 100, 4))});
-    }
-    return model;
-  }
 
   private TypedTableModel getMasterTableModel() {
     // Initialization of Model
@@ -426,18 +340,11 @@ public class ProjectContributionLp6SummaryAction extends BaseSummariesAction imp
     projectLp6Contributions = new ArrayList<>();
 
     if (projectLp6ContributionManager.findAll() != null && !projectLp6ContributionManager.findAll().isEmpty()) {
-      projectLp6Contributions =
-        projectLp6ContributionManager.findAll().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+      projectLp6Contributions = projectLp6ContributionManager.findAll().stream()
+        .filter(c -> c.isActive() && c.getPhase().getId() == this.getSelectedPhase().getId())
+        .collect(Collectors.toList());
     }
 
-    try {
-      Map<String, Parameter> parameters = this.getParameters();
-      partnerType = StringUtils.trim(parameters.get(APConstants.SUMMARY_PARTNER_TYPE).getMultipleValues()[0]);
-    } catch (Exception e) {
-      LOG.warn("Failed to get " + APConstants.SUMMARY_PARTNER_TYPE
-        + " parameter. Parameter will be set as All. Exception: " + e.getMessage());
-      partnerType = "All";
-    }
     this.setGeneralParameters();
     // Calculate time to generate report
     startTime = System.currentTimeMillis();

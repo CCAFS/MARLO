@@ -134,15 +134,8 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
   private Set<ProjectPolicyCrossCuttingMarker> projectPolicyCrossCuttingMarkers =
     new HashSet<ProjectPolicyCrossCuttingMarker>(0);
 
-
-  private Set<Lp6ContributionGeographicScope> lp6ContributionGeographicScopes =
-    new HashSet<Lp6ContributionGeographicScope>(0);
-
-
   private Set<ProjectLp6ContributionDeliverable> projectLp6ContributionDeliverables =
     new HashSet<ProjectLp6ContributionDeliverable>(0);
-
-
   private Set<ProjectLp6Contribution> projectLp6Contributions = new HashSet<ProjectLp6Contribution>(0);
 
   public Phase() {
@@ -266,10 +259,6 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
     StringBuilder sb = new StringBuilder();
     sb.append("Id : ").append(this.getId());
     return sb.toString();
-  }
-
-  public Set<Lp6ContributionGeographicScope> getLp6ContributionGeographicScopes() {
-    return lp6ContributionGeographicScopes;
   }
 
   @Override
@@ -587,11 +576,6 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
 
   public void setFundingSourceLocations(Set<FundingSourceLocation> fundingSourceLocations) {
     this.fundingSourceLocations = fundingSourceLocations;
-  }
-
-
-  public void setLp6ContributionGeographicScopes(Set<Lp6ContributionGeographicScope> lp6ContributionGeographicScopes) {
-    this.lp6ContributionGeographicScopes = lp6ContributionGeographicScopes;
   }
 
   @Override
