@@ -41,6 +41,9 @@ $(document).ready(function() {
 
   /* Reporting events */
   attachReportingEvents();
+
+
+  lp6menu();
 });
 
 function addNewOutcome() {
@@ -82,6 +85,7 @@ function attachReportingEvents() {
 
 
   $('input[name="lp6Contribution"]').on('change', contributionToLP6);
+
 }
 
 function addOtherContribution() {
@@ -121,3 +125,15 @@ function contributionToLP6(){
    });
 
 };
+
+function lp6menu() {
+
+  var menu = $("#menu-contributionsLP6");
+
+  menu.animate({
+    opacity: 1
+  }, {
+    duration: "slow"
+  });
+
+}

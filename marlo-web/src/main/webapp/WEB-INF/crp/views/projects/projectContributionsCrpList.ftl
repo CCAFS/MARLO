@@ -234,7 +234,7 @@
        [@customForm.radioFlat id="lp6Contribution-no" name="lp6Contribution" label="No" value="false" checked=!((projectLp6Contribution.contribution)!true) cssClassLabel="radio-label-no" editable=Editable /]
   </div>
   <div class="form-group contributionNote note" style="display:${(isContributing)?string('block','none')}">
-     [@s.text name="projects.LP6Contribution.contributionNote"/] <a href="[@s.url action="${crpSession}/contributionsLP6"][@s.param name="projectID" value=projectID /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">clicking here</a>.
+     [@s.text name="projects.LP6Contribution.contributionNote"/]
   </div>
   </div>
 
