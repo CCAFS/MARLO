@@ -92,6 +92,14 @@ public class ProjectLP6Validator extends BaseValidator {
       action.getInvalidFields().put("input-project.projectLp6Contribution.narrative", InvalidFieldsMessages.EMPTYFIELD);
     }
 
+    // Validate Geographic Scope Narrative
+    if (!(this.isValidString(projectLp6Contribution.getGeographicScopeNarrative())
+      && this.wordCount(projectLp6Contribution.getGeographicScopeNarrative()) <= 100)) {
+      action.addMessage(action.getText("projects.LP6Contribution.geographicScopeNarrative"));
+      action.getInvalidFields().put("input-project.projectLp6Contribution.geographicScopeNarrative",
+        InvalidFieldsMessages.EMPTYFIELD);
+    }
+
     // Validate TopThreePartnershipsNarrative
     if (!(this.isValidString(projectLp6Contribution.getTopThreePartnershipsNarrative())
       && this.wordCount(projectLp6Contribution.getTopThreePartnershipsNarrative()) <= 100)) {

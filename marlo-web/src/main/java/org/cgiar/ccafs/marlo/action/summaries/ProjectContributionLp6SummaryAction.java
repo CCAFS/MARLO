@@ -237,7 +237,9 @@ public class ProjectContributionLp6SummaryAction extends BaseSummariesAction imp
         }
       }
 
-      // TODO: Add location input geographicScope
+      geographicScope = projectLp6Contribution.getGeographicScopeNarrative() != null
+        && !projectLp6Contribution.getGeographicScopeNarrative().trim().isEmpty()
+          ? projectLp6Contribution.getGeographicScopeNarrative() : null;
 
       workingAcross = projectLp6Contribution.isWorkingAcrossFlagships() != null
         ? projectLp6Contribution.isWorkingAcrossFlagships() + "" : null;

@@ -40,9 +40,9 @@
                 <p class="note">[@s.text name="projects.LP6Contribution.deliverablesTooltip" /] <a href="[@s.url action="${crpSession}/deliverableList"][@s.param name="projectID" value=projectID /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">clicking here.</a></p>
                 [/#if]
                </div>
-              [#-- Geographic Scope --]
+              [#-- Geographic Scope Narrative --]
               <div class="form-group">
-                [@customForm.textArea name="project.projectLp6Contribution.geographicScope"  i18nkey="projects.LP6Contribution.geographicScope" className="limitWords-100" required=true editable=editable /] 
+                [@customForm.textArea name="project.projectLp6Contribution.geographicScopeNarrative"  i18nkey="projects.LP6Contribution.geographicScopeNarrative" className="limitWords-100" required=true editable=editable /] 
               </div>
               [#-- Work across flagships --]
               [@contributionForm name="workingAcrossFlagships" textName="workingAcrossFlagshipsNarrative" i18nkey="flagshipLevels" checkedValue=(project.projectLp6Contribution.workingAcrossFlagships?string)!"" className="limitWords-100"/]
