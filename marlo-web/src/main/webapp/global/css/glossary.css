@@ -23,7 +23,7 @@
   float:right;
 }
 
-.form-group {
+.search-word {
   float: right !important;
   transition: all 0.35s, border-radius 0s;
   width: 32px;
@@ -33,7 +33,7 @@
   border-radius: 25px;
   border: 1px solid #ccc;
 }
-.form-group input.form-control {
+.search-word input.form-control {
   padding-right: 20px;
   border: 0 none;
   background: transparent;
@@ -41,12 +41,12 @@
   display:block;
 }
 
-.form-group:hover,
-.form-group.hover {
+.search-word:hover,
+.search-word.hover {
   width: 30%;
   border-radius: 4px 25px 25px 4px;
 }
-.form-group span.form-control-feedback {
+.search-word span.form-control-feedback {
   position: absolute;
   top: -1px;
   right: -2px;
@@ -97,4 +97,8 @@ div#content {
 .tag:hover {
     color: white;
     background-color: #c1bdbd;
+}
+
+.timeline-phases {
+  display: none;
 }

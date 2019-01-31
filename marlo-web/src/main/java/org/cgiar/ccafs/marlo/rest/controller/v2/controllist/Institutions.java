@@ -13,7 +13,7 @@
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
 
-package org.cgiar.ccafs.marlo.rest.controller.v2.todo;
+package org.cgiar.ccafs.marlo.rest.controller.v2.controllist;
 
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionLocationManager;
@@ -61,7 +61,7 @@ import org.springframework.web.bind.annotation.RestController;
 import springfox.documentation.annotations.ApiIgnore;
 
 @RestController
-@Api(tags = "_Institutions")
+@Api(tags = "Institutions Lists")
 public class Institutions {
 
 	private static final Logger LOG = LoggerFactory.getLogger(Institutions.class);
@@ -102,7 +102,7 @@ public class Institutions {
 	}
 
 	@ApiIgnore
-	@RequiresPermissions(Permission.INSTITUTIONS_CREATE_REST_API_PERMISSION)
+	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
 	@RequestMapping(value = "/{globalUnit}/institutions", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<InstitutionDTO> createInstitution(@PathVariable String globalUnit,
 			@Valid @RequestBody InstitutionDTO institutionDTO) {
@@ -165,9 +165,8 @@ public class Institutions {
 		return ResponseEntity.ok().build();
 	}
 
-	@ApiIgnore
 	@ApiOperation(value = "View a List of Institutions", response = InstitutionDTO.class, responseContainer = "List")
-	@RequiresPermissions(Permission.INSTITUTIONS_READ_REST_API_PERMISSION)
+	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
 	@RequestMapping(value = "/institutions", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public List<InstitutionDTO> getAllInstitutions() {
 		LOG.debug("REST request to get Institutions");
@@ -178,9 +177,8 @@ public class Institutions {
 		return institutionDTOs;
 	}
 
-	@ApiIgnore
 	@ApiOperation(value = "View a List of Institution Types", response = InstitutionTypeDTO.class, responseContainer = "List")
-	@RequiresPermissions(Permission.INSTITUTIONS_READ_REST_API_PERMISSION)
+	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
 	@RequestMapping(value = "/institutionTypes", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public List<InstitutionTypeDTO> getAllInstitutionsTypes() {
 		LOG.debug("REST request to get Institution Types");
@@ -198,9 +196,8 @@ public class Institutions {
 		return user;
 	}
 
-	@ApiIgnore
 	@ApiOperation(value = "Search an Institution with an ID", response = InstitutionDTO.class)
-	@RequiresPermissions(Permission.INSTITUTIONS_READ_REST_API_PERMISSION)
+	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
 	@RequestMapping(value = "/institution/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<InstitutionDTO> getInstitution(@PathVariable Long id) {
 		LOG.debug("REST request to get Institution : {}", id);
