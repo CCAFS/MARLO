@@ -271,7 +271,7 @@ public class CRPStaffingAction extends BaseAction {
         && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue() && c.isActive())
       .collect(Collectors.toList());
     liaisonInstitutions.addAll(loggedCrp.getLiaisonInstitutions().stream()
-      .filter(c -> c.getCrpProgram() == null && c.getAcronym().equals("PMU") && c.isActive())
+      .filter(c -> c.getCrpProgram() == null && c.getAcronym() != null && c.getAcronym().equals("PMU") && c.isActive())
       .collect(Collectors.toList()));
     liaisonInstitutions.sort(Comparator.comparing(LiaisonInstitution::getAcronym));
     powbCrpStaffingCategories = new ArrayList<>();
@@ -438,7 +438,8 @@ public class CRPStaffingAction extends BaseAction {
         Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.LIAISON_INSTITUTION_REQUEST_ID)));
     } catch (NumberFormatException e) {
       List<LiaisonInstitution> pmuList = loggedCrp.getLiaisonInstitutions().stream()
-        .filter(c -> c.getCrpProgram() == null && c.getAcronym().equals("PMU") && c.isActive())
+        .filter(
+          c -> c.getCrpProgram() == null && c.getAcronym() != null && c.getAcronym().equals("PMU") && c.isActive())
         .collect(Collectors.toList());
       if (pmuList != null && !pmuList.isEmpty()) {
         liaisonInstitutionID = pmuList.get(0).getId();
@@ -483,7 +484,7 @@ public class CRPStaffingAction extends BaseAction {
 
   private void setPowbSynthesisIdParameter() {
     List<LiaisonInstitution> pmuList = loggedCrp.getLiaisonInstitutions().stream()
-      .filter(c -> c.getCrpProgram() == null && c.getAcronym().equals("PMU") && c.isActive())
+      .filter(c -> c.getCrpProgram() == null && c.getAcronym() != null && c.getAcronym().equals("PMU") && c.isActive())
       .collect(Collectors.toList());
     if (pmuList != null && !pmuList.isEmpty()) {
       Long liaisonInstitutionID = pmuList.get(0).getId();

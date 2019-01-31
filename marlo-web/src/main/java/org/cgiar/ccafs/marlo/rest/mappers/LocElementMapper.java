@@ -19,7 +19,9 @@ import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.rest.dto.LocElementDTO;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
+import org.mapstruct.Mappings;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
@@ -27,11 +29,24 @@ import org.mapstruct.MappingTarget;
 @Mapper(componentModel = "jsr330")
 public interface LocElementMapper {
 
-  public abstract LocElement locElementDTOToLocElement(LocElementDTO locElement);
+	@Mappings({ @Mapping(source = "locElement.code", target = "isoNumeric") })
+	/*
+	 * @Mappings({ @Mapping(source = "locElement.code", target = "isoNumeric"),
+	 * 
+	 * @Mapping(source = "locElement.region", target = "locElement") })
+	 */
+	public abstract LocElement locElementDTOToLocElement(LocElementDTO locElement);
 
-  public abstract LocElementDTO locElementToLocElementDTO(LocElement locElement);
+	/*
+	 * @Mappings({ @Mapping(source = "locElement.isoNumeric", target = "code"),
+	 * 
+	 * @Mapping(source = "locElement.locElement", target = "region") })
+	 */
+	@Mappings({ @Mapping(source = "locElement.isoNumeric", target = "code"),
+			@Mapping(source = "locElement.locElement", target = "region") })
+	public abstract LocElementDTO locElementToLocElementDTO(LocElement locElement);
 
-  public abstract LocElement updateLocElementFromLocElementDto(LocElementDTO locElementDTO,
-    @MappingTarget LocElement locElement);
+	public abstract LocElement updateLocElementFromLocElementDto(LocElementDTO locElementDTO,
+			@MappingTarget LocElement locElement);
 
 }
