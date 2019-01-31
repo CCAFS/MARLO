@@ -95,7 +95,7 @@ public class ProjectLP6Validator extends BaseValidator {
     // Validate Geographic Scope Narrative
     if (!(this.isValidString(projectLp6Contribution.getGeographicScopeNarrative())
       && this.wordCount(projectLp6Contribution.getGeographicScopeNarrative()) <= 100)) {
-      action.addMessage(action.getText("projects.LP6Contribution.geographicScopeNarrative"));
+      action.addMessage(action.getText("projects.LP6Contribution.geographicScopeNarrative.readText"));
       action.getInvalidFields().put("input-project.projectLp6Contribution.geographicScopeNarrative",
         InvalidFieldsMessages.EMPTYFIELD);
     }

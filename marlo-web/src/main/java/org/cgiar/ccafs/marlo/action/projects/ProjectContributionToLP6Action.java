@@ -30,6 +30,7 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableInfo;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.Project;
+import org.cgiar.ccafs.marlo.data.model.ProjectInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectLp6Contribution;
 import org.cgiar.ccafs.marlo.data.model.ProjectLp6ContributionDeliverable;
 import org.cgiar.ccafs.marlo.security.Permission;
@@ -44,6 +45,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -214,12 +216,16 @@ public class ProjectContributionToLP6Action extends BaseAction {
     project = projectManager.getProjectById(projectID);
 
     // We check that you have a TRANSACTION_ID to know if it is history version
-    if (this.getRequest().getParameter(APConstants.TRANSACTION_ID) != null) {
-      transaction = StringUtils.trim(this.getRequest().getParameter(APConstants.TRANSACTION_ID));
+    Boolean hasTransaction = false;
+    String transactionID = this.getRequest().getParameter(APConstants.TRANSACTION_ID);
+
+    if (transactionID != null) {
+      transaction = StringUtils.trim(transactionID);
       Project history = (Project) auditLogManager.getHistory(transaction);
 
       if (history != null) {
         project = history;
+        hasTransaction = true;
       } else {
         this.transaction = null;
 
@@ -233,7 +239,7 @@ public class ProjectContributionToLP6Action extends BaseAction {
     if (project != null) {
       Path path = this.getAutoSaveFilePath();
 
-      if (path.toFile().exists() && this.getCurrentUser().isAutoSave()) {
+      if (path.toFile().exists() && this.getCurrentUser().isAutoSave() && !hasTransaction) {
 
         // Autosave File
         BufferedReader reader = null;
@@ -281,11 +287,24 @@ public class ProjectContributionToLP6Action extends BaseAction {
         this.setDraft(true);
       } else {
         this.setDraft(false);
+
+        // Load the DB information and adjust it to the structures with which the front end
+        Project projectDb = projectManager.getProjectById(project.getId());
+        if (project.getProjectInfo() == null) {
+          project.setProjectInfo(new ProjectInfo());
+        }
+        project.getProjectInfo().setPhase(projectDb.getProjecInfoPhase(this.getActualPhase()).getPhase());
+        project.getProjectInfo()
+          .setProjectEditLeader(projectDb.getProjecInfoPhase(this.getActualPhase()).isProjectEditLeader());
+        project.getProjectInfo()
+          .setAdministrative(projectDb.getProjecInfoPhase(this.getActualPhase()).getAdministrative());
+        project.setProjectInfo(project.getProjecInfoPhase(this.getActualPhase()));
+
         /*
          * Get the actual projectLp6Contribution
          */
-        project.setProjectLp6Contribution(projectLp6ContributionManager.findAll().stream().filter(c -> c.isActive()
-          && c.getProject().getId() == projectID && c.getPhase().getId() == this.getActualPhase().getId())
+        project.setProjectLp6Contribution(project.getProjectLp6Contributions().stream()
+          .filter(c -> c.isActive() && c.getPhase().getId() == this.getActualPhase().getId())
           .collect(Collectors.toList()).get(0));
 
         if (project.getProjectLp6Contribution() != null) {
@@ -294,8 +313,16 @@ public class ProjectContributionToLP6Action extends BaseAction {
             project.getProjectLp6Contribution().setDeliverables(new ArrayList<>());
           }
           List<ProjectLp6ContributionDeliverable> deliverables =
-            projectLp6ContributionDeliverableManager.getProjectLp6ContributionDeliverablebyPhase(
-              project.getProjectLp6Contribution().getId(), this.getActualPhase().getId());
+            project.getProjectLp6Contribution().getProjectLp6ContributionDeliverable().stream()
+              .filter(ld -> ld.isActive() && ld.getPhase().equals(this.getActualPhase())).collect(Collectors.toList());
+          for (ProjectLp6ContributionDeliverable projectLp6ContributionDeliverable : deliverables) {
+            if (projectLp6ContributionDeliverable.getDeliverable() != null
+              && projectLp6ContributionDeliverable.getDeliverable().getId() != null) {
+              projectLp6ContributionDeliverable.setDeliverable(
+                deliverableManager.getDeliverableById(projectLp6ContributionDeliverable.getDeliverable().getId()));
+            }
+          }
+
           project.getProjectLp6Contribution().getDeliverables().addAll(deliverables);
 
         }
@@ -348,6 +375,7 @@ public class ProjectContributionToLP6Action extends BaseAction {
       this.saveProjectDeliverables();
 
       projectLp6ContributionManager.saveProjectLp6Contribution(project.getProjectLp6Contribution());
+
       project.getProjectLp6Contributions().add(project.getProjectLp6Contribution());
       Path path = this.getAutoSaveFilePath();
 
@@ -359,7 +387,7 @@ public class ProjectContributionToLP6Action extends BaseAction {
        */
 
       this.setModificationJustification(project);
-      // projectManager.saveProject(project, this.getActionName(), relationsName, this.getActualPhase());
+      projectManager.saveProject(project, this.getActionName(), relationsName, this.getActualPhase());
 
       if (path.toFile().exists()) {
         path.toFile().delete();
@@ -411,7 +439,7 @@ public class ProjectContributionToLP6Action extends BaseAction {
           }
         }
       }
-
+      project.getProjectLp6Contribution().setProjectLp6ContributionDeliverable(new HashSet<>());
       for (ProjectLp6ContributionDeliverable contributionDeliverables : project.getProjectLp6Contribution()
         .getDeliverables()) {
         if (contributionDeliverables.getId() == null) {
