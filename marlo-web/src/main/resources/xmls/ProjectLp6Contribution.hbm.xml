@@ -41,12 +41,6 @@
 			<column name="modified_by" />
 		</many-to-one>
 
-		<many-to-one name="geographicScope"
-			class="org.cgiar.ccafs.marlo.data.model.RepIndGeographicScope"
-			fetch="select">
-			<column name="geographic_scope_id" />
-		</many-to-one>
-
 		<property name="narrative" type="string">
 			<column name="narrative" sql-type="TEXT" not-null="true" />
 		</property>
@@ -111,17 +105,6 @@
 			</key>
 			<one-to-many
 				class="org.cgiar.ccafs.marlo.data.model.ProjectLp6ContributionDeliverable"
-				embed-xml="true" not-found="exception" />
-		</set>
-		<set embed-xml="true" fetch="select" inverse="true" lazy="true"
-			mutable="true" name="lp6ContributionGeographicScopes"
-			optimistic-lock="true" sort="unsorted"
-			table="lp6_contribution_geographic_scope">
-			<key on-delete="noaction">
-				<column name="lp6_contribution_id" />
-			</key>
-			<one-to-many
-				class="org.cgiar.ccafs.marlo.data.model.Lp6ContributionGeographicScope"
 				embed-xml="true" not-found="exception" />
 		</set>
 	</class>

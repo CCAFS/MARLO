@@ -329,8 +329,7 @@
     <mapping resource="xmls/ProjectPolicyCrps.hbm.xml"/>
     <mapping resource="xmls/ProjectPolicySubIdos.hbm.xml"/>
     <mapping resource="xmls/ProjectPolicyCrossCuttingMarkers.hbm.xml"/>                    
-    <mapping resource="xmls/ProjectLp6Contribution.hbm.xml"/>
-    <mapping resource="xmls/Lp6ContributionGeographicScope.hbm.xml"/>   
+    <mapping resource="xmls/ProjectLp6Contribution.hbm.xml"/> 
     <mapping resource="xmls/ProjectLp6ContributionDeliverables.hbm.xml"/>   
     
 	</session-factory>

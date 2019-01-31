@@ -71,8 +71,6 @@ public class ProjectLP6Validator extends BaseValidator {
     }
 
     this.validateContributionLp6(action, projectLp6Contribution);
-    this.validateContributionLp6Locations(action, projectLp6Contribution);
-
 
     if (!action.getFieldErrors().isEmpty()) {
       action.addActionError(action.getText("saving.fields.required"));
@@ -183,36 +181,5 @@ public class ProjectLP6Validator extends BaseValidator {
     }
 
   }
-
-  private void validateContributionLp6Locations(BaseAction action, ProjectLp6Contribution projectLp6Contribution) {
-    // Deliverable Locations
-    if (projectLp6Contribution.getGeographicScope() != null
-      && projectLp6Contribution.getGeographicScope().getId() != null
-      && projectLp6Contribution.getGeographicScope().getId() != -1
-      && !projectLp6Contribution.getGeographicScope().getId().equals(action.getReportingIndGeographicScopeGlobal())) {
-
-
-      if (projectLp6Contribution.getGeographicScope().getId().equals(action.getReportingIndGeographicScopeRegional())) {
-        if (projectLp6Contribution.getRegions() == null || projectLp6Contribution.getRegions().isEmpty()) {
-          action.addMessage(action.getText("projects.LP6Contribution.region"));
-          action.getInvalidFields().put("list-project.projectLp6Contribution.regions",
-            InvalidFieldsMessages.EMPTYFIELD);
-        }
-      }
-
-      if (projectLp6Contribution.getGeographicScope().getId()
-        .equals(action.getReportingIndGeographicScopeMultiNational())
-        || projectLp6Contribution.getGeographicScope().getId().equals(action.getReportingIndGeographicScopeNational())
-        || projectLp6Contribution.getGeographicScope().getId()
-          .equals(action.getReportingIndGeographicScopeSubNational())) {
-        if (projectLp6Contribution.getCountriesIds() == null || projectLp6Contribution.getCountriesIds().isEmpty()) {
-          action.addMessage(action.getText("projects.LP6Contribution.countries"));
-          action.getInvalidFields().put("input-project.projectLp6Contribution.countriesIds",
-            InvalidFieldsMessages.EMPTYFIELD);
-        }
-      }
-    }
-  }
-
 
 }
