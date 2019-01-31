@@ -131,7 +131,7 @@
           
           [#-- Top Five Contributing Organizations --]
           <div class="form-group"">
-            [@customForm.elementsListComponent name="innovation.projectInnovationInfo.contributingOrganizations" elementType="" elementList="" label="projectInnovations.contributingOrganizations"  listName="intitutions" keyFieldName="id" displayFieldName="name"/]
+            [@customForm.elementsListComponent name="innovation.projectInnovationContributingOrganization" elementType="" elementList="" label="projectInnovations.contributingOrganizations"  listName="institutions" keyFieldName="id" displayFieldName="name"/]
           </div>
           
           [#-- Novel or Adaptive research --]

@@ -65,5 +65,8 @@
         <property name="year" type="java.lang.Long">
             <column name="year" />
         </property>
+        <many-to-one name="leadOrganization" class="org.cgiar.ccafs.marlo.data.model.Institution" fetch="select">
+            <column name="lead_organization_id" />
+        </many-to-one>
     </class>
 </hibernate-mapping>
