@@ -92,3 +92,8 @@ i.indicatorText {
 .contributionNarrative {
   margin-bottom: 18px;
 }
+
+#menu-contributionsLP6 {
+  background: #ffffff !important;
+  opacity: 0.5;
+}
