@@ -271,6 +271,22 @@ public class ProjectInnovationValidator extends BaseValidator {
         InvalidFieldsMessages.EMPTYFIELD);
     }
 
+    // Validate lead organization
+    if (projectInnovation.getProjectInnovationInfo().getLeadOrganization() == null) {
+      action.addMessage(action.getText("projectInnovations.leadOrganization"));
+      action.addMissingField("projectInnovations.leadOrganization");
+      action.getInvalidFields().put("list-innovation.projectInnovationInfo.leadOrganization.id",
+        action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Crps"}));
+    }
+
+    // Validate contribution organizations
+    if (projectInnovation.getProjectInnovationContributingOrganization() == null) {
+      action.addMessage(action.getText(action.getText("projectInnovations.contributingOrganizations")));
+      action.addMissingField("projectInnovations.contributingOrganizations");
+      action.getInvalidFields().put("list-innovation.projectInnovationContributingOrganization",
+        action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Crps"}));
+    }
+
     // Validate Evidence Link (URL)
     if (!this.isValidString(projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getEvidenceLink())
       && !this.isValidUrl(projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getEvidenceLink())) {
