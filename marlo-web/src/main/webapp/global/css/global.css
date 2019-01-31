@@ -286,10 +286,16 @@ span.badge.fieldError {
   min-height: 400px;
 }
 
-textarea.fieldError, input.fieldError, textarea.fieldError:focus, input.fieldError:focus, div.fieldError, label.fieldError {
+textarea.fieldError, input.fieldError, textarea.fieldError:focus, input.fieldError:focus{
   border-color: #F44 !important;
   background-color: #FFFAFA;
   color: #EE1D1D !important;
+}
+ 
+div.fieldError, label.fieldError {
+  border-color: #F44 !important; 
+  color: #EE1D1D !important;
+  font-weight: 600 !important;
 }
 
 .fieldFocus {
