@@ -20,19 +20,19 @@ import io.swagger.annotations.ApiModelProperty;
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  */
-public class SrfSloIndicatorTargetDTO {
+public class SrfSloTargetDTO {
 
 	@ApiModelProperty(notes = "SLO target indicator code")
 	private String code;
+
+	@ApiModelProperty(notes = "SLO target indicator year")
+	private String year;
 
 	@ApiModelProperty(notes = "SLO target indicator narrative")
 	private String narrative;
 
 	@ApiModelProperty(notes = "SLO of target indicator ")
 	private SrfSloDTO srfSloDTO;
-
-	@ApiModelProperty(notes = "SLO target indicator year")
-	private String year;
 
 	public String getCode() {
 		return this.code;

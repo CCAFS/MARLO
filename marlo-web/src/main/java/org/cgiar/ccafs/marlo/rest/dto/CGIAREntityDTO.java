@@ -19,9 +19,11 @@ import java.io.Serializable;
 
 import javax.validation.constraints.NotNull;
 
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
-public class GlobalUnitDTO implements Serializable {
+@ApiModel(description = "Official list of CGIAR Centers, CGIAR Research Programs (CRPs) and CGIAR Platforms (PTFs)")
+public class CGIAREntityDTO implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
@@ -38,7 +40,7 @@ public class GlobalUnitDTO implements Serializable {
 
 	@ApiModelProperty(notes = "CGIAR entity type")
 	@NotNull
-	private GlobalUnitTypeDTO globalUnitTypeDTO;
+	private CGIAREntityTypeDTO globalUnitTypeDTO;
 
 	public String getAcronym() {
 		return this.acronym;
@@ -46,6 +48,10 @@ public class GlobalUnitDTO implements Serializable {
 
 	public String getCode() {
 		return this.code;
+	}
+
+	public CGIAREntityTypeDTO getGlobalUnitTypeDTO() {
+		return this.globalUnitTypeDTO;
 	}
 
 	public String getName() {
@@ -60,16 +66,12 @@ public class GlobalUnitDTO implements Serializable {
 		this.code = code;
 	}
 
+	public void setGlobalUnitTypeDTO(CGIAREntityTypeDTO globalUnitTypeDTO) {
+		this.globalUnitTypeDTO = globalUnitTypeDTO;
+	}
+
 	public void setName(String name) {
 		this.name = name;
-	}
-
-	public GlobalUnitTypeDTO getGlobalUnitTypeDTO() {
-		return globalUnitTypeDTO;
-	}
-
-	public void setGlobalUnitTypeDTO(GlobalUnitTypeDTO globalUnitTypeDTO) {
-		this.globalUnitTypeDTO = globalUnitTypeDTO;
 	}
 
 }

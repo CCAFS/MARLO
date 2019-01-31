@@ -16,7 +16,7 @@
 package org.cgiar.ccafs.marlo.rest.mappers;
 
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
-import org.cgiar.ccafs.marlo.rest.dto.GlobalUnitDTO;
+import org.cgiar.ccafs.marlo.rest.dto.CGIAREntityDTO;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -37,14 +37,14 @@ import org.mapstruct.Mappings;
 @Mapper(componentModel = "jsr330")
 public interface GlobalUnitMapper {
 
-	public GlobalUnit globalUnitDTOToGlobalUnit(GlobalUnitDTO globalUnitDTO);
+	public GlobalUnit globalUnitDTOToGlobalUnit(CGIAREntityDTO globalUnitDTO);
 
 	@Mappings({ @Mapping(source = "globalUnit.smoCode", target = "code"),
 			@Mapping(source = "globalUnitType.id", target = "globalUnitTypeDTO.id"),
 			@Mapping(source = "globalUnitType.name", target = "globalUnitTypeDTO.name") })
-	public GlobalUnitDTO globalUnitToGlobalUnitDTO(GlobalUnit globalUnit);
+	public CGIAREntityDTO globalUnitToGlobalUnitDTO(GlobalUnit globalUnit);
 
-	public GlobalUnit updateGlobalUnitFromGlobalUnitDto(GlobalUnitDTO globalUnitDTO,
+	public GlobalUnit updateGlobalUnitFromGlobalUnitDto(CGIAREntityDTO globalUnitDTO,
 			@MappingTarget GlobalUnit globalUnit);
 
 }

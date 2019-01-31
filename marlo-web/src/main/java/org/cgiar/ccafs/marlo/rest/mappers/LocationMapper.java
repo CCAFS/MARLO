@@ -29,7 +29,6 @@ import org.mapstruct.Mappings;
 @Mapper(componentModel = "jsr330")
 
 public interface LocationMapper {
-
 	@Mappings({ @Mapping(source = "code", target = "isoNumeric") })
 	public abstract LocElement countryDTOToLocElement(CountryDTO countryDTO);
 
@@ -37,7 +36,7 @@ public interface LocationMapper {
 			@Mapping(source = "locElement", target = "regionDTO") })
 	public abstract CountryDTO locElementToCountryDTO(LocElement locElement);
 
-	@Mappings({ @Mapping(source = "isoNumeric", target = "code"),
+	@Mappings({ @Mapping(source = "isoNumeric", target = "UM49Code"),
 			@Mapping(source = "locElement", target = "parentRegion") })
 	public abstract RegionDTO locElementToRegionDTO(LocElement regElement);
 

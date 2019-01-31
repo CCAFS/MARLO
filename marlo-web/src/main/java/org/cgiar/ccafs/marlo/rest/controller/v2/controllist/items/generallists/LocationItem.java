@@ -83,6 +83,23 @@ public class LocationItem<T> {
 	}
 
 	/**
+	 * Get the country by Alpha2 ISO Code
+	 * 
+	 * @param alpha2 ISO code
+	 * @return a List of LocElementDTO with all LocElements Items.
+	 */
+	public ResponseEntity<CountryDTO> getContryByAlpha2ISOCode(String ISOCode) {
+		LocElement locElement = this.locElementManager.getLocElementByISOCode(ISOCode.toUpperCase());
+		ResponseEntity<CountryDTO> response;
+		if (locElement != null && locElement.getLocElementType().getId() == 2) {
+			response = new ResponseEntity<>(this.locationMapper.locElementToCountryDTO(locElement), HttpStatus.OK);
+		} else {
+			response = new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
+		return response;
+	}
+
+	/**
 	 * Get the country by numeric ISO Code
 	 * 
 	 * @param Numeric iso code

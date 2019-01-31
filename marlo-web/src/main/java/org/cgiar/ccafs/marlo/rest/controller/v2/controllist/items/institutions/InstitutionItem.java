@@ -24,6 +24,7 @@ import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.PartnerRequest;
 import org.cgiar.ccafs.marlo.data.model.User;
+import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.Institutions;
 import org.cgiar.ccafs.marlo.rest.dto.InstitutionDTO;
 import org.cgiar.ccafs.marlo.rest.dto.PartnerRequestDTO;
 import org.cgiar.ccafs.marlo.rest.mappers.InstitutionMapper;
@@ -35,18 +36,28 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 @Named
+@PropertySource("classpath:clarisa.properties")
 public class InstitutionItem<T> {
+
+	private static final Logger LOG = LoggerFactory.getLogger(Institutions.class);
 
 	private InstitutionManager institutionManager;
 	private LocElementManager locElementManager;
 	private InstitutionMapper institutionMapper;
 	private PartnerRequestManager partnerRequestManager;
 	private GlobalUnitManager globalUnitManager;
+
+	@Value("${table1.tag}")
+	private String table1;
 
 	@Inject
 	public InstitutionItem(InstitutionManager institutionManager, InstitutionMapper institutionMapper,
@@ -104,6 +115,8 @@ public class InstitutionItem<T> {
 	 */
 	public ResponseEntity<InstitutionDTO> findInstitutionById(Long id) {
 		Institution institution = this.institutionManager.getInstitutionById(id);
+		LOG.debug("Titulo de la tabla1 : {}", this.table1);
+
 		return Optional.ofNullable(institution).map(this.institutionMapper::institutionToInstitutionDTO)
 				.map(result -> new ResponseEntity<>(result, HttpStatus.OK))
 				.orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
