@@ -237,6 +237,9 @@ public class ProjectContributionLp6SummaryAction extends BaseSummariesAction imp
         }
       }
 
+      if (deliverables != null && deliverables.isEmpty()) {
+        deliverables = null;
+      }
       geographicScope = projectLp6Contribution.getGeographicScopeNarrative() != null
         && !projectLp6Contribution.getGeographicScopeNarrative().trim().isEmpty()
           ? projectLp6Contribution.getGeographicScopeNarrative() : null;
@@ -339,15 +342,15 @@ public class ProjectContributionLp6SummaryAction extends BaseSummariesAction imp
 
   @Override
   public void prepare() {
-    projectLp6Contributions = new ArrayList<>();
+    this.setGeneralParameters();
 
-    if (projectLp6ContributionManager.findAll() != null && !projectLp6ContributionManager.findAll().isEmpty()) {
-      projectLp6Contributions = projectLp6ContributionManager.findAll().stream()
-        .filter(c -> c.isActive() && c.getPhase().getId() == this.getSelectedPhase().getId())
-        .collect(Collectors.toList());
+    projectLp6Contributions = projectLp6ContributionManager.findAll().stream()
+      .filter(c -> c.isActive() && c.getPhase().equals(this.getSelectedPhase())).collect(Collectors.toList());
+
+    if (projectLp6Contributions == null) {
+      projectLp6Contributions = new ArrayList<>();
     }
 
-    this.setGeneralParameters();
     // Calculate time to generate report
     startTime = System.currentTimeMillis();
     LOG.info(

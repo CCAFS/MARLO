@@ -129,7 +129,8 @@ public class EditProjectLp6ContributionInterceptor extends AbstractInterceptor i
     List<ProjectLp6Contribution> projectLp6Contributions = project.getProjectLp6Contributions().stream()
       .filter(lp6 -> lp6.isActive() && lp6.getPhase().equals(baseAction.getActualPhase())).collect(Collectors.toList());
 
-    if (projectLp6Contributions != null && !projectLp6Contributions.isEmpty()) {
+    if (projectLp6Contributions != null && !projectLp6Contributions.isEmpty()
+      && projectLp6Contributions.get(0).getContribution() != null && projectLp6Contributions.get(0).getContribution()) {
 
 
       // Get The Crp/Center/Platform where the project was created
