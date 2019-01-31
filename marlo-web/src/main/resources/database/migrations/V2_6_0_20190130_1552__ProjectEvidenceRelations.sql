@@ -75,10 +75,10 @@ SET FOREIGN_KEY_CHECKS=1;
 SET FOREIGN_KEY_CHECKS=0;
 
 -- ----------------------------
--- Table structure for project_expected_study_quiantifications
+-- Table structure for project_expected_study_quantifications
 -- ----------------------------
-DROP TABLE IF EXISTS `project_expected_study_quiantifications`;
-CREATE TABLE `project_expected_study_quiantifications` (
+DROP TABLE IF EXISTS `project_expected_study_quantifications`;
+CREATE TABLE `project_expected_study_quantifications` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `expected_id` bigint(20) DEFAULT NULL,
   `id_phase` bigint(20) DEFAULT NULL,
@@ -89,8 +89,8 @@ CREATE TABLE `project_expected_study_quiantifications` (
   PRIMARY KEY (`id`),
   KEY `expected_id` (`expected_id`),
   KEY `id_phase` (`id_phase`),
-  CONSTRAINT `project_expected_study_quiantifications_ibfk_1` FOREIGN KEY (`expected_id`) REFERENCES `project_expected_studies` (`id`),
-  CONSTRAINT `project_expected_study_quiantifications_ibfk_2` FOREIGN KEY (`id_phase`) REFERENCES `phases` (`id`)
+  CONSTRAINT `project_expected_study_quantifications_ibfk_1` FOREIGN KEY (`expected_id`) REFERENCES `project_expected_studies` (`id`),
+  CONSTRAINT `project_expected_study_quantifications_ibfk_2` FOREIGN KEY (`id_phase`) REFERENCES `phases` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- ----------------------------
