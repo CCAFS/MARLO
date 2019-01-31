@@ -24,6 +24,7 @@ import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationContributingOrganizationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationCountryManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationCrpManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationDeliverableManager;
@@ -49,6 +50,7 @@ import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationContributingOrganization;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCountry;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCrp;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationDeliverable;
@@ -113,10 +115,12 @@ public class ProjectInnovationAction extends BaseAction {
   private ProjectInnovationOrganizationManager projectInnovationOrganizationManager;
   private ProjectInnovationDeliverableManager projectInnovationDeliverableManager;
   private ProjectInnovationCountryManager projectInnovationCountryManager;
+  private ProjectInnovationContributingOrganizationManager projectInnovationContributingOrganizationManager;
   private RepIndOrganizationTypeManager repIndOrganizationTypeManager;
   private InstitutionManager institutionManager;
   private AuditLogManager auditLogManager;
   private DeliverableManager deliverableManager;
+
 
   // Variables
   private long projectID;
@@ -158,7 +162,8 @@ public class ProjectInnovationAction extends BaseAction {
     RepIndOrganizationTypeManager repIndOrganizationTypeManager, ProjectInnovationValidator validator,
     AuditLogManager auditLogManager, RepIndContributionOfCrpManager repIndContributionOfCrpManager,
     RepIndDegreeInnovationManager repIndDegreeInnovationManager, DeliverableManager deliverableManager,
-    InstitutionManager institutionManager) {
+    InstitutionManager institutionManager,
+    ProjectInnovationContributingOrganizationManager projectInnovationContributingOrganizationManager) {
     super(config);
     this.projectInnovationManager = projectInnovationManager;
     this.globalUnitManager = globalUnitManager;
@@ -185,6 +190,7 @@ public class ProjectInnovationAction extends BaseAction {
     this.repIndDegreeInnovationManager = repIndDegreeInnovationManager;
     this.deliverableManager = deliverableManager;
     this.institutionManager = institutionManager;
+    this.projectInnovationContributingOrganizationManager = projectInnovationContributingOrganizationManager;
   }
 
   /**
@@ -386,6 +392,27 @@ public class ProjectInnovationAction extends BaseAction {
           }
         }
 
+        // load contributionOrganization
+        if (innovation.getProjectInnovationContributingOrganization() != null
+          && !innovation.getProjectInnovationContributingOrganization().isEmpty()) {
+          for (ProjectInnovationContributingOrganization projectInnovationContributingOrganization : innovation
+            .getProjectInnovationContributingOrganization()) {
+            if (projectInnovationContributingOrganization.getInstitution() != null
+              && projectInnovationContributingOrganization.getInstitution().getId() != null) {
+
+              if (institutionManager
+                .getInstitutionById(projectInnovationContributingOrganization.getInstitution().getId()) != null) {
+                Institution institution = institutionManager
+                  .getInstitutionById(projectInnovationContributingOrganization.getInstitution().getId());
+                projectInnovationContributingOrganization.setInstitution(institution);
+                // projectInnovationContributingOrganization.getInstitution().get(this.getActualPhase());
+              }
+
+            }
+
+          }
+        }
+
       }
 
     } else {
@@ -443,6 +470,15 @@ public class ProjectInnovationAction extends BaseAction {
           }
         }
 
+        // Innovation Contributing Institutions List Autosave
+        if (innovation.getProjectInnovationContributingOrganization() != null) {
+          for (ProjectInnovationContributingOrganization projectInnovationContributingOrganization : innovation
+            .getProjectInnovationContributingOrganization()) {
+            projectInnovationContributingOrganization.setInstitution(institutionManager
+              .getInstitutionById(projectInnovationContributingOrganization.getInstitution().getId()));
+          }
+        }
+
         // Innovation Crp List Autosave
         if (innovation.getCrps() != null) {
           for (ProjectInnovationCrp projectInnovationCrp : innovation.getCrps()) {
@@ -480,6 +516,13 @@ public class ProjectInnovationAction extends BaseAction {
         if (innovation.getProjectInnovationDeliverables() != null) {
           innovation.setDeliverables(new ArrayList<>(innovation.getProjectInnovationDeliverables().stream()
             .filter(d -> d.isActive() && d.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
+        }
+
+        // Innovation Contributing organizations List
+        if (innovation.getProjectInnovationContributingOrganization() != null) {
+          innovation
+            .setContributingOrganizations(new ArrayList<>(innovation.getProjectInnovationContributingOrganization()
+              .stream().filter(d -> d.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
         }
 
         // Innovation Crp list
@@ -566,6 +609,10 @@ public class ProjectInnovationAction extends BaseAction {
         innovation.getDeliverables().clear();
       }
 
+      if (innovation.getContributingOrganizations() != null) {
+        innovation.getContributingOrganizations().clear();
+      }
+
       // HTTP Post info Values
       innovation.getProjectInnovationInfo().setGenderFocusLevel(null);
       innovation.getProjectInnovationInfo().setYouthFocusLevel(null);
@@ -577,6 +624,7 @@ public class ProjectInnovationAction extends BaseAction {
       innovation.getProjectInnovationInfo().setRepIndRegion(null);
       innovation.getProjectInnovationInfo().setRepIndContributionOfCrp(null);
       innovation.getProjectInnovationInfo().setRepIndDegreeInnovation(null);
+      innovation.getProjectInnovationInfo().setLeadOrganization(null);
     }
   }
 
@@ -592,6 +640,7 @@ public class ProjectInnovationAction extends BaseAction {
 
       this.saveOrganizations(innovationDB, phase);
       this.saveDeliverables(innovationDB, phase);
+      this.saveContributionOrganizations(innovationDB, phase);
       this.saveCrps(innovationDB, phase);
 
 
@@ -695,6 +744,12 @@ public class ProjectInnovationAction extends BaseAction {
           innovation.getProjectInnovationInfo().setRepIndDegreeInnovation(null);
         }
       }
+
+      if (innovation.getProjectInnovationInfo().getLeadOrganization() != null) {
+        if (innovation.getProjectInnovationInfo().getLeadOrganization().getId() == -1) {
+          innovation.getProjectInnovationInfo().setLeadOrganization(null);
+        }
+      }
       // End
 
       projectInnovationInfoManager.saveProjectInnovationInfo(innovation.getProjectInnovationInfo());
@@ -734,6 +789,56 @@ public class ProjectInnovationAction extends BaseAction {
       return NOT_AUTHORIZED;
     }
   }
+
+  /**
+   * Save Project Innovation contributing organizations
+   * 
+   * @param projectInnovation
+   * @param phase
+   */
+  public void saveContributionOrganizations(ProjectInnovation projectInnovation, Phase phase) {
+
+    // Search and deleted form Information
+    if (projectInnovation.getProjectInnovationContributingOrganization() != null
+      && projectInnovation.getProjectInnovationContributingOrganization().size() > 0) {
+
+      List<ProjectInnovationContributingOrganization> organizationPrev =
+        new ArrayList<>(projectInnovation.getProjectInnovationContributingOrganization().stream()
+          .filter(nu -> nu.isActive() && nu.getPhase().getId() == phase.getId()).collect(Collectors.toList()));
+
+      for (ProjectInnovationContributingOrganization innovationOrganization : organizationPrev) {
+        if (!innovation.getContributingOrganizations().contains(innovationOrganization)) {
+          projectInnovationContributingOrganizationManager
+            .deleteProjectInnovationContributingOrganization(innovationOrganization.getId());
+        }
+      }
+    }
+
+    // Save form Information
+    if (innovation.getContributingOrganizations() != null) {
+      for (ProjectInnovationContributingOrganization innovationOrganization : innovation
+        .getContributingOrganizations()) {
+        if (innovationOrganization.getId() == null) {
+          ProjectInnovationContributingOrganization innovationOrganizationSave =
+            new ProjectInnovationContributingOrganization();
+          innovationOrganizationSave.setProjectInnovation(projectInnovation);
+          innovationOrganizationSave.setPhase(phase);
+
+          Institution institution =
+            institutionManager.getInstitutionById(innovationOrganization.getInstitution().getId());
+
+          innovationOrganizationSave.setInstitution(institution);
+
+
+          projectInnovationContributingOrganizationManager
+            .saveProjectInnovationContributingOrganization(innovationOrganizationSave);
+          // This is to add innovationOrganizationSave to generate correct auditlog.
+          innovation.getProjectInnovationContributingOrganization().add(innovationOrganizationSave);
+        }
+      }
+    }
+  }
+
 
   /**
    * Save Project Innovation Crp Information
@@ -776,7 +881,6 @@ public class ProjectInnovationAction extends BaseAction {
       }
     }
   }
-
 
   public void saveDeliverables(ProjectInnovation projectInnovation, Phase phase) {
 
