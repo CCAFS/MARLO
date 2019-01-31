@@ -131,14 +131,13 @@
           
           [#-- Top Five Contributing Organizations --]
           <div class="form-group"">
-            [@customForm.elementsListComponent name="innovation.projectInnovationContributingOrganization" elementType="" elementList="" label="projectInnovations.contributingOrganizations"  listName="institutions" keyFieldName="id" displayFieldName="name"/]
+            [@customForm.elementsListComponent name="innovation.projectInnovationContributingOrganization" elementType="institution" elementList=[] label="projectInnovations.contributingOrganizations"  listName="institutions" keyFieldName="id" displayFieldName="name"/]
           </div>
           
           [#-- Novel or Adaptive research --]
           <div class="form-group">
             [@customForm.textArea name="innovation.projectInnovationInfo.novelOrAdaptive" i18nkey="projectInnovations.novelOrAdaptative" placeholder="" className="" required=false editable=editable /]
           </div>
-          
           [#-- Specify next user organizational type (Only if stage 4) --]
           <div class="form-group stageFourBlock" style="display:${isStageFour?string('block','none')}">
             [@customForm.elementsListComponent name="innovation.organizations" elementType="repIndOrganizationType" elementList=innovation.organizations label="projectInnovations.nextUserOrganizationalType"  listName="organizationTypeList" keyFieldName="id" displayFieldName="name"/]
