@@ -31,39 +31,35 @@
   </div>
 [/#macro]
 
-[#macro deliverableCrossCuttingMacro label="deliverable.crossCuttingDimensions" ]
+[#macro deliverableCrossCuttingMacroOld label="deliverable.crossCuttingDimensions" ]
   [#-- Does this deliverable have a cross-cutting dimension --]
   <div class="form-group">
     <label for="">[@customForm.text name=label readText=!editable/] [@customForm.req required=editable/]</label>
-    <div class="row">
-      <div class="col-md-12">
-        [#assign crossCuttingMarkers = [
-            { "id":"gender",    "name": "crossCuttingGender",   "scoreName": "crossCuttingScoreGender" },
-            { "id":"youth",     "name": "crossCuttingYouth",    "scoreName": "crossCuttingScoreYouth" },
-            { "id":"capacity",  "name": "crossCuttingCapacity", "scoreName": "crossCuttingScoreCapacity" },
-            { "id":"climate",   "name": "crossCuttingClimate",  "scoreName": "crossCuttingScoreClimate" },
-            { "id":"na",        "name": "crossCuttingNa" }
-          ] 
-        /]
-        [#if editable]
-          [#list crossCuttingMarkers as marker]
-            <label class="checkbox-inline"><input type="checkbox" name="deliverable.deliverableInfo.${marker.name}" class="[#if marker.id != "na"]crosscutingDimension[/#if]" id="${marker.id}" value="true" [#if (deliverable.deliverableInfo[marker.name])!false ]checked="checked"[/#if]> [@s.text name="crossCuttingMarker.${marker.id}" /]</label>
-          [/#list]
-        [#else]
-          [#assign checkedItems = false /]
-          [#list crossCuttingMarkers as marker]
-            [#if (deliverable.deliverableInfo[marker.name])!false ]
-              <div class="${customForm.changedField('deliverable.deliverableInfo.${marker.name}')}">
-                <p class="checked"> [@s.text name="crossCuttingMarker.${marker.id}" /]</p> <input type="hidden" name="deliverable.deliverableInfo.${marker.name}" value="true">
-              </div>
-              [#assign checkedItems = true /]
-            [/#if] 
-          [/#list]
-          [#-- Message when there's nothing to show -> "Prefilled if avaible" --]
-          [#if !checkedItems]<div class="input"><p>[@s.text name="form.values.fieldEmpty" /]</p></div>[/#if]
-        [/#if]
-      </div>
-    </div>
+    [#assign crossCuttingMarkers = [
+        { "id":"gender",    "name": "crossCuttingGender",   "scoreName": "crossCuttingScoreGender" },
+        { "id":"youth",     "name": "crossCuttingYouth",    "scoreName": "crossCuttingScoreYouth" },
+        { "id":"capacity",  "name": "crossCuttingCapacity", "scoreName": "crossCuttingScoreCapacity" },
+        { "id":"climate",   "name": "crossCuttingClimate",  "scoreName": "crossCuttingScoreClimate" },
+        { "id":"na",        "name": "crossCuttingNa" }
+      ] 
+    /]
+    [#if editable]
+      [#list crossCuttingMarkers as marker]
+        <label class="checkbox-inline"><input type="checkbox" name="deliverable.deliverableInfo.${marker.name}" class="[#if marker.id != "na"]crosscutingDimension[/#if]" id="${marker.id}" value="true" [#if (deliverable.deliverableInfo[marker.name])!false ]checked="checked"[/#if]> [@s.text name="crossCuttingMarker.${marker.id}" /]</label>
+      [/#list]
+    [#else]
+      [#assign checkedItems = false /]
+      [#list crossCuttingMarkers as marker]
+        [#if (deliverable.deliverableInfo[marker.name])!false ]
+          <div class="${customForm.changedField('deliverable.deliverableInfo.${marker.name}')}">
+            <p class="checked"> [@s.text name="crossCuttingMarker.${marker.id}" /]</p> <input type="hidden" name="deliverable.deliverableInfo.${marker.name}" value="true">
+          </div>
+          [#assign checkedItems = true /]
+        [/#if] 
+      [/#list]
+      [#-- Message when there's nothing to show -> "Prefilled if avaible" --]
+      [#if !checkedItems]<div class="input"><p>[@s.text name="form.values.fieldEmpty" /]</p></div>[/#if]
+    [/#if]
   </div>
   
   [#-- If gender dimension, select with ones --]
@@ -116,6 +112,26 @@
         </span>
       [/#list]
     [/#if]
+  </div>
+[/#macro]
+
+[#macro deliverableCrossCuttingMacro label="deliverable.crossCuttingDimensions" ]
+  [#-- CGIAR Cross-cutting Markers  --]
+  <div class="form-group">
+    <h5 class="labelheader">[@s.text name=label /]</h5>
+    <div class="row">
+      [#list (cgiarCrossCuttingMarkers)![] as marker]
+        [#local customName = "deliverable.crossCuttingMarkers[${marker_index}]" /]
+        <div class="col-md-3">
+          [#local markerElement = (action.getDeliverableCrossCuttingMarker(marker.id))!{} ]
+          <input type="hidden"  name="${customName}.id" value="${(markerElement.id)!}"/>
+          <input type="hidden"  name="${customName}.cgiarCrossCuttingMarker.id" value="${marker.id}"/>
+          [@customForm.select   name="${customName}.repIndGenderYouthFocusLevel.id" value="${(markerElement.repIndGenderYouthFocusLevel.id)!-1}" className="setSelect2" i18nkey="${marker.name}" listName="focusLevels" keyFieldName="id"  displayFieldName="powbName" required=true editable=editable/]
+        </div>
+      [#else]
+        <p class="col-md-12">No cgiarCrossCuttingMarkers loaded</p>
+      [/#list]
+    </div>
   </div>
 [/#macro]
 
