@@ -394,20 +394,22 @@
     [#-- Private Option --]
     [#if isOutcomeCaseStudy]
     <div class="borderBox">
-      <label for="">[@s.text name="study.public" /]:[@customForm.helpLabel name="study.public.help" showIcon=false editable=editable/]</label> <br />
+      <label for="">[@s.text name="study.public" ][@s.param]${(element.projectExpectedStudyInfo.studyType.name)!}[/@][/@] 
+        [@customForm.helpLabel name="study.public.help" showIcon=false paramText="${(element.projectExpectedStudyInfo.studyType.name)!}" editable=editable/]
+      </label> <br />
       [#local isPublic = (element.projectExpectedStudyInfo.public == "true")!true /]
       [@customForm.radioFlat id="optionPublic-yes"  name="${customName}.projectExpectedStudyInfo.public" i18nkey="Yes"  value="true"  checked=isPublic  cssClass="radioType-optionPublic" cssClassLabel="font-normal radio-label-yes" editable=editable /] 
       [@customForm.radioFlat id="optionPublic-no"   name="${customName}.projectExpectedStudyInfo.public" i18nkey="No"   value="false" checked=!isPublic cssClass="radioType-optionPublic" cssClassLabel="font-normal radio-label-no"  editable=editable /] 
       
       <div class="optionPublicComponent form-group" style="display:${isPublic?string('block', 'none')}">         
         <br />
-       
         <div class="input-group">
           <span class="input-group-btn">
-            <button class="btn btn-default btn-sm" type="button"> <span class="glyphicon glyphicon-link"></span> Copy URL </button>
+            <button class="btn btn-default btn-sm copyButton" type="button"> <span class="glyphicon glyphicon-link"></span> Copy URL </button>
           </span>
-          <input type="text" class="form-control input-sm" value="${baseUrl}/projects/${crpSession}/studySummary.do?studyID=${(element.id)!}&cycle=Reporting&year=${(actualPhase.year)!}" readonly>
+          <input type="text" class="form-control input-sm urlInput" value="${baseUrl}/projects/${crpSession}/studySummary.do?studyID=${(element.id)!}&cycle=Reporting&year=${(actualPhase.year)!}" readonly>
         </div>
+        <div class="message text-center" style="display:none">Copied!</div>
       </div>
     </div>
     [/#if]

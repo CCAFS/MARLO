@@ -826,8 +826,8 @@ public class DeliverableValidator extends BaseValidator {
       if (deliverablePublicationMetadata != null && deliverablePublicationMetadata.getId() != null
         && deliverablePublicationMetadata.getId().intValue() != -1) {
 
-        // Validation of Volume or Issue or Pages
         if (action.hasDeliverableRule(deliverableInfo, APConstants.DELIVERABLE_RULE_JORNAL_ARTICLES)) {
+          // Validation of Volume or Issue or Pages
           if (!this.isValidString(deliverablePublicationMetadata.getVolume())
             && !this.isValidString(deliverablePublicationMetadata.getIssue())
             && !this.isValidString(deliverablePublicationMetadata.getPages())) {
