@@ -272,19 +272,30 @@ public class ProjectInnovationValidator extends BaseValidator {
     }
 
     // Validate lead organization
-    if (projectInnovation.getProjectInnovationInfo().getLeadOrganization() == null) {
-      action.addMessage(action.getText("projectInnovations.leadOrganization"));
+    if (projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getLeadOrganization() != null) {
+      if (projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getLeadOrganization().getId() == null
+        || projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getLeadOrganization()
+          .getId() == -1) {
+        action.addMessage(action.getText("Lead Organization"));
+        action.addMissingField("projectInnovations.leadOrganization");
+        action.getInvalidFields().put("input-innovation.projectInnovationInfo.leadOrganization.id",
+          InvalidFieldsMessages.EMPTYFIELD);
+      }
+    } else {
+      action.addMessage(action.getText("Lead Organization"));
       action.addMissingField("projectInnovations.leadOrganization");
-      action.getInvalidFields().put("list-innovation.projectInnovationInfo.leadOrganization.id",
-        action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Crps"}));
+      action.getInvalidFields().put("input-innovation.projectInnovationInfo.leadOrganization.id",
+        InvalidFieldsMessages.EMPTYFIELD);
     }
 
-    // Validate contribution organizations
-    if (projectInnovation.getProjectInnovationContributingOrganization() == null) {
-      action.addMessage(action.getText(action.getText("projectInnovations.contributingOrganizations")));
+    // Validate contributing organizations
+    if (projectInnovation.getContributingOrganizations() == null
+      || projectInnovation.getContributingOrganizations().isEmpty()) {
+      action.addMessage(action.getText(action.getText("Contributing organizations")));
       action.addMissingField("projectInnovations.contributingOrganizations");
-      action.getInvalidFields().put("list-innovation.projectInnovationContributingOrganization",
-        action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Crps"}));
+      action.getInvalidFields().put("input-innovation.contributingOrganizations", InvalidFieldsMessages.EMPTYFIELD);
+      action.getInvalidFields().put("list-innovation.contributingOrganizations",
+        action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Contributing organizations"}));
     }
 
     // Validate Evidence Link (URL)

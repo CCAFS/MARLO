@@ -471,9 +471,9 @@ public class ProjectInnovationAction extends BaseAction {
         }
 
         // Innovation Contributing Institutions List Autosave
-        if (innovation.getProjectInnovationContributingOrganization() != null) {
+        if (innovation.getContributingOrganizations() != null) {
           for (ProjectInnovationContributingOrganization projectInnovationContributingOrganization : innovation
-            .getProjectInnovationContributingOrganization()) {
+            .getContributingOrganizations()) {
             projectInnovationContributingOrganization.setInstitution(institutionManager
               .getInstitutionById(projectInnovationContributingOrganization.getInstitution().getId()));
           }
@@ -650,6 +650,7 @@ public class ProjectInnovationAction extends BaseAction {
       relationsName.add(APConstants.PROJECT_INNOVATION_ORGANIZATION_RELATION);
       relationsName.add(APConstants.PROJECT_INNOVATION_CRP_RELATION);
       relationsName.add(APConstants.PROJECT_DELIVERABLE_CRP_RELATION);
+      relationsName.add(APConstants.PROJECT_INNOVATION_CONTRIBUTING_ORGANIZATION_RELATION);
 
       innovation.setModificationJustification(this.getJustification());
 
@@ -816,8 +817,10 @@ public class ProjectInnovationAction extends BaseAction {
 
     // Save form Information
     if (innovation.getContributingOrganizations() != null) {
+      System.out.println("entri aqui");
       for (ProjectInnovationContributingOrganization innovationOrganization : innovation
         .getContributingOrganizations()) {
+        System.out.println("Holi");
         if (innovationOrganization.getId() == null) {
           ProjectInnovationContributingOrganization innovationOrganizationSave =
             new ProjectInnovationContributingOrganization();
