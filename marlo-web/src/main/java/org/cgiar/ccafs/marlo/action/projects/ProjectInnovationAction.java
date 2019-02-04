@@ -371,6 +371,13 @@ public class ProjectInnovationAction extends BaseAction {
             .getRepIndDegreeInnovationById(innovation.getProjectInnovationInfo().getRepIndDegreeInnovation().getId()));
         }
 
+        // load leadOrganization
+        if (innovation.getProjectInnovationInfo().getLeadOrganization() != null
+          && innovation.getProjectInnovationInfo().getLeadOrganization().getId() != null) {
+          innovation.getProjectInnovationInfo().setLeadOrganization(
+            institutionManager.getInstitutionById(innovation.getProjectInnovationInfo().getLeadOrganization().getId()));
+        }
+
         // load InnovationDeliverables
         if (innovation.getProjectInnovationDeliverables() != null
           && !innovation.getProjectInnovationDeliverables().isEmpty()) {
