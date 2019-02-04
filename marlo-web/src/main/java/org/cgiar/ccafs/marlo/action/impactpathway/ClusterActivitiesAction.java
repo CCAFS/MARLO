@@ -835,8 +835,8 @@ public class ClusterActivitiesAction extends BaseAction {
               if (!user.getUserRoles().contains(userRole)) {
                 userRoleManager.saveUserRole(userRole);
                 this.addCrpUser(userRole.getUser());
-                // this.notifyNewUserCreated(userRole.getUser());
-                // this.notifyRoleAssigned(userRole.getUser(), userRole.getRole(), crpClusterPreview);
+                this.notifyNewUserCreated(userRole.getUser());
+                this.notifyRoleAssigned(userRole.getUser(), userRole.getRole(), crpClusterPreview);
               }
 
 
