@@ -25,43 +25,34 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
 
   private ProjectInnovationInfo projectInnovationInfo;
 
-
   private Set<ProjectInnovationInfo> projectInnovationInfos = new HashSet<ProjectInnovationInfo>(0);
 
   private Set<SectionStatus> sectionStatuses = new HashSet<SectionStatus>(0);
-
 
   private Set<ProjectInnovationCountry> projectInnovationCountries = new HashSet<ProjectInnovationCountry>(0);
 
   private Set<ProjectInnovationContributingOrganization> projectInnovationContributingOrganization =
     new HashSet<ProjectInnovationContributingOrganization>(0);
 
-
   private Set<ProjectInnovationOrganization> projectInnovationOrganizations =
     new HashSet<ProjectInnovationOrganization>(0);
-
 
   private Set<ProjectInnovationDeliverable> projectInnovationDeliverables =
     new HashSet<ProjectInnovationDeliverable>(0);
 
-
   private Set<ProjectInnovationCrp> projectInnovationCrps = new HashSet<ProjectInnovationCrp>(0);
-
 
   private List<String> countriesIds = new ArrayList<>();
 
   private List<ProjectInnovationOrganization> organizations;
 
-
   private List<ProjectInnovationDeliverable> deliverables;
 
   private List<ProjectInnovationContributingOrganization> contributingOrganizations;
 
-
   private List<ProjectInnovationCrp> crps;
   private List<ProjectInnovationCountry> countries;
   private String countriesIdsText;
-
 
   public List<ProjectInnovationContributingOrganization> getContributingOrganizations() {
     return contributingOrganizations;
