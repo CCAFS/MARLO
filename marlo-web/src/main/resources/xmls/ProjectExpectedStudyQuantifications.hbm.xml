@@ -1,28 +1,45 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!-- Generated Jan 31, 2019 9:21:00 AM by Hibernate Tools 5.3.6.Final --><!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
-<hibernate-mapping auto-import="true" default-access="property" default-cascade="none" default-lazy="true">
-    <class catalog="marlo" dynamic-insert="false" dynamic-update="false" mutable="true" name="src.data.ProjectExpectedStudyQuantifications" optimistic-lock="version" polymorphism="implicit" select-before-update="false" table="project_expected_study_quantifications">
-        <id name="id" type="java.lang.Long">
-            <column name="id"/>
-            <generator class="identity"/>
-        </id>
-        <many-to-one class="src.data.Phases" embed-xml="true" fetch="select" insert="true" name="phases" not-found="exception" optimistic-lock="true" unique="false" update="true">
-            <column name="id_phase"/>
-        </many-to-one>
-        <many-to-one class="src.data.ProjectExpectedStudies" embed-xml="true" fetch="select" insert="true" name="projectExpectedStudies" not-found="exception" optimistic-lock="true" unique="false" update="true">
-            <column name="expected_id"/>
-        </many-to-one>
-        <property generated="never" lazy="false" name="typeQuantification" optimistic-lock="true" type="string" unique="false">
-            <column length="65535" name="type_quantification"/>
-        </property>
-        <property generated="never" lazy="false" name="number" optimistic-lock="true" type="java.lang.Long" unique="false">
-            <column name="number" precision="10" scale="0"/>
-        </property>
-        <property generated="never" lazy="false" name="targetUnit" optimistic-lock="true" type="string" unique="false">
-            <column length="65535" name="target_unit"/>
-        </property>
-        <property generated="never" lazy="false" name="comments" optimistic-lock="true" type="string" unique="false">
-            <column length="65535" name="comments"/>
-        </property>
-    </class>
+<hibernate-mapping auto-import="true"
+  default-access="property" default-cascade="none" default-lazy="true">
+  <class dynamic-insert="false" dynamic-update="false"
+    mutable="true"
+    name="org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyQuantification"
+    optimistic-lock="none" polymorphism="implicit"
+    select-before-update="false"
+    table="project_expected_study_quantifications">
+    <id name="id" type="java.lang.Long">
+      <column name="id" />
+      <generator class="identity" />
+    </id>
+    <many-to-one
+      class="org.cgiar.ccafs.marlo.data.model.Phase" embed-xml="true"
+      fetch="select" insert="true" name="phase" not-found="exception"
+      optimistic-lock="true" unique="false" update="true">
+      <column name="id_phase" />
+    </many-to-one>
+    <many-to-one class="org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy"
+      embed-xml="true" fetch="select" insert="true"
+      name="projectExpectedStudy" not-found="exception"
+      optimistic-lock="true" unique="false" update="true">
+      <column name="expected_id" />
+    </many-to-one>
+    <property generated="never" lazy="false"
+      name="typeQuantification" optimistic-lock="true" type="string"
+      unique="false">
+      <column length="65535" name="type_quantification" />
+    </property>
+    <property generated="never" lazy="false" name="number"
+      optimistic-lock="true" type="java.lang.Long" unique="false">
+      <column name="number" precision="10" scale="0" />
+    </property>
+    <property generated="never" lazy="false" name="targetUnit"
+      optimistic-lock="true" type="string" unique="false">
+      <column length="65535" name="target_unit" />
+    </property>
+    <property generated="never" lazy="false" name="comments"
+      optimistic-lock="true" type="string" unique="false">
+      <column length="65535" name="comments" />
+    </property>
+  </class>
 </hibernate-mapping>

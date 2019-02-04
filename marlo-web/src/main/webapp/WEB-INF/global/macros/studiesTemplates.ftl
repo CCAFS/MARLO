@@ -56,7 +56,10 @@
         [@customForm.textArea name="${customName}.projectExpectedStudyInfo.outcomestory" i18nkey="study.outcomestory" help="study.outcomestory.help" className="limitWords-400" helpIcon=false required=true editable=editable /]
       
         <br />
-        <label for="">[@s.text name="study.outcomestoryLinks" /]:[@customForm.req required=editable /][@customForm.helpLabel name="study.outcomestoryLinks.help" showIcon=false editable=editable/]</label>
+        <label for="">[@s.text name="study.outcomestoryLinks" /]:
+          [@customForm.req required=editable /]
+          [@customForm.helpLabel name="study.outcomestoryLinks.help" paramText="<a href='https://sites.google.com/cgxchange.org/cgiar-pbm-resources/' target='_blank'>here</a>" showIcon=false editable=editable/]
+        </label>
         <div class="linksBlock simpleBox">
           <div class="linksList">
             [#list (element.links)![{}] as link ]
