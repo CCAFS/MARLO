@@ -59,21 +59,6 @@
 		<property name="modificationJustification" type="string">
 			<column name="modification_justification" sql-type="TEXT" />
 		</property>
-		<property name="crossCuttingGender" type="java.lang.Boolean">
-			<column name="cross_cutting_gender" />
-		</property>
-		<property name="crossCuttingYouth" type="java.lang.Boolean">
-			<column name="cross_cutting_youth" />
-		</property>
-		<property name="crossCuttingCapacity" type="java.lang.Boolean">
-			<column name="cross_cutting_capacity" />
-		</property>
-		<property name="crossCuttingClimate" type="java.lang.Boolean">
-      <column name="cross_cutting_climate" />
-    </property>
-		<property name="crossCuttingNa" type="java.lang.Boolean">
-			<column name="cross_cutting_na" />
-		</property>
 		<property name="adoptedLicense" type="java.lang.Boolean">
 			<column name="adopted_license" />
 		</property>
@@ -85,19 +70,7 @@
 		</property>
 		<property name="allowModifications" type="java.lang.Boolean">
 			<column name="allow_modifications" />
-		</property>
-		<property name="crossCuttingScoreGender" type="java.lang.Long">
-			<column name="cross_cutting_score_gender" />
-		</property>
-		<property name="crossCuttingScoreYouth" type="java.lang.Long">
-			<column name="cross_cutting_score_youth" />
-		</property>
-		<property name="crossCuttingScoreCapacity" type="java.lang.Long">
-			<column name="cross_cutting_score_capacity" />
-		</property>
-		<property name="crossCuttingScoreClimate" type="java.lang.Long">
-      <column name="cross_cutting_score_climate" />
-    </property>
+		</property>		
 		<many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User"
 			fetch="select" update="false">
 			<column name="created_by" not-null="true" />

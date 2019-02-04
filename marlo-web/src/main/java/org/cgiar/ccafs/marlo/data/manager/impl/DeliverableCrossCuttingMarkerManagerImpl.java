@@ -68,7 +68,15 @@ public class DeliverableCrossCuttingMarkerManagerImpl implements DeliverableCros
   }
 
   @Override
-  public DeliverableCrossCuttingMarker saveDeliverableCrossCuttingMarker(DeliverableCrossCuttingMarker deliverableCrossCuttingMarker) {
+  public DeliverableCrossCuttingMarker getDeliverableCrossCuttingMarkerId(long deliverableID,
+    long cgiarCrossCuttingMarkerID, long phaseID) {
+    return deliverableCrossCuttingMarkerDAO.getDeliverableCrossCountryMarkerId(deliverableID, cgiarCrossCuttingMarkerID,
+      phaseID);
+  }
+
+  @Override
+  public DeliverableCrossCuttingMarker
+    saveDeliverableCrossCuttingMarker(DeliverableCrossCuttingMarker deliverableCrossCuttingMarker) {
 
     return deliverableCrossCuttingMarkerDAO.save(deliverableCrossCuttingMarker);
   }

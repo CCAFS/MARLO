@@ -424,16 +424,18 @@ public class SearchTermsSummaryAction extends BaseSummariesAction implements Sum
             devTitle = this.setFieldMatches(deliverable.getDeliverableInfo(this.getSelectedPhase()).getTitle(), pattern,
               "", null, false);
             String gender = "", youth = "", capacityDevelopment = "";
-            gender = this.setFieldMatches(
-              deliverable.getDeliverableInfo(this.getSelectedPhase()).getCrossCuttingGender(), pattern,
-              this.getText("summaries.gender"), deliverable.getDeliverableInfo().getCrossCuttingScoreGender(), true);
-            youth = this.setFieldMatches(deliverable.getDeliverableInfo(this.getSelectedPhase()).getCrossCuttingYouth(),
-              pattern, this.getText("summaries.youth"), deliverable.getDeliverableInfo().getCrossCuttingScoreYouth(),
-              true);
-            capacityDevelopment =
-              this.setFieldMatches(deliverable.getDeliverableInfo(this.getSelectedPhase()).getCrossCuttingCapacity(),
-                pattern, this.getText("summaries.capacityDevelopment"),
-                deliverable.getDeliverableInfo().getCrossCuttingScoreCapacity(), true);
+            // TODO: gender, youth, capDev matches
+            // gender = this.setFieldMatches(
+            // deliverable.getDeliverableInfo(this.getSelectedPhase()).getCrossCuttingGender(), pattern,
+            // this.getText("summaries.gender"), deliverable.getDeliverableInfo().getCrossCuttingScoreGender(), true);
+            // youth =
+            // this.setFieldMatches(deliverable.getDeliverableInfo(this.getSelectedPhase()).getCrossCuttingYouth(),
+            // pattern, this.getText("summaries.youth"), deliverable.getDeliverableInfo().getCrossCuttingScoreYouth(),
+            // true);
+            // capacityDevelopment =
+            // this.setFieldMatches(deliverable.getDeliverableInfo(this.getSelectedPhase()).getCrossCuttingCapacity(),
+            // pattern, this.getText("summaries.capacityDevelopment"),
+            // deliverable.getDeliverableInfo().getCrossCuttingScoreCapacity(), true);
             if (countMatches > 0) {
               String projectId =
                 "<font size=2 face='Segoe UI' color='#0000ff'>P" + project.getId().toString() + "</font>";
