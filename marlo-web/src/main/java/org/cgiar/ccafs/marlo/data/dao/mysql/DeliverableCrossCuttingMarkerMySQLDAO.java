@@ -19,7 +19,9 @@ package org.cgiar.ccafs.marlo.data.dao.mysql;
 import org.cgiar.ccafs.marlo.data.dao.DeliverableCrossCuttingMarkerDAO;
 import org.cgiar.ccafs.marlo.data.model.DeliverableCrossCuttingMarker;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -68,6 +70,35 @@ public class DeliverableCrossCuttingMarkerMySQLDAO extends AbstractMarloDAO<Deli
     return null;
 
   }
+
+  @Override
+  public DeliverableCrossCuttingMarker getDeliverableCrossCountryMarkerId(long deliverableID,
+    long cgiarCrossCuttingMarkerID, long phaseID) {
+    StringBuilder query = new StringBuilder();
+    query.append("SELECT id as markerId FROM deliverable_cross_cutting_markers ");
+    query.append("WHERE deliverable_id = ");
+    query.append(deliverableID);
+    query.append(" AND cgiar_cross_cutting_marker_id = ");
+    query.append(cgiarCrossCuttingMarkerID);
+    query.append(" AND id_phase = ");
+    query.append(phaseID);
+    List<Map<String, Object>> list = super.findCustomQuery(query.toString());
+
+    List<DeliverableCrossCuttingMarker> deliverableCrossCuttingMarkers = new ArrayList<DeliverableCrossCuttingMarker>();
+    for (Map<String, Object> map : list) {
+      String markerId = map.get("markerId").toString();
+      long longMarkerId = Long.parseLong(markerId);
+      DeliverableCrossCuttingMarker deliverableCrossCuttingMarker = this.find(longMarkerId);
+      deliverableCrossCuttingMarkers.add(deliverableCrossCuttingMarker);
+    }
+    if (deliverableCrossCuttingMarkers.size() > 0) {
+      return deliverableCrossCuttingMarkers.get(0);
+    } else {
+      return null;
+    }
+
+  }
+
 
   @Override
   public DeliverableCrossCuttingMarker save(DeliverableCrossCuttingMarker deliverableCrossCuttingMarker) {

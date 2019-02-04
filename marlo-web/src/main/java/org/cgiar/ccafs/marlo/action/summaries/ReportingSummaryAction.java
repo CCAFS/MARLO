@@ -19,6 +19,7 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.config.MarloLocalizedTextProvider;
 import org.cgiar.ccafs.marlo.data.manager.CrossCuttingScoringManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableCrossCuttingMarkerManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverablePartnershipManager;
 import org.cgiar.ccafs.marlo.data.manager.GenderTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
@@ -32,11 +33,11 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.RepositoryChannelManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfTargetUnitManager;
 import org.cgiar.ccafs.marlo.data.model.Activity;
-import org.cgiar.ccafs.marlo.data.model.CrossCuttingScoring;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.CrpTargetUnit;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableActivity;
+import org.cgiar.ccafs.marlo.data.model.DeliverableCrossCuttingMarker;
 import org.cgiar.ccafs.marlo.data.model.DeliverableCrp;
 import org.cgiar.ccafs.marlo.data.model.DeliverableDataSharingFile;
 import org.cgiar.ccafs.marlo.data.model.DeliverableDissemination;
@@ -206,6 +207,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
   private final DeliverablePartnershipManager deliverablePartnershipManager;
   private final ResourceManager resourceManager;
   private final ProjectExpectedStudyCountryManager projectExpectedStudyCountryManager;
+  private final DeliverableCrossCuttingMarkerManager deliverableCrossCuttingMarkerManager;
 
   @Inject
   public ReportingSummaryAction(APConfig config, GlobalUnitManager crpManager, ProjectManager projectManager,
@@ -214,7 +216,8 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     SrfTargetUnitManager srfTargetUnitManager, PhaseManager phaseManager,
     RepositoryChannelManager repositoryChannelManager, LocalizedTextProvider localizedTextProvider,
     CrossCuttingScoringManager crossCuttingScoringManager, DeliverablePartnershipManager deliverablePartnershipManager,
-    ResourceManager resourceManager, ProjectExpectedStudyCountryManager projectExpectedStudyCountryManager) {
+    ResourceManager resourceManager, ProjectExpectedStudyCountryManager projectExpectedStudyCountryManager,
+    DeliverableCrossCuttingMarkerManager deliverableCrossCuttingMarkerManager) {
     super(config, crpManager, phaseManager, projectManager);
     this.programManager = programManager;
     this.institutionManager = institutionManager;
@@ -229,6 +232,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     this.deliverablePartnershipManager = deliverablePartnershipManager;
     this.resourceManager = resourceManager;
     this.projectExpectedStudyCountryManager = projectExpectedStudyCountryManager;
+    this.deliverableCrossCuttingMarkerManager = deliverableCrossCuttingMarkerManager;
   }
 
   /**
@@ -1905,47 +1909,17 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         }
         // Get cross_cutting dimension
         String crossCutting = "";
-        if (deliverable.getDeliverableInfo(this.getSelectedPhase()).getCrossCuttingNa() != null) {
-          if (deliverable.getDeliverableInfo(this.getSelectedPhase()).getCrossCuttingNa() == true) {
-            crossCutting += "&nbsp;&nbsp;&nbsp;&nbsp;● N/A <br>";
-          }
-        }
-        if (deliverable.getDeliverableInfo(this.getSelectedPhase()).getCrossCuttingGender() != null) {
-          if (deliverable.getDeliverableInfo(this.getSelectedPhase()).getCrossCuttingGender() == true) {
-            Long scoring = deliverable.getDeliverableInfo().getCrossCuttingScoreGender();
-            if (scoring != null) {
-              CrossCuttingScoring crossCuttingScoring = crossCuttingScoringManager.getCrossCuttingScoringById(scoring);
-              crossCutting += "&nbsp;&nbsp;&nbsp;&nbsp;● Gender (" + crossCuttingScoring.getDescription() + ")<br>";
-            } else {
-              crossCutting += "&nbsp;&nbsp;&nbsp;&nbsp;● Gender <br>";
-            }
-          }
-        }
-        if (deliverable.getDeliverableInfo(this.getSelectedPhase()).getCrossCuttingYouth() != null) {
-          if (deliverable.getDeliverableInfo(this.getSelectedPhase()).getCrossCuttingYouth() == true) {
-            Long scoring = deliverable.getDeliverableInfo().getCrossCuttingScoreYouth();
-            if (scoring != null) {
-              CrossCuttingScoring crossCuttingScoring = crossCuttingScoringManager.getCrossCuttingScoringById(scoring);
-              crossCutting += "&nbsp;&nbsp;&nbsp;&nbsp;● Youth (" + crossCuttingScoring.getDescription() + ")<br>";
-            } else {
-              crossCutting += "&nbsp;&nbsp;&nbsp;&nbsp;● Youth <br>";
-            }
-          }
-        }
-        if (deliverable.getDeliverableInfo(this.getSelectedPhase()).getCrossCuttingCapacity() != null) {
-          if (deliverable.getDeliverableInfo(this.getSelectedPhase()).getCrossCuttingCapacity() == true) {
-            Long scoring = deliverable.getDeliverableInfo().getCrossCuttingScoreCapacity();
-            if (scoring != null) {
-              CrossCuttingScoring crossCuttingScoring = crossCuttingScoringManager.getCrossCuttingScoringById(scoring);
-              crossCutting +=
-                "&nbsp;&nbsp;&nbsp;&nbsp;● Capacity Development (" + crossCuttingScoring.getDescription() + ")<br>";
-            } else {
-              crossCutting += "&nbsp;&nbsp;&nbsp;&nbsp;● Capacity Development <br>";
-            }
-          }
-        }
-        if (deliverable.getDeliverableInfo(this.getSelectedPhase()).getCrossCuttingGender() != null) {
-          if (deliverable.getDeliverableInfo(this.getSelectedPhase()).getCrossCuttingGender() == true) {
+        DeliverableCrossCuttingMarker deliverableCrossCuttingMarkerGender = deliverableCrossCuttingMarkerManager
+          .getDeliverableCrossCuttingMarkerId(deliverable.getId(), 1, this.getSelectedPhase().getId());
+        DeliverableCrossCuttingMarker deliverableCrossCuttingMarkerYouth = deliverableCrossCuttingMarkerManager
+          .getDeliverableCrossCuttingMarkerId(deliverable.getId(), 2, this.getSelectedPhase().getId());
+        DeliverableCrossCuttingMarker deliverableCrossCuttingMarkerCapDev = deliverableCrossCuttingMarkerManager
+          .getDeliverableCrossCuttingMarkerId(deliverable.getId(), 3, this.getSelectedPhase().getId());
+        if (deliverableCrossCuttingMarkerGender != null) {
+          if (deliverableCrossCuttingMarkerGender.getRepIndGenderYouthFocusLevel() != null) {
+            crossCutting += "&nbsp;&nbsp;&nbsp;&nbsp;● Gender ("
+              + deliverableCrossCuttingMarkerGender.getRepIndGenderYouthFocusLevel().getPowbName() + ")<br>";
+
             if (deliverable.getDeliverableGenderLevels() == null
               || deliverable.getDeliverableGenderLevels().isEmpty()) {
               crossCutting += "<br><b>Gender level(s):</b><br>&nbsp;&nbsp;&nbsp;&nbsp;&lt;Not Defined&gt;";
@@ -1961,6 +1935,25 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
                 }
               }
             }
+          } else {
+            crossCutting += "&nbsp;&nbsp;&nbsp;&nbsp;● Gender <br>";
+          }
+        }
+
+        if (deliverableCrossCuttingMarkerYouth != null) {
+          if (deliverableCrossCuttingMarkerYouth.getRepIndGenderYouthFocusLevel() != null) {
+            crossCutting += "&nbsp;&nbsp;&nbsp;&nbsp;● Youth ("
+              + deliverableCrossCuttingMarkerYouth.getRepIndGenderYouthFocusLevel().getPowbName() + ")<br>";
+          } else {
+            crossCutting += "&nbsp;&nbsp;&nbsp;&nbsp;● Youth <br>";
+          }
+        }
+        if (deliverableCrossCuttingMarkerCapDev != null) {
+          if (deliverableCrossCuttingMarkerCapDev.getRepIndGenderYouthFocusLevel() != null) {
+            crossCutting += "&nbsp;&nbsp;&nbsp;&nbsp;● Capacity Development ("
+              + deliverableCrossCuttingMarkerCapDev.getRepIndGenderYouthFocusLevel().getPowbName() + ")<br>";
+          } else {
+            crossCutting += "&nbsp;&nbsp;&nbsp;&nbsp;● Capacity Development <br>";
           }
         }
         if (crossCutting.isEmpty()) {
@@ -2632,47 +2625,17 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         }
         // Get cross_cutting dimension
         String crossCutting = "";
-        if (deliverable.getDeliverableInfo(this.getSelectedPhase()).getCrossCuttingNa() != null) {
-          if (deliverable.getDeliverableInfo(this.getSelectedPhase()).getCrossCuttingNa() == true) {
-            crossCutting += "&nbsp;&nbsp;&nbsp;&nbsp;● N/A <br>";
-          }
-        }
-        if (deliverable.getDeliverableInfo(this.getSelectedPhase()).getCrossCuttingGender() != null) {
-          if (deliverable.getDeliverableInfo(this.getSelectedPhase()).getCrossCuttingGender() == true) {
-            Long scoring = deliverable.getDeliverableInfo().getCrossCuttingScoreGender();
-            if (scoring != null) {
-              CrossCuttingScoring crossCuttingScoring = crossCuttingScoringManager.getCrossCuttingScoringById(scoring);
-              crossCutting += "&nbsp;&nbsp;&nbsp;&nbsp;● Gender (" + crossCuttingScoring.getDescription() + ")<br>";
-            } else {
-              crossCutting += "&nbsp;&nbsp;&nbsp;&nbsp;● Gender <br>";
-            }
-          }
-        }
-        if (deliverable.getDeliverableInfo(this.getSelectedPhase()).getCrossCuttingYouth() != null) {
-          if (deliverable.getDeliverableInfo(this.getSelectedPhase()).getCrossCuttingYouth() == true) {
-            Long scoring = deliverable.getDeliverableInfo().getCrossCuttingScoreYouth();
-            if (scoring != null) {
-              CrossCuttingScoring crossCuttingScoring = crossCuttingScoringManager.getCrossCuttingScoringById(scoring);
-              crossCutting += "&nbsp;&nbsp;&nbsp;&nbsp;● Youth (" + crossCuttingScoring.getDescription() + ")<br>";
-            } else {
-              crossCutting += "&nbsp;&nbsp;&nbsp;&nbsp;● Youth <br>";
-            }
-          }
-        }
-        if (deliverable.getDeliverableInfo(this.getSelectedPhase()).getCrossCuttingCapacity() != null) {
-          if (deliverable.getDeliverableInfo(this.getSelectedPhase()).getCrossCuttingCapacity() == true) {
-            Long scoring = deliverable.getDeliverableInfo().getCrossCuttingScoreCapacity();
-            if (scoring != null) {
-              CrossCuttingScoring crossCuttingScoring = crossCuttingScoringManager.getCrossCuttingScoringById(scoring);
-              crossCutting +=
-                "&nbsp;&nbsp;&nbsp;&nbsp;● Capacity Development (" + crossCuttingScoring.getDescription() + ")<br>";
-            } else {
-              crossCutting += "&nbsp;&nbsp;&nbsp;&nbsp;● Capacity Development <br>";
-            }
-          }
-        }
-        if (deliverable.getDeliverableInfo(this.getSelectedPhase()).getCrossCuttingGender() != null) {
-          if (deliverable.getDeliverableInfo(this.getSelectedPhase()).getCrossCuttingGender() == true) {
+        DeliverableCrossCuttingMarker deliverableCrossCuttingMarkerGender = deliverableCrossCuttingMarkerManager
+          .getDeliverableCrossCuttingMarkerId(deliverable.getId(), 1, this.getSelectedPhase().getId());
+        DeliverableCrossCuttingMarker deliverableCrossCuttingMarkerYouth = deliverableCrossCuttingMarkerManager
+          .getDeliverableCrossCuttingMarkerId(deliverable.getId(), 2, this.getSelectedPhase().getId());
+        DeliverableCrossCuttingMarker deliverableCrossCuttingMarkerCapDev = deliverableCrossCuttingMarkerManager
+          .getDeliverableCrossCuttingMarkerId(deliverable.getId(), 3, this.getSelectedPhase().getId());
+        if (deliverableCrossCuttingMarkerGender != null) {
+          if (deliverableCrossCuttingMarkerGender.getRepIndGenderYouthFocusLevel() != null) {
+            crossCutting += "&nbsp;&nbsp;&nbsp;&nbsp;● Gender ("
+              + deliverableCrossCuttingMarkerGender.getRepIndGenderYouthFocusLevel().getPowbName() + ")<br>";
+
             if (deliverable.getDeliverableGenderLevels() == null
               || deliverable.getDeliverableGenderLevels().isEmpty()) {
               crossCutting += "<br><b>Gender level(s):</b><br>&nbsp;&nbsp;&nbsp;&nbsp;&lt;Not Defined&gt;";
@@ -2688,6 +2651,25 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
                 }
               }
             }
+          } else {
+            crossCutting += "&nbsp;&nbsp;&nbsp;&nbsp;● Gender <br>";
+          }
+        }
+
+        if (deliverableCrossCuttingMarkerYouth != null) {
+          if (deliverableCrossCuttingMarkerYouth.getRepIndGenderYouthFocusLevel() != null) {
+            crossCutting += "&nbsp;&nbsp;&nbsp;&nbsp;● Youth ("
+              + deliverableCrossCuttingMarkerYouth.getRepIndGenderYouthFocusLevel().getPowbName() + ")<br>";
+          } else {
+            crossCutting += "&nbsp;&nbsp;&nbsp;&nbsp;● Youth <br>";
+          }
+        }
+        if (deliverableCrossCuttingMarkerCapDev != null) {
+          if (deliverableCrossCuttingMarkerCapDev.getRepIndGenderYouthFocusLevel() != null) {
+            crossCutting += "&nbsp;&nbsp;&nbsp;&nbsp;● Capacity Development ("
+              + deliverableCrossCuttingMarkerCapDev.getRepIndGenderYouthFocusLevel().getPowbName() + ")<br>";
+          } else {
+            crossCutting += "&nbsp;&nbsp;&nbsp;&nbsp;● Capacity Development <br>";
           }
         }
         if (crossCutting.isEmpty()) {

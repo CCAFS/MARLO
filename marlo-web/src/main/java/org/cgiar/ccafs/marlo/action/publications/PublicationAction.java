@@ -19,14 +19,15 @@ package org.cgiar.ccafs.marlo.action.publications;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
+import org.cgiar.ccafs.marlo.data.manager.CgiarCrossCuttingMarkerManager;
 import org.cgiar.ccafs.marlo.data.manager.CrossCuttingScoringManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpClusterKeyOutputManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpPpaPartnerManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableCrossCuttingMarkerManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableCrpManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableDisseminationManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableFundingSourceManager;
-import org.cgiar.ccafs.marlo.data.manager.DeliverableGenderLevelManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableIntellectualAssetManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableLeaderManager;
@@ -42,20 +43,22 @@ import org.cgiar.ccafs.marlo.data.manager.FundingSourceManager;
 import org.cgiar.ccafs.marlo.data.manager.GenderTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
-import org.cgiar.ccafs.marlo.data.manager.IpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.manager.MetadataElementManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndFillingTypeManager;
+import org.cgiar.ccafs.marlo.data.manager.RepIndGenderYouthFocusLevelManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndGeographicScopeManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndPatentStatusManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndRegionManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndTypeActivityManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndTypeParticipantManager;
 import org.cgiar.ccafs.marlo.data.manager.RepositoryChannelManager;
+import org.cgiar.ccafs.marlo.data.model.CgiarCrossCuttingMarker;
 import org.cgiar.ccafs.marlo.data.model.CrossCuttingScoring;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutput;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
+import org.cgiar.ccafs.marlo.data.model.DeliverableCrossCuttingMarker;
 import org.cgiar.ccafs.marlo.data.model.DeliverableCrp;
 import org.cgiar.ccafs.marlo.data.model.DeliverableDissemination;
 import org.cgiar.ccafs.marlo.data.model.DeliverableFundingSource;
@@ -79,6 +82,7 @@ import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.RepIndFillingType;
+import org.cgiar.ccafs.marlo.data.model.RepIndGenderYouthFocusLevel;
 import org.cgiar.ccafs.marlo.data.model.RepIndGeographicScope;
 import org.cgiar.ccafs.marlo.data.model.RepIndPatentStatus;
 import org.cgiar.ccafs.marlo.data.model.RepIndRegion;
@@ -89,7 +93,6 @@ import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
-import org.cgiar.ccafs.marlo.utils.HistoryComparator;
 import org.cgiar.ccafs.marlo.validation.publications.PublicationValidator;
 
 import java.io.BufferedReader;
@@ -130,10 +133,8 @@ public class PublicationAction extends BaseAction {
   // Managers
   private final GlobalUnitManager crpManager;
   private final DeliverableCrpManager deliverableCrpManager;
-  private final IpProgramManager ipProgramManager;
   private final DeliverableManager deliverableManager;
   private final DeliverableDisseminationManager deliverableDisseminationManager;
-  private final DeliverableGenderLevelManager deliverableGenderLevelManager;
   private final DeliverableMetadataElementManager deliverableMetadataElementManager;
   private final DeliverablePublicationMetadataManager deliverablePublicationMetadataManager;
   private final DeliverableUserManager deliverableUserManager;
@@ -161,6 +162,9 @@ public class PublicationAction extends BaseAction {
   private final RepIndFillingTypeManager repIndFillingTypeManager;
   private final RepIndPatentStatusManager repIndPatentStatusManager;
   private DeliverableLocationManager deliverableLocationManager;
+  private DeliverableCrossCuttingMarkerManager deliverableCrossCuttingMarkerManager;
+  private RepIndGenderYouthFocusLevelManager repIndGenderYouthFocusLevelManager;
+  private CgiarCrossCuttingMarkerManager cgiarCrossCuttingMarkerManager;
 
   // Variables
   private GlobalUnit loggedCrp;
@@ -168,19 +172,12 @@ public class PublicationAction extends BaseAction {
   private List<GlobalUnit> crps;
   private List<GenderType> genderLevels;
   private List<FundingSource> fundingSources;
-  private List<CrpProgram> flagshipsList;
-  private List<CrpProgram> regionsList;
   private List<Institution> institutions;
   private Map<String, String> channels;
   private PublicationValidator publicationValidator;
   private Deliverable deliverable;
   private Deliverable deliverableDB;
-
   private String transaction;
-
-
-  private HistoryComparator historyComparator;
-
   private List<DeliverableType> deliverableSubTypes;
   private List<RepositoryChannel> repositoryChannels;
   private List<CrossCuttingScoring> crossCuttingDimensions;
@@ -194,6 +191,8 @@ public class PublicationAction extends BaseAction {
   private List<RepIndFillingType> repIndFillingTypes;
   private List<RepIndPatentStatus> repIndPatentStatuses;
   private Map<String, String> statuses;
+  private List<RepIndGenderYouthFocusLevel> focusLevels;
+  private List<CgiarCrossCuttingMarker> cgiarCrossCuttingMarkers;
 
 
   @Inject
@@ -201,11 +200,10 @@ public class PublicationAction extends BaseAction {
     GenderTypeManager genderTypeManager, AuditLogManager auditLogManager, DeliverableTypeManager deliverableTypeManager,
     DeliverableDisseminationManager deliverableDisseminationManager, InstitutionManager institutionManager,
     DeliverablePublicationMetadataManager deliverablePublicationMetadataManager,
-    DeliverableGenderLevelManager deliverableGenderLevelManager, DeliverableUserManager deliverableUserManager,
-    DeliverableCrpManager deliverableCrpManager, CrpPpaPartnerManager crpPpaPartnerManager,
-    DeliverableProgramManager deliverableProgramManager, DeliverableLeaderManager deliverableLeaderManager,
-    PublicationValidator publicationValidator, HistoryComparator historyComparator,
-    DeliverableMetadataElementManager deliverableMetadataElementManager, IpProgramManager ipProgramManager,
+    DeliverableUserManager deliverableUserManager, DeliverableCrpManager deliverableCrpManager,
+    CrpPpaPartnerManager crpPpaPartnerManager, DeliverableProgramManager deliverableProgramManager,
+    DeliverableLeaderManager deliverableLeaderManager, PublicationValidator publicationValidator,
+    DeliverableMetadataElementManager deliverableMetadataElementManager,
     RepositoryChannelManager repositoryChannelManager, CrpProgramManager crpProgramManager,
     FundingSourceManager fundingSourceManager, CrossCuttingScoringManager crossCuttingManager,
     CrpClusterKeyOutputManager crpClusterKeyOutputManager, DeliverableInfoManager deliverableInfoManager,
@@ -215,17 +213,18 @@ public class PublicationAction extends BaseAction {
     RepIndTypeParticipantManager repIndTypeParticipantManager,
     RepIndGeographicScopeManager repIndGeographicScopeManager, RepIndRegionManager repIndRegionManager,
     LocElementManager locElementManager, RepIndFillingTypeManager repIndFillingTypeManager,
-    RepIndPatentStatusManager repIndPatentStatusManager, DeliverableLocationManager deliverableLocationManager) {
+    RepIndPatentStatusManager repIndPatentStatusManager, DeliverableLocationManager deliverableLocationManager,
+    DeliverableCrossCuttingMarkerManager deliverableCrossCuttingMarkerManager,
+    RepIndGenderYouthFocusLevelManager repIndGenderYouthFocusLevelManager,
+    CgiarCrossCuttingMarkerManager cgiarCrossCuttingMarkerManager) {
     super(config);
     this.deliverableDisseminationManager = deliverableDisseminationManager;
-    this.historyComparator = historyComparator;
     this.crpManager = crpManager;
     this.publicationValidator = publicationValidator;
     this.deliverableCrpManager = deliverableCrpManager;
     this.deliverableManager = deliverableManager;
     this.genderTypeManager = genderTypeManager;
     this.auditLogManager = auditLogManager;
-    this.deliverableGenderLevelManager = deliverableGenderLevelManager;
     this.deliverablePublicationMetadataManager = deliverablePublicationMetadataManager;
     this.deliverableUserManager = deliverableUserManager;
     this.institutionManager = institutionManager;
@@ -233,7 +232,6 @@ public class PublicationAction extends BaseAction {
     this.deliverableLeaderManager = deliverableLeaderManager;
     this.deliverableMetadataElementManager = deliverableMetadataElementManager;
     this.deliverableTypeManager = deliverableTypeManager;
-    this.ipProgramManager = ipProgramManager;
     this.repositoryChannelManager = repositoryChannelManager;
     this.crpProgramManager = crpProgramManager;
     this.fundingSourceManager = fundingSourceManager;
@@ -252,7 +250,11 @@ public class PublicationAction extends BaseAction {
     this.repIndFillingTypeManager = repIndFillingTypeManager;
     this.repIndPatentStatusManager = repIndPatentStatusManager;
     this.deliverableLocationManager = deliverableLocationManager;
+    this.deliverableCrossCuttingMarkerManager = deliverableCrossCuttingMarkerManager;
+    this.repIndGenderYouthFocusLevelManager = repIndGenderYouthFocusLevelManager;
+    this.cgiarCrossCuttingMarkerManager = cgiarCrossCuttingMarkerManager;
   }
+
 
   @Override
   public String cancel() {
@@ -261,7 +263,7 @@ public class PublicationAction extends BaseAction {
 
     if (path.toFile().exists()) {
 
-      boolean fileDeleted = path.toFile().delete();
+      path.toFile().delete();
     }
 
     deliverable.getDeliverableInfo(deliverable.getPhase()).setCrpClusterKeyOutput(null);
@@ -269,7 +271,7 @@ public class PublicationAction extends BaseAction {
     this.setDraft(false);
     Collection<String> messages = this.getActionMessages();
     if (!messages.isEmpty()) {
-      String validationMessage = messages.iterator().next();
+      messages.iterator().next();
       this.setActionMessages(null);
       this.addActionMessage("draft:" + this.getText("cancel.autoSave"));
     } else {
@@ -278,23 +280,6 @@ public class PublicationAction extends BaseAction {
     messages = this.getActionMessages();
 
     return SUCCESS;
-  }
-
-
-  /**
-   * Delete Deliverable Gender Levels if there is no cross cutting gender component.
-   * 
-   * @param deliverablePrew
-   */
-  private void deleteDeliverableGenderLevels(Deliverable deliverablePrew) {
-    if (!deliverablePrew.getDeliverableInfo(deliverable.getPhase()).getCrossCuttingGender().booleanValue()) {
-      Deliverable deliverableDB = deliverableManager.getDeliverableById(deliverableID);
-      List<DeliverableGenderLevel> deliverableGenderLevels =
-        deliverableDB.getDeliverableGenderLevels().stream().filter(c -> c.isActive()).collect(Collectors.toList());
-      for (DeliverableGenderLevel genderLevel : deliverableGenderLevels) {
-        deliverableGenderLevelManager.deleteDeliverableGenderLevel(genderLevel.getId());
-      }
-    }
   }
 
 
@@ -314,6 +299,11 @@ public class PublicationAction extends BaseAction {
       + deliverable.getPhase().getYear() + "_" + actionFile + ".json";
 
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
+  }
+
+
+  public List<CgiarCrossCuttingMarker> getCgiarCrossCuttingMarkers() {
+    return cgiarCrossCuttingMarkers;
   }
 
 
@@ -347,6 +337,35 @@ public class PublicationAction extends BaseAction {
   }
 
 
+  /**
+   * Get the information for the Cross Cutting marker in the form
+   * 
+   * @param markerID
+   * @return
+   */
+  public DeliverableCrossCuttingMarker getDeliverableCrossCuttingMarker(long markerID) {
+    DeliverableCrossCuttingMarker crossCuttingMarker = new DeliverableCrossCuttingMarker();
+    if (this.isDraft()) {
+      // Cgiar Cross Cutting Markers Autosave
+      if (deliverable.getCrossCuttingMarkers() != null) {
+        for (DeliverableCrossCuttingMarker deliverableCrossCuttingMarker : deliverable.getCrossCuttingMarkers()) {
+          if (deliverableCrossCuttingMarker.getCgiarCrossCuttingMarker().getId() == markerID) {
+            crossCuttingMarker = deliverableCrossCuttingMarker;
+          }
+        }
+      }
+    } else {
+      crossCuttingMarker = deliverableCrossCuttingMarkerManager.getDeliverableCrossCuttingMarkerId(deliverableID,
+        markerID, this.getActualPhase().getId());
+    }
+    if (crossCuttingMarker != null) {
+      return crossCuttingMarker;
+    } else {
+      return null;
+    }
+  }
+
+
   public Deliverable getDeliverableDB() {
     return deliverableDB;
   }
@@ -356,9 +375,11 @@ public class PublicationAction extends BaseAction {
     return deliverableID;
   }
 
+
   public List<DeliverableType> getDeliverableSubTypes() {
     return deliverableSubTypes;
   }
+
 
   public DeliverableTypeManager getDeliverableTypeManager() {
     return deliverableTypeManager;
@@ -379,7 +400,6 @@ public class PublicationAction extends BaseAction {
     return null;
   }
 
-
   public List<CrpProgram> getFlagshipsList() {
     return crpProgramManager.findAll().stream()
       .filter(c -> c.isActive() && c.getCrp().equals(this.loggedCrp)
@@ -387,9 +407,15 @@ public class PublicationAction extends BaseAction {
       .sorted((f1, f2) -> f1.getAcronym().compareTo(f2.getAcronym())).collect(Collectors.toList());
   }
 
+  public List<RepIndGenderYouthFocusLevel> getFocusLevels() {
+    return focusLevels;
+  }
+
+
   public List<FundingSource> getFundingSources() {
     return fundingSources;
   }
+
 
   public List<GenderType> getGenderLevels() {
     return genderLevels;
@@ -407,7 +433,6 @@ public class PublicationAction extends BaseAction {
     return loggedCrp;
   }
 
-
   public String[] getRegionsIds() {
 
     List<DeliverableProgram> projectFocuses = deliverable.getRegions();
@@ -421,7 +446,6 @@ public class PublicationAction extends BaseAction {
     }
     return null;
   }
-
 
   public List<CrpProgram> getRegionsList() {
     return crpProgramManager.findAll().stream()
@@ -445,6 +469,7 @@ public class PublicationAction extends BaseAction {
     return repIndPatentStatuses;
   }
 
+
   public List<RepIndRegion> getRepIndRegions() {
     return repIndRegions;
   }
@@ -458,19 +483,19 @@ public class PublicationAction extends BaseAction {
     return repIndTypeParticipants;
   }
 
+
   public List<RepositoryChannel> getRepositoryChannels() {
     return repositoryChannels;
   }
-
 
   public Map<String, String> getStatuses() {
     return statuses;
   }
 
-
   public String getTransaction() {
     return transaction;
   }
+
 
   @Override
   public void prepare() throws Exception {
@@ -635,6 +660,22 @@ public class PublicationAction extends BaseAction {
               break;
           }
         }
+
+        // Cgiar Cross Cutting Markers Autosave
+        if (deliverable.getCrossCuttingMarkers() != null) {
+          for (DeliverableCrossCuttingMarker deliverableCrossCuttingMarker : deliverable.getCrossCuttingMarkers()) {
+            deliverableCrossCuttingMarker.setCgiarCrossCuttingMarker(cgiarCrossCuttingMarkerManager
+              .getCgiarCrossCuttingMarkerById(deliverableCrossCuttingMarker.getCgiarCrossCuttingMarker().getId()));
+            if (deliverableCrossCuttingMarker.getRepIndGenderYouthFocusLevel() != null) {
+              if (deliverableCrossCuttingMarker.getRepIndGenderYouthFocusLevel().getId() != -1) {
+                deliverableCrossCuttingMarker
+                  .setRepIndGenderYouthFocusLevel(repIndGenderYouthFocusLevelManager.getRepIndGenderYouthFocusLevelById(
+                    deliverableCrossCuttingMarker.getRepIndGenderYouthFocusLevel().getId()));
+              }
+            }
+          }
+        }
+
         this.setDraft(true);
 
       } else {
@@ -801,6 +842,14 @@ public class PublicationAction extends BaseAction {
               deliverable.getRegionsValue() + "," + deliverableProgram.getCrpProgram().getId().toString());
           }
         }
+
+        // Cgiar Cross Cutting Markers List
+        if (deliverable.getCrossCuttingMarkers() != null) {
+          deliverable.setCrossCuttingMarkers(new ArrayList<>(deliverable.getDeliverableCrossCuttingMarkers().stream()
+            .filter(o -> o.isActive() && o.getPhase().getId() == this.getActualPhase().getId())
+            .collect(Collectors.toList())));
+        }
+
         this.setDraft(false);
       }
 
@@ -923,6 +972,12 @@ public class PublicationAction extends BaseAction {
         statuses.put(projectStatusEnum.getStatusId(), projectStatusEnum.getStatus());
       }
 
+      // Cross Cutting Values List
+      focusLevels = repIndGenderYouthFocusLevelManager.findAll();
+
+      // Cross Cutting Markers
+      cgiarCrossCuttingMarkers = cgiarCrossCuttingMarkerManager.findAll();
+
       deliverableDB = deliverableManager.getDeliverableById(deliverable.getId());
 
       String params[] = {loggedCrp.getAcronym(), deliverable.getId() + ""};
@@ -937,11 +992,6 @@ public class PublicationAction extends BaseAction {
         }
 
         deliverable.getDeliverableInfo(deliverable.getPhase()).setDeliverableType(null);
-        deliverable.getDeliverableInfo(deliverable.getPhase()).setCrossCuttingGender(null);
-        deliverable.getDeliverableInfo(deliverable.getPhase()).setCrossCuttingCapacity(null);
-        deliverable.getDeliverableInfo(deliverable.getPhase()).setCrossCuttingClimate(null);
-        deliverable.getDeliverableInfo(deliverable.getPhase()).setCrossCuttingNa(null);
-        deliverable.getDeliverableInfo(deliverable.getPhase()).setCrossCuttingYouth(null);
         deliverable.getDeliverableInfo(deliverable.getPhase()).setIsLocationGlobal(null);
         deliverable.getDeliverableInfo(deliverable.getPhase()).setLicense(null);
         deliverable.getDeliverableInfo(deliverable.getPhase()).setCrpClusterKeyOutput(null);
@@ -995,9 +1045,14 @@ public class PublicationAction extends BaseAction {
         if (deliverable.getCountries() != null) {
           deliverable.getCountries().clear();
         }
+
+        if (deliverable.getCrossCuttingMarkers() != null) {
+          deliverable.getCrossCuttingMarkers().clear();
+        }
       }
     }
   }
+
 
   @Override
   public String save() {
@@ -1006,9 +1061,6 @@ public class PublicationAction extends BaseAction {
     if (isCreator || this.hasPermission("*")) {
       Deliverable deliverablePrew = this.updateDeliverableInfo();
       this.updateDeliverableFS(deliverablePrew);
-
-      this.saveDeliverableGenderLevels(deliverablePrew);
-      this.deleteDeliverableGenderLevels(deliverablePrew);
       this.saveDissemination();
       this.saveMetadata();
       this.saveCrps();
@@ -1022,6 +1074,7 @@ public class PublicationAction extends BaseAction {
       this.saveParticipant();
       // Save Countries list
       this.saveDeliverableCountries();
+      this.saveCrossCutting();
       deliverableInfoManager.saveDeliverableInfo(deliverablePrew.getDeliverableInfo());
 
       List<String> relationsName = new ArrayList<>();
@@ -1051,7 +1104,7 @@ public class PublicationAction extends BaseAction {
         path.toFile().delete();
       }
       if (this.getUrl() == null || this.getUrl().isEmpty()) {
-        Collection<String> messages = this.getActionMessages();
+        this.getActionMessages();
         if (!this.getInvalidFields().isEmpty()) {
           this.setActionMessages(null);
           // this.addActionMessage(Map.toString(this.getInvalidFields().toArray()));
@@ -1072,6 +1125,86 @@ public class PublicationAction extends BaseAction {
 
     } else {
       return NOT_AUTHORIZED;
+    }
+  }
+
+  /**
+   * Save Deliverable CrossCutting Information
+   */
+  public void saveCrossCutting() {
+
+    // Save form Information
+    if (deliverable.getCrossCuttingMarkers() != null) {
+      for (DeliverableCrossCuttingMarker crossCuttingOwner : deliverable.getCrossCuttingMarkers()) {
+        if (crossCuttingOwner.getId() == null) {
+          DeliverableCrossCuttingMarker crossCuttingOwnerSave = new DeliverableCrossCuttingMarker();
+          crossCuttingOwnerSave.setDeliverable(deliverable);
+          crossCuttingOwnerSave.setPhase(this.getActualPhase());
+
+          CgiarCrossCuttingMarker cgiarCrossCuttingMarker = cgiarCrossCuttingMarkerManager
+            .getCgiarCrossCuttingMarkerById(crossCuttingOwner.getCgiarCrossCuttingMarker().getId());
+
+          crossCuttingOwnerSave.setCgiarCrossCuttingMarker(cgiarCrossCuttingMarker);
+
+          if (crossCuttingOwner.getRepIndGenderYouthFocusLevel() != null) {
+            if (crossCuttingOwner.getRepIndGenderYouthFocusLevel().getId() != null
+              && crossCuttingOwner.getRepIndGenderYouthFocusLevel().getId() != -1) {
+              RepIndGenderYouthFocusLevel focusLevel = repIndGenderYouthFocusLevelManager
+                .getRepIndGenderYouthFocusLevelById(crossCuttingOwner.getRepIndGenderYouthFocusLevel().getId());
+              crossCuttingOwnerSave.setRepIndGenderYouthFocusLevel(focusLevel);
+            } else {
+              crossCuttingOwnerSave.setRepIndGenderYouthFocusLevel(null);
+            }
+          } else {
+            crossCuttingOwnerSave.setRepIndGenderYouthFocusLevel(null);
+          }
+
+
+          deliverableCrossCuttingMarkerManager.saveDeliverableCrossCuttingMarker(crossCuttingOwnerSave);
+          // This is to add deliverableCrossCuttingMarker to generate correct auditlog.
+          deliverable.getDeliverableCrossCuttingMarkers().add(crossCuttingOwnerSave);
+        } else {
+          boolean hasChanges = false;
+          DeliverableCrossCuttingMarker crossCuttingOwnerSave =
+            deliverableCrossCuttingMarkerManager.getDeliverableCrossCuttingMarkerById(crossCuttingOwner.getId());
+
+          if (crossCuttingOwner.getRepIndGenderYouthFocusLevel() != null) {
+            if (crossCuttingOwner.getRepIndGenderYouthFocusLevel().getId() != null
+              && crossCuttingOwner.getRepIndGenderYouthFocusLevel().getId() != -1) {
+
+              if (crossCuttingOwnerSave.getRepIndGenderYouthFocusLevel() != null) {
+                if (crossCuttingOwner.getRepIndGenderYouthFocusLevel().getId() != crossCuttingOwnerSave
+                  .getRepIndGenderYouthFocusLevel().getId()) {
+                  RepIndGenderYouthFocusLevel focusLevel = repIndGenderYouthFocusLevelManager
+                    .getRepIndGenderYouthFocusLevelById(crossCuttingOwner.getRepIndGenderYouthFocusLevel().getId());
+                  crossCuttingOwnerSave.setRepIndGenderYouthFocusLevel(focusLevel);
+                  hasChanges = true;
+                }
+              } else {
+                RepIndGenderYouthFocusLevel focusLevel = repIndGenderYouthFocusLevelManager
+                  .getRepIndGenderYouthFocusLevelById(crossCuttingOwner.getRepIndGenderYouthFocusLevel().getId());
+                crossCuttingOwnerSave.setRepIndGenderYouthFocusLevel(focusLevel);
+                hasChanges = true;
+              }
+
+            } else {
+              crossCuttingOwnerSave.setRepIndGenderYouthFocusLevel(null);
+              hasChanges = true;
+            }
+          } else {
+            crossCuttingOwnerSave.setRepIndGenderYouthFocusLevel(null);
+            hasChanges = true;
+          }
+
+
+          if (hasChanges) {
+            deliverableCrossCuttingMarkerManager.saveDeliverableCrossCuttingMarker(crossCuttingOwnerSave);
+          }
+          // This is to add deliverableCrossCuttingMarker to generate correct auditlog.
+          deliverable.getDeliverableCrossCuttingMarkers().add(crossCuttingOwnerSave);
+
+        }
+      }
     }
   }
 
@@ -1125,37 +1258,6 @@ public class PublicationAction extends BaseAction {
           if (!countriesSave.contains(deliverableLocation)) {
             deliverableLocationManager.deleteDeliverableLocation(deliverableLocation.getId());
           }
-        }
-      }
-    }
-  }
-
-  private void saveDeliverableGenderLevels(Deliverable deliverablePrew) {
-    if (deliverable.getGenderLevels() != null) {
-      if (deliverablePrew.getDeliverableGenderLevels() != null
-        && deliverablePrew.getDeliverableGenderLevels().size() > 0) {
-        List<DeliverableGenderLevel> fundingSourcesPrew = deliverablePrew.getDeliverableGenderLevels().stream()
-          .filter(dp -> dp.isActive() && dp.getPhase().equals(deliverable.getPhase())).collect(Collectors.toList());
-
-        for (DeliverableGenderLevel deliverableFundingSource : fundingSourcesPrew) {
-          if (!deliverable.getGenderLevels().contains(deliverableFundingSource)) {
-            deliverableGenderLevelManager.deleteDeliverableGenderLevel(deliverableFundingSource.getId());
-          }
-        }
-      }
-
-      for (DeliverableGenderLevel deliverableGenderLevel : deliverable.getGenderLevels()) {
-        if (deliverableGenderLevel.getId() == null || deliverableGenderLevel.getId() == -1) {
-
-          deliverableGenderLevel.setDeliverable(deliverableManager.getDeliverableById(deliverableID));
-          deliverableGenderLevel.setPhase(deliverable.getPhase());
-          deliverableGenderLevelManager.saveDeliverableGenderLevel(deliverableGenderLevel);
-
-        } else {
-          DeliverableGenderLevel deliverableGenderLevelDB =
-            deliverableGenderLevelManager.getDeliverableGenderLevelById(deliverableGenderLevel.getId());
-          deliverableGenderLevelDB.setGenderLevel(deliverableGenderLevel.getGenderLevel());
-          deliverableGenderLevelManager.saveDeliverableGenderLevel(deliverableGenderLevelDB);
         }
       }
     }
@@ -1292,7 +1394,6 @@ public class PublicationAction extends BaseAction {
     }
   }
 
-
   private void saveIntellectualAsset() {
     if (deliverable.getIntellectualAsset() != null && deliverable.getIntellectualAsset().getHasPatentPvp() != null) {
       DeliverableIntellectualAsset intellectualAsset = new DeliverableIntellectualAsset();
@@ -1401,7 +1502,6 @@ public class PublicationAction extends BaseAction {
       deliverableIntellectualAssetManager.saveDeliverableIntellectualAsset(intellectualAsset);
     }
   }
-
 
   public void saveLeaders() {
     if (deliverable.getLeaders() == null) {
@@ -1595,6 +1695,7 @@ public class PublicationAction extends BaseAction {
 
   }
 
+
   public void savePublicationMetadata() {
     if (deliverable.getPublication() != null) {
       deliverable.getPublication().setDeliverable(deliverable);
@@ -1606,6 +1707,7 @@ public class PublicationAction extends BaseAction {
 
     }
   }
+
 
   public void saveUsers() {
     if (deliverable.getUsers() == null) {
@@ -1631,19 +1733,22 @@ public class PublicationAction extends BaseAction {
     }
   }
 
+  public void setCgiarCrossCuttingMarkers(List<CgiarCrossCuttingMarker> cgiarCrossCuttingMarkers) {
+    this.cgiarCrossCuttingMarkers = cgiarCrossCuttingMarkers;
+  }
+
   public void setChannels(Map<String, String> channels) {
     this.channels = channels;
   }
-
 
   public void setCountries(List<LocElement> countries) {
     this.countries = countries;
   }
 
+
   public void setCrossCuttingDimensions(List<CrossCuttingScoring> crossCuttingDimensions) {
     this.crossCuttingDimensions = crossCuttingDimensions;
   }
-
 
   public void setCrossCuttingScoresMap(Map<Long, String> crossCuttingScoresMap) {
     this.crossCuttingScoresMap = crossCuttingScoresMap;
@@ -1654,22 +1759,27 @@ public class PublicationAction extends BaseAction {
     this.crps = crps;
   }
 
+
   public void setDeliverable(Deliverable deliverable) {
     this.deliverable = deliverable;
   }
-
 
   public void setDeliverableDB(Deliverable deliverableDB) {
     this.deliverableDB = deliverableDB;
   }
 
+
   public void setDeliverableID(long deliverableID) {
     this.deliverableID = deliverableID;
   }
 
-
   public void setDeliverableSubTypes(List<DeliverableType> deliverableSubTypes) {
     this.deliverableSubTypes = deliverableSubTypes;
+  }
+
+
+  public void setFocusLevels(List<RepIndGenderYouthFocusLevel> focusLevels) {
+    this.focusLevels = focusLevels;
   }
 
   public void setFundingSources(List<FundingSource> fundingSources) {
@@ -1781,45 +1891,6 @@ public class PublicationAction extends BaseAction {
 
     if (deliverable.getDeliverableInfo().getNewExpectedYear() != null) {
       deliverableInfoDb.setNewExpectedYear(deliverable.getDeliverableInfo().getNewExpectedYear());
-    }
-
-    // Capacity Development
-    if (deliverable.getDeliverableInfo().getCrossCuttingCapacity() == null) {
-      deliverableInfoDb.setCrossCuttingCapacity(false);
-      deliverableInfoDb.setCrossCuttingScoreCapacity(APConstants.CROSS_CUTTING_NOT_TARGETED);
-    } else {
-      deliverableInfoDb.setCrossCuttingCapacity(true);
-      deliverableInfoDb.setCrossCuttingScoreCapacity(deliverable.getDeliverableInfo().getCrossCuttingScoreCapacity());
-    }
-    // Climate Change
-    if (deliverable.getDeliverableInfo().getCrossCuttingClimate() == null) {
-      deliverableInfoDb.setCrossCuttingClimate(false);
-      deliverableInfoDb.setCrossCuttingScoreClimate(APConstants.CROSS_CUTTING_NOT_TARGETED);
-    } else {
-      deliverableInfoDb.setCrossCuttingClimate(true);
-      deliverableInfoDb.setCrossCuttingScoreClimate(deliverable.getDeliverableInfo().getCrossCuttingScoreClimate());
-    }
-    // N/A
-    if (deliverable.getDeliverableInfo().getCrossCuttingNa() == null) {
-      deliverableInfoDb.setCrossCuttingNa(false);
-    } else {
-      deliverableInfoDb.setCrossCuttingNa(true);
-    }
-    // Gender
-    if (deliverable.getDeliverableInfo().getCrossCuttingGender() == null) {
-      deliverableInfoDb.setCrossCuttingGender(false);
-      deliverableInfoDb.setCrossCuttingScoreGender(APConstants.CROSS_CUTTING_NOT_TARGETED);
-    } else {
-      deliverableInfoDb.setCrossCuttingGender(true);
-      deliverableInfoDb.setCrossCuttingScoreGender(deliverable.getDeliverableInfo().getCrossCuttingScoreGender());
-    }
-    // Youth
-    if (deliverable.getDeliverableInfo().getCrossCuttingYouth() == null) {
-      deliverableInfoDb.setCrossCuttingYouth(false);
-      deliverableInfoDb.setCrossCuttingScoreYouth(APConstants.CROSS_CUTTING_NOT_TARGETED);
-    } else {
-      deliverableInfoDb.setCrossCuttingYouth(true);
-      deliverableInfoDb.setCrossCuttingScoreYouth(deliverable.getDeliverableInfo().getCrossCuttingScoreYouth());
     }
 
     if (deliverable.getDeliverableInfo().getStatus() != null) {
