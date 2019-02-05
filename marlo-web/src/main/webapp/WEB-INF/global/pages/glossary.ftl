@@ -13,24 +13,28 @@
 
 
 [#assign glossaryContent= [ 
-  [ "accountability", "activities", "adoption", "appraisal", "attribution", "audit"],
-  [ "baseline", "behavioralIndependence", "behIndependence", "beneficiaries", "budget"],
-  [ "clients","clusterOfActivities",  "comparativeAdvantage", "costEffectiveness", "counterfactual"],
-  [ "deliverables"],
-  [  "effectiveness", "efficiency","endUsers", "evaluation","evaluationCriteria", "evaluationReference", "evidence", "formativeEvaluation" ],
+  [ "accountability", "achievements", "activities", "adoption", "adoptionStudy", "appraisal", "assumptions", "attribution", "audit"],
+  [ "baseline", "behIndependence", "benchmark", "beneficiaries", "bilateralFunding",  "budget", "CCAFSbudget"],
+  [ "cgiarPlatform", "clients", "clusterEvaluation", "clusterOfActivities", "clusterSample",  "comparativeAdvantage", "comparisonGroup", "conclusions", "confidenceLevel", "contribution", "controlGroup", "costBenefit", "costEffectiveness", "counterfactual", "crossCuttingDimension", "credibility", "CRP"],
+  [ "deliverables", "dependentVariable", "disaggregation", "doubleLoopLearning"],
+  [ "effectiveness", "efficiency","endUsers", "evaluation","evaluationCriteria", "evaluationReference", "evidence", "exanteEvaluation", "expostEvaluation", "externalEvaluation", "formativeEvaluation", "flagshipProject" ],
   [ "globalPublicGoods"],
-  [ "impact", "impactAssesment", "impactEvaluation", "impactPathway", "impartiality", "independence", "indicator", "inputs", "ido", "internationalPublicGoods", "interoperable"],
-  [ "legitimacy"],
-  [ "managementLiason","mog",  "monitoring","mutualAccountability", "nextUsers"],
-  [ "orgIndependence", "outcome", "outcomestatement", "outcomestory", "outputs"],
-  [ "partners", "peerReview", "performanceManagement", "performanceMeasureement", "project", "projectLeader", "projectOutcome", "projectOutcomeStory", "projectPartner"],
-  [ "relevance", "researchOutcomes", "results", "resultsBaseManagement", "review"],
-  [ "scaling", "stakeholders", "summativeEvaluation", "sustainability", "systemLevelOutcomes"],
-  [ "targetGroup", "targetnarrative", "targetvalue", "toc", "transactionCost", "triangulation"],
-  [ "update" , "use"]
+  [ "hypothesis" ],
+  [ "impact", "impactAssessment", "impactEvaluation", "impactPathway", "impartiality", "independence", "independentVariable", "indicator", "innovation", "inputs", "ido", "internalEvaluation", "internationalPublicGoods", "interoperable"],
+  [ "legitimacy", "lessonsLearned", "logicalFramework" ],
+  [ "metaEvaluation", "midTermEvaluation", "milestone", "mixedMethods", "monitoring","mutualAccountability" ],
+  [ "nextUsers", "nares" ],
+  [ "outcome", "outcomeCaseStudy", "outputs"],
+  [ "participatoryEvaluation", "partners", "peerReview", "performanceManagement", "performanceMeasureement", "ppa", "primaryData", "processEvaluation", "programEvaluation", "programManagementUnit", "projectEvaluation", "projectLeader" ],
+  [ "qualityAssurance", "quasiExperimentalDesign" ],
+  [ "randomAssignment", "rtc", "recommendations", "regressionAnalysis", "relevance", "reliability", "replication", "researchQuality", "results", "resultsBaseManagement", "review", "riskAnalysis"],
+  [ "scaling", "secondaryData", "selectionBias", "sexDisaggregatedData", "singleLoopLearning", "socialLearning", "sphereOfControl", "sphereOfInfluence", "sphereOfInterest", "spilloverEffects", "srf", "stakeholders", "subido", "survey", "surveyInstrument", "sustainability"],
+  [ "targetGroup", "targetUnit", "targetvalue", "termsOfReference", "thematicEvaluation", "theoryBasedImpact", "toc", "transactionCost", "treatmentGroup", "tripleLoopLearning", "triangulation"],
+  [ "use", "valueForMoney" , "validity"],
+  [ "window1", "window2", "window3", "womenEmpowerment" ]
 ] /]
 
-[#assign words= [ "A", "B", "C", "D", "E", "F", "G", "I", "L", "M", "N", "O", "P", "R", "S", "T", "U"]/]
+[#assign words= [ "A", "B", "C", "D", "E", "F", "G", "H", "I", "L", "M", "N", "O", "P", "R", "S", "T", "U", "V", "W"]/]
 
 <section class="container contentForm">
   [@s.form action="glossary" cssClass="pure-form"]
@@ -39,7 +43,7 @@
     <h1 class="contentTitle">[@s.text name="home.glossary.title"/]</h1>
     [@s.text name="home.glossary.contact"/] [@s.text name="home.glossary.mailto"/]
     
-    <div id="searchInput" class="pull-right form-group has-feedback"">
+    <div id="searchInput" class="pull-right form-group search-word has-feedback">
       <input type="text" class="form-control" name="search" id="search" placeholder="search" autocomplete="off">
       <span class="glyphicon glyphicon-search form-control-feedback"></span>
     </div>
@@ -72,19 +76,19 @@
 <hr />
   <div class="wordTitle">[@s.text name="home.glossary.${word}"/]</div>
   <div class="wordDefinition">[@s.text name="home.glossary.${word}.definition"/]
-    [#if word == "budget"]
+    [#if word == "CCAFSbudget"]
       <ul class="listGlossaryItems">
-        <li>[@s.text name="home.glossary.budget.definition.w1"/]</li>
-        <li>[@s.text name="home.glossary.budget.definition.w2"/]</li>
-        <li>[@s.text name="home.glossary.budget.definition.w3"/]</li>
-        <li>[@s.text name="home.glossary.budget.definition.bilateral"/]</li>
+        <li>[@s.text name="home.glossary.CCAFSbudget.definition.w1"/]</li>
+        <li>[@s.text name="home.glossary.CCAFSbudget.definition.w2"/]</li>
+        <li>[@s.text name="home.glossary.CCAFSbudget.definition.w3"/]</li>
+        <li>[@s.text name="home.glossary.CCAFSbudget.definition.bilateral"/]</li>
+      </ul> 
+    [#elseif word == "budget"]
+      <ul class="listGlossaryItems">
+          <li>[@s.text name="home.glossary.budget.definition.w1"/]</li>
+          <li>[@s.text name="home.glossary.budget.definition.w3"/]</li>
+          <li>[@s.text name="home.glossary.budget.definition.bilateral"/]</li>
       </ul>
-    [#elseif word == "partners"]
-      <ul>
-        <li>[@s.text name="home.glossary.partners.definition2"/]</li>
-        <li>[@s.text name="home.glossary.partners.definition3"/]</li>
-      </ul>
-      [@s.text name="home.glossary.partners.definition4"/]  
     [/#if]
   </div>
  </div>

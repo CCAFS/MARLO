@@ -336,5 +336,7 @@
     <mapping resource="xmls/ProjectExpectedStudyLinks.hbm.xml "/>
     <mapping resource="xmls/ProjectExpectedStudyPolicies.hbm.xml "/>
     <mapping resource="xmls/ProjectExpectedStudyQuantifications.hbm.xml "/>
+    <mapping resource="xmls/ProjectLp6Contribution.hbm.xml"/> 
+    <mapping resource="xmls/ProjectLp6ContributionDeliverables.hbm.xml"/> 
 	</session-factory>
 </hibernate-configuration>

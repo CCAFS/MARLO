@@ -262,9 +262,9 @@ public class FlagshipPlansAction extends BaseAction {
       .filter(c -> c.getCrpProgram() != null
         && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue() && c.isActive())
       .collect(Collectors.toList());
-    liaisonInstitutions.addAll(loggedCrp.getLiaisonInstitutions().stream()
-      .filter(c -> c.getCrpProgram() == null && c.getAcronym().equals("PMU") && c.isActive())
-      .collect(Collectors.toList()));
+    liaisonInstitutions.addAll(
+      loggedCrp.getLiaisonInstitutions().stream().filter(c -> c.getCrpProgram() == null && c.getAcronym() != null
+        && c.getAcronym() != null && c.getAcronym().equals("PMU") && c.isActive()).collect(Collectors.toList()));
     liaisonInstitutions.sort(Comparator.comparing(LiaisonInstitution::getAcronym));
     // Base Permission
     String params[] = {loggedCrp.getAcronym(), powbSynthesis.getId() + ""};
@@ -379,7 +379,7 @@ public class FlagshipPlansAction extends BaseAction {
                   break;
                 }
               } else {
-                if (institution.getAcronym().equals("PMU")) {
+                if (institution.getAcronym() != null && institution.getAcronym().equals("PMU")) {
                   liaisonInstitutionID = institution.getId();
                   isLeader = true;
                   break;

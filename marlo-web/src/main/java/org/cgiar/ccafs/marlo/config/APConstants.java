@@ -114,6 +114,8 @@ public final class APConstants {
   public static final String CRP_HAS_RESEARCH_HUMAN = "crp_has_research_human";
   public static final String CRP_CONTACT_POINT_EDIT_PROJECT = "crp_contact_point_edit_project";
   public static final String CRP_DELIVERABLES_INTELLECTUAL_ASSET = "crp_deliverable_intellectual_asset";
+  public static final String CRP_LP6_ACTIVE = "crp_lp6_active";
+  public static final String CRP_LP6_CONTRIBUTION_VALUE = "crp_lp6_contribution_value";
 
 
   // Email parameters to copy to FL FM CL
@@ -416,6 +418,9 @@ public final class APConstants {
   public static final String PROJECT_POLICY_CROSS_CUTTING_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.ProjectPolicy.projectPolicyCrossCuttingMarkers)";
 
+  // Project Contribution To LP6 Relations
+  public static final String PROJECT_CONTRIBUTION_LP6_RELATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.Project.projectLp6Contributions)";
 
   // End
   public static final String PROJECT_REQUEST_ID = "projectID";

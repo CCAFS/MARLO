@@ -84,3 +84,17 @@ ul.nav.nav-tabs.projectOutcomeYear-tabs>li>a:hover {
 i.indicatorText {
   opacity: 0.7;
 }
+
+.radio-yes-no {
+  margin-top: 5px;
+}
+
+.contributionNarrative {
+  margin-bottom: 18px;
+}
+
+#menu-contributionsLP6 {
+  /* background: #ffffff !important; */
+  /* opacity: 0.5; */
+  font-size: 0.85em !important;
+}

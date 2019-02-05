@@ -129,7 +129,7 @@
 </div>
 
 [#if logged?? && logged]
-<div class="form-group">
+<div class="form-group timeline-phases">
   [#attempt]
     [#include "/WEB-INF/global/pages/timeline-phases.ftl" /]
   [#recover]

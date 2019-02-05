@@ -82,6 +82,7 @@ public class OutcomesContributionsSummaryAction extends BaseSummariesAction impl
   private final ResourceManager resourceManager;
   // XLSX bytes
   private byte[] bytesXLSX;
+  private String projectSummary = "";
   // Streams
   InputStream inputStream;
 
@@ -104,6 +105,7 @@ public class OutcomesContributionsSummaryAction extends BaseSummariesAction impl
   private MasterReport addi8nParameters(MasterReport masterReport) {
     masterReport.getParameterValues().put("i8nProjectId", this.getText("searchTerms.projectId"));
     masterReport.getParameterValues().put("i8nTitle", this.getText("project.title.readText"));
+    masterReport.getParameterValues().put("i8nProjectSummary", this.getText("project.summary"));
     masterReport.getParameterValues().put("i8nStartDate", this.getText("project.startDate"));
     masterReport.getParameterValues().put("i8nEndDate", this.getText("project.endDate"));
     masterReport.getParameterValues().put("i8nFlagship", this.getText("projectOtherContributions.flagship"));
@@ -276,12 +278,12 @@ public class OutcomesContributionsSummaryAction extends BaseSummariesAction impl
 
   private TypedTableModel getMilestonesOutcomesTableModel() {
     TypedTableModel model = new TypedTableModel(
-      new String[] {"project_id", "flagship", "outcome", "project_url", "milestone", "expected_value", "expected_unit",
-        "narrative_target", "title", "outcomeIndicator", "phaseID", "outcome_expected_value", "achieved_value",
-        "achieved_narrative", "startDate", "endDate"},
-      new Class[] {String.class, String.class, String.class, String.class, String.class, Long.class, String.class,
-        String.class, String.class, String.class, Long.class, BigDecimal.class, Long.class, String.class, String.class,
-        String.class},
+      new String[] {"project_id", "flagship", "projectSummary", "outcome", "project_url", "milestone", "expected_value",
+        "expected_unit", "narrative_target", "title", "outcomeIndicator", "phaseID", "outcome_expected_value",
+        "achieved_value", "achieved_narrative", "startDate", "endDate"},
+      new Class[] {String.class, String.class, String.class, String.class, String.class, String.class, Long.class,
+        String.class, String.class, String.class, String.class, Long.class, BigDecimal.class, Long.class, String.class,
+        String.class, String.class},
       0);
     SimpleDateFormat formatter = new SimpleDateFormat("MMM yyyy");
 
@@ -297,6 +299,9 @@ public class OutcomesContributionsSummaryAction extends BaseSummariesAction impl
       projectId = projectMilestone.getProjectOutcome().getProject().getId().toString();
       BigDecimal outcomeExpectedValue = new BigDecimal(0);
       Long achievedValue = new Long(0);
+      if (projectSummary == null && projectSummary.isEmpty()) {
+        projectSummary = "";
+      }
       if (projectMilestone.getProjectOutcome().getProject().getProjecInfoPhase(this.getSelectedPhase()) != null) {
         title =
           projectMilestone.getProjectOutcome().getProject().getProjecInfoPhase(this.getSelectedPhase()).getTitle();
@@ -356,9 +361,9 @@ public class OutcomesContributionsSummaryAction extends BaseSummariesAction impl
         achievedTarget = projectMilestone.getNarrativeAchieved();
       }
 
-      model.addRow(
-        new Object[] {projectId, flagship, outcome, projectUrl, milestone, expectedValue, expectedUnit, narrativeTarget,
-          title, outcomeIndicator, phaseID, outcomeExpectedValue, achievedValue, achievedTarget, startDate, endDate});
+      model.addRow(new Object[] {projectId, flagship, projectSummary, outcome, projectUrl, milestone, expectedValue,
+        expectedUnit, narrativeTarget, title, outcomeIndicator, phaseID, outcomeExpectedValue, achievedValue,
+        achievedTarget, startDate, endDate});
     }
     return model;
   }
@@ -366,12 +371,12 @@ public class OutcomesContributionsSummaryAction extends BaseSummariesAction impl
 
   private TypedTableModel getProjectsOutcomesTableModel() {
     TypedTableModel model = new TypedTableModel(
-      new String[] {"project_id", "title", "flagship", "outcome", "expected_value", "expected_unit",
+      new String[] {"project_id", "title", "projectSummary", "flagship", "outcome", "expected_value", "expected_unit",
         "expected_narrative", "project_url", "outcomeIndicator", "phaseID", "outcome_expected_value", "achieved_value",
         "achieved_narrative", "startDate", "endDate", "communications"},
-      new Class[] {String.class, String.class, String.class, String.class, BigDecimal.class, String.class, String.class,
-        String.class, String.class, Long.class, BigDecimal.class, Long.class, String.class, String.class, String.class,
-        String.class},
+      new Class[] {String.class, String.class, String.class, String.class, String.class, BigDecimal.class, String.class,
+        String.class, String.class, String.class, Long.class, BigDecimal.class, Long.class, String.class, String.class,
+        String.class, String.class},
       0);
 
     SimpleDateFormat formatter = new SimpleDateFormat("MMM yyyy");
@@ -400,6 +405,12 @@ public class OutcomesContributionsSummaryAction extends BaseSummariesAction impl
           projectId = project.getId().toString();
           projectUrl = "P" + project.getId().toString();
           title = project.getProjectInfo().getTitle();
+          if (project.getProjectInfo().getSummary() != null && !project.getProjectInfo().getSummary().isEmpty()) {
+            projectSummary = project.getProjectInfo().getSummary();
+          } else {
+            projectSummary = "";
+          }
+
           if (project.getProjectInfo().getStartDate() != null) {
             startDate = formatter.format(project.getProjectInfo().getStartDate());
           }
@@ -460,7 +471,7 @@ public class OutcomesContributionsSummaryAction extends BaseSummariesAction impl
             }
           }
           Long phaseID = this.getSelectedPhase().getId();
-          model.addRow(new Object[] {projectId, title, flagship, outcome, expectedValue, expectedUnit,
+          model.addRow(new Object[] {projectId, title, projectSummary, flagship, outcome, expectedValue, expectedUnit,
             expectedNarrative, projectUrl, outcomeIndicator, phaseID, outcomeExpectedValue, achievedValue,
             achievedNarrative, startDate, endDate, communications});
           if (projectOutcome.getProjectMilestones() != null && projectOutcome.getProjectMilestones().size() > 0) {
