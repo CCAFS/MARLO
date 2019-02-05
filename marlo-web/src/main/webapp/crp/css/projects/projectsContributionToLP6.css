@@ -1,0 +1,35 @@
+.lp6-pdf{
+  float:right;
+  font-weight:bold;
+  cursor: pointer;
+}
+
+.lp6-view-more {
+  cursor: pointer;
+  color: #337ab7;
+}
+
+.lp6-view-more:hover{
+  text-decoration:underline;
+}
+
+.lp6info-modal .modal-content {
+  padding: 20px;
+  text-align: justify;
+}
+
+.lp6-contribution-note {
+  text-align: justify !important;
+}
+
+.contributionNote {
+  background-color: #f9f9f9 !important;
+}
+
+.lp6-close {
+  font-size: 35px;
+}
+
+.lp6-help { 
+  margin: 40px 20px 40px 20px;
+}

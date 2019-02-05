@@ -68,6 +68,7 @@ public class DeliverableListAction extends BaseAction {
   private ProjectManager projectManager;
   private SectionStatusManager sectionStatusManager;
 
+
   // Front-end
   private List<Integer> allYears;
   private long deliverableID;
@@ -76,6 +77,7 @@ public class DeliverableListAction extends BaseAction {
   private GlobalUnit loggedCrp;
   private Project project;
   private long projectID;
+
 
   @Inject
   public DeliverableListAction(APConfig config, ProjectManager projectManager, GlobalUnitManager crpManager,
@@ -125,13 +127,13 @@ public class DeliverableListAction extends BaseAction {
       }
     }
 
-
     if (deliverableID > 0) {
       return SUCCESS;
     }
 
     return INPUT;
   }
+
 
   public void addDeliverablePhase(Phase phase, Deliverable deliverable) {
     phase = phaseManager.getPhaseById(phase.getId());
@@ -147,6 +149,7 @@ public class DeliverableListAction extends BaseAction {
     }
   }
 
+
   public boolean canEdit(long deliverableID) {
     Deliverable deliverable = deliverableManager.getDeliverableById(deliverableID);
     if (this.isPlanningActive() && !this.isUpKeepActive()) {
@@ -157,7 +160,6 @@ public class DeliverableListAction extends BaseAction {
     }
     return true;
   }
-
 
   @Override
   public String delete() {
@@ -191,10 +193,10 @@ public class DeliverableListAction extends BaseAction {
     return allYears;
   }
 
-
   public long getDeliverableID() {
     return deliverableID;
   }
+
 
   public List<Deliverable> getDeliverables() {
     return deliverables;
@@ -353,10 +355,10 @@ public class DeliverableListAction extends BaseAction {
 
   }
 
-
   public GlobalUnit getLoggedCrp() {
     return loggedCrp;
   }
+
 
   public Project getProject() {
     return project;
@@ -430,7 +432,6 @@ public class DeliverableListAction extends BaseAction {
 
   }
 
-
   private DeliverablePartnership responsiblePartner(Deliverable deliverable) {
     try {
       DeliverablePartnership partnership = deliverable.getDeliverablePartnerships().stream()
@@ -443,11 +444,11 @@ public class DeliverableListAction extends BaseAction {
     }
   }
 
+
   @Override
   public String save() {
     return SUCCESS;
   }
-
 
   public void setAllYears(List<Integer> allYears) {
     this.allYears = allYears;

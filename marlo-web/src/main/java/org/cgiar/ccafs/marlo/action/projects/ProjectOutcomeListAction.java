@@ -21,6 +21,7 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitProjectManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectLp6ContributionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
@@ -32,6 +33,7 @@ import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
+import org.cgiar.ccafs.marlo.data.model.ProjectLp6Contribution;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.security.Permission;
@@ -39,6 +41,7 @@ import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -63,6 +66,7 @@ public class ProjectOutcomeListAction extends BaseAction {
   private ProjectOutcomeManager projectOutcomeManager;
   private SectionStatusManager sectionStatusManager;
   private GlobalUnitProjectManager globalUnitProjectManager;
+  private ProjectLp6ContributionManager projectLp6ContributionManager;
 
   // Front-end
   private long projectID;
@@ -71,12 +75,18 @@ public class ProjectOutcomeListAction extends BaseAction {
   private Project project;
   private long outcomeId;
   private List<CrpProgramOutcome> outcomes;
-  private long sharedPhaseID;
+  private ProjectLp6Contribution projectLp6Contribution;
+  private Map<String, Object> status;
+  private boolean contributionValue;
+  private long phaseID;
+  private Phase phase;
+
 
   @Inject
   public ProjectOutcomeListAction(APConfig config, ProjectManager projectManager, GlobalUnitManager crpManager,
     CrpProgramOutcomeManager crpProgramOutcomeManager, SectionStatusManager sectionStatusManager,
-    ProjectOutcomeManager projectOutcomeManager, GlobalUnitProjectManager globalUnitProjectManager) {
+    ProjectOutcomeManager projectOutcomeManager, GlobalUnitProjectManager globalUnitProjectManager,
+    ProjectLp6ContributionManager projectLp6ContributionManager) {
     super(config);
     this.projectManager = projectManager;
     this.sectionStatusManager = sectionStatusManager;
@@ -84,9 +94,8 @@ public class ProjectOutcomeListAction extends BaseAction {
     this.crpProgramOutcomeManager = crpProgramOutcomeManager;
     this.projectOutcomeManager = projectOutcomeManager;
     this.globalUnitProjectManager = globalUnitProjectManager;
-
+    this.projectLp6ContributionManager = projectLp6ContributionManager;
   }
-
 
   public String addProjectOutcome() {
     if (this.hasPermission("add")) {
@@ -101,7 +110,6 @@ public class ProjectOutcomeListAction extends BaseAction {
     } else {
       return NOT_AUTHORIZED;
     }
-
   }
 
   public String deleteProjectOutcome() {
@@ -117,14 +125,17 @@ public class ProjectOutcomeListAction extends BaseAction {
     }
   }
 
-
   public Long getOutcomeId() {
     return outcomeId;
   }
 
-
   public List<CrpProgramOutcome> getOutcomes() {
     return outcomes;
+  }
+
+  @Override
+  public Long getPhaseID() {
+    return phaseID;
   }
 
 
@@ -132,16 +143,25 @@ public class ProjectOutcomeListAction extends BaseAction {
     return project;
   }
 
-
   public long getProjectID() {
     return projectID;
   }
 
+  public ProjectLp6Contribution getProjectLp6Contribution() {
+    return projectLp6Contribution;
+  }
 
   public long getProjectOutcomeID() {
     return projectOutcomeID;
   }
 
+  public Map<String, Object> getStatus() {
+    return status;
+  }
+
+  public boolean isContributionValue() {
+    return contributionValue;
+  }
 
   @Override
   public void prepare() throws Exception {
@@ -156,21 +176,19 @@ public class ProjectOutcomeListAction extends BaseAction {
 
     }
 
-    Phase phase = this.getActualPhase();
-    sharedPhaseID = phase.getId();
+    contributionValue =
+      Boolean.parseBoolean(StringUtils.trim(this.getRequest().getParameter(APConstants.CRP_LP6_CONTRIBUTION_VALUE)));
 
+    phase = this.getActualPhase();
 
     project = projectManager.getProjectById(projectID);
     project.setProjectInfo(project.getProjecInfoPhase(phase));
     List<ProjectOutcome> projectOutcomes = project.getProjectOutcomes().stream()
       .filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList());
 
-
     GlobalUnitProject gp = globalUnitProjectManager.findByProjectId(project.getId());
 
     project.setOutcomes(projectOutcomes);
-
-    System.out.println(project.getOutcomes().size());
 
     outcomes = new ArrayList<CrpProgramOutcome>();
     for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
@@ -194,11 +212,25 @@ public class ProjectOutcomeListAction extends BaseAction {
     }
     project.setFlagships(programs);
 
-
-    System.out.println(project.getOutcomes().size());
     String params[] = {gp.getGlobalUnit().getAcronym(), project.getId() + ""};
     this.setBasePermission(this.getText(Permission.PROJECT_CONTRIBRUTIONCRP_BASE_PERMISSION, params));
 
+    if (this.getActualPhase() != null && projectID != 0) {
+
+      if (projectLp6ContributionManager.findAll() != null) {
+        List<ProjectLp6Contribution> projectLp6Contributions = projectLp6ContributionManager.findAll().stream()
+          .filter(
+            c -> c.isActive() && c.getProject().getId().equals(projectID) && c.getPhase().equals(this.getActualPhase()))
+          .collect(Collectors.toList());
+        if (projectLp6Contributions != null && !projectLp6Contributions.isEmpty()) {
+          this.setProjectLp6Contribution(projectLp6Contributions.get(0));
+        }
+      }
+    }
+  }
+
+  public void setContributionValue(boolean contributionValue) {
+    this.contributionValue = contributionValue;
   }
 
 
@@ -206,14 +238,21 @@ public class ProjectOutcomeListAction extends BaseAction {
     this.outcomeId = outcomeId;
   }
 
-
   public void setOutcomeId(Long outcomeId) {
     this.outcomeId = outcomeId;
   }
 
+
   public void setOutcomes(List<CrpProgramOutcome> outcomes) {
     this.outcomes = outcomes;
   }
+
+
+  @Override
+  public void setPhaseID(Long phaseID) {
+    this.phaseID = phaseID;
+  }
+
 
   public void setProject(Project project) {
     this.project = project;
@@ -223,8 +262,16 @@ public class ProjectOutcomeListAction extends BaseAction {
     this.projectID = projectID;
   }
 
+  public void setProjectLp6Contribution(ProjectLp6Contribution projectLp6Contribution) {
+    this.projectLp6Contribution = projectLp6Contribution;
+  }
 
   public void setProjectOutcomeID(long projectOutcomeID) {
     this.projectOutcomeID = projectOutcomeID;
+  }
+
+
+  public void setStatus(Map<String, Object> status) {
+    this.status = status;
   }
 }

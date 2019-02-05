@@ -633,14 +633,16 @@ function onClickRemoveElement() {
   $parent.slideUp(100, function() {
     $parent.remove();
 
-    // Create event removeElement
-    $select.trigger("removeElement", [
-        id, name
-    ]);
+
 
     // Enabled option in select component
     $select.find('option[value="' + id + '"]').prop("disabled", false);
     $select.select2();
+
+    // Create event removeElement
+    $select.trigger("removeElement", [
+        id, name
+    ]);
 
     // Update indexes
     $list.find('li.relationElement').each(function(i,element) {

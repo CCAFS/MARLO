@@ -329,5 +329,8 @@
     <mapping resource="xmls/ProjectPolicyCrps.hbm.xml"/>
     <mapping resource="xmls/ProjectPolicySubIdos.hbm.xml"/>
     <mapping resource="xmls/ProjectPolicyCrossCuttingMarkers.hbm.xml"/>                    
+    <mapping resource="xmls/ProjectLp6Contribution.hbm.xml"/> 
+    <mapping resource="xmls/ProjectLp6ContributionDeliverables.hbm.xml"/>   
+    
 	</session-factory>
 </hibernate-configuration>
