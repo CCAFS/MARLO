@@ -16,16 +16,13 @@ package org.cgiar.ccafs.marlo.rest.dto;
 
 import io.swagger.annotations.ApiModelProperty;
 
-public class RegionDTO {
+public class ParentRegionDTO {
 
 	@ApiModelProperty(notes = "The ISO Region code")
 	private Long UM49Code;
 
 	@ApiModelProperty(notes = "Region Name")
 	private String name;
-
-	@ApiModelProperty(notes = "Parent Region")
-	private ParentRegionDTO parentRegion;
 
 	public String getName() {
 		return this.name;
@@ -41,14 +38,6 @@ public class RegionDTO {
 
 	public void setUM49Code(Long uM49Code) {
 		this.UM49Code = uM49Code;
-	}
-
-	public ParentRegionDTO getParentRegion() {
-		return parentRegion;
-	}
-
-	public void setParentRegion(ParentRegionDTO parentRegion) {
-		this.parentRegion = parentRegion;
 	}
 
 }
