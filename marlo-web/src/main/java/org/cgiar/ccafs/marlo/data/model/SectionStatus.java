@@ -56,8 +56,10 @@ public class SectionStatus extends MarloBaseEntity implements java.io.Serializab
 
   private ProjectExpectedStudy projectExpectedStudy;
 
-
   private ReportSynthesis reportSynthesis;
+
+
+  private ProjectLp6Contribution projectLp6Contribution;
 
 
   public SectionStatus() {
@@ -67,6 +69,7 @@ public class SectionStatus extends MarloBaseEntity implements java.io.Serializab
     return caseStudy;
   }
 
+
   public CrpProgram getCrpProgram() {
     return this.crpProgram;
   }
@@ -74,7 +77,6 @@ public class SectionStatus extends MarloBaseEntity implements java.io.Serializab
   public String getCycle() {
     return this.cycle;
   }
-
 
   public Deliverable getDeliverable() {
     return deliverable;
@@ -92,6 +94,7 @@ public class SectionStatus extends MarloBaseEntity implements java.io.Serializab
   public IpProgram getIpProgram() {
     return ipProgram;
   }
+
 
   public String getMissingFields() {
     return this.missingFields;
@@ -115,6 +118,10 @@ public class SectionStatus extends MarloBaseEntity implements java.io.Serializab
 
   public ProjectInnovation getProjectInnovation() {
     return projectInnovation;
+  }
+
+  public ProjectLp6Contribution getProjectLp6Contribution() {
+    return projectLp6Contribution;
   }
 
   public ProjectOutcome getProjectOutcome() {
@@ -153,7 +160,6 @@ public class SectionStatus extends MarloBaseEntity implements java.io.Serializab
     this.deliverable = deliverable;
   }
 
-
   public void setFundingSource(FundingSource fundingSource) {
     this.fundingSource = fundingSource;
   }
@@ -162,6 +168,7 @@ public class SectionStatus extends MarloBaseEntity implements java.io.Serializab
   public void setIpLiaisonInstitution(IpLiaisonInstitution ipLiaisonInstitution) {
     this.ipLiaisonInstitution = ipLiaisonInstitution;
   }
+
 
   public void setIpProgram(IpProgram ipProgram) {
     this.ipProgram = ipProgram;
@@ -174,7 +181,6 @@ public class SectionStatus extends MarloBaseEntity implements java.io.Serializab
   public void setPowbSynthesis(PowbSynthesis powbSynthesis) {
     this.powbSynthesis = powbSynthesis;
   }
-
 
   public void setProject(Project project) {
     this.project = project;
@@ -190,8 +196,13 @@ public class SectionStatus extends MarloBaseEntity implements java.io.Serializab
     this.projectHighlight = projectHighlight;
   }
 
+
   public void setProjectInnovation(ProjectInnovation projectInnovation) {
     this.projectInnovation = projectInnovation;
+  }
+
+  public void setProjectLp6Contribution(ProjectLp6Contribution projectLp6Contribution) {
+    this.projectLp6Contribution = projectLp6Contribution;
   }
 
 
@@ -219,10 +230,12 @@ public class SectionStatus extends MarloBaseEntity implements java.io.Serializab
   @Override
   public String toString() {
     return "SectionStatus [id=" + this.getId() + ", crpProgram=" + crpProgram + ", sectionName=" + sectionName
-      + ", missingFields=" + missingFields + ", cycle=" + cycle + ", year=" + year + ", project=" + project
-      + ", fundingSource=" + fundingSource + ", deliverable=" + deliverable + ", projectOutcome=" + projectOutcome
-      + ", caseStudy=" + caseStudy + ", projectHighlight=" + projectHighlight + ", ipProgram=" + ipProgram
-      + ", ipLiaisonInstitution=" + ipLiaisonInstitution + "]";
+      + ", missingFields=" + missingFields + ", cycle=" + cycle + ", year=" + year + ", upkeep=" + upkeep + ", project="
+      + project + ", fundingSource=" + fundingSource + ", deliverable=" + deliverable + ", projectOutcome="
+      + projectOutcome + ", caseStudy=" + caseStudy + ", projectHighlight=" + projectHighlight + ", ipProgram="
+      + ipProgram + ", ipLiaisonInstitution=" + ipLiaisonInstitution + ", powbSynthesis=" + powbSynthesis
+      + ", projectInnovation=" + projectInnovation + ", projectExpectedStudy=" + projectExpectedStudy
+      + ", reportSynthesis=" + reportSynthesis + ", projectLp6Contribution=" + projectLp6Contribution + "]";
   }
 }
 
