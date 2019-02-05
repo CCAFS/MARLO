@@ -58,9 +58,9 @@
         <br />
         <label for="">[@s.text name="study.outcomestoryLinks" /]:
           [@customForm.req required=editable /]
-          [@customForm.helpLabel name="study.outcomestoryLinks.help" paramText="<a href='https://sites.google.com/cgxchange.org/cgiar-pbm-resources/' target='_blank'>here</a>" showIcon=false editable=editable/]
+          [@customForm.helpLabel name="study.outcomestoryLinks.help" paramText="<a href='https://sites.google.com/cgxchange.org/cgiar-pbm-resources/' target='_blank'>Personal data use authorization form</a>" showIcon=false editable=editable/]
         </label>
-        <div class="linksBlock simpleBox">
+        <div class="linksBlock ">
           <div class="linksList">
             [#list (element.links)![{}] as link ]
               [@studyLink name="study.links" element=link index=link_index /]
