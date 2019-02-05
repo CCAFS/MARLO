@@ -3,11 +3,14 @@
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2", "jsUri"] /]
 [#assign customJS = [
-  "${baseUrlMedia}/js/projects/projectContributionsCrpList.js",
+  "${baseUrlMedia}/js/projects/projectContributionsCrpList.js?20180131_2",
   "${baseUrl}/global/js/fieldsValidation.js"
   ] 
 /]
-[#assign customCSS = ["${baseUrlMedia}/css/projects/projectContributionsCrpList.css"] /]
+[#assign customCSS = [
+  "${baseUrlMedia}/css/projects/projectContributionsCrpList.css",
+  "${baseUrlMedia}/css/projects/projectsContributionToLP6.css"
+  ] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "contributionsCrpList" /]
 [#assign isListSection = true /]
@@ -21,6 +24,7 @@
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
 [#import "/WEB-INF/crp/macros/relationsPopupMacro.ftl" as popUps /]
+[#import "/WEB-INF/global/macros/utils.ftl" as utilities /]
 
 [#assign startYear = (project.projectInfo.startDate?string.yyyy)?number /]
 [#assign endYear = (project.projectInfo.endDate?string.yyyy)?number /]
@@ -99,7 +103,7 @@
               </div>
             [/#if] 
           </div> 
-      
+      [@contributionToLP6 /]
       </div>
     </div>  
 </section>
@@ -214,6 +218,36 @@
       </div>
     </div>
   </div> 
+[/#macro]
+
+[#macro contributionToLP6 template=false] 
+[#assign isContributing = ((action.getProjectLp6ContributionValue(project.id, actualPhase.id))!false) ]
+[#if action.hasSpecificities('crp_lp6_active') && reportingActive]
+  <div id="projectContributionToLP6" class="borderBox project-${project.id} phase-${actualPhase.id}">
+  
+   [#-- <a class="btn lp6-pdf btn-link" role="button" data-toggle="popover" data-trigger="focus" title="[@s.text name="projects.LP6Contribution.disabledPDF"/]"><img src="${baseUrl}/global/images/pdf.png" height="25"/>[[@s.text name="projects.LP6Contribution.explanatoryPDF" /]]</a>--]
+   <h4>[@s.text name="projects.LP6Contribution.title" /]</h4>
+   <p class="note lp6-contribution-note"><small>[@s.text name="projects.LP6Contribution.infoText"/] (<span class="lp6-view-more" data-toggle="modal" data-target=".lp6info-modal">view more</span>)</small></p>
+   <div class="form-group">
+       <label>[@s.text name="projects.LP6Contribution.contribution"/][@customForm.req required=true /]</label>
+       [@customForm.radioFlat id="lp6Contribution-yes" name="lp6Contribution" label="Yes" value="true" checked=(projectLp6Contribution.contribution)!false cssClassLabel="radio-label-yes" editable=Editable /]
+       [@customForm.radioFlat id="lp6Contribution-no" name="lp6Contribution" label="No" value="false" checked=!((projectLp6Contribution.contribution)!true) cssClassLabel="radio-label-no" editable=Editable /]
+  </div>
+  <div class="form-group contributionNote note" style="display:${(isContributing)?string('block','none')}">
+     [@s.text name="projects.LP6Contribution.contributionNote"/]
+  </div>
+  </div>
+
+  [#-- LP6 Help Text expanded --]
+    <div class="modal fade extended-table-modal lp6info-modal" tabindex="-1" role="dialog" aria-labelledby="extendedTableModal" aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+         <div class="modal-content">
+           <button type="button" class="close lp6-close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+             <div class="lp6-help">[@s.text name="projects.LP6Contribution.helpText"/]</div>
+          </div>
+      </div>
+    </div>
+[/#if]
 [/#macro]
 
 [#-- Get if the year is required--]

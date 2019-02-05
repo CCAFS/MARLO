@@ -27,16 +27,16 @@
 
   <cache
     name="org.hibernate.cache.spi.UpdateTimestampsCache"
-    maxElementsInMemory="10000"
+    maxElementsInMemory="15000"
     eternal="true">
   </cache>
     
     <cache name="org.cgiar.ccafs.marlo.data.model.Parameter"
-           timeToLiveSeconds="3600">
+           timeToLiveSeconds="5000">
     </cache>
     
     <cache name="org.cgiar.ccafs.marlo.data.model.CustomParameter"
-           timeToLiveSeconds="3600">
+           timeToLiveSeconds="5000">
     </cache>
     
 </ehcache>

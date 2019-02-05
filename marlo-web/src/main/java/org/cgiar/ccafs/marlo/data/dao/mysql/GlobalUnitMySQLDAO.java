@@ -13,7 +13,6 @@
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
 
-
 package org.cgiar.ccafs.marlo.data.dao.mysql;
 
 import org.cgiar.ccafs.marlo.data.dao.GlobalUnitDAO;
@@ -30,79 +29,85 @@ import org.hibernate.SessionFactory;
 @Named
 public class GlobalUnitMySQLDAO extends AbstractMarloDAO<GlobalUnit, Long> implements GlobalUnitDAO {
 
+	@Inject
+	public GlobalUnitMySQLDAO(SessionFactory sessionFactory) {
+		super(sessionFactory);
+	}
 
-  @Inject
-  public GlobalUnitMySQLDAO(SessionFactory sessionFactory) {
-    super(sessionFactory);
-  }
+	@Override
+	public List<GlobalUnit> crpUsers(String emai) {
 
-  @Override
-  public List<GlobalUnit> crpUsers(String emai) {
+		String query = "select distinct cp from GlobalUnit cp inner join fetch cp.crpUsers cpUser   "
+				+ "where (cpUser.user.email = :emai  or cpUser.user.username =:emai ) and cpUser.active=1 ";
+		Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+		createQuery.setParameter("emai", emai);
+		List<GlobalUnit> crps = super.findAll(createQuery);
+		return crps;
+	}
 
-    String query = "select distinct cp from GlobalUnit cp inner join fetch cp.crpUsers cpUser   "
-      + "where (cpUser.user.email = :emai  or cpUser.user.username =:emai ) and cpUser.active=1 ";
-    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
-    createQuery.setParameter("emai", emai);
-    List<GlobalUnit> crps = super.findAll(createQuery);
-    return crps;
-  }
+	@Override
+	public void deleteGlobalUnit(long globalUnitId) {
+		GlobalUnit globalUnit = this.find(globalUnitId);
+		globalUnit.setActive(false);
+		this.save(globalUnit);
+	}
 
-  @Override
-  public void deleteGlobalUnit(long globalUnitId) {
-    GlobalUnit globalUnit = this.find(globalUnitId);
-    globalUnit.setActive(false);
-    this.save(globalUnit);
-  }
+	@Override
+	public boolean existGlobalUnit(long globalUnitID) {
+		GlobalUnit globalUnit = this.find(globalUnitID);
+		if (globalUnit == null) {
+			return false;
+		}
+		return true;
 
-  @Override
-  public boolean existGlobalUnit(long globalUnitID) {
-    GlobalUnit globalUnit = this.find(globalUnitID);
-    if (globalUnit == null) {
-      return false;
-    }
-    return true;
+	}
 
-  }
+	@Override
+	public GlobalUnit find(long id) {
+		return super.find(GlobalUnit.class, id);
 
-  @Override
-  public GlobalUnit find(long id) {
-    return super.find(GlobalUnit.class, id);
+	}
 
-  }
+	@Override
+	public List<GlobalUnit> findAll() {
+		String query = "from " + GlobalUnit.class.getName() + " where is_active=1";
+		List<GlobalUnit> list = super.findAll(query);
+		if (list.size() > 0) {
+			return list;
+		}
+		return null;
 
+	}
 
-  @Override
-  public List<GlobalUnit> findAll() {
-    String query = "from " + GlobalUnit.class.getName() + " where is_active=1";
-    List<GlobalUnit> list = super.findAll(query);
-    if (list.size() > 0) {
-      return list;
-    }
-    return null;
+	@Override
+	public GlobalUnit findGlobalUnitByAcronym(String acronym) {
+		String query = "from " + GlobalUnit.class.getName() + " where acronym='" + acronym + "'";
+		List<GlobalUnit> list = super.findAll(query);
+		if (list.size() > 0) {
+			return list.get(0);
+		}
+		return null;
+	}
 
-  }
+	@Override
+	public GlobalUnit findGlobalUnitBySMOCode(String smoCode) {
+		String query = "from " + GlobalUnit.class.getName() + " where smo_code='" + smoCode + "'";
+		List<GlobalUnit> list = super.findAll(query);
+		if (list.size() > 0) {
+			return list.get(0);
+		}
+		return null;
+	}
 
-  @Override
-  public GlobalUnit findGlobalUnitByAcronym(String acronym) {
-    String query = "from " + GlobalUnit.class.getName() + " where acronym='" + acronym + "'";
-    List<GlobalUnit> list = super.findAll(query);
-    if (list.size() > 0) {
-      return list.get(0);
-    }
-    return null;
-  }
+	@Override
+	public GlobalUnit save(GlobalUnit globalUnit) {
+		if (globalUnit.getId() == null) {
+			super.saveEntity(globalUnit);
+		} else {
+			globalUnit = super.update(globalUnit);
+		}
 
-  @Override
-  public GlobalUnit save(GlobalUnit globalUnit) {
-    if (globalUnit.getId() == null) {
-      super.saveEntity(globalUnit);
-    } else {
-      globalUnit = super.update(globalUnit);
-    }
-
-
-    return globalUnit;
-  }
-
+		return globalUnit;
+	}
 
 }

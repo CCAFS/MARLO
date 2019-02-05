@@ -30,7 +30,6 @@ public class ProjectPolicy extends MarloAuditableEntity implements java.io.Seria
   private Set<ProjectPolicyCrossCuttingMarker> projectPolicyCrossCuttingMarkers =
     new HashSet<ProjectPolicyCrossCuttingMarker>(0);
 
-
   private List<String> countriesIds = new ArrayList<>();
   private List<ProjectPolicyCountry> countries;
   private String countriesIdsText;
@@ -41,10 +40,6 @@ public class ProjectPolicy extends MarloAuditableEntity implements java.io.Seria
   private List<ProjectPolicyCrossCuttingMarker> crossCuttingMarkers;
 
   private List<ProjectPolicyCountry> regions;
-
-
-  public ProjectPolicy() {
-  }
 
 
   public List<ProjectPolicyCountry> getCountries() {
@@ -219,6 +214,11 @@ public class ProjectPolicy extends MarloAuditableEntity implements java.io.Seria
 
   public void setSubIdos(List<ProjectPolicySubIdo> subIdos) {
     this.subIdos = subIdos;
+  }
+
+  @Override
+  public String toString() {
+    return "ProjectPolicy [id=" + this.getId() + ", isActive=" + this.isActive() + "]";
   }
 
 }
