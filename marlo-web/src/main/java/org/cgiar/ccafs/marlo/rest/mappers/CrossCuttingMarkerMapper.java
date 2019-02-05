@@ -1,5 +1,5 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning &
+ * This file is part of Managing Agricultural Research for Learning & 
  * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -12,26 +12,20 @@
  * You should have received a copy of the GNU General Public License
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
-
 package org.cgiar.ccafs.marlo.rest.mappers;
 
-import org.cgiar.ccafs.marlo.data.model.RepIndGenderYouthFocusLevel;
-import org.cgiar.ccafs.marlo.rest.dto.CrossCuttingMarkerScoreDTO;
+import org.cgiar.ccafs.marlo.data.model.CgiarCrossCuttingMarker;
+import org.cgiar.ccafs.marlo.rest.dto.CrossCuttingMarkerDTO;
 
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.Mappings;
 
 @Mapper(componentModel = "jsr330")
 public interface CrossCuttingMarkerMapper {
 
-  @Mappings({@Mapping(target = "powbName", source = "crossCuttingMarkersDTO.name")})
-  public abstract RepIndGenderYouthFocusLevel
-    crossCuttingMarkersDTOToRepIndGenderYouthFocusLevel(CrossCuttingMarkerScoreDTO crossCuttingMarkersDTO);
+	public abstract CrossCuttingMarkerDTO cgiarCrossCuttingMarkerToCrossCuttingMarkerDTO(
+			CgiarCrossCuttingMarker cgiarCrossCuttingMarker);
 
-  @Mappings({@Mapping(target = "name", source = "repIndGenderYouthFocusLevel.powbName")})
-  public abstract CrossCuttingMarkerScoreDTO
-    repIndGenderYouthFocusLevelToCrossCuttingMarkersDTO(RepIndGenderYouthFocusLevel repIndGenderYouthFocusLevel);
-
+	public abstract CgiarCrossCuttingMarker crossCuttingMarkerDTOToCgiarCrossCuttingMarker(
+			CrossCuttingMarkerDTO crossCuttingMarkerDTO);
 
 }

@@ -13,7 +13,6 @@
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
 
-
 package org.cgiar.ccafs.marlo.data.dao.mysql;
 
 import org.cgiar.ccafs.marlo.data.dao.SrfSloIndicatorTargetDAO;
@@ -21,62 +20,80 @@ import org.cgiar.ccafs.marlo.data.model.SrfSloIndicatorTarget;
 
 import java.util.List;
 
-import javax.inject.Named;
 import javax.inject.Inject;
+import javax.inject.Named;
+
 import org.hibernate.SessionFactory;
 
 @Named
-public class SrfSloIndicatorTargetMySQLDAO extends AbstractMarloDAO<SrfSloIndicatorTarget, Long> implements SrfSloIndicatorTargetDAO {
+public class SrfSloIndicatorTargetMySQLDAO extends AbstractMarloDAO<SrfSloIndicatorTarget, Long>
+		implements SrfSloIndicatorTargetDAO {
 
+	@Inject
+	public SrfSloIndicatorTargetMySQLDAO(SessionFactory sessionFactory) {
+		super(sessionFactory);
+	}
 
-  @Inject
-  public SrfSloIndicatorTargetMySQLDAO(SessionFactory sessionFactory) {
-    super(sessionFactory);
-  }
+	@Override
+	public void deleteSrfSloIndicatorTarget(long srfSloIndicatorTargetId) {
+		SrfSloIndicatorTarget srfSloIndicatorTarget = this.find(srfSloIndicatorTargetId);
+		srfSloIndicatorTarget.setActive(false);
+		this.save(srfSloIndicatorTarget);
+	}
 
-  @Override
-  public void deleteSrfSloIndicatorTarget(long srfSloIndicatorTargetId) {
-    SrfSloIndicatorTarget srfSloIndicatorTarget = this.find(srfSloIndicatorTargetId);
-    srfSloIndicatorTarget.setActive(false);
-    this.save(srfSloIndicatorTarget);
-  }
+	@Override
+	public boolean existSrfSloIndicatorTarget(long srfSloIndicatorTargetID) {
+		SrfSloIndicatorTarget srfSloIndicatorTarget = this.find(srfSloIndicatorTargetID);
+		if (srfSloIndicatorTarget == null) {
+			return false;
+		}
+		return true;
 
-  @Override
-  public boolean existSrfSloIndicatorTarget(long srfSloIndicatorTargetID) {
-    SrfSloIndicatorTarget srfSloIndicatorTarget = this.find(srfSloIndicatorTargetID);
-    if (srfSloIndicatorTarget == null) {
-      return false;
-    }
-    return true;
+	}
 
-  }
+	@Override
+	public SrfSloIndicatorTarget find(long id) {
+		return super.find(SrfSloIndicatorTarget.class, id);
 
-  @Override
-  public SrfSloIndicatorTarget find(long id) {
-    return super.find(SrfSloIndicatorTarget.class, id);
+	}
 
-  }
+	@Override
+	public List<SrfSloIndicatorTarget> findAll() {
+		String query = "from " + SrfSloIndicatorTarget.class.getName() + " where is_active=1";
+		List<SrfSloIndicatorTarget> list = super.findAll(query);
+		if (list.size() > 0) {
+			return list;
+		}
+		return null;
 
-  @Override
-  public List<SrfSloIndicatorTarget> findAll() {
-    String query = "from " + SrfSloIndicatorTarget.class.getName() + " where is_active=1";
-    List<SrfSloIndicatorTarget> list = super.findAll(query);
-    if (list.size() > 0) {
-      return list;
-    }
-    return null;
+	}
 
-  }
+	/**
+	 * Find a SLO indicator target by smo code
+	 * 
+	 * @param smo code of the Slo Target
+	 * @return list of SrfSloIndicatorTargets
+	 */
+	@Override
+	public SrfSloIndicatorTarget findbyTargetIndicatorCode(String code) {
+		String query = "from " + SrfSloIndicatorTarget.class.getName() + " where is_active=1 and targets_indicator ='"
+				+ code + "'";
+		List<SrfSloIndicatorTarget> list = super.findAll(query);
+		if (list.size() > 0) {
+			return list.get(0);
+		}
+		return null;
 
-  @Override
-  public SrfSloIndicatorTarget save(SrfSloIndicatorTarget srfSloIndicatorTarget) {
-    if (srfSloIndicatorTarget.getId() == null) {
-      super.saveEntity(srfSloIndicatorTarget);
-    } else {
-      srfSloIndicatorTarget = super.update(srfSloIndicatorTarget);
-    }
-    return srfSloIndicatorTarget;
-  }
+	}
 
+	@Override
+	public SrfSloIndicatorTarget save(SrfSloIndicatorTarget srfSloIndicatorTarget) {
+		if (srfSloIndicatorTarget.getId() == null) {
+			super.saveEntity(srfSloIndicatorTarget);
+		} else {
+			srfSloIndicatorTarget = super.update(srfSloIndicatorTarget);
+		}
+		return srfSloIndicatorTarget;
+	}
 
 }

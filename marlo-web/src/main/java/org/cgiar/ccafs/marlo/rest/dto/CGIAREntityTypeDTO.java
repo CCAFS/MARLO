@@ -1,5 +1,5 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning &
+ * This file is part of Managing Agricultural Research for Learning & 
  * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -12,47 +12,39 @@
  * You should have received a copy of the GNU General Public License
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
-
 package org.cgiar.ccafs.marlo.rest.dto;
+
+import java.io.Serializable;
+
+import javax.validation.constraints.NotNull;
 
 import io.swagger.annotations.ApiModelProperty;
 
-public class SrfSubIdoDTO {
+public class CGIAREntityTypeDTO implements Serializable {
 
-	/*
-	 * @ApiModelProperty(notes = "SRF Sub-IDO ID") private Long id;
-	 */
+	private static final long serialVersionUID = 1L;
 
-	@ApiModelProperty(notes = "SRF Sub-IDO CODE")
-	private String code;
+	@ApiModelProperty(notes = "Code of CGIAR entity type")
+	private Long id;
 
-	@ApiModelProperty(notes = "SRF Sub-IDO description ")
-	private String description;
+	@ApiModelProperty(notes = "CGIAR entity type name")
+	@NotNull
+	private String name;
 
-	private SrfIdoDTO srfIdoDTO;
-
-	public String getCode() {
-		return this.code;
+	public Long getId() {
+		return this.id;
 	}
 
-	public String getDescription() {
-		return this.description;
+	public String getName() {
+		return this.name;
 	}
 
-	public SrfIdoDTO getSrfIdoDTO() {
-		return this.srfIdoDTO;
+	public void setId(Long id) {
+		this.id = id;
 	}
 
-	public void setCode(String code) {
-		this.code = code;
-	}
-
-	public void setDescription(String description) {
-		this.description = description;
-	}
-
-	public void setSrfIdoDTO(SrfIdoDTO srfIdoDTO) {
-		this.srfIdoDTO = srfIdoDTO;
+	public void setName(String name) {
+		this.name = name;
 	}
 
 }
