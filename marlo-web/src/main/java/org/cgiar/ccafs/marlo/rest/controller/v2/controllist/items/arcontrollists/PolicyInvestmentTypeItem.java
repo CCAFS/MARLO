@@ -13,12 +13,12 @@
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
 
-package org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.powbar;
+package org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.arcontrollists;
 
 import org.cgiar.ccafs.marlo.data.manager.RepIndPolicyInvestimentTypeManager;
 import org.cgiar.ccafs.marlo.data.model.RepIndPolicyInvestimentType;
-import org.cgiar.ccafs.marlo.rest.dto.PolicyInvestimentTypeDTO;
-import org.cgiar.ccafs.marlo.rest.mappers.PolicyInvestimentTypeMapper;
+import org.cgiar.ccafs.marlo.rest.dto.PolicyInvestmentTypeDTO;
+import org.cgiar.ccafs.marlo.rest.mappers.PolicyInvestmentTypeMapper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,14 +32,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 @Named
-public class PolicyInvestimentTypeItem<T> {
+public class PolicyInvestmentTypeItem<T> {
 
 	private RepIndPolicyInvestimentTypeManager repIndPolicyInvestimentTypeManager;
-	private PolicyInvestimentTypeMapper policyInvestimentTypeMapper;
+	private PolicyInvestmentTypeMapper policyInvestimentTypeMapper;
 
 	@Inject
-	public PolicyInvestimentTypeItem(RepIndPolicyInvestimentTypeManager repIndPolicyInvestimentTypeManager,
-			PolicyInvestimentTypeMapper policyInvestimentTypeMapper) {
+	public PolicyInvestmentTypeItem(RepIndPolicyInvestimentTypeManager repIndPolicyInvestimentTypeManager,
+			PolicyInvestmentTypeMapper policyInvestimentTypeMapper) {
 		this.repIndPolicyInvestimentTypeManager = repIndPolicyInvestimentTypeManager;
 		this.policyInvestimentTypeMapper = policyInvestimentTypeMapper;
 	}
@@ -50,12 +50,12 @@ public class PolicyInvestimentTypeItem<T> {
 	 * @return a List of PolicyInvestmentTypeDTO with all repIndInnovationType
 	 * Items.
 	 */
-	public List<PolicyInvestimentTypeDTO> getAllPolicyInvestimentType() {
+	public List<PolicyInvestmentTypeDTO> getAllPolicyInvestmentType() {
 		if (this.repIndPolicyInvestimentTypeManager.findAll() != null) {
 			List<RepIndPolicyInvestimentType> repIndPolicyInvestimentType = new ArrayList<>(
 					this.repIndPolicyInvestimentTypeManager.findAll());
 
-			List<PolicyInvestimentTypeDTO> policyInvestimentTypeDTOs = repIndPolicyInvestimentType.stream()
+			List<PolicyInvestmentTypeDTO> policyInvestimentTypeDTOs = repIndPolicyInvestimentType.stream()
 					.map(repIndPolicyInvestimentTypeEntity -> this.policyInvestimentTypeMapper
 							.RepIndPolicyInvestimentTypeToPolicyInvestimentTypeDTO(repIndPolicyInvestimentTypeEntity))
 					.collect(Collectors.toList());
@@ -71,7 +71,7 @@ public class PolicyInvestimentTypeItem<T> {
 	 * @param id
 	 * @return a PolicyInvestmentTypeDTO with the Policy Type data.
 	 */
-	public ResponseEntity<PolicyInvestimentTypeDTO> PolicyInvestimentTypeById(Long id) {
+	public ResponseEntity<PolicyInvestmentTypeDTO> PolicyInvestmentTypeById(Long id) {
 		RepIndPolicyInvestimentType repIndPolicyInvestimentType = this.repIndPolicyInvestimentTypeManager
 				.getRepIndPolicyInvestimentTypeById(id);
 		return Optional.ofNullable(repIndPolicyInvestimentType)

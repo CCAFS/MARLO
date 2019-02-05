@@ -17,42 +17,53 @@ package org.cgiar.ccafs.marlo.rest.dto;
 
 import io.swagger.annotations.ApiModelProperty;
 
-public class SrfSubIdoDTO {
+/**
+ * @author Hermes Jiménez - CIAT/CCAFS
+ */
+public class CountryDTO {
 
-	/*
-	 * @ApiModelProperty(notes = "SRF Sub-IDO ID") private Long id;
-	 */
+	@ApiModelProperty(notes = "The ISO country code")
+	private Long code;
 
-	@ApiModelProperty(notes = "SRF Sub-IDO CODE")
-	private String code;
+	@ApiModelProperty(notes = "The ISO Alpha 2 letters code")
+	private String isoAlpha2;
 
-	@ApiModelProperty(notes = "SRF Sub-IDO description ")
-	private String description;
+	@ApiModelProperty(notes = "Country Name")
+	private String name;
 
-	private SrfIdoDTO srfIdoDTO;
+	@ApiModelProperty(notes = "Region")
+	private RegionDTO regionDTO;
 
-	public String getCode() {
+	public Long getCode() {
 		return this.code;
 	}
 
-	public String getDescription() {
-		return this.description;
+	public String getIsoAlpha2() {
+		return this.isoAlpha2;
 	}
 
-	public SrfIdoDTO getSrfIdoDTO() {
-		return this.srfIdoDTO;
+	public String getName() {
+		return this.name;
 	}
 
-	public void setCode(String code) {
+	public RegionDTO getRegionDTO() {
+		return this.regionDTO;
+	}
+
+	public void setCode(Long code) {
 		this.code = code;
 	}
 
-	public void setDescription(String description) {
-		this.description = description;
+	public void setIsoAlpha2(String isoAlpha2) {
+		this.isoAlpha2 = isoAlpha2;
 	}
 
-	public void setSrfIdoDTO(SrfIdoDTO srfIdoDTO) {
-		this.srfIdoDTO = srfIdoDTO;
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public void setRegionDTO(RegionDTO regionDTO) {
+		this.regionDTO = regionDTO;
 	}
 
 }

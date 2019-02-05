@@ -13,46 +13,27 @@
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
 
-package org.cgiar.ccafs.marlo.rest.dto;
+package org.cgiar.ccafs.marlo.rest.mappers;
 
-import io.swagger.annotations.ApiModelProperty;
+import org.cgiar.ccafs.marlo.data.model.SrfSloIndicatorTarget;
+import org.cgiar.ccafs.marlo.rest.dto.SrfSloTargetDTO;
 
-public class SrfSubIdoDTO {
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.Mappings;
 
-	/*
-	 * @ApiModelProperty(notes = "SRF Sub-IDO ID") private Long id;
-	 */
+/**
+ * @author Hermes Jiménez - CIAT/CCAFS
+ */
+@Mapper(componentModel = "jsr330")
+public interface SrfSloIndicatorTargetMapper {
 
-	@ApiModelProperty(notes = "SRF Sub-IDO CODE")
-	private String code;
+	public abstract SrfSloIndicatorTarget srfSloIndicatorTargetDTOToSrfSloIndicatorTarget(
+			SrfSloTargetDTO srfSloIndicatorTargetDTO);
 
-	@ApiModelProperty(notes = "SRF Sub-IDO description ")
-	private String description;
-
-	private SrfIdoDTO srfIdoDTO;
-
-	public String getCode() {
-		return this.code;
-	}
-
-	public String getDescription() {
-		return this.description;
-	}
-
-	public SrfIdoDTO getSrfIdoDTO() {
-		return this.srfIdoDTO;
-	}
-
-	public void setCode(String code) {
-		this.code = code;
-	}
-
-	public void setDescription(String description) {
-		this.description = description;
-	}
-
-	public void setSrfIdoDTO(SrfIdoDTO srfIdoDTO) {
-		this.srfIdoDTO = srfIdoDTO;
-	}
+	@Mappings({ @Mapping(source = "targetsIndicator", target = "code"),
+			@Mapping(source = "srfSloIndicatorTarget.srfSloIndicator.srfSlo", target = "srfSloDTO") })
+	public abstract SrfSloTargetDTO srfSloIndicatorTargetToSrfSloIndicatorTargetDTO(
+			SrfSloIndicatorTarget srfSloIndicatorTarget);
 
 }

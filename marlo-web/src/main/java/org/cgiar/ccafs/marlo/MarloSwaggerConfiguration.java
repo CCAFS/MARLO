@@ -16,6 +16,7 @@
 package org.cgiar.ccafs.marlo;
 
 import java.util.Collections;
+import java.util.Optional;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -51,8 +52,10 @@ public class MarloSwaggerConfiguration extends WebMvcConfigurerAdapter {
 
 		return new Docket(DocumentationType.SWAGGER_2).securitySchemes(Collections.singletonList(this.securityScheme()))
 				.select().apis(RequestHandlerSelectors.basePackage("org.cgiar.ccafs.marlo.rest"))
-				.paths(PathSelectors.any()).build().apiInfo(this.apiInfo()).tags(new Tag("All AR 2018 Control Lists",
-						"All control list used to populate all tables of AR 2018", 100), this.getTags());
+				.paths(PathSelectors.any()).build().apiInfo(this.apiInfo())// .enableUrlTemplating(true)
+				.tags(new Tag("All AR 2018 Control Lists", "All control list used to populate all tables of AR 2018",
+						100), this.getTags())
+				.genericModelSubstitutes(Optional.class);
 
 	}
 
@@ -64,12 +67,16 @@ public class MarloSwaggerConfiguration extends WebMvcConfigurerAdapter {
 	}
 
 	private Tag[] getTags() {
-		Tag[] tags = new Tag[4];
-		tags[0] = new Tag("Table2 - CRP Policies",
-				"Control list used to populate the policies indicator as per the AR2018 template", 1);
-		tags[1] = new Tag("General Control Lists", "General pourpose control List ", 101);
-		tags[2] = new Tag("SRF Lists", "All SRF related control List ", 102);
-		tags[3] = new Tag("Institutions Lists", "All control List about MARLO intitutions ", 103);
+		Tag[] tags = new Tag[5];
+		tags[0] = new Tag("Table 1 - Evidence on Progress towards SRF targets",
+				"Control list used to populate the table 1 indicator as per the AR2018 template", 5);
+		tags[1] = new Tag("Table 2 - CRP Policies",
+				"Control list used to populate the policies indicator as per the AR2018 template", 10);
+		tags[2] = new Tag("Institutions Lists", "All control List about MARLO intitutions ", 110);
+
+		tags[3] = new Tag("General Control Lists", "General pourpose control List ", 115);
+		tags[4] = new Tag("SRF Lists", "All SRF related control List ", 120);
+
 		return tags;
 	}
 

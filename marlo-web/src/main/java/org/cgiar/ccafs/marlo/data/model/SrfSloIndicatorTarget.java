@@ -1,7 +1,6 @@
 package org.cgiar.ccafs.marlo.data.model;
 // Generated May 21, 2018 2:10:20 PM by Hibernate Tools 3.4.0.CR1
 
-
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 
 import java.math.BigDecimal;
@@ -15,147 +14,134 @@ import com.google.gson.annotations.Expose;
  */
 public class SrfSloIndicatorTarget extends MarloAuditableEntity implements java.io.Serializable, IAuditLog {
 
+	private static final long serialVersionUID = -8975527941728871240L;
 
-  private static final long serialVersionUID = -8975527941728871240L;
+	@Expose
+	private SrfSloIndicator srfSloIndicator;
 
+	@Expose
+	private String narrative;
 
-  @Expose
-  private SrfSloIndicator srfSloIndicator;
+	@Expose
+	private BigDecimal value;
 
+	@Expose
+	private int year;
 
-  @Expose
-  private String narrative;
+	@Expose
+	private String targetsIndicator;
 
+	@Expose
+	private SrfTargetUnit srfTargetUnit;
 
-  @Expose
-  private BigDecimal value;
+	private Set<ReportSynthesisCrpProgressTarget> reportSynthesisCrpProgressTargets = new HashSet<ReportSynthesisCrpProgressTarget>(
+			0);
 
+	public SrfSloIndicatorTarget() {
+	}
 
-  @Expose
-  private int year;
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (this.getClass() != obj.getClass()) {
+			return false;
+		}
+		SrfSloIndicatorTarget other = (SrfSloIndicatorTarget) obj;
+		if (this.getId() == null) {
+			if (other.getId() != null) {
+				return false;
+			}
+		} else if (!this.getId().equals(other.getId())) {
+			return false;
+		}
+		return true;
+	}
 
-  private String targetsIndicator;
+	public String getComposedName() {
+		return "SLO " + this.getSrfSloIndicator().getSrfSlo().getId() + " Target - " + this.narrative;
+	}
 
-  @Expose
-  private SrfTargetUnit srfTargetUnit;
+	@Override
+	public String getLogDeatil() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("Id : ").append(this.getId());
+		return sb.toString();
+	}
 
-  private Set<ReportSynthesisCrpProgressTarget> reportSynthesisCrpProgressTargets =
-    new HashSet<ReportSynthesisCrpProgressTarget>(0);
+	public String getNarrative() {
+		return this.narrative;
+	}
 
-  public SrfSloIndicatorTarget() {
-  }
+	public Set<ReportSynthesisCrpProgressTarget> getReportSynthesisCrpProgressTargets() {
+		return this.reportSynthesisCrpProgressTargets;
+	}
 
-  @Override
-  public boolean equals(Object obj) {
-    if (this == obj) {
-      return true;
-    }
-    if (obj == null) {
-      return false;
-    }
-    if (this.getClass() != obj.getClass()) {
-      return false;
-    }
-    SrfSloIndicatorTarget other = (SrfSloIndicatorTarget) obj;
-    if (this.getId() == null) {
-      if (other.getId() != null) {
-        return false;
-      }
-    } else if (!this.getId().equals(other.getId())) {
-      return false;
-    }
-    return true;
-  }
+	public SrfSloIndicator getSrfSloIndicator() {
+		return this.srfSloIndicator;
+	}
 
-  public String getComposedName() {
-    return "SLO " + this.getSrfSloIndicator().getSrfSlo().getId() + " Target - " + narrative;
-  }
+	public SrfTargetUnit getSrfTargetUnit() {
+		return this.srfTargetUnit;
+	}
 
-  @Override
-  public String getLogDeatil() {
-    StringBuilder sb = new StringBuilder();
-    sb.append("Id : ").append(this.getId());
-    return sb.toString();
-  }
+	public String getTargetsIndicator() {
+		return this.targetsIndicator;
+	}
 
-  public String getNarrative() {
-    return narrative;
-  }
+	public BigDecimal getValue() {
+		return this.value;
+	}
 
+	public int getYear() {
+		return this.year;
+	}
 
-  public Set<ReportSynthesisCrpProgressTarget> getReportSynthesisCrpProgressTargets() {
-    return reportSynthesisCrpProgressTargets;
-  }
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((this.getId() == null) ? 0 : this.getId().hashCode());
+		return result;
+	}
 
+	public void setNarrative(String narrative) {
+		this.narrative = narrative;
+	}
 
-  public SrfSloIndicator getSrfSloIndicator() {
-    return srfSloIndicator;
-  }
+	public void setReportSynthesisCrpProgressTargets(
+			Set<ReportSynthesisCrpProgressTarget> reportSynthesisCrpProgressTargets) {
+		this.reportSynthesisCrpProgressTargets = reportSynthesisCrpProgressTargets;
+	}
 
+	public void setSrfSloIndicator(SrfSloIndicator srfSloIndicator) {
+		this.srfSloIndicator = srfSloIndicator;
+	}
 
-  public SrfTargetUnit getSrfTargetUnit() {
-    return srfTargetUnit;
-  }
+	public void setSrfTargetUnit(SrfTargetUnit srfTargetUnit) {
+		this.srfTargetUnit = srfTargetUnit;
+	}
 
+	public void setTargetsIndicator(String targetsIndicator) {
+		this.targetsIndicator = targetsIndicator;
+	}
 
-  public String getTargetsIndicator() {
-    return targetsIndicator;
-  }
+	public void setValue(BigDecimal value) {
+		this.value = value;
+	}
 
+	public void setYear(int year) {
+		this.year = year;
+	}
 
-  public BigDecimal getValue() {
-    return value;
-  }
-
-  public int getYear() {
-    return year;
-  }
-
-
-  @Override
-  public int hashCode() {
-    final int prime = 31;
-    int result = 1;
-    result = prime * result + ((this.getId() == null) ? 0 : this.getId().hashCode());
-    return result;
-  }
-
-  public void setNarrative(String narrative) {
-    this.narrative = narrative;
-  }
-
-  public void
-    setReportSynthesisCrpProgressTargets(Set<ReportSynthesisCrpProgressTarget> reportSynthesisCrpProgressTargets) {
-    this.reportSynthesisCrpProgressTargets = reportSynthesisCrpProgressTargets;
-  }
-
-  public void setSrfSloIndicator(SrfSloIndicator srfSloIndicator) {
-    this.srfSloIndicator = srfSloIndicator;
-  }
-
-  public void setSrfTargetUnit(SrfTargetUnit srfTargetUnit) {
-    this.srfTargetUnit = srfTargetUnit;
-  }
-
-  public void setTargetsIndicator(String targetsIndicator) {
-    this.targetsIndicator = targetsIndicator;
-  }
-
-  public void setValue(BigDecimal value) {
-    this.value = value;
-  }
-
-
-  public void setYear(int year) {
-    this.year = year;
-  }
-
-
-  @Override
-  public String toString() {
-    return "SrfSloIndicatorTarget [id=" + this.getId() + ", narrative=" + narrative + ", value=" + value + ", year="
-      + year + "]";
-  }
+	@Override
+	public String toString() {
+		return "SrfSloIndicatorTarget [id=" + this.getId() + ", narrative=" + this.narrative + ", value=" + this.value
+				+ ", year=" + this.year + "]";
+	}
 
 }
-

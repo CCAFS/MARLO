@@ -15,18 +15,18 @@
 
 package org.cgiar.ccafs.marlo.rest.mappers;
 
-import org.cgiar.ccafs.marlo.data.model.RepIndPolicyInvestimentType;
-import org.cgiar.ccafs.marlo.rest.dto.PolicyInvestimentTypeDTO;
+import org.cgiar.ccafs.marlo.data.model.RepIndStageProcess;
+import org.cgiar.ccafs.marlo.rest.dto.PolicyMaturityLevelDTO;
 
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "jsr330")
-public interface PolicyInvestimentTypeMapper {
+public interface PolicyMaturityLevelMapper {
 
-	public abstract RepIndPolicyInvestimentType policyInvestimentTypeDTOToRepIndPolicyInvestimentType(
-			PolicyInvestimentTypeDTO policyInvestimentTypeDTO);
+	public abstract RepIndStageProcess policyMaturityLevelDTOToRepIndStageProcess(
+			PolicyMaturityLevelDTO policyLevelOfMaturityDTO);
 
-	public abstract PolicyInvestimentTypeDTO RepIndPolicyInvestimentTypeToPolicyInvestimentTypeDTO(
-			RepIndPolicyInvestimentType repIndPolicyInvestimentType);
+	public abstract PolicyMaturityLevelDTO repIndStageProcessToPolicyMaturityLevelDTO(
+			RepIndStageProcess repIndStageProcess);
 
 }

@@ -1,5 +1,5 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning &
+ * This file is part of Managing Agricultural Research for Learning & 
  * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -12,47 +12,43 @@
  * You should have received a copy of the GNU General Public License
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
-
 package org.cgiar.ccafs.marlo.rest.dto;
 
 import io.swagger.annotations.ApiModelProperty;
 
-public class SrfSubIdoDTO {
+public class RegionDTO {
 
-	/*
-	 * @ApiModelProperty(notes = "SRF Sub-IDO ID") private Long id;
-	 */
+	@ApiModelProperty(notes = "The ISO Region code")
+	private Long UM49Code;
 
-	@ApiModelProperty(notes = "SRF Sub-IDO CODE")
-	private String code;
+	@ApiModelProperty(notes = "Region Name")
+	private String name;
 
-	@ApiModelProperty(notes = "SRF Sub-IDO description ")
-	private String description;
+	@ApiModelProperty(notes = "Parent Region")
+	private ParentRegionDTO parentRegion;
 
-	private SrfIdoDTO srfIdoDTO;
-
-	public String getCode() {
-		return this.code;
+	public String getName() {
+		return this.name;
 	}
 
-	public String getDescription() {
-		return this.description;
+	public Long getUM49Code() {
+		return this.UM49Code;
 	}
 
-	public SrfIdoDTO getSrfIdoDTO() {
-		return this.srfIdoDTO;
+	public void setName(String name) {
+		this.name = name;
 	}
 
-	public void setCode(String code) {
-		this.code = code;
+	public void setUM49Code(Long uM49Code) {
+		this.UM49Code = uM49Code;
 	}
 
-	public void setDescription(String description) {
-		this.description = description;
+	public ParentRegionDTO getParentRegion() {
+		return parentRegion;
 	}
 
-	public void setSrfIdoDTO(SrfIdoDTO srfIdoDTO) {
-		this.srfIdoDTO = srfIdoDTO;
+	public void setParentRegion(ParentRegionDTO parentRegion) {
+		this.parentRegion = parentRegion;
 	}
 
 }
