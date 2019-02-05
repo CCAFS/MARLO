@@ -29,8 +29,8 @@
   [#-- ADDITIONAL REPORTING - CRP --]
   { 'slug': 'additionalReporting', 'name': 'menu.additionalReporting',      'namespace': '/publications',       'action': '${(crpSession)!}/publicationsList',  'visible': logged && reportingActive && !centerGlobalUnit, 'active': true,  'help': true,  
     'subItems' : [
-      { 'slug': 'publications', 'name': 'menu.publications', 'namespace': '/publications',  'action': '${(crpSession)!}/publicationsList',  'visible': logged, 'active':  canAcessPublications },
-      { 'slug': 'studies', 'name': 'menu.studies', 'namespace': '/studies',  'action': '${(crpSession)!}/studiesList',  'visible': logged, 'active':  true }
+      { 'slug': 'publications', 'name': 'menu.publications', 'namespace': '/publications',  'action': '${(crpSession)!}/publicationsList',  'visible': logged, 'active':  canAcessPublications, "development": true },
+      { 'slug': 'studies', 'name': 'menu.studies', 'namespace': '/studies',  'action': '${(crpSession)!}/studiesList',  'visible': logged, 'active':  true, "development": true }
     ]
   },
   [#-- SYNTHESIS PLANNING - CRP --]
@@ -42,8 +42,8 @@
   [#-- SYNTHESIS REPORTING - CRP --]
   { 'slug': 'synthesis', 'name': 'menu.synthesis',      'namespace': '/annualReport${annualReport2018?string("2018", "")}',       'action': '${(crpSession)!}/crpProgress',    'visible': logged && reportingActive && !centerGlobalUnit && !upKeepActive, 'active': true,    
     'subItems' : [
-      { 'slug': 'annualReport', 'name': 'menu.synthesis.annualReport', 'namespace': '/annualReport${annualReport2018?string("2018", "")}',  'action': '${(crpSession)!}/crpProgress',  'visible': logged, 'active': canAcessCrp },
-      { 'slug': 'projectsEvaluation', 'name': 'menu.synthesis.projectsEvaluation', 'namespace': '/synthesis',  'action': '${(crpSession)!}/projectsEvaluation',  'visible': logged, 'active': false }
+      { 'slug': 'annualReport', 'name': 'menu.synthesis.annualReport', 'namespace': '/annualReport${annualReport2018?string("2018", "")}',  'action': '${(crpSession)!}/crpProgress',  'visible': logged, 'active': canAcessCrp, "development": true },
+      { 'slug': 'projectsEvaluation', 'name': 'menu.synthesis.projectsEvaluation', 'namespace': '/synthesis',  'action': '${(crpSession)!}/projectsEvaluation',  'visible': logged, 'active': false, "development": true }
     ]
   },
   [#-- Cap Dev - CENTER --]

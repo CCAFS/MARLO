@@ -30,7 +30,7 @@
       [#-- Section Buttons --]
       <div class="buttons">
         <div class="buttons-content">
-          <a class="addButton" href="[@s.url action='${crpSession}/addNewStudy'][@s.param name="studyTypeID" value="1"/][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]"> <span class="saveText">[@s.text name="studiesList.addOutcomeCaseStudy" /] </span></a>
+          <a class="addButton" href="[@s.url action='${crpSession}/addNewStudy'][@s.param name="studyTypeID" value="1"/][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]"> <span class="saveText">[@s.text name="studiesList.addOutcomeCaseStudy" /] </span></a>  
           <a class="addButton" href="[@s.url action='${crpSession}/addNewStudy'][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]"> <span class="saveText">[@s.text name="studiesList.addStudy" /] </span></a>
           <div class="clearfix"></div>
         </div>
