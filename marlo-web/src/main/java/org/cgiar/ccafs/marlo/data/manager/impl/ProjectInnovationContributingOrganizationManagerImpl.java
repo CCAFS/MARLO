@@ -15,11 +15,14 @@
 package org.cgiar.ccafs.marlo.data.manager.impl;
 
 
+import org.cgiar.ccafs.marlo.data.dao.PhaseDAO;
 import org.cgiar.ccafs.marlo.data.dao.ProjectInnovationContributingOrganizationDAO;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationContributingOrganizationManager;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationContributingOrganization;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -28,30 +31,33 @@ import javax.inject.Named;
  * @author CCAFS
  */
 @Named
-public class ProjectInnovationContributingOrganizationManagerImpl implements ProjectInnovationContributingOrganizationManager {
+public class ProjectInnovationContributingOrganizationManagerImpl
+  implements ProjectInnovationContributingOrganizationManager {
 
 
   private ProjectInnovationContributingOrganizationDAO projectInnovationContributingOrganizationDAO;
   // Managers
-
+  private PhaseDAO phaseDAO;
 
   @Inject
-  public ProjectInnovationContributingOrganizationManagerImpl(ProjectInnovationContributingOrganizationDAO projectInnovationContributingOrganizationDAO) {
+  public ProjectInnovationContributingOrganizationManagerImpl(
+    ProjectInnovationContributingOrganizationDAO projectInnovationContributingOrganizationDAO, PhaseDAO phaseDAO) {
     this.projectInnovationContributingOrganizationDAO = projectInnovationContributingOrganizationDAO;
-
-
+    this.phaseDAO = phaseDAO;
   }
 
   @Override
   public void deleteProjectInnovationContributingOrganization(long projectInnovationContributingOrganizationId) {
 
-    projectInnovationContributingOrganizationDAO.deleteProjectInnovationContributingOrganization(projectInnovationContributingOrganizationId);
+    projectInnovationContributingOrganizationDAO
+      .deleteProjectInnovationContributingOrganization(projectInnovationContributingOrganizationId);
   }
 
   @Override
   public boolean existProjectInnovationContributingOrganization(long projectInnovationContributingOrganizationID) {
 
-    return projectInnovationContributingOrganizationDAO.existProjectInnovationContributingOrganization(projectInnovationContributingOrganizationID);
+    return projectInnovationContributingOrganizationDAO
+      .existProjectInnovationContributingOrganization(projectInnovationContributingOrganizationID);
   }
 
   @Override
@@ -62,15 +68,51 @@ public class ProjectInnovationContributingOrganizationManagerImpl implements Pro
   }
 
   @Override
-  public ProjectInnovationContributingOrganization getProjectInnovationContributingOrganizationById(long projectInnovationContributingOrganizationID) {
+  public ProjectInnovationContributingOrganization
+    getProjectInnovationContributingOrganizationById(long projectInnovationContributingOrganizationID) {
 
     return projectInnovationContributingOrganizationDAO.find(projectInnovationContributingOrganizationID);
   }
 
   @Override
-  public ProjectInnovationContributingOrganization saveProjectInnovationContributingOrganization(ProjectInnovationContributingOrganization projectInnovationContributingOrganization) {
+  public ProjectInnovationContributingOrganization saveProjectInnovationContributingOrganization(
+    ProjectInnovationContributingOrganization projectInnovationContributingOrganization) {
 
-    return projectInnovationContributingOrganizationDAO.save(projectInnovationContributingOrganization);
+    ProjectInnovationContributingOrganization projectInnovationContributing =
+      projectInnovationContributingOrganizationDAO.save(projectInnovationContributingOrganization);
+
+    if (projectInnovationContributing.getPhase().getNext() != null) {
+      this.saveProjectInnovationContributingPhase(projectInnovationContributing.getPhase().getNext(),
+        projectInnovationContributing.getProjectInnovation().getId(), projectInnovationContributing);
+    }
+
+    return projectInnovationContributing;
+  }
+
+
+  public void saveProjectInnovationContributingPhase(Phase next, long innovationid,
+    ProjectInnovationContributingOrganization projectInnovationContributing) {
+
+    Phase phase = phaseDAO.find(next.getId());
+
+    List<ProjectInnovationContributingOrganization> projectInnovatioCrps =
+      phase.getProjectInnovationContribution().stream()
+        .filter(c -> c.getProjectInnovation().getId().longValue() == innovationid
+          && c.getInstitution().getId().equals(projectInnovationContributing.getInstitution().getId()))
+        .collect(Collectors.toList());
+
+    if (projectInnovatioCrps.isEmpty()) {
+      ProjectInnovationContributingOrganization projectInnovationContributingAdd =
+        new ProjectInnovationContributingOrganization();
+      projectInnovationContributingAdd.setProjectInnovation(projectInnovationContributing.getProjectInnovation());
+      projectInnovationContributingAdd.setPhase(phase);
+      projectInnovationContributingAdd.setInstitution(projectInnovationContributing.getInstitution());
+      projectInnovationContributingOrganizationDAO.save(projectInnovationContributingAdd);
+    }
+
+    if (phase.getNext() != null) {
+      this.saveProjectInnovationContributingPhase(phase.getNext(), innovationid, projectInnovationContributing);
+    }
   }
 
 

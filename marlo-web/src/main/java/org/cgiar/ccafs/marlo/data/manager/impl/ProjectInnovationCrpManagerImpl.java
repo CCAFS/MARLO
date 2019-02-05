@@ -44,8 +44,6 @@ public class ProjectInnovationCrpManagerImpl implements ProjectInnovationCrpMana
   public ProjectInnovationCrpManagerImpl(ProjectInnovationCrpDAO projectInnovationCrpDAO, PhaseDAO phaseDAO) {
     this.projectInnovationCrpDAO = projectInnovationCrpDAO;
     this.phaseDAO = phaseDAO;
-
-
   }
 
   @Override
@@ -117,7 +115,6 @@ public class ProjectInnovationCrpManagerImpl implements ProjectInnovationCrpMana
       projectInnovationCrpAdd.setGlobalUnit(projectInnovationCrp.getGlobalUnit());
       projectInnovationCrpDAO.save(projectInnovationCrpAdd);
     }
-
 
     if (phase.getNext() != null) {
       this.saveInnovationCrpPhase(phase.getNext(), innovationid, projectInnovationCrp);
