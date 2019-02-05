@@ -15,9 +15,7 @@
 
 package org.cgiar.ccafs.marlo.rest.mappers;
 
-import org.cgiar.ccafs.marlo.data.model.SrfIdo;
 import org.cgiar.ccafs.marlo.data.model.SrfSubIdo;
-import org.cgiar.ccafs.marlo.rest.dto.SrfIdoDTO;
 import org.cgiar.ccafs.marlo.rest.dto.SrfSubIdoDTO;
 
 import org.mapstruct.Mapper;
@@ -31,11 +29,13 @@ import org.mapstruct.Mappings;
 @Mapper(componentModel = "jsr330")
 public interface SrfSubIdoMapper {
 
-	@Mappings({ @Mapping(source = "srfIdo.smoCode", target = "code") })
-	public abstract SrfIdoDTO srfIdoToSrfIdoDTO(SrfIdo srfIdo);
+//
+//	@Mappings({ @Mapping(source = "srfIdo.smoCode", target = "code") })
+//	public abstract SrfIdoDTO srfIdoToSrfIdoDTO(SrfIdo srfIdo);
 
 	public abstract SrfSubIdo srfSubIdoDTOToSrfSubIdo(SrfSubIdoDTO srfSubIdoDTO);
 
-	@Mappings({ @Mapping(source = "srfSubIdo.smoCode", target = "code") })
+	@Mappings({ @Mapping(source = "srfSubIdo.smoCode", target = "code"),
+			@Mapping(source = "srfSubIdo.srfIdo.smoCode", target = "srfIdoDTO.code") })
 	public abstract SrfSubIdoDTO srfSubIdoToSrfSubIdoDTO(SrfSubIdo srfSubIdo);
 }

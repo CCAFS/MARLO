@@ -22,56 +22,37 @@ import io.swagger.annotations.ApiModelProperty;
  */
 public class SrfSloDTO {
 
+	@ApiModelProperty(notes = "The Generated SMO Code for the Srf-SLO")
+	private String smoCode;
 
-  @ApiModelProperty(notes = "The Generated Srf-SLO ID")
-  private Long id;
+	@ApiModelProperty(notes = "The Srf-SLO title")
+	private String title;
 
+	@ApiModelProperty(notes = "The Srf-SLO Description")
+	private String description;
 
-  @ApiModelProperty(notes = "The Srf-SLO title")
-  private String title;
+	public String getDescription() {
+		return this.description;
+	}
 
+	public String getSmoCode() {
+		return this.smoCode;
+	}
 
-  @ApiModelProperty(notes = "The Srf-SLO Description")
-  private String description;
+	public String getTitle() {
+		return this.title;
+	}
 
+	public void setDescription(String description) {
+		this.description = description;
+	}
 
-  @ApiModelProperty(notes = "The Generated SMO Code for the Srf-SLO")
-  private String smoCode;
+	public void setSmoCode(String smoCode) {
+		this.smoCode = smoCode;
+	}
 
-
-  public String getDescription() {
-    return description;
-  }
-
-
-  public Long getId() {
-    return id;
-  }
-
-
-  public String getSmoCode() {
-    return smoCode;
-  }
-
-
-  public String getTitle() {
-    return title;
-  }
-
-  public void setDescription(String description) {
-    this.description = description;
-  }
-
-  public void setId(Long id) {
-    this.id = id;
-  }
-
-  public void setSmoCode(String smoCode) {
-    this.smoCode = smoCode;
-  }
-
-  public void setTitle(String title) {
-    this.title = title;
-  }
+	public void setTitle(String title) {
+		this.title = title;
+	}
 
 }

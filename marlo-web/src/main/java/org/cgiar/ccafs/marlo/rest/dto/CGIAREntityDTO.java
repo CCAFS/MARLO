@@ -15,45 +15,59 @@
 
 package org.cgiar.ccafs.marlo.rest.dto;
 
+import java.io.Serializable;
+
 import javax.validation.constraints.NotNull;
 
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
-/**
- * @author Hermes Jiménez - CIAT/CCAFS
- */
+@ApiModel(description = "Official list of CGIAR Centers, CGIAR Research Programs (CRPs) and CGIAR Platforms (PTFs)")
+public class CGIAREntityDTO implements Serializable {
 
-public class PolicyInvestimentTypeDTO {
+	private static final long serialVersionUID = 1L;
 
-	@ApiModelProperty(notes = "The Generated policy insvestiment type ID")
-	@NotNull
-	private Long id;
+	@ApiModelProperty(notes = "Code of CGIAR entity")
+	private String code;
 
-	@ApiModelProperty(notes = "policy insvestiment type name")
+	@ApiModelProperty(notes = "CGIAR entity name")
 	@NotNull
 	private String name;
 
-	@ApiModelProperty(notes = "policy insvestiment type definition")
-	private String definition;
+	@ApiModelProperty(notes = "Acronym of CGIAR entity")
+	@NotNull
+	private String acronym;
 
-	public String getDefinition() {
-		return this.definition;
+	@ApiModelProperty(notes = "CGIAR entity type")
+	@NotNull
+	private CGIAREntityTypeDTO globalUnitTypeDTO;
+
+	public String getAcronym() {
+		return this.acronym;
 	}
 
-	public Long getId() {
-		return this.id;
+	public String getCode() {
+		return this.code;
+	}
+
+	public CGIAREntityTypeDTO getGlobalUnitTypeDTO() {
+		return this.globalUnitTypeDTO;
 	}
 
 	public String getName() {
 		return this.name;
 	}
 
-	public void setDefinition(String definition) {
-		this.definition = definition;
+	public void setAcronym(String acronym) {
+		this.acronym = acronym;
 	}
 
-	public void setId(Long id) {
-		this.id = id;
+	public void setCode(String code) {
+		this.code = code;
+	}
+
+	public void setGlobalUnitTypeDTO(CGIAREntityTypeDTO globalUnitTypeDTO) {
+		this.globalUnitTypeDTO = globalUnitTypeDTO;
 	}
 
 	public void setName(String name) {

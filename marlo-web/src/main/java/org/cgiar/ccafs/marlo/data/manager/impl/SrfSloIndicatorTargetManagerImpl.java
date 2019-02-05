@@ -14,15 +14,14 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.manager.impl;
 
-
 import org.cgiar.ccafs.marlo.data.dao.SrfSloIndicatorTargetDAO;
 import org.cgiar.ccafs.marlo.data.manager.SrfSloIndicatorTargetManager;
 import org.cgiar.ccafs.marlo.data.model.SrfSloIndicatorTarget;
 
 import java.util.List;
 
-import javax.inject.Named;
 import javax.inject.Inject;
+import javax.inject.Named;
 
 /**
  * @author Christian Garcia
@@ -30,48 +29,49 @@ import javax.inject.Inject;
 @Named
 public class SrfSloIndicatorTargetManagerImpl implements SrfSloIndicatorTargetManager {
 
+	private SrfSloIndicatorTargetDAO srfSloIndicatorTargetDAO;
+	// Managers
 
-  private SrfSloIndicatorTargetDAO srfSloIndicatorTargetDAO;
-  // Managers
+	@Inject
+	public SrfSloIndicatorTargetManagerImpl(SrfSloIndicatorTargetDAO srfSloIndicatorTargetDAO) {
+		this.srfSloIndicatorTargetDAO = srfSloIndicatorTargetDAO;
 
+	}
 
-  @Inject
-  public SrfSloIndicatorTargetManagerImpl(SrfSloIndicatorTargetDAO srfSloIndicatorTargetDAO) {
-    this.srfSloIndicatorTargetDAO = srfSloIndicatorTargetDAO;
+	@Override
+	public void deleteSrfSloIndicatorTarget(long srfSloIndicatorTargetId) {
 
+		this.srfSloIndicatorTargetDAO.deleteSrfSloIndicatorTarget(srfSloIndicatorTargetId);
+	}
 
-  }
+	@Override
+	public boolean existSrfSloIndicatorTarget(long srfSloIndicatorTargetID) {
 
-  @Override
-  public void deleteSrfSloIndicatorTarget(long srfSloIndicatorTargetId) {
+		return this.srfSloIndicatorTargetDAO.existSrfSloIndicatorTarget(srfSloIndicatorTargetID);
+	}
 
-    srfSloIndicatorTargetDAO.deleteSrfSloIndicatorTarget(srfSloIndicatorTargetId);
-  }
+	@Override
+	public List<SrfSloIndicatorTarget> findAll() {
 
-  @Override
-  public boolean existSrfSloIndicatorTarget(long srfSloIndicatorTargetID) {
+		return this.srfSloIndicatorTargetDAO.findAll();
 
-    return srfSloIndicatorTargetDAO.existSrfSloIndicatorTarget(srfSloIndicatorTargetID);
-  }
+	}
 
-  @Override
-  public List<SrfSloIndicatorTarget> findAll() {
+	@Override
+	public SrfSloIndicatorTarget findbyTargetIndicatorCode(String code) {
+		return this.srfSloIndicatorTargetDAO.findbyTargetIndicatorCode(code);
+	}
 
-    return srfSloIndicatorTargetDAO.findAll();
+	@Override
+	public SrfSloIndicatorTarget getSrfSloIndicatorTargetById(long srfSloIndicatorTargetID) {
 
-  }
+		return this.srfSloIndicatorTargetDAO.find(srfSloIndicatorTargetID);
+	}
 
-  @Override
-  public SrfSloIndicatorTarget getSrfSloIndicatorTargetById(long srfSloIndicatorTargetID) {
+	@Override
+	public SrfSloIndicatorTarget saveSrfSloIndicatorTarget(SrfSloIndicatorTarget srfSloIndicatorTarget) {
 
-    return srfSloIndicatorTargetDAO.find(srfSloIndicatorTargetID);
-  }
-
-  @Override
-  public SrfSloIndicatorTarget saveSrfSloIndicatorTarget(SrfSloIndicatorTarget srfSloIndicatorTarget) {
-
-    return srfSloIndicatorTargetDAO.save(srfSloIndicatorTarget);
-  }
-
+		return this.srfSloIndicatorTargetDAO.save(srfSloIndicatorTarget);
+	}
 
 }

@@ -13,55 +13,67 @@
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
 
-
 package org.cgiar.ccafs.marlo.data.dao;
 
 import org.cgiar.ccafs.marlo.data.model.SrfSloIndicatorTarget;
 
 import java.util.List;
 
-
 public interface SrfSloIndicatorTargetDAO {
 
-  /**
-   * This method removes a specific srfSloIndicatorTarget value from the database.
-   * 
-   * @param srfSloIndicatorTargetId is the srfSloIndicatorTarget identifier.
-   * @return true if the srfSloIndicatorTarget was successfully deleted, false otherwise.
-   */
-  public void deleteSrfSloIndicatorTarget(long srfSloIndicatorTargetId);
+	/**
+	 * This method removes a specific srfSloIndicatorTarget value from the
+	 * database.
+	 * 
+	 * @param srfSloIndicatorTargetId is the srfSloIndicatorTarget identifier.
+	 * @return true if the srfSloIndicatorTarget was successfully deleted, false
+	 * otherwise.
+	 */
+	public void deleteSrfSloIndicatorTarget(long srfSloIndicatorTargetId);
 
-  /**
-   * This method validate if the srfSloIndicatorTarget identify with the given id exists in the system.
-   * 
-   * @param srfSloIndicatorTargetID is a srfSloIndicatorTarget identifier.
-   * @return true if the srfSloIndicatorTarget exists, false otherwise.
-   */
-  public boolean existSrfSloIndicatorTarget(long srfSloIndicatorTargetID);
+	/**
+	 * This method validate if the srfSloIndicatorTarget identify with the given
+	 * id exists in the system.
+	 * 
+	 * @param srfSloIndicatorTargetID is a srfSloIndicatorTarget identifier.
+	 * @return true if the srfSloIndicatorTarget exists, false otherwise.
+	 */
+	public boolean existSrfSloIndicatorTarget(long srfSloIndicatorTargetID);
 
-  /**
-   * This method gets a srfSloIndicatorTarget object by a given srfSloIndicatorTarget identifier.
-   * 
-   * @param srfSloIndicatorTargetID is the srfSloIndicatorTarget identifier.
-   * @return a SrfSloIndicatorTarget object.
-   */
-  public SrfSloIndicatorTarget find(long id);
+	/**
+	 * This method gets a srfSloIndicatorTarget object by a given
+	 * srfSloIndicatorTarget identifier.
+	 * 
+	 * @param srfSloIndicatorTargetID is the srfSloIndicatorTarget identifier.
+	 * @return a SrfSloIndicatorTarget object.
+	 */
+	public SrfSloIndicatorTarget find(long id);
 
-  /**
-   * This method gets a list of srfSloIndicatorTarget that are active
-   * 
-   * @return a list from SrfSloIndicatorTarget null if no exist records
-   */
-  public List<SrfSloIndicatorTarget> findAll();
+	/**
+	 * This method gets a list of srfSloIndicatorTarget that are active
+	 * 
+	 * @return a list from SrfSloIndicatorTarget null if no exist records
+	 */
+	public List<SrfSloIndicatorTarget> findAll();
 
+	/**
+	 * This method gets a srfSloIndicatorTarget object by a given
+	 * srfSloIndicatorTarget smo code.
+	 * 
+	 * @param srfSloIndicatorTargetID is the smo code identifier.
+	 * @return a SrfSloIndicatorTarget object.
+	 */
+	public SrfSloIndicatorTarget findbyTargetIndicatorCode(String code);
 
-  /**
-   * This method saves the information of the given srfSloIndicatorTarget
-   * 
-   * @param srfSloIndicatorTarget - is the srfSloIndicatorTarget object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the srfSloIndicatorTarget
-   *         was updated
-   *         or -1 is some error occurred.
-   */
-  public SrfSloIndicatorTarget save(SrfSloIndicatorTarget srfSloIndicatorTarget);
+	/**
+	 * This method saves the information of the given srfSloIndicatorTarget
+	 * 
+	 * @param srfSloIndicatorTarget - is the srfSloIndicatorTarget object with
+	 * the new information to be added/updated.
+	 * @return a number greater than 0 representing the new ID assigned by the
+	 * database, 0 if the srfSloIndicatorTarget was updated or -1 is some error
+	 * occurred.
+	 */
+	public SrfSloIndicatorTarget save(SrfSloIndicatorTarget srfSloIndicatorTarget);
+
 }

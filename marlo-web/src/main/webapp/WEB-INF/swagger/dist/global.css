@@ -27,6 +27,7 @@ body {
   font-family: 'Montserrat', sans-serif;
   font-weight: 800;
   text-align: center;
+  height: 56px;
 }
 
 .nav li {
@@ -47,12 +48,14 @@ body {
 .navtitle {
   font-size:18px;
   position: absolute;
-  top: 14px;
-  left: 15px;
+  top: 11px;
+  left: 16px;
   font-family: 'Montserrat', sans-serif;
   font-weight: 900;
   color: #316651;
   padding-right: 13px;
+  padding-top: 7px;
+  padding-bottom: 7px;
   border-right: 1px solid #dce2df;
 }
 
@@ -81,6 +84,15 @@ body {
   font-weight: 500;
   margin: 0 auto;
   text-align: center;
+}
+
+.versionTitle {
+  font-size:  14px;
+  font-weight: 500;
+  margin: 0 auto;
+  text-align: center;
+  text-transform: uppercase;
+  position: relative;
 }
 
 .clarisaHeader {
@@ -121,6 +133,7 @@ body {
   margin: 0 auto;
   font-size: 11px;
   color: #6c887a;
+  text-align: center;
   font-family: "Montserrat", sans-serif;
 }
 

@@ -15,44 +15,49 @@
 
 package org.cgiar.ccafs.marlo.rest.dto;
 
+import javax.validation.constraints.NotNull;
+
 import io.swagger.annotations.ApiModelProperty;
 
-public class SrfSubIdoDTO {
+/**
+ * @author Hermes Jiménez - CIAT/CCAFS
+ */
 
-	/*
-	 * @ApiModelProperty(notes = "SRF Sub-IDO ID") private Long id;
-	 */
+public class PolicyInvestmentTypeDTO {
 
-	@ApiModelProperty(notes = "SRF Sub-IDO CODE")
-	private String code;
+	@ApiModelProperty(notes = "The Generated policy insvestiment type ID")
+	@NotNull
+	private Long id;
 
-	@ApiModelProperty(notes = "SRF Sub-IDO description ")
-	private String description;
+	@ApiModelProperty(notes = "policy insvestiment type name")
+	@NotNull
+	private String name;
 
-	private SrfIdoDTO srfIdoDTO;
+	@ApiModelProperty(notes = "policy insvestiment type definition")
+	private String definition;
 
-	public String getCode() {
-		return this.code;
+	public String getDefinition() {
+		return this.definition;
 	}
 
-	public String getDescription() {
-		return this.description;
+	public Long getId() {
+		return this.id;
 	}
 
-	public SrfIdoDTO getSrfIdoDTO() {
-		return this.srfIdoDTO;
+	public String getName() {
+		return this.name;
 	}
 
-	public void setCode(String code) {
-		this.code = code;
+	public void setDefinition(String definition) {
+		this.definition = definition;
 	}
 
-	public void setDescription(String description) {
-		this.description = description;
+	public void setId(Long id) {
+		this.id = id;
 	}
 
-	public void setSrfIdoDTO(SrfIdoDTO srfIdoDTO) {
-		this.srfIdoDTO = srfIdoDTO;
+	public void setName(String name) {
+		this.name = name;
 	}
 
 }

@@ -21,67 +21,37 @@ import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.PartnerRequest;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.rest.dto.InstitutionDTO;
-import org.cgiar.ccafs.marlo.rest.dto.InstitutionLocationDTO;
+import org.cgiar.ccafs.marlo.rest.dto.PartnerRequestDTO;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
 import org.mapstruct.Mappings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@Mapper(componentModel = "jsr330", uses = {InstitutionTypeMapper.class, InstitutionLocationMapper.class})
+@Mapper(componentModel = "jsr330", uses = LocationMapper.class)
 public abstract class InstitutionMapper {
+	private static final Logger LOG = LoggerFactory.getLogger(InstitutionMapper.class);
 
-  private static final Logger LOG = LoggerFactory.getLogger(InstitutionMapper.class);
+	@Mappings({ @Mapping(source = "locElement", target = "locElement"),
+			@Mapping(source = "institutionDTO.institutionType", target = "institutionType"),
+			@Mapping(source = "institutionDTO.name", target = "partnerName"),
+			@Mapping(source = "institutionDTO.acronym", target = "acronym"),
+			@Mapping(source = "institutionDTO.websiteLink", target = "webPage"),
+			@Mapping(source = "globalUnit", target = "crp"), @Mapping(source = "user", target = "createdBy"),
+			@Mapping(source = "user", target = "modifiedBy"), @Mapping(target = "office", constant = "0"),
+			@Mapping(target = "modificationJustification", constant = "0"), @Mapping(target = "id", constant = "0"),
+			@Mapping(target = "active", constant = "1"), @Mapping(target = "requestSource", constant = "REST API"),
+			@Mapping(target = "activeSince", source = "institutionDTO.added"),
+			@Mapping(target = "institution", expression = "java(null)") })
+	public abstract PartnerRequest institutionDTOToPartnerRequest(InstitutionDTO institutionDTO, GlobalUnit globalUnit,
+			LocElement locElement, User user);
 
-  // public abstract Institution institutionDTOToInstitution(InstitutionDTO institutionDTO);
+	public abstract InstitutionDTO institutionToInstitutionDTO(Institution institution);
 
-  @Mappings({@Mapping(target = "partnerName", source = "institutionDTO.name"),
-    @Mapping(target = "acronym", source = "institutionDTO.acronym"),
-    @Mapping(target = "webPage", source = "institutionDTO.websiteLink"), @Mapping(target = "id", ignore = true),
-    @Mapping(target = "crp", source = "globalUnit"), @Mapping(target = "locElement", source = "locElement"),
-    @Mapping(target = "createdBy", source = "requestor"), @Mapping(target = "modifiedBy", source = "requestor"),
-    @Mapping(target = "modificationJustification", constant = ""),
-    @Mapping(target = "activeSince", source = "institutionDTO.added"), @Mapping(target = "active", constant = "true"),
-    @Mapping(target = "office", constant = "false"), @Mapping(target = "requestSource", constant = "rest api")})
-  public abstract PartnerRequest institutionDTOToPartnerRequest(InstitutionDTO institutionDTO, GlobalUnit globalUnit,
-    LocElement locElement, User requestor);
-
-  public abstract InstitutionDTO institutionToInstitutionDTO(Institution institution);
-
-  public List<InstitutionLocationDTO> locElementToInstitutionLocations(LocElement locElement) {
-    List<InstitutionLocationDTO> institutionLocations = new ArrayList<>();
-
-    InstitutionLocationDTO instituionLocationDTO = new InstitutionLocationDTO();
-    instituionLocationDTO.setCountryIsoAlpha2Code(locElement.getIsoAlpha2());
-    instituionLocationDTO.setCountryName(locElement.getName());
-    institutionLocations.add(instituionLocationDTO);
-    return institutionLocations;
-
-  }
-
-
-  @Mappings({@Mapping(target = "name", source = "partnerName"), @Mapping(target = "websiteLink", source = "webPage"),
-    @Mapping(target = "id", ignore = true), @Mapping(target = "institutionsLocations", source = "locElement")})
-  public abstract InstitutionDTO partnerRequestToInstitutionDTO(PartnerRequest partnerRequest);
-
-  // Ignore InstitutionLocations for updates
-  @Mapping(target = "institutionsLocations", ignore = true)
-  public abstract Institution updateInstitutionFromInstitutionDto(InstitutionDTO institutionDTO,
-    @MappingTarget Institution institution);
-
-  @AfterMapping
-  protected void updateInstitutionLocationWithInstitution(InstitutionDTO institutionDTO,
-    @MappingTarget Institution institution) {
-
-    LOG.debug("Adding institution to institutionLocations : ", institution);
-    institution.getInstitutionsLocations().forEach(location -> location.setInstitution(institution));
-  }
-
+	@Mappings({ @Mapping(source = "locElement", target = "locElementDTO"),
+			@Mapping(source = "institution", target = "institutionDTO"),
+			@Mapping(source = "institutionType", target = "institutionTypeDTO") })
+	public abstract PartnerRequestDTO partnerRequestToPartnerRequestDTO(PartnerRequest PartnerRequest);
 
 }
