@@ -7,9 +7,8 @@
   "${baseUrl}/global/js/autoSave.js",
   "${baseUrl}/global/js/fieldsValidation.js"
 ] /]
-[#assign customCSS = [ 
-  "${baseUrlMedia}/css/publications/publication.css", 
-  "${baseUrlMedia}/css/projects/projectDeliverable.css" 
+[#assign customCSS = [
+  "${baseUrlMedia}/css/projects/projectStudies.css"
   ] 
 /]
 [#assign currentSection = "additionalReporting" /]
