@@ -17,6 +17,7 @@ package org.cgiar.ccafs.marlo.rest.mappers;
 
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.rest.dto.CountryDTO;
+import org.cgiar.ccafs.marlo.rest.dto.ParentRegionDTO;
 import org.cgiar.ccafs.marlo.rest.dto.RegionDTO;
 
 import org.mapstruct.Mapper;
@@ -35,6 +36,9 @@ public interface LocationMapper {
 	@Mappings({ @Mapping(source = "isoNumeric", target = "code"),
 			@Mapping(source = "locElement", target = "regionDTO") })
 	public abstract CountryDTO locElementToCountryDTO(LocElement locElement);
+
+	@Mappings({ @Mapping(source = "isoNumeric", target = "UM49Code") })
+	public abstract ParentRegionDTO locElementToParentRegionDTO(LocElement regElement);
 
 	@Mappings({ @Mapping(source = "isoNumeric", target = "UM49Code"),
 			@Mapping(source = "locElement", target = "parentRegion") })
