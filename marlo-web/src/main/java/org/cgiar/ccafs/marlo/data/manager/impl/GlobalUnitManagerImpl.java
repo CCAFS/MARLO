@@ -14,7 +14,6 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.manager.impl;
 
-
 import org.cgiar.ccafs.marlo.data.dao.GlobalUnitDAO;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
@@ -24,65 +23,66 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-
 /**
  * @author Christian Garcia
  */
 @Named
 public class GlobalUnitManagerImpl implements GlobalUnitManager {
 
+	private GlobalUnitDAO globalUnitDAO;
 
-  private GlobalUnitDAO globalUnitDAO;
+	@Inject
+	public GlobalUnitManagerImpl(GlobalUnitDAO globalUnitDAO) {
+		this.globalUnitDAO = globalUnitDAO;
 
+	}
 
-  @Inject
-  public GlobalUnitManagerImpl(GlobalUnitDAO globalUnitDAO) {
-    this.globalUnitDAO = globalUnitDAO;
+	@Override
+	public List<GlobalUnit> crpUsers(String emai) {
+		return this.globalUnitDAO.crpUsers(emai);
+	}
 
+	@Override
+	public void deleteGlobalUnit(long globalUnitId) {
 
-  }
+		this.globalUnitDAO.deleteGlobalUnit(globalUnitId);
+	}
 
-  @Override
-  public List<GlobalUnit> crpUsers(String emai) {
-    return globalUnitDAO.crpUsers(emai);
-  }
+	@Override
+	public boolean existGlobalUnit(long globalUnitID) {
 
-  @Override
-  public void deleteGlobalUnit(long globalUnitId) {
+		return this.globalUnitDAO.existGlobalUnit(globalUnitID);
+	}
 
-    globalUnitDAO.deleteGlobalUnit(globalUnitId);
-  }
+	@Override
+	public List<GlobalUnit> findAll() {
 
-  @Override
-  public boolean existGlobalUnit(long globalUnitID) {
+		return this.globalUnitDAO.findAll();
 
-    return globalUnitDAO.existGlobalUnit(globalUnitID);
-  }
+	}
 
-  @Override
-  public List<GlobalUnit> findAll() {
+	@Override
+	public GlobalUnit findGlobalUnitByAcronym(String acronym) {
 
-    return globalUnitDAO.findAll();
+		return this.globalUnitDAO.findGlobalUnitByAcronym(acronym);
+	}
 
-  }
+	@Override
+	public GlobalUnit findGlobalUnitBySMOCode(String smoCode) {
 
-  @Override
-  public GlobalUnit findGlobalUnitByAcronym(String acronym) {
+		return this.globalUnitDAO.findGlobalUnitBySMOCode(smoCode);
+	}
 
-    return globalUnitDAO.findGlobalUnitByAcronym(acronym);
-  }
+	@Override
+	public GlobalUnit getGlobalUnitById(long globalUnitID) {
 
-  @Override
-  public GlobalUnit getGlobalUnitById(long globalUnitID) {
+		return this.globalUnitDAO.find(globalUnitID);
+	}
 
-    return globalUnitDAO.find(globalUnitID);
-  }
+	@Override
+	public GlobalUnit saveGlobalUnit(GlobalUnit globalUnit) {
 
-  @Override
-  public GlobalUnit saveGlobalUnit(GlobalUnit globalUnit) {
-
-    return globalUnitDAO.save(globalUnit);
-  }
-
+		return this.globalUnitDAO.save(globalUnit);
+	}
 
 }
