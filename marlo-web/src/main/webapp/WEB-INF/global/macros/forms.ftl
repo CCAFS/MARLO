@@ -127,7 +127,7 @@
   </div>
 [/#macro]
 
-[#macro select name listName label="" keyFieldName="" displayFieldName="" paramText="" value="-NULL" i18nkey="" disabled=false required=false errorField="" selected=false className="" multiple=false help="" helpIcon=true header=true display=true showTitle=true stringKey=false placeholder="" editable=true]
+[#macro select name listName label="" keyFieldName="" displayFieldName="" paramText="" value="-NULL" valueName="" i18nkey="" disabled=false required=false errorField="" selected=false className="" multiple=false help="" helpIcon=true header=true display=true showTitle=true stringKey=false placeholder="" editable=true]
   <div class="select ${changedField(name)}" [#if !display]style="display: none;"[/#if]>
     [#assign labelTitle][#if i18nkey==""][@s.text name="${name}"][@s.param]${paramText}[/@s.param][/@s.text][#else][@s.text name="${i18nkey}"][@s.param]${paramText}[/@s.param][/@s.text][/#if][/#assign]
     [#assign placeholderText][@s.text name="${(placeholder?has_content)?string(placeholder,'form.select.placeholder')}" /][/#assign]
@@ -184,7 +184,6 @@
                 ${requiredText}   [@s.text name="form.values.fieldEmpty" /]
               [/#if]
             [/#if]
-            
           [#else]
             [#if name?contains(".id")]
               [#assign customName]${name?replace('.id','')}[/#assign]
@@ -197,8 +196,12 @@
               [#else]${customValue}
               [/#if]
             [#else]
-              [#if customValue?has_content]${customValue}
-              [#elseif value=="-1"]${requiredText}   [@s.text name="form.values.fieldEmpty" /]
+              [#if customValue?has_content]
+                ${customValue}
+              [#elseif value=="-1"]
+                ${requiredText} [@s.text name="form.values.fieldEmpty" /]
+              [#else]
+                ${valueName}
               [/#if] 
             [/#if]
             </p>
