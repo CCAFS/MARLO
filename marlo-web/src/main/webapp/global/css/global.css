@@ -540,7 +540,7 @@ a.form-button.button-edit {
 .addButton {
   background: url('../../global/images/add.png') no-repeat 4px #2BA6CB;
   padding: 4px 25px 4px 28px;
-  margin: 5px 0;
+  margin: 5px 1px;
   text-decoration: none;
   cursor: pointer;
 }
