@@ -3027,7 +3027,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       }
       return value;
     } catch (Exception e) {
-      return null;
+      return false;
     }
   }
 
