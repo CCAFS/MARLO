@@ -80,12 +80,12 @@ public class ProjectInnovationContributingOrganizationManagerImpl
 
     ProjectInnovationContributingOrganization projectInnovationContributing =
       projectInnovationContributingOrganizationDAO.save(projectInnovationContributingOrganization);
-
-    if (projectInnovationContributing.getPhase().getNext() != null) {
-      this.saveProjectInnovationContributingPhase(projectInnovationContributing.getPhase().getNext(),
-        projectInnovationContributing.getProjectInnovation().getId(), projectInnovationContributing);
-    }
-
+    /*
+     * if (projectInnovationContributing.getPhase().getNext() != null) {
+     * this.saveProjectInnovationContributingPhase(projectInnovationContributing.getPhase().getNext(),
+     * projectInnovationContributing.getProjectInnovation().getId(), projectInnovationContributing);
+     * }
+     */
     return projectInnovationContributing;
   }
 
