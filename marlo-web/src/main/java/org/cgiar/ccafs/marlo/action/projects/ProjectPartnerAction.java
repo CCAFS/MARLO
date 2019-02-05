@@ -550,14 +550,14 @@ public class ProjectPartnerAction extends BaseAction {
         }
 
         // TODO Disable temporally CIAT MARLO send email.
-        // if (!this.isCenterGlobalUnit()) {
-        // if (buffer != null && fileName != null && contentType != null) {
-        // sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), buffer, contentType, fileName,
-        // true);
-        // } else {
-        // sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
-        // }
-        // }
+        if (!this.isCenterGlobalUnit()) {
+          if (buffer != null && fileName != null && contentType != null) {
+            sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), buffer, contentType, fileName,
+              true);
+          } else {
+            sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
+          }
+        }
       }
     }
 
@@ -699,9 +699,9 @@ public class ProjectPartnerAction extends BaseAction {
     message.append(this.getText("email.bye"));
 
     // TODO Disable temporally CIAT MARLO send email.
-    // if (!this.isCenterGlobalUnit()) {
-    // sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
-    // }
+    if (!this.isCenterGlobalUnit()) {
+      sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
+    }
   }
 
   /**
@@ -839,9 +839,9 @@ public class ProjectPartnerAction extends BaseAction {
     message.append(this.getText("email.bye"));
 
     // TODO Disable temporally CIAT MARLO send email.
-    // if (!this.isCenterGlobalUnit()) {
-    // sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
-    // }
+    if (!this.isCenterGlobalUnit()) {
+      sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
+    }
   }
 
   @Override
@@ -2089,3 +2089,4 @@ public class ProjectPartnerAction extends BaseAction {
     }
   }
 }
+
