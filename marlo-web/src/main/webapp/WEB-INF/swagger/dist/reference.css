@@ -1,0 +1,145 @@
+.sidebar {
+  position: fixed !important;
+  padding: 20px;
+  top: 50px; 
+}
+
+#reference-index {
+  font-family: 'Montserrat', sans-serif; 
+  font-size: 0.75rem;
+}
+
+#reference-index .navbar-brand {
+  font-size: 1rem;
+  font-weight: 500 !important;
+}
+
+.navbar-brand {
+  font-weight: 900 !important;
+  color: #316651 !important;
+  font-family: 'Montserrat', sans-serif; 
+}
+
+
+#reference-index a {
+  color: #4f4f4f;
+}
+
+#reference-index a:hover {
+  color: #3f8569;
+}
+
+.referenceContent {
+  width: 700px;
+}
+
+body p {
+  font-family: 'Open Sans', sans-serif;
+  font-size: 13px;
+  text-align: justify;
+  color: #4f4f4f;
+}
+
+.subItem {
+  font-size: 16px;
+  font-family: 'Montserrat', sans-serif;
+  color: #4f4f4f;
+}
+
+h6 {
+  font-size: 18px !important;
+  font-family: 'Montserrat', sans-serif !important;
+  color: #56927e!important;
+}
+
+h5 {
+  font-size: 19px;
+  font-family: 'Montserrat', sans-serif !important;
+  color: #3f8569 !important;
+}
+
+.menu-credit {
+  bottom: 0; 
+  height:20px;
+  font-size: 10px;
+  color: #b1b1b1;
+}
+
+.ml-5 {
+  margin-top: -15px !important;
+}
+
+.item-section {
+  border-bottom: dotted 1px #e3e8e6;
+  padding-botttom: 30px;
+  padding-top: 10px;
+}
+
+.section-title {
+  padding-top: 20px;
+  border-top: solid 1px #d8dedc;
+}
+
+.subtitle-section {
+  padding-top: 20px;
+}
+
+.navbar {
+  border: 1px solid #ccc;
+  border-width: 1px 0;
+}
+
+.top-title {
+  padding-right: 13px;
+  border-right: 1px solid #dce2df;
+}
+
+.navbar-nav {
+  display: inline !important;
+}
+
+.top-items .nav-item {
+  display: inline-block !important;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 800;
+}
+
+.top-items .nav-link {
+  color: #122525 !important;
+  margin-left: 15px;
+  margin-right: 15px;
+}
+
+.top-items .nav-link:hover {
+  color: #3f8569 !important;
+}
+
+.api-button {
+  color: #2c382d;
+  text-decoration: underline;
+}
+
+.api-button:hover {
+  color: #3f8569;
+}
+
+.table {
+  font-family: 'Open Sans', sans-serif;
+  font-size: 11px;
+  color: #4f4f4f;
+}
+
+.table-title {
+  font-weight: normal;
+  font-size: 9px;
+}
+
+th {
+  text-align: center !important;
+}
+
+table .columns p {
+  
+  font-size: 11px;
+  
+}
