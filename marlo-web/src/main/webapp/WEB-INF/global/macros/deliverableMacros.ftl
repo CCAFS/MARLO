@@ -126,7 +126,7 @@
           [#local markerElement = (action.getDeliverableCrossCuttingMarker(marker.id))!{} ]
           <input type="hidden"  name="${customName}.id" value="${(markerElement.id)!}"/>
           <input type="hidden"  name="${customName}.cgiarCrossCuttingMarker.id" value="${marker.id}"/>
-          [@customForm.select   name="${customName}.repIndGenderYouthFocusLevel.id" value="${(markerElement.repIndGenderYouthFocusLevel.id)!-1}" className="setSelect2" i18nkey="${marker.name}" listName="focusLevels" keyFieldName="id"  displayFieldName="powbName" required=true editable=editable/]
+          [@customForm.select   name="${customName}.repIndGenderYouthFocusLevel.id" value="${(markerElement.repIndGenderYouthFocusLevel.id)!-1}" valueName="${(markerElement.repIndGenderYouthFocusLevel.powbName)!}" className="setSelect2" i18nkey="${marker.name}" listName="focusLevels" keyFieldName="id"  displayFieldName="powbName"  required=true editable=editable/]
         </div>
       [#else]
         <p class="col-md-12">No cgiarCrossCuttingMarkers loaded</p>
