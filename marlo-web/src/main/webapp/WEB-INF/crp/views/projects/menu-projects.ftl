@@ -33,16 +33,16 @@
       { 'slug': 'contributionsCrpList',  'name': 'projects.menu.contributionsCrpList',  'action': 'contributionsCrpList',  'active': true, 'show':!phaseOne  && ((!project.projectInfo.administrative)!false) , "showCheck": isGlobalUnitProject},
       { 'slug': 'projectOutcomes',  'name': 'projects.menu.projectOutcomes',  'action': 'outcomesPandR',  'active': true, 'show':  phaseOne && !project.projectInfo.administrative , "showCheck": isGlobalUnitProject},
       { 'slug': 'ccafsOutcomes',  'name': 'projects.menu.ccafsOutcomes',  'action': 'ccafsOutcomes',  'active': true, 'show': phaseOne && !project.projectInfo.administrative , "showCheck": isGlobalUnitProject },
-      { 'slug': 'projectPolicies',  'name': 'projects.menu.policies',           'action': 'policies',  'active': true, 'show': reportingActive , "showCheck": isGlobalUnitProject },
+      { 'slug': 'projectPolicies',  'name': 'projects.menu.policies',           'action': 'policies',  'active': true, 'show': reportingActive , "showCheck": isGlobalUnitProject, "development": reportingActive},
       { 'slug': 'projectStudies',  'name': 'projects.menu.expectedStudies',  'action': 'studies',  'active': true, 'show': !centerGlobalUnit && !reportingActive , "showCheck": isGlobalUnitProject },
-      { 'slug': 'projectStudies',  'name': 'projects.menu.studies',           'action': 'studies',  'active': true, 'show': reportingActive , "showCheck": isGlobalUnitProject }
+      { 'slug': 'projectStudies',  'name': 'projects.menu.studies',           'action': 'studies',  'active': true, 'show': reportingActive , "showCheck": isGlobalUnitProject, "development": reportingActive }
       ]
     },
     { 'title': 'Outputs', 'show': true,
       'items': [
       { 'slug': 'overviewByMogs',  'name': 'projects.menu.overviewByMogs',  'action': 'outputs',  'active': true, 'show' : phaseOne && isCrpProject , "showCheck": isGlobalUnitProject},
-      { 'slug': 'deliverableList',  'name': 'projects.menu.deliverables',  'action': 'deliverableList',  'active': true , "showCheck": isGlobalUnitProject },
-      { 'slug': 'innovations',  'name': 'projects.menu.innovations',  'action': 'innovationsList',  'active': true,'show': reportingActive && isCrpProject , "showCheck": isGlobalUnitProject },
+      { 'slug': 'deliverableList',  'name': 'projects.menu.deliverables',  'action': 'deliverableList',  'active': true , "showCheck": isGlobalUnitProject, "development": reportingActive },
+      { 'slug': 'innovations',  'name': 'projects.menu.innovations',  'action': 'innovationsList',  'active': true,'show': reportingActive && isCrpProject , "showCheck": isGlobalUnitProject, "development": reportingActive },
       { 'slug': 'highlights',  'name': 'Project Highlights',  'action': 'highlights',  'active': true ,'show': reportingActive && isCrpProject, "showCheck": isGlobalUnitProject }
       ]
     },
