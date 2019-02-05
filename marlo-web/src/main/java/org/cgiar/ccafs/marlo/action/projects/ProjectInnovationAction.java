@@ -393,9 +393,7 @@ public class ProjectInnovationAction extends BaseAction {
                 projectInnovationDeliverable.setDeliverable(deliverable);
                 projectInnovationDeliverable.getDeliverable().getDeliverableInfo(this.getActualPhase());
               }
-
             }
-
           }
         }
 
@@ -403,7 +401,8 @@ public class ProjectInnovationAction extends BaseAction {
         if (innovation.getProjectInnovationContributingOrganization() != null
           && !innovation.getProjectInnovationContributingOrganization().isEmpty()) {
           for (ProjectInnovationContributingOrganization projectInnovationContributingOrganization : innovation
-            .getProjectInnovationContributingOrganization()) {
+            .getProjectInnovationContributingOrganization().stream()
+            .filter(c -> c.getPhase().getId() == this.getActualPhase().getId()).collect(Collectors.toList())) {
             if (projectInnovationContributingOrganization.getInstitution() != null
               && projectInnovationContributingOrganization.getInstitution().getId() != null) {
 
@@ -412,16 +411,15 @@ public class ProjectInnovationAction extends BaseAction {
                 Institution institution = institutionManager
                   .getInstitutionById(projectInnovationContributingOrganization.getInstitution().getId());
                 projectInnovationContributingOrganization.setInstitution(institution);
-                // projectInnovationContributingOrganization.getInstitution().get(this.getActualPhase());
+                /*
+                 * projectInnovationContributingOrganization
+                 * .setPhase(projectInnovationContributingOrganization.getPhase());
+                 */
               }
-
             }
-
           }
         }
-
       }
-
     } else {
       innovation = projectInnovationManager.getProjectInnovationById(innovationID);
 
@@ -480,7 +478,8 @@ public class ProjectInnovationAction extends BaseAction {
         // Innovation Contributing Institutions List Autosave
         if (innovation.getContributingOrganizations() != null) {
           for (ProjectInnovationContributingOrganization projectInnovationContributingOrganization : innovation
-            .getContributingOrganizations()) {
+            .getContributingOrganizations().stream().filter(c -> c.getPhase().getId() == phase.getId())
+            .collect(Collectors.toList())) {
             projectInnovationContributingOrganization.setInstitution(institutionManager
               .getInstitutionById(projectInnovationContributingOrganization.getInstitution().getId()));
           }
@@ -493,6 +492,7 @@ public class ProjectInnovationAction extends BaseAction {
               .setGlobalUnit(globalUnitManager.getGlobalUnitById(projectInnovationCrp.getGlobalUnit().getId()));
           }
         }
+
 
         this.setDraft(true);
 
@@ -683,9 +683,7 @@ public class ProjectInnovationAction extends BaseAction {
             projectInnovationCountryManager.deleteProjectInnovationCountry(projectInnovationCountry.getId());
           }
         }
-
       }
-
 
       innovation.getProjectInnovationInfo().setPhase(this.getActualPhase());
       innovation.getProjectInnovationInfo().setProjectInnovation(innovation);
@@ -824,10 +822,8 @@ public class ProjectInnovationAction extends BaseAction {
 
     // Save form Information
     if (innovation.getContributingOrganizations() != null) {
-      System.out.println("entri aqui");
       for (ProjectInnovationContributingOrganization innovationOrganization : innovation
         .getContributingOrganizations()) {
-        System.out.println("Holi");
         if (innovationOrganization.getId() == null) {
           ProjectInnovationContributingOrganization innovationOrganizationSave =
             new ProjectInnovationContributingOrganization();

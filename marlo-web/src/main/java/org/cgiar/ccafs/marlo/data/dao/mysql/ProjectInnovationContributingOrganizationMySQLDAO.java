@@ -76,7 +76,6 @@ public class ProjectInnovationContributingOrganizationMySQLDAO
   public ProjectInnovationContributingOrganization
     save(ProjectInnovationContributingOrganization projectInnovationContributingOrganization) {
     if (projectInnovationContributingOrganization.getId() == null) {
-      System.out.println("entro save");
       super.saveEntity(projectInnovationContributingOrganization);
     } else {
       projectInnovationContributingOrganization = super.update(projectInnovationContributingOrganization);
