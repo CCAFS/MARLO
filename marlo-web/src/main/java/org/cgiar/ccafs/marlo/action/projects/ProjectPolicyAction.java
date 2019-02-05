@@ -253,12 +253,27 @@ public class ProjectPolicyAction extends BaseAction {
     return policy;
   }
 
+  /**
+   * Get the information for the Cross Cutting marker in the form
+   * 
+   * @param markerID
+   * @return
+   */
   public ProjectPolicyCrossCuttingMarker getPolicyCrossCuttingMarker(long markerID) {
     ProjectPolicyCrossCuttingMarker crossCuttingMarker = new ProjectPolicyCrossCuttingMarker();
-
-    crossCuttingMarker = projectPolicyCrossCuttingMarkerManager.getPolicyCrossCountryMarkerId(policyID, markerID,
-      this.getActualPhase().getId());
-
+    if (this.isDraft()) {
+      // Cgiar Cross Cutting Markers Autosave
+      if (policy.getCrossCuttingMarkers() != null) {
+        for (ProjectPolicyCrossCuttingMarker projectPolicyCrossCuttingMarker : policy.getCrossCuttingMarkers()) {
+          if (projectPolicyCrossCuttingMarker.getCgiarCrossCuttingMarker().getId() == markerID) {
+            crossCuttingMarker = projectPolicyCrossCuttingMarker;
+          }
+        }
+      }
+    } else {
+      crossCuttingMarker = projectPolicyCrossCuttingMarkerManager.getPolicyCrossCountryMarkerId(policyID, markerID,
+        this.getActualPhase().getId());
+    }
     if (crossCuttingMarker != null) {
       return crossCuttingMarker;
     } else {

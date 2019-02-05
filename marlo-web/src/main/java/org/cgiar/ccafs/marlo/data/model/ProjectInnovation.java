@@ -198,6 +198,10 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
     this.sectionStatuses = sectionStatuses;
   }
 
+  @Override
+  public String toString() {
+    return "ProjectInnovation [id=" + this.getId() + ", isActive=" + this.isActive() + "]";
+  }
 
 }
 

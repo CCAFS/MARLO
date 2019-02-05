@@ -43,10 +43,6 @@ public class ProjectPolicy extends MarloAuditableEntity implements java.io.Seria
   private List<ProjectPolicyCountry> regions;
 
 
-  public ProjectPolicy() {
-  }
-
-
   public List<ProjectPolicyCountry> getCountries() {
     return countries;
   }
@@ -219,6 +215,11 @@ public class ProjectPolicy extends MarloAuditableEntity implements java.io.Seria
 
   public void setSubIdos(List<ProjectPolicySubIdo> subIdos) {
     this.subIdos = subIdos;
+  }
+
+  @Override
+  public String toString() {
+    return "ProjectPolicy [id=" + this.getId() + ", isActive=" + this.isActive() + "]";
   }
 
 }

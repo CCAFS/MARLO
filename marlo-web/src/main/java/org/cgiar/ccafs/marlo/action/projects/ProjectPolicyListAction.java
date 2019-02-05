@@ -127,19 +127,14 @@ public class ProjectPolicyListAction extends BaseAction {
 
   @Override
   public void prepare() throws Exception {
-
     projectID = Integer.parseInt(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_REQUEST_ID)));
-
     project = projectManager.getProjectById(projectID);
-
     allYears = project.getProjecInfoPhase(this.getActualPhase()).getAllYears();
-
     List<ProjectPolicy> policies =
       project.getProjectPolicies().stream().filter(c -> c.isActive()).collect(Collectors.toList());
     project.setPolicies(new ArrayList<ProjectPolicy>());
     for (ProjectPolicy projectPolicy : policies) {
       if (projectPolicy.getProjectPolicyInfo(this.getActualPhase()) != null) {
-
         // SubIdos List
         if (projectPolicy.getProjectPolicySubIdos() != null) {
           projectPolicy.setSubIdos(new ArrayList<>(projectPolicy.getProjectPolicySubIdos().stream()
