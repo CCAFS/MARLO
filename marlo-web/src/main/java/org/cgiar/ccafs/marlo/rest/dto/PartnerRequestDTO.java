@@ -22,105 +22,103 @@ import io.swagger.annotations.ApiModelProperty;
  */
 public class PartnerRequestDTO {
 
+	@ApiModelProperty(notes = "The id of the Partner Request")
+	private Long id;
 
-  @ApiModelProperty(notes = "The Generated SRF IDO ID")
-  private Long id;
+	@ApiModelProperty(notes = "Name of institution")
+	private String partnerName;
 
+	@ApiModelProperty(notes = "Acronym of institution")
+	private String acronym;
 
-  @ApiModelProperty(notes = "The Generated SRF IDO ID")
-  private String partnerName;
+	@ApiModelProperty(notes = "Web Page of institution")
+	private String webPage;
 
+	@ApiModelProperty(notes = "Partner Request Status")
+	private Boolean acepted;
 
-  @ApiModelProperty(notes = "The Generated SRF IDO ID")
-  private String acronym;
+	@ApiModelProperty(notes = "Reject justification")
+	private String rejectJustification;
 
+	@ApiModelProperty(notes = "Country of partner request")
+	CountryDTO locElementDTO;
 
-  @ApiModelProperty(notes = "The Generated SRF IDO ID")
-  private String webPage;
+	@ApiModelProperty(notes = "Institution type")
+	InstitutionTypeDTO institutionTypeDTO;
 
+	@ApiModelProperty(notes = "Intitution created")
+	InstitutionDTO institutionDTO;
 
-  @ApiModelProperty(notes = "The Generated SRF IDO ID")
-  private Boolean acepted;
+	public Boolean getAcepted() {
+		return this.acepted;
+	}
 
+	public String getAcronym() {
+		return this.acronym;
+	}
 
-  LocElementDTO locElementDTO;
+	public Long getId() {
+		return this.id;
+	}
 
+	public InstitutionDTO getInstitutionDTO() {
+		return this.institutionDTO;
+	}
 
-  InstitutionTypeDTO institutionTypeDTO;
+	public InstitutionTypeDTO getInstitutionTypeDTO() {
+		return this.institutionTypeDTO;
+	}
 
+	public CountryDTO getLocElementDTO() {
+		return this.locElementDTO;
+	}
 
-  InstitutionDTO institutionDTO;
+	public String getPartnerName() {
+		return this.partnerName;
+	}
 
+	public String getRejectJustification() {
+		return this.rejectJustification;
+	}
 
-  public Boolean getAcepted() {
-    return acepted;
-  }
+	public String getWebPage() {
+		return this.webPage;
+	}
 
+	public void setAcepted(Boolean acepted) {
+		this.acepted = acepted;
+	}
 
-  public String getAcronym() {
-    return acronym;
-  }
+	public void setAcronym(String acronym) {
+		this.acronym = acronym;
+	}
 
+	public void setId(Long id) {
+		this.id = id;
+	}
 
-  public Long getId() {
-    return id;
-  }
+	public void setInstitutionDTO(InstitutionDTO institutionDTO) {
+		this.institutionDTO = institutionDTO;
+	}
 
+	public void setInstitutionTypeDTO(InstitutionTypeDTO institutionTypeDTO) {
+		this.institutionTypeDTO = institutionTypeDTO;
+	}
 
-  public InstitutionDTO getInstitutionDTO() {
-    return institutionDTO;
-  }
+	public void setLocElementDTO(CountryDTO locElementDTO) {
+		this.locElementDTO = locElementDTO;
+	}
 
+	public void setPartnerName(String partnerName) {
+		this.partnerName = partnerName;
+	}
 
-  public InstitutionTypeDTO getInstitutionTypeDTO() {
-    return institutionTypeDTO;
-  }
+	public void setRejectJustification(String rejectJustification) {
+		this.rejectJustification = rejectJustification;
+	}
 
-
-  public LocElementDTO getLocElementDTO() {
-    return locElementDTO;
-  }
-
-
-  public String getPartnerName() {
-    return partnerName;
-  }
-
-
-  public String getWebPage() {
-    return webPage;
-  }
-
-  public void setAcepted(Boolean acepted) {
-    this.acepted = acepted;
-  }
-
-  public void setAcronym(String acronym) {
-    this.acronym = acronym;
-  }
-
-  public void setId(Long id) {
-    this.id = id;
-  }
-
-  public void setInstitutionDTO(InstitutionDTO institutionDTO) {
-    this.institutionDTO = institutionDTO;
-  }
-
-  public void setInstitutionTypeDTO(InstitutionTypeDTO institutionTypeDTO) {
-    this.institutionTypeDTO = institutionTypeDTO;
-  }
-
-  public void setLocElementDTO(LocElementDTO locElementDTO) {
-    this.locElementDTO = locElementDTO;
-  }
-
-  public void setPartnerName(String partnerName) {
-    this.partnerName = partnerName;
-  }
-
-  public void setWebPage(String webPage) {
-    this.webPage = webPage;
-  }
+	public void setWebPage(String webPage) {
+		this.webPage = webPage;
+	}
 
 }

@@ -29,7 +29,7 @@ public class SrfSubIdoDTO {
 	@ApiModelProperty(notes = "SRF Sub-IDO description ")
 	private String description;
 
-	private SrfIdoDTO srfIdo;
+	private SrfIdoDTO srfIdoDTO;
 
 	public String getCode() {
 		return this.code;
@@ -38,12 +38,9 @@ public class SrfSubIdoDTO {
 	public String getDescription() {
 		return this.description;
 	}
-	/*
-	 * public Long getId() { return this.id; }
-	 */
 
-	public SrfIdoDTO getSrfIdo() {
-		return this.srfIdo;
+	public SrfIdoDTO getSrfIdoDTO() {
+		return this.srfIdoDTO;
 	}
 
 	public void setCode(String code) {
@@ -54,11 +51,8 @@ public class SrfSubIdoDTO {
 		this.description = description;
 	}
 
-	/*
-	 * public void setId(Long id) { this.id = id; }
-	 */
-	public void setSrfIdo(SrfIdoDTO srfIdo) {
-		this.srfIdo = srfIdo;
+	public void setSrfIdoDTO(SrfIdoDTO srfIdoDTO) {
+		this.srfIdoDTO = srfIdoDTO;
 	}
 
 }

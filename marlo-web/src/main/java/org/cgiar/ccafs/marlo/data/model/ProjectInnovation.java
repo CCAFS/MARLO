@@ -1,3 +1,4 @@
+
 package org.cgiar.ccafs.marlo.data.model;
 // Generated Apr 18, 2018 3:39:52 PM by Hibernate Tools 3.4.0.CR1
 

@@ -51,6 +51,7 @@ public class Auditlog extends MarloBaseEntity implements java.io.Serializable {
   public Auditlog(String action, String detail, Date createdDate, Long entityId, String entityName, String entityJson,
     Long userId, String transactionId, Long principal, String relationName, String modificationJustification,
     Long phase) {
+    super();
     this.action = action;
     this.detail = detail;
     this.createdDate = createdDate;
