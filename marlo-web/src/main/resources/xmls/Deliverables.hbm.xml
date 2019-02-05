@@ -215,5 +215,13 @@
       <column name="modification_justification" sql-type="TEXT"
         not-null="true" />
     </property>		
+    
+    <set name="deliverableLp6s" table="project_lp6_contribution_deliverables" inverse="true"
+      order-by="id" lazy="true" fetch="select">
+      <key>
+        <column name="deliverable_id" not-null="true" />
+      </key>
+      <one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectLp6ContributionDeliverable" />
+    </set>
 	</class>
 </hibernate-mapping>

@@ -559,7 +559,7 @@ public class ExpectedCRPProgress2019Action extends BaseAction {
                   break;
                 }
               } else {
-                if (institution.getAcronym().equals("PMU")) {
+                if (institution.getAcronym() != null && institution.getAcronym().equals("PMU")) {
                   liaisonInstitutionID = institution.getId();
                   isLeader = true;
                   break;
@@ -685,7 +685,7 @@ public class ExpectedCRPProgress2019Action extends BaseAction {
     }
 
     liaisonInstitutions.addAll(loggedCrp.getLiaisonInstitutions().stream()
-      .filter(c -> c.getCrpProgram() == null && c.getAcronym().equals("PMU") & c.isActive())
+      .filter(c -> c.getCrpProgram() == null && c.getAcronym() != null && c.getAcronym().equals("PMU") & c.isActive())
       .collect(Collectors.toList()));
     liaisonInstitutions.sort(Comparator.comparing(LiaisonInstitution::getAcronym));
 

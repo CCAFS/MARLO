@@ -298,7 +298,7 @@ public class CrossCuttingDimensionsAction extends BaseAction {
                     break;
                   }
                 } else {
-                  if (institution.getAcronym().equals("PMU")) {
+                  if (institution.getAcronym() != null && institution.getAcronym().equals("PMU")) {
                     liaisonInstitutionID = institution.getId();
                     isLeader = true;
                     break;
@@ -381,7 +381,8 @@ public class CrossCuttingDimensionsAction extends BaseAction {
 
     if (this.isFlagship()) {
       LiaisonInstitution pmuInstitution = loggedCrp.getLiaisonInstitutions().stream()
-        .filter(c -> c.getCrpProgram() == null && c.getAcronym().equals("PMU")).collect(Collectors.toList()).get(0);
+        .filter(c -> c.getCrpProgram() == null && c.getAcronym() != null && c.getAcronym().equals("PMU"))
+        .collect(Collectors.toList()).get(0);
       PowbSynthesis powbSynthesisDB = powbSynthesisManager.findSynthesis(phase.getId(), pmuInstitution.getId());
       if (powbSynthesisDB != null) {
         if (powbSynthesisDB.getPowbCrossCuttingDimension() != null) {
@@ -400,7 +401,8 @@ public class CrossCuttingDimensionsAction extends BaseAction {
     liaisonInstitutions.sort(Comparator.comparing(LiaisonInstitution::getAcronym));
     // ADD PMU as liasion Institutio too
     liaisonInstitutions.addAll(loggedCrp.getLiaisonInstitutions().stream()
-      .filter(c -> c.getCrpProgram() == null && c.getAcronym().equals("PMU")).collect(Collectors.toList()));
+      .filter(c -> c.getCrpProgram() == null && c.getAcronym() != null && c.getAcronym().equals("PMU"))
+      .collect(Collectors.toList()));
 
     // Get the tableC Information
     this.tableCInfo(phase);

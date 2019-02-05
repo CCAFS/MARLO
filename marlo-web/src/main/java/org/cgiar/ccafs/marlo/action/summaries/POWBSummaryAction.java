@@ -1142,7 +1142,7 @@ public class POWBSummaryAction extends BaseSummariesAction implements Summary {
   }
 
   public boolean isPMU(LiaisonInstitution institution) {
-    if (institution.getAcronym().equals("PMU")) {
+    if (institution.getAcronym() != null && institution.getAcronym().equals("PMU")) {
       return true;
     }
     return false;

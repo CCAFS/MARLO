@@ -30,7 +30,6 @@ public class ProjectPolicy extends MarloAuditableEntity implements java.io.Seria
   private Set<ProjectPolicyCrossCuttingMarker> projectPolicyCrossCuttingMarkers =
     new HashSet<ProjectPolicyCrossCuttingMarker>(0);
 
-
   private List<String> countriesIds = new ArrayList<>();
   private List<ProjectPolicyCountry> countries;
   private String countriesIdsText;

@@ -334,7 +334,6 @@ public class HibernateAuditLogListener
     throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
     Set<HashMap<String, Object>> setRelations = new HashSet<>();
     entity = (IAuditLog) session.get(entity.getClass(), entity.getId());
-
     ClassMetadata classMetadata = session.getSessionFactory().getClassMetadata(entity.getClass());
     String[] propertyNames = classMetadata.getPropertyNames();
 
@@ -567,7 +566,6 @@ public class HibernateAuditLogListener
           updateRecord.put(IAuditLog.ENTITY, entity);
           updateRecord.put(IAuditLog.PRINCIPAL, new Long(1));
           auditLogContext.getUpdates().add(updateRecord);
-
 
           auditLogContext.getUpdates().addAll(this.relations(postUpdateEvent.getState(), types,
             ((IAuditLog) entity).getId(), true, postUpdateEvent.getSession(), entity));

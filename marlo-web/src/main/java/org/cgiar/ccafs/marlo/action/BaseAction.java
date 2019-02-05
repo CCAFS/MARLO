@@ -57,6 +57,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectBudgetManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectComponentLessonManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectLp6ContributionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerPersonManager;
@@ -137,6 +138,8 @@ import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
 import org.cgiar.ccafs.marlo.data.model.ProjectHighlight;
 import org.cgiar.ccafs.marlo.data.model.ProjectInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
+import org.cgiar.ccafs.marlo.data.model.ProjectLp6Contribution;
+import org.cgiar.ccafs.marlo.data.model.ProjectLp6ContributionDeliverable;
 import org.cgiar.ccafs.marlo.data.model.ProjectMilestone;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
@@ -284,6 +287,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   private PhaseManager phaseManager;
   private CenterOutputsOutcomeManager centerOutputsOutcomeManager;
 
+  @Inject
+  private ProjectLp6ContributionManager projectLp6ContributionManager;
 
   @Inject
   private CrpClusterKeyOutputManager crpClusterKeyOutputManager;
@@ -2511,6 +2516,18 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
+  public Boolean getHasLp6ContributionDeliverable(long deliverableID, long phaseID) {
+    Deliverable deliverable = deliverableManager.getDeliverableById(deliverableID);
+    // Get selected deliverables
+    List<ProjectLp6ContributionDeliverable> projectLp6ContributionDeliverables = deliverable.getDeliverableLp6s()
+      .stream().filter(dl -> dl.isActive() && dl.getPhase().getId().equals(phaseID)).collect(Collectors.toList());
+    if (projectLp6ContributionDeliverables != null && !projectLp6ContributionDeliverables.isEmpty()) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   /**
    * Get the folder path according if the user navigate in center,crp or platform sections.
    * 
@@ -2997,6 +3014,25 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
   }
 
+  public Boolean getProjectLp6ContributionValue(long projectID, long phaseID) {
+    try {
+      ProjectLp6Contribution projectLp6Contribution = new ProjectLp6Contribution();
+      Boolean value = null;
+      if (projectID != 0 && phaseID != 0) {
+        projectLp6Contribution = projectLp6ContributionManager.findAll().stream()
+          .filter(c -> c.isActive() && c.getProject().getId() == projectID && c.getPhase().getId() == phaseID)
+          .collect(Collectors.toList()).get(0);
+
+        if (projectLp6Contribution != null) {
+          value = projectLp6Contribution.isContribution();
+        }
+      }
+      return value;
+    } catch (Exception e) {
+      return null;
+    }
+  }
+
 
   public SectionStatus getProjectOutcomeStatus(long projectOutcomeID) {
     ProjectOutcome projectOutcome = projectOutcomeManager.getProjectOutcomeById(projectOutcomeID);
@@ -3168,6 +3204,23 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     switch (ProjectSectionStatusEnum.value(section.toUpperCase())) {
       case OUTCOMES:
         project = projectManager.getProjectById(projectID);
+
+        // Validate LP6 Contribution question
+        if (this.hasSpecificities(APConstants.CRP_LP6_ACTIVE) && this.isReportingActive()) {
+
+          List<ProjectLp6Contribution> projectLp6Contributions = project.getProjectLp6Contributions().stream()
+            .filter(pl -> pl.isActive() && pl.getPhase().equals(this.getActualPhase())).collect(Collectors.toList());
+          if (projectLp6Contributions != null && !projectLp6Contributions.isEmpty()) {
+            ProjectLp6Contribution projectLp6Contribution = projectLp6Contributions.get(0);
+            if (projectLp6Contribution.getContribution() == null) {
+              return false;
+            }
+          } else {
+            return false;
+          }
+
+        }
+
         List<ProjectOutcome> projectOutcomes = project.getProjectOutcomes().stream()
           .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase()))
           .collect(Collectors.toList());
