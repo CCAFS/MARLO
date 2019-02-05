@@ -15,55 +15,49 @@
 
 package org.cgiar.ccafs.marlo.rest.dto;
 
+import javax.validation.constraints.NotNull;
+
 import io.swagger.annotations.ApiModelProperty;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  */
-public class LocElementDTO {
 
-	@ApiModelProperty(notes = "The ISO country code")
-	private Long code;
+public class PolicyMaturityLevelDTO {
 
-	@ApiModelProperty(notes = "The ISO Alpha 2 letters code")
-	private String isoAlpha2;
+	@ApiModelProperty(notes = "Level of maturity of policy ID")
+	@NotNull
+	private Long id;
 
-	@ApiModelProperty(notes = "Country Name")
+	@ApiModelProperty(notes = "Level of maturity of policy name")
+	@NotNull
 	private String name;
 
-	@ApiModelProperty(notes = "Region")
-	private LocElementDTO region;
+	@ApiModelProperty(notes = "Level of maturity of policy definition")
+	private String description;
 
-	public Long getCode() {
-		return this.code;
+	public String getDescription() {
+		return this.description;
 	}
 
-	public String getIsoAlpha2() {
-		return this.isoAlpha2;
+	public Long getId() {
+		return this.id;
 	}
 
 	public String getName() {
 		return this.name;
 	}
 
-	public LocElementDTO getRegion() {
-		return this.region;
+	public void setDescription(String description) {
+		this.description = description;
 	}
 
-	public void setCode(Long code) {
-		this.code = code;
-	}
-
-	public void setIsoAlpha2(String isoAlpha2) {
-		this.isoAlpha2 = isoAlpha2;
+	public void setId(Long id) {
+		this.id = id;
 	}
 
 	public void setName(String name) {
 		this.name = name;
-	}
-
-	public void setRegion(LocElementDTO region) {
-		this.region = region;
 	}
 
 }

@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <title>CLARISA | API reference</title>
+  <meta charset="UTF-8">
+  
+  <link rel="icon" type="image/png" href="./cgiar-32x32.png" sizes="32x32" />
+  <link rel="icon" type="image/png" href="./cgiar-16x16.png" sizes="16x16" />
+  
+ 
+  <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+  
+  <link rel="stylesheet" type="text/css" href="./reference.css">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+	<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+	 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+</head>
+
+<body>
+	  <nav class="navbar navbar-light navbar-inverse bg-white fixed-top mb-3">
+	    <a class="navbar-brand top-title" href="#">CLARISA DEMO</a>
+	    <ul class="navbar-nav top-items mr-auto ml-auto">
+        <li class="nav-item active">
+          <a class="nav-link" href="#">Terms of Service</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">API License</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">Contact</a>
+        </li>
+      </ul>
+	  </nav>
+	  
+	<div class="container-fluid row">
+				<nav id="reference-index" class="col-sm-3 col-md-2 bg-light sidebar">
+				 <a class="navbar-brand ml-auto mr-auto" href="#">API REFERENCE</a>
+				 <!-- Table 1. Item 1 -->
+				 <ul class="nav flex-column">
+				  <li class="nav-item">
+				    <a class="nav-link reference-link" href="#Table1">Evidence on Progress towards SRF targets (Sphere of interest)</a>
+				  </li>
+				  <!-- Table 1. Item 1 -->
+				  <li class="nav-item">
+				    <a class="nav-link ml-3 my-1" href="#1-1Control-List">Control List for the disaggregation </a>
+				  </li>
+				  <!-- Sub Items -->
+				  <li class="nav-item">
+				    <a class="nav-link ml-5 my-1" href="#1-1-1SLO-Targets">SLO Targets</a>
+				  </li>
+				  <li class="nav-item">
+				    <a class="nav-link ml-5 my-1" href="#1-1-2CGIAR-Entities">CGIAR Entities</a>
+          </li>
+          <!-- Table 1. Item 2 -->
+          <li class="nav-item">
+            <a class="nav-link ml-3 my-1" href="#1-2Indicator-Administration">Indicator administration</a>
+          </li>
+				 </ul>
+				 <!-- Table 2 -->
+				 <ul class="nav flex-column">
+				  <li class="nav-item">
+				    <a class="nav-link" href="#Table2">Condensed list of policy contributions in this reporting year (Policies Guidance) </a>
+				  </li>
+				  <!-- Table 2. Item 1 -->
+				  <li class="nav-item">
+				    <a class="nav-link ml-3 my-1" href="#2-1Control-List">Control List for the disaggregation</a>
+          </li>
+          <!-- Sub Items -->
+          <li class="nav-item">
+            <a class="nav-link ml-5 my-1" href="#2-1-1CGIAR-Entities">CGIAR Entities </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link ml-5 my-1" href="#2-1-2Sub-IDOs">CGIAR Sub-IDOs</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link ml-5 my-1" href="#2-1-3Cross-Cutting">Cross-cutting markers</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link ml-5 my-1" href="#2-1-4Cross-Cutting-Scores">Cross cutting marker scores</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link ml-5 my-1" href="#2-1-5Policy-Types">Policy/investment Types</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link ml-5 my-1" href="#2-1-6Policy-Owner">Policies owner types</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link ml-5 my-1" href="#2-1-7Geographic-Scopes">Geographic Scopes</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link ml-5 my-1" href="#2-1-8United-Nations-Regions">United Nations Regions</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link ml-5 my-1" href="#2-1-9Countries">Countries</a>
+          </li>
+          <li class="nav-item">
+          <a class="nav-link ml-5 my-1" href="#2-1-10Policy-Maturity">Level of maturity of the policy</a>
+          </li>
+          <!-- Table 2. Item 2 -->
+          <li class="nav-item">
+            <a class="nav-link ml-3 my-1" href="#2-2Indicator-Administration">Indicator administration</a>
+          </li>
+				 </ul>
+				 <div class="menu-credit mr-5 ml-5 mt-5">Developed by MARLO Team</div>
+				</nav>
+			<div class="col-sm-6 offset-sm-3 col-md-6 offset-md-2 pt-5 mt-5">
+			 <div data-spy="scroll" data-target="#reference-index" data-offset="0">
+			    <div class="mx-auto referenceContent">
+			    <div id="Table1">
+					  <h5>Table 1. Evidence on Progress towards SRF targets (Sphere of interest)</h5>
+					  
+					  <table class="table table-bordered">
+						  <thead>
+						    <tr class="d-flex">
+                  <th scope="col" class="col-sm-5">Column 1</th>
+                  <th scope="col" class="col-sm-4">Column 2</th>
+                  <th scope="col" class="col-sm-3">Column 3</th>
+                </tr>
+						    <tr class="d-flex">
+						      <th scope="col" class="col-sm-5">SLO Target (2022)</th>
+						      <th scope="col" class="col-sm-4">Brief summary of new evidence of CGIAR contribution
+						      <p class="table-title">[Put N/A if the specific SRF target is not applicable to your CRP. Put "No new evidence in 2018" if 
+						      the target is potentially relevant, but there is no new evidence available. Spell out all acronyms.]</p></th>
+						      <th scope="col" class="col-sm-3">Expected additional contribution before end of 2022
+						      <p class="table-title">(If not already fully covered.)<br>
+						      <strong>[Optional narrative. Evidence not required.]</strong></p></th>
+						    </tr>
+							  </thead>
+							  <tbody>
+							   <tr class="d-flex">
+                  <td class="col-sm-5"></td>
+                  <td class="col-sm-4">Max. 150 words per entry</td>
+                  <td class="col-sm-3">Max. 100 words</td>
+                </tr>
+							  <tr class="d-flex">
+								  <td class="col-sm-5">1.1. 100 million more farm households have adopted improved varieties, breeds, trees, and/or 
+								  managements practices</td>
+								  <td class="col-sm-4"></td>
+								  <td class="col-sm-3"></td>
+							  </tr>
+							  <tr class="d-flex">
+                  <td class="col-sm-5">1.2. 30 million people, of which 50% are women, assited to exit poverty</td>
+                  <td class="col-sm-4"></td>
+                  <td class="col-sm-3"></td>
+                </tr>
+                <tr class="d-flex">
+                  <td class="col-sm-5">2.1. Improve the rate of yield increase for major food staples from current <1% to 1.2%-2.5% per year</td>
+                  <td class="col-sm-4"></td>
+                  <td class="col-sm-3"></td>
+                </tr>
+                <tr class="d-flex">
+                  <td class="col-sm-5">2.2. 30 million more people, of which 50% are women, meeting minimun dietary energy requirements</td>
+                  <td class="col-sm-4"></td>
+                  <td class="col-sm-3"></td>
+                </tr>
+                <tr class="d-flex">
+                  <td class="col-sm-5">2.3. 150 million more people, of which 50% are women, wihout deficiencies in one or more essential micronutriets</td>
+                  <td class="col-sm-4"></td>
+                  <td class="col-sm-3"></td>
+                </tr>
+                <tr class="d-flex">
+                  <td class="col-sm-5">3.1. 5% increase in water and nutrient efficiency in agroecosystems</td>
+                  <td class="col-sm-4"></td>
+                  <td class="col-sm-3"></td>
+                </tr>
+                <tr class="d-flex">
+                  <td class="col-sm-5">3.2. Reduction in 'agriculturally' related greenhouse gas emissions by 5%</td>
+                  <td class="col-sm-4"></td>
+                  <td class="col-sm-3"></td>
+                </tr>
+                <tr class="d-flex">
+                  <td class="col-sm-5">3.3. 55 M ha degraded land area restored</td>
+                  <td class="col-sm-4"></td>
+                  <td class="col-sm-3"></td>
+                </tr>
+                <tr class="d-flex">
+                  <td class="col-sm-5">3.4. 2.5 M ha forest saved from deforestation</td>
+                  <td class="col-sm-4"></td>
+                  <td class="col-sm-3"></td>
+                </tr>
+							  </tbody>
+						</table>
+						<p>This table has available high-quality evidences on progress that was published or made available 
+              in 2018. </p>
+					  
+					</div>
+					  
+					  <h6 id="1-1Control-List">Control List for the disaggregation</h6>
+					  
+					  <div id="1-1-1SLO-Targets" class="item-section">
+						  <span class="subItem">SLO Targets</span>
+							  <p>System Level Outcomes targets defined. In order to fill this table, should call the “Get all targets 
+							  of a year” like this <i>/v2/slo-targets?year=2022</i> to retrieve just the 2022 targets. Services:</p>
+							  <p class="ml-3"><i>GET:</i></p>
+									   <p class="ml-5">Get all:  /v2/slo-targets</p>
+									   <p class="ml-5">Get all targets of a year: /v2/slo-targets?year={year}</p>
+									   <p class="ml-5">Get one by id:  /v2/slo-targets/{id}</p>
+							  <p class="ml-3"><i>POST:</i> Not applicable as this control list will be updated internally </p>
+							  <p class="ml-3"><i>DELETE:</i> Not applicable as this control list will be updated internally</p>
+							  <p class="ml-3"><i>PUT:</i> Not applicable as this control list will be updated internally</p>
+						</div>
+						
+						<div id="1-1-2CGIAR-Entities" class="item-section">  
+						  <span class="subItem">CGIAR Entities</span>
+						    <p>This service includes CGIAR Research Programs (CRP’s), CGIAR platforms and CGIAR centers. To report 
+						    this indicator should include just the “CRP” and “Platforms” types.</p>
+							  <p class="ml-3"><i>GET:</i></p>
+			                 <p class="ml-5">Get all:  /v2/cgiar-entities</p>
+			                 <p class="ml-5">Get all by type: /v2/ cgiar-entities?type={entity-type}</p>
+			                 <p class="ml-5">Get one by id:  /v2/ cgiar-entities /{id}</p> 		            
+			          <p class="ml-3"><i>POST:</i> Not applicable as this control list will be updated internally </p>
+			          <p class="ml-3"><i>DELETE:</i> Not applicable as this control list will be updated internally</p>
+			          <p class="ml-3"><i>PUT:</i> Not applicable as this control list will be updated internally</p>
+		        </div>
+					  
+					  <div id="1-2Indicator-Administration" class="subtitle-section">  
+						  <h6>Indicator administration</h6>
+						    <p>CLARISA allows the creation of new progress evidences in order to fill this table. Additionally, 
+						    allows to update, retrieve and delete evidences.</p>
+						    <p class="ml-3"><i>GET:</i></p>
+	                     <p class="ml-5">Get all evidences:       /v2/progress-evidences-sfr-targets/</p>
+	                     <p class="ml-5">Get all evidences of a CRP:    /v2/progress-evidences-sfr-target?crp={id-crp} </p>
+	                     <p class="ml-5">Get one evidence by id:     /v2/progress-evidences-sfr-targets/{evidence-id}</p>                
+	              <p class="ml-3"><i>POST:</i> </p> 
+	                     <p class="ml-5">Create a new evidence:    /v2/progress-evidences-sfr-targets/ </p>
+	              <p class="ml-3"><i>DELETE:</i> </p> 
+	                     <p class="ml-5">Delete (Disable) an evidence by id:/v2/progress-evidences-sfr-targets/{evidence-id} </p>
+	              <p class="ml-3"><i>PUT:</i> </p> 
+	                     <p class="ml-5">Update information of an evidence: /v2/progress-evidences-sfr-targets/{evidence-id}</p>
+            </div>
+					  
+					  <div id="Table2">
+						  <h5 class="section-title">Table 2. Condensed list of policy contributions in this reporting year (Policies Guidance) </h5>
+						  <table class="table table-bordered">
+	              <thead>
+	               <tr>
+                  <th scope="col">Column 1</th>
+                  <th scope="col">Column 2</th>
+                  <th scope="col">Column 3</th>
+                  <th scope="col">Column 4a</th>
+                  <th scope="col">Column 4b</th>
+                  <th scope="col">Column 4c</th>
+                  <th scope="col">Column 4d</th>
+                  <th scope="col">Column 4e</th>
+                </tr>
+	              </thead>
+	              <tbody>
+		              <tr class="columns">
+	                  <td rowspan="2"><p>Name and description of policy, legal instrument, investment or curriculum to which CGIAR 
+	                  contributed (20-50 words, ideally around 30 words)</p>
+	                  <p>Spell out acronyms in every row</p></td>
+	                  <td rowspan="2">Level of Maturity</td>
+	                  <td rowspan="2">Link to sub-IDOs (max. 2)</td>
+	                  <td colspan="4">CGIAR cross-cutting market score</td>
+	                  <td>Link to OICR (obligatory if Level of Maturity is 2 or 3) or link to evidence (e.g. PDF generated from MIS)</td>
+	                </tr>
+	                <tr>
+	                 <td>Gender</td>
+	                 <td>Youth</td>
+	                 <td>CapDev</td>
+	                 <td>Climate Change</td>
+	                 <td></td>
+	                </tr>
+	                <tr>
+                   <td></td>
+                   <td></td>
+                   <td></td>
+                   <td></td>
+                   <td></td>
+                   <td></td>
+                   <td></td>
+                   <td></td>
+                  </tr>
+	              </tbody>
+	            </table>
+            </div>
+					 
+					  <h6 id="2-1Control-List">Control List for the disaggregation</h6>
+					  <div id="2-1-2Sub-IDOs" class="item-section">
+						  <span class="subItem">CGIAR Sub-IDOs</span>
+						    <p>Sub intermediate development outcomes</p>
+						    <p class="ml-3"><i>GET:</i></p>
+	                     <p class="ml-5">Get all:        <a class="api-button" href="#">/v2/srf-sub-idos</a> </p>
+	                     <p class="ml-5">Get one by id:      /v2/srf-sub-idos/{id}</p>
+	              <p class="ml-3"><i>POST:</i> Not applicable as this control list will be updated internally</p> 
+	              <p class="ml-3"><i>DELETE:</i> Not applicable as this control list will be updated internally</p> 
+	              <p class="ml-3"><i>PUT:</i> Not applicable as this control list will be updated internally</p>
+            </div> 
+					 
+					  <div id="2-1-3Cross-Cutting" class="item-section">
+						  <span class="subItem">Cross-cutting markers</span>
+		            <p>List of CGIAR Cross-cutting markers.</p>
+		            <p class="ml-3"><i>GET:</i></p>
+	                     <p class="ml-5">Get all: /v2/cross-cutting-markers </p>
+	                     <p class="ml-5">Get one by id: /v2/cross-cutting-markers/{id}</p>
+	              <p class="ml-3"><i>POST:</i> Not applicable as this control list will be updated internally</p> 
+	              <p class="ml-3"><i>DELETE:</i> Not applicable as this control list will be updated internally</p> 
+	              <p class="ml-3"><i>PUT:</i> Not applicable as this control list will be updated internally</p> 
+	          </div>
+	         
+	          <div id="2-1-4Cross-Cutting-Scores" class="item-section">
+		          <span class="subItem">Cross-cutting marker scores</span>
+		            <p>List of possible scores on each cross-cutting marker. On MARLO Exists 5 possible scores, but for 
+		            policy just 4 are applicable.</p>
+		            <p class="ml-3"><i>GET:</i></p>
+	                     <p class="ml-5">Get all: /v2/cross-cutting-marker-scores </p>
+	                     <p class="ml-5">Get one by id: /v2/cross-cutting-marker-scores/{id}</p>
+	              <p class="ml-3"><i>POST:</i> Not applicable as this control list will be updated internally</p> 
+	              <p class="ml-3"><i>DELETE:</i> Not applicable as this control list will be updated internally</p> 
+	              <p class="ml-3"><i>PUT:</i> Not applicable as this control list will be updated internally</p> 
+            </div>
+	         
+	          <div id="2-1-5Policy-Types" class="item-section">
+		          <span class="subItem">Policy/investment Types</span>
+		            <p>The category to which the change refers.</p>
+		            <p class="ml-3"><i>GET:</i></p>
+	                     <p class="ml-5">Get all: /v2/policy-investment-types</p>
+	                     <p class="ml-5">Get one by id: /v2/policy-investment-types/{id}</p>
+	              <p class="ml-3"><i>POST:</i> Not applicable as this control list will be updated internally</p> 
+	              <p class="ml-3"><i>DELETE:</i> Not applicable as this control list will be updated internally</p> 
+	              <p class="ml-3"><i>PUT:</i> Not applicable as this control list will be updated internally</p> 
+            </div>
+	         
+	          <div id="2-1-6Policy-Owner" class="item-section">
+	          <span class="subItem">Policies owner type</span>
+	            <p>Type of the primary organization(s) either designing/promulgating the policy, law, investment 
+	            (e.g. national government) etc. and/or within which it is operating</p>
+	            <p class="ml-3"><i>GET:</i></p>
+                     <p class="ml-5">Get all: /v2/policy-owner-types </p>
+                     <p class="ml-5">Get one by id: /v2/policy-owner-types/{id} </p>
+              <p class="ml-3"><i>POST:</i> Not applicable as this control list will be updated internally</p> 
+              <p class="ml-3"><i>DELETE:</i> Not applicable as this control list will be updated internally</p> 
+              <p class="ml-3"><i>PUT:</i> Not applicable as this control list will be updated internally</p>
+            </div>
+	        
+	          <div id="2-1-7Geographic-Scopes" class="item-section">
+		          <span class="subItem">Geographic Scopes</span>
+		            <p>The level at which the impact of the change is expected to be realized. </p>
+		            <p class="ml-3"><i>GET:</i></p>
+	                     <p class="ml-5">Get all: /v2/geographic-scopes</p>
+	                     <p class="ml-5">Get one by id: /v2/geographic-scopes/{id}</p>
+	              <p class="ml-3"><i>POST:</i> Not applicable as this control list will be updated internally</p> 
+	              <p class="ml-3"><i>DELETE:</i> Not applicable as this control list will be updated internally</p> 
+	              <p class="ml-3"><i>PUT:</i> Not applicable as this control list will be updated internally</p>
+            </div>
+	        
+	          <div id="2-1-8United-Nations-Regions" class="item-section">
+		          <span class="subItem">United Nations Regions</span>
+		            <p>Geographical regions defined by UN (M49 code).</p>
+		            <p class="ml-3"><i>GET:</i></p>
+	                     <p class="ml-5">Get all:  /v2/un-regions</p>
+	                     <p class="ml-5">Get one by id: /v2/un-regions/{id}</p>
+	              <p class="ml-3"><i>POST:</i> Not applicable as this control list will be updated internally</p> 
+	              <p class="ml-3"><i>DELETE:</i> Not applicable as this control list will be updated internally</p> 
+	              <p class="ml-3"><i>PUT:</i> Not applicable as this control list will be updated internally</p>
+            </div>
+	       
+	          <div id="2-1-9Countries" class="item-section">
+		          <span class="subItem">Countries</span>
+		            <p>Worldwide countries.</p>
+		            <p class="ml-3"><i>GET:</i></p>
+	                     <p class="ml-5">Get all:   /v2/countries</p>
+	                     <p class="ml-5">Get one by id: /v2/countries/{id}</p>
+	              <p class="ml-3"><i>POST:</i> Not applicable as this control list will be updated internally</p> 
+	              <p class="ml-3"><i>DELETE:</i> Not applicable as this control list will be updated internally</p> 
+	              <p class="ml-3"><i>PUT:</i> Not applicable as this control list will be updated internally</p>
+            </div>
+	      
+	          <div id="2-1-10Policy-Maturity" class="item-section">
+	          <span class="subItem">Level of maturity of the policy</span>
+		          <p class="ml-3"><i>GET:</i></p>
+	                     <p class="ml-5">Get all:   /v2/policy-maturity-levels</p>
+	                     <p class="ml-5">Get one by id: /v2/policy-maturity-levels/{id}</p>
+	              <p class="ml-3"><i>POST:</i> Not applicable as this control list will be updated internally</p> 
+	              <p class="ml-3"><i>DELETE:</i> Not applicable as this control list will be updated internally</p> 
+	              <p class="ml-3"><i>PUT:</i> Not applicable as this control list will be updated internally</p>
+            </div>
+					 
+					 
+					  <div id="2-2Indicator-Administration" class="subtitle-section">
+					  <h6>Indicator administration</h6>
+					    <p>CLARISA allows the creation of new policies in order to fill this table. Additionally, allows to update, 
+					    retrieve and delete evidences. Take in mind that should be send all the guidance fields, not just the 
+					    table columns.</p>
+					    <p class="ml-3"><i>GET:</i></p>
+                     <p class="ml-5">Get all policies:       /v2/policies/</p>
+                     <p class="ml-5">Get all policies of a CRP:    /v2/progress-evidences-sfr-target?crp={id-crp} </p>
+                     <p class="ml-5">Get one policy by id:     /v2/progress-evidences-sfr-targets/{evidence-id}</p>                
+              <p class="ml-3"><i>POST:</i> </p> 
+                     <p class="ml-5">Create a new policy:    /v2/policies/ </p>
+              <p class="ml-3"><i>DELETE: </i></p> 
+                     <p class="ml-5">Delete (Disable) a policy by id: /v2/policies/{policy-id} 
+                     /v2/progress-evidences-sfr-targets/{evidence-id} </p>
+              <p class="ml-3"><i>PUT: </i></p> 
+                     <p class="ml-5">Update information of a policy: /v2/policies/{policy-id} </p>
+            </div>
+				  </div>
+				</div>
+			</div>
+	</div>
+</body>
+</html>

@@ -16,37 +16,39 @@
 package org.cgiar.ccafs.marlo.rest.mappers;
 
 import org.cgiar.ccafs.marlo.data.model.LocElement;
-import org.cgiar.ccafs.marlo.rest.dto.LocElementDTO;
+import org.cgiar.ccafs.marlo.rest.dto.CountryDTO;
+import org.cgiar.ccafs.marlo.rest.dto.ParentRegionDTO;
+import org.cgiar.ccafs.marlo.rest.dto.RegionDTO;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
 import org.mapstruct.Mappings;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  */
 @Mapper(componentModel = "jsr330")
-public interface LocElementMapper {
 
-	@Mappings({ @Mapping(source = "locElement.code", target = "isoNumeric") })
+public interface LocationMapper {
+	@Mappings({ @Mapping(source = "code", target = "isoNumeric") })
+	public abstract LocElement countryDTOToLocElement(CountryDTO countryDTO);
+
+	@Mappings({ @Mapping(source = "isoNumeric", target = "code"),
+			@Mapping(source = "locElement", target = "regionDTO") })
+	public abstract CountryDTO locElementToCountryDTO(LocElement locElement);
+
+	@Mappings({ @Mapping(source = "isoNumeric", target = "UM49Code") })
+	public abstract ParentRegionDTO locElementToParentRegionDTO(LocElement regElement);
+
+	@Mappings({ @Mapping(source = "isoNumeric", target = "UM49Code"),
+			@Mapping(source = "locElement", target = "parentRegion") })
+	public abstract RegionDTO locElementToRegionDTO(LocElement regElement);
+
 	/*
-	 * @Mappings({ @Mapping(source = "locElement.code", target = "isoNumeric"),
+	 * public abstract LocElement updateLocElementFromLocElementDto(CountryDTO
+	 * locElementDTO,
 	 * 
-	 * @Mapping(source = "locElement.region", target = "locElement") })
+	 * @MappingTarget LocElement locElement);
 	 */
-	public abstract LocElement locElementDTOToLocElement(LocElementDTO locElement);
-
-	/*
-	 * @Mappings({ @Mapping(source = "locElement.isoNumeric", target = "code"),
-	 * 
-	 * @Mapping(source = "locElement.locElement", target = "region") })
-	 */
-	@Mappings({ @Mapping(source = "locElement.isoNumeric", target = "code"),
-			@Mapping(source = "locElement.locElement", target = "region") })
-	public abstract LocElementDTO locElementToLocElementDTO(LocElement locElement);
-
-	public abstract LocElement updateLocElementFromLocElementDto(LocElementDTO locElementDTO,
-			@MappingTarget LocElement locElement);
 
 }

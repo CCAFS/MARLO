@@ -17,42 +17,53 @@ package org.cgiar.ccafs.marlo.rest.dto;
 
 import io.swagger.annotations.ApiModelProperty;
 
-public class SrfSubIdoDTO {
+/**
+ * @author Hermes Jiménez - CIAT/CCAFS
+ */
+public class SrfSloTargetDTO {
 
-	/*
-	 * @ApiModelProperty(notes = "SRF Sub-IDO ID") private Long id;
-	 */
-
-	@ApiModelProperty(notes = "SRF Sub-IDO CODE")
+	@ApiModelProperty(notes = "SLO target indicator code")
 	private String code;
 
-	@ApiModelProperty(notes = "SRF Sub-IDO description ")
-	private String description;
+	@ApiModelProperty(notes = "SLO target indicator year")
+	private String year;
 
-	private SrfIdoDTO srfIdoDTO;
+	@ApiModelProperty(notes = "SLO target indicator narrative")
+	private String narrative;
+
+	@ApiModelProperty(notes = "SLO of target indicator ")
+	private SrfSloDTO srfSloDTO;
 
 	public String getCode() {
 		return this.code;
 	}
 
-	public String getDescription() {
-		return this.description;
+	public String getNarrative() {
+		return this.narrative;
 	}
 
-	public SrfIdoDTO getSrfIdoDTO() {
-		return this.srfIdoDTO;
+	public SrfSloDTO getSrfSloDTO() {
+		return this.srfSloDTO;
+	}
+
+	public String getYear() {
+		return this.year;
 	}
 
 	public void setCode(String code) {
 		this.code = code;
 	}
 
-	public void setDescription(String description) {
-		this.description = description;
+	public void setNarrative(String narrative) {
+		this.narrative = narrative;
 	}
 
-	public void setSrfIdoDTO(SrfIdoDTO srfIdoDTO) {
-		this.srfIdoDTO = srfIdoDTO;
+	public void setSrfSloDTO(SrfSloDTO srfSloDTO) {
+		this.srfSloDTO = srfSloDTO;
+	}
+
+	public void setYear(String year) {
+		this.year = year;
 	}
 
 }
