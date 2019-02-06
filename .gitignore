@@ -15,3 +15,5 @@ bin
 configuration/test/marlo.properties
 configuration/dev/marlo.properties
 marlo-web/src/main/resources/swagger/dist/swagger-ui-setup.js
+marlo-web/src/main/java/org/cgiar/ccafs/marlo/validation/NewRole.java
+marlo-web/src/main/java/org/cgiar/ccafs/marlo/validation/WelcomeEmail.java
