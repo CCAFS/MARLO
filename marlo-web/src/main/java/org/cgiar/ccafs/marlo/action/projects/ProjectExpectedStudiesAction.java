@@ -19,6 +19,7 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
+import org.cgiar.ccafs.marlo.data.manager.EvidenceTagManager;
 import org.cgiar.ccafs.marlo.data.manager.ExpectedStudyProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.FileDBManager;
 import org.cgiar.ccafs.marlo.data.manager.GeneralStatusManager;
@@ -30,12 +31,18 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyCountryManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyCrpManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyFlagshipManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyInfoManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyInnovationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyInstitutionManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyLinkManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyPolicyManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyQuantificationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyRegionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudySrfTargetManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudySubIdoManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndGenderYouthFocusLevelManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndGeographicScopeManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndOrganizationTypeManager;
@@ -47,6 +54,7 @@ import org.cgiar.ccafs.marlo.data.manager.SrfSloIndicatorManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfSubIdoManager;
 import org.cgiar.ccafs.marlo.data.manager.StudyTypeManager;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
+import org.cgiar.ccafs.marlo.data.model.EvidenceTag;
 import org.cgiar.ccafs.marlo.data.model.ExpectedStudyProject;
 import org.cgiar.ccafs.marlo.data.model.GeneralStatus;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
@@ -59,10 +67,16 @@ import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyCountry;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyCrp;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyFlagship;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInnovation;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInstitution;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyLink;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyPolicy;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyQuantification;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudySrfTarget;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudySubIdo;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
 import org.cgiar.ccafs.marlo.data.model.ProjectPhase;
+import org.cgiar.ccafs.marlo.data.model.ProjectPolicy;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.RepIndGenderYouthFocusLevel;
 import org.cgiar.ccafs.marlo.data.model.RepIndGeographicScope;
@@ -142,6 +156,16 @@ public class ProjectExpectedStudiesAction extends BaseAction {
   private ExpectedStudyProjectManager expectedStudyProjectManager;
   private ProjectExpectedStudyRegionManager projectExpectedStudyRegionManager;
   private GeneralStatusManager generalStatusManager;
+
+  // AR 2018 Managers
+  private EvidenceTagManager evidenceTagManager;
+  private ProjectExpectedStudyLinkManager projectExpectedStudyLinkManager;
+  private ProjectExpectedStudyPolicyManager projectExpectedStudyPolicyManager;
+  private ProjectExpectedStudyQuantificationManager projectExpectedStudyQuantificationManager;
+  private ProjectExpectedStudyInnovationManager projectExpectedStudyInnovationManager;
+  private ProjectInnovationManager projectInnovationManager;
+  private ProjectPolicyManager projectPolicyManager;
+
   // Variables
   private ProjectExpectedStudiesValidator projectExpectedStudiesValidator;
   private GlobalUnit loggedCrp;
@@ -170,6 +194,12 @@ public class ProjectExpectedStudiesAction extends BaseAction {
   private List<Project> myProjects;
   private String transaction;
 
+  // AR 2018 Sel-List
+  private List<EvidenceTag> tags;
+  private List<ProjectPolicy> policyList;
+  private List<ProjectInnovation> innovationsList;
+
+
   @Inject
   public ProjectExpectedStudiesAction(APConfig config, ProjectManager projectManager, GlobalUnitManager crpManager,
     ProjectExpectedStudyManager projectExpectedStudyManager, SrfSloIndicatorManager srfSloIndicatorManager,
@@ -188,7 +218,12 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     ProjectExpectedStudyInstitutionManager projectExpectedStudyInstitutionManager,
     ProjectExpectedStudySrfTargetManager projectExpectedStudySrfTargetManager,
     ProjectExpectedStudyCountryManager projectExpectedStudyCountryManager,
-    ProjectExpectedStudyRegionManager projectExpectedStudyRegionManager, GeneralStatusManager generalStatusManager) {
+    ProjectExpectedStudyRegionManager projectExpectedStudyRegionManager, GeneralStatusManager generalStatusManager,
+    EvidenceTagManager evidenceTagManager, ProjectExpectedStudyLinkManager projectExpectedStudyLinkManager,
+    ProjectExpectedStudyPolicyManager projectExpectedStudyPolicyManager,
+    ProjectExpectedStudyQuantificationManager projectExpectedStudyQuantificationManager,
+    ProjectExpectedStudyInnovationManager projectExpectedStudyInnovationManager,
+    ProjectInnovationManager projectInnovationManager, ProjectPolicyManager projectPolicyManager) {
     super(config);
     this.projectManager = projectManager;
     this.crpManager = crpManager;
@@ -224,7 +259,16 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
     this.generalStatusManager = generalStatusManager;
 
+    this.evidenceTagManager = evidenceTagManager;
+    this.projectExpectedStudyLinkManager = projectExpectedStudyLinkManager;
+    this.projectExpectedStudyPolicyManager = projectExpectedStudyPolicyManager;
+    this.projectExpectedStudyQuantificationManager = projectExpectedStudyQuantificationManager;
+    this.projectExpectedStudyInnovationManager = projectExpectedStudyInnovationManager;
+    this.projectInnovationManager = projectInnovationManager;
+    this.projectPolicyManager = projectPolicyManager;
+
   }
+
 
   private Path getAutoSaveFilePath() {
     String composedClassName = expectedStudy.getClass().getSimpleName();
@@ -236,17 +280,21 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
+
   public List<LocElement> getCountries() {
     return countries;
   }
+
 
   public List<GlobalUnit> getCrps() {
     return crps;
   }
 
+
   public long getExpectedID() {
     return expectedID;
   }
+
 
   public ProjectExpectedStudy getExpectedStudy() {
     return expectedStudy;
@@ -262,6 +310,10 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
   public List<RepIndGeographicScope> getGeographicScopes() {
     return geographicScopes;
+  }
+
+  public List<ProjectInnovation> getInnovationsList() {
+    return innovationsList;
   }
 
   public List<Institution> getInstitutions() {
@@ -284,9 +336,12 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     return config.getDownloadURL() + "/" + this.getStudiesSourceFolder().replace('\\', '/');
   }
 
-
   public List<RepIndPolicyInvestimentType> getPolicyInvestimentTypes() {
     return policyInvestimentTypes;
+  }
+
+  public List<ProjectPolicy> getPolicyList() {
+    return policyList;
   }
 
   public Project getProject() {
@@ -301,6 +356,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     return regionList;
   }
 
+
   public List<LocElement> getRegions() {
     return regions;
   }
@@ -309,16 +365,13 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     return stageProcesses;
   }
 
-
   public List<RepIndStageStudy> getStageStudies() {
     return stageStudies;
   }
 
-
   public List<GeneralStatus> getStatuses() {
     return statuses;
   }
-
 
   private String getStudiesSourceFolder() {
     return APConstants.STUDIES_FOLDER.concat(File.separator).concat(this.getCrpSession()).concat(File.separator)
@@ -330,9 +383,16 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     return studyTypes;
   }
 
+
   public List<SrfSubIdo> getSubIdos() {
     return subIdos;
   }
+
+
+  public List<EvidenceTag> getTags() {
+    return tags;
+  }
+
 
   public List<SrfSloIndicator> getTargets() {
     return targets;
@@ -420,6 +480,13 @@ public class ProjectExpectedStudiesAction extends BaseAction {
             generalStatusManager.getGeneralStatusById(expectedStudy.getProjectExpectedStudyInfo().getStatus().getId()));
         }
 
+        // Load evidence Tags
+        if (expectedStudy.getProjectExpectedStudyInfo().getEvidenceTag() != null
+          && expectedStudy.getProjectExpectedStudyInfo().getEvidenceTag().getId() != null) {
+          expectedStudy.getProjectExpectedStudyInfo().setEvidenceTag(evidenceTagManager
+            .getEvidenceTagById(expectedStudy.getProjectExpectedStudyInfo().getEvidenceTag().getId()));
+        }
+
         // Load region
         // if (expectedStudy.getProjectExpectedStudyInfo().getRepIndRegion() != null
         // && expectedStudy.getProjectExpectedStudyInfo().getRepIndRegion().getId() != null) {
@@ -431,7 +498,12 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     } else {
       expectedStudy = projectExpectedStudyManager.getProjectExpectedStudyById(expectedID);
     }
+
+
     if (expectedStudy != null) {
+
+      projectID = expectedStudy.getProject().getId();
+      project = projectManager.getProjectById(projectID);
 
 
       Phase phase = phaseManager.getPhaseById(this.getActualPhase().getId());
@@ -529,6 +601,22 @@ public class ProjectExpectedStudiesAction extends BaseAction {
           }
         }
 
+        // Expected Study Innovations List Autosave
+        if (expectedStudy.getInnovations() != null) {
+          for (ProjectExpectedStudyInnovation projectExpectedStudyInnovation : expectedStudy.getInnovations()) {
+            projectExpectedStudyInnovation.setProjectInnovation(projectInnovationManager
+              .getProjectInnovationById(projectExpectedStudyInnovation.getProjectInnovation().getId()));
+          }
+        }
+
+        // Expected Study Policies List Autosave
+        if (expectedStudy.getPolicies() != null) {
+          for (ProjectExpectedStudyPolicy projectExpectedStudyPolicy : expectedStudy.getPolicies()) {
+            projectExpectedStudyPolicy.setProjectPolicy(
+              projectPolicyManager.getProjectPolicyById(projectExpectedStudyPolicy.getProjectPolicy().getId()));
+          }
+        }
+
         // Study Type Autosave
         if (expectedStudy.getProjectExpectedStudyInfo().getStudyType() != null) {
           if (expectedStudy.getProjectExpectedStudyInfo().getStudyType().getId() != null
@@ -613,6 +701,30 @@ public class ProjectExpectedStudiesAction extends BaseAction {
             .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
         }
 
+        // Expected Study Link List
+        if (expectedStudy.getProjectExpectedStudyLinks() != null) {
+          expectedStudy.setLinks(new ArrayList<>(expectedStudy.getProjectExpectedStudyLinks().stream()
+            .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
+        }
+
+        // Expected Study Policies List
+        if (expectedStudy.getProjectExpectedStudyPolicies() != null) {
+          expectedStudy.setPolicies(new ArrayList<>(expectedStudy.getProjectExpectedStudyPolicies().stream()
+            .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
+        }
+
+        // Expected Study Quantifications List
+        if (expectedStudy.getProjectExpectedStudyQuantifications() != null) {
+          expectedStudy.setQuantifications(new ArrayList<>(expectedStudy.getProjectExpectedStudyQuantifications()
+            .stream().filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
+        }
+
+        // Expected Study Quantifications List
+        if (expectedStudy.getProjectExpectedStudyInnovations() != null) {
+          expectedStudy.setInnovations(new ArrayList<>(expectedStudy.getProjectExpectedStudyInnovations().stream()
+            .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
+        }
+
       }
 
 
@@ -660,6 +772,62 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       studyTypes = studyTypeManager.findAll();
       subIdos = srfSubIdoManager.findAll();
       targets = srfSloIndicatorManager.findAll();
+
+      tags = evidenceTagManager.findAll();
+
+      Project projectL = projectManager.getProjectById(projectID);
+
+
+      // Get the innovations List
+      innovationsList = new ArrayList<>();
+
+      List<ProjectInnovation> innovations =
+        projectL.getProjectInnovations().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+      for (ProjectInnovation projectInnovation : innovations) {
+        if (projectInnovation.getProjectInnovationInfo(this.getActualPhase()) != null) {
+          innovationsList.add(projectInnovation);
+        }
+      }
+
+      // Get the policies List
+      policyList = new ArrayList<>();
+
+      List<ProjectPolicy> policies =
+        projectL.getProjectPolicies().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+      for (ProjectPolicy projectPolicy : policies) {
+        if (projectPolicy.getProjectPolicyInfo(this.getActualPhase()) != null) {
+          policyList.add(projectPolicy);
+        }
+      }
+
+
+      // Expected Study Projects List
+      if (expectedStudy.getExpectedStudyProjects() != null) {
+        List<ExpectedStudyProject> expectedStudyProjects = new ArrayList<>(expectedStudy.getExpectedStudyProjects()
+          .stream().filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()).collect(Collectors.toList()));
+
+        for (ExpectedStudyProject expectedStudyProject : expectedStudyProjects) {
+
+          Project sharedProject = expectedStudyProject.getProject();
+
+          List<ProjectInnovation> sharedInnovations =
+            sharedProject.getProjectInnovations().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+          for (ProjectInnovation projectInnovation : sharedInnovations) {
+            if (projectInnovation.getProjectInnovationInfo(this.getActualPhase()) != null) {
+              innovationsList.add(projectInnovation);
+            }
+          }
+
+          List<ProjectPolicy> sharedPolicies =
+            sharedProject.getProjectPolicies().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+          for (ProjectPolicy projectPolicy : sharedPolicies) {
+            if (projectPolicy.getProjectPolicyInfo(this.getActualPhase()) != null) {
+              policyList.add(projectPolicy);
+            }
+          }
+
+        }
+      }
 
       myProjects = new ArrayList<>();
       for (ProjectPhase projectPhase : phase.getProjectPhases()) {
@@ -743,6 +911,22 @@ public class ProjectExpectedStudiesAction extends BaseAction {
         expectedStudy.getStudyRegions().clear();
       }
 
+      if (expectedStudy.getLinks() != null) {
+        expectedStudy.getLinks().clear();
+      }
+
+      if (expectedStudy.getPolicies() != null) {
+        expectedStudy.getPolicies().clear();
+      }
+
+      if (expectedStudy.getInnovations() != null) {
+        expectedStudy.getInnovations().clear();
+      }
+
+      if (expectedStudy.getQuantifications() != null) {
+        expectedStudy.getQuantifications().clear();
+      }
+
       // HTTP Post info Values
       expectedStudy.getProjectExpectedStudyInfo().setRepIndGeographicScope(null);
       expectedStudy.getProjectExpectedStudyInfo().setRepIndRegion(null);
@@ -757,11 +941,14 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       expectedStudy.getProjectExpectedStudyInfo().setGenderLevel(null);
       expectedStudy.getProjectExpectedStudyInfo().setCapdevLevel(null);
       expectedStudy.getProjectExpectedStudyInfo().setYouthLevel(null);
+      expectedStudy.getProjectExpectedStudyInfo().setClimateChangeLevel(null);
       expectedStudy.getProjectExpectedStudyInfo().setRepIndStageStudy(null);
 
       expectedStudy.getProjectExpectedStudyInfo().setOutcomeFile(null);
       expectedStudy.getProjectExpectedStudyInfo().setReferencesFile(null);
       expectedStudy.getProjectExpectedStudyInfo().setStatus(null);
+
+      expectedStudy.getProjectExpectedStudyInfo().setEvidenceTag(null);
 
     }
 
@@ -788,6 +975,12 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       this.saveInstitutions(expectedStudyDB, phase);
       this.saveSrfTargets(expectedStudyDB, phase);
       this.saveStudyRegions(expectedStudyDB, phase);
+
+      // AR 2018 Save Relations
+      this.savePolicies(expectedStudyDB, phase);
+      this.saveLink(expectedStudyDB, phase);
+      this.saveInnovations(expectedStudyDB, phase);
+      this.saveQuantifications(expectedStudyDB, phase);
 
 
       List<String> relationsName = new ArrayList<>();
@@ -873,6 +1066,12 @@ public class ProjectExpectedStudiesAction extends BaseAction {
         expectedStudy.getProjectExpectedStudyInfo().setYouthLevel(focusLevel);
       }
 
+      if (expectedStudy.getProjectExpectedStudyInfo().getClimateChangeLevel() != null) {
+        RepIndGenderYouthFocusLevel focusLevel = focusLevelManager.getRepIndGenderYouthFocusLevelById(
+          expectedStudy.getProjectExpectedStudyInfo().getClimateChangeLevel().getId());
+        expectedStudy.getProjectExpectedStudyInfo().setClimateChangeLevel(focusLevel);
+      }
+
       if (expectedStudy.getProjectExpectedStudyInfo().getRepIndStageStudy() != null) {
         if (expectedStudy.getProjectExpectedStudyInfo().getRepIndStageStudy().getId() == -1) {
           expectedStudy.getProjectExpectedStudyInfo().setRepIndStageStudy(null);
@@ -927,6 +1126,12 @@ public class ProjectExpectedStudiesAction extends BaseAction {
           expectedStudy.getProjectExpectedStudyInfo().setStatus(null);
         }
       }
+
+      if (expectedStudy.getProjectExpectedStudyInfo().getEvidenceTag() != null) {
+        if (expectedStudy.getProjectExpectedStudyInfo().getEvidenceTag().getId() == -1) {
+          expectedStudy.getProjectExpectedStudyInfo().setEvidenceTag(null);
+        }
+      }
       // End
 
       projectExpectedStudyInfoManager.saveProjectExpectedStudyInfo(expectedStudy.getProjectExpectedStudyInfo());
@@ -969,6 +1174,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     }
   }
 
+
   /**
    * Save Expected Studies Crps Information
    * 
@@ -1010,6 +1216,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     }
 
   }
+
 
   /**
    * Save Expected Studies Flagships Information
@@ -1058,6 +1265,50 @@ public class ProjectExpectedStudiesAction extends BaseAction {
   }
 
   /**
+   * Save Expected Studies Innovations Information
+   * 
+   * @param projectExpectedStudy
+   * @param phase
+   */
+  public void saveInnovations(ProjectExpectedStudy projectExpectedStudy, Phase phase) {
+
+    // Search and deleted form Information
+    if (projectExpectedStudy.getProjectExpectedStudyInnovations() != null
+      && projectExpectedStudy.getProjectExpectedStudyInnovations().size() > 0) {
+      List<ProjectExpectedStudyInnovation> innovationPrev =
+        new ArrayList<>(projectExpectedStudy.getProjectExpectedStudyInnovations().stream()
+          .filter(nu -> nu.isActive() && nu.getPhase().getId() == phase.getId()).collect(Collectors.toList()));
+
+      for (ProjectExpectedStudyInnovation studyInnovation : innovationPrev) {
+        if (expectedStudy.getInnovations() == null || !expectedStudy.getInnovations().contains(studyInnovation)) {
+          projectExpectedStudyInnovationManager.deleteProjectExpectedStudyInnovation(studyInnovation.getId());
+        }
+      }
+    }
+
+    // Save form Information
+    if (expectedStudy.getInnovations() != null) {
+      for (ProjectExpectedStudyInnovation studyInnovation : expectedStudy.getInnovations()) {
+        if (studyInnovation.getId() == null) {
+          ProjectExpectedStudyInnovation studyInnovationSave = new ProjectExpectedStudyInnovation();
+          studyInnovationSave.setProjectExpectedStudy(projectExpectedStudy);
+          studyInnovationSave.setPhase(phase);
+
+          ProjectInnovation projectInnovation =
+            projectInnovationManager.getProjectInnovationById(studyInnovation.getProjectInnovation().getId());
+
+          studyInnovationSave.setProjectInnovation(projectInnovation);
+
+
+          projectExpectedStudyInnovationManager.saveProjectExpectedStudyInnovation(studyInnovationSave);
+          // This is to add studyInnovationSave to generate correct auditlog.
+          expectedStudy.getProjectExpectedStudyInnovations().add(studyInnovationSave);
+        }
+      }
+    }
+  }
+
+  /**
    * Save Expected Studies Institutions Information
    * 
    * @param projectExpectedStudy
@@ -1102,6 +1353,89 @@ public class ProjectExpectedStudiesAction extends BaseAction {
   }
 
   /**
+   * Save Expected Studies Link Information
+   * 
+   * @param projectExpectedStudy
+   * @param phase
+   */
+  public void saveLink(ProjectExpectedStudy projectExpectedStudy, Phase phase) {
+
+    // Search and deleted form Information
+    if (projectExpectedStudy.getProjectExpectedStudyLinks() != null
+      && projectExpectedStudy.getProjectExpectedStudyLinks().size() > 0) {
+      List<ProjectExpectedStudyLink> linkPrev = new ArrayList<>(projectExpectedStudy.getProjectExpectedStudyLinks()
+        .stream().filter(nu -> nu.isActive() && nu.getPhase().getId() == phase.getId()).collect(Collectors.toList()));
+
+      for (ProjectExpectedStudyLink studyLink : linkPrev) {
+        if (expectedStudy.getLinks() == null || !expectedStudy.getLinks().contains(studyLink)) {
+          projectExpectedStudyLinkManager.deleteProjectExpectedStudyLink(studyLink.getId());
+        }
+      }
+    }
+
+    // Save form Information
+    if (expectedStudy.getLinks() != null) {
+      for (ProjectExpectedStudyLink studyLink : expectedStudy.getLinks()) {
+        if (studyLink.getId() == null) {
+          ProjectExpectedStudyLink studyLinkSave = new ProjectExpectedStudyLink();
+          studyLinkSave.setProjectExpectedStudy(projectExpectedStudy);
+          studyLinkSave.setPhase(phase);
+          studyLinkSave.setLink(studyLink.getLink());
+
+
+          projectExpectedStudyLinkManager.saveProjectExpectedStudyLink(studyLinkSave);
+          // This is to add studyLinkSave to generate correct auditlog.
+          expectedStudy.getProjectExpectedStudyLinks().add(studyLinkSave);
+        }
+      }
+    }
+  }
+
+  /**
+   * Save Expected Studies Policies Information
+   * 
+   * @param projectExpectedStudy
+   * @param phase
+   */
+  public void savePolicies(ProjectExpectedStudy projectExpectedStudy, Phase phase) {
+
+    // Search and deleted form Information
+    if (projectExpectedStudy.getProjectExpectedStudyPolicies() != null
+      && projectExpectedStudy.getProjectExpectedStudyPolicies().size() > 0) {
+      List<ProjectExpectedStudyPolicy> policyPrev =
+        new ArrayList<>(projectExpectedStudy.getProjectExpectedStudyPolicies().stream()
+          .filter(nu -> nu.isActive() && nu.getPhase().getId() == phase.getId()).collect(Collectors.toList()));
+
+      for (ProjectExpectedStudyPolicy studyPolicy : policyPrev) {
+        if (expectedStudy.getPolicies() == null || !expectedStudy.getPolicies().contains(studyPolicy)) {
+          projectExpectedStudyPolicyManager.deleteProjectExpectedStudyPolicy(studyPolicy.getId());
+        }
+      }
+    }
+
+    // Save form Information
+    if (expectedStudy.getPolicies() != null) {
+      for (ProjectExpectedStudyPolicy studyPolicy : expectedStudy.getPolicies()) {
+        if (studyPolicy.getId() == null) {
+          ProjectExpectedStudyPolicy studyPolicySave = new ProjectExpectedStudyPolicy();
+          studyPolicySave.setProjectExpectedStudy(projectExpectedStudy);
+          studyPolicySave.setPhase(phase);
+
+          ProjectPolicy projectPolicy =
+            projectPolicyManager.getProjectPolicyById(studyPolicy.getProjectPolicy().getId());
+
+          studyPolicySave.setProjectPolicy(projectPolicy);
+
+
+          projectExpectedStudyPolicyManager.saveProjectExpectedStudyPolicy(studyPolicySave);
+          // This is to add studyLinkSave to generate correct auditlog.
+          expectedStudy.getProjectExpectedStudyPolicies().add(studyPolicySave);
+        }
+      }
+    }
+  }
+
+  /**
    * Save Expected Studies Projects Information
    * 
    * @param projectExpectedStudy
@@ -1142,6 +1476,53 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       }
     }
 
+  }
+
+  /**
+   * Save Expected Studies Quantification Information
+   * 
+   * @param projectExpectedStudy
+   * @param phase
+   */
+  public void saveQuantifications(ProjectExpectedStudy projectExpectedStudy, Phase phase) {
+
+    // Search and deleted form Information
+    if (projectExpectedStudy.getProjectExpectedStudyQuantifications() != null
+      && projectExpectedStudy.getProjectExpectedStudyQuantifications().size() > 0) {
+      List<ProjectExpectedStudyQuantification> quantificationPrev =
+        new ArrayList<>(projectExpectedStudy.getProjectExpectedStudyQuantifications().stream()
+          .filter(nu -> nu.isActive() && nu.getPhase().getId() == phase.getId()).collect(Collectors.toList()));
+
+      for (ProjectExpectedStudyQuantification studyQuantification : quantificationPrev) {
+        if (expectedStudy.getQuantifications() == null
+          || !expectedStudy.getQuantifications().contains(studyQuantification)) {
+          projectExpectedStudyQuantificationManager
+            .deleteProjectExpectedStudyQuantification(studyQuantification.getId());
+        }
+      }
+    }
+
+    // Save form Information
+    if (expectedStudy.getQuantifications() != null) {
+      for (ProjectExpectedStudyQuantification studyQuantification : expectedStudy.getQuantifications()) {
+        if (studyQuantification.getId() == null) {
+          ProjectExpectedStudyQuantification studyQuantificationSave = new ProjectExpectedStudyQuantification();
+          studyQuantificationSave.setProjectExpectedStudy(projectExpectedStudy);
+          studyQuantificationSave.setPhase(phase);
+
+
+          studyQuantificationSave.setTypeQuantification(studyQuantification.getTypeQuantification());
+          studyQuantificationSave.setNumber(studyQuantification.getNumber());
+          studyQuantificationSave.setComments(studyQuantification.getComments());
+          studyQuantificationSave.setTargetUnit(studyQuantification.getTargetUnit());
+
+
+          projectExpectedStudyQuantificationManager.saveProjectExpectedStudyQuantification(studyQuantificationSave);
+          // This is to add studyQuantificationSave to generate correct auditlog.
+          expectedStudy.getProjectExpectedStudyQuantifications().add(studyQuantificationSave);
+        }
+      }
+    }
   }
 
   /**
@@ -1321,41 +1702,45 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
   }
 
-
   public void setCountries(List<LocElement> countries) {
     this.countries = countries;
   }
-
 
   public void setCrps(List<GlobalUnit> crps) {
     this.crps = crps;
   }
 
-
   public void setExpectedID(long expectedID) {
     this.expectedID = expectedID;
   }
+
 
   public void setExpectedStudy(ProjectExpectedStudy expectedStudy) {
     this.expectedStudy = expectedStudy;
   }
 
+
   public void setFlagshipList(List<CrpProgram> flagshipList) {
     this.flagshipList = flagshipList;
   }
+
 
   public void setFocusLevels(List<RepIndGenderYouthFocusLevel> focusLevels) {
     this.focusLevels = focusLevels;
   }
 
-
   public void setGeographicScopes(List<RepIndGeographicScope> geographicScopes) {
     this.geographicScopes = geographicScopes;
+  }
+
+  public void setInnovationsList(List<ProjectInnovation> innovationsList) {
+    this.innovationsList = innovationsList;
   }
 
   public void setInstitutions(List<Institution> institutions) {
     this.institutions = institutions;
   }
+
 
   public void setLoggedCrp(GlobalUnit loggedCrp) {
     this.loggedCrp = loggedCrp;
@@ -1373,6 +1758,9 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     this.policyInvestimentTypes = policyInvestimentTypes;
   }
 
+  public void setPolicyList(List<ProjectPolicy> policyList) {
+    this.policyList = policyList;
+  }
 
   public void setProject(Project project) {
     this.project = project;
@@ -1408,13 +1796,18 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     this.statuses = statuses;
   }
 
+
   public void setStudyTypes(List<StudyType> studyTypes) {
     this.studyTypes = studyTypes;
   }
 
-
   public void setSubIdos(List<SrfSubIdo> subIdos) {
     this.subIdos = subIdos;
+  }
+
+
+  public void setTags(List<EvidenceTag> tags) {
+    this.tags = tags;
   }
 
   public void setTargets(List<SrfSloIndicator> targets) {

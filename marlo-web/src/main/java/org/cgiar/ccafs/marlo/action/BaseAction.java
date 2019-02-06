@@ -236,6 +236,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   public static final String NOT_LOGGED = "401";
 
+  public static final String PRIVATE = "private";
+
 
   public static final String REDIRECT = "redirect";
 

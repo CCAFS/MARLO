@@ -26,8 +26,9 @@
         [#-- Tags --]
         <div class="form-group">
           <label for="">[@s.text name="study.tags" /]:[@customForm.req required=editable /][@customForm.helpLabel name="study.tags.help" showIcon=false editable=editable/]</label>
-          [#list ["tagNew", "tagUpdateSame", "tagUpdateNew"] as tag]
-            <br /> [@customForm.radioFlat id="tag-${tag_index}" name="${customName}.tag" i18nkey="study.${tag}" value="${tag_index + 1}" checked=false cssClass="radioType-tags" cssClassLabel="font-normal" editable=editable /] 
+          [#local tagValue = (element.projectExpectedStudyInfo.evidenceTag.id)!"" ]
+          [#list tags as tag]
+            <br /> [@customForm.radioFlat id="tag-${tag_index}" name="${customName}.projectExpectedStudyInfo.evidenceTag.id" i18nkey="${tag.name}" value="${tag.id}" checked=(tagValue == tag.id) cssClass="radioType-tags" cssClassLabel="font-normal" editable=editable /] 
           [/#list]
         </div>
       [/#if]
@@ -53,7 +54,7 @@
       [#-- 3. Outcome story for communications use. NEW --]
       [#if isOutcomeCaseStudy]
       <div class="form-group">
-        [@customForm.textArea name="${customName}.projectExpectedStudyInfo.outcomestory" i18nkey="study.outcomestory" help="study.outcomestory.help" className="limitWords-400" helpIcon=false required=true editable=editable /]
+        [@customForm.textArea name="${customName}.projectExpectedStudyInfo.outcomeStory" i18nkey="study.outcomestory" help="study.outcomestory.help" className="limitWords-400" helpIcon=false required=true editable=editable /]
       
         <br />
         <label for="">[@s.text name="study.outcomestoryLinks" /]:
@@ -63,7 +64,7 @@
         <div class="linksBlock ">
           <div class="linksList">
             [#list (element.links)![{}] as link ]
-              [@studyLink name="study.links" element=link index=link_index /]
+              [@studyLink name="${customName}.links" element=link index=link_index /]
             [/#list]
           </div>
           [#if editable]
@@ -73,7 +74,7 @@
         </div>
         [#-- Element item Template --]
         <div style="display:none">
-          [@studyLink name="study.links" element={} index=-1 template=true /]
+          [@studyLink name="${customName}.links" element={} index=-1 template=true /]
         </div>
       </div>
       [/#if]
@@ -91,7 +92,7 @@
         
         [#-- Disaggregates for CGIAR Indicator I3  --]
         <div class="form-group simpleBox block-${studyIndicatorThree}" style="display:${((element.projectExpectedStudyInfo.isContribution)!false)?string('block','none')}">
-          [@customForm.elementsListComponent name="${customName}.policies" elementType="projectPolicy" elementList=element.policies label="study.policies"  listName="policiesList" keyFieldName="id" displayFieldName="description"/]
+          [@customForm.elementsListComponent name="${customName}.policies" elementType="projectPolicy" elementList=element.policies label="study.policies"  listName="policyList" keyFieldName="id" displayFieldName="composedName"/]
           [#-- Note --]
           <div class="note">[@s.text name="study.policies.note"][@s.param] <a href="[@s.url namespace="/projects" action='${crpSession}/policies'][@s.param name='projectID']${(projectID)!}[/@s.param][/@s.url]">clicking here</a>[/@][/@]</div>
         </div>
@@ -130,10 +131,11 @@
         [#-- SRF Targets (maxLimit=2)  --]
         <div class="form-group simpleBox stageProcessOne">
           <label for="">[@s.text name="study.targetsOption" /]:[@customForm.req required=editable /][@customForm.helpLabel name="study.targetsOption.help" showIcon=false editable=editable/]</label><br />
+          [#local targetsOption = (element.projectExpectedStudyInfo.isSrfTarget)!""]
           [#list ["targetsOptionYes", "targetsOptionNo", "targetsOptionTooEarlyToSay"] as option]
-            [@customForm.radioFlat id="option-${option}" name="${customName}.projectExpectedStudyInfo.targetsOption" i18nkey="study.${option}" value="${option}" checked=false cssClass="radioType-targetsOption" cssClassLabel="font-normal" editable=editable /] 
+            [@customForm.radioFlat id="option-${option}" name="${customName}.projectExpectedStudyInfo.isSrfTarget" i18nkey="study.${option}" value="${option}" checked=(option == targetsOption) cssClass="radioType-targetsOption" cssClassLabel="font-normal" editable=editable /] 
           [/#list]
-          [#local showTargetsComponent = (element.projectExpectedStudyInfo.targetsOption == "targetsOptionYes")!false /]
+          [#local showTargetsComponent = (element.projectExpectedStudyInfo.isSrfTarget == "targetsOptionYes")!false /]
           <div class="srfTargetsComponent" style="display:${showTargetsComponent?string('block', 'none')}">
             [@customForm.elementsListComponent name="${customName}.srfTargets" elementType="srfSloIndicator" elementList=element.srfTargets label="study.stratgicResultsLink.srfTargets" listName="targets" maxLimit=2  keyFieldName="id" displayFieldName="title" required=editable && !(isPolicy && stageProcessOne)/]          
           </div>
@@ -229,7 +231,7 @@
       [#--  CGIAR innovation(s) or findings that have resulted in this outcome or impact.   --]
       [#if isOutcomeCaseStudy]
       <div class="form-group stageProcessOne">
-        [@customForm.textArea name="${customName}.projectExpectedStudyInfo.innovationsNarrative" i18nkey="study.innovationsNarrative" help="study.innovationsNarrative.help" helpIcon=false className="" required=editable && !(isPolicy && stageProcessOne) editable=editable /]
+        [@customForm.textArea name="${customName}.projectExpectedStudyInfo.cgiarInnovation" i18nkey="study.innovationsNarrative" help="study.innovationsNarrative.help" helpIcon=false className="" required=editable && !(isPolicy && stageProcessOne) editable=editable /]
          
         [@customForm.elementsListComponent name="${customName}.innovations" elementType="projectInnovation" elementList=element.innovations label="study.innovationsList"  listName="innovationsList" keyFieldName="id" displayFieldName="composedName" required=false /]
       </div>
@@ -348,8 +350,9 @@
       <div class="form-group stageProcessOne">
         <label for="">[@s.text name="study.otherCrossCutting" /]:</label> 
         [@customForm.helpLabel name="study.otherCrossCuttingOptions" showIcon=false editable=editable/]<br />
+        [#local otherCrossCuttingSelection = (element.projectExpectedStudyInfo.otherCrossCuttingSelection)!"" ]
         [#list ["Yes", "No", "NA"] as option]
-          [@customForm.radioFlat id="option-${option}" name="${customName}.projectExpectedStudyInfo.otherCrossCuttingOption" i18nkey="study.otherCrossCutting${option}" value="${option}" checked=false cssClass="radioType-otherCrossCuttingOption" cssClassLabel="font-normal" editable=editable /] 
+          [@customForm.radioFlat id="option-${option}" name="${customName}.projectExpectedStudyInfo.otherCrossCuttingSelection" i18nkey="study.otherCrossCutting${option}" value="${option}" checked=(otherCrossCuttingSelection == option) cssClass="radioType-otherCrossCuttingOption" cssClassLabel="font-normal" editable=editable /] 
         [/#list]
         [#local showOtherCrossCuttingOptionsComponent = true /]
         <div class="otherCrossCuttingOptionsComponent form-group" style="display:${showOtherCrossCuttingOptionsComponent?string('block', 'none')}">
@@ -400,9 +403,9 @@
       <label for="">[@s.text name="study.public" ][@s.param]${(element.projectExpectedStudyInfo.studyType.name)!}[/@][/@] 
         [@customForm.helpLabel name="study.public.help" showIcon=false paramText="${(element.projectExpectedStudyInfo.studyType.name)!}" editable=editable/]
       </label> <br />
-      [#local isPublic = (element.projectExpectedStudyInfo.public == "true")!true /]
-      [@customForm.radioFlat id="optionPublic-yes"  name="${customName}.projectExpectedStudyInfo.public" i18nkey="Yes"  value="true"  checked=isPublic  cssClass="radioType-optionPublic" cssClassLabel="font-normal radio-label-yes" editable=editable /] 
-      [@customForm.radioFlat id="optionPublic-no"   name="${customName}.projectExpectedStudyInfo.public" i18nkey="No"   value="false" checked=!isPublic cssClass="radioType-optionPublic" cssClassLabel="font-normal radio-label-no"  editable=editable /] 
+      [#local isPublic = (element.projectExpectedStudyInfo.isPublic)!true /]
+      [@customForm.radioFlat id="optionPublic-yes"  name="${customName}.projectExpectedStudyInfo.isPublic" i18nkey="Yes"  value="true"  checked=isPublic  cssClass="radioType-optionPublic" cssClassLabel="font-normal radio-label-yes" editable=editable /] 
+      [@customForm.radioFlat id="optionPublic-no"   name="${customName}.projectExpectedStudyInfo.isPublic" i18nkey="No"   value="false" checked=!isPublic cssClass="radioType-optionPublic" cssClassLabel="font-normal radio-label-no"  editable=editable /] 
       
       <div class="optionPublicComponent form-group" style="display:${isPublic?string('block', 'none')}">         
         <br />
@@ -436,7 +439,7 @@
   <div id="studyLink-${(template?string('template', ''))}" class="studyLink form-group grayBox">
     <input type="hidden" name="${customName}.id" value="${(element.id)!}" />
     <span class="pull-left" style="width:4%"><strong><span class="indexTag">${index + 1}</span>.</strong></span>
-    <span class="pull-left" style="width:90%">[@customForm.input name="${customName}.value" placeholder="global.webSiteLink.placeholder" showTitle=false i18nkey="" className="" editable=editable /]</span>
+    <span class="pull-left" style="width:90%">[@customForm.input name="${customName}.link" placeholder="global.webSiteLink.placeholder" showTitle=false i18nkey="" className="" editable=editable /]</span>
     [#if editable]<div class="removeElement sm removeIcon removeLink" title="Remove"></div>[/#if]
     <div class="clearfix"></div>
   </div>
@@ -456,8 +459,8 @@
       [#-- Quantification type --]
       <div class="form-group">
         <label for="">[@s.text name="study.quantificationType" /]:[@customForm.req required=editable /]</label>
-        <br />[@customForm.radioFlat id="quantificationType-1" name="${customName}.type" i18nkey="study.quantification.quantificationType-1" value="1" checked=((element.type == "1")!false) cssClass="" cssClassLabel="font-normal" editable=editable /]
-        <br />[@customForm.radioFlat id="quantificationType-2" name="${customName}.type" i18nkey="study.quantification.quantificationType-2" value="2" checked=((element.type == "2")!false) cssClass="" cssClassLabel="font-normal" editable=editable /]
+        <br />[@customForm.radioFlat id="quantificationType-1" name="${customName}.typeQuantification" i18nkey="study.quantification.quantificationType-1" value="A" checked=((element.typeQuantification == "A")!false) cssClass="" cssClassLabel="font-normal" editable=editable /]
+        <br />[@customForm.radioFlat id="quantificationType-2" name="${customName}.typeQuantification" i18nkey="study.quantification.quantificationType-2" value="B" checked=((element.typeQuantification == "B")!false) cssClass="" cssClassLabel="font-normal" editable=editable /]
       </div>
     </div>
     [#-- Units --]
