@@ -59,11 +59,16 @@ function addDisseminationEvents() {
   // Is this deliverable already disseminated
   $(".type-findable .button-label").on("click", function() {
     var valueSelected = $(this).hasClass('yes-button-label');
+    console.log(valueSelected);
     if(!valueSelected) {
       $(".dataSharing").show("slow");
+      $(".block-notFindable").slideDown();
+
       unSyncDeliverable();
     } else {
       $(".dataSharing").hide("slow");
+      $(".block-notFindable").slideUp();
+
     }
   });
 
