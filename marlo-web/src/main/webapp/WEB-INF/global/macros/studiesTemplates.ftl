@@ -26,7 +26,7 @@
         [#-- Tags --]
         <div class="form-group">
           <label for="">[@s.text name="study.tags" /]:[@customForm.req required=editable /][@customForm.helpLabel name="study.tags.help" showIcon=false editable=editable/]</label>
-          [#local tagValue = (element.projectExpectedStudyInfo.evidenceTag.id)!"" ]
+          [#local tagValue = (element.projectExpectedStudyInfo.evidenceTag.id)!-1 ]
           [#list tags as tag]
             <br /> [@customForm.radioFlat id="tag-${tag_index}" name="${customName}.projectExpectedStudyInfo.evidenceTag.id" i18nkey="${tag.name}" value="${tag.id}" checked=(tagValue == tag.id) cssClass="radioType-tags" cssClassLabel="font-normal" editable=editable /] 
           [/#list]
@@ -341,7 +341,23 @@
               [@customForm.textArea name="${customName}.projectExpectedStudyInfo.describeCapdev" i18nkey="study.achievementsCapDevRelevance"  className="limitWords-100" required=editable && !(isPolicy && stageProcessOne) editable=editable /]
             </div>
           </div>
+        </div>
+        [#-- Climate Change  --]
+        <div class="simpleBox ccRelevanceBlock">
+          <label for="">[@s.text name="study.climateChangeRelevance" /]:[@customForm.req required=editable /]</label>
+          <div class="form-group">
+            [#assign climateChangeLevel = (element.projectExpectedStudyInfo.climateChangeLevel.id)!1 ]
+            [#list focusLevels  as cc]
+              [@customForm.radioFlat id="climateChangeRelevance-${cc_index}" name="${name}.projectExpectedStudyInfo.climateChangeLevel.id" label="${cc.name}" value="${cc.id}" checked=(climateChangeLevel == cc.id)!false cssClass="" cssClassLabel="font-normal" editable=editable /]
+            [/#list]
+          </div>
+          <div class="ccCommentBox" style="display:${(climateChangeLevel != 1)?string('block', 'none')}">
+            <div class="form-group stageProcessOne">
+              [@customForm.textArea name="${customName}.projectExpectedStudyInfo.describeClimateChange" i18nkey="study.achievementsClimateChangeRelevance"  className="limitWords-100" required=editable && !(isPolicy && stageProcessOne) editable=editable /]
+            </div>
+          </div>
         </div> 
+        
       </div>
       [/#if]
       
