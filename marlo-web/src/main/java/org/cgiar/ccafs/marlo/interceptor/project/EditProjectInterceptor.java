@@ -329,6 +329,14 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
         baseAction.setCanEdit(canEdit);
         baseAction.setEditStatus(baseAction.isEditStatus() && globalUnitProject.isOrigin());
 
+        // Allow Superadmin edit
+        if (baseAction.canAccessSuperAdmin()) {
+          baseAction.setEditableParameter(true);
+          baseAction.setCanEdit(true);
+          baseAction.setEditStatus(true);
+        }
+
+
       } else {
         throw new NullPointerException();
       }
