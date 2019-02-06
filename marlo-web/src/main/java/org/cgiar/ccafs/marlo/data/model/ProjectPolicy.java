@@ -42,10 +42,21 @@ public class ProjectPolicy extends MarloAuditableEntity implements java.io.Seria
   private List<ProjectPolicyCountry> regions;
 
 
+  public String getComposedName() {
+
+
+    if (projectPolicyInfo != null) {
+      return this.getId() + " - " + projectPolicyInfo.getTitle();
+    } else {
+      return "" + this.getId();
+    }
+
+  }
+
+
   public List<ProjectPolicyCountry> getCountries() {
     return countries;
   }
-
 
   public List<String> getCountriesIds() {
     return countriesIds;

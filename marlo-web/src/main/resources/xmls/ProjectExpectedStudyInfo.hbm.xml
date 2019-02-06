@@ -36,6 +36,11 @@
 			fetch="select">
 			<column name="youth_focus_level_id" />
 		</many-to-one>
+		<many-to-one name="climateChangeLevel"
+      class="org.cgiar.ccafs.marlo.data.model.RepIndGenderYouthFocusLevel"
+      fetch="select">
+      <column name="climate_change_level_id" />
+    </many-to-one>
 		<many-to-one name="repIndPolicyInvestimentType"
 			class="org.cgiar.ccafs.marlo.data.model.RepIndPolicyInvestimentType"
 			fetch="select">
@@ -114,6 +119,9 @@
 		<property name="describeCapdev" type="string">
 			<column name="describe_capdev" sql-type="TEXT" />
 		</property>
+		<property name="describeClimateChange" type="string">
+      <column name="describe_climate_change" sql-type="TEXT" />
+    </property>
 		<property name="otherCrossCuttingDimensions" type="string">
 			<column name="other_cross_cutting_dimensions" sql-type="TEXT" />
 		</property>
@@ -132,7 +140,7 @@
 		<property name="outcomeStory" type="string">
       <column name="outcome_story" sql-type="TEXT" />
     </property>
-    <property name="isSrfTarget" type="java.lang.Boolean">
+    <property name="isSrfTarget" type="string">
       <column name="is_srf_target" />
     </property>
     <property name="cgiarInnovation" type="string">

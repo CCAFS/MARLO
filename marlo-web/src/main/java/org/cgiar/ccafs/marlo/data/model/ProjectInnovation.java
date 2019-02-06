@@ -58,6 +58,17 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
   private String countriesIdsText;
 
 
+  public String getComposedName() {
+
+
+    if (projectInnovationInfo != null) {
+      return this.getId() + " - " + projectInnovationInfo.getTitle();
+    } else {
+      return "" + this.getId();
+    }
+
+  }
+
   public List<ProjectInnovationCountry> getCountries() {
     return countries;
   }
@@ -66,19 +77,19 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
     return countriesIds;
   }
 
+
   public String getCountriesIdsText() {
     return countriesIdsText;
   }
-
 
   public List<ProjectInnovationCrp> getCrps() {
     return crps;
   }
 
+
   public List<ProjectInnovationDeliverable> getDeliverables() {
     return deliverables;
   }
-
 
   @Override
   public String getLogDeatil() {
@@ -87,10 +98,10 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
     return sb.toString();
   }
 
+
   public List<ProjectInnovationOrganization> getOrganizations() {
     return organizations;
   }
-
 
   public Project getProject() {
     return project;

@@ -118,6 +118,9 @@
 
 			<interceptor name="editExpectedStudy"
 				class="org.cgiar.ccafs.marlo.interceptor.project.EditExpectedStudyInterceptor" />
+				
+			<interceptor name="privateStudy"
+        class="org.cgiar.ccafs.marlo.interceptor.project.EditPrivateStudyInterceptor" />				
 
 			<interceptor name="editPolicy"
 				class="org.cgiar.ccafs.marlo.interceptor.project.EditPolicyInterceptor" />
@@ -189,6 +192,14 @@
 				<interceptor-ref name="validSessionCrp" />
 				<interceptor-ref name="defaultStack" />
 			</interceptor-stack>
+			
+			<interceptor-stack name="privateStudyStack">
+        <interceptor-ref name="i18nFile" />
+        <interceptor-ref name="validCrp" />
+        <interceptor-ref name="validSessionCrp" />
+        <interceptor-ref name="privateStudy" />        
+        <interceptor-ref name="defaultStack" />
+      </interceptor-stack>
 
 			<interceptor-stack name="crpAdminStack">
 				<interceptor-ref name="i18nFile" />
@@ -463,6 +474,9 @@
 			<result name="404">
 				/WEB-INF/global/pages/error/404.ftl
 			</result>
+			<result name="private">
+        /WEB-INF/global/pages/error/privatePage.ftl
+      </result>
 			<result name="unhandledException" type="chain">
 				<param name="actionName">unhandledExceptionAction</param>
 				<param name="namespace">/</param>
