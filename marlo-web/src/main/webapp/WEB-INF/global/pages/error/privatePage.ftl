@@ -3,6 +3,7 @@
 [#assign customCSS = [ "${baseUrl}/global/css/privatePage.css" ] /]
 
 [#include "/WEB-INF/global/pages/header.ftl" /]
+[#include "/WEB-INF/global/pages/main-menu.ftl" /]
 
 <section class="content">
   <br />
