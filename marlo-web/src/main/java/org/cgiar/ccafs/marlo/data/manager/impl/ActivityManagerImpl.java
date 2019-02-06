@@ -200,13 +200,18 @@ public class ActivityManagerImpl implements ActivityManager {
   public Activity saveActivity(Activity activity) {
 
     Activity resultActivity = activityDAO.save(activity);
+    if (resultActivity.getComposeID() == null || resultActivity.getComposeID().isEmpty()) {
+      resultActivity.setComposeID(resultActivity.getProject().getId() + "-" + resultActivity.getId());
+      resultActivity = activityDAO.save(resultActivity);
+    }
+
     Phase currentPhase = phaseDAO.find(activity.getPhase().getId());
 
     this.saveCurrentPhaseDeliverables(resultActivity, activity.getDeliverables(), currentPhase);
 
     if (currentPhase.getDescription().equals(APConstants.PLANNING)) {
-      if (activity.getPhase().getNext() != null) {
-        this.saveActvityPhase(activity.getPhase().getNext(), activity.getProject().getId(), activity);
+      if (currentPhase.getNext() != null) {
+        this.saveActvityPhase(currentPhase.getNext(), resultActivity.getProject().getId(), resultActivity);
       }
     }
 
@@ -241,7 +246,7 @@ public class ActivityManagerImpl implements ActivityManager {
       Activity activityAdd = new Activity();
       this.cloneActivity(activityAdd, activity, phase);
       activityDAO.save(activityAdd);
-      if (activityAdd.getComposeID() == null) {
+      if (activityAdd.getComposeID() == null || activityAdd.getComposeID().isEmpty()) {
         activity.setComposeID(activity.getProject().getId() + "-" + activityAdd.getId());
         activityAdd.setComposeID(activity.getComposeID());
         activityDAO.save(activityAdd);
