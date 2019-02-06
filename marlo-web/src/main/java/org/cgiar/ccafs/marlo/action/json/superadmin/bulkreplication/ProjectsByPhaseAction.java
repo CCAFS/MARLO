@@ -3,7 +3,6 @@ package org.cgiar.ccafs.marlo.action.json.superadmin.bulkreplication;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
-import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectInfo;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -28,26 +27,21 @@ public class ProjectsByPhaseAction extends BaseAction {
   private static final Logger logger = LoggerFactory.getLogger(ProjectsByPhaseAction.class);
 
   // Parameters
-  private List<Map<String, Object>> projectsbyPhase;
+  private List<Map<String, Object>> entityByPhaseList;
   private long selectedPhaseID;
 
-
   // Managers
-  private ProjectManager projectManager;
-
-
   private PhaseManager phaseManager;
 
   @Inject
-  public ProjectsByPhaseAction(APConfig config, ProjectManager projectManager, PhaseManager phaseManager) {
+  public ProjectsByPhaseAction(APConfig config, PhaseManager phaseManager) {
     super(config);
-    this.projectManager = projectManager;
     this.phaseManager = phaseManager;
   }
 
   @Override
   public String execute() throws Exception {
-    projectsbyPhase = new ArrayList<Map<String, Object>>();
+    entityByPhaseList = new ArrayList<Map<String, Object>>();
 
     if (selectedPhaseID != -1) {
       Phase phase = phaseManager.getPhaseById(selectedPhaseID);
@@ -64,7 +58,7 @@ public class ProjectsByPhaseAction extends BaseAction {
               projectMap.put("id", projectInfo.getProject().getId());
               projectMap.put("title", projectInfo.getTitle());
               projectMap.put("composedName", "P" + projectInfo.getProject().getId() + ": " + projectInfo.getTitle());
-              this.projectsbyPhase.add(projectMap);
+              this.entityByPhaseList.add(projectMap);
             }
           } catch (Exception e) {
             logger.error("Unable to add projectInfo to Project list", e);
@@ -77,8 +71,8 @@ public class ProjectsByPhaseAction extends BaseAction {
   }
 
 
-  public List<Map<String, Object>> getProjectsbyPhase() {
-    return projectsbyPhase;
+  public List<Map<String, Object>> getEntityByPhaseList() {
+    return entityByPhaseList;
   }
 
 
@@ -93,10 +87,9 @@ public class ProjectsByPhaseAction extends BaseAction {
   }
 
 
-  public void setProjectsbyPhase(List<Map<String, Object>> projectsbyPhase) {
-    this.projectsbyPhase = projectsbyPhase;
+  public void setEntityByPhaseList(List<Map<String, Object>> entityByPhaseList) {
+    this.entityByPhaseList = entityByPhaseList;
   }
-
 
   public void setSelectedPhaseID(long selectedPhaseID) {
     this.selectedPhaseID = selectedPhaseID;

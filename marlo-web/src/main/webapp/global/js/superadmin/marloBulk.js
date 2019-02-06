@@ -104,7 +104,7 @@ function updateDeliverables() {
 
       },
       success: function(data) {
-        var dataArray = (data.deliverablesbyPhase) || (data.projectsbyPhase);
+        var dataArray = (data.entityByPhaseList);
 
         $.each(dataArray, function(i,e) {
           var $checkmarkRow = $('.check-template tr').clone(true).removeAttr('id');
