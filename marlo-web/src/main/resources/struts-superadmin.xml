@@ -144,7 +144,7 @@
         <param name="edit">true</param> <param name="phaseID">${phaseID}</param>
       </result>
     </action>
-    
+        
     <action name="projectsReplication"
       class="org.cgiar.ccafs.marlo.action.superadmin.ProjectBudgetByPartnersReplicationAction">
       <interceptor-ref name="superAdminStack" />
@@ -152,6 +152,17 @@
       </result>
       <result name="success" type="redirectAction">
         <param name="actionName">projectsReplication</param>
+        <param name="edit">true</param> <param name="phaseID">${phaseID}</param>
+      </result>
+    </action>
+    
+    <action name="activitiesReplication"
+      class="org.cgiar.ccafs.marlo.action.superadmin.ActivitiesReplicationAction">
+      <interceptor-ref name="superAdminStack" />
+      <result name="input">/WEB-INF/global/views/superadmin/marloBulkReplication.ftl
+      </result>
+      <result name="success" type="redirectAction">
+        <param name="actionName">activitiesReplication</param>
         <param name="edit">true</param> <param name="phaseID">${phaseID}</param>
       </result>
     </action>

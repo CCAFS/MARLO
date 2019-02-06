@@ -93,7 +93,7 @@ public class DeliverablesReplicationAction extends BaseAction {
   private DeliverableGeographicRegionManager deliverableGeographicRegionManager;
 
   // Variables
-  private String deliverablesbyPhaseList;
+  private String entityByPhaseList;
   private List<GlobalUnit> crps;
   private long selectedPhaseID;
   private Phase phase;
@@ -174,14 +174,15 @@ public class DeliverablesReplicationAction extends BaseAction {
   }
 
 
-  public String getDeliverablesbyPhaseList() {
-    return deliverablesbyPhaseList;
+  public String getEntityByPhaseList() {
+    return entityByPhaseList;
   }
 
 
   public long getSelectedPhaseID() {
     return selectedPhaseID;
   }
+
 
   @Override
   public void prepare() throws Exception {
@@ -192,11 +193,11 @@ public class DeliverablesReplicationAction extends BaseAction {
   @Override
   public String save() {
     if (this.canAccessSuperAdmin()) {
-      if (deliverablesbyPhaseList != null && !deliverablesbyPhaseList.isEmpty()) {
+      if (entityByPhaseList != null && !entityByPhaseList.isEmpty()) {
         logger.debug("Start replication for phase: " + selectedPhaseID);
         phase = phaseManager.getPhaseById(selectedPhaseID);
 
-        for (String id : deliverablesbyPhaseList.trim().split(",")) {
+        for (String id : entityByPhaseList.trim().split(",")) {
           logger.debug("Replicating deliverable: " + id);
 
           deliverable = deliverableManager.getDeliverableById(new Long(id.trim()));
@@ -388,10 +389,10 @@ public class DeliverablesReplicationAction extends BaseAction {
     this.crps = crps;
   }
 
-
-  public void setDeliverablesbyPhaseList(String deliverablesbyPhaseList) {
-    this.deliverablesbyPhaseList = deliverablesbyPhaseList;
+  public void setEntityByPhaseList(String entityByPhaseList) {
+    this.entityByPhaseList = entityByPhaseList;
   }
+
 
   public void setSelectedPhaseID(long selectedPhaseID) {
     this.selectedPhaseID = selectedPhaseID;
