@@ -415,9 +415,8 @@
     </div>
     <div class="block-notFindable findableOptions" style="display:${(isDisseminated == "false")?string('block', 'none')}">
       <hr />
-       
+      
     </div>
-    
   </div>
 [/#macro]
 
