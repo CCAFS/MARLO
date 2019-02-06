@@ -18,13 +18,17 @@ package org.cgiar.ccafs.marlo.interceptor.project;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyManager;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnitProject;
+import org.cgiar.ccafs.marlo.data.model.Phase;
+import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
-import org.cgiar.ccafs.marlo.data.model.User;
 
 import java.io.Serializable;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -49,24 +53,26 @@ public class EditPrivateStudyInterceptor extends AbstractInterceptor implements 
 
   // GlobalUnit Manager
   private GlobalUnitManager crpManager;
+  private GlobalUnitProjectManager globalUnitProjectManager;
 
 
   @Inject
   public EditPrivateStudyInterceptor(ProjectExpectedStudyManager projectExpectedStudyManager,
-    GlobalUnitManager crpManager) {
+    GlobalUnitManager crpManager, GlobalUnitProjectManager globalUnitProjectManager) {
     this.projectExpectedStudyManager = projectExpectedStudyManager;
     this.crpManager = crpManager;
+    this.globalUnitProjectManager = globalUnitProjectManager;
   }
 
   @Override
   public String intercept(ActionInvocation invocation) throws Exception {
     parameters = invocation.getInvocationContext().getParameters();
     session = invocation.getInvocationContext().getSession();
-    crp = (GlobalUnit) session.get(APConstants.SESSION_CRP);
-    crp = crpManager.getGlobalUnitById(crp.getId());
+
+
     try {
       this.setPermissionParameters(invocation);
-      if (isPrivate) {
+      if (!isPrivate) {
         return invocation.invoke();
       } else {
         BaseAction action = (BaseAction) invocation.getAction();
@@ -80,7 +86,6 @@ public class EditPrivateStudyInterceptor extends AbstractInterceptor implements 
 
   void setPermissionParameters(ActionInvocation invocation) throws Exception {
     BaseAction baseAction = (BaseAction) invocation.getAction();
-    User user = (User) session.get(APConstants.SESSION_USER);
     baseAction.setSession(session);
     boolean canEdit = false;
     boolean hasPermissionToEdit = false;
@@ -89,16 +94,43 @@ public class EditPrivateStudyInterceptor extends AbstractInterceptor implements 
     baseAction.setSession(session);
     String projectParameter = parameters.get(APConstants.STUDY_REQUEST_ID).getMultipleValues()[0];
 
+    String cycle = parameters.get(APConstants.CYCLE).getMultipleValues()[0];
+    String year = parameters.get(APConstants.YEAR_REQUEST).getMultipleValues()[0];
+
     expectedId = Long.parseLong(projectParameter);
 
     ProjectExpectedStudy projectExpectedStudy = projectExpectedStudyManager.getProjectExpectedStudyById(expectedId);
 
-    if (projectExpectedStudy != null && projectExpectedStudy.isActive()
-      && projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()) != null) {
+    // && projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()) != null
+
+    if (projectExpectedStudy != null && projectExpectedStudy.isActive()) {
       isPrivate = false;
-      if (!projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getIsPublic()) {
-        isPrivate = true;
+      Project project = projectExpectedStudy.getProject();
+
+      GlobalUnitProject globalUnitProjectOrigin = globalUnitProjectManager.findByProjectId(project.getId());
+
+      if (globalUnitProjectOrigin.isOrigin()) {
+        GlobalUnit globalUnit = globalUnitProjectOrigin.getGlobalUnit();
+
+        try {
+          Phase phase = globalUnit.getPhases().stream()
+            .filter(c -> c.isActive() && c.getDescription().equals(cycle) && c.getYear() == Integer.parseInt(year))
+            .collect(Collectors.toList()).get(0);
+
+          if (phase != null) {
+            if (projectExpectedStudy.getProjectExpectedStudyInfo(phase).getIsPublic() != null
+              && !projectExpectedStudy.getProjectExpectedStudyInfo(phase).getIsPublic()) {
+              isPrivate = true;
+            }
+          }
+
+        } catch (Exception e) {
+          throw new NullPointerException();
+        }
+
+
       }
+
 
     } else {
       throw new NullPointerException();
