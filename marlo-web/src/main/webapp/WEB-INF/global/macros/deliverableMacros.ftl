@@ -408,10 +408,16 @@
         [@customForm.yesNoInputDeliverable name="${name}.alreadyDisseminated"  editable=editable inverse=false cssClass="type-findable text-center" /] 
       </div>  
     </div>
-    <div class="block-findable findableOptions" style="display:[#if (deliverable.dissemination.alreadyDisseminated)?? && (deliverable.dissemination.alreadyDisseminated)]block[#else]none [/#if]">
+    [#local isDisseminated = (deliverable.dissemination.alreadyDisseminated?string)!""]
+    <div class="block-findable findableOptions" style="display:${(isDisseminated == "true")?string('block', 'none')}">
       <hr />
       [@findableOptions /]
     </div>
+    <div class="block-notFindable findableOptions" style="display:${(isDisseminated == "false")?string('block', 'none')}">
+      <hr />
+       
+    </div>
+    
   </div>
 [/#macro]
 
