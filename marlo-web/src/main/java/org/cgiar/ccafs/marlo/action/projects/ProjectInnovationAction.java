@@ -476,10 +476,9 @@ public class ProjectInnovationAction extends BaseAction {
         }
 
         // Innovation Contributing Institutions List Autosave
-        if (innovation.getContributingOrganizations() != null) {
+        if (innovation.getContributingOrganizations() != null && !innovation.getContributingOrganizations().isEmpty()) {
           for (ProjectInnovationContributingOrganization projectInnovationContributingOrganization : innovation
-            .getContributingOrganizations().stream().filter(c -> c.getPhase().getId() == phase.getId())
-            .collect(Collectors.toList())) {
+            .getContributingOrganizations()) {
             projectInnovationContributingOrganization.setInstitution(institutionManager
               .getInstitutionById(projectInnovationContributingOrganization.getInstitution().getId()));
           }
