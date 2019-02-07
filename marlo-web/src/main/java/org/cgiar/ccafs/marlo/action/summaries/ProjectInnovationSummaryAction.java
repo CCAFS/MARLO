@@ -21,6 +21,7 @@ import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.Project;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationContributingOrganization;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCountry;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCrp;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationDeliverable;
@@ -118,6 +119,12 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
       this.getText("caseStudy.caseStudyTitle"));
     masterReport.getParameterValues().put("i8nInnovationRDescriptionStage",
       this.getText("projectInnovations.stageDescription.readText"));
+    /*
+     * masterReport.getParameterValues().put("i8nInnovationRDescriptionStage",
+     * this.getText("projectInnovations.leadOrganization"));
+     * masterReport.getParameterValues().put("i8nInnovationRDescriptionStage",
+     * this.getText("projectInnovations.contributingOrganzations"));
+     */
     masterReport.getParameterValues().put("i8nInnovationREvidenceLink",
       this.getText("summaries.innovation.evidenceLink"));
     masterReport.getParameterValues().put("i8nInnovationRDeliverables",
@@ -377,6 +384,27 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
       && !projectInnovationInfo.getDescriptionStage().trim().isEmpty()) {
       descriptionStage = projectInnovationInfo.getDescriptionStage();
     }
+    // Lead Organization
+    if (projectInnovationInfo.getLeadOrganization() != null) {
+      if (projectInnovationInfo.getLeadOrganization().getComposedName() != null
+        && !projectInnovationInfo.getLeadOrganization().getComposedName().isEmpty()) {
+        // leadOrganization = projectInnovationInfo.getLeadOrganization().getComposedName();
+      }
+    }
+    // Contributing Organizations
+    if (projectInnovationInfo.getProjectInnovation().getContributingOrganizations() != null
+      && !projectInnovationInfo.getProjectInnovation().getContributingOrganizations().isEmpty()) {
+      List<ProjectInnovationContributingOrganization> projectInnovationContributingOrganizationList =
+        projectInnovationInfo.getProjectInnovation().getContributingOrganizations().stream()
+          .filter(i -> i.getPhase().equals(this.getActualPhase())).collect(Collectors.toList());
+
+      if (projectInnovationContributingOrganizationList != null) {
+        for (ProjectInnovationContributingOrganization contributingOrganizationItem : projectInnovationContributingOrganizationList) {
+          // contributingOrganization += contributingOrganizationItem.getComposedName() + ", ";
+        }
+      }
+    }
+
     // Evidence Link
     if (projectInnovationInfo.getEvidenceLink() != null && !projectInnovationInfo.getEvidenceLink().trim().isEmpty()) {
       evidenceLink = projectInnovationInfo.getEvidenceLink();
