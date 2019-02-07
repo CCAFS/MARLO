@@ -8,7 +8,7 @@
     <!--  1.1 CRP Progress Towards Intermediate Outcomes and SLOs -->
     <action name="{crp}/crpProgress" class="org.cgiar.ccafs.marlo.action.annualReport.CrpProgressAction">
       <interceptor-ref name="editReportSynthesisStack" />
-      <result name="input">/WEB-INF/crp/views/annualReport2018/AR2018_TEMPLATE.ftl</result>
+      <result name="input">/WEB-INF/crp/views/annualReport2018/AR2018_crpProgress.ftl</result>
       <result name="success" type="redirectAction">
         <param name="actionName">${crpSession}/crpProgress</param>
         <param name="liaisonInstitutionID">${liaisonInstitutionID}</param>
@@ -21,7 +21,7 @@
     <!--  1.2 Progress by CRP Flagships  -->
     <action name="{crp}/flagshipProgress" class="org.cgiar.ccafs.marlo.action.annualReport.FlagshipProgressAction">
       <interceptor-ref name="editReportSynthesisStack" />
-      <result name="input">/WEB-INF/crp/views/annualReport2018/AR2018_TEMPLATE.ftl</result>
+      <result name="input">/WEB-INF/crp/views/annualReport2018/AR2018_flagshipProgress.ftl</result>
       <result name="success" type="redirectAction">
         <param name="actionName">${crpSession}/flagshipProgress</param>
         <param name="liaisonInstitutionID">${liaisonInstitutionID}</param>
@@ -34,7 +34,7 @@
     <!--  1.3 Cross-Cutting Dimensions  -->
     <action name="{crp}/ccDimensions" class="org.cgiar.ccafs.marlo.action.annualReport.CrossCuttingDimensionAction">
       <interceptor-ref name="editReportSynthesisStack" />
-      <result name="input">/WEB-INF/crp/views/annualReport2018/AR2018_TEMPLATE.ftl</result>
+      <result name="input">/WEB-INF/crp/views/annualReport2018/AR2018_ccDimension.ftl</result>
       <result name="success" type="redirectAction">
         <param name="actionName">${crpSession}/ccDimensions</param>
         <param name="liaisonInstitutionID">${liaisonInstitutionID}</param>
@@ -73,7 +73,7 @@
     <!--  2.2 Partnerships  -->
     <action name="{crp}/externalPartnerships" class="org.cgiar.ccafs.marlo.action.annualReport.ExternalPartnershipsAction">
       <interceptor-ref name="editReportSynthesisStack" />
-      <result name="input">/WEB-INF/crp/views/annualReport2018/AR2018_TEMPLATE.ftl</result>
+      <result name="input">/WEB-INF/crp/views/annualReport2018/AR2018_partnerships.ftl</result>
       <result name="success" type="redirectAction">
         <param name="actionName">${crpSession}/externalPartnerships</param>
         <param name="liaisonInstitutionID">${liaisonInstitutionID}</param>
@@ -86,7 +86,7 @@
     <!--  2.3 Intellectual Assets   -->
     <action name="{crp}/intellectualAssets" class="org.cgiar.ccafs.marlo.action.annualReport.ExternalPartnershipsAction">
       <interceptor-ref name="editReportSynthesisStack" />
-      <result name="input">/WEB-INF/crp/views/annualReport2018/AR2018_TEMPLATE.ftl</result>
+      <result name="input">/WEB-INF/crp/views/annualReport2018/AR2018_intellectualAssets.ftl</result>
       <result name="success" type="redirectAction">
         <param name="actionName">${crpSession}/intellectualAssets</param>
         <param name="liaisonInstitutionID">${liaisonInstitutionID}</param>
@@ -125,7 +125,7 @@
     <!--  3.1 CRP Management and Governance  -->
     <action name="{crp}/governance" class="org.cgiar.ccafs.marlo.action.annualReport.ManagementGovernanceAction">
       <interceptor-ref name="editReportSynthesisStack" />
-      <result name="input">/WEB-INF/crp/views/annualReport2018/AR2018_TEMPLATE.ftl</result>
+      <result name="input">/WEB-INF/crp/views/annualReport2018/AR2018_governance.ftl</result>
       <result name="success" type="redirectAction">
         <param name="actionName">${crpSession}/governance</param>
         <param name="liaisonInstitutionID">${liaisonInstitutionID}</param>
