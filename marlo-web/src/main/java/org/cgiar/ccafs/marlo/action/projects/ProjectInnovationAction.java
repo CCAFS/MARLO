@@ -401,8 +401,9 @@ public class ProjectInnovationAction extends BaseAction {
         if (innovation.getProjectInnovationContributingOrganization() != null
           && !innovation.getProjectInnovationContributingOrganization().isEmpty()) {
           for (ProjectInnovationContributingOrganization projectInnovationContributingOrganization : innovation
-            .getProjectInnovationContributingOrganization().stream()
-            .filter(c -> c.getPhase().getId() == this.getActualPhase().getId()).collect(Collectors.toList())) {
+            .getProjectInnovationContributingOrganization()) {
+            System.out.println("innovation\r\n" + "            .getProjectInnovationContributingOrganization() "
+              + innovation.getProjectInnovationContributingOrganization());
             if (projectInnovationContributingOrganization.getInstitution() != null
               && projectInnovationContributingOrganization.getInstitution().getId() != null) {
 
@@ -528,7 +529,7 @@ public class ProjectInnovationAction extends BaseAction {
         if (innovation.getProjectInnovationContributingOrganization() != null) {
           innovation
             .setContributingOrganizations(new ArrayList<>(innovation.getProjectInnovationContributingOrganization()
-              .stream().filter(d -> d.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
+              .stream().filter(d -> d.getPhase().equals(phase)).collect(Collectors.toList())));
         }
 
         // Innovation Crp list
