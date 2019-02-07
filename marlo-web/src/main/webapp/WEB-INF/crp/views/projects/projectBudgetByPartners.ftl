@@ -258,7 +258,6 @@
   <div id="projectW3bilateralFund-${isTemplate?string('template', index )}" class="projectW3bilateralFund expandableBlock grayBox" style="display:${isTemplate?string('none','block')}">
     [#local customName = "${name}[${index}]" /]
     [#-- Remove --]
- 
     [#if (editable && isYearEditable(selectedYear) && action.canEditFunding(((element.fundingSource.fundingSourceInfo.budgetType.id)!-1),(element.institution.id)!-1) ) || isTemplate]
       [#if action.canBeDeleted((element.id)!-1,(element.class.name)!"")]
         <div class="removeIcon removeW3bilateralFund" title="Remove"></div>
@@ -269,7 +268,6 @@
       <div class="pull-right">[@popUps.relationsMacro element=element /] </div>
       [/#if]
     [/#if]
-    
     
     <p class="checked">
       [#assign fsRemaining = ((element.fundingSource.getRemaining(selectedYear,action.getActualPhase()))!0)?number /]
@@ -317,28 +315,27 @@
           <div class="row"><strong>Amount:</strong></div>
         </div>
         <div class="row col-md-9">
-        [#-- TODO: Allow to add funding sources when there is no aggregate (problem with permissions)  --]
-        [#-- Added action.canSearchFunding to allow to modify gender depending on institution  --]
-        [#if (editable && isYearEditable(selectedYear) && (action.canEditFunding(((element.fundingSource.fundingSourceInfo.budgetType.id)!-1),(element.institution.id)!-1) ))|| isTemplate]
-          [@customForm.input name="${customName}.amount"    i18nkey="budget.amount" showTitle=false className="currencyInput fundInput type-${(element.fundingSource.fundingSourceInfo.budgetType.id)!'none'}" required=true /]
-        [#else]
-          
-           <div class="${customForm.changedField(customName+'.amount')}">
-          <div class="input"><p>US$ <span>${((element.amount)!0)?number?string(",##0.00")}</span></p></div>
-          <input type="hidden" name="${customName}.amount"  value="${(element.amount)!0}" />
-          </div>
-        [/#if]
+          [#-- TODO: Allow to add funding sources when there is no aggregate (problem with permissions)  --]
+          [#-- Added action.canSearchFunding to allow to modify gender depending on institution  --]
+          [#if (editable && isYearEditable(selectedYear) && (action.canEditFunding(((element.fundingSource.fundingSourceInfo.budgetType.id)!-1),(element.institution.id)!-1) ))|| isTemplate]
+            [@customForm.input name="${customName}.amount"    i18nkey="budget.amount" showTitle=false className="currencyInput fundInput type-${(element.fundingSource.fundingSourceInfo.budgetType.id)!'none'}" required=true /]
+          [#else]
+            <div class="${customForm.changedField(customName+'.amount')}">
+            <div class="input"><p>US$ <span>${((element.amount)!0)?number?string(",##0.00")}</span></p></div>
+            <input type="hidden" name="${customName}.amount"  value="${(element.amount)!0}" />
+            </div>
+          [/#if]
         </div>
       </div>
       <div class="col-md-4">
         [#if ((project.projectInfo.projectEditLeader)!false) && action.hasSpecificities('crp_budget_gender')]
           <div class="row col-md-6"> <div class="row"><strong>Gender %:</strong></div> </div>
           <div class="row col-md-7">
-          [#-- TODO: Allow to add funding sources when there is no aggregate (problem with permissions)  --]
-          [#-- Added action.canSearchFunding to allow to modify gender depending on institution  --]
-          [#if (editable && isYearEditable(selectedYear) && action.canSearchFunding(element.institution.id) && action.canEditGender()) || isTemplate]
-            [@customForm.input name="${customName}.genderPercentage" i18nkey="budget.genderPercentage" showTitle=false className="percentageInput type-${(element.fundingSource.fundingSourceInfo.budgetType.id)!'none'}" required=true   /]
-          [#else]  
+            [#-- TODO: Allow to add funding sources when there is no aggregate (problem with permissions)  --]
+            [#-- Added action.canSearchFunding to allow to modify gender depending on institution  --]
+            [#if (editable && isYearEditable(selectedYear) && action.canSearchFunding(element.institution.id) && action.canEditGender()) || isTemplate]
+              [@customForm.input name="${customName}.genderPercentage" i18nkey="budget.genderPercentage" showTitle=false className="percentageInput type-${(element.fundingSource.fundingSourceInfo.budgetType.id)!'none'}" required=true   /]
+            [#else]  
             <div class="${customForm.changedField(customName+'.genderPercentage')}">
             <div class="input"><p><span>${((element.genderPercentage)!0)}%</span></p></div>
             <input type="hidden" name="${customName}.genderPercentage"  value="${(element.genderPercentage)!0}" />

@@ -62,7 +62,7 @@ public class ProjectBudgetByPartnersReplicationAction extends BaseAction {
   private ProjectSectionValidator<ProjectBudgetByPartnersAction> projectSectionValidator;
 
   // Variables
-  private String projectsbyPhaseList;
+  private String entityByPhaseList;
   private List<GlobalUnit> crps;
   private long selectedPhaseID;
   private Phase phase;
@@ -105,9 +105,10 @@ public class ProjectBudgetByPartnersReplicationAction extends BaseAction {
   }
 
 
-  public String getProjectsbyPhaseList() {
-    return projectsbyPhaseList;
+  public String getEntityByPhaseList() {
+    return entityByPhaseList;
   }
+
 
   public long getSelectedPhaseID() {
     return selectedPhaseID;
@@ -151,11 +152,11 @@ public class ProjectBudgetByPartnersReplicationAction extends BaseAction {
   @Override
   public String save() {
     if (this.canAccessSuperAdmin()) {
-      if (projectsbyPhaseList != null && !projectsbyPhaseList.isEmpty()) {
+      if (entityByPhaseList != null && !entityByPhaseList.isEmpty()) {
         logger.debug("Start replication for phase: " + selectedPhaseID);
         phase = phaseManager.getPhaseById(selectedPhaseID);
 
-        for (String id : projectsbyPhaseList.trim().split(",")) {
+        for (String id : entityByPhaseList.trim().split(",")) {
           logger.debug("Replicating project: " + id);
           project = projectManager.getProjectById(new Long(id.trim()));
 
@@ -206,10 +207,10 @@ public class ProjectBudgetByPartnersReplicationAction extends BaseAction {
     this.crps = crps;
   }
 
-
-  public void setProjectsbyPhaseList(String projectsbyPhaseList) {
-    this.projectsbyPhaseList = projectsbyPhaseList;
+  public void setEntityByPhaseList(String entityByPhaseList) {
+    this.entityByPhaseList = entityByPhaseList;
   }
+
 
   public void setSelectedPhaseID(long selectedPhaseID) {
     this.selectedPhaseID = selectedPhaseID;
