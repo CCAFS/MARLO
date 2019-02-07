@@ -35,8 +35,8 @@
       [#assign lastSubmission = {} /]
       <p>
         [@s.text name="message.submittedOn" ]
-          [@s.param] [/@s.param]
-          [@s.param] [/@s.param]
+          [@s.param] { date } [/@s.param]
+          [@s.param] { user } [/@s.param]
           [@s.param]Impact Pathway[/@s.param]
         [/@s.text]
       </p>
