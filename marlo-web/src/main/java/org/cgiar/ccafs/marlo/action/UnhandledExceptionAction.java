@@ -20,6 +20,8 @@ import org.cgiar.ccafs.marlo.utils.SendMailS;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
@@ -91,13 +93,35 @@ public class UnhandledExceptionAction extends BaseAction {
     message.append("The user " + this.getCurrentUser().getFirstName() + " " + this.getCurrentUser().getLastName() + " ("
       + this.getCurrentUser().getEmail() + ") ");
     message.append("has experienced an exception on the platform. </br>");
-    message.append("This execption occurs in the server: " + config.getBaseUrl() + ".</br>");
+    message.append("This exception occurs in the server: " + config.getBaseUrl() + "</br>");
     String crpAcronymName = crp.getAcronym() != null && !crp.getAcronym().isEmpty() ? crp.getAcronym() : crp.getName();
-    if (crp != null) {
-      message.append("In the CRP : " + crp.getAcronym() != null && !crp.getAcronym().isEmpty() ? crp.getAcronym()
-        : crpAcronymName + ".</br>");
+    if (crpAcronymName != null) {
+      message.append("In the CRP :" +crp.getAcronym() + ".</br>");
     }
-    message.append("The exception message was: </br></br>");
+    if(this.getActualPhase()!=null) {
+    	message.append("In the Phase: "+this.getActualPhase().getComposedName()+".</br>");    	
+    }    
+    if(this.getActionName()!=null) {
+    	message.append("In the ActionName: "+this.getActionName()+".</br>");    	
+    }
+    if(this.getRequest()!=null) {
+    	HttpServletRequest httpServletRequest=this.getRequest();
+    	if(httpServletRequest.getParameterMap()!=null && !httpServletRequest.getParameterMap().isEmpty()) {
+    		message.append("Parameters: ");    
+    		for(String parameter:httpServletRequest.getParameterMap().keySet()) {
+    			if(httpServletRequest.getParameterMap().get(parameter)!=null && httpServletRequest.getParameterMap().get(parameter).length>0) {
+    				message.append("</br>"+parameter+": ");
+    				Set<String> values = new HashSet<>();
+        			for(String value:httpServletRequest.getParameterMap().get(parameter)) {
+        				values.add(value);
+        			}
+        			message.append(String.join(", ", values));
+    			}
+    		}
+    	}
+    }    
+    
+    message.append("</br></br>The exception message was: </br></br>");
     message.append(writer.toString());
 
     sendMail.send(config.getEmailNotification(), null, config.getEmailNotification(), subject, message.toString(), null,
