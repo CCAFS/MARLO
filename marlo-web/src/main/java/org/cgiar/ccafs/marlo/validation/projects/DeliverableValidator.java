@@ -647,9 +647,12 @@ public class DeliverableValidator extends BaseValidator {
         try {
           if (deliverablePartnership != null && deliverablePartnership.getProjectPartnerPerson() != null
             && deliverablePartnership.getProjectPartnerPerson().getId() != null) {
-            if (projectPartnerPersonManager
-              .getProjectPartnerPersonById(deliverablePartnership.getProjectPartnerPerson().getId()).getProjectPartner()
-              .getInstitution().getAcronym().equalsIgnoreCase("IFPRI")) {
+            ProjectPartnerPerson projectPartnerPerson = projectPartnerPersonManager
+              .getProjectPartnerPersonById(deliverablePartnership.getProjectPartnerPerson().getId());
+            if (projectPartnerPerson.getProjectPartner() != null
+              && projectPartnerPerson.getProjectPartner().getInstitution() != null
+              && projectPartnerPerson.getProjectPartner().getInstitution().getAcronym() != null
+              && projectPartnerPerson.getProjectPartner().getInstitution().getAcronym().equalsIgnoreCase("IFPRI")) {
               if (action.hasSpecificities(APConstants.CRP_DIVISION_FS)) {
                 if (deliverablePartnership.getPartnerDivision() == null) {
                   action.addMessage(action.getText("deliverable.division"));
@@ -691,9 +694,12 @@ public class DeliverableValidator extends BaseValidator {
         try {
           if (deliverablePartnership != null && deliverablePartnership.getProjectPartnerPerson() != null
             && deliverablePartnership.getProjectPartnerPerson().getId() != null) {
-            if (projectPartnerPersonManager
-              .getProjectPartnerPersonById(deliverablePartnership.getProjectPartnerPerson().getId()).getProjectPartner()
-              .getInstitution().getAcronym().equalsIgnoreCase("IFPRI")) {
+            ProjectPartnerPerson projectPartnerPerson = projectPartnerPersonManager
+              .getProjectPartnerPersonById(deliverablePartnership.getProjectPartnerPerson().getId());
+            if (projectPartnerPerson.getProjectPartner() != null
+              && projectPartnerPerson.getProjectPartner().getInstitution() != null
+              && projectPartnerPerson.getProjectPartner().getInstitution().getAcronym() != null
+              && projectPartnerPerson.getProjectPartner().getInstitution().getAcronym().equalsIgnoreCase("IFPRI")) {
               if (action.hasSpecificities(APConstants.CRP_DIVISION_FS)) {
                 if (deliverablePartnership.getPartnerDivision() == null) {
                   action.addMessage(action.getText("deliverable.division"));
@@ -737,9 +743,12 @@ public class DeliverableValidator extends BaseValidator {
       && deliverable.getResponsiblePartner().getProjectPartner() != null) {
       if (deliverable.getResponsiblePartner() != null
         && deliverable.getResponsiblePartner().getProjectPartnerPerson() != null) {
-        if (projectPartnerPersonManager
-          .getProjectPartnerPersonById(deliverable.getResponsiblePartner().getProjectPartnerPerson().getId())
-          .getProjectPartner().getInstitution().getAcronym().equalsIgnoreCase("IFPRI")) {
+        ProjectPartnerPerson projectPartnerPerson = projectPartnerPersonManager
+          .getProjectPartnerPersonById(deliverable.getResponsiblePartner().getProjectPartnerPerson().getId());
+        if (projectPartnerPerson.getProjectPartner() != null
+          && projectPartnerPerson.getProjectPartner().getInstitution() != null
+          && projectPartnerPerson.getProjectPartner().getInstitution().getAcronym() != null
+          && projectPartnerPerson.getProjectPartner().getInstitution().getAcronym().equalsIgnoreCase("IFPRI")) {
           if (action.hasSpecificities(APConstants.CRP_DIVISION_FS)) {
             if (deliverable.getResponsiblePartner().getPartnerDivision() == null) {
               action.addMessage(action.getText("deliverable.division"));
