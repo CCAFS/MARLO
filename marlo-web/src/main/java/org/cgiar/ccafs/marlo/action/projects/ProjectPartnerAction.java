@@ -1429,7 +1429,7 @@ public class ProjectPartnerAction extends BaseAction {
           this.saveProjectPartnerPersons(projectPartnerClient, projectPartnerDB);
           this.saveProjectPartnerContributions(projectPartnerClient, projectPartnerDB);
           this.saveLocations(projectPartnerClient, projectPartnerDB);
-          this.saveProjectPartnership(projectPartnerClient, projectPartnerDB);
+          // this.saveProjectPartnership(projectPartnerClient, projectPartnerDB);
           // This is to add projectPartner to generate correct auditlog.
           projectPartnerDB
             .setInstitution(institutionManager.getInstitutionById(projectPartnerDB.getInstitution().getId()));
@@ -1455,10 +1455,11 @@ public class ProjectPartnerAction extends BaseAction {
       relationsName.add(APConstants.PROJECT_LESSONS_RELATION);
       relationsName.add(APConstants.PROJECT_INFO_RELATION);
 
-      if (this.isReportingActive() && projectDB.getProjectInfo() != null && project.getProjectInfo() != null
-        && project.getProjectInfo().getPartnerOverall() != null) {
-        projectDB.getProjectInfo().setPartnerOverall(project.getProjectInfo().getPartnerOverall());
-      }
+      // There not Save After AR 2018
+      // if (this.isReportingActive() && projectDB.getProjectInfo() != null && project.getProjectInfo() != null
+      // && project.getProjectInfo().getPartnerOverall() != null) {
+      // projectDB.getProjectInfo().setPartnerOverall(project.getProjectInfo().getPartnerOverall());
+      // }
 
       if (project.getProjectInfo() != null && project.getProjectInfo().getNewPartnershipsPlanned() != null) {
         projectDB.getProjectInfo().setNewPartnershipsPlanned(project.getProjectInfo().getNewPartnershipsPlanned());

@@ -68,9 +68,11 @@
               
               [#-- -- -- REPORTING BLOCK -- -- --]
               [#if reportingActive]
+              [#-- AR 2018 Changes
               <div class="form-group">
                 [@customForm.textArea name="project.projectInfo.partnerOverall" i18nkey="projectPartners.partnershipsOverall" className="limitWords-100" required=true editable=editable /]
               </div>
+              --]
               [/#if]
               
               [#-- Lessons and progress --]
@@ -341,52 +343,19 @@
       </div>
       [/#if]
       
+      [#--  AR 2018 Changes  --] 
       [#-- Reporting Partnerships --]
-      [#if reportingActive]
-        <h5 class="sectionSubTitle">Partnership</h5>
-        <div class="${reportingActive?string('fieldFocus','')}">
-          [#assign customPartnershipName = "${name}.projectPartnerPartnership"]
-          [#assign isRegional = ((element.projectPartnerPartnership.geographicScope.id == action.reportingIndGeographicScopeRegional)!false) ]
-          [#assign isMultiNational = ((element.projectPartnerPartnership.geographicScope.id == action.reportingIndGeographicScopeMultiNational)!false) ]
-          [#assign isNational = ((element.projectPartnerPartnership.geographicScope.id == action.reportingIndGeographicScopeNational)!false) ]
-          [#assign isSubNational = ((element.projectPartnerPartnership.geographicScope.id == action.reportingIndGeographicScopeSubNational)!false) ]
-          
-          [#-- Hidden Inputs --]
-          <input type="hidden" name="${name}.projectPartnerPartnership.id" value="${(element.projectPartnerPartnership.id)!}"/>
-          <div class="form-group">
-            [#-- Is This partner a formal partner --]
-            <label for="">[@s.text name="projectPartners.hasPartnerships" /][@customForm.req required=editable /]
-              [@customForm.helpLabel name="projectPartners.hasPartnerships.help" showIcon=false editable=editable/]
-            </label>
-            [@customForm.radioFlat id="hasPartnerships-yes-${index}" name="${name}.hasPartnerships" label="Yes" value="true" checked=(element.hasPartnerships)!false cssClass="hasPartnerships-yes" cssClassLabel="radio-label-yes" editable=editable /]
-            [@customForm.radioFlat id="hasPartnerships-no-${index}" name="${name}.hasPartnerships" label="No" value="false" checked=!((element.hasPartnerships)!true) cssClass="hasPartnerships-no" cssClassLabel="radio-label-no" editable=editable /]
-          </div>
-          <div class="form-group">
-            [#-- Phase of research --]
-            <div class="form-group">
-              [@customForm.select name="${customPartnershipName}.researchPhasesIds" label="" i18nkey="projectPartners.researchPhase" listName="allRepIndResearchPhases" keyFieldName="id"  displayFieldName="name" value="${customPartnershipName}.researchPhasesIds" multiple=true required=true className="researchPhasesSelect" disabled=!editable /]
-            </div>
-            [#-- Geographic Scope --]
-            <div class="form-group row">
-              <div class="col-md-6">
-                [@customForm.select name="${customPartnershipName}.geographicScope.id" className="setSelect2 geographicScopeSelect" i18nkey="projectPartners.geographicScope" listName="allRepIndGeographicScope" keyFieldName="id"  displayFieldName="name" required=true editable=editable /]
-              </div>
-            </div>
-            [#-- Regional scope --]
-            <div class="form-group regionalBlock" style="display:${(isRegional)?string('block','none')}">
-              [@customForm.selectGroup name="${customPartnershipName}.region.id" list=allRepIndRegions element=(element.projectPartnerPartnership.region)!{} subListName="subRegions"  keyFieldName="id" displayFieldName="name" i18nkey="projectPartners.region" required=true className="" editable=editable /]
-            </div>
-            [#-- Multinational, National and Subnational scope --]
-            <div class="form-group nationalBlock" style="display:${(isMultiNational || isNational || isSubNational)?string('block','none')}">
-              [@customForm.select name="${customPartnershipName}.partnershipLocationsIsos" label="" i18nkey="projectPartners.partnershipsCountries" listName="countries" keyFieldName="isoAlpha2"  displayFieldName="name" value="${name}.projectPartnerPartnership.partnershipLocationsIsos" multiple=true required=true className="countriesSelect" disabled=!editable /]
-            </div>
-            [#-- Main area of partnership --]
-            <div class="form-group">
-              [@customForm.textArea name="${customPartnershipName}.mainArea" className="limitWords-30" i18nkey="projectPartners.partnershipMainarea"  editable=editable required=true/]
-            </div>
-          </div>
+      [#if reportingActive]      
+        <h5 class="sectionSubTitle">Partnership</h5>        
+        [#-- Is This partner a formal partner --]
+        <label for="">[@s.text name="projectPartners.hasPartnerships" /][@customForm.req required=editable /]
+          [@customForm.helpLabel name="projectPartners.hasPartnerships.help" showIcon=false editable=editable/]
+        </label>
+        <div class="form-group">            
+          [@customForm.radioFlat id="hasPartnerships-yes-${index}" name="${name}.hasPartnerships" label="Yes" value="true" checked=(element.hasPartnerships)!false cssClass="hasPartnerships-yes" cssClassLabel="radio-label-yes" editable=editable /]
+          [@customForm.radioFlat id="hasPartnerships-no-${index}" name="${name}.hasPartnerships" label="No" value="false" checked=!((element.hasPartnerships)!true) cssClass="hasPartnerships-no" cssClassLabel="radio-label-no" editable=editable /]
         </div>
-      [/#if]
+      [/#if]    
       
       [#--Select country office  (if applicable)  --] 
       <h5 class="sectionSubTitle">[@s.text name="projectPartners.countryOffices${action.hasSpecificities('crp_partners_office')?string('.required','')}" /] <small>[@customForm.req required=action.hasSpecificities('crp_partners_office') /]</small></h5>
