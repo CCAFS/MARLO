@@ -84,34 +84,23 @@ public class MARLOCustomPersistFilter extends OncePerRequestFilter {
     String requestUrl = stringBuilder.toString();
 
     try {
-      System.out.println("VIVO 1");
       // Create an AuditLogContext for AuditLogging
       AuditLogContextProvider.push(new AuditLogContext());
-      System.out.println("VIVO 2");
       LOG.debug("begin doFilter for MARLOCustomPersistFilter for request: " + requestUrl);
       Cache cache = sessionFactory.getCache();
-      System.out.println("VIVO 3");
       if (cache != null) {
         cache.evictAllRegions(); // Evict data from all query regions.
-        System.out.println("VIVO 4");
       }
-      System.out.println("VIVO 5");
       sessionFactory.getCurrentSession().beginTransaction();
-      System.out.println("VIVO 6");
       // Continue filter chain
       chain.doFilter(httpRequest, response);
-      System.out.println("VIVO 7");
 
       if (sessionFactory.getCurrentSession() != null && sessionFactory.getCurrentSession().getTransaction() != null) {
-        System.out.println("VIVO 8");
         Transaction tr = sessionFactory.getCurrentSession().getTransaction();
-        System.out.println("VIVO 9" + tr);
         tr.commit();
-        System.out.println("VIVO 10");
 
       }
 
-      System.out.println("VIVO 11");
     } catch (StaleObjectStateException staleEx) {
       LOG.error("This interceptor does not implement optimistic concurrency control!");
       LOG.error("Your application will not work until you add compensation actions!");
