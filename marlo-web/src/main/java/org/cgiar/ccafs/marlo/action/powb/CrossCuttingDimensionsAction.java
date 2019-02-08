@@ -577,6 +577,15 @@ public class CrossCuttingDimensionsAction extends BaseAction {
     if (deliverables != null && !deliverables.isEmpty()) {
       for (Deliverable deliverable : deliverables) {
         DeliverableInfo deliverableInfo = deliverable.getDeliverableInfo(phase);
+        // Load cross cutting markers
+        List<DeliverableCrossCuttingMarker> deliverableCrossCuttingMarkers =
+          deliverable.getDeliverableCrossCuttingMarkers().stream()
+            .filter(dc -> dc.isActive() && dc.getPhase().equals(phase)).collect(Collectors.toList());
+        if (deliverableCrossCuttingMarkers != null && !deliverableCrossCuttingMarkers.isEmpty()) {
+          deliverableInfo.getDeliverable().setCrossCuttingMarkers(deliverableCrossCuttingMarkers);
+        } else {
+          deliverableInfo.getDeliverable().setCrossCuttingMarkers(new ArrayList<>());
+        }
         if (deliverableInfo.isActive()) {
           deliverableList.add(deliverableInfo);
           boolean bGender = false;
