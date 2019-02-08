@@ -1768,8 +1768,8 @@ public class DeliverableAction extends BaseAction {
           deliverable.getGenderLevels().clear();
         }
 
-        if (deliverable.getDeliverableGeographicRegions() != null) {
-          deliverable.getDeliverableGeographicRegions().clear();
+        if (deliverable.getDeliverableRegions() != null) {
+          deliverable.getDeliverableRegions().clear();
         }
 
         deliverable.setQualityCheck(null);
@@ -2160,8 +2160,8 @@ public class DeliverableAction extends BaseAction {
       // .filter(nu -> nu.isActive() && nu.getPhase().getId() == phase.getId()).collect(Collectors.toList()));
 
       for (DeliverableGeographicRegion deliverableRegion : regionPrev) {
-        if (deliverable.getDeliverableGeographicRegions() == null
-          || !deliverable.getDeliverableGeographicRegions().contains(deliverableRegion)) {
+        if (deliverable.getDeliverableRegions() == null
+          || !deliverable.getDeliverableRegions().contains(deliverableRegion)) {
           deliverableGeographicRegionManager.deleteDeliverableGeographicRegion(deliverableRegion.getId());
         }
       }
