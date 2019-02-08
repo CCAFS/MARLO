@@ -63,13 +63,12 @@ public class ProjectInnovationContributingOrganizationMySQLDAO
 
   @Override
   public List<ProjectInnovationContributingOrganization> findAll() {
-    String query = "from " + ProjectInnovationContributingOrganization.class.getName() + " where is_active=1";
+    String query = "from " + ProjectInnovationContributingOrganization.class.getName();
     List<ProjectInnovationContributingOrganization> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
     return null;
-
   }
 
   @Override
@@ -80,8 +79,6 @@ public class ProjectInnovationContributingOrganizationMySQLDAO
     } else {
       projectInnovationContributingOrganization = super.update(projectInnovationContributingOrganization);
     }
-
-
     return projectInnovationContributingOrganization;
   }
 
