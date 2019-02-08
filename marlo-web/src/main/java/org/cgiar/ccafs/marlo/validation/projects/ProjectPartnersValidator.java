@@ -112,7 +112,7 @@ public class ProjectPartnersValidator extends BaseValidator {
         }
       }
       this.validateEmptyPartners(action, project);
-      this.validateReportingOverall(action, project);
+      // this.validateReportingOverall(action, project);
       this.validateReportingLessons(action, project);
       this.validatePlanningNewPartnershipsPlanned(action, project);
       this.validateProjectLeader(action, project);
@@ -351,7 +351,7 @@ public class ProjectPartnersValidator extends BaseValidator {
         this.validateEmptyInstitution(action, partner, c);
         this.validateContactPersons(action, project, partner, c);
         this.validateOffices(action, project, partner, c);
-        this.validatePartnership(action, project, partner, c);
+        // this.validatePartnership(action, project, partner, c);
 
         c++;
       }
