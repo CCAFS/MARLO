@@ -124,6 +124,7 @@ ul.nav.nav-tabs.budget-tabs>li>a:hover {
 
 .projectW3bilateralFund {
     border: 1px solid #f3f2f2;
+    font-size: 1em;
 }
 .projectW3bilateralFund a {
   color: #575757;
@@ -160,4 +161,8 @@ span.contact.name {
 
 .projectW3bilateralFund-list {
     padding: 4px 10px;
+}
+
+.removeW3bilateralFund {
+  cursor: pointer;
 }
