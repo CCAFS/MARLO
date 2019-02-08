@@ -402,8 +402,7 @@ public class ProjectInnovationAction extends BaseAction {
           && !innovation.getProjectInnovationContributingOrganization().isEmpty()) {
           for (ProjectInnovationContributingOrganization projectInnovationContributingOrganization : innovation
             .getProjectInnovationContributingOrganization()) {
-            System.out.println("innovation\r\n" + "            .getProjectInnovationContributingOrganization() "
-              + innovation.getProjectInnovationContributingOrganization());
+
             if (projectInnovationContributingOrganization.getInstitution() != null
               && projectInnovationContributingOrganization.getInstitution().getId() != null) {
 
@@ -412,10 +411,6 @@ public class ProjectInnovationAction extends BaseAction {
                 Institution institution = institutionManager
                   .getInstitutionById(projectInnovationContributingOrganization.getInstitution().getId());
                 projectInnovationContributingOrganization.setInstitution(institution);
-                /*
-                 * projectInnovationContributingOrganization
-                 * .setPhase(projectInnovationContributingOrganization.getPhase());
-                 */
               }
             }
           }
@@ -423,18 +418,14 @@ public class ProjectInnovationAction extends BaseAction {
       }
     } else {
       innovation = projectInnovationManager.getProjectInnovationById(innovationID);
-
     }
-
 
     if (innovation != null) {
       projectID = innovation.getProject().getId();
       project = projectManager.getProjectById(projectID);
 
-
       Phase phase = phaseManager.getPhaseById(this.getActualPhase().getId());
       project.getProjecInfoPhase(phase);
-
 
       Path path = this.getAutoSaveFilePath();
       if (path.toFile().exists() && this.getCurrentUser().isAutoSave()) {
@@ -493,11 +484,8 @@ public class ProjectInnovationAction extends BaseAction {
           }
         }
 
-
         this.setDraft(true);
-
       } else {
-
         this.setDraft(false);
 
         if (innovation.getProjectInnovationInfo() == null) {
