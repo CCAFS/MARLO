@@ -320,6 +320,22 @@ public class ProjectInnovationAction extends BaseAction {
       // load relations
       if (innovation.getProjectInnovationInfo() != null) {
 
+        // load innovations next organizations
+        if (innovation.getProjectInnovationOrganizations() != null) {
+          for (ProjectInnovationOrganization projectOrganization : innovation.getProjectInnovationOrganizations()) {
+
+            if (projectOrganization.getRepIndOrganizationType() != null
+              && projectOrganization.getRepIndOrganizationType().getId() != null) {
+
+              if (repIndOrganizationTypeManager
+                .getRepIndOrganizationTypeById(projectOrganization.getRepIndOrganizationType().getId()) != null) {
+                RepIndOrganizationType institution = repIndOrganizationTypeManager
+                  .getRepIndOrganizationTypeById(projectOrganization.getRepIndOrganizationType().getId());
+              }
+            }
+          }
+        }
+
         // load PhaseResearchPartnership
         if (innovation.getProjectInnovationInfo().getRepIndPhaseResearchPartnership() != null
           && innovation.getProjectInnovationInfo().getRepIndPhaseResearchPartnership().getId() != null) {

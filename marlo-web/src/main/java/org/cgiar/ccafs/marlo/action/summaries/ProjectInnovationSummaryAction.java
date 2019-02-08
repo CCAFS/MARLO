@@ -408,7 +408,10 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
       for (ProjectInnovationContributingOrganization contributingOrganizationItem : projectInnovationContributingOrganizationList) {
         contributingOrganization += contributingOrganizationItem.getComposedName() + ", ";
       }
-      contributingOrganization = contributingOrganization.replace("null", "");
+      if (contributingOrganization.contains("null")) {
+        contributingOrganization = contributingOrganization.replace("null", "");
+      }
+      contributingOrganization = contributingOrganization.substring(0, contributingOrganization.length() - 2);
     }
 
     // Evidence Link
