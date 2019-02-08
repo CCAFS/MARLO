@@ -58,16 +58,23 @@ function attachEvents() {
 
   $('input.currencyInput.fundInput').on('keyup', validateFundingSource);
 
+  $('.toggleProjectFundingSource').on('click', toggleProjectFundingSource);
 }
 
 /**
  * Events Functions
  */
 
-function removeBilateralFund() {
-  var $parent = $(this).parent();
+function toggleProjectFundingSource() {
   var $partner = $(this).parents('.projectPartner');
-  $parent.slideUp('slow', function() {
+  $partner.find('.project-fs-expandible-true').slideToggle(300);
+  $partner.find('.project-fs-expandible-false').slideToggle(300);
+}
+
+function removeBilateralFund() {
+  var $parent = $(this).parents('.projectW3bilateralFund');
+  var $partner = $(this).parents('.projectPartner');
+  $parent.slideUp(300, function() {
     $parent.remove();
     // Update overalls
     $.each(budgetTypeJson, function(i,e) {
@@ -91,7 +98,6 @@ function calculateCurrencyPercentage() {
 function validateFundingSource() {
   var value = parseInt($(this).val()) || 0;
   var limit = removeCurrencyFormat($(this).parents('.projectW3bilateralFund').find('.projectAmount').text());
-
   if(value > limit) {
     $(this).addClass('fieldError');
   } else {
@@ -104,7 +110,8 @@ function addFundingSource(fs) {
   dialog.dialog("close");
 
   var $item = $('#projectW3bilateralFund-template').clone(true).removeAttr('id');
-  var $list = $elementSelected.parents(".projectPartner").find(".projectW3bilateralFund-list");
+  var $partner = $elementSelected.parents(".projectPartner");
+  var $list = $partner.find(".projectW3bilateralFund-list");
 
   // Setting parameters
   $item.find('.title').text(fs.composedName);
@@ -140,6 +147,11 @@ function addFundingSource(fs) {
   $('.projectW3bilateralFund').each(function(iFs,fs) {
     $(fs).setNameIndexes(1, iFs);
   })
+
+  // Update FS counter
+  var fsCount = $list.find('.projectW3bilateralFund').length;
+  $partner.find('span.fsCounter').text(fsCount);
+  $partner.find('span.fsCounter').parent().animateCss('bounceIn');
 }
 
 function updateActiveYearCurrency(type,partner) {
