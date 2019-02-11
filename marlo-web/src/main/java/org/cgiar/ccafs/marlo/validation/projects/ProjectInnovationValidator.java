@@ -90,14 +90,15 @@ public class ProjectInnovationValidator extends BaseValidator {
       action.getInvalidFields().put("input-innovation.projectInnovationInfo.title", InvalidFieldsMessages.EMPTYFIELD);
     }
 
+
     // Validate Narrative
-    if (!(this.isValidString(projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getNarrative())
-      && this.wordCount(projectInnovation.getProjectInnovationInfo(action.getActualPhase()).getNarrative()) <= 75)) {
+    if (!(this.wordCount(projectInnovation.getProjectInnovationInfo(action.getActualPhase()).getNarrative()) <= 75)) {
       action.addMessage(action.getText("Narrative of The Innovation"));
       action.addMissingField("projectInnovations.narrative");
       action.getInvalidFields().put("input-innovation.projectInnovationInfo.narrative",
         InvalidFieldsMessages.EMPTYFIELD);
     }
+
 
     // Validate Contribution of CRP
     if (projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getRepIndContributionOfCrp() != null) {
@@ -315,6 +316,15 @@ public class ProjectInnovationValidator extends BaseValidator {
       action.addMissingField("projectInnovations.contributing");
       action.getInvalidFields().put("list-innovation.crps",
         action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Crps"}));
+    }
+
+    // Validate adaptative research narrative
+    if (!(this.wordCount(
+      projectInnovation.getProjectInnovationInfo(action.getActualPhase()).getAdaptativeResearchNarrative()) <= 800)) {
+      action.addMessage(action.getText("Adaptative research narrative"));
+      action.addMissingField("projectInnovations.adaptativeResearchNarrative");
+      action.getInvalidFields().put("input-innovation.projectInnovationInfo.novelOrAdaptative",
+        InvalidFieldsMessages.EMPTYFIELD);
     }
   }
 
