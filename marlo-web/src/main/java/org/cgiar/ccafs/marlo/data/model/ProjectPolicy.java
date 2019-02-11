@@ -41,6 +41,9 @@ public class ProjectPolicy extends MarloAuditableEntity implements java.io.Seria
 
   private List<ProjectPolicyCountry> regions;
 
+  private Set<ProjectExpectedStudyPolicy> projectExpectedStudyPolicies = new HashSet<ProjectExpectedStudyPolicy>(0);
+  private List<ProjectExpectedStudyPolicy> evidences;
+
 
   public String getComposedName() {
 
@@ -57,6 +60,7 @@ public class ProjectPolicy extends MarloAuditableEntity implements java.io.Seria
   public List<ProjectPolicyCountry> getCountries() {
     return countries;
   }
+
 
   public List<String> getCountriesIds() {
     return countriesIds;
@@ -77,6 +81,10 @@ public class ProjectPolicy extends MarloAuditableEntity implements java.io.Seria
     return crps;
   }
 
+  public List<ProjectExpectedStudyPolicy> getEvidences() {
+    return evidences;
+  }
+
 
   @Override
   public String getLogDeatil() {
@@ -93,6 +101,11 @@ public class ProjectPolicy extends MarloAuditableEntity implements java.io.Seria
 
   public Project getProject() {
     return project;
+  }
+
+
+  public Set<ProjectExpectedStudyPolicy> getProjectExpectedStudyPolicies() {
+    return projectExpectedStudyPolicies;
   }
 
 
@@ -142,19 +155,19 @@ public class ProjectPolicy extends MarloAuditableEntity implements java.io.Seria
     return projectPolicyOwners;
   }
 
+
   public Set<ProjectPolicySubIdo> getProjectPolicySubIdos() {
     return projectPolicySubIdos;
   }
+
 
   public List<ProjectPolicyCountry> getRegions() {
     return regions;
   }
 
-
   public List<ProjectPolicySubIdo> getSubIdos() {
     return subIdos;
   }
-
 
   public void setCountries(List<ProjectPolicyCountry> countries) {
     this.countries = countries;
@@ -181,6 +194,11 @@ public class ProjectPolicy extends MarloAuditableEntity implements java.io.Seria
   }
 
 
+  public void setEvidences(List<ProjectExpectedStudyPolicy> evidences) {
+    this.evidences = evidences;
+  }
+
+
   public void setOwners(List<ProjectPolicyOwner> owners) {
     this.owners = owners;
   }
@@ -188,6 +206,11 @@ public class ProjectPolicy extends MarloAuditableEntity implements java.io.Seria
 
   public void setProject(Project project) {
     this.project = project;
+  }
+
+
+  public void setProjectExpectedStudyPolicies(Set<ProjectExpectedStudyPolicy> projectExpectedStudyPolicies) {
+    this.projectExpectedStudyPolicies = projectExpectedStudyPolicies;
   }
 
   public void setProjectPolicyCountries(Set<ProjectPolicyCountry> projectPolicyCountries) {
