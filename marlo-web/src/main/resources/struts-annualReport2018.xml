@@ -60,7 +60,7 @@
     <!--  2.2 Use of W1-2 Funding  -->
     <action name="{crp}/fundingUse" class="org.cgiar.ccafs.marlo.action.annualReport.FundingUseAction">
       <interceptor-ref name="editReportSynthesisStack" />
-      <result name="input">/WEB-INF/crp/views/annualReport2018/AR2018_TEMPLATE.ftl</result>
+      <result name="input">/WEB-INF/crp/views/annualReport2018/AR2018_fundingUse.ftl</result>
       <result name="success" type="redirectAction">
         <param name="actionName">${crpSession}/fundingUse</param>
         <param name="liaisonInstitutionID">${liaisonInstitutionID}</param>
@@ -99,7 +99,7 @@
     <!--  2.4 MELIA  -->
     <action name="{crp}/melia" class="org.cgiar.ccafs.marlo.action.annualReport.MeliaAction">
       <interceptor-ref name="editReportSynthesisStack" />
-      <result name="input">/WEB-INF/crp/views/annualReport2018/AR2018_TEMPLATE.ftl</result>
+      <result name="input">/WEB-INF/crp/views/annualReport2018/AR2018_melia.ftl</result>
       <result name="success" type="redirectAction">
         <param name="actionName">${crpSession}/melia</param>
         <param name="liaisonInstitutionID">${liaisonInstitutionID}</param>
@@ -112,7 +112,7 @@
     <!--  2.6 Improving Efficiency  -->
     <action name="{crp}/efficiency" class="org.cgiar.ccafs.marlo.action.annualReport.EfficiencyAction">
       <interceptor-ref name="editReportSynthesisStack" />
-      <result name="input">/WEB-INF/crp/views/annualReport2018/AR2018_TEMPLATE.ftl</result>
+      <result name="input">/WEB-INF/crp/views/annualReport2018/AR2018_efficiency.ftl</result>
       <result name="success" type="redirectAction">
         <param name="actionName">${crpSession}/efficiency</param>
         <param name="liaisonInstitutionID">${liaisonInstitutionID}</param>
@@ -138,7 +138,7 @@
     <!--  3.2 Management of Risks to Your CRP  -->
     <action name="{crp}/risks" class="org.cgiar.ccafs.marlo.action.annualReport.RisksAction">
       <interceptor-ref name="editReportSynthesisStack" />
-      <result name="input">/WEB-INF/crp/views/annualReport2018/AR2018_TEMPLATE.ftl</result>
+      <result name="input">/WEB-INF/crp/views/annualReport2018/AR2018_risks.ftl</result>
       <result name="success" type="redirectAction">
         <param name="actionName">${crpSession}/risks</param>
         <param name="liaisonInstitutionID">${liaisonInstitutionID}</param>
@@ -151,7 +151,7 @@
     <!--  3.3 Financial Summary  -->
     <action name="{crp}/financial" class="org.cgiar.ccafs.marlo.action.annualReport.FinancialSummaryAction">
       <interceptor-ref name="editReportSynthesisStack" />
-      <result name="input">/WEB-INF/crp/views/annualReport2018/AR2018_TEMPLATE.ftl</result>
+      <result name="input">/WEB-INF/crp/views/annualReport2018/AR2018_financial.ftl</result>
       <result name="success" type="redirectAction">
         <param name="actionName">${crpSession}/financial</param>
         <param name="liaisonInstitutionID">${liaisonInstitutionID}</param>

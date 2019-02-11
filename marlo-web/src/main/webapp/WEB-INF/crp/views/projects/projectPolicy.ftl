@@ -43,7 +43,7 @@
           [#-- Back --]
           <small class="pull-right">
             <a href="[@s.url action='${crpSession}/policies'][@s.param name="projectID" value=project.id /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
-              <span class="glyphicon glyphicon-circle-arrow-left"></span> [@s.text name="projectPolicies.backProjectStudies" /]
+              <span class="glyphicon glyphicon-circle-arrow-left"></span> [@s.text name="projectPolicies.backProjectPolicies" /]
             </a>
           </small>
           
@@ -73,7 +73,7 @@
     
     [#-- Title (up to 50 words) --]
     <div class="form-group">
-      [@customForm.input name="${customName}.projectPolicyInfo.title" i18nkey="policy.title" help="policy.title.help" helpIcon=false className="limitWords-50"required=true editable=editable /]
+      [@customForm.input name="${customName}.projectPolicyInfo.title" i18nkey="policy.title" className="limitWords-50"required=true editable=editable /]
     </div>
     
     <div class="form-group row ">
@@ -127,7 +127,7 @@
     
     [#-- Sub IDOs (maxLimit=2) --]
     <div class="form-group">
-      [@customForm.elementsListComponent name="${customName}.subIdos" elementType="srfSubIdo" elementList=element.subIdos label="policy.subIDOs" help="policy.subIDOs.help" helpIcon=false listName="subIdos" maxLimit=2 keyFieldName="id" displayFieldName="description"/]
+      [@customForm.elementsListComponent name="${customName}.subIdos" elementType="srfSubIdo" elementList=element.subIdos label="policy.subIDOs" listName="subIdos" maxLimit=2 keyFieldName="id" displayFieldName="description"/]
     </div>
     
     [#-- CGIAR Cross-cutting Markers  --]
