@@ -118,23 +118,25 @@ public class ProjectInnovationValidator extends BaseValidator {
     }
 
     // Validate Degree of Innovation
-    if (projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getRepIndDegreeInnovation() != null) {
-      if (projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getRepIndDegreeInnovation()
-        .getId() == null
-        || projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getRepIndDegreeInnovation()
-          .getId() == -1) {
-        action.addMessage(action.getText("Degree of Innovation"));
-        action.addMissingField("projectInnovations.degreeInnovation");
-        action.getInvalidFields().put("input-innovation.projectInnovationInfo.repIndDegreeInnovation.id",
-          InvalidFieldsMessages.EMPTYFIELD);
-      }
-    } else {
-      action.addMessage(action.getText("Degree of Innovation"));
-      action.addMissingField("projectInnovations.degreeInnovation");
-      action.getInvalidFields().put("input-innovation.projectInnovationInfo.repIndDegreeInnovation.id",
-        InvalidFieldsMessages.EMPTYFIELD);
-    }
-
+    /*
+     * if (projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getRepIndDegreeInnovation() != null)
+     * {
+     * if (projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getRepIndDegreeInnovation()
+     * .getId() == null
+     * || projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getRepIndDegreeInnovation()
+     * .getId() == -1) {
+     * action.addMessage(action.getText("Degree of Innovation"));
+     * action.addMissingField("projectInnovations.degreeInnovation");
+     * action.getInvalidFields().put("input-innovation.projectInnovationInfo.repIndDegreeInnovation.id",
+     * InvalidFieldsMessages.EMPTYFIELD);
+     * }
+     * } else {
+     * action.addMessage(action.getText("Degree of Innovation"));
+     * action.addMissingField("projectInnovations.degreeInnovation");
+     * action.getInvalidFields().put("input-innovation.projectInnovationInfo.repIndDegreeInnovation.id",
+     * InvalidFieldsMessages.EMPTYFIELD);
+     * }
+     */
     // Validate Stage of Innovation
     if (projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getRepIndStageInnovation() != null) {
       if (projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getRepIndStageInnovation()

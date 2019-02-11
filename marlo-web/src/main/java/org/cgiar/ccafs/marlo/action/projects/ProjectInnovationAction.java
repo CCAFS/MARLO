@@ -381,12 +381,13 @@ public class ProjectInnovationAction extends BaseAction {
         }
 
         // load DegreeInnovation
-        if (innovation.getProjectInnovationInfo().getRepIndDegreeInnovation() != null
-          && innovation.getProjectInnovationInfo().getRepIndDegreeInnovation().getId() != null) {
-          innovation.getProjectInnovationInfo().setRepIndDegreeInnovation(repIndDegreeInnovationManager
-            .getRepIndDegreeInnovationById(innovation.getProjectInnovationInfo().getRepIndDegreeInnovation().getId()));
-        }
-
+        /*
+         * if (innovation.getProjectInnovationInfo().getRepIndDegreeInnovation() != null
+         * && innovation.getProjectInnovationInfo().getRepIndDegreeInnovation().getId() != null) {
+         * innovation.getProjectInnovationInfo().setRepIndDegreeInnovation(repIndDegreeInnovationManager
+         * .getRepIndDegreeInnovationById(innovation.getProjectInnovationInfo().getRepIndDegreeInnovation().getId()));
+         * }
+         */
         // load leadOrganization
         if (innovation.getProjectInnovationInfo().getLeadOrganization() != null
           && innovation.getProjectInnovationInfo().getLeadOrganization().getId() != null) {
@@ -567,7 +568,7 @@ public class ProjectInnovationAction extends BaseAction {
       focusLevelList = focusLevelManager.findAll();
       organizationTypeList = repIndOrganizationTypeManager.findAll();
       contributionCrpList = repIndContributionOfCrpManager.findAll();
-      degreeInnovationList = repIndDegreeInnovationManager.findAll();
+      // degreeInnovationList = repIndDegreeInnovationManager.findAll();
 
       expectedStudyList = new ArrayList<>();
       List<ProjectExpectedStudy> expectedStudies = projectExpectedStudyManager.findAll().stream()
@@ -634,7 +635,7 @@ public class ProjectInnovationAction extends BaseAction {
       innovation.getProjectInnovationInfo().setRepIndInnovationType(null);
       innovation.getProjectInnovationInfo().setRepIndRegion(null);
       innovation.getProjectInnovationInfo().setRepIndContributionOfCrp(null);
-      innovation.getProjectInnovationInfo().setRepIndDegreeInnovation(null);
+      // innovation.getProjectInnovationInfo().setRepIndDegreeInnovation(null);
       innovation.getProjectInnovationInfo().setLeadOrganization(null);
     }
   }
@@ -749,12 +750,13 @@ public class ProjectInnovationAction extends BaseAction {
         }
       }
 
-      if (innovation.getProjectInnovationInfo().getRepIndDegreeInnovation() != null) {
-        if (innovation.getProjectInnovationInfo().getRepIndDegreeInnovation().getId() == -1) {
-          innovation.getProjectInnovationInfo().setRepIndDegreeInnovation(null);
-        }
-      }
-
+      /*
+       * if (innovation.getProjectInnovationInfo().getRepIndDegreeInnovation() != null) {
+       * if (innovation.getProjectInnovationInfo().getRepIndDegreeInnovation().getId() == -1) {
+       * innovation.getProjectInnovationInfo().setRepIndDegreeInnovation(null);
+       * }
+       * }
+       */
       if (innovation.getProjectInnovationInfo().getLeadOrganization() != null) {
         if (innovation.getProjectInnovationInfo().getLeadOrganization().getId() == -1) {
           innovation.getProjectInnovationInfo().setLeadOrganization(null);
