@@ -140,7 +140,7 @@
                           <h4 class="modal-title">Remove this item <br /> <small>${(innovation.projectInnovationInfo.title)!}</small> </h4>
                         </div>
                         <div class="modal-body">
-                          [@customForm.textArea name="justification" i18nkey="projectInnovations.removeJustification" required=false className="removeJustification"/]
+                          [@customForm.textArea name="projectInnovations.removeJustification" i18nkey="projectInnovations.removeJustification" required=false className="removeJustification"/]
                           <input type="hidden"  name="innovationID" value="${(innovation.id)!}" />
                           <input type="hidden"  name="projectID" value="${(innovation.project.id)!}" />
                           <input type="hidden"  name="phaseID"  value="${(actualPhase.id)!}"/>
