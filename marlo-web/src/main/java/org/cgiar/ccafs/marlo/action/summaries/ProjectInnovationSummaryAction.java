@@ -18,9 +18,11 @@ package org.cgiar.ccafs.marlo.action.summaries;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationContributingOrganizationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.Project;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationContributingOrganization;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCountry;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCrp;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationDeliverable;
@@ -68,6 +70,7 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
   private static final long serialVersionUID = 1L;
   private static Logger LOG = LoggerFactory.getLogger(ProjectInnovationSummaryAction.class);
   // Managers
+  private final ProjectInnovationContributingOrganizationManager projectInnovationContributingOrganizationManager;
   private final ProjectInnovationManager projectInnovationManager;
   private final ResourceManager resourceManager;
   // Parameters
@@ -82,10 +85,12 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
   @Inject
   public ProjectInnovationSummaryAction(APConfig config, GlobalUnitManager crpManager,
     ProjectInnovationManager projectInnovationManager, PhaseManager phaseManager, ResourceManager resourceManager,
-    ProjectManager projectManager) {
+    ProjectManager projectManager,
+    ProjectInnovationContributingOrganizationManager projectInnovationContributingOrganizationManager) {
     super(config, crpManager, phaseManager, projectManager);
     this.projectInnovationManager = projectInnovationManager;
     this.resourceManager = resourceManager;
+    this.projectInnovationContributingOrganizationManager = projectInnovationContributingOrganizationManager;
   }
 
   /**
@@ -118,6 +123,12 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
       this.getText("caseStudy.caseStudyTitle"));
     masterReport.getParameterValues().put("i8nInnovationRDescriptionStage",
       this.getText("projectInnovations.stageDescription.readText"));
+
+    masterReport.getParameterValues().put("i8nInnovationLeadOrganization",
+      this.getText("projectInnovations.leadOrganization"));
+    masterReport.getParameterValues().put("i8nInnovationContributionOrganization",
+      this.getText("projectInnovations.contributingOrganizations"));
+
     masterReport.getParameterValues().put("i8nInnovationREvidenceLink",
       this.getText("summaries.innovation.evidenceLink"));
     masterReport.getParameterValues().put("i8nInnovationRDeliverables",
@@ -276,19 +287,20 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
     TypedTableModel model = new TypedTableModel(
       new String[] {"id", "isRegional", "isNational", "isStage4", "title", "narrative", "phaseResearch",
         "stageInnovation", "innovationType", "contributionOfCrp", "degreeInnovation", "geographicScope", "region",
-        "countries", "organizations", "projectExpectedStudy", "descriptionStage", "evidenceLink", "deliverables",
-        "crps", "genderFocusLevel", "genderExplaniation", "youthFocusLevel", "youthExplaniation", "project"},
+        "countries", "organizations", "projectExpectedStudy", "descriptionStage", "leadOrganization",
+        "contributingOrganization", "evidenceLink", "deliverables", "crps", "genderFocusLevel", "genderExplaniation",
+        "youthFocusLevel", "youthExplaniation", "project"},
       new Class[] {Long.class, Boolean.class, Boolean.class, Boolean.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        String.class, String.class},
+        String.class, String.class, String.class, String.class},
       0);
     Long id = null;
     String title = null, narrative = null, phaseResearch = null, stageInnovation = null, innovationType = null,
       contributionOfCrp = null, degreeInnovation = null, geographicScope = null, region = null, countries = null,
-      organizations = null, projectExpectedStudy = null, descriptionStage = null, evidenceLink = null,
-      deliverables = null, crps = null, genderFocusLevel = null, genderExplaniation = null, youthFocusLevel = null,
-      youthExplaniation = null, project = null;
+      organizations = null, projectExpectedStudy = null, descriptionStage = null, leadOrganization = null,
+      contributingOrganization = null, evidenceLink = null, deliverables = null, crps = null, genderFocusLevel = null,
+      genderExplaniation = null, youthFocusLevel = null, youthExplaniation = null, project = null;
     Boolean isRegional = false, isNational = false, isStage4 = false;
     // Id
     id = projectInnovationID;
@@ -377,6 +389,31 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
       && !projectInnovationInfo.getDescriptionStage().trim().isEmpty()) {
       descriptionStage = projectInnovationInfo.getDescriptionStage();
     }
+    // Lead Organization
+    if (projectInnovationInfo.getLeadOrganization() != null) {
+      if (projectInnovationInfo.getLeadOrganization().getComposedName() != null
+        && !projectInnovationInfo.getLeadOrganization().getComposedName().isEmpty()) {
+        leadOrganization = projectInnovationInfo.getLeadOrganization().getComposedName();
+      }
+    }
+    // Contributing Organizations
+    List<ProjectInnovationContributingOrganization> projectInnovationContributingOrganizationList =
+      projectInnovationContributingOrganizationManager.findAll().stream()
+        .filter(p -> p.getPhase().equals(this.getActualPhase())
+          && p.getProjectInnovation() == projectInnovationInfo.getProjectInnovation())
+        .collect(Collectors.toList());
+    if (projectInnovationContributingOrganizationList != null
+      && !projectInnovationContributingOrganizationList.isEmpty()) {
+
+      for (ProjectInnovationContributingOrganization contributingOrganizationItem : projectInnovationContributingOrganizationList) {
+        contributingOrganization += contributingOrganizationItem.getComposedName() + ", ";
+      }
+      if (contributingOrganization.contains("null")) {
+        contributingOrganization = contributingOrganization.replace("null", "");
+      }
+      contributingOrganization = contributingOrganization.substring(0, contributingOrganization.length() - 2);
+    }
+
     // Evidence Link
     if (projectInnovationInfo.getEvidenceLink() != null && !projectInnovationInfo.getEvidenceLink().trim().isEmpty()) {
       evidenceLink = projectInnovationInfo.getEvidenceLink();
@@ -432,8 +469,8 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
 
     model.addRow(new Object[] {id, isRegional, isNational, isStage4, title, narrative, phaseResearch, stageInnovation,
       innovationType, contributionOfCrp, degreeInnovation, geographicScope, region, countries, organizations,
-      projectExpectedStudy, descriptionStage, evidenceLink, deliverables, crps, genderFocusLevel, genderExplaniation,
-      youthFocusLevel, youthExplaniation, project});
+      projectExpectedStudy, descriptionStage, leadOrganization, contributingOrganization, evidenceLink, deliverables,
+      crps, genderFocusLevel, genderExplaniation, youthFocusLevel, youthExplaniation, project});
     return model;
   }
 
