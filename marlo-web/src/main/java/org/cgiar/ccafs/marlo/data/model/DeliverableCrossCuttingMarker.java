@@ -127,6 +127,13 @@ public class DeliverableCrossCuttingMarker extends MarloBaseEntity implements ja
     this.repIndGenderYouthFocusLevel = repIndGenderYouthFocusLevel;
   }
 
+  @Override
+  public String toString() {
+    return "DeliverableCrossCuttingMarker [Id=" + this.getId() + ", cgiarCrossCuttingMarker=" + cgiarCrossCuttingMarker
+      + ", phase=" + phase + ", deliverable=" + deliverable + ", repIndGenderYouthFocusLevel="
+      + repIndGenderYouthFocusLevel + ", isActive()=" + this.isActive() + "]";
+  }
+
 
 }
 
