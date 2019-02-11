@@ -100,6 +100,7 @@ public class ProjectInnovationInfoManagerImpl implements ProjectInnovationInfoMa
       ProjectInnovationInfo projectInnovationInfoAdd = new ProjectInnovationInfo();
       projectInnovationInfoAdd.setProjectInnovation(projectInnovationInfo.getProjectInnovation());
       projectInnovationInfoAdd.updateProjectInnovationInfo(projectInnovationInfo, phase);
+      projectInnovationInfoAdd.setLeadOrganization(projectInnovationInfo.getLeadOrganization());
       projectInnovationInfoAdd.setPhase(phase);
       projectInnovationInfoDAO.save(projectInnovationInfoAdd);
     }

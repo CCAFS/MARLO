@@ -24,7 +24,6 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
   @Expose
   private RepIndStageInnovation repIndStageInnovation;
 
-
   @Expose
   private Phase phase;
 
@@ -72,6 +71,9 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
 
   @Expose
   private String descriptionStage;
+
+  @Expose
+  private Institution leadOrganization;
 
   public ProjectInnovationInfo() {
   }
@@ -123,12 +125,18 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     return evidenceLink;
   }
 
+
   public String getGenderExplaniation() {
     return genderExplaniation;
   }
 
+
   public RepIndGenderYouthFocusLevel getGenderFocusLevel() {
     return genderFocusLevel;
+  }
+
+  public Institution getLeadOrganization() {
+    return leadOrganization;
   }
 
   @Override
@@ -138,11 +146,11 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     return sb.toString();
   }
 
-
   @Override
   public String getModificationJustification() {
     return "";
   }
+
 
   @Override
   public User getModifiedBy() {
@@ -150,7 +158,6 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     u.setId(new Long(3));
     return u;
   }
-
 
   public String getNarrative() {
     return narrative;
@@ -237,6 +244,7 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     this.descriptionStage = descriptionStage;
   }
 
+
   public void setEvidenceLink(String evidenceLink) {
     this.evidenceLink = evidenceLink;
   }
@@ -247,6 +255,10 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
 
   public void setGenderFocusLevel(RepIndGenderYouthFocusLevel genderFocusLevel) {
     this.genderFocusLevel = genderFocusLevel;
+  }
+
+  public void setLeadOrganization(Institution leadOrganization) {
+    this.leadOrganization = leadOrganization;
   }
 
   @Override
