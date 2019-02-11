@@ -17,9 +17,11 @@ package org.cgiar.ccafs.marlo.validation.publications;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.data.manager.DeliverableInfoManager;
+import org.cgiar.ccafs.marlo.data.manager.CgiarCrossCuttingMarkerManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
+import org.cgiar.ccafs.marlo.data.model.CgiarCrossCuttingMarker;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
+import org.cgiar.ccafs.marlo.data.model.DeliverableCrossCuttingMarker;
 import org.cgiar.ccafs.marlo.data.model.DeliverableDissemination;
 import org.cgiar.ccafs.marlo.data.model.DeliverableInfo;
 import org.cgiar.ccafs.marlo.data.model.DeliverableIntellectualAsset;
@@ -37,6 +39,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -50,13 +53,14 @@ public class PublicationValidator extends BaseValidator {
 
   // GlobalUnit Manager
   private GlobalUnitManager crpManager;
-  private DeliverableInfoManager deliverableInfoManager;
+  private CgiarCrossCuttingMarkerManager cgiarCrossCuttingMarkerManager;
 
   @Inject
-  public PublicationValidator(GlobalUnitManager crpManager, DeliverableInfoManager deliverableInfoManager) {
+  public PublicationValidator(GlobalUnitManager crpManager,
+    CgiarCrossCuttingMarkerManager cgiarCrossCuttingMarkerManager) {
     super();
     this.crpManager = crpManager;
-    this.deliverableInfoManager = deliverableInfoManager;
+    this.cgiarCrossCuttingMarkerManager = cgiarCrossCuttingMarkerManager;
   }
 
   private Path getAutoSaveFilePath(Deliverable deliverable, long crpID) {
@@ -228,6 +232,46 @@ public class PublicationValidator extends BaseValidator {
           action.addMessage(action.getText("deliverable.countries"));
           action.getInvalidFields().put("input-deliverable.countriesIds", InvalidFieldsMessages.EMPTYFIELD);
         }
+      }
+    }
+
+    // Cross Cutting Markers
+    List<CgiarCrossCuttingMarker> cgiarCrossCuttingMarkers = cgiarCrossCuttingMarkerManager.findAll();
+
+    // Deliverable Cross Cutting Markers
+    if (deliverable.getCrossCuttingMarkers() != null) {
+      int i = 0;
+      for (CgiarCrossCuttingMarker cgiarCrossCuttingMarker : cgiarCrossCuttingMarkers) {
+        List<DeliverableCrossCuttingMarker> deliverableCrossCuttingMarkers =
+          deliverable.getCrossCuttingMarkers().stream()
+            .filter(
+              cc -> cc.isActive() && cc.getCgiarCrossCuttingMarker().getId().equals(cgiarCrossCuttingMarker.getId()))
+            .collect(Collectors.toList());
+        if (deliverableCrossCuttingMarkers != null && !deliverableCrossCuttingMarkers.isEmpty()) {
+          DeliverableCrossCuttingMarker deliverableCrossCuttingMarker = deliverableCrossCuttingMarkers.get(0);
+          if (deliverableCrossCuttingMarker.getRepIndGenderYouthFocusLevel() == null
+            || deliverableCrossCuttingMarker.getRepIndGenderYouthFocusLevel().getId() == -1) {
+            action.addMessage(cgiarCrossCuttingMarker.getName());
+            action.getInvalidFields().put(
+              "input-deliverable.crossCuttingMarkers[" + i + "].repIndGenderYouthFocusLevel.id",
+              InvalidFieldsMessages.EMPTYFIELD);
+          }
+        } else {
+          action.addMessage(cgiarCrossCuttingMarker.getName());
+          action.getInvalidFields().put(
+            "input-deliverable.crossCuttingMarkers[" + i + "].repIndGenderYouthFocusLevel.id",
+            InvalidFieldsMessages.EMPTYFIELD);
+        }
+        i++;
+      }
+
+    } else {
+      int i = 0;
+      for (CgiarCrossCuttingMarker cgiarCrossCuttingMarker : cgiarCrossCuttingMarkers) {
+        action.addMessage(cgiarCrossCuttingMarker.getName());
+        action.getInvalidFields().put("input-deliverable.crossCuttingMarkers[" + i + "].repIndGenderYouthFocusLevel.id",
+          InvalidFieldsMessages.EMPTYFIELD);
+        i++;
       }
     }
   }
