@@ -70,7 +70,7 @@
              [@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/]
              <hr />
             <div class="form-group">
-              <h4 class="subTitle headTitle annualReport-table">[@s.text name="${customLabel}.evidenceProgress" /]</h4>
+              <h4 class="headTitle annualReport-table">[@s.text name="${customLabel}.evidenceProgress" /]</h4>
               [@customForm.helpLabel name="${customLabel}.evidenceProgress.help" showIcon=false editable=editable/]
               <div class="block-selectedSLOs">
                 <div class="form-group sloTargetsList">
@@ -108,34 +108,6 @@
 
 
 [#---------------------------------------------------- MACROS ----------------------------------------------------]
-
-[#macro tableSLOSynthesisProgressMacro list=[] ]
-  <div class="">
-    <table class="table table-bordered">
-      <thead>
-        <tr>
-          <th class="col-md-1"> [@s.text name="${customLabel}.table.flagship" /] </th>
-          <th> [@s.text name="${customLabel}.table.sloTarget" /] </th>
-          <th> [@s.text name="${customLabel}.table.summarieEvidence" /] </th>
-          <th> [@s.text name="${customLabel}.table.expectedContribution" /] </th>
-        </tr>
-      </thead>
-      <tbody>
-        [#if list?has_content]
-          [#list list as item]
-            [#local crpProgram = (item.reportSynthesisCrpProgress.reportSynthesis.liaisonInstitution.crpProgram)!false]
-            <tr>
-              <td><span class="programTag" style="border-color:${(crpProgram.color)!'#fff'}">${(crpProgram.acronym)!}</span></td>              
-              <td>[#if item.srfSloIndicatorTarget??] ${item.srfSloIndicatorTarget.narrative?replace('\n', '<br>')} [#else]<i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>[/#if]</td>
-              <td>[#if (item.birefSummary?has_content)!false]${item.birefSummary?replace('\n', '<br>')}[#else]<i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>[/#if]</td>
-              <td>[#if (item.additionalContribution?has_content)!false]${item.additionalContribution?replace('\n', '<br>')}[#else]<i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>[/#if]</td>
-            </tr>
-          [/#list]
-        [/#if]
-      </tbody>
-    </table>
-  </div>
-[/#macro]
 
 [#macro tableFlagshipSynthesis tableName="tableName" list=[] columns=[] ]
   <div class="form-group">
@@ -185,7 +157,7 @@
     <div class="form-group grayBox name"> <strong>SLO ${(element.srfSloIndicator.srfSlo.id)!} Target </strong> <br />${(element.srfSloIndicatorTarget.narrative)!}</div>
     [#-- Brief summary of new evidence of CGIAR contribution to relevant targets for this CRP (with citation) --]
     <div class="form-group">
-      [@customForm.textArea name="${customName}.birefSummary" value="${(element.birefSummary)!}" i18nkey="${customLabel}.summaryNewEvidence" className="limitWords-150" help="${customLabel}.summaryEvidence.help" helpIcon=false required=true editable=editable /]
+      [@customForm.textArea name="${customName}.birefSummary" value="${(element.birefSummary)!}" i18nkey="${customLabel}.summaryEvidence" className="limitWords-150" help="${customLabel}.summaryEvidence.help" helpIcon=false required=true editable=editable /]
     </div>
     [#-- Expected additional contribution before end of 2022 (if not already fully covered). --]
     <div class="form-group">

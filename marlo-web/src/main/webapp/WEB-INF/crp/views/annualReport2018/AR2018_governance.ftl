@@ -42,15 +42,23 @@
           [#-- Title --]
           <h3 class="headTitle">[@s.text name="${customLabel}.title" /]</h3>
           <div class="borderBox">
+            [@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/]
             [#if PMU]
               [#-- Governance description --]
               <div class="form-group">
                [@customForm.textArea name="${customName}.describe" i18nkey="${customLabel}.describe" help="${customLabel}.describe.help" className="limitWords-300" helpIcon=false required=true editable=editable /]
               </div>
+              [#else]
+              <div class="textArea">
+                <label for="">[@customForm.text name="${customLabel}.describe" readText=true /]:</label>
+                <p>[#if (pmuText?has_content)!false]${pmuText?replace('\n', '<br>')}[#else] [@s.text name="global.prefilledByPmu"/] [/#if]</p>
+              </div>
             [/#if]
           </div>
           [#-- Section Buttons & hidden inputs--]
-          [#include "/WEB-INF/crp/views/annualReport2018/buttons-AR2018.ftl" /]
+          [#if PMU]
+            [#include "/WEB-INF/crp/views/annualReport2018/buttons-AR2018.ftl" /]
+          [/#if]
         [/@s.form] 
       </div> 
     </div>

@@ -41,6 +41,7 @@ import org.cgiar.ccafs.marlo.data.model.CountryFundingSources;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableActivity;
+import org.cgiar.ccafs.marlo.data.model.DeliverableCrossCuttingMarker;
 import org.cgiar.ccafs.marlo.data.model.DeliverableDataSharingFile;
 import org.cgiar.ccafs.marlo.data.model.DeliverableDissemination;
 import org.cgiar.ccafs.marlo.data.model.DeliverableFile;
@@ -911,6 +912,13 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
         deliverable.setGenderLevels(deliverable.getDeliverableGenderLevels().stream()
           .filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList()));
 
+        List<DeliverableCrossCuttingMarker> deliverableCrossCuttingMarkers =
+          deliverable.getDeliverableCrossCuttingMarkers().stream()
+            .filter(dc -> dc.isActive() && dc.getPhase().equals(action.getActualPhase())).collect(Collectors.toList());
+
+        if (deliverableCrossCuttingMarkers != null && !deliverableCrossCuttingMarkers.isEmpty()) {
+          deliverable.setCrossCuttingMarkers(deliverableCrossCuttingMarkers);
+        }
 
         if (action.isReportingActive() || action.isUpKeepActive()) {
 
