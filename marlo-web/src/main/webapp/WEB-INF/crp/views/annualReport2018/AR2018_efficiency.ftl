@@ -42,37 +42,18 @@
           [#-- Title --]
           <h3 class="headTitle">[@s.text name="${customLabel}.title" /]</h3>
           <div class="borderBox">
-            [#-- Section description --]
-            <i class="helpLabel">[@s.text name="${customLabel}.help" /]</i>
-            
+            [@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/]
             [#if PMU]
-              [#-- Strategically managed assets --]
+              [#-- Efficiency description --]
               <div class="form-group">
-                [@customForm.textArea name="${customName}.managed" i18nkey="${customLabel}.managed" help="${customLabel}.managed.help" className="" helpIcon=false required=true editable=editable /]
-              </div>
-              [#-- Published patents --]
-              <div class="form-group">
-                [@customForm.textArea name="${customName}.patents" i18nkey="${customLabel}.patents" help="${customLabel}.patents.help" className="" helpIcon=false required=true editable=editable /]
-              </div>
-              [#-- Critical issues --]
-              <div class="form-group">
-                [@customForm.textArea name="${customName}.criticalIssues" i18nkey="${customLabel}.criticalIssues" help="${customLabel}.criticalIssues.help" className="" helpIcon=false required=true editable=editable /]
+               [@customForm.textArea name="${customName}.description" i18nkey="${customLabel}.description" help="${customLabel}.description.help" className="limitWords-250" helpIcon=false required=true editable=editable /]
               </div>
               [#else]
               <div class="textArea">
-                <label for="">[@customForm.text name="${customLabel}.managed" readText=true /]:</label>
-                <p>[#if (pmuText?has_content)!false]${pmuText?replace('\n', '<br>')}[#else] [@s.text name="global.prefilledByPmu"/] [/#if]</p>
-              </div>
-              <div class="textArea">
-                <label for="">[@customForm.text name="${customLabel}.patents" readText=true /]:</label>
-                <p>[#if (pmuText?has_content)!false]${pmuText?replace('\n', '<br>')}[#else] [@s.text name="global.prefilledByPmu"/] [/#if]</p>
-              </div>
-              <div class="textArea">
-                <label for="">[@customForm.text name="${customLabel}.criticalIssues" readText=true /]:</label>
+                <label for="">[@customForm.text name="${customLabel}.description" readText=true /]:</label>
                 <p>[#if (pmuText?has_content)!false]${pmuText?replace('\n', '<br>')}[#else] [@s.text name="global.prefilledByPmu"/] [/#if]</p>
               </div>
             [/#if]
-            
           </div>
           [#-- Section Buttons & hidden inputs--]
           [#if PMU]

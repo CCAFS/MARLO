@@ -122,7 +122,7 @@
                           <h4 class="modal-title">Remove this item <br /> <small>${(item.projectPolicyInfo.title)!}</small> </h4>
                         </div>
                         <div class="modal-body">
-                          [@customForm.textArea name="justification" i18nkey="projectPolicies.removeJustification" required=true className="removeJustification"/]
+                          [@customForm.textArea name="justification" i18nkey="projectPolicies.removeJustification" required=false className="removeJustification"/]
                           <input type="hidden"  name="policyID" value="${(item.id)!}" />
                           <input type="hidden"  name="projectID" value="${(projectID)!}" />
                           <input type="hidden"  name="phaseID"  value="${(actualPhase.id)!}"/>
