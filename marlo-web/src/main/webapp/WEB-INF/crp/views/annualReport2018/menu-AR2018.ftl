@@ -4,7 +4,7 @@
   { 'title': '1. Key Results', 'show': true,
     'items': [
     { 'slug': 'crpProgress',          'name': 'annualReport2018.menu.crpProgress',          'action': 'crpProgress',        'active': true },
-    { 'slug': 'flagshipProgress',     'name': 'annualReport2018.menu.flagshipProgress',     'action': 'flagshipProgress',   'active': true, 'onlyFlagship': !flagship },
+    { 'slug': 'flagshipProgress',     'name': 'annualReport2018.menu.flagshipProgress',     'action': 'flagshipProgress',   'active': true },
     { 'slug': 'ccDimensions',         'name': 'annualReport2018.menu.ccDimensions',         'action': 'ccDimensions',       'active': true }
     ]
   },

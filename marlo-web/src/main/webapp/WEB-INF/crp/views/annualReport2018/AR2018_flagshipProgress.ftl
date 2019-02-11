@@ -3,7 +3,7 @@
 [#assign currentSectionString = "annualReport-${actionName?replace('/','-')}-${synthesisID}" /]
 [#assign currentSection = "synthesis" /]
 [#assign currentStage = actionName?split('/')[1]/]
-[#assign pageLibs = [ ] /]
+[#assign pageLibs = [ "select2" ] /]
 [#assign customJS = [ "${baseUrlMedia}/js/annualReport/annualReport_${currentStage}.js" ] /]
 [#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css"] /]
 
@@ -59,12 +59,12 @@
               
               [#-- Flagship Synthesis --]
               <div class="form-group">
-                  [@tableFlagshipSynthesis tableName="tableflagshipSynthesis" list=flagshipCrpProgress columns=["summaryNarratives", "detailedAnnex"] /]
+                  [@tableFlagshipSynthesis tableName="tableflagshipSynthesis" list=flagships columns=["summaryNarratives", "detailedAnnex"] /]
               </div>
               
               [#-- Table 2: Condensed list of policy contributions --]
               <div class="form-group">
-                <h4 class="subTitle headTitle annualReport-table">[@s.text name="${customLabel}.policyContributions" /]</h4>
+                <h4 class="headTitle annualReport-table">[@s.text name="${customLabel}.policyContributions" /]</h4>
                 [@customForm.helpLabel name="${customLabel}.policyContributions.help" showIcon=false editable=editable/] <a href="[@s.url action='${crpSession}/influence'][@s.param name="liaisonInstitutionID" value=liaisonInstitutionID /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">here</a>
               </div>
             [/#if]
@@ -76,27 +76,23 @@
             
             [#-- Table 4: Condensed list of innovations --]
             <div class="form-group">
-                <h4 class="subTitle headTitle annualReport-table">[@s.text name="${customLabel}.listOfInnovations" /]</h4>
+                <h4 class="headTitle annualReport-table">[@s.text name="${customLabel}.listOfInnovations" /]</h4>
                 [@customForm.helpLabel name="${customLabel}.listOfInnovations.help" showIcon=false editable=editable/] <a href="[@s.url action='${crpSession}/control'][@s.param name="liaisonInstitutionID" value=liaisonInstitutionID /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">here</a>
             </div>
             
             [#if flagship]
             [#-- Table 5: Status of Planned Outcomes and Milestones --]
             <div class="form-group">
-              <h4 class="subTitle headTitle">[@s.text name="${customLabel}.table5.title" /]</h4>
-              [#assign outcomes=[
-                {"1", "2"}
-               ]
-              /]
+              <h4 class="headTitle">[@s.text name="${customLabel}.table5.title" /]</h4>
                 [#list outcomes as outcome]
-                  [@annualReport2018OutcomesMacro element=outcome name="${customLabel}" index="1" /]
+                  [@annualReport2018OutcomesMacro element=outcome name="${customLabel}" index=outcome_index /]
                 [/#list]
             </div>
             [/#if]
             
             [#-- 1.2.3 Variance from Planned Program for this year --]
             <div class="form-group">
-              <h4 class="subTitle headTitle">[@s.text name="${customLabel}.variance" /]</h4>
+              <h4 class="headTitle">[@s.text name="${customLabel}.variance" /]</h4>
               <i class="helpLabel">[@s.text name="${customLabel}.variance.help" /]</i>
             </div>
             
@@ -118,7 +114,7 @@
             [#if PMU]
             [#-- Flagships - Synthesis (Variance from Planned Program) --]
             <div class="form-group">
-              [@tableFlagshipSynthesis tableName="tableFlagshipVariance" list=flagshipCrpProgress columns=["A", "B", "C"] /]
+              [@tableFlagshipSynthesis tableName="tableFlagshipVariance" list=flagships columns=["A", "B", "C"] /]
             </div>
             [/#if]
             
@@ -130,7 +126,7 @@
             [#if PMU]
             [#-- Flagships - Synthesis (Altmetric Score) --]
             <div class="form-group">
-              [@tableFlagshipSynthesis tableName="tableFlagshipAltmetric" list=flagshipCrpProgress columns=["altmetricScore"] /]
+              [@tableFlagshipSynthesis tableName="tableFlagshipAltmetric" list=flagships columns=["altmetricScore"] /]
             </div>
             [/#if]
             
@@ -220,7 +216,8 @@
 
 [#macro annualReport2018OutcomesMacro element name index isTemplate=false]
   [#local customName = "${name}" /]
-  <div id="powbOutcome-${isTemplate?string('template', index)}" class="powbOutcome simpleBox" style="display:${isTemplate?string('none','block')}">
+     
+    <div id="powbOutcome-${isTemplate?string('template', index)}" class="powbOutcome simpleBox" style="display:${isTemplate?string('none','block')}">
     [#-- Index --]
     <div class="leftHead sm"><span class="index">${index+1}</span></div>
     [#-- Title --]
@@ -230,21 +227,17 @@
       [@customForm.textArea name="${customName}.outcome.progressNarrative" i18nkey="${customLabel}.outcome.progressNarrative" help="${customLabel}.outcome.progressNarrative.help" className="limitWords-100" helpIcon=false required=true editable=editable /]
     </div>
     [#-- Milestones List --]
-    <h4 class="subTitle">[@s.text name="${customLabel}.milestones.title" /]</h4>
+    <h4 class="simpleTitle">[@s.text name="${customLabel}.milestones.title" /]</h4>
     <div class="form-group simpleBox">
-     [#--  [#list element.milestones as milestone]
+       [#list element.milestones as milestone]
         [@annualReport2018MilestoneMacro element=milestone name="${customName}.milestones" index=milestone_index /]
-      [/#list] --]
-    </div>
+      [/#list]
+    </div> 
     
   </div>
 [/#macro]
 
 [#macro annualReport2018MilestoneMacro element name index isTemplate=false]
-[#local element = [
-  {"FP":"1",   "summaryNarratives":"",             "detailedAnnex":""},
-  {"FP":"2",   "summaryNarratives":"",             "detailedAnnex":""}
-] /]
 [#local annualReportElement= action.getReportSynthesisFlagshipProgressMilestone(element.id)]
   [#local customName = "${name}[${action.getIndex(element.id)}]" /]
   
@@ -256,9 +249,61 @@
     <input type="hidden" name="${customName}.crpMilestone.id" value="${(annualReportElement.crpMilestone.id)!}" >
     
     [#-- Title --]
-    <div class="form-group">
+    <div class="form-group grayBox">
       <div class="pull-right">[@milestoneContributions element=element /]</div>
       <p class="text-justify"><strong>Milestone for ${actualPhase.year}</strong> - ${(element.title)!} </p>
+    </div>
+    
+    [#-- Gender Marker --]
+    <div class="form-group row">
+      <div class="col-md-3">
+        <h5>[@s.text name="${customLabel}.milestoneGenderScore" /]</h5>
+      </div>
+      <div class="col-md-3">
+         [@customForm.select name="${customName}.milestoneGenderScoreMarker" label=""  i18nkey="${customLabel}.milestoneScoreMarker" listName="" keyFieldName=""  displayFieldName=""   required=true  className="" editable=editable/]
+      </div>
+      <div class="col-md-6">
+         [@customForm.input name="${customName}.milestoneGenderScoreJustification" i18nkey="${customLabel}.milestoneScoreJustification" help="${customLabel}.milestoneGenderScoreJustification.help" className="input-sm" helpIcon=true required=true editable=editable /]
+      </div>
+    </div>
+    
+    [#-- Youth Marker --]
+    <div class="form-group row">
+      <div class="col-md-3">
+        <h5>[@s.text name="${customLabel}.milestoneYouthScore" /]</h5>
+      </div>
+      <div class="col-md-3">
+         [@customForm.select name="${customName}.milestoneYouthScoreMarker" label=""  i18nkey="${customLabel}.milestoneScoreMarker" listName="" keyFieldName=""  displayFieldName=""   required=true  className="" editable=editable/]
+      </div>
+      <div class="col-md-6">
+         [@customForm.input name="${customName}.milestoneYouthScoreJustification" i18nkey="${customLabel}.milestoneScoreJustification" help="${customLabel}.milestoneYouthScoreJustification.help" className="input-sm" helpIcon=true required=true editable=editable /]
+      </div>
+    </div>
+    
+    [#-- CapDev Marker --]
+    <div class="form-group row">
+      <div class="col-md-3">
+        <h5>[@s.text name="${customLabel}.milestoneCapDevScore" /]</h5>
+      </div>
+      <div class="col-md-3">
+         [@customForm.select name="${customName}.milestoneCapDevScoreMarker" label=""  i18nkey="${customLabel}.milestoneScoreMarker" listName="" keyFieldName=""  displayFieldName=""   required=true  className="" editable=editable/]
+      </div>
+      <div class="col-md-6">
+         [@customForm.input name="${customName}.milestoneCapDevScoreJustification" i18nkey="${customLabel}.milestoneScoreJustification" help="${customLabel}.milestoneCapDevScoreJustification.help" className="input-sm" helpIcon=true required=true editable=editable /]
+      </div>
+    </div>
+    
+    [#-- Climate Change Marker --]
+    <div class="form-group row">
+      <div class="col-md-3">
+        <h5>[@s.text name="${customLabel}.milestoneClimateChangeScore" /]</h5>
+      </div>
+      <div class="col-md-3">
+         [@customForm.select name="${customName}.milestoneClimateChangeScoreMarker" label=""  i18nkey="${customLabel}.milestoneScoreMarker" listName="" keyFieldName=""  displayFieldName=""   required=true  className="" editable=editable/]
+      </div>
+      <div class="col-md-6">
+         [@customForm.input name="${customName}.milestoneClimateChangeScoreJustification" i18nkey="${customLabel}.milestoneScoreJustification" help="${customLabel}.milestoneClimateChangeScoreJustification.help" className="input-sm" helpIcon=true required=true editable=editable /]
+      </div>
     </div>
     
     [#-- Milestone status --]
@@ -268,13 +313,25 @@
       [@customForm.radioFlat id="${customName}-status-1" name="${customName}.milestonesStatus" label="Complete"   value="1" checked=(milestoneStatus == 1)!false editable=editable cssClass="" cssClassLabel="font-normal"/]
       [@customForm.radioFlat id="${customName}-status-2" name="${customName}.milestonesStatus" label="Extended"   value="2" checked=(milestoneStatus == 2)!false editable=editable cssClass="" cssClassLabel="font-normal"/]
       [@customForm.radioFlat id="${customName}-status-3" name="${customName}.milestonesStatus" label="Cancelled"  value="3" checked=(milestoneStatus == 3)!false editable=editable cssClass="" cssClassLabel="font-normal"/]
+      [@customForm.radioFlat id="${customName}-status-4" name="${customName}.milestonesStatus" label="Changed"    value="4" checked=(milestoneStatus == 4)!false editable=editable cssClass="" cssClassLabel="font-normal"/]
       
       [#if !editable && (milestoneStatus == -1)][@s.text name="form.values.fieldEmpty"/][/#if]
     </div>
     
-    [#-- Provide evidence for completed milestones** or explanation for extended or cancelled --]
+    [#-- Evidence for completed milestones or explanation for extended or cancelled --]
     <div class="form-group">
-      [@customForm.textArea name="${customName}.evidence" i18nkey="${customLabel}.explanation" help="${customLabel}.explanation.help" helpIcon=false display=true required=true className="" editable=editable /]
+      [@customForm.textArea name="${customName}.milestoneEvidence" i18nkey="${customLabel}.milestoneEvidence" help="${customLabel}.milestoneEvidence.help" helpIcon=false display=true required=false className="limitWords-50" editable=editable /]
+    </div>
+    
+    [#-- Extendend, cancelled or changed milestones - Main reason --]
+    <div class="form-group">
+      [@customForm.select name="${customName}.milestoneMainReason" label=""  i18nkey="${customLabel}.milestoneMainReason" listName="" keyFieldName=""  displayFieldName=""   required=true  className="" editable=editable/]
+    </div>
+    
+    [#-- Extendend, cancelled or changed milestones - Other reason --]
+    [#local display = true /]
+    <div class="form-group" style="display:${display?string('block','none')}">
+      [@customForm.input name="${customName}.milestoneOtherReason" i18nkey="${customLabel}.milestoneOtherReason" display=true required=false className="input-sm" editable=editable /]
     </div>
     
     
@@ -330,7 +387,7 @@
                       [#else]
                         <i class="text-center" style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
                       [/#if]
-                    </td>                  
+                    </td>
                     <td> <a href="${poURL}" target="_blank"><span class="glyphicon glyphicon-new-window"></span></a>  </td>
                   </tr>
                 [/#list]
