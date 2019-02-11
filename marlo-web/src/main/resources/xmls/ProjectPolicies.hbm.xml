@@ -77,5 +77,14 @@
 				class="org.cgiar.ccafs.marlo.data.model.ProjectPolicySubIdo"
 				embed-xml="true" not-found="exception" />
 		</set>
+		<set fetch="select" inverse="true" lazy="true"
+      name="projectExpectedStudyPolicies" table="project_expected_study_policies">
+      <key on-delete="noaction">
+        <column name="project_policy_id" />
+      </key>
+      <one-to-many
+        class="org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyPolicy"
+        embed-xml="true" not-found="exception" />
+    </set>
 	</class>
 </hibernate-mapping>

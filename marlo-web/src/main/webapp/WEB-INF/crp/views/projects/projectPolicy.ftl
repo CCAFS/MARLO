@@ -115,7 +115,7 @@
     
     [#-- Evidence (OICR)  --]
     <div class="form-group">
-      [@customForm.select name="${customName}.projectPolicyInfo.projectExpectedStudy.id" className="setSelect2" i18nkey="policy.evidence" help="policy.evidence.help" listName="expectedStudyList" keyFieldName="id"  displayFieldName="composedName" helpIcon=false required=true editable=editable/]
+      [@customForm.elementsListComponent name="${customName}.evidences" elementType="projectExpectedStudy" elementList=element.evidences label="policy.evidence"  listName="expectedStudyList" keyFieldName="id" displayFieldName="composedName" /]
     </div>
     
     <hr />

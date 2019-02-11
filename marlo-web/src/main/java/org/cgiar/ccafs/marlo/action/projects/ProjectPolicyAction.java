@@ -23,6 +23,7 @@ import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyPolicyManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyCountryManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyCrossCuttingMarkerManager;
@@ -44,6 +45,7 @@ import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyPolicy;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicy;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicyCountry;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicyCrossCuttingMarker;
@@ -108,6 +110,7 @@ public class ProjectPolicyAction extends BaseAction {
   private ProjectPolicyCrpManager projectPolicyCrpManager;
   private ProjectPolicySubIdoManager projectPolicySubIdoManager;
   private ProjectPolicyCrossCuttingMarkerManager projectPolicyCrossCuttingMarkerManager;
+  private ProjectExpectedStudyPolicyManager projectExpectedStudyPolicyManager;
   private ProjectPolicyValidator validator;
 
 
@@ -147,7 +150,8 @@ public class ProjectPolicyAction extends BaseAction {
     CgiarCrossCuttingMarkerManager cgiarCrossCuttingMarkerManager,
     ProjectPolicyCountryManager projectPolicyCountryManager, ProjectPolicyOwnerManager projectPolicyOwnerManager,
     ProjectPolicyCrpManager projectPolicyCrpManager, ProjectPolicySubIdoManager projectPolicySubIdoManager,
-    ProjectPolicyCrossCuttingMarkerManager projectPolicyCrossCuttingMarkerManager, ProjectPolicyValidator validator) {
+    ProjectPolicyCrossCuttingMarkerManager projectPolicyCrossCuttingMarkerManager, ProjectPolicyValidator validator,
+    ProjectExpectedStudyPolicyManager projectExpectedStudyPolicyManager) {
     super(config);
     this.globalUnitManager = globalUnitManager;
     this.projectPolicyManager = projectPolicyManager;
@@ -171,6 +175,7 @@ public class ProjectPolicyAction extends BaseAction {
     this.projectPolicySubIdoManager = projectPolicySubIdoManager;
     this.projectPolicyCrossCuttingMarkerManager = projectPolicyCrossCuttingMarkerManager;
     this.validator = validator;
+    this.projectExpectedStudyPolicyManager = projectExpectedStudyPolicyManager;
   }
 
   /**
@@ -376,14 +381,6 @@ public class ProjectPolicyAction extends BaseAction {
             .getRepIndStageProcessById(policy.getProjectPolicyInfo().getRepIndStageProcess().getId()));
         }
 
-        // load Evidence
-        if (policy.getProjectPolicyInfo().getProjectExpectedStudy() != null
-          && policy.getProjectPolicyInfo().getProjectExpectedStudy().getId() != null) {
-          policy.getProjectPolicyInfo().setProjectExpectedStudy(projectExpectedStudyManager
-            .getProjectExpectedStudyById(policy.getProjectPolicyInfo().getProjectExpectedStudy().getId()));
-        }
-
-
       }
 
     } else {
@@ -468,6 +465,14 @@ public class ProjectPolicyAction extends BaseAction {
           }
         }
 
+        // Evidences List Autosave
+        if (policy.getEvidences() != null) {
+          for (ProjectExpectedStudyPolicy projectPolicyEvidence : policy.getEvidences()) {
+            projectPolicyEvidence.setProjectExpectedStudy(projectExpectedStudyManager
+              .getProjectExpectedStudyById(projectPolicyEvidence.getProjectExpectedStudy().getId()));
+          }
+        }
+
         // Cgiar Cross Cutting Markers Autosave
         if (policy.getCrossCuttingMarkers() != null) {
           for (ProjectPolicyCrossCuttingMarker projectPolicyCrossCuttingMarker : policy.getCrossCuttingMarkers()) {
@@ -535,6 +540,12 @@ public class ProjectPolicyAction extends BaseAction {
         // SubIdos List
         if (policy.getProjectPolicySubIdos() != null) {
           policy.setSubIdos(new ArrayList<>(policy.getProjectPolicySubIdos().stream()
+            .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
+        }
+
+        // Evidence List
+        if (policy.getProjectExpectedStudyPolicies() != null) {
+          policy.setEvidences(new ArrayList<>(policy.getProjectExpectedStudyPolicies().stream()
             .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
         }
 
@@ -648,7 +659,6 @@ public class ProjectPolicyAction extends BaseAction {
       policy.getProjectPolicyInfo().setRepIndPolicyInvestimentType(null);
       policy.getProjectPolicyInfo().setRepIndOrganizationType(null);
       policy.getProjectPolicyInfo().setRepIndStageProcess(null);
-      policy.getProjectPolicyInfo().setProjectExpectedStudy(null);
 
     }
 
@@ -687,12 +697,6 @@ public class ProjectPolicyAction extends BaseAction {
       policy.getProjectPolicyInfo().setProjectPolicy(policy);
 
       // Validate negative Values
-      if (policy.getProjectPolicyInfo().getProjectExpectedStudy() != null) {
-        if (policy.getProjectPolicyInfo().getProjectExpectedStudy().getId() == -1) {
-          policy.getProjectPolicyInfo().setProjectExpectedStudy(null);
-        }
-      }
-
       if (policy.getProjectPolicyInfo().getRepIndGeographicScope() != null) {
         if (policy.getProjectPolicyInfo().getRepIndGeographicScope().getId() == -1) {
           policy.getProjectPolicyInfo().setRepIndGeographicScope(null);
@@ -937,6 +941,49 @@ public class ProjectPolicyAction extends BaseAction {
           projectPolicyCrpManager.saveProjectPolicyCrp(policyCrpSave);
           // This is to add innovationCrpSave to generate correct auditlog.
           policy.getProjectPolicyCrps().add(policyCrpSave);
+        }
+      }
+    }
+  }
+
+  /**
+   * Save Policy-Evidence Information
+   * 
+   * @param projectExpectedStudy
+   * @param phase
+   */
+  public void saveEvidence(ProjectPolicy projectPolicy, Phase phase) {
+
+    // Search and deleted form Information
+    if (projectPolicy.getProjectExpectedStudyPolicies() != null
+      && projectPolicy.getProjectExpectedStudyPolicies().size() > 0) {
+      List<ProjectExpectedStudyPolicy> policyPrev = new ArrayList<>(projectPolicy.getProjectExpectedStudyPolicies()
+        .stream().filter(nu -> nu.isActive() && nu.getPhase().getId() == phase.getId()).collect(Collectors.toList()));
+
+      for (ProjectExpectedStudyPolicy studyPolicy : policyPrev) {
+        if (policy.getEvidences() == null || !policy.getEvidences().contains(studyPolicy)) {
+          projectExpectedStudyPolicyManager.deleteProjectExpectedStudyPolicy(studyPolicy.getId());
+        }
+      }
+    }
+
+    // Save form Information
+    if (policy.getEvidences() != null) {
+      for (ProjectExpectedStudyPolicy studyPolicy : policy.getEvidences()) {
+        if (studyPolicy.getId() == null) {
+          ProjectExpectedStudyPolicy studyPolicySave = new ProjectExpectedStudyPolicy();
+          studyPolicySave.setProjectPolicy(projectPolicy);
+          studyPolicySave.setPhase(phase);
+
+          ProjectExpectedStudy expectedStudy =
+            projectExpectedStudyManager.getProjectExpectedStudyById(studyPolicy.getProjectExpectedStudy().getId());
+
+          studyPolicySave.setProjectExpectedStudy(expectedStudy);
+
+
+          projectExpectedStudyPolicyManager.saveProjectExpectedStudyPolicy(studyPolicySave);
+          // This is to add studyLinkSave to generate correct auditlog.
+          expectedStudy.getProjectExpectedStudyPolicies().add(studyPolicySave);
         }
       }
     }
