@@ -191,7 +191,7 @@
 [#function getMarker deliverable name]
   [#list (deliverable.crossCuttingMarkers)![] as ccm]
     [#if ccm.cgiarCrossCuttingMarker.name == name]
-      [#return ccm.repIndGenderYouthFocusLevel.powbName ]
+      [#return (ccm.repIndGenderYouthFocusLevel.powbName)!'0 - Not Targeted' ]
     [/#if]
   [/#list]
   [#return "0 - Not Targeted" ]
