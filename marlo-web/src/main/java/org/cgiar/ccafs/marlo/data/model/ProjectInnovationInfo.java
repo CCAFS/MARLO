@@ -73,6 +73,9 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
   private String descriptionStage;
 
   @Expose
+  private String adaptativeResearchNarrative;
+
+  @Expose
   private Institution leadOrganization;
 
   public ProjectInnovationInfo() {
@@ -117,9 +120,14 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     this.year = year;
   }
 
+  public String getAdaptativeResearchNarrative() {
+    return adaptativeResearchNarrative;
+  }
+
   public String getDescriptionStage() {
     return descriptionStage;
   }
+
 
   public String getEvidenceLink() {
     return evidenceLink;
@@ -129,7 +137,6 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
   public String getGenderExplaniation() {
     return genderExplaniation;
   }
-
 
   public RepIndGenderYouthFocusLevel getGenderFocusLevel() {
     return genderFocusLevel;
@@ -146,11 +153,11 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     return sb.toString();
   }
 
+
   @Override
   public String getModificationJustification() {
     return "";
   }
-
 
   @Override
   public User getModifiedBy() {
@@ -158,6 +165,7 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     u.setId(new Long(3));
     return u;
   }
+
 
   public String getNarrative() {
     return narrative;
@@ -240,10 +248,13 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
   }
 
 
+  public void setAdaptativeResearchNarrative(String adaptativeResearchNarrative) {
+    this.adaptativeResearchNarrative = adaptativeResearchNarrative;
+  }
+
   public void setDescriptionStage(String descriptionStage) {
     this.descriptionStage = descriptionStage;
   }
-
 
   public void setEvidenceLink(String evidenceLink) {
     this.evidenceLink = evidenceLink;
@@ -270,6 +281,7 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     this.narrative = narrative;
   }
 
+
   public void setPhase(Phase phase) {
     this.phase = phase;
   }
@@ -277,7 +289,6 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
   public void setProjectExpectedStudy(ProjectExpectedStudy projectExpectedStudy) {
     this.projectExpectedStudy = projectExpectedStudy;
   }
-
 
   public void setProjectInnovation(ProjectInnovation projectInnovation) {
     this.projectInnovation = projectInnovation;
@@ -303,6 +314,7 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     this.repIndPhaseResearchPartnership = repIndPhaseResearchPartnership;
   }
 
+
   public void setRepIndRegion(RepIndRegion repIndRegion) {
     this.repIndRegion = repIndRegion;
   }
@@ -315,7 +327,6 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
   public void setTitle(String title) {
     this.title = title;
   }
-
 
   public void setYear(Long year) {
     this.year = year;
@@ -364,6 +375,7 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     this.setGenderExplaniation(projectInnovationInfoUpdate.getGenderExplaniation());
     this.setYouthExplaniation(projectInnovationInfoUpdate.getYouthExplaniation());
     this.setYear(projectInnovationInfoUpdate.getYear());
+    this.setAdaptativeResearchNarrative(projectInnovationInfoUpdate.getAdaptativeResearchNarrative());
     this.setProjectExpectedStudy(projectInnovationInfoUpdate.getProjectExpectedStudy());
 
   }
