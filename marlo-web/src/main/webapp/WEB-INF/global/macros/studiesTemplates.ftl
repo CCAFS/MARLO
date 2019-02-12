@@ -59,7 +59,7 @@
         <br />
         <label for="">[@s.text name="study.outcomestoryLinks" /]:
           [@customForm.req required=editable /]
-          [@customForm.helpLabel name="study.outcomestoryLinks.help" paramText="<a href='${baseUrl}/global/documents/Personal_data_use_authorization_form.docx' target='_blank'>Personal data use authorization form</a>" showIcon=false editable=editable/]
+          [@customForm.helpLabel name="study.outcomestoryLinks.help" paramText="<a href='https://hdl.handle.net/10568/99384' target='_blank'>Personal data use authorization form</a>" showIcon=false editable=editable/]
         </label>
         <div class="linksBlock ">
           <div class="linksList">
