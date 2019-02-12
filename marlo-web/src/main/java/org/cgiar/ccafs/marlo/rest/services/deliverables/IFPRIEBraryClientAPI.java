@@ -21,12 +21,15 @@ import org.cgiar.ccafs.marlo.rest.services.deliverables.model.MetadataModel;
 import org.cgiar.ccafs.marlo.utils.DateTypeAdapter;
 import org.cgiar.ccafs.marlo.utils.RestConnectionUtil;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.json.JSONException;
@@ -42,16 +45,15 @@ public class IFPRIEBraryClientAPI extends MetadataClientApi {
 
   private final String REST_URL =
     "https://server15738.contentdm.oclc.org/dmwebservices/index.php?q=dmGetItemInfo/{0}/{1}/json";
+
   private RestConnectionUtil xmlReaderConnectionUtil;
   private Map<String, String> coverterAtrributes;
 
   public IFPRIEBraryClientAPI() {
     xmlReaderConnectionUtil = new RestConnectionUtil();
     coverterAtrributes = new HashMap<String, String>();
-    coverterAtrributes.put("dmcreated", "publicationDate");
     coverterAtrributes.put("langua", "language");
     coverterAtrributes.put("loc", "keywords");
-    coverterAtrributes.put("full", "citation");
     coverterAtrributes.put("rights", "rights.desc");
   }
 
@@ -66,7 +68,6 @@ public class IFPRIEBraryClientAPI extends MetadataClientApi {
       GsonBuilder gsonBuilder = new GsonBuilder();
       gsonBuilder.registerTypeAdapter(Date.class, new DateTypeAdapter());
       Gson gson = gsonBuilder.create();
-      String data = jo.toString();
       List<Author> authors = new ArrayList<Author>();
       if (jo.has("orcid") && jo.get("orcid") != null) {
         try {
@@ -93,6 +94,110 @@ public class IFPRIEBraryClientAPI extends MetadataClientApi {
         }
       }
 
+      // get description
+      if (jo.has("descri") && jo.get("descri") != null) {
+        String description = jo.get("descri").toString();
+        if (!description.equals("{}")) {
+          jo.put("description", description);
+        }
+      }
+
+      // get citation
+      if (jo.has("full") && jo.get("full") != null) {
+        String citation = jo.get("full").toString();
+        if (!citation.equals("{}")) {
+          jo.put("citation", citation);
+        }
+      }
+
+      // get publisher
+      if (jo.has("publis") && jo.get("publis") != null) {
+        String publisher = jo.get("publis").toString();
+        if (!publisher.equals("{}")) {
+          jo.put("publisher", publisher);
+        }
+      }
+
+      // get rights
+      if (jo.has("cclice") && jo.get("cclice") != null) {
+        String rights = jo.get("cclice").toString();
+        if (!rights.equals("{}")) {
+          jo.put("rights", rights);
+        }
+      }
+
+      // get access
+      if (jo.has("access") && jo.get("access") != null) {
+        String access = jo.get("access").toString();
+        if (!access.equals("{}") && access.equals("Open Access")) {
+          jo.put("openAccess", true);
+        }
+        if (!access.equals("{}") && access.equals("Restricted")) {
+          jo.put("openAccess", false);
+        }
+      }
+
+      // get ISI
+      if (jo.has("ISI") && jo.get("ISI") != null) {
+        String ISI = jo.get("ISI").toString();
+        if (!ISI.equals("{}") && ISI.contains("ISI")) {
+          jo.put("ISI", true);
+        }
+        if (!ISI.equals("{}") && !ISI.contains("ISI")) {
+          jo.put("ISI", false);
+        }
+      }
+
+      // get Journal
+      if (jo.has("series") && jo.get("series") != null) {
+        String series = jo.get("series").toString();
+        if (!series.equals("{}")) {
+          jo.put("journal", series);
+        }
+      }
+
+      // get DOI
+      if (jo.has("doi") && jo.get("doi") != null) {
+        String doi = jo.get("doi").toString();
+        if (doi.contains("http://dx.doi.org/")) {
+          doi = doi.replace("http://dx.doi.org/", "https://doi.org/");
+        }
+        doi = doi.trim();
+        if (!doi.equals("{}")) {
+          String metadataDOI = xmlReaderConnectionUtil.getJsonRestClientFromDOI(doi);
+          HashMap<String, Object> result = new ObjectMapper().readValue(metadataDOI, HashMap.class);
+          if (result != null && !result.isEmpty()) {
+            Object volume = result.get("volume");
+            Object issue = result.get("issue");
+            Object page = result.get("page");
+            Object publisher = result.get("publisher");
+
+            // volume
+            if (volume != null) {
+              jo.put("volume", volume.toString());
+            }
+
+            // issue
+            if (issue != null) {
+              jo.put("issue", issue.toString());
+            }
+
+            // page
+            if (page != null) {
+              jo.put("pages", page.toString());
+            }
+
+            // journal
+            if (publisher != null) {
+              jo.put("journal", publisher.toString());
+            }
+          }
+
+        }
+      }
+
+
+      String data = jo.toString();
       for (String key : coverterAtrributes.keySet()) {
         data = data.replace(key, coverterAtrributes.get(key));
       }
@@ -102,6 +207,19 @@ public class IFPRIEBraryClientAPI extends MetadataClientApi {
       Author[] authorsArr = new Author[authors.size()];
       authorsArr = authors.toArray(authorsArr);
       metadataModel.setAuthors(authorsArr);
+
+      // get date
+      try {
+        if (jo.has("date") && jo.get("date") != null) {
+          String dateInString = (String) jo.get("date");
+          SimpleDateFormat formatter = new SimpleDateFormat("yyyy");
+          Date date = formatter.parse(dateInString);
+          metadataModel.setPublicationDate(date);
+        }
+      } catch (ParseException e) {
+        LOG.error("Unparseable date");
+      }
+
     } catch (Exception e) {
       e.printStackTrace();
       LOG.error(e.getLocalizedMessage());
