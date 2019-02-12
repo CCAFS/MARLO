@@ -25,6 +25,8 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
 
   private ProjectInnovationInfo projectInnovationInfo;
 
+  private String modificationJustification;
+
   private Set<ProjectInnovationInfo> projectInnovationInfos = new HashSet<ProjectInnovationInfo>(0);
 
   private Set<SectionStatus> sectionStatuses = new HashSet<SectionStatus>(0);
@@ -54,6 +56,14 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
   private List<ProjectInnovationCountry> countries;
   private String countriesIdsText;
 
+  public String getComposedName() {
+    if (projectInnovationInfo != null) {
+      return this.getId() + " - " + projectInnovationInfo.getTitle();
+    } else {
+      return "" + this.getId();
+    }
+  }
+
   public List<ProjectInnovationContributingOrganization> getContributingOrganizations() {
     return contributingOrganizations;
   }
@@ -62,29 +72,35 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
     return countries;
   }
 
+
   public List<String> getCountriesIds() {
     return countriesIds;
   }
-
 
   public String getCountriesIdsText() {
     return countriesIdsText;
   }
 
+
   public List<ProjectInnovationCrp> getCrps() {
     return crps;
   }
 
-
   public List<ProjectInnovationDeliverable> getDeliverables() {
     return deliverables;
   }
+
 
   @Override
   public String getLogDeatil() {
     StringBuilder sb = new StringBuilder();
     sb.append("Id : ").append(this.getId());
     return sb.toString();
+  }
+
+  @Override
+  public String getModificationJustification() {
+    return modificationJustification;
   }
 
 
@@ -171,21 +187,13 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
     this.deliverables = deliverables;
   }
 
+  @Override
+  public void setModificationJustification(String modificationJustification) {
+    this.modificationJustification = modificationJustification;
+  }
+
   public void setOrganizations(List<ProjectInnovationOrganization> organizations) {
     this.organizations = organizations;
-  }
-
-    @Override
-  public String toString() {
-    return "ProjectInnovation [id=" + this.getId() + ", isActive=" + this.isActive() + "]";
-  }
-
-  public String getComposedName() {
-    if (projectInnovationInfo != null) {
-      return this.getId() + " - " + projectInnovationInfo.getTitle();
-    } else {
-      return "" + this.getId();
-    }
   }
 
   public void setProject(Project project) {
@@ -223,6 +231,11 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
 
   public void setSectionStatuses(Set<SectionStatus> sectionStatuses) {
     this.sectionStatuses = sectionStatuses;
+  }
+
+  @Override
+  public String toString() {
+    return "ProjectInnovation [id=" + this.getId() + ", isActive=" + this.isActive() + "]";
   }
 }
 

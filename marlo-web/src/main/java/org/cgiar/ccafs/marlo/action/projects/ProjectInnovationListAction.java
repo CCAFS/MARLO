@@ -26,7 +26,6 @@ import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCrp;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationInfo;
-import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
@@ -109,9 +108,12 @@ public class ProjectInnovationListAction extends BaseAction {
     for (ProjectInnovation projectInnovation : project.getInnovations()) {
       if (projectInnovation.getId().longValue() == innovationID) {
         ProjectInnovation projectInnovationBD = projectInnovationManager.getProjectInnovationById(innovationID);
-        for (SectionStatus sectionStatus : projectInnovationBD.getSectionStatuses()) {
-          sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
-        }
+        /*
+         * for (SectionStatus sectionStatus : projectInnovationBD.getSectionStatuses()) {
+         * sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
+         * }
+         */
+        // projectInnovationManager.saveProjectInnovation(projectInnovation);
         projectInnovationManager.deleteProjectInnovation(projectInnovation.getId());
       }
     }
