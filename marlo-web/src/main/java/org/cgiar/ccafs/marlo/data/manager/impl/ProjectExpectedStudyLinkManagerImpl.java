@@ -15,7 +15,6 @@
 package org.cgiar.ccafs.marlo.data.manager.impl;
 
 
-import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.dao.PhaseDAO;
 import org.cgiar.ccafs.marlo.data.dao.ProjectExpectedStudyLinkDAO;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyLinkManager;
@@ -55,12 +54,12 @@ public class ProjectExpectedStudyLinkManagerImpl implements ProjectExpectedStudy
       this.getProjectExpectedStudyLinkById(projectExpectedStudyLinkId);
     Phase currentPhase = projectExpectedStudyLink.getPhase();
 
-    if (currentPhase.getDescription().equals(APConstants.PLANNING)) {
-      if (currentPhase.getNext() != null) {
-        this.deleteProjectExpectedStudyLinkPhase(currentPhase.getNext(),
-          projectExpectedStudyLink.getProjectExpectedStudy().getId(), projectExpectedStudyLink);
-      }
+
+    if (currentPhase.getNext() != null) {
+      this.deleteProjectExpectedStudyLinkPhase(currentPhase.getNext(),
+        projectExpectedStudyLink.getProjectExpectedStudy().getId(), projectExpectedStudyLink);
     }
+
     projectExpectedStudyLinkDAO.deleteProjectExpectedStudyLink(projectExpectedStudyLinkId);
   }
 
@@ -128,12 +127,12 @@ public class ProjectExpectedStudyLinkManagerImpl implements ProjectExpectedStudy
       projectExpectedStudyLinkDAO.save(projectExpectedStudyLink);
     Phase currentPhase = projectExpectedStudyLinkResult.getPhase();
 
-    if (currentPhase.getDescription().equals(APConstants.PLANNING)) {
-      if (currentPhase.getNext() != null) {
-        this.saveExpectedStudyLinkPhase(currentPhase.getNext(),
-          projectExpectedStudyLink.getProjectExpectedStudy().getId(), projectExpectedStudyLink);
-      }
+
+    if (currentPhase.getNext() != null) {
+      this.saveExpectedStudyLinkPhase(currentPhase.getNext(),
+        projectExpectedStudyLink.getProjectExpectedStudy().getId(), projectExpectedStudyLink);
     }
+
 
     return projectExpectedStudyLinkResult;
   }

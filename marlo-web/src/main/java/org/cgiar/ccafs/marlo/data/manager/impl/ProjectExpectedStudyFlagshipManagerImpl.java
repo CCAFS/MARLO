@@ -15,7 +15,6 @@
 package org.cgiar.ccafs.marlo.data.manager.impl;
 
 
-import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.dao.PhaseDAO;
 import org.cgiar.ccafs.marlo.data.dao.ProjectExpectedStudyFlagshipDAO;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyFlagshipManager;
@@ -55,12 +54,11 @@ public class ProjectExpectedStudyFlagshipManagerImpl implements ProjectExpectedS
       this.getProjectExpectedStudyFlagshipById(projectExpectedStudyFlagshipId);
     Phase currentPhase = projectExpectedStudyFlagship.getPhase();
 
-    if (currentPhase.getDescription().equals(APConstants.PLANNING)) {
-      if (currentPhase.getNext() != null) {
-        this.deleteProjectExpectedStudyFlagshipPhase(currentPhase.getNext(),
-          projectExpectedStudyFlagship.getProjectExpectedStudy().getId(), projectExpectedStudyFlagship);
-      }
+    if (currentPhase.getNext() != null) {
+      this.deleteProjectExpectedStudyFlagshipPhase(currentPhase.getNext(),
+        projectExpectedStudyFlagship.getProjectExpectedStudy().getId(), projectExpectedStudyFlagship);
     }
+
     // Uncomment this line to allow reporting replication to upkeep
     // if (currentPhase.getDescription().equals(APConstants.REPORTING)) {
     // if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {
@@ -141,12 +139,12 @@ public class ProjectExpectedStudyFlagshipManagerImpl implements ProjectExpectedS
     ProjectExpectedStudyFlagship flagship = projectExpectedStudyFlagshipDAO.save(projectExpectedStudyFlagship);
     Phase currentPhase = flagship.getPhase();
 
-    if (currentPhase.getDescription().equals(APConstants.PLANNING)) {
-      if (currentPhase.getNext() != null) {
-        this.saveExpectedStudyFlagshipPhase(currentPhase.getNext(), flagship.getProjectExpectedStudy().getId(),
-          projectExpectedStudyFlagship);
-      }
+
+    if (currentPhase.getNext() != null) {
+      this.saveExpectedStudyFlagshipPhase(currentPhase.getNext(), flagship.getProjectExpectedStudy().getId(),
+        projectExpectedStudyFlagship);
     }
+
     // Uncomment this line to allow reporting replication to upkeep
     // if (currentPhase.getDescription().equals(APConstants.REPORTING)) {
     // if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {
