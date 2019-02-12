@@ -15,7 +15,6 @@
 package org.cgiar.ccafs.marlo.data.manager.impl;
 
 
-import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.dao.PhaseDAO;
 import org.cgiar.ccafs.marlo.data.dao.ProjectExpectedStudySrfTargetDAO;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudySrfTargetManager;
@@ -56,12 +55,12 @@ public class ProjectExpectedStudySrfTargetManagerImpl implements ProjectExpected
       this.getProjectExpectedStudySrfTargetById(projectExpectedStudySrfTargetId);
     Phase currentPhase = projectExpectedStudySrfTarget.getPhase();
 
-    if (currentPhase.getDescription().equals(APConstants.PLANNING)) {
-      if (currentPhase.getNext() != null) {
-        this.deleteProjectExpectedStudySrfTargetPhase(currentPhase.getNext(),
-          projectExpectedStudySrfTarget.getProjectExpectedStudy().getId(), projectExpectedStudySrfTarget);
-      }
+
+    if (currentPhase.getNext() != null) {
+      this.deleteProjectExpectedStudySrfTargetPhase(currentPhase.getNext(),
+        projectExpectedStudySrfTarget.getProjectExpectedStudy().getId(), projectExpectedStudySrfTarget);
     }
+
     // Uncomment this line to allow reporting replication to upkeep
     // if (currentPhase.getDescription().equals(APConstants.REPORTING)) {
     // if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {
@@ -145,12 +144,12 @@ public class ProjectExpectedStudySrfTargetManagerImpl implements ProjectExpected
     ProjectExpectedStudySrfTarget srfTarget = projectExpectedStudySrfTargetDAO.save(projectExpectedStudySrfTarget);
     Phase currentPhase = srfTarget.getPhase();
 
-    if (currentPhase.getDescription().equals(APConstants.PLANNING)) {
-      if (currentPhase.getNext() != null) {
-        this.saveExpectedStudySrfTargetPhase(currentPhase.getNext(), srfTarget.getProjectExpectedStudy().getId(),
-          projectExpectedStudySrfTarget);
-      }
+
+    if (currentPhase.getNext() != null) {
+      this.saveExpectedStudySrfTargetPhase(currentPhase.getNext(), srfTarget.getProjectExpectedStudy().getId(),
+        projectExpectedStudySrfTarget);
     }
+
     // Uncomment this line to allow reporting replication to upkeep
     // if (currentPhase.getDescription().equals(APConstants.REPORTING)) {
     // if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {
