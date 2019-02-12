@@ -97,7 +97,14 @@
       <column name="geographic_scope_narrative" sql-type="TEXT"
         not-null="true" />
     </property>
-		
+    
+    <set name="sectionStatuses" table="section_statuses" inverse="true"
+      lazy="true" fetch="select">
+      <key>
+        <column name="project_lp6_contribution_id" />
+      </key>
+      <one-to-many class="org.cgiar.ccafs.marlo.data.model.SectionStatus" />
+    </set>	
 
 		<property name="initiativeRelated" type="boolean">
 			<column name="is_initiative_related" not-null="true" />

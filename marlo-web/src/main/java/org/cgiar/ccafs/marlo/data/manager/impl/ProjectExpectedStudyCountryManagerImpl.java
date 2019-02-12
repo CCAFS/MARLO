@@ -15,7 +15,6 @@
 package org.cgiar.ccafs.marlo.data.manager.impl;
 
 
-import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.dao.PhaseDAO;
 import org.cgiar.ccafs.marlo.data.dao.ProjectExpectedStudyCountryDAO;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyCountryManager;
@@ -55,12 +54,12 @@ public class ProjectExpectedStudyCountryManagerImpl implements ProjectExpectedSt
       this.getProjectExpectedStudyCountryById(projectExpectedStudyCountryId);
     Phase currentPhase = projectExpectedStudyCountry.getPhase();
 
-    if (currentPhase.getDescription().equals(APConstants.PLANNING)) {
-      if (currentPhase.getNext() != null) {
-        this.deleteProjectExpectedStudyCountryPhase(currentPhase.getNext(),
-          projectExpectedStudyCountry.getProjectExpectedStudy().getId(), projectExpectedStudyCountry);
-      }
+
+    if (currentPhase.getNext() != null) {
+      this.deleteProjectExpectedStudyCountryPhase(currentPhase.getNext(),
+        projectExpectedStudyCountry.getProjectExpectedStudy().getId(), projectExpectedStudyCountry);
     }
+
     // Uncomment this line to allow reporting replication to upkeep
     // if (currentPhase.getDescription().equals(APConstants.REPORTING)) {
     // if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {
@@ -146,12 +145,12 @@ public class ProjectExpectedStudyCountryManagerImpl implements ProjectExpectedSt
 
     ProjectExpectedStudyCountry country = projectExpectedStudyCountryDAO.save(projectExpectedStudyCountry);
     Phase currentPhase = phaseDAO.find(country.getPhase().getId());
-    if (currentPhase.getDescription().equals(APConstants.PLANNING)) {
-      if (currentPhase.getNext() != null) {
-        this.saveExpectedStudyCountryPhase(currentPhase.getNext(), country.getProjectExpectedStudy().getId(),
-          projectExpectedStudyCountry);
-      }
+
+    if (currentPhase.getNext() != null) {
+      this.saveExpectedStudyCountryPhase(currentPhase.getNext(), country.getProjectExpectedStudy().getId(),
+        projectExpectedStudyCountry);
     }
+
     // Uncomment this line to allow reporting replication to upkeep
     // if (currentPhase.getDescription().equals(APConstants.REPORTING)) {
     // if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {

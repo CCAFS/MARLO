@@ -15,7 +15,6 @@
 package org.cgiar.ccafs.marlo.data.manager.impl;
 
 
-import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.dao.PhaseDAO;
 import org.cgiar.ccafs.marlo.data.dao.ProjectExpectedStudyRegionDAO;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyRegionManager;
@@ -57,12 +56,12 @@ public class ProjectExpectedStudyRegionManagerImpl implements ProjectExpectedStu
       this.getProjectExpectedStudyRegionById(projectExpectedStudyRegionId);
     Phase currentPhase = projectExpectedStudyRegion.getPhase();
 
-    if (currentPhase.getDescription().equals(APConstants.PLANNING)) {
-      if (currentPhase.getNext() != null) {
-        this.deleteProjectExpectedStudyRegionPhase(currentPhase.getNext(),
-          projectExpectedStudyRegion.getProjectExpectedStudy().getId(), projectExpectedStudyRegion);
-      }
+
+    if (currentPhase.getNext() != null) {
+      this.deleteProjectExpectedStudyRegionPhase(currentPhase.getNext(),
+        projectExpectedStudyRegion.getProjectExpectedStudy().getId(), projectExpectedStudyRegion);
     }
+
 
     projectExpectedStudyRegionDAO.deleteProjectExpectedStudyRegion(projectExpectedStudyRegionId);
   }
@@ -134,12 +133,12 @@ public class ProjectExpectedStudyRegionManagerImpl implements ProjectExpectedStu
     ProjectExpectedStudyRegion region = projectExpectedStudyRegionDAO.save(projectExpectedStudyRegion);
     Phase currentPhase = region.getPhase();
 
-    if (currentPhase.getDescription().equals(APConstants.PLANNING)) {
-      if (currentPhase.getNext() != null) {
-        this.saveExpectedStudyRegionPhase(currentPhase.getNext(), region.getProjectExpectedStudy().getId(),
-          projectExpectedStudyRegion);
-      }
+
+    if (currentPhase.getNext() != null) {
+      this.saveExpectedStudyRegionPhase(currentPhase.getNext(), region.getProjectExpectedStudy().getId(),
+        projectExpectedStudyRegion);
     }
+
 
     return region;
   }

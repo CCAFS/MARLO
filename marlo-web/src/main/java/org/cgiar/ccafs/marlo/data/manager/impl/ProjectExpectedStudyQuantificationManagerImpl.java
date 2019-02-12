@@ -54,12 +54,12 @@ public class ProjectExpectedStudyQuantificationManagerImpl implements ProjectExp
       this.getProjectExpectedStudyQuantificationById(projectExpectedStudyQuantificationId);
     Phase currentPhase = projectExpectedStudyQuantification.getPhase();
 
-    if (currentPhase.getDescription().equals(APConstants.PLANNING)) {
-      if (currentPhase.getNext() != null) {
-        this.deleteProjectExpectedStudyQuiantificationPhase(currentPhase.getNext(),
-          projectExpectedStudyQuantification.getProjectExpectedStudy().getId(), projectExpectedStudyQuantification);
-      }
+
+    if (currentPhase.getNext() != null) {
+      this.deleteProjectExpectedStudyQuiantificationPhase(currentPhase.getNext(),
+        projectExpectedStudyQuantification.getProjectExpectedStudy().getId(), projectExpectedStudyQuantification);
     }
+
 
     projectExpectedStudyQuantificationDAO
       .deleteProjectExpectedStudyQuantification(projectExpectedStudyQuantificationId);

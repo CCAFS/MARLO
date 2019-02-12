@@ -15,7 +15,6 @@
 package org.cgiar.ccafs.marlo.data.manager.impl;
 
 
-import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.dao.PhaseDAO;
 import org.cgiar.ccafs.marlo.data.dao.ProjectExpectedStudyInnovationDAO;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyInnovationManager;
@@ -53,12 +52,12 @@ public class ProjectExpectedStudyInnovationManagerImpl implements ProjectExpecte
       this.getProjectExpectedStudyInnovationById(projectExpectedStudyInnovationId);
     Phase currentPhase = projectExpectedStudyInnovation.getPhase();
 
-    if (currentPhase.getDescription().equals(APConstants.PLANNING)) {
-      if (currentPhase.getNext() != null) {
-        this.deleteProjectExpectedStudyInnovationPhase(currentPhase.getNext(),
-          projectExpectedStudyInnovation.getProjectExpectedStudy().getId(), projectExpectedStudyInnovation);
-      }
+
+    if (currentPhase.getNext() != null) {
+      this.deleteProjectExpectedStudyInnovationPhase(currentPhase.getNext(),
+        projectExpectedStudyInnovation.getProjectExpectedStudy().getId(), projectExpectedStudyInnovation);
     }
+
 
     projectExpectedStudyInnovationDAO.deleteProjectExpectedStudyInnovation(projectExpectedStudyInnovationId);
   }
@@ -133,12 +132,12 @@ public class ProjectExpectedStudyInnovationManagerImpl implements ProjectExpecte
       projectExpectedStudyInnovationDAO.save(projectExpectedStudyInnovation);
     Phase currentPhase = projectExpectedStudyInnovationResult.getPhase();
 
-    if (currentPhase.getDescription().equals(APConstants.PLANNING)) {
-      if (currentPhase.getNext() != null) {
-        this.saveExpectedStudyInnovationPhase(currentPhase.getNext(),
-          projectExpectedStudyInnovation.getProjectExpectedStudy().getId(), projectExpectedStudyInnovation);
-      }
+
+    if (currentPhase.getNext() != null) {
+      this.saveExpectedStudyInnovationPhase(currentPhase.getNext(),
+        projectExpectedStudyInnovation.getProjectExpectedStudy().getId(), projectExpectedStudyInnovation);
     }
+
 
     return projectExpectedStudyInnovationResult;
   }
