@@ -38,7 +38,9 @@ public class MetadataModel {
 
   private String language;
 
-  private String openAccess;
+  private Boolean openAccess;
+
+  private Boolean ISI;
 
   private String doi;
 
@@ -46,9 +48,21 @@ public class MetadataModel {
 
   private String country;
 
+  private String publisher;
+
+  private String journal;
+
+  private String volume;
+
+  private String issue;
+
+  private String pages;
+
+
   public Author[] getAuthors() {
     return author;
   }
+
 
   public String getCitation() {
     return citation;
@@ -62,12 +76,26 @@ public class MetadataModel {
     return description;
   }
 
+
   public String getDoi() {
     return doi;
   }
 
+
   public String getHandle() {
     return handle;
+  }
+
+  public Boolean getISI() {
+    return ISI;
+  }
+
+  public String getIssue() {
+    return issue;
+  }
+
+  public String getJournal() {
+    return journal;
   }
 
   public String getKeywords() {
@@ -78,13 +106,23 @@ public class MetadataModel {
     return language;
   }
 
-  public String getOpenAccess() {
+  public Boolean getOpenAccess() {
     return openAccess;
   }
+
+
+  public String getPages() {
+    return pages;
+  }
+
 
   @JSON(format = "yyyy-MM-dd")
   public Date getPublicationDate() {
     return publicationDate;
+  }
+
+  public String getPublisher() {
+    return publisher;
   }
 
   public String getRights() {
@@ -95,6 +133,10 @@ public class MetadataModel {
     return title;
   }
 
+  public String getVolume() {
+    return volume;
+  }
+
   public void setAuthors(Author[] authors) {
     this.author = authors;
   }
@@ -102,6 +144,7 @@ public class MetadataModel {
   public void setCitation(String citation) {
     this.citation = citation;
   }
+
 
   public void setCountry(String country) {
     this.country = country;
@@ -119,6 +162,18 @@ public class MetadataModel {
     this.handle = handle;
   }
 
+  public void setISI(Boolean iSI) {
+    ISI = iSI;
+  }
+
+  public void setIssue(String issue) {
+    this.issue = issue;
+  }
+
+  public void setJournal(String journal) {
+    this.journal = journal;
+  }
+
   public void setKeywords(String keywords) {
     this.keywords = keywords;
   }
@@ -127,12 +182,21 @@ public class MetadataModel {
     this.language = language;
   }
 
-  public void setOpenAccess(String openAccess) {
+  public void setOpenAccess(Boolean openAccess) {
     this.openAccess = openAccess;
+  }
+
+  public void setPages(String pages) {
+    this.pages = pages;
   }
 
   public void setPublicationDate(Date publicationDate) {
     this.publicationDate = publicationDate;
+  }
+
+
+  public void setPublisher(String publisher) {
+    this.publisher = publisher;
   }
 
   public void setRights(String rights) {
@@ -143,11 +207,8 @@ public class MetadataModel {
     this.title = title;
   }
 
-  @Override
-  public String toString() {
-    return "MetadataModel [author = " + author + ", citation = " + citation + ", title = " + title + ", handle = "
-      + handle + ", keywords = " + keywords + ", description = " + description + ", rights = " + rights
-      + ", language = " + language + ", openAccess = " + openAccess + ", doi = " + doi + ", publicationDate = "
-      + publicationDate + ", country = " + country + "]";
+  public void setVolume(String volume) {
+    this.volume = volume;
   }
+
 }
