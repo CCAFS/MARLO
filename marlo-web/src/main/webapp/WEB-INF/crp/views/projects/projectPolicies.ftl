@@ -77,6 +77,7 @@
         <th class="type">Type</th>
         <th class="subIdos">Sub-IDOs</th>
         <th class="maturity">Level of Maturity</th>
+        <th class="">Year</th>
         <th class="no-sort"></th>
         <th class="no-sort"></th>
       </tr>
@@ -106,6 +107,9 @@
             </td>
             <td class="text-center">
               [@utils.tableCheckIcon state=(isThisComplete || ((item.year lt  currentCycleYear)!false)) /]
+            </td>
+            <td>
+              [@utils.tableText value=(item.projectPolicyInfo.year)!"" /]
             </td>
             <td class="removeHighlight-row text-center">
               [#if canEdit && ((item.year gte  currentCycleYear)!true) ]

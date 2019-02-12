@@ -37,13 +37,13 @@
   
       [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
 
+
+        [#-- Innovations List --]
         <h3 class="headTitle">[@s.text name="projectInnovations" /]</h3>
-
-        [#-- Innovations List Table --]
         <div class="simpleBox">
-          [@innovationsTableMacro /]
+          [@innovationsTableMacro list=(project.innovations)![] /]
         </div>
-
+        
         [#-- Add Innovation Button --]
         [#if canEdit]
         <div class="buttons">
@@ -56,6 +56,13 @@
         </div>
         [/#if]
 
+        [#-- Previous Innovations List --]
+        <br />
+        <h3 class="headTitle">Previous [@s.text name="projectInnovations" /]</h3>
+        <div class="simpleBox">
+          [@innovationsTableMacro list=(project.innovations)![] currentTable=false/]
+        </div>
+        
       [/@s.form]
     </div>
   </div>
@@ -66,7 +73,7 @@
 
 [#-- -- MACROS -- --]
 
-[#macro innovationsTableMacro]
+[#macro innovationsTableMacro list currentTable=true ]
   <table id="table-innovations" class="table table-striped table-hover">
     <thead>
       <tr class="subHeader">
@@ -75,13 +82,15 @@
         <th id="tb-type" width="22%">[@s.text name="projectInnovations.table.type" /]</th>
         <th id="tb-stage" width="15%">[@s.text name="projectInnovations.table.stage" /]</th>
         <th id="tb-year" width="8%">[@s.text name="projectInnovations.table.year" /]</th>
-        <th id="projectDownload">[@s.text name="projectsList.download" /]</th>
-        <th id="tb-remove" width="4%"></th>
+        <th id="projectDownload" class="no-sort"></th>
+        [#if currentTable]
+        <th id="tb-remove" width="4%" class="no-sort"></th>
+        [/#if]
       </tr>
     </thead>
     <tbody>
-    [#if project.innovations?has_content]
-      [#list project.innovations as innovation]
+    [#if list?has_content]
+      [#list list as innovation]
         [#local tsURL][@s.url namespace="/projects" action="${(crpSession)!}/innovation"][@s.param name='innovationID']${(innovation.id)!''}[/@s.param][@s.param name='projectID']${(innovation.project.id)!''}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
         <tr>
           [#-- ID --]
@@ -119,12 +128,13 @@
           [/#if]
           </td>
           [#-- Summary PDF download --]
-          <td>
+          <td class="text-center">
             <a href="[@s.url namespace="/summaries" action='${(crpSession)!}/projectInnovationSummary'][@s.param name='innovationID']${innovation.id?c}[/@s.param][@s.param name='phaseID']${(innovation.projectInnovationInfo.phase.id)!''}[/@s.param][/@s.url]" target="__BLANK">
               <img src="${baseUrl}/global/images/pdf.png" height="25" title="[@s.text name="projectsList.downloadPDF" /]" />
             </a>            
           </td>
           [#-- Remove --]
+          [#if currentTable]
           <td class="text-center">
             [#if canEdit ]
               <a id="removeElement-${(innovation.id)!}" class="removeElementList" href="#" title="" data-toggle="modal" data-target="#removeItem-${innovation_index}" >
@@ -157,6 +167,7 @@
               <img src="${baseUrl}/global/images/trash_disable.png" title="[@s.text name="projectInnovations.table.cantDelete" /]" />
             [/#if]
           </td>
+          [/#if]
         </tr>
       [/#list]
     [#else]
