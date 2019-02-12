@@ -128,7 +128,7 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
       this.getText("projectInnovations.leadOrganization"));
     masterReport.getParameterValues().put("i8nInnovationContributionOrganization",
       this.getText("projectInnovations.contributingOrganizations"));
-
+    masterReport.getParameterValues().put("i8nInnovationAdaptativeResearch", "projectInnovations.adaptativeResearch");
     masterReport.getParameterValues().put("i8nInnovationREvidenceLink",
       this.getText("summaries.innovation.evidenceLink"));
     masterReport.getParameterValues().put("i8nInnovationRDeliverables",
@@ -288,19 +288,20 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
       new String[] {"id", "isRegional", "isNational", "isStage4", "title", "narrative", "phaseResearch",
         "stageInnovation", "innovationType", "contributionOfCrp", "degreeInnovation", "geographicScope", "region",
         "countries", "organizations", "projectExpectedStudy", "descriptionStage", "leadOrganization",
-        "contributingOrganization", "evidenceLink", "deliverables", "crps", "genderFocusLevel", "genderExplaniation",
-        "youthFocusLevel", "youthExplaniation", "project"},
+        "contributingOrganization", "adaptativeResearch", "evidenceLink", "deliverables", "crps", "genderFocusLevel",
+        "genderExplaniation", "youthFocusLevel", "youthExplaniation", "project"},
       new Class[] {Long.class, Boolean.class, Boolean.class, Boolean.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        String.class, String.class, String.class, String.class},
+        String.class, String.class, String.class, String.class, String.class},
       0);
     Long id = null;
     String title = null, narrative = null, phaseResearch = null, stageInnovation = null, innovationType = null,
       contributionOfCrp = null, degreeInnovation = null, geographicScope = null, region = null, countries = null,
       organizations = null, projectExpectedStudy = null, descriptionStage = null, leadOrganization = null,
-      contributingOrganization = null, evidenceLink = null, deliverables = null, crps = null, genderFocusLevel = null,
-      genderExplaniation = null, youthFocusLevel = null, youthExplaniation = null, project = null;
+      contributingOrganization = null, adaptativeResearch = null, evidenceLink = null, deliverables = null, crps = null,
+      genderFocusLevel = null, genderExplaniation = null, youthFocusLevel = null, youthExplaniation = null,
+      project = null;
     Boolean isRegional = false, isNational = false, isStage4 = false;
     // Id
     id = projectInnovationID;
@@ -398,20 +399,31 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
     }
     // Contributing Organizations
     List<ProjectInnovationContributingOrganization> projectInnovationContributingOrganizationList =
-      projectInnovationContributingOrganizationManager.findAll().stream()
-        .filter(p -> p.getPhase().equals(this.getActualPhase())
-          && p.getProjectInnovation() == projectInnovationInfo.getProjectInnovation())
-        .collect(Collectors.toList());
+      projectInnovationContributingOrganizationManager.findAll();
+
     if (projectInnovationContributingOrganizationList != null
       && !projectInnovationContributingOrganizationList.isEmpty()) {
 
-      for (ProjectInnovationContributingOrganization contributingOrganizationItem : projectInnovationContributingOrganizationList) {
-        contributingOrganization += contributingOrganizationItem.getComposedName() + ", ";
+      projectInnovationContributingOrganizationList =
+        projectInnovationContributingOrganizationList.stream().filter(p -> p.getPhase().equals(this.getActualPhase())
+          && p.getProjectInnovation() == projectInnovationInfo.getProjectInnovation()).collect(Collectors.toList());
+      if (projectInnovationContributingOrganizationList != null
+        && !projectInnovationContributingOrganizationList.isEmpty()) {
+
+        for (ProjectInnovationContributingOrganization contributingOrganizationItem : projectInnovationContributingOrganizationList) {
+          contributingOrganization += contributingOrganizationItem.getComposedName() + ", ";
+        }
+        if (contributingOrganization.contains("null")) {
+          contributingOrganization = contributingOrganization.replace("null", "");
+        }
+        contributingOrganization = contributingOrganization.substring(0, contributingOrganization.length() - 2);
       }
-      if (contributingOrganization.contains("null")) {
-        contributingOrganization = contributingOrganization.replace("null", "");
-      }
-      contributingOrganization = contributingOrganization.substring(0, contributingOrganization.length() - 2);
+    }
+
+    // Adaptative research
+    if (projectInnovationInfo.getAdaptativeResearchNarrative() != null
+      && !projectInnovationInfo.getAdaptativeResearchNarrative().trim().isEmpty()) {
+      adaptativeResearch = projectInnovationInfo.getAdaptativeResearchNarrative();
     }
 
     // Evidence Link
@@ -469,8 +481,9 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
 
     model.addRow(new Object[] {id, isRegional, isNational, isStage4, title, narrative, phaseResearch, stageInnovation,
       innovationType, contributionOfCrp, degreeInnovation, geographicScope, region, countries, organizations,
-      projectExpectedStudy, descriptionStage, leadOrganization, contributingOrganization, evidenceLink, deliverables,
-      crps, genderFocusLevel, genderExplaniation, youthFocusLevel, youthExplaniation, project});
+      projectExpectedStudy, descriptionStage, leadOrganization, contributingOrganization, adaptativeResearch,
+      evidenceLink, deliverables, crps, genderFocusLevel, genderExplaniation, youthFocusLevel, youthExplaniation,
+      project});
     return model;
   }
 

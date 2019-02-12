@@ -113,7 +113,7 @@ public class ProjectInnovationListAction extends BaseAction {
          * sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
          * }
          */
-        // projectInnovationManager.saveProjectInnovation(projectInnovation);
+        projectInnovationManager.saveProjectInnovation(projectInnovation);
         projectInnovationManager.deleteProjectInnovation(projectInnovation.getId());
       }
     }
