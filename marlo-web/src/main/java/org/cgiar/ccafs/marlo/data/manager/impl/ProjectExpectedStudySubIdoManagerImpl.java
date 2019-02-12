@@ -15,7 +15,6 @@
 package org.cgiar.ccafs.marlo.data.manager.impl;
 
 
-import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.dao.PhaseDAO;
 import org.cgiar.ccafs.marlo.data.dao.ProjectExpectedStudySubIdoDAO;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudySubIdoManager;
@@ -56,12 +55,12 @@ public class ProjectExpectedStudySubIdoManagerImpl implements ProjectExpectedStu
       this.getProjectExpectedStudySubIdoById(projectExpectedStudySubIdoId);
     Phase currentPhase = projectExpectedStudySubIdo.getPhase();
 
-    if (currentPhase.getDescription().equals(APConstants.PLANNING)) {
-      if (currentPhase.getNext() != null) {
-        this.deleteProjectExpectedStudySubIdoPhase(currentPhase.getNext(),
-          projectExpectedStudySubIdo.getProjectExpectedStudy().getId(), projectExpectedStudySubIdo);
-      }
+
+    if (currentPhase.getNext() != null) {
+      this.deleteProjectExpectedStudySubIdoPhase(currentPhase.getNext(),
+        projectExpectedStudySubIdo.getProjectExpectedStudy().getId(), projectExpectedStudySubIdo);
     }
+
     // Uncomment this line to allow reporting replication to upkeep
     // if (currentPhase.getDescription().equals(APConstants.REPORTING)) {
     // if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {
@@ -142,12 +141,12 @@ public class ProjectExpectedStudySubIdoManagerImpl implements ProjectExpectedStu
     ProjectExpectedStudySubIdo subIdo = projectExpectedStudySubIdoDAO.save(projectExpectedStudySubIdo);
     Phase currentPhase = subIdo.getPhase();
 
-    if (currentPhase.getDescription().equals(APConstants.PLANNING)) {
-      if (currentPhase.getNext() != null) {
-        this.saveExpectedStudySubIdoPhase(currentPhase.getNext(), subIdo.getProjectExpectedStudy().getId(),
-          projectExpectedStudySubIdo);
-      }
+
+    if (currentPhase.getNext() != null) {
+      this.saveExpectedStudySubIdoPhase(currentPhase.getNext(), subIdo.getProjectExpectedStudy().getId(),
+        projectExpectedStudySubIdo);
     }
+
     // Uncomment this line to allow reporting replication to upkeep
     // if (currentPhase.getDescription().equals(APConstants.REPORTING)) {
     // if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {

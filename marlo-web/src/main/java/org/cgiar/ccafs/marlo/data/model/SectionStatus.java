@@ -61,14 +61,16 @@ public class SectionStatus extends MarloBaseEntity implements java.io.Serializab
 
   private ProjectLp6Contribution projectLp6Contribution;
 
+  private ProjectPolicy projectPolicy;
+
 
   public SectionStatus() {
   }
 
+
   public CaseStudy getCaseStudy() {
     return caseStudy;
   }
-
 
   public CrpProgram getCrpProgram() {
     return this.crpProgram;
@@ -78,6 +80,7 @@ public class SectionStatus extends MarloBaseEntity implements java.io.Serializab
     return this.cycle;
   }
 
+
   public Deliverable getDeliverable() {
     return deliverable;
   }
@@ -85,7 +88,6 @@ public class SectionStatus extends MarloBaseEntity implements java.io.Serializab
   public FundingSource getFundingSource() {
     return fundingSource;
   }
-
 
   public IpLiaisonInstitution getIpLiaisonInstitution() {
     return ipLiaisonInstitution;
@@ -103,6 +105,7 @@ public class SectionStatus extends MarloBaseEntity implements java.io.Serializab
   public PowbSynthesis getPowbSynthesis() {
     return powbSynthesis;
   }
+
 
   public Project getProject() {
     return project;
@@ -126,6 +129,10 @@ public class SectionStatus extends MarloBaseEntity implements java.io.Serializab
 
   public ProjectOutcome getProjectOutcome() {
     return projectOutcome;
+  }
+
+  public ProjectPolicy getProjectPolicy() {
+    return projectPolicy;
   }
 
   public ReportSynthesis getReportSynthesis() {
@@ -164,7 +171,6 @@ public class SectionStatus extends MarloBaseEntity implements java.io.Serializab
     this.fundingSource = fundingSource;
   }
 
-
   public void setIpLiaisonInstitution(IpLiaisonInstitution ipLiaisonInstitution) {
     this.ipLiaisonInstitution = ipLiaisonInstitution;
   }
@@ -173,6 +179,7 @@ public class SectionStatus extends MarloBaseEntity implements java.io.Serializab
   public void setIpProgram(IpProgram ipProgram) {
     this.ipProgram = ipProgram;
   }
+
 
   public void setMissingFields(String missingFields) {
     this.missingFields = missingFields;
@@ -185,7 +192,6 @@ public class SectionStatus extends MarloBaseEntity implements java.io.Serializab
   public void setProject(Project project) {
     this.project = project;
   }
-
 
   public void setProjectExpectedStudy(ProjectExpectedStudy projectExpectedStudy) {
     this.projectExpectedStudy = projectExpectedStudy;
@@ -201,13 +207,18 @@ public class SectionStatus extends MarloBaseEntity implements java.io.Serializab
     this.projectInnovation = projectInnovation;
   }
 
+
   public void setProjectLp6Contribution(ProjectLp6Contribution projectLp6Contribution) {
     this.projectLp6Contribution = projectLp6Contribution;
   }
 
-
   public void setProjectOutcome(ProjectOutcome projectOutcome) {
     this.projectOutcome = projectOutcome;
+  }
+
+
+  public void setProjectPolicy(ProjectPolicy projectPolicy) {
+    this.projectPolicy = projectPolicy;
   }
 
   public void setReportSynthesis(ReportSynthesis reportSynthesis) {

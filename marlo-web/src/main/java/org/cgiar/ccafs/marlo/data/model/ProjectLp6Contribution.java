@@ -68,8 +68,12 @@ public class ProjectLp6Contribution extends MarloAuditableEntity implements java
 
   private List<ProjectLp6ContributionDeliverable> deliverables;
 
+  private Set<SectionStatus> sectionStatuses = new HashSet<SectionStatus>(0);
+
+
   public ProjectLp6Contribution() {
   }
+
 
   @Override
   public boolean equals(Object obj) {
@@ -93,11 +97,9 @@ public class ProjectLp6Contribution extends MarloAuditableEntity implements java
     return true;
   }
 
-
   public Boolean getContribution() {
     return contribution;
   }
-
 
   public List<ProjectLp6ContributionDeliverable> getDeliverables() {
     return deliverables;
@@ -108,14 +110,15 @@ public class ProjectLp6Contribution extends MarloAuditableEntity implements java
     return geographicScopeNarrative;
   }
 
+
   public Boolean getInitiativeRelated() {
     return initiativeRelated;
   }
 
+
   public String getInitiativeRelatedNarrative() {
     return initiativeRelatedNarrative;
   }
-
 
   @Override
   public String getLogDeatil() {
@@ -127,10 +130,10 @@ public class ProjectLp6Contribution extends MarloAuditableEntity implements java
     return sb.toString();
   }
 
-
   public String getNarrative() {
     return narrative;
   }
+
 
   public Phase getPhase() {
     return phase;
@@ -140,7 +143,6 @@ public class ProjectLp6Contribution extends MarloAuditableEntity implements java
   public Project getProject() {
     return project;
   }
-
 
   public Set<ProjectLp6ContributionDeliverable> getProjectLp6ContributionDeliverable() {
     return projectLp6ContributionDeliverable;
@@ -156,6 +158,12 @@ public class ProjectLp6Contribution extends MarloAuditableEntity implements java
     return providingPathwaysNarrative;
   }
 
+
+  public Set<SectionStatus> getSectionStatuses() {
+    return sectionStatuses;
+  }
+
+
   public String getTopThreePartnershipsNarrative() {
     return topThreePartnershipsNarrative;
   }
@@ -164,28 +172,28 @@ public class ProjectLp6Contribution extends MarloAuditableEntity implements java
     return undertakingEffortsCsa;
   }
 
-
   public String getUndertakingEffortsCsaNarrative() {
     return undertakingEffortsCsaNarrative;
   }
+
 
   public Boolean getUndertakingEffortsLeading() {
     return undertakingEffortsLeading;
   }
 
-
   public String getUndertakingEffortsLeadingNarrative() {
     return undertakingEffortsLeadingNarrative;
   }
+
 
   public Boolean getWorkingAcrossFlagships() {
     return workingAcrossFlagships;
   }
 
-
   public String getWorkingAcrossFlagshipsNarrative() {
     return workingAcrossFlagshipsNarrative;
   }
+
 
   @Override
   public int hashCode() {
@@ -194,7 +202,6 @@ public class ProjectLp6Contribution extends MarloAuditableEntity implements java
     result = prime * result + ((this.getId() == null) ? 0 : this.getId().hashCode());
     return result;
   }
-
 
   public Boolean isContribution() {
     return contribution;
@@ -205,6 +212,7 @@ public class ProjectLp6Contribution extends MarloAuditableEntity implements java
     return initiativeRelated;
   }
 
+
   public Boolean isProvidingPathways() {
     return providingPathways;
   }
@@ -212,7 +220,6 @@ public class ProjectLp6Contribution extends MarloAuditableEntity implements java
   public Boolean isUndertakingEffortsCsa() {
     return undertakingEffortsCsa;
   }
-
 
   public Boolean isUndertakingEffortsLeading() {
     return undertakingEffortsLeading;
@@ -277,6 +284,11 @@ public class ProjectLp6Contribution extends MarloAuditableEntity implements java
 
   public void setProvidingPathwaysNarrative(String providingPathwaysNarrative) {
     this.providingPathwaysNarrative = providingPathwaysNarrative;
+  }
+
+
+  public void setSectionStatuses(Set<SectionStatus> sectionStatuses) {
+    this.sectionStatuses = sectionStatuses;
   }
 
 

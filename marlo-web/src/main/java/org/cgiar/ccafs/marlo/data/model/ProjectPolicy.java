@@ -21,29 +21,33 @@ public class ProjectPolicy extends MarloAuditableEntity implements java.io.Seria
 
   private ProjectPolicyInfo projectPolicyInfo;
 
+  private Set<SectionStatus> sectionStatuses = new HashSet<SectionStatus>(0);
+
+
   private Set<ProjectPolicyInfo> projectPolicyInfos = new HashSet<ProjectPolicyInfo>(0);
 
+
   private Set<ProjectPolicyCountry> ProjectPolicyCountries = new HashSet<ProjectPolicyCountry>(0);
+
   private Set<ProjectPolicyOwner> projectPolicyOwners = new HashSet<ProjectPolicyOwner>(0);
+
   private Set<ProjectPolicyCrp> projectPolicyCrps = new HashSet<ProjectPolicyCrp>(0);
   private Set<ProjectPolicySubIdo> projectPolicySubIdos = new HashSet<ProjectPolicySubIdo>(0);
   private Set<ProjectPolicyCrossCuttingMarker> projectPolicyCrossCuttingMarkers =
     new HashSet<ProjectPolicyCrossCuttingMarker>(0);
-
   private List<String> countriesIds = new ArrayList<>();
   private List<ProjectPolicyCountry> countries;
-  private String countriesIdsText;
 
+  private String countriesIdsText;
   private List<ProjectPolicyOwner> owners;
   private List<ProjectPolicyCrp> crps;
+
   private List<ProjectPolicySubIdo> subIdos;
   private List<ProjectPolicyCrossCuttingMarker> crossCuttingMarkers;
-
   private List<ProjectPolicyCountry> regions;
-
   private Set<ProjectExpectedStudyPolicy> projectExpectedStudyPolicies = new HashSet<ProjectExpectedStudyPolicy>(0);
-  private List<ProjectExpectedStudyPolicy> evidences;
 
+  private List<ProjectExpectedStudyPolicy> evidences;
 
   public String getComposedName() {
 
@@ -55,7 +59,6 @@ public class ProjectPolicy extends MarloAuditableEntity implements java.io.Seria
     }
 
   }
-
 
   public List<ProjectPolicyCountry> getCountries() {
     return countries;
@@ -81,6 +84,7 @@ public class ProjectPolicy extends MarloAuditableEntity implements java.io.Seria
     return crps;
   }
 
+
   public List<ProjectExpectedStudyPolicy> getEvidences() {
     return evidences;
   }
@@ -92,7 +96,6 @@ public class ProjectPolicy extends MarloAuditableEntity implements java.io.Seria
     sb.append("Id : ").append(this.getId());
     return sb.toString();
   }
-
 
   public List<ProjectPolicyOwner> getOwners() {
     return owners;
@@ -165,6 +168,12 @@ public class ProjectPolicy extends MarloAuditableEntity implements java.io.Seria
     return regions;
   }
 
+
+  public Set<SectionStatus> getSectionStatuses() {
+    return sectionStatuses;
+  }
+
+
   public List<ProjectPolicySubIdo> getSubIdos() {
     return subIdos;
   }
@@ -172,7 +181,6 @@ public class ProjectPolicy extends MarloAuditableEntity implements java.io.Seria
   public void setCountries(List<ProjectPolicyCountry> countries) {
     this.countries = countries;
   }
-
 
   public void setCountriesIds(List<String> countriesIds) {
     this.countriesIds = countriesIds;
@@ -213,6 +221,7 @@ public class ProjectPolicy extends MarloAuditableEntity implements java.io.Seria
     this.projectExpectedStudyPolicies = projectExpectedStudyPolicies;
   }
 
+
   public void setProjectPolicyCountries(Set<ProjectPolicyCountry> projectPolicyCountries) {
     ProjectPolicyCountries = projectPolicyCountries;
   }
@@ -244,6 +253,10 @@ public class ProjectPolicy extends MarloAuditableEntity implements java.io.Seria
 
   public void setRegions(List<ProjectPolicyCountry> regions) {
     this.regions = regions;
+  }
+
+  public void setSectionStatuses(Set<SectionStatus> sectionStatuses) {
+    this.sectionStatuses = sectionStatuses;
   }
 
   public void setSubIdos(List<ProjectPolicySubIdo> subIdos) {
