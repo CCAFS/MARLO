@@ -4974,10 +4974,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return isEditable;
   }
 
-
   public boolean isEditStatus() {
     return editStatus;
   }
+
 
   public boolean isEntityCenter() {
     if (this.getCurrentCrp() != null) {
@@ -5003,6 +5003,23 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         return true;
       }
     }
+    return false;
+  }
+
+  /**
+   * Get if the Evidence is new
+   * 
+   * @param id
+   * @return
+   */
+  public Boolean isEvidenceNew(long id) {
+    ProjectExpectedStudy expectedStudy = projectExpectedStudyManager.getProjectExpectedStudyById(id);
+    if (expectedStudy.getPhase() == null) {
+      return false;
+    }
+    // if (expectedStudy.getPhase().equals(this.getActualPhase())) {
+    // return true;
+    // }
     return false;
   }
 
