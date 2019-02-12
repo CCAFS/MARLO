@@ -1,0 +1,1 @@
+UPDATE `custom_parameters` SET `value`='false' WHERE (`id`='1518');
