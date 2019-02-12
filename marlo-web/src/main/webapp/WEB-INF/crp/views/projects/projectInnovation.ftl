@@ -1,5 +1,5 @@
 [#ftl]
-[#assign title = "Project Innovations" /]
+[#assign title = "Innovations" /]
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${innovationID}-phase-${(actualPhase.id)!}" /]
 [#-- TODO: Remove unused pageLibs--]
 [#assign pageLibs = ["select2","font-awesome", "flat-flags"] /]
@@ -53,12 +53,12 @@
         <div class="">
           [#-- Title --] 
           <div class="form-group">
-            [@customForm.input name="innovation.projectInnovationInfo.title" type="text" i18nkey="projectInnovations.title"  placeholder="" className="limitWords-30" help="projectInnovations.title.helpText" required=true editable=editable /]
+            [@customForm.input name="innovation.projectInnovationInfo.title" type="text" i18nkey="projectInnovations.title"  placeholder="" className="limitWords-30" help="projectInnovations.title.helpText" helpIcon=false required=true editable=editable /]
           </div>
         
           [#-- Narrative --] 
           <div class="form-group">
-            [@customForm.textArea name="innovation.projectInnovationInfo.narrative"  i18nkey="projectInnovations.narrative"  placeholder="" className="limitWords-75" help="projectInnovations.narrative.helpText" required=false editable=editable /]
+            [@customForm.textArea name="innovation.projectInnovationInfo.narrative"  i18nkey="projectInnovations.narrative"  placeholder="" className="limitWords-75" help="projectInnovations.narrative.helpText" helpIcon=false required=false editable=editable /]
           </div>
         
           [#-- Phase of research and Stage of innovation --] 
@@ -72,22 +72,22 @@
             </div>
           </div>
         
-          [#-- Geographic scope and innovation type --] 
+          [#-- Geographic scope and Contribution of CRP --] 
           <div class="form-group row">
             <div class="col-md-6 ">
               [@customForm.select name="innovation.projectInnovationInfo.repIndGeographicScope.id" label=""  i18nkey="projectInnovations.geographicScope" listName="geographicScopeList" keyFieldName="id"  displayFieldName="name" required=true  className="geographicScopeSelect" editable=editable/]
             </div>
             <div class="col-md-6 ">
-              [@customForm.select name="innovation.projectInnovationInfo.repIndDegreeInnovation.id" label=""  i18nkey="projectInnovations.degreeInnovation" listName="degreeInnovationList" keyFieldName="id"  displayFieldName="name" required=true  className="" editable=editable/]
-            </div>
-          </div>
-          
-          [#-- Contribution of Crp and Degree Innovation --] 
-          <div class="form-group row">
-            <div class="col-md-6 ">
               [@customForm.select name="innovation.projectInnovationInfo.repIndContributionOfCrp.id" label=""  i18nkey="projectInnovations.contributionOfCrp" listName="contributionCrpList" keyFieldName="id"  displayFieldName="name" required=true  className="" editable=editable/]
             </div>
           </div>
+          
+          [#-- Degree of Innovation --] 
+          [#--  <div class="form-group row">
+            <div class="col-md-6 ">
+              [@customForm.select name="innovation.projectInnovationInfo.repIndDegreeInnovation.id" label=""  i18nkey="projectInnovations.degreeInnovation" listName="degreeInnovationList" keyFieldName="id"  displayFieldName="name" required=true  className="" editable=editable/]
+            </div>
+          </div>--]
           
           [#assign isRegional = ((innovation.projectInnovationInfo.repIndGeographicScope.id == action.reportingIndGeographicScopeRegional)!false) ]
           [#assign isMultiNational = ((innovation.projectInnovationInfo.repIndGeographicScope.id == action.reportingIndGeographicScopeMultiNational)!false) ]
@@ -121,7 +121,7 @@
           
           [#-- Description of Stage reached--] 
           <div class="form-group">
-            [@customForm.textArea name="innovation.projectInnovationInfo.descriptionStage" i18nkey="projectInnovations.stageDescription" help="projectInnovations.stageDescription.help" placeholder="" className="limitWords-50" required=true editable=editable /]
+            [@customForm.textArea name="innovation.projectInnovationInfo.descriptionStage" i18nkey="projectInnovations.stageDescription" help="projectInnovations.stageDescription.help" helpIcon=false placeholder="" className="limitWords-50" required=true editable=editable /]
           </div>
           
           [#-- Lead Organization --]
@@ -136,7 +136,7 @@
           
           [#-- Novel or Adaptive research --]
           <div class="form-group">
-            [@customForm.textArea name="innovation.projectInnovationInfo.novelOrAdaptive" i18nkey="projectInnovations.novelOrAdaptative" placeholder="" className="" required=false editable=editable /]
+            [@customForm.textArea name="innovation.projectInnovationInfo.adaptativeResearchNarrative" i18nkey="projectInnovations.novelOrAdaptative" placeholder="" className="" required=false editable=editable /]
           </div>
           [#-- Specify next user organizational type (Only if stage 4) --]
           <div class="form-group stageFourBlock" style="display:${isStageFour?string('block','none')}">
