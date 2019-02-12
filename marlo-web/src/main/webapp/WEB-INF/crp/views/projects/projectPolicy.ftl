@@ -71,6 +71,16 @@
 
   <div id="${customId}" class="policy" style="display:${template?string('none','block')}">
     
+    [#-- Year --]
+    <div class="form-group">
+      <div class="col-md-4"></div>
+      <div class="col-md-4"></div>
+      <div class="col-md-4">
+        [@customForm.select name="${customName}.projectPolicyInfo.year" className="setSelect2" i18nkey="policy.year" listName="years" required=true editable=editable/]
+      </div>
+    </div>
+    <hr />
+    
     [#-- Title (up to 50 words) --]
     <div class="form-group">
       [@customForm.input name="${customName}.projectPolicyInfo.title" i18nkey="policy.title" className="limitWords-50"required=true editable=editable /]
