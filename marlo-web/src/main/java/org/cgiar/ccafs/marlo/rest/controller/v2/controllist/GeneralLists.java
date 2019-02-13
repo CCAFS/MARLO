@@ -17,8 +17,10 @@ package org.cgiar.ccafs.marlo.rest.controller.v2.controllist;
 
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.generallists.GeographicScopeItem;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.generallists.GlobalUnitItem;
+import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.generallists.GlobalUnitTypeItem;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.generallists.LocationItem;
 import org.cgiar.ccafs.marlo.rest.dto.CGIAREntityDTO;
+import org.cgiar.ccafs.marlo.rest.dto.CGIAREntityTypeDTO;
 import org.cgiar.ccafs.marlo.rest.dto.ContributionOfCrpDTO;
 import org.cgiar.ccafs.marlo.rest.dto.CountryDTO;
 import org.cgiar.ccafs.marlo.rest.dto.GeographicScopeDTO;
@@ -56,13 +58,15 @@ public class GeneralLists {
 	private LocationItem<GeneralLists> locationItem;
 	private GeographicScopeItem<GeneralLists> geographicScopeItem;
 	private GlobalUnitItem<GeneralLists> globalUnitItem;
+	private GlobalUnitTypeItem<GeneralLists> globalUnitTypeItem;
 
 	@Inject
 	public GeneralLists(LocationItem<GeneralLists> countryItem, GeographicScopeItem<GeneralLists> geographicScopeItem,
-			GlobalUnitItem<GeneralLists> globalUnitItem) {
+			GlobalUnitItem<GeneralLists> globalUnitItem, GlobalUnitTypeItem<GeneralLists> globalUnitTypeItem) {
 		this.locationItem = countryItem;
 		this.geographicScopeItem = geographicScopeItem;
 		this.globalUnitItem = globalUnitItem;
+		this.globalUnitTypeItem = globalUnitTypeItem;
 	}
 
 	/**
@@ -141,6 +145,19 @@ public class GeneralLists {
 	}
 
 	/**
+	 * Get All CGIAR entities Types *
+	 * 
+	 * @return a List of CGIAREntityTypeDTO with all CGIAR entities Types.
+	 */
+	@ApiOperation(value = "View all CGIAR entities Types", response = CGIAREntityTypeDTO.class, responseContainer = "List")
+	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
+	@RequestMapping(value = "/cgiar-entity-types", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public List<CGIAREntityTypeDTO> getAllGlobalUnitTypes() {
+		LOG.debug("REST request to get Regions");
+		return this.globalUnitTypeItem.getAllGlobalUnitTypes();
+	}
+
+	/**
 	 * Get All the Region items *
 	 * 
 	 * @return a List of RegionDTO with all LocElements regions Items.
@@ -166,6 +183,19 @@ public class GeneralLists {
 	public ResponseEntity<CGIAREntityDTO> getGlobalUnitByCGIARId(@PathVariable String code) {
 		LOG.debug("REST request to get GlobalUnit : {}", code);
 		return this.globalUnitItem.findGlobalUnitByCGIRARId(code);
+	}
+
+	/**
+	 * Get a CGIAR Entity Type by code
+	 * 
+	 * @return a CGIAREntityTypeDTO founded by the code.
+	 */
+	@ApiOperation(value = "Get a CGIAR Entity Type by code", response = CGIAREntityTypeDTO.class)
+	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
+	@RequestMapping(value = "/cgiar-entity-types/{code}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<CGIAREntityTypeDTO> getGlobalUnitTypeByCode(@PathVariable Long code) {
+		LOG.debug("REST request to get Regions");
+		return this.globalUnitTypeItem.findGlobalUnitTypeById(code);
 	}
 
 	/**

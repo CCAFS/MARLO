@@ -26,7 +26,7 @@ import org.cgiar.ccafs.marlo.data.model.PartnerRequest;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.Institutions;
 import org.cgiar.ccafs.marlo.rest.dto.InstitutionDTO;
-import org.cgiar.ccafs.marlo.rest.dto.PartnerRequestDTO;
+import org.cgiar.ccafs.marlo.rest.dto.InstitutionRequestDTO;
 import org.cgiar.ccafs.marlo.rest.mappers.InstitutionMapper;
 
 import java.util.List;
@@ -75,8 +75,8 @@ public class InstitutionItem<T> {
 		}
 	}
 
-	public ResponseEntity<PartnerRequestDTO> createPartnerRequest(InstitutionDTO institutionDTO, String entityAcronym,
-			User user) {
+	public ResponseEntity<InstitutionRequestDTO> createPartnerRequest(InstitutionDTO institutionDTO,
+			String entityAcronym, User user) {
 
 		GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitByAcronym(entityAcronym);
 
@@ -99,7 +99,7 @@ public class InstitutionItem<T> {
 
 		partnerRequestChild = this.partnerRequestManager.savePartnerRequest(partnerRequestChild);
 
-		return new ResponseEntity<PartnerRequestDTO>(
+		return new ResponseEntity<InstitutionRequestDTO>(
 				this.institutionMapper.partnerRequestToPartnerRequestDTO(partnerRequestChild), HttpStatus.CREATED);
 
 		// TODO: SEND THE MAIL
@@ -140,7 +140,7 @@ public class InstitutionItem<T> {
 	 * 
 	 * @return PartnerRequestDTO founded
 	 */
-	public ResponseEntity<PartnerRequestDTO> getPartnerRequest(Long id, String entityAcronym) {
+	public ResponseEntity<InstitutionRequestDTO> getPartnerRequest(Long id, String entityAcronym) {
 		PartnerRequest partnerRequest = this.partnerRequestManager.getPartnerRequestById(id);
 		if (partnerRequest != null && partnerRequest.getPartnerRequest() == null) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
