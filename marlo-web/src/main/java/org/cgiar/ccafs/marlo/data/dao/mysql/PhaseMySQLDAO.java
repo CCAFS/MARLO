@@ -82,7 +82,7 @@ public class PhaseMySQLDAO extends AbstractMarloDAO<Phase, Long> implements Phas
 
   @Override
   public Phase findPreviousPhase(long phaseId) {
-    String query = "from " + Phase.class.getName() + " where next_phase='" + phaseId;
+    String query = "from " + Phase.class.getName() + " where next_phase=" + phaseId;
     List<Phase> list = super.findAll(query);
     if (list.size() > 0) {
       return list.get(0);

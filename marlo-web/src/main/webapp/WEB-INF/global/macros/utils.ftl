@@ -73,7 +73,7 @@
 [#macro prefilledTag]<i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>[/#macro]
 
 [#macro tableText value]
-  [#if (value?trim?has_content)!false]${value}[#else]<i style="opacity:0.8">[@s.text name="global.notDefined"/]</i>[/#if]
+  [#if (value?trim?has_content)!false]${value}[#else]<i style="opacity:0.8"><nobr>[@s.text name="global.notDefined"/]</nobr></i>[/#if]
 [/#macro]
 
 [#macro tableList list displayFieldName="title"]
@@ -87,7 +87,7 @@
       [/#list]
     </ul>
   [#else]
-    <i style="opacity:0.8">[@s.text name="global.notDefined"/]</i>
+    <i style="opacity:0.8"><nobr>[@s.text name="global.notDefined"/]</nobr></i>
   [/#if]
 [/#macro]
 
