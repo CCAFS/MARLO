@@ -447,6 +447,7 @@ public class ProjectInnovationAction extends BaseAction {
       Path path = this.getAutoSaveFilePath();
       if (path.toFile().exists() && this.getCurrentUser().isAutoSave()) {
 
+
         // Autosave File in
         BufferedReader reader = null;
         reader = new BufferedReader(new FileReader(path.toFile()));
@@ -458,15 +459,42 @@ public class ProjectInnovationAction extends BaseAction {
 
         innovation = (ProjectInnovation) autoSaveReader.readFromJson(jReader);
 
-        // Innovation Countries List AutoSave
-        if (innovation.getCountriesIdsText() != null) {
-          String[] countriesText = innovation.getCountriesIdsText().replace("[", "").replace("]", "").split(",");
-          List<String> countries = new ArrayList<>();
-          for (String value : Arrays.asList(countriesText)) {
-            countries.add(value.trim());
+        // Innovation Geographic Scope List AutoSave
+
+        if (innovation.getProjectInnovationInfo() != null) {
+          if (innovation.getProjectInnovationInfo().getRepIndGeographicScope() != null) {
+            if (innovation.getProjectInnovationInfo().getRepIndGeographicScope().getId() != null
+              && innovation.getProjectInnovationInfo().getRepIndGeographicScope().getId() != -1) {
+              // If the Geographic Scope is not Global
+              if (innovation.getProjectInnovationInfo().getRepIndGeographicScope().getId() != 1) {
+                if (innovation.getProjectInnovationInfo().getRepIndGeographicScope().getId() == 2) {
+                  // Load Regions
+                  /*
+                   * if (innovation.getRegions() != null) {
+                   * for (ProjectPolicyCountry projectPolicyCountry : innovation.getRegions()) {
+                   * projectPolicyCountry
+                   * .setLocElement(locElementManager.getLocElementById(projectPolicyCountry.getLocElement().getId()))
+                   * ;
+                   * }
+                   * }
+                   */
+                } else {
+                  // Load Countries
+                  if (innovation.getCountriesIdsText() != null) {
+                    String[] countriesText =
+                      innovation.getCountriesIdsText().replace("[", "").replace("]", "").split(",");
+                    List<String> countries = new ArrayList<>();
+                    for (String value : Arrays.asList(countriesText)) {
+                      countries.add(value.trim());
+                    }
+                    innovation.setCountriesIds(countries);
+                  }
+                }
+              }
+            }
           }
-          innovation.setCountriesIds(countries);
         }
+
 
         // Innovation Organization Type List Autosave
         if (innovation.getOrganizations() != null) {

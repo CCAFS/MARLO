@@ -60,7 +60,7 @@
         <br />
         <h3 class="headTitle">Previous [@s.text name="projectInnovations" /]</h3>
         <div class="simpleBox">
-          [@innovationsTableMacro list=(project.innovations)![] currentTable=false/]
+          [@innovationsTableMacro list=(projectOldInnovations)![] currentTable=false/]
         </div>
         
       [/@s.form]

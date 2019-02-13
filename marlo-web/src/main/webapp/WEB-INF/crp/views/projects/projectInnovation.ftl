@@ -88,6 +88,7 @@
               [@customForm.select name="innovation.projectInnovationInfo.repIndDegreeInnovation.id" label=""  i18nkey="projectInnovations.degreeInnovation" listName="degreeInnovationList" keyFieldName="id"  displayFieldName="name" required=true  className="" editable=editable/]
             </div>
           </div>--]
+          [#assign geographicScope = ((innovation.projectInnovationInfo.repIndGeographicScope.id)!-1) ]
           
           [#assign isRegional = ((innovation.projectInnovationInfo.repIndGeographicScope.id == action.reportingIndGeographicScopeRegional)!false) ]
           [#assign isMultiNational = ((innovation.projectInnovationInfo.repIndGeographicScope.id == action.reportingIndGeographicScopeMultiNational)!false) ]
@@ -126,12 +127,12 @@
           
           [#-- Lead Organization --]
           <div class="form-group"">
-            [@customForm.select name="innovation.projectInnovationInfo.leadOrganization.id" label=""  i18nkey="projectInnovations.leadOrganization" listName="institutions" keyFieldName="id"  displayFieldName="name" required=true  className="" editable=editable/]
+            [@customForm.select name="innovation.projectInnovationInfo.leadOrganization.id" label=""  i18nkey="projectInnovations.leadOrganization" listName="institutions" keyFieldName="id"  displayFieldName="composedName" required=true  className="" editable=editable/]
           </div>
           
           [#-- Top Five Contributing Organizations --]
           <div class="form-group"">
-            [@customForm.elementsListComponent name="innovation.contributingOrganizations" elementType="institution" elementList=innovation.contributingOrganizations label="projectInnovations.contributingOrganizations"  listName="institutions" keyFieldName="id" displayFieldName="name"/]
+            [@customForm.elementsListComponent name="innovation.contributingOrganizations" elementType="institution" elementList=innovation.contributingOrganizations label="projectInnovations.contributingOrganizations"  listName="institutions" keyFieldName="id" displayFieldName="composedName"/]
           </div>
           
           [#-- Novel or Adaptive research --]
