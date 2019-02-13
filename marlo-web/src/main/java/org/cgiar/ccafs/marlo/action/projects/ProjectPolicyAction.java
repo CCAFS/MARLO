@@ -732,6 +732,7 @@ public class ProjectPolicyAction extends BaseAction {
       this.saveSubIdos(policyDB, phase);
       this.saveCrossCutting(policyDB, phase);
       this.saveInnovations(policyDB, phase);
+      this.saveEvidence(policyDB, phase);
 
 
       List<String> relationsName = new ArrayList<>();
