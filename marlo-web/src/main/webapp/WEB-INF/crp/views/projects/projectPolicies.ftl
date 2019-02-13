@@ -58,6 +58,12 @@
         </a>
       </div>
       [/#if]
+      
+      [#-- Previous Policies list --]
+      <h3 class="headTitle">Previous [@s.text name="projectPolicies.title" /] <br /></h3>
+      <div id="" class="simpleBox">
+        [@policiesTable list=(project.policies)![]  currentTable=false/]
+      </div>
     </div>
   </div>
 </section>
@@ -67,7 +73,7 @@
 
 [#-- -- MACROS -- --]
 
-[#macro policiesTable list previousTable=false]
+[#macro policiesTable list currentTable=true]
   [@s.set var="counter" value=0/]
   <table id="projectPolicies" class="table table-striped table-hover ">
     <thead>
@@ -75,11 +81,13 @@
         <th class="id" >ID</th> 
         <th class="name col-md-5">Title</th>
         <th class="type">Type</th>
-        <th class="subIdos">Sub-IDOs</th>
+        <th class="subIdos col-md-2">Sub-IDOs</th>
         <th class="maturity">Level of Maturity</th>
+        <th class="">Geographic Scope</th>
         <th class="">Year</th>
+        [#if currentTable]
         <th class="no-sort"></th>
-        <th class="no-sort"></th>
+        [/#if]
       </tr>
     </thead>
     <tbody>
@@ -99,24 +107,25 @@
             <td class="">
               [@utils.tableText value=(item.projectPolicyInfo.repIndPolicyInvestimentType.name)!"" /]
             </td>
-            <td class="">
-              [@utils.tableList list=(item.subIdos)![] displayFieldName="srfSubIdo.description" /]
+            <td class="text-center">
+              <a title='[@utils.tableList list=(item.subIdos)![] displayFieldName="srfSubIdo.description" /]' class="btn btn-default btn-xs">${(item.subIdos?size)!'0'}</a>
             </td>
             <td class="">
               [@utils.tableText value=(item.projectPolicyInfo.repIndStageProcess.name)!"" /]
             </td>
-            <td class="text-center">
-              [@utils.tableCheckIcon state=(isThisComplete || ((item.year lt  currentCycleYear)!false)) /]
+            <td>
+              [@utils.tableText value=(item.projectPolicyInfo.repIndGeographicScope.name)!"" /]
             </td>
             <td>
               [@utils.tableText value=(item.projectPolicyInfo.year)!"" /]
             </td>
+             
+            [#if currentTable]
             <td class="removeHighlight-row text-center">
               [#if canEdit && ((item.year gte  currentCycleYear)!true) ]
                 <a id="removeElement-${(item.id)!}" class="removeElementList" href="#" title="" data-toggle="modal" data-target="#removeItem-${item_index}" >
                   <img src="${baseUrl}/global/images/trash.png" title="[@s.text name="projectPolicies.removeItem" /]" /> 
                 </a>
-                
                 <div id="removeItem-${item_index}" class="modal fade" tabindex="-1" role="dialog">
                   <div class="modal-dialog" role="document">
                     <div class="modal-content">
@@ -139,11 +148,11 @@
                     </div>
                   </div>
                 </div>
-                
               [#else]
                 <img src="${baseUrl}/global/images/trash_disable.png" title="[@s.text name="projectPolicies.cantDeleteItem" /]" />
               [/#if]
             </td>
+            [/#if]
           </tr> 
         [/#list]
     [/#if]  
