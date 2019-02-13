@@ -593,11 +593,10 @@
       [#local isISI = (deliverable.publication.isiPublication?string)!"" /]
       [@customForm.radioFlat id="optionISI-yes"  name="deliverable.publication.isiPublication" i18nkey="Yes"  value="true"  checked=(isISI == "true")  cssClass="radioType-optionISI" cssClassLabel="font-normal radio-label-yes" editable=editable /] 
       [@customForm.radioFlat id="optionISI-no"   name="deliverable.publication.isiPublication" i18nkey="No"   value="false" checked=(isISI == "false") cssClass="radioType-optionISI" cssClassLabel="font-normal radio-label-no"  editable=editable /] 
-      <br />
     </div>
     
     [#-- Journal Indicators --]
-    <div class="form-group">
+    [#-- <div class="form-group">
       <label for="">[@s.text name="project.deliverable.dissemination.indicatorsJournal" /]:
       <div class="checkbox">
         [#if editable]
@@ -608,8 +607,7 @@
           <p [#if (deliverable.publication.coAuthor)!false]class="checked"[#else]class="noChecked"[/#if]>Does this article have a co-author based in an Earth System Science-related academic department?</p>
         [/#if]
       </div>
-    </div> 
-    
+    </div>  --]
     <hr />
     [#-- Does the publication acknowledge {CRP}? --]
     <div class="row yesNoInputDeliverable">
