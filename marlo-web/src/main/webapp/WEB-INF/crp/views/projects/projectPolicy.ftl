@@ -129,7 +129,14 @@
       [@customForm.elementsListComponent name="${customName}.evidences" elementType="projectExpectedStudy" elementList=element.evidences label="policy.evidence" help="policy.evidence.help" helpIcon=false listName="expectedStudyList" keyFieldName="id" displayFieldName="composedName" /]
     </div>
     
+    [#-- Innovations  --]
+    <div class="form-group">
+      [@customForm.elementsListComponent name="${customName}.innovations" elementType="projectInnovation" elementList=element.innovations label="policy.innovations" helpIcon=false listName="innovationList" keyFieldName="id" displayFieldName="composedName" /]
+    </div>
+
+    <br />
     <hr />
+    <br />
     
     [#-- Contributing CRPs/PTFs  --]
     <div class="form-group">
