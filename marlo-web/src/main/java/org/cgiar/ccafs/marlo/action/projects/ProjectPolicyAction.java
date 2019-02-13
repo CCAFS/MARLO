@@ -24,11 +24,13 @@ import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyPolicyManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyCountryManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyCrossCuttingMarkerManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyCrpManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyInfoManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyInnovationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyOwnerManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicySubIdoManager;
@@ -46,10 +48,12 @@ import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyPolicy;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicy;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicyCountry;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicyCrossCuttingMarker;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicyCrp;
+import org.cgiar.ccafs.marlo.data.model.ProjectPolicyInnovation;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicyOwner;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicySubIdo;
 import org.cgiar.ccafs.marlo.data.model.RepIndGenderYouthFocusLevel;
@@ -111,6 +115,8 @@ public class ProjectPolicyAction extends BaseAction {
   private ProjectPolicySubIdoManager projectPolicySubIdoManager;
   private ProjectPolicyCrossCuttingMarkerManager projectPolicyCrossCuttingMarkerManager;
   private ProjectExpectedStudyPolicyManager projectExpectedStudyPolicyManager;
+  private ProjectPolicyInnovationManager projectPolicyInnovationManager;
+  private ProjectInnovationManager projectInnovationManager;
   private ProjectPolicyValidator validator;
 
 
@@ -134,6 +140,8 @@ public class ProjectPolicyAction extends BaseAction {
   private List<GlobalUnit> crps;
   private List<ProjectExpectedStudy> expectedStudyList;
   private List<CgiarCrossCuttingMarker> cgiarCrossCuttingMarkers;
+  private List<ProjectInnovation> innovationList;
+
   private String transaction;
 
 
@@ -151,7 +159,8 @@ public class ProjectPolicyAction extends BaseAction {
     ProjectPolicyCountryManager projectPolicyCountryManager, ProjectPolicyOwnerManager projectPolicyOwnerManager,
     ProjectPolicyCrpManager projectPolicyCrpManager, ProjectPolicySubIdoManager projectPolicySubIdoManager,
     ProjectPolicyCrossCuttingMarkerManager projectPolicyCrossCuttingMarkerManager, ProjectPolicyValidator validator,
-    ProjectExpectedStudyPolicyManager projectExpectedStudyPolicyManager) {
+    ProjectExpectedStudyPolicyManager projectExpectedStudyPolicyManager,
+    ProjectInnovationManager projectInnovationManager, ProjectPolicyInnovationManager projectPolicyInnovationManager) {
     super(config);
     this.globalUnitManager = globalUnitManager;
     this.projectPolicyManager = projectPolicyManager;
@@ -176,6 +185,8 @@ public class ProjectPolicyAction extends BaseAction {
     this.projectPolicyCrossCuttingMarkerManager = projectPolicyCrossCuttingMarkerManager;
     this.validator = validator;
     this.projectExpectedStudyPolicyManager = projectExpectedStudyPolicyManager;
+    this.projectInnovationManager = projectInnovationManager;
+    this.projectPolicyInnovationManager = projectPolicyInnovationManager;
   }
 
   /**
@@ -224,7 +235,6 @@ public class ProjectPolicyAction extends BaseAction {
     return countries;
   }
 
-
   public List<GlobalUnit> getCrps() {
     return crps;
   }
@@ -239,10 +249,15 @@ public class ProjectPolicyAction extends BaseAction {
     return focusLevels;
   }
 
+
   public List<RepIndGeographicScope> getGeographicScopes() {
     return geographicScopes;
   }
 
+
+  public List<ProjectInnovation> getInnovationList() {
+    return innovationList;
+  }
 
   public GlobalUnit getLoggedCrp() {
     return loggedCrp;
@@ -257,6 +272,7 @@ public class ProjectPolicyAction extends BaseAction {
   public ProjectPolicy getPolicy() {
     return policy;
   }
+
 
   /**
    * Get the information for the Cross Cutting marker in the form
@@ -294,7 +310,6 @@ public class ProjectPolicyAction extends BaseAction {
     return policyInvestimentTypes;
   }
 
-
   public List<RepIndPolicyType> getPolicyTypes() {
     return policyTypes;
   }
@@ -304,10 +319,10 @@ public class ProjectPolicyAction extends BaseAction {
     return project;
   }
 
+
   public long getProjectID() {
     return projectID;
   }
-
 
   public List<LocElement> getRegions() {
     return regions;
@@ -317,6 +332,7 @@ public class ProjectPolicyAction extends BaseAction {
   public List<RepIndStageProcess> getStageProcesses() {
     return stageProcesses;
   }
+
 
   public List<SrfSubIdo> getSubIdos() {
     return subIdos;
@@ -465,6 +481,14 @@ public class ProjectPolicyAction extends BaseAction {
           }
         }
 
+        // Innovations List Autosave
+        if (policy.getInnovations() != null) {
+          for (ProjectPolicyInnovation projectPolicyInnovation : policy.getInnovations()) {
+            projectPolicyInnovation.setProjectInnovation(projectInnovationManager
+              .getProjectInnovationById(projectPolicyInnovation.getProjectInnovation().getId()));
+          }
+        }
+
         // Evidences List Autosave
         if (policy.getEvidences() != null) {
           for (ProjectExpectedStudyPolicy projectPolicyEvidence : policy.getEvidences()) {
@@ -543,6 +567,12 @@ public class ProjectPolicyAction extends BaseAction {
             .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
         }
 
+        // Innovations List
+        if (policy.getProjectPolicySubIdos() != null) {
+          policy.setSubIdos(new ArrayList<>(policy.getProjectPolicySubIdos().stream()
+            .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
+        }
+
         // Evidence List
         if (policy.getProjectExpectedStudyPolicies() != null) {
           policy.setEvidences(new ArrayList<>(policy.getProjectExpectedStudyPolicies().stream()
@@ -603,6 +633,20 @@ public class ProjectPolicyAction extends BaseAction {
 
       // Cross Cutting Markers
       cgiarCrossCuttingMarkers = cgiarCrossCuttingMarkerManager.findAll();
+
+
+      Project projectL = projectManager.getProjectById(projectID);
+
+      // Get the innovations List
+      innovationList = new ArrayList<>();
+
+      List<ProjectInnovation> innovations =
+        projectL.getProjectInnovations().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+      for (ProjectInnovation projectInnovation : innovations) {
+        if (projectInnovation.getProjectInnovationInfo(this.getActualPhase()) != null) {
+          innovationList.add(projectInnovation);
+        }
+      }
 
       // Evidences List
       expectedStudyList = new ArrayList<>();
@@ -679,6 +723,7 @@ public class ProjectPolicyAction extends BaseAction {
       this.saveOwners(policyDB, phase);
       this.saveSubIdos(policyDB, phase);
       this.saveCrossCutting(policyDB, phase);
+      this.saveInnovations(policyDB, phase);
 
 
       List<String> relationsName = new ArrayList<>();
@@ -990,6 +1035,49 @@ public class ProjectPolicyAction extends BaseAction {
   }
 
   /**
+   * Save Project Policy Innovations Information
+   * 
+   * @param projectPolicy
+   * @param phase
+   */
+  public void saveInnovations(ProjectPolicy projectPolicy, Phase phase) {
+
+    // Search and deleted form Information
+    if (projectPolicy.getProjectPolicyInnovations() != null && projectPolicy.getProjectPolicyInnovations().size() > 0) {
+
+      List<ProjectPolicyInnovation> innovationPrev = new ArrayList<>(projectPolicy.getProjectPolicyInnovations()
+        .stream().filter(nu -> nu.isActive() && nu.getPhase().getId() == phase.getId()).collect(Collectors.toList()));
+
+      for (ProjectPolicyInnovation policyInnovation : innovationPrev) {
+        if (policy.getInnovations() == null || !policy.getInnovations().contains(policyInnovation)) {
+          projectPolicyInnovationManager.deleteProjectPolicyInnovation(policyInnovation.getId());
+        }
+      }
+    }
+
+    // Save form Information
+    if (policy.getInnovations() != null) {
+      for (ProjectPolicyInnovation policyInnovation : policy.getInnovations()) {
+        if (policyInnovation.getId() == null) {
+          ProjectPolicyInnovation policyInnovationSave = new ProjectPolicyInnovation();
+          policyInnovationSave.setProjectPolicy(projectPolicy);
+          policyInnovationSave.setPhase(phase);
+
+          ProjectInnovation innovation =
+            projectInnovationManager.getProjectInnovationById(policyInnovation.getProjectInnovation().getId());
+
+
+          policyInnovationSave.setProjectInnovation(innovation);
+
+          projectPolicyInnovationManager.saveProjectPolicyInnovation(policyInnovationSave);
+          // This is to add innovationCrpSave to generate correct auditlog.
+          policy.getProjectPolicyInnovations().add(policyInnovationSave);
+        }
+      }
+    }
+  }
+
+  /**
    * Save Project Policy Owner Information
    * 
    * @param projectPolicy
@@ -1072,6 +1160,7 @@ public class ProjectPolicyAction extends BaseAction {
     }
   }
 
+
   /**
    * Save Project Policy SubIdos Information
    * 
@@ -1114,7 +1203,6 @@ public class ProjectPolicyAction extends BaseAction {
     }
   }
 
-
   public void setCgiarCrossCuttingMarkers(List<CgiarCrossCuttingMarker> cgiarCrossCuttingMarkers) {
     this.cgiarCrossCuttingMarkers = cgiarCrossCuttingMarkers;
   }
@@ -1134,12 +1222,17 @@ public class ProjectPolicyAction extends BaseAction {
     this.expectedStudyList = expectedStudyList;
   }
 
+
   public void setFocusLevels(List<RepIndGenderYouthFocusLevel> focusLevels) {
     this.focusLevels = focusLevels;
   }
 
   public void setGeographicScopes(List<RepIndGeographicScope> geographicScopes) {
     this.geographicScopes = geographicScopes;
+  }
+
+  public void setInnovationList(List<ProjectInnovation> innovationList) {
+    this.innovationList = innovationList;
   }
 
   public void setLoggedCrp(GlobalUnit loggedCrp) {

@@ -26,16 +26,13 @@ import org.apache.commons.io.IOUtils;
 
 public class Clone {
 
-  public static String pathdao =
-    "D:\\OneDrive - CGIAR\\Documents\\workspace-sts-3.9.4.RELEASE\\MARLO\\marlo-web\\src\\main\\java\\org\\cgiar\\ccafs\\marlo\\data\\dao";
+  public static String pathdao = "D:\\MARLO\\marlo-web\\src\\main\\java\\org\\cgiar\\ccafs\\marlo\\data\\dao";
   public static String pathmysqldao =
-    "D:\\OneDrive - CGIAR\\Documents\\workspace-sts-3.9.4.RELEASE\\MARLO\\marlo-web\\src\\main\\java\\org\\cgiar\\ccafs\\marlo\\data\\dao\\mysql";
-  public static String pathmanager =
-    "D:\\OneDrive - CGIAR\\Documents\\workspace-sts-3.9.4.RELEASE\\MARLO\\marlo-web\\src\\main\\java\\org\\cgiar\\ccafs\\marlo\\data\\manager";
-  public static String pathmodel =
-    "D:\\OneDrive - CGIAR\\Documents\\workspace-sts-3.9.4.RELEASE\\MARLO\\marlo-web\\src\\main\\java\\org\\cgiar\\ccafs\\marlo\\data\\model";
+    "D:\\MARLO\\marlo-web\\src\\main\\java\\org\\cgiar\\ccafs\\marlo\\data\\dao\\mysql";
+  public static String pathmanager = "D:\\MARLO\\marlo-web\\src\\main\\java\\org\\cgiar\\ccafs\\marlo\\data\\manager";
+  public static String pathmodel = "D:\\MARLO\\marlo-web\\src\\main\\java\\org\\cgiar\\ccafs\\marlo\\data\\model";
   public static String pathmanagerimpl =
-    "D:\\OneDrive - CGIAR\\Documents\\workspace-sts-3.9.4.RELEASE\\MARLO\\marlo-web\\src\\main\\java\\org\\cgiar\\ccafs\\marlo\\data\\manager\\impl";
+    "D:\\MARLO\\marlo-web\\src\\main\\java\\org\\cgiar\\ccafs\\marlo\\data\\manager\\impl";
 
   // Copy the source file to target file.
   // In case the dst file does not exist, it is created
@@ -136,11 +133,11 @@ public class Clone {
      */
 
 
-/*
-    String[] model = {"EvidenceTag", "ProjectExpectedStudyInnovation", "ProjectExpectedStudyPolicy",
-      "ProjectExpectedStudyLink", "ProjectExpectedStudyQuantification"};
-*/
-    String[] model = {"ProjectInnovationContributingOrganization"};
+    /*
+     * String[] model = {"EvidenceTag", "ProjectExpectedStudyInnovation", "ProjectExpectedStudyPolicy",
+     * "ProjectExpectedStudyLink", "ProjectExpectedStudyQuantification"};
+     */
+    String[] model = {"ProjectPolicyInnovation"};
 
     for (int i = 0; i < model.length; i++) {
       generateDao(model[i]);

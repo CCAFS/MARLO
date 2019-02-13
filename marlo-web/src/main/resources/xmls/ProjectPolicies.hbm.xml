@@ -92,6 +92,13 @@
         <column name="project_policy_id" />
       </key>
       <one-to-many class="org.cgiar.ccafs.marlo.data.model.SectionStatus" />
-    </set>  
+    </set> 
+    <set name="projectPolicyInnovations" table="project_policy_innovations" inverse="true"
+      lazy="true" fetch="select">
+      <key>
+        <column name="project_policy_id" />
+      </key>
+      <one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectPolicyInnovation" />
+    </set> 
 	</class>
 </hibernate-mapping>

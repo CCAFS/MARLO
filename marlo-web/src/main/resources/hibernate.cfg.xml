@@ -379,5 +379,6 @@
 		<mapping resource="xmls/EvidenceTags.hbm.xml" />
 		<mapping
 			resource="xmls/ProjectExpectedStudyQuantifications.hbm.xml" />
+	<mapping resource="xmls/ProjectPolicyInnovations.hbm.xml" />	
 	</session-factory>
 </hibernate-configuration>

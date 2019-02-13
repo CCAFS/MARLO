@@ -68,6 +68,11 @@ public class PhaseManagerImpl implements PhaseManager {
   }
 
   @Override
+  public Phase findPreviousPhase(long phaseId) {
+    return phaseDAO.findPreviousPhase(phaseId);
+  }
+
+  @Override
   public Phase getPhaseById(long phaseID) {
 
     return phaseDAO.find(phaseID);
