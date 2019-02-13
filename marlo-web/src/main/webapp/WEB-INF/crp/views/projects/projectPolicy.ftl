@@ -134,7 +134,6 @@
       [@customForm.elementsListComponent name="${customName}.innovations" elementType="projectInnovation" elementList=element.innovations label="policy.innovations" helpIcon=false listName="innovationList" keyFieldName="id" displayFieldName="composedName" /]
     </div>
 
-    <br />
     <hr />
     <br />
     
