@@ -536,7 +536,6 @@ public class DeliverableAction extends BaseAction {
   }
 
 
-
   public ArrayList<GlobalUnit> getCrps() {
     return crps;
   }
@@ -1186,6 +1185,7 @@ public class DeliverableAction extends BaseAction {
                 break;
             }
           }
+
         }
 
         // Deliverable Geographic Regions List Autosave
@@ -2187,8 +2187,6 @@ public class DeliverableAction extends BaseAction {
   }
 
 
-
-
   public void saveDeliverableRegions(Deliverable deliverable, Phase phase, Deliverable deliverableManagedState) {
 
     // Search and deleted form Information
@@ -2351,11 +2349,15 @@ public class DeliverableAction extends BaseAction {
         } else {
           dissemination.setDisseminationUrl(null);
           dissemination.setDisseminationChannel(null);
+          dissemination.setConfidential(deliverable.getDissemination().getConfidential());
+          dissemination.setConfidentialUrl(deliverable.getDissemination().getConfidentialUrl());
         }
       } else {
         dissemination.setAlreadyDisseminated(null);
         dissemination.setDisseminationUrl(null);
         dissemination.setDisseminationChannel(null);
+        dissemination.setConfidential(null);
+        dissemination.setConfidentialUrl(null);
       }
 
       dissemination.setPhase(this.getActualPhase());
@@ -2808,8 +2810,6 @@ public class DeliverableAction extends BaseAction {
   public void setAnswers(List<DeliverableQualityAnswer> answers) {
     this.answers = answers;
   }
-
-
 
 
   public void setCgiarCrossCuttingMarkers(List<CgiarCrossCuttingMarker> cgiarCrossCuttingMarkers) {
