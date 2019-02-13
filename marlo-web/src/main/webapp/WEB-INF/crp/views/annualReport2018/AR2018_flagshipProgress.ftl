@@ -71,7 +71,19 @@
             
             [#-- Table 3: List of Outcome/Impact Case Reports --]
             <div class="form-group">
-              [@listOfOutcomeImpactCaseReports name="tableOICR" /]
+              [#assign outcomesList = [
+                { 
+                  "title": "Title",
+                  "maturity": "Maturity Level",
+                  "status": "Status"
+                },
+                { 
+                  "title": "Title 1",
+                  "maturity": "Maturity Level 1",
+                  "status": "Status 1"
+                }
+              ] /]
+              [@listOfOutcomeImpactCaseReports name="tableOICR" list=outcomesList/]
             </div>
             
             [#-- Table 4: Condensed list of innovations --]
@@ -178,11 +190,8 @@
   </div>
 [/#macro]
 
-[#macro listOfOutcomeImpactCaseReports name list=[]  isPMU=false ]
-[#local list = [
-  {"outcome",   "maturity", "status":"1"},
-  {"outcome",   "maturity", "status":"2"}
-] /]
+[#macro listOfOutcomeImpactCaseReports name list=["",""]  isPMU=false ]
+
 
   <div class="form-group">
     <h4 class="subTitle headTitle annualReport-table">[@s.text name="${customLabel}.${name}.title" /]</h4>
@@ -198,12 +207,16 @@
       </thead>
       <tbody>
         [#if list?has_content]
-          <td></td>
-          <td></td>
-          <td></td>
-          <td class="text-center">
-            [@customForm.checkmark id="" name="" label="" value="" editable=editable checked=false cssClass="" /]
-          </td>
+          [#list list as item]
+          <tr>
+            <td>${item.title}</td>
+            <td>${item.maturity}</td>
+            <td>${item.status}</td>
+            <td class="text-center">
+              [@customForm.checkmark id="" name="" label="" value="" editable=editable checked=false cssClass="" /]
+            </td>
+          </tr>
+          [/#list]
         [#else]
           <tr>
             <td class="text-center" colspan="6"><i>No entries added yet.</i></td>
