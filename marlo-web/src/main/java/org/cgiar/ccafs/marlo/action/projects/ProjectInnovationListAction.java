@@ -59,6 +59,7 @@ public class ProjectInnovationListAction extends BaseAction {
   private long projectID;
   private long innovationID;
   private List<Integer> allYears;
+  private List<ProjectInnovation> projectOldInnovations;
 
   @Inject
   public ProjectInnovationListAction(APConfig config, ProjectInnovationManager projectInnovationManager,
@@ -113,7 +114,6 @@ public class ProjectInnovationListAction extends BaseAction {
          * sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
          * }
          */
-        projectInnovationManager.saveProjectInnovation(projectInnovation);
         projectInnovationManager.deleteProjectInnovation(projectInnovation.getId());
       }
     }
@@ -124,6 +124,7 @@ public class ProjectInnovationListAction extends BaseAction {
   public List<Integer> getAllYears() {
     return allYears;
   }
+
 
   public long getInnovationID() {
     return innovationID;
@@ -137,6 +138,10 @@ public class ProjectInnovationListAction extends BaseAction {
     return projectID;
   }
 
+  public List<ProjectInnovation> getProjectOldInnovations() {
+    return projectOldInnovations;
+  }
+
   @Override
   public void prepare() throws Exception {
 
@@ -145,15 +150,20 @@ public class ProjectInnovationListAction extends BaseAction {
     project = projectManager.getProjectById(projectID);
 
     allYears = project.getProjecInfoPhase(this.getActualPhase()).getAllYears();
-
+    projectOldInnovations = new ArrayList<ProjectInnovation>();
     List<ProjectInnovation> innovations =
       project.getProjectInnovations().stream().filter(c -> c.isActive()).collect(Collectors.toList());
     project.setInnovations(new ArrayList<ProjectInnovation>());
     for (ProjectInnovation projectInnovation : innovations) {
-      if (projectInnovation.getProjectInnovationInfo(this.getActualPhase()) != null) {
+      if (projectInnovation.getProjectInnovationInfo(this.getActualPhase()) != null
+        && projectInnovation.getProjectInnovationInfo().getYear() >= this.getActualPhase().getYear()) {
         project.getInnovations().add(projectInnovation);
+      } else {
+        projectOldInnovations.add(projectInnovation);
       }
     }
+
+
   }
 
   public void setAllYears(List<Integer> allYears) {
@@ -170,6 +180,10 @@ public class ProjectInnovationListAction extends BaseAction {
 
   public void setProjectID(long projectID) {
     this.projectID = projectID;
+  }
+
+  public void setProjectOldInnovations(List<ProjectInnovation> projectOldInnovations) {
+    this.projectOldInnovations = projectOldInnovations;
   }
 
 }

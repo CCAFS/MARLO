@@ -25,8 +25,6 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
 
   private ProjectInnovationInfo projectInnovationInfo;
 
-  private String modificationJustification;
-
   private Set<ProjectInnovationInfo> projectInnovationInfos = new HashSet<ProjectInnovationInfo>(0);
 
   private Set<SectionStatus> sectionStatuses = new HashSet<SectionStatus>(0);
@@ -81,7 +79,6 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
     return countriesIdsText;
   }
 
-
   public List<ProjectInnovationCrp> getCrps() {
     return crps;
   }
@@ -97,12 +94,6 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
     sb.append("Id : ").append(this.getId());
     return sb.toString();
   }
-
-  @Override
-  public String getModificationJustification() {
-    return modificationJustification;
-  }
-
 
   public List<ProjectInnovationOrganization> getOrganizations() {
     return organizations;
@@ -185,11 +176,6 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
 
   public void setDeliverables(List<ProjectInnovationDeliverable> deliverables) {
     this.deliverables = deliverables;
-  }
-
-  @Override
-  public void setModificationJustification(String modificationJustification) {
-    this.modificationJustification = modificationJustification;
   }
 
   public void setOrganizations(List<ProjectInnovationOrganization> organizations) {
