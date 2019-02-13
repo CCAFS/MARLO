@@ -5000,6 +5000,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
     ProjectExpectedStudy expectedStudy = projectExpectedStudyManager.getProjectExpectedStudyById(evidenceId);
 
+    expectedStudy.setProjectExpectedStudyInfo(null);
     if (expectedStudy.getProjectExpectedStudyInfo(previousPhase) != null) {
       return false;
     } else {
