@@ -49,6 +49,11 @@ public class ProjectPolicy extends MarloAuditableEntity implements java.io.Seria
 
   private List<ProjectExpectedStudyPolicy> evidences;
 
+  private Set<ProjectPolicyInnovation> projectPolicyInnovations = new HashSet<ProjectPolicyInnovation>(0);
+
+  private List<ProjectPolicyInnovation> innovations;
+
+
   public String getComposedName() {
 
 
@@ -59,6 +64,7 @@ public class ProjectPolicy extends MarloAuditableEntity implements java.io.Seria
     }
 
   }
+
 
   public List<ProjectPolicyCountry> getCountries() {
     return countries;
@@ -74,11 +80,9 @@ public class ProjectPolicy extends MarloAuditableEntity implements java.io.Seria
     return countriesIdsText;
   }
 
-
   public List<ProjectPolicyCrossCuttingMarker> getCrossCuttingMarkers() {
     return crossCuttingMarkers;
   }
-
 
   public List<ProjectPolicyCrp> getCrps() {
     return crps;
@@ -90,12 +94,18 @@ public class ProjectPolicy extends MarloAuditableEntity implements java.io.Seria
   }
 
 
+  public List<ProjectPolicyInnovation> getInnovations() {
+    return innovations;
+  }
+
+
   @Override
   public String getLogDeatil() {
     StringBuilder sb = new StringBuilder();
     sb.append("Id : ").append(this.getId());
     return sb.toString();
   }
+
 
   public List<ProjectPolicyOwner> getOwners() {
     return owners;
@@ -110,7 +120,6 @@ public class ProjectPolicy extends MarloAuditableEntity implements java.io.Seria
   public Set<ProjectExpectedStudyPolicy> getProjectExpectedStudyPolicies() {
     return projectExpectedStudyPolicies;
   }
-
 
   public Set<ProjectPolicyCountry> getProjectPolicyCountries() {
     return ProjectPolicyCountries;
@@ -154,6 +163,11 @@ public class ProjectPolicy extends MarloAuditableEntity implements java.io.Seria
   }
 
 
+  public Set<ProjectPolicyInnovation> getProjectPolicyInnovations() {
+    return projectPolicyInnovations;
+  }
+
+
   public Set<ProjectPolicyOwner> getProjectPolicyOwners() {
     return projectPolicyOwners;
   }
@@ -178,19 +192,19 @@ public class ProjectPolicy extends MarloAuditableEntity implements java.io.Seria
     return subIdos;
   }
 
+
   public void setCountries(List<ProjectPolicyCountry> countries) {
     this.countries = countries;
   }
+
 
   public void setCountriesIds(List<String> countriesIds) {
     this.countriesIds = countriesIds;
   }
 
-
   public void setCountriesIdsText(String countriesIdsText) {
     this.countriesIdsText = countriesIdsText;
   }
-
 
   public void setCrossCuttingMarkers(List<ProjectPolicyCrossCuttingMarker> crossCuttingMarkers) {
     this.crossCuttingMarkers = crossCuttingMarkers;
@@ -204,6 +218,11 @@ public class ProjectPolicy extends MarloAuditableEntity implements java.io.Seria
 
   public void setEvidences(List<ProjectExpectedStudyPolicy> evidences) {
     this.evidences = evidences;
+  }
+
+
+  public void setInnovations(List<ProjectPolicyInnovation> innovations) {
+    this.innovations = innovations;
   }
 
 
@@ -226,6 +245,7 @@ public class ProjectPolicy extends MarloAuditableEntity implements java.io.Seria
     ProjectPolicyCountries = projectPolicyCountries;
   }
 
+
   public void
     setProjectPolicyCrossCuttingMarkers(Set<ProjectPolicyCrossCuttingMarker> projectPolicyCrossCuttingMarkers) {
     this.projectPolicyCrossCuttingMarkers = projectPolicyCrossCuttingMarkers;
@@ -241,6 +261,10 @@ public class ProjectPolicy extends MarloAuditableEntity implements java.io.Seria
 
   public void setProjectPolicyInfos(Set<ProjectPolicyInfo> projectPolicyInfos) {
     this.projectPolicyInfos = projectPolicyInfos;
+  }
+
+  public void setProjectPolicyInnovations(Set<ProjectPolicyInnovation> projectPolicyInnovations) {
+    this.projectPolicyInnovations = projectPolicyInnovations;
   }
 
   public void setProjectPolicyOwners(Set<ProjectPolicyOwner> projectPolicyOwners) {

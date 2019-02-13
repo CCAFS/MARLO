@@ -54,6 +54,14 @@ public interface PhaseManager {
 
 
   /**
+   * This method get a previous phase to the current one
+   * 
+   * @param phaseId
+   * @return
+   */
+  public Phase findPreviousPhase(long phaseId);
+
+  /**
    * This method gets a phase object by a given phase identifier.
    * 
    * @param phaseID is the phase identifier.

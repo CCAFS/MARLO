@@ -56,6 +56,14 @@ public interface PhaseDAO {
 
   public Phase findCycle(String cylce, int year, boolean upkeep, long crpId);
 
+  /**
+   * This method get a previous phase to the current one
+   * 
+   * @param phaseId
+   * @return
+   */
+  public Phase findPreviousPhase(long phaseId);
+
 
   /**
    * This method saves the information of the given phase

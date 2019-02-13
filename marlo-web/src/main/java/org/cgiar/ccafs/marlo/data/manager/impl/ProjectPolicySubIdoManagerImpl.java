@@ -15,11 +15,15 @@
 package org.cgiar.ccafs.marlo.data.manager.impl;
 
 
+import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.dao.PhaseDAO;
 import org.cgiar.ccafs.marlo.data.dao.ProjectPolicySubIdoDAO;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicySubIdoManager;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicySubIdo;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -33,11 +37,13 @@ public class ProjectPolicySubIdoManagerImpl implements ProjectPolicySubIdoManage
 
   private ProjectPolicySubIdoDAO projectPolicySubIdoDAO;
   // Managers
+  private PhaseDAO phaseDAO;
 
 
   @Inject
-  public ProjectPolicySubIdoManagerImpl(ProjectPolicySubIdoDAO projectPolicySubIdoDAO) {
+  public ProjectPolicySubIdoManagerImpl(ProjectPolicySubIdoDAO projectPolicySubIdoDAO, PhaseDAO phaseDAO) {
     this.projectPolicySubIdoDAO = projectPolicySubIdoDAO;
+    this.phaseDAO = phaseDAO;
 
 
   }
@@ -45,7 +51,32 @@ public class ProjectPolicySubIdoManagerImpl implements ProjectPolicySubIdoManage
   @Override
   public void deleteProjectPolicySubIdo(long projectPolicySubIdoId) {
 
+    ProjectPolicySubIdo projectPolicySubIdo = this.getProjectPolicySubIdoById(projectPolicySubIdoId);
+
+    if (projectPolicySubIdo.getPhase().getNext() != null) {
+      this.deleteProjectPolicySubIdoPhase(projectPolicySubIdo.getPhase().getNext(),
+        projectPolicySubIdo.getProjectPolicy().getId(), projectPolicySubIdo);
+    }
+
     projectPolicySubIdoDAO.deleteProjectPolicySubIdo(projectPolicySubIdoId);
+  }
+
+
+  public void deleteProjectPolicySubIdoPhase(Phase next, long policyID, ProjectPolicySubIdo projectPolicySubIdo) {
+    Phase phase = phaseDAO.find(next.getId());
+
+    List<ProjectPolicySubIdo> projectPolicySubIdos = phase.getProjectPolicySubIdos().stream()
+      .filter(c -> c.isActive() && c.getProjectPolicy().getId().longValue() == policyID
+        && c.getSrfSubIdo().getId().equals(projectPolicySubIdo.getSrfSubIdo().getId()))
+      .collect(Collectors.toList());
+
+    for (ProjectPolicySubIdo projectPolicySubIdoDB : projectPolicySubIdos) {
+      projectPolicySubIdoDAO.deleteProjectPolicySubIdo(projectPolicySubIdoDB.getId());
+    }
+
+    if (phase.getNext() != null) {
+      this.deleteProjectPolicySubIdoPhase(phase.getNext(), policyID, projectPolicySubIdo);
+    }
   }
 
   @Override
@@ -67,10 +98,41 @@ public class ProjectPolicySubIdoManagerImpl implements ProjectPolicySubIdoManage
     return projectPolicySubIdoDAO.find(projectPolicySubIdoID);
   }
 
+  public void savePolicySubIdoPhase(Phase next, long policyID, ProjectPolicySubIdo projectPolicySubIdo) {
+
+    Phase phase = phaseDAO.find(next.getId());
+
+    List<ProjectPolicySubIdo> projectPolicySubIdos =
+      phase.getProjectPolicySubIdos().stream().filter(c -> c.getProjectPolicy().getId().longValue() == policyID
+        && c.getSrfSubIdo().getId().equals(projectPolicySubIdo.getSrfSubIdo().getId())).collect(Collectors.toList());
+
+    if (projectPolicySubIdos.isEmpty()) {
+      ProjectPolicySubIdo projectPolicySubIdoAdd = new ProjectPolicySubIdo();
+      projectPolicySubIdoAdd.setProjectPolicy(projectPolicySubIdo.getProjectPolicy());
+      projectPolicySubIdoAdd.setPhase(phase);
+      projectPolicySubIdoAdd.setSrfSubIdo(projectPolicySubIdo.getSrfSubIdo());
+      projectPolicySubIdoDAO.save(projectPolicySubIdoAdd);
+    }
+
+
+    if (phase.getNext() != null) {
+      this.savePolicySubIdoPhase(phase.getNext(), policyID, projectPolicySubIdo);
+    }
+  }
+
   @Override
   public ProjectPolicySubIdo saveProjectPolicySubIdo(ProjectPolicySubIdo projectPolicySubIdo) {
 
-    return projectPolicySubIdoDAO.save(projectPolicySubIdo);
+    ProjectPolicySubIdo subIdo = projectPolicySubIdoDAO.save(projectPolicySubIdo);
+
+    Phase phase = phaseDAO.find(subIdo.getPhase().getId());
+    if (phase.getDescription().equals(APConstants.REPORTING)) {
+      if (subIdo.getPhase().getNext() != null) {
+        this.savePolicySubIdoPhase(projectPolicySubIdo.getPhase().getNext(),
+          projectPolicySubIdo.getProjectPolicy().getId(), projectPolicySubIdo);
+      }
+    }
+    return subIdo;
   }
 
 
