@@ -21,8 +21,8 @@ import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.generallists.G
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.institutions.InstitutionItem;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.institutions.InstitutionTypeItem;
 import org.cgiar.ccafs.marlo.rest.dto.InstitutionDTO;
+import org.cgiar.ccafs.marlo.rest.dto.InstitutionRequestDTO;
 import org.cgiar.ccafs.marlo.rest.dto.InstitutionTypeDTO;
-import org.cgiar.ccafs.marlo.rest.dto.PartnerRequestDTO;
 import org.cgiar.ccafs.marlo.security.Permission;
 
 import java.util.List;
@@ -64,13 +64,14 @@ public class Institutions {
 		this.userManager = userManager;
 	}
 
-	@ApiOperation(value = "Create a partner request by id", response = PartnerRequestDTO.class)
+	@ApiOperation(value = "Create a partner request by id", response = InstitutionRequestDTO.class)
 	@RequiresPermissions(Permission.FULL_CREATE_REST_API_PERMISSION)
-	@RequestMapping(value = "/institutions/{entityAcronym}/partner-requests", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<PartnerRequestDTO> createPartnerRequest(@PathVariable String entityAcronym,
+	@RequestMapping(value = "/institutions/{CGIAREntity}/institution-requests", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<InstitutionRequestDTO> createPartnerRequest(
+			@PathVariable(name = "CGIAR Entity Acronym") String CGIAREntity,
 			@Valid @RequestBody InstitutionDTO institutionDTO) {
 		LOG.debug("Create a new institution (Partner Request) with : {}", institutionDTO);
-		return this.institutionItem.createPartnerRequest(institutionDTO, entityAcronym, this.getCurrentUser());
+		return this.institutionItem.createPartnerRequest(institutionDTO, CGIAREntity, this.getCurrentUser());
 	}
 
 	@ApiOperation(value = "View a list of institutions", response = InstitutionDTO.class, responseContainer = "List")
@@ -104,12 +105,23 @@ public class Institutions {
 		return this.institutionItem.findInstitutionById(id);
 	}
 
-	@ApiOperation(value = "Search a partner request by id", response = PartnerRequestDTO.class)
+	@ApiOperation(value = "Search an institution typet by id", response = InstitutionTypeDTO.class)
 	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
-	@RequestMapping(value = "/institutions/{entityAcronym}/partner-requests/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<PartnerRequestDTO> getPartnerRequestById(@PathVariable String entityAcronym,
-			@PathVariable Long id) {
+	@RequestMapping(value = "/institution-types/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<InstitutionTypeDTO> getInstitutionTypeById(
+			@PathVariable(name = "institution type id") Long id) {
+		LOG.debug("Get a partner request with : {}", id);
+		return this.institutionTypeItem.findInstitutionTypeById(id);
+	}
+
+	@ApiOperation(value = "Search a partner request by id", response = InstitutionRequestDTO.class)
+	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
+	@RequestMapping(value = "/institutions/{CGIAREntity}/institution-requests/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<InstitutionRequestDTO> getPartnerRequestById(
+			@PathVariable(name = "CGIAR Entity Acronym") String entityAcronym,
+			@PathVariable(name = "institution request id") Long id) {
 		LOG.debug("Get a partner request with : {}", id);
 		return this.institutionItem.getPartnerRequest(id, entityAcronym);
 	}
+
 }

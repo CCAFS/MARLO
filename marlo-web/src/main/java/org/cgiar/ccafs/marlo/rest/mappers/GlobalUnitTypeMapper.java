@@ -15,13 +15,10 @@
 
 package org.cgiar.ccafs.marlo.rest.mappers;
 
-import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
-import org.cgiar.ccafs.marlo.rest.dto.CGIAREntityDTO;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnitType;
+import org.cgiar.ccafs.marlo.rest.dto.CGIAREntityTypeDTO;
 
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
-import org.mapstruct.Mappings;
 
 /**
  * Maps Crp domain entites to GlobalUnitDTO objects. As JSON serialization
@@ -35,16 +32,13 @@ import org.mapstruct.Mappings;
  * @author GrantL
  */
 @Mapper(componentModel = "jsr330")
-public interface GlobalUnitMapper {
+public interface GlobalUnitTypeMapper {
 
-	public GlobalUnit globalUnitDTOToGlobalUnit(CGIAREntityDTO globalUnitDTO);
+	public GlobalUnitType cgiarEntityTypeDTOToGlobalUnitType(CGIAREntityTypeDTO cgiarEntityTypeDTO);
 
-	@Mappings({ @Mapping(source = "globalUnit.smoCode", target = "code"),
-			@Mapping(source = "globalUnitType.id", target = "cgiarEntityTypeDTO.id"),
-			@Mapping(source = "globalUnitType.name", target = "cgiarEntityTypeDTO.name") })
-	public CGIAREntityDTO globalUnitToGlobalUnitDTO(GlobalUnit globalUnit);
-
-	public GlobalUnit updateGlobalUnitFromGlobalUnitDto(CGIAREntityDTO globalUnitDTO,
-			@MappingTarget GlobalUnit globalUnit);
+//	@Mappings({ @Mapping(source = "globalUnit.smoCode", target = "code"),
+//			@Mapping(source = "globalUnitType.id", target = "cgiarEntityTypeDTO.id"),
+//			@Mapping(source = "globalUnitType.name", target = "cgiarEntityTypeDTO.name") })
+	public CGIAREntityTypeDTO globalUnitTypeToCGIAREntityTypeDTO(GlobalUnitType globalUnitType);
 
 }

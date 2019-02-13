@@ -72,7 +72,6 @@ public class LocationItem<T> {
 		if (this.locElementManager.findAll() != null) {
 			List<LocElement> regions = new ArrayList<>(this.locElementManager.findAll().stream()
 					.filter(c -> c.isActive() && c.getLocElementType().getId() == 1).collect(Collectors.toList()));
-
 			List<RegionDTO> regionDTOs = regions.stream()
 					.map(regionEntity -> this.locationMapper.locElementToRegionDTO(regionEntity))
 					.collect(Collectors.toList());

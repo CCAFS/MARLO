@@ -20,7 +20,7 @@ import io.swagger.annotations.ApiModelProperty;
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  */
-public class PartnerRequestDTO {
+public class InstitutionRequestDTO {
 
 	@ApiModelProperty(notes = "The id of the Partner Request")
 	private Long id;

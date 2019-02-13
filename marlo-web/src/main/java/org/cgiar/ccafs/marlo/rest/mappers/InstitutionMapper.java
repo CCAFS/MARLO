@@ -21,7 +21,7 @@ import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.PartnerRequest;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.rest.dto.InstitutionDTO;
-import org.cgiar.ccafs.marlo.rest.dto.PartnerRequestDTO;
+import org.cgiar.ccafs.marlo.rest.dto.InstitutionRequestDTO;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -52,6 +52,6 @@ public abstract class InstitutionMapper {
 	@Mappings({ @Mapping(source = "locElement", target = "locElementDTO"),
 			@Mapping(source = "institution", target = "institutionDTO"),
 			@Mapping(source = "institutionType", target = "institutionTypeDTO") })
-	public abstract PartnerRequestDTO partnerRequestToPartnerRequestDTO(PartnerRequest PartnerRequest);
+	public abstract InstitutionRequestDTO partnerRequestToPartnerRequestDTO(PartnerRequest PartnerRequest);
 
 }

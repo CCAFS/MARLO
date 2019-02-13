@@ -22,6 +22,7 @@ import io.swagger.annotations.ApiModelProperty;
  */
 public class SrfIdoDTO {
 
+	@ApiModelProperty(notes = "Cross cutting Issue associated")
 	private SrfCrossCuttingIssueDTO srfCrossCuttingIssue;
 
 	@ApiModelProperty(notes = "TheCode for SRF IDO")
@@ -32,6 +33,10 @@ public class SrfIdoDTO {
 
 	@ApiModelProperty(notes = "Indicator if the SRF IDO is a Cross Cutting Issue")
 	private boolean isCrossCutting;
+
+	public String getCode() {
+		return this.code;
+	}
 
 	public String getDescription() {
 		return this.description;
@@ -45,6 +50,10 @@ public class SrfIdoDTO {
 		return this.isCrossCutting;
 	}
 
+	public void setCode(String code) {
+		this.code = code;
+	}
+
 	public void setCrossCutting(boolean isCrossCutting) {
 		this.isCrossCutting = isCrossCutting;
 	}
@@ -55,14 +64,6 @@ public class SrfIdoDTO {
 
 	public void setSrfCrossCuttingIssue(SrfCrossCuttingIssueDTO srfCrossCuttingIssue) {
 		this.srfCrossCuttingIssue = srfCrossCuttingIssue;
-	}
-
-	public String getCode() {
-		return code;
-	}
-
-	public void setCode(String code) {
-		this.code = code;
 	}
 
 }
