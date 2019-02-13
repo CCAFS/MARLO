@@ -172,7 +172,7 @@
       [/#list]
     [#else]
       <tr>
-        <td class="text-center" colspan="6">
+        <td class="text-center" colspan="[#if currentTable]7[#else]6[/#if]">
           <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
         </td>
       </tr>

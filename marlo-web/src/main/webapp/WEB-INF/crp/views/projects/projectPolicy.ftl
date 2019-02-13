@@ -72,10 +72,11 @@
   <div id="${customId}" class="policy" style="display:${template?string('none','block')}">
     
     [#-- Year --]
-    <div class="form-group">
-      <div class="col-md-4"></div>
-      <div class="col-md-4"></div>
-      <div class="col-md-4">
+    <div class="form-group row">
+      <div class="col-md-3"></div>
+      <div class="col-md-3"></div>
+      <div class="col-md-3"></div>
+      <div class="col-md-3">
         [@customForm.select name="${customName}.projectPolicyInfo.year" className="setSelect2" i18nkey="policy.year" listName="years" required=true editable=editable/]
       </div>
     </div>
@@ -128,7 +129,13 @@
       [@customForm.elementsListComponent name="${customName}.evidences" elementType="projectExpectedStudy" elementList=element.evidences label="policy.evidence" help="policy.evidence.help" helpIcon=false listName="expectedStudyList" keyFieldName="id" displayFieldName="composedName" /]
     </div>
     
+    [#-- Innovations  --]
+    <div class="form-group">
+      [@customForm.elementsListComponent name="${customName}.innovations" elementType="projectInnovation" elementList=element.innovations label="policy.innovations" helpIcon=false listName="innovationList" keyFieldName="id" displayFieldName="composedName" /]
+    </div>
+
     <hr />
+    <br />
     
     [#-- Contributing CRPs/PTFs  --]
     <div class="form-group">
@@ -173,7 +180,7 @@
         </div>
         <div class="form-group regionalBlock" style="display:${(isRegional)?string('block','none')}">
           [#-- Regional scope --]
-          [@customForm.elementsListComponent name="${customName}.regions" elementType="locElement" elementList=element.regions label="policy.regions"  listName="regions" keyFieldName="id" displayFieldName="name" required=false /]
+          [@customForm.elementsListComponent name="${customName}.regions" elementType="locElement" elementList=element.regions label="policy.regions"  listName="regions" keyFieldName="id" displayFieldName="composedName" required=false /]
         </div>
         <div class="form-group nationalBlock" style="display:${(isMultiNational || isNational || isSubNational)?string('block','none')}">
           [#-- Multinational, National and Subnational scope --]
