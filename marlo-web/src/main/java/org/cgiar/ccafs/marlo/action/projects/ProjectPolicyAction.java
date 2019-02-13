@@ -568,8 +568,8 @@ public class ProjectPolicyAction extends BaseAction {
         }
 
         // Innovations List
-        if (policy.getProjectPolicySubIdos() != null) {
-          policy.setSubIdos(new ArrayList<>(policy.getProjectPolicySubIdos().stream()
+        if (policy.getProjectPolicyInnovations() != null) {
+          policy.setInnovations(new ArrayList<>(policy.getProjectPolicyInnovations().stream()
             .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
         }
 
@@ -692,6 +692,14 @@ public class ProjectPolicyAction extends BaseAction {
 
       if (policy.getSubIdos() != null) {
         policy.getSubIdos().clear();
+      }
+
+      if (policy.getEvidences() != null) {
+        policy.getEvidences().clear();
+      }
+
+      if (policy.getInnovations() != null) {
+        policy.getInnovations().clear();
       }
 
       if (policy.getCrossCuttingMarkers() != null) {
