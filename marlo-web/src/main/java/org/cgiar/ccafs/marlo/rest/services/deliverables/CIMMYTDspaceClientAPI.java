@@ -52,6 +52,7 @@ public class CIMMYTDspaceClientAPI extends MetadataClientApi {
   private final String Dataverse_OAI_PMH_HANDLE =
     "http://repository.cimmyt.org/oai/request?verb=GetRecord&identifier=oai:repository.cimmyt.org:{0}&metadataPrefix=oai_dc";
   private final String CYMMYT_DSPACE_URL = "http://repository.cimmyt.org/xmlui/handle/";
+  private final String CYMMYT_DSPACE_HTTPS_URL = "https://repository.cimmyt.org/xmlui/handle/";
   private RestConnectionUtil xmlReaderConnectionUtil;
 
   private Map<String, String> coverterAtrributes;
@@ -187,7 +188,7 @@ public class CIMMYTDspaceClientAPI extends MetadataClientApi {
           }
         }
       }
-
+      this.setDoi(jo);
       GsonBuilder gsonBuilder = new GsonBuilder();
       gsonBuilder.registerTypeAdapter(Date.class, new DateTypeAdapter());
       Gson gson = gsonBuilder.create();
@@ -218,6 +219,9 @@ public class CIMMYTDspaceClientAPI extends MetadataClientApi {
     // if the link contains http://repository.cimmyt.org/xmlui/handle/ we remove it from the link
     if (link.contains(CYMMYT_DSPACE_URL)) {
       this.setId(link.replace(CYMMYT_DSPACE_URL, ""));
+    }
+    if (link.contains(CYMMYT_DSPACE_HTTPS_URL)) {
+      this.setId(link.replace(CYMMYT_DSPACE_HTTPS_URL, ""));
     }
     String linkRest = (Dataverse_OAI_PMH_HANDLE.replace("{0}", this.getId()));
     return linkRest;

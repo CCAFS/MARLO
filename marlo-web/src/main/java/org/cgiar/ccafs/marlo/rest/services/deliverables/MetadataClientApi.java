@@ -67,7 +67,13 @@ public abstract class MetadataClientApi {
     }
   }
 
+  private RestConnectionUtil xmlReaderConnectionUtil;
+
   private String id;
+
+  public MetadataClientApi() {
+    xmlReaderConnectionUtil = new RestConnectionUtil();
+  }
 
 
   public String getId() {
@@ -108,11 +114,21 @@ public abstract class MetadataClientApi {
     this.putKeyIfNotExists(jo, "pages");
   }
 
-  public void setDoi(JSONObject jo, RestConnectionUtil xmlReaderConnectionUtil)
-    throws JsonParseException, JsonMappingException, IOException {
-    // get DOI
+  public void setDoi(JSONObject jo) throws JsonParseException, JsonMappingException, IOException {
+    String doi = "";
     if (jo.has("doi") && jo.get("doi") != null) {
-      String doi = jo.get("doi").toString();
+      doi = jo.get("doi").toString();
+    }
+    if (doi.isEmpty() && jo.has("identifier.doi") && jo.get("identifier.doi") != null) {
+      doi = jo.get("identifier.doi").toString();
+    }
+
+    if (doi.isEmpty() && jo.has("persistentUrl") && jo.get("persistentUrl") != null) {
+      doi = jo.get("persistentUrl").toString();
+    }
+
+    if (doi != null && !doi.isEmpty()) {
+      jo.put("doi", doi);
       if (doi.contains("http://dx.doi.org/") || doi.contains("https://doi.org/")) {
 
         if (doi.contains("http://dx.doi.org/")) {

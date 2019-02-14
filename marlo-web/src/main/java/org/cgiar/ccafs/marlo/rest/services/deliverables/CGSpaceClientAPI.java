@@ -94,7 +94,7 @@ public class CGSpaceClientAPI extends MetadataClientApi {
         }
       }
 
-      this.setDoi(jo, xmlReaderConnectionUtil);
+      this.setDoi(jo);
 
 
       GsonBuilder gsonBuilder = new GsonBuilder();
