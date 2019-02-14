@@ -78,7 +78,7 @@ public class ILRIDatasetsClientAPI extends MetadataClientApi {
       }
       Author[] authorsArr = new Author[authors.size()];
       authorsArr = authors.toArray(authorsArr);
-      metadataModel.setAuthors(authorsArr);
+      metadataModel.setAuthor(authorsArr);
     } catch (Exception e) {
       e.printStackTrace();
       LOG.error(e.getLocalizedMessage());

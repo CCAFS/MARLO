@@ -100,5 +100,12 @@
       </key>
       <one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectPolicyInnovation" />
     </set> 
+    <set name="projectPolicyGeographicScopes" table="project_policy_geographic_scopes" inverse="true"
+      lazy="true" fetch="select">
+      <key>
+        <column name="project_policy_id" />
+      </key>
+      <one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectPolicyGeographicScope" />
+    </set> 
 	</class>
 </hibernate-mapping>

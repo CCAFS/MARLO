@@ -29,6 +29,7 @@ import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectBudgetManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyCountryManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyLinkManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.RepositoryChannelManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfTargetUnitManager;
@@ -75,6 +76,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyCrp;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyFlagship;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInstitution;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyLink;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudySrfTarget;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudySubIdo;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
@@ -208,6 +210,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
   private final ResourceManager resourceManager;
   private final ProjectExpectedStudyCountryManager projectExpectedStudyCountryManager;
   private final DeliverableCrossCuttingMarkerManager deliverableCrossCuttingMarkerManager;
+  private final ProjectExpectedStudyLinkManager projectExpectedStudyLinkManager;
 
   @Inject
   public ReportingSummaryAction(APConfig config, GlobalUnitManager crpManager, ProjectManager projectManager,
@@ -217,7 +220,8 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     RepositoryChannelManager repositoryChannelManager, LocalizedTextProvider localizedTextProvider,
     CrossCuttingScoringManager crossCuttingScoringManager, DeliverablePartnershipManager deliverablePartnershipManager,
     ResourceManager resourceManager, ProjectExpectedStudyCountryManager projectExpectedStudyCountryManager,
-    DeliverableCrossCuttingMarkerManager deliverableCrossCuttingMarkerManager) {
+    DeliverableCrossCuttingMarkerManager deliverableCrossCuttingMarkerManager,
+    ProjectExpectedStudyLinkManager projectExpectedStudyLinkManager) {
     super(config, crpManager, phaseManager, projectManager);
     this.programManager = programManager;
     this.institutionManager = institutionManager;
@@ -233,6 +237,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     this.resourceManager = resourceManager;
     this.projectExpectedStudyCountryManager = projectExpectedStudyCountryManager;
     this.deliverableCrossCuttingMarkerManager = deliverableCrossCuttingMarkerManager;
+    this.projectExpectedStudyLinkManager = projectExpectedStudyLinkManager;
   }
 
   /**
@@ -477,11 +482,16 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     masterReport.getParameterValues().put("i8nExpectedStudiesProjects",
       this.getText("summaries.expectedStudies.projects"));
     masterReport.getParameterValues().put("i8nExpectedStudiesTitle", this.getText("summaries.study.title"));
+    masterReport.getParameterValues().put("i8nExpectedStudiesTagged", this.getText("summaries.study.tagged"));
     masterReport.getParameterValues().put("i8nExpectedStudiesYear", this.getText("summaries.study.year"));
     masterReport.getParameterValues().put("i8nExpectedStudiesStatus", this.getText("study.status"));
     masterReport.getParameterValues().put("i8nExpectedStudiesType", this.getText("expectedStudy.type"));
     masterReport.getParameterValues().put("i8nExpectedStudiesCommissioningStudy",
       this.getText("study.commissioningStudy.readText"));
+    masterReport.getParameterValues().put("i8nExpectedStudiesOutcomesStory",
+      this.getText("summaries.study.outcomeStory"));
+    masterReport.getParameterValues().put("i8nExpectedStudiesLinksProvided",
+      this.getText("summaries.study.linksProvided"));
     masterReport.getParameterValues().put("i8nExpectedStudiesSubIdo", this.getText("expectedStudy.srfSubIdo"));
     masterReport.getParameterValues().put("i8nExpectedStudiesSRF", this.getText("expectedStudy.srfSloIndicator"));
     masterReport.getParameterValues().put("i8nExpectedStudiesComments", this.getText("expectedStudy.comments"));
@@ -4199,20 +4209,22 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
 
   private TypedTableModel getStudiesTableModel() {
     TypedTableModel model = new TypedTableModel(
-      new String[] {"id", "year", "policyAmount", "title", "status", "type", "outcomeImpactStatement",
-        "isContributionText", "policyInvestimentType", "organizationType", "stageProcess", "stageStudy", "srfTargets",
-        "subIdos", "topLevelComments", "geographicScope", "region", "countries", "scopeComments", "crps", "flagships",
-        "regions", "institutions", "elaborationOutcomeImpactStatement", "referenceText", "referencesFile",
-        "quantification", "genderRelevance", "youthRelevance", "capacityRelevance", "otherCrossCuttingDimensions",
-        "comunicationsMaterial", "comunicationsFile", "contacts", "studyProjects", "isContribution",
-        "isBudgetInvestment", "isStage1", "isRegional", "isNational", "hasreferencesFile", "hasCommunicationFile",
-        "isOutcomeCaseStudy", "hasMultipleProjects", "commissioningStudy"},
+      new String[] {"id", "year", "policyAmount", "title", "status", "type", "tagged", "outcomeImpactStatement",
+        "outcomeHistory", "linksProvided", "isContributionText", "policyInvestimentType", "organizationType",
+        "stageProcess", "stageStudy", "srfTargets", "subIdos", "topLevelComments", "geographicScope", "region",
+        "countries", "scopeComments", "crps", "flagships", "regions", "institutions",
+        "elaborationOutcomeImpactStatement", "referenceText", "referencesFile", "quantification", "genderRelevance",
+        "youthRelevance", "capacityRelevance", "otherCrossCuttingDimensions", "comunicationsMaterial",
+        "comunicationsFile", "contacts", "studyProjects", "isContribution", "isBudgetInvestment", "isStage1",
+        "isRegional", "isNational", "hasreferencesFile", "hasCommunicationFile", "isOutcomeCaseStudy",
+        "hasMultipleProjects", "commissioningStudy"},
       new Class[] {Long.class, Integer.class, Double.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        String.class, String.class, String.class, String.class, Boolean.class, Boolean.class, Boolean.class,
-        Boolean.class, Boolean.class, Boolean.class, Boolean.class, Boolean.class, Boolean.class, String.class},
+        String.class, String.class, String.class, String.class, String.class, String.class, String.class, Boolean.class,
+        Boolean.class, Boolean.class, Boolean.class, Boolean.class, Boolean.class, Boolean.class, Boolean.class,
+        Boolean.class, String.class},
       0);
     Set<ProjectExpectedStudy> myStudies = new HashSet<>();
 
@@ -4246,14 +4258,14 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         Long id = null;
         Integer year = null;
         Double policyAmount = null;
-        String title = null, status = null, type = null, outcomeImpactStatement = null, isContributionText = null,
-          policyInvestimentType = null, organizationType = null, stageProcess = null, stageStudy = null,
-          srfTargets = null, subIdos = null, topLevelComments = null, geographicScope = "", region = "", countries = "",
-          scopeComments = null, crps = null, flagships = null, regions = null, institutions = null,
-          elaborationOutcomeImpactStatement = null, referenceText = null, referencesFile = null, quantification = null,
-          genderRelevance = null, youthRelevance = null, capacityRelevance = null, otherCrossCuttingDimensions = null,
-          comunicationsMaterial = null, comunicationsFile = null, contacts = null, studyProjects = null,
-          commissioningStudy = null;
+        String title = null, status = null, type = null, outcomeImpactStatement = null, outcomeHistory = null,
+          linksProvided = null, isContributionText = null, policyInvestimentType = null, organizationType = null,
+          stageProcess = null, stageStudy = null, srfTargets = null, subIdos = null, topLevelComments = null,
+          geographicScope = "", region = "", countries = "", scopeComments = null, crps = null, flagships = null,
+          regions = null, institutions = null, elaborationOutcomeImpactStatement = null, referenceText = null,
+          referencesFile = null, quantification = null, genderRelevance = null, youthRelevance = null,
+          capacityRelevance = null, otherCrossCuttingDimensions = null, comunicationsMaterial = null,
+          comunicationsFile = null, contacts = null, studyProjects = null, commissioningStudy = null, tagget = null;
 
         Boolean isContribution = false, isBudgetInvestment = false, isStage1 = false, isRegional = false,
           isNational = false, hasreferencesFile = false, hasCommunicationFile = false, isOutcomeCaseStudy = false,
@@ -4262,12 +4274,16 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         // Id
         id = projectExpectedStudy.getId();
         // Year
-        if (projectExpectedStudy.getProjectExpectedStudyInfo().getYear() != null) {
+        if (studyinfo != null && studyinfo.getYear() != null) {
           year = projectExpectedStudy.getProjectExpectedStudyInfo().getYear();
         }
         // Title
         if (studyinfo.getTitle() != null && !studyinfo.getTitle().trim().isEmpty()) {
           title = studyinfo.getTitle();
+        }
+        // Tagged
+        if (studyinfo != null && studyinfo.getEvidenceTag() != null && studyinfo.getEvidenceTag().getName() != null) {
+          tagget = studyinfo.getEvidenceTag().getName();
         }
         // Status
         if (studyinfo.getStatus() != null) {
@@ -4288,6 +4304,26 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         // outcomeImpactStatement
         if (studyinfo.getOutcomeImpactStatement() != null && !studyinfo.getOutcomeImpactStatement().trim().isEmpty()) {
           outcomeImpactStatement = studyinfo.getOutcomeImpactStatement();
+        }
+        // OutcomeHistory
+        if (studyinfo != null && studyinfo.getOutcomeStory() != null) {
+          outcomeHistory = projectExpectedStudy.getProjectExpectedStudyInfo().getOutcomeStory();
+        }
+        // Links Provided
+        if (projectExpectedStudy.getProjectExpectedStudyLinks() != null) {
+          projectExpectedStudy.setLinks(new ArrayList<>(projectExpectedStudy.getProjectExpectedStudyLinks().stream()
+            .filter(o -> o.isActive() && o.getPhase().getId() == this.getSelectedPhase().getId())
+            .collect(Collectors.toList())));
+        }
+
+        if (projectExpectedStudy.getProjectExpectedStudyLinks() != null
+          && projectExpectedStudy.getProjectExpectedStudyLinks().size() > 0) {
+          List<ProjectExpectedStudyLink> linkPrev =
+            new ArrayList<>(projectExpectedStudy.getProjectExpectedStudyLinks());
+
+          for (ProjectExpectedStudyLink studyLink : linkPrev) {
+            linksProvided += studyLink.getLink() + " ";
+          }
         }
         // isContribution
         if (studyinfo.getIsContribution() != null) {
@@ -4547,13 +4583,14 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           hasMultipleProjects = true;
         }
 
-        model.addRow(new Object[] {id, year, policyAmount, title, status, type, outcomeImpactStatement,
-          isContributionText, policyInvestimentType, organizationType, stageProcess, stageStudy, srfTargets, subIdos,
-          topLevelComments, geographicScope, region, countries, scopeComments, crps, flagships, regions, institutions,
-          elaborationOutcomeImpactStatement, referenceText, referencesFile, quantification, genderRelevance,
-          youthRelevance, capacityRelevance, otherCrossCuttingDimensions, comunicationsMaterial, comunicationsFile,
-          contacts, studyProjects, isContribution, isBudgetInvestment, isStage1, isRegional, isNational,
-          hasreferencesFile, hasCommunicationFile, isOutcomeCaseStudy, hasMultipleProjects, commissioningStudy});
+        model.addRow(new Object[] {id, year, policyAmount, title, status, type, tagget, outcomeImpactStatement,
+          outcomeHistory, linksProvided, isContributionText, policyInvestimentType, organizationType, stageProcess,
+          stageStudy, srfTargets, subIdos, topLevelComments, geographicScope, region, countries, scopeComments, crps,
+          flagships, regions, institutions, elaborationOutcomeImpactStatement, referenceText, referencesFile,
+          quantification, genderRelevance, youthRelevance, capacityRelevance, otherCrossCuttingDimensions,
+          comunicationsMaterial, comunicationsFile, contacts, studyProjects, isContribution, isBudgetInvestment,
+          isStage1, isRegional, isNational, hasreferencesFile, hasCommunicationFile, isOutcomeCaseStudy,
+          hasMultipleProjects, commissioningStudy});
       }
     }
 

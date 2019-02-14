@@ -344,8 +344,12 @@ public class ProjectContributionLp6SummaryAction extends BaseSummariesAction imp
   public void prepare() {
     this.setGeneralParameters();
 
-    projectLp6Contributions = projectLp6ContributionManager.findAll().stream()
-      .filter(c -> c.isActive() && c.getPhase().equals(this.getSelectedPhase())).collect(Collectors.toList());
+    projectLp6Contributions = projectLp6ContributionManager.findAll();
+
+    if (projectLp6Contributions != null) {
+      projectLp6Contributions = projectLp6Contributions.stream()
+        .filter(c -> c.isActive() && c.getPhase().equals(this.getSelectedPhase())).collect(Collectors.toList());
+    }
 
     if (projectLp6Contributions == null) {
       projectLp6Contributions = new ArrayList<>();
