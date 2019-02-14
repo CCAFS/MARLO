@@ -793,27 +793,9 @@ public class ProjectPolicyAction extends BaseAction {
       this.saveInnovations(policyDB, phase);
       this.saveEvidence(policyDB, phase);
 
-
-      List<String> relationsName = new ArrayList<>();
-      relationsName.add(APConstants.PROJECT_POLICY_INFOS_RELATION);
-      relationsName.add(APConstants.PROJECT_POLICY_COUNTRY_RELATION);
-      relationsName.add(APConstants.PROJECT_POLICY_CRP_RELATION);
-      relationsName.add(APConstants.PROJECT_POLICY_OWNER_RELATION);
-      relationsName.add(APConstants.PROJECT_POLICY_SUB_IDO_RELATION);
-      relationsName.add(APConstants.PROJECT_POLICY_REGION_RELATION);
-      relationsName.add(APConstants.PROJECT_POLICY_INNOVATION_RELATION);
-      relationsName.add(APConstants.PROJECT_POLICY_CROSS_CUTTING_RELATION);
-      relationsName.add(APConstants.PROJECT_POLICY_EVIDENCE_RELATION);
-
-
-      policy.setModificationJustification(this.getJustification());
-
-
-      // Save Project Policy Info
-      policy.getProjectPolicyInfo().setPhase(this.getActualPhase());
-      policy.getProjectPolicyInfo().setProjectPolicy(policy);
-
       // Save Geographic Scope Data
+      this.saveGeographicScopes(policyDB, phase);
+
       boolean haveRegions = false;
       boolean haveCountries = false;
 
@@ -862,6 +844,27 @@ public class ProjectPolicyAction extends BaseAction {
           }
         }
       }
+
+
+      List<String> relationsName = new ArrayList<>();
+      relationsName.add(APConstants.PROJECT_POLICY_INFOS_RELATION);
+      relationsName.add(APConstants.PROJECT_POLICY_COUNTRY_RELATION);
+      relationsName.add(APConstants.PROJECT_POLICY_CRP_RELATION);
+      relationsName.add(APConstants.PROJECT_POLICY_OWNER_RELATION);
+      relationsName.add(APConstants.PROJECT_POLICY_SUB_IDO_RELATION);
+      relationsName.add(APConstants.PROJECT_POLICY_REGION_RELATION);
+      relationsName.add(APConstants.PROJECT_POLICY_INNOVATION_RELATION);
+      relationsName.add(APConstants.PROJECT_POLICY_CROSS_CUTTING_RELATION);
+      relationsName.add(APConstants.PROJECT_POLICY_EVIDENCE_RELATION);
+
+
+      policy.setModificationJustification(this.getJustification());
+
+
+      // Save Project Policy Info
+      policy.getProjectPolicyInfo().setPhase(this.getActualPhase());
+      policy.getProjectPolicyInfo().setProjectPolicy(policy);
+
 
       // Validate negative Values
       if (policy.getProjectPolicyInfo().getRepIndOrganizationType() != null) {
@@ -1102,6 +1105,50 @@ public class ProjectPolicyAction extends BaseAction {
           projectExpectedStudyPolicyManager.saveProjectExpectedStudyPolicy(studyPolicySave);
           // This is to add studyLinkSave to generate correct auditlog.
           expectedStudy.getProjectExpectedStudyPolicies().add(studyPolicySave);
+        }
+      }
+    }
+  }
+
+  /**
+   * Save Project Policy Geographic Scopes Information
+   * 
+   * @param projectPolicy
+   * @param phase
+   */
+  public void saveGeographicScopes(ProjectPolicy projectPolicy, Phase phase) {
+
+    // Search and deleted form Information
+    if (projectPolicy.getProjectPolicyGeographicScopes() != null
+      && projectPolicy.getProjectPolicyGeographicScopes().size() > 0) {
+
+      List<ProjectPolicyGeographicScope> scopePrev = new ArrayList<>(projectPolicy.getProjectPolicyGeographicScopes()
+        .stream().filter(nu -> nu.isActive() && nu.getPhase().getId() == phase.getId()).collect(Collectors.toList()));
+
+      for (ProjectPolicyGeographicScope scope : scopePrev) {
+        if (policy.getGeographicScopes() == null || !policy.getGeographicScopes().contains(scope)) {
+          projectPolicyGeographicScopeManager.deleteProjectPolicyGeographicScope(scope.getId());
+        }
+      }
+    }
+
+    // Save form Information
+    if (policy.getGeographicScopes() != null) {
+      for (ProjectPolicyGeographicScope scope : policy.getGeographicScopes()) {
+        if (scope.getId() == null) {
+          ProjectPolicyGeographicScope scopeSave = new ProjectPolicyGeographicScope();
+          scopeSave.setProjectPolicy(projectPolicy);
+          scopeSave.setPhase(phase);
+
+          RepIndGeographicScope geoScope =
+            repIndGeographicScopeManager.getRepIndGeographicScopeById(scope.getRepIndGeographicScope().getId());
+
+
+          scopeSave.setRepIndGeographicScope(geoScope);
+
+          projectPolicyGeographicScopeManager.saveProjectPolicyGeographicScope(scopeSave);
+          // This is to add to generate correct auditlog.
+          policy.getProjectPolicyGeographicScopes().add(scopeSave);
         }
       }
     }
