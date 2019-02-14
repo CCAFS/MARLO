@@ -411,6 +411,8 @@ public final class APConstants {
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.ProjectPolicy.projectPolicyInfos)";
   public static final String PROJECT_POLICY_COUNTRY_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.ProjectPolicy.ProjectPolicyCountries)";
+  public static final String PROJECT_POLICY_REGION_RELATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.ProjectPolicy.ProjectPolicyRegions)";
   public static final String PROJECT_POLICY_CRP_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.ProjectPolicy.projectPolicyCrps)";
   public static final String PROJECT_POLICY_OWNER_RELATION =
@@ -419,6 +421,10 @@ public final class APConstants {
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.ProjectPolicy.projectPolicySubIdos)";
   public static final String PROJECT_POLICY_CROSS_CUTTING_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.ProjectPolicy.projectPolicyCrossCuttingMarkers)";
+  public static final String PROJECT_POLICY_INNOVATION_RELATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.ProjectPolicy.projectPolicyInnovations)";
+  public static final String PROJECT_POLICY_EVIDENCE_RELATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.ProjectPolicy.projectExpectedStudyPolicies)";
 
   // Project Contribution To LP6 Relations
   public static final String PROJECT_CONTRIBUTION_LP6_RELATION =
