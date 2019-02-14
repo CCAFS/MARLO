@@ -66,6 +66,7 @@ public class CIMMYTDspaceClientAPI extends MetadataClientApi {
   public MetadataModel getMetadata(String link) {
     MetadataModel metadataModel = null;
     JSONObject jo = new JSONObject();
+    this.setDefaultEmptyValues(jo);
     try {
       Element metadata = xmlReaderConnectionUtil.getXmlRestClient(link);
       List<Author> authors = new ArrayList<Author>();
@@ -197,7 +198,7 @@ public class CIMMYTDspaceClientAPI extends MetadataClientApi {
       metadataModel = gson.fromJson(data, MetadataModel.class);
       Author[] authorsArr = new Author[authors.size()];
       authorsArr = authors.toArray(authorsArr);
-      metadataModel.setAuthors(authorsArr);
+      metadataModel.setAuthor(authorsArr);
 
     } catch (Exception e) {
       e.printStackTrace();
