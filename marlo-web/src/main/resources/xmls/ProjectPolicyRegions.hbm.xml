@@ -13,7 +13,7 @@
 		<many-to-one
 			class="org.cgiar.ccafs.marlo.data.model.LocElement" fetch="select"
 			name="locElement">
-			<column name="id_country" not-null="true" />
+			<column name="id_region" not-null="true" />
 		</many-to-one>
 		<many-to-one
 			class="org.cgiar.ccafs.marlo.data.model.Phase" fetch="select"
