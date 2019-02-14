@@ -117,7 +117,7 @@
       </div>
       [#local ownerOther = false /]
       [#list (element.owners)![] as owner]
-        [#if owner.repIndPolicyType.id == 4][#local ownerOther = true /][#break][/#if]
+        [#if (owner.repIndPolicyType.id == 4)!false][#local ownerOther = true /][#break][/#if]
       [/#list]
       <div class="col-md-6 block-pleaseSpecify" style="display:${ownerOther?string('block', 'none')}">
         [@customForm.input name="${customName}.projectPolicyInfo.other" i18nkey="policy.otherOwner" className="" required=false editable=editable /]
