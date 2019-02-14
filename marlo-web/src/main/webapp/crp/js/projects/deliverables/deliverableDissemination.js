@@ -59,17 +59,21 @@ function addDisseminationEvents() {
   // Is this deliverable already disseminated
   $(".type-findable .button-label").on("click", function() {
     var valueSelected = $(this).hasClass('yes-button-label');
-    console.log(valueSelected);
+
     if(!valueSelected) {
       $(".dataSharing").show("slow");
       $(".block-notFindable").slideDown();
-
       unSyncDeliverable();
+      setOpenAccess(false);
+      $('input[value="notDisseminated"]').prop('checked', true);
     } else {
       $(".dataSharing").hide("slow");
       $(".block-notFindable").slideUp();
-
     }
+  });
+
+  $('input.radioType-confidential').on("click", function() {
+    $(".confidentialBlock").slideToggle();
   });
 
   // Add Author
@@ -528,23 +532,41 @@ function setMetadata(data) {
   }
 
   // Open Access Validation
+  setOpenAccess(data.openAccess);
+
+  // Sync Deliverable
+  syncDeliverable();
+
+}
+
+function setOpenAccess(isOA) {
   var $input = $(".type-accessible ").parent();
-  if(data.openAccess === "true") {
+  if(isOA) {
     $input.find('input.yesInput').prop("checked", true);
-    console.log($input.find('input.yesInput'));
     $(".type-accessible ").parent().find("label").removeClass("radio-checked");
     $(".block-accessible").hide("slow");
     $(".type-accessible .yes-button-label ").addClass("radio-checked");
   } else {
     $input.find('input.noInput').prop("checked", true);
-    console.log($input.find('input.noInput'));
     $(".type-accessible ").parent().find("label").removeClass("radio-checked");
     $(".block-accessible").show("slow");
     $(".type-accessible .no-button-label ").addClass("radio-checked");
   }
+}
 
-  syncDeliverable();
-
+function setLicense(hasLicense) {
+  var $input = $(".type-license ").parent();
+  if(hasLicense) {
+    $input.find('input.yesInput').prop("checked", true);
+    $(".type-license ").parent().find("label").removeClass("radio-checked");
+    $(".block-license").hide("slow");
+    $(".type-license .yes-button-label ").addClass("radio-checked");
+  } else {
+    $input.find('input.noInput').prop("checked", true);
+    $(".type-license ").parent().find("label").removeClass("radio-checked");
+    $(".block-license").show("slow");
+    $(".type-license .no-button-label ").addClass("radio-checked");
+  }
 }
 
 /**
