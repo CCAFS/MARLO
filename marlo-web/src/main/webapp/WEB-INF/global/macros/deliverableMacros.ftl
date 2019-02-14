@@ -18,8 +18,7 @@
     [#-- Region --]
     <div class="form-group row">
       <div class="col-md-6 regionalBlock" style="display:${(isRegional)?string('block','none')}">
-        [#--  [@customForm.selectGroup name="deliverable.deliverableInfo.region.id" list=(repIndRegions)![] element=(deliverable.deliverableInfo.region)!{} subListName="subRegions"  keyFieldName="id" displayFieldName="name" i18nkey="deliverable.region" required=true className="" editable=editable /]--]
-        [@customForm.elementsListComponent name="deliverable.deliverableRegions" elementType="locElement" elementList=deliverable.deliverableRegions label="deliverable.region"  listName="repIndRegions" keyFieldName="id" displayFieldName="name" required=false /]
+        [@customForm.elementsListComponent name="deliverable.deliverableRegions" elementType="locElement" elementList=deliverable.deliverableRegions label="deliverable.region"  listName="repIndRegions" keyFieldName="id" displayFieldName="composedName" required=false /]
       </div>
     </div>
     
@@ -175,6 +174,11 @@
   
   <div class="block-license" style="display:${((deliverable.deliverableInfo.adoptedLicense)!false)?string('block','none')}">
     <hr />
+    
+    [@metadataField title="rights" encodedName="dc.rights" type="text" require=false /]
+    [#-- ${getMetadataValueByCode("dc.rights")} --] 
+    
+    
     [#list licenceOptions as licenseType]
       <div class="licenseOptions ${licenseType.name}" style="display:${licenseType.display};">
         [#list licenseType.options as option]
@@ -424,10 +428,10 @@
       </div>
       
       [#-- Confidential URL --]
-      <div class="form-group confidentialBlock" style="display:${(isConfidential == "true")?string('block', 'none')}">
+      <div class="form-group confidentialBlock-true" style="display:${(isConfidential == "true")?string('block', 'none')}">
         [@customForm.input name="${name}.confidentialUrl" type="text" i18nkey="project.deliverable.dissemination.confidentialUrl"  placeholder="global.webSiteLink.placeholder" className="" required=true editable=editable /]
       </div>
-      <div class="form-group confidentialBlock" style="display:${(isConfidential == "false")?string('block', 'none')}">
+      <div class="form-group confidentialBlock-false" style="display:${(isConfidential == "false")?string('block', 'none')}">
         <p class="note"> [@s.text name="project.deliverable.dissemination.confidentialNoMessage" /] </p>
       </div>
     </div>
@@ -513,36 +517,36 @@
 
 [#macro deliverableMetadataMacro flagshipslistName="programs" crpsListName="crps" allowFlagships=true]
   <div class="form-group">
-    [@deliverableMacros.metadataField title="title" encodedName="dc.title" type="input" require=false/]
+    [@metadataField title="title" encodedName="dc.title" type="input" require=false/]
   </div>
   <div class="form-group">
-    [@deliverableMacros.metadataField title="description" encodedName="dc.description.abstract" type="textArea" require=false/]
+    [@metadataField title="description" encodedName="dc.description.abstract" type="textArea" require=false/]
   </div>
   <div class="form-group row">
     <div class="col-md-6">
-      [@deliverableMacros.metadataField title="publicationDate" encodedName="dc.date" type="input" require=false/]
+      [@metadataField title="publicationDate" encodedName="dc.date" type="input" require=false/]
     </div>
     <div class="col-md-6">
-      [@deliverableMacros.metadataField title="language" encodedName="dc.language" type="input" require=false/]
+      [@metadataField title="language" encodedName="dc.language" type="input" require=false/]
     </div>
   </div>
   <div class="form-group row">
     <div class="col-md-6">
-      [@deliverableMacros.metadataField title="countries" encodedName="cg:coverage.country" type="input" require=false/]
+      [@metadataField title="countries" encodedName="cg:coverage.country" type="input" require=false/]
     </div>
     <div class="col-md-6">
-      [@deliverableMacros.metadataField title="keywords" encodedName="marlo.keywords" type="input" require=false/]
+      [@metadataField title="keywords" encodedName="marlo.keywords" type="input" require=false/]
     </div>
   </div>
   <div class="form-group"> 
-    [@deliverableMacros.metadataField title="citation" encodedName="dc.identifier.citation" type="textArea" require=false/]
+    [@metadataField title="citation" encodedName="dc.identifier.citation" type="textArea" require=false/]
   </div>
   <div class="form-group row">
     <div class="col-md-6">
-      [@deliverableMacros.metadataField title="handles" encodedName="marlo.handle" type="input" require=false/]
+      [@metadataField title="handles" encodedName="marlo.handle" type="input" require=false/]
     </div>
     <div class="col-md-6">
-      [@deliverableMacros.metadataField title="doi" encodedName="marlo.doi" type="input" require=false/]
+      [@metadataField title="doi" encodedName="marlo.doi" type="input" require=false/]
     </div>
   </div>
    
@@ -552,7 +556,7 @@
   <div class="form-group">
     <label for="">[@s.text name="metadata.creator" /]:  </label>
     [#-- Hidden input --]
-    [@deliverableMacros.metadataField title="authors" encodedName="marlo.authors" type="hidden" require=false/]
+    [@metadataField title="authors" encodedName="marlo.authors" type="hidden" require=false/]
     [#-- Some Instructions  --]
     [#if editable]
       <div class="note authorVisibles" style="display:${isMetadataHide("marlo.authors")?string('none','block')}">
@@ -592,12 +596,18 @@
     <input type="hidden" name="deliverable.publication.id" value="${(deliverable.publication.id)!}"/>
     [#if editable] <p class="note">[@s.text name="project.deliverable.dissemination.journalFields" /]</p> [/#if]
     <div class="form-group row">
-      <div class="col-md-4">[@customForm.input name="deliverable.publication.volume" i18nkey="project.deliverable.dissemination.volume" className="" type="text" disabled=!editable  required=true editable=editable /]</div>
-      <div class="col-md-4">[@customForm.input name="deliverable.publication.issue" i18nkey="project.deliverable.dissemination.issue" className="" type="text" disabled=!editable  required=true editable=editable /]</div>
-      <div class="col-md-4">[@customForm.input name="deliverable.publication.pages" i18nkey="project.deliverable.dissemination.pages" className="" type="text" disabled=!editable  required=true editable=editable /]</div>
+      <div class="col-md-4 metadataElement metadataElement-volume no-lock">
+        [@customForm.input name="deliverable.publication.volume" i18nkey="project.deliverable.dissemination.volume" className="metadataValue" type="text" disabled=!editable  required=true editable=editable /]
+      </div> 
+      <div class="col-md-4 metadataElement metadataElement-issue no-lock">
+        [@customForm.input name="deliverable.publication.issue" i18nkey="project.deliverable.dissemination.issue" className="metadataValue" type="text" disabled=!editable  required=true editable=editable /]
+      </div>
+      <div class="col-md-4 metadataElement metadataElement-pages no-lock">
+        [@customForm.input name="deliverable.publication.pages" i18nkey="project.deliverable.dissemination.pages" className="metadataValue" type="text" disabled=!editable  required=true editable=editable /]
+      </div>
     </div>
-    <div class="form-group">
-      [@customForm.input name="deliverable.publication.journal" i18nkey="project.deliverable.dissemination.journalName" className="" type="text" disabled=!editable  required=true editable=editable /]
+    <div class="form-group metadataElement metadataElement-journal no-lock">
+      [@customForm.input name="deliverable.publication.journal" i18nkey="project.deliverable.dissemination.journalName" className="metadataValue" type="text" disabled=!editable  required=true editable=editable /]
     </div>
     
     [#-- Is ISI Journal --]
@@ -873,10 +883,10 @@
 [/#macro]
 
 [#-- Metadata Macro --]
-[#macro metadataField title="" encodedName="" type="input" list="" require=false]
+[#macro metadataField title="" encodedName="" type="input" list="" require=false cssLabelName=""]
   [#local metadataID = (deliverable.getMetadataID(encodedName))!-1 /]
-  [#local mElementID = (deliverable.getMElementID(metadataID))!'' /]
   [#local metadataIndex = (deliverable.getMetadataIndex(encodedName))!-1 /]
+  [#local mElementID = (deliverable.getMElementID(metadataID))!'' /]
   [#local metadataValue = (deliverable.getMetadataValue(metadataID))!'' /]
   [#local mElementHide = isMetadataHide(encodedName) /]
   
@@ -887,13 +897,16 @@
     <input type="hidden" class="hide" name="${customName}.hide" value="${mElementHide?string}" />
     <input type="hidden" name="${customName}.metadataElement.id" value="${metadataID}" />
     [#if type == "input"]
-      [@customForm.input name="${customName}.elementValue" required=require value="${metadataValue}" className="metadataValue"  type="text" i18nkey="metadata.${title}" help="metadata.${title}.help" readOnly=mElementHide editable=editable/]
+      [@customForm.input name="${customName}.elementValue" required=require value="${metadataValue}" className="metadataValue "  type="text" i18nkey="metadata.${title}" help="metadata.${title}.help" readOnly=mElementHide editable=editable/]
     [#elseif type == "textArea"]
-      [@customForm.textArea name="${customName}.elementValue" required=require value="${metadataValue}" className="metadataValue" i18nkey="metadata.${title}" help="metadata.${title}.help" readOnly=mElementHide editable=editable/]
+      [@customForm.textArea name="${customName}.elementValue" required=require value="${metadataValue}" className="metadataValue " i18nkey="metadata.${title}" help="metadata.${title}.help" readOnly=mElementHide editable=editable/]
     [#elseif type == "select"]
-      [@customForm.select name="${customName}.elementValue" required=require value="${metadataValue}" className="metadataValue" i18nkey="metadata.${title}" listName=list disabled=mElementHide editable=editable /]
+      [@customForm.select name="${customName}.elementValue" required=require value="${metadataValue}" className="metadataValue " i18nkey="metadata.${title}" listName=list disabled=mElementHide editable=editable /]
     [#elseif type == "hidden"]
-      <input type="hidden" name="${customName}.elementValue" value="${metadataValue}" class="metadataValue"/>
+      <input type="hidden" name="${customName}.elementValue" value="${metadataValue}" class="metadataValue "/>
+    [#elseif type == "text"]
+      <input type="hidden" name="${customName}.elementValue" value="${metadataValue}" class="metadataValue "/>
+      <p class="${cssLabelName}" style="display:${(metadataValue?has_content)?string('block', 'none')}"> Recorded in the public repository: <span class="metadataText">${metadataValue}</span> </p>
     [/#if]
   </div>
 [/#macro]
@@ -902,6 +915,12 @@
   [#local metadataID = (deliverable.getMetadataID(encodedName))!-1 /]
   [#local mElement = (deliverable.getMetadata(metadataID))!{} /]
   [#return (mElement.hide)!false]
+[/#function]
+
+[#function getMetadataValueByCode encodedName]
+  [#local metadataID = (deliverable.getMetadataID(encodedName))!-1 /]
+  [#local metadataValue = (deliverable.getMetadataValue(metadataID))!'' /]
+  [#return (metadataValue)!false]
 [/#function]
 
 
