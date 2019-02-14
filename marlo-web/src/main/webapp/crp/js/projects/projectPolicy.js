@@ -78,7 +78,7 @@ function attachEvents() {
     }
 
     // Countries
-    $nationalBlock.find("select").val(null).trigger('change');
+    // $nationalBlock.find("select").val(null).trigger('change');
     if(isMultiNational || isNational || isSubNational) {
       if(isMultiNational) {
         $nationalBlock.find("select").select2({
