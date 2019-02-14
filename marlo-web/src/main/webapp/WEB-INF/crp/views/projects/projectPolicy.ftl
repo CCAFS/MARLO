@@ -164,26 +164,24 @@
     
     [#--  Geographic scope  --]
     <div class="form-group geographicScopeBlock">
-      [#local geographicScope = ((element.projectPolicyInfo.repIndGeographicScope.id)!-1) ]
-      
-      [#local isRegional = ((geographicScope == action.reportingIndGeographicScopeRegional)!false) ]
-      [#local isMultiNational = ((geographicScope == action.reportingIndGeographicScopeMultiNational)!false) ]
-      [#local isNational = ((geographicScope == action.reportingIndGeographicScopeNational)!false) ]
-      [#local isSubNational = ((geographicScope == action.reportingIndGeographicScopeSubNational)!false) ]
-      
+      [#local geographicScopeList = (element.geographicScopes)![] ]
+      [#local isRegional =      findElementID(geographicScopeList,  action.reportingIndGeographicScopeRegional) /]
+      [#local isMultiNational = findElementID(geographicScopeList,  action.reportingIndGeographicScopeMultiNational) /]
+      [#local isNational =      findElementID(geographicScopeList,  action.reportingIndGeographicScopeNational) /]
+      [#local isSubNational =   findElementID(geographicScopeList,  action.reportingIndGeographicScopeSubNational) /]
       <div class="form-group">
-        <div class="form-group row">
+        <div class="row">
+          [#-- Geographic Scope --]
           <div class="col-md-6">
-            [#-- Geographic Scope --]
-            [@customForm.select name="${customName}.projectPolicyInfo.repIndGeographicScope.id" className="setSelect2 geographicScopeSelect" i18nkey="policy.geographicScope" help="policy.geographicScope.help" listName="geographicScopes" keyFieldName="id"  displayFieldName="name" editable=editable required=true /]
+            [@customForm.elementsListComponent name="${customName}.geographicScopes" elementType="repIndGeographicScope" elementList=element.geographicScopes label="policy.geographicScope" help="policy.geographicScope.help" listName="geographicScopes" keyFieldName="id" displayFieldName="name" required=true /]
           </div>
         </div>
+        [#-- Regional scope --]
         <div class="form-group regionalBlock" style="display:${(isRegional)?string('block','none')}">
-          [#-- Regional scope --]
-          [@customForm.elementsListComponent name="${customName}.regions" elementType="locElement" elementList=element.regions label="policy.regions"  listName="regions" keyFieldName="id" displayFieldName="composedName" required=false /]
+          [@customForm.elementsListComponent name="${customName}.regions" elementType="locElement" elementList=element.regions label="policy.regions"  listName="regions" keyFieldName="id" displayFieldName="composedName" required=true /]
         </div>
+        [#-- Multinational, National and Subnational scope --]
         <div class="form-group nationalBlock" style="display:${(isMultiNational || isNational || isSubNational)?string('block','none')}">
-          [#-- Multinational, National and Subnational scope --]
           [@customForm.select name="${customName}.countriesIds" label="" i18nkey="policy.countries" listName="countries" keyFieldName="isoAlpha2"  displayFieldName="name" value="${customName}.countriesIds" multiple=true required=true className="countriesSelect" disabled=!editable/]
         </div>
       </div>
@@ -191,3 +189,10 @@
     
   </div>
 [/#macro]
+
+[#function findElementID list id]
+  [#list (list)![] as item]
+    [#if (item.repIndGeographicScope.id == id)!false][#return true][/#if]
+  [/#list]
+  [#return false]
+[/#function]
