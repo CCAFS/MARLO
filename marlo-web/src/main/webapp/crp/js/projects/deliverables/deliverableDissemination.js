@@ -549,26 +549,47 @@ function setMetadata(data) {
   // Set License
   setLicense(data.rights);
 
+  // Set ISI
+  setISI(data.ISI);
+
   // Sync Deliverable
   syncDeliverable();
 
 }
 
-function setOpenAccess(isOA) {
+function setOpenAccess(openAccess) {
   var $input = $(".type-accessible ").parent();
-  if(isOA) {
+  $(".type-accessible ").parent().find("label").removeClass("radio-checked");
+  if(openAccess === "true") {
     $input.find('input.yesInput').prop("checked", true);
-    $(".type-accessible ").parent().find("label").removeClass("radio-checked");
     $(".block-accessible").hide("slow");
     $(".type-accessible .yes-button-label ").addClass("radio-checked");
-  } else {
+  }
+  if(openAccess === "false") {
     $input.find('input.noInput').prop("checked", true);
-    $(".type-accessible ").parent().find("label").removeClass("radio-checked");
     $(".block-accessible").show("slow");
     $(".type-accessible .no-button-label ").addClass("radio-checked");
   }
+  if(openAccess === "") {
+    $input.find('input.yesInput').prop("checked", true);
+    $(".block-accessible").hide("slow");
+  }
   // Check FAIR Principles
   checkFAIRCompliant();
+}
+
+function setISI(isi) {
+  if(isi === "true") {
+    $('input#optionISI-yes').prop('checked', true);
+  }
+  if(isi === "false") {
+    $('input#optionISI-no').prop('checked', false);
+  }
+  if(isi === "") {
+    $('input#optionISI-yes').prop('checked', false);
+    $('input#optionISI-no').prop('checked', false);
+  }
+
 }
 
 function setLicense(license) {
