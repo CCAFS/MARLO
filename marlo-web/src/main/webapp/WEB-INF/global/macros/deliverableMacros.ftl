@@ -415,7 +415,21 @@
     </div>
     <div class="block-notFindable findableOptions" style="display:${(isDisseminated == "false")?string('block', 'none')}">
       <hr />
+      [#-- Is this deliverable confidential and/or a management/internal deliverable? --]
+      <div class="form-group">
+        <label for="">[@s.text name="project.deliverable.dissemination.confidential" /]?[@customForm.req required=editable /]</label> <br />
+        [#assign isConfidential = (deliverable.dissemination.confidential?string)!""]
+        [@customForm.radioFlat id="confidetial-yes" name="${name}.confidential" label="Yes" value="true"  checked=(isConfidential == "true")  cssClass="radioType-confidential" cssClassLabel="radio-label-yes" editable=editable /]
+        [@customForm.radioFlat id="confidetial-no"  name="${name}.confidential" label="No"  value="false" checked=(isConfidential == "false") cssClass="radioType-confidential" cssClassLabel="radio-label-no"  editable=editable /]
+      </div>
       
+      [#-- Confidential URL --]
+      <div class="form-group confidentialBlock" style="display:${(isConfidential == "true")?string('block', 'none')}">
+        [@customForm.input name="${name}.confidentialUrl" type="text" i18nkey="project.deliverable.dissemination.confidentialUrl"  placeholder="global.webSiteLink.placeholder" className="" required=true editable=editable /]
+      </div>
+      <div class="form-group confidentialBlock" style="display:${(isConfidential == "false")?string('block', 'none')}">
+        <p class="note"> [@s.text name="project.deliverable.dissemination.confidentialNoMessage" /] </p>
+      </div>
     </div>
   </div>
 [/#macro]
