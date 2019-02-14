@@ -64,7 +64,7 @@ function addDisseminationEvents() {
       $(".dataSharing").show("slow");
       $(".block-notFindable").slideDown();
       unSyncDeliverable();
-      setOpenAccess(false);
+      setOpenAccess("false");
       $('input[value="notDisseminated"]').prop('checked', true);
     } else {
       $(".dataSharing").hide("slow");
@@ -560,6 +560,7 @@ function setMetadata(data) {
 function setOpenAccess(openAccess) {
   var $input = $(".type-accessible ").parent();
   $(".type-accessible ").parent().find("label").removeClass("radio-checked");
+
   if(openAccess === "true") {
     $input.find('input.yesInput').prop("checked", true);
     $(".block-accessible").hide("slow");
