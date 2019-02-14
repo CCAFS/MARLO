@@ -381,5 +381,6 @@
       resource="xmls/ProjectExpectedStudyQuantifications.hbm.xml" />
     <mapping resource="xmls/ProjectPolicyInnovations.hbm.xml" />
     <mapping resource="xmls/ProjectPolicyGeographicScopes.hbm.xml" />
+    <mapping resource="xmls/ProjectPolicyRegions.hbm.xml" />
   </session-factory>
 </hibernate-configuration>
