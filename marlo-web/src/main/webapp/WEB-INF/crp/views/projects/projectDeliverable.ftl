@@ -121,8 +121,8 @@
                 
                 [#--  Intellectual Asset--]                
                 [#if action.hasSpecificities(action.crpDeliverableIntellectualAsset())]
-                [@deliverableMacros.intellectualAsset /]
-                 [/#if]
+                  [@deliverableMacros.intellectualAsset /]
+                [/#if]
                 
                 [#--  Does this deliverable involve Participants and Trainees? --]
                 [@deliverableMacros.deliverableParticipantsMacro /]

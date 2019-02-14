@@ -170,8 +170,7 @@
           </div>
           <div class="form-group regionalBlock" style="display:${(isRegional)?string('block','none')}">
             [#-- Regional scope --]
-              [@customForm.elementsListComponent name="${customName}.studyRegions" elementType="locElement" elementList=element.studyRegions label="study.region"  listName="regions" keyFieldName="id" displayFieldName="name" required=false /]
-           [#-- [@customForm.selectGroup name="${customName}.projectExpectedStudyInfo.repIndRegion.id" list=(regions)![] element=(element.projectExpectedStudyInfo.repIndRegion)!{} subListName="subRegions"  keyFieldName="id" displayFieldName="name" i18nkey="study.region" required=true className="" editable=editable /]--]
+            [@customForm.elementsListComponent name="${customName}.studyRegions" elementType="locElement" elementList=element.studyRegions label="study.region"  listName="regions" keyFieldName="id" displayFieldName="composedName" required=false /]
           </div>
           <div class="form-group nationalBlock" style="display:${(isMultiNational || isNational || isSubNational)?string('block','none')}">
             [#-- Multinational, National and Subnational scope --]
