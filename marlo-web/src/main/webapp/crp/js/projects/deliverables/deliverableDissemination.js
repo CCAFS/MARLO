@@ -59,16 +59,26 @@ function addDisseminationEvents() {
   // Is this deliverable already disseminated
   $(".type-findable .button-label").on("click", function() {
     var valueSelected = $(this).hasClass('yes-button-label');
-    console.log(valueSelected);
+
     if(!valueSelected) {
       $(".dataSharing").show("slow");
       $(".block-notFindable").slideDown();
-
       unSyncDeliverable();
+      setOpenAccess(false);
+      $('input[value="notDisseminated"]').prop('checked', true);
     } else {
       $(".dataSharing").hide("slow");
       $(".block-notFindable").slideUp();
+    }
+  });
 
+  $('input.radioType-confidential').on("click", function() {
+    if(this.value == "true") {
+      $(".confidentialBlock-true").slideDown();
+      $(".confidentialBlock-false").slideUp();
+    } else {
+      $(".confidentialBlock-false").slideDown();
+      $(".confidentialBlock-true").slideUp();
     }
   });
 
@@ -493,12 +503,18 @@ function setMetadata(data) {
   // Text area & Inputs fields
   $.each(data, function(key,value) {
     var $parent = $('.metadataElement-' + key);
+    var lockInput = !($parent.hasClass('no-lock'));
     var $input = $parent.find(".metadataValue");
+    var $text = $parent.find(".metadataText");
     var $hide = $parent.find('.hide');
+
     if(value) {
       $input.val(value);
+      $text.text(value).parent().show();
       $parent.find('textarea').autoGrow();
-      $input.attr('readOnly', true);
+      if(lockInput) {
+        $input.attr('readOnly', true);
+      }
       $hide.val("true");
     } else {
       $input.attr('readOnly', false);
@@ -528,23 +544,48 @@ function setMetadata(data) {
   }
 
   // Open Access Validation
+  setOpenAccess(data.openAccess);
+
+  // Set License
+  setLicense(data.rights);
+
+  // Sync Deliverable
+  syncDeliverable();
+
+}
+
+function setOpenAccess(isOA) {
   var $input = $(".type-accessible ").parent();
-  if(data.openAccess === "true") {
+  if(isOA) {
     $input.find('input.yesInput').prop("checked", true);
-    console.log($input.find('input.yesInput'));
     $(".type-accessible ").parent().find("label").removeClass("radio-checked");
     $(".block-accessible").hide("slow");
     $(".type-accessible .yes-button-label ").addClass("radio-checked");
   } else {
     $input.find('input.noInput').prop("checked", true);
-    console.log($input.find('input.noInput'));
     $(".type-accessible ").parent().find("label").removeClass("radio-checked");
     $(".block-accessible").show("slow");
     $(".type-accessible .no-button-label ").addClass("radio-checked");
   }
+  // Check FAIR Principles
+  checkFAIRCompliant();
+}
 
-  syncDeliverable();
-
+function setLicense(license) {
+  var $input = $(".type-license ").parent();
+  if(license) {
+    $input.find('input.yesInput').prop("checked", true);
+    $(".type-license ").parent().find("label").removeClass("radio-checked");
+    $(".block-license").show("slow");
+    $(".type-license .yes-button-label ").addClass("radio-checked");
+  } else {
+    $input.find('input.noInput').prop("checked", true);
+    $(".type-license ").parent().find("label").removeClass("radio-checked");
+    $(".block-license").hide("slow");
+    $(".type-license .no-button-label ").addClass("radio-checked");
+  }
+  // Check FAIR Principles
+  checkFAIRCompliant();
 }
 
 /**
@@ -573,8 +614,11 @@ function unSyncDeliverable() {
   $('.metadataElement').each(function(i,e) {
     var $parent = $(e);
     var $input = $parent.find('.metadataValue');
+    var $text = $parent.find(".metadataText");
     var $hide = $parent.find('.hide');
     $input.attr('readOnly', false);
+    $input.val("");
+    $text.text("").parent().hide();
     $hide.val("false");
   });
 
@@ -582,6 +626,7 @@ function unSyncDeliverable() {
   $('.author').removeClass('hideAuthor');
   $('.authorVisibles').show();
   $('.metadataElement-authors .hide').val("false");
+  $('.authorsList').empty();
 
   // Show Sync Button & dissemination channel
   $('#fillMetadata .checkButton, .disseminationChannelBlock').show('slow');

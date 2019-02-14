@@ -29,7 +29,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.json.JSONException;
@@ -52,22 +51,20 @@ public class IFPRIEBraryClientAPI extends MetadataClientApi {
   public IFPRIEBraryClientAPI() {
     xmlReaderConnectionUtil = new RestConnectionUtil();
     coverterAtrributes = new HashMap<String, String>();
-    coverterAtrributes.put("langua", "language");
-    coverterAtrributes.put("loc", "keywords");
-    coverterAtrributes.put("rights", "rights.desc");
   }
 
   @Override
   public MetadataModel getMetadata(String link) {
     MetadataModel metadataModel = new MetadataModel();
     JSONObject jo = new JSONObject();
-
     try {
       String metadata = xmlReaderConnectionUtil.getJsonRestClient(link);
       jo = new JSONObject(metadata);
       GsonBuilder gsonBuilder = new GsonBuilder();
       gsonBuilder.registerTypeAdapter(Date.class, new DateTypeAdapter());
       Gson gson = gsonBuilder.create();
+      // Set default values
+      this.setDefaultEmptyValues(jo);
       List<Author> authors = new ArrayList<Author>();
       if (jo.has("orcid") && jo.get("orcid") != null) {
         try {
@@ -130,21 +127,21 @@ public class IFPRIEBraryClientAPI extends MetadataClientApi {
       if (jo.has("access") && jo.get("access") != null) {
         String access = jo.get("access").toString();
         if (!access.equals("{}") && access.equals("Open Access")) {
-          jo.put("openAccess", true);
+          jo.put("openAccess", "true");
         }
         if (!access.equals("{}") && access.equals("Restricted")) {
-          jo.put("openAccess", false);
+          jo.put("openAccess", "false");
         }
       }
 
       // get ISI
-      if (jo.has("ISI") && jo.get("ISI") != null) {
-        String ISI = jo.get("ISI").toString();
-        if (!ISI.equals("{}") && ISI.contains("ISI")) {
-          jo.put("ISI", true);
+      if (jo.has("ifpri") && jo.get("ifpri") != null) {
+        String ifpri = jo.get("ifpri").toString();
+        if (!ifpri.equals("{}") && ifpri.contains("ISI")) {
+          jo.put("ISI", "true");
         }
-        if (!ISI.equals("{}") && !ISI.contains("ISI")) {
-          jo.put("ISI", false);
+        if (!ifpri.equals("{}") && !ifpri.contains("ISI")) {
+          jo.put("ISI", "false");
         }
       }
 
@@ -156,46 +153,23 @@ public class IFPRIEBraryClientAPI extends MetadataClientApi {
         }
       }
 
-      // get DOI
-      if (jo.has("doi") && jo.get("doi") != null) {
-        String doi = jo.get("doi").toString();
-        if (doi.contains("http://dx.doi.org/")) {
-          doi = doi.replace("http://dx.doi.org/", "https://doi.org/");
-        }
-        doi = doi.trim();
-        if (!doi.equals("{}")) {
-          String metadataDOI = xmlReaderConnectionUtil.getJsonRestClientFromDOI(doi);
-          HashMap<String, Object> result = new ObjectMapper().readValue(metadataDOI, HashMap.class);
-          if (result != null && !result.isEmpty()) {
-            Object volume = result.get("volume");
-            Object issue = result.get("issue");
-            Object page = result.get("page");
-            Object publisher = result.get("publisher");
-
-            // volume
-            if (volume != null) {
-              jo.put("volume", volume.toString());
-            }
-
-            // issue
-            if (issue != null) {
-              jo.put("issue", issue.toString());
-            }
-
-            // page
-            if (page != null) {
-              jo.put("pages", page.toString());
-            }
-
-            // journal
-            if (publisher != null) {
-              jo.put("journal", publisher.toString());
-            }
-          }
-
+      // get language
+      if (jo.has("langua") && jo.get("langua") != null) {
+        String language = jo.get("langua").toString();
+        if (!language.equals("{}")) {
+          jo.put("language", language);
         }
       }
 
+      // get language
+      if (jo.has("loc") && jo.get("loc") != null) {
+        String keywords = jo.get("loc").toString();
+        if (!keywords.equals("{}")) {
+          jo.put("keywords", keywords);
+        }
+      }
+
+      this.setDoi(jo, xmlReaderConnectionUtil);
 
       String data = jo.toString();
       for (String key : coverterAtrributes.keySet()) {
@@ -206,7 +180,7 @@ public class IFPRIEBraryClientAPI extends MetadataClientApi {
       metadataModel = gson.fromJson(data, MetadataModel.class);
       Author[] authorsArr = new Author[authors.size()];
       authorsArr = authors.toArray(authorsArr);
-      metadataModel.setAuthors(authorsArr);
+      metadataModel.setAuthor(authorsArr);
 
       // get date
       try {
@@ -220,7 +194,9 @@ public class IFPRIEBraryClientAPI extends MetadataClientApi {
         LOG.error("Unparseable date");
       }
 
-    } catch (Exception e) {
+    } catch (
+
+    Exception e) {
       e.printStackTrace();
       LOG.error(e.getLocalizedMessage());
       jo = null;
@@ -261,5 +237,6 @@ public class IFPRIEBraryClientAPI extends MetadataClientApi {
 
     return linkRest;
   }
+
 
 }

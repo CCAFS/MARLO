@@ -88,6 +88,56 @@ public class ProjectPolicyValidator extends BaseValidator {
       action.addMissingField("projectPolicy.title");
       action.getInvalidFields().put("input-policy.projectPolicyInfo.title", InvalidFieldsMessages.EMPTYFIELD);
     }
+
+    // Validate Policy Investment Type
+    if (projectPolicy.getProjectPolicyInfo(baseAction.getActualPhase()).getRepIndPolicyInvestimentType() != null) {
+      if (projectPolicy.getProjectPolicyInfo(baseAction.getActualPhase()).getRepIndPolicyInvestimentType()
+        .getId() == null
+        || projectPolicy.getProjectPolicyInfo(baseAction.getActualPhase()).getRepIndPolicyInvestimentType()
+          .getId() == -1) {
+        action.addMessage(action.getText("Policy Investment Type"));
+        action.addMissingField("projectPolicy.repIndPolicyInvestimentType");
+        action.getInvalidFields().put("input-policy.projectPolicyInfo.repIndPolicyInvestimentType.id",
+          InvalidFieldsMessages.EMPTYFIELD);
+      }
+    } else {
+      action.addMessage(action.getText("Policy Investment Type"));
+      action.addMissingField("projectPolicy.repIndPolicyInvestimentType");
+      action.getInvalidFields().put("input-policy.projectPolicyInfo.repIndPolicyInvestimentType.id",
+        InvalidFieldsMessages.EMPTYFIELD);
+    }
+
+    // Validate Organization Type
+    if (projectPolicy.getProjectPolicyInfo(baseAction.getActualPhase()).getRepIndOrganizationType() != null) {
+      if (projectPolicy.getProjectPolicyInfo(baseAction.getActualPhase()).getRepIndOrganizationType().getId() == null
+        || projectPolicy.getProjectPolicyInfo(baseAction.getActualPhase()).getRepIndOrganizationType().getId() == -1) {
+        action.addMessage(action.getText("Organization Type"));
+        action.addMissingField("projectPolicy.repIndOrganizationType");
+        action.getInvalidFields().put("input-policy.projectPolicyInfo.repIndOrganizationType.id",
+          InvalidFieldsMessages.EMPTYFIELD);
+      }
+    } else {
+      action.addMessage(action.getText("Organization Type"));
+      action.addMissingField("projectPolicy.repIndOrganizationType");
+      action.getInvalidFields().put("input-policy.projectPolicyInfo.repIndOrganizationType.id",
+        InvalidFieldsMessages.EMPTYFIELD);
+    }
+
+    // Validate Maturity Process
+    if (projectPolicy.getProjectPolicyInfo(baseAction.getActualPhase()).getRepIndStageProcess() != null) {
+      if (projectPolicy.getProjectPolicyInfo(baseAction.getActualPhase()).getRepIndStageProcess().getId() == null
+        || projectPolicy.getProjectPolicyInfo(baseAction.getActualPhase()).getRepIndStageProcess().getId() == -1) {
+        action.addMessage(action.getText("Maturity Process"));
+        action.addMissingField("projectPolicy.repIndStageProcess");
+        action.getInvalidFields().put("input-policy.projectPolicyInfo.repIndStageProcess.id",
+          InvalidFieldsMessages.EMPTYFIELD);
+      }
+    } else {
+      action.addMessage(action.getText("Maturity Process"));
+      action.addMissingField("projectPolicy.repIndStageProcess");
+      action.getInvalidFields().put("input-policy.projectPolicyInfo.repIndStageProcess.id",
+        InvalidFieldsMessages.EMPTYFIELD);
+    }
   }
 
 
