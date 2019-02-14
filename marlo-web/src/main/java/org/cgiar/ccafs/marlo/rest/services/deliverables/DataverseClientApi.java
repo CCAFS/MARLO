@@ -268,7 +268,7 @@ public class DataverseClientApi extends MetadataClientApi {
 
                                 Author[] authorsArr = new Author[authors.size()];
                                 authorsArr = authors.toArray(authorsArr);
-                                metadataModel.setAuthors(authorsArr);
+                                metadataModel.setAuthor(authorsArr);
                               }
                             }
                             break;
