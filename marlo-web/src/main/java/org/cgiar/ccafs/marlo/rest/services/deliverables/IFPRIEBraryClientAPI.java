@@ -29,7 +29,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.json.JSONException;
@@ -58,17 +57,14 @@ public class IFPRIEBraryClientAPI extends MetadataClientApi {
   public MetadataModel getMetadata(String link) {
     MetadataModel metadataModel = new MetadataModel();
     JSONObject jo = new JSONObject();
-
     try {
       String metadata = xmlReaderConnectionUtil.getJsonRestClient(link);
       jo = new JSONObject(metadata);
       GsonBuilder gsonBuilder = new GsonBuilder();
       gsonBuilder.registerTypeAdapter(Date.class, new DateTypeAdapter());
       Gson gson = gsonBuilder.create();
-
       // Set default values
       this.setDefaultEmptyValues(jo);
-
       List<Author> authors = new ArrayList<Author>();
       if (jo.has("orcid") && jo.get("orcid") != null) {
         try {
@@ -131,10 +127,10 @@ public class IFPRIEBraryClientAPI extends MetadataClientApi {
       if (jo.has("access") && jo.get("access") != null) {
         String access = jo.get("access").toString();
         if (!access.equals("{}") && access.equals("Open Access")) {
-          jo.put("openAccess", true);
+          jo.put("openAccess", "true");
         }
         if (!access.equals("{}") && access.equals("Restricted")) {
-          jo.put("openAccess", false);
+          jo.put("openAccess", "false");
         }
       }
 
@@ -142,10 +138,10 @@ public class IFPRIEBraryClientAPI extends MetadataClientApi {
       if (jo.has("ifpri") && jo.get("ifpri") != null) {
         String ifpri = jo.get("ifpri").toString();
         if (!ifpri.equals("{}") && ifpri.contains("ISI")) {
-          jo.put("ISI", true);
+          jo.put("ISI", "true");
         }
         if (!ifpri.equals("{}") && !ifpri.contains("ISI")) {
-          jo.put("ISI", false);
+          jo.put("ISI", "false");
         }
       }
 
@@ -173,48 +169,7 @@ public class IFPRIEBraryClientAPI extends MetadataClientApi {
         }
       }
 
-      // get DOI
-      if (jo.has("doi") && jo.get("doi") != null) {
-        String doi = jo.get("doi").toString();
-        if (doi.contains("http://dx.doi.org/") || doi.contains("https://doi.org/")) {
-
-          if (doi.contains("http://dx.doi.org/")) {
-            doi = doi.replace("http://dx.doi.org/", "https://doi.org/");
-          }
-          doi = doi.trim();
-          if (!doi.equals("{}")) {
-            String metadataDOI = xmlReaderConnectionUtil.getJsonRestClientFromDOI(doi);
-            HashMap<String, Object> result = new ObjectMapper().readValue(metadataDOI, HashMap.class);
-            if (result != null && !result.isEmpty()) {
-              Object volume = result.get("volume");
-              Object issue = result.get("issue");
-              Object page = result.get("page");
-              Object publisher = result.get("publisher");
-
-              // volume
-              if (volume != null) {
-                jo.put("volume", volume.toString());
-              }
-
-              // issue
-              if (issue != null) {
-                jo.put("issue", issue.toString());
-              }
-
-              // page
-              if (page != null) {
-                jo.put("pages", page.toString());
-              }
-
-              // journal
-              if (publisher != null) {
-                jo.put("journal", publisher.toString());
-              }
-            }
-
-          }
-        }
-      }
+      this.setDoi(jo, xmlReaderConnectionUtil);
 
       String data = jo.toString();
       for (String key : coverterAtrributes.keySet()) {
@@ -225,7 +180,7 @@ public class IFPRIEBraryClientAPI extends MetadataClientApi {
       metadataModel = gson.fromJson(data, MetadataModel.class);
       Author[] authorsArr = new Author[authors.size()];
       authorsArr = authors.toArray(authorsArr);
-      metadataModel.setAuthors(authorsArr);
+      metadataModel.setAuthor(authorsArr);
 
       // get date
       try {
@@ -283,19 +238,5 @@ public class IFPRIEBraryClientAPI extends MetadataClientApi {
     return linkRest;
   }
 
-  private void setDefaultEmptyValues(JSONObject jo) {
-    jo.put("volume", "");
-    jo.put("issue", "");
-    jo.put("pages", "");
-    jo.put("journal", "");
-    jo.put("description", "");
-    jo.put("citation", "");
-    jo.put("publisher", "");
-    jo.put("rights", "");
-    jo.put("openAccess", false);
-    jo.put("ISI", false);
-    jo.put("language", "");
-    jo.put("keywords", "");
-  }
 
 }
