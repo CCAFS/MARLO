@@ -72,7 +72,7 @@ public class ProjectExpectedStudyRegionManagerImpl implements ProjectExpectedStu
 
     List<ProjectExpectedStudyRegion> projectExpectedStudyRegions = phase.getProjectExpectedStudyRegions().stream()
       .filter(c -> c.isActive() && c.getProjectExpectedStudy().getId().longValue() == expectedID
-        && c.getRepIndRegion().getId().equals(projectExpectedStudyRegion.getRepIndRegion().getId()))
+        && c.getLocElement().getId().equals(projectExpectedStudyRegion.getLocElement().getId()))
       .collect(Collectors.toList());
     for (ProjectExpectedStudyRegion projectExpectedStudyRegionDB : projectExpectedStudyRegions) {
       projectExpectedStudyRegionDAO.deleteProjectExpectedStudyRegion(projectExpectedStudyRegionDB.getId());
@@ -109,14 +109,14 @@ public class ProjectExpectedStudyRegionManagerImpl implements ProjectExpectedStu
 
     List<ProjectExpectedStudyRegion> projectExpectedStudyRegions = phase.getProjectExpectedStudyRegions().stream()
       .filter(c -> c.getProjectExpectedStudy().getId().longValue() == expectedID
-        && c.getRepIndRegion().getId().equals(projectExpectedStudyRegion.getRepIndRegion().getId()))
+        && c.getLocElement().getId().equals(projectExpectedStudyRegion.getLocElement().getId()))
       .collect(Collectors.toList());
 
     if (projectExpectedStudyRegions.isEmpty()) {
       ProjectExpectedStudyRegion projectExpectedStudyRegionAdd = new ProjectExpectedStudyRegion();
       projectExpectedStudyRegionAdd.setProjectExpectedStudy(projectExpectedStudyRegion.getProjectExpectedStudy());
       projectExpectedStudyRegionAdd.setPhase(phase);
-      projectExpectedStudyRegionAdd.setRepIndRegion(projectExpectedStudyRegion.getRepIndRegion());
+      projectExpectedStudyRegionAdd.setLocElement(projectExpectedStudyRegion.getLocElement());
       projectExpectedStudyRegionDAO.save(projectExpectedStudyRegionAdd);
     }
 
