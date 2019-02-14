@@ -58,6 +58,25 @@ public class MetadataModel {
 
   private String pages;
 
+  public MetadataModel() {
+    this.citation = "";
+    this.title = "";
+    this.handle = "";
+    this.keywords = "";
+    this.description = "";
+    this.rights = "";
+    this.language = "";
+    this.openAccess = "";
+    this.ISI = "";
+    this.doi = "";
+    this.country = "";
+    this.publisher = "";
+    this.journal = "";
+    this.volume = "";
+    this.issue = "";
+    this.pages = "";
+  }
+
   public Author[] getAuthor() {
     return author;
   }

@@ -63,7 +63,6 @@ public class IFPRIEBraryClientAPI extends MetadataClientApi {
       GsonBuilder gsonBuilder = new GsonBuilder();
       gsonBuilder.registerTypeAdapter(Date.class, new DateTypeAdapter());
       Gson gson = gsonBuilder.create();
-      // Set default values
       this.setDefaultEmptyValues(jo);
       List<Author> authors = new ArrayList<Author>();
       if (jo.has("orcid") && jo.get("orcid") != null) {
@@ -169,7 +168,7 @@ public class IFPRIEBraryClientAPI extends MetadataClientApi {
         }
       }
 
-      this.setDoi(jo, xmlReaderConnectionUtil);
+      this.setDoi(jo);
 
       String data = jo.toString();
       for (String key : coverterAtrributes.keySet()) {

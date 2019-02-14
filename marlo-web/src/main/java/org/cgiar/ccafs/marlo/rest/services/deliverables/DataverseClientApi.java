@@ -64,6 +64,7 @@ public class DataverseClientApi extends MetadataClientApi {
       String metadata = restConnectionUtil.getJsonRestClient(link);
       jo = new JSONObject(metadata);
       jo = jo.getJSONObject(data);
+      this.setDefaultEmptyValues(jo);
       if (jo != null && jo.length() > 0) {
         try {
           if (jo.has(publicationDate)) {
@@ -81,7 +82,25 @@ public class DataverseClientApi extends MetadataClientApi {
           String persistentUrlValue = (String) jo.get(persistentUrl);
           if (persistentUrlValue != null && !persistentUrlValue.isEmpty()) {
             if (persistentUrlValue.contains("doi")) {
+              this.setDoi(jo);
               metadataModel.setDoi(persistentUrlValue);
+
+              // volume
+              if (jo.get("volume") != null) {
+                metadataModel.setVolume(jo.get("volume").toString());
+              }
+              // issue
+              if (jo.get("issue") != null) {
+                metadataModel.setIssue(jo.get("issue").toString());
+              }
+              // page
+              if (jo.get("pages") != null) {
+                metadataModel.setPages(jo.get("pages").toString());
+              }
+              // journal
+              if (jo.get("journal") != null) {
+                metadataModel.setPublisher(jo.get("journal").toString());
+              }
             }
             if (persistentUrlValue.contains("handle")) {
               metadataModel.setHandle(persistentUrlValue);
