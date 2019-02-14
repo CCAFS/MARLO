@@ -38,9 +38,9 @@ public class MetadataModel {
 
   private String language;
 
-  private Boolean openAccess;
+  private String openAccess;
 
-  private Boolean ISI;
+  private String ISI;
 
   private String doi;
 
@@ -58,11 +58,9 @@ public class MetadataModel {
 
   private String pages;
 
-
-  public Author[] getAuthors() {
+  public Author[] getAuthor() {
     return author;
   }
-
 
   public String getCitation() {
     return citation;
@@ -76,7 +74,6 @@ public class MetadataModel {
     return description;
   }
 
-
   public String getDoi() {
     return doi;
   }
@@ -86,7 +83,8 @@ public class MetadataModel {
     return handle;
   }
 
-  public Boolean getISI() {
+
+  public String getISI() {
     return ISI;
   }
 
@@ -98,23 +96,24 @@ public class MetadataModel {
     return journal;
   }
 
+
   public String getKeywords() {
     return keywords;
   }
+
 
   public String getLanguage() {
     return language;
   }
 
-  public Boolean getOpenAccess() {
+
+  public String getOpenAccess() {
     return openAccess;
   }
-
 
   public String getPages() {
     return pages;
   }
-
 
   @JSON(format = "yyyy-MM-dd")
   public Date getPublicationDate() {
@@ -125,9 +124,11 @@ public class MetadataModel {
     return publisher;
   }
 
+
   public String getRights() {
     return rights;
   }
+
 
   public String getTitle() {
     return title;
@@ -137,14 +138,13 @@ public class MetadataModel {
     return volume;
   }
 
-  public void setAuthors(Author[] authors) {
-    this.author = authors;
+  public void setAuthor(Author[] author) {
+    this.author = author;
   }
 
   public void setCitation(String citation) {
     this.citation = citation;
   }
-
 
   public void setCountry(String country) {
     this.country = country;
@@ -154,6 +154,7 @@ public class MetadataModel {
     this.description = description;
   }
 
+
   public void setDoi(String doi) {
     this.doi = doi;
   }
@@ -162,7 +163,7 @@ public class MetadataModel {
     this.handle = handle;
   }
 
-  public void setISI(Boolean iSI) {
+  public void setISI(String iSI) {
     ISI = iSI;
   }
 
@@ -182,9 +183,10 @@ public class MetadataModel {
     this.language = language;
   }
 
-  public void setOpenAccess(Boolean openAccess) {
+  public void setOpenAccess(String openAccess) {
     this.openAccess = openAccess;
   }
+
 
   public void setPages(String pages) {
     this.pages = pages;
