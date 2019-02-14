@@ -175,7 +175,7 @@
   <div class="block-license" style="display:${((deliverable.deliverableInfo.adoptedLicense)!false)?string('block','none')}">
     <hr />
     
-    [@metadataField title="rights" encodedName="dc.rights" type="text" require=false /]
+    [@metadataField title="rights" encodedName="dc.rights" type="text" require=false cssLabelName="note"/]
     [#-- ${getMetadataValueByCode("dc.rights")} --] 
     
     
