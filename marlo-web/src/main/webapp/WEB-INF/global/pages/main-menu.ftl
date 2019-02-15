@@ -29,8 +29,8 @@
   [#-- ADDITIONAL REPORTING - CRP --]
   { 'slug': 'additionalReporting', 'name': 'menu.additionalReporting',      'namespace': '/publications',       'action': '${(crpSession)!}/publicationsList',  'visible': logged && reportingActive && !centerGlobalUnit, 'active': true,  'help': true,  
     'subItems' : [
-      { 'slug': 'publications', 'name': 'menu.publications', 'namespace': '/publications',  'action': '${(crpSession)!}/publicationsList',  'visible': logged, 'active':  canAcessPublications, "development": true },
-      { 'slug': 'studies', 'name': 'menu.studies', 'namespace': '/studies',  'action': '${(crpSession)!}/studiesList',  'visible': logged, 'active':  true, "development": true }
+      { 'slug': 'publications', 'name': 'menu.publications', 'namespace': '/publications',  'action': '${(crpSession)!}/publicationsList',  'visible': logged, 'active':  canAcessPublications, "development": false },
+      { 'slug': 'studies', 'name': 'menu.studies', 'namespace': '/studies',  'action': '${(crpSession)!}/studiesList',  'visible': logged, 'active':  true, "development": false }
     ]
   },
   [#-- SYNTHESIS PLANNING - CRP --]
