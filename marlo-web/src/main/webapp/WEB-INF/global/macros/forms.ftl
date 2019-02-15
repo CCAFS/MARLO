@@ -485,11 +485,16 @@
   </label>
 [/#macro]
 
-[#macro fileUploadAjax fileDB name label="" dataUrl="" path="" required=false isEditable=true cssClass="" labelClass=""]
+[#macro fileUploadAjax fileDB name label="" dataUrl="" path="" required=false isEditable=true cssClass="" labelClass="" image=false imgUrl="" imgClass=""]
   [#assign hasFile = (fileDB.id??)!false /]
   <div class="fileUploadContainer ${cssClass}" >
     <label class="${labelClass}">[@customForm.text name=label readText=!isEditable /]: [@req required=required && isEditable /]</label>
     <input class="fileID" type="hidden" name="${name}" value="${(fileDB.id)!}" />
+    [#if image]
+    <div class="form-group">
+      <img src="${baseUrl}/global/images/${imgUrl}" class="${imgClass}" />
+    </div>
+    [/#if]
     [#-- Input File --]
     [#if isEditable]
       <div class="fileUpload" style="display:${hasFile?string('none','block')}"> <input class="upload" type="file" name="file" data-url="${dataUrl}"></div>

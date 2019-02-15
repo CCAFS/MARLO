@@ -1326,6 +1326,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return APConstants.CRP_DELIVERABLES_INTELLECTUAL_ASSET;
   }
 
+  public String crpLocationCsvActivities() {
+    return APConstants.CRP_LOCATION_CSV_ACTIVITIES;
+  }
+
   /* Override this method depending of the delete action. */
   public String delete() {
     return SUCCESS;

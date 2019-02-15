@@ -30,7 +30,10 @@ import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectBudgetManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyCountryManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyLinkManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationContributingOrganizationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectLp6ContributionDeliverableManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectLp6ContributionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyManager;
 import org.cgiar.ccafs.marlo.data.manager.RepositoryChannelManager;
@@ -89,6 +92,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectHighlightType;
 import org.cgiar.ccafs.marlo.data.model.ProjectHighligthsTypeEnum;
 import org.cgiar.ccafs.marlo.data.model.ProjectInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationContributingOrganization;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCountry;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCrp;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationDeliverable;
@@ -97,6 +101,8 @@ import org.cgiar.ccafs.marlo.data.model.ProjectInnovationOrganization;
 import org.cgiar.ccafs.marlo.data.model.ProjectLeverage;
 import org.cgiar.ccafs.marlo.data.model.ProjectLocation;
 import org.cgiar.ccafs.marlo.data.model.ProjectLocationElementType;
+import org.cgiar.ccafs.marlo.data.model.ProjectLp6Contribution;
+import org.cgiar.ccafs.marlo.data.model.ProjectLp6ContributionDeliverable;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerLocation;
@@ -197,7 +203,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
   private Boolean hasGender;
   private long projectID;
   private ProjectInfo projectInfo;
-
+  private List<ProjectLp6Contribution> projectLp6Contributions;
 
   // Managers
   private final CrpProgramManager programManager;
@@ -216,6 +222,10 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
   private final ProjectExpectedStudyLinkManager projectExpectedStudyLinkManager;
   private final ProjectPolicyManager projectPolicyManager;
   private final ProjectInnovationManager projectInnovationManager;
+  private final ProjectInnovationContributingOrganizationManager projectInnovationContributingOrganizationManager;
+  private final ProjectLp6ContributionDeliverableManager projectLp6ContributionDeliverableManager;
+  private final ProjectLp6ContributionManager projectLp6ContributionManager;
+
 
   @Inject
   public ReportingSummaryAction(APConfig config, GlobalUnitManager crpManager, ProjectManager projectManager,
@@ -227,7 +237,10 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     ResourceManager resourceManager, ProjectExpectedStudyCountryManager projectExpectedStudyCountryManager,
     DeliverableCrossCuttingMarkerManager deliverableCrossCuttingMarkerManager,
     ProjectExpectedStudyLinkManager projectExpectedStudyLinkManager, ProjectPolicyManager projectPolicyManager,
-    ProjectInnovationManager projectInnovationManager) {
+    ProjectInnovationManager projectInnovationManager,
+    ProjectInnovationContributingOrganizationManager projectInnovationContributingOrganizationManager,
+    ProjectLp6ContributionDeliverableManager projectLp6ContributionDeliverableManager,
+    ProjectLp6ContributionManager projectLp6ContributionManager) {
     super(config, crpManager, phaseManager, projectManager);
     this.programManager = programManager;
     this.institutionManager = institutionManager;
@@ -246,6 +259,9 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     this.projectExpectedStudyLinkManager = projectExpectedStudyLinkManager;
     this.projectPolicyManager = projectPolicyManager;
     this.projectInnovationManager = projectInnovationManager;
+    this.projectInnovationContributingOrganizationManager = projectInnovationContributingOrganizationManager;
+    this.projectLp6ContributionDeliverableManager = projectLp6ContributionDeliverableManager;
+    this.projectLp6ContributionManager = projectLp6ContributionManager;
   }
 
   /**
@@ -387,6 +403,8 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         "8. " + this.getText("projects.menu.activities"));
       masterReport.getParameterValues().put("i8nLeveragesReportingMenu",
         "9. " + this.getText("breadCrumb.menu.leverage"));
+      masterReport.getParameterValues().put("i8nProjectContributionMenu",
+        "10. " + this.getText("breadCrumb.menu.contribution"));
     } else {
       masterReport.getParameterValues().put("i8nLeveragesReportingMenu",
         "8. " + this.getText("breadCrumb.menu.leverage"));
@@ -845,6 +863,10 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       this.getText("caseStudy.caseStudyTitle"));
     masterReport.getParameterValues().put("i8nInnovationRDescriptionStage",
       this.getText("projectInnovations.stageDescription.readText"));
+    masterReport.getParameterValues().put("i8nInnovationRLeadOrganization",
+      this.getText("projectInnovations.leadOrganization"));
+    masterReport.getParameterValues().put("i8nInnovationRContributingOrganizations",
+      this.getText("projectInnovations.topFiveContributing"));
     masterReport.getParameterValues().put("i8nInnovationREvidenceLink",
       this.getText("summaries.innovation.evidenceLink"));
     masterReport.getParameterValues().put("i8nInnovationRDeliverables",
@@ -917,6 +939,29 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     masterReport.getParameterValues().put("i8nProjectLeverageRFlagship", this.getText("projectLeverage.flagship"));
     masterReport.getParameterValues().put("i8nProjectLeverageRBudget", this.getText("projectLeverage.budget"));
 
+    /*
+     * Reporting
+     * Project contribution to Lp6
+     */
+    masterReport.getParameterValues().put("i8nProjectContributionRNoData", this.getText("projectContribution.noData"));
+    masterReport.getParameterValues().put("i8nProjectContributionDescription",
+      this.getText("projectContribution.narrative"));
+    masterReport.getParameterValues().put("i8nProjectContributionDeliverables",
+      this.getText("projectContribution.deliverables"));
+    masterReport.getParameterValues().put("i8nProjectContributionGeographicScope",
+      this.getText("projectContribution.grographicScope"));
+    masterReport.getParameterValues().put("i8nProjectContributionWorkingAcrossFlagships",
+      this.getText("projectContribution.workingAcrossFlagships"));
+    masterReport.getParameterValues().put("i8nProjectContributionUndertakingEfforts",
+      this.getText("projectContribution.undertakingEfforts"));
+    masterReport.getParameterValues().put("i8nProjectContributionProvidingPathways",
+      this.getText("projectContribution.providingPathways"));
+    masterReport.getParameterValues().put("i8nProjectContributionTop3",
+      this.getText("projectContribution.top3Partnerships"));
+    masterReport.getParameterValues().put("i8nProjectContributionUndertakingEffortsCSA",
+      this.getText("projectContribution.undertakingEffortsCSA"));
+    masterReport.getParameterValues().put("i8nProjectContributionUndertakingInitiative",
+      this.getText("projectContribution.initivativeRelated"));
 
     return masterReport;
   }
@@ -1289,6 +1334,9 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         break;
       case "leverages":
         model = this.getLeveragesTableModel();
+        break;
+      case "project_contribution_list":
+        model = this.getProjectContributionTableModel();
         break;
     }
     sdf.addTable(query, model);
@@ -3196,11 +3244,12 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       new String[] {"id", "isRegional", "isNational", "isStage4", "title", "narrative", "phaseResearch",
         "stageInnovation", "innovationType", "contributionOfCrp", "degreeInnovation", "geographicScope", "region",
         "countries", "organizations", "projectExpectedStudy", "descriptionStage", "evidenceLink", "deliverables",
-        "crps", "genderFocusLevel", "genderExplaniation", "youthFocusLevel", "youthExplaniation"},
+        "crps", "genderFocusLevel", "genderExplaniation", "youthFocusLevel", "youthExplaniation", "leadOrganization",
+        "contributingOrganizations"},
       new Class[] {Long.class, Boolean.class, Boolean.class, Boolean.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        String.class},
+        String.class, String.class, String.class},
       0);
 
     List<ProjectInnovation> projectInnovations = project.getProjectInnovations().stream()
@@ -3214,7 +3263,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           contributionOfCrp = null, degreeInnovation = null, geographicScope = null, region = null, countries = null,
           organizations = null, projectExpectedStudy = null, descriptionStage = null, evidenceLink = null,
           deliverables = null, crps = null, genderFocusLevel = null, genderExplaniation = null, youthFocusLevel = null,
-          youthExplaniation = null;
+          youthExplaniation = null, leadOrganization = null, contributingOrganizations = null;
         Boolean isRegional = false, isNational = false, isStage4 = false;
         // Id
         id = projectInnovation.getId();
@@ -3300,6 +3349,31 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         if (innovationInfo.getDescriptionStage() != null && !innovationInfo.getDescriptionStage().trim().isEmpty()) {
           descriptionStage = innovationInfo.getDescriptionStage();
         }
+        // Lead Organization
+        if (innovationInfo.getLeadOrganization() != null
+          && innovationInfo.getLeadOrganization().getComposedName() != null) {
+          leadOrganization = innovationInfo.getLeadOrganization().getComposedName();
+        }
+        // Contributing Organizations
+        List<ProjectInnovationContributingOrganization> contributingOrganizationsList =
+          new ArrayList<ProjectInnovationContributingOrganization>();
+        contributingOrganizationsList = projectInnovationContributingOrganizationManager.findAll();
+        if (contributingOrganizationsList != null && contributingOrganizationsList.size() > 0) {
+          contributingOrganizationsList.stream()
+            .filter(p -> p.getProjectInnovation().getId() == projectInnovation.getId()
+              && p.getPhase().getId() == this.getSelectedPhase().getId());
+        }
+        if (contributingOrganizationsList != null && !contributingOrganizationsList.isEmpty()) {
+          Set<String> contributingSet = new HashSet<>();
+          for (ProjectInnovationContributingOrganization contributingOrganization : contributingOrganizationsList) {
+            if (contributingOrganization.getInstitution() != null) {
+              contributingSet
+                .add("<br>&nbsp;&nbsp;&nbsp;&nbsp; ● " + contributingOrganization.getInstitution().getComposedName());
+            }
+          }
+          contributingOrganizations = String.join("", contributingSet);
+        }
+
         // Evidence Link
         if (innovationInfo.getEvidenceLink() != null && !innovationInfo.getEvidenceLink().trim().isEmpty()) {
           evidenceLink = innovationInfo.getEvidenceLink();
@@ -3349,7 +3423,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         model.addRow(new Object[] {id, isRegional, isNational, isStage4, title, narrative, phaseResearch,
           stageInnovation, innovationType, contributionOfCrp, degreeInnovation, geographicScope, region, countries,
           organizations, projectExpectedStudy, descriptionStage, evidenceLink, deliverables, crps, genderFocusLevel,
-          genderExplaniation, youthFocusLevel, youthExplaniation});
+          genderExplaniation, youthFocusLevel, youthExplaniation, leadOrganization, contributingOrganizations});
       }
     }
 
@@ -3403,7 +3477,6 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     return model;
   }
 
-
   private TypedTableModel getLocationsTableModel() {
     TypedTableModel model = new TypedTableModel(new String[] {"level", "lat", "long", "name"},
       new Class[] {String.class, Double.class, Double.class, String.class}, 0);
@@ -3453,6 +3526,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     }
     return model;
   }
+
 
   private TypedTableModel getMasterTableModel(List<CrpProgram> flagships, List<CrpProgram> regions,
     ProjectPartner projectLeader) {
@@ -3594,7 +3668,6 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     return model;
   }
 
-
   public List<IpElement> getMidOutcomeOutputs(long midOutcomeID) {
     List<IpProjectContribution> ipProjectContributions =
       project.getIpProjectContributions().stream().filter(c -> c.isActive()).collect(Collectors.toList());
@@ -3628,6 +3701,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     }
     return outputs;
   }
+
 
   private TypedTableModel getOutcomesTableModel() {
     TypedTableModel model = new TypedTableModel(
@@ -4023,6 +4097,90 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     return project;
   }
 
+  private TypedTableModel getProjectContributionTableModel() {
+    // Project Lp6 contribution
+    // Decimal format
+    DecimalFormat myFormatter = new DecimalFormat("###,###.00");
+    TypedTableModel model = new TypedTableModel(
+      new String[] {"description", "deliverables", "geographicScope", "workingAcrossFlagships", "undertakingEfforts",
+        "providingPathways", "top3Partnerships", "undertakingEffortsCSA", "undertakingInitiative"},
+      new Class[] {String.class, String.class, String.class, String.class, String.class, String.class, String.class,
+        String.class, String.class, String.class},
+      0);
+
+    for (ProjectLp6Contribution projectLp6Contribution : projectLp6Contributions.stream()
+      .filter(pl -> pl.getProject().getId() == this.getSelectedYear()
+        && pl.getPhase().getId().equals(this.getSelectedPhase().getId()))
+      .collect(Collectors.toList())) {
+      String description = null, deliverables = null, geographicScope = null, workingAcrossFlagships = null,
+        undertakingEfforts = null, providingPathways = null, top3Partnerships = null, undertakingEffortsCSA = null,
+        keyLearnings = null, undertakingInitiative = null;
+
+      // Narrative - description
+      if (projectLp6Contribution.getNarrative() != null && !projectLp6Contribution.getNarrative().isEmpty()) {
+        description = projectLp6Contribution.getNarrative();
+      }
+      // Deliverables
+      Set<String> contributionDeliverablesSet = new HashSet<>();
+      List<ProjectLp6ContributionDeliverable> contributionDeliverableList =
+        new ArrayList<ProjectLp6ContributionDeliverable>();
+      contributionDeliverableList = projectLp6ContributionDeliverableManager.findAll().stream()
+        .filter(d -> d.getProjectLp6Contribution().getId().equals(projectLp6Contribution.getId())
+          && d.getPhase().getId().equals(this.getSelectedPhase().getId())
+          && d.getProjectLp6Contribution().getId().equals(projectLp6Contribution.getId()))
+        .collect(Collectors.toList());
+      if (contributionDeliverableList != null && !contributionDeliverableList.isEmpty()) {
+        for (ProjectLp6ContributionDeliverable contributionDeliverable : contributionDeliverableList) {
+          if (contributionDeliverable.getDeliverable() != null
+            && contributionDeliverable.getDeliverable().getDeliverableInfo() != null) {
+            contributionDeliverablesSet.add("<br>&nbsp;&nbsp;&nbsp;&nbsp; ● "
+              + contributionDeliverable.getDeliverable().getDeliverableInfo().getTitle());
+          }
+        }
+        deliverables = String.join("", contributionDeliverablesSet);
+      }
+      // Geographic Scope
+      if (projectLp6Contribution.getGeographicScopeNarrative() != null
+        && !projectLp6Contribution.getGeographicScopeNarrative().trim().isEmpty()) {
+        geographicScope = projectLp6Contribution.getGeographicScopeNarrative();
+      }
+      // Working Across Flagships
+      if (projectLp6Contribution.getWorkingAcrossFlagshipsNarrative() != null
+        && !projectLp6Contribution.getWorkingAcrossFlagshipsNarrative().trim().isEmpty()) {
+        workingAcrossFlagships = projectLp6Contribution.getWorkingAcrossFlagshipsNarrative();
+      }
+      // Undertaking Efforts
+      if (projectLp6Contribution.getUndertakingEffortsLeadingNarrative() != null
+        && !projectLp6Contribution.getUndertakingEffortsLeadingNarrative().trim().isEmpty()) {
+        undertakingEfforts = projectLp6Contribution.getUndertakingEffortsLeadingNarrative();
+      }
+      // providingPathways
+      if (projectLp6Contribution.getProvidingPathwaysNarrative() != null
+        && !projectLp6Contribution.getProvidingPathwaysNarrative().trim().isEmpty()) {
+        providingPathways = projectLp6Contribution.getProvidingPathwaysNarrative();
+      }
+      // Top 3 Partnerships
+      if (projectLp6Contribution.getTopThreePartnershipsNarrative() != null
+        && !projectLp6Contribution.getTopThreePartnershipsNarrative().trim().isEmpty()) {
+        top3Partnerships = projectLp6Contribution.getTopThreePartnershipsNarrative();
+      }
+      // Undertaking Efforts CSA
+      if (projectLp6Contribution.getUndertakingEffortsCsaNarrative() != null
+        && !projectLp6Contribution.getUndertakingEffortsCsaNarrative().isEmpty()) {
+        undertakingEffortsCSA = projectLp6Contribution.getUndertakingEffortsCsaNarrative();
+      }
+      // Undertaking Initiative
+      if (projectLp6Contribution.getInitiativeRelatedNarrative() != null
+        && !projectLp6Contribution.getInitiativeRelatedNarrative().isEmpty()) {
+        undertakingInitiative = projectLp6Contribution.getInitiativeRelatedNarrative();
+      }
+      model.addRow(new Object[] {description, deliverables, geographicScope, workingAcrossFlagships, undertakingEfforts,
+        providingPathways, top3Partnerships, undertakingEffortsCSA, undertakingInitiative});
+    }
+    return model;
+
+  }
+
   private TypedTableModel getProjectHighlightReportingTableModel() {
     TypedTableModel model = new TypedTableModel(
       new String[] {"id", "title", "author", "subject", "publisher", "year_reported", "highlights_types",
@@ -4318,7 +4476,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         if (studyinfo.getOutcomeImpactStatement() != null && !studyinfo.getOutcomeImpactStatement().trim().isEmpty()) {
           outcomeImpactStatement = studyinfo.getOutcomeImpactStatement();
         }
-        // OutcomeHistory
+        // OutcomeStory
         if (studyinfo != null && studyinfo.getOutcomeStory() != null) {
           outcomeHistory = projectExpectedStudy.getProjectExpectedStudyInfo().getOutcomeStory();
         }
@@ -4344,10 +4502,11 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           && projectExpectedStudy.getProjectExpectedStudyLinks().size() > 0) {
           List<ProjectExpectedStudyLink> linkPrev =
             new ArrayList<>(projectExpectedStudy.getProjectExpectedStudyLinks());
-
+          Set<String> linkSet = new HashSet<>();
           for (ProjectExpectedStudyLink studyLink : linkPrev) {
-            linksProvided += studyLink.getLink() + " ";
+            linkSet.add("<br>&nbsp;&nbsp;&nbsp;&nbsp; ● " + studyLink.getLink());
           }
+          linksProvided = String.join("", linkSet);
         }
         // isContribution
         if (studyinfo.getIsContribution() != null) {
@@ -4387,12 +4546,14 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         }
         // Innovations
         if (projectExpectedStudy.getInnovations() != null) {
+          Set<String> innovationsSet = new HashSet<>();
           for (ProjectExpectedStudyInnovation projectExpectedStudyInnovation : projectExpectedStudy.getInnovations()) {
             projectExpectedStudyInnovation.setProjectInnovation(projectInnovationManager
               .getProjectInnovationById(projectExpectedStudyInnovation.getProjectInnovation().getId()));
-            cgiarInnovationsList +=
-              projectExpectedStudyInnovation.getProjectInnovation().getProjectInnovationInfo().getTitle();
+            innovationsSet.add("<br>&nbsp;&nbsp;&nbsp;&nbsp; ● "
+              + projectExpectedStudyInnovation.getProjectInnovation().getProjectInnovationInfo().getTitle());
           }
+          cgiarInnovationsList = String.join("", innovationsSet);
         }
         // SubIdos
         List<ProjectExpectedStudySubIdo> subIdosList = projectExpectedStudy.getProjectExpectedStudySubIdos().stream()
@@ -4883,6 +5044,9 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     this.loadProvider(this.getSession());
     this.setGeneralParameters();
 
+    projectLp6Contributions = projectLp6ContributionManager.findAll();
+
+
     // Set projectID
     try {
       this
@@ -4898,6 +5062,16 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       LOG.error("Failed to get project. Exception: " + e.getMessage());
     }
     this.setProjectInfo(project.getProjecInfoPhase(this.getSelectedPhase()));
+
+    if (projectLp6Contributions != null) {
+      projectLp6Contributions =
+        projectLp6Contributions.stream().filter(c -> c.isActive() && c.getPhase().equals(this.getSelectedPhase())
+          && c.getProject().getId().equals(project.getId())).collect(Collectors.toList());
+    }
+
+    if (projectLp6Contributions == null) {
+      projectLp6Contributions = new ArrayList<>();
+    }
   }
 
 
