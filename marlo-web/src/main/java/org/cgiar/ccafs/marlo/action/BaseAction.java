@@ -4998,10 +4998,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     Phase currentPhase = this.getActualPhase();
     Phase previousPhase = phaseManager.findPreviousPhase(currentPhase.getId());
 
-    ProjectExpectedStudy expectedStudy = projectExpectedStudyManager.getProjectExpectedStudyById(evidenceId);
+    ProjectExpectedStudy studyDB = projectExpectedStudyManager.getProjectExpectedStudyById(evidenceId);
 
-    expectedStudy.setProjectExpectedStudyInfo(null);
-    if (expectedStudy.getProjectExpectedStudyInfo(previousPhase) != null) {
+    if (studyDB.getProjectExpectedStudyInfo(previousPhase) != null) {
+      studyDB.getProjectExpectedStudyInfo(currentPhase);
       return false;
     } else {
       return true;
@@ -5170,9 +5170,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     Phase currentPhase = this.getActualPhase();
     Phase previousPhase = phaseManager.findPreviousPhase(currentPhase.getId());
 
-    ProjectInnovation innovation = projectInnovationManager.getProjectInnovationById(innovationId);
+    ProjectInnovation innovationNew = projectInnovationManager.getProjectInnovationById(innovationId);
 
-    if (innovation.getProjectInnovationInfo(previousPhase) != null) {
+    if (innovationNew.getProjectInnovationInfo(previousPhase) != null) {
       return false;
     } else {
       return true;
@@ -5241,10 +5241,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     Phase currentPhase = this.getActualPhase();
     Phase previousPhase = phaseManager.findPreviousPhase(currentPhase.getId());
 
-    ProjectPolicy policy = projectPolicyManager.getProjectPolicyById(policyId);
+    ProjectPolicy policyD = projectPolicyManager.getProjectPolicyById(policyId);
 
     if (previousPhase != null) {
-      if (policy.getProjectPolicyInfo(previousPhase) != null) {
+      if (policyD.getProjectPolicyInfo(previousPhase) != null) {
         return false;
       } else {
         return true;
