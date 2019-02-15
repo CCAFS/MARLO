@@ -17,6 +17,7 @@
   [#assign auditObjectID = auditObject['id'] ]
   [#assign auditObjectName = "policyID" ]
   <input type="hidden"  name="${auditObjectName}"   value="${(auditObjectID)!}" />
+  <input type="hidden"  name="policy.projectPolicyInfo.id" value="${(policy.projectPolicyInfo.id)!}"/>
 [/#if]
 
 
