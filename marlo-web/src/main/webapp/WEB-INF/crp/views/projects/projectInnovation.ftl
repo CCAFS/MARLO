@@ -72,11 +72,8 @@
             </div>
           </div>
         
-          [#-- Geographic scope and Contribution of CRP --] 
+          [#-- Contribution of CRP --] 
           <div class="form-group row">
-            <div class="col-md-6 ">
-              [@customForm.select name="innovation.projectInnovationInfo.repIndGeographicScope.id" label=""  i18nkey="projectInnovations.geographicScope" listName="geographicScopeList" keyFieldName="id"  displayFieldName="name" required=true  className="geographicScopeSelect" editable=editable/]
-            </div>
             <div class="col-md-6 ">
               [@customForm.select name="innovation.projectInnovationInfo.repIndContributionOfCrp.id" label=""  i18nkey="projectInnovations.contributionOfCrp" listName="contributionCrpList" keyFieldName="id"  displayFieldName="name" required=true  className="" editable=editable/]
             </div>
@@ -88,36 +85,32 @@
               [@customForm.select name="innovation.projectInnovationInfo.repIndDegreeInnovation.id" label=""  i18nkey="projectInnovations.degreeInnovation" listName="degreeInnovationList" keyFieldName="id"  displayFieldName="name" required=true  className="" editable=editable/]
             </div>
           </div>--]
-          [#assign geographicScope = ((innovation.projectInnovationInfo.repIndGeographicScope.id)!-1) ]
-          
-          [#assign isRegional = ((innovation.projectInnovationInfo.repIndGeographicScope.id == action.reportingIndGeographicScopeRegional)!false) ]
-          [#assign isMultiNational = ((innovation.projectInnovationInfo.repIndGeographicScope.id == action.reportingIndGeographicScopeMultiNational)!false) ]
-          [#assign isNational = ((innovation.projectInnovationInfo.repIndGeographicScope.id == action.reportingIndGeographicScopeNational)!false) ]
-          [#assign isSubNational = ((innovation.projectInnovationInfo.repIndGeographicScope.id == action.reportingIndGeographicScopeSubNational)!false) ]
-        
-          [#-- Region (if scope is Region) --] 
-          <div class="form-group row regionalBlock" style="display:${isRegional?string('block','none')}">
-            <div class="col-md-6 ">
-              [@customForm.selectGroup name="innovation.projectInnovationInfo.repIndRegion.id" list=regionList element=(innovation.projectInnovationInfo.repIndRegion)!{} subListName="subRegions"  keyFieldName="id" displayFieldName="name" i18nkey="projectInnovations.region" required=true className="" editable=editable /]
-            </div>
-            <div class="col-md-6 ">
-            </div>
-          </div>
-        
-          [#-- Country(ies) (if scope is Multi-national, National or Sub-National)  --]
-          <div class="form-group countriesBlock nationalBlock chosen" style="display:${(isMultiNational || isNational || isSubNational)?string('block','none')}">
-            [#if editable]
-              [@customForm.select name="innovation.countriesIds" label="" i18nkey="projectInnovations.countries" listName="countries" keyFieldName="isoAlpha2"  displayFieldName="name" value="innovation.countriesIds" required=true  className="countriesIds" multiple=true  /]
-            [#else]
-              <label>[@s.text name="projectInnovations.countries" /]:</label>
-              <div class="select">
-              [#if innovation.countries?has_content]
-                [#list innovation.countries as element]<p class="checked">${(element.locElement.name)!}</p>[/#list]
-              [#else]
-                <p>[@s.text name="projectInnovations.countries" /]</p>
-              [/#if]
+
+          [#-- 6.  Geographic scope - Countries  --]
+          <div class="form-group geographicScopeBlock">
+            [#assign geographicScopeList = (innovation.geographicScopes)![] ]
+            [#assign isRegional =      findElementID(geographicScopeList,  action.reportingIndGeographicScopeRegional) /]
+            [#assign isMultiNational = findElementID(geographicScopeList,  action.reportingIndGeographicScopeMultiNational) /]
+            [#assign isNational =      findElementID(geographicScopeList,  action.reportingIndGeographicScopeNational) /]
+            [#assign isSubNational =   findElementID(geographicScopeList,  action.reportingIndGeographicScopeSubNational) /]
+            
+            <label for="">[@s.text name="study.geographicScopeTopic" /]:[@customForm.req required=editable /]</label>
+            <div class="form-group simpleBox">
+              <div class="form-group row">
+                <div class="col-md-6">
+                  [#-- Geographic Scope --]
+                  [@customForm.elementsListComponent name="innovation.geographicScopes" elementType="repIndGeographicScope" elementList=innovation.geographicScopes  label="projectInnovations.geographicScope" listName="geographicScopeList" keyFieldName="id" displayFieldName="name" required=true /]
+                </div>
               </div>
-            [/#if]
+              <div class="form-group regionalBlock" style="display:${(isRegional)?string('block','none')}">
+                [#-- Regional scope --]
+                [@customForm.elementsListComponent name="innovation.regions" elementType="locElement" elementList=innovation.regions label="projectInnovations.region"  listName="regions" keyFieldName="id" displayFieldName="composedName" required=false /]
+              </div>
+              <div class="form-group nationalBlock" style="display:${(isMultiNational || isNational || isSubNational)?string('block','none')}">
+                [#-- Multinational, National and Subnational scope --]
+                [@customForm.select name="innovation.countriesIds" label="" i18nkey="projectInnovations.countries" listName="countries" keyFieldName="isoAlpha2"  displayFieldName="name" value="innovation.countriesIds" multiple=true required=true className="countriesSelect" disabled=!editable/]
+              </div>
+            </div>
           </div>
           
           [#-- Description of Stage reached--] 
@@ -175,3 +168,10 @@
 </section>
 
 [#include "/WEB-INF/global/pages/footer.ftl"]
+
+[#function findElementID list id]
+  [#list (list)![] as item]
+    [#if (item.repIndGeographicScope.id == id)!false][#return true][/#if]
+  [/#list]
+  [#return false]
+[/#function]
