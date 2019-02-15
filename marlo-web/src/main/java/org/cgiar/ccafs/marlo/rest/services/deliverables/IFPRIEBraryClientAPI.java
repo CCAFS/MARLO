@@ -179,7 +179,7 @@ public class IFPRIEBraryClientAPI extends MetadataClientApi {
       metadataModel = gson.fromJson(data, MetadataModel.class);
       Author[] authorsArr = new Author[authors.size()];
       authorsArr = authors.toArray(authorsArr);
-      metadataModel.setAuthor(authorsArr);
+      metadataModel.setAuthors(authorsArr);
 
       // get date
       try {

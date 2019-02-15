@@ -45,6 +45,10 @@
                     "i18nkey": "marloBulkReplication.projectsReplication",
                     "service": "getProjectsByPhase"
                   },
+                  { "actionName": "projectsOutcomesReplication",
+                    "i18nkey": "marloBulkReplication.projectsOutcomesReplication",
+                    "service": "getProjectsByPhase"
+                  },
                   { "actionName": "activitiesReplication",
                     "i18nkey": "marloBulkReplication.activitiesReplication",
                     "service": "getActivitiesByPhase"

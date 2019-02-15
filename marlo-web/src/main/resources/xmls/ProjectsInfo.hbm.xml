@@ -109,6 +109,13 @@
         <property name="partnerOverall" type="string">
             <column name="partner_overall" sql-type="TEXT" />
         </property>
+        <property name="activitiesCSV" type="java.lang.Boolean">
+            <column name="activities_csv" />
+        </property>
+        <many-to-one name="activitiesCSVFile"
+        class="org.cgiar.ccafs.marlo.data.model.FileDB" fetch="select">
+            <column name="activities_csv_file" not-null="false" />
+        </many-to-one>
         <many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select" update="false">
           <column name="created_by" not-null="true" />
         </many-to-one>

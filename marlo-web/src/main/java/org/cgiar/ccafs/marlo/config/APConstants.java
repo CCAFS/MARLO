@@ -116,6 +116,7 @@ public final class APConstants {
   public static final String CRP_DELIVERABLES_INTELLECTUAL_ASSET = "crp_deliverable_intellectual_asset";
   public static final String CRP_LP6_ACTIVE = "crp_lp6_active";
   public static final String CRP_LP6_CONTRIBUTION_VALUE = "crp_lp6_contribution_value";
+  public static final String CRP_LOCATION_CSV_ACTIVITIES = "crp_location_csv_activities";
 
 
   // Email parameters to copy to FL FM CL
