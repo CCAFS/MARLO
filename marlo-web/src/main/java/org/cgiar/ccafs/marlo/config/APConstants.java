@@ -563,6 +563,8 @@ public final class APConstants {
   public static final String POWB_FOLDER = "powbSynthesis";
   // Studies
   public static final String STUDIES_FOLDER = "studies";
+  // Projects
+  public static final String PROJECTS_LOCATIONS_ACTIVITIES_CSV_FOLDER = "projectLocationCSV";
 
 
   // Relations Name

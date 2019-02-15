@@ -165,18 +165,18 @@
                     </div>
                     
                     [#-- Upload Template --]
-                    <div class="col-md-3 center" style="position:relative" listname="">
+                    <div class="col-md-5" style="position:relative" listname="project.projectInfo.activitiesCSVFile">
                       [@customForm.fileUploadAjax 
-                        fileDB={} 
-                        name="project.projectInfo.activitiesCSVFile" 
-                        label="projectLocations.activitiesCSV.upload" 
+                        fileDB=(project.projectInfo.activitiesCSVFile)!{}  
+                        name="project.projectInfo.activitiesCSVFile.id" 
+                        label="projectLocations.activitiesCSV.upload"
                         image=true
                         imgUrl="download-summary.png"
                         imgClass="csvUpload"
-                        dataUrl="" 
-                        path=""
+                        dataUrl="${baseUrl}/uploadProjectLocationActivitiesCSV.do"  
+                        path="${(action.getPath())!}"
                         isEditable=editable
-                        labelClass="label-min-width"
+                        labelClass=""
                         required=false
                       /]
                     </div>
