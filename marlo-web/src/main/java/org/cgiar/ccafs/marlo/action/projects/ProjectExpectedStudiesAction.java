@@ -1198,12 +1198,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       }
 
       // Validate negative Values
-      if (expectedStudy.getProjectExpectedStudyInfo().getRepIndGeographicScope() != null) {
-        if (expectedStudy.getProjectExpectedStudyInfo().getRepIndGeographicScope().getId() == -1) {
-          expectedStudy.getProjectExpectedStudyInfo().setRepIndGeographicScope(null);
-        }
-      }
-
       if (expectedStudy.getProjectExpectedStudyInfo().getRepIndRegion() != null) {
         if (expectedStudy.getProjectExpectedStudyInfo().getRepIndRegion().getId() == -1) {
           expectedStudy.getProjectExpectedStudyInfo().setRepIndRegion(null);
