@@ -429,7 +429,7 @@
       
       [#-- Confidential URL --]
       <div class="form-group confidentialBlock-true" style="display:${(isConfidential == "true")?string('block', 'none')}">
-        [@customForm.input name="${name}.confidentialUrl" type="text" i18nkey="project.deliverable.dissemination.confidentialUrl"  placeholder="global.webSiteLink.placeholder" className="" required=true editable=editable /]
+        [@customForm.input name="${name}.confidentialUrl" type="text" i18nkey="project.deliverable.dissemination.confidentialUrl" help="project.deliverable.dissemination.confidentialUrl.help" helpIcon=false placeholder="global.webSiteLink.placeholder" className="" required=true editable=editable /]
       </div>
       <div class="form-group confidentialBlock-false" style="display:${(isConfidential == "false")?string('block', 'none')}">
         <p class="note"> [@s.text name="project.deliverable.dissemination.confidentialNoMessage" /] </p>

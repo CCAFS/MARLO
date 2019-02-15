@@ -37,7 +37,7 @@
                <div class="form-group simpleBox">
                  [@customForm.elementsListComponent id="deliverableSelect" name="project.projectLp6Contribution.deliverables" elementType="deliverable" elementList=(project.projectLp6Contribution.deliverables) label="projects.LP6Contribution.evidenceDeliverables" listName="deliverables" keyFieldName="id" displayFieldName="composedName" required=false/]
                 [#if editable]
-                <p class="note">[@s.text name="projects.LP6Contribution.deliverablesTooltip" /] <a href="[@s.url action="${crpSession}/deliverableList"][@s.param name="projectID" value=projectID /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">clicking here.</a></p>
+                <p class="note">[@s.text name="projects.LP6Contribution.deliverablesTooltip" /] <a href="[@s.url action="${crpSession}/deliverableList"][@s.param name="projectID" value=projectID /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" target="__BLANK">clicking here.</a></p>
                 [/#if]
                </div>
               [#-- Geographic Scope Narrative --]
