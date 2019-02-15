@@ -72,6 +72,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInstitution;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyLink;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyPolicy;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyQuantification;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyRegion;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudySrfTarget;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudySubIdo;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
@@ -564,9 +565,9 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
         // Expected Study Geographic Regions List Autosave
         if (expectedStudy.getStudyRegions() != null) {
-          for (ProjectExpectedStudyCountry projectExpectedStudyCountry : expectedStudy.getStudyRegions()) {
-            projectExpectedStudyCountry
-              .setLocElement(locElementManager.getLocElementById(projectExpectedStudyCountry.getLocElement().getId()));
+          for (ProjectExpectedStudyRegion projectExpectedStudyRegion : expectedStudy.getStudyRegions()) {
+            projectExpectedStudyRegion
+              .setLocElement(locElementManager.getLocElementById(projectExpectedStudyRegion.getLocElement().getId()));
           }
         }
 
@@ -633,7 +634,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
         this.setDraft(false);
 
         if (expectedStudy.getProjectExpectedStudyInfo() == null) {
-          expectedStudy.getProjectExpectedStudyInfo(this.getActualPhase());
+          expectedStudy.getProjectExpectedStudyInfo(phase);
         }
 
         // Expected Study Countries List
@@ -670,12 +671,13 @@ public class ProjectExpectedStudiesAction extends BaseAction {
         }
 
         // Expected Study Geographic Regions List
-        if (expectedStudy.getProjectExpectedStudyCountries() != null) {
-          expectedStudy.setStudyRegions(new ArrayList<>(projectExpectedStudyCountryManager
-            .getProjectExpectedStudyCountrybyPhase(expectedStudy.getId(), phase.getId()).stream()
-            .filter(le -> le.isActive() && le.getLocElement().getLocElementType().getId() == 1)
-            .collect(Collectors.toList())));
-        }
+        // TODO
+        // if (expectedStudy.getProjectExpectedStudyCountries() != null) {
+        // expectedStudy.setStudyRegions(new ArrayList<>(projectExpectedStudyCountryManager
+        // .getProjectExpectedStudyCountrybyPhase(expectedStudy.getId(), phase.getId()).stream()
+        // .filter(le -> le.isActive() && le.getLocElement().getLocElementType().getId() == 1)
+        // .collect(Collectors.toList())));
+        // }
 
         // Expected Study Crp List
         if (expectedStudy.getProjectExpectedStudyCrps() != null) {
@@ -863,7 +865,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       expectedStudyDB = projectExpectedStudyManager.getProjectExpectedStudyById(expectedID);
 
       if (expectedStudyDB.getProject() != null) {
-        projectID = expectedStudyDB.getProject().getId();
+        projectID = expectedStudy.getProject().getId();
         project = projectManager.getProjectById(projectID);
         project.getProjecInfoPhase(phase);
       }
@@ -1026,7 +1028,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
 
       expectedStudy.getProjectExpectedStudyInfo().setPhase(this.getActualPhase());
-      expectedStudy.getProjectExpectedStudyInfo().setProjectExpectedStudy(expectedStudyDB);
+      expectedStudy.getProjectExpectedStudyInfo().setProjectExpectedStudy(expectedStudy);
 
       // Save Files
       if (expectedStudy.getProjectExpectedStudyInfo().getOutcomeFile() != null) {
@@ -1638,23 +1640,24 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     }
 
     // Save form Information
-    if (expectedStudy.getStudyRegions() != null) {
-      for (ProjectExpectedStudyCountry studyRegion : expectedStudy.getStudyRegions()) {
-        if (studyRegion.getId() == null) {
-          ProjectExpectedStudyCountry studyRegionSave = new ProjectExpectedStudyCountry();
-          studyRegionSave.setProjectExpectedStudy(projectExpectedStudy);
-          studyRegionSave.setPhase(phase);
-
-          LocElement locElement = locElementManager.getLocElementById(studyRegion.getLocElement().getId());
-
-          studyRegionSave.setLocElement(locElement);
-
-          projectExpectedStudyCountryManager.saveProjectExpectedStudyCountry(studyRegionSave);
-          // This is to add studyFlagshipSave to generate correct auditlog.
-          expectedStudy.getProjectExpectedStudyCountries().add(studyRegionSave);
-        }
-      }
-    }
+    // TODO
+    // if (expectedStudy.getStudyRegions() != null) {
+    // for (ProjectExpectedStudyCountry studyRegion : expectedStudy.getStudyRegions()) {
+    // if (studyRegion.getId() == null) {
+    // ProjectExpectedStudyCountry studyRegionSave = new ProjectExpectedStudyCountry();
+    // studyRegionSave.setProjectExpectedStudy(projectExpectedStudy);
+    // studyRegionSave.setPhase(phase);
+    //
+    // LocElement locElement = locElementManager.getLocElementById(studyRegion.getLocElement().getId());
+    //
+    // studyRegionSave.setLocElement(locElement);
+    //
+    // projectExpectedStudyCountryManager.saveProjectExpectedStudyCountry(studyRegionSave);
+    // // This is to add studyFlagshipSave to generate correct auditlog.
+    // expectedStudy.getProjectExpectedStudyCountries().add(studyRegionSave);
+    // }
+    // }
+    // }
 
   }
 
