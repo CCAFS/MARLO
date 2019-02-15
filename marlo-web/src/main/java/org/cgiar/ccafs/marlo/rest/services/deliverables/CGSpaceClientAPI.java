@@ -51,9 +51,6 @@ public class CGSpaceClientAPI extends MetadataClientApi {
     coverterAtrributes.put("date.issued", "publicationDate");
     coverterAtrributes.put("language.iso", "language");
     coverterAtrributes.put("subject", "keywords");
-    coverterAtrributes.put("identifier.citation", "citation");
-    coverterAtrributes.put("identifier.uri", "handle");
-    coverterAtrributes.put("identifier.doi", "doi");
   }
 
   @Override
@@ -70,6 +67,7 @@ public class CGSpaceClientAPI extends MetadataClientApi {
         Element value = element.element("value");
         String keyValue = key.getStringValue();
         keyValue = keyValue.substring(3);
+
         if (keyValue.equals("contributor.author")) {
           Author author = new Author(value.getStringValue());
           String names[] = author.getFirstName().split(", ");
@@ -78,24 +76,34 @@ public class CGSpaceClientAPI extends MetadataClientApi {
             author.setLastName(names[0]);
           }
           authors.add(author);
-        } else {
-          if (keyValue.equals("identifier.status")) {
-            if (value.getStringValue().equals("Open Access")) {
-              jo.put("openAccess", "true");
-            } else {
-              jo.put("openAccess", "false");
-            }
+        } else if (keyValue.equals("identifier.status")) {
+          if (value.getStringValue().equals("Open Access")) {
+            jo.put("openAccess", "true");
+          } else {
+            jo.put("openAccess", "false");
           }
-          if (jo.has(keyValue)) {
+        } else if (keyValue.equals("identifier.citation")) {
+          jo.put("citation", value.getStringValue());
+        } else if (keyValue.equals("identifier.uri")) {
+          jo.put("handle", value.getStringValue());
+        } else if (keyValue.equals("isijournal")) {
+          if (value.getStringValue().contains("ISI")) {
+            jo.put("ISI", "true");
+          } else {
+            jo.put("ISI", "false");
+          }
+        } else {
+          if (jo.has(keyValue) && jo.get(keyValue) != null && jo.get(keyValue) != "") {
             jo.put(keyValue, jo.get(keyValue) + "," + value.getStringValue());
           } else {
             jo.put(keyValue, value.getStringValue());
           }
         }
+
       }
 
-      this.setDoi(jo);
 
+      this.setDoi(jo);
 
       GsonBuilder gsonBuilder = new GsonBuilder();
       gsonBuilder.registerTypeAdapter(Date.class, new DateTypeAdapter());
@@ -107,9 +115,11 @@ public class CGSpaceClientAPI extends MetadataClientApi {
       metadataModel = gson.fromJson(data, MetadataModel.class);
       Author[] authorsArr = new Author[authors.size()];
       authorsArr = authors.toArray(authorsArr);
-      metadataModel.setAuthor(authorsArr);
+      metadataModel.setAuthors(authorsArr);
 
-    } catch (Exception e) {
+    } catch (
+
+    Exception e) {
       e.printStackTrace();
       LOG.error(e.getLocalizedMessage());
 

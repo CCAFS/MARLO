@@ -193,7 +193,7 @@ public class DataverseClientApi extends MetadataClientApi {
 
                                 }
                                 if (countries != null && countries.size() > 0) {
-                                  metadataModel.setCountry(String.join(", ", countries));
+                                  metadataModel.setCountries(String.join(", ", countries));
                                 }
 
                               }
@@ -287,7 +287,7 @@ public class DataverseClientApi extends MetadataClientApi {
 
                                 Author[] authorsArr = new Author[authors.size()];
                                 authorsArr = authors.toArray(authorsArr);
-                                metadataModel.setAuthor(authorsArr);
+                                metadataModel.setAuthors(authorsArr);
                               }
                             }
                             break;

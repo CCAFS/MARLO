@@ -32,11 +32,11 @@ public class ProjectExpectedStudyRegion extends MarloBaseEntity implements java.
       return false;
     }
     ProjectExpectedStudyRegion other = (ProjectExpectedStudyRegion) obj;
-    if (locElement == null) {
-      if (other.locElement != null) {
+    if (this.getId() == null) {
+      if (other.getId() != null) {
         return false;
       }
-    } else if (!locElement.getId().equals(other.locElement.getId())) {
+    } else if (!this.getId().equals(other.getId())) {
       return false;
     }
     return true;
@@ -79,7 +79,7 @@ public class ProjectExpectedStudyRegion extends MarloBaseEntity implements java.
   public int hashCode() {
     final int prime = 31;
     int result = 1;
-    result = prime * result + ((locElement == null) ? 0 : locElement.hashCode());
+    result = prime * result + ((this.getId() == null) ? 0 : this.getId().hashCode());
     return result;
   }
 

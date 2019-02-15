@@ -31,15 +31,17 @@
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
 [#import "/WEB-INF/global/macros/studiesTemplates.ftl" as studies /]
 
-[#--  
-<div class="container helpText viewMore-block">
-  <div class="helpMessage infoText">
-    <img class="col-md-2" src="${baseUrl}/global/images/icon-help.jpg" />
-    <p class="col-md-10"> [@s.text name="projectStudies.help" /] </p>
-  </div> 
-  <div style="display:none" class="viewMore closed"></div>
-</div>
---]
+
+[#assign isOutcomeCaseStudy = ((expectedStudy.projectExpectedStudyInfo.studyType.id == 1)!false) && reportingActive/]
+[#if isOutcomeCaseStudy]
+  <div class="container helpText viewMore-block">
+    <div class="helpMessage infoText">
+      <img class="col-md-2" src="${baseUrl}/global/images/icon-help.jpg" />
+      <p class="col-md-10"> [@s.text name="study.help" /] </p>
+    </div> 
+    <div style="display:none" class="viewMore closed"></div>
+  </div>
+[/#if]
 
 <section class="container">
     <div class="row">
