@@ -605,3 +605,7 @@ div.suggestedLocations-separator{
     padding: 0 13px;
     border-bottom-right-radius: 4px;
 }
+
+.csvUpload {
+  height: 70px;
+}
