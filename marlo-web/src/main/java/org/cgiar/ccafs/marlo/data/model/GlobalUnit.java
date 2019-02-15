@@ -166,10 +166,10 @@ public class GlobalUnit extends MarloAuditableEntity implements java.io.Serializ
   }
 
   public String getComposedName() {
-    if (this.acronym != null || !this.acronym.trim().equals("")) {
-      return this.acronym + " - " + this.name;
+    if (this.getAcronym() != null || !this.getAcronym().trim().equals("")) {
+      return this.getAcronym() + " - " + this.getName();
     } else {
-      return this.name;
+      return this.getName();
     }
   }
 
