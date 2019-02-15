@@ -55,7 +55,6 @@ function loadMilestonesByYear(i,e) {
       success: function(data) {
         for(var i = 0, len = data.crpMilestones.length; i < len; i++) {
           $select.addOption(data.crpMilestones[i].id, data.crpMilestones[i].description);
-          console.log(data.crpMilestones[i].year);
         }
 
         // Clear options
