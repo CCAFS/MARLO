@@ -799,17 +799,20 @@ public class ProjectPolicyAction extends BaseAction {
       boolean haveRegions = false;
       boolean haveCountries = false;
 
-      for (ProjectPolicyGeographicScope projectPolicyGeographicScope : policy.getGeographicScopes()) {
+      if (policy.getGeographicScopes() != null) {
+        for (ProjectPolicyGeographicScope projectPolicyGeographicScope : policy.getGeographicScopes()) {
 
-        if (projectPolicyGeographicScope.getRepIndGeographicScope().getId() == 2) {
-          haveRegions = true;
-        }
+          if (projectPolicyGeographicScope.getRepIndGeographicScope().getId() == 2) {
+            haveRegions = true;
+          }
 
-        if (projectPolicyGeographicScope.getRepIndGeographicScope().getId() != 1
-          && projectPolicyGeographicScope.getRepIndGeographicScope().getId() != 2) {
-          haveCountries = true;
+          if (projectPolicyGeographicScope.getRepIndGeographicScope().getId() != 1
+            && projectPolicyGeographicScope.getRepIndGeographicScope().getId() != 2) {
+            haveCountries = true;
+          }
         }
       }
+
 
       if (haveRegions) {
         // Save the Regions List

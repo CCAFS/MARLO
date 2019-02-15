@@ -338,6 +338,18 @@ function attachEvents() {
 
   // Add the modal buttons listeners
   modalButtonsListeners();
+
+
+  // CSA Question
+  $(".isCSV .button-label").on("click", function() {
+    var valueSelected = $(this).hasClass('yes-button-label');
+    if(!valueSelected) {
+      $(".csvActivitiesBox").hide("slow");
+    } else {
+      $(".csvActivitiesBox").show("slow");
+    }
+  });
+
 }
 
 // Load locations options depending on the location level id (Countries, CSV, etc.)
