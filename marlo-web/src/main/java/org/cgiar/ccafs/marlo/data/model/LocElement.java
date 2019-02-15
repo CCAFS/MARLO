@@ -104,10 +104,10 @@ public class LocElement extends MarloAuditableEntity implements java.io.Serializ
   }
 
   public String getComposedName() {
-    if (this.locElement != null) {
-      return this.locElement.name + " / " + this.name;
+    if (this.getLocElement() != null) {
+      return this.getLocElement().getName() + " / " + this.getName();
     }
-    return this.name;
+    return this.getName();
   }
 
 
