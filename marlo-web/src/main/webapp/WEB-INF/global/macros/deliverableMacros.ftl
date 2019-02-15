@@ -543,7 +543,7 @@
   </div>
   <div class="form-group row">
     <div class="col-md-6">
-      [@metadataField title="handles" encodedName="marlo.handle" type="input" require=false/]
+      [@metadataField title="handle" encodedName="marlo.handle" type="input" require=false/]
     </div>
     <div class="col-md-6">
       [@metadataField title="doi" encodedName="marlo.doi" type="input" require=false/]
