@@ -159,19 +159,18 @@
       
       [#-- 6.  Geographic scope - Countries  --]
       <div class="form-group geographicScopeBlock">
-        [#local geographicScope = ((element.projectExpectedStudyInfo.repIndGeographicScope.id)!-1) ]
-        
-        [#local isRegional = ((geographicScope == action.reportingIndGeographicScopeRegional)!false) ]
-        [#local isMultiNational = ((geographicScope == action.reportingIndGeographicScopeMultiNational)!false) ]
-        [#local isNational = ((geographicScope == action.reportingIndGeographicScopeNational)!false) ]
-        [#local isSubNational = ((geographicScope == action.reportingIndGeographicScopeSubNational)!false) ]
+        [#local geographicScopeList = (element.geographicScopes)![] ]
+        [#local isRegional =      findElementID(geographicScopeList,  action.reportingIndGeographicScopeRegional) /]
+        [#local isMultiNational = findElementID(geographicScopeList,  action.reportingIndGeographicScopeMultiNational) /]
+        [#local isNational =      findElementID(geographicScopeList,  action.reportingIndGeographicScopeNational) /]
+        [#local isSubNational =   findElementID(geographicScopeList,  action.reportingIndGeographicScopeSubNational) /]
         
         <label for="">[@s.text name="study.geographicScopeTopic" /]:[@customForm.req required=editable /]</label>
         <div class="form-group simpleBox">
           <div class="form-group row">
             <div class="col-md-6">
               [#-- Geographic Scope --]
-              [@customForm.select name="${customName}.projectExpectedStudyInfo.repIndGeographicScope.id" className="setSelect2 geographicScopeSelect" i18nkey="study.geographicScope" listName="geographicScopes" keyFieldName="id"  displayFieldName="name" editable=editable required=true /]
+              [@customForm.elementsListComponent name="${customName}.geographicScopes" elementType="repIndGeographicScope" elementList=element.geographicScopes  label="study.geographicScope" listName="geographicScopes" keyFieldName="id" displayFieldName="name" required=true /]
             </div>
           </div>
           <div class="form-group regionalBlock" style="display:${(isRegional)?string('block','none')}">
@@ -509,4 +508,9 @@
   </div>
 [/#macro]
 
-
+[#function findElementID list id]
+  [#list (list)![] as item]
+    [#if (item.repIndGeographicScope.id == id)!false][#return true][/#if]
+  [/#list]
+  [#return false]
+[/#function]

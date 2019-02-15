@@ -74,25 +74,26 @@ function attachEvents() {
       width: '100%'
   });
 
-  $(".geographicScopeSelect").on('change', function() {
+  $('select.elementType-repIndGeographicScope ').on("addElement removeElement", function(event,id,name) {
     var $partner = $(this).parents('.geographicScopeBlock');
+    var $scopes = $(this).parents('.elementsListComponent');
     var $regionalBlock = $partner.find('.regionalBlock');
     var $nationalBlock = $partner.find('.nationalBlock');
 
-    var isRegional = this.value == 2;
-    var isMultiNational = this.value == 3;
-    var isNational = this.value == 4;
-    var isSubNational = this.value == 5;
+    var isRegional = $scopes.find('.elementRelationID[value="2"]').exists();
+    var isMultiNational = $scopes.find('.elementRelationID[value="3"]').exists();
+    var isNational = $scopes.find('.elementRelationID[value="4"]').exists();
+    var isSubNational = $scopes.find('.elementRelationID[value="5"]').exists();
 
     // Regions
     if(isRegional) {
-      $regionalBlock.show();
+      $regionalBlock.slideDown();
     } else {
-      $regionalBlock.hide();
+      $regionalBlock.slideUp();
     }
 
     // Countries
-    $nationalBlock.find("select").val(null).trigger('change');
+    // $nationalBlock.find("select").val(null).trigger('change');
     if(isMultiNational || isNational || isSubNational) {
       if(isMultiNational) {
         $nationalBlock.find("select").select2({
@@ -105,15 +106,15 @@ function attachEvents() {
       } else {
         $nationalBlock.find("select").select2({
             maximumSelectionLength: 1,
-            placeholder: "Select a country(ies)",
+            placeholder: "Select a country",
             templateResult: formatStateCountries,
             templateSelection: formatStateCountries,
             width: '100%'
         });
       }
-      $nationalBlock.show();
+      $nationalBlock.slideDown();
     } else {
-      $nationalBlock.hide();
+      $nationalBlock.slideUp();
     }
   });
 
