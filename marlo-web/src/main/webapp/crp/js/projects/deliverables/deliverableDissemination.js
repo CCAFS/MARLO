@@ -221,11 +221,17 @@ function addDisseminationEvents() {
   });
 
   $('.trainingType').on('change', function() {
-    console.log(this.value);
-    if(this.value == 1) {
+    var id = this.value;
+    if(id == 1) {
       $('.block-academicDegree').show();
     } else {
       $('.block-academicDegree').hide();
+    }
+
+    if((id == 1) || (id == 3) || (id == 2) || (id == 4)) {
+      $('.block-periodTime').show();
+    } else {
+      $('.block-periodTime').hide();
     }
   });
 

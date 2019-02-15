@@ -686,6 +686,8 @@ function setGeographicScope(component) {
     $regionalBlock.slideDown();
   } else {
     $regionalBlock.slideUp();
+    // Clean selected region
+    $regionalBlock.find("select").val("-1").trigger('change');
   }
 
   // Countries
