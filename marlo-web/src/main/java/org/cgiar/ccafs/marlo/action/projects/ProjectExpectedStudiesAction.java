@@ -857,7 +857,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
         .collect(Collectors.toList());
       organizationTypes = organizationTypeManager.findAll();
       // Focus levels and Too early to tell was removed
-      focusLevels = focusLevelManager.findAll().stream().filter(f -> f.getId() != 4).collect(Collectors.toList());
+      focusLevels = focusLevelManager.findAll().stream().collect(Collectors.toList());
       policyInvestimentTypes = investimentTypeManager.findAll();
       stageProcesses = stageProcessManager.findAll();
       stageStudies = stageStudyManager.findAll();
