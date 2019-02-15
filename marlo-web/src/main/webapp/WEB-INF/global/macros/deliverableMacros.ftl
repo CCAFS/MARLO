@@ -366,7 +366,8 @@
         [@customForm.select name="${customName}.repIndTypeActivity.id" className="setSelect2 trainingType" i18nkey="involveParticipants.typeActivity" listName="repIndTypeActivities" keyFieldName="id"  displayFieldName="name" editable=editable required=editable /]
       </div>
       [#-- Formal training: Academic Degree --]
-      <div class="col-md-6 block-academicDegree" style="display:${((deliverable.deliverableParticipant.repIndTypeActivity.id == 1)!false)?string('block','none')}">
+      [#local isAcademicDegree = (deliverable.deliverableParticipant.repIndTypeActivity.id == 1)!false /]
+      <div class="col-md-6 block-academicDegree" style="display:${isAcademicDegree?string('block','none')}">
         [@customForm.input name="${customName}.academicDegree" i18nkey="involveParticipants.academicDegree" help="involveParticipants.academicDegree.help" className="" required=true editable=editable /]
       </div>
     </div>
@@ -394,6 +395,20 @@
         [@customForm.select name="${customName}.repIndTypeParticipant.id" className="setSelect2" i18nkey="involveParticipants.participantsType" listName="repIndTypeParticipants" keyFieldName="id"  displayFieldName="name" editable=editable required=editable /]
       </div>
     </div>
+    
+    [#-- Training period of time: (Only if formal training) --]
+    [#local isFormal = ([1, 3, 2, 4]?seq_contains(deliverable.deliverableParticipant.repIndTypeActivity.id))!false /]
+    <div class="form-group block-periodTime" style="display:${isFormal?string('block','none')}">
+      <label for="">[@s.text name="involveParticipants.trainingPeriod" /]:[@customForm.req required=editable /] </label><br />
+      [#local trainingPeriods =  [
+        {"id":"1", "name":"N/A - Not applicable"},
+        {"id":"2", "name":"Short-term"},
+        {"id":"3", "name":"Long-term"}
+      ] /]
+      [#list trainingPeriods as item]
+        [@customForm.radioFlat id="trainingPeriod-${item.id}"  name="${customName}.trainingPeriod" label="${item.name}"  value="${item.id}"  checked=(deliverable.deliverableParticipant.trainingPeriod.id == item.id)!false cssClass="" cssClassLabel="font-normal" editable=editable /]
+      [/#list]
+    </div> 
     
   </div>
 </div>
