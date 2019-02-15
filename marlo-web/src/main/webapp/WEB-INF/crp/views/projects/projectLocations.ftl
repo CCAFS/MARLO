@@ -134,7 +134,7 @@
                 </div>
                 <hr />
                 
-                [#if reportingActive]
+                [#if reportingActive && action.hasSpecificities("crpLocationCsvActivities")]
                 [#-- AR4D activities related to the evaluation of CSA options --]
                 <div class="form-group">
                   [@customForm.yesNoInput  label="projectLocations.activitiesCSV" name="project.projectInfo.activitiesCSV"  editable=editable inverse=false  cssClass="" /] 
