@@ -843,6 +843,8 @@ public class ProjectPolicyAction extends BaseAction {
             }
           }
         }
+      } else {
+        this.deleteLocElements(policyDB, phase, true);
       }
 
 
