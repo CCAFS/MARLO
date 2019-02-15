@@ -1878,7 +1878,7 @@ a.currentReportingSection li, a.currentSection li {
   /* padding: 0px 0px 0px 13px; */
 }
 
-#menu-contributionsCrpList {
+#menu-contributionsCrpList, #menu-contributionsLP6 {
   font-size: 0.88em !important;
 }
 

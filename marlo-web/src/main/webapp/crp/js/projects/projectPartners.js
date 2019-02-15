@@ -560,6 +560,7 @@ function removePartnerEvent(e) {
       modal: true,
       width: 500,
       buttons: {},
+      closeText: "",
       close: function() {
         $(this).find('.messages').empty();
       }

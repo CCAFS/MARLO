@@ -5,7 +5,7 @@
 [#assign customJS = [
   "${baseUrl}/global/js/fieldsValidation.js", 
   "${baseUrl}/global/js/usersManagement.js", 
-  "${baseUrlMedia}/js/projects/projectPartners.js?1", 
+  "${baseUrlMedia}/js/projects/projectPartners.js?191502", 
   "${baseUrl}/global/js/autoSave.js"
   ] 
 /]  
@@ -76,7 +76,7 @@
               [/#if]
               
               [#-- Lessons and progress --]
-              [#if !action.isProjectNew(project.id)]
+              [#if !action.isProjectNew(project.id) || reportingActive]
                 <div id="lessons" class="">
                   [#-- Lessons learnt from last planning/reporting cycle --]
                   [#if (project.projectComponentLessonPreview.lessons?has_content)!false]
@@ -89,7 +89,7 @@
                   [#if reportingActive]
                   <div class="fullBlock">
                     <input type="hidden" name="project.projectComponentLesson.id" value=${(project.projectComponentLesson.id)!"-1"} />
-                    <input type="hidden" name="project.projectComponentLesson.year" value=${reportingActive?string(reportingYear,planningYear)} />
+                    <input type="hidden" name="project.projectComponentLesson.year" value=${actualPhase.year} />
                     <input type="hidden" name="project.projectComponentLesson.componentName" value="${actionName}">
                     [@customForm.textArea name="project.projectComponentLesson.lessons" i18nkey="projectPartners.lessons.${reportingActive?string('reporting','planning')}" className="limitWords-100" editable=editable required=true /]
                   </div>
