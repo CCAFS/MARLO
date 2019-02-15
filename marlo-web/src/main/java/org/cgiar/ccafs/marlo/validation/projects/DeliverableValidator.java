@@ -523,6 +523,22 @@ public class DeliverableValidator extends BaseValidator {
           action.getInvalidFields().put("input-deliverable.dissemination.disseminationChannel",
             InvalidFieldsMessages.EMPTYFIELD);
         }
+      } else {
+        // Validate confidential
+        if (dissemination.getConfidential() != null) {
+          if (dissemination.getConfidential()) {
+            if (dissemination.getConfidentialUrl() == null || dissemination.getConfidentialUrl().trim().isEmpty()) {
+              action.addMessage(action.getText("project.deliverable.dissemination.confidentialUrl"));
+              action.getInvalidFields().put("input-deliverable.dissemination.confidentialUrl",
+                InvalidFieldsMessages.EMPTYFIELD);
+            }
+          }
+        } else {
+          action.addMessage(action.getText("project.deliverable.dissemination.confidential"));
+          action.getInvalidFields().put("input-deliverable.dissemination.confidential",
+            InvalidFieldsMessages.EMPTYFIELD);
+        }
+
       }
     } else {
       action.addMessage(action.getText("project.deliverable.dissemination.v.alreadyDisseminated"));
