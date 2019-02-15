@@ -137,15 +137,16 @@
                 [#if reportingActive && action.hasSpecificities("crp_location_csv_activities")]
                 [#-- AR4D activities related to the evaluation of CSA options --]
                 <div class="form-group">
-                  [@customForm.yesNoInput  label="projectLocations.activitiesCSV" name="project.projectInfo.activitiesCSV"  editable=editable inverse=false  cssClass="" /] 
+                  [@customForm.yesNoInput  label="projectLocations.activitiesCSV" name="project.projectInfo.activitiesCSV"  editable=editable inverse=false  cssClass="isCSV" /] 
                 </div>
+                <div class="clear-fix"></div>
                 
-                <div class="csvActivities panel tertiary col-md-12">
+                <div class="csvActivitiesBox panel tertiary col-md-12" style="display:${(project.projectInfo.activitiesCSV?string("block","none"))!"none"};">
                   <div class="row">
                     <div class="col-md-9">
                       <label for="">[@s.text name="projectLocations.activitiesCSV.instructions" /]:[@customForm.req required=editable /]</label>
                     </div>
-                    <div class="col-md-3 right">
+                    <div class="col-md-3 right" style="display:none">
                       <a href="" target="__BLANK">
                         <img src="${baseUrl}/global/images/pdf.png" height="20" />
                         [[@s.text name="projectLocations.activitiesCSV.guideline" /]]
@@ -159,7 +160,7 @@
                     <div class="col-md-6 center">
                         <label for="">[@s.text name="projectLocations.activitiesCSV.download" /]:</label>
                        <div class="form-group">
-                         <img src="${baseUrl}/global/images/download-summary.png" height="70" />
+                         <a href="${baseUrl}/global/documents/CSA_Evaluation_template.xlsm" download><img src="${baseUrl}/global/images/download-summary.png" height="70" /></a>
                        </div>
                     </div>
                     
