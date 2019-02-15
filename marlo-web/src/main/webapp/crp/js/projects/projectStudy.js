@@ -22,10 +22,12 @@ function init() {
 
   $('.ccRelevanceBlock input:radio').on('change', function() {
     var $commentBox = $(this).parents('.ccRelevanceBlock').find('.ccCommentBox');
-    if(this.value != 1) {
-      $commentBox.slideDown();
-    } else {
+    var id = this.value;
+    console.log("CC", id);
+    if((id == "1") || (id == "4")) {
       $commentBox.slideUp();
+    } else {
+      $commentBox.slideDown();
     }
   });
 }
