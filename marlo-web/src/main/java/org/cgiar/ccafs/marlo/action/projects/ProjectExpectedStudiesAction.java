@@ -30,6 +30,7 @@ import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyCountryManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyCrpManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyFlagshipManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyGeographicScopeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyInnovationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyInstitutionManager;
@@ -67,6 +68,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyCountry;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyCrp;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyFlagship;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyGeographicScope;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInnovation;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInstitution;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyLink;
@@ -156,6 +158,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
   private ProjectExpectedStudySrfTargetManager projectExpectedStudySrfTargetManager;
   private ExpectedStudyProjectManager expectedStudyProjectManager;
   private ProjectExpectedStudyRegionManager projectExpectedStudyRegionManager;
+  private ProjectExpectedStudyGeographicScopeManager projectExpectedStudyGeographicScopeManager;
   private GeneralStatusManager generalStatusManager;
 
   // AR 2018 Managers
@@ -224,7 +227,8 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     ProjectExpectedStudyPolicyManager projectExpectedStudyPolicyManager,
     ProjectExpectedStudyQuantificationManager projectExpectedStudyQuantificationManager,
     ProjectExpectedStudyInnovationManager projectExpectedStudyInnovationManager,
-    ProjectInnovationManager projectInnovationManager, ProjectPolicyManager projectPolicyManager) {
+    ProjectInnovationManager projectInnovationManager, ProjectPolicyManager projectPolicyManager,
+    ProjectExpectedStudyGeographicScopeManager projectExpectedStudyGeographicScopeManager) {
     super(config);
     this.projectManager = projectManager;
     this.crpManager = crpManager;
@@ -267,7 +271,44 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     this.projectExpectedStudyInnovationManager = projectExpectedStudyInnovationManager;
     this.projectInnovationManager = projectInnovationManager;
     this.projectPolicyManager = projectPolicyManager;
+    this.projectExpectedStudyGeographicScopeManager = projectExpectedStudyGeographicScopeManager;
 
+  }
+
+
+  /**
+   * Delete all LocElements Records when Geographic Scope is Global or NULL
+   * 
+   * @param policy
+   * @param phase
+   */
+  public void deleteLocElements(ProjectExpectedStudy study, Phase phase, boolean isCountry) {
+    if (isCountry) {
+      if (expectedStudy.getProjectExpectedStudyCountries() != null
+        && expectedStudy.getProjectExpectedStudyCountries().size() > 0) {
+
+        List<ProjectExpectedStudyCountry> regionPrev = new ArrayList<>(expectedStudy.getProjectExpectedStudyCountries()
+          .stream().filter(nu -> nu.isActive() && nu.getPhase().getId() == phase.getId()).collect(Collectors.toList()));
+
+        for (ProjectExpectedStudyCountry region : regionPrev) {
+          projectExpectedStudyCountryManager.deleteProjectExpectedStudyCountry(region.getId());
+        }
+      }
+    } else {
+      if (expectedStudy.getProjectExpectedStudyRegions() != null
+        && expectedStudy.getProjectExpectedStudyRegions().size() > 0) {
+
+        List<ProjectExpectedStudyRegion> regionPrev = new ArrayList<>(expectedStudy.getProjectExpectedStudyRegions()
+          .stream().filter(nu -> nu.isActive() && nu.getPhase().getId() == phase.getId()).collect(Collectors.toList()));
+
+        for (ProjectExpectedStudyRegion policyRegion : regionPrev) {
+
+          projectExpectedStudyRegionManager.deleteProjectExpectedStudyRegion(policyRegion.getId());
+
+        }
+
+      }
+    }
   }
 
 
@@ -295,7 +336,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
   public long getExpectedID() {
     return expectedID;
   }
-
 
   public ProjectExpectedStudy getExpectedStudy() {
     return expectedStudy;
@@ -353,10 +393,10 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     return projectID;
   }
 
+
   public List<CrpProgram> getRegionList() {
     return regionList;
   }
-
 
   public List<LocElement> getRegions() {
     return regions;
@@ -380,6 +420,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       .concat(ProjectSectionStatusEnum.EXPECTEDSTUDY.getStatus()).concat(File.separator);
   }
 
+
   public List<StudyType> getStudyTypes() {
     return studyTypes;
   }
@@ -393,7 +434,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
   public List<EvidenceTag> getTags() {
     return tags;
   }
-
 
   public List<SrfSloIndicator> getTargets() {
     return targets;
@@ -488,13 +528,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
             .getEvidenceTagById(expectedStudy.getProjectExpectedStudyInfo().getEvidenceTag().getId()));
         }
 
-        // Load region
-        // if (expectedStudy.getProjectExpectedStudyInfo().getRepIndRegion() != null
-        // && expectedStudy.getProjectExpectedStudyInfo().getRepIndRegion().getId() != null) {
-        // expectedStudy.getProjectExpectedStudyInfo().setRepIndRegion(repIndRegionManager
-        // .getRepIndRegionById(expectedStudy.getProjectExpectedStudyInfo().getRepIndRegion().getId()));
-        // }
-
       }
     } else {
       expectedStudy = projectExpectedStudyManager.getProjectExpectedStudyById(expectedID);
@@ -528,16 +561,52 @@ public class ProjectExpectedStudiesAction extends BaseAction {
         AutoSaveReader autoSaveReader = new AutoSaveReader();
         expectedStudy = (ProjectExpectedStudy) autoSaveReader.readFromJson(jReader);
 
+        // Policy Geographic Scope List AutoSave
+        boolean haveRegions = false;
+        boolean haveCountries = false;
 
-        // Expected Study Countries List AutoSave
-        if (expectedStudy.getCountriesIdsText() != null) {
-          String[] countriesText = expectedStudy.getCountriesIdsText().replace("[", "").replace("]", "").split(",");
-          List<String> countries = new ArrayList<>();
-          for (String value : Arrays.asList(countriesText)) {
-            countries.add(value.trim());
+        if (expectedStudy.getGeographicScopes() != null) {
+          for (ProjectExpectedStudyGeographicScope projectExpectedStudyGeographicScope : expectedStudy
+            .getGeographicScopes()) {
+            projectExpectedStudyGeographicScope.setRepIndGeographicScope(geographicScopeManager
+              .getRepIndGeographicScopeById(projectExpectedStudyGeographicScope.getRepIndGeographicScope().getId()));
+
+            if (projectExpectedStudyGeographicScope.getRepIndGeographicScope().getId() == 2) {
+              haveRegions = true;
+            }
+
+            if (projectExpectedStudyGeographicScope.getRepIndGeographicScope().getId() != 1
+              && projectExpectedStudyGeographicScope.getRepIndGeographicScope().getId() != 2) {
+              haveCountries = true;
+            }
+
           }
-          expectedStudy.setCountriesIds(countries);
         }
+
+        if (haveRegions) {
+          // Load Regions
+          // Expected Study Geographic Regions List Autosave
+          if (expectedStudy.getStudyRegions() != null) {
+            for (ProjectExpectedStudyRegion projectExpectedStudyRegion : expectedStudy.getStudyRegions()) {
+              projectExpectedStudyRegion
+                .setLocElement(locElementManager.getLocElementById(projectExpectedStudyRegion.getLocElement().getId()));
+            }
+          }
+        }
+
+        if (haveCountries) {
+          // Load Countries
+          // Expected Study Countries List AutoSave
+          if (expectedStudy.getCountriesIdsText() != null) {
+            String[] countriesText = expectedStudy.getCountriesIdsText().replace("[", "").replace("]", "").split(",");
+            List<String> countries = new ArrayList<>();
+            for (String value : Arrays.asList(countriesText)) {
+              countries.add(value.trim());
+            }
+            expectedStudy.setCountriesIds(countries);
+          }
+        }
+
 
         // Expected Study SubIdo List Autosave
         if (expectedStudy.getSubIdos() != null) {
@@ -555,7 +624,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
           }
         }
 
-        // Expected Study Regions List Autosave
+        // Expected Study Regions (Flagships) List Autosave
         if (expectedStudy.getRegions() != null) {
           for (ProjectExpectedStudyFlagship projectExpectedStudyFlagship : expectedStudy.getRegions()) {
             projectExpectedStudyFlagship
@@ -563,13 +632,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
           }
         }
 
-        // Expected Study Geographic Regions List Autosave
-        if (expectedStudy.getStudyRegions() != null) {
-          for (ProjectExpectedStudyRegion projectExpectedStudyRegion : expectedStudy.getStudyRegions()) {
-            projectExpectedStudyRegion
-              .setLocElement(locElementManager.getLocElementById(projectExpectedStudyRegion.getLocElement().getId()));
-          }
-        }
 
         // Expected Study Crp List Autosave
         if (expectedStudy.getCrps() != null) {
@@ -637,6 +699,31 @@ public class ProjectExpectedStudiesAction extends BaseAction {
           expectedStudy.getProjectExpectedStudyInfo(phase);
         }
 
+
+        // Setup Geographic Scope
+        boolean haveRegions = false;
+        boolean haveCountries = false;
+
+        if (expectedStudy.getProjectExpectedStudyGeographicScopes() != null) {
+          expectedStudy.setGeographicScopes(new ArrayList<>(expectedStudy.getProjectExpectedStudyGeographicScopes()
+            .stream().filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
+
+          for (ProjectExpectedStudyGeographicScope projectExpectedStudyGeographicScope : expectedStudy
+            .getGeographicScopes()) {
+
+            if (projectExpectedStudyGeographicScope.getRepIndGeographicScope().getId() == 2) {
+              haveRegions = true;
+            }
+
+            if (projectExpectedStudyGeographicScope.getRepIndGeographicScope().getId() != 1
+              && projectExpectedStudyGeographicScope.getRepIndGeographicScope().getId() != 2) {
+              haveCountries = true;
+            }
+
+          }
+        }
+
+
         // Expected Study Countries List
         if (expectedStudy.getProjectExpectedStudyCountries() == null) {
           expectedStudy.setCountries(new ArrayList<>());
@@ -647,6 +734,18 @@ public class ProjectExpectedStudiesAction extends BaseAction {
             .collect(Collectors.toList());
           expectedStudy.setCountries(countries);
         }
+
+        if (expectedStudy.getProjectExpectedStudyRegions() == null) {
+          expectedStudy.setStudyRegions(new ArrayList<>());
+        } else {
+          List<ProjectExpectedStudyRegion> geographics = projectExpectedStudyRegionManager
+            .getProjectExpectedStudyRegionbyPhase(expectedStudy.getId(), phase.getId());
+
+          // Load Regions
+          expectedStudy.setStudyRegions(geographics.stream()
+            .filter(sc -> sc.getLocElement().getLocElementType().getId() == 1).collect(Collectors.toList()));
+        }
+
 
         // Expected Study SubIdos List
         if (expectedStudy.getProjectExpectedStudySubIdos() != null) {
@@ -669,15 +768,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
               && o.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue())
             .collect(Collectors.toList())));
         }
-
-        // Expected Study Geographic Regions List
-        // TODO
-        // if (expectedStudy.getProjectExpectedStudyCountries() != null) {
-        // expectedStudy.setStudyRegions(new ArrayList<>(projectExpectedStudyCountryManager
-        // .getProjectExpectedStudyCountrybyPhase(expectedStudy.getId(), phase.getId()).stream()
-        // .filter(le -> le.isActive() && le.getLocElement().getLocElementType().getId() == 1)
-        // .collect(Collectors.toList())));
-        // }
 
         // Expected Study Crp List
         if (expectedStudy.getProjectExpectedStudyCrps() != null) {
@@ -865,7 +955,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       expectedStudyDB = projectExpectedStudyManager.getProjectExpectedStudyById(expectedID);
 
       if (expectedStudyDB.getProject() != null) {
-        projectID = expectedStudy.getProject().getId();
+        projectID = expectedStudyDB.getProject().getId();
         project = projectManager.getProjectById(projectID);
         project.getProjecInfoPhase(phase);
       }
@@ -930,7 +1020,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       }
 
       // HTTP Post info Values
-      expectedStudy.getProjectExpectedStudyInfo().setRepIndGeographicScope(null);
       expectedStudy.getProjectExpectedStudyInfo().setRepIndRegion(null);
       expectedStudy.getProjectExpectedStudyInfo().setRepIndOrganizationType(null);
       expectedStudy.getProjectExpectedStudyInfo().setRepIndPolicyInvestimentType(null);
@@ -957,6 +1046,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
   }
 
+
   @Override
   public String save() {
 
@@ -976,13 +1066,69 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       this.saveSubIdos(expectedStudyDB, phase);
       this.saveInstitutions(expectedStudyDB, phase);
       this.saveSrfTargets(expectedStudyDB, phase);
-      this.saveStudyRegions(expectedStudyDB, phase);
+
 
       // AR 2018 Save Relations
       this.savePolicies(expectedStudyDB, phase);
       this.saveLink(expectedStudyDB, phase);
       this.saveInnovations(expectedStudyDB, phase);
       this.saveQuantifications(expectedStudyDB, phase);
+
+
+      // Save Geographic Scope Data
+      this.saveGeographicScopes(expectedStudyDB, phase);
+
+      boolean haveRegions = false;
+      boolean haveCountries = false;
+
+      for (ProjectExpectedStudyGeographicScope projectPolicyGeographicScope : expectedStudy.getGeographicScopes()) {
+
+        if (projectPolicyGeographicScope.getRepIndGeographicScope().getId() == 2) {
+          haveRegions = true;
+        }
+
+        if (projectPolicyGeographicScope.getRepIndGeographicScope().getId() != 1
+          && projectPolicyGeographicScope.getRepIndGeographicScope().getId() != 2) {
+          haveCountries = true;
+        }
+      }
+
+      if (haveRegions) {
+        // Save the Regions List
+        this.saveStudyRegions(expectedStudyDB, phase);
+      } else {
+        this.deleteLocElements(expectedStudyDB, phase, false);
+      }
+
+      if (haveCountries) {
+        // Save the Countries List (ProjectExpectedStudyCountry)
+        if (expectedStudy.getCountriesIds() != null || !expectedStudy.getCountriesIds().isEmpty()) {
+
+          List<ProjectExpectedStudyCountry> countries = projectExpectedStudyCountryManager
+            .getProjectExpectedStudyCountrybyPhase(expectedStudy.getId(), phase.getId()).stream()
+            .filter(le -> le != null && le.isActive() && le.getLocElement() != null
+              && le.getLocElement().getLocElementType() != null && le.getLocElement().getLocElementType().getId() == 2)
+            .collect(Collectors.toList());
+          List<ProjectExpectedStudyCountry> countriesSave = new ArrayList<>();
+          for (String countryIds : expectedStudy.getCountriesIds()) {
+            ProjectExpectedStudyCountry countryInn = new ProjectExpectedStudyCountry();
+            countryInn.setLocElement(locElementManager.getLocElementByISOCode(countryIds));
+            countryInn.setProjectExpectedStudy(expectedStudy);
+            countryInn.setPhase(this.getActualPhase());
+            countriesSave.add(countryInn);
+            if (!countries.contains(countryInn)) {
+              projectExpectedStudyCountryManager.saveProjectExpectedStudyCountry(countryInn);
+            }
+          }
+          for (ProjectExpectedStudyCountry projectExpectedStudyCountry : countries) {
+            if (!countriesSave.contains(projectExpectedStudyCountry)) {
+              projectExpectedStudyCountryManager.deleteProjectExpectedStudyCountry(projectExpectedStudyCountry.getId());
+            }
+          }
+        }
+      } else {
+        this.deleteLocElements(expectedStudyDB, phase, true);
+      }
 
 
       List<String> relationsName = new ArrayList<>();
@@ -996,35 +1142,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       relationsName.add(APConstants.PROJECT_EXPECTED_STUDIES_SRF_TARGET_RELATION);
 
       expectedStudy.setModificationJustification(this.getJustification());
-
-
-      // Save the Countries List (ProjectExpectedStudyCountry)
-      if (expectedStudy.getCountriesIds() != null || !expectedStudy.getCountriesIds().isEmpty()) {
-
-        List<ProjectExpectedStudyCountry> countries = projectExpectedStudyCountryManager
-          .getProjectExpectedStudyCountrybyPhase(expectedStudy.getId(), phase.getId()).stream()
-          .filter(le -> le != null && le.isActive() && le.getLocElement() != null
-            && le.getLocElement().getLocElementType() != null && le.getLocElement().getLocElementType().getId() == 2)
-          .collect(Collectors.toList());
-        List<ProjectExpectedStudyCountry> countriesSave = new ArrayList<>();
-        for (String countryIds : expectedStudy.getCountriesIds()) {
-          ProjectExpectedStudyCountry countryInn = new ProjectExpectedStudyCountry();
-          countryInn.setLocElement(locElementManager.getLocElementByISOCode(countryIds));
-          countryInn.setProjectExpectedStudy(expectedStudy);
-          countryInn.setPhase(this.getActualPhase());
-          countriesSave.add(countryInn);
-          if (!countries.contains(countryInn)) {
-            projectExpectedStudyCountryManager.saveProjectExpectedStudyCountry(countryInn);
-          }
-        }
-
-        for (ProjectExpectedStudyCountry projectExpectedStudyCountry : countries) {
-          if (!countriesSave.contains(projectExpectedStudyCountry)) {
-            projectExpectedStudyCountryManager.deleteProjectExpectedStudyCountry(projectExpectedStudyCountry.getId());
-          }
-        }
-
-      }
 
 
       expectedStudy.getProjectExpectedStudyInfo().setPhase(this.getActualPhase());
@@ -1219,7 +1336,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
   }
 
-
   /**
    * Save Expected Studies Flagships Information
    * 
@@ -1260,6 +1376,52 @@ public class ProjectExpectedStudiesAction extends BaseAction {
           projectExpectedStudyFlagshipManager.saveProjectExpectedStudyFlagship(studyFlagshipSave);
           // This is to add studyFlagshipSave to generate correct auditlog.
           expectedStudy.getProjectExpectedStudyFlagships().add(studyFlagshipSave);
+        }
+      }
+    }
+
+  }
+
+
+  /**
+   * Save Expected Studies Geographic Scopes Information
+   * 
+   * @param projectExpectedStudy
+   * @param phase
+   */
+  public void saveGeographicScopes(ProjectExpectedStudy projectExpectedStudy, Phase phase) {
+
+    // Search and deleted form Information
+    if (projectExpectedStudy.getProjectExpectedStudyGeographicScopes() != null
+      && projectExpectedStudy.getProjectExpectedStudyGeographicScopes().size() > 0) {
+
+      List<ProjectExpectedStudyGeographicScope> scopePrev =
+        new ArrayList<>(projectExpectedStudy.getProjectExpectedStudyGeographicScopes().stream()
+          .filter(nu -> nu.isActive() && nu.getPhase().getId() == phase.getId()).collect(Collectors.toList()));
+
+      for (ProjectExpectedStudyGeographicScope studyScope : scopePrev) {
+        if (expectedStudy.getGeographicScopes() == null || !expectedStudy.getGeographicScopes().contains(studyScope)) {
+          projectExpectedStudyGeographicScopeManager.deleteProjectExpectedStudyGeographicScope(studyScope.getId());
+        }
+      }
+    }
+
+    // Save form Information
+    if (expectedStudy.getGeographicScopes() != null) {
+      for (ProjectExpectedStudyGeographicScope studyScope : expectedStudy.getGeographicScopes()) {
+        if (studyScope.getId() == null) {
+          ProjectExpectedStudyGeographicScope studyScopeSave = new ProjectExpectedStudyGeographicScope();
+          studyScopeSave.setProjectExpectedStudy(projectExpectedStudy);
+          studyScopeSave.setPhase(phase);
+
+          RepIndGeographicScope geoScope =
+            geographicScopeManager.getRepIndGeographicScopeById(studyScope.getRepIndGeographicScope().getId());
+
+          studyScopeSave.setRepIndGeographicScope(geoScope);
+
+          projectExpectedStudyGeographicScopeManager.saveProjectExpectedStudyGeographicScope(studyScopeSave);
+          // This is to add to generate correct auditlog.
+          expectedStudy.getProjectExpectedStudyGeographicScopes().add(studyScopeSave);
         }
       }
     }
@@ -1527,6 +1689,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     }
   }
 
+
   /**
    * Save Expected Studies Regions Information
    * 
@@ -1626,38 +1789,37 @@ public class ProjectExpectedStudiesAction extends BaseAction {
    */
   public void saveStudyRegions(ProjectExpectedStudy projectExpectedStudy, Phase phase) {
 
-    List<ProjectExpectedStudyCountry> regionPrev = projectExpectedStudyCountryManager
-      .getProjectExpectedStudyCountrybyPhase(expectedStudy.getId(), phase.getId()).stream()
+    List<ProjectExpectedStudyRegion> regionPrev = projectExpectedStudyRegionManager
+      .getProjectExpectedStudyRegionbyPhase(expectedStudy.getId(), phase.getId()).stream()
       .filter(le -> le.isActive() && le.getLocElement().getLocElementType().getId() == 1).collect(Collectors.toList());
 
     // Search and deleted form Information
     if (regionPrev != null && regionPrev.size() > 0) {
-      for (ProjectExpectedStudyCountry studyRegion : regionPrev) {
+      for (ProjectExpectedStudyRegion studyRegion : regionPrev) {
         if (expectedStudy.getStudyRegions() == null || !expectedStudy.getStudyRegions().contains(studyRegion)) {
-          projectExpectedStudyCountryManager.deleteProjectExpectedStudyCountry(studyRegion.getId());
+          projectExpectedStudyRegionManager.deleteProjectExpectedStudyRegion(studyRegion.getId());
         }
       }
     }
 
-    // Save form Information
-    // TODO
-    // if (expectedStudy.getStudyRegions() != null) {
-    // for (ProjectExpectedStudyCountry studyRegion : expectedStudy.getStudyRegions()) {
-    // if (studyRegion.getId() == null) {
-    // ProjectExpectedStudyCountry studyRegionSave = new ProjectExpectedStudyCountry();
-    // studyRegionSave.setProjectExpectedStudy(projectExpectedStudy);
-    // studyRegionSave.setPhase(phase);
-    //
-    // LocElement locElement = locElementManager.getLocElementById(studyRegion.getLocElement().getId());
-    //
-    // studyRegionSave.setLocElement(locElement);
-    //
-    // projectExpectedStudyCountryManager.saveProjectExpectedStudyCountry(studyRegionSave);
-    // // This is to add studyFlagshipSave to generate correct auditlog.
-    // expectedStudy.getProjectExpectedStudyCountries().add(studyRegionSave);
-    // }
-    // }
-    // }
+
+    if (expectedStudy.getStudyRegions() != null) {
+      for (ProjectExpectedStudyRegion studyRegion : expectedStudy.getStudyRegions()) {
+        if (studyRegion.getId() == null) {
+          ProjectExpectedStudyRegion studyRegionSave = new ProjectExpectedStudyRegion();
+          studyRegionSave.setProjectExpectedStudy(projectExpectedStudy);
+          studyRegionSave.setPhase(phase);
+
+          LocElement locElement = locElementManager.getLocElementById(studyRegion.getLocElement().getId());
+
+          studyRegionSave.setLocElement(locElement);
+
+          projectExpectedStudyRegionManager.saveProjectExpectedStudyRegion(studyRegionSave);
+          // This is to add studyFlagshipSave to generate correct auditlog.
+          expectedStudy.getProjectExpectedStudyRegions().add(studyRegionSave);
+        }
+      }
+    }
 
   }
 
@@ -1713,6 +1875,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     this.crps = crps;
   }
 
+
   public void setExpectedID(long expectedID) {
     this.expectedID = expectedID;
   }
@@ -1727,7 +1890,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     this.flagshipList = flagshipList;
   }
 
-
   public void setFocusLevels(List<RepIndGenderYouthFocusLevel> focusLevels) {
     this.focusLevels = focusLevels;
   }
@@ -1740,10 +1902,10 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     this.innovationsList = innovationsList;
   }
 
+
   public void setInstitutions(List<Institution> institutions) {
     this.institutions = institutions;
   }
-
 
   public void setLoggedCrp(GlobalUnit loggedCrp) {
     this.loggedCrp = loggedCrp;
@@ -1764,6 +1926,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
   public void setPolicyList(List<ProjectPolicy> policyList) {
     this.policyList = policyList;
   }
+
 
   public void setProject(Project project) {
     this.project = project;
@@ -1799,15 +1962,14 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     this.statuses = statuses;
   }
 
-
   public void setStudyTypes(List<StudyType> studyTypes) {
     this.studyTypes = studyTypes;
   }
 
+
   public void setSubIdos(List<SrfSubIdo> subIdos) {
     this.subIdos = subIdos;
   }
-
 
   public void setTags(List<EvidenceTag> tags) {
     this.tags = tags;
@@ -1827,5 +1989,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       projectExpectedStudiesValidator.validate(this, project, expectedStudy, true);
     }
   }
+
 
 }

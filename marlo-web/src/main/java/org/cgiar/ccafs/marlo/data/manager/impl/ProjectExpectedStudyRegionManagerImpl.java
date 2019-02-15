@@ -103,6 +103,11 @@ public class ProjectExpectedStudyRegionManagerImpl implements ProjectExpectedStu
   }
 
 
+  @Override
+  public List<ProjectExpectedStudyRegion> getProjectExpectedStudyRegionbyPhase(long expectedID, long phaseID) {
+    return projectExpectedStudyRegionDAO.getProjectExpectedStudyRegionbyPhase(expectedID, phaseID);
+  }
+
   public void saveExpectedStudyRegionPhase(Phase next, long expectedID,
     ProjectExpectedStudyRegion projectExpectedStudyRegion) {
     Phase phase = phaseDAO.find(next.getId());
