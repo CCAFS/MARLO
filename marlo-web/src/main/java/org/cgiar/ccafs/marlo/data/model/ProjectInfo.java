@@ -82,9 +82,25 @@ public class ProjectInfo extends MarloAuditableEntity implements java.io.Seriali
   private String newPartnershipsPlanned;
   @Expose
   private String partnerOverall;
+  @Expose
+  private Boolean activitiesCSV;
+  @Expose
+  private FileDB activitiesCSVFile;
+
 
   public ProjectInfo() {
   }
+
+
+  public Boolean getActivitiesCSV() {
+    return activitiesCSV;
+  }
+
+
+  public FileDB getActivitiesCSVFile() {
+    return activitiesCSVFile;
+  }
+
 
   public Boolean getAdministrative() {
     return administrative;
@@ -141,15 +157,14 @@ public class ProjectInfo extends MarloAuditableEntity implements java.io.Seriali
     return allYears;
   }
 
-
   public Boolean getCrossCuttingCapacity() {
     return crossCuttingCapacity;
   }
 
-
   public Boolean getCrossCuttingClimate() {
     return crossCuttingClimate;
   }
+
 
   public Boolean getCrossCuttingGender() {
     return crossCuttingGender;
@@ -164,10 +179,10 @@ public class ProjectInfo extends MarloAuditableEntity implements java.io.Seriali
     return crossCuttingYouth;
   }
 
+
   public String getDimension() {
     return dimension;
   }
-
 
   public Date getEndDate() {
     return endDate;
@@ -177,10 +192,10 @@ public class ProjectInfo extends MarloAuditableEntity implements java.io.Seriali
     return genderAnalysis;
   }
 
+
   public String getLeaderResponsabilities() {
     return leaderResponsabilities;
   }
-
 
   public LiaisonInstitution getLiaisonInstitution() {
     return liaisonInstitution;
@@ -190,15 +205,14 @@ public class ProjectInfo extends MarloAuditableEntity implements java.io.Seriali
     return liaisonInstitutionCenter;
   }
 
+
   public LiaisonUser getLiaisonUser() {
     return liaisonUser;
   }
 
-
   public Boolean getLocationGlobal() {
     return locationGlobal;
   }
-
 
   public Boolean getLocationRegional() {
     return locationRegional;
@@ -212,6 +226,7 @@ public class ProjectInfo extends MarloAuditableEntity implements java.io.Seriali
     return sb.toString();
   }
 
+
   public String getNewPartnershipsPlanned() {
     return newPartnershipsPlanned;
   }
@@ -220,7 +235,6 @@ public class ProjectInfo extends MarloAuditableEntity implements java.io.Seriali
   public Boolean getNoRegional() {
     return noRegional;
   }
-
 
   public String getPartnerOverall() {
     return partnerOverall;
@@ -305,6 +319,7 @@ public class ProjectInfo extends MarloAuditableEntity implements java.io.Seriali
     return title;
   }
 
+
   public String getType() {
     return type;
   }
@@ -339,9 +354,18 @@ public class ProjectInfo extends MarloAuditableEntity implements java.io.Seriali
     return cofinancing;
   }
 
-
   public Boolean isProjectEditLeader() {
     return projectEditLeader;
+  }
+
+
+  public void setActivitiesCSV(Boolean activitiesCSV) {
+    this.activitiesCSV = activitiesCSV;
+  }
+
+
+  public void setActivitiesCSVFile(FileDB activitiesCSVFile) {
+    this.activitiesCSVFile = activitiesCSVFile;
   }
 
 
@@ -535,6 +559,8 @@ public class ProjectInfo extends MarloAuditableEntity implements java.io.Seriali
     this.setLiaisonInstitutionCenter(update.getLiaisonInstitutionCenter());
     this.setProjectEditLeader(update.getProjectEditLeader());
     this.setActiveSince(update.getActiveSince());
+    this.setActivitiesCSV(update.getActivitiesCSV());
+    this.setActivitiesCSVFile(update.getActivitiesCSVFile());
   }
 
 
