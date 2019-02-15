@@ -575,24 +575,8 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
 
   @Override
   public String toString() {
-    return "ProjectExpectedStudyInfo [repIndGeographicScope=" + repIndGeographicScope + ", repIndRegion=" + repIndRegion
-      + ", repIndOrganizationType=" + repIndOrganizationType + ", genderLevel=" + genderLevel + ", youthLevel="
-      + youthLevel + ", climateChangeLevel=" + climateChangeLevel + ", repIndPolicyInvestimentType="
-      + repIndPolicyInvestimentType + ", outcomeFile=" + outcomeFile + ", repIndStageProcess=" + repIndStageProcess
-      + ", phase=" + phase + ", referencesFile=" + referencesFile + ", repIndStageStudy=" + repIndStageStudy
-      + ", projectExpectedStudy=" + projectExpectedStudy + ", capdevLevel=" + capdevLevel + ", studyType=" + studyType
-      + ", status=" + status + ", title=" + title + ", outcomeImpactStatement=" + outcomeImpactStatement
-      + ", isContribution=" + isContribution + ", policyAmount=" + policyAmount + ", topLevelComments="
-      + topLevelComments + ", scopeComments=" + scopeComments + ", elaborationOutcomeImpactStatement="
-      + elaborationOutcomeImpactStatement + ", referencesText=" + referencesText + ", quantification=" + quantification
-      + ", describeGender=" + describeGender + ", describeYouth=" + describeYouth + ", describeCapdev=" + describeCapdev
-      + ", describeClimateChange=" + describeClimateChange + ", otherCrossCuttingDimensions="
-      + otherCrossCuttingDimensions + ", comunicationsMaterial=" + comunicationsMaterial + ", contacts=" + contacts
-      + ", commissioningStudy=" + commissioningStudy + ", year=" + year + ", evidenceTag=" + evidenceTag
-      + ", outcomeStory=" + outcomeStory + ", isSrfTarget=" + isSrfTarget + ", cgiarInnovation=" + cgiarInnovation
-      + ", otherCrossCuttingSelection=" + otherCrossCuttingSelection + ", isPublic=" + isPublic + "]";
+    return "ProjectExpectedStudyInfo [phase=" + phase + ", title=" + title + ", year=" + year + "]";
   }
-
 
   /**
    * Add the save/update information to reply the next Phase
