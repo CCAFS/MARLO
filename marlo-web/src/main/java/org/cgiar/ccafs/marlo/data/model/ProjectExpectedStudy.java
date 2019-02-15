@@ -124,14 +124,16 @@ public class ProjectExpectedStudy extends MarloAuditableEntity implements java.i
 
   private List<ProjectExpectedStudySrfTarget> srfTargets;
 
-
   private List<ProjectExpectedStudyFlagship> regions;
 
 
-  private List<ProjectExpectedStudyCountry> studyRegions;
+  private List<ProjectExpectedStudyRegion> studyRegions;
+
 
   // AR 2018 Lists
   private Set<ProjectExpectedStudyLink> projectExpectedStudyLinks = new HashSet<ProjectExpectedStudyLink>(0);
+
+
   private List<ProjectExpectedStudyLink> links;
 
   private Set<ProjectExpectedStudyPolicy> projectExpectedStudyPolicies = new HashSet<ProjectExpectedStudyPolicy>(0);
@@ -145,10 +147,8 @@ public class ProjectExpectedStudy extends MarloAuditableEntity implements java.i
     new HashSet<ProjectExpectedStudyInnovation>(0);
   private List<ProjectExpectedStudyInnovation> innovations;
 
-
   public ProjectExpectedStudy() {
   }
-
 
   @Override
   public boolean equals(Object obj) {
@@ -268,9 +268,11 @@ public class ProjectExpectedStudy extends MarloAuditableEntity implements java.i
     return policies;
   }
 
+
   public Project getProject() {
     return project;
   }
+
 
   public Set<ProjectExpectedStudyCountry> getProjectExpectedStudyCountries() {
     return projectExpectedStudyCountries;
@@ -320,7 +322,6 @@ public class ProjectExpectedStudy extends MarloAuditableEntity implements java.i
     return projectExpectedStudyLinks;
   }
 
-
   public Set<ProjectExpectedStudyPolicy> getProjectExpectedStudyPolicies() {
     return projectExpectedStudyPolicies;
   }
@@ -329,10 +330,10 @@ public class ProjectExpectedStudy extends MarloAuditableEntity implements java.i
     return projectExpectedStudyQuantifications;
   }
 
+
   public Set<ProjectExpectedStudyRegion> getProjectExpectedStudyRegions() {
     return projectExpectedStudyRegions;
   }
-
 
   public Set<ProjectExpectedStudySrfTarget> getProjectExpectedStudySrfTargets() {
     return projectExpectedStudySrfTargets;
@@ -342,10 +343,10 @@ public class ProjectExpectedStudy extends MarloAuditableEntity implements java.i
     return projectExpectedStudySubIdos;
   }
 
+
   public List<ExpectedStudyProject> getProjects() {
     return projects;
   }
-
 
   public List<ProjectExpectedStudyQuantification> getQuantifications() {
     return quantifications;
@@ -354,6 +355,7 @@ public class ProjectExpectedStudy extends MarloAuditableEntity implements java.i
   public List<ProjectExpectedStudyFlagship> getRegions() {
     return regions;
   }
+
 
   public Integer getScope() {
     return scope;
@@ -379,17 +381,16 @@ public class ProjectExpectedStudy extends MarloAuditableEntity implements java.i
     return srfSloIndicator;
   }
 
-
   public SrfSubIdo getSrfSubIdo() {
     return srfSubIdo;
   }
-
 
   public List<ProjectExpectedStudySrfTarget> getSrfTargets() {
     return srfTargets;
   }
 
-  public List<ProjectExpectedStudyCountry> getStudyRegions() {
+
+  public List<ProjectExpectedStudyRegion> getStudyRegions() {
     return studyRegions;
   }
 
@@ -398,10 +399,10 @@ public class ProjectExpectedStudy extends MarloAuditableEntity implements java.i
     return subIdos;
   }
 
+
   public String getTopicStudy() {
     return topicStudy;
   }
-
 
   public Integer getType() {
     return type;
@@ -420,6 +421,7 @@ public class ProjectExpectedStudy extends MarloAuditableEntity implements java.i
   public Integer getYear() {
     return year;
   }
+
 
   @Override
   public int hashCode() {
@@ -441,10 +443,10 @@ public class ProjectExpectedStudy extends MarloAuditableEntity implements java.i
     this.composedId = composedId;
   }
 
-
   public void setCountries(List<ProjectExpectedStudyCountry> countries) {
     this.countries = countries;
   }
+
 
   public void setCountriesIds(List<String> countriesIds) {
     this.countriesIds = countriesIds;
@@ -457,7 +459,6 @@ public class ProjectExpectedStudy extends MarloAuditableEntity implements java.i
   public void setCrps(List<ProjectExpectedStudyCrp> crps) {
     this.crps = crps;
   }
-
 
   public void setExpectedStudyProjects(Set<ExpectedStudyProject> expectedStudyProjects) {
     this.expectedStudyProjects = expectedStudyProjects;
@@ -508,10 +509,10 @@ public class ProjectExpectedStudy extends MarloAuditableEntity implements java.i
     this.projectExpectedStudyCountries = projectExpectedStudyCountries;
   }
 
+
   public void setProjectExpectedStudyCrps(Set<ProjectExpectedStudyCrp> projectExpectedStudyCrps) {
     this.projectExpectedStudyCrps = projectExpectedStudyCrps;
   }
-
 
   public void setProjectExpectedStudyFlagships(Set<ProjectExpectedStudyFlagship> projectExpectedStudyFlagships) {
     this.projectExpectedStudyFlagships = projectExpectedStudyFlagships;
@@ -559,6 +560,7 @@ public class ProjectExpectedStudy extends MarloAuditableEntity implements java.i
     this.projectExpectedStudyRegions = projectExpectedStudyRegions;
   }
 
+
   public void setProjectExpectedStudySrfTargets(Set<ProjectExpectedStudySrfTarget> projectExpectedStudySrfTargets) {
     this.projectExpectedStudySrfTargets = projectExpectedStudySrfTargets;
   }
@@ -566,7 +568,6 @@ public class ProjectExpectedStudy extends MarloAuditableEntity implements java.i
   public void setProjectExpectedStudySubIdos(Set<ProjectExpectedStudySubIdo> projectExpectedStudySubIdos) {
     this.projectExpectedStudySubIdos = projectExpectedStudySubIdos;
   }
-
 
   public void setProjects(List<ExpectedStudyProject> projects) {
     this.projects = projects;
@@ -612,7 +613,8 @@ public class ProjectExpectedStudy extends MarloAuditableEntity implements java.i
     this.srfTargets = srfTargets;
   }
 
-  public void setStudyRegions(List<ProjectExpectedStudyCountry> studyRegions) {
+
+  public void setStudyRegions(List<ProjectExpectedStudyRegion> studyRegions) {
     this.studyRegions = studyRegions;
   }
 
@@ -637,7 +639,8 @@ public class ProjectExpectedStudy extends MarloAuditableEntity implements java.i
 
   @Override
   public String toString() {
-    return "ProjectExpectedStudy [id=" + this.getId() + "]";
+    return "Id [" + this.getId() + "]" + "ProjectExpectedStudy [projectExpectedStudyInfo=" + projectExpectedStudyInfo
+      + "]";
   }
 
 
