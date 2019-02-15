@@ -89,7 +89,11 @@ public class CGSpaceClientAPI extends MetadataClientApi {
           if (jo.has(keyValue)) {
             jo.put(keyValue, jo.get(keyValue) + "," + value.getStringValue());
           } else {
-            jo.put(keyValue, value.getStringValue());
+            if (keyValue.equals("identifier.citation")) {
+              jo.put("citation", value.getStringValue());
+            } else {
+              jo.put(keyValue, value.getStringValue());
+            }
           }
         }
       }
