@@ -52,7 +52,6 @@ public class MELDSpaceClientAPI extends MetadataClientApi {
     coverterAtrributes.put("subject", "keywords");
     coverterAtrributes.put("identifier.citation", "citation");
     coverterAtrributes.put("identifier.uri", "handle");
-    coverterAtrributes.put("identifier.doi", "doi");
   }
 
   @Override
@@ -69,6 +68,7 @@ public class MELDSpaceClientAPI extends MetadataClientApi {
         Element value = element.element("value");
         String keyValue = key.getStringValue();
         keyValue = keyValue.substring(3);
+
         if (keyValue.equals("contributor.author")) {
           Author author = new Author(value.getStringValue());
           String names[] = author.getFirstName().split(", ");
@@ -77,28 +77,40 @@ public class MELDSpaceClientAPI extends MetadataClientApi {
             author.setLastName(names[0]);
           }
           authors.add(author);
-        } else {
-          if (keyValue.equals("identifier.status")) {
-            if (value.getStringValue().equals("Open Access")) {
-              jo.put("openAccess", "true");
-            } else {
-              jo.put("openAccess", "false");
-            }
+        } else if (keyValue.equals("identifier.status")) {
+          if (value.getStringValue().equals("Open Access")) {
+            jo.put("openAccess", "true");
+          } else {
+            jo.put("openAccess", "false");
           }
+        } else if (keyValue.equals("identifier.citation")) {
+          jo.put("citation", value.getStringValue());
+        } else if (keyValue.equals("identifier.uri")) {
+          jo.put("handle", value.getStringValue());
+        } else if (keyValue.equals("isijournal")) {
+          if (value.getStringValue().contains("ISI")) {
+            jo.put("ISI", "true");
+          } else {
+            jo.put("ISI", "false");
+          }
+        } else if (keyValue.equals("coverage.country")) {
+          jo.put("countries", value.getStringValue());
+        } else if (keyValue.equals("identifier")) {
+          if (value.getStringValue() != null && value.getStringValue().contains("doi")) {
+            jo.put("doi", value.getStringValue());
+          }
+        } else {
           if (jo.has(keyValue) && jo.get(keyValue) != null && jo.get(keyValue) != "") {
             jo.put(keyValue, jo.get(keyValue) + "," + value.getStringValue());
           } else {
-            if (keyValue.equals("identifier.citation")) {
-              jo.put("citation", value.getStringValue());
-            } else {
-              jo.put(keyValue, value.getStringValue());
-            }
+            jo.put(keyValue, value.getStringValue());
           }
         }
+
       }
 
-      this.setDoi(jo);
 
+      this.setDoi(jo);
 
       GsonBuilder gsonBuilder = new GsonBuilder();
       gsonBuilder.registerTypeAdapter(Date.class, new DateTypeAdapter());
@@ -110,7 +122,7 @@ public class MELDSpaceClientAPI extends MetadataClientApi {
       metadataModel = gson.fromJson(data, MetadataModel.class);
       Author[] authorsArr = new Author[authors.size()];
       authorsArr = authors.toArray(authorsArr);
-      metadataModel.setAuthor(authorsArr);
+      metadataModel.setAuthors(authorsArr);
 
     } catch (Exception e) {
       e.printStackTrace();

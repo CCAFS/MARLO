@@ -106,7 +106,7 @@ public abstract class MetadataClientApi {
     this.putKeyIfNotExists(jo, "ISI");
     this.putKeyIfNotExists(jo, "doi");
     this.putKeyIfNotExists(jo, "publicationDate");
-    this.putKeyIfNotExists(jo, "country");
+    this.putKeyIfNotExists(jo, "countries");
     this.putKeyIfNotExists(jo, "publisher");
     this.putKeyIfNotExists(jo, "journal");
     this.putKeyIfNotExists(jo, "volume");

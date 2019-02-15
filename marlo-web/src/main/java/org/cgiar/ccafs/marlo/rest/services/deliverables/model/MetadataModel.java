@@ -22,7 +22,7 @@ import org.apache.struts2.json.annotations.JSON;
 
 public class MetadataModel {
 
-  private Author[] author;
+  private Author[] authors;
 
   private String citation;
 
@@ -46,7 +46,7 @@ public class MetadataModel {
 
   private Date publicationDate;
 
-  private String country;
+  private String countries;
 
   private String publisher;
 
@@ -69,7 +69,7 @@ public class MetadataModel {
     this.openAccess = "";
     this.ISI = "";
     this.doi = "";
-    this.country = "";
+    this.countries = "";
     this.publisher = "";
     this.journal = "";
     this.volume = "";
@@ -77,39 +77,43 @@ public class MetadataModel {
     this.pages = "";
   }
 
-  public Author[] getAuthor() {
-    return author;
+
+  public Author[] getAuthors() {
+    return authors;
   }
 
   public String getCitation() {
     return citation;
   }
 
-  public String getCountry() {
-    return country;
+
+  public String getCountries() {
+    return countries;
   }
+
 
   public String getDescription() {
     return description;
   }
 
+
   public String getDoi() {
     return doi;
   }
-
 
   public String getHandle() {
     return handle;
   }
 
-
   public String getISI() {
     return ISI;
   }
 
+
   public String getIssue() {
     return issue;
   }
+
 
   public String getJournal() {
     return journal;
@@ -120,11 +124,9 @@ public class MetadataModel {
     return keywords;
   }
 
-
   public String getLanguage() {
     return language;
   }
-
 
   public String getOpenAccess() {
     return openAccess;
@@ -134,15 +136,16 @@ public class MetadataModel {
     return pages;
   }
 
+
   @JSON(format = "yyyy-MM-dd")
   public Date getPublicationDate() {
     return publicationDate;
   }
 
+
   public String getPublisher() {
     return publisher;
   }
-
 
   public String getRights() {
     return rights;
@@ -153,21 +156,26 @@ public class MetadataModel {
     return title;
   }
 
+
   public String getVolume() {
     return volume;
   }
 
-  public void setAuthor(Author[] author) {
-    this.author = author;
+
+  public void setAuthors(Author[] authors) {
+    this.authors = authors;
   }
+
 
   public void setCitation(String citation) {
     this.citation = citation;
   }
 
-  public void setCountry(String country) {
-    this.country = country;
+
+  public void setCountries(String countries) {
+    this.countries = countries;
   }
+
 
   public void setDescription(String description) {
     this.description = description;
