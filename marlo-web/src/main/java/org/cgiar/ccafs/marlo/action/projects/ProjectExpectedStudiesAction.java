@@ -506,14 +506,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
             .getRepIndStageStudyById(expectedStudy.getProjectExpectedStudyInfo().getRepIndStageStudy().getId()));
         }
 
-        // Load GeographicScope
-        if (expectedStudy.getProjectExpectedStudyInfo().getRepIndGeographicScope() != null
-          && expectedStudy.getProjectExpectedStudyInfo().getRepIndGeographicScope().getId() != null) {
-          expectedStudy.getProjectExpectedStudyInfo()
-            .setRepIndGeographicScope(geographicScopeManager.getRepIndGeographicScopeById(
-              expectedStudy.getProjectExpectedStudyInfo().getRepIndGeographicScope().getId()));
-        }
-
         // Load Status
         if (expectedStudy.getProjectExpectedStudyInfo().getStatus() != null
           && expectedStudy.getProjectExpectedStudyInfo().getStatus().getId() != null) {
@@ -1080,18 +1072,20 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
       boolean haveRegions = false;
       boolean haveCountries = false;
+      if (expectedStudy.getGeographicScopes() != null) {
+        for (ProjectExpectedStudyGeographicScope projectPolicyGeographicScope : expectedStudy.getGeographicScopes()) {
 
-      for (ProjectExpectedStudyGeographicScope projectPolicyGeographicScope : expectedStudy.getGeographicScopes()) {
+          if (projectPolicyGeographicScope.getRepIndGeographicScope().getId() == 2) {
+            haveRegions = true;
+          }
 
-        if (projectPolicyGeographicScope.getRepIndGeographicScope().getId() == 2) {
-          haveRegions = true;
-        }
-
-        if (projectPolicyGeographicScope.getRepIndGeographicScope().getId() != 1
-          && projectPolicyGeographicScope.getRepIndGeographicScope().getId() != 2) {
-          haveCountries = true;
+          if (projectPolicyGeographicScope.getRepIndGeographicScope().getId() != 1
+            && projectPolicyGeographicScope.getRepIndGeographicScope().getId() != 2) {
+            haveCountries = true;
+          }
         }
       }
+
 
       if (haveRegions) {
         // Save the Regions List

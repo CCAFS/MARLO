@@ -106,6 +106,13 @@
         <column name="project_policy_id" />
       </key>
       <one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectPolicyGeographicScope" />
+    </set>
+    <set name="projectPolicyRegions" table="project_policy_regions" inverse="true"
+      lazy="true" fetch="select">
+      <key>
+        <column name="project_policy_id" />
+      </key>
+      <one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectPolicyRegion" />
     </set> 
 	</class>
 </hibernate-mapping>
