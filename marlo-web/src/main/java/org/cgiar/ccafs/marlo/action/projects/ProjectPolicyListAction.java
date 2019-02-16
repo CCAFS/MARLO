@@ -152,9 +152,11 @@ public class ProjectPolicyListAction extends BaseAction {
             .collect(Collectors.toList())));
         }
 
-        project.getPolicies().add(projectPolicy);
-      } else {
-        projectOldPolicies.add(projectPolicy);
+        if (projectPolicy.getProjectPolicyInfo(this.getActualPhase()).getYear() < this.getCurrentCycleYear()) {
+          projectOldPolicies.add(projectPolicy);
+        } else {
+          project.getPolicies().add(projectPolicy);
+        }
       }
     }
   }
