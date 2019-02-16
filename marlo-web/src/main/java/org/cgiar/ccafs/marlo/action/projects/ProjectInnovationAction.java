@@ -885,12 +885,6 @@ public class ProjectInnovationAction extends BaseAction {
         }
       }
 
-      if (innovation.getProjectInnovationInfo().getRepIndGeographicScope() != null) {
-        if (innovation.getProjectInnovationInfo().getRepIndGeographicScope().getId() == -1) {
-          innovation.getProjectInnovationInfo().setRepIndGeographicScope(null);
-        }
-      }
-
       if (innovation.getProjectInnovationInfo().getRepIndInnovationType() != null) {
         if (innovation.getProjectInnovationInfo().getRepIndInnovationType().getId() == -1) {
           innovation.getProjectInnovationInfo().setRepIndInnovationType(null);
@@ -1182,7 +1176,7 @@ public class ProjectInnovationAction extends BaseAction {
   }
 
   /**
-   * Save Project Innovation Regio Information
+   * Save Project Innovation Region Information
    * 
    * @param projectInnovation
    * @param phase
