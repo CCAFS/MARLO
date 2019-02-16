@@ -5031,10 +5031,12 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
     ProjectExpectedStudy studyDB = projectExpectedStudyManager.getProjectExpectedStudyById(evidenceId);
 
+    studyDB.setProjectExpectedStudyInfo(null);
     if (studyDB.getProjectExpectedStudyInfo(previousPhase) != null) {
       studyDB.getProjectExpectedStudyInfo(currentPhase);
       return false;
     } else {
+      studyDB.getProjectExpectedStudyInfo(currentPhase);
       return true;
     }
 
@@ -5202,10 +5204,12 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     Phase previousPhase = phaseManager.findPreviousPhase(currentPhase.getId());
 
     ProjectInnovation innovationNew = projectInnovationManager.getProjectInnovationById(innovationId);
-
+    innovationNew.setProjectInnovationInfo(null);
     if (innovationNew.getProjectInnovationInfo(previousPhase) != null) {
+      innovationNew.getProjectInnovationInfo(currentPhase);
       return false;
     } else {
+      innovationNew.getProjectInnovationInfo(currentPhase);
       return true;
     }
 
@@ -5274,10 +5278,14 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
     ProjectPolicy policyD = projectPolicyManager.getProjectPolicyById(policyId);
 
+
     if (previousPhase != null) {
+      policyD.setProjectPolicyInfo(null);
       if (policyD.getProjectPolicyInfo(previousPhase) != null) {
+        policyD.getProjectPolicyInfo(currentPhase);
         return false;
       } else {
+        policyD.getProjectPolicyInfo(currentPhase);
         return true;
       }
     } else {

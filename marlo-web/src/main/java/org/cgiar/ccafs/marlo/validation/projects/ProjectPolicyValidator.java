@@ -155,6 +155,16 @@ public class ProjectPolicyValidator extends BaseValidator {
         action.addMissingField("projectPolicy.repIndStageProcess");
         action.getInvalidFields().put("input-policy.projectPolicyInfo.repIndStageProcess.id",
           InvalidFieldsMessages.EMPTYFIELD);
+      } else {
+        if (projectPolicy.getProjectPolicyInfo(baseAction.getActualPhase()).getRepIndStageProcess().getId() != 1) {
+          // Validate Evidences
+          if (projectPolicy.getOwners() == null || projectPolicy.getOwners().isEmpty()) {
+            action.addMessage(action.getText("expectedStudyList"));
+            action.addMissingField("policy.evidence");
+            action.getInvalidFields().put("list-policy.evidences",
+              action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"expectedStudyList"}));
+          }
+        }
       }
     } else {
       action.addMessage(action.getText("Maturity Process"));
@@ -171,22 +181,6 @@ public class ProjectPolicyValidator extends BaseValidator {
         action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"policyTypes"}));
     }
 
-
-    // Validate Evidences
-    if (projectPolicy.getOwners() == null || projectPolicy.getOwners().isEmpty()) {
-      action.addMessage(action.getText("expectedStudyList"));
-      action.addMissingField("policy.evidence");
-      action.getInvalidFields().put("list-policy.evidences",
-        action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"expectedStudyList"}));
-    }
-
-    // Validate Innovations
-    if (projectPolicy.getInnovations() == null || projectPolicy.getInnovations().isEmpty()) {
-      action.addMessage(action.getText("innovationList"));
-      action.addMissingField("policy.innovations");
-      action.getInvalidFields().put("list-policy.innovations",
-        action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"innovationList"}));
-    }
 
     // Validate Crps
     if (projectPolicy.getCrps() == null || projectPolicy.getCrps().isEmpty()) {
