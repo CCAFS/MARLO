@@ -88,12 +88,22 @@ public class ProjectLocationValidator extends BaseValidator {
               action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Locations"}));
             action.addMessage(action.getText("project.locationsData"));
           }
-
-
         }
-
       }
+    }
 
+    if (action.hasSpecificities(action.crpLocationCsvActivities())) {
+      if (project.getProjecInfoPhase(action.getActualPhase()).getActivitiesCSV() != null
+        && project.getProjecInfoPhase(action.getActualPhase()).getActivitiesCSV()) {
+
+        if (project.getProjecInfoPhase(action.getActualPhase()).getActivitiesCSVFile() == null
+          || project.getProjecInfoPhase(action.getActualPhase()).getActivitiesCSVFile().getId() == null
+          || project.getProjecInfoPhase(action.getActualPhase()).getActivitiesCSVFile().getId().longValue() == -1) {
+          action.getInvalidFields().put("list-project.projectInfo.activitiesCSVFile",
+            action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Locations CSV"}));
+          action.addMessage(action.getText("projectLocations.activitiesCSV.upload"));
+        }
+      }
     }
 
 
