@@ -37,6 +37,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
 import org.cgiar.ccafs.marlo.data.model.ProjectLp6Contribution;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
+import org.cgiar.ccafs.marlo.data.model.ProjectPolicy;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.SectionStatus;
@@ -131,6 +132,9 @@ public class ValidateProjectSectionAction extends BaseAction {
           break;
         case EXPECTEDSTUDIES:
           this.projectSectionValidator.validateProjectExpectedStudies(this, this.getProjectID());
+          break;
+        case POLICIES:
+          this.projectSectionValidator.validatePolicy(this, this.getProjectID());
           break;
         case INNOVATIONS:
           this.projectSectionValidator.validateInnovations(this, this.getProjectID());
@@ -375,6 +379,28 @@ public class ValidateProjectSectionAction extends BaseAction {
               section.put("missingFields", section.get("missingFields") + "-" + sectionStatus.getMissingFields());
             }
           }
+          break;
+
+        case POLICIES:
+          section = new HashMap<String, Object>();
+          section.put("sectionName", sectionName);
+          section.put("missingFields", "");
+
+          List<ProjectPolicy> policies =
+            project.getProjectPolicies().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+          for (ProjectPolicy projectPolicy : policies) {
+            sectionStatus = sectionStatusManager.getSectionStatusByProjectPolicy(projectPolicy.getId(), cycle,
+              this.getActualPhase().getYear(), this.getActualPhase().getUpkeep(), sectionName);
+            section.put("sectionName", sectionStatus.getSectionName());
+            if (sectionStatus == null) {
+              sectionStatus = new SectionStatus();
+              sectionStatus.setMissingFields("No section");
+            }
+            if (sectionStatus.getMissingFields().length() > 0) {
+              section.put("missingFields", section.get("missingFields") + "-" + sectionStatus.getMissingFields());
+            }
+          }
+
           break;
 
         case INNOVATIONS:

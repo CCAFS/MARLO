@@ -34,6 +34,9 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyCountryManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationCountryManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectLocationElementTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyCountryManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyRegionManager;
 import org.cgiar.ccafs.marlo.data.model.Activity;
 import org.cgiar.ccafs.marlo.data.model.CaseStudyIndicator;
 import org.cgiar.ccafs.marlo.data.model.CaseStudyProject;
@@ -86,6 +89,9 @@ import org.cgiar.ccafs.marlo.data.model.ProjectPartnerLocation;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPartnership;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPartnershipLocation;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPartnershipResearchPhase;
+import org.cgiar.ccafs.marlo.data.model.ProjectPolicy;
+import org.cgiar.ccafs.marlo.data.model.ProjectPolicyCountry;
+import org.cgiar.ccafs.marlo.data.model.ProjectPolicyRegion;
 import org.cgiar.ccafs.marlo.data.model.ProjectScope;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
@@ -178,6 +184,11 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
 
   private final DeliverablePartnershipManager deliverablePartnershipManager;
 
+  private final ProjectPolicyValidator projectPolicyValidator;
+
+  private final ProjectPolicyCountryManager projectPolicyCountryManager;
+
+  private final ProjectPolicyRegionManager projectPolicyRegionManager;
 
   @Inject
   public ProjectSectionValidator(ProjectManager projectManager, ProjectLocationValidator locationValidator,
@@ -201,7 +212,9 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
     GlobalUnitProjectManager globalUnitProjectManager, DeliverableTypeManager deliverableTypeManager,
     DeliverableInfoManager deliverableInfoManager, DeliverableLocationManager deliverableLocationManager,
     DeliverableGeographicRegionManager deliverableGeographicRegionManager,
-    DeliverablePartnershipManager deliverablePartnershipManager, ProjectLP6Validator projectLP6Validator) {
+    DeliverablePartnershipManager deliverablePartnershipManager, ProjectLP6Validator projectLP6Validator,
+    ProjectPolicyValidator projectPolicyValidator, ProjectPolicyManager projectPolicyManager,
+    ProjectPolicyCountryManager projectPolicyCountryManager, ProjectPolicyRegionManager projectPolicyRegionManager) {
     this.projectManager = projectManager;
     this.locationValidator = locationValidator;
     this.projectBudgetsValidator = projectBudgetsValidator;
@@ -239,6 +252,10 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
     this.deliverableGeographicRegionManager = deliverableGeographicRegionManager;
     this.deliverablePartnershipManager = deliverablePartnershipManager;
     this.projectLP6Validator = projectLP6Validator;
+    this.projectPolicyCountryManager = projectPolicyCountryManager;
+    this.projectPolicyValidator = projectPolicyValidator;
+    this.projectPolicyRegionManager = projectPolicyRegionManager;
+
   }
 
 
@@ -671,6 +688,103 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
       project.getIpProjectContributionOverviews().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
     projectOutputsValidator.validate(action, project, false);
 
+
+  }
+
+  public void validatePolicy(BaseAction action, Long projectID) {
+    // Getting the project information.
+    Project project = projectManager.getProjectById(projectID);
+
+    Phase phase = action.getActualPhase();
+
+    List<ProjectPolicy> policies =
+      project.getProjectPolicies().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+    project.setPolicies(new ArrayList<ProjectPolicy>());
+    for (ProjectPolicy projectPolicy : policies) {
+      if (projectPolicy.getProjectPolicyInfo(phase) != null) {
+        project.getPolicies().add(projectPolicy);
+      }
+    }
+
+    for (ProjectPolicy policy : project.getPolicies()) {
+
+      if (policy.getProjectPolicyInfo() == null) {
+        policy.getProjectPolicyInfo(phase);
+      }
+
+
+      // Setup Geographic Scope
+      if (policy.getProjectPolicyGeographicScopes() != null) {
+        policy.setGeographicScopes(new ArrayList<>(policy.getProjectPolicyGeographicScopes().stream()
+          .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
+      }
+
+
+      // Policy Countries List
+      if (policy.getProjectPolicyCountries() == null) {
+        policy.setCountries(new ArrayList<>());
+
+      } else {
+        List<ProjectPolicyCountry> geographics =
+          projectPolicyCountryManager.getPolicyCountrybyPhase(policy.getId(), phase.getId());
+
+        // Load Countries
+        policy.setCountries(geographics.stream().filter(sc -> sc.getLocElement().getLocElementType().getId() == 2)
+          .collect(Collectors.toList()));
+
+      }
+
+      if (policy.getProjectPolicyRegions() == null) {
+        policy.setRegions(new ArrayList<>());
+      } else {
+        List<ProjectPolicyRegion> geographics =
+          projectPolicyRegionManager.getPolicyRegionbyPhase(policy.getId(), phase.getId());
+
+        // Load Regions
+        policy.setRegions(geographics.stream().filter(sc -> sc.getLocElement().getLocElementType().getId() == 1)
+          .collect(Collectors.toList()));
+      }
+
+
+      // Policy Type ( Whose Policy is This ? ) List
+      if (policy.getProjectPolicyOwners() != null) {
+        policy.setOwners(new ArrayList<>(policy.getProjectPolicyOwners().stream()
+          .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
+      }
+
+      // Crp List
+      if (policy.getProjectPolicyCrps() != null) {
+        policy.setCrps(new ArrayList<>(policy.getProjectPolicyCrps().stream()
+          .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
+      }
+
+      // SubIdos List
+      if (policy.getProjectPolicySubIdos() != null) {
+        policy.setSubIdos(new ArrayList<>(policy.getProjectPolicySubIdos().stream()
+          .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
+      }
+
+      // Innovations List
+      if (policy.getProjectPolicyInnovations() != null) {
+        policy.setInnovations(new ArrayList<>(policy.getProjectPolicyInnovations().stream()
+          .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
+      }
+
+      // Evidence List
+      if (policy.getProjectExpectedStudyPolicies() != null) {
+        policy.setEvidences(new ArrayList<>(policy.getProjectExpectedStudyPolicies().stream()
+          .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
+      }
+
+      // Cgiar Cross Cutting Markers List
+      if (policy.getCrossCuttingMarkers() != null) {
+        policy.setCrossCuttingMarkers(new ArrayList<>(policy.getProjectPolicyCrossCuttingMarkers().stream()
+          .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
+      }
+
+
+      projectPolicyValidator.validate(action, project, policy, false);
+    }
 
   }
 

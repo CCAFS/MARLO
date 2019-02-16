@@ -151,7 +151,6 @@ public class ProjectPolicyListAction extends BaseAction {
             .filter(o -> o.isActive() && o.getPhase().getId() == this.getActualPhase().getId())
             .collect(Collectors.toList())));
         }
-
         if (projectPolicy.getProjectPolicyInfo(this.getActualPhase()).getYear() < this.getCurrentCycleYear()) {
           projectOldPolicies.add(projectPolicy);
         } else {

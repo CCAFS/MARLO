@@ -3513,6 +3513,33 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
         break;
 
+      case POLICIES:
+
+        project = projectManager.getProjectById(projectID);
+        List<ProjectPolicy> policies = project.getProjectPolicies().stream()
+          .filter(c -> c.getProjectPolicyInfo(this.getActualPhase()) != null && c.isActive()
+            && c.getProjectPolicyInfo(this.getActualPhase()).getYear().intValue() == this.getCurrentCycleYear())
+          .collect(Collectors.toList());
+
+        if (policies.isEmpty()) {
+          return true;
+        }
+
+        for (ProjectPolicy projectPolicy : policies) {
+          sectionStatus = sectionStatusManager.getSectionStatusByProjectPolicy(projectPolicy.getId(),
+            this.getCurrentCycle(), this.getCurrentCycleYear(), this.isUpKeepActive(), section);
+          if (sectionStatus != null) {
+            if (sectionStatus.getMissingFields().length() != 0) {
+              return false;
+            }
+          } else {
+            return false;
+          }
+        }
+        returnValue = true;
+
+        break;
+
       case LEVERAGES:
 
 

@@ -557,25 +557,9 @@ public class ProjectPolicyAction extends BaseAction {
 
 
         // Setup Geographic Scope
-        boolean haveRegions = false;
-        boolean haveCountries = false;
-
         if (policy.getProjectPolicyGeographicScopes() != null) {
           policy.setGeographicScopes(new ArrayList<>(policy.getProjectPolicyGeographicScopes().stream()
             .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
-
-          for (ProjectPolicyGeographicScope projectPolicyGeographicScope : policy.getGeographicScopes()) {
-
-            if (projectPolicyGeographicScope.getRepIndGeographicScope().getId() == 2) {
-              haveRegions = true;
-            }
-
-            if (projectPolicyGeographicScope.getRepIndGeographicScope().getId() != 1
-              && projectPolicyGeographicScope.getRepIndGeographicScope().getId() != 2) {
-              haveCountries = true;
-            }
-
-          }
         }
 
 
