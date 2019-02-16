@@ -78,9 +78,7 @@ import org.apache.commons.lang3.StringUtils;
  */
 public class ProjectLocationAction extends BaseAction {
 
-
   private static final long serialVersionUID = -3215013554941621274L;
-
 
   // Managers
   private final AuditLogManager auditLogManager;
@@ -109,7 +107,6 @@ public class ProjectLocationAction extends BaseAction {
   private List<LocationLevel> locationsLevels;
   private final ProjectLocationValidator locationValidator;
 
-
   @Inject
   public ProjectLocationAction(APConfig config, GlobalUnitManager crpManager, ProjectManager projectManager,
     LocElementTypeManager locElementTypeManager, LocElementManager locElementManager,
@@ -132,7 +129,6 @@ public class ProjectLocationAction extends BaseAction {
     this.globalUnitProjectManager = globalUnitProjectManager;
     this.fileDBManager = fileDBManager;
   }
-
 
   @Override
   public String cancel() {
@@ -175,7 +171,6 @@ public class ProjectLocationAction extends BaseAction {
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
-
   public List<ProjectLocation> getDBLocations() {
     List<ProjectLocation> locations = projectLocationManager.findAll().stream()
       .filter(p -> p.isActive() && p.getProject().getId().longValue() == projectID && p.getPhase() != null
@@ -187,7 +182,6 @@ public class ProjectLocationAction extends BaseAction {
   public List<LocationLevel> getLocationsLevels() {
     return locationsLevels;
   }
-
 
   public String getPath() {
     return config.getDownloadURL() + "/" + this.getProjectLocationActivitiesCSVSourceFolder().replace('\\', '/');
@@ -201,7 +195,6 @@ public class ProjectLocationAction extends BaseAction {
     return projectID;
   }
 
-
   private String getProjectLocationActivitiesCSVSourceFolder() {
     return APConstants.PROJECTS_LOCATIONS_ACTIVITIES_CSV_FOLDER.concat(File.separator).concat(this.getCrpSession())
       .concat(File.separator).concat(File.separator).concat(this.getCrpSession() + "_")
@@ -214,7 +207,6 @@ public class ProjectLocationAction extends BaseAction {
     List<CountryLocationLevel> locationLevels = new ArrayList<>();
     List<ProjectLocationElementType> locationsElementType = new ArrayList<>(
       project.getProjectLocationElementTypes().stream().filter(pl -> pl.getIsGlobal()).collect(Collectors.toList()));
-
 
     project.setLocations((this.getDBLocations().stream()
       .filter(p -> p.isActive() && p.getLocElementType() == null && p.getLocElement() != null
@@ -323,7 +315,6 @@ public class ProjectLocationAction extends BaseAction {
         locationLevels.add(countryLocationLevel);
       }
 
-
     }
 
     return locationLevels;
@@ -336,7 +327,6 @@ public class ProjectLocationAction extends BaseAction {
   public List<ScopeData> getScopeData() {
     return scopeData;
   }
-
 
   public List<LocElementType> getScopeRegionLists() {
     return scopeRegionLists;
@@ -361,7 +351,6 @@ public class ProjectLocationAction extends BaseAction {
       .collect(Collectors.toList());
 
     scopeRegions = new ArrayList<>();
-
 
     if (project.getLocationsData() != null) {
       for (CountryLocationLevel locationData : project.getLocationsData()) {
@@ -393,7 +382,6 @@ public class ProjectLocationAction extends BaseAction {
                         }
                       }
                     }
-
 
                   }
 
@@ -485,7 +473,6 @@ public class ProjectLocationAction extends BaseAction {
           return false;
         }
 
-
       } else {
         List<CountryLocationLevel> locElements = project.getLocationsData().stream()
           .filter(c -> c.getLocElements() != null
@@ -504,9 +491,7 @@ public class ProjectLocationAction extends BaseAction {
       return !locElements.isEmpty();
     }
 
-
   }
-
 
   public boolean locElementTypeSelected(long locElementID) {
 
@@ -528,9 +513,7 @@ public class ProjectLocationAction extends BaseAction {
       return !locElements.isEmpty();
     }
 
-
   }
-
 
   @Override
   public void prepare() throws Exception {
@@ -561,7 +544,6 @@ public class ProjectLocationAction extends BaseAction {
       GlobalUnitProject gp = globalUnitProjectManager.findByProjectId(project.getId());
       Path path = this.getAutoSaveFilePath();
 
-
       if (path.toFile().exists() && this.getCurrentUser().isAutoSave()) {
 
         BufferedReader reader = null;
@@ -570,10 +552,8 @@ public class ProjectLocationAction extends BaseAction {
 
         Gson gson = new GsonBuilder().create();
 
-
         JsonObject jReader = gson.fromJson(reader, JsonObject.class);
         reader.close();
-
 
         AutoSaveReader autoSaveReader = new AutoSaveReader();
 
@@ -685,12 +665,15 @@ public class ProjectLocationAction extends BaseAction {
         }
 
         this.prepareFundingList();
-        if (project.getProjecInfoPhase(this.getActualPhase()).getActivitiesCSVFile() != null) {
-          if (project.getProjecInfoPhase(this.getActualPhase()).getActivitiesCSVFile().getId() != null) {
-            project.getProjecInfoPhase(this.getActualPhase()).setActivitiesCSVFile(fileDBManager
-              .getFileDBById(project.getProjecInfoPhase(this.getActualPhase()).getActivitiesCSVFile().getId()));
-          } else {
-            project.getProjecInfoPhase(this.getActualPhase()).setActivitiesCSVFile(null);
+        if (this.hasSpecificities(this.crpLocationCsvActivities())) {
+
+          if (project.getProjecInfoPhase(this.getActualPhase()).getActivitiesCSVFile() != null) {
+            if (project.getProjecInfoPhase(this.getActualPhase()).getActivitiesCSVFile().getId() != null) {
+              project.getProjecInfoPhase(this.getActualPhase()).setActivitiesCSVFile(fileDBManager
+                .getFileDBById(project.getProjecInfoPhase(this.getActualPhase()).getActivitiesCSVFile().getId()));
+            } else {
+              project.getProjecInfoPhase(this.getActualPhase()).setActivitiesCSVFile(null);
+            }
           }
         }
 
@@ -698,9 +681,7 @@ public class ProjectLocationAction extends BaseAction {
       } else {
         this.setDraft(false);
 
-
         this.prepareFundingList();
-
 
         for (CountryFundingSources locElement : project.getCountryFS()) {
           locElement.setSelected(this.locElementSelected(locElement.getLocElement().getId()));
@@ -727,20 +708,18 @@ public class ProjectLocationAction extends BaseAction {
               .collect(Collectors.toList()));
 
       }
-
-      // Setup Files
-      if (project.getProjecInfoPhase(this.getActualPhase()).getActivitiesCSVFile() != null) {
-        if (project.getProjecInfoPhase(this.getActualPhase()).getActivitiesCSVFile().getId() != null) {
-          project.getProjecInfoPhase(this.getActualPhase()).setActivitiesCSVFile(fileDBManager
-            .getFileDBById(project.getProjecInfoPhase(this.getActualPhase()).getActivitiesCSVFile().getId()));
+      if (this.hasSpecificities(this.crpLocationCsvActivities())) {
+        if (project.getProjecInfoPhase(this.getActualPhase()).getActivitiesCSVFile() != null) {
+          if (project.getProjecInfoPhase(this.getActualPhase()).getActivitiesCSVFile().getId() != null) {
+            project.getProjecInfoPhase(this.getActualPhase()).setActivitiesCSVFile(fileDBManager
+              .getFileDBById(project.getProjecInfoPhase(this.getActualPhase()).getActivitiesCSVFile().getId()));
+          }
         }
       }
 
     }
 
-
     this.listScopeRegions();
-
 
     Collection<LocElement> fsLocs = new ArrayList<>();
 
@@ -754,7 +733,6 @@ public class ProjectLocationAction extends BaseAction {
     for (CountryFundingSources locElement : project.getCountryFS()) {
       fsLocs.add(locElement.getLocElement());
     }
-
 
     if (project.getLocationsData() == null) {
       project.setLocationsData(new ArrayList<>());
@@ -772,7 +750,6 @@ public class ProjectLocationAction extends BaseAction {
 
         countryLocationLevel.getLocElements().removeAll(similar);
       }
-
 
     }
 
@@ -837,7 +814,9 @@ public class ProjectLocationAction extends BaseAction {
       }
 
       project.getProjecInfoPhase(this.getActualPhase()).setLocationGlobal(false);
-      project.getProjecInfoPhase(this.getActualPhase()).setActivitiesCSV(null);
+      if (this.hasSpecificities(this.crpLocationCsvActivities())) {
+        project.getProjecInfoPhase(this.getActualPhase()).setActivitiesCSV(null);
+      }
 
       if (project.getCountryFS() != null) {
         project.getCountryFS().clear();
@@ -851,8 +830,9 @@ public class ProjectLocationAction extends BaseAction {
       if (project.getProjectRegions() != null) {
         project.getProjectRegions().clear();
       }
-
-      project.getProjecInfoPhase(this.getActualPhase()).setActivitiesCSVFile(null);
+      if (this.hasSpecificities(this.crpLocationCsvActivities())) {
+        project.getProjecInfoPhase(this.getActualPhase()).setActivitiesCSVFile(null);
+      }
     }
 
   }
@@ -860,7 +840,6 @@ public class ProjectLocationAction extends BaseAction {
   public void prepareFundingList() {
 
     Project projectDB = projectManager.getProjectById(project.getId());
-
 
     List<ProjectBudget> projectBudgets =
       new ArrayList<>(projectDB.getProjectBudgets().stream().filter(pb -> pb.isActive() && pb.getProject().isActive()
@@ -933,9 +912,7 @@ public class ProjectLocationAction extends BaseAction {
         }
       }
 
-
     }
-
 
     if (project.getCountryFS() == null) {
       project.setCountryFS(new ArrayList<>());
@@ -944,7 +921,6 @@ public class ProjectLocationAction extends BaseAction {
     if (project.getRegionFS() == null) {
       project.setRegionFS(new ArrayList<>());
     }
-
 
     HashSet<LocElement> hashElements = new HashSet<>();
     hashElements.addAll(locElements);
@@ -973,7 +949,6 @@ public class ProjectLocationAction extends BaseAction {
         }
       }
 
-
     }
 
     HashSet<LocElementType> hashElementTypes = new HashSet<>();
@@ -997,9 +972,7 @@ public class ProjectLocationAction extends BaseAction {
     Collections.sort(project.getCountryFS(),
       (tu1, tu2) -> tu1.getLocElement().getName().compareTo(tu2.getLocElement().getName()));
 
-
   }
-
 
   public void projectLocationNewData() {
 
@@ -1009,7 +982,6 @@ public class ProjectLocationAction extends BaseAction {
       for (CountryLocationLevel locationData : project.getLocationsData()) {
 
         if (!locationsDataPrew.contains(locationData)) {
-
 
           if (locationData.getLocElements() != null && !locationData.getLocElements().isEmpty()) {
             for (LocElement locElement : locationData.getLocElements()) {
@@ -1101,7 +1073,6 @@ public class ProjectLocationAction extends BaseAction {
                       this.getActualPhase().getId());
                   if (existProjectLocation == null) {
 
-
                     ProjectLocation projectLocation = new ProjectLocation();
                     projectLocation.setProject(project);
                     projectLocation.setLocElement(element);
@@ -1115,11 +1086,9 @@ public class ProjectLocationAction extends BaseAction {
             }
           }
 
-
         }
       }
     }
-
 
     Project projectDB = projectManager.getProjectById(projectID);
     List<LocElement> regionsCustomSaved = new ArrayList<>();
@@ -1131,7 +1100,6 @@ public class ProjectLocationAction extends BaseAction {
       regionsCustomSaved.add(projectLocation.getLocElement());
 
     }
-
 
     if (project.getCountryFS() == null) {
       project.setCountryFS(new ArrayList<>());
@@ -1149,7 +1117,6 @@ public class ProjectLocationAction extends BaseAction {
       }
 
     }
-
 
   }
 
@@ -1176,7 +1143,6 @@ public class ProjectLocationAction extends BaseAction {
           } else {
             projectLocationManager.deleteProjectLocation(projectLocation.getId());
           }
-
 
         }
 
@@ -1238,13 +1204,14 @@ public class ProjectLocationAction extends BaseAction {
       this.projectLocationNewData();
       this.saveRegions();
 
-      // Save Files
-      if (project.getProjecInfoPhase(this.getActualPhase()).getActivitiesCSVFile() != null) {
-        if (project.getProjecInfoPhase(this.getActualPhase()).getActivitiesCSVFile().getId() == null) {
-          project.getProjecInfoPhase(this.getActualPhase()).setActivitiesCSVFile(null);
-        } else {
-          projectDB.getProjecInfoPhase(this.getActualPhase())
-            .setActivitiesCSVFile(project.getProjecInfoPhase(this.getActualPhase()).getActivitiesCSVFile());
+      if (this.hasSpecificities(this.crpLocationCsvActivities())) {
+        if (project.getProjecInfoPhase(this.getActualPhase()).getActivitiesCSVFile() != null) {
+          if (project.getProjecInfoPhase(this.getActualPhase()).getActivitiesCSVFile().getId() == null) {
+            project.getProjecInfoPhase(this.getActualPhase()).setActivitiesCSVFile(null);
+          } else {
+            projectDB.getProjecInfoPhase(this.getActualPhase())
+              .setActivitiesCSVFile(project.getProjecInfoPhase(this.getActualPhase()).getActivitiesCSVFile());
+          }
         }
       }
 
@@ -1258,8 +1225,8 @@ public class ProjectLocationAction extends BaseAction {
       projectDB.getProjecInfoPhase(this.getActualPhase()).setLocationRegional(isProjectRegional);
       projectInfoManager.saveProjectInfo(projectDB.getProjecInfoPhase(this.getActualPhase()));
       /**
-       * The following is required because we need to update something on the @Project if we want a row
-       * created in the auditlog table.
+       * The following is required because we need to update something on the @Project
+       * if we want a row created in the auditlog table.
        */
       this.setModificationJustification(project);
       projectManager.saveProject(project, this.getActionName(), relationsName, this.getActualPhase());
@@ -1290,7 +1257,6 @@ public class ProjectLocationAction extends BaseAction {
     }
     return SUCCESS;
   }
-
 
   public void saveGeoProjectLocation(LocElement locElement, Long elementTypeId) {
     LocElement parentElement = locElementManager.getLocElementByISOCode(locElement.getIsoAlpha2());
@@ -1332,7 +1298,6 @@ public class ProjectLocationAction extends BaseAction {
       project.setProjectRegions(new ArrayList<>());
     }
 
-
     List<ProjectLocation> regions = new ArrayList<>(this
       .getDBLocations().stream().filter(fl -> fl.isActive() && fl.getLocElement() != null
         && fl.getLocElement().getLocElementType() != null && fl.getLocElement().getLocElementType().getId() == 1)
@@ -1358,7 +1323,6 @@ public class ProjectLocationAction extends BaseAction {
 
             }
           }
-
 
         }
       } else {
@@ -1402,7 +1366,6 @@ public class ProjectLocationAction extends BaseAction {
     }
 
     for (ProjectLocation projectLocation : project.getProjectRegions()) {
-
 
       if (projectLocation.getId() == null || projectLocation.getId() == -1) {
 
@@ -1461,7 +1424,6 @@ public class ProjectLocationAction extends BaseAction {
           projectLocationManager.saveProjectLocation(projectLocationSave);
         }
 
-
       } else {
         if (!regionsSaved.contains(countryFundingSources.getLocElement()) && countryFundingSources.isSelected()) {
 
@@ -1479,7 +1441,6 @@ public class ProjectLocationAction extends BaseAction {
   public void setProject(Project project) {
     this.project = project;
   }
-
 
   public void setProjectID(long projectID) {
     this.projectID = projectID;
@@ -1512,10 +1473,12 @@ public class ProjectLocationAction extends BaseAction {
   @Override
   public void validate() {
     if (save) {
-      if (project.getProjecInfoPhase(this.getActualPhase()).getActivitiesCSVFile() != null
-        && project.getProjecInfoPhase(this.getActualPhase()).getActivitiesCSVFile().getId() == null
-        || project.getProjecInfoPhase(this.getActualPhase()).getActivitiesCSVFile().getId().longValue() == -1) {
-        project.getProjecInfoPhase(this.getActualPhase()).setActivitiesCSVFile(null);
+      if (this.hasSpecificities(this.crpLocationCsvActivities())) {
+        if (project.getProjecInfoPhase(this.getActualPhase()).getActivitiesCSVFile() != null
+          && project.getProjecInfoPhase(this.getActualPhase()).getActivitiesCSVFile().getId() == null
+          || project.getProjecInfoPhase(this.getActualPhase()).getActivitiesCSVFile().getId().longValue() == -1) {
+          project.getProjecInfoPhase(this.getActualPhase()).setActivitiesCSVFile(null);
+        }
       }
       locationValidator.validate(this, project, true);
     }
