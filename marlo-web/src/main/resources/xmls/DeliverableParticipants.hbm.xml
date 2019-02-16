@@ -48,6 +48,10 @@
 			class="org.cgiar.ccafs.marlo.data.model.RepIndTypeParticipant" fetch="select">
 			<column name="rep_ind_type_participant_id" />
 		</many-to-one>
+		<many-to-one name="repIndTrainingTerm"
+      class="org.cgiar.ccafs.marlo.data.model.RepIndTrainingTerm" fetch="select">
+      <column name="rep_ind_training_term" />
+    </many-to-one>
 		<property name="active" type="boolean">
 			<column name="is_active" not-null="true" />
 		</property>
