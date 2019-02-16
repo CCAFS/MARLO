@@ -194,10 +194,10 @@ public class ProjectInnovationValidator extends BaseValidator {
         .getId() == null
         || projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getRepIndGeographicScope()
           .getId() == -1) {
-        action.addMessage(action.getText("Geographic Scope"));
-        action.addMissingField("projectInnovations.geographicScope");
-        action.getInvalidFields().put("input-innovation.projectInnovationInfo.repIndGeographicScope.id",
-          InvalidFieldsMessages.EMPTYFIELD);
+        // action.addMessage(action.getText("Geographic Scope"));
+        // action.addMissingField("projectInnovations.geographicScope");
+        // action.getInvalidFields().put("input-innovation.projectInnovationInfo.repIndGeographicScope.id",
+        // InvalidFieldsMessages.EMPTYFIELD);
       } else {
         // Validate if Scope is Multi-national, National or Sub-National and review if the innovation has Countries
         if (projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getRepIndGeographicScope().getId()
@@ -238,10 +238,10 @@ public class ProjectInnovationValidator extends BaseValidator {
         }
       }
     } else {
-      action.addMessage(action.getText("Geographic Scope"));
-      action.addMissingField("projectInnovations.geographicScope");
-      action.getInvalidFields().put("input-innovation.projectInnovationInfo.repIndGeographicScope.id",
-        InvalidFieldsMessages.EMPTYFIELD);
+      // action.addMessage(action.getText("Geographic Scope"));
+      // action.addMissingField("projectInnovations.geographicScope");
+      // action.getInvalidFields().put("input-innovation.projectInnovationInfo.repIndGeographicScope.id",
+      // InvalidFieldsMessages.EMPTYFIELD);
     }
 
 

@@ -141,10 +141,10 @@
                 </div>
                 <div class="clear-fix"></div>
                 
-                <div class="csvActivitiesBox panel tertiary col-md-12" style="display:${(project.projectInfo.activitiesCSV?string("block","none"))!"none"};">
+                <div class="csvActivitiesBox simpleBox" style="display:${(project.projectInfo.activitiesCSV?string("block","none"))!"none"};">
                   <div class="row">
                     <div class="col-md-9">
-                      <label for="">[@s.text name="projectLocations.activitiesCSV.instructions" /]:[@customForm.req required=editable /]</label>
+                      <label for="">[@s.text name="projectLocations.activitiesCSV.instructions" /]:</label>
                     </div>
                     <div class="col-md-3 right" style="display:none">
                       <a href="" target="__BLANK">
@@ -157,15 +157,16 @@
                   <div class="row justify-content-md-center">
                     
                     [#-- Download Template --]
-                    <div class="col-md-6 center">
-                        <label for="">[@s.text name="projectLocations.activitiesCSV.download" /]:</label>
+                    <div class="col-md-2"></div>
+                    <div class="col-md-4">
+                       <label for="">[@s.text name="projectLocations.activitiesCSV.download" /]:</label>
                        <div class="form-group">
                          <a href="${baseUrl}/global/documents/CSA_Evaluation_template.xlsm" download><img src="${baseUrl}/global/images/download-excel.png" height="70" /></a>
                        </div>
                     </div>
                     
                     [#-- Upload Template --]
-                    <div class="col-md-5 center" style="position:relative" listname="project.projectInfo.activitiesCSVFile">
+                    <div class="col-md-5 " style="position:relative" listname="project.projectInfo.activitiesCSVFile">
                       [@customForm.fileUploadAjax 
                         fileDB=(project.projectInfo.activitiesCSVFile)!{}  
                         name="project.projectInfo.activitiesCSVFile.id" 
@@ -177,7 +178,7 @@
                         path="${(action.getPath())!}"
                         isEditable=editable
                         labelClass=""
-                        required=false
+                        required=true
                       /]
                     </div>
                   </div>

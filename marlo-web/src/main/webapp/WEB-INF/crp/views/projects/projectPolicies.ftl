@@ -62,7 +62,7 @@
       [#-- Previous Policies list --]
       <h3 class="headTitle">Previous [@s.text name="projectPolicies.title" /] <br /></h3>
       <div id="" class="simpleBox">
-        [@policiesTable list=(project.policies)![]  currentTable=false/]
+        [@policiesTable list=(projectOldPolicies)![]  currentTable=false/]
       </div>
     </div>
   </div>
