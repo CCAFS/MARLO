@@ -127,9 +127,9 @@
             </td> 
             <td class="name">
               [#-- Report Tag --]
+              [#if isNew] <span class="label label-info">[@s.text name="global.new" /]</span> [/#if] 
               [#if reportingActive && !oldFormat && !previousTable && isOwner]<span class="label label-primary" title="Required for this cycle"><span class="glyphicon glyphicon-flash" ></span> Report</span>[/#if]
               [#if !oldFormat]<a href="${dlurl}" ${isOwner?string('','target="blank"')}>[/#if]
-                [#if isNew] <span class="label label-info">[@s.text name="global.new" /]</span> [/#if] 
                 [#if oldFormat] <span class="label label-info">Old Format</span> [/#if]
                 [@utils.tableText value=(item.projectExpectedStudyInfo.title)!"" /]
               [#if !oldFormat]</a>[/#if]

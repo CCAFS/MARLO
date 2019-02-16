@@ -10,9 +10,6 @@
   
   <div id="${customId}" class="caseStudy evidenceBlock isNew-${isNew?string}" style="display:${template?string('none','block')}">
     <div class="borderBox">
-      [#-- 
-      <strong>isNew ${isNew?string}</strong>
-       --]
     
       <div class="form-group row">
         <div class="col-md-4">

@@ -68,6 +68,8 @@
 [#macro policyMacro element name index=-1 template=false ]
   [#local customName = "${name}"/]
   [#local customId = "policy-${template?string('template',index)}" /]
+  [#-- Is new --]
+  [#local isNew = (action.isPolicyNew(element.id)) /]
 
   <div id="${customId}" class="policy" style="display:${template?string('none','block')}">
     
