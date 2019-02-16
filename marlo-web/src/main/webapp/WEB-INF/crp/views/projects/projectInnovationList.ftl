@@ -100,32 +100,20 @@
           [#-- Title --]
           <td class="tb-title">
             <a href="${tsURL}">
-              [#if innovation.projectInnovationInfo.title?has_content]${(innovation.projectInnovationInfo.title)!''}[#else][@s.text name="global.untitled"/] [/#if]
+              [@utils.tableText value=(innovation.projectInnovationInfo.title)!"" /]
             </a>
           </td>
           [#-- Type --]
           <td>
-          [#if innovation.projectInnovationInfo.repIndInnovationType?has_content]
-            <span>${(innovation.projectInnovationInfo.repIndInnovationType.name)!''}</span>
-          [#else]
-            <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
-          [/#if]
+            [@utils.tableText value=(innovation.projectInnovationInfo.repIndInnovationType.name)!"" /]
           </td>
           [#-- Stage --]
           <td class="text-center">
-          [#if innovation.projectInnovationInfo.repIndStageInnovation?has_content]
-            ${innovation.projectInnovationInfo.repIndStageInnovation.name!''}
-          [#else]
-            <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
-          [/#if]
+            [@utils.tableText value=(innovation.projectInnovationInfo.repIndStageInnovation.name)!"" /]
           </td>
           [#-- Stage --]
           <td class="text-center">
-          [#if innovation.projectInnovationInfo.year?has_content]
-            ${innovation.projectInnovationInfo.year!''}
-          [#else]
-            <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
-          [/#if]
+            [@utils.tableText value=(innovation.projectInnovationInfo.year)!"" /]
           </td>
           [#-- Summary PDF download --]
           <td class="text-center">

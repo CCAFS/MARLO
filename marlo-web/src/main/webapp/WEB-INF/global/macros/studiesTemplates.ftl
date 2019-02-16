@@ -102,7 +102,7 @@
         <div class="form-group simpleBox block-${studyIndicatorThree}" style="display:${(showPolicyIndicator == "true")?string('block','none')}">
           [@customForm.elementsListComponent name="${customName}.policies" elementType="projectPolicy" elementList=element.policies label="study.policies"  listName="policyList" keyFieldName="id" displayFieldName="composedName"/]
           [#-- Note --]
-          <div class="note">[@s.text name="study.policies.note"][@s.param] <a href="[@s.url namespace="/projects" action='${crpSession}/policies'][@s.param name='projectID']${(projectID)!}[/@s.param][/@s.url]">clicking here</a>[/@][/@]</div>
+          <div class="note">[@s.text name="study.policies.note"][@s.param] <a href="[@s.url namespace="/projects" action='${crpSession}/policies'][@s.param name='projectID']${(projectID)!}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">clicking here</a>[/@][/@]</div>
         </div>
       </div>
       [/#if]
