@@ -20,6 +20,8 @@ import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicy;
+import org.cgiar.ccafs.marlo.data.model.ProjectPolicyCrossCuttingMarker;
+import org.cgiar.ccafs.marlo.data.model.ProjectPolicyGeographicScope;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
@@ -67,6 +69,7 @@ public class ProjectPolicyValidator extends BaseValidator {
       }
     }
 
+    this.validateProjectPolicy(action, policy);
 
     if (!action.getFieldErrors().isEmpty()) {
       action.addActionError(action.getText("saving.fields.required"));
@@ -77,6 +80,27 @@ public class ProjectPolicyValidator extends BaseValidator {
 
     this.saveMissingFields(project, policy, action.getActualPhase().getDescription(), action.getActualPhase().getYear(),
       action.getActualPhase().getUpkeep(), ProjectSectionStatusEnum.POLICIES.getStatus(), action);
+  }
+
+  private void validateCrossCuttingMarkers(BaseAction action, ProjectPolicyCrossCuttingMarker crossCuttingMarker,
+    int i) {
+
+    // Validate each Cross Cutting Markers
+    if (crossCuttingMarker.getRepIndGenderYouthFocusLevel() != null) {
+      if (crossCuttingMarker.getRepIndGenderYouthFocusLevel().getId() == null
+        || crossCuttingMarker.getRepIndGenderYouthFocusLevel().getId() == -1) {
+        action.addMessage(action.getText("CrossCutting Markers"));
+        action.addMissingField("policy.crossCuttingMarkers");
+        action.getInvalidFields().put("input-policy.crossCuttingMarkers[" + i + "].repIndGenderYouthFocusLevel.id",
+          InvalidFieldsMessages.EMPTYFIELD);
+      }
+    } else {
+      action.addMessage(action.getText("CrossCutting Markers"));
+      action.addMissingField("policy.crossCuttingMarkers");
+      action.getInvalidFields().put("input-policy.crossCuttingMarkers[" + i + "].repIndGenderYouthFocusLevel.id",
+        InvalidFieldsMessages.EMPTYFIELD);
+    }
+
   }
 
   private void validateProjectPolicy(BaseAction action, ProjectPolicy projectPolicy) {
@@ -138,7 +162,102 @@ public class ProjectPolicyValidator extends BaseValidator {
       action.getInvalidFields().put("input-policy.projectPolicyInfo.repIndStageProcess.id",
         InvalidFieldsMessages.EMPTYFIELD);
     }
-  }
 
+    // Validate Owners
+    if (projectPolicy.getOwners() == null || projectPolicy.getOwners().isEmpty()) {
+      action.addMessage(action.getText("policyTypes"));
+      action.addMissingField("policy.policyOwners");
+      action.getInvalidFields().put("list-policy.owners",
+        action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"policyTypes"}));
+    }
+
+
+    // Validate Evidences
+    if (projectPolicy.getOwners() == null || projectPolicy.getOwners().isEmpty()) {
+      action.addMessage(action.getText("expectedStudyList"));
+      action.addMissingField("policy.evidence");
+      action.getInvalidFields().put("list-policy.evidences",
+        action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"expectedStudyList"}));
+    }
+
+    // Validate Innovations
+    if (projectPolicy.getInnovations() == null || projectPolicy.getInnovations().isEmpty()) {
+      action.addMessage(action.getText("innovationList"));
+      action.addMissingField("policy.innovations");
+      action.getInvalidFields().put("list-policy.innovations",
+        action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"innovationList"}));
+    }
+
+    // Validate Crps
+    if (projectPolicy.getCrps() == null || projectPolicy.getCrps().isEmpty()) {
+      action.addMessage(action.getText("expectedStudyList"));
+      action.addMissingField("policy.contributingCrpsPtfs");
+      action.getInvalidFields().put("list-policy.crps",
+        action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"crps"}));
+    }
+
+    // Validate SubIdos
+    if (projectPolicy.getSubIdos() == null || projectPolicy.getSubIdos().isEmpty()) {
+      action.addMessage(action.getText("subIdos"));
+      action.addMissingField("policy.subIDOs");
+      action.getInvalidFields().put("list-policy.subIdos",
+        action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"subIdos"}));
+    }
+
+    // Validate Cross Cutting
+    if (projectPolicy.getCrossCuttingMarkers() == null || projectPolicy.getCrossCuttingMarkers().isEmpty()) {
+      action.addMessage(action.getText("crossCuttingMarkers"));
+      action.getInvalidFields().put("list-outcome.crossCuttingMarkers",
+        action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"crossCuttingMarkers"}));
+    } else {
+      for (int i = 0; i < projectPolicy.getCrossCuttingMarkers().size(); i++) {
+        this.validateCrossCuttingMarkers(action, projectPolicy.getCrossCuttingMarkers().get(i), i);
+      }
+
+    }
+
+    // Validate Geographic Scope
+
+    boolean haveRegions = false;
+    boolean haveCountries = false;
+
+    if (projectPolicy.getGeographicScopes() == null || projectPolicy.getGeographicScopes().isEmpty()) {
+      action.addMessage(action.getText("geographicScopes"));
+      action.addMissingField("policy.geographicScope");
+      action.getInvalidFields().put("list-policy.geographicScopes",
+        action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"geographicScopes"}));
+    } else {
+      for (ProjectPolicyGeographicScope projectPolicyGeographicScope : projectPolicy.getGeographicScopes()) {
+        if (projectPolicyGeographicScope.getRepIndGeographicScope().getId() == 2) {
+          haveRegions = true;
+        }
+        if (projectPolicyGeographicScope.getRepIndGeographicScope().getId() != 1
+          && projectPolicyGeographicScope.getRepIndGeographicScope().getId() != 2) {
+          haveCountries = true;
+        }
+      }
+    }
+
+
+    if (haveRegions) {
+      // Validate Regions
+      if (projectPolicy.getRegions() == null || projectPolicy.getRegions().isEmpty()) {
+        action.addMessage(action.getText("regions"));
+        action.addMissingField("policy.regions");
+        action.getInvalidFields().put("list-policy.regions",
+          action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"regions"}));
+      }
+    }
+
+    if (haveCountries) {
+      // Validate Countries
+      if (projectPolicy.getCountriesIds() == null || projectPolicy.getCountriesIds().isEmpty()) {
+        action.addMessage(action.getText("countries"));
+        action.addMissingField("policy.countries");
+        action.getInvalidFields().put("input-policy.countriesIds",
+          action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"countries"}));
+      }
+    }
+  }
 
 }
