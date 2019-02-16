@@ -590,25 +590,9 @@ public class ProjectInnovationAction extends BaseAction {
 
 
         // Setup Geographic Scope
-        boolean haveRegions = false;
-        boolean haveCountries = false;
-
         if (innovation.getProjectInnovationGeographicScopes() != null) {
           innovation.setGeographicScopes(new ArrayList<>(innovation.getProjectInnovationGeographicScopes().stream()
             .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
-
-          for (ProjectInnovationGeographicScope PprojectInnovationGeographicScope : innovation.getGeographicScopes()) {
-
-            if (PprojectInnovationGeographicScope.getRepIndGeographicScope().getId() == 2) {
-              haveRegions = true;
-            }
-
-            if (PprojectInnovationGeographicScope.getRepIndGeographicScope().getId() != 1
-              && PprojectInnovationGeographicScope.getRepIndGeographicScope().getId() != 2) {
-              haveCountries = true;
-            }
-
-          }
         }
 
         // Innovation Countries List
