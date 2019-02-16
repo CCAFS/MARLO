@@ -572,9 +572,7 @@ function onSelectElement() {
   if((maxLimit > 0) && (counted >= maxLimit)) {
     $select.val('-1').trigger('change.select2');
     $select.parent().animateCss('shake');
-    var notyOptions = jQuery.extend({}, notyDefaultOptions);
-    notyOptions.text = 'Only ' + maxLimit + ' can be selected';
-    noty(notyOptions);
+    notificationError('Only ' + maxLimit + ' can be selected');
     return;
   }
 
@@ -583,9 +581,7 @@ function onSelectElement() {
   if($repeatedElement.length) {
     $select.val('-1').trigger('change.select2');
     $repeatedElement.parent().animateCss('shake');
-    var notyOptions = jQuery.extend({}, notyDefaultOptions);
-    notyOptions.text = 'It was already selected';
-    noty(notyOptions);
+    notificationError('It was already selected');
     return;
   }
 
@@ -616,6 +612,11 @@ function onSelectElement() {
     ]);
   });
 
+  // Validate limit reached
+  if((counted + 1) == maxLimit) {
+    $select.prop('disabled', true).trigger('change.select2');
+  }
+
   // Update indexes
   $list.find('li.relationElement').each(function(i,element) {
     var indexLevel = $(element).classParam('indexLevel');
@@ -628,6 +629,8 @@ function onClickRemoveElement() {
   var $parent = $(this).parent();
   var $select = $(this).parents(".panel-body").find('select');
   var $list = $('.listType-' + removeElementType);
+  var counted = $list.find('li').length;
+  var maxLimit = $select.classParam('maxLimit');
   var id = $parent.find(".elementRelationID").val();
   var name = $parent.find(".elementName").text();
   $parent.slideUp(100, function() {
@@ -648,6 +651,9 @@ function onClickRemoveElement() {
       console.log("indexLevel", indexLevel);
       $(element).setNameIndexes(indexLevel, i);
     });
+
+    // Enabled select component
+    $select.prop('disabled', false).trigger('change.select2');
   });
 }
 
