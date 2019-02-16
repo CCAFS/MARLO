@@ -119,6 +119,14 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
         InvalidFieldsMessages.EMPTYFIELD);
     }
 
+    // Validate Evidence Tag
+    if (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getEvidenceTag() == null) {
+      action.addMessage(action.getText("Evidence Tag"));
+      action.addMissingField("study.evidenceTag");
+      action.getInvalidFields().put("input-expectedStudy.projectExpectedStudyInfo.evidenceTag.id",
+        InvalidFieldsMessages.EMPTYFIELD);
+    }
+
     // Validate Title
     if (!this.isValidString(projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getTitle())
       && this
