@@ -160,18 +160,18 @@
                     <div class="col-md-6 center">
                         <label for="">[@s.text name="projectLocations.activitiesCSV.download" /]:</label>
                        <div class="form-group">
-                         <a href="${baseUrl}/global/documents/CSA_Evaluation_template.xlsm" download><img src="${baseUrl}/global/images/download-summary.png" height="70" /></a>
+                         <a href="${baseUrl}/global/documents/CSA_Evaluation_template.xlsm" download><img src="${baseUrl}/global/images/download-excel.png" height="70" /></a>
                        </div>
                     </div>
                     
                     [#-- Upload Template --]
-                    <div class="col-md-5" style="position:relative" listname="project.projectInfo.activitiesCSVFile">
+                    <div class="col-md-5 center" style="position:relative" listname="project.projectInfo.activitiesCSVFile">
                       [@customForm.fileUploadAjax 
                         fileDB=(project.projectInfo.activitiesCSVFile)!{}  
                         name="project.projectInfo.activitiesCSVFile.id" 
                         label="projectLocations.activitiesCSV.upload"
                         image=true
-                        imgUrl="download-summary.png"
+                        imgUrl="upload-excel.png"
                         imgClass="csvUpload"
                         dataUrl="${baseUrl}/uploadProjectLocationActivitiesCSV.do"  
                         path="${(action.getPath())!}"

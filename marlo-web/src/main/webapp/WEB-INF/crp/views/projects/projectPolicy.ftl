@@ -127,13 +127,13 @@
     [#-- Evidence (OICR)  --]
     <div class="form-group">
       [@customForm.elementsListComponent name="${customName}.evidences" elementType="projectExpectedStudy" elementList=element.evidences label="policy.evidence" help="policy.evidence.help" helpIcon=false listName="expectedStudyList" keyFieldName="id" displayFieldName="composedName" /]
-      <div class="note">[@s.text name="policy.evidence.note"][@s.param] <a href="[@s.url namespace="/projects" action='${crpSession}/studies'][@s.param name='projectID']${(projectID)!}[/@s.param][/@s.url]">clicking here</a>[/@][/@]</div>
+      <div class="note">[@s.text name="policy.evidence.note"][@s.param] <a href="[@s.url namespace="/projects" action='${crpSession}/studies'][@s.param name='projectID']${(projectID)!}[/@s.param][/@s.url]" target="__BLANK">clicking here</a>[/@][/@]</div>
     </div>
     
     [#-- Innovations  --]
     <div class="form-group">
       [@customForm.elementsListComponent name="${customName}.innovations" elementType="projectInnovation" elementList=element.innovations label="policy.innovations" helpIcon=false listName="innovationList" keyFieldName="id" displayFieldName="composedName" required=false /]
-      <div class="note">[@s.text name="policy.innovations.note"][@s.param] <a href="[@s.url namespace="/projects" action='${crpSession}/innovationsList'][@s.param name='projectID']${(projectID)!}[/@s.param][/@s.url]">clicking here</a>[/@][/@]</div>
+      <div class="note">[@s.text name="policy.innovations.note"][@s.param] <a href="[@s.url namespace="/projects" action='${crpSession}/innovationsList'][@s.param name='projectID']${(projectID)!}[/@s.param][/@s.url]" target="__BLANK">clicking here</a>[/@][/@]</div>
     </div>
 
     <hr />
