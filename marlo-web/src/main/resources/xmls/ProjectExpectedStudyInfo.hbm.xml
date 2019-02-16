@@ -86,6 +86,9 @@
 		<property name="title" type="string">
 			<column name="title" sql-type="TEXT" />
 		</property>
+		<property name="otherStudyType" type="string">
+      <column name="other_study_type" sql-type="TEXT" />
+    </property>
 		<property name="outcomeImpactStatement" type="string">
 			<column name="outcome_impact_statement" sql-type="TEXT" />
 		</property>

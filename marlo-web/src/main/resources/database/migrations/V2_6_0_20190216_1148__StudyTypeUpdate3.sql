@@ -1,0 +1,1 @@
+UPDATE project_expected_study_info set other_study_type = 'Learning' where study_type_id=9;
