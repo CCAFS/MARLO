@@ -97,6 +97,8 @@
           [#local dlurl][@s.url namespace=namespace action='${crpSession}/policy' ][@s.param name='policyID']${(item.id)!}[/@s.param][@s.param name='projectID']${(item.project.id)!(projectID)!}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
           [#-- Is this complete --]
           [#local isThisComplete = false]
+          [#-- Is new --]
+          [#local isNew = (action.isPolicyNew(element.id)) /]
           <tr>
             <td class="" >
               <a href="${dlurl}">${(item.id)!'ID'}</a>
