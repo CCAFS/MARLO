@@ -143,8 +143,13 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
   @Expose
   private Boolean isPublic;
 
+  @Expose
+  public String otherStudyType;
+
+
   public ProjectExpectedStudyInfo() {
   }
+
 
   public ProjectExpectedStudyInfo(Phase phase, ProjectExpectedStudy projectExpectedStudy, String title,
     String outcomeImpactStatement, String topLevelComments, String scopeComments,
@@ -182,11 +187,9 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
     return climateChangeLevel;
   }
 
-
   public String getCommissioningStudy() {
     return commissioningStudy;
   }
-
 
   public String getComunicationsMaterial() {
     return comunicationsMaterial;
@@ -242,9 +245,11 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
     return isPublic;
   }
 
+
   public String getIsSrfTarget() {
     return isSrfTarget;
   }
+
 
   @Override
   public String getLogDeatil() {
@@ -258,7 +263,6 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
     return "";
   }
 
-
   @Override
   public User getModifiedBy() {
     User u = new User();
@@ -270,14 +274,18 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
     return otherCrossCuttingDimensions;
   }
 
+
   public String getOtherCrossCuttingSelection() {
     return otherCrossCuttingSelection;
+  }
+
+  public String getOtherStudyType() {
+    return otherStudyType;
   }
 
   public FileDB getOutcomeFile() {
     return outcomeFile;
   }
-
 
   public String getOutcomeImpactStatement() {
     return outcomeImpactStatement;
@@ -298,10 +306,10 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
     return policyAmount;
   }
 
+
   public ProjectExpectedStudy getProjectExpectedStudy() {
     return projectExpectedStudy;
   }
-
 
   public String getQuantification() {
     return quantification;
@@ -337,6 +345,7 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
     return repIndRegion;
   }
 
+
   public RepIndStageProcess getRepIndStageProcess() {
     return repIndStageProcess;
   }
@@ -344,7 +353,6 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
   public RepIndStageStudy getRepIndStageStudy() {
     return repIndStageStudy;
   }
-
 
   public String getScopeComments() {
     return scopeComments;
@@ -409,10 +417,10 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
     this.climateChangeLevel = climateChangeLevel;
   }
 
+
   public void setCommissioningStudy(String commissioningStudy) {
     this.commissioningStudy = commissioningStudy;
   }
-
 
   public void setComunicationsMaterial(String comunicationsMaterial) {
     this.comunicationsMaterial = comunicationsMaterial;
@@ -422,6 +430,7 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
   public void setContacts(String contacts) {
     this.contacts = contacts;
   }
+
 
   public void setDescribeCapdev(String describeCapdev) {
     this.describeCapdev = describeCapdev;
@@ -459,7 +468,6 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
     this.isPublic = isPublic;
   }
 
-
   public void setIsSrfTarget(String isSrfTarget) {
     this.isSrfTarget = isSrfTarget;
   }
@@ -478,6 +486,11 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
 
   public void setOtherCrossCuttingSelection(String otherCrossCuttingSelection) {
     this.otherCrossCuttingSelection = otherCrossCuttingSelection;
+  }
+
+
+  public void setOtherStudyType(String otherStudyType) {
+    this.otherStudyType = otherStudyType;
   }
 
   public void setOutcomeFile(FileDB outcomeFile) {
@@ -626,8 +639,7 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
     this.setIsPublic(projectExpectedStudyInfoUpdate.getIsPublic());
     this.setClimateChangeLevel(projectExpectedStudyInfoUpdate.getClimateChangeLevel());
     this.setDescribeClimateChange(projectExpectedStudyInfoUpdate.getDescribeClimateChange());
-
-
+    this.setOtherStudyType(projectExpectedStudyInfoUpdate.getOtherStudyType());
   }
 
 }
