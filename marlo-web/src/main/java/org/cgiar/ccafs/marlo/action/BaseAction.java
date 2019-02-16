@@ -5262,7 +5262,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   /**
-   * Get if the Evidence is new
+   * Get if the Policy is new
    * 
    * @param id
    * @return
