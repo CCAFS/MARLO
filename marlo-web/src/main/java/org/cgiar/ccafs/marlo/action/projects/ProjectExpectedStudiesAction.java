@@ -476,14 +476,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
             studyTypeManager.getStudyTypeById(expectedStudy.getProjectExpectedStudyInfo().getStudyType().getId()));
         }
 
-        // Load PolicyInvestimentType
-        if (expectedStudy.getProjectExpectedStudyInfo().getRepIndPolicyInvestimentType() != null
-          && expectedStudy.getProjectExpectedStudyInfo().getRepIndPolicyInvestimentType().getId() != null) {
-          expectedStudy.getProjectExpectedStudyInfo()
-            .setRepIndPolicyInvestimentType(investimentTypeManager.getRepIndPolicyInvestimentTypeById(
-              expectedStudy.getProjectExpectedStudyInfo().getRepIndPolicyInvestimentType().getId()));
-        }
-
         // Load OrganizationType
         if (expectedStudy.getProjectExpectedStudyInfo().getRepIndOrganizationType() != null
           && expectedStudy.getProjectExpectedStudyInfo().getRepIndOrganizationType().getId() != null) {
@@ -693,26 +685,9 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
 
         // Setup Geographic Scope
-        boolean haveRegions = false;
-        boolean haveCountries = false;
-
         if (expectedStudy.getProjectExpectedStudyGeographicScopes() != null) {
           expectedStudy.setGeographicScopes(new ArrayList<>(expectedStudy.getProjectExpectedStudyGeographicScopes()
             .stream().filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
-
-          for (ProjectExpectedStudyGeographicScope projectExpectedStudyGeographicScope : expectedStudy
-            .getGeographicScopes()) {
-
-            if (projectExpectedStudyGeographicScope.getRepIndGeographicScope().getId() == 2) {
-              haveRegions = true;
-            }
-
-            if (projectExpectedStudyGeographicScope.getRepIndGeographicScope().getId() != 1
-              && projectExpectedStudyGeographicScope.getRepIndGeographicScope().getId() != 2) {
-              haveCountries = true;
-            }
-
-          }
         }
 
 
@@ -817,21 +792,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
           for (ProjectExpectedStudyCountry country : expectedStudy.getCountries()) {
             expectedStudy.getCountriesIds().add(country.getLocElement().getIsoAlpha2());
           }
-        }
-      }
-
-      // Setup Files
-      if (expectedStudy.getProjectExpectedStudyInfo().getOutcomeFile() != null) {
-        if (expectedStudy.getProjectExpectedStudyInfo().getOutcomeFile().getId() != null) {
-          expectedStudy.getProjectExpectedStudyInfo().setOutcomeFile(
-            fileDBManager.getFileDBById(expectedStudy.getProjectExpectedStudyInfo().getOutcomeFile().getId()));
-        }
-      }
-
-      if (expectedStudy.getProjectExpectedStudyInfo().getReferencesFile() != null) {
-        if (expectedStudy.getProjectExpectedStudyInfo().getReferencesFile().getId() != null) {
-          expectedStudy.getProjectExpectedStudyInfo().setReferencesFile(
-            fileDBManager.getFileDBById(expectedStudy.getProjectExpectedStudyInfo().getReferencesFile().getId()));
         }
       }
 

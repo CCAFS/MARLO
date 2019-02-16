@@ -20,6 +20,7 @@ import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationGeographicScope;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
@@ -189,59 +190,45 @@ public class ProjectInnovationValidator extends BaseValidator {
 
 
     // Validate Geographic Scope
-    if (projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getRepIndGeographicScope() != null) {
-      if (projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getRepIndGeographicScope()
-        .getId() == null
-        || projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getRepIndGeographicScope()
-          .getId() == -1) {
-        // action.addMessage(action.getText("Geographic Scope"));
-        // action.addMissingField("projectInnovations.geographicScope");
-        // action.getInvalidFields().put("input-innovation.projectInnovationInfo.repIndGeographicScope.id",
-        // InvalidFieldsMessages.EMPTYFIELD);
-      } else {
-        // Validate if Scope is Multi-national, National or Sub-National and review if the innovation has Countries
-        if (projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getRepIndGeographicScope().getId()
-          .equals(action.getReportingIndGeographicScopeMultiNational())
-          || projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getRepIndGeographicScope().getId()
-            .equals(action.getReportingIndGeographicScopeNational())
-          || projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getRepIndGeographicScope().getId()
-            .equals(action.getReportingIndGeographicScopeSubNational())) {
-          // Validate Countries
-          if (projectInnovation.getCountriesIds() == null || projectInnovation.getCountriesIds().isEmpty()) {
-            action.addMessage(action.getText("Countries"));
-            action.addMissingField("projectInnovations.countries");
-            action.getInvalidFields().put("list-projectInnovations.countries",
-              action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Countries"}));
-          }
-        }
+    boolean haveRegions = false;
+    boolean haveCountries = false;
 
-        // Validate if Scope is Regional and review if The innovation has a region
-        if (projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getRepIndGeographicScope().getId()
-          .equals(action.getReportingIndGeographicScopeRegional())) {
-          // Validate Region
-          if (projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getRepIndRegion() != null) {
-            if (projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getRepIndRegion()
-              .getId() == null
-              || projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getRepIndRegion()
-                .getId() == -1) {
-              action.addMessage(action.getText("Region"));
-              action.addMissingField("projectInnovations.region");
-              action.getInvalidFields().put("input-innovation.projectInnovationInfo.repIndRegion.id",
-                InvalidFieldsMessages.EMPTYFIELD);
-            }
-          } else {
-            action.addMessage(action.getText("Region"));
-            action.addMissingField("projectInnovations.region");
-            action.getInvalidFields().put("input-innovation.projectInnovationInfo.repIndRegion.id",
-              InvalidFieldsMessages.EMPTYFIELD);
-          }
+    if (projectInnovation.getGeographicScopes() == null || projectInnovation.getGeographicScopes().isEmpty()) {
+      action.addMessage(action.getText("geographicScopes"));
+      action.addMissingField("innovation.geographicScope");
+      action.getInvalidFields().put("list-innovation.geographicScopes",
+        action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"geographicScopes"}));
+    } else {
+      for (ProjectInnovationGeographicScope innovationGeographicScope : projectInnovation.getGeographicScopes()) {
+        if (innovationGeographicScope.getRepIndGeographicScope().getId() == 2) {
+          haveRegions = true;
+        }
+        if (innovationGeographicScope.getRepIndGeographicScope().getId() != 1
+          && innovationGeographicScope.getRepIndGeographicScope().getId() != 2) {
+          haveCountries = true;
         }
       }
-    } else {
-      // action.addMessage(action.getText("Geographic Scope"));
-      // action.addMissingField("projectInnovations.geographicScope");
-      // action.getInvalidFields().put("input-innovation.projectInnovationInfo.repIndGeographicScope.id",
-      // InvalidFieldsMessages.EMPTYFIELD);
+    }
+
+
+    if (haveRegions) {
+      // Validate Regions
+      if (projectInnovation.getRegions() == null || projectInnovation.getRegions().isEmpty()) {
+        action.addMessage(action.getText("regions"));
+        action.addMissingField("innovation.regions");
+        action.getInvalidFields().put("list-innovation.regions",
+          action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"regions"}));
+      }
+    }
+
+    if (haveCountries) {
+      // Validate Countries
+      if (projectInnovation.getCountriesIds() == null || projectInnovation.getCountriesIds().isEmpty()) {
+        action.addMessage(action.getText("countries"));
+        action.addMissingField("innovation.countries");
+        action.getInvalidFields().put("input-innovation.countriesIds",
+          action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"countries"}));
+      }
     }
 
 
