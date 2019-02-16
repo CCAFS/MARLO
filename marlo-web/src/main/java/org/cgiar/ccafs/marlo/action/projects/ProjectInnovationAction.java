@@ -753,8 +753,8 @@ public class ProjectInnovationAction extends BaseAction {
       }
 
       // HTTP Post info Values
-      innovation.getProjectInnovationInfo().setGenderFocusLevel(null);
-      innovation.getProjectInnovationInfo().setYouthFocusLevel(null);
+      // innovation.getProjectInnovationInfo().setGenderFocusLevel(null);
+      // innovation.getProjectInnovationInfo().setYouthFocusLevel(null);
       innovation.getProjectInnovationInfo().setProjectExpectedStudy(null);
       innovation.getProjectInnovationInfo().setRepIndPhaseResearchPartnership(null);
       innovation.getProjectInnovationInfo().setRepIndStageInnovation(null);
