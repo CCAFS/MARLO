@@ -33,6 +33,9 @@ public class DeliverableParticipant extends MarloAuditableEntity implements java
   private Boolean dontKnowFemale;
   @Expose
   private RepIndTypeParticipant repIndTypeParticipant;
+  @Expose
+  private RepIndTrainingTerm repIndTrainingTerm;
+
 
   public DeliverableParticipant() {
   }
@@ -65,19 +68,19 @@ public class DeliverableParticipant extends MarloAuditableEntity implements java
     return academicDegree;
   }
 
+
   public Deliverable getDeliverable() {
     return deliverable;
   }
+
 
   public Boolean getDontKnowFemale() {
     return dontKnowFemale;
   }
 
-
   public Boolean getEstimateFemales() {
     return estimateFemales;
   }
-
 
   public Boolean getEstimateParticipants() {
     return estimateParticipants;
@@ -106,6 +109,7 @@ public class DeliverableParticipant extends MarloAuditableEntity implements java
     return sb.toString();
   }
 
+
   public Double getParticipants() {
     return participants;
   }
@@ -113,6 +117,10 @@ public class DeliverableParticipant extends MarloAuditableEntity implements java
 
   public Phase getPhase() {
     return phase;
+  }
+
+  public RepIndTrainingTerm getRepIndTrainingTerm() {
+    return repIndTrainingTerm;
   }
 
 
@@ -139,6 +147,7 @@ public class DeliverableParticipant extends MarloAuditableEntity implements java
     this.academicDegree = academicDegree;
   }
 
+
   public void setDeliverable(Deliverable deliverable) {
     this.deliverable = deliverable;
   }
@@ -146,7 +155,6 @@ public class DeliverableParticipant extends MarloAuditableEntity implements java
   public void setDontKnowFemale(Boolean dontKnowFemale) {
     this.dontKnowFemale = dontKnowFemale;
   }
-
 
   public void setEstimateFemales(Boolean estimateFemales) {
     this.estimateFemales = estimateFemales;
@@ -156,6 +164,7 @@ public class DeliverableParticipant extends MarloAuditableEntity implements java
   public void setEstimateParticipants(Boolean estimateParticipants) {
     this.estimateParticipants = estimateParticipants;
   }
+
 
   public void setEventActivityName(String eventActivityName) {
     this.eventActivityName = eventActivityName;
@@ -173,9 +182,13 @@ public class DeliverableParticipant extends MarloAuditableEntity implements java
     this.participants = participants;
   }
 
-
   public void setPhase(Phase phase) {
     this.phase = phase;
+  }
+
+
+  public void setRepIndTrainingTerm(RepIndTrainingTerm repIndTrainingTerm) {
+    this.repIndTrainingTerm = repIndTrainingTerm;
   }
 
   public void setRepIndTypeActivity(RepIndTypeActivity repIndTypeActivity) {

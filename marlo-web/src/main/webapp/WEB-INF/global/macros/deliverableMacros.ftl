@@ -400,13 +400,8 @@
     [#local isFormal = ([1, 3, 2, 4]?seq_contains(deliverable.deliverableParticipant.repIndTypeActivity.id))!false /]
     <div class="form-group block-periodTime" style="display:${isFormal?string('block','none')}">
       <label for="">[@s.text name="involveParticipants.trainingPeriod" /]:[@customForm.req required=editable /] </label><br />
-      [#local trainingPeriods =  [
-        {"id":"1", "name":"N/A - Not applicable"},
-        {"id":"2", "name":"Short-term"},
-        {"id":"3", "name":"Long-term"}
-      ] /]
-      [#list trainingPeriods as item]
-        [@customForm.radioFlat id="trainingPeriod-${item.id}"  name="${customName}.trainingPeriod" label="${item.name}"  value="${item.id}"  checked=(deliverable.deliverableParticipant.trainingPeriod.id == item.id)!false cssClass="" cssClassLabel="font-normal" editable=editable /]
+      [#list repIndTrainingTerms as item]
+        [@customForm.radioFlat id="trainingPeriod-${item.id}"  name="${customName}.repIndTrainingTerm.id" label="${item.name}"  value="${item.id}"  checked=(deliverable.deliverableParticipant.repIndTrainingTerm.id == item.id)!false cssClass="" cssClassLabel="font-normal" editable=editable /]
       [/#list]
     </div> 
     

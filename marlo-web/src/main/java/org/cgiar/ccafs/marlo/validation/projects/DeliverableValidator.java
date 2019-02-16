@@ -21,6 +21,7 @@ import org.cgiar.ccafs.marlo.data.manager.CgiarCrossCuttingMarkerManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerPersonManager;
+import org.cgiar.ccafs.marlo.data.manager.RepIndTypeActivityManager;
 import org.cgiar.ccafs.marlo.data.model.CgiarCrossCuttingMarker;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableCrossCuttingMarker;
@@ -38,6 +39,7 @@ import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
+import org.cgiar.ccafs.marlo.data.model.RepIndTypeActivity;
 import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
 
@@ -67,15 +69,18 @@ public class DeliverableValidator extends BaseValidator {
   private ProjectManager projectManager;
   private ProjectPartnerPersonManager projectPartnerPersonManager;
   private CgiarCrossCuttingMarkerManager cgiarCrossCuttingMarkerManager;
+  private RepIndTypeActivityManager repIndTypeActivityManager;
 
   @Inject
   public DeliverableValidator(GlobalUnitManager crpManager, ProjectManager projectManager,
     ProjectPartnerPersonManager projectPartnerPersonManager,
-    CgiarCrossCuttingMarkerManager cgiarCrossCuttingMarkerManager) {
+    CgiarCrossCuttingMarkerManager cgiarCrossCuttingMarkerManager,
+    RepIndTypeActivityManager repIndTypeActivityManager) {
     this.crpManager = crpManager;
     this.projectManager = projectManager;
     this.projectPartnerPersonManager = projectPartnerPersonManager;
     this.cgiarCrossCuttingMarkerManager = cgiarCrossCuttingMarkerManager;
+    this.repIndTypeActivityManager = repIndTypeActivityManager;
   }
 
   private Path getAutoSaveFilePath(Deliverable deliverable, long crpID, BaseAction action) {
@@ -424,11 +429,21 @@ public class DeliverableValidator extends BaseValidator {
         action.getInvalidFields().put("input-deliverable.deliverableParticipant.repIndTypeActivity.id",
           InvalidFieldsMessages.EMPTYFIELD);
       } else {
-        if (deliverableParticipant.getRepIndTypeActivity().getId()
-          .equals(action.getReportingIndTypeActivityAcademicDegree())) {
+        RepIndTypeActivity repIndTypeActivity =
+          repIndTypeActivityManager.getRepIndTypeActivityById(deliverableParticipant.getRepIndTypeActivity().getId());
+
+        if (repIndTypeActivity.getId().equals(action.getReportingIndTypeActivityAcademicDegree())) {
           if (!this.isValidString(deliverableParticipant.getAcademicDegree())) {
             action.addMessage(action.getText("involveParticipants.academicDegree"));
             action.getInvalidFields().put("input-deliverable.deliverableParticipant.academicDegree",
+              InvalidFieldsMessages.EMPTYFIELD);
+          }
+        }
+        if (repIndTypeActivity.getIsFormal()) {
+          if (deliverableParticipant.getRepIndTrainingTerm() == null
+            || deliverableParticipant.getRepIndTrainingTerm().getId() == -1) {
+            action.addMessage(action.getText("involveParticipants.trainingPeriod"));
+            action.getInvalidFields().put("input-deliverable.deliverableParticipant.repIndTrainingTerm.id",
               InvalidFieldsMessages.EMPTYFIELD);
           }
         }
