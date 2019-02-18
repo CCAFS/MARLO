@@ -146,8 +146,8 @@
                     <div class="col-md-9">
                       <label for="">[@s.text name="projectLocations.activitiesCSV.instructions" /]:</label>
                     </div>
-                    <div class="col-md-3 right" style="display:none">
-                      <a href="" target="__BLANK">
+                    <div class="col-md-3 right">
+                      <a href="${baseUrl}/global/documents/Guidelines_CSA_evlautions_template _Reporting_2018.pdf" target="__BLANK">
                         <img src="${baseUrl}/global/images/pdf.png" height="20" />
                         [[@s.text name="projectLocations.activitiesCSV.guideline" /]]
                       </a>
