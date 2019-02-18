@@ -57,6 +57,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -337,7 +338,7 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
       // Store Institution
       String ppaRespondible = "";
       Set<String> ppaResponsibleList = new HashSet<>();
-      Set<Institution> institutionsResponsibleList = new HashSet<>();
+      LinkedHashSet<Institution> institutionsResponsibleList = new LinkedHashSet<>();
 
       // Get partner responsible
 
@@ -495,7 +496,7 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
       if (individual.isEmpty()) {
         individual = null;
       }
-      Set<Institution> managingResponsibleList = new HashSet<>();
+      LinkedHashSet<Institution> managingResponsibleList = new LinkedHashSet<>();
       for (String ppaOher : ppaResponsibleList) {
         if (ppaRespondible.isEmpty()) {
           ppaRespondible += "<span style='font-family: Segoe UI;font-size: 10'>" + ppaOher + "</span>";
@@ -544,7 +545,6 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
         ppaFilter = new CrpPpaPartner();
       }
 
-
       for (Institution managingInstitution : managingResponsibleList) {
         if (activePPAFilter) {
           if (managingInstitution.getId().equals(ppaFilter.getInstitution().getId())) {
@@ -558,10 +558,29 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
         } else {
           institution = managingInstitution.getName();
         }
+        String color = ";color:#000000";
+        if (responsible != null && responsible.getProjectPartner() != null) {
+          if (responsible.getProjectPartner().getInstitution().equals(managingInstitution)) {
+            color = ";color:#ff0000";
+          } else {
+            List<ProjectPartnerContribution> projectPartnerContributions = responsible.getProjectPartner()
+              .getProjectPartnerContributions().stream().filter(pc -> pc.isActive()).collect(Collectors.toList());
+            if (projectPartnerContributions != null && !projectPartnerContributions.isEmpty()) {
+              for (ProjectPartnerContribution projectPartnerContribution : projectPartnerContributions) {
+                if (projectPartnerContribution.getProjectPartner().equals(responsible.getProjectPartner())) {
+                  color = ";color:#ff0000";
+                }
+              }
+            }
+          }
+        }
+
         if (managingResponsible.isEmpty()) {
-          managingResponsible += "<span style='font-family: Segoe UI;font-size: 10'>" + institution + "</span>";
+          managingResponsible +=
+            "<span style='font-family: Segoe UI;font-size: 10" + color + "'>" + institution + "</span>";
         } else {
-          managingResponsible += ", <span style='font-family: Segoe UI;font-size: 10'>" + institution + "</span>";
+          managingResponsible +=
+            ", <span style='font-family: Segoe UI;font-size: 10" + color + "'>" + institution + "</span>";
         }
       }
       if (managingResponsible.isEmpty()) {
