@@ -103,8 +103,8 @@ public class SendEmails {
     action.getSession().put(APConstants.CRP_PL_ROLE, "91");
     action.getSession().put(APConstants.CRP_LESSONS_ACTIVE, true);
     action.setPhaseID(new Long(7));
-    List<Phase> phases = globalUnitManager.getGlobalUnitById(21L).getPhases().stream()
-      .filter(c -> c.isActive()).collect(Collectors.toList());
+    List<Phase> phases = globalUnitManager.getGlobalUnitById(21L).getPhases().stream().filter(c -> c.isActive())
+      .collect(Collectors.toList());
     phases.sort((p1, p2) -> p1.getStartDate().compareTo(p2.getStartDate()));
     Map<Long, Phase> allPhasesMap = new HashMap<>();
     for (Phase phase : phases) {
@@ -320,12 +320,12 @@ public class SendEmails {
         users.add(user);
         // Send UserManual.pdf
         String contentType = "application/pdf";
-        String fileName = "Introduction_To_MARLO_v2.4.pdf";
+        String fileName = APConstants.MARLO_PDF_MANUAL_NAME;
         byte[] buffer = null;
         InputStream inputStream = null;
 
         try {
-          inputStream = action.getClass().getResourceAsStream("/manual/Introduction_To_MARLO_v2.4.pdf");
+          inputStream = action.getClass().getResourceAsStream("/manual/" + APConstants.MARLO_PDF_MANUAL_NAME);
           buffer = readFully(inputStream);
         } catch (FileNotFoundException e) {
           // TODO Auto-generated catch block

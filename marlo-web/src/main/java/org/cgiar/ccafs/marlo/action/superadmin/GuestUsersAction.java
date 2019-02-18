@@ -277,13 +277,12 @@ public class GuestUsersAction extends BaseAction {
 
     // Send pdf
     String contentType = "application/pdf";
-    String fileName = "Introduction_To_MARLO_v2.4.pdf";
+    String fileName = APConstants.MARLO_PDF_MANUAL_NAME;
     byte[] buffer = null;
     InputStream inputStream = null;
 
     try {
-      inputStream = this.getClass().getResourceAsStream("/manual/Introduction_To_MARLO_v2.4.pdf");
-      buffer = readFully(inputStream);
+      inputStream = this.getClass().getResourceAsStream("/manual/" + APConstants.MARLO_PDF_MANUAL_NAME);
     } catch (FileNotFoundException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();

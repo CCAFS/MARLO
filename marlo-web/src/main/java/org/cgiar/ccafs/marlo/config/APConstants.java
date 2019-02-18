@@ -676,6 +676,9 @@ public final class APConstants {
   public static final String CRP_CD_ROLE_ACRONYM = "CD";
   public static final String CRP_CAP_DEV_ACTIVE = "crp_capdev_active";
 
+  // Marlo PDF Manual Name
+  public static final String MARLO_PDF_MANUAL_NAME = "Introduction_To_MARLO_v2.5.pdf";
+
   public static String getFilterBy() {
     return FILTER_BY;
   }
