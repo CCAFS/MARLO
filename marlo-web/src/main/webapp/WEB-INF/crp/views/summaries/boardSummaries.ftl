@@ -96,7 +96,7 @@
       "cycles": [ "Planning", "Reporting" ]
     },
     { "active": action.hasSpecificities('crp_lp6_active'),
-      "available": !config.production,
+      "available": true,
       "title": "summaries.board.report.contributionToLP6", 
       "description": "",
       "namespace": "/projects",
