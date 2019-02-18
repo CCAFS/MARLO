@@ -443,7 +443,7 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
         }
 
         // Validate Quantification
-        if (projectExpectedStudy.getQuantifications() != null || !projectExpectedStudy.getQuantifications().isEmpty()) {
+        if (projectExpectedStudy.getQuantifications() != null) {
           for (int i = 0; i < projectExpectedStudy.getQuantifications().size(); i++) {
             this.validateQuantifications(action, projectExpectedStudy.getQuantifications().get(i), i);
           }

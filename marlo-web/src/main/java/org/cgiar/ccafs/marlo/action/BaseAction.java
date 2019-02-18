@@ -135,10 +135,12 @@ import org.cgiar.ccafs.marlo.data.model.ProjectBudgetsFlagship;
 import org.cgiar.ccafs.marlo.data.model.ProjectClusterActivity;
 import org.cgiar.ccafs.marlo.data.model.ProjectComponentLesson;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
 import org.cgiar.ccafs.marlo.data.model.ProjectHighlight;
 import org.cgiar.ccafs.marlo.data.model.ProjectInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectLp6Contribution;
 import org.cgiar.ccafs.marlo.data.model.ProjectLp6ContributionDeliverable;
 import org.cgiar.ccafs.marlo.data.model.ProjectMilestone;
@@ -146,6 +148,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicy;
+import org.cgiar.ccafs.marlo.data.model.ProjectPolicyInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionsEnum;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
@@ -5031,14 +5034,18 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
     ProjectExpectedStudy studyDB = projectExpectedStudyManager.getProjectExpectedStudyById(evidenceId);
 
-    studyDB.setProjectExpectedStudyInfo(null);
-    if (studyDB.getProjectExpectedStudyInfo(previousPhase) != null) {
-      studyDB.getProjectExpectedStudyInfo(currentPhase);
+    try {
+      List<ProjectExpectedStudyInfo> infos = new ArrayList<>(studyDB.getProjectExpectedStudyInfos().stream()
+        .filter(i -> i.getPhase().getId().equals(previousPhase.getId())).collect(Collectors.toList()));
+      if (infos != null && !infos.isEmpty()) {
+        return false;
+      } else {
+        return true;
+      }
+    } catch (Exception e) {
       return false;
-    } else {
-      studyDB.getProjectExpectedStudyInfo(currentPhase);
-      return true;
     }
+
 
   }
 
@@ -5204,13 +5211,17 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     Phase previousPhase = phaseManager.findPreviousPhase(currentPhase.getId());
 
     ProjectInnovation innovationNew = projectInnovationManager.getProjectInnovationById(innovationId);
-    innovationNew.setProjectInnovationInfo(null);
-    if (innovationNew.getProjectInnovationInfo(previousPhase) != null) {
-      innovationNew.getProjectInnovationInfo(currentPhase);
+
+    try {
+      List<ProjectInnovationInfo> innos = new ArrayList<>(innovationNew.getProjectInnovationInfos().stream()
+        .filter(i -> i.getPhase().getId().equals(previousPhase.getId())).collect(Collectors.toList()));
+      if (innos != null && !innos.isEmpty()) {
+        return false;
+      } else {
+        return true;
+      }
+    } catch (Exception e) {
       return false;
-    } else {
-      innovationNew.getProjectInnovationInfo(currentPhase);
-      return true;
     }
 
   }
@@ -5278,19 +5289,18 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
     ProjectPolicy policyD = projectPolicyManager.getProjectPolicyById(policyId);
 
-
-    if (previousPhase != null) {
-      policyD.setProjectPolicyInfo(null);
-      if (policyD.getProjectPolicyInfo(previousPhase) != null) {
-        policyD.getProjectPolicyInfo(currentPhase);
+    try {
+      List<ProjectPolicyInfo> poli = new ArrayList<>(policyD.getProjectPolicyInfos().stream()
+        .filter(i -> i.getPhase().getId().equals(previousPhase.getId())).collect(Collectors.toList()));
+      if (poli != null && !poli.isEmpty()) {
         return false;
       } else {
-        policyD.getProjectPolicyInfo(currentPhase);
         return true;
       }
-    } else {
+    } catch (Exception e) {
       return false;
     }
+
   }
 
 
