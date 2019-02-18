@@ -108,7 +108,7 @@
       </div>
       [#-- Level of Maturity of the Process: (Before Stage in Process) --]
       <div class="col-md-6">
-        [@customForm.select name="${customName}.projectPolicyInfo.repIndStageProcess.id" className="setSelect2" i18nkey="policy.maturityLevel" help="policy.maturityLevel.help" help="policy.maturityLevel.help" listName="stageProcesses" keyFieldName="id"  displayFieldName="description" required=true editable=editable/]
+        [@customForm.select name="${customName}.projectPolicyInfo.repIndStageProcess.id" className="setSelect2 maturityLevel" i18nkey="policy.maturityLevel" help="policy.maturityLevel.help" help="policy.maturityLevel.help" listName="stageProcesses" keyFieldName="id"  displayFieldName="description" required=true editable=editable/]
       </div>
     </div>
     
@@ -127,8 +127,9 @@
     </div>
     
     [#-- Evidence (OICR)  --]
-    <div class="form-group">
-      [@customForm.elementsListComponent name="${customName}.evidences" elementType="projectExpectedStudy" elementList=element.evidences label="policy.evidence" help="policy.evidence.help" helpIcon=false listName="expectedStudyList" keyFieldName="id" displayFieldName="composedName" /]
+    [#local isEvidenceRequired = ([4, 5]?seq_contains(element.projectPolicyInfo.repIndStageProcess.id))!false /]
+    <div class="form-group evidences-block">
+      [@customForm.elementsListComponent name="${customName}.evidences" elementType="projectExpectedStudy" elementList=element.evidences label="policy.evidence" help="policy.evidence.help" helpIcon=false listName="expectedStudyList" keyFieldName="id" displayFieldName="composedName" required=isEvidenceRequired /]
       <div class="note">[@s.text name="policy.evidence.note"][@s.param] <a href="[@s.url namespace="/projects" action='${crpSession}/studies'][@s.param name='projectID']${(projectID)!}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" target="__BLANK">clicking here</a>[/@][/@]</div>
     </div>
     
