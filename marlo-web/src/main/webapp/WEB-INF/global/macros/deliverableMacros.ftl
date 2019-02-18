@@ -673,6 +673,7 @@
           </div>
           [#if allowFlagships]
             <div class="col-md-7">
+              ${(crpSession)!'CRP'}
               [@customForm.select name="" label=""  i18nkey="project.deliverable.dissemination.selectFlagships" paramText="${(crpSession)!'CRP'}" listName=flagshipslistName keyFieldName="id"  displayFieldName="composedName" className="flaghsipSelect" editable=editable/]
             </div>
           [/#if]
