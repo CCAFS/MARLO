@@ -57,6 +57,18 @@ function attachEvents() {
     }
   });
 
+  $('select.maturityLevel').on('change', function() {
+    var id = this.value;
+    if((id == 4) || (id == 5)) {
+      $('.evidences-block .requiredTag').slideDown();
+    } else {
+      $('.evidences-block .requiredTag').slideUp();
+    }
+  });
+
+  //
+  // evidences-block
+
 }
 
 function addSelect2() {
