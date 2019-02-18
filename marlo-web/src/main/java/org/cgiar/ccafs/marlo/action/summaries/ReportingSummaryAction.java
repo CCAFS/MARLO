@@ -1290,14 +1290,15 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           this.fillSubreport((SubReport) hm.get("leverages"), "leverages", args);
         }
 
-        // Project Policy
-        args.clear();
-        this.fillSubreport((SubReport) hm.get("project_policy"), "project_policy", args);
+        if (this.getSelectedCycle().equals("Reporting")) {
+          // Project Policy
+          args.clear();
+          this.fillSubreport((SubReport) hm.get("project_policy"), "project_policy", args);
 
-        // Lp6 contribution
-        args.clear();
-        this.fillSubreport((SubReport) hm.get("project_contribution"), "project_contribution", args);
-
+          // Lp6 contribution
+          args.clear();
+          this.fillSubreport((SubReport) hm.get("project_contribution"), "project_contribution", args);
+        }
 
       }
       PdfReportUtil.createPDF(masterReport, os);
