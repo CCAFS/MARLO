@@ -158,8 +158,8 @@ public class ProjectPolicyValidator extends BaseValidator {
       } else {
         if (projectPolicy.getProjectPolicyInfo(baseAction.getActualPhase()).getRepIndStageProcess().getId() != 1) {
           // Validate Evidences
-          if (projectPolicy.getOwners() == null || projectPolicy.getOwners().isEmpty()) {
-            action.addMessage(action.getText("expectedStudyList"));
+          if (projectPolicy.getEvidences() == null || projectPolicy.getEvidences().isEmpty()) {
+            action.addMessage(action.getText("Evidences List"));
             action.addMissingField("policy.evidence");
             action.getInvalidFields().put("list-policy.evidences",
               action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"expectedStudyList"}));
