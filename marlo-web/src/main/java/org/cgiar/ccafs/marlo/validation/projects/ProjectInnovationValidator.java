@@ -251,10 +251,10 @@ public class ProjectInnovationValidator extends BaseValidator {
     }
 
     // Validate Description Stage
-    if (!this
+    if (!(this
       .isValidString(projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getDescriptionStage())
       && this
-        .wordCount(projectInnovation.getProjectInnovationInfo(action.getActualPhase()).getDescriptionStage()) <= 50) {
+        .wordCount(projectInnovation.getProjectInnovationInfo(action.getActualPhase()).getDescriptionStage()) <= 50)) {
       action.addMessage(action.getText("Description Stage"));
       action.addMissingField("projectInnovations.stageDescription");
       action.getInvalidFields().put("input-innovation.projectInnovationInfo.descriptionStage",
