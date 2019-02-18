@@ -37,6 +37,7 @@ import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -285,15 +286,15 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
 
   private TypedTableModel getProjectInnovationTableModel() {
     TypedTableModel model = new TypedTableModel(
-      new String[] {"id", "isRegional", "isNational", "isStage4", "title", "narrative", "phaseResearch",
-        "stageInnovation", "innovationType", "contributionOfCrp", "degreeInnovation", "geographicScope", "region",
-        "countries", "organizations", "projectExpectedStudy", "descriptionStage", "leadOrganization",
-        "contributingOrganization", "adaptativeResearch", "evidenceLink", "deliverables", "crps", "genderFocusLevel",
-        "genderExplaniation", "youthFocusLevel", "youthExplaniation", "project"},
+      new String[] {"id", "isRegional", "isNational", "isStage4", "title", "narrative", "stageInnovation",
+        "innovationType", "contributionOfCrp", "degreeInnovation", "geographicScope", "region", "countries",
+        "organizations", "projectExpectedStudy", "descriptionStage", "leadOrganization", "contributingOrganization",
+        "adaptativeResearch", "evidenceLink", "deliverables", "crps", "genderFocusLevel", "genderExplaniation",
+        "youthFocusLevel", "youthExplaniation", "project"},
       new Class[] {Long.class, Boolean.class, Boolean.class, Boolean.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        String.class, String.class, String.class, String.class, String.class},
+        String.class, String.class, String.class, String.class},
       0);
     Long id = null;
     String title = null, narrative = null, phaseResearch = null, stageInnovation = null, innovationType = null,
@@ -397,27 +398,25 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
         leadOrganization = projectInnovationInfo.getLeadOrganization().getComposedName();
       }
     }
-    // Contributing Organizations
-    List<ProjectInnovationContributingOrganization> projectInnovationContributingOrganizationList =
-      projectInnovationContributingOrganizationManager.findAll();
 
-    if (projectInnovationContributingOrganizationList != null
-      && !projectInnovationContributingOrganizationList.isEmpty()) {
-
-      projectInnovationContributingOrganizationList =
-        projectInnovationContributingOrganizationList.stream().filter(p -> p.getPhase().equals(this.getActualPhase())
-          && p.getProjectInnovation() == projectInnovationInfo.getProjectInnovation()).collect(Collectors.toList());
-      if (projectInnovationContributingOrganizationList != null
-        && !projectInnovationContributingOrganizationList.isEmpty()) {
-
-        for (ProjectInnovationContributingOrganization contributingOrganizationItem : projectInnovationContributingOrganizationList) {
-          contributingOrganization += contributingOrganizationItem.getComposedName() + ", ";
+    // Contributing Organization
+    List<ProjectInnovationContributingOrganization> contributingOrganizationsList =
+      new ArrayList<ProjectInnovationContributingOrganization>();
+    contributingOrganizationsList = projectInnovationContributingOrganizationManager.findAll();
+    if (contributingOrganizationsList != null && contributingOrganizationsList.size() > 0) {
+      contributingOrganizationsList.stream()
+        .filter(p -> p.getProjectInnovation().getId() == projectInnovationInfo.getProjectInnovation().getId()
+          && p.getPhase().getId() == this.getSelectedPhase().getId());
+    }
+    if (contributingOrganizationsList != null && !contributingOrganizationsList.isEmpty()) {
+      Set<String> contributingSet = new HashSet<>();
+      for (ProjectInnovationContributingOrganization contributingOrganizationItem : contributingOrganizationsList) {
+        if (contributingOrganizationItem.getInstitution() != null) {
+          contributingSet
+            .add("<br>&nbsp;&nbsp;&nbsp;&nbsp; ● " + contributingOrganizationItem.getInstitution().getComposedName());
         }
-        if (contributingOrganization.contains("null")) {
-          contributingOrganization = contributingOrganization.replace("null", "");
-        }
-        contributingOrganization = contributingOrganization.substring(0, contributingOrganization.length() - 2);
       }
+      contributingOrganization = String.join("", contributingSet);
     }
 
     // Adaptative research
@@ -443,6 +442,7 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
       }
       deliverables = String.join("", deliverablesSet);
     }
+
     // Contributions CRPS/Platforms
     List<ProjectInnovationCrp> projectInnovationCrps =
       projectInnovationInfo.getProjectInnovation().getProjectInnovationCrps().stream()
@@ -479,11 +479,10 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
       project = projectInnovationInfo.getProjectInnovation().getProject().getComposedName();
     }
 
-    model.addRow(new Object[] {id, isRegional, isNational, isStage4, title, narrative, phaseResearch, stageInnovation,
-      innovationType, contributionOfCrp, degreeInnovation, geographicScope, region, countries, organizations,
-      projectExpectedStudy, descriptionStage, leadOrganization, contributingOrganization, adaptativeResearch,
-      evidenceLink, deliverables, crps, genderFocusLevel, genderExplaniation, youthFocusLevel, youthExplaniation,
-      project});
+    model.addRow(new Object[] {id, isRegional, isNational, isStage4, title, narrative, stageInnovation, innovationType,
+      contributionOfCrp, degreeInnovation, geographicScope, region, countries, organizations, projectExpectedStudy,
+      descriptionStage, leadOrganization, contributingOrganization, adaptativeResearch, evidenceLink, deliverables,
+      crps, genderFocusLevel, genderExplaniation, youthFocusLevel, youthExplaniation, project});
     return model;
   }
 
