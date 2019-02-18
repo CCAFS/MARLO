@@ -443,15 +443,10 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
         }
 
         // Validate Quantification
-        if (projectExpectedStudy.getQuantifications() == null || projectExpectedStudy.getQuantifications().isEmpty()) {
-          action.addMessage(action.getText("quantifications"));
-          action.getInvalidFields().put("list-expectedStudy.quantifications",
-            action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"quantifications"}));
-        } else {
+        if (projectExpectedStudy.getQuantifications() != null || !projectExpectedStudy.getQuantifications().isEmpty()) {
           for (int i = 0; i < projectExpectedStudy.getQuantifications().size(); i++) {
             this.validateQuantifications(action, projectExpectedStudy.getQuantifications().get(i), i);
           }
-
         }
 
       } else {
