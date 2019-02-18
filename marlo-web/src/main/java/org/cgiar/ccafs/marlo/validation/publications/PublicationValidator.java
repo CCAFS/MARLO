@@ -19,6 +19,7 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CgiarCrossCuttingMarkerManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
+import org.cgiar.ccafs.marlo.data.manager.RepIndTypeActivityManager;
 import org.cgiar.ccafs.marlo.data.model.CgiarCrossCuttingMarker;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableCrossCuttingMarker;
@@ -32,6 +33,7 @@ import org.cgiar.ccafs.marlo.data.model.DeliverablePublicationMetadata;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.LicensesTypeEnum;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
+import org.cgiar.ccafs.marlo.data.model.RepIndTypeActivity;
 import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
 
@@ -54,13 +56,16 @@ public class PublicationValidator extends BaseValidator {
   // GlobalUnit Manager
   private GlobalUnitManager crpManager;
   private CgiarCrossCuttingMarkerManager cgiarCrossCuttingMarkerManager;
+  private RepIndTypeActivityManager repIndTypeActivityManager;
 
   @Inject
   public PublicationValidator(GlobalUnitManager crpManager,
-    CgiarCrossCuttingMarkerManager cgiarCrossCuttingMarkerManager) {
+    CgiarCrossCuttingMarkerManager cgiarCrossCuttingMarkerManager,
+    RepIndTypeActivityManager repIndTypeActivityManager) {
     super();
     this.crpManager = crpManager;
     this.cgiarCrossCuttingMarkerManager = cgiarCrossCuttingMarkerManager;
+    this.repIndTypeActivityManager = repIndTypeActivityManager;
   }
 
   private Path getAutoSaveFilePath(Deliverable deliverable, long crpID) {
@@ -219,10 +224,9 @@ public class PublicationValidator extends BaseValidator {
         InvalidFieldsMessages.EMPTYFIELD);
     } else {
       if (deliverableInfo.getGeographicScope().getId().equals(action.getReportingIndGeographicScopeRegional())) {
-        if (deliverableInfo.getRegion() == null || deliverableInfo.getRegion().getId() == -1) {
+        if (deliverable.getDeliverableRegions() == null) {
           action.addMessage(action.getText("deliverable.region"));
-          action.getInvalidFields().put("input-deliverable.deliverableInfo.region.id",
-            InvalidFieldsMessages.EMPTYFIELD);
+          action.getInvalidFields().put("input-deliverable.deliverableRegions", InvalidFieldsMessages.EMPTYFIELD);
         }
       }
       if (deliverableInfo.getGeographicScope().getId().equals(action.getReportingIndGeographicScopeMultiNational())
@@ -289,11 +293,21 @@ public class PublicationValidator extends BaseValidator {
         action.getInvalidFields().put("input-deliverable.deliverableParticipant.repIndTypeActivity.id",
           InvalidFieldsMessages.EMPTYFIELD);
       } else {
+        RepIndTypeActivity repIndTypeActivity =
+          repIndTypeActivityManager.getRepIndTypeActivityById(deliverableParticipant.getRepIndTypeActivity().getId());
         if (deliverableParticipant.getRepIndTypeActivity().getId()
           .equals(action.getReportingIndTypeActivityAcademicDegree())) {
           if (!this.isValidString(deliverableParticipant.getAcademicDegree())) {
             action.addMessage(action.getText("involveParticipants.academicDegree"));
             action.getInvalidFields().put("input-deliverable.deliverableParticipant.academicDegree",
+              InvalidFieldsMessages.EMPTYFIELD);
+          }
+        }
+        if (repIndTypeActivity.getIsFormal()) {
+          if (deliverableParticipant.getRepIndTrainingTerm() == null
+            || deliverableParticipant.getRepIndTrainingTerm().getId() == -1) {
+            action.addMessage(action.getText("involveParticipants.trainingPeriod"));
+            action.getInvalidFields().put("input-deliverable.deliverableParticipant.repIndTrainingTerm.id",
               InvalidFieldsMessages.EMPTYFIELD);
           }
         }

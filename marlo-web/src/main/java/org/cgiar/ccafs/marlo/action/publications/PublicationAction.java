@@ -28,6 +28,7 @@ import org.cgiar.ccafs.marlo.data.manager.DeliverableCrossCuttingMarkerManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableCrpManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableDisseminationManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableFundingSourceManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableGeographicRegionManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableIntellectualAssetManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableLeaderManager;
@@ -49,7 +50,7 @@ import org.cgiar.ccafs.marlo.data.manager.RepIndFillingTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndGenderYouthFocusLevelManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndGeographicScopeManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndPatentStatusManager;
-import org.cgiar.ccafs.marlo.data.manager.RepIndRegionManager;
+import org.cgiar.ccafs.marlo.data.manager.RepIndTrainingTermManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndTypeActivityManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndTypeParticipantManager;
 import org.cgiar.ccafs.marlo.data.manager.RepositoryChannelManager;
@@ -63,6 +64,7 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableCrp;
 import org.cgiar.ccafs.marlo.data.model.DeliverableDissemination;
 import org.cgiar.ccafs.marlo.data.model.DeliverableFundingSource;
 import org.cgiar.ccafs.marlo.data.model.DeliverableGenderLevel;
+import org.cgiar.ccafs.marlo.data.model.DeliverableGeographicRegion;
 import org.cgiar.ccafs.marlo.data.model.DeliverableInfo;
 import org.cgiar.ccafs.marlo.data.model.DeliverableIntellectualAsset;
 import org.cgiar.ccafs.marlo.data.model.DeliverableIntellectualAssetTypeEnum;
@@ -79,13 +81,14 @@ import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.LicensesTypeEnum;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.RepIndFillingType;
 import org.cgiar.ccafs.marlo.data.model.RepIndGenderYouthFocusLevel;
 import org.cgiar.ccafs.marlo.data.model.RepIndGeographicScope;
 import org.cgiar.ccafs.marlo.data.model.RepIndPatentStatus;
-import org.cgiar.ccafs.marlo.data.model.RepIndRegion;
+import org.cgiar.ccafs.marlo.data.model.RepIndTrainingTerm;
 import org.cgiar.ccafs.marlo.data.model.RepIndTypeActivity;
 import org.cgiar.ccafs.marlo.data.model.RepIndTypeParticipant;
 import org.cgiar.ccafs.marlo.data.model.RepositoryChannel;
@@ -157,7 +160,6 @@ public class PublicationAction extends BaseAction {
   private final RepIndTypeActivityManager repIndTypeActivityManager;
   private final RepIndTypeParticipantManager repIndTypeParticipantManager;
   private final RepIndGeographicScopeManager repIndGeographicScopeManager;
-  private final RepIndRegionManager repIndRegionManager;
   private final LocElementManager locElementManager;
   private final RepIndFillingTypeManager repIndFillingTypeManager;
   private final RepIndPatentStatusManager repIndPatentStatusManager;
@@ -165,6 +167,10 @@ public class PublicationAction extends BaseAction {
   private DeliverableCrossCuttingMarkerManager deliverableCrossCuttingMarkerManager;
   private RepIndGenderYouthFocusLevelManager repIndGenderYouthFocusLevelManager;
   private CgiarCrossCuttingMarkerManager cgiarCrossCuttingMarkerManager;
+  private DeliverableGeographicRegionManager deliverableGeographicRegionManager;
+  private RepIndTrainingTermManager repIndTrainingTermManager;
+  private List<RepIndTrainingTerm> repIndTrainingTerms;
+
 
   // Variables
   private GlobalUnit loggedCrp;
@@ -186,14 +192,13 @@ public class PublicationAction extends BaseAction {
   private List<RepIndTypeActivity> repIndTypeActivities;
   private List<RepIndTypeParticipant> repIndTypeParticipants;
   private List<RepIndGeographicScope> repIndGeographicScopes;
-  private List<RepIndRegion> repIndRegions;
+  private List<LocElement> repIndRegions;
   private List<LocElement> countries;
   private List<RepIndFillingType> repIndFillingTypes;
   private List<RepIndPatentStatus> repIndPatentStatuses;
   private Map<String, String> statuses;
   private List<RepIndGenderYouthFocusLevel> focusLevels;
   private List<CgiarCrossCuttingMarker> cgiarCrossCuttingMarkers;
-
 
   @Inject
   public PublicationAction(APConfig config, GlobalUnitManager crpManager, DeliverableManager deliverableManager,
@@ -211,12 +216,14 @@ public class PublicationAction extends BaseAction {
     DeliverableIntellectualAssetManager deliverableIntellectualAssetManager,
     DeliverableParticipantManager deliverableParticipantManager, RepIndTypeActivityManager repIndTypeActivityManager,
     RepIndTypeParticipantManager repIndTypeParticipantManager,
-    RepIndGeographicScopeManager repIndGeographicScopeManager, RepIndRegionManager repIndRegionManager,
-    LocElementManager locElementManager, RepIndFillingTypeManager repIndFillingTypeManager,
-    RepIndPatentStatusManager repIndPatentStatusManager, DeliverableLocationManager deliverableLocationManager,
+    RepIndGeographicScopeManager repIndGeographicScopeManager, LocElementManager locElementManager,
+    RepIndFillingTypeManager repIndFillingTypeManager, RepIndPatentStatusManager repIndPatentStatusManager,
+    DeliverableLocationManager deliverableLocationManager,
     DeliverableCrossCuttingMarkerManager deliverableCrossCuttingMarkerManager,
     RepIndGenderYouthFocusLevelManager repIndGenderYouthFocusLevelManager,
-    CgiarCrossCuttingMarkerManager cgiarCrossCuttingMarkerManager) {
+    CgiarCrossCuttingMarkerManager cgiarCrossCuttingMarkerManager,
+    DeliverableGeographicRegionManager deliverableGeographicRegionManager,
+    RepIndTrainingTermManager repIndTrainingTermManager) {
     super(config);
     this.deliverableDisseminationManager = deliverableDisseminationManager;
     this.crpManager = crpManager;
@@ -245,7 +252,6 @@ public class PublicationAction extends BaseAction {
     this.repIndTypeActivityManager = repIndTypeActivityManager;
     this.repIndTypeParticipantManager = repIndTypeParticipantManager;
     this.repIndGeographicScopeManager = repIndGeographicScopeManager;
-    this.repIndRegionManager = repIndRegionManager;
     this.locElementManager = locElementManager;
     this.repIndFillingTypeManager = repIndFillingTypeManager;
     this.repIndPatentStatusManager = repIndPatentStatusManager;
@@ -253,8 +259,9 @@ public class PublicationAction extends BaseAction {
     this.deliverableCrossCuttingMarkerManager = deliverableCrossCuttingMarkerManager;
     this.repIndGenderYouthFocusLevelManager = repIndGenderYouthFocusLevelManager;
     this.cgiarCrossCuttingMarkerManager = cgiarCrossCuttingMarkerManager;
+    this.deliverableGeographicRegionManager = deliverableGeographicRegionManager;
+    this.repIndTrainingTermManager = repIndTrainingTermManager;
   }
-
 
   @Override
   public String cancel() {
@@ -356,7 +363,7 @@ public class PublicationAction extends BaseAction {
       }
     } else {
       crossCuttingMarker = deliverableCrossCuttingMarkerManager.getDeliverableCrossCuttingMarkerId(deliverableID,
-        markerID, this.getActualPhase().getId());
+        markerID, deliverable.getPhase().getId());
     }
     if (crossCuttingMarker != null) {
       return crossCuttingMarker;
@@ -400,6 +407,7 @@ public class PublicationAction extends BaseAction {
     return null;
   }
 
+
   public List<CrpProgram> getFlagshipsList() {
     return crpProgramManager.findAll().stream()
       .filter(c -> c.isActive() && c.getCrp().equals(this.loggedCrp)
@@ -407,23 +415,24 @@ public class PublicationAction extends BaseAction {
       .sorted((f1, f2) -> f1.getAcronym().compareTo(f2.getAcronym())).collect(Collectors.toList());
   }
 
+
   public List<RepIndGenderYouthFocusLevel> getFocusLevels() {
     return focusLevels;
   }
-
 
   public List<FundingSource> getFundingSources() {
     return fundingSources;
   }
 
-
   public List<GenderType> getGenderLevels() {
     return genderLevels;
   }
 
+
   public List<Institution> getInstitutions() {
     return institutions;
   }
+
 
   public List<CrpClusterKeyOutput> getKeyOutputs() {
     return keyOutputs;
@@ -454,11 +463,9 @@ public class PublicationAction extends BaseAction {
       .sorted((r1, r2) -> r1.getAcronym().compareTo(r2.getAcronym())).collect(Collectors.toList());
   }
 
-
   public List<RepIndFillingType> getRepIndFillingTypes() {
     return repIndFillingTypes;
   }
-
 
   public List<RepIndGeographicScope> getRepIndGeographicScopes() {
     return repIndGeographicScopes;
@@ -470,8 +477,13 @@ public class PublicationAction extends BaseAction {
   }
 
 
-  public List<RepIndRegion> getRepIndRegions() {
+  public List<LocElement> getRepIndRegions() {
     return repIndRegions;
+  }
+
+
+  public List<RepIndTrainingTerm> getRepIndTrainingTerms() {
+    return repIndTrainingTerms;
   }
 
 
@@ -661,6 +673,14 @@ public class PublicationAction extends BaseAction {
           }
         }
 
+        // Deliverable Geographic Regions List Autosave
+        if (deliverable.getDeliverableRegions() != null) {
+          for (DeliverableGeographicRegion deliverableGeographicRegion : deliverable.getDeliverableRegions()) {
+            deliverableGeographicRegion
+              .setLocElement(locElementManager.getLocElementById(deliverableGeographicRegion.getLocElement().getId()));
+          }
+        }
+
         // Cgiar Cross Cutting Markers Autosave
         if (deliverable.getCrossCuttingMarkers() != null) {
           for (DeliverableCrossCuttingMarker deliverableCrossCuttingMarker : deliverable.getCrossCuttingMarkers()) {
@@ -695,7 +715,14 @@ public class PublicationAction extends BaseAction {
             deliverable.getCountriesIds().add(country.getLocElement().getIsoAlpha2());
           }
         }
-
+        // Expected Study Geographic Regions List
+        if (deliverable.getDeliverableGeographicRegions() != null
+          && !deliverable.getDeliverableGeographicRegions().isEmpty()) {
+          deliverable.setDeliverableRegions(new ArrayList<>(deliverableGeographicRegionManager
+            .getDeliverableGeographicRegionbyPhase(deliverable.getId(), deliverable.getPhase().getId()).stream()
+            .filter(le -> le.isActive() && le.getLocElement().getLocElementType().getId() == 1)
+            .collect(Collectors.toList())));
+        }
         deliverable.setFundingSources(deliverable.getDeliverableFundingSources().stream()
           .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(deliverable.getPhase()))
           .collect(Collectors.toList()));
@@ -802,7 +829,8 @@ public class PublicationAction extends BaseAction {
             .filter(c -> c.isActive() && c.getPhase().equals(deliverable.getPhase())).collect(Collectors.toList());
 
           if (deliverableParticipants.size() > 0) {
-            deliverable.setDeliverableParticipant(deliverableParticipants.get(0));
+            deliverable.setDeliverableParticipant(
+              deliverableParticipantManager.getDeliverableParticipantById(deliverableParticipants.get(0).getId()));
 
             if (this.transaction != null && !this.transaction.equals("-1")) {
               if (deliverable.getDeliverableParticipant().getRepIndTypeActivity() != null
@@ -815,6 +843,11 @@ public class PublicationAction extends BaseAction {
                 deliverable.getDeliverableParticipant()
                   .setRepIndTypeParticipant(repIndTypeParticipantManager.getRepIndTypeParticipantById(
                     deliverable.getDeliverableParticipant().getRepIndTypeParticipant().getId()));
+              }
+              if (deliverable.getDeliverableParticipant().getRepIndTrainingTerm() != null
+                && deliverable.getDeliverableParticipant().getRepIndTrainingTerm().getId() != null) {
+                deliverable.getDeliverableParticipant().setRepIndTrainingTerm(repIndTrainingTermManager
+                  .getRepIndTrainingTermById(deliverable.getDeliverableParticipant().getRepIndTrainingTerm().getId()));
               }
             }
           } else {
@@ -846,7 +879,7 @@ public class PublicationAction extends BaseAction {
         // Cgiar Cross Cutting Markers List
         if (deliverable.getCrossCuttingMarkers() != null) {
           deliverable.setCrossCuttingMarkers(new ArrayList<>(deliverable.getDeliverableCrossCuttingMarkers().stream()
-            .filter(o -> o.isActive() && o.getPhase().getId() == this.getActualPhase().getId())
+            .filter(o -> o.isActive() && o.getPhase().getId() == deliverable.getPhase().getId())
             .collect(Collectors.toList())));
         }
 
@@ -855,8 +888,9 @@ public class PublicationAction extends BaseAction {
 
       this.setRepIndGeographicScopes(repIndGeographicScopeManager.findAll().stream()
         .sorted((g1, g2) -> g1.getName().compareTo(g2.getName())).collect(Collectors.toList()));
-      this.setRepIndRegions(repIndRegionManager.findAll().stream()
-        .sorted((r1, r2) -> r1.getName().compareTo(r2.getName())).collect(Collectors.toList()));
+      repIndRegions = locElementManager.findAll().stream()
+        .filter(c -> c.getLocElementType().getId().intValue() == 1 && c.isActive() && c.getIsoNumeric() != null)
+        .collect(Collectors.toList());
       this.setCountries(locElementManager.findAll().stream()
         .filter(c -> c.isActive() && c.getLocElementType().getId() == 2).collect(Collectors.toList()));
 
@@ -971,6 +1005,8 @@ public class PublicationAction extends BaseAction {
       for (ProjectStatusEnum projectStatusEnum : list) {
         statuses.put(projectStatusEnum.getStatusId(), projectStatusEnum.getStatus());
       }
+      this.setRepIndTrainingTerms(repIndTrainingTermManager.findAll().stream()
+        .sorted((t1, t2) -> t1.getId().compareTo(t2.getId())).collect(Collectors.toList()));
 
       // Cross Cutting Values List
       focusLevels = repIndGenderYouthFocusLevelManager.findAll();
@@ -1028,12 +1064,16 @@ public class PublicationAction extends BaseAction {
         if (deliverable.getGenderLevels() != null) {
           deliverable.getGenderLevels().clear();
         }
+        if (deliverable.getDeliverableRegions() != null) {
+          deliverable.getDeliverableRegions().clear();
+        }
         if (deliverable.getDisseminations() != null) {
           deliverable.getDisseminations().clear();
         }
         if (deliverable.getDeliverableParticipant() != null) {
           deliverable.getDeliverableParticipant().setRepIndTypeActivity(null);
           deliverable.getDeliverableParticipant().setRepIndTypeParticipant(null);
+          deliverable.getDeliverableParticipant().setRepIndTrainingTerm(null);
         }
         if (this.hasSpecificities(this.crpDeliverableIntellectualAsset())) {
           if (deliverable.getIntellectualAsset() != null) {
@@ -1073,6 +1113,7 @@ public class PublicationAction extends BaseAction {
       }
       this.saveParticipant();
       // Save Countries list
+      this.saveDeliverableRegions(deliverableDB, deliverable.getPhase(), deliverablePrew);
       this.saveDeliverableCountries();
       this.saveCrossCutting();
       deliverableInfoManager.saveDeliverableInfo(deliverablePrew.getDeliverableInfo());
@@ -1139,7 +1180,7 @@ public class PublicationAction extends BaseAction {
         if (crossCuttingOwner.getId() == null) {
           DeliverableCrossCuttingMarker crossCuttingOwnerSave = new DeliverableCrossCuttingMarker();
           crossCuttingOwnerSave.setDeliverable(deliverable);
-          crossCuttingOwnerSave.setPhase(this.getActualPhase());
+          crossCuttingOwnerSave.setPhase(deliverable.getPhase());
 
           CgiarCrossCuttingMarker cgiarCrossCuttingMarker = cgiarCrossCuttingMarkerManager
             .getCgiarCrossCuttingMarkerById(crossCuttingOwner.getCgiarCrossCuttingMarker().getId());
@@ -1238,16 +1279,17 @@ public class PublicationAction extends BaseAction {
     }
   }
 
+
   private void saveDeliverableCountries() {
     if (deliverable.getCountriesIds() != null || !deliverable.getCountriesIds().isEmpty()) {
       List<DeliverableLocation> countries =
-        deliverableLocationManager.getDeliverableLocationbyPhase(deliverable.getId(), this.getActualPhase().getId());
+        deliverableLocationManager.getDeliverableLocationbyPhase(deliverable.getId(), deliverable.getPhase().getId());
       List<DeliverableLocation> countriesSave = new ArrayList<>();
       for (String countryIds : deliverable.getCountriesIds()) {
         DeliverableLocation deliverableLocation = new DeliverableLocation();
         deliverableLocation.setLocElement(locElementManager.getLocElementByISOCode(countryIds));
         deliverableLocation.setDeliverable(deliverable);
-        deliverableLocation.setPhase(this.getActualPhase());
+        deliverableLocation.setPhase(deliverable.getPhase());
         countriesSave.add(deliverableLocation);
         if (!countries.contains(deliverableLocation)) {
           deliverableLocationManager.saveDeliverableLocation(deliverableLocation);
@@ -1261,6 +1303,46 @@ public class PublicationAction extends BaseAction {
         }
       }
     }
+  }
+
+  public void saveDeliverableRegions(Deliverable deliverable, Phase phase, Deliverable deliverableManagedState) {
+
+    // Search and deleted form Information
+    if (deliverable.getDeliverableGeographicRegions() != null
+      && deliverable.getDeliverableGeographicRegions().size() > 0) {
+
+      List<DeliverableGeographicRegion> regionPrev =
+        deliverableGeographicRegionManager.getDeliverableGeographicRegionbyPhase(deliverable.getId(), phase.getId())
+          .stream().filter(le -> le.isActive() && le.getLocElement().getLocElementType().getId() == 1)
+          .collect(Collectors.toList());
+
+      for (DeliverableGeographicRegion deliverableRegion : regionPrev) {
+        if (deliverable.getDeliverableRegions() == null
+          || !deliverable.getDeliverableRegions().contains(deliverableRegion)) {
+          deliverableGeographicRegionManager.deleteDeliverableGeographicRegion(deliverableRegion.getId());
+        }
+      }
+    }
+
+    // Save form Information
+    if (deliverable.getDeliverableRegions() != null) {
+      for (DeliverableGeographicRegion deliverableRegion : deliverable.getDeliverableRegions()) {
+        if (deliverableRegion.getId() == null && deliverableRegion.getLocElement() != null) {
+          DeliverableGeographicRegion deliverableRegionSave = new DeliverableGeographicRegion();
+          deliverableRegionSave.setDeliverable(deliverable);
+          deliverableRegionSave.setPhase(phase);
+
+          LocElement locElement = locElementManager.getLocElementById(deliverableRegion.getLocElement().getId());
+
+          deliverableRegionSave.setLocElement(locElement);
+
+          deliverableGeographicRegionManager.saveDeliverableGeographicRegion(deliverableRegionSave);
+          // This is to add regions to generate correct auditlog.
+          deliverableManagedState.getDeliverableGeographicRegions().add(deliverableRegionSave);
+        }
+      }
+    }
+
   }
 
   public void saveDissemination() {
@@ -1510,7 +1592,7 @@ public class PublicationAction extends BaseAction {
     }
     Deliverable deliverableDB = deliverableManager.getDeliverableById(deliverableID);
     for (DeliverableLeader deliverableUser : deliverableDB.getDeliverableLeaders()) {
-      if (!deliverable.getLeaders().contains(deliverableUser)) {
+      if (deliverable.getLeaders().isEmpty() || !deliverable.getLeaders().contains(deliverableUser)) {
         deliverableLeaderManager.deleteDeliverableLeader(deliverableUser.getId());
       }
     }
@@ -1526,7 +1608,6 @@ public class PublicationAction extends BaseAction {
     }
   }
 
-
   public void saveMetadata() {
     if (deliverable.getMetadataElements() != null) {
       for (DeliverableMetadataElement deliverableMetadataElement : deliverable.getMetadataElements()) {
@@ -1538,7 +1619,6 @@ public class PublicationAction extends BaseAction {
       }
     }
   }
-
 
   private void saveParticipant() {
     if (deliverable.getDeliverableParticipant() != null
@@ -1570,18 +1650,26 @@ public class PublicationAction extends BaseAction {
         participant.setEventActivityName(deliverable.getDeliverableParticipant().getEventActivityName());
         if (deliverable.getDeliverableParticipant().getRepIndTypeActivity() != null
           && deliverable.getDeliverableParticipant().getRepIndTypeActivity().getId() != -1) {
+          RepIndTypeActivity repIndTypeActivity = repIndTypeActivityManager
+            .getRepIndTypeActivityById(deliverable.getDeliverableParticipant().getRepIndTypeActivity().getId());
 
-          participant.setRepIndTypeActivity(deliverable.getDeliverableParticipant().getRepIndTypeActivity());
+          participant.setRepIndTypeActivity(repIndTypeActivity);
 
           if (participant.getRepIndTypeActivity().getId().equals(this.getReportingIndTypeActivityAcademicDegree())) {
             participant.setAcademicDegree(deliverable.getDeliverableParticipant().getAcademicDegree());
           } else {
             participant.setAcademicDegree(null);
           }
+          if (participant.getRepIndTypeActivity().getIsFormal()) {
+            participant.setRepIndTrainingTerm(deliverable.getDeliverableParticipant().getRepIndTrainingTerm());
+          } else {
+            participant.setRepIndTrainingTerm(null);
+          }
 
         } else {
           participant.setRepIndTypeActivity(null);
           participant.setAcademicDegree(null);
+          participant.setRepIndTrainingTerm(null);
         }
         participant.setParticipants(deliverable.getDeliverableParticipant().getParticipants());
         if (deliverable.getDeliverableParticipant().getEstimateParticipants() != null) {
@@ -1607,6 +1695,7 @@ public class PublicationAction extends BaseAction {
           participant.setRepIndTypeParticipant(null);
         }
 
+        participant.setActive(true);
       } else {
         participant.setEventActivityName(null);
         participant.setRepIndTypeActivity(null);
@@ -1617,12 +1706,12 @@ public class PublicationAction extends BaseAction {
         participant.setEstimateFemales(null);
         participant.setDontKnowFemale(null);
         participant.setRepIndTypeParticipant(null);
+        participant.setRepIndTrainingTerm(null);
       }
 
       deliverableParticipantManager.saveDeliverableParticipant(participant);
 
     }
-
   }
 
 
@@ -1733,9 +1822,11 @@ public class PublicationAction extends BaseAction {
     }
   }
 
+
   public void setCgiarCrossCuttingMarkers(List<CgiarCrossCuttingMarker> cgiarCrossCuttingMarkers) {
     this.cgiarCrossCuttingMarkers = cgiarCrossCuttingMarkers;
   }
+
 
   public void setChannels(Map<String, String> channels) {
     this.channels = channels;
@@ -1744,7 +1835,6 @@ public class PublicationAction extends BaseAction {
   public void setCountries(List<LocElement> countries) {
     this.countries = countries;
   }
-
 
   public void setCrossCuttingDimensions(List<CrossCuttingScoring> crossCuttingDimensions) {
     this.crossCuttingDimensions = crossCuttingDimensions;
@@ -1759,10 +1849,10 @@ public class PublicationAction extends BaseAction {
     this.crps = crps;
   }
 
-
   public void setDeliverable(Deliverable deliverable) {
     this.deliverable = deliverable;
   }
+
 
   public void setDeliverableDB(Deliverable deliverableDB) {
     this.deliverableDB = deliverableDB;
@@ -1795,6 +1885,7 @@ public class PublicationAction extends BaseAction {
     this.institutions = institutions;
   }
 
+
   public void setKeyOutputs(List<CrpClusterKeyOutput> keyOutputs) {
     this.keyOutputs = keyOutputs;
   }
@@ -1803,25 +1894,27 @@ public class PublicationAction extends BaseAction {
     this.loggedCrp = loggedCrp;
   }
 
-
   public void setRepIndFillingTypes(List<RepIndFillingType> repIndFillingTypes) {
     this.repIndFillingTypes = repIndFillingTypes;
   }
 
-
   public void setRepIndGeographicScopes(List<RepIndGeographicScope> repIndGeographicScopes) {
     this.repIndGeographicScopes = repIndGeographicScopes;
   }
+
 
   public void setRepIndPatentStatuses(List<RepIndPatentStatus> repIndPatentStatuses) {
     this.repIndPatentStatuses = repIndPatentStatuses;
   }
 
 
-  public void setRepIndRegions(List<RepIndRegion> repIndRegions) {
+  public void setRepIndRegions(List<LocElement> repIndRegions) {
     this.repIndRegions = repIndRegions;
   }
 
+  public void setRepIndTrainingTerms(List<RepIndTrainingTerm> repIndTrainingTerms) {
+    this.repIndTrainingTerms = repIndTrainingTerms;
+  }
 
   public void setRepIndTypeActivities(List<RepIndTypeActivity> repIndTypeActivities) {
     this.repIndTypeActivities = repIndTypeActivities;
@@ -1936,7 +2029,7 @@ public class PublicationAction extends BaseAction {
     }
 
     List<DeliverableLocation> countries =
-      deliverableLocationManager.getDeliverableLocationbyPhase(deliverable.getId(), this.getActualPhase().getId());
+      deliverableLocationManager.getDeliverableLocationbyPhase(deliverable.getId(), deliverable.getPhase().getId());
     // Save Locations
     if (deliverable.getDeliverableInfo().getGeographicScope() != null
       && deliverable.getDeliverableInfo().getGeographicScope().getId() != -1) {
