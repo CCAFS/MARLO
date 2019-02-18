@@ -5104,13 +5104,14 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         if (studyinfo.getContacts() != null && !studyinfo.getContacts().trim().isEmpty()) {
           contacts = studyinfo.getContacts();
 
-          if (link != null && studyinfo.getProjectExpectedStudy().getProjectExpectedStudyInfo() != null
+          if (link != null && !link.isEmpty() && studyinfo.getProjectExpectedStudy() != null
+            && studyinfo.getProjectExpectedStudy().getProjectExpectedStudyInfo() != null
+            && studyinfo.getProjectExpectedStudy().getProjectExpectedStudyInfo().getIsPublic() != null
             && studyinfo.getProjectExpectedStudy().getProjectExpectedStudyInfo().getIsPublic() == true) {
             contacts +=
               "<br></br><p><font size=2 face='Segoe UI' \n> <b>Outcome Impact Case Report link:</b></font></p> "
                 + "<p><font size=2 face='Segoe UI' \n>" + link + "</font></p>";
           }
-
         }
 
         // Projects
