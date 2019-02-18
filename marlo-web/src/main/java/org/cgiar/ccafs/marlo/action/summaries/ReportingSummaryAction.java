@@ -2657,11 +2657,12 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
 
           if (otherPartners != null) {
             for (DeliverablePartnership partner : otherPartners) {
-              otherPartner += partner.getProjectPartnerPerson().getComposedInstitutionName();
+              if (partner.getProjectPartnerPerson() != null
+                && partner.getProjectPartnerPerson().getComposedInstitutionName() != null) {
+                otherPartner += partner.getProjectPartnerPerson().getComposedInstitutionName();
+              }
             }
           }
-
-
         }
         model.addRow(new Object[] {deliverable.getId(), deliverable.getDeliverableInfo().getTitle(), delivType,
           delivSubType, delivStatus, delivYear, keyOutput, leader, institution, fundingSources, crossCutting,
