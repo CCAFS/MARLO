@@ -219,23 +219,29 @@ function onChangeRadioButton() {
 function addSelect2() {
 
   var isNew = $('.evidenceBlock').classParam('isNew') == "true";
-  var evidenceTag = $('input.radioType-tags:checked').val();
-
-  if(!evidenceTag) {
-    $('input.radioType-tags[value="1"]').prop("checked", true);
-  }
+  var hasEvidenceTag = $('input.radioType-tags:checked').val();
 
   if(isNew) {
-    $('select.statusSelect option[value="4"]').prop('disabled', true);
-    $('select.statusSelect option[value="5"]').prop('disabled', true);
+    // Adjust status
+    $('select.statusSelect option[value="4"]').prop('disabled', true); // Extended
+    $('select.statusSelect option[value="5"]').prop('disabled', true); // Cancelled
+
+    // Suggest Evidence tag
+    if(!hasEvidenceTag) {
+      $('input.radioType-tags[value="1"]').prop("checked", true); // New tag
+    }
   } else {
+
   }
 
-  if(!reportingActive) {
+  if(reportingActive) {
+    // Adjust status
+
+  } else {
+    // Adjust status
     $('select.statusSelect option[value="3"]').prop('disabled', true);
     $('select.statusSelect option[value="4"]').prop('disabled', true);
     $('select.statusSelect option[value="5"]').prop('disabled', true);
-  } else {
   }
 
   $('form select').select2({
