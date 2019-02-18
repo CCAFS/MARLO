@@ -520,10 +520,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
     if (expectedStudy != null) {
 
-      projectID = expectedStudy.getProject().getId();
-      project = projectManager.getProjectById(projectID);
-
-
       Phase phase = phaseManager.getPhaseById(this.getActualPhase().getId());
 
 
@@ -819,31 +815,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
       tags = evidenceTagManager.findAll();
 
-      Project projectL = projectManager.getProjectById(projectID);
-
-
-      // Get the innovations List
-      innovationsList = new ArrayList<>();
-
-      List<ProjectInnovation> innovations =
-        projectL.getProjectInnovations().stream().filter(c -> c.isActive()).collect(Collectors.toList());
-      for (ProjectInnovation projectInnovation : innovations) {
-        if (projectInnovation.getProjectInnovationInfo(this.getActualPhase()) != null) {
-          innovationsList.add(projectInnovation);
-        }
-      }
-
-      // Get the policies List
-      policyList = new ArrayList<>();
-
-      List<ProjectPolicy> policies =
-        projectL.getProjectPolicies().stream().filter(c -> c.isActive()).collect(Collectors.toList());
-      for (ProjectPolicy projectPolicy : policies) {
-        if (projectPolicy.getProjectPolicyInfo(this.getActualPhase()) != null) {
-          policyList.add(projectPolicy);
-        }
-      }
-
 
       // Expected Study Projects List
       if (expectedStudy.getExpectedStudyProjects() != null) {
@@ -910,6 +881,63 @@ public class ProjectExpectedStudiesAction extends BaseAction {
         projectID = expectedStudyDB.getProject().getId();
         project = projectManager.getProjectById(projectID);
         project.getProjecInfoPhase(phase);
+      }
+
+      if (project != null) {
+        Project projectL = projectManager.getProjectById(projectID);
+
+        // Get the innovations List
+        innovationsList = new ArrayList<>();
+
+        List<ProjectInnovation> innovations =
+          projectL.getProjectInnovations().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+        for (ProjectInnovation projectInnovation : innovations) {
+          if (projectInnovation.getProjectInnovationInfo(this.getActualPhase()) != null) {
+            innovationsList.add(projectInnovation);
+          }
+        }
+
+        // Get the policies List
+        policyList = new ArrayList<>();
+
+        List<ProjectPolicy> policies =
+          projectL.getProjectPolicies().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+        for (ProjectPolicy projectPolicy : policies) {
+          if (projectPolicy.getProjectPolicyInfo(this.getActualPhase()) != null) {
+            policyList.add(projectPolicy);
+          }
+        }
+      } else {
+        // Get the innovations List
+        innovationsList = new ArrayList<>();
+        // Get the policies List
+        policyList = new ArrayList<>();
+
+        if (myProjects != null && !myProjects.isEmpty()) {
+          for (Project projectL : myProjects) {
+
+
+            List<ProjectInnovation> innovations =
+              projectL.getProjectInnovations().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+            for (ProjectInnovation projectInnovation : innovations) {
+              if (projectInnovation.getProjectInnovationInfo(this.getActualPhase()) != null) {
+                innovationsList.add(projectInnovation);
+              }
+            }
+
+
+            List<ProjectPolicy> policies =
+              projectL.getProjectPolicies().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+            for (ProjectPolicy projectPolicy : policies) {
+              if (projectPolicy.getProjectPolicyInfo(this.getActualPhase()) != null) {
+                policyList.add(projectPolicy);
+              }
+            }
+
+            System.out.println("POLICY ****************** " + policyList.size());
+          }
+        }
+
       }
 
       if (project != null) {
