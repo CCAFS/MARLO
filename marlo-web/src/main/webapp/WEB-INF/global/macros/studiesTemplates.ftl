@@ -3,13 +3,14 @@
   [#local customName = "${name}"/]
   [#local customId = "study-${template?string('template',index)}" /]
   [#local isOutcomeCaseStudy = ((element.projectExpectedStudyInfo.studyType.id == 1)!false) && reportingActive/]
-  [#local isNew = action.isEvidenceNew(element.id)?string('new', 'old') /]
+  [#local isNew = (action.isEvidenceNew(element.id))!false /]
   
   [#local isPolicy = ((element.projectExpectedStudyInfo.isContribution)!false) ]
   [#local stageProcessOne = ((element.projectExpectedStudyInfo.repIndStageProcess.id == 1))!false ]
   
   <div id="${customId}" class="caseStudy evidenceBlock isNew-${isNew?string}" style="display:${template?string('none','block')}">
     <div class="borderBox">
+    
       <div class="form-group row">
         <div class="col-md-4">
           [@customForm.select name="${customName}.projectExpectedStudyInfo.studyType.id" value="${(element.projectExpectedStudyInfo.studyType.id)!-1}" className="setSelect2 studyType" i18nkey="study.type" listName="studyTypes" keyFieldName="id"  displayFieldName="name" required=true editable=editable && !isOutcomeCaseStudy /]

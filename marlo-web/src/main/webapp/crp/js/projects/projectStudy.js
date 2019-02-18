@@ -218,6 +218,19 @@ function onChangeRadioButton() {
 
 function addSelect2() {
 
+  var isNew = $('.evidenceBlock').classParam('isNew') == "true";
+  var evidenceTag = $('input.radioType-tags:checked').val();
+
+  if(!evidenceTag) {
+    $('input.radioType-tags[value="1"]').prop("checked", true);
+  }
+
+  if(isNew) {
+    $('select.statusSelect option[value="4"]').prop('disabled', true);
+    $('select.statusSelect option[value="5"]').prop('disabled', true);
+  } else {
+  }
+
   if(!reportingActive) {
     $('select.statusSelect option[value="3"]').prop('disabled', true);
     $('select.statusSelect option[value="4"]').prop('disabled', true);
