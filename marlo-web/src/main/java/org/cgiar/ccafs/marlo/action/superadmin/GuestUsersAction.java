@@ -283,6 +283,7 @@ public class GuestUsersAction extends BaseAction {
 
     try {
       inputStream = this.getClass().getResourceAsStream("/manual/" + APConstants.MARLO_PDF_MANUAL_NAME);
+      buffer = readFully(inputStream);
     } catch (FileNotFoundException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
