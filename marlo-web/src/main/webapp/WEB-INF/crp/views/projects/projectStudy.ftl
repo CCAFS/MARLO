@@ -1,7 +1,7 @@
 [#ftl]
 [#assign title = "Project Study" /]
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${expectedID}-phase-${(actualPhase.id)!}" /]
-[#assign pageLibs = [ "select2", "blueimp-file-upload" "flat-flags", "components-font-awesome"] /]
+[#assign pageLibs = [ "select2", "blueimp-file-upload", "flat-flags", "components-font-awesome"] /]
 [#assign customJS = [
   "${baseUrlMedia}/js/projects/projectStudy.js?20180614",
   "${baseUrl}/global/js/autoSave.js",
