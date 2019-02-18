@@ -3639,10 +3639,10 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     TypedTableModel model = new TypedTableModel(
       new String[] {"title", "center", "current_date", "project_submission", "cycle", "isNew", "isAdministrative",
         "type", "isGlobal", "isPhaseOne", "budget_gender", "hasTargetUnit", "hasW1W2Co", "hasActivities", "phaseID",
-        "hasSpecificitiesDeliverableIntellectualAsset"},
+        "hasSpecificitiesDeliverableIntellectualAsset", "hasLP6"},
       new Class[] {String.class, String.class, String.class, String.class, String.class, Boolean.class, Boolean.class,
         String.class, Boolean.class, Boolean.class, Boolean.class, Boolean.class, Boolean.class, Boolean.class,
-        Long.class, Boolean.class});
+        Long.class, Boolean.class, Boolean.class});
     // Filling title
     String title = "";
     if (projectLeader != null) {
@@ -3767,9 +3767,14 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     Boolean hasSpecificitiesDeliverableIntellectualAsset =
       this.hasSpecificities(this.crpDeliverableIntellectualAsset());
 
+    Boolean hasLP6 = false;
+    if (this.hasSpecificities(APConstants.CRP_LP6_ACTIVE)) {
+      hasLP6 = true;
+    }
+
     model.addRow(new Object[] {title, centerURL, currentDate, submission, this.getSelectedCycle(), isNew,
       isAdministrative, type, projectInfo.getLocationGlobal(), this.isPhaseOne(), hasGender, hasTargetUnit, hasW1W2Co,
-      hasActivities, phaseID, hasSpecificitiesDeliverableIntellectualAsset});
+      hasActivities, phaseID, hasSpecificitiesDeliverableIntellectualAsset, hasLP6});
     return model;
   }
 
@@ -5104,13 +5109,14 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         if (studyinfo.getContacts() != null && !studyinfo.getContacts().trim().isEmpty()) {
           contacts = studyinfo.getContacts();
 
-          if (link != null && studyinfo.getProjectExpectedStudy().getProjectExpectedStudyInfo() != null
+          if (link != null && !link.isEmpty() && studyinfo.getProjectExpectedStudy() != null
+            && studyinfo.getProjectExpectedStudy().getProjectExpectedStudyInfo() != null
+            && studyinfo.getProjectExpectedStudy().getProjectExpectedStudyInfo().getIsPublic() != null
             && studyinfo.getProjectExpectedStudy().getProjectExpectedStudyInfo().getIsPublic() == true) {
             contacts +=
               "<br></br><p><font size=2 face='Segoe UI' \n> <b>Outcome Impact Case Report link:</b></font></p> "
                 + "<p><font size=2 face='Segoe UI' \n>" + link + "</font></p>";
           }
-
         }
 
         // Projects
