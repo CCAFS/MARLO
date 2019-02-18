@@ -538,14 +538,35 @@ function notificationError(message) {
 /* Set elementsListComponent function to the functioning of the customForm macro */
 function setElementsListComponent() {
 
-  // Disabled elements already selected
+  // Settings
   $('select[class*="elementType-"]').each(function(i,e) {
     var $parent = $(e).parents('.elementsListComponent');
     var $select = $parent.find('select');
+    var elementType = $select.classParam('elementType');
+    var maxLimit = $select.classParam('maxLimit');
+    var $list = $('.listType-' + elementType);
+    var counted = $list.find('li').length;
+
+    // Disabled elements already selected
     $parent.find("ul.list li").each(function(index,domElement) {
       var id = $(domElement).find('.elementRelationID').val();
       $select.find('option[value="' + id + '"]').prop("disabled", true);
     });
+
+    // Validate limit reached
+    if((maxLimit > 0) && (counted >= maxLimit)) {
+      $select.prop('disabled', true).trigger('change.select2');
+    }
+
+    // Set placeholder
+    if((maxLimit == 0)) {
+      $select.find('option[value="-1"]').text("Select multiple options...");
+    } else if((maxLimit > 1)) {
+      $select.find('option[value="-1"]').text("Select multiple options (Max " + maxLimit + ")...");
+    } else if((maxLimit == 1)) {
+      $select.find('option[value="-1"]').text("Select a single option...");
+    }
+
   });
 
   // On select element
@@ -558,8 +579,8 @@ function setElementsListComponent() {
 function onSelectElement() {
   var $select = $(this);
   var $option = $select.find('option:selected');
-  var elementType = $(this).classParam('elementType');
-  var maxLimit = $(this).classParam('maxLimit');
+  var elementType = $select.classParam('elementType');
+  var maxLimit = $select.classParam('maxLimit');
   var $list = $('.listType-' + elementType);
   var counted = $list.find('li').length;
 
@@ -613,7 +634,7 @@ function onSelectElement() {
   });
 
   // Validate limit reached
-  if((counted + 1) == maxLimit) {
+  if((maxLimit > 0) && ((counted + 1) >= maxLimit)) {
     $select.prop('disabled', true).trigger('change.select2');
   }
 
@@ -652,8 +673,11 @@ function onClickRemoveElement() {
       $(element).setNameIndexes(indexLevel, i);
     });
 
-    // Enabled select component
-    $select.prop('disabled', false).trigger('change.select2');
+    // Enabled select component if needed
+    if((maxLimit > 0) && (counted >= maxLimit)) {
+      console.log("reenabled component", removeElementType);
+      $select.prop('disabled', false).trigger('change.select2');
+    }
   });
 }
 

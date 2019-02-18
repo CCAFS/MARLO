@@ -297,7 +297,7 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
         }
 
         // Validate Srf Targets Selection
-        if (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getCapdevLevel() == null) {
+        if (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getIsSrfTarget() == null) {
           action.addMessage(action.getText("targets"));
           action.addMissingField("expectedStudy.projectExpectedStudyInfo.isSrfTarget");
           action.getInvalidFields().put("input-expectedStudy.projectExpectedStudyInfo.isSrfTarget",

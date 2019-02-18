@@ -453,7 +453,7 @@
     <label for="${id}" class="radio-label ${cssClassLabel}">[#if i18nkey?has_content][@s.text name=i18nkey /][#else]${label}[/#if]</label>
   </div>
   [#elseif checked]
-    <p>${label}</p>
+    <p>[#if i18nkey?has_content][@s.text name=i18nkey /][#else]${label}[/#if]</p>
   [/#if]
 [/#macro]
 
