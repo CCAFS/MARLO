@@ -60,7 +60,7 @@ public class ProjectPolicySubIdoMySQLDAO extends AbstractMarloDAO<ProjectPolicyS
 
   @Override
   public List<ProjectPolicySubIdo> findAll() {
-    String query = "from " + ProjectPolicySubIdo.class.getName() + " where is_active=1";
+    String query = "from " + ProjectPolicySubIdo.class.getName();
     List<ProjectPolicySubIdo> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
