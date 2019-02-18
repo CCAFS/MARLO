@@ -98,7 +98,7 @@
           [#-- Is this complete --]
           [#local isThisComplete = false]
           [#-- Is new --]
-          [#local isNew = (action.isPolicyNew(element.id)) /]
+          [#local isNew = (action.isPolicyNew(item.id)) /]
           <tr>
             <td class="" >
               <a href="${dlurl}">${(item.id)!'ID'}</a>
