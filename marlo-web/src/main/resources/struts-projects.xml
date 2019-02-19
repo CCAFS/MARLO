@@ -128,7 +128,7 @@
     
     <action name="{crp}/studySummary"
       class="org.cgiar.ccafs.marlo.action.summaries.StudySummaryAction">
-      <interceptor-ref name="unloggedStack" />
+      <interceptor-ref name="privateStudyStack" />
       <result name="success" type="stream">
         <param name="inputName">inputStream</param>             
         <param name="contentType">${contentType}</param>               
@@ -184,6 +184,16 @@
         <param name="contentDisposition">filename="${fileName}"</param>
       </result>
     </action>
+    <action name="{crp}/projectContributionLp6Summary"
+      class="org.cgiar.ccafs.marlo.action.summaries.ProjectContributionLp6SummaryAction">
+      <interceptor-ref name="homeStack" />
+      <result name="success" type="stream">
+        <param name="inputName">inputStream</param>
+        <param name="contentType">${contentType}</param>               
+        <param name="contentDisposition">filename="${fileName}"</param>
+      </result>
+    </action>
+    
     <action name="{crp}/projectsSummary"
       class="org.cgiar.ccafs.marlo.action.summaries.ProjectsSummaryAction">
       <interceptor-ref name="homeStack" />
@@ -599,6 +609,25 @@
         <param name="projectOutcomeID">${projectOutcomeID}</param>
       </result>
     </action>
+    
+    <action name="{crp}/contributionsLP6"
+      class="org.cgiar.ccafs.marlo.action.projects.ProjectContributionToLP6Action">
+      <interceptor-ref name="editProjectLp6ContributionStack" /> 
+      <result name="input">/WEB-INF/crp/views/projects/projectContributionToLP6.ftl
+      </result>
+      <result name="success" type="redirectAction">
+        <param name="actionName">${crpSession}/contributionsLP6</param>
+        <param name="edit">true</param>
+        <param name="phaseID">${phaseID}</param>
+        <param name="projectID">${projectID}</param>
+      </result>
+      <result name="redirect" type="redirectAction">
+        <param name="actionName">${crpSession}/contributionsLP6</param>
+        <param name="edit">true</param>
+        <param name="phaseID">${phaseID}</param>
+        <param name="projectID">${projectID}</param>
+      </result>
+    </action>
 
     <action name="{crp}/partnerSave"
       class="org.cgiar.ccafs.marlo.action.projects.PartnersSaveAction">
@@ -611,7 +640,6 @@
         <param name="messageSent">${messageSent}</param>
       </result>
     </action>
-
 
     <action name="{crp}/contributionCrp"
       class="org.cgiar.ccafs.marlo.action.projects.ProjectOutcomeAction">

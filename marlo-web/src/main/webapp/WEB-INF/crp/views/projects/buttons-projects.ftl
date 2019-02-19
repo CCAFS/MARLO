@@ -7,6 +7,7 @@
   [#assign auditObjectName = "projectID" ]
   <input type="hidden"  name="${auditObjectName}"   value="${(auditObjectID)!}" />
   <input type="hidden"  name="project.projectInfo.id" value="${(project.projectInfo.id)!}"  class="projectInfo" />
+  <input type="hidden"  name="project.projectLp6Contribution.id" value="${(project.projectLp6Contribution.id)!}"  />
   <input type="hidden"  name="project.type"           value="${(project.type)!}" />
 [/#if]
 
@@ -16,7 +17,9 @@
   [#assign auditObjectID = auditObject['id'] ]
   [#assign auditObjectName = "policyID" ]
   <input type="hidden"  name="${auditObjectName}"   value="${(auditObjectID)!}" />
+  <input type="hidden"  name="policy.projectPolicyInfo.id" value="${(policy.projectPolicyInfo.id)!}"/>
 [/#if]
+
 
 [#-- General identifiers --]
 <input type="hidden"  name="id"                     value="${(auditObjectID)!}"/>

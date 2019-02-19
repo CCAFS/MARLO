@@ -1,38 +1,47 @@
-
-#projectOutcomesList {}
-
-#projectHighlights tr{
-    list-style: none;
-    padding-bottom: 9px;
-    border-bottom: 1px solid #e7e7e7;
-    font-size: 0.95em;
+#projectOutcomesList {
 }
 
-#projectHighlights tr a{
-   color: #444;
+#projectHighlights tr {
+  list-style: none;
+  padding-bottom: 9px;
+  border-bottom: 1px solid #e7e7e7;
+  font-size: 0.95em;
 }
 
-a {}
+#projectHighlights tr a {
+  color: #444;
+}
+
+a {
+}
 
 thead {
-    background: #f5f5f5;
-    color: #a9a8a8;
+  background: #f5f5f5;
+  color: #a9a8a8;
 }
 
 td {
-    vertical-align: middle !important;
+  vertical-align: middle !important;
 }
 
 span.icon-20 {
-    margin-top: 7px;
+  margin-top: 7px;
 }
 
 table#projectHighlights {
-    border: 1px solid #e6e6e6;
-    font-size: 0.94em;
+  border: 1px solid #e6e6e6;
+  font-size: 0.94em;
 }
 
 /* NEW */
-.panel .panel-body { 
+.panel .panel-body {
   min-height: 38px;
+}
+
+.quantification {
+  padding-top: 20px;
+}
+
+.optionPublicComponent button {
+  padding: 3px 10px 4px 10px;
 }

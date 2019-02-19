@@ -21,3 +21,9 @@
     {LiaisonInstitutions not loaded}
   [/#if]
 </ul>
+
+[#if annualReport2018]
+  <div class="alert alert-warning text-center" role="alert"> 
+    <strong> <span class="glyphicon glyphicon-warning-sign"></span> <a href="[@s.url namespace='/annualReport${annualReport2018?string("2018", "")}' action="${(crpSession)!}/crpProgress"][@s.param name ="liaisonInstitutionID"]${(liaisonInstitutionID)!}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" class="alert-link"> Go to Annual Report ${actualPhase.year} Version </a> </strong>
+  </div>
+[/#if]

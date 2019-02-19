@@ -198,7 +198,15 @@
 			</key>
 			<one-to-many
 				class="org.cgiar.ccafs.marlo.data.model.DeliverableLocation" />
-		</set>
+		</set>		
+		<set name="deliverableCrossCuttingMarkers" table="deliverable_cross_cutting_markers"
+      inverse="true" lazy="true" fetch="select">
+      <key>
+        <column name="deliverable_id" />
+      </key>
+      <one-to-many
+        class="org.cgiar.ccafs.marlo.data.model.DeliverableCrossCuttingMarker" />
+    </set>		
 		<many-to-one name="modifiedBy" class="org.cgiar.ccafs.marlo.data.model.User"
       fetch="select">
       <column name="modified_by" />
@@ -207,5 +215,13 @@
       <column name="modification_justification" sql-type="TEXT"
         not-null="true" />
     </property>		
+    
+    <set name="deliverableLp6s" table="project_lp6_contribution_deliverables" inverse="true"
+      order-by="id" lazy="true" fetch="select">
+      <key>
+        <column name="deliverable_id" not-null="true" />
+      </key>
+      <one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectLp6ContributionDeliverable" />
+    </set>
 	</class>
 </hibernate-mapping>

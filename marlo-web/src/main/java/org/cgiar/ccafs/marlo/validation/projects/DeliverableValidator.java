@@ -17,10 +17,14 @@ package org.cgiar.ccafs.marlo.validation.projects;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.CgiarCrossCuttingMarkerManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerPersonManager;
+import org.cgiar.ccafs.marlo.data.manager.RepIndTypeActivityManager;
+import org.cgiar.ccafs.marlo.data.model.CgiarCrossCuttingMarker;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
+import org.cgiar.ccafs.marlo.data.model.DeliverableCrossCuttingMarker;
 import org.cgiar.ccafs.marlo.data.model.DeliverableDissemination;
 import org.cgiar.ccafs.marlo.data.model.DeliverableInfo;
 import org.cgiar.ccafs.marlo.data.model.DeliverableIntellectualAsset;
@@ -35,6 +39,7 @@ import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
+import org.cgiar.ccafs.marlo.data.model.RepIndTypeActivity;
 import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
 
@@ -42,6 +47,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -62,13 +68,19 @@ public class DeliverableValidator extends BaseValidator {
   private GlobalUnitManager crpManager;
   private ProjectManager projectManager;
   private ProjectPartnerPersonManager projectPartnerPersonManager;
+  private CgiarCrossCuttingMarkerManager cgiarCrossCuttingMarkerManager;
+  private RepIndTypeActivityManager repIndTypeActivityManager;
 
   @Inject
   public DeliverableValidator(GlobalUnitManager crpManager, ProjectManager projectManager,
-    ProjectPartnerPersonManager projectPartnerPersonManager) {
+    ProjectPartnerPersonManager projectPartnerPersonManager,
+    CgiarCrossCuttingMarkerManager cgiarCrossCuttingMarkerManager,
+    RepIndTypeActivityManager repIndTypeActivityManager) {
     this.crpManager = crpManager;
     this.projectManager = projectManager;
     this.projectPartnerPersonManager = projectPartnerPersonManager;
+    this.cgiarCrossCuttingMarkerManager = cgiarCrossCuttingMarkerManager;
+    this.repIndTypeActivityManager = repIndTypeActivityManager;
   }
 
   private Path getAutoSaveFilePath(Deliverable deliverable, long crpID, BaseAction action) {
@@ -202,16 +214,19 @@ public class DeliverableValidator extends BaseValidator {
             }
           }
         }
-        DeliverableIntellectualAsset asset = deliverable.getIntellectualAsset();
-        // Validate Intellectual Asset
-        if (deliverable.getIntellectualAsset() != null
-          && deliverable.getIntellectualAsset().getHasPatentPvp() != null) {
-          this.validateIntellectualAsset(deliverable.getIntellectualAsset(), action);
-        } else {
-          action.addMessage(action.getText("intellectualAsset.applicants"));
-          action.getInvalidFields().put("input-deliverable.intellectualAsset.hasPatentPvp",
-            InvalidFieldsMessages.EMPTYFIELD);
+        if (action.hasSpecificities(action.crpDeliverableIntellectualAsset())) {
+          DeliverableIntellectualAsset asset = deliverable.getIntellectualAsset();
+          // Validate Intellectual Asset
+          if (deliverable.getIntellectualAsset() != null
+            && deliverable.getIntellectualAsset().getHasPatentPvp() != null) {
+            this.validateIntellectualAsset(deliverable.getIntellectualAsset(), action);
+          } else {
+            action.addMessage(action.getText("intellectualAsset.applicants"));
+            action.getInvalidFields().put("input-deliverable.intellectualAsset.hasPatentPvp",
+              InvalidFieldsMessages.EMPTYFIELD);
+          }
         }
+
 
         // Validate Deliverable Participant
         if (deliverable.getDeliverableParticipant() != null
@@ -313,13 +328,6 @@ public class DeliverableValidator extends BaseValidator {
         InvalidFieldsMessages.EMPTYFIELD);
     }
 
-    if (deliverableInfo.getCrossCuttingGender() == null && deliverableInfo.getCrossCuttingYouth() == null
-      && deliverableInfo.getCrossCuttingCapacity() == null && deliverableInfo.getCrossCuttingNa() == null) {
-      action.addMessage(action.getText("project.crossCuttingDimensions.readText"));
-      action.getInvalidFields().put("input-deliverable.deliverableInfo.crossCuttingNa",
-        action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Cross Cutting"}));
-    }
-
     if (!action.isReportingActive()) {
       if (!action.isCenterGlobalUnit()) {
         if (!(project.getProjecInfoPhase(action.getActualPhase()).getAdministrative() != null
@@ -366,6 +374,45 @@ public class DeliverableValidator extends BaseValidator {
         }
       }
     }
+    // Cross Cutting Markers
+    List<CgiarCrossCuttingMarker> cgiarCrossCuttingMarkers = cgiarCrossCuttingMarkerManager.findAll();
+
+    // Deliverable Cross Cutting Markers
+    if (deliverable.getCrossCuttingMarkers() != null) {
+      int i = 0;
+      for (CgiarCrossCuttingMarker cgiarCrossCuttingMarker : cgiarCrossCuttingMarkers) {
+        List<DeliverableCrossCuttingMarker> deliverableCrossCuttingMarkers =
+          deliverable.getCrossCuttingMarkers().stream()
+            .filter(
+              cc -> cc.isActive() && cc.getCgiarCrossCuttingMarker().getId().equals(cgiarCrossCuttingMarker.getId()))
+            .collect(Collectors.toList());
+        if (deliverableCrossCuttingMarkers != null && !deliverableCrossCuttingMarkers.isEmpty()) {
+          DeliverableCrossCuttingMarker deliverableCrossCuttingMarker = deliverableCrossCuttingMarkers.get(0);
+          if (deliverableCrossCuttingMarker.getRepIndGenderYouthFocusLevel() == null
+            || deliverableCrossCuttingMarker.getRepIndGenderYouthFocusLevel().getId() == -1) {
+            action.addMessage(cgiarCrossCuttingMarker.getName());
+            action.getInvalidFields().put(
+              "input-deliverable.crossCuttingMarkers[" + i + "].repIndGenderYouthFocusLevel.id",
+              InvalidFieldsMessages.EMPTYFIELD);
+          }
+        } else {
+          action.addMessage(cgiarCrossCuttingMarker.getName());
+          action.getInvalidFields().put(
+            "input-deliverable.crossCuttingMarkers[" + i + "].repIndGenderYouthFocusLevel.id",
+            InvalidFieldsMessages.EMPTYFIELD);
+        }
+        i++;
+      }
+
+    } else {
+      int i = 0;
+      for (CgiarCrossCuttingMarker cgiarCrossCuttingMarker : cgiarCrossCuttingMarkers) {
+        action.addMessage(cgiarCrossCuttingMarker.getName());
+        action.getInvalidFields().put("input-deliverable.crossCuttingMarkers[" + i + "].repIndGenderYouthFocusLevel.id",
+          InvalidFieldsMessages.EMPTYFIELD);
+        i++;
+      }
+    }
 
   }
 
@@ -382,11 +429,21 @@ public class DeliverableValidator extends BaseValidator {
         action.getInvalidFields().put("input-deliverable.deliverableParticipant.repIndTypeActivity.id",
           InvalidFieldsMessages.EMPTYFIELD);
       } else {
-        if (deliverableParticipant.getRepIndTypeActivity().getId()
-          .equals(action.getReportingIndTypeActivityAcademicDegree())) {
+        RepIndTypeActivity repIndTypeActivity =
+          repIndTypeActivityManager.getRepIndTypeActivityById(deliverableParticipant.getRepIndTypeActivity().getId());
+
+        if (repIndTypeActivity.getId().equals(action.getReportingIndTypeActivityAcademicDegree())) {
           if (!this.isValidString(deliverableParticipant.getAcademicDegree())) {
             action.addMessage(action.getText("involveParticipants.academicDegree"));
             action.getInvalidFields().put("input-deliverable.deliverableParticipant.academicDegree",
+              InvalidFieldsMessages.EMPTYFIELD);
+          }
+        }
+        if (repIndTypeActivity.getIsFormal()) {
+          if (deliverableParticipant.getRepIndTrainingTerm() == null
+            || deliverableParticipant.getRepIndTrainingTerm().getId() == -1) {
+            action.addMessage(action.getText("involveParticipants.trainingPeriod"));
+            action.getInvalidFields().put("input-deliverable.deliverableParticipant.repIndTrainingTerm.id",
               InvalidFieldsMessages.EMPTYFIELD);
           }
         }
@@ -481,6 +538,22 @@ public class DeliverableValidator extends BaseValidator {
           action.getInvalidFields().put("input-deliverable.dissemination.disseminationChannel",
             InvalidFieldsMessages.EMPTYFIELD);
         }
+      } else {
+        // Validate confidential
+        if (dissemination.getConfidential() != null) {
+          if (dissemination.getConfidential()) {
+            if (dissemination.getConfidentialUrl() == null || dissemination.getConfidentialUrl().trim().isEmpty()) {
+              action.addMessage(action.getText("project.deliverable.dissemination.confidentialUrl"));
+              action.getInvalidFields().put("input-deliverable.dissemination.confidentialUrl",
+                InvalidFieldsMessages.EMPTYFIELD);
+            }
+          }
+        } else {
+          action.addMessage(action.getText("project.deliverable.dissemination.confidential"));
+          action.getInvalidFields().put("input-deliverable.dissemination.confidential",
+            InvalidFieldsMessages.EMPTYFIELD);
+        }
+
       }
     } else {
       action.addMessage(action.getText("project.deliverable.dissemination.v.alreadyDisseminated"));
@@ -647,9 +720,12 @@ public class DeliverableValidator extends BaseValidator {
         try {
           if (deliverablePartnership != null && deliverablePartnership.getProjectPartnerPerson() != null
             && deliverablePartnership.getProjectPartnerPerson().getId() != null) {
-            if (projectPartnerPersonManager
-              .getProjectPartnerPersonById(deliverablePartnership.getProjectPartnerPerson().getId()).getProjectPartner()
-              .getInstitution().getAcronym().equalsIgnoreCase("IFPRI")) {
+            ProjectPartnerPerson projectPartnerPerson = projectPartnerPersonManager
+              .getProjectPartnerPersonById(deliverablePartnership.getProjectPartnerPerson().getId());
+            if (projectPartnerPerson.getProjectPartner() != null
+              && projectPartnerPerson.getProjectPartner().getInstitution() != null
+              && projectPartnerPerson.getProjectPartner().getInstitution().getAcronym() != null
+              && projectPartnerPerson.getProjectPartner().getInstitution().getAcronym().equalsIgnoreCase("IFPRI")) {
               if (action.hasSpecificities(APConstants.CRP_DIVISION_FS)) {
                 if (deliverablePartnership.getPartnerDivision() == null) {
                   action.addMessage(action.getText("deliverable.division"));
@@ -691,9 +767,12 @@ public class DeliverableValidator extends BaseValidator {
         try {
           if (deliverablePartnership != null && deliverablePartnership.getProjectPartnerPerson() != null
             && deliverablePartnership.getProjectPartnerPerson().getId() != null) {
-            if (projectPartnerPersonManager
-              .getProjectPartnerPersonById(deliverablePartnership.getProjectPartnerPerson().getId()).getProjectPartner()
-              .getInstitution().getAcronym().equalsIgnoreCase("IFPRI")) {
+            ProjectPartnerPerson projectPartnerPerson = projectPartnerPersonManager
+              .getProjectPartnerPersonById(deliverablePartnership.getProjectPartnerPerson().getId());
+            if (projectPartnerPerson.getProjectPartner() != null
+              && projectPartnerPerson.getProjectPartner().getInstitution() != null
+              && projectPartnerPerson.getProjectPartner().getInstitution().getAcronym() != null
+              && projectPartnerPerson.getProjectPartner().getInstitution().getAcronym().equalsIgnoreCase("IFPRI")) {
               if (action.hasSpecificities(APConstants.CRP_DIVISION_FS)) {
                 if (deliverablePartnership.getPartnerDivision() == null) {
                   action.addMessage(action.getText("deliverable.division"));
@@ -737,9 +816,12 @@ public class DeliverableValidator extends BaseValidator {
       && deliverable.getResponsiblePartner().getProjectPartner() != null) {
       if (deliverable.getResponsiblePartner() != null
         && deliverable.getResponsiblePartner().getProjectPartnerPerson() != null) {
-        if (projectPartnerPersonManager
-          .getProjectPartnerPersonById(deliverable.getResponsiblePartner().getProjectPartnerPerson().getId())
-          .getProjectPartner().getInstitution().getAcronym().equalsIgnoreCase("IFPRI")) {
+        ProjectPartnerPerson projectPartnerPerson = projectPartnerPersonManager
+          .getProjectPartnerPersonById(deliverable.getResponsiblePartner().getProjectPartnerPerson().getId());
+        if (projectPartnerPerson.getProjectPartner() != null
+          && projectPartnerPerson.getProjectPartner().getInstitution() != null
+          && projectPartnerPerson.getProjectPartner().getInstitution().getAcronym() != null
+          && projectPartnerPerson.getProjectPartner().getInstitution().getAcronym().equalsIgnoreCase("IFPRI")) {
           if (action.hasSpecificities(APConstants.CRP_DIVISION_FS)) {
             if (deliverable.getResponsiblePartner().getPartnerDivision() == null) {
               action.addMessage(action.getText("deliverable.division"));
@@ -822,7 +904,9 @@ public class DeliverableValidator extends BaseValidator {
     if (action.hasDeliverableRule(deliverableInfo, APConstants.DELIVERABLE_RULE_PUBLICATION_METADATA)) {
       if (deliverablePublicationMetadata != null && deliverablePublicationMetadata.getId() != null
         && deliverablePublicationMetadata.getId().intValue() != -1) {
+
         if (action.hasDeliverableRule(deliverableInfo, APConstants.DELIVERABLE_RULE_JORNAL_ARTICLES)) {
+          // Validation of Volume or Issue or Pages
           if (!this.isValidString(deliverablePublicationMetadata.getVolume())
             && !this.isValidString(deliverablePublicationMetadata.getIssue())
             && !this.isValidString(deliverablePublicationMetadata.getPages())) {
@@ -835,10 +919,18 @@ public class DeliverableValidator extends BaseValidator {
           }
         }
 
+        // Validation of Journal Article Name
         if (!(this.isValidString(deliverablePublicationMetadata.getJournal())
           && this.wordCount(deliverablePublicationMetadata.getJournal()) <= 100)) {
           action.addMessage(action.getText("project.deliverable.publication.v.journal"));
           action.getInvalidFields().put("input-deliverable.publication.journal", InvalidFieldsMessages.EMPTYFIELD);
+        }
+
+        // Validation of ISI Question
+        if (deliverablePublicationMetadata.getIsiPublication() == null) {
+          action.addMessage(action.getText("deliverable.isiPublication"));
+          action.getInvalidFields().put("input-deliverable.publication.isiPublication",
+            InvalidFieldsMessages.EMPTYFIELD);
         }
       }
     }

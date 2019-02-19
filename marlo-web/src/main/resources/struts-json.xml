@@ -76,6 +76,18 @@
         <param name="excludeNullProperties">true</param>
       </result>
     </action>
+    
+    <action name="uploadProjectLocationActivitiesCSV"
+      class="org.cgiar.ccafs.marlo.action.json.project.UploadProjectLocationActivitiesCSVAction">
+      <interceptor-ref name="defaultStack" />
+      <interceptor-ref name="fileUpload">
+        <param name="maximumSize">314572900</param>
+      </interceptor-ref>
+      <result type="json">
+        <param name="noCache">true</param>
+        <param name="excludeNullProperties">true</param>
+      </result>
+    </action>
 
     <action name="uploadBaseLine"
       class="org.cgiar.ccafs.marlo.action.json.project.UploadBaseLineFileAction">
@@ -235,6 +247,16 @@
         <param name="root">status</param>
       </result>
     </action>
+    
+    <action name="projectCollaborationValue"
+      class="org.cgiar.ccafs.marlo.action.json.project.ProjectCollaborationValue">
+      <result type="json">
+        <param name="noCache">true</param>
+        <param name="excludeNullProperties">true</param>
+        <param name="root">status</param>
+      </result>
+    </action>
+    
 
     <action name="SubIDObyIDO"
       class="org.cgiar.ccafs.marlo.action.json.impactpathway.SubIDOListAction">
@@ -519,6 +541,14 @@
     
     <action name="getProjectsByPhase"
       class="org.cgiar.ccafs.marlo.action.json.superadmin.bulkreplication.ProjectsByPhaseAction">
+      <result type="json">
+        <param name="noCache">true</param>
+        <param name="excludeNullProperties">true</param>
+      </result>
+    </action>
+    
+    <action name="getActivitiesByPhase"
+      class="org.cgiar.ccafs.marlo.action.json.superadmin.bulkreplication.ActivitiesByPhaseAction">
       <result type="json">
         <param name="noCache">true</param>
         <param name="excludeNullProperties">true</param>

@@ -146,5 +146,45 @@
       <one-to-many
         class="org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyRegion" />
     </set>
+    <set name="projectExpectedStudyLinks" table="project_expected_study_links"
+      inverse="true" lazy="true" fetch="select">
+      <key>
+        <column name="expected_id" />
+      </key>
+      <one-to-many
+        class="org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyLink" />
+    </set>
+    <set name="projectExpectedStudyPolicies" table="project_expected_study_policies"
+      inverse="true" lazy="true" fetch="select">
+      <key>
+        <column name="expected_id" />
+      </key>
+      <one-to-many
+        class="org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyPolicy" />
+    </set>
+    <set name="projectExpectedStudyQuantifications" table="project_expected_study_quantifications"
+      inverse="true" lazy="true" fetch="select">
+      <key>
+        <column name="expected_id" />
+      </key>
+      <one-to-many
+        class="org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyQuantification" />
+    </set>
+    <set name="projectExpectedStudyInnovations" table="project_expected_study_innovations"
+      inverse="true" lazy="true" fetch="select">
+      <key>
+        <column name="expected_id" />
+      </key>
+      <one-to-many
+        class="org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInnovation" />
+    </set>
+    <set name="projectExpectedStudyGeographicScopes" table="project_expected_study_geographic_scopes"
+      inverse="true" lazy="true" fetch="select">
+      <key>
+        <column name="expected_id" />
+      </key>
+      <one-to-many
+        class="org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyGeographicScope" />
+    </set>
 	</class>
 </hibernate-mapping>

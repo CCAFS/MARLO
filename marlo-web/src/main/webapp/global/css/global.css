@@ -286,10 +286,16 @@ span.badge.fieldError {
   min-height: 400px;
 }
 
-textarea.fieldError, input.fieldError, textarea.fieldError:focus, input.fieldError:focus, div.fieldError, label.fieldError {
+textarea.fieldError, input.fieldError, textarea.fieldError:focus, input.fieldError:focus{
   border-color: #F44 !important;
   background-color: #FFFAFA;
   color: #EE1D1D !important;
+}
+ 
+div.fieldError, label.fieldError {
+  border-color: #F44 !important; 
+  color: #EE1D1D !important;
+  font-weight: 600 !important;
 }
 
 .fieldFocus {
@@ -534,7 +540,7 @@ a.form-button.button-edit {
 .addButton {
   background: url('../../global/images/add.png') no-repeat 4px #2BA6CB;
   padding: 4px 25px 4px 28px;
-  margin: 5px 0;
+  margin: 5px 1px;
   text-decoration: none;
   cursor: pointer;
 }
@@ -1091,7 +1097,7 @@ select#partnerSave_activityPartner_partner_type_id {
 }
 
 .input-group .input-group-addon {
-  padding: 5px 12px;
+  padding: 4px 12px;
 }
 
 .dialog-content {
@@ -1872,7 +1878,7 @@ a.currentReportingSection li, a.currentSection li {
   /* padding: 0px 0px 0px 13px; */
 }
 
-#menu-contributionsCrpList {
+#menu-contributionsCrpList, #menu-contributionsLP6 {
   font-size: 0.88em !important;
 }
 

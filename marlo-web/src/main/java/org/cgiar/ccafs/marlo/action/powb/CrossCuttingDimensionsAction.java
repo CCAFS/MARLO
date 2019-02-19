@@ -20,6 +20,7 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableCrossCuttingMarkerManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
@@ -29,6 +30,7 @@ import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.CrossCuttingDimensionTableDTO;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
+import org.cgiar.ccafs.marlo.data.model.DeliverableCrossCuttingMarker;
 import org.cgiar.ccafs.marlo.data.model.DeliverableInfo;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnitProject;
@@ -79,6 +81,7 @@ public class CrossCuttingDimensionsAction extends BaseAction {
   private LiaisonInstitutionManager liaisonInstitutionManager;
 
   private CrpProgramManager crpProgramManager;
+  private DeliverableCrossCuttingMarkerManager deliverableCrossCuttingMarkerManager;
 
 
   private PowbSynthesisManager powbSynthesisManager;
@@ -104,7 +107,8 @@ public class CrossCuttingDimensionsAction extends BaseAction {
   public CrossCuttingDimensionsAction(APConfig config, GlobalUnitManager crpManager, AuditLogManager auditLogManager,
     LiaisonInstitutionManager liaisonInstitutionManager, CrossCuttingValidator validator,
     CrpProgramManager crpProgramManager, UserManager userManager, PowbSynthesisManager powbSynthesisManager,
-    PowbCrossCuttingDimensionManager powbCrossCuttingDimensionManager, DeliverableManager deliverableManager) {
+    PowbCrossCuttingDimensionManager powbCrossCuttingDimensionManager, DeliverableManager deliverableManager,
+    DeliverableCrossCuttingMarkerManager deliverableCrossCuttingMarkerManager) {
     super(config);
     this.crpManager = crpManager;
     this.auditLogManager = auditLogManager;
@@ -115,6 +119,7 @@ public class CrossCuttingDimensionsAction extends BaseAction {
     this.validator = validator;
     this.powbCrossCuttingDimensionManager = powbCrossCuttingDimensionManager;
     this.deliverableManager = deliverableManager;
+    this.deliverableCrossCuttingMarkerManager = deliverableCrossCuttingMarkerManager;
 
   }
 
@@ -293,7 +298,7 @@ public class CrossCuttingDimensionsAction extends BaseAction {
                     break;
                   }
                 } else {
-                  if (institution.getAcronym().equals("PMU")) {
+                  if (institution.getAcronym() != null && institution.getAcronym().equals("PMU")) {
                     liaisonInstitutionID = institution.getId();
                     isLeader = true;
                     break;
@@ -376,7 +381,8 @@ public class CrossCuttingDimensionsAction extends BaseAction {
 
     if (this.isFlagship()) {
       LiaisonInstitution pmuInstitution = loggedCrp.getLiaisonInstitutions().stream()
-        .filter(c -> c.getCrpProgram() == null && c.getAcronym().equals("PMU")).collect(Collectors.toList()).get(0);
+        .filter(c -> c.getCrpProgram() == null && c.getAcronym() != null && c.getAcronym().equals("PMU"))
+        .collect(Collectors.toList()).get(0);
       PowbSynthesis powbSynthesisDB = powbSynthesisManager.findSynthesis(phase.getId(), pmuInstitution.getId());
       if (powbSynthesisDB != null) {
         if (powbSynthesisDB.getPowbCrossCuttingDimension() != null) {
@@ -395,7 +401,8 @@ public class CrossCuttingDimensionsAction extends BaseAction {
     liaisonInstitutions.sort(Comparator.comparing(LiaisonInstitution::getAcronym));
     // ADD PMU as liasion Institutio too
     liaisonInstitutions.addAll(loggedCrp.getLiaisonInstitutions().stream()
-      .filter(c -> c.getCrpProgram() == null && c.getAcronym().equals("PMU")).collect(Collectors.toList()));
+      .filter(c -> c.getCrpProgram() == null && c.getAcronym() != null && c.getAcronym().equals("PMU"))
+      .collect(Collectors.toList()));
 
     // Get the tableC Information
     this.tableCInfo(phase);
@@ -570,86 +577,98 @@ public class CrossCuttingDimensionsAction extends BaseAction {
     if (deliverables != null && !deliverables.isEmpty()) {
       for (Deliverable deliverable : deliverables) {
         DeliverableInfo deliverableInfo = deliverable.getDeliverableInfo(phase);
+        // Load cross cutting markers
+        List<DeliverableCrossCuttingMarker> deliverableCrossCuttingMarkers =
+          deliverable.getDeliverableCrossCuttingMarkers().stream()
+            .filter(dc -> dc.isActive() && dc.getPhase().equals(phase)).collect(Collectors.toList());
+        if (deliverableCrossCuttingMarkers != null && !deliverableCrossCuttingMarkers.isEmpty()) {
+          deliverableInfo.getDeliverable().setCrossCuttingMarkers(deliverableCrossCuttingMarkers);
+        } else {
+          deliverableInfo.getDeliverable().setCrossCuttingMarkers(new ArrayList<>());
+        }
         if (deliverableInfo.isActive()) {
           deliverableList.add(deliverableInfo);
           boolean bGender = false;
           boolean bYouth = false;
           boolean bCapDev = false;
           boolean bClimate = false;
-          if (deliverableInfo.getCrossCuttingNa() != null && deliverableInfo.getCrossCuttingNa()) {
-            iGenderNa++;
-            iYouthNa++;
-            iCapDevNa++;
-            iClimateNa++;
-          } else {
-            // Gender
-            if (deliverableInfo.getCrossCuttingGender() != null && deliverableInfo.getCrossCuttingGender()) {
-              bGender = true;
-              if (deliverableInfo.getCrossCuttingScoreGender() != null
-                && deliverableInfo.getCrossCuttingScoreGender() == 1) {
-                iGenderSignificant++;
-              } else if (deliverableInfo.getCrossCuttingScoreGender() != null
-                && deliverableInfo.getCrossCuttingScoreGender() == 2) {
-                iGenderPrincipal++;
-              } else if (deliverableInfo.getCrossCuttingScoreGender() == null) {
-                iGenderNa++;
-              }
-            }
+          DeliverableCrossCuttingMarker deliverableCrossCuttingMarkerGender = deliverableCrossCuttingMarkerManager
+            .getDeliverableCrossCuttingMarkerId(deliverable.getId(), 1, phase.getId());
+          DeliverableCrossCuttingMarker deliverableCrossCuttingMarkerYouth = deliverableCrossCuttingMarkerManager
+            .getDeliverableCrossCuttingMarkerId(deliverable.getId(), 2, phase.getId());
+          DeliverableCrossCuttingMarker deliverableCrossCuttingMarkerCapDev = deliverableCrossCuttingMarkerManager
+            .getDeliverableCrossCuttingMarkerId(deliverable.getId(), 3, phase.getId());
+          DeliverableCrossCuttingMarker deliverableCrossCuttingMarkerClimateChange =
+            deliverableCrossCuttingMarkerManager.getDeliverableCrossCuttingMarkerId(deliverable.getId(), 4,
+              phase.getId());
 
-            // Youth
-            if (deliverableInfo.getCrossCuttingYouth() != null && deliverableInfo.getCrossCuttingYouth()) {
-              bYouth = true;
-              if (deliverableInfo.getCrossCuttingScoreYouth() != null
-                && deliverableInfo.getCrossCuttingScoreYouth() == 1) {
-                iYouthSignificant++;
-              } else if (deliverableInfo.getCrossCuttingScoreYouth() != null
-                && deliverableInfo.getCrossCuttingScoreYouth() == 2) {
-                iYouthPrincipal++;
-              } else if (deliverableInfo.getCrossCuttingScoreYouth() == null) {
-                iYouthNa++;
-              }
-            }
-
-            // CapDev
-            if (deliverableInfo.getCrossCuttingCapacity() != null && deliverableInfo.getCrossCuttingCapacity()) {
-              bCapDev = true;
-              if (deliverableInfo.getCrossCuttingScoreCapacity() != null
-                && deliverableInfo.getCrossCuttingScoreCapacity() == 1) {
-                iCapDevSignificant++;
-              } else if (deliverableInfo.getCrossCuttingScoreCapacity() != null
-                && deliverableInfo.getCrossCuttingScoreCapacity() == 2) {
-                iCapDevPrincipal++;
-              } else if (deliverableInfo.getCrossCuttingScoreCapacity() == null) {
-                iCapDevNa++;
-              }
-            }
-
-            // Climate Change
-            if (deliverableInfo.getCrossCuttingClimate() != null && deliverableInfo.getCrossCuttingClimate()) {
-              bClimate = true;
-              if (deliverableInfo.getCrossCuttingClimate() != null
-                && deliverableInfo.getCrossCuttingScoreClimate() == 1) {
-                iClimateSignificant++;
-              } else if (deliverableInfo.getCrossCuttingClimate() != null
-                && deliverableInfo.getCrossCuttingScoreClimate() == 2) {
-                iClimatePrincipal++;
-              } else if (deliverableInfo.getCrossCuttingClimate() == null) {
-                iClimateNa++;
-              }
-            }
-
-            if (!bGender) {
+          // Gender
+          if (deliverableCrossCuttingMarkerGender != null) {
+            bGender = true;
+            if (deliverableCrossCuttingMarkerGender.getRepIndGenderYouthFocusLevel() == null
+              || deliverableCrossCuttingMarkerGender.getRepIndGenderYouthFocusLevel().getId() == 1
+              || deliverableCrossCuttingMarkerGender.getRepIndGenderYouthFocusLevel().getId() == 4) {
               iGenderNa++;
+            } else if (deliverableCrossCuttingMarkerGender.getRepIndGenderYouthFocusLevel().getId() == 2) {
+              iGenderSignificant++;
+            } else if (deliverableCrossCuttingMarkerGender.getRepIndGenderYouthFocusLevel().getId() == 3) {
+              iGenderPrincipal++;
             }
-            if (!bYouth) {
+          }
+
+          // Youth
+          if (deliverableCrossCuttingMarkerYouth != null) {
+            bYouth = true;
+            if (deliverableCrossCuttingMarkerYouth.getRepIndGenderYouthFocusLevel() == null
+              || deliverableCrossCuttingMarkerYouth.getRepIndGenderYouthFocusLevel().getId() == 1
+              || deliverableCrossCuttingMarkerYouth.getRepIndGenderYouthFocusLevel().getId() == 4) {
               iYouthNa++;
+            } else if (deliverableCrossCuttingMarkerYouth.getRepIndGenderYouthFocusLevel().getId() == 2) {
+              iYouthSignificant++;
+            } else if (deliverableCrossCuttingMarkerYouth.getRepIndGenderYouthFocusLevel().getId() == 3) {
+              iYouthPrincipal++;
             }
-            if (!bCapDev) {
+          }
+
+          // CapDev
+          if (deliverableCrossCuttingMarkerCapDev != null) {
+            bCapDev = true;
+            if (deliverableCrossCuttingMarkerCapDev.getRepIndGenderYouthFocusLevel() == null
+              || deliverableCrossCuttingMarkerCapDev.getRepIndGenderYouthFocusLevel().getId() == 1
+              || deliverableCrossCuttingMarkerCapDev.getRepIndGenderYouthFocusLevel().getId() == 4) {
               iCapDevNa++;
+            } else if (deliverableCrossCuttingMarkerCapDev.getRepIndGenderYouthFocusLevel().getId() == 2) {
+              iCapDevSignificant++;
+            } else if (deliverableCrossCuttingMarkerCapDev.getRepIndGenderYouthFocusLevel().getId() == 3) {
+              iCapDevPrincipal++;
             }
-            if (!bClimate) {
+          }
+
+          // Climate Change
+          if (deliverableCrossCuttingMarkerClimateChange != null) {
+            bClimate = true;
+            if (deliverableCrossCuttingMarkerClimateChange.getRepIndGenderYouthFocusLevel() == null
+              || deliverableCrossCuttingMarkerClimateChange.getRepIndGenderYouthFocusLevel().getId() == 1
+              || deliverableCrossCuttingMarkerClimateChange.getRepIndGenderYouthFocusLevel().getId() == 4) {
               iClimateNa++;
+            } else if (deliverableCrossCuttingMarkerClimateChange.getRepIndGenderYouthFocusLevel().getId() == 2) {
+              iClimateSignificant++;
+            } else if (deliverableCrossCuttingMarkerClimateChange.getRepIndGenderYouthFocusLevel().getId() == 3) {
+              iClimatePrincipal++;
             }
+          }
+
+          if (!bGender) {
+            iGenderNa++;
+          }
+          if (!bYouth) {
+            iYouthNa++;
+          }
+          if (!bCapDev) {
+            iCapDevNa++;
+          }
+          if (!bClimate) {
+            iClimateNa++;
           }
         }
       }

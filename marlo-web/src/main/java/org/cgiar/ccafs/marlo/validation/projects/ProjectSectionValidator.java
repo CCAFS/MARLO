@@ -31,9 +31,14 @@ import org.cgiar.ccafs.marlo.data.manager.GlobalUnitProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyCountryManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyRegionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationCountryManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationRegionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectLocationElementTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyCountryManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyRegionManager;
 import org.cgiar.ccafs.marlo.data.model.Activity;
 import org.cgiar.ccafs.marlo.data.model.CaseStudyIndicator;
 import org.cgiar.ccafs.marlo.data.model.CaseStudyProject;
@@ -41,6 +46,7 @@ import org.cgiar.ccafs.marlo.data.model.CountryFundingSources;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableActivity;
+import org.cgiar.ccafs.marlo.data.model.DeliverableCrossCuttingMarker;
 import org.cgiar.ccafs.marlo.data.model.DeliverableDataSharingFile;
 import org.cgiar.ccafs.marlo.data.model.DeliverableDissemination;
 import org.cgiar.ccafs.marlo.data.model.DeliverableFile;
@@ -67,6 +73,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectClusterActivity;
 import org.cgiar.ccafs.marlo.data.model.ProjectComponentLesson;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyCountry;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyRegion;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
 import org.cgiar.ccafs.marlo.data.model.ProjectHighlight;
 import org.cgiar.ccafs.marlo.data.model.ProjectHighlightType;
@@ -74,9 +81,11 @@ import org.cgiar.ccafs.marlo.data.model.ProjectHighligthsTypeEnum;
 import org.cgiar.ccafs.marlo.data.model.ProjectInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCountry;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationRegion;
 import org.cgiar.ccafs.marlo.data.model.ProjectLeverage;
 import org.cgiar.ccafs.marlo.data.model.ProjectLocation;
 import org.cgiar.ccafs.marlo.data.model.ProjectLocationElementType;
+import org.cgiar.ccafs.marlo.data.model.ProjectLp6Contribution;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerContribution;
@@ -84,6 +93,9 @@ import org.cgiar.ccafs.marlo.data.model.ProjectPartnerLocation;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPartnership;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPartnershipLocation;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPartnershipResearchPhase;
+import org.cgiar.ccafs.marlo.data.model.ProjectPolicy;
+import org.cgiar.ccafs.marlo.data.model.ProjectPolicyCountry;
+import org.cgiar.ccafs.marlo.data.model.ProjectPolicyRegion;
 import org.cgiar.ccafs.marlo.data.model.ProjectScope;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
@@ -164,6 +176,8 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
 
   private final ProjectCenterMappingValidator projectCenterMappingValidator;
 
+  private final ProjectLP6Validator projectLP6Validator;
+
   private final DeliverableTypeManager deliverableTypeManager;
 
   private final DeliverableInfoManager deliverableInfoManager;
@@ -174,6 +188,15 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
 
   private final DeliverablePartnershipManager deliverablePartnershipManager;
 
+  private final ProjectPolicyValidator projectPolicyValidator;
+
+  private final ProjectPolicyCountryManager projectPolicyCountryManager;
+
+  private final ProjectPolicyRegionManager projectPolicyRegionManager;
+
+  private final ProjectExpectedStudyRegionManager projectExpectedStudyRegionManager;
+
+  private final ProjectInnovationRegionManager projectInnovationRegionManager;
 
   @Inject
   public ProjectSectionValidator(ProjectManager projectManager, ProjectLocationValidator locationValidator,
@@ -197,7 +220,11 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
     GlobalUnitProjectManager globalUnitProjectManager, DeliverableTypeManager deliverableTypeManager,
     DeliverableInfoManager deliverableInfoManager, DeliverableLocationManager deliverableLocationManager,
     DeliverableGeographicRegionManager deliverableGeographicRegionManager,
-    DeliverablePartnershipManager deliverablePartnershipManager) {
+    DeliverablePartnershipManager deliverablePartnershipManager, ProjectLP6Validator projectLP6Validator,
+    ProjectPolicyValidator projectPolicyValidator, ProjectPolicyManager projectPolicyManager,
+    ProjectPolicyCountryManager projectPolicyCountryManager, ProjectPolicyRegionManager projectPolicyRegionManager,
+    ProjectExpectedStudyRegionManager projectExpectedStudyRegionManager,
+    ProjectInnovationRegionManager projectInnovationRegionManager) {
     this.projectManager = projectManager;
     this.locationValidator = locationValidator;
     this.projectBudgetsValidator = projectBudgetsValidator;
@@ -234,6 +261,12 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
     this.deliverableLocationManager = deliverableLocationManager;
     this.deliverableGeographicRegionManager = deliverableGeographicRegionManager;
     this.deliverablePartnershipManager = deliverablePartnershipManager;
+    this.projectLP6Validator = projectLP6Validator;
+    this.projectPolicyCountryManager = projectPolicyCountryManager;
+    this.projectPolicyValidator = projectPolicyValidator;
+    this.projectPolicyRegionManager = projectPolicyRegionManager;
+    this.projectExpectedStudyRegionManager = projectExpectedStudyRegionManager;
+    this.projectInnovationRegionManager = projectInnovationRegionManager;
   }
 
 
@@ -505,7 +538,6 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
 
   }
 
-
   public void validateCCAFSOutcomes(BaseAction action, Long projectID) {
     // Getting the project information.
     Project project = projectManager.getProjectById(projectID);
@@ -515,6 +547,19 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
     projectCCAFSOutcomeValidator.validate(action, project, false);
 
 
+  }
+
+  public void validateContributionLp6(BaseAction action, Long projectID) {
+    // Getting the project information.
+    Project project = projectManager.getProjectById(projectID);
+
+    List<ProjectLp6Contribution> lp6Contributions = project.getProjectLp6Contributions().stream()
+      .filter(pl -> pl.isActive() && pl.getPhase().equals(action.getActualPhase())).collect(Collectors.toList());
+
+    if (lp6Contributions != null && lp6Contributions.size() > 0) {
+      ProjectLp6Contribution projectLp6Contribution = lp6Contributions.get(0);
+      projectLP6Validator.validate(action, project, projectLp6Contribution, false);
+    }
   }
 
   public void validateHighlight(BaseAction action, Long projectID) {
@@ -566,6 +611,13 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
         innovation.getProjectInnovationInfo(phase);
       }
 
+
+      // Setup Geographic Scope
+      if (innovation.getProjectInnovationGeographicScopes() != null) {
+        innovation.setGeographicScopes(new ArrayList<>(innovation.getProjectInnovationGeographicScopes().stream()
+          .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
+      }
+
       // Innovation Countries List
       if (innovation.getProjectInnovationCountries() == null) {
         innovation.setCountries(new ArrayList<>());
@@ -574,6 +626,18 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
           projectInnovationCountryManager.getInnovationCountrybyPhase(innovation.getId(), phase.getId());
         innovation.setCountries(countries);
       }
+
+      if (innovation.getProjectInnovationRegions() == null) {
+        innovation.setRegions(new ArrayList<>());
+      } else {
+        List<ProjectInnovationRegion> geographics =
+          projectInnovationRegionManager.getInnovationRegionbyPhase(innovation.getId(), phase.getId());
+
+        // Load Regions
+        innovation.setRegions(geographics.stream().filter(sc -> sc.getLocElement().getLocElementType().getId() == 1)
+          .collect(Collectors.toList()));
+      }
+
 
       // Innovation Organization Type List
       if (innovation.getProjectInnovationOrganizations() != null) {
@@ -585,6 +649,13 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
       if (innovation.getProjectInnovationDeliverables() != null) {
         innovation.setDeliverables(new ArrayList<>(innovation.getProjectInnovationDeliverables().stream()
           .filter(d -> d.isActive() && d.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
+      }
+
+      // Innovation Contributing organizations List
+      if (innovation.getProjectInnovationContributingOrganization() != null) {
+        innovation
+          .setContributingOrganizations(new ArrayList<>(innovation.getProjectInnovationContributingOrganization()
+            .stream().filter(d -> d.getPhase().equals(phase)).collect(Collectors.toList())));
       }
 
       // Innovation Crp list
@@ -654,6 +725,108 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
       project.getIpProjectContributionOverviews().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
     projectOutputsValidator.validate(action, project, false);
 
+
+  }
+
+  public void validatePolicy(BaseAction action, Long projectID) {
+    // Getting the project information.
+    Project project = projectManager.getProjectById(projectID);
+
+    Phase phase = action.getActualPhase();
+
+    List<ProjectPolicy> policies =
+      project.getProjectPolicies().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+    project.setPolicies(new ArrayList<ProjectPolicy>());
+    for (ProjectPolicy projectPolicy : policies) {
+      if (projectPolicy.getProjectPolicyInfo(phase) != null) {
+        project.getPolicies().add(projectPolicy);
+      }
+    }
+
+    for (ProjectPolicy policy : project.getPolicies()) {
+
+      if (policy.getProjectPolicyInfo() == null) {
+        policy.getProjectPolicyInfo(phase);
+      }
+
+
+      // Setup Geographic Scope
+      if (policy.getProjectPolicyGeographicScopes() != null) {
+        policy.setGeographicScopes(new ArrayList<>(policy.getProjectPolicyGeographicScopes().stream()
+          .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
+      }
+
+
+      // Policy Countries List
+      if (policy.getProjectPolicyCountries() == null) {
+        policy.setCountries(new ArrayList<>());
+
+      } else {
+        List<ProjectPolicyCountry> geographics =
+          projectPolicyCountryManager.getPolicyCountrybyPhase(policy.getId(), phase.getId());
+
+        // Load Countries
+        policy.setCountries(geographics.stream().filter(sc -> sc.getLocElement().getLocElementType().getId() == 2)
+          .collect(Collectors.toList()));
+
+      }
+
+      if (policy.getProjectPolicyRegions() == null) {
+        policy.setRegions(new ArrayList<>());
+      } else {
+        List<ProjectPolicyRegion> geographics =
+          projectPolicyRegionManager.getPolicyRegionbyPhase(policy.getId(), phase.getId());
+
+        // Load Regions
+        policy.setRegions(geographics.stream().filter(sc -> sc.getLocElement().getLocElementType().getId() == 1)
+          .collect(Collectors.toList()));
+      }
+
+
+      // Policy Type ( Whose Policy is This ? ) List
+      if (policy.getProjectPolicyOwners() != null) {
+        policy.setOwners(new ArrayList<>(policy.getProjectPolicyOwners().stream()
+          .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
+      }
+
+      // Crp List
+      if (policy.getProjectPolicyCrps() != null) {
+        policy.setCrps(new ArrayList<>(policy.getProjectPolicyCrps().stream()
+          .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
+      }
+
+      // SubIdos List
+      if (policy.getProjectPolicySubIdos() != null) {
+        policy.setSubIdos(new ArrayList<>(policy.getProjectPolicySubIdos().stream()
+          .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
+      }
+
+      // Innovations List
+      if (policy.getProjectPolicyInnovations() != null) {
+        policy.setInnovations(new ArrayList<>(policy.getProjectPolicyInnovations().stream()
+          .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
+      }
+
+      // Evidence List
+      if (policy.getProjectExpectedStudyPolicies() != null) {
+        policy.setEvidences(new ArrayList<>(policy.getProjectExpectedStudyPolicies().stream()
+          .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
+      }
+
+      // Cgiar Cross Cutting Markers List
+      if (policy.getCrossCuttingMarkers() != null) {
+        policy.setCrossCuttingMarkers(new ArrayList<>(policy.getProjectPolicyCrossCuttingMarkers().stream()
+          .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
+      }
+
+      if (policy.getCountries() != null) {
+        for (ProjectPolicyCountry country : policy.getCountries()) {
+          policy.getCountriesIds().add(country.getLocElement().getIsoAlpha2());
+        }
+      }
+
+      projectPolicyValidator.validate(action, project, policy, false);
+    }
 
   }
 
@@ -895,6 +1068,13 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
         deliverable.setGenderLevels(deliverable.getDeliverableGenderLevels().stream()
           .filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList()));
 
+        List<DeliverableCrossCuttingMarker> deliverableCrossCuttingMarkers =
+          deliverable.getDeliverableCrossCuttingMarkers().stream()
+            .filter(dc -> dc.isActive() && dc.getPhase().equals(action.getActualPhase())).collect(Collectors.toList());
+
+        if (deliverableCrossCuttingMarkers != null && !deliverableCrossCuttingMarkers.isEmpty()) {
+          deliverable.setCrossCuttingMarkers(deliverableCrossCuttingMarkers);
+        }
 
         if (action.isReportingActive() || action.isUpKeepActive()) {
 
@@ -961,20 +1141,23 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
             deliverable.getFiles().add(deFile);
           }
 
-          if (deliverable.getDeliverableIntellectualAssets() != null) {
-            List<DeliverableIntellectualAsset> intellectualAssets = deliverable.getDeliverableIntellectualAssets()
-              .stream().filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList());
+          if (action.hasSpecificities(action.crpDeliverableIntellectualAsset())) {
+            if (deliverable.getDeliverableIntellectualAssets() != null) {
+              List<DeliverableIntellectualAsset> intellectualAssets = deliverable.getDeliverableIntellectualAssets()
+                .stream().filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList());
 
-            if (intellectualAssets.size() > 0) {
-              DeliverableIntellectualAsset asset = deliverableIntellectualAssetManager
-                .getDeliverableIntellectualAssetById(intellectualAssets.get(0).getId());
-              deliverable.setIntellectualAsset(deliverableIntellectualAssetManager
-                .getDeliverableIntellectualAssetById(intellectualAssets.get(0).getId()));
+              if (intellectualAssets.size() > 0) {
+                DeliverableIntellectualAsset asset = deliverableIntellectualAssetManager
+                  .getDeliverableIntellectualAssetById(intellectualAssets.get(0).getId());
+                deliverable.setIntellectualAsset(deliverableIntellectualAssetManager
+                  .getDeliverableIntellectualAssetById(intellectualAssets.get(0).getId()));
 
-            } else {
-              deliverable.setIntellectualAsset(new DeliverableIntellectualAsset());
+              } else {
+                deliverable.setIntellectualAsset(new DeliverableIntellectualAsset());
+              }
             }
           }
+
           if (deliverable.getDeliverableParticipants() != null) {
             List<DeliverableParticipant> deliverableParticipants = deliverable.getDeliverableParticipants().stream()
               .filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList());
@@ -1094,6 +1277,14 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
         expectedStudy.getProjectExpectedStudyInfo(phase);
       }
 
+
+      // Setup Geographic Scope
+      if (expectedStudy.getProjectExpectedStudyGeographicScopes() != null) {
+        expectedStudy.setGeographicScopes(new ArrayList<>(expectedStudy.getProjectExpectedStudyGeographicScopes()
+          .stream().filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
+      }
+
+
       // Expected Study Countries List
       if (expectedStudy.getProjectExpectedStudyCountries() == null) {
         expectedStudy.setCountries(new ArrayList<>());
@@ -1105,56 +1296,86 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
         expectedStudy.setCountries(countries);
       }
 
+      if (expectedStudy.getProjectExpectedStudyRegions() == null) {
+        expectedStudy.setStudyRegions(new ArrayList<>());
+      } else {
+        List<ProjectExpectedStudyRegion> geographics =
+          projectExpectedStudyRegionManager.getProjectExpectedStudyRegionbyPhase(expectedStudy.getId(), phase.getId());
+
+        // Load Regions
+        expectedStudy.setStudyRegions(geographics.stream()
+          .filter(sc -> sc.getLocElement().getLocElementType().getId() == 1).collect(Collectors.toList()));
+      }
+
+
       // Expected Study SubIdos List
       if (expectedStudy.getProjectExpectedStudySubIdos() != null) {
         expectedStudy.setSubIdos(new ArrayList<>(expectedStudy.getProjectExpectedStudySubIdos().stream()
-          .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
+          .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
       }
 
       // Expected Study Flagship List
       if (expectedStudy.getProjectExpectedStudyFlagships() != null) {
         expectedStudy.setFlagships(new ArrayList<>(expectedStudy.getProjectExpectedStudyFlagships().stream()
-          .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
+          .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()
+            && o.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+          .collect(Collectors.toList())));
       }
 
       // Expected Study Regions List
       if (expectedStudy.getProjectExpectedStudyFlagships() != null) {
         expectedStudy.setRegions(new ArrayList<>(expectedStudy.getProjectExpectedStudyFlagships().stream()
-          .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())
+          .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()
             && o.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue())
           .collect(Collectors.toList())));
-      }
-
-      // Expected Study Geographic Regions List
-      if (expectedStudy.getProjectExpectedStudyCountries() != null) {
-        expectedStudy.setStudyRegions(new ArrayList<>(
-          projectExpectedStudyCountryManager.getProjectExpectedStudyCountrybyPhase(expectedStudy.getId(), phase.getId())
-            .stream().filter(le -> le.isActive() && le.getLocElement().getLocElementType().getId() == 1)
-            .collect(Collectors.toList())));
       }
 
       // Expected Study Crp List
       if (expectedStudy.getProjectExpectedStudyCrps() != null) {
         expectedStudy.setCrps(new ArrayList<>(expectedStudy.getProjectExpectedStudyCrps().stream()
-          .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
+          .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
       }
 
       // Expected Study Institutions List
       if (expectedStudy.getProjectExpectedStudyInstitutions() != null) {
         expectedStudy.setInstitutions(new ArrayList<>(expectedStudy.getProjectExpectedStudyInstitutions().stream()
-          .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
+          .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
       }
 
       // Expected Study Srf Target List
       if (expectedStudy.getProjectExpectedStudySrfTargets() != null) {
         expectedStudy.setSrfTargets(new ArrayList<>(expectedStudy.getProjectExpectedStudySrfTargets().stream()
-          .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
+          .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
       }
 
       // Expected Study Projects List
       if (expectedStudy.getExpectedStudyProjects() != null) {
         expectedStudy.setProjects(new ArrayList<>(expectedStudy.getExpectedStudyProjects().stream()
-          .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
+          .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
+      }
+
+      // Expected Study Link List
+      if (expectedStudy.getProjectExpectedStudyLinks() != null) {
+        expectedStudy.setLinks(new ArrayList<>(expectedStudy.getProjectExpectedStudyLinks().stream()
+          .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
+      }
+
+      // Expected Study Policies List
+      if (expectedStudy.getProjectExpectedStudyPolicies() != null) {
+        expectedStudy.setPolicies(new ArrayList<>(expectedStudy.getProjectExpectedStudyPolicies().stream()
+          .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
+      }
+
+      // Expected Study Quantifications List
+      if (expectedStudy.getProjectExpectedStudyQuantifications() != null) {
+        expectedStudy.setQuantifications(new ArrayList<>(expectedStudy.getProjectExpectedStudyQuantifications().stream()
+          .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
+      }
+
+      // Expected Study Quantifications List
+      if (expectedStudy.getProjectExpectedStudyInnovations() != null) {
+        expectedStudy.setInnovations(new ArrayList<>(expectedStudy.getProjectExpectedStudyInnovations().stream()
+          .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
       }
 
       if (expectedStudy.getCountries() != null) {

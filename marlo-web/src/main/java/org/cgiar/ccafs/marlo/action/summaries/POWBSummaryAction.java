@@ -16,6 +16,7 @@
 package org.cgiar.ccafs.marlo.action.summaries;
 
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableCrossCuttingMarkerManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.PowbExpectedCrpProgressManager;
@@ -30,6 +31,7 @@ import org.cgiar.ccafs.marlo.data.model.CrpPpaPartner;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
+import org.cgiar.ccafs.marlo.data.model.DeliverableCrossCuttingMarker;
 import org.cgiar.ccafs.marlo.data.model.DeliverableInfo;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnitProject;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
@@ -118,6 +120,7 @@ public class POWBSummaryAction extends BaseSummariesAction implements Summary {
   private CrossCuttingDimensionTableDTO tableC;
   private List<DeliverableInfo> deliverableList;
   private List<PowbEvidencePlannedStudyDTO> flagshipPlannedList;
+  private DeliverableCrossCuttingMarkerManager deliverableCrossCuttingMarkerManager;
 
   // Parameter for tables E and F
   Double totalw1w2 = 0.0, totalw3Bilateral = 0.0, grandTotal = 0.0;
@@ -139,13 +142,14 @@ public class POWBSummaryAction extends BaseSummariesAction implements Summary {
     PowbExpectedCrpProgressManager powbExpectedCrpProgressManager,
     PowbExpenditureAreasManager powbExpenditureAreasManager, PowbSynthesisManager powbSynthesisManager,
     ProjectExpectedStudyManager projectExpectedStudyManager, ResourceManager resourceManager,
-    ProjectManager projectManager) {
+    ProjectManager projectManager, DeliverableCrossCuttingMarkerManager deliverableCrossCuttingMarkerManager) {
     super(config, crpManager, phaseManager, projectManager);
     this.powbExpectedCrpProgressManager = powbExpectedCrpProgressManager;
     this.powbExpenditureAreasManager = powbExpenditureAreasManager;
     this.powbSynthesisManager = powbSynthesisManager;
     this.projectExpectedStudyManager = projectExpectedStudyManager;
     this.resourceManager = resourceManager;
+    this.deliverableCrossCuttingMarkerManager = deliverableCrossCuttingMarkerManager;
   }
 
   /**
@@ -1138,7 +1142,7 @@ public class POWBSummaryAction extends BaseSummariesAction implements Summary {
   }
 
   public boolean isPMU(LiaisonInstitution institution) {
-    if (institution.getAcronym().equals("PMU")) {
+    if (institution.getAcronym() != null && institution.getAcronym().equals("PMU")) {
       return true;
     }
     return false;
@@ -1308,110 +1312,111 @@ public class POWBSummaryAction extends BaseSummariesAction implements Summary {
             boolean bGender = false;
             boolean bYouth = false;
             boolean bCapDev = false;
-            if (deliverableInfo.getCrossCuttingNa() != null && deliverableInfo.getCrossCuttingNa()) {
-              iGenderNa++;
-              iYouthNa++;
-              iCapDevNa++;
-            } else {
-              // Gender
-              if (deliverableInfo.getCrossCuttingGender() != null && deliverableInfo.getCrossCuttingGender()) {
-                bGender = true;
-                if (deliverableInfo.getCrossCuttingScoreGender() != null
-                  && deliverableInfo.getCrossCuttingScoreGender() == 1) {
-                  iGenderSignificant++;
-                } else if (deliverableInfo.getCrossCuttingScoreGender() != null
-                  && deliverableInfo.getCrossCuttingScoreGender() == 2) {
-                  iGenderPrincipal++;
-                } else if (deliverableInfo.getCrossCuttingScoreGender() == null) {
-                  iGenderNa++;
-                }
-              }
+            DeliverableCrossCuttingMarker deliverableCrossCuttingMarkerGender = deliverableCrossCuttingMarkerManager
+              .getDeliverableCrossCuttingMarkerId(deliverable.getId(), 1, phase.getId());
+            DeliverableCrossCuttingMarker deliverableCrossCuttingMarkerYouth = deliverableCrossCuttingMarkerManager
+              .getDeliverableCrossCuttingMarkerId(deliverable.getId(), 2, phase.getId());
+            DeliverableCrossCuttingMarker deliverableCrossCuttingMarkerCapDev = deliverableCrossCuttingMarkerManager
+              .getDeliverableCrossCuttingMarkerId(deliverable.getId(), 3, phase.getId());
 
-              // Youth
-              if (deliverableInfo.getCrossCuttingYouth() != null && deliverableInfo.getCrossCuttingYouth()) {
-                bYouth = true;
-                if (deliverableInfo.getCrossCuttingScoreYouth() != null
-                  && deliverableInfo.getCrossCuttingScoreYouth() == 1) {
-                  iYouthSignificant++;
-                } else if (deliverableInfo.getCrossCuttingScoreYouth() != null
-                  && deliverableInfo.getCrossCuttingScoreYouth() == 2) {
-                  iYouthPrincipal++;
-                } else if (deliverableInfo.getCrossCuttingScoreYouth() == null) {
-                  iYouthNa++;
-                }
-              }
-
-              // CapDev
-              if (deliverableInfo.getCrossCuttingCapacity() != null && deliverableInfo.getCrossCuttingCapacity()) {
-                bCapDev = true;
-                if (deliverableInfo.getCrossCuttingScoreCapacity() != null
-                  && deliverableInfo.getCrossCuttingScoreCapacity() == 1) {
-                  iCapDevSignificant++;
-                } else if (deliverableInfo.getCrossCuttingScoreCapacity() != null
-                  && deliverableInfo.getCrossCuttingScoreCapacity() == 2) {
-                  iCapDevPrincipal++;
-                } else if (deliverableInfo.getCrossCuttingScoreCapacity() == null) {
-                  iCapDevNa++;
-                }
-              }
-
-              if (!bGender) {
+            // Gender
+            if (deliverableCrossCuttingMarkerGender != null) {
+              bGender = true;
+              if (deliverableCrossCuttingMarkerGender.getRepIndGenderYouthFocusLevel() == null
+                || deliverableCrossCuttingMarkerGender.getRepIndGenderYouthFocusLevel().getId() == 1
+                || deliverableCrossCuttingMarkerGender.getRepIndGenderYouthFocusLevel().getId() == 4) {
                 iGenderNa++;
+              } else if (deliverableCrossCuttingMarkerGender.getRepIndGenderYouthFocusLevel().getId() == 2) {
+                iGenderSignificant++;
+              } else if (deliverableCrossCuttingMarkerGender.getRepIndGenderYouthFocusLevel().getId() == 3) {
+                iGenderPrincipal++;
               }
-              if (!bYouth) {
+            }
+
+            // Youth
+            if (deliverableCrossCuttingMarkerYouth != null) {
+              bYouth = true;
+              if (deliverableCrossCuttingMarkerYouth.getRepIndGenderYouthFocusLevel() == null
+                || deliverableCrossCuttingMarkerYouth.getRepIndGenderYouthFocusLevel().getId() == 1
+                || deliverableCrossCuttingMarkerYouth.getRepIndGenderYouthFocusLevel().getId() == 4) {
                 iYouthNa++;
+              } else if (deliverableCrossCuttingMarkerYouth.getRepIndGenderYouthFocusLevel().getId() == 2) {
+                iYouthSignificant++;
+              } else if (deliverableCrossCuttingMarkerYouth.getRepIndGenderYouthFocusLevel().getId() == 3) {
+                iYouthPrincipal++;
               }
-              if (!bCapDev) {
+            }
+
+            // CapDev
+            if (deliverableCrossCuttingMarkerCapDev != null) {
+              bCapDev = true;
+              if (deliverableCrossCuttingMarkerCapDev.getRepIndGenderYouthFocusLevel() == null
+                || deliverableCrossCuttingMarkerCapDev.getRepIndGenderYouthFocusLevel().getId() == 1
+                || deliverableCrossCuttingMarkerCapDev.getRepIndGenderYouthFocusLevel().getId() == 4) {
                 iCapDevNa++;
+              } else if (deliverableCrossCuttingMarkerCapDev.getRepIndGenderYouthFocusLevel().getId() == 2) {
+                iCapDevSignificant++;
+              } else if (deliverableCrossCuttingMarkerCapDev.getRepIndGenderYouthFocusLevel().getId() == 3) {
+                iCapDevPrincipal++;
               }
+            }
+
+            if (!bGender) {
+              iGenderNa++;
+            }
+            if (!bYouth) {
+              iYouthNa++;
+            }
+            if (!bCapDev) {
+              iCapDevNa++;
             }
           }
         }
       }
-      tableC = new CrossCuttingDimensionTableDTO();
-      int iDeliverableCount = deliverableList.size();
-
-      tableC.setTotal(iDeliverableCount);
-
-      double dGenderPrincipal = (iGenderPrincipal * 100.0) / iDeliverableCount;
-      double dGenderSignificant = (iGenderSignificant * 100.0) / iDeliverableCount;
-      double dGenderNa = (iGenderNa * 100.0) / iDeliverableCount;
-      double dYouthPrincipal = (iYouthPrincipal * 100.0) / iDeliverableCount;
-      double dYouthSignificant = (iYouthSignificant * 100.0) / iDeliverableCount;
-      double dYouthNa = (iYouthNa * 100.0) / iDeliverableCount;
-      double dCapDevPrincipal = (iCapDevPrincipal * 100.0) / iDeliverableCount;
-      double dCapDevSignificant = (iCapDevSignificant * 100.0) / iDeliverableCount;
-      double dCapDevNa = (iCapDevNa * 100.0) / iDeliverableCount;
-
-
-      // Gender
-      tableC.setGenderPrincipal(iGenderPrincipal);
-      tableC.setGenderSignificant(iGenderSignificant);
-      tableC.setGenderScored(iGenderNa);
-
-      tableC.setPercentageGenderPrincipal(dGenderPrincipal);
-      tableC.setPercentageGenderSignificant(dGenderSignificant);
-      tableC.setPercentageGenderNotScored(dGenderNa);
-      // Youth
-      tableC.setYouthPrincipal(iYouthPrincipal);
-      tableC.setYouthSignificant(iYouthSignificant);
-      tableC.setYouthScored(iYouthNa);
-
-      tableC.setPercentageYouthPrincipal(dYouthPrincipal);
-      tableC.setPercentageYouthSignificant(dYouthSignificant);
-      tableC.setPercentageYouthNotScored(dYouthNa);
-      // CapDev
-      tableC.setCapDevPrincipal(iCapDevPrincipal);
-      tableC.setCapDevSignificant(iCapDevSignificant);
-      tableC.setCapDevScored(iCapDevNa);
-
-      tableC.setPercentageCapDevPrincipal(dCapDevPrincipal);
-      tableC.setPercentageCapDevSignificant(dCapDevSignificant);
-      tableC.setPercentageCapDevNotScored(dCapDevNa);
-
-
     }
+    tableC = new CrossCuttingDimensionTableDTO();
+    int iDeliverableCount = deliverableList.size();
+
+    tableC.setTotal(iDeliverableCount);
+
+    double dGenderPrincipal = (iGenderPrincipal * 100.0) / iDeliverableCount;
+    double dGenderSignificant = (iGenderSignificant * 100.0) / iDeliverableCount;
+    double dGenderNa = (iGenderNa * 100.0) / iDeliverableCount;
+    double dYouthPrincipal = (iYouthPrincipal * 100.0) / iDeliverableCount;
+    double dYouthSignificant = (iYouthSignificant * 100.0) / iDeliverableCount;
+    double dYouthNa = (iYouthNa * 100.0) / iDeliverableCount;
+    double dCapDevPrincipal = (iCapDevPrincipal * 100.0) / iDeliverableCount;
+    double dCapDevSignificant = (iCapDevSignificant * 100.0) / iDeliverableCount;
+    double dCapDevNa = (iCapDevNa * 100.0) / iDeliverableCount;
+
+
+    // Gender
+    tableC.setGenderPrincipal(iGenderPrincipal);
+    tableC.setGenderSignificant(iGenderSignificant);
+    tableC.setGenderScored(iGenderNa);
+
+    tableC.setPercentageGenderPrincipal(dGenderPrincipal);
+    tableC.setPercentageGenderSignificant(dGenderSignificant);
+    tableC.setPercentageGenderNotScored(dGenderNa);
+    // Youth
+    tableC.setYouthPrincipal(iYouthPrincipal);
+    tableC.setYouthSignificant(iYouthSignificant);
+    tableC.setYouthScored(iYouthNa);
+
+    tableC.setPercentageYouthPrincipal(dYouthPrincipal);
+    tableC.setPercentageYouthSignificant(dYouthSignificant);
+    tableC.setPercentageYouthNotScored(dYouthNa);
+    // CapDev
+    tableC.setCapDevPrincipal(iCapDevPrincipal);
+    tableC.setCapDevSignificant(iCapDevSignificant);
+    tableC.setCapDevScored(iCapDevNa);
+
+    tableC.setPercentageCapDevPrincipal(dCapDevPrincipal);
+    tableC.setPercentageCapDevSignificant(dCapDevSignificant);
+    tableC.setPercentageCapDevNotScored(dCapDevNa);
+
 
   }
+
 
 }

@@ -18,12 +18,13 @@ package org.cgiar.ccafs.marlo.action.summaries;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrossCuttingScoringManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableCrossCuttingMarkerManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.Activity;
-import org.cgiar.ccafs.marlo.data.model.CrossCuttingScoring;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
+import org.cgiar.ccafs.marlo.data.model.DeliverableCrossCuttingMarker;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePartnership;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePartnershipTypeEnum;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
@@ -94,6 +95,7 @@ public class SearchTermsSummaryAction extends BaseSummariesAction implements Sum
   // Managers
   private final CrpProgramManager programManager;
   private final CrossCuttingScoringManager crossCuttingScoringManager;
+  private final DeliverableCrossCuttingMarkerManager deliverableCrossCuttingMarkerManager;
   private final ResourceManager resourceManager;
   // XLSX bytes
   private byte[] bytesXLSX;
@@ -103,11 +105,12 @@ public class SearchTermsSummaryAction extends BaseSummariesAction implements Sum
   @Inject
   public SearchTermsSummaryAction(APConfig config, GlobalUnitManager crpManager, CrpProgramManager programManager,
     PhaseManager phaseManager, CrossCuttingScoringManager crossCuttingScoringManager, ResourceManager resourceManager,
-    ProjectManager projectManager) {
+    ProjectManager projectManager, DeliverableCrossCuttingMarkerManager deliverableCrossCuttingMarkerManager) {
     super(config, crpManager, phaseManager, projectManager);
     this.programManager = programManager;
     this.crossCuttingScoringManager = crossCuttingScoringManager;
     this.resourceManager = resourceManager;
+    this.deliverableCrossCuttingMarkerManager = deliverableCrossCuttingMarkerManager;
   }
 
   /**
@@ -380,16 +383,44 @@ public class SearchTermsSummaryAction extends BaseSummariesAction implements Sum
     return model;
   }
 
+  private String getBooleanMatches(Boolean field, Pattern pattern, String stringCrossCutting) {
+    Set<String> matchesField = new HashSet<>();
+    String crossCutting = "";
+    if (field) {
+      crossCutting = "<font size=2 face='Segoe UI' color='#000000'>Yes</font>";
+    } else {
+      return "<font size=2 face='Segoe UI' color='#000000'>No</font>";
+    }
+
+    // Hash set list of matches, avoiding duplicates
+    // Find keys in title
+    Matcher matcher = pattern.matcher(stringCrossCutting);
+    // while are occurrences
+    while (matcher.find()) {
+      // add elements to matches
+      matchesField.add(matcher.group(1));
+    }
+    for (@SuppressWarnings("unused")
+    String match : matchesField) {
+      if (field) {
+        countMatches++;
+        crossCutting = crossCutting.replaceAll("\\b" + "Yes" + "\\b",
+          "<font size=2 face='Segoe UI' color='#FF0000'><b>$0</b></font>");
+      }
+    }
+    return crossCutting;
+  }
+
   @Override
   public int getContentLength() {
     return bytesXLSX.length;
   }
 
+
   @Override
   public String getContentType() {
     return "application/xlsx";
   }
-
 
   private TypedTableModel getDeliverablesTableModel() {
     TypedTableModel model = new TypedTableModel(
@@ -421,19 +452,33 @@ public class SearchTermsSummaryAction extends BaseSummariesAction implements Sum
             // count occurrences
             countMatches = 0;
 
-            devTitle = this.setFieldMatches(deliverable.getDeliverableInfo(this.getSelectedPhase()).getTitle(), pattern,
+            devTitle = this.getFieldMatches(deliverable.getDeliverableInfo(this.getSelectedPhase()).getTitle(), pattern,
               "", null, false);
             String gender = "", youth = "", capacityDevelopment = "";
-            gender = this.setFieldMatches(
-              deliverable.getDeliverableInfo(this.getSelectedPhase()).getCrossCuttingGender(), pattern,
-              this.getText("summaries.gender"), deliverable.getDeliverableInfo().getCrossCuttingScoreGender(), true);
-            youth = this.setFieldMatches(deliverable.getDeliverableInfo(this.getSelectedPhase()).getCrossCuttingYouth(),
-              pattern, this.getText("summaries.youth"), deliverable.getDeliverableInfo().getCrossCuttingScoreYouth(),
-              true);
-            capacityDevelopment =
-              this.setFieldMatches(deliverable.getDeliverableInfo(this.getSelectedPhase()).getCrossCuttingCapacity(),
-                pattern, this.getText("summaries.capacityDevelopment"),
-                deliverable.getDeliverableInfo().getCrossCuttingScoreCapacity(), true);
+            // gender, youth, capDev matches
+            DeliverableCrossCuttingMarker deliverableCrossCuttingMarkerGender = deliverableCrossCuttingMarkerManager
+              .getDeliverableCrossCuttingMarkerId(deliverable.getId(), 1, this.getSelectedPhase().getId());
+            DeliverableCrossCuttingMarker deliverableCrossCuttingMarkerYouth = deliverableCrossCuttingMarkerManager
+              .getDeliverableCrossCuttingMarkerId(deliverable.getId(), 2, this.getSelectedPhase().getId());
+            DeliverableCrossCuttingMarker deliverableCrossCuttingMarkerCapDev = deliverableCrossCuttingMarkerManager
+              .getDeliverableCrossCuttingMarkerId(deliverable.getId(), 3, this.getSelectedPhase().getId());
+
+            if (deliverableCrossCuttingMarkerGender != null
+              && deliverableCrossCuttingMarkerGender.getRepIndGenderYouthFocusLevel() != null) {
+              gender = this.getFieldMatches(true, pattern, this.getText("summaries.gender"),
+                deliverableCrossCuttingMarkerGender.getRepIndGenderYouthFocusLevel().getPowbName(), true);
+            }
+            if (deliverableCrossCuttingMarkerYouth != null
+              && deliverableCrossCuttingMarkerYouth.getRepIndGenderYouthFocusLevel() != null) {
+              youth = this.getFieldMatches(true, pattern, this.getText("summaries.youth"),
+                deliverableCrossCuttingMarkerYouth.getRepIndGenderYouthFocusLevel().getPowbName(), true);
+            }
+            if (deliverableCrossCuttingMarkerCapDev != null
+              && deliverableCrossCuttingMarkerCapDev.getRepIndGenderYouthFocusLevel() != null) {
+              capacityDevelopment = this.getFieldMatches(true, pattern, this.getText("summaries.capacityDevelopment"),
+                deliverableCrossCuttingMarkerCapDev.getRepIndGenderYouthFocusLevel().getPowbName(), true);
+            }
+
             if (countMatches > 0) {
               String projectId =
                 "<font size=2 face='Segoe UI' color='#0000ff'>P" + project.getId().toString() + "</font>";
@@ -494,6 +539,21 @@ public class SearchTermsSummaryAction extends BaseSummariesAction implements Sum
     return model;
   }
 
+  private String getFieldMatches(Object field, Pattern pattern, String stringCrossCutting, String scoring,
+    Boolean isScoring) {
+    if (field != null) {
+      if (isScoring) {
+        return this.getScoringMatches((Boolean) field, pattern, stringCrossCutting, scoring);
+      } else if (field instanceof Boolean) {
+        return this.getBooleanMatches((Boolean) field, pattern, stringCrossCutting);
+      } else {
+        return this.getStringMatches((String) field, pattern);
+      }
+    } else {
+      return "<font size=2 face='Segoe UI' color='#000000'>&lt;Not Defined&gt;</font>";
+    }
+  }
+
   @SuppressWarnings("unused")
   private File getFile(String fileName) {
     // Get file from resources folder
@@ -501,6 +561,7 @@ public class SearchTermsSummaryAction extends BaseSummariesAction implements Sum
     File file = new File(classLoader.getResource(fileName).getFile());
     return file;
   }
+
 
   @Override
   public String getFileName() {
@@ -589,15 +650,15 @@ public class SearchTermsSummaryAction extends BaseSummariesAction implements Sum
           // count occurrences
           countMatches = 0;
 
-          title = this.setFieldMatches(projectInfo.getTitle(), pattern, "", null, false);
-          summary = this.setFieldMatches(projectInfo.getSummary(), pattern, "", null, false);
+          title = this.getFieldMatches(projectInfo.getTitle(), pattern, "", null, false);
+          summary = this.getFieldMatches(projectInfo.getSummary(), pattern, "", null, false);
 
           String gender = "", youth = "", capacityDevelopment = "";
-          gender = this.setFieldMatches(projectInfo.getCrossCuttingGender(), pattern, this.getText("summaries.gender"),
+          gender = this.getFieldMatches(projectInfo.getCrossCuttingGender(), pattern, this.getText("summaries.gender"),
             null, false);
-          youth = this.setFieldMatches(projectInfo.getCrossCuttingYouth(), pattern, this.getText("summaries.youth"),
+          youth = this.getFieldMatches(projectInfo.getCrossCuttingYouth(), pattern, this.getText("summaries.youth"),
             null, false);
-          capacityDevelopment = this.setFieldMatches(projectInfo.getCrossCuttingCapacity(), pattern,
+          capacityDevelopment = this.getFieldMatches(projectInfo.getCrossCuttingCapacity(), pattern,
             this.getText("summaries.capacityDevelopment"), null, false);
 
           if (countMatches > 0) {
@@ -737,6 +798,53 @@ public class SearchTermsSummaryAction extends BaseSummariesAction implements Sum
     return model;
   }
 
+  private String getScoringMatches(Boolean field, Pattern pattern, String stringCrossCutting, String scoring) {
+    Set<String> matchesField = new HashSet<>();
+    String crossCutting = "";
+    if (scoring != null) {
+      crossCutting = "<font size=2 face='Segoe UI' color='#000000'>" + scoring + "</font>";
+      // Hash set list of matches, avoiding duplicates
+      // Find keys in title
+      Matcher matcher = pattern.matcher(stringCrossCutting);
+      // while are occurrences
+      while (matcher.find()) {
+        // add elements to matches
+        matchesField.add(matcher.group(1));
+      }
+      for (@SuppressWarnings("unused")
+      String match : matchesField) {
+        if (field) {
+          countMatches++;
+          crossCutting = crossCutting.replaceAll("\\b" + scoring + "\\b",
+            "<font size=2 face='Segoe UI' color='#FF0000'><b>$0</b></font>");
+        }
+      }
+    } else {
+      return "<font size=2 face='Segoe UI' color='#000000'>&lt;Not Defined&gt;</font>";
+    }
+    return crossCutting;
+  }
+
+
+  private String getStringMatches(String field, Pattern pattern) {
+    Set<String> matchesField = new HashSet<>();
+
+    field = "<font size=2 face='Segoe UI' color='#000000'>" + field + "</font>";
+    // Hash set list of matches, avoiding duplicates
+    // Find keys in title
+    Matcher matcher = pattern.matcher(field);
+    // while are occurrences
+    while (matcher.find()) {
+      // add elements to matches
+      matchesField.add(matcher.group(1));
+      countMatches++;
+    }
+    for (String match : matchesField) {
+      field = field.replaceAll("\\b" + match + "\\b", "<font size=2 face='Segoe UI' color='#FF0000'><b>$0</b></font>");
+    }
+    return field;
+  }
+
 
   /**
    * Get the total budget per year and type
@@ -788,6 +896,7 @@ public class SearchTermsSummaryAction extends BaseSummariesAction implements Sum
     return total;
   }
 
+
   @Override
   public void prepare() {
     hasW1W2Co = this.hasSpecificities(APConstants.CRP_FS_W1W2_COFINANCING);
@@ -811,99 +920,6 @@ public class SearchTermsSummaryAction extends BaseSummariesAction implements Sum
       LOG.warn("Error getting DeliverablePartnership. Exception: " + e.getMessage());
       return null;
     }
-  }
-
-
-  private String setBooleanMatches(Boolean field, Pattern pattern, String stringCrossCutting) {
-    Set<String> matchesField = new HashSet<>();
-    String crossCutting = "";
-    if (field) {
-      crossCutting = "<font size=2 face='Segoe UI' color='#000000'>Yes</font>";
-    } else {
-      return "<font size=2 face='Segoe UI' color='#000000'>No</font>";
-    }
-
-    // Hash set list of matches, avoiding duplicates
-    // Find keys in title
-    Matcher matcher = pattern.matcher(stringCrossCutting);
-    // while are occurrences
-    while (matcher.find()) {
-      // add elements to matches
-      matchesField.add(matcher.group(1));
-    }
-    for (@SuppressWarnings("unused")
-    String match : matchesField) {
-      if (field) {
-        countMatches++;
-        crossCutting = crossCutting.replaceAll("\\b" + "Yes" + "\\b",
-          "<font size=2 face='Segoe UI' color='#FF0000'><b>$0</b></font>");
-      }
-    }
-    return crossCutting;
-  }
-
-
-  private String setFieldMatches(Object field, Pattern pattern, String stringCrossCutting, Object scoring,
-    Boolean isScoring) {
-    if (field != null) {
-      if (isScoring) {
-        return this.setScoringMatches((Boolean) field, pattern, stringCrossCutting, scoring);
-      } else if (field instanceof Boolean) {
-        return this.setBooleanMatches((Boolean) field, pattern, stringCrossCutting);
-      } else {
-        return this.setStringMatches((String) field, pattern);
-      }
-    } else {
-      return "<font size=2 face='Segoe UI' color='#000000'>&lt;Not Defined&gt;</font>";
-    }
-  }
-
-
-  private String setScoringMatches(Boolean field, Pattern pattern, String stringCrossCutting, Object scoring) {
-    Set<String> matchesField = new HashSet<>();
-    String crossCutting = "";
-    if (scoring != null) {
-      CrossCuttingScoring crossCuttingScoring = crossCuttingScoringManager.getCrossCuttingScoringById((long) scoring);
-      crossCutting = "<font size=2 face='Segoe UI' color='#000000'>" + crossCuttingScoring.getDescription() + "</font>";
-      // Hash set list of matches, avoiding duplicates
-      // Find keys in title
-      Matcher matcher = pattern.matcher(stringCrossCutting);
-      // while are occurrences
-      while (matcher.find()) {
-        // add elements to matches
-        matchesField.add(matcher.group(1));
-      }
-      for (@SuppressWarnings("unused")
-      String match : matchesField) {
-        if (field) {
-          countMatches++;
-          crossCutting = crossCutting.replaceAll("\\b" + crossCuttingScoring.getDescription() + "\\b",
-            "<font size=2 face='Segoe UI' color='#FF0000'><b>$0</b></font>");
-        }
-      }
-    } else {
-      return "<font size=2 face='Segoe UI' color='#000000'>&lt;Not Defined&gt;</font>";
-    }
-    return crossCutting;
-  }
-
-  private String setStringMatches(String field, Pattern pattern) {
-    Set<String> matchesField = new HashSet<>();
-
-    field = "<font size=2 face='Segoe UI' color='#000000'>" + field + "</font>";
-    // Hash set list of matches, avoiding duplicates
-    // Find keys in title
-    Matcher matcher = pattern.matcher(field);
-    // while are occurrences
-    while (matcher.find()) {
-      // add elements to matches
-      matchesField.add(matcher.group(1));
-      countMatches++;
-    }
-    for (String match : matchesField) {
-      field = field.replaceAll("\\b" + match + "\\b", "<font size=2 face='Segoe UI' color='#FF0000'><b>$0</b></font>");
-    }
-    return field;
   }
 
 

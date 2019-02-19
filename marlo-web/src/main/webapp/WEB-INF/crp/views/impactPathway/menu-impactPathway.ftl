@@ -148,7 +148,7 @@
 
 
 [#if centerGlobalUnit]
-  [#-- Impact Pathway PDF --]
+  [#-- Impact Pathway PDF 
   <div class="text-center hidden-print">
     <br />
     <a class="btn btn-default" href="${baseUrl}/summaries/impactPathwaySubmissions.do?crpProgramID=${crpProgramID}" target="_BLANK" style="text-align:center;">
@@ -156,6 +156,7 @@
       <img src="${baseUrl}/global/images/download-summary.png" width="40" height="50" title="Download" />
     </a>
   </div>
+  --]
 [#else]
   [#-- Mini-graph --]
   <div id="graphicWrapper" class="hidden-print" style="">

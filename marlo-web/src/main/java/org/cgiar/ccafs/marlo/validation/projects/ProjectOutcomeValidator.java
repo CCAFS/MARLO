@@ -398,6 +398,21 @@ public class ProjectOutcomeValidator extends BaseValidator {
         InvalidFieldsMessages.EMPTYFIELD);
     }
 
+    if (action.isReportingActive()) {
+      if (!(this.isValidString(projectOutcomeIndicator.getAchievedNarrative())
+        && this.wordCount(projectOutcomeIndicator.getAchievedNarrative()) <= 100)) {
+        action.addMessage(action.getText("projectOutcomeIndicator.requeried.achievedNarrative", params));
+        action.getInvalidFields().put("input-projectOutcome.indicators[" + i + "].achievedNarrative",
+          InvalidFieldsMessages.EMPTYFIELD);
+      }
+      if (projectOutcomeIndicator.getValueReporting() == null
+        || projectOutcomeIndicator.getValueReporting().longValue() < 0) {
+        action.addMessage(action.getText("projectOutcomeIndicator.valueReporting"));
+        action.getInvalidFields().put("input-projectOutcome.indicators[" + i + "].valueReporting",
+          InvalidFieldsMessages.EMPTYFIELD);
+      }
+    }
+
 
   }
 }

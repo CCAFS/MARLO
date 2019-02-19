@@ -93,7 +93,7 @@ public class DeliverablesReplicationAction extends BaseAction {
   private DeliverableGeographicRegionManager deliverableGeographicRegionManager;
 
   // Variables
-  private String deliverablesbyPhaseList;
+  private String entityByPhaseList;
   private List<GlobalUnit> crps;
   private long selectedPhaseID;
   private Phase phase;
@@ -174,14 +174,15 @@ public class DeliverablesReplicationAction extends BaseAction {
   }
 
 
-  public String getDeliverablesbyPhaseList() {
-    return deliverablesbyPhaseList;
+  public String getEntityByPhaseList() {
+    return entityByPhaseList;
   }
 
 
   public long getSelectedPhaseID() {
     return selectedPhaseID;
   }
+
 
   @Override
   public void prepare() throws Exception {
@@ -192,11 +193,11 @@ public class DeliverablesReplicationAction extends BaseAction {
   @Override
   public String save() {
     if (this.canAccessSuperAdmin()) {
-      if (deliverablesbyPhaseList != null && !deliverablesbyPhaseList.isEmpty()) {
+      if (entityByPhaseList != null && !entityByPhaseList.isEmpty()) {
         logger.debug("Start replication for phase: " + selectedPhaseID);
         phase = phaseManager.getPhaseById(selectedPhaseID);
 
-        for (String id : deliverablesbyPhaseList.trim().split(",")) {
+        for (String id : entityByPhaseList.trim().split(",")) {
           logger.debug("Replicating deliverable: " + id);
 
           deliverable = deliverableManager.getDeliverableById(new Long(id.trim()));
@@ -217,7 +218,9 @@ public class DeliverablesReplicationAction extends BaseAction {
               relationsName.add(APConstants.PROJECT_DELIVERABLE_DISEMINATIONS);
               relationsName.add(APConstants.PROJECT_DELIVERABLE_CRPS);
               relationsName.add(APConstants.PROJECT_DELIVERABLE_USERS);
-              relationsName.add(APConstants.PROJECT_DELIVERABLES_INTELLECTUAL_RELATION);
+              if (this.hasSpecificities(this.crpDeliverableIntellectualAsset())) {
+                relationsName.add(APConstants.PROJECT_DELIVERABLES_INTELLECTUAL_RELATION);
+              }
               relationsName.add(APConstants.PROJECT_DELIVERABLES_PARTICIPANT_RELATION);
             }
 
@@ -331,15 +334,18 @@ public class DeliverablesReplicationAction extends BaseAction {
               }
 
               // Deliverable Intellectual asset
-              List<DeliverableIntellectualAsset> intellectualAssets = deliverable.getDeliverableIntellectualAssets()
-                .stream().filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList());
-              if (intellectualAssets != null && !intellectualAssets.isEmpty()) {
-                if (intellectualAssets.size() > 1) {
-                  logger.warn("There is more than 1 intellectual assets for deliverable: " + deliverable.getId()
-                    + " and phase: " + phase.getId());
+              if (this.hasSpecificities(this.crpDeliverableIntellectualAsset())) {
+                List<DeliverableIntellectualAsset> intellectualAssets = deliverable.getDeliverableIntellectualAssets()
+                  .stream().filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList());
+                if (intellectualAssets != null && !intellectualAssets.isEmpty()) {
+                  if (intellectualAssets.size() > 1) {
+                    logger.warn("There is more than 1 intellectual assets for deliverable: " + deliverable.getId()
+                      + " and phase: " + phase.getId());
+                  }
+                  deliverableIntellectualAssetManager.saveDeliverableIntellectualAsset(intellectualAssets.get(0));
                 }
-                deliverableIntellectualAssetManager.saveDeliverableIntellectualAsset(intellectualAssets.get(0));
               }
+
 
               // Deliverable Participant
               List<DeliverableParticipant> deliverableParticipants = deliverable.getDeliverableParticipants().stream()
@@ -388,10 +394,10 @@ public class DeliverablesReplicationAction extends BaseAction {
     this.crps = crps;
   }
 
-
-  public void setDeliverablesbyPhaseList(String deliverablesbyPhaseList) {
-    this.deliverablesbyPhaseList = deliverablesbyPhaseList;
+  public void setEntityByPhaseList(String entityByPhaseList) {
+    this.entityByPhaseList = entityByPhaseList;
   }
+
 
   public void setSelectedPhaseID(long selectedPhaseID) {
     this.selectedPhaseID = selectedPhaseID;

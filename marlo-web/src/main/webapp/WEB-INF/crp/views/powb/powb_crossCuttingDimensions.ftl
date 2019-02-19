@@ -165,34 +165,16 @@
           <tr>
             <td class="row">
               <span title="${(dInfo.title)!}"><strong>D${(dInfo.deliverable.id)!}</strong> [@utilities.wordCutter string="${(dInfo.title)!'Not Defined'}" maxPos=70 /] </span> <br />
-              <small>(${(dInfo.deliverableType.name)!'Not Defined'})</small>
+              <small>(${(dInfo.deliverableType.name)!'Not Defined'})</small> 
             </td>
             <td>
-              <nobr>
-              [#if (dInfo.crossCuttingGender)!false]
-                [#if dInfo.genderScoreName??]${(dInfo.genderScoreName)!}[#else]0 - Not Targeted[/#if]
-              [#else]
-                 0 - Not Targeted
-              [/#if]
-              </nobr>
+              <nobr>${getMarker(dInfo.deliverable, "Gender")}</nobr>
             </td>
             <td>
-              <nobr>
-              [#if (dInfo.crossCuttingYouth)!false]
-                [#if dInfo.youthScoreName??]${(dInfo.youthScoreName)!}[#else]0 - Not Targeted[/#if]
-              [#else]
-                 0 - Not Targeted
-              [/#if]
-              </nobr>
+              <nobr>${getMarker(dInfo.deliverable, "Youth")}</nobr>
             </td>
             <td>
-              <nobr>
-              [#if (dInfo.crossCuttingCapacity)!false]
-                [#if dInfo.capDevScoreName??]${(dInfo.capDevScoreName)!}[#else]0 - Not Targeted[/#if]
-              [#else]
-                 0 - Not Targeted
-              [/#if]
-              </nobr>
+              <nobr>${getMarker(dInfo.deliverable, "CapDev")}</nobr>
             </td>
             <td>
               [#local dURL][@s.url namespace="/projects" action="${(crpSession)!}/deliverable"][@s.param name='deliverableID']${dInfo.deliverable.id}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
@@ -205,3 +187,12 @@
     </table>
   </div>
 [/#macro]
+
+[#function getMarker deliverable name]
+  [#list (deliverable.crossCuttingMarkers)![] as ccm]
+    [#if ccm.cgiarCrossCuttingMarker.name == name]
+      [#return (ccm.repIndGenderYouthFocusLevel.powbName)!'0 - Not Targeted' ]
+    [/#if]
+  [/#list]
+  [#return "0 - Not Targeted" ]
+[/#function]

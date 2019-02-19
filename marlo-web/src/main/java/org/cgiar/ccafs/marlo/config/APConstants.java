@@ -113,6 +113,10 @@ public final class APConstants {
   public static final String CRP_BASELINE_INDICATORS = "crp_baseline_indicators";
   public static final String CRP_HAS_RESEARCH_HUMAN = "crp_has_research_human";
   public static final String CRP_CONTACT_POINT_EDIT_PROJECT = "crp_contact_point_edit_project";
+  public static final String CRP_DELIVERABLES_INTELLECTUAL_ASSET = "crp_deliverable_intellectual_asset";
+  public static final String CRP_LP6_ACTIVE = "crp_lp6_active";
+  public static final String CRP_LP6_CONTRIBUTION_VALUE = "crp_lp6_contribution_value";
+  public static final String CRP_LOCATION_CSV_ACTIVITIES = "crp_location_csv_activities";
 
 
   // Email parameters to copy to FL FM CL
@@ -396,6 +400,8 @@ public final class APConstants {
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.ProjectInnovation.projectInnovationCountries)";
   public static final String PROJECT_INNOVATION_ORGANIZATION_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.ProjectInnovation.projectInnovationOrganizations)";
+  public static final String PROJECT_INNOVATION_CONTRIBUTING_ORGANIZATION_RELATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.ProjectInnovation.projectInnovationContributingOrganization)";
   public static final String PROJECT_INNOVATION_CRP_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.ProjectInnovation.projectInnovationCrps)";
   public static final String PROJECT_DELIVERABLE_CRP_RELATION =
@@ -406,6 +412,8 @@ public final class APConstants {
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.ProjectPolicy.projectPolicyInfos)";
   public static final String PROJECT_POLICY_COUNTRY_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.ProjectPolicy.ProjectPolicyCountries)";
+  public static final String PROJECT_POLICY_REGION_RELATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.ProjectPolicy.ProjectPolicyRegions)";
   public static final String PROJECT_POLICY_CRP_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.ProjectPolicy.projectPolicyCrps)";
   public static final String PROJECT_POLICY_OWNER_RELATION =
@@ -414,7 +422,14 @@ public final class APConstants {
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.ProjectPolicy.projectPolicySubIdos)";
   public static final String PROJECT_POLICY_CROSS_CUTTING_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.ProjectPolicy.projectPolicyCrossCuttingMarkers)";
+  public static final String PROJECT_POLICY_INNOVATION_RELATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.ProjectPolicy.projectPolicyInnovations)";
+  public static final String PROJECT_POLICY_EVIDENCE_RELATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.ProjectPolicy.projectExpectedStudyPolicies)";
 
+  // Project Contribution To LP6 Relations
+  public static final String PROJECT_CONTRIBUTION_LP6_RELATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.Project.projectLp6Contributions)";
 
   // End
   public static final String PROJECT_REQUEST_ID = "projectID";
@@ -548,6 +563,8 @@ public final class APConstants {
   public static final String POWB_FOLDER = "powbSynthesis";
   // Studies
   public static final String STUDIES_FOLDER = "studies";
+  // Projects
+  public static final String PROJECTS_LOCATIONS_ACTIVITIES_CSV_FOLDER = "projectLocationCSV";
 
 
   // Relations Name
@@ -658,6 +675,9 @@ public final class APConstants {
   public static final String CRP_CD_ROLE = "crp_cd_role";
   public static final String CRP_CD_ROLE_ACRONYM = "CD";
   public static final String CRP_CAP_DEV_ACTIVE = "crp_capdev_active";
+
+  // Marlo PDF Manual Name
+  public static final String MARLO_PDF_MANUAL_NAME = "Introduction_To_MARLO_v2.5.pdf";
 
   public static String getFilterBy() {
     return FILTER_BY;

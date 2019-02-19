@@ -31,8 +31,30 @@ public class ProjectPolicyInfo extends MarloBaseEntity implements java.io.Serial
   private String title;
   @Expose
   private Double amount;
+  @Expose
+  private String other;
+
 
   public ProjectPolicyInfo() {
+
+  }
+
+  public ProjectPolicyInfo(Phase phase, ProjectExpectedStudy projectExpectedStudy, ProjectPolicy projectPolicy,
+    RepIndGeographicScope repIndGeographicScope, RepIndOrganizationType repIndOrganizationType,
+    RepIndPolicyInvestimentType repIndPolicyInvestimentType, RepIndStageProcess repIndStageProcess, Long year,
+    String title, Double amount, String other) {
+    super();
+    this.phase = phase;
+    this.projectExpectedStudy = projectExpectedStudy;
+    this.projectPolicy = projectPolicy;
+    this.repIndGeographicScope = repIndGeographicScope;
+    this.repIndOrganizationType = repIndOrganizationType;
+    this.repIndPolicyInvestimentType = repIndPolicyInvestimentType;
+    this.repIndStageProcess = repIndStageProcess;
+    this.year = year;
+    this.title = title;
+    this.amount = amount;
+    this.other = other;
   }
 
   public ProjectPolicyInfo(Phase phase, ProjectPolicy projectPolicy, Long year) {
@@ -46,14 +68,12 @@ public class ProjectPolicyInfo extends MarloBaseEntity implements java.io.Serial
     return amount;
   }
 
-
   @Override
   public String getLogDeatil() {
     StringBuilder sb = new StringBuilder();
     sb.append("Id : ").append(this.getId());
     return sb.toString();
   }
-
 
   @Override
   public String getModificationJustification() {
@@ -66,6 +86,11 @@ public class ProjectPolicyInfo extends MarloBaseEntity implements java.io.Serial
     User u = new User();
     u.setId(new Long(3));
     return u;
+  }
+
+
+  public String getOther() {
+    return other;
   }
 
 
@@ -131,6 +156,11 @@ public class ProjectPolicyInfo extends MarloBaseEntity implements java.io.Serial
   }
 
 
+  public void setOther(String other) {
+    this.other = other;
+  }
+
+
   public void setPhase(Phase phase) {
     this.phase = phase;
   }
@@ -177,8 +207,8 @@ public class ProjectPolicyInfo extends MarloBaseEntity implements java.io.Serial
 
   @Override
   public String toString() {
-    return "ProjectPolicyInfo [projectPolicy=" + projectPolicy + ", phase=" + phase + ", title=" + title + ", year="
-      + year + "]";
+    return "ProjectPolicyInfo [id=" + this.getId() + "projectPolicy=" + projectPolicy + ", phase=" + phase + ", title="
+      + title + ", year=" + year + "]";
   }
 
 
@@ -201,6 +231,7 @@ public class ProjectPolicyInfo extends MarloBaseEntity implements java.io.Serial
     this.setRepIndGeographicScope(projectPolicyInfoUpdate.getRepIndGeographicScope());
     this.setProjectPolicy(projectPolicyInfoUpdate.getProjectPolicy());
     this.setProjectExpectedStudy(projectPolicyInfoUpdate.getProjectExpectedStudy());
+    this.setOther(projectPolicyInfoUpdate.getOther());
 
   }
 

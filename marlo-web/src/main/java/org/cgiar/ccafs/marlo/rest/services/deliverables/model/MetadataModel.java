@@ -22,7 +22,7 @@ import org.apache.struts2.json.annotations.JSON;
 
 public class MetadataModel {
 
-  private Author[] author;
+  private Author[] authors;
 
   private String citation;
 
@@ -40,27 +40,62 @@ public class MetadataModel {
 
   private String openAccess;
 
+  private String ISI;
+
   private String doi;
 
   private Date publicationDate;
 
-  private String country;
+  private String countries;
+
+  private String publisher;
+
+  private String journal;
+
+  private String volume;
+
+  private String issue;
+
+  private String pages;
+
+  public MetadataModel() {
+    this.citation = "";
+    this.title = "";
+    this.handle = "";
+    this.keywords = "";
+    this.description = "";
+    this.rights = "";
+    this.language = "";
+    this.openAccess = "";
+    this.ISI = "";
+    this.doi = "";
+    this.countries = "";
+    this.publisher = "";
+    this.journal = "";
+    this.volume = "";
+    this.issue = "";
+    this.pages = "";
+  }
+
 
   public Author[] getAuthors() {
-    return author;
+    return authors;
   }
 
   public String getCitation() {
     return citation;
   }
 
-  public String getCountry() {
-    return country;
+
+  public String getCountries() {
+    return countries;
   }
+
 
   public String getDescription() {
     return description;
   }
+
 
   public String getDoi() {
     return doi;
@@ -69,6 +104,21 @@ public class MetadataModel {
   public String getHandle() {
     return handle;
   }
+
+  public String getISI() {
+    return ISI;
+  }
+
+
+  public String getIssue() {
+    return issue;
+  }
+
+
+  public String getJournal() {
+    return journal;
+  }
+
 
   public String getKeywords() {
     return keywords;
@@ -82,34 +132,55 @@ public class MetadataModel {
     return openAccess;
   }
 
+  public String getPages() {
+    return pages;
+  }
+
+
   @JSON(format = "yyyy-MM-dd")
   public Date getPublicationDate() {
     return publicationDate;
+  }
+
+
+  public String getPublisher() {
+    return publisher;
   }
 
   public String getRights() {
     return rights;
   }
 
+
   public String getTitle() {
     return title;
   }
 
-  public void setAuthors(Author[] authors) {
-    this.author = authors;
+
+  public String getVolume() {
+    return volume;
   }
+
+
+  public void setAuthors(Author[] authors) {
+    this.authors = authors;
+  }
+
 
   public void setCitation(String citation) {
     this.citation = citation;
   }
 
-  public void setCountry(String country) {
-    this.country = country;
+
+  public void setCountries(String countries) {
+    this.countries = countries;
   }
+
 
   public void setDescription(String description) {
     this.description = description;
   }
+
 
   public void setDoi(String doi) {
     this.doi = doi;
@@ -117,6 +188,18 @@ public class MetadataModel {
 
   public void setHandle(String handle) {
     this.handle = handle;
+  }
+
+  public void setISI(String iSI) {
+    ISI = iSI;
+  }
+
+  public void setIssue(String issue) {
+    this.issue = issue;
+  }
+
+  public void setJournal(String journal) {
+    this.journal = journal;
   }
 
   public void setKeywords(String keywords) {
@@ -131,8 +214,18 @@ public class MetadataModel {
     this.openAccess = openAccess;
   }
 
+
+  public void setPages(String pages) {
+    this.pages = pages;
+  }
+
   public void setPublicationDate(Date publicationDate) {
     this.publicationDate = publicationDate;
+  }
+
+
+  public void setPublisher(String publisher) {
+    this.publisher = publisher;
   }
 
   public void setRights(String rights) {
@@ -143,11 +236,8 @@ public class MetadataModel {
     this.title = title;
   }
 
-  @Override
-  public String toString() {
-    return "MetadataModel [author = " + author + ", citation = " + citation + ", title = " + title + ", handle = "
-      + handle + ", keywords = " + keywords + ", description = " + description + ", rights = " + rights
-      + ", language = " + language + ", openAccess = " + openAccess + ", doi = " + doi + ", publicationDate = "
-      + publicationDate + ", country = " + country + "]";
+  public void setVolume(String volume) {
+    this.volume = volume;
   }
+
 }

@@ -58,10 +58,7 @@
           <h3 class="headTitle">[@s.text name="projectOutcome.projectContribution" /] </h3>
           [#-- Outcomen name --]
           [#assign showOutcomeValue = projectOutcome.crpProgramOutcome.srfTargetUnit??  && projectOutcome.crpProgramOutcome.srfTargetUnit.id?? && (projectOutcome.crpProgramOutcome.srfTargetUnit.id != -1) /]
-          [#assign pimText][@s.text name="contribution.message" /][/#assign]
-          [#if editable && pimText?has_content]
-           <div class="note">${pimText}</div>
-          [/#if]
+
           <div class="grayBox">
             <div class="col-md-12">
               <strong>${(projectOutcome.crpProgramOutcome.crpProgram.acronym)!} - Outcome ${(projectOutcome.crpProgramOutcome.year)!}</strong>: ${projectOutcome.crpProgramOutcome.description}
@@ -462,7 +459,7 @@
     </div>
     [#if reportingActive]
       <div class="form-group">
-        [@customForm.textArea name="${customName}.achievedNarrative" i18nkey="projectOutcomeBaseline.achievedNarrative" required=isYearRequired(year) className="limitWords-100" editable=editable /]
+        [@customForm.textArea name="${customName}.achievedNarrative" i18nkey="projectOutcomeBaseline.achievedNarrative" required=true className="limitWords-100" editable=editable /]
       </div>
     [/#if]
   </div>

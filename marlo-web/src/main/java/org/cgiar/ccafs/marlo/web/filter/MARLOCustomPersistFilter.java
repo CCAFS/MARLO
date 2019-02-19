@@ -86,25 +86,20 @@ public class MARLOCustomPersistFilter extends OncePerRequestFilter {
     try {
       // Create an AuditLogContext for AuditLogging
       AuditLogContextProvider.push(new AuditLogContext());
-
       LOG.debug("begin doFilter for MARLOCustomPersistFilter for request: " + requestUrl);
       Cache cache = sessionFactory.getCache();
-
       if (cache != null) {
         cache.evictAllRegions(); // Evict data from all query regions.
       }
       sessionFactory.getCurrentSession().beginTransaction();
-
       // Continue filter chain
       chain.doFilter(httpRequest, response);
 
       if (sessionFactory.getCurrentSession() != null && sessionFactory.getCurrentSession().getTransaction() != null) {
-
         Transaction tr = sessionFactory.getCurrentSession().getTransaction();
         tr.commit();
 
       }
-
 
     } catch (StaleObjectStateException staleEx) {
       LOG.error("This interceptor does not implement optimistic concurrency control!");

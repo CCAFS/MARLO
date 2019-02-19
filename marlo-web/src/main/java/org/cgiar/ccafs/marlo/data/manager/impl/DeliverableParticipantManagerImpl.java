@@ -62,6 +62,7 @@ public class DeliverableParticipantManagerImpl implements DeliverableParticipant
     newDeliverableParticipantPhase.setEstimateFemales(deliverableParticipant.getEstimateFemales());
     newDeliverableParticipantPhase.setDontKnowFemale(deliverableParticipant.getDontKnowFemale());
     newDeliverableParticipantPhase.setRepIndTypeParticipant(deliverableParticipant.getRepIndTypeParticipant());
+    newDeliverableParticipantPhase.setRepIndTrainingTerm(deliverableParticipant.getRepIndTrainingTerm());
   }
 
   @Override

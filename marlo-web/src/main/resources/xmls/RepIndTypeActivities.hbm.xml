@@ -14,5 +14,9 @@
         <property name="definition" type="string">
             <column name="definition" sql-type="TEXT" />
         </property>
+        <property name="isFormal" type="java.lang.Boolean">
+            <column name="is_formal" />
+        </property>
+        
     </class>
 </hibernate-mapping>

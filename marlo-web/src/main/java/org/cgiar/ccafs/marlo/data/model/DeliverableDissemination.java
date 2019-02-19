@@ -45,13 +45,17 @@ public class DeliverableDissemination extends MarloBaseEntity implements java.io
   @Expose
   private Boolean synced;
   @Expose
+  private Boolean confidential;
+  @Expose
+  private String confidentialUrl;
+  @Expose
   private Phase phase;
+
   private String type;
 
 
   public DeliverableDissemination() {
   }
-
 
   public DeliverableDissemination(Deliverable deliverable) {
     this.deliverable = deliverable;
@@ -84,6 +88,17 @@ public class DeliverableDissemination extends MarloBaseEntity implements java.io
     return alreadyDisseminated;
   }
 
+
+  public Boolean getConfidential() {
+    return confidential;
+  }
+
+
+  public String getConfidentialUrl() {
+    return confidentialUrl;
+  }
+
+
   public Deliverable getDeliverable() {
     return deliverable;
   }
@@ -96,15 +111,14 @@ public class DeliverableDissemination extends MarloBaseEntity implements java.io
     return disseminationChannelName;
   }
 
-
   public String getDisseminationUrl() {
     return disseminationUrl;
   }
 
-
   public Boolean getEffectiveDateRestriction() {
     return effectiveDateRestriction;
   }
+
 
   public Boolean getIntellectualProperty() {
     return intellectualProperty;
@@ -133,6 +147,7 @@ public class DeliverableDissemination extends MarloBaseEntity implements java.io
     return "";
   }
 
+
   @Override
   public User getModifiedBy() {
     User u = new User();
@@ -140,11 +155,9 @@ public class DeliverableDissemination extends MarloBaseEntity implements java.io
     return u;
   }
 
-
   public Boolean getNotDisseminated() {
     return notDisseminated;
   }
-
 
   public Phase getPhase() {
     return phase;
@@ -184,14 +197,24 @@ public class DeliverableDissemination extends MarloBaseEntity implements java.io
     return result;
   }
 
+
   @Override
   public boolean isActive() {
 
     return true;
   }
 
+
   public void setAlreadyDisseminated(Boolean alreadyDisseminated) {
     this.alreadyDisseminated = alreadyDisseminated;
+  }
+
+  public void setConfidential(Boolean confidential) {
+    this.confidential = confidential;
+  }
+
+  public void setConfidentialUrl(String confidentialUrl) {
+    this.confidentialUrl = confidentialUrl;
   }
 
   public void setDeliverable(Deliverable deliverable) {

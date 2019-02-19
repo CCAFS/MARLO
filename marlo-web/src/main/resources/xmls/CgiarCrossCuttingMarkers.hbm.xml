@@ -3,17 +3,14 @@
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 <hibernate-mapping auto-import="true"
 	default-access="property" default-cascade="none" default-lazy="true">
-	<class dynamic-insert="false" dynamic-update="false"
-		mutable="true"
+	<class
 		name="org.cgiar.ccafs.marlo.data.model.CgiarCrossCuttingMarker"
-		optimistic-lock="version" polymorphism="implicit"
-		select-before-update="false" table="cgiar_cross_cutting_markers">
+		optimistic-lock="none" table="cgiar_cross_cutting_markers">
 		<id name="id" type="java.lang.Long">
 			<column name="id" />
 			<generator class="identity" />
 		</id>
-		<property generated="never" lazy="false" name="name"
-			optimistic-lock="true" type="string" unique="false">
+		<property name="name" type="string">
 			<column length="65535" name="name" />
 		</property>
 	</class>

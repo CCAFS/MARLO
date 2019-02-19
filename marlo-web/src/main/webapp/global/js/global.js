@@ -538,14 +538,35 @@ function notificationError(message) {
 /* Set elementsListComponent function to the functioning of the customForm macro */
 function setElementsListComponent() {
 
-  // Disabled elements already selected
+  // Settings
   $('select[class*="elementType-"]').each(function(i,e) {
     var $parent = $(e).parents('.elementsListComponent');
     var $select = $parent.find('select');
+    var elementType = $select.classParam('elementType');
+    var maxLimit = $select.classParam('maxLimit');
+    var $list = $('.listType-' + elementType);
+    var counted = $list.find('li').length;
+
+    // Disabled elements already selected
     $parent.find("ul.list li").each(function(index,domElement) {
       var id = $(domElement).find('.elementRelationID').val();
       $select.find('option[value="' + id + '"]').prop("disabled", true);
     });
+
+    // Validate limit reached
+    if((maxLimit > 0) && (counted >= maxLimit)) {
+      $select.prop('disabled', true).trigger('change.select2');
+    }
+
+    // Set placeholder
+    if((maxLimit == 0)) {
+      $select.find('option[value="-1"]').text("Select multiple options...");
+    } else if((maxLimit > 1)) {
+      $select.find('option[value="-1"]').text("Select multiple options (Max " + maxLimit + ")...");
+    } else if((maxLimit == 1)) {
+      $select.find('option[value="-1"]').text("Select a single option...");
+    }
+
   });
 
   // On select element
@@ -558,8 +579,8 @@ function setElementsListComponent() {
 function onSelectElement() {
   var $select = $(this);
   var $option = $select.find('option:selected');
-  var elementType = $(this).classParam('elementType');
-  var maxLimit = $(this).classParam('maxLimit');
+  var elementType = $select.classParam('elementType');
+  var maxLimit = $select.classParam('maxLimit');
   var $list = $('.listType-' + elementType);
   var counted = $list.find('li').length;
 
@@ -572,9 +593,7 @@ function onSelectElement() {
   if((maxLimit > 0) && (counted >= maxLimit)) {
     $select.val('-1').trigger('change.select2');
     $select.parent().animateCss('shake');
-    var notyOptions = jQuery.extend({}, notyDefaultOptions);
-    notyOptions.text = 'Only ' + maxLimit + ' can be selected';
-    noty(notyOptions);
+    notificationError('Only ' + maxLimit + ' can be selected');
     return;
   }
 
@@ -583,9 +602,7 @@ function onSelectElement() {
   if($repeatedElement.length) {
     $select.val('-1').trigger('change.select2');
     $repeatedElement.parent().animateCss('shake');
-    var notyOptions = jQuery.extend({}, notyDefaultOptions);
-    notyOptions.text = 'It was already selected';
-    noty(notyOptions);
+    notificationError('It was already selected');
     return;
   }
 
@@ -616,6 +633,11 @@ function onSelectElement() {
     ]);
   });
 
+  // Validate limit reached
+  if((maxLimit > 0) && ((counted + 1) >= maxLimit)) {
+    $select.prop('disabled', true).trigger('change.select2');
+  }
+
   // Update indexes
   $list.find('li.relationElement').each(function(i,element) {
     var indexLevel = $(element).classParam('indexLevel');
@@ -628,19 +650,21 @@ function onClickRemoveElement() {
   var $parent = $(this).parent();
   var $select = $(this).parents(".panel-body").find('select');
   var $list = $('.listType-' + removeElementType);
+  var counted = $list.find('li').length;
+  var maxLimit = $select.classParam('maxLimit');
   var id = $parent.find(".elementRelationID").val();
   var name = $parent.find(".elementName").text();
   $parent.slideUp(100, function() {
     $parent.remove();
 
+    // Enabled option in select component
+    $select.find('option[value="' + id + '"]').prop("disabled", false);
+    $select.select2();
+
     // Create event removeElement
     $select.trigger("removeElement", [
         id, name
     ]);
-
-    // Enabled option in select component
-    $select.find('option[value="' + id + '"]').prop("disabled", false);
-    $select.select2();
 
     // Update indexes
     $list.find('li.relationElement').each(function(i,element) {
@@ -648,5 +672,79 @@ function onClickRemoveElement() {
       console.log("indexLevel", indexLevel);
       $(element).setNameIndexes(indexLevel, i);
     });
+
+    // Enabled select component if needed
+    if((maxLimit > 0) && (counted >= maxLimit)) {
+      console.log("reenabled component", removeElementType);
+      $select.prop('disabled', false).trigger('change.select2');
+    }
   });
+}
+
+/**
+ * Geographic Scope Component
+ */
+function formatStateCountries(state) {
+  if(!state.id) {
+    return state.text;
+  }
+  var flag = '<i class="flag-sm flag-sm-' + state.element.value.toUpperCase() + '"></i> ';
+  var $state;
+  if(state.id != -1) {
+    $state = $('<span>' + flag + state.text + '</span>');
+  } else {
+    $state = $('<span>' + state.text + '</span>');
+  }
+  return $state;
+};
+
+function setGeographicScope(component) {
+
+  var $partner = $(component).parents('.geographicScopeBlock');
+  var $scopes = $(component).parents('.elementsListComponent');
+
+  var $regionalBlock = $partner.find('.regionalBlock');
+  var $nationalBlock = $partner.find('.nationalBlock');
+
+  var isRegional = $scopes.find('.elementRelationID[value="2"]').exists();
+  var isMultiNational = $scopes.find('.elementRelationID[value="3"]').exists();
+  var isNational = $scopes.find('.elementRelationID[value="4"]').exists();
+  var isSubNational = $scopes.find('.elementRelationID[value="5"]').exists();
+
+  // Regions
+  if(isRegional) {
+    $regionalBlock.slideDown();
+  } else {
+    $regionalBlock.slideUp();
+    // Clean selected region
+    $regionalBlock.find("select").val("-1").trigger('change');
+  }
+
+  // Countries
+  if(isMultiNational || isNational || isSubNational) {
+    if(isMultiNational) {
+      $nationalBlock.find("select").select2({
+          maximumSelectionLength: 0,
+          placeholder: "Select a country(ies)",
+          templateResult: formatStateCountries,
+          templateSelection: formatStateCountries,
+          width: '100%'
+      });
+    } else {
+      var countries = ($nationalBlock.find("select").val()) || [];
+      if(countries.length > 1) {
+        $nationalBlock.find("select").val(null).trigger('change');
+      }
+      $nationalBlock.find("select").select2({
+          maximumSelectionLength: 1,
+          placeholder: "Select a country",
+          templateResult: formatStateCountries,
+          templateSelection: formatStateCountries,
+          width: '100%'
+      });
+    }
+    $nationalBlock.slideDown();
+  } else {
+    $nationalBlock.slideUp();
+  }
 }

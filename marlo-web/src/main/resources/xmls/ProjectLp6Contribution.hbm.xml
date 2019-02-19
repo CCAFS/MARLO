@@ -1,0 +1,124 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated Jul 29, 2016 11:36:56 AM by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+	<class
+		name="org.cgiar.ccafs.marlo.data.model.ProjectLp6Contribution"
+		table="project_lp6_contribution" optimistic-lock="none">
+		<id name="id" type="java.lang.Long">
+			<column name="id" />
+			<generator class="identity" />
+		</id>
+		<many-to-one name="project"
+			class="org.cgiar.ccafs.marlo.data.model.Project" fetch="select">
+			<column name="project_id" not-null="true" />
+		</many-to-one>
+		<many-to-one name="phase"
+			class="org.cgiar.ccafs.marlo.data.model.Phase" fetch="select">
+			<column name="phase_id" />
+		</many-to-one>
+		<property name="active" type="boolean">
+			<column name="is_active" not-null="true" />
+		</property>
+		<property name="contribution" type="boolean">
+			<column name="contribution" not-null="false" />
+		</property>
+		<property name="activeSince" type="timestamp" update="false">
+			<column name="active_since" length="19" not-null="true" />
+		</property>
+		<property name="modificationJustification" type="string">
+			<column name="modification_justification" sql-type="TEXT"
+				not-null="true" />
+		</property>
+		<many-to-one name="createdBy"
+			class="org.cgiar.ccafs.marlo.data.model.User" fetch="select"
+			update="false">
+			<column name="created_by" not-null="true" />
+		</many-to-one>
+		<many-to-one name="modifiedBy"
+			class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
+			<column name="modified_by" />
+		</many-to-one>
+
+		<property name="narrative" type="string">
+			<column name="narrative" sql-type="TEXT" not-null="true" />
+		</property>
+
+		<property name="workingAcrossFlagshipsNarrative"
+			type="string">
+			<column name="working_across_flagships" sql-type="TEXT"
+				not-null="true" />
+		</property>
+
+		<property name="workingAcrossFlagships" type="boolean">
+			<column name="is_working_across_flagships" not-null="true" />
+		</property>
+
+		<property name="undertakingEffortsLeadingNarrative"
+			type="string">
+			<column name="undertaking_efforts_leading" sql-type="TEXT"
+				not-null="true" />
+		</property>
+
+		<property name="undertakingEffortsCsaNarrative" type="string">
+			<column name="undertaking_efforts_csa" sql-type="TEXT"
+				not-null="true" />
+		</property>
+
+		<property name="undertakingEffortsLeading" type="boolean">
+			<column name="is_undertaking_efforts_leading" not-null="true" />
+		</property>
+
+		<property name="providingPathways" type="boolean">
+			<column name="is_providing_pathways" not-null="true" />
+		</property>
+
+		<property name="topThreePartnershipsNarrative" type="string">
+			<column name="top_three_partnerships" sql-type="TEXT"
+				not-null="true" />
+		</property>
+
+		<property name="providingPathwaysNarrative" type="string">
+			<column name="providing_pathways_narrative" sql-type="TEXT"
+				not-null="true" />
+		</property>
+
+		<property name="undertakingEffortsCsa" type="boolean">
+			<column name="is_undertaking_efforts_csa" not-null="true" />
+		</property>
+
+		<property name="initiativeRelatedNarrative" type="string">
+			<column name="initiative_related" sql-type="TEXT"
+				not-null="true" />
+		</property>
+		
+		<property name="geographicScopeNarrative" type="string">
+      <column name="geographic_scope_narrative" sql-type="TEXT"
+        not-null="true" />
+    </property>
+    
+    <set name="sectionStatuses" table="section_statuses" inverse="true"
+      lazy="true" fetch="select">
+      <key>
+        <column name="project_lp6_contribution_id" />
+      </key>
+      <one-to-many class="org.cgiar.ccafs.marlo.data.model.SectionStatus" />
+    </set>	
+
+		<property name="initiativeRelated" type="boolean">
+			<column name="is_initiative_related" not-null="true" />
+		</property>
+		<set embed-xml="true" fetch="select" inverse="true" lazy="true"
+			mutable="true" name="projectLp6ContributionDeliverable"
+			optimistic-lock="true" sort="unsorted"
+			table="project_lp6_contribution_deliverables">
+			<key on-delete="noaction">
+				<column name="lp6_contribution_id" />
+			</key>
+			<one-to-many
+				class="org.cgiar.ccafs.marlo.data.model.ProjectLp6ContributionDeliverable"
+				embed-xml="true" not-found="exception" />
+		</set>
+	</class>
+</hibernate-mapping>

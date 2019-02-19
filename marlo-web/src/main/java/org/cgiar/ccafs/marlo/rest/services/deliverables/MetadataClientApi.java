@@ -17,13 +17,20 @@
 package org.cgiar.ccafs.marlo.rest.services.deliverables;
 
 import org.cgiar.ccafs.marlo.rest.services.deliverables.model.MetadataModel;
+import org.cgiar.ccafs.marlo.utils.RestConnectionUtil;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.json.JSONObject;
 
 public abstract class MetadataClientApi {
 
@@ -60,7 +67,13 @@ public abstract class MetadataClientApi {
     }
   }
 
+  private RestConnectionUtil xmlReaderConnectionUtil;
+
   private String id;
+
+  public MetadataClientApi() {
+    xmlReaderConnectionUtil = new RestConnectionUtil();
+  }
 
 
   public String getId() {
@@ -75,9 +88,90 @@ public abstract class MetadataClientApi {
     return link;
   }
 
+  private void putKeyIfNotExists(JSONObject jo, String key) {
+    if (!jo.has(key) || jo.get(key) == null || jo.get(key).toString().equals("{}")) {
+      jo.put(key, "");
+    }
+  }
+
+  public void setDefaultEmptyValues(JSONObject jo) {
+    this.putKeyIfNotExists(jo, "citation");
+    this.putKeyIfNotExists(jo, "title");
+    this.putKeyIfNotExists(jo, "handle");
+    this.putKeyIfNotExists(jo, "keywords");
+    this.putKeyIfNotExists(jo, "description");
+    this.putKeyIfNotExists(jo, "rights");
+    this.putKeyIfNotExists(jo, "language");
+    this.putKeyIfNotExists(jo, "openAccess");
+    this.putKeyIfNotExists(jo, "ISI");
+    this.putKeyIfNotExists(jo, "doi");
+    this.putKeyIfNotExists(jo, "publicationDate");
+    this.putKeyIfNotExists(jo, "countries");
+    this.putKeyIfNotExists(jo, "publisher");
+    this.putKeyIfNotExists(jo, "journal");
+    this.putKeyIfNotExists(jo, "volume");
+    this.putKeyIfNotExists(jo, "issue");
+    this.putKeyIfNotExists(jo, "pages");
+  }
+
+  public void setDoi(JSONObject jo) throws JsonParseException, JsonMappingException, IOException {
+    String doi = "";
+    if (jo.has("doi") && jo.get("doi") != null) {
+      doi = jo.get("doi").toString();
+    }
+    if (doi.isEmpty() && jo.has("identifier.doi") && jo.get("identifier.doi") != null) {
+      doi = jo.get("identifier.doi").toString();
+    }
+
+    if (doi.isEmpty() && jo.has("persistentUrl") && jo.get("persistentUrl") != null) {
+      doi = jo.get("persistentUrl").toString();
+    }
+
+    if (doi != null && !doi.isEmpty()) {
+      jo.put("doi", doi);
+      if (doi.contains("http://dx.doi.org/") || doi.contains("https://doi.org/")) {
+
+        if (doi.contains("http://dx.doi.org/")) {
+          doi = doi.replace("http://dx.doi.org/", "https://doi.org/");
+        }
+        doi = doi.trim();
+        if (!doi.equals("{}")) {
+          String metadataDOI = xmlReaderConnectionUtil.getJsonRestClientFromDOI(doi);
+          HashMap<String, Object> result = new ObjectMapper().readValue(metadataDOI, HashMap.class);
+          if (result != null && !result.isEmpty()) {
+            Object volume = result.get("volume");
+            Object issue = result.get("issue");
+            Object page = result.get("page");
+            Object publisher = result.get("publisher");
+
+            // volume
+            if (volume != null) {
+              jo.put("volume", volume.toString());
+            }
+
+            // issue
+            if (issue != null) {
+              jo.put("issue", issue.toString());
+            }
+
+            // page
+            if (page != null) {
+              jo.put("pages", page.toString());
+            }
+
+            // journal
+            if (publisher != null) {
+              jo.put("journal", publisher.toString());
+            }
+          }
+
+        }
+      }
+    }
+  }
+
   public void setId(String id) {
     this.id = id;
   }
-
 
 }

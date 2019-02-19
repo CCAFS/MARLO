@@ -20,6 +20,7 @@ import org.cgiar.ccafs.marlo.data.manager.CaseStudyManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyInfoManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.ExpectedStudyProject;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
@@ -27,11 +28,11 @@ import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyCountry;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyCrp;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyFlagship;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInfo;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInnovation;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInstitution;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudySrfTarget;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudySubIdo;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
-import org.cgiar.ccafs.marlo.data.model.StudiesStatusPlanningEnum;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.HTMLParser;
 
@@ -82,6 +83,7 @@ public class StudiesSummaryAction extends BaseSummariesAction implements Summary
   private final ProjectExpectedStudyInfoManager projectExpectedStudyInfoManager;
   private final ResourceManager resourceManager;
   private final HTMLParser HTMLParser;
+  private final ProjectInnovationManager projectInnovationManager;
 
   // PDF bytes
   private byte[] bytesPDF;
@@ -101,11 +103,12 @@ public class StudiesSummaryAction extends BaseSummariesAction implements Summary
   public StudiesSummaryAction(APConfig config, CaseStudyManager caseStudyManager, GlobalUnitManager crpManager,
     PhaseManager phaseManager, ResourceManager resourceManager,
     ProjectExpectedStudyInfoManager projectExpectedStudyInfoManager, HTMLParser HTMLParser,
-    ProjectManager projectManager) {
+    ProjectManager projectManager, ProjectInnovationManager projectInnovationManager) {
     super(config, crpManager, phaseManager, projectManager);
     this.resourceManager = resourceManager;
     this.projectExpectedStudyInfoManager = projectExpectedStudyInfoManager;
     this.HTMLParser = HTMLParser;
+    this.projectInnovationManager = projectInnovationManager;
   }
 
   /**
@@ -158,6 +161,7 @@ public class StudiesSummaryAction extends BaseSummariesAction implements Summary
     masterReport.getParameterValues().put("i8nStudiesRElaborationOutcomeImpactStatement",
       this.getText("summaries.study.elaborationStatement"));
     masterReport.getParameterValues().put("i8nStudiesRReferenceText", this.getText("summaries.study.referencesCited"));
+    masterReport.getParameterValues().put("i8nStudiesRTagged", this.getText("summaries.study.tagged"));
     masterReport.getParameterValues().put("i8nStudiesRReferencesFile",
       this.getText("study.referencesCitedAttach.readText"));
     masterReport.getParameterValues().put("i8nStudiesRQuantification", this.getText("summaries.study.quantification"));
@@ -166,6 +170,7 @@ public class StudiesSummaryAction extends BaseSummariesAction implements Summary
     masterReport.getParameterValues().put("i8nStudiesRGenderRelevance", this.getText("study.genderRelevance"));
     masterReport.getParameterValues().put("i8nStudiesRYouthRelevance", this.getText("study.youthRelevance"));
     masterReport.getParameterValues().put("i8nStudiesRCapacityRelevance", this.getText("study.capDevRelevance"));
+    masterReport.getParameterValues().put("i8nStudiesRClimateRelevance", this.getText("study.climateRelevance"));
     masterReport.getParameterValues().put("i8nStudiesROtherCrossCuttingDimensions",
       this.getText("summaries.study.otherCrossCutting"));
     masterReport.getParameterValues().put("i8nStudiesRComunicationsMaterial",
@@ -281,13 +286,14 @@ public class StudiesSummaryAction extends BaseSummariesAction implements Summary
         "quantification", "genderRelevance", "youthRelevance", "capacityRelevance", "otherCrossCuttingDimensions",
         "comunicationsMaterial", "comunicationsFile", "contacts", "studyProjects", "isContribution",
         "isBudgetInvestment", "isStage1", "isRegional", "isNational", "hasreferencesFile", "hasCommunicationFile",
-        "isOutcomeCaseStudy", "referenceURL", "communicationsURL"},
+        "isOutcomeCaseStudy", "referenceURL", "communicationsURL", "tagged", "climateRelevance", "cgiarInnovations"},
       new Class[] {Long.class, Integer.class, Double.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, Boolean.class, Boolean.class, Boolean.class,
-        Boolean.class, Boolean.class, Boolean.class, Boolean.class, Boolean.class, String.class, String.class},
+        Boolean.class, Boolean.class, Boolean.class, Boolean.class, Boolean.class, String.class, String.class,
+        String.class, String.class, String.class},
       0);
     List<ProjectExpectedStudyInfo> projectExpectedStudyInfos = new ArrayList<>();
     if (studyType.equals("all")) {
@@ -330,7 +336,8 @@ public class StudiesSummaryAction extends BaseSummariesAction implements Summary
           elaborationOutcomeImpactStatement = null, referenceText = null, referencesFile = null, quantification = null,
           genderRelevance = null, youthRelevance = null, capacityRelevance = null, otherCrossCuttingDimensions = null,
           comunicationsMaterial = null, comunicationsFile = null, contacts = null, studyProjects = null,
-          referenceURL = null, communicationsURL = null;
+          referenceURL = null, communicationsURL = null, tagged = null, cgiarInnovations = null,
+          cgiarInnovationsList = null, climateRelevance = null, link = null;
 
         Boolean isContribution = false, isBudgetInvestment = false, isStage1 = false, isRegional = false,
           isNational = false, hasreferencesFile = false, hasCommunicationFile = false, isOutcomeCaseStudy = false,
@@ -351,7 +358,28 @@ public class StudiesSummaryAction extends BaseSummariesAction implements Summary
         }
         // Status
         if (projectExpectedStudyInfo.getStatus() != null) {
-          status = StudiesStatusPlanningEnum.getValue(projectExpectedStudyInfo.getStatus()).getStatus();
+          status = projectExpectedStudyInfo.getStatus().getName();
+        }
+        // Tagged
+        if (projectExpectedStudyInfo != null && projectExpectedStudyInfo.getEvidenceTag() != null
+          && projectExpectedStudyInfo.getEvidenceTag().getName() != null) {
+          tagged = projectExpectedStudyInfo.getEvidenceTag().getName();
+        }
+        // cgiarInnovations
+        if (projectExpectedStudyInfo.getCgiarInnovation() != null) {
+          cgiarInnovations = projectExpectedStudyInfo.getCgiarInnovation();
+        }
+        // Innovations
+        if (projectExpectedStudyInfo.getProjectExpectedStudy().getInnovations() != null) {
+          Set<String> innovationsSet = new HashSet<>();
+          for (ProjectExpectedStudyInnovation projectExpectedStudyInnovation : projectExpectedStudyInfo
+            .getProjectExpectedStudy().getInnovations()) {
+            projectExpectedStudyInnovation.setProjectInnovation(projectInnovationManager
+              .getProjectInnovationById(projectExpectedStudyInnovation.getProjectInnovation().getId()));
+            innovationsSet.add("<br>&nbsp;&nbsp;&nbsp;&nbsp; ● "
+              + projectExpectedStudyInnovation.getProjectInnovation().getProjectInnovationInfo().getTitle());
+          }
+          cgiarInnovationsList = String.join("", innovationsSet);
         }
         // Type
         if (projectExpectedStudyInfo.getStudyType() != null) {
@@ -581,6 +609,17 @@ public class StudiesSummaryAction extends BaseSummariesAction implements Summary
           }
         }
 
+        // Climate change
+        if (projectExpectedStudyInfo.getClimateChangeLevel() != null) {
+          climateRelevance = projectExpectedStudyInfo.getClimateChangeLevel().getName();
+          if (!projectExpectedStudyInfo.getClimateChangeLevel().getId().equals(1l)
+            && projectExpectedStudyInfo.getDescribeClimateChange() != null
+            && !projectExpectedStudyInfo.getDescribeClimateChange().isEmpty()) {
+            climateRelevance += "<br>" + this.getText("study.achievementsClimateChangeRelevance.readText") + ": "
+              + HTMLParser.plainTextToHtml(projectExpectedStudyInfo.getDescribeClimateChange());
+          }
+        }
+
         // Other cross-cutting dimensions
         if (projectExpectedStudyInfo.getOtherCrossCuttingDimensions() != null
           && !projectExpectedStudyInfo.getOtherCrossCuttingDimensions().trim().isEmpty()) {
@@ -600,10 +639,29 @@ public class StudiesSummaryAction extends BaseSummariesAction implements Summary
           communicationsURL = this.getPath() + comunicationsFile;
         }
 
+        // link
+
+        // {baseUrl}/projects/${crpSession}/studySummary.do?studyID=${(element.id)!}&cycle=Reporting&year=${(actualPhase.year)
+        if (projectExpectedStudyInfo.getProjectExpectedStudy().getId() != null
+          && projectExpectedStudyInfo.getPhase() != null && this.getBaseUrl() != null) {
+          link = this.getBaseUrl() + "/projects/" + this.getCrpSession() + "/studySummary.do?studyID="
+            + projectExpectedStudyInfo.getProjectExpectedStudy().getId() + "&cycle=Reporting&year="
+            + projectExpectedStudyInfo.getPhase().getYear();
+        }
+
         // Contact person
         if (projectExpectedStudyInfo.getContacts() != null
           && !projectExpectedStudyInfo.getContacts().trim().isEmpty()) {
           contacts = HTMLParser.plainTextToHtml(projectExpectedStudyInfo.getContacts());
+
+
+          if (link != null && projectExpectedStudyInfo.getProjectExpectedStudy().getProjectExpectedStudyInfo() != null
+            && projectExpectedStudyInfo.getProjectExpectedStudy().getProjectExpectedStudyInfo().getIsPublic() == true) {
+            contacts +=
+              "<br></br><p><font size=2 face='Segoe UI' \n> <b>Outcome Impact Case Report link:</b></font></p> "
+                + "<p><font size=2 face='Segoe UI' \n>" + link + "</font></p>";
+          }
+
         }
 
         // Projects
@@ -639,7 +697,8 @@ public class StudiesSummaryAction extends BaseSummariesAction implements Summary
             elaborationOutcomeImpactStatement, referenceText, referencesFile, quantification, genderRelevance,
             youthRelevance, capacityRelevance, otherCrossCuttingDimensions, comunicationsMaterial, comunicationsFile,
             contacts, studyProjects, isContribution, isBudgetInvestment, isStage1, isRegional, isNational,
-            hasreferencesFile, hasCommunicationFile, isOutcomeCaseStudy, referenceURL, communicationsURL});
+            hasreferencesFile, hasCommunicationFile, isOutcomeCaseStudy, referenceURL, communicationsURL, tagged,
+            climateRelevance, cgiarInnovations});
         }
       }
     }

@@ -66,6 +66,8 @@ public class DeliverableDisseminationManagerImpl implements DeliverableDissemina
     newDeliverableDissemination.setDisseminationUrl(deliverableDissemination.getDisseminationUrl());
     newDeliverableDissemination.setDisseminationChannelName(deliverableDissemination.getDisseminationChannelName());
     newDeliverableDissemination.setSynced(deliverableDissemination.getSynced());
+    newDeliverableDissemination.setConfidential(deliverableDissemination.getConfidential());
+    newDeliverableDissemination.setConfidentialUrl(deliverableDissemination.getConfidentialUrl());
   }
 
   @Override

@@ -13,12 +13,20 @@ public class RepIndTypeActivity extends MarloBaseEntity implements java.io.Seria
   private String name;
   @Expose
   private String definition;
+  @Expose
+  private Boolean isFormal;
+
 
   public RepIndTypeActivity() {
   }
 
+
   public String getDefinition() {
     return this.definition;
+  }
+
+  public Boolean getIsFormal() {
+    return isFormal;
   }
 
   public String getName() {
@@ -27,6 +35,10 @@ public class RepIndTypeActivity extends MarloBaseEntity implements java.io.Seria
 
   public void setDefinition(String definition) {
     this.definition = definition;
+  }
+
+  public void setIsFormal(Boolean isFormal) {
+    this.isFormal = isFormal;
   }
 
   public void setName(String name) {

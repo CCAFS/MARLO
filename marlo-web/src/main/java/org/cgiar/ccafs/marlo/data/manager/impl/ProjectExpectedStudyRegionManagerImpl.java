@@ -15,7 +15,6 @@
 package org.cgiar.ccafs.marlo.data.manager.impl;
 
 
-import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.dao.PhaseDAO;
 import org.cgiar.ccafs.marlo.data.dao.ProjectExpectedStudyRegionDAO;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyRegionManager;
@@ -57,12 +56,12 @@ public class ProjectExpectedStudyRegionManagerImpl implements ProjectExpectedStu
       this.getProjectExpectedStudyRegionById(projectExpectedStudyRegionId);
     Phase currentPhase = projectExpectedStudyRegion.getPhase();
 
-    if (currentPhase.getDescription().equals(APConstants.PLANNING)) {
-      if (currentPhase.getNext() != null) {
-        this.deleteProjectExpectedStudyRegionPhase(currentPhase.getNext(),
-          projectExpectedStudyRegion.getProjectExpectedStudy().getId(), projectExpectedStudyRegion);
-      }
+
+    if (currentPhase.getNext() != null) {
+      this.deleteProjectExpectedStudyRegionPhase(currentPhase.getNext(),
+        projectExpectedStudyRegion.getProjectExpectedStudy().getId(), projectExpectedStudyRegion);
     }
+
 
     projectExpectedStudyRegionDAO.deleteProjectExpectedStudyRegion(projectExpectedStudyRegionId);
   }
@@ -73,7 +72,7 @@ public class ProjectExpectedStudyRegionManagerImpl implements ProjectExpectedStu
 
     List<ProjectExpectedStudyRegion> projectExpectedStudyRegions = phase.getProjectExpectedStudyRegions().stream()
       .filter(c -> c.isActive() && c.getProjectExpectedStudy().getId().longValue() == expectedID
-        && c.getRepIndRegion().getId().equals(projectExpectedStudyRegion.getRepIndRegion().getId()))
+        && c.getLocElement().getId().equals(projectExpectedStudyRegion.getLocElement().getId()))
       .collect(Collectors.toList());
     for (ProjectExpectedStudyRegion projectExpectedStudyRegionDB : projectExpectedStudyRegions) {
       projectExpectedStudyRegionDAO.deleteProjectExpectedStudyRegion(projectExpectedStudyRegionDB.getId());
@@ -104,20 +103,25 @@ public class ProjectExpectedStudyRegionManagerImpl implements ProjectExpectedStu
   }
 
 
+  @Override
+  public List<ProjectExpectedStudyRegion> getProjectExpectedStudyRegionbyPhase(long expectedID, long phaseID) {
+    return projectExpectedStudyRegionDAO.getProjectExpectedStudyRegionbyPhase(expectedID, phaseID);
+  }
+
   public void saveExpectedStudyRegionPhase(Phase next, long expectedID,
     ProjectExpectedStudyRegion projectExpectedStudyRegion) {
     Phase phase = phaseDAO.find(next.getId());
 
     List<ProjectExpectedStudyRegion> projectExpectedStudyRegions = phase.getProjectExpectedStudyRegions().stream()
       .filter(c -> c.getProjectExpectedStudy().getId().longValue() == expectedID
-        && c.getRepIndRegion().getId().equals(projectExpectedStudyRegion.getRepIndRegion().getId()))
+        && c.getLocElement().getId().equals(projectExpectedStudyRegion.getLocElement().getId()))
       .collect(Collectors.toList());
 
     if (projectExpectedStudyRegions.isEmpty()) {
       ProjectExpectedStudyRegion projectExpectedStudyRegionAdd = new ProjectExpectedStudyRegion();
       projectExpectedStudyRegionAdd.setProjectExpectedStudy(projectExpectedStudyRegion.getProjectExpectedStudy());
       projectExpectedStudyRegionAdd.setPhase(phase);
-      projectExpectedStudyRegionAdd.setRepIndRegion(projectExpectedStudyRegion.getRepIndRegion());
+      projectExpectedStudyRegionAdd.setLocElement(projectExpectedStudyRegion.getLocElement());
       projectExpectedStudyRegionDAO.save(projectExpectedStudyRegionAdd);
     }
 
@@ -134,12 +138,12 @@ public class ProjectExpectedStudyRegionManagerImpl implements ProjectExpectedStu
     ProjectExpectedStudyRegion region = projectExpectedStudyRegionDAO.save(projectExpectedStudyRegion);
     Phase currentPhase = region.getPhase();
 
-    if (currentPhase.getDescription().equals(APConstants.PLANNING)) {
-      if (currentPhase.getNext() != null) {
-        this.saveExpectedStudyRegionPhase(currentPhase.getNext(), region.getProjectExpectedStudy().getId(),
-          projectExpectedStudyRegion);
-      }
+
+    if (currentPhase.getNext() != null) {
+      this.saveExpectedStudyRegionPhase(currentPhase.getNext(), region.getProjectExpectedStudy().getId(),
+        projectExpectedStudyRegion);
     }
+
 
     return region;
   }

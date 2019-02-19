@@ -4,17 +4,18 @@
 <!-- Generated Apr 18, 2018 3:39:52 PM by Hibernate Tools 3.4.0.CR1 -->
 <hibernate-mapping>
 	<class name="org.cgiar.ccafs.marlo.data.model.ProjectInnovation"
-		table="project_innovations" optimistic-lock="version">
+		table="project_innovations" optimistic-lock="none">
 		<id name="id" type="java.lang.Long">
 			<column name="id" />
 			<generator class="identity" />
 		</id>
-		<many-to-one name="modifiedBy" class="org.cgiar.ccafs.marlo.data.model.User"
-			fetch="select">
+		<many-to-one name="modifiedBy"
+			class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
 			<column name="modified_by" />
 		</many-to-one>
-		<many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User"
-			fetch="select" update="false">
+		<many-to-one name="createdBy"
+			class="org.cgiar.ccafs.marlo.data.model.User" fetch="select"
+			update="false">
 			<column name="created_by" not-null="true" />
 		</many-to-one>
 		<many-to-one name="project"
@@ -36,42 +37,76 @@
 			<key>
 				<column name="project_innovation_id" />
 			</key>
-			<one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectInnovationInfo" />
+			<one-to-many
+				class="org.cgiar.ccafs.marlo.data.model.ProjectInnovationInfo" />
 		</set>
-		<set name="sectionStatuses" table="section_statuses" inverse="true"
-			lazy="true" fetch="select">
+		<set name="sectionStatuses" table="section_statuses"
+			inverse="true" lazy="true" fetch="select">
 			<key>
 				<column name="project_innovation_id" />
 			</key>
-			<one-to-many class="org.cgiar.ccafs.marlo.data.model.SectionStatus" />
+			<one-to-many
+				class="org.cgiar.ccafs.marlo.data.model.SectionStatus" />
 		</set>
-		<set name="projectInnovationCountries" table="project_innovation_countries"
-			inverse="true" lazy="true" fetch="select">
+		<set name="projectInnovationCountries"
+			table="project_innovation_countries" inverse="true" lazy="true"
+			fetch="select">
 			<key>
 				<column name="project_innovation_id" not-null="true" />
 			</key>
-			<one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectInnovationCountry" />
+			<one-to-many
+				class="org.cgiar.ccafs.marlo.data.model.ProjectInnovationCountry" />
 		</set>
-		<set name="projectInnovationOrganizations" table="project_innovation_organizations"
-			inverse="true" lazy="true" fetch="select">
+		<set name="projectInnovationOrganizations"
+			table="project_innovation_organizations" inverse="true" lazy="true"
+			fetch="select">
 			<key>
 				<column name="project_innovation_id" />
 			</key>
-			<one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectInnovationOrganization" />
+			<one-to-many
+				class="org.cgiar.ccafs.marlo.data.model.ProjectInnovationOrganization" />
 		</set>
-		<set name="projectInnovationDeliverables" table="project_innovation_deliverables"
-			inverse="true" lazy="true" fetch="select">
+		<set name="projectInnovationDeliverables"
+			table="project_innovation_deliverables" inverse="true" lazy="true"
+			fetch="select">
 			<key>
 				<column name="project_innovation_id" />
 			</key>
-			<one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectInnovationDeliverable" />
+			<one-to-many
+				class="org.cgiar.ccafs.marlo.data.model.ProjectInnovationDeliverable" />
+		</set>
+		<set name="projectInnovationContributingOrganization"
+			table="project_innovation_contributing_organization" inverse="true" lazy="true"
+			fetch="select">
+			<key>
+				<column name="project_innovation_id" />
+			</key>
+			<one-to-many
+				class="org.cgiar.ccafs.marlo.data.model.ProjectInnovationContributingOrganization" />
 		</set>
 		<set name="projectInnovationCrps" table="project_innovation_crps"
+			inverse="true" lazy="true" fetch="select">
+			<key>
+				<column name="project_innovation_id" />
+			</key>
+			<one-to-many
+				class="org.cgiar.ccafs.marlo.data.model.ProjectInnovationCrp" />
+		</set>
+		<set name="projectInnovationGeographicScopes" table="project_innovation_geographic_scopes"
       inverse="true" lazy="true" fetch="select">
       <key>
         <column name="project_innovation_id" />
       </key>
-      <one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectInnovationCrp" />
+      <one-to-many
+        class="org.cgiar.ccafs.marlo.data.model.ProjectInnovationGeographicScope" />
+    </set>
+    <set name="projectInnovationRegions" table="project_innovation_regions"
+      inverse="true" lazy="true" fetch="select">
+      <key>
+        <column name="project_innovation_id" />
+      </key>
+      <one-to-many
+        class="org.cgiar.ccafs.marlo.data.model.ProjectInnovationRegion" />
     </set>
 	</class>
 </hibernate-mapping>

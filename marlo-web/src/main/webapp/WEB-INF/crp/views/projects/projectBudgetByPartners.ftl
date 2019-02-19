@@ -3,7 +3,7 @@
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2", "dropzone", "blueimp-file-upload"] /]
 [#assign customJS = [
-  "${baseUrlMedia}/js/projects/projectBudgetByPartners.js?20180223", 
+  "${baseUrlMedia}/js/projects/projectBudgetByPartners.js?20190207", 
   "${baseUrl}/global/js/autoSave.js",
   "${baseUrl}/global/js/fieldsValidation.js"
   ] 
@@ -218,29 +218,37 @@
           [/#if]
         </tbody>
       </table>
+      [#attempt]
+        [#assign projectFundingSources = (action.getBudgetsByPartner(element.institution.id,selectedYear))![] /]
+      [#recover]
+        [#assign projectFundingSources = [] /]
+        ERROR LOADING FUNDING SOURCES
+      [/#attempt]
       
-      <h5 class="sectionSubTitle">Funding Sources:</h5>
+      [#assign expandedProjectFundingSource = !(projectFundingSources?size > 0) ]
+      [#if projectFundingSources?size > 0]
+      <a class="btn btn-default btn-xs pull-right toggleProjectFundingSource"> 
+        <span class="project-fs-expandible-true" style="display:${expandedProjectFundingSource?string('none', 'block')}"><span class="glyphicon glyphicon-resize-full"></span> Expand</span>
+        <span class="project-fs-expandible-false" style="display:${expandedProjectFundingSource?string('block', 'none')}"><span class="glyphicon glyphicon-resize-small"></span> Collapse all</span>
+      </a>
+      [/#if]
+      <h5 class="sectionSubTitle">Funding Sources: </h5>
       <div class="projectW3bilateralFund-block">
         [#-- Funding sources --]
-        [#assign fundingSources = 0 /]
-        <div class="projectW3bilateralFund-list simpleBox" >
-          [#attempt]
-            [#list action.getBudgetsByPartner(element.institution.id,selectedYear) as budget ]
-                [#assign fundingSources++ /]
-                [#local indexBudgetfundingSource=action.getIndexBudget(element.institution.id,selectedYear,budget.fundingSource.fundingSourceInfo.budgetType.id,budget.fundingSource.id) ]
-                [@fundingSourceMacro element=budget name="project.budgets" selectedYear=selectedYear  index=indexBudgetfundingSource /]
-            [/#list]
-          [#recover]
-            ERROR LOADING FUNDING SOURCES
-          [/#attempt]
-          
-          [#if fundingSources == 0]
+        <div class="projectW3bilateralFund-list simpleBox project-fs-expandible-true" style="display:${expandedProjectFundingSource?string('block', 'none')}">
+          [#list projectFundingSources as budget ] 
+            [#local indexBudgetfundingSource=action.getIndexBudget(element.institution.id,selectedYear,budget.fundingSource.fundingSourceInfo.budgetType.id,budget.fundingSource.id) ]
+            [@fundingSourceMacro element=budget name="project.budgets" selectedYear=selectedYear  index=indexBudgetfundingSource /]
+          [#else]
             [#if editable && isYearEditable(selectedYear) && action.canSearchFunding(element.institution.id)]
               <p class="emptyMessage text-center">[@s.text name="projectBudgetByPartners.assginFundingSourceClicking" /] "[@s.text name="form.buttons.selectProject" /]".</p>
             [#else]
               <p class="emptyMessage text-center">[@s.text name="projectBudgetByPartners.noFundingSourcesAdded" /].</p>
             [/#if]
-          [/#if]
+          [/#list]
+        </div>
+        <div class="simpleBox project-fs-expandible-false" style="display:${expandedProjectFundingSource?string('none', 'block')}">
+          <p class="emptyMessage text-center"> <span class="fsCounter">${projectFundingSources?size}</span> Funding source(s), please click in the "Expand" button above to show them.</p>
         </div>
         [#-- Search project bilateral co-funded --]
         [#if editable  && isYearEditable(selectedYear) && action.canSearchFunding(element.institution.id)]
@@ -254,11 +262,102 @@
   </div>
 [/#macro]
 
+
+[#macro fundingSourceRowMacro element name selectedYear index=-1  isTemplate=false]
+  [#local customName = "${name}[${index}]" /]
+  <tr id="projectW3bilateralFund-${isTemplate?string('template', index )}" class="projectW3bilateralFund  " style="display:${isTemplate?string('none','table-row')}">
+    
+    [#-- Title --]
+    <td>
+      [#-- Relations --]
+      [#if !isTemplate]
+        <div class="pull-right">[@popUps.relationsMacro element=element labelText=false /] </div>
+      [/#if]
+    
+      [#-- Funding Source Title --]
+      <p class="">
+        [#-- Finance Code --]
+        [#if (element.fundingSource.fundingSourceInfo.financeCode?has_content)!false]
+          [#assign isSynced = (element.fundingSource.fundingSourceInfo.synced)!false ]
+          [#-- Code --]
+          <span [#if isSynced]title="Synced on ${(element.fundingSource.fundingSourceInfo.syncedDate)!''}"  style="color: #2aa4c9;"[/#if]>${element.fundingSource.fundingSourceInfo.financeCode}</span> |
+        [/#if]
+        
+        [#local fsURL][@s.url namespace="/fundingSources" action="${crpSession}/fundingSource"][@s.param name="fundingSourceID" value="${(element.fundingSource.id)!}" /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
+        [#if !isTemplate]<a href="${fsURL}" class="" target="_BLANK">[/#if]
+          <span class="titleId">FS${(element.fundingSource.id)!}</span>  - <span class="title">${(element.fundingSource.fundingSourceInfo.title)!}</span>
+        [#if !isTemplate]</a>[/#if]
+      </p>
+      
+      [#-- Funding Source remaining budget --]
+      [#assign fsRemaining = ((element.fundingSource.getRemaining(selectedYear,action.getActualPhase()))!0)?number /]
+      [#if (isYearEditable(selectedYear)) || isTemplate]
+        <small class="grayLabel [#if fsRemaining lt 0]fieldError[/#if]"> (Remaining budget US$ <span class="projectAmount">${fsRemaining?string(",##0.00")}</span>) </small>
+      [/#if]
+      
+      <input type="hidden" class="id " name="${customName}.id" value="${(element.id)!}"/>
+      <input type="hidden" class="institutionId" name="${customName}.institution.id" value="${(element.institution.id)!}"/>
+      <input type="hidden" class="selectedYear" name="${customName}.year" value="${(selectedYear)!}"/>
+      <input type="hidden" class="projectId institution-${(element.institution.id)!} year-${(selectedYear)!}" name="${customName}.fundingSource.id" value="${(element.fundingSource.id)!}"/>
+      <input type="hidden"  name="${customName}.phase.id" value="${(element.phase.id)!}"/>
+    </td>
+    
+    [#-- Funding Type --]
+    <td class="col-md-2 text-center">
+      <span class="budgetTypeName">${(element.fundingSource.fundingSourceInfo.budgetType.name)!} 
+        [#if action.hasSpecificities('crp_fs_w1w2_cofinancing')] <br />${(element.fundingSource.fundingSourceInfo.w1w2?string('<small class="text-primary">(Co-Financing)</small>',''))!} [/#if]
+      </span> 
+      <input type="hidden" class="budgetTypeId" name="${customName}.budgetType.id" value="${(element.fundingSource.fundingSourceInfo.budgetType.id)!}" />
+    </td>
+    
+    [#-- Amount --]
+    <td class="col-md-2">
+      [#-- TODO: Allow to add funding sources when there is no aggregate (problem with permissions)  --]
+      [#-- Added action.canSearchFunding to allow to modify gender depending on institution  --]
+      [#if (editable && isYearEditable(selectedYear) && (action.canEditFunding(((element.fundingSource.fundingSourceInfo.budgetType.id)!-1),(element.institution.id)!-1) ))|| isTemplate]
+        [@customForm.input name="${customName}.amount"    i18nkey="budget.amount" showTitle=false className="currencyInput fundInput type-${(element.fundingSource.fundingSourceInfo.budgetType.id)!'none'}" required=true /]
+      [#else]
+        <div class="${customForm.changedField(customName+'.amount')}">
+          <div class="input"><p>US$ <span>${((element.amount)!0)?number?string(",##0.00")}</span></p></div>
+          <input type="hidden" name="${customName}.amount"  value="${(element.amount)!0}" />
+        </div>
+      [/#if]
+    </td>
+    
+    [#-- Gender Percentage --]
+    [#if ((project.projectInfo.projectEditLeader)!false) && action.hasSpecificities('crp_budget_gender')]
+    <td class="col-md-1">
+      [#-- TODO: Allow to add funding sources when there is no aggregate (problem with permissions)  --]
+      [#-- Added action.canSearchFunding to allow to modify gender depending on institution  --]
+      [#if (editable && isYearEditable(selectedYear) && action.canSearchFunding(element.institution.id) && action.canEditGender()) || isTemplate]
+        [@customForm.input name="${customName}.genderPercentage" i18nkey="budget.genderPercentage" showTitle=false className="percentageInput type-${(element.fundingSource.fundingSourceInfo.budgetType.id)!'none'}" required=true   /]
+      [#else]  
+        <div class="${customForm.changedField(customName+'.genderPercentage')}">
+          <div class="input"><p><span>${((element.genderPercentage)!0)}%</span></p></div>
+          <input type="hidden" name="${customName}.genderPercentage"  value="${(element.genderPercentage)!0}" />
+        </div>
+      [/#if]
+    </td>
+    [/#if]
+    
+    [#-- Remove --]
+    <td>
+      [#if (editable && isYearEditable(selectedYear) && action.canEditFunding(((element.fundingSource.fundingSourceInfo.budgetType.id)!-1),(element.institution.id)!-1) ) || isTemplate]
+        [#if action.canBeDeleted((element.id)!-1,(element.class.name)!"")]
+          <div class="removeW3bilateralFund" title="Remove"> <img src="${baseUrl}/global/images/icon-remove.png" alt="" /> </div>
+        [#else]
+          <div class="disable text-right" title="Project Budget cannot be deleted"></div>
+        [/#if]
+      [/#if]
+    </td>
+      
+  </tr>
+[/#macro]
+
 [#macro fundingSourceMacro element name selectedYear index=-1  isTemplate=false]
   <div id="projectW3bilateralFund-${isTemplate?string('template', index )}" class="projectW3bilateralFund expandableBlock grayBox" style="display:${isTemplate?string('none','block')}">
     [#local customName = "${name}[${index}]" /]
     [#-- Remove --]
- 
     [#if (editable && isYearEditable(selectedYear) && action.canEditFunding(((element.fundingSource.fundingSourceInfo.budgetType.id)!-1),(element.institution.id)!-1) ) || isTemplate]
       [#if action.canBeDeleted((element.id)!-1,(element.class.name)!"")]
         <div class="removeIcon removeW3bilateralFund" title="Remove"></div>
@@ -269,7 +368,6 @@
       <div class="pull-right">[@popUps.relationsMacro element=element /] </div>
       [/#if]
     [/#if]
-    
     
     <p class="checked">
       [#assign fsRemaining = ((element.fundingSource.getRemaining(selectedYear,action.getActualPhase()))!0)?number /]
@@ -290,7 +388,7 @@
     [#if !isTemplate]
     <a href="[@s.url namespace="/fundingSources" action="${crpSession}/fundingSource"][@s.param name="fundingSourceID" value="${(element.fundingSource.id)!}" /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" class="" target="_BLANK"> 
     [/#if]
-      <p> <span class="title">${(element.fundingSource.fundingSourceInfo.title)!}</span> </p>
+      <p class=""> <span class="title">${(element.fundingSource.fundingSourceInfo.title)!}</span> </p>
     [#if !isTemplate]
     </a>
     [/#if]
@@ -317,28 +415,27 @@
           <div class="row"><strong>Amount:</strong></div>
         </div>
         <div class="row col-md-9">
-        [#-- TODO: Allow to add funding sources when there is no aggregate (problem with permissions)  --]
-        [#-- Added action.canSearchFunding to allow to modify gender depending on institution  --]
-        [#if (editable && isYearEditable(selectedYear) && (action.canEditFunding(((element.fundingSource.fundingSourceInfo.budgetType.id)!-1),(element.institution.id)!-1) ))|| isTemplate]
-          [@customForm.input name="${customName}.amount"    i18nkey="budget.amount" showTitle=false className="currencyInput fundInput type-${(element.fundingSource.fundingSourceInfo.budgetType.id)!'none'}" required=true /]
-        [#else]
-          
-           <div class="${customForm.changedField(customName+'.amount')}">
-          <div class="input"><p>US$ <span>${((element.amount)!0)?number?string(",##0.00")}</span></p></div>
-          <input type="hidden" name="${customName}.amount"  value="${(element.amount)!0}" />
-          </div>
-        [/#if]
+          [#-- TODO: Allow to add funding sources when there is no aggregate (problem with permissions)  --]
+          [#-- Added action.canSearchFunding to allow to modify gender depending on institution  --]
+          [#if (editable && isYearEditable(selectedYear) && (action.canEditFunding(((element.fundingSource.fundingSourceInfo.budgetType.id)!-1),(element.institution.id)!-1) ))|| isTemplate]
+            [@customForm.input name="${customName}.amount"    i18nkey="budget.amount" showTitle=false className="currencyInput fundInput type-${(element.fundingSource.fundingSourceInfo.budgetType.id)!'none'}" required=true /]
+          [#else]
+            <div class="${customForm.changedField(customName+'.amount')}">
+            <div class="input"><p>US$ <span>${((element.amount)!0)?number?string(",##0.00")}</span></p></div>
+            <input type="hidden" name="${customName}.amount"  value="${(element.amount)!0}" />
+            </div>
+          [/#if]
         </div>
       </div>
       <div class="col-md-4">
         [#if ((project.projectInfo.projectEditLeader)!false) && action.hasSpecificities('crp_budget_gender')]
           <div class="row col-md-6"> <div class="row"><strong>Gender %:</strong></div> </div>
           <div class="row col-md-7">
-          [#-- TODO: Allow to add funding sources when there is no aggregate (problem with permissions)  --]
-          [#-- Added action.canSearchFunding to allow to modify gender depending on institution  --]
-          [#if (editable && isYearEditable(selectedYear) && action.canSearchFunding(element.institution.id) && action.canEditGender()) || isTemplate]
-            [@customForm.input name="${customName}.genderPercentage" i18nkey="budget.genderPercentage" showTitle=false className="percentageInput type-${(element.fundingSource.fundingSourceInfo.budgetType.id)!'none'}" required=true   /]
-          [#else]  
+            [#-- TODO: Allow to add funding sources when there is no aggregate (problem with permissions)  --]
+            [#-- Added action.canSearchFunding to allow to modify gender depending on institution  --]
+            [#if (editable && isYearEditable(selectedYear) && action.canSearchFunding(element.institution.id) && action.canEditGender()) || isTemplate]
+              [@customForm.input name="${customName}.genderPercentage" i18nkey="budget.genderPercentage" showTitle=false className="percentageInput type-${(element.fundingSource.fundingSourceInfo.budgetType.id)!'none'}" required=true   /]
+            [#else]  
             <div class="${customForm.changedField(customName+'.genderPercentage')}">
             <div class="input"><p><span>${((element.genderPercentage)!0)}%</span></p></div>
             <input type="hidden" name="${customName}.genderPercentage"  value="${(element.genderPercentage)!0}" />

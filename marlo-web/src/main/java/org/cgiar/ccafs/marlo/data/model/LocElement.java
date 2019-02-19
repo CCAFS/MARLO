@@ -103,10 +103,17 @@ public class LocElement extends MarloAuditableEntity implements java.io.Serializ
     return true;
   }
 
+  public String getComposedName() {
+    if (this.getLocElement() != null) {
+      return this.getLocElement().getName() + " / " + this.getName();
+    }
+    return this.getName();
+  }
+
+
   public GlobalUnit getCrp() {
     return crp;
   }
-
 
   public Set<CrpProgramCountry> getCrpProgramCountries() {
     return crpProgramCountries;
@@ -119,7 +126,6 @@ public class LocElement extends MarloAuditableEntity implements java.io.Serializ
   public Set<FundingSourceLocation> getFundingSourceLocations() {
     return fundingSourceLocations;
   }
-
 
   public List<FundingSource> getFundingSources() {
     return fundingSources;

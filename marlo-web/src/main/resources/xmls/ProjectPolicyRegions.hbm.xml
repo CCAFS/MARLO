@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Generated Jan 10, 2019 10:48:35 AM by Hibernate Tools 5.3.6.Final -->
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping auto-import="true"
+	default-access="property">
+	<class
+		name="org.cgiar.ccafs.marlo.data.model.ProjectPolicyRegion"
+		optimistic-lock="none" table="project_policy_regions">
+		<id name="id" type="java.lang.Long">
+			<column name="id" />
+			<generator class="identity" />
+		</id>
+		<many-to-one
+			class="org.cgiar.ccafs.marlo.data.model.LocElement" fetch="select"
+			name="locElement">
+			<column name="id_region" not-null="true" />
+		</many-to-one>
+		<many-to-one
+			class="org.cgiar.ccafs.marlo.data.model.Phase" fetch="select"
+			name="phase">
+			<column name="id_phase" />
+		</many-to-one>
+		<many-to-one
+			class="org.cgiar.ccafs.marlo.data.model.ProjectPolicy" fetch="select"
+			name="projectPolicy">
+			<column name="project_policy_id" not-null="true" />
+		</many-to-one>
+	</class>
+</hibernate-mapping>
