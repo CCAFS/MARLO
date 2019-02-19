@@ -639,9 +639,9 @@ public class StudiesSummaryAction extends BaseSummariesAction implements Summary
           communicationsURL = this.getPath() + comunicationsFile;
         }
 
-        // link
-
-        // {baseUrl}/projects/${crpSession}/studySummary.do?studyID=${(element.id)!}&cycle=Reporting&year=${(actualPhase.year)
+        /*
+         * Generate link url from parameters
+         */
         if (projectExpectedStudyInfo.getProjectExpectedStudy().getId() != null
           && projectExpectedStudyInfo.getPhase() != null && this.getBaseUrl() != null) {
           link = this.getBaseUrl() + "/projects/" + this.getCrpSession() + "/studySummary.do?studyID="
@@ -654,14 +654,14 @@ public class StudiesSummaryAction extends BaseSummariesAction implements Summary
           && !projectExpectedStudyInfo.getContacts().trim().isEmpty()) {
           contacts = HTMLParser.plainTextToHtml(projectExpectedStudyInfo.getContacts());
 
-
-          if (link != null && projectExpectedStudyInfo.getProjectExpectedStudy().getProjectExpectedStudyInfo() != null
+          if (link != null && projectExpectedStudyInfo.getProjectExpectedStudy() != null
+            && projectExpectedStudyInfo.getProjectExpectedStudy().getProjectExpectedStudyInfo() != null
+            && projectExpectedStudyInfo.getProjectExpectedStudy().getProjectExpectedStudyInfo().getIsPublic() != null
             && projectExpectedStudyInfo.getProjectExpectedStudy().getProjectExpectedStudyInfo().getIsPublic() == true) {
             contacts +=
               "<br></br><p><font size=2 face='Segoe UI' \n> <b>Outcome Impact Case Report link:</b></font></p> "
                 + "<p><font size=2 face='Segoe UI' \n>" + link + "</font></p>";
           }
-
         }
 
         // Projects
@@ -702,7 +702,6 @@ public class StudiesSummaryAction extends BaseSummariesAction implements Summary
         }
       }
     }
-
     return model;
 
   }
