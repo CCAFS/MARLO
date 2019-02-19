@@ -28,9 +28,15 @@ public class ProjectOutcomeIndicator extends MarloAuditableEntity implements jav
   private Double value;
   @Expose
   private String narrative;
+  @Expose
+  private Double valueReporting;
+  @Expose
+  private String achievedNarrative;
+
 
   public ProjectOutcomeIndicator() {
   }
+
 
   @Override
   public boolean equals(Object obj) {
@@ -53,10 +59,14 @@ public class ProjectOutcomeIndicator extends MarloAuditableEntity implements jav
   }
 
 
+  public String getAchievedNarrative() {
+    return achievedNarrative;
+  }
+
+
   public CrpProgramOutcomeIndicator getCrpProgramOutcomeIndicator() {
     return crpProgramOutcomeIndicator;
   }
-
 
   @Override
   public String getLogDeatil() {
@@ -67,7 +77,6 @@ public class ProjectOutcomeIndicator extends MarloAuditableEntity implements jav
 
     return sb.toString();
   }
-
 
   public String getNarrative() {
     return narrative;
@@ -84,12 +93,22 @@ public class ProjectOutcomeIndicator extends MarloAuditableEntity implements jav
   }
 
 
+  public Double getValueReporting() {
+    return valueReporting;
+  }
+
+
   @Override
   public int hashCode() {
     final int prime = 31;
     int result = 1;
     result = prime * result + ((this.getId() == null) ? 0 : this.getId().hashCode());
     return result;
+  }
+
+
+  public void setAchievedNarrative(String achievedNarrative) {
+    this.achievedNarrative = achievedNarrative;
   }
 
 
@@ -110,6 +129,11 @@ public class ProjectOutcomeIndicator extends MarloAuditableEntity implements jav
 
   public void setValue(Double value) {
     this.value = value;
+  }
+
+
+  public void setValueReporting(Double valueReporting) {
+    this.valueReporting = valueReporting;
   }
 
 
