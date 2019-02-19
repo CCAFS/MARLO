@@ -637,7 +637,8 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
 
         if (isOldCrossCutting) {
           // Gender
-          if (deliverableCrossCuttingMarkerGender != null) {
+          if (deliverableCrossCuttingMarkerGender != null
+            && deliverableCrossCuttingMarkerGender.getRepIndGenderYouthFocusLevel() != null) {
             if (deliverableCrossCuttingMarkerGender.getRepIndGenderYouthFocusLevel().getId() != 0
               && deliverableCrossCuttingMarkerGender.getRepIndGenderYouthFocusLevel().getId() != 4) {
               gender = deliverableCrossCuttingMarkerGender.getRepIndGenderYouthFocusLevel().getPowbName();
@@ -679,7 +680,8 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
           }
 
           // Youth
-          if (deliverableCrossCuttingMarkerYouth != null) {
+          if (deliverableCrossCuttingMarkerYouth != null
+            && deliverableCrossCuttingMarkerYouth.getRepIndGenderYouthFocusLevel() != null) {
             if (deliverableCrossCuttingMarkerYouth.getRepIndGenderYouthFocusLevel().getId() != 0
               && deliverableCrossCuttingMarkerYouth.getRepIndGenderYouthFocusLevel().getId() != 4) {
               youth = deliverableCrossCuttingMarkerYouth.getRepIndGenderYouthFocusLevel().getPowbName();
@@ -693,7 +695,8 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
           }
 
           // Cap
-          if (deliverableCrossCuttingMarkerCapDev != null) {
+          if (deliverableCrossCuttingMarkerCapDev != null
+            && deliverableCrossCuttingMarkerCapDev.getRepIndGenderYouthFocusLevel() != null) {
             if (deliverableCrossCuttingMarkerCapDev.getRepIndGenderYouthFocusLevel().getId() != 0
               && deliverableCrossCuttingMarkerCapDev.getRepIndGenderYouthFocusLevel().getId() != 4) {
               cap = deliverableCrossCuttingMarkerCapDev.getRepIndGenderYouthFocusLevel().getPowbName();
@@ -718,7 +721,8 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
           }
 
           // Youth
-          if (deliverableCrossCuttingMarkerYouth != null) {
+          if (deliverableCrossCuttingMarkerYouth != null
+            && deliverableCrossCuttingMarkerYouth.getRepIndGenderYouthFocusLevel() != null) {
             youth = deliverableCrossCuttingMarkerYouth.getRepIndGenderYouthFocusLevel().getPowbName();
           }
           if (youth.isEmpty()) {
@@ -726,7 +730,8 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
           }
 
           // Cap
-          if (deliverableCrossCuttingMarkerCapDev != null) {
+          if (deliverableCrossCuttingMarkerCapDev != null
+            && deliverableCrossCuttingMarkerCapDev.getRepIndGenderYouthFocusLevel() != null) {
             cap = deliverableCrossCuttingMarkerCapDev.getRepIndGenderYouthFocusLevel().getPowbName();
           }
           if (cap.isEmpty()) {
@@ -740,7 +745,8 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
         if (deliverableInfo.getCrpClusterKeyOutput() != null) {
           keyOutput += "• ";
 
-          if (deliverableInfo.getCrpClusterKeyOutput().getCrpClusterOfActivity().getCrpProgram() != null) {
+          if (deliverableInfo.getCrpClusterKeyOutput().getCrpClusterOfActivity() != null
+            && deliverableInfo.getCrpClusterKeyOutput().getCrpClusterOfActivity().getCrpProgram() != null) {
             keyOutput +=
               deliverableInfo.getCrpClusterKeyOutput().getCrpClusterOfActivity().getCrpProgram().getAcronym() + " - ";
           }
