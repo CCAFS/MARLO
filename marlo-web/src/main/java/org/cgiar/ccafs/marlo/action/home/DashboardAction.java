@@ -26,6 +26,7 @@ import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectPhase;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -140,6 +141,17 @@ public class DashboardAction extends BaseAction {
           Collections.sort(myProjects, (p1, p2) -> p1.getId().compareTo(p2.getId()));
 
         }
+      } else {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("y");
+
+        System.out.println(myProjects.size());
+        myProjects = myProjects.stream()
+          .filter(mp -> mp.isActive()
+            && Integer.parseInt(dateFormat.format(mp.getProjecInfoPhase(this.getActualPhase()).getEndDate())) >= this
+              .getCurrentCycleYear())
+          .collect(Collectors.toList());
+        System.out.println(myProjects.size());
+
       }
 
 
