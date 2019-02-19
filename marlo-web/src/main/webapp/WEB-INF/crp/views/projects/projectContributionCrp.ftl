@@ -459,7 +459,7 @@
     </div>
     [#if reportingActive]
       <div class="form-group">
-        [@customForm.textArea name="${customName}.achievedNarrative" i18nkey="projectOutcomeBaseline.achievedNarrative" required=isYearRequired(year) className="limitWords-100" editable=editable /]
+        [@customForm.textArea name="${customName}.achievedNarrative" i18nkey="projectOutcomeBaseline.achievedNarrative" required=true className="limitWords-100" editable=editable /]
       </div>
     [/#if]
   </div>
