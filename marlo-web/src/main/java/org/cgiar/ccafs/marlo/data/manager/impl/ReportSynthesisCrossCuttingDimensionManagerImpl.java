@@ -16,6 +16,7 @@ package org.cgiar.ccafs.marlo.data.manager.impl;
 
 
 import org.cgiar.ccafs.marlo.data.dao.ReportSynthesisCrossCuttingDimensionDAO;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableCrossCuttingMarkerManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableIntellectualAssetManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationManager;
@@ -23,6 +24,7 @@ import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisCrossCuttingDimensionMa
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
 import org.cgiar.ccafs.marlo.data.model.CrossCuttingDimensionTableDTO;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
+import org.cgiar.ccafs.marlo.data.model.DeliverableCrossCuttingMarker;
 import org.cgiar.ccafs.marlo.data.model.DeliverableInfo;
 import org.cgiar.ccafs.marlo.data.model.DeliverableIntellectualAsset;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
@@ -60,18 +62,21 @@ public class ReportSynthesisCrossCuttingDimensionManagerImpl implements ReportSy
   private PhaseManager phaseManager;
   private ProjectInnovationManager projectInnovationManager;
   private DeliverableIntellectualAssetManager deliverableIntellectualAssetManager;
+  private DeliverableCrossCuttingMarkerManager deliverableCrossCuttingMarkerManager;
 
   @Inject
   public ReportSynthesisCrossCuttingDimensionManagerImpl(
     ReportSynthesisCrossCuttingDimensionDAO reportSynthesisCrossCuttingDimensionDAO,
     ReportSynthesisManager reportSynthesisManager, PhaseManager phaseManager,
     ProjectInnovationManager projectInnovationManager,
-    DeliverableIntellectualAssetManager deliverableIntellectualAssetManager) {
+    DeliverableIntellectualAssetManager deliverableIntellectualAssetManager,
+    DeliverableCrossCuttingMarkerManager deliverableCrossCuttingMarkerManager) {
     this.reportSynthesisCrossCuttingDimensionDAO = reportSynthesisCrossCuttingDimensionDAO;
     this.reportSynthesisManager = reportSynthesisManager;
     this.phaseManager = phaseManager;
     this.projectInnovationManager = projectInnovationManager;
     this.deliverableIntellectualAssetManager = deliverableIntellectualAssetManager;
+    this.deliverableCrossCuttingMarkerManager = deliverableCrossCuttingMarkerManager;
   }
 
   @Override
@@ -415,80 +420,84 @@ public class ReportSynthesisCrossCuttingDimensionManagerImpl implements ReportSy
           boolean bYouth = false;
           boolean bCapDev = false;
           boolean bClimate = false;
-          if (deliverableInfo.getCrossCuttingNa() != null && deliverableInfo.getCrossCuttingNa()) {
-            iGenderNa++;
-            iYouthNa++;
-            iCapDevNa++;
-            iClimateNa++;
-          } else {
-            // Gender
-            if (deliverableInfo.getCrossCuttingGender() != null && deliverableInfo.getCrossCuttingGender()) {
-              bGender = true;
-              if (deliverableInfo.getCrossCuttingScoreGender() != null
-                && deliverableInfo.getCrossCuttingScoreGender() == 1) {
-                iGenderSignificant++;
-              } else if (deliverableInfo.getCrossCuttingScoreGender() != null
-                && deliverableInfo.getCrossCuttingScoreGender() == 2) {
-                iGenderPrincipal++;
-              } else if (deliverableInfo.getCrossCuttingScoreGender() == null) {
-                iGenderNa++;
-              }
-            }
 
-            // Youth
-            if (deliverableInfo.getCrossCuttingYouth() != null && deliverableInfo.getCrossCuttingYouth()) {
-              bYouth = true;
-              if (deliverableInfo.getCrossCuttingScoreYouth() != null
-                && deliverableInfo.getCrossCuttingScoreYouth() == 1) {
-                iYouthSignificant++;
-              } else if (deliverableInfo.getCrossCuttingScoreYouth() != null
-                && deliverableInfo.getCrossCuttingScoreYouth() == 2) {
-                iYouthPrincipal++;
-              } else if (deliverableInfo.getCrossCuttingScoreYouth() == null) {
-                iYouthNa++;
-              }
-            }
+          DeliverableCrossCuttingMarker deliverableCrossCuttingMarkerGender = deliverableCrossCuttingMarkerManager
+            .getDeliverableCrossCuttingMarkerId(deliverable.getId(), 1, phase.getId());
+          DeliverableCrossCuttingMarker deliverableCrossCuttingMarkerYouth = deliverableCrossCuttingMarkerManager
+            .getDeliverableCrossCuttingMarkerId(deliverable.getId(), 2, phase.getId());
+          DeliverableCrossCuttingMarker deliverableCrossCuttingMarkerCapDev = deliverableCrossCuttingMarkerManager
+            .getDeliverableCrossCuttingMarkerId(deliverable.getId(), 3, phase.getId());
+          DeliverableCrossCuttingMarker deliverableCrossCuttingMarkerClimateChange =
+            deliverableCrossCuttingMarkerManager.getDeliverableCrossCuttingMarkerId(deliverable.getId(), 4,
+              phase.getId());
 
-            // CapDev
-            if (deliverableInfo.getCrossCuttingCapacity() != null && deliverableInfo.getCrossCuttingCapacity()) {
-              bCapDev = true;
-              if (deliverableInfo.getCrossCuttingScoreCapacity() != null
-                && deliverableInfo.getCrossCuttingScoreCapacity() == 1) {
-                iCapDevSignificant++;
-              } else if (deliverableInfo.getCrossCuttingScoreCapacity() != null
-                && deliverableInfo.getCrossCuttingScoreCapacity() == 2) {
-                iCapDevPrincipal++;
-              } else if (deliverableInfo.getCrossCuttingScoreCapacity() == null) {
-                iCapDevNa++;
-              }
-            }
-
-            // Climate Change
-            if (deliverableInfo.getCrossCuttingClimate() != null && deliverableInfo.getCrossCuttingClimate()) {
-              bClimate = true;
-              if (deliverableInfo.getCrossCuttingScoreClimate() != null
-                && deliverableInfo.getCrossCuttingScoreClimate() == 1) {
-                iClimateSignificant++;
-              } else if (deliverableInfo.getCrossCuttingScoreClimate() != null
-                && deliverableInfo.getCrossCuttingScoreClimate() == 2) {
-                iClimatePrincipal++;
-              } else if (deliverableInfo.getCrossCuttingScoreClimate() == null) {
-                iClimateNa++;
-              }
-            }
-
-            if (!bGender) {
+          // Gender
+          if (deliverableCrossCuttingMarkerGender != null) {
+            bGender = true;
+            if (deliverableCrossCuttingMarkerGender.getRepIndGenderYouthFocusLevel() == null
+              || deliverableCrossCuttingMarkerGender.getRepIndGenderYouthFocusLevel().getId() == 1
+              || deliverableCrossCuttingMarkerGender.getRepIndGenderYouthFocusLevel().getId() == 4) {
               iGenderNa++;
+            } else if (deliverableCrossCuttingMarkerGender.getRepIndGenderYouthFocusLevel().getId() == 2) {
+              iGenderSignificant++;
+            } else if (deliverableCrossCuttingMarkerGender.getRepIndGenderYouthFocusLevel().getId() == 3) {
+              iGenderPrincipal++;
             }
-            if (!bYouth) {
+          }
+
+          // Youth
+          if (deliverableCrossCuttingMarkerYouth != null) {
+            bYouth = true;
+            if (deliverableCrossCuttingMarkerYouth.getRepIndGenderYouthFocusLevel() == null
+              || deliverableCrossCuttingMarkerYouth.getRepIndGenderYouthFocusLevel().getId() == 1
+              || deliverableCrossCuttingMarkerYouth.getRepIndGenderYouthFocusLevel().getId() == 4) {
               iYouthNa++;
+            } else if (deliverableCrossCuttingMarkerYouth.getRepIndGenderYouthFocusLevel().getId() == 2) {
+              iYouthSignificant++;
+            } else if (deliverableCrossCuttingMarkerYouth.getRepIndGenderYouthFocusLevel().getId() == 3) {
+              iYouthPrincipal++;
             }
-            if (!bCapDev) {
+          }
+
+          // CapDev
+          if (deliverableCrossCuttingMarkerCapDev != null) {
+            bCapDev = true;
+            if (deliverableCrossCuttingMarkerCapDev.getRepIndGenderYouthFocusLevel() == null
+              || deliverableCrossCuttingMarkerCapDev.getRepIndGenderYouthFocusLevel().getId() == 1
+              || deliverableCrossCuttingMarkerCapDev.getRepIndGenderYouthFocusLevel().getId() == 4) {
               iCapDevNa++;
+            } else if (deliverableCrossCuttingMarkerCapDev.getRepIndGenderYouthFocusLevel().getId() == 2) {
+              iCapDevSignificant++;
+            } else if (deliverableCrossCuttingMarkerCapDev.getRepIndGenderYouthFocusLevel().getId() == 3) {
+              iCapDevPrincipal++;
             }
-            if (!bClimate) {
+          }
+
+          // Climate Change
+          if (deliverableCrossCuttingMarkerClimateChange != null) {
+            bClimate = true;
+            if (deliverableCrossCuttingMarkerClimateChange.getRepIndGenderYouthFocusLevel() == null
+              || deliverableCrossCuttingMarkerClimateChange.getRepIndGenderYouthFocusLevel().getId() == 1
+              || deliverableCrossCuttingMarkerClimateChange.getRepIndGenderYouthFocusLevel().getId() == 4) {
               iClimateNa++;
+            } else if (deliverableCrossCuttingMarkerClimateChange.getRepIndGenderYouthFocusLevel().getId() == 2) {
+              iClimateSignificant++;
+            } else if (deliverableCrossCuttingMarkerClimateChange.getRepIndGenderYouthFocusLevel().getId() == 3) {
+              iClimatePrincipal++;
             }
+          }
+
+          if (!bGender) {
+            iGenderNa++;
+          }
+          if (!bYouth) {
+            iYouthNa++;
+          }
+          if (!bCapDev) {
+            iCapDevNa++;
+          }
+          if (!bClimate) {
+            iClimateNa++;
           }
         }
       }

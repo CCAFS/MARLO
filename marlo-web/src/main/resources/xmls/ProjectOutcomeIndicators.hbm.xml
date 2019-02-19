@@ -25,8 +25,14 @@
         <property name="value" type="java.lang.Double">
             <column name="value" precision="10" scale="2" />
         </property>
+        <property name="valueReporting" type="java.lang.Double">
+            <column name="value_reporting" precision="10" scale="2" />
+        </property>
         <property name="narrative" type="string">
             <column name="narrative" sql-type="TEXT" />
+        </property>
+        <property name="achievedNarrative" type="string">
+            <column name="achieved_narrative" sql-type="TEXT" />
         </property>
         <property name="active" type="boolean">
             <column name="is_active" not-null="true" />

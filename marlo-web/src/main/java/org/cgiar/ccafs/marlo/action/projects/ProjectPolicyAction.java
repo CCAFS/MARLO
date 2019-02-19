@@ -23,13 +23,18 @@ import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyPolicyManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyCountryManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyCrossCuttingMarkerManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyCrpManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyGeographicScopeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyInfoManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyInnovationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyOwnerManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyRegionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicySubIdoManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndGenderYouthFocusLevelManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndGeographicScopeManager;
@@ -44,11 +49,16 @@ import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyPolicy;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicy;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicyCountry;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicyCrossCuttingMarker;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicyCrp;
+import org.cgiar.ccafs.marlo.data.model.ProjectPolicyGeographicScope;
+import org.cgiar.ccafs.marlo.data.model.ProjectPolicyInnovation;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicyOwner;
+import org.cgiar.ccafs.marlo.data.model.ProjectPolicyRegion;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicySubIdo;
 import org.cgiar.ccafs.marlo.data.model.RepIndGenderYouthFocusLevel;
 import org.cgiar.ccafs.marlo.data.model.RepIndGeographicScope;
@@ -108,6 +118,11 @@ public class ProjectPolicyAction extends BaseAction {
   private ProjectPolicyCrpManager projectPolicyCrpManager;
   private ProjectPolicySubIdoManager projectPolicySubIdoManager;
   private ProjectPolicyCrossCuttingMarkerManager projectPolicyCrossCuttingMarkerManager;
+  private ProjectExpectedStudyPolicyManager projectExpectedStudyPolicyManager;
+  private ProjectPolicyInnovationManager projectPolicyInnovationManager;
+  private ProjectInnovationManager projectInnovationManager;
+  private ProjectPolicyGeographicScopeManager projectPolicyGeographicScopeManager;
+  private ProjectPolicyRegionManager projectPolicyRegionManager;
   private ProjectPolicyValidator validator;
 
 
@@ -131,6 +146,8 @@ public class ProjectPolicyAction extends BaseAction {
   private List<GlobalUnit> crps;
   private List<ProjectExpectedStudy> expectedStudyList;
   private List<CgiarCrossCuttingMarker> cgiarCrossCuttingMarkers;
+  private List<ProjectInnovation> innovationList;
+
   private String transaction;
 
 
@@ -147,7 +164,11 @@ public class ProjectPolicyAction extends BaseAction {
     CgiarCrossCuttingMarkerManager cgiarCrossCuttingMarkerManager,
     ProjectPolicyCountryManager projectPolicyCountryManager, ProjectPolicyOwnerManager projectPolicyOwnerManager,
     ProjectPolicyCrpManager projectPolicyCrpManager, ProjectPolicySubIdoManager projectPolicySubIdoManager,
-    ProjectPolicyCrossCuttingMarkerManager projectPolicyCrossCuttingMarkerManager, ProjectPolicyValidator validator) {
+    ProjectPolicyCrossCuttingMarkerManager projectPolicyCrossCuttingMarkerManager, ProjectPolicyValidator validator,
+    ProjectExpectedStudyPolicyManager projectExpectedStudyPolicyManager,
+    ProjectInnovationManager projectInnovationManager, ProjectPolicyInnovationManager projectPolicyInnovationManager,
+    ProjectPolicyGeographicScopeManager projectPolicyGeographicScopeManager,
+    ProjectPolicyRegionManager projectPolicyRegionManager) {
     super(config);
     this.globalUnitManager = globalUnitManager;
     this.projectPolicyManager = projectPolicyManager;
@@ -171,6 +192,11 @@ public class ProjectPolicyAction extends BaseAction {
     this.projectPolicySubIdoManager = projectPolicySubIdoManager;
     this.projectPolicyCrossCuttingMarkerManager = projectPolicyCrossCuttingMarkerManager;
     this.validator = validator;
+    this.projectExpectedStudyPolicyManager = projectExpectedStudyPolicyManager;
+    this.projectInnovationManager = projectInnovationManager;
+    this.projectPolicyInnovationManager = projectPolicyInnovationManager;
+    this.projectPolicyGeographicScopeManager = projectPolicyGeographicScopeManager;
+    this.projectPolicyRegionManager = projectPolicyRegionManager;
   }
 
   /**
@@ -179,15 +205,30 @@ public class ProjectPolicyAction extends BaseAction {
    * @param policy
    * @param phase
    */
-  public void deleteLocElements(ProjectPolicy policy, Phase phase) {
-    if (policy.getProjectPolicyCountries() != null && policy.getProjectPolicyCountries().size() > 0) {
+  public void deleteLocElements(ProjectPolicy policy, Phase phase, boolean isCountry) {
+    if (isCountry) {
+      if (policy.getProjectPolicyCountries() != null && policy.getProjectPolicyCountries().size() > 0) {
 
-      List<ProjectPolicyCountry> regionPrev = new ArrayList<>(policy.getProjectPolicyCountries().stream()
-        .filter(nu -> nu.isActive() && nu.getPhase().getId() == phase.getId()).collect(Collectors.toList()));
+        List<ProjectPolicyCountry> regionPrev = new ArrayList<>(policy.getProjectPolicyCountries().stream()
+          .filter(nu -> nu.isActive() && nu.getPhase().getId() == phase.getId()).collect(Collectors.toList()));
 
-      for (ProjectPolicyCountry policyRegion : regionPrev) {
+        for (ProjectPolicyCountry policyRegion : regionPrev) {
 
-        projectPolicyCountryManager.deleteProjectPolicyCountry(policyRegion.getId());
+          projectPolicyCountryManager.deleteProjectPolicyCountry(policyRegion.getId());
+
+        }
+      }
+    } else {
+      if (policy.getProjectPolicyRegions() != null && policy.getProjectPolicyRegions().size() > 0) {
+
+        List<ProjectPolicyRegion> regionPrev = new ArrayList<>(policy.getProjectPolicyRegions().stream()
+          .filter(nu -> nu.isActive() && nu.getPhase().getId() == phase.getId()).collect(Collectors.toList()));
+
+        for (ProjectPolicyRegion policyRegion : regionPrev) {
+
+          projectPolicyRegionManager.deleteProjectPolicyRegion(policyRegion.getId());
+
+        }
 
       }
     }
@@ -219,7 +260,6 @@ public class ProjectPolicyAction extends BaseAction {
     return countries;
   }
 
-
   public List<GlobalUnit> getCrps() {
     return crps;
   }
@@ -234,10 +274,15 @@ public class ProjectPolicyAction extends BaseAction {
     return focusLevels;
   }
 
+
   public List<RepIndGeographicScope> getGeographicScopes() {
     return geographicScopes;
   }
 
+
+  public List<ProjectInnovation> getInnovationList() {
+    return innovationList;
+  }
 
   public GlobalUnit getLoggedCrp() {
     return loggedCrp;
@@ -253,12 +298,28 @@ public class ProjectPolicyAction extends BaseAction {
     return policy;
   }
 
+
+  /**
+   * Get the information for the Cross Cutting marker in the form
+   * 
+   * @param markerID
+   * @return
+   */
   public ProjectPolicyCrossCuttingMarker getPolicyCrossCuttingMarker(long markerID) {
     ProjectPolicyCrossCuttingMarker crossCuttingMarker = new ProjectPolicyCrossCuttingMarker();
-
-    crossCuttingMarker = projectPolicyCrossCuttingMarkerManager.getPolicyCrossCountryMarkerId(policyID, markerID,
-      this.getActualPhase().getId());
-
+    if (this.isDraft()) {
+      // Cgiar Cross Cutting Markers Autosave
+      if (policy.getCrossCuttingMarkers() != null) {
+        for (ProjectPolicyCrossCuttingMarker projectPolicyCrossCuttingMarker : policy.getCrossCuttingMarkers()) {
+          if (projectPolicyCrossCuttingMarker.getCgiarCrossCuttingMarker().getId() == markerID) {
+            crossCuttingMarker = projectPolicyCrossCuttingMarker;
+          }
+        }
+      }
+    } else {
+      crossCuttingMarker = projectPolicyCrossCuttingMarkerManager.getPolicyCrossCountryMarkerId(policyID, markerID,
+        this.getActualPhase().getId());
+    }
     if (crossCuttingMarker != null) {
       return crossCuttingMarker;
     } else {
@@ -274,7 +335,6 @@ public class ProjectPolicyAction extends BaseAction {
     return policyInvestimentTypes;
   }
 
-
   public List<RepIndPolicyType> getPolicyTypes() {
     return policyTypes;
   }
@@ -284,10 +344,10 @@ public class ProjectPolicyAction extends BaseAction {
     return project;
   }
 
+
   public long getProjectID() {
     return projectID;
   }
-
 
   public List<LocElement> getRegions() {
     return regions;
@@ -297,6 +357,7 @@ public class ProjectPolicyAction extends BaseAction {
   public List<RepIndStageProcess> getStageProcesses() {
     return stageProcesses;
   }
+
 
   public List<SrfSubIdo> getSubIdos() {
     return subIdos;
@@ -332,13 +393,6 @@ public class ProjectPolicyAction extends BaseAction {
       // load relations
       if (policy.getProjectPolicyInfo() != null) {
 
-        // load GeographicScope
-        if (policy.getProjectPolicyInfo().getRepIndGeographicScope() != null
-          && policy.getProjectPolicyInfo().getRepIndGeographicScope().getId() != null) {
-          policy.getProjectPolicyInfo().setRepIndGeographicScope(repIndGeographicScopeManager
-            .getRepIndGeographicScopeById(policy.getProjectPolicyInfo().getRepIndGeographicScope().getId()));
-        }
-
         // load Policy Investment Type
         if (policy.getProjectPolicyInfo().getRepIndPolicyInvestimentType() != null
           && policy.getProjectPolicyInfo().getRepIndPolicyInvestimentType().getId() != null) {
@@ -360,14 +414,6 @@ public class ProjectPolicyAction extends BaseAction {
           policy.getProjectPolicyInfo().setRepIndStageProcess(repIndStageProcessManager
             .getRepIndStageProcessById(policy.getProjectPolicyInfo().getRepIndStageProcess().getId()));
         }
-
-        // load Evidence
-        if (policy.getProjectPolicyInfo().getProjectExpectedStudy() != null
-          && policy.getProjectPolicyInfo().getProjectExpectedStudy().getId() != null) {
-          policy.getProjectPolicyInfo().setProjectExpectedStudy(projectExpectedStudyManager
-            .getProjectExpectedStudyById(policy.getProjectPolicyInfo().getProjectExpectedStudy().getId()));
-        }
-
 
       }
 
@@ -399,32 +445,47 @@ public class ProjectPolicyAction extends BaseAction {
 
         policy = (ProjectPolicy) autoSaveReader.readFromJson(jReader);
 
+
         // Policy Geographic Scope List AutoSave
-        if (policy.getProjectPolicyInfo().getRepIndGeographicScope() != null) {
-          if (policy.getProjectPolicyInfo().getRepIndGeographicScope().getId() != null
-            && policy.getProjectPolicyInfo().getRepIndGeographicScope().getId() != -1) {
-            // If the Geographic Scope is not Global
-            if (policy.getProjectPolicyInfo().getRepIndGeographicScope().getId() != 1) {
-              if (policy.getProjectPolicyInfo().getRepIndGeographicScope().getId() == 2) {
-                // Load Regions
-                if (policy.getRegions() != null) {
-                  for (ProjectPolicyCountry projectPolicyCountry : policy.getRegions()) {
-                    projectPolicyCountry
-                      .setLocElement(locElementManager.getLocElementById(projectPolicyCountry.getLocElement().getId()));
-                  }
-                }
-              } else {
-                // Load Countries
-                if (policy.getCountriesIdsText() != null) {
-                  String[] countriesText = policy.getCountriesIdsText().replace("[", "").replace("]", "").split(",");
-                  List<String> countries = new ArrayList<>();
-                  for (String value : Arrays.asList(countriesText)) {
-                    countries.add(value.trim());
-                  }
-                  policy.setCountriesIds(countries);
-                }
-              }
+        boolean haveRegions = false;
+        boolean haveCountries = false;
+
+        if (policy.getGeographicScopes() != null) {
+          for (ProjectPolicyGeographicScope projectPolicyGeographicScope : policy.getGeographicScopes()) {
+            projectPolicyGeographicScope.setRepIndGeographicScope(repIndGeographicScopeManager
+              .getRepIndGeographicScopeById(projectPolicyGeographicScope.getRepIndGeographicScope().getId()));
+
+            if (projectPolicyGeographicScope.getRepIndGeographicScope().getId() == 2) {
+              haveRegions = true;
             }
+
+            if (projectPolicyGeographicScope.getRepIndGeographicScope().getId() != 1
+              && projectPolicyGeographicScope.getRepIndGeographicScope().getId() != 2) {
+              haveCountries = true;
+            }
+
+          }
+        }
+
+        if (haveRegions) {
+          // Load Regions
+          if (policy.getRegions() != null) {
+            for (ProjectPolicyRegion projectPolicyRegion : policy.getRegions()) {
+              projectPolicyRegion
+                .setLocElement(locElementManager.getLocElementById(projectPolicyRegion.getLocElement().getId()));
+            }
+          }
+        }
+
+        if (haveCountries) {
+          // Load Countries
+          if (policy.getCountriesIdsText() != null) {
+            String[] countriesText = policy.getCountriesIdsText().replace("[", "").replace("]", "").split(",");
+            List<String> countries = new ArrayList<>();
+            for (String value : Arrays.asList(countriesText)) {
+              countries.add(value.trim());
+            }
+            policy.setCountriesIds(countries);
           }
         }
 
@@ -450,6 +511,22 @@ public class ProjectPolicyAction extends BaseAction {
           for (ProjectPolicySubIdo projectPolicySubIdo : policy.getSubIdos()) {
             projectPolicySubIdo
               .setSrfSubIdo(srfSubIdoManager.getSrfSubIdoById(projectPolicySubIdo.getSrfSubIdo().getId()));
+          }
+        }
+
+        // Innovations List Autosave
+        if (policy.getInnovations() != null) {
+          for (ProjectPolicyInnovation projectPolicyInnovation : policy.getInnovations()) {
+            projectPolicyInnovation.setProjectInnovation(projectInnovationManager
+              .getProjectInnovationById(projectPolicyInnovation.getProjectInnovation().getId()));
+          }
+        }
+
+        // Evidences List Autosave
+        if (policy.getEvidences() != null) {
+          for (ProjectExpectedStudyPolicy projectPolicyEvidence : policy.getEvidences()) {
+            projectPolicyEvidence.setProjectExpectedStudy(projectExpectedStudyManager
+              .getProjectExpectedStudyById(projectPolicyEvidence.getProjectExpectedStudy().getId()));
           }
         }
 
@@ -480,28 +557,35 @@ public class ProjectPolicyAction extends BaseAction {
 
 
         // Setup Geographic Scope
-        if (policy.getProjectPolicyInfo().getRepIndGeographicScope() != null) {
-          // If the Geographic Scope is not Global
-          if (policy.getProjectPolicyInfo().getRepIndGeographicScope().getId() != 1) {
+        if (policy.getProjectPolicyGeographicScopes() != null) {
+          policy.setGeographicScopes(new ArrayList<>(policy.getProjectPolicyGeographicScopes().stream()
+            .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
+        }
 
-            // Policy Countries List
-            if (policy.getProjectPolicyCountries() == null) {
-              policy.setCountries(new ArrayList<>());
-              policy.setRegions(new ArrayList<>());
-            } else {
-              List<ProjectPolicyCountry> geographics =
-                projectPolicyCountryManager.getPolicyCountrybyPhase(policy.getId(), phase.getId());
-              if (policy.getProjectPolicyInfo().getRepIndGeographicScope().getId() == 2) {
-                // Load Regions
-                policy.setRegions(geographics.stream().filter(sc -> sc.getLocElement().getLocElementType().getId() == 1)
-                  .collect(Collectors.toList()));
-              } else {
-                // Load Countries
-                policy.setCountries(geographics.stream()
-                  .filter(sc -> sc.getLocElement().getLocElementType().getId() == 2).collect(Collectors.toList()));
-              }
-            }
-          }
+
+        // Policy Countries List
+        if (policy.getProjectPolicyCountries() == null) {
+          policy.setCountries(new ArrayList<>());
+
+        } else {
+          List<ProjectPolicyCountry> geographics =
+            projectPolicyCountryManager.getPolicyCountrybyPhase(policy.getId(), phase.getId());
+
+          // Load Countries
+          policy.setCountries(geographics.stream().filter(sc -> sc.getLocElement().getLocElementType().getId() == 2)
+            .collect(Collectors.toList()));
+
+        }
+
+        if (policy.getProjectPolicyRegions() == null) {
+          policy.setRegions(new ArrayList<>());
+        } else {
+          List<ProjectPolicyRegion> geographics =
+            projectPolicyRegionManager.getPolicyRegionbyPhase(policy.getId(), phase.getId());
+
+          // Load Regions
+          policy.setRegions(geographics.stream().filter(sc -> sc.getLocElement().getLocElementType().getId() == 1)
+            .collect(Collectors.toList()));
         }
 
 
@@ -520,6 +604,18 @@ public class ProjectPolicyAction extends BaseAction {
         // SubIdos List
         if (policy.getProjectPolicySubIdos() != null) {
           policy.setSubIdos(new ArrayList<>(policy.getProjectPolicySubIdos().stream()
+            .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
+        }
+
+        // Innovations List
+        if (policy.getProjectPolicyInnovations() != null) {
+          policy.setInnovations(new ArrayList<>(policy.getProjectPolicyInnovations().stream()
+            .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
+        }
+
+        // Evidence List
+        if (policy.getProjectExpectedStudyPolicies() != null) {
+          policy.setEvidences(new ArrayList<>(policy.getProjectExpectedStudyPolicies().stream()
             .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
         }
 
@@ -578,6 +674,20 @@ public class ProjectPolicyAction extends BaseAction {
       // Cross Cutting Markers
       cgiarCrossCuttingMarkers = cgiarCrossCuttingMarkerManager.findAll();
 
+
+      Project projectL = projectManager.getProjectById(projectID);
+
+      // Get the innovations List
+      innovationList = new ArrayList<>();
+
+      List<ProjectInnovation> innovations =
+        projectL.getProjectInnovations().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+      for (ProjectInnovation projectInnovation : innovations) {
+        if (projectInnovation.getProjectInnovationInfo(this.getActualPhase()) != null) {
+          innovationList.add(projectInnovation);
+        }
+      }
+
       // Evidences List
       expectedStudyList = new ArrayList<>();
       List<ProjectExpectedStudy> expectedStudies = projectExpectedStudyManager.findAll().stream()
@@ -624,16 +734,26 @@ public class ProjectPolicyAction extends BaseAction {
         policy.getSubIdos().clear();
       }
 
+      if (policy.getEvidences() != null) {
+        policy.getEvidences().clear();
+      }
+
+      if (policy.getInnovations() != null) {
+        policy.getInnovations().clear();
+      }
+
       if (policy.getCrossCuttingMarkers() != null) {
         policy.getCrossCuttingMarkers().clear();
       }
 
+      if (policy.getGeographicScopes() != null) {
+        policy.getGeographicScopes().clear();
+      }
+
       // HTTP Post info Values
-      policy.getProjectPolicyInfo().setRepIndGeographicScope(null);
       policy.getProjectPolicyInfo().setRepIndPolicyInvestimentType(null);
       policy.getProjectPolicyInfo().setRepIndOrganizationType(null);
       policy.getProjectPolicyInfo().setRepIndStageProcess(null);
-      policy.getProjectPolicyInfo().setProjectExpectedStudy(null);
 
     }
 
@@ -654,6 +774,65 @@ public class ProjectPolicyAction extends BaseAction {
       this.saveOwners(policyDB, phase);
       this.saveSubIdos(policyDB, phase);
       this.saveCrossCutting(policyDB, phase);
+      this.saveInnovations(policyDB, phase);
+      this.saveEvidence(policyDB, phase);
+
+      // Save Geographic Scope Data
+      this.saveGeographicScopes(policyDB, phase);
+
+      boolean haveRegions = false;
+      boolean haveCountries = false;
+
+      if (policy.getGeographicScopes() != null) {
+        for (ProjectPolicyGeographicScope projectPolicyGeographicScope : policy.getGeographicScopes()) {
+
+          if (projectPolicyGeographicScope.getRepIndGeographicScope().getId() == 2) {
+            haveRegions = true;
+          }
+
+          if (projectPolicyGeographicScope.getRepIndGeographicScope().getId() != 1
+            && projectPolicyGeographicScope.getRepIndGeographicScope().getId() != 2) {
+            haveCountries = true;
+          }
+        }
+      }
+
+
+      if (haveRegions) {
+        // Save the Regions List
+        this.saveRegions(policyDB, phase);
+      } else {
+        this.deleteLocElements(policyDB, phase, false);
+      }
+
+      if (haveCountries) {
+
+        // Save the Countries List (ProjectPolicyCountry)
+        if (policy.getCountriesIds() != null || !policy.getCountriesIds().isEmpty()) {
+
+          List<ProjectPolicyCountry> countries =
+            projectPolicyCountryManager.getPolicyCountrybyPhase(policy.getId(), this.getActualPhase().getId());
+          List<ProjectPolicyCountry> countriesSave = new ArrayList<>();
+          for (String countryIds : policy.getCountriesIds()) {
+            ProjectPolicyCountry countryInn = new ProjectPolicyCountry();
+            countryInn.setLocElement(locElementManager.getLocElementByISOCode(countryIds));
+            countryInn.setProjectPolicy(policy);
+            countryInn.setPhase(this.getActualPhase());
+            countriesSave.add(countryInn);
+            if (!countries.contains(countryInn)) {
+              projectPolicyCountryManager.saveProjectPolicyCountry(countryInn);
+            }
+          }
+
+          for (ProjectPolicyCountry projectPolicyCountry : countries) {
+            if (!countriesSave.contains(projectPolicyCountry)) {
+              projectPolicyCountryManager.deleteProjectPolicyCountry(projectPolicyCountry.getId());
+            }
+          }
+        }
+      } else {
+        this.deleteLocElements(policyDB, phase, true);
+      }
 
 
       List<String> relationsName = new ArrayList<>();
@@ -662,7 +841,11 @@ public class ProjectPolicyAction extends BaseAction {
       relationsName.add(APConstants.PROJECT_POLICY_CRP_RELATION);
       relationsName.add(APConstants.PROJECT_POLICY_OWNER_RELATION);
       relationsName.add(APConstants.PROJECT_POLICY_SUB_IDO_RELATION);
+      relationsName.add(APConstants.PROJECT_POLICY_REGION_RELATION);
+      relationsName.add(APConstants.PROJECT_POLICY_INNOVATION_RELATION);
       relationsName.add(APConstants.PROJECT_POLICY_CROSS_CUTTING_RELATION);
+      relationsName.add(APConstants.PROJECT_POLICY_EVIDENCE_RELATION);
+
 
       policy.setModificationJustification(this.getJustification());
 
@@ -671,64 +854,8 @@ public class ProjectPolicyAction extends BaseAction {
       policy.getProjectPolicyInfo().setPhase(this.getActualPhase());
       policy.getProjectPolicyInfo().setProjectPolicy(policy);
 
+
       // Validate negative Values
-      if (policy.getProjectPolicyInfo().getProjectExpectedStudy() != null) {
-        if (policy.getProjectPolicyInfo().getProjectExpectedStudy().getId() == -1) {
-          policy.getProjectPolicyInfo().setProjectExpectedStudy(null);
-        }
-      }
-
-      if (policy.getProjectPolicyInfo().getRepIndGeographicScope() != null) {
-        if (policy.getProjectPolicyInfo().getRepIndGeographicScope().getId() == -1) {
-          policy.getProjectPolicyInfo().setRepIndGeographicScope(null);
-          // delete all locElements in geographic scope
-          this.deleteLocElements(policyDB, phase);
-        } else {
-
-          // Save Geographic Scope Data
-
-
-          if (policy.getProjectPolicyInfo().getRepIndGeographicScope().getId() != 1) {
-            if (policy.getProjectPolicyInfo().getRepIndGeographicScope().getId() == 2) {
-              // Save the Regions List (ProjectPolicyCountry)
-              this.saveRegions(policyDB, phase);
-
-            } else {
-
-              // Save the Countries List (ProjectPolicyCountry)
-              if (policy.getCountriesIds() != null || !policy.getCountriesIds().isEmpty()) {
-
-                List<ProjectPolicyCountry> countries =
-                  projectPolicyCountryManager.getPolicyCountrybyPhase(policy.getId(), this.getActualPhase().getId());
-                List<ProjectPolicyCountry> countriesSave = new ArrayList<>();
-                for (String countryIds : policy.getCountriesIds()) {
-                  ProjectPolicyCountry countryInn = new ProjectPolicyCountry();
-                  countryInn.setLocElement(locElementManager.getLocElementByISOCode(countryIds));
-                  countryInn.setProjectPolicy(policy);
-                  countryInn.setPhase(this.getActualPhase());
-                  countriesSave.add(countryInn);
-                  if (!countries.contains(countryInn)) {
-                    projectPolicyCountryManager.saveProjectPolicyCountry(countryInn);
-                  }
-                }
-
-                for (ProjectPolicyCountry projectPolicyCountry : countries) {
-                  if (!countriesSave.contains(projectPolicyCountry)) {
-                    projectPolicyCountryManager.deleteProjectPolicyCountry(projectPolicyCountry.getId());
-                  }
-                }
-
-              }
-            }
-
-          } else {
-            // delete all locElements in geographic scope
-            this.deleteLocElements(policyDB, phase);
-          }
-        }
-      }
-
-
       if (policy.getProjectPolicyInfo().getRepIndOrganizationType() != null) {
         if (policy.getProjectPolicyInfo().getRepIndOrganizationType().getId() == -1) {
           policy.getProjectPolicyInfo().setRepIndOrganizationType(null);
@@ -779,7 +906,9 @@ public class ProjectPolicyAction extends BaseAction {
         this.setActionMessages(null);
         return REDIRECT;
       }
-    } else {
+    } else
+
+    {
 
 
       return NOT_AUTHORIZED;
@@ -928,6 +1057,136 @@ public class ProjectPolicyAction extends BaseAction {
   }
 
   /**
+   * Save Policy-Evidence Information
+   * 
+   * @param projectExpectedStudy
+   * @param phase
+   */
+  public void saveEvidence(ProjectPolicy projectPolicy, Phase phase) {
+
+    // Search and deleted form Information
+    if (projectPolicy.getProjectExpectedStudyPolicies() != null
+      && projectPolicy.getProjectExpectedStudyPolicies().size() > 0) {
+      List<ProjectExpectedStudyPolicy> policyPrev = new ArrayList<>(projectPolicy.getProjectExpectedStudyPolicies()
+        .stream().filter(nu -> nu.isActive() && nu.getPhase().getId() == phase.getId()).collect(Collectors.toList()));
+
+      for (ProjectExpectedStudyPolicy studyPolicy : policyPrev) {
+        if (policy.getEvidences() == null || !policy.getEvidences().contains(studyPolicy)) {
+          projectExpectedStudyPolicyManager.deleteProjectExpectedStudyPolicy(studyPolicy.getId());
+        }
+      }
+    }
+
+    // Save form Information
+    if (policy.getEvidences() != null) {
+      for (ProjectExpectedStudyPolicy studyPolicy : policy.getEvidences()) {
+        if (studyPolicy.getId() == null) {
+          ProjectExpectedStudyPolicy studyPolicySave = new ProjectExpectedStudyPolicy();
+          studyPolicySave.setProjectPolicy(projectPolicy);
+          studyPolicySave.setPhase(phase);
+
+          ProjectExpectedStudy expectedStudy =
+            projectExpectedStudyManager.getProjectExpectedStudyById(studyPolicy.getProjectExpectedStudy().getId());
+
+          studyPolicySave.setProjectExpectedStudy(expectedStudy);
+
+
+          projectExpectedStudyPolicyManager.saveProjectExpectedStudyPolicy(studyPolicySave);
+          // This is to add studyLinkSave to generate correct auditlog.
+          expectedStudy.getProjectExpectedStudyPolicies().add(studyPolicySave);
+        }
+      }
+    }
+  }
+
+  /**
+   * Save Project Policy Geographic Scopes Information
+   * 
+   * @param projectPolicy
+   * @param phase
+   */
+  public void saveGeographicScopes(ProjectPolicy projectPolicy, Phase phase) {
+
+    // Search and deleted form Information
+    if (projectPolicy.getProjectPolicyGeographicScopes() != null
+      && projectPolicy.getProjectPolicyGeographicScopes().size() > 0) {
+
+      List<ProjectPolicyGeographicScope> scopePrev = new ArrayList<>(projectPolicy.getProjectPolicyGeographicScopes()
+        .stream().filter(nu -> nu.isActive() && nu.getPhase().getId() == phase.getId()).collect(Collectors.toList()));
+
+      for (ProjectPolicyGeographicScope scope : scopePrev) {
+        if (policy.getGeographicScopes() == null || !policy.getGeographicScopes().contains(scope)) {
+          projectPolicyGeographicScopeManager.deleteProjectPolicyGeographicScope(scope.getId());
+        }
+      }
+    }
+
+    // Save form Information
+    if (policy.getGeographicScopes() != null) {
+      for (ProjectPolicyGeographicScope scope : policy.getGeographicScopes()) {
+        if (scope.getId() == null) {
+          ProjectPolicyGeographicScope scopeSave = new ProjectPolicyGeographicScope();
+          scopeSave.setProjectPolicy(projectPolicy);
+          scopeSave.setPhase(phase);
+
+          RepIndGeographicScope geoScope =
+            repIndGeographicScopeManager.getRepIndGeographicScopeById(scope.getRepIndGeographicScope().getId());
+
+
+          scopeSave.setRepIndGeographicScope(geoScope);
+
+          projectPolicyGeographicScopeManager.saveProjectPolicyGeographicScope(scopeSave);
+          // This is to add to generate correct auditlog.
+          policy.getProjectPolicyGeographicScopes().add(scopeSave);
+        }
+      }
+    }
+  }
+
+  /**
+   * Save Project Policy Innovations Information
+   * 
+   * @param projectPolicy
+   * @param phase
+   */
+  public void saveInnovations(ProjectPolicy projectPolicy, Phase phase) {
+
+    // Search and deleted form Information
+    if (projectPolicy.getProjectPolicyInnovations() != null && projectPolicy.getProjectPolicyInnovations().size() > 0) {
+
+      List<ProjectPolicyInnovation> innovationPrev = new ArrayList<>(projectPolicy.getProjectPolicyInnovations()
+        .stream().filter(nu -> nu.isActive() && nu.getPhase().getId() == phase.getId()).collect(Collectors.toList()));
+
+      for (ProjectPolicyInnovation policyInnovation : innovationPrev) {
+        if (policy.getInnovations() == null || !policy.getInnovations().contains(policyInnovation)) {
+          projectPolicyInnovationManager.deleteProjectPolicyInnovation(policyInnovation.getId());
+        }
+      }
+    }
+
+    // Save form Information
+    if (policy.getInnovations() != null) {
+      for (ProjectPolicyInnovation policyInnovation : policy.getInnovations()) {
+        if (policyInnovation.getId() == null) {
+          ProjectPolicyInnovation policyInnovationSave = new ProjectPolicyInnovation();
+          policyInnovationSave.setProjectPolicy(projectPolicy);
+          policyInnovationSave.setPhase(phase);
+
+          ProjectInnovation innovation =
+            projectInnovationManager.getProjectInnovationById(policyInnovation.getProjectInnovation().getId());
+
+
+          policyInnovationSave.setProjectInnovation(innovation);
+
+          projectPolicyInnovationManager.saveProjectPolicyInnovation(policyInnovationSave);
+          // This is to add innovationCrpSave to generate correct auditlog.
+          policy.getProjectPolicyInnovations().add(policyInnovationSave);
+        }
+      }
+    }
+  }
+
+  /**
    * Save Project Policy Owner Information
    * 
    * @param projectPolicy
@@ -978,23 +1237,23 @@ public class ProjectPolicyAction extends BaseAction {
   public void saveRegions(ProjectPolicy projectPolicy, Phase phase) {
 
     // Search and deleted form Information
-    if (projectPolicy.getProjectPolicyCountries() != null && projectPolicy.getProjectPolicyCountries().size() > 0) {
+    if (projectPolicy.getProjectPolicyRegions() != null && projectPolicy.getProjectPolicyRegions().size() > 0) {
 
-      List<ProjectPolicyCountry> regionPrev = new ArrayList<>(projectPolicy.getProjectPolicyCountries().stream()
+      List<ProjectPolicyRegion> regionPrev = new ArrayList<>(projectPolicy.getProjectPolicyRegions().stream()
         .filter(nu -> nu.isActive() && nu.getPhase().getId() == phase.getId()).collect(Collectors.toList()));
 
-      for (ProjectPolicyCountry policyRegion : regionPrev) {
+      for (ProjectPolicyRegion policyRegion : regionPrev) {
         if (policy.getRegions() == null || !policy.getRegions().contains(policyRegion)) {
-          projectPolicyCountryManager.deleteProjectPolicyCountry(policyRegion.getId());
+          projectPolicyRegionManager.deleteProjectPolicyRegion(policyRegion.getId());
         }
       }
     }
 
     // Save form Information
     if (policy.getRegions() != null) {
-      for (ProjectPolicyCountry policyRegion : policy.getRegions()) {
+      for (ProjectPolicyRegion policyRegion : policy.getRegions()) {
         if (policyRegion.getId() == null) {
-          ProjectPolicyCountry policyRegionSave = new ProjectPolicyCountry();
+          ProjectPolicyRegion policyRegionSave = new ProjectPolicyRegion();
           policyRegionSave.setProjectPolicy(projectPolicy);
           policyRegionSave.setPhase(phase);
 
@@ -1002,13 +1261,14 @@ public class ProjectPolicyAction extends BaseAction {
 
           policyRegionSave.setLocElement(locElement);
 
-          projectPolicyCountryManager.saveProjectPolicyCountry(policyRegionSave);
+          projectPolicyRegionManager.saveProjectPolicyRegion(policyRegionSave);
           // This is to add innovationCrpSave to generate correct auditlog.
-          policy.getProjectPolicyCountries().add(policyRegionSave);
+          policy.getProjectPolicyRegions().add(policyRegionSave);
         }
       }
     }
   }
+
 
   /**
    * Save Project Policy SubIdos Information
@@ -1052,7 +1312,6 @@ public class ProjectPolicyAction extends BaseAction {
     }
   }
 
-
   public void setCgiarCrossCuttingMarkers(List<CgiarCrossCuttingMarker> cgiarCrossCuttingMarkers) {
     this.cgiarCrossCuttingMarkers = cgiarCrossCuttingMarkers;
   }
@@ -1072,12 +1331,17 @@ public class ProjectPolicyAction extends BaseAction {
     this.expectedStudyList = expectedStudyList;
   }
 
+
   public void setFocusLevels(List<RepIndGenderYouthFocusLevel> focusLevels) {
     this.focusLevels = focusLevels;
   }
 
   public void setGeographicScopes(List<RepIndGeographicScope> geographicScopes) {
     this.geographicScopes = geographicScopes;
+  }
+
+  public void setInnovationList(List<ProjectInnovation> innovationList) {
+    this.innovationList = innovationList;
   }
 
   public void setLoggedCrp(GlobalUnit loggedCrp) {

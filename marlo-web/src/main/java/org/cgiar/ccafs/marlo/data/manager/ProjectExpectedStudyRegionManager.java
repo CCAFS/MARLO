@@ -60,15 +60,20 @@ public interface ProjectExpectedStudyRegionManager {
    */
   public ProjectExpectedStudyRegion getProjectExpectedStudyRegionById(long projectExpectedStudyRegionID);
 
+  public List<ProjectExpectedStudyRegion> getProjectExpectedStudyRegionbyPhase(long expectedID, long phaseID);
+
   /**
    * This method saves the information of the given projectExpectedStudyRegion
    * 
-   * @param projectExpectedStudyRegion - is the projectExpectedStudyRegion object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the projectExpectedStudyRegion was
+   * @param projectExpectedStudyRegion - is the projectExpectedStudyRegion object with the new information to be
+   *        added/updated.
+   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the
+   *         projectExpectedStudyRegion was
    *         updated
    *         or -1 is some error occurred.
    */
-  public ProjectExpectedStudyRegion saveProjectExpectedStudyRegion(ProjectExpectedStudyRegion projectExpectedStudyRegion);
+  public ProjectExpectedStudyRegion
+    saveProjectExpectedStudyRegion(ProjectExpectedStudyRegion projectExpectedStudyRegion);
 
 
 }

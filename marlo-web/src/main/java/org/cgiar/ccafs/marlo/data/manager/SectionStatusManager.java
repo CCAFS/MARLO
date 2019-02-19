@@ -74,6 +74,7 @@ public interface SectionStatusManager {
   public SectionStatus getSectionStatusByCrpProgam(long crpProgramID, String sectionName, String cylce, int year,
     Boolean upkeep);
 
+
   /**
    * This method gets a sectionStatus object by a given sectionStatus identifier.
    * 
@@ -123,6 +124,15 @@ public interface SectionStatusManager {
    */
   public SectionStatus getSectionStatusByProjectCofunded(long projectID, String cycle, int year, Boolean upkeep,
     String sectionName);
+
+  /**
+   * This method gets a sectionStatus object by a given sectionStatus identifier.
+   * 
+   * @param projectLp6ContributionID is the project Lp6Contribution identifier.
+   * @return a SectionStatus object.
+   */
+  public SectionStatus getSectionStatusByProjectContributionToLP6(long projectLp6ContributionID, String cycle, int year,
+    Boolean upkeep, String sectionName);
 
 
   /**

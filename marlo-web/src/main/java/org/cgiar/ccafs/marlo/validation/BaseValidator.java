@@ -22,7 +22,9 @@ import org.cgiar.ccafs.marlo.data.model.ProjectComponentLesson;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.data.model.ProjectHighlight;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
+import org.cgiar.ccafs.marlo.data.model.ProjectLp6Contribution;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
+import org.cgiar.ccafs.marlo.data.model.ProjectPolicy;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
 import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -551,7 +553,6 @@ public class BaseValidator {
     action.getMissingFields().setLength(0);
   }
 
-
   /**
    * This method saves the missing fields into the database for a section at project expected study.
    * 
@@ -634,6 +635,67 @@ public class BaseValidator {
       status.setYear(year);
       status.setUpkeep(upkeep);
       status.setProjectInnovation(innovation);
+      status.setSectionName(sectionName);
+      status.setProject(project);
+
+    }
+    status.setMissingFields(action.getMissingFields().toString());
+    sectionStatusManager.saveSectionStatus(status);
+    // Not sure if this is still required to set the missingFields to length zero???
+    action.getMissingFields().setLength(0);
+  }
+
+
+  /**
+   * This method saves the missing fields into the database for a section at project Contribution to LP6 level.
+   * 
+   * @param projectLp6Contribution is a Project Lp6 Contribution
+   * @param cycle could be 'Planning' or 'Reporting'
+   * @param upkeep could be '0' or '1'
+   * @param sectionName is the name of the section.
+   */
+  protected void saveMissingFields(Project project, ProjectLp6Contribution projectLp6Contribution, String cycle,
+    int year, Boolean upkeep, String sectionName, BaseAction action) {
+    // Reporting missing fields into the database.
+    SectionStatus status = sectionStatusManager
+      .getSectionStatusByProjectContributionToLP6(projectLp6Contribution.getId(), cycle, year, upkeep, sectionName);
+    if (status == null) {
+
+      status = new SectionStatus();
+      status.setCycle(cycle);
+      status.setYear(year);
+      status.setUpkeep(upkeep);
+      status.setProjectLp6Contribution(projectLp6Contribution);
+      status.setSectionName(sectionName);
+      status.setProject(project);
+
+    }
+    status.setMissingFields(action.getMissingFields().toString());
+    sectionStatusManager.saveSectionStatus(status);
+    // Not sure if this is still required to set the missingFields to length zero???
+    action.getMissingFields().setLength(0);
+  }
+
+  /**
+   * This method saves the missing fields into the database for a section at project Policy.
+   * 
+   * @param policy is a Project Policy.
+   * @param cycle could be 'Planning' or 'Reporting'
+   * @param upkeep could be '0' or '1'
+   * @param sectionName is the name of the section.
+   */
+  protected void saveMissingFields(Project project, ProjectPolicy policy, String cycle, int year, Boolean upkeep,
+    String sectionName, BaseAction action) {
+    // Reporting missing fields into the database.
+    SectionStatus status =
+      sectionStatusManager.getSectionStatusByProjectPolicy(policy.getId(), cycle, year, upkeep, sectionName);
+    if (status == null) {
+
+      status = new SectionStatus();
+      status.setCycle(cycle);
+      status.setYear(year);
+      status.setUpkeep(upkeep);
+      status.setProjectPolicy(policy);
       status.setSectionName(sectionName);
       status.setProject(project);
 

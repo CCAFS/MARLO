@@ -32,7 +32,6 @@ import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInstitution;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudySrfTarget;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudySubIdo;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
-import org.cgiar.ccafs.marlo.data.model.StudiesStatusPlanningEnum;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.HTMLParser;
 
@@ -393,7 +392,7 @@ public class StudySummaryAction extends BaseSummariesAction implements Summary {
     }
     // Status
     if (projectExpectedStudyInfo.getStatus() != null) {
-      status = StudiesStatusPlanningEnum.getValue(projectExpectedStudyInfo.getStatus()).getStatus();
+      status = projectExpectedStudyInfo.getStatus().getName();
     }
     // Type
     if (projectExpectedStudyInfo.getStudyType() != null) {

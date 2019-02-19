@@ -36,10 +36,29 @@
             [#--  Entity  --]
             <div class="col-md-4">
               <div class="form-group">
+                [#assign entitiesList = [
+                  { "actionName": "deliverablesReplication",
+                    "i18nkey": "marloBulkReplication.deliverablesReplication",
+                    "service": "getDeliverablesByPhase"
+                  },
+                  { "actionName": "projectsReplication",
+                    "i18nkey": "marloBulkReplication.projectsReplication",
+                    "service": "getProjectsByPhase"
+                  },
+                  { "actionName": "projectsOutcomesReplication",
+                    "i18nkey": "marloBulkReplication.projectsOutcomesReplication",
+                    "service": "getProjectsByPhase"
+                  },
+                  { "actionName": "activitiesReplication",
+                    "i18nkey": "marloBulkReplication.activitiesReplication",
+                    "service": "getActivitiesByPhase"
+                  }
+                ] /]
                 <label for="entityID">Entity:</label>
                 <select name="selectedEntityID" id="entityID" class="form-control">
-                  <option value="getDeliverablesByPhase" class="action-deliverablesReplication" [#if actionName == "deliverablesReplication"]selected[/#if]>[@s.text name="marloBulkReplication.deliverablesReplication" /]</option>
-                  <option value="getProjectsByPhase" class="action-projectsReplication" [#if actionName == "projectsReplication"]selected[/#if]>[@s.text name="marloBulkReplication.projectsReplication" /]</option>
+                  [#list entitiesList as entity ]
+                    <option value="${entity.service}" class="action-${entity.actionName}" [#if actionName == entity.actionName]selected[/#if]>[@s.text name=entity.i18nkey /]</option>
+                  [/#list]
                 </select>
               </div>
             </div>
@@ -117,7 +136,7 @@
 [#-- Check Template --]
 <table class="check-template" style="display:none">
   <tr display="font-size: 0.9em;">
-    <td>[@customForm.checkmark id="" label="{{ labelText }}" name="deliverablesbyPhaseList" cssClass="deliverableCheck" cssClassLabel="font-normal" /]</td>
+    <td>[@customForm.checkmark id="" label="{{ labelText }}" name="entityByPhaseList" cssClass="deliverableCheck" cssClassLabel="font-normal" /]</td>
   </tr>
 </table>
 

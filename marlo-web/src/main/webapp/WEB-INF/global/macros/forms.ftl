@@ -127,7 +127,7 @@
   </div>
 [/#macro]
 
-[#macro select name listName label="" keyFieldName="" displayFieldName="" paramText="" value="-NULL" i18nkey="" disabled=false required=false errorField="" selected=false className="" multiple=false help="" helpIcon=true header=true display=true showTitle=true stringKey=false placeholder="" editable=true]
+[#macro select name listName label="" keyFieldName="" displayFieldName="" paramText="" value="-NULL" valueName="" i18nkey="" disabled=false required=false errorField="" selected=false className="" multiple=false help="" helpIcon=true header=true display=true showTitle=true stringKey=false placeholder="" editable=true]
   <div class="select ${changedField(name)}" [#if !display]style="display: none;"[/#if]>
     [#assign labelTitle][#if i18nkey==""][@s.text name="${name}"][@s.param]${paramText}[/@s.param][/@s.text][#else][@s.text name="${i18nkey}"][@s.param]${paramText}[/@s.param][/@s.text][/#if][/#assign]
     [#assign placeholderText][@s.text name="${(placeholder?has_content)?string(placeholder,'form.select.placeholder')}" /][/#assign]
@@ -184,7 +184,6 @@
                 ${requiredText}   [@s.text name="form.values.fieldEmpty" /]
               [/#if]
             [/#if]
-            
           [#else]
             [#if name?contains(".id")]
               [#assign customName]${name?replace('.id','')}[/#assign]
@@ -197,8 +196,12 @@
               [#else]${customValue}
               [/#if]
             [#else]
-              [#if customValue?has_content]${customValue}
-              [#elseif value=="-1"]${requiredText}   [@s.text name="form.values.fieldEmpty" /]
+              [#if customValue?has_content]
+                ${customValue}
+              [#elseif value=="-1"]
+                ${requiredText} [@s.text name="form.values.fieldEmpty" /]
+              [#else]
+                ${valueName}
               [/#if] 
             [/#if]
             </p>
@@ -443,14 +446,14 @@
 
 
 
-[#macro radioFlat id name label="" disabled=false editable=true value="" checked=true cssClass="" cssClassLabel=""]
+[#macro radioFlat id name i18nkey="" label="" disabled=false editable=true value="" checked=true cssClass="" cssClassLabel=""]
   [#if editable]
   <div class="radioFlat radio-inline">
     <input id="${id}" class="radio-input ${cssClass}" type="radio" name="${name}" value="${value}" [#if checked]checked[/#if] />
-    <label for="${id}" class="radio-label ${cssClassLabel}"> ${label} </label>
+    <label for="${id}" class="radio-label ${cssClassLabel}">[#if i18nkey?has_content][@s.text name=i18nkey /][#else]${label}[/#if]</label>
   </div>
   [#elseif checked]
-    <p>${label}</p>
+    <p>[#if i18nkey?has_content][@s.text name=i18nkey /][#else]${label}[/#if]</p>
   [/#if]
 [/#macro]
 
@@ -482,11 +485,16 @@
   </label>
 [/#macro]
 
-[#macro fileUploadAjax fileDB name label="" dataUrl="" path="" required=false isEditable=true cssClass="" labelClass=""]
+[#macro fileUploadAjax fileDB name label="" dataUrl="" path="" required=false isEditable=true cssClass="" labelClass="" image=false imgUrl="" imgClass=""]
   [#assign hasFile = (fileDB.id??)!false /]
   <div class="fileUploadContainer ${cssClass}" >
     <label class="${labelClass}">[@customForm.text name=label readText=!isEditable /]: [@req required=required && isEditable /]</label>
     <input class="fileID" type="hidden" name="${name}" value="${(fileDB.id)!}" />
+    [#if image]
+    <div class="form-group">
+      <img src="${baseUrl}/global/images/${imgUrl}" class="${imgClass}" />
+    </div>
+    [/#if]
     [#-- Input File --]
     [#if isEditable]
       <div class="fileUpload" style="display:${hasFile?string('none','block')}"> <input class="upload" type="file" name="file" data-url="${dataUrl}"></div>

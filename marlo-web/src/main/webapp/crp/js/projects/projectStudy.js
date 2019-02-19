@@ -11,6 +11,12 @@ function init() {
   // Add select2
   addSelect2();
 
+  // Add Geographic Scope
+  $('select.elementType-repIndGeographicScope ').on("addElement removeElement", function(event,id,name) {
+    setGeographicScope(this);
+  });
+  setGeographicScope($('form select.elementType-repIndGeographicScope')[0]);
+
   // Add file uploads
   setFileUploads();
 
@@ -22,10 +28,12 @@ function init() {
 
   $('.ccRelevanceBlock input:radio').on('change', function() {
     var $commentBox = $(this).parents('.ccRelevanceBlock').find('.ccCommentBox');
-    if(this.value != 1) {
-      $commentBox.slideDown();
-    } else {
+    var id = this.value;
+    console.log("CC", id);
+    if((id == "1") || (id == "4")) {
       $commentBox.slideUp();
+    } else {
+      $commentBox.slideDown();
     }
   });
 }
@@ -58,65 +66,143 @@ function attachEvents() {
     var stageProcessOne = ($('select.stageProcess').val() == 1);
 
     if(isPolicy && stageProcessOne) {
-      $('.stageProcessOne span.requiredTag').slideUp();
-      // Hide asterix
+      // $('.stageProcessOne span.requiredTag').slideUp();
     } else {
-      // Hide asterix
-      $('.stageProcessOne span.requiredTag').slideDown();
+      // $('.stageProcessOne span.requiredTag').slideDown();
     }
   });
 
-  // Partnership Geographic Scope
-  $('.nationalBlock').find("select").select2({
-      placeholder: "Select a country(ies)",
-      templateResult: formatStateCountries,
-      templateSelection: formatStateCountries,
-      width: '100%'
+  // SRF Targets validation
+  $('input.radioType-targetsOption').on('change', function() {
+    var showComponent = $(this).val() == "targetsOptionYes";
+    if(showComponent) {
+      $('.srfTargetsComponent').slideDown(); // Show
+    } else {
+      $('.srfTargetsComponent').slideUp(); // Hide
+    }
   });
 
-  $(".geographicScopeSelect").on('change', function() {
-    var $partner = $(this).parents('.geographicScopeBlock');
-    var $regionalBlock = $partner.find('.regionalBlock');
-    var $nationalBlock = $partner.find('.nationalBlock');
-
-    var isRegional = this.value == 2;
-    var isMultiNational = this.value == 3;
-    var isNational = this.value == 4;
-    var isSubNational = this.value == 5;
-
-    // Regions
-    if(isRegional) {
-      $regionalBlock.show();
+  // Other CrossCutting Component validation
+  $('input.radioType-otherCrossCuttingOption').on('change', function() {
+    var showComponent = $(this).val() == "Yes";
+    if(showComponent) {
+      // $('.otherCrossCuttingOptionsComponent').slideDown(); // Show
     } else {
-      $regionalBlock.hide();
+      // $('.otherCrossCuttingOptionsComponent').slideUp(); // Hide
+    }
+  });
+
+  // Public link
+  $('input.radioType-optionPublic').on('change', function() {
+    var showComponent = $(this).val() == "true";
+    if(showComponent) {
+      $('.optionPublicComponent').slideDown(); // Show
+    } else {
+      $('.optionPublicComponent').slideUp(); // Hide
+    }
+  });
+
+  // Copy URL Button event
+  $('.copyButton').on('click', function() {
+    var $parent = $(this).parents(".optionPublicComponent");
+    var $input = $parent.find('.urlInput');
+    var $message = $parent.find('.message');
+    $input.select();
+    if(document.execCommand("copy")) {
+      $message.fadeIn(400, function() {
+        $message.fadeOut(300);
+      });
+    }
+    console.log($input.val());
+  });
+
+  /**
+   * Links Component
+   */
+  (function() {
+    // Events
+    $('.addButtonLink').on('click', addItem);
+    $('.removeLink').on('click', removeItem);
+
+    // Functions
+    function addItem() {
+      var $list = $(this).parents('.linksBlock').find('.linksList');
+      var $element = $('#studyLink-template').clone(true).removeAttr("id");
+      // Remove template tag
+      $element.find('input, textarea').each(function(i,e) {
+        e.name = (e.name).replace("_TEMPLATE_", "");
+        e.id = (e.id).replace("_TEMPLATE_", "");
+      });
+      // Show the element
+      $element.appendTo($list).hide().show(350);
+      // Update indexes
+      updateIndexes();
+    }
+    function removeItem() {
+      var $parent = $(this).parents('.studyLink');
+      $parent.hide(500, function() {
+        // Remove DOM element
+        $parent.remove();
+        // Update indexes
+        updateIndexes();
+      });
+    }
+    function updateIndexes() {
+      $('.linksList').find('.studyLink').each(function(i,element) {
+        $(element).find('.indexTag').text(i + 1);
+        $(element).setNameIndexes(1, i);
+      });
     }
 
-    // Countries
-    $nationalBlock.find("select").val(null).trigger('change');
-    if(isMultiNational || isNational || isSubNational) {
-      if(isMultiNational) {
-        $nationalBlock.find("select").select2({
-            maximumSelectionLength: 0,
-            placeholder: "Select a country(ies)",
-            templateResult: formatStateCountries,
-            templateSelection: formatStateCountries,
-            width: '100%'
+  })();
+
+  /**
+   * Qualification Component
+   */
+  (function() {
+    // Events
+    $('.addStudyQualification').on('click', addItem);
+    $('.removeQuantification').on('click', removeItem);
+
+    // Functions
+    function addItem() {
+      var $list = $(this).parents('.quantificationsBlock').find('.quantificationsList');
+      var $element = $('#quantification-template').clone(true).removeAttr("id");
+      // Remove template tag
+      $element.find('input, textarea').each(function(i,e) {
+        e.name = (e.name).replace("_TEMPLATE_", "");
+        e.id = (e.id).replace("_TEMPLATE_", "");
+      });
+      // Show the element
+      $element.appendTo($list).hide().show(350);
+      // Update indexes
+      updateIndexes();
+    }
+    function removeItem() {
+      var $parent = $(this).parents('.quantification');
+      $parent.hide(500, function() {
+        // Remove DOM element
+        $parent.remove();
+        // Update indexes
+        updateIndexes();
+      });
+    }
+    function updateIndexes() {
+      $('.quantificationsList').find('.quantification').each(function(i,element) {
+        $(element).find('span.index').text(i + 1);
+        $(element).setNameIndexes(1, i);
+
+        // Update Radios
+        $(element).find('.radioFlat ').each(function(j,item) {
+          var radioName = 'quantificationRadio-' + i + '-' + j;
+          $(item).find('input').attr('id', radioName);
+          $(item).find('label').attr('for', radioName);
         });
-      } else {
-        $nationalBlock.find("select").select2({
-            maximumSelectionLength: 1,
-            placeholder: "Select a country(ies)",
-            templateResult: formatStateCountries,
-            templateSelection: formatStateCountries,
-            width: '100%'
-        });
-      }
-      $nationalBlock.show();
-    } else {
-      $nationalBlock.hide();
+
+      });
     }
 
-  });
+  })();
 
 }
 
@@ -132,11 +218,30 @@ function onChangeRadioButton() {
 
 function addSelect2() {
 
-  if(!reportingActive) {
+  var isNew = $('.evidenceBlock').classParam('isNew') == "true";
+  var hasEvidenceTag = $('input.radioType-tags:checked').val();
+
+  if(isNew) {
+    // Adjust status
+    $('select.statusSelect option[value="4"]').prop('disabled', true); // Extended
+    $('select.statusSelect option[value="5"]').prop('disabled', true); // Cancelled
+
+    // Suggest Evidence tag
+    if(!hasEvidenceTag) {
+      $('input.radioType-tags[value="1"]').prop("checked", true); // New tag
+    }
+  } else {
+
+  }
+
+  if(reportingActive) {
+    // Adjust status
+
+  } else {
+    // Adjust status
     $('select.statusSelect option[value="3"]').prop('disabled', true);
     $('select.statusSelect option[value="4"]').prop('disabled', true);
     $('select.statusSelect option[value="5"]').prop('disabled', true);
-  } else {
   }
 
   $('form select').select2({
@@ -211,17 +316,3 @@ function setFileUploads() {
   });
 
 }
-
-function formatStateCountries(state) {
-  if(!state.id) {
-    return state.text;
-  }
-  var flag = '<i class="flag-sm flag-sm-' + state.element.value.toUpperCase() + '"></i> ';
-  var $state;
-  if(state.id != -1) {
-    $state = $('<span>' + flag + state.text + '</span>');
-  } else {
-    $state = $('<span>' + state.text + '</span>');
-  }
-  return $state;
-};

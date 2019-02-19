@@ -48,11 +48,16 @@
             <column name="dissemination_URL" length="500" />
         </property>
         <property name="disseminationChannelName" type="string">
-            <column name="dissemination_channel_name" length="50" />
-            
+            <column name="dissemination_channel_name" length="50" />            
         </property>
          <property name="synced" type="java.lang.Boolean">
             <column name="synced" />
+        </property>
+        <property name="confidential" type="java.lang.Boolean">
+            <column name="confidential" />
+        </property>
+        <property name="confidentialUrl" type="string">
+            <column name="confidential_url" length="500" />
         </property>
     </class>
 </hibernate-mapping>

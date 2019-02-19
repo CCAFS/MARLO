@@ -62,6 +62,14 @@
       class="org.cgiar.ccafs.marlo.data.model.ReportSynthesis" fetch="select">
       <column name="report_synthesis_id" />
     </many-to-one>
+    <many-to-one name="projectLp6Contribution"
+      class="org.cgiar.ccafs.marlo.data.model.ProjectLp6Contribution" fetch="select">
+      <column name="project_lp6_contribution_id" />
+    </many-to-one>
+    <many-to-one name="projectPolicy"
+      class="org.cgiar.ccafs.marlo.data.model.ProjectPolicy" fetch="select">
+      <column name="project_policy_id" />
+    </many-to-one>
 		<property name="sectionName" type="string">
 			<column name="section_name" not-null="true">
 				<comment>Some section name (would be the action name)</comment>

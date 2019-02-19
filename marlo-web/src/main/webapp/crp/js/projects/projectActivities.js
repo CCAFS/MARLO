@@ -29,7 +29,7 @@ function init() {
   $(".activityTitle").on("keyup", changeTitle);
   $(".removeDeliverable").on("click", removeDeliverable);
 
-// Missing fields in activities
+  // Missing fields in activities
   $("form .projectActivity").each(function(i,e) {
     verifyMissingFields(e);
   });
@@ -65,10 +65,10 @@ function init() {
     $statusDescription.find('textarea').val('');
   });
 
-  //Open Current Activity from url
+  // Open Current Activity from url
   var currentActivity = window.location.hash.substring(1);
-  if (currentActivity != ''){
-    $('.activitiesOG-content #'+currentActivity+' .blockTitle').click();
+  if(currentActivity != '') {
+    $('.activitiesOG-content #' + currentActivity + ' .blockTitle').click();
   }
 }
 

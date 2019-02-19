@@ -1,7 +1,7 @@
 [#ftl]
 [#assign title = "Project Locations" /]
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}-phase-${(actualPhase.id)!}" /]
-[#assign pageLibs = ["select2"] /]
+[#assign pageLibs = ["select2", "blueimp-file-upload"] /]
 [#assign customJS = [
   "${baseUrlMedia}/js/projects/projectLocations.js?20181029", 
   "${baseUrl}/global/js/autoSave.js",
@@ -132,6 +132,60 @@
                     [/#if]
                   </div>
                 </div>
+                <hr />
+                
+                [#if reportingActive && action.hasSpecificities("crp_location_csv_activities")]
+                [#-- AR4D activities related to the evaluation of CSA options --]
+                <div class="form-group">
+                  [@customForm.yesNoInput  label="projectLocations.activitiesCSV" name="project.projectInfo.activitiesCSV"  editable=editable inverse=false  cssClass="isCSV" /] 
+                </div>
+                <div class="clear-fix"></div>
+                
+                <div class="csvActivitiesBox simpleBox" style="display:${(project.projectInfo.activitiesCSV?string("block","none"))!"none"};">
+                  <div class="row">
+                    <div class="col-md-9">
+                      <label for="">[@s.text name="projectLocations.activitiesCSV.instructions" /]:</label>
+                    </div>
+                    <div class="col-md-3 right">
+                      <a href="${baseUrl}/global/documents/Guidelines_CSA_evlautions_template _Reporting_2018.pdf" target="__BLANK">
+                        <img src="${baseUrl}/global/images/pdf.png" height="20" />
+                        [[@s.text name="projectLocations.activitiesCSV.guideline" /]]
+                      </a>
+                    </div>
+                  </div>
+                  
+                  <div class="row justify-content-md-center">
+                    
+                    [#-- Download Template --]
+                    <div class="col-md-2"></div>
+                    <div class="col-md-4">
+                       <label for="">[@s.text name="projectLocations.activitiesCSV.download" /]:</label>
+                       <div class="form-group">
+                         <a href="${baseUrl}/global/documents/CSA_Evaluation_template.xlsm" download><img src="${baseUrl}/global/images/download-excel.png" height="70" /></a>
+                       </div>
+                    </div>
+                    
+                    [#-- Upload Template --]
+                    <div class="col-md-5 " style="position:relative" listname="project.projectInfo.activitiesCSVFile">
+                      [@customForm.fileUploadAjax 
+                        fileDB=(project.projectInfo.activitiesCSVFile)!{}  
+                        name="project.projectInfo.activitiesCSVFile.id" 
+                        label="projectLocations.activitiesCSV.upload"
+                        image=true
+                        imgUrl="upload-excel.png"
+                        imgClass="csvUpload"
+                        dataUrl="${baseUrl}/uploadProjectLocationActivitiesCSV.do"  
+                        path="${(action.getPath())!}"
+                        isEditable=editable
+                        labelClass=""
+                        required=true
+                      /]
+                    </div>
+                  </div>
+                  
+                </div>
+                [/#if]
+                
               </div>
               
               

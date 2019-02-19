@@ -1,5 +1,5 @@
 [#ftl]
-[#assign title = "Project Outcome Case Studies" /]
+[#assign title = "Project Evidence" /]
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = [ "datatables.net", "datatables.net-bs" ] /]
 [#assign customJS = [
@@ -114,9 +114,11 @@
           [#-- Is this complete --]
           [#local isThisComplete = (action.hasStudiesMissingFields(item.class.name,item.id))!false]
           [#-- Previous year --]
-          [#local oldFormat = (item.projectExpectedStudyInfo.year < 2018)!false ]
+          [#local oldFormat = (item.projectExpectedStudyInfo.year < 2017)!false ]
           [#-- Owner --]
           [#local isOwner = (item.project.id == projectID)!false]
+          [#-- Is new --]
+          [#local isNew = (action.isEvidenceNew(item.id)) /]
           <tr>
             <td class="id" >
               [#if !oldFormat]<a href="${dlurl}" ${isOwner?string('','target="blank"')}>[/#if]
@@ -125,18 +127,25 @@
             </td> 
             <td class="name">
               [#-- Report Tag --]
-              [#if reportingActive && !oldFormat]<span class="label label-primary" title="Required for this cycle"><span class="glyphicon glyphicon-flash" ></span> Report</span>[/#if]
-              <a href="${dlurl}" ${isOwner?string('','target="blank"')}>
-              [#if oldFormat] <span class="label label-info">Old Format</span> [/#if]
-              [#if (item.projectExpectedStudyInfo.title?trim?has_content)!false]${(item.projectExpectedStudyInfo.title)!'Not defined'}[#else][@s.text name="global.untitled" /][/#if]
-              </a>
+              [#if isNew] <span class="label label-info">[@s.text name="global.new" /]</span> [/#if] 
+              [#if reportingActive && !oldFormat && !previousTable && isOwner]<span class="label label-primary" title="Required for this cycle"><span class="glyphicon glyphicon-flash" ></span> Report</span>[/#if]
+              [#if !oldFormat]<a href="${dlurl}" ${isOwner?string('','target="blank"')}>[/#if]
+                [#if oldFormat] <span class="label label-info">Old Format</span> [/#if]
+                [@utils.tableText value=(item.projectExpectedStudyInfo.title)!"" /]
+              [#if !oldFormat]</a>[/#if]
             </td>
-            <td class="type">[#if (item.projectExpectedStudyInfo.studyType?has_content)!false][#if (item.projectExpectedStudyInfo.studyType.id=1)]OICS[#else]${(item.projectExpectedStudyInfo.studyType.name)!'Not defined'}[/#if][#else]Not defined[/#if]</td>
+            <td class="type">
+              [@utils.tableText value=(item.projectExpectedStudyInfo.studyType.name)!"" /]
+            </td>
             <td class="owner text-center">
               [#if isOwner] <small><nobr>This Project</nobr></small>  [#else][#if item.project?has_content]P${item.project.id}[#else]Not defined[/#if][/#if]
             </td>
-            <td class="year">[#if (item.projectExpectedStudyInfo.year?trim?has_content)!false]${(item.projectExpectedStudyInfo.year)!}[#else]Not defined[/#if]</td>
-            <td class="status">[#if (item.projectExpectedStudyInfo.statusName?trim?has_content)!false]${(item.projectExpectedStudyInfo.statusName)!}[#else]Not defined[/#if]</td>
+            <td class="year">
+              [@utils.tableText value=(item.projectExpectedStudyInfo.year)!"" /]
+            </td>
+            <td class="status">
+              [@utils.tableText value=(item.projectExpectedStudyInfo.statusName)!"" /]
+            </td>
             [#if !previousTable]
             <td>
               [#if isThisComplete || ((item.projectExpectedStudyInfo.year lt  currentCycleYear)!false)]

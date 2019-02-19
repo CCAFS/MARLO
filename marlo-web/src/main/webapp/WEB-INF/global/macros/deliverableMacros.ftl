@@ -18,8 +18,7 @@
     [#-- Region --]
     <div class="form-group row">
       <div class="col-md-6 regionalBlock" style="display:${(isRegional)?string('block','none')}">
-        [#--  [@customForm.selectGroup name="deliverable.deliverableInfo.region.id" list=(repIndRegions)![] element=(deliverable.deliverableInfo.region)!{} subListName="subRegions"  keyFieldName="id" displayFieldName="name" i18nkey="deliverable.region" required=true className="" editable=editable /]--]
-        [@customForm.elementsListComponent name="deliverable.deliverableRegions" elementType="locElement" elementList=deliverable.deliverableRegions label="deliverable.region"  listName="repIndRegions" keyFieldName="id" displayFieldName="name" required=false /]
+        [@customForm.elementsListComponent name="deliverable.deliverableRegions" elementType="locElement" elementList=deliverable.deliverableRegions label="deliverable.region"  listName="repIndRegions" keyFieldName="id" displayFieldName="composedName" required=false /]
       </div>
     </div>
     
@@ -31,39 +30,35 @@
   </div>
 [/#macro]
 
-[#macro deliverableCrossCuttingMacro label="deliverable.crossCuttingDimensions" ]
+[#macro deliverableCrossCuttingMacroOld label="deliverable.crossCuttingDimensions" ]
   [#-- Does this deliverable have a cross-cutting dimension --]
   <div class="form-group">
     <label for="">[@customForm.text name=label readText=!editable/] [@customForm.req required=editable/]</label>
-    <div class="row">
-      <div class="col-md-12">
-        [#assign crossCuttingMarkers = [
-            { "id":"gender",    "name": "crossCuttingGender",   "scoreName": "crossCuttingScoreGender" },
-            { "id":"youth",     "name": "crossCuttingYouth",    "scoreName": "crossCuttingScoreYouth" },
-            { "id":"capacity",  "name": "crossCuttingCapacity", "scoreName": "crossCuttingScoreCapacity" },
-            { "id":"climate",   "name": "crossCuttingClimate",  "scoreName": "crossCuttingScoreClimate" },
-            { "id":"na",        "name": "crossCuttingNa" }
-          ] 
-        /]
-        [#if editable]
-          [#list crossCuttingMarkers as marker]
-            <label class="checkbox-inline"><input type="checkbox" name="deliverable.deliverableInfo.${marker.name}" class="[#if marker.id != "na"]crosscutingDimension[/#if]" id="${marker.id}" value="true" [#if (deliverable.deliverableInfo[marker.name])!false ]checked="checked"[/#if]> [@s.text name="crossCuttingMarker.${marker.id}" /]</label>
-          [/#list]
-        [#else]
-          [#assign checkedItems = false /]
-          [#list crossCuttingMarkers as marker]
-            [#if (deliverable.deliverableInfo[marker.name])!false ]
-              <div class="${customForm.changedField('deliverable.deliverableInfo.${marker.name}')}">
-                <p class="checked"> [@s.text name="crossCuttingMarker.${marker.id}" /]</p> <input type="hidden" name="deliverable.deliverableInfo.${marker.name}" value="true">
-              </div>
-              [#assign checkedItems = true /]
-            [/#if] 
-          [/#list]
-          [#-- Message when there's nothing to show -> "Prefilled if avaible" --]
-          [#if !checkedItems]<div class="input"><p>[@s.text name="form.values.fieldEmpty" /]</p></div>[/#if]
-        [/#if]
-      </div>
-    </div>
+    [#assign crossCuttingMarkers = [
+        { "id":"gender",    "name": "crossCuttingGender",   "scoreName": "crossCuttingScoreGender" },
+        { "id":"youth",     "name": "crossCuttingYouth",    "scoreName": "crossCuttingScoreYouth" },
+        { "id":"capacity",  "name": "crossCuttingCapacity", "scoreName": "crossCuttingScoreCapacity" },
+        { "id":"climate",   "name": "crossCuttingClimate",  "scoreName": "crossCuttingScoreClimate" },
+        { "id":"na",        "name": "crossCuttingNa" }
+      ] 
+    /]
+    [#if editable]
+      [#list crossCuttingMarkers as marker]
+        <label class="checkbox-inline"><input type="checkbox" name="deliverable.deliverableInfo.${marker.name}" class="[#if marker.id != "na"]crosscutingDimension[/#if]" id="${marker.id}" value="true" [#if (deliverable.deliverableInfo[marker.name])!false ]checked="checked"[/#if]> [@s.text name="crossCuttingMarker.${marker.id}" /]</label>
+      [/#list]
+    [#else]
+      [#assign checkedItems = false /]
+      [#list crossCuttingMarkers as marker]
+        [#if (deliverable.deliverableInfo[marker.name])!false ]
+          <div class="${customForm.changedField('deliverable.deliverableInfo.${marker.name}')}">
+            <p class="checked"> [@s.text name="crossCuttingMarker.${marker.id}" /]</p> <input type="hidden" name="deliverable.deliverableInfo.${marker.name}" value="true">
+          </div>
+          [#assign checkedItems = true /]
+        [/#if] 
+      [/#list]
+      [#-- Message when there's nothing to show -> "Prefilled if avaible" --]
+      [#if !checkedItems]<div class="input"><p>[@s.text name="form.values.fieldEmpty" /]</p></div>[/#if]
+    [/#if]
   </div>
   
   [#-- If gender dimension, select with ones --]
@@ -119,6 +114,26 @@
   </div>
 [/#macro]
 
+[#macro deliverableCrossCuttingMacro label="deliverable.crossCuttingDimensions" ]
+  [#-- CGIAR Cross-cutting Markers  --]
+  <div class="form-group">
+    <h5 class="labelheader">[@s.text name=label /]</h5>
+    <div class="row">
+      [#list (cgiarCrossCuttingMarkers)![] as marker]
+        [#local customName = "deliverable.crossCuttingMarkers[${marker_index}]" /]
+        <div class="col-md-3">
+          [#local markerElement = (action.getDeliverableCrossCuttingMarker(marker.id))!{} ]
+          <input type="hidden"  name="${customName}.id" value="${(markerElement.id)!}"/>
+          <input type="hidden"  name="${customName}.cgiarCrossCuttingMarker.id" value="${marker.id}"/>
+          [@customForm.select   name="${customName}.repIndGenderYouthFocusLevel.id" value="${(markerElement.repIndGenderYouthFocusLevel.id)!-1}" valueName="${(markerElement.repIndGenderYouthFocusLevel.powbName)!}" className="setSelect2" i18nkey="${marker.name}" listName="focusLevels" keyFieldName="id"  displayFieldName="powbName"  required=true editable=editable/]
+        </div>
+      [#else]
+        <p class="col-md-12">No cgiarCrossCuttingMarkers loaded</p>
+      [/#list]
+    </div>
+  </div>
+[/#macro]
+
 [#macro deliverableLicenseMacro ]
 <div class="simpleBox">
   <div class="form-group row yesNoInputDeliverable">
@@ -159,6 +174,11 @@
   
   <div class="block-license" style="display:${((deliverable.deliverableInfo.adoptedLicense)!false)?string('block','none')}">
     <hr />
+    
+    [@metadataField title="rights" encodedName="dc.rights" type="text" require=false cssLabelName="note"/]
+    [#-- ${getMetadataValueByCode("dc.rights")} --] 
+    
+    
     [#list licenceOptions as licenseType]
       <div class="licenseOptions ${licenseType.name}" style="display:${licenseType.display};">
         [#list licenseType.options as option]
@@ -346,7 +366,8 @@
         [@customForm.select name="${customName}.repIndTypeActivity.id" className="setSelect2 trainingType" i18nkey="involveParticipants.typeActivity" listName="repIndTypeActivities" keyFieldName="id"  displayFieldName="name" editable=editable required=editable /]
       </div>
       [#-- Formal training: Academic Degree --]
-      <div class="col-md-6 block-academicDegree" style="display:${((deliverable.deliverableParticipant.repIndTypeActivity.id == 1)!false)?string('block','none')}">
+      [#local isAcademicDegree = (deliverable.deliverableParticipant.repIndTypeActivity.id == 1)!false /]
+      <div class="col-md-6 block-academicDegree" style="display:${isAcademicDegree?string('block','none')}">
         [@customForm.input name="${customName}.academicDegree" i18nkey="involveParticipants.academicDegree" help="involveParticipants.academicDegree.help" className="" required=true editable=editable /]
       </div>
     </div>
@@ -375,6 +396,17 @@
       </div>
     </div>
     
+    [#-- Training period of time: (Only if formal training) --]
+    [#local isFormal = ([1, 3, 2, 4]?seq_contains(deliverable.deliverableParticipant.repIndTypeActivity.id))!false /]
+    <div class="form-group block-periodTime" style="display:${isFormal?string('block','none')}">
+      <label for="">[@s.text name="involveParticipants.trainingPeriod" /]:[@customForm.req required=editable /] </label><br />
+      [#list (repIndTrainingTerms)![] as item]
+        [@customForm.radioFlat id="trainingPeriod-${item.id}"  name="${customName}.repIndTrainingTerm.id" label="${item.name}"  value="${item.id}"  checked=(deliverable.deliverableParticipant.repIndTrainingTerm.id == item.id)!false cssClass="" cssClassLabel="font-normal" editable=editable /]
+      [#else]
+        LIST NOT FOUND
+      [/#list]
+    </div> 
+    
   </div>
 </div>
 [/#macro]
@@ -392,9 +424,28 @@
         [@customForm.yesNoInputDeliverable name="${name}.alreadyDisseminated"  editable=editable inverse=false cssClass="type-findable text-center" /] 
       </div>  
     </div>
-    <div class="block-findable findableOptions" style="display:[#if (deliverable.dissemination.alreadyDisseminated)?? && (deliverable.dissemination.alreadyDisseminated)]block[#else]none [/#if]">
+    [#local isDisseminated = (deliverable.dissemination.alreadyDisseminated?string)!""]
+    <div class="block-findable findableOptions" style="display:${(isDisseminated == "true")?string('block', 'none')}">
       <hr />
       [@findableOptions /]
+    </div>
+    <div class="block-notFindable findableOptions" style="display:${(isDisseminated == "false")?string('block', 'none')}">
+      <hr />
+      [#-- Is this deliverable confidential and/or a management/internal deliverable? --]
+      <div class="form-group">
+        <label for="">[@s.text name="project.deliverable.dissemination.confidential" /]?[@customForm.req required=editable /]</label> <br />
+        [#assign isConfidential = (deliverable.dissemination.confidential?string)!""]
+        [@customForm.radioFlat id="confidetial-yes" name="${name}.confidential" label="Yes" value="true"  checked=(isConfidential == "true")  cssClass="radioType-confidential" cssClassLabel="radio-label-yes" editable=editable /]
+        [@customForm.radioFlat id="confidetial-no"  name="${name}.confidential" label="No"  value="false" checked=(isConfidential == "false") cssClass="radioType-confidential" cssClassLabel="radio-label-no"  editable=editable /]
+      </div>
+      
+      [#-- Confidential URL --]
+      <div class="form-group confidentialBlock-true" style="display:${(isConfidential == "true")?string('block', 'none')}">
+        [@customForm.input name="${name}.confidentialUrl" type="text" i18nkey="project.deliverable.dissemination.confidentialUrl" help="project.deliverable.dissemination.confidentialUrl.help" helpIcon=false placeholder="global.webSiteLink.placeholder" className="" required=true editable=editable /]
+      </div>
+      <div class="form-group confidentialBlock-false" style="display:${(isConfidential == "false")?string('block', 'none')}">
+        <p class="note"> [@s.text name="project.deliverable.dissemination.confidentialNoMessage" /] </p>
+      </div>
     </div>
   </div>
 [/#macro]
@@ -478,36 +529,36 @@
 
 [#macro deliverableMetadataMacro flagshipslistName="programs" crpsListName="crps" allowFlagships=true]
   <div class="form-group">
-    [@deliverableMacros.metadataField title="title" encodedName="dc.title" type="input" require=false/]
+    [@metadataField title="title" encodedName="dc.title" type="input" require=false/]
   </div>
   <div class="form-group">
-    [@deliverableMacros.metadataField title="description" encodedName="dc.description.abstract" type="textArea" require=false/]
+    [@metadataField title="description" encodedName="dc.description.abstract" type="textArea" require=false/]
   </div>
   <div class="form-group row">
     <div class="col-md-6">
-      [@deliverableMacros.metadataField title="publicationDate" encodedName="dc.date" type="input" require=false/]
+      [@metadataField title="publicationDate" encodedName="dc.date" type="input" require=false/]
     </div>
     <div class="col-md-6">
-      [@deliverableMacros.metadataField title="language" encodedName="dc.language" type="input" require=false/]
+      [@metadataField title="language" encodedName="dc.language" type="input" require=false/]
     </div>
   </div>
   <div class="form-group row">
     <div class="col-md-6">
-      [@deliverableMacros.metadataField title="countries" encodedName="cg:coverage.country" type="input" require=false/]
+      [@metadataField title="countries" encodedName="cg:coverage.country" type="input" require=false/]
     </div>
     <div class="col-md-6">
-      [@deliverableMacros.metadataField title="keywords" encodedName="marlo.keywords" type="input" require=false/]
+      [@metadataField title="keywords" encodedName="marlo.keywords" type="input" require=false/]
     </div>
   </div>
   <div class="form-group"> 
-    [@deliverableMacros.metadataField title="citation" encodedName="dc.identifier.citation" type="textArea" require=false/]
+    [@metadataField title="citation" encodedName="dc.identifier.citation" type="textArea" require=false/]
   </div>
   <div class="form-group row">
     <div class="col-md-6">
-      [@deliverableMacros.metadataField title="handles" encodedName="marlo.handle" type="input" require=false/]
+      [@metadataField title="handle" encodedName="marlo.handle" type="input" require=false/]
     </div>
     <div class="col-md-6">
-      [@deliverableMacros.metadataField title="doi" encodedName="marlo.doi" type="input" require=false/]
+      [@metadataField title="doi" encodedName="marlo.doi" type="input" require=false/]
     </div>
   </div>
    
@@ -517,7 +568,7 @@
   <div class="form-group">
     <label for="">[@s.text name="metadata.creator" /]:  </label>
     [#-- Hidden input --]
-    [@deliverableMacros.metadataField title="authors" encodedName="marlo.authors" type="hidden" require=false/]
+    [@metadataField title="authors" encodedName="marlo.authors" type="hidden" require=false/]
     [#-- Some Instructions  --]
     [#if editable]
       <div class="note authorVisibles" style="display:${isMetadataHide("marlo.authors")?string('none','block')}">
@@ -557,29 +608,44 @@
     <input type="hidden" name="deliverable.publication.id" value="${(deliverable.publication.id)!}"/>
     [#if editable] <p class="note">[@s.text name="project.deliverable.dissemination.journalFields" /]</p> [/#if]
     <div class="form-group row">
-      <div class="col-md-4">[@customForm.input name="deliverable.publication.volume" i18nkey="project.deliverable.dissemination.volume" className="" type="text" disabled=!editable  required=true editable=editable /]</div>
-      <div class="col-md-4">[@customForm.input name="deliverable.publication.issue" i18nkey="project.deliverable.dissemination.issue" className="" type="text" disabled=!editable  required=true editable=editable /]</div>
-      <div class="col-md-4">[@customForm.input name="deliverable.publication.pages" i18nkey="project.deliverable.dissemination.pages" className="" type="text" disabled=!editable  required=true editable=editable /]</div>
+      <div class="col-md-4 metadataElement metadataElement-volume no-lock">
+        [@customForm.input name="deliverable.publication.volume" i18nkey="project.deliverable.dissemination.volume" className="metadataValue" type="text" disabled=!editable  required=true editable=editable /]
+      </div> 
+      <div class="col-md-4 metadataElement metadataElement-issue no-lock">
+        [@customForm.input name="deliverable.publication.issue" i18nkey="project.deliverable.dissemination.issue" className="metadataValue" type="text" disabled=!editable  required=true editable=editable /]
+      </div>
+      <div class="col-md-4 metadataElement metadataElement-pages no-lock">
+        [@customForm.input name="deliverable.publication.pages" i18nkey="project.deliverable.dissemination.pages" className="metadataValue" type="text" disabled=!editable  required=true editable=editable /]
+      </div>
     </div>
-    <div class="form-group">
-      [@customForm.input name="deliverable.publication.journal" i18nkey="project.deliverable.dissemination.journalName" className="" type="text" disabled=!editable  required=true editable=editable /]
+    <div class="form-group metadataElement metadataElement-journal no-lock">
+      [@customForm.input name="deliverable.publication.journal" i18nkey="project.deliverable.dissemination.journalName" className="metadataValue" type="text" disabled=!editable  required=true editable=editable /]
     </div>
+    
+    [#-- Is ISI Journal --]
     <div class="form-group">
+      <label for="">[@s.text name="deliverable.isiPublication" /] [@customForm.req required=editable /]
+      [@customForm.helpLabel name="deliverable.isiPublication.help" showIcon=false editable=editable/]</label> <br />
+      [#local isISI = (deliverable.publication.isiPublication?string)!"" /]
+      [@customForm.radioFlat id="optionISI-yes"  name="deliverable.publication.isiPublication" i18nkey="Yes"  value="true"  checked=(isISI == "true")  cssClass="radioType-optionISI" cssClassLabel="font-normal radio-label-yes" editable=editable /] 
+      [@customForm.radioFlat id="optionISI-no"   name="deliverable.publication.isiPublication" i18nkey="No"   value="false" checked=(isISI == "false") cssClass="radioType-optionISI" cssClassLabel="font-normal radio-label-no"  editable=editable /] 
+    </div>
+    
+    [#-- Journal Indicators --]
+    [#-- <div class="form-group">
       <label for="">[@s.text name="project.deliverable.dissemination.indicatorsJournal" /]:
       <div class="checkbox">
         [#if editable]
-          <label for="isiPublication"><input type="checkbox" id="isiPublication"  name="deliverable.publication.isiPublication" value="true" [#if (deliverable.publication.isiPublication)!false]checked[/#if]/>Tick this box if this journal article is an ISI publication <small>(check at http://ip-science.thomsonreuters.com/mjl/ for the list)</small></label>  
           <label for="nasr"><input type="checkbox" id="nasr" name="deliverable.publication.nasr" value="true" [#if (deliverable.publication.nasr)!false]checked[/#if]/>Does this article have a co-author from a developing country National Agricultural Research System (NARS) ?</label>
           <label for="coAuthor"><input type="checkbox" id="coAuthor" name="deliverable.publication.coAuthor" value="true" [#if (deliverable.publication.coAuthor)!false]checked[/#if] />Does this article have a co-author based in an Earth System Science-related academic department?</label>
         [#else]
-          <p [#if (deliverable.publication.isiPublication)!false]class="checked">[#else]class="noChecked ">[/#if]Tick this box if this journal article is an ISI publication (check at http://ip-science.thomsonreuters.com/mjl/ for the list)</p>
           <p [#if (deliverable.publication.nasr)!false]class="checked"[#else]class="noChecked"[/#if]>Does this article have a co-author from a developing country National Agricultural Research System (NARS) ?</p>
           <p [#if (deliverable.publication.coAuthor)!false]class="checked"[#else]class="noChecked"[/#if]>Does this article have a co-author based in an Earth System Science-related academic department?</p>
         [/#if]
       </div>
-    </div> 
-    
+    </div>  --]
     <hr />
+    [#-- Does the publication acknowledge {CRP}? --]
     <div class="row yesNoInputDeliverable">
       <div class="col-md-9">
         <label class="yesNoLabel">[@s.text name="project.deliverable.dissemination.acknowledgeQuestion" ][@s.param]${(crpSession?upper_case)!}[/@s.param][/@s.text]</label>
@@ -829,10 +895,10 @@
 [/#macro]
 
 [#-- Metadata Macro --]
-[#macro metadataField title="" encodedName="" type="input" list="" require=false]
+[#macro metadataField title="" encodedName="" type="input" list="" require=false cssLabelName=""]
   [#local metadataID = (deliverable.getMetadataID(encodedName))!-1 /]
-  [#local mElementID = (deliverable.getMElementID(metadataID))!'' /]
   [#local metadataIndex = (deliverable.getMetadataIndex(encodedName))!-1 /]
+  [#local mElementID = (deliverable.getMElementID(metadataID))!'' /]
   [#local metadataValue = (deliverable.getMetadataValue(metadataID))!'' /]
   [#local mElementHide = isMetadataHide(encodedName) /]
   
@@ -843,13 +909,16 @@
     <input type="hidden" class="hide" name="${customName}.hide" value="${mElementHide?string}" />
     <input type="hidden" name="${customName}.metadataElement.id" value="${metadataID}" />
     [#if type == "input"]
-      [@customForm.input name="${customName}.elementValue" required=require value="${metadataValue}" className="metadataValue"  type="text" i18nkey="metadata.${title}" help="metadata.${title}.help" readOnly=mElementHide editable=editable/]
+      [@customForm.input name="${customName}.elementValue" required=require value="${metadataValue}" className="metadataValue "  type="text" i18nkey="metadata.${title}" help="metadata.${title}.help" readOnly=mElementHide editable=editable/]
     [#elseif type == "textArea"]
-      [@customForm.textArea name="${customName}.elementValue" required=require value="${metadataValue}" className="metadataValue" i18nkey="metadata.${title}" help="metadata.${title}.help" readOnly=mElementHide editable=editable/]
+      [@customForm.textArea name="${customName}.elementValue" required=require value="${metadataValue}" className="metadataValue " i18nkey="metadata.${title}" help="metadata.${title}.help" readOnly=mElementHide editable=editable/]
     [#elseif type == "select"]
-      [@customForm.select name="${customName}.elementValue" required=require value="${metadataValue}" className="metadataValue" i18nkey="metadata.${title}" listName=list disabled=mElementHide editable=editable /]
+      [@customForm.select name="${customName}.elementValue" required=require value="${metadataValue}" className="metadataValue " i18nkey="metadata.${title}" listName=list disabled=mElementHide editable=editable /]
     [#elseif type == "hidden"]
-      <input type="hidden" name="${customName}.elementValue" value="${metadataValue}" class="metadataValue"/>
+      <input type="hidden" name="${customName}.elementValue" value="${metadataValue}" class="metadataValue "/>
+    [#elseif type == "text"]
+      <input type="hidden" name="${customName}.elementValue" value="${metadataValue}" class="metadataValue "/>
+      <p class="${cssLabelName}" style="display:${(metadataValue?has_content)?string('block', 'none')}"> Recorded in the public repository: <span class="metadataText">${metadataValue}</span> </p>
     [/#if]
   </div>
 [/#macro]
@@ -858,6 +927,12 @@
   [#local metadataID = (deliverable.getMetadataID(encodedName))!-1 /]
   [#local mElement = (deliverable.getMetadata(metadataID))!{} /]
   [#return (mElement.hide)!false]
+[/#function]
+
+[#function getMetadataValueByCode encodedName]
+  [#local metadataID = (deliverable.getMetadataID(encodedName))!-1 /]
+  [#local metadataValue = (deliverable.getMetadataValue(metadataID))!'' /]
+  [#return (metadataValue)!false]
 [/#function]
 
 

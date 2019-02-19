@@ -18,7 +18,7 @@ public class ProjectExpectedStudyRegion extends MarloBaseEntity implements java.
   @Expose
   private ProjectExpectedStudy projectExpectedStudy;
   @Expose
-  private RepIndRegion repIndRegion;
+  private LocElement locElement;
 
   @Override
   public boolean equals(Object obj) {
@@ -32,14 +32,18 @@ public class ProjectExpectedStudyRegion extends MarloBaseEntity implements java.
       return false;
     }
     ProjectExpectedStudyRegion other = (ProjectExpectedStudyRegion) obj;
-    if (repIndRegion == null) {
-      if (other.repIndRegion != null) {
+    if (this.getId() == null) {
+      if (other.getId() != null) {
         return false;
       }
-    } else if (!repIndRegion.getId().equals(other.repIndRegion.getId())) {
+    } else if (!this.getId().equals(other.getId())) {
       return false;
     }
     return true;
+  }
+
+  public LocElement getLocElement() {
+    return locElement;
   }
 
   @Override
@@ -65,19 +69,17 @@ public class ProjectExpectedStudyRegion extends MarloBaseEntity implements java.
     return phase;
   }
 
+
   public ProjectExpectedStudy getProjectExpectedStudy() {
     return projectExpectedStudy;
   }
 
-  public RepIndRegion getRepIndRegion() {
-    return repIndRegion;
-  }
 
   @Override
   public int hashCode() {
     final int prime = 31;
     int result = 1;
-    result = prime * result + ((repIndRegion == null) ? 0 : repIndRegion.hashCode());
+    result = prime * result + ((this.getId() == null) ? 0 : this.getId().hashCode());
     return result;
   }
 
@@ -85,6 +87,11 @@ public class ProjectExpectedStudyRegion extends MarloBaseEntity implements java.
   @Override
   public boolean isActive() {
     return true;
+  }
+
+
+  public void setLocElement(LocElement locElement) {
+    this.locElement = locElement;
   }
 
   @Override
@@ -100,9 +107,6 @@ public class ProjectExpectedStudyRegion extends MarloBaseEntity implements java.
     this.projectExpectedStudy = projectExpectedStudy;
   }
 
-  public void setRepIndRegion(RepIndRegion repIndRegion) {
-    this.repIndRegion = repIndRegion;
-  }
 
 }
 

@@ -74,12 +74,12 @@
           [#else]
             [#if selectedResearchTopic?has_content] 
             <div class="clearfix"></div>
-            <div class="notOutcome">
+            <div class="notOutcome grayBox text-center">
               There are NO OUTCOMES added to "<b>${selectedResearchTopic.researchTopic}</b>" as of yet. [#if editable] If you want to add a new outcome, please click on the button below: [/#if]
             </div>
             [#else]
             <div class="clearfix"></div>
-            <div class="notOutcome">
+            <div class="notOutcome grayBox text-center">
               There are NO OUTCOMES added to "<b>${selectedProgram.name}</b>" as of yet.
             </div>
             [/#if]
@@ -101,15 +101,15 @@
               [/#if]
             [#else]
               [#if selectedResearchTopic?has_content] 
-              <div class="text-center">
-              <div class="addOutcome button-blue"><a  href="[@s.url namespace="/${currentSection}" action='${(centerSession)!}/addNewCenterOutcome'] [@s.param name="crpProgramID"]${selectedProgram.id}[/@s.param] [@s.param name="topicID"]${selectedResearchTopic.id}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
-                <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> [@s.text name="form.buttons.addOutcome" /]
-              </a></div>
-              </div>
+                <div class="text-center">
+                <div class="addOutcome button-blue"><a  href="[@s.url namespace="/${currentSection}" action='${(centerSession)!}/addNewCenterOutcome'] [@s.param name="crpProgramID"]${selectedProgram.id}[/@s.param] [@s.param name="topicID"]${selectedResearchTopic.id}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
+                  <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> [@s.text name="form.buttons.addOutcome" /]
+                </a></div>
+                </div>
               [#else]
-              <div class="text-right">
-               [@s.text name="programImpact.outcomeList.allTopics" /]
-              </div>
+                <div class="note text-right">
+                 [@s.text name="programImpact.outcomeList.allTopics" /]
+                </div>
               [/#if]
             [/#if]
          [/#if]          

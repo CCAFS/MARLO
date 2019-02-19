@@ -35,7 +35,9 @@ import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.data.model.ProjectHighlight;
 import org.cgiar.ccafs.marlo.data.model.ProjectInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
+import org.cgiar.ccafs.marlo.data.model.ProjectLp6Contribution;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
+import org.cgiar.ccafs.marlo.data.model.ProjectPolicy;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.SectionStatus;
@@ -131,6 +133,9 @@ public class ValidateProjectSectionAction extends BaseAction {
         case EXPECTEDSTUDIES:
           this.projectSectionValidator.validateProjectExpectedStudies(this, this.getProjectID());
           break;
+        case POLICIES:
+          this.projectSectionValidator.validatePolicy(this, this.getProjectID());
+          break;
         case INNOVATIONS:
           this.projectSectionValidator.validateInnovations(this, this.getProjectID());
           break;
@@ -140,12 +145,10 @@ public class ValidateProjectSectionAction extends BaseAction {
           if (this.isPlanningActive()) {
             this.projectSectionValidator.validateProjectBudgets(this, this.getProjectID());
           }
-
           break;
         case BUDGETBYCOA:
           this.projectSectionValidator.validateProjectBudgetsCoAs(this, this.getProjectID(), true);
           break;
-
         case BUDGETBYFLAGSHIP:
           this.projectSectionValidator.validateProjectBudgetsFlagship(this, this.getProjectID(), true);
           break;
@@ -158,15 +161,12 @@ public class ValidateProjectSectionAction extends BaseAction {
         case LEVERAGES:
           this.projectSectionValidator.validateLeverage(this, this.getProjectID());
           break;
-
         case HIGHLIGHTS:
           this.projectSectionValidator.validateHighlight(this, this.getProjectID());
           break;
-
         case CASESTUDIES:
           this.projectSectionValidator.validateCaseStduies(this, this.getProjectID());
           break;
-
         case CCAFSOUTCOMES:
           this.projectSectionValidator.validateCCAFSOutcomes(this, this.getProjectID());
           break;
@@ -174,9 +174,11 @@ public class ValidateProjectSectionAction extends BaseAction {
           this.projectSectionValidator.validateOutcomesPandR(this, this.getProjectID());
         case OUTPUTS:
           this.projectSectionValidator.validateOutputs(this, this.getProjectID());
-
         case OTHERCONTRIBUTIONS:
           this.projectSectionValidator.validateOtherContributions(this, this.getProjectID());
+          break;
+        case CONTRIBUTIONLP6:
+          this.projectSectionValidator.validateContributionLp6(this, this.getProjectID());
           break;
         default:
           break;
@@ -228,6 +230,22 @@ public class ValidateProjectSectionAction extends BaseAction {
           section = new HashMap<String, Object>();
           section.put("sectionName", ProjectSectionStatusEnum.OUTCOMES);
           section.put("missingFields", "");
+
+          // Validate LP6 Contribution question
+          if (this.hasSpecificities(APConstants.CRP_LP6_ACTIVE) && this.isReportingActive()) {
+
+            List<ProjectLp6Contribution> projectLp6Contributions = project.getProjectLp6Contributions().stream()
+              .filter(pl -> pl.isActive() && pl.getPhase().equals(this.getActualPhase())).collect(Collectors.toList());
+            if (projectLp6Contributions != null && !projectLp6Contributions.isEmpty()) {
+              ProjectLp6Contribution projectLp6Contribution = projectLp6Contributions.get(0);
+              if (projectLp6Contribution.getContribution() == null) {
+                section.put("missingFields", this.getText("projects.LP6Contribution.contribution"));
+              }
+            } else {
+              section.put("missingFields", this.getText("projects.LP6Contribution.contribution"));
+            }
+
+          }
 
           List<ProjectOutcome> projectOutcomes = project.getProjectOutcomes().stream()
             .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList());
@@ -361,6 +379,28 @@ public class ValidateProjectSectionAction extends BaseAction {
               section.put("missingFields", section.get("missingFields") + "-" + sectionStatus.getMissingFields());
             }
           }
+          break;
+
+        case POLICIES:
+          section = new HashMap<String, Object>();
+          section.put("sectionName", sectionName);
+          section.put("missingFields", "");
+
+          List<ProjectPolicy> policies =
+            project.getProjectPolicies().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+          for (ProjectPolicy projectPolicy : policies) {
+            sectionStatus = sectionStatusManager.getSectionStatusByProjectPolicy(projectPolicy.getId(), cycle,
+              this.getActualPhase().getYear(), this.getActualPhase().getUpkeep(), sectionName);
+            section.put("sectionName", sectionStatus.getSectionName());
+            if (sectionStatus == null) {
+              sectionStatus = new SectionStatus();
+              sectionStatus.setMissingFields("No section");
+            }
+            if (sectionStatus.getMissingFields().length() > 0) {
+              section.put("missingFields", section.get("missingFields") + "-" + sectionStatus.getMissingFields());
+            }
+          }
+
           break;
 
         case INNOVATIONS:

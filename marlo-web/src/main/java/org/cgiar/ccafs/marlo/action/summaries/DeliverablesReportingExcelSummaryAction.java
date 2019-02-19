@@ -17,15 +17,16 @@ package org.cgiar.ccafs.marlo.action.summaries;
 
 import org.cgiar.ccafs.marlo.data.manager.CrossCuttingScoringManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableCrossCuttingMarkerManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.GenderTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.RepositoryChannelManager;
-import org.cgiar.ccafs.marlo.data.model.CrossCuttingScoring;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutputOutcome;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
+import org.cgiar.ccafs.marlo.data.model.DeliverableCrossCuttingMarker;
 import org.cgiar.ccafs.marlo.data.model.DeliverableCrp;
 import org.cgiar.ccafs.marlo.data.model.DeliverableDataSharingFile;
 import org.cgiar.ccafs.marlo.data.model.DeliverableDissemination;
@@ -96,6 +97,7 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
   private final RepositoryChannelManager repositoryChannelManager;
   private final ResourceManager resourceManager;
   private final CrossCuttingScoringManager crossCuttingScoringManager;
+  private final DeliverableCrossCuttingMarkerManager deliverableCrossCuttingMarkerManager;
 
 
   // XLSX bytes
@@ -109,7 +111,8 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
   public DeliverablesReportingExcelSummaryAction(APConfig config, GlobalUnitManager crpManager,
     CrpProgramManager programManager, GenderTypeManager genderTypeManager, DeliverableManager deliverableManager,
     PhaseManager phaseManager, RepositoryChannelManager repositoryChannelManager, ResourceManager resourceManager,
-    CrossCuttingScoringManager crossCuttingScoringManager, ProjectManager projectManager) {
+    CrossCuttingScoringManager crossCuttingScoringManager, ProjectManager projectManager,
+    DeliverableCrossCuttingMarkerManager deliverableCrossCuttingMarkerManager) {
     super(config, crpManager, phaseManager, projectManager);
     this.genderTypeManager = genderTypeManager;
     this.programManager = programManager;
@@ -117,6 +120,7 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
     this.repositoryChannelManager = repositoryChannelManager;
     this.resourceManager = resourceManager;
     this.crossCuttingScoringManager = crossCuttingScoringManager;
+    this.deliverableCrossCuttingMarkerManager = deliverableCrossCuttingMarkerManager;
   }
 
   /**
@@ -1101,154 +1105,115 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
         String crossCutting = "";
         String gender = "", youth = "", cap = "";
         Boolean isOldCrossCutting = this.getSelectedYear() < 2018;
-        if (deliverable.getDeliverableInfo().getCrossCuttingNa() != null) {
-          if (deliverable.getDeliverableInfo().getCrossCuttingNa() == true) {
-            crossCutting = "N/A";
-          }
-        }
-        if (crossCutting.isEmpty()) {
-          if (isOldCrossCutting) {
-            // Gender
-            if (deliverable.getDeliverableInfo().getCrossCuttingGender() != null) {
-              if (deliverable.getDeliverableInfo().getCrossCuttingGender() == true) {
-                if (deliverable.getDeliverableInfo().getCrossCuttingScoreGender() != null) {
-                  Long scoring = deliverable.getDeliverableInfo().getCrossCuttingScoreGender();
-                  if (scoring != null) {
-                    CrossCuttingScoring crossCuttingScoring =
-                      crossCuttingScoringManager.getCrossCuttingScoringById(scoring);
-                    gender = crossCuttingScoring.getDescription();
-                  }
-                }
-                String genderLevels = "";
-                int countGenderLevel = 0;
-                List<DeliverableGenderLevel> deliverableGenderLevels = deliverable.getDeliverableGenderLevels().stream()
-                  .filter(dgl -> dgl.isActive() && dgl.getPhase().equals(this.getSelectedPhase()))
-                  .collect(Collectors.toList());
-                if (deliverableGenderLevels == null || deliverableGenderLevels.isEmpty()) {
-                  genderLevels = "";
-                } else {
-                  genderLevels += "Gender level(s): ";
-                  for (DeliverableGenderLevel dgl : deliverableGenderLevels) {
-                    if (dgl.getGenderLevel() != 0.0) {
-                      if (countGenderLevel == 0) {
-                        genderLevels += genderTypeManager.getGenderTypeById(dgl.getGenderLevel()).getDescription();
-                      } else {
-                        genderLevels +=
-                          ", " + genderTypeManager.getGenderTypeById(dgl.getGenderLevel()).getDescription();
-                      }
-                      countGenderLevel++;
+
+        DeliverableCrossCuttingMarker deliverableCrossCuttingMarkerGender = deliverableCrossCuttingMarkerManager
+          .getDeliverableCrossCuttingMarkerId(deliverable.getId(), 1, this.getSelectedPhase().getId());
+        DeliverableCrossCuttingMarker deliverableCrossCuttingMarkerYouth = deliverableCrossCuttingMarkerManager
+          .getDeliverableCrossCuttingMarkerId(deliverable.getId(), 2, this.getSelectedPhase().getId());
+        DeliverableCrossCuttingMarker deliverableCrossCuttingMarkerCapDev = deliverableCrossCuttingMarkerManager
+          .getDeliverableCrossCuttingMarkerId(deliverable.getId(), 3, this.getSelectedPhase().getId());
+        DeliverableCrossCuttingMarker deliverableCrossCuttingMarkerClimateChange = deliverableCrossCuttingMarkerManager
+          .getDeliverableCrossCuttingMarkerId(deliverable.getId(), 4, this.getSelectedPhase().getId());
+
+        if (isOldCrossCutting) {
+          // Gender
+          if (deliverableCrossCuttingMarkerGender != null) {
+            if (deliverableCrossCuttingMarkerGender.getRepIndGenderYouthFocusLevel().getId() != 0
+              && deliverableCrossCuttingMarkerGender.getRepIndGenderYouthFocusLevel().getId() != 4) {
+              gender = deliverableCrossCuttingMarkerGender.getRepIndGenderYouthFocusLevel().getPowbName();
+              String genderLevels = "";
+              int countGenderLevel = 0;
+              List<DeliverableGenderLevel> deliverableGenderLevels = deliverable.getDeliverableGenderLevels().stream()
+                .filter(dgl -> dgl.isActive() && dgl.getPhase().equals(this.getSelectedPhase()))
+                .collect(Collectors.toList());
+              if (deliverableGenderLevels == null || deliverableGenderLevels.isEmpty()) {
+                genderLevels = "";
+              } else {
+                genderLevels += "Gender level(s): ";
+                for (DeliverableGenderLevel dgl : deliverableGenderLevels) {
+                  if (dgl.getGenderLevel() != 0.0) {
+                    if (countGenderLevel == 0) {
+                      genderLevels += genderTypeManager.getGenderTypeById(dgl.getGenderLevel()).getDescription();
+                    } else {
+                      genderLevels += ", " + genderTypeManager.getGenderTypeById(dgl.getGenderLevel()).getDescription();
                     }
+                    countGenderLevel++;
                   }
                 }
+              }
 
-                if (!genderLevels.isEmpty()) {
-                  if (gender.isEmpty()) {
-                    gender = genderLevels;
-                  } else {
-                    gender += "\n" + genderLevels;
-                  }
-                }
+              if (!genderLevels.isEmpty()) {
                 if (gender.isEmpty()) {
-                  gender = "Yes";
+                  gender = genderLevels;
+                } else {
+                  gender += "\n" + genderLevels;
                 }
               }
-            }
-            if (gender.isEmpty()) {
-              gender = "No";
-            }
-
-            // Youth
-            if (deliverable.getDeliverableInfo().getCrossCuttingYouth() != null) {
-              if (deliverable.getDeliverableInfo().getCrossCuttingYouth() == true) {
-                if (deliverable.getDeliverableInfo().getCrossCuttingScoreYouth() != null) {
-                  Long scoring = deliverable.getDeliverableInfo().getCrossCuttingScoreYouth();
-                  if (scoring != null) {
-                    CrossCuttingScoring crossCuttingScoring =
-                      crossCuttingScoringManager.getCrossCuttingScoringById(scoring);
-                    youth = crossCuttingScoring.getDescription();
-                  }
-                }
-                if (youth.isEmpty()) {
-                  youth = "Yes";
-                }
+              if (gender.isEmpty()) {
+                gender = "Yes";
               }
             }
-            if (youth.isEmpty()) {
-              youth = "No";
-            }
-
-            // Cap
-            if (deliverable.getDeliverableInfo().getCrossCuttingCapacity() != null) {
-              if (deliverable.getDeliverableInfo().getCrossCuttingCapacity() == true) {
-                if (deliverable.getDeliverableInfo().getCrossCuttingScoreCapacity() != null) {
-                  Long scoring = deliverable.getDeliverableInfo().getCrossCuttingScoreCapacity();
-                  if (scoring != null) {
-                    CrossCuttingScoring crossCuttingScoring =
-                      crossCuttingScoringManager.getCrossCuttingScoringById(scoring);
-                    cap = crossCuttingScoring.getDescription();
-                  }
-                }
-                if (cap.isEmpty()) {
-                  cap = "Yes";
-                }
-              }
-            }
-            if (cap.isEmpty()) {
-              cap = "No";
-            }
-
-          } else {
-            // Gender
-            if (deliverable.getDeliverableInfo().getCrossCuttingScoreGender() != null) {
-              Long scoring = deliverable.getDeliverableInfo().getCrossCuttingScoreGender();
-              if (scoring != null) {
-                CrossCuttingScoring crossCuttingScoring =
-                  crossCuttingScoringManager.getCrossCuttingScoringById(scoring);
-                gender = crossCuttingScoring.getDescription();
-              }
-            }
-            if (gender.isEmpty()) {
-              gender = "0-Not Targeted";
-            }
-
-            // Youth
-            if (deliverable.getDeliverableInfo().getCrossCuttingScoreYouth() != null) {
-              Long scoring = deliverable.getDeliverableInfo().getCrossCuttingScoreYouth();
-              if (scoring != null) {
-                CrossCuttingScoring crossCuttingScoring =
-                  crossCuttingScoringManager.getCrossCuttingScoringById(scoring);
-                youth = crossCuttingScoring.getDescription();
-              }
-            }
-            if (youth.isEmpty()) {
-              youth = "0-Not Targeted";
-            }
-
-            // Cap
-            if (deliverable.getDeliverableInfo().getCrossCuttingScoreCapacity() != null) {
-              Long scoring = deliverable.getDeliverableInfo().getCrossCuttingScoreCapacity();
-              if (scoring != null) {
-                CrossCuttingScoring crossCuttingScoring =
-                  crossCuttingScoringManager.getCrossCuttingScoringById(scoring);
-                cap = crossCuttingScoring.getDescription();
-              }
-            }
-            if (cap.isEmpty()) {
-              cap = "0-Not Targeted";
-            }
-
           }
-        } else {
-          if (isOldCrossCutting) {
+          if (gender.isEmpty()) {
             gender = "No";
+          }
+
+          // Youth
+          if (deliverableCrossCuttingMarkerYouth != null) {
+            if (deliverableCrossCuttingMarkerYouth.getRepIndGenderYouthFocusLevel().getId() != 0
+              && deliverableCrossCuttingMarkerYouth.getRepIndGenderYouthFocusLevel().getId() != 4) {
+              youth = deliverableCrossCuttingMarkerYouth.getRepIndGenderYouthFocusLevel().getPowbName();
+              if (youth.isEmpty()) {
+                youth = "Yes";
+              }
+            }
+          }
+          if (youth.isEmpty()) {
             youth = "No";
+          }
+
+          // Cap
+          if (deliverableCrossCuttingMarkerCapDev != null) {
+            if (deliverableCrossCuttingMarkerCapDev.getRepIndGenderYouthFocusLevel().getId() != 0
+              && deliverableCrossCuttingMarkerCapDev.getRepIndGenderYouthFocusLevel().getId() != 4) {
+              cap = deliverableCrossCuttingMarkerCapDev.getRepIndGenderYouthFocusLevel().getPowbName();
+              if (cap.isEmpty()) {
+                cap = "Yes";
+              }
+            }
+          }
+          if (cap.isEmpty()) {
             cap = "No";
-          } else {
+          }
+
+        } else {
+          // Gender
+          if (deliverableCrossCuttingMarkerGender != null) {
+            if (deliverableCrossCuttingMarkerGender.getRepIndGenderYouthFocusLevel() != null) {
+              gender = deliverableCrossCuttingMarkerGender.getRepIndGenderYouthFocusLevel().getPowbName();
+            }
+          }
+          if (gender.isEmpty()) {
             gender = "0-Not Targeted";
+          }
+
+          // Youth
+          if (deliverableCrossCuttingMarkerYouth != null) {
+            youth = deliverableCrossCuttingMarkerYouth.getRepIndGenderYouthFocusLevel().getPowbName();
+          }
+          if (youth.isEmpty()) {
             youth = "0-Not Targeted";
+          }
+
+          // Cap
+          if (deliverableCrossCuttingMarkerCapDev != null) {
+            cap = deliverableCrossCuttingMarkerCapDev.getRepIndGenderYouthFocusLevel().getPowbName();
+          }
+          if (cap.isEmpty()) {
             cap = "0-Not Targeted";
           }
         }
+
 
         /*
          * Geographic Scope
@@ -1807,152 +1772,110 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
         String crossCutting = "";
         String gender = "", youth = "", cap = "";
         Boolean isOldCrossCutting = this.getSelectedYear() < 2018;
-        if (deliverable.getDeliverableInfo().getCrossCuttingNa() != null) {
-          if (deliverable.getDeliverableInfo().getCrossCuttingNa() == true) {
-            crossCutting = "N/A";
-          }
-        }
-        if (crossCutting.isEmpty()) {
-          if (isOldCrossCutting) {
-            // Gender
-            if (deliverable.getDeliverableInfo().getCrossCuttingGender() != null) {
-              if (deliverable.getDeliverableInfo().getCrossCuttingGender() == true) {
-                if (deliverable.getDeliverableInfo().getCrossCuttingScoreGender() != null) {
-                  Long scoring = deliverable.getDeliverableInfo().getCrossCuttingScoreGender();
-                  if (scoring != null) {
-                    CrossCuttingScoring crossCuttingScoring =
-                      crossCuttingScoringManager.getCrossCuttingScoringById(scoring);
-                    gender = crossCuttingScoring.getDescription();
-                  }
-                }
-                String genderLevels = "";
-                int countGenderLevel = 0;
-                List<DeliverableGenderLevel> deliverableGenderLevels = deliverable.getDeliverableGenderLevels().stream()
-                  .filter(
-                    dgl -> dgl.isActive() && dgl.getPhase() != null && dgl.getPhase().equals(this.getSelectedPhase()))
-                  .collect(Collectors.toList());
-                if (deliverableGenderLevels == null || deliverableGenderLevels.isEmpty()) {
-                  genderLevels = "";
-                } else {
-                  genderLevels += "Gender level(s): ";
-                  for (DeliverableGenderLevel dgl : deliverableGenderLevels) {
-                    if (dgl.getGenderLevel() != 0.0) {
-                      if (countGenderLevel == 0) {
-                        genderLevels += genderTypeManager.getGenderTypeById(dgl.getGenderLevel()).getDescription();
-                      } else {
-                        genderLevels +=
-                          ", " + genderTypeManager.getGenderTypeById(dgl.getGenderLevel()).getDescription();
-                      }
-                      countGenderLevel++;
+        DeliverableCrossCuttingMarker deliverableCrossCuttingMarkerGender = deliverableCrossCuttingMarkerManager
+          .getDeliverableCrossCuttingMarkerId(deliverable.getId(), 1, this.getSelectedPhase().getId());
+        DeliverableCrossCuttingMarker deliverableCrossCuttingMarkerYouth = deliverableCrossCuttingMarkerManager
+          .getDeliverableCrossCuttingMarkerId(deliverable.getId(), 2, this.getSelectedPhase().getId());
+        DeliverableCrossCuttingMarker deliverableCrossCuttingMarkerCapDev = deliverableCrossCuttingMarkerManager
+          .getDeliverableCrossCuttingMarkerId(deliverable.getId(), 3, this.getSelectedPhase().getId());
+        DeliverableCrossCuttingMarker deliverableCrossCuttingMarkerClimateChange = deliverableCrossCuttingMarkerManager
+          .getDeliverableCrossCuttingMarkerId(deliverable.getId(), 4, this.getSelectedPhase().getId());
+
+        if (isOldCrossCutting) {
+          // Gender
+          if (deliverableCrossCuttingMarkerGender != null) {
+            if (deliverableCrossCuttingMarkerGender.getRepIndGenderYouthFocusLevel().getId() != 0
+              && deliverableCrossCuttingMarkerGender.getRepIndGenderYouthFocusLevel().getId() != 4) {
+              gender = deliverableCrossCuttingMarkerGender.getRepIndGenderYouthFocusLevel().getPowbName();
+              String genderLevels = "";
+              int countGenderLevel = 0;
+              List<DeliverableGenderLevel> deliverableGenderLevels = deliverable.getDeliverableGenderLevels().stream()
+                .filter(dgl -> dgl.isActive() && dgl.getPhase().equals(this.getSelectedPhase()))
+                .collect(Collectors.toList());
+              if (deliverableGenderLevels == null || deliverableGenderLevels.isEmpty()) {
+                genderLevels = "";
+              } else {
+                genderLevels += "Gender level(s): ";
+                for (DeliverableGenderLevel dgl : deliverableGenderLevels) {
+                  if (dgl.getGenderLevel() != 0.0) {
+                    if (countGenderLevel == 0) {
+                      genderLevels += genderTypeManager.getGenderTypeById(dgl.getGenderLevel()).getDescription();
+                    } else {
+                      genderLevels += ", " + genderTypeManager.getGenderTypeById(dgl.getGenderLevel()).getDescription();
                     }
+                    countGenderLevel++;
                   }
                 }
+              }
 
-                if (!genderLevels.isEmpty()) {
-                  if (gender.isEmpty()) {
-                    gender = genderLevels;
-                  } else {
-                    gender += "\n" + genderLevels;
-                  }
-                }
+              if (!genderLevels.isEmpty()) {
                 if (gender.isEmpty()) {
-                  gender = "Yes";
+                  gender = genderLevels;
+                } else {
+                  gender += "\n" + genderLevels;
                 }
               }
-            }
-            if (gender.isEmpty()) {
-              gender = "No";
-            }
-
-            // Youth
-            if (deliverable.getDeliverableInfo().getCrossCuttingYouth() != null) {
-              if (deliverable.getDeliverableInfo().getCrossCuttingYouth() == true) {
-                if (deliverable.getDeliverableInfo().getCrossCuttingScoreYouth() != null) {
-                  Long scoring = deliverable.getDeliverableInfo().getCrossCuttingScoreYouth();
-                  if (scoring != null) {
-                    CrossCuttingScoring crossCuttingScoring =
-                      crossCuttingScoringManager.getCrossCuttingScoringById(scoring);
-                    youth = crossCuttingScoring.getDescription();
-                  }
-                }
-                if (youth.isEmpty()) {
-                  youth = "Yes";
-                }
+              if (gender.isEmpty()) {
+                gender = "Yes";
               }
             }
-            if (youth.isEmpty()) {
-              youth = "No";
-            }
-
-            // Cap
-            if (deliverable.getDeliverableInfo().getCrossCuttingCapacity() != null) {
-              if (deliverable.getDeliverableInfo().getCrossCuttingCapacity() == true) {
-                if (deliverable.getDeliverableInfo().getCrossCuttingScoreCapacity() != null) {
-                  Long scoring = deliverable.getDeliverableInfo().getCrossCuttingScoreCapacity();
-                  if (scoring != null) {
-                    CrossCuttingScoring crossCuttingScoring =
-                      crossCuttingScoringManager.getCrossCuttingScoringById(scoring);
-                    cap = crossCuttingScoring.getDescription();
-                  }
-                }
-                if (cap.isEmpty()) {
-                  cap = "Yes";
-                }
-              }
-            }
-            if (cap.isEmpty()) {
-              cap = "No";
-            }
-
-          } else {
-            // Gender
-            if (deliverable.getDeliverableInfo().getCrossCuttingScoreGender() != null) {
-              Long scoring = deliverable.getDeliverableInfo().getCrossCuttingScoreGender();
-              if (scoring != null) {
-                CrossCuttingScoring crossCuttingScoring =
-                  crossCuttingScoringManager.getCrossCuttingScoringById(scoring);
-                gender = crossCuttingScoring.getDescription();
-              }
-            }
-            if (gender.isEmpty()) {
-              gender = "0-Not Targeted";
-            }
-
-            // Youth
-            if (deliverable.getDeliverableInfo().getCrossCuttingScoreYouth() != null) {
-              Long scoring = deliverable.getDeliverableInfo().getCrossCuttingScoreYouth();
-              if (scoring != null) {
-                CrossCuttingScoring crossCuttingScoring =
-                  crossCuttingScoringManager.getCrossCuttingScoringById(scoring);
-                youth = crossCuttingScoring.getDescription();
-              }
-            }
-            if (youth.isEmpty()) {
-              youth = "0-Not Targeted";
-            }
-
-            // Cap
-            if (deliverable.getDeliverableInfo().getCrossCuttingScoreCapacity() != null) {
-              Long scoring = deliverable.getDeliverableInfo().getCrossCuttingScoreCapacity();
-              if (scoring != null) {
-                CrossCuttingScoring crossCuttingScoring =
-                  crossCuttingScoringManager.getCrossCuttingScoringById(scoring);
-                cap = crossCuttingScoring.getDescription();
-              }
-            }
-            if (cap.isEmpty()) {
-              cap = "0-Not Targeted";
-            }
-
           }
-        } else {
-          if (isOldCrossCutting) {
+          if (gender.isEmpty()) {
             gender = "No";
+          }
+
+          // Youth
+          if (deliverableCrossCuttingMarkerYouth != null) {
+            if (deliverableCrossCuttingMarkerYouth.getRepIndGenderYouthFocusLevel().getId() != 0
+              && deliverableCrossCuttingMarkerYouth.getRepIndGenderYouthFocusLevel().getId() != 4) {
+              youth = deliverableCrossCuttingMarkerYouth.getRepIndGenderYouthFocusLevel().getPowbName();
+              if (youth.isEmpty()) {
+                youth = "Yes";
+              }
+            }
+          }
+          if (youth.isEmpty()) {
             youth = "No";
+          }
+
+          // Cap
+          if (deliverableCrossCuttingMarkerCapDev != null) {
+            if (deliverableCrossCuttingMarkerCapDev.getRepIndGenderYouthFocusLevel().getId() != 0
+              && deliverableCrossCuttingMarkerCapDev.getRepIndGenderYouthFocusLevel().getId() != 4) {
+              cap = deliverableCrossCuttingMarkerCapDev.getRepIndGenderYouthFocusLevel().getPowbName();
+              if (cap.isEmpty()) {
+                cap = "Yes";
+              }
+            }
+          }
+          if (cap.isEmpty()) {
             cap = "No";
-          } else {
+          }
+
+        } else {
+          // Gender
+          if (deliverableCrossCuttingMarkerGender != null) {
+            if (deliverableCrossCuttingMarkerGender.getRepIndGenderYouthFocusLevel() != null) {
+              gender = deliverableCrossCuttingMarkerGender.getRepIndGenderYouthFocusLevel().getPowbName();
+            }
+          }
+          if (gender.isEmpty()) {
             gender = "0-Not Targeted";
+          }
+
+          // Youth
+          if (deliverableCrossCuttingMarkerYouth != null) {
+            youth = deliverableCrossCuttingMarkerYouth.getRepIndGenderYouthFocusLevel().getPowbName();
+          }
+          if (youth.isEmpty()) {
             youth = "0-Not Targeted";
+          }
+
+          // Cap
+          if (deliverableCrossCuttingMarkerCapDev != null) {
+            cap = deliverableCrossCuttingMarkerCapDev.getRepIndGenderYouthFocusLevel().getPowbName();
+          }
+          if (cap.isEmpty()) {
             cap = "0-Not Targeted";
           }
         }

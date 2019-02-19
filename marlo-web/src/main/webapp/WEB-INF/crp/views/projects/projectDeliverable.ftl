@@ -3,9 +3,9 @@
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${deliverableID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2","font-awesome","dropzone","blueimp-file-upload","jsUri", "flat-flags", "pickadate"] /]
 [#assign customJS = [
-  "${baseUrlMedia}/js/projects/deliverables/deliverableInfo.js?20181016",
-  "${baseUrlMedia}/js/projects/deliverables/deliverableDissemination.js?20180612", 
-  "${baseUrlMedia}/js/projects/deliverables/deliverableQualityCheck.js?20180529",
+  "${baseUrlMedia}/js/projects/deliverables/deliverableInfo.js?20190214",
+  "${baseUrlMedia}/js/projects/deliverables/deliverableDissemination.js?20190214", 
+  "${baseUrlMedia}/js/projects/deliverables/deliverableQualityCheck.js?20190214",
   [#--  "${baseUrlMedia}/js/projects/deliverables/deliverableDataSharing.js?20180523",--]
   "${baseUrl}/global/js/autoSave.js",
   "${baseUrl}/global/js/fieldsValidation.js?20180529"
@@ -119,8 +119,10 @@
                 [#-- Have you adopted a license?  --]
                 [@deliverableMacros.deliverableLicenseMacro /]
                 
-                [#--  Intellectual Asset--]
-                [@deliverableMacros.intellectualAsset /]
+                [#--  Intellectual Asset--]                
+                [#if action.hasSpecificities(action.crpDeliverableIntellectualAsset())]
+                  [@deliverableMacros.intellectualAsset /]
+                [/#if]
                 
                 [#--  Does this deliverable involve Participants and Trainees? --]
                 [@deliverableMacros.deliverableParticipantsMacro /]

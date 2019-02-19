@@ -711,6 +711,10 @@ public class ProjectOutcomeAction extends BaseAction {
             // update existing fields
             projectOutcomeIndicatorDB.setNarrative(projectOutcomeIndicator.getNarrative());
             projectOutcomeIndicatorDB.setValue(projectOutcomeIndicator.getValue());
+            if (this.isReportingActive()) {
+              projectOutcomeIndicatorDB.setValueReporting(projectOutcomeIndicator.getValueReporting());
+              projectOutcomeIndicatorDB.setAchievedNarrative(projectOutcomeIndicator.getAchievedNarrative());
+            }
 
 
             projectOutcomeIndicatorDB =

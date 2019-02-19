@@ -98,10 +98,12 @@
 </section>
 
 
-[#macro crpItem element]
-  <li id="crp-${element.acronym}" title="${element.login?string('', 'Coming soon...')}">
-    <img class="${element.login?string('animated bounceIn', '')}" src="${baseUrl}/global/images/crps/${element.acronym}.png" alt="${element.name}" />
-  </li>
+[#macro crpItem element] 
+  [#if element.marlo && element.login]
+    <li id="crp-${element.acronym}" title="${element.login?string('', 'Coming soon...')}">
+      <img class="${element.login?string('animated bounceIn', '')}" src="${baseUrl}/global/images/crps/${element.acronym}.png" alt="${element.name}" />
+    </li>
+  [/#if]
 [/#macro]
 
 [#include "/WEB-INF/global/pages/footer.ftl" /]

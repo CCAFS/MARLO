@@ -36,16 +36,6 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
   @Expose
   private String statusDescription;
   @Expose
-  private Boolean crossCuttingGender;
-  @Expose
-  private Boolean crossCuttingYouth;
-  @Expose
-  private Boolean crossCuttingCapacity;
-  @Expose
-  private Boolean crossCuttingClimate;
-  @Expose
-  private Boolean crossCuttingNa;
-  @Expose
   private Boolean adoptedLicense;
   @Expose
   private String license;
@@ -53,14 +43,6 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
   private String otherLicense;
   @Expose
   private Boolean allowModifications;
-  @Expose
-  private Long crossCuttingScoreGender;
-  @Expose
-  private Long crossCuttingScoreYouth;
-  @Expose
-  private Long crossCuttingScoreCapacity;
-  @Expose
-  private Long crossCuttingScoreClimate;
   @Expose
   private Boolean isLocationGlobal;
   @Expose
@@ -79,58 +61,6 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
     return allowModifications;
   }
 
-  public String getCapDevScoreName() {
-    if (this.crossCuttingScoreCapacity != null) {
-      if (this.crossCuttingScoreCapacity == Long.valueOf(CrossCuttingScoreEnum.SIGNIFICANT.getScoreId())) {
-        return CrossCuttingScoreEnum.SIGNIFICANT.getScore();
-      }
-
-      if (this.crossCuttingScoreCapacity == Long.valueOf(CrossCuttingScoreEnum.PRINCIPAL.getScoreId())) {
-        return CrossCuttingScoreEnum.PRINCIPAL.getScore();
-      }
-    }
-    return null;
-  }
-
-
-  public Boolean getCrossCuttingCapacity() {
-    return crossCuttingCapacity;
-  }
-
-
-  public Boolean getCrossCuttingClimate() {
-    return crossCuttingClimate;
-  }
-
-
-  public Boolean getCrossCuttingGender() {
-    return crossCuttingGender;
-  }
-
-  public Boolean getCrossCuttingNa() {
-    return crossCuttingNa;
-  }
-
-
-  public Long getCrossCuttingScoreCapacity() {
-    return crossCuttingScoreCapacity;
-  }
-
-  public Long getCrossCuttingScoreClimate() {
-    return crossCuttingScoreClimate;
-  }
-
-  public Long getCrossCuttingScoreGender() {
-    return crossCuttingScoreGender;
-  }
-
-  public Long getCrossCuttingScoreYouth() {
-    return crossCuttingScoreYouth;
-  }
-
-  public Boolean getCrossCuttingYouth() {
-    return crossCuttingYouth;
-  }
 
   public CrpClusterKeyOutput getCrpClusterKeyOutput() {
     return crpClusterKeyOutput;
@@ -152,19 +82,6 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
 
   public String getDescription() {
     return description;
-  }
-
-  public String getGenderScoreName() {
-    if (this.crossCuttingScoreGender != null) {
-      if (this.crossCuttingScoreGender == Long.valueOf(CrossCuttingScoreEnum.SIGNIFICANT.getScoreId())) {
-        return CrossCuttingScoreEnum.SIGNIFICANT.getScore();
-      }
-
-      if (this.crossCuttingScoreGender == Long.valueOf(CrossCuttingScoreEnum.PRINCIPAL.getScoreId())) {
-        return CrossCuttingScoreEnum.PRINCIPAL.getScore();
-      }
-    }
-    return null;
   }
 
 
@@ -269,20 +186,6 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
   }
 
 
-  public String getYouthScoreName() {
-    if (this.crossCuttingScoreYouth != null) {
-      if (this.crossCuttingScoreYouth == Long.valueOf(CrossCuttingScoreEnum.SIGNIFICANT.getScoreId())) {
-        return CrossCuttingScoreEnum.SIGNIFICANT.getScore();
-      }
-
-      if (this.crossCuttingScoreYouth == Long.valueOf(CrossCuttingScoreEnum.PRINCIPAL.getScoreId())) {
-        return CrossCuttingScoreEnum.PRINCIPAL.getScore();
-      }
-    }
-    return null;
-  }
-
-
   public Boolean isRequieriedReporting(int year) {
 
     if (status == null && this.year <= year) {
@@ -334,51 +237,6 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
 
   public void setAllowModifications(Boolean allowModifications) {
     this.allowModifications = allowModifications;
-  }
-
-
-  public void setCrossCuttingCapacity(Boolean crossCuttingCapacity) {
-    this.crossCuttingCapacity = crossCuttingCapacity;
-  }
-
-
-  public void setCrossCuttingClimate(Boolean crossCuttingClimate) {
-    this.crossCuttingClimate = crossCuttingClimate;
-  }
-
-
-  public void setCrossCuttingGender(Boolean crossCuttingGender) {
-    this.crossCuttingGender = crossCuttingGender;
-  }
-
-
-  public void setCrossCuttingNa(Boolean crossCuttingNa) {
-    this.crossCuttingNa = crossCuttingNa;
-  }
-
-
-  public void setCrossCuttingScoreCapacity(Long crossCuttingScoreCapacity) {
-    this.crossCuttingScoreCapacity = crossCuttingScoreCapacity;
-  }
-
-
-  public void setCrossCuttingScoreClimate(Long crossCuttingScoreClimate) {
-    this.crossCuttingScoreClimate = crossCuttingScoreClimate;
-  }
-
-
-  public void setCrossCuttingScoreGender(Long crossCuttingScoreGender) {
-    this.crossCuttingScoreGender = crossCuttingScoreGender;
-  }
-
-
-  public void setCrossCuttingScoreYouth(Long crossCuttingScoreYouth) {
-    this.crossCuttingScoreYouth = crossCuttingScoreYouth;
-  }
-
-
-  public void setCrossCuttingYouth(Boolean crossCuttingYouth) {
-    this.crossCuttingYouth = crossCuttingYouth;
   }
 
 
@@ -466,10 +324,6 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
   public void updateDeliverableInfo(DeliverableInfo update) {
     this.setAdoptedLicense(update.getAdoptedLicense());
     this.setAllowModifications(update.getAllowModifications());
-    this.setCrossCuttingCapacity(update.getCrossCuttingCapacity());
-    this.setCrossCuttingClimate(update.getCrossCuttingClimate());
-    this.setCrossCuttingNa(update.getCrossCuttingNa());
-    this.setCrossCuttingYouth(update.getCrossCuttingYouth());
     this.setCrpClusterKeyOutput(update.getCrpClusterKeyOutput());
     this.setCrpProgramOutcome(update.getCrpProgramOutcome());
     this.setDeliverable(update.getDeliverable());
@@ -481,12 +335,8 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
     this.setTitle(update.getTitle());
     this.setTypeOther(update.getTypeOther());
     this.setDeliverableType(update.getDeliverableType());
-    this.setCrossCuttingGender(update.getCrossCuttingGender());
     this.setYear(update.getYear());
     this.setStatusDescription(update.getStatusDescription());
-    this.setCrossCuttingScoreGender(update.getCrossCuttingScoreGender());
-    this.setCrossCuttingScoreYouth(update.getCrossCuttingScoreYouth());
-    this.setCrossCuttingScoreCapacity(update.getCrossCuttingScoreCapacity());
     this.setGeographicScope(update.getGeographicScope());
     this.setRegion(update.getRegion());
   }

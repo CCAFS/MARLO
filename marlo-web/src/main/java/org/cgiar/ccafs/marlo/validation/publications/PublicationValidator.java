@@ -17,9 +17,12 @@ package org.cgiar.ccafs.marlo.validation.publications;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.data.manager.DeliverableInfoManager;
+import org.cgiar.ccafs.marlo.data.manager.CgiarCrossCuttingMarkerManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
+import org.cgiar.ccafs.marlo.data.manager.RepIndTypeActivityManager;
+import org.cgiar.ccafs.marlo.data.model.CgiarCrossCuttingMarker;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
+import org.cgiar.ccafs.marlo.data.model.DeliverableCrossCuttingMarker;
 import org.cgiar.ccafs.marlo.data.model.DeliverableDissemination;
 import org.cgiar.ccafs.marlo.data.model.DeliverableInfo;
 import org.cgiar.ccafs.marlo.data.model.DeliverableIntellectualAsset;
@@ -30,6 +33,7 @@ import org.cgiar.ccafs.marlo.data.model.DeliverablePublicationMetadata;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.LicensesTypeEnum;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
+import org.cgiar.ccafs.marlo.data.model.RepIndTypeActivity;
 import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
 
@@ -37,6 +41,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -50,13 +55,17 @@ public class PublicationValidator extends BaseValidator {
 
   // GlobalUnit Manager
   private GlobalUnitManager crpManager;
-  private DeliverableInfoManager deliverableInfoManager;
+  private CgiarCrossCuttingMarkerManager cgiarCrossCuttingMarkerManager;
+  private RepIndTypeActivityManager repIndTypeActivityManager;
 
   @Inject
-  public PublicationValidator(GlobalUnitManager crpManager, DeliverableInfoManager deliverableInfoManager) {
+  public PublicationValidator(GlobalUnitManager crpManager,
+    CgiarCrossCuttingMarkerManager cgiarCrossCuttingMarkerManager,
+    RepIndTypeActivityManager repIndTypeActivityManager) {
     super();
     this.crpManager = crpManager;
-    this.deliverableInfoManager = deliverableInfoManager;
+    this.cgiarCrossCuttingMarkerManager = cgiarCrossCuttingMarkerManager;
+    this.repIndTypeActivityManager = repIndTypeActivityManager;
   }
 
   private Path getAutoSaveFilePath(Deliverable deliverable, long crpID) {
@@ -123,12 +132,15 @@ public class PublicationValidator extends BaseValidator {
       }
 
       // Validate Intellectual Asset
-      if (deliverable.getIntellectualAsset() != null && deliverable.getIntellectualAsset().getHasPatentPvp() != null) {
-        this.validateIntellectualAsset(deliverable.getIntellectualAsset(), action);
-      } else {
-        action.addMessage(action.getText("deliverable.intellectualAsset.hasPatentPvp"));
-        action.getInvalidFields().put("input-deliverable.intellectualAsset.hasPatentPvp",
-          InvalidFieldsMessages.EMPTYFIELD);
+      if (action.hasSpecificities(action.crpDeliverableIntellectualAsset())) {
+        if (deliverable.getIntellectualAsset() != null
+          && deliverable.getIntellectualAsset().getHasPatentPvp() != null) {
+          this.validateIntellectualAsset(deliverable.getIntellectualAsset(), action);
+        } else {
+          action.addMessage(action.getText("deliverable.intellectualAsset.hasPatentPvp"));
+          action.getInvalidFields().put("input-deliverable.intellectualAsset.hasPatentPvp",
+            InvalidFieldsMessages.EMPTYFIELD);
+        }
       }
 
       // Validate Deliverable Participant
@@ -196,14 +208,6 @@ public class PublicationValidator extends BaseValidator {
         InvalidFieldsMessages.EMPTYFIELD);
     }
 
-    if (deliverableInfo.getCrossCuttingGender() == null && deliverableInfo.getCrossCuttingYouth() == null
-      && deliverableInfo.getCrossCuttingCapacity() == null && deliverableInfo.getCrossCuttingClimate() == null
-      && deliverableInfo.getCrossCuttingNa() == null) {
-      action.addMessage(action.getText("project.crossCuttingDimensions.readText"));
-      action.getInvalidFields().put("input-deliverable.deliverableInfo.crossCuttingNa",
-        action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Cross Cutting"}));
-    }
-
     // Deliverable Licenses
     if (deliverableInfo.getAdoptedLicense() != null) {
       this.validateLicense(deliverableInfo, action);
@@ -220,10 +224,9 @@ public class PublicationValidator extends BaseValidator {
         InvalidFieldsMessages.EMPTYFIELD);
     } else {
       if (deliverableInfo.getGeographicScope().getId().equals(action.getReportingIndGeographicScopeRegional())) {
-        if (deliverableInfo.getRegion() == null || deliverableInfo.getRegion().getId() == -1) {
+        if (deliverable.getDeliverableRegions() == null) {
           action.addMessage(action.getText("deliverable.region"));
-          action.getInvalidFields().put("input-deliverable.deliverableInfo.region.id",
-            InvalidFieldsMessages.EMPTYFIELD);
+          action.getInvalidFields().put("input-deliverable.deliverableRegions", InvalidFieldsMessages.EMPTYFIELD);
         }
       }
       if (deliverableInfo.getGeographicScope().getId().equals(action.getReportingIndGeographicScopeMultiNational())
@@ -233,6 +236,46 @@ public class PublicationValidator extends BaseValidator {
           action.addMessage(action.getText("deliverable.countries"));
           action.getInvalidFields().put("input-deliverable.countriesIds", InvalidFieldsMessages.EMPTYFIELD);
         }
+      }
+    }
+
+    // Cross Cutting Markers
+    List<CgiarCrossCuttingMarker> cgiarCrossCuttingMarkers = cgiarCrossCuttingMarkerManager.findAll();
+
+    // Deliverable Cross Cutting Markers
+    if (deliverable.getCrossCuttingMarkers() != null) {
+      int i = 0;
+      for (CgiarCrossCuttingMarker cgiarCrossCuttingMarker : cgiarCrossCuttingMarkers) {
+        List<DeliverableCrossCuttingMarker> deliverableCrossCuttingMarkers =
+          deliverable.getCrossCuttingMarkers().stream()
+            .filter(
+              cc -> cc.isActive() && cc.getCgiarCrossCuttingMarker().getId().equals(cgiarCrossCuttingMarker.getId()))
+            .collect(Collectors.toList());
+        if (deliverableCrossCuttingMarkers != null && !deliverableCrossCuttingMarkers.isEmpty()) {
+          DeliverableCrossCuttingMarker deliverableCrossCuttingMarker = deliverableCrossCuttingMarkers.get(0);
+          if (deliverableCrossCuttingMarker.getRepIndGenderYouthFocusLevel() == null
+            || deliverableCrossCuttingMarker.getRepIndGenderYouthFocusLevel().getId() == -1) {
+            action.addMessage(cgiarCrossCuttingMarker.getName());
+            action.getInvalidFields().put(
+              "input-deliverable.crossCuttingMarkers[" + i + "].repIndGenderYouthFocusLevel.id",
+              InvalidFieldsMessages.EMPTYFIELD);
+          }
+        } else {
+          action.addMessage(cgiarCrossCuttingMarker.getName());
+          action.getInvalidFields().put(
+            "input-deliverable.crossCuttingMarkers[" + i + "].repIndGenderYouthFocusLevel.id",
+            InvalidFieldsMessages.EMPTYFIELD);
+        }
+        i++;
+      }
+
+    } else {
+      int i = 0;
+      for (CgiarCrossCuttingMarker cgiarCrossCuttingMarker : cgiarCrossCuttingMarkers) {
+        action.addMessage(cgiarCrossCuttingMarker.getName());
+        action.getInvalidFields().put("input-deliverable.crossCuttingMarkers[" + i + "].repIndGenderYouthFocusLevel.id",
+          InvalidFieldsMessages.EMPTYFIELD);
+        i++;
       }
     }
   }
@@ -250,11 +293,21 @@ public class PublicationValidator extends BaseValidator {
         action.getInvalidFields().put("input-deliverable.deliverableParticipant.repIndTypeActivity.id",
           InvalidFieldsMessages.EMPTYFIELD);
       } else {
+        RepIndTypeActivity repIndTypeActivity =
+          repIndTypeActivityManager.getRepIndTypeActivityById(deliverableParticipant.getRepIndTypeActivity().getId());
         if (deliverableParticipant.getRepIndTypeActivity().getId()
           .equals(action.getReportingIndTypeActivityAcademicDegree())) {
           if (!this.isValidString(deliverableParticipant.getAcademicDegree())) {
             action.addMessage(action.getText("involveParticipants.academicDegree"));
             action.getInvalidFields().put("input-deliverable.deliverableParticipant.academicDegree",
+              InvalidFieldsMessages.EMPTYFIELD);
+          }
+        }
+        if (repIndTypeActivity.getIsFormal()) {
+          if (deliverableParticipant.getRepIndTrainingTerm() == null
+            || deliverableParticipant.getRepIndTrainingTerm().getId() == -1) {
+            action.addMessage(action.getText("involveParticipants.trainingPeriod"));
+            action.getInvalidFields().put("input-deliverable.deliverableParticipant.repIndTrainingTerm.id",
               InvalidFieldsMessages.EMPTYFIELD);
           }
         }
@@ -514,7 +567,10 @@ public class PublicationValidator extends BaseValidator {
     if (action.hasDeliverableRule(deliverableInfo, APConstants.DELIVERABLE_RULE_PUBLICATION_METADATA)) {
       if (deliverablePublicationMetadata != null && deliverablePublicationMetadata.getId() != null
         && deliverablePublicationMetadata.getId().intValue() != -1) {
+
+
         if (action.hasDeliverableRule(deliverableInfo, APConstants.DELIVERABLE_RULE_JORNAL_ARTICLES)) {
+          // Validation of Volume or Issue or Pages
           if (!this.isValidString(deliverablePublicationMetadata.getVolume())
             && !this.isValidString(deliverablePublicationMetadata.getIssue())
             && !this.isValidString(deliverablePublicationMetadata.getPages())) {
@@ -527,10 +583,18 @@ public class PublicationValidator extends BaseValidator {
           }
         }
 
+        // Validation of Journal Article Name
         if (!(this.isValidString(deliverablePublicationMetadata.getJournal())
           && this.wordCount(deliverablePublicationMetadata.getJournal()) <= 100)) {
           action.addMessage(action.getText("project.deliverable.publication.v.journal"));
           action.getInvalidFields().put("input-deliverable.publication.journal", InvalidFieldsMessages.EMPTYFIELD);
+        }
+
+        // Validation of ISI Question
+        if (deliverablePublicationMetadata.getIsiPublication() == null) {
+          action.addMessage(action.getText("deliverable.isiPublication"));
+          action.getInvalidFields().put("input-deliverable.publication.isiPublication",
+            InvalidFieldsMessages.EMPTYFIELD);
         }
       }
     }

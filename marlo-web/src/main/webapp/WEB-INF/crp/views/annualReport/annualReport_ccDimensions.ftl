@@ -162,7 +162,7 @@
             </div>
             
             [#-- 1.3.6 Intellectual Assets --]
-            [#if PMU]
+            [#if PMU && action.hasSpecificities(action.crpDeliverableIntellectualAsset())]
               [@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/]
               <h5 class="sectionSubTitle">[@s.text name="${customLabel}.intellectualAssetsTitle" /]</h5>
               [#-- Please provide a brief summary under the three following headings --]
@@ -172,18 +172,21 @@
             [/#if]
             
             [#-- Table E: Intellectual Assets  --]
-            [@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/]
-            <h4 class="simpleTitle">[@s.text name="${customLabel}.tableETitle" /]</h4>
-            <div class="form-group">
-              [#if flagship]
-                [@tableEIntellectualAssets name="${customName}.assetsValue" list=assetsList  /]
-              [#else]
-                <div class="viewMoreSyntesis-block" >
-                  [@tableEIntellectualAssets name="${customName}.assetsValue" list=flagshipPlannedAssets  isPMU=PMU /]
-                  
-                </div>
-              [/#if]
-            </div>
+            [#if action.hasSpecificities(action.crpDeliverableIntellectualAsset())]
+              [@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/]
+              <h4 class="simpleTitle">[@s.text name="${customLabel}.tableETitle" /]</h4>
+              <div class="form-group">
+                [#if flagship]
+                  [@tableEIntellectualAssets name="${customName}.assetsValue" list=assetsList  /]
+                [#else]
+                  <div class="viewMoreSyntesis-block" >
+                    [@tableEIntellectualAssets name="${customName}.assetsValue" list=flagshipPlannedAssets  isPMU=PMU /]
+                    
+                  </div>
+                [/#if]
+              </div>
+            [/#if]
+            
             
           </div>
           

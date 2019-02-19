@@ -118,9 +118,15 @@
 
 			<interceptor name="editExpectedStudy"
 				class="org.cgiar.ccafs.marlo.interceptor.project.EditExpectedStudyInterceptor" />
+				
+			<interceptor name="privateStudy"
+        class="org.cgiar.ccafs.marlo.interceptor.project.EditPrivateStudyInterceptor" />				
 
 			<interceptor name="editPolicy"
 				class="org.cgiar.ccafs.marlo.interceptor.project.EditPolicyInterceptor" />
+				
+				<interceptor name="canEditProjectLp6Contribution"
+				class="org.cgiar.ccafs.marlo.interceptor.project.EditProjectLp6ContributionInterceptor" />
 
 			<!-- SuperAdmin interceptors -->
 			<interceptor name="superAdminValidation"
@@ -186,6 +192,14 @@
 				<interceptor-ref name="validSessionCrp" />
 				<interceptor-ref name="defaultStack" />
 			</interceptor-stack>
+			
+			<interceptor-stack name="privateStudyStack">
+        <interceptor-ref name="i18nFile" />
+        <interceptor-ref name="validCrp" />
+        <interceptor-ref name="validSessionCrp" />
+        <interceptor-ref name="privateStudy" />        
+        <interceptor-ref name="defaultStack" />
+      </interceptor-stack>
 
 			<interceptor-stack name="crpAdminStack">
 				<interceptor-ref name="i18nFile" />
@@ -245,6 +259,18 @@
 				<interceptor-ref name="trimInputs" />
 				<interceptor-ref name="defaultStack" />
 			</interceptor-stack>
+			
+			<interceptor-stack name="editProjectLp6ContributionStack">
+        <interceptor-ref name="i18nFile" />
+        <interceptor-ref name="validCrp" />
+        <interceptor-ref name="requireUser" />
+        <interceptor-ref name="validSessionCrp" />
+        <interceptor-ref name="canEditProjectLp6Contribution" />
+        <interceptor-ref name="keepRedirectMessages" />
+        <interceptor-ref name="accessibleStage" />
+        <interceptor-ref name="trimInputs" />
+        <interceptor-ref name="defaultStack" />
+      </interceptor-stack>
 
 			<interceptor-stack name="editFSStack">
 				<interceptor-ref name="i18nFile" />
@@ -448,6 +474,9 @@
 			<result name="404">
 				/WEB-INF/global/pages/error/404.ftl
 			</result>
+			<result name="private">
+        /WEB-INF/global/pages/error/privatePage.ftl
+      </result>
 			<result name="unhandledException" type="chain">
 				<param name="actionName">unhandledExceptionAction</param>
 				<param name="namespace">/</param>
@@ -491,6 +520,7 @@
 	<include file="struts-synthesis.xml" />
 	<include file="struts-powb.xml" />
 	<include file="struts-annualReport.xml" />
+	<include file="struts-annualReport2018.xml" />
 	<include file="struts-publications.xml" />
 	<include file="struts-studies.xml" />
 	<include file="struts-powb2019.xml" />

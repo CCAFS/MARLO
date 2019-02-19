@@ -25,6 +25,7 @@ import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicy;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicyInfo;
+import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
@@ -56,6 +57,8 @@ public class ProjectPolicyListAction extends BaseAction {
   private long projectID;
   private long policyID;
   private List<Integer> allYears;
+  private List<ProjectPolicy> projectOldPolicies;
+
 
   @Inject
   public ProjectPolicyListAction(APConfig config, ProjectPolicyManager projectPolicyManager,
@@ -67,6 +70,7 @@ public class ProjectPolicyListAction extends BaseAction {
     this.sectionStatusManager = sectionStatusManager;
     this.projectManager = projectManager;
   }
+
 
   @Override
   public String add() {
@@ -91,31 +95,30 @@ public class ProjectPolicyListAction extends BaseAction {
     return INPUT;
   }
 
-
   @Override
   public String delete() {
     for (ProjectPolicy projectPolicy : project.getPolicies()) {
       if (projectPolicy.getId().longValue() == policyID) {
         ProjectPolicy projectPolicyBD = projectPolicyManager.getProjectPolicyById(policyID);
-        // TODO
-        // for (SectionStatus sectionStatus : projectPolicyBD.getSectionStatuses()) {
-        // sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
-        // }
+        for (SectionStatus sectionStatus : projectPolicyBD.getSectionStatuses()) {
+          sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
+        }
         projectPolicyManager.deleteProjectPolicy(projectPolicy.getId());
       }
     }
     return SUCCESS;
   }
 
-
   @Override
   public List<Integer> getAllYears() {
     return allYears;
   }
 
+
   public long getPolicyID() {
     return policyID;
   }
+
 
   public Project getProject() {
     return project;
@@ -125,29 +128,34 @@ public class ProjectPolicyListAction extends BaseAction {
     return projectID;
   }
 
+  public List<ProjectPolicy> getProjectOldPolicies() {
+    return projectOldPolicies;
+  }
+
   @Override
   public void prepare() throws Exception {
-
     projectID = Integer.parseInt(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_REQUEST_ID)));
-
     project = projectManager.getProjectById(projectID);
 
-    allYears = project.getProjecInfoPhase(this.getActualPhase()).getAllYears();
 
+    allYears = project.getProjecInfoPhase(this.getActualPhase()).getAllYears();
+    projectOldPolicies = new ArrayList<>();
     List<ProjectPolicy> policies =
       project.getProjectPolicies().stream().filter(c -> c.isActive()).collect(Collectors.toList());
     project.setPolicies(new ArrayList<ProjectPolicy>());
     for (ProjectPolicy projectPolicy : policies) {
       if (projectPolicy.getProjectPolicyInfo(this.getActualPhase()) != null) {
-
         // SubIdos List
         if (projectPolicy.getProjectPolicySubIdos() != null) {
           projectPolicy.setSubIdos(new ArrayList<>(projectPolicy.getProjectPolicySubIdos().stream()
             .filter(o -> o.isActive() && o.getPhase().getId() == this.getActualPhase().getId())
             .collect(Collectors.toList())));
         }
-
-        project.getPolicies().add(projectPolicy);
+        if (projectPolicy.getProjectPolicyInfo(this.getActualPhase()).getYear() < this.getCurrentCycleYear()) {
+          projectOldPolicies.add(projectPolicy);
+        } else {
+          project.getPolicies().add(projectPolicy);
+        }
       }
     }
   }
@@ -166,6 +174,10 @@ public class ProjectPolicyListAction extends BaseAction {
 
   public void setProjectID(long projectID) {
     this.projectID = projectID;
+  }
+
+  public void setProjectOldPolicies(List<ProjectPolicy> projectOldPolicies) {
+    this.projectOldPolicies = projectOldPolicies;
   }
 
 }

@@ -27,7 +27,7 @@ public class DeliverableByPhaseAction extends BaseAction {
   private static final Logger logger = LoggerFactory.getLogger(DeliverableByPhaseAction.class);
 
   // Parameters
-  private List<Map<String, Object>> deliverablesbyPhase;
+  private List<Map<String, Object>> entityByPhaseList;
   private long selectedPhaseID;
 
   // Managers
@@ -46,7 +46,7 @@ public class DeliverableByPhaseAction extends BaseAction {
 
   @Override
   public String execute() throws Exception {
-    deliverablesbyPhase = new ArrayList<Map<String, Object>>();
+    entityByPhaseList = new ArrayList<Map<String, Object>>();
 
     if (selectedPhaseID != -1) {
       Phase phase = phaseManager.getPhaseById(selectedPhaseID);
@@ -65,7 +65,7 @@ public class DeliverableByPhaseAction extends BaseAction {
               deliverableMap.put("composedName",
                 "D" + deliverable.getId() + ": " + deliverable.getDeliverableInfo().getTitle());
               deliverableMap.put("project", deliverable.getProject().getId());
-              this.deliverablesbyPhase.add(deliverableMap);
+              this.entityByPhaseList.add(deliverableMap);
             }
           } catch (Exception e) {
             logger.error("Unable to add Deliverable to Deliverable list", e);
@@ -78,8 +78,8 @@ public class DeliverableByPhaseAction extends BaseAction {
   }
 
 
-  public List<Map<String, Object>> getDeliverablesbyPhase() {
-    return deliverablesbyPhase;
+  public List<Map<String, Object>> getEntityByPhaseList() {
+    return entityByPhaseList;
   }
 
 
@@ -94,8 +94,8 @@ public class DeliverableByPhaseAction extends BaseAction {
   }
 
 
-  public void setDeliverablesbyPhase(List<Map<String, Object>> deliverablesbyPhase) {
-    this.deliverablesbyPhase = deliverablesbyPhase;
+  public void setEntityByPhaseList(List<Map<String, Object>> entityByPhaseList) {
+    this.entityByPhaseList = entityByPhaseList;
   }
 
 

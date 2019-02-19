@@ -430,7 +430,7 @@ public class IndicatorsAction extends BaseAction {
                     break;
                   }
                 } else {
-                  if (institution.getAcronym().equals("PMU")) {
+                  if (institution.getAcronym() != null && institution.getAcronym().equals("PMU")) {
                     liaisonInstitutionID = institution.getId();
                     isLeader = true;
                     break;
@@ -473,7 +473,8 @@ public class IndicatorsAction extends BaseAction {
     if (reportSynthesis != null) {
       // reportSynthesisPMU: Used to calculate FLagships values
       LiaisonInstitution pmuInstitution = loggedCrp.getLiaisonInstitutions().stream()
-        .filter(c -> c.getCrpProgram() == null && c.getAcronym().equals("PMU")).collect(Collectors.toList()).get(0);
+        .filter(c -> c.getCrpProgram() == null && c.getAcronym() != null && c.getAcronym().equals("PMU"))
+        .collect(Collectors.toList()).get(0);
       reportSynthesisPMU = reportSynthesisManager.findSynthesis(phase.getId(), pmuInstitution.getId());
 
       ReportSynthesis reportSynthesisDB = reportSynthesisManager.getReportSynthesisById(reportSynthesis.getId());
@@ -554,7 +555,7 @@ public class IndicatorsAction extends BaseAction {
 
     // ADD PMU as liasion Institution too
     liaisonInstitutions.addAll(loggedCrp.getLiaisonInstitutions().stream()
-      .filter(c -> c.getCrpProgram() == null && c.isActive() && c.getAcronym().equals("PMU"))
+      .filter(c -> c.getCrpProgram() == null && c.isActive() && c.getAcronym() != null && c.getAcronym().equals("PMU"))
       .collect(Collectors.toList()));
 
     // Informative table to Flagships
@@ -617,19 +618,21 @@ public class IndicatorsAction extends BaseAction {
       // Deliverables Participants
       deliverableParticipants = deliverableParticipantManager.getDeliverableParticipantByPhase(phase);
       Double totalFemales = new Double(0);
-      for (DeliverableParticipant deliverableParticipant : deliverableParticipants) {
-        // Total Participants
-        if (deliverableParticipant.getParticipants() != null) {
-          totalParticipants += deliverableParticipant.getParticipants();
-        }
-        if (deliverableParticipant.getFemales() != null) {
-          totalFemales += deliverableParticipant.getFemales();
-        }
+      if (deliverableParticipants != null && !deliverableParticipants.isEmpty()) {
+        for (DeliverableParticipant deliverableParticipant : deliverableParticipants) {
+          // Total Participants
+          if (deliverableParticipant.getParticipants() != null) {
+            totalParticipants += deliverableParticipant.getParticipants();
+          }
+          if (deliverableParticipant.getFemales() != null) {
+            totalFemales += deliverableParticipant.getFemales();
+          }
 
-        // Total Formal Training
-        if (deliverableParticipant.getRepIndTypeActivity() != null && deliverableParticipant.getRepIndTypeActivity()
-          .getName().contains(APConstants.REP_IND_SYNTHESIS_TYPE_ACTIVITY_FORMAL_TRAINING)) {
-          totalParticipantFormalTraining += deliverableParticipant.getParticipants();
+          // Total Formal Training
+          if (deliverableParticipant.getRepIndTypeActivity() != null && deliverableParticipant.getRepIndTypeActivity()
+            .getName().contains(APConstants.REP_IND_SYNTHESIS_TYPE_ACTIVITY_FORMAL_TRAINING)) {
+            totalParticipantFormalTraining += deliverableParticipant.getParticipants();
+          }
         }
       }
       // Percentage female
@@ -639,57 +642,59 @@ public class IndicatorsAction extends BaseAction {
       DeliverableType deliverableType = deliverableTypeManager.getDeliverableTypeById(63);
       deliverableInfos = deliverableInfoManager.getDeliverablesInfoByType(phase, deliverableType);
 
-      for (DeliverableInfo deliverableInfo : deliverableInfos) {
-        // Load Disseminations
-        List<DeliverableDissemination> deliverableDisseminations =
-          deliverableInfo.getDeliverable().getDeliverableDisseminations().stream()
-            .filter(dd -> dd.isActive() && dd.getPhase() != null && dd.getPhase().equals(phase))
-            .collect(Collectors.toList());
-        if (deliverableDisseminations != null && !deliverableDisseminations.isEmpty()) {
-          deliverableInfo.getDeliverable().setDissemination(deliverableDisseminations.get(0));
-          if (deliverableInfo.getDeliverable().getDissemination().getIsOpenAccess() != null) {
-            // Journal Articles by Open Access
-            if (deliverableInfo.getDeliverable().getDissemination().getIsOpenAccess()) {
-              totalOpenAccess++;
+      if (deliverableInfos != null && !deliverableInfos.isEmpty()) {
+        for (DeliverableInfo deliverableInfo : deliverableInfos) {
+          // Load Disseminations
+          List<DeliverableDissemination> deliverableDisseminations =
+            deliverableInfo.getDeliverable().getDeliverableDisseminations().stream()
+              .filter(dd -> dd.isActive() && dd.getPhase() != null && dd.getPhase().equals(phase))
+              .collect(Collectors.toList());
+          if (deliverableDisseminations != null && !deliverableDisseminations.isEmpty()) {
+            deliverableInfo.getDeliverable().setDissemination(deliverableDisseminations.get(0));
+            if (deliverableInfo.getDeliverable().getDissemination().getIsOpenAccess() != null) {
+              // Journal Articles by Open Access
+              if (deliverableInfo.getDeliverable().getDissemination().getIsOpenAccess()) {
+                totalOpenAccess++;
+              } else {
+                totalLimited++;
+              }
             } else {
               totalLimited++;
             }
           } else {
             totalLimited++;
           }
-        } else {
-          totalLimited++;
-        }
 
-        // Load Publications
-        List<DeliverablePublicationMetadata> deliverablePublicationMetadatas =
-          deliverableInfo.getDeliverable().getDeliverablePublicationMetadatas().stream()
-            .filter(dp -> dp.isActive() && dp.getPhase() != null && dp.getPhase().equals(phase))
-            .collect(Collectors.toList());
-        if (deliverablePublicationMetadatas != null && !deliverablePublicationMetadatas.isEmpty()) {
-          deliverableInfo.getDeliverable().setPublication(deliverablePublicationMetadatas.get(0));
-          // Journal Articles by ISI status
-          if (deliverableInfo.getDeliverable().getPublication().getIsiPublication() != null) {
-            if (deliverableInfo.getDeliverable().getPublication().getIsiPublication()) {
-              totalIsis++;
+          // Load Publications
+          List<DeliverablePublicationMetadata> deliverablePublicationMetadatas =
+            deliverableInfo.getDeliverable().getDeliverablePublicationMetadatas().stream()
+              .filter(dp -> dp.isActive() && dp.getPhase() != null && dp.getPhase().equals(phase))
+              .collect(Collectors.toList());
+          if (deliverablePublicationMetadatas != null && !deliverablePublicationMetadatas.isEmpty()) {
+            deliverableInfo.getDeliverable().setPublication(deliverablePublicationMetadatas.get(0));
+            // Journal Articles by ISI status
+            if (deliverableInfo.getDeliverable().getPublication().getIsiPublication() != null) {
+              if (deliverableInfo.getDeliverable().getPublication().getIsiPublication()) {
+                totalIsis++;
+              } else {
+                totalNoIsis++;
+              }
             } else {
               totalNoIsis++;
             }
           } else {
             totalNoIsis++;
           }
-        } else {
-          totalNoIsis++;
-        }
 
-        // Load Partnerships
-        List<DeliverablePartnership> deliverablePartnerships =
-          deliverableInfo.getDeliverable().getDeliverablePartnerships().stream()
-            .filter(dp -> dp.isActive() && dp.getPhase() != null && dp.getPhase().equals(phase)
-              && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.RESPONSIBLE.getValue()))
-            .collect(Collectors.toList());
-        if (deliverablePartnerships != null && !deliverablePartnerships.isEmpty()) {
-          deliverableInfo.getDeliverable().setResponsiblePartner(deliverablePartnerships.get(0));
+          // Load Partnerships
+          List<DeliverablePartnership> deliverablePartnerships =
+            deliverableInfo.getDeliverable().getDeliverablePartnerships().stream()
+              .filter(dp -> dp.isActive() && dp.getPhase() != null && dp.getPhase().equals(phase)
+                && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.RESPONSIBLE.getValue()))
+              .collect(Collectors.toList());
+          if (deliverablePartnerships != null && !deliverablePartnerships.isEmpty()) {
+            deliverableInfo.getDeliverable().setResponsiblePartner(deliverablePartnerships.get(0));
+          }
         }
       }
     }
