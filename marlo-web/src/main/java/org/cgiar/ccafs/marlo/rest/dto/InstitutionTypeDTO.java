@@ -19,42 +19,35 @@ import javax.validation.constraints.NotNull;
 
 public class InstitutionTypeDTO {
 
-  @NotNull
-  private Long id;
+	@NotNull
+	private Long code;
 
-  private String name;
+	private String name;
 
-  private String description;
+	private String description;
 
+	public Long getCode() {
+		return this.code;
+	}
 
-  public String getDescription() {
-    return description;
-  }
+	public String getDescription() {
+		return this.description;
+	}
 
+	public String getName() {
+		return this.name;
+	}
 
-  public Long getId() {
-    return id;
-  }
+	public void setCode(Long code) {
+		this.code = code;
+	}
 
+	public void setDescription(String description) {
+		this.description = description;
+	}
 
-  public String getName() {
-    return name;
-  }
-
-
-  public void setDescription(String description) {
-    this.description = description;
-  }
-
-
-  public void setId(Long id) {
-    this.id = id;
-  }
-
-
-  public void setName(String name) {
-    this.name = name;
-  }
-
+	public void setName(String name) {
+		this.name = name;
+	}
 
 }

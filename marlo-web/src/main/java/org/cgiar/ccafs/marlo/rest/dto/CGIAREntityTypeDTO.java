@@ -25,22 +25,22 @@ public class CGIAREntityTypeDTO implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@ApiModelProperty(notes = "Code of CGIAR entity type")
-	private Long id;
+	private Long code;
 
 	@ApiModelProperty(notes = "CGIAR entity type name")
 	@NotNull
 	private String name;
 
-	public Long getId() {
-		return this.id;
+	public Long getCode() {
+		return this.code;
 	}
 
 	public String getName() {
 		return this.name;
 	}
 
-	public void setId(Long id) {
-		this.id = id;
+	public void setCode(Long code) {
+		this.code = code;
 	}
 
 	public void setName(String name) {

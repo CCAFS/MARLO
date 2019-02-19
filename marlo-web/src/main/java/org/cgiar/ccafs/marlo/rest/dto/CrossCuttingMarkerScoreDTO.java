@@ -23,26 +23,26 @@ public class CrossCuttingMarkerScoreDTO {
 
 	@ApiModelProperty(notes = "The Generated Cross Cutting Score Marker ID")
 	@NotNull
-	private Long id;
+	private Long code;
 
 	@ApiModelProperty(notes = "Cross Cutting Marker Score name")
 	@NotNull
 	private String name;
 
-	public Long getId() {
-		return this.id;
-	}
-
 	public String getName() {
 		return this.name;
 	}
 
-	public void setId(Long id) {
-		this.id = id;
-	}
-
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public Long getCode() {
+		return code;
+	}
+
+	public void setCode(Long code) {
+		this.code = code;
 	}
 
 }

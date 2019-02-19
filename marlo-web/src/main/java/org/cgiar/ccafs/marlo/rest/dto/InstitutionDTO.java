@@ -26,7 +26,7 @@ import org.hibernate.validator.constraints.NotEmpty;
 public class InstitutionDTO {
 
 	@ApiModelProperty(notes = "The Generated Institution Name")
-	private Long id;
+	private Long code;
 	@NotNull
 	private InstitutionTypeDTO institutionType;
 	@ApiModelProperty(notes = "The Institution Name")
@@ -54,10 +54,6 @@ public class InstitutionDTO {
 		return this.countryDTO;
 	}
 
-	public Long getId() {
-		return this.id;
-	}
-
 	public InstitutionTypeDTO getInstitutionType() {
 		return this.institutionType;
 	}
@@ -82,10 +78,6 @@ public class InstitutionDTO {
 		this.countryDTO = countryDTO;
 	}
 
-	public void setId(Long id) {
-		this.id = id;
-	}
-
 	public void setInstitutionType(InstitutionTypeDTO institutionType) {
 		this.institutionType = institutionType;
 	}
@@ -96,6 +88,14 @@ public class InstitutionDTO {
 
 	public void setWebsiteLink(String websiteLink) {
 		this.websiteLink = websiteLink;
+	}
+
+	public Long getCode() {
+		return code;
+	}
+
+	public void setCode(Long code) {
+		this.code = code;
 	}
 
 }

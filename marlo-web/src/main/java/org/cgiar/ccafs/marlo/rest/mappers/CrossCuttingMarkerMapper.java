@@ -18,13 +18,17 @@ import org.cgiar.ccafs.marlo.data.model.CgiarCrossCuttingMarker;
 import org.cgiar.ccafs.marlo.rest.dto.CrossCuttingMarkerDTO;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.Mappings;
 
 @Mapper(componentModel = "jsr330")
 public interface CrossCuttingMarkerMapper {
 
+	@Mappings({ @Mapping(source = "id", target = "code") })
 	public abstract CrossCuttingMarkerDTO cgiarCrossCuttingMarkerToCrossCuttingMarkerDTO(
 			CgiarCrossCuttingMarker cgiarCrossCuttingMarker);
 
+	@Mappings({ @Mapping(source = "code", target = "id") })
 	public abstract CgiarCrossCuttingMarker crossCuttingMarkerDTOToCgiarCrossCuttingMarker(
 			CrossCuttingMarkerDTO crossCuttingMarkerDTO);
 

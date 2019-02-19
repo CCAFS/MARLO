@@ -19,7 +19,9 @@ import org.cgiar.ccafs.marlo.data.model.SrfCrossCuttingIssue;
 import org.cgiar.ccafs.marlo.rest.dto.SrfCrossCuttingIssueDTO;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
+import org.mapstruct.Mappings;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
@@ -27,13 +29,15 @@ import org.mapstruct.MappingTarget;
 @Mapper(componentModel = "jsr330")
 public interface SrfCrossCuttingIssueMapper {
 
-  public abstract SrfCrossCuttingIssue
-    srfCrossCuttingIssueDTOToSrfCrossCuttingIssue(SrfCrossCuttingIssueDTO srfCrossCuttingIssueDTO);
+	@Mappings({ @Mapping(source = "code", target = "id") })
+	public abstract SrfCrossCuttingIssue srfCrossCuttingIssueDTOToSrfCrossCuttingIssue(
+			SrfCrossCuttingIssueDTO srfCrossCuttingIssueDTO);
 
-  public abstract SrfCrossCuttingIssueDTO
-    srfCrossCuttingIssueToSrfCrossCuttingIssueDTO(SrfCrossCuttingIssue srfCrossCuttingIssue);
+	@Mappings({ @Mapping(source = "id", target = "code") })
+	public abstract SrfCrossCuttingIssueDTO srfCrossCuttingIssueToSrfCrossCuttingIssueDTO(
+			SrfCrossCuttingIssue srfCrossCuttingIssue);
 
-  public abstract SrfCrossCuttingIssue updateSrfCrossCuttingIssueFromSrfCrossCuttingIssueDto(
-    SrfCrossCuttingIssueDTO srfCrossCuttingIssueDTO, @MappingTarget SrfCrossCuttingIssue srfCrossCuttingIssue);
+	public abstract SrfCrossCuttingIssue updateSrfCrossCuttingIssueFromSrfCrossCuttingIssueDto(
+			SrfCrossCuttingIssueDTO srfCrossCuttingIssueDTO, @MappingTarget SrfCrossCuttingIssue srfCrossCuttingIssue);
 
 }
