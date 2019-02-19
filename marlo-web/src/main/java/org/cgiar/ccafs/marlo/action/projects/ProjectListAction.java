@@ -676,29 +676,24 @@ public class ProjectListAction extends BaseAction {
 
       System.out.println(myProjects.size());
       myProjects = myProjects.stream()
-        .filter(mp -> mp.isActive()
-          && Integer.parseInt(dateFormat.format(mp.getProjecInfoPhase(this.getActualPhase()).getEndDate())) >= this
-            .getCurrentCycleYear())
+        .filter(mp -> mp.isActive() && (mp.getProjecInfoPhase(this.getActualPhase()).getEndDate() == null
+          || Integer.parseInt(dateFormat.format(mp.getProjecInfoPhase(this.getActualPhase()).getEndDate())) >= this
+            .getCurrentCycleYear()))
         .collect(Collectors.toList());
-      System.out.println(myProjects.size());
 
-      System.out.println(allProjects.size());
+
       allProjects = allProjects.stream()
-        .filter(mp -> mp.isActive()
-          && Integer.parseInt(dateFormat.format(mp.getProjecInfoPhase(this.getActualPhase()).getEndDate())) >= this
-            .getCurrentCycleYear())
+        .filter(mp -> mp.isActive() && (mp.getProjecInfoPhase(this.getActualPhase()).getEndDate() == null
+          || Integer.parseInt(dateFormat.format(mp.getProjecInfoPhase(this.getActualPhase()).getEndDate())) >= this
+            .getCurrentCycleYear()))
         .collect(Collectors.toList());
-      System.out.println(allProjects.size());
 
-      System.out.println(closedProjects.size());
 
       closedProjects = closedProjects.stream()
-        .filter(mp -> mp.isActive()
-          && Integer.parseInt(dateFormat.format(mp.getProjecInfoPhase(this.getActualPhase()).getEndDate())) >= this
-            .getCurrentCycleYear())
+        .filter(mp -> mp.isActive() && (mp.getProjecInfoPhase(this.getActualPhase()).getEndDate() == null
+          || Integer.parseInt(dateFormat.format(mp.getProjecInfoPhase(this.getActualPhase()).getEndDate())) >= this
+            .getCurrentCycleYear()))
         .collect(Collectors.toList());
-
-      System.out.println(closedProjects.size());
     }
 
     // closedProjects.sort((p1, p2) -> p1.getStatus().compareTo(p2.getStatus()));
