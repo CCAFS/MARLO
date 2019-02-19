@@ -869,27 +869,29 @@ public class DeliverableAction extends BaseAction {
   public List<DeliverablePartnership> otherPartnersAutoSave() {
     try {
       List<DeliverablePartnership> list = new ArrayList<>();
-      for (DeliverablePartnership partnership : deliverable.getOtherPartners()) {
+      if (deliverable.getOtherPartners() != null) {
+        for (DeliverablePartnership partnership : deliverable.getOtherPartners()) {
 
-        ProjectPartnerPerson partnerPersonDb = new ProjectPartnerPerson();
-        if (partnership.getProjectPartnerPerson() != null && partnership.getProjectPartnerPerson().getId() != null) {
-          partnerPersonDb =
-            projectPartnerPersonManager.getProjectPartnerPersonById(partnership.getProjectPartnerPerson().getId());
-        }
+          ProjectPartnerPerson partnerPersonDb = new ProjectPartnerPerson();
+          if (partnership.getProjectPartnerPerson() != null && partnership.getProjectPartnerPerson().getId() != null) {
+            partnerPersonDb =
+              projectPartnerPersonManager.getProjectPartnerPersonById(partnership.getProjectPartnerPerson().getId());
+          }
 
-        ProjectPartner partnerDb = projectPartnerManager.getProjectPartnerById(partnership.getProjectPartner().getId());
-        DeliverablePartnership partnershipOth = new DeliverablePartnership();
-        partnershipOth.setId(partnership.getId());
-        partnershipOth.setDeliverable(deliverable);
-        partnershipOth.setProjectPartnerPerson(partnerPersonDb);
-        partnershipOth.setProjectPartner(partnerDb);
-        partnershipOth.setPartnerType(DeliverablePartnershipTypeEnum.OTHER.getValue());
-        if (partnership.getPartnerDivision() != null && partnership.getPartnerDivision().getId() != null) {
-          partnershipOth.setPartnerDivision(partnership.getPartnerDivision());
+          ProjectPartner partnerDb =
+            projectPartnerManager.getProjectPartnerById(partnership.getProjectPartner().getId());
+          DeliverablePartnership partnershipOth = new DeliverablePartnership();
+          partnershipOth.setId(partnership.getId());
+          partnershipOth.setDeliverable(deliverable);
+          partnershipOth.setProjectPartnerPerson(partnerPersonDb);
+          partnershipOth.setProjectPartner(partnerDb);
+          partnershipOth.setPartnerType(DeliverablePartnershipTypeEnum.OTHER.getValue());
+          if (partnership.getPartnerDivision() != null && partnership.getPartnerDivision().getId() != null) {
+            partnershipOth.setPartnerDivision(partnership.getPartnerDivision());
+          }
+          list.add(partnershipOth);
         }
-        list.add(partnershipOth);
       }
-
       return list;
     } catch (Exception e) {
       logger.error("unable to do otherPartnersAutoSave", e);
@@ -2821,18 +2823,22 @@ public class DeliverableAction extends BaseAction {
     Deliverable deliverableDB = deliverableManager.getDeliverableById(deliverableID);
     for (DeliverableUser deliverableUser : deliverableDB.getDeliverableUsers().stream()
       .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())) {
-      if (!deliverable.getUsers().contains(deliverableUser)) {
-        deliverableUserManager.deleteDeliverableUser(deliverableUser.getId());
+      if (deliverable.getUsers() != null) {
+        if (!deliverable.getUsers().contains(deliverableUser)) {
+          deliverableUserManager.deleteDeliverableUser(deliverableUser.getId());
+        }
       }
     }
 
-    for (DeliverableUser deliverableUser : deliverable.getUsers()) {
+    if (deliverable.getUsers() != null) {
+      for (DeliverableUser deliverableUser : deliverable.getUsers()) {
 
-      if (deliverableUser.getId() == null || deliverableUser.getId().intValue() == -1) {
-        deliverableUser.setId(null);
-        deliverableUser.setPhase(this.getActualPhase());
-        deliverableUser.setDeliverable(deliverable);
-        deliverableUserManager.saveDeliverableUser(deliverableUser);
+        if (deliverableUser.getId() == null || deliverableUser.getId().intValue() == -1) {
+          deliverableUser.setId(null);
+          deliverableUser.setPhase(this.getActualPhase());
+          deliverableUser.setDeliverable(deliverable);
+          deliverableUserManager.saveDeliverableUser(deliverableUser);
+        }
       }
     }
   }
