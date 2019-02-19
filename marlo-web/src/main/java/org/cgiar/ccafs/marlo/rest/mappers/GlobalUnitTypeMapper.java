@@ -19,6 +19,8 @@ import org.cgiar.ccafs.marlo.data.model.GlobalUnitType;
 import org.cgiar.ccafs.marlo.rest.dto.CGIAREntityTypeDTO;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.Mappings;
 
 /**
  * Maps Crp domain entites to GlobalUnitDTO objects. As JSON serialization
@@ -36,9 +38,7 @@ public interface GlobalUnitTypeMapper {
 
 	public GlobalUnitType cgiarEntityTypeDTOToGlobalUnitType(CGIAREntityTypeDTO cgiarEntityTypeDTO);
 
-//	@Mappings({ @Mapping(source = "globalUnit.smoCode", target = "code"),
-//			@Mapping(source = "globalUnitType.id", target = "cgiarEntityTypeDTO.id"),
-//			@Mapping(source = "globalUnitType.name", target = "cgiarEntityTypeDTO.name") })
+	@Mappings({ @Mapping(source = "globalUnitType.id", target = "code") })
 	public CGIAREntityTypeDTO globalUnitTypeToCGIAREntityTypeDTO(GlobalUnitType globalUnitType);
 
 }

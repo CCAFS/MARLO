@@ -24,44 +24,39 @@ import io.swagger.annotations.ApiModelProperty;
  */
 public class CrpProgramDTO {
 
-  @ApiModelProperty(notes = "The Generated Program ID")
-  private Long id;
+	@ApiModelProperty(notes = "The Generated Program ID")
+	private Long code;
 
-  @ApiModelProperty(notes = "The Flagship program Name")
-  @NotNull
-  private String name;
+	@ApiModelProperty(notes = "The Flagship program Name")
+	@NotNull
+	private String name;
 
-  @ApiModelProperty(notes = "The Flagship program Acronym")
-  @NotNull
-  private String acronym;
+	@ApiModelProperty(notes = "The Flagship program Acronym")
+	@NotNull
+	private String acronym;
 
-  public String getAcronym() {
-    return acronym;
-  }
+	public String getAcronym() {
+		return this.acronym;
+	}
 
+	public Long getCode() {
+		return this.code;
+	}
 
-  public Long getId() {
-    return id;
-  }
+	public String getName() {
+		return this.name;
+	}
 
+	public void setAcronym(String acronym) {
+		this.acronym = acronym;
+	}
 
-  public String getName() {
-    return name;
-  }
+	public void setCode(Long code) {
+		this.code = code;
+	}
 
-
-  public void setAcronym(String acronym) {
-    this.acronym = acronym;
-  }
-
-  public void setId(Long id) {
-    this.id = id;
-  }
-
-
-  public void setName(String name) {
-    this.name = name;
-  }
-
+	public void setName(String name) {
+		this.name = name;
+	}
 
 }

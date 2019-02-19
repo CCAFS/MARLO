@@ -35,7 +35,7 @@ public class InstitutionRequestDTO {
 	private String webPage;
 
 	@ApiModelProperty(notes = "Partner Request Status")
-	private Boolean acepted;
+	private Boolean isAcepted;
 
 	@ApiModelProperty(notes = "Reject justification")
 	private String rejectJustification;
@@ -49,16 +49,8 @@ public class InstitutionRequestDTO {
 	@ApiModelProperty(notes = "Intitution created")
 	InstitutionDTO institutionDTO;
 
-	public Boolean getAcepted() {
-		return this.acepted;
-	}
-
 	public String getAcronym() {
 		return this.acronym;
-	}
-
-	public Long getId() {
-		return this.id;
 	}
 
 	public InstitutionDTO getInstitutionDTO() {
@@ -83,10 +75,6 @@ public class InstitutionRequestDTO {
 
 	public String getWebPage() {
 		return this.webPage;
-	}
-
-	public void setAcepted(Boolean acepted) {
-		this.acepted = acepted;
 	}
 
 	public void setAcronym(String acronym) {
@@ -119,6 +107,14 @@ public class InstitutionRequestDTO {
 
 	public void setWebPage(String webPage) {
 		this.webPage = webPage;
+	}
+
+	public Boolean getIsAcepted() {
+		return isAcepted;
+	}
+
+	public void setIsAcepted(Boolean isAcepted) {
+		this.isAcepted = isAcepted;
 	}
 
 }

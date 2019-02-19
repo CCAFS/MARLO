@@ -19,6 +19,8 @@ import org.cgiar.ccafs.marlo.data.model.RepIndDegreeInnovation;
 import org.cgiar.ccafs.marlo.rest.dto.DegreeOfInnovationDTO;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.Mappings;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
@@ -27,10 +29,12 @@ import org.mapstruct.Mapper;
 @Mapper(componentModel = "jsr330")
 public interface DegreeOfInnovationMapper {
 
-  public abstract RepIndDegreeInnovation
-    degreeOfInnovationDTOToRepIndDegreeInnovation(DegreeOfInnovationDTO degreeOfInnovationDTO);
+	@Mappings({ @Mapping(source = "code", target = "id") })
+	public abstract RepIndDegreeInnovation degreeOfInnovationDTOToRepIndDegreeInnovation(
+			DegreeOfInnovationDTO degreeOfInnovationDTO);
 
-  public abstract DegreeOfInnovationDTO
-    repIndDegreeInnovationToDegreeOfInnovationDTO(RepIndDegreeInnovation repIndDegreeInnovation);
+	@Mappings({ @Mapping(source = "id", target = "code") })
+	public abstract DegreeOfInnovationDTO repIndDegreeInnovationToDegreeOfInnovationDTO(
+			RepIndDegreeInnovation repIndDegreeInnovation);
 
 }

@@ -47,6 +47,8 @@ public abstract class InstitutionMapper {
 	public abstract PartnerRequest institutionDTOToPartnerRequest(InstitutionDTO institutionDTO, GlobalUnit globalUnit,
 			LocElement locElement, User user);
 
+	@Mappings({ @Mapping(source = "id", target = "code"),
+			@Mapping(source = "institutionsLocations", target = "countryDTO") })
 	public abstract InstitutionDTO institutionToInstitutionDTO(Institution institution);
 
 	@Mappings({ @Mapping(source = "locElement", target = "locElementDTO"),

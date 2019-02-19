@@ -32,7 +32,7 @@ public class SrfIdoDTO {
 	private String description;
 
 	@ApiModelProperty(notes = "Indicator if the SRF IDO is a Cross Cutting Issue")
-	private boolean isCrossCutting;
+	private Boolean isCrossCutting;
 
 	public String getCode() {
 		return this.code;
@@ -46,16 +46,12 @@ public class SrfIdoDTO {
 		return this.srfCrossCuttingIssue;
 	}
 
-	public boolean isCrossCutting() {
-		return this.isCrossCutting;
-	}
-
 	public void setCode(String code) {
 		this.code = code;
 	}
 
 	public void setCrossCutting(boolean isCrossCutting) {
-		this.isCrossCutting = isCrossCutting;
+		this.setIsCrossCutting(isCrossCutting);
 	}
 
 	public void setDescription(String description) {
@@ -64,6 +60,14 @@ public class SrfIdoDTO {
 
 	public void setSrfCrossCuttingIssue(SrfCrossCuttingIssueDTO srfCrossCuttingIssue) {
 		this.srfCrossCuttingIssue = srfCrossCuttingIssue;
+	}
+
+	public Boolean getIsCrossCutting() {
+		return isCrossCutting;
+	}
+
+	public void setIsCrossCutting(Boolean isCrossCutting) {
+		this.isCrossCutting = isCrossCutting;
 	}
 
 }

@@ -27,7 +27,7 @@ public class PolicyMaturityLevelDTO {
 
 	@ApiModelProperty(notes = "Level of maturity of policy ID")
 	@NotNull
-	private Long id;
+	private Long code;
 
 	@ApiModelProperty(notes = "Level of maturity of policy name")
 	@NotNull
@@ -40,10 +40,6 @@ public class PolicyMaturityLevelDTO {
 		return this.description;
 	}
 
-	public Long getId() {
-		return this.id;
-	}
-
 	public String getName() {
 		return this.name;
 	}
@@ -52,12 +48,16 @@ public class PolicyMaturityLevelDTO {
 		this.description = description;
 	}
 
-	public void setId(Long id) {
-		this.id = id;
-	}
-
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public Long getCode() {
+		return code;
+	}
+
+	public void setCode(Long code) {
+		this.code = code;
 	}
 
 }
