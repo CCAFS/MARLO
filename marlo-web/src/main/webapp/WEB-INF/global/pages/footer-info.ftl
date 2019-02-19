@@ -24,7 +24,7 @@
 [#-- Copyright --]
 <div class="copyRight">
   <hr />
-  <span> Copyright &#169; 2013-2018 International Center for Tropical Agriculture (CIAT)</span><br />
+  <span> Copyright &#169; 2013-2019 International Center for Tropical Agriculture (CIAT)</span><br />
   <span style="opacity:0.5;"> Some rights reserved</span>
 </div>
 

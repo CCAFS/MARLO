@@ -93,7 +93,7 @@
               [/#if]
               
               [#-- Table 8: Internal Cross-CGIAR Collaborations --]
-              [#if reportSynthesis.reportSynthesisCrossCgiar.collaborations?has_content]
+              [#if (reportSynthesis.reportSynthesisCrossCgiar.collaborations?has_content)!false]
                   [#list reportSynthesis.reportSynthesisCrossCgiar.collaborations as item]
                     [@addCrossCGIARPartnerships element=item name="${customName}.collaborations" index=item_index  isEditable=editable/]
                   [/#list]
