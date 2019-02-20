@@ -92,32 +92,22 @@
             <img src="${baseUrl}/global/images/FAIR_Principles_in_MARLO_20170919.png" alt="" width="100%" />
           </div>
           
-          [#-- Ongoing table --]
+          [#-- Current table --]
           <div class="">
-            <h3 class="subTitle headTitle">On going deliverables</h3>
+            <h3 class="subTitle headTitle">Deliverables</h3>
             [#if reportingActive]
              <p class="note">[@s.text name="project.deliverableList.focusDeliverablesMessage"][@s.param]${currentCycleYear}[/@s.param][@s.param]<span class="label label-primary" title="Required for this cycle"><span class="glyphicon glyphicon-flash" ></span> Report</span>[/@s.param][/@s.text]</p>
             [/#if]
             <hr /> 
-            [@deliverableList.deliverablesList deliverables=action.getDeliverables(true,false) canValidate=true canEdit=candit  isReportingActive=reportingActive namespace="/projects" defaultAction="${(crpSession)!}/deliverable"/]
+            [@deliverableList.deliverablesList deliverables=(project.getCurrentDeliverables(actualPhase))![] canValidate=true canEdit=candit  isReportingActive=reportingActive namespace="/projects" defaultAction="${(crpSession)!}/deliverable"/]
           </div>
                      
-          [#-- Completed Extended table (Modal) --]
-          [#if action.getDeliverables(false,false)?has_content]
+          [#-- Previous Extended table (Modal) --]
           <div class="">
-            <h3 class="subTitle headTitle">Completed deliverables</h3>
+            <h3 class="subTitle headTitle">Previous deliverables</h3>
             <hr />
-            [@deliverableList.deliverablesList deliverables=action.getDeliverables(false,false) canValidate=true canEdit=candit isReportingActive=reportingActive namespace="/projects" defaultAction="${(crpSession)!}/deliverable" currentTable=false /]
+            [@deliverableList.deliverablesList deliverables=(project.getPreviousDeliverables(actualPhase))![] canValidate=true canEdit=candit isReportingActive=reportingActive namespace="/projects" defaultAction="${(crpSession)!}/deliverable" currentTable=false /]
           </div>
-          [/#if]
-
-          [#if action.getDeliverables(false,true)?has_content]
-          <div class="">
-            <h3 class="subTitle headTitle">Cancelled deliverables</h3>
-            <hr />
-            [@deliverableList.deliverablesList deliverables=action.getDeliverables(false,true) canValidate=true canEdit=candit namespace="/projects" defaultAction="${(crpSession)!}/deliverable" currentTable=false /] 
-          </div>
-          [/#if]
           
           [#-- Add Deliverable Button --]
           [#if canEdit && action.hasPermission("addDeliverable")]
