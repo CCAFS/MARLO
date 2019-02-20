@@ -452,7 +452,7 @@
     
     [#-- Projects shared --]
     [#if fromProject]
-    <h3 class="headTitle"> Share Study </h3>
+    <h3 class="headTitle">[@s.text name="study.sharedProjects.title" /]</h3>
     <div class="borderBox">
       [@customForm.elementsListComponent name="${customName}.projects" elementType="project" elementList=element.projects label="study.sharedProjects"  listName="myProjects" keyFieldName="id" displayFieldName="composedName" required=false /]
     </div>

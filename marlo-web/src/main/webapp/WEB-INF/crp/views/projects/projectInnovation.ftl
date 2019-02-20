@@ -73,11 +73,11 @@
           </div>
         
           [#-- Contribution of CRP --] 
-          <div class="form-group row">
+          [#--<div class="form-group row">
             <div class="col-md-6 ">
               [@customForm.select name="innovation.projectInnovationInfo.repIndContributionOfCrp.id" label=""  i18nkey="projectInnovations.contributionOfCrp" listName="contributionCrpList" keyFieldName="id"  displayFieldName="name" required=true  className="" editable=editable/]
             </div>
-          </div>
+          </div>--] 
           
           [#-- Degree of Innovation --] 
           [#--  <div class="form-group row">
@@ -85,6 +85,11 @@
               [@customForm.select name="innovation.projectInnovationInfo.repIndDegreeInnovation.id" label=""  i18nkey="projectInnovations.degreeInnovation" listName="degreeInnovationList" keyFieldName="id"  displayFieldName="name" required=true  className="" editable=editable/]
             </div>
           </div>--]
+          
+          [#-- Specify next user organizational type (Only if stage 4) --]
+          <div class="form-group stageFourBlock" style="display:${isStageFour?string('block','none')}">
+            [@customForm.elementsListComponent name="innovation.organizations" elementType="repIndOrganizationType" elementList=innovation.organizations label="projectInnovations.nextUserOrganizationalType"  listName="organizationTypeList" keyFieldName="id" displayFieldName="name"/]
+          </div>
 
           [#-- 6.  Geographic scope - Countries  --]
           <div class="form-group geographicScopeBlock">
@@ -128,13 +133,10 @@
           </div>
           
           [#-- Novel or Adaptive research --]
-          <div class="form-group">
+          [#--<div class="form-group">
             [@customForm.textArea name="innovation.projectInnovationInfo.adaptativeResearchNarrative" i18nkey="projectInnovations.novelOrAdaptative" placeholder="" className="" required=false editable=editable /]
-          </div>
-          [#-- Specify next user organizational type (Only if stage 4) --]
-          <div class="form-group stageFourBlock" style="display:${isStageFour?string('block','none')}">
-            [@customForm.elementsListComponent name="innovation.organizations" elementType="repIndOrganizationType" elementList=innovation.organizations label="projectInnovations.nextUserOrganizationalType"  listName="organizationTypeList" keyFieldName="id" displayFieldName="name"/]
-          </div>
+          </div>--]
+          
         
           [#-- Specify an Outcome Case Study (Only if stage 4) --]
           <div class="form-group stageFourBlock" style="display:${isStageFour?string('block','none')}">
