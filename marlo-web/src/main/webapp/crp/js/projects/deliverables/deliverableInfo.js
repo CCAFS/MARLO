@@ -33,7 +33,7 @@ function init() {
 
   $('.helpMessage3').on("click", openDialog);
 
-  // justificationByStatus($(".status").find("option:selected").val());
+  justificationByStatus($statuses.val());
   // validateCurrentDate();
 
   $(".addPartner").on("click", addPartnerEvent);
@@ -467,29 +467,29 @@ function justificationByStatus(statusId) {
 
   // Validate the justification
   if(isStatusCancelled(statusId) || isStatusExtended(statusId)) {
-    $statusDescription.hide().show(400);
+    $statusDescription.slideDown(400);
     $statusDescription.find('label').html($('#status-' + statusId).html());
   } else {
-    $statusDescription.show().hide(400);
+    $statusDescription.slideUp(400);
   }
 
   // Validate the new extended year
   if(isStatusOnGoing(statusId)) {
-    $newExpectedYearSelect.val('-1').trigger('change');
+    // $newExpectedYearSelect.val('-1').trigger('change');
     $newExpectedYearBlock.hide();
   } else {
     if(hasExpectedYear) {
       $newExpectedYearBlock.show();
+      $yearOverlay.show();
     } else {
       $newExpectedYearBlock.hide();
+      $yearOverlay.hide();
     }
   }
 
-  // Lock the delivery year
   if(isStatusExtended(statusId)) {
+    $newExpectedYearBlock.show();
     $yearOverlay.show();
-  } else {
-    $yearOverlay.hide();
   }
 
   // $statusDescription.find('textarea').val('');
