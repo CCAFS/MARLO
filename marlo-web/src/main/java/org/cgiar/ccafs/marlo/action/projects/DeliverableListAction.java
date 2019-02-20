@@ -118,7 +118,7 @@ public class DeliverableListAction extends BaseAction {
       if (phase.getNext() != null && phase.getNext().getNext() != null) {
         Phase upkeepPhase = phase.getNext().getNext();
         if (upkeepPhase != null) {
-          this.addDeliverablePhase(phase.getNext(), deliverable);
+          this.addDeliverablePhase(upkeepPhase, deliverable);
         }
       }
     } else {
