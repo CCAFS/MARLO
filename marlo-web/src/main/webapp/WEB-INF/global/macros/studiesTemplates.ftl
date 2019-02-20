@@ -89,8 +89,6 @@
       <div class="form-group">
         [#-- Does this outcome reflect a contribution of the CGIAR in influencing or modifying policies/ strategies / laws/ regulations/ budgets/ investments or  curricula?  --]
         <div class="form-group">
-          [#local guideSheetURL = "https://drive.google.com/file/d/1GYLsseeZOOXF9zXNtpUtE1xeh2gx3Vw2/view" /]
-          <small class="pull-right"><a href="${guideSheetURL}" target="_blank"> <img src="${baseUrl}/global/images/icon-file.png" alt="" /> #I1 Policies -  Guideline </a> </small>
           
           <label for="">[@s.text name="study.reportingIndicatorThree" /]:[@customForm.req required=editable /][@customForm.helpLabel name="study.reportingIndicatorThree.help" showIcon=false editable=editable/]</label>
           [#assign studyIndicatorThree = "studyIndicatorThree"]
@@ -104,6 +102,9 @@
           [@customForm.elementsListComponent name="${customName}.policies" elementType="projectPolicy" elementList=element.policies label="study.policies"  listName="policyList" keyFieldName="id" displayFieldName="composedName"/]
           [#-- Note --]
           <div class="note">[@s.text name="study.policies.note"][@s.param] <a href="[@s.url namespace="/projects" action='${crpSession}/policies'][@s.param name='projectID']${(projectID)!}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">clicking here</a>[/@][/@]</div>
+          [#local guideSheetURL = "https://drive.google.com/file/d/1GYLsseeZOOXF9zXNtpUtE1xeh2gx3Vw2/view" /]
+          <small class="pull-right"><a href="${guideSheetURL}" target="_blank"> <img src="${baseUrl}/global/images/icon-file.png" alt="" /> #I1 Policies -  Guideline </a> </small>
+          <br>
         </div>
       </div>
       [/#if]
