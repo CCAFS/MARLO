@@ -15,8 +15,8 @@
 
 package org.cgiar.ccafs.marlo.rest.mappers;
 
-import org.cgiar.ccafs.marlo.data.model.RepIndStageInnovation;
-import org.cgiar.ccafs.marlo.rest.dto.StageOfInnovationDTO;
+import org.cgiar.ccafs.marlo.data.model.RepIndOrganizationType;
+import org.cgiar.ccafs.marlo.rest.dto.OrganizationTypeDTO;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -27,14 +27,13 @@ import org.mapstruct.Mappings;
  */
 
 @Mapper(componentModel = "jsr330")
-public interface StageOfInnovationMapper {
-
-	@Mappings({ @Mapping(source = "id", target = "code") })
-	public abstract StageOfInnovationDTO repIndStageInnovationToStageOfInnovationDTO(
-			RepIndStageInnovation repIndStageInnovation);
+public interface OrganizationTypeMapper {
 
 	@Mappings({ @Mapping(source = "code", target = "id") })
-	public abstract RepIndStageInnovation stageOfInnovationDTOToRepIndStageInnovation(
-			StageOfInnovationDTO stageOfInnovationDTO);
+	public abstract RepIndOrganizationType organizationTypeDTOToRepIndOrganizationType(
+			OrganizationTypeDTO organizationTypeDTO);
 
+	@Mappings({ @Mapping(source = "id", target = "code") })
+	public abstract OrganizationTypeDTO repIndOrganizationTypeToOrganizationTypeDTO(
+			RepIndOrganizationType repIndOrganizationType);
 }
