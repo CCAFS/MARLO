@@ -1,7 +1,7 @@
 [#ftl]
 [#import "/WEB-INF/global/macros/utils.ftl" as utilities/]
 
-[#macro deliverablesList deliverables={} owned=true canValidate=false canEdit=false isReportingActive=false namespace="/" defaultAction=""]
+[#macro deliverablesList deliverables={} owned=true canValidate=false canEdit=false isReportingActive=false namespace="/" defaultAction="" currentTable=true]
   <table class="deliverableList" id="deliverables">
     <thead>
       <tr class="subHeader">
@@ -13,7 +13,9 @@
           <th id="deliverableFC">[@s.text name="project.deliverableList.fairCompliance" /]</th>
         [/#if]
         <th id="deliverableStatus">[@s.text name="project.deliverableList.status" /]</th>
+        [#if currentTable]
         <th id="deliverableRF"></th>
+        [/#if]
       </tr>
     </thead>
     <tbody>
@@ -21,9 +23,10 @@
       [#list deliverables as deliverable]
         [#assign isDeliverableNew = action.isDeliverableNew(deliverable.id) /]
         [#assign hasDraft = (action.getAutoSaveFilePath(deliverable.class.simpleName, "deliverable", deliverable.id))!false /]
-        
-        [#-- isDeliverableComplete --]
+        [#-- Is Complete --]
         [#assign isDeliverableComplete = action.isDeliverableComplete(deliverable.id) /]
+        [#-- To Report --]
+        [#local toReport = (deliverable.deliverableInfo.isRequieriedReporting(currentCycleYear) && reportingActive)  ]
         
         <tr>
           [#-- ID --]
@@ -38,30 +41,22 @@
             <span class="hidden">${deliverable.deliverableInfo.title!''}</span>
             [#-- New Tag --]
             [#if isDeliverableNew]<span class="label label-info">New</span>[/#if]
-            
             [#-- Draft Tag --]
             [#if hasDraft]<strong class="text-info">[DRAFT]</strong>[/#if]
-            
             [#-- Report --]
-            [#if deliverable.deliverableInfo.isRequieriedReporting(currentCycleYear) && reportingActive && !isDeliverableComplete]
-              <span class="label label-primary" title="Required for this cycle"><span class="glyphicon glyphicon-flash" ></span> Report</span>
-            [/#if]
+            [#if toReport]<span class="label label-primary" title="Required for this cycle"><span class="glyphicon glyphicon-flash" ></span> Report</span>[/#if]
             
             [#if deliverable.deliverableInfo.title?has_content]
-                <a href="[@s.url namespace=namespace action=defaultAction] [@s.param name='deliverableID']${deliverable.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" title="${deliverable.deliverableInfo.title}">
-                [#if deliverable.deliverableInfo.title?length < 120] 
-                  ${deliverable.deliverableInfo.title}
-                [#else] 
-                  [@utilities.wordCutter string=deliverable.deliverableInfo.title maxPos=120 /]
-                [/#if]
-                </a> 
+              <a href="[@s.url namespace=namespace action=defaultAction] [@s.param name='deliverableID']${deliverable.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" >
+                [@utilities.wordCutter string=deliverable.deliverableInfo.title maxPos=120 /]
+              </a> 
             [#else]
               [#if action.canEdit(deliverable.id)]
                 <a href="[@s.url namespace=namespace action=defaultAction includeParams='get'] [@s.param name='deliverableID']${deliverable.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url] ">
                   [@s.text name="projectsList.title.none" /]
                 </a>
               [#else]
-              [@s.text name="projectsList.title.none" /]
+                [@s.text name="projectsList.title.none" /]
               [/#if]
             [/#if]
           </td>
@@ -71,14 +66,14 @@
           </td>
           [#-- Deliverable Year --]
           <td class="text-center">
-          [#if deliverable.deliverableInfo.year== -1]
-            None
-          [#else]
-            ${(deliverable.deliverableInfo.year)!'None'}
-            [#if deliverable.deliverableInfo.status?? && (deliverable.deliverableInfo.status==4 || deliverable.deliverableInfo.status==3) && deliverable.deliverableInfo.newExpectedYear?? && (deliverable.deliverableInfo.newExpectedYear != -1) ]
-              Extended to ${deliverable.deliverableInfo.newExpectedYear}
+            [#if deliverable.deliverableInfo.year== -1]
+              None
+            [#else]
+              ${(deliverable.deliverableInfo.year)!'None'}
+              [#if deliverable.deliverableInfo.status?? && (deliverable.deliverableInfo.status==4 || deliverable.deliverableInfo.status==3) && deliverable.deliverableInfo.newExpectedYear?? && (deliverable.deliverableInfo.newExpectedYear != -1) ]
+                Extended to ${deliverable.deliverableInfo.newExpectedYear}
+              [/#if]
             [/#if]
-          [/#if]
             
           </td>
           [#if isReportingActive]
@@ -106,19 +101,21 @@
             [/#attempt]
           </td>
           [#-- Deliverable required fields --]
-          <td class="text-center">
-            [#if isDeliverableComplete]
-              <span class="icon-20 icon-check" title="Complete"></span>
-            [#else]
-              <span class="icon-20 icon-uncheck" title="[@s.text name="project.deliverableList.requiredStatus.incomplete" /]"></span> 
-            [/#if]
-            [#-- Remove icon --]
-            [#if isDeliverableNew]
-              <a id="removeDeliverable-${deliverable.id}" class="removeDeliverable" href="${baseUrl}/projects/${crpSession}/deleteDeliverable.do?deliverableID=${deliverable.id}&phaseID=${(actualPhase.id)!}" title="Remove deliverable">
-                <div class="icon-container"><span class="trash-icon glyphicon glyphicon-trash"></span><div>
-              </a>
-            [/#if]
-          </td>
+          [#if currentTable]
+            <td class="text-center">
+              [#if isDeliverableComplete]
+                <span class="icon-20 icon-check" title="Complete"></span>
+              [#else]
+                <span class="icon-20 icon-uncheck" title="[@s.text name="project.deliverableList.requiredStatus.incomplete" /]"></span> 
+              [/#if]
+              [#-- Remove icon --]
+              [#if isDeliverableNew]
+                <a id="removeDeliverable-${deliverable.id}" class="removeDeliverable" href="${baseUrl}/projects/${crpSession}/deleteDeliverable.do?deliverableID=${deliverable.id}&phaseID=${(actualPhase.id)!}" title="Remove deliverable">
+                  <div class="icon-container"><span class="trash-icon glyphicon glyphicon-trash"></span><div>
+                </a>
+              [/#if]
+            </td>
+          [/#if]
         </tr>
       [/#list]
       [/#if]
@@ -151,6 +148,8 @@
         
         [#-- isDeliverableComplete --]
         [#assign isDeliverableComplete = action.isDeliverableComplete(deliverable.id) /]
+        [#-- To Report --]
+        [#local toReport = deliverable.deliverableInfo.isRequieriedReporting(currentCycleYear) && reportingActive && !isDeliverableComplete ]
         
         <tr>
           [#-- ID --]
@@ -163,20 +162,14 @@
           <td class="left">
             [#-- New Tag --]
             [#if isDeliverableNew]<span class="label label-info">New</span>[/#if]
-            
             [#-- Draft Tag --]
             [#if hasDraft]<strong class="text-info">[DRAFT]</strong>[/#if]
-
-            [#if deliverable.deliverableInfo.isRequieriedReporting(currentCycleYear) && reportingActive && !isDeliverableComplete]
-              <span class="label label-primary" title="Required for this cycle"><span class="glyphicon glyphicon-flash" ></span> Report</span>
-            [/#if]
+            [#-- To report --]
+            [#if toReport]<span class="label label-primary" title="Required for this cycle"><span class="glyphicon glyphicon-flash" ></span> Report</span>[/#if]
+            
             [#if deliverable.deliverableInfo.title?has_content]
-                <a href="[@s.url namespace=namespace action=defaultAction] [@s.param name='deliverableID']${deliverable.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" title="${deliverable.deliverableInfo.title}">
-                [#if deliverable.deliverableInfo.title?length < 120] 
-                  ${deliverable.deliverableInfo.title}
-                [#else] 
+                <a href="[@s.url namespace=namespace action=defaultAction] [@s.param name='deliverableID']${deliverable.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
                   [@utilities.wordCutter string=deliverable.deliverableInfo.title maxPos=120 /]
-                [/#if]
                 </a> 
             [#else]
               [#if action.canEdit(deliverable.id)]
