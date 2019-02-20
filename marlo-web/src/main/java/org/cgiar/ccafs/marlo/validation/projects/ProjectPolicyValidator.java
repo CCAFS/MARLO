@@ -147,6 +147,14 @@ public class ProjectPolicyValidator extends BaseValidator {
         InvalidFieldsMessages.EMPTYFIELD);
     }
 
+    // Validate Narrative
+    if (!(this.wordCount(projectPolicy.getProjectPolicyInfo(action.getActualPhase()).getNarrativeEvidence()) <= 200)) {
+      action.addMessage(action.getText("Narrative of Evidence"));
+      action.addMissingField("policy.narrative");
+      action.getInvalidFields().put("input-policy.projectPolicyInfo.narrativeEvidence",
+        InvalidFieldsMessages.EMPTYFIELD);
+    }
+
     // Validate Maturity Process
     if (projectPolicy.getProjectPolicyInfo(baseAction.getActualPhase()).getRepIndStageProcess() != null) {
       if (projectPolicy.getProjectPolicyInfo(baseAction.getActualPhase()).getRepIndStageProcess().getId() == null
@@ -156,7 +164,7 @@ public class ProjectPolicyValidator extends BaseValidator {
         action.getInvalidFields().put("input-policy.projectPolicyInfo.repIndStageProcess.id",
           InvalidFieldsMessages.EMPTYFIELD);
       } else {
-        if (projectPolicy.getProjectPolicyInfo(baseAction.getActualPhase()).getRepIndStageProcess().getId() != 1) {
+        if (projectPolicy.getProjectPolicyInfo(baseAction.getActualPhase()).getRepIndStageProcess().getId() != 3) {
           // Validate Evidences
           if (projectPolicy.getEvidences() == null || projectPolicy.getEvidences().isEmpty()) {
             action.addMessage(action.getText("Evidences List"));
