@@ -15,11 +15,15 @@
 package org.cgiar.ccafs.marlo.data.manager.impl;
 
 
+import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.dao.DeliverableCrossCuttingMarkerDAO;
+import org.cgiar.ccafs.marlo.data.dao.PhaseDAO;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableCrossCuttingMarkerManager;
 import org.cgiar.ccafs.marlo.data.model.DeliverableCrossCuttingMarker;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -32,12 +36,15 @@ public class DeliverableCrossCuttingMarkerManagerImpl implements DeliverableCros
 
 
   private DeliverableCrossCuttingMarkerDAO deliverableCrossCuttingMarkerDAO;
+  private PhaseDAO phaseDAO;
   // Managers
 
 
   @Inject
-  public DeliverableCrossCuttingMarkerManagerImpl(DeliverableCrossCuttingMarkerDAO deliverableCrossCuttingMarkerDAO) {
+  public DeliverableCrossCuttingMarkerManagerImpl(DeliverableCrossCuttingMarkerDAO deliverableCrossCuttingMarkerDAO,
+    PhaseDAO phaseDAO) {
     this.deliverableCrossCuttingMarkerDAO = deliverableCrossCuttingMarkerDAO;
+    this.phaseDAO = phaseDAO;
 
 
   }
@@ -78,7 +85,57 @@ public class DeliverableCrossCuttingMarkerManagerImpl implements DeliverableCros
   public DeliverableCrossCuttingMarker
     saveDeliverableCrossCuttingMarker(DeliverableCrossCuttingMarker deliverableCrossCuttingMarker) {
 
-    return deliverableCrossCuttingMarkerDAO.save(deliverableCrossCuttingMarker);
+    DeliverableCrossCuttingMarker marker = deliverableCrossCuttingMarkerDAO.save(deliverableCrossCuttingMarker);
+
+    Phase currentPhase = phaseDAO.find(deliverableCrossCuttingMarker.getPhase().getId());
+    boolean isPublication = deliverableCrossCuttingMarker.getDeliverable().getIsPublication() != null
+      && deliverableCrossCuttingMarker.getDeliverable().getIsPublication();
+    if (currentPhase.getDescription().equals(APConstants.PLANNING) && currentPhase.getNext() != null
+      && !isPublication) {
+      if (deliverableCrossCuttingMarker.getPhase().getNext() != null) {
+        this.saveDeliverableCrossCuttingMarkerAddPhase(deliverableCrossCuttingMarker.getPhase().getNext(),
+          deliverableCrossCuttingMarker.getDeliverable().getId(), deliverableCrossCuttingMarker);
+      }
+    }
+    if (currentPhase.getDescription().equals(APConstants.REPORTING) && !isPublication) {
+      if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {
+        Phase upkeepPhase = currentPhase.getNext().getNext();
+        if (upkeepPhase != null) {
+          this.saveDeliverableCrossCuttingMarkerAddPhase(upkeepPhase,
+            deliverableCrossCuttingMarker.getDeliverable().getId(), deliverableCrossCuttingMarker);
+        }
+      }
+    }
+
+    return marker;
+  }
+
+  public void saveDeliverableCrossCuttingMarkerAddPhase(Phase next, long deliverableID,
+    DeliverableCrossCuttingMarker deliverableCrossCuttingMarker) {
+
+    Phase phase = phaseDAO.find(next.getId());
+
+    List<DeliverableCrossCuttingMarker> deliverableCrossCuttingMarkers =
+      phase.getDeliverableCrossCuttingMarkers().stream()
+        .filter(
+          c -> c.isActive() && c.getDeliverable().getId().longValue() == deliverableID && c.getCgiarCrossCuttingMarker()
+            .getId().equals(deliverableCrossCuttingMarker.getCgiarCrossCuttingMarker().getId()))
+        .collect(Collectors.toList());
+
+    if (deliverableCrossCuttingMarkers.isEmpty()) {
+      DeliverableCrossCuttingMarker deliverableCrossCuttingMarkerAdd = new DeliverableCrossCuttingMarker();
+      deliverableCrossCuttingMarkerAdd.setDeliverable(deliverableCrossCuttingMarker.getDeliverable());
+      deliverableCrossCuttingMarkerAdd.setPhase(phase);
+      deliverableCrossCuttingMarkerAdd
+        .setRepIndGenderYouthFocusLevel(deliverableCrossCuttingMarker.getRepIndGenderYouthFocusLevel());
+      deliverableCrossCuttingMarkerAdd
+        .setCgiarCrossCuttingMarker(deliverableCrossCuttingMarker.getCgiarCrossCuttingMarker());
+      deliverableCrossCuttingMarkerDAO.save(deliverableCrossCuttingMarkerAdd);
+    }
+
+    if (phase.getNext() != null) {
+      this.saveDeliverableCrossCuttingMarkerAddPhase(phase.getNext(), deliverableID, deliverableCrossCuttingMarker);
+    }
   }
 
 
