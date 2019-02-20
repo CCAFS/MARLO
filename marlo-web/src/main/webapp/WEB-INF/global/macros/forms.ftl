@@ -269,11 +269,11 @@
  
 [#macro req required=true ]<span class="red requiredTag" style="display:${required?string('inline','none')};">*</span>[/#macro]
 
-[#macro confirmJustification action="" namespace="/" nameId="" title="" projectID=""]
+[#macro confirmJustification action="" namespace="/" nameId="" title="" projectID="" required=true]
   <div id="dialog-justification" title="${title}" style="display:none"> 
     <div class="dialog-content"> 
       [@s.form action=action namespace="${namespace}" cssClass="pure-form"]
-        [@textArea name="justification" i18nkey="saving.justification" required=true className="justification"/]
+        [@textArea name="justification" i18nkey="saving.justification" required=required className="justification"/]
         [#if nameId != ""]
           <input class="nameId" name="${nameId}" type="hidden" value="-1" />
         [/#if]
