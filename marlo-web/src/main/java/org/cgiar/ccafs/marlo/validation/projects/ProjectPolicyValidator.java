@@ -156,7 +156,7 @@ public class ProjectPolicyValidator extends BaseValidator {
         action.getInvalidFields().put("input-policy.projectPolicyInfo.repIndStageProcess.id",
           InvalidFieldsMessages.EMPTYFIELD);
       } else {
-        if (projectPolicy.getProjectPolicyInfo(baseAction.getActualPhase()).getRepIndStageProcess().getId() != 1) {
+        if (projectPolicy.getProjectPolicyInfo(baseAction.getActualPhase()).getRepIndStageProcess().getId() != 3) {
           // Validate Evidences
           if (projectPolicy.getEvidences() == null || projectPolicy.getEvidences().isEmpty()) {
             action.addMessage(action.getText("Evidences List"));
