@@ -21,7 +21,9 @@
     <tbody>
     [#if deliverables?has_content]
       [#list deliverables as deliverable]
+        [#-- Is New --]
         [#assign isDeliverableNew = action.isDeliverableNew(deliverable.id) /]
+        [#-- Has draft version (Auto-save) --]
         [#assign hasDraft = (action.getAutoSaveFilePath(deliverable.class.simpleName, "deliverable", deliverable.id))!false /]
         [#-- Is Complete --]
         [#assign isDeliverableComplete = action.isDeliverableComplete(deliverable.id) /]
