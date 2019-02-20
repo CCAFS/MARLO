@@ -540,16 +540,7 @@
 [/#function]
 
 [#macro elementsListComponent name elementType id="" elementList=[] label="" paramText="" help="" helpIcon=true listName="" keyFieldName="" displayFieldName="" maxLimit=0 indexLevel=1 required=true ]
-  [#local list = (listName?eval)?sort_by(displayFieldName) /]
-  
-  [#-- 
-  <ul>
-  [#list list as item]
-    <li>${(item[displayFieldName])!}</li>
-  [/#list]
-  </ul>
-   --]
-  
+  [#local list = ((listName?eval)?sort_by(displayFieldName))![] /] 
   [#local composedID = "${elementType}${id}" /]
   <div class="panel tertiary elementsListComponent" listname="${name}" style="position:relative">
     <div class="panel-head">
@@ -565,7 +556,12 @@
         [/#if]
       </ul>
       [#if editable]
-        [@select name="" className="setSelect2 maxLimit-${maxLimit} elementType-${composedID} indexLevel-${indexLevel}" showTitle=false listName=listName keyFieldName=keyFieldName displayFieldName=displayFieldName /]
+        <select name="" id="" class="setSelect2 maxLimit-${maxLimit} elementType-${composedID} indexLevel-${indexLevel}">
+          <option value="-1">[@s.text name="form.select.placeholder" /]</option>
+          [#list list as item]
+            <option value="${(item[keyFieldName])!}">${(item[displayFieldName])!'null'}</option>
+          [/#list]
+        </select>
       [#else]
         [#if !(elementList?has_content)]<p class="font-italic"> No entries added yet.</p>[/#if]
       [/#if]
