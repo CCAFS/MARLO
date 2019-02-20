@@ -126,6 +126,11 @@
       </div>
     </div>
     
+    [#-- Narrative --] 
+    <div class="form-group">
+      [@customForm.textArea name="${customName}.projectPolicyInfo.narrativeEvidence"  i18nkey="policy.narrative"  placeholder="" className="limitWords-200" help="policy.narrative.helpText" helpIcon=false required=false editable=editable /]
+    </div>
+          
     [#-- Evidence (OICR)  --]
     [#local isEvidenceRequired = ([4, 5]?seq_contains(element.projectPolicyInfo.repIndStageProcess.id))!false /]
     <div class="form-group evidences-block">

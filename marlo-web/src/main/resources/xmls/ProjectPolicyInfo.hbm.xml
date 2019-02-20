@@ -53,6 +53,9 @@
 		<property name="other" type="string">
 			<column length="65535" name="other" />
 		</property>
+		<property name="narrativeEvidence" type="string">
+			<column name="narrative_evidence" sql-type="TEXT" />
+		</property>
 		<property name="amount" type="java.lang.Double">
 			<column name="amount" precision="30" />
 		</property>
