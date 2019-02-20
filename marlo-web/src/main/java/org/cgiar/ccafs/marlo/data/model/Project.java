@@ -554,7 +554,9 @@ public class Project extends MarloAuditableEntity implements java.io.Serializabl
               && ((d.getDeliverableInfo().getNewExpectedYear() != null
                 && d.getDeliverableInfo().getNewExpectedYear() != -1
                 && d.getDeliverableInfo().getNewExpectedYear() >= phase.getYear())
-                || d.getDeliverableInfo().getYear() >= phase.getYear()))))
+                || ((d.getDeliverableInfo().getNewExpectedYear() == null
+                  || d.getDeliverableInfo().getNewExpectedYear() == -1)
+                  && d.getDeliverableInfo().getYear() >= phase.getYear())))))
         .collect(Collectors.toList());
 
     if (currentDeliverables != null && !currentDeliverables.isEmpty()) {
@@ -895,7 +897,9 @@ public class Project extends MarloAuditableEntity implements java.io.Serializabl
               && ((d.getDeliverableInfo().getNewExpectedYear() != null
                 && d.getDeliverableInfo().getNewExpectedYear() != -1
                 && d.getDeliverableInfo().getNewExpectedYear() < phase.getYear())
-                || d.getDeliverableInfo().getYear() < phase.getYear()))))
+                || ((d.getDeliverableInfo().getNewExpectedYear() == null
+                  || d.getDeliverableInfo().getNewExpectedYear() == -1)
+                  && d.getDeliverableInfo().getYear() < phase.getYear())))))
         .collect(Collectors.toList());
 
     if (previousDeliverables != null && !previousDeliverables.isEmpty()) {
