@@ -197,15 +197,24 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
     }
 
     if (status != null && this.year == year
-      && (status.intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
-        || status.intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())
-        || status.intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId()))) {
+      && status.intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())) {
       return true;
     }
 
-    if (status != null && newExpectedYear != null && this.newExpectedYear == year
+    if (status != null && this.newExpectedYear != null && this.newExpectedYear != -1 && this.newExpectedYear == year
       && status.intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())) {
       return true;
+    }
+
+    if (status != null && (status.intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())
+      || status.intValue() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId()))) {
+      if (this.newExpectedYear != null && this.newExpectedYear != -1 && this.newExpectedYear == year) {
+        return true;
+      } else {
+        if (this.year == year) {
+          return true;
+        }
+      }
     }
 
     return false;

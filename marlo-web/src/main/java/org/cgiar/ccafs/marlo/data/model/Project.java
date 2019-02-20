@@ -533,22 +533,29 @@ public class Project extends MarloAuditableEntity implements java.io.Serializabl
   public List<Deliverable> getCurrentDeliverables(Phase phase) {
     List<Deliverable> deliverables = new ArrayList<Deliverable>();
 
-    List<Deliverable> currentDeliverables = this.getDeliverables().stream().filter(d -> d.isActive()
-      && d.getDeliverableInfo(phase) != null && d.getDeliverableInfo().isActive()
-      && ((d.getDeliverableInfo().getStatus() == null && d.getDeliverableInfo().getYear() >= phase.getYear())
-        || (d.getDeliverableInfo().getStatus() != null
-          && d.getDeliverableInfo().getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
-          && d
-            .getDeliverableInfo().getNewExpectedYear() != null
-          && d.getDeliverableInfo().getNewExpectedYear() >= phase.getYear())
-        || (d.getDeliverableInfo().getStatus() != null
-          && (d.getDeliverableInfo().getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
-            || d.getDeliverableInfo().getStatus().intValue() == Integer
-              .parseInt(ProjectStatusEnum.Cancelled.getStatusId())
-            || d.getDeliverableInfo().getStatus().intValue() == Integer
-              .parseInt(ProjectStatusEnum.Complete.getStatusId()))
-          && d.getDeliverableInfo().getYear() >= phase.getYear())))
-      .collect(Collectors.toList());
+    List<Deliverable> currentDeliverables =
+      this.getDeliverables().stream()
+        .filter(d -> d.isActive() && d.getDeliverableInfo(phase) != null && d.getDeliverableInfo().isActive()
+          && ((d.getDeliverableInfo().getStatus() == null && d.getDeliverableInfo().getYear() >= phase.getYear())
+            || (d.getDeliverableInfo().getStatus() != null
+              && d.getDeliverableInfo().getStatus().intValue() == Integer
+                .parseInt(ProjectStatusEnum.Ongoing.getStatusId())
+              && d.getDeliverableInfo().getYear() >= phase.getYear())
+            || (d.getDeliverableInfo().getStatus() != null
+              && d.getDeliverableInfo().getStatus().intValue() == Integer
+                .parseInt(ProjectStatusEnum.Extended.getStatusId())
+              && d.getDeliverableInfo().getNewExpectedYear() != null
+              && d.getDeliverableInfo().getNewExpectedYear() >= phase.getYear())
+            || (d.getDeliverableInfo().getStatus() != null
+              && (d.getDeliverableInfo().getStatus().intValue() == Integer
+                .parseInt(ProjectStatusEnum.Cancelled.getStatusId())
+                || d.getDeliverableInfo().getStatus().intValue() == Integer
+                  .parseInt(ProjectStatusEnum.Complete.getStatusId()))
+              && ((d.getDeliverableInfo().getNewExpectedYear() != null
+                && d.getDeliverableInfo().getNewExpectedYear() != -1
+                && d.getDeliverableInfo().getNewExpectedYear() >= phase.getYear())
+                || d.getDeliverableInfo().getYear() >= phase.getYear()))))
+        .collect(Collectors.toList());
 
     if (currentDeliverables != null && !currentDeliverables.isEmpty()) {
       currentDeliverables.stream().sorted((d1, d2) -> d1.getId().compareTo((d2.getId()))).collect(Collectors.toList());
@@ -867,22 +874,29 @@ public class Project extends MarloAuditableEntity implements java.io.Serializabl
   public List<Deliverable> getPreviousDeliverables(Phase phase) {
     List<Deliverable> deliverables = new ArrayList<Deliverable>();
 
-    List<Deliverable> previousDeliverables = this.getDeliverables().stream().filter(d -> d.isActive()
-      && d.getDeliverableInfo(phase) != null && d.getDeliverableInfo().isActive()
-      && ((d.getDeliverableInfo().getStatus() == null && d.getDeliverableInfo().getYear() < phase.getYear())
-        || (d.getDeliverableInfo().getStatus() != null
-          && d.getDeliverableInfo().getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
-          && d
-            .getDeliverableInfo().getNewExpectedYear() != null
-          && d.getDeliverableInfo().getNewExpectedYear() < phase.getYear())
-        || (d.getDeliverableInfo().getStatus() != null
-          && (d.getDeliverableInfo().getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
-            || d.getDeliverableInfo().getStatus().intValue() == Integer
-              .parseInt(ProjectStatusEnum.Cancelled.getStatusId())
-            || d.getDeliverableInfo().getStatus().intValue() == Integer
-              .parseInt(ProjectStatusEnum.Complete.getStatusId()))
-          && d.getDeliverableInfo().getYear() < phase.getYear())))
-      .collect(Collectors.toList());
+    List<Deliverable> previousDeliverables =
+      this.getDeliverables().stream()
+        .filter(d -> d.isActive() && d.getDeliverableInfo(phase) != null && d.getDeliverableInfo().isActive()
+          && ((d.getDeliverableInfo().getStatus() == null && d.getDeliverableInfo().getYear() < phase.getYear())
+            || (d.getDeliverableInfo().getStatus() != null
+              && d.getDeliverableInfo().getStatus().intValue() == Integer
+                .parseInt(ProjectStatusEnum.Ongoing.getStatusId())
+              && d.getDeliverableInfo().getYear() < phase.getYear())
+            || (d.getDeliverableInfo().getStatus() != null
+              && d.getDeliverableInfo().getStatus().intValue() == Integer
+                .parseInt(ProjectStatusEnum.Extended.getStatusId())
+              && d.getDeliverableInfo().getNewExpectedYear() != null
+              && d.getDeliverableInfo().getNewExpectedYear() < phase.getYear())
+            || (d.getDeliverableInfo().getStatus() != null
+              && (d.getDeliverableInfo().getStatus().intValue() == Integer
+                .parseInt(ProjectStatusEnum.Cancelled.getStatusId())
+                || d.getDeliverableInfo().getStatus().intValue() == Integer
+                  .parseInt(ProjectStatusEnum.Complete.getStatusId()))
+              && ((d.getDeliverableInfo().getNewExpectedYear() != null
+                && d.getDeliverableInfo().getNewExpectedYear() != -1
+                && d.getDeliverableInfo().getNewExpectedYear() < phase.getYear())
+                || d.getDeliverableInfo().getYear() < phase.getYear()))))
+        .collect(Collectors.toList());
 
     if (previousDeliverables != null && !previousDeliverables.isEmpty()) {
       deliverables.addAll(previousDeliverables);
