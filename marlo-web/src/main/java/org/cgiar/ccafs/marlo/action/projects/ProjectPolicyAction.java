@@ -762,6 +762,8 @@ public class ProjectPolicyAction extends BaseAction {
 
   @Override
   public String save() {
+    System.out.println("narrative " + policy.getProjectPolicyInfo().getNarrativeEvidence());
+
     if (this.hasPermission("canEdit")) {
 
       Phase phase = this.getActualPhase();
