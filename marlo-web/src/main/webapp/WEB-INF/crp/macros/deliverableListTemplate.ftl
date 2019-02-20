@@ -28,7 +28,7 @@
         [#-- Is Complete --]
         [#assign isDeliverableComplete = action.isDeliverableComplete(deliverable.id) /]
         [#-- To Report --]
-        [#local toReport = (deliverable.deliverableInfo.isRequieriedReporting(currentCycleYear) && reportingActive)  ]
+        [#local toReport = (deliverable.deliverableInfo.isRequieriedReporting(currentCycleYear) && reportingActive) && !isDeliverableComplete ]
         
         <tr>
           [#-- ID --]

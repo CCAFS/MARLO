@@ -13,25 +13,6 @@ function init() {
 
   selectKeyOutput();
 
-  /* Init Select2 plugin */
-  $('form select').select2({
-    width: '100%'
-  });
-
-  // Update Parters selected lists
-  updateProjectPartnersSelects();
-
-  $(".fundingSource").select2({
-      templateResult: formatState,
-      templateSelection: formatState,
-      width: "100%"
-  });
-
-  $(".genderLevelsSelect").select2({
-      templateResult: formatStateGenderType,
-      width: "100%"
-  });
-
   $('.helpMessage3').on("click", openDialog);
 
   // justificationByStatus($statuses.val());
@@ -113,21 +94,12 @@ function init() {
 
   });
 
-  // CHANGE CATEGORY
-  $("#CCAFS_deliverable_deliverable_deliverableType_deliverableType_id").on('change', function(e) {
-    var selectedOption = $("#CCAFS_deliverable_deliverable_deliverableType_deliverableType_id option:selected").val();
-    if(selectedOption != -1) {
-      $(".subType-select").show(600);
-    } else {
-      $(".subType-select").hide(600);
-    }
-  });
-
-  // CHANGE STATUS
+  // Event when status is changed
   $statuses.on("change", function() {
     justificationByStatus(this.value);
   });
 
+  // Event to validate the expected date
   $(".yearExpected").on("change", validateCurrentDate);
 
   // New Expected year should be greater than current reporting cycle year
@@ -137,6 +109,7 @@ function init() {
       $statuses.val(3).trigger("change");
       $('.deliverableYear .overlay').show();
     } else {
+      // Disable On-going
       $statuses.find('option[value="2"]').prop("disabled", true).trigger("change");
     }
   }
@@ -288,6 +261,25 @@ function init() {
       $('.computerLicense input').prop("checked", false);
     }
 
+  });
+
+  /* Init Select2 plugin */
+  $('form select').select2({
+    width: '100%'
+  });
+
+  // Update Parters selected lists
+  updateProjectPartnersSelects();
+
+  $(".fundingSource").select2({
+      templateResult: formatState,
+      templateSelection: formatState,
+      width: "100%"
+  });
+
+  $(".genderLevelsSelect").select2({
+      templateResult: formatStateGenderType,
+      width: "100%"
   });
 }
 
