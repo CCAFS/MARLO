@@ -798,6 +798,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
       this.tags = this.evidenceTagManager.findAll();
       this.innovationsList = new ArrayList<>();
+      this.policyList = new ArrayList<>();
 
       // Expected Study Projects List
       if (this.expectedStudy.getExpectedStudyProjects() != null) {
@@ -882,9 +883,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
             this.innovationsList.add(projectInnovation);
           }
         }
-
-        // Get the policies List
-        this.policyList = new ArrayList<>();
 
         List<ProjectPolicy> policies =
           projectL.getProjectPolicies().stream().filter(c -> c.isActive()).collect(Collectors.toList());
