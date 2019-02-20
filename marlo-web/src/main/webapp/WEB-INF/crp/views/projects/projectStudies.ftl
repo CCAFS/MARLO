@@ -83,7 +83,7 @@
 [#list params?keys as prop]<input id="${params[prop].id}" type="hidden" value="${params[prop].name}" />[/#list]
 
 
-[@customForm.confirmJustification action="deleteStudy.do" namespace="/projects" nameId="expectedID" projectID="${projectID}" title="Remove study" /]
+[@customForm.confirmJustification action="deleteStudy.do" namespace="/projects" nameId="expectedID" projectID="${projectID}" title="Remove study" required=false /]
 
 [#include "/WEB-INF/global/pages/footer.ftl"]
 
