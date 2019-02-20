@@ -33,6 +33,8 @@ public class ProjectPolicyInfo extends MarloBaseEntity implements java.io.Serial
   private Double amount;
   @Expose
   private String other;
+  @Expose
+  private String narrativeEvidence;
 
 
   public ProjectPolicyInfo() {
@@ -89,10 +91,14 @@ public class ProjectPolicyInfo extends MarloBaseEntity implements java.io.Serial
   }
 
 
+  public String getNarrativeEvidence() {
+    return narrativeEvidence;
+  }
+
+
   public String getOther() {
     return other;
   }
-
 
   public Phase getPhase() {
     return phase;
@@ -102,7 +108,6 @@ public class ProjectPolicyInfo extends MarloBaseEntity implements java.io.Serial
   public ProjectExpectedStudy getProjectExpectedStudy() {
     return projectExpectedStudy;
   }
-
 
   public ProjectPolicy getProjectPolicy() {
     return projectPolicy;
@@ -153,6 +158,11 @@ public class ProjectPolicyInfo extends MarloBaseEntity implements java.io.Serial
   @Override
   public void setModifiedBy(User modifiedBy) {
 
+  }
+
+
+  public void setNarrativeEvidence(String narrativeEvidence) {
+    this.narrativeEvidence = narrativeEvidence;
   }
 
 
