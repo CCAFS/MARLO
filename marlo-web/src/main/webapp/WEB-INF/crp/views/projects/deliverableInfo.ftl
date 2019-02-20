@@ -55,6 +55,7 @@
   <div class="${reportingActive?string('fieldFocus','simpleBox')}">
     
     <div class="form-group row">
+      [#assign canViewNewExpectedYear = action.candEditExpectedYear(deliverable.id) /]
       [#-- Deliverable Status --]
       <div class="col-md-4">
         [@customForm.select name="deliverable.deliverableInfo.status" label=""   i18nkey="project.deliverable.generalInformation.status" listName="status"  multiple=false required=true header=false className=" status" editable=editable || editStatus/]
@@ -63,8 +64,7 @@
       <div id="deliverableYear" class="col-md-4 form-group">
         [#assign canNotEditYear = (deliverable.deliverableInfo.status == 4)!false || !action.candEditYear(deliverable.id)/] 
         [#if editable ]
-          <div class="overlay" style="display:${canNotEditYear?string('block', 'none')}"></div>
-          [#-- project.projectInfo.${canNotEditYear?string('AllYears', 'AllYearsPhase')} --]
+          <div class="overlay" style="display:${(canNotEditYear)?string('block', 'none')}"></div>
           [@customForm.select name="deliverable.deliverableInfo.year" label=""  i18nkey="project.deliverable.generalInformation.year" listName="project.projectInfo.AllYears" header=false required=true className="yearExpected" disabled=canNotEditYear /]
         [#else]
            <div class="select">
@@ -76,7 +76,6 @@
       </div>
       
       [#-- New Expected Year - Extended = 4 or exist--]
-      [#assign canViewNewExpectedYear = action.candEditExpectedYear(deliverable.id) /]
       <div id="newExpectedYear" class="col-md-4" style="display:${canViewNewExpectedYear?string('block','none')}">
         [#assign startExpectedYear = ((deliverable.deliverableInfo.year)!currentCycleYear)  ]
         [#if editable || editStatus]
