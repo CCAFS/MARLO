@@ -822,10 +822,8 @@ public class ProjectExpectedStudiesAction extends BaseAction {
           List<ProjectPolicy> sharedPolicies =
             sharedProject.getProjectPolicies().stream().filter(c -> c.isActive()).collect(Collectors.toList());
           for (ProjectPolicy projectPolicy : sharedPolicies) {
-            if (projectPolicy != null) {
-              if (projectPolicy.getProjectPolicyInfo(this.getActualPhase()) != null) {
-                this.policyList.add(projectPolicy);
-              }
+            if (projectPolicy.getProjectPolicyInfo(this.getActualPhase()) != null) {
+              this.policyList.add(projectPolicy);
             }
           }
 
@@ -886,9 +884,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
           }
         }
 
-        // Get the policies List
-        // this.policyList = new ArrayList<>();
-
         List<ProjectPolicy> policies =
           projectL.getProjectPolicies().stream().filter(c -> c.isActive()).collect(Collectors.toList());
         for (ProjectPolicy projectPolicy : policies) {
@@ -920,8 +915,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
                 this.policyList.add(projectPolicy);
               }
             }
-
-            System.out.println("POLICY ****************** " + this.policyList.size());
           }
         }
 
