@@ -92,73 +92,32 @@
             <img src="${baseUrl}/global/images/FAIR_Principles_in_MARLO_20170919.png" alt="" width="100%" />
           </div>
           
-          
-          <h3 class="subTitle headTitle">On going deliverables</h3>
-          <span class="extended-simple-version" data-toggle="modal" data-target=".ongoing-modal">Extended version</span>
-          <div class="deliverables-extended-version" data-toggle="modal" data-target=".ongoing-modal"><span class="glyphicon glyphicon-eye-open"></span></div>
-           [#if reportingActive]
-             <p class="note">
-              [@s.text name="project.deliverableList.focusDeliverablesMessage"][@s.param]${currentCycleYear}[/@s.param][@s.param]<span class="label label-primary" title="Required for this cycle"><span class="glyphicon glyphicon-flash" ></span> Report</span>[/@s.param][/@s.text]
-             </p>
-           [/#if]
-           <hr />
-           [#-- On-going Extended table (Modal) --]
-           <div class="modal fade extended-table-modal ongoing-modal" tabindex="-1" role="dialog" aria-labelledby="extendedTableModal" aria-hidden="true">
-            <div class="modal-dialog modal-lg">
-              <div class="modal-content">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h3 class="subTitle headTitle">On going deliverables</h3>
-                <hr />
-                  [@deliverableList.deliverablesListExtended deliverables=action.getDeliverables(true,false) canValidate=true canEdit=candit FAIRColumn=false namespace="/projects" defaultAction="${(crpSession)!}/deliverable"/]
-              </div>
-            </div>
+          [#-- Ongoing table --]
+          <div class="">
+            <h3 class="subTitle headTitle">On going deliverables</h3>
+            [#if reportingActive]
+             <p class="note">[@s.text name="project.deliverableList.focusDeliverablesMessage"][@s.param]${currentCycleYear}[/@s.param][@s.param]<span class="label label-primary" title="Required for this cycle"><span class="glyphicon glyphicon-flash" ></span> Report</span>[/@s.param][/@s.text]</p>
+            [/#if]
+            <hr /> 
+            [@deliverableList.deliverablesList deliverables=action.getDeliverables(true,false) canValidate=true canEdit=candit  isReportingActive=reportingActive namespace="/projects" defaultAction="${(crpSession)!}/deliverable"/]
           </div>
-          [#-- Simple table --]
-           [@deliverableList.deliverablesList deliverables=action.getDeliverables(true,false) canValidate=true canEdit=candit  isReportingActive=reportingActive namespace="/projects" defaultAction="${(crpSession)!}/deliverable"/]
                      
+          [#-- Completed Extended table (Modal) --]
           [#if action.getDeliverables(false,false)?has_content]
-            <div class="deliverables-table-header">
-              <h3 class="subTitle headTitle">Completed deliverables</h3>
-              <span class="extended-simple-version" data-toggle="modal" data-target=".completed-modal">Extended version</span>
-              <div class="deliverables-extended-version" data-toggle="modal" data-target=".completed-modal"><span class="glyphicon glyphicon-eye-open"></span></div>
-            </div>
+          <div class="">
+            <h3 class="subTitle headTitle">Completed deliverables</h3>
             <hr />
-            [#-- Completed Extended table (Modal) --]
-            <div class="modal fade extended-table-modal completed-modal" tabindex="-1" role="dialog" aria-labelledby="extendedTableModal" aria-hidden="true">
-              <div class="modal-dialog modal-lg">
-                <div class="modal-content">
-                  <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                  <h3 class="subTitle headTitle">Completed deliverables</h3>
-                  <hr />
-                    [@deliverableList.deliverablesListExtended deliverables=action.getDeliverables(false,false) canValidate=true canEdit=candit namespace="/projects" defaultAction="${(crpSession)!}/deliverable"/]
-                </div>
-              </div>
-            </div>
-            [#-- Simple table --]
-            [@deliverableList.deliverablesList deliverables=action.getDeliverables(false,false) canValidate=true canEdit=candit isReportingActive=reportingActive namespace="/projects" defaultAction="${(crpSession)!}/deliverable"/]
+            [@deliverableList.deliverablesList deliverables=action.getDeliverables(false,false) canValidate=true canEdit=candit isReportingActive=reportingActive namespace="/projects" defaultAction="${(crpSession)!}/deliverable" currentTable=false /]
+          </div>
           [/#if]
 
           [#if action.getDeliverables(false,true)?has_content]
-            <div class="deliverables-table-header">
-              <h3 class="subTitle headTitle">Cancelled deliverables</h3>
-              <span class="extended-simple-version" data-toggle="modal" data-target=".cancelled-modal">Extended version</span>
-              <div class="deliverables-extended-version" data-toggle="modal" data-target=".cancelled-modal"><span class="glyphicon glyphicon-eye-open"></span></div>
-            </div>
+          <div class="">
+            <h3 class="subTitle headTitle">Cancelled deliverables</h3>
             <hr />
-            [#-- Cancelled Extended table (Modal) --]
-            <div class="modal fade extended-table-modal cancelled-modal" tabindex="-1" role="dialog" aria-labelledby="extendedTableModal" aria-hidden="true">
-              <div class="modal-dialog modal-lg">
-                <div class="modal-content">
-                  <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                  <h3 class="subTitle headTitle">Cancelled deliverables</h3>
-                  <hr />
-                    [@deliverableList.deliverablesListExtended deliverables=action.getDeliverables(false,true) canValidate=true canEdit=candit namespace="/projects" defaultAction="${(crpSession)!}/deliverable"/]
-                </div>
-              </div>
-            </div>
-            [@deliverableList.deliverablesList deliverables=action.getDeliverables(false,true) canValidate=true canEdit=candit namespace="/projects" defaultAction="${(crpSession)!}/deliverable"/] 
+            [@deliverableList.deliverablesList deliverables=action.getDeliverables(false,true) canValidate=true canEdit=candit namespace="/projects" defaultAction="${(crpSession)!}/deliverable" currentTable=false /] 
+          </div>
           [/#if]
-          <input type="hidden" name="projectID" value="${projectID}" />
           
           [#-- Add Deliverable Button --]
           [#if canEdit && action.hasPermission("addDeliverable")]
@@ -172,6 +131,7 @@
           </div>
           [/#if]
           
+          <input type="hidden" name="projectID" value="${projectID}" />
         [/@s.form] 
       </div>
     </div>  
