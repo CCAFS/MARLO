@@ -547,7 +547,8 @@
       <label for="">[@s.text name=label /]:[@req required=required && editable /]
         [#--  Help Text --]
         [@helpLabel name="${help}" paramText="${paramText}" showIcon=helpIcon editable=editable/]
-      </label></div>
+      </label>
+    </div>
     <div class="panel-body" style="min-height: 30px;">
       <div class="loading listComponentLoading" style="display:none"></div>
       <ul class="list listType-${composedID}">
