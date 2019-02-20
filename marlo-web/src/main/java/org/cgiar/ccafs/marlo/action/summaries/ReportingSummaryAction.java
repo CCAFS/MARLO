@@ -1023,6 +1023,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     masterReport.getParameterValues().put("i8nProjectPolicyClimateChange", this.getText("projectPolicy.climateChange"));
     masterReport.getParameterValues().put("i8nProjectPolicyGeographicScope",
       this.getText("projectPolicy.geographicScope"));
+    masterReport.getParameterValues().put("i8nProjectPolicyNarrative", this.getText("policy.narrative"));
 
     return masterReport;
   }
@@ -4470,10 +4471,10 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     TypedTableModel model = new TypedTableModel(
       new String[] {"id", "title", "year", "investment", "organizationType", "levelMaturity", "whosePolicy",
         "outcomeCaseReport", "innovations", "contributingCRP", "subIDOs", "gender", "youth", "capdev", "climateChange",
-        "geographicScope"},
+        "geographicScope", "narrative"},
       new Class[] {Long.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        String.class},
+        String.class, String.class},
       0);
     for (ProjectPolicy projectPolicy : project.getProjectPolicies().stream()
       .filter(pl -> pl.getProject() != null && pl.getProject().getId().equals(projectID)
@@ -4483,7 +4484,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       String title = null, year = null, investment = null, organizationType = null, levelMaturity = null,
         whosePolicy = null, outcomeCaseReport = null, innovations = null, contributingCRP = null, subIDOs = null,
         gender = null, youth = null, capdev = null, climateChange = null, geographicScope = null, region = "",
-        countries = "";
+        countries = "", narrative = "";
 
       Boolean isRegional = false, isNational = false;
 
@@ -4491,6 +4492,13 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       if (projectPolicy.getProjectPolicyInfo() != null && projectPolicy.getProjectPolicyInfo().getTitle() != null) {
         title = projectPolicy.getProjectPolicyInfo().getTitle();
       }
+
+      // Narrative
+      if (projectPolicy.getProjectPolicyInfo() != null
+        && projectPolicy.getProjectPolicyInfo().getNarrativeEvidence() != null) {
+        narrative = projectPolicy.getProjectPolicyInfo().getNarrativeEvidence();
+      }
+
       // Year
       if (projectPolicy.getProjectPolicyInfo() != null && projectPolicy.getProjectPolicyInfo().getYear() != null) {
         year = projectPolicy.getProjectPolicyInfo().getYear().toString();
@@ -4688,7 +4696,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
        */
       model.addRow(new Object[] {projectPolicy.getId(), title, year, investment, organizationType, levelMaturity,
         whosePolicy, outcomeCaseReport, innovations, contributingCRP, subIDOs, gender, youth, capdev, climateChange,
-        geographicScope});
+        geographicScope, narrative});
 
     }
     return model;
