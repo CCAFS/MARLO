@@ -276,7 +276,10 @@ public class ValidateProjectSectionAction extends BaseAction {
           section.put("sectionName", ProjectSectionStatusEnum.DELIVERABLES);
           section.put("missingFields", "");
 
-          if (project.getDeliverables().stream().filter(d -> d.isActive()).collect(Collectors.toList()).isEmpty()) {
+          if (project.getDeliverables().stream().filter(d -> d.isActive()).collect(Collectors.toList()).isEmpty()
+            && project.getProjecInfoPhase(this.getActualPhase()) != null
+            && project.getProjecInfoPhase(this.getActualPhase()).getAdministrative() != null
+            && !project.getProjecInfoPhase(this.getActualPhase()).getAdministrative()) {
             section.put("missingFields", section.get("missingFields") + "-" + "deliveralbes");
           }
 
