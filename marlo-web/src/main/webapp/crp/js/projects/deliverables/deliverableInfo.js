@@ -458,6 +458,14 @@ function validateCurrentDate() {
 }
 
 function justificationByStatus(statusId) {
+  var $yearOverlay = $('#deliverableYear .overlay');
+  var $newExpectedYearBlock = $('#newExpectedYear');
+  var $newExpectedYearSelect = $newExpectedYearBlock.find('select');
+  var newExpectedYear = $newExpectedYearSelect.val();
+  var hasExpectedYear = ((newExpectedYear != "") && newExpectedYear != "-1");
+  var isCompletedWithoutExpectedYear = ((!reportingActive) && isStatusComplete(statusId) && hasExpectedYear);
+
+  // Validate the justification
   if(isStatusCancelled(statusId) || isStatusExtended(statusId)) {
     $statusDescription.hide().show(400);
     $statusDescription.find('label').html($('#status-' + statusId).html());
@@ -465,32 +473,26 @@ function justificationByStatus(statusId) {
     $statusDescription.show().hide(400);
   }
 
-  var newExpectedYear = $('#newExpectedYear select').val();
-  console.log(newExpectedYear);
-  var isCompletedWithoutExpectedYear =
-      ((!reportingActive) && isStatusComplete(statusId) && ((newExpectedYear != "") || newExpectedYear != "-1"));
-
-  if(isStatusExtended(statusId) || isCompletedWithoutExpectedYear) {
-    $('#newExpectedYear').show();
-    $('#newExpectedYear select').attr('disabled', false);
-    if(isCompletedWithoutExpectedYear) {
-      $('#newExpectedYear select').attr('disabled', true);
-      $('#newExpectedYear').hide();
-    } else {
-      $('#newExpectedYear select').attr('disabled', false);
-    }
+  // Validate the new extended year
+  if(isStatusOnGoing(statusId)) {
+    $newExpectedYearSelect.val('-1').trigger('change');
+    $newExpectedYearBlock.hide();
   } else {
-    $('#newExpectedYear').hide();
+    if(hasExpectedYear) {
+      $newExpectedYearBlock.show();
+    } else {
+      $newExpectedYearBlock.hide();
+    }
   }
 
-  var $yearOverlay = $('#deliverableYear .overlay');
+  // Lock the delivery year
   if(isStatusExtended(statusId)) {
     $yearOverlay.show();
   } else {
     $yearOverlay.hide();
   }
 
-  $statusDescription.find('textarea').val('');
+  // $statusDescription.find('textarea').val('');
 }
 
 // Add a new person element
@@ -638,7 +640,7 @@ function selectKeyOutput() {
   var keyOutputOptions = $keyOutputList.find('option')
   var keyOutputsLength = keyOutputOptions.length;
 
-  if( keyOutputsLength == 2 ) {
+  if(keyOutputsLength == 2) {
     var optionValue = keyOutputOptions[1].value;
     $keyOutputList.val(optionValue);
     $keyOutputList.trigger('change');

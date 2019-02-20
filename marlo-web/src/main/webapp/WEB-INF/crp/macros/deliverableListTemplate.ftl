@@ -70,7 +70,10 @@
               None
             [#else]
               ${(deliverable.deliverableInfo.year)!'None'}
-              [#if deliverable.deliverableInfo.status?? && (deliverable.deliverableInfo.status==4 || deliverable.deliverableInfo.status==3) && deliverable.deliverableInfo.newExpectedYear?? && (deliverable.deliverableInfo.newExpectedYear != -1) ]
+              [#if  
+                    ((deliverable.deliverableInfo.status == 4 || deliverable.deliverableInfo.status==3)!false )
+                    && ((deliverable.deliverableInfo.newExpectedYear != -1)!false) 
+                    ]
                 Extended to ${deliverable.deliverableInfo.newExpectedYear}
               [/#if]
             [/#if]
