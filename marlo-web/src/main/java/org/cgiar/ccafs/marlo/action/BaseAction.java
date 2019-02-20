@@ -1607,8 +1607,12 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     String actionFile = this.getCrpSession() + "_" + actionName;
     String autoSaveFile = id + "_" + composedClassName + "_" + this.getActualPhase().getName() + "_"
       + this.getActualPhase().getYear() + "_" + actionFile + ".json";
-    boolean exist = Paths.get(config.getAutoSaveFolder() + autoSaveFile).toFile().exists();
-    return exist;
+    Path path = Paths.get(config.getAutoSaveFolder() + autoSaveFile);
+    if (path.toFile().exists()) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
 
@@ -3524,9 +3528,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
             && c.getProjectPolicyInfo(this.getActualPhase()).getYear().intValue() == this.getCurrentCycleYear())
           .collect(Collectors.toList());
 
-        if (policies.isEmpty()) {
-          return true;
-        }
 
         for (ProjectPolicy projectPolicy : policies) {
           sectionStatus = sectionStatusManager.getSectionStatusByProjectPolicy(projectPolicy.getId(),
@@ -6545,6 +6546,19 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
 
 
+    return true;
+  }
+
+  public boolean validatePolicy(long policyID) {
+    SectionStatus sectionStatus = sectionStatusManager.getSectionStatusByProjectPolicy(policyID, this.getCurrentCycle(),
+      this.getCurrentCycleYear(), this.isUpKeepActive(), ProjectSectionStatusEnum.POLICIES.getStatus());
+    if (sectionStatus != null) {
+      if (sectionStatus.getMissingFields().length() != 0) {
+        return false;
+      }
+    } else {
+      return false;
+    }
     return true;
   }
 
