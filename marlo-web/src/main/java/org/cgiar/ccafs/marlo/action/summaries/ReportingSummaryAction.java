@@ -4517,10 +4517,11 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       }
 
       // Owners
-      List<ProjectPolicyOwner> pList = projectPolicyOwnerManager.findAll().stream()
-        .filter(p -> p.getPhase().getId().equals(this.getSelectedPhase().getId())
-          && p.getProjectPolicy().getId().equals(projectPolicy.getId()))
-        .collect(Collectors.toList());
+      List<ProjectPolicyOwner> pList = projectPolicyOwnerManager.findAll();
+      if (pList != null) {
+        pList = pList.stream().filter(p -> p.getPhase().getId().equals(this.getSelectedPhase().getId())
+          && p.getProjectPolicy().getId().equals(projectPolicy.getId())).collect(Collectors.toList());
+      }
 
       if (pList != null) {
         Set<String> ownersSet = new HashSet<>();
@@ -4533,19 +4534,22 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       }
 
       // Outcomes case report
-      List<ProjectExpectedStudyPolicy> expectedStudyList = projectExpectedStudyPolicyManager.findAll().stream()
-        .filter(p -> p.getPhase().getId().equals(this.getActualPhase().getId())
-          && p.getProjectPolicy().getId().equals(projectPolicy.getId()))
-        .collect(Collectors.toList());
+      List<ProjectExpectedStudyPolicy> expectedStudyList = projectExpectedStudyPolicyManager.findAll();
       if (expectedStudyList != null) {
-        Set<String> evidencesSet = new HashSet<>();
-        for (ProjectExpectedStudyPolicy evidences : expectedStudyList) {
-          if (evidences.getProjectExpectedStudy() != null
-            && evidences.getProjectExpectedStudy().getComposedName() != null) {
-            evidencesSet.add("<br>&nbsp;&nbsp;&nbsp;&nbsp; ● " + evidences.getProjectExpectedStudy().getComposedName());
+        expectedStudyList =
+          expectedStudyList.stream().filter(p -> p.getPhase().getId().equals(this.getActualPhase().getId())
+            && p.getProjectPolicy().getId().equals(projectPolicy.getId())).collect(Collectors.toList());
+        if (expectedStudyList != null) {
+          Set<String> evidencesSet = new HashSet<>();
+          for (ProjectExpectedStudyPolicy evidences : expectedStudyList) {
+            if (evidences.getProjectExpectedStudy() != null
+              && evidences.getProjectExpectedStudy().getComposedName() != null) {
+              evidencesSet
+                .add("<br>&nbsp;&nbsp;&nbsp;&nbsp; ● " + evidences.getProjectExpectedStudy().getComposedName());
+            }
           }
+          outcomeCaseReport = String.join("", evidencesSet);
         }
-        outcomeCaseReport = String.join("", evidencesSet);
       }
 
       // Innovation
