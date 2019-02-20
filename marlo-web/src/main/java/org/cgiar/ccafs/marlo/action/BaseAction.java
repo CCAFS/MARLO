@@ -4933,7 +4933,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
       if (deliverableInfo.getStatus() != null
         && deliverableInfo.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())) {
-        if (deliverableInfo.getNewExpectedYear() != null) {
+        if (deliverableInfo.getNewExpectedYear() != null && deliverableInfo.getNewExpectedYear().intValue() != -1) {
           if (deliverableInfo.getNewExpectedYear() != this.getActualPhase().getYear()) {
             return true;
           }
@@ -4943,9 +4943,22 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       }
 
       if (deliverableInfo.getStatus() != null
-        && (deliverableInfo.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
-          || deliverableInfo.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId())
+        && (deliverableInfo.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId())
           || deliverableInfo.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId()))) {
+        if (deliverableInfo.getNewExpectedYear() != null && deliverableInfo.getNewExpectedYear().intValue() != -1) {
+          if (deliverableInfo.getNewExpectedYear() != this.getActualPhase().getYear()) {
+            return true;
+          }
+        } else {
+          if (deliverableInfo.getYear() != this.getActualPhase().getYear()) {
+            return true;
+          }
+        }
+      }
+
+
+      if (deliverableInfo.getStatus() != null
+        && (deliverableInfo.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId()))) {
         if (deliverableInfo.getYear() != this.getActualPhase().getYear()) {
           return true;
         }
