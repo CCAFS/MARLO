@@ -147,6 +147,14 @@ public class ProjectPolicyValidator extends BaseValidator {
         InvalidFieldsMessages.EMPTYFIELD);
     }
 
+    // Validate Narrative
+    if (!(this.wordCount(projectPolicy.getProjectPolicyInfo(action.getActualPhase()).getNarrativeEvidence()) <= 200)) {
+      action.addMessage(action.getText("Narrative of Evidence"));
+      action.addMissingField("policy.narrative");
+      action.getInvalidFields().put("input-policy.projectPolicyInfo.narrativeEvidence",
+        InvalidFieldsMessages.EMPTYFIELD);
+    }
+
     // Validate Maturity Process
     if (projectPolicy.getProjectPolicyInfo(baseAction.getActualPhase()).getRepIndStageProcess() != null) {
       if (projectPolicy.getProjectPolicyInfo(baseAction.getActualPhase()).getRepIndStageProcess().getId() == null
