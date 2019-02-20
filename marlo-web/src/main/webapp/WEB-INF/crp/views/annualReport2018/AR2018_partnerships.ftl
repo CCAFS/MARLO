@@ -58,16 +58,30 @@
             [/#if]
             
             [#-- Table 7: Key external partnerships --]
-              <h4 class="simpleTitle headTitle">[@s.text name="${customLabel}.table7.title" /]</h4>
+              <div class="form-group">
+                <h4 class="simpleTitle headTitle">[@s.text name="${customLabel}.table7.title" /]</h4>
+              </div>
                 <div class="listProgramCollaborations">
-              [#--       [#if reportSynthesis.reportSynthesisCrossCgiar.collaborations?has_content]
-                  [#list reportSynthesis.reportSynthesisCrossCgiar.collaborations as item]
-                    [@flagshipCollaborationMacro element=item name="${customName}.collaborations" index=item_index  isEditable=editable/]
+                  [#assign keyEPartnersList = [
+                  { 
+                    "id": "1",
+                    "phase": "Phase 1",
+                    "type": "Type 1",
+                    "geographicScope": "Scope 1",
+                    "mainArea": "Area 1"
+                  }
+                ] /]
+              [#--       [#if reportSynthesis.reportSynthesisCrossCgiar.collaborations?has_content]--] 
+                  [#if keyEPartnersList?has_content]
+                  [#list keyEPartnersList as item]
+                    [@addKeyExternalPartnership element=item name="${customName}.table7" index=item_index  isEditable=editable/]
                   [/#list]
-                 [/#if]--] 
+                 [/#if]
                 </div>
               [#if canEdit && editable]
                 <div class="text-right">
+
+
                   <div class="addKeyPartnership bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> [@s.text name="annualReport2018.externalPartnerships.addPartnershipButton"/]</div>
                 </div> 
               [/#if]
@@ -75,7 +89,30 @@
              [#-- Projects Key Partnerships --]
               <h4 class="simpleTitle">[@customForm.text name="${customLabel}.projectsPartnerships.title" param="${currentCycleYear}" /] ([#if PMU]${flagshipPlannedList?size}[#else]${partnerShipList?size}[/#if])</h4>
               <div class="form-group margin-panel">
-                  [@projectsKeyPartnershipsTable name="${customName}.partnershipsValue" list="" /]
+                 [#assign keyPartnersList = [
+                  { 
+                    "id": "1",
+                    "phase": "Phase 1",
+                    "type": "Type 1",
+                    "geographicScope": "Scope 1",
+                    "mainArea": "Area 1"
+                  },
+                  { 
+                    "id": "2",
+                    "phase": "Phase 2",
+                    "type": "Type 2",
+                    "geographicScope": "Scope 2",
+                    "mainArea": "Area 2"
+                  },
+                  { 
+                    "id": "3",
+                    "phase": "Phase 3",
+                    "type": "Type 3",
+                    "geographicScope": "Scope 3",
+                    "mainArea": "Area 3"
+                  }
+                ] /]
+                  [@projectsKeyPartnershipsTable name="${customName}.projectsPartnerships" list=keyPartnersList /]
               </div>
               
               [#-- 2.2.2 Cross-CGIAR Partnerships  --]
@@ -92,12 +129,29 @@
                 </div>
               [/#if]
               
+              [#assign crossCGIARp = [
+                { 
+                  "title": "Title",
+                  "maturity": "Maturity Level",
+                  "status": "Status"
+                }
+              ] /]
+              
               [#-- Table 8: Internal Cross-CGIAR Collaborations --]
-              [#if (reportSynthesis.reportSynthesisCrossCgiar.collaborations?has_content)!false]
-                  [#list reportSynthesis.reportSynthesisCrossCgiar.collaborations as item]
-                    [@addCrossCGIARPartnerships element=item name="${customName}.collaborations" index=item_index  isEditable=editable/]
-                  [/#list]
-              [/#if]
+              <div class="form-group">
+                <h4 class="headTitle annualReport-table">[@s.text name="${customLabel}.table8.title" /]</h4>
+                [@customForm.helpLabel name="${customLabel}.table8.help" showIcon=false/]
+                [#if crossCGIARp?has_content]
+                    [#list crossCGIARp as item]
+                      [@addCrossCGIARPartnerships element=item name="${customName}.externalPartnerships.table8" index=item_index  isEditable=editable/]
+                    [/#list]
+                [/#if]
+                [#if canEdit && editable]
+                  <div class="text-right">
+                    <div class="addPlatformCollaboration bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> [@s.text name="annualReport2018.externalPartnerships.addPlatformCollaborationButton"/]</div>
+                  </div> 
+                [/#if]
+              </div>
             
           </div>
           [#-- Section Buttons & hidden inputs --]
@@ -111,67 +165,48 @@
 
 [#---------------------------------------------------- MACROS ----------------------------------------------------]
 
-[#macro addKeyExternalPartnership]
+[#macro addKeyExternalPartnership element name index template=false isEditable=true]
 
-  <table class="annual-report-table table-border">
-    <thead>
-      <tr class="subHeader">
-        <th id="tb-flagship" width="8%">FP</th>
-        <th id="tb-crp" width="20%">[@s.text name="${customLabel}.tableH.crp" /]</th>
-        <th id="tb-description" width="50%">[@s.text name="${customLabel}.tableH.description" /]</th>
-        <th id="tb-relevantFP" width="20%">[@s.text name="${customLabel}.tableH.relevantFP" /]</th>
-      </tr>
-    </thead>
-    <tbody>
-    [#-- Loading --]
-    [#if list?has_content]
-      [#list list as item]
-        [#local crpProgram = (item.reportSynthesisCrossCgiar.reportSynthesis.liaisonInstitution.crpProgram)!{} ]
-        <tr>
-          [#-- Flagship --]
-          <td class="tb-flagship text-center">
-            <span class="programTag" style="border-color:${(crpProgram.color)!'#fff'}">${(crpProgram.acronym)!}</span>
-          </td>
-          [#-- CRP/Platform --]
-          <td class="text-center">
-          [#if item.globalUnit?has_content]
-            ${item.globalUnit.acronym}
-          [#else]
-            <i style="opacity:0.5">[@s.text name="global.prefilledByFlagship"/]</i>
-          [/#if]
-          </td>
-          [#-- Description of collaboration --]
-          <td class="">
-          [#if item.description?has_content]
-            ${item.description?replace('\n', '<br>')}
-          [#else]
-            <i style="opacity:0.5">[@s.text name="global.prefilledByFlagship"/]</i>
-          [/#if]
-          </td>
-          [#-- Relevant FP --]
-          <td class="text-center">
-          [#if item.flagship?has_content]
-            ${item.flagship}
-          [#else]
-            <i style="opacity:0.5">[@s.text name="global.prefilledByFlagship"/]</i>
-          [/#if]
-          </td>
-        </tr>
-      [/#list]
-    [#else]
-      <tr>
-        <td class="text-center" colspan="4">
-          <i style="opacity:0.5">[@s.text name="global.prefilledByFlagship"/]</i>
-        </td>
-      </tr>
-    [/#if]
-    </tbody>
-  </table>
+    [#local customName = "${name}[${index}]" /]
+    <div id="flagshipCollaboration-${template?string('template', index)}" class="flagshipCollaboration borderBox form-group" style="position:relative; display:${template?string('none','block')}">
+
+    [#-- Remove Button --]
+    [#if isEditable]<div class="removeProgramCollaboration removeElement sm" title="Remove"></div>[/#if]
+    [#-- Hidden inputs --]
+    <input type="hidden" name="${customName}.id" value="${(element.id)!}"/> 
+    <br />
+
+    <div class="form-group">
+      [#-- Description --]
+        [@customForm.input name="${customName}.table7.description" i18nkey="${customLabel}.table7.description" helpIcon=false required=true editable=editable /]
+    </div>
+
+    <div class="form-group row">
+      [#-- Main area of partnership --]
+      <div class="col-md-6">
+        [@customForm.elementsListComponent name="${customName}.table7.mainArea" elementType="" elementList="" label="${customLabel}.table7.mainArea" help=""  listName="" keyFieldName="id" displayFieldName="name"/]
+      </div>
+      [#local otherArea = true /]
+      [#-- [#list (element.owners)![] as owner]
+        [#if (owner.repIndPolicyType.id == 4)!false][#local ownerOther = true /][#break][/#if]
+      [/#list] --]
+      <div class="col-md-6 block-pleaseSpecify" style="display:${otherArea?string('block', 'none')}">
+        [@customForm.input name="${customName}.table7.otherMainArea" i18nkey="${customLabel}.table7.otherMainArea" className="" required=false editable=editable /]
+      </div>
+    </div>
+    
+    <div class="form-group">
+      [#-- Partners --]
+        [@customForm.elementsListComponent name="${customName}.table7.parnters" elementType="" elementList="" label="${customLabel}.table7.partners" help=""  listName="" keyFieldName="id" displayFieldName="name"/]
+    </div>
+
+    
+  </div>
 
 [/#macro]
 
 
-[#macro projectsKeyPartnershipsTable name="" list=[]]
+[#macro projectsKeyPartnershipsTable name="" list=["",""]]
   <table class="annual-report-table table-border">
     <thead>
       <tr class="subHeader">
@@ -183,77 +218,26 @@
       </tr>
     </thead>
     <tbody>
-    [#-- Loading --]
-    [#if list?has_content]
-      [#list list as item]
-        [#if isPMU]
-          [#local element = (item.projectPartnerPartnership)!{} ]
+      [#if list?has_content]
+          [#list list as item]
+          <tr>
+            <td class="text-center">${item.id}</td>
+            <td class="text-center">${item.phase}</td>
+            <td class="text-center">${item.type}</td>
+            <td class="text-center">
+             [#if item.geographicScope?has_content]
+               ${item.geographicScope}
+             [#else]
+               <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
+             [/#if]</td>
+            <td class="text-justify">${item.mainArea}</td>
+          </tr>
+          [/#list]
         [#else]
-          [#local element = item ]
-        [/#if]
-        [#local customName = "${name}" /]
-        [#local URL][@s.url namespace="/projects" action="${(crpSession)!}/partners"][@s.param name='projectID']${(element.projectPartner.project.id)!''}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
-        <tr>
-          [#-- Flagships --]
-          [#if isPMU]
-          <td>
-            <div class="clearfix"></div>
-            [#list (item.liaisonInstitutions)![] as li]
-              <span class="programTag" style="border-color:${(li.crpProgram.color)!'#4a4a4a'}">${(li.crpProgram.acronym)!(li.crpProgram.institution.acronymName)!(li.acronym)!'NULL'}</span>
-            [/#list]
-          </td>
-          [/#if]
-          <td class="tb-projectId text-center">
-            <a href="${URL}" target="_blank">
-              [#-- Partner Name --]
-              ${(element.projectPartner.institution.acronymName)!'--'}
-              [#-- Project ID --]
-              <br /><i><small>(From P${(element.projectPartner.project.id)!''})</small></i>
-            </a>
-          </td>
-          [#-- Phase of research --]
-          <td class="text-center">
-          [#if element.partnershipResearchPhases?has_content]
-            [#list element.partnershipResearchPhases as reseacrhPhase]
-              <span>${reseacrhPhase.repIndPhaseResearchPartnership.name}</span><br />
-            [/#list]
-          [#else]
-            <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
-          [/#if]
-          </td>
-          [#-- Partner type --]
-          <td class="text-center">
-          [#if element.projectPartner.institution.institutionType.repIndOrganizationType?has_content]
-            ${element.projectPartner.institution.institutionType.repIndOrganizationType.name}
-          [#else]
-            <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
-          [/#if]
-          </td>
-          [#-- Geographic scope --]
-          <td class="text-center">
-          [#if element.geographicScope?has_content]
-            ${element.geographicScope.name}
-          [#else]
-            <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
-          [/#if]
-          </td>
-          [#-- Main area of partnership --]
-          <td class="">
-          [#if element.mainArea?has_content]
-            ${element.mainArea}
-          [#else]
-            <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
-          [/#if]
-          </td>
-        </tr>
-      [/#list]
-    [#else]
-      <tr>
-        <td class="text-center" colspan="6">
-          <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
-        </td>
-      </tr>
-    [/#if]
+          <tr>
+            <td class="text-center" colspan="6"><i>No entries added yet.</i></td>
+          </tr>
+      [/#if]
     </tbody>
   </table>
 [/#macro]
@@ -271,39 +255,49 @@
     <input type="hidden" name="${customName}.id" value="${(element.id)!}"/> 
     <br />
 
-    <div class="form-group row">
+    <div class="form-group">
       [#-- CRP/Platform --] 
-      <div class="col-md-5">
-        [@customForm.select name="${customName}.globalUnit.id" label="" keyFieldName="id" displayFieldName="acronym" i18nkey="${customLabel}.collaboration.crp" listName="globalUnitList"  required=true  className="globalUnitSelect" editable=isEditable/]
-      </div>
-      [#-- Flagship/Module --]
-      <div class="col-md-7">
-        [@customForm.input name="${customName}.flagship" i18nkey="${customLabel}.collaboration.flagship" required=true className="globalUnitPrograms" editable=isEditable /]
-      </div>
+        [@customForm.select name="${customName}.table8.crp" label="" keyFieldName="id" displayFieldName="acronym" i18nkey="${customLabel}.table8.crp" listName="globalUnitList"  required=true  className="globalUnitSelect" editable=isEditable/]
     </div>
     
+    <div class="form-group">
+      [#-- Description of collaboration --]
+        [@customForm.textArea name="${customName}.table8.description" i18nkey="${customLabel}.table8.description" help="${customLabel}.table8.description.help" helpIcon=false required=true editable=editable /]
+    </div>
+    
+    <div class="form-group">
+      [#-- Value added --]
+        [@customForm.input name="${customName}.table8.value" i18nkey="${customLabel}.table8.value" help="${customLabel}.table8.value.help" helpIcon=false required=true editable=editable /]
+    </div>
+    
+    
+    [#assign collaborationList = [
+       { 
+        "id": "1",
+        "name": "Contribution"
+       },
+       { 
+        "id": "2",
+        "name": "Service needed from"
+       },
+       { 
+        "id": "3",
+        "name": "Both"
+       }
+    ] /]
+    
+    
     [#-- Collaboration type --]
-    <div class="form-group row">
-      <div class="col-md-7">
-        <label>[@s.text name="${customLabel}.collaboration.type" /]:[@customForm.req required=editable  /]</label><br />
-        [#local collaborationTypeSelected = (element.repIndCollaborationType.id)!-1]
+    <div class="form-group">
+        <label>[@s.text name="${customLabel}.table8.collaborationType" /]:[@customForm.req required=editable  /]</label><br />
+        [#-- [#local collaborationTypeSelected = (element.repIndCollaborationType.id)!-1] --]
+        [#local collaborationTypeSelected = "1"]
         
         [#list (collaborationList)![] as collaboration]
           [@customForm.radioFlat id="${customName}-collaboration-${collaboration_index}" name="${customName}.repIndCollaborationType.id" label="${collaboration.name}" value="${collaboration.id}" checked=(collaborationTypeSelected == collaboration.id)!false editable=isEditable cssClass="" cssClassLabel="font-normal"/]
         [/#list]
         
         [#if !editable && (collaborationTypeSelected == -1)][@s.text name="form.values.fieldEmpty"/][/#if]
-      </div>
-      
-      [#-- Status --]
-      <div class="col-md-5">
-        [@customForm.select name="${customName}.status" i18nkey="${customLabel}.collaboration.status" value="${(element.status)!-1}" listName="statuses"  required=true  className="" editable=isEditable/]
-      </div>
-    </div>
-    
-    [#-- Brief Description --] 
-    <div class="form-group"> 
-      [@customForm.textArea name="${customName}.description" i18nkey="${customLabel}.collaboration.description" className="" required=true editable=isEditable /]
     </div>
     
   </div>

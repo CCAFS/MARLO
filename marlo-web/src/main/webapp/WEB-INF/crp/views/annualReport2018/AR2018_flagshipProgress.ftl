@@ -211,7 +211,7 @@
           <tr>
             <td>${item.title}</td>
             <td>${item.maturity}</td>
-            <td>${item.status}</td>
+            <td class="text-center">${item.status}</td>
             <td class="text-center">
               [@customForm.checkmark id="" name="" label="" value="" editable=editable checked=false cssClass="" /]
             </td>
