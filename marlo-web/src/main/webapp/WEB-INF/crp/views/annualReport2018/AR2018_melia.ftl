@@ -3,7 +3,7 @@
 [#assign currentSectionString = "annualReport-${actionName?replace('/','-')}-${synthesisID}" /]
 [#assign currentSection = "synthesis" /]
 [#assign currentStage = actionName?split('/')[1]/]
-[#assign pageLibs = [ ] /]
+[#assign pageLibs = [ "select2" ] /]
 [#assign customJS = [ "${baseUrlMedia}/js/annualReport/annualReport_${currentStage}.js" ] /]
 [#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css"] /]
 
@@ -72,6 +72,39 @@
               ] /]
           [@meliaTable name="table9" list=meliaList /]
           
+          
+          [#assign meliaUpdateList = [
+                { 
+                  "title": "Title",
+                  "maturity": "Maturity Level",
+                  "status": "Status"
+                },
+                { 
+                  "title": "Title 1",
+                  "maturity": "Maturity Level 1",
+                  "status": "Status 1"
+                }
+              ] /]
+          
+          [#-- Table 10: Update on actions taken in response to relevant evaluations --]
+            [#if PMU]
+              <div class="form-group">
+                <h4 class="subTitle headTitle">[@s.text name="${customLabel}.table10.title" /]</h4>
+                <div class="listEvaluations">
+                  [#-- [#list (reportSynthesis.reportSynthesisMelia.evaluations)![] as item] --]
+                  [#list (meliaUpdateList)![] as item]
+                    [@relevantEvaluationMacro element=item name="${customName}.table10" index=item_index  isEditable=editable/]
+                  [/#list]
+                </div>
+                [#if canEdit && editable]
+                <div class="text-right">
+                  <div class="addEvaluation bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> [@s.text name="form.buttons.addEvaluation"/]</div>
+                </div> 
+                [/#if]
+              </div>
+            [/#if]
+          
+          
           </div>
           [#-- Section Buttons & hidden inputs--]
           [#include "/WEB-INF/crp/views/annualReport2018/buttons-AR2018.ftl" /]
@@ -106,8 +139,8 @@
           [#list list as item]
           <tr>
             <td>${item.studies}</td>
-            <td>${item.status}</td>
-            <td>${item.type}</td>
+            <td class="text-center">${item.status}</td>
+            <td class="text-center">${item.type}</td>
             <td>${item.comments}</td>
             <td class="text-center">
               [@customForm.checkmark id="" name="" label="" value="" editable=editable checked=false cssClass="" /]
@@ -126,4 +159,62 @@
     
   </div>
 
+[/#macro]
+
+[#macro relevantEvaluationMacro element name index template=false isEditable=true]
+  [#local customName = "${name}[${index}]" /]
+  <div id="evaluation-${template?string('template', index)}" class="evaluation borderBox form-group" style="position:relative; display:${template?string('none','block')}">
+
+    [#-- Index --]
+    <div class="leftHead blue sm"><span class="index">${index+1}</span></div>
+    [#-- Remove Button --]
+    [#if isEditable]<div class="removeEvaluation removeElement sm" title="Remove"></div>[/#if]
+    [#-- Hidden inputs --]
+    <input type="hidden" name="${customName}.id" value="${(element.id)!}"/> 
+    <br />
+    
+    [#-- Name of the evaluation --]
+    <div class="form-group">
+      [@customForm.input name="${customName}.nameEvaluation" i18nkey="${customLabel}.table10.name" help="${customLabel}.table10.name.help" helpIcon=false required=true className="" editable=isEditable /]
+    </div>
+    
+    [#-- Recommendation --] 
+    <div class="form-group"> 
+      [@customForm.input name="${customName}.recommendation" i18nkey="${customLabel}.table10.recommendation" help="${customLabel}.table10.recommendation.help" helpIcon=false className="" required=true editable=isEditable /]
+    </div>
+    
+    [#-- Management response --] 
+    <div class="form-group">
+      [@customForm.textArea name="${customName}.managementResponse" i18nkey="${customLabel}.table10.textOfRecommendation" help="${customLabel}.table10.textOfRecommendation.help" helpIcon=false className="" required=true editable=isEditable /]
+    </div>
+    
+    [#-- Status --]
+    <div class="form-group row">
+      <div class="col-md-5">
+        [@customForm.select name="${customName}.status" i18nkey="${customLabel}.table10.status" listName="statuses"  required=true  className="" editable=isEditable/]
+      </div>
+    </div>
+    
+    [#-- Concrete actions --] 
+    <div class="form-group">
+      [@customForm.textArea name="${customName}.actions" i18nkey="${customLabel}.table10.actions" help="${customLabel}.table10.actions.help" helpIcon=false className="" required=true editable=isEditable /]
+    </div>
+    
+    <div class="form-group row">
+      <div class="col-md-6">
+        [#-- By whom --]
+        [@customForm.input name="${customName}.textWhom" i18nkey="${customLabel}.table10.whom" help="${customLabel}.table10.whom.help" helpIcon=false required=true className="" editable=isEditable /]
+      </div>
+      <div class="col-md-6">
+        [#-- By when --]
+        [@customForm.input name="${customName}.textWhen" i18nkey="${customLabel}.table10.when" help="${customLabel}.table10.when.help" helpIcon=false required=true className="" editable=isEditable /]
+      </div>
+    </div>
+    
+    
+    <div class="form-group">
+        [@customForm.textArea name="${customName}.comments" i18nkey="${customLabel}.table10.comments" help="${customLabel}.table10.comments.help" helpIcon=false className="" required=true editable=isEditable /]
+    </div>
+    
+  </div>
 [/#macro]
