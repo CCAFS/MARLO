@@ -64,6 +64,12 @@ function attachEvents() {
     } else {
       $('.evidences-block .requiredTag').slideUp();
     }
+    if(id == 3) {
+      $('.block-researchMaturity').slideDown();
+    }
+    else {
+      $('.block-researchMaturity').slideUp();
+    }
   });
 
   //
