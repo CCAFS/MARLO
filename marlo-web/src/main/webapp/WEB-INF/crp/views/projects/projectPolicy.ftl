@@ -126,12 +126,6 @@
       </div>
     </div>
     
-    [#local isResearchMaturity = ((element.projectPolicyInfo.repIndStageProcess.id == 3))!false]
-    [#-- Narrative --] 
-    <div class="form-group block-researchMaturity" style="display:${isResearchMaturity?string('block', 'none')}">
-      [@customForm.textArea name="${customName}.projectPolicyInfo.narrativeEvidence"  i18nkey="policy.narrative"  placeholder="" className="limitWords-200" help="policy.narrative.helpText" helpIcon=false required=false editable=editable /]
-    </div>
-          
     [#-- Evidence (OICR)  --]
     [#local isEvidenceRequired = ([4, 5]?seq_contains(element.projectPolicyInfo.repIndStageProcess.id))!false /]
     <div class="form-group evidences-block">
@@ -139,6 +133,13 @@
       <div class="note">[@s.text name="policy.evidence.note"][@s.param] <a href="[@s.url namespace="/projects" action='${crpSession}/studies'][@s.param name='projectID']${(projectID)!}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" target="__BLANK">clicking here</a>[/@][/@]</div>
     </div>
     
+    [#local isResearchMaturity = ((element.projectPolicyInfo.repIndStageProcess.id == 3))!false]
+    [#-- Narrative --] 
+    <div class="form-group block-researchMaturity" style="display:${isResearchMaturity?string('block', 'none')}">
+      [@customForm.textArea name="${customName}.projectPolicyInfo.narrativeEvidence"  i18nkey="policy.narrative"  placeholder="" className="limitWords-200" help="policy.narrative.helpText" helpIcon=false required=false editable=editable /]
+    <br>
+    </div>
+          
     [#-- Innovations  --]
     <div class="form-group">
       [@customForm.elementsListComponent name="${customName}.innovations" elementType="projectInnovation" elementList=element.innovations label="policy.innovations" helpIcon=false listName="innovationList" keyFieldName="id" displayFieldName="composedName" required=false /]
