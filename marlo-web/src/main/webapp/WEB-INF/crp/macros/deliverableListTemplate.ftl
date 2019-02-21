@@ -28,7 +28,7 @@
         [#-- Is Complete --]
         [#assign isDeliverableComplete = action.isDeliverableComplete(deliverable.id) /]
         [#-- To Report --]
-        [#local toReport = (deliverable.deliverableInfo.isRequieriedReporting(currentCycleYear) && reportingActive) && !isDeliverableComplete ]
+        [#local toReport = reportingActive && !isDeliverableComplete ]
         
         <tr>
           [#-- ID --]
@@ -152,9 +152,9 @@
         [#assign hasDraft = (action.getAutoSaveFilePath(deliverable.class.simpleName, "deliverable", deliverable.id))!false /]
         
         [#-- isDeliverableComplete --]
-        [#assign isDeliverableComplete = action.isDeliverableComplete(deliverable.id) /]
+        [#assign isDeliverableComplete = action.isDeliverableComplete(deliverable.id, actualPhase.id) /]
         [#-- To Report --]
-        [#local toReport = deliverable.deliverableInfo.isRequieriedReporting(currentCycleYear) && reportingActive && !isDeliverableComplete ]
+        [#local toReport = reportingActive && !isDeliverableComplete ]
         
         <tr>
           [#-- ID --]
