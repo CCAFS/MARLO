@@ -66,7 +66,7 @@
       <div id="deliverableYear" class="col-md-4 form-group">
         [#--  [#assign canNotEditYear = (deliverable.deliverableInfo.status == 4)!false || !action.candEditYear(deliverable.id)/]  --]
         [#if editable ]
-          <div class="overlay" style="display:${(hasExpectedYear || (isDeliverableNew && reportingActive))?string('block', 'none')}"></div>
+          <div class="overlay" style="display:${(hasExpectedYear || (reportingActive))?string('block', 'none')}"></div>
           [@customForm.select name="deliverable.deliverableInfo.year" label=""  i18nkey="project.deliverable.generalInformation.year" listName="project.projectInfo.AllYears" header=false required=true className="yearExpected"  /]
         [#else]
            <div class="select">
@@ -111,8 +111,9 @@
     [/#if]
     
     <hr />
-    [#-- New deliverable at reporting --]
+    [#-- New deliverable at reporting 
     [#if isDeliverableNew && editable && reportingActive]<i class="text-center">The status of this deliverable should be 'Complete' due is new</i> <br />[/#if]
+    --]
     [#-- Deliverable field status --]
     [#if isDeliverableComplete]
       <span class="icon-20 icon-check" title="Complete"></span> Required fields Completed

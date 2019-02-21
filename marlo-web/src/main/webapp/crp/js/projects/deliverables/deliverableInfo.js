@@ -15,10 +15,8 @@ function init() {
 
   $('.helpMessage3').on("click", openDialog);
 
-  // justificationByStatus($statuses.val());
-  // validateCurrentDate();
-
   $(".addPartner").on("click", addPartnerEvent);
+
   $(".removeElement").on("click", removePartnerEvent);
 
   // On change any partner person
@@ -94,29 +92,18 @@ function init() {
 
   });
 
+  // Event to validate the expected date
+  $(".yearExpected").on("change", validateCurrentDate);
+
   // Event when status is changed
   $statuses.on("change", function() {
     justificationByStatus(this.value);
   });
 
-  // Event to validate the expected date
-  $(".yearExpected").on("change", validateCurrentDate);
+  validateDeliverableStatus();
 
-  // New Expected year should be greater than current reporting cycle year
-  if(reportingActive) {
-    if(isDeliverableNew) {
-      $statuses.find('option').prop("disabled", true);
-      $statuses.find('option[value="3"]').prop("disabled", false); // Complete
-      $statuses.find('option[value="5"]').prop("disabled", false); // Cancelled
-      $statuses.val("3"); // Set Complete
-    } else {
-      // Disable On-going
-      $statuses.find('option[value="2"]').prop("disabled", true);
-    }
-
-    $('#deliverableYear .overlay').show();
-    $statuses.trigger("change");
-  }
+  // justificationByStatus($statuses.val());
+  // validateCurrentDate();
 
   /** Funding source * */
 
@@ -162,42 +149,6 @@ function init() {
         $(eOption).remove();
       }
     });
-  });
-
-  /** Cross-Cutting dimensions * */
-
-  $('input.crosscutingDimension').on('change', function() {
-    var $crosscutingDimensionBlock = $('#ccDimension-' + this.id);
-
-    if($(this).is(':checked')) {
-      $crosscutingDimensionBlock.slideDown();
-    } else {
-      $crosscutingDimensionBlock.slideUp();
-    }
-  });
-
-  /** Gender questions * */
-
-  $('input#gender').on('change', function() {
-    if($(this).is(':checked')) {
-      $('#gender-levels').slideDown();
-      $(".genderLevelsSelect").select2({
-          templateResult: formatStateGenderType,
-          width: "100%"
-      });
-    } else {
-      $('#gender-levels').slideUp();
-    }
-  });
-
-  $('input.crosscutingDimension').on('change', function() {
-    $('input#na').prop("checked", false);
-  });
-
-  $('input#na').on('change', function() {
-    $('input.crosscutingDimension').prop("checked", false);
-    $('#gender-levels').slideUp();
-    $('.ccDimension').slideUp();
   });
 
   $('.typeSelect').on('change', function() {
@@ -476,28 +427,47 @@ function justificationByStatus(statusId) {
     $statusDescription.slideUp(400);
   }
 
-  // Validate the new extended year
-  if(!isDeliverableNew) {
-    if(isStatusOnGoing(statusId)) {
-      // $newExpectedYearSelect.val('-1').trigger('change');
-      $newExpectedYearBlock.hide();
+  if(reportingActive) {
+    // Validate the new extended year
+    if(isDeliverableNew) {
+
     } else {
-      if(hasExpectedYear) {
-        $newExpectedYearBlock.show();
-        $yearOverlay.show();
-      } else {
+      if(isStatusOnGoing(statusId)) {
         $newExpectedYearBlock.hide();
-        $yearOverlay.hide();
+      } else {
+        if(hasExpectedYear) {
+          $newExpectedYearBlock.show();
+          $yearOverlay.show();
+        } else {
+          $newExpectedYearBlock.hide();
+          $yearOverlay.hide();
+        }
       }
     }
-  }
 
-  if(isStatusExtended(statusId)) {
-    $newExpectedYearBlock.show();
+    if(isStatusExtended(statusId)) {
+      $newExpectedYearBlock.show();
+    }
     $yearOverlay.show();
   }
 
-  // $statusDescription.find('textarea').val('');
+}
+
+function validateDeliverableStatus() {
+  // New Expected year should be greater than current reporting cycle year
+  if(reportingActive) {
+    if(isDeliverableNew) {
+      $statuses.find('option').prop("disabled", true); // Disable All
+      $statuses.find('option[value="3"]').prop("disabled", false); // Enable Complete
+      $statuses.find('option[value="5"]').prop("disabled", false); // Enable Cancelled
+      $statuses.val("3"); // Set Complete
+    } else {
+      $statuses.find('option[value="2"]').prop("disabled", true);// Disable On-going
+    }
+
+    $('#deliverableYear .overlay').show();
+    $statuses.trigger("change");
+  }
 }
 
 // Add a new person element
