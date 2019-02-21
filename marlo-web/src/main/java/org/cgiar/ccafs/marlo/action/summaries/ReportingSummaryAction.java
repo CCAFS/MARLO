@@ -1963,9 +1963,8 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
               .parseInt(ProjectStatusEnum.Cancelled.getStatusId())))
         .collect(Collectors.toList());
 
-      deliverables
-        .sort((p1, p2) -> p1.getDeliverableInfo(this.getSelectedPhase()).isRequieriedReporting(this.getSelectedYear())
-          .compareTo(p2.getDeliverableInfo(this.getSelectedPhase()).isRequieriedReporting(this.getSelectedYear())));
+      deliverables.sort((p1, p2) -> this.isDeliverableComplete(p1.getId(), this.getSelectedPhase().getId())
+        .compareTo(this.isDeliverableComplete(p2.getId(), this.getSelectedPhase().getId())));
       HashSet<Deliverable> deliverablesHL = new HashSet<>();
       deliverablesHL.addAll(deliverables);
       deliverables.clear();

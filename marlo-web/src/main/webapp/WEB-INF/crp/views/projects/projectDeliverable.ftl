@@ -78,7 +78,7 @@
             
           </div>
           [#-- Is deliverable complete --]
-          [#assign isDeliverableComplete = action.isDeliverableComplete(deliverable.id) /]
+          [#assign isDeliverableComplete = action.isDeliverableComplete(deliverable.id, actualPhase.id) /]
           
           [#-- Is deliverable new --]
           [#assign isDeliverableNew = action.isDeliverableNew(deliverable.id) /]

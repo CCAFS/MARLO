@@ -255,9 +255,8 @@ public class DeliverableListAction extends BaseAction {
               .collect(Collectors.toList()));
           }
 
-          openA.sort((p1, p2) -> p1.getDeliverableInfo(this.getActualPhase())
-            .isRequieriedReporting(this.getCurrentCycleYear())
-            .compareTo(p2.getDeliverableInfo(this.getActualPhase()).isRequieriedReporting(this.getCurrentCycleYear())));
+          openA.sort((p1, p2) -> this.isDeliverableComplete(p1.getId(), this.getActualPhase().getId())
+            .compareTo(this.isDeliverableComplete(p2.getId(), this.getActualPhase().getId())));
 
           HashSet<Deliverable> deliverables = new HashSet<>();
           deliverables.addAll(openA);
@@ -328,9 +327,8 @@ public class DeliverableListAction extends BaseAction {
           }
 
 
-          openA.sort((p1, p2) -> p1.getDeliverableInfo(this.getActualPhase())
-            .isRequieriedReporting(this.getCurrentCycleYear())
-            .compareTo(p2.getDeliverableInfo(this.getActualPhase()).isRequieriedReporting(this.getCurrentCycleYear())));
+          openA.sort((p1, p2) -> this.isDeliverableComplete(p1.getId(), this.getActualPhase().getId())
+            .compareTo(this.isDeliverableComplete(p2.getId(), this.getActualPhase().getId())));
           HashSet<Deliverable> deliverables = new HashSet<>();
           deliverables.addAll(openA);
           openA.clear();
@@ -418,9 +416,8 @@ public class DeliverableListAction extends BaseAction {
 
 
       if (this.isReportingActive() || this.isUpKeepActive()) {
-        deliverables.sort(
-          (p1, p2) -> p1.getDeliverableInfo(this.getActualPhase()).isRequieriedReporting(this.getCurrentCycleYear())
-            .compareTo(p2.getDeliverableInfo(this.getActualPhase()).isRequieriedReporting(this.getCurrentCycleYear())));
+        deliverables.sort((p1, p2) -> this.isDeliverableComplete(p1.getId(), this.getActualPhase().getId())
+          .compareTo(this.isDeliverableComplete(p2.getId(), this.getActualPhase().getId())));
 
       }
       String params[] = {loggedCrp.getAcronym(), project.getId() + ""};
