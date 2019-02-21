@@ -2834,7 +2834,16 @@ public class DeliverableAction extends BaseAction {
       for (DeliverableUser deliverableUser : deliverable.getUsers()) {
 
         if (deliverableUser.getId() == null || deliverableUser.getId().intValue() == -1) {
-          deliverableUser.setId(null);
+          DeliverableUser deliverableUserSave = new DeliverableUser();
+
+          deliverableUserSave.setLastName(deliverableUser.getLastName());
+          deliverableUserSave.setFirstName(deliverableUser.getFirstName());
+          deliverableUserSave.setPhase(this.getActualPhase());
+          deliverableUserSave.setDeliverable(deliverable);
+          deliverableUserManager.saveDeliverableUser(deliverableUserSave);
+        } else {
+          deliverableUser.setLastName(deliverableUser.getLastName());
+          deliverableUser.setFirstName(deliverableUser.getFirstName());
           deliverableUser.setPhase(this.getActualPhase());
           deliverableUser.setDeliverable(deliverable);
           deliverableUserManager.saveDeliverableUser(deliverableUser);
