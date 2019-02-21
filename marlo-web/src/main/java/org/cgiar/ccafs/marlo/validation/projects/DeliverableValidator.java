@@ -113,8 +113,7 @@ public class DeliverableValidator extends BaseValidator {
       }
 
     } else {
-      validate =
-        deliverable.getDeliverableInfo(action.getActualPhase()).isRequieriedReporting(action.getCurrentCycleYear());
+      validate = action.isDeliverableComplete(deliverable.getId(), action.getActualPhase().getId());
     }
     if (validate) {
       Project project = projectManager.getProjectById(deliverable.getProject().getId());

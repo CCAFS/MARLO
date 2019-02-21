@@ -4925,17 +4925,18 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * @param deliverableID is the deliverable ID to be identified.
    * @return Boolean object with the status of the deliverable
    */
-  public Boolean isDeliverableComplete(long deliverableID) {
+  public Boolean isDeliverableComplete(long deliverableID, long phaseID) {
     Deliverable deliverable = deliverableManager.getDeliverableById(deliverableID);
+    Phase phase = phaseManager.getPhaseById(phaseID);
 
-    if (deliverable.getDeliverableInfo(this.getActualPhase()) != null) {
-      DeliverableInfo deliverableInfo = deliverable.getDeliverableInfo(this.getActualPhase());
+    if (deliverable.getDeliverableInfo(phase) != null) {
+      DeliverableInfo deliverableInfo = deliverable.getDeliverableInfo(phase);
 
 
       if (deliverableInfo.getStatus() != null
         && deliverableInfo.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())) {
         if (deliverableInfo.getNewExpectedYear() != null && deliverableInfo.getNewExpectedYear().intValue() != -1) {
-          if (deliverableInfo.getNewExpectedYear() != this.getActualPhase().getYear()) {
+          if (deliverableInfo.getNewExpectedYear() != phase.getYear()) {
             return true;
           }
         } else {
@@ -4944,23 +4945,26 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       }
 
       if (deliverableInfo.getStatus() != null
-        && (deliverableInfo.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId())
-          || deliverableInfo.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId()))) {
+        && deliverableInfo.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())) {
         if (deliverableInfo.getNewExpectedYear() != null && deliverableInfo.getNewExpectedYear().intValue() != -1) {
-          if (deliverableInfo.getNewExpectedYear() != this.getActualPhase().getYear()) {
+          if (deliverableInfo.getNewExpectedYear() != phase.getYear()) {
             return true;
           }
         } else {
-          if (deliverableInfo.getYear() != this.getActualPhase().getYear()) {
+          if (deliverableInfo.getYear() != phase.getYear()) {
             return true;
           }
         }
       }
 
+      if (deliverableInfo.getStatus() != null
+        && deliverableInfo.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId())) {
+        return true;
+      }
 
       if (deliverableInfo.getStatus() != null
         && (deliverableInfo.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId()))) {
-        if (deliverableInfo.getYear() != this.getActualPhase().getYear()) {
+        if (deliverableInfo.getYear() != phase.getYear()) {
           return true;
         }
       }
