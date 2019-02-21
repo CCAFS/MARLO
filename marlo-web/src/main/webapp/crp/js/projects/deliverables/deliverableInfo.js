@@ -105,16 +105,16 @@ function init() {
   // New Expected year should be greater than current reporting cycle year
   if(reportingActive) {
     if(isDeliverableNew) {
-      // Set Complete if is new
       $statuses.find('option').prop("disabled", true);
-      $statuses.find('option[value="3"]').prop("disabled", false);
-      $statuses.val("3");
-      $('#deliverableYear .overlay').show();
-
+      $statuses.find('option[value="3"]').prop("disabled", false); // Complete
+      $statuses.find('option[value="5"]').prop("disabled", false); // Cancelled
+      $statuses.val("3"); // Set Complete
     } else {
       // Disable On-going
       $statuses.find('option[value="2"]').prop("disabled", true);
     }
+
+    $('#deliverableYear .overlay').show();
     $statuses.trigger("change");
   }
 
