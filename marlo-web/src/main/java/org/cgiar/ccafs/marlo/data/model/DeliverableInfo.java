@@ -185,6 +185,48 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
     return year;
   }
 
+  public Boolean isRequieried() {
+
+    if (this.getStatus() != null
+      && this.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())) {
+      if (this.getNewExpectedYear() != null && this.getNewExpectedYear().intValue() != -1) {
+        if (this.getNewExpectedYear() == phase.getYear()) {
+          return true;
+        }
+      } else {
+        return true;
+      }
+    }
+
+    if (this.getStatus() != null
+      && this.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())) {
+      if (this.getNewExpectedYear() != null && this.getNewExpectedYear().intValue() != -1) {
+        if (this.getNewExpectedYear() == phase.getYear()) {
+          return true;
+        }
+      } else {
+        if (this.getYear() == phase.getYear()) {
+          return true;
+        }
+      }
+    }
+
+    if (this.getStatus() != null
+      && this.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId())) {
+      return false;
+    }
+
+    if (this.getStatus() != null
+      && (this.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId()))) {
+      if (this.getYear() == phase.getYear()) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+
   public boolean requeriedFair() {
     try {
       if (this.getDeliverableType().getFair()) {
@@ -244,7 +286,6 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
     this.isLocationGlobal = isLocationGlobal;
   }
 
-
   public void setLicense(String license) {
     this.license = license;
   }
@@ -252,6 +293,7 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
   public void setNewExpectedYear(Integer newExpectedYear) {
     this.newExpectedYear = newExpectedYear;
   }
+
 
   public void setOtherLicense(String otherLicense) {
     this.otherLicense = otherLicense;
@@ -267,10 +309,10 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
     this.region = region;
   }
 
-
   public void setStatus(Integer status) {
     this.status = status;
   }
+
 
   public void setStatusDescription(String statusDescription) {
     this.statusDescription = statusDescription;
@@ -285,7 +327,6 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
   public void setTypeOther(String typeOther) {
     this.typeOther = typeOther;
   }
-
 
   public void setYear(int year) {
     this.year = year;

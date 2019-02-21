@@ -4932,53 +4932,19 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     if (deliverable.getDeliverableInfo(phase) != null) {
       DeliverableInfo deliverableInfo = deliverable.getDeliverableInfo(phase);
 
-
-      if (deliverableInfo.getStatus() != null
-        && deliverableInfo.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())) {
-        if (deliverableInfo.getNewExpectedYear() != null && deliverableInfo.getNewExpectedYear().intValue() != -1) {
-          if (deliverableInfo.getNewExpectedYear() != phase.getYear()) {
-            return true;
-          }
-        } else {
+      if (deliverableInfo.isRequieried()) {
+        SectionStatus sectionStatus = sectionStatusManager.getSectionStatusByDeliverable(deliverable.getId(),
+          phase.getDescription(), phase.getYear(), phase.getUpkeep(), "deliverableList");
+        if (sectionStatus == null) {
           return false;
         }
-      }
 
-      if (deliverableInfo.getStatus() != null
-        && deliverableInfo.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())) {
-        if (deliverableInfo.getNewExpectedYear() != null && deliverableInfo.getNewExpectedYear().intValue() != -1) {
-          if (deliverableInfo.getNewExpectedYear() != phase.getYear()) {
-            return true;
-          }
-        } else {
-          if (deliverableInfo.getYear() != phase.getYear()) {
-            return true;
-          }
+        if (sectionStatus.getMissingFields().length() != 0) {
+          return false;
         }
-      }
-
-      if (deliverableInfo.getStatus() != null
-        && deliverableInfo.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId())) {
+      } else {
         return true;
       }
-
-      if (deliverableInfo.getStatus() != null
-        && (deliverableInfo.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId()))) {
-        if (deliverableInfo.getYear() != phase.getYear()) {
-          return true;
-        }
-      }
-
-      SectionStatus sectionStatus = sectionStatusManager.getSectionStatusByDeliverable(deliverable.getId(),
-        this.getCurrentCycle(), this.getCurrentCycleYear(), this.isUpKeepActive(), "deliverableList");
-      if (sectionStatus == null) {
-        return false;
-      }
-
-      if (sectionStatus.getMissingFields().length() != 0) {
-        return false;
-      }
-
     }
 
     return true;
