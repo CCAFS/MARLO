@@ -106,10 +106,10 @@ function init() {
   if(reportingActive) {
     if(isDeliverableNew) {
       // Set Complete if is new
-
-      $statuses.find('option[value="3"]').prop("disabled", true);
-      $statuses.val("3")
-      $('.deliverableYear .overlay').show();
+      $statuses.find('option').prop("disabled", true);
+      $statuses.find('option[value="3"]').prop("disabled", false);
+      $statuses.val("3");
+      $('#deliverableYear .overlay').show();
 
     } else {
       // Disable On-going

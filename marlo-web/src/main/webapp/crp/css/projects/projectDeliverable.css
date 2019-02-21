@@ -30,7 +30,6 @@
 }
 
 /* Bootstrap Tabs */
-
 .tab-content>.active {
   display: block;
   /* background-color: #f5f5f5; */
@@ -39,7 +38,7 @@
   border-left: 1px solid #ddd;
   border-right: 1px solid #ddd;
 }
-  
+
 .nav-tabs>li.active>a, .nav-tabs>li.active>a:focus, .nav-tabs>li.active>a:hover {
   border-top: 4px solid #1882aa;
   border-bottom-color: transparent;
@@ -48,7 +47,7 @@
   /* background-color: #f5f5f5; */
 }
 
-.nav-tabs>li>a.fieldError{
+.nav-tabs>li>a.fieldError {
   color: #ff4444 !important;
 }
 
@@ -90,7 +89,7 @@ ul.nav li a {
   text-decoration: initial;
 }
 
-span.legend-color{
+span.legend-color {
   padding: 0px 8px !important;
   border-radius: 20px !important;
   margin-right: 5px !important;
@@ -149,11 +148,11 @@ span#notDefined {
   min-height: 132px;
 }
 
-.icon-check{
+.icon-check {
   background-position-y: -23px;
 }
 
-.icon-uncheck, .icon-check{
+.icon-uncheck, .icon-check {
   background-repeat: no-repeat
 }
 
@@ -174,7 +173,6 @@ span#notDefined {
   min-width: 22px;
   margin-bottom: 55%;
 }
-
 
 .personRead-content {
   padding: 0 2%;
@@ -595,7 +593,7 @@ h3.subTitle.headTitle {
 }
 
 form#CCAFS_deliverableList {
-    margin-top: 10px;
+  margin-top: 10px;
 }
 
 .deliverables-extended-version {
@@ -673,8 +671,8 @@ tr:hover td {
   background-color: #f0f0f0 !important;
 }
 
-.fundingSource-container span{
-    display: block;
+.fundingSource-container span {
+  display: block;
 }
 
 td:last-child {
@@ -700,9 +698,13 @@ tr:hover .icon-container {
 }
 
 [class^="block-"] {
- padding:0 1em;
+  padding: 0 1em;
 }
 
 div#ccDimension-capacity {
-    font-size: 0.95em;
+  font-size: 0.95em;
+}
+
+#newExpectedYear label {
+  font-size: 0.95em;
 }

@@ -10,7 +10,7 @@
   "${baseUrl}/global/js/autoSave.js",
   "${baseUrl}/global/js/fieldsValidation.js?20180529"
 ] /]
-[#assign customCSS = ["${baseUrlMedia}/css/projects/projectDeliverable.css"] /]
+[#assign customCSS = ["${baseUrl}/crp/css/projects/projectDeliverable.css"] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "deliverableList" /]
 [#assign hideJustification = true /]
