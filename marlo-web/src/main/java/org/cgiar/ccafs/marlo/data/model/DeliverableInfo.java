@@ -185,30 +185,38 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
     return year;
   }
 
-
+  /**
+   * Get a boolean to mark a deliverable with a Report tag in deliverableList for Reporting
+   * 
+   * @param year
+   * @return Boolean
+   */
   public Boolean isRequieriedReporting(int year) {
-
-    if (status == null && this.year <= year) {
+    if (status == null && this.year == year) {
       return true;
     }
 
-    if (status != null && this.year <= year
+    if (status != null && this.year == year
       && status.intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())) {
       return true;
     }
 
-    if (status != null && newExpectedYear != null && this.newExpectedYear <= year
+    if (status != null && this.newExpectedYear != null && this.newExpectedYear != -1 && this.newExpectedYear == year
       && status.intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())) {
       return true;
     }
-    if (status != null && this.year == year
-      && status.intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())) {
-      return true;
-    }
 
-    if (status != null && newExpectedYear != null && this.newExpectedYear <= year
-      && status.intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())) {
-      return true;
+    if (status != null && (status.intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())
+      || status.intValue() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId()))) {
+      if (this.newExpectedYear != null && this.newExpectedYear != -1) {
+        if (this.newExpectedYear == year) {
+          return true;
+        }
+      } else {
+        if (this.year == year) {
+          return true;
+        }
+      }
     }
 
     return false;

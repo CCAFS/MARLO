@@ -18,7 +18,7 @@
             <column name="last_name" length="500" not-null="true" />
         </property>
         <property name="elementId" type="string">
-            <column name="element_id" sql-type="TEXT" not-null="true" />
+            <column name="element_id" not-null="true" />
         </property>
          <many-to-one name="phase" class="org.cgiar.ccafs.marlo.data.model.Phase" fetch="select">
             <column name="id_phase" />

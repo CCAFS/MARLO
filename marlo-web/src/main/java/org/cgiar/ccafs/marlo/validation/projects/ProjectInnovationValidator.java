@@ -96,7 +96,7 @@ public class ProjectInnovationValidator extends BaseValidator {
     if (!(this.wordCount(projectInnovation.getProjectInnovationInfo(action.getActualPhase()).getNarrative()) <= 75)) {
       action.addMessage(action.getText("Narrative of The Innovation"));
       action.addMissingField("projectInnovations.narrative");
-      action.getInvalidFields().put("input-innovation.projectInnovationInfo.narrative",
+      action.getInvalidFields().put("input-innovation.projectPolicyInfo.narrativeEvidence",
         InvalidFieldsMessages.EMPTYFIELD);
     }
 
