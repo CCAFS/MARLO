@@ -93,36 +93,38 @@ public class UnhandledExceptionAction extends BaseAction {
     message.append("The user " + this.getCurrentUser().getFirstName() + " " + this.getCurrentUser().getLastName() + " ("
       + this.getCurrentUser().getEmail() + ") ");
     message.append("has experienced an exception on the platform. </br>");
-    message.append("This exception occurs in the server: " + config.getBaseUrl() + "</br>");
+    message.append("This exception occurs in the server: " + config.getBaseUrl() + "</br></br>");
     String crpAcronymName = crp.getAcronym() != null && !crp.getAcronym().isEmpty() ? crp.getAcronym() : crp.getName();
     if (crpAcronymName != null) {
-      message.append("In the CRP :" +crp.getAcronym() + ".</br>");
+      message.append("<b>CRP : </b>" + crp.getAcronym() + ".</br>");
     }
-    if(this.getActualPhase()!=null) {
-    	message.append("In the Phase: "+this.getActualPhase().getComposedName()+".</br>");    	
-    }    
-    if(this.getActionName()!=null) {
-    	message.append("In the ActionName: "+this.getActionName()+".</br>");    	
+    if (this.getActualPhase() != null) {
+      message.append("<b>Phase: </b>" + this.getActualPhase().getComposedName() + ".</br>");
     }
-    if(this.getRequest()!=null) {
-    	HttpServletRequest httpServletRequest=this.getRequest();
-    	if(httpServletRequest.getParameterMap()!=null && !httpServletRequest.getParameterMap().isEmpty()) {
-    		message.append("Parameters: ");    
-    		for(String parameter:httpServletRequest.getParameterMap().keySet()) {
-    			if(httpServletRequest.getParameterMap().get(parameter)!=null && httpServletRequest.getParameterMap().get(parameter).length>0) {
-    				message.append("</br>"+parameter+": ");
-    				Set<String> values = new HashSet<>();
-        			for(String value:httpServletRequest.getParameterMap().get(parameter)) {
-        				values.add(value);
-        			}
-        			message.append(String.join(", ", values));
-    			}
-    		}
-    	}
-    }    
-    
-    message.append("</br></br>The exception message was: </br></br>");
-    message.append(writer.toString());
+    if (this.getActionName() != null) {
+      message.append("<b>ActionName: </b>" + this.getActionName() + ".</br>");
+    }
+
+    message.append("</br></br><b>Exception message: </b></br></br>");
+    message.append(writer.toString() + "</br></br></br>");
+
+    if (this.getRequest() != null) {
+      HttpServletRequest httpServletRequest = this.getRequest();
+      if (httpServletRequest.getParameterMap() != null && !httpServletRequest.getParameterMap().isEmpty()) {
+        message.append("<b>Parameters: </b></br>");
+        for (String parameter : httpServletRequest.getParameterMap().keySet()) {
+          if (httpServletRequest.getParameterMap().get(parameter) != null
+            && httpServletRequest.getParameterMap().get(parameter).length > 0) {
+            message.append("</br>" + parameter + ": ");
+            Set<String> values = new HashSet<>();
+            for (String value : httpServletRequest.getParameterMap().get(parameter)) {
+              values.add(value);
+            }
+            message.append(String.join(", ", values));
+          }
+        }
+      }
+    }
 
     sendMail.send(config.getEmailNotification(), null, config.getEmailNotification(), subject, message.toString(), null,
       null, null, true);
