@@ -269,11 +269,11 @@
  
 [#macro req required=true ]<span class="red requiredTag" style="display:${required?string('inline','none')};">*</span>[/#macro]
 
-[#macro confirmJustification action="" namespace="/" nameId="" title="" projectID=""]
+[#macro confirmJustification action="" namespace="/" nameId="" title="" projectID="" required=true]
   <div id="dialog-justification" title="${title}" style="display:none"> 
     <div class="dialog-content"> 
       [@s.form action=action namespace="${namespace}" cssClass="pure-form"]
-        [@textArea name="justification" i18nkey="saving.justification" required=true className="justification"/]
+        [@textArea name="justification" i18nkey="saving.justification" required=required className="justification"/]
         [#if nameId != ""]
           <input class="nameId" name="${nameId}" type="hidden" value="-1" />
         [/#if]
@@ -540,13 +540,15 @@
 [/#function]
 
 [#macro elementsListComponent name elementType id="" elementList=[] label="" paramText="" help="" helpIcon=true listName="" keyFieldName="" displayFieldName="" maxLimit=0 indexLevel=1 required=true ]
+  [#local list = ((listName?eval)?sort_by(displayFieldName))![] /] 
   [#local composedID = "${elementType}${id}" /]
   <div class="panel tertiary elementsListComponent" listname="${name}" style="position:relative">
     <div class="panel-head">
       <label for="">[@s.text name=label /]:[@req required=required && editable /]
         [#--  Help Text --]
         [@helpLabel name="${help}" paramText="${paramText}" showIcon=helpIcon editable=editable/]
-      </label></div>
+      </label>
+    </div>
     <div class="panel-body" style="min-height: 30px;">
       <div class="loading listComponentLoading" style="display:none"></div>
       <ul class="list listType-${composedID}">
@@ -555,7 +557,12 @@
         [/#if]
       </ul>
       [#if editable]
-        [@select name="" className="setSelect2 maxLimit-${maxLimit} elementType-${composedID} indexLevel-${indexLevel}" showTitle=false listName=listName keyFieldName=keyFieldName displayFieldName=displayFieldName /]
+        <select name="" id="" class="setSelect2 maxLimit-${maxLimit} elementType-${composedID} indexLevel-${indexLevel}">
+          <option value="-1">[@s.text name="form.select.placeholder" /]</option>
+          [#list list as item]
+            <option value="${(item[keyFieldName])!}">${(item[displayFieldName])!'null'}</option>
+          [/#list]
+        </select>
       [#else]
         [#if !(elementList?has_content)]<p class="font-italic"> No entries added yet.</p>[/#if]
       [/#if]

@@ -5,6 +5,7 @@ $(document).ready(init);
 function init() {
 
   $statuses = $('select.status');
+  isDeliverableNew = $statuses.classParam('isNew') == "true";
   $statusDescription = $('#statusDescription');
 
   // Take out the 0 - Not Targeted Dimension
@@ -33,7 +34,7 @@ function init() {
 
   $('.helpMessage3').on("click", openDialog);
 
-  // justificationByStatus($(".status").find("option:selected").val());
+  // justificationByStatus($statuses.val());
   // validateCurrentDate();
 
   $(".addPartner").on("click", addPartnerEvent);
@@ -131,8 +132,13 @@ function init() {
 
   // New Expected year should be greater than current reporting cycle year
   if(reportingActive) {
-    // $('#newExpectedYear select option[value=' + currentCycleYear - 1 + ']').attr('disabled', 'disabled')
-    // $('#newExpectedYear select').trigger("change.select2");
+    if(isDeliverableNew) {
+      // Set Complete if is new
+      $statuses.val(3).trigger("change");
+      $('.deliverableYear .overlay').show();
+    } else {
+      $statuses.find('option[value="2"]').prop("disabled", true).trigger("change");
+    }
   }
 
   /** Funding source * */
@@ -458,39 +464,44 @@ function validateCurrentDate() {
 }
 
 function justificationByStatus(statusId) {
+  var $yearOverlay = $('#deliverableYear .overlay');
+  var $newExpectedYearBlock = $('#newExpectedYear');
+  var $newExpectedYearSelect = $newExpectedYearBlock.find('select');
+  var newExpectedYear = $newExpectedYearSelect.val();
+  var hasExpectedYear =
+      ((newExpectedYear != "") && newExpectedYear != "-1") && (typeof newExpectedYear !== 'undefined');
+  var isCompletedWithoutExpectedYear = ((!reportingActive) && isStatusComplete(statusId) && hasExpectedYear);
+
+  // Validate the justification
   if(isStatusCancelled(statusId) || isStatusExtended(statusId)) {
-    $statusDescription.hide().show(400);
+    $statusDescription.slideDown(400);
     $statusDescription.find('label').html($('#status-' + statusId).html());
   } else {
-    $statusDescription.show().hide(400);
+    $statusDescription.slideUp(400);
   }
 
-  var newExpectedYear = $('#newExpectedYear select').val();
-  console.log(newExpectedYear);
-  var isCompletedWithoutExpectedYear =
-      ((!reportingActive) && isStatusComplete(statusId) && ((newExpectedYear != "") || newExpectedYear != "-1"));
-
-  if(isStatusExtended(statusId) || isCompletedWithoutExpectedYear) {
-    $('#newExpectedYear').show();
-    $('#newExpectedYear select').attr('disabled', false);
-    if(isCompletedWithoutExpectedYear) {
-      $('#newExpectedYear select').attr('disabled', true);
-      $('#newExpectedYear').hide();
+  // Validate the new extended year
+  if(!isDeliverableNew) {
+    if(isStatusOnGoing(statusId)) {
+      // $newExpectedYearSelect.val('-1').trigger('change');
+      $newExpectedYearBlock.hide();
     } else {
-      $('#newExpectedYear select').attr('disabled', false);
+      if(hasExpectedYear) {
+        $newExpectedYearBlock.show();
+        $yearOverlay.show();
+      } else {
+        $newExpectedYearBlock.hide();
+        $yearOverlay.hide();
+      }
     }
-  } else {
-    $('#newExpectedYear').hide();
   }
 
-  var $yearOverlay = $('#deliverableYear .overlay');
   if(isStatusExtended(statusId)) {
+    $newExpectedYearBlock.show();
     $yearOverlay.show();
-  } else {
-    $yearOverlay.hide();
   }
 
-  $statusDescription.find('textarea').val('');
+  // $statusDescription.find('textarea').val('');
 }
 
 // Add a new person element
@@ -638,7 +649,7 @@ function selectKeyOutput() {
   var keyOutputOptions = $keyOutputList.find('option')
   var keyOutputsLength = keyOutputOptions.length;
 
-  if( keyOutputsLength == 2 ) {
+  if(keyOutputsLength == 2) {
     var optionValue = keyOutputOptions[1].value;
     $keyOutputList.val(optionValue);
     $keyOutputList.trigger('change');

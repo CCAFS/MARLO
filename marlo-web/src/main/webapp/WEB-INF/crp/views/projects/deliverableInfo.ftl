@@ -55,28 +55,30 @@
   <div class="${reportingActive?string('fieldFocus','simpleBox')}">
     
     <div class="form-group row">
+      [#--  [#assign canViewNewExpectedYear = action.candEditExpectedYear(deliverable.id) /]  --]
+      [#assign hasExpectedYear = ((deliverable.deliverableInfo.newExpectedYear != -1))!false /]
       [#-- Deliverable Status --]
       <div class="col-md-4">
-        [@customForm.select name="deliverable.deliverableInfo.status" label=""   i18nkey="project.deliverable.generalInformation.status" listName="status"  multiple=false required=true header=false className=" status" editable=editable || editStatus/]
+        [@customForm.select name="deliverable.deliverableInfo.status" label=""   i18nkey="project.deliverable.generalInformation.status" listName="status"  multiple=false required=true header=false className="status isNew-${isDeliverableNew?string}" editable=editable || editStatus/]
       </div>
+      
       [#-- Deliverable Year --]
       <div id="deliverableYear" class="col-md-4 form-group">
-        [#assign canNotEditYear = (deliverable.deliverableInfo.status == 4)!false || !action.candEditYear(deliverable.id)/] 
+        [#--  [#assign canNotEditYear = (deliverable.deliverableInfo.status == 4)!false || !action.candEditYear(deliverable.id)/]  --]
         [#if editable ]
-          <div class="overlay" style="display:${canNotEditYear?string('block', 'none')}"></div>
-          [@customForm.select name="deliverable.deliverableInfo.year" label=""  i18nkey="project.deliverable.generalInformation.year" listName="project.projectInfo.${canNotEditYear?string('AllYears', 'AllYearsPhase')}" header=false required=true className="yearExpected" disabled=canNotEditYear /]
+          <div class="overlay" style="display:${(hasExpectedYear || (isDeliverableNew && reportingActive))?string('block', 'none')}"></div>
+          [@customForm.select name="deliverable.deliverableInfo.year" label=""  i18nkey="project.deliverable.generalInformation.year" listName="project.projectInfo.AllYears" header=false required=true className="yearExpected"  /]
         [#else]
            <div class="select">
             <label for="">[@s.text name="project.deliverable.generalInformation.year" /]:</label>
             <p>${(deliverable.deliverableInfo.year)!}</p>
-            [#if canNotEditYear] <input type="hidden" name="deliverable.deliverableInfo.year" value="${(deliverable.deliverableInfo.year)!}"/>  [/#if]
+            <input type="hidden" name="deliverable.deliverableInfo.year" value="${(deliverable.deliverableInfo.year)!}"/>
           </div>
         [/#if]
       </div>
       
       [#-- New Expected Year - Extended = 4 or exist--]
-      [#assign canViewNewExpectedYear = (deliverable.deliverableInfo.status == 4)!false || action.candEditExpectedYear(deliverable.id) /]
-      <div id="newExpectedYear" class="col-md-4" style="display:${canViewNewExpectedYear?string('block','none')}">
+      <div id="newExpectedYear" class="col-md-4" style="display:${hasExpectedYear?string('block','none')}">
         [#assign startExpectedYear = ((deliverable.deliverableInfo.year)!currentCycleYear)  ]
         [#if editable || editStatus]
           [@customForm.select name="deliverable.deliverableInfo.newExpectedYear"  i18nkey="deliverable.newExpectedYear"  listName="project.projectInfo.getYears(${startExpectedYear})" header=true  multiple=false required=true  className="yearNewExpected" editable=editable || editStatus/]
@@ -84,7 +86,7 @@
           <div class="select">
             <label for="">[@s.text name="deliverable.newExpectedYear" /]:</label>
             <p>${(deliverable.deliverableInfo.newExpectedYear)!}</p>
-            <input type="hidden" name="deliverable.deliverableInfo.newExpectedYear" value="${(deliverable.deliverableInfo.newExpectedYear)!}" />
+            <input type="hidden" class="yearNewExpected" name="deliverable.deliverableInfo.newExpectedYear" value="${(deliverable.deliverableInfo.newExpectedYear)!}" />
           </div>
         [/#if]
       </div> 
@@ -92,8 +94,8 @@
     </div>
     
     [#-- Status justification textArea --]
-    [#if !action.isDeliverableNew(deliverable.id)]
-      [#assign justificationRequired = (deliverable.deliverableInfo.year??) && (deliverable.deliverableInfo.status??) &&  ((deliverable.deliverableInfo.status == 4)  || (deliverable.deliverableInfo.status == 5)) ]
+    [#if !isDeliverableNew]
+      [#assign justificationRequired = ((deliverable.deliverableInfo.status == 4)  || (deliverable.deliverableInfo.status == 5))!false ]
       <div class="form-group">
         <div id="statusDescription" class="col-md-12" style="display:${justificationRequired?string('block','none')}">
           [@customForm.textArea name="deliverable.deliverableInfo.statusDescription" className="statusDescription limitWords-150" i18nkey="deliverable.statusJustification.status${(deliverable.deliverableInfo.status)!'NotSelected'}" editable=editable || editStatus/]

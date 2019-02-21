@@ -4918,7 +4918,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   /**
-   * This method get the status of an specific deliverable from the sectionStatuses array.
+   * This method get the status of an specific deliverable depending of the sectionStatuses and the year
+   * Previous deliverable will be marked as completed
    * 
    * @param deliverableID is the deliverable ID to be identified.
    * @return Boolean object with the status of the deliverable
@@ -4928,10 +4929,12 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
     if (deliverable.getDeliverableInfo(this.getActualPhase()) != null) {
       DeliverableInfo deliverableInfo = deliverable.getDeliverableInfo(this.getActualPhase());
+
+
       if (deliverableInfo.getStatus() != null
         && deliverableInfo.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())) {
-        if (deliverableInfo.getNewExpectedYear() != null) {
-          if (deliverableInfo.getNewExpectedYear() > this.getActualPhase().getYear()) {
+        if (deliverableInfo.getNewExpectedYear() != null && deliverableInfo.getNewExpectedYear().intValue() != -1) {
+          if (deliverableInfo.getNewExpectedYear() != this.getActualPhase().getYear()) {
             return true;
           }
         } else {
@@ -4940,16 +4943,23 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       }
 
       if (deliverableInfo.getStatus() != null
-        && deliverableInfo.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())) {
-        if (deliverableInfo.getYear() > this.getActualPhase().getYear()) {
-          return true;
+        && (deliverableInfo.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId())
+          || deliverableInfo.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId()))) {
+        if (deliverableInfo.getNewExpectedYear() != null && deliverableInfo.getNewExpectedYear().intValue() != -1) {
+          if (deliverableInfo.getNewExpectedYear() != this.getActualPhase().getYear()) {
+            return true;
+          }
+        } else {
+          if (deliverableInfo.getYear() != this.getActualPhase().getYear()) {
+            return true;
+          }
         }
       }
 
-      if (this.isPlanningActive() && !this.isUpKeepActive()) {
-        if (deliverable.getDeliverableInfo(this.getActualPhase()).getStatus() != null
-          && deliverable.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
-            .parseInt(ProjectStatusEnum.Complete.getStatusId())) {
+
+      if (deliverableInfo.getStatus() != null
+        && (deliverableInfo.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId()))) {
+        if (deliverableInfo.getYear() != this.getActualPhase().getYear()) {
           return true;
         }
       }

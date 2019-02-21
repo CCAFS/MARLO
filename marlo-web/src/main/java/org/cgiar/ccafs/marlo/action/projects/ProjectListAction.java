@@ -46,6 +46,7 @@ import org.cgiar.ccafs.marlo.security.APCustomRealm;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
@@ -631,6 +632,7 @@ public class ProjectListAction extends BaseAction {
           allProjects.removeAll(closedProjects);
         }
         Set<Project> uniqueProjects = new HashSet<>();
+
         uniqueProjects.addAll(closedProjects);
         closedProjects.clear();
         closedProjects.addAll(uniqueProjects);
@@ -666,6 +668,33 @@ public class ProjectListAction extends BaseAction {
       // myProjects.addAll(centerProjects);
     }
 
+    // AR 2018 Filter by End Date
+    if (this.isReportingActive()) {
+
+
+      SimpleDateFormat dateFormat = new SimpleDateFormat("y");
+
+      System.out.println(myProjects.size());
+      myProjects = myProjects.stream()
+        .filter(mp -> mp.isActive() && (mp.getProjecInfoPhase(this.getActualPhase()).getEndDate() == null
+          || Integer.parseInt(dateFormat.format(mp.getProjecInfoPhase(this.getActualPhase()).getEndDate())) >= this
+            .getCurrentCycleYear()))
+        .collect(Collectors.toList());
+
+
+      allProjects = allProjects.stream()
+        .filter(mp -> mp.isActive() && (mp.getProjecInfoPhase(this.getActualPhase()).getEndDate() == null
+          || Integer.parseInt(dateFormat.format(mp.getProjecInfoPhase(this.getActualPhase()).getEndDate())) >= this
+            .getCurrentCycleYear()))
+        .collect(Collectors.toList());
+
+
+      closedProjects = closedProjects.stream()
+        .filter(mp -> mp.isActive() && (mp.getProjecInfoPhase(this.getActualPhase()).getEndDate() == null
+          || Integer.parseInt(dateFormat.format(mp.getProjecInfoPhase(this.getActualPhase()).getEndDate())) >= this
+            .getCurrentCycleYear()))
+        .collect(Collectors.toList());
+    }
 
     // closedProjects.sort((p1, p2) -> p1.getStatus().compareTo(p2.getStatus()));
     String params[] = {loggedCrp.getAcronym() + ""};
