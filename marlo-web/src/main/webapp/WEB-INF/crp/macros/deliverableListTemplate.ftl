@@ -26,7 +26,7 @@
         [#-- Has draft version (Auto-save) --]
         [#assign hasDraft = (action.getAutoSaveFilePath(deliverable.class.simpleName, "deliverable", deliverable.id))!false /]
         [#-- Is Complete --]
-        [#assign isDeliverableComplete = action.isDeliverableComplete(deliverable.id) /]
+        [#assign isDeliverableComplete = action.isDeliverableComplete(deliverable.id, actualPhase.id) /]
         [#-- To Report --]
         [#local toReport = reportingActive && !isDeliverableComplete ]
         
