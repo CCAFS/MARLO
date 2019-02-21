@@ -106,12 +106,16 @@ function init() {
   if(reportingActive) {
     if(isDeliverableNew) {
       // Set Complete if is new
-      $statuses.val(3).trigger("change");
+
+      $statuses.find('option[value="3"]').prop("disabled", true);
+      $statuses.val("3")
       $('.deliverableYear .overlay').show();
+
     } else {
       // Disable On-going
-      $statuses.find('option[value="2"]').prop("disabled", true).trigger("change");
+      $statuses.find('option[value="2"]').prop("disabled", true);
     }
+    $statuses.trigger("change");
   }
 
   /** Funding source * */
