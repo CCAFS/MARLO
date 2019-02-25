@@ -606,6 +606,11 @@ function setLicense(license) {
     $(".type-license ").parent().find("label").removeClass("radio-checked");
     $(".block-license").show("slow");
     $(".type-license .yes-button-label ").addClass("radio-checked");
+
+    // Set license as Other
+    // $('input.licenceOption[value="OTHER"]').prop("checked", true);
+    // $('input.otherLicense').val(license);
+
   } else {
     $input.find('input.noInput').prop("checked", true);
     $(".type-license ").parent().find("label").removeClass("radio-checked");
