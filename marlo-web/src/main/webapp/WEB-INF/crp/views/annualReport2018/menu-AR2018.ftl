@@ -34,7 +34,7 @@
   },
   { 'title': '0. Narrative section', 'show': true,
     'items': [
-    { 'slug': 'narrative',    'name': 'annualReport2018.menu.executiveSummary',    'action': 'narrative',  'active': false, 'onlyPMU': !PMU }
+    { 'slug': 'narrative',    'name': 'annualReport2018.menu.executiveSummary',    'action': 'narrative',  'active': true, 'onlyPMU': !PMU }
     ]
   }
 ]/]
