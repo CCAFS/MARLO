@@ -778,18 +778,24 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
         }
 
         String creatorAuthors = "";
-        for (DeliverableUser deliverableUser : deliverable.getDeliverableUsers().stream()
-          .filter(du -> du.isActive() && du.getPhase() != null && du.getPhase().equals(this.getSelectedPhase()))
-          .collect(Collectors.toList())) {
-          creatorAuthors += "\n● ";
-          if (!deliverableUser.getLastName().isEmpty()) {
-            creatorAuthors += deliverableUser.getLastName() + " - ";
-          }
-          if (!deliverableUser.getFirstName().isEmpty()) {
-            creatorAuthors += deliverableUser.getFirstName();
-          }
-          if (!deliverableUser.getElementId().isEmpty()) {
-            creatorAuthors += "<" + deliverableUser.getElementId() + ">";
+        if (deliverable.getDeliverableUsers() != null) {
+          for (DeliverableUser deliverableUser : deliverable.getDeliverableUsers().stream()
+            .filter(du -> du.isActive() && du.getPhase() != null && du.getPhase().equals(this.getSelectedPhase()))
+            .collect(Collectors.toList())) {
+            creatorAuthors += "\n● ";
+            if (deliverableUser != null) {
+              if (!deliverableUser.getLastName().isEmpty()) {
+                creatorAuthors += deliverableUser.getLastName() + " - ";
+              }
+              if (!deliverableUser.getFirstName().isEmpty()) {
+                creatorAuthors += deliverableUser.getFirstName();
+              }
+              if (deliverableUser.getElementId() != null) {
+                if (!deliverableUser.getElementId().isEmpty()) {
+                  creatorAuthors += "<" + deliverableUser.getElementId() + ">";
+                }
+              }
+            }
           }
         }
 
@@ -1199,7 +1205,9 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
 
           // Youth
           if (deliverableCrossCuttingMarkerYouth != null) {
-            youth = deliverableCrossCuttingMarkerYouth.getRepIndGenderYouthFocusLevel().getPowbName();
+            if (deliverableCrossCuttingMarkerYouth.getRepIndGenderYouthFocusLevel() != null) {
+              youth = deliverableCrossCuttingMarkerYouth.getRepIndGenderYouthFocusLevel().getPowbName();
+            }
           }
           if (youth.isEmpty()) {
             youth = "0-Not Targeted";
@@ -1207,7 +1215,9 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
 
           // Cap
           if (deliverableCrossCuttingMarkerCapDev != null) {
-            cap = deliverableCrossCuttingMarkerCapDev.getRepIndGenderYouthFocusLevel().getPowbName();
+            if (deliverableCrossCuttingMarkerCapDev.getRepIndGenderYouthFocusLevel() != null) {
+              cap = deliverableCrossCuttingMarkerCapDev.getRepIndGenderYouthFocusLevel().getPowbName();
+            }
           }
           if (cap.isEmpty()) {
             cap = "0-Not Targeted";
