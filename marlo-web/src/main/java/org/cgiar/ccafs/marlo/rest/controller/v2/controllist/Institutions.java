@@ -74,7 +74,8 @@ public class Institutions {
 		return this.institutionItem.createPartnerRequest(institutionDTO, CGIAREntity, this.getCurrentUser());
 	}
 
-	@ApiOperation(tags = "Table 4 - CRP Innovations", value = "View a list of all institutions", response = InstitutionDTO.class, responseContainer = "List")
+	@ApiOperation(tags = { "Table 4 - CRP Innovations",
+			"Table 3 - Outcome/ Impact Case Reports" }, value = "View a list of all institutions", response = InstitutionDTO.class, responseContainer = "List")
 	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
 	@RequestMapping(value = "/institutions", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public List<InstitutionDTO> getAllInstitutions() {
@@ -97,7 +98,8 @@ public class Institutions {
 		return user;
 	}
 
-	@ApiOperation(tags = "Table 4 - CRP Innovations", value = "Search an institution with an ID", response = InstitutionDTO.class)
+	@ApiOperation(tags = { "Table 4 - CRP Innovations",
+			"Table 3 - Outcome/ Impact Case Reports" }, value = "Search an institution with an ID", response = InstitutionDTO.class)
 	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
 	@RequestMapping(value = "/institutions/{code}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<InstitutionDTO> getInstitution(@PathVariable Long code) {

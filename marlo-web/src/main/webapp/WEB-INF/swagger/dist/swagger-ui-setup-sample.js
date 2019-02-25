@@ -5,6 +5,7 @@ window.onload = function() {
     url : "https://localhost/marlo-web/api/v2/api-docs",
     dom_id : '#swagger-ui',
     deepLinking : true,
+    validatorUrl: null,
     presets : [ SwaggerUIBundle.presets.apis, SwaggerUIStandalonePreset ],
     plugins : [ SwaggerUIBundle.plugins.DownloadUrl ],
     layout : "StandaloneLayout",
