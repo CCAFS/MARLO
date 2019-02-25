@@ -64,10 +64,10 @@
                   "comments": "Comments"
                 },
                 { 
-                  "studies": "Studies 1",
-                  "status": "Status 1",
-                  "type": "Type 1",
-                  "comments": "Comments 1"
+                  "studies": "",
+                  "status": "",
+                  "type": "",
+                  "comments": ""
                 }
               ] /]
           [@meliaTable name="table9" list=meliaList /]
@@ -138,12 +138,36 @@
         [#if list?has_content]
           [#list list as item]
           <tr>
-            <td>${item.studies}</td>
-            <td class="text-center">${item.status}</td>
-            <td class="text-center">${item.type}</td>
-            <td>${item.comments}</td>
+            <td>
+              [#if (item.studies?has_content)!false]
+                ${item.studies}
+              [#else]
+                <i style="opacity:0.5">Prefilled</i>
+              [/#if]
+            </td>
             <td class="text-center">
-              [@customForm.checkmark id="" name="" label="" value="" editable=editable checked=false cssClass="" /]
+              [#if (item.status?has_content)!false]
+                ${item.status}
+              [#else]
+                <i style="opacity:0.5">Prefilled</i>
+              [/#if]
+            </td>
+            <td class="text-center">
+              [#if (item.type?has_content)!false]
+                ${item.type}
+              [#else]
+                <i style="opacity:0.5">Prefilled</i>
+              [/#if]
+            </td>
+            <td>
+              [#if (item.comments?has_content)!false]
+                ${item.comments}
+              [#else]
+                <i style="opacity:0.5">Prefilled</i>
+              [/#if]
+            </td>
+            <td class="text-center">
+              [@customForm.checkmark id="" name="" checked=false editable=editable centered=true/] 
             </td>
           </tr>
           [/#list]
