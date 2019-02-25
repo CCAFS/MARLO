@@ -67,7 +67,7 @@ public class MarloSwaggerConfiguration extends WebMvcConfigurerAdapter {
 	}
 
 	private Tag[] getTags() {
-		Tag[] tags = new Tag[7];
+		Tag[] tags = new Tag[15];
 		tags[0] = new Tag("Institutions Lists", "All control List about MARLO intitutions ", 110);
 		tags[1] = new Tag("General Control Lists", "General pourpose control List ", 115);
 		tags[2] = new Tag("SRF Lists", "All SRF related control List ", 120);
@@ -79,6 +79,30 @@ public class MarloSwaggerConfiguration extends WebMvcConfigurerAdapter {
 				"Control list used to populate the policies indicator as per the AR2018 template", 15);
 		tags[6] = new Tag("Table 4 - CRP Innovations",
 				"Control list used to populate the innovation indicator as per the AR2018 template", 20);
+
+		tags[7] = new Tag("Table 5 - Status of Planned Outcomes and Milestones",
+				"Control list used to populate this indicator as per the AR2018 template", 25);
+
+		tags[8] = new Tag("Table 6 - Peer-reviewed publicationss",
+				"Control list used to populate this indicator as per the AR2018 template", 30);
+
+		tags[9] = new Tag("Table 7 - Key external partnerships",
+				"Control list used to populate this indicator as per the AR2018 template", 35);
+
+		tags[10] = new Tag("Table 8 - Internal Cross-CGIAR Collaborations",
+				"Control list used to populate this indicator as per the AR2018 template", 40);
+
+		tags[11] = new Tag("Table 9 - Monitoring, Evaluation, \n Learning and Impact Assessment (MELIA)",
+				"Control list used to populate this indicator as per the AR2018 template", 45);
+
+		tags[12] = new Tag("Table 10 - Update on Actions Taken in Response to Relevant Evaluations",
+				"Control list used to populate this indicator as per the AR2018 template", 50);
+
+		tags[13] = new Tag("Table 11 - W1/2 Use",
+				"Control list used to populate this indicator as per the AR2018 template", 55);
+
+		tags[14] = new Tag("Table 12 - CRP Financial Report",
+				"Control list used to populate this indicator as per the AR2018 template", 60);
 
 		return tags;
 	}

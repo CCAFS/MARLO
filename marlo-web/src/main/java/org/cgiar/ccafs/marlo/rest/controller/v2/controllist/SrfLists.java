@@ -75,18 +75,64 @@ public class SrfLists {
 	}
 
 	/**
+	 * Find a SRF IDO requesting by Id
+	 * 
+	 * @param id
+	 * @return a SrfIdoDTO with the SRL IDO data.
+	 */
+	@ApiIgnore
+	@ApiOperation(value = "Search an SRF intermediate level objective(sub-IDO) by ID", response = SrfIdoDTO.class)
+	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
+	@RequestMapping(value = "/srfIdo/{code}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<SrfIdoDTO> findSrfIdoById(@PathVariable Long code) {
+		LOG.debug("REST request to get SRF-SLO : {}", code);
+		return this.srfIdoItem.findSrfIdobyId(code);
+	}
+
+	/**
+	 * Find a SRF-SLO requesting by Id
+	 * 
+	 * @param id
+	 * @return a SrfSloDTO with the SRL-SLO data.
+	 */
+	@ApiIgnore
+	@ApiOperation(value = "Search an SRF-SLO with an ID", response = SrfSloDTO.class)
+	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
+	@RequestMapping(value = "/srfSlo/{code}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<SrfSloDTO> findSrfSloById(@PathVariable Long code) {
+		LOG.debug("REST request to get SRF-SLO : {}", code);
+		return this.srfSloItem.findSrfSlobyId(code);
+	}
+
+	/**
 	 * Find a SLO indicator Target requesting by code
 	 * 
 	 * @param id
 	 * @return a SrfSloIndicatorTargetDTO with the SLO indicator Target data.
 	 */
 
-	@ApiOperation(tags = "Table 1 - Evidence on Progress towards SRF targets", value = "Search a SLO Target by code", response = SrfSloTargetDTO.class)
+	@ApiOperation(tags = { "Table 1 - Evidence on Progress towards SRF targets",
+			"Table 3 - Outcome/ Impact Case Reports" }, value = "Search a SLO Target by code", response = SrfSloTargetDTO.class)
 	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
 	@RequestMapping(value = "/slo-targets/{code:.+}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<SrfSloTargetDTO> findSrfSloTargetByCode(@PathVariable String code) {
 		LOG.debug("REST request to get SrfSloIndicatorTarget : {}", code);
 		return this.srfSloIndicatorTargetItem.findSrfSloIndicatorTargetbyId(code);
+	}
+
+	/**
+	 * Find a SRF Cross Cutting Issue requesting by Id
+	 * 
+	 * @param id
+	 * @return a SrfCrossCuttingIssueDTO with the SRF Cross Cutting Issue data.
+	 */
+	@ApiIgnore
+	@ApiOperation(value = "Search an SRF Cross Cutting Issue with an ID", response = SrfCrossCuttingIssueDTO.class)
+	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
+	@RequestMapping(value = "/srfCrossCuttingIssue/{code}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<SrfCrossCuttingIssueDTO> findSrfSrfCrossCuttingIssueById(@PathVariable Long code) {
+		LOG.debug("REST request to get SRF Cross Cutting Issue : {}", code);
+		return this.srfCrossCuttingIssueItem.findSrfCrossCuttingIssuebyId(code);
 	}
 
 	/**
@@ -96,7 +142,8 @@ public class SrfLists {
 	 * @return a SrfSubIdoDTO with the SRF-SubIdo data.
 	 */
 
-	@ApiOperation(tags = "Table 2 - CRP Policies", value = "Search an SRF sub intermediate level objective(sub-IDO) by Code", response = SrfSubIdoDTO.class)
+	@ApiOperation(tags = { "Table 2 - CRP Policies",
+			"Table 3 - Outcome/ Impact Case Reports" }, value = "Search an SRF sub intermediate level objective(sub-IDO) by Code", response = SrfSubIdoDTO.class)
 	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
 	@RequestMapping(value = "/srf-sub-idos/{code:.+}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<SrfSubIdoDTO> findSrfSubIdoByCode(@PathVariable String code) {
@@ -119,21 +166,6 @@ public class SrfLists {
 	}
 
 	/**
-	 * Get All SLO indicator Target items
-	 * 
-	 * @return a List of SrfIdoDTO with all SRF IDO Items.
-	 */
-
-	@ApiOperation(tags = "Table 1 - Evidence on Progress towards SRF targets", value = "View all SLO Targets", response = SrfSloTargetDTO.class, responseContainer = "List")
-	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
-	@RequestMapping(value = "/slo-targets", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<SrfSloTargetDTO>> getAllSrfSloIndicatorTarget(
-			@RequestParam(required = false, value = "target year (2022 or 2030)") Long year) {
-		LOG.debug("REST request to get SLO indicator Target");
-		return this.srfSloIndicatorTargetItem.getAllSrfSloIndicatorTargets(year);
-	}
-
-	/**
 	 * Get All the SRF-SLO items
 	 * 
 	 * @return a List of SrfSloDTO with all SRF-SLO Items.
@@ -145,6 +177,22 @@ public class SrfLists {
 	public List<SrfSloDTO> getAllSrfSlos() {
 		LOG.debug("REST request to get SRF-SLOs");
 		return this.srfSloItem.getAllSrfSlos();
+	}
+
+	/**
+	 * Get All SLO indicator Target items
+	 * 
+	 * @return a List of SrfIdoDTO with all SRF IDO Items.
+	 */
+
+	@ApiOperation(tags = { "Table 1 - Evidence on Progress towards SRF targets",
+			"Table 3 - Outcome/ Impact Case Reports" }, value = "View all SLO Targets", response = SrfSloTargetDTO.class, responseContainer = "List")
+	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
+	@RequestMapping(value = "/slo-targets", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<SrfSloTargetDTO>> getAllSrfSloTarget(
+			@RequestParam(required = false, value = "target year (2022 or 2030)") Long year) {
+		LOG.debug("REST request to get SLO indicator Target");
+		return this.srfSloIndicatorTargetItem.getAllSrfSloIndicatorTargets(year);
 	}
 
 	/**
@@ -168,57 +216,13 @@ public class SrfLists {
 	 * @return a List of SrfSubIdoDTO with all SRF-SubIdo Items.
 	 */
 
-	@ApiOperation(tags = "Table 2 - CRP Policies", value = "Get all sub intermediate level objectives (sub-IDOs)", response = SrfSubIdoDTO.class, responseContainer = "List")
+	@ApiOperation(tags = { "Table 2 - CRP Policies",
+			"Table 3 - Outcome/ Impact Case Reports" }, value = "Get all sub intermediate level objectives (sub-IDOs)", response = SrfSubIdoDTO.class, responseContainer = "List")
 	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
 	@RequestMapping(value = "/srf-sub-idos", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public List<SrfSubIdoDTO> getAllSrfSubIdos() {
 		LOG.debug("REST request to get SRF-SubIdos");
 		return this.srfSubIdoItem.getAllSrfSubIdos();
-	}
-
-	/**
-	 * Find a SRF IDO requesting by Id
-	 * 
-	 * @param id
-	 * @return a SrfIdoDTO with the SRL IDO data.
-	 */
-	@ApiIgnore
-	@ApiOperation(value = "Search an SRF intermediate level objective(sub-IDO) by ID", response = SrfIdoDTO.class)
-	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
-	@RequestMapping(value = "/srfIdo/{code}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<SrfIdoDTO> getSrfIdoById(@PathVariable Long code) {
-		LOG.debug("REST request to get SRF-SLO : {}", code);
-		return this.srfIdoItem.findSrfIdobyId(code);
-	}
-
-	/**
-	 * Find a SRF-SLO requesting by Id
-	 * 
-	 * @param id
-	 * @return a SrfSloDTO with the SRL-SLO data.
-	 */
-	@ApiIgnore
-	@ApiOperation(value = "Search an SRF-SLO with an ID", response = SrfSloDTO.class)
-	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
-	@RequestMapping(value = "/srfSlo/{code}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<SrfSloDTO> getSrfSloById(@PathVariable Long code) {
-		LOG.debug("REST request to get SRF-SLO : {}", code);
-		return this.srfSloItem.findSrfSlobyId(code);
-	}
-
-	/**
-	 * Find a SRF Cross Cutting Issue requesting by Id
-	 * 
-	 * @param id
-	 * @return a SrfCrossCuttingIssueDTO with the SRF Cross Cutting Issue data.
-	 */
-	@ApiIgnore
-	@ApiOperation(value = "Search an SRF Cross Cutting Issue with an ID", response = SrfCrossCuttingIssueDTO.class)
-	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
-	@RequestMapping(value = "/srfCrossCuttingIssue/{code}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<SrfCrossCuttingIssueDTO> getSrfSrfCrossCuttingIssueById(@PathVariable Long code) {
-		LOG.debug("REST request to get SRF Cross Cutting Issue : {}", code);
-		return this.srfCrossCuttingIssueItem.findSrfCrossCuttingIssuebyId(code);
 	}
 
 }

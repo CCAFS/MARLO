@@ -22,21 +22,29 @@ import io.swagger.annotations.ApiModelProperty;
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  */
-public class CrpProgramDTO {
+public class FlagshipProgramDTO {
 
-	@ApiModelProperty(notes = "The Generated Program ID")
+	@ApiModelProperty(notes = "The Generated Flagship/Program ID")
 	private Long code;
 
-	@ApiModelProperty(notes = "The Flagship program Name")
+	@ApiModelProperty(notes = "The Flagship/program Name")
 	@NotNull
 	private String name;
 
-	@ApiModelProperty(notes = "The Flagship program Acronym")
+	@ApiModelProperty(notes = "The Flagship/program Acronym")
 	@NotNull
 	private String acronym;
 
+	@ApiModelProperty(notes = "The CRP/Platform of Flagship/program")
+	@NotNull
+	private CGIAREntityDTO cgiarEntityDTO;
+
 	public String getAcronym() {
 		return this.acronym;
+	}
+
+	public CGIAREntityDTO getCgiarEntityDTO() {
+		return this.cgiarEntityDTO;
 	}
 
 	public Long getCode() {
@@ -49,6 +57,10 @@ public class CrpProgramDTO {
 
 	public void setAcronym(String acronym) {
 		this.acronym = acronym;
+	}
+
+	public void setCgiarEntityDTO(CGIAREntityDTO cgiarEntityDTO) {
+		this.cgiarEntityDTO = cgiarEntityDTO;
 	}
 
 	public void setCode(Long code) {

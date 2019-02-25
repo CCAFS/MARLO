@@ -15,6 +15,7 @@
 
 package org.cgiar.ccafs.marlo.rest.controller.v2.controllist;
 
+import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.generallists.FlagshipProgramItem;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.generallists.GeographicScopeItem;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.generallists.GlobalUnitItem;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.generallists.GlobalUnitTypeItem;
@@ -23,6 +24,7 @@ import org.cgiar.ccafs.marlo.rest.dto.CGIAREntityDTO;
 import org.cgiar.ccafs.marlo.rest.dto.CGIAREntityTypeDTO;
 import org.cgiar.ccafs.marlo.rest.dto.ContributionOfCrpDTO;
 import org.cgiar.ccafs.marlo.rest.dto.CountryDTO;
+import org.cgiar.ccafs.marlo.rest.dto.FlagshipProgramDTO;
 import org.cgiar.ccafs.marlo.rest.dto.GeographicScopeDTO;
 import org.cgiar.ccafs.marlo.rest.dto.RegionDTO;
 import org.cgiar.ccafs.marlo.security.Permission;
@@ -59,14 +61,17 @@ public class GeneralLists {
 	private GeographicScopeItem<GeneralLists> geographicScopeItem;
 	private GlobalUnitItem<GeneralLists> globalUnitItem;
 	private GlobalUnitTypeItem<GeneralLists> globalUnitTypeItem;
+	private FlagshipProgramItem<GeneralLists> flagshipProgramItem;
 
 	@Inject
 	public GeneralLists(LocationItem<GeneralLists> countryItem, GeographicScopeItem<GeneralLists> geographicScopeItem,
-			GlobalUnitItem<GeneralLists> globalUnitItem, GlobalUnitTypeItem<GeneralLists> globalUnitTypeItem) {
+			GlobalUnitItem<GeneralLists> globalUnitItem, GlobalUnitTypeItem<GeneralLists> globalUnitTypeItem,
+			FlagshipProgramItem<GeneralLists> flagshipProgramItem) {
 		this.locationItem = countryItem;
 		this.geographicScopeItem = geographicScopeItem;
 		this.globalUnitItem = globalUnitItem;
 		this.globalUnitTypeItem = globalUnitTypeItem;
+		this.flagshipProgramItem = flagshipProgramItem;
 	}
 
 	/**
@@ -76,7 +81,8 @@ public class GeneralLists {
 	 * @return a LocElementDTO with the country founded.
 	 */
 
-	@ApiOperation(tags = { "Table 2 - CRP Policies",
+	@ApiOperation(tags = { "Table 2 - CRP Policies", "Table 3 - Outcome/ Impact Case Reports",
+			"Table 3 - Outcome/ Impact Case Reports",
 			"Table 4 - CRP Innovations" }, value = "Search a country by alpha2 ISO code", response = ContributionOfCrpDTO.class)
 	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
 	@RequestMapping(value = "/countries/{code}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -86,13 +92,27 @@ public class GeneralLists {
 	}
 
 	/**
+	 * Find a Flagship or Program by id
+	 * 
+	 * @param smo flagship/program code
+	 * @return a FlagshipProgramDTO with Flagship or Program data.
+	 */
+	@ApiOperation(tags = "Table 3 - Outcome/ Impact Case Reports", value = "Search a Flagship or Program with an ID", response = FlagshipProgramDTO.class)
+	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
+	@RequestMapping(value = "/flagships-modules/{code}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<FlagshipProgramDTO> findFlagshipProgramById(@PathVariable Long code) {
+		LOG.debug("REST request to get Maturity of Change : {}", code);
+		return this.flagshipProgramItem.findFlagshipProgramById(code);
+	}
+
+	/**
 	 * Find a Geographic Scope by id
 	 * 
 	 * @param id
 	 * @return a GeographicScopeDTO with the geo scope founded.
 	 */
 
-	@ApiOperation(tags = { "Table 2 - CRP Policies",
+	@ApiOperation(tags = { "Table 2 - CRP Policies", "Table 3 - Outcome/ Impact Case Reports",
 			"Table 4 - CRP Innovations" }, value = "Search a geographic scope by id ", response = ContributionOfCrpDTO.class)
 	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
 	@RequestMapping(value = "/geographic-scopes/{code}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -106,7 +126,7 @@ public class GeneralLists {
 	 * 
 	 * @return a List of LocElementDTO with all LocElements Items.
 	 */
-	@ApiOperation(tags = { "Table 2 - CRP Policies",
+	@ApiOperation(tags = { "Table 2 - CRP Policies", "Table 3 - Outcome/ Impact Case Reports",
 			"Table 4 - CRP Innovations" }, value = "View all countries", response = CountryDTO.class, responseContainer = "List")
 	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
 	@RequestMapping(value = "/countries", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -116,13 +136,27 @@ public class GeneralLists {
 	}
 
 	/**
+	 * Get All the Flagship or Program items *
+	 * 
+	 * @return a List of FlagshipProgramDTO with all Flagship or Program Items.
+	 */
+	@ApiOperation(tags = {
+			"Table 3 - Outcome/ Impact Case Reports" }, value = "View all Flagships or Programs ", response = FlagshipProgramDTO.class, responseContainer = "List")
+	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
+	@RequestMapping(value = "/flagships-modules", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public List<FlagshipProgramDTO> getAllFlagshipsPrograms() {
+		LOG.debug("REST request to get Flagships or Programs");
+		return this.flagshipProgramItem.getAllContributionOfCrps();
+	}
+
+	/**
 	 * Get All the Geographic Scope items *
 	 * 
 	 * @return a List of GeographicScopeDTO with all RepIndGeographicScope
 	 * Items.
 	 */
 
-	@ApiOperation(tags = { "Table 2 - CRP Policies",
+	@ApiOperation(tags = { "Table 2 - CRP Policies", "Table 3 - Outcome/ Impact Case Reports",
 			"Table 4 - CRP Innovations" }, value = "View all geographic scopes", response = GeographicScopeDTO.class, responseContainer = "List")
 	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
 	@RequestMapping(value = "/geographic-scopes", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -138,7 +172,8 @@ public class GeneralLists {
 	 * @return a LocElementDTO with the country founded.
 	 */
 	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
-	@ApiOperation(tags = { "Table 2 - CRP Policies", "Table 1 - Evidence on Progress towards SRF targets",
+	@ApiOperation(tags = { "Table 1 - Evidence on Progress towards SRF targets", "Table 2 - CRP Policies",
+			"Table 3 - Outcome/ Impact Case Reports",
 			"Table 4 - CRP Innovations" }, value = "View official list of CGIAR Centers, CGIAR Research Programs (CRPs) and CGIAR Platforms (PTFs)", response = CGIAREntityDTO.class, responseContainer = "List")
 	@RequestMapping(value = "/cgiar-entities", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<CGIAREntityDTO>> getAllGlobalUnits(
@@ -166,7 +201,7 @@ public class GeneralLists {
 	 * 
 	 * @return a List of RegionDTO with all LocElements regions Items.
 	 */
-	@ApiOperation(tags = { "Table 2 - CRP Policies",
+	@ApiOperation(tags = { "Table 2 - CRP Policies", "Table 3 - Outcome/ Impact Case Reports",
 			"Table 4 - CRP Innovations" }, value = "View all United Nations regions (UN M.49)", response = RegionDTO.class, responseContainer = "List")
 	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
 	@RequestMapping(value = "/un-regions", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -179,10 +214,11 @@ public class GeneralLists {
 	 * Find a global unit requesting by smo id
 	 * 
 	 * @param smo ID
-	 * @return a GlobalUnit with the country founded.
+	 * @return a GlobalUnit with the global unit founded.
 	 */
 	@RequiresPermissions(Permission.CRPS_READ_REST_API_PERMISSION)
-	@ApiOperation(tags = { "Table 2 - CRP Policies", "Table 1 - Evidence on Progress towards SRF targets",
+	@ApiOperation(tags = { "Table 1 - Evidence on Progress towards SRF targets", "Table 2 - CRP Policies",
+			"Table 3 - Outcome/ Impact Case Reports",
 			"Table 4 - CRP Innovations" }, value = "Search a specific Center, CRP or Platform by code", response = CGIAREntityDTO.class)
 	@RequestMapping(value = "/cgiar-entities/{code}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<CGIAREntityDTO> getGlobalUnitByCGIARId(@PathVariable String code) {
@@ -208,7 +244,7 @@ public class GeneralLists {
 	 * 
 	 * @return a RegionDTO founded by the code.
 	 */
-	@ApiOperation(tags = { "Table 2 - CRP Policies",
+	@ApiOperation(tags = { "Table 2 - CRP Policies", "Table 3 - Outcome/ Impact Case Reports",
 			"Table 4 - CRP Innovations" }, value = "Get a United Nations regions (UN M.49) by code", response = RegionDTO.class)
 	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
 	@RequestMapping(value = "/un-regions/{code}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
