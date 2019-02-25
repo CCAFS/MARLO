@@ -28,6 +28,7 @@ import org.cgiar.ccafs.marlo.data.manager.DeliverableDisseminationManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableFundingSourceManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableGenderLevelManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableGeographicRegionManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableGeographicScopeManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableIntellectualAssetManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableLocationManager;
@@ -73,6 +74,7 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableFile;
 import org.cgiar.ccafs.marlo.data.model.DeliverableFundingSource;
 import org.cgiar.ccafs.marlo.data.model.DeliverableGenderLevel;
 import org.cgiar.ccafs.marlo.data.model.DeliverableGeographicRegion;
+import org.cgiar.ccafs.marlo.data.model.DeliverableGeographicScope;
 import org.cgiar.ccafs.marlo.data.model.DeliverableInfo;
 import org.cgiar.ccafs.marlo.data.model.DeliverableIntellectualAsset;
 import org.cgiar.ccafs.marlo.data.model.DeliverableIntellectualAssetTypeEnum;
@@ -201,6 +203,7 @@ public class DeliverableAction extends BaseAction {
   private DeliverableCrossCuttingMarkerManager deliverableCrossCuttingMarkerManager;
   private ProjectLp6ContributionDeliverableManager projectLp6ContributionDeliverableManager;
   private RepIndTrainingTermManager repIndTrainingTermManager;
+  private DeliverableGeographicScopeManager deliverableGeographicScopeManager;
 
   // Parameters
   private List<DeliverableQualityAnswer> answers;
@@ -270,7 +273,8 @@ public class DeliverableAction extends BaseAction {
     RepIndGenderYouthFocusLevelManager repIndGenderYouthFocusLevelManager,
     CgiarCrossCuttingMarkerManager cgiarCrossCuttingMarkerManager,
     DeliverableCrossCuttingMarkerManager deliverableCrossCuttingMarkerManager,
-    RepIndTrainingTermManager repIndTrainingTermManager) {
+    RepIndTrainingTermManager repIndTrainingTermManager,
+    DeliverableGeographicScopeManager deliverableGeographicScopeManager) {
     super(config);
     this.deliverableManager = deliverableManager;
     this.deliverableTypeManager = deliverableTypeManager;
@@ -316,6 +320,7 @@ public class DeliverableAction extends BaseAction {
     this.cgiarCrossCuttingMarkerManager = cgiarCrossCuttingMarkerManager;
     this.deliverableCrossCuttingMarkerManager = deliverableCrossCuttingMarkerManager;
     this.repIndTrainingTermManager = repIndTrainingTermManager;
+    this.deliverableGeographicScopeManager = deliverableGeographicScopeManager;
   }
 
   @Override
@@ -1090,15 +1095,50 @@ public class DeliverableAction extends BaseAction {
 
         deliverable = (Deliverable) autoSaveReader.readFromJson(jReader);
 
-        // Deliverable Countries List AutoSave
-        if (deliverable.getCountriesIdsText() != null) {
-          String[] countriesText = deliverable.getCountriesIdsText().replace("[", "").replace("]", "").split(",");
-          List<String> countries = new ArrayList<>();
-          for (String value : Arrays.asList(countriesText)) {
-            countries.add(value.trim());
+
+        // Policy Geographic Scope List AutoSave
+        boolean haveRegions = false;
+        boolean haveCountries = false;
+
+        if (deliverable.getGeographicScopes() != null) {
+          for (DeliverableGeographicScope projectInnovationGeographicScope : deliverable.getGeographicScopes()) {
+            projectInnovationGeographicScope.setRepIndGeographicScope(repIndGeographicScopeManager
+              .getRepIndGeographicScopeById(projectInnovationGeographicScope.getRepIndGeographicScope().getId()));
+
+            if (projectInnovationGeographicScope.getRepIndGeographicScope().getId() == 2) {
+              haveRegions = true;
+            }
+
+            if (projectInnovationGeographicScope.getRepIndGeographicScope().getId() != 1
+              && projectInnovationGeographicScope.getRepIndGeographicScope().getId() != 2) {
+              haveCountries = true;
+            }
+
           }
-          deliverable.setCountriesIds(countries);
         }
+
+        if (haveRegions) {
+          // Deliverable Geographic Regions List Autosave
+          if (deliverable.getDeliverableRegions() != null) {
+            for (DeliverableGeographicRegion deliverableGeographicRegion : deliverable.getDeliverableRegions()) {
+              deliverableGeographicRegion.setLocElement(
+                locElementManager.getLocElementById(deliverableGeographicRegion.getLocElement().getId()));
+            }
+          }
+        }
+
+        if (haveCountries) {
+          // Deliverable Countries List AutoSave
+          if (deliverable.getCountriesIdsText() != null) {
+            String[] countriesText = deliverable.getCountriesIdsText().replace("[", "").replace("]", "").split(",");
+            List<String> countries = new ArrayList<>();
+            for (String value : Arrays.asList(countriesText)) {
+              countries.add(value.trim());
+            }
+            deliverable.setCountriesIds(countries);
+          }
+        }
+
 
         if (metadataElementManager.findAll() != null) {
           deliverable.setMetadata(new ArrayList<>(metadataElementManager.findAll()));
@@ -1196,13 +1236,6 @@ public class DeliverableAction extends BaseAction {
 
         }
 
-        // Deliverable Geographic Regions List Autosave
-        if (deliverable.getDeliverableRegions() != null) {
-          for (DeliverableGeographicRegion deliverableGeographicRegion : deliverable.getDeliverableRegions()) {
-            deliverableGeographicRegion
-              .setLocElement(locElementManager.getLocElementById(deliverableGeographicRegion.getLocElement().getId()));
-          }
-        }
 
         // Cgiar Cross Cutting Markers Autosave
         if (deliverable.getCrossCuttingMarkers() != null) {
@@ -1222,6 +1255,13 @@ public class DeliverableAction extends BaseAction {
         this.setDraft(true);
       } else {
         deliverable.getDeliverableInfo(this.getActualPhase());
+
+        // Setup Geographic Scope
+        if (deliverable.getDeliverableGeographicScopes() != null) {
+          deliverable.setGeographicScopes(new ArrayList<>(deliverable.getDeliverableGeographicScopes().stream()
+            .filter(o -> o.isActive() && o.getPhase().getId() == this.getActualPhase().getId())
+            .collect(Collectors.toList())));
+        }
 
         // Deliverable Countries List
         if (deliverable.getDeliverableLocations() == null) {
@@ -1772,6 +1812,10 @@ public class DeliverableAction extends BaseAction {
           deliverable.getDeliverableRegions().clear();
         }
 
+        if (deliverable.getGeographicScopes() != null) {
+          deliverable.getGeographicScopes().clear();
+        }
+
         deliverable.setQualityCheck(null);
         deliverable.getDeliverableInfo(this.getActualPhase()).setCrpClusterKeyOutput(null);
 
@@ -2244,7 +2288,6 @@ public class DeliverableAction extends BaseAction {
 
   }
 
-
   public void saveDissemination() {
     if (deliverable.getDissemination() != null) {
 
@@ -2377,6 +2420,51 @@ public class DeliverableAction extends BaseAction {
       dissemination.setPhase(this.getActualPhase());
       deliverableDisseminationManager.saveDeliverableDissemination(dissemination);
 
+    }
+  }
+
+
+  /**
+   * Save Deliverable Geographic Scope Information
+   * 
+   * @param projectInnovation
+   * @param phase
+   */
+  public void saveGeographicScope(Deliverable deliverable, Phase phase) {
+
+    // Search and deleted form Information
+    if (deliverable.getDeliverableGeographicScopes() != null
+      && deliverable.getDeliverableGeographicScopes().size() > 0) {
+
+      List<DeliverableGeographicScope> scopePrev = new ArrayList<>(deliverable.getDeliverableGeographicScopes().stream()
+        .filter(nu -> nu.isActive() && nu.getPhase().getId() == phase.getId()).collect(Collectors.toList()));
+
+      for (DeliverableGeographicScope deliverableScope : scopePrev) {
+        if (deliverable.getGeographicScopes() == null
+          || !deliverable.getGeographicScopes().contains(deliverableScope)) {
+          deliverableGeographicScopeManager.deleteDeliverableGeographicScope(deliverableScope.getId());
+        }
+      }
+    }
+
+    // Save form Information
+    if (deliverable.getGeographicScopes() != null) {
+      for (DeliverableGeographicScope deliverableScope : deliverable.getGeographicScopes()) {
+        if (deliverableScope.getId() == null) {
+          DeliverableGeographicScope deliverableScopeSave = new DeliverableGeographicScope();
+          deliverableScopeSave.setDeliverable(deliverable);
+          deliverableScopeSave.setPhase(phase);
+
+          RepIndGeographicScope repIndGeographicScope = repIndGeographicScopeManager
+            .getRepIndGeographicScopeById(deliverableScope.getRepIndGeographicScope().getId());
+
+          deliverableScopeSave.setRepIndGeographicScope(repIndGeographicScope);
+
+          deliverableGeographicScopeManager.saveDeliverableGeographicScope(deliverableScopeSave);
+          // This is to add innovationCrpSave to generate correct auditlog.
+          deliverable.getDeliverableGeographicScopes().add(deliverableScopeSave);
+        }
+      }
     }
   }
 
