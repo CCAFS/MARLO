@@ -709,9 +709,7 @@ public class DeliverableAction extends BaseAction {
    * @return
    */
   public List<ProjectPartnerPerson> getPersons(long projectPartnerId) {
-    if (deliverable.getDeliverableInfo(this.getActualPhase()).getStatus() == Integer
-      .parseInt(ProjectStatusEnum.Ongoing.getStatusId())
-      && deliverable.getDeliverableInfo(this.getActualPhase()).getYear() < this.getActualPhase().getYear()) {
+    if (deliverable.getDeliverableInfo().getYear() < this.getActualPhase().getYear()) {
       return projectPartnerPersonManager.findAllForProjectPartner(projectPartnerId);
     } else {
       return projectPartnerPersonManager.findAllActiveForProjectPartner(projectPartnerId);
@@ -807,9 +805,7 @@ public class DeliverableAction extends BaseAction {
       .filter(o -> o.isActive() && o.getProjectPartnerPerson() != null && o.getProjectPartner() != null
         && o.getProjectPartner().getId() == partnerID && o.getProjectPartner().isActive())
       .collect(Collectors.toList())) {
-      if (deliverable.getDeliverableInfo(this.getActualPhase()).getStatus() == Integer
-        .parseInt(ProjectStatusEnum.Ongoing.getStatusId())
-        && deliverable.getDeliverableInfo(this.getActualPhase()).getYear() < this.getActualPhase().getYear()) {
+      if (deliverable.getDeliverableInfo(this.getActualPhase()).getYear() < this.getActualPhase().getYear()) {
         deliverablePartnerPersons.add(deliverablePartnership.getProjectPartnerPerson());
       } else {
         if (deliverablePartnership.getProjectPartnerPerson().isActive()) {
@@ -1252,9 +1248,7 @@ public class DeliverableAction extends BaseAction {
             logger.warn("There are more than 1 deliverable responsibles for D" + deliverable.getId() + " "
               + this.getActualPhase().toString());
           }
-          if (deliverable.getDeliverableInfo(this.getActualPhase()).getStatus() == Integer
-            .parseInt(ProjectStatusEnum.Ongoing.getStatusId())
-            && deliverable.getDeliverableInfo(this.getActualPhase()).getYear() < this.getActualPhase().getYear()) {
+          if (deliverable.getDeliverableInfo(this.getActualPhase()).getYear() < this.getActualPhase().getYear()) {
             deliverable.setResponsiblePartner(deliverablePartnershipResponsibles.get(0));
           } else {
             if (deliverablePartnershipResponsibles.get(0).getProjectPartnerPerson() == null
@@ -1270,9 +1264,7 @@ public class DeliverableAction extends BaseAction {
           deliverablePartnershipManager.findByDeliverablePhaseAndType(deliverable.getId(),
             this.getActualPhase().getId(), DeliverablePartnershipTypeEnum.OTHER.getValue());
         if (deliverablePartnershipOthers != null && deliverablePartnershipOthers.size() > 0) {
-          if (deliverable.getDeliverableInfo(this.getActualPhase()).getStatus() == Integer
-            .parseInt(ProjectStatusEnum.Ongoing.getStatusId())
-            && deliverable.getDeliverableInfo(this.getActualPhase()).getYear() < this.getActualPhase().getYear()) {
+          if (deliverable.getDeliverableInfo(this.getActualPhase()).getYear() < this.getActualPhase().getYear()) {
             deliverable.setOtherPartners(deliverablePartnershipOthers);
           } else {
             deliverable.setOtherPartners(new ArrayList<DeliverablePartnership>());

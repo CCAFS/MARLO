@@ -100,25 +100,6 @@ public class ProjectInnovationValidator extends BaseValidator {
         InvalidFieldsMessages.EMPTYFIELD);
     }
 
-
-    // Validate Contribution of CRP
-    if (projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getRepIndContributionOfCrp() != null) {
-      if (projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getRepIndContributionOfCrp()
-        .getId() == null
-        || projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getRepIndContributionOfCrp()
-          .getId() == -1) {
-        action.addMessage(action.getText("Contribution Of Crp"));
-        action.addMissingField("projectInnovations.contributionOfCrp");
-        action.getInvalidFields().put("input-innovation.projectInnovationInfo.repIndContributionOfCrp.id",
-          InvalidFieldsMessages.EMPTYFIELD);
-      }
-    } else {
-      action.addMessage(action.getText("Contribution Of Crp"));
-      action.addMissingField("projectInnovations.contributionOfCrp");
-      action.getInvalidFields().put("input-innovation.projectInnovationInfo.repIndContributionOfCrp.id",
-        InvalidFieldsMessages.EMPTYFIELD);
-    }
-
     // Validate Degree of Innovation
     /*
      * if (projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getRepIndDegreeInnovation() != null)
