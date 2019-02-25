@@ -164,7 +164,7 @@
     <!--  Influence - Common reporting indicators  -->
     <action name="{crp}/influence" class="org.cgiar.ccafs.marlo.action.annualReport.IndicatorsAction">
       <interceptor-ref name="editReportSynthesisStack" />
-      <result name="input">/WEB-INF/crp/views/annualReport2018/AR2018_TEMPLATE.ftl</result>
+      <result name="input">/WEB-INF/crp/views/annualReport2018/AR2018_influence.ftl</result>
       <result name="success" type="redirectAction">
         <param name="actionName">${crpSession}/influence</param>
         <param name="liaisonInstitutionID">${liaisonInstitutionID}</param>
@@ -177,9 +177,22 @@
     <!--  Control - Common reporting indicators  -->
     <action name="{crp}/control" class="org.cgiar.ccafs.marlo.action.annualReport.IndicatorsAction">
       <interceptor-ref name="editReportSynthesisStack" />
-      <result name="input">/WEB-INF/crp/views/annualReport2018/AR2018_TEMPLATE.ftl</result>
+      <result name="input">/WEB-INF/crp/views/annualReport2018/AR2018_control.ftl</result>
       <result name="success" type="redirectAction">
         <param name="actionName">${crpSession}/control</param>
+        <param name="liaisonInstitutionID">${liaisonInstitutionID}</param>
+        <param name="synthesisID">${synthesisID}</param>
+        <param name="phaseID">${phaseID}</param>
+        <param name="edit">true</param>        
+      </result>
+    </action>
+    
+    <!--  Narrative Section  -->
+    <action name="{crp}/narrative" class="org.cgiar.ccafs.marlo.action.annualReport.EfficiencyAction">
+      <interceptor-ref name="editReportSynthesisStack" />
+      <result name="input">/WEB-INF/crp/views/annualReport2018/AR2018_narrative.ftl</result>
+      <result name="success" type="redirectAction">
+        <param name="actionName">${crpSession}/narrative</param>
         <param name="liaisonInstitutionID">${liaisonInstitutionID}</param>
         <param name="synthesisID">${synthesisID}</param>
         <param name="phaseID">${phaseID}</param>

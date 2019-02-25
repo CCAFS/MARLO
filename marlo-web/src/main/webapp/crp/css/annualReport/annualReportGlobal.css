@@ -311,3 +311,7 @@ table.financial-report .row-title {
 .dataTables_scrollBody thead tr th{
   background-color: #e5edff !important;
 }
+
+.cc-milestones h5 {
+  margin-top:30px;
+}

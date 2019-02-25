@@ -65,7 +65,7 @@
               [#-- Table 2: Condensed list of policy contributions --]
               <div class="form-group">
                 <h4 class="headTitle annualReport-table">[@s.text name="${customLabel}.policyContributions" /]</h4>
-                [@customForm.helpLabel name="${customLabel}.policyContributions.help" showIcon=false editable=editable/] <a href="[@s.url action='${crpSession}/influence'][@s.param name="liaisonInstitutionID" value=liaisonInstitutionID /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">here</a>
+                [@customForm.helpLabel name="${customLabel}.policyContributions.help" showIcon=false editable=editable/] <a href="[@s.url action='${crpSession}/influence'][@s.param name="liaisonInstitutionID" value=liaisonInstitutionID /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]"></a>
               </div>
             [/#if]
             
@@ -89,7 +89,7 @@
             [#-- Table 4: Condensed list of innovations --]
             <div class="form-group">
                 <h4 class="headTitle annualReport-table">[@s.text name="${customLabel}.listOfInnovations" /]</h4>
-                [@customForm.helpLabel name="${customLabel}.listOfInnovations.help" showIcon=false editable=editable/] <a href="[@s.url action='${crpSession}/control'][@s.param name="liaisonInstitutionID" value=liaisonInstitutionID /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">here</a>
+                [@customForm.helpLabel name="${customLabel}.listOfInnovations.help" showIcon=false editable=editable/] <a href="[@s.url action='${crpSession}/control'][@s.param name="liaisonInstitutionID" value=liaisonInstitutionID /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]"></a>
             </div>
             
             [#if flagship]
@@ -213,7 +213,7 @@
             <td>${item.maturity}</td>
             <td class="text-center">${item.status}</td>
             <td class="text-center">
-              [@customForm.checkmark id="" name="" label="" value="" editable=editable checked=false cssClass="" /]
+              [@customForm.checkmark id="" name="" checked=false editable=editable centered=true/] 
             </td>
           </tr>
           [/#list]
@@ -269,7 +269,7 @@
     
     [#-- Gender Marker --]
     <div class="form-group row">
-      <div class="col-md-3">
+      <div class="col-md-3 cc-milestones">
         <h5>[@s.text name="${customLabel}.milestoneGenderScore" /]</h5>
       </div>
       <div class="col-md-3">
@@ -282,7 +282,7 @@
     
     [#-- Youth Marker --]
     <div class="form-group row">
-      <div class="col-md-3">
+      <div class="col-md-3 cc-milestones">
         <h5>[@s.text name="${customLabel}.milestoneYouthScore" /]</h5>
       </div>
       <div class="col-md-3">
@@ -295,10 +295,10 @@
     
     [#-- CapDev Marker --]
     <div class="form-group row">
-      <div class="col-md-3">
+      <div class="col-md-3 cc-milestones">
         <h5>[@s.text name="${customLabel}.milestoneCapDevScore" /]</h5>
       </div>
-      <div class="col-md-3">
+      <div class="col-md-3 cc-milestones">
          [@customForm.select name="${customName}.milestoneCapDevScoreMarker" label=""  i18nkey="${customLabel}.milestoneScoreMarker" listName="" keyFieldName=""  displayFieldName=""   required=true  className="" editable=editable/]
       </div>
       <div class="col-md-6">
@@ -308,7 +308,7 @@
     
     [#-- Climate Change Marker --]
     <div class="form-group row">
-      <div class="col-md-3">
+      <div class="col-md-3 cc-milestones">
         <h5>[@s.text name="${customLabel}.milestoneClimateChangeScore" /]</h5>
       </div>
       <div class="col-md-3">
@@ -322,7 +322,8 @@
     [#-- Milestone status --]
     <div class="form-group">
       <label>[@s.text name="${customLabel}.milestoneStatus" /]:[@customForm.req required=editable  /]</label><br />
-      [#local milestoneStatus = (annualReportElement.milestonesStatus)!-1 /]
+      [#-- [#local milestoneStatus = (annualReportElement.milestonesStatus)!-1 /] --]
+      [#local milestoneStatus = -1 /]
       [@customForm.radioFlat id="${customName}-status-1" name="${customName}.milestonesStatus" label="Complete"   value="1" checked=(milestoneStatus == 1)!false editable=editable cssClass="" cssClassLabel="font-normal"/]
       [@customForm.radioFlat id="${customName}-status-2" name="${customName}.milestonesStatus" label="Extended"   value="2" checked=(milestoneStatus == 2)!false editable=editable cssClass="" cssClassLabel="font-normal"/]
       [@customForm.radioFlat id="${customName}-status-3" name="${customName}.milestonesStatus" label="Cancelled"  value="3" checked=(milestoneStatus == 3)!false editable=editable cssClass="" cssClassLabel="font-normal"/]
