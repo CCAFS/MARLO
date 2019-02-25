@@ -959,7 +959,8 @@ public class ProjectInnovationAction extends BaseAction {
       if (organizationPrev != null) {
         for (ProjectInnovationContributingOrganization innovationOrganization : organizationPrev) {
           if (innovationOrganization != null && innovation.getContributingOrganizations() != null) {
-            if (!innovation.getContributingOrganizations().contains(innovationOrganization)) {
+            if (!innovation.getContributingOrganizations().contains(innovationOrganization)
+              && innovationOrganization.getId() != -1) {
               projectInnovationContributingOrganizationManager
                 .deleteProjectInnovationContributingOrganization(innovationOrganization.getId());
             }
