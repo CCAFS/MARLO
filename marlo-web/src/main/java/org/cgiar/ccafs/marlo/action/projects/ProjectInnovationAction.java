@@ -956,10 +956,14 @@ public class ProjectInnovationAction extends BaseAction {
         new ArrayList<>(projectInnovation.getProjectInnovationContributingOrganization().stream()
           .filter(nu -> nu.isActive() && nu.getPhase().getId() == phase.getId()).collect(Collectors.toList()));
 
-      for (ProjectInnovationContributingOrganization innovationOrganization : organizationPrev) {
-        if (!innovation.getContributingOrganizations().contains(innovationOrganization)) {
-          projectInnovationContributingOrganizationManager
-            .deleteProjectInnovationContributingOrganization(innovationOrganization.getId());
+      if (organizationPrev != null) {
+        for (ProjectInnovationContributingOrganization innovationOrganization : organizationPrev) {
+          if (innovationOrganization != null && innovation.getContributingOrganizations() != null) {
+            if (!innovation.getContributingOrganizations().contains(innovationOrganization)) {
+              projectInnovationContributingOrganizationManager
+                .deleteProjectInnovationContributingOrganization(innovationOrganization.getId());
+            }
+          }
         }
       }
     }
