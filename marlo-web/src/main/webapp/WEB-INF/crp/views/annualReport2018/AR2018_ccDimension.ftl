@@ -105,7 +105,7 @@
             [#-- 1.3.3 Capacity Development --]
             <h5 class="sectionSubTitle">[@s.text name="${customLabel}.capDev.title" /]</h5>
             
-            [#-- CRPs contribution to youth --]
+            [#-- CRPs contribution to CapDev --]
             <div class="form-group">
                [@customForm.textArea name="${customName}.capDev.keyAchievements" i18nkey="${customLabel}.capDev.keyAchievements" help="${customLabel}.capDev.keyAchievements.help" className="limitWords-300" helpIcon=false required=true editable=editable /]
             </div>
@@ -121,9 +121,9 @@
             [#-- 1.3.4 Climate change --]
             <h5 class="sectionSubTitle">[@s.text name="${customLabel}.climateChange.title" /]</h5>
             
-            [#-- CRPs contribution to youth --]
+            [#-- CRPs contribution to Climate Change --]
             <div class="form-group">
-               [@customForm.textArea name="${customName}.climateChange.keyAchievements" i18nkey="${customLabel}.climateChange.keyAchievements" help="${customLabel}.climateChange.keyAchievements.help" className="limitWords-300" helpIcon=false required=true editable=editable /]
+               [@customForm.textArea name="${customName}.climateChange.keyAchievements" i18nkey="${customLabel}.climateChange.keyAchievements" help="${customLabel}.climateChange.keyAchievements.help" className="limitWords-300" helpIcon=false required=false editable=editable /]
             </div>
             
             
