@@ -20,9 +20,11 @@ function attachEvents() {
   $('select.stageInnovationSelect').on('change', function() {
     var isStageFour = this.value == 4;
     if(isStageFour) {
-      $('.stageFourBlock').slideDown();
+      $('.stageFourBlock-true').slideDown();
+      $('.stageFourBlock-false').slideUp();
     } else {
-      $('.stageFourBlock').slideUp();
+      $('.stageFourBlock-true').slideUp();
+      $('.stageFourBlock-false').slideDown();
     }
   });
 
