@@ -1096,7 +1096,7 @@ public class DeliverableAction extends BaseAction {
         deliverable = (Deliverable) autoSaveReader.readFromJson(jReader);
 
 
-        // Policy Geographic Scope List AutoSave
+        // Geographic Scope List AutoSave
         boolean haveRegions = false;
         boolean haveCountries = false;
 

@@ -26,6 +26,7 @@ import org.cgiar.ccafs.marlo.data.model.CgiarCrossCuttingMarker;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableCrossCuttingMarker;
 import org.cgiar.ccafs.marlo.data.model.DeliverableDissemination;
+import org.cgiar.ccafs.marlo.data.model.DeliverableGeographicScope;
 import org.cgiar.ccafs.marlo.data.model.DeliverableInfo;
 import org.cgiar.ccafs.marlo.data.model.DeliverableIntellectualAsset;
 import org.cgiar.ccafs.marlo.data.model.DeliverableIntellectualAssetTypeEnum;
@@ -352,28 +353,71 @@ public class DeliverableValidator extends BaseValidator {
       }
     }
 
-    // Deliverable Locations
-    if (deliverableInfo.getGeographicScope() == null || deliverableInfo.getGeographicScope().getId() == null
-      || deliverableInfo.getGeographicScope().getId() == -1) {
-      action.addMessage(action.getText("deliverable.geographicScope"));
-      action.getInvalidFields().put("input-deliverable.deliverableInfo.geographicScope.id",
-        InvalidFieldsMessages.EMPTYFIELD);
+    // Validate Geographic Scope
+
+    boolean haveRegions = false;
+    boolean haveCountries = false;
+
+    if (deliverable.getGeographicScopes() == null || deliverable.getGeographicScopes().isEmpty()) {
+      action.addMessage(action.getText("geographicScopes"));
+      action.addMissingField("deliverable.geographicScope");
+      action.getInvalidFields().put("list-deliverable.geographicScopes",
+        action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"geographicScopes"}));
     } else {
-      if (deliverableInfo.getGeographicScope().getId().equals(action.getReportingIndGeographicScopeRegional())) {
-        if (deliverable.getDeliverableRegions() == null) {
-          action.addMessage(action.getText("deliverable.region"));
-          action.getInvalidFields().put("input-deliverable.deliverableRegions", InvalidFieldsMessages.EMPTYFIELD);
+      for (DeliverableGeographicScope deliverableGeographicScope : deliverable.getGeographicScopes()) {
+        if (deliverableGeographicScope.getRepIndGeographicScope().getId() == 2) {
+          haveRegions = true;
         }
-      }
-      if (deliverableInfo.getGeographicScope().getId().equals(action.getReportingIndGeographicScopeMultiNational())
-        || deliverableInfo.getGeographicScope().getId().equals(action.getReportingIndGeographicScopeNational())
-        || deliverableInfo.getGeographicScope().getId().equals(action.getReportingIndGeographicScopeSubNational())) {
-        if (deliverable.getCountriesIds() == null || deliverable.getCountriesIds().isEmpty()) {
-          action.addMessage(action.getText("deliverable.countries"));
-          action.getInvalidFields().put("input-deliverable.countriesIds", InvalidFieldsMessages.EMPTYFIELD);
+        if (deliverableGeographicScope.getRepIndGeographicScope().getId() != 1
+          && deliverableGeographicScope.getRepIndGeographicScope().getId() != 2) {
+          haveCountries = true;
         }
       }
     }
+
+
+    if (haveRegions) {
+      // Validate Regions
+      if (deliverable.getDeliverableRegions() == null || deliverable.getDeliverableRegions().isEmpty()) {
+        action.addMessage(action.getText("regions"));
+        action.addMissingField("deliverable.deliverableRegions");
+        action.getInvalidFields().put("list-deliverable.deliverableRegions",
+          action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"regions"}));
+      }
+    }
+
+    if (haveCountries) {
+      // Validate Countries
+      if (deliverable.getCountriesIds() == null || deliverable.getCountriesIds().isEmpty()) {
+        action.addMessage(action.getText("countries"));
+        action.addMissingField("deliverable.countries");
+        action.getInvalidFields().put("input-deliverable.countriesIds",
+          action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"countries"}));
+      }
+    }
+
+    // // Deliverable Locations
+    // if (deliverableInfo.getGeographicScope() == null || deliverableInfo.getGeographicScope().getId() == null
+    // || deliverableInfo.getGeographicScope().getId() == -1) {
+    // action.addMessage(action.getText("deliverable.geographicScope"));
+    // action.getInvalidFields().put("input-deliverable.deliverableInfo.geographicScope.id",
+    // InvalidFieldsMessages.EMPTYFIELD);
+    // } else {
+    // if (deliverableInfo.getGeographicScope().getId().equals(action.getReportingIndGeographicScopeRegional())) {
+    // if (deliverable.getDeliverableRegions() == null) {
+    // action.addMessage(action.getText("deliverable.region"));
+    // action.getInvalidFields().put("input-deliverable.deliverableRegions", InvalidFieldsMessages.EMPTYFIELD);
+    // }
+    // }
+    // if (deliverableInfo.getGeographicScope().getId().equals(action.getReportingIndGeographicScopeMultiNational())
+    // || deliverableInfo.getGeographicScope().getId().equals(action.getReportingIndGeographicScopeNational())
+    // || deliverableInfo.getGeographicScope().getId().equals(action.getReportingIndGeographicScopeSubNational())) {
+    // if (deliverable.getCountriesIds() == null || deliverable.getCountriesIds().isEmpty()) {
+    // action.addMessage(action.getText("deliverable.countries"));
+    // action.getInvalidFields().put("input-deliverable.countriesIds", InvalidFieldsMessages.EMPTYFIELD);
+    // }
+    // }
+    // }
     // Cross Cutting Markers
     List<CgiarCrossCuttingMarker> cgiarCrossCuttingMarkers = cgiarCrossCuttingMarkerManager.findAll();
 
