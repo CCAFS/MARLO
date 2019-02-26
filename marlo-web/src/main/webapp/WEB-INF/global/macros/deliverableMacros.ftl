@@ -3,17 +3,17 @@
 
 [#macro deliverableGeographicScope]
   <div class="block-geographicScope">
+    [#assign geographicScopeList = (deliverable.geographicScopes)![] ]
+    [#assign isRegional =      findElementID(geographicScopeList,  action.reportingIndGeographicScopeRegional) /]
+    [#assign isMultiNational = findElementID(geographicScopeList,  action.reportingIndGeographicScopeMultiNational) /]
+    [#assign isNational =      findElementID(geographicScopeList,  action.reportingIndGeographicScopeNational) /]
+    [#assign isSubNational =   findElementID(geographicScopeList,  action.reportingIndGeographicScopeSubNational) /]
+    
     <div class="form-group row">
       <div class="col-md-6">
         [@customForm.select name="deliverable.deliverableInfo.geographicScope.id" className="setSelect2 geographicScopeSelect" i18nkey="deliverable.geographicScope" listName="repIndGeographicScopes" keyFieldName="id"  displayFieldName="name" editable=editable required=editable/]
       </div>
     </div>
-    
-    [#assign scopeID = (deliverable.deliverableInfo.geographicScope.id)!-1 ]  
-    [#assign isRegional = ((scopeID == action.reportingIndGeographicScopeRegional)) ]
-    [#assign isMultiNational = ((scopeID == action.reportingIndGeographicScopeMultiNational)) ]
-    [#assign isNational = ((scopeID == action.reportingIndGeographicScopeNational)) ]
-    [#assign isSubNational = ((scopeID == action.reportingIndGeographicScopeSubNational)) ]
     
     [#-- Region --]
     <div class="form-group row">
@@ -987,3 +987,9 @@
   [#return "none"]
 [/#function]
 
+[#function findElementID list id]
+  [#list (list)![] as item]
+    [#if (item.repIndGeographicScope.id == id)!false][#return true][/#if]
+  [/#list]
+  [#return false]
+[/#function]

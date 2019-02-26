@@ -218,6 +218,12 @@ function init() {
 
   });
 
+  // Deliverable Geographic Scope
+  $('select.elementType-repIndGeographicScope ').on("addElement removeElement", function(event,id,name) {
+    setGeographicScope(this);
+  });
+  setGeographicScope($('form select.elementType-repIndGeographicScope')[0]);
+
   /* Init Select2 plugin */
   $('form select').select2({
     width: '100%'

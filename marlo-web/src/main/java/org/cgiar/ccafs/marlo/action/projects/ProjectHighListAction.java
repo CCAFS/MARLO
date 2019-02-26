@@ -56,6 +56,8 @@ public class ProjectHighListAction extends BaseAction {
   private long projectID;
   private long higlightID;
   private List<Integer> allYears;
+  private String justification;
+
 
   @Inject
   public ProjectHighListAction(APConfig config, ProjectHighligthManager projectHighligthManager,
@@ -67,6 +69,7 @@ public class ProjectHighListAction extends BaseAction {
     this.projectManager = projectManager;
     this.projectHighlightInfoManager = projectHighlightInfoManager;
   }
+
 
   @Override
   public String add() {
@@ -131,9 +134,8 @@ public class ProjectHighListAction extends BaseAction {
         for (SectionStatus sectionStatus : projectHighlightBD.getSectionStatuses()) {
           sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
         }
+        projectHighlight.setModificationJustification(justification);
         projectHighligthManager.deleteProjectHighligth(projectHighlight.getId());
-
-
       }
     }
     return SUCCESS;
@@ -144,15 +146,20 @@ public class ProjectHighListAction extends BaseAction {
     return allYears;
   }
 
-
   public long getHiglightID() {
     return higlightID;
+  }
+
+  @Override
+  public String getJustification() {
+    return justification;
   }
 
 
   public Project getProject() {
     return project;
   }
+
 
   public long getProjectID() {
     return projectID;
@@ -161,7 +168,6 @@ public class ProjectHighListAction extends BaseAction {
   public String getProjectRequestID() {
     return APConstants.PROJECT_REQUEST_ID;
   }
-
 
   @Override
   public String next() {
@@ -210,6 +216,12 @@ public class ProjectHighListAction extends BaseAction {
 
   public void setHiglightID(long higlightID) {
     this.higlightID = higlightID;
+  }
+
+
+  @Override
+  public void setJustification(String justification) {
+    this.justification = justification;
   }
 
 
