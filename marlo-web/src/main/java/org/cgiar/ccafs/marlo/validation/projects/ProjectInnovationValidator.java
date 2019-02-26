@@ -160,6 +160,17 @@ public class ProjectInnovationValidator extends BaseValidator {
             action.getInvalidFields().put("input-innovation.projectInnovationInfo.projectExpectedStudy.id",
               InvalidFieldsMessages.EMPTYFIELD);
           }
+        } else {
+          // Validate Evidence Link (URL)
+          if (!this
+            .isValidString(projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getEvidenceLink())
+            && !this
+              .isValidUrl(projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getEvidenceLink())) {
+            action.addMessage(action.getText("Evidence Link"));
+            action.addMissingField("projectInnovations.evidenceLink");
+            action.getInvalidFields().put("input-innovation.projectInnovationInfo.evidenceLink",
+              InvalidFieldsMessages.EMPTYFIELD);
+          }
         }
       }
     } else {
@@ -269,14 +280,6 @@ public class ProjectInnovationValidator extends BaseValidator {
         action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Contributing organizations"}));
     }
 
-    // Validate Evidence Link (URL)
-    if (!this.isValidString(projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getEvidenceLink())
-      && !this.isValidUrl(projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getEvidenceLink())) {
-      action.addMessage(action.getText("Evidence Link"));
-      action.addMissingField("projectInnovations.evidenceLink");
-      action.getInvalidFields().put("input-innovation.projectInnovationInfo.evidenceLink",
-        InvalidFieldsMessages.EMPTYFIELD);
-    }
 
     // Validate Crps
     if (projectInnovation.getCrps() == null || projectInnovation.getCrps().isEmpty()) {
