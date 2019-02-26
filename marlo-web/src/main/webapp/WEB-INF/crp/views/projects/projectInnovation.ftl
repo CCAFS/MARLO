@@ -73,11 +73,11 @@
           </div>
         
           [#-- Contribution of CRP --] 
-          [#--<div class="form-group row">
+          <div class="form-group row">
             <div class="col-md-6 ">
-              [@customForm.select name="innovation.projectInnovationInfo.repIndContributionOfCrp.id" label=""  i18nkey="projectInnovations.contributionOfCrp" listName="contributionCrpList" keyFieldName="id"  displayFieldName="name" required=true  className="" editable=editable/]
+              [@customForm.select name="innovation.projectInnovationInfo.repIndContributionOfCrp.id" label=""  i18nkey="projectInnovations.contributionOfCrp" listName="contributionCrpList" keyFieldName="id"  displayFieldName="name" required=false  className="" editable=editable/]
             </div>
-          </div>--] 
+          </div> 
           
           [#-- Degree of Innovation --] 
           [#--  <div class="form-group row">

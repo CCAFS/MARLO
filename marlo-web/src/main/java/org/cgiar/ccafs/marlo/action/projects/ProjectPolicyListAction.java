@@ -160,6 +160,12 @@ public class ProjectPolicyListAction extends BaseAction {
             .filter(o -> o.isActive() && o.getPhase().getId() == this.getActualPhase().getId())
             .collect(Collectors.toList())));
         }
+        // Geographic Scope List
+        if (projectPolicy.getProjectPolicyGeographicScopes() != null) {
+          projectPolicy.setGeographicScopes(new ArrayList<>(projectPolicy.getProjectPolicyGeographicScopes().stream()
+            .filter(o -> o.isActive() && o.getPhase().getId() == this.getActualPhase().getId())
+            .collect(Collectors.toList())));
+        }
         if (projectPolicy.getProjectPolicyInfo(this.getActualPhase()).getYear() < this.getCurrentCycleYear()) {
           projectOldPolicies.add(projectPolicy);
         } else {
