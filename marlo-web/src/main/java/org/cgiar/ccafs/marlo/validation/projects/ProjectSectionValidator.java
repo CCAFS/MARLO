@@ -983,6 +983,12 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
 
         deliverable.getDeliverableInfo(phase);
 
+        // Setup Geographic Scope
+        if (deliverable.getDeliverableGeographicScopes() != null) {
+          deliverable.setGeographicScopes(new ArrayList<>(deliverable.getDeliverableGeographicScopes().stream()
+            .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
+        }
+
         // Deliverable Countries List
         if (deliverable.getDeliverableLocations() == null) {
           deliverable.setCountries(new ArrayList<>());

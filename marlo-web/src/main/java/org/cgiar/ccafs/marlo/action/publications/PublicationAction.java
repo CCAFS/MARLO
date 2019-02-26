@@ -65,6 +65,7 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableDissemination;
 import org.cgiar.ccafs.marlo.data.model.DeliverableFundingSource;
 import org.cgiar.ccafs.marlo.data.model.DeliverableGenderLevel;
 import org.cgiar.ccafs.marlo.data.model.DeliverableGeographicRegion;
+import org.cgiar.ccafs.marlo.data.model.DeliverableGeographicScope;
 import org.cgiar.ccafs.marlo.data.model.DeliverableInfo;
 import org.cgiar.ccafs.marlo.data.model.DeliverableIntellectualAsset;
 import org.cgiar.ccafs.marlo.data.model.DeliverableIntellectualAssetTypeEnum;
@@ -557,14 +558,47 @@ public class PublicationAction extends BaseAction {
 
         deliverable = (Deliverable) autoSaveReader.readFromJson(jReader);
 
-        // Deliverable Countries List AutoSave
-        if (deliverable.getCountriesIdsText() != null) {
-          String[] countriesText = deliverable.getCountriesIdsText().replace("[", "").replace("]", "").split(",");
-          List<String> countries = new ArrayList<>();
-          for (String value : Arrays.asList(countriesText)) {
-            countries.add(value.trim());
+        // Geographic Scope List AutoSave
+        boolean haveRegions = false;
+        boolean haveCountries = false;
+
+        if (deliverable.getGeographicScopes() != null) {
+          for (DeliverableGeographicScope projectInnovationGeographicScope : deliverable.getGeographicScopes()) {
+            projectInnovationGeographicScope.setRepIndGeographicScope(repIndGeographicScopeManager
+              .getRepIndGeographicScopeById(projectInnovationGeographicScope.getRepIndGeographicScope().getId()));
+
+            if (projectInnovationGeographicScope.getRepIndGeographicScope().getId() == 2) {
+              haveRegions = true;
+            }
+
+            if (projectInnovationGeographicScope.getRepIndGeographicScope().getId() != 1
+              && projectInnovationGeographicScope.getRepIndGeographicScope().getId() != 2) {
+              haveCountries = true;
+            }
+
           }
-          deliverable.setCountriesIds(countries);
+        }
+
+        if (haveRegions) {
+          // Deliverable Geographic Regions List Autosave
+          if (deliverable.getDeliverableRegions() != null) {
+            for (DeliverableGeographicRegion deliverableGeographicRegion : deliverable.getDeliverableRegions()) {
+              deliverableGeographicRegion.setLocElement(
+                locElementManager.getLocElementById(deliverableGeographicRegion.getLocElement().getId()));
+            }
+          }
+        }
+
+        if (haveCountries) {
+          // Deliverable Countries List AutoSave
+          if (deliverable.getCountriesIdsText() != null) {
+            String[] countriesText = deliverable.getCountriesIdsText().replace("[", "").replace("]", "").split(",");
+            List<String> countries = new ArrayList<>();
+            for (String value : Arrays.asList(countriesText)) {
+              countries.add(value.trim());
+            }
+            deliverable.setCountriesIds(countries);
+          }
         }
 
         deliverable.setPhase(deliverableManager.getDeliverableById(deliverable.getId()).getPhase());
@@ -673,14 +707,6 @@ public class PublicationAction extends BaseAction {
           }
         }
 
-        // Deliverable Geographic Regions List Autosave
-        if (deliverable.getDeliverableRegions() != null) {
-          for (DeliverableGeographicRegion deliverableGeographicRegion : deliverable.getDeliverableRegions()) {
-            deliverableGeographicRegion
-              .setLocElement(locElementManager.getLocElementById(deliverableGeographicRegion.getLocElement().getId()));
-          }
-        }
-
         // Cgiar Cross Cutting Markers Autosave
         if (deliverable.getCrossCuttingMarkers() != null) {
           for (DeliverableCrossCuttingMarker deliverableCrossCuttingMarker : deliverable.getCrossCuttingMarkers()) {
@@ -700,6 +726,13 @@ public class PublicationAction extends BaseAction {
 
       } else {
         deliverable.getDeliverableInfo(deliverable.getPhase());
+
+        // Setup Geographic Scope
+        if (deliverable.getDeliverableGeographicScopes() != null) {
+          deliverable.setGeographicScopes(new ArrayList<>(deliverable.getDeliverableGeographicScopes().stream()
+            .filter(o -> o.isActive() && o.getPhase().getId() == this.getActualPhase().getId())
+            .collect(Collectors.toList())));
+        }
 
         // Deliverable Countries List
         if (deliverable.getDeliverableLocations() == null) {
@@ -1069,6 +1102,10 @@ public class PublicationAction extends BaseAction {
         }
         if (deliverable.getDisseminations() != null) {
           deliverable.getDisseminations().clear();
+        }
+
+        if (deliverable.getGeographicScopes() != null) {
+          deliverable.getGeographicScopes().clear();
         }
         if (deliverable.getDeliverableParticipant() != null) {
           deliverable.getDeliverableParticipant().setRepIndTypeActivity(null);
