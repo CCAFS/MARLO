@@ -223,15 +223,6 @@
       </key>
       <one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectLp6ContributionDeliverable" />
     </set>
-    
-    <set name="deliverableGeographicScopes"
-      table="deliverable_geographic_scopes" inverse="true"
-      lazy="true" fetch="select">
-      <key>
-        <column name="deliverable_id" />
-      </key>
-      <one-to-many
-        class="org.cgiar.ccafs.marlo.data.model.DeliverableGeographicScope" />
-    </set>
+ 
 	</class>
 </hibernate-mapping>
