@@ -34,9 +34,6 @@
     <div class="col-md-9">
       [#-- Section Messages --]
       [#include "/WEB-INF/crp/views/projects/messages-projects.ftl" /]
-  
-      [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
-
 
         [#-- Innovations List --]
         <h3 class="headTitle">[@s.text name="projectInnovations" /]</h3>
@@ -63,7 +60,7 @@
           [@innovationsTableMacro list=(projectOldInnovations)![] currentTable=false/]
         </div>
         
-      [/@s.form]
+     
     </div>
   </div>
 </section>
