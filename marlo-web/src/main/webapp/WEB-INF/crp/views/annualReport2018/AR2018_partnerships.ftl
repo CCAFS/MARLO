@@ -3,8 +3,8 @@
 [#assign currentSectionString = "annualReport-${actionName?replace('/','-')}-${synthesisID}" /]
 [#assign currentSection = "synthesis" /]
 [#assign currentStage = actionName?split('/')[1]/]
-[#assign pageLibs = [ "select2" ] /]
-[#assign customJS = [ "${baseUrlMedia}/js/annualReport/annualReport_${currentStage}.js" ] /]
+[#assign pageLibs = [ "select2", "blueimp-file-upload" ] /]
+[#assign customJS = [ "${baseUrlMedia}/js/annualReport2018/annualReport2018_${currentStage}.js" ] /]
 [#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css"] /]
 
 [#assign breadCrumb = [
@@ -178,18 +178,15 @@
 
     <div class="form-group">
       [#-- Description --]
-        [@customForm.input name="${customName}.table7.description" i18nkey="${customLabel}.table7.description" helpIcon=false required=true editable=editable /]
+        [@customForm.input name="${customName}.table7.description" i18nkey="${customLabel}.table7.description" helpIcon=false className="limitWords-30" required=true editable=editable /]
     </div>
 
     <div class="form-group row">
       [#-- Main area of partnership --]
       <div class="col-md-6">
-        [@customForm.elementsListComponent name="${customName}.table7.mainArea" elementType="" elementList="" label="${customLabel}.table7.mainArea" help=""  listName="" keyFieldName="id" displayFieldName="name"/]
+        [@customForm.elementsListComponent name="${customName}.table7.mainArea" elementType="" elementList="" label="${customLabel}.table7.mainArea" help=""  listName="" keyFieldName="" displayFieldName=""/]
       </div>
       [#local otherArea = true /]
-      [#-- [#list (element.owners)![] as owner]
-        [#if (owner.repIndPolicyType.id == 4)!false][#local ownerOther = true /][#break][/#if]
-      [/#list] --]
       <div class="col-md-6 block-pleaseSpecify" style="display:${otherArea?string('block', 'none')}">
         [@customForm.input name="${customName}.table7.otherMainArea" i18nkey="${customLabel}.table7.otherMainArea" className="" required=false editable=editable /]
       </div>
@@ -197,8 +194,22 @@
     
     <div class="form-group">
       [#-- Partners --]
-        [@customForm.elementsListComponent name="${customName}.table7.parnters" elementType="" elementList="" label="${customLabel}.table7.partners" help=""  listName="" keyFieldName="id" displayFieldName="name"/]
+        [@customForm.elementsListComponent name="${customName}.table7.parnters" elementType="" elementList="" label="${customLabel}.table7.partners" help=""  listName="" keyFieldName="" displayFieldName=""/]
     </div>
+    
+    [#-- Upload Template
+    <div class="form-group" style="position:relative" listname="">
+      [@customForm.fileUploadAjax 
+        fileDB={}  
+        name="annualReport2018.externalPartnerships.table7.documentation" 
+        label="annualReport2018.externalPartnerships.table7.documentation"
+        dataUrl=""  
+        path=""
+        isEditable=editable
+        labelClass=""
+        required=true
+       /]
+    </div>--]
 
     
   </div>
@@ -221,16 +232,41 @@
       [#if list?has_content]
           [#list list as item]
           <tr>
-            <td class="text-center">${item.id}</td>
-            <td class="text-center">${item.phase}</td>
-            <td class="text-center">${item.type}</td>
             <td class="text-center">
-             [#if item.geographicScope?has_content]
+              [#if (item.id?has_content)!false]
+                ${item.id}
+              [#else]
+                <i style="opacity:0.5">PID</i>
+              [/#if]
+            </td>
+            <td class="text-center">
+              [#if (item.phase?has_content)!false]
+                ${item.phase}
+              [#else]
+                <i style="opacity:0.5">From Projects</i>
+              [/#if]
+            </td>
+            <td class="text-center">
+              [#if (item.phase?has_content)!false]
+                ${item.type}
+              [#else]
+                <i style="opacity:0.5">From Projects</i>
+              [/#if]
+            </td>
+            <td class="text-center">
+              [#if item.geographicScope?has_content]
                ${item.geographicScope}
-             [#else]
-               <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
-             [/#if]</td>
-            <td class="text-justify">${item.mainArea}</td>
+              [#else]
+               <i style="opacity:0.5">From Projects</i>
+              [/#if]
+            </td>
+            <td class="text-justify">
+              [#if item.mainArea?has_content]
+               ${item.mainArea}
+              [#else]
+               <i style="opacity:0.5">From Projects</i>
+              [/#if]
+            </td>
           </tr>
           [/#list]
         [#else]

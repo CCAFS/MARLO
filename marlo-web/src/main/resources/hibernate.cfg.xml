@@ -385,7 +385,7 @@
     <mapping resource="xmls/ProjectExpectedStudyGeographicScopes.hbm.xml" />
     <mapping resource="xmls/ProjectInnovationGeographicScopes.hbm.xml" />
     <mapping resource="xmls/ProjectInnovationRegions.hbm.xml" />   
-    <mapping resource="xmls/RepIndTrainingTerms.hbm.xml" />   
-    
+    <mapping resource="xmls/RepIndTrainingTerms.hbm.xml" />  
+    <mapping resource="xmls/DeliverableGeographicScopes.hbm.xml" />    
   </session-factory>
 </hibernate-configuration>
