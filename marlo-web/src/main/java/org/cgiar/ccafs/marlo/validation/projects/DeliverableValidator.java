@@ -149,7 +149,8 @@ public class DeliverableValidator extends BaseValidator {
       }
 
 
-      if (action.isReportingActive() || action.isUpKeepActive()) {
+      if ((action.isReportingActive() || action.isUpKeepActive())
+        && action.hasSpecificities(APConstants.CRP_HAS_DISEMINATION)) {
         if (action.isReportingActive() && deliverable.getDeliverableInfo(action.getActualPhase()).getStatus() != null
           && deliverable.getDeliverableInfo(action.getActualPhase()).getStatus().intValue() == Integer
             .parseInt(ProjectStatusEnum.Ongoing.getStatusId())) {

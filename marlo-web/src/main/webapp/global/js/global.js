@@ -669,13 +669,11 @@ function onClickRemoveElement() {
     // Update indexes
     $list.find('li.relationElement').each(function(i,element) {
       var indexLevel = $(element).classParam('indexLevel');
-      console.log("indexLevel", indexLevel);
       $(element).setNameIndexes(indexLevel, i);
     });
 
     // Enabled select component if needed
     if((maxLimit > 0) && (counted >= maxLimit)) {
-      console.log("reenabled component", removeElementType);
       $select.prop('disabled', false).trigger('change.select2');
     }
   });
