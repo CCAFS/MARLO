@@ -89,6 +89,9 @@
     [#if list?has_content]
       [#list list as innovation]
         [#local tsURL][@s.url namespace="/projects" action="${(crpSession)!}/innovation"][@s.param name='innovationID']${(innovation.id)!''}[/@s.param][@s.param name='projectID']${(innovation.project.id)!''}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
+        
+        [#-- Is New --]
+        [#local isNew = (action.isInnovationNew(innovation.id))!false ]
         <tr>
           [#-- ID --]
           <td class="tb-id text-center">
@@ -96,9 +99,8 @@
           </td>
           [#-- Title --]
           <td class="tb-title">
-            <a href="${tsURL}">
-              [@utils.tableText value=(innovation.projectInnovationInfo.title)!"" /]
-            </a>
+            [#if isNew] <span class="label label-info">[@s.text name="global.new" /]</span> [/#if] 
+            <a href="${tsURL}">[@utils.tableText value=(innovation.projectInnovationInfo.title)!"" /]</a>
           </td>
           [#-- Type --]
           <td>
