@@ -1125,6 +1125,16 @@ public class POISummary {
     h1Run.setFontSize(16);
   }
 
+  public void textHead1TitleBlack(XWPFParagraph h1, String text) {
+    h1.setAlignment(ParagraphAlignment.BOTH);
+    XWPFRun h1Run = h1.createRun();
+    this.addParagraphTextBreak(h1Run, text);
+    h1Run.setColor("000000");
+    h1Run.setBold(true);
+    h1Run.setFontFamily("Calibri");
+    h1Run.setFontSize(13);
+  }
+
   public void textHead1TitleFontCalibri(XWPFParagraph h1, String text) {
     h1.setAlignment(ParagraphAlignment.BOTH);
     XWPFRun h1Run = h1.createRun();
