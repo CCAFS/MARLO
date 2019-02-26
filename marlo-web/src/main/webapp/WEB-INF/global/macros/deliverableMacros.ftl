@@ -3,30 +3,29 @@
 
 [#macro deliverableGeographicScope]
   <div class="block-geographicScope">
-    <div class="form-group row">
-      <div class="col-md-6">
-        [@customForm.select name="deliverable.deliverableInfo.geographicScope.id" className="setSelect2 geographicScopeSelect" i18nkey="deliverable.geographicScope" listName="repIndGeographicScopes" keyFieldName="id"  displayFieldName="name" editable=editable required=editable/]
+    [#assign geographicScopeList = (deliverable.geographicScopes)![] ]
+    [#assign isRegional =      findElementID(geographicScopeList,  action.reportingIndGeographicScopeRegional) /]
+    [#assign isMultiNational = findElementID(geographicScopeList,  action.reportingIndGeographicScopeMultiNational) /]
+    [#assign isNational =      findElementID(geographicScopeList,  action.reportingIndGeographicScopeNational) /]
+    [#assign isSubNational =   findElementID(geographicScopeList,  action.reportingIndGeographicScopeSubNational) /]
+    
+    <div class="form-group">
+      <div class="row">
+        <div class="col-md-6">
+          [#-- Geographic Scope --]
+          [@customForm.elementsListComponent name="deliverable.geographicScopes" elementType="repIndGeographicScope" elementList=deliverable.geographicScopes maxLimit=1 label="deliverable.geographicScope" listName="repIndGeographicScopes" keyFieldName="id" displayFieldName="name" required=true /]
+        </div>
+      </div>
+      <div class="form-group regionalBlock" style="display:${(isRegional)?string('block','none')}">
+        [#-- Regional scope --]
+        [@customForm.elementsListComponent name="deliverable.regions" elementType="locElement" elementList=deliverable.regions label="deliverable.region"  listName="repIndRegions" keyFieldName="id" displayFieldName="composedName" required=false /]
+      </div>
+      <div class="form-group nationalBlock" style="display:${(isMultiNational || isNational || isSubNational)?string('block','none')}">
+        [#-- Multinational, National and Subnational scope --]
+        [@customForm.select name="deliverable.countriesIds" label="" i18nkey="deliverable.countries" listName="countries" keyFieldName="isoAlpha2"  displayFieldName="name" value="deliverable.countriesIds" multiple=true required=true className="countriesSelect" disabled=!editable/]
       </div>
     </div>
-    
-    [#assign scopeID = (deliverable.deliverableInfo.geographicScope.id)!-1 ]  
-    [#assign isRegional = ((scopeID == action.reportingIndGeographicScopeRegional)) ]
-    [#assign isMultiNational = ((scopeID == action.reportingIndGeographicScopeMultiNational)) ]
-    [#assign isNational = ((scopeID == action.reportingIndGeographicScopeNational)) ]
-    [#assign isSubNational = ((scopeID == action.reportingIndGeographicScopeSubNational)) ]
-    
-    [#-- Region --]
-    <div class="form-group row">
-      <div class="col-md-6 regionalBlock" style="display:${(isRegional)?string('block','none')}">
-        [@customForm.elementsListComponent name="deliverable.deliverableRegions" elementType="locElement" elementList=deliverable.deliverableRegions label="deliverable.region"  listName="repIndRegions" keyFieldName="id" displayFieldName="composedName" required=false /]
-      </div>
-    </div>
-    
-    [#-- Countries --]
-    <div class="form-group nationalBlock" style="display:${(isMultiNational || isNational || isSubNational)?string('block','none')}">
-      [#-- Multinational, National and Subnational scope --]
-      [@customForm.select name="deliverable.countriesIds" label="" i18nkey="deliverable.countries" listName="countries" keyFieldName="isoAlpha2"  displayFieldName="name" value="deliverable.countriesIds" multiple=true required=editable className="countriesSelect" disabled=!editable/]
-    </div>
+   
   </div>
 [/#macro]
 
@@ -987,3 +986,9 @@
   [#return "none"]
 [/#function]
 
+[#function findElementID list id]
+  [#list (list)![] as item]
+    [#if (item.repIndGeographicScope.id == id)!false][#return true][/#if]
+  [/#list]
+  [#return false]
+[/#function]
