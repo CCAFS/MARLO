@@ -69,6 +69,8 @@ public class ProjectExpectedStudiesListAction extends BaseAction {
   private long projectID;
   private long expectedID;
   private GlobalUnit loggedCrp;
+  private String justification;
+
 
   @Inject
   public ProjectExpectedStudiesListAction(APConfig config, SectionStatusManager sectionStatusManager,
@@ -132,6 +134,7 @@ public class ProjectExpectedStudiesListAction extends BaseAction {
     return INPUT;
   }
 
+
   @Override
   public String delete() {
     ProjectExpectedStudy projectExpectedStudyBD = projectExpectedStudyManager.getProjectExpectedStudyById(expectedID);
@@ -140,38 +143,44 @@ public class ProjectExpectedStudiesListAction extends BaseAction {
         sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
       }
     }
+    projectExpectedStudyBD.setModificationJustification(justification);
     projectExpectedStudyManager.deleteProjectExpectedStudy(projectExpectedStudyBD.getId());
     return SUCCESS;
   }
-
 
   @Override
   public List<Integer> getAllYears() {
     return allYears;
   }
 
-
   public long getExpectedID() {
     return expectedID;
   }
+
+
+  @Override
+  public String getJustification() {
+    return justification;
+  }
+
 
   public List<ProjectExpectedStudy> getMyNonProjectStudies() {
     return myNonProjectStudies;
   }
 
-
   public List<ProjectExpectedStudy> getNonProjectStudies() {
     return nonProjectStudies;
   }
+
 
   public Project getProject() {
     return project;
   }
 
-
   public long getProjectID() {
     return projectID;
   }
+
 
   public List<ProjectExpectedStudy> getProjectOldStudies() {
     return projectOldStudies;
@@ -180,7 +189,6 @@ public class ProjectExpectedStudiesListAction extends BaseAction {
   public List<ProjectExpectedStudy> getProjectStudies() {
     return projectStudies;
   }
-
 
   @Override
   public void prepare() throws Exception {
@@ -309,8 +317,14 @@ public class ProjectExpectedStudiesListAction extends BaseAction {
     this.allYears = allYears;
   }
 
+
   public void setExpectedID(long expectedID) {
     this.expectedID = expectedID;
+  }
+
+  @Override
+  public void setJustification(String justification) {
+    this.justification = justification;
   }
 
   public void setMyNonProjectStudies(List<ProjectExpectedStudy> myNonProjectStudies) {
