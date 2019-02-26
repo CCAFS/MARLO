@@ -164,8 +164,17 @@ public class ProjectInnovationListAction extends BaseAction {
       project.getProjectInnovations().stream().filter(c -> c.isActive()).collect(Collectors.toList());
     project.setInnovations(new ArrayList<ProjectInnovation>());
     for (ProjectInnovation projectInnovation : innovations) {
+
       if (projectInnovation.getProjectInnovationInfo(this.getActualPhase()) != null
         && projectInnovation.getProjectInnovationInfo().getYear() >= this.getActualPhase().getYear()) {
+
+        // Geographic Scope List
+        if (projectInnovation.getProjectInnovationGeographicScopes() != null) {
+          projectInnovation.setGeographicScopes(new ArrayList<>(projectInnovation.getProjectInnovationGeographicScopes()
+            .stream().filter(o -> o.isActive() && o.getPhase().getId() == this.getActualPhase().getId())
+            .collect(Collectors.toList())));
+        }
+
         project.getInnovations().add(projectInnovation);
       } else {
         projectOldInnovations.add(projectInnovation);
