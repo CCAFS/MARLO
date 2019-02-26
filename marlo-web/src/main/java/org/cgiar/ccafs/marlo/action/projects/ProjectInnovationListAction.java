@@ -26,6 +26,7 @@ import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCrp;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationInfo;
+import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
@@ -60,6 +61,8 @@ public class ProjectInnovationListAction extends BaseAction {
   private long innovationID;
   private List<Integer> allYears;
   private List<ProjectInnovation> projectOldInnovations;
+  private String justification;
+
 
   @Inject
   public ProjectInnovationListAction(APConfig config, ProjectInnovationManager projectInnovationManager,
@@ -72,6 +75,7 @@ public class ProjectInnovationListAction extends BaseAction {
     this.projectManager = projectManager;
     this.projectInnovationCrpManager = projectInnovationCrpManager;
   }
+
 
   @Override
   public String add() {
@@ -109,11 +113,11 @@ public class ProjectInnovationListAction extends BaseAction {
     for (ProjectInnovation projectInnovation : project.getInnovations()) {
       if (projectInnovation.getId().longValue() == innovationID) {
         ProjectInnovation projectInnovationBD = projectInnovationManager.getProjectInnovationById(innovationID);
-        /*
-         * for (SectionStatus sectionStatus : projectInnovationBD.getSectionStatuses()) {
-         * sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
-         * }
-         */
+
+        for (SectionStatus sectionStatus : projectInnovationBD.getSectionStatuses()) {
+          sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
+        }
+        projectInnovation.setModificationJustification(justification);
         projectInnovationManager.deleteProjectInnovation(projectInnovation.getId());
       }
     }
@@ -125,10 +129,15 @@ public class ProjectInnovationListAction extends BaseAction {
     return allYears;
   }
 
-
   public long getInnovationID() {
     return innovationID;
   }
+
+  @Override
+  public String getJustification() {
+    return justification;
+  }
+
 
   public Project getProject() {
     return project;
@@ -155,8 +164,17 @@ public class ProjectInnovationListAction extends BaseAction {
       project.getProjectInnovations().stream().filter(c -> c.isActive()).collect(Collectors.toList());
     project.setInnovations(new ArrayList<ProjectInnovation>());
     for (ProjectInnovation projectInnovation : innovations) {
+
       if (projectInnovation.getProjectInnovationInfo(this.getActualPhase()) != null
         && projectInnovation.getProjectInnovationInfo().getYear() >= this.getActualPhase().getYear()) {
+
+        // Geographic Scope List
+        if (projectInnovation.getProjectInnovationGeographicScopes() != null) {
+          projectInnovation.setGeographicScopes(new ArrayList<>(projectInnovation.getProjectInnovationGeographicScopes()
+            .stream().filter(o -> o.isActive() && o.getPhase().getId() == this.getActualPhase().getId())
+            .collect(Collectors.toList())));
+        }
+
         project.getInnovations().add(projectInnovation);
       } else {
         projectOldInnovations.add(projectInnovation);
@@ -172,6 +190,11 @@ public class ProjectInnovationListAction extends BaseAction {
 
   public void setInnovationID(long innovationID) {
     this.innovationID = innovationID;
+  }
+
+  @Override
+  public void setJustification(String justification) {
+    this.justification = justification;
   }
 
   public void setProject(Project project) {

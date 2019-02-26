@@ -2442,14 +2442,17 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         for (DeliverableUser deliverableUser : deliverable.getDeliverableUsers().stream()
           .filter(du -> du.isActive() && du.getPhase().equals(this.getSelectedPhase())).collect(Collectors.toList())) {
           creatorAuthors += "<br>● ";
-          if (!deliverableUser.getLastName().isEmpty()) {
-            creatorAuthors += deliverableUser.getLastName() + " - ";
-          }
-          if (!deliverableUser.getFirstName().isEmpty()) {
-            creatorAuthors += deliverableUser.getFirstName();
-          }
-          if (!deliverableUser.getElementId().isEmpty()) {
-            creatorAuthors += "&lt;" + deliverableUser.getElementId() + "&gt;";
+
+          if (deliverableUser.getElementId() != null) {
+            if (!deliverableUser.getLastName().isEmpty()) {
+              creatorAuthors += deliverableUser.getLastName() + " - ";
+            }
+            if (!deliverableUser.getFirstName().isEmpty()) {
+              creatorAuthors += deliverableUser.getFirstName();
+            }
+            if (!deliverableUser.getElementId().isEmpty()) {
+              creatorAuthors += "&lt;" + deliverableUser.getElementId() + "&gt;";
+            }
           }
         }
         if (creatorAuthors.isEmpty()) {

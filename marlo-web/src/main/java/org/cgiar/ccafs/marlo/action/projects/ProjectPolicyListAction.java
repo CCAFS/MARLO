@@ -59,6 +59,8 @@ public class ProjectPolicyListAction extends BaseAction {
   private List<Integer> allYears;
   private List<ProjectPolicy> projectOldPolicies;
 
+  private String justification;
+
 
   @Inject
   public ProjectPolicyListAction(APConfig config, ProjectPolicyManager projectPolicyManager,
@@ -70,7 +72,6 @@ public class ProjectPolicyListAction extends BaseAction {
     this.sectionStatusManager = sectionStatusManager;
     this.projectManager = projectManager;
   }
-
 
   @Override
   public String add() {
@@ -95,6 +96,7 @@ public class ProjectPolicyListAction extends BaseAction {
     return INPUT;
   }
 
+
   @Override
   public String delete() {
     for (ProjectPolicy projectPolicy : project.getPolicies()) {
@@ -103,17 +105,23 @@ public class ProjectPolicyListAction extends BaseAction {
         for (SectionStatus sectionStatus : projectPolicyBD.getSectionStatuses()) {
           sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
         }
+        projectPolicy.setModificationJustification(justification);
         projectPolicyManager.deleteProjectPolicy(projectPolicy.getId());
       }
     }
     return SUCCESS;
   }
 
+
   @Override
   public List<Integer> getAllYears() {
     return allYears;
   }
 
+  @Override
+  public String getJustification() {
+    return justification;
+  }
 
   public long getPolicyID() {
     return policyID;
@@ -123,6 +131,7 @@ public class ProjectPolicyListAction extends BaseAction {
   public Project getProject() {
     return project;
   }
+
 
   public long getProjectID() {
     return projectID;
@@ -151,6 +160,12 @@ public class ProjectPolicyListAction extends BaseAction {
             .filter(o -> o.isActive() && o.getPhase().getId() == this.getActualPhase().getId())
             .collect(Collectors.toList())));
         }
+        // Geographic Scope List
+        if (projectPolicy.getProjectPolicyGeographicScopes() != null) {
+          projectPolicy.setGeographicScopes(new ArrayList<>(projectPolicy.getProjectPolicyGeographicScopes().stream()
+            .filter(o -> o.isActive() && o.getPhase().getId() == this.getActualPhase().getId())
+            .collect(Collectors.toList())));
+        }
         if (projectPolicy.getProjectPolicyInfo(this.getActualPhase()).getYear() < this.getCurrentCycleYear()) {
           projectOldPolicies.add(projectPolicy);
         } else {
@@ -162,6 +177,11 @@ public class ProjectPolicyListAction extends BaseAction {
 
   public void setAllYears(List<Integer> allYears) {
     this.allYears = allYears;
+  }
+
+  @Override
+  public void setJustification(String justification) {
+    this.justification = justification;
   }
 
   public void setPolicyID(long policyID) {
