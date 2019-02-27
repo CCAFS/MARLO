@@ -68,7 +68,7 @@
         }
       ]
     },
-    { "active": !centerGlobalUnit,
+    { "active": !centerGlobalUnit && action.hasSpecificities("crp_view_highlights"),
       "available": true,
       "title": "summaries.board.report.projectHighlights", 
       "description": "summaries.board.report.projectHighlights.description",

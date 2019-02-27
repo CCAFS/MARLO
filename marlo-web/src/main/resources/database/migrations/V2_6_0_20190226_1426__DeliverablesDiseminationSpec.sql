@@ -1,9 +1,9 @@
 INSERT INTO parameters (global_unit_type_id, `key`, description, format, category)
-VALUES (1, 'crp_has_disemination', 'Parameter to Able Project Highligths section',1,2);
+VALUES (1, 'crp_has_disemination', 'Parameter to enabled/disabled Dissemination & Metadata and Quality Check in deliverable section',1,2);
 INSERT INTO parameters (global_unit_type_id, `key`, description, format, category)
-VALUES (3, 'crp_has_disemination', 'Parameter to Able Project Highligths section',1,2);
+VALUES (3, 'crp_has_disemination', 'Parameter to enabled/disabled Dissemination & Metadata and Quality Check in deliverable section',1,2);
 INSERT INTO parameters (global_unit_type_id, `key`, description, format, category)
-VALUES (4, 'crp_has_disemination', 'Parameter to Able Project Highligths section',1,2);
+VALUES (4, 'crp_has_disemination', 'Parameter to enabled/disabled Dissemination & Metadata and Quality Check in deliverable section',1,2);
 
 INSERT INTO custom_parameters(parameter_id, `value`, created_by, is_active, active_since, modified_by, modification_justification, global_unit_id)
 SELECT
