@@ -25,7 +25,6 @@
       
       [#if isOutcomeCaseStudy]
         <hr />
-        
         [#-- Tags --]
         <div class="form-group">
           <label for="">[@s.text name="study.tags" /]:[@customForm.req required=editable /]</label>
