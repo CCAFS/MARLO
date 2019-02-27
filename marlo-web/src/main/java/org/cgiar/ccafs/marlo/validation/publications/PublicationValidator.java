@@ -123,40 +123,43 @@ public class PublicationValidator extends BaseValidator {
           action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Funding Sources"}));
       }
 
-      // Validate Dissemination
-      if (deliverable.getDissemination() != null) {
-        this.validateDissemination(deliverable.getDissemination(), saving, action);
-      } else {
-        action.addMessage(action.getText("project.deliverable.dissemination.v.dissemination"));
-        action.getInvalidFields().put("input-deliverable.dissemination.alreadyDisseminated",
-          InvalidFieldsMessages.EMPTYFIELD);
-      }
+      if (action.hasSpecificities(APConstants.CRP_HAS_DISEMINATION)) {
 
-      // Validate Intellectual Asset
-      if (action.hasSpecificities(action.crpDeliverableIntellectualAsset())) {
-        if (deliverable.getIntellectualAsset() != null
-          && deliverable.getIntellectualAsset().getHasPatentPvp() != null) {
-          this.validateIntellectualAsset(deliverable.getIntellectualAsset(), action);
+        // Validate Dissemination
+        if (deliverable.getDissemination() != null) {
+          this.validateDissemination(deliverable.getDissemination(), saving, action);
         } else {
-          action.addMessage(action.getText("deliverable.intellectualAsset.hasPatentPvp"));
-          action.getInvalidFields().put("input-deliverable.intellectualAsset.hasPatentPvp",
+          action.addMessage(action.getText("project.deliverable.dissemination.v.dissemination"));
+          action.getInvalidFields().put("input-deliverable.dissemination.alreadyDisseminated",
             InvalidFieldsMessages.EMPTYFIELD);
         }
+
+        // Validate Intellectual Asset
+        if (action.hasSpecificities(action.crpDeliverableIntellectualAsset())) {
+          if (deliverable.getIntellectualAsset() != null
+            && deliverable.getIntellectualAsset().getHasPatentPvp() != null) {
+            this.validateIntellectualAsset(deliverable.getIntellectualAsset(), action);
+          } else {
+            action.addMessage(action.getText("deliverable.intellectualAsset.hasPatentPvp"));
+            action.getInvalidFields().put("input-deliverable.intellectualAsset.hasPatentPvp",
+              InvalidFieldsMessages.EMPTYFIELD);
+          }
+        }
+
+        // Validate Deliverable Participant
+        if (deliverable.getDeliverableParticipant() != null
+          && deliverable.getDeliverableParticipant().getHasParticipants() != null) {
+          this.validateDeliverableParticipant(deliverable.getDeliverableParticipant(), action);
+        } else {
+          action.addMessage("hasParticipants");
+          action.getInvalidFields().put("input-deliverable.deliverableParticipant.hasParticipants",
+            InvalidFieldsMessages.EMPTYFIELD);
+        }
+
+        // Validate Publication Meta-data
+        this.validatePublicationMetadata(deliverable.getPublication(), deliverable.getDeliverableInfo(), action);
+
       }
-
-      // Validate Deliverable Participant
-      if (deliverable.getDeliverableParticipant() != null
-        && deliverable.getDeliverableParticipant().getHasParticipants() != null) {
-        this.validateDeliverableParticipant(deliverable.getDeliverableParticipant(), action);
-      } else {
-        action.addMessage("hasParticipants");
-        action.getInvalidFields().put("input-deliverable.deliverableParticipant.hasParticipants",
-          InvalidFieldsMessages.EMPTYFIELD);
-      }
-
-      // Validate Publication Meta-data
-      this.validatePublicationMetadata(deliverable.getPublication(), deliverable.getDeliverableInfo(), action);
-
     }
     if (!action.getFieldErrors().isEmpty()) {
       action.addActionError(action.getText("saving.fields.required"));
