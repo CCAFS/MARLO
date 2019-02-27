@@ -185,7 +185,54 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
     return year;
   }
 
-  public Boolean isRequieried() {
+  /**
+   * Check if the deliverables is from a previous year for the current cycle
+   * Used in Project.getCurrentDeliverables and Project.getPreviousDeliverables to generate the deliverable list and;
+   * 
+   * @return
+   */
+  public Boolean isPrevious() {
+
+    if (this.getStatus() != null
+      && this.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())) {
+      if (this.getNewExpectedYear() != null && this.getNewExpectedYear().intValue() != -1) {
+        if (this.getNewExpectedYear() < phase.getYear()) {
+          return true;
+        }
+      }
+    }
+
+    if (this.getStatus() != null
+      && (this.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())
+        || this.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId()))) {
+      if (this.getNewExpectedYear() != null && this.getNewExpectedYear().intValue() != -1) {
+        if (this.getNewExpectedYear() < phase.getYear()) {
+          return true;
+        }
+      } else {
+        if (this.getYear() < phase.getYear()) {
+          return true;
+        }
+      }
+    }
+
+    if (this.getStatus() != null
+      && (this.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId()))) {
+      if (this.getYear() < phase.getYear()) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  /**
+   * Check if the deliverables is required for the current cycle
+   * Used in BaseAction.isDeliverableComplete to know if the Deliverable is Complete
+   * 
+   * @return
+   */
+  public Boolean isRequired() {
 
     if (this.getStatus() != null
       && this.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())) {
@@ -225,7 +272,6 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
 
     return false;
   }
-
 
   public boolean requeriedFair() {
     try {

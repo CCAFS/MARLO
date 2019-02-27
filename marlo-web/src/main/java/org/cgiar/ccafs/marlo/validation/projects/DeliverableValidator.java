@@ -114,7 +114,7 @@ public class DeliverableValidator extends BaseValidator {
       }
 
     } else {
-      validate = deliverable.getDeliverableInfo().isRequieried();
+      validate = deliverable.getDeliverableInfo().isRequired();
     }
     if (validate) {
       Project project = projectManager.getProjectById(deliverable.getProject().getId());
