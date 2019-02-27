@@ -254,7 +254,8 @@ public class ProjectInnovationValidator extends BaseValidator {
     }
 
     // Validate lead organization
-    if (projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getClearLead() != false) {
+    if (projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getClearLead() == null
+      || projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getClearLead() == false) {
       if (projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getLeadOrganization() != null) {
         if (projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getLeadOrganization()
           .getId() == null
