@@ -295,14 +295,18 @@ public class ProjectActivitiesAction extends BaseAction {
 
         for (Activity activity : project.getProjectActivities()) {
           if (activity.getDeliverables() != null) {
+            List<DeliverableActivity> deliverableActivities = new ArrayList<>();
             for (DeliverableActivity deliverableActivity : activity.getDeliverables()) {
-              if (deliverableActivity.getId() == -1) {
-                Deliverable deliverable =
-                  deliverableManager.getDeliverableById(deliverableActivity.getDeliverable().getId());
-                deliverable.getDeliverableInfo(this.getActualPhase());
-                deliverableActivity.setDeliverable(deliverable);
+              Deliverable deliverable =
+                deliverableManager.getDeliverableById(deliverableActivity.getDeliverable().getId());
+              deliverable.getDeliverableInfo(this.getActualPhase());
+              deliverableActivity.setDeliverable(deliverable);
+              if (deliverable.isActive() && deliverable.getDeliverableInfo(this.getActualPhase()) != null
+                && deliverable.getDeliverableInfo(this.getActualPhase()).isActive()) {
+                deliverableActivities.add(deliverableActivity);
               }
             }
+            activity.setDeliverables(deliverableActivities);
           }
         }
 
@@ -321,11 +325,11 @@ public class ProjectActivitiesAction extends BaseAction {
           for (Activity openActivity : project.getProjectActivities()) {
             openActivity
               .setDeliverables(new ArrayList<DeliverableActivity>(openActivity.getDeliverableActivities().stream()
-                .filter(da -> da.isActive() && da.getPhase() != null && da.getPhase().equals(this.getActualPhase()))
+                .filter(da -> da.isActive() && da.getPhase() != null && da.getPhase().equals(this.getActualPhase())
+                  && da.getDeliverable().isActive()
+                  && da.getDeliverable().getDeliverableInfo(this.getActualPhase()) != null
+                  && da.getDeliverable().getDeliverableInfo(this.getActualPhase()).isActive())
                 .collect(Collectors.toList())));
-            for (DeliverableActivity deliverableActivity : openActivity.getDeliverables()) {
-              deliverableActivity.getDeliverable().getDeliverableInfo(this.getActualPhase());
-            }
           }
         }
 
