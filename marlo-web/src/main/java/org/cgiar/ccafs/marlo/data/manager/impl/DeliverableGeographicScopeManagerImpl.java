@@ -40,8 +40,10 @@ public class DeliverableGeographicScopeManagerImpl implements DeliverableGeograp
   private PhaseDAO phaseDAO;
 
   @Inject
-  public DeliverableGeographicScopeManagerImpl(DeliverableGeographicScopeDAO deliverableGeographicScopeDAO) {
+  public DeliverableGeographicScopeManagerImpl(DeliverableGeographicScopeDAO deliverableGeographicScopeDAO,
+    PhaseDAO phaseDAO) {
     this.deliverableGeographicScopeDAO = deliverableGeographicScopeDAO;
+    this.phaseDAO = phaseDAO;
   }
 
   @Override
