@@ -123,13 +123,14 @@
           </div>
           
           [#-- Is clear lead  --]
-           <div class="form-group">
-            [@customForm.checkmark id="" name="innovation.projectInnovationInfo.clearLead" i18nkey="projectInnovations.clearLead" help="" paramText="" helpIcon=true disabled=false editable=true value="true" checked=(innovation.projectInnovationInfo.clearLead)!false cssClass="" cssClassLabel=""  /]
+          [#assign isClearLead = (innovation.projectInnovationInfo.clearLead)!false /]
+           <div class="form-group isClearLead">
+            [@customForm.checkmark id="" name="innovation.projectInnovationInfo.clearLead" i18nkey="projectInnovations.clearLead" help="" paramText="" value="true" helpIcon=true disabled=false editable=true checked=(innovation.projectInnovationInfo.clearLead)!false cssClass="isClearLead" cssClassLabel=""  /]
            </div>
-          
+           
           [#-- Lead Organization --]
-          <div class="form-group"">
-            [@customForm.select name="innovation.projectInnovationInfo.leadOrganization.id" label=""  i18nkey="projectInnovations.leadOrganization" listName="institutions" keyFieldName="id"  displayFieldName="composedName" required=true  className="" editable=editable/]
+          <div class="form-group lead-organization">
+            [@customForm.select name="innovation.projectInnovationInfo.leadOrganization.id" label=""  i18nkey="projectInnovations.leadOrganization" listName="institutions" keyFieldName="id"  displayFieldName="composedName" required=!(isClearLead)  className="" editable=editable/]
           </div>
           
           [#-- Top Five Contributing Organizations --]
