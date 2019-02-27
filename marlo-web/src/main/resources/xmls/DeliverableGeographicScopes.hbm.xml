@@ -4,7 +4,7 @@
 <!-- Generated May 5, 2017 11:44:22 AM by Hibernate Tools 4.3.1.Final -->
 <hibernate-mapping>
 	<class name="org.cgiar.ccafs.marlo.data.model.DeliverableGeographicScope"
-		table="deliverable_locations" optimistic-lock="none">
+		table="deliverable_geographic_scopes" optimistic-lock="none">
 		<id name="id" type="java.lang.Long">
 			<column name="id" />
 			<generator class="identity" />

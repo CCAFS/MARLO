@@ -516,9 +516,46 @@ public class DeliverableAction extends BaseAction {
     }
   }
 
+  /**
+   * Delete all LocElements Records when Geographic Scope is Global or NULL
+   * 
+   * @param deliverable
+   * @param phase
+   */
+  public void deleteLocElements(Deliverable deliverable, Phase phase, boolean isCountry) {
+    if (isCountry) {
+      if (deliverable.getDeliverableLocations() != null && deliverable.getDeliverableLocations().size() > 0) {
+
+        List<DeliverableLocation> regionPrev = new ArrayList<>(deliverable.getDeliverableLocations().stream()
+          .filter(nu -> nu.isActive() && nu.getPhase().getId() == phase.getId()).collect(Collectors.toList()));
+
+        for (DeliverableLocation region : regionPrev) {
+
+          deliverableLocationManager.deleteDeliverableLocation(region.getId());
+
+        }
+      }
+    } else {
+      if (deliverable.getDeliverableGeographicRegions() != null
+        && deliverable.getDeliverableGeographicRegions().size() > 0) {
+
+        List<DeliverableGeographicRegion> regionPrev = new ArrayList<>(deliverable.getDeliverableGeographicRegions()
+          .stream().filter(nu -> nu.isActive() && nu.getPhase().getId() == phase.getId()).collect(Collectors.toList()));
+
+        for (DeliverableGeographicRegion region : regionPrev) {
+
+          deliverableGeographicRegionManager.deleteDeliverableGeographicRegion(region.getId());
+
+        }
+
+      }
+    }
+  }
+
   public List<DeliverableQualityAnswer> getAnswers() {
     return answers;
   }
+
 
   private Path getAutoSaveFilePath() {
 
@@ -583,7 +620,6 @@ public class DeliverableAction extends BaseAction {
       return null;
     }
   }
-
 
   public long getDeliverableID() {
     return deliverableID;
@@ -655,6 +691,7 @@ public class DeliverableAction extends BaseAction {
     return deliverableSubTypes;
   }
 
+
   public List<DeliverableType> getDeliverableTypeParent() {
     return deliverableTypeParent;
   }
@@ -664,16 +701,15 @@ public class DeliverableAction extends BaseAction {
     return config.getDownloadURL() + "/" + this.getDeliverableUrlPath(fileType).replace('\\', '/');
   }
 
-
   public String getDeliverableUrlPath(String fileType) {
     return config.getProjectsBaseFolder(this.getCrpSession()) + File.separator + deliverable.getId() + File.separator
       + "deliverable" + File.separator + fileType + File.separator;
   }
 
+
   public List<PartnerDivision> getDivisions() {
     return divisions;
   }
-
 
   public List<RepIndGenderYouthFocusLevel> getFocusLevels() {
     return focusLevels;
@@ -687,10 +723,10 @@ public class DeliverableAction extends BaseAction {
     return genderLevels;
   }
 
+
   public int getIndexTab() {
     return indexTab;
   }
-
 
   public List<CrpClusterKeyOutput> getKeyOutputs() {
     return keyOutputs;
@@ -703,6 +739,7 @@ public class DeliverableAction extends BaseAction {
   public List<ProjectPartnerPerson> getPartnerPersons() {
     return partnerPersons;
   }
+
 
   public List<ProjectPartner> getPartners() {
     return partners;
@@ -736,7 +773,6 @@ public class DeliverableAction extends BaseAction {
     return projectID;
   }
 
-
   public List<ProjectOutcome> getProjectOutcome() {
     return projectOutcome;
   }
@@ -745,19 +781,19 @@ public class DeliverableAction extends BaseAction {
     return projectPrograms;
   }
 
+
   public List<RepIndFillingType> getRepIndFillingTypes() {
     return repIndFillingTypes;
   }
-
 
   public List<RepIndGeographicScope> getRepIndGeographicScopes() {
     return repIndGeographicScopes;
   }
 
+
   public List<RepIndPatentStatus> getRepIndPatentStatuses() {
     return repIndPatentStatuses;
   }
-
 
   public List<LocElement> getRepIndRegions() {
     return repIndRegions;
@@ -767,19 +803,19 @@ public class DeliverableAction extends BaseAction {
     return repIndTrainingTerms;
   }
 
+
   public List<RepIndTypeActivity> getRepIndTypeActivities() {
     return repIndTypeActivities;
   }
-
 
   public List<RepIndTypeParticipant> getRepIndTypeParticipants() {
     return repIndTypeParticipants;
   }
 
+
   public List<RepositoryChannel> getRepositoryChannels() {
     return repositoryChannels;
   }
-
 
   public List<ProjectPartner> getSelectedPartners() {
 
@@ -801,6 +837,7 @@ public class DeliverableAction extends BaseAction {
     return deliverablePartnerPersons;
 
   }
+
 
   public List<Long> getSelectedPersons(long partnerID) {
 
@@ -830,10 +867,10 @@ public class DeliverableAction extends BaseAction {
     return status;
   }
 
-
   public Map<String, String> getStatuses() {
     return statuses;
   }
+
 
   public String getTransaction() {
     return transaction;
@@ -900,7 +937,6 @@ public class DeliverableAction extends BaseAction {
     }
 
   }
-
 
   public void parnershipNewData() {
     if (deliverable.getOtherPartners() != null) {
@@ -1003,6 +1039,7 @@ public class DeliverableAction extends BaseAction {
       }
     }
   }
+
 
   public void partnershipPreviousData(Deliverable deliverablePrew) {
     if (deliverablePrew.getDeliverablePartnerships() != null
@@ -1936,7 +1973,6 @@ public class DeliverableAction extends BaseAction {
 
   }
 
-
   @Override
   public String save() {
     if (this.hasPermission("canEdit")) {
@@ -1957,10 +1993,43 @@ public class DeliverableAction extends BaseAction {
       this.removeOthersDeliverablePartnerships(deliverableManagedState);
       this.updateOtherDeliverablePartnerships();
 
-      this.saveDeliverableRegions(deliverableDB, this.getActualPhase(), deliverableManagedState);
 
-      // Save Countries list
-      this.saveDeliverableCountries(deliverableManagedState);
+      // Save Geographic Scope Data
+      this.saveGeographicScope(deliverableDB, this.getActualPhase());
+
+      boolean haveRegions = false;
+      boolean haveCountries = false;
+
+      if (deliverable.getGeographicScopes() != null) {
+        for (DeliverableGeographicScope deliverableGeographicScope : deliverable.getGeographicScopes()) {
+
+          if (deliverableGeographicScope.getRepIndGeographicScope().getId() == 2) {
+            haveRegions = true;
+          }
+
+          if (deliverableGeographicScope.getRepIndGeographicScope().getId() != 1
+            && deliverableGeographicScope.getRepIndGeographicScope().getId() != 2) {
+            haveCountries = true;
+          }
+        }
+      }
+
+
+      if (haveRegions) {
+        // Save the Regions List
+        this.saveDeliverableRegions(deliverableDB, this.getActualPhase(), deliverableManagedState);
+      } else {
+        this.deleteLocElements(deliverableDB, this.getActualPhase(), false);
+      }
+
+      if (haveCountries) {
+
+        // Save Countries list
+        this.saveDeliverableCountries(deliverableManagedState);
+      } else {
+        this.deleteLocElements(deliverableDB, this.getActualPhase(), true);
+      }
+
 
       this.saveCrossCutting(deliverableManagedState);
 
@@ -2288,6 +2357,7 @@ public class DeliverableAction extends BaseAction {
 
   }
 
+
   public void saveDissemination() {
     if (deliverable.getDissemination() != null) {
 
@@ -2427,7 +2497,7 @@ public class DeliverableAction extends BaseAction {
   /**
    * Save Deliverable Geographic Scope Information
    * 
-   * @param projectInnovation
+   * @param deliverable
    * @param phase
    */
   public void saveGeographicScope(Deliverable deliverable, Phase phase) {
@@ -2467,7 +2537,6 @@ public class DeliverableAction extends BaseAction {
       }
     }
   }
-
 
   private void saveIntellectualAsset() {
     if (deliverable.getIntellectualAsset() != null && deliverable.getIntellectualAsset().getHasPatentPvp() != null) {
@@ -2684,6 +2753,7 @@ public class DeliverableAction extends BaseAction {
     }
   }
 
+
   /**
    * All we are doing here is setting the modification justification.
    */
@@ -2850,7 +2920,6 @@ public class DeliverableAction extends BaseAction {
     return partnership;
   }
 
-
   /**
    * Save, update or delete partnership's responsible
    * 
@@ -2936,10 +3005,10 @@ public class DeliverableAction extends BaseAction {
     this.answers = answers;
   }
 
+
   public void setCgiarCrossCuttingMarkers(List<CgiarCrossCuttingMarker> cgiarCrossCuttingMarkers) {
     this.cgiarCrossCuttingMarkers = cgiarCrossCuttingMarkers;
   }
-
 
   public void setCountries(List<LocElement> countries) {
     this.countries = countries;
@@ -2952,6 +3021,7 @@ public class DeliverableAction extends BaseAction {
   public void setDeliverable(Deliverable deliverable) {
     this.deliverable = deliverable;
   }
+
 
   public void setDeliverableID(long deliverableID) {
     this.deliverableID = deliverableID;
@@ -2967,24 +3037,23 @@ public class DeliverableAction extends BaseAction {
     this.deliverableTypeParent = deliverableTypeParent;
   }
 
-
   public void setDivisions(List<PartnerDivision> divisions) {
     this.divisions = divisions;
   }
+
 
   public void setFocusLevels(List<RepIndGenderYouthFocusLevel> focusLevels) {
     this.focusLevels = focusLevels;
   }
 
-
   public void setFundingSources(List<FundingSource> fundingSources) {
     this.fundingSources = fundingSources;
   }
 
+
   public void setGenderLevels(List<GenderType> genderLevels) {
     this.genderLevels = genderLevels;
   }
-
 
   public void setIndexTab(int indexTab) {
     this.indexTab = indexTab;
@@ -2998,6 +3067,7 @@ public class DeliverableAction extends BaseAction {
     this.loggedCrp = loggedCrp;
   }
 
+
   public void setPartnerPersons(List<ProjectPartnerPerson> partnerPersons) {
     this.partnerPersons = partnerPersons;
   }
@@ -3006,7 +3076,6 @@ public class DeliverableAction extends BaseAction {
   public void setPartners(List<ProjectPartner> partners) {
     this.partners = partners;
   }
-
 
   public void setPrograms(ArrayList<CrpProgram> programs) {
     this.programs = programs;
@@ -3036,14 +3105,15 @@ public class DeliverableAction extends BaseAction {
     this.repIndGeographicScopes = repIndGeographicScopes;
   }
 
+
   public void setRepIndPatentStatuses(List<RepIndPatentStatus> repIndPatentStatuses) {
     this.repIndPatentStatuses = repIndPatentStatuses;
   }
 
-
   public void setRepIndRegions(List<LocElement> repIndRegions) {
     this.repIndRegions = repIndRegions;
   }
+
 
   public void setRepIndTrainingTerms(List<RepIndTrainingTerm> repIndTrainingTerms) {
     this.repIndTrainingTerms = repIndTrainingTerms;
@@ -3054,10 +3124,10 @@ public class DeliverableAction extends BaseAction {
     this.repIndTypeActivities = repIndTypeActivities;
   }
 
-
   public void setRepIndTypeParticipants(List<RepIndTypeParticipant> repIndTypeParticipants) {
     this.repIndTypeParticipants = repIndTypeParticipants;
   }
+
 
   public void setRepositoryChannels(List<RepositoryChannel> repositoryChannels) {
     this.repositoryChannels = repositoryChannels;
@@ -3068,15 +3138,14 @@ public class DeliverableAction extends BaseAction {
     this.status = status;
   }
 
-
   public void setStatuses(Map<String, String> statuses) {
     this.statuses = statuses;
   }
 
+
   public void setTransaction(String transaction) {
     this.transaction = transaction;
   }
-
 
   /**
    * Save and update list of deliverables funding sources for all phases
@@ -3112,6 +3181,7 @@ public class DeliverableAction extends BaseAction {
       }
     }
   }
+
 
   /**
    * deliverableDb is in a managed state, deliverable is in a detached state.
@@ -3260,7 +3330,6 @@ public class DeliverableAction extends BaseAction {
     deliverableBase.setDeliverableInfo(deliverableInfoDb);
     return deliverableBase;
   }
-
 
   /**
    * This is for updating the list of Other Deliverable Partnerships.
