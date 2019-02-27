@@ -2,7 +2,7 @@
 [#import "/WEB-INF/global/macros/utils.ftl" as utils /]
 
 [#macro deliverableGeographicScope]
-  <div class="block-geographicScope">
+  <div class="block-geographicScope geographicScopeBlock">
     [#assign geographicScopeList = (deliverable.geographicScopes)![] ]
     [#assign isRegional =      findElementID(geographicScopeList,  action.reportingIndGeographicScopeRegional) /]
     [#assign isMultiNational = findElementID(geographicScopeList,  action.reportingIndGeographicScopeMultiNational) /]
@@ -13,12 +13,12 @@
       <div class="row">
         <div class="col-md-6">
           [#-- Geographic Scope --]
-          [@customForm.elementsListComponent name="deliverable.geographicScopes" elementType="repIndGeographicScope" elementList=deliverable.geographicScopes maxLimit=1 label="deliverable.geographicScope" listName="repIndGeographicScopes" keyFieldName="id" displayFieldName="name" required=true /]
+          [@customForm.elementsListComponent name="deliverable.geographicScopes" elementType="repIndGeographicScope" elementList=deliverable.geographicScopes label="deliverable.geographicScope" listName="repIndGeographicScopes" keyFieldName="id" displayFieldName="name" required=true /]
         </div>
       </div>
       <div class="form-group regionalBlock" style="display:${(isRegional)?string('block','none')}">
         [#-- Regional scope --]
-        [@customForm.elementsListComponent name="deliverable.regions" elementType="locElement" elementList=deliverable.regions label="deliverable.region"  listName="repIndRegions" keyFieldName="id" displayFieldName="composedName" required=false /]
+        [@customForm.elementsListComponent name="deliverable.deliverableRegions" elementType="locElement" elementList=deliverable.deliverableRegions label="deliverable.region"  listName="repIndRegions" keyFieldName="id" displayFieldName="composedName" required=false /]
       </div>
       <div class="form-group nationalBlock" style="display:${(isMultiNational || isNational || isSubNational)?string('block','none')}">
         [#-- Multinational, National and Subnational scope --]
