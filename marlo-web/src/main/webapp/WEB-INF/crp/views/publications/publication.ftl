@@ -198,34 +198,36 @@
       
     </div>
     
-    <h3 class="headTitle"> Publication Dissemination</h3> 
-    <div class="borderBox"> 
-      [#-- Dissemination channel & URL --]
-      <div class="simpleBox">
-        <div class="findable"><input type="hidden" name="${customName}.dissemination.alreadyDisseminated" value="true"/></div>
-        [@deliverableMacros.findableOptions /]
+    [#if action.hasSpecificities("crp_has_disemination")]
+      <h3 class="headTitle"> Publication Dissemination</h3> 
+      <div class="borderBox"> 
+        [#-- Dissemination channel & URL --]
+        <div class="simpleBox">
+          <div class="findable"><input type="hidden" name="${customName}.dissemination.alreadyDisseminated" value="true"/></div>
+          [@deliverableMacros.findableOptions /]
+        </div>
+        
+        [#--  Intellectual Asset--]
+        [#if action.hasSpecificities(action.crpDeliverableIntellectualAsset())]
+          [@deliverableMacros.intellectualAsset /]
+        [/#if]
+        
+        [#--  Does this deliverable involve Participants and Trainees? --]
+        [@deliverableMacros.deliverableParticipantsMacro /]
+        
+        [#-- Is this deliverable Open Access? --]
+        [@deliverableMacros.isOpenaccessMacro /]
+        
+        [#-- Have you adopted a license?  --]
+        [@deliverableMacros.deliverableLicenseMacro/]
       </div>
       
-      [#--  Intellectual Asset--]
-      [#if action.hasSpecificities(action.crpDeliverableIntellectualAsset())]
-        [@deliverableMacros.intellectualAsset /]
-      [/#if]
-      
-      [#--  Does this deliverable involve Participants and Trainees? --]
-      [@deliverableMacros.deliverableParticipantsMacro /]
-      
-      [#-- Is this deliverable Open Access? --]
-      [@deliverableMacros.isOpenaccessMacro /]
-      
-      [#-- Have you adopted a license?  --]
-      [@deliverableMacros.deliverableLicenseMacro/]
-    </div>
-    
-    <h3 class="headTitle"> Publication Metadata</h3> 
-    <div class="borderBox">
-      [#-- Metadata (included publications) --]
-      [@deliverableMacros.deliverableMetadataMacro flagshipslistName="flagshipsList" allowFlagships=false /]
-    </div> 
+      <h3 class="headTitle"> Publication Metadata</h3> 
+      <div class="borderBox">
+        [#-- Metadata (included publications) --]
+        [@deliverableMacros.deliverableMetadataMacro flagshipslistName="flagshipsList" allowFlagships=false /]
+      </div>
+    [/#if] 
     
     [#-- Section Buttons & hidden inputs--]
     [#include "/WEB-INF/crp/views/publications/buttons-publications.ftl" /]
