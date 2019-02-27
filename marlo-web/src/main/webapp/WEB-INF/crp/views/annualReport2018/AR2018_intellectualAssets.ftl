@@ -3,7 +3,7 @@
 [#assign currentSectionString = "annualReport-${actionName?replace('/','-')}-${synthesisID}" /]
 [#assign currentSection = "synthesis" /]
 [#assign currentStage = actionName?split('/')[1]/]
-[#assign pageLibs = [ ] /]
+[#assign pageLibs = [ "trumbowyg" ] /]
 [#assign customJS = [ "${baseUrlMedia}/js/annualReport/annualReport_${currentStage}.js" ] /]
 [#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css"] /]
 
@@ -48,15 +48,15 @@
             [#if PMU]
               [#-- Strategically managed assets --]
               <div class="form-group">
-                [@customForm.textArea name="${customName}.managed" i18nkey="${customLabel}.managed" help="${customLabel}.managed.help" className="" helpIcon=false required=true editable=editable /]
+                [@customForm.textArea name="${customName}.managed" i18nkey="${customLabel}.managed" help="${customLabel}.managed.help" className="" helpIcon=false required=true editable=editable allowTextEditor=true /]
               </div>
               [#-- Published patents --]
               <div class="form-group">
-                [@customForm.textArea name="${customName}.patents" i18nkey="${customLabel}.patents" help="${customLabel}.patents.help" className="" helpIcon=false required=true editable=editable /]
+                [@customForm.textArea name="${customName}.patents" i18nkey="${customLabel}.patents" help="${customLabel}.patents.help" className="" helpIcon=false required=true editable=editable allowTextEditor=true /]
               </div>
               [#-- Critical issues --]
               <div class="form-group">
-                [@customForm.textArea name="${customName}.criticalIssues" i18nkey="${customLabel}.criticalIssues" help="${customLabel}.criticalIssues.help" className="" helpIcon=false required=true editable=editable /]
+                [@customForm.textArea name="${customName}.criticalIssues" i18nkey="${customLabel}.criticalIssues" help="${customLabel}.criticalIssues.help" className="" helpIcon=false required=true editable=editable allowTextEditor=true /]
               </div>
               [#else]
               <div class="textArea">

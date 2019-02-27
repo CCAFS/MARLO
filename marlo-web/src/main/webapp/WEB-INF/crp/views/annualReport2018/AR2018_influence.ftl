@@ -3,7 +3,7 @@
 [#assign currentSectionString = "annualReport-${actionName?replace('/','-')}-${synthesisID}" /]
 [#assign currentSection = "synthesis" /]
 [#assign currentStage = actionName?split('/')[1]/]
-[#assign pageLibs = [ "datatables.net", "datatables.net-bs", "components-font-awesome" ] /]
+[#assign pageLibs = [ "datatables.net", "datatables.net-bs", "components-font-awesome", "trumbowyg" ] /]
 [#assign customJS = [
   "https://www.gstatic.com/charts/loader.js",
   "${baseUrlMedia}/js/annualReport2018/annualReport2018_${currentStage}.js",
@@ -154,7 +154,7 @@
             
             <div class="form-group">
               [#-- Modal Large --]
-                <button type="button" class="pull-right btn btn-default " data-toggle="modal" data-target="#tableA-bigger"> 
+                <button type="button" class="pull-right btn btn-link btn-sm" data-toggle="modal" data-target="#tableA-bigger"> 
                   <span class="glyphicon glyphicon-fullscreen"></span> See Full Table 2
                 </button>
                 <div id="tableA-bigger" class="modal fade bs-example-modal-lg " tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
@@ -191,18 +191,26 @@
   <table id="tableA" class="table table-bordered">
     <thead>
       <tr>
-        <th class="col-md-5 text-center">[@s.text name="${customLabel}.table2.name" /]</th>
-        <th class="text-center">[@s.text name="${customLabel}.table2.maturity" /]</th>
-        <th class="col-md-2 text-center">[@s.text name="${customLabel}.table2.subIDOs" /]</th>
+        <th class="text-center" rowspan="2">[@s.text name="${customLabel}.table2.name" /]</th>
+        <th class="text-center" rowspan="2">[@s.text name="${customLabel}.table2.maturity" /]</th>
+        <th class="col-md-2 text-center" rowspan="2">[@s.text name="${customLabel}.table2.subIDOs" /]</th>
         [#if !allowPopups]
-          <th class="text-center">[@s.text name="${customLabel}.table2.crossCutting" /]</th>
-          <th class="text-center">[@s.text name="${customLabel}.table2.whose" /]</th>
-          <th class="text-center">[@s.text name="${customLabel}.table2.geoScope" /]</th>
+          <th class="text-center" colspan="4">[@s.text name="${customLabel}.table2.crossCutting" /]</th>
+          <th class="text-center" rowspan="2">[@s.text name="${customLabel}.table2.whose" /]</th>
+          <th class="text-center" rowspan="2">[@s.text name="${customLabel}.table2.geoScope" /]</th>
         [/#if]
         [#if PMU && allowPopups]
-          <th class="col-md-2 text-center">[@s.text name="${customLabel}.table2.includeAR" /]</th>
+          <th class="col-md-1 text-center" rowspan="2">[@s.text name="${customLabel}.table2.includeAR" /]</th>
         [/#if]
       </tr>
+      [#if !allowPopups]
+      <tr>
+          <th class="text-center"> Gender </th>
+          <th class="text-center"> Youth </th>
+          <th class="text-center"> CapDev</th>
+          <th class="text-center"> Climate Change</th>
+        </tr>
+      [/#if]
     </thead>
     <tbody>
       <tr>
@@ -210,10 +218,27 @@
         </td>
         <td>
         </td>
+        [#if !allowPopups]
+          <td>
+          </td>
+          <td>
+          </td>
+          <td>
+          </td>
+          <td>
+          </td>
+          <td>
+          </td>
+          <td>
+          </td>
+        [/#if]
         <td>
         </td>
-        <td>
-        </td>
+        [#if PMU && allowPopups]
+          <td class="text-center">
+            [@customForm.checkmark id="" name="" checked=false editable=editable centered=true/] 
+          </td>
+        [/#if]
       </tr>
     </tbody>
   </table>
