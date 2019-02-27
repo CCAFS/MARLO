@@ -1995,7 +1995,7 @@ public class DeliverableAction extends BaseAction {
 
 
       // Save Geographic Scope Data
-      this.saveGeographicScope(deliverableDB, this.getActualPhase());
+      this.saveGeographicScope(deliverableManagedState, this.getActualPhase());
 
       boolean haveRegions = false;
       boolean haveCountries = false;
@@ -2019,7 +2019,7 @@ public class DeliverableAction extends BaseAction {
         // Save the Regions List
         this.saveDeliverableRegions(deliverableDB, this.getActualPhase(), deliverableManagedState);
       } else {
-        this.deleteLocElements(deliverableDB, this.getActualPhase(), false);
+        this.deleteLocElements(deliverableManagedState, this.getActualPhase(), false);
       }
 
       if (haveCountries) {
@@ -2027,7 +2027,7 @@ public class DeliverableAction extends BaseAction {
         // Save Countries list
         this.saveDeliverableCountries(deliverableManagedState);
       } else {
-        this.deleteLocElements(deliverableDB, this.getActualPhase(), true);
+        this.deleteLocElements(deliverableManagedState, this.getActualPhase(), true);
       }
 
 
@@ -3282,47 +3282,6 @@ public class DeliverableAction extends BaseAction {
         deliverableInfoDb.setOtherLicense(null);
         deliverableInfoDb.setAllowModifications(null);
       }
-    }
-
-    List<DeliverableLocation> countries =
-      deliverableLocationManager.getDeliverableLocationbyPhase(deliverable.getId(), this.getActualPhase().getId());
-
-    // Save Locations
-    if (deliverable.getDeliverableInfo().getGeographicScope() != null
-      && deliverable.getDeliverableInfo().getGeographicScope().getId() != null
-      && deliverable.getDeliverableInfo().getGeographicScope().getId() != -1) {
-
-      RepIndGeographicScope repIndGeographicScope =
-        repIndGeographicScopeManager.getRepIndGeographicScopeById(deliverableInfoDb.getGeographicScope().getId());
-
-      deliverableInfoDb.setGeographicScope(repIndGeographicScope);
-
-      // Global
-      if (repIndGeographicScope.getId().equals(this.getReportingIndGeographicScopeGlobal())) {
-
-        deliverableInfoDb.setRegion(null);
-        this.deleteDeliverableLocations(countries);
-
-      } else
-      // Regional
-      if (repIndGeographicScope.getId().equals(this.getReportingIndGeographicScopeRegional())) {
-
-        if (deliverable.getDeliverableInfo().getRegion() != null
-          && deliverable.getDeliverableInfo().getRegion().getId() != -1) {
-          deliverableInfoDb.setRegion(deliverable.getDeliverableInfo().getRegion());
-        } else {
-          deliverableInfoDb.setRegion(null);
-        }
-        this.deleteDeliverableLocations(countries);
-
-      } else {
-        // Multi-national || National || Sub-national
-        deliverableInfoDb.setRegion(null);
-      }
-    } else {
-      deliverableInfoDb.setGeographicScope(null);
-      deliverableInfoDb.setRegion(null);
-      this.deleteDeliverableLocations(countries);
     }
 
     deliverableInfoDb.setModificationJustification(this.getJustification());
