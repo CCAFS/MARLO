@@ -122,6 +122,11 @@
             [@customForm.textArea name="innovation.projectInnovationInfo.descriptionStage" i18nkey="projectInnovations.stageDescription" help="projectInnovations.stageDescription.help" helpIcon=false placeholder="" className="limitWords-50" required=true editable=editable /]
           </div>
           
+          [#-- Is clear lead  --]
+           <div class="form-group">
+            [@customForm.checkmark id="" name="innovation.projectInnovationInfo.clearLead" i18nkey="projectInnovations.clearLead" help="" paramText="" helpIcon=true disabled=false editable=true value="true" checked=(innovation.projectInnovationInfo.clearLead)!false cssClass="" cssClassLabel=""  /]
+           </div>
+          
           [#-- Lead Organization --]
           <div class="form-group"">
             [@customForm.select name="innovation.projectInnovationInfo.leadOrganization.id" label=""  i18nkey="projectInnovations.leadOrganization" listName="institutions" keyFieldName="id"  displayFieldName="composedName" required=true  className="" editable=editable/]
