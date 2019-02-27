@@ -112,20 +112,24 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
   HashMap<Integer, Set<Deliverable>> deliverablePerYearList = new HashMap<Integer, Set<Deliverable>>();
   HashMap<String, Set<Deliverable>> deliverablePerTypeList = new HashMap<String, Set<Deliverable>>();
   Set<Long> projectsList = new HashSet<Long>();
+  private String showAllYears;
+
 
   // Managers
   private final GenderTypeManager genderTypeManager;
+
+
   private final CrpProgramManager crpProgramManager;
+
+
   private final CrossCuttingScoringManager crossCuttingScoringManager;
   private final CrpPpaPartnerManager crpPpaPartnerManager;
   private final ResourceManager resourceManager;
   private final DeliverableCrossCuttingMarkerManager deliverableCrossCuttingMarkerManager;
-
   // XLS bytes
   private byte[] bytesXLSX;
   // Streams
   InputStream inputStream;
-
 
   @Inject
   public ExpectedDeliverablesSummaryAction(APConfig config, GlobalUnitManager crpManager, PhaseManager phaseManager,
@@ -141,7 +145,6 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
     this.resourceManager = resourceManager;
     this.deliverableCrossCuttingMarkerManager = deliverableCrossCuttingMarkerManager;
   }
-
 
   /**
    * Method to add i8n parameters to masterReport in Pentaho
@@ -265,6 +268,7 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
     subReport.setDataFactory(cdf);
   }
 
+
   private int getCalendarFromDate(Date date) {
     try {
       Calendar cal = Calendar.getInstance();
@@ -280,7 +284,6 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
   public int getContentLength() {
     return bytesXLSX.length;
   }
-
 
   @Override
   public String getContentType() {
@@ -302,6 +305,7 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
     Boolean activePPAFilter = ppa != null && !ppa.isEmpty() && !ppa.equals("All") && !ppa.equals("-1");
     Boolean addDeliverableRow = true;
     Set<Deliverable> phaseDeliverables = new HashSet<>();
+
     for (GlobalUnitProject globalUnitProject : this.getLoggedCrp().getGlobalUnitProjects().stream()
       .filter(p -> p.isActive() && p.getProject() != null && p.getProject().isActive()
         && (p.getProject().getProjecInfoPhase(this.getSelectedPhase()) != null
@@ -310,21 +314,33 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
           || p.getProject().getProjecInfoPhase(this.getSelectedPhase()) != null && p.getProject().getProjectInfo()
             .getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())))
       .collect(Collectors.toList())) {
-      for (Deliverable deliverable : globalUnitProject.getProject().getDeliverables().stream().filter(d -> d.isActive()
-        && d.getDeliverableInfo(this.getSelectedPhase()) != null && d.getDeliverableInfo().isActive()
-        && ((d.getDeliverableInfo().getStatus() == null && d.getDeliverableInfo().getYear() == this.getSelectedYear())
-          || (d.getDeliverableInfo().getStatus() != null
-            && d.getDeliverableInfo().getStatus().intValue() == Integer
-              .parseInt(ProjectStatusEnum.Extended.getStatusId())
-            && d.getDeliverableInfo().getNewExpectedYear() != null
-            && d.getDeliverableInfo().getNewExpectedYear() == this.getSelectedYear())
-          || (d.getDeliverableInfo().getStatus() != null && d.getDeliverableInfo().getYear() == this.getSelectedYear()
-            && d.getDeliverableInfo().getStatus().intValue() == Integer
-              .parseInt(ProjectStatusEnum.Ongoing.getStatusId()))))
-        .collect(Collectors.toList())) {
-        phaseDeliverables.add(deliverable);
+
+      if (showAllYears.equals("true")) {
+        for (Deliverable deliverable : globalUnitProject
+          .getProject().getDeliverables().stream().filter(d -> d.isActive()
+            && d.getDeliverableInfo(this.getSelectedPhase()) != null && d.getDeliverableInfo().isActive())
+          .collect(Collectors.toList())) {
+          phaseDeliverables.add(deliverable);
+        }
+      } else {
+        for (Deliverable deliverable : globalUnitProject.getProject().getDeliverables().stream().filter(d -> d
+          .isActive()
+          && d.getDeliverableInfo(this.getSelectedPhase()) != null && d.getDeliverableInfo().isActive()
+          && ((d.getDeliverableInfo().getStatus() == null && d.getDeliverableInfo().getYear() == this.getSelectedYear())
+            || (d.getDeliverableInfo().getStatus() != null
+              && d.getDeliverableInfo().getStatus().intValue() == Integer
+                .parseInt(ProjectStatusEnum.Extended.getStatusId())
+              && d.getDeliverableInfo().getNewExpectedYear() != null
+              && d.getDeliverableInfo().getNewExpectedYear() == this.getSelectedYear())
+            || (d.getDeliverableInfo().getStatus() != null && d.getDeliverableInfo().getYear() == this.getSelectedYear()
+              && d.getDeliverableInfo().getStatus().intValue() == Integer
+                .parseInt(ProjectStatusEnum.Ongoing.getStatusId()))))
+          .collect(Collectors.toList())) {
+          phaseDeliverables.add(deliverable);
+        }
       }
     }
+
 
     for (Deliverable deliverable : phaseDeliverables.stream().sorted((d1, d2) -> d1.getId().compareTo(d2.getId()))
       .collect(Collectors.toList())) {
@@ -1045,6 +1061,7 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
     return model;
   }
 
+
   @SuppressWarnings("unused")
   private File getFile(String fileName) {
     // Get file from resources folder
@@ -1056,8 +1073,11 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
   @Override
   public String getFileName() {
     StringBuffer fileName = new StringBuffer();
-    fileName.append("ExpectedDeliverablesSummary-");
-    fileName.append(this.getLoggedCrp().getAcronym() + "-");
+    fileName.append("ExpectedDeliverablesSummary");
+    if (showAllYears.equals("true")) {
+      fileName.append("_AllYears");
+    }
+    fileName.append("-" + this.getLoggedCrp().getAcronym() + "-");
     fileName.append(this.getSelectedYear() + "_");
     fileName.append(new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date()));
     fileName.append(".xlsx");
@@ -1066,7 +1086,6 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
 
   }
 
-
   @Override
   public InputStream getInputStream() {
     if (inputStream == null) {
@@ -1074,6 +1093,7 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
     }
     return inputStream;
   }
+
 
   private TypedTableModel getMasterTableModel() {
     // Initialization of Model
@@ -1095,6 +1115,9 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
     return model;
   }
 
+  public String getShowAllYears() {
+    return showAllYears;
+  }
 
   @Override
   public void prepare() {
@@ -1107,11 +1130,25 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
         + " parameter. Parameter will be set as All. Exception: " + e.getMessage());
       ppa = "All";
     }
+    try {
+      Map<String, Parameter> parameters = this.getParameters();
+      showAllYears = StringUtils.trim(parameters.get(APConstants.SUMMARY_DELIVERABLE_ALL_YEARS).getMultipleValues()[0]);
+    } catch (Exception e) {
+      LOG.warn("Failed to get " + APConstants.SUMMARY_DELIVERABLE_ALL_YEARS
+        + " parameter. Parameter will be set as false. Exception: " + e.getMessage());
+      showAllYears = "false";
+    }
     this.setGeneralParameters();
     // Calculate time to generate report
     startTime = System.currentTimeMillis();
     LOG.info("Start report download: " + this.getFileName() + ". User: "
       + this.getCurrentUser().getComposedCompleteName() + ". CRP: " + this.getLoggedCrp().getAcronym());
   }
+
+
+  public void setShowAllYears(String showAllYears) {
+    this.showAllYears = showAllYears;
+  }
+
 
 }
