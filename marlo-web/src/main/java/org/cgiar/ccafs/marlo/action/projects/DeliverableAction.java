@@ -2987,12 +2987,14 @@ public class DeliverableAction extends BaseAction {
 
           deliverableUserSave.setLastName(deliverableUser.getLastName());
           deliverableUserSave.setFirstName(deliverableUser.getFirstName());
+          deliverableUserSave.setElementId(deliverableUser.getElementId());
           deliverableUserSave.setPhase(this.getActualPhase());
           deliverableUserSave.setDeliverable(deliverable);
           deliverableUserManager.saveDeliverableUser(deliverableUserSave);
         } else {
           deliverableUser.setLastName(deliverableUser.getLastName());
           deliverableUser.setFirstName(deliverableUser.getFirstName());
+          deliverableUser.setElementId(deliverableUser.getElementId());
           deliverableUser.setPhase(this.getActualPhase());
           deliverableUser.setDeliverable(deliverable);
           deliverableUserManager.saveDeliverableUser(deliverableUser);
