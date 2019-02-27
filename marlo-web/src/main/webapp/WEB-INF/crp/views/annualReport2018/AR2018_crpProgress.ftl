@@ -3,7 +3,7 @@
 [#assign currentSectionString = "annualReport-${actionName?replace('/','-')}-${synthesisID}" /]
 [#assign currentSection = "synthesis" /]
 [#assign currentStage = actionName?split('/')[1]/]
-[#assign pageLibs = [ "select2", "components-font-awesome", "datatables.net", "datatables.net-bs"] /]
+[#assign pageLibs = [ "select2", "trumbowyg", "components-font-awesome", "datatables.net", "datatables.net-bs"] /]
 [#assign customJS = [ 
   "${baseUrlMedia}/js/annualReport/annualReport_${currentStage}.js"
   "${baseUrlMedia}/js/annualReport/annualReportGlobal.js" ] /]
@@ -47,11 +47,11 @@
             [#-- Overall contribution towards SRF targets --]
             <div class="form-group">
               [#if PMU][@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/][/#if]
-              [@customForm.textArea name="${customName}.overallContribution" i18nkey="${customLabel}.overallContribution" help="${customLabel}.overallContribution.help" className="limitWords-400" helpIcon=false required=true editable=editable /]
+              [@customForm.textArea name="${customName}.overallContribution" i18nkey="${customLabel}.overallContribution" help="${customLabel}.overallContribution.help" className="limitWords-400" helpIcon=false required=true editable=editable allowTextEditor=true /]
             </div>
             [#-- Areas of learning from past impact assessments --]
             <div class="form-group">
-              [@customForm.textArea name="${customName}.impactAssessments" i18nkey="${customLabel}.impactAssessments" help="${customLabel}.impactAssessments.help" className="" helpIcon=false required=true editable=editable /]
+              [@customForm.textArea name="${customName}.impactAssessments" i18nkey="${customLabel}.impactAssessments" help="${customLabel}.impactAssessments.help" className="" helpIcon=false required=true editable=editable allowTextEditor=true /]
             </div>
             
             [#-- PMU Flagships - Synthesis --]
@@ -157,11 +157,11 @@
     <div class="form-group grayBox name"> <strong>SLO ${(element.srfSloIndicator.srfSlo.id)!} Target </strong> <br />${(element.srfSloIndicatorTarget.narrative)!}</div>
     [#-- Brief summary of new evidence of CGIAR contribution to relevant targets for this CRP (with citation) --]
     <div class="form-group">
-      [@customForm.textArea name="${customName}.birefSummary" value="${(element.birefSummary)!}" i18nkey="${customLabel}.summaryEvidence" className="limitWords-150" help="${customLabel}.summaryEvidence.help" helpIcon=false required=true editable=editable /]
+      [@customForm.textArea name="${customName}.birefSummary" value="${(element.birefSummary)!}" i18nkey="${customLabel}.summaryEvidence" className="limitWords-150" help="${customLabel}.summaryEvidence.help" helpIcon=false required=true editable=editable allowTextEditor=true /]
     </div>
     [#-- Expected additional contribution before end of 2022 (if not already fully covered). --]
     <div class="form-group">
-      [@customForm.textArea name="${customName}.additionalContribution" value="${(element.additionalContribution)!}" i18nkey="${customLabel}.additionalContribution" className="limitWords-100" help="${customLabel}.additionalContribution.help" helpIcon=false required=false editable=editable /]
+      [@customForm.textArea name="${customName}.additionalContribution" value="${(element.additionalContribution)!}" i18nkey="${customLabel}.additionalContribution" className="limitWords-100" help="${customLabel}.additionalContribution.help" helpIcon=false required=false editable=editable allowTextEditor=true /]
     </div>
   </div>
 [/#macro]

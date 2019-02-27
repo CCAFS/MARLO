@@ -3,7 +3,7 @@
 [#assign currentSectionString = "annualReport-${actionName?replace('/','-')}-${synthesisID}" /]
 [#assign currentSection = "synthesis" /]
 [#assign currentStage = actionName?split('/')[1]/]
-[#assign pageLibs = [ "select2" ] /]
+[#assign pageLibs = [ "select2", "trumbowyg" ] /]
 [#assign customJS = [ "${baseUrlMedia}/js/annualReport/annualReport_${currentStage}.js" ] /]
 [#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css"] /]
 
@@ -45,16 +45,16 @@
             [#if flagship]
               [#-- Progress by flagships --]
               <div class="form-group">
-                  [@customForm.textArea name="${customName}.progressByFlagships" i18nkey="${customLabel}.progressByFlagships" help="${customLabel}.progressByFlagships.help" className="limitWords-200" helpIcon=false required=true editable=editable /]
+                  [@customForm.textArea name="${customName}.progressByFlagships" i18nkey="${customLabel}.progressByFlagships" help="${customLabel}.progressByFlagships.help" className="limitWords-200" helpIcon=false required=true editable=editable allowTextEditor=true /]
               </div>
               [#-- Detailed annex --]
               <div class="form-group">
-                  [@customForm.textArea name="${customName}.detailedAnnex" i18nkey="${customLabel}.detailedAnnex" className="limitWords-800" helpIcon=false required=false editable=editable /]
+                  [@customForm.textArea name="${customName}.detailedAnnex" i18nkey="${customLabel}.detailedAnnex" className="limitWords-800" helpIcon=false required=false editable=editable allowTextEditor=true /]
               </div>
             [#else]
               [#-- Overall CRP progress --]
               <div class="form-group">
-                  [@customForm.textArea name="${customName}.overallProgress" i18nkey="${customLabel}.overallProgress" help="${customLabel}.overallProgress.help" className="limitWords-250" helpIcon=false required=true editable=editable /]
+                  [@customForm.textArea name="${customName}.overallProgress" i18nkey="${customLabel}.overallProgress" help="${customLabel}.overallProgress.help" className="limitWords-250" helpIcon=false required=true editable=editable allowTextEditor=true /]
               </div>
               
               [#-- Flagship Synthesis --]
@@ -110,17 +110,17 @@
             
             [#-- Expandend research areas --]
             <div class="form-group">
-              [@customForm.textArea name="${customName}.expandedResearchAreas" i18nkey="${customLabel}.expandedResearchAreas" help="${customLabel}.expandedResearchAreas.help" className="limitWords-200" helpIcon=false required=true editable=editable /]
+              [@customForm.textArea name="${customName}.expandedResearchAreas" i18nkey="${customLabel}.expandedResearchAreas" help="${customLabel}.expandedResearchAreas.help" className="limitWords-200" helpIcon=false required=true editable=editable allowTextEditor=true /]
             </div>
             
             [#-- Dropped research lines --]
             <div class="form-group">
-              [@customForm.textArea name="${customName}.droppedResearchLines" i18nkey="${customLabel}.droppedResearchLines" help="${customLabel}.droppedResearchLines.help" className="limitWords-200" helpIcon=false required=true editable=editable /]
+              [@customForm.textArea name="${customName}.droppedResearchLines" i18nkey="${customLabel}.droppedResearchLines" help="${customLabel}.droppedResearchLines.help" className="limitWords-200" helpIcon=false required=true editable=editable allowTextEditor=true /]
             </div>
             
             [#-- Changed direction --]
             <div class="form-group">
-              [@customForm.textArea name="${customName}.changedDirection" i18nkey="${customLabel}.changedDirection" help="${customLabel}.changedDirection.help" className="limitWords-200" helpIcon=false required=true editable=editable /]
+              [@customForm.textArea name="${customName}.changedDirection" i18nkey="${customLabel}.changedDirection" help="${customLabel}.changedDirection.help" className="limitWords-200" helpIcon=false required=true editable=editable allowTextEditor=true /]
             </div>
             
             [#if PMU]
@@ -132,7 +132,7 @@
             
             [#-- Altmetric Score --]
             <div class="form-group">
-              [@customForm.textArea name="${customName}.altmetricScore" i18nkey="${customLabel}.altmetricScore" help="${customLabel}.altmetricScore.help" className="limitWords-400" helpIcon=false required=true editable=editable /]
+              [@customForm.textArea name="${customName}.altmetricScore" i18nkey="${customLabel}.altmetricScore" help="${customLabel}.altmetricScore.help" className="limitWords-400" helpIcon=false required=true editable=editable allowTextEditor=true /]
             </div>
             
             [#if PMU]
@@ -237,7 +237,7 @@
     <div class="form-group grayBox"><strong>${(liaisonInstitution.crpProgram.acronym)!liaisonInstitution.acronym} Outcome: </strong> ${(element.description)!}</div>
     [#-- Narrative on progress --]
     <div class="form-group">
-      [@customForm.textArea name="${customName}.outcome.progressNarrative" i18nkey="${customLabel}.outcome.progressNarrative" help="${customLabel}.outcome.progressNarrative.help" className="limitWords-100" helpIcon=false required=true editable=editable /]
+      [@customForm.textArea name="${customName}.outcome.progressNarrative" i18nkey="${customLabel}.outcome.progressNarrative" help="${customLabel}.outcome.progressNarrative.help" className="limitWords-100" helpIcon=false required=true editable=editable allowTextEditor=true /]
     </div>
     [#-- Milestones List --]
     <h4 class="simpleTitle">[@s.text name="${customLabel}.milestones.title" /]</h4>
@@ -334,7 +334,7 @@
     
     [#-- Evidence for completed milestones or explanation for extended or cancelled --]
     <div class="form-group">
-      [@customForm.textArea name="${customName}.milestoneEvidence" i18nkey="${customLabel}.milestoneEvidence" help="${customLabel}.milestoneEvidence.help" helpIcon=false display=true required=false className="limitWords-50" editable=editable /]
+      [@customForm.textArea name="${customName}.milestoneEvidence" i18nkey="${customLabel}.milestoneEvidence" help="${customLabel}.milestoneEvidence.help" helpIcon=false display=true required=false className="limitWords-50" editable=editable allowTextEditor=true /]
     </div>
     
     [#-- Extendend, cancelled or changed milestones - Main reason --]

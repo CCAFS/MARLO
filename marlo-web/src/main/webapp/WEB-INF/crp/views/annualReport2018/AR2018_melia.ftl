@@ -3,7 +3,7 @@
 [#assign currentSectionString = "annualReport-${actionName?replace('/','-')}-${synthesisID}" /]
 [#assign currentSection = "synthesis" /]
 [#assign currentStage = actionName?split('/')[1]/]
-[#assign pageLibs = [ "select2" ] /]
+[#assign pageLibs = [ "select2", "trumbowyg" ] /]
 [#assign customJS = [ "${baseUrlMedia}/js/annualReport/annualReport_${currentStage}.js" ] /]
 [#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css"] /]
 
@@ -46,7 +46,7 @@
           [#-- Short narrative to introduce the table 9 --]
           [#if PMU]
             <div class="form-group">
-                [@customForm.textArea name="${customName}.narrative" i18nkey="${customLabel}.narrative" className="" helpIcon=false required=false editable=editable /]
+                [@customForm.textArea name="${customName}.narrative" i18nkey="${customLabel}.narrative" className="" helpIcon=false required=false editable=editable allowTextEditor=true /]
             </div>
           [#else]
             <div class="textArea">
@@ -209,7 +209,7 @@
     
     [#-- Management response --] 
     <div class="form-group">
-      [@customForm.textArea name="${customName}.managementResponse" i18nkey="${customLabel}.table10.textOfRecommendation" help="${customLabel}.table10.textOfRecommendation.help" helpIcon=false className="" required=true editable=isEditable /]
+      [@customForm.textArea name="${customName}.managementResponse" i18nkey="${customLabel}.table10.textOfRecommendation" help="${customLabel}.table10.textOfRecommendation.help" helpIcon=false className="" required=true editable=isEditable allowTextEditor=true /]
     </div>
     
     [#-- Status --]
@@ -221,7 +221,7 @@
     
     [#-- Concrete actions --] 
     <div class="form-group">
-      [@customForm.textArea name="${customName}.actions" i18nkey="${customLabel}.table10.actions" help="${customLabel}.table10.actions.help" helpIcon=false className="" required=true editable=isEditable /]
+      [@customForm.textArea name="${customName}.actions" i18nkey="${customLabel}.table10.actions" help="${customLabel}.table10.actions.help" helpIcon=false className="" required=true editable=isEditable allowTextEditor=true /]
     </div>
     
     <div class="form-group row">
@@ -237,7 +237,7 @@
     
     
     <div class="form-group">
-        [@customForm.textArea name="${customName}.comments" i18nkey="${customLabel}.table10.comments" help="${customLabel}.table10.comments.help" helpIcon=false className="" required=true editable=isEditable /]
+        [@customForm.textArea name="${customName}.comments" i18nkey="${customLabel}.table10.comments" help="${customLabel}.table10.comments.help" helpIcon=false className="" required=true editable=isEditable allowTextEditor=true /]
     </div>
     
   </div>
