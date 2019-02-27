@@ -212,13 +212,15 @@ public class PublicationValidator extends BaseValidator {
         InvalidFieldsMessages.EMPTYFIELD);
     }
 
-    // Deliverable Licenses
-    if (deliverableInfo.getAdoptedLicense() != null) {
-      this.validateLicense(deliverableInfo, action);
-    } else {
-      action.addMessage(action.getText("project.deliverable.v.ALicense"));
-      action.getInvalidFields().put("input-deliverable.deliverableInfo.adoptedLicense",
-        InvalidFieldsMessages.EMPTYFIELD);
+    if (action.hasSpecificities(APConstants.CRP_HAS_DISEMINATION)) {
+      // Deliverable Licenses
+      if (deliverableInfo.getAdoptedLicense() != null) {
+        this.validateLicense(deliverableInfo, action);
+      } else {
+        action.addMessage(action.getText("project.deliverable.v.ALicense"));
+        action.getInvalidFields().put("input-deliverable.deliverableInfo.adoptedLicense",
+          InvalidFieldsMessages.EMPTYFIELD);
+      }
     }
 
     // Validate Geographic Scope
