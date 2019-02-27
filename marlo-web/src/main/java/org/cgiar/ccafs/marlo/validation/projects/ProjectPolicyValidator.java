@@ -150,6 +150,7 @@ public class ProjectPolicyValidator extends BaseValidator {
      */
 
     // Validate Narrative
+
     if (!(this.wordCount(projectPolicy.getProjectPolicyInfo(action.getActualPhase()).getNarrativeEvidence()) <= 200)) {
       action.addMessage(action.getText("Narrative of Evidence"));
       action.addMissingField("policy.narrative");

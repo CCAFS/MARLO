@@ -254,20 +254,23 @@ public class ProjectInnovationValidator extends BaseValidator {
     }
 
     // Validate lead organization
-    if (projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getLeadOrganization() != null) {
-      if (projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getLeadOrganization().getId() == null
-        || projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getLeadOrganization()
-          .getId() == -1) {
+    if (projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getClearLead() != false) {
+      if (projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getLeadOrganization() != null) {
+        if (projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getLeadOrganization()
+          .getId() == null
+          || projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getLeadOrganization()
+            .getId() == -1) {
+          action.addMessage(action.getText("Lead Organization"));
+          action.addMissingField("projectInnovations.leadOrganization");
+          action.getInvalidFields().put("input-innovation.projectInnovationInfo.leadOrganization.id",
+            InvalidFieldsMessages.EMPTYFIELD);
+        }
+      } else {
         action.addMessage(action.getText("Lead Organization"));
         action.addMissingField("projectInnovations.leadOrganization");
         action.getInvalidFields().put("input-innovation.projectInnovationInfo.leadOrganization.id",
           InvalidFieldsMessages.EMPTYFIELD);
       }
-    } else {
-      action.addMessage(action.getText("Lead Organization"));
-      action.addMissingField("projectInnovations.leadOrganization");
-      action.getInvalidFields().put("input-innovation.projectInnovationInfo.leadOrganization.id",
-        InvalidFieldsMessages.EMPTYFIELD);
     }
 
     // Validate contributing organizations
