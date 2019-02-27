@@ -4939,7 +4939,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     if (deliverable.getDeliverableInfo(phase) != null) {
       DeliverableInfo deliverableInfo = deliverable.getDeliverableInfo(phase);
 
-      if (deliverableInfo.isRequieried()) {
+      if (deliverableInfo.isRequired()) {
         SectionStatus sectionStatus = sectionStatusManager.getSectionStatusByDeliverable(deliverable.getId(),
           phase.getDescription(), phase.getYear(), phase.getUpkeep(), "deliverableList");
         if (sectionStatus == null) {
