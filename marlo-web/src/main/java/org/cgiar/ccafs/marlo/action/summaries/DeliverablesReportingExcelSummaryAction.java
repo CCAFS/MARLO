@@ -15,6 +15,7 @@
 
 package org.cgiar.ccafs.marlo.action.summaries;
 
+import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrossCuttingScoringManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableCrossCuttingMarkerManager;
@@ -61,11 +62,14 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.struts2.dispatcher.Parameter;
 import org.pentaho.reporting.engine.classic.core.CompoundDataFactory;
 import org.pentaho.reporting.engine.classic.core.Element;
 import org.pentaho.reporting.engine.classic.core.ItemBand;
@@ -98,12 +102,16 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
   private final ResourceManager resourceManager;
   private final CrossCuttingScoringManager crossCuttingScoringManager;
   private final DeliverableCrossCuttingMarkerManager deliverableCrossCuttingMarkerManager;
+  private String showAllYears;
 
 
   // XLSX bytes
   private byte[] bytesXLSX;
+
+
   // Streams
   InputStream inputStream;
+
   // Parameters
   private long startTime;
 
@@ -318,7 +326,6 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
     subReport.setDataFactory(cdf);
   }
 
-
   public byte[] getBytesXLSX() {
     return bytesXLSX;
   }
@@ -338,6 +345,7 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
     String upload = config.getDownloadURL();
     return upload + "/" + this.getDeliverableDataSharingFileRelativePath(projectID).replace('\\', '/');
   }
+
 
   private String getDeliverableDataSharingFileRelativePath(String projectID) {
     return config.getProjectsBaseFolder(this.getCrpSession()) + File.separator + projectID + File.separator
@@ -365,39 +373,54 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
         String.class, String.class},
       0);
     if (!deliverableManager.findAll().isEmpty()) {
+      List<Deliverable> deliverables = new ArrayList<>();
+
+      if (showAllYears.equals("true")) {
+        deliverables = new ArrayList<>(deliverableManager.findAll().stream().filter(d -> d.isActive()
+          && d.getProject() != null && d.getProject().isActive()
+          && d.getProject().getProjecInfoPhase(this.getSelectedPhase()) != null
+          && d.getProject().getGlobalUnitProjects().stream().filter(
+            gup -> gup.isActive() && gup.isOrigin() && gup.getGlobalUnit().getId().equals(this.getLoggedCrp().getId()))
+            .collect(Collectors.toList()).size() > 0
+          && d.getDeliverableInfo(this.getSelectedPhase()) != null).collect(Collectors.toList()));
+
+      } else {
+        deliverables = new ArrayList<>(deliverableManager.findAll().stream().filter(d -> d.isActive()
+          && d.getProject() != null && d.getProject().isActive()
+          && d.getProject().getProjecInfoPhase(this.getSelectedPhase()) != null
+          && d.getProject().getGlobalUnitProjects().stream().filter(
+            gup -> gup.isActive() && gup.isOrigin() && gup.getGlobalUnit().getId().equals(this.getLoggedCrp().getId()))
+            .collect(Collectors.toList()).size() > 0
+          && d.getDeliverableInfo(this.getSelectedPhase()) != null && d.getDeliverableInfo().getStatus() != null
+          && ((d.getDeliverableInfo().getStatus().intValue() == Integer
+            .parseInt(ProjectStatusEnum.Complete.getStatusId())
+            && (d.getDeliverableInfo().getYear() >= this.getSelectedYear()
+              || (d.getDeliverableInfo().getNewExpectedYear() != null
+                && d.getDeliverableInfo().getNewExpectedYear().intValue() >= this.getSelectedYear())))
+            || (d.getDeliverableInfo().getStatus().intValue() == Integer
+              .parseInt(ProjectStatusEnum.Extended.getStatusId())
+              && (d.getDeliverableInfo().getNewExpectedYear() != null
+                && d.getDeliverableInfo().getNewExpectedYear().intValue() == this.getSelectedYear()))
+            || (d.getDeliverableInfo().getStatus().intValue() == Integer
+              .parseInt(ProjectStatusEnum.Cancelled.getStatusId())
+              && (d.getDeliverableInfo().getYear() == this.getSelectedYear()
+                || (d.getDeliverableInfo().getNewExpectedYear() != null
+                  && d.getDeliverableInfo().getNewExpectedYear().intValue() == this.getSelectedYear())))
+            || (d.getDeliverableInfo().getStatus().intValue() == Integer
+              .parseInt(ProjectStatusEnum.Ongoing.getStatusId())
+              && (d.getDeliverableInfo().getYear() == this.getSelectedYear())))
+          && (d.getDeliverableInfo().getStatus().intValue() == Integer
+            .parseInt(ProjectStatusEnum.Extended.getStatusId())
+            || d.getDeliverableInfo().getStatus().intValue() == Integer
+              .parseInt(ProjectStatusEnum.Complete.getStatusId())
+            || d.getDeliverableInfo().getStatus().intValue() == Integer
+              .parseInt(ProjectStatusEnum.Cancelled.getStatusId())
+            || d.getDeliverableInfo().getStatus().intValue() == Integer
+              .parseInt(ProjectStatusEnum.Ongoing.getStatusId())))
+          .collect(Collectors.toList()));
+      }
 
       // get Reporting deliverables: added on-going as request of Amanda
-      List<Deliverable> deliverables = new ArrayList<>(deliverableManager.findAll().stream().filter(d -> d.isActive()
-        && d.getProject() != null && d.getProject().isActive()
-        && d.getProject().getProjecInfoPhase(this.getSelectedPhase()) != null
-        && d.getProject().getGlobalUnitProjects().stream()
-          .filter(
-            gup -> gup.isActive() && gup.isOrigin() && gup.getGlobalUnit().getId().equals(this.getLoggedCrp().getId()))
-          .collect(Collectors.toList()).size() > 0
-        && d.getDeliverableInfo(this.getSelectedPhase()) != null && d.getDeliverableInfo().getStatus() != null
-        && ((d.getDeliverableInfo().getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())
-          && (d.getDeliverableInfo().getYear() >= this.getSelectedYear()
-            || (d.getDeliverableInfo().getNewExpectedYear() != null
-              && d.getDeliverableInfo().getNewExpectedYear().intValue() >= this.getSelectedYear())))
-          || (d.getDeliverableInfo().getStatus().intValue() == Integer
-            .parseInt(ProjectStatusEnum.Extended.getStatusId())
-            && (d.getDeliverableInfo().getNewExpectedYear() != null
-              && d.getDeliverableInfo().getNewExpectedYear().intValue() == this.getSelectedYear()))
-          || (d.getDeliverableInfo().getStatus().intValue() == Integer
-            .parseInt(ProjectStatusEnum.Cancelled.getStatusId())
-            && (d.getDeliverableInfo().getYear() == this.getSelectedYear()
-              || (d.getDeliverableInfo().getNewExpectedYear() != null
-                && d.getDeliverableInfo().getNewExpectedYear().intValue() == this.getSelectedYear())))
-
-          || (d.getDeliverableInfo().getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
-            && (d.getDeliverableInfo().getYear() == this.getSelectedYear())))
-        && (d.getDeliverableInfo().getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
-          || d.getDeliverableInfo().getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())
-          || d.getDeliverableInfo().getStatus().intValue() == Integer
-            .parseInt(ProjectStatusEnum.Cancelled.getStatusId())
-          || d.getDeliverableInfo().getStatus().intValue() == Integer
-            .parseInt(ProjectStatusEnum.Ongoing.getStatusId())))
-        .collect(Collectors.toList()));
 
 
       HashSet<Deliverable> deliverablesHL = new HashSet<>();
@@ -2010,8 +2033,11 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
   @Override
   public String getFileName() {
     StringBuffer fileName = new StringBuffer();
-    fileName.append("DeliverablesReportingSummary-");
-    fileName.append(this.getLoggedCrp().getAcronym() + "-");
+    fileName.append("DeliverablesReportingSummary");
+    if (showAllYears.equals("true")) {
+      fileName.append("_AllYears");
+    }
+    fileName.append("-" + this.getLoggedCrp().getAcronym() + "-");
     fileName.append(this.getSelectedYear() + "_");
     fileName.append(new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date()));
     fileName.append(".xlsx");
@@ -2022,7 +2048,6 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
   public String getHighlightsImagesUrl(String projectId) {
     return config.getDownloadURL() + "/" + this.getHighlightsImagesUrlPath(projectId).replace('\\', '/');
   }
-
 
   public String getHighlightsImagesUrlPath(String projectId) {
     return config.getProjectsBaseFolder(this.getCrpSession()) + File.separator + projectId + File.separator
@@ -2037,6 +2062,7 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
     return inputStream;
   }
 
+
   private TypedTableModel getMasterTableModel(String center, String date, String year) {
     // Initialization of Model
     TypedTableModel model = new TypedTableModel(new String[] {"center", "date", "year", "regionalAvalaible"},
@@ -2045,8 +2071,20 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
     return model;
   }
 
+  public String getShowAllYears() {
+    return showAllYears;
+  }
+
   @Override
   public void prepare() throws Exception {
+    try {
+      Map<String, Parameter> parameters = this.getParameters();
+      showAllYears = StringUtils.trim(parameters.get(APConstants.SUMMARY_DELIVERABLE_ALL_YEARS).getMultipleValues()[0]);
+    } catch (Exception e) {
+      LOG.warn("Failed to get " + APConstants.SUMMARY_DELIVERABLE_ALL_YEARS
+        + " parameter. Parameter will be set as false. Exception: " + e.getMessage());
+      showAllYears = "false";
+    }
     this.setGeneralParameters();
     // Calculate time to generate report
     startTime = System.currentTimeMillis();
@@ -2074,6 +2112,10 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
 
   public void setInputStream(InputStream inputStream) {
     this.inputStream = inputStream;
+  }
+
+  public void setShowAllYears(String showAllYears) {
+    this.showAllYears = showAllYears;
   }
 
 }

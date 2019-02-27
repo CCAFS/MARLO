@@ -619,6 +619,7 @@ public final class APConstants {
   public static final String SUMMARY_PARTNER_TYPE = "partnerType";
   public static final String SUMMARY_STUDY_TYPE = "studyType";
   public static final String SUMMARY_DELIVERABLE_PPA = "ppaPartnerID";
+  public static final String SUMMARY_DELIVERABLE_ALL_YEARS = "showAllYears";
 
   public static final String CRP_HAS_SPECIFIC_MANAGEMENT_DELIVERABLE_TYPES =
     "crp_has_specific_management_deliverable_type";
