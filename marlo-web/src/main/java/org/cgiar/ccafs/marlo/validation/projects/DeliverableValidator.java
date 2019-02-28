@@ -114,7 +114,7 @@ public class DeliverableValidator extends BaseValidator {
       }
 
     } else {
-      validate = deliverable.getDeliverableInfo().isRequieried();
+      validate = deliverable.getDeliverableInfo().isRequired();
     }
     if (validate) {
       Project project = projectManager.getProjectById(deliverable.getProject().getId());
@@ -149,96 +149,97 @@ public class DeliverableValidator extends BaseValidator {
       }
 
 
-      if ((action.isReportingActive() || action.isUpKeepActive())
-        && action.hasSpecificities(APConstants.CRP_HAS_DISEMINATION)) {
+      if ((action.isReportingActive() || action.isUpKeepActive())) {
+
         if (action.isReportingActive() && deliverable.getDeliverableInfo(action.getActualPhase()).getStatus() != null
           && deliverable.getDeliverableInfo(action.getActualPhase()).getStatus().intValue() == Integer
             .parseInt(ProjectStatusEnum.Ongoing.getStatusId())) {
-
           action.addMessage(action.getText("project.deliverable.generalInformation.status"));
           action.getInvalidFields().put("input-deliverable.deliverableInfo.status", InvalidFieldsMessages.EMPTYFIELD);
         }
 
+        if (action.hasSpecificities(APConstants.CRP_HAS_DISEMINATION)) {
 
-        // Deliverable Dissemination
-        if (deliverable.getDissemination() != null) {
-          this.validateDissemination(deliverable.getDissemination(), saving, action);
-        } else {
-          action.addMessage(action.getText("project.deliverable.dissemination.v.dissemination"));
-          action.getInvalidFields().put("input-deliverable.deliverableInfo.dissemination.isOpenAccess",
-            InvalidFieldsMessages.EMPTYFIELD);
-        }
-
-        // Deliverable Meta-data Elements
-        if (deliverable.getMetadataElements() != null) {
-          // this.validateMetadata(deliverable.getMetadataElements());
-        } else {
-          action.addMessage(action.getText("project.deliverable.v.metadata"));
-          action.getInvalidFields().put("input-deliverable.deliverableInfo.dissemination.isOpenAccess",
-            InvalidFieldsMessages.EMPTYFIELD);
-        }
-
-        // Deliverable Publication Meta-data
-        // Validate Publication Meta-data
-        this.validatePublicationMetadata(deliverable.getPublication(), deliverable.getDeliverableInfo(), action);
-
-        // Deliverable Licenses
-        if (deliverable.getDeliverableInfo(action.getActualPhase()).getAdoptedLicense() != null) {
-          this.validateLicense(deliverable, action);
-        } else {
-          action.addMessage(action.getText("project.deliverable.v.ALicense"));
-          action.getInvalidFields().put("input-deliverable.deliverableInfo.adoptedLicense",
-            InvalidFieldsMessages.EMPTYFIELD);
-        }
-
-        // Deliverable Quality Check
-        if (deliverable.getDeliverableInfo(action.getActualPhase()).getDeliverableType() != null
-          && (deliverable.getDeliverableInfo(action.getActualPhase()).getDeliverableType().getId().intValue() == 51
-            || deliverable.getDeliverableInfo(action.getActualPhase()).getDeliverableType().getId().intValue() == 74)) {
-          if (deliverable.getQualityCheck() != null) {
-            if (deliverable.getQualityCheck().getQualityAssurance() == null) {
-              action.addMessage(action.getText("project.deliverable.v.qualityCheck.assurance"));
-              action.getInvalidFields().put("input-deliverable.qualityCheck.qualityAssurance.id",
-                InvalidFieldsMessages.EMPTYFIELD);
-            }
-
-            if (deliverable.getQualityCheck().getDataDictionary() == null) {
-              action.addMessage(action.getText("project.deliverable.v.qualityCheck.dictionary"));
-              action.getInvalidFields().put("input-deliverable.qualityCheck.dataDictionary.id",
-                InvalidFieldsMessages.EMPTYFIELD);
-            }
-
-            if (deliverable.getQualityCheck().getDataTools() == null) {
-              action.addMessage(action.getText("project.deliverable.v.qualityCheck.tool"));
-              action.getInvalidFields().put("input-deliverable.qualityCheck.dataTools.id",
-                InvalidFieldsMessages.EMPTYFIELD);
-            }
-          }
-        }
-        if (action.hasSpecificities(action.crpDeliverableIntellectualAsset())) {
-          DeliverableIntellectualAsset asset = deliverable.getIntellectualAsset();
-          // Validate Intellectual Asset
-          if (deliverable.getIntellectualAsset() != null
-            && deliverable.getIntellectualAsset().getHasPatentPvp() != null) {
-            this.validateIntellectualAsset(deliverable.getIntellectualAsset(), action);
+          // Deliverable Dissemination
+          if (deliverable.getDissemination() != null) {
+            this.validateDissemination(deliverable.getDissemination(), saving, action);
           } else {
-            action.addMessage(action.getText("intellectualAsset.applicants"));
-            action.getInvalidFields().put("input-deliverable.intellectualAsset.hasPatentPvp",
+            action.addMessage(action.getText("project.deliverable.dissemination.v.dissemination"));
+            action.getInvalidFields().put("input-deliverable.deliverableInfo.dissemination.isOpenAccess",
               InvalidFieldsMessages.EMPTYFIELD);
           }
+
+          // Deliverable Meta-data Elements
+          if (deliverable.getMetadataElements() != null) {
+            // this.validateMetadata(deliverable.getMetadataElements());
+          } else {
+            action.addMessage(action.getText("project.deliverable.v.metadata"));
+            action.getInvalidFields().put("input-deliverable.deliverableInfo.dissemination.isOpenAccess",
+              InvalidFieldsMessages.EMPTYFIELD);
+          }
+
+          // Deliverable Publication Meta-data
+          // Validate Publication Meta-data
+          this.validatePublicationMetadata(deliverable.getPublication(), deliverable.getDeliverableInfo(), action);
+
+          // Deliverable Licenses
+          if (deliverable.getDeliverableInfo(action.getActualPhase()).getAdoptedLicense() != null) {
+            this.validateLicense(deliverable, action);
+          } else {
+            action.addMessage(action.getText("project.deliverable.v.ALicense"));
+            action.getInvalidFields().put("input-deliverable.deliverableInfo.adoptedLicense",
+              InvalidFieldsMessages.EMPTYFIELD);
+          }
+
+          // Deliverable Quality Check
+          if (deliverable.getDeliverableInfo(action.getActualPhase()).getDeliverableType() != null && (deliverable
+            .getDeliverableInfo(action.getActualPhase()).getDeliverableType().getId().intValue() == 51
+            || deliverable.getDeliverableInfo(action.getActualPhase()).getDeliverableType().getId().intValue() == 74)) {
+            if (deliverable.getQualityCheck() != null) {
+              if (deliverable.getQualityCheck().getQualityAssurance() == null) {
+                action.addMessage(action.getText("project.deliverable.v.qualityCheck.assurance"));
+                action.getInvalidFields().put("input-deliverable.qualityCheck.qualityAssurance.id",
+                  InvalidFieldsMessages.EMPTYFIELD);
+              }
+
+              if (deliverable.getQualityCheck().getDataDictionary() == null) {
+                action.addMessage(action.getText("project.deliverable.v.qualityCheck.dictionary"));
+                action.getInvalidFields().put("input-deliverable.qualityCheck.dataDictionary.id",
+                  InvalidFieldsMessages.EMPTYFIELD);
+              }
+
+              if (deliverable.getQualityCheck().getDataTools() == null) {
+                action.addMessage(action.getText("project.deliverable.v.qualityCheck.tool"));
+                action.getInvalidFields().put("input-deliverable.qualityCheck.dataTools.id",
+                  InvalidFieldsMessages.EMPTYFIELD);
+              }
+            }
+          }
+          if (action.hasSpecificities(action.crpDeliverableIntellectualAsset())) {
+            DeliverableIntellectualAsset asset = deliverable.getIntellectualAsset();
+            // Validate Intellectual Asset
+            if (deliverable.getIntellectualAsset() != null
+              && deliverable.getIntellectualAsset().getHasPatentPvp() != null) {
+              this.validateIntellectualAsset(deliverable.getIntellectualAsset(), action);
+            } else {
+              action.addMessage(action.getText("intellectualAsset.applicants"));
+              action.getInvalidFields().put("input-deliverable.intellectualAsset.hasPatentPvp",
+                InvalidFieldsMessages.EMPTYFIELD);
+            }
+          }
+
+
+          // Validate Deliverable Participant
+          if (deliverable.getDeliverableParticipant() != null
+            && deliverable.getDeliverableParticipant().getHasParticipants() != null) {
+            this.validateDeliverableParticipant(deliverable.getDeliverableParticipant(), action);
+          } else {
+            action.addMessage("hasParticipants");
+            action.getInvalidFields().put("input-deliverable.deliverableParticipant.hasParticipants",
+              InvalidFieldsMessages.EMPTYFIELD);
+          }
+
         }
-
-
-        // Validate Deliverable Participant
-        if (deliverable.getDeliverableParticipant() != null
-          && deliverable.getDeliverableParticipant().getHasParticipants() != null) {
-          this.validateDeliverableParticipant(deliverable.getDeliverableParticipant(), action);
-        } else {
-          action.addMessage("hasParticipants");
-          action.getInvalidFields().put("input-deliverable.deliverableParticipant.hasParticipants",
-            InvalidFieldsMessages.EMPTYFIELD);
-        }
-
       }
 
 
@@ -329,29 +330,28 @@ public class DeliverableValidator extends BaseValidator {
         InvalidFieldsMessages.EMPTYFIELD);
     }
 
-    if (!action.isReportingActive()) {
-      if (!action.isCenterGlobalUnit()) {
-        if (!(project.getProjecInfoPhase(action.getActualPhase()).getAdministrative() != null
-          && project.getProjecInfoPhase(action.getActualPhase()).getAdministrative().booleanValue() == true)) {
-          if (deliverable.getDeliverableInfo(action.getActualPhase()).getCrpClusterKeyOutput() != null
-            && deliverable.getDeliverableInfo(action.getActualPhase()).getCrpClusterKeyOutput().getId() != null) {
-            if (deliverable.getDeliverableInfo(action.getActualPhase()).getCrpClusterKeyOutput().getId() == -1) {
-              action.addMessage(action.getText("project.deliverable.generalInformation.keyOutput"));
-              action.getInvalidFields().put("input-deliverable.deliverableInfo.crpClusterKeyOutput.id",
-                InvalidFieldsMessages.EMPTYFIELD);
-
-              deliverable.getDeliverableInfo(action.getActualPhase()).setCrpClusterKeyOutput(null);
-
-            }
-          } else {
+    if (!action.isCenterGlobalUnit()) {
+      if (!(project.getProjecInfoPhase(action.getActualPhase()).getAdministrative() != null
+        && project.getProjecInfoPhase(action.getActualPhase()).getAdministrative().booleanValue() == true)) {
+        if (deliverable.getDeliverableInfo(action.getActualPhase()).getCrpClusterKeyOutput() != null
+          && deliverable.getDeliverableInfo(action.getActualPhase()).getCrpClusterKeyOutput().getId() != null) {
+          if (deliverable.getDeliverableInfo(action.getActualPhase()).getCrpClusterKeyOutput().getId() == -1) {
             action.addMessage(action.getText("project.deliverable.generalInformation.keyOutput"));
             action.getInvalidFields().put("input-deliverable.deliverableInfo.crpClusterKeyOutput.id",
               InvalidFieldsMessages.EMPTYFIELD);
+
             deliverable.getDeliverableInfo(action.getActualPhase()).setCrpClusterKeyOutput(null);
+
           }
+        } else {
+          action.addMessage(action.getText("project.deliverable.generalInformation.keyOutput"));
+          action.getInvalidFields().put("input-deliverable.deliverableInfo.crpClusterKeyOutput.id",
+            InvalidFieldsMessages.EMPTYFIELD);
+          deliverable.getDeliverableInfo(action.getActualPhase()).setCrpClusterKeyOutput(null);
         }
       }
     }
+
 
     // Validate Geographic Scope
 

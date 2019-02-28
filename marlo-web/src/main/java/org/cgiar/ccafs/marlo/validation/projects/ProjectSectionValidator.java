@@ -1264,15 +1264,6 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
     Project project = projectManager.getProjectById(projectID);
     project.setExpectedStudies(new ArrayList<ProjectExpectedStudy>());
 
-    List<ProjectExpectedStudy> ownerStudies = project.getProjectExpectedStudies().stream()
-      .filter(c -> c.isActive() && c.getProjectExpectedStudyInfo(action.getActualPhase()) != null)
-      .collect(Collectors.toList());
-
-    // Owner Studies
-    if (ownerStudies != null && !ownerStudies.isEmpty()) {
-      project.getExpectedStudies().addAll(ownerStudies);
-    }
-
     // Shared Studies
     List<ExpectedStudyProject> sharedStudies = project.getExpectedStudyProjects().stream()
       .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(action.getActualPhase())

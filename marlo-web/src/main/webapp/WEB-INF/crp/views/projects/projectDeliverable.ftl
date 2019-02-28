@@ -3,9 +3,9 @@
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${deliverableID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2","font-awesome","dropzone","blueimp-file-upload","jsUri", "flat-flags", "pickadate"] /]
 [#assign customJS = [
-  "${baseUrlMedia}/js/projects/deliverables/deliverableInfo.js?20190227",
-  "${baseUrlMedia}/js/projects/deliverables/deliverableDissemination.js?20190227", 
-  "${baseUrlMedia}/js/projects/deliverables/deliverableQualityCheck.js?20190227",
+  "${baseUrlMedia}/js/projects/deliverables/deliverableInfo.js?20190228",
+  "${baseUrlMedia}/js/projects/deliverables/deliverableDissemination.js?20190228", 
+  "${baseUrlMedia}/js/projects/deliverables/deliverableQualityCheck.js?20190228",
   [#--  "${baseUrlMedia}/js/projects/deliverables/deliverableDataSharing.js?20180523",--]
   "${baseUrl}/global/js/autoSave.js",
   "${baseUrl}/global/js/fieldsValidation.js?20180529"
@@ -89,7 +89,7 @@
             <ul class="nav nav-tabs" role="tablist"> 
                 <li role="presentation" class="[#if indexTab==1 || indexTab==0]active[/#if]"><a index="1" href="#deliverable-mainInformation" aria-controls="info" role="tab" data-toggle="tab">[@s.text name="project.deliverable.generalInformation.titleTab" /]</a></li>
                 
-                [#if reportingActive || actualPhase.upkeep ]
+                [#if (reportingActive || actualPhase.upkeep) && action.hasSpecificities("crp_has_disemination") ]
                 <li role="presentation" class="[#if indexTab==2]active[/#if]"><a index="2" href="#deliverable-disseminationMetadata" aria-controls="metadata" role="tab" data-toggle="tab">Dissemination & Metadata</a></li>
                 
                 [#assign isRequiredQuality = deliverable.deliverableInfo.requeriedFair() || ((action.hasDeliverableRule(deliverable.deliverableInfo, deliverableComplianceCheck))!false) /]
@@ -107,7 +107,7 @@
               <div id="deliverable-mainInformation" role="tabpanel" class="tab-pane fade [#if indexTab==1 || indexTab==0]in active[/#if]">
                 [#include "/WEB-INF/crp/views/projects/deliverableInfo.ftl" /]
               </div>
-              [#if reportingActive || actualPhase.upkeep]
+              [#if (reportingActive || actualPhase.upkeep) && action.hasSpecificities("crp_has_disemination") ]
               [#-- Deliverable disseminationMetadata --] 
               <div id="deliverable-disseminationMetadata" role="tabpanel" class="tab-pane fade [#if indexTab==2]in active[/#if]">
                 [#-- Is this deliverable already disseminated? --]
