@@ -82,6 +82,7 @@ public class Permission {
   // Report Synthesis
   public static final String REPORT_SYNTHESIS_PERMISSION = "crp:{0}:reportSynthesis:{1}:canEdit";
   public static final String REPORT_SYNTHESIS_CRP_PROGRESS_BASE_PERMISSION = "crp:{0}:reportSynthesis:{1}:crpProgress";
+  public static final String REPORT_SYNTHESIS_SRF_PROGRESS_BASE_PERMISSION = "crp:{0}:reportSynthesis:{1}:srfProgress";
   public static final String REPORT_SYNTHESIS_MELIA_BASE_PERMISSION = "crp:{0}:reportSynthesis:{1}:melia";
   public static final String REPORT_SYNTHESIS_MANAGEMENT_GOVERNANCE_BASE_PERMISSION =
     "crp:{0}:reportSynthesis:{1}:governance";
