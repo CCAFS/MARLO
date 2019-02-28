@@ -40,7 +40,6 @@ import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
-import org.cgiar.ccafs.marlo.data.model.ReportSynthesisCrpProgress;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisCrpProgressTarget;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisSrfProgress;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisSrfProgressTarget;
@@ -124,7 +123,7 @@ public class SrfProgressAction extends BaseAction {
 
   private List<ReportSynthesisCrpProgressTarget> fpSynthesisTable;
 
-  private List<ReportSynthesisCrpProgress> flagshipCrpProgress;
+  private List<ReportSynthesisSrfProgress> flagshipSrfProgress;
 
 
   @Inject
@@ -153,6 +152,7 @@ public class SrfProgressAction extends BaseAction {
     this.reportSynthesisSrfProgressManager = reportSynthesisSrfProgressManager;
   }
 
+
   @Override
   public String cancel() {
     Path path = this.getAutoSaveFilePath();
@@ -172,7 +172,6 @@ public class SrfProgressAction extends BaseAction {
     return SUCCESS;
   }
 
-
   public Long firstFlagship() {
     List<LiaisonInstitution> liaisonInstitutions = new ArrayList<>(loggedCrp.getLiaisonInstitutions().stream()
       .filter(c -> c.getCrpProgram() != null && c.isActive()
@@ -191,14 +190,15 @@ public class SrfProgressAction extends BaseAction {
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
-  public List<ReportSynthesisCrpProgress> getFlagshipCrpProgress() {
-    return flagshipCrpProgress;
-  }
 
+  public List<ReportSynthesisSrfProgress> getFlagshipSrfProgress() {
+    return flagshipSrfProgress;
+  }
 
   public List<ReportSynthesisCrpProgressTarget> getFpSynthesisTable() {
     return fpSynthesisTable;
   }
+
 
   public LiaisonInstitution getLiaisonInstitution() {
     return liaisonInstitution;
@@ -216,24 +216,23 @@ public class SrfProgressAction extends BaseAction {
     return loggedCrp;
   }
 
-
   public ReportSynthesis getReportSynthesis() {
     return reportSynthesis;
   }
+
 
   public List<SrfSloIndicatorTarget> getSloTargets() {
     return sloTargets;
   }
 
-
   public Long getSynthesisID() {
     return synthesisID;
   }
 
+
   public String getTransaction() {
     return transaction;
   }
-
 
   public boolean isFlagship() {
     boolean isFP = false;
@@ -262,6 +261,7 @@ public class SrfProgressAction extends BaseAction {
 
   }
 
+
   @Override
   public String next() {
     String result = this.save();
@@ -271,7 +271,6 @@ public class SrfProgressAction extends BaseAction {
       return result;
     }
   }
-
 
   @Override
   public void prepare() throws Exception {
@@ -431,6 +430,10 @@ public class SrfProgressAction extends BaseAction {
       // flagshipCrpProgress =
       // reportSynthesisCrpProgressManager.getFlagshipCrpProgress(liaisonInstitutions, phase.getId());
 
+      // Flagships Synthesis Progress
+      flagshipSrfProgress =
+        reportSynthesisSrfProgressManager.getFlagshipSrfProgress(liaisonInstitutions, phase.getId());
+
 
     }
 
@@ -504,6 +507,7 @@ public class SrfProgressAction extends BaseAction {
     }
   }
 
+
   /**
    * Save Crp Progress Srf Targets Information
    * 
@@ -570,8 +574,8 @@ public class SrfProgressAction extends BaseAction {
 
   }
 
-  public void setFlagshipCrpProgress(List<ReportSynthesisCrpProgress> flagshipCrpProgress) {
-    this.flagshipCrpProgress = flagshipCrpProgress;
+  public void setFlagshipSrfProgress(List<ReportSynthesisSrfProgress> flagshipSrfProgress) {
+    this.flagshipSrfProgress = flagshipSrfProgress;
   }
 
 
