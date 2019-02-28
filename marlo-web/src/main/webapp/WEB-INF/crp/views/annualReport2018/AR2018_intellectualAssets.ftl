@@ -17,7 +17,7 @@
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
 
-[#assign customName= "reportSynthesis" /]
+[#assign customName= "reportSynthesis.reportSynthesisIntellectualAsset" /]
 [#assign customLabel= "annualReport2018.${currentStage}" /]
 
 [#-- Helptext --]
@@ -61,15 +61,15 @@
               [#else]
               <div class="textArea">
                 <label for="">[@customForm.text name="${customLabel}.managed" readText=true /]:</label>
-                <p>[#if (pmuText?has_content)!false]${pmuText?replace('\n', '<br>')}[#else] [@s.text name="global.prefilledByPmu"/] [/#if]</p>
+                <p>[#if (managedPMUText?has_content)!false]${managedPMUText?replace('\n', '<br>')}[#else] [@s.text name="global.prefilledByPmu"/] [/#if]</p>
               </div>
               <div class="textArea">
                 <label for="">[@customForm.text name="${customLabel}.patents" readText=true /]:</label>
-                <p>[#if (pmuText?has_content)!false]${pmuText?replace('\n', '<br>')}[#else] [@s.text name="global.prefilledByPmu"/] [/#if]</p>
+                <p>[#if (patentsPMUText?has_content)!false]${patentsPMUText?replace('\n', '<br>')}[#else] [@s.text name="global.prefilledByPmu"/] [/#if]</p>
               </div>
               <div class="textArea">
                 <label for="">[@customForm.text name="${customLabel}.criticalIssues" readText=true /]:</label>
-                <p>[#if (pmuText?has_content)!false]${pmuText?replace('\n', '<br>')}[#else] [@s.text name="global.prefilledByPmu"/] [/#if]</p>
+                <p>[#if (patentsPMUText?has_content)!false]${patentsPMUText?replace('\n', '<br>')}[#else] [@s.text name="global.prefilledByPmu"/] [/#if]</p>
               </div>
             [/#if]
             
