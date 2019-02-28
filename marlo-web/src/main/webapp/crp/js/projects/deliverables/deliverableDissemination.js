@@ -142,50 +142,50 @@ function addDisseminationEvents() {
 
   // Edit an Author
   if(editable) {
-    $('.lastName').dblclick(function() {
+    // EVENT FIRST NAME
+    $('.lastName').on("click", function() {
       var spantext = $(this).text();
       $(this).empty().html('<input type="text" value="' + spantext + '">').find('input').focus();
-    }).keypress(function(e) {
-      if((e.keyCode == 13) || (e.keyCode == 27)) {
-        var text = $('input', this).val();
-        if(text == "") {
-          text = "Last Name";
-        } else {
-          $(this).parents(".author").find(".lastNameInput").val(text);
-          $(this).parents(".author").find(".id").val("");
-        }
-        $(this).html(text);
+    }).on("focusout", function(e) {
+      var $author = $(this).parents(".author");
+      var defaultText = "LastName";
+      var text = $('input', this).val() || defaultText;
+      if(text != defaultText) {
+        $author.find(".lastNameInput").val(text);
+      } else {
+        $author.find(".lastNameInput").val("");
       }
+      $(this).html(text);
     });
-    $('.firstName').dblclick(function() {
+    // EVENT FIRST NAME
+    $('.firstName').on("click", function() {
       var spantext = $(this).text();
       $(this).empty().html('<input type="text" value="' + spantext + '">').find('input').focus();
-    }).keypress(function(e) {
-      if((e.keyCode == 13) || (e.keyCode == 27)) {
-        var text = $('input', this).val();
-        if(text == "") {
-          text = "First Name";
-        } else {
-          $(this).parents(".author").find(".firstNameInput").val(text);
-          $(this).parents(".author").find(".id").val("");
-        }
-        $(this).html(text);
+    }).on("focusout", function(e) {
+      var $author = $(this).parents(".author");
+      var defaultText = "FirstName";
+      var text = $('input', this).val() || defaultText;
+      if(text != defaultText) {
+        $author.find(".firstNameInput").val(text);
+      } else {
+        $author.find(".firstNameInput").val("");
       }
+      $(this).html(text);
     });
-    $('.orcidId').dblclick(function() {
+    // EVENT ORCID
+    $('.orcidId').on("click", function() {
       var spantext = $(this).text();
       $(this).empty().html('<input type="text" value="' + spantext + '">').find('input').focus();
-    }).keypress(function(e) {
-      if((e.keyCode == 13) || (e.keyCode == 27)) {
-        var text = $('input', this).val();
-        if(text == "") {
-          text = "";
-        } else {
-          $(this).parents(".author").find(".orcidIdInput").val(text);
-          $(this).parents(".author").find(".id").val("");
-        }
-        $(this).html(text);
+    }).on("focusout", function(e) {
+      var $author = $(this).parents(".author");
+      var defaultText = "No ORCID";
+      var text = $('input', this).val() || defaultText;
+      if(text != defaultText) {
+        $author.find(".orcidIdInput").val(text);
+      } else {
+        $author.find(".orcidIdInput").val("");
       }
+      $(this).html(text);
     });
   }
 
