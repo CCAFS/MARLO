@@ -125,7 +125,7 @@
           [#-- Is clear lead  --]
           [#assign isClearLead = (innovation.projectInnovationInfo.clearLead)!false /]
            <div class="form-group isClearLead">
-            [@customForm.checkmark id="" name="innovation.projectInnovationInfo.clearLead" i18nkey="projectInnovations.clearLead" help="" paramText="" value="true" helpIcon=true disabled=false editable=true checked=(innovation.projectInnovationInfo.clearLead)!false cssClass="isClearLead" cssClassLabel=""  /]
+            [@customForm.checkmark id="" name="clearLead" i18nkey="projectInnovations.clearLead" help="" paramText="" value="true" helpIcon=true disabled=false editable=true checked=(innovation.projectInnovationInfo.clearLead)!false cssClass="isClearLead" cssClassLabel=""  /]
            </div>
            
           [#-- Lead Organization --]

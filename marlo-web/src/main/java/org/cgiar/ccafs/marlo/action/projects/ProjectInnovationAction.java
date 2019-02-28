@@ -152,6 +152,7 @@ public class ProjectInnovationAction extends BaseAction {
   private List<RepIndGenderYouthFocusLevel> focusLevelList;
   private List<RepIndOrganizationType> organizationTypeList;
   private ProjectInnovationValidator validator;
+  private Boolean clearLead;
 
   @Inject
   public ProjectInnovationAction(APConfig config, GlobalUnitManager globalUnitManager,
@@ -284,19 +285,19 @@ public class ProjectInnovationAction extends BaseAction {
     return focusLevelList;
   }
 
-
   public List<RepIndGeographicScope> getGeographicScopeList() {
     return geographicScopeList;
   }
-
 
   public ProjectInnovation getInnovation() {
     return innovation;
   }
 
+
   public long getInnovationID() {
     return innovationID;
   }
+
 
   public List<RepIndInnovationType> getInnovationTypeList() {
     return innovationTypeList;
@@ -310,7 +311,6 @@ public class ProjectInnovationAction extends BaseAction {
     return loggedCrp;
   }
 
-
   public List<RepIndOrganizationType> getOrganizationTypeList() {
     return organizationTypeList;
   }
@@ -318,6 +318,7 @@ public class ProjectInnovationAction extends BaseAction {
   public List<RepIndPhaseResearchPartnership> getPhaseResearchList() {
     return phaseResearchList;
   }
+
 
   public Project getProject() {
     return project;
@@ -341,6 +342,10 @@ public class ProjectInnovationAction extends BaseAction {
 
   public String getTransaction() {
     return transaction;
+  }
+
+  public Boolean isClearLead() {
+    return clearLead;
   }
 
   @Override
@@ -455,6 +460,14 @@ public class ProjectInnovationAction extends BaseAction {
               }
             }
           }
+        }
+
+        // load clear lead
+        if (innovation.getProjectInnovationInfo().getClearLead() == null
+          || innovation.getProjectInnovationInfo().getClearLead() == false) {
+          this.setClearLead(false);
+        } else {
+          this.setClearLead(true);
         }
 
         // load contributionOrganization
@@ -614,7 +627,6 @@ public class ProjectInnovationAction extends BaseAction {
           innovation.setRegions(geographics.stream().filter(sc -> sc.getLocElement().getLocElementType().getId() == 1)
             .collect(Collectors.toList()));
         }
-
 
         // Innovation Organization Type List
         if (innovation.getProjectInnovationOrganizations() != null) {
@@ -899,6 +911,12 @@ public class ProjectInnovationAction extends BaseAction {
           innovation.getProjectInnovationInfo().setLeadOrganization(null);
         }
       }
+
+      if (clearLead == null || clearLead == false) {
+        innovation.getProjectInnovationInfo().setClearLead(false);
+      } else {
+        innovation.getProjectInnovationInfo().setClearLead(true);
+      }
       // End
 
       projectInnovationInfoManager.saveProjectInnovationInfo(innovation.getProjectInnovationInfo());
@@ -938,7 +956,6 @@ public class ProjectInnovationAction extends BaseAction {
       return NOT_AUTHORIZED;
     }
   }
-
 
   /**
    * Save Project Innovation contributing organizations
@@ -1037,6 +1054,7 @@ public class ProjectInnovationAction extends BaseAction {
     }
   }
 
+
   public void saveDeliverables(ProjectInnovation projectInnovation, Phase phase) {
 
     // Search and deleted form Information
@@ -1074,7 +1092,6 @@ public class ProjectInnovationAction extends BaseAction {
       }
     }
   }
-
 
   /**
    * Save Project Innovation Geographic Scope Information
@@ -1119,6 +1136,7 @@ public class ProjectInnovationAction extends BaseAction {
       }
     }
   }
+
 
   /**
    * Save Project Innovation Organization Information
@@ -1204,6 +1222,10 @@ public class ProjectInnovationAction extends BaseAction {
         }
       }
     }
+  }
+
+  public void setClearLead(Boolean clearLead) {
+    this.clearLead = clearLead;
   }
 
   public void setContributionCrpList(List<RepIndContributionOfCrp> contributionCrpList) {
