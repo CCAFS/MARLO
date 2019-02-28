@@ -77,11 +77,11 @@ public class ProjectPolicyInfo extends MarloBaseEntity implements java.io.Serial
     return sb.toString();
   }
 
+
   @Override
   public String getModificationJustification() {
     return "";
   }
-
 
   @Override
   public User getModifiedBy() {
@@ -95,24 +95,23 @@ public class ProjectPolicyInfo extends MarloBaseEntity implements java.io.Serial
     return narrativeEvidence;
   }
 
-
   public String getOther() {
     return other;
   }
+
 
   public Phase getPhase() {
     return phase;
   }
 
-
   public ProjectExpectedStudy getProjectExpectedStudy() {
     return projectExpectedStudy;
   }
 
+
   public ProjectPolicy getProjectPolicy() {
     return projectPolicy;
   }
-
 
   public RepIndGeographicScope getRepIndGeographicScope() {
     return repIndGeographicScope;
@@ -153,7 +152,6 @@ public class ProjectPolicyInfo extends MarloBaseEntity implements java.io.Serial
   public void setAmount(Double amount) {
     this.amount = amount;
   }
-
 
   @Override
   public void setModifiedBy(User modifiedBy) {

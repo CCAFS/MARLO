@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Generated Feb 27, 2019 2:52:09 PM by Hibernate Tools 5.3.6.Final -->
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping auto-import="true"
+	default-access="property" default-cascade="none" default-lazy="true">
+	<class dynamic-insert="false"
+		dynamic-update="false" mutable="true"
+		name="org.cgiar.ccafs.marlo.data.model.ReportSynthesisSrfProgressTarget"
+		optimistic-lock="version" polymorphism="implicit"
+		select-before-update="false"
+		table="report_synthesis_srf_progress_targets">
+		<id name="id" type="java.lang.Long">
+			<column name="id" />
+			<generator class="identity" />
+		</id>
+		<many-to-one class="org.cgiar.ccafs.marlo.data.model.ReportSynthesisSrfProgress"
+			embed-xml="true" fetch="select" insert="true"
+			name="reportSynthesisSrfProgress" not-found="exception"
+			optimistic-lock="true" unique="false" update="true">
+			<column name="report_synthesis_srf_progress_id" />
+		</many-to-one>
+		<many-to-one class="org.cgiar.ccafs.marlo.data.model.SrfSloIndicatorTarget"
+			embed-xml="true" fetch="select" insert="true"
+			name="srfSloIndicatorTargets" not-found="exception"
+			optimistic-lock="true" unique="false" update="true">
+			<column name="srf_slo_indicator_targets_id" />
+		</many-to-one>
+		<property generated="never" lazy="false" name="birefSummary"
+			optimistic-lock="true" type="string" unique="false">
+			<column length="65535" name="biref_summary" />
+		</property>
+		<property generated="never" lazy="false"
+			name="additionalContribution" optimistic-lock="true" type="string"
+			unique="false">
+			<column length="65535" name="additional_contribution" />
+		</property>
+		<property generated="never" lazy="false" name="active"
+			optimistic-lock="true" type="boolean" unique="false">
+			<column name="is_active" not-null="true" />
+		</property>
+		<property generated="never" lazy="false" name="activeSince"
+			optimistic-lock="true" type="timestamp" unique="false">
+			<column length="19" name="active_since" />
+		</property>
+		<many-to-one name="createdBy"
+      class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
+      <column name="created_by" />
+    </many-to-one>
+    <many-to-one name="modifiedBy"
+      class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
+      <column name="modified_by" />
+    </many-to-one>
+		<property generated="never" lazy="false"
+			name="modificationJustification" optimistic-lock="true" type="string"
+			unique="false">
+			<column length="65535" name="modification_justification" />
+		</property>	
+	</class>
+</hibernate-mapping>

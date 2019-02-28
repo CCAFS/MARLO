@@ -53,8 +53,10 @@ public class ReportSynthesis extends MarloAuditableEntity implements java.io.Ser
   @Expose
   private ReportSynthesisProgramVariance reportSynthesisProgramVariance;
 
+
   @Expose
   private ReportSynthesisFundingUseSummary reportSynthesisFundingUseSummary;
+
 
   @Expose
   private ReportSynthesisEfficiency reportSynthesisEfficiency;
@@ -62,21 +64,26 @@ public class ReportSynthesis extends MarloAuditableEntity implements java.io.Ser
   @Expose
   private ReportSynthesisIndicatorGeneral reportSynthesisIndicatorGeneral;
 
-
   @Expose
   private ReportSynthesisExternalPartnership reportSynthesisExternalPartnership;
 
   @Expose
   private ReportSynthesisCrossCgiar reportSynthesisCrossCgiar;
 
+
   @Expose
   private ReportSynthesisMelia reportSynthesisMelia;
+
+  @Expose
+  private ReportSynthesisSrfProgress reportSynthesisSrfProgress;
+  
+  @Expose
+  private ReportSynthesisIntellectualAsset reportSynthesisIntellectualAsset;
 
   private Set<SectionStatus> sectionStatuses = new HashSet<SectionStatus>(0);
 
   public ReportSynthesis() {
   }
-
 
   @Override
   public boolean equals(Object obj) {
@@ -130,7 +137,6 @@ public class ReportSynthesis extends MarloAuditableEntity implements java.io.Ser
     return reportSynthesisCrpProgress;
   }
 
-
   public ReportSynthesisEfficiency getReportSynthesisEfficiency() {
     return reportSynthesisEfficiency;
   }
@@ -150,9 +156,11 @@ public class ReportSynthesis extends MarloAuditableEntity implements java.io.Ser
     return reportSynthesisFlagshipProgress;
   }
 
+
   public ReportSynthesisFundingUseSummary getReportSynthesisFundingUseSummary() {
     return reportSynthesisFundingUseSummary;
   }
+
 
   public ReportSynthesisGovernance getReportSynthesisGovernance() {
     return reportSynthesisGovernance;
@@ -165,6 +173,10 @@ public class ReportSynthesis extends MarloAuditableEntity implements java.io.Ser
   public ReportSynthesisMelia getReportSynthesisMelia() {
     return reportSynthesisMelia;
   }
+  
+    public ReportSynthesisIntellectualAsset getReportSynthesisIntellectualAsset() {
+    return reportSynthesisIntellectualAsset;
+  }
 
   public ReportSynthesisProgramVariance getReportSynthesisProgramVariance() {
     return reportSynthesisProgramVariance;
@@ -172,6 +184,10 @@ public class ReportSynthesis extends MarloAuditableEntity implements java.io.Ser
 
   public ReportSynthesisRisk getReportSynthesisRisk() {
     return reportSynthesisRisk;
+  }
+
+  public ReportSynthesisSrfProgress getReportSynthesisSrfProgress() {
+    return reportSynthesisSrfProgress;
   }
 
   public Set<SectionStatus> getSectionStatuses() {
@@ -185,7 +201,6 @@ public class ReportSynthesis extends MarloAuditableEntity implements java.io.Ser
     result = prime * result + ((this.getId() == null) ? 0 : this.getId().hashCode());
     return result;
   }
-
 
   public void setLiaisonInstitution(LiaisonInstitution liaisonInstitution) {
     this.liaisonInstitution = liaisonInstitution;
@@ -223,6 +238,7 @@ public class ReportSynthesis extends MarloAuditableEntity implements java.io.Ser
     this.reportSynthesisExternalPartnership = reportSynthesisExternalPartnership;
   }
 
+
   public void setReportSynthesisFinancialSummary(ReportSynthesisFinancialSummary reportSynthesisFinancialSummary) {
     this.reportSynthesisFinancialSummary = reportSynthesisFinancialSummary;
   }
@@ -247,14 +263,22 @@ public class ReportSynthesis extends MarloAuditableEntity implements java.io.Ser
     this.reportSynthesisMelia = reportSynthesisMelia;
   }
 
-
   public void setReportSynthesisProgramVariance(ReportSynthesisProgramVariance reportSynthesisProgramVariance) {
     this.reportSynthesisProgramVariance = reportSynthesisProgramVariance;
+  }
+  
+    public void setReportSynthesisIntellectualAsset(ReportSynthesisIntellectualAsset reportSynthesisIntellectualAsset) {
+    this.reportSynthesisIntellectualAsset = reportSynthesisIntellectualAsset;
   }
 
 
   public void setReportSynthesisRisk(ReportSynthesisRisk reportSynthesisRisk) {
     this.reportSynthesisRisk = reportSynthesisRisk;
+  }
+
+
+  public void setReportSynthesisSrfProgress(ReportSynthesisSrfProgress reportSynthesisSrfProgress) {
+    this.reportSynthesisSrfProgress = reportSynthesisSrfProgress;
   }
 
 

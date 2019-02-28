@@ -28,6 +28,18 @@ function attachEvents() {
     }
   });
 
+
+ $('input.isClearLead').on('change', function() {
+    var selected = $('input.isClearLead').is(":checked");
+
+    if(selected == true) {
+      $('.lead-organization .requiredTag').slideUp();
+    } else {
+      $('.lead-organization .requiredTag').slideDown();
+    }
+
+  })
+
 }
 
 function addSelect2() {
