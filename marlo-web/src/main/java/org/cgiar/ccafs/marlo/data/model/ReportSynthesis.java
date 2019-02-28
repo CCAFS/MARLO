@@ -76,6 +76,9 @@ public class ReportSynthesis extends MarloAuditableEntity implements java.io.Ser
 
   @Expose
   private ReportSynthesisSrfProgress reportSynthesisSrfProgress;
+  
+  @Expose
+  private ReportSynthesisIntellectualAsset reportSynthesisIntellectualAsset;
 
   private Set<SectionStatus> sectionStatuses = new HashSet<SectionStatus>(0);
 
@@ -170,6 +173,10 @@ public class ReportSynthesis extends MarloAuditableEntity implements java.io.Ser
   public ReportSynthesisMelia getReportSynthesisMelia() {
     return reportSynthesisMelia;
   }
+  
+    public ReportSynthesisIntellectualAsset getReportSynthesisIntellectualAsset() {
+    return reportSynthesisIntellectualAsset;
+  }
 
   public ReportSynthesisProgramVariance getReportSynthesisProgramVariance() {
     return reportSynthesisProgramVariance;
@@ -258,6 +265,10 @@ public class ReportSynthesis extends MarloAuditableEntity implements java.io.Ser
 
   public void setReportSynthesisProgramVariance(ReportSynthesisProgramVariance reportSynthesisProgramVariance) {
     this.reportSynthesisProgramVariance = reportSynthesisProgramVariance;
+  }
+  
+    public void setReportSynthesisIntellectualAsset(ReportSynthesisIntellectualAsset reportSynthesisIntellectualAsset) {
+    this.reportSynthesisIntellectualAsset = reportSynthesisIntellectualAsset;
   }
 
 

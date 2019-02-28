@@ -78,6 +78,9 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
   @Expose
   private Institution leadOrganization;
 
+  @Expose
+  private Boolean clearLead;
+
   public ProjectInnovationInfo() {
   }
 
@@ -124,6 +127,11 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     return adaptativeResearchNarrative;
   }
 
+  public Boolean getClearLead() {
+    return clearLead;
+  }
+
+
   public String getDescriptionStage() {
     return descriptionStage;
   }
@@ -153,11 +161,11 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     return sb.toString();
   }
 
-
   @Override
   public String getModificationJustification() {
     return "";
   }
+
 
   @Override
   public User getModifiedBy() {
@@ -165,7 +173,6 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     u.setId(new Long(3));
     return u;
   }
-
 
   public String getNarrative() {
     return narrative;
@@ -250,6 +257,11 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
 
   public void setAdaptativeResearchNarrative(String adaptativeResearchNarrative) {
     this.adaptativeResearchNarrative = adaptativeResearchNarrative;
+  }
+
+
+  public void setClearLead(Boolean clearLead) {
+    this.clearLead = clearLead;
   }
 
   public void setDescriptionStage(String descriptionStage) {

@@ -3,7 +3,7 @@
 [#assign currentSectionString = "annualReport-${actionName?replace('/','-')}-${synthesisID}" /]
 [#assign currentSection = "synthesis" /]
 [#assign currentStage = actionName?split('/')[1]/]
-[#assign pageLibs = [ ] /]
+[#assign pageLibs = [ "trumbowyg" ] /]
 [#assign customJS = [ "${baseUrlMedia}/js/annualReport/annualReport_${currentStage}.js" ] /]
 [#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css"] /]
 
@@ -17,7 +17,7 @@
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
 
-[#assign customName= "reportSynthesis" /]
+[#assign customName= "reportSynthesis.reportSynthesisIntellectualAsset" /]
 [#assign customLabel= "annualReport2018.${currentStage}" /]
 
 [#-- Helptext --]
@@ -48,28 +48,28 @@
             [#if PMU]
               [#-- Strategically managed assets --]
               <div class="form-group">
-                [@customForm.textArea name="${customName}.managed" i18nkey="${customLabel}.managed" help="${customLabel}.managed.help" className="" helpIcon=false required=true editable=editable /]
+                [@customForm.textArea name="${customName}.managed" i18nkey="${customLabel}.managed" help="${customLabel}.managed.help" className="" helpIcon=false required=true editable=editable allowTextEditor=true /]
               </div>
               [#-- Published patents --]
               <div class="form-group">
-                [@customForm.textArea name="${customName}.patents" i18nkey="${customLabel}.patents" help="${customLabel}.patents.help" className="" helpIcon=false required=true editable=editable /]
+                [@customForm.textArea name="${customName}.patents" i18nkey="${customLabel}.patents" help="${customLabel}.patents.help" className="" helpIcon=false required=true editable=editable allowTextEditor=true /]
               </div>
               [#-- Critical issues --]
               <div class="form-group">
-                [@customForm.textArea name="${customName}.criticalIssues" i18nkey="${customLabel}.criticalIssues" help="${customLabel}.criticalIssues.help" className="" helpIcon=false required=true editable=editable /]
+                [@customForm.textArea name="${customName}.criticalIssues" i18nkey="${customLabel}.criticalIssues" help="${customLabel}.criticalIssues.help" className="" helpIcon=false required=true editable=editable allowTextEditor=true /]
               </div>
               [#else]
               <div class="textArea">
                 <label for="">[@customForm.text name="${customLabel}.managed" readText=true /]:</label>
-                <p>[#if (pmuText?has_content)!false]${pmuText?replace('\n', '<br>')}[#else] [@s.text name="global.prefilledByPmu"/] [/#if]</p>
+                <p>[#if (managedPMUText?has_content)!false]${managedPMUText?replace('\n', '<br>')}[#else] [@s.text name="global.prefilledByPmu"/] [/#if]</p>
               </div>
               <div class="textArea">
                 <label for="">[@customForm.text name="${customLabel}.patents" readText=true /]:</label>
-                <p>[#if (pmuText?has_content)!false]${pmuText?replace('\n', '<br>')}[#else] [@s.text name="global.prefilledByPmu"/] [/#if]</p>
+                <p>[#if (patentsPMUText?has_content)!false]${patentsPMUText?replace('\n', '<br>')}[#else] [@s.text name="global.prefilledByPmu"/] [/#if]</p>
               </div>
               <div class="textArea">
                 <label for="">[@customForm.text name="${customLabel}.criticalIssues" readText=true /]:</label>
-                <p>[#if (pmuText?has_content)!false]${pmuText?replace('\n', '<br>')}[#else] [@s.text name="global.prefilledByPmu"/] [/#if]</p>
+                <p>[#if (patentsPMUText?has_content)!false]${patentsPMUText?replace('\n', '<br>')}[#else] [@s.text name="global.prefilledByPmu"/] [/#if]</p>
               </div>
             [/#if]
             

@@ -75,6 +75,9 @@
 		<one-to-one name="reportSynthesisSrfProgress"
 			class="org.cgiar.ccafs.marlo.data.model.ReportSynthesisSrfProgress"
 			cascade="save-update"></one-to-one>
+		<one-to-one name="reportSynthesisIntellectualAsset"
+      class="org.cgiar.ccafs.marlo.data.model.ReportSynthesisIntellectualAsset"
+      cascade="save-update"></one-to-one>	
 		<set name="sectionStatuses" table="section_statuses"
 			inverse="true" lazy="true" fetch="select">
 			<key>
