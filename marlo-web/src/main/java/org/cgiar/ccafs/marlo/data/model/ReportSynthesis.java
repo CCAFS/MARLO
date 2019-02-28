@@ -72,7 +72,12 @@ public class ReportSynthesis extends MarloAuditableEntity implements java.io.Ser
   @Expose
   private ReportSynthesisMelia reportSynthesisMelia;
 
+  @Expose
+  private ReportSynthesisIntellectualAsset reportSynthesisIntellectualAsset;
+
+
   private Set<SectionStatus> sectionStatuses = new HashSet<SectionStatus>(0);
+
 
   public ReportSynthesis() {
   }
@@ -130,7 +135,6 @@ public class ReportSynthesis extends MarloAuditableEntity implements java.io.Ser
     return reportSynthesisCrpProgress;
   }
 
-
   public ReportSynthesisEfficiency getReportSynthesisEfficiency() {
     return reportSynthesisEfficiency;
   }
@@ -150,9 +154,11 @@ public class ReportSynthesis extends MarloAuditableEntity implements java.io.Ser
     return reportSynthesisFlagshipProgress;
   }
 
+
   public ReportSynthesisFundingUseSummary getReportSynthesisFundingUseSummary() {
     return reportSynthesisFundingUseSummary;
   }
+
 
   public ReportSynthesisGovernance getReportSynthesisGovernance() {
     return reportSynthesisGovernance;
@@ -162,9 +168,14 @@ public class ReportSynthesis extends MarloAuditableEntity implements java.io.Ser
     return reportSynthesisIndicatorGeneral;
   }
 
+  public ReportSynthesisIntellectualAsset getReportSynthesisIntellectualAsset() {
+    return reportSynthesisIntellectualAsset;
+  }
+
   public ReportSynthesisMelia getReportSynthesisMelia() {
     return reportSynthesisMelia;
   }
+
 
   public ReportSynthesisProgramVariance getReportSynthesisProgramVariance() {
     return reportSynthesisProgramVariance;
@@ -242,6 +253,11 @@ public class ReportSynthesis extends MarloAuditableEntity implements java.io.Ser
   public void setReportSynthesisIndicatorGeneral(ReportSynthesisIndicatorGeneral reportSynthesisIndicatorGeneral) {
     this.reportSynthesisIndicatorGeneral = reportSynthesisIndicatorGeneral;
   }
+
+  public void setReportSynthesisIntellectualAsset(ReportSynthesisIntellectualAsset reportSynthesisIntellectualAsset) {
+    this.reportSynthesisIntellectualAsset = reportSynthesisIntellectualAsset;
+  }
+
 
   public void setReportSynthesisMelia(ReportSynthesisMelia reportSynthesisMelia) {
     this.reportSynthesisMelia = reportSynthesisMelia;
