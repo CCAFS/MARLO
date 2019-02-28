@@ -19,7 +19,7 @@
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
 
-[#assign customName= "reportSynthesis" /]
+[#assign customName= "reportSynthesis.reportSynthesisCrpProgress" /]
 [#assign customLabel= "annualReport2018.${currentStage}" /]
 
 [#-- Helptext --]
@@ -46,51 +46,37 @@
           <div class="borderBox">
             [#-- Overall contribution towards SRF targets --]
             <div class="form-group">
-              [#if PMU][@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/][/#if]
               [@customForm.textArea name="${customName}.overallContribution" i18nkey="${customLabel}.overallContribution" help="${customLabel}.overallContribution.help" className="limitWords-400" helpIcon=false required=true editable=editable allowTextEditor=true /]
-            </div>
-            [#-- Areas of learning from past impact assessments --]
-            <div class="form-group">
-              [@customForm.textArea name="${customName}.impactAssessments" i18nkey="${customLabel}.impactAssessments" help="${customLabel}.impactAssessments.help" className="" helpIcon=false required=true editable=editable allowTextEditor=true /]
+              <br />
             </div>
             
             [#-- PMU Flagships - Synthesis --]
             [#if PMU]
               <div class="form-group">
-                <div class="viewMoreSyntesis-block" >
-                  [@tableFlagshipSynthesis tableName="tableOverallProgress" list=flagshipCrpProgress columns=["SLOTarget", "CGIARContribution", "expectedContribution", "includeAR"] /]
-                </div>
+                  [@tableFlagshipSynthesis tableName="tableOverallProgress" list=flagshipCrpProgress columns=["narrative"] /]
               </div>
             [/#if]
-           
             
             
             [#-- Table 1: Evidence on progress towards SRF targets  --]
-            [#if flagship]
              [@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/]
              <hr />
             <div class="form-group">
               <h4 class="headTitle annualReport-table">[@s.text name="${customLabel}.evidenceProgress" /]</h4>
-              [@customForm.helpLabel name="${customLabel}.evidenceProgress.help" showIcon=false editable=editable/]
+              [@customForm.helpLabel name="${customLabel}.evidenceProgress.help" showIcon=false editable=editable helpMore=true/]
+             [#-- [@helpViewMore name="evidenceProgress.help" /]  --] 
               <div class="block-selectedSLOs">
                 <div class="form-group sloTargetsList">
-                  [#if reportSynthesis.reportSynthesisCrpProgress.sloTargets?has_content]
-                    [#list reportSynthesis.reportSynthesisCrpProgress.sloTargets as slo]
+                  [#if sloTargets?has_content]
+                    [#list sloTargets as slo]
                       [@sloTargetMacro name="${customName}.sloTargets" element=slo index=slo_index /]
                     [/#list]
                   [#else]
                     [#if !editable] <p class="text-center font-italic">No entries added yet.</p> [/#if]
                   [/#if]
                 </div>
-                [#if editable]
-                <div class="dottedBox">
-                  <div class="pull-left"> <span class="glyphicon glyphicon-plus"></span>  &nbsp</div>
-                  [@customForm.select name="" className="setSelect2 addSloTarget" i18nkey="${customLabel}.selectSLOTarget" listName="sloTargets" keyFieldName="id"  displayFieldName="composedName" required=true /]
-                </div>
-                [/#if]
               </div>
             </div>
-            [/#if]
             
           </div>
           [#-- Section Buttons & hidden inputs--]
@@ -99,8 +85,8 @@
       </div> 
     </div>
     
-    [#-- Templates --]
-    [@sloTargetMacro name="${customName}.sloTargets" element={} index=-1 isTemplate=true /]
+    [#-- Templates 
+    [@sloTargetMacro name="${customName}.sloTargets" element={} index=-1 isTemplate=true /]--]
     
   [/#if] 
 </section>
@@ -151,17 +137,31 @@
     [#-- Hidden Inputs --]
     <input type="hidden" name="${customName}.id" value="${(element.id)!}" />
     <input type="hidden" name="${customName}.srfSloIndicatorTarget.id" class="indicatorTargetID" value="${(element.srfSloIndicatorTarget.id)!}" />
-    [#-- Remove button --]
-    [#if editable]<div class="removeElement sm removeIcon removeSloTarget" title="Remove"></div>[/#if] 
     [#-- SLO Target --]
-    <div class="form-group grayBox name"> <strong>SLO ${(element.srfSloIndicator.srfSlo.id)!} Target </strong> <br />${(element.srfSloIndicatorTarget.narrative)!}</div>
+    <div class="form-group grayBox name"> <strong>SLO Target 2022</strong> <br />${(element.narrative)!}</div>
     [#-- Brief summary of new evidence of CGIAR contribution to relevant targets for this CRP (with citation) --]
     <div class="form-group">
       [@customForm.textArea name="${customName}.birefSummary" value="${(element.birefSummary)!}" i18nkey="${customLabel}.summaryEvidence" className="limitWords-150" help="${customLabel}.summaryEvidence.help" helpIcon=false required=true editable=editable allowTextEditor=true /]
     </div>
+   [#--  [#if PMU]
+      <span class="programTag">${(crpProgram.acronym)!}</span>
+    [/#if] --]
     [#-- Expected additional contribution before end of 2022 (if not already fully covered). --]
     <div class="form-group">
       [@customForm.textArea name="${customName}.additionalContribution" value="${(element.additionalContribution)!}" i18nkey="${customLabel}.additionalContribution" className="limitWords-100" help="${customLabel}.additionalContribution.help" helpIcon=false required=false editable=editable allowTextEditor=true /]
     </div>
   </div>
+[/#macro]
+
+[#macro helpViewMore name=""]
+
+  [#local customName = "annualReport2018.crpProgress.${name}.more" /]
+   <a id="helpViewMoreLink" class="btn-link" data-toggle="collapse" data-target="#helpViewMoreBlock" aria-expanded="false" aria-controls="helpViewMoreBlock">
+     <i class="helpLabel">[[@s.text name="global.viewMore" /]]</i>
+   </a>
+   
+   <div id="helpViewMoreBlock" class="collapse" aria-labelledby="helpViewMoreBlock" data-parent="#helpViewMoreLink">
+      <i class="helpLabel">[@s.text name="${customName}" /]</i>
+   </div>
+  
 [/#macro]
