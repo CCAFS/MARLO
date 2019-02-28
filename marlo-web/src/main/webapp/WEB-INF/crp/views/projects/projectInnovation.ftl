@@ -122,9 +122,15 @@
             [@customForm.textArea name="innovation.projectInnovationInfo.descriptionStage" i18nkey="projectInnovations.stageDescription" help="projectInnovations.stageDescription.help" helpIcon=false placeholder="" className="limitWords-50" required=true editable=editable /]
           </div>
           
+          [#-- Is clear lead  --]
+          [#assign isClearLead = (innovation.projectInnovationInfo.clearLead)!false /]
+           <div class="form-group isClearLead">
+            [@customForm.checkmark id="" name="clearLead" i18nkey="projectInnovations.clearLead" help="" paramText="" value="true" helpIcon=true disabled=false editable=true checked=(innovation.projectInnovationInfo.clearLead)!false cssClass="isClearLead" cssClassLabel=""  /]
+           </div>
+           
           [#-- Lead Organization --]
-          <div class="form-group"">
-            [@customForm.select name="innovation.projectInnovationInfo.leadOrganization.id" label=""  i18nkey="projectInnovations.leadOrganization" listName="institutions" keyFieldName="id"  displayFieldName="composedName" required=true  className="" editable=editable/]
+          <div class="form-group lead-organization">
+            [@customForm.select name="innovation.projectInnovationInfo.leadOrganization.id" label=""  i18nkey="projectInnovations.leadOrganization" listName="institutions" keyFieldName="id"  displayFieldName="composedName" required=!(isClearLead)  className="" editable=editable/]
           </div>
           
           [#-- Top Five Contributing Organizations --]

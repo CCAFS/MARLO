@@ -9,20 +9,22 @@
 			<column name="id" />
 			<generator class="identity" />
 		</id>
-		<many-to-one name="phase" class="org.cgiar.ccafs.marlo.data.model.Phase"
-			fetch="select">
+		<many-to-one name="phase"
+			class="org.cgiar.ccafs.marlo.data.model.Phase" fetch="select">
 			<column name="id_phase" not-null="true" />
 		</many-to-one>
-		<many-to-one name="modifiedBy" class="org.cgiar.ccafs.marlo.data.model.User"
-			fetch="select">
+		<many-to-one name="modifiedBy"
+			class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
 			<column name="modified_by" />
 		</many-to-one>
-		<many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User"
-			fetch="select" update="false">
+		<many-to-one name="createdBy"
+			class="org.cgiar.ccafs.marlo.data.model.User" fetch="select"
+			update="false">
 			<column name="created_by" not-null="true" />
 		</many-to-one>
 		<many-to-one name="liaisonInstitution"
-			class="org.cgiar.ccafs.marlo.data.model.LiaisonInstitution" fetch="select">
+			class="org.cgiar.ccafs.marlo.data.model.LiaisonInstitution"
+			fetch="select">
 			<column name="liaison_institution_id" not-null="true" />
 		</many-to-one>
 		<property name="active" type="boolean">
@@ -41,7 +43,8 @@
 			class="org.cgiar.ccafs.marlo.data.model.ReportSynthesisGovernance"
 			cascade="save-update"></one-to-one>
 		<one-to-one name="reportSynthesisRisk"
-			class="org.cgiar.ccafs.marlo.data.model.ReportSynthesisRisk" cascade="save-update"></one-to-one>
+			class="org.cgiar.ccafs.marlo.data.model.ReportSynthesisRisk"
+			cascade="save-update"></one-to-one>
 		<one-to-one name="reportSynthesisCrossCuttingDimension"
 			class="org.cgiar.ccafs.marlo.data.model.ReportSynthesisCrossCuttingDimension"
 			cascade="save-update"></one-to-one>
@@ -69,12 +72,19 @@
 		<one-to-one name="reportSynthesisMelia"
 			class="org.cgiar.ccafs.marlo.data.model.ReportSynthesisMelia"
 			cascade="save-update"></one-to-one>
-		<set name="sectionStatuses" table="section_statuses" inverse="true"
-			lazy="true" fetch="select">
+		<one-to-one name="reportSynthesisSrfProgress"
+			class="org.cgiar.ccafs.marlo.data.model.ReportSynthesisSrfProgress"
+			cascade="save-update"></one-to-one>
+		<one-to-one name="reportSynthesisIntellectualAsset"
+      class="org.cgiar.ccafs.marlo.data.model.ReportSynthesisIntellectualAsset"
+      cascade="save-update"></one-to-one>	
+		<set name="sectionStatuses" table="section_statuses"
+			inverse="true" lazy="true" fetch="select">
 			<key>
 				<column name="report_synthesis_id" />
 			</key>
-			<one-to-many class="org.cgiar.ccafs.marlo.data.model.SectionStatus" />
+			<one-to-many
+				class="org.cgiar.ccafs.marlo.data.model.SectionStatus" />
 		</set>
 	</class>
 </hibernate-mapping>

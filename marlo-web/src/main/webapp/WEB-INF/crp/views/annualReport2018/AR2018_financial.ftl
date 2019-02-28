@@ -3,7 +3,7 @@
 [#assign currentSectionString = "annualReport-${actionName?replace('/','-')}-${synthesisID}" /]
 [#assign currentSection = "synthesis" /]
 [#assign currentStage = actionName?split('/')[1]/]
-[#assign pageLibs = [ ] /]
+[#assign pageLibs = [ "trumbowyg" ] /]
 [#assign customJS = [ "${baseUrlMedia}/js/annualReport/annualReport_${currentStage}.js" ] /]
 [#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css"] /]
 
@@ -45,7 +45,7 @@
             [#-- Narrative --]
             <div class="form-group">
               [#if PMU]
-                [@customForm.textArea name="${customName}.financialStatus" i18nkey="${customLabel}.financialStatus" help="${customLabel}.financialStatus.help" helpIcon=false required=true editable=editable /]
+                [@customForm.textArea name="${customName}.financialStatus" i18nkey="${customLabel}.financialStatus" help="${customLabel}.financialStatus.help" helpIcon=false required=true editable=editable allowTextEditor=true /]
               [#else]
                 <div class="textArea">
                   <label for="">[@customForm.text name="${customLabel}.financialStatus" readText=true /]</label>:
