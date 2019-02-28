@@ -947,15 +947,18 @@
     [#if editable]
       <div class="removeLink authorVisibles" style="${displayVisible}"><div class="removeAuthor removeIcon" title="Remove author/creator"></div></div>
     [/#if]
+    [#local firstName = (element.firstName?replace(',',''))!'' ]
+    [#local lastName = (element.lastName?replace(',',''))!'' ]
+    [#local orcid = (element.elementId?replace('https://|http://','','r'))!'' ]
     [#-- Last name & First name --]
-    <span class="lastName">${(element.lastName?replace(',',''))!}</span>, <span class="firstName">${(element.firstName?replace(',',''))!} </span><br />
+    <span class="lastName [#if editable]cursor-pointer[/#if]">${lastName}</span>, <span class="firstName [#if editable]cursor-pointer[/#if]">${firstName} </span><br />
     [#-- ORCID --]
-    <span><small class="orcidId"><strong>[#if (element.elementId?has_content)!false]${(element.elementId?replace('https://|http://','','r'))!}[#else]<i class="authorVisibles" style="${displayVisible}">No ORCID</i>[/#if]</strong></small></span>
+    <span><small class="orcidId [#if editable]cursor-pointer[/#if]"><strong>[#if orcid?has_content]${orcid}[#else]<i class="authorVisibles" style="${displayVisible}">No ORCID</i>[/#if]</strong></small></span>
     [#-- Hidden inputs --]
-    <input type="hidden" name="${customName}.id" class="id" value="${(element.id)!}" />
-    <input type="hidden" name="${customName}.lastName"  class="lastNameInput" value="${(element.lastName?replace(',',''))!}" />
-    <input type="hidden" name="${customName}.firstName"  class="firstNameInput" value="${(element.firstName?replace(',',''))!}" />
-    <input type="hidden"name="${customName}.elementId"   class="orcidIdInput" value="${(element.elementId)!}" />
+    <input type="hidden"  name="${customName}.id"         class="id"              value="${(element.id)!}" />
+    <input type="hidden"  name="${customName}.lastName"   class="lastNameInput"   value="${(element.lastName?replace(',',''))!}" />
+    <input type="hidden"  name="${customName}.firstName"  class="firstNameInput"  value="${(element.firstName?replace(',',''))!}" />
+    <input type="hidden"  name="${customName}.elementId"  class="orcidIdInput"    value="${(element.elementId)!}" />
     <div class="clearfix"></div>
   </div>
 [/#macro]

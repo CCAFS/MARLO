@@ -3,10 +3,10 @@
 [#assign currentSectionString = "${actionName?replace('/','-')}-${(deliverable.id)!}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2","font-awesome","blueimp-file-upload","jsUri", "flat-flags", "pickadate"] /]
 [#assign customJS = [
-  "${baseUrlMedia}/js/publications/publication.js?20190227",
-  "${baseUrlMedia}/js/projects/deliverables/deliverableQualityCheck.js?20190227", 
-  "${baseUrlMedia}/js/projects/deliverables/deliverableInfo.js?20190227",
-  "${baseUrlMedia}/js/projects/deliverables/deliverableDissemination.js?20190227", 
+  "${baseUrlMedia}/js/publications/publication.js?20190228",
+  "${baseUrlMedia}/js/projects/deliverables/deliverableQualityCheck.js?20190228", 
+  "${baseUrlMedia}/js/projects/deliverables/deliverableInfo.js?20190228",
+  "${baseUrlMedia}/js/projects/deliverables/deliverableDissemination.js?20190228",
   "${baseUrl}/global/js/autoSave.js",
   "${baseUrl}/global/js/fieldsValidation.js?20180529"
 ] /]
