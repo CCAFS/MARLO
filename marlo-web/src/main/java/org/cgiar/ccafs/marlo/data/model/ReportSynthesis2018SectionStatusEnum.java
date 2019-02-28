@@ -24,7 +24,7 @@ public enum ReportSynthesis2018SectionStatusEnum {
 
   CRP_PROGRESS("crpProgress"), FLAGSHIP_PROGRESS("flagshipProgress"), CC_DIMENSIONS("ccDimensions"),
   GOVERNANCE("governance"), EXTERNAL_PARTNERSHIPS("externalPartnerships"), INTELLECTUAL_ASSETS("intellectualAssets"),
-  MELIA("melia"), EFFICIENCY("efficiency"), RISKS("risk"), FUNDING_USE("fundingUse"), FINANCIAL("financial"),
+  MELIA("melia"), EFFICIENCY("efficiency"), RISKS("risks"), FUNDING_USE("fundingUse"), FINANCIAL("financial"),
   INFLUENCE("influence"), CONTROL("control"), NARRATIVE("narrative");
 
 
