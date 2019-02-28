@@ -3,7 +3,7 @@
 [#assign currentSectionString = "annualReport-${actionName?replace('/','-')}-${synthesisID}" /]
 [#assign currentSection = "synthesis" /]
 [#assign currentStage = actionName?split('/')[1]/]
-[#assign pageLibs = [ "select2", "blueimp-file-upload" ] /]
+[#assign pageLibs = [ "select2", "blueimp-file-upload", "trumbowyg" ] /]
 [#assign customJS = [ "${baseUrlMedia}/js/annualReport2018/annualReport2018_${currentStage}.js" ] /]
 [#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css"] /]
 
@@ -48,7 +48,7 @@
             [#-- Partnerships summary --]
             [#if PMU]
               <div class="form-group">
-                [@customForm.textArea name="${customName}.highlights" i18nkey="${customLabel}.highlights" help="${customLabel}.highlights.help" className="limitWords-300" helpIcon=false required=true editable=editable /]
+                [@customForm.textArea name="${customName}.highlights" i18nkey="${customLabel}.highlights" help="${customLabel}.highlights.help" className="limitWords-300" helpIcon=false required=true editable=editable allowTextEditor=true /]
               </div>
             [#else]
               <div class="textArea">
@@ -120,7 +120,7 @@
               [#-- Summary --]
               [#if PMU]
                 <div class="form-group">
-                  [@customForm.textArea name="${customName}.crossCGIAR.summary" i18nkey="${customLabel}.crossCGIAR.summary" help="${customLabel}.crossCGIAR.summary.help" className="limitWords-300" helpIcon=false required=true editable=editable /]
+                  [@customForm.textArea name="${customName}.crossCGIAR.summary" i18nkey="${customLabel}.crossCGIAR.summary" help="${customLabel}.crossCGIAR.summary.help" className="limitWords-300" helpIcon=false required=true editable=editable allowTextEditor=true /]
                 </div>
               [#else]
                 <div class="textArea">
@@ -194,10 +194,10 @@
     
     <div class="form-group">
       [#-- Partners --]
-        [@customForm.elementsListComponent name="${customName}.table7.parnters" elementType="" elementList="" label="${customLabel}.table7.partners" help=""  listName="" keyFieldName="" displayFieldName=""/]
+        [@customForm.elementsListComponent name="${customName}.table7.parnters" elementType="" elementList="" label="${customLabel}.table7.partners" help=""  listName="" keyFieldName="id" displayFieldName="name"/]
     </div>
     
-    [#-- Upload Template
+    [#-- Upload Template --]
     <div class="form-group" style="position:relative" listname="">
       [@customForm.fileUploadAjax 
         fileDB={}  
@@ -209,7 +209,7 @@
         labelClass=""
         required=true
        /]
-    </div>--]
+    </div>
 
     
   </div>
@@ -298,7 +298,7 @@
     
     <div class="form-group">
       [#-- Description of collaboration --]
-        [@customForm.textArea name="${customName}.table8.description" i18nkey="${customLabel}.table8.description" help="${customLabel}.table8.description.help" helpIcon=false required=true editable=editable /]
+        [@customForm.textArea name="${customName}.table8.description" i18nkey="${customLabel}.table8.description" help="${customLabel}.table8.description.help" helpIcon=false required=true editable=editable allowTextEditor=true /]
     </div>
     
     <div class="form-group">

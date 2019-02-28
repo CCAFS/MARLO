@@ -3,7 +3,7 @@
 [#assign currentSectionString = "annualReport-${actionName?replace('/','-')}-${synthesisID}" /]
 [#assign currentSection = "synthesis" /]
 [#assign currentStage = actionName?split('/')[1]/]
-[#assign pageLibs = [ "select2" ] /]
+[#assign pageLibs = [ "select2", "trumbowyg" ] /]
 [#assign customJS = [ "${baseUrlMedia}/js/annualReport/annualReport_${currentStage}.js" ] /]
 [#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css"] /]
 
@@ -46,7 +46,7 @@
             [#-- Interesting points on the use of W1/2 --]
             <div class="form-group">
               [#if PMU]
-                [@customForm.textArea name="${customName}.interestingPoints" i18nkey="${customLabel}.interestingPoints" help="${customLabel}.interestingPoints.help" helpIcon=false required=true editable=editable /]
+                [@customForm.textArea name="${customName}.interestingPoints" i18nkey="${customLabel}.interestingPoints" help="${customLabel}.interestingPoints.help" helpIcon=false required=true editable=editable allowTextEditor=true /]
               [#else]
                 <div class="textArea">
                   <label for="">[@customForm.text name="${customLabel}.interestingPoints" readText=true /]</label>:
@@ -113,7 +113,7 @@
     
     <div class="form-group">
       [#-- Name of examples of W1/2 Expenditure --]
-        [@customForm.textArea name="${customName}.table11.examples" i18nkey="${customLabel}.table11.examples" help="${customLabel}.table11.examples.help" helpIcon=false className="limitWords-50" required=true editable=editable /]
+        [@customForm.textArea name="${customName}.table11.examples" i18nkey="${customLabel}.table11.examples" help="${customLabel}.table11.examples.help" helpIcon=false className="limitWords-50" required=true editable=editable allowTextEditor=true /]
     </div>
 
     <div class="form-group row">

@@ -732,6 +732,14 @@
         <param name="excludeNullProperties">true</param>
       </result>
     </action>
+    
+    <action name="validateAnnualReportSynthesis2018Section"
+      class="org.cgiar.ccafs.marlo.action.json.annualReport.ValidateSectionStatusReportSynthesis2018Action">
+      <result type="json">
+        <param name="noCache">true</param>
+        <param name="excludeNullProperties">true</param>
+      </result>
+    </action>
 
     <action name="previewParticipants"
       class="org.cgiar.ccafs.marlo.action.center.json.capdev.FilterListsAction"

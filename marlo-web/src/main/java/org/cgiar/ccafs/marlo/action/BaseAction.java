@@ -153,6 +153,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionsEnum;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesis2018SectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.Role;
 import org.cgiar.ccafs.marlo.data.model.SectionStatus;
@@ -4478,6 +4479,24 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
+  /**
+   * Check if all the annual Synthesis Sections by Liaison Institution is completed
+   * 
+   * @param liaisonInstitutionID
+   * @return
+   */
+  public boolean isCompleteLiaisonSectionReport2018(long liaisonInstitutionID) {
+    Phase phase = this.getActualPhase();
+
+    ReportSynthesis reportSynthesis = reportSynthesisManager.findSynthesis(phase.getId(), liaisonInstitutionID);
+
+    if (reportSynthesis != null) {
+      return this.isCompleteReportSynthesis2018(reportSynthesis.getId());
+    } else {
+      return false;
+    }
+
+  }
 
   /**
    * Check if the powb synthesis is complete by the flagships or the PMU.
@@ -4829,6 +4848,135 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
               }
               break;
             case CONTROL:
+              secctions++;
+              if (sectionStatus.getMissingFields().length() > 0) {
+                return false;
+              }
+              break;
+          }
+        }
+      }
+    } else {
+      return false;
+    }
+
+    if (this.isPowbFlagship(reportSynthesis.getLiaisonInstitution())) {
+      if (secctions != 6) {
+        return false;
+      }
+    }
+
+    if (this.isPowbPMU(reportSynthesis.getLiaisonInstitution())) {
+      if (secctions != 13) {
+        return false;
+      }
+    }
+    return true;
+
+  }
+
+
+  /**
+   * Check if the annual Report is complete by the flagships or the PMU.
+   * 
+   * @param phaseID
+   * @return
+   */
+  public boolean isCompleteReportSynthesis2018(long synthesisID) {
+
+    int secctions = 0;
+    if (sectionStatusManager.findAll() == null) {
+      return false;
+    }
+
+    ReportSynthesis reportSynthesis = reportSynthesisManager.getReportSynthesisById(synthesisID);
+
+
+    if (reportSynthesis.getSectionStatuses() != null) {
+      List<SectionStatus> sections = new ArrayList<>(reportSynthesis.getSectionStatuses());
+      for (SectionStatus sectionStatus : sections) {
+        if (sectionStatus.getCycle().equals(this.getCurrentCycle())
+          && sectionStatus.getYear().intValue() == this.getCurrentCycleYear()) {
+          switch (ReportSynthesis2018SectionStatusEnum.value(sectionStatus.getSectionName().toUpperCase())) {
+            case CRP_PROGRESS:
+              secctions++;
+              if (sectionStatus.getMissingFields().length() > 0) {
+                return false;
+              }
+              break;
+            case FLAGSHIP_PROGRESS:
+              secctions++;
+              if (sectionStatus.getMissingFields().length() > 0) {
+                return false;
+              }
+              break;
+            case CC_DIMENSIONS:
+              secctions++;
+              if (sectionStatus.getMissingFields().length() > 0) {
+                return false;
+              }
+              break;
+            case GOVERNANCE:
+              secctions++;
+              if (sectionStatus.getMissingFields().length() > 0) {
+                return false;
+              }
+              break;
+            case EXTERNAL_PARTNERSHIPS:
+              secctions++;
+              if (sectionStatus.getMissingFields().length() > 0) {
+                return false;
+              }
+              break;
+            case INTELLECTUAL_ASSETS:
+              secctions++;
+              if (sectionStatus.getMissingFields().length() > 0) {
+                return false;
+              }
+              break;
+            case MELIA:
+              secctions++;
+              if (sectionStatus.getMissingFields().length() > 0) {
+                return false;
+              }
+              break;
+            case EFFICIENCY:
+              secctions++;
+              if (sectionStatus.getMissingFields().length() > 0) {
+                return false;
+              }
+              break;
+            case RISKS:
+              secctions++;
+              if (sectionStatus.getMissingFields().length() > 0) {
+                return false;
+              }
+              break;
+            case FUNDING_USE:
+              secctions++;
+              if (sectionStatus.getMissingFields().length() > 0) {
+                return false;
+              }
+              break;
+            case FINANCIAL:
+              secctions++;
+              if (sectionStatus.getMissingFields().length() > 0) {
+                return false;
+              }
+              break;
+            case INFLUENCE:
+              secctions++;
+              if (sectionStatus.getMissingFields().length() > 0) {
+                return false;
+              }
+              break;
+            case CONTROL:
+              secctions++;
+              if (sectionStatus.getMissingFields().length() > 0) {
+                return false;
+              }
+              break;
+            case NARRATIVE:
               secctions++;
               if (sectionStatus.getMissingFields().length() > 0) {
                 return false;

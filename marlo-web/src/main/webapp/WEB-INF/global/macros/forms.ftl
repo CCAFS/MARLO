@@ -471,12 +471,12 @@
   </div>
 [/#macro]
 
-[#macro checkmark id name label="" help="" paramText="" helpIcon=true disabled=false editable=true value="true" checked=true cssClass="" cssClassLabel="" centered=false]
+[#macro checkmark id name label="" i18nkey="" help="" paramText="" helpIcon=true disabled=false editable=true value="true" checked=true cssClass="" cssClassLabel="" centered=false]
   <label class="inputContainer ${cssClassLabel}"> 
     [#if editable]
       <input id="${id}" class="${cssClass}" type="checkbox" name="${name}" value="${value}" [#if checked]checked="checked"[/#if] >
       <span class="checkmark centered-${centered?string}"></span>
-      [#if label?has_content]<span class="labelText ${cssClassLabel}">${label}</span>[/#if]
+       [#if label?has_content || i18nkey?has_content]<label for="${id}" class="labelText ${cssClassLabel}">[#if i18nkey?has_content][@s.text name=i18nkey /][#else]${label}[/#if]</label>[/#if]
     [#else]
       <p class="checked-${checked?string}">
         [#if label?has_content]<span class="${cssClassLabel}">${label}</span>[/#if] 

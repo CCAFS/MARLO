@@ -3,7 +3,7 @@
 [#assign currentSectionString = "annualReport-${actionName?replace('/','-')}-${synthesisID}" /]
 [#assign currentSection = "synthesis" /]
 [#assign currentStage = actionName?split('/')[1]/]
-[#assign pageLibs = [ ] /]
+[#assign pageLibs = [ "trumbowyg" ] /]
 [#assign customJS = [ "${baseUrlMedia}/js/annualReport/annualReport_${currentStage}.js" ] /]
 [#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css"] /]
 
@@ -45,7 +45,7 @@
             [#-- Executive Summary --]
             [#if PMU]
               <div class="form-group">
-               [@customForm.textArea name="${customName}.narrative" i18nkey="${customLabel}.progress" help="${customLabel}.progress.help" className="limitWords-500" helpIcon=false required=true editable=editable /]
+               [@customForm.textArea name="${customName}.narrative" i18nkey="${customLabel}.progress" help="${customLabel}.progress.help" className="limitWords-500" helpIcon=false required=true editable=editable allowTextEditor=true /]
               </div>
             [#else]
               <div class="textArea">

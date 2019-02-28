@@ -89,6 +89,9 @@
 		<property name="year" type="java.lang.Long">
 			<column name="year" />
 		</property>
+		<property name="clearLead" type="java.lang.Boolean">
+			<column name="is_clear_lead" />
+		</property>
 		<many-to-one name="leadOrganization"
 			class="org.cgiar.ccafs.marlo.data.model.Institution" fetch="select">
 			<column name="lead_organization_id" />
