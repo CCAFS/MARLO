@@ -138,7 +138,18 @@
       "action": "${crpSession}/expectedDeliverablesSummary",
       "formats": [ "Excel" ],
       "cycles": [ "Planning" ],
-      "allowPpaPartners": true 
+      "allowPpaPartners": true,
+      "components" : [
+        { 
+          "type" :  "radio",
+          "label":  "Type of report",
+          "name":   "showAllYears",
+          "data" : [ 
+            { "label": "Only the specific cycle year",  "value": "false"},
+            { "label": "All Years",                     "value": "true"}
+          ] 
+        }
+      ]
     },
     { "active": true,
       "available": true,
@@ -147,7 +158,18 @@
       "namespace": "/projects",
       "action": "${crpSession}/DeliverablesReportingSummary",
       "formats": [ "Excel" ],
-      "cycles": [ "Reporting", "Upkeep" ]
+      "cycles": [ "Reporting", "Upkeep" ],
+      "components" : [
+        { 
+          "type" :  "radio",
+          "label":  "Type of report",
+          "name":   "showAllYears",
+          "data" : [ 
+            { "label": "Only the specific cycle year",  "value": "false"},
+            { "label": "All Years",                     "value": "true"}
+          ] 
+        }
+      ]
     }
   ]},
   [#-- BUDGET REPORTS --]
