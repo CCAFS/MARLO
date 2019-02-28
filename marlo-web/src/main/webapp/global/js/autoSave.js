@@ -191,6 +191,13 @@ function validateThisSection() {
     validateService = "/validateAnnualReportSynthesisSection.do";
   }
 
+  // Validate Annual Report Synthesis section
+  if(isAnnualReport2018Section()) {
+    sectionData.liaisonInstitutionID = $('input[name="liaisonInstitutionID"]').val();
+    sectionData.synthesisID = $('input[name="synthesisID"]').val() || $('#synthesisID').text();
+    validateService = "/validateAnnualReportSynthesis2018Section.do";
+  }
+
   $.ajax({
       url: baseURL + validateService,
       data: sectionData,
