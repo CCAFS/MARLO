@@ -593,6 +593,7 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
   public void validateInnovations(BaseAction action, Long projectID) {
     // Getting the project information.
     Project project = projectManager.getProjectById(projectID);
+    Boolean clearLead = null;
 
     Phase phase = action.getActualPhase();
 
@@ -664,13 +665,21 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
           .filter(c -> c.isActive() && c.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
       }
 
+      // Innovation clear lead
+      if (innovation.getProjectInnovationInfo().getClearLead() == false
+        || innovation.getProjectInnovationInfo().getClearLead() == null) {
+        clearLead = false;
+      } else {
+        clearLead = true;
+      }
+
       if (innovation.getCountries() != null) {
         for (ProjectInnovationCountry country : innovation.getCountries()) {
           innovation.getCountriesIds().add(country.getLocElement().getIsoAlpha2());
         }
       }
 
-      projectInnovationValidator.validate(action, project, innovation, false);
+      projectInnovationValidator.validate(action, project, innovation, clearLead, false);
     }
 
   }

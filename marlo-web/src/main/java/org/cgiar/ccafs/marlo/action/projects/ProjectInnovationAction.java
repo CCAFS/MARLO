@@ -465,9 +465,9 @@ public class ProjectInnovationAction extends BaseAction {
         // load clear lead
         if (innovation.getProjectInnovationInfo().getClearLead() == null
           || innovation.getProjectInnovationInfo().getClearLead() == false) {
-          this.setClearLead(false);
+          clearLead = false;
         } else {
-          this.setClearLead(true);
+          clearLead = true;
         }
 
         // load contributionOrganization
@@ -1316,7 +1316,7 @@ public class ProjectInnovationAction extends BaseAction {
   @Override
   public void validate() {
     if (save) {
-      validator.validate(this, project, innovation, true);
+      validator.validate(this, project, innovation, clearLead, true);
     }
   }
 
