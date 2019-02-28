@@ -42,7 +42,7 @@
 
 [#assign submission = false /]
 [#assign canSubmit = false /]
-[#assign completed = (action.isCompleteReportSynthesis(synthesisID))!false /]
+[#assign completed = (action.isCompleteReportSynthesis2018(synthesisID))!false /]
 [#assign canUnSubmit = false /]
 
 [#assign sectionsForChecking = [] /]

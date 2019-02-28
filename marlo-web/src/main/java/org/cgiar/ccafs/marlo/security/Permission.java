@@ -88,6 +88,8 @@ public class Permission {
   public static final String REPORT_SYNTHESIS_FINANCIAL_SUMMARY_BASE_PERMISSION =
     "crp:{0}:reportSynthesis:{1}:financial";
   public static final String REPORT_SYNTHESIS_MANAGEMENT_RISK_BASE_PERMISSION = "crp:{0}:reportSynthesis:{1}:risks";
+  public static final String REPORT_SYNTHESIS_INTELLECTUAL_ASSETS_BASE_PERMISSION =
+    "crp:{0}:reportSynthesis:{1}:intellectualAssets";
   public static final String REPORT_SYNTHESIS_CROSS_CUTTING_BASE_PERMISSION =
     "crp:{0}:reportSynthesis:{1}:ccDimensions";
   public static final String REPORT_SYNTHESIS_FLAGSHIP_PROGRESS_BASE_PERMISSION =
