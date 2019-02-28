@@ -518,7 +518,7 @@
   </div>
 [/#macro]
 
-[#macro helpLabel name="" paramText="" showIcon=true editable=true]
+[#macro helpLabel name="" paramText="" showIcon=true editable=true helpMore=false]
   [#local nameValue][@s.text name="${name}"][@s.param]${paramText}[/@s.param][/@s.text][/#local]
   [#--  Help Text --]
   [#if nameValue?has_content && editable]
@@ -528,6 +528,9 @@
     [#else]
       <br /><i class="helpLabel">${nameValue}</i>
     [/#if]
+  [/#if]
+  [#if helpMore]
+    [@helpViewMore name="${name}" /]
   [/#if]
 [/#macro]
 
@@ -586,4 +589,16 @@
     [#-- Title --]
     <span class="elementName">${(element[type][displayFieldName])!'{elementNameUndefined}'}</span>
   </li>
+[/#macro]
+
+[#macro helpViewMore name=""]
+[#local customName="${name}.more" /]
+
+   <a id="helpViewMoreLink" class="btn-link" data-toggle="collapse" data-target="#helpViewMoreBlock" aria-expanded="false" aria-controls="helpViewMoreBlock">
+     <i class="helpLabel">[@s.text name="global.viewMore" /]</i>
+   </a>
+   
+   <div id="helpViewMoreBlock" class="collapse" aria-labelledby="helpViewMoreBlock" data-parent="#helpViewMoreLink">
+      <i class="helpLabel">[@s.text name="${customName}" /]</i>
+   </div>
 [/#macro]
