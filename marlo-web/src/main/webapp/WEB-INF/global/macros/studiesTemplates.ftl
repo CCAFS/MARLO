@@ -25,13 +25,12 @@
       
       [#if isOutcomeCaseStudy]
         <hr />
-        
         [#-- Tags --]
         <div class="form-group">
           <label for="">[@s.text name="study.tags" /]:[@customForm.req required=editable /]</label>
           [#local tagValue = (element.projectExpectedStudyInfo.evidenceTag.id)!-1 ]
           [#list tags as tag]
-            <br /> [@customForm.radioFlat id="tag-${tag_index}" name="${customName}.projectExpectedStudyInfo.evidenceTag.id" i18nkey="${tag.name}" value="${tag.id}" checked=(tagValue == tag.id) cssClass="radioType-tags" cssClassLabel="font-normal" editable=editable /] 
+            <br /> [@customForm.radioFlat id="tag-${tag_index}" name="${customName}.projectExpectedStudyInfo.evidenceTag.id" label="${tag.name}" value="${tag.id}" checked=(tagValue == tag.id) cssClass="radioType-tags" cssClassLabel="font-normal" editable=editable /] 
           [/#list]
         </div>
       [/#if]
