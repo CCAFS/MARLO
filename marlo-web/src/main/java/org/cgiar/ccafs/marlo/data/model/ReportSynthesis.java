@@ -76,7 +76,7 @@ public class ReportSynthesis extends MarloAuditableEntity implements java.io.Ser
 
   @Expose
   private ReportSynthesisSrfProgress reportSynthesisSrfProgress;
-  
+
   @Expose
   private ReportSynthesisIntellectualAsset reportSynthesisIntellectualAsset;
 
@@ -170,12 +170,12 @@ public class ReportSynthesis extends MarloAuditableEntity implements java.io.Ser
     return reportSynthesisIndicatorGeneral;
   }
 
+  public ReportSynthesisIntellectualAsset getReportSynthesisIntellectualAsset() {
+    return reportSynthesisIntellectualAsset;
+  }
+
   public ReportSynthesisMelia getReportSynthesisMelia() {
     return reportSynthesisMelia;
-  }
-  
-    public ReportSynthesisIntellectualAsset getReportSynthesisIntellectualAsset() {
-    return reportSynthesisIntellectualAsset;
   }
 
   public ReportSynthesisProgramVariance getReportSynthesisProgramVariance() {
@@ -259,16 +259,16 @@ public class ReportSynthesis extends MarloAuditableEntity implements java.io.Ser
     this.reportSynthesisIndicatorGeneral = reportSynthesisIndicatorGeneral;
   }
 
+  public void setReportSynthesisIntellectualAsset(ReportSynthesisIntellectualAsset reportSynthesisIntellectualAsset) {
+    this.reportSynthesisIntellectualAsset = reportSynthesisIntellectualAsset;
+  }
+
   public void setReportSynthesisMelia(ReportSynthesisMelia reportSynthesisMelia) {
     this.reportSynthesisMelia = reportSynthesisMelia;
   }
 
   public void setReportSynthesisProgramVariance(ReportSynthesisProgramVariance reportSynthesisProgramVariance) {
     this.reportSynthesisProgramVariance = reportSynthesisProgramVariance;
-  }
-  
-    public void setReportSynthesisIntellectualAsset(ReportSynthesisIntellectualAsset reportSynthesisIntellectualAsset) {
-    this.reportSynthesisIntellectualAsset = reportSynthesisIntellectualAsset;
   }
 
 
