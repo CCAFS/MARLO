@@ -43,12 +43,13 @@ import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisCrpProgress;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisCrpProgressTarget;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisSrfProgress;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisSrfProgressTarget;
 import org.cgiar.ccafs.marlo.data.model.SrfSloIndicatorTarget;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
-import org.cgiar.ccafs.marlo.validation.annualreport.CrpProgressValidator;
+import org.cgiar.ccafs.marlo.validation.annualreport.y2018.SrfProgressValidator;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -94,7 +95,7 @@ public class SrfProgressAction extends BaseAction {
 
   private ReportSynthesisSrfProgressManager reportSynthesisSrfProgressManager;
 
-  private CrpProgressValidator validator;
+  private SrfProgressValidator validator;
 
   private ReportSynthesisSrfProgressTargetManager reportSynthesisSrfProgressTargetManager;
 
@@ -131,7 +132,7 @@ public class SrfProgressAction extends BaseAction {
     LiaisonInstitutionManager liaisonInstitutionManager,
     ReportSynthesisCrpProgressManager reportSynthesisCrpProgressManager, AuditLogManager auditLogManager,
     UserManager userManager, CrpProgramManager crpProgramManager, ReportSynthesisManager reportSynthesisManager,
-    CrpProgressValidator validator, ProjectFocusManager projectFocusManager, ProjectManager projectManager,
+    SrfProgressValidator validator, ProjectFocusManager projectFocusManager, ProjectManager projectManager,
     ProjectExpectedStudyManager projectExpectedStudyManager,
     ReportSynthesisCrpProgressStudyManager reportSynthesisCrpProgressStudyManager,
     ReportSynthesisCrpProgressTargetManager reportSynthesisCrpProgressTargetManager,
@@ -459,8 +460,7 @@ public class SrfProgressAction extends BaseAction {
       ReportSynthesisSrfProgress srfProgressDB =
         reportSynthesisManager.getReportSynthesisById(synthesisID).getReportSynthesisSrfProgress();
 
-      // TODO
-      // this.saveSrfTargets(crpProgressDB);
+      this.saveSrfTargets(srfProgressDB);
 
 
       srfProgressDB.setSummary(reportSynthesis.getReportSynthesisSrfProgress().getSummary());
@@ -509,60 +509,60 @@ public class SrfProgressAction extends BaseAction {
    * 
    * @param crpProgressDB
    */
-  public void saveSrfTargets(ReportSynthesisCrpProgress crpProgressDB) {
+  public void saveSrfTargets(ReportSynthesisSrfProgress srfProgressDB) {
 
 
     // Search and deleted form Information
-    if (crpProgressDB.getReportSynthesisCrpProgressTargets() != null
-      && crpProgressDB.getReportSynthesisCrpProgressTargets().size() > 0) {
+    if (srfProgressDB.getReportSynthesisSrfProgressTargets() != null
+      && srfProgressDB.getReportSynthesisSrfProgressTargets().size() > 0) {
 
-      List<ReportSynthesisCrpProgressTarget> targetPrev = new ArrayList<>(crpProgressDB
-        .getReportSynthesisCrpProgressTargets().stream().filter(nu -> nu.isActive()).collect(Collectors.toList()));
+      List<ReportSynthesisSrfProgressTarget> targetPrev = new ArrayList<>(srfProgressDB
+        .getReportSynthesisSrfProgressTargets().stream().filter(nu -> nu.isActive()).collect(Collectors.toList()));
 
-      // for (ReportSynthesisCrpProgressTarget crpTarget : targetPrev) {
-      // if (!reportSynthesis.getReportSynthesisCrpProgress().getSloTargets().contains(crpTarget)) {
-      // reportSynthesisCrpProgressTargetManager.deleteReportSynthesisCrpProgressTarget(crpTarget.getId());
-      // }
-      // }
+      for (ReportSynthesisSrfProgressTarget srfTarget : targetPrev) {
+        if (!reportSynthesis.getReportSynthesisSrfProgress().getSloTargets().contains(srfTarget)) {
+          reportSynthesisSrfProgressTargetManager.deleteReportSynthesisSrfProgressTarget(srfTarget.getId());
+        }
+      }
     }
 
     // Save form Information
-    if (reportSynthesis.getReportSynthesisCrpProgress().getSloTargets() != null) {
-      for (ReportSynthesisCrpProgressTarget crpTarget : reportSynthesis.getReportSynthesisCrpProgress()
+    if (reportSynthesis.getReportSynthesisSrfProgress().getSloTargets() != null) {
+      for (ReportSynthesisSrfProgressTarget srfTarget : reportSynthesis.getReportSynthesisSrfProgress()
         .getSloTargets()) {
-        if (crpTarget.getId() == null) {
-          ReportSynthesisCrpProgressTarget crpTargetSave = new ReportSynthesisCrpProgressTarget();
+        if (srfTarget.getId() == null) {
+          ReportSynthesisSrfProgressTarget srfTargetSave = new ReportSynthesisSrfProgressTarget();
 
-          crpTargetSave.setReportSynthesisCrpProgress(crpProgressDB);
+          srfTargetSave.setReportSynthesisSrfProgress(srfProgressDB);
 
           SrfSloIndicatorTarget sloIndicator =
-            srfSloIndicatorTargetManager.getSrfSloIndicatorTargetById(crpTarget.getSrfSloIndicatorTarget().getId());
+            srfSloIndicatorTargetManager.getSrfSloIndicatorTargetById(srfTarget.getSrfSloIndicatorTarget().getId());
 
-          crpTargetSave.setBirefSummary(crpTarget.getBirefSummary());
-          crpTargetSave.setAdditionalContribution(crpTarget.getAdditionalContribution());
+          srfTargetSave.setBirefSummary(srfTarget.getBirefSummary());
+          srfTargetSave.setAdditionalContribution(srfTarget.getAdditionalContribution());
 
-          crpTargetSave.setSrfSloIndicatorTarget(sloIndicator);
+          srfTargetSave.setSrfSloIndicatorTarget(sloIndicator);
 
-          // reportSynthesisCrpProgressTargetManager.saveReportSynthesisCrpProgressTarget(crpTargetSave);
+          reportSynthesisSrfProgressTargetManager.saveReportSynthesisSrfProgressTarget(srfTargetSave);
         } else {
 
-          // boolean hasChanges = false;
-          // ReportSynthesisCrpProgressTarget crpTargetPrev =
-          // reportSynthesisCrpProgressTargetManager.getReportSynthesisCrpProgressTargetById(crpTarget.getId());
+          boolean hasChanges = false;
+          ReportSynthesisSrfProgressTarget srfTargetPrev =
+            reportSynthesisSrfProgressTargetManager.getReportSynthesisSrfProgressTargetById(srfTarget.getId());
 
-          // if (!crpTargetPrev.getBirefSummary().equals(crpTarget.getBirefSummary())) {
-          // hasChanges = true;
-          // crpTargetPrev.setBirefSummary(crpTarget.getBirefSummary());
-          // }
-          //
-          // if (!crpTargetPrev.getAdditionalContribution().equals(crpTarget.getAdditionalContribution())) {
-          // hasChanges = true;
-          // crpTargetPrev.setAdditionalContribution(crpTarget.getAdditionalContribution());
-          // }
+          if (!srfTargetPrev.getBirefSummary().equals(srfTarget.getBirefSummary())) {
+            hasChanges = true;
+            srfTargetPrev.setBirefSummary(srfTarget.getBirefSummary());
+          }
 
-          // if (hasChanges) {
-          // reportSynthesisCrpProgressTargetManager.saveReportSynthesisCrpProgressTarget(crpTargetPrev);
-          // }
+          if (!srfTargetPrev.getAdditionalContribution().equals(srfTarget.getAdditionalContribution())) {
+            hasChanges = true;
+            srfTargetPrev.setAdditionalContribution(srfTarget.getAdditionalContribution());
+          }
+
+          if (hasChanges) {
+            reportSynthesisSrfProgressTargetManager.saveReportSynthesisSrfProgressTarget(srfTargetPrev);
+          }
         }
       }
     }
