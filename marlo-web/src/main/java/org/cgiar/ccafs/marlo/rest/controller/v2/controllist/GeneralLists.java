@@ -83,7 +83,7 @@ public class GeneralLists {
 
 	@ApiOperation(tags = { "Table 2 - CRP Policies", "Table 3 - Outcome/ Impact Case Reports",
 			"Table 3 - Outcome/ Impact Case Reports",
-			"Table 4 - CRP Innovations" }, value = "Search a country by alpha2 ISO code", response = ContributionOfCrpDTO.class)
+			"Table 4 - CRP Innovations" }, value = "${GeneralLists.countries.code.value}", response = ContributionOfCrpDTO.class)
 	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
 	@RequestMapping(value = "/countries/{code}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<CountryDTO> findCountryByNumericISOCode(@PathVariable("Iso Apha2 Code") String code) {
@@ -97,7 +97,7 @@ public class GeneralLists {
 	 * @param smo flagship/program code
 	 * @return a FlagshipProgramDTO with Flagship or Program data.
 	 */
-	@ApiOperation(tags = "Table 3 - Outcome/ Impact Case Reports", value = "Search a Flagship or Program with an ID", response = FlagshipProgramDTO.class)
+	@ApiOperation(tags = "Table 3 - Outcome/ Impact Case Reports", value = "${GeneralLists.flagships-modules.code.value}", response = FlagshipProgramDTO.class)
 	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
 	@RequestMapping(value = "/flagships-modules/{code}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<FlagshipProgramDTO> findFlagshipProgramById(@PathVariable Long code) {
@@ -113,7 +113,7 @@ public class GeneralLists {
 	 */
 
 	@ApiOperation(tags = { "Table 2 - CRP Policies", "Table 3 - Outcome/ Impact Case Reports",
-			"Table 4 - CRP Innovations" }, value = "Search a geographic scope by id ", response = ContributionOfCrpDTO.class)
+			"Table 4 - CRP Innovations" }, value = "${GeneralLists.geographic-scopes.code.value}", response = ContributionOfCrpDTO.class)
 	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
 	@RequestMapping(value = "/geographic-scopes/{code}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<GeographicScopeDTO> findGeographicScopeById(@PathVariable Long code) {
@@ -122,12 +122,54 @@ public class GeneralLists {
 	}
 
 	/**
+	 * Find a global unit requesting by smo id
+	 * 
+	 * @param smo ID
+	 * @return a GlobalUnit with the global unit founded.
+	 */
+	@RequiresPermissions(Permission.CRPS_READ_REST_API_PERMISSION)
+	@ApiOperation(tags = { "Table 1 - Evidence on Progress towards SRF targets", "Table 2 - CRP Policies",
+			"Table 4 - CRP Innovations" }, value = "${GeneralLists.cgiar-entities.code.value}", response = CGIAREntityDTO.class)
+	@RequestMapping(value = "/cgiar-entities/{code}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<CGIAREntityDTO> findGlobalUnitByCGIARId(@PathVariable String code) {
+		LOG.debug("REST request to get GlobalUnit : {}", code);
+		return this.globalUnitItem.findGlobalUnitByCGIRARId(code);
+	}
+
+	/**
+	 * Get a CGIAR Entity Type by code
+	 * 
+	 * @return a CGIAREntityTypeDTO founded by the code.
+	 */
+	@ApiOperation(value = "${GeneralLists.cgiar-entity-types.code.value}", response = CGIAREntityTypeDTO.class)
+	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
+	@RequestMapping(value = "/cgiar-entity-types/{code}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<CGIAREntityTypeDTO> findGlobalUnitTypeByCode(@PathVariable Long code) {
+		LOG.debug("REST request to get Regions");
+		return this.globalUnitTypeItem.findGlobalUnitTypeById(code);
+	}
+
+	/**
+	 * Get a Region by code
+	 * 
+	 * @return a RegionDTO founded by the code.
+	 */
+	@ApiOperation(tags = { "Table 2 - CRP Policies", "Table 3 - Outcome/ Impact Case Reports",
+			"Table 4 - CRP Innovations" }, value = "${GeneralLists.un-regions.code.value}", response = RegionDTO.class)
+	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
+	@RequestMapping(value = "/un-regions/{code}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<RegionDTO> findtRegionByCode(@PathVariable Long code) {
+		LOG.debug("REST request to get Regions");
+		return this.locationItem.getRegionByCode(code);
+	}
+
+	/**
 	 * Get All the Country items *
 	 * 
 	 * @return a List of LocElementDTO with all LocElements Items.
 	 */
 	@ApiOperation(tags = { "Table 2 - CRP Policies", "Table 3 - Outcome/ Impact Case Reports",
-			"Table 4 - CRP Innovations" }, value = "View all countries", response = CountryDTO.class, responseContainer = "List")
+			"Table 4 - CRP Innovations" }, value = "${GeneralLists.countries.all.value}", response = CountryDTO.class, responseContainer = "List")
 	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
 	@RequestMapping(value = "/countries", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public List<CountryDTO> getAllContries() {
@@ -141,7 +183,7 @@ public class GeneralLists {
 	 * @return a List of FlagshipProgramDTO with all Flagship or Program Items.
 	 */
 	@ApiOperation(tags = {
-			"Table 3 - Outcome/ Impact Case Reports" }, value = "View all Flagships or Programs ", response = FlagshipProgramDTO.class, responseContainer = "List")
+			"Table 3 - Outcome/ Impact Case Reports" }, value = "${GeneralLists.flagships-modules.all.value}", response = FlagshipProgramDTO.class, responseContainer = "List")
 	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
 	@RequestMapping(value = "/flagships-modules", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public List<FlagshipProgramDTO> getAllFlagshipsPrograms() {
@@ -157,7 +199,7 @@ public class GeneralLists {
 	 */
 
 	@ApiOperation(tags = { "Table 2 - CRP Policies", "Table 3 - Outcome/ Impact Case Reports",
-			"Table 4 - CRP Innovations" }, value = "View all geographic scopes", response = GeographicScopeDTO.class, responseContainer = "List")
+			"Table 4 - CRP Innovations" }, value = "${GeneralLists.geographic-scopes.all.value}", response = GeographicScopeDTO.class, responseContainer = "List")
 	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
 	@RequestMapping(value = "/geographic-scopes", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public List<GeographicScopeDTO> getAllGeographicScopes() {
@@ -173,8 +215,7 @@ public class GeneralLists {
 	 */
 	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
 	@ApiOperation(tags = { "Table 1 - Evidence on Progress towards SRF targets", "Table 2 - CRP Policies",
-			"Table 3 - Outcome/ Impact Case Reports",
-			"Table 4 - CRP Innovations" }, value = "View official list of CGIAR Centers, CGIAR Research Programs (CRPs) and CGIAR Platforms (PTFs)", response = CGIAREntityDTO.class, responseContainer = "List")
+			"Table 4 - CRP Innovations" }, value = "${GeneralLists.cgiar-entities.all.value}", response = CGIAREntityDTO.class, responseContainer = "List")
 	@RequestMapping(value = "/cgiar-entities", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<CGIAREntityDTO>> getAllGlobalUnits(
 			@RequestParam(required = false, value = "id of cgiar entity type") Long typeId) {
@@ -188,7 +229,7 @@ public class GeneralLists {
 	 * 
 	 * @return a List of CGIAREntityTypeDTO with all CGIAR entities Types.
 	 */
-	@ApiOperation(value = "View all CGIAR entities Types", response = CGIAREntityTypeDTO.class, responseContainer = "List")
+	@ApiOperation(value = "${GeneralLists.cgiar-entity-types.all.value}", response = CGIAREntityTypeDTO.class, responseContainer = "List")
 	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
 	@RequestMapping(value = "/cgiar-entity-types", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public List<CGIAREntityTypeDTO> getAllGlobalUnitTypes() {
@@ -202,55 +243,12 @@ public class GeneralLists {
 	 * @return a List of RegionDTO with all LocElements regions Items.
 	 */
 	@ApiOperation(tags = { "Table 2 - CRP Policies", "Table 3 - Outcome/ Impact Case Reports",
-			"Table 4 - CRP Innovations" }, value = "View all United Nations regions (UN M.49)", response = RegionDTO.class, responseContainer = "List")
+			"Table 4 - CRP Innovations" }, value = "${GeneralLists.un-regions.all.value}", response = RegionDTO.class, responseContainer = "List")
 	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
 	@RequestMapping(value = "/un-regions", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public List<RegionDTO> getAllRegions() {
 		LOG.debug("REST request to get Regions");
 		return this.locationItem.getAllRegions();
-	}
-
-	/**
-	 * Find a global unit requesting by smo id
-	 * 
-	 * @param smo ID
-	 * @return a GlobalUnit with the global unit founded.
-	 */
-	@RequiresPermissions(Permission.CRPS_READ_REST_API_PERMISSION)
-	@ApiOperation(tags = { "Table 1 - Evidence on Progress towards SRF targets", "Table 2 - CRP Policies",
-			"Table 3 - Outcome/ Impact Case Reports",
-			"Table 4 - CRP Innovations" }, value = "Search a specific Center, CRP or Platform by code", response = CGIAREntityDTO.class)
-	@RequestMapping(value = "/cgiar-entities/{code}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<CGIAREntityDTO> getGlobalUnitByCGIARId(@PathVariable String code) {
-		LOG.debug("REST request to get GlobalUnit : {}", code);
-		return this.globalUnitItem.findGlobalUnitByCGIRARId(code);
-	}
-
-	/**
-	 * Get a CGIAR Entity Type by code
-	 * 
-	 * @return a CGIAREntityTypeDTO founded by the code.
-	 */
-	@ApiOperation(value = "Get a CGIAR Entity Type by code", response = CGIAREntityTypeDTO.class)
-	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
-	@RequestMapping(value = "/cgiar-entity-types/{code}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<CGIAREntityTypeDTO> getGlobalUnitTypeByCode(@PathVariable Long code) {
-		LOG.debug("REST request to get Regions");
-		return this.globalUnitTypeItem.findGlobalUnitTypeById(code);
-	}
-
-	/**
-	 * Get a Region by code
-	 * 
-	 * @return a RegionDTO founded by the code.
-	 */
-	@ApiOperation(tags = { "Table 2 - CRP Policies", "Table 3 - Outcome/ Impact Case Reports",
-			"Table 4 - CRP Innovations" }, value = "Get a United Nations regions (UN M.49) by code", response = RegionDTO.class)
-	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
-	@RequestMapping(value = "/un-regions/{code}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<RegionDTO> getRegionByCode(@PathVariable Long code) {
-		LOG.debug("REST request to get Regions");
-		return this.locationItem.getRegionByCode(code);
 	}
 
 }

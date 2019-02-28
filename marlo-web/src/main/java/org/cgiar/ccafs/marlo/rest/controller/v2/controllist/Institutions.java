@@ -64,18 +64,45 @@ public class Institutions {
 		this.userManager = userManager;
 	}
 
-	@ApiOperation(value = "Create a partner request by id", response = InstitutionRequestDTO.class)
+	@ApiOperation(value = "${Institutions.institution-requests.create.value}", response = InstitutionRequestDTO.class)
 	@RequiresPermissions(Permission.FULL_CREATE_REST_API_PERMISSION)
 	@RequestMapping(value = "/institutions/{CGIAREntity}/institution-requests", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<InstitutionRequestDTO> createPartnerRequest(
-			@PathVariable(name = "CGIAR Entity Acronym") String CGIAREntity,
+	public ResponseEntity<InstitutionRequestDTO> createPartnerRequest(@PathVariable("CGIAREntity") String CGIAREntity,
 			@Valid @RequestBody InstitutionDTO institutionDTO) {
 		LOG.debug("Create a new institution (Partner Request) with : {}", institutionDTO);
 		return this.institutionItem.createPartnerRequest(institutionDTO, CGIAREntity, this.getCurrentUser());
 	}
 
 	@ApiOperation(tags = { "Table 4 - CRP Innovations",
-			"Table 3 - Outcome/ Impact Case Reports" }, value = "View a list of all institutions", response = InstitutionDTO.class, responseContainer = "List")
+			"Table 3 - Outcome/ Impact Case Reports" }, value = "${Institutions.institutions.code.value}", response = InstitutionDTO.class)
+	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
+	@RequestMapping(value = "/institutions/{code}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<InstitutionDTO> findInstitutionById(@PathVariable Long code) {
+		LOG.debug("REST request to get Institution : {}", code);
+		return this.institutionItem.findInstitutionById(code);
+	}
+
+	@ApiOperation(value = "${Institutions.institution-types.code.value}", response = InstitutionTypeDTO.class)
+	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
+	@RequestMapping(value = "/institution-types/{code}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<InstitutionTypeDTO> findInstitutionTypeById(
+			@PathVariable(name = "institution type id") Long code) {
+		LOG.debug("Get a partner request with : {}", code);
+		return this.institutionTypeItem.findInstitutionTypeById(code);
+	}
+
+	@ApiOperation(value = "${Institutions.institution-requests.code.value}", response = InstitutionRequestDTO.class)
+	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
+	@RequestMapping(value = "/institutions/{CGIAREntity}/institution-requests/{code}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<InstitutionRequestDTO> findPartnerRequestById(
+			@PathVariable(name = "CGIAR Entity Acronym") String entityAcronym,
+			@PathVariable(name = "institution request id") Long code) {
+		LOG.debug("Get a partner request with : {}", code);
+		return this.institutionItem.getPartnerRequest(code, entityAcronym);
+	}
+
+	@ApiOperation(tags = { "Table 4 - CRP Innovations",
+			"Table 3 - Outcome/ Impact Case Reports" }, value = "${Institutions.institutions.all.value}", response = InstitutionDTO.class, responseContainer = "List")
 	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
 	@RequestMapping(value = "/institutions", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public List<InstitutionDTO> getAllInstitutions() {
@@ -83,7 +110,7 @@ public class Institutions {
 		return this.institutionItem.getAllInstitutions();
 	}
 
-	@ApiOperation(value = "View a list of institution types", response = InstitutionTypeDTO.class, responseContainer = "List")
+	@ApiOperation(value = "${Institutions.institution-types.all.value}", response = InstitutionTypeDTO.class, responseContainer = "List")
 	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
 	@RequestMapping(value = "/institution-types", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public List<InstitutionTypeDTO> getAllInstitutionsTypes() {
@@ -96,34 +123,6 @@ public class Institutions {
 		Long principal = (Long) subject.getPrincipal();
 		User user = this.userManager.getUser(principal);
 		return user;
-	}
-
-	@ApiOperation(tags = { "Table 4 - CRP Innovations",
-			"Table 3 - Outcome/ Impact Case Reports" }, value = "Search an institution with an ID", response = InstitutionDTO.class)
-	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
-	@RequestMapping(value = "/institutions/{code}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<InstitutionDTO> getInstitution(@PathVariable Long code) {
-		LOG.debug("REST request to get Institution : {}", code);
-		return this.institutionItem.findInstitutionById(code);
-	}
-
-	@ApiOperation(value = "Search an institution typet by id", response = InstitutionTypeDTO.class)
-	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
-	@RequestMapping(value = "/institution-types/{code}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<InstitutionTypeDTO> getInstitutionTypeById(
-			@PathVariable(name = "institution type id") Long code) {
-		LOG.debug("Get a partner request with : {}", code);
-		return this.institutionTypeItem.findInstitutionTypeById(code);
-	}
-
-	@ApiOperation(value = "Search a partner request by id", response = InstitutionRequestDTO.class)
-	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
-	@RequestMapping(value = "/institutions/{CGIAREntity}/institution-requests/{code}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<InstitutionRequestDTO> getPartnerRequestById(
-			@PathVariable(name = "CGIAR Entity Acronym") String entityAcronym,
-			@PathVariable(name = "institution request id") Long code) {
-		LOG.debug("Get a partner request with : {}", code);
-		return this.institutionItem.getPartnerRequest(code, entityAcronym);
 	}
 
 }

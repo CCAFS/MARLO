@@ -29,7 +29,7 @@ import org.mapstruct.Mappings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@Mapper(componentModel = "jsr330", uses = LocationMapper.class)
+@Mapper(componentModel = "jsr330", uses = { LocationMapper.class, InstitutionTypeMapper.class })
 public abstract class InstitutionMapper {
 	private static final Logger LOG = LoggerFactory.getLogger(InstitutionMapper.class);
 
