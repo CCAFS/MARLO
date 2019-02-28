@@ -18,9 +18,11 @@ package org.cgiar.ccafs.marlo;
 import java.util.Collections;
 import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.env.Environment;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import springfox.documentation.builders.PathSelectors;
@@ -33,11 +35,15 @@ import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
+@PropertySource("classpath:clarisa.properties")
 // Disable for production environment.
 @Profile("!" + ApplicationContextConfig.SPRING_PROFILE_PRODUCTION)
-@Configuration
+
 @EnableSwagger2
 public class MarloSwaggerConfiguration extends WebMvcConfigurerAdapter {
+
+	@Autowired
+	private Environment env;
 
 	// Config required for Swagger UI if not using Spring Boot.
 	@Override
@@ -53,8 +59,8 @@ public class MarloSwaggerConfiguration extends WebMvcConfigurerAdapter {
 		return new Docket(DocumentationType.SWAGGER_2).securitySchemes(Collections.singletonList(this.securityScheme()))
 				.select().apis(RequestHandlerSelectors.basePackage("org.cgiar.ccafs.marlo.rest"))
 				.paths(PathSelectors.any()).build().apiInfo(this.apiInfo())// .enableUrlTemplating(true)
-				.tags(new Tag("All AR 2018 Control Lists", "All control list used to populate all tables of AR 2018",
-						100), this.getTags())
+				.tags(new Tag(this.env.getProperty("allcontrol.tag"), this.env.getProperty("allcontrol.description"),
+						Integer.parseInt(this.env.getProperty("allcontrol.order"))), this.getTags())
 				.genericModelSubstitutes(Optional.class);
 
 	}
@@ -68,41 +74,51 @@ public class MarloSwaggerConfiguration extends WebMvcConfigurerAdapter {
 
 	private Tag[] getTags() {
 		Tag[] tags = new Tag[15];
-		tags[0] = new Tag("Institutions Lists", "All control List about MARLO intitutions ", 110);
-		tags[1] = new Tag("General Control Lists", "General pourpose control List ", 115);
-		tags[2] = new Tag("SRF Lists", "All SRF related control List ", 120);
-		tags[3] = new Tag("Table 1 - Evidence on Progress towards SRF targets",
-				"Control list used to populate the table 1 indicator as per the AR2018 template", 5);
-		tags[4] = new Tag("Table 2 - CRP Policies",
-				"Control list used to populate the policies indicator as per the AR2018 template", 10);
-		tags[5] = new Tag("Table 3 - Outcome/ Impact Case Reports",
-				"Control list used to populate the policies indicator as per the AR2018 template", 15);
-		tags[6] = new Tag("Table 4 - CRP Innovations",
-				"Control list used to populate the innovation indicator as per the AR2018 template", 20);
+		tags[0] = new Tag(this.env.getProperty("institution.tag"), this.env.getProperty("institution.description"),
+				Integer.parseInt(this.env.getProperty("institution.order")));
 
-		tags[7] = new Tag("Table 5 - Status of Planned Outcomes and Milestones",
-				"Control list used to populate this indicator as per the AR2018 template", 25);
+		tags[1] = new Tag(this.env.getProperty("generalcontrol.tag"),
+				this.env.getProperty("generalcontrol.description"),
+				Integer.parseInt(this.env.getProperty("generalcontrol.order")));
 
-		tags[8] = new Tag("Table 6 - Peer-reviewed publicationss",
-				"Control list used to populate this indicator as per the AR2018 template", 30);
+		tags[2] = new Tag(this.env.getProperty("srfcontrol.tag"), this.env.getProperty("srfcontrol.description"),
+				Integer.parseInt(this.env.getProperty("srfcontrol.order")));
 
-		tags[9] = new Tag("Table 7 - Key external partnerships",
-				"Control list used to populate this indicator as per the AR2018 template", 35);
+		tags[3] = new Tag(this.env.getProperty("table1.tag"), this.env.getProperty("table1.description"),
+				Integer.parseInt(this.env.getProperty("table1.order")));
 
-		tags[10] = new Tag("Table 8 - Internal Cross-CGIAR Collaborations",
-				"Control list used to populate this indicator as per the AR2018 template", 40);
+		tags[4] = new Tag(this.env.getProperty("table2.tag"), this.env.getProperty("table2.description"),
+				Integer.parseInt(this.env.getProperty("table2.order")));
 
-		tags[11] = new Tag("Table 9 - Monitoring, Evaluation, \n Learning and Impact Assessment (MELIA)",
-				"Control list used to populate this indicator as per the AR2018 template", 45);
+		tags[5] = new Tag(this.env.getProperty("table3.tag"), this.env.getProperty("table3.description"),
+				Integer.parseInt(this.env.getProperty("table3.order")));
 
-		tags[12] = new Tag("Table 10 - Update on Actions Taken in Response to Relevant Evaluations",
-				"Control list used to populate this indicator as per the AR2018 template", 50);
+		tags[6] = new Tag(this.env.getProperty("table4.tag"), this.env.getProperty("table4.description"),
+				Integer.parseInt(this.env.getProperty("table4.order")));
 
-		tags[13] = new Tag("Table 11 - W1/2 Use",
-				"Control list used to populate this indicator as per the AR2018 template", 55);
+		tags[7] = new Tag(this.env.getProperty("table5.tag"), this.env.getProperty("table5.description"),
+				Integer.parseInt(this.env.getProperty("table5.order")));
 
-		tags[14] = new Tag("Table 12 - CRP Financial Report",
-				"Control list used to populate this indicator as per the AR2018 template", 60);
+		tags[8] = new Tag(this.env.getProperty("table6.tag"), this.env.getProperty("table6.description"),
+				Integer.parseInt(this.env.getProperty("table6.order")));
+
+		tags[9] = new Tag(this.env.getProperty("table7.tag"), this.env.getProperty("table7.description"),
+				Integer.parseInt(this.env.getProperty("table7.order")));
+
+		tags[10] = new Tag(this.env.getProperty("table8.tag"), this.env.getProperty("table8.description"),
+				Integer.parseInt(this.env.getProperty("table8.order")));
+
+		tags[11] = new Tag(this.env.getProperty("table9.tag"), this.env.getProperty("table9.description"),
+				Integer.parseInt(this.env.getProperty("table9.order")));
+
+		tags[12] = new Tag(this.env.getProperty("table10.tag"), this.env.getProperty("table10.description"),
+				Integer.parseInt(this.env.getProperty("table10.order")));
+
+		tags[13] = new Tag(this.env.getProperty("table11.tag"), this.env.getProperty("table11.description"),
+				Integer.parseInt(this.env.getProperty("table11.order")));
+
+		tags[14] = new Tag(this.env.getProperty("table12.tag"), this.env.getProperty("table12.description"),
+				Integer.parseInt(this.env.getProperty("table12.order")));
 
 		return tags;
 	}

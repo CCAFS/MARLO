@@ -28,6 +28,8 @@ import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.Institutions;
 import org.cgiar.ccafs.marlo.rest.dto.InstitutionDTO;
 import org.cgiar.ccafs.marlo.rest.dto.InstitutionRequestDTO;
 import org.cgiar.ccafs.marlo.rest.mappers.InstitutionMapper;
+import org.cgiar.ccafs.marlo.utils.APConfig;
+import org.cgiar.ccafs.marlo.utils.SendMailS;
 
 import java.util.List;
 import java.util.Optional;
@@ -36,43 +38,45 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import com.ibm.icu.text.MessageFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+@Configuration
+@PropertySource("classpath:global.properties")
 @Named
-@PropertySource("classpath:clarisa.properties")
 public class InstitutionItem<T> {
 
 	private static final Logger LOG = LoggerFactory.getLogger(Institutions.class);
-
+	@Autowired
+	private Environment env;
+	private final SendMailS sendMail;
 	private InstitutionManager institutionManager;
 	private LocElementManager locElementManager;
 	private InstitutionMapper institutionMapper;
 	private PartnerRequestManager partnerRequestManager;
 	private GlobalUnitManager globalUnitManager;
-
-	@Value("${table1.tag}")
-	private String table1;
+	private boolean messageSent;
+	protected APConfig config;
 
 	@Inject
 	public InstitutionItem(InstitutionManager institutionManager, InstitutionMapper institutionMapper,
 			LocElementManager locElementManager, PartnerRequestManager partnerRequestManager,
-			GlobalUnitManager globalUnitManager) {
+			GlobalUnitManager globalUnitManager, SendMailS sendMail, APConfig config) {
 		this.institutionManager = institutionManager;
 		this.institutionMapper = institutionMapper;
 		this.locElementManager = locElementManager;
 		this.partnerRequestManager = partnerRequestManager;
 		this.globalUnitManager = globalUnitManager;
-		try {
-			ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext(new String[] { "spring-bean.xml" });
-		} catch (Throwable e) {
-			System.out.println(e);
-		}
+		this.sendMail = sendMail;
+		this.config = config;
+
 	}
 
 	public ResponseEntity<InstitutionRequestDTO> createPartnerRequest(InstitutionDTO institutionDTO,
@@ -99,10 +103,11 @@ public class InstitutionItem<T> {
 
 		partnerRequestChild = this.partnerRequestManager.savePartnerRequest(partnerRequestChild);
 
+		// SEND THE MAIL
+		this.sendPartnerRequestEmail(partnerRequestChild, user, entityAcronym);
+
 		return new ResponseEntity<InstitutionRequestDTO>(
 				this.institutionMapper.partnerRequestToPartnerRequestDTO(partnerRequestChild), HttpStatus.CREATED);
-
-		// TODO: SEND THE MAIL
 
 	}
 
@@ -115,7 +120,6 @@ public class InstitutionItem<T> {
 	 */
 	public ResponseEntity<InstitutionDTO> findInstitutionById(Long id) {
 		Institution institution = this.institutionManager.getInstitutionById(id);
-		LOG.debug("Titulo de la tabla1 : {}", this.table1);
 
 		return Optional.ofNullable(institution).map(this.institutionMapper::institutionToInstitutionDTO)
 				.map(result -> new ResponseEntity<>(result, HttpStatus.OK))
@@ -151,85 +155,70 @@ public class InstitutionItem<T> {
 
 	}
 
-//	private Boolean sendPartnerRequestEmail(PartnerRequest partnerRequest) {
-//		String institutionName, institutionAcronym, institutionTypeName, countryId, countryName, partnerWebPage;
-//		String subject;
-//		StringBuilder message = new StringBuilder();
-//
-//		// message subject
-//
-//		subject = this.getText("marloRequestInstitution.email.subject",
-//				new String[] { this.getCrpSession().toUpperCase(), institutionName });
-//		// Message content
-//		message.append(this.getCurrentUser().getFirstName() + " " + this.getCurrentUser().getLastName() + " ");
-//		message.append("(" + this.getCurrentUser().getEmail() + ") ");
-//		message.append("is requesting to add the following partner information:");
-//		message.append("</br></br>");
-//		message.append("Partner Name: ");
-//		message.append(institutionName);
-//		message.append("</br>");
-//		message.append("Acronym: ");
-//		message.append(institutionAcronym);
-//		message.append(" </br>");
-//		message.append("Partner type: ");
-//		message.append(institutionTypeName);
-//		message.append(" </br>");
-//
-//		message.append("Headquarter country location: ");
-//		message.append(countryName);
-//		message.append(" </br>");
-//
-//		// Is there a web page?
-//		if (partnerWebPage != null && !partnerWebPage.isEmpty()) {
-//			message.append("Web Page: ");
-//			message.append(partnerWebPage);
-//			message.append(" </br>");
-//		}
-//		message.append(" </br>");
-//
-//		switch (pageRequestName) {
-//		case "projects":
-//			this.addProjectMessage(message, partnerRequest, partnerRequestModifications);
-//			break;
-//
-//		case "fundingSources":
-//			this.addFunginMessage(message, partnerRequest, partnerRequestModifications);
-//			break;
-//
-//		case "studies":
-//			this.addStudyMessage(message, partnerRequest, partnerRequestModifications);
-//			break;
-//
-//		case "capdev":
-//			this.addCapDevMessage(message, partnerRequest, partnerRequestModifications);
-//			break;
-//
-//		case "powbSynthesis":
-//			this.addPowbSynthesisMessage(message, partnerRequest, partnerRequestModifications);
-//			break;
-//
-//		}
-//
-//		partnerRequest = this.partnerRequestManager.savePartnerRequest(partnerRequest);
-//		partnerRequestModifications.setPartnerRequest(partnerRequest);
-//		partnerRequestModifications.setModified(false);
-//		partnerRequestModifications = this.partnerRequestManager.savePartnerRequest(partnerRequestModifications);
-//
-//		message.append(".</br>");
-//		message.append("</br>");
-//		try {
-//			sendMail.send(config.getEmailNotification(), null, config.getEmailNotification(), subject,
-//					message.toString(), null, null, null, true);
-//		} catch (Exception e) {
-//			LOG.error("unable to send mail", e);
-//			/**
-//			 * Original code swallows the exception and didn't even log it. Now
-//			 * we at least log it, but we need to revisit to see if we should
-//			 * continue processing or re-throw the exception.
-//			 */
-//		}
-//		messageSent = true;
-//
-//	}
+	String getText(String property, String[] params) {
+		String value = this.env.getProperty(property);
+		MessageFormat message = new MessageFormat(value);
+		return message.format(params);
+
+	}
+
+	private void sendPartnerRequestEmail(PartnerRequest partnerRequest, User user, String entityAcronym) {
+		String institutionName, institutionAcronym, institutionTypeName, countryName, partnerWebPage;
+		institutionName = partnerRequest.getPartnerName();
+		institutionAcronym = partnerRequest.getAcronym();
+		institutionTypeName = partnerRequest.getInstitutionType().getName();
+		countryName = partnerRequest.getLocElement().getName();
+		partnerWebPage = partnerRequest.getWebPage();
+		String subject;
+		StringBuilder message = new StringBuilder();
+
+		// message subject
+
+		subject = this.getText("marloRequestInstitution.email.subject",
+				new String[] { entityAcronym.toUpperCase(), institutionName });
+
+		// Message content
+		message.append(user.getFirstName() + " " + user.getLastName() + " ");
+		message.append("(" + user.getEmail() + ") ");
+		message.append("is requesting to add the following partner information:");
+		message.append("</br></br>");
+		message.append("Partner Name: ");
+		message.append(institutionName);
+		message.append("</br>");
+		message.append("Acronym: ");
+		message.append(institutionAcronym);
+		message.append(" </br>");
+		message.append("Partner type: ");
+		message.append(institutionTypeName);
+		message.append(" </br>");
+
+		message.append("Headquarter country location: ");
+		message.append(countryName);
+		message.append(" </br>");
+
+		// Is there a web page?
+		if (partnerWebPage != null && !partnerWebPage.isEmpty()) {
+			message.append("Web Page: ");
+			message.append(partnerWebPage);
+			message.append(" </br>");
+		}
+		message.append(" </br>");
+		message.append(".</br>");
+		message.append("</br>");
+		try {
+			this.sendMail.send(this.config.getEmailNotification(), null, this.config.getEmailNotification(), subject,
+					message.toString(), null, null, null, true);
+		} catch (Exception e) {
+			LOG.error("unable to send mail", e);
+			this.messageSent = false;
+			/**
+			 * Original code swallows the exception and didn't even log it. Now
+			 * we at least log it, but we need to revisit to see if we should
+			 * continue processing or re-throw the exception.
+			 */
+		}
+		this.messageSent = true;
+
+	}
 
 }
