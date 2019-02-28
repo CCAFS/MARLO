@@ -91,6 +91,12 @@ function validateButtonEvent(e) {
 }
 
 function processTasks(tasks,id,button) {
+  // Validate Annual Report Synthesis section
+  var validateService = "/validateAnnualReportSynthesisSection.do";
+  if(isAnnualReport2018Section()) {
+    validateService = "/validateAnnualReportSynthesis2018Section.do";
+  }
+
   $(button).unbind('click');
   var completed = 0;
   var index = 0;
@@ -103,7 +109,7 @@ function processTasks(tasks,id,button) {
       var $sectionMenu = $('#menu-' + sectionName + '');
       $
           .ajax({
-              url: baseURL + '/validateAnnualReportSynthesisSection.do',
+              url: baseURL + validateService,
               data: {
                   synthesisID: $('#synthesisID').text(),
                   sectionName: sectionName,

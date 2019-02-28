@@ -87,7 +87,6 @@ import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyCountry;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyCrp;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyFlagship;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInfo;
-import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInnovation;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInstitution;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyLink;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyPolicy;
@@ -218,6 +217,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
   private long projectID;
   private ProjectInfo projectInfo;
   private List<ProjectLp6Contribution> projectLp6Contributions;
+  private List<ProjectInnovation> innovationsList;
 
   // Managers
   private final CrpProgramManager programManager;
@@ -4887,16 +4887,23 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           cgiarInnovations = studyinfo.getCgiarInnovation();
         }
         // Innovations
-        if (projectExpectedStudy.getInnovations() != null) {
+        if (this.project != null) {
+          Project projectL = this.projectManager.getProjectById(this.projectID);
+
+          List<ProjectInnovation> innovations =
+            projectL.getProjectInnovations().stream().filter(c -> c.isActive()).collect(Collectors.toList());
           Set<String> innovationsSet = new HashSet<>();
-          for (ProjectExpectedStudyInnovation projectExpectedStudyInnovation : projectExpectedStudy.getInnovations()) {
-            projectExpectedStudyInnovation.setProjectInnovation(projectInnovationManager
-              .getProjectInnovationById(projectExpectedStudyInnovation.getProjectInnovation().getId()));
-            innovationsSet.add("<br>&nbsp;&nbsp;&nbsp;&nbsp; ● "
-              + projectExpectedStudyInnovation.getProjectInnovation().getProjectInnovationInfo().getTitle());
+          for (ProjectInnovation projectInnovation : innovations) {
+            if (projectInnovation != null
+              && projectInnovation.getProjectInnovationInfo(this.getActualPhase()) != null) {
+              // this.innovationsList.add(projectInnovation);
+              innovationsSet
+                .add("<br>&nbsp;&nbsp;&nbsp;&nbsp; ● " + projectInnovation.getProjectInnovationInfo().getTitle());
+            }
           }
           cgiarInnovationsList = String.join("", innovationsSet);
         }
+
         // SubIdos
         List<ProjectExpectedStudySubIdo> subIdosList = projectExpectedStudy.getProjectExpectedStudySubIdos().stream()
           .filter(s -> s.isActive() && s.getPhase() != null && s.getPhase().equals(this.getSelectedPhase()))

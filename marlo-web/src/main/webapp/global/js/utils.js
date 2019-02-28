@@ -308,6 +308,11 @@ function isAnnualReportSection() {
   return url.includes("/annualReport/");
 }
 
+function isAnnualReport2018Section() {
+  var url = window.location.href;
+  return url.includes("/annualReport2018/");
+}
+
 /**
  * Search from url that has GET parameters
  */
