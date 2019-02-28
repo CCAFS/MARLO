@@ -40,6 +40,7 @@ public class ProjectInnovationValidator extends BaseValidator {
 
   private final GlobalUnitManager crpManager;
   private BaseAction baseAction;
+  private Boolean clearLead;
 
   @Inject
   public ProjectInnovationValidator(GlobalUnitManager crpManager) {
@@ -56,7 +57,8 @@ public class ProjectInnovationValidator extends BaseValidator {
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
-  public void validate(BaseAction action, Project project, ProjectInnovation innovation, boolean saving) {
+  public void validate(BaseAction action, Project project, ProjectInnovation innovation, Boolean clearLead,
+    boolean saving) {
 
     action.setInvalidFields(new HashMap<>());
     baseAction = action;
@@ -67,7 +69,7 @@ public class ProjectInnovationValidator extends BaseValidator {
         action.addMissingField("draft");
       }
     }
-
+    this.clearLead = clearLead;
     this.validateProjectInnovation(action, innovation);
 
     if (!action.getFieldErrors().isEmpty()) {
@@ -254,8 +256,7 @@ public class ProjectInnovationValidator extends BaseValidator {
     }
 
     // Validate lead organization
-    if (projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getClearLead() == null
-      || projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getClearLead() == false) {
+    if (clearLead == null || clearLead == false) {
       if (projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getLeadOrganization() != null) {
         if (projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getLeadOrganization()
           .getId() == null
