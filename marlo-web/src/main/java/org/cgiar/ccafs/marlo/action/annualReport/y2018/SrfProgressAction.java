@@ -231,7 +231,7 @@ public class SrfProgressAction extends BaseAction {
 
 
   /**
-   * Get the information for the Cross Cutting marker in the form
+   * Get the information list for the Flagships Slo Targets Information in the form
    *
    * @param markerID
    * @return
@@ -258,7 +258,7 @@ public class SrfProgressAction extends BaseAction {
   }
 
   /**
-   * Get the information for the Cross Cutting marker in the form
+   * Get the information for the Slo targets in the form
    * 
    * @param markerID
    * @return
