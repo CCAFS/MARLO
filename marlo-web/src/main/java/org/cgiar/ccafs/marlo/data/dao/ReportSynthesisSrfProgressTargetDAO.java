@@ -55,11 +55,15 @@ public interface ReportSynthesisSrfProgressTargetDAO {
   public List<ReportSynthesisSrfProgressTarget> findAll();
 
 
+  public ReportSynthesisSrfProgressTarget getReportSynthesisSrfProgressId(long synthesisID, long srfTargetID);
+
   /**
    * This method saves the information of the given reportSynthesisSrfProgressTarget
    * 
-   * @param reportSynthesisSrfProgressTarget - is the reportSynthesisSrfProgressTarget object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the reportSynthesisSrfProgressTarget was
+   * @param reportSynthesisSrfProgressTarget - is the reportSynthesisSrfProgressTarget object with the new information
+   *        to be added/updated.
+   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the
+   *         reportSynthesisSrfProgressTarget was
    *         updated
    *         or -1 is some error occurred.
    */

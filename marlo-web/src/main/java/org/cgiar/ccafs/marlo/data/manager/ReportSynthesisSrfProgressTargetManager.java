@@ -52,23 +52,29 @@ public interface ReportSynthesisSrfProgressTargetManager {
   public List<ReportSynthesisSrfProgressTarget> findAll();
 
 
+  public ReportSynthesisSrfProgressTarget getReportSynthesisSrfProgressId(long synthesisID, long srfTargetID);
+
   /**
    * This method gets a reportSynthesisSrfProgressTarget object by a given reportSynthesisSrfProgressTarget identifier.
    * 
    * @param reportSynthesisSrfProgressTargetID is the reportSynthesisSrfProgressTarget identifier.
    * @return a ReportSynthesisSrfProgressTarget object.
    */
-  public ReportSynthesisSrfProgressTarget getReportSynthesisSrfProgressTargetById(long reportSynthesisSrfProgressTargetID);
+  public ReportSynthesisSrfProgressTarget
+    getReportSynthesisSrfProgressTargetById(long reportSynthesisSrfProgressTargetID);
 
   /**
    * This method saves the information of the given reportSynthesisSrfProgressTarget
    * 
-   * @param reportSynthesisSrfProgressTarget - is the reportSynthesisSrfProgressTarget object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the reportSynthesisSrfProgressTarget was
+   * @param reportSynthesisSrfProgressTarget - is the reportSynthesisSrfProgressTarget object with the new information
+   *        to be added/updated.
+   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the
+   *         reportSynthesisSrfProgressTarget was
    *         updated
    *         or -1 is some error occurred.
    */
-  public ReportSynthesisSrfProgressTarget saveReportSynthesisSrfProgressTarget(ReportSynthesisSrfProgressTarget reportSynthesisSrfProgressTarget);
+  public ReportSynthesisSrfProgressTarget
+    saveReportSynthesisSrfProgressTarget(ReportSynthesisSrfProgressTarget reportSynthesisSrfProgressTarget);
 
 
 }
