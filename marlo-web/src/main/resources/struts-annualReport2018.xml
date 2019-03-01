@@ -32,7 +32,7 @@
     </action>
     
     <!--  1.3 Cross-Cutting Dimensions  -->
-    <action name="{crp}/ccDimensions" class="org.cgiar.ccafs.marlo.action.annualReport.CrossCuttingDimensionAction">
+    <action name="{crp}/ccDimensions" class="org.cgiar.ccafs.marlo.action.annualReport.y2018.CrossCuttingDimensionAction">
       <interceptor-ref name="editReportSynthesisStack" />
       <result name="input">/WEB-INF/crp/views/annualReport2018/AR2018_ccDimension.ftl</result>
       <result name="success" type="redirectAction">
