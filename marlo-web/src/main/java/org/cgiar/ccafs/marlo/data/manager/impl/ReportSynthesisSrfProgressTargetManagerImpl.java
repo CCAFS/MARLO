@@ -16,6 +16,8 @@ package org.cgiar.ccafs.marlo.data.manager.impl;
 
 
 import org.cgiar.ccafs.marlo.data.dao.ReportSynthesisSrfProgressTargetDAO;
+import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
+import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisSrfProgressTargetManager;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisSrfProgressTarget;
 
@@ -33,12 +35,17 @@ public class ReportSynthesisSrfProgressTargetManagerImpl implements ReportSynthe
 
   private ReportSynthesisSrfProgressTargetDAO reportSynthesisSrfProgressTargetDAO;
   // Managers
+  private PhaseManager phaseManager;
+  private ReportSynthesisManager reportSynthesisManager;
 
 
   @Inject
   public ReportSynthesisSrfProgressTargetManagerImpl(
-    ReportSynthesisSrfProgressTargetDAO reportSynthesisSrfProgressTargetDAO) {
+    ReportSynthesisSrfProgressTargetDAO reportSynthesisSrfProgressTargetDAO, PhaseManager phaseManager,
+    ReportSynthesisManager reportSynthesisManager) {
     this.reportSynthesisSrfProgressTargetDAO = reportSynthesisSrfProgressTargetDAO;
+    this.phaseManager = phaseManager;
+    this.reportSynthesisManager = reportSynthesisManager;
 
 
   }
@@ -74,6 +81,36 @@ public class ReportSynthesisSrfProgressTargetManagerImpl implements ReportSynthe
 
     return reportSynthesisSrfProgressTargetDAO.find(reportSynthesisSrfProgressTargetID);
   }
+
+
+  // @Override
+  // public ReportSynthesisSrfProgressTarget getSrfProgressTargetInfo(List<LiaisonInstitution> lInstitutions,
+  // long phaseID) {
+  //
+  // List<ReportSynthesisSrfProgressTarget> reportSynthesisSrfProgressTarget = new ArrayList<>();
+  //
+  // for (LiaisonInstitution liaisonInstitution : lInstitutions) {
+  //
+  // ReportSynthesisSrfProgress crpProgress = new ReportSynthesisSrfProgress();
+  // ReportSynthesis reportSynthesisFP = reportSynthesisManager.findSynthesis(phaseID, liaisonInstitution.getId());
+  //
+  // if (reportSynthesisFP != null) {
+  // if (reportSynthesisFP.getReportSynthesisSrfProgress() != null) {
+  // crpProgress = reportSynthesisFP.getReportSynthesisSrfProgress();
+  // }
+  // } else {
+  // ReportSynthesis synthesis = new ReportSynthesis();
+  // synthesis.setPhase(phaseManager.getPhaseById(phaseID));
+  // synthesis.setLiaisonInstitution(liaisonInstitution);
+  // crpProgress.setReportSynthesis(synthesis);
+  // }
+  // synthesisSrfProgres.add(crpProgress);
+  // }
+  //
+  // return synthesisSrfProgres;
+  //
+  //
+  // }
 
   @Override
   public ReportSynthesisSrfProgressTarget

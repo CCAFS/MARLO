@@ -38,8 +38,8 @@ public class ReportSynthesisSrfProgressManagerImpl implements ReportSynthesisSrf
 
   private ReportSynthesisSrfProgressDAO reportSynthesisSrfProgressDAO;
   // Managers
-  ReportSynthesisManager reportSynthesisManager;
-  PhaseManager phaseManager;
+  private ReportSynthesisManager reportSynthesisManager;
+  private PhaseManager phaseManager;
 
 
   @Inject
@@ -98,6 +98,7 @@ public class ReportSynthesisSrfProgressManagerImpl implements ReportSynthesisSrf
 
 
   }
+
 
   @Override
   public ReportSynthesisSrfProgress getReportSynthesisSrfProgressById(long reportSynthesisSrfProgressID) {
