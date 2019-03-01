@@ -62,7 +62,6 @@ public class ProjectPolicyValidator extends BaseValidator {
     action.setInvalidFields(new HashMap<>());
     baseAction = action;
 
-
     if (!saving) {
       Path path = this.getAutoSaveFilePath(policy, action.getCrpID(), action);
       if (path.toFile().exists()) {
@@ -70,9 +69,9 @@ public class ProjectPolicyValidator extends BaseValidator {
       }
     }
 
-    if (policy.getProjectPolicyInfo(action.getActualPhase()).getYear() == action.getActualPhase().getYear()) {
-      this.validateProjectPolicy(action, policy);
-    }
+    // if (policy.getProjectPolicyInfo(action.getActualPhase()).getYear() == action.getActualPhase().getYear()) {
+    this.validateProjectPolicy(action, policy);
+    // }
 
     if (!action.getFieldErrors().isEmpty()) {
       action.addActionError(action.getText("saving.fields.required"));
@@ -155,16 +154,22 @@ public class ProjectPolicyValidator extends BaseValidator {
      */
 
     // Validate Narrative
-
-    if (!(this.wordCount(projectPolicy.getProjectPolicyInfo(action.getActualPhase()).getNarrativeEvidence()) <= 200)) {
-      action.addMessage(action.getText("Narrative of Evidence"));
-      action.addMissingField("policy.narrative");
-      action.getInvalidFields().put("input-policy.projectPolicyInfo.narrativeEvidence",
-        InvalidFieldsMessages.EMPTYFIELD);
-    }
-
+    /*
+     * if (projectPolicy.getProjectPolicyInfo(baseAction.getActualPhase()).getRepIndStageProcess() != null
+     * && projectPolicy.getProjectPolicyInfo().getRepIndStageProcess().getId() == 3) {
+     * if (!(this
+     * .wordCount(projectPolicy.getProjectPolicyInfo(action.getActualPhase()).getNarrativeEvidence()) <= 200)) {
+     * action.addMessage(action.getText("Narrative of Evidence"));
+     * action.addMissingField("policy.narrative");
+     * action.getInvalidFields().put("input-policy.projectPolicyInfo.narrativeEvidence",
+     * InvalidFieldsMessages.EMPTYFIELD);
+     * }
+     * }
+     */
     // Validate Maturity Process
-    if (projectPolicy.getProjectPolicyInfo(baseAction.getActualPhase()).getRepIndStageProcess() != null) {
+    if (projectPolicy.getProjectPolicyInfo(baseAction.getActualPhase()).getRepIndStageProcess() != null)
+
+    {
       if (projectPolicy.getProjectPolicyInfo(baseAction.getActualPhase()).getRepIndStageProcess().getId() == null
         || projectPolicy.getProjectPolicyInfo(baseAction.getActualPhase()).getRepIndStageProcess().getId() == -1) {
         action.addMessage(action.getText("Maturity Process"));
