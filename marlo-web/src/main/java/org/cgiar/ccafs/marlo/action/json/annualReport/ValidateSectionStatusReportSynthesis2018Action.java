@@ -93,9 +93,9 @@ public class ValidateSectionStatusReportSynthesis2018Action extends BaseAction {
         // case FLAGSHIP_PROGRESS:
         // reportSynthesisSectionValidator2018.validateFlagshipProgress(this, reportSynthesis);
         // break;
-        // case CC_DIMENSIONS:
-        // reportSynthesisSectionValidator2018.validateCrossCuttingDimensions(this, reportSynthesis);
-        // break;
+        case CC_DIMENSIONS:
+          reportSynthesisSectionValidator2018.validateCrossCuttingDimensionValidator(this, reportSynthesis);
+          break;
         // case GOVERNANCE:
         // reportSynthesisSectionValidator2018.validateGovernance(this, reportSynthesis);
         // break;
@@ -238,6 +238,5 @@ public class ValidateSectionStatusReportSynthesis2018Action extends BaseAction {
   public void setSectionName(String sectionName) {
     this.sectionName = sectionName;
   }
-
 
 }

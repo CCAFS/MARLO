@@ -3,73 +3,116 @@
 "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 <!-- Generated May 31, 2018 4:07:34 PM by Hibernate Tools 3.4.0.CR1 -->
 <hibernate-mapping>
-	<class
-		name="org.cgiar.ccafs.marlo.data.model.ReportSynthesisCrossCuttingDimension"
-		table="report_synthesis_cross_cutting_dimensions" optimistic-lock="none">
-		<id name="id" type="long">
-			<column name="id" />
-			<generator class="foreign">
-				<param name="property">reportSynthesis</param>
-			</generator>
-		</id>
-		<many-to-one name="modifiedBy" class="org.cgiar.ccafs.marlo.data.model.User"
-			fetch="select">
-			<column name="modified_by" />
-		</many-to-one>
-		<one-to-one name="reportSynthesis" class="org.cgiar.ccafs.marlo.data.model.ReportSynthesis"
-			constrained="true"></one-to-one>
-		<many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User"
-			fetch="select" update="false">
-			<column name="created_by" not-null="true" />
-		</many-to-one>
-		<property name="genderDescription" type="string">
-			<column name="gender_description" sql-type="TEXT" />
-		</property>
-		<property name="genderLessons" type="string">
-			<column name="gender_lessons" sql-type="TEXT" />
-		</property>
-		<property name="youthLessons" type="string">
+  <class
+    name="org.cgiar.ccafs.marlo.data.model.ReportSynthesisCrossCuttingDimension"
+    table="report_synthesis_cross_cutting_dimensions"
+    optimistic-lock="none">
+    <id name="id" type="long">
+      <column name="id" />
+      <generator class="foreign">
+        <param name="property">reportSynthesis</param>
+      </generator>
+    </id>
+    <many-to-one name="modifiedBy"
+      class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
+      <column name="modified_by" />
+    </many-to-one>
+    <one-to-one name="reportSynthesis"
+      class="org.cgiar.ccafs.marlo.data.model.ReportSynthesis"
+      constrained="true"></one-to-one>
+    <many-to-one name="createdBy"
+      class="org.cgiar.ccafs.marlo.data.model.User" fetch="select"
+      update="false">
+      <column name="created_by" not-null="true" />
+    </many-to-one>
+    <property name="genderDescription" type="string">
+      <column name="gender_description" sql-type="TEXT" />
+    </property>
+    <property name="genderLessons" type="string">
+      <column name="gender_lessons" sql-type="TEXT" />
+    </property>
+    <property name="youthLessons" type="string">
       <column name="youth_lessons" sql-type="TEXT" />
     </property>
-		<property name="youthDescription" type="string">
-			<column name="youth_description" sql-type="TEXT" />
-		</property>
-		<property name="otherAspects" type="string">
-			<column name="other_aspects" sql-type="TEXT" />
-		</property>
-		<property name="capDev" type="string">
-			<column name="cap_dev" sql-type="TEXT" />
-		</property>
-		<property name="openData" type="string">
-			<column name="open_data" sql-type="TEXT" />
-		</property>
-		<property name="intellectualAssets" type="string">
-			<column name="intellectual_assets" sql-type="TEXT" />
-		</property>
-		<property name="active" type="boolean">
-			<column name="is_active" not-null="true" />
-		</property>
-		<property name="activeSince" type="timestamp" update="false">
-			<column name="active_since" length="19" not-null="true" />
-		</property>
-		<property name="modificationJustification" type="string">
-			<column name="modification_justification" sql-type="TEXT" />
-		</property>
-		<set name="reportSynthesisCrossCuttingDimensionAssets" table="report_synthesis_cross_cutting_dimension_assets"
-			inverse="true" lazy="true" fetch="select">
-			<key>
-				<column name="report_synthesis_cross_cutting_dimension_id" />
-			</key>
-			<one-to-many class="org.cgiar.ccafs.marlo.data.model.ReportSynthesisCrossCuttingDimensionAsset" />
-		</set>
-		<set name="reportSynthesisCrossCuttingDimensionInnovations"
-			table="report_synthesis_cross_cutting_dimension_innovations" inverse="true"
-			lazy="true" fetch="select">
-			<key>
-				<column name="report_synthesis_cross_cutting_dimension_id" />
-			</key>
-			<one-to-many
-				class="org.cgiar.ccafs.marlo.data.model.ReportSynthesisCrossCuttingDimensionInnovation" />
-		</set>
-	</class>
+    <property name="youthDescription" type="string">
+      <column name="youth_description" sql-type="TEXT" />
+    </property>
+    <property name="otherAspects" type="string">
+      <column name="other_aspects" sql-type="TEXT" />
+    </property>
+    <property name="capDev" type="string">
+      <column name="cap_dev" sql-type="TEXT" />
+    </property>
+    <property name="openData" type="string">
+      <column name="open_data" sql-type="TEXT" />
+    </property>
+    <property name="intellectualAssets" type="string">
+      <column name="intellectual_assets" sql-type="TEXT" />
+    </property>
+    <property name="active" type="boolean">
+      <column name="is_active" not-null="true" />
+    </property>
+    <property name="activeSince" type="timestamp" update="false">
+      <column name="active_since" length="19" not-null="true" />
+    </property>
+    <property name="modificationJustification" type="string">
+      <column name="modification_justification" sql-type="TEXT" />
+    </property>
+    <set name="reportSynthesisCrossCuttingDimensionAssets"
+      table="report_synthesis_cross_cutting_dimension_assets"
+      inverse="true" lazy="true" fetch="select">
+      <key>
+        <column name="report_synthesis_cross_cutting_dimension_id" />
+      </key>
+      <one-to-many
+        class="org.cgiar.ccafs.marlo.data.model.ReportSynthesisCrossCuttingDimensionAsset" />
+    </set>
+    <set name="reportSynthesisCrossCuttingDimensionInnovations"
+      table="report_synthesis_cross_cutting_dimension_innovations"
+      inverse="true" lazy="true" fetch="select">
+      <key>
+        <column name="report_synthesis_cross_cutting_dimension_id" />
+      </key>
+      <one-to-many
+        class="org.cgiar.ccafs.marlo.data.model.ReportSynthesisCrossCuttingDimensionInnovation" />
+    </set>
+
+    <!-- AR2018 Columns -->
+    <property name="genderResearchFindings" type="string">
+      <column name="gender_research_findings" sql-type="TEXT" />
+    </property>
+
+    <property name="genderLearned" type="string">
+      <column name="gender_learned" sql-type="TEXT" />
+    </property>
+
+    <property name="genderProblemsArisen" type="string">
+      <column name="gender_problems_arisen" sql-type="TEXT" />
+    </property>
+
+    <property name="youthContribution" type="string">
+      <column name="youth_contribution" sql-type="TEXT" />
+    </property>
+
+    <property name="youthResearchFindings" type="string">
+      <column name="youth_research_findings" sql-type="TEXT" />
+    </property>
+
+    <property name="youthLearned" type="string">
+      <column name="youth_learned" sql-type="TEXT" />
+    </property>
+
+    <property name="youthProblemsArisen" type="string">
+      <column name="youth_problems_arisen" sql-type="TEXT" />
+    </property>
+
+    <property name="capDevKeyAchievements" type="string">
+      <column name="cap_dev_key_achievements" sql-type="TEXT" />
+    </property>
+
+    <property name="climateChangeKeyAchievements" type="string">
+      <column name="climate_change_key_achievements" sql-type="TEXT" />
+    </property>
+
+  </class>
 </hibernate-mapping>

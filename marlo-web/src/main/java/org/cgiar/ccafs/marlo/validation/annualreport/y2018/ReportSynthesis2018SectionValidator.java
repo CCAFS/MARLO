@@ -19,6 +19,7 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisCrossCuttingDimension;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisIntellectualAsset;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
 
@@ -35,14 +36,16 @@ public class ReportSynthesis2018SectionValidator<T extends BaseAction> extends B
 
   // Validations
   private final IntellectualAssetsValidator intellectualAssetsValidator;
+  private final CCDimension2018Validator ccDimensionValidator;
 
 
   @Inject
   public ReportSynthesis2018SectionValidator(ReportSynthesisManager reportSynthesisManager,
-    IntellectualAssetsValidator intellectualAssetsValidator) {
+    IntellectualAssetsValidator intellectualAssetsValidator, CCDimension2018Validator ccDimensionValidator) {
     super();
     this.reportSynthesisManager = reportSynthesisManager;
     this.intellectualAssetsValidator = intellectualAssetsValidator;
+    this.ccDimensionValidator = ccDimensionValidator;
   }
 
 
@@ -61,6 +64,25 @@ public class ReportSynthesis2018SectionValidator<T extends BaseAction> extends B
     return isFP;
   }
 
+
+  public void validateCrossCuttingDimensionValidator(BaseAction action, ReportSynthesis reportSynthesis) {
+
+    if (reportSynthesis.getReportSynthesisCrossCuttingDimension() == null) {
+      ReportSynthesisCrossCuttingDimension crossCuttingDimension = new ReportSynthesisCrossCuttingDimension();
+
+      // create one to one relation
+      reportSynthesis.setReportSynthesisCrossCuttingDimension(crossCuttingDimension);
+      crossCuttingDimension.setReportSynthesis(reportSynthesis);
+
+      ccDimensionValidator.validate(action, reportSynthesis, false);
+
+      // save the changes
+      reportSynthesis = reportSynthesisManager.saveReportSynthesis(reportSynthesis);
+    } else {
+      ccDimensionValidator.validate(action, reportSynthesis, false);
+    }
+
+  }
 
   public void validateIntellectualAssets(BaseAction action, ReportSynthesis reportSynthesis) {
 
