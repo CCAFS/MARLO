@@ -124,7 +124,7 @@
     </action>
     
     <!--  2.7 Use of W1-2 Funding  -->
-    <action name="{crp}/fundingUse" class="org.cgiar.ccafs.marlo.action.annualReport.FundingUseAction">
+    <action name="{crp}/fundingUse" class="org.cgiar.ccafs.marlo.action.annualReport.y2018.FundingUseAction">
       <interceptor-ref name="editReportSynthesisStack" />
       <result name="input">/WEB-INF/crp/views/annualReport2018/AR2018_fundingUse.ftl</result>
       <result name="success" type="redirectAction">

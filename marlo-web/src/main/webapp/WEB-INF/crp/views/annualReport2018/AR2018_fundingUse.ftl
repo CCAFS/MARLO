@@ -17,7 +17,7 @@
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
 
-[#assign customName= "reportSynthesis" /]
+[#assign customName= "reportSynthesis.reportSynthesisFundingUseSummary" /]
 [#assign customLabel= "annualReport2018.${currentStage}" /]
 
 [#-- Helptext --]
@@ -73,8 +73,8 @@
             <div class="form-group">
               <h4 class="simpleTitle headTitle annualReport-table">[@s.text name="${customLabel}.table11.title" /]</h4>
                 [@customForm.helpLabel name="${customLabel}.table11.help" showIcon=false editable=editable/]
-                [#if fundingList?has_content]
-                    [#list fundingList as item]
+                [#if reportSynthesis.reportSynthesisFundingUseSummary.expenditureAreas?has_content]
+                    [#list reportSynthesis.reportSynthesisFundingUseSummary.expenditureAreas as item]
                       [@fundingExamples element=item name="${customName}.fundingUse.table11" index=item_index template=false isEditable=editable/]
                     [/#list]
                 [/#if]
