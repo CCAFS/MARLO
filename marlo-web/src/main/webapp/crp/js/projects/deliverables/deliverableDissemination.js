@@ -156,6 +156,10 @@ function addDisseminationEvents() {
         $author.find(".lastNameInput").val("");
       }
       $(this).html(text);
+    }).on('keypress', function(e) {
+      if(e.which == 13 || e.keyCode === 13) {
+        e.preventDefault();
+      }
     });
     // EVENT FIRST NAME
     $('.firstName').on("click", function() {
@@ -171,6 +175,10 @@ function addDisseminationEvents() {
         $author.find(".firstNameInput").val("");
       }
       $(this).html(text);
+    }).on('keypress', function(e) {
+      if(e.which == 13 || e.keyCode === 13) {
+        e.preventDefault();
+      }
     });
     // EVENT ORCID
     $('.orcidId').on("click", function() {
@@ -186,6 +194,10 @@ function addDisseminationEvents() {
         $author.find(".orcidIdInput").val("");
       }
       $(this).html(text);
+    }).on('keypress', function(e) {
+      if(e.which == 13 || e.keyCode === 13) {
+        e.preventDefault();
+      }
     });
   }
 
