@@ -129,7 +129,7 @@
 [#macro sloTargetMacro name element index=-1 isTemplate=false]
   [#local customName = "${name}[${index}]" /]
   [#local customClass = "sloTarget" /]
-  [#local sloTargetContribution = (action.getTargetsInfo(element.id))!{} ]
+  [#local sloTargetContribution = {} ]
   
   <div id="${customClass}-${isTemplate?string('template', index)}" class="simpleBox ${customClass}" style="display:${isTemplate?string('none', 'block')}">
     [#-- Hidden Inputs --]
@@ -141,7 +141,6 @@
     <div class="form-group">
       [@customForm.textArea name="${customName}.birefSummary" value="${(sloTargetContribution.birefSummary)!}" i18nkey="${customLabel}.summaryEvidence" className="limitWords-150" help="${customLabel}.summaryEvidence.help" helpIcon=false required=true editable=editable allowTextEditor=true /]
     </div>
-     
     [#-- Expected additional contribution before end of 2022 (if not already fully covered). --]
     <div class="form-group">
       [@customForm.textArea name="${customName}.additionalContribution" value="${(sloTargetContribution.additionalContribution)!}" i18nkey="${customLabel}.additionalContribution" className="limitWords-100" help="${customLabel}.additionalContribution.help" helpIcon=false required=false editable=editable allowTextEditor=true /]
