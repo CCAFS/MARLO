@@ -191,7 +191,7 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
 
     if (baseAction.isPlanningActive()) {
       // Validate Srf Targets Selection
-      if (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getCapdevLevel() == null) {
+      if (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getIsSrfTarget() == null) {
         action.addMessage(action.getText("targets"));
         action.addMissingField("expectedStudy.projectExpectedStudyInfo.isSrfTarget");
         action.getInvalidFields().put("input-expectedStudy.projectExpectedStudyInfo.isSrfTarget",
@@ -443,7 +443,7 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
 
       } else {
         // Validate Srf Targets Selection
-        if (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getCapdevLevel() == null) {
+        if (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getIsSrfTarget() == null) {
           action.addMessage(action.getText("targets"));
           action.addMissingField("expectedStudy.projectExpectedStudyInfo.isSrfTarget");
           action.getInvalidFields().put("input-expectedStudy.projectExpectedStudyInfo.isSrfTarget",

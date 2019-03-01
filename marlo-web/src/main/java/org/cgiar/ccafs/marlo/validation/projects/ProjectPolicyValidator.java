@@ -62,6 +62,7 @@ public class ProjectPolicyValidator extends BaseValidator {
     action.setInvalidFields(new HashMap<>());
     baseAction = action;
 
+
     if (!saving) {
       Path path = this.getAutoSaveFilePath(policy, action.getCrpID(), action);
       if (path.toFile().exists()) {
@@ -69,7 +70,9 @@ public class ProjectPolicyValidator extends BaseValidator {
       }
     }
 
-    this.validateProjectPolicy(action, policy);
+    if (policy.getProjectPolicyInfo(action.getActualPhase()).getYear() == action.getActualPhase().getYear()) {
+      this.validateProjectPolicy(action, policy);
+    }
 
     if (!action.getFieldErrors().isEmpty()) {
       action.addActionError(action.getText("saving.fields.required"));
@@ -80,6 +83,8 @@ public class ProjectPolicyValidator extends BaseValidator {
 
     this.saveMissingFields(project, policy, action.getActualPhase().getDescription(), action.getActualPhase().getYear(),
       action.getActualPhase().getUpkeep(), ProjectSectionStatusEnum.POLICIES.getStatus(), action);
+
+
   }
 
   private void validateCrossCuttingMarkers(BaseAction action, ProjectPolicyCrossCuttingMarker crossCuttingMarker,
