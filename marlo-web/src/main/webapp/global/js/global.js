@@ -322,7 +322,7 @@ $(document).ready(function() {
     $('.allowTextEditor').trumbowyg({
         btns: [
           [
-            'link'
+              'link', 'strong', 'em'
           ]
         ],
         autogrow: true,

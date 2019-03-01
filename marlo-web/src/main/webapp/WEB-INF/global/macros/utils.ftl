@@ -85,7 +85,7 @@
       [#local itemValue = (item)!'null' /]
       [#list levels as level][#local itemValue = (itemValue[level])!'null' /][/#list]
       [#local valuesArray = valuesArray + [itemValue] /]
-    [/#list]     
+    [/#list]
     
     [#if valuesArray?size > 1 ]
       <ul style="padding: 0">
