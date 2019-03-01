@@ -16,6 +16,7 @@
 ]/]
 
 [#import "/WEB-INF/global/macros/utils.ftl" as utilities /]
+[#import "/WEB-INF/crp/views/annualReport2018/macros-AR2018.ftl" as macrosAR /]
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
 
@@ -46,6 +47,9 @@
           <div class="borderBox">
             [#-- Overall contribution towards SRF targets --]
             <div class="form-group">
+              [#if PMU]
+                [@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/]
+              [/#if]
               [@customForm.textArea name="${customName}.summary" i18nkey="${customLabel}.overallContribution" help="${customLabel}.overallContribution.help" className="limitWords-400" helpIcon=false required=true editable=editable allowTextEditor=true /]
               <br />
             </div>
@@ -53,14 +57,16 @@
             [#-- PMU Flagships - Synthesis --]
             [#if PMU]
               <div class="form-group">
-                  [@tableFlagshipSynthesis tableName="tableOverallProgress" list=flagshipCrpProgress columns=["narrative"] /]
+                [@macrosAR.tableFPSynthesis tableName="${customLabel}.tableOverallProgress" list=flagshipSrfProgress columns=["summary"] /]
               </div>
             [/#if]
             
             
             [#-- Table 1: Evidence on progress towards SRF targets  --]
-             [@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/]
-             <hr />
+            [#if PMU]
+              [@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/]
+            [/#if]
+            <hr />
             <div class="form-group">
               <h4 class="headTitle annualReport-table">[@s.text name="${customLabel}.evidenceProgress" /]</h4>
               [@customForm.helpLabel name="${customLabel}.evidenceProgress.help" showIcon=false editable=editable helpMore=true/]
@@ -91,45 +97,13 @@
 
 [#---------------------------------------------------- MACROS ----------------------------------------------------]
 
-[#macro tableFlagshipSynthesis tableName="tableName" list=[] columns=[] ]
-  <div class="form-group">
-    <h4 class="simpleTitle">[@s.text name="${customLabel}.${tableName}.title" /]</h4>
-    <table class="table table-bordered">
-      <thead>
-        <tr>
-          <th class="col-md-1 text-center"> FP </th>
-          [#list columns as column]<th class="text-center"> [@s.text name="${customLabel}.${tableName}.column${column_index}" /] </th>[/#list]
-        </tr>
-      </thead>
-      <tbody>
-        [#if list?has_content]
-          [#list list as item]
-            [#local crpProgram = (item.reportSynthesis.liaisonInstitution.crpProgram)!{} ]
-            <tr>
-              <td>
-                <span class="programTag" style="border-color:${(crpProgram.color)!'#fff'}">${(crpProgram.acronym)!}</span>
-              </td>
-              [#list columns as column]
-                <td>
-                  [#if (item[column]?has_content)!false] 
-                    ${item[column]?replace('\n', '<br>')} 
-                  [#else]
-                    <i style="opacity:0.5">[@s.text name="global.prefilledByFlagship"/]</i>
-                  [/#if]
-                </td>
-              [/#list]
-            </tr>
-          [/#list]
-        [/#if]
-      </tbody>
-    </table>
-  </div>
-[/#macro]
+
 
 [#macro sloTargetMacro name element index=-1 isTemplate=false]
   [#local customName = "${name}[${index}]" /]
   [#local customClass = "sloTarget" /]
-  [#local sloTargetContribution = {} ]
+  [#local sloTargetContribution = action.getTargetsInfo(element.id)!{} ]
+  [#local otherContributions = action.getTargetsFlagshipInfo(element.id)![] ]
   
   <div id="${customClass}-${isTemplate?string('template', index)}" class="simpleBox ${customClass}" style="display:${isTemplate?string('none', 'block')}">
     [#-- Hidden Inputs --]
@@ -140,11 +114,20 @@
     [#-- Brief summary of new evidence of CGIAR contribution to relevant targets for this CRP (with citation) --]
     <div class="form-group">
       [@customForm.textArea name="${customName}.birefSummary" value="${(sloTargetContribution.birefSummary)!}" i18nkey="${customLabel}.summaryEvidence" className="limitWords-150" help="${customLabel}.summaryEvidence.help" helpIcon=false required=true editable=editable allowTextEditor=true /]
+      [#-- FP Synthesis table --]
+      [#if PMU]
+        [@macrosAR.tableFPSynthesis tableName="${customLabel}.tableSloTargetBriefSummary" list=otherContributions columns=["birefSummary"] crpProgramField="reportSynthesisSrfProgress.reportSynthesis.liaisonInstitution.crpProgram" showTitle=false showHeader=false showEmptyRows=false /]
+      [/#if]
     </div>
     [#-- Expected additional contribution before end of 2022 (if not already fully covered). --]
     <div class="form-group">
       [@customForm.textArea name="${customName}.additionalContribution" value="${(sloTargetContribution.additionalContribution)!}" i18nkey="${customLabel}.additionalContribution" className="limitWords-100" help="${customLabel}.additionalContribution.help" helpIcon=false required=false editable=editable allowTextEditor=true /]
+      [#-- FP Synthesis table --]
+      [#if PMU]
+        [@macrosAR.tableFPSynthesis tableName="${customLabel}.tableSloTargetBriefSummary" list=otherContributions columns=["additionalContribution"] crpProgramField="reportSynthesisSrfProgress.reportSynthesis.liaisonInstitution.crpProgram" showTitle=false showHeader=false showEmptyRows=false /]
+      [/#if]
     </div>
+    
   </div>
 [/#macro]
 
