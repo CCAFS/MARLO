@@ -36,7 +36,8 @@ public class ReportSynthesisSrfProgressTargetManagerImpl implements ReportSynthe
 
 
   @Inject
-  public ReportSynthesisSrfProgressTargetManagerImpl(ReportSynthesisSrfProgressTargetDAO reportSynthesisSrfProgressTargetDAO) {
+  public ReportSynthesisSrfProgressTargetManagerImpl(
+    ReportSynthesisSrfProgressTargetDAO reportSynthesisSrfProgressTargetDAO) {
     this.reportSynthesisSrfProgressTargetDAO = reportSynthesisSrfProgressTargetDAO;
 
 
@@ -51,7 +52,8 @@ public class ReportSynthesisSrfProgressTargetManagerImpl implements ReportSynthe
   @Override
   public boolean existReportSynthesisSrfProgressTarget(long reportSynthesisSrfProgressTargetID) {
 
-    return reportSynthesisSrfProgressTargetDAO.existReportSynthesisSrfProgressTarget(reportSynthesisSrfProgressTargetID);
+    return reportSynthesisSrfProgressTargetDAO
+      .existReportSynthesisSrfProgressTarget(reportSynthesisSrfProgressTargetID);
   }
 
   @Override
@@ -62,13 +64,20 @@ public class ReportSynthesisSrfProgressTargetManagerImpl implements ReportSynthe
   }
 
   @Override
-  public ReportSynthesisSrfProgressTarget getReportSynthesisSrfProgressTargetById(long reportSynthesisSrfProgressTargetID) {
+  public ReportSynthesisSrfProgressTarget getReportSynthesisSrfProgressId(long synthesisID, long srfTargetID) {
+    return reportSynthesisSrfProgressTargetDAO.getReportSynthesisSrfProgressId(synthesisID, srfTargetID);
+  }
+
+  @Override
+  public ReportSynthesisSrfProgressTarget
+    getReportSynthesisSrfProgressTargetById(long reportSynthesisSrfProgressTargetID) {
 
     return reportSynthesisSrfProgressTargetDAO.find(reportSynthesisSrfProgressTargetID);
   }
 
   @Override
-  public ReportSynthesisSrfProgressTarget saveReportSynthesisSrfProgressTarget(ReportSynthesisSrfProgressTarget reportSynthesisSrfProgressTarget) {
+  public ReportSynthesisSrfProgressTarget
+    saveReportSynthesisSrfProgressTarget(ReportSynthesisSrfProgressTarget reportSynthesisSrfProgressTarget) {
 
     return reportSynthesisSrfProgressTargetDAO.save(reportSynthesisSrfProgressTarget);
   }

@@ -22,6 +22,7 @@ import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis2018SectionStatusEnum;
+import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
 
 import java.nio.file.Path;
@@ -82,6 +83,14 @@ public class SrfProgressValidator extends BaseValidator {
           action.addMissingField("draft");
         }
       }
+
+      // Validate Summary
+      if (!this.isValidString(reportSynthesis.getReportSynthesisSrfProgress().getSummary())) {
+        action.addMessage(action.getText("annualReport2018.intellectualAssets.managed.readText"));
+        action.getInvalidFields().put("input-reportSynthesis.reportSynthesisIntellectualAsset.managed",
+          InvalidFieldsMessages.EMPTYFIELD);
+      }
+
 
       if (!action.getFieldErrors().isEmpty()) {
         action.addActionError(action.getText("saving.fields.required"));

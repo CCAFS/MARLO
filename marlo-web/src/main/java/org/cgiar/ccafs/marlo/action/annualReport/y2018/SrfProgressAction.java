@@ -230,9 +230,38 @@ public class SrfProgressAction extends BaseAction {
   }
 
 
+  /**
+   * Get the information for the Cross Cutting marker in the form
+   * 
+   * @param markerID
+   * @return
+   */
+  public ReportSynthesisSrfProgressTarget getTargetsInfo(long targetID) {
+    ReportSynthesisSrfProgressTarget target = new ReportSynthesisSrfProgressTarget();
+    if (this.isDraft()) {
+      // Cgiar Cross Cutting Markers Autosave
+      if (reportSynthesis.getReportSynthesisSrfProgress().getSloTargets() != null) {
+        for (ReportSynthesisSrfProgressTarget reportSynthesisSrfProgressTargets : reportSynthesis
+          .getReportSynthesisSrfProgress().getSloTargets()) {
+          if (reportSynthesisSrfProgressTargets.getSrfSloIndicatorTarget().getId() == targetID) {
+            target = reportSynthesisSrfProgressTargets;
+          }
+        }
+      }
+    } else {
+      target = reportSynthesisSrfProgressTargetManager.getReportSynthesisSrfProgressId(synthesisID, targetID);
+    }
+    if (target != null) {
+      return target;
+    } else {
+      return null;
+    }
+  }
+
   public String getTransaction() {
     return transaction;
   }
+
 
   public boolean isFlagship() {
     boolean isFP = false;
@@ -261,7 +290,6 @@ public class SrfProgressAction extends BaseAction {
 
   }
 
-
   @Override
   public String next() {
     String result = this.save();
@@ -271,6 +299,7 @@ public class SrfProgressAction extends BaseAction {
       return result;
     }
   }
+
 
   @Override
   public void prepare() throws Exception {
@@ -507,7 +536,6 @@ public class SrfProgressAction extends BaseAction {
     }
   }
 
-
   /**
    * Save Crp Progress Srf Targets Information
    * 
@@ -574,6 +602,7 @@ public class SrfProgressAction extends BaseAction {
 
   }
 
+
   public void setFlagshipSrfProgress(List<ReportSynthesisSrfProgress> flagshipSrfProgress) {
     this.flagshipSrfProgress = flagshipSrfProgress;
   }
@@ -582,7 +611,6 @@ public class SrfProgressAction extends BaseAction {
   public void setFpSynthesisTable(List<ReportSynthesisCrpProgressTarget> fpSynthesisTable) {
     this.fpSynthesisTable = fpSynthesisTable;
   }
-
 
   public void setLiaisonInstitution(LiaisonInstitution liaisonInstitution) {
     this.liaisonInstitution = liaisonInstitution;
