@@ -65,7 +65,7 @@
             [#if PMU]
               [#-- Flagships - Gender Synthesis --]
               <div class="form-group">
-                [@tableFlagshipSynthesis tableName="gender.flagshipSynthesis" list=flagshipCCDimensions columns=["A", "B", "C"] /]
+                [@tableFlagshipSynthesis tableName="gender.flagshipSynthesis" list=flagshipCCDimensions columns=["genderResearchFindings", "genderLearned", "genderProblemsArisen"] /]
               </div>
             [/#if]
             
@@ -98,7 +98,7 @@
             [#if PMU]
               [#-- Flagships - Youth Synthesis --]
               <div class="form-group">
-                [@tableFlagshipSynthesis tableName="youth.flagshipSynthesis" list=flagshipCCDimensions columns=["A", "B", "C"] /]
+                [@tableFlagshipSynthesis tableName="youth.flagshipSynthesis" list=flagshipCCDimensions columns=["youthContribution", "youthResearchFindings", "youthLearned", "youthProblemsArisen"] /]
               </div>
             [/#if]
             
@@ -114,7 +114,7 @@
             [#if PMU]
               [#-- Flagships - CapDev Synthesis --]
               <div class="form-group">
-                [@tableFlagshipSynthesis tableName="capDev.flagshipSynthesis" list=flagshipCCDimensions columns=["summary"] /]
+                [@tableFlagshipSynthesis tableName="capDev.flagshipSynthesis" list=flagshipCCDimensions columns=["capDevKeyAchievements"] /]
               </div>
             [/#if]
             
@@ -130,7 +130,7 @@
             [#if PMU]
               [#-- Flagships - Climate Change Synthesis --]
               <div class="form-group">
-                [@tableFlagshipSynthesis tableName="climateChange.flagshipSynthesis" list=flagshipCCDimensions columns=["summary"] /]
+                [@tableFlagshipSynthesis tableName="climateChange.flagshipSynthesis" list=flagshipCCDimensions columns=["climateChangeKeyAchievements"] /]
               </div>
             [/#if]
             
