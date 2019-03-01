@@ -19,6 +19,9 @@ import org.cgiar.ccafs.marlo.data.dao.ReportSynthesisSrfProgressTargetDAO;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisSrfProgressTargetManager;
+import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisSrfProgress;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisSrfProgressTarget;
 
 import java.util.List;
@@ -83,34 +86,32 @@ public class ReportSynthesisSrfProgressTargetManagerImpl implements ReportSynthe
   }
 
 
-  // @Override
-  // public ReportSynthesisSrfProgressTarget getSrfProgressTargetInfo(List<LiaisonInstitution> lInstitutions,
-  // long phaseID) {
-  //
-  // List<ReportSynthesisSrfProgressTarget> reportSynthesisSrfProgressTarget = new ArrayList<>();
-  //
-  // for (LiaisonInstitution liaisonInstitution : lInstitutions) {
-  //
-  // ReportSynthesisSrfProgress crpProgress = new ReportSynthesisSrfProgress();
-  // ReportSynthesis reportSynthesisFP = reportSynthesisManager.findSynthesis(phaseID, liaisonInstitution.getId());
-  //
-  // if (reportSynthesisFP != null) {
-  // if (reportSynthesisFP.getReportSynthesisSrfProgress() != null) {
-  // crpProgress = reportSynthesisFP.getReportSynthesisSrfProgress();
-  // }
-  // } else {
-  // ReportSynthesis synthesis = new ReportSynthesis();
-  // synthesis.setPhase(phaseManager.getPhaseById(phaseID));
-  // synthesis.setLiaisonInstitution(liaisonInstitution);
-  // crpProgress.setReportSynthesis(synthesis);
-  // }
-  // synthesisSrfProgres.add(crpProgress);
-  // }
-  //
-  // return synthesisSrfProgres;
-  //
-  //
-  // }
+  @Override
+  public ReportSynthesisSrfProgressTarget getSrfProgressTargetInfo(LiaisonInstitution institutions, long phaseID,
+    long targetID) {
+
+    ReportSynthesisSrfProgressTarget reportSynthesisSrfProgressTarget = new ReportSynthesisSrfProgressTarget();
+
+    ReportSynthesisSrfProgress crpProgress = new ReportSynthesisSrfProgress();
+    ReportSynthesis reportSynthesisFP = reportSynthesisManager.findSynthesis(phaseID, institutions.getId());
+
+    if (reportSynthesisFP != null) {
+      if (reportSynthesisFP.getReportSynthesisSrfProgress() != null) {
+        crpProgress = reportSynthesisFP.getReportSynthesisSrfProgress();
+        reportSynthesisSrfProgressTarget = this.getReportSynthesisSrfProgressId(reportSynthesisFP.getId(), targetID);
+      }
+    } else {
+      ReportSynthesis synthesis = new ReportSynthesis();
+      synthesis.setPhase(phaseManager.getPhaseById(phaseID));
+      synthesis.setLiaisonInstitution(institutions);
+      crpProgress.setReportSynthesis(synthesis);
+      reportSynthesisSrfProgressTarget.setReportSynthesisSrfProgress(crpProgress);
+    }
+
+    return reportSynthesisSrfProgressTarget;
+
+
+  }
 
   @Override
   public ReportSynthesisSrfProgressTarget

@@ -19,7 +19,7 @@
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
 
-[#assign customName= "reportSynthesis.reportSynthesisCrpProgress" /]
+[#assign customName= "reportSynthesis.reportSynthesisSrfProgress" /]
 [#assign customLabel= "annualReport2018.${currentStage}" /]
 
 [#-- Helptext --]
@@ -46,7 +46,7 @@
           <div class="borderBox">
             [#-- Overall contribution towards SRF targets --]
             <div class="form-group">
-              [@customForm.textArea name="${customName}.overallContribution" i18nkey="${customLabel}.overallContribution" help="${customLabel}.overallContribution.help" className="limitWords-400" helpIcon=false required=true editable=editable allowTextEditor=true /]
+              [@customForm.textArea name="${customName}.summary" i18nkey="${customLabel}.overallContribution" help="${customLabel}.overallContribution.help" className="limitWords-400" helpIcon=false required=true editable=editable allowTextEditor=true /]
               <br />
             </div>
             
@@ -134,7 +134,7 @@
   <div id="${customClass}-${isTemplate?string('template', index)}" class="simpleBox ${customClass}" style="display:${isTemplate?string('none', 'block')}">
     [#-- Hidden Inputs --]
     <input type="hidden" name="${customName}.id" value="${(sloTargetContribution.id)!}" />
-    <input type="hidden" name="${customName}.srfSloIndicatorTarget.id" class="indicatorTargetID" value="${(sloTargetContribution.srfSloIndicatorTarget.id)!}" />
+    <input type="hidden" name="${customName}.srfSloIndicatorTarget.id" class="indicatorTargetID" value="${(element.id)!}" />
     [#-- SLO Target --]
     <div class="form-group grayBox name"> <strong>SLO Target 2022</strong> <br />${(element.narrative)!}</div>
     [#-- Brief summary of new evidence of CGIAR contribution to relevant targets for this CRP (with citation) --]

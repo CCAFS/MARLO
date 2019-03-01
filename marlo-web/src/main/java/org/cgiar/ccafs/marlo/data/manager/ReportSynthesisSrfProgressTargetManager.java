@@ -14,6 +14,7 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.manager;
 
+import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisSrfProgressTarget;
 
 import java.util.List;
@@ -62,6 +63,9 @@ public interface ReportSynthesisSrfProgressTargetManager {
    */
   public ReportSynthesisSrfProgressTarget
     getReportSynthesisSrfProgressTargetById(long reportSynthesisSrfProgressTargetID);
+
+  public ReportSynthesisSrfProgressTarget getSrfProgressTargetInfo(LiaisonInstitution institutions, long phaseID,
+    long targetID);
 
   /**
    * This method saves the information of the given reportSynthesisSrfProgressTarget
