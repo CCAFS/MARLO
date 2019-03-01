@@ -229,6 +229,37 @@ public class SrfProgressAction extends BaseAction {
     return synthesisID;
   }
 
+  //
+  // /**
+  // * Get the information for the Cross Cutting marker in the form
+  // *
+  // * @param markerID
+  // * @return
+  // */
+  // public List<ReportSynthesisSrfProgressTarget> getTargetsFlagshipInfo(long targetID) {
+  //
+  // List<ReportSynthesisSrfProgressTarget> targets = new ArrayList<ReportSynthesisSrfProgressTarget>();
+  //
+  // ReportSynthesisSrfProgressTarget target = new ReportSynthesisSrfProgressTarget();
+  // if (this.isDraft()) {
+  // // Cgiar Cross Cutting Markers Autosave
+  // if (reportSynthesis.getReportSynthesisSrfProgress().getSloTargets() != null) {
+  // for (ReportSynthesisSrfProgressTarget reportSynthesisSrfProgressTargets : reportSynthesis
+  // .getReportSynthesisSrfProgress().getSloTargets()) {
+  // if (reportSynthesisSrfProgressTargets.getSrfSloIndicatorTarget().getId() == targetID) {
+  // target = reportSynthesisSrfProgressTargets;
+  // }
+  // }
+  // }
+  // } else {
+  // target = reportSynthesisSrfProgressTargetManager.getReportSynthesisSrfProgressId(synthesisID, targetID);
+  // }
+  // if (target != null) {
+  // return target;
+  // } else {
+  // return null;
+  // }
+  // }
 
   /**
    * Get the information for the Cross Cutting marker in the form
