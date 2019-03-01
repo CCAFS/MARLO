@@ -10,7 +10,7 @@
         </id>        
         <many-to-one name="reportSynthesisFundingUseSummary" class="org.cgiar.ccafs.marlo.data.model.ReportSynthesisFundingUseSummary" fetch="select">
             <column name="report_synthesis_funding_use_summary_id" />
-        </many-to-one>
+        </many-to-one>        
         <many-to-one name="expenditureArea" class="org.cgiar.ccafs.marlo.data.model.PowbExpenditureAreas" fetch="select">
             <column name="expenditure_area_id" />
         </many-to-one>
@@ -35,5 +35,16 @@
         <many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select" update="false">
             <column name="created_by" not-null="true" />
         </many-to-one>
+        
+        <!-- AR2018 Fields -->
+        <property name="exampleExpenditure" type="string">
+            <column name="example_expenditure" sql-type="TEXT" />
+        </property>                
+        <many-to-one name="expenditureCategory" class="org.cgiar.ccafs.marlo.data.model.ReportSynthesisExpenditureCategory" fetch="select">
+            <column name="expenditure_category_id" />
+        </many-to-one>                
+        <property name="otherCategory" type="string">
+            <column name="other_category" sql-type="TEXT" />
+        </property> 
     </class>
 </hibernate-mapping>
