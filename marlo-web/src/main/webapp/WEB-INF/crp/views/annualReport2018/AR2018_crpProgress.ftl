@@ -84,9 +84,6 @@
       </div> 
     </div>
     
-    [#-- Templates 
-    [@sloTargetMacro name="${customName}.sloTargets" element={} index=-1 isTemplate=true /]--]
-    
   [/#if] 
 </section>
 [#include "/WEB-INF/global/pages/footer.ftl"]
@@ -132,22 +129,22 @@
 [#macro sloTargetMacro name element index=-1 isTemplate=false]
   [#local customName = "${name}[${index}]" /]
   [#local customClass = "sloTarget" /]
+  [#local sloTargetContribution = (action.getTargetsInfo(element.id))!{} ]
+  
   <div id="${customClass}-${isTemplate?string('template', index)}" class="simpleBox ${customClass}" style="display:${isTemplate?string('none', 'block')}">
     [#-- Hidden Inputs --]
-    <input type="hidden" name="${customName}.id" value="${(element.id)!}" />
-    <input type="hidden" name="${customName}.srfSloIndicatorTarget.id" class="indicatorTargetID" value="${(element.srfSloIndicatorTarget.id)!}" />
+    <input type="hidden" name="${customName}.id" value="${(sloTargetContribution.id)!}" />
+    <input type="hidden" name="${customName}.srfSloIndicatorTarget.id" class="indicatorTargetID" value="${(sloTargetContribution.srfSloIndicatorTarget.id)!}" />
     [#-- SLO Target --]
     <div class="form-group grayBox name"> <strong>SLO Target 2022</strong> <br />${(element.narrative)!}</div>
     [#-- Brief summary of new evidence of CGIAR contribution to relevant targets for this CRP (with citation) --]
     <div class="form-group">
-      [@customForm.textArea name="${customName}.birefSummary" value="${(element.birefSummary)!}" i18nkey="${customLabel}.summaryEvidence" className="limitWords-150" help="${customLabel}.summaryEvidence.help" helpIcon=false required=true editable=editable allowTextEditor=true /]
+      [@customForm.textArea name="${customName}.birefSummary" value="${(sloTargetContribution.birefSummary)!}" i18nkey="${customLabel}.summaryEvidence" className="limitWords-150" help="${customLabel}.summaryEvidence.help" helpIcon=false required=true editable=editable allowTextEditor=true /]
     </div>
-   [#--  [#if PMU]
-      <span class="programTag">${(crpProgram.acronym)!}</span>
-    [/#if] --]
+     
     [#-- Expected additional contribution before end of 2022 (if not already fully covered). --]
     <div class="form-group">
-      [@customForm.textArea name="${customName}.additionalContribution" value="${(element.additionalContribution)!}" i18nkey="${customLabel}.additionalContribution" className="limitWords-100" help="${customLabel}.additionalContribution.help" helpIcon=false required=false editable=editable allowTextEditor=true /]
+      [@customForm.textArea name="${customName}.additionalContribution" value="${(sloTargetContribution.additionalContribution)!}" i18nkey="${customLabel}.additionalContribution" className="limitWords-100" help="${customLabel}.additionalContribution.help" helpIcon=false required=false editable=editable allowTextEditor=true /]
     </div>
   </div>
 [/#macro]
