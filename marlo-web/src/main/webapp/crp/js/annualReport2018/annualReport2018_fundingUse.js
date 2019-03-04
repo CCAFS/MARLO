@@ -30,6 +30,8 @@ function addExample() {
       width: '100%'
   });
 
+  $item.find('textarea').setTrumbowyg();
+
   $item.show('slow');
   updateIndexes();
 }

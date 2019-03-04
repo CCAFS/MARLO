@@ -318,19 +318,8 @@ $(document).ready(function() {
   // Set autogrow
   $("textarea[id!='justification']").autoGrow();
 
-  if($.fn.trumbowyg) {
-    $('.allowTextEditor').trumbowyg({
-        btns: [
-          [
-              'link', 'strong', 'em'
-          ]
-        ],
-        autogrow: true,
-        minimalLinks: true,
-        semantic: true,
-        removeformatPasted: true
-    });
-  }
+
+  $('form .allowTextEditor').setTrumbowyg();
 
   $('.decodeHTML').each(function(i,e) {
     $(this).html($(this).text());
@@ -344,6 +333,22 @@ $(document).ready(function() {
   });
 
 });
+
+jQuery.fn.setTrumbowyg = function() {
+  if($.fn.trumbowyg) {
+    $(this).trumbowyg({
+      btns: [
+        [
+          'link', 'strong', 'em'
+          ]
+        ],
+        autogrow: true,
+        minimalLinks: true,
+        semantic: true,
+        removeformatPasted: true
+    });
+  }
+};
 
 function turnSavingStateOn(button) {
   $(button).addClass('disabled animated flipInY');
