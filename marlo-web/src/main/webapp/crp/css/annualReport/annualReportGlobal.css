@@ -49,6 +49,13 @@ td {
   vertical-align: middle !important;
 }
 
+td.tableTitle {
+    background: #95a6d1;
+    color: #ffffff;
+    padding: 9px;
+    font-weight: bold;
+}
+
 span.icon-20 {
   margin-top: 7px;
 }

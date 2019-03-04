@@ -4,7 +4,7 @@
 [#assign currentSection = "synthesis" /]
 [#assign currentStage = actionName?split('/')[1]/]
 [#assign pageLibs = [ "select2", "trumbowyg" ] /]
-[#assign customJS = [ "${baseUrlMedia}/js/annualReport/annualReport_${currentStage}.js" ] /]
+[#assign customJS = [ "${baseUrlMedia}/js/annualReport2018/annualReport2018_${currentStage}.js" ] /]
 [#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css"] /]
 
 [#assign breadCrumb = [
@@ -55,32 +55,19 @@
               [/#if]
             </div>
             
-            [#assign fundingList = [
-                { 
-                  "title": "Title",
-                  "maturity": "Maturity Level",
-                  "status": "Status"
-                },
-                { 
-                  "title": "Title 1",
-                  "maturity": "Maturity Level 1",
-                  "status": "Status 1"
-                }
-            ] /]
-            
             [#if PMU]
             [#-- Table 11 - Examples of W1/2 Use --]
             <div class="form-group">
               <h4 class="simpleTitle headTitle annualReport-table">[@s.text name="${customLabel}.table11.title" /]</h4>
                 [@customForm.helpLabel name="${customLabel}.table11.help" showIcon=false editable=editable/]
-                [#if reportSynthesis.reportSynthesisFundingUseSummary.expenditureAreas?has_content]
+                <div class="listExamples">
                     [#list reportSynthesis.reportSynthesisFundingUseSummary.expenditureAreas as item]
                       [@fundingExamples element=item name="${customName}.fundingUse.table11" index=item_index template=false isEditable=editable/]
                     [/#list]
-                [/#if]
+                </div>
                 [#if canEdit && editable]
                   <div class="text-right">
-                    <div class="addKeyPartnership bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> [@s.text name="annualReport2018.fundingUse.addExpenditure"/]</div>
+                    <div class="addExample bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> [@s.text name="annualReport2018.fundingUse.addExpenditure"/]</div>
                   </div> 
                 [/#if]
             </div>
@@ -94,19 +81,24 @@
     </div>
   [/#if] 
 </section>
+
+[#--  Relevant Evaluation Form template --]
+[@fundingExamples element={} name="${customName}.fundingUse.table11" index=-1 template=true /]
+
+
 [#include "/WEB-INF/global/pages/footer.ftl"]
 
 [#---------------------------------------------------- MACROS ----------------------------------------------------]
 
-[#macro fundingExamples name element index isEditable template=false] 
+[#macro fundingExamples name element index isEditable=true template=false] 
 
 [#local customName = "${name}[${index}]" /]
-  <div id="flagshipCollaboration-${template?string('template', index)}" class="flagshipCollaboration borderBox form-group" style="position:relative; display:${template?string('none','block')}">
+  <div id="fundingUseExample-${template?string('template', index)}" class="fundingUseExample borderBox form-group" style="position:relative; display:${template?string('none','block')}">
 
     [#-- Index --]
     <div class="leftHead blue sm"><span class="index">${index+1}</span></div>
     [#-- Remove Button --]
-    [#if isEditable]<div class="removeProgramCollaboration removeElement sm" title="Remove"></div>[/#if]
+    [#if isEditable]<div class="removeExample removeElement sm" title="Remove"></div>[/#if]
     [#-- Hidden inputs --]
     <input type="hidden" name="${customName}.id" value="${(element.id)!}"/> 
     <br />

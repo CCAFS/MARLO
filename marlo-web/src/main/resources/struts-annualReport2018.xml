@@ -34,7 +34,7 @@
     <!-- Table 2: Condensed list of policy contributions in this reporting year (Sphere of Influence)  -->
     <action name="{crp}/policies" class="org.cgiar.ccafs.marlo.action.annualReport.FlagshipProgressAction">
       <interceptor-ref name="editReportSynthesisStack" />
-      <result name="input">/WEB-INF/crp/views/annualReport2018/AR2018_TEMPLATE.ftl</result>
+      <result name="input">/WEB-INF/crp/views/annualReport2018/AR2018_policies.ftl</result>
       <result name="success" type="redirectAction">
         <param name="actionName">${crpSession}/policies</param>
         <param name="liaisonInstitutionID">${liaisonInstitutionID}</param>
@@ -47,7 +47,7 @@
     <!-- Table 3: List of Outcome/ Impact Case Reports from this reporting year (Sphere of Influence)  -->
     <action name="{crp}/oicr" class="org.cgiar.ccafs.marlo.action.annualReport.FlagshipProgressAction">
       <interceptor-ref name="editReportSynthesisStack" />
-      <result name="input">/WEB-INF/crp/views/annualReport2018/AR2018_TEMPLATE.ftl</result>
+      <result name="input">/WEB-INF/crp/views/annualReport2018/AR2018_oicr.ftl</result>
       <result name="success" type="redirectAction">
         <param name="actionName">${crpSession}/oicr</param>
         <param name="liaisonInstitutionID">${liaisonInstitutionID}</param>
@@ -60,7 +60,7 @@
     <!-- Table 4: Condensed list of innovations by stage for this reporting year   -->
     <action name="{crp}/innovations" class="org.cgiar.ccafs.marlo.action.annualReport.FlagshipProgressAction">
       <interceptor-ref name="editReportSynthesisStack" />
-      <result name="input">/WEB-INF/crp/views/annualReport2018/AR2018_TEMPLATE.ftl</result>
+      <result name="input">/WEB-INF/crp/views/annualReport2018/AR2018_innovations.ftl</result>
       <result name="success" type="redirectAction">
         <param name="actionName">${crpSession}/innovations</param>
         <param name="liaisonInstitutionID">${liaisonInstitutionID}</param>
@@ -73,7 +73,7 @@
     <!-- Table 5: Summary of status of Planned Outcomes and Milestones (Sphere of Influence-Control)  -->
     <action name="{crp}/outomesMilestones" class="org.cgiar.ccafs.marlo.action.annualReport.FlagshipProgressAction">
       <interceptor-ref name="editReportSynthesisStack" />
-      <result name="input">/WEB-INF/crp/views/annualReport2018/AR2018_TEMPLATE.ftl</result>
+      <result name="input">/WEB-INF/crp/views/annualReport2018/AR2018_OutcomeMilestones.ftl</result>
       <result name="success" type="redirectAction">
         <param name="actionName">${crpSession}/outomesMilestones</param>
         <param name="liaisonInstitutionID">${liaisonInstitutionID}</param>
@@ -86,7 +86,7 @@
     <!-- Table 6: Numbers of peer-reviewed publications from current reporting period (Sphere of control)  -->
     <action name="{crp}/publications" class="org.cgiar.ccafs.marlo.action.annualReport.FlagshipProgressAction">
       <interceptor-ref name="editReportSynthesisStack" />
-      <result name="input">/WEB-INF/crp/views/annualReport2018/AR2018_TEMPLATE.ftl</result>
+      <result name="input">/WEB-INF/crp/views/annualReport2018/AR2018_publications.ftl</result>
       <result name="success" type="redirectAction">
         <param name="actionName">${crpSession}/publications</param>
         <param name="liaisonInstitutionID">${liaisonInstitutionID}</param>
