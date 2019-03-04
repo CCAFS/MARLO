@@ -391,5 +391,6 @@
     <mapping resource="xmls/ReportSynthesisSrfProgressTargets.hbm.xml" />   
     <mapping resource="xmls/ReportSynthesisIntellectualAssets.hbm.xml" />    
     <mapping resource="xmls/ReportSynthesisExpenditureCategories.hbm.xml" />    
+    <mapping resource="xmls/ProjectBudgetExecutions.hbm.xml" />        
   </session-factory>
 </hibernate-configuration>
