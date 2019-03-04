@@ -45,13 +45,15 @@ public class DeliverableUserManagerImpl implements DeliverableUserManager {
     this.phaseDAO = phaseDAO;
   }
 
-  private void cloneDeliverableUser(DeliverableUser deliverableUser, DeliverableUser newDeliverableUser, Phase phase) {
+  private DeliverableUser cloneDeliverableUser(DeliverableUser deliverableUser, DeliverableUser newDeliverableUser,
+    Phase phase) {
     newDeliverableUser.setDeliverable(deliverableUser.getDeliverable());
     newDeliverableUser.setPhase(phase);
     newDeliverableUser.setFirstName(deliverableUser.getFirstName());
     newDeliverableUser.setLastName(deliverableUser.getLastName());
     newDeliverableUser.setElementId(deliverableUser.getElementId());
 
+    return newDeliverableUser;
   }
 
   @Override
@@ -145,11 +147,13 @@ public class DeliverableUserManagerImpl implements DeliverableUserManager {
       deliverableUserDAO.findDeliverableUserByPhaseAndDeliverableUser(phase, deliverableUserResult);
 
     if (deliverableUserPhase != null) {
-      this.cloneDeliverableUser(deliverableUserResult, deliverableUserPhase, phase);
+      deliverableUserPhase.setElementId(deliverableUserResult.getElementId());
+      deliverableUserPhase.setFirstName(deliverableUserResult.getFirstName());
+      deliverableUserPhase.setLastName(deliverableUserResult.getLastName());
       deliverableUserDAO.save(deliverableUserPhase);
     } else {
       DeliverableUser newDeliverableUser = new DeliverableUser();
-      this.cloneDeliverableUser(deliverableUserResult, newDeliverableUser, phase);
+      newDeliverableUser = this.cloneDeliverableUser(deliverableUserResult, newDeliverableUser, phase);
       deliverableUserDAO.save(newDeliverableUser);
     }
     if (phase.getNext() != null) {

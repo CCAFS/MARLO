@@ -61,7 +61,7 @@ public class DeliverableUserMySQLDAO extends AbstractMarloDAO<DeliverableUser, L
 
   @Override
   public List<DeliverableUser> findAll() {
-    String query = "from " + DeliverableUser.class.getName() + " where is_active=1";
+    String query = "from " + DeliverableUser.class.getName();
     List<DeliverableUser> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
