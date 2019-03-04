@@ -23,6 +23,7 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableUser;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -126,14 +127,15 @@ public class DeliverableUserManagerImpl implements DeliverableUserManager {
       if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {
         Phase upkeepPhase = currentPhase.getNext().getNext();
         if (upkeepPhase != null) {
-          this.saveDeliverableUserPhase(deliverableUserResult, upkeepPhase.getId());
+          this.saveDeliverableUserPhase(deliverableUserResult, upkeepPhase.getId(), deliverableUserResult.getId());
         }
       }
     } else {
       // UpKeep
       if (currentPhase.getDescription().equals(APConstants.PLANNING) && currentPhase.getUpkeep() && !isPublication) {
         if (currentPhase.getNext() != null) {
-          this.saveDeliverableUserPhase(deliverableUserResult, currentPhase.getNext().getId());
+          this.saveDeliverableUserPhase(deliverableUserResult, currentPhase.getNext().getId(),
+            deliverableUserResult.getId());
         }
       }
     }
@@ -141,27 +143,34 @@ public class DeliverableUserManagerImpl implements DeliverableUserManager {
     return deliverableUserResult;
   }
 
-  private void saveDeliverableUserPhase(DeliverableUser deliverableUserResult, Long phaseID) {
+  private void saveDeliverableUserPhase(DeliverableUser deliverableUserResult, Long phaseID, Long deliverableID) {
     Phase phase = phaseDAO.find(phaseID);
-    DeliverableUser deliverableUserPhase =
-      deliverableUserDAO.findDeliverableUserByPhaseAndDeliverableUser(phase, deliverableUserResult);
 
-    if (deliverableUserPhase == null) {
+
+    List<DeliverableUser> deliverableUserPhases = phase.getDeliverableUsers().stream()
+      .filter(c -> c.isActive() && c.getDeliverable().getId().longValue() == deliverableID
+        && c.getFirstName().equals(deliverableUserResult.getFirstName())
+        && c.getLastName().equals(deliverableUserResult.getLastName())
+        && c.getElementId().equals(deliverableUserResult.getElementId()))
+      .collect(Collectors.toList());
+
+
+    if (deliverableUserPhases.isEmpty()) {
       DeliverableUser newDeliverableUser = new DeliverableUser();
       newDeliverableUser = this.cloneDeliverableUser(deliverableUserResult, newDeliverableUser, phase);
       deliverableUserDAO.save(newDeliverableUser);
     } else {
       DeliverableUser newDeliverableUser = new DeliverableUser();
-      newDeliverableUser.setDeliverable(deliverableUserPhase.getDeliverable());
-      newDeliverableUser.setPhase(deliverableUserPhase.getPhase());
-      newDeliverableUser.setElementId(deliverableUserPhase.getElementId());
-      newDeliverableUser.setFirstName(deliverableUserPhase.getFirstName());
-      newDeliverableUser.setLastName(deliverableUserPhase.getLastName());
+      newDeliverableUser.setDeliverable(deliverableUserResult.getDeliverable());
+      newDeliverableUser.setPhase(deliverableUserResult.getPhase());
+      newDeliverableUser.setElementId(deliverableUserResult.getElementId());
+      newDeliverableUser.setFirstName(deliverableUserResult.getFirstName());
+      newDeliverableUser.setLastName(deliverableUserResult.getLastName());
       deliverableUserDAO.save(newDeliverableUser);
     }
 
     if (phase.getNext() != null) {
-      this.saveDeliverableUserPhase(deliverableUserResult, phase.getNext().getId());
+      this.saveDeliverableUserPhase(deliverableUserResult, phase.getNext().getId(), deliverableUserResult.getId());
     }
   }
 }
