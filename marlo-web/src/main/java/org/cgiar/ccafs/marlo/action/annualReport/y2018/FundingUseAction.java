@@ -91,6 +91,7 @@ public class FundingUseAction extends BaseAction {
   private List<LiaisonInstitution> liaisonInstitutions;
   private ReportSynthesis reportSynthesisPMU;
   private String pmuText;
+  private List<ReportSynthesisExpenditureCategory> expenditureCategories;
 
 
   @Inject
@@ -133,6 +134,7 @@ public class FundingUseAction extends BaseAction {
     return SUCCESS;
   }
 
+
   private void deleteRemovedFundingUseExpenditureAreas(ReportSynthesisFundingUseSummary fundingUseSummaryDB) {
 
     if (reportSynthesis.getReportSynthesisFundingUseSummary().getExpenditureAreas() != null
@@ -162,6 +164,7 @@ public class FundingUseAction extends BaseAction {
 
   }
 
+
   public Long firstFlagship() {
     List<LiaisonInstitution> liaisonInstitutions = new ArrayList<>(loggedCrp.getLiaisonInstitutions().stream()
       .filter(c -> c.getCrpProgram() != null && c.isActive()
@@ -178,6 +181,10 @@ public class FundingUseAction extends BaseAction {
     String autoSaveFile = reportSynthesis.getId() + "_" + composedClassName + "_" + this.getActualPhase().getName()
       + "_" + this.getActualPhase().getYear() + "_" + actionFile + ".json";
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
+  }
+
+  public List<ReportSynthesisExpenditureCategory> getExpenditureCategories() {
+    return expenditureCategories;
   }
 
   public LiaisonInstitution getLiaisonInstitution() {
@@ -416,6 +423,14 @@ public class FundingUseAction extends BaseAction {
       }
     }
 
+    // Load expenditureCategories list
+    this.setExpenditureCategories(new ArrayList<>());
+    List<ReportSynthesisExpenditureCategory> reportSynthesisExpenditureCategories =
+      reportSynthesisExpenditureCategoryManager.findAll().stream().collect(Collectors.toList());
+    if (reportSynthesisExpenditureCategories != null && !reportSynthesisExpenditureCategories.isEmpty()) {
+      this.setExpenditureCategories(reportSynthesisExpenditureCategories);
+    }
+
 
     // Base Permission
     String params[] = {loggedCrp.getAcronym(), reportSynthesis.getId() + ""};
@@ -427,7 +442,6 @@ public class FundingUseAction extends BaseAction {
       }
     }
   }
-
 
   @Override
   public String save() {
@@ -544,6 +558,11 @@ public class FundingUseAction extends BaseAction {
         }
       }
     }
+  }
+
+
+  public void setExpenditureCategories(List<ReportSynthesisExpenditureCategory> expenditureCategories) {
+    this.expenditureCategories = expenditureCategories;
   }
 
   public void setLiaisonInstitution(LiaisonInstitution liaisonInstitution) {

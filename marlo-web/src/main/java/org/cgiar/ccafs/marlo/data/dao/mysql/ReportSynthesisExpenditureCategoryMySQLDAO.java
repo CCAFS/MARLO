@@ -60,7 +60,7 @@ public class ReportSynthesisExpenditureCategoryMySQLDAO extends AbstractMarloDAO
 
   @Override
   public List<ReportSynthesisExpenditureCategory> findAll() {
-    String query = "from " + ReportSynthesisExpenditureCategory.class.getName() + " where is_active=1";
+    String query = "from " + ReportSynthesisExpenditureCategory.class.getName() + " where is_active=1 order by name";
     List<ReportSynthesisExpenditureCategory> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
