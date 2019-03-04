@@ -2213,14 +2213,16 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           if (deliverable.getDeliverableInfo().getAdoptedLicense() != null) {
             if (deliverable.getDeliverableInfo().getAdoptedLicense() == true) {
               delivLicense = deliverable.getDeliverableInfo().getLicense();
-              if (delivLicense.equals("OTHER")) {
-                delivLicense = deliverable.getDeliverableInfo().getOtherLicense();
-                showDelivLicenseModifications = true;
-                if (deliverable.getDeliverableInfo().getAllowModifications() != null
-                  && deliverable.getDeliverableInfo().getAllowModifications() == true) {
-                  delivLicenseModifications = "Yes";
-                } else {
-                  delivLicenseModifications = "No";
+              if (delivLicense != null) {
+                if (delivLicense.equals("OTHER")) {
+                  delivLicense = deliverable.getDeliverableInfo().getOtherLicense();
+                  showDelivLicenseModifications = true;
+                  if (deliverable.getDeliverableInfo().getAllowModifications() != null
+                    && deliverable.getDeliverableInfo().getAllowModifications() == true) {
+                    delivLicenseModifications = "Yes";
+                  } else {
+                    delivLicenseModifications = "No";
+                  }
                 }
               }
             } else {
