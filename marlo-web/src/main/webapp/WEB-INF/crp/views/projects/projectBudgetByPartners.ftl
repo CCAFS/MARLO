@@ -24,6 +24,8 @@
 
 
 
+[#assign budgetExpenditureIndex = 0 /]
+
 [#if (!availabePhase)!false]
   [#include "/WEB-INF/crp/views/projects/availability-projects.ftl" /]
 [#else]
@@ -100,9 +102,9 @@
                     </div>                   
                     [#if projectPPAPartners?has_content]
                       [#list projectPPAPartners as projectPartner]
-                       [#if action.existOnYear(projectPartner.id,year)]
-                        [@projectPartnerMacro element=projectPartner name="project.partners[${projectPartner_index}]" index=projectPartner_index selectedYear=year/]
-                         [/#if]
+                        [#if action.existOnYear(projectPartner.id,year)]
+                          [@projectPartnerMacro element=projectPartner name="project.partners[${projectPartner_index}]" index=projectPartner_index selectedYear=year/]
+                        [/#if]
                       [/#list]
                     [#else]
                       <div class="simpleBox emptyMessage text-center">[@s.text name="projectBudgetByPartners.beforeEnteringBudgetInformation" /] <a href="[@s.url action="${crpSession}/partners"][@s.param name="projectID" value=projectID /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">partners section</a></div>
@@ -188,6 +190,7 @@
               [#-- Budget Type--]
               <th class="text-center">${budgetType.name}</th>
             [/#list]
+            
           </tr>
         </thead>
         <tbody>
@@ -195,12 +198,34 @@
           <tr>
             <td class="amountType"> Budget:</td>
             [#list budgetTypesList as budgetType]
-              [#-- Budget Type--]
+              [#-- Budget--]
               <td class="budgetColumn">
                 <div class="input"><p>US$ <span class="currencyInput totalByPartner-${budgetType.id}">${((action.getTotalAmount(element.institution.id, selectedYear, budgetType.id,1))!0)?number?string(",##0.00")}</span></p></div>
               </td>
             [/#list]
           </tr>
+          [#-- Actual Expenditure--]
+          [#if reportingActive]
+            <tr>
+              <td class="amountType"> Actual expenditure:</td>
+              [#list budgetTypesList as budgetType]
+                <td class="budgetColumn">
+                  <div class="budgetExecutionAmount type-${budgetType.id} text-center">
+                    [#-- Budget Expenditure --]
+                    [#local budgetExecution = (action.getProjectBudgetExecution (element.institution.id, selectedYear, budgetType.id))!{} /]
+                    [#local budgetExecutionName = "project.projectBudgetExecution[${budgetExpenditureIndex}]" /]
+                    <input type="hidden" name="${budgetExecutionName}.id" value="${(budgetExecution.id)!}" />
+                    <input type="hidden" name="${budgetExecutionName}.institution.id" value="${(element.institution.id)!}" />
+                    <input type="hidden" name="${budgetExecutionName}.budgetType.id" value="${(budgetType.id)!}" />
+                    <input type="hidden" name="${budgetExecutionName}.year" value="${(selectedYear)!}" />
+                    [@customForm.input name="${budgetExecutionName}.amount" value="${(budgetExecution.amount)!0}" i18nkey="budget.amount" showTitle=false className="currencyInput" required=true editable=editable && isYearEditable(selectedYear) /]
+                    [#-- Index --]
+                    [#assign budgetExpenditureIndex = budgetExpenditureIndex + 1 /]
+                  </div>
+                </td>
+              [/#list]
+            </tr>
+          [/#if]
           [#-- Gender Budget Percentage --]
           [#if project.projectInfo.projectEditLeader && action.hasSpecificities('crp_budget_gender')]
           <tr>
@@ -420,9 +445,9 @@
           [#if (editable && isYearEditable(selectedYear) && (action.canEditFunding(((element.fundingSource.fundingSourceInfo.budgetType.id)!-1),(element.institution.id)!-1) ))|| isTemplate]
             [@customForm.input name="${customName}.amount"    i18nkey="budget.amount" showTitle=false className="currencyInput fundInput type-${(element.fundingSource.fundingSourceInfo.budgetType.id)!'none'}" required=true /]
           [#else]
-            <div class="${customForm.changedField(customName+'.amount')}">
-            <div class="input"><p>US$ <span>${((element.amount)!0)?number?string(",##0.00")}</span></p></div>
-            <input type="hidden" name="${customName}.amount"  value="${(element.amount)!0}" />
+            <div class="${customForm.changedField(customName + '.amount')}">
+              <div class="input"><p>US$ <span>${((element.amount)!0)?number?string(",##0.00")}</span></p></div>
+              <input type="hidden" name="${customName}.amount"  value="${(element.amount)!0}" />
             </div>
           [/#if]
         </div>
@@ -437,10 +462,10 @@
               [@customForm.input name="${customName}.genderPercentage" i18nkey="budget.genderPercentage" showTitle=false className="percentageInput type-${(element.fundingSource.fundingSourceInfo.budgetType.id)!'none'}" required=true   /]
             [#else]  
             <div class="${customForm.changedField(customName+'.genderPercentage')}">
-            <div class="input"><p><span>${((element.genderPercentage)!0)}%</span></p></div>
-            <input type="hidden" name="${customName}.genderPercentage"  value="${(element.genderPercentage)!0}" />
-         </div>
-          [/#if]
+              <div class="input"><p><span>${((element.genderPercentage)!0)}%</span></p></div>
+              <input type="hidden" name="${customName}.genderPercentage"  value="${(element.genderPercentage)!0}" />
+            </div>
+            [/#if]
           </div>
         [/#if]
       </div>
