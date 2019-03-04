@@ -49,9 +49,9 @@
               [@numberOfPublications name="peerReviewed" list=["", ""]/]
             </div>
             
+            
             [#-- Full list of publications published --]
             <div class="form-group">
-              <h4 class="headTitle">[@s.text name="${customLabel}.fullList.title" /]</h4>
               [#-- Modal Large --]
                 <button type="button" class="pull-right btn btn-link btn-sm" data-toggle="modal" data-target="#tableA-bigger"> 
                   <span class="glyphicon glyphicon-fullscreen"></span> See Full Table 2
@@ -60,6 +60,7 @@
                   <div class="modal-dialog modal-lg bigger" role="document">
                     <div class="modal-content">
                       <div class="modal-header">
+                        [@s.text name="${customLabel}.fullList.title" /]
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                       </div>
                       [@listOfPublications name="fullList" list=[ ] allowPopups=false /]
@@ -88,7 +89,7 @@
     <table class="table table-bordered">
       <thead>
         <tr>
-          <td></td>
+          <th class="numbersTitle"></th>
           <th class="text-center"> [@s.text name="${customLabel}.${name}.totalAmount" /] </th>
           <th class="text-center col-md-3"> [@s.text name="${customLabel}.${name}.percent" /] </th>
         </tr>
@@ -119,6 +120,9 @@
 
 
   <div class="form-group">
+    [#if allowPopups]
+      <h4 class="headTitle">[@s.text name="${customLabel}.fullList.title" /]</h4>
+    [/#if]
     <table class="table table-bordered">
       <thead>
         <tr>

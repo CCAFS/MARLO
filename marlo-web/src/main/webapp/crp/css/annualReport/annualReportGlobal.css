@@ -56,6 +56,10 @@ td.tableTitle {
     font-weight: bold;
 }
 
+table th.numbersTitle {
+    background: transparent !important;
+}
+
 span.icon-20 {
   margin-top: 7px;
 }
