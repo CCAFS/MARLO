@@ -98,7 +98,7 @@ public class UnhandledExceptionAction extends BaseAction {
     message.append("This exception occurs in the server: " + config.getBaseUrl() + "</br></br>");
     String crpAcronymName = crp.getAcronym() != null && !crp.getAcronym().isEmpty() ? crp.getAcronym() : crp.getName();
     if (crpAcronymName != null) {
-      message.append("<b>CRP : </b>" + crp.getAcronym() + ".</br>");
+      message.append("<b>CRP: </b>" + crp.getAcronym() + ".</br>");
     }
     if (this.getActualPhase() != null) {
       message.append("<b>Phase: </b>" + this.getActualPhase().getComposedName() + ".</br>");
