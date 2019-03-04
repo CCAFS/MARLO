@@ -609,5 +609,14 @@
       <one-to-many
         class="org.cgiar.ccafs.marlo.data.model.DeliverableGeographicScope" />
     </set>
+    <set name="deliverableUsers"
+      table="deliverable_users" inverse="true"
+      lazy="true" fetch="select">
+      <key>
+        <column name="id_phase" />
+      </key>
+      <one-to-many
+        class="org.cgiar.ccafs.marlo.data.model.DeliverableUser" />
+    </set>
   </class>
 </hibernate-mapping>

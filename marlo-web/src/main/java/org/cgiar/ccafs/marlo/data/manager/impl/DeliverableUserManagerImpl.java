@@ -45,13 +45,15 @@ public class DeliverableUserManagerImpl implements DeliverableUserManager {
     this.phaseDAO = phaseDAO;
   }
 
-  private void cloneDeliverableUser(DeliverableUser deliverableUser, DeliverableUser newDeliverableUser, Phase phase) {
+  private DeliverableUser cloneDeliverableUser(DeliverableUser deliverableUser, DeliverableUser newDeliverableUser,
+    Phase phase) {
     newDeliverableUser.setDeliverable(deliverableUser.getDeliverable());
     newDeliverableUser.setPhase(phase);
     newDeliverableUser.setFirstName(deliverableUser.getFirstName());
     newDeliverableUser.setLastName(deliverableUser.getLastName());
     newDeliverableUser.setElementId(deliverableUser.getElementId());
 
+    return newDeliverableUser;
   }
 
   @Override
@@ -144,14 +146,20 @@ public class DeliverableUserManagerImpl implements DeliverableUserManager {
     DeliverableUser deliverableUserPhase =
       deliverableUserDAO.findDeliverableUserByPhaseAndDeliverableUser(phase, deliverableUserResult);
 
-    if (deliverableUserPhase != null) {
-      this.cloneDeliverableUser(deliverableUserResult, deliverableUserPhase, phase);
-      deliverableUserDAO.save(deliverableUserPhase);
+    if (deliverableUserPhase == null) {
+      DeliverableUser newDeliverableUser = new DeliverableUser();
+      newDeliverableUser = this.cloneDeliverableUser(deliverableUserResult, newDeliverableUser, phase);
+      deliverableUserDAO.save(newDeliverableUser);
     } else {
       DeliverableUser newDeliverableUser = new DeliverableUser();
-      this.cloneDeliverableUser(deliverableUserResult, newDeliverableUser, phase);
+      newDeliverableUser.setDeliverable(deliverableUserPhase.getDeliverable());
+      newDeliverableUser.setPhase(deliverableUserPhase.getPhase());
+      newDeliverableUser.setElementId(deliverableUserPhase.getElementId());
+      newDeliverableUser.setFirstName(deliverableUserPhase.getFirstName());
+      newDeliverableUser.setLastName(deliverableUserPhase.getLastName());
       deliverableUserDAO.save(newDeliverableUser);
     }
+
     if (phase.getNext() != null) {
       this.saveDeliverableUserPhase(deliverableUserResult, phase.getNext().getId());
     }
