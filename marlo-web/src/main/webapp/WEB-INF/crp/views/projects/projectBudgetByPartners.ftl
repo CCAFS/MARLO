@@ -114,7 +114,7 @@
               [/#list]  
             </div>
             
-            [#if !reportingActive]
+            [#if true || !reportingActive]
             [#-- Section Buttons & hidden inputs--]
             [#include "/WEB-INF/crp/views/projects/buttons-projects.ftl" /]
             [/#if]
@@ -213,12 +213,12 @@
                   <div class="budgetExecutionAmount type-${budgetType.id} text-center">
                     [#-- Budget Expenditure --]
                     [#local budgetExecution = (action.getProjectBudgetExecution (element.institution.id, selectedYear, budgetType.id))!{} /]
-                    [#local budgetExecutionName = "project.projectBudgetExecution[${budgetExpenditureIndex}]" /]
+                    [#local budgetExecutionName = "project.budgetExecutions[${budgetExpenditureIndex}]" /]
                     <input type="hidden" name="${budgetExecutionName}.id" value="${(budgetExecution.id)!}" />
                     <input type="hidden" name="${budgetExecutionName}.institution.id" value="${(element.institution.id)!}" />
                     <input type="hidden" name="${budgetExecutionName}.budgetType.id" value="${(budgetType.id)!}" />
                     <input type="hidden" name="${budgetExecutionName}.year" value="${(selectedYear)!}" />
-                    [@customForm.input name="${budgetExecutionName}.amount" value="${(budgetExecution.amount)!0}" i18nkey="budget.amount" showTitle=false className="currencyInput" required=true editable=editable && isYearEditable(selectedYear) /]
+                    [@customForm.input name="${budgetExecutionName}.actualExpenditure" value="${(budgetExecution.actualExpenditure)!0}" i18nkey="budget.amount" showTitle=false className="currencyInput" required=true editable=editable && isYearEditable(selectedYear) /]
                     [#-- Index --]
                     [#assign budgetExpenditureIndex = budgetExpenditureIndex + 1 /]
                   </div>
