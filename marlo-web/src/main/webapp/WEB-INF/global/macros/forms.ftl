@@ -543,7 +543,12 @@
 [/#function]
 
 [#macro elementsListComponent name elementType id="" elementList=[] label="" paramText="" help="" helpIcon=true listName="" keyFieldName="" displayFieldName="" maxLimit=0 indexLevel=1 required=true ]
-  [#local list = ((listName?eval)?sort_by(displayFieldName))![] /] 
+  [#attempt]
+    [#local list = ((listName?eval)?sort_by(displayFieldName))![] /] 
+  [#recover]
+    [#local list = [] /] 
+  [/#attempt]
+  
   [#local composedID = "${elementType}${id}" /]
   <div class="panel tertiary elementsListComponent" listname="${name}" style="position:relative">
     <div class="panel-head">
