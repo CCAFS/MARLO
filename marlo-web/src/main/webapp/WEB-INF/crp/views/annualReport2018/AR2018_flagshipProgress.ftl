@@ -151,6 +151,3 @@
     </table>
   </div>
 [/#macro]
-
-
-

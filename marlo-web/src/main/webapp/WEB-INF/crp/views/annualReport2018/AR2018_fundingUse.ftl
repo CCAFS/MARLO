@@ -62,7 +62,7 @@
                 [@customForm.helpLabel name="${customLabel}.table11.help" showIcon=false editable=editable/]
                 <div class="listExamples">
                     [#list reportSynthesis.reportSynthesisFundingUseSummary.expenditureAreas as item]
-                      [@fundingExamples element=item name="${customName}.fundingUse.table11" index=item_index template=false isEditable=editable/]
+                      [@fundingExamples element=item name="${customName}.expenditureAreas" index=item_index template=false isEditable=editable/]
                     [/#list]
                 </div>
                 [#if canEdit && editable]
@@ -83,7 +83,7 @@
 </section>
 
 [#--  Relevant Evaluation Form template --]
-[@fundingExamples element={} name="${customName}.fundingUse.table11" index=-1 template=true /]
+[@fundingExamples element={} name="${customName}.expenditureAreas" index=-1 template=true /]
 
 
 [#include "/WEB-INF/global/pages/footer.ftl"]
@@ -91,6 +91,7 @@
 [#---------------------------------------------------- MACROS ----------------------------------------------------]
 
 [#macro fundingExamples name element index isEditable=true template=false] 
+${(element.id)!}
 
 [#local customName = "${name}[${index}]" /]
   <div id="fundingUseExample-${template?string('template', index)}" class="fundingUseExample borderBox form-group" style="position:relative; display:${template?string('none','block')}">
@@ -105,20 +106,20 @@
     
     <div class="form-group">
       [#-- Name of examples of W1/2 Expenditure --]
-        [@customForm.textArea name="${customName}.table11.examples" i18nkey="${customLabel}.table11.examples" help="${customLabel}.table11.examples.help" helpIcon=false className="limitWords-50" required=true editable=editable allowTextEditor=true /]
+        [@customForm.textArea name="${customName}.exampleExpenditure" i18nkey="${customLabel}.table11.examples" help="${customLabel}.table11.examples.help" helpIcon=false className="limitWords-50" required=true editable=editable allowTextEditor=true /]
     </div>
 
     <div class="form-group row">
       [#-- Broad area --] 
         <div class="col-md-7">
-          [@customForm.select name="${customName}.table11.broadArea" label="" keyFieldName="id" displayFieldName="acronym" i18nkey="${customLabel}.table11.broadArea" listName="globalUnitList"  required=true  className="" editable=isEditable/]
+          [@customForm.select name="${customName}.expenditureCategory" label="" keyFieldName="id" displayFieldName="acronym" i18nkey="${customLabel}.table11.broadArea" listName="globalUnitList"  required=true  className="" editable=isEditable/]
         </div>
     </div>    
     
     <div class="form-group row">
       [#-- Other --]
         <div class="col-md-7">
-          [@customForm.input name="${customName}.table11.otherArea" i18nkey="${customLabel}.table11.otherArea"required=true editable=editable /]
+          [@customForm.input name="${customName}.otherCategory" i18nkey="${customLabel}.table11.otherArea"required=true editable=editable /]
         </div>
     </div>
     
