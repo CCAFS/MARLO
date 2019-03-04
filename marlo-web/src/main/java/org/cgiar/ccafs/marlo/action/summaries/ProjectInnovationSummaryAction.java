@@ -19,8 +19,10 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationContributingOrganizationManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationDeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
+import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationContributingOrganization;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCountry;
@@ -73,11 +75,13 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
   // Managers
   private final ProjectInnovationContributingOrganizationManager projectInnovationContributingOrganizationManager;
   private final ProjectInnovationManager projectInnovationManager;
+  private final ProjectInnovationDeliverableManager projectInnovationDeliverableManager;
   private final ResourceManager resourceManager;
   // Parameters
   private long startTime;
   private Long projectInnovationID;
   private ProjectInnovationInfo projectInnovationInfo;
+
   // XLSX bytes
   private byte[] bytesPDF;
   // Streams
@@ -87,11 +91,13 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
   public ProjectInnovationSummaryAction(APConfig config, GlobalUnitManager crpManager,
     ProjectInnovationManager projectInnovationManager, PhaseManager phaseManager, ResourceManager resourceManager,
     ProjectManager projectManager,
-    ProjectInnovationContributingOrganizationManager projectInnovationContributingOrganizationManager) {
+    ProjectInnovationContributingOrganizationManager projectInnovationContributingOrganizationManager,
+    ProjectInnovationDeliverableManager projectInnovationDeliverableManager) {
     super(config, crpManager, phaseManager, projectManager);
     this.projectInnovationManager = projectInnovationManager;
     this.resourceManager = resourceManager;
     this.projectInnovationContributingOrganizationManager = projectInnovationContributingOrganizationManager;
+    this.projectInnovationDeliverableManager = projectInnovationDeliverableManager;
   }
 
   /**
@@ -402,11 +408,13 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
     // Contributing Organization
     List<ProjectInnovationContributingOrganization> contributingOrganizationsList =
       new ArrayList<ProjectInnovationContributingOrganization>();
+    List<Deliverable> deliverableList = new ArrayList<Deliverable>();
     contributingOrganizationsList = projectInnovationContributingOrganizationManager.findAll();
     if (contributingOrganizationsList != null && contributingOrganizationsList.size() > 0) {
-      contributingOrganizationsList.stream()
-        .filter(p -> p.getProjectInnovation().getId() == projectInnovationInfo.getProjectInnovation().getId()
-          && p.getPhase().getId() == this.getSelectedPhase().getId());
+      contributingOrganizationsList = contributingOrganizationsList.stream()
+        .filter(p -> p.getProjectInnovation().getId().equals(projectInnovationInfo.getProjectInnovation().getId())
+          && p.getPhase().getId() == this.getSelectedPhase().getId())
+        .collect(Collectors.toList());
     }
     if (contributingOrganizationsList != null && !contributingOrganizationsList.isEmpty()) {
       Set<String> contributingSet = new HashSet<>();
@@ -429,16 +437,21 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
     if (projectInnovationInfo.getEvidenceLink() != null && !projectInnovationInfo.getEvidenceLink().trim().isEmpty()) {
       evidenceLink = projectInnovationInfo.getEvidenceLink();
     }
+
     // Deliverables
     List<ProjectInnovationDeliverable> projectInnovationDeliverables =
-      projectInnovationInfo.getProjectInnovation().getProjectInnovationDeliverables().stream()
-        .filter(o -> o.isActive() && o.getPhase() != null && o.getPhase().equals(this.getSelectedPhase()))
+      projectInnovationDeliverableManager.findAll().stream()
+        .filter(p -> p.getProjectInnovation().getId().equals(projectInnovationInfo.getProjectInnovation().getId())
+          && p.getPhase().getId().equals(this.getSelectedPhase().getId()))
         .collect(Collectors.toList());
+
     if (projectInnovationDeliverables != null && projectInnovationDeliverables.size() > 0) {
       Set<String> deliverablesSet = new HashSet<>();
       for (ProjectInnovationDeliverable projectInnovationDeliverable : projectInnovationDeliverables) {
-        deliverablesSet
-          .add("<br>&nbsp;&nbsp;&nbsp;&nbsp; ● " + projectInnovationDeliverable.getDeliverable().getComposedName());
+        if (projectInnovationDeliverable.getDeliverable().getId() != null) {
+          deliverablesSet
+            .add("<br>&nbsp;&nbsp;&nbsp;&nbsp; ● " + projectInnovationDeliverable.getDeliverable().getId());
+        }
       }
       deliverables = String.join("", deliverablesSet);
     }
