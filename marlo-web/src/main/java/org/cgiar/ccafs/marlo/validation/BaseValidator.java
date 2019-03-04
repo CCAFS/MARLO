@@ -735,6 +735,10 @@ public class BaseValidator {
     // Validate if the form have missing fileds in project sections issue #1209
     String sMissingField = action.getMissingFields().toString();
     if (sMissingField.length() > 0) {
+      System.out.println("missing fields " + action.getMissingFields().toString());
+      if (sMissingField.equals("null") && sectionName.equals("policies")) {
+        status.setMissingFields("");
+      }
       status.setMissingFields(sMissingField);
     } else {
       status.setMissingFields("");
