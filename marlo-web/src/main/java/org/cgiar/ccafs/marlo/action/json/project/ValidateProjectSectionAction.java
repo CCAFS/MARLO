@@ -239,10 +239,10 @@ public class ValidateProjectSectionAction extends BaseAction {
             if (projectLp6Contributions != null && !projectLp6Contributions.isEmpty()) {
               ProjectLp6Contribution projectLp6Contribution = projectLp6Contributions.get(0);
               if (projectLp6Contribution.getContribution() == null) {
-                section.put("missingFields", this.getText("projects.LP6Contribution.contribution"));
+                section.put("missingFields", "projects.LP6Contribution.contribution");
               }
             } else {
-              section.put("missingFields", this.getText("projects.LP6Contribution.contribution"));
+              section.put("missingFields", "projects.LP6Contribution.contribution");
             }
 
           }
