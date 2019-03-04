@@ -1,42 +1,45 @@
 [#ftl]
 
 [#assign menus= [
+  { 'title': '0. Narrative section', 'show': true,
+    'items': [
+    { 'slug': 'narrative',    'name': 'annualReport2018.menu.executiveSummary',    'action': 'narrative',  'active': true, 'onlyPMU': !PMU }
+    ]
+  },
   { 'title': '1. Key Results', 'show': true,
     'items': [
-    { 'slug': 'crpProgress',          'name': 'annualReport2018.menu.crpProgress',          'action': 'crpProgress',        'active': true },
-    { 'slug': 'flagshipProgress',     'name': 'annualReport2018.menu.flagshipProgress',     'action': 'flagshipProgress',   'active': true },
-    { 'slug': 'ccDimensions',         'name': 'annualReport2018.menu.ccDimensions',         'action': 'ccDimensions',       'active': true }
+    { 'slug': 'crpProgress',          'name': 'annualReport2018.menu.crpProgress',          'action': 'crpProgress',        'active': true, 'subName': '(Table 1: SRF Targets)' },
+    { 'slug': 'flagshipProgress',     'name': 'annualReport2018.menu.flagshipProgress',     'action': 'flagshipProgress',   'active': true,
+      'items': [
+        { 'slug': 'policies',             'name': 'annualReport2018.menu.policies',           'action': 'policies',             'active': true },
+        { 'slug': 'oicr',                 'name': 'annualReport2018.menu.oicr',               'action': 'oicr',                 'active': true },
+        { 'slug': 'innovations',          'name': 'annualReport2018.menu.innovations',        'action': 'innovations',          'active': true },
+        { 'slug': 'outomesMilestones',    'name': 'annualReport2018.menu.outomesMilestones',  'action': 'outomesMilestones',    'active': true },
+        { 'slug': 'publications',         'name': 'annualReport2018.menu.publications',       'action': 'publications',         'active': true }  
+      ]
+    },
+    { 'slug': 'ccDimensions',         'name': 'annualReport2018.menu.ccDimensions',         'action': 'ccDimensions',       'active': true, 'subName': '(Table 7: CapDev)' }
     ]
   },
   { 'title': '2. Effectiveness and Efficiency', 'show': true,
     'items': [
     [#-- { 'slug': 'plannedVariance',        'name': 'annualReport.menu.plannedVariance',      'action': 'plannedVariance',        'active': true, 'onlyPMU': !PMU }, --]
     { 'slug': 'governance',             'name': 'annualReport2018.menu.governance',             'action': 'governance',             'active': true, 'onlyPMU': !PMU }
-    { 'slug': 'externalPartnerships',   'name': 'annualReport2018.menu.externalPartnerships',   'action': 'externalPartnerships',   'active': true },
+    { 'slug': 'externalPartnerships',   'name': 'annualReport2018.menu.externalPartnerships',   'action': 'externalPartnerships',   'active': true, 'subName': '(Table 8 and Table 9)' },
     { 'slug': 'intellectualAssets',     'name': 'annualReport2018.menu.intellectualAssets',     'action': 'intellectualAssets',             'active': true, 'onlyPMU': !PMU },
     [#-- { 'slug': 'crossPartnerships',      'name': 'annualReport.menu.crossPartnerships',    'action': 'crossPartnerships',      'active': true }, --]
-    { 'slug': 'melia',                  'name': 'annualReport2018.menu.melia',                  'action': 'melia',                  'active': true },
+    { 'slug': 'melia',                  'name': 'annualReport2018.menu.melia',                  'action': 'melia',                  'active': true, 'subName': '(Table 10 and Table 11)' },
     { 'slug': 'efficiency',             'name': 'annualReport2018.menu.efficiency',             'action': 'efficiency',             'active': true, 'onlyPMU': !PMU },
     { 'slug': 'risks',                  'name': 'annualReport2018.menu.risks',                  'action': 'risks',                  'active': true, 'onlyPMU': !PMU },
-    { 'slug': 'fundingUse',             'name': 'annualReport2018.menu.fundingUse',             'action': 'fundingUse',             'active': true, 'onlyPMU': !PMU }
+    { 'slug': 'fundingUse',             'name': 'annualReport2018.menu.fundingUse',             'action': 'fundingUse',             'active': true, 'subName': '(Table 12)', 'onlyPMU': !PMU }
     ]
   },
   { 'title': '3. Financial Summary', 'show': true,
     'items': [
-    { 'slug': 'financial',    'name': 'annualReport2018.menu.financial',    'action': 'financial',    'active': true, 'onlyPMU': !PMU }
-    ]
-  },
-  { 'title': '4. Reporting Indicators', 'show': true,
-    'items': [
-    { 'slug': 'influence',    'name': 'annualReport2018.menu.influence',    'action': 'influence',  'active': true, 'onlyPMU': !PMU },
-    { 'slug': 'control',      'name': 'annualReport2018.menu.control',      'action': 'control',    'active': true, 'onlyPMU': !PMU }
-    ]
-  },
-  { 'title': '0. Narrative section', 'show': true,
-    'items': [
-    { 'slug': 'narrative',    'name': 'annualReport2018.menu.executiveSummary',    'action': 'narrative',  'active': true, 'onlyPMU': !PMU }
+    { 'slug': 'financial',    'name': 'annualReport2018.menu.financial',    'action': 'financial',    'active': true, 'subName': '(Table 13)', 'onlyPMU': !PMU }
     ]
   }
+  
 ]/]
 
 
@@ -62,21 +65,7 @@
       <li>
         <ul><p class="menuTitle">${menu.title}</p>
           [#list menu.items as item]
-            [#assign itemRequired = (((item.onlyPMU)!false) && PMU) || (((item.onlyFlagship)!false) && flagship) || (!((item.onlyFlagship)!false) && !((item.onlyPMU)!false)) /]
-            [#assign submitStatus = (action.getReportSynthesisSectionStatus(item.action, synthesisID))!false /]
-            [#assign hasDraft = (action.getAutoSaveFilePath(reportSynthesis.class.simpleName, item.action, reportSynthesis.id))!false /]
-            [#if (item.show)!true ]
-              <li id="menu-${item.action}" class="${hasDraft?string('draft', '')} [#if item.slug == currentStage]currentSection[/#if] [#if item.active && itemRequired]${submitStatus?string('submitted','toSubmit')}[/#if] ${(item.active)?string('enabled','disabled')}">
-                <a href="[@s.url action="${crpSession}/${item.action}"][@s.param name="liaisonInstitutionID" value=liaisonInstitutionID /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" onclick="return ${item.active?string}" class="action-${crpSession}/${item.action}">
-                  [#-- Name --]
-                  [@s.text name=item.name/]
-                </a>
-              </li>
-              [#-- Set current Item --]
-              [#if item.slug == currentStage][#assign currentMenuItem = item /][/#if]
-              [#-- Set sections for checking --]
-              [#if item.active && itemRequired][#assign sectionsForChecking = sectionsForChecking + ["${item.action}"] /][/#if]
-            [/#if]
+            [@menuItem item=item /]
           [/#list] 
         </ul>
       </li>
@@ -151,3 +140,31 @@
 [#--  HERMES TO ENABLE THE AUTOSAVE FUNCTION PLASE ADD THIS: "${baseUrl}/global/js/autoSave.js" --]
 [#assign customJS = customJS  + [  "${baseUrlMedia}/js/annualReport/annualReportSubmit.js", "${baseUrl}/global/js/fieldsValidation.js","${baseUrl}/global/js/autoSave.js"]
 /]
+
+[#macro menuItem item]
+  [#local itemRequired = (((item.onlyPMU)!false) && PMU) || (((item.onlyFlagship)!false) && flagship) || (!((item.onlyFlagship)!false) && !((item.onlyPMU)!false)) /]
+  [#local submitStatus = (action.getReportSynthesisSectionStatus(item.action, synthesisID))!false /]
+  [#local hasDraft = (action.getAutoSaveFilePath(reportSynthesis.class.simpleName, item.action, reportSynthesis.id))!false /]
+  [#if (item.show)!true ]
+    <li id="menu-${item.action}" class="${hasDraft?string('draft', '')} [#if item.slug == currentStage]currentSection[/#if] [#if item.active && itemRequired]${submitStatus?string('submitted','toSubmit')}[/#if] ${(item.active)?string('enabled','disabled')}">
+      <a href="[@s.url action="${crpSession}/${item.action}"][@s.param name="liaisonInstitutionID" value=liaisonInstitutionID /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" onclick="return ${item.active?string}" class="action-${crpSession}/${item.action}">
+        [#-- Name --]
+        [@s.text name=item.name/]
+        [#-- Sub Name --]
+        [#if item.subName?has_content]<br /><small>[@s.text name=item.subName/]</small>[/#if]
+      </a>
+      
+      [#if item.items?has_content]
+        <ul>
+          [#list item.items as subItem]
+            [@menuItem item=subItem /]
+          [/#list]
+        </ul>
+      [/#if]
+    </li>
+    [#-- Set current Item --]
+    [#if item.slug == currentStage][#assign currentMenuItem = item /][/#if]
+    [#-- Set sections for checking --]
+    [#if item.active && itemRequired][#assign sectionsForChecking = sectionsForChecking + ["${item.action}"] /][/#if]
+  [/#if]
+[/#macro]
