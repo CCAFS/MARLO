@@ -69,9 +69,9 @@ public class ProjectPolicyValidator extends BaseValidator {
       }
     }
 
-    // if (policy.getProjectPolicyInfo(action.getActualPhase()).getYear() == action.getActualPhase().getYear()) {
-    this.validateProjectPolicy(action, policy);
-    // }
+    if (policy.getProjectPolicyInfo(action.getActualPhase()).getYear() == action.getActualPhase().getYear()) {
+      this.validateProjectPolicy(action, policy);
+    }
 
     if (!action.getFieldErrors().isEmpty()) {
       action.addActionError(action.getText("saving.fields.required"));
