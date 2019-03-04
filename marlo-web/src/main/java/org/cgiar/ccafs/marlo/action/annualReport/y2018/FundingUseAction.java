@@ -381,19 +381,6 @@ public class FundingUseAction extends BaseAction {
                 .sorted((f1, f2) -> f1.getId().compareTo(f2.getId())).collect(Collectors.toList())));
           } else {
             reportSynthesis.getReportSynthesisFundingUseSummary().setExpenditureAreas(new ArrayList<>());
-
-            List<ReportSynthesisExpenditureCategory> expCategories =
-              new ArrayList<>(reportSynthesisExpenditureCategoryManager.findAll().stream().filter(c -> c.isActive())
-                .sorted((c1, c2) -> c1.getId().compareTo(c2.getId())).collect(Collectors.toList()));
-
-            for (ReportSynthesisExpenditureCategory expenditureCategory : expCategories) {
-              ReportSynthesisFundingUseExpendituryArea fundingUseExpenditureArea =
-                new ReportSynthesisFundingUseExpendituryArea();
-              fundingUseExpenditureArea.setExpenditureCategory(expenditureCategory);
-              reportSynthesis.getReportSynthesisFundingUseSummary().getExpenditureAreas()
-                .add(fundingUseExpenditureArea);
-            }
-
           }
         }
       }
@@ -426,16 +413,6 @@ public class FundingUseAction extends BaseAction {
             .sorted((f1, f2) -> f1.getId().compareTo(f2.getId())).collect(Collectors.toList())));
       } else {
         reportSynthesis.getReportSynthesisFundingUseSummary().setExpenditureAreas(new ArrayList<>());
-
-        List<ReportSynthesisExpenditureCategory> expCategories =
-          new ArrayList<>(reportSynthesisExpenditureCategoryManager.findAll().stream().filter(c -> c.isActive())
-            .sorted((c1, c2) -> c1.getId().compareTo(c2.getId())).collect(Collectors.toList()));
-        for (ReportSynthesisExpenditureCategory expenditureCategory : expCategories) {
-          ReportSynthesisFundingUseExpendituryArea fundingUseExpenditureArea =
-            new ReportSynthesisFundingUseExpendituryArea();
-          fundingUseExpenditureArea.setExpenditureCategory(expenditureCategory);
-          reportSynthesis.getReportSynthesisFundingUseSummary().getExpenditureAreas().add(fundingUseExpenditureArea);
-        }
       }
     }
 
