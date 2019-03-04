@@ -22,6 +22,8 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
@@ -96,7 +98,7 @@ public class UnhandledExceptionAction extends BaseAction {
     message.append("This exception occurs in the server: " + config.getBaseUrl() + "</br></br>");
     String crpAcronymName = crp.getAcronym() != null && !crp.getAcronym().isEmpty() ? crp.getAcronym() : crp.getName();
     if (crpAcronymName != null) {
-      message.append("<b>CRP : </b>" + crp.getAcronym() + ".</br>");
+      message.append("<b>CRP: </b>" + crp.getAcronym() + ".</br>");
     }
     if (this.getActualPhase() != null) {
       message.append("<b>Phase: </b>" + this.getActualPhase().getComposedName() + ".</br>");
@@ -111,8 +113,11 @@ public class UnhandledExceptionAction extends BaseAction {
     if (this.getRequest() != null) {
       HttpServletRequest httpServletRequest = this.getRequest();
       if (httpServletRequest.getParameterMap() != null && !httpServletRequest.getParameterMap().isEmpty()) {
+        // Order Parameters
+        SortedSet<String> keys = new TreeSet<>(httpServletRequest.getParameterMap().keySet());
+
         message.append("<b>Parameters: </b></br>");
-        for (String parameter : httpServletRequest.getParameterMap().keySet()) {
+        for (String parameter : keys) {
           if (httpServletRequest.getParameterMap().get(parameter) != null
             && httpServletRequest.getParameterMap().get(parameter).length > 0) {
             message.append("</br>" + parameter + ": ");
