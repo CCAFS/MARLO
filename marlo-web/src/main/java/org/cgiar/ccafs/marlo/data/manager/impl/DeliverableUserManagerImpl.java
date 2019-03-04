@@ -146,16 +146,20 @@ public class DeliverableUserManagerImpl implements DeliverableUserManager {
     DeliverableUser deliverableUserPhase =
       deliverableUserDAO.findDeliverableUserByPhaseAndDeliverableUser(phase, deliverableUserResult);
 
-    if (deliverableUserPhase != null) {
-      deliverableUserPhase.setElementId(deliverableUserResult.getElementId());
-      deliverableUserPhase.setFirstName(deliverableUserResult.getFirstName());
-      deliverableUserPhase.setLastName(deliverableUserResult.getLastName());
-      deliverableUserDAO.save(deliverableUserPhase);
-    } else {
+    if (deliverableUserPhase == null) {
       DeliverableUser newDeliverableUser = new DeliverableUser();
       newDeliverableUser = this.cloneDeliverableUser(deliverableUserResult, newDeliverableUser, phase);
       deliverableUserDAO.save(newDeliverableUser);
+    } else {
+      DeliverableUser newDeliverableUser = new DeliverableUser();
+      newDeliverableUser.setDeliverable(deliverableUserPhase.getDeliverable());
+      newDeliverableUser.setPhase(deliverableUserPhase.getPhase());
+      newDeliverableUser.setElementId(deliverableUserPhase.getElementId());
+      newDeliverableUser.setFirstName(deliverableUserPhase.getFirstName());
+      newDeliverableUser.setLastName(deliverableUserPhase.getLastName());
+      deliverableUserDAO.save(newDeliverableUser);
     }
+
     if (phase.getNext() != null) {
       this.saveDeliverableUserPhase(deliverableUserResult, phase.getNext().getId());
     }
