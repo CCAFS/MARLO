@@ -207,23 +207,56 @@ public class SrfProgressAction extends BaseAction {
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
+  /**
+   * Get the information of evidences according to srf target
+   *
+   * @param markerID
+   * @return
+   */
+  public List<ProjectExpectedStudy> getEvidenceInfo(long targetID) {
+
+
+    List<ProjectExpectedStudy> studiesInfo = new ArrayList<>();
+
+    if (this.isPMU()) {
+      List<ProjectExpectedStudy> flagshipStudiesInfo = new ArrayList<>();
+      // Get the list of liaison institutions Flagships and PMU.
+      List<LiaisonInstitution> liaisonInstitutionsFg = loggedCrp.getLiaisonInstitutions().stream()
+        .filter(c -> c.getCrpProgram() != null && c.isActive()
+          && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+        .collect(Collectors.toList());
+      liaisonInstitutionsFg.sort(Comparator.comparing(LiaisonInstitution::getAcronym));
+
+      for (LiaisonInstitution liaisonInstitution : liaisonInstitutionsFg) {
+        flagshipStudiesInfo = this.studiesList(this.getActualPhase().getId(), liaisonInstitution, targetID);
+        studiesInfo.addAll(flagshipStudiesInfo);
+      }
+
+    } else {
+      studiesInfo = this.studiesList(this.getActualPhase().getId(), this.liaisonInstitution, targetID);
+    }
+
+
+    return studiesInfo;
+  }
+
   public List<ReportSynthesisSrfProgress> getFlagshipSrfProgress() {
     return flagshipSrfProgress;
   }
+
 
   public List<ReportSynthesisCrpProgressTarget> getFpSynthesisTable() {
     return fpSynthesisTable;
   }
 
-
   public LiaisonInstitution getLiaisonInstitution() {
     return liaisonInstitution;
   }
 
+
   public Long getLiaisonInstitutionID() {
     return liaisonInstitutionID;
   }
-
 
   public List<LiaisonInstitution> getLiaisonInstitutions() {
     return liaisonInstitutions;
@@ -241,14 +274,15 @@ public class SrfProgressAction extends BaseAction {
     return sloTargets;
   }
 
+
   public List<ProjectExpectedStudy> getStudiesList() {
     return studiesList;
   }
 
-
   public Long getSynthesisID() {
     return synthesisID;
   }
+
 
   /**
    * Get the information list for the Flagships Slo Targets Information in the form
@@ -724,9 +758,9 @@ public class SrfProgressAction extends BaseAction {
   // }
 
 
-  public void studiesList(long phaseID, LiaisonInstitution liaisonInstitution, long tragetId) {
+  public List<ProjectExpectedStudy> studiesList(long phaseID, LiaisonInstitution liaisonInstitution, long tragetId) {
 
-    studiesList = new ArrayList<>();
+    List<ProjectExpectedStudy> studies = new ArrayList<>();
 
     Phase phase = phaseManager.getPhaseById(phaseID);
 
@@ -752,19 +786,17 @@ public class SrfProgressAction extends BaseAction {
 
               if (projectExpectedStudy.getProjectExpectedStudySrfTargets() != null
                 && projectExpectedStudy.getProjectExpectedStudySrfTargets().size() > 0) {
-
+                // AR Synthesis 2018 add Studies wiht Target
                 List<ProjectExpectedStudySrfTarget> targetPrev = new ArrayList<>(projectExpectedStudy
                   .getProjectExpectedStudySrfTargets().stream()
                   .filter(nu -> nu.isActive() && nu.getPhase().getId() == phase.getId()).collect(Collectors.toList()));
 
                 for (ProjectExpectedStudySrfTarget studytarget : targetPrev) {
-
+                  if (studytarget.getSrfSloIndicator().getId().equals(target.getId())) {
+                    studies.add(projectExpectedStudy);
+                  }
                 }
-
               }
-
-
-              studiesList.add(projectExpectedStudy);
             }
           }
         }
@@ -786,8 +818,22 @@ public class SrfProgressAction extends BaseAction {
               if (projectExpectedStudy.getProjectExpectedStudyInfo(phase) != null) {
                 if (projectExpectedStudy.getProjectExpectedStudyInfo(phase).getStudyType() != null
                   && projectExpectedStudy.getProjectExpectedStudyInfo(phase).getStudyType().getId() == 1) {
-                  studiesList.add(projectExpectedStudy);
-                  break;
+
+                  if (projectExpectedStudy.getProjectExpectedStudySrfTargets() != null
+                    && projectExpectedStudy.getProjectExpectedStudySrfTargets().size() > 0) {
+                    // AR Synthesis 2018 add Studies wiht Target
+                    List<ProjectExpectedStudySrfTarget> targetPrev =
+                      new ArrayList<>(projectExpectedStudy.getProjectExpectedStudySrfTargets().stream()
+                        .filter(nu -> nu.isActive() && nu.getPhase().getId() == phase.getId())
+                        .collect(Collectors.toList()));
+
+                    for (ProjectExpectedStudySrfTarget studytarget : targetPrev) {
+                      if (studytarget.getSrfSloIndicator().getId().equals(target.getId())) {
+                        studies.add(projectExpectedStudy);
+                        break;
+                      }
+                    }
+                  }
                 }
               }
             }
@@ -795,7 +841,7 @@ public class SrfProgressAction extends BaseAction {
         }
       }
 
-      for (ProjectExpectedStudy projectExpectedStudy : studiesList) {
+      for (ProjectExpectedStudy projectExpectedStudy : studies) {
         if (projectExpectedStudy.getProjectExpectedStudySubIdos() != null
           && !projectExpectedStudy.getProjectExpectedStudySubIdos().isEmpty()) {
           projectExpectedStudy.setSubIdos(new ArrayList<>(projectExpectedStudy.getProjectExpectedStudySubIdos().stream()
@@ -804,6 +850,8 @@ public class SrfProgressAction extends BaseAction {
       }
 
     }
+
+    return studies;
   }
 
   @Override
