@@ -770,7 +770,7 @@ public class PublicationAction extends BaseAction {
         // Setup Geographic Scope
         if (deliverable.getDeliverableGeographicScopes() != null) {
           deliverable.setGeographicScopes(new ArrayList<>(deliverable.getDeliverableGeographicScopes().stream()
-            .filter(o -> o.isActive() && o.getPhase().getId() == this.getActualPhase().getId())
+            .filter(o -> o.isActive() && o.getPhase().getId() == deliverable.getPhase().getId())
             .collect(Collectors.toList())));
         }
 
@@ -1192,7 +1192,7 @@ public class PublicationAction extends BaseAction {
 
 
       // Save Geographic Scope Data
-      this.saveGeographicScope(deliverableDB, this.getActualPhase());
+      this.saveGeographicScope(deliverableDB, deliverable.getPhase());
 
       boolean haveRegions = false;
       boolean haveCountries = false;
@@ -1214,9 +1214,9 @@ public class PublicationAction extends BaseAction {
 
       if (haveRegions) {
         // Save the Regions List
-        this.saveDeliverableRegions(deliverableDB, this.getActualPhase(), deliverablePrew);
+        this.saveDeliverableRegions(deliverableDB, deliverable.getPhase(), deliverablePrew);
       } else {
-        this.deleteLocElements(deliverableDB, this.getActualPhase(), false);
+        this.deleteLocElements(deliverableDB, deliverable.getPhase(), false);
       }
 
       if (haveCountries) {
@@ -1224,7 +1224,7 @@ public class PublicationAction extends BaseAction {
         // Save Countries list
         this.saveDeliverableCountries();
       } else {
-        this.deleteLocElements(deliverableDB, this.getActualPhase(), true);
+        this.deleteLocElements(deliverableDB, deliverable.getPhase(), true);
       }
 
       this.saveCrossCutting();
