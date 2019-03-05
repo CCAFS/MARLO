@@ -71,8 +71,13 @@ public class ProjectExpectedStudyQuantificationManagerImpl implements ProjectExp
 
     List<ProjectExpectedStudyQuantification> projectExpectedStudyQuantifications =
       phase.getProjectExpectedStudyQuantifications().stream()
-        .filter(c -> c.isActive() && c.getProjectExpectedStudy().getId().longValue() == expectedID)
+        .filter(c -> c.isActive() && c.getProjectExpectedStudy().getId().longValue() == expectedID
+          && c.getNumber().equals(projectExpectedStudyQuantification.getNumber())
+          && c.getComments().equals(projectExpectedStudyQuantification.getComments())
+          && c.getTargetUnit().equals(projectExpectedStudyQuantification.getTargetUnit())
+          && c.getTypeQuantification().equals(projectExpectedStudyQuantification.getTypeQuantification()))
         .collect(Collectors.toList());
+
     for (ProjectExpectedStudyQuantification projectExpectedStudyQuantificationDB : projectExpectedStudyQuantifications) {
       projectExpectedStudyQuantificationDAO
         .deleteProjectExpectedStudyQuantification(projectExpectedStudyQuantificationDB.getId());
@@ -111,10 +116,30 @@ public class ProjectExpectedStudyQuantificationManagerImpl implements ProjectExp
 
     List<ProjectExpectedStudyQuantification> projectExpectedStudyQuantifications =
       phase.getProjectExpectedStudyQuantifications().stream()
-        .filter(c -> c.isActive() && c.getProjectExpectedStudy().getId().longValue() == expectedID)
+        .filter(c -> c.isActive() && c.getProjectExpectedStudy().getId().longValue() == expectedID
+          && c.getNumber().equals(projectExpectedStudyQuantification.getNumber())
+          && c.getComments().equals(projectExpectedStudyQuantification.getComments())
+          && c.getTargetUnit().equals(projectExpectedStudyQuantification.getTargetUnit())
+          && c.getTypeQuantification().equals(projectExpectedStudyQuantification.getTypeQuantification()))
         .collect(Collectors.toList());
 
     if (projectExpectedStudyQuantifications.isEmpty()) {
+      ProjectExpectedStudyQuantification projectExpectedStudyQuantificationAdd =
+        new ProjectExpectedStudyQuantification();
+      projectExpectedStudyQuantificationAdd
+        .setProjectExpectedStudy(projectExpectedStudyQuantification.getProjectExpectedStudy());
+      projectExpectedStudyQuantificationAdd.setPhase(phase);
+      projectExpectedStudyQuantificationAdd.setNumber(projectExpectedStudyQuantification.getNumber());
+      projectExpectedStudyQuantificationAdd.setComments(projectExpectedStudyQuantification.getComments());
+      projectExpectedStudyQuantificationAdd.setTargetUnit(projectExpectedStudyQuantification.getTargetUnit());
+      projectExpectedStudyQuantificationAdd
+        .setTypeQuantification(projectExpectedStudyQuantification.getTypeQuantification());
+      projectExpectedStudyQuantificationDAO.save(projectExpectedStudyQuantificationAdd);
+    } else {
+      for (ProjectExpectedStudyQuantification projectExpectedStudyQuantificationDel : projectExpectedStudyQuantifications) {
+        projectExpectedStudyQuantificationDAO
+          .deleteProjectExpectedStudyQuantification(projectExpectedStudyQuantificationDel.getId());
+      }
       ProjectExpectedStudyQuantification projectExpectedStudyQuantificationAdd =
         new ProjectExpectedStudyQuantification();
       projectExpectedStudyQuantificationAdd
