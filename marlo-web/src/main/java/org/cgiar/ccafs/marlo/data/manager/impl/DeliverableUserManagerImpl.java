@@ -86,12 +86,18 @@ public class DeliverableUserManagerImpl implements DeliverableUserManager {
 
   private void deleteDeliverableUserPhase(DeliverableUser deliverableUser, Long next) {
     Phase phase = phaseDAO.find(next);
-    DeliverableUser deliverableUserPhase =
-      deliverableUserDAO.findDeliverableUserByPhaseAndDeliverableUser(phase, deliverableUser);
 
-    if (deliverableUserPhase != null) {
-      deliverableUserDAO.deleteDeliverableUser(deliverableUserPhase.getId());
+    List<DeliverableUser> deliverableUserPhases = phase.getDeliverableUsers().stream()
+      .filter(c -> c.isActive() && c.getDeliverable().getId().longValue() == deliverableUser.getDeliverable().getId()
+        && c.getFirstName().equals(deliverableUser.getFirstName())
+        && c.getLastName().equals(deliverableUser.getLastName())
+        && c.getElementId().equals(deliverableUser.getElementId()))
+      .collect(Collectors.toList());
+
+    for (DeliverableUser deliverableUserdel : deliverableUserPhases) {
+      deliverableUserDAO.deleteDeliverableUser(deliverableUserdel.getId());
     }
+
     if (phase.getNext() != null) {
       this.deleteDeliverableUserPhase(deliverableUser, phase.getNext().getId());
     }

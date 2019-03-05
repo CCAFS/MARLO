@@ -67,13 +67,15 @@ public class ProjectExpectedStudyLinkManagerImpl implements ProjectExpectedStudy
     ProjectExpectedStudyLink projectExpectedStudyLink) {
     Phase phase = phaseDAO.find(next.getId());
 
+    List<ProjectExpectedStudyLink> projectExpectedStudyLinks = phase.getProjectExpectedStudyLinks().stream()
+      .filter(c -> c.getProjectExpectedStudy().getId().longValue() == expectedID
+        && c.getLink().equals(projectExpectedStudyLink.getLink()))
+      .collect(Collectors.toList());
 
-    ProjectExpectedStudyLink projectExpectedStudyLinkPhase =
-      projectExpectedStudyLinkDAO.findProjectExpectedStudyLinkByPhase(phase, projectExpectedStudyLink);
-
-    if (projectExpectedStudyLinkPhase != null) {
-      projectExpectedStudyLinkDAO.deleteProjectExpectedStudyLink(projectExpectedStudyLinkPhase.getId());
+    for (ProjectExpectedStudyLink projectExpectedStudyLinkDel : projectExpectedStudyLinks) {
+      projectExpectedStudyLinkDAO.deleteProjectExpectedStudyLink(projectExpectedStudyLinkDel.getId());
     }
+
 
     if (phase.getNext() != null) {
       this.deleteProjectExpectedStudyLinkPhase(phase.getNext(), expectedID, projectExpectedStudyLink);
