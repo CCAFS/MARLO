@@ -41,7 +41,7 @@
         [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
           [#-- Title --]
           <h3 class="headTitle">[@s.text name="${customLabel}.title" /]</h3>
-          <div class="borderBox">
+          <div class="">
           
             [#-- Table 5: Status of Planned Outcomes and Milestones --]
             <div class="form-group">
@@ -66,7 +66,7 @@
 [#macro annualReport2018OutcomesMacro element name index isTemplate=false]
   [#local customName = "${name}" /]
      
-    <div id="powbOutcome-${isTemplate?string('template', index)}" class="powbOutcome simpleBox" style="display:${isTemplate?string('none','block')}">
+    <div id="powbOutcome-${isTemplate?string('template', index)}" class="powbOutcome borderBox" style="display:${isTemplate?string('none','block')}">
     [#-- Index --]
     <div class="leftHead sm"><span class="index">${index+1}</span></div>
     [#-- Title --]
@@ -77,7 +77,7 @@
     </div>
     [#-- Milestones List --]
     <h4 class="simpleTitle">[@s.text name="${customLabel}.milestones.title" /]</h4>
-    <div class="form-group simpleBox">
+    <div class="form-group">
        [#list element.milestones as milestone]
         [@annualReport2018MilestoneMacro element=milestone name="${customName}.milestones" index=milestone_index /]
       [/#list]
@@ -87,7 +87,7 @@
 [/#macro]
 
 [#macro annualReport2018MilestoneMacro element name index isTemplate=false]
-[#local annualReportElement= action.getReportSynthesisFlagshipProgressMilestone(element.id)]
+  [#local annualReportElement= action.getReportSynthesisFlagshipProgressMilestone(element.id)]
   [#local customName = "${name}[${action.getIndex(element.id)}]" /]
   
   <div id="powbMilestone-${isTemplate?string('template', index)}" class="powbMilestone simpleBox" style="display:${isTemplate?string('none','block')}">

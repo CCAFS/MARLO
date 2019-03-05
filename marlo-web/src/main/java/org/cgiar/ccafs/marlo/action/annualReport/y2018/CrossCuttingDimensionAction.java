@@ -19,12 +19,14 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableParticipantManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisCrossCuttingDimensionManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
+import org.cgiar.ccafs.marlo.data.model.DeliverableParticipant;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
@@ -69,6 +71,7 @@ public class CrossCuttingDimensionAction extends BaseAction {
   private CrpProgramManager crpProgramManager;
   private UserManager userManager;
   private ReportSynthesisCrossCuttingDimensionManager reportSynthesisCrossCuttingDimensionManager;
+  private DeliverableParticipantManager deliverableParticipantManager;
   private CCDimension2018Validator validator;
 
   // Variables
@@ -80,13 +83,22 @@ public class CrossCuttingDimensionAction extends BaseAction {
   private GlobalUnit loggedCrp;
   private List<LiaisonInstitution> liaisonInstitutions;
   private List<ReportSynthesisCrossCuttingDimension> flagshipCCDimensions;
+  private Double totalParticipants = new Double(0);
+  private Double totalParticipantFormalTraining = new Double(0);
+  private Double totalParticipantFormalTrainingShortMale = new Double(0);
+  private Double totalParticipantFormalTrainingLongMale = new Double(0);
+  private Double totalParticipantFormalTrainingShortFemale = new Double(0);
+  private Double totalParticipantFormalTrainingLongFemale = new Double(0);
+  private List<DeliverableParticipant> deliverableParticipants;
+
 
   @Inject
   public CrossCuttingDimensionAction(APConfig config, GlobalUnitManager crpManager,
     LiaisonInstitutionManager liaisonInstitutionManager, ReportSynthesisManager reportSynthesisManager,
     AuditLogManager auditLogManager, UserManager userManager,
     ReportSynthesisCrossCuttingDimensionManager reportSynthesisCrossCuttingDimensionManager,
-    CCDimension2018Validator validator, CrpProgramManager crpProgramManager) {
+    CCDimension2018Validator validator, CrpProgramManager crpProgramManager,
+    DeliverableParticipantManager deliverableParticipantManager) {
     super(config);
     this.crpManager = crpManager;
     this.liaisonInstitutionManager = liaisonInstitutionManager;
@@ -96,7 +108,9 @@ public class CrossCuttingDimensionAction extends BaseAction {
     this.reportSynthesisCrossCuttingDimensionManager = reportSynthesisCrossCuttingDimensionManager;
     this.validator = validator;
     this.crpProgramManager = crpProgramManager;
+    this.deliverableParticipantManager = deliverableParticipantManager;
   }
+
 
   public Long firstFlagship() {
     List<LiaisonInstitution> liaisonInstitutions = new ArrayList<>(loggedCrp.getLiaisonInstitutions().stream()
@@ -118,10 +132,13 @@ public class CrossCuttingDimensionAction extends BaseAction {
   }
 
 
+  public List<DeliverableParticipant> getDeliverableParticipants() {
+    return deliverableParticipants;
+  }
+
   public List<ReportSynthesisCrossCuttingDimension> getFlagshipCCDimensions() {
     return flagshipCCDimensions;
   }
-
 
   public LiaisonInstitution getLiaisonInstitution() {
     return liaisonInstitution;
@@ -144,9 +161,39 @@ public class CrossCuttingDimensionAction extends BaseAction {
     return reportSynthesis;
   }
 
+
   public Long getSynthesisID() {
     return synthesisID;
   }
+
+
+  public Double getTotalParticipantFormalTraining() {
+    return totalParticipantFormalTraining;
+  }
+
+
+  public Double getTotalParticipantFormalTrainingLongFemale() {
+    return totalParticipantFormalTrainingLongFemale;
+  }
+
+
+  public Double getTotalParticipantFormalTrainingLongMale() {
+    return totalParticipantFormalTrainingLongMale;
+  }
+
+  public Double getTotalParticipantFormalTrainingShortFemale() {
+    return totalParticipantFormalTrainingShortFemale;
+  }
+
+  public Double getTotalParticipantFormalTrainingShortMale() {
+    return totalParticipantFormalTrainingShortMale;
+  }
+
+
+  public Double getTotalParticipants() {
+    return totalParticipants;
+  }
+
 
   public String getTransaction() {
     return transaction;
@@ -327,6 +374,48 @@ public class CrossCuttingDimensionAction extends BaseAction {
       .filter(c -> c.getCrpProgram() == null && c.isActive() && c.getAcronym() != null && c.getAcronym().equals("PMU"))
       .collect(Collectors.toList()));
 
+    /** Graphs and Tables */
+    // Deliverables Participants
+    deliverableParticipants = deliverableParticipantManager.getDeliverableParticipantByPhase(phase);
+    if (deliverableParticipants != null && !deliverableParticipants.isEmpty()) {
+      for (DeliverableParticipant deliverableParticipant : deliverableParticipants) {
+        if (deliverableParticipant.getDeliverable().getDeliverableInfo(phase) != null
+          && deliverableParticipant.getDeliverable().getDeliverableInfo(phase).isRequired()) {
+          // Total Participants
+          Double numberParticipant = 0.0;
+          if (deliverableParticipant.getParticipants() != null) {
+            numberParticipant = deliverableParticipant.getParticipants();
+          }
+
+          totalParticipants += numberParticipant;
+
+          // Total Formal Training
+          if (deliverableParticipant.getRepIndTypeActivity() != null
+            && deliverableParticipant.getRepIndTypeActivity().getIsFormal()) {
+            totalParticipantFormalTraining += numberParticipant;
+
+            // Total Female and Male per terms
+            if (deliverableParticipant.getRepIndTrainingTerm() != null) {
+              Double numberFemales = 0.0;
+              if (deliverableParticipant.getFemales() != null) {
+                numberFemales = deliverableParticipant.getFemales();
+              }
+              if (deliverableParticipant.getRepIndTrainingTerm().getId()
+                .equals(APConstants.REP_IND_TRAINING_TERMS_SHORT)) {
+                totalParticipantFormalTrainingShortFemale += numberFemales;
+                totalParticipantFormalTrainingShortMale += (numberParticipant - numberFemales);
+              }
+              if (deliverableParticipant.getRepIndTrainingTerm().getId()
+                .equals(APConstants.REP_IND_TRAINING_TERMS_LONG)) {
+                totalParticipantFormalTrainingLongFemale += numberFemales;
+                totalParticipantFormalTrainingLongMale += (numberParticipant - numberFemales);
+              }
+            }
+          }
+        }
+      }
+    }
+
     // Base Permission
     String params[] = {loggedCrp.getAcronym(), reportSynthesis.getId() + ""};
     this.setBasePermission(this.getText(Permission.REPORT_SYNTHESIS_CROSS_CUTTING_BASE_PERMISSION, params));
@@ -396,9 +485,14 @@ public class CrossCuttingDimensionAction extends BaseAction {
     }
   }
 
+  public void setDeliverableParticipants(List<DeliverableParticipant> deliverableParticipants) {
+    this.deliverableParticipants = deliverableParticipants;
+  }
+
   public void setFlagshipCCDimensions(List<ReportSynthesisCrossCuttingDimension> flagshipCCDimensions) {
     this.flagshipCCDimensions = flagshipCCDimensions;
   }
+
 
   public void setLiaisonInstitution(LiaisonInstitution liaisonInstitution) {
     this.liaisonInstitution = liaisonInstitution;
@@ -412,6 +506,7 @@ public class CrossCuttingDimensionAction extends BaseAction {
     this.liaisonInstitutions = liaisonInstitutions;
   }
 
+
   public void setLoggedCrp(GlobalUnit loggedCrp) {
     this.loggedCrp = loggedCrp;
   }
@@ -422,6 +517,30 @@ public class CrossCuttingDimensionAction extends BaseAction {
 
   public void setSynthesisID(Long synthesisID) {
     this.synthesisID = synthesisID;
+  }
+
+  public void setTotalParticipantFormalTraining(Double totalParticipantFormalTraining) {
+    this.totalParticipantFormalTraining = totalParticipantFormalTraining;
+  }
+
+  public void setTotalParticipantFormalTrainingLongFemale(Double totalParticipantFormalTrainingLongFemale) {
+    this.totalParticipantFormalTrainingLongFemale = totalParticipantFormalTrainingLongFemale;
+  }
+
+  public void setTotalParticipantFormalTrainingLongMale(Double totalParticipantFormalTrainingLongMale) {
+    this.totalParticipantFormalTrainingLongMale = totalParticipantFormalTrainingLongMale;
+  }
+
+  public void setTotalParticipantFormalTrainingShortFemale(Double totalParticipantFormalTrainingShortFemale) {
+    this.totalParticipantFormalTrainingShortFemale = totalParticipantFormalTrainingShortFemale;
+  }
+
+  public void setTotalParticipantFormalTrainingShortMale(Double totalParticipantFormalTrainingShortMale) {
+    this.totalParticipantFormalTrainingShortMale = totalParticipantFormalTrainingShortMale;
+  }
+
+  public void setTotalParticipants(Double totalParticipants) {
+    this.totalParticipants = totalParticipants;
   }
 
 

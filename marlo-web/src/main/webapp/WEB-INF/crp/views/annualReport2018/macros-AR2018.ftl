@@ -119,7 +119,7 @@
                           <br /> <small>(From Project P${item.project.id})</small> 
                         [/#if]
                       </td>
-                      <td> [@utils.tableList list=(item.srfTargets)![] displayFieldName="srfSloIndicator.title" /] </td>
+                      <td class="col-md-4"> [@utils.tableList list=(item.srfTargets)![] displayFieldName="srfSloIndicator.title" /] </td>
                       <td> [@utils.tableText value=(item.projectExpectedStudyInfo.studyType.name)!"" /] </td>
                       <td> [@utils.tableText value=(item.projectExpectedStudyInfo.year)!"" /] </td>
                       <td> <a href="${summaryPDF}" target="_blank"><img src="${baseUrl}/global/images/pdf.png" height="25" title="[@s.text name="projectsList.downloadPDF" /]" /></a>  </td>
