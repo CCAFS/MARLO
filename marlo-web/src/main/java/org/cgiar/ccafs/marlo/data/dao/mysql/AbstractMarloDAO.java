@@ -73,7 +73,6 @@ public abstract class AbstractMarloDAO<T, ID extends Serializable> {
    */
   protected void delete(Object obj) {
     this.sessionFactory.getCurrentSession().delete(obj);
-    this.sessionFactory.getCurrentSession().setFlushMode(FlushMode.COMMIT);
   }
 
   /**
