@@ -618,5 +618,13 @@
       <one-to-many
         class="org.cgiar.ccafs.marlo.data.model.DeliverableUser" />
     </set>
+    <set name="projectBudgetExecutions" table="project_budget_executions" inverse="true"
+      lazy="true" fetch="select">
+      <key>
+        <column name="phase_id" not-null="true" />
+      </key>
+      <one-to-many
+        class="org.cgiar.ccafs.marlo.data.model.ProjectBudgetExecution" />
+    </set>
   </class>
 </hibernate-mapping>
