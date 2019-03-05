@@ -26,6 +26,9 @@ function init() {
   // Add amount format
   $('input.currencyInput').currencyInput();
 
+  // Numeric field
+  $('input.numericInput').numericInput();
+
   $('.ccRelevanceBlock input:radio').on('change', function() {
     var $commentBox = $(this).parents('.ccRelevanceBlock').find('.ccCommentBox');
     var id = this.value;

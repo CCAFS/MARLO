@@ -58,7 +58,6 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableParticipant;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePartnership;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePartnershipTypeEnum;
 import org.cgiar.ccafs.marlo.data.model.DeliverableQualityCheck;
-import org.cgiar.ccafs.marlo.data.model.ExpectedStudyProject;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceLocation;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
@@ -99,6 +98,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectPolicyRegion;
 import org.cgiar.ccafs.marlo.data.model.ProjectScope;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
+import org.cgiar.ccafs.marlo.data.model.StudiesStatusPlanningEnum;
 import org.cgiar.ccafs.marlo.utils.CountryLocationLevel;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
 
@@ -1262,27 +1262,46 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
   public void validateProjectExpectedStudies(BaseAction action, Long projectID) {
     // Getting the project information.
     Project project = projectManager.getProjectById(projectID);
-    project.setExpectedStudies(new ArrayList<ProjectExpectedStudy>());
 
-    // Shared Studies
-    List<ExpectedStudyProject> sharedStudies = project.getExpectedStudyProjects().stream()
-      .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(action.getActualPhase())
-        && c.getProjectExpectedStudy().getProjectExpectedStudyInfo(action.getActualPhase()) != null)
+    List<ProjectExpectedStudy> allProjectStudies = new ArrayList<ProjectExpectedStudy>();
+
+    // Load Studies
+    List<ProjectExpectedStudy> studies = project.getProjectExpectedStudies().stream()
+      .filter(c -> c.isActive() && c.getProjectExpectedStudyInfo(action.getActualPhase()) != null)
       .collect(Collectors.toList());
-
-    if (sharedStudies != null && !sharedStudies.isEmpty()) {
-      for (ExpectedStudyProject expectedStudyProject : sharedStudies) {
-        project.getExpectedStudies().add(expectedStudyProject.getProjectExpectedStudy());
-      }
+    if (studies != null && studies.size() > 0) {
+      allProjectStudies.addAll(studies);
     }
 
+    List<ProjectExpectedStudy> projectStudies = new ArrayList<ProjectExpectedStudy>();
+
+    if (allProjectStudies != null && allProjectStudies.size() > 0) {
+      // Editable project studies: Current cycle year-1 will be editable except Complete and Cancelled.
+      // Every study of the current cycle year will be editable
+      projectStudies = allProjectStudies.stream()
+        .filter(ps -> ps.getProjectExpectedStudyInfo().getYear() != null
+          && ps.getProjectExpectedStudyInfo().getStatus() != null
+          && ps.getProjectExpectedStudyInfo().getYear() == action.getCurrentCycleYear()
+          && ((ps.getProjectExpectedStudyInfo().getStatus().getId()
+            .equals(Long.parseLong(StudiesStatusPlanningEnum.Ongoing.getStatusId()))
+            || ps.getProjectExpectedStudyInfo().getStatus().getId()
+              .equals(Long.parseLong(StudiesStatusPlanningEnum.Extended.getStatusId()))
+            || ps.getProjectExpectedStudyInfo().getStatus().getId().equals(StudiesStatusPlanningEnum.New.getStatusId()))
+            || ((ps.getProjectExpectedStudyInfo().getStatus().getId()
+              .equals(Long.parseLong(StudiesStatusPlanningEnum.Complete.getStatusId()))
+              || ps.getProjectExpectedStudyInfo().getStatus().getId()
+                .equals(Long.parseLong(StudiesStatusPlanningEnum.Cancelled.getStatusId())))
+              && ps.getProjectExpectedStudyInfo().getYear() >= action.getActualPhase().getYear())))
+        .collect(Collectors.toList());
+    }
+
+
     Phase phase = action.getActualPhase();
-    for (ProjectExpectedStudy expectedStudy : project.getExpectedStudies()) {
+    for (ProjectExpectedStudy expectedStudy : projectStudies) {
 
       if (expectedStudy.getProjectExpectedStudyInfo() == null) {
         expectedStudy.getProjectExpectedStudyInfo(phase);
       }
-
 
       // Setup Geographic Scope
       if (expectedStudy.getProjectExpectedStudyGeographicScopes() != null) {
@@ -1290,29 +1309,27 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
           .stream().filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
       }
 
-
       // Expected Study Countries List
       if (expectedStudy.getProjectExpectedStudyCountries() == null) {
         expectedStudy.setCountries(new ArrayList<>());
       } else {
-        List<ProjectExpectedStudyCountry> countries =
-          projectExpectedStudyCountryManager.getProjectExpectedStudyCountrybyPhase(expectedStudy.getId(), phase.getId())
-            .stream().filter(le -> le.isActive() && le.getLocElement().getLocElementType().getId() == 2)
-            .collect(Collectors.toList());
+        List<ProjectExpectedStudyCountry> countries = this.projectExpectedStudyCountryManager
+          .getProjectExpectedStudyCountrybyPhase(expectedStudy.getId(), phase.getId()).stream()
+          .filter(le -> le.isActive() && le.getLocElement().getLocElementType().getId() == 2)
+          .collect(Collectors.toList());
         expectedStudy.setCountries(countries);
       }
 
       if (expectedStudy.getProjectExpectedStudyRegions() == null) {
         expectedStudy.setStudyRegions(new ArrayList<>());
       } else {
-        List<ProjectExpectedStudyRegion> geographics =
-          projectExpectedStudyRegionManager.getProjectExpectedStudyRegionbyPhase(expectedStudy.getId(), phase.getId());
+        List<ProjectExpectedStudyRegion> geographics = this.projectExpectedStudyRegionManager
+          .getProjectExpectedStudyRegionbyPhase(expectedStudy.getId(), phase.getId());
 
         // Load Regions
         expectedStudy.setStudyRegions(geographics.stream()
           .filter(sc -> sc.getLocElement().getLocElementType().getId() == 1).collect(Collectors.toList()));
       }
-
 
       // Expected Study SubIdos List
       if (expectedStudy.getProjectExpectedStudySubIdos() != null) {

@@ -68,7 +68,6 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
       }
     }
 
-
     this.validateProjectExpectedStudy(projectExpectedStudy, action);
 
 
@@ -119,13 +118,6 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
         InvalidFieldsMessages.EMPTYFIELD);
     }
 
-    // Validate Evidence Tag
-    if (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getEvidenceTag() == null) {
-      action.addMessage(action.getText("Evidence Tag"));
-      action.addMissingField("study.evidenceTag");
-      action.getInvalidFields().put("input-expectedStudy.projectExpectedStudyInfo.evidenceTag.id",
-        InvalidFieldsMessages.EMPTYFIELD);
-    }
 
     // Validate Title
     if (!this.isValidString(projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getTitle())
@@ -208,17 +200,6 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
               action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"targets"}));
           }
         }
-      }
-
-      // Validate Commissioning Study
-      if (!this.isValidString(
-        projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getCommissioningStudy())
-        && this.wordCount(projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase())
-          .getCommissioningStudy()) <= 20) {
-        action.addMessage(action.getText("Commissioning Study"));
-        action.addMissingField("study.commissioningStudy.readText");
-        action.getInvalidFields().put("input-expectedStudy.projectExpectedStudyInfo.commissioningStudy",
-          InvalidFieldsMessages.EMPTYFIELD);
       }
 
     } else {
@@ -340,8 +321,10 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
 
         // Validate Describe Gender
         if (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getGenderLevel() != null
-          && projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getGenderLevel()
-            .getId() != 1) {
+          && (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getGenderLevel()
+            .getId() != 1
+            && projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getGenderLevel()
+              .getId() != 4)) {
           if (!this.isValidString(
             projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getDescribeGender())
             && this.wordCount(projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase())
@@ -355,8 +338,9 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
 
         // Validate Describe Youth
         if (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getYouthLevel() != null
-          && projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getYouthLevel()
-            .getId() != 1) {
+          && (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getYouthLevel().getId() != 1
+            && projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getYouthLevel()
+              .getId() != 4)) {
           if (!this.isValidString(
             projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getDescribeYouth())
             && this.wordCount(projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase())
@@ -369,8 +353,10 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
         }
         // Validate Describe Capdev
         if (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getCapdevLevel() != null
-          && projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getCapdevLevel()
-            .getId() != 1) {
+          && (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getCapdevLevel()
+            .getId() != 1
+            && projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getCapdevLevel()
+              .getId() != 4)) {
           if (!this.isValidString(
             projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getDescribeCapdev())
             && this.wordCount(projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase())
@@ -385,8 +371,10 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
         // Validate Describe ClimateChange
         if (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase())
           .getClimateChangeLevel() != null
-          && projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getClimateChangeLevel()
-            .getId() != 1) {
+          && (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getClimateChangeLevel()
+            .getId() != 1
+            && projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getClimateChangeLevel()
+              .getId() != 4)) {
           if (!this.isValidString(
             projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getDescribeClimateChange())
             && this.wordCount(projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase())
@@ -441,6 +429,14 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
           }
         }
 
+        // Validate Evidence Tag
+        if (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getEvidenceTag() == null) {
+          action.addMessage(action.getText("Evidence Tag"));
+          action.addMissingField("study.evidenceTag");
+          action.getInvalidFields().put("input-expectedStudy.projectExpectedStudyInfo.evidenceTag.id",
+            InvalidFieldsMessages.EMPTYFIELD);
+        }
+
       } else {
         // Validate Srf Targets Selection
         if (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getIsSrfTarget() == null) {
@@ -468,6 +464,17 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
           action.addMessage(action.getText("Comments"));
           action.addMissingField("study.comments");
           action.getInvalidFields().put("input-expectedStudy.projectExpectedStudyInfo.topLevelComments",
+            InvalidFieldsMessages.EMPTYFIELD);
+        }
+
+        // Validate Commissioning Study
+        if (!this.isValidString(
+          projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getCommissioningStudy())
+          && this.wordCount(projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase())
+            .getCommissioningStudy()) <= 20) {
+          action.addMessage(action.getText("Commissioning Study"));
+          action.addMissingField("study.commissioningStudy.readText");
+          action.getInvalidFields().put("input-expectedStudy.projectExpectedStudyInfo.commissioningStudy",
             InvalidFieldsMessages.EMPTYFIELD);
         }
       }
