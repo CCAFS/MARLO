@@ -137,8 +137,12 @@ public class ProjectExpectedStudyQuantificationManagerImpl implements ProjectExp
       projectExpectedStudyQuantificationDAO.save(projectExpectedStudyQuantificationAdd);
     } else {
       for (ProjectExpectedStudyQuantification projectExpectedStudyQuantificationDel : projectExpectedStudyQuantifications) {
-        projectExpectedStudyQuantificationDAO
-          .deleteProjectExpectedStudyQuantification(projectExpectedStudyQuantificationDel.getId());
+        try {
+          projectExpectedStudyQuantificationDAO
+            .deleteProjectExpectedStudyQuantification(projectExpectedStudyQuantificationDel.getId());
+        } catch (Exception e) {
+          // TODO: handle exception
+        }
       }
       ProjectExpectedStudyQuantification projectExpectedStudyQuantificationAdd =
         new ProjectExpectedStudyQuantification();
