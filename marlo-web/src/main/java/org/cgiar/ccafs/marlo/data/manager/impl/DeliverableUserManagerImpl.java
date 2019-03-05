@@ -168,7 +168,11 @@ public class DeliverableUserManagerImpl implements DeliverableUserManager {
       deliverableUserDAO.save(newDeliverableUser);
     } else {
       for (DeliverableUser deliverableUserDel : deliverableUserPhases) {
-        deliverableUserDAO.deleteDeliverableUser(deliverableUserDel.getId());
+        try {
+          deliverableUserDAO.deleteDeliverableUser(deliverableUserDel.getId());
+        } catch (Exception e) {
+          // TODO: handle exception
+        }
       }
       DeliverableUser newDeliverableUser = new DeliverableUser();
       newDeliverableUser = this.cloneDeliverableUser(deliverableUserResult, newDeliverableUser, phase);
