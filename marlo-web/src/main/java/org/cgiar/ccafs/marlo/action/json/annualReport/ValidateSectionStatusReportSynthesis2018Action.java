@@ -114,9 +114,9 @@ public class ValidateSectionStatusReportSynthesis2018Action extends BaseAction {
         // case RISKS:
         // reportSynthesisSectionValidator2018.validateRisk(this, reportSynthesis);
         // break;
-        // case FUNDING_USE:
-        // reportSynthesisSectionValidator2018.validateFundingUse(this, reportSynthesis);
-        // break;
+        case FUNDING_USE:
+          reportSynthesisSectionValidator2018.validateFundingUse(this, reportSynthesis);
+          break;
         // case FINANCIAL:
         // reportSynthesisSectionValidator2018.validateFinancial(this, reportSynthesis);
         // break;
@@ -150,6 +150,7 @@ public class ValidateSectionStatusReportSynthesis2018Action extends BaseAction {
 
     switch (ReportSynthesis2018SectionStatusEnum.value(sectionName.toUpperCase())) {
       case INTELLECTUAL_ASSETS:
+      case FUNDING_USE:
         if (this.isPMU(reportSynthesis.getLiaisonInstitution())) {
           sectionStatus = sectionStatusManager.getSectionStatusByReportSynthesis(reportSynthesis.getId(), cycle,
             phase.getYear(), phase.getUpkeep(), sectionName);
