@@ -74,7 +74,7 @@
 
 
 [#macro evidencesPopup element list]
-  [#local className = ((element.class.name)?split('.')?last)!''/]
+  [#local className = 'SrfSloIndicatorTarget'/]
   [#local composedID = "${className}-${(element.id)!}"]
   <div id="${composedID}" class="form-group elementRelations ${className}">
     [#if list?has_content]
