@@ -15,11 +15,16 @@
 package org.cgiar.ccafs.marlo.data.manager.impl;
 
 
+import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.dao.PhaseDAO;
 import org.cgiar.ccafs.marlo.data.dao.ProjectBudgetExecutionDAO;
+import org.cgiar.ccafs.marlo.data.dao.ProjectDAO;
 import org.cgiar.ccafs.marlo.data.manager.ProjectBudgetExecutionManager;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectBudgetExecution;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -32,13 +37,52 @@ public class ProjectBudgetExecutionManagerImpl implements ProjectBudgetExecution
 
 
   private ProjectBudgetExecutionDAO projectBudgetExecutionDAO;
-  // Managers
+  private PhaseDAO phaseDAO;
+  private ProjectDAO projectDAO;
 
 
   @Inject
-  public ProjectBudgetExecutionManagerImpl(ProjectBudgetExecutionDAO projectBudgetExecutionDAO) {
+  public ProjectBudgetExecutionManagerImpl(ProjectBudgetExecutionDAO projectBudgetExecutionDAO, PhaseDAO phaseDAO,
+    ProjectDAO projectDAO) {
     this.projectBudgetExecutionDAO = projectBudgetExecutionDAO;
+    this.phaseDAO = phaseDAO;
+    this.projectDAO = projectDAO;
+  }
 
+  /**
+   * Clone budget from budgetExecution to new projectBudgetExecutionAdd
+   * 
+   * @param projectBudgetExecutionAdd
+   * @param budgetExecution
+   * @param phase
+   */
+
+  public void cloneBudgetExecution(ProjectBudgetExecution projectBudgetExecutionAdd,
+    ProjectBudgetExecution budgetExecution, Phase phase) {
+    projectBudgetExecutionAdd.setProject(projectDAO.find(budgetExecution.getProject().getId()));
+    projectBudgetExecutionAdd.setInstitution(budgetExecution.getInstitution());
+    projectBudgetExecutionAdd.setPhase(phase);
+    projectBudgetExecutionAdd.setBudgetType(budgetExecution.getBudgetType());
+    projectBudgetExecutionAdd.setYear(budgetExecution.getYear());
+    projectBudgetExecutionAdd.setActualExpenditure(budgetExecution.getActualExpenditure());
+  }
+
+  private void deleteBudgetExecutionPhase(Phase next, Long projectID, ProjectBudgetExecution projectBudgetExecution) {
+    Phase phase = phaseDAO.find(next.getId());
+
+    List<ProjectBudgetExecution> budgetExecutions = phase.getProjectBudgetExecutions().stream()
+      .filter(c -> c.isActive() && c.getProject().getId().longValue() == projectID
+        && c.getYear() == projectBudgetExecution.getYear() && c.getPhase() != null
+        && c.getInstitution().getId().equals(projectBudgetExecution.getInstitution().getId())
+        && c.getBudgetType().getId().equals(projectBudgetExecution.getBudgetType().getId()))
+      .collect(Collectors.toList());
+    for (ProjectBudgetExecution projectBudgetExecutionDB : budgetExecutions) {
+      projectBudgetExecutionDAO.deleteProjectBudgetExecution(projectBudgetExecutionDB.getId());
+    }
+
+    if (phase.getNext() != null) {
+      this.deleteBudgetExecutionPhase(phase.getNext(), projectID, projectBudgetExecution);
+    }
 
   }
 
@@ -46,6 +90,24 @@ public class ProjectBudgetExecutionManagerImpl implements ProjectBudgetExecution
   public void deleteProjectBudgetExecution(long projectBudgetExecutionId) {
 
     projectBudgetExecutionDAO.deleteProjectBudgetExecution(projectBudgetExecutionId);
+    ProjectBudgetExecution projectBudgetExecution = this.getProjectBudgetExecutionById(projectBudgetExecutionId);
+    Phase currentPhase = phaseDAO.find(projectBudgetExecution.getPhase().getId());
+
+    if (currentPhase.getDescription().equals(APConstants.PLANNING) && currentPhase.getNext() != null) {
+      this.deleteBudgetExecutionPhase(currentPhase.getNext(), projectBudgetExecution.getProject().getId(),
+        projectBudgetExecution);
+    }
+
+    if (currentPhase.getDescription().equals(APConstants.REPORTING)) {
+      if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {
+        Phase upkeepPhase = currentPhase.getNext().getNext();
+        if (upkeepPhase != null) {
+          this.deleteBudgetExecutionPhase(upkeepPhase, projectBudgetExecution.getProject().getId(),
+            projectBudgetExecution);
+        }
+      }
+    }
+
   }
 
   @Override
@@ -67,10 +129,53 @@ public class ProjectBudgetExecutionManagerImpl implements ProjectBudgetExecution
     return projectBudgetExecutionDAO.find(projectBudgetExecutionID);
   }
 
+  private void saveBudgetExecutionPhase(Phase next, Long projectID, ProjectBudgetExecution projectBudgetExecution) {
+    Phase phase = phaseDAO.find(next.getId());
+
+    // Save BudgetExecution of current year
+    List<ProjectBudgetExecution> budgetExecutions = phase.getProjectBudgetExecutions().stream()
+      .filter(c -> c.isActive() && c.getProject().getId().longValue() == projectID
+        && c.getYear() == projectBudgetExecution.getYear() && c.getPhase() != null
+        && c.getInstitution().getId().equals(projectBudgetExecution.getInstitution().getId())
+        && c.getBudgetType().getId().equals(projectBudgetExecution.getBudgetType().getId()))
+      .collect(Collectors.toList());
+    if (budgetExecutions.isEmpty()) {
+      ProjectBudgetExecution budgetExecutionAdd = new ProjectBudgetExecution();
+      this.cloneBudgetExecution(budgetExecutionAdd, projectBudgetExecution, phase);
+      projectBudgetExecutionDAO.save(budgetExecutionAdd);
+    } else {
+      ProjectBudgetExecution budgetExecutionAdd = budgetExecutions.get(0);
+      this.cloneBudgetExecution(budgetExecutionAdd, projectBudgetExecution, phase);
+      projectBudgetExecutionDAO.save(budgetExecutionAdd);
+    }
+
+    if (phase.getNext() != null) {
+      this.saveBudgetExecutionPhase(phase.getNext(), projectID, projectBudgetExecution);
+    }
+
+  }
+
   @Override
   public ProjectBudgetExecution saveProjectBudgetExecution(ProjectBudgetExecution projectBudgetExecution) {
+    ProjectBudgetExecution resultBudgetExecution = projectBudgetExecutionDAO.save(projectBudgetExecution);
+    Phase currentPhase = phaseDAO.find(projectBudgetExecution.getPhase().getId());
 
-    return projectBudgetExecutionDAO.save(projectBudgetExecution);
+    if (currentPhase.getDescription().equals(APConstants.PLANNING) && currentPhase.getNext() != null) {
+      this.saveBudgetExecutionPhase(currentPhase.getNext(), projectBudgetExecution.getProject().getId(),
+        projectBudgetExecution);
+    }
+
+    if (currentPhase.getDescription().equals(APConstants.REPORTING)) {
+      if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {
+        Phase upkeepPhase = currentPhase.getNext().getNext();
+        if (upkeepPhase != null) {
+          this.saveBudgetExecutionPhase(upkeepPhase, projectBudgetExecution.getProject().getId(),
+            projectBudgetExecution);
+        }
+      }
+    }
+
+    return resultBudgetExecution;
   }
 
 
