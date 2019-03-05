@@ -2510,16 +2510,16 @@ public class DeliverableAction extends BaseAction {
         .filter(nu -> nu.isActive() && nu.getPhase().getId() == phase.getId()).collect(Collectors.toList()));
 
       for (DeliverableGeographicScope deliverableScope : scopePrev) {
-        if (deliverable.getGeographicScopes() == null
-          || !deliverable.getGeographicScopes().contains(deliverableScope)) {
+        if (this.deliverable.getGeographicScopes() == null
+          || !this.deliverable.getGeographicScopes().contains(deliverableScope)) {
           deliverableGeographicScopeManager.deleteDeliverableGeographicScope(deliverableScope.getId());
         }
       }
     }
 
     // Save form Information
-    if (deliverable.getGeographicScopes() != null) {
-      for (DeliverableGeographicScope deliverableScope : deliverable.getGeographicScopes()) {
+    if (this.deliverable.getGeographicScopes() != null) {
+      for (DeliverableGeographicScope deliverableScope : this.deliverable.getGeographicScopes()) {
         if (deliverableScope.getId() == null) {
           DeliverableGeographicScope deliverableScopeSave = new DeliverableGeographicScope();
           deliverableScopeSave.setDeliverable(deliverable);
@@ -2532,7 +2532,7 @@ public class DeliverableAction extends BaseAction {
 
           deliverableGeographicScopeManager.saveDeliverableGeographicScope(deliverableScopeSave);
           // This is to add innovationCrpSave to generate correct auditlog.
-          deliverable.getDeliverableGeographicScopes().add(deliverableScopeSave);
+          this.deliverable.getDeliverableGeographicScopes().add(deliverableScopeSave);
         }
       }
     }
