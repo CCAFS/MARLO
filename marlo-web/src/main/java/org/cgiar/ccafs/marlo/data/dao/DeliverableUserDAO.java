@@ -65,6 +65,8 @@ public interface DeliverableUserDAO {
    */
   public DeliverableUser findDeliverableUserByPhaseAndDeliverableUser(Phase phase, DeliverableUser deliverableUser);
 
+  public List<DeliverableUser> findDeliverableUserByPhases(Phase phase, DeliverableUser deliverableUser);
+
   /**
    * This method saves the information of the given deliverableUser
    * 
