@@ -474,13 +474,11 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
 
   private void addFundingSummarize() {
     String brieflySummarize = "";
-
     if (reportSynthesisPMU != null) {
-
       if (reportSynthesisPMU.getReportSynthesisFundingUseSummary() != null) {
         ReportSynthesisFundingUseSummary funding = reportSynthesisPMU.getReportSynthesisFundingUseSummary();
         if (funding != null) {
-          brieflySummarize = funding.getMainArea();
+          brieflySummarize = funding.getInterestingPoints();
         }
       }
     }
@@ -1877,7 +1875,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         run.setBold(true);
         run.setText(this.getText("summaries.annualReport2018.effectiveness.funding"));
         paragraph.setStyle("heading 23");
-        this.addImprovingEfficiency();
+        this.addFundingSummarize();
 
         // section 3 - Financial summary
         poiSummary.textLineBreak(document, 1);
