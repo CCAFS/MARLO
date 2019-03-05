@@ -115,7 +115,6 @@
         [@macrosAR.evidencesPopup element=(element)!{} list=(action.getEvidenceInfo(element.id))![]  /]
       </div> 
       <strong>SLO Target 2022</strong> <br />${(element.narrative)!}
-      
     </div>
     [#-- Brief summary of new evidence of CGIAR contribution to relevant targets for this CRP (with citation) --]
     <div class="form-group">
