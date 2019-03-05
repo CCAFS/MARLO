@@ -496,7 +496,7 @@
     [#-- Units --]
     <div class="form-group row">
       <div class="col-md-4">
-        [@customForm.input name="${customName}.number" i18nkey="study.quantification.number" help="study.quantification.number.help" className="" required=true editable=editable /]
+        [@customForm.input name="${customName}.number" i18nkey="study.quantification.number" help="study.quantification.number.help" className="numericInput" required=true editable=editable /]
       </div>
       <div class="col-md-4"> 
         [@customForm.input name="${customName}.targetUnit" i18nkey="study.quantification.targetUnit" help="study.quantification.targetUnit.help" className="" required=true editable=editable /]
