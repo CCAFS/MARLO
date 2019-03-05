@@ -132,8 +132,9 @@ public class ProjectBudgetExecution extends MarloAuditableEntity implements java
 
   @Override
   public String toString() {
-    return "ProjectBudget [id=" + this.getId() + ", project=" + project + ", institution=" + institution + ", phase="
-      + phase + ", budget type=" + budgetType + ", year=" + year + ", actualExpenditure=" + actualExpenditure + "]";
+    return "ProjectBudgetExecution [id=" + this.getId() + ", project=" + project + ", institution=" + institution
+      + ", phase=" + phase + ", budget type=" + budgetType + ", year=" + year + ", actualExpenditure="
+      + actualExpenditure + "]";
   }
 
 
