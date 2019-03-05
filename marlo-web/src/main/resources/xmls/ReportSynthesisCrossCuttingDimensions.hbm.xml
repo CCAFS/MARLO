@@ -113,6 +113,23 @@
     <property name="climateChangeKeyAchievements" type="string">
       <column name="climate_change_key_achievements" sql-type="TEXT" />
     </property>
+    
+    <property name="traineesShortTermFemale" type="java.lang.Double">
+      <column name="trainees_short_term_female" precision="30" scale="0" />
+    </property>
+    
+    <property name="traineesShortTermMale" type="java.lang.Double">
+      <column name="trainees_short_term_male" precision="30" scale="0" />
+    </property>
+    
+    <property name="traineesLongTermFemale" type="java.lang.Double">
+      <column name="trainees_long_term_female" precision="30" scale="0" />
+    </property>
+    
+    <property name="traineesLongTermMale" type="java.lang.Double">
+      <column name="trainees_long_term_male" precision="30" scale="0" />
+    </property>
+    
 
   </class>
 </hibernate-mapping>
