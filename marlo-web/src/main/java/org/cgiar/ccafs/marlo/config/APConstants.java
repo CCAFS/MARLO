@@ -673,6 +673,8 @@ public final class APConstants {
   public static final String REP_IND_SYNTHESIS_INDICATOR_TYPE_INFLUENCE = "Influence";
   public static final String REP_IND_SYNTHESIS_INDICATOR_TYPE_CONTROL = "Control";
   public static final String REP_IND_SYNTHESIS_TYPE_ACTIVITY_FORMAL_TRAINING = "Formal Training";
+  public static final long REP_IND_TRAINING_TERMS_SHORT = 1;
+  public static final long REP_IND_TRAINING_TERMS_LONG = 2;
 
   // Capdev Parameters
   public static final String CRP_CD_ROLE = "crp_cd_role";
