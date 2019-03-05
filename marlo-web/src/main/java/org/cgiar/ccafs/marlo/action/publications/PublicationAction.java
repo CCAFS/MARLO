@@ -1192,7 +1192,7 @@ public class PublicationAction extends BaseAction {
 
 
       // Save Geographic Scope Data
-      this.saveGeographicScope(deliverableDB, deliverable.getPhase());
+      this.saveGeographicScope(this.getActualPhase());
 
       boolean haveRegions = false;
       boolean haveCountries = false;
@@ -1594,14 +1594,20 @@ public class PublicationAction extends BaseAction {
    * @param deliverable
    * @param phase
    */
-  public void saveGeographicScope(Deliverable deliverable, Phase phase) {
+  public void saveGeographicScope(Phase phase) {
+
+    if (deliverable.getGeographicScopes() == null) {
+      deliverable.setGeographicScopes(new ArrayList<>());
+    }
+    /* Delete */
+    Deliverable deliverableDB = deliverableManager.getDeliverableById(deliverableID);
 
     // Search and deleted form Information
-    if (deliverable.getDeliverableGeographicScopes() != null
-      && deliverable.getDeliverableGeographicScopes().size() > 0) {
+    if (deliverableDB.getDeliverableGeographicScopes() != null
+      && deliverableDB.getDeliverableGeographicScopes().size() > 0) {
 
-      List<DeliverableGeographicScope> scopePrev = new ArrayList<>(deliverable.getDeliverableGeographicScopes().stream()
-        .filter(nu -> nu.isActive() && nu.getPhase().getId() == phase.getId()).collect(Collectors.toList()));
+      List<DeliverableGeographicScope> scopePrev = new ArrayList<>(deliverableDB.getDeliverableGeographicScopes()
+        .stream().filter(nu -> nu.isActive() && nu.getPhase().getId() == phase.getId()).collect(Collectors.toList()));
 
       for (DeliverableGeographicScope deliverableScope : scopePrev) {
         if (deliverable.getGeographicScopes() == null
