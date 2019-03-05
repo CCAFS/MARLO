@@ -86,12 +86,18 @@ public class DeliverableUserManagerImpl implements DeliverableUserManager {
 
   private void deleteDeliverableUserPhase(DeliverableUser deliverableUser, Long next) {
     Phase phase = phaseDAO.find(next);
-    DeliverableUser deliverableUserPhase =
-      deliverableUserDAO.findDeliverableUserByPhaseAndDeliverableUser(phase, deliverableUser);
 
-    if (deliverableUserPhase != null) {
-      deliverableUserDAO.deleteDeliverableUser(deliverableUserPhase.getId());
+    List<DeliverableUser> deliverableUserPhases = phase.getDeliverableUsers().stream()
+      .filter(c -> c.isActive() && c.getDeliverable().getId().longValue() == deliverableUser.getDeliverable().getId()
+        && c.getFirstName().equals(deliverableUser.getFirstName())
+        && c.getLastName().equals(deliverableUser.getLastName())
+        && c.getElementId().equals(deliverableUser.getElementId()))
+      .collect(Collectors.toList());
+
+    for (DeliverableUser deliverableUserdel : deliverableUserPhases) {
+      deliverableUserDAO.deleteDeliverableUser(deliverableUserdel.getId());
     }
+
     if (phase.getNext() != null) {
       this.deleteDeliverableUserPhase(deliverableUser, phase.getNext().getId());
     }
@@ -127,7 +133,8 @@ public class DeliverableUserManagerImpl implements DeliverableUserManager {
       if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {
         Phase upkeepPhase = currentPhase.getNext().getNext();
         if (upkeepPhase != null) {
-          this.saveDeliverableUserPhase(deliverableUserResult, upkeepPhase.getId(), deliverableUserResult.getId());
+          this.saveDeliverableUserPhase(deliverableUserResult, upkeepPhase.getId(),
+            deliverableUserResult.getDeliverable().getId());
         }
       }
     } else {
@@ -160,17 +167,18 @@ public class DeliverableUserManagerImpl implements DeliverableUserManager {
       newDeliverableUser = this.cloneDeliverableUser(deliverableUserResult, newDeliverableUser, phase);
       deliverableUserDAO.save(newDeliverableUser);
     } else {
+      for (DeliverableUser deliverableUserDel : deliverableUserPhases) {
+        deliverableUserDAO.deleteDeliverableUser(deliverableUserDel.getId());
+      }
       DeliverableUser newDeliverableUser = new DeliverableUser();
-      newDeliverableUser.setDeliverable(deliverableUserResult.getDeliverable());
-      newDeliverableUser.setPhase(deliverableUserResult.getPhase());
-      newDeliverableUser.setElementId(deliverableUserResult.getElementId());
-      newDeliverableUser.setFirstName(deliverableUserResult.getFirstName());
-      newDeliverableUser.setLastName(deliverableUserResult.getLastName());
+      newDeliverableUser = this.cloneDeliverableUser(deliverableUserResult, newDeliverableUser, phase);
       deliverableUserDAO.save(newDeliverableUser);
+
     }
 
     if (phase.getNext() != null) {
-      this.saveDeliverableUserPhase(deliverableUserResult, phase.getNext().getId(), deliverableUserResult.getId());
+      this.saveDeliverableUserPhase(deliverableUserResult, phase.getNext().getId(),
+        deliverableUserResult.getDeliverable().getId());
     }
   }
 }

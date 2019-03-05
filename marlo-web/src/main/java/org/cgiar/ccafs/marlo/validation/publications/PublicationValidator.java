@@ -167,13 +167,9 @@ public class PublicationValidator extends BaseValidator {
       action.addActionMessage(
         " " + action.getText("saving.missingFields", new String[] {action.getValidationMessage().toString()}));
     }
-    if (action.isReportingActive()) {
-      this.saveMissingFields(deliverable, APConstants.REPORTING, action.getReportingYear(),
-        action.getActualPhase().getUpkeep(), ProjectSectionStatusEnum.DELIVERABLES.getStatus(), action);
-    } else {
-      this.saveMissingFields(deliverable, APConstants.PLANNING, action.getPlanningYear(),
-        action.getActualPhase().getUpkeep(), ProjectSectionStatusEnum.DELIVERABLES.getStatus(), action);
-    }
+
+    this.saveMissingFields(deliverable, deliverable.getPhase().getDescription(), deliverable.getPhase().getYear(),
+      deliverable.getPhase().getUpkeep(), ProjectSectionStatusEnum.DELIVERABLES.getStatus(), action);
   }
 
   private void validateDeliverableInfo(DeliverableInfo deliverableInfo, Deliverable deliverable, BaseAction action) {

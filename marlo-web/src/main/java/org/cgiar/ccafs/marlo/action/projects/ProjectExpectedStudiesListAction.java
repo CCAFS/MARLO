@@ -237,8 +237,7 @@ public class ProjectExpectedStudiesListAction extends BaseAction {
         projectStudies = new ArrayList<ProjectExpectedStudy>();
         projectStudies = allProjectStudies.stream().filter(ps -> ps.getProjectExpectedStudyInfo().getYear() != null
           && ps.getProjectExpectedStudyInfo().getStatus() != null
-          && ps.getProjectExpectedStudyInfo().getYear() >= this.getActualPhase().getYear() - 1
-          && ps.getProjectExpectedStudyInfo().getYear() >= 2018
+          && ps.getProjectExpectedStudyInfo().getYear() >= this.getCurrentCycleYear()
           && ((ps.getProjectExpectedStudyInfo().getStatus().getId()
             .equals(Long.parseLong(StudiesStatusPlanningEnum.Ongoing.getStatusId()))
             || ps.getProjectExpectedStudyInfo().getStatus().getId()
