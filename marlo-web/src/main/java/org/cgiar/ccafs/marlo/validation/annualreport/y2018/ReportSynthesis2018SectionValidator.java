@@ -20,6 +20,7 @@ import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisCrossCuttingDimension;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFundingUseSummary;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisIntellectualAsset;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
 
@@ -37,15 +38,18 @@ public class ReportSynthesis2018SectionValidator<T extends BaseAction> extends B
   // Validations
   private final IntellectualAssetsValidator intellectualAssetsValidator;
   private final CCDimension2018Validator ccDimensionValidator;
+  private final FundingUse2018Validator fundingUse2018Validator;
 
 
   @Inject
   public ReportSynthesis2018SectionValidator(ReportSynthesisManager reportSynthesisManager,
-    IntellectualAssetsValidator intellectualAssetsValidator, CCDimension2018Validator ccDimensionValidator) {
+    IntellectualAssetsValidator intellectualAssetsValidator, CCDimension2018Validator ccDimensionValidator,
+    FundingUse2018Validator fundingUse2018Validator) {
     super();
     this.reportSynthesisManager = reportSynthesisManager;
     this.intellectualAssetsValidator = intellectualAssetsValidator;
     this.ccDimensionValidator = ccDimensionValidator;
+    this.fundingUse2018Validator = fundingUse2018Validator;
   }
 
 
@@ -83,6 +87,26 @@ public class ReportSynthesis2018SectionValidator<T extends BaseAction> extends B
     }
 
   }
+
+  public void validateFundingUse(BaseAction action, ReportSynthesis reportSynthesis) {
+
+    if (reportSynthesis.getReportSynthesisFundingUseSummary() == null) {
+      ReportSynthesisFundingUseSummary fundingUseSummary = new ReportSynthesisFundingUseSummary();
+
+      // create one to one relation
+      reportSynthesis.setReportSynthesisFundingUseSummary(fundingUseSummary);
+      fundingUseSummary.setReportSynthesis(reportSynthesis);
+
+      fundingUse2018Validator.validate(action, reportSynthesis, false);
+
+      // save the changes
+      reportSynthesis = reportSynthesisManager.saveReportSynthesis(reportSynthesis);
+    } else {
+      fundingUse2018Validator.validate(action, reportSynthesis, false);
+    }
+
+  }
+
 
   public void validateIntellectualAssets(BaseAction action, ReportSynthesis reportSynthesis) {
 
