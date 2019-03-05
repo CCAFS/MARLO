@@ -91,7 +91,6 @@
 [#---------------------------------------------------- MACROS ----------------------------------------------------]
 
 [#macro fundingExamples name element index isEditable=true template=false] 
-${(element.id)!}
 
 [#local customName = "${name}[${index}]" /]
   <div id="fundingUseExample-${template?string('template', index)}" class="fundingUseExample borderBox form-group" style="position:relative; display:${template?string('none','block')}">
@@ -112,7 +111,8 @@ ${(element.id)!}
     <div class="form-group row">
       [#-- Broad area --] 
         <div class="col-md-7">
-          [@customForm.select name="${customName}.expenditureCategory" label="" keyFieldName="id" displayFieldName="acronym" i18nkey="${customLabel}.table11.broadArea" listName="globalUnitList"  required=true  className="" editable=isEditable/]
+          
+          [@customForm.select name="${customName}.expenditureCategory.id"  label="" keyFieldName="id" displayFieldName="name" i18nkey="${customLabel}.table11.broadArea" listName="expenditureCategories"  required=true  className="" editable=isEditable/]
         </div>
     </div>    
     

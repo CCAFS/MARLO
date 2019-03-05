@@ -4,6 +4,7 @@ package org.cgiar.ccafs.marlo.data.model;
 
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -26,7 +27,7 @@ public class ReportSynthesisFundingUseSummary extends MarloAuditableEntity imple
   private Set<ReportSynthesisFundingUseExpendituryArea> reportSynthesisFundingUseExpendituryAreas =
     new HashSet<ReportSynthesisFundingUseExpendituryArea>(0);
 
-  private List<ReportSynthesisFundingUseExpendituryArea> expenditureAreas;
+  private List<ReportSynthesisFundingUseExpendituryArea> expenditureAreas = new ArrayList<>();
 
   /** AR2018 Fields **/
   @Expose

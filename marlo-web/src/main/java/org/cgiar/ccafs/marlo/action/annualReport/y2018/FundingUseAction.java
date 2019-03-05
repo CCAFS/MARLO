@@ -534,18 +534,23 @@ public class FundingUseAction extends BaseAction {
             reportSynthesisFundingUseExpendituryAreaManager
               .getReportSynthesisFundingUseExpendituryAreaById(fundingUseExpenditureArea.getId());
 
-          if (fundingUseExpenditureArea.getExampleExpenditure() != fundingUseExpenditureArea.getExampleExpenditure()) {
+          if (fundingUseExpenditureAreaPrev.getExampleExpenditure() != fundingUseExpenditureArea
+            .getExampleExpenditure()) {
             hasChanges = true;
             fundingUseExpenditureAreaPrev.setExampleExpenditure(fundingUseExpenditureArea.getExampleExpenditure());
           }
 
-          if (fundingUseExpenditureArea.getExpenditureCategory() != fundingUseExpenditureArea
+          if (fundingUseExpenditureArea.getExpenditureCategory() != null
+            && fundingUseExpenditureArea.getExpenditureCategory().getId().equals(-1l)) {
+            fundingUseExpenditureArea.setExpenditureCategory(null);
+          }
+          if (fundingUseExpenditureAreaPrev.getExpenditureCategory() != fundingUseExpenditureArea
             .getExpenditureCategory()) {
             hasChanges = true;
             fundingUseExpenditureAreaPrev.setExpenditureCategory(fundingUseExpenditureArea.getExpenditureCategory());
           }
 
-          if (fundingUseExpenditureArea.getOtherCategory() != fundingUseExpenditureArea.getOtherCategory()) {
+          if (fundingUseExpenditureAreaPrev.getOtherCategory() != fundingUseExpenditureArea.getOtherCategory()) {
             hasChanges = true;
             fundingUseExpenditureAreaPrev.setOtherCategory(fundingUseExpenditureArea.getOtherCategory());
           }
