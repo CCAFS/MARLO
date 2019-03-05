@@ -117,6 +117,15 @@ public class ProjectExpectedStudyLinkManagerImpl implements ProjectExpectedStudy
       projectExpectedStudyLinkAdd.setPhase(phase);
       projectExpectedStudyLinkAdd.setLink(projectExpectedStudyLink.getLink());
       projectExpectedStudyLinkDAO.save(projectExpectedStudyLinkAdd);
+    } else {
+      for (ProjectExpectedStudyLink projectExpectedStudyLinkDel : projectExpectedStudyLinks) {
+        projectExpectedStudyLinkDAO.deleteProjectExpectedStudyLink(projectExpectedStudyLinkDel.getId());
+      }
+      ProjectExpectedStudyLink projectExpectedStudyLinkAdd = new ProjectExpectedStudyLink();
+      projectExpectedStudyLinkAdd.setProjectExpectedStudy(projectExpectedStudyLink.getProjectExpectedStudy());
+      projectExpectedStudyLinkAdd.setPhase(phase);
+      projectExpectedStudyLinkAdd.setLink(projectExpectedStudyLink.getLink());
+      projectExpectedStudyLinkDAO.save(projectExpectedStudyLinkAdd);
     }
 
 

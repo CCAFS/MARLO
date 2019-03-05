@@ -166,6 +166,14 @@ public class DeliverableUserManagerImpl implements DeliverableUserManager {
       DeliverableUser newDeliverableUser = new DeliverableUser();
       newDeliverableUser = this.cloneDeliverableUser(deliverableUserResult, newDeliverableUser, phase);
       deliverableUserDAO.save(newDeliverableUser);
+    } else {
+      for (DeliverableUser deliverableUserDel : deliverableUserPhases) {
+        deliverableUserDAO.deleteDeliverableUser(deliverableUserDel.getId());
+      }
+      DeliverableUser newDeliverableUser = new DeliverableUser();
+      newDeliverableUser = this.cloneDeliverableUser(deliverableUserResult, newDeliverableUser, phase);
+      deliverableUserDAO.save(newDeliverableUser);
+
     }
 
     if (phase.getNext() != null) {
