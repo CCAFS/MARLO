@@ -117,7 +117,7 @@ public class ProjectExpectedStudyQuantificationManagerImpl implements ProjectExp
     List<ProjectExpectedStudyQuantification> projectExpectedStudyQuantifications =
       phase.getProjectExpectedStudyQuantifications().stream()
         .filter(c -> c.isActive() && c.getProjectExpectedStudy().getId().longValue() == expectedID
-          && c.getNumber().equals(projectExpectedStudyQuantification.getNumber())
+          && c.getNumber() == projectExpectedStudyQuantification.getNumber()
           && c.getComments().equals(projectExpectedStudyQuantification.getComments())
           && c.getTargetUnit().equals(projectExpectedStudyQuantification.getTargetUnit())
           && c.getTypeQuantification().equals(projectExpectedStudyQuantification.getTypeQuantification()))
