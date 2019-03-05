@@ -24,3 +24,15 @@ ADD COLUMN `cap_dev_key_achievements`  text CHARACTER SET utf8 COLLATE utf8_gene
 
 ALTER TABLE `report_synthesis_cross_cutting_dimensions`
 ADD COLUMN `climate_change_key_achievements`  text CHARACTER SET utf8 COLLATE utf8_general_ci NULL AFTER `cap_dev_key_achievements`;
+
+ALTER TABLE `report_synthesis_cross_cutting_dimensions`
+ADD COLUMN `trainees_short_term_female`  double NULL DEFAULT NULL AFTER `climate_change_key_achievements`;
+
+ALTER TABLE `report_synthesis_cross_cutting_dimensions`
+ADD COLUMN `trainees_short_term_male`  double NULL DEFAULT NULL AFTER `trainees_short_term_female`;
+
+ALTER TABLE `report_synthesis_cross_cutting_dimensions`
+ADD COLUMN `trainees_long_term_female`  double NULL DEFAULT NULL AFTER `trainees_short_term_male`;
+
+ALTER TABLE `report_synthesis_cross_cutting_dimensions`
+ADD COLUMN `trainees_long_term_male`  double NULL DEFAULT NULL AFTER `trainees_long_term_female`;
