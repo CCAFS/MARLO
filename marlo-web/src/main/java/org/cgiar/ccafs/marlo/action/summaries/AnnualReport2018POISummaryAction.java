@@ -500,6 +500,23 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     }
   }
 
+  public void addIntellectualAssets() {
+    if (reportSynthesisPMU != null) {
+      if (reportSynthesisPMU.getReportSynthesisIntellectualAsset() != null
+        && reportSynthesisPMU.getReportSynthesisIntellectualAsset().getManaged() != null
+        && reportSynthesisPMU.getReportSynthesisIntellectualAsset().getPatents() != null
+        && reportSynthesisPMU.getReportSynthesisIntellectualAsset().getCriticalIssues() != null) {
+        poiSummary.textParagraph(document.createParagraph(),
+          reportSynthesisPMU.getReportSynthesisIntellectualAsset().getManaged());
+        poiSummary.textParagraph(document.createParagraph(),
+          reportSynthesisPMU.getReportSynthesisIntellectualAsset().getPatents());
+        poiSummary.textParagraph(document.createParagraph(),
+          reportSynthesisPMU.getReportSynthesisIntellectualAsset().getCriticalIssues());
+
+      }
+    }
+  }
+
   private void addManagement() {
     poiSummary.textHead2Title(document.createParagraph(), this.getText("summaries.annualReport.management.governance"));
     this.addManagementGovernance();
@@ -1824,7 +1841,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         run.setBold(true);
         run.setText(this.getText("summaries.annualReport2018.effectiveness.intellectual"));
         paragraph.setStyle("heading 19");
-        this.addReportSynthesisMelia();
+        this.addIntellectualAssets();
 
         poiSummary.textLineBreak(document, 1);
         paragraph = document.createParagraph();
