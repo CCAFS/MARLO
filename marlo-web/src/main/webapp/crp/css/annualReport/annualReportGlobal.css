@@ -335,3 +335,8 @@ li#menu-crpProgress {
 li#menu-oicr {
   font-size: 0.86em !important;
 }
+
+.modal-dialog.modal-lg {
+  max-width: 1170px;
+  width: 90%;
+}
