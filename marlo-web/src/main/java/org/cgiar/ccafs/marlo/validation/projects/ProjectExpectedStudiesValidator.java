@@ -68,7 +68,6 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
       }
     }
 
-
     this.validateProjectExpectedStudy(projectExpectedStudy, action);
 
 
