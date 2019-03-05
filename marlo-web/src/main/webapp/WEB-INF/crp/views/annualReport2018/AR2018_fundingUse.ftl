@@ -46,7 +46,7 @@
             [#-- Interesting points on the use of W1/2 --]
             <div class="form-group">
               [#if PMU]
-                [@customForm.textArea name="${customName}.interestingPoints" i18nkey="${customLabel}.interestingPoints" help="${customLabel}.interestingPoints.help" helpIcon=false required=true editable=editable allowTextEditor=true /]
+                [@customForm.textArea name="${customName}.interestingPoints" i18nkey="${customLabel}.interestingPoints" help="${customLabel}.interestingPoints.help" helpIcon=false required=true className="limitWords-250" editable=editable allowTextEditor=true /]
               [#else]
                 <div class="textArea">
                   <label for="">[@customForm.text name="${customLabel}.interestingPoints" readText=true /]</label>:
@@ -55,23 +55,23 @@
               [/#if]
             </div>
             
-            [#if PMU]
+            
             [#-- Table 11 - Examples of W1/2 Use --]
             <div class="form-group">
               <h4 class="simpleTitle headTitle annualReport-table">[@s.text name="${customLabel}.table11.title" /]</h4>
                 [@customForm.helpLabel name="${customLabel}.table11.help" showIcon=false editable=editable/]
                 <div class="listExamples">
-                    [#list reportSynthesis.reportSynthesisFundingUseSummary.expenditureAreas as item]
-                      [@fundingExamples element=item name="${customName}.expenditureAreas" index=item_index template=false isEditable=editable/]
-                    [/#list]
+                  [#list reportSynthesis.reportSynthesisFundingUseSummary.expenditureAreas as item]
+                    [@fundingExamples element=item name="${customName}.expenditureAreas" index=item_index template=false isEditable=editable && PMU/]
+                  [/#list]
                 </div>
-                [#if canEdit && editable]
+                [#if canEdit && editable && PMU]
                   <div class="text-right">
                     <div class="addExample bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> [@s.text name="annualReport2018.fundingUse.addExpenditure"/]</div>
                   </div> 
                 [/#if]
             </div>
-            [/#if]
+            
             
           </div>
           [#-- Section Buttons & hidden inputs--]
@@ -91,10 +91,8 @@
 [#---------------------------------------------------- MACROS ----------------------------------------------------]
 
 [#macro fundingExamples name element index isEditable=true template=false] 
-
-[#local customName = "${name}[${index}]" /]
+  [#local customName = "${name}[${index}]" /]
   <div id="fundingUseExample-${template?string('template', index)}" class="fundingUseExample borderBox form-group" style="position:relative; display:${template?string('none','block')}">
-
     [#-- Index --]
     <div class="leftHead blue sm"><span class="index">${index+1}</span></div>
     [#-- Remove Button --]
@@ -102,27 +100,22 @@
     [#-- Hidden inputs --]
     <input type="hidden" name="${customName}.id" value="${(element.id)!}"/> 
     <br />
-    
     <div class="form-group">
       [#-- Name of examples of W1/2 Expenditure --]
-        [@customForm.textArea name="${customName}.exampleExpenditure" i18nkey="${customLabel}.table11.examples" help="${customLabel}.table11.examples.help" helpIcon=false className="limitWords-50" required=true editable=editable allowTextEditor=true /]
+      [@customForm.textArea name="${customName}.exampleExpenditure" i18nkey="${customLabel}.table11.examples" help="${customLabel}.table11.examples.help" helpIcon=false className="limitWords-50" required=true editable=isEditable allowTextEditor=true /]
     </div>
-
+    [#-- Broad area --] 
     <div class="form-group row">
-      [#-- Broad area --] 
-        <div class="col-md-7">
-          
-          [@customForm.select name="${customName}.expenditureCategory.id"  label="" keyFieldName="id" displayFieldName="name" i18nkey="${customLabel}.table11.broadArea" listName="expenditureCategories"  required=true  className="" editable=isEditable/]
-        </div>
+      <div class="col-md-7">
+        [@customForm.select name="${customName}.expenditureCategory.id"  label="" keyFieldName="id" displayFieldName="name" i18nkey="${customLabel}.table11.broadArea" listName="expenditureCategories"  required=true  className="expenditureCategoriesSelect" editable=isEditable/]
+      </div>
     </div>    
-    
-    <div class="form-group row">
-      [#-- Other --]
-        <div class="col-md-7">
-          [@customForm.input name="${customName}.otherCategory" i18nkey="${customLabel}.table11.otherArea"required=true editable=editable /]
-        </div>
+    [#-- Other --]
+    [#local showOther = (element.expenditureCategory.id == 10)!false]
+    <div class="form-group row otherBlock" style="display:${showOther?string('block', 'none')}">
+      <div class="col-md-7">
+        [@customForm.input name="${customName}.otherCategory" i18nkey="${customLabel}.table11.otherArea"required=true editable=isEditable /]
+      </div>
     </div>
-    
   </div>
-
 [/#macro]

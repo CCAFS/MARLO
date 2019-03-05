@@ -4,7 +4,7 @@ function init() {
 
   // Add Select2
   $('form select').select2({
-      width: '100%'
+    width: '100%'
   });
 
   attachEvents();
@@ -18,6 +18,18 @@ function attachEvents() {
   // Remove an example of W1/2 use
   $('.removeExample').on('click', removeExample);
 
+  // Change expenditure category
+  $('select.expenditureCategoriesSelect').on('change', function() {
+    var optionSelected = this.value;
+    var $block = $(this).parents('.fundingUseExample').find('.otherBlock');
+
+    if(optionSelected == 10) {
+      $block.slideDown();
+    } else {
+      $block.slideUp();
+    }
+  });
+
 }
 
 function addExample() {
@@ -27,7 +39,7 @@ function addExample() {
 
   // Add select
   $item.find('select').select2({
-      width: '100%'
+    width: '100%'
   });
 
   $item.find('textarea').setTrumbowyg();
@@ -35,7 +47,6 @@ function addExample() {
   $item.show('slow');
   updateIndexes();
 }
-
 
 function removeExample() {
   var $item = $(this).parents('.fundingUseExample');

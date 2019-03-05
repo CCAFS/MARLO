@@ -46,3 +46,9 @@
   background: #f5f5f5;
   top: 19px;
 }
+
+
+p.decodeHTML.trumbowyg-editor {
+  background: none;
+  box-shadow: none;
+}
