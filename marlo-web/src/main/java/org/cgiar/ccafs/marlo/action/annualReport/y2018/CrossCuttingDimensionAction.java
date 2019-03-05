@@ -447,6 +447,16 @@ public class CrossCuttingDimensionAction extends BaseAction {
       crossCuttingDimensionDB.setClimateChangeKeyAchievements(
         reportSynthesis.getReportSynthesisCrossCuttingDimension().getClimateChangeKeyAchievements());
 
+      // Save Number of Trainees
+      crossCuttingDimensionDB.setTraineesLongTermFemale(
+        reportSynthesis.getReportSynthesisCrossCuttingDimension().getTraineesLongTermFemale());
+      crossCuttingDimensionDB
+        .setTraineesLongTermMale(reportSynthesis.getReportSynthesisCrossCuttingDimension().getTraineesLongTermMale());
+      crossCuttingDimensionDB.setTraineesShortTermFemale(
+        reportSynthesis.getReportSynthesisCrossCuttingDimension().getTraineesShortTermFemale());
+      crossCuttingDimensionDB
+        .setTraineesShortTermMale(reportSynthesis.getReportSynthesisCrossCuttingDimension().getTraineesShortTermMale());
+
       crossCuttingDimensionDB =
         reportSynthesisCrossCuttingDimensionManager.saveReportSynthesisCrossCuttingDimension(crossCuttingDimensionDB);
 
