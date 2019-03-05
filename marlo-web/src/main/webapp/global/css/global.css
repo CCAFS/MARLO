@@ -4320,6 +4320,15 @@ li.fileUploaded span {
   vertical-align: middle;
 }
 
+
+.icon-20.files {
+  background-image: url(../../global/images/summaries/summaries-icons.png);
+  background-position: -28px 22px;
+  background-size: 360%;
+  vertical-align: middle;
+}
+
+
 .icon-uncheck {
   background: url('../../global/images/sprite-icons-activities.png') 0 -85px;
 }
