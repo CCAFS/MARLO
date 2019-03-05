@@ -1303,36 +1303,33 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
         expectedStudy.getProjectExpectedStudyInfo(phase);
       }
 
-
       // Setup Geographic Scope
       if (expectedStudy.getProjectExpectedStudyGeographicScopes() != null) {
         expectedStudy.setGeographicScopes(new ArrayList<>(expectedStudy.getProjectExpectedStudyGeographicScopes()
           .stream().filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
       }
 
-
       // Expected Study Countries List
       if (expectedStudy.getProjectExpectedStudyCountries() == null) {
         expectedStudy.setCountries(new ArrayList<>());
       } else {
-        List<ProjectExpectedStudyCountry> countries =
-          projectExpectedStudyCountryManager.getProjectExpectedStudyCountrybyPhase(expectedStudy.getId(), phase.getId())
-            .stream().filter(le -> le.isActive() && le.getLocElement().getLocElementType().getId() == 2)
-            .collect(Collectors.toList());
+        List<ProjectExpectedStudyCountry> countries = this.projectExpectedStudyCountryManager
+          .getProjectExpectedStudyCountrybyPhase(expectedStudy.getId(), phase.getId()).stream()
+          .filter(le -> le.isActive() && le.getLocElement().getLocElementType().getId() == 2)
+          .collect(Collectors.toList());
         expectedStudy.setCountries(countries);
       }
 
       if (expectedStudy.getProjectExpectedStudyRegions() == null) {
         expectedStudy.setStudyRegions(new ArrayList<>());
       } else {
-        List<ProjectExpectedStudyRegion> geographics =
-          projectExpectedStudyRegionManager.getProjectExpectedStudyRegionbyPhase(expectedStudy.getId(), phase.getId());
+        List<ProjectExpectedStudyRegion> geographics = this.projectExpectedStudyRegionManager
+          .getProjectExpectedStudyRegionbyPhase(expectedStudy.getId(), phase.getId());
 
         // Load Regions
         expectedStudy.setStudyRegions(geographics.stream()
           .filter(sc -> sc.getLocElement().getLocElementType().getId() == 1).collect(Collectors.toList()));
       }
-
 
       // Expected Study SubIdos List
       if (expectedStudy.getProjectExpectedStudySubIdos() != null) {

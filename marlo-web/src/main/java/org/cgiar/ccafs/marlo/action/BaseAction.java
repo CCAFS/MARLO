@@ -107,7 +107,6 @@ import org.cgiar.ccafs.marlo.data.model.DeliverablePartnership;
 import org.cgiar.ccafs.marlo.data.model.DeliverableQualityCheck;
 import org.cgiar.ccafs.marlo.data.model.DeliverableType;
 import org.cgiar.ccafs.marlo.data.model.DeliverableTypeRule;
-import org.cgiar.ccafs.marlo.data.model.ExpectedStudyProject;
 import org.cgiar.ccafs.marlo.data.model.FileDB;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
@@ -158,6 +157,7 @@ import org.cgiar.ccafs.marlo.data.model.ReportSynthesisSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.Role;
 import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.data.model.SrfTargetUnit;
+import org.cgiar.ccafs.marlo.data.model.StudiesStatusPlanningEnum;
 import org.cgiar.ccafs.marlo.data.model.Submission;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.data.model.UserRole;
@@ -3457,37 +3457,44 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       case EXPECTEDSTUDIES:
 
         project = projectManager.getProjectById(projectID);
-        Set<ProjectExpectedStudy> myStudies = new HashSet<>();
+        List<ProjectExpectedStudy> allProjectStudies = new ArrayList<ProjectExpectedStudy>();
 
-        // Owner Studies
-        List<ProjectExpectedStudy> ownerStudies = project.getProjectExpectedStudies().stream()
-          .filter(c -> c.isActive() && c.getProjectExpectedStudyInfo(this.getActualPhase()) != null
-            && c.getProjectExpectedStudyInfo(this.getActualPhase()).getYear() == this.getCurrentCycleYear())
+        // Load Studies
+        List<ProjectExpectedStudy> studies = project.getProjectExpectedStudies().stream()
+          .filter(c -> c.isActive() && c.getProjectExpectedStudyInfo(this.getActualPhase()) != null)
           .collect(Collectors.toList());
-        if (ownerStudies != null && !ownerStudies.isEmpty()) {
-          myStudies.addAll(ownerStudies);
+        if (studies != null && studies.size() > 0) {
+          allProjectStudies.addAll(studies);
         }
 
-        // Shared Studies
-        List<ExpectedStudyProject> sharedStudies = project.getExpectedStudyProjects().stream()
-          .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase())
-            && c.getProjectExpectedStudy().getProjectExpectedStudyInfo(this.getActualPhase()) != null
-            && c.getProjectExpectedStudy().getProjectExpectedStudyInfo(this.getActualPhase()).getYear() != null
-            && c.getProjectExpectedStudy().getProjectExpectedStudyInfo(this.getActualPhase()).getYear() == this
-              .getCurrentCycleYear())
-          .collect(Collectors.toList());
+        List<ProjectExpectedStudy> projectStudies = new ArrayList<ProjectExpectedStudy>();
 
-        if (sharedStudies != null && !sharedStudies.isEmpty()) {
-          for (ExpectedStudyProject expectedStudyProject : sharedStudies) {
-            myStudies.add(expectedStudyProject.getProjectExpectedStudy());
-          }
+        if (allProjectStudies != null && allProjectStudies.size() > 0) {
+          // Editable project studies: Current cycle year-1 will be editable except Complete and Cancelled.
+          // Every study of the current cycle year will be editable
+          projectStudies = allProjectStudies.stream()
+            .filter(ps -> ps.getProjectExpectedStudyInfo().getYear() != null
+              && ps.getProjectExpectedStudyInfo().getStatus() != null
+              && ps.getProjectExpectedStudyInfo().getYear() == this.getCurrentCycleYear()
+              && ((ps.getProjectExpectedStudyInfo().getStatus().getId()
+                .equals(Long.parseLong(StudiesStatusPlanningEnum.Ongoing.getStatusId()))
+                || ps.getProjectExpectedStudyInfo().getStatus().getId()
+                  .equals(Long.parseLong(StudiesStatusPlanningEnum.Extended.getStatusId()))
+                || ps.getProjectExpectedStudyInfo().getStatus().getId()
+                  .equals(StudiesStatusPlanningEnum.New.getStatusId()))
+                || ((ps.getProjectExpectedStudyInfo().getStatus().getId()
+                  .equals(Long.parseLong(StudiesStatusPlanningEnum.Complete.getStatusId()))
+                  || ps.getProjectExpectedStudyInfo().getStatus().getId()
+                    .equals(Long.parseLong(StudiesStatusPlanningEnum.Cancelled.getStatusId())))
+                  && ps.getProjectExpectedStudyInfo().getYear() >= this.getActualPhase().getYear())))
+            .collect(Collectors.toList());
         }
 
-        if (myStudies.isEmpty()) {
+        if (projectStudies.isEmpty()) {
           return true;
         }
 
-        for (ProjectExpectedStudy projectExpectedStudy : myStudies) {
+        for (ProjectExpectedStudy projectExpectedStudy : projectStudies) {
           sectionStatus = sectionStatusManager.getSectionStatusByProjectExpectedStudy(projectExpectedStudy.getId(),
             this.getCurrentCycle(), this.getCurrentCycleYear(), this.isUpKeepActive(), section);
           if (sectionStatus != null) {
