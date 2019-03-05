@@ -34,6 +34,14 @@ import org.json.JSONObject;
 
 public abstract class MetadataClientApi {
 
+  private RestConnectionUtil xmlReaderConnectionUtil;
+
+  private String id;
+
+  public MetadataClientApi() {
+    xmlReaderConnectionUtil = new RestConnectionUtil();
+  }
+
   /**
    * Extract parameters from a given URL
    * 
@@ -65,14 +73,6 @@ public abstract class MetadataClientApi {
     } catch (UnsupportedEncodingException ex) {
       throw new AssertionError(ex);
     }
-  }
-
-  private RestConnectionUtil xmlReaderConnectionUtil;
-
-  private String id;
-
-  public MetadataClientApi() {
-    xmlReaderConnectionUtil = new RestConnectionUtil();
   }
 
 
@@ -142,27 +142,36 @@ public abstract class MetadataClientApi {
             Object volume = result.get("volume");
             Object issue = result.get("issue");
             Object page = result.get("page");
+            Object journal = result.get("container-title");
             Object publisher = result.get("publisher");
 
-            // volume
+            // Volume
             if (volume != null) {
               jo.put("volume", volume.toString());
             }
 
-            // issue
+            // Issue
             if (issue != null) {
               jo.put("issue", issue.toString());
             }
 
-            // page
+            // Page
             if (page != null) {
               jo.put("pages", page.toString());
             }
 
-            // journal
-            if (publisher != null) {
-              jo.put("journal", publisher.toString());
+            // Journal
+            if (!jo.has("journal") || jo.get("journal") == null || jo.get("journal").toString().equals("{}")) {
+              if (journal != null) {
+                jo.put("journal", journal.toString());
+              } else {
+                // Try Publisher
+                if (publisher != null) {
+                  jo.put("journal", publisher.toString());
+                }
+              }
             }
+
           }
 
         }
