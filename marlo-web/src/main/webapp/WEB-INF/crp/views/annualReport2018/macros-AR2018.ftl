@@ -100,28 +100,29 @@
               <table class="table">
                 <thead>
                   <tr>
-                    <th id="">ID</th>
                     <th id="">Title</th>
-                    <th id="">Type</th>
                     <th id="">SRF Targets</th>
+                    <th id="">Type</th>
                     <th id="">Year</th>
+                    <th></th>
                     <th></th>
                   </tr>
                 </thead>
                 <tbody>
                   [#list list as item]
                     [#local url][@s.url namespace="/projects" action="${(crpSession)!}/study"][@s.param name='expectedID']${item.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
+                    [#local summaryPDF = "${baseUrl}/projects/${crpSession}/studySummary.do?studyID=${(item.id)!}&cycle=Reporting&year=${(actualPhase.year)!}"]
                     <tr>
-                      <th scope="row">${item.id}</th>
-                      <td>  
-                        [@utils.tableText value=(item.projectExpectedStudyInfo.title)!"" /] 
+                      <td class="col-md-5">  
+                        [@utils.tableText value=(item.composedName)!"" /] 
                         [#if item.project??]
                           <br /> <small>(From Project P${item.project.id})</small> 
                         [/#if]
                       </td>
-                      <td> [@utils.tableText value=(item.projectExpectedStudyInfo.studyType.name)!"" /] </td>
                       <td> [@utils.tableList list=(item.srfTargets)![] displayFieldName="srfSloIndicator.title" /] </td>
+                      <td> [@utils.tableText value=(item.projectExpectedStudyInfo.studyType.name)!"" /] </td>
                       <td> [@utils.tableText value=(item.projectExpectedStudyInfo.year)!"" /] </td>
+                      <td> <a href="${summaryPDF}" target="_blank"><img src="${baseUrl}/global/images/pdf.png" height="25" title="[@s.text name="projectsList.downloadPDF" /]" /></a>  </td>
                       <td> <a href="${url}" target="_blank"><span class="glyphicon glyphicon-new-window"></span></a>  </td>
                     </tr>
                   [/#list]
