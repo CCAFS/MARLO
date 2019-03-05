@@ -1,4 +1,7 @@
 [#ftl]
+[#import "/WEB-INF/global/macros/utils.ftl" as utils /]
+
+
 [#macro indicatorInformation name list index id="indicatorID" label="" editable=true]
   <div class="form-group">
     [#local customName = "${name}[${index}]"]
@@ -67,4 +70,71 @@
       </tbody>
     </table>
   </div>
+[/#macro]
+
+
+[#macro evidencesPopup element list]
+  [#local className = ((element.class.name)?split('.')?last)!''/]
+  [#local composedID = "${className}-${(element.id)!}"]
+  <div id="${composedID}" class="form-group elementRelations ${className}">
+    [#if list?has_content]
+      [#-- Button --]
+      <button type="button" class="btn btn-default btn-xs" data-toggle="modal" data-target="#modal-projects-${composedID}">
+        <span class="icon-20 files"></span> <strong>${list?size}</strong> [@s.text name="global.evidence" /](s)
+      </button>
+      
+      [#-- Modal --]
+      <div class="modal fade" id="modal-projects-${composedID}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog modal-lg" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+              <h4 class="modal-title" id="myModalLabel">
+                [@s.text name="global.evidences" /] that are contributing to this [@s.text name="global.${className}" /] 
+                <br />
+                <small>${(element.narrative)!}</small>
+              </h4>
+            </div>
+            <div class="modal-body">
+              [#-- Projects table --]
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th id="">ID</th>
+                    <th id="">Title</th>
+                    <th id="">Type</th>
+                    <th id="">SRF Targets</th>
+                    <th id="">Year</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  [#list list as item]
+                    [#local url][@s.url namespace="/projects" action="${(crpSession)!}/study"][@s.param name='expectedID']${item.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
+                    <tr>
+                      <th scope="row">${item.id}</th>
+                      <td>  
+                        [@utils.tableText value=(item.projectExpectedStudyInfo.title)!"" /] 
+                        [#if item.project??]
+                          <br /> <small>(From Project P${item.project.id})</small> 
+                        [/#if]
+                      </td>
+                      <td> [@utils.tableText value=(item.projectExpectedStudyInfo.studyType.name)!"" /] </td>
+                      <td> [@utils.tableList list=(item.srfTargets)![] displayFieldName="srfSloIndicator.title" /] </td>
+                      <td> [@utils.tableText value=(item.projectExpectedStudyInfo.year)!"" /] </td>
+                      <td> <a href="${url}" target="_blank"><span class="glyphicon glyphicon-new-window"></span></a>  </td>
+                    </tr>
+                  [/#list]
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    [/#if]
+  </div>
+
 [/#macro]

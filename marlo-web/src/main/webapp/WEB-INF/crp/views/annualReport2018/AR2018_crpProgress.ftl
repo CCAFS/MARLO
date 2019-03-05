@@ -110,7 +110,13 @@
     <input type="hidden" name="${customName}.id" value="${(sloTargetContribution.id)!}" />
     <input type="hidden" name="${customName}.srfSloIndicatorTarget.id" class="indicatorTargetID" value="${(element.id)!}" />    
     [#-- SLO Target --]
-    <div class="form-group grayBox name"> <strong>SLO Target 2022</strong> <br />${(element.narrative)!}</div>
+    <div class="form-group grayBox name"> 
+      <div class="pull-right">
+        [@macrosAR.evidencesPopup element=(element)!{} list=(action.getEvidenceInfo(element.id))![]  /]
+      </div> 
+      <strong>SLO Target 2022</strong> <br />${(element.narrative)!}
+      
+    </div>
     [#-- Brief summary of new evidence of CGIAR contribution to relevant targets for this CRP (with citation) --]
     <div class="form-group">
       [@customForm.textArea name="${customName}.birefSummary" value="${(sloTargetContribution.birefSummary)!}" i18nkey="${customLabel}.summaryEvidence" className="limitWords-150" help="${customLabel}.summaryEvidence.help" helpIcon=false required=true editable=editable allowTextEditor=true /]
