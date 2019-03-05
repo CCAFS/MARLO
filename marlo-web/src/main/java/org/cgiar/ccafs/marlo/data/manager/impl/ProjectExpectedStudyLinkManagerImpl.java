@@ -119,7 +119,11 @@ public class ProjectExpectedStudyLinkManagerImpl implements ProjectExpectedStudy
       projectExpectedStudyLinkDAO.save(projectExpectedStudyLinkAdd);
     } else {
       for (ProjectExpectedStudyLink projectExpectedStudyLinkDel : projectExpectedStudyLinks) {
-        projectExpectedStudyLinkDAO.deleteProjectExpectedStudyLink(projectExpectedStudyLinkDel.getId());
+        try {
+          projectExpectedStudyLinkDAO.deleteProjectExpectedStudyLink(projectExpectedStudyLinkDel.getId());
+        } catch (Exception e) {
+          // TODO: handle exception
+        }
       }
       ProjectExpectedStudyLink projectExpectedStudyLinkAdd = new ProjectExpectedStudyLink();
       projectExpectedStudyLinkAdd.setProjectExpectedStudy(projectExpectedStudyLink.getProjectExpectedStudy());
