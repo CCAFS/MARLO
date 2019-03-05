@@ -90,6 +90,20 @@ public class ReportSynthesisCrossCuttingDimension extends MarloAuditableEntity
   @Expose
   private String climateChangeKeyAchievements;
 
+  @Expose
+  private Double traineesShortTermFemale;
+
+  @Expose
+  private Double traineesShortTermMale;
+
+
+  @Expose
+  private Double traineesLongTermFemale;
+
+
+  @Expose
+  private Double traineesLongTermMale;
+
 
   public ReportSynthesisCrossCuttingDimension() {
   }
@@ -136,7 +150,6 @@ public class ReportSynthesisCrossCuttingDimension extends MarloAuditableEntity
     return climateChangeKeyAchievements;
   }
 
-
   public String getGenderDescription() {
     return genderDescription;
   }
@@ -156,9 +169,11 @@ public class ReportSynthesisCrossCuttingDimension extends MarloAuditableEntity
     return genderProblemsArisen;
   }
 
+
   public String getGenderResearchFindings() {
     return genderResearchFindings;
   }
+
 
   /**
    * @return an array of integers (project Innovation Id).
@@ -176,17 +191,21 @@ public class ReportSynthesisCrossCuttingDimension extends MarloAuditableEntity
     return null;
   }
 
+
   public List<ProjectInnovation> getInnovations() {
     return innovations;
   }
+
 
   public String getInnovationsValue() {
     return innovationsValue;
   }
 
+
   public String getIntellectualAssets() {
     return intellectualAssets;
   }
+
 
   @Override
   public String getLogDeatil() {
@@ -195,9 +214,11 @@ public class ReportSynthesisCrossCuttingDimension extends MarloAuditableEntity
     return sb.toString();
   }
 
+
   public String getOpenData() {
     return openData;
   }
+
 
   public String getOtherAspects() {
     return otherAspects;
@@ -223,10 +244,25 @@ public class ReportSynthesisCrossCuttingDimension extends MarloAuditableEntity
     return reportSynthesisCrossCuttingDimensionInnovations;
   }
 
+  public Double getTraineesLongTermFemale() {
+    return traineesLongTermFemale;
+  }
+
+  public Double getTraineesLongTermMale() {
+    return traineesLongTermMale;
+  }
+
+  public Double getTraineesShortTermFemale() {
+    return traineesShortTermFemale;
+  }
+
+  public Double getTraineesShortTermMale() {
+    return traineesShortTermMale;
+  }
+
   public String getYouthContribution() {
     return youthContribution;
   }
-
 
   public String getYouthDescription() {
     return youthDescription;
@@ -244,6 +280,7 @@ public class ReportSynthesisCrossCuttingDimension extends MarloAuditableEntity
     return youthProblemsArisen;
   }
 
+
   public String getYouthResearchFindings() {
     return youthResearchFindings;
   }
@@ -252,21 +289,17 @@ public class ReportSynthesisCrossCuttingDimension extends MarloAuditableEntity
     this.assets = assets;
   }
 
-
   public void setAssetsValue(String assetsValue) {
     this.assetsValue = assetsValue;
   }
-
 
   public void setCapDev(String capDev) {
     this.capDev = capDev;
   }
 
-
   public void setCapDevKeyAchievements(String capDevKeyAchievements) {
     this.capDevKeyAchievements = capDevKeyAchievements;
   }
-
 
   public void setClimateChangeKeyAchievements(String climateChangeKeyAchievements) {
     this.climateChangeKeyAchievements = climateChangeKeyAchievements;
@@ -292,6 +325,7 @@ public class ReportSynthesisCrossCuttingDimension extends MarloAuditableEntity
     this.genderProblemsArisen = genderProblemsArisen;
   }
 
+
   public void setGenderResearchFindings(String genderResearchFindings) {
     this.genderResearchFindings = genderResearchFindings;
   }
@@ -306,6 +340,7 @@ public class ReportSynthesisCrossCuttingDimension extends MarloAuditableEntity
     this.innovationsValue = innovationsValue;
   }
 
+
   public void setIntellectualAssets(String intellectualAssets) {
     this.intellectualAssets = intellectualAssets;
   }
@@ -314,9 +349,11 @@ public class ReportSynthesisCrossCuttingDimension extends MarloAuditableEntity
     this.openData = openData;
   }
 
+
   public void setOtherAspects(String otherAspects) {
     this.otherAspects = otherAspects;
   }
+
 
   public void setPlannedAssets(List<ReportSynthesisCrossCuttingDimensionAsset> plannedAssets) {
     this.plannedAssets = plannedAssets;
@@ -338,6 +375,22 @@ public class ReportSynthesisCrossCuttingDimension extends MarloAuditableEntity
   public void setReportSynthesisCrossCuttingDimensionInnovations(
     Set<ReportSynthesisCrossCuttingDimensionInnovation> reportSynthesisCrossCuttingDimensionInnovations) {
     this.reportSynthesisCrossCuttingDimensionInnovations = reportSynthesisCrossCuttingDimensionInnovations;
+  }
+
+  public void setTraineesLongTermFemale(Double traineesLongTermFemale) {
+    this.traineesLongTermFemale = traineesLongTermFemale;
+  }
+
+  public void setTraineesLongTermMale(Double traineesLongTermMale) {
+    this.traineesLongTermMale = traineesLongTermMale;
+  }
+
+  public void setTraineesShortTermFemale(Double traineesShortTermFemale) {
+    this.traineesShortTermFemale = traineesShortTermFemale;
+  }
+
+  public void setTraineesShortTermMale(Double traineesShortTermMale) {
+    this.traineesShortTermMale = traineesShortTermMale;
   }
 
   public void setYouthContribution(String youthContribution) {
