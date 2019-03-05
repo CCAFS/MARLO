@@ -133,7 +133,8 @@ public class DeliverableUserManagerImpl implements DeliverableUserManager {
       if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {
         Phase upkeepPhase = currentPhase.getNext().getNext();
         if (upkeepPhase != null) {
-          this.saveDeliverableUserPhase(deliverableUserResult, upkeepPhase.getId(), deliverableUserResult.getId());
+          this.saveDeliverableUserPhase(deliverableUserResult, upkeepPhase.getId(),
+            deliverableUserResult.getDeliverable().getId());
         }
       }
     } else {
@@ -168,7 +169,8 @@ public class DeliverableUserManagerImpl implements DeliverableUserManager {
     }
 
     if (phase.getNext() != null) {
-      this.saveDeliverableUserPhase(deliverableUserResult, phase.getNext().getId(), deliverableUserResult.getId());
+      this.saveDeliverableUserPhase(deliverableUserResult, phase.getNext().getId(),
+        deliverableUserResult.getDeliverable().getId());
     }
   }
 }
