@@ -148,12 +148,26 @@ public class ProjectPolicyInfo extends MarloBaseEntity implements java.io.Serial
   }
 
 
-  public Boolean isRequired() {
-    if (this.getYear() == phase.getYear()) {
-      return true;
-    } else {
-      return false;
+  public Boolean isPrevious() {
+    if (this.getYear() != null) {
+      if (this.getYear() < phase.getYear()) {
+        return true;
+      } else {
+        return false;
+      }
     }
+    return false;
+  }
+
+  public Boolean isRequired() {
+    if (this.getYear() != null) {
+      if (this.getYear() == phase.getYear()) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+    return true;
   }
 
   public void setAmount(Double amount) {

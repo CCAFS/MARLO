@@ -55,6 +55,12 @@ public interface ProjectPolicyDAO {
    */
   public List<ProjectPolicy> findAll();
 
+  /**
+   * This method gets a list of ProjectPolicy that are active by a given phase
+   * 
+   * @return a list from ProjectPolicy null if no exist records
+   */
+  public List<ProjectPolicy> getProjectPolicyByPhase(Phase phase);
 
   /**
    * This method saves the information of the given projectPolicy
