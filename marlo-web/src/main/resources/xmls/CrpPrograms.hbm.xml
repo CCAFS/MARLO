@@ -16,6 +16,9 @@
 		<property name="name" type="string">
 			<column name="name" sql-type="TEXT" not-null="true" />
 		</property>
+		  <property name="smoCode" type="string">
+      <column name="smo_code" sql-type="TEXT" />
+    </property>
 		<property name="color" type="string">
 			<column name="color" length="8" />
 		</property>

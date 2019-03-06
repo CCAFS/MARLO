@@ -15,60 +15,67 @@
 
 package org.cgiar.ccafs.marlo.rest.dto;
 
+import java.util.List;
+
 import javax.validation.constraints.NotNull;
 
 import io.swagger.annotations.ApiModelProperty;
+import org.hibernate.validator.constraints.NotEmpty;
 
-/**
- * @author Hermes Jiménez - CIAT/CCAFS
- */
-public class FlagshipProgramDTO {
+public class NewInstitutionDTO {
 
-	@ApiModelProperty(notes = "The Generated Flagship/Program ID")
-	private String code;
-
-	@ApiModelProperty(notes = "The Flagship/program Name")
+	@ApiModelProperty(notes = "The Institution Name", position = 1)
 	@NotNull
 	private String name;
-
-	@ApiModelProperty(notes = "The Flagship/program Acronym")
-	@NotNull
+	@ApiModelProperty(notes = "The Institution Acronym", position = 2)
 	private String acronym;
-
-	@ApiModelProperty(notes = "The CRP/Platform of Flagship/program")
+	@ApiModelProperty(notes = "The Institution Website", position = 3)
+	private String websiteLink;
+	@ApiModelProperty(notes = "The Institution type", position = 4)
 	@NotNull
-	private CGIAREntityDTO cgiarEntityDTO;
+	private InstitutionTypeDTO institutionType;
+	@NotEmpty
+	@ApiModelProperty(notes = "List of countries where are offices", position = 5)
+	private List<CountryDTO> countryDTO;
 
 	public String getAcronym() {
 		return this.acronym;
 	}
 
-	public CGIAREntityDTO getCgiarEntityDTO() {
-		return this.cgiarEntityDTO;
+	public List<CountryDTO> getCountryDTO() {
+		return this.countryDTO;
+	}
+
+	public InstitutionTypeDTO getInstitutionType() {
+		return this.institutionType;
 	}
 
 	public String getName() {
 		return this.name;
 	}
 
+	public String getWebsiteLink() {
+		return this.websiteLink;
+	}
+
 	public void setAcronym(String acronym) {
 		this.acronym = acronym;
 	}
 
-	public void setCgiarEntityDTO(CGIAREntityDTO cgiarEntityDTO) {
-		this.cgiarEntityDTO = cgiarEntityDTO;
+	public void setCountryDTO(List<CountryDTO> countryDTO) {
+		this.countryDTO = countryDTO;
+	}
+
+	public void setInstitutionType(InstitutionTypeDTO institutionType) {
+		this.institutionType = institutionType;
 	}
 
 	public void setName(String name) {
 		this.name = name;
 	}
 
-	public String getCode() {
-		return code;
-	}
-
-	public void setCode(String code) {
-		this.code = code;
+	public void setWebsiteLink(String websiteLink) {
+		this.websiteLink = websiteLink;
 	}
 
 }

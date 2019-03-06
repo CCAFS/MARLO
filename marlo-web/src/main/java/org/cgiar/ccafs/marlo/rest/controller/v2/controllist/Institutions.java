@@ -23,6 +23,7 @@ import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.institutions.I
 import org.cgiar.ccafs.marlo.rest.dto.InstitutionDTO;
 import org.cgiar.ccafs.marlo.rest.dto.InstitutionRequestDTO;
 import org.cgiar.ccafs.marlo.rest.dto.InstitutionTypeDTO;
+import org.cgiar.ccafs.marlo.rest.dto.NewInstitutionDTO;
 import org.cgiar.ccafs.marlo.security.Permission;
 
 import java.util.List;
@@ -68,9 +69,9 @@ public class Institutions {
 	@RequiresPermissions(Permission.FULL_CREATE_REST_API_PERMISSION)
 	@RequestMapping(value = "/institutions/{CGIAREntity}/institution-requests", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<InstitutionRequestDTO> createPartnerRequest(@PathVariable("CGIAREntity") String CGIAREntity,
-			@Valid @RequestBody InstitutionDTO institutionDTO) {
-		LOG.debug("Create a new institution (Partner Request) with : {}", institutionDTO);
-		return this.institutionItem.createPartnerRequest(institutionDTO, CGIAREntity, this.getCurrentUser());
+			@Valid @RequestBody NewInstitutionDTO newInstitutionDTO) {
+		LOG.debug("Create a new institution (Partner Request) with : {}", newInstitutionDTO);
+		return this.institutionItem.createPartnerRequest(newInstitutionDTO, CGIAREntity, this.getCurrentUser());
 	}
 
 	@ApiOperation(tags = { "Table 4 - CRP Innovations",
@@ -93,12 +94,11 @@ public class Institutions {
 
 	@ApiOperation(value = "${Institutions.institution-requests.code.value}", response = InstitutionRequestDTO.class)
 	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
-	@RequestMapping(value = "/institutions/{CGIAREntity}/institution-requests/{code}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/institutions/{CGIAREntity}/institution-requests/{requestId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<InstitutionRequestDTO> findPartnerRequestById(
-			@PathVariable(name = "CGIAR Entity Acronym") String entityAcronym,
-			@PathVariable(name = "institution request id") Long code) {
-		LOG.debug("Get a partner request with : {}", code);
-		return this.institutionItem.getPartnerRequest(code, entityAcronym);
+			@PathVariable(name = "CGIAREntity") String CGIAREntity, @PathVariable(name = "requestId") Long requestId) {
+		LOG.debug("Get a partner request with : {}", requestId);
+		return this.institutionItem.getPartnerRequest(requestId, CGIAREntity);
 	}
 
 	@ApiOperation(tags = { "Table 4 - CRP Innovations",

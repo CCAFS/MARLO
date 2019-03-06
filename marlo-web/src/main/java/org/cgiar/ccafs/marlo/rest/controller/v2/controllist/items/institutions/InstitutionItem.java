@@ -27,6 +27,7 @@ import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.Institutions;
 import org.cgiar.ccafs.marlo.rest.dto.InstitutionDTO;
 import org.cgiar.ccafs.marlo.rest.dto.InstitutionRequestDTO;
+import org.cgiar.ccafs.marlo.rest.dto.NewInstitutionDTO;
 import org.cgiar.ccafs.marlo.rest.mappers.InstitutionMapper;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.SendMailS;
@@ -79,15 +80,23 @@ public class InstitutionItem<T> {
 
 	}
 
-	public ResponseEntity<InstitutionRequestDTO> createPartnerRequest(InstitutionDTO institutionDTO,
+	public ResponseEntity<InstitutionRequestDTO> createPartnerRequest(NewInstitutionDTO newInstitutionDTO,
 			String entityAcronym, User user) {
 
 		GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitByAcronym(entityAcronym);
 
+		if (globalUnitEntity == null) {
+			return new ResponseEntity<InstitutionRequestDTO>(HttpStatus.BAD_REQUEST);
+		}
 		// CountryDTO countryDTO = institutionDTO.getCountryDTO().get(0);
+
 		LocElement locElement = this.locElementManager
-				.getLocElementByNumericISOCode(institutionDTO.getCountryDTO().get(0).getCode());
-		PartnerRequest partnerRequestParent = this.institutionMapper.institutionDTOToPartnerRequest(institutionDTO,
+				.getLocElementByNumericISOCode(newInstitutionDTO.getCountryDTO().get(0).getCode());
+		if (locElement == null) {
+			return new ResponseEntity<InstitutionRequestDTO>(HttpStatus.BAD_REQUEST);
+		}
+
+		PartnerRequest partnerRequestParent = this.institutionMapper.institutionDTOToPartnerRequest(newInstitutionDTO,
 				globalUnitEntity, locElement, user);
 
 		partnerRequestParent = this.partnerRequestManager.savePartnerRequest(partnerRequestParent);
@@ -96,7 +105,7 @@ public class InstitutionItem<T> {
 		 * Need to create a parent child relationship for the partnerRequest to
 		 * display. That design might need to be re-visited.
 		 */
-		PartnerRequest partnerRequestChild = this.institutionMapper.institutionDTOToPartnerRequest(institutionDTO,
+		PartnerRequest partnerRequestChild = this.institutionMapper.institutionDTOToPartnerRequest(newInstitutionDTO,
 				globalUnitEntity, locElement, user);
 
 		partnerRequestChild.setPartnerRequest(partnerRequestParent);

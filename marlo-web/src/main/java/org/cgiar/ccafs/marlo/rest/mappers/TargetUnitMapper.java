@@ -15,30 +15,24 @@
 
 package org.cgiar.ccafs.marlo.rest.mappers;
 
-import org.cgiar.ccafs.marlo.data.model.CrpProgram;
-import org.cgiar.ccafs.marlo.rest.dto.FlagshipProgramDTO;
-import org.cgiar.ccafs.marlo.rest.dto.NewFlagshipDTO;
+import org.cgiar.ccafs.marlo.data.model.SrfTargetUnit;
+import org.cgiar.ccafs.marlo.rest.dto.TargetUnitDTO;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
 import org.mapstruct.Mappings;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  */
-@Mapper(componentModel = "jsr330", uses = GlobalUnitMapper.class)
-public interface FlagshipProgramMapper {
 
-	@Mappings({ @Mapping(source = "code", target = "smoCode"), @Mapping(source = "cgiarEntityDTO", target = "crp") })
-	public abstract CrpProgram crpProgramDTOToCrpProgram(FlagshipProgramDTO crpProgramDTO);
+@Mapper(componentModel = "jsr330")
+public interface TargetUnitMapper {
 
-	@Mappings({ @Mapping(source = "smoCode", target = "code"), @Mapping(source = "crp", target = "cgiarEntityDTO") })
-	public abstract FlagshipProgramDTO crpProgramToCrpProgramDTO(CrpProgram crpProgram);
+	@Mappings({ @Mapping(source = "id", target = "code") })
+	public abstract TargetUnitDTO srfTargetUnitToTargetUnitDTO(SrfTargetUnit srfTargetUnit);
 
-	public abstract CrpProgram newFlagshipDTOToCrpProgram(NewFlagshipDTO newFlagshipDTO);
-
-	public abstract CrpProgram updateCrpProgramFromCrpProgramDto(FlagshipProgramDTO crpProgramDTO,
-			@MappingTarget CrpProgram crpProgram);
+	@Mappings({ @Mapping(source = "code", target = "id") })
+	public abstract SrfTargetUnit targetUnitDTOToSrfTargetUnit(TargetUnitDTO targetUnitDTO);
 
 }

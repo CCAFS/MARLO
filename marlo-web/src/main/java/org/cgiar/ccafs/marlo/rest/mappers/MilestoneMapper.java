@@ -15,30 +15,23 @@
 
 package org.cgiar.ccafs.marlo.rest.mappers;
 
-import org.cgiar.ccafs.marlo.data.model.CrpProgram;
-import org.cgiar.ccafs.marlo.rest.dto.FlagshipProgramDTO;
-import org.cgiar.ccafs.marlo.rest.dto.NewFlagshipDTO;
+import org.cgiar.ccafs.marlo.data.model.CrpMilestone;
+import org.cgiar.ccafs.marlo.rest.dto.MilestoneDTO;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
 import org.mapstruct.Mappings;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-/**
- * @author Hermes Jiménez - CIAT/CCAFS
- */
-@Mapper(componentModel = "jsr330", uses = GlobalUnitMapper.class)
-public interface FlagshipProgramMapper {
+@Mapper(componentModel = "jsr330", uses = { OutcomeMapper.class })
+public abstract class MilestoneMapper {
+	private static final Logger LOG = LoggerFactory.getLogger(MilestoneMapper.class);
 
-	@Mappings({ @Mapping(source = "code", target = "smoCode"), @Mapping(source = "cgiarEntityDTO", target = "crp") })
-	public abstract CrpProgram crpProgramDTOToCrpProgram(FlagshipProgramDTO crpProgramDTO);
+	@Mappings({ @Mapping(source = "crpProgramOutcome", target = "outcomeDTO"),
+			@Mapping(source = "srfTargetUnit", target = "targetUnitDTO"), })
+	public abstract MilestoneDTO crpMilestoneToMilestoneDTO(CrpMilestone crpMilestone);
 
-	@Mappings({ @Mapping(source = "smoCode", target = "code"), @Mapping(source = "crp", target = "cgiarEntityDTO") })
-	public abstract FlagshipProgramDTO crpProgramToCrpProgramDTO(CrpProgram crpProgram);
-
-	public abstract CrpProgram newFlagshipDTOToCrpProgram(NewFlagshipDTO newFlagshipDTO);
-
-	public abstract CrpProgram updateCrpProgramFromCrpProgramDto(FlagshipProgramDTO crpProgramDTO,
-			@MappingTarget CrpProgram crpProgram);
+	public abstract CrpMilestone milestoneDTOToCrpMilestone(MilestoneDTO milestoneDTO);
 
 }
