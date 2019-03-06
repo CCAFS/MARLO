@@ -814,8 +814,13 @@ public class SrfProgressAction extends BaseAction {
 
                 for (ProjectExpectedStudySrfTarget studytarget : targetPrev) {
                   if (studytarget.getSrfSloIndicator().getId().equals(target.getId())) {
+                    projectExpectedStudy
+                      .setSrfTargets(new ArrayList<>(projectExpectedStudy.getProjectExpectedStudySrfTargets().stream()
+                        .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId())
+                        .collect(Collectors.toList())));
                     studies.add(projectExpectedStudy);
                   }
+
                 }
               }
             }
@@ -868,6 +873,10 @@ public class SrfProgressAction extends BaseAction {
 
                     for (ProjectExpectedStudySrfTarget studytarget : targetPrev) {
                       if (studytarget.getSrfSloIndicator().getId().equals(target.getId())) {
+                        projectExpectedStudy
+                          .setSrfTargets(new ArrayList<>(projectExpectedStudy.getProjectExpectedStudySrfTargets()
+                            .stream().filter(o -> o.isActive() && o.getPhase().getId() == phase.getId())
+                            .collect(Collectors.toList())));
                         studies.add(projectExpectedStudy);
                         break;
                       }
