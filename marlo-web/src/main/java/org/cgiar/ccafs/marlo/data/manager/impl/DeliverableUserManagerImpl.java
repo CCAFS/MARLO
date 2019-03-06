@@ -23,7 +23,6 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableUser;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -87,12 +86,8 @@ public class DeliverableUserManagerImpl implements DeliverableUserManager {
   private void deleteDeliverableUserPhase(DeliverableUser deliverableUser, Long next) {
     Phase phase = phaseDAO.find(next);
 
-    List<DeliverableUser> deliverableUserPhases = phase.getDeliverableUsers().stream()
-      .filter(c -> c.isActive() && c.getDeliverable().getId().longValue() == deliverableUser.getDeliverable().getId()
-        && c.getFirstName().equals(deliverableUser.getFirstName())
-        && c.getLastName().equals(deliverableUser.getLastName())
-        && c.getElementId().equals(deliverableUser.getElementId()))
-      .collect(Collectors.toList());
+    List<DeliverableUser> deliverableUserPhases =
+      deliverableUserDAO.findDeliverableUserByPhases(phase, deliverableUser);
 
     for (DeliverableUser deliverableUserdel : deliverableUserPhases) {
       deliverableUserDAO.deleteDeliverableUser(deliverableUserdel.getId());
@@ -154,12 +149,8 @@ public class DeliverableUserManagerImpl implements DeliverableUserManager {
     Phase phase = phaseDAO.find(phaseID);
 
 
-    List<DeliverableUser> deliverableUserPhases = phase.getDeliverableUsers().stream()
-      .filter(c -> c.isActive() && c.getDeliverable().getId().longValue() == deliverableID
-        && c.getFirstName().equals(deliverableUserResult.getFirstName())
-        && c.getLastName().equals(deliverableUserResult.getLastName())
-        && c.getElementId().equals(deliverableUserResult.getElementId()))
-      .collect(Collectors.toList());
+    List<DeliverableUser> deliverableUserPhases =
+      deliverableUserDAO.findDeliverableUserByPhases(phase, deliverableUserResult);
 
 
     if (deliverableUserPhases.isEmpty()) {
