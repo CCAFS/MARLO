@@ -114,7 +114,7 @@
                     [#local summaryPDF = "${baseUrl}/projects/${crpSession}/studySummary.do?studyID=${(item.id)!}&cycle=Reporting&year=${(actualPhase.year)!}"]
                     <tr>
                       <td class="col-md-5">  
-                        [@utils.tableText value=(item.composedName)!"" /] 
+                        [@utils.tableText value=(item.composedName)!"" /]
                         [#if item.project??]
                           <br /> <small>(From Project P${item.project.id})</small> 
                         [/#if]
