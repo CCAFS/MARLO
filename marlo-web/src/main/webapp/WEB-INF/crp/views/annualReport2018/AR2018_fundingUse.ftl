@@ -59,17 +59,17 @@
             [#-- Table 11 - Examples of W1/2 Use --]
             <div class="form-group">
               <h4 class="simpleTitle headTitle annualReport-table">[@s.text name="${customLabel}.table11.title" /]</h4>
-                [@customForm.helpLabel name="${customLabel}.table11.help" showIcon=false editable=editable/]
-                <div class="listExamples">
-                  [#list reportSynthesis.reportSynthesisFundingUseSummary.expenditureAreas as item]
-                    [@fundingExamples element=item name="${customName}.expenditureAreas" index=item_index template=false isEditable=editable && PMU/]
-                  [/#list]
-                </div>
-                [#if canEdit && editable && PMU]
-                  <div class="text-right">
-                    <div class="addExample bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> [@s.text name="annualReport2018.fundingUse.addExpenditure"/]</div>
-                  </div> 
-                [/#if]
+              [@customForm.helpLabel name="${customLabel}.table11.help" showIcon=false editable=editable/]
+              <div class="listExamples">
+                [#list reportSynthesis.reportSynthesisFundingUseSummary.expenditureAreas as item]
+                  [@fundingExamples element=item name="${customName}.expenditureAreas" index=item_index template=false isEditable=editable && PMU/]
+                [/#list]
+              </div>
+              [#if canEdit && editable && PMU]
+                <div class="text-right">
+                  <div class="addExample bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> [@s.text name="annualReport2018.fundingUse.addExpenditure"/]</div>
+                </div> 
+              [/#if]
             </div>
             
             
