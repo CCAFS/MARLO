@@ -34,7 +34,7 @@
       [#if showHeader]
       <thead>
         <tr>
-          <th class="col-md-1 text-center"> FP </th>
+          <th class="col-md-1 text-center"> [@s.text name="annualReport2018.tableFP" /] </th>
           [#list columns as column]<th class="text-center"> [@s.text name="${tableName}.column${column_index}" /] </th>[/#list]
         </tr>
       </thead>
