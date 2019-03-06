@@ -80,6 +80,8 @@ public class FlagshipProgressAction extends BaseAction {
   private LiaisonInstitution liaisonInstitution;
   private GlobalUnit loggedCrp;
   private List<LiaisonInstitution> liaisonInstitutions;
+  private List<ReportSynthesisFlagshipProgress> flagshipsReportSynthesisFlagshipProgress;
+
 
   @Inject
   public FlagshipProgressAction(APConfig config, GlobalUnitManager crpManager,
@@ -97,6 +99,7 @@ public class FlagshipProgressAction extends BaseAction {
     this.validator = validator;
     this.reportSynthesisFlagshipProgressManager = reportSynthesisFlagshipProgressManager;
   }
+
 
   public Long firstFlagship() {
     List<LiaisonInstitution> liaisonInstitutions = new ArrayList<>(loggedCrp.getLiaisonInstitutions().stream()
@@ -116,10 +119,14 @@ public class FlagshipProgressAction extends BaseAction {
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
+  public List<ReportSynthesisFlagshipProgress> getFlagshipsReportSynthesisFlagshipProgress() {
+    return flagshipsReportSynthesisFlagshipProgress;
+  }
 
   public LiaisonInstitution getLiaisonInstitution() {
     return liaisonInstitution;
   }
+
 
   public Long getLiaisonInstitutionID() {
     return liaisonInstitutionID;
@@ -307,6 +314,11 @@ public class FlagshipProgressAction extends BaseAction {
       .collect(Collectors.toList());
     liaisonInstitutions.sort(Comparator.comparing(LiaisonInstitution::getAcronym));
 
+    // Flagship - Synthesis
+    if (this.isPMU()) {
+      flagshipsReportSynthesisFlagshipProgress = reportSynthesisFlagshipProgressManager
+        .getFlagshipsReportSynthesisFlagshipProgress(liaisonInstitutions, phase.getId());
+    }
 
     // ADD PMU as liasion Institution too
     liaisonInstitutions.addAll(loggedCrp.getLiaisonInstitutions().stream()
@@ -386,10 +398,15 @@ public class FlagshipProgressAction extends BaseAction {
   }
 
 
+  public void setFlagshipsReportSynthesisFlagshipProgress(
+    List<ReportSynthesisFlagshipProgress> flagshipsReportSynthesisFlagshipProgress) {
+    this.flagshipsReportSynthesisFlagshipProgress = flagshipsReportSynthesisFlagshipProgress;
+  }
+
+
   public void setLiaisonInstitution(LiaisonInstitution liaisonInstitution) {
     this.liaisonInstitution = liaisonInstitution;
   }
-
 
   public void setLiaisonInstitutionID(Long liaisonInstitutionID) {
     this.liaisonInstitutionID = liaisonInstitutionID;
@@ -399,6 +416,7 @@ public class FlagshipProgressAction extends BaseAction {
     this.liaisonInstitutions = liaisonInstitutions;
   }
 
+
   public void setLoggedCrp(GlobalUnit loggedCrp) {
     this.loggedCrp = loggedCrp;
   }
@@ -407,6 +425,7 @@ public class FlagshipProgressAction extends BaseAction {
   public void setReportSynthesis(ReportSynthesis reportSynthesis) {
     this.reportSynthesis = reportSynthesis;
   }
+
 
   public void setSynthesisID(Long synthesisID) {
     this.synthesisID = synthesisID;

@@ -16,9 +16,14 @@ package org.cgiar.ccafs.marlo.data.manager.impl;
 
 
 import org.cgiar.ccafs.marlo.data.dao.ReportSynthesisFlagshipProgressDAO;
+import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressManager;
+import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
+import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgress;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -32,14 +37,17 @@ public class ReportSynthesisFlagshipProgressManagerImpl implements ReportSynthes
 
 
   private ReportSynthesisFlagshipProgressDAO reportSynthesisFlagshipProgressDAO;
-  // Managers
+  private PhaseManager phaseManager;
+  private ReportSynthesisManager reportSynthesisManager;
 
 
   @Inject
-  public ReportSynthesisFlagshipProgressManagerImpl(ReportSynthesisFlagshipProgressDAO reportSynthesisFlagshipProgressDAO) {
+  public ReportSynthesisFlagshipProgressManagerImpl(
+    ReportSynthesisFlagshipProgressDAO reportSynthesisFlagshipProgressDAO, PhaseManager phaseManager,
+    ReportSynthesisManager reportSynthesisManager) {
     this.reportSynthesisFlagshipProgressDAO = reportSynthesisFlagshipProgressDAO;
-
-
+    this.phaseManager = phaseManager;
+    this.reportSynthesisManager = reportSynthesisManager;
   }
 
   @Override
@@ -62,13 +70,41 @@ public class ReportSynthesisFlagshipProgressManagerImpl implements ReportSynthes
   }
 
   @Override
-  public ReportSynthesisFlagshipProgress getReportSynthesisFlagshipProgressById(long reportSynthesisFlagshipProgressID) {
+  public List<ReportSynthesisFlagshipProgress>
+    getFlagshipsReportSynthesisFlagshipProgress(List<LiaisonInstitution> liaisonInstitutions, Long phaseID) {
+    List<ReportSynthesisFlagshipProgress> synthesisFlagshipProgress = new ArrayList<>();
+
+    for (LiaisonInstitution liaisonInstitution : liaisonInstitutions) {
+
+      ReportSynthesisFlagshipProgress flagshipProgress = new ReportSynthesisFlagshipProgress();
+      ReportSynthesis reportSynthesisFP = reportSynthesisManager.findSynthesis(phaseID, liaisonInstitution.getId());
+
+      if (reportSynthesisFP != null) {
+        if (reportSynthesisFP.getReportSynthesisFlagshipProgress() != null) {
+          flagshipProgress = reportSynthesisFP.getReportSynthesisFlagshipProgress();
+        }
+      } else {
+        ReportSynthesis synthesis = new ReportSynthesis();
+        synthesis.setPhase(phaseManager.getPhaseById(phaseID));
+        synthesis.setLiaisonInstitution(liaisonInstitution);
+        flagshipProgress.setReportSynthesis(synthesis);
+      }
+      synthesisFlagshipProgress.add(flagshipProgress);
+    }
+
+    return synthesisFlagshipProgress;
+  }
+
+  @Override
+  public ReportSynthesisFlagshipProgress
+    getReportSynthesisFlagshipProgressById(long reportSynthesisFlagshipProgressID) {
 
     return reportSynthesisFlagshipProgressDAO.find(reportSynthesisFlagshipProgressID);
   }
 
   @Override
-  public ReportSynthesisFlagshipProgress saveReportSynthesisFlagshipProgress(ReportSynthesisFlagshipProgress reportSynthesisFlagshipProgress) {
+  public ReportSynthesisFlagshipProgress
+    saveReportSynthesisFlagshipProgress(ReportSynthesisFlagshipProgress reportSynthesisFlagshipProgress) {
 
     return reportSynthesisFlagshipProgressDAO.save(reportSynthesisFlagshipProgress);
   }

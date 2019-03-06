@@ -14,6 +14,7 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.manager;
 
+import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgress;
 
 import java.util.List;
@@ -53,6 +54,16 @@ public interface ReportSynthesisFlagshipProgressManager {
 
 
   /**
+   * Shows to the pmu the Flagship Report Synthesis Flagship Progress
+   * 
+   * @param liaisonInstitutions - List of CRP's flagships
+   * @param phaseID - The Current phase
+   * @return list of ReportSynthesisFlagshipProgress
+   */
+  public List<ReportSynthesisFlagshipProgress>
+    getFlagshipsReportSynthesisFlagshipProgress(List<LiaisonInstitution> liaisonInstitutions, Long phaseID);
+
+  /**
    * This method gets a reportSynthesisFlagshipProgress object by a given reportSynthesisFlagshipProgress identifier.
    * 
    * @param reportSynthesisFlagshipProgressID is the reportSynthesisFlagshipProgress identifier.
@@ -63,12 +74,15 @@ public interface ReportSynthesisFlagshipProgressManager {
   /**
    * This method saves the information of the given reportSynthesisFlagshipProgress
    * 
-   * @param reportSynthesisFlagshipProgress - is the reportSynthesisFlagshipProgress object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the reportSynthesisFlagshipProgress was
+   * @param reportSynthesisFlagshipProgress - is the reportSynthesisFlagshipProgress object with the new information to
+   *        be added/updated.
+   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the
+   *         reportSynthesisFlagshipProgress was
    *         updated
    *         or -1 is some error occurred.
    */
-  public ReportSynthesisFlagshipProgress saveReportSynthesisFlagshipProgress(ReportSynthesisFlagshipProgress reportSynthesisFlagshipProgress);
+  public ReportSynthesisFlagshipProgress
+    saveReportSynthesisFlagshipProgress(ReportSynthesisFlagshipProgress reportSynthesisFlagshipProgress);
 
 
 }
