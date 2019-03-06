@@ -35,5 +35,30 @@
             </key>
             <one-to-many class="org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressMilestone" />
         </set>
+        
+        <!-- AR2018 Fields -->
+        <property name="overallProgress" type="string">
+            <column name="overall_progress" sql-type="TEXT" />
+        </property>
+        <property name="progressByFlagships" type="string">
+            <column name="progress_by_flagships" sql-type="TEXT" />
+        </property>
+        <property name="detailedAnnex" type="string">
+            <column name="detailed_annex" sql-type="TEXT" />
+        </property>
+        <property name="expandedResearchAreas" type="string">
+            <column name="expanded_research_areas" sql-type="TEXT" />
+        </property>
+        <property name="droppedResearchLines" type="string">
+            <column name="dropped_research_lines" sql-type="TEXT" />
+        </property>
+        <property name="changedDirection" type="string">
+            <column name="changed_direction" sql-type="TEXT" />
+        </property>
+        <property name="altmetricScore" type="string">
+            <column name="altmetric_score" sql-type="TEXT" />
+        </property>
+        
+        
     </class>
 </hibernate-mapping>
