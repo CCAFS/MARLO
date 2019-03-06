@@ -50,13 +50,14 @@
             
               [#-- Table 2: Condensed list of policy contributions --]
               <div class="form-group">
-                <h4 class="headTitle annualReport-table">[@s.text name="${customLabel}.policyContributions" /]</h4>
+                [#assign guideSheetURL = "https://drive.google.com/file/d/1GYLsseeZOOXF9zXNtpUtE1xeh2gx3Vw2/view" /]
+                <small class="pull-right"><a href="${guideSheetURL}" target="_blank"> <img src="${baseUrl}/global/images/icon-file.png" alt="" /> #I1 Policies  -  Guideline </a> </small>
               </div>
-              
+              <br />
               <div class="form-group row">
               <div class="col-md-9">
-                [#-- Chart 1 --]
-                <div id="chart1" class="chartBox simpleBox">
+                [#-- Chart 6 - Organizations designing/promulgating the policy --]
+                <div id="chart6" class="chartBox simpleBox">
                   <ul class="chartData" style="display:none">
                     [#assign organizationTypeByStudiesDTOs = [
                       { 
@@ -111,8 +112,8 @@
             
             <div class="form-group row">
               <div class="col-md-9">
-              [#-- Chart 2 --]
-                <div id="chart2" class="chartBox simpleBox">
+              [#-- Chart 7 - CGIAR Cross-cutting markers --]
+                <div id="chart7" class="chartBox simpleBox">
                   <ul class="chartData" style="display:none">
                     [#assign levelsList = ["Not Targeted", "Significant Objective", "Principal Objective"] /]
                     [#assign crossCuttingM = [

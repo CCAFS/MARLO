@@ -3,8 +3,15 @@
 [#assign currentSectionString = "annualReport-${actionName?replace('/','-')}-${synthesisID}" /]
 [#assign currentSection = "synthesis" /]
 [#assign currentStage = actionName?split('/')[1]/]
-[#assign pageLibs = [ ] /]
-[#assign customJS = [ "${baseUrlMedia}/js/annualReport/annualReport_${currentStage}.js" ] /]
+[#assign pageLibs = [ "datatables.net", "datatables.net-bs" ] /]
+[#assign customJS = [ 
+  "https://www.gstatic.com/charts/loader.js",
+  "https://cdn.datatables.net/buttons/1.3.1/js/dataTables.buttons.min.js",
+  "//cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js",
+  "//cdn.datatables.net/buttons/1.3.1/js/buttons.print.min.js",
+  "${baseUrlMedia}/js/annualReport2018/annualReport2018_${currentStage}.js",
+  "${baseUrlMedia}/js/annualReport/annualReportGlobal.js"
+  ] /]
 [#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css"] /]
 
 [#assign breadCrumb = [
@@ -43,12 +50,67 @@
           <h3 class="headTitle">[@s.text name="${customLabel}.title" /]</h3>
           <div class="borderBox">
             
+            <div class="form-group">
+              [#assign guideSheetURL = "https://drive.google.com/file/d/1apWx9qJk5NXlZQTzZzhGqRNSx934Bp5H/view" /]
+                <small class="pull-right"><a href="${guideSheetURL}" target="_blank"> <img src="${baseUrl}/global/images/icon-file.png" alt="" /> #C4 Peer review papers  -  Guideline </a> </small>
+            </div>
+            <br />
+            
+            <div class="form-group row">
+              <div class="col-md-4">
+              [#assign peerReviewedArticles = 12 /]
+                [#-- Total number of peer reviewed articles --]
+                <div id="" class="simpleBox numberBox">
+                  <label for="">[@s.text name="${customLabel}.indicatorC4.totalArticles" /]</label><br />
+                  <span>${(peerReviewedArticles)!}</span>
+                </div>
+              </div>
+              
+              <div class="col-md-4">
+                [#-- Chart 10 - Number of peer reviewed articles by Open Access status --]
+                <div id="chart10" class="chartBox simpleBox">
+                  [#assign chartData = [
+                      {"name":"Open Acess",   "value": "10"},
+                      {"name":"Limited",      "value": "3"}
+                    ] /] 
+                  <ul class="chartData" style="display:none">
+                    <li>
+                      <span>[@s.text name="${customLabel}.indicatorC5.chart6.0" /]</span>
+                      <span>[@s.text name="${customLabel}.indicatorC5.chart6.1" /]</span>
+                    </li>
+                    [#list chartData as data]
+                      <li><span>${data.name}</span><span class="number">${data.value}</span></li>
+                    [/#list]
+                  </ul>
+                </div>
+              </div>
+              
+              <div class="col-md-4">
+                [#-- Chart 11 - Number of peer reviewed articles by ISI status --]
+                <div id="chart11" class="chartBox simpleBox">
+                  [#assign chartData = [
+                      {"name":"Yes",   "value": "14"},
+                      {"name":"No",    "value": "3"}
+                    ] 
+                  /] 
+                  <ul class="chartData" style="display:none">
+                    <li>
+                      <span>[@s.text name="${customLabel}.indicatorC5.chart7.0" /]</span>
+                      <span>[@s.text name="${customLabel}.indicatorC5.chart7.1" /]</span>
+                    </li>
+                    [#list chartData as data]
+                      <li><span>${data.name}</span><span class="number">${data.value}</span></li>
+                    [/#list]
+                  </ul>
+                </div>
+              </div>
+            </div>
+            
             [#-- Number of peer-reviewed publications --]
             <div class="form-group">
               <h4 class="headTitle">[@s.text name="${customLabel}.peerReviewed.title" /]</h4>
               [@numberOfPublications name="peerReviewed" list=["", ""]/]
             </div>
-            
             
             [#-- Full list of publications published --]
             <div class="form-group">
@@ -63,12 +125,12 @@
                         [@s.text name="${customLabel}.fullList.title" /]
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                       </div>
-                      [@listOfPublications name="fullList" list=[ ] allowPopups=false /]
+                      [@listOfPublications name="fullList" list=[] allowPopups=false /]
                     </div>
                   </div>
                 </div>
                 [#-- Table --]
-                [@listOfPublications name="fullList" list=[ ] allowPopups=true /]
+                [@listOfPublications name="fullList" list=[] allowPopups=true /]
               </div>
             
           </div>
@@ -86,7 +148,7 @@
 [#macro numberOfPublications name list=[] ]
   
   <div class="form-group">
-    <table class="table table-bordered">
+    <table class="table table-bordered numberPublicationsTable">
       <thead>
         <tr>
           <th class="numbersTitle"></th>
@@ -149,18 +211,26 @@
         [#if list?has_content]
           [#list list as item]
           <tr>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
+            <td>${item.author}</td>
+            <td>${item.date}</td>
+            <td>${item.article}</td>
+            <td>${item.journal}</td>
             [#if !allowPopups]
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
+              <td>${item.volume}</td>
+              <td>${item.issue}</td>
+              <td>${item.page}</td>
             [/#if]
-            <td></td>
-            <td></td>
+            <td class="text-center">
+              <span style="display:none">${(item.open?string)!'false'}</span>
+              <img src="${baseUrl}/global/images/openAccess-${(item.open?string)!'false'}.png" alt="" />
+            </td>
+            <td class="text-center">
+              <span style="display:none">${(item.isi?string)!'false'}</span>
+              <img src="${baseUrl}/global/images/checked-${(item.isi?string)!'false'}.png" alt="" />
+            </td>
+            [#if !allowPopups]
+              <td>${item.identifier}</td>
+            [/#if]
             [#if allowPopups]
               <td class="text-center">
                 [@customForm.checkmark id="" name="" checked=false editable=editable centered=true/] 

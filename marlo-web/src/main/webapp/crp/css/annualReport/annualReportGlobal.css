@@ -50,14 +50,20 @@ td {
 }
 
 td.tableTitle {
-    background: #95a6d1;
-    color: #ffffff;
+    background: #f9f9f9;
     padding: 9px;
     font-weight: bold;
 }
 
 table th.numbersTitle {
     background: transparent !important;
+    border: 1px solid transparent !important;
+    border-right: 1px solid #ddd !important;
+    border-bottom: 2px solid #ddd !important;
+}
+
+table.numberPublicationsTable{
+  border: 0px solid transparent;
 }
 
 span.icon-20 {
@@ -310,7 +316,21 @@ table.financial-report .row-title {
 #chart5 {
   height: 180px;
 }
+#chart6 {
+  height: 220px;
+}
 
+#chart7 {
+  height: 220px;
+}
+
+#chart8, #chart9 {
+  height: 220px;
+}
+
+#chart10, #chart11 {
+  height: 220px;
+}
 
 .dataTables_scrollBody {
   border-bottom: 1px solid #e6e6e6;

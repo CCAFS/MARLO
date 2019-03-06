@@ -17,12 +17,12 @@ google.charts.setOnLoadCallback(function() {
   // On load
   $('.chartBox').addClass('loaded');
 
-  // Chart #1
-  var $chart1 = $('#chart1');
-  var data1 = new google.visualization.arrayToDataTable(getChartDataArray($chart1));
-  var view1 = new google.visualization.DataView(data1);
-  var chart1 = new google.visualization.BarChart(document.getElementById($chart1[0].id));
-  chart1.draw(view1, google.charts.Bar.convertOptions({
+  // Chart #6 - Organizations designing/promulgating the policy
+  var $chart6 = $('#chart6');
+  var data6 = new google.visualization.arrayToDataTable(getChartDataArray($chart6));
+  var view6 = new google.visualization.DataView(data6);
+  var chart6 = new google.visualization.BarChart(document.getElementById($chart6[0].id));
+  chart6.draw(view6, google.charts.Bar.convertOptions({
       title: "Organizations designing/promulgating the policy",
       titleTextStyle: {
           color: '#5f5e5e',
@@ -46,12 +46,12 @@ google.charts.setOnLoadCallback(function() {
       bars: 'horizontal' // Required for Material Bar Charts.
   }));
 
-//Chart #2
-  var $chart2 = $('#chart2');
-  var data2 = new google.visualization.arrayToDataTable(getChartDataArray($chart2));
-  var view2 = new google.visualization.DataView(data2);
-  var chart2 = new google.visualization.ColumnChart(document.getElementById($chart2[0].id));
-  chart2.draw(view2, google.charts.Bar.convertOptions({
+//Chart #7
+  var $chart7 = $('#chart7');
+  var data7 = new google.visualization.arrayToDataTable(getChartDataArray($chart7));
+  var view7 = new google.visualization.DataView(data7);
+  var chart7 = new google.visualization.ColumnChart(document.getElementById($chart7[0].id));
+  chart7.draw(view7, google.charts.Bar.convertOptions({
       title: "CGIAR Cross-cutting markers",
       stacked: true,
       titleTextStyle: {
