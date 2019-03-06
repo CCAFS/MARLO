@@ -49,6 +49,7 @@ import org.cgiar.ccafs.marlo.data.model.ReportSynthesisCrpProgressTarget;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisSrfProgress;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisSrfProgressTarget;
 import org.cgiar.ccafs.marlo.data.model.SrfSloIndicatorTarget;
+import org.cgiar.ccafs.marlo.data.model.StudiesStatusPlanningEnum;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -775,14 +776,34 @@ public class SrfProgressAction extends BaseAction {
 
       for (ProjectFocus focus : projectFocus) {
         Project project = projectManager.getProjectById(focus.getProject().getId());
+
+
         List<ProjectExpectedStudy> expectedStudies = new ArrayList<>(project.getProjectExpectedStudies().stream()
           .filter(es -> es.isActive() && es.getProjectExpectedStudyInfo(phase) != null
             && es.getProjectExpectedStudyInfo(phase).getYear() == this.getCurrentCycleYear())
           .collect(Collectors.toList()));
-        for (ProjectExpectedStudy projectExpectedStudy : expectedStudies) {
+
+
+        List<ProjectExpectedStudy> expectedStudiesFiltered = new ArrayList<>();
+
+        expectedStudiesFiltered = expectedStudies.stream().filter(ps -> ps.getProjectExpectedStudyInfo()
+          .getYear() != null && ps.getProjectExpectedStudyInfo().getStatus() != null
+          && ps.getProjectExpectedStudyInfo().getYear() == this.getCurrentCycleYear()
+          && ((ps.getProjectExpectedStudyInfo().getStatus().getId()
+            .equals(Long.parseLong(StudiesStatusPlanningEnum.Ongoing.getStatusId()))
+            || ps.getProjectExpectedStudyInfo().getStatus().getId()
+              .equals(Long.parseLong(StudiesStatusPlanningEnum.Extended.getStatusId()))
+            || ps.getProjectExpectedStudyInfo().getStatus().getId().equals(StudiesStatusPlanningEnum.New.getStatusId()))
+            || ((ps.getProjectExpectedStudyInfo().getStatus().getId()
+              .equals(Long.parseLong(StudiesStatusPlanningEnum.Complete.getStatusId()))
+              || ps.getProjectExpectedStudyInfo().getStatus().getId()
+                .equals(Long.parseLong(StudiesStatusPlanningEnum.Cancelled.getStatusId())))
+              && ps.getProjectExpectedStudyInfo().getYear() >= this.getActualPhase().getYear())))
+          .collect(Collectors.toList());
+
+        for (ProjectExpectedStudy projectExpectedStudy : expectedStudiesFiltered) {
           if (projectExpectedStudy.getProjectExpectedStudyInfo(phase) != null) {
-            if (projectExpectedStudy.getProjectExpectedStudyInfo(phase).getStudyType() != null
-              && projectExpectedStudy.getProjectExpectedStudyInfo(phase).getStudyType().getId() == 1) {
+            if (projectExpectedStudy.getProjectExpectedStudyInfo(phase).getStudyType() != null) {
 
               if (projectExpectedStudy.getProjectExpectedStudySrfTargets() != null
                 && projectExpectedStudy.getProjectExpectedStudySrfTargets().size() > 0) {
@@ -807,7 +828,26 @@ public class SrfProgressAction extends BaseAction {
           && es.getProjectExpectedStudyInfo(phase).getYear() == this.getCurrentCycleYear() && es.getProject() == null)
         .collect(Collectors.toList()));
 
-      for (ProjectExpectedStudy projectExpectedStudy : expectedStudies) {
+
+      List<ProjectExpectedStudy> expectedStudiesFiltered = new ArrayList<>();
+
+      expectedStudiesFiltered = expectedStudies.stream()
+        .filter(ps -> ps.getProjectExpectedStudyInfo().getYear() != null
+          && ps.getProjectExpectedStudyInfo().getStatus() != null
+          && ps.getProjectExpectedStudyInfo().getYear() == this.getCurrentCycleYear()
+          && ((ps.getProjectExpectedStudyInfo().getStatus().getId()
+            .equals(Long.parseLong(StudiesStatusPlanningEnum.Ongoing.getStatusId()))
+            || ps.getProjectExpectedStudyInfo().getStatus().getId()
+              .equals(Long.parseLong(StudiesStatusPlanningEnum.Extended.getStatusId()))
+            || ps.getProjectExpectedStudyInfo().getStatus().getId().equals(StudiesStatusPlanningEnum.New.getStatusId()))
+            || ((ps.getProjectExpectedStudyInfo().getStatus().getId()
+              .equals(Long.parseLong(StudiesStatusPlanningEnum.Complete.getStatusId()))
+              || ps.getProjectExpectedStudyInfo().getStatus().getId()
+                .equals(Long.parseLong(StudiesStatusPlanningEnum.Cancelled.getStatusId())))
+              && ps.getProjectExpectedStudyInfo().getYear() >= this.getActualPhase().getYear())))
+        .collect(Collectors.toList());
+
+      for (ProjectExpectedStudy projectExpectedStudy : expectedStudiesFiltered) {
         if (projectExpectedStudy.getProjectExpectedStudyInfo(phase) != null) {
           List<ProjectExpectedStudyFlagship> studiesPrograms =
             new ArrayList<>(projectExpectedStudy.getProjectExpectedStudyFlagships().stream()
@@ -816,8 +856,7 @@ public class SrfProgressAction extends BaseAction {
             CrpProgram crpProgram = liaisonInstitution.getCrpProgram();
             if (crpProgram.equals(projectExpectedStudyFlagship.getCrpProgram())) {
               if (projectExpectedStudy.getProjectExpectedStudyInfo(phase) != null) {
-                if (projectExpectedStudy.getProjectExpectedStudyInfo(phase).getStudyType() != null
-                  && projectExpectedStudy.getProjectExpectedStudyInfo(phase).getStudyType().getId() == 1) {
+                if (projectExpectedStudy.getProjectExpectedStudyInfo(phase).getStudyType() != null) {
 
                   if (projectExpectedStudy.getProjectExpectedStudySrfTargets() != null
                     && projectExpectedStudy.getProjectExpectedStudySrfTargets().size() > 0) {
