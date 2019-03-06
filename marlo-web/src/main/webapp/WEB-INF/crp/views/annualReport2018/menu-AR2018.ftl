@@ -138,7 +138,7 @@
 
 [#-- Project Submit JS --]
 [#--  HERMES TO ENABLE THE AUTOSAVE FUNCTION PLASE ADD THIS: "${baseUrl}/global/js/autoSave.js" --]
-[#assign customJS = customJS  + [  "${baseUrlMedia}/js/annualReport/annualReportSubmit.js", "${baseUrl}/global/js/fieldsValidation.js","${baseUrl}/global/js/autoSave.js"]
+[#assign customJS = customJS  + [  "${baseUrlMedia}/js/annualReport/annualReportSubmit.js", "${baseUrl}/global/js/fieldsValidation.js"]
 /]
 
 [#macro menuItem item]
