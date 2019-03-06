@@ -39,8 +39,8 @@ table tr a {
 }
 
 table:not(.financial-report) thead th {
-  background: #1da5ce;
-  color: #ffffff;
+  background: #f9f9f9;
+  /* color: #ffffff; */
   padding: 9px;
 }
 

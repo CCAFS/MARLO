@@ -14,6 +14,7 @@
 ]/]
 
 [#import "/WEB-INF/global/macros/utils.ftl" as utilities /]
+[#import "/WEB-INF/global/macros/utils.ftl" as utils /]
 [#import "/WEB-INF/crp/views/annualReport2018/macros-AR2018.ftl" as macrosAR /]
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
@@ -111,6 +112,51 @@
                [@customForm.textArea name="${customName}.capDevKeyAchievements" i18nkey="${customLabel}.capDev.keyAchievements" help="${customLabel}.capDev.keyAchievements.help" className="limitWords-${calculateLimitWords(300)}" helpIcon=false required=true editable=editable allowTextEditor=true /]
             </div>
             
+            [#if PMU]
+              [#-- CapDevCharts--]
+              <div class="form-group">
+              </div>
+              
+              [#-- Table 7: Participants in CapDev Activities  --]
+              <div class="form-group">
+                <h4 class="simpleTitle headTitle annualReport-table">[@s.text name="${customLabel}.table7.title" /]</h4>
+                [@customForm.helpLabel name="${customLabel}.table7.help" showIcon=false editable=editable/]
+                
+                <div class="">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>[@s.text name="${customLabel}.table7.numberTrainnees" /]</th>
+                        <th>[@s.text name="${customLabel}.table7.female" /]</th>
+                        <th>[@s.text name="${customLabel}.table7.male" /]</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                    	<tr>
+                    		<td> [@s.text name="${customLabel}.table7.shortTerm" /]</td>
+                    		<td> [@customForm.input name="${customName}.traineesShortTermFemale" i18nkey="" showTitle=false className="numericInput" required=true editable=editable /] </td>
+                    		<td> [@customForm.input name="${customName}.traineesShortTermMale" i18nkey="" showTitle=false className="numericInput" required=true editable=editable /] </td>
+                    	</tr>
+                    	<tr>
+                        <td> [@s.text name="${customLabel}.table7.longTerm" /]</td>
+                        <td> [@customForm.input name="${customName}.traineesLongTermFemale" i18nkey="" showTitle=false className="numericInput" required=true editable=editable /] </td>
+                        <td> [@customForm.input name="${customName}.traineesLongTermMale" i18nkey="" showTitle=false className="numericInput" required=true editable=editable /] </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              
+              [#-- Deliverables Participants & Trainees --]
+              <div class="form-group">
+                <h4 class="simpleTitle headTitle annualReport-table">[@s.text name="${customLabel}.deliverableParticipants.title" /]</h4>
+                
+                <div class="">
+                  [@tableParticipantsTrainingsMacro list=(deliverableParticipants)![] /]
+                </div>
+              </div>
+              
+            [/#if]
             
             [#if PMU]
               [#-- Flagships - CapDev Synthesis --]
@@ -145,3 +191,71 @@
   [/#if] 
 </section>
 [#include "/WEB-INF/global/pages/footer.ftl"]
+
+
+
+[#macro tableParticipantsTrainingsMacro list]
+  <table class="annual-report-table table-border">
+    <thead>
+      <tr class="subHeader">
+        <th id="tb-id">[@s.text name="${customLabel}.activitiesEventsTable.activityEvent" /]</th>
+        <th id="tb-title">[@s.text name="${customLabel}.activitiesEventsTable.type" /]</th>
+        <th id="tb-type">[@s.text name="${customLabel}.activitiesEventsTable.totalParticipants" /]</th>
+        <th id="tb-type">[@s.text name="${customLabel}.activitiesEventsTable.numberFemales" /]</th>
+        <th id="tb-organization-type">[@s.text name="${customLabel}.activitiesEventsTable.typeParticipants" /]</th>
+      </tr>
+    </thead>
+    <tbody>
+    [#-- Loading --]
+    [#if list?has_content]
+      [#list list as item]
+        [#local URL][@s.url namespace="/projects" action="${(crpSession)!}/deliverable"][@s.param name='deliverableID']${(item.deliverable.id)!''}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
+        <tr>
+          [#-- Title of Innovation --]
+          <td class="">
+            <a href="${URL}" target="_blank">
+              [#if item.eventActivityName?has_content]
+                ${item.eventActivityName}
+              [#else]
+                <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
+              [/#if]
+              [#-- Deliverable ID --]
+              <br /><i style="opacity:0.5"><small>(From D${(item.deliverable.id)!''})</small></i>
+            </a>
+          </td>
+          [#-- Activity Type --]
+          <td class="">
+          [#if item.repIndTypeActivity?has_content]
+            ${item.repIndTypeActivity.name}
+          [#else]
+            <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
+          [/#if]
+          </td>
+          [#-- Total Participants --]
+          <td class="text-center">
+            ${(item.participants?number?string(",##0"))!0}
+          </td>
+          [#-- Number of females --]
+          <td class="text-center">
+            ${(item.females?number?string(",##0"))!0}
+          </td>
+          [#-- Type of participants --]
+          <td class="text-center">
+          [#if item.repIndTypeParticipant?has_content]
+            ${item.repIndTypeParticipant.name}
+          [#else]
+            <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
+          [/#if]
+          </td>
+        </tr>
+      [/#list]
+    [#else]
+      <tr>
+        <td class="text-center" colspan="6">
+          <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
+        </td>
+      </tr>
+    [/#if]
+    </tbody>
+  </table>
+[/#macro]
