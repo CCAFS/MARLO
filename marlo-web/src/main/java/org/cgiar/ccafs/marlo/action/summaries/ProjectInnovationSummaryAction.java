@@ -20,6 +20,7 @@ import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationContributingOrganizationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationDeliverableManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationGeographicScopeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
@@ -28,6 +29,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectInnovationContributingOrganizatio
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCountry;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCrp;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationDeliverable;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationGeographicScope;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationOrganization;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -77,6 +79,7 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
   private final ProjectInnovationManager projectInnovationManager;
   private final ProjectInnovationDeliverableManager projectInnovationDeliverableManager;
   private final ResourceManager resourceManager;
+  private final ProjectInnovationGeographicScopeManager projectInnovationGeographicScopeManager;
   // Parameters
   private long startTime;
   private Long projectInnovationID;
@@ -92,12 +95,14 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
     ProjectInnovationManager projectInnovationManager, PhaseManager phaseManager, ResourceManager resourceManager,
     ProjectManager projectManager,
     ProjectInnovationContributingOrganizationManager projectInnovationContributingOrganizationManager,
-    ProjectInnovationDeliverableManager projectInnovationDeliverableManager) {
+    ProjectInnovationDeliverableManager projectInnovationDeliverableManager,
+    ProjectInnovationGeographicScopeManager projectInnovationGeographicScopeManager) {
     super(config, crpManager, phaseManager, projectManager);
     this.projectInnovationManager = projectInnovationManager;
     this.resourceManager = resourceManager;
     this.projectInnovationContributingOrganizationManager = projectInnovationContributingOrganizationManager;
     this.projectInnovationDeliverableManager = projectInnovationDeliverableManager;
+    this.projectInnovationGeographicScopeManager = projectInnovationGeographicScopeManager;
   }
 
   /**
@@ -363,10 +368,16 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
       degreeInnovation = projectInnovationInfo.getRepIndDegreeInnovation().getName();
     }
     // Geographic Scope
-    if (projectInnovationInfo.getRepIndGeographicScope() != null) {
-      geographicScope = projectInnovationInfo.getRepIndGeographicScope().getName();
+    List<ProjectInnovationGeographicScope> projectInnovationGeographicScopeList =
+      projectInnovationGeographicScopeManager.findAll().stream()
+        .filter(p -> p.getPhase().getId().equals(this.getActualPhase().getId())
+          && p.getProjectInnovation() == projectInnovationInfo.getProjectInnovation())
+        .collect(Collectors.toList());
+    if (projectInnovationGeographicScopeList != null) {
+      geographicScope = projectInnovationGeographicScopeList.get(0).getRepIndGeographicScope().getName();
+
       // Regional
-      if (projectInnovationInfo.getRepIndGeographicScope().getId()
+      if (projectInnovationGeographicScopeList.get(0).getRepIndGeographicScope().getId()
         .equals(this.getReportingIndGeographicScopeRegional())) {
         isRegional = true;
         if (projectInnovationInfo.getRepIndRegion() != null) {
@@ -374,8 +385,9 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
         }
       }
       // Country
-      if (!projectInnovationInfo.getRepIndGeographicScope().getId().equals(this.getReportingIndGeographicScopeGlobal())
-        && !projectInnovationInfo.getRepIndGeographicScope().getId()
+      if (!projectInnovationGeographicScopeList.get(0).getRepIndGeographicScope().getId()
+        .equals(this.getReportingIndGeographicScopeGlobal())
+        && !projectInnovationGeographicScopeList.get(0).getRepIndGeographicScope().getId()
           .equals(this.getReportingIndGeographicScopeRegional())) {
         isNational = true;
         List<ProjectInnovationCountry> innovationCountries =

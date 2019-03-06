@@ -5303,33 +5303,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
           return true;
         }
 
-        switch (channel) {
-          case "cgspace":
-            if (!this.validURL(link)) {
-              return null;
-            }
-            if ((link.contains("cgspace")) || (link.contains("hdl")) || (link.contains("handle"))) {
-              return true;
-            }
-            break;
-          case "dataverse":
-            if (!link.contains("dataverse.harvard.edu")) {
-              if (!this.validURL(link)) {
-                return null;
-              }
-              return null;
-            }
-            break;
-          case "other":
-            return null;
-
-          default:
-            return null;
-
-        }
-
-
-        return true;
+        return null;
       }
       if (deliverableBD.getDissemination().getAlreadyDisseminated() == null) {
         return null;
