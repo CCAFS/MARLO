@@ -3539,10 +3539,11 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       case POLICIES:
 
         project = projectManager.getProjectById(projectID);
-        List<ProjectPolicy> policies = project.getProjectPolicies().stream()
-          .filter(c -> c.getProjectPolicyInfo(this.getActualPhase()) != null && c.isActive()
-            && c.getProjectPolicyInfo(this.getActualPhase()).getYear().intValue() == this.getCurrentCycleYear())
-          .collect(Collectors.toList());
+        List<ProjectPolicy> policies =
+          project
+            .getProjectPolicies().stream().filter(c -> c.getProjectPolicyInfo(this.getActualPhase()) != null
+              && c.isActive() && c.getProjectPolicyInfo(this.getActualPhase()).isRequired())
+            .collect(Collectors.toList());
 
 
         for (ProjectPolicy projectPolicy : policies) {

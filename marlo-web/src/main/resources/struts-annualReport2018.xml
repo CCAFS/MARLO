@@ -32,7 +32,7 @@
     </action>
     
     <!-- Table 2: Condensed list of policy contributions in this reporting year (Sphere of Influence)  -->
-    <action name="{crp}/policies" class="org.cgiar.ccafs.marlo.action.annualReport.FlagshipProgressAction">
+    <action name="{crp}/policies" class="org.cgiar.ccafs.marlo.action.annualReport.y2018.PoliciesAction">
       <interceptor-ref name="editReportSynthesisStack" />
       <result name="input">/WEB-INF/crp/views/annualReport2018/AR2018_policies.ftl</result>
       <result name="success" type="redirectAction">

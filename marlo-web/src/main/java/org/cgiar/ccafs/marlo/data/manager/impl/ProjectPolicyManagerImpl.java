@@ -69,6 +69,11 @@ public class ProjectPolicyManagerImpl implements ProjectPolicyManager {
   }
 
   @Override
+  public List<ProjectPolicy> getProjectPolicyByPhase(Phase phase) {
+    return projectPolicyDAO.getProjectPolicyByPhase(phase);
+  }
+
+  @Override
   public ProjectPolicy saveProjectPolicy(ProjectPolicy projectPolicy) {
 
     return projectPolicyDAO.save(projectPolicy);
