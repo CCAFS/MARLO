@@ -22,6 +22,7 @@ import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis2018SectionStatusEnum;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisSrfProgressTarget;
 import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
 
@@ -85,10 +86,18 @@ public class SrfProgressValidator extends BaseValidator {
       }
 
       // Validate Summary
-      if (!this.isValidString(reportSynthesis.getReportSynthesisSrfProgress().getSummary())) {
-        action.addMessage(action.getText("annualReport2018.intellectualAssets.managed.readText"));
-        action.getInvalidFields().put("input-reportSynthesis.reportSynthesisIntellectualAsset.managed",
+      if (!(this.isValidString(reportSynthesis.getReportSynthesisSrfProgress().getSummary())
+        && this.wordCount(reportSynthesis.getReportSynthesisSrfProgress().getSummary()) <= 400)) {
+        action.addMessage(action.getText("reportSynthesis.reportSynthesisSrfProgress.overallContribution"));
+        action.getInvalidFields().put("input-reportSynthesis.reportSynthesisSrfProgress.summary",
           InvalidFieldsMessages.EMPTYFIELD);
+      }
+
+      // Validate Targets
+      if (reportSynthesis.getReportSynthesisSrfProgress().getSloTargets() != null) {
+        for (int i = 0; i < reportSynthesis.getReportSynthesisSrfProgress().getSloTargets().size(); i++) {
+          this.validateTargets(action, reportSynthesis.getReportSynthesisSrfProgress().getSloTargets().get(i), i);
+        }
       }
 
 
@@ -102,6 +111,29 @@ public class SrfProgressValidator extends BaseValidator {
       this.saveMissingFields(reportSynthesis, action.getActualPhase().getDescription(),
         action.getActualPhase().getYear(), action.getActualPhase().getUpkeep(),
         ReportSynthesis2018SectionStatusEnum.CRP_PROGRESS.getStatus(), action);
+    }
+
+  }
+
+  public void validateTargets(BaseAction action, ReportSynthesisSrfProgressTarget target, int i) {
+
+    // Validate Brief Summary
+    if (!(this.isValidString(target.getBirefSummary()) && this.wordCount(target.getBirefSummary()) <= 150)) {
+      action.addMessage(action.getText("Brief Summary"));
+      action.addMissingField("Brief Summary");
+      action.getInvalidFields().put(
+        "input-reportSynthesis.reportSynthesisSrfProgress.srfTargets[" + i + "].birefSummary",
+        InvalidFieldsMessages.EMPTYFIELD);;
+    }
+
+    // Validate Brief Summary
+    if (!(this.isValidString(target.getAdditionalContribution())
+      && this.wordCount(target.getAdditionalContribution()) <= 100)) {
+      action.addMessage(action.getText("Additional Contribution"));
+      action.addMissingField("Additional Contribution");
+      action.getInvalidFields().put(
+        "input-reportSynthesis.reportSynthesisSrfProgress.srfTargets[" + i + "].additionalContribution",
+        InvalidFieldsMessages.EMPTYFIELD);;
     }
 
   }

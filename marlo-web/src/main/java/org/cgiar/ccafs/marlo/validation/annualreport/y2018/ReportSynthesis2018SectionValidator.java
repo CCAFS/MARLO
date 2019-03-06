@@ -20,6 +20,7 @@ import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisCrossCuttingDimension;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgress;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFundingUseSummary;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisIntellectualAsset;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
@@ -39,17 +40,19 @@ public class ReportSynthesis2018SectionValidator<T extends BaseAction> extends B
   private final IntellectualAssetsValidator intellectualAssetsValidator;
   private final CCDimension2018Validator ccDimensionValidator;
   private final FundingUse2018Validator fundingUse2018Validator;
+  private final FlagshipProgress2018Validator flagshipProgress2018Validator;
 
 
   @Inject
   public ReportSynthesis2018SectionValidator(ReportSynthesisManager reportSynthesisManager,
     IntellectualAssetsValidator intellectualAssetsValidator, CCDimension2018Validator ccDimensionValidator,
-    FundingUse2018Validator fundingUse2018Validator) {
+    FundingUse2018Validator fundingUse2018Validator, FlagshipProgress2018Validator flagshipProgress2018Validator) {
     super();
     this.reportSynthesisManager = reportSynthesisManager;
     this.intellectualAssetsValidator = intellectualAssetsValidator;
     this.ccDimensionValidator = ccDimensionValidator;
     this.fundingUse2018Validator = fundingUse2018Validator;
+    this.flagshipProgress2018Validator = flagshipProgress2018Validator;
   }
 
 
@@ -84,6 +87,25 @@ public class ReportSynthesis2018SectionValidator<T extends BaseAction> extends B
       reportSynthesis = reportSynthesisManager.saveReportSynthesis(reportSynthesis);
     } else {
       ccDimensionValidator.validate(action, reportSynthesis, false);
+    }
+
+  }
+
+  public void validateFlagshipProgressValidator(BaseAction action, ReportSynthesis reportSynthesis) {
+
+    if (reportSynthesis.getReportSynthesisFlagshipProgress() == null) {
+      ReportSynthesisFlagshipProgress flagshipProgress = new ReportSynthesisFlagshipProgress();
+
+      // create one to one relation
+      reportSynthesis.setReportSynthesisFlagshipProgress(flagshipProgress);
+      flagshipProgress.setReportSynthesis(reportSynthesis);
+
+      flagshipProgress2018Validator.validate(action, reportSynthesis, false);
+
+      // save the changes
+      reportSynthesis = reportSynthesisManager.saveReportSynthesis(reportSynthesis);
+    } else {
+      flagshipProgress2018Validator.validate(action, reportSynthesis, false);
     }
 
   }
