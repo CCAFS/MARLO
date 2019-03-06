@@ -28,8 +28,53 @@ public class ReportSynthesisFlagshipProgress extends MarloAuditableEntity implem
 
   private List<ReportSynthesisFlagshipProgressMilestone> milestones;
 
+  /**
+   * AR2018 Fields
+   */
+  @Expose
+  private String overallProgress;
+  @Expose
+  private String progressByFlagships;
+  @Expose
+  private String detailedAnnex;
+  @Expose
+  private String expandedResearchAreas;
+  @Expose
+  private String droppedResearchLines;
+  @Expose
+  private String changedDirection;
+  @Expose
+  private String altmetricScore;
+
+
   public ReportSynthesisFlagshipProgress() {
   }
+
+
+  public String getAltmetricScore() {
+    return altmetricScore;
+  }
+
+
+  public String getChangedDirection() {
+    return changedDirection;
+  }
+
+
+  public String getDetailedAnnex() {
+    return detailedAnnex;
+  }
+
+
+  public String getDroppedResearchLines() {
+    return droppedResearchLines;
+  }
+
+
+  public String getExpandedResearchAreas() {
+    return expandedResearchAreas;
+  }
+
 
   @Override
   public String getLogDeatil() {
@@ -43,9 +88,21 @@ public class ReportSynthesisFlagshipProgress extends MarloAuditableEntity implem
     return milestones;
   }
 
+
+  public String getOverallProgress() {
+    return overallProgress;
+  }
+
+
+  public String getProgressByFlagships() {
+    return progressByFlagships;
+  }
+
+
   public ReportSynthesis getReportSynthesis() {
     return reportSynthesis;
   }
+
 
   public Set<ReportSynthesisFlagshipProgressMilestone> getReportSynthesisFlagshipProgressMilestones() {
     return reportSynthesisFlagshipProgressMilestones;
@@ -56,8 +113,39 @@ public class ReportSynthesisFlagshipProgress extends MarloAuditableEntity implem
     return summary;
   }
 
+
+  public void setAltmetricScore(String altmetricScore) {
+    this.altmetricScore = altmetricScore;
+  }
+
+  public void setChangedDirection(String changedDirection) {
+    this.changedDirection = changedDirection;
+  }
+
+  public void setDetailedAnnex(String detailedAnnex) {
+    this.detailedAnnex = detailedAnnex;
+  }
+
+
+  public void setDroppedResearchLines(String droppedResearchLines) {
+    this.droppedResearchLines = droppedResearchLines;
+  }
+
+  public void setExpandedResearchAreas(String expandedResearchAreas) {
+    this.expandedResearchAreas = expandedResearchAreas;
+  }
+
   public void setMilestones(List<ReportSynthesisFlagshipProgressMilestone> milestones) {
     this.milestones = milestones;
+  }
+
+
+  public void setOverallProgress(String overallProgress) {
+    this.overallProgress = overallProgress;
+  }
+
+  public void setProgressByFlagships(String progressByFlagships) {
+    this.progressByFlagships = progressByFlagships;
   }
 
 

@@ -3,8 +3,12 @@
 [#assign currentSectionString = "annualReport-${actionName?replace('/','-')}-${synthesisID}" /]
 [#assign currentSection = "synthesis" /]
 [#assign currentStage = actionName?split('/')[1]/]
-[#assign pageLibs = [ ] /]
-[#assign customJS = [ "${baseUrlMedia}/js/annualReport/annualReport_${currentStage}.js" ] /]
+[#assign pageLibs = [ "datatables.net", "datatables.net-bs", "components-font-awesome" ] /]
+[#assign customJS = [
+  "https://www.gstatic.com/charts/loader.js", 
+  "${baseUrlMedia}/js/annualReport2018/annualReport2018_${currentStage}.js",
+  "${baseUrlMedia}/js/annualReport/annualReportGlobal.js"
+] /]
 [#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css"] /]
 
 [#assign breadCrumb = [
@@ -45,7 +49,109 @@
           
            [#-- Table 4: Condensed list of innovations --]
             <div class="form-group">
-                <h4 class="headTitle annualReport-table">[@s.text name="${customLabel}.title" /]</h4>
+                [#assign guideSheetURL = "https://drive.google.com/file/d/1JvceA0bdvqS5Een056ctL7zJr3hidToe/view" /]
+                <small class="pull-right"><a href="${guideSheetURL}" target="_blank"> <img src="${baseUrl}/global/images/icon-file.png" alt="" /> #C1 Innovations -  Guideline </a> </small>
+            </div>
+            
+            <div class="form-group row">
+              <div class="col-md-4">
+              [#assign projectInnovationInfos = 12 /]
+                [#-- Total of CRP Innovations --]
+                <div id="" class="simpleBox numberBox">
+                  <label for="">[@s.text name="${customLabel}.indicatorC1.totalInnovations" /]</label><br />
+                  <span>${(projectInnovationInfos)!}</span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="form-group row">
+              [#-- Chart 8 - Innovations by Type --]
+              <div class="col-md-5">
+                [#assign partnershipsByGeographicScopeDTO = [
+                      { 
+                        "repIndGeographicScope": {
+                          "name": "Name"
+                        },
+                        "projectPartnerPartnerships": [1, 2, 3]
+                      },
+                      { 
+                        "repIndGeographicScope": {
+                          "name": "Name 2"
+                        },
+                        "projectPartnerPartnerships": [1, 2, 3, 4]
+                      },
+                      { 
+                        "repIndGeographicScope": {
+                          "name": "Name 3"
+                        },
+                        "projectPartnerPartnerships": [1, 2, 3, 4, 5]
+                      }
+                    ] /]
+                <div id="chart8" class="chartBox simpleBox">
+                  <ul class="chartData" style="display:none">
+                    <li>
+                      <span>[@s.text name="${customLabel}.indicatorC1.chart4.0" /]</span>
+                      <span>[@s.text name="${customLabel}.indicatorC1.chart4.1" /]</span>
+                    </li>
+                    [#list partnershipsByGeographicScopeDTO as data]
+                      [#if data.projectPartnerPartnerships?has_content]
+                      <li>
+                        <span>${data.repIndGeographicScope.name}</span>
+                        <span class="number">${data.projectPartnerPartnerships?size}</span>
+                      </li>
+                      [/#if]
+                    [/#list]
+                  </ul>
+                </div>
+              </div>
+              
+              [#-- Chart 9 - Innovations by Stage --]
+              <div class="col-md-7">
+                [#assign innovationsByStageDTO = [
+                      { 
+                        "repIndStageInnovation": {
+                          "name": "Name"
+                        },
+                        "projectInnovationInfos": [1, 2, 3]
+                      },
+                      { 
+                        "repIndStageInnovation": {
+                          "name": "Name 2"
+                        },
+                        "projectInnovationInfos": [1, 2, 3, 4]
+                      },
+                      { 
+                        "repIndStageInnovation": {
+                          "name": "Name 3"
+                        },
+                        "projectInnovationInfos": [1, 2, 3, 4, 5]
+                      }
+                    ] /]
+                <div id="chart9" class="chartBox simpleBox">
+                  <ul class="chartData" style="display:none">
+                    <li>
+                      <span>[@s.text name="${customLabel}.indicatorC1.chart9.0" /]</span>
+                      <span>[@s.text name="${customLabel}.indicatorC1.chart9.1" /]</span>
+                      <span class="json">{"role":"style"}</span>
+                      <span class="json">{"role":"annotation"}</span>
+                    </li>
+                    [#list innovationsByStageDTO as data]
+                      [#if data.projectInnovationInfos?has_content]
+                      <li>
+                        <span>${data.repIndStageInnovation.name}</span>
+                        <span class="number">${data.projectInnovationInfos?size}</span>
+                        <span>#27ae60</span>
+                        <span>${data.projectInnovationInfos?size}</span>
+                      </li>
+                      [/#if]
+                    [/#list]
+                  </ul>
+                </div>
+              </div>
+           
+            </div>
+            
+            <div class="form-group">
                 [@innovationsTable name="table4" list=[]/]
             </div>
             
