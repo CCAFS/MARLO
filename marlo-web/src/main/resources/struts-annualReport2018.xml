@@ -19,7 +19,7 @@
     </action>
 
     <!--  1.2 Progress by CRP Flagships  -->
-    <action name="{crp}/flagshipProgress" class="org.cgiar.ccafs.marlo.action.annualReport.FlagshipProgressAction">
+    <action name="{crp}/flagshipProgress" class="org.cgiar.ccafs.marlo.action.annualReport.y2018.FlagshipProgressAction">
       <interceptor-ref name="editReportSynthesisStack" />
       <result name="input">/WEB-INF/crp/views/annualReport2018/AR2018_flagshipProgress.ftl</result>
       <result name="success" type="redirectAction">
