@@ -90,9 +90,9 @@ public class ValidateSectionStatusReportSynthesis2018Action extends BaseAction {
         // case CRP_PROGRESS:
         // reportSynthesisSectionValidator2018.validateCrpProgress(this, reportSynthesis);
         // break;
-        // case FLAGSHIP_PROGRESS:
-        // reportSynthesisSectionValidator2018.validateFlagshipProgress(this, reportSynthesis);
-        // break;
+        case FLAGSHIP_PROGRESS:
+          reportSynthesisSectionValidator2018.validateFlagshipProgressValidator(this, reportSynthesis);
+          break;
         case CC_DIMENSIONS:
           reportSynthesisSectionValidator2018.validateCrossCuttingDimensionValidator(this, reportSynthesis);
           break;
