@@ -51,18 +51,9 @@ td {
 }
 
 td.tableTitle {
-  background: #95a6d1;
-  color: #ffffff;
+  background: #f9f9f9;
   padding: 9px;
   font-weight: bold;
-}
-
-table th.numbersTitle {
-  background: transparent !important;
-
-    background: #f9f9f9;
-    padding: 9px;
-    font-weight: bold;
 }
 
 table th.numbersTitle {

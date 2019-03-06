@@ -14,6 +14,7 @@
 ]/]
 
 [#import "/WEB-INF/global/macros/utils.ftl" as utilities /]
+[#import "/WEB-INF/crp/views/annualReport2018/macros-AR2018.ftl" as macrosAR /]
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
 
@@ -59,7 +60,7 @@
               
               [#-- Flagship Synthesis --]
               <div class="form-group">
-                  [@tableFlagshipSynthesis tableName="tableflagshipSynthesis" list=flagships columns=["progressByFlagships", "detailedAnnex"] /]
+                  [@macrosAR.tableFPSynthesis tableName="${customLabel}.tableflagshipSynthesis" list=flagships columns=["progressByFlagships", "detailedAnnex"] /]
               </div>
             [/#if]
             
@@ -88,7 +89,7 @@
             [#if PMU]
             [#-- Flagships - Synthesis (Variance from Planned Program) --]
             <div class="form-group">
-              [@tableFlagshipSynthesis tableName="tableFlagshipVariance" list=flagships columns=["expandedResearchAreas", "droppedResearchLines", "changedDirection"] /]
+              [@macrosAR.tableFPSynthesis tableName="${customLabel}.tableFlagshipVariance" list=flagships columns=["expandedResearchAreas", "droppedResearchLines", "changedDirection"] /]
             </div>
             [/#if]
             
@@ -100,7 +101,7 @@
             [#if PMU]
             [#-- Flagships - Synthesis (Altmetric Score) --]
             <div class="form-group">
-              [@tableFlagshipSynthesis tableName="tableFlagshipAltmetric" list=flagships columns=["altmetricScore"] /]
+              [@macrosAR.tableFPSynthesis tableName="${customLabel}.tableFlagshipAltmetric" list=flagships columns=["altmetricScore"] /]
             </div>
             [/#if]
             
@@ -113,41 +114,3 @@
   [/#if] 
 </section>
 [#include "/WEB-INF/global/pages/footer.ftl"]
-
-
-[#---------------------------------------------------- MACROS ----------------------------------------------------]
-
-[#macro tableFlagshipSynthesis tableName="tableName" list=[] columns=[] ]
-  <div class="form-group">
-    <h4 class="simpleTitle">[@s.text name="${customLabel}.${tableName}.title" /]</h4>
-    <table class="table table-bordered">
-      <thead>
-        <tr>
-          <th class="col-md-1 text-center"> FP </th>
-          [#list columns as column]<th class="text-center"> [@s.text name="${customLabel}.${tableName}.column${column_index}" /] </th>[/#list]
-        </tr>
-      </thead>
-      <tbody>
-        [#if list?has_content]
-          [#list list as item]
-            [#local crpProgram = (item.reportSynthesis.liaisonInstitution.crpProgram)!{} ]
-            <tr>
-              <td>
-                <span class="programTag" style="border-color:${(crpProgram.color)!'#fff'}">${(crpProgram.acronym)!}</span>
-              </td>
-              [#list columns as column]
-                <td>
-                  [#if (item[column]?has_content)!false] 
-                    ${item[column]?replace('\n', '<br>')} 
-                  [#else]
-                    <i style="opacity:0.5">[@s.text name="global.prefilledByFlagship"/]</i>
-                  [/#if]
-                </td>
-              [/#list]
-            </tr>
-          [/#list]
-        [/#if]
-      </tbody>
-    </table>
-  </div>
-[/#macro]
