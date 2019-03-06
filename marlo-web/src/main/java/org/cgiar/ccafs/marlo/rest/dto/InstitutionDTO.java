@@ -27,8 +27,6 @@ public class InstitutionDTO {
 
 	@ApiModelProperty(notes = "The Generated Institution Name")
 	private Long code;
-	@NotNull
-	private InstitutionTypeDTO institutionType;
 	@ApiModelProperty(notes = "The Institution Name")
 	@NotNull
 	private String name;
@@ -36,8 +34,13 @@ public class InstitutionDTO {
 	private String acronym;
 	@ApiModelProperty(notes = "The Institution Website")
 	private String websiteLink;
+
 	@ApiModelProperty(notes = "The date that was added the Institution")
 	private Date added;
+
+	@ApiModelProperty(notes = "The Institution type")
+	@NotNull
+	private InstitutionTypeDTO institutionType;
 	@NotEmpty
 	@ApiModelProperty(notes = "List of countries where are offices")
 	private List<CountryDTO> countryDTO;
@@ -48,6 +51,10 @@ public class InstitutionDTO {
 
 	public Date getAdded() {
 		return this.added;
+	}
+
+	public Long getCode() {
+		return this.code;
 	}
 
 	public List<CountryDTO> getCountryDTO() {
@@ -74,6 +81,10 @@ public class InstitutionDTO {
 		this.added = added;
 	}
 
+	public void setCode(Long code) {
+		this.code = code;
+	}
+
 	public void setCountryDTO(List<CountryDTO> countryDTO) {
 		this.countryDTO = countryDTO;
 	}
@@ -88,14 +99,6 @@ public class InstitutionDTO {
 
 	public void setWebsiteLink(String websiteLink) {
 		this.websiteLink = websiteLink;
-	}
-
-	public Long getCode() {
-		return code;
-	}
-
-	public void setCode(Long code) {
-		this.code = code;
 	}
 
 }

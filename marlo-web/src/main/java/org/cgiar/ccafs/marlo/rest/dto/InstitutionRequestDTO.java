@@ -22,35 +22,38 @@ import io.swagger.annotations.ApiModelProperty;
  */
 public class InstitutionRequestDTO {
 
-	@ApiModelProperty(notes = "The id of the Partner Request")
+	@ApiModelProperty(notes = "The id of the Partner Request", position = 1)
 	private Long id;
 
-	@ApiModelProperty(notes = "Name of institution")
+	@ApiModelProperty(notes = "Name of institution", position = 2)
 	private String partnerName;
 
-	@ApiModelProperty(notes = "Acronym of institution")
+	@ApiModelProperty(notes = "Acronym of institution", position = 3)
 	private String acronym;
-
-	@ApiModelProperty(notes = "Web Page of institution")
+	@ApiModelProperty(notes = "Web Page of institution", position = 4)
 	private String webPage;
 
-	@ApiModelProperty(notes = "Partner Request Status")
+	@ApiModelProperty(notes = "Partner Request Status", position = 5)
 	private Boolean isAcepted;
 
-	@ApiModelProperty(notes = "Reject justification")
+	@ApiModelProperty(notes = "Reject justification", position = 6)
 	private String rejectJustification;
 
-	@ApiModelProperty(notes = "Country of partner request")
+	@ApiModelProperty(notes = "Country of partner request", position = 7)
 	CountryDTO locElementDTO;
 
-	@ApiModelProperty(notes = "Institution type")
+	@ApiModelProperty(notes = "Institution type", position = 8)
 	InstitutionTypeDTO institutionTypeDTO;
 
-	@ApiModelProperty(notes = "Intitution created")
+	@ApiModelProperty(notes = "Intitution created", position = 9)
 	InstitutionDTO institutionDTO;
 
 	public String getAcronym() {
 		return this.acronym;
+	}
+
+	public Long getId() {
+		return this.id;
 	}
 
 	public InstitutionDTO getInstitutionDTO() {
@@ -59,6 +62,10 @@ public class InstitutionRequestDTO {
 
 	public InstitutionTypeDTO getInstitutionTypeDTO() {
 		return this.institutionTypeDTO;
+	}
+
+	public Boolean getIsAcepted() {
+		return this.isAcepted;
 	}
 
 	public CountryDTO getLocElementDTO() {
@@ -93,6 +100,10 @@ public class InstitutionRequestDTO {
 		this.institutionTypeDTO = institutionTypeDTO;
 	}
 
+	public void setIsAcepted(Boolean isAcepted) {
+		this.isAcepted = isAcepted;
+	}
+
 	public void setLocElementDTO(CountryDTO locElementDTO) {
 		this.locElementDTO = locElementDTO;
 	}
@@ -107,14 +118,6 @@ public class InstitutionRequestDTO {
 
 	public void setWebPage(String webPage) {
 		this.webPage = webPage;
-	}
-
-	public Boolean getIsAcepted() {
-		return isAcepted;
-	}
-
-	public void setIsAcepted(Boolean isAcepted) {
-		this.isAcepted = isAcepted;
 	}
 
 }

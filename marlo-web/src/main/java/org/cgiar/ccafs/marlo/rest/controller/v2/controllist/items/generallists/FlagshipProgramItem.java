@@ -21,6 +21,7 @@ import org.cgiar.ccafs.marlo.rest.dto.FlagshipProgramDTO;
 import org.cgiar.ccafs.marlo.rest.mappers.FlagshipProgramMapper;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -62,15 +63,33 @@ public class FlagshipProgramItem<T> {
 	}
 
 	/**
+	 * Find a Flagship or program requesting by smo Code
+	 * 
+	 * @param smo code
+	 * @return a FlagshipProgramDTO with the flagship or program data.
+	 */
+	public ResponseEntity<FlagshipProgramDTO> findFlagshipProgramBySmoCode(String smoCode) {
+		CrpProgram crpProgram = this.crpProgramManager.getCrpProgramBySmoCode(smoCode);
+		return Optional.ofNullable(crpProgram)
+				.filter(c -> c.getProgramType() == 1 && c.getCrp().getGlobalUnitType().getId() <= 3)
+				.map(this.flagshipProgramMapper::crpProgramToCrpProgramDTO)
+				.map(result -> new ResponseEntity<>(result, HttpStatus.OK))
+				.orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+	}
+
+	/**
 	 * Get All the Flagship or program Items *
 	 * 
 	 * @return a List of FlagshipProgramDTO with all the Flagship or program
 	 * Items.
 	 */
-	public List<FlagshipProgramDTO> getAllContributionOfCrps() {
+	public List<FlagshipProgramDTO> getAllCrpPrograms() {
 		if (this.crpProgramManager.findAll() != null) {
 			List<CrpProgram> crpPrograms = new ArrayList<>(this.crpProgramManager.findAll());
 			List<FlagshipProgramDTO> flagshipProgramDTOs = crpPrograms.stream()
+					.filter(c -> c.getProgramType() == 1 && c.getCrp().getGlobalUnitType().getId() <= 3)
+					.sorted(Comparator.comparing(CrpProgram::getSmoCode,
+							Comparator.nullsLast(Comparator.naturalOrder())))
 					.map(crpProgramsEntity -> this.flagshipProgramMapper.crpProgramToCrpProgramDTO(crpProgramsEntity))
 					.collect(Collectors.toList());
 			return flagshipProgramDTOs;

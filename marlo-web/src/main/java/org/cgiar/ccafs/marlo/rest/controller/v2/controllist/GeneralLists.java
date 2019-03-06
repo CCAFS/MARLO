@@ -92,17 +92,18 @@ public class GeneralLists {
 	}
 
 	/**
-	 * Find a Flagship or Program by id
+	 * Find a Flagship or Program by smo code
 	 * 
 	 * @param smo flagship/program code
 	 * @return a FlagshipProgramDTO with Flagship or Program data.
 	 */
-	@ApiOperation(tags = "Table 3 - Outcome/ Impact Case Reports", value = "${GeneralLists.flagships-modules.code.value}", response = FlagshipProgramDTO.class)
+	@ApiOperation(tags = { "Table 3 - Outcome/ Impact Case Reports",
+			"Table 5 - Status of Planned Outcomes and Milestones" }, value = "${GeneralLists.flagships-modules.code.value}", response = FlagshipProgramDTO.class)
 	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
 	@RequestMapping(value = "/flagships-modules/{code}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<FlagshipProgramDTO> findFlagshipProgramById(@PathVariable Long code) {
+	public ResponseEntity<FlagshipProgramDTO> findFlagshipProgramBySmoCode(@PathVariable String code) {
 		LOG.debug("REST request to get Maturity of Change : {}", code);
-		return this.flagshipProgramItem.findFlagshipProgramById(code);
+		return this.flagshipProgramItem.findFlagshipProgramBySmoCode(code);
 	}
 
 	/**
@@ -129,7 +130,10 @@ public class GeneralLists {
 	 */
 	@RequiresPermissions(Permission.CRPS_READ_REST_API_PERMISSION)
 	@ApiOperation(tags = { "Table 1 - Evidence on Progress towards SRF targets", "Table 2 - CRP Policies",
-			"Table 4 - CRP Innovations" }, value = "${GeneralLists.cgiar-entities.code.value}", response = CGIAREntityDTO.class)
+			"Table 4 - CRP Innovations", "Table 5 - Status of Planned Outcomes and Milestones",
+			"Table 6 - Peer-reviewed publications", "Table 7 - Key external partnerships",
+			"Table 8 - Internal Cross-CGIAR Collaborations",
+			"Table 9 - Monitoring, Evaluation, Learning and Impact Assessment (MELIA)" }, value = "${GeneralLists.cgiar-entities.code.value}", response = CGIAREntityDTO.class)
 	@RequestMapping(value = "/cgiar-entities/{code}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<CGIAREntityDTO> findGlobalUnitByCGIARId(@PathVariable String code) {
 		LOG.debug("REST request to get GlobalUnit : {}", code);
@@ -182,13 +186,13 @@ public class GeneralLists {
 	 * 
 	 * @return a List of FlagshipProgramDTO with all Flagship or Program Items.
 	 */
-	@ApiOperation(tags = {
-			"Table 3 - Outcome/ Impact Case Reports" }, value = "${GeneralLists.flagships-modules.all.value}", response = FlagshipProgramDTO.class, responseContainer = "List")
+	@ApiOperation(tags = { "Table 3 - Outcome/ Impact Case Reports",
+			"Table 5 - Status of Planned Outcomes and Milestones" }, value = "${GeneralLists.flagships-modules.all.value}", response = FlagshipProgramDTO.class, responseContainer = "List")
 	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
 	@RequestMapping(value = "/flagships-modules", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public List<FlagshipProgramDTO> getAllFlagshipsPrograms() {
 		LOG.debug("REST request to get Flagships or Programs");
-		return this.flagshipProgramItem.getAllContributionOfCrps();
+		return this.flagshipProgramItem.getAllCrpPrograms();
 	}
 
 	/**
@@ -215,7 +219,10 @@ public class GeneralLists {
 	 */
 	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
 	@ApiOperation(tags = { "Table 1 - Evidence on Progress towards SRF targets", "Table 2 - CRP Policies",
-			"Table 4 - CRP Innovations" }, value = "${GeneralLists.cgiar-entities.all.value}", response = CGIAREntityDTO.class, responseContainer = "List")
+			"Table 4 - CRP Innovations", "Table 5 - Status of Planned Outcomes and Milestones",
+			"Table 6 - Peer-reviewed publications", "Table 7 - Key external partnerships",
+			"Table 8 - Internal Cross-CGIAR Collaborations",
+			"Table 9 - Monitoring, Evaluation, Learning and Impact Assessment (MELIA)" }, value = "${GeneralLists.cgiar-entities.all.value}", response = CGIAREntityDTO.class, responseContainer = "List")
 	@RequestMapping(value = "/cgiar-entities", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<CGIAREntityDTO>> getAllGlobalUnits(
 			@RequestParam(required = false, value = "id of cgiar entity type") Long typeId) {
