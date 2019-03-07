@@ -42,10 +42,11 @@
           [#-- Title --]
           <h3 class="headTitle">[@s.text name="${customLabel}.title" /]</h3>
           <div class="borderBox">
+            
             [#-- Executive Summary --]
             [#if PMU]
               <div class="form-group">
-               [@customForm.textArea name="${customName}.narrative" i18nkey="${customLabel}.progress" help="${customLabel}.progress.help" className="limitWords-500" helpIcon=false required=true editable=editable allowTextEditor=true /]
+               [@customForm.textArea name="${customName}.narrative" i18nkey="${customLabel}.progress" help="${customLabel}.progress.help" className="limitWords-500" helpIcon=false required=!isPlatform editable=editable allowTextEditor=true /]
               </div>
             [#else]
               <div class="textArea">

@@ -61,27 +61,28 @@
               </div>
             [/#if]
             
-            
-            [#-- Table 1: Evidence on progress towards SRF targets  --]
-            [#if PMU]
-              [@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/]
-            [/#if]
-            <hr />
-            <div class="form-group">
-              <h4 class="headTitle annualReport-table">[@s.text name="${customLabel}.evidenceProgress" /]</h4>
-              [@customForm.helpLabel name="${customLabel}.evidenceProgress.help" showIcon=false editable=editable helpMore=true/]
-              <div class="block-selectedSLOs">
-                <div class="form-group sloTargetsList">
-                  [#if sloTargets?has_content]
-                    [#list sloTargets as slo]
-                      [@sloTargetMacro name="${customName}.sloTargets" element=slo index=slo_index /]
-                    [/#list]
-                  [#else]
-                    [#if !editable] <p class="text-center font-italic">No entries added yet.</p> [/#if]
-                  [/#if]
+            [#if !isPlatform]
+              [#-- Table 1: Evidence on progress towards SRF targets  --]
+              [#if PMU]
+                [@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/]
+              [/#if]
+              <hr />
+              <div class="form-group">
+                <h4 class="headTitle annualReport-table">[@s.text name="${customLabel}.evidenceProgress" /]</h4>
+                [@customForm.helpLabel name="${customLabel}.evidenceProgress.help" showIcon=false editable=editable helpMore=true/]
+                <div class="block-selectedSLOs">
+                  <div class="form-group sloTargetsList">
+                    [#if sloTargets?has_content]
+                      [#list sloTargets as slo]
+                        [@sloTargetMacro name="${customName}.sloTargets" element=slo index=slo_index /]
+                      [/#list]
+                    [#else]
+                      [#if !editable] <p class="text-center font-italic">No entries added yet.</p> [/#if]
+                    [/#if]
+                  </div>
                 </div>
               </div>
-            </div>
+            [/#if]
             
           </div>
           [#-- Section Buttons & hidden inputs--]

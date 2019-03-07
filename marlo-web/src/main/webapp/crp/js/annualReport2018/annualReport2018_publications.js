@@ -14,16 +14,12 @@ google.charts.load('current', {
   ]
 });
 
-
 google.charts.setOnLoadCallback(function() {
   // On load
   $('.chartBox').addClass('loaded');
 
-//Chart #10 - Number of peer reviewed articles by Open Access status
-  var $chart10 = $('#chart10');
-  var data10 = google.visualization.arrayToDataTable(getChartDataArray($chart10));
-  var chart10 = new google.visualization.PieChart(document.getElementById($chart10[0].id));
-  chart10.draw(data10, {
+  // Chart #10 - Number of peer reviewed articles by Open Access status
+  createGooglePieChart('#chart10', {
       title: 'Number of peer reviewed articles by Open Access status',
       titleTextStyle: {
           color: '#5f5e5e',
@@ -33,8 +29,8 @@ google.charts.setOnLoadCallback(function() {
       },
       pieHole: 0.4,
       chartArea: {
-        top: 70,
-        width: '80%'
+          top: 70,
+          width: '80%'
       },
       colors: '#e67e22',
       legend: {
@@ -50,11 +46,8 @@ google.charts.setOnLoadCallback(function() {
       }
   });
 
-//Chart #11
-  var $chart11 = $('#chart11');
-  var data11 = google.visualization.arrayToDataTable(getChartDataArray($chart11));
-  var chart11 = new google.visualization.PieChart(document.getElementById($chart11[0].id));
-  chart11.draw(data11, {
+  // Chart #11 - Number of peer reviewed articles by ISI status
+  createGooglePieChart('#chart11', {
       title: 'Number of peer reviewed articles by ISI status',
       titleTextStyle: {
           color: '#5f5e5e',
@@ -64,8 +57,8 @@ google.charts.setOnLoadCallback(function() {
       },
       pieHole: 0.4,
       chartArea: {
-        top: 70,
-        width: '80%'
+          top: 70,
+          width: '80%'
       },
       colors: '#e67e22',
       legend: {

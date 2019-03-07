@@ -137,7 +137,9 @@ public class Clone {
      * String[] model = {"EvidenceTag", "ProjectExpectedStudyInnovation", "ProjectExpectedStudyPolicy",
      * "ProjectExpectedStudyLink", "ProjectExpectedStudyQuantification"};
      */
-    String[] model = {"ReportSynthesisSrfProgress", "ReportSynthesisSrfProgressTarget"};
+    String[] model =
+      {"RepIndPartnershipMainArea", "ReportSynthesisKeyPartnership", "ReportSynthesisKeyPartnershipExternal",
+        "ReportSynthesisKeyPartnershipExternalInstitution", "ReportSynthesisKeyPartnershipExternalMainArea"};
 
     for (int i = 0; i < model.length; i++) {
       generateDao(model[i]);
