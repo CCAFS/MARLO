@@ -3,7 +3,7 @@
 [#assign currentSectionString = "annualReport-${actionName?replace('/','-')}-${synthesisID}" /]
 [#assign currentSection = "synthesis" /]
 [#assign currentStage = actionName?split('/')[1]/]
-[#assign pageLibs = [ "trumbowyg" ] /]
+[#assign pageLibs = [ "select2", "trumbowyg" ] /]
 [#assign customJS = [ "${baseUrlMedia}/js/annualReport2018/annualReport2018_${currentStage}.js" ] /]
 [#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css"] /]
 
@@ -90,7 +90,7 @@
   [#local annualReportElement= action.getReportSynthesisFlagshipProgressMilestone(element.id)]
   [#local customName = "${name}[${action.getIndex(element.id)}]" /]
   
-  <div id="powbMilestone-${isTemplate?string('template', index)}" class="powbMilestone simpleBox" style="display:${isTemplate?string('none','block')}">
+  <div id="powbMilestone-${isTemplate?string('template', index)}" class="synthesisMilestone simpleBox" style="display:${isTemplate?string('none','block')}">
     [#-- Index --]
     <div class="leftHead gray sm"><span class="index">${index+1}</span></div>
     [#-- Hidden inputs --]
@@ -103,85 +103,72 @@
       <p class="text-justify"><strong>Milestone for ${actualPhase.year}</strong> - ${(element.title)!} </p>
     </div>
     
-    [#-- Gender Marker --]
-    <div class="form-group row">
-      <div class="col-md-3 cc-milestones">
-        <h5>[@s.text name="${customLabel}.milestoneGenderScore" /]</h5>
-      </div>
-      <div class="col-md-3">
-         [@customForm.select name="${customName}.milestoneGenderScoreMarker" label=""  i18nkey="${customLabel}.milestoneScoreMarker" listName="" keyFieldName=""  displayFieldName=""   required=true  className="" editable=editable/]
-      </div>
-      <div class="col-md-6">
-         [@customForm.input name="${customName}.milestoneGenderScoreJustification" i18nkey="${customLabel}.milestoneScoreJustification" help="${customLabel}.milestoneGenderScoreJustification.help" className="input-sm" helpIcon=true required=true editable=editable /]
-      </div>
+    [#-- Cross-Cutting --]
+    <div class="form-group">
+      <table class="milestones-crosscutting">
+        <thead>
+          <tr>
+            <th></th>
+            <th class="text-center">[@s.text name="${customLabel}.milestoneScoreMarker" /]</th>
+            <th class="text-center col-md-7">[@s.text name="${customLabel}.milestoneScoreJustification" /]</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="row-title">[@s.text name="${customLabel}.milestoneGenderScore" /]</td>
+            <td class="text-center">[@customForm.select name="${customName}.milestoneGenderScoreMarker" label="" listName="" keyFieldName=""  displayFieldName=""   required=true showTitle=false className="" editable=editable/]</td>
+            <td class="text-center">[@customForm.input name="${customName}.milestoneGenderScoreJustification" className="input-sm" showTitle=false required=true editable=editable /]</td>
+          </tr>
+          <tr>
+            <td class="row-title">[@s.text name="${customLabel}.milestoneYouthScore" /]</td>
+            <td class="text-center">[@customForm.select name="${customName}.milestoneYouthScoreMarker" label="" listName="" keyFieldName=""  displayFieldName=""  showTitle=false required=true  className="" editable=editable/]</td>
+            <td class="text-center">[@customForm.input name="${customName}.milestoneYouthScoreJustification" className="input-sm" showTitle=false required=true editable=editable /]</td>
+          </tr>
+          <tr>
+            <td class="row-title">[@s.text name="${customLabel}.milestoneCapDevScore" /]</td>
+            <td class="text-center">[@customForm.select name="${customName}.milestoneCapDevScoreMarker" label="" listName="" keyFieldName=""  displayFieldName="" showTitle=false required=true  className="" editable=editable/]</td>
+            <td class="text-center">[@customForm.input name="${customName}.milestoneCapDevScoreJustification" className="input-sm" showTitle=false required=true editable=editable /]</td>
+          </tr>
+          <tr>
+            <td class="row-title">[@s.text name="${customLabel}.milestoneClimateChangeScore" /]</td>
+            <td class="text-center">[@customForm.select name="${customName}.milestoneClimateChangeScoreMarker" label=""  listName="" keyFieldName=""  displayFieldName="" showTitle=false required=true  className="" editable=editable/]</td>
+            <td class="text-center">[@customForm.input name="${customName}.milestoneClimateChangeScoreJustification" className="input-sm" showTitle=false required=true editable=editable /]</td>
+          </tr>
+        </tbody>
+      </table>
     </div>
     
-    [#-- Youth Marker --]
-    <div class="form-group row">
-      <div class="col-md-3 cc-milestones">
-        <h5>[@s.text name="${customLabel}.milestoneYouthScore" /]</h5>
-      </div>
-      <div class="col-md-3">
-         [@customForm.select name="${customName}.milestoneYouthScoreMarker" label=""  i18nkey="${customLabel}.milestoneScoreMarker" listName="" keyFieldName=""  displayFieldName=""   required=true  className="" editable=editable/]
-      </div>
-      <div class="col-md-6">
-         [@customForm.input name="${customName}.milestoneYouthScoreJustification" i18nkey="${customLabel}.milestoneScoreJustification" help="${customLabel}.milestoneYouthScoreJustification.help" className="input-sm" helpIcon=true required=true editable=editable /]
-      </div>
-    </div>
-    
-    [#-- CapDev Marker --]
-    <div class="form-group row">
-      <div class="col-md-3 cc-milestones">
-        <h5>[@s.text name="${customLabel}.milestoneCapDevScore" /]</h5>
-      </div>
-      <div class="col-md-3 cc-milestones">
-         [@customForm.select name="${customName}.milestoneCapDevScoreMarker" label=""  i18nkey="${customLabel}.milestoneScoreMarker" listName="" keyFieldName=""  displayFieldName=""   required=true  className="" editable=editable/]
-      </div>
-      <div class="col-md-6">
-         [@customForm.input name="${customName}.milestoneCapDevScoreJustification" i18nkey="${customLabel}.milestoneScoreJustification" help="${customLabel}.milestoneCapDevScoreJustification.help" className="input-sm" helpIcon=true required=true editable=editable /]
-      </div>
-    </div>
-    
-    [#-- Climate Change Marker --]
-    <div class="form-group row">
-      <div class="col-md-3 cc-milestones">
-        <h5>[@s.text name="${customLabel}.milestoneClimateChangeScore" /]</h5>
-      </div>
-      <div class="col-md-3">
-         [@customForm.select name="${customName}.milestoneClimateChangeScoreMarker" label=""  i18nkey="${customLabel}.milestoneScoreMarker" listName="" keyFieldName=""  displayFieldName=""   required=true  className="" editable=editable/]
-      </div>
-      <div class="col-md-6">
-         [@customForm.input name="${customName}.milestoneClimateChangeScoreJustification" i18nkey="${customLabel}.milestoneScoreJustification" help="${customLabel}.milestoneClimateChangeScoreJustification.help" className="input-sm" helpIcon=true required=true editable=editable /]
-      </div>
-    </div>
     
     [#-- Milestone status --]
     <div class="form-group">
       <label>[@s.text name="${customLabel}.milestoneStatus" /]:[@customForm.req required=editable  /]</label><br />
       [#-- [#local milestoneStatus = (annualReportElement.milestonesStatus)!-1 /] --]
       [#local milestoneStatus = -1 /]
-      [@customForm.radioFlat id="${customName}-status-1" name="${customName}.milestonesStatus" label="Complete"   value="1" checked=(milestoneStatus == 1)!false editable=editable cssClass="" cssClassLabel="font-normal"/]
-      [@customForm.radioFlat id="${customName}-status-2" name="${customName}.milestonesStatus" label="Extended"   value="2" checked=(milestoneStatus == 2)!false editable=editable cssClass="" cssClassLabel="font-normal"/]
-      [@customForm.radioFlat id="${customName}-status-3" name="${customName}.milestonesStatus" label="Cancelled"  value="3" checked=(milestoneStatus == 3)!false editable=editable cssClass="" cssClassLabel="font-normal"/]
-      [@customForm.radioFlat id="${customName}-status-4" name="${customName}.milestonesStatus" label="Changed"    value="4" checked=(milestoneStatus == 4)!false editable=editable cssClass="" cssClassLabel="font-normal"/]
+      [@customForm.radioFlat id="${customName}-status-1" name="${customName}.milestonesStatus" label="Complete"   value="1" checked=(milestoneStatus == 1)!false editable=editable cssClass="milestoneStatus" cssClassLabel="font-normal"/]
+      [@customForm.radioFlat id="${customName}-status-2" name="${customName}.milestonesStatus" label="Extended"   value="2" checked=(milestoneStatus == 2)!false editable=editable cssClass="milestoneStatus" cssClassLabel="font-normal"/]
+      [@customForm.radioFlat id="${customName}-status-3" name="${customName}.milestonesStatus" label="Cancelled"  value="3" checked=(milestoneStatus == 3)!false editable=editable cssClass="milestoneStatus" cssClassLabel="font-normal"/]
+      [@customForm.radioFlat id="${customName}-status-4" name="${customName}.milestonesStatus" label="Changed"    value="4" checked=(milestoneStatus == 4)!false editable=editable cssClass="milestoneStatus" cssClassLabel="font-normal"/]
       
       [#if !editable && (milestoneStatus == -1)][@s.text name="form.values.fieldEmpty"/][/#if]
     </div>
     
-    [#-- Evidence for completed milestones or explanation for extended or cancelled --]
-    <div class="form-group">
-      [@customForm.textArea name="${customName}.milestoneEvidence" i18nkey="${customLabel}.milestoneEvidence" help="${customLabel}.milestoneEvidence.help" helpIcon=false display=true required=false className="limitWords-50" editable=editable allowTextEditor=true /]
-    </div>
-    
-    [#-- Extendend, cancelled or changed milestones - Main reason --]
-    <div class="form-group">
-      [@customForm.select name="${customName}.milestoneMainReason" label=""  i18nkey="${customLabel}.milestoneMainReason" listName="" keyFieldName=""  displayFieldName=""   required=true  className="" editable=editable/]
-    </div>
-    
-    [#-- Extendend, cancelled or changed milestones - Other reason --]
-    [#local display = true /]
-    <div class="form-group" style="display:${display?string('block','none')}">
-      [@customForm.input name="${customName}.milestoneOtherReason" i18nkey="${customLabel}.milestoneOtherReason" display=true required=false className="input-sm" editable=editable /]
+    [#local notComplete = true /]
+    <div class="form-group milestonesEvidence" style="display:${notComplete?string('block', 'none')}">
+      [#-- Evidence for completed milestones or explanation for extended or cancelled --]
+      <div class="form-group">
+        [@customForm.textArea name="${customName}.milestoneEvidence" i18nkey="${customLabel}.milestoneEvidence" help="${customLabel}.milestoneEvidence.help" helpIcon=false display=true required=false className="limitWords-50" editable=editable allowTextEditor=true /]
+      </div>
+      
+      [#-- Extendend, cancelled or changed milestones - Main reason --]
+      <div class="form-group">
+        [@customForm.select name="${customName}.milestoneMainReason" label=""  i18nkey="${customLabel}.milestoneMainReason" listName="" keyFieldName=""  displayFieldName=""   required=true  className="milestoneMainReasonSelect" editable=editable/]
+      </div>
+      
+      [#-- Extendend, cancelled or changed milestones - Other reason --]
+      [#local showOther = true /]
+      <div class="form-group otherBlock" style="display:${showOther?string('block', 'none')}">
+        [@customForm.input name="${customName}.milestoneOtherReason" i18nkey="${customLabel}.milestoneOtherReason" display=true required=false className="input-sm" editable=editable /]
+      </div>
     </div>
     
     
