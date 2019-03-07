@@ -46,133 +46,88 @@
           [#-- Title --]
           <h3 class="headTitle">[@s.text name="${customLabel}.title" /]</h3>
           <div class="borderBox">
-          
-            
-              [#-- Table 2: Condensed list of policy contributions --]
-              <div class="form-group">
-                [#assign guideSheetURL = "https://drive.google.com/file/d/1GYLsseeZOOXF9zXNtpUtE1xeh2gx3Vw2/view" /]
-                <small class="pull-right"><a href="${guideSheetURL}" target="_blank"> <img src="${baseUrl}/global/images/icon-file.png" alt="" /> #I1 Policies  -  Guideline </a> </small>
+            [#-- Table 2: Condensed list of policy contributions --]
+            <div class="form-group">
+              [#assign guideSheetURL = "https://drive.google.com/file/d/1GYLsseeZOOXF9zXNtpUtE1xeh2gx3Vw2/view" /]
+              <small class="pull-right"><a href="${guideSheetURL}" target="_blank"> <img src="${baseUrl}/global/images/icon-file.png" alt="" /> #I1 Policies  -  Guideline </a> </small>
+            </div>
+            <br />
+            <div class="form-group row">
+              <div class="col-md-4">
+                <div class="simpleBox numberBox">
+                  <label for="">[@s.text name="${customLabel}.indicatorI1.totalPolicies" /]</label><br />
+                  <span class="animated infinite bounce">${(((projectPolicies?size)!0)?number?string(",##0"))!0}</span>
+                </div>
+                [#-- Chart 7 - Level of maturity --]
+                <div id="chart7" class="chartBox simpleBox">
+                  [#assign chartData = [
+                      {"name":"Level 1",  "value": "4"},
+                      {"name":"Level 2",  "value": "5"},
+                      {"name":"Level 3",  "value": "2"}
+                    ] /] 
+                  <ul class="chartData" style="display:none">
+                    <li>
+                      <span>[@s.text name="${customLabel}.chart13" /]</span>
+                      <span>[@s.text name="${customLabel}.chart13" /]</span>
+                    </li>
+                    [#list chartData as data]
+                      <li><span>${data.name}</span><span class="number">${data.value}</span></li>
+                    [/#list]
+                  </ul>
+                </div> 
               </div>
-              <br />
-              <div class="form-group row">
-              <div class="col-md-9">
+              <div class="col-md-8">
                 [#-- Chart 6 - Organizations designing/promulgating the policy --]
                 <div id="chart6" class="chartBox simpleBox">
                   <ul class="chartData" style="display:none">
-                    [#assign organizationTypeByStudiesDTOs = [
-                      { 
-                        "projectExpectedStudies": 1,
-                        "repIndOrganizationType": {
-                          "name": "Name"
-                        },
-                        "projectExpectedStudies": [1, 2, 3]
-                      },
-                      { 
-                        "projectExpectedStudies": 1,
-                        "repIndOrganizationType": {
-                          "name": "Name 2"
-                        },
-                        "projectExpectedStudies": [1, 2, 3, 4]
-                      },
-                      { 
-                        "projectExpectedStudies": 1,
-                        "repIndOrganizationType": {
-                          "name": "Name 3"
-                        },
-                        "projectExpectedStudies": [1, 2, 3, 4, 5]
-                      }
-                    ] /]
                     <li>
                       <span>[@s.text name="${customLabel}.indicatorI1.chart1.0" /]</span>
                       <span>[@s.text name="${customLabel}.indicatorI1.chart1.1" /]</span>
                       <span class="json">{"role":"style"}</span>
                       <span class="json">{"role":"annotation"}</span>
                     </li>
-                    [#list (organizationTypeByStudiesDTOs)![] as data]
-                      [#if (data.projectExpectedStudies?has_content)!false]
+                    [#list (policiesByOrganizationTypeDTOs)![] as data]
+                      [#if (data.repIndOrganizationType?has_content && (data.projectPolicies?has_content))!false]
                       <li>
                         <span>${(data.repIndOrganizationType.name)!}</span>
-                        <span class="number">${data.projectExpectedStudies?size}</span>
+                        <span class="number">${data.projectPolicies?size}</span>
                         <span>#4285f4</span>
-                        <span>${data.projectExpectedStudies?size}</span>
+                        <span>${data.projectPolicies?size}</span>
                       </li>
                       [/#if]
                     [/#list]
                   </ul>
                 </div> 
               </div>
-              [#assign totalPolicies = 12 /]
-              <div class="col-md-3">
-                <div class="simpleBox numberBox">
-                  <label for="">[@s.text name="${customLabel}.indicatorI1.totalPolicies" /]</label><br />
-                  <span class="animated infinite bounce">${(totalPolicies?number?string(",##0"))!0}</span>
-                </div>
-              </div>
-            </div>
-            
-            <div class="form-group row">
-              <div class="col-md-9">
-              [#-- Chart 7 - CGIAR Cross-cutting markers --]
-                <div id="chart7" class="chartBox simpleBox">
-                  <ul class="chartData" style="display:none">
-                    [#assign levelsList = ["Not Targeted", "Significant Objective", "Principal Objective"] /]
-                    [#assign crossCuttingM = [
-                      { 
-                        "name": "Gender",
-                        "cclevels": [3, 4, 5]
-                      },
-                      { 
-                        "name": "Youth",
-                        "cclevels": [4, 5, 3]
-                      },
-                      { 
-                        "name": "Climate Change",
-                        "cclevels": [5, 3, 4]
-                      }
-                    ] /]
-                    <li>
-                      <span>[@s.text name="${customLabel}.indicatorI1.chart1.0" /]</span>
-                      <span>[@s.text name="${customLabel}.indicatorI1.chart1.1" /]</span>
-                      <span class="json">{"role":"style"}</span>
-                      <span class="json">{"role":"annotation"}</span>
-                    </li>
-                    [#list (crossCuttingM)![] as data]
-                      [#if (data?has_content)!false]
-                      <li>
-                        <span>${(data.name)!}</span>
-                        <span class="number">
-                          [#list (data.cclevels)![] as levels]
-                            ${(levels)}
-                          [/#list]
-                        </span>
-                        <span>#4285f4</span>
-                        <span></span>
-                      </li>
-                      [/#if]
-                    [/#list]
-                  </ul>
-                </div> 
-               </div>
             </div>
               
-              <div class="form-group">
-              [#-- Modal Large --]
-                <button type="button" class="pull-right btn btn-link btn-sm" data-toggle="modal" data-target="#tableA-bigger"> 
-                  <span class="glyphicon glyphicon-fullscreen"></span> See Full Table 2
-                </button>
-                <div id="tableA-bigger" class="modal fade bs-example-modal-lg " tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
-                  <div class="modal-dialog modal-lg bigger" role="document">
-                    <div class="modal-content">
-                      <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                      </div>
-                      [@table2ListOfPolicies list=(projectPolicies)![] allowPopups=false/]
+            <div class="form-group">
+              [#-- Button --]
+              <button type="button" class="btn btn-default btn-xs pull-right" data-toggle="modal" data-target="#modal-policies">
+                 <span class="glyphicon glyphicon-fullscreen"></span> See Full table 2
+              </button>
+              [#-- Modal --]
+              <div class="modal fade" id="modal-policies" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                <div class="modal-dialog modal-lg" role="document">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                      <h4 class="modal-title" id="myModalLabel"></h4>
+                    </div>
+                    <div class="modal-body">
+                      [#-- Full table --]
+                      [@table2ListOfPolicies list=(projectPolicies)![] expanded=true/]
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                     </div>
                   </div>
                 </div>
-                [#-- Table --]
-                [@table2ListOfPolicies list=(projectPolicies)![] allowPopups=true/]
               </div>
+              
+              [#-- Table --]
+              [@table2ListOfPolicies list=(projectPolicies)![] expanded=false/]
+            </div>
           
           </div>
           [#-- Section Buttons & hidden inputs--]
@@ -188,69 +143,76 @@
 [#------------------------------------  MACROS  ------------------------------------------]
 
 
-[#macro table2ListOfPolicies list=[] allowPopups=true id=""]
+[#macro table2ListOfPolicies list=[]  id="" expanded=false]
 
   <table id="tableA" class="table table-bordered">
     <thead>
       <tr>
         <th class="text-center" rowspan="2">[@s.text name="${customLabel}.table2.name" /]</th>
         <th class="text-center" rowspan="2">[@s.text name="${customLabel}.table2.maturity" /]</th>
-        <th class="col-md-2 text-center" rowspan="2">[@s.text name="${customLabel}.table2.subIDOs" /]</th>
-        [#if !allowPopups]
-          <th class="text-center" colspan="4">[@s.text name="${customLabel}.table2.crossCutting" /]</th>
-          <th class="text-center" rowspan="2">[@s.text name="${customLabel}.table2.type" /]</th>
-          <th class="text-center" rowspan="2">[@s.text name="${customLabel}.table2.whose" /]</th>
-          <th class="text-center" rowspan="2">[@s.text name="${customLabel}.table2.geoScope" /]</th>
+        <th class="text-center" rowspan="2">[@s.text name="${customLabel}.table2.subIDOs" /]</th>
+        [#if expanded]
+        <th class="text-center" colspan="4">[@s.text name="${customLabel}.table2.crossCutting" /]</th>
+        <th class="text-center" rowspan="2">[@s.text name="${customLabel}.table2.type" /]</th>
+        <th class="text-center" rowspan="2">[@s.text name="${customLabel}.table2.whose" /]</th>
+        <th class="text-center" rowspan="2">[@s.text name="${customLabel}.table2.geoScope" /]</th>
         [/#if]
-        [#if allowPopups]
-          <th class="col-md-1 text-center" rowspan="2">[@s.text name="${customLabel}.table2.includeAR" /]</th>
+        [#if !expanded]
+        <th class="col-md-1 text-center" rowspan="2">[@s.text name="${customLabel}.table2.includeAR" /]</th>
         [/#if]
       </tr>
-      [#if !allowPopups]
+      [#if expanded]
       <tr>
-          <th class="text-center"> Gender </th>
-          <th class="text-center"> Youth </th>
-          <th class="text-center"> CapDev</th>
-          <th class="text-center"> Climate Change</th>
-        </tr>
+        <th class="text-center"> Gender </th>
+        <th class="text-center"> Youth </th>
+        <th class="text-center"> CapDev</th>
+        <th class="text-center"> Climate Change </th>
+      </tr>
       [/#if]
     </thead>
     <tbody>
     [#if list?has_content]
       [#list list as item]
       <tr>
-        <td>
-          [@utils.tableText value=(item.projectPolicyInfo.title)!"" /]
+        [#-- Title --]
+        <td class="">
+          [@utils.tableText value=(item.composedName)!"" /]
+          [#if item.project??]<br /> <small>(From Project P${item.project.id})</small> [/#if]
         </td>
-        <td>
-          [@utils.tableText value=(item.projectPolicyInfo.repIndStageProcess.description)!"" /]
-        </td>
-        [#if !allowPopups]
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-        [/#if]
-        <td>
-          [@utils.tableList list=(item.subIdos)![]  displayFieldName="title"/]
-        </td>
-        [#if allowPopups]
-          <td class="text-center">
-            [#local isChecked = ((!reportSynthesis.reportSynthesisFlagshipProgress.policiesIds?seq_contains(item.id))!true) /]
-            [@customForm.checkmark id="policy-${(item.id)!''}" name="reportSynthesis.reportSynthesisFlagshipProgress.policiesValue" value="${(item.id)!''}" checked=isChecked editable=editable centered=true/]
+        [#-- Level of Maturity --]
+        <td class="text-center">[@utils.tableText value=(item.projectPolicyInfo.repIndStageProcess.name)!"" /]</td>
+        [#-- Sub-IDOs --]
+        <td>[@utils.tableList list=(item.subIdos)![]  displayFieldName="title"/]</td>
+        [#if expanded]
+          [#-- Gender --]
+          <td class="text-center"> <p class="dacMarker level-2" title="0 - Not Targeted">0</p>  </td>
+          [#-- Youth --]
+          <td class="text-center"> <p class="dacMarker level-2" title="0 - Not Targeted">0</p> </td>
+          [#-- CapDev --]
+          <td class="text-center"> <p class="dacMarker level-3" title="1 - Significant">0</p> </td>
+          [#-- Climate Change --]
+          <td class="text-center"> <p class="dacMarker level-4" title="2 - Principal">0</p> </td>
+          [#-- Policy Type --]
+          <td>[@utils.tableText value=(item.projectPolicyInfo.repIndOrganizationType.name)!"" /]</td>
+          [#-- Owners--]
+          <td>[@utils.tableList list=(item.owners)![]  displayFieldName="name"/]</td>
+          [#-- Geographic Scope--]
+          <td>
+            [@utils.tableList list=(item.geographicScopes)![]  displayFieldName="name"/] <br />
+            [@utils.tableList list=(item.regions)![]  displayFieldName="composedName"/] <br />
+            [@utils.tableList list=(item.countries)![]  displayFieldName="name"/]
           </td>
+        [/#if]
+        [#if !expanded]
+        <td class="text-center">
+          [#local isChecked = ((!reportSynthesis.reportSynthesisFlagshipProgress.policiesIds?seq_contains(item.id))!true) /]
+          [@customForm.checkmark id="policy-${(item.id)!}" name="reportSynthesis.reportSynthesisFlagshipProgress.policiesValue" value="${(item.id)!''}" checked=isChecked editable=editable centered=true/]
+        </td>
         [/#if]
       </tr>
       [/#list]
     [#else]
-      [#if allowPopups]
-        <td class="text-center" colspan="4"><i>No entries added yet.</i></td>
-      [#else]
-        <td class="text-center" colspan="10"><i>No entries added yet.</i></td>
-      [/#if]
+      
     [/#if]
     </tbody>
   </table>
