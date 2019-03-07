@@ -5,6 +5,7 @@ package org.cgiar.ccafs.marlo.data.model;
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import com.google.gson.annotations.Expose;
@@ -33,8 +34,34 @@ public class ReportSynthesisKeyPartnershipExternal extends MarloBaseEntity imple
   private Set<ReportSynthesisKeyPartnershipExternalInstitution> reportSynthesisKeyPartnershipExternalInstitutions =
     new HashSet<ReportSynthesisKeyPartnershipExternalInstitution>(0);
 
+  private List<ReportSynthesisKeyPartnershipExternalMainArea> mainAreas;
+
+
+  private List<ReportSynthesisKeyPartnershipExternalInstitution> institutions;
 
   public ReportSynthesisKeyPartnershipExternal() {
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    if (this.getClass() != obj.getClass()) {
+      return false;
+    }
+    ReportSynthesisKeyPartnershipExternal other = (ReportSynthesisKeyPartnershipExternal) obj;
+    if (this.getId() == null) {
+      if (other.getId() != null) {
+        return false;
+      }
+    } else if (!this.getId().equals(other.getId())) {
+      return false;
+    }
+    return true;
   }
 
 
@@ -48,11 +75,21 @@ public class ReportSynthesisKeyPartnershipExternal extends MarloBaseEntity imple
   }
 
 
+  public List<ReportSynthesisKeyPartnershipExternalInstitution> getInstitutions() {
+    return institutions;
+  }
+
+
   @Override
   public String getLogDeatil() {
     StringBuilder sb = new StringBuilder();
     sb.append("Id : ").append(this.getId());
     return sb.toString();
+  }
+
+
+  public List<ReportSynthesisKeyPartnershipExternalMainArea> getMainAreas() {
+    return mainAreas;
   }
 
 
@@ -84,23 +121,42 @@ public class ReportSynthesisKeyPartnershipExternal extends MarloBaseEntity imple
     return reportSynthesisKeyPartnershipExternalInstitutions;
   }
 
+
   public Set<ReportSynthesisKeyPartnershipExternalMainArea> getReportSynthesisKeyPartnershipExternalMainAreas() {
     return reportSynthesisKeyPartnershipExternalMainAreas;
   }
+
+
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((this.getId() == null) ? 0 : this.getId().hashCode());
+    return result;
+  }
+
 
   @Override
   public boolean isActive() {
     return true;
   }
 
-
   public void setDescription(String description) {
     this.description = description;
   }
 
-
   public void setFile(FileDB file) {
     this.file = file;
+  }
+
+
+  public void setInstitutions(List<ReportSynthesisKeyPartnershipExternalInstitution> institutions) {
+    this.institutions = institutions;
+  }
+
+
+  public void setMainAreas(List<ReportSynthesisKeyPartnershipExternalMainArea> mainAreas) {
+    this.mainAreas = mainAreas;
   }
 
 

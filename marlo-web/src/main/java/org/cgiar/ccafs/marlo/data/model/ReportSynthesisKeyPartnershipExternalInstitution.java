@@ -24,6 +24,29 @@ public class ReportSynthesisKeyPartnershipExternalInstitution extends MarloBaseE
   }
 
 
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    if (this.getClass() != obj.getClass()) {
+      return false;
+    }
+    ReportSynthesisKeyPartnershipExternalInstitution other = (ReportSynthesisKeyPartnershipExternalInstitution) obj;
+    if (this.getId() == null) {
+      if (other.getId() != null) {
+        return false;
+      }
+    } else if (!this.getId().equals(other.getId())) {
+      return false;
+    }
+    return true;
+  }
+
+
   public Institution getInstitution() {
     return institution;
   }
@@ -42,6 +65,7 @@ public class ReportSynthesisKeyPartnershipExternalInstitution extends MarloBaseE
     return "";
   }
 
+
   @Override
   public User getModifiedBy() {
     User u = new User();
@@ -51,6 +75,14 @@ public class ReportSynthesisKeyPartnershipExternalInstitution extends MarloBaseE
 
   public ReportSynthesisKeyPartnershipExternal getReportSynthesisKeyPartnershipExternal() {
     return reportSynthesisKeyPartnershipExternal;
+  }
+
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((this.getId() == null) ? 0 : this.getId().hashCode());
+    return result;
   }
 
   @Override

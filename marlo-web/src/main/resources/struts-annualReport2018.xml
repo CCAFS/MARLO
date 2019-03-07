@@ -123,7 +123,7 @@
     </action>
     
     <!--  2.2 Partnerships  -->
-    <action name="{crp}/externalPartnerships" class="org.cgiar.ccafs.marlo.action.annualReport.ExternalPartnershipsAction">
+    <action name="{crp}/externalPartnerships" class="org.cgiar.ccafs.marlo.action.annualReport.y2018.PartnershipsAction">
       <interceptor-ref name="editReportSynthesisStack" />
       <result name="input">/WEB-INF/crp/views/annualReport2018/AR2018_partnerships.ftl</result>
       <result name="success" type="redirectAction">
