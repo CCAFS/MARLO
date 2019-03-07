@@ -666,11 +666,11 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
       }
 
       // Innovation clear lead
-      if (innovation.getProjectInnovationInfo().getClearLead() == false
-        || innovation.getProjectInnovationInfo().getClearLead() == null) {
-        clearLead = false;
-      } else {
+      if (innovation.getProjectInnovationInfo() != null && innovation.getProjectInnovationInfo().getClearLead() != null
+        && (innovation.getProjectInnovationInfo().getClearLead() == true)) {
         clearLead = true;
+      } else {
+        clearLead = false;
       }
 
       if (innovation.getCountries() != null) {

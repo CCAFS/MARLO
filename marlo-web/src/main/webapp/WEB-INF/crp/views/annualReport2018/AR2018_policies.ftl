@@ -166,12 +166,12 @@
                       <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                       </div>
-                      [@table2ListOfPolicies list=[] allowPopups=false/]
+                      [@table2ListOfPolicies list=(projectPolicies)![] allowPopups=false/]
                     </div>
                   </div>
                 </div>
                 [#-- Table --]
-                [@table2ListOfPolicies list=[] allowPopups=true/]
+                [@table2ListOfPolicies list=(projectPolicies)![] allowPopups=true/]
               </div>
           
           </div>
@@ -216,43 +216,42 @@
       [/#if]
     </thead>
     <tbody>
-     [#if list?has_content]
+    [#if list?has_content]
+      [#list list as item]
       <tr>
         <td>
+          [@utils.tableText value=(item.projectPolicyInfo.title)!"" /]
         </td>
         <td>
+          [@utils.tableText value=(item.projectPolicyInfo.repIndStageProcess.description)!"" /]
         </td>
         [#if !allowPopups]
-          <td>
-          </td>
-          <td>
-          </td>
-          <td>
-          </td>
-          <td>
-          </td>
-          <td>
-          </td>
-          <td>
-          </td>
-          <td>
-          </td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
         [/#if]
         <td>
+          [@utils.tableList list=(item.subIdos)![]  displayFieldName="title"/]
         </td>
         [#if allowPopups]
           <td class="text-center">
-            [@customForm.checkmark id="" name="" checked=false editable=editable centered=true/] 
+            [#local isChecked = ((!reportSynthesis.reportSynthesisFlagshipProgress.policiesIds?seq_contains(item.id))!true) /]
+            [@customForm.checkmark id="policy-${(item.id)!''}" name="reportSynthesis.reportSynthesisFlagshipProgress.policiesValue" value="${(item.id)!''}" checked=isChecked editable=editable centered=true/]
           </td>
         [/#if]
       </tr>
+      [/#list]
+    [#else]
+      [#if allowPopups]
+        <td class="text-center" colspan="4"><i>No entries added yet.</i></td>
       [#else]
-        [#if allowPopups]
-          <td class="text-center" colspan="4"><i>No entries added yet.</i></td>
-        [#else]
-          <td class="text-center" colspan="10"><i>No entries added yet.</i></td>
-        [/#if]
+        <td class="text-center" colspan="10"><i>No entries added yet.</i></td>
       [/#if]
+    [/#if]
     </tbody>
   </table>
 
