@@ -391,7 +391,7 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
           .equals(this.getReportingIndGeographicScopeRegional())) {
         isNational = true;
         List<ProjectInnovationCountry> innovationCountries =
-          projectInnovationInfo.getProjectInnovation().getProjectInnovationCountries().stream()
+          projectInnovationGeographicScopeList.get(0).getProjectInnovation().getProjectInnovationCountries().stream()
             .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase()))
             .collect(Collectors.toList());
         if (innovationCountries != null && innovationCountries.size() > 0) {
@@ -402,6 +402,14 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
           countries = String.join("", countriesSet);
         }
       }
+      /*
+       * if (region != null) {
+       * geographicScope += region;
+       * }
+       * if (countries != null) {
+       * geographicScope += countries;
+       * }
+       */
     }
 
     // Description
