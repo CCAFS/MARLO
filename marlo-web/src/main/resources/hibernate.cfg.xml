@@ -391,6 +391,11 @@
     <mapping resource="xmls/ReportSynthesisSrfProgressTargets.hbm.xml" />   
     <mapping resource="xmls/ReportSynthesisIntellectualAssets.hbm.xml" />    
     <mapping resource="xmls/ReportSynthesisExpenditureCategories.hbm.xml" />    
-    <mapping resource="xmls/ProjectBudgetExecutions.hbm.xml" />        
+    <mapping resource="xmls/ProjectBudgetExecutions.hbm.xml" />
+    <mapping resource="xmls/RepIndPartnershipMainArea.hbm.xml" />
+    <mapping resource="xmls/ReportSynthesisKeyPartnershipExternal.hbm.xml" />
+    <mapping resource="xmls/ReportSynthesisKeyPartnershipExternalInstitutions.hbm.xml" />
+    <mapping resource="xmls/ReportSynthesisKeyPartnershipExternalMainAreas.hbm.xml" />
+    <mapping resource="xmls/ReportSynthesisKeyPartnerships.hbm.xml" />    
   </session-factory>
 </hibernate-configuration>
