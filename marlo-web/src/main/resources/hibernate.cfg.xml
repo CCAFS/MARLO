@@ -397,5 +397,6 @@
     <mapping resource="xmls/ReportSynthesisKeyPartnershipExternalInstitutions.hbm.xml" />
     <mapping resource="xmls/ReportSynthesisKeyPartnershipExternalMainAreas.hbm.xml" />
     <mapping resource="xmls/ReportSynthesisKeyPartnerships.hbm.xml" />    
+    <mapping resource="xmls/ReportSynthesisFlagshipProgressPolicies.hbm.xml" />    
   </session-factory>
 </hibernate-configuration>

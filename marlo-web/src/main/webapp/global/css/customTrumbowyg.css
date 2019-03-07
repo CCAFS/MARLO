@@ -52,3 +52,21 @@ p.decodeHTML.trumbowyg-editor {
   background: none;
   box-shadow: none;
 }
+
+.trumbowyg-modal-box .trumbowyg-modal-button {
+  padding: 0;
+  font-size: 14px;
+}
+
+.trumbowyg-modal-box .trumbowyg-modal-title {
+  padding: 5px 0 5px;
+  font-size: 18px !important;
+}
+
+.trumbowyg-dropdown {
+  width: 150px;
+}
+
+.trumbowyg-dropdown button {
+  font-size: 14px;
+}

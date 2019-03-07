@@ -122,20 +122,21 @@ public class SrfProgressValidator extends BaseValidator {
       action.addMessage(action.getText("Brief Summary"));
       action.addMissingField("Brief Summary");
       action.getInvalidFields().put(
-        "input-reportSynthesis.reportSynthesisSrfProgress.srfTargets[" + i + "].birefSummary",
+        "input-reportSynthesis.reportSynthesisSrfProgress.sloTargets[" + i + "].birefSummary",
         InvalidFieldsMessages.EMPTYFIELD);;
     }
 
     // Validate Brief Summary
+    /*
     if (!(this.isValidString(target.getAdditionalContribution())
       && this.wordCount(target.getAdditionalContribution()) <= 100)) {
       action.addMessage(action.getText("Additional Contribution"));
       action.addMissingField("Additional Contribution");
       action.getInvalidFields().put(
-        "input-reportSynthesis.reportSynthesisSrfProgress.srfTargets[" + i + "].additionalContribution",
+        "input-reportSynthesis.reportSynthesisSrfProgress.sloTargets[" + i + "].additionalContribution",
         InvalidFieldsMessages.EMPTYFIELD);;
     }
-
+*/
   }
 
 }
