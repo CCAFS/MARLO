@@ -23,6 +23,29 @@ public class ReportSynthesisKeyPartnershipExternalMainArea extends MarloBaseEnti
 
 
   @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    if (this.getClass() != obj.getClass()) {
+      return false;
+    }
+    ReportSynthesisKeyPartnershipExternalMainArea other = (ReportSynthesisKeyPartnershipExternalMainArea) obj;
+    if (this.getId() == null) {
+      if (other.getId() != null) {
+        return false;
+      }
+    } else if (!this.getId().equals(other.getId())) {
+      return false;
+    }
+    return true;
+  }
+
+
+  @Override
   public String getLogDeatil() {
     StringBuilder sb = new StringBuilder();
     sb.append("Id : ").append(this.getId());
@@ -43,12 +66,21 @@ public class ReportSynthesisKeyPartnershipExternalMainArea extends MarloBaseEnti
     return u;
   }
 
+
   public RepIndPartnershipMainArea getRepIndPartnershipMainArea() {
     return repIndPartnershipMainArea;
   }
 
   public ReportSynthesisKeyPartnershipExternal getReportSynthesisKeyPartnershipExternal() {
     return reportSynthesisKeyPartnershipExternal;
+  }
+
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((this.getId() == null) ? 0 : this.getId().hashCode());
+    return result;
   }
 
   @Override

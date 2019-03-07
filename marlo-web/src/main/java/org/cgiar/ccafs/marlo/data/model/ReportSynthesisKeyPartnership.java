@@ -5,6 +5,7 @@ package org.cgiar.ccafs.marlo.data.model;
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import com.google.gson.annotations.Expose;
@@ -27,8 +28,33 @@ public class ReportSynthesisKeyPartnership extends MarloAuditableEntity implemen
   private Set<ReportSynthesisKeyPartnershipExternal> reportSynthesisKeyPartnershipExternals =
     new HashSet<ReportSynthesisKeyPartnershipExternal>(0);
 
+  private List<ReportSynthesisKeyPartnershipExternal> partnerships;
+
 
   public ReportSynthesisKeyPartnership() {
+  }
+
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    if (this.getClass() != obj.getClass()) {
+      return false;
+    }
+    ReportSynthesisKeyPartnership other = (ReportSynthesisKeyPartnership) obj;
+    if (this.getId() == null) {
+      if (other.getId() != null) {
+        return false;
+      }
+    } else if (!this.getId().equals(other.getId())) {
+      return false;
+    }
+    return true;
   }
 
 
@@ -38,6 +64,12 @@ public class ReportSynthesisKeyPartnership extends MarloAuditableEntity implemen
     sb.append("Id : ").append(this.getId());
     return sb.toString();
   }
+
+
+  public List<ReportSynthesisKeyPartnershipExternal> getPartnerships() {
+    return partnerships;
+  }
+
 
   public ReportSynthesis getReportSynthesis() {
     return reportSynthesis;
@@ -50,6 +82,19 @@ public class ReportSynthesisKeyPartnership extends MarloAuditableEntity implemen
 
   public String getSummary() {
     return summary;
+  }
+
+
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((this.getId() == null) ? 0 : this.getId().hashCode());
+    return result;
+  }
+
+  public void setPartnerships(List<ReportSynthesisKeyPartnershipExternal> partnerships) {
+    this.partnerships = partnerships;
   }
 
 

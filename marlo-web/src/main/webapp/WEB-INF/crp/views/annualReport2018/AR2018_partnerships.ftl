@@ -17,7 +17,7 @@
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
 
-[#assign customName= "reportSynthesis" /]
+[#assign customName= "reportSynthesis.reportSynthesisKeyPartnership" /]
 [#assign customLabel= "annualReport2018.${currentStage}" /]
 
 [#-- Helptext --]
@@ -48,11 +48,11 @@
             [#-- Partnerships summary --]
             [#if PMU]
               <div class="form-group">
-                [@customForm.textArea name="${customName}.highlights" i18nkey="${customLabel}.highlights" help="${customLabel}.highlights.help" className="limitWords-300" helpIcon=false required=true editable=editable allowTextEditor=true /]
+                [@customForm.textArea name="${customName}.summary" i18nkey="${customLabel}.highlights" help="${customLabel}.highlights.help" className="limitWords-300" helpIcon=false required=true editable=editable allowTextEditor=true /]
               </div>
             [#else]
               <div class="textArea">
-                  <label for="">[@customForm.text name="${customLabel}.highlights" readText=true /]</label>:
+                  <label for="">[@customForm.text name="${customLabel}.summary" readText=true /]</label>:
                   <p>[#if (pmuText?has_content)!false]${pmuText?replace('\n', '<br>')}[#else] [@s.text name="global.prefilledByPmu"/] [/#if]</p>
               </div>
             [/#if]
@@ -61,20 +61,11 @@
               <div class="form-group">
                 <h4 class="simpleTitle headTitle">[@s.text name="${customLabel}.table7.title" /]</h4>
               </div>
-                <div class="listProgramCollaborations">
-                  [#assign keyEPartnersList = [
-                  { 
-                    "id": "1",
-                    "phase": "Phase 1",
-                    "type": "Type 1",
-                    "geographicScope": "Scope 1",
-                    "mainArea": "Area 1"
-                  }
-                ] /]
+                <div class="listProgramCollaborations">                  
               [#--       [#if reportSynthesis.reportSynthesisCrossCgiar.collaborations?has_content]--] 
-                  [#if keyEPartnersList?has_content]
-                  [#list keyEPartnersList as item]
-                    [@addKeyExternalPartnership element=item name="${customName}.table7" index=item_index  isEditable=editable/]
+                  [#if reportSynthesis.reportSynthesisKeyPartnership.partnerships?has_content]
+                  [#list reportSynthesis.reportSynthesisKeyPartnership.partnerships as item]
+                    [@addKeyExternalPartnership element=item name="${customName}.partnerships" index=item_index  isEditable=editable/]
                   [/#list]
                  [/#if]
                 </div>
@@ -87,32 +78,9 @@
               [/#if]
          
              [#-- Projects Key Partnerships --]
-              <h4 class="simpleTitle">[@customForm.text name="${customLabel}.projectsPartnerships.title" param="${currentCycleYear}" /] ([#if PMU]${flagshipPlannedList?size}[#else]${partnerShipList?size}[/#if])</h4>
-              <div class="form-group margin-panel">
-                 [#assign keyPartnersList = [
-                  { 
-                    "id": "1",
-                    "phase": "Phase 1",
-                    "type": "Type 1",
-                    "geographicScope": "Scope 1",
-                    "mainArea": "Area 1"
-                  },
-                  { 
-                    "id": "2",
-                    "phase": "Phase 2",
-                    "type": "Type 2",
-                    "geographicScope": "Scope 2",
-                    "mainArea": "Area 2"
-                  },
-                  { 
-                    "id": "3",
-                    "phase": "Phase 3",
-                    "type": "Type 3",
-                    "geographicScope": "Scope 3",
-                    "mainArea": "Area 3"
-                  }
-                ] /]
-                  [@projectsKeyPartnershipsTable name="${customName}.projectsPartnerships" list=keyPartnersList /]
+              <h4 class="simpleTitle">[@customForm.text name="${customLabel}.projectsPartnerships.title" param="${currentCycleYear}" /] ([#if PMU]${flagshipPlannedList?size}[#else]${projectKeyPartnerships?size}[/#if])</h4>
+              <div class="form-group margin-panel">                 
+                  [@projectsKeyPartnershipsTable name="${customName}.projectsPartnerships" list=projectKeyPartnerships /]
               </div>
               
               [#-- 2.2.2 Cross-CGIAR Partnerships  --]
@@ -178,23 +146,23 @@
 
     <div class="form-group">
       [#-- Description --]
-        [@customForm.input name="${customName}.table7.description" i18nkey="${customLabel}.table7.description" helpIcon=false className="limitWords-30" required=true editable=editable /]
+        [@customForm.input name="${customName}.description" i18nkey="${customLabel}.table7.description" helpIcon=false className="limitWords-30" required=true editable=editable /]
     </div>
 
     <div class="form-group row">
       [#-- Main area of partnership --]
       <div class="col-md-6">
-        [@customForm.elementsListComponent name="${customName}.table7.mainArea" elementType="" elementList="" label="${customLabel}.table7.mainArea" help=""  listName="" keyFieldName="" displayFieldName=""/]
+        [@customForm.elementsListComponent name="${customName}.mainAreas" elementType="repIndPartnershipMainArea" elementList=(element.mainAreas)![] label="${customLabel}.table7.mainArea" help=""  listName="mainAreas" keyFieldName="id" displayFieldName="name"/]
       </div>
       [#local otherArea = true /]
       <div class="col-md-6 block-pleaseSpecify" style="display:${otherArea?string('block', 'none')}">
-        [@customForm.input name="${customName}.table7.otherMainArea" i18nkey="${customLabel}.table7.otherMainArea" className="" required=false editable=editable /]
+        [@customForm.input name="${customName}.otherPartnershipMainArea" i18nkey="${customLabel}.table7.otherMainArea" className="" required=false editable=editable /]
       </div>
     </div>
     
     <div class="form-group">
       [#-- Partners --]
-        [@customForm.elementsListComponent name="${customName}.table7.parnters" elementType="" elementList="" label="${customLabel}.table7.partners" help=""  listName="" keyFieldName="id" displayFieldName="name"/]
+        [@customForm.elementsListComponent name="${customName}.institutions" elementType="institution" elementList=(element.institutions)![] label="${customLabel}.table7.partners" help=""  listName="partners" keyFieldName="id" displayFieldName="composedName"/]
     </div>
     
     [#-- Upload Template --]
@@ -223,9 +191,6 @@
       <tr class="subHeader">
         <th id="tb-projectId">[@s.text name="${customLabel}.projectsPartnerships.id" /]</th>
         <th id="tb-phase">[@s.text name="${customLabel}.projectsPartnerships.phase" /]</th>
-        <th id="tb-type">[@s.text name="${customLabel}.projectsPartnerships.type" /]</th>
-        <th id="tb-geographicScope">[@s.text name="${customLabel}.projectsPartnerships.geographicScope" /]</th>
-        <th id="tb-mainArea" width="34%">[@s.text name="${customLabel}.projectsPartnerships.mainArea" /]</th>
       </tr>
     </thead>
     <tbody>
@@ -233,40 +198,19 @@
           [#list list as item]
           <tr>
             <td class="text-center">
-              [#if (item.id?has_content)!false]
-                ${item.id}
+              [#if (item.project.id?has_content)!false]
+                ${item.project.id}
               [#else]
                 <i style="opacity:0.5">PID</i>
               [/#if]
             </td>
             <td class="text-center">
-              [#if (item.phase?has_content)!false]
-                ${item.phase}
+              [#if (item.lessons?has_content)!false]
+                ${item.lessons}
               [#else]
                 <i style="opacity:0.5">From Projects</i>
               [/#if]
-            </td>
-            <td class="text-center">
-              [#if (item.phase?has_content)!false]
-                ${item.type}
-              [#else]
-                <i style="opacity:0.5">From Projects</i>
-              [/#if]
-            </td>
-            <td class="text-center">
-              [#if item.geographicScope?has_content]
-               ${item.geographicScope}
-              [#else]
-               <i style="opacity:0.5">From Projects</i>
-              [/#if]
-            </td>
-            <td class="text-justify">
-              [#if item.mainArea?has_content]
-               ${item.mainArea}
-              [#else]
-               <i style="opacity:0.5">From Projects</i>
-              [/#if]
-            </td>
+            </td>           
           </tr>
           [/#list]
         [#else]
