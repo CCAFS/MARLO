@@ -92,7 +92,7 @@ public class PoliciesAction extends BaseAction {
   private LiaisonInstitution liaisonInstitution;
   private GlobalUnit loggedCrp;
   private List<LiaisonInstitution> liaisonInstitutions;
-  private List<ProjectPolicy> selectedProjectPolicies;
+  private List<ProjectPolicy> projectPolicies;
 
 
   @Inject
@@ -229,8 +229,9 @@ public class PoliciesAction extends BaseAction {
     return flagshipPlannedList;
   }
 
+
   private void fillProjectPoliciesList(Long phaseID, LiaisonInstitution liaisonInstitution) {
-    selectedProjectPolicies = new ArrayList<>();
+    projectPolicies = new ArrayList<>();
     Phase phase = this.getActualPhase();
     if (this.isFlagship()) {
       // Fill Project policies of the current flagship
@@ -249,7 +250,7 @@ public class PoliciesAction extends BaseAction {
 
           for (ProjectPolicy projectPolicy : plannedProjectPolicies) {
             projectPolicy.getProjectPolicyInfo(phase);
-            selectedProjectPolicies.add(projectPolicy);
+            projectPolicies.add(projectPolicy);
           }
         }
       }
@@ -271,12 +272,13 @@ public class PoliciesAction extends BaseAction {
         projectPolicy.setSelectedFlahsgips(new ArrayList<>());
         projectPolicy.getSelectedFlahsgips().addAll(reportSynthesisFlagshipProgressPolicyDTO.getLiaisonInstitutions());
 
-        selectedProjectPolicies.add(projectPolicy);
+        projectPolicies.add(projectPolicy);
 
       }
     }
 
   }
+
 
   public Long firstFlagship() {
     List<LiaisonInstitution> liaisonInstitutions = new ArrayList<>(loggedCrp.getLiaisonInstitutions().stream()
@@ -288,14 +290,13 @@ public class PoliciesAction extends BaseAction {
     return liaisonInstitutionId;
   }
 
-
   private void
     flagshipProgressProjectPoliciesNewData(ReportSynthesisFlagshipProgress reportSynthesisFlagshipProgressDB) {
 
     List<Long> selectedPs = new ArrayList<>();
     List<Long> selectedPoliciesIds = new ArrayList<>();
 
-    for (ProjectPolicy projectPolicy : selectedProjectPolicies) {
+    for (ProjectPolicy projectPolicy : projectPolicies) {
       selectedPoliciesIds.add(projectPolicy.getId());
     }
 
@@ -373,7 +374,6 @@ public class PoliciesAction extends BaseAction {
 
   }
 
-
   private Path getAutoSaveFilePath() {
     String composedClassName = reportSynthesis.getClass().getSimpleName();
     String actionFile = this.getActionName().replace("/", "_");
@@ -381,6 +381,7 @@ public class PoliciesAction extends BaseAction {
       + "_" + this.getActualPhase().getYear() + "_" + actionFile + ".json";
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
+
 
   public LiaisonInstitution getLiaisonInstitution() {
     return liaisonInstitution;
@@ -395,17 +396,17 @@ public class PoliciesAction extends BaseAction {
     return liaisonInstitutions;
   }
 
+
   public GlobalUnit getLoggedCrp() {
     return loggedCrp;
   }
 
+  public List<ProjectPolicy> getProjectPolicies() {
+    return projectPolicies;
+  }
 
   public ReportSynthesis getReportSynthesis() {
     return reportSynthesis;
-  }
-
-  public List<ProjectPolicy> getSelectedProjectPolicies() {
-    return selectedProjectPolicies;
   }
 
 
@@ -416,7 +417,6 @@ public class PoliciesAction extends BaseAction {
   public String getTransaction() {
     return transaction;
   }
-
 
   public boolean isFlagship() {
     boolean isFP = false;
@@ -431,6 +431,7 @@ public class PoliciesAction extends BaseAction {
     }
     return isFP;
   }
+
 
   @Override
   public boolean isPMU() {
@@ -453,7 +454,6 @@ public class PoliciesAction extends BaseAction {
       return result;
     }
   }
-
 
   @Override
   public void prepare() throws Exception {
@@ -614,6 +614,7 @@ public class PoliciesAction extends BaseAction {
 
   }
 
+
   @Override
   public String save() {
     if (this.hasPermission("canEdit")) {
@@ -665,7 +666,6 @@ public class PoliciesAction extends BaseAction {
     }
   }
 
-
   public void setLiaisonInstitution(LiaisonInstitution liaisonInstitution) {
     this.liaisonInstitution = liaisonInstitution;
   }
@@ -675,6 +675,7 @@ public class PoliciesAction extends BaseAction {
     this.liaisonInstitutionID = liaisonInstitutionID;
   }
 
+
   public void setLiaisonInstitutions(List<LiaisonInstitution> liaisonInstitutions) {
     this.liaisonInstitutions = liaisonInstitutions;
   }
@@ -683,13 +684,13 @@ public class PoliciesAction extends BaseAction {
     this.loggedCrp = loggedCrp;
   }
 
+  public void setProjectPolicies(List<ProjectPolicy> projectPolicies) {
+    this.projectPolicies = projectPolicies;
+  }
+
 
   public void setReportSynthesis(ReportSynthesis reportSynthesis) {
     this.reportSynthesis = reportSynthesis;
-  }
-
-  public void setSelectedProjectPolicies(List<ProjectPolicy> selectedProjectPolicies) {
-    this.selectedProjectPolicies = selectedProjectPolicies;
   }
 
   public void setSynthesisID(Long synthesisID) {
