@@ -202,7 +202,7 @@
           <th class="text-center" rowspan="2">[@s.text name="${customLabel}.table2.whose" /]</th>
           <th class="text-center" rowspan="2">[@s.text name="${customLabel}.table2.geoScope" /]</th>
         [/#if]
-        [#if PMU && allowPopups]
+        [#if allowPopups]
           <th class="col-md-1 text-center" rowspan="2">[@s.text name="${customLabel}.table2.includeAR" /]</th>
         [/#if]
       </tr>
