@@ -197,8 +197,9 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
         action.getInvalidFields().put("input-expectedStudy.projectExpectedStudyInfo.isSrfTarget",
           InvalidFieldsMessages.EMPTYFIELD);
       } else {
-        if (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getIsSrfTarget()
-          .equals("targetsOptionYes")) {
+        if (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getIsSrfTarget() != null
+          && projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getIsSrfTarget()
+            .equals("targetsOptionYes")) {
           // Validate Srf Targets
           if (projectExpectedStudy.getSrfTargets() == null || projectExpectedStudy.getSrfTargets().isEmpty()) {
             action.addMessage(action.getText("targets"));

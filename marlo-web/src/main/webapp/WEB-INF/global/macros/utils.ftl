@@ -78,14 +78,22 @@
 
 [#macro tableList list displayFieldName="title"]
   [#local levels = displayFieldName?split(".")]
+  [#local valuesArray = [] /]
   [#if (list?has_content)!false]
-    <ul style="padding: 0;">
-      [#list list as item]
-        [#local itemValue = (item)!'null' /]
-        [#list levels as level][#local itemValue = (itemValue[level])!'null' /][/#list]
-        <li style="list-style-position: inside;">${itemValue}</li>
-      [/#list]
-    </ul>
+    
+    [#list list as item]
+      [#local itemValue = (item)!'null' /]
+      [#list levels as level][#local itemValue = (itemValue[level])!'null' /][/#list]
+      [#local valuesArray = valuesArray + [itemValue] /]
+    [/#list]     
+    
+    [#if valuesArray?size > 1 ]
+      <ul style="padding: 0">
+        [#list valuesArray as item]<li style="list-style-position: inside;">${item}</li>[/#list]
+      </ul>
+    [#else]
+      ${valuesArray[0]}
+    [/#if]
   [#else]
     <i style="opacity:0.8"><nobr>[@s.text name="global.notDefined"/]</nobr></i>
   [/#if]

@@ -6,7 +6,7 @@
   <package name="annualReport2018" namespace="/annualReport2018" extends="marlo-default">
     
     <!--  1.1 CRP Progress Towards Intermediate Outcomes and SLOs -->
-    <action name="{crp}/crpProgress" class="org.cgiar.ccafs.marlo.action.annualReport.CrpProgressAction">
+    <action name="{crp}/crpProgress" class="org.cgiar.ccafs.marlo.action.annualReport.y2018.SrfProgressAction">
       <interceptor-ref name="editReportSynthesisStack" />
       <result name="input">/WEB-INF/crp/views/annualReport2018/AR2018_crpProgress.ftl</result>
       <result name="success" type="redirectAction">
@@ -43,26 +43,13 @@
         <param name="edit">true</param>        
       </result>
     </action>
-    
-    <!--  2.1 Variance from Planned Program  -->
-    <action name="{crp}/plannedVariance" class="org.cgiar.ccafs.marlo.action.annualReport.ProgramVarianceAction">
+
+     <!--  2.1 CRP Management and Governance  -->
+    <action name="{crp}/governance" class="org.cgiar.ccafs.marlo.action.annualReport.ManagementGovernanceAction">
       <interceptor-ref name="editReportSynthesisStack" />
-      <result name="input">/WEB-INF/crp/views/annualReport2018/AR2018_TEMPLATE.ftl</result>
+      <result name="input">/WEB-INF/crp/views/annualReport2018/AR2018_governance.ftl</result>
       <result name="success" type="redirectAction">
-        <param name="actionName">${crpSession}/plannedVariance</param>
-        <param name="liaisonInstitutionID">${liaisonInstitutionID}</param>
-        <param name="synthesisID">${synthesisID}</param>
-        <param name="phaseID">${phaseID}</param>
-        <param name="edit">true</param>        
-      </result>
-    </action>
-    
-    <!--  2.2 Use of W1-2 Funding  -->
-    <action name="{crp}/fundingUse" class="org.cgiar.ccafs.marlo.action.annualReport.FundingUseAction">
-      <interceptor-ref name="editReportSynthesisStack" />
-      <result name="input">/WEB-INF/crp/views/annualReport2018/AR2018_fundingUse.ftl</result>
-      <result name="success" type="redirectAction">
-        <param name="actionName">${crpSession}/fundingUse</param>
+        <param name="actionName">${crpSession}/governance</param>
         <param name="liaisonInstitutionID">${liaisonInstitutionID}</param>
         <param name="synthesisID">${synthesisID}</param>
         <param name="phaseID">${phaseID}</param>
@@ -84,7 +71,7 @@
     </action>
     
     <!--  2.3 Intellectual Assets   -->
-    <action name="{crp}/intellectualAssets" class="org.cgiar.ccafs.marlo.action.annualReport.ExternalPartnershipsAction">
+    <action name="{crp}/intellectualAssets" class="org.cgiar.ccafs.marlo.action.annualReport.y2018.IntellectualAssetsAction">
       <interceptor-ref name="editReportSynthesisStack" />
       <result name="input">/WEB-INF/crp/views/annualReport2018/AR2018_intellectualAssets.ftl</result>
       <result name="success" type="redirectAction">
@@ -121,21 +108,9 @@
         <param name="edit">true</param>        
       </result>
     </action>
+   
     
-    <!--  3.1 CRP Management and Governance  -->
-    <action name="{crp}/governance" class="org.cgiar.ccafs.marlo.action.annualReport.ManagementGovernanceAction">
-      <interceptor-ref name="editReportSynthesisStack" />
-      <result name="input">/WEB-INF/crp/views/annualReport2018/AR2018_governance.ftl</result>
-      <result name="success" type="redirectAction">
-        <param name="actionName">${crpSession}/governance</param>
-        <param name="liaisonInstitutionID">${liaisonInstitutionID}</param>
-        <param name="synthesisID">${synthesisID}</param>
-        <param name="phaseID">${phaseID}</param>
-        <param name="edit">true</param>        
-      </result>
-    </action>
-    
-    <!--  3.2 Management of Risks to Your CRP  -->
+    <!--  2.6 Management of Risks to Your CRP  -->
     <action name="{crp}/risks" class="org.cgiar.ccafs.marlo.action.annualReport.RisksAction">
       <interceptor-ref name="editReportSynthesisStack" />
       <result name="input">/WEB-INF/crp/views/annualReport2018/AR2018_risks.ftl</result>
@@ -148,7 +123,20 @@
       </result>
     </action>
     
-    <!--  3.3 Financial Summary  -->
+    <!--  2.7 Use of W1-2 Funding  -->
+    <action name="{crp}/fundingUse" class="org.cgiar.ccafs.marlo.action.annualReport.FundingUseAction">
+      <interceptor-ref name="editReportSynthesisStack" />
+      <result name="input">/WEB-INF/crp/views/annualReport2018/AR2018_fundingUse.ftl</result>
+      <result name="success" type="redirectAction">
+        <param name="actionName">${crpSession}/fundingUse</param>
+        <param name="liaisonInstitutionID">${liaisonInstitutionID}</param>
+        <param name="synthesisID">${synthesisID}</param>
+        <param name="phaseID">${phaseID}</param>
+        <param name="edit">true</param>        
+      </result>
+    </action>
+    
+    <!--  3.1 Financial Summary  -->
     <action name="{crp}/financial" class="org.cgiar.ccafs.marlo.action.annualReport.FinancialSummaryAction">
       <interceptor-ref name="editReportSynthesisStack" />
       <result name="input">/WEB-INF/crp/views/annualReport2018/AR2018_financial.ftl</result>
@@ -164,7 +152,7 @@
     <!--  Influence - Common reporting indicators  -->
     <action name="{crp}/influence" class="org.cgiar.ccafs.marlo.action.annualReport.IndicatorsAction">
       <interceptor-ref name="editReportSynthesisStack" />
-      <result name="input">/WEB-INF/crp/views/annualReport2018/AR2018_TEMPLATE.ftl</result>
+      <result name="input">/WEB-INF/crp/views/annualReport2018/AR2018_influence.ftl</result>
       <result name="success" type="redirectAction">
         <param name="actionName">${crpSession}/influence</param>
         <param name="liaisonInstitutionID">${liaisonInstitutionID}</param>
@@ -177,9 +165,22 @@
     <!--  Control - Common reporting indicators  -->
     <action name="{crp}/control" class="org.cgiar.ccafs.marlo.action.annualReport.IndicatorsAction">
       <interceptor-ref name="editReportSynthesisStack" />
-      <result name="input">/WEB-INF/crp/views/annualReport2018/AR2018_TEMPLATE.ftl</result>
+      <result name="input">/WEB-INF/crp/views/annualReport2018/AR2018_control.ftl</result>
       <result name="success" type="redirectAction">
         <param name="actionName">${crpSession}/control</param>
+        <param name="liaisonInstitutionID">${liaisonInstitutionID}</param>
+        <param name="synthesisID">${synthesisID}</param>
+        <param name="phaseID">${phaseID}</param>
+        <param name="edit">true</param>        
+      </result>
+    </action>
+    
+    <!--  Narrative Section  -->
+    <action name="{crp}/narrative" class="org.cgiar.ccafs.marlo.action.annualReport.EfficiencyAction">
+      <interceptor-ref name="editReportSynthesisStack" />
+      <result name="input">/WEB-INF/crp/views/annualReport2018/AR2018_narrative.ftl</result>
+      <result name="success" type="redirectAction">
+        <param name="actionName">${crpSession}/narrative</param>
         <param name="liaisonInstitutionID">${liaisonInstitutionID}</param>
         <param name="synthesisID">${synthesisID}</param>
         <param name="phaseID">${phaseID}</param>

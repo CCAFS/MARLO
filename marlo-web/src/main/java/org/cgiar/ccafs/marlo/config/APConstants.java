@@ -117,6 +117,8 @@ public final class APConstants {
   public static final String CRP_LP6_ACTIVE = "crp_lp6_active";
   public static final String CRP_LP6_CONTRIBUTION_VALUE = "crp_lp6_contribution_value";
   public static final String CRP_LOCATION_CSV_ACTIVITIES = "crp_location_csv_activities";
+  public static final String CRP_VIEW_HIGHLIGTHS = "crp_view_highlights";
+  public static final String CRP_HAS_DISEMINATION = "crp_has_disemination";
 
 
   // Email parameters to copy to FL FM CL
@@ -617,6 +619,7 @@ public final class APConstants {
   public static final String SUMMARY_PARTNER_TYPE = "partnerType";
   public static final String SUMMARY_STUDY_TYPE = "studyType";
   public static final String SUMMARY_DELIVERABLE_PPA = "ppaPartnerID";
+  public static final String SUMMARY_DELIVERABLE_ALL_YEARS = "showAllYears";
 
   public static final String CRP_HAS_SPECIFIC_MANAGEMENT_DELIVERABLE_TYPES =
     "crp_has_specific_management_deliverable_type";

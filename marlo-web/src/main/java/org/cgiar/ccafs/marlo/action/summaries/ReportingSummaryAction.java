@@ -87,7 +87,6 @@ import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyCountry;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyCrp;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyFlagship;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInfo;
-import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInnovation;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInstitution;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyLink;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyPolicy;
@@ -218,6 +217,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
   private long projectID;
   private ProjectInfo projectInfo;
   private List<ProjectLp6Contribution> projectLp6Contributions;
+  private List<ProjectInnovation> innovationsList;
 
   // Managers
   private final CrpProgramManager programManager;
@@ -1023,6 +1023,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     masterReport.getParameterValues().put("i8nProjectPolicyClimateChange", this.getText("projectPolicy.climateChange"));
     masterReport.getParameterValues().put("i8nProjectPolicyGeographicScope",
       this.getText("projectPolicy.geographicScope"));
+    masterReport.getParameterValues().put("i8nProjectPolicyNarrative", this.getText("policy.narrative"));
 
     return masterReport;
   }
@@ -1962,9 +1963,8 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
               .parseInt(ProjectStatusEnum.Cancelled.getStatusId())))
         .collect(Collectors.toList());
 
-      deliverables
-        .sort((p1, p2) -> p1.getDeliverableInfo(this.getSelectedPhase()).isRequieriedReporting(this.getSelectedYear())
-          .compareTo(p2.getDeliverableInfo(this.getSelectedPhase()).isRequieriedReporting(this.getSelectedYear())));
+      deliverables.sort((p1, p2) -> this.isDeliverableComplete(p1.getId(), this.getSelectedPhase().getId())
+        .compareTo(this.isDeliverableComplete(p2.getId(), this.getSelectedPhase().getId())));
       HashSet<Deliverable> deliverablesHL = new HashSet<>();
       deliverablesHL.addAll(deliverables);
       deliverables.clear();
@@ -2442,14 +2442,17 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         for (DeliverableUser deliverableUser : deliverable.getDeliverableUsers().stream()
           .filter(du -> du.isActive() && du.getPhase().equals(this.getSelectedPhase())).collect(Collectors.toList())) {
           creatorAuthors += "<br>● ";
-          if (!deliverableUser.getLastName().isEmpty()) {
-            creatorAuthors += deliverableUser.getLastName() + " - ";
-          }
-          if (!deliverableUser.getFirstName().isEmpty()) {
-            creatorAuthors += deliverableUser.getFirstName();
-          }
-          if (!deliverableUser.getElementId().isEmpty()) {
-            creatorAuthors += "&lt;" + deliverableUser.getElementId() + "&gt;";
+
+          if (deliverableUser.getElementId() != null) {
+            if (!deliverableUser.getLastName().isEmpty()) {
+              creatorAuthors += deliverableUser.getLastName() + " - ";
+            }
+            if (!deliverableUser.getFirstName().isEmpty()) {
+              creatorAuthors += deliverableUser.getFirstName();
+            }
+            if (!deliverableUser.getElementId().isEmpty()) {
+              creatorAuthors += "&lt;" + deliverableUser.getElementId() + "&gt;";
+            }
           }
         }
         if (creatorAuthors.isEmpty()) {
@@ -4470,10 +4473,10 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     TypedTableModel model = new TypedTableModel(
       new String[] {"id", "title", "year", "investment", "organizationType", "levelMaturity", "whosePolicy",
         "outcomeCaseReport", "innovations", "contributingCRP", "subIDOs", "gender", "youth", "capdev", "climateChange",
-        "geographicScope"},
+        "geographicScope", "narrative"},
       new Class[] {Long.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        String.class},
+        String.class, String.class},
       0);
     for (ProjectPolicy projectPolicy : project.getProjectPolicies().stream()
       .filter(pl -> pl.getProject() != null && pl.getProject().getId().equals(projectID)
@@ -4483,7 +4486,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       String title = null, year = null, investment = null, organizationType = null, levelMaturity = null,
         whosePolicy = null, outcomeCaseReport = null, innovations = null, contributingCRP = null, subIDOs = null,
         gender = null, youth = null, capdev = null, climateChange = null, geographicScope = null, region = "",
-        countries = "";
+        countries = "", narrative = "";
 
       Boolean isRegional = false, isNational = false;
 
@@ -4491,6 +4494,13 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       if (projectPolicy.getProjectPolicyInfo() != null && projectPolicy.getProjectPolicyInfo().getTitle() != null) {
         title = projectPolicy.getProjectPolicyInfo().getTitle();
       }
+
+      // Narrative
+      if (projectPolicy.getProjectPolicyInfo() != null
+        && projectPolicy.getProjectPolicyInfo().getNarrativeEvidence() != null) {
+        narrative = projectPolicy.getProjectPolicyInfo().getNarrativeEvidence();
+      }
+
       // Year
       if (projectPolicy.getProjectPolicyInfo() != null && projectPolicy.getProjectPolicyInfo().getYear() != null) {
         year = projectPolicy.getProjectPolicyInfo().getYear().toString();
@@ -4517,10 +4527,11 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       }
 
       // Owners
-      List<ProjectPolicyOwner> pList = projectPolicyOwnerManager.findAll().stream()
-        .filter(p -> p.getPhase().getId().equals(this.getSelectedPhase().getId())
-          && p.getProjectPolicy().getId().equals(projectPolicy.getId()))
-        .collect(Collectors.toList());
+      List<ProjectPolicyOwner> pList = projectPolicyOwnerManager.findAll();
+      if (pList != null) {
+        pList = pList.stream().filter(p -> p.getPhase().getId().equals(this.getSelectedPhase().getId())
+          && p.getProjectPolicy().getId().equals(projectPolicy.getId())).collect(Collectors.toList());
+      }
 
       if (pList != null) {
         Set<String> ownersSet = new HashSet<>();
@@ -4533,19 +4544,22 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       }
 
       // Outcomes case report
-      List<ProjectExpectedStudyPolicy> expectedStudyList = projectExpectedStudyPolicyManager.findAll().stream()
-        .filter(p -> p.getPhase().getId().equals(this.getActualPhase().getId())
-          && p.getProjectPolicy().getId().equals(projectPolicy.getId()))
-        .collect(Collectors.toList());
+      List<ProjectExpectedStudyPolicy> expectedStudyList = projectExpectedStudyPolicyManager.findAll();
       if (expectedStudyList != null) {
-        Set<String> evidencesSet = new HashSet<>();
-        for (ProjectExpectedStudyPolicy evidences : expectedStudyList) {
-          if (evidences.getProjectExpectedStudy() != null
-            && evidences.getProjectExpectedStudy().getComposedName() != null) {
-            evidencesSet.add("<br>&nbsp;&nbsp;&nbsp;&nbsp; ● " + evidences.getProjectExpectedStudy().getComposedName());
+        expectedStudyList =
+          expectedStudyList.stream().filter(p -> p.getPhase().getId().equals(this.getActualPhase().getId())
+            && p.getProjectPolicy().getId().equals(projectPolicy.getId())).collect(Collectors.toList());
+        if (expectedStudyList != null) {
+          Set<String> evidencesSet = new HashSet<>();
+          for (ProjectExpectedStudyPolicy evidences : expectedStudyList) {
+            if (evidences.getProjectExpectedStudy() != null
+              && evidences.getProjectExpectedStudy().getComposedName() != null) {
+              evidencesSet
+                .add("<br>&nbsp;&nbsp;&nbsp;&nbsp; ● " + evidences.getProjectExpectedStudy().getComposedName());
+            }
           }
+          outcomeCaseReport = String.join("", evidencesSet);
         }
-        outcomeCaseReport = String.join("", evidencesSet);
       }
 
       // Innovation
@@ -4684,7 +4698,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
        */
       model.addRow(new Object[] {projectPolicy.getId(), title, year, investment, organizationType, levelMaturity,
         whosePolicy, outcomeCaseReport, innovations, contributingCRP, subIDOs, gender, youth, capdev, climateChange,
-        geographicScope});
+        geographicScope, narrative});
 
     }
     return model;
@@ -4873,16 +4887,23 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           cgiarInnovations = studyinfo.getCgiarInnovation();
         }
         // Innovations
-        if (projectExpectedStudy.getInnovations() != null) {
+        if (this.project != null) {
+          Project projectL = this.projectManager.getProjectById(this.projectID);
+
+          List<ProjectInnovation> innovations =
+            projectL.getProjectInnovations().stream().filter(c -> c.isActive()).collect(Collectors.toList());
           Set<String> innovationsSet = new HashSet<>();
-          for (ProjectExpectedStudyInnovation projectExpectedStudyInnovation : projectExpectedStudy.getInnovations()) {
-            projectExpectedStudyInnovation.setProjectInnovation(projectInnovationManager
-              .getProjectInnovationById(projectExpectedStudyInnovation.getProjectInnovation().getId()));
-            innovationsSet.add("<br>&nbsp;&nbsp;&nbsp;&nbsp; ● "
-              + projectExpectedStudyInnovation.getProjectInnovation().getProjectInnovationInfo().getTitle());
+          for (ProjectInnovation projectInnovation : innovations) {
+            if (projectInnovation != null
+              && projectInnovation.getProjectInnovationInfo(this.getActualPhase()) != null) {
+              // this.innovationsList.add(projectInnovation);
+              innovationsSet
+                .add("<br>&nbsp;&nbsp;&nbsp;&nbsp; ● " + projectInnovation.getProjectInnovationInfo().getTitle());
+            }
           }
           cgiarInnovationsList = String.join("", innovationsSet);
         }
+
         // SubIdos
         List<ProjectExpectedStudySubIdo> subIdosList = projectExpectedStudy.getProjectExpectedStudySubIdos().stream()
           .filter(s -> s.isActive() && s.getPhase() != null && s.getPhase().equals(this.getSelectedPhase()))

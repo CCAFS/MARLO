@@ -593,6 +593,7 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
   public void validateInnovations(BaseAction action, Long projectID) {
     // Getting the project information.
     Project project = projectManager.getProjectById(projectID);
+    Boolean clearLead = null;
 
     Phase phase = action.getActualPhase();
 
@@ -664,13 +665,21 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
           .filter(c -> c.isActive() && c.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
       }
 
+      // Innovation clear lead
+      if (innovation.getProjectInnovationInfo().getClearLead() == false
+        || innovation.getProjectInnovationInfo().getClearLead() == null) {
+        clearLead = false;
+      } else {
+        clearLead = true;
+      }
+
       if (innovation.getCountries() != null) {
         for (ProjectInnovationCountry country : innovation.getCountries()) {
           innovation.getCountriesIds().add(country.getLocElement().getIsoAlpha2());
         }
       }
 
-      projectInnovationValidator.validate(action, project, innovation, false);
+      projectInnovationValidator.validate(action, project, innovation, clearLead, false);
     }
 
   }
@@ -983,6 +992,12 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
 
         deliverable.getDeliverableInfo(phase);
 
+        // Setup Geographic Scope
+        if (deliverable.getDeliverableGeographicScopes() != null) {
+          deliverable.setGeographicScopes(new ArrayList<>(deliverable.getDeliverableGeographicScopes().stream()
+            .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
+        }
+
         // Deliverable Countries List
         if (deliverable.getDeliverableLocations() == null) {
           deliverable.setCountries(new ArrayList<>());
@@ -1248,15 +1263,6 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
     // Getting the project information.
     Project project = projectManager.getProjectById(projectID);
     project.setExpectedStudies(new ArrayList<ProjectExpectedStudy>());
-
-    List<ProjectExpectedStudy> ownerStudies = project.getProjectExpectedStudies().stream()
-      .filter(c -> c.isActive() && c.getProjectExpectedStudyInfo(action.getActualPhase()) != null)
-      .collect(Collectors.toList());
-
-    // Owner Studies
-    if (ownerStudies != null && !ownerStudies.isEmpty()) {
-      project.getExpectedStudies().addAll(ownerStudies);
-    }
 
     // Shared Studies
     List<ExpectedStudyProject> sharedStudies = project.getExpectedStudyProjects().stream()

@@ -79,6 +79,7 @@
       <div class="col-md-3"></div>
       <div class="col-md-3"></div>
       <div class="col-md-3">
+        <div class="overlay" style="display:${isNew?string('block', 'none')}"></div>
         [@customForm.select name="${customName}.projectPolicyInfo.year" className="setSelect2" i18nkey="policy.year" listName="years" required=true editable=editable/]
       </div>
     </div>
@@ -104,7 +105,7 @@
     <div class="form-group row">
       [#-- Implementing Organization Type --]
       <div class="col-md-6">
-        [@customForm.select name="${customName}.projectPolicyInfo.repIndOrganizationType.id" className="setSelect2 policyOrganizationType" i18nkey="policy.organizationType" help="policy.organizationType.help" listName="organizationTypes" keyFieldName="id"  displayFieldName="name" required=true editable=editable/]
+        [@customForm.select name="${customName}.projectPolicyInfo.repIndOrganizationType.id" className="setSelect2 policyOrganizationType" i18nkey="policy.organizationType" help="policy.organizationType.help" listName="organizationTypes" keyFieldName="id"  displayFieldName="name" required=false editable=editable/]
       </div>
       [#-- Level of Maturity of the Process: (Before Stage in Process) --]
       <div class="col-md-6">
@@ -125,13 +126,7 @@
         [@customForm.input name="${customName}.projectPolicyInfo.other" i18nkey="policy.otherOwner" className="" required=false editable=editable /]
       </div>
     </div>
-    
-    [#local isResearchMaturity = ((element.projectPolicyInfo.repIndStageProcess.id == 3))!false]
-    [#-- Narrative --] 
-    <div class="form-group block-researchMaturity" style="display:${isResearchMaturity?string('block', 'none')}">
-      [@customForm.textArea name="${customName}.projectPolicyInfo.narrativeEvidence"  i18nkey="policy.narrative"  placeholder="" className="limitWords-200" help="policy.narrative.helpText" helpIcon=false required=false editable=editable /]
-    </div>
-          
+        
     [#-- Evidence (OICR)  --]
     [#local isEvidenceRequired = ([4, 5]?seq_contains(element.projectPolicyInfo.repIndStageProcess.id))!false /]
     <div class="form-group evidences-block">
@@ -139,6 +134,13 @@
       <div class="note">[@s.text name="policy.evidence.note"][@s.param] <a href="[@s.url namespace="/projects" action='${crpSession}/studies'][@s.param name='projectID']${(projectID)!}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" target="__BLANK">clicking here</a>[/@][/@]</div>
     </div>
     
+    [#local isResearchMaturity = ((element.projectPolicyInfo.repIndStageProcess.id == 3))!false]
+    [#-- Narrative --] 
+    <div class="form-group block-researchMaturity" style="display:${isResearchMaturity?string('block', 'none')}">
+      [@customForm.textArea name="${customName}.projectPolicyInfo.narrativeEvidence"  i18nkey="policy.narrative"  placeholder="" className="limitWords-200" help="policy.narrative.helpText" helpIcon=false required=false editable=editable /]
+    <br>
+    </div>
+          
     [#-- Innovations  --]
     <div class="form-group">
       [@customForm.elementsListComponent name="${customName}.innovations" elementType="projectInnovation" elementList=element.innovations label="policy.innovations" helpIcon=false listName="innovationList" keyFieldName="id" displayFieldName="composedName" required=false /]

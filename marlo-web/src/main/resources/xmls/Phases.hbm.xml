@@ -590,5 +590,24 @@
       <one-to-many
         class="org.cgiar.ccafs.marlo.data.model.ProjectInnovationRegion" />
     </set>
+    
+    <set name="deliverableCrossCuttingMarkers"
+      table="deliverable_cross_cutting_markers" inverse="true"
+      lazy="true" fetch="select">
+      <key>
+        <column name="id_phase" />
+      </key>
+      <one-to-many
+        class="org.cgiar.ccafs.marlo.data.model.DeliverableCrossCuttingMarker" />
+    </set>
+    <set name="deliverableGeographicScopes"
+      table="deliverable_geographic_scopes" inverse="true"
+      lazy="true" fetch="select">
+      <key>
+        <column name="id_phase" />
+      </key>
+      <one-to-many
+        class="org.cgiar.ccafs.marlo.data.model.DeliverableGeographicScope" />
+    </set>
   </class>
 </hibernate-mapping>

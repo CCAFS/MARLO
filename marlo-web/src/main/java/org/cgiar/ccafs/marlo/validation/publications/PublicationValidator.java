@@ -24,6 +24,7 @@ import org.cgiar.ccafs.marlo.data.model.CgiarCrossCuttingMarker;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableCrossCuttingMarker;
 import org.cgiar.ccafs.marlo.data.model.DeliverableDissemination;
+import org.cgiar.ccafs.marlo.data.model.DeliverableGeographicScope;
 import org.cgiar.ccafs.marlo.data.model.DeliverableInfo;
 import org.cgiar.ccafs.marlo.data.model.DeliverableIntellectualAsset;
 import org.cgiar.ccafs.marlo.data.model.DeliverableIntellectualAssetTypeEnum;
@@ -122,40 +123,43 @@ public class PublicationValidator extends BaseValidator {
           action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Funding Sources"}));
       }
 
-      // Validate Dissemination
-      if (deliverable.getDissemination() != null) {
-        this.validateDissemination(deliverable.getDissemination(), saving, action);
-      } else {
-        action.addMessage(action.getText("project.deliverable.dissemination.v.dissemination"));
-        action.getInvalidFields().put("input-deliverable.dissemination.alreadyDisseminated",
-          InvalidFieldsMessages.EMPTYFIELD);
-      }
+      if (action.hasSpecificities(APConstants.CRP_HAS_DISEMINATION)) {
 
-      // Validate Intellectual Asset
-      if (action.hasSpecificities(action.crpDeliverableIntellectualAsset())) {
-        if (deliverable.getIntellectualAsset() != null
-          && deliverable.getIntellectualAsset().getHasPatentPvp() != null) {
-          this.validateIntellectualAsset(deliverable.getIntellectualAsset(), action);
+        // Validate Dissemination
+        if (deliverable.getDissemination() != null) {
+          this.validateDissemination(deliverable.getDissemination(), saving, action);
         } else {
-          action.addMessage(action.getText("deliverable.intellectualAsset.hasPatentPvp"));
-          action.getInvalidFields().put("input-deliverable.intellectualAsset.hasPatentPvp",
+          action.addMessage(action.getText("project.deliverable.dissemination.v.dissemination"));
+          action.getInvalidFields().put("input-deliverable.dissemination.alreadyDisseminated",
             InvalidFieldsMessages.EMPTYFIELD);
         }
+
+        // Validate Intellectual Asset
+        if (action.hasSpecificities(action.crpDeliverableIntellectualAsset())) {
+          if (deliverable.getIntellectualAsset() != null
+            && deliverable.getIntellectualAsset().getHasPatentPvp() != null) {
+            this.validateIntellectualAsset(deliverable.getIntellectualAsset(), action);
+          } else {
+            action.addMessage(action.getText("deliverable.intellectualAsset.hasPatentPvp"));
+            action.getInvalidFields().put("input-deliverable.intellectualAsset.hasPatentPvp",
+              InvalidFieldsMessages.EMPTYFIELD);
+          }
+        }
+
+        // Validate Deliverable Participant
+        if (deliverable.getDeliverableParticipant() != null
+          && deliverable.getDeliverableParticipant().getHasParticipants() != null) {
+          this.validateDeliverableParticipant(deliverable.getDeliverableParticipant(), action);
+        } else {
+          action.addMessage("hasParticipants");
+          action.getInvalidFields().put("input-deliverable.deliverableParticipant.hasParticipants",
+            InvalidFieldsMessages.EMPTYFIELD);
+        }
+
+        // Validate Publication Meta-data
+        this.validatePublicationMetadata(deliverable.getPublication(), deliverable.getDeliverableInfo(), action);
+
       }
-
-      // Validate Deliverable Participant
-      if (deliverable.getDeliverableParticipant() != null
-        && deliverable.getDeliverableParticipant().getHasParticipants() != null) {
-        this.validateDeliverableParticipant(deliverable.getDeliverableParticipant(), action);
-      } else {
-        action.addMessage("hasParticipants");
-        action.getInvalidFields().put("input-deliverable.deliverableParticipant.hasParticipants",
-          InvalidFieldsMessages.EMPTYFIELD);
-      }
-
-      // Validate Publication Meta-data
-      this.validatePublicationMetadata(deliverable.getPublication(), deliverable.getDeliverableInfo(), action);
-
     }
     if (!action.getFieldErrors().isEmpty()) {
       action.addActionError(action.getText("saving.fields.required"));
@@ -208,34 +212,57 @@ public class PublicationValidator extends BaseValidator {
         InvalidFieldsMessages.EMPTYFIELD);
     }
 
-    // Deliverable Licenses
-    if (deliverableInfo.getAdoptedLicense() != null) {
-      this.validateLicense(deliverableInfo, action);
-    } else {
-      action.addMessage(action.getText("project.deliverable.v.ALicense"));
-      action.getInvalidFields().put("input-deliverable.deliverableInfo.adoptedLicense",
-        InvalidFieldsMessages.EMPTYFIELD);
+    if (action.hasSpecificities(APConstants.CRP_HAS_DISEMINATION)) {
+      // Deliverable Licenses
+      if (deliverableInfo.getAdoptedLicense() != null) {
+        this.validateLicense(deliverableInfo, action);
+      } else {
+        action.addMessage(action.getText("project.deliverable.v.ALicense"));
+        action.getInvalidFields().put("input-deliverable.deliverableInfo.adoptedLicense",
+          InvalidFieldsMessages.EMPTYFIELD);
+      }
     }
 
-    // Deliverable Locations
-    if (deliverableInfo.getGeographicScope() == null || deliverableInfo.getGeographicScope().getId() == -1) {
-      action.addMessage(action.getText("deliverable.geographicScope"));
-      action.getInvalidFields().put("input-deliverable.deliverableInfo.geographicScope.id",
-        InvalidFieldsMessages.EMPTYFIELD);
+    // Validate Geographic Scope
+
+    boolean haveRegions = false;
+    boolean haveCountries = false;
+
+    if (deliverable.getGeographicScopes() == null || deliverable.getGeographicScopes().isEmpty()) {
+      action.addMessage(action.getText("geographicScopes"));
+      action.addMissingField("deliverable.geographicScope");
+      action.getInvalidFields().put("list-deliverable.geographicScopes",
+        action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"geographicScopes"}));
     } else {
-      if (deliverableInfo.getGeographicScope().getId().equals(action.getReportingIndGeographicScopeRegional())) {
-        if (deliverable.getDeliverableRegions() == null) {
-          action.addMessage(action.getText("deliverable.region"));
-          action.getInvalidFields().put("input-deliverable.deliverableRegions", InvalidFieldsMessages.EMPTYFIELD);
+      for (DeliverableGeographicScope deliverableGeographicScope : deliverable.getGeographicScopes()) {
+        if (deliverableGeographicScope.getRepIndGeographicScope().getId() == 2) {
+          haveRegions = true;
+        }
+        if (deliverableGeographicScope.getRepIndGeographicScope().getId() != 1
+          && deliverableGeographicScope.getRepIndGeographicScope().getId() != 2) {
+          haveCountries = true;
         }
       }
-      if (deliverableInfo.getGeographicScope().getId().equals(action.getReportingIndGeographicScopeMultiNational())
-        || deliverableInfo.getGeographicScope().getId().equals(action.getReportingIndGeographicScopeNational())
-        || deliverableInfo.getGeographicScope().getId().equals(action.getReportingIndGeographicScopeSubNational())) {
-        if (deliverable.getCountriesIds() == null || deliverable.getCountriesIds().isEmpty()) {
-          action.addMessage(action.getText("deliverable.countries"));
-          action.getInvalidFields().put("input-deliverable.countriesIds", InvalidFieldsMessages.EMPTYFIELD);
-        }
+    }
+
+
+    if (haveRegions) {
+      // Validate Regions
+      if (deliverable.getDeliverableRegions() == null || deliverable.getDeliverableRegions().isEmpty()) {
+        action.addMessage(action.getText("regions"));
+        action.addMissingField("deliverable.deliverableRegions");
+        action.getInvalidFields().put("list-deliverable.deliverableRegions",
+          action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"regions"}));
+      }
+    }
+
+    if (haveCountries) {
+      // Validate Countries
+      if (deliverable.getCountriesIds() == null || deliverable.getCountriesIds().isEmpty()) {
+        action.addMessage(action.getText("countries"));
+        action.addMissingField("deliverable.countries");
+        action.getInvalidFields().put("input-deliverable.countriesIds",
+          action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"countries"}));
       }
     }
 
