@@ -107,6 +107,22 @@ public class ReportSynthesisFlagshipProgress extends MarloAuditableEntity implem
   }
 
 
+  /**
+   * @return Get an array of policies IDs checked.
+   */
+  public long[] getPoliciesIds() {
+    List<ProjectPolicy> projectPolicies = this.getProjectPolicies();
+    if (projectPolicies != null) {
+      long[] ids = new long[projectPolicies.size()];
+      for (int i = 0; i < ids.length; i++) {
+        ids[i] = projectPolicies.get(i).getId();
+      }
+      return ids;
+    }
+    return null;
+  }
+
+
   public String getPoliciesValue() {
     return policiesValue;
   }
@@ -115,7 +131,6 @@ public class ReportSynthesisFlagshipProgress extends MarloAuditableEntity implem
   public String getProgressByFlagships() {
     return progressByFlagships;
   }
-
 
   public List<ProjectPolicy> getProjectPolicies() {
     return projectPolicies;
