@@ -60,7 +60,7 @@
               
               [#-- Flagship Synthesis --]
               <div class="form-group">
-                  [@macrosAR.tableFPSynthesis tableName="${customLabel}.tableflagshipSynthesis" list=flagships columns=["progressByFlagships", "detailedAnnex"] /]
+                  [@macrosAR.tableFPSynthesis tableName="${customLabel}.tableflagshipSynthesis" list=flagshipsReportSynthesisFlagshipProgress columns=["progressByFlagships", "detailedAnnex"] /]
               </div>
             [/#if]
             
@@ -89,19 +89,19 @@
             [#if PMU]
             [#-- Flagships - Synthesis (Variance from Planned Program) --]
             <div class="form-group">
-              [@macrosAR.tableFPSynthesis tableName="${customLabel}.tableFlagshipVariance" list=flagships columns=["expandedResearchAreas", "droppedResearchLines", "changedDirection"] /]
+              [@macrosAR.tableFPSynthesis tableName="${customLabel}.tableFlagshipVariance" list=flagshipsReportSynthesisFlagshipProgress columns=["expandedResearchAreas", "droppedResearchLines", "changedDirection"] /]
             </div>
             [/#if]
             
             [#-- Altmetric Score --]
             <div class="form-group">
-              [@customForm.textArea name="${customName}.altmetricScore" i18nkey="${customLabel}.altmetricScore" help="${customLabel}.altmetricScore.help" className="limitWords-400" helpIcon=false required=true editable=editable allowTextEditor=true /]
+              [@customForm.textArea name="${customName}.altmetricScore" i18nkey="${customLabel}.altmetricScore" help="${customLabel}.altmetricScore.help" className="limitWords-${calculateLimitWords(400)}" helpIcon=false required=true editable=editable allowTextEditor=true /]
             </div>
             
             [#if PMU]
             [#-- Flagships - Synthesis (Altmetric Score) --]
             <div class="form-group">
-              [@macrosAR.tableFPSynthesis tableName="${customLabel}.tableFlagshipAltmetric" list=flagships columns=["altmetricScore"] /]
+              [@macrosAR.tableFPSynthesis tableName="${customLabel}.tableFlagshipAltmetric" list=flagshipsReportSynthesisFlagshipProgress columns=["altmetricScore"] /]
             </div>
             [/#if]
             
