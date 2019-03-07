@@ -301,11 +301,10 @@ public class PoliciesAction extends BaseAction {
     }
 
     // Add policies (active =0)
-    if (reportSynthesis.getReportSynthesisFlagshipProgress().getPlannedPoliciesValue() != null
-      && reportSynthesis.getReportSynthesisFlagshipProgress().getPlannedPoliciesValue().length() > 0) {
+    if (reportSynthesis.getReportSynthesisFlagshipProgress().getPoliciesValue() != null
+      && reportSynthesis.getReportSynthesisFlagshipProgress().getPoliciesValue().length() > 0) {
       List<Long> stList = new ArrayList<>();
-      for (String string : reportSynthesis.getReportSynthesisFlagshipProgress().getPlannedPoliciesValue().trim()
-        .split(",")) {
+      for (String string : reportSynthesis.getReportSynthesisFlagshipProgress().getPoliciesValue().trim().split(",")) {
         stList.add(Long.parseLong(string.trim()));
       }
 
