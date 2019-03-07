@@ -61,6 +61,9 @@ public class ProjectPolicy extends MarloAuditableEntity implements java.io.Seria
 
   private Set<ProjectPolicyRegion> projectPolicyRegions = new HashSet<ProjectPolicyRegion>(0);
 
+  // AR2018 Field
+  private List<LiaisonInstitution> selectedFlahsgips;
+
 
   public String getComposedName() {
 
@@ -103,6 +106,7 @@ public class ProjectPolicy extends MarloAuditableEntity implements java.io.Seria
     return evidences;
   }
 
+
   public List<ProjectPolicyGeographicScope> getGeographicScopes() {
     return geographicScopes;
   }
@@ -111,7 +115,6 @@ public class ProjectPolicy extends MarloAuditableEntity implements java.io.Seria
   public List<ProjectPolicyInnovation> getInnovations() {
     return innovations;
   }
-
 
   @Override
   public String getLogDeatil() {
@@ -130,19 +133,19 @@ public class ProjectPolicy extends MarloAuditableEntity implements java.io.Seria
     return project;
   }
 
+
   public Set<ProjectExpectedStudyPolicy> getProjectExpectedStudyPolicies() {
     return projectExpectedStudyPolicies;
   }
+
 
   public Set<ProjectPolicyCountry> getProjectPolicyCountries() {
     return ProjectPolicyCountries;
   }
 
-
   public Set<ProjectPolicyCrossCuttingMarker> getProjectPolicyCrossCuttingMarkers() {
     return projectPolicyCrossCuttingMarkers;
   }
-
 
   public Set<ProjectPolicyCrp> getProjectPolicyCrps() {
     return projectPolicyCrps;
@@ -180,6 +183,7 @@ public class ProjectPolicy extends MarloAuditableEntity implements java.io.Seria
     return projectPolicyInfos;
   }
 
+
   public Set<ProjectPolicyInnovation> getProjectPolicyInnovations() {
     return projectPolicyInnovations;
   }
@@ -188,7 +192,6 @@ public class ProjectPolicy extends MarloAuditableEntity implements java.io.Seria
   public Set<ProjectPolicyOwner> getProjectPolicyOwners() {
     return projectPolicyOwners;
   }
-
 
   public Set<ProjectPolicyRegion> getProjectPolicyRegions() {
     return projectPolicyRegions;
@@ -207,6 +210,11 @@ public class ProjectPolicy extends MarloAuditableEntity implements java.io.Seria
 
   public Set<SectionStatus> getSectionStatuses() {
     return sectionStatuses;
+  }
+
+
+  public List<LiaisonInstitution> getSelectedFlahsgips() {
+    return selectedFlahsgips;
   }
 
 
@@ -244,6 +252,7 @@ public class ProjectPolicy extends MarloAuditableEntity implements java.io.Seria
     this.evidences = evidences;
   }
 
+
   public void setGeographicScopes(List<ProjectPolicyGeographicScope> geographicScopes) {
     this.geographicScopes = geographicScopes;
   }
@@ -251,7 +260,6 @@ public class ProjectPolicy extends MarloAuditableEntity implements java.io.Seria
   public void setInnovations(List<ProjectPolicyInnovation> innovations) {
     this.innovations = innovations;
   }
-
 
   public void setOwners(List<ProjectPolicyOwner> owners) {
     this.owners = owners;
@@ -293,6 +301,7 @@ public class ProjectPolicy extends MarloAuditableEntity implements java.io.Seria
     this.projectPolicyInfo = projectPolicyInfo;
   }
 
+
   public void setProjectPolicyInfos(Set<ProjectPolicyInfo> projectPolicyInfos) {
     this.projectPolicyInfos = projectPolicyInfos;
   }
@@ -317,9 +326,13 @@ public class ProjectPolicy extends MarloAuditableEntity implements java.io.Seria
     this.regions = regions;
   }
 
-
   public void setSectionStatuses(Set<SectionStatus> sectionStatuses) {
     this.sectionStatuses = sectionStatuses;
+  }
+
+
+  public void setSelectedFlahsgips(List<LiaisonInstitution> selectedFlahsgips) {
+    this.selectedFlahsgips = selectedFlahsgips;
   }
 
   public void setSubIdos(List<ProjectPolicySubIdo> subIdos) {

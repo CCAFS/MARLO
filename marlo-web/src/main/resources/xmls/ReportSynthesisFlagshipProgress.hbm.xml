@@ -59,6 +59,11 @@
             <column name="altmetric_score" sql-type="TEXT" />
         </property>
         
-        
+        <set name="reportSynthesisFlagshipProgressPolicies" table="report_synthesis_flagship_progress_policies" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="report_synthesis_flagship_progress_id" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressPolicy" />
+        </set>
     </class>
 </hibernate-mapping>

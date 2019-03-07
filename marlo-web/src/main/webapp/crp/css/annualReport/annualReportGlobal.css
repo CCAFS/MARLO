@@ -84,6 +84,29 @@ table ul {
   padding-left: 15px;
 }
 
+table.milestones-crosscutting {
+  border:none;
+}
+
+.milestones-crosscutting th {
+  background: transparent !important;
+  font-weight: 600;
+  padding: 0 !important;
+}
+
+.milestones-crosscutting td {
+  background: #fafafa;
+}
+
+.milestones-crosscutting tr {
+  border-bottom: 5px solid #ffffff;
+}
+
+.milestones-crosscutting td.row-title {
+  font-weight: 600;
+}
+
+
 /** MARLO Responsibe Tables **/
 .table-responsive table {
   min-width: 1500px;

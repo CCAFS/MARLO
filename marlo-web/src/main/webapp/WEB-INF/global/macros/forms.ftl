@@ -599,9 +599,9 @@
 [#macro helpViewMore name=""]
 [#local customName="${name}.more" /]
 
-   <a id="helpViewMoreLink" class="btn-link" data-toggle="collapse" data-target="#helpViewMoreBlock" aria-expanded="false" aria-controls="helpViewMoreBlock">
-     <i class="helpLabel">[@s.text name="global.viewMore" /]</i>
-   </a>
+   <i class="helpLabel"><a id="helpViewMoreLink" class="btn-link viewMoreLinkclosed" data-toggle="collapse" data-target="#helpViewMoreBlock" aria-expanded="false" aria-controls="helpViewMoreBlock">
+     [@s.text name="global.viewMore" /]
+   </a></i>
    
    <div id="helpViewMoreBlock" class="collapse" aria-labelledby="helpViewMoreBlock" data-parent="#helpViewMoreLink">
       <i class="helpLabel">[@s.text name="${customName}" /]</i>
