@@ -52,7 +52,7 @@ public class ReportSynthesisFlagshipProgress extends MarloAuditableEntity implem
   private List<ReportSynthesisFlagshipProgressPolicy> plannedPolicies;
   private List<ProjectPolicy> projectPolicies;
 
-  private String plannedPoliciesValue;
+  private String policiesValue;
 
 
   public ReportSynthesisFlagshipProgress() {
@@ -107,8 +107,8 @@ public class ReportSynthesisFlagshipProgress extends MarloAuditableEntity implem
   }
 
 
-  public String getPlannedPoliciesValue() {
-    return plannedPoliciesValue;
+  public String getPoliciesValue() {
+    return policiesValue;
   }
 
 
@@ -171,6 +171,7 @@ public class ReportSynthesisFlagshipProgress extends MarloAuditableEntity implem
     this.milestones = milestones;
   }
 
+
   public void setOverallProgress(String overallProgress) {
     this.overallProgress = overallProgress;
   }
@@ -179,10 +180,10 @@ public class ReportSynthesisFlagshipProgress extends MarloAuditableEntity implem
     this.plannedPolicies = plannedPolicies;
   }
 
-
-  public void setPlannedPoliciesValue(String plannedPoliciesValue) {
-    this.plannedPoliciesValue = plannedPoliciesValue;
+  public void setPoliciesValue(String policiesValue) {
+    this.policiesValue = policiesValue;
   }
+
 
   public void setProgressByFlagships(String progressByFlagships) {
     this.progressByFlagships = progressByFlagships;
