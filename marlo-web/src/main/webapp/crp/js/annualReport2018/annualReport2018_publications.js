@@ -30,7 +30,7 @@ google.charts.setOnLoadCallback(function() {
       pieHole: 0.4,
       chartArea: {
           top: 70,
-          width: '100%'
+          width: '80%'
       },
       colors: '#e67e22',
       legend: {
@@ -58,7 +58,7 @@ google.charts.setOnLoadCallback(function() {
       pieHole: 0.4,
       chartArea: {
           top: 70,
-          width: 400
+          width: '80%'
       },
       colors: '#e67e22',
       legend: {
