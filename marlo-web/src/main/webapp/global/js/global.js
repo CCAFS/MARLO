@@ -43,6 +43,9 @@ $(document).ready(function() {
   setViewMore();
   $('.viewMore').on("click", expandViewMoreBlock);
 
+  // View More link button
+  $('#helpViewMoreLink').on("click", expandViewMoreLink);
+
   $(".removeHelp").on("click", function() {
     $(this).parent().parent().fadeOut(function() {
       console.log(this);
@@ -436,6 +439,18 @@ function expandViewMoreBlock() {
     $(this).removeClass("opened");
   }
 
+}
+
+function expandViewMoreLink() {
+  if($(this).hasClass("viewMoreLinkclosed")) {
+    $(this).html('View Less');
+    $(this).addClass("viewMoreLinkopened");
+    $(this).removeClass("viewMoreLinkclosed");
+  } else if($(this).hasClass("viewMoreLinkopened")) {
+    $(this).html('View More');
+    $(this).addClass("viewMoreLinkclosed");
+    $(this).removeClass("viewMoreLinkopened");
+  }
 }
 
 /**
