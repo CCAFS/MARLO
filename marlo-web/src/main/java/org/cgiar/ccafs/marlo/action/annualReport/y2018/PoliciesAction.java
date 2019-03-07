@@ -24,6 +24,7 @@ import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectFocusManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyManager;
+import org.cgiar.ccafs.marlo.data.manager.RepIndOrganizationTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressPolicyManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
@@ -41,6 +42,7 @@ import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgress;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressPolicy;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressPolicyDTO;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisPoliciesByOrganizationTypeDTO;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -83,6 +85,7 @@ public class PoliciesAction extends BaseAction {
   private ProjectManager projectManager;
   private ReportSynthesisFlagshipProgressManager reportSynthesisFlagshipProgressManager;
   private ReportSynthesisFlagshipProgressPolicyManager reportSynthesisFlagshipProgressPolicyManager;
+  private RepIndOrganizationTypeManager repIndOrganizationTypeManager;
 
   // Variables
   private String transaction;
@@ -93,6 +96,7 @@ public class PoliciesAction extends BaseAction {
   private GlobalUnit loggedCrp;
   private List<LiaisonInstitution> liaisonInstitutions;
   private List<ProjectPolicy> projectPolicies;
+  private List<ReportSynthesisPoliciesByOrganizationTypeDTO> policiesByOrganizationTypeDTOs;
 
 
   @Inject
@@ -102,7 +106,8 @@ public class PoliciesAction extends BaseAction {
     CrpProgramManager crpProgramManager, ProjectPolicyManager projectPolicyManager,
     ProjectFocusManager projectFocusManager, ProjectManager projectManager,
     ReportSynthesisFlagshipProgressManager reportSynthesisFlagshipProgressManager,
-    ReportSynthesisFlagshipProgressPolicyManager reportSynthesisFlagshipProgressPolicyManager) {
+    ReportSynthesisFlagshipProgressPolicyManager reportSynthesisFlagshipProgressPolicyManager,
+    RepIndOrganizationTypeManager repIndOrganizationTypeManager) {
     super(config);
     this.crpManager = crpManager;
     this.liaisonInstitutionManager = liaisonInstitutionManager;
@@ -116,6 +121,7 @@ public class PoliciesAction extends BaseAction {
     this.projectManager = projectManager;
     this.reportSynthesisFlagshipProgressManager = reportSynthesisFlagshipProgressManager;
     this.reportSynthesisFlagshipProgressPolicyManager = reportSynthesisFlagshipProgressPolicyManager;
+    this.repIndOrganizationTypeManager = repIndOrganizationTypeManager;
   }
 
 
@@ -290,6 +296,7 @@ public class PoliciesAction extends BaseAction {
     return liaisonInstitutionId;
   }
 
+
   private void
     flagshipProgressProjectPoliciesNewData(ReportSynthesisFlagshipProgress reportSynthesisFlagshipProgressDB) {
 
@@ -373,6 +380,7 @@ public class PoliciesAction extends BaseAction {
 
   }
 
+
   private Path getAutoSaveFilePath() {
     String composedClassName = reportSynthesis.getClass().getSimpleName();
     String actionFile = this.getActionName().replace("/", "_");
@@ -381,15 +389,14 @@ public class PoliciesAction extends BaseAction {
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
-
   public LiaisonInstitution getLiaisonInstitution() {
     return liaisonInstitution;
   }
 
-
   public Long getLiaisonInstitutionID() {
     return liaisonInstitutionID;
   }
+
 
   public List<LiaisonInstitution> getLiaisonInstitutions() {
     return liaisonInstitutions;
@@ -400,6 +407,11 @@ public class PoliciesAction extends BaseAction {
     return loggedCrp;
   }
 
+  public List<ReportSynthesisPoliciesByOrganizationTypeDTO> getPoliciesByOrganizationTypeDTOs() {
+    return policiesByOrganizationTypeDTOs;
+  }
+
+
   public List<ProjectPolicy> getProjectPolicies() {
     return projectPolicies;
   }
@@ -408,10 +420,10 @@ public class PoliciesAction extends BaseAction {
     return reportSynthesis;
   }
 
-
   public Long getSynthesisID() {
     return synthesisID;
   }
+
 
   public String getTransaction() {
     return transaction;
@@ -431,7 +443,6 @@ public class PoliciesAction extends BaseAction {
     return isFP;
   }
 
-
   @Override
   public boolean isPMU() {
     boolean isFP = false;
@@ -443,6 +454,7 @@ public class PoliciesAction extends BaseAction {
     return isFP;
 
   }
+
 
   @Override
   public String next() {
@@ -599,7 +611,23 @@ public class PoliciesAction extends BaseAction {
       .collect(Collectors.toList()));
 
     /** Graphs and Tables */
-
+    List<ProjectPolicy> selectedProjectPolicies = new ArrayList<ProjectPolicy>();
+    policiesByOrganizationTypeDTOs = new ArrayList<ReportSynthesisPoliciesByOrganizationTypeDTO>();
+    if (projectPolicies != null && !projectPolicies.isEmpty()) {
+      selectedProjectPolicies.addAll(projectPolicies);
+      // Remove unchecked policies
+      if (reportSynthesis.getReportSynthesisFlagshipProgress().getProjectPolicies() != null
+        && !reportSynthesis.getReportSynthesisFlagshipProgress().getProjectPolicies().isEmpty()) {
+        for (ProjectPolicy projectPolicy : reportSynthesis.getReportSynthesisFlagshipProgress().getProjectPolicies()) {
+          selectedProjectPolicies.remove(projectPolicy);
+        }
+      }
+      // Chart: Policies by organization type
+      if (selectedProjectPolicies != null && !selectedProjectPolicies.isEmpty()) {
+        policiesByOrganizationTypeDTOs =
+          repIndOrganizationTypeManager.getPoliciesByOrganizationTypes(selectedProjectPolicies, phase);
+      }
+    }
 
     // Base Permission
     String params[] = {loggedCrp.getAcronym(), reportSynthesis.getId() + ""};
@@ -612,7 +640,6 @@ public class PoliciesAction extends BaseAction {
     }
 
   }
-
 
   @Override
   public String save() {
@@ -665,10 +692,10 @@ public class PoliciesAction extends BaseAction {
     }
   }
 
+
   public void setLiaisonInstitution(LiaisonInstitution liaisonInstitution) {
     this.liaisonInstitution = liaisonInstitution;
   }
-
 
   public void setLiaisonInstitutionID(Long liaisonInstitutionID) {
     this.liaisonInstitutionID = liaisonInstitutionID;
@@ -679,8 +706,14 @@ public class PoliciesAction extends BaseAction {
     this.liaisonInstitutions = liaisonInstitutions;
   }
 
+
   public void setLoggedCrp(GlobalUnit loggedCrp) {
     this.loggedCrp = loggedCrp;
+  }
+
+  public void setPoliciesByOrganizationTypeDTOs(
+    List<ReportSynthesisPoliciesByOrganizationTypeDTO> policiesByOrganizationTypeDTOs) {
+    this.policiesByOrganizationTypeDTOs = policiesByOrganizationTypeDTOs;
   }
 
   public void setProjectPolicies(List<ProjectPolicy> projectPolicies) {
