@@ -6877,3 +6877,7 @@ span.doc-badge {
 
 
 i.authorVisibles {}
+
+#helpViewMoreLink {
+  cursor: pointer;
+}
