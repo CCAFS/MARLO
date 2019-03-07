@@ -9,7 +9,7 @@
   "https://cdn.datatables.net/buttons/1.3.1/js/dataTables.buttons.min.js",
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js",
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.print.min.js",
-  "${baseUrlMedia}/js/annualReport2018/annualReport2018Global.js",
+  "${baseUrlMedia}/js/annualReport/annualReportGlobal.js",
   "${baseUrlMedia}/js/annualReport2018/annualReport2018_${currentStage}.js" 
 ] /]
 [#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css"] /]
@@ -55,10 +55,10 @@
             <div class="bootstrapTabs">
               [#-- Tabs --] 
               <ul class="nav nav-tabs" role="tablist"> 
-                <li role="presentation" class="active"><a index="1" href="#tab-gender" aria-controls="info" role="tab" data-toggle="tab">Gender</a></li>
-                <li role="presentation" class=" "><a index="2" href="#tab-youth" aria-controls="info" role="tab" data-toggle="tab">Youth</a></li>
-                <li role="presentation" class=" "><a index="2" href="#tab-capdev" aria-controls="info" role="tab" data-toggle="tab">Capacity Development</small> </a></li>
-                <li role="presentation" class=" "><a index="2" href="#tab-climateChange" aria-controls="info" role="tab" data-toggle="tab">Climate Change</a></li>
+                <li role="presentation" class="active"><a index="1" href="#tab-gender" aria-controls="info" role="tab" data-toggle="tab">1.3.1 Gender</a></li>
+                <li role="presentation" class=" "><a index="2" href="#tab-youth" aria-controls="info" role="tab" data-toggle="tab">1.3.2 Youth</a></li>
+                <li role="presentation" class=" "><a index="2" href="#tab-capdev" aria-controls="info" role="tab" data-toggle="tab">1.3.3 Capacity Development</small> </a></li>
+                <li role="presentation" class=" "><a index="2" href="#tab-climateChange" aria-controls="info" role="tab" data-toggle="tab">1.3.4 Climate Change</a></li>
               </ul>
               [#-- Content --] 
               <div class="tab-content ">
@@ -138,10 +138,6 @@
                   </div>
                   
                   [#if PMU]
-                    [#-- CapDevCharts--]
-                    <div class="form-group">
-                    </div>
-                    
                     [#-- Table 7: Participants in CapDev Activities  --]
                     <div class="form-group">
                       <h4 class="simpleTitle headTitle annualReport-table">[@s.text name="${customLabel}.table7.title" /]</h4>
@@ -172,10 +168,67 @@
                       </div>
                     </div>
                     
+                    <br />
+                    <hr />
+                    <br />
+                    
+                    [#-- CapDevCharts--]
+                    <div class="form-group">
+                      <div class="row">
+                        <div class="col-md-4">
+                          <div id="" class="simpleBox numberBox">
+                            <label for="">[@s.text name="${customLabel}.totalParticipants" /]</label><br />
+                            <span>${(totalParticipants?number?string(",##0"))!0}</span>
+                          </div>
+                          <div id="" class="simpleBox numberBox">
+                            <label for="">[@s.text name="${customLabel}.totalParticipantFormalTraining" /]</label><br />
+                            <span>${(totalParticipantFormalTraining?number?string(",##0"))!0}</span>
+                          </div>
+                        </div>
+                        <div class="col-md-8">
+                          <div class="row">
+                            <div class="col-md-6">
+                              <div id="chart12" class="chartBox simpleBox">
+                                [#assign chartData = [
+                                    {"name":"Male",   "value": "${(totalParticipantFormalTrainingShortMale)!0}"},
+                                    {"name":"Female", "value": "${(totalParticipantFormalTrainingShortFemale)!0}"}
+                                  ] /] 
+                                <ul class="chartData" style="display:none">
+                                  <li>
+                                    <span>[@s.text name="${customLabel}.chart12" /]</span>
+                                    <span>[@s.text name="${customLabel}.chart12" /]</span>
+                                  </li>
+                                  [#list chartData as data]
+                                    <li><span>${data.name}</span><span class="number">${data.value}</span></li>
+                                  [/#list]
+                                </ul>
+                              </div>
+                            </div>
+                            <div class="col-md-6">
+                              <div id="chart13" class="chartBox simpleBox">
+                                [#assign chartData = [
+                                    {"name":"Male",   "value": "${(totalParticipantFormalTrainingLongMale)!0} "},
+                                    {"name":"Female", "value": "${(totalParticipantFormalTrainingLongFemale)!0}"}
+                                  ] /] 
+                                <ul class="chartData" style="display:none">
+                                  <li>
+                                    <span>[@s.text name="${customLabel}.chart13" /]</span>
+                                    <span>[@s.text name="${customLabel}.chart13" /]</span>
+                                  </li>
+                                  [#list chartData as data]
+                                    <li><span>${data.name}</span><span class="number">${data.value}</span></li>
+                                  [/#list]
+                                </ul>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    
                     [#-- Deliverables Participants & Trainees --]
                     <div class="form-group">
                       <h4 class="simpleTitle headTitle annualReport-table">[@s.text name="${customLabel}.deliverableParticipants.title" /]</h4>
-                      
                       <div class="viewMoreSyntesis-block">
                         [@tableParticipantsTrainingsMacro list=(deliverableParticipants)![] /]
                       </div>
@@ -215,7 +268,7 @@
 
 
 [#macro tableParticipantsTrainingsMacro list]
-  <table class="annual-report-table table-border">
+  <table id="tableParticipantsTrainingsMacro" class="annual-report-table table-border">
     <thead>
       <tr class="subHeader">
         <th id="tb-id">[@s.text name="${customLabel}.activitiesEventsTable.activityEvent" /]</th>

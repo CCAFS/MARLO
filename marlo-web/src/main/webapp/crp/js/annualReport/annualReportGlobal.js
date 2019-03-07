@@ -1,8 +1,10 @@
+var $tableViewMore;
+var tableDatatableViewmore
 $(document).ready(function() {
 
   // Set data tables
-  var $table = $('.viewMoreSyntesis-block table');
-  $table.DataTable({
+  $tableViewMore = $('.viewMoreSyntesis-block table');
+  tableDatatableViewmore = $tableViewMore.DataTable({
       "paging": false,
       "searching": false,
       "info": false,
@@ -37,4 +39,11 @@ function getChartDataArray(chart) {
     }).toArray());
   });
   return dataArray;
+}
+
+function createGooglePieChart(chartID,options) {
+  var $chart = $(chartID);
+  var data = google.visualization.arrayToDataTable(getChartDataArray($chart));
+  var chart = new google.visualization.PieChart(document.getElementById($chart[0].id));
+  chart.draw(data, options);
 }
