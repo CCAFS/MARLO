@@ -21,7 +21,11 @@ import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectFocusManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyManager;
+import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressManager;
+import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressPolicyManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
@@ -30,13 +34,21 @@ import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
+import org.cgiar.ccafs.marlo.data.model.Project;
+import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicy;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgress;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressPolicy;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressPolicyDTO;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
+import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
 import org.cgiar.ccafs.marlo.validation.annualreport.y2018.CCDimension2018Validator;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -46,6 +58,9 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -64,6 +79,10 @@ public class PoliciesAction extends BaseAction {
   private UserManager userManager;
   private CCDimension2018Validator validator;
   private ProjectPolicyManager projectPolicyManager;
+  private ProjectFocusManager projectFocusManager;
+  private ProjectManager projectManager;
+  private ReportSynthesisFlagshipProgressManager reportSynthesisFlagshipProgressManager;
+  private ReportSynthesisFlagshipProgressPolicyManager reportSynthesisFlagshipProgressPolicyManager;
 
   // Variables
   private String transaction;
@@ -73,14 +92,17 @@ public class PoliciesAction extends BaseAction {
   private LiaisonInstitution liaisonInstitution;
   private GlobalUnit loggedCrp;
   private List<LiaisonInstitution> liaisonInstitutions;
-  private List<ProjectPolicy> projectPolicies;
+  private List<ProjectPolicy> selectedProjectPolicies;
 
 
   @Inject
   public PoliciesAction(APConfig config, GlobalUnitManager crpManager,
     LiaisonInstitutionManager liaisonInstitutionManager, ReportSynthesisManager reportSynthesisManager,
     AuditLogManager auditLogManager, UserManager userManager, CCDimension2018Validator validator,
-    CrpProgramManager crpProgramManager, ProjectPolicyManager projectPolicyManager) {
+    CrpProgramManager crpProgramManager, ProjectPolicyManager projectPolicyManager,
+    ProjectFocusManager projectFocusManager, ProjectManager projectManager,
+    ReportSynthesisFlagshipProgressManager reportSynthesisFlagshipProgressManager,
+    ReportSynthesisFlagshipProgressPolicyManager reportSynthesisFlagshipProgressPolicyManager) {
     super(config);
     this.crpManager = crpManager;
     this.liaisonInstitutionManager = liaisonInstitutionManager;
@@ -90,8 +112,171 @@ public class PoliciesAction extends BaseAction {
     this.validator = validator;
     this.crpProgramManager = crpProgramManager;
     this.projectPolicyManager = projectPolicyManager;
+    this.projectFocusManager = projectFocusManager;
+    this.projectManager = projectManager;
+    this.reportSynthesisFlagshipProgressManager = reportSynthesisFlagshipProgressManager;
+    this.reportSynthesisFlagshipProgressPolicyManager = reportSynthesisFlagshipProgressPolicyManager;
   }
 
+
+  /**
+   * Method to fill the list of policies selected by flagships
+   * 
+   * @param flagshipsLiaisonInstitutions
+   * @param phaseID
+   * @return
+   */
+  public List<ReportSynthesisFlagshipProgressPolicyDTO>
+    fillFpPlannedList(List<LiaisonInstitution> flagshipsLiaisonInstitutions, long phaseID) {
+    List<ReportSynthesisFlagshipProgressPolicyDTO> flagshipPlannedList = new ArrayList<>();
+
+    if (projectPolicyManager.findAll() != null) {
+
+      // Get global unit policies
+      List<ProjectPolicy> projectPolicies = new ArrayList<>(projectPolicyManager.findAll().stream()
+        .filter(ps -> ps.isActive() && ps.getProjectPolicyInfo(this.getActualPhase()) != null
+          && ps.getProjectPolicyInfo().isRequired() && ps.getProject() != null
+          && ps.getProject().getGlobalUnitProjects().stream()
+            .filter(gup -> gup.isActive() && gup.isOrigin() && gup.getGlobalUnit().getId().equals(loggedCrp.getId()))
+            .collect(Collectors.toList()).size() > 0)
+        .collect(Collectors.toList()));
+
+      // Fill all project policies of the global unit
+      for (ProjectPolicy projectPolicy : projectPolicies) {
+        ReportSynthesisFlagshipProgressPolicyDTO dto = new ReportSynthesisFlagshipProgressPolicyDTO();
+        projectPolicy.getProject().setProjectInfo(projectPolicy.getProject().getProjecInfoPhase(this.getActualPhase()));
+        dto.setProjectPolicy(projectPolicy);
+        if (projectPolicy.getProject().getProjectInfo().getAdministrative() != null
+          && projectPolicy.getProject().getProjectInfo().getAdministrative()) {
+          dto.setLiaisonInstitutions(new ArrayList<>());
+          dto.getLiaisonInstitutions().add(this.liaisonInstitution);
+        } else {
+          List<ProjectFocus> projectFocuses = new ArrayList<>(projectPolicy.getProject().getProjectFocuses().stream()
+            .filter(pf -> pf.isActive() && pf.getPhase().getId() == phaseID).collect(Collectors.toList()));
+          List<LiaisonInstitution> liaisonInstitutions = new ArrayList<>();
+          for (ProjectFocus projectFocus : projectFocuses) {
+            liaisonInstitutions.addAll(projectFocus.getCrpProgram().getLiaisonInstitutions().stream()
+              .filter(li -> li.isActive() && li.getCrpProgram() != null
+                && li.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+              .collect(Collectors.toList()));
+          }
+          dto.setLiaisonInstitutions(liaisonInstitutions);
+        }
+
+        flagshipPlannedList.add(dto);
+      }
+
+      // Get deleted policies
+      List<ReportSynthesisFlagshipProgressPolicy> flagshipProgressPolicies = new ArrayList<>();
+      for (LiaisonInstitution liaisonInstitution : flagshipsLiaisonInstitutions) {
+        ReportSynthesis reportSynthesis = reportSynthesisManager.findSynthesis(phaseID, liaisonInstitution.getId());
+        if (reportSynthesis != null) {
+          if (reportSynthesis.getReportSynthesisFlagshipProgress() != null) {
+            if (reportSynthesis.getReportSynthesisFlagshipProgress()
+              .getReportSynthesisFlagshipProgressPolicies() != null) {
+              List<ReportSynthesisFlagshipProgressPolicy> policies = new ArrayList<>(
+                reportSynthesis.getReportSynthesisFlagshipProgress().getReportSynthesisFlagshipProgressPolicies()
+                  .stream().filter(s -> s.isActive()).collect(Collectors.toList()));
+              if (policies != null || !policies.isEmpty()) {
+                for (ReportSynthesisFlagshipProgressPolicy reportSynthesisFlagshipProgressPolicy : policies) {
+                  flagshipProgressPolicies.add(reportSynthesisFlagshipProgressPolicy);
+                }
+              }
+            }
+          }
+        }
+      }
+
+      // Get list of policies to remove
+      List<ReportSynthesisFlagshipProgressPolicyDTO> removeList = new ArrayList<>();
+      for (ReportSynthesisFlagshipProgressPolicyDTO dto : flagshipPlannedList) {
+
+        List<LiaisonInstitution> removeLiaison = new ArrayList<>();
+        for (LiaisonInstitution liaisonInstitution : dto.getLiaisonInstitutions()) {
+          ReportSynthesis reportSynthesis = reportSynthesisManager.findSynthesis(phaseID, liaisonInstitution.getId());
+          if (reportSynthesis != null) {
+            if (reportSynthesis.getReportSynthesisFlagshipProgress() != null) {
+
+              ReportSynthesisFlagshipProgressPolicy flagshipProgressPolicyNew =
+                new ReportSynthesisFlagshipProgressPolicy();
+              flagshipProgressPolicyNew = new ReportSynthesisFlagshipProgressPolicy();
+              flagshipProgressPolicyNew.setProjectPolicy(dto.getProjectPolicy());
+              flagshipProgressPolicyNew
+                .setReportSynthesisFlagshipProgress(reportSynthesis.getReportSynthesisFlagshipProgress());
+
+              if (flagshipProgressPolicies.contains(flagshipProgressPolicyNew)) {
+                removeLiaison.add(liaisonInstitution);
+              }
+            }
+          }
+        }
+
+        for (LiaisonInstitution li : removeLiaison) {
+          dto.getLiaisonInstitutions().remove(li);
+        }
+
+        if (dto.getLiaisonInstitutions().isEmpty()) {
+          removeList.add(dto);
+        }
+      }
+
+      // Remove policies unselected by flagships
+      for (ReportSynthesisFlagshipProgressPolicyDTO i : removeList) {
+        flagshipPlannedList.remove(i);
+      }
+
+    }
+    return flagshipPlannedList;
+  }
+
+  private void fillProjectPoliciesList(Long phaseID, LiaisonInstitution liaisonInstitution) {
+    selectedProjectPolicies = new ArrayList<>();
+    Phase phase = this.getActualPhase();
+    if (this.isFlagship()) {
+      // Fill Project policies of the current flagship
+      if (projectFocusManager.findAll() != null) {
+        List<ProjectFocus> projectFocus = new ArrayList<>(projectFocusManager.findAll().stream()
+          .filter(pf -> pf.isActive() && pf.getCrpProgram().getId() == liaisonInstitution.getCrpProgram().getId()
+            && pf.getPhase() != null && pf.getPhase().getId() == phaseID)
+          .collect(Collectors.toList()));
+
+        for (ProjectFocus focus : projectFocus) {
+          Project project = projectManager.getProjectById(focus.getProject().getId());
+          List<ProjectPolicy> plannedProjectPolicies = new ArrayList<>(project.getProjectPolicies().stream()
+            .filter(
+              pp -> pp.isActive() && pp.getProjectPolicyInfo(phase) != null && pp.getProjectPolicyInfo().isRequired())
+            .collect(Collectors.toList()));
+
+          for (ProjectPolicy projectPolicy : plannedProjectPolicies) {
+            projectPolicy.getProjectPolicyInfo(phase);
+            selectedProjectPolicies.add(projectPolicy);
+          }
+        }
+      }
+    } else {
+      // Fill Project policies of the PMU, removing flagship deletions
+      liaisonInstitutions = loggedCrp.getLiaisonInstitutions().stream()
+        .filter(c -> c.getCrpProgram() != null && c.isActive()
+          && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+        .collect(Collectors.toList());
+      liaisonInstitutions.sort(Comparator.comparing(LiaisonInstitution::getAcronym));
+
+      List<ReportSynthesisFlagshipProgressPolicyDTO> flagshipPlannedList =
+        this.fillFpPlannedList(liaisonInstitutions, phase.getId());
+
+      for (ReportSynthesisFlagshipProgressPolicyDTO reportSynthesisFlagshipProgressPolicyDTO : flagshipPlannedList) {
+
+        ProjectPolicy projectPolicy = reportSynthesisFlagshipProgressPolicyDTO.getProjectPolicy();
+        projectPolicy.getProjectPolicyInfo(phase);
+        projectPolicy.setSelectedFlahsgips(new ArrayList<>());
+        projectPolicy.getSelectedFlahsgips().addAll(reportSynthesisFlagshipProgressPolicyDTO.getLiaisonInstitutions());
+
+        selectedProjectPolicies.add(projectPolicy);
+
+      }
+    }
+
+  }
 
   public Long firstFlagship() {
     List<LiaisonInstitution> liaisonInstitutions = new ArrayList<>(loggedCrp.getLiaisonInstitutions().stream()
@@ -104,6 +289,91 @@ public class PoliciesAction extends BaseAction {
   }
 
 
+  private void
+    flagshipProgressProjectPoliciesNewData(ReportSynthesisFlagshipProgress reportSynthesisFlagshipProgressDB) {
+
+    List<Long> selectedPs = new ArrayList<>();
+    List<Long> selectedPoliciesIds = new ArrayList<>();
+
+    for (ProjectPolicy projectPolicy : selectedProjectPolicies) {
+      selectedPoliciesIds.add(projectPolicy.getId());
+    }
+
+    // Add policies (active =0)
+    if (reportSynthesis.getReportSynthesisFlagshipProgress().getPlannedPoliciesValue() != null
+      && reportSynthesis.getReportSynthesisFlagshipProgress().getPlannedPoliciesValue().length() > 0) {
+      List<Long> stList = new ArrayList<>();
+      for (String string : reportSynthesis.getReportSynthesisFlagshipProgress().getPlannedPoliciesValue().trim()
+        .split(",")) {
+        stList.add(Long.parseLong(string.trim()));
+      }
+
+      for (Long studyId : selectedPoliciesIds) {
+        int index = stList.indexOf(studyId);
+        if (index < 0) {
+          selectedPs.add(studyId);
+        }
+      }
+
+      for (ReportSynthesisFlagshipProgressPolicy flagshipProgressPolicy : reportSynthesisFlagshipProgressDB
+        .getReportSynthesisFlagshipProgressPolicies().stream().filter(rio -> rio.isActive())
+        .collect(Collectors.toList())) {
+        if (!selectedPs.contains(flagshipProgressPolicy.getProjectPolicy().getId())) {
+          reportSynthesisFlagshipProgressPolicyManager
+            .deleteReportSynthesisFlagshipProgressPolicy(flagshipProgressPolicy.getId());
+        }
+      }
+
+      for (Long policyId : selectedPs) {
+        ProjectPolicy projectPolicy = projectPolicyManager.getProjectPolicyById(policyId);
+
+        ReportSynthesisFlagshipProgressPolicy flagshipProgressPolicyNew = new ReportSynthesisFlagshipProgressPolicy();
+
+        flagshipProgressPolicyNew = new ReportSynthesisFlagshipProgressPolicy();
+
+        flagshipProgressPolicyNew.setProjectPolicy(projectPolicy);
+        flagshipProgressPolicyNew.setReportSynthesisFlagshipProgress(reportSynthesisFlagshipProgressDB);
+
+        List<ReportSynthesisFlagshipProgressPolicy> flagshipProgressPolicies =
+          reportSynthesisFlagshipProgressDB.getReportSynthesisFlagshipProgressPolicies().stream()
+            .filter(rio -> rio.isActive()).collect(Collectors.toList());
+
+
+        if (!flagshipProgressPolicies.contains(flagshipProgressPolicyNew)) {
+          flagshipProgressPolicyNew = reportSynthesisFlagshipProgressPolicyManager
+            .saveReportSynthesisFlagshipProgressPolicy(flagshipProgressPolicyNew);
+        }
+
+      }
+    } else {
+
+      // Delete Policies (Save with active=1)
+      for (Long policyId : selectedPoliciesIds) {
+        ProjectPolicy projectPolicy = projectPolicyManager.getProjectPolicyById(policyId);
+
+        ReportSynthesisFlagshipProgressPolicy flagshipProgressPlannedPolicyNew =
+          new ReportSynthesisFlagshipProgressPolicy();
+
+        flagshipProgressPlannedPolicyNew = new ReportSynthesisFlagshipProgressPolicy();
+
+        flagshipProgressPlannedPolicyNew.setProjectPolicy(projectPolicy);
+        flagshipProgressPlannedPolicyNew.setReportSynthesisFlagshipProgress(reportSynthesisFlagshipProgressDB);
+
+        List<ReportSynthesisFlagshipProgressPolicy> reportSynthesisFlagshipProgressPolicies =
+          reportSynthesisFlagshipProgressDB.getReportSynthesisFlagshipProgressPolicies().stream()
+            .filter(rio -> rio.isActive()).collect(Collectors.toList());
+
+
+        if (!reportSynthesisFlagshipProgressPolicies.contains(flagshipProgressPlannedPolicyNew)) {
+          flagshipProgressPlannedPolicyNew = reportSynthesisFlagshipProgressPolicyManager
+            .saveReportSynthesisFlagshipProgressPolicy(flagshipProgressPlannedPolicyNew);
+        }
+      }
+    }
+
+  }
+
+
   private Path getAutoSaveFilePath() {
     String composedClassName = reportSynthesis.getClass().getSimpleName();
     String actionFile = this.getActionName().replace("/", "_");
@@ -112,10 +382,10 @@ public class PoliciesAction extends BaseAction {
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
-
   public LiaisonInstitution getLiaisonInstitution() {
     return liaisonInstitution;
   }
+
 
   public Long getLiaisonInstitutionID() {
     return liaisonInstitutionID;
@@ -125,13 +395,17 @@ public class PoliciesAction extends BaseAction {
     return liaisonInstitutions;
   }
 
-
   public GlobalUnit getLoggedCrp() {
     return loggedCrp;
   }
 
+
   public ReportSynthesis getReportSynthesis() {
     return reportSynthesis;
+  }
+
+  public List<ProjectPolicy> getSelectedProjectPolicies() {
+    return selectedProjectPolicies;
   }
 
 
@@ -264,6 +538,55 @@ public class PoliciesAction extends BaseAction {
       }
     }
 
+    if (reportSynthesis != null) {
+
+      ReportSynthesis reportSynthesisDB = reportSynthesisManager.getReportSynthesisById(synthesisID);
+      synthesisID = reportSynthesisDB.getId();
+      liaisonInstitutionID = reportSynthesisDB.getLiaisonInstitution().getId();
+      liaisonInstitution = liaisonInstitutionManager.getLiaisonInstitutionById(liaisonInstitutionID);
+
+      this.fillProjectPoliciesList(phase.getId(), liaisonInstitution);
+
+      Path path = this.getAutoSaveFilePath();
+      // Verify if there is a Draft file
+      if (path.toFile().exists() && this.getCurrentUser().isAutoSave()) {
+        BufferedReader reader;
+        reader = new BufferedReader(new FileReader(path.toFile()));
+        Gson gson = new GsonBuilder().create();
+        JsonObject jReader = gson.fromJson(reader, JsonObject.class);
+        reader.close();
+        AutoSaveReader autoSaveReader = new AutoSaveReader();
+        reportSynthesis = (ReportSynthesis) autoSaveReader.readFromJson(jReader);
+        synthesisID = reportSynthesis.getId();
+        this.setDraft(true);
+      } else {
+        this.setDraft(false);
+        // Check if ToC relation is null -create it
+        if (reportSynthesis.getReportSynthesisFlagshipProgress() == null) {
+          ReportSynthesisFlagshipProgress flagshipProgress = new ReportSynthesisFlagshipProgress();
+          // create one to one relation
+          reportSynthesis.setReportSynthesisFlagshipProgress(flagshipProgress);
+          flagshipProgress.setReportSynthesis(reportSynthesis);
+          // save the changes
+          reportSynthesis = reportSynthesisManager.saveReportSynthesis(reportSynthesis);
+        }
+
+
+        reportSynthesis.getReportSynthesisFlagshipProgress().setProjectPolicies(new ArrayList<>());
+        if (reportSynthesis.getReportSynthesisFlagshipProgress().getReportSynthesisFlagshipProgressPolicies() != null
+          && !reportSynthesis.getReportSynthesisFlagshipProgress().getReportSynthesisFlagshipProgressPolicies()
+            .isEmpty()) {
+          for (ReportSynthesisFlagshipProgressPolicy flagshipProgressPolicy : reportSynthesis
+            .getReportSynthesisFlagshipProgress().getReportSynthesisFlagshipProgressPolicies().stream()
+            .filter(ro -> ro.isActive()).collect(Collectors.toList())) {
+            reportSynthesis.getReportSynthesisFlagshipProgress().getProjectPolicies()
+              .add(flagshipProgressPolicy.getProjectPolicy());
+          }
+        }
+      }
+    }
+
+
     // Get the list of liaison institutions Flagships and PMU.
     liaisonInstitutions = loggedCrp.getLiaisonInstitutions().stream()
       .filter(c -> c.getCrpProgram() != null && c.isActive()
@@ -277,28 +600,35 @@ public class PoliciesAction extends BaseAction {
       .collect(Collectors.toList()));
 
     /** Graphs and Tables */
-    List<ProjectPolicy> projectPoliciesByPhase = projectPolicyManager.getProjectPolicyByPhase(phase);
-    if (projectPoliciesByPhase != null && !projectPoliciesByPhase.isEmpty()) {
-      for (ProjectPolicy projectPolicy : projectPoliciesByPhase) {
-        if (!projectPolicy.getProjectPolicyInfo(phase).isPrevious()) {
-          if (this.isFlagship()) {
-
-          } else {
-            projectPolicies.add(projectPolicy);
-          }
-        }
-      }
-    }
 
 
     // Base Permission
     String params[] = {loggedCrp.getAcronym(), reportSynthesis.getId() + ""};
-    this.setBasePermission(this.getText(Permission.REPORT_SYNTHESIS_CROSS_CUTTING_BASE_PERMISSION, params));
+    this.setBasePermission(this.getText(Permission.REPORT_SYNTHESIS_FLAGSHIP_PROGRESS_BASE_PERMISSION, params));
+
+    if (this.isHttpPost()) {
+      if (reportSynthesis.getReportSynthesisFlagshipProgress().getPlannedPolicies() != null) {
+        reportSynthesis.getReportSynthesisFlagshipProgress().getPlannedPolicies().clear();
+      }
+    }
+
   }
 
   @Override
   public String save() {
     if (this.hasPermission("canEdit")) {
+
+      ReportSynthesisFlagshipProgress reportSynthesisFlagshipProgressDB =
+        reportSynthesisManager.getReportSynthesisById(synthesisID).getReportSynthesisFlagshipProgress();
+
+      this.flagshipProgressProjectPoliciesNewData(reportSynthesisFlagshipProgressDB);
+
+      if (reportSynthesis.getReportSynthesisFlagshipProgress().getPlannedPolicies() == null) {
+        reportSynthesis.getReportSynthesisFlagshipProgress().setPlannedPolicies(new ArrayList<>());
+      }
+
+      reportSynthesisFlagshipProgressDB =
+        reportSynthesisFlagshipProgressManager.saveReportSynthesisFlagshipProgress(reportSynthesisFlagshipProgressDB);
 
       List<String> relationsName = new ArrayList<>();
       reportSynthesis = reportSynthesisManager.getReportSynthesisById(synthesisID);
@@ -340,6 +670,7 @@ public class PoliciesAction extends BaseAction {
     this.liaisonInstitution = liaisonInstitution;
   }
 
+
   public void setLiaisonInstitutionID(Long liaisonInstitutionID) {
     this.liaisonInstitutionID = liaisonInstitutionID;
   }
@@ -348,13 +679,17 @@ public class PoliciesAction extends BaseAction {
     this.liaisonInstitutions = liaisonInstitutions;
   }
 
-
   public void setLoggedCrp(GlobalUnit loggedCrp) {
     this.loggedCrp = loggedCrp;
   }
 
+
   public void setReportSynthesis(ReportSynthesis reportSynthesis) {
     this.reportSynthesis = reportSynthesis;
+  }
+
+  public void setSelectedProjectPolicies(List<ProjectPolicy> selectedProjectPolicies) {
+    this.selectedProjectPolicies = selectedProjectPolicies;
   }
 
   public void setSynthesisID(Long synthesisID) {
@@ -368,7 +703,7 @@ public class PoliciesAction extends BaseAction {
   @Override
   public void validate() {
     if (save) {
-      validator.validate(this, reportSynthesis, true);
+      // validator.validate(this, reportSynthesis, true);
     }
   }
 }
