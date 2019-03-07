@@ -115,9 +115,7 @@
                     <tr>
                       <td class="col-md-5">  
                         [@utils.tableText value=(item.composedName)!"" /]
-                        [#if item.project??]
-                          <br /> <small>(From Project P${item.project.id})</small> 
-                        [/#if]
+                        [#if item.project??]<br /> <small>(From Project P${item.project.id})</small> [/#if]
                       </td>
                       <td class="col-md-4"> [@utils.tableList list=(item.srfTargets)![] displayFieldName="srfSloIndicator.title" /] </td>
                       <td> [@utils.tableText value=(item.projectExpectedStudyInfo.studyType.name)!"" /] </td>
@@ -139,3 +137,12 @@
   </div>
 
 [/#macro]
+
+[#function getMarker element name]
+  [#list (element.crossCuttingMarkers)![] as ccm]
+    [#if ccm.cgiarCrossCuttingMarker.name == name]
+      [#return (ccm.repIndGenderYouthFocusLevel.powbName)!'0 - Not Targeted' ]
+    [/#if]
+  [/#list]
+  [#return "0 - Not Targeted" ]
+[/#function]

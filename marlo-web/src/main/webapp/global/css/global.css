@@ -1940,7 +1940,7 @@ a.currentReportingSection li, a.currentSection li {
 }
 
 #secondaryMenu ul li > ul li ul li a {
-  padding: 4px 20px 4px 10px !important;
+  padding: 6px 20px 6px 10px !important;
 }
 
 #secondaryMenu ul li  > ul li:hover {

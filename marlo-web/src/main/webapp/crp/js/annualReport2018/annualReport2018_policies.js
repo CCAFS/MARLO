@@ -19,6 +19,7 @@ google.charts.setOnLoadCallback(function() {
 
   // Chart #6 - Organizations designing/promulgating the policy
   var $chart6 = $('#chart6');
+  console.log(getChartDataArray($chart6));
   var data6 = new google.visualization.arrayToDataTable(getChartDataArray($chart6));
   var view6 = new google.visualization.DataView(data6);
   var chart6 = new google.visualization.BarChart(document.getElementById($chart6[0].id));
@@ -46,34 +47,35 @@ google.charts.setOnLoadCallback(function() {
       bars: 'horizontal' // Required for Material Bar Charts.
   }));
 
-//Chart #7
-  var $chart7 = $('#chart7');
-  var data7 = new google.visualization.arrayToDataTable(getChartDataArray($chart7));
-  var view7 = new google.visualization.DataView(data7);
-  var chart7 = new google.visualization.ColumnChart(document.getElementById($chart7[0].id));
-  chart7.draw(view7, google.charts.Bar.convertOptions({
-      title: "CGIAR Cross-cutting markers",
-      stacked: true,
+  // Chart #7 - Policies Level of maturity
+  createGooglePieChart('#chart7', {
+      title: 'Policies Level of Maturity',
       titleTextStyle: {
           color: '#5f5e5e',
           fontName: 'Roboto',
           fontSize: 16,
           bold: false
       },
+      pieHole: 0.4,
       chartArea: {
-          right: 0,
-          width: '80%',
+          top: 45,
+          width: "100%"
       },
+      colors: '#7ed6df',
       legend: {
-        position: "top"
+        alignment: 'center'
       },
-      vAxis: {
-        minValue: 0,
-        textStyle: {
-            color: '#8c8c8c',
-            fontName: 'Roboto'
-        }
+      slices: {
+          0: {
+            color: '#22a6b3'
+          },
+          1: {
+            color: '#7ed6df'
+          },
+          2: {
+            color: '#1ed9d4'
+          }
       }
-  }));
+  });
 
 });

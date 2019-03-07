@@ -345,11 +345,11 @@ table.financial-report .row-title {
   height: 180px;
 }
 #chart6 {
-  height: 220px;
+  height: 294px;
 }
 
 #chart7 {
-  height: 220px;
+  height: 200px;
 }
 
 #chart8, #chart9 {
@@ -377,7 +377,7 @@ table.financial-report .row-title {
 }
 
 li#menu-crpProgress {
-  font-size: 0.87em !important;
+  font-size: 0.9em !important;
 }
 
 li#menu-oicr {
@@ -425,4 +425,31 @@ li#menu-oicr {
   padding: 14px 22px !important;
   border: 1px solid #dedede;
   height: 48px;
+}
+
+
+/* Markers*/
+
+p.dacMarker {
+  background: #ececec;
+  border-radius: 50%;
+  width: 27px;
+  height: 27px;
+  padding: 4px;
+  margin: 0 auto;
+}
+
+p.dacMarker.level-2 {
+  background: #a8ceec;
+  color: #fff;
+}
+
+p.dacMarker.level-3 {
+  background: #5db0f3;
+  color: #fff;
+}
+
+p.dacMarker.level-4 {
+  font-size: 0.85em;
+  padding: 6px 0;
 }
