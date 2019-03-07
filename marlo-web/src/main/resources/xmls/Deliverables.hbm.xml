@@ -206,7 +206,8 @@
       </key>
       <one-to-many
         class="org.cgiar.ccafs.marlo.data.model.DeliverableCrossCuttingMarker" />
-    </set>		
+    </set>
+    
 		<many-to-one name="modifiedBy" class="org.cgiar.ccafs.marlo.data.model.User"
       fetch="select">
       <column name="modified_by" />
@@ -223,5 +224,14 @@
       </key>
       <one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectLp6ContributionDeliverable" />
     </set>
+    
+    <set name="deliverableGeographicScopes" table="deliverable_geographic_scopes" inverse="true"
+      order-by="id" lazy="true" fetch="select">
+      <key>
+        <column name="deliverable_id" not-null="true" />
+      </key>
+      <one-to-many class="org.cgiar.ccafs.marlo.data.model.DeliverableGeographicScope" />
+    </set>
+ 
 	</class>
 </hibernate-mapping>

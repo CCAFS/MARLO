@@ -676,23 +676,26 @@ public class ProjectListAction extends BaseAction {
 
       System.out.println(myProjects.size());
       myProjects = myProjects.stream()
-        .filter(mp -> mp.isActive() && (mp.getProjecInfoPhase(this.getActualPhase()).getEndDate() == null
-          || Integer.parseInt(dateFormat.format(mp.getProjecInfoPhase(this.getActualPhase()).getEndDate())) >= this
-            .getCurrentCycleYear()))
+        .filter(mp -> mp.isActive() && mp.getProjecInfoPhase(this.getActualPhase()) != null
+          && (mp.getProjecInfoPhase(this.getActualPhase()).getEndDate() == null
+            || Integer.parseInt(dateFormat.format(mp.getProjecInfoPhase(this.getActualPhase()).getEndDate())) >= this
+              .getCurrentCycleYear()))
         .collect(Collectors.toList());
 
 
       allProjects = allProjects.stream()
-        .filter(mp -> mp.isActive() && (mp.getProjecInfoPhase(this.getActualPhase()).getEndDate() == null
-          || Integer.parseInt(dateFormat.format(mp.getProjecInfoPhase(this.getActualPhase()).getEndDate())) >= this
-            .getCurrentCycleYear()))
+        .filter(mp -> mp.isActive() && mp.getProjecInfoPhase(this.getActualPhase()) != null
+          && (mp.getProjecInfoPhase(this.getActualPhase()).getEndDate() == null
+            || Integer.parseInt(dateFormat.format(mp.getProjecInfoPhase(this.getActualPhase()).getEndDate())) >= this
+              .getCurrentCycleYear()))
         .collect(Collectors.toList());
 
 
       closedProjects = closedProjects.stream()
-        .filter(mp -> mp.isActive() && (mp.getProjecInfoPhase(this.getActualPhase()).getEndDate() == null
-          || Integer.parseInt(dateFormat.format(mp.getProjecInfoPhase(this.getActualPhase()).getEndDate())) >= this
-            .getCurrentCycleYear()))
+        .filter(mp -> mp.isActive() && mp.getProjecInfoPhase(this.getActualPhase()) != null
+          && (mp.getProjecInfoPhase(this.getActualPhase()).getEndDate() == null
+            || Integer.parseInt(dateFormat.format(mp.getProjecInfoPhase(this.getActualPhase()).getEndDate())) >= this
+              .getCurrentCycleYear()))
         .collect(Collectors.toList());
     }
 

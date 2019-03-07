@@ -20,11 +20,25 @@ function attachEvents() {
   $('select.stageInnovationSelect').on('change', function() {
     var isStageFour = this.value == 4;
     if(isStageFour) {
-      $('.stageFourBlock').slideDown();
+      $('.stageFourBlock-true').slideDown();
+      $('.stageFourBlock-false').slideUp();
     } else {
-      $('.stageFourBlock').slideUp();
+      $('.stageFourBlock-true').slideUp();
+      $('.stageFourBlock-false').slideDown();
     }
   });
+
+
+ $('input.isClearLead').on('change', function() {
+    var selected = $('input.isClearLead').is(":checked");
+
+    if(selected == true) {
+      $('.lead-organization .requiredTag').slideUp();
+    } else {
+      $('.lead-organization .requiredTag').slideDown();
+    }
+
+  })
 
 }
 

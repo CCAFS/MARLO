@@ -3,10 +3,10 @@
 [#assign currentSectionString = "${actionName?replace('/','-')}-${(deliverable.id)!}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2","font-awesome","blueimp-file-upload","jsUri", "flat-flags", "pickadate"] /]
 [#assign customJS = [
-  "${baseUrlMedia}/js/publications/publication.js?20180529",
-  "${baseUrlMedia}/js/projects/deliverables/deliverableQualityCheck.js?20180529", 
-  "${baseUrlMedia}/js/projects/deliverables/deliverableInfo.js?20180529",
-  "${baseUrlMedia}/js/projects/deliverables/deliverableDissemination.js?20180612", 
+  "${baseUrlMedia}/js/publications/publication.js?20190228",
+  "${baseUrlMedia}/js/projects/deliverables/deliverableQualityCheck.js?20190228", 
+  "${baseUrlMedia}/js/projects/deliverables/deliverableInfo.js?20190228",
+  "${baseUrlMedia}/js/projects/deliverables/deliverableDissemination.js?20190228",
   "${baseUrl}/global/js/autoSave.js",
   "${baseUrl}/global/js/fieldsValidation.js?20180529"
 ] /]
@@ -198,34 +198,36 @@
       
     </div>
     
-    <h3 class="headTitle"> Publication Dissemination</h3> 
-    <div class="borderBox"> 
-      [#-- Dissemination channel & URL --]
-      <div class="simpleBox">
-        <div class="findable"><input type="hidden" name="${customName}.dissemination.alreadyDisseminated" value="true"/></div>
-        [@deliverableMacros.findableOptions /]
+    [#if action.hasSpecificities("crp_has_disemination")]
+      <h3 class="headTitle"> Publication Dissemination</h3> 
+      <div class="borderBox"> 
+        [#-- Dissemination channel & URL --]
+        <div class="simpleBox">
+          <div class="findable"><input type="hidden" name="${customName}.dissemination.alreadyDisseminated" value="true"/></div>
+          [@deliverableMacros.findableOptions /]
+        </div>
+        
+        [#--  Intellectual Asset--]
+        [#if action.hasSpecificities(action.crpDeliverableIntellectualAsset())]
+          [@deliverableMacros.intellectualAsset /]
+        [/#if]
+        
+        [#--  Does this deliverable involve Participants and Trainees? --]
+        [@deliverableMacros.deliverableParticipantsMacro /]
+        
+        [#-- Is this deliverable Open Access? --]
+        [@deliverableMacros.isOpenaccessMacro /]
+        
+        [#-- Have you adopted a license?  --]
+        [@deliverableMacros.deliverableLicenseMacro/]
       </div>
       
-      [#--  Intellectual Asset--]
-      [#if action.hasSpecificities(action.crpDeliverableIntellectualAsset())]
-        [@deliverableMacros.intellectualAsset /]
-      [/#if]
-      
-      [#--  Does this deliverable involve Participants and Trainees? --]
-      [@deliverableMacros.deliverableParticipantsMacro /]
-      
-      [#-- Is this deliverable Open Access? --]
-      [@deliverableMacros.isOpenaccessMacro /]
-      
-      [#-- Have you adopted a license?  --]
-      [@deliverableMacros.deliverableLicenseMacro/]
-    </div>
-    
-    <h3 class="headTitle"> Publication Metadata</h3> 
-    <div class="borderBox">
-      [#-- Metadata (included publications) --]
-      [@deliverableMacros.deliverableMetadataMacro flagshipslistName="flagshipsList" allowFlagships=false /]
-    </div> 
+      <h3 class="headTitle"> Publication Metadata</h3> 
+      <div class="borderBox">
+        [#-- Metadata (included publications) --]
+        [@deliverableMacros.deliverableMetadataMacro flagshipslistName="flagshipsList" allowFlagships=false /]
+      </div>
+    [/#if] 
     
     [#-- Section Buttons & hidden inputs--]
     [#include "/WEB-INF/crp/views/publications/buttons-publications.ftl" /]

@@ -186,42 +186,92 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
   }
 
   /**
-   * Get a boolean to mark a deliverable with a Report tag in deliverableList for Reporting
+   * Check if the deliverables is from a previous year for the current cycle
+   * Used in Project.getCurrentDeliverables and Project.getPreviousDeliverables to generate the deliverable list and;
    * 
-   * @param year
-   * @return Boolean
+   * @return
    */
-  public Boolean isRequieriedReporting(int year) {
-    if (status == null && this.year == year) {
-      return true;
+  public Boolean isPrevious() {
+
+    if (this.getStatus() != null
+      && this.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())) {
+      if (this.getNewExpectedYear() != null && this.getNewExpectedYear().intValue() != -1) {
+        if (this.getNewExpectedYear() < phase.getYear()) {
+          return true;
+        }
+      }
     }
 
-    if (status != null && this.year == year
-      && status.intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())) {
-      return true;
-    }
-
-    if (status != null && this.newExpectedYear != null && this.newExpectedYear != -1 && this.newExpectedYear == year
-      && status.intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())) {
-      return true;
-    }
-
-    if (status != null && (status.intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())
-      || status.intValue() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId()))) {
-      if (this.newExpectedYear != null && this.newExpectedYear != -1) {
-        if (this.newExpectedYear == year) {
+    if (this.getStatus() != null
+      && (this.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())
+        || this.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId()))) {
+      if (this.getNewExpectedYear() != null && this.getNewExpectedYear().intValue() != -1) {
+        if (this.getNewExpectedYear() < phase.getYear()) {
           return true;
         }
       } else {
-        if (this.year == year) {
+        if (this.getYear() < phase.getYear()) {
           return true;
         }
+      }
+    }
+
+    if (this.getStatus() != null
+      && (this.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId()))) {
+      if (this.getYear() < phase.getYear()) {
+        return true;
       }
     }
 
     return false;
   }
 
+  /**
+   * Check if the deliverables is required for the current cycle
+   * Used in BaseAction.isDeliverableComplete to know if the Deliverable is Complete
+   * 
+   * @return
+   */
+  public Boolean isRequired() {
+
+    if (this.getStatus() != null
+      && this.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())) {
+      if (this.getNewExpectedYear() != null && this.getNewExpectedYear().intValue() != -1) {
+        if (this.getNewExpectedYear() == phase.getYear()) {
+          return true;
+        }
+      } else {
+        return true;
+      }
+    }
+
+    if (this.getStatus() != null
+      && this.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())) {
+      if (this.getNewExpectedYear() != null && this.getNewExpectedYear().intValue() != -1) {
+        if (this.getNewExpectedYear() == phase.getYear()) {
+          return true;
+        }
+      } else {
+        if (this.getYear() == phase.getYear()) {
+          return true;
+        }
+      }
+    }
+
+    if (this.getStatus() != null
+      && this.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId())) {
+      return false;
+    }
+
+    if (this.getStatus() != null
+      && (this.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId()))) {
+      if (this.getYear() == phase.getYear()) {
+        return true;
+      }
+    }
+
+    return false;
+  }
 
   public boolean requeriedFair() {
     try {
@@ -282,7 +332,6 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
     this.isLocationGlobal = isLocationGlobal;
   }
 
-
   public void setLicense(String license) {
     this.license = license;
   }
@@ -290,6 +339,7 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
   public void setNewExpectedYear(Integer newExpectedYear) {
     this.newExpectedYear = newExpectedYear;
   }
+
 
   public void setOtherLicense(String otherLicense) {
     this.otherLicense = otherLicense;
@@ -305,10 +355,10 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
     this.region = region;
   }
 
-
   public void setStatus(Integer status) {
     this.status = status;
   }
+
 
   public void setStatusDescription(String statusDescription) {
     this.statusDescription = statusDescription;
@@ -323,7 +373,6 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
   public void setTypeOther(String typeOther) {
     this.typeOther = typeOther;
   }
-
 
   public void setYear(int year) {
     this.year = year;

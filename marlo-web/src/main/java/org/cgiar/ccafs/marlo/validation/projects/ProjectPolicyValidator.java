@@ -132,22 +132,25 @@ public class ProjectPolicyValidator extends BaseValidator {
     }
 
     // Validate Organization Type
-    if (projectPolicy.getProjectPolicyInfo(baseAction.getActualPhase()).getRepIndOrganizationType() != null) {
-      if (projectPolicy.getProjectPolicyInfo(baseAction.getActualPhase()).getRepIndOrganizationType().getId() == null
-        || projectPolicy.getProjectPolicyInfo(baseAction.getActualPhase()).getRepIndOrganizationType().getId() == -1) {
-        action.addMessage(action.getText("Organization Type"));
-        action.addMissingField("projectPolicy.repIndOrganizationType");
-        action.getInvalidFields().put("input-policy.projectPolicyInfo.repIndOrganizationType.id",
-          InvalidFieldsMessages.EMPTYFIELD);
-      }
-    } else {
-      action.addMessage(action.getText("Organization Type"));
-      action.addMissingField("projectPolicy.repIndOrganizationType");
-      action.getInvalidFields().put("input-policy.projectPolicyInfo.repIndOrganizationType.id",
-        InvalidFieldsMessages.EMPTYFIELD);
-    }
+    /*
+     * if (projectPolicy.getProjectPolicyInfo(baseAction.getActualPhase()).getRepIndOrganizationType() != null) {
+     * if (projectPolicy.getProjectPolicyInfo(baseAction.getActualPhase()).getRepIndOrganizationType().getId() == null
+     * || projectPolicy.getProjectPolicyInfo(baseAction.getActualPhase()).getRepIndOrganizationType().getId() == -1) {
+     * action.addMessage(action.getText("Organization Type"));
+     * action.addMissingField("projectPolicy.repIndOrganizationType");
+     * action.getInvalidFields().put("input-policy.projectPolicyInfo.repIndOrganizationType.id",
+     * InvalidFieldsMessages.EMPTYFIELD);
+     * }
+     * } else {
+     * action.addMessage(action.getText("Organization Type"));
+     * action.addMissingField("projectPolicy.repIndOrganizationType");
+     * action.getInvalidFields().put("input-policy.projectPolicyInfo.repIndOrganizationType.id",
+     * InvalidFieldsMessages.EMPTYFIELD);
+     * }
+     */
 
     // Validate Narrative
+
     if (!(this.wordCount(projectPolicy.getProjectPolicyInfo(action.getActualPhase()).getNarrativeEvidence()) <= 200)) {
       action.addMessage(action.getText("Narrative of Evidence"));
       action.addMissingField("policy.narrative");

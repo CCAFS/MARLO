@@ -40,6 +40,7 @@ public class ProjectInnovationValidator extends BaseValidator {
 
   private final GlobalUnitManager crpManager;
   private BaseAction baseAction;
+  private Boolean clearLead;
 
   @Inject
   public ProjectInnovationValidator(GlobalUnitManager crpManager) {
@@ -56,7 +57,8 @@ public class ProjectInnovationValidator extends BaseValidator {
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
-  public void validate(BaseAction action, Project project, ProjectInnovation innovation, boolean saving) {
+  public void validate(BaseAction action, Project project, ProjectInnovation innovation, Boolean clearLead,
+    boolean saving) {
 
     action.setInvalidFields(new HashMap<>());
     baseAction = action;
@@ -67,7 +69,7 @@ public class ProjectInnovationValidator extends BaseValidator {
         action.addMissingField("draft");
       }
     }
-
+    this.clearLead = clearLead;
     this.validateProjectInnovation(action, innovation);
 
     if (!action.getFieldErrors().isEmpty()) {
@@ -97,25 +99,6 @@ public class ProjectInnovationValidator extends BaseValidator {
       action.addMessage(action.getText("Narrative of The Innovation"));
       action.addMissingField("projectInnovations.narrative");
       action.getInvalidFields().put("input-innovation.projectPolicyInfo.narrativeEvidence",
-        InvalidFieldsMessages.EMPTYFIELD);
-    }
-
-
-    // Validate Contribution of CRP
-    if (projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getRepIndContributionOfCrp() != null) {
-      if (projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getRepIndContributionOfCrp()
-        .getId() == null
-        || projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getRepIndContributionOfCrp()
-          .getId() == -1) {
-        action.addMessage(action.getText("Contribution Of Crp"));
-        action.addMissingField("projectInnovations.contributionOfCrp");
-        action.getInvalidFields().put("input-innovation.projectInnovationInfo.repIndContributionOfCrp.id",
-          InvalidFieldsMessages.EMPTYFIELD);
-      }
-    } else {
-      action.addMessage(action.getText("Contribution Of Crp"));
-      action.addMissingField("projectInnovations.contributionOfCrp");
-      action.getInvalidFields().put("input-innovation.projectInnovationInfo.repIndContributionOfCrp.id",
         InvalidFieldsMessages.EMPTYFIELD);
     }
 
@@ -177,6 +160,17 @@ public class ProjectInnovationValidator extends BaseValidator {
             action.addMessage(action.getText("Outcome Case Study"));
             action.addMissingField("projectInnovations.outcomeCaseStudy");
             action.getInvalidFields().put("input-innovation.projectInnovationInfo.projectExpectedStudy.id",
+              InvalidFieldsMessages.EMPTYFIELD);
+          }
+        } else {
+          // Validate Evidence Link (URL)
+          if (!this
+            .isValidString(projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getEvidenceLink())
+            && !this
+              .isValidUrl(projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getEvidenceLink())) {
+            action.addMessage(action.getText("Evidence Link"));
+            action.addMissingField("projectInnovations.evidenceLink");
+            action.getInvalidFields().put("input-innovation.projectInnovationInfo.evidenceLink",
               InvalidFieldsMessages.EMPTYFIELD);
           }
         }
@@ -262,20 +256,23 @@ public class ProjectInnovationValidator extends BaseValidator {
     }
 
     // Validate lead organization
-    if (projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getLeadOrganization() != null) {
-      if (projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getLeadOrganization().getId() == null
-        || projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getLeadOrganization()
-          .getId() == -1) {
+    if (clearLead == null || clearLead == false) {
+      if (projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getLeadOrganization() != null) {
+        if (projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getLeadOrganization()
+          .getId() == null
+          || projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getLeadOrganization()
+            .getId() == -1) {
+          action.addMessage(action.getText("Lead Organization"));
+          action.addMissingField("projectInnovations.leadOrganization");
+          action.getInvalidFields().put("input-innovation.projectInnovationInfo.leadOrganization.id",
+            InvalidFieldsMessages.EMPTYFIELD);
+        }
+      } else {
         action.addMessage(action.getText("Lead Organization"));
         action.addMissingField("projectInnovations.leadOrganization");
         action.getInvalidFields().put("input-innovation.projectInnovationInfo.leadOrganization.id",
           InvalidFieldsMessages.EMPTYFIELD);
       }
-    } else {
-      action.addMessage(action.getText("Lead Organization"));
-      action.addMissingField("projectInnovations.leadOrganization");
-      action.getInvalidFields().put("input-innovation.projectInnovationInfo.leadOrganization.id",
-        InvalidFieldsMessages.EMPTYFIELD);
     }
 
     // Validate contributing organizations
@@ -288,14 +285,6 @@ public class ProjectInnovationValidator extends BaseValidator {
         action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Contributing organizations"}));
     }
 
-    // Validate Evidence Link (URL)
-    if (!this.isValidString(projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getEvidenceLink())
-      && !this.isValidUrl(projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getEvidenceLink())) {
-      action.addMessage(action.getText("Evidence Link"));
-      action.addMissingField("projectInnovations.evidenceLink");
-      action.getInvalidFields().put("input-innovation.projectInnovationInfo.evidenceLink",
-        InvalidFieldsMessages.EMPTYFIELD);
-    }
 
     // Validate Crps
     if (projectInnovation.getCrps() == null || projectInnovation.getCrps().isEmpty()) {

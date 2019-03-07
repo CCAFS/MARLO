@@ -73,11 +73,11 @@
           </div>
         
           [#-- Contribution of CRP --] 
-          [#--<div class="form-group row">
+          <div class="form-group row">
             <div class="col-md-6 ">
-              [@customForm.select name="innovation.projectInnovationInfo.repIndContributionOfCrp.id" label=""  i18nkey="projectInnovations.contributionOfCrp" listName="contributionCrpList" keyFieldName="id"  displayFieldName="name" required=true  className="" editable=editable/]
+              [@customForm.select name="innovation.projectInnovationInfo.repIndContributionOfCrp.id" label=""  i18nkey="projectInnovations.contributionOfCrp" listName="contributionCrpList" keyFieldName="id"  displayFieldName="name" required=false  className="" editable=editable/]
             </div>
-          </div>--] 
+          </div> 
           
           [#-- Degree of Innovation --] 
           [#--  <div class="form-group row">
@@ -122,9 +122,15 @@
             [@customForm.textArea name="innovation.projectInnovationInfo.descriptionStage" i18nkey="projectInnovations.stageDescription" help="projectInnovations.stageDescription.help" helpIcon=false placeholder="" className="limitWords-50" required=true editable=editable /]
           </div>
           
+          [#-- Is clear lead  --]
+          [#assign isClearLead = (innovation.projectInnovationInfo.clearLead)!false /]
+           <div class="form-group isClearLead">
+            [@customForm.checkmark id="" name="clearLead" i18nkey="projectInnovations.clearLead" help="" paramText="" value="true" helpIcon=true disabled=false editable=true checked=(innovation.projectInnovationInfo.clearLead)!false cssClass="isClearLead" cssClassLabel=""  /]
+           </div>
+           
           [#-- Lead Organization --]
-          <div class="form-group"">
-            [@customForm.select name="innovation.projectInnovationInfo.leadOrganization.id" label=""  i18nkey="projectInnovations.leadOrganization" listName="institutions" keyFieldName="id"  displayFieldName="composedName" required=true  className="" editable=editable/]
+          <div class="form-group lead-organization">
+            [@customForm.select name="innovation.projectInnovationInfo.leadOrganization.id" label=""  i18nkey="projectInnovations.leadOrganization" listName="institutions" keyFieldName="id"  displayFieldName="composedName" required=!(isClearLead)  className="" editable=editable/]
           </div>
           
           [#-- Top Five Contributing Organizations --]
@@ -139,12 +145,12 @@
           
         
           [#-- Specify an Outcome Case Study (Only if stage 4) --]
-          <div class="form-group stageFourBlock" style="display:${isStageFour?string('block','none')}">
+          <div class="form-group stageFourBlock-true" style="display:${isStageFour?string('block','none')}">
             [@customForm.select name="innovation.projectInnovationInfo.projectExpectedStudy.id" label=""  i18nkey="projectInnovations.outcomeCaseStudy" listName="expectedStudyList" keyFieldName="id"  displayFieldName="composedName"  multiple=false required=true  className="keyOutput" editable=editable/]
           </div>
                 
           [#-- Evidence Link --] 
-          <div class="form-group">
+          <div class="form-group stageFourBlock-false" style="display:${isStageFour?string('none','block')}">
             [@customForm.input name="innovation.projectInnovationInfo.evidenceLink"  type="text" i18nkey="projectInnovations.evidenceLink"  placeholder="marloRequestCreation.webSiteLink.placeholder" className="" required=true editable=editable /]
           </div>
         

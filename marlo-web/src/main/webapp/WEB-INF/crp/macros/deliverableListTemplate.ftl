@@ -26,9 +26,9 @@
         [#-- Has draft version (Auto-save) --]
         [#assign hasDraft = (action.getAutoSaveFilePath(deliverable.class.simpleName, "deliverable", deliverable.id))!false /]
         [#-- Is Complete --]
-        [#assign isDeliverableComplete = action.isDeliverableComplete(deliverable.id) /]
+        [#assign isDeliverableComplete = action.isDeliverableComplete(deliverable.id, actualPhase.id) /]
         [#-- To Report --]
-        [#local toReport = (deliverable.deliverableInfo.isRequieriedReporting(currentCycleYear) && reportingActive)  ]
+        [#local toReport = reportingActive && !isDeliverableComplete ]
         
         <tr>
           [#-- ID --]
@@ -41,12 +41,12 @@
           <td class="left">
             [#-- Hidden title to sort correctly by title --]
             <span class="hidden">${deliverable.deliverableInfo.title!''}</span>
-            [#-- New Tag --]
-            [#if isDeliverableNew]<span class="label label-info">New</span>[/#if]
             [#-- Draft Tag --]
             [#if hasDraft]<strong class="text-info">[DRAFT]</strong>[/#if]
             [#-- Report --]
             [#if toReport]<span class="label label-primary" title="Required for this cycle"><span class="glyphicon glyphicon-flash" ></span> Report</span>[/#if]
+            [#-- New Tag --]
+            [#if isDeliverableNew]<span class="label label-info">New</span>[/#if]
             
             [#if deliverable.deliverableInfo.title?has_content]
               <a href="[@s.url namespace=namespace action=defaultAction] [@s.param name='deliverableID']${deliverable.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" >
@@ -152,9 +152,9 @@
         [#assign hasDraft = (action.getAutoSaveFilePath(deliverable.class.simpleName, "deliverable", deliverable.id))!false /]
         
         [#-- isDeliverableComplete --]
-        [#assign isDeliverableComplete = action.isDeliverableComplete(deliverable.id) /]
+        [#assign isDeliverableComplete = action.isDeliverableComplete(deliverable.id, actualPhase.id) /]
         [#-- To Report --]
-        [#local toReport = deliverable.deliverableInfo.isRequieriedReporting(currentCycleYear) && reportingActive && !isDeliverableComplete ]
+        [#local toReport = reportingActive && !isDeliverableComplete ]
         
         <tr>
           [#-- ID --]
@@ -293,7 +293,7 @@
         [@customForm.select name="${dp_name}.projectPartner.id" value="${(projectPartnerObj.id)!-1}"  label="" i18nkey="" showTitle=false listName="partners" keyFieldName="id"  displayFieldName="composedName" className="responsible id " editable=editable required=isResponsable/]
         <div class="partnerPersons" listname="deliverable.responsiblePartner.projectPartnerPerson.id">
           [#if (projectPartnerObj.id??)!false]
-            [#list action.getPersons(projectPartnerObj.id) as person]
+          [#list action.getPersons(projectPartnerObj.id) as person]            
               [@deliverablePerson element=person name="${dp_name}" projectPartner=(projectPartnerObj) index=person_index checked=(dp.projectPartnerPerson.id == person.id)!false isResponsable=true /]
             [/#list]
           [/#if]
@@ -362,7 +362,7 @@
           <div class="partnerPersons">
             [#if (projectPartner.id??)!false]
               [#assign selectedPersons =  action.getSelectedPersons(projectPartner.id) /]
-              [#local deliverablePartnerships = (action.getPersons(projectPartner.id))![] /]
+               [#local deliverablePartnerships = (action.getPersons(projectPartner.id))![] /]
               [#if deliverablePartnerships?has_content]
                 [#list action.getPersons(projectPartner.id) as person]
                   [@deliverablePerson element=person name="${dp_name}" projectPartner=projectPartner index=personsIndex checked=(action.isSelectedPerson(person.id,projectPartner.id)) isResponsable=false /]

@@ -104,6 +104,7 @@
               <a href="${dlurl}">${(item.id)!'ID'}</a>
             </td> 
             <td class="">
+              [#if isNew] <span class="label label-info">[@s.text name="global.new" /]</span> [/#if] 
               <a href="${dlurl}"}>[@utils.tableText value=(item.projectPolicyInfo.title)!"" /]</a>
             </td>
             <td class="">
@@ -116,7 +117,7 @@
               [@utils.tableText value=(item.projectPolicyInfo.repIndStageProcess.name)!"" /]
             </td>
             <td>
-              [@utils.tableText value=(item.projectPolicyInfo.repIndGeographicScope.name)!"" /]
+              [@utils.tableList list=(item.geographicScopes)![] displayFieldName="repIndGeographicScope.name" /]
             </td>
             <td>
               [@utils.tableText value=(item.projectPolicyInfo.year)!"" /]

@@ -13,31 +13,10 @@ function init() {
 
   selectKeyOutput();
 
-  /* Init Select2 plugin */
-  $('form select').select2({
-    width: '100%'
-  });
-
-  // Update Parters selected lists
-  updateProjectPartnersSelects();
-
-  $(".fundingSource").select2({
-      templateResult: formatState,
-      templateSelection: formatState,
-      width: "100%"
-  });
-
-  $(".genderLevelsSelect").select2({
-      templateResult: formatStateGenderType,
-      width: "100%"
-  });
-
   $('.helpMessage3').on("click", openDialog);
 
-  // justificationByStatus($statuses.val());
-  // validateCurrentDate();
-
   $(".addPartner").on("click", addPartnerEvent);
+
   $(".removeElement").on("click", removePartnerEvent);
 
   // On change any partner person
@@ -113,33 +92,18 @@ function init() {
 
   });
 
-  // CHANGE CATEGORY
-  $("#CCAFS_deliverable_deliverable_deliverableType_deliverableType_id").on('change', function(e) {
-    var selectedOption = $("#CCAFS_deliverable_deliverable_deliverableType_deliverableType_id option:selected").val();
-    if(selectedOption != -1) {
-      $(".subType-select").show(600);
-    } else {
-      $(".subType-select").hide(600);
-    }
-  });
+  // Event to validate the expected date
+  $(".yearExpected").on("change", validateCurrentDate);
 
-  // CHANGE STATUS
+  // Event when status is changed
   $statuses.on("change", function() {
     justificationByStatus(this.value);
   });
 
-  $(".yearExpected").on("change", validateCurrentDate);
+  validateDeliverableStatus();
 
-  // New Expected year should be greater than current reporting cycle year
-  if(reportingActive) {
-    if(isDeliverableNew) {
-      // Set Complete if is new
-      $statuses.val(3).trigger("change");
-      $('.deliverableYear .overlay').show();
-    } else {
-      $statuses.find('option[value="2"]').prop("disabled", true).trigger("change");
-    }
-  }
+  // justificationByStatus($statuses.val());
+  // validateCurrentDate();
 
   /** Funding source * */
 
@@ -185,42 +149,6 @@ function init() {
         $(eOption).remove();
       }
     });
-  });
-
-  /** Cross-Cutting dimensions * */
-
-  $('input.crosscutingDimension').on('change', function() {
-    var $crosscutingDimensionBlock = $('#ccDimension-' + this.id);
-
-    if($(this).is(':checked')) {
-      $crosscutingDimensionBlock.slideDown();
-    } else {
-      $crosscutingDimensionBlock.slideUp();
-    }
-  });
-
-  /** Gender questions * */
-
-  $('input#gender').on('change', function() {
-    if($(this).is(':checked')) {
-      $('#gender-levels').slideDown();
-      $(".genderLevelsSelect").select2({
-          templateResult: formatStateGenderType,
-          width: "100%"
-      });
-    } else {
-      $('#gender-levels').slideUp();
-    }
-  });
-
-  $('input.crosscutingDimension').on('change', function() {
-    $('input#na').prop("checked", false);
-  });
-
-  $('input#na').on('change', function() {
-    $('input.crosscutingDimension').prop("checked", false);
-    $('#gender-levels').slideUp();
-    $('.ccDimension').slideUp();
   });
 
   $('.typeSelect').on('change', function() {
@@ -289,6 +217,31 @@ function init() {
     }
 
   });
+
+  /* Init Select2 plugin */
+  $('form select').select2({
+    width: '100%'
+  });
+
+  // Update Parters selected lists
+  updateProjectPartnersSelects();
+
+  $(".fundingSource").select2({
+      templateResult: formatState,
+      templateSelection: formatState,
+      width: "100%"
+  });
+
+  $(".genderLevelsSelect").select2({
+      templateResult: formatStateGenderType,
+      width: "100%"
+  });
+
+  // Deliverable Geographic Scope
+  $('select.elementType-repIndGeographicScope').on("addElement removeElement", function(event,id,name) {
+    setGeographicScope(this);
+  });
+  setGeographicScope($('form select.elementType-repIndGeographicScope')[0]);
 }
 
 function openDialog() {
@@ -480,28 +433,47 @@ function justificationByStatus(statusId) {
     $statusDescription.slideUp(400);
   }
 
-  // Validate the new extended year
-  if(!isDeliverableNew) {
-    if(isStatusOnGoing(statusId)) {
-      // $newExpectedYearSelect.val('-1').trigger('change');
-      $newExpectedYearBlock.hide();
+  if(reportingActive) {
+    // Validate the new extended year
+    if(isDeliverableNew) {
+
     } else {
-      if(hasExpectedYear) {
-        $newExpectedYearBlock.show();
-        $yearOverlay.show();
-      } else {
+      if(isStatusOnGoing(statusId)) {
         $newExpectedYearBlock.hide();
-        $yearOverlay.hide();
+      } else {
+        if(hasExpectedYear) {
+          $newExpectedYearBlock.show();
+          $yearOverlay.show();
+        } else {
+          $newExpectedYearBlock.hide();
+          $yearOverlay.hide();
+        }
       }
     }
-  }
 
-  if(isStatusExtended(statusId)) {
-    $newExpectedYearBlock.show();
+    if(isStatusExtended(statusId)) {
+      $newExpectedYearBlock.show();
+    }
     $yearOverlay.show();
   }
 
-  // $statusDescription.find('textarea').val('');
+}
+
+function validateDeliverableStatus() {
+  // New Expected year should be greater than current reporting cycle year
+  if(reportingActive) {
+    if(isDeliverableNew) {
+      $statuses.find('option').prop("disabled", true); // Disable All
+      $statuses.find('option[value="3"]').prop("disabled", false); // Enable Complete
+      $statuses.find('option[value="5"]').prop("disabled", false); // Enable Cancelled
+      $statuses.val("3"); // Set Complete
+    } else {
+      $statuses.find('option[value="2"]').prop("disabled", true);// Disable On-going
+    }
+
+    $('#deliverableYear .overlay').show();
+    $statuses.trigger("change");
+  }
 }
 
 // Add a new person element

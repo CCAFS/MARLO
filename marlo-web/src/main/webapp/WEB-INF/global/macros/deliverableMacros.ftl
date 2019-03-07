@@ -2,31 +2,30 @@
 [#import "/WEB-INF/global/macros/utils.ftl" as utils /]
 
 [#macro deliverableGeographicScope]
-  <div class="block-geographicScope">
-    <div class="form-group row">
-      <div class="col-md-6">
-        [@customForm.select name="deliverable.deliverableInfo.geographicScope.id" className="setSelect2 geographicScopeSelect" i18nkey="deliverable.geographicScope" listName="repIndGeographicScopes" keyFieldName="id"  displayFieldName="name" editable=editable required=editable/]
+  <div class="block-geographicScope geographicScopeBlock">
+    [#assign geographicScopeList = (deliverable.geographicScopes)![] ]
+    [#assign isRegional =      findElementID(geographicScopeList,  action.reportingIndGeographicScopeRegional) /]
+    [#assign isMultiNational = findElementID(geographicScopeList,  action.reportingIndGeographicScopeMultiNational) /]
+    [#assign isNational =      findElementID(geographicScopeList,  action.reportingIndGeographicScopeNational) /]
+    [#assign isSubNational =   findElementID(geographicScopeList,  action.reportingIndGeographicScopeSubNational) /]
+    
+    <div class="form-group">
+      <div class="row">
+        <div class="col-md-6">
+          [#-- Geographic Scope --]
+          [@customForm.elementsListComponent name="deliverable.geographicScopes" elementType="repIndGeographicScope" elementList=deliverable.geographicScopes label="deliverable.geographicScope" listName="repIndGeographicScopes" keyFieldName="id" displayFieldName="name" required=true /]
+        </div>
       </div>
-    </div>
-    
-    [#assign scopeID = (deliverable.deliverableInfo.geographicScope.id)!-1 ]  
-    [#assign isRegional = ((scopeID == action.reportingIndGeographicScopeRegional)) ]
-    [#assign isMultiNational = ((scopeID == action.reportingIndGeographicScopeMultiNational)) ]
-    [#assign isNational = ((scopeID == action.reportingIndGeographicScopeNational)) ]
-    [#assign isSubNational = ((scopeID == action.reportingIndGeographicScopeSubNational)) ]
-    
-    [#-- Region --]
-    <div class="form-group row">
-      <div class="col-md-6 regionalBlock" style="display:${(isRegional)?string('block','none')}">
+      <div class="form-group regionalBlock" style="display:${(isRegional)?string('block','none')}">
+        [#-- Regional scope --]
         [@customForm.elementsListComponent name="deliverable.deliverableRegions" elementType="locElement" elementList=deliverable.deliverableRegions label="deliverable.region"  listName="repIndRegions" keyFieldName="id" displayFieldName="composedName" required=false /]
       </div>
+      <div class="form-group nationalBlock" style="display:${(isMultiNational || isNational || isSubNational)?string('block','none')}">
+        [#-- Multinational, National and Subnational scope --]
+        [@customForm.select name="deliverable.countriesIds" label="" i18nkey="deliverable.countries" listName="countries" keyFieldName="isoAlpha2"  displayFieldName="name" value="deliverable.countriesIds" multiple=true required=true className="countriesSelect" disabled=!editable/]
+      </div>
     </div>
-    
-    [#-- Countries --]
-    <div class="form-group nationalBlock" style="display:${(isMultiNational || isNational || isSubNational)?string('block','none')}">
-      [#-- Multinational, National and Subnational scope --]
-      [@customForm.select name="deliverable.countriesIds" label="" i18nkey="deliverable.countries" listName="countries" keyFieldName="isoAlpha2"  displayFieldName="name" value="deliverable.countriesIds" multiple=true required=editable className="countriesSelect" disabled=!editable/]
-    </div>
+   
   </div>
 [/#macro]
 
@@ -179,30 +178,33 @@
     [#-- ${getMetadataValueByCode("dc.rights")} --] 
     
     
-    [#list licenceOptions as licenseType]
-      <div class="licenseOptions ${licenseType.name}" style="display:${licenseType.display};">
-        [#list licenseType.options as option]
-          [#assign licenseDescription][@s.text name="license.${option.name}.description" /][/#assign]
-          [#assign licenseLabel][@s.text name="license.${option.name}" /][#if licenseDescription?has_content] <small>(${licenseDescription})</small>[/#if][/#assign]
-          <p>[@customForm.radioFlat id="license-${licenseType_index}-${option_index}" name="deliverable.deliverableInfo.license" label="${licenseLabel}" disabled=false editable=editable value="${option.name}" checked=((deliverable.deliverableInfo.licenseType) == (option.name))!false cssClass="licenceOption" cssClassLabel="font-normal" /]</p>
-        [/#list]
-      </div>
-    [/#list]
-    
-    [#-- Other (Please specify)--]
-    <div class="licenseOptions">
-      <div class="form-group row">
-        <div class="col-md-6 licence-modifications" style="display:[#if (deliverable.deliverableInfo.licenseType=="OTHER")!false]block[#else]none [/#if];" >
-          [@customForm.input name="deliverable.deliverableInfo.otherLicense" showTitle=false className="" type="text" placeholder="Please specify" disabled=!editable className="otherLicense"  required=true editable=editable /]
+    <div class="licenseOptions-block">
+      [#list licenceOptions as licenseType]
+        <div class="licenseOptions ${licenseType.name}" style="display:${licenseType.display};">
+          [#list licenseType.options as option]
+            [#assign licenseDescription][@s.text name="license.${option.name}.description" /][/#assign]
+            [#assign licenseLabel][@s.text name="license.${option.name}" /][#if licenseDescription?has_content] <small>(${licenseDescription})</small>[/#if][/#assign]
+            <p>[@customForm.radioFlat id="license-${licenseType_index}-${option_index}" name="deliverable.deliverableInfo.license" label="${licenseLabel}" disabled=false editable=editable value="${option.name}" checked=((deliverable.deliverableInfo.licenseType) == (option.name))!false cssClass="licenceOption" cssClassLabel="font-normal" /]</p>
+          [/#list]
         </div>
-        <div class="col-md-6 licence-modifications yesNoInputDeliverable" style="display:[#if (deliverable.deliverableInfo.licenseType=="OTHER")!false]block[#else]none [/#if];" >
-          <label class="col-md-6 yesNoLabel" for="">[@s.text name="project.deliverable.dissemination.licenseModifications" /]</label>
-          <div class="col-md-6">
-            [@customForm.yesNoInputDeliverable name="deliverable.deliverableInfo.allowModifications"  editable=editable inverse=false cssClass="licenceModifications text-center" /] 
-          </div>  
+      [/#list]
+      
+      [#-- Other (Please specify)--]
+      <div class="licenseOptions">
+        <div class="form-group row">
+          <div class="col-md-6 licence-modifications" style="display:[#if (deliverable.deliverableInfo.licenseType=="OTHER")!false]block[#else]none [/#if];" >
+            [@customForm.input name="deliverable.deliverableInfo.otherLicense" showTitle=false className="" type="text" placeholder="Please specify" disabled=!editable className="otherLicense"  required=true editable=editable /]
+          </div>
+          <div class="col-md-6 licence-modifications yesNoInputDeliverable" style="display:[#if (deliverable.deliverableInfo.licenseType=="OTHER")!false]block[#else]none [/#if];" >
+            <label class="col-md-6 yesNoLabel" for="">[@s.text name="project.deliverable.dissemination.licenseModifications" /]</label>
+            <div class="col-md-6">
+              [@customForm.yesNoInputDeliverable name="deliverable.deliverableInfo.allowModifications"  editable=editable inverse=false cssClass="licenceModifications text-center" /] 
+            </div>  
+          </div>
         </div>
       </div>
     </div>
+    
   </div>
 </div>
 [/#macro]
@@ -399,7 +401,9 @@
     [#-- Training period of time: (Only if formal training) --]
     [#local isFormal = ([1, 3, 2, 4]?seq_contains(deliverable.deliverableParticipant.repIndTypeActivity.id))!false /]
     <div class="form-group block-periodTime" style="display:${isFormal?string('block','none')}">
-      <label for="">[@s.text name="involveParticipants.trainingPeriod" /]:[@customForm.req required=editable /] </label><br />
+      <label for="">[@s.text name="involveParticipants.trainingPeriod" /]:[@customForm.req required=editable /]
+        [@customForm.helpLabel name="involveParticipants.trainingPeriod.help" showIcon=false editable=editable/] 
+      </label><br />
       [#list (repIndTrainingTerms)![] as item]
         [@customForm.radioFlat id="trainingPeriod-${item.id}"  name="${customName}.repIndTrainingTerm.id" label="${item.name}"  value="${item.id}"  checked=(deliverable.deliverableParticipant.repIndTrainingTerm.id == item.id)!false cssClass="" cssClassLabel="font-normal" editable=editable /]
       [#else]
@@ -943,15 +947,18 @@
     [#if editable]
       <div class="removeLink authorVisibles" style="${displayVisible}"><div class="removeAuthor removeIcon" title="Remove author/creator"></div></div>
     [/#if]
+    [#local firstName = (element.firstName?replace(',',''))!'' ]
+    [#local lastName = (element.lastName?replace(',',''))!'' ]
+    [#local orcid = (element.elementId?replace('https://|http://','','r'))!'' ]
     [#-- Last name & First name --]
-    <span class="lastName">${(element.lastName?replace(',',''))!}</span>, <span class="firstName">${(element.firstName?replace(',',''))!} </span><br />
+    <span class="lastName [#if editable]cursor-pointer[/#if]">${lastName}</span>, <span class="firstName [#if editable]cursor-pointer[/#if]">${firstName} </span><br />
     [#-- ORCID --]
-    <span><small class="orcidId"><strong>[#if (element.elementId?has_content)!false]${(element.elementId?replace('https://|http://','','r'))!}[#else]<i class="authorVisibles" style="${displayVisible}">No ORCID</i>[/#if]</strong></small></span>
+    <span><small class="orcidId [#if editable]cursor-pointer[/#if]"><strong>[#if orcid?has_content]${orcid}[#else]<i class="authorVisibles" style="${displayVisible}">No ORCID</i>[/#if]</strong></small></span>
     [#-- Hidden inputs --]
-    <input type="hidden" name="${customName}.id" class="id" value="${(element.id)!}" />
-    <input type="hidden" name="${customName}.lastName"  class="lastNameInput" value="${(element.lastName?replace(',',''))!}" />
-    <input type="hidden" name="${customName}.firstName"  class="firstNameInput" value="${(element.firstName?replace(',',''))!}" />
-    <input type="hidden"name="${customName}.elementId"   class="orcidIdInput" value="${(element.elementId)!}" />
+    <input type="hidden"  name="${customName}.id"         class="id"              value="${(element.id)!}" />
+    <input type="hidden"  name="${customName}.lastName"   class="lastNameInput"   value="${(element.lastName?replace(',',''))!}" />
+    <input type="hidden"  name="${customName}.firstName"  class="firstNameInput"  value="${(element.firstName?replace(',',''))!}" />
+    <input type="hidden"  name="${customName}.elementId"  class="orcidIdInput"    value="${(element.elementId)!}" />
     <div class="clearfix"></div>
   </div>
 [/#macro]
@@ -982,3 +989,9 @@
   [#return "none"]
 [/#function]
 
+[#function findElementID list id]
+  [#list (list)![] as item]
+    [#if (item.repIndGeographicScope.id == id)!false][#return true][/#if]
+  [/#list]
+  [#return false]
+[/#function]
