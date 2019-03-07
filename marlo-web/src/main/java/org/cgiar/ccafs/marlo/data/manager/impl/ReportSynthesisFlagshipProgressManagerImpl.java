@@ -79,13 +79,12 @@ public class ReportSynthesisFlagshipProgressManagerImpl implements ReportSynthes
       ReportSynthesisFlagshipProgress flagshipProgress = new ReportSynthesisFlagshipProgress();
       ReportSynthesis reportSynthesisFP = reportSynthesisManager.findSynthesis(phaseID, liaisonInstitution.getId());
 
-      if (reportSynthesisFP != null) {
-        if (reportSynthesisFP.getReportSynthesisFlagshipProgress() != null) {
-          flagshipProgress = reportSynthesisFP.getReportSynthesisFlagshipProgress();
-        }
+      if (reportSynthesisFP != null && reportSynthesisFP.getReportSynthesisFlagshipProgress() != null) {
+        flagshipProgress = reportSynthesisFP.getReportSynthesisFlagshipProgress();
       } else {
         ReportSynthesis synthesis = new ReportSynthesis();
         synthesis.setPhase(phaseManager.getPhaseById(phaseID));
+
         synthesis.setLiaisonInstitution(liaisonInstitution);
         flagshipProgress.setReportSynthesis(synthesis);
       }

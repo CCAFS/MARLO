@@ -59,6 +59,29 @@ public class ReportSynthesisFlagshipProgress extends MarloAuditableEntity implem
   }
 
 
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    if (this.getClass() != obj.getClass()) {
+      return false;
+    }
+    ReportSynthesisFlagshipProgress other = (ReportSynthesisFlagshipProgress) obj;
+    if (this.getId() == null) {
+      if (other.getId() != null) {
+        return false;
+      }
+    } else if (!this.getId().equals(other.getId())) {
+      return false;
+    }
+    return true;
+  }
+
+
   public String getAltmetricScore() {
     return altmetricScore;
   }
@@ -127,10 +150,10 @@ public class ReportSynthesisFlagshipProgress extends MarloAuditableEntity implem
     return policiesValue;
   }
 
-
   public String getProgressByFlagships() {
     return progressByFlagships;
   }
+
 
   public List<ProjectPolicy> getProjectPolicies() {
     return projectPolicies;
@@ -186,7 +209,6 @@ public class ReportSynthesisFlagshipProgress extends MarloAuditableEntity implem
     this.milestones = milestones;
   }
 
-
   public void setOverallProgress(String overallProgress) {
     this.overallProgress = overallProgress;
   }
@@ -194,6 +216,7 @@ public class ReportSynthesisFlagshipProgress extends MarloAuditableEntity implem
   public void setPlannedPolicies(List<ReportSynthesisFlagshipProgressPolicy> plannedPolicies) {
     this.plannedPolicies = plannedPolicies;
   }
+
 
   public void setPoliciesValue(String policiesValue) {
     this.policiesValue = policiesValue;
@@ -204,31 +227,28 @@ public class ReportSynthesisFlagshipProgress extends MarloAuditableEntity implem
     this.progressByFlagships = progressByFlagships;
   }
 
-
   public void setProjectPolicies(List<ProjectPolicy> projectPolicies) {
     this.projectPolicies = projectPolicies;
   }
 
+
   public void setReportSynthesis(ReportSynthesis reportSynthesis) {
     this.reportSynthesis = reportSynthesis;
   }
-
 
   public void setReportSynthesisFlagshipProgressMilestones(
     Set<ReportSynthesisFlagshipProgressMilestone> reportSynthesisFlagshipProgressMilestones) {
     this.reportSynthesisFlagshipProgressMilestones = reportSynthesisFlagshipProgressMilestones;
   }
 
+
   public void setReportSynthesisFlagshipProgressPolicies(
     Set<ReportSynthesisFlagshipProgressPolicy> reportSynthesisFlagshipProgressPolicies) {
     this.reportSynthesisFlagshipProgressPolicies = reportSynthesisFlagshipProgressPolicies;
   }
 
-
   public void setSummary(String summary) {
     this.summary = summary;
   }
-
-
 }
 
