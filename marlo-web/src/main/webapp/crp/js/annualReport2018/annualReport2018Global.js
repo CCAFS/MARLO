@@ -1,8 +1,10 @@
+var $tableViewMore;
+var tableDatatableViewmore
 $(document).ready(function() {
 
   // Set data tables
-  var $table = $('.viewMoreSyntesis-block table');
-  $table.DataTable({
+  $tableViewMore = $('.viewMoreSyntesis-block table');
+  tableDatatableViewmore = $tableViewMore.DataTable({
       "paging": false,
       "searching": false,
       "info": false,
