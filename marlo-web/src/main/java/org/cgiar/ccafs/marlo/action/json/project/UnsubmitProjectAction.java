@@ -174,19 +174,21 @@ public class UnsubmitProjectAction extends BaseAction {
           .getProjecInfoPhase(this.getActualPhase()).getLiaisonInstitution().getCrpProgram().getId())
         .collect(Collectors.toList());
       if (crpPrograms != null) {
-        CrpProgram crpProgram = crpPrograms.get(0);
-        for (CrpProgramLeader crpProgramLeader : crpProgram.getCrpProgramLeaders().stream()
-          .filter(cpl -> cpl.getUser().isActive() && cpl.isActive()).collect(Collectors.toList())) {
-          ccEmails.append(crpProgramLeader.getUser().getEmail());
-          ccEmails.append(", ");
-        }
-        // CC will be also other Cluster Leaders
-        for (CrpClusterOfActivity crpClusterOfActivity : crpProgram.getCrpClusterOfActivities().stream()
-          .filter(cl -> cl.isActive() && cl.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())) {
-          for (CrpClusterActivityLeader crpClusterActivityLeader : crpClusterOfActivity.getCrpClusterActivityLeaders()
-            .stream().filter(cl -> cl.isActive()).collect(Collectors.toList())) {
-            ccEmails.append(crpClusterActivityLeader.getUser().getEmail());
+        if (this.hasSpecificities(APConstants.CRP_EMAIL_PL_CRPADMIN_FL)) {
+          CrpProgram crpProgram = crpPrograms.get(0);
+          for (CrpProgramLeader crpProgramLeader : crpProgram.getCrpProgramLeaders().stream()
+            .filter(cpl -> cpl.getUser().isActive() && cpl.isActive()).collect(Collectors.toList())) {
+            ccEmails.append(crpProgramLeader.getUser().getEmail());
             ccEmails.append(", ");
+          }
+          // CC will be also other Cluster Leaders
+          for (CrpClusterOfActivity crpClusterOfActivity : crpProgram.getCrpClusterOfActivities().stream()
+            .filter(cl -> cl.isActive() && cl.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())) {
+            for (CrpClusterActivityLeader crpClusterActivityLeader : crpClusterOfActivity.getCrpClusterActivityLeaders()
+              .stream().filter(cl -> cl.isActive()).collect(Collectors.toList())) {
+              ccEmails.append(crpClusterActivityLeader.getUser().getEmail());
+              ccEmails.append(", ");
+            }
           }
         }
       }

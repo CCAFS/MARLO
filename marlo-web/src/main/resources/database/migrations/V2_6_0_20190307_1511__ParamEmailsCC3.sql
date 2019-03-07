@@ -1,0 +1,3 @@
+INSERT INTO `parameters` (`id`, `key`, `description`, `format`, `default_value`, `category`) VALUES ('230','crp_email_pl_crpAdmin_fl', 'Send CC email to PL, CRP Admin and FL Only', '1', NULL, '2');
+INSERT INTO `custom_parameters` (`parameter_id`, `value`, `created_by`, `is_active`, `active_since`,`modified_by`, `modification_justification`, `global_unit_id`) VALUES ('230', 'true', '3', '1', CURRENT_TIMESTAMP, '1', '', '21');
+INSERT INTO `custom_parameters` (`parameter_id`, `value`, `created_by`, `is_active`, `active_since`,`modified_by`, `modification_justification`, `global_unit_id`) VALUES ('230', 'true', '3', '1', CURRENT_TIMESTAMP, '1', '', '22');
