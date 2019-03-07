@@ -40,3 +40,6 @@
     [#return ((maxLimit/(liaisonInstitutions?size-1))*2)?round]
   [/#if]
 [/#function]
+
+
+[#assign isPlatform = action.isEntityPlatform() /]

@@ -94,7 +94,7 @@
                   <h5 class="sectionSubTitle">[@s.text name="${customLabel}.youth.title" /]</h5>
                   [#-- CRPs contribution to youth --]
                   <div class="form-group">
-                     [@customForm.textArea name="${customName}.youthContribution" i18nkey="${customLabel}.youth.youthContribution" help="${customLabel}.youth.youthContribution.help" className="limitWords-${calculateLimitWords(600)}" helpIcon=false required=true editable=editable allowTextEditor=true /]
+                     [@customForm.textArea name="${customName}.youthContribution" i18nkey="${customLabel}.youth.youthContribution" help="${customLabel}.youth.youthContribution.help" className="limitWords-${calculateLimitWords(600)}" helpIcon=false required=!isPlatform editable=editable allowTextEditor=true /]
                   </div>
                   <div class="form-group">
                     <i class="helpLabel">[@s.text name="${customLabel}.youth.help" /]</i>
@@ -102,17 +102,17 @@
                   
                   [#-- Youth - Research findings --]
                   <div class="form-group">
-                     [@customForm.textArea name="${customName}.youthResearchFindings" i18nkey="${customLabel}.youth.researchFindings" help="${customLabel}.youth.researchFindings.help" className="limitWords-${calculateLimitWords(450)}" helpIcon=false required=true editable=editable allowTextEditor=true /]
+                     [@customForm.textArea name="${customName}.youthResearchFindings" i18nkey="${customLabel}.youth.researchFindings" help="${customLabel}.youth.researchFindings.help" className="limitWords-${calculateLimitWords(450)}" helpIcon=false required=!isPlatform editable=editable allowTextEditor=true /]
                   </div>
                   
                   [#-- Youth - What have you learned --]
                   <div class="form-group">
-                     [@customForm.textArea name="${customName}.youthLearned" i18nkey="${customLabel}.youth.learned" help="${customLabel}.youth.learned.help" className="limitWords-${calculateLimitWords(200)}" helpIcon=false required=true editable=editable allowTextEditor=true /]
+                     [@customForm.textArea name="${customName}.youthLearned" i18nkey="${customLabel}.youth.learned" help="${customLabel}.youth.learned.help" className="limitWords-${calculateLimitWords(200)}" helpIcon=false required=!isPlatform editable=editable allowTextEditor=true /]
                   </div>
                   
                   [#-- Youth - Problems arisen --]
                   <div class="form-group">
-                     [@customForm.textArea name="${customName}.youthProblemsArisen" i18nkey="${customLabel}.youth.problemsArisen" help="" className="limitWords-${calculateLimitWords(100)}" helpIcon=false required=true editable=editable allowTextEditor=true /]
+                     [@customForm.textArea name="${customName}.youthProblemsArisen" i18nkey="${customLabel}.youth.problemsArisen" help="" className="limitWords-${calculateLimitWords(100)}" helpIcon=false required=!isPlatform editable=editable allowTextEditor=true /]
                   </div>
                   
                   [#if PMU]
