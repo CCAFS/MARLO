@@ -52,5 +52,16 @@
 				class="org.cgiar.ccafs.marlo.data.model.ReportSynthesisKeyPartnershipExternal"
 				embed-xml="true" not-found="exception" />
 		</set>
+		<set embed-xml="true" fetch="select" inverse="true" lazy="true"
+      mutable="true" name="reportSynthesisKeyPartnershipCollaborations"
+      optimistic-lock="true" sort="unsorted"
+      table="report_synthesis_key_partnership_collaborations">
+      <key on-delete="noaction">
+        <column name="report_synthesis_key_partnership_id" />
+      </key>
+      <one-to-many
+        class="org.cgiar.ccafs.marlo.data.model.ReportSynthesisKeyPartnershipCollaboration"
+        embed-xml="true" not-found="exception" />
+    </set>
 	</class>
 </hibernate-mapping>

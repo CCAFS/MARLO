@@ -27,6 +27,8 @@ import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectFocusManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndPartnershipMainAreaManager;
+import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisKeyPartnershipCollaborationCrpManager;
+import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisKeyPartnershipCollaborationManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisKeyPartnershipExternalInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisKeyPartnershipExternalMainAreaManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisKeyPartnershipExternalManager;
@@ -51,6 +53,8 @@ import org.cgiar.ccafs.marlo.data.model.ReportSynthesis2018SectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisExternalPartnership;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisExternalPartnershipDTO;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisKeyPartnership;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisKeyPartnershipCollaboration;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisKeyPartnershipCollaborationCrp;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisKeyPartnershipExternal;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisKeyPartnershipExternalInstitution;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisKeyPartnershipExternalMainArea;
@@ -109,6 +113,8 @@ public class PartnershipsAction extends BaseAction {
   private ReportSynthesisKeyPartnershipExternalMainAreaManager reportSynthesisKeyPartnershipExternalMainAreaManager;
   private ReportSynthesisKeyPartnershipExternalInstitutionManager reportSynthesisKeyPartnershipExternalInstitutionManager;
   private RepIndPartnershipMainAreaManager repIndPartnershipMainAreaManager;
+  private ReportSynthesisKeyPartnershipCollaborationManager reportSynthesisKeyPartnershipCollaborationManager;
+  private ReportSynthesisKeyPartnershipCollaborationCrpManager reportSynthesisKeyPartnershipCollaborationCrpManager;
   private InstitutionManager institutionManager;
   private FileDBManager fileDBManager;
 
@@ -136,6 +142,7 @@ public class PartnershipsAction extends BaseAction {
   private List<Institution> partners;
 
   private List<ProjectComponentLesson> projectKeyPartnerships;
+  private List<GlobalUnit> globalUnits;
 
 
   @Inject
@@ -148,7 +155,9 @@ public class PartnershipsAction extends BaseAction {
     ReportSynthesisKeyPartnershipExternalMainAreaManager reportSynthesisKeyPartnershipExternalMainAreaManager,
     ReportSynthesisKeyPartnershipExternalInstitutionManager reportSynthesisKeyPartnershipExternalInstitutionManager,
     RepIndPartnershipMainAreaManager repIndPartnershipMainAreaManager, InstitutionManager institutionManager,
-    FileDBManager fileDBManager) {
+    FileDBManager fileDBManager,
+    ReportSynthesisKeyPartnershipCollaborationManager reportSynthesisKeyPartnershipCollaborationManager,
+    ReportSynthesisKeyPartnershipCollaborationCrpManager reportSynthesisKeyPartnershipCollaborationCrpManager) {
     super(config);
     this.crpManager = crpManager;
     this.liaisonInstitutionManager = liaisonInstitutionManager;
@@ -168,6 +177,8 @@ public class PartnershipsAction extends BaseAction {
     this.repIndPartnershipMainAreaManager = repIndPartnershipMainAreaManager;
     this.institutionManager = institutionManager;
     this.fileDBManager = fileDBManager;
+    this.reportSynthesisKeyPartnershipCollaborationManager = reportSynthesisKeyPartnershipCollaborationManager;
+    this.reportSynthesisKeyPartnershipCollaborationCrpManager = reportSynthesisKeyPartnershipCollaborationCrpManager;
   }
 
 
@@ -206,6 +217,12 @@ public class PartnershipsAction extends BaseAction {
     return flagshipPlannedList;
   }
 
+
+  public List<GlobalUnit> getGlobalUnits() {
+    return globalUnits;
+  }
+
+
   public LiaisonInstitution getLiaisonInstitution() {
     return liaisonInstitution;
   }
@@ -236,19 +253,19 @@ public class PartnershipsAction extends BaseAction {
     return partners;
   }
 
-
   public List<ProjectPartnerPartnership> getPartnerShipList() {
     return partnerShipList;
   }
+
 
   public List<ProjectComponentLesson> getProjectKeyPartnerships() {
     return projectKeyPartnerships;
   }
 
-
   public ReportSynthesis getReportSynthesis() {
     return reportSynthesis;
   }
+
 
   public Long getSynthesisID() {
     return synthesisID;
@@ -460,15 +477,51 @@ public class PartnershipsAction extends BaseAction {
 
           }
 
-          // Charge Main Areas and Partners Selection List
-          mainAreas = repIndPartnershipMainAreaManager.findAll();
-          partners = institutionManager.findAll().stream().filter(i -> i.isActive()).collect(Collectors.toList());
-
-          // Load Project Flagship Partnerships
-          this.projectPartnerships(phase.getId(), liaisonInstitution);
 
         }
+
+        // Load CGIAR collaborations
+        reportSynthesis.getReportSynthesisKeyPartnership().setCollaborations(new ArrayList<>());
+
+        if (reportSynthesis.getReportSynthesisKeyPartnership().getReportSynthesisKeyPartnershipCollaborations() != null
+          && !reportSynthesis.getReportSynthesisKeyPartnership().getReportSynthesisKeyPartnershipCollaborations()
+            .isEmpty()) {
+
+          for (ReportSynthesisKeyPartnershipCollaboration keyPartnershipCollaboration : reportSynthesis
+            .getReportSynthesisKeyPartnership().getReportSynthesisKeyPartnershipCollaborations().stream()
+            .filter(ro -> ro.isActive()).collect(Collectors.toList())) {
+
+            keyPartnershipCollaboration.setCrps(new ArrayList<>());
+
+            if (keyPartnershipCollaboration.getReportSynthesisKeyPartnershipCollaborationCrps() != null
+              && !keyPartnershipCollaboration.getReportSynthesisKeyPartnershipCollaborationCrps().isEmpty()) {
+
+              for (ReportSynthesisKeyPartnershipCollaborationCrp crp : keyPartnershipCollaboration
+                .getReportSynthesisKeyPartnershipCollaborationCrps().stream().filter(c -> c.isActive())
+                .collect(Collectors.toList())) {
+                keyPartnershipCollaboration.getCrps().add(crp);
+              }
+            }
+          }
+        }
+
       }
+
+
+      if (this.isFlagship()) {
+        // Charge Main Areas and Partners Selection List
+        mainAreas = repIndPartnershipMainAreaManager.findAll();
+        partners = institutionManager.findAll().stream().filter(i -> i.isActive()).collect(Collectors.toList());
+
+        // Load Project Flagship Partnerships
+        this.projectPartnerships(phase.getId(), liaisonInstitution);
+      }
+
+      // load Crps-Platforms
+      globalUnits = crpManager.findAll().stream()
+        .filter(gu -> gu.isActive() && (gu.getGlobalUnitType().getId() == 1 || gu.getGlobalUnitType().getId() == 3))
+        .collect(Collectors.toList());
+
     }
 
 
@@ -546,7 +599,6 @@ public class PartnershipsAction extends BaseAction {
     }
   }
 
-
   @Override
   public String save() {
     if (this.hasPermission("canEdit")) {
@@ -556,15 +608,10 @@ public class PartnershipsAction extends BaseAction {
         reportSynthesisManager.getReportSynthesisById(synthesisID).getReportSynthesisKeyPartnership();
 
       if (this.isFlagship()) {
-
-        // if (reportSynthesis.getReportSynthesisExternalPartnership().getPartnerPartnerships() == null) {
-        // reportSynthesis.getReportSynthesisExternalPartnership().setPartnerPartnerships(new ArrayList<>());
-        // }
-        //
-        // this.saveExternalPartnership(externalPartnershipDB);
-
-
+        this.saveKeyExternalPartnership(keyPartnershipDB);
       }
+
+      this.saveKeyExternalCollaboration(keyPartnershipDB);
 
       if (this.isPMU()) {
         keyPartnershipDB.setSummary(reportSynthesis.getReportSynthesisKeyPartnership().getSummary());
@@ -612,6 +659,90 @@ public class PartnershipsAction extends BaseAction {
       return NOT_AUTHORIZED;
     }
   }
+
+
+  /**
+   * Save Key External Collaborations Information
+   * 
+   * @param crpProgressDB
+   */
+  public void saveKeyExternalCollaboration(ReportSynthesisKeyPartnership keyPartnershipDB) {
+
+
+    // Search and deleted form Information
+    if (keyPartnershipDB.getReportSynthesisKeyPartnershipCollaborations() != null
+      && keyPartnershipDB.getReportSynthesisKeyPartnershipCollaborations().size() > 0) {
+
+      List<ReportSynthesisKeyPartnershipCollaboration> collaborationPrev =
+        new ArrayList<>(keyPartnershipDB.getReportSynthesisKeyPartnershipCollaborations().stream()
+          .filter(nu -> nu.isActive()).collect(Collectors.toList()));
+
+      for (ReportSynthesisKeyPartnershipCollaboration collaboration : collaborationPrev) {
+        if (!reportSynthesis.getReportSynthesisKeyPartnership().getCollaborations().contains(collaboration)) {
+
+          // Delete Crp to the deleteable Collaboration
+          if (collaboration.getReportSynthesisKeyPartnershipCollaborationCrps() != null
+            && !collaboration.getReportSynthesisKeyPartnershipCollaborationCrps().isEmpty()) {
+
+            for (ReportSynthesisKeyPartnershipCollaborationCrp crp : collaboration
+              .getReportSynthesisKeyPartnershipCollaborationCrps().stream().filter(ro -> ro.isActive())
+              .collect(Collectors.toList())) {
+              reportSynthesisKeyPartnershipCollaborationCrpManager
+                .deleteReportSynthesisKeyPartnershipCollaborationCrp(crp.getId());
+            }
+
+          }
+
+          // Delete Collaboration
+          reportSynthesisKeyPartnershipCollaborationManager
+            .deleteReportSynthesisKeyPartnershipCollaboration(collaboration.getId());
+
+
+        }
+      }
+    }
+
+    // Save form Information
+    if (reportSynthesis.getReportSynthesisKeyPartnership().getCollaborations() != null) {
+      for (ReportSynthesisKeyPartnershipCollaboration collaboration : reportSynthesis.getReportSynthesisKeyPartnership()
+        .getCollaborations()) {
+        if (collaboration.getId() == null) {
+
+          ReportSynthesisKeyPartnershipCollaboration collaborationSave =
+            new ReportSynthesisKeyPartnershipCollaboration();
+
+          collaborationSave.setReportSynthesisKeyPartnership(keyPartnershipDB);
+          collaborationSave.setDescription(collaboration.getDescription());
+          collaborationSave.setValueAdded(collaboration.getValueAdded());
+
+
+          collaborationSave = reportSynthesisKeyPartnershipCollaborationManager
+            .saveReportSynthesisKeyPartnershipCollaboration(collaborationSave);
+
+          this.saveKeyExternalPartnershipCrp(collaborationSave, collaboration);
+
+
+        } else {
+
+          ReportSynthesisKeyPartnershipCollaboration collaborationSave =
+            reportSynthesisKeyPartnershipCollaborationManager
+              .getReportSynthesisKeyPartnershipCollaborationById(collaboration.getId());
+
+          this.saveKeyExternalPartnershipCrp(collaborationSave, collaboration);
+
+          collaborationSave.setReportSynthesisKeyPartnership(keyPartnershipDB);
+          collaborationSave.setDescription(collaboration.getDescription());
+          collaborationSave.setValueAdded(collaboration.getValueAdded());
+
+
+          collaborationSave = reportSynthesisKeyPartnershipCollaborationManager
+            .saveReportSynthesisKeyPartnershipCollaboration(collaborationSave);
+
+        }
+      }
+    }
+  }
+
 
   /**
    * Save Key External Partnership Information
@@ -684,46 +815,198 @@ public class PartnershipsAction extends BaseAction {
             }
           }
 
-          reportSynthesisKeyPartnershipExternalManager.saveReportSynthesisKeyPartnershipExternal(externalSave);
+
+          externalSave =
+            reportSynthesisKeyPartnershipExternalManager.saveReportSynthesisKeyPartnershipExternal(externalSave);
+
+          this.saveKeyExternalPartnershipMainAreas(externalSave, external);
+          this.saveKeyExternalPartnershipInstitutions(externalSave, external);
 
 
         } else {
 
-          // boolean hasChanges = false;
-          // ReportSynthesisSrfProgressTarget srfTargetPrev =
-          // reportSynthesisSrfProgressTargetManager.getReportSynthesisSrfProgressTargetById(srfTarget.getId());
-          //
-          // if (!srfTargetPrev.getBirefSummary().equals(srfTarget.getBirefSummary())) {
-          // hasChanges = true;
-          // srfTargetPrev.setBirefSummary(srfTarget.getBirefSummary());
-          // }
-          //
-          // if (!srfTargetPrev.getAdditionalContribution().equals(srfTarget.getAdditionalContribution())) {
-          // hasChanges = true;
-          // srfTargetPrev.setAdditionalContribution(srfTarget.getAdditionalContribution());
-          // }
-          //
-          // if (hasChanges) {
-          // reportSynthesisSrfProgressTargetManager.saveReportSynthesisSrfProgressTarget(srfTargetPrev);
-          // }
+          ReportSynthesisKeyPartnershipExternal externalSave =
+            reportSynthesisKeyPartnershipExternalManager.getReportSynthesisKeyPartnershipExternalById(external.getId());
+
+          this.saveKeyExternalPartnershipMainAreas(externalSave, external);
+          this.saveKeyExternalPartnershipInstitutions(externalSave, external);
+
+          externalSave.setDescription(external.getDescription());
+
+          // Save File
+          if (external.getFile() != null) {
+            if (external.getFile().getId() == null) {
+              externalSave.setFile(null);
+            } else {
+              externalSave.setFile(external.getFile());
+            }
+          }
+
+
+          externalSave =
+            reportSynthesisKeyPartnershipExternalManager.saveReportSynthesisKeyPartnershipExternal(externalSave);
+
+        }
+      }
+    }
+  }
+
+
+  /**
+   * Save Key External Partnership Crps Information
+   */
+  public void saveKeyExternalPartnershipCrp(ReportSynthesisKeyPartnershipCollaboration collaborationDB,
+    ReportSynthesisKeyPartnershipCollaboration collaboration) {
+
+
+    // Search and deleted form Information
+    if (collaborationDB.getReportSynthesisKeyPartnershipCollaborationCrps() != null
+      && collaborationDB.getReportSynthesisKeyPartnershipCollaborationCrps().size() > 0) {
+
+      List<ReportSynthesisKeyPartnershipCollaborationCrp> crpPrev =
+        new ArrayList<>(collaborationDB.getReportSynthesisKeyPartnershipCollaborationCrps().stream()
+          .filter(nu -> nu.isActive()).collect(Collectors.toList()));
+
+      for (ReportSynthesisKeyPartnershipCollaborationCrp crp : crpPrev) {
+        if (!collaboration.getCrps().contains(crp)) {
+          reportSynthesisKeyPartnershipCollaborationCrpManager
+            .deleteReportSynthesisKeyPartnershipCollaborationCrp(crp.getId());
         }
       }
     }
 
+    // Save form Information
+    if (collaboration.getCrps() != null) {
+      for (ReportSynthesisKeyPartnershipCollaborationCrp crp : collaboration.getCrps()) {
+        if (crp.getId() == null) {
 
+          ReportSynthesisKeyPartnershipCollaborationCrp crpSave = new ReportSynthesisKeyPartnershipCollaborationCrp();
+
+          crpSave.setReportSynthesisKeyPartnershipCollaboration(collaborationDB);
+
+          GlobalUnit globalUnit = crpManager.getGlobalUnitById(crp.getGlobalUnit().getId());
+
+          crpSave.setGlobalUnit(globalUnit);
+
+
+          reportSynthesisKeyPartnershipCollaborationCrpManager
+            .saveReportSynthesisKeyPartnershipCollaborationCrp(crpSave);
+
+
+        }
+      }
+    }
+  }
+
+
+  /**
+   * Save Key External Partnership Institutions Information
+   */
+  public void saveKeyExternalPartnershipInstitutions(ReportSynthesisKeyPartnershipExternal externalDB,
+    ReportSynthesisKeyPartnershipExternal external) {
+
+
+    // Search and deleted form Information
+    if (externalDB.getReportSynthesisKeyPartnershipExternalInstitutions() != null
+      && externalDB.getReportSynthesisKeyPartnershipExternalInstitutions().size() > 0) {
+
+      List<ReportSynthesisKeyPartnershipExternalInstitution> institutionPrev =
+        new ArrayList<>(externalDB.getReportSynthesisKeyPartnershipExternalInstitutions().stream()
+          .filter(nu -> nu.isActive()).collect(Collectors.toList()));
+
+      for (ReportSynthesisKeyPartnershipExternalInstitution institution : institutionPrev) {
+        if (!external.getInstitutions().contains(institution)) {
+          reportSynthesisKeyPartnershipExternalInstitutionManager
+            .deleteReportSynthesisKeyPartnershipExternalInstitution(institution.getId());
+        }
+      }
+    }
+
+    // Save form Information
+    if (external.getInstitutions() != null) {
+      for (ReportSynthesisKeyPartnershipExternalInstitution institution : external.getInstitutions()) {
+        if (institution.getId() == null) {
+
+          ReportSynthesisKeyPartnershipExternalInstitution institutionSave =
+            new ReportSynthesisKeyPartnershipExternalInstitution();
+
+          institutionSave.setReportSynthesisKeyPartnershipExternal(externalDB);
+
+          Institution partner = institutionManager.getInstitutionById(institution.getInstitution().getId());
+
+          institutionSave.setInstitution(partner);
+
+          reportSynthesisKeyPartnershipExternalInstitutionManager
+            .saveReportSynthesisKeyPartnershipExternalInstitution(institutionSave);
+
+        }
+      }
+    }
+  }
+
+
+  /**
+   * Save Key External Partnership Main Areas Information
+   */
+  public void saveKeyExternalPartnershipMainAreas(ReportSynthesisKeyPartnershipExternal externalDB,
+    ReportSynthesisKeyPartnershipExternal external) {
+
+
+    // Search and deleted form Information
+    if (externalDB.getReportSynthesisKeyPartnershipExternalMainAreas() != null
+      && externalDB.getReportSynthesisKeyPartnershipExternalMainAreas().size() > 0) {
+
+      List<ReportSynthesisKeyPartnershipExternalMainArea> areaPrev =
+        new ArrayList<>(externalDB.getReportSynthesisKeyPartnershipExternalMainAreas().stream()
+          .filter(nu -> nu.isActive()).collect(Collectors.toList()));
+
+      for (ReportSynthesisKeyPartnershipExternalMainArea area : areaPrev) {
+        if (!external.getMainAreas().contains(area)) {
+          reportSynthesisKeyPartnershipExternalMainAreaManager
+            .deleteReportSynthesisKeyPartnershipExternalMainArea(area.getId());
+        }
+      }
+    }
+
+    // Save form Information
+    if (external.getMainAreas() != null) {
+      for (ReportSynthesisKeyPartnershipExternalMainArea area : external.getMainAreas()) {
+        if (area.getId() == null) {
+
+          ReportSynthesisKeyPartnershipExternalMainArea areaSave = new ReportSynthesisKeyPartnershipExternalMainArea();
+
+          areaSave.setReportSynthesisKeyPartnershipExternal(externalDB);
+
+          RepIndPartnershipMainArea mainArea = repIndPartnershipMainAreaManager
+            .getRepIndPartnershipMainAreaById(area.getRepIndPartnershipMainArea().getId());
+
+          areaSave.setRepIndPartnershipMainArea(mainArea);
+
+
+          reportSynthesisKeyPartnershipExternalMainAreaManager
+            .saveReportSynthesisKeyPartnershipExternalMainArea(areaSave);
+
+
+        }
+      }
+    }
   }
 
   public void setCrpManager(GlobalUnitManager crpManager) {
     this.crpManager = crpManager;
   }
 
-
   public void setFlagshipExternalPartnerships(List<ReportSynthesisExternalPartnership> flagshipExternalPartnerships) {
     this.flagshipExternalPartnerships = flagshipExternalPartnerships;
   }
 
+
   public void setFlagshipPlannedList(List<ReportSynthesisExternalPartnershipDTO> flagshipPlannedList) {
     this.flagshipPlannedList = flagshipPlannedList;
+  }
+
+  public void setGlobalUnits(List<GlobalUnit> globalUnits) {
+    this.globalUnits = globalUnits;
   }
 
   public void setLiaisonInstitution(LiaisonInstitution liaisonInstitution) {
