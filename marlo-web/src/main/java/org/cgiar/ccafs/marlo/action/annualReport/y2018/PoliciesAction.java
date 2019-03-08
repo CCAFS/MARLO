@@ -49,7 +49,7 @@ import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
-import org.cgiar.ccafs.marlo.validation.annualreport.y2018.CCDimension2018Validator;
+import org.cgiar.ccafs.marlo.validation.annualreport.y2018.Policies2018Validator;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -81,7 +81,7 @@ public class PoliciesAction extends BaseAction {
   private AuditLogManager auditLogManager;
   private CrpProgramManager crpProgramManager;
   private UserManager userManager;
-  private CCDimension2018Validator validator;
+  private Policies2018Validator validator;
   private ProjectPolicyManager projectPolicyManager;
   private ProjectFocusManager projectFocusManager;
   private ProjectManager projectManager;
@@ -106,7 +106,7 @@ public class PoliciesAction extends BaseAction {
   @Inject
   public PoliciesAction(APConfig config, GlobalUnitManager crpManager,
     LiaisonInstitutionManager liaisonInstitutionManager, ReportSynthesisManager reportSynthesisManager,
-    AuditLogManager auditLogManager, UserManager userManager, CCDimension2018Validator validator,
+    AuditLogManager auditLogManager, UserManager userManager, Policies2018Validator validator,
     CrpProgramManager crpProgramManager, ProjectPolicyManager projectPolicyManager,
     ProjectFocusManager projectFocusManager, ProjectManager projectManager,
     ReportSynthesisFlagshipProgressManager reportSynthesisFlagshipProgressManager,
@@ -761,7 +761,7 @@ public class PoliciesAction extends BaseAction {
   @Override
   public void validate() {
     if (save) {
-      // validator.validate(this, reportSynthesis, true);
+      validator.validate(this, reportSynthesis, true);
     }
   }
 }
