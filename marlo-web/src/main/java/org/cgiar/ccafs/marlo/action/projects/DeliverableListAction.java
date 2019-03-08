@@ -39,6 +39,7 @@ import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -431,11 +432,28 @@ public class DeliverableListAction extends BaseAction {
 
   private DeliverablePartnership responsiblePartner(Deliverable deliverable) {
     try {
-      DeliverablePartnership partnership = deliverable.getDeliverablePartnerships().stream()
+      List<DeliverablePartnership> partnerships = deliverable.getDeliverablePartnerships().stream()
         .filter(
           dp -> dp.isActive() && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.RESPONSIBLE.getValue()))
-        .collect(Collectors.toList()).get(0);
-      return partnership;
+        .collect(Collectors.toList());
+
+      partnerships.sort(new Comparator<DeliverablePartnership>() {
+
+        @Override
+        public int compare(final DeliverablePartnership dp1, DeliverablePartnership dp2) {
+
+          if (dp1.getProjectPartnerPerson() == null) {
+            return (dp2.getProjectPartnerPerson() == null) ? 0 : 1;
+          }
+
+          if (dp2.getProjectPartnerPerson() == null) {
+            return -1;
+          }
+          return dp1.getId().compareTo(dp2.getId());
+        }
+      });
+
+      return partnerships.get(0);
     } catch (Exception e) {
       return null;
     }
