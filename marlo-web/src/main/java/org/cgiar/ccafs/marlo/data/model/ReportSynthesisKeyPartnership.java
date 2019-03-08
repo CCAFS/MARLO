@@ -30,6 +30,11 @@ public class ReportSynthesisKeyPartnership extends MarloAuditableEntity implemen
 
   private List<ReportSynthesisKeyPartnershipExternal> partnerships;
 
+  private Set<ReportSynthesisKeyPartnershipCollaboration> reportSynthesisKeyPartnershipCollaborations =
+    new HashSet<ReportSynthesisKeyPartnershipCollaboration>(0);
+
+  private List<ReportSynthesisKeyPartnershipCollaboration> collaborations;
+
 
   public ReportSynthesisKeyPartnership() {
   }
@@ -58,6 +63,11 @@ public class ReportSynthesisKeyPartnership extends MarloAuditableEntity implemen
   }
 
 
+  public List<ReportSynthesisKeyPartnershipCollaboration> getCollaborations() {
+    return collaborations;
+  }
+
+
   @Override
   public String getLogDeatil() {
     StringBuilder sb = new StringBuilder();
@@ -76,9 +86,15 @@ public class ReportSynthesisKeyPartnership extends MarloAuditableEntity implemen
   }
 
 
+  public Set<ReportSynthesisKeyPartnershipCollaboration> getReportSynthesisKeyPartnershipCollaborations() {
+    return reportSynthesisKeyPartnershipCollaborations;
+  }
+
+
   public Set<ReportSynthesisKeyPartnershipExternal> getReportSynthesisKeyPartnershipExternals() {
     return reportSynthesisKeyPartnershipExternals;
   }
+
 
   public String getSummary() {
     return summary;
@@ -93,13 +109,23 @@ public class ReportSynthesisKeyPartnership extends MarloAuditableEntity implemen
     return result;
   }
 
+  public void setCollaborations(List<ReportSynthesisKeyPartnershipCollaboration> collaborations) {
+    this.collaborations = collaborations;
+  }
+
+
   public void setPartnerships(List<ReportSynthesisKeyPartnershipExternal> partnerships) {
     this.partnerships = partnerships;
   }
 
-
   public void setReportSynthesis(ReportSynthesis reportSynthesis) {
     this.reportSynthesis = reportSynthesis;
+  }
+
+
+  public void setReportSynthesisKeyPartnershipCollaborations(
+    Set<ReportSynthesisKeyPartnershipCollaboration> reportSynthesisKeyPartnershipCollaborations) {
+    this.reportSynthesisKeyPartnershipCollaborations = reportSynthesisKeyPartnershipCollaborations;
   }
 
 

@@ -41,94 +41,109 @@
         [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
           [#-- Title --]
           <h3 class="headTitle">[@s.text name="${customLabel}.title" /]</h3>
-          <div class="borderBox">
-            [#-- 2.2.1 Highlights of External Partnerships  --]
-            <h5 class="sectionSubTitle">[@s.text name="${customLabel}.highlights.title" /]</h5>
-            
-            [#-- Partnerships summary --]
-            [#if PMU]
-              <div class="form-group">
-                [@customForm.textArea name="${customName}.summary" i18nkey="${customLabel}.highlights" help="${customLabel}.highlights.help" className="limitWords-300" helpIcon=false required=true editable=editable allowTextEditor=true /]
-              </div>
-            [#else]
-              <div class="textArea">
-                  <label for="">[@customForm.text name="${customLabel}.summary" readText=true /]</label>:
-                  <p>[#if (pmuText?has_content)!false]${pmuText?replace('\n', '<br>')}[#else] [@s.text name="global.prefilledByPmu"/] [/#if]</p>
-              </div>
-            [/#if]
-            
-            [#-- Table 7: Key external partnerships --]
-              <div class="form-group">
-                <h4 class="simpleTitle headTitle">[@s.text name="${customLabel}.table7.title" /]</h4>
-              </div>
-                <div class="listProgramCollaborations">                  
-              [#--       [#if reportSynthesis.reportSynthesisCrossCgiar.collaborations?has_content]--] 
-                  [#if reportSynthesis.reportSynthesisKeyPartnership.partnerships?has_content]
-                  [#list reportSynthesis.reportSynthesisKeyPartnership.partnerships as item]
-                    [@addKeyExternalPartnership element=item name="${customName}.partnerships" index=item_index  isEditable=editable/]
-                  [/#list]
+          <div class="">
+          
+            <div class="bootstrapTabs">
+              [#-- Tabs --] 
+              <ul class="nav nav-tabs" role="tablist"> 
+                <li role="presentation" class="active"><a index="1" href="#tab-keyPartnerships" aria-controls="info" role="tab" data-toggle="tab">2.2.1 Highlights of External Partnerships </a></li>
+                <li role="presentation" class=" "><a index="2" href="#tab-crossPartnerships" aria-controls="info" role="tab" data-toggle="tab">2.2.2 Cross-CGIAR Partnerships</a></li>
+              </ul>
+              
+              [#-- Content --] 
+              <div class="tab-content ">
+                
+                <div id="tab-keyPartnerships" role="tabpanel" class="tab-pane fade in active">
+                [#-- 2.2.1 Highlights of External Partnerships  --]
+                <h5 class="sectionSubTitle">[@s.text name="${customLabel}.highlights.title" /]</h5>
+                
+                [#-- Partnerships summary --]
+                [#if PMU]
+                  <div class="form-group">
+                    [@customForm.textArea name="${customName}.summary" i18nkey="${customLabel}.summary" help="${customLabel}.summary.help" className="limitWords-300" helpIcon=false required=true editable=editable allowTextEditor=true /]
+                  </div>
+                [#else]
+                  <div class="textArea">
+                      <label for="">[@customForm.text name="${customLabel}.summary" readText=true /]</label>:
+                      <p>[#if (pmuText?has_content)!false]${pmuText?replace('\n', '<br>')}[#else] [@s.text name="global.prefilledByPmu"/] [/#if]</p>
+                  </div>
+                [/#if]
+                
+                [#-- Table 7: Key external partnerships --]
+                  <div class="form-group">
+                    <h4 class="simpleTitle headTitle">[@s.text name="${customLabel}.table7.title" /]</h4>
+                  </div>
+                    <div class="listKeyPartnerships">
+                      [#if reportSynthesis.reportSynthesisKeyPartnership.partnerships?has_content]
+                      [#list reportSynthesis.reportSynthesisKeyPartnership.partnerships as item]
+                        [@addKeyExternalPartnership element=item name="${customName}.partnerships" index=item_index isEditable=editable/]
+                      [/#list]
+                     [/#if]
+                    </div>
+                  [#if canEdit && editable]
+                    <div class="text-right">
+                      <div class="addKeyPartnership bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> [@s.text name="annualReport2018.externalPartnerships.addPartnershipButton"/]</div>
+                    </div> 
+                  [/#if]
+                  
+                 [#if !PMU]
+                 [#-- Projects Key Partnerships --]
+                  <h4 class="simpleTitle">[@customForm.text name="${customLabel}.projectsPartnerships.title" param="${currentCycleYear}" /] (${projectKeyPartnerships?size})</h4>
+                  <div class="form-group margin-panel">                 
+                      [@projectsKeyPartnershipsTable name="${customName}.projectsPartnerships" list=projectKeyPartnerships /]
+                  </div>
                  [/#if]
-                </div>
-              [#if canEdit && editable]
-                <div class="text-right">
-
-
-                  <div class="addKeyPartnership bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> [@s.text name="annualReport2018.externalPartnerships.addPartnershipButton"/]</div>
-                </div> 
-              [/#if]
-         
-             [#-- Projects Key Partnerships --]
-              <h4 class="simpleTitle">[@customForm.text name="${customLabel}.projectsPartnerships.title" param="${currentCycleYear}" /] ([#if PMU]${flagshipPlannedList?size}[#else]${projectKeyPartnerships?size}[/#if])</h4>
-              <div class="form-group margin-panel">                 
-                  [@projectsKeyPartnershipsTable name="${customName}.projectsPartnerships" list=projectKeyPartnerships /]
+               </div>
+               
+               <div id="tab-crossPartnerships" role="tabpanel" class="tab-pane fade  ">
+                  [#-- 2.2.2 Cross-CGIAR Partnerships  --]
+                  <h5 class="sectionSubTitle">[@s.text name="${customLabel}.crossCGIAR.title" /]</h5>
+                  [#-- Summary --]
+                  [#if PMU]
+                    <div class="form-group">
+                      [@customForm.textArea name="${customName}.crossCGIAR.summary" i18nkey="${customLabel}.crossCGIAR.summary" help="${customLabel}.crossCGIAR.summary.help" className="limitWords-300" helpIcon=false required=true editable=editable allowTextEditor=true /]
+                    </div>
+                  [#else]
+                    <div class="textArea">
+                      <label for="">[@customForm.text name="${customLabel}.crossCGIAR.summary" readText=true /]:</label>
+                      <p>[#if (pmuText?has_content)!false]${pmuText?replace('\n', '<br>')}[#else] [@s.text name="global.prefilledByPmu"/] [/#if]</p>
+                    </div>
+                  [/#if]
+                  
+                  [#-- Table 8: Internal Cross-CGIAR Collaborations --]
+                  <div class="form-group">
+                    <h4 class="headTitle annualReport-table">[@s.text name="${customLabel}.table8.title" /]</h4>
+                    [@customForm.helpLabel name="${customLabel}.table8.help" showIcon=false/]
+                    <div class="listCrossParnterships">
+                    [#if crossCGIARp?has_content]
+                        [#list crossCGIARp as item]
+                          [@addCrossCGIARPartnerships element=item name="${customName}.externalPartnerships" index=item_index  isEditable=editable/]
+                        [/#list]
+                    [/#if]
+                    </div>
+                    [#if canEdit && editable]
+                      <div class="text-right">
+                        <div class="addCrossPartnership bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> [@s.text name="annualReport2018.externalPartnerships.addPlatformCollaborationButton"/]</div>
+                      </div> 
+                    [/#if]
+                  </div>
+               </div>
+                
               </div>
-              
-              [#-- 2.2.2 Cross-CGIAR Partnerships  --]
-              <h5 class="sectionSubTitle">[@s.text name="${customLabel}.crossCGIAR.title" /]</h5>
-              [#-- Summary --]
-              [#if PMU]
-                <div class="form-group">
-                  [@customForm.textArea name="${customName}.crossCGIAR.summary" i18nkey="${customLabel}.crossCGIAR.summary" help="${customLabel}.crossCGIAR.summary.help" className="limitWords-300" helpIcon=false required=true editable=editable allowTextEditor=true /]
-                </div>
-              [#else]
-                <div class="textArea">
-                  <label for="">[@customForm.text name="${customLabel}.crossCGIAR.summary" readText=true /]:</label>
-                  <p>[#if (pmuText?has_content)!false]${pmuText?replace('\n', '<br>')}[#else] [@s.text name="global.prefilledByPmu"/] [/#if]</p>
-                </div>
-              [/#if]
-              
-              [#assign crossCGIARp = [
-                { 
-                  "title": "Title",
-                  "maturity": "Maturity Level",
-                  "status": "Status"
-                }
-              ] /]
-              
-              [#-- Table 8: Internal Cross-CGIAR Collaborations --]
-              <div class="form-group">
-                <h4 class="headTitle annualReport-table">[@s.text name="${customLabel}.table8.title" /]</h4>
-                [@customForm.helpLabel name="${customLabel}.table8.help" showIcon=false/]
-                [#if crossCGIARp?has_content]
-                    [#list crossCGIARp as item]
-                      [@addCrossCGIARPartnerships element=item name="${customName}.externalPartnerships.table8" index=item_index  isEditable=editable/]
-                    [/#list]
-                [/#if]
-                [#if canEdit && editable]
-                  <div class="text-right">
-                    <div class="addPlatformCollaboration bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> [@s.text name="annualReport2018.externalPartnerships.addPlatformCollaborationButton"/]</div>
-                  </div> 
-                [/#if]
-              </div>
-            
+              [#-- Section Buttons & hidden inputs --]
+              [#include "/WEB-INF/crp/views/annualReport2018/buttons-AR2018.ftl" /]
+            [/@s.form]
           </div>
-          [#-- Section Buttons & hidden inputs --]
-          [#include "/WEB-INF/crp/views/annualReport2018/buttons-AR2018.ftl" /]
-        [/@s.form]
+        </div>
       </div>
     </div>
   [/#if] 
 </section>
+
+[#--  Key Partnerships Template --]
+[@addKeyExternalPartnership element={} name="${customName}.partnerships" index=-1 template=true /]
+[@addCrossCGIARPartnerships element={} name="${customName}.collaborations" index=-1 template=true /]
+
 [#include "/WEB-INF/global/pages/footer.ftl"]
 
 [#---------------------------------------------------- MACROS ----------------------------------------------------]
@@ -136,48 +151,59 @@
 [#macro addKeyExternalPartnership element name index template=false isEditable=true]
 
     [#local customName = "${name}[${index}]" /]
-    <div id="flagshipCollaboration-${template?string('template', index)}" class="flagshipCollaboration borderBox form-group" style="position:relative; display:${template?string('none','block')}">
-
-    [#-- Remove Button --]
-    [#if isEditable]<div class="removeProgramCollaboration removeElement sm" title="Remove"></div>[/#if]
-    [#-- Hidden inputs --]
-    <input type="hidden" name="${customName}.id" value="${(element.id)!}"/> 
-    <br />
-
-    <div class="form-group">
-      [#-- Description --]
-        [@customForm.input name="${customName}.description" i18nkey="${customLabel}.table7.description" helpIcon=false className="limitWords-30" required=true editable=editable /]
-    </div>
-
-    <div class="form-group row">
-      [#-- Main area of partnership --]
-      <div class="col-md-6">
-        [@customForm.elementsListComponent name="${customName}.mainAreas" elementType="repIndPartnershipMainArea" elementList=(element.mainAreas)![] label="${customLabel}.table7.mainArea" help=""  listName="mainAreas" keyFieldName="id" displayFieldName="name"/]
-      </div>
-      [#local otherArea = true /]
-      <div class="col-md-6 block-pleaseSpecify" style="display:${otherArea?string('block', 'none')}">
-        [@customForm.input name="${customName}.otherPartnershipMainArea" i18nkey="${customLabel}.table7.otherMainArea" className="" required=false editable=editable /]
-      </div>
-    </div>
+    <div id="keyPartnerships-${template?string('template', index)}" class="keyPartnership borderBox form-group" style="position:relative; display:${template?string('none','block')}">
+      
+      [#-- Index --]
+      <div class="leftHead blue sm"><span class="index">${index+1}</span></div>
     
-    <div class="form-group">
-      [#-- Partners --]
-        [@customForm.elementsListComponent name="${customName}.institutions" elementType="institution" elementList=(element.institutions)![] label="${customLabel}.table7.partners" help=""  listName="partners" keyFieldName="id" displayFieldName="composedName"/]
-    </div>
+      [#-- Remove Button --]
+      [#if isEditable]<div class="removeKeyPartnership removeElement sm" title="Remove"></div>[/#if]
+      [#-- Hidden inputs --]
+      <input type="hidden" name="${customName}.id" value="${(element.id)!}"/> 
+      <br />
+      
+      [#-- 
+      <div class="form-group">
+        <label for="">[@s.text name="annualReport2018.externalPartnerships.table7.lead" /]:</label>
+        [#local crpProgram = (reportSynthesis.liaisonInstitution.crpProgram)!{} /]
+        ${(crpProgram.acronym)!}
+      </div>
+       --]
+      
+      <div class="form-group">
+        [#-- Description --]
+          [@customForm.input name="${customName}.description" i18nkey="${customLabel}.table7.description" helpIcon=false className="limitWords-30" required=true editable=editable /]
+      </div>
+
+      <div class="form-group row">
+        [#-- Main area of partnership --]
+        <div class="col-md-6">
+          [@customForm.elementsListComponent name="${customName}.mainAreas" elementType="repIndPartnershipMainArea" elementList=(element.mainAreas)![] label="${customLabel}.table7.mainArea" help=""  listName="mainAreas" keyFieldName="id" displayFieldName="name"  indexLevel=2 /]
+        </div>
+        [#local otherArea = true /]
+        <div class="col-md-6 block-pleaseSpecify" style="display:${otherArea?string('block', 'none')}">
+          [@customForm.input name="${customName}.otherPartnershipMainArea" i18nkey="${customLabel}.table7.otherMainArea" className="" required=false editable=editable /]
+        </div>
+      </div>
     
-    [#-- Upload Template --]
-    <div class="form-group" style="position:relative" listname="">
-      [@customForm.fileUploadAjax 
-        fileDB={}  
-        name="annualReport2018.externalPartnerships.table7.documentation" 
-        label="annualReport2018.externalPartnerships.table7.documentation"
-        dataUrl=""  
-        path=""
-        isEditable=editable
-        labelClass=""
-        required=true
-       /]
-    </div>
+      <div class="form-group">
+        [#-- Partners --]
+          [@customForm.elementsListComponent name="${customName}.institutions" elementType="institution" elementList=(element.institutions)![] label="${customLabel}.table7.partners" help=""  listName="partners" keyFieldName="id" displayFieldName="composedName" indexLevel=2 /]
+      </div>
+    
+      [#-- Upload Template --]
+      <div class="form-group" style="position:relative" listname="">
+        [@customForm.fileUploadAjax 
+          fileDB={}  
+          name="annualReport2018.externalPartnerships.table7.documentation" 
+          label="annualReport2018.externalPartnerships.table7.documentation"
+          dataUrl=""  
+          path=""
+          isEditable=editable
+          labelClass=""
+          required=true
+         /]
+      </div>
 
     
   </div>
@@ -225,29 +251,29 @@
 
 [#macro addCrossCGIARPartnerships element name index template=false isEditable=true]
   [#local customName = "${name}[${index}]" /]
-  <div id="flagshipCollaboration-${template?string('template', index)}" class="flagshipCollaboration borderBox form-group" style="position:relative; display:${template?string('none','block')}">
+  <div id="crossPartnerships-${template?string('template', index)}" class="crossPartnership borderBox form-group" style="position:relative; display:${template?string('none','block')}">
 
     [#-- Index --]
     <div class="leftHead blue sm"><span class="index">${index+1}</span></div>
     [#-- Remove Button --]
-    [#if isEditable]<div class="removeProgramCollaboration removeElement sm" title="Remove"></div>[/#if]
+    [#if isEditable]<div class="removeCrossPartnership removeElement sm" title="Remove"></div>[/#if]
     [#-- Hidden inputs --]
     <input type="hidden" name="${customName}.id" value="${(element.id)!}"/> 
     <br />
 
     <div class="form-group">
       [#-- CRP/Platform --] 
-        [@customForm.select name="${customName}.table8.crp" label="" keyFieldName="id" displayFieldName="acronym" i18nkey="${customLabel}.table8.crp" listName="globalUnitList"  required=true  className="globalUnitSelect" editable=isEditable/]
+        [@customForm.select name="${customName}.crp" label="" keyFieldName="id" displayFieldName="acronym" i18nkey="${customLabel}.table8.crp" listName="globalUnitList"  required=true  className="globalUnitSelect" editable=isEditable/]
     </div>
     
     <div class="form-group">
       [#-- Description of collaboration --]
-        [@customForm.textArea name="${customName}.table8.description" i18nkey="${customLabel}.table8.description" help="${customLabel}.table8.description.help" helpIcon=false required=true editable=editable allowTextEditor=true /]
+        [@customForm.textArea name="${customName}.description" i18nkey="${customLabel}.table8.description" help="${customLabel}.table8.description.help" helpIcon=false required=true editable=editable allowTextEditor=true /]
     </div>
     
     <div class="form-group">
       [#-- Value added --]
-        [@customForm.input name="${customName}.table8.value" i18nkey="${customLabel}.table8.value" help="${customLabel}.table8.value.help" helpIcon=false required=true editable=editable /]
+        [@customForm.input name="${customName}.value" i18nkey="${customLabel}.table8.value" help="${customLabel}.table8.value.help" helpIcon=false required=true editable=editable /]
     </div>
     
     

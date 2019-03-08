@@ -131,7 +131,7 @@ public class RepIndOrganizationTypeManagerImpl implements RepIndOrganizationType
   @Override
   public List<ReportSynthesisPoliciesByOrganizationTypeDTO>
     getPoliciesByOrganizationTypes(List<ProjectPolicy> selectedProjectPolicies, Phase phase) {
-    List<ReportSynthesisPoliciesByOrganizationTypeDTO> studiesByOrganizationTypeDTOs = new ArrayList<>();
+    List<ReportSynthesisPoliciesByOrganizationTypeDTO> policiesByOrganizationTypeDTOs = new ArrayList<>();
     List<RepIndOrganizationType> organizationTypes =
       this.findAll().stream().sorted((o1, o2) -> o1.getName().compareTo(o2.getName())).collect(Collectors.toList());
     if (organizationTypes != null) {
@@ -150,15 +150,16 @@ public class RepIndOrganizationTypeManagerImpl implements RepIndOrganizationType
           reportSynthesisStudiesByOrganizationTypeDTO.setProjectPolicies(new ArrayList<>());
         }
 
-        studiesByOrganizationTypeDTOs.add(reportSynthesisStudiesByOrganizationTypeDTO);
+        policiesByOrganizationTypeDTOs.add(reportSynthesisStudiesByOrganizationTypeDTO);
       }
     }
 
-    return studiesByOrganizationTypeDTOs.stream()
+    return policiesByOrganizationTypeDTOs.stream()
       .sorted(
         (o1, o2) -> new Integer(o2.getProjectPolicies().size()).compareTo(new Integer(o1.getProjectPolicies().size())))
       .collect(Collectors.toList());
   }
+
 
   @Override
   public RepIndOrganizationType getRepIndOrganizationTypeById(long repIndOrganizationTypeID) {
