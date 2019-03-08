@@ -36,6 +36,7 @@ import javax.inject.Named;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -86,8 +87,8 @@ public class GeneralLists {
 			"Table 10 - Monitoring, Evaluation, Learning and Impact Assessment (MELIA)" }, value = "${GeneralLists.countries.code.value}", response = ContributionOfCrpDTO.class)
 	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
 	@RequestMapping(value = "/countries/{code}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<CountryDTO> findCountryByNumericISOCode(@PathVariable("Iso Apha2 Code") String code) {
-		LOG.debug("REST request country requesting alpha2 ISO Codeby id : {}", code);
+	public ResponseEntity<CountryDTO> findCountryByNumericISOCode(
+			@ApiParam(value = "${GeneralLists.countries.code.param.code}", required = true) @PathVariable("Iso Apha2 Code") String code) {
 		return this.locationItem.getContryByAlpha2ISOCode(code);
 	}
 
@@ -102,8 +103,8 @@ public class GeneralLists {
 			"Table 8 - Key external partnerships" }, value = "${GeneralLists.flagships-modules.code.value}", response = FlagshipProgramDTO.class)
 	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
 	@RequestMapping(value = "/flagships-modules/{code}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<FlagshipProgramDTO> findFlagshipProgramBySmoCode(@PathVariable String code) {
-		LOG.debug("REST request to get Maturity of Change : {}", code);
+	public ResponseEntity<FlagshipProgramDTO> findFlagshipProgramBySmoCode(
+			@ApiParam(value = "${GeneralLists.flagships-modules.code.param.code}", required = true) @PathVariable String code) {
 		return this.flagshipProgramItem.findFlagshipProgramBySmoCode(code);
 	}
 
@@ -119,8 +120,8 @@ public class GeneralLists {
 			"Table 10 - Monitoring, Evaluation, Learning and Impact Assessment (MELIA)" }, value = "${GeneralLists.geographic-scopes.code.value}", response = ContributionOfCrpDTO.class)
 	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
 	@RequestMapping(value = "/geographic-scopes/{code}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<GeographicScopeDTO> findGeographicScopeById(@PathVariable Long code) {
-		LOG.debug("REST geo scope by id : {}", code);
+	public ResponseEntity<GeographicScopeDTO> findGeographicScopeById(
+			@ApiParam(value = "${GeneralLists.geographic-scopes.code.param.code}", required = true) @PathVariable Long code) {
 		return this.geographicScopeItem.findGeographicScopesById(code);
 	}
 
@@ -138,8 +139,8 @@ public class GeneralLists {
 			"Table 9 - Internal Cross-CGIAR Collaborations",
 			"Table 10 - Monitoring, Evaluation, Learning and Impact Assessment (MELIA)" }, value = "${GeneralLists.cgiar-entities.code.value}", response = CGIAREntityDTO.class)
 	@RequestMapping(value = "/cgiar-entities/{code}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<CGIAREntityDTO> findGlobalUnitByCGIARId(@PathVariable String code) {
-		LOG.debug("REST request to get GlobalUnit : {}", code);
+	public ResponseEntity<CGIAREntityDTO> findGlobalUnitByCGIARId(
+			@ApiParam(value = "${GeneralLists.cgiar-entities.code.param.code}", required = true) @PathVariable String code) {
 		return this.globalUnitItem.findGlobalUnitByCGIRARId(code);
 	}
 
@@ -151,8 +152,8 @@ public class GeneralLists {
 	@ApiOperation(value = "${GeneralLists.cgiar-entity-types.code.value}", response = CGIAREntityTypeDTO.class)
 	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
 	@RequestMapping(value = "/cgiar-entity-types/{code}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<CGIAREntityTypeDTO> findGlobalUnitTypeByCode(@PathVariable Long code) {
-		LOG.debug("REST request to get Regions");
+	public ResponseEntity<CGIAREntityTypeDTO> findGlobalUnitTypeByCode(
+			@ApiParam(value = "${GeneralLists.cgiar-entity-types.code.param.code}", required = true) @PathVariable Long code) {
 		return this.globalUnitTypeItem.findGlobalUnitTypeById(code);
 	}
 
@@ -166,8 +167,8 @@ public class GeneralLists {
 			"Table 10 - Monitoring, Evaluation, Learning and Impact Assessment (MELIA)" }, value = "${GeneralLists.un-regions.code.value}", response = RegionDTO.class)
 	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
 	@RequestMapping(value = "/un-regions/{code}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<RegionDTO> findtRegionByCode(@PathVariable Long code) {
-		LOG.debug("REST request to get Regions");
+	public ResponseEntity<RegionDTO> findtRegionByCode(
+			@ApiParam(value = "${GeneralLists.un-regions.code.param.code}", required = true) @PathVariable Long code) {
 		return this.locationItem.getRegionByCode(code);
 	}
 
@@ -182,7 +183,6 @@ public class GeneralLists {
 	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
 	@RequestMapping(value = "/countries", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public List<CountryDTO> getAllContries() {
-		LOG.debug("REST request to get Contries");
 		return this.locationItem.getAllCountries();
 	}
 
@@ -197,7 +197,6 @@ public class GeneralLists {
 	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
 	@RequestMapping(value = "/flagships-modules", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public List<FlagshipProgramDTO> getAllFlagshipsPrograms() {
-		LOG.debug("REST request to get Flagships or Programs");
 		return this.flagshipProgramItem.getAllCrpPrograms();
 	}
 
@@ -214,7 +213,6 @@ public class GeneralLists {
 	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
 	@RequestMapping(value = "/geographic-scopes", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public List<GeographicScopeDTO> getAllGeographicScopes() {
-		LOG.debug("REST request to get Geographic Scopes");
 		return this.geographicScopeItem.getAllGeographicScopes();
 	}
 // (Optional) Entity type can be Center, CRP or Platform. Please refer to the entity-type control list. (edited) 
@@ -233,9 +231,7 @@ public class GeneralLists {
 			"Table 10 - Monitoring, Evaluation, Learning and Impact Assessment (MELIA)" }, value = "${GeneralLists.cgiar-entities.all.value}", response = CGIAREntityDTO.class, responseContainer = "List")
 	@RequestMapping(value = "/cgiar-entities", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<CGIAREntityDTO>> getAllGlobalUnits(
-			@RequestParam(required = false, value = "id of cgiar entity type") Long typeId) {
-		LOG.debug("REST request to get GlobalUnits");
-		LOG.debug("entityType requested: " + typeId);
+			@ApiParam(value = "${GeneralLists.cgiar-entities.all.param.typeId}") @RequestParam(value = "typeId", required = false) Long typeId) {
 		return this.globalUnitItem.getAllGlobaUnits(typeId);
 	}
 
@@ -248,7 +244,6 @@ public class GeneralLists {
 	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
 	@RequestMapping(value = "/cgiar-entity-types", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public List<CGIAREntityTypeDTO> getAllGlobalUnitTypes() {
-		LOG.debug("REST request to get CGIAR entities Types");
 		return this.globalUnitTypeItem.getAllGlobalUnitTypes();
 	}
 
@@ -263,7 +258,6 @@ public class GeneralLists {
 	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
 	@RequestMapping(value = "/un-regions", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public List<RegionDTO> getAllRegions() {
-		LOG.debug("REST request to get Regions");
 		return this.locationItem.getAllRegions();
 	}
 

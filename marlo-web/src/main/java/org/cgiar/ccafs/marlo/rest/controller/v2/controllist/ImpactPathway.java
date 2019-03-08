@@ -55,14 +55,15 @@ public class ImpactPathway {
 	public ImpactPathway(OutcomeItem<OutcomeDTO> outcomeItem, MilestoneItem<MilestoneDTO> milestoneItem) {
 		this.outcomeItem = outcomeItem;
 		this.milestoneItem = milestoneItem;
-
 	}
 
 	@ApiOperation(tags = {
 			"Table 5 - Status of Planned Outcomes and Milestones" }, value = "${ImpactPathway.milestones.id.value}", response = MilestoneDTO.class)
 	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
 	@RequestMapping(value = "/{CGIAREntity}/milestones/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<MilestoneDTO> findMilestoneById(@PathVariable String CGIAREntity, @PathVariable Long id) {
+	public ResponseEntity<MilestoneDTO> findMilestoneById(
+			@ApiParam(value = "${ImpactPathway.milestones.id.param.CGIAR}", required = true) @PathVariable String CGIAREntity,
+			@ApiParam(value = "${ImpactPathway.milestones.id.param.id}", required = true) @PathVariable Long id) {
 		LOG.debug("REST request to get Institution : {}", id);
 		return this.milestoneItem.findMilestoneById(id, CGIAREntity);
 	}
@@ -71,7 +72,9 @@ public class ImpactPathway {
 			"Table 5 - Status of Planned Outcomes and Milestones" }, value = "${ImpactPathway.outcomes.id.value}", response = OutcomeDTO.class)
 	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
 	@RequestMapping(value = "/{CGIAREntity}/outcomes/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<OutcomeDTO> findOutcomeById(@PathVariable String CGIAREntity, @PathVariable Long id) {
+	public ResponseEntity<OutcomeDTO> findOutcomeById(
+			@ApiParam(value = "${ImpactPathway.outcomes.id.param.CGIAR}", required = true) @PathVariable String CGIAREntity,
+			@ApiParam(value = "${ImpactPathway.outcomes.id.param.id}", required = true) @PathVariable Long id) {
 		LOG.debug("REST request to get Institution : {}", id);
 		return this.outcomeItem.findOutcomeById(id, CGIAREntity);
 	}
@@ -81,10 +84,10 @@ public class ImpactPathway {
 	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
 	@RequestMapping(value = "/{CGIAREntity}/milestones/", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public List<MilestoneDTO> getAllMilestones(
-			@ApiParam(value = "Acronym of CGIAR Entity") @PathVariable("CGIAREntity") String CGIAREntity,
-			@ApiParam(value = "Code of Flagship/Module") @RequestParam("flagshipId") String flagshipId,
-			@ApiParam(value = "Target year of outcome") @RequestParam(value = "targetYear", required = false) Integer targetYear,
-			@ApiParam(value = "Year of reporting") @RequestParam("reportYear") Integer repoYear)
+			@ApiParam(value = "${ImpactPathway.milestones.all.param.CGIAR}", required = true) @PathVariable("CGIAREntity") String CGIAREntity,
+			@ApiParam(value = "${ImpactPathway.milestones.all.param.flagshipId}", required = true) @RequestParam("flagshipId") String flagshipId,
+			@ApiParam(value = "${ImpactPathway.milestones.all.param.targetYear}") @RequestParam(value = "targetYear", required = false) Integer targetYear,
+			@ApiParam(value = "${ImpactPathway.milestones.all.param.reportYear}", required = true) @RequestParam("reportYear") Integer repoYear)
 			throws NotFoundException {
 		LOG.debug("REST request to get Institutions");
 		List<MilestoneDTO> response = this.milestoneItem.getAllMilestones(flagshipId, CGIAREntity, repoYear);
@@ -99,10 +102,10 @@ public class ImpactPathway {
 	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
 	@RequestMapping(value = "/{CGIAREntity}/outcomes/", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public List<OutcomeDTO> getAllOutcomes(
-			@ApiParam(value = "Acronym of CGIAR Entity") @PathVariable("CGIAREntity") String CGIAREntity,
-			@ApiParam(value = "Code of Flagship/Module") @RequestParam("flagshipId") String flagshipId,
-			@ApiParam(value = "Target year of outcome", example = "2022") @RequestParam(value = "targetYear", required = false) Integer targetYear,
-			@ApiParam(value = "Year of reporting", example = "2018") @RequestParam("reportYear") Integer repoYear)
+			@ApiParam(value = "${ImpactPathway.outcomes.all.param.CGIAR}", required = true) @PathVariable("CGIAREntity") String CGIAREntity,
+			@ApiParam(value = "${ImpactPathway.outcomes.all.param.flagshipId}", required = true) @RequestParam("flagshipId") String flagshipId,
+			@ApiParam(value = "${ImpactPathway.outcomes.all.param.targetYear}") @RequestParam(value = "targetYear", required = false) Integer targetYear,
+			@ApiParam(value = "${ImpactPathway.outcomes.all.param.reportYear}", required = true) @RequestParam("reportYear") Integer repoYear)
 			throws NotFoundException {
 		LOG.debug("REST request to get Institutions");
 		List<OutcomeDTO> response = this.outcomeItem.getAllOutcomes(flagshipId, CGIAREntity, targetYear, repoYear);
@@ -111,5 +114,4 @@ public class ImpactPathway {
 		}
 		return response;
 	}
-
 }
