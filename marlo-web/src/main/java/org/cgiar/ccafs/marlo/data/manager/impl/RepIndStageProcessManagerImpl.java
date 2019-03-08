@@ -17,9 +17,14 @@ package org.cgiar.ccafs.marlo.data.manager.impl;
 
 import org.cgiar.ccafs.marlo.data.dao.RepIndStageProcessDAO;
 import org.cgiar.ccafs.marlo.data.manager.RepIndStageProcessManager;
+import org.cgiar.ccafs.marlo.data.model.Phase;
+import org.cgiar.ccafs.marlo.data.model.ProjectPolicy;
 import org.cgiar.ccafs.marlo.data.model.RepIndStageProcess;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisPoliciesByRepIndStageProcessDTO;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -59,6 +64,39 @@ public class RepIndStageProcessManagerImpl implements RepIndStageProcessManager 
 
     return repIndStageProcessDAO.findAll();
 
+  }
+
+  @Override
+  public List<ReportSynthesisPoliciesByRepIndStageProcessDTO>
+    getPoliciesByStageProcess(List<ProjectPolicy> selectedProjectPolicies, Phase phase) {
+    List<ReportSynthesisPoliciesByRepIndStageProcessDTO> reportSynthesisPoliciesByRepIndStageProcessDTOs =
+      new ArrayList<>();
+    List<RepIndStageProcess> stageProcess =
+      this.findAll().stream().sorted((o1, o2) -> o1.getName().compareTo(o2.getName())).collect(Collectors.toList());
+    if (stageProcess != null) {
+      for (RepIndStageProcess repIndStageProcess : stageProcess) {
+        ReportSynthesisPoliciesByRepIndStageProcessDTO reportSynthesisPoliciesByRepIndStageProcessDTO =
+          new ReportSynthesisPoliciesByRepIndStageProcessDTO();
+        reportSynthesisPoliciesByRepIndStageProcessDTO.setRepIndStageProcess(repIndStageProcess);
+        List<ProjectPolicy> projectPoliciesByRepIndStageProcess = selectedProjectPolicies.stream()
+          .filter(pp -> pp.isActive() && pp.getProjectPolicyInfo(phase) != null
+            && pp.getProjectPolicyInfo().getRepIndStageProcess() != null
+            && pp.getProjectPolicyInfo().getRepIndStageProcess().equals(repIndStageProcess))
+          .collect(Collectors.toList());
+        if (projectPoliciesByRepIndStageProcess != null && !projectPoliciesByRepIndStageProcess.isEmpty()) {
+          reportSynthesisPoliciesByRepIndStageProcessDTO.setProjectPolicies(projectPoliciesByRepIndStageProcess);
+        } else {
+          reportSynthesisPoliciesByRepIndStageProcessDTO.setProjectPolicies(new ArrayList<>());
+        }
+
+        reportSynthesisPoliciesByRepIndStageProcessDTOs.add(reportSynthesisPoliciesByRepIndStageProcessDTO);
+      }
+    }
+
+    return reportSynthesisPoliciesByRepIndStageProcessDTOs.stream()
+      .sorted(
+        (o1, o2) -> new Integer(o2.getProjectPolicies().size()).compareTo(new Integer(o1.getProjectPolicies().size())))
+      .collect(Collectors.toList());
   }
 
   @Override
