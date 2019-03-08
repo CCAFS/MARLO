@@ -33,6 +33,7 @@ import javax.validation.Valid;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.subject.Subject;
@@ -68,9 +69,9 @@ public class Institutions {
 	@ApiOperation(value = "${Institutions.institution-requests.create.value}", response = InstitutionRequestDTO.class)
 	@RequiresPermissions(Permission.FULL_CREATE_REST_API_PERMISSION)
 	@RequestMapping(value = "/institutions/{CGIAREntity}/institution-requests", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<InstitutionRequestDTO> createPartnerRequest(@PathVariable("CGIAREntity") String CGIAREntity,
-			@Valid @RequestBody NewInstitutionDTO newInstitutionDTO) {
-		LOG.debug("Create a new institution (Partner Request) with : {}", newInstitutionDTO);
+	public ResponseEntity<InstitutionRequestDTO> createPartnerRequest(
+			@ApiParam(value = "${Institutions.institution-requests.create.param.CGIAR}", required = true) @PathVariable("CGIAREntity") String CGIAREntity,
+			@ApiParam(value = "${Institutions.institution-requests.create.param.institution}", required = true) @Valid @RequestBody NewInstitutionDTO newInstitutionDTO) {
 		return this.institutionItem.createPartnerRequest(newInstitutionDTO, CGIAREntity, this.getCurrentUser());
 	}
 
@@ -78,8 +79,8 @@ public class Institutions {
 			"Table 3 - Outcome/ Impact Case Reports" }, value = "${Institutions.institutions.code.value}", response = InstitutionDTO.class)
 	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
 	@RequestMapping(value = "/institutions/{code}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<InstitutionDTO> findInstitutionById(@PathVariable Long code) {
-		LOG.debug("REST request to get Institution : {}", code);
+	public ResponseEntity<InstitutionDTO> findInstitutionById(
+			@ApiParam(value = "${Institutions.institution.code.param.code}", required = true) @PathVariable Long code) {
 		return this.institutionItem.findInstitutionById(code);
 	}
 
@@ -87,8 +88,7 @@ public class Institutions {
 	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
 	@RequestMapping(value = "/institution-types/{code}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<InstitutionTypeDTO> findInstitutionTypeById(
-			@PathVariable(name = "institution type id") Long code) {
-		LOG.debug("Get a partner request with : {}", code);
+			@ApiParam(value = "${Institutions.institution-types.code.param.code}", required = true) @PathVariable(name = "institution type id") Long code) {
 		return this.institutionTypeItem.findInstitutionTypeById(code);
 	}
 
@@ -96,8 +96,8 @@ public class Institutions {
 	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
 	@RequestMapping(value = "/institutions/{CGIAREntity}/institution-requests/{requestId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<InstitutionRequestDTO> findPartnerRequestById(
-			@PathVariable(name = "CGIAREntity") String CGIAREntity, @PathVariable(name = "requestId") Long requestId) {
-		LOG.debug("Get a partner request with : {}", requestId);
+			@ApiParam(value = "${Institutions.institution-requests.code.param.CGIAR}", required = true) @PathVariable(name = "CGIAREntity") String CGIAREntity,
+			@ApiParam(value = "${Institutions.institution-requests.code.param.requestId}", required = true) @PathVariable(name = "requestId") Long requestId) {
 		return this.institutionItem.getPartnerRequest(requestId, CGIAREntity);
 	}
 
@@ -106,7 +106,6 @@ public class Institutions {
 	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
 	@RequestMapping(value = "/institutions", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public List<InstitutionDTO> getAllInstitutions() {
-		LOG.debug("REST request to get Institutions");
 		return this.institutionItem.getAllInstitutions();
 	}
 
@@ -114,7 +113,6 @@ public class Institutions {
 	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
 	@RequestMapping(value = "/institution-types", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public List<InstitutionTypeDTO> getAllInstitutionsTypes() {
-		LOG.debug("REST request to get Institution Types");
 		return this.institutionTypeItem.getAllInstitutionTypes();
 	}
 

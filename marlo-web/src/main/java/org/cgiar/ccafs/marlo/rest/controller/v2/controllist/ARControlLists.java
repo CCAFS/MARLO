@@ -50,6 +50,7 @@ import javax.inject.Named;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -129,8 +130,8 @@ public class ARControlLists {
 
 	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
 	@RequestMapping(value = "/cross-cutting-markers/{code}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<CrossCuttingMarkerDTO> findCrossCuttingMarkerById(@PathVariable Long code) {
-		LOG.debug("REST request to get Cross Cutting Marker : {}", code);
+	public ResponseEntity<CrossCuttingMarkerDTO> findCrossCuttingMarkerById(
+			@ApiParam(value = "${ARControlLists.cross-cutting-markers.code.param.code}", required = true) @PathVariable Long code) {
 		return this.crossCuttingMarkerItem.findCrossCuttingMarkerById(code);
 	}
 
@@ -144,8 +145,8 @@ public class ARControlLists {
 			"Table 3 - Outcome/ Impact Case Reports" }, value = "${ARControlLists.cross-cutting-marker-scores.code.value}", response = CrossCuttingMarkerScoreDTO.class)
 	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
 	@RequestMapping(value = "/cross-cutting-marker-scores/{code}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<CrossCuttingMarkerScoreDTO> findCrossCuttingMarkerScoreById(@PathVariable Long code) {
-		LOG.debug("REST request to get Cross Cutting Marker : {}", code);
+	public ResponseEntity<CrossCuttingMarkerScoreDTO> findCrossCuttingMarkerScoreById(
+			@ApiParam(value = "${ARControlLists.cross-cutting-marker-scores.code.param.code}", required = true) @PathVariable Long code) {
 		return this.crossCuttingMarkerScoreItem.findCrossCuttingMarkerScoreById(code);
 	}
 
@@ -159,8 +160,8 @@ public class ARControlLists {
 	@ApiOperation(tags = "Table 4 - CRP Innovations", value = "${ARControlLists.innovation-types.code.value}", response = InnovationTypeDTO.class)
 	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
 	@RequestMapping(value = "/innovation-types/{code}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<InnovationTypeDTO> findInnovationTypeById(@PathVariable Long code) {
-		LOG.debug("REST request to get Innovation Type : {}", code);
+	public ResponseEntity<InnovationTypeDTO> findInnovationTypeById(
+			@ApiParam(value = "${ARControlLists.innovation-types.code.param.code}", required = true) @PathVariable Long code) {
 		return this.innovationTypesItem.findInnovationTypeById(code);
 	}
 
@@ -173,8 +174,8 @@ public class ARControlLists {
 	@ApiOperation(tags = "Table 3 - Outcome/ Impact Case Reports", value = "${ARControlLists.maturities-of-change.code.value}", response = MaturityOfChangeDTO.class)
 	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
 	@RequestMapping(value = "/maturities-of-change/{code}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<MaturityOfChangeDTO> findMaturityOfChangeById(@PathVariable Long code) {
-		LOG.debug("REST request to get Maturity of Change : {}", code);
+	public ResponseEntity<MaturityOfChangeDTO> findMaturityOfChangeById(
+			@ApiParam(value = "${ARControlLists.maturities-of-change.code.param.code}", required = true) @PathVariable Long code) {
 		return this.maturityOfChangeItem.findMaturityOfChangeById(code);
 	}
 
@@ -187,8 +188,8 @@ public class ARControlLists {
 	@ApiOperation(tags = "Table 4 - CRP Innovations", value = "${ARControlLists.organization-types.code.value}", response = OrganizationTypeDTO.class)
 	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
 	@RequestMapping(value = "/organization-types/{code}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<OrganizationTypeDTO> findOrganizationTypeById(@PathVariable Long code) {
-		LOG.debug("REST request to get  Organization Type : {}", code);
+	public ResponseEntity<OrganizationTypeDTO> findOrganizationTypeById(
+			@ApiParam(value = "${ARControlLists.organization-types.code.param.code}", required = true) @PathVariable Long code) {
 		return this.organizationTypeItem.findOrganizationTypeById(code);
 	}
 
@@ -201,8 +202,8 @@ public class ARControlLists {
 	@ApiOperation(tags = "Table 2 - CRP Policies", value = "${ARControlLists.policy-investment-types.code.value}", response = PolicyInvestmentTypeDTO.class)
 	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
 	@RequestMapping(value = "/policy-investment-types/{code}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<PolicyInvestmentTypeDTO> findPolicyInvestimentTypesById(@PathVariable Long code) {
-		LOG.debug("REST request to get Cross Cutting Marker : {}", code);
+	public ResponseEntity<PolicyInvestmentTypeDTO> findPolicyInvestimentTypesById(
+			@ApiParam(value = "${ARControlLists.policy-investment-types.code.param.code}", required = true) @PathVariable Long code) {
 		return this.policyInvestmentTypeItem.PolicyInvestmentTypeById(code);
 	}
 
@@ -215,8 +216,8 @@ public class ARControlLists {
 	@ApiOperation(tags = "Table 2 - CRP Policies", value = "${ARControlLists.policy-maturity-levels.code.value}", response = PolicyMaturityLevelDTO.class)
 	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
 	@RequestMapping(value = "/policy-maturity-levels/{code}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<PolicyMaturityLevelDTO> findPolicyMaturityLevelById(@PathVariable Long code) {
-		LOG.debug("REST request to get Cross Cutting Marker : {}", code);
+	public ResponseEntity<PolicyMaturityLevelDTO> findPolicyMaturityLevelById(
+			@ApiParam(value = "${ARControlLists.policy-maturity-levels.code.param.code}", required = true) @PathVariable Long code) {
 		return this.policyMaturityLevelItem.PolicyMaturityLevelById(code);
 	}
 
@@ -229,8 +230,8 @@ public class ARControlLists {
 	@ApiOperation(tags = "Table 2 - CRP Policies", value = "${ARControlLists.policy-owner-types.code.value}", response = PolicyOwnerTypeDTO.class)
 	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
 	@RequestMapping(value = "/policy-owner-types/{code}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<PolicyOwnerTypeDTO> findPolicyOwnerTypeById(@PathVariable Long code) {
-		LOG.debug("REST request to get Cross Cutting Marker : {}", code);
+	public ResponseEntity<PolicyOwnerTypeDTO> findPolicyOwnerTypeById(
+			@ApiParam(value = "${ARControlLists.policy-owner-types.code.param.code}", required = true) @PathVariable Long code) {
 		return this.policyOwnerTypeItem.findPolicyOwnerTypeById(code);
 	}
 
@@ -243,8 +244,8 @@ public class ARControlLists {
 	@ApiOperation(tags = "Table 4 - CRP Innovations", value = "${ARControlLists.stage-of-innovations.code.value}", response = StageOfInnovationDTO.class)
 	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
 	@RequestMapping(value = "/stage-of-innovations/{code}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<StageOfInnovationDTO> findStageOfInnovationById(@PathVariable Long code) {
-		LOG.debug("REST request to get Stage of Innovation : {}", code);
+	public ResponseEntity<StageOfInnovationDTO> findStageOfInnovationById(
+			@ApiParam(value = "${ARControlLists.stage-of-innovations.code.param.code}", required = true) @PathVariable Long code) {
 		return this.stageOfInnovationItem.findStageOfInnovationById(code);
 	}
 
@@ -258,8 +259,8 @@ public class ARControlLists {
 			"Table 10 - Monitoring, Evaluation, Learning and Impact Assessment (MELIA)" }, value = "${ARControlLists.study-types.code.value}", response = StudyTypeDTO.class)
 	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
 	@RequestMapping(value = "/study-types/{code}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<StudyTypeDTO> findStudyTypeById(@PathVariable Long code) {
-		LOG.debug("REST request to get Study Type : {}", code);
+	public ResponseEntity<StudyTypeDTO> findStudyTypeById(
+			@ApiParam(value = "${ARControlLists.study-types.code.param.code}", required = true) @PathVariable Long code) {
 		return this.studyTypeItem.findStudyTypeById(code);
 	}
 
@@ -272,8 +273,8 @@ public class ARControlLists {
 	@ApiOperation(tags = "Table 3 - Outcome/ Impact Case Reports", value = "${ARControlLists.tags.code.value}", response = TagDTO.class)
 	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
 	@RequestMapping(value = "/tags/{code}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<TagDTO> findTagsById(@PathVariable Long code) {
-		LOG.debug("REST request to get  Tags : {}", code);
+	public ResponseEntity<TagDTO> findTagsById(
+			@ApiParam(value = "${ARControlLists.tags.code.param.code}", required = true) @PathVariable Long code) {
 		return this.tagItem.findTagById(code);
 	}
 
@@ -287,7 +288,6 @@ public class ARControlLists {
 	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
 	@RequestMapping(value = "/cross-cutting-markers", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public List<CrossCuttingMarkerDTO> getAllCrossCuttingMarkers() {
-		LOG.debug("REST request to get all The Cross Cutting Markers");
 		return this.crossCuttingMarkerItem.getAllCrossCuttingMarker();
 	}
 
@@ -303,7 +303,6 @@ public class ARControlLists {
 	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
 	@RequestMapping(value = "/cross-cutting-marker-scores", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public List<CrossCuttingMarkerScoreDTO> getAllCrossCuttingMarkerScores() {
-		LOG.debug("REST request to get Cross Cutting Markers");
 		return this.crossCuttingMarkerScoreItem.getAllCrossCuttingMarkersScores();
 	}
 
@@ -316,7 +315,6 @@ public class ARControlLists {
 	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
 	@RequestMapping(value = "/innovation-types", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public List<InnovationTypeDTO> getAllInnovationTypes() {
-		LOG.debug("REST request to get Innovation Types");
 		return this.innovationTypesItem.getAllInnovationTypes();
 	}
 
@@ -330,7 +328,6 @@ public class ARControlLists {
 	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
 	@RequestMapping(value = "/maturities-of-change", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public List<MaturityOfChangeDTO> getAllMaturityOfChanges() {
-		LOG.debug("REST request to get  Maturity of Change");
 		return this.maturityOfChangeItem.getAllMaturityOfChanges();
 	}
 
@@ -344,7 +341,6 @@ public class ARControlLists {
 	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
 	@RequestMapping(value = "/organization-types", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public List<OrganizationTypeDTO> getAllOrganizationTypes() {
-		LOG.debug("REST request to get  organization-types");
 		return this.organizationTypeItem.getAllOrganizationTypes();
 	}
 
@@ -358,7 +354,6 @@ public class ARControlLists {
 	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
 	@RequestMapping(value = "/policy-investment-types", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public List<PolicyInvestmentTypeDTO> getAllPolicyInvestmentType() {
-		LOG.debug("REST request to get  Degree of Innovations");
 		return this.policyInvestmentTypeItem.getAllPolicyInvestmentType();
 	}
 
@@ -373,7 +368,6 @@ public class ARControlLists {
 	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
 	@RequestMapping(value = "/policy-maturity-levels", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public List<PolicyMaturityLevelDTO> getAllPolicyMaturityLevels() {
-		LOG.debug("REST request to get Cross Cutting Markers");
 		return this.policyMaturityLevelItem.getAllPolicyMaturityLevel();
 	}
 
@@ -386,7 +380,6 @@ public class ARControlLists {
 	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
 	@RequestMapping(value = "/policy-owner-types", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public List<PolicyOwnerTypeDTO> getAllPolicyOwnerTypes() {
-		LOG.debug("REST request to get Innovation Types");
 		return this.policyOwnerTypeItem.getAllPolicyOwnerTypes();
 	}
 
@@ -400,7 +393,6 @@ public class ARControlLists {
 	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
 	@RequestMapping(value = "/stage-of-innovations", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public List<StageOfInnovationDTO> getAllStageOfInnovations() {
-		LOG.debug("REST request to get  Stage of Innovations");
 		return this.stageOfInnovationItem.getAllStageOfInnovations();
 	}
 
@@ -413,7 +405,6 @@ public class ARControlLists {
 	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
 	@RequestMapping(value = "/study-types", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public List<StudyTypeDTO> getAllStudyTypes() {
-		LOG.debug("REST request to get  organization-types");
 		return this.studyTypeItem.getAllStudyTypes();
 	}
 
@@ -426,7 +417,6 @@ public class ARControlLists {
 	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
 	@RequestMapping(value = "/tags", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public List<TagDTO> getAllTags() {
-		LOG.debug("REST request to get  all Tags");
 		return this.tagItem.getAllTags();
 	}
 
