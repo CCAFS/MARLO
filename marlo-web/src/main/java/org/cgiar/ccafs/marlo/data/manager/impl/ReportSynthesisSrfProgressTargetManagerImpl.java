@@ -16,7 +16,12 @@ package org.cgiar.ccafs.marlo.data.manager.impl;
 
 
 import org.cgiar.ccafs.marlo.data.dao.ReportSynthesisSrfProgressTargetDAO;
+import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
+import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisSrfProgressTargetManager;
+import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisSrfProgress;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisSrfProgressTarget;
 
 import java.util.List;
@@ -33,11 +38,17 @@ public class ReportSynthesisSrfProgressTargetManagerImpl implements ReportSynthe
 
   private ReportSynthesisSrfProgressTargetDAO reportSynthesisSrfProgressTargetDAO;
   // Managers
+  private PhaseManager phaseManager;
+  private ReportSynthesisManager reportSynthesisManager;
 
 
   @Inject
-  public ReportSynthesisSrfProgressTargetManagerImpl(ReportSynthesisSrfProgressTargetDAO reportSynthesisSrfProgressTargetDAO) {
+  public ReportSynthesisSrfProgressTargetManagerImpl(
+    ReportSynthesisSrfProgressTargetDAO reportSynthesisSrfProgressTargetDAO, PhaseManager phaseManager,
+    ReportSynthesisManager reportSynthesisManager) {
     this.reportSynthesisSrfProgressTargetDAO = reportSynthesisSrfProgressTargetDAO;
+    this.phaseManager = phaseManager;
+    this.reportSynthesisManager = reportSynthesisManager;
 
 
   }
@@ -51,7 +62,8 @@ public class ReportSynthesisSrfProgressTargetManagerImpl implements ReportSynthe
   @Override
   public boolean existReportSynthesisSrfProgressTarget(long reportSynthesisSrfProgressTargetID) {
 
-    return reportSynthesisSrfProgressTargetDAO.existReportSynthesisSrfProgressTarget(reportSynthesisSrfProgressTargetID);
+    return reportSynthesisSrfProgressTargetDAO
+      .existReportSynthesisSrfProgressTarget(reportSynthesisSrfProgressTargetID);
   }
 
   @Override
@@ -62,13 +74,48 @@ public class ReportSynthesisSrfProgressTargetManagerImpl implements ReportSynthe
   }
 
   @Override
-  public ReportSynthesisSrfProgressTarget getReportSynthesisSrfProgressTargetById(long reportSynthesisSrfProgressTargetID) {
+  public ReportSynthesisSrfProgressTarget getReportSynthesisSrfProgressId(long synthesisID, long srfTargetID) {
+    return reportSynthesisSrfProgressTargetDAO.getReportSynthesisSrfProgressId(synthesisID, srfTargetID);
+  }
+
+  @Override
+  public ReportSynthesisSrfProgressTarget
+    getReportSynthesisSrfProgressTargetById(long reportSynthesisSrfProgressTargetID) {
 
     return reportSynthesisSrfProgressTargetDAO.find(reportSynthesisSrfProgressTargetID);
   }
 
+
   @Override
-  public ReportSynthesisSrfProgressTarget saveReportSynthesisSrfProgressTarget(ReportSynthesisSrfProgressTarget reportSynthesisSrfProgressTarget) {
+  public ReportSynthesisSrfProgressTarget getSrfProgressTargetInfo(LiaisonInstitution institutions, long phaseID,
+    long targetID) {
+
+    ReportSynthesisSrfProgressTarget reportSynthesisSrfProgressTarget = new ReportSynthesisSrfProgressTarget();
+
+    ReportSynthesisSrfProgress crpProgress = new ReportSynthesisSrfProgress();
+    ReportSynthesis reportSynthesisFP = reportSynthesisManager.findSynthesis(phaseID, institutions.getId());
+
+    if (reportSynthesisFP != null) {
+      if (reportSynthesisFP.getReportSynthesisSrfProgress() != null) {
+        crpProgress = reportSynthesisFP.getReportSynthesisSrfProgress();
+        reportSynthesisSrfProgressTarget = this.getReportSynthesisSrfProgressId(reportSynthesisFP.getId(), targetID);
+      }
+    } else {
+      ReportSynthesis synthesis = new ReportSynthesis();
+      synthesis.setPhase(phaseManager.getPhaseById(phaseID));
+      synthesis.setLiaisonInstitution(institutions);
+      crpProgress.setReportSynthesis(synthesis);
+      reportSynthesisSrfProgressTarget.setReportSynthesisSrfProgress(crpProgress);
+    }
+
+    return reportSynthesisSrfProgressTarget;
+
+
+  }
+
+  @Override
+  public ReportSynthesisSrfProgressTarget
+    saveReportSynthesisSrfProgressTarget(ReportSynthesisSrfProgressTarget reportSynthesisSrfProgressTarget) {
 
     return reportSynthesisSrfProgressTargetDAO.save(reportSynthesisSrfProgressTarget);
   }

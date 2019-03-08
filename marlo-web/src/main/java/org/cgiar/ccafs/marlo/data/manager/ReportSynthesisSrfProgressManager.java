@@ -14,6 +14,7 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.manager;
 
+import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisSrfProgress;
 
 import java.util.List;
@@ -53,6 +54,15 @@ public interface ReportSynthesisSrfProgressManager {
 
 
   /**
+   * This method shows a table for the Srf Progress In AR Synthesis 2018.
+   * 
+   * @param lInstitutions
+   * @param phaseID
+   * @return
+   */
+  public List<ReportSynthesisSrfProgress> getFlagshipSrfProgress(List<LiaisonInstitution> lInstitutions, long phaseID);
+
+  /**
    * This method gets a reportSynthesisSrfProgress object by a given reportSynthesisSrfProgress identifier.
    * 
    * @param reportSynthesisSrfProgressID is the reportSynthesisSrfProgress identifier.
@@ -63,12 +73,15 @@ public interface ReportSynthesisSrfProgressManager {
   /**
    * This method saves the information of the given reportSynthesisSrfProgress
    * 
-   * @param reportSynthesisSrfProgress - is the reportSynthesisSrfProgress object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the reportSynthesisSrfProgress was
+   * @param reportSynthesisSrfProgress - is the reportSynthesisSrfProgress object with the new information to be
+   *        added/updated.
+   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the
+   *         reportSynthesisSrfProgress was
    *         updated
    *         or -1 is some error occurred.
    */
-  public ReportSynthesisSrfProgress saveReportSynthesisSrfProgress(ReportSynthesisSrfProgress reportSynthesisSrfProgress);
+  public ReportSynthesisSrfProgress
+    saveReportSynthesisSrfProgress(ReportSynthesisSrfProgress reportSynthesisSrfProgress);
 
 
 }

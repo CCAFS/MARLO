@@ -939,7 +939,6 @@
   [#return (metadataValue)!false]
 [/#function]
 
-
 [#macro authorMacro element index name  isTemplate=false]
   [#local customName = "${name}[${index}]" /]
   [#local displayVisible = "display:${isMetadataHide('marlo.authors')?string('none','block')};" /]

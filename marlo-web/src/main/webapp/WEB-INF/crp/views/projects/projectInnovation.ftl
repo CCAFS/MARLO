@@ -143,6 +143,16 @@
             [@customForm.textArea name="innovation.projectInnovationInfo.adaptativeResearchNarrative" i18nkey="projectInnovations.novelOrAdaptative" placeholder="" className="" required=false editable=editable /]
           </div>--]
           
+          [#-- Request partner adition --]
+          [#if editable]
+          <p id="addPartnerText" class="helpMessage">
+            If you cannot find the organization you are looking for, please 
+            <a class="popup" href="[@s.url action='${crpSession}/partnerSave' namespace="/projects"][@s.param name='projectID']${(projectID)!}[/@s.param][@s.param name='context'](${(actionName)!}: ID-${(innovation.id)!})[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
+              click here to [@s.text name="projectPartners.addPartnerMessage.second" /]
+            </a>
+          </p>
+          <br />
+          [/#if]
         
           [#-- Specify an Outcome Case Study (Only if stage 4) --]
           <div class="form-group stageFourBlock-true" style="display:${isStageFour?string('block','none')}">

@@ -26,7 +26,6 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableInfo;
-import org.cgiar.ccafs.marlo.data.model.ExpectedStudyProject;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnitProject;
 import org.cgiar.ccafs.marlo.data.model.Phase;
@@ -42,16 +41,15 @@ import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.data.model.SharedProjectSectionStatusEnum;
+import org.cgiar.ccafs.marlo.data.model.StudiesStatusPlanningEnum;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.validation.projects.ProjectSectionValidator;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -239,10 +237,10 @@ public class ValidateProjectSectionAction extends BaseAction {
             if (projectLp6Contributions != null && !projectLp6Contributions.isEmpty()) {
               ProjectLp6Contribution projectLp6Contribution = projectLp6Contributions.get(0);
               if (projectLp6Contribution.getContribution() == null) {
-                section.put("missingFields", this.getText("projects.LP6Contribution.contribution"));
+                section.put("missingFields", "projects.LP6Contribution.contribution");
               }
             } else {
-              section.put("missingFields", this.getText("projects.LP6Contribution.contribution"));
+              section.put("missingFields", "projects.LP6Contribution.contribution");
             }
 
           }
@@ -345,33 +343,42 @@ public class ValidateProjectSectionAction extends BaseAction {
           section = new HashMap<String, Object>();
           section.put("sectionName", sectionName);
           section.put("missingFields", "");
-          Set<ProjectExpectedStudy> myStudies = new HashSet<>();
-          // Owner Studies
-          List<ProjectExpectedStudy> ownerStudies = project.getProjectExpectedStudies().stream()
-            .filter(c -> c.isActive() && c.getProjectExpectedStudyInfo(this.getActualPhase()) != null
-              && c.getProjectExpectedStudyInfo(this.getActualPhase()).getYear() == this.getCurrentCycleYear())
+
+          List<ProjectExpectedStudy> allProjectStudies = new ArrayList<ProjectExpectedStudy>();
+
+          // Load Studies
+          List<ProjectExpectedStudy> studies = project.getProjectExpectedStudies().stream()
+            .filter(c -> c.isActive() && c.getProjectExpectedStudyInfo(this.getActualPhase()) != null)
             .collect(Collectors.toList());
-          if (ownerStudies != null && !ownerStudies.isEmpty()) {
-            myStudies.addAll(ownerStudies);
+          if (studies != null && studies.size() > 0) {
+            allProjectStudies.addAll(studies);
           }
 
-          // Shared Studies
-          List<ExpectedStudyProject> sharedStudies = project.getExpectedStudyProjects().stream()
-            .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase())
-              && c.getProjectExpectedStudy().getProjectExpectedStudyInfo(this.getActualPhase()) != null
-              && c.getProjectExpectedStudy().getProjectExpectedStudyInfo(this.getActualPhase()).getYear() != null
-              && c.getProjectExpectedStudy().getProjectExpectedStudyInfo(this.getActualPhase()).getYear() == this
-                .getCurrentCycleYear())
-            .collect(Collectors.toList());
+          List<ProjectExpectedStudy> projectStudies = new ArrayList<ProjectExpectedStudy>();
 
-          if (sharedStudies != null && !sharedStudies.isEmpty()) {
-            for (ExpectedStudyProject expectedStudyProject : sharedStudies) {
-              myStudies.add(expectedStudyProject.getProjectExpectedStudy());
-            }
+          if (allProjectStudies != null && allProjectStudies.size() > 0) {
+            // Editable project studies: Current cycle year-1 will be editable except Complete and Cancelled.
+            // Every study of the current cycle year will be editable
+            projectStudies = allProjectStudies.stream()
+              .filter(ps -> ps.getProjectExpectedStudyInfo().getYear() != null
+                && ps.getProjectExpectedStudyInfo().getStatus() != null
+                && ps.getProjectExpectedStudyInfo().getYear() == this.getCurrentCycleYear()
+                && ((ps.getProjectExpectedStudyInfo().getStatus().getId()
+                  .equals(Long.parseLong(StudiesStatusPlanningEnum.Ongoing.getStatusId()))
+                  || ps.getProjectExpectedStudyInfo().getStatus().getId()
+                    .equals(Long.parseLong(StudiesStatusPlanningEnum.Extended.getStatusId()))
+                  || ps.getProjectExpectedStudyInfo().getStatus().getId()
+                    .equals(StudiesStatusPlanningEnum.New.getStatusId()))
+                  || ((ps.getProjectExpectedStudyInfo().getStatus().getId()
+                    .equals(Long.parseLong(StudiesStatusPlanningEnum.Complete.getStatusId()))
+                    || ps.getProjectExpectedStudyInfo().getStatus().getId()
+                      .equals(Long.parseLong(StudiesStatusPlanningEnum.Cancelled.getStatusId())))
+                    && ps.getProjectExpectedStudyInfo().getYear() >= this.getActualPhase().getYear())))
+              .collect(Collectors.toList());
           }
 
 
-          for (ProjectExpectedStudy projectExpectedStudy : myStudies) {
+          for (ProjectExpectedStudy projectExpectedStudy : projectStudies) {
             sectionStatus = sectionStatusManager.getSectionStatusByProjectExpectedStudy(projectExpectedStudy.getId(),
               cycle, this.getActualPhase().getYear(), this.getActualPhase().getUpkeep(), sectionName);
             if (sectionStatus == null) {

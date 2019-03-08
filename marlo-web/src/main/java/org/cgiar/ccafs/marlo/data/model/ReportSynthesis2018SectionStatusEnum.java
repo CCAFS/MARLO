@@ -22,10 +22,11 @@ package org.cgiar.ccafs.marlo.data.model;
 public enum ReportSynthesis2018SectionStatusEnum {
 
 
-  CRP_PROGRESS("crpProgress"), FLAGSHIP_PROGRESS("flagshipProgress"), CC_DIMENSIONS("ccDimensions"),
-  GOVERNANCE("governance"), EXTERNAL_PARTNERSHIPS("externalPartnerships"), INTELLECTUAL_ASSETS("intellectualAssets"),
-  MELIA("melia"), EFFICIENCY("efficiency"), RISKS("risks"), FUNDING_USE("fundingUse"), FINANCIAL("financial"),
-  INFLUENCE("influence"), CONTROL("control"), NARRATIVE("narrative");
+  CRP_PROGRESS("crpProgress"), FLAGSHIP_PROGRESS("flagshipProgress"), POLICIES("policies"), OICR("oicr"),
+  INNOVATIONS("innovations"), OUTOMESMILESTONES("outomesMilestones"), PUBLICATIONS("publications"),
+  CC_DIMENSIONS("ccDimensions"), GOVERNANCE("governance"), EXTERNAL_PARTNERSHIPS("externalPartnerships"),
+  INTELLECTUAL_ASSETS("intellectualAssets"), MELIA("melia"), EFFICIENCY("efficiency"), RISKS("risks"),
+  FUNDING_USE("fundingUse"), FINANCIAL("financial"), INFLUENCE("influence"), CONTROL("control"), NARRATIVE("narrative");
 
 
   public static ReportSynthesis2018SectionStatusEnum value(String status) {

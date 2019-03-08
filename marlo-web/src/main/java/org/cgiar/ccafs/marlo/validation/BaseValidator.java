@@ -690,7 +690,6 @@ public class BaseValidator {
     SectionStatus status =
       sectionStatusManager.getSectionStatusByProjectPolicy(policy.getId(), cycle, year, upkeep, sectionName);
     if (status == null) {
-
       status = new SectionStatus();
       status.setCycle(cycle);
       status.setYear(year);
@@ -698,9 +697,18 @@ public class BaseValidator {
       status.setProjectPolicy(policy);
       status.setSectionName(sectionName);
       status.setProject(project);
-
     }
     status.setMissingFields(action.getMissingFields().toString());
+
+    if (status.getMissingFields().length() > 0) {
+      if (status.getMissingFields().equals("null")) {
+        status.setMissingFields("");
+      }
+      status.setMissingFields(status.getMissingFields());
+    } else {
+      status.setMissingFields("");
+    }
+
     sectionStatusManager.saveSectionStatus(status);
     // Not sure if this is still required to set the missingFields to length zero???
     action.getMissingFields().setLength(0);
@@ -721,27 +729,25 @@ public class BaseValidator {
     SectionStatus status =
       sectionStatusManager.getSectionStatusByProject(project.getId(), cycle, year, upkeep, sectionName);
     if (status == null) {
-
       status = new SectionStatus();
       status.setCycle(cycle);
       status.setYear(year);
       status.setUpkeep(upkeep);
       status.setProject(project);
       status.setSectionName(sectionName);
-
-
     }
 
     // Validate if the form have missing fileds in project sections issue #1209
     String sMissingField = action.getMissingFields().toString();
     if (sMissingField.length() > 0) {
+      if (sMissingField.equals("null") && sectionName.equals("policies")) {
+        status.setMissingFields("");
+      }
       status.setMissingFields(sMissingField);
     } else {
       status.setMissingFields("");
     }
-
     sectionStatusManager.saveSectionStatus(status);
-
   }
 
 
@@ -791,14 +797,12 @@ public class BaseValidator {
     SectionStatus status =
       sectionStatusManager.getSectionStatusByReportSynthesis(reportSynthesis.getId(), cycle, year, upkeep, sectionName);
     if (status == null) {
-
       status = new SectionStatus();
       status.setCycle(cycle);
-      status.setYear(year);
       status.setUpkeep(upkeep);
+      status.setYear(year);
       status.setReportSynthesis(reportSynthesis);
       status.setSectionName(sectionName);
-
     }
 
     // Validate if the form have missing fileds in project sections issue #1209
@@ -808,9 +812,7 @@ public class BaseValidator {
     } else {
       status.setMissingFields("");
     }
-
     sectionStatusManager.saveSectionStatus(status);
-
   }
 
   /**

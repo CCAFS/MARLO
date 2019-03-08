@@ -34,7 +34,8 @@
     <tbody>
     [#if publications?has_content]
       [#list publications as deliverable]
-
+        [#-- Is Complete --]
+        [#local isDeliverableComplete = action.isDeliverableComplete(deliverable.id, deliverable.phase.id) /]
         [#local projectUrl][@s.url namespace=namespace action=defaultAction][@s.param name='deliverableID']${deliverable.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
         <tr>
           [#-- ID --]
@@ -95,14 +96,10 @@
           </td>
           [#-- Fields check --]
           <td class=""> 
-           [#if (action.getDeliverableStatus(deliverable.id)??)!false]
-              [#if !((action.getDeliverableStatus(deliverable.id)).missingFields)?has_content]
-                <span class="icon-20 icon-check" title="Complete"></span>
-              [#else]
-                <span class="icon-20 icon-uncheck" title=""></span> 
-              [/#if]
+            [#if isDeliverableComplete]
+              <span class="icon-20 icon-check" title="Complete"></span>
             [#else]
-                <span class="icon-20 icon-uncheck" title=""></span>
+              <span class="icon-20 icon-uncheck" title=""></span> 
             [/#if]
           </td>
           [#-- Delete --]

@@ -14,7 +14,10 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.manager;
 
+import org.cgiar.ccafs.marlo.data.model.Phase;
+import org.cgiar.ccafs.marlo.data.model.ProjectPolicy;
 import org.cgiar.ccafs.marlo.data.model.RepIndStageProcess;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisPoliciesByRepIndStageProcessDTO;
 
 import java.util.List;
 
@@ -53,6 +56,15 @@ public interface RepIndStageProcessManager {
 
 
   /**
+   * This method gets a list of ReportSynthesisPoliciesByOrganizationTypeDTO that are active:
+   * List of Policies grouped by RepIndOrganizationType
+   * 
+   * @return a list from ReportSynthesisPoliciesByOrganizationTypeDTO null if no exist records
+   */
+  public List<ReportSynthesisPoliciesByRepIndStageProcessDTO>
+    getPoliciesByStageProcess(List<ProjectPolicy> selectedProjectPolicies, Phase phase);
+
+  /**
    * This method gets a repIndStageProcess object by a given repIndStageProcess identifier.
    * 
    * @param repIndStageProcessID is the repIndStageProcess identifier.
@@ -69,6 +81,5 @@ public interface RepIndStageProcessManager {
    *         or -1 is some error occurred.
    */
   public RepIndStageProcess saveRepIndStageProcess(RepIndStageProcess repIndStageProcess);
-
 
 }

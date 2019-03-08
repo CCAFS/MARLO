@@ -112,7 +112,7 @@ public class ReportSynthesisCrossCuttingDimensionManagerImpl implements ReportSy
       ReportSynthesis reportSynthesisFP = reportSynthesisManager.findSynthesis(phaseID, liaisonInstitution.getId());
 
       if (reportSynthesisFP != null) {
-        if (reportSynthesisFP.getReportSynthesisCrpProgress() != null) {
+        if (reportSynthesisFP.getReportSynthesisCrossCuttingDimension() != null) {
           crossCuttingDimension = reportSynthesisFP.getReportSynthesisCrossCuttingDimension();
         }
       } else {

@@ -123,6 +123,7 @@ public final class APConstants {
 
   // Email parameters to copy to FL FM CL
   public static final String CRP_EMAIL_CC_FL_FM_CL = "crp_email_cc_fl_fm_cl";
+  public static final String CRP_EMAIL_PL_CRPADMIN_FL = "crp_email_pl_crpAdmin_fl";
   public static final String GENDER_KEYWORDS = "show_gender_keywords_summaries";
 
   public static final String CYCLE = "cycle";
@@ -567,6 +568,8 @@ public final class APConstants {
   public static final String STUDIES_FOLDER = "studies";
   // Projects
   public static final String PROJECTS_LOCATIONS_ACTIVITIES_CSV_FOLDER = "projectLocationCSV";
+  // Partnership
+  public static final String PARTNERSHIP_FOLDER = "partnerships";
 
 
   // Relations Name
@@ -673,6 +676,8 @@ public final class APConstants {
   public static final String REP_IND_SYNTHESIS_INDICATOR_TYPE_INFLUENCE = "Influence";
   public static final String REP_IND_SYNTHESIS_INDICATOR_TYPE_CONTROL = "Control";
   public static final String REP_IND_SYNTHESIS_TYPE_ACTIVITY_FORMAL_TRAINING = "Formal Training";
+  public static final long REP_IND_TRAINING_TERMS_SHORT = 1;
+  public static final long REP_IND_TRAINING_TERMS_LONG = 2;
 
   // Capdev Parameters
   public static final String CRP_CD_ROLE = "crp_cd_role";

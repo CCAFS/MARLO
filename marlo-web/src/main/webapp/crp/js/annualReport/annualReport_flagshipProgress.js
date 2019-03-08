@@ -7,4 +7,16 @@ function init() {
     width: '100%'
   });
 
+
+  setTextFieldHeight();
+
+
+
+}
+
+//html text fields
+function setTextFieldHeight() {
+ var chart = $('.chartCount').text();
+ console.log(chart);
+
 }

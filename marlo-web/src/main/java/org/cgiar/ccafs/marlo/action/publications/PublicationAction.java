@@ -770,7 +770,7 @@ public class PublicationAction extends BaseAction {
         // Setup Geographic Scope
         if (deliverable.getDeliverableGeographicScopes() != null) {
           deliverable.setGeographicScopes(new ArrayList<>(deliverable.getDeliverableGeographicScopes().stream()
-            .filter(o -> o.isActive() && o.getPhase().getId() == this.getActualPhase().getId())
+            .filter(o -> o.isActive() && o.getPhase().getId() == deliverable.getPhase().getId())
             .collect(Collectors.toList())));
         }
 
@@ -1192,7 +1192,7 @@ public class PublicationAction extends BaseAction {
 
 
       // Save Geographic Scope Data
-      this.saveGeographicScope(deliverableDB, this.getActualPhase());
+      this.saveGeographicScope(this.getActualPhase());
 
       boolean haveRegions = false;
       boolean haveCountries = false;
@@ -1214,9 +1214,9 @@ public class PublicationAction extends BaseAction {
 
       if (haveRegions) {
         // Save the Regions List
-        this.saveDeliverableRegions(deliverableDB, this.getActualPhase(), deliverablePrew);
+        this.saveDeliverableRegions(deliverableDB, deliverable.getPhase(), deliverablePrew);
       } else {
-        this.deleteLocElements(deliverableDB, this.getActualPhase(), false);
+        this.deleteLocElements(deliverableDB, deliverable.getPhase(), false);
       }
 
       if (haveCountries) {
@@ -1224,7 +1224,7 @@ public class PublicationAction extends BaseAction {
         // Save Countries list
         this.saveDeliverableCountries();
       } else {
-        this.deleteLocElements(deliverableDB, this.getActualPhase(), true);
+        this.deleteLocElements(deliverableDB, deliverable.getPhase(), true);
       }
 
       this.saveCrossCutting();
@@ -1594,14 +1594,20 @@ public class PublicationAction extends BaseAction {
    * @param deliverable
    * @param phase
    */
-  public void saveGeographicScope(Deliverable deliverable, Phase phase) {
+  public void saveGeographicScope(Phase phase) {
+
+    if (deliverable.getGeographicScopes() == null) {
+      deliverable.setGeographicScopes(new ArrayList<>());
+    }
+    /* Delete */
+    Deliverable deliverableDB = deliverableManager.getDeliverableById(deliverableID);
 
     // Search and deleted form Information
-    if (deliverable.getDeliverableGeographicScopes() != null
-      && deliverable.getDeliverableGeographicScopes().size() > 0) {
+    if (deliverableDB.getDeliverableGeographicScopes() != null
+      && deliverableDB.getDeliverableGeographicScopes().size() > 0) {
 
-      List<DeliverableGeographicScope> scopePrev = new ArrayList<>(deliverable.getDeliverableGeographicScopes().stream()
-        .filter(nu -> nu.isActive() && nu.getPhase().getId() == phase.getId()).collect(Collectors.toList()));
+      List<DeliverableGeographicScope> scopePrev = new ArrayList<>(deliverableDB.getDeliverableGeographicScopes()
+        .stream().filter(nu -> nu.isActive() && nu.getPhase().getId() == phase.getId()).collect(Collectors.toList()));
 
       for (DeliverableGeographicScope deliverableScope : scopePrev) {
         if (deliverable.getGeographicScopes() == null

@@ -61,7 +61,7 @@ public class DeliverableUserMySQLDAO extends AbstractMarloDAO<DeliverableUser, L
 
   @Override
   public List<DeliverableUser> findAll() {
-    String query = "from " + DeliverableUser.class.getName() + " where is_active=1";
+    String query = "from " + DeliverableUser.class.getName();
     List<DeliverableUser> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
@@ -85,6 +85,25 @@ public class DeliverableUserMySQLDAO extends AbstractMarloDAO<DeliverableUser, L
     Object findSingleResult = super.findSingleResult(DeliverableUser.class, createQuery);
     DeliverableUser deliverableUserResult = (DeliverableUser) findSingleResult;
     return deliverableUserResult;
+  }
+
+  @Override
+  public List<DeliverableUser> findDeliverableUserByPhases(Phase phase, DeliverableUser deliverableUser) {
+    String query =
+      "select distinct du from DeliverableUser du " + "where phase.id = :phaseId and deliverable.id= :deliverableId "
+        + "and du.firstName = :duFirstName and du.lastName = :duLastName and du.elementId = :duElementId";
+    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+    createQuery.setParameter("phaseId", phase.getId());
+    createQuery.setParameter("deliverableId", deliverableUser.getDeliverable().getId());
+    createQuery.setParameter("duFirstName", deliverableUser.getFirstName());
+    createQuery.setParameter("duLastName", deliverableUser.getLastName());
+    createQuery.setParameter("duElementId", deliverableUser.getElementId());
+
+    Object findSingleResult = super.findAll(createQuery);
+    List<DeliverableUser> findSingleResult2 = (List<DeliverableUser>) findSingleResult;
+    List<DeliverableUser> deliverableUserResult = findSingleResult2;
+    return deliverableUserResult;
+
   }
 
   @Override

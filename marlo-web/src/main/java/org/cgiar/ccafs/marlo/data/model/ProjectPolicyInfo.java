@@ -117,7 +117,6 @@ public class ProjectPolicyInfo extends MarloBaseEntity implements java.io.Serial
     return repIndGeographicScope;
   }
 
-
   public RepIndOrganizationType getRepIndOrganizationType() {
     return repIndOrganizationType;
   }
@@ -149,9 +148,32 @@ public class ProjectPolicyInfo extends MarloBaseEntity implements java.io.Serial
   }
 
 
+  public Boolean isPrevious() {
+    if (this.getYear() != null) {
+      if (this.getYear() < phase.getYear()) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+    return false;
+  }
+
+  public Boolean isRequired() {
+    if (this.getYear() != null) {
+      if (this.getYear() == phase.getYear()) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+    return true;
+  }
+
   public void setAmount(Double amount) {
     this.amount = amount;
   }
+
 
   @Override
   public void setModifiedBy(User modifiedBy) {
@@ -188,10 +210,10 @@ public class ProjectPolicyInfo extends MarloBaseEntity implements java.io.Serial
     this.repIndGeographicScope = repIndGeographicScope;
   }
 
-
   public void setRepIndOrganizationType(RepIndOrganizationType repIndOrganizationType) {
     this.repIndOrganizationType = repIndOrganizationType;
   }
+
 
   public void setRepIndPolicyInvestimentType(RepIndPolicyInvestimentType repIndPolicyInvestimentType) {
     this.repIndPolicyInvestimentType = repIndPolicyInvestimentType;
@@ -218,7 +240,6 @@ public class ProjectPolicyInfo extends MarloBaseEntity implements java.io.Serial
     return "ProjectPolicyInfo [id=" + this.getId() + "projectPolicy=" + projectPolicy + ", phase=" + phase + ", title="
       + title + ", year=" + year + "]";
   }
-
 
   /**
    * Add the save information to reply the next Phase

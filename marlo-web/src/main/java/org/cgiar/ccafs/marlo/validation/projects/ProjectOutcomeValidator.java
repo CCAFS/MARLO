@@ -385,13 +385,15 @@ public class ProjectOutcomeValidator extends BaseValidator {
     List<String> params = new ArrayList<String>();
     params.add(String.valueOf(i + 1));
 
-
-    if (!(this.isValidString(projectOutcomeIndicator.getNarrative())
-      && this.wordCount(projectOutcomeIndicator.getNarrative()) <= 100)) {
-      action.addMessage(action.getText("projectOutcomeIndicator.requeried.narrative", params));
-      action.getInvalidFields().put("input-projectOutcome.indicators[" + i + "].narrative",
-        InvalidFieldsMessages.EMPTYFIELD);
+    if (action.isPlanningActive()) {
+      if (!(this.isValidString(projectOutcomeIndicator.getNarrative())
+        && this.wordCount(projectOutcomeIndicator.getNarrative()) <= 100)) {
+        action.addMessage(action.getText("projectOutcomeIndicator.requeried.narrative", params));
+        action.getInvalidFields().put("input-projectOutcome.indicators[" + i + "].narrative",
+          InvalidFieldsMessages.EMPTYFIELD);
+      }
     }
+
     if (projectOutcomeIndicator.getValue() == null || projectOutcomeIndicator.getValue().longValue() < 0) {
       action.addMessage(action.getText("projectOutcomeIndicator.value"));
       action.getInvalidFields().put("input-projectOutcome.indicators[" + i + "].value",

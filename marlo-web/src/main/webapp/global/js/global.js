@@ -43,6 +43,9 @@ $(document).ready(function() {
   setViewMore();
   $('.viewMore').on("click", expandViewMoreBlock);
 
+  // View More link button
+  $('#helpViewMoreLink').on("click", expandViewMoreLink);
+
   $(".removeHelp").on("click", function() {
     $(this).parent().parent().fadeOut(function() {
       console.log(this);
@@ -318,19 +321,8 @@ $(document).ready(function() {
   // Set autogrow
   $("textarea[id!='justification']").autoGrow();
 
-  if($.fn.trumbowyg) {
-    $('.allowTextEditor').trumbowyg({
-        btns: [
-          [
-            'link'
-          ]
-        ],
-        autogrow: true,
-        minimalLinks: true,
-        semantic: true,
-        removeformatPasted: true
-    });
-  }
+
+  $('form .allowTextEditor').setTrumbowyg();
 
   $('.decodeHTML').each(function(i,e) {
     $(this).html($(this).text());
@@ -344,6 +336,22 @@ $(document).ready(function() {
   });
 
 });
+
+jQuery.fn.setTrumbowyg = function() {
+  if($.fn.trumbowyg) {
+    $(this).trumbowyg({
+      btns: [
+        [
+          'link', 'strong', 'em'
+          ]
+        ],
+        autogrow: true,
+        minimalLinks: true,
+        semantic: true,
+        removeformatPasted: true
+    });
+  }
+};
 
 function turnSavingStateOn(button) {
   $(button).addClass('disabled animated flipInY');
@@ -431,6 +439,18 @@ function expandViewMoreBlock() {
     $(this).removeClass("opened");
   }
 
+}
+
+function expandViewMoreLink() {
+  if($(this).hasClass("viewMoreLinkclosed")) {
+    $(this).html('View Less');
+    $(this).addClass("viewMoreLinkopened");
+    $(this).removeClass("viewMoreLinkclosed");
+  } else if($(this).hasClass("viewMoreLinkopened")) {
+    $(this).html('View More');
+    $(this).addClass("viewMoreLinkclosed");
+    $(this).removeClass("viewMoreLinkopened");
+  }
 }
 
 /**
