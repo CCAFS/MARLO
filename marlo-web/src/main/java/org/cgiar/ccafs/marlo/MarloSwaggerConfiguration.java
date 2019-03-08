@@ -20,6 +20,7 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
@@ -39,6 +40,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 // Disable for production environment.
 @Profile("!" + ApplicationContextConfig.SPRING_PROFILE_PRODUCTION)
 
+@Configuration
 @EnableSwagger2
 public class MarloSwaggerConfiguration extends WebMvcConfigurerAdapter {
 
@@ -58,7 +60,7 @@ public class MarloSwaggerConfiguration extends WebMvcConfigurerAdapter {
 
 		return new Docket(DocumentationType.SWAGGER_2).securitySchemes(Collections.singletonList(this.securityScheme()))
 				.select().apis(RequestHandlerSelectors.basePackage("org.cgiar.ccafs.marlo.rest"))
-				.paths(PathSelectors.any()).build().apiInfo(this.apiInfo())// .enableUrlTemplating(true)
+				.paths(PathSelectors.any()).build().apiInfo(this.apiInfo())
 				.tags(new Tag(this.env.getProperty("allcontrol.tag"), this.env.getProperty("allcontrol.description"),
 						Integer.parseInt(this.env.getProperty("allcontrol.order"))), this.getTags())
 				.genericModelSubstitutes(Optional.class);
@@ -80,6 +82,10 @@ public class MarloSwaggerConfiguration extends WebMvcConfigurerAdapter {
 		tags[1] = new Tag(this.env.getProperty("generalcontrol.tag"),
 				this.env.getProperty("generalcontrol.description"),
 				Integer.parseInt(this.env.getProperty("generalcontrol.order")));
+
+		tags[2] = new Tag(this.env.getProperty("impactpathwaycontrol.tag"),
+				this.env.getProperty("impactpathwaycontrol.description"),
+				Integer.parseInt(this.env.getProperty("impactpathwaycontrol.order")));
 
 		tags[2] = new Tag(this.env.getProperty("srfcontrol.tag"), this.env.getProperty("srfcontrol.description"),
 				Integer.parseInt(this.env.getProperty("srfcontrol.order")));

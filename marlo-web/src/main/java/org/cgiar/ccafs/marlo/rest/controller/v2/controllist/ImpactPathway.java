@@ -40,7 +40,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@Api(tags = "Institutions Lists")
+@Api(tags = "Impact Pathway Lists")
 public class ImpactPathway {
 
 	private static final Logger LOG = LoggerFactory.getLogger(ImpactPathway.class);
@@ -59,7 +59,7 @@ public class ImpactPathway {
 	}
 
 	@ApiOperation(tags = {
-			"Table 5 - Status of Planned Outcomes and Milestones" }, value = "Search a Milestone by ID", response = MilestoneDTO.class)
+			"Table 5 - Status of Planned Outcomes and Milestones" }, value = "${ImpactPathway.milestones.id.value}", response = MilestoneDTO.class)
 	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
 	@RequestMapping(value = "/{CGIAREntity}/milestones/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<MilestoneDTO> findMilestoneById(@PathVariable String CGIAREntity, @PathVariable Long id) {
@@ -68,7 +68,7 @@ public class ImpactPathway {
 	}
 
 	@ApiOperation(tags = {
-			"Table 5 - Status of Planned Outcomes and Milestones" }, value = "Search an Outcomes by ID", response = OutcomeDTO.class)
+			"Table 5 - Status of Planned Outcomes and Milestones" }, value = "${ImpactPathway.outcomes.id.value}", response = OutcomeDTO.class)
 	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
 	@RequestMapping(value = "/{CGIAREntity}/outcomes/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<OutcomeDTO> findOutcomeById(@PathVariable String CGIAREntity, @PathVariable Long id) {
@@ -77,7 +77,7 @@ public class ImpactPathway {
 	}
 
 	@ApiOperation(tags = {
-			"Table 5 - Status of Planned Outcomes and Milestones" }, value = "View a list of milestones", response = MilestoneDTO.class, responseContainer = "List")
+			"Table 5 - Status of Planned Outcomes and Milestones" }, value = "${ImpactPathway.milestones.all.value}", response = MilestoneDTO.class, responseContainer = "List")
 	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
 	@RequestMapping(value = "/{CGIAREntity}/milestones/", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public List<MilestoneDTO> getAllMilestones(
@@ -95,7 +95,7 @@ public class ImpactPathway {
 	}
 
 	@ApiOperation(tags = {
-			"Table 5 - Status of Planned Outcomes and Milestones" }, value = "View a list of outcomes", response = OutcomeDTO.class, responseContainer = "List")
+			"Table 5 - Status of Planned Outcomes and Milestones" }, value = "${ImpactPathway.outcomes.all.value}", response = OutcomeDTO.class, responseContainer = "List")
 	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
 	@RequestMapping(value = "/{CGIAREntity}/outcomes/", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public List<OutcomeDTO> getAllOutcomes(
