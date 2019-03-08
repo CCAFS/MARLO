@@ -113,6 +113,9 @@
     </div>
   [/#if] 
 </section>
+
+[@relevantEvaluationMacro element={} name="${customName}.table10" index=-1  template=true/]
+
 [#include "/WEB-INF/global/pages/footer.ftl"]
 
 
