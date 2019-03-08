@@ -127,6 +127,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -751,7 +752,7 @@ public class DeliverableAction extends BaseAction {
    * @return
    */
   public List<ProjectPartnerPerson> getPersons(long projectPartnerId) {
-    if (deliverable.getDeliverableInfo().getYear() < this.getActualPhase().getYear()) {
+    if (deliverable.getDeliverableInfo().isPrevious()) {
       return projectPartnerPersonManager.findAllForProjectPartner(projectPartnerId);
     } else {
       return projectPartnerPersonManager.findAllActiveForProjectPartner(projectPartnerId);
@@ -1325,6 +1326,23 @@ public class DeliverableAction extends BaseAction {
             logger.warn("There are more than 1 deliverable responsibles for D" + deliverable.getId() + " "
               + this.getActualPhase().toString());
           }
+
+          deliverablePartnershipResponsibles.sort(new Comparator<DeliverablePartnership>() {
+
+            @Override
+            public int compare(final DeliverablePartnership dp1, DeliverablePartnership dp2) {
+
+              if (dp1.getProjectPartnerPerson() == null) {
+                return (dp2.getProjectPartnerPerson() == null) ? 0 : 1;
+              }
+
+              if (dp2.getProjectPartnerPerson() == null) {
+                return -1;
+              }
+              return dp1.getId().compareTo(dp2.getId());
+            }
+          });
+
           if (deliverable.getDeliverableInfo(this.getActualPhase()).getYear() < this.getActualPhase().getYear()) {
             deliverable.setResponsiblePartner(deliverablePartnershipResponsibles.get(0));
           } else {
