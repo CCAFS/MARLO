@@ -553,8 +553,11 @@ public class PartnershipsAction extends BaseAction {
     this.setBasePermission(this.getText(Permission.REPORT_SYNTHESIS_EXTERNAL_PARTNERSHIP_BASE_PERMISSION, params));
 
     if (this.isHttpPost()) {
-      if (reportSynthesis.getReportSynthesisExternalPartnership().getPartnerPartnerships() != null) {
-        reportSynthesis.getReportSynthesisExternalPartnership().getPartnerPartnerships().clear();
+      if (reportSynthesis.getReportSynthesisKeyPartnership().getPartnerships() != null) {
+        reportSynthesis.getReportSynthesisKeyPartnership().getPartnerships().clear();
+      }
+      if (reportSynthesis.getReportSynthesisKeyPartnership().getCollaborations() != null) {
+        reportSynthesis.getReportSynthesisKeyPartnership().getCollaborations().clear();
       }
     }
   }
