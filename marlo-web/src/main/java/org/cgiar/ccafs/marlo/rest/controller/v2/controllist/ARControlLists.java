@@ -27,6 +27,7 @@ import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.arcontrollists
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.arcontrollists.PolicyOwnerTypeItem;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.arcontrollists.ResearchPartnershipItem;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.arcontrollists.StageOfInnovationItem;
+import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.arcontrollists.StudyTypeItem;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.arcontrollists.TagItem;
 import org.cgiar.ccafs.marlo.rest.dto.ContributionOfCrpDTO;
 import org.cgiar.ccafs.marlo.rest.dto.CrossCuttingMarkerDTO;
@@ -38,6 +39,7 @@ import org.cgiar.ccafs.marlo.rest.dto.PolicyInvestmentTypeDTO;
 import org.cgiar.ccafs.marlo.rest.dto.PolicyMaturityLevelDTO;
 import org.cgiar.ccafs.marlo.rest.dto.PolicyOwnerTypeDTO;
 import org.cgiar.ccafs.marlo.rest.dto.StageOfInnovationDTO;
+import org.cgiar.ccafs.marlo.rest.dto.StudyTypeDTO;
 import org.cgiar.ccafs.marlo.rest.dto.TagDTO;
 import org.cgiar.ccafs.marlo.security.Permission;
 
@@ -82,6 +84,7 @@ public class ARControlLists {
 	private PolicyOwnerTypeItem<ARControlLists> policyOwnerTypeItem;
 	private PolicyMaturityLevelItem<ARControlLists> policyMaturityLevelItem;
 	private OrganizationTypeItem<ARControlLists> organizationTypeItem;
+	private StudyTypeItem<ARControlLists> studyTypeItem;
 	private TagItem<ARControlLists> tagItem;
 
 	@Inject
@@ -96,7 +99,8 @@ public class ARControlLists {
 			PolicyInvestmentTypeItem<ARControlLists> policyInvestmentTypeItem,
 			PolicyOwnerTypeItem<ARControlLists> policyOwnerTypeItem,
 			PolicyMaturityLevelItem<ARControlLists> policyMaturityLevelItem,
-			OrganizationTypeItem<ARControlLists> organizationTypeItem, TagItem<ARControlLists> tagItem) {
+			OrganizationTypeItem<ARControlLists> organizationTypeItem, StudyTypeItem<ARControlLists> studyTypeItem,
+			TagItem<ARControlLists> tagItem) {
 		this.crossCuttingMarkerScoreItem = crossCuttingMarkerScoreItem;
 		this.innovationTypesItem = innovationTypesItem;
 		this.researchPartnershipsItem = researchPartnershipsItem;
@@ -110,6 +114,7 @@ public class ARControlLists {
 		this.policyMaturityLevelItem = policyMaturityLevelItem;
 		this.organizationTypeItem = organizationTypeItem;
 		this.tagItem = tagItem;
+		this.studyTypeItem = studyTypeItem;
 
 	}
 
@@ -241,6 +246,21 @@ public class ARControlLists {
 	public ResponseEntity<StageOfInnovationDTO> findStageOfInnovationById(@PathVariable Long code) {
 		LOG.debug("REST request to get Stage of Innovation : {}", code);
 		return this.stageOfInnovationItem.findStageOfInnovationById(code);
+	}
+
+	/**
+	 * Find a study Type by id
+	 * 
+	 * @param id
+	 * @return a CStudyTypeDTO with the study Type data.
+	 */
+	@ApiOperation(tags = {
+			"Table 10 - Monitoring, Evaluation, Learning and Impact Assessment (MELIA)" }, value = "${ARControlLists.study-types.code.value}", response = StudyTypeDTO.class)
+	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
+	@RequestMapping(value = "/study-types/{code}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<StudyTypeDTO> findStudyTypeById(@PathVariable Long code) {
+		LOG.debug("REST request to get Study Type : {}", code);
+		return this.studyTypeItem.findStudyTypeById(code);
 	}
 
 	/**
@@ -382,6 +402,19 @@ public class ARControlLists {
 	public List<StageOfInnovationDTO> getAllStageOfInnovations() {
 		LOG.debug("REST request to get  Stage of Innovations");
 		return this.stageOfInnovationItem.getAllStageOfInnovations();
+	}
+
+	/**
+	 * Get All the Study types items
+	 * 
+	 * @return a List of StudyTypesDTO with all Study types items
+	 */
+	@ApiOperation(tags = "Table 10 - Monitoring, Evaluation, Learning and Impact Assessment (MELIA)", value = "${ARControlLists.study-types.all.value}", response = StudyTypeDTO.class, responseContainer = "List")
+	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
+	@RequestMapping(value = "/study-types", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public List<StudyTypeDTO> getAllStudyTypes() {
+		LOG.debug("REST request to get  organization-types");
+		return this.studyTypeItem.getAllStudyTypes();
 	}
 
 	/**

@@ -112,7 +112,8 @@ public class SrfLists {
 	 */
 
 	@ApiOperation(tags = { "Table 1 - Evidence on Progress towards SRF targets",
-			"Table 3 - Outcome/ Impact Case Reports" }, value = "${SrfList.slo-targets.code.value}", response = SrfSloTargetDTO.class)
+			"Table 3 - Outcome/ Impact Case Reports",
+			"Table 10 - Monitoring, Evaluation, Learning and Impact Assessment (MELIA)" }, value = "${SrfList.slo-targets.code.value}", response = SrfSloTargetDTO.class)
 	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
 	@RequestMapping(value = "/slo-targets/{code:.+}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<SrfSloTargetDTO> findSrfSloTargetByCode(@PathVariable String code) {
@@ -142,8 +143,8 @@ public class SrfLists {
 	 * @return a SrfSubIdoDTO with the SRF-SubIdo data.
 	 */
 
-	@ApiOperation(tags = { "Table 2 - CRP Policies",
-			"Table 3 - Outcome/ Impact Case Reports" }, value = "${SrfList.srf-sub-idos.code.value}", response = SrfSubIdoDTO.class)
+	@ApiOperation(tags = { "Table 2 - CRP Policies", "Table 3 - Outcome/ Impact Case Reports",
+			"Table 10 - Monitoring, Evaluation, Learning and Impact Assessment (MELIA)" }, value = "${SrfList.srf-sub-idos.code.value}", response = SrfSubIdoDTO.class)
 	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
 	@RequestMapping(value = "/srf-sub-idos/{code:.+}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<SrfSubIdoDTO> findSrfSubIdoByCode(@PathVariable String code) {
@@ -186,7 +187,8 @@ public class SrfLists {
 	 */
 
 	@ApiOperation(tags = { "Table 1 - Evidence on Progress towards SRF targets",
-			"Table 3 - Outcome/ Impact Case Reports" }, value = "${SrfList.slo-targets.all.value}", response = SrfSloTargetDTO.class, responseContainer = "List")
+			"Table 3 - Outcome/ Impact Case Reports",
+			"Table 10 - Monitoring, Evaluation, Learning and Impact Assessment (MELIA)" }, value = "${SrfList.slo-targets.all.value}", response = SrfSloTargetDTO.class, responseContainer = "List")
 	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
 	@RequestMapping(value = "/slo-targets", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<SrfSloTargetDTO>> getAllSrfSloTarget(
@@ -216,8 +218,8 @@ public class SrfLists {
 	 * @return a List of SrfSubIdoDTO with all SRF-SubIdo Items.
 	 */
 
-	@ApiOperation(tags = { "Table 2 - CRP Policies",
-			"Table 3 - Outcome/ Impact Case Reports" }, value = "${SrfList.srf-sub-idos.all.value}", response = SrfSubIdoDTO.class, responseContainer = "List")
+	@ApiOperation(tags = { "Table 2 - CRP Policies", "Table 3 - Outcome/ Impact Case Reports",
+			"Table 10 - Monitoring, Evaluation, Learning and Impact Assessment (MELIA)" }, value = "${SrfList.srf-sub-idos.all.value}", response = SrfSubIdoDTO.class, responseContainer = "List")
 	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
 	@RequestMapping(value = "/srf-sub-idos", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public List<SrfSubIdoDTO> getAllSrfSubIdos() {
