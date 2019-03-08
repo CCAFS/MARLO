@@ -4,7 +4,7 @@
 [#assign currentSection = "synthesis" /]
 [#assign currentStage = actionName?split('/')[1]/]
 [#assign pageLibs = [ "select2", "trumbowyg" ] /]
-[#assign customJS = [ "${baseUrlMedia}/js/annualReport/annualReport2018_${currentStage}.js" ] /]
+[#assign customJS = [ "${baseUrlMedia}/js/annualReport2018/annualReport2018_${currentStage}.js" ] /]
 [#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css"] /]
 
 [#assign breadCrumb = [
@@ -56,35 +56,7 @@
           [/#if]
           
           [#-- Table 9: MELIA --]
-          [#assign meliaList = [
-                { 
-                  "studies": "Studies",
-                  "status": "Status",
-                  "type": "Type",
-                  "comments": "Comments"
-                },
-                { 
-                  "studies": "",
-                  "status": "",
-                  "type": "",
-                  "comments": ""
-                }
-              ] /]
-          [@meliaTable name="table9" list=meliaList /]
-          
-          
-          [#assign meliaUpdateList = [
-                { 
-                  "title": "Title",
-                  "maturity": "Maturity Level",
-                  "status": "Status"
-                },
-                { 
-                  "title": "Title 1",
-                  "maturity": "Maturity Level 1",
-                  "status": "Status 1"
-                }
-              ] /]
+          [@meliaTable name="table9" list=[] /]
           
           [#-- Table 10: Update on actions taken in response to relevant evaluations --]
             [#if PMU]
@@ -113,6 +85,9 @@
     </div>
   [/#if] 
 </section>
+
+[@relevantEvaluationMacro element={} name="${customName}.table10" index=-1  template=true/]
+
 [#include "/WEB-INF/global/pages/footer.ftl"]
 
 

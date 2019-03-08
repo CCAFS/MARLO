@@ -105,6 +105,10 @@ public class ValidateSectionStatusReportSynthesis2018Action extends BaseAction {
         case INTELLECTUAL_ASSETS:
           reportSynthesisSectionValidator2018.validateIntellectualAssets(this, reportSynthesis);
           break;
+        case POLICIES:
+          reportSynthesisSectionValidator2018.validatePolicies(this, reportSynthesis);
+          break;
+
         // case MELIA:
         // reportSynthesisSectionValidator2018.validateMelia(this, reportSynthesis);
         // break;
