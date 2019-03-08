@@ -9,6 +9,9 @@ $(document).ready(function() {
   });
   setGeographicScope($('form select.elementType-repIndGeographicScope')[0]);
 
+  // Activate Popup
+  popups();
+
   // Attach Events
   attachEvents();
 
@@ -28,8 +31,7 @@ function attachEvents() {
     }
   });
 
-
- $('input.isClearLead').on('change', function() {
+  $('input.isClearLead').on('change', function() {
     var selected = $('input.isClearLead').is(":checked");
 
     if(selected == true) {

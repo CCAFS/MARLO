@@ -174,19 +174,23 @@ public class UnsubmitProjectAction extends BaseAction {
           .getProjecInfoPhase(this.getActualPhase()).getLiaisonInstitution().getCrpProgram().getId())
         .collect(Collectors.toList());
       if (crpPrograms != null) {
+
         CrpProgram crpProgram = crpPrograms.get(0);
         for (CrpProgramLeader crpProgramLeader : crpProgram.getCrpProgramLeaders().stream()
           .filter(cpl -> cpl.getUser().isActive() && cpl.isActive()).collect(Collectors.toList())) {
           ccEmails.append(crpProgramLeader.getUser().getEmail());
           ccEmails.append(", ");
         }
-        // CC will be also other Cluster Leaders
-        for (CrpClusterOfActivity crpClusterOfActivity : crpProgram.getCrpClusterOfActivities().stream()
-          .filter(cl -> cl.isActive() && cl.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())) {
-          for (CrpClusterActivityLeader crpClusterActivityLeader : crpClusterOfActivity.getCrpClusterActivityLeaders()
-            .stream().filter(cl -> cl.isActive()).collect(Collectors.toList())) {
-            ccEmails.append(crpClusterActivityLeader.getUser().getEmail());
-            ccEmails.append(", ");
+
+        if (this.hasSpecificities(APConstants.CRP_EMAIL_PL_CRPADMIN_FL)) {
+          // CC will be also other Cluster Leaders
+          for (CrpClusterOfActivity crpClusterOfActivity : crpProgram.getCrpClusterOfActivities().stream()
+            .filter(cl -> cl.isActive() && cl.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())) {
+            for (CrpClusterActivityLeader crpClusterActivityLeader : crpClusterOfActivity.getCrpClusterActivityLeaders()
+              .stream().filter(cl -> cl.isActive()).collect(Collectors.toList())) {
+              ccEmails.append(crpClusterActivityLeader.getUser().getEmail());
+              ccEmails.append(", ");
+            }
           }
         }
       }
@@ -253,7 +257,7 @@ public class UnsubmitProjectAction extends BaseAction {
     message.append(this.getText("email.support", new String[] {crpAdmins}));
     message.append(this.getText("email.getStarted"));
     message.append(this.getText("email.bye"));
-
+    System.out.println("\ntoEmail : " + toEmail + "\n, ccEmail: " + ccEmail + ",\n bbcEmail " + bbcEmails);
     sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
   }
 

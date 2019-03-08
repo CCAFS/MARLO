@@ -15,6 +15,9 @@ function updateSerializeForm() {
   $('.getSerializeForm').html(getSerializeForm());
 }
 
+
+
+
 /**
  * Jquery Plugins
  */
@@ -334,7 +337,7 @@ function getParameterByName(name,url) {
 /**
  * Get Parameter from a class, example:
  * <p class="parameter-100">, the function will return 100
- * 
+ *
  * @param selector
  *          <p class="parameter-100">
  *          </p>
@@ -599,7 +602,7 @@ function validateField($input) {
 
 /**
  * Validate if and URL is valid
- * 
+ *
  * @param str
  * @returns
  */
@@ -708,7 +711,7 @@ function getCookie(cname) {
 
 /**
  * Get the current date in String
- * 
+ *
  * @returns {string} date
  */
 function getDateString() {
@@ -718,7 +721,7 @@ function getDateString() {
 
 /**
  * Number.prototype.toCurrencyFormat(n, x, s, c)
- * 
+ *
  * @param integer n: length of decimal
  * @param integer x: length of whole part
  * @param mixed s: sections delimiter
@@ -731,7 +734,7 @@ Number.prototype.toCurrencyFormat = function(n,x,s,c) {
 
 /**
  * Function to get a key in an object by its value
- * 
+ *
  * @param object
  * @param value
  * @returns key

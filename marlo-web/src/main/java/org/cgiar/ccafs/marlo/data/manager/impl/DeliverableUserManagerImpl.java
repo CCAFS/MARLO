@@ -45,13 +45,15 @@ public class DeliverableUserManagerImpl implements DeliverableUserManager {
     this.phaseDAO = phaseDAO;
   }
 
-  private void cloneDeliverableUser(DeliverableUser deliverableUser, DeliverableUser newDeliverableUser, Phase phase) {
+  private DeliverableUser cloneDeliverableUser(DeliverableUser deliverableUser, DeliverableUser newDeliverableUser,
+    Phase phase) {
     newDeliverableUser.setDeliverable(deliverableUser.getDeliverable());
     newDeliverableUser.setPhase(phase);
     newDeliverableUser.setFirstName(deliverableUser.getFirstName());
     newDeliverableUser.setLastName(deliverableUser.getLastName());
     newDeliverableUser.setElementId(deliverableUser.getElementId());
 
+    return newDeliverableUser;
   }
 
   @Override
@@ -83,12 +85,14 @@ public class DeliverableUserManagerImpl implements DeliverableUserManager {
 
   private void deleteDeliverableUserPhase(DeliverableUser deliverableUser, Long next) {
     Phase phase = phaseDAO.find(next);
-    DeliverableUser deliverableUserPhase =
-      deliverableUserDAO.findDeliverableUserByPhaseAndDeliverableUser(phase, deliverableUser);
 
-    if (deliverableUserPhase != null) {
-      deliverableUserDAO.deleteDeliverableUser(deliverableUserPhase.getId());
+    List<DeliverableUser> deliverableUserPhases =
+      deliverableUserDAO.findDeliverableUserByPhases(phase, deliverableUser);
+
+    for (DeliverableUser deliverableUserdel : deliverableUserPhases) {
+      deliverableUserDAO.deleteDeliverableUser(deliverableUserdel.getId());
     }
+
     if (phase.getNext() != null) {
       this.deleteDeliverableUserPhase(deliverableUser, phase.getNext().getId());
     }
@@ -124,14 +128,16 @@ public class DeliverableUserManagerImpl implements DeliverableUserManager {
       if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {
         Phase upkeepPhase = currentPhase.getNext().getNext();
         if (upkeepPhase != null) {
-          this.saveDeliverableUserPhase(deliverableUserResult, upkeepPhase.getId());
+          this.saveDeliverableUserPhase(deliverableUserResult, upkeepPhase.getId(),
+            deliverableUserResult.getDeliverable().getId());
         }
       }
     } else {
       // UpKeep
       if (currentPhase.getDescription().equals(APConstants.PLANNING) && currentPhase.getUpkeep() && !isPublication) {
         if (currentPhase.getNext() != null) {
-          this.saveDeliverableUserPhase(deliverableUserResult, currentPhase.getNext().getId());
+          this.saveDeliverableUserPhase(deliverableUserResult, currentPhase.getNext().getId(),
+            deliverableUserResult.getId());
         }
       }
     }
@@ -139,21 +145,35 @@ public class DeliverableUserManagerImpl implements DeliverableUserManager {
     return deliverableUserResult;
   }
 
-  private void saveDeliverableUserPhase(DeliverableUser deliverableUserResult, Long phaseID) {
+  private void saveDeliverableUserPhase(DeliverableUser deliverableUserResult, Long phaseID, Long deliverableID) {
     Phase phase = phaseDAO.find(phaseID);
-    DeliverableUser deliverableUserPhase =
-      deliverableUserDAO.findDeliverableUserByPhaseAndDeliverableUser(phase, deliverableUserResult);
 
-    if (deliverableUserPhase != null) {
-      this.cloneDeliverableUser(deliverableUserResult, deliverableUserPhase, phase);
-      deliverableUserDAO.save(deliverableUserPhase);
-    } else {
+
+    List<DeliverableUser> deliverableUserPhases =
+      deliverableUserDAO.findDeliverableUserByPhases(phase, deliverableUserResult);
+
+
+    if (deliverableUserPhases.isEmpty()) {
       DeliverableUser newDeliverableUser = new DeliverableUser();
-      this.cloneDeliverableUser(deliverableUserResult, newDeliverableUser, phase);
+      newDeliverableUser = this.cloneDeliverableUser(deliverableUserResult, newDeliverableUser, phase);
       deliverableUserDAO.save(newDeliverableUser);
+    } else {
+      for (DeliverableUser deliverableUserDel : deliverableUserPhases) {
+        try {
+          deliverableUserDAO.deleteDeliverableUser(deliverableUserDel.getId());
+        } catch (Exception e) {
+          // TODO: handle exception
+        }
+      }
+      DeliverableUser newDeliverableUser = new DeliverableUser();
+      newDeliverableUser = this.cloneDeliverableUser(deliverableUserResult, newDeliverableUser, phase);
+      deliverableUserDAO.save(newDeliverableUser);
+
     }
+
     if (phase.getNext() != null) {
-      this.saveDeliverableUserPhase(deliverableUserResult, phase.getNext().getId());
+      this.saveDeliverableUserPhase(deliverableUserResult, phase.getNext().getId(),
+        deliverableUserResult.getDeliverable().getId());
     }
   }
 }

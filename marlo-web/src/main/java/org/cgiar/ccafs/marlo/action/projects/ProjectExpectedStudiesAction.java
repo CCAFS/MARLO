@@ -1507,6 +1507,17 @@ public class ProjectExpectedStudiesAction extends BaseAction {
           // This is to add studyLinkSave to generate correct
           // auditlog.
           this.expectedStudy.getProjectExpectedStudyLinks().add(studyLinkSave);
+        } else {
+          ProjectExpectedStudyLink studyLinkSave =
+            projectExpectedStudyLinkManager.getProjectExpectedStudyLinkById(studyLink.getId());
+          studyLinkSave.setProjectExpectedStudy(projectExpectedStudy);
+          studyLinkSave.setPhase(phase);
+          studyLinkSave.setLink(studyLink.getLink());
+
+          this.projectExpectedStudyLinkManager.saveProjectExpectedStudyLink(studyLinkSave);
+          // This is to add studyLinkSave to generate correct
+          // auditlog.
+          this.expectedStudy.getProjectExpectedStudyLinks().add(studyLinkSave);
         }
       }
     }
@@ -1631,6 +1642,21 @@ public class ProjectExpectedStudiesAction extends BaseAction {
           ProjectExpectedStudyQuantification studyQuantificationSave = new ProjectExpectedStudyQuantification();
           studyQuantificationSave.setProjectExpectedStudy(projectExpectedStudy);
           studyQuantificationSave.setPhase(phase);
+
+          studyQuantificationSave.setTypeQuantification(studyQuantification.getTypeQuantification());
+          studyQuantificationSave.setNumber(studyQuantification.getNumber());
+          studyQuantificationSave.setComments(studyQuantification.getComments());
+          studyQuantificationSave.setTargetUnit(studyQuantification.getTargetUnit());
+
+          this.projectExpectedStudyQuantificationManager
+            .saveProjectExpectedStudyQuantification(studyQuantificationSave);
+          // This is to add studyQuantificationSave to generate
+          // correct auditlog.
+          this.expectedStudy.getProjectExpectedStudyQuantifications().add(studyQuantificationSave);
+        } else {
+          ProjectExpectedStudyQuantification studyQuantificationSave = projectExpectedStudyQuantificationManager
+            .getProjectExpectedStudyQuantificationById(studyQuantification.getId());
+
 
           studyQuantificationSave.setTypeQuantification(studyQuantification.getTypeQuantification());
           studyQuantificationSave.setNumber(studyQuantification.getNumber());

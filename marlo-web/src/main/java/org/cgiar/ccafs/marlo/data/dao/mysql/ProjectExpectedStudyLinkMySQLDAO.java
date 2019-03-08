@@ -17,6 +17,7 @@
 package org.cgiar.ccafs.marlo.data.dao.mysql;
 
 import org.cgiar.ccafs.marlo.data.dao.ProjectExpectedStudyLinkDAO;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyLink;
 
 import java.util.List;
@@ -24,6 +25,7 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 
 @Named
@@ -68,6 +70,22 @@ public class ProjectExpectedStudyLinkMySQLDAO extends AbstractMarloDAO<ProjectEx
     }
     return null;
 
+  }
+
+  @Override
+  public ProjectExpectedStudyLink findProjectExpectedStudyLinkByPhase(Phase phase,
+    ProjectExpectedStudyLink projectExpectedStudyLink) {
+    String query = "select distinct du from ProjectExpectedStudyLink du "
+      + "where phase.id = :phaseId and projectExpectedStudy.id= :expectedId " + "and du.link = :duLink";
+    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+    createQuery.setParameter("phaseId", phase.getId());
+    createQuery.setParameter("expectedId", projectExpectedStudyLink.getProjectExpectedStudy().getId());
+    createQuery.setParameter("duLink", projectExpectedStudyLink.getLink());
+
+
+    Object findSingleResult = super.findSingleResult(ProjectExpectedStudyLink.class, createQuery);
+    ProjectExpectedStudyLink projectExpectedStudyLinkResult = (ProjectExpectedStudyLink) findSingleResult;
+    return projectExpectedStudyLinkResult;
   }
 
   @Override

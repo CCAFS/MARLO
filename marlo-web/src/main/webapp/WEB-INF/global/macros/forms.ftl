@@ -518,7 +518,7 @@
   </div>
 [/#macro]
 
-[#macro helpLabel name="" paramText="" showIcon=true editable=true]
+[#macro helpLabel name="" paramText="" showIcon=true editable=true helpMore=false]
   [#local nameValue][@s.text name="${name}"][@s.param]${paramText}[/@s.param][/@s.text][/#local]
   [#--  Help Text --]
   [#if nameValue?has_content && editable]
@@ -528,6 +528,9 @@
     [#else]
       <br /><i class="helpLabel">${nameValue}</i>
     [/#if]
+  [/#if]
+  [#if helpMore]
+    [@helpViewMore name="${name}" /]
   [/#if]
 [/#macro]
 
@@ -540,7 +543,12 @@
 [/#function]
 
 [#macro elementsListComponent name elementType id="" elementList=[] label="" paramText="" help="" helpIcon=true listName="" keyFieldName="" displayFieldName="" maxLimit=0 indexLevel=1 required=true ]
-  [#local list = ((listName?eval)?sort_by(displayFieldName))![] /] 
+  [#attempt]
+    [#local list = ((listName?eval)?sort_by(displayFieldName))![] /] 
+  [#recover]
+    [#local list = [] /] 
+  [/#attempt]
+  
   [#local composedID = "${elementType}${id}" /]
   <div class="panel tertiary elementsListComponent" listname="${name}" style="position:relative">
     <div class="panel-head">
@@ -586,4 +594,16 @@
     [#-- Title --]
     <span class="elementName">${(element[type][displayFieldName])!'{elementNameUndefined}'}</span>
   </li>
+[/#macro]
+
+[#macro helpViewMore name=""]
+[#local customName="${name}.more" /]
+
+   <i class="helpLabel"><a id="helpViewMoreLink" class="btn-link viewMoreLinkclosed" data-toggle="collapse" data-target="#helpViewMoreBlock" aria-expanded="false" aria-controls="helpViewMoreBlock">
+     [@s.text name="global.viewMore" /]
+   </a></i>
+   
+   <div id="helpViewMoreBlock" class="collapse" aria-labelledby="helpViewMoreBlock" data-parent="#helpViewMoreLink">
+      <i class="helpLabel">[@s.text name="${customName}" /]</i>
+   </div>
 [/#macro]

@@ -4,6 +4,7 @@ package org.cgiar.ccafs.marlo.data.model;
 
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -26,8 +27,11 @@ public class ReportSynthesisFundingUseSummary extends MarloAuditableEntity imple
   private Set<ReportSynthesisFundingUseExpendituryArea> reportSynthesisFundingUseExpendituryAreas =
     new HashSet<ReportSynthesisFundingUseExpendituryArea>(0);
 
-  private List<ReportSynthesisFundingUseExpendituryArea> expenditureAreas;
+  private List<ReportSynthesisFundingUseExpendituryArea> expenditureAreas = new ArrayList<>();
 
+  /** AR2018 Fields **/
+  @Expose
+  private String interestingPoints;
 
   public ReportSynthesisFundingUseSummary() {
   }
@@ -35,6 +39,11 @@ public class ReportSynthesisFundingUseSummary extends MarloAuditableEntity imple
 
   public List<ReportSynthesisFundingUseExpendituryArea> getExpenditureAreas() {
     return expenditureAreas;
+  }
+
+
+  public String getInterestingPoints() {
+    return interestingPoints;
   }
 
 
@@ -66,6 +75,11 @@ public class ReportSynthesisFundingUseSummary extends MarloAuditableEntity imple
   }
 
 
+  public void setInterestingPoints(String interestingPoints) {
+    this.interestingPoints = interestingPoints;
+  }
+
+
   public void setMainArea(String mainArea) {
     this.mainArea = mainArea;
   }
@@ -85,7 +99,7 @@ public class ReportSynthesisFundingUseSummary extends MarloAuditableEntity imple
   @Override
   public String toString() {
     return "ReportSynthesisFundingUseSummary [Id=" + this.getId() + ", reportSynthesis=" + reportSynthesis
-      + ", mainArea=" + mainArea + ", isActive()=" + this.isActive() + "]";
+      + ", interestingPoints=" + interestingPoints + ", mainArea=" + mainArea + ", isActive()=" + this.isActive() + "]";
   }
 
 

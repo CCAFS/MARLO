@@ -26,6 +26,7 @@ import org.cgiar.ccafs.marlo.data.manager.GlobalUnitProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectBudgetExecutionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectBudgetManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerManager;
@@ -38,6 +39,7 @@ import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectBudget;
+import org.cgiar.ccafs.marlo.data.model.ProjectBudgetExecution;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
 import org.cgiar.ccafs.marlo.security.APCustomRealm;
 import org.cgiar.ccafs.marlo.security.Permission;
@@ -65,9 +67,13 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ProjectBudgetByPartnersAction extends BaseAction {
 
+  // LOG
+  private static Logger LOG = LoggerFactory.getLogger(ProjectBudgetByPartnersAction.class);
 
   private static final long serialVersionUID = 7833194831832715444L;
 
@@ -78,6 +84,7 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
   private ProjectManager projectManager;
   private FundingSourceManager fundingSourceManager;
   private ProjectBudgetManager projectBudgetManager;
+  private ProjectBudgetExecutionManager projectBudgetExecutionManager;
   private ProjectPartnerManager projectPartnerManager;
   private PhaseManager phaseManager;
   private LiaisonInstitutionManager liaisonInstitutionManager;
@@ -110,7 +117,8 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     LiaisonInstitutionManager liaisonInstitutionManager, ProjectBudgetsValidator projectBudgetsValidator,
     ProjectPartnerManager projectPartnerManager, PhaseManager phaseManager,
     GlobalUnitProjectManager globalUnitProjectManager,
-    ProjectSectionValidator<ProjectBudgetByPartnersAction> projectSectionValidator) {
+    ProjectSectionValidator<ProjectBudgetByPartnersAction> projectSectionValidator,
+    ProjectBudgetExecutionManager projectBudgetExecutionManager) {
     super(config);
 
     this.institutionManager = institutionManager;
@@ -126,6 +134,7 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     this.phaseManager = phaseManager;
     this.globalUnitProjectManager = globalUnitProjectManager;
     this.projectSectionValidator = projectSectionValidator;
+    this.projectBudgetExecutionManager = projectBudgetExecutionManager;
 
   }
 
@@ -388,10 +397,26 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     return project;
   }
 
+  public ProjectBudgetExecution getProjectBudgetExecution(long institutionId, int year, long budgetType) {
+    if (project.getBudgetExecutions() != null && !project.getBudgetExecutions().isEmpty()) {
+      List<ProjectBudgetExecution> projectBudgetExecutions = project.getBudgetExecutions().stream()
+        .filter(be -> be.isActive() && be.getInstitution().getId().equals(institutionId) && be.getYear() == year
+          && be.getBudgetType().getId().equals(budgetType) && be.getPhase().equals(this.getActualPhase()))
+        .collect(Collectors.toList());
+      if (projectBudgetExecutions != null && !projectBudgetExecutions.isEmpty()) {
+        if (projectBudgetExecutions.size() > 1) {
+          LOG.warn("ProjectBudgetExecution did not return a unique result:  " + projectBudgetExecutions.size());
+        }
+        return projectBudgetExecutions.get(0);
+      }
+    }
+    return null;
+  }
+
+
   public long getProjectID() {
     return projectID;
   }
-
 
   public List<ProjectPartner> getProjectPPAPartners() {
     return projectPPAPartners;
@@ -401,10 +426,10 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     return sharedPhaseID;
   }
 
+
   public Map<String, String> getStatus() {
     return status;
   }
-
 
   public String getTotalAmount(long institutionId, int year, long budgetType, Integer coFinancing) {
     Phase sharedPhase = phaseManager.getPhaseById(sharedPhaseID);
@@ -564,7 +589,6 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     w3bilateralBudgetTypes.put("3", "Bilateral");
     if (this.getRequest().getParameter(APConstants.TRANSACTION_ID) != null) {
 
-
       transaction = StringUtils.trim(this.getRequest().getParameter(APConstants.TRANSACTION_ID));
       Project history = (Project) auditLogManager.getHistory(transaction);
 
@@ -644,6 +668,9 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
             && (c.getFundingSource().getFundingSourceInfo(this.getActualPhase()).getStatus() != 3
               || c.getFundingSource().getFundingSourceInfo(this.getActualPhase()).getStatus() != 5))
           .collect(Collectors.toList()));
+        project.setBudgetExecutions(project.getProjectBudgetExecutions().stream()
+          .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase()))
+          .collect(Collectors.toList()));
       }
 
       // Pre-load Project Co-Funded Lists.
@@ -705,7 +732,10 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
 
       if (project.getBudgets() != null) {
         project.getBudgets().clear();
+      }
 
+      if (project.getBudgetExecutions() != null) {
+        project.getBudgetExecutions().clear();
       }
     }
 
@@ -716,6 +746,7 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
   public String save() {
     if (this.hasPermission("canEdit")) {
       this.saveBasicBudgets();
+      this.saveDeleteBudgetExecutions();
 
       List<String> relationsName = new ArrayList<>();
       relationsName.add(APConstants.PROJECT_BUDGETS_RELATION);
@@ -827,6 +858,63 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     this.projectSectionValidator.validateProjectBudgetsFlagship(this, this.getProjectID(), false);
   }
 
+  private void saveBudgetExecution(ProjectBudgetExecution projectBudgetExecution, Project projectDB) {
+
+    /**
+     * If the entity is new we can save it as is.
+     */
+    if (projectBudgetExecution.getId() == null) {
+
+      projectBudgetExecution.setProject(projectDB);
+      projectBudgetExecution.setPhase(this.getActualPhase());
+      projectBudgetExecutionManager.saveProjectBudgetExecution(projectBudgetExecution);
+      return;
+    }
+    /**
+     * The entity is existing so we need to retrieve and then update it. This is necessary to make sure we don't try and
+     * persist a projectBudgetExecution with no manadatory logging fields.
+     */
+    ProjectBudgetExecution projectBudgetExecutionDB =
+      projectBudgetExecutionManager.getProjectBudgetExecutionById(projectBudgetExecution.getId());
+    projectBudgetExecutionDB.setProject(projectDB);
+    projectBudgetExecutionDB.setInstitution(projectBudgetExecution.getInstitution());
+    projectBudgetExecutionDB.setPhase(this.getActualPhase());
+    projectBudgetExecutionDB.setBudgetType(projectBudgetExecution.getBudgetType());
+    projectBudgetExecutionDB.setYear(projectBudgetExecution.getYear());
+    projectBudgetExecutionDB.setActualExpenditure(projectBudgetExecution.getActualExpenditure());
+    projectBudgetExecutionManager.saveProjectBudgetExecution(projectBudgetExecutionDB);
+  }
+
+
+  private void saveDeleteBudgetExecutions() {
+    List<ProjectBudgetExecution> budgetExecutions = project.getBudgetExecutions();
+    Project projectDB = projectManager.getProjectById(projectID);
+
+    // Remove deleted budget executions
+    for (ProjectBudgetExecution projectBudgetExecution : projectDB.getProjectBudgetExecutions().stream()
+      .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())) {
+      if (budgetExecutions == null) {
+        budgetExecutions = (new ArrayList<>());
+      }
+      if (projectBudgetExecution.getYear() == this.getCurrentCycleYear()) {
+        if (!budgetExecutions.contains(projectBudgetExecution)) {
+          projectBudgetExecutionManager.deleteProjectBudgetExecution(projectBudgetExecution.getId());
+        }
+      }
+    }
+
+    // Save budget execution
+    if (budgetExecutions != null) {
+      for (ProjectBudgetExecution projectBudgetExecution : budgetExecutions) {
+        if (projectBudgetExecution != null) {
+          if (projectBudgetExecution.getYear() >= this.getActualPhase().getYear()) {
+            this.saveBudgetExecution(projectBudgetExecution, projectDB);
+          }
+
+        }
+      }
+    }
+  }
 
   public void setBudgetIndex(int budgetIndex) {
     this.budgetIndex = budgetIndex;

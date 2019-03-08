@@ -68,15 +68,19 @@ public class ProjectExpectedStudyLinkManagerImpl implements ProjectExpectedStudy
     Phase phase = phaseDAO.find(next.getId());
 
     List<ProjectExpectedStudyLink> projectExpectedStudyLinks = phase.getProjectExpectedStudyLinks().stream()
-      .filter(c -> c.isActive() && c.getProjectExpectedStudy().getId().longValue() == expectedID)
+      .filter(c -> c.getProjectExpectedStudy().getId().longValue() == expectedID
+        && c.getLink().equals(projectExpectedStudyLink.getLink()))
       .collect(Collectors.toList());
-    for (ProjectExpectedStudyLink projectExpectedStudyLinkDB : projectExpectedStudyLinks) {
-      projectExpectedStudyLinkDAO.deleteProjectExpectedStudyLink(projectExpectedStudyLinkDB.getId());
+
+    for (ProjectExpectedStudyLink projectExpectedStudyLinkDel : projectExpectedStudyLinks) {
+      projectExpectedStudyLinkDAO.deleteProjectExpectedStudyLink(projectExpectedStudyLinkDel.getId());
     }
+
 
     if (phase.getNext() != null) {
       this.deleteProjectExpectedStudyLinkPhase(phase.getNext(), expectedID, projectExpectedStudyLink);
     }
+
   }
 
   @Override
@@ -103,9 +107,24 @@ public class ProjectExpectedStudyLinkManagerImpl implements ProjectExpectedStudy
     Phase phase = phaseDAO.find(next.getId());
 
     List<ProjectExpectedStudyLink> projectExpectedStudyLinks = phase.getProjectExpectedStudyLinks().stream()
-      .filter(c -> c.getProjectExpectedStudy().getId().longValue() == expectedID).collect(Collectors.toList());
+      .filter(c -> c.getProjectExpectedStudy().getId().longValue() == expectedID
+        && c.getLink().equals(projectExpectedStudyLink.getLink()))
+      .collect(Collectors.toList());
 
     if (projectExpectedStudyLinks.isEmpty()) {
+      ProjectExpectedStudyLink projectExpectedStudyLinkAdd = new ProjectExpectedStudyLink();
+      projectExpectedStudyLinkAdd.setProjectExpectedStudy(projectExpectedStudyLink.getProjectExpectedStudy());
+      projectExpectedStudyLinkAdd.setPhase(phase);
+      projectExpectedStudyLinkAdd.setLink(projectExpectedStudyLink.getLink());
+      projectExpectedStudyLinkDAO.save(projectExpectedStudyLinkAdd);
+    } else {
+      for (ProjectExpectedStudyLink projectExpectedStudyLinkDel : projectExpectedStudyLinks) {
+        try {
+          projectExpectedStudyLinkDAO.deleteProjectExpectedStudyLink(projectExpectedStudyLinkDel.getId());
+        } catch (Exception e) {
+          // TODO: handle exception
+        }
+      }
       ProjectExpectedStudyLink projectExpectedStudyLinkAdd = new ProjectExpectedStudyLink();
       projectExpectedStudyLinkAdd.setProjectExpectedStudy(projectExpectedStudyLink.getProjectExpectedStudy());
       projectExpectedStudyLinkAdd.setPhase(phase);

@@ -20,7 +20,10 @@ import org.cgiar.ccafs.marlo.data.dao.ProjectPolicyDAO;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicy;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -68,6 +71,31 @@ public class ProjectPolicyMySQLDAO extends AbstractMarloDAO<ProjectPolicy, Long>
     }
     return null;
 
+  }
+
+  @Override
+  public List<ProjectPolicy> getProjectPolicyByPhase(Phase phase) {
+    StringBuilder query = new StringBuilder();
+    query.append("SELECT DISTINCT  ");
+    query.append("pp.id as id ");
+    query.append("FROM ");
+    query.append("project_policies AS pp ");
+    query.append("INNER JOIN project_policy_info AS ppi ON pp.id = ppi.project_policy_id ");
+    query.append("WHERE pp.is_active = 1 AND ");
+    query.append("ppi.`id_phase` =" + phase.getId());
+    query.append(" ORDER BY ppi.`title`");
+
+    List<Map<String, Object>> rList = super.findCustomQuery(query.toString());
+    List<ProjectPolicy> projectPolicies = new ArrayList<>();
+
+    if (rList != null) {
+      for (Map<String, Object> map : rList) {
+        ProjectPolicy projectPolicy = this.find(Long.parseLong(map.get("id").toString()));
+        projectPolicies.add(projectPolicy);
+      }
+    }
+
+    return projectPolicies.stream().collect(Collectors.toList());
   }
 
   @Override

@@ -320,5 +320,12 @@
       </key>
       <one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectLp6Contribution" />
     </set>
+    <set name="projectBudgetExecutions" order-by="id" table="project_budget_executions"
+      inverse="true" lazy="true" fetch="select">
+      <key>
+        <column name="project_id" not-null="true" />
+      </key>
+      <one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectBudgetExecution" />
+    </set>
 	</class>
 </hibernate-mapping>

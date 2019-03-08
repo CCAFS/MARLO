@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="org.cgiar.ccafs.marlo.data.model.ProjectBudgetExecution" table="project_budget_executions"  optimistic-lock="none">
+        <id name="id" type="java.lang.Long">
+            <column name="id" />
+            <generator class="identity" />
+        </id>
+        <many-to-one name="project" class="org.cgiar.ccafs.marlo.data.model.Project" fetch="select">
+            <column name="project_id" not-null="true" />
+        </many-to-one>
+        <many-to-one name="institution" class="org.cgiar.ccafs.marlo.data.model.Institution" fetch="select">
+            <column name="institution_id" not-null="true" />
+        </many-to-one>
+        <many-to-one name="phase" class="org.cgiar.ccafs.marlo.data.model.Phase" fetch="select">
+            <column name="phase_id" />
+        </many-to-one>
+        <many-to-one name="budgetType" class="org.cgiar.ccafs.marlo.data.model.BudgetType" fetch="select">
+            <column name="budget_type_id" />
+        </many-to-one>
+        <property name="year" type="int">
+            <column name="year" not-null="true" />
+        </property>
+        <property name="actualExpenditure" type="java.lang.Double">
+            <column name="actual_expenditure"  precision="30" scale="0" />
+        </property>
+        <property name="active" type="boolean">
+            <column name="is_active" not-null="true" />
+        </property>
+        <property name="activeSince" type="timestamp" update="false">
+            <column name="active_since" length="19" not-null="true" />
+        </property>
+        <many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select" update="false">
+            <column name="created_by" not-null="true" />
+        </many-to-one>
+        <many-to-one name="modifiedBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
+            <column name="modified_by" />
+        </many-to-one>
+        <property name="modificationJustification" type="string">
+            <column name="modification_justification" length="16777215"  />
+        </property>
+    </class>
+</hibernate-mapping>

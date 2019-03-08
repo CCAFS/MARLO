@@ -127,6 +127,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -751,7 +752,7 @@ public class DeliverableAction extends BaseAction {
    * @return
    */
   public List<ProjectPartnerPerson> getPersons(long projectPartnerId) {
-    if (deliverable.getDeliverableInfo().getYear() < this.getActualPhase().getYear()) {
+    if (deliverable.getDeliverableInfo().isPrevious()) {
       return projectPartnerPersonManager.findAllForProjectPartner(projectPartnerId);
     } else {
       return projectPartnerPersonManager.findAllActiveForProjectPartner(projectPartnerId);
@@ -1325,6 +1326,23 @@ public class DeliverableAction extends BaseAction {
             logger.warn("There are more than 1 deliverable responsibles for D" + deliverable.getId() + " "
               + this.getActualPhase().toString());
           }
+
+          deliverablePartnershipResponsibles.sort(new Comparator<DeliverablePartnership>() {
+
+            @Override
+            public int compare(final DeliverablePartnership dp1, DeliverablePartnership dp2) {
+
+              if (dp1.getProjectPartnerPerson() == null) {
+                return (dp2.getProjectPartnerPerson() == null) ? 0 : 1;
+              }
+
+              if (dp2.getProjectPartnerPerson() == null) {
+                return -1;
+              }
+              return dp1.getId().compareTo(dp2.getId());
+            }
+          });
+
           if (deliverable.getDeliverableInfo(this.getActualPhase()).getYear() < this.getActualPhase().getYear()) {
             deliverable.setResponsiblePartner(deliverablePartnershipResponsibles.get(0));
           } else {
@@ -2510,16 +2528,16 @@ public class DeliverableAction extends BaseAction {
         .filter(nu -> nu.isActive() && nu.getPhase().getId() == phase.getId()).collect(Collectors.toList()));
 
       for (DeliverableGeographicScope deliverableScope : scopePrev) {
-        if (deliverable.getGeographicScopes() == null
-          || !deliverable.getGeographicScopes().contains(deliverableScope)) {
+        if (this.deliverable.getGeographicScopes() == null
+          || !this.deliverable.getGeographicScopes().contains(deliverableScope)) {
           deliverableGeographicScopeManager.deleteDeliverableGeographicScope(deliverableScope.getId());
         }
       }
     }
 
     // Save form Information
-    if (deliverable.getGeographicScopes() != null) {
-      for (DeliverableGeographicScope deliverableScope : deliverable.getGeographicScopes()) {
+    if (this.deliverable.getGeographicScopes() != null) {
+      for (DeliverableGeographicScope deliverableScope : this.deliverable.getGeographicScopes()) {
         if (deliverableScope.getId() == null) {
           DeliverableGeographicScope deliverableScopeSave = new DeliverableGeographicScope();
           deliverableScopeSave.setDeliverable(deliverable);
@@ -2532,7 +2550,7 @@ public class DeliverableAction extends BaseAction {
 
           deliverableGeographicScopeManager.saveDeliverableGeographicScope(deliverableScopeSave);
           // This is to add innovationCrpSave to generate correct auditlog.
-          deliverable.getDeliverableGeographicScopes().add(deliverableScopeSave);
+          this.deliverable.getDeliverableGeographicScopes().add(deliverableScopeSave);
         }
       }
     }

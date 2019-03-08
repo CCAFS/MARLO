@@ -264,16 +264,13 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
   }
 
   private void addCrossCuttingCapacityDevelopment() {
-
     String crossCuttingCapacityDevelopment = "";
-
     if (reportSynthesisPMU != null) {
-
       if (reportSynthesisPMU.getReportSynthesisCrossCuttingDimension() != null) {
         ReportSynthesisCrossCuttingDimension crossCutting =
           reportSynthesisPMU.getReportSynthesisCrossCuttingDimension();
         if (crossCutting != null) {
-          crossCuttingCapacityDevelopment = crossCutting.getCapDev();
+          crossCuttingCapacityDevelopment = crossCutting.getCapDevKeyAchievements();
         }
       }
     }
@@ -281,32 +278,52 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     if (crossCuttingCapacityDevelopment != null && !crossCuttingCapacityDevelopment.isEmpty()) {
       poiSummary.textParagraph(document.createParagraph(), crossCuttingCapacityDevelopment);
     }
+  }
 
+  private void addCrossCuttingClimateChange() {
+    String crossCuttingClimateChange = "";
+    if (reportSynthesisPMU != null) {
+      if (reportSynthesisPMU.getReportSynthesisCrossCuttingDimension() != null) {
+        ReportSynthesisCrossCuttingDimension crossCutting =
+          reportSynthesisPMU.getReportSynthesisCrossCuttingDimension();
+        if (crossCutting != null) {
+          crossCuttingClimateChange = crossCutting.getClimateChangeKeyAchievements();
+        }
+      }
+    }
 
+    if (crossCuttingClimateChange != null && !crossCuttingClimateChange.isEmpty()) {
+      poiSummary.textParagraph(document.createParagraph(), crossCuttingClimateChange);
+    }
   }
 
   private void addCrossCuttingGender() {
 
-    String crossCuttingGenderDescription = "";
-    String crossCuttingGenderLessons = "";
+    String crossCuttingGenderResearchFindings = "";
+    String crossCuttingGenderLearned = "";
+    String crossCuttingGenderProblemsArimes = "";
     if (reportSynthesisPMU != null) {
       // Cross Cutting Gender Info
       if (reportSynthesisPMU.getReportSynthesisCrossCuttingDimension() != null) {
         ReportSynthesisCrossCuttingDimension crossCutting =
           reportSynthesisPMU.getReportSynthesisCrossCuttingDimension();
         if (crossCutting != null) {
-          crossCuttingGenderDescription = crossCutting.getGenderDescription();
-          crossCuttingGenderLessons = crossCutting.getGenderLessons();
+          crossCuttingGenderResearchFindings = crossCutting.getGenderResearchFindings();
+          crossCuttingGenderLearned = crossCutting.getGenderLearned();
+          crossCuttingGenderProblemsArimes = crossCutting.getGenderProblemsArisen();
         }
       }
     }
-
-    if (crossCuttingGenderDescription != null && !crossCuttingGenderDescription.isEmpty()) {
-      poiSummary.textParagraph(document.createParagraph(), crossCuttingGenderDescription);
+    if (crossCuttingGenderResearchFindings != null && !crossCuttingGenderResearchFindings.isEmpty()) {
+      poiSummary.textParagraph(document.createParagraph(), crossCuttingGenderResearchFindings);
     }
 
-    if (crossCuttingGenderLessons != null && !crossCuttingGenderLessons.isEmpty()) {
-      poiSummary.textParagraph(document.createParagraph(), crossCuttingGenderLessons);
+    if (crossCuttingGenderLearned != null && !crossCuttingGenderLearned.isEmpty()) {
+      poiSummary.textParagraph(document.createParagraph(), crossCuttingGenderLearned);
+    }
+
+    if (crossCuttingGenderProblemsArimes != null && !crossCuttingGenderProblemsArimes.isEmpty()) {
+      poiSummary.textParagraph(document.createParagraph(), crossCuttingGenderProblemsArimes);
     }
 
   }
@@ -377,8 +394,10 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
 
   private void addCrossCuttingYouth() {
 
-    String crossCuttingYouthDescription = "";
-    String crossCuttingYouthLessons = "";
+    String crossCuttingYouthContribution = "";
+    String crossCuttingYouthResearchFindings = "";
+    String crossCuttingYouthLearned = "";
+    String crossCuttingYouthProblemsArisen = "";
     if (reportSynthesisPMU != null) {
 
       // Cross Cutting Gender Info
@@ -386,18 +405,26 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         ReportSynthesisCrossCuttingDimension crossCutting =
           reportSynthesisPMU.getReportSynthesisCrossCuttingDimension();
         if (crossCutting != null) {
-          crossCuttingYouthDescription = crossCutting.getYouthDescription();
-          crossCuttingYouthLessons = crossCutting.getYouthLessons();
+          crossCuttingYouthContribution = crossCutting.getYouthDescription();
+          crossCuttingYouthResearchFindings = crossCutting.getYouthLessons();
+          crossCuttingYouthLearned = crossCutting.getYouthLessons();
+          crossCuttingYouthProblemsArisen = crossCutting.getYouthLessons();
         }
       }
     }
-
-    if (crossCuttingYouthDescription != null && !crossCuttingYouthDescription.isEmpty()) {
-      poiSummary.textParagraph(document.createParagraph(), crossCuttingYouthDescription);
+    if (crossCuttingYouthContribution != null && !crossCuttingYouthContribution.isEmpty()) {
+      poiSummary.textParagraph(document.createParagraph(), crossCuttingYouthContribution);
     }
 
-    if (crossCuttingYouthLessons != null && !crossCuttingYouthLessons.isEmpty()) {
-      poiSummary.textParagraph(document.createParagraph(), crossCuttingYouthLessons);
+    if (crossCuttingYouthResearchFindings != null && !crossCuttingYouthResearchFindings.isEmpty()) {
+      poiSummary.textParagraph(document.createParagraph(), crossCuttingYouthResearchFindings);
+    }
+    if (crossCuttingYouthLearned != null && !crossCuttingYouthLearned.isEmpty()) {
+      poiSummary.textParagraph(document.createParagraph(), crossCuttingYouthLearned);
+    }
+
+    if (crossCuttingYouthProblemsArisen != null && !crossCuttingYouthProblemsArisen.isEmpty()) {
+      poiSummary.textParagraph(document.createParagraph(), crossCuttingYouthProblemsArisen);
     }
 
   }
@@ -474,13 +501,11 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
 
   private void addFundingSummarize() {
     String brieflySummarize = "";
-
     if (reportSynthesisPMU != null) {
-
       if (reportSynthesisPMU.getReportSynthesisFundingUseSummary() != null) {
         ReportSynthesisFundingUseSummary funding = reportSynthesisPMU.getReportSynthesisFundingUseSummary();
         if (funding != null) {
-          brieflySummarize = funding.getMainArea();
+          brieflySummarize = funding.getInterestingPoints();
         }
       }
     }
@@ -496,6 +521,23 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         && reportSynthesisPMU.getReportSynthesisEfficiency().getDescription() != null) {
         poiSummary.textParagraph(document.createParagraph(),
           reportSynthesisPMU.getReportSynthesisEfficiency().getDescription());
+      }
+    }
+  }
+
+  public void addIntellectualAssets() {
+    if (reportSynthesisPMU != null) {
+      if (reportSynthesisPMU.getReportSynthesisIntellectualAsset() != null
+        && reportSynthesisPMU.getReportSynthesisIntellectualAsset().getManaged() != null
+        && reportSynthesisPMU.getReportSynthesisIntellectualAsset().getPatents() != null
+        && reportSynthesisPMU.getReportSynthesisIntellectualAsset().getCriticalIssues() != null) {
+        poiSummary.textParagraph(document.createParagraph(),
+          reportSynthesisPMU.getReportSynthesisIntellectualAsset().getManaged());
+        poiSummary.textParagraph(document.createParagraph(),
+          reportSynthesisPMU.getReportSynthesisIntellectualAsset().getPatents());
+        poiSummary.textParagraph(document.createParagraph(),
+          reportSynthesisPMU.getReportSynthesisIntellectualAsset().getCriticalIssues());
+
       }
     }
   }
@@ -1639,8 +1681,8 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         addCustomHeadingStyle(document, "heading 11", 2);
         addCustomHeadingStyle(document, "heading 12", 2);
         addCustomHeadingStyle(document, "heading 13", 2);
-        addCustomHeadingStyle(document, "heading 14", 1);
-        addCustomHeadingStyle(document, "heading 15", 2);
+        addCustomHeadingStyle(document, "heading 14", 2);
+        addCustomHeadingStyle(document, "heading 15", 1);
         addCustomHeadingStyle(document, "heading 16", 2);
         addCustomHeadingStyle(document, "heading 17", 2);
         addCustomHeadingStyle(document, "heading 18", 2);
@@ -1649,7 +1691,8 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         addCustomHeadingStyle(document, "heading 21", 2);
         addCustomHeadingStyle(document, "heading 22", 2);
         addCustomHeadingStyle(document, "heading 23", 2);
-        addCustomHeadingStyle(document, "heading 24", 1);
+        addCustomHeadingStyle(document, "heading 24", 2);
+        addCustomHeadingStyle(document, "heading 25", 1);
 
         // First page
         document.createParagraph().setPageBreak(true);
@@ -1745,7 +1788,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         run.setText(this.getText("summaries.annualReport2018.crossCutting"));
         paragraph.setStyle("heading 10");
 
-        poiSummary.textLineBreak(document, 1);
+        // poiSummary.textLineBreak(document, 1);
         paragraph = document.createParagraph();
         run = paragraph.createRun();
         run.setFontSize(13);
@@ -1770,7 +1813,16 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         run.setBold(true);
         run.setText(this.getText("summaries.annualReport2018.crossCutting.capacity"));
         paragraph.setStyle("heading 13");
-        this.addCrossCuttingOtherAspects();
+        this.addCrossCuttingCapacityDevelopment();
+
+        poiSummary.textLineBreak(document, 1);
+        paragraph = document.createParagraph();
+        run = paragraph.createRun();
+        run.setFontSize(13);
+        run.setBold(true);
+        run.setText(this.getText("summaries.annualReport2018.crossCutting.climateChange"));
+        paragraph.setStyle("heading 14");
+        this.addCrossCuttingClimateChange();
 
         // section 2 - Effectiveness and Efficiency
         poiSummary.textLineBreak(document, 1);
@@ -1779,7 +1831,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         run.setFontSize(14);
         run.setBold(true);
         run.setText(this.getText("summaries.annualReport2018.effectiveness"));
-        paragraph.setStyle("heading 14");
+        paragraph.setStyle("heading 15");
 
         poiSummary.textLineBreak(document, 1);
         paragraph = document.createParagraph();
@@ -1787,7 +1839,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         run.setFontSize(13);
         run.setBold(true);
         run.setText(this.getText("summaries.annualReport2018.effectiveness.management"));
-        paragraph.setStyle("heading 15");
+        paragraph.setStyle("heading 16");
         this.addVariancePlanned();
 
         poiSummary.textLineBreak(document, 1);
@@ -1796,7 +1848,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         run.setFontSize(13);
         run.setBold(true);
         run.setText(this.getText("summaries.annualReport2018.effectiveness.partnerships"));
-        paragraph.setStyle("heading 16");
+        paragraph.setStyle("heading 17");
         this.addFundingSummarize();
 
         poiSummary.textLineBreak(document, 1);
@@ -1805,7 +1857,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         run.setFontSize(13);
         run.setBold(true);
         run.setText(this.getText("summaries.annualReport2018.effectiveness.highlights"));
-        paragraph.setStyle("heading 17");
+        paragraph.setStyle("heading 18");
         this.addExternalPartnerships();
 
         poiSummary.textLineBreak(document, 1);
@@ -1814,7 +1866,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         run.setFontSize(13);
         run.setBold(true);
         run.setText(this.getText("summaries.annualReport2018.effectiveness.crossCgiar"));
-        paragraph.setStyle("heading 18");
+        paragraph.setStyle("heading 19");
         this.addCrossPartnerships();
 
         poiSummary.textLineBreak(document, 1);
@@ -1823,8 +1875,8 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         run.setFontSize(13);
         run.setBold(true);
         run.setText(this.getText("summaries.annualReport2018.effectiveness.intellectual"));
-        paragraph.setStyle("heading 19");
-        this.addReportSynthesisMelia();
+        paragraph.setStyle("heading 20");
+        this.addIntellectualAssets();
 
         poiSummary.textLineBreak(document, 1);
         paragraph = document.createParagraph();
@@ -1832,15 +1884,6 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         run.setFontSize(13);
         run.setBold(true);
         run.setText(this.getText("summaries.annualReport2018.effectiveness.monitoring"));
-        paragraph.setStyle("heading 20");
-        this.addImprovingEfficiency();
-
-        poiSummary.textLineBreak(document, 1);
-        paragraph = document.createParagraph();
-        run = paragraph.createRun();
-        run.setFontSize(13);
-        run.setBold(true);
-        run.setText(this.getText("summaries.annualReport2018.effectiveness.efficiency"));
         paragraph.setStyle("heading 21");
         this.addImprovingEfficiency();
 
@@ -1849,7 +1892,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         run = paragraph.createRun();
         run.setFontSize(13);
         run.setBold(true);
-        run.setText(this.getText("summaries.annualReport2018.effectiveness.risk"));
+        run.setText(this.getText("summaries.annualReport2018.effectiveness.efficiency"));
         paragraph.setStyle("heading 22");
         this.addImprovingEfficiency();
 
@@ -1858,9 +1901,18 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         run = paragraph.createRun();
         run.setFontSize(13);
         run.setBold(true);
-        run.setText(this.getText("summaries.annualReport2018.effectiveness.funding"));
+        run.setText(this.getText("summaries.annualReport2018.effectiveness.risk"));
         paragraph.setStyle("heading 23");
         this.addImprovingEfficiency();
+
+        poiSummary.textLineBreak(document, 1);
+        paragraph = document.createParagraph();
+        run = paragraph.createRun();
+        run.setFontSize(13);
+        run.setBold(true);
+        run.setText(this.getText("summaries.annualReport2018.effectiveness.funding"));
+        paragraph.setStyle("heading 24");
+        this.addFundingSummarize();
 
         // section 3 - Financial summary
         poiSummary.textLineBreak(document, 1);
@@ -1869,8 +1921,8 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         run.setFontSize(14);
         run.setBold(true);
         run.setText(this.getText("summaries.annualReport2018.financial"));
-        paragraph.setStyle("heading 24");
-        this.addManagement();
+        paragraph.setStyle("heading 25");
+        // this.addManagement();
 
         /* Create a landscape text Section */
         paragraph = document.createParagraph();
@@ -2093,7 +2145,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         // section 3 - crp management
         poiSummary.textLineBreak(document, 1);
         poiSummary.textHead1Title(document.createParagraph(), this.getText("summaries.annualReport.management"));
-        this.addManagement();
+        // this.addManagement();
 
         /* Create a landscape text Section */
         XWPFParagraph para = document.createParagraph();

@@ -233,6 +233,9 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
    * @return
    */
   public Boolean isRequired() {
+    if (this.getStatus() == null) {
+      return true;
+    }
 
     if (this.getStatus() != null
       && this.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())) {

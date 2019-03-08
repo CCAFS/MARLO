@@ -443,7 +443,8 @@
           <span class="input-group-btn">
             <button class="btn btn-default btn-sm copyButton" type="button"> <span class="glyphicon glyphicon-link"></span> Copy URL </button>
           </span>
-          <input type="text" class="form-control input-sm urlInput" value="${baseUrl}/projects/${crpSession}/studySummary.do?studyID=${(element.id)!}&cycle=Reporting&year=${(actualPhase.year)!}" readonly>
+          [#local summaryPDF = "${baseUrl}/projects/${crpSession}/studySummary.do?studyID=${(element.id)!}&cycle=Reporting&year=${(actualPhase.year)!}"]
+          <input type="text" class="form-control input-sm urlInput" value="${summaryPDF}" readonly>
         </div>
         <div class="message text-center" style="display:none">Copied!</div>
       </div>
@@ -496,7 +497,7 @@
     [#-- Units --]
     <div class="form-group row">
       <div class="col-md-4">
-        [@customForm.input name="${customName}.number" i18nkey="study.quantification.number" help="study.quantification.number.help" className="" required=true editable=editable /]
+        [@customForm.input name="${customName}.number" i18nkey="study.quantification.number" help="study.quantification.number.help" className="numericInput" required=true editable=editable /]
       </div>
       <div class="col-md-4"> 
         [@customForm.input name="${customName}.targetUnit" i18nkey="study.quantification.targetUnit" help="study.quantification.targetUnit.help" className="" required=true editable=editable /]

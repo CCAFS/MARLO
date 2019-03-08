@@ -19,13 +19,17 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationContributingOrganizationManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationDeliverableManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationGeographicScopeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
+import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationContributingOrganization;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCountry;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCrp;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationDeliverable;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationGeographicScope;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationOrganization;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -73,11 +77,14 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
   // Managers
   private final ProjectInnovationContributingOrganizationManager projectInnovationContributingOrganizationManager;
   private final ProjectInnovationManager projectInnovationManager;
+  private final ProjectInnovationDeliverableManager projectInnovationDeliverableManager;
   private final ResourceManager resourceManager;
+  private final ProjectInnovationGeographicScopeManager projectInnovationGeographicScopeManager;
   // Parameters
   private long startTime;
   private Long projectInnovationID;
   private ProjectInnovationInfo projectInnovationInfo;
+
   // XLSX bytes
   private byte[] bytesPDF;
   // Streams
@@ -87,11 +94,15 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
   public ProjectInnovationSummaryAction(APConfig config, GlobalUnitManager crpManager,
     ProjectInnovationManager projectInnovationManager, PhaseManager phaseManager, ResourceManager resourceManager,
     ProjectManager projectManager,
-    ProjectInnovationContributingOrganizationManager projectInnovationContributingOrganizationManager) {
+    ProjectInnovationContributingOrganizationManager projectInnovationContributingOrganizationManager,
+    ProjectInnovationDeliverableManager projectInnovationDeliverableManager,
+    ProjectInnovationGeographicScopeManager projectInnovationGeographicScopeManager) {
     super(config, crpManager, phaseManager, projectManager);
     this.projectInnovationManager = projectInnovationManager;
     this.resourceManager = resourceManager;
     this.projectInnovationContributingOrganizationManager = projectInnovationContributingOrganizationManager;
+    this.projectInnovationDeliverableManager = projectInnovationDeliverableManager;
+    this.projectInnovationGeographicScopeManager = projectInnovationGeographicScopeManager;
   }
 
   /**
@@ -357,10 +368,16 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
       degreeInnovation = projectInnovationInfo.getRepIndDegreeInnovation().getName();
     }
     // Geographic Scope
-    if (projectInnovationInfo.getRepIndGeographicScope() != null) {
-      geographicScope = projectInnovationInfo.getRepIndGeographicScope().getName();
+    List<ProjectInnovationGeographicScope> projectInnovationGeographicScopeList =
+      projectInnovationGeographicScopeManager.findAll().stream()
+        .filter(p -> p.getPhase().getId().equals(this.getActualPhase().getId())
+          && p.getProjectInnovation() == projectInnovationInfo.getProjectInnovation())
+        .collect(Collectors.toList());
+    if (projectInnovationGeographicScopeList != null) {
+      geographicScope = projectInnovationGeographicScopeList.get(0).getRepIndGeographicScope().getName();
+
       // Regional
-      if (projectInnovationInfo.getRepIndGeographicScope().getId()
+      if (projectInnovationGeographicScopeList.get(0).getRepIndGeographicScope().getId()
         .equals(this.getReportingIndGeographicScopeRegional())) {
         isRegional = true;
         if (projectInnovationInfo.getRepIndRegion() != null) {
@@ -368,12 +385,13 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
         }
       }
       // Country
-      if (!projectInnovationInfo.getRepIndGeographicScope().getId().equals(this.getReportingIndGeographicScopeGlobal())
-        && !projectInnovationInfo.getRepIndGeographicScope().getId()
+      if (!projectInnovationGeographicScopeList.get(0).getRepIndGeographicScope().getId()
+        .equals(this.getReportingIndGeographicScopeGlobal())
+        && !projectInnovationGeographicScopeList.get(0).getRepIndGeographicScope().getId()
           .equals(this.getReportingIndGeographicScopeRegional())) {
         isNational = true;
         List<ProjectInnovationCountry> innovationCountries =
-          projectInnovationInfo.getProjectInnovation().getProjectInnovationCountries().stream()
+          projectInnovationGeographicScopeList.get(0).getProjectInnovation().getProjectInnovationCountries().stream()
             .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase()))
             .collect(Collectors.toList());
         if (innovationCountries != null && innovationCountries.size() > 0) {
@@ -384,6 +402,14 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
           countries = String.join("", countriesSet);
         }
       }
+      /*
+       * if (region != null) {
+       * geographicScope += region;
+       * }
+       * if (countries != null) {
+       * geographicScope += countries;
+       * }
+       */
     }
 
     // Description
@@ -402,11 +428,13 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
     // Contributing Organization
     List<ProjectInnovationContributingOrganization> contributingOrganizationsList =
       new ArrayList<ProjectInnovationContributingOrganization>();
+    List<Deliverable> deliverableList = new ArrayList<Deliverable>();
     contributingOrganizationsList = projectInnovationContributingOrganizationManager.findAll();
     if (contributingOrganizationsList != null && contributingOrganizationsList.size() > 0) {
-      contributingOrganizationsList.stream()
-        .filter(p -> p.getProjectInnovation().getId() == projectInnovationInfo.getProjectInnovation().getId()
-          && p.getPhase().getId() == this.getSelectedPhase().getId());
+      contributingOrganizationsList = contributingOrganizationsList.stream()
+        .filter(p -> p.getProjectInnovation().getId().equals(projectInnovationInfo.getProjectInnovation().getId())
+          && p.getPhase().getId() == this.getSelectedPhase().getId())
+        .collect(Collectors.toList());
     }
     if (contributingOrganizationsList != null && !contributingOrganizationsList.isEmpty()) {
       Set<String> contributingSet = new HashSet<>();
@@ -429,16 +457,21 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
     if (projectInnovationInfo.getEvidenceLink() != null && !projectInnovationInfo.getEvidenceLink().trim().isEmpty()) {
       evidenceLink = projectInnovationInfo.getEvidenceLink();
     }
+
     // Deliverables
     List<ProjectInnovationDeliverable> projectInnovationDeliverables =
-      projectInnovationInfo.getProjectInnovation().getProjectInnovationDeliverables().stream()
-        .filter(o -> o.isActive() && o.getPhase() != null && o.getPhase().equals(this.getSelectedPhase()))
+      projectInnovationDeliverableManager.findAll().stream()
+        .filter(p -> p.getProjectInnovation().getId().equals(projectInnovationInfo.getProjectInnovation().getId())
+          && p.getPhase().getId().equals(this.getSelectedPhase().getId()))
         .collect(Collectors.toList());
+
     if (projectInnovationDeliverables != null && projectInnovationDeliverables.size() > 0) {
       Set<String> deliverablesSet = new HashSet<>();
       for (ProjectInnovationDeliverable projectInnovationDeliverable : projectInnovationDeliverables) {
-        deliverablesSet
-          .add("<br>&nbsp;&nbsp;&nbsp;&nbsp; ● " + projectInnovationDeliverable.getDeliverable().getComposedName());
+        if (projectInnovationDeliverable.getDeliverable().getId() != null) {
+          deliverablesSet
+            .add("<br>&nbsp;&nbsp;&nbsp;&nbsp; ● " + projectInnovationDeliverable.getDeliverable().getId());
+        }
       }
       deliverables = String.join("", deliverablesSet);
     }

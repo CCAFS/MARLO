@@ -13,36 +13,43 @@
 			</generator>
 		</id>
 		<one-to-one name="reportSynthesis"
-			class="org.cgiar.ccafs.marlo.data.model.ReportSynthesis" constrained="true"></one-to-one>
-		<property name="mainArea" type="string">
-			<column name="main_area" sql-type="TEXT" />
-		</property>
-
-		<many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User"
-			fetch="select" update="false">
+			class="org.cgiar.ccafs.marlo.data.model.ReportSynthesis"
+			constrained="true"></one-to-one>
+			
+    <property name="mainArea" type="string">
+      <column name="main_area" sql-type="TEXT" />
+    </property>		
+		<many-to-one name="createdBy"
+			class="org.cgiar.ccafs.marlo.data.model.User" fetch="select"
+			update="false">
 			<column name="created_by" not-null="true" />
 		</many-to-one>
 		<property name="activeSince" type="timestamp" update="false">
-      <column name="active_since" length="19" not-null="true" />
-    </property>
-    <property name="modificationJustification" type="string">
-      <column name="modification_justification" sql-type="TEXT" />
-    </property>
-    <many-to-one name="modifiedBy" class="org.cgiar.ccafs.marlo.data.model.User"
-      fetch="select">
-      <column name="modified_by" />
-    </many-to-one>
+			<column name="active_since" length="19" not-null="true" />
+		</property>
+		<property name="modificationJustification" type="string">
+			<column name="modification_justification" sql-type="TEXT" />
+		</property>
+		<many-to-one name="modifiedBy"
+			class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
+			<column name="modified_by" />
+		</many-to-one>
 		<property name="active" type="boolean">
 			<column name="is_active" not-null="true" />
 		</property>
-		
-		<set name="reportSynthesisFundingUseExpendituryAreas" table="report_synthesis_funding_use_expenditury_areas"
-			inverse="true" lazy="true" fetch="select">
+		<set name="reportSynthesisFundingUseExpendituryAreas"
+			table="report_synthesis_funding_use_expenditury_areas" inverse="true"
+			lazy="true" fetch="select">
 			<key>
 				<column name="report_synthesis_funding_use_summary_id" />
 			</key>
 			<one-to-many
 				class="org.cgiar.ccafs.marlo.data.model.ReportSynthesisFundingUseExpendituryArea" />
 		</set>
+
+		<!-- AR2018 -->
+		<property name="interestingPoints" type="string">
+      <column name="interesting_points" sql-type="TEXT" />
+    </property>
 	</class>
 </hibernate-mapping>
