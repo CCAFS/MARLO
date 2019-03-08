@@ -103,6 +103,7 @@ import org.cgiar.ccafs.marlo.utils.CountryLocationLevel;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -490,11 +491,26 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
 
   private DeliverablePartnership responsiblePartner(Deliverable deliverable) {
     try {
-      DeliverablePartnership partnership = deliverable.getDeliverablePartnerships().stream()
+      List<DeliverablePartnership> partnerships = deliverable.getDeliverablePartnerships().stream()
         .filter(
           dp -> dp.isActive() && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.RESPONSIBLE.getValue()))
-        .collect(Collectors.toList()).get(0);
-      return partnership;
+        .collect(Collectors.toList());
+      partnerships.sort(new Comparator<DeliverablePartnership>() {
+
+        @Override
+        public int compare(final DeliverablePartnership dp1, DeliverablePartnership dp2) {
+
+          if (dp1.getProjectPartnerPerson() == null) {
+            return (dp2.getProjectPartnerPerson() == null) ? 0 : 1;
+          }
+
+          if (dp2.getProjectPartnerPerson() == null) {
+            return -1;
+          }
+          return dp1.getId().compareTo(dp2.getId());
+        }
+      });
+      return partnerships.get(0);
     } catch (Exception e) {
       return null;
     }
@@ -502,11 +518,27 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
 
   private DeliverablePartnership responsiblePartner(Deliverable deliverable, BaseAction baseAction) {
     try {
-      DeliverablePartnership partnership = deliverable.getDeliverablePartnerships().stream()
+      List<DeliverablePartnership> partnerships = deliverable.getDeliverablePartnerships().stream()
         .filter(dp -> dp.isActive() && dp.getPhase() != null && dp.getPhase().equals(baseAction.getActualPhase())
           && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.RESPONSIBLE.getValue()))
-        .collect(Collectors.toList()).get(0);
-      return partnership;
+        .collect(Collectors.toList());
+
+      partnerships.sort(new Comparator<DeliverablePartnership>() {
+
+        @Override
+        public int compare(final DeliverablePartnership dp1, DeliverablePartnership dp2) {
+
+          if (dp1.getProjectPartnerPerson() == null) {
+            return (dp2.getProjectPartnerPerson() == null) ? 0 : 1;
+          }
+
+          if (dp2.getProjectPartnerPerson() == null) {
+            return -1;
+          }
+          return dp1.getId().compareTo(dp2.getId());
+        }
+      });
+      return partnerships.get(0);
     } catch (Exception e) {
       return null;
     }
@@ -1023,6 +1055,22 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
             System.out.println("There are more than 1 deliverable responsibles for D" + deliverable.getId() + " "
               + action.getActualPhase().toString());
           }
+          deliverablePartnershipResponsibles.sort(new Comparator<DeliverablePartnership>() {
+
+            @Override
+            public int compare(final DeliverablePartnership dp1, DeliverablePartnership dp2) {
+
+              if (dp1.getProjectPartnerPerson() == null) {
+                return (dp2.getProjectPartnerPerson() == null) ? 0 : 1;
+              }
+
+              if (dp2.getProjectPartnerPerson() == null) {
+                return -1;
+              }
+              return dp1.getId().compareTo(dp2.getId());
+            }
+          });
+
           if (deliverable.getDeliverableInfo(action.getActualPhase()).getStatus() == Integer
             .parseInt(ProjectStatusEnum.Ongoing.getStatusId())
             && deliverable.getDeliverableInfo(phase).getYear() < phase.getYear()) {
