@@ -25,6 +25,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectFocusManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndOrganizationTypeManager;
+import org.cgiar.ccafs.marlo.data.manager.RepIndStageProcessManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressPolicyManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
@@ -43,6 +44,7 @@ import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgress;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressPolicy;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressPolicyDTO;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisPoliciesByOrganizationTypeDTO;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisPoliciesByRepIndStageProcessDTO;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -86,6 +88,7 @@ public class PoliciesAction extends BaseAction {
   private ReportSynthesisFlagshipProgressManager reportSynthesisFlagshipProgressManager;
   private ReportSynthesisFlagshipProgressPolicyManager reportSynthesisFlagshipProgressPolicyManager;
   private RepIndOrganizationTypeManager repIndOrganizationTypeManager;
+  private RepIndStageProcessManager repIndStageProcessManager;
 
   // Variables
   private String transaction;
@@ -97,6 +100,7 @@ public class PoliciesAction extends BaseAction {
   private List<LiaisonInstitution> liaisonInstitutions;
   private List<ProjectPolicy> projectPolicies;
   private List<ReportSynthesisPoliciesByOrganizationTypeDTO> policiesByOrganizationTypeDTOs;
+  private List<ReportSynthesisPoliciesByRepIndStageProcessDTO> policiesByRepIndStageProcessDTOs;
 
 
   @Inject
@@ -107,7 +111,7 @@ public class PoliciesAction extends BaseAction {
     ProjectFocusManager projectFocusManager, ProjectManager projectManager,
     ReportSynthesisFlagshipProgressManager reportSynthesisFlagshipProgressManager,
     ReportSynthesisFlagshipProgressPolicyManager reportSynthesisFlagshipProgressPolicyManager,
-    RepIndOrganizationTypeManager repIndOrganizationTypeManager) {
+    RepIndOrganizationTypeManager repIndOrganizationTypeManager, RepIndStageProcessManager repIndStageProcessManager) {
     super(config);
     this.crpManager = crpManager;
     this.liaisonInstitutionManager = liaisonInstitutionManager;
@@ -122,6 +126,7 @@ public class PoliciesAction extends BaseAction {
     this.reportSynthesisFlagshipProgressManager = reportSynthesisFlagshipProgressManager;
     this.reportSynthesisFlagshipProgressPolicyManager = reportSynthesisFlagshipProgressPolicyManager;
     this.repIndOrganizationTypeManager = repIndOrganizationTypeManager;
+    this.repIndStageProcessManager = repIndStageProcessManager;
   }
 
 
@@ -389,9 +394,11 @@ public class PoliciesAction extends BaseAction {
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
+
   public LiaisonInstitution getLiaisonInstitution() {
     return liaisonInstitution;
   }
+
 
   public Long getLiaisonInstitutionID() {
     return liaisonInstitutionID;
@@ -411,19 +418,24 @@ public class PoliciesAction extends BaseAction {
     return policiesByOrganizationTypeDTOs;
   }
 
+  public List<ReportSynthesisPoliciesByRepIndStageProcessDTO> getPoliciesByRepIndStageProcessDTOs() {
+    return policiesByRepIndStageProcessDTOs;
+  }
+
 
   public List<ProjectPolicy> getProjectPolicies() {
     return projectPolicies;
   }
 
+
   public ReportSynthesis getReportSynthesis() {
     return reportSynthesis;
   }
 
+
   public Long getSynthesisID() {
     return synthesisID;
   }
-
 
   public String getTransaction() {
     return transaction;
@@ -443,6 +455,7 @@ public class PoliciesAction extends BaseAction {
     return isFP;
   }
 
+
   @Override
   public boolean isPMU() {
     boolean isFP = false;
@@ -454,7 +467,6 @@ public class PoliciesAction extends BaseAction {
     return isFP;
 
   }
-
 
   @Override
   public String next() {
@@ -622,11 +634,17 @@ public class PoliciesAction extends BaseAction {
           selectedProjectPolicies.remove(projectPolicy);
         }
       }
-      // Chart: Policies by organization type
+
       if (selectedProjectPolicies != null && !selectedProjectPolicies.isEmpty()) {
+        // Chart: Policies by organization type
         policiesByOrganizationTypeDTOs =
           repIndOrganizationTypeManager.getPoliciesByOrganizationTypes(selectedProjectPolicies, phase);
+
+        // Chart: Policies by stage process
+        policiesByRepIndStageProcessDTOs =
+          repIndStageProcessManager.getPoliciesByStageProcess(selectedProjectPolicies, phase);
       }
+
     }
 
     // Base Permission
@@ -640,6 +658,7 @@ public class PoliciesAction extends BaseAction {
     }
 
   }
+
 
   @Override
   public String save() {
@@ -692,7 +711,6 @@ public class PoliciesAction extends BaseAction {
     }
   }
 
-
   public void setLiaisonInstitution(LiaisonInstitution liaisonInstitution) {
     this.liaisonInstitution = liaisonInstitution;
   }
@@ -706,15 +724,22 @@ public class PoliciesAction extends BaseAction {
     this.liaisonInstitutions = liaisonInstitutions;
   }
 
-
   public void setLoggedCrp(GlobalUnit loggedCrp) {
     this.loggedCrp = loggedCrp;
   }
+
 
   public void setPoliciesByOrganizationTypeDTOs(
     List<ReportSynthesisPoliciesByOrganizationTypeDTO> policiesByOrganizationTypeDTOs) {
     this.policiesByOrganizationTypeDTOs = policiesByOrganizationTypeDTOs;
   }
+
+
+  public void setPoliciesByRepIndStageProcessDTOs(
+    List<ReportSynthesisPoliciesByRepIndStageProcessDTO> policiesByRepIndStageProcessDTOs) {
+    this.policiesByRepIndStageProcessDTOs = policiesByRepIndStageProcessDTOs;
+  }
+
 
   public void setProjectPolicies(List<ProjectPolicy> projectPolicies) {
     this.projectPolicies = projectPolicies;
