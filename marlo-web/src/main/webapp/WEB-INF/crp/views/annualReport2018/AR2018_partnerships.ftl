@@ -141,8 +141,8 @@
 </section>
 
 [#--  Key Partnerships Template --]
-[@addKeyExternalPartnership element={} name="${customName}.projectsPartnerships" index=-1 template=true /]
-[@addCrossCGIARPartnerships element={} name="${customName}.externalPartnerships" index=-1 template=true /]
+[@addKeyExternalPartnership element={} name="${customName}.partnerships" index=-1 template=true /]
+[@addCrossCGIARPartnerships element={} name="${customName}.collaborations" index=-1 template=true /]
 
 [#include "/WEB-INF/global/pages/footer.ftl"]
 
@@ -178,7 +178,7 @@
       <div class="form-group row">
         [#-- Main area of partnership --]
         <div class="col-md-6">
-          [@customForm.elementsListComponent name="${customName}.mainAreas" elementType="repIndPartnershipMainArea" elementList=(element.mainAreas)![] label="${customLabel}.table7.mainArea" help=""  listName="mainAreas" keyFieldName="id" displayFieldName="name"/]
+          [@customForm.elementsListComponent name="${customName}.mainAreas" elementType="repIndPartnershipMainArea" elementList=(element.mainAreas)![] label="${customLabel}.table7.mainArea" help=""  listName="mainAreas" keyFieldName="id" displayFieldName="name"  indexLevel=2 /]
         </div>
         [#local otherArea = true /]
         <div class="col-md-6 block-pleaseSpecify" style="display:${otherArea?string('block', 'none')}">
@@ -188,7 +188,7 @@
     
       <div class="form-group">
         [#-- Partners --]
-          [@customForm.elementsListComponent name="${customName}.institutions" elementType="institution" elementList=(element.institutions)![] label="${customLabel}.table7.partners" help=""  listName="partners" keyFieldName="id" displayFieldName="composedName"/]
+          [@customForm.elementsListComponent name="${customName}.institutions" elementType="institution" elementList=(element.institutions)![] label="${customLabel}.table7.partners" help=""  listName="partners" keyFieldName="id" displayFieldName="composedName" indexLevel=2 /]
       </div>
     
       [#-- Upload Template --]
