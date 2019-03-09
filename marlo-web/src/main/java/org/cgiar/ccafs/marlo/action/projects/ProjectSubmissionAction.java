@@ -297,13 +297,16 @@ public class ProjectSubmissionAction extends BaseAction {
     // Message to download the pdf
     if (!this.isPlanningActive()) {
       values[6] = config.getBaseUrl() + "/projects/" + this.getCurrentCrp().getAcronym() + "/reportingSummary.do?"
-        + APConstants.PROJECT_REQUEST_ID + "=" + projectID + "&" + APConstants.YEAR_REQUEST + "="
-        + this.getActualPhase().getYear() + "&" + APConstants.CYCLE + "=" + this.getActualPhase().getDescription();
+        + APConstants.PROJECT_REQUEST_ID + "=" + projectID + "&" + APConstants.PHASE_ID + "="
+        + this.getActualPhase().getId();
     }
 
+
     if (this.isPlanningActive()) {
+      System.out.println(values);
       message.append(this.getText("submit.email.message", values));
     } else {
+      System.out.println(this.getText("submit.email.message.noPDF", values));
       message.append(this.getText("submit.email.message.noPDF", values));
     }
 
