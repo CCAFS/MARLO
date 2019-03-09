@@ -303,10 +303,8 @@ public class ProjectSubmissionAction extends BaseAction {
 
 
     if (this.isPlanningActive()) {
-      System.out.println(values);
       message.append(this.getText("submit.email.message", values));
     } else {
-      System.out.println(this.getText("submit.email.message.noPDF", values));
       message.append(this.getText("submit.email.message.noPDF", values));
     }
 
