@@ -2083,8 +2083,10 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
                   dgl -> dgl.isActive() && dgl.getPhase() != null && dgl.getPhase().equals(this.getSelectedPhase()))
                 .collect(Collectors.toList())) {
                 if (dgl.getGenderLevel() != 0.0) {
-                  crossCutting += "&nbsp;&nbsp;&nbsp;&nbsp;● "
-                    + genderTypeManager.getGenderTypeById(dgl.getGenderLevel()).getDescription() + "<br>";
+                  if (genderTypeManager.getGenderTypeById(dgl.getGenderLevel()) != null) {
+                    crossCutting += "&nbsp;&nbsp;&nbsp;&nbsp;● "
+                      + genderTypeManager.getGenderTypeById(dgl.getGenderLevel()).getDescription() + "<br>";
+                  }
                 }
               }
             }
