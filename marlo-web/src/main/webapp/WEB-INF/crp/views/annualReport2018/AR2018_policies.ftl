@@ -182,7 +182,7 @@
         [#-- Level of Maturity --]
         <td class="text-center">[@utils.tableText value=(item.projectPolicyInfo.repIndStageProcess.name)!"" /]</td>
         [#-- Sub-IDOs --]
-        <td>[@utils.tableList list=(item.subIdos)![]  displayFieldName="title"/]</td>
+        <td>[@utils.tableList list=(item.subIdos)![]  displayFieldName="srfSubIdo.description" /]</td>
         [#if expanded]
           [#-- Gender --]
           <td class="text-center"> <p class="dacMarker level-2" title="0 - Not Targeted">0</p>  </td>
