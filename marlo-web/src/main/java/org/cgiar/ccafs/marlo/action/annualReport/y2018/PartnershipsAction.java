@@ -1066,10 +1066,13 @@ public class PartnershipsAction extends BaseAction {
         for (ReportSynthesisKeyPartnershipExternal external : reportSynthesis.getReportSynthesisKeyPartnership()
           .getPartnerships()) {
 
-          if (external.getFile() != null && external.getFile().getId() == null
-            || external.getFile().getId().longValue() == -1) {
-            external.setFile(null);
-          }
+          /*
+           * if (external.getFile() != null && external.getFile().getId() == null
+           * || external.getFile().getId().longValue() == -1) {
+           * external.setFile(null);
+           * }
+           */
+
         }
       }
 

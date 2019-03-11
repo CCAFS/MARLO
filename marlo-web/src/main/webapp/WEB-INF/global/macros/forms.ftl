@@ -549,7 +549,10 @@
     [#local list = [] /] 
   [/#attempt]
   
-  [#local composedID = "${elementType}${id}" /]
+  [#local composedID = "${elementType}" /]
+  [#if id?has_content]
+    [#local composedID = "${elementType}-${id}" /]
+  [/#if]
   <div class="panel tertiary elementsListComponent" listname="${name}" style="position:relative">
     <div class="panel-head">
       <label for="">[@s.text name=label /]:[@req required=required && editable /]
@@ -559,7 +562,7 @@
     </div>
     <div class="panel-body" style="min-height: 30px;">
       <div class="loading listComponentLoading" style="display:none"></div>
-      <ul class="list listType-${composedID}">
+      <ul class="list">
         [#if elementList?has_content]
           [#list elementList as item][@listElementMacro name=name element=item type=elementType id=id index=item_index keyFieldName=keyFieldName displayFieldName=displayFieldName indexLevel=indexLevel /][/#list]
         [/#if]
@@ -584,8 +587,11 @@
 
 [#macro listElementMacro element name type id="" index=-1 keyFieldName="id" displayFieldName="composedName" indexLevel=1 template=false]
   [#local customName = "${template?string('_TEMPLATE_', '')}${name}[${index}]"]
-  [#local composedID = "${type}${id}" /]
-  <li id="relationElement-${composedID}-${template?string('template', index)}" class="relationElement indexLevel-${indexLevel}">
+  [#local composedID = "${type}" /]
+  [#if id?has_content]
+    [#local composedID = "${type}-${id}" /]
+  [/#if]
+  <li class="relationElement-template relationElement indexLevel-${indexLevel}">
     [#-- Hidden Inputs --]
     <input type="hidden" class="elementID" name="${customName}.id" value="${(element.id)!}" />
     <input type="hidden" class="elementRelationID" name="${customName}.${type}.id" value="${(element[type][keyFieldName])!}" />
@@ -597,12 +603,10 @@
 [/#macro]
 
 [#macro helpViewMore name=""]
-[#local customName="${name}.more" /]
-
+  [#local customName="${name}.more" /]
    <i class="helpLabel"><a id="helpViewMoreLink" class="btn-link viewMoreLinkclosed" data-toggle="collapse" data-target="#helpViewMoreBlock" aria-expanded="false" aria-controls="helpViewMoreBlock">
      [@s.text name="global.viewMore" /]
    </a></i>
-   
    <div id="helpViewMoreBlock" class="collapse" aria-labelledby="helpViewMoreBlock" data-parent="#helpViewMoreLink">
       <i class="helpLabel">[@s.text name="${customName}" /]</i>
    </div>
