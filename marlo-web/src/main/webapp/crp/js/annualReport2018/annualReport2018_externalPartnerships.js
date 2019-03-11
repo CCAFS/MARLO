@@ -12,6 +12,17 @@ function init() {
 
   attachEvents();
 
+  // Check the stage of innovation
+  $('select.elementType-repIndPartnershipMainArea').on('change', function() {
+
+    var otherArea = this.value == 6;
+    if(otherArea) {
+      $('.block-pleaseSpecify').slideDown();
+    } else {
+      $('.block-pleaseSpecify').slideUp();
+    }
+  });
+
 }
 
 

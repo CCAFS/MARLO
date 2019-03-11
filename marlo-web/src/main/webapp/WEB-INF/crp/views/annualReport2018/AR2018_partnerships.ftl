@@ -180,7 +180,7 @@
         <div class="col-md-6">
           [@customForm.elementsListComponent name="${customName}.mainAreas" elementType="repIndPartnershipMainArea" elementList=(element.mainAreas)![] label="${customLabel}.table7.mainArea" help=""  listName="mainAreas" keyFieldName="id" displayFieldName="name"  indexLevel=2 /]
         </div>
-        [#local otherArea = true /]
+        [#local otherArea = (element.mainAreas==6)!false /]
         <div class="col-md-6 block-pleaseSpecify" style="display:${otherArea?string('block', 'none')}">
           [@customForm.input name="${customName}.otherPartnershipMainArea" i18nkey="${customLabel}.table7.otherMainArea" className="" required=false editable=editable /]
         </div>
@@ -216,7 +216,7 @@
     <thead>
       <tr class="subHeader">
         <th id="tb-projectId">[@s.text name="${customLabel}.projectsPartnerships.id" /]</th>
-        <th id="tb-phase">[@s.text name="${customLabel}.projectsPartnerships.phase" /]</th>
+        <th id="tb-phase">[@s.text name="${customLabel}.projectsPartnerships.mainArea" /]</th>
       </tr>
     </thead>
     <tbody>
@@ -230,7 +230,7 @@
                 <i style="opacity:0.5">PID</i>
               [/#if]
             </td>
-            <td class="text-center">
+            <td class="text-justify">
               [#if (item.lessons?has_content)!false]
                 ${item.lessons}
               [#else]
