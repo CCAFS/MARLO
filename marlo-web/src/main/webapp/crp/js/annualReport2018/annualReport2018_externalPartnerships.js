@@ -12,19 +12,20 @@ function init() {
 
   attachEvents();
 
-  // Check the stage of innovation
-  $('select.elementType-repIndPartnershipMainArea').on('change', function() {
-
-    var otherArea = this.value == 6;
-    if(otherArea) {
-      $('.block-pleaseSpecify').slideDown();
-    } else {
-      $('.block-pleaseSpecify').slideUp();
+  $('select[class*="elementType-"]').on("addElement removeElement", function(event,id,name) {
+    var $parent = $(this).parents('.keyPartnership');
+    // Other Please Specify
+    if(id == 6) {
+      if(event.type == "addElement") {
+        $parent.find('.block-pleaseSpecify').slideDown();
+      }
+      if(event.type == "removeElement") {
+        $parent.find('.block-pleaseSpecify').slideUp();
+      }
     }
   });
 
 }
-
 
 function attachEvents() {
 
@@ -51,7 +52,7 @@ function addKeyPartnership() {
 
   // Add select
   $item.find('select').select2({
-      width: '100%'
+    width: '100%'
   });
 
   $item.find('textarea').setTrumbowyg();
@@ -84,7 +85,7 @@ function addCrossPartnership() {
 
   // Add select
   $item.find('select').select2({
-      width: '100%'
+    width: '100%'
   });
 
   $item.find('textarea').setTrumbowyg();
@@ -107,7 +108,6 @@ function updateCrossIndexes() {
     $(element).find(".index").html(i + 1);
   });
 }
-
 
 /**
  * File upload (blueimp-tmpl)
