@@ -14,7 +14,7 @@
 		</id>
 		<many-to-one class="org.cgiar.ccafs.marlo.data.model.RepIndPartnershipMainArea"
 			embed-xml="true" fetch="select" insert="true"
-			name="repIndPartnershipMainArea" not-found="exception"
+			name="partnerArea" not-found="exception"
 			optimistic-lock="true" unique="false" update="true">
 			<column name="rep_ind_partnership_main_area_id" />
 		</many-to-one>

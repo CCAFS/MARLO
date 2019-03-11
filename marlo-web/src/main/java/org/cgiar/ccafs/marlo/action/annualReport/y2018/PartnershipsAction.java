@@ -138,7 +138,7 @@ public class PartnershipsAction extends BaseAction {
   private List<ReportSynthesisExternalPartnership> flagshipExternalPartnerships;
   private List<ReportSynthesisExternalPartnershipDTO> flagshipPlannedList;
 
-  private List<RepIndPartnershipMainArea> mainAreas;
+  private List<RepIndPartnershipMainArea> mainAreasSel;
   private List<Institution> partners;
 
   private List<ProjectComponentLesson> projectKeyPartnerships;
@@ -239,15 +239,18 @@ public class PartnershipsAction extends BaseAction {
     return loggedCrp;
   }
 
-  public List<RepIndPartnershipMainArea> getMainAreas() {
-    return mainAreas;
+
+  public List<RepIndPartnershipMainArea> getMainAreasSel() {
+    return mainAreasSel;
   }
+
 
   private String getParnetshipSourceFolder() {
     return APConstants.PARTNERSHIP_FOLDER.concat(File.separator).concat(this.getCrpSession()).concat(File.separator)
       .concat(File.separator).concat(this.getCrpSession() + "_")
       .concat(ReportSynthesis2018SectionStatusEnum.EXTERNAL_PARTNERSHIPS.getStatus()).concat(File.separator);
   }
+
 
   public List<Institution> getPartners() {
     return partners;
@@ -257,19 +260,19 @@ public class PartnershipsAction extends BaseAction {
     return partnerShipList;
   }
 
-
   public List<ProjectComponentLesson> getProjectKeyPartnerships() {
     return projectKeyPartnerships;
   }
+
 
   public ReportSynthesis getReportSynthesis() {
     return reportSynthesis;
   }
 
-
   public Long getSynthesisID() {
     return synthesisID;
   }
+
 
   public String getTransaction() {
     return transaction;
@@ -510,7 +513,7 @@ public class PartnershipsAction extends BaseAction {
 
       if (this.isFlagship()) {
         // Charge Main Areas and Partners Selection List
-        mainAreas = repIndPartnershipMainAreaManager.findAll();
+        mainAreasSel = repIndPartnershipMainAreaManager.findAll();
         partners = institutionManager.findAll().stream().filter(i -> i.isActive()).collect(Collectors.toList());
 
         // Load Project Flagship Partnerships
@@ -662,7 +665,6 @@ public class PartnershipsAction extends BaseAction {
       return NOT_AUTHORIZED;
     }
   }
-
 
   /**
    * Save Key External Collaborations Information
@@ -980,10 +982,10 @@ public class PartnershipsAction extends BaseAction {
 
           areaSave.setReportSynthesisKeyPartnershipExternal(externalDB);
 
-          RepIndPartnershipMainArea mainArea = repIndPartnershipMainAreaManager
-            .getRepIndPartnershipMainAreaById(area.getRepIndPartnershipMainArea().getId());
+          RepIndPartnershipMainArea mainArea =
+            repIndPartnershipMainAreaManager.getRepIndPartnershipMainAreaById(area.getPartnerArea().getId());
 
-          areaSave.setRepIndPartnershipMainArea(mainArea);
+          areaSave.setPartnerArea(mainArea);
 
 
           reportSynthesisKeyPartnershipExternalMainAreaManager
@@ -995,6 +997,7 @@ public class PartnershipsAction extends BaseAction {
     }
   }
 
+
   public void setCrpManager(GlobalUnitManager crpManager) {
     this.crpManager = crpManager;
   }
@@ -1003,10 +1006,10 @@ public class PartnershipsAction extends BaseAction {
     this.flagshipExternalPartnerships = flagshipExternalPartnerships;
   }
 
-
   public void setFlagshipPlannedList(List<ReportSynthesisExternalPartnershipDTO> flagshipPlannedList) {
     this.flagshipPlannedList = flagshipPlannedList;
   }
+
 
   public void setGlobalUnits(List<GlobalUnit> globalUnits) {
     this.globalUnits = globalUnits;
@@ -1028,9 +1031,10 @@ public class PartnershipsAction extends BaseAction {
     this.loggedCrp = loggedCrp;
   }
 
-  public void setMainAreas(List<RepIndPartnershipMainArea> mainAreas) {
-    this.mainAreas = mainAreas;
+  public void setMainAreasSel(List<RepIndPartnershipMainArea> mainAreasSel) {
+    this.mainAreasSel = mainAreasSel;
   }
+
 
   public void setPartners(List<Institution> partners) {
     this.partners = partners;
