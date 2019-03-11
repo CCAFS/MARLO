@@ -13,7 +13,7 @@ public class ReportSynthesisKeyPartnershipExternalMainArea extends MarloBaseEnti
 
   private static final long serialVersionUID = -6108083528060500202L;
   @Expose
-  private RepIndPartnershipMainArea repIndPartnershipMainArea;
+  private RepIndPartnershipMainArea partnerArea;
   @Expose
   private ReportSynthesisKeyPartnershipExternal reportSynthesisKeyPartnershipExternal;
 
@@ -67,8 +67,8 @@ public class ReportSynthesisKeyPartnershipExternalMainArea extends MarloBaseEnti
   }
 
 
-  public RepIndPartnershipMainArea getRepIndPartnershipMainArea() {
-    return repIndPartnershipMainArea;
+  public RepIndPartnershipMainArea getPartnerArea() {
+    return partnerArea;
   }
 
   public ReportSynthesisKeyPartnershipExternal getReportSynthesisKeyPartnershipExternal() {
@@ -88,14 +88,17 @@ public class ReportSynthesisKeyPartnershipExternalMainArea extends MarloBaseEnti
     return true;
   }
 
+
   @Override
   public void setModifiedBy(User modifiedBy) {
 
   }
 
-  public void setRepIndPartnershipMainArea(RepIndPartnershipMainArea repIndPartnershipMainArea) {
-    this.repIndPartnershipMainArea = repIndPartnershipMainArea;
+
+  public void setPartnerArea(RepIndPartnershipMainArea partnerArea) {
+    this.partnerArea = partnerArea;
   }
+
 
   public void setReportSynthesisKeyPartnershipExternal(
     ReportSynthesisKeyPartnershipExternal reportSynthesisKeyPartnershipExternal) {

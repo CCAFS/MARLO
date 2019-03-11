@@ -194,15 +194,8 @@
       [#-- Main area of partnership --]
       <div class="form-group row">
         <div class="col-md-6">
-          [@customForm.elementsListComponent name="${customName}.mainAreas" id="${(element.id)!'TEMPLATE'}" elementType="repIndPartnershipMainArea" elementList=(element.mainAreas)![] label="${customLabel}.table7.mainArea" help=""  listName="mainAreas" keyFieldName="id" displayFieldName="name"  indexLevel=2 /]
-        </div>
-        [#local otherArea = false /]
-        [#list (element.mainAreas)![] as owner]
-          [#if (owner.repIndPartnershipMainArea.id == 6)!false][#local otherArea = true /][#break][/#if]
-        [/#list]
-        <div class="col-md-6 block-pleaseSpecify" style="display:${otherArea?string('block', 'none')}">
-          [@customForm.input name="${customName}.otherPartnershipMainArea" i18nkey="${customLabel}.table7.otherMainArea" className="" required=false editable=editable /]
-        </div>
+          [@customForm.elementsListComponent name="${customName}.mainAreas" id="${(element.id)!'TEMPLATE'}" elementType="partnerArea" elementList=(element.mainAreas)![] label="${customLabel}.table7.mainArea" help=""  listName="mainAreasSel" keyFieldName="id" displayFieldName="name"  indexLevel=2 /]
+        </div>        
       </div>
     
       [#-- Partners --]
