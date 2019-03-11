@@ -261,6 +261,12 @@ public class PoliciesAction extends BaseAction {
 
           for (ProjectPolicy projectPolicy : plannedProjectPolicies) {
             projectPolicy.getProjectPolicyInfo(phase);
+            projectPolicy.setSubIdos(projectPolicy.getSubIdos(this.getActualPhase()));
+            projectPolicy.setCrossCuttingMarkers(projectPolicy.getCrossCuttingMarkers(this.getActualPhase()));
+            projectPolicy.setOwners(projectPolicy.getOwners(this.getActualPhase()));
+            projectPolicy.setGeographicScopes(projectPolicy.getGeographicScopes(this.getActualPhase()));
+            projectPolicy.setRegions(projectPolicy.getRegions(this.getActualPhase()));
+            projectPolicy.setCountries(projectPolicy.getCountries(this.getActualPhase()));
             projectPolicies.add(projectPolicy);
           }
         }
@@ -282,7 +288,12 @@ public class PoliciesAction extends BaseAction {
         projectPolicy.getProjectPolicyInfo(phase);
         projectPolicy.setSelectedFlahsgips(new ArrayList<>());
         projectPolicy.getSelectedFlahsgips().addAll(reportSynthesisFlagshipProgressPolicyDTO.getLiaisonInstitutions());
-
+        projectPolicy.setSubIdos(projectPolicy.getSubIdos(this.getActualPhase()));
+        projectPolicy.setCrossCuttingMarkers(projectPolicy.getCrossCuttingMarkers(this.getActualPhase()));
+        projectPolicy.setOwners(projectPolicy.getOwners(this.getActualPhase()));
+        projectPolicy.setGeographicScopes(projectPolicy.getGeographicScopes(this.getActualPhase()));
+        projectPolicy.setRegions(projectPolicy.getRegions(this.getActualPhase()));
+        projectPolicy.setCountries(projectPolicy.getCountries(this.getActualPhase()));
         projectPolicies.add(projectPolicy);
 
       }
@@ -626,6 +637,7 @@ public class PoliciesAction extends BaseAction {
     List<ProjectPolicy> selectedProjectPolicies = new ArrayList<ProjectPolicy>();
     policiesByOrganizationTypeDTOs = new ArrayList<ReportSynthesisPoliciesByOrganizationTypeDTO>();
     if (projectPolicies != null && !projectPolicies.isEmpty()) {
+      projectPolicies.sort((p1, p2) -> p1.getId().compareTo(p2.getId()));
       selectedProjectPolicies.addAll(projectPolicies);
       // Remove unchecked policies
       if (reportSynthesis.getReportSynthesisFlagshipProgress().getProjectPolicies() != null
