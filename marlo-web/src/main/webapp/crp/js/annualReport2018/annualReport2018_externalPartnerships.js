@@ -57,6 +57,9 @@ function addKeyPartnership() {
 
   $item.find('textarea').setTrumbowyg();
 
+  // Add Uploader
+  $item.find('.fileUploadContainer').setFileuploader();
+
   $item.show('slow');
   updateIndexes();
 }
@@ -113,66 +116,62 @@ function updateCrossIndexes() {
  * File upload (blueimp-tmpl)
  */
 function setFileUploads() {
-
-  var containerClass = ".fileUploadContainer";
-  var $uploadBlock = $(containerClass);
-  var $fileUpload = $uploadBlock.find('.upload');
-
-  $fileUpload.fileupload({
-      dataType: 'json',
-      start: function(e) {
-        var $ub = $(e.target).parents(containerClass);
-        $ub.addClass('blockLoading');
-      },
-      stop: function(e) {
-        var $ub = $(e.target).parents(containerClass);
-        $ub.removeClass('blockLoading');
-      },
-      done: function(e,data) {
-        var r = data.result;
-        console.log(r);
-        if(r.saved) {
-          var $ub = $(e.target).parents(containerClass);
-          $ub.find('.textMessage .contentResult').html(r.fileFileName);
-          $ub.find('.textMessage').show();
-          $ub.find('.fileUpload').hide();
-          // Set file ID
-          $ub.find('input.fileID').val(r.fileID);
-          // Set file URL
-          $ub.find('.fileUploaded a').attr('href', r.path + '/' + r.fileFileName)
-        }
-      },
-      fail: function(e,data) {
-        var $ub = $(e.target).parents(containerClass);
-        $ub.animateCss('shake');
-      },
-      progressall: function(e,data) {
-        var $ub = $(e.target).parents(containerClass);
-        var progress = parseInt(data.loaded / data.total * 100, 10);
-        $ub.find('.progress').fadeIn(100);
-        $ub.find('.progress .progress-bar').width(progress + '%');
-        if(progress == 100) {
-          $ub.find('.progress').fadeOut(1000, function() {
-            $ub.find('.progress .progress-bar').width(0);
-          });
-        }
-      }
+  $('form .fileUploadContainer').each(function(i,e) {
+    $(this).setFileuploader();
   });
-
-  // Prepare data
-  $fileUpload.bind('fileuploadsubmit', function(e,data) {
-
-  });
-
-  // Remove file event
-  $uploadBlock.find('.removeIcon').on('click', function() {
-    var $ub = $(this).parents(containerClass);
-    $ub.find('.textMessage .contentResult').html("");
-    $ub.find('.textMessage').hide();
-    $ub.find('.fileUpload').show();
-    $ub.find('input.fileID').val('');
-    // Clear URL
-    $ub.find('.fileUploaded a').attr('href', '');
-  });
-
 }
+
+jQuery.fn.setFileuploader = function() {
+  if($.fn.fileupload) {
+    var $uploadBlock = $(this);
+    var $fileUpload = $uploadBlock.find('.upload');
+
+    $fileUpload.fileupload({
+        dataType: 'json',
+        start: function(e) {
+          var $ub = $(e.target).parents('.fileUploadContainer');
+          $ub.addClass('blockLoading');
+        },
+        stop: function(e) {
+          var $ub = $(e.target).parents('.fileUploadContainer');
+          $ub.removeClass('blockLoading');
+        },
+        done: function(e,data) {
+          var r = data.result;
+          if(r.saved) {
+            console.log(r);
+            var $ub = $(e.target).parents('.fileUploadContainer');
+            console.log($ub);
+            $ub.find('.textMessage .contentResult').html(r.fileFileName);
+            $ub.find('.textMessage').show();
+            $ub.find('.fileUpload').hide();
+            // Set file ID
+            $ub.find('input.fileID').val(r.fileID);
+            $ub.find('input.outcomeID').val(r.outcomeID);
+          }
+        },
+        progressall: function(e,data) {
+          var progress = parseInt(data.loaded / data.total * 100, 10);
+        }
+    });
+
+    // Prepare data
+    $fileUpload.bind('fileuploadsubmit', function(e,data) {
+      var outcomeID = $(e.target).parents('.outcome').find('.outcomeId').val();
+      data.formData = {
+          outcomeID: outcomeID,
+          actionName: actionName
+      };
+    });
+
+    // Remove file event
+    $uploadBlock.find('.removeIcon').on('click', function() {
+      var $ub = $(this).parents('.fileUploadContainer');
+      $ub.find('.textMessage .contentResult').html("");
+      $ub.find('.textMessage').hide();
+      $ub.find('.fileUpload').show();
+      $ub.find('input.fileID').val('');
+      $ub.find('input.outcomeID').val('');
+    });
+  }
+};

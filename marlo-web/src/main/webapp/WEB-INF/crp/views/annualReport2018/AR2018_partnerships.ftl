@@ -79,32 +79,62 @@
                     <br />
                   </div>
                 
-                  [#-- Table 7: Key external partnerships --]
-                  <div class="form-group">
-                    <h4 class="simpleTitle headTitle">[@s.text name="${customLabel}.table7.title" /]</h4>
-                    <div class="listKeyPartnerships">
-                        [#if reportSynthesis.reportSynthesisKeyPartnership.partnerships?has_content]
-                        [#list reportSynthesis.reportSynthesisKeyPartnership.partnerships as item]
-                          [@addKeyExternalPartnership element=item name="${customName}.partnerships" index=item_index isEditable=editable/]
-                        [/#list]
-                       [/#if]
-                      </div>
-                    [#if canEdit && editable]
-                      <div class="text-right">
-                        <div class="addKeyPartnership bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> [@s.text name="annualReport2018.externalPartnerships.addPartnershipButton"/]</div>
-                      </div> 
-                    [/#if]
-                    <br />
-                  </div>
                   
-                  [#-- Projects Key Partnerships --]
-                  [#if !PMU]
-                  <div class="form-group">
-                    <h4 class="simpleTitle headTitle">[@customForm.text name="${customLabel}.projectsPartnerships.title" param="${currentCycleYear}" /] (${projectKeyPartnerships?size})</h4>
-                    <div class="viewMoreSyntesis-block">
-                      [@projectsKeyPartnershipsTable name="${customName}.projectsPartnerships" list=projectKeyPartnerships /]
+                  [#-- Table 8: Key external partnerships --]
+                  [#if PMU]
+                    <div class="form-group">
+                      <h4 class="simpleTitle headTitle">[@s.text name="${customLabel}.table7.title" /]</h4>
+                      <table class="table">
+                        <thead>
+                          <tr>
+                            <th>Lead FP</th>
+                            <th>Description of partnership</th>
+                            <th>List of key partners</th>
+                            <th>Main area of partnership</th>
+                            <th>Include in AR</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          [#list [ {}, {} , {} ] as item]
+                          <tr>
+                            <td> ${(item.reportSynthesis.crpProgram.acronym)!'FP'}</td>
+                            <td> [@utils.tableText value=(item.description)!"" /] </td>
+                            <td> [@utils.tableList list=(item.mainAreas)![] displayFieldName="title" /] </td>
+                            <td> [@utils.tableList list=(item.institutions)![] displayFieldName="title" /] </td>
+                            <td class="text-center">
+                              [#assign isChecked = ((!reportSynthesis.reportSynthesisKeyPartnership.partnershipsIds?seq_contains(item.id))!true) /]
+                              [@customForm.checkmark id="check-${(item.id)!}" name="reportSynthesis.reportSynthesisKeyPartnership.partnerships" value="${(item.id)!''}" checked=isChecked editable=editable centered=true/]
+                            </td>
+                          </tr>
+                          [/#list]
+                        </tbody>
+                      </table>
                     </div>
-                  </div>
+                  [#else]
+                    <div class="form-group">
+                      <h4 class="simpleTitle headTitle">[@s.text name="${customLabel}.table7.title" /]</h4>
+                      <div class="listKeyPartnerships">
+                        [#if reportSynthesis.reportSynthesisKeyPartnership.partnerships?has_content]
+                          [#list reportSynthesis.reportSynthesisKeyPartnership.partnerships as item]
+                            [@addKeyExternalPartnership element=item name="${customName}.partnerships" index=item_index isEditable=editable/]
+                          [/#list]
+                        [/#if]
+                      </div>
+                      [#if canEdit && editable]
+                        <div class="text-right">
+                          <div class="addKeyPartnership bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> [@s.text name="annualReport2018.externalPartnerships.addPartnershipButton"/]</div>
+                        </div> 
+                      [/#if]
+                      <br />
+                    </div>
+                    
+                    [#-- Projects Key Partnerships --]
+                    <div class="form-group">
+                      <h4 class="simpleTitle headTitle">[@customForm.text name="${customLabel}.projectsPartnerships.title" param="${currentCycleYear}" /] (${projectKeyPartnerships?size})</h4>
+                      <div class="viewMoreSyntesis-block">
+                        [@projectsKeyPartnershipsTable name="${customName}.projectsPartnerships" list=projectKeyPartnerships /]
+                      </div>
+                    </div>
                   [/#if]
                </div>
                
@@ -205,16 +235,16 @@
     
       [#-- Upload Template --]
       <div class="form-group" style="position:relative" listname="">
-        [#if !template]
+        [#if true]
           [@customForm.fileUploadAjax 
             fileDB=(element.file)!{} 
-            name="annualReport2018.externalPartnerships.table7.documentation" 
+            name="${customName}.file.id" 
             label="annualReport2018.externalPartnerships.table7.documentation"
             dataUrl="${baseUrl}/uploadPartnership.do"  
             path="${(action.getPath())!}"
             isEditable=editable
             labelClass=""
-            required=true
+            required=false
           /]
         [#else]
           <p><i> Once you have save this new Key Partnership you will be able to upload the documentation.</i></p>
@@ -237,11 +267,12 @@
     </thead>
     <tbody>
       [#if list?has_content]
-          [#list list as item]
+        [#list list as item]
+          [#local url][@s.url namespace="/projects" action="${(crpSession)!}/partners"][@s.param name='projectID']${(item.project.id)!}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
           <tr>
             <td class="text-center">
               [#if (item.project.id?has_content)!false]
-                ${item.project.id}
+                <a href="${url}" target="_blank"> P${item.project.id} </a>
               [#else]
                 <i style="opacity:0.5">PID</i>
               [/#if]
@@ -254,11 +285,11 @@
               [/#if]
             </td>           
           </tr>
-          [/#list]
-        [#else]
-          <tr>
-            <td class="text-center" colspan="6"><i>No entries added yet.</i></td>
-          </tr>
+        [/#list]
+      [#else]
+        <tr>
+          <td class="text-center" colspan="6"><i>No entries added yet.</i></td>
+        </tr>
       [/#if]
     </tbody>
   </table>
