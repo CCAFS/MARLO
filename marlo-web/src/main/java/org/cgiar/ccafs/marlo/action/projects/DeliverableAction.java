@@ -752,7 +752,8 @@ public class DeliverableAction extends BaseAction {
    * @return
    */
   public List<ProjectPartnerPerson> getPersons(long projectPartnerId) {
-    if (deliverable.getDeliverableInfo().isPrevious()) {
+    if (deliverable.getDeliverableInfo(this.getActualPhase()) != null
+      && deliverable.getDeliverableInfo(this.getActualPhase()).isPrevious()) {
       return projectPartnerPersonManager.findAllForProjectPartner(projectPartnerId);
     } else {
       return projectPartnerPersonManager.findAllActiveForProjectPartner(projectPartnerId);
