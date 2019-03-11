@@ -581,7 +581,7 @@ public class PartnershipsAction extends BaseAction {
 
 
     if (this.isPMU()) {
-
+      this.flagshipExternalPartnerships(liaisonInstitutions);
     }
 
     // ADD PMU as liasion Institution too
