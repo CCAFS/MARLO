@@ -178,14 +178,28 @@
         <td class="">
           [@utils.tableText value=(item.composedName)!"" /]
           [#if item.project??]<br /> <small>(From Project P${item.project.id})</small> [/#if]
+          
+          [#if PMU]
+          <br />
+          <div class="form-group">
+            [#list (item.selectedFlahsgips)![] as liason]
+              <span class="programTag" style="border-color:${(liason.crpProgram.color)!'#fff'}" title="${(liason.composedName)!}">${(liason.acronym)!}</span>
+            [/#list]
+          </div>
+          [/#if]
         </td>
         [#-- Level of Maturity --]
         <td class="text-center">[@utils.tableText value=(item.projectPolicyInfo.repIndStageProcess.name)!"" /]</td>
         [#-- Sub-IDOs --]
-        <td>[@utils.tableList list=(item.subIdos)![]  displayFieldName="srfSubIdo.description" /]</td>
+        <td> <small>[@utils.tableList list=(item.subIdos)![]  displayFieldName="srfSubIdo.description" /]</small> </td>
         [#if expanded]
           [#-- Gender --]
-          <td class="text-center"> <p class="dacMarker level-2" title="0 - Not Targeted">0</p>  </td>
+          <td class="text-center">
+            [#list (item.crossCuttingMarkers)![] as ccm]
+              - ${ccm}
+            [/#list] 
+            <p class="dacMarker level-2" title="0 - Not Targeted"> 0 </p>  
+          </td>
           [#-- Youth --]
           <td class="text-center"> <p class="dacMarker level-2" title="0 - Not Targeted">0</p> </td>
           [#-- CapDev --]
@@ -195,12 +209,12 @@
           [#-- Policy Type --]
           <td>[@utils.tableText value=(item.projectPolicyInfo.repIndOrganizationType.name)!"" /]</td>
           [#-- Owners--]
-          <td>[@utils.tableList list=(item.owners)![]  displayFieldName="name"/]</td>
+          <td class="col-md-1">[@utils.tableList list=(item.owners)![]  displayFieldName="repIndPolicyType.name"/]</td>
           [#-- Geographic Scope--]
-          <td>
-            [@utils.tableList list=(item.geographicScopes)![]  displayFieldName="name"/] <br />
-            [@utils.tableList list=(item.regions)![]  displayFieldName="composedName"/] <br />
-            [@utils.tableList list=(item.countries)![]  displayFieldName="name"/]
+          <td class="col-md-1">
+            [@utils.tableList list=(item.geographicScopes)![]  displayFieldName="repIndGeographicScope.name" showEmpty=false /] <br />
+            [@utils.tableList list=(item.regions)![]  displayFieldName="locElement.composedName" showEmpty=false /] <br />
+            [@utils.tableList list=(item.countries)![]  displayFieldName="locElement.name" showEmpty=false /]
           </td>
         [/#if]
         [#if !expanded]
@@ -218,3 +232,12 @@
   </table>
 
 [/#macro]
+
+[#function getMarker element name]
+  [#list (element.crossCuttingMarkers)![] as ccm]
+    [#if ccm.cgiarCrossCuttingMarker.name == name]
+      [#return (ccm.repIndGenderYouthFocusLevel.powbName)!'0 - Not Targeted' ]
+    [/#if]
+  [/#list]
+  [#return "0 - Not Targeted" ]
+[/#function]

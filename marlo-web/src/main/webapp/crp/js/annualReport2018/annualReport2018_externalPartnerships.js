@@ -12,7 +12,7 @@ function init() {
 
   attachEvents();
 
-  $('select[class*="elementType-"]').on("addElement removeElement", function(event,id,name) {
+  $('select[class*="elementType-partnerArea"]').on("addElement removeElement", function(event,id,name) {
     var $parent = $(this).parents('.keyPartnership');
     // Other Please Specify
     if(id == 6) {
@@ -123,24 +123,26 @@ function setFileUploads() {
 
 jQuery.fn.setFileuploader = function() {
   if($.fn.fileupload) {
+
+    var containerClass = ".fileUploadContainer";
     var $uploadBlock = $(this);
     var $fileUpload = $uploadBlock.find('.upload');
 
     $fileUpload.fileupload({
         dataType: 'json',
         start: function(e) {
-          var $ub = $(e.target).parents('.fileUploadContainer');
+          var $ub = $(e.target).parents(containerClass);
           $ub.addClass('blockLoading');
         },
         stop: function(e) {
-          var $ub = $(e.target).parents('.fileUploadContainer');
+          var $ub = $(e.target).parents(containerClass);
           $ub.removeClass('blockLoading');
         },
         done: function(e,data) {
           var r = data.result;
           if(r.saved) {
             console.log(r);
-            var $ub = $(e.target).parents('.fileUploadContainer');
+            var $ub = $(e.target).parents(containerClass);
             console.log($ub);
             $ub.find('.textMessage .contentResult').html(r.fileFileName);
             $ub.find('.textMessage').show();
@@ -150,8 +152,20 @@ jQuery.fn.setFileuploader = function() {
             $ub.find('input.outcomeID').val(r.outcomeID);
           }
         },
+        fail: function(e,data) {
+          var $ub = $(e.target).parents(containerClass);
+          $ub.animateCss('shake');
+        },
         progressall: function(e,data) {
+          var $ub = $(e.target).parents(containerClass);
           var progress = parseInt(data.loaded / data.total * 100, 10);
+          $ub.find('.progress').fadeIn(100);
+          $ub.find('.progress .progress-bar').width(progress + '%');
+          if(progress == 100) {
+            $ub.find('.progress').fadeOut(1000, function() {
+              $ub.find('.progress .progress-bar').width(0);
+            });
+          }
         }
     });
 
@@ -166,12 +180,14 @@ jQuery.fn.setFileuploader = function() {
 
     // Remove file event
     $uploadBlock.find('.removeIcon').on('click', function() {
-      var $ub = $(this).parents('.fileUploadContainer');
+      var $ub = $(this).parents(containerClass);
       $ub.find('.textMessage .contentResult').html("");
       $ub.find('.textMessage').hide();
       $ub.find('.fileUpload').show();
       $ub.find('input.fileID').val('');
       $ub.find('input.outcomeID').val('');
+      // Clear URL
+      $ub.find('.fileUploaded a').attr('href', '');
     });
   }
 };
