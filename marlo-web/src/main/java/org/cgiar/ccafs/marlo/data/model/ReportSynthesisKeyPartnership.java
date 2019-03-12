@@ -89,11 +89,11 @@ public class ReportSynthesisKeyPartnership extends MarloAuditableEntity implemen
    */
   public long[] getPartnershipIds() {
 
-    List<ReportSynthesisKeyPartnershipPmu> plannedExternalPartnership = this.getPlannedExternalPartnerships();
-    if (plannedExternalPartnership != null) {
-      long[] ids = new long[plannedExternalPartnership.size()];
+    List<ReportSynthesisKeyPartnershipExternal> externalPartnerships = this.getSelectedExternalPartnerships();
+    if (externalPartnerships != null) {
+      long[] ids = new long[externalPartnerships.size()];
       for (int i = 0; i < ids.length; i++) {
-        ids[i] = plannedExternalPartnership.get(i).getId();
+        ids[i] = externalPartnerships.get(i).getId();
       }
       return ids;
     }
