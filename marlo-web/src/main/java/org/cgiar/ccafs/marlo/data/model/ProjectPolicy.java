@@ -118,6 +118,11 @@ public class ProjectPolicy extends MarloAuditableEntity implements java.io.Seria
     return evidences;
   }
 
+  public List<ProjectExpectedStudyPolicy> getEvidences(Phase phase) {
+    return new ArrayList<>(this.getEvidences().stream().filter(pr -> pr.isActive() && pr.getPhase().equals(phase))
+      .collect(Collectors.toList()));
+  }
+
   public List<ProjectPolicyGeographicScope> getGeographicScopes() {
     return geographicScopes;
   }

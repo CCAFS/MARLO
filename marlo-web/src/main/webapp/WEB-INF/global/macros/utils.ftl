@@ -76,7 +76,7 @@
   [#if (value?trim?has_content)!false]${value}[#else]<i style="opacity:0.8"><nobr>[@s.text name="global.notDefined"/]</nobr></i>[/#if]
 [/#macro]
 
-[#macro tableList list displayFieldName="title" showEmpty=true]
+[#macro tableList list displayFieldName="title" showEmpty=true nobr=false]
   [#local levels = displayFieldName?split(".")]
   [#local valuesArray = [] /]
   [#if (list?has_content)!false]
@@ -89,7 +89,7 @@
     
     [#if valuesArray?size > 1 ]
       <ul style="padding: 0">
-        [#list valuesArray as item]<li style="list-style-position: inside;">${item}</li>[/#list]
+        [#list valuesArray as item]<li style="list-style-position: inside;${nobr?string('white-space: nowrap;','')}">${item}</li>[/#list]
       </ul>
     [#else]
       ${valuesArray[0]}

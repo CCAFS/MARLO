@@ -156,10 +156,12 @@
         <th class="text-center" rowspan="2">[@s.text name="${customLabel}.table2.type" /]</th>
         <th class="text-center" rowspan="2">[@s.text name="${customLabel}.table2.whose" /]</th>
         <th class="text-center" rowspan="2">[@s.text name="${customLabel}.table2.geoScope" /]</th>
+        <th class="text-center" rowspan="2">Evidence</th>
         [/#if]
         [#if !expanded]
         <th class="col-md-1 text-center" rowspan="2">[@s.text name="${customLabel}.table2.includeAR" /]</th>
         [/#if]
+        
       </tr>
       [#if expanded]
       <tr>
@@ -195,9 +197,7 @@
         [#if expanded]
           [#-- Gender --]
           <td class="text-center">
-            [#list (item.crossCuttingMarkers)![] as ccm]
-              - ${ccm}
-            [/#list] 
+            [#list (item.crossCuttingMarkers)![] as ccm]${ccm}[/#list]
             <p class="dacMarker level-2" title="0 - Not Targeted"> 0 </p>  
           </td>
           [#-- Youth --]
@@ -209,13 +209,20 @@
           [#-- Policy Type --]
           <td>[@utils.tableText value=(item.projectPolicyInfo.repIndOrganizationType.name)!"" /]</td>
           [#-- Owners--]
-          <td class="col-md-1">[@utils.tableList list=(item.owners)![]  displayFieldName="repIndPolicyType.name"/]</td>
+          <td class="col-md-1">[@utils.tableList list=(item.owners)![]  displayFieldName="repIndPolicyType.name" nobr=true /]</td>
           [#-- Geographic Scope--]
           <td class="col-md-1">
-            [@utils.tableList list=(item.geographicScopes)![]  displayFieldName="repIndGeographicScope.name" showEmpty=false /] <br />
-            [@utils.tableList list=(item.regions)![]  displayFieldName="locElement.composedName" showEmpty=false /] <br />
-            [@utils.tableList list=(item.countries)![]  displayFieldName="locElement.name" showEmpty=false /]
+            <div class="">
+              <strong>[@utils.tableList list=(item.geographicScopes)![]  displayFieldName="repIndGeographicScope.name" nobr=true /]</strong>
+            </div>
+            <div class="">
+              [@utils.tableList list=(item.regions)![]  displayFieldName="locElement.composedName" showEmpty=false nobr=true /]
+            </div>
+            <div class="">
+              [@utils.tableList list=(item.countries)![]  displayFieldName="locElement.name" showEmpty=false nobr=true /]
+            </div>
           </td>
+          <td>[@utils.tableList list=(item.evidences)![]  displayFieldName="projectExpectedStudy.id" nobr=true /]</td>
         [/#if]
         [#if !expanded]
         <td class="text-center">
