@@ -24,9 +24,13 @@ public class ReportSynthesisKeyPartnership extends MarloAuditableEntity implemen
   @Expose
   private String summary;
 
+  @Expose
+  private String summaryCgiar;
+
 
   private Set<ReportSynthesisKeyPartnershipExternal> reportSynthesisKeyPartnershipExternals =
     new HashSet<ReportSynthesisKeyPartnershipExternal>(0);
+
 
   private List<ReportSynthesisKeyPartnershipExternal> partnerships;
 
@@ -46,7 +50,6 @@ public class ReportSynthesisKeyPartnership extends MarloAuditableEntity implemen
 
   public ReportSynthesisKeyPartnership() {
   }
-
 
   @Override
   public boolean equals(Object obj) {
@@ -69,7 +72,6 @@ public class ReportSynthesisKeyPartnership extends MarloAuditableEntity implemen
     }
     return true;
   }
-
 
   public List<ReportSynthesisKeyPartnershipCollaboration> getCollaborations() {
     return collaborations;
@@ -100,6 +102,7 @@ public class ReportSynthesisKeyPartnership extends MarloAuditableEntity implemen
     return null;
   }
 
+
   public List<ReportSynthesisKeyPartnershipExternal> getPartnerships() {
     return partnerships;
   }
@@ -108,7 +111,6 @@ public class ReportSynthesisKeyPartnership extends MarloAuditableEntity implemen
   public List<ReportSynthesisKeyPartnershipPmu> getPlannedExternalPartnerships() {
     return plannedExternalPartnerships;
   }
-
 
   public String getPlannedExternalPartnershipsValue() {
     return plannedExternalPartnershipsValue;
@@ -145,6 +147,11 @@ public class ReportSynthesisKeyPartnership extends MarloAuditableEntity implemen
   }
 
 
+  public String getSummaryCgiar() {
+    return summaryCgiar;
+  }
+
+
   @Override
   public int hashCode() {
     final int prime = 31;
@@ -168,20 +175,20 @@ public class ReportSynthesisKeyPartnership extends MarloAuditableEntity implemen
     this.plannedExternalPartnerships = plannedExternalPartnerships;
   }
 
+
   public void setPlannedExternalPartnershipsValue(String plannedExternalPartnershipsValue) {
     this.plannedExternalPartnershipsValue = plannedExternalPartnershipsValue;
   }
-
 
   public void setReportSynthesis(ReportSynthesis reportSynthesis) {
     this.reportSynthesis = reportSynthesis;
   }
 
+
   public void setReportSynthesisKeyPartnershipCollaborations(
     Set<ReportSynthesisKeyPartnershipCollaboration> reportSynthesisKeyPartnershipCollaborations) {
     this.reportSynthesisKeyPartnershipCollaborations = reportSynthesisKeyPartnershipCollaborations;
   }
-
 
   public void setReportSynthesisKeyPartnershipExternals(
     Set<ReportSynthesisKeyPartnershipExternal> reportSynthesisKeyPartnershipExternals) {
@@ -200,8 +207,13 @@ public class ReportSynthesisKeyPartnership extends MarloAuditableEntity implemen
     this.selectedExternalPartnerships = selectedExternalPartnerships;
   }
 
+
   public void setSummary(String summary) {
     this.summary = summary;
+  }
+
+  public void setSummaryCgiar(String summaryCgiar) {
+    this.summaryCgiar = summaryCgiar;
   }
 
 }

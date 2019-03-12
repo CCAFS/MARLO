@@ -21,6 +21,10 @@
 			optimistic-lock="true" type="string" unique="false">
 			<column length="65535" name="summary" />
 		</property>
+		<property generated="never" lazy="false" name="summaryCgiar"
+      optimistic-lock="true" type="string" unique="false">
+      <column length="65535" name="summary_cgiar" />
+    </property>
 		<property generated="never" lazy="false" name="active"
 			optimistic-lock="true" type="boolean" unique="false">
 			<column name="is_active" not-null="true" />
