@@ -58,7 +58,7 @@
     </action>
     
     <!-- Table 4: Condensed list of innovations by stage for this reporting year   -->
-    <action name="{crp}/innovations" class="org.cgiar.ccafs.marlo.action.annualReport.FlagshipProgressAction">
+    <action name="{crp}/innovations" class="org.cgiar.ccafs.marlo.action.annualReport.y2018.InnovationsAction">
       <interceptor-ref name="editReportSynthesisStack" />
       <result name="input">/WEB-INF/crp/views/annualReport2018/AR2018_innovations.ftl</result>
       <result name="success" type="redirectAction">

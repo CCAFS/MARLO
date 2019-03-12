@@ -182,7 +182,7 @@ public class UnsubmitProjectAction extends BaseAction {
           ccEmails.append(", ");
         }
 
-        if (this.hasSpecificities(APConstants.CRP_EMAIL_PL_CRPADMIN_FL)) {
+        if (this.hasSpecificities(APConstants.CRP_EMAIL_CC_FL_FM_CL)) {
           // CC will be also other Cluster Leaders
           for (CrpClusterOfActivity crpClusterOfActivity : crpProgram.getCrpClusterOfActivities().stream()
             .filter(cl -> cl.isActive() && cl.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())) {
@@ -257,7 +257,6 @@ public class UnsubmitProjectAction extends BaseAction {
     message.append(this.getText("email.support", new String[] {crpAdmins}));
     message.append(this.getText("email.getStarted"));
     message.append(this.getText("email.bye"));
-    System.out.println("\ntoEmail : " + toEmail + "\n, ccEmail: " + ccEmail + ",\n bbcEmail " + bbcEmails);
     sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
   }
 

@@ -218,7 +218,7 @@ public class ProjectSubmissionAction extends BaseAction {
           ccEmails.append(", ");
         }
         // CC will be also other Cluster Leaders
-        if (this.hasSpecificities(APConstants.CRP_EMAIL_PL_CRPADMIN_FL)) {
+        if (this.hasSpecificities(APConstants.CRP_EMAIL_CC_FL_FM_CL)) {
 
           for (CrpClusterOfActivity crpClusterOfActivity : crpProgram.getCrpClusterOfActivities().stream()
             .filter(cl -> cl.isActive() && cl.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())) {
