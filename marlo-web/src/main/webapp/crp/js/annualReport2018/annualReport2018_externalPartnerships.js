@@ -24,7 +24,6 @@ function init() {
       }
     }
   });
-
 }
 
 function attachEvents() {
@@ -143,13 +142,11 @@ jQuery.fn.setFileuploader = function() {
           if(r.saved) {
             console.log(r);
             var $ub = $(e.target).parents(containerClass);
-            console.log($ub);
             $ub.find('.textMessage .contentResult').html(r.fileFileName);
             $ub.find('.textMessage').show();
             $ub.find('.fileUpload').hide();
             // Set file ID
             $ub.find('input.fileID').val(r.fileID);
-            $ub.find('input.outcomeID').val(r.outcomeID);
           }
         },
         fail: function(e,data) {
@@ -171,10 +168,8 @@ jQuery.fn.setFileuploader = function() {
 
     // Prepare data
     $fileUpload.bind('fileuploadsubmit', function(e,data) {
-      var outcomeID = $(e.target).parents('.outcome').find('.outcomeId').val();
       data.formData = {
-          outcomeID: outcomeID,
-          actionName: actionName
+        actionName: actionName
       };
     });
 
@@ -185,7 +180,6 @@ jQuery.fn.setFileuploader = function() {
       $ub.find('.textMessage').hide();
       $ub.find('.fileUpload').show();
       $ub.find('input.fileID').val('');
-      $ub.find('input.outcomeID').val('');
       // Clear URL
       $ub.find('.fileUploaded a').attr('href', '');
     });

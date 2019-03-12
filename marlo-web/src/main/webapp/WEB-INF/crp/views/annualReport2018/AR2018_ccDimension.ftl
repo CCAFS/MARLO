@@ -55,14 +55,14 @@
             <div class="bootstrapTabs">
               [#-- Tabs --] 
               <ul class="nav nav-tabs" role="tablist"> 
-                <li role="presentation" class="active"><a index="1" href="#tab-gender" aria-controls="info" role="tab" data-toggle="tab">1.3.1 Gender</a></li>
-                <li role="presentation" class=" "><a index="2" href="#tab-youth" aria-controls="info" role="tab" data-toggle="tab">1.3.2 Youth</a></li>
-                <li role="presentation" class=" "><a index="2" href="#tab-capdev" aria-controls="info" role="tab" data-toggle="tab">1.3.3 Capacity Development</small> </a></li>
-                <li role="presentation" class=" "><a index="2" href="#tab-climateChange" aria-controls="info" role="tab" data-toggle="tab">1.3.4 Climate Change</a></li>
+                <li role="presentation" class="[#if indexTab == 1]active[/#if]"><a index="1" href="#tab-gender" aria-controls="info" role="tab" data-toggle="tab">1.3.1 Gender</a></li>
+                <li role="presentation" class="[#if indexTab == 2]active[/#if]"><a index="2" href="#tab-youth" aria-controls="info" role="tab" data-toggle="tab">1.3.2 Youth</a></li>
+                <li role="presentation" class="[#if indexTab == 3]active[/#if]"><a index="3" href="#tab-capdev" aria-controls="info" role="tab" data-toggle="tab">1.3.3 Capacity Development</small> </a></li>
+                <li role="presentation" class="[#if indexTab == 4]active[/#if]"><a index="4" href="#tab-climateChange" aria-controls="info" role="tab" data-toggle="tab">1.3.4 Climate Change</a></li>
               </ul>
               [#-- Content --] 
               <div class="tab-content ">
-                <div id="tab-gender" role="tabpanel" class="tab-pane fade in active">
+                <div id="tab-gender" role="tabpanel" class="tab-pane fade [#if indexTab == 1]in active[/#if]">
                   [#-- 1.3.1 Gender --]
                   <h5 class="sectionSubTitle">[@s.text name="${customLabel}.gender.title" /]</h5>
                   <i class="helpLabel">[@s.text name="${customLabel}.gender.help" /]</i>
@@ -89,7 +89,7 @@
                     </div>
                   [/#if]
                 </div>
-                <div id="tab-youth" role="tabpanel" class="tab-pane fade  ">
+                <div id="tab-youth" role="tabpanel" class="tab-pane fade [#if indexTab == 2]in active[/#if] ">
                   [#-- 1.3.2 Youth --]
                   <h5 class="sectionSubTitle">[@s.text name="${customLabel}.youth.title" /]</h5>
                   [#-- CRPs contribution to youth --]
@@ -122,7 +122,7 @@
                     </div>
                   [/#if]
                 </div>
-                <div id="tab-capdev" role="tabpanel" class="tab-pane fade  ">
+                <div id="tab-capdev" role="tabpanel" class="tab-pane fade [#if indexTab == 3]in active[/#if]">
                   [#-- 1.3.3 Capacity Development --]
                   <h5 class="sectionSubTitle">[@s.text name="${customLabel}.capDev.title" /]</h5>
                   [#-- CRPs contribution to CapDev --]
@@ -235,7 +235,7 @@
                     </div> 
                   [/#if]
                 </div>
-                <div id="tab-climateChange" role="tabpanel" class="tab-pane fade  ">
+                <div id="tab-climateChange" role="tabpanel" class="tab-pane fade [#if indexTab == 4]in active[/#if]">
                   [#-- 1.3.4 Climate change --]
                   <h5 class="sectionSubTitle">[@s.text name="${customLabel}.climateChange.title" /]</h5>
                   
