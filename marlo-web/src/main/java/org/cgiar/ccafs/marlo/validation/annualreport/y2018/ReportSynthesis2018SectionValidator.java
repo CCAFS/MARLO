@@ -43,13 +43,15 @@ public class ReportSynthesis2018SectionValidator<T extends BaseAction> extends B
   private final FlagshipProgress2018Validator flagshipProgress2018Validator;
   private final Policies2018Validator policies2018Validator;
   private final StudiesOICR2018Validator studiesOICR2018Validator;
+  private final Innovations2018Validator innovations2018Validator;
 
 
   @Inject
   public ReportSynthesis2018SectionValidator(ReportSynthesisManager reportSynthesisManager,
     IntellectualAssetsValidator intellectualAssetsValidator, CCDimension2018Validator ccDimensionValidator,
     FundingUse2018Validator fundingUse2018Validator, FlagshipProgress2018Validator flagshipProgress2018Validator,
-    Policies2018Validator policies2018Validator, StudiesOICR2018Validator studiesOICR2018Validator) {
+    Policies2018Validator policies2018Validator, StudiesOICR2018Validator studiesOICR2018Validator,
+    Innovations2018Validator innovations2018Validator) {
     super();
     this.reportSynthesisManager = reportSynthesisManager;
     this.intellectualAssetsValidator = intellectualAssetsValidator;
@@ -58,6 +60,7 @@ public class ReportSynthesis2018SectionValidator<T extends BaseAction> extends B
     this.flagshipProgress2018Validator = flagshipProgress2018Validator;
     this.policies2018Validator = policies2018Validator;
     this.studiesOICR2018Validator = studiesOICR2018Validator;
+    this.innovations2018Validator = innovations2018Validator;
   }
 
 
@@ -134,6 +137,25 @@ public class ReportSynthesis2018SectionValidator<T extends BaseAction> extends B
 
   }
 
+
+  public void validateInnovations(BaseAction action, ReportSynthesis reportSynthesis) {
+
+    if (reportSynthesis.getReportSynthesisFlagshipProgress() == null) {
+      ReportSynthesisFlagshipProgress flagshipProgress = new ReportSynthesisFlagshipProgress();
+
+      // create one to one relation
+      reportSynthesis.setReportSynthesisFlagshipProgress(flagshipProgress);
+      flagshipProgress.setReportSynthesis(reportSynthesis);
+
+      innovations2018Validator.validate(action, reportSynthesis, false);
+
+      // save the changes
+      reportSynthesis = reportSynthesisManager.saveReportSynthesis(reportSynthesis);
+    } else {
+      innovations2018Validator.validate(action, reportSynthesis, false);
+    }
+
+  }
 
   public void validateIntellectualAssets(BaseAction action, ReportSynthesis reportSynthesis) {
 
