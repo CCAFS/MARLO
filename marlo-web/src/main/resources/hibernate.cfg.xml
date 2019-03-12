@@ -401,5 +401,7 @@
     <mapping resource="xmls/ReportSynthesisKeyPartnershipCollaborationCrps.hbm.xml" />
     <mapping resource="xmls/ReportSynthesisKeyPartnershipCollaborations.hbm.xml" />
     <mapping resource="xmls/ReportSynthesisKeyPartnershipPmu.hbm.xml" />  
+    <mapping resource="xmls/ReportSynthesisFlagshipProgressStudies.hbm.xml" />  
+    
   </session-factory>
 </hibernate-configuration>

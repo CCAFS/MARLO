@@ -42,13 +42,14 @@ public class ReportSynthesis2018SectionValidator<T extends BaseAction> extends B
   private final FundingUse2018Validator fundingUse2018Validator;
   private final FlagshipProgress2018Validator flagshipProgress2018Validator;
   private final Policies2018Validator policies2018Validator;
+  private final StudiesOICR2018Validator studiesOICR2018Validator;
 
 
   @Inject
   public ReportSynthesis2018SectionValidator(ReportSynthesisManager reportSynthesisManager,
     IntellectualAssetsValidator intellectualAssetsValidator, CCDimension2018Validator ccDimensionValidator,
     FundingUse2018Validator fundingUse2018Validator, FlagshipProgress2018Validator flagshipProgress2018Validator,
-    Policies2018Validator policies2018Validator) {
+    Policies2018Validator policies2018Validator, StudiesOICR2018Validator studiesOICR2018Validator) {
     super();
     this.reportSynthesisManager = reportSynthesisManager;
     this.intellectualAssetsValidator = intellectualAssetsValidator;
@@ -56,6 +57,7 @@ public class ReportSynthesis2018SectionValidator<T extends BaseAction> extends B
     this.fundingUse2018Validator = fundingUse2018Validator;
     this.flagshipProgress2018Validator = flagshipProgress2018Validator;
     this.policies2018Validator = policies2018Validator;
+    this.studiesOICR2018Validator = studiesOICR2018Validator;
   }
 
 
@@ -167,6 +169,25 @@ public class ReportSynthesis2018SectionValidator<T extends BaseAction> extends B
       reportSynthesis = reportSynthesisManager.saveReportSynthesis(reportSynthesis);
     } else {
       policies2018Validator.validate(action, reportSynthesis, false);
+    }
+
+  }
+
+  public void validateStudiesOICR(BaseAction action, ReportSynthesis reportSynthesis) {
+
+    if (reportSynthesis.getReportSynthesisFlagshipProgress() == null) {
+      ReportSynthesisFlagshipProgress flagshipProgress = new ReportSynthesisFlagshipProgress();
+
+      // create one to one relation
+      reportSynthesis.setReportSynthesisFlagshipProgress(flagshipProgress);
+      flagshipProgress.setReportSynthesis(reportSynthesis);
+
+      studiesOICR2018Validator.validate(action, reportSynthesis, false);
+
+      // save the changes
+      reportSynthesis = reportSynthesisManager.saveReportSynthesis(reportSynthesis);
+    } else {
+      studiesOICR2018Validator.validate(action, reportSynthesis, false);
     }
 
   }
