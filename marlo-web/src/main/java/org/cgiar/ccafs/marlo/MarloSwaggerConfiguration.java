@@ -75,7 +75,7 @@ public class MarloSwaggerConfiguration extends WebMvcConfigurerAdapter {
 	}
 
 	private Tag[] getTags() {
-		Tag[] tags = new Tag[15];
+		Tag[] tags = new Tag[16];
 		tags[0] = new Tag(this.env.getProperty("institution.tag"), this.env.getProperty("institution.description"),
 				Integer.parseInt(this.env.getProperty("institution.order")));
 
@@ -126,6 +126,8 @@ public class MarloSwaggerConfiguration extends WebMvcConfigurerAdapter {
 		tags[14] = new Tag(this.env.getProperty("table12.tag"), this.env.getProperty("table12.description"),
 				Integer.parseInt(this.env.getProperty("table12.order")));
 
+		tags[15] = new Tag(this.env.getProperty("table13.tag"), this.env.getProperty("table13.description"),
+				Integer.parseInt(this.env.getProperty("table13.order")));
 		return tags;
 	}
 
