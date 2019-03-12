@@ -4921,6 +4921,36 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
                 return false;
               }
               break;
+            case POLICIES:
+              secctions++;
+              if (sectionStatus.getMissingFields().length() > 0) {
+                return false;
+              }
+              break;
+            case OICR:
+              secctions++;
+              if (sectionStatus.getMissingFields().length() > 0) {
+                return false;
+              }
+              break;
+            case INNOVATIONS:
+              secctions++;
+              if (sectionStatus.getMissingFields().length() > 0) {
+                return false;
+              }
+              break;
+            case OUTOMESMILESTONES:
+              secctions++;
+              if (sectionStatus.getMissingFields().length() > 0) {
+                return false;
+              }
+              break;
+            case PUBLICATIONS:
+              secctions++;
+              if (sectionStatus.getMissingFields().length() > 0) {
+                return false;
+              }
+              break;
             case CC_DIMENSIONS:
               secctions++;
               if (sectionStatus.getMissingFields().length() > 0) {

@@ -45,7 +45,7 @@
     </action>
     
     <!-- Table 3: List of Outcome/ Impact Case Reports from this reporting year (Sphere of Influence)  -->
-    <action name="{crp}/oicr" class="org.cgiar.ccafs.marlo.action.annualReport.FlagshipProgressAction">
+    <action name="{crp}/oicr" class="org.cgiar.ccafs.marlo.action.annualReport.y2018.StudiesOICRAction">
       <interceptor-ref name="editReportSynthesisStack" />
       <result name="input">/WEB-INF/crp/views/annualReport2018/AR2018_oicr.ftl</result>
       <result name="success" type="redirectAction">
