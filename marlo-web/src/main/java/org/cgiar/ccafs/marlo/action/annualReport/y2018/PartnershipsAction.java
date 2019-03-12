@@ -94,21 +94,11 @@ public class PartnershipsAction extends BaseAction {
 
   // Managers
   private GlobalUnitManager crpManager;
-
-
   private LiaisonInstitutionManager liaisonInstitutionManager;
-
-
   private ReportSynthesisManager reportSynthesisManager;
-
   private AuditLogManager auditLogManager;
-
-
   private UserManager userManager;
-
   private CrpProgramManager crpProgramManager;
-
-
   private ReportSynthesisKeyPartnershipManager reportSynthesisKeyPartnershipManager;
   private ReportSynthesisKeyPartnershipExternalManager reportSynthesisKeyPartnershipExternalManager;
   private ReportSynthesisKeyPartnershipExternalMainAreaManager reportSynthesisKeyPartnershipExternalMainAreaManager;
@@ -119,14 +109,10 @@ public class PartnershipsAction extends BaseAction {
   private ReportSynthesisKeyPartnershipPmuManager reportSynthesisKeyPartnershipPmuManager;
   private InstitutionManager institutionManager;
   private FileDBManager fileDBManager;
-
-  private PartnershipValidator validator;
-
   private ProjectFocusManager projectFocusManager;
-
   private ProjectManager projectManager;
-
   private PhaseManager phaseManager;
+  private PartnershipValidator validator;
 
   // Variables
   private String transaction;
@@ -139,12 +125,11 @@ public class PartnershipsAction extends BaseAction {
   private List<ProjectPartnerPartnership> partnerShipList;
   private List<ReportSynthesisKeyPartnershipExternal> flagshipExternalPartnerships;
   private List<ReportSynthesisExternalPartnershipDTO> flagshipPlannedList;
-
   private List<RepIndPartnershipMainArea> mainAreasSel;
   private List<Institution> partners;
-
   private List<ProjectComponentLesson> projectKeyPartnerships;
   private List<GlobalUnit> globalUnits;
+  private int indexTab;
 
 
   @Inject
@@ -271,8 +256,14 @@ public class PartnershipsAction extends BaseAction {
     return flagshipPlannedList;
   }
 
+
   public List<GlobalUnit> getGlobalUnits() {
     return globalUnits;
+  }
+
+
+  public int getIndexTab() {
+    return indexTab;
   }
 
   public LiaisonInstitution getLiaisonInstitution() {
@@ -282,7 +273,6 @@ public class PartnershipsAction extends BaseAction {
   public Long getLiaisonInstitutionID() {
     return liaisonInstitutionID;
   }
-
 
   public List<LiaisonInstitution> getLiaisonInstitutions() {
     return liaisonInstitutions;
@@ -298,6 +288,7 @@ public class PartnershipsAction extends BaseAction {
     return mainAreasSel;
   }
 
+
   private String getParnetshipSourceFolder() {
     return APConstants.PARTNERSHIP_FOLDER.concat(File.separator).concat(this.getCrpSession()).concat(File.separator)
       .concat(File.separator).concat(this.getCrpSession() + "_")
@@ -308,19 +299,19 @@ public class PartnershipsAction extends BaseAction {
     return partners;
   }
 
-
   public List<ProjectPartnerPartnership> getPartnerShipList() {
     return partnerShipList;
   }
+
 
   public List<ProjectComponentLesson> getProjectKeyPartnerships() {
     return projectKeyPartnerships;
   }
 
-
   public ReportSynthesis getReportSynthesis() {
     return reportSynthesis;
   }
+
 
   public Long getSynthesisID() {
     return synthesisID;
@@ -628,6 +619,14 @@ public class PartnershipsAction extends BaseAction {
         reportSynthesis.getReportSynthesisKeyPartnership().getPlannedExternalPartnerships().clear();
       }
     }
+
+
+    try {
+      indexTab = Integer.parseInt(this.getSession().get("indexTab").toString());
+      this.getSession().remove("indexTab");
+    } catch (Exception e) {
+      indexTab = 1;
+    }
   }
 
   /*
@@ -673,7 +672,7 @@ public class PartnershipsAction extends BaseAction {
   @Override
   public String save() {
     if (this.hasPermission("canEdit")) {
-
+      this.getSession().put("indexTab", indexTab);
 
       ReportSynthesisKeyPartnership keyPartnershipDB =
         reportSynthesisManager.getReportSynthesisById(synthesisID).getReportSynthesisKeyPartnership();
@@ -737,7 +736,6 @@ public class PartnershipsAction extends BaseAction {
       return NOT_AUTHORIZED;
     }
   }
-
 
   public void saveExternalPmu(ReportSynthesisKeyPartnership partnershipDB) {
 
@@ -1160,8 +1158,13 @@ public class PartnershipsAction extends BaseAction {
     this.flagshipPlannedList = flagshipPlannedList;
   }
 
+
   public void setGlobalUnits(List<GlobalUnit> globalUnits) {
     this.globalUnits = globalUnits;
+  }
+
+  public void setIndexTab(int indexTab) {
+    this.indexTab = indexTab;
   }
 
   public void setLiaisonInstitution(LiaisonInstitution liaisonInstitution) {

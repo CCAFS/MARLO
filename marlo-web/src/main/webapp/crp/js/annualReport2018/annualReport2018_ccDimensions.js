@@ -1,36 +1,33 @@
+var capdevTabLoaded;
 $(document).ready(function() {
-  var capdevTabLoaded = false;
+  capdevTabLoaded = ($('input[name="indexTab"]').val() == 3);
 
   $('a[data-toggle="tab"]').on('shown.bs.tab', function(e) {
     if(!capdevTabLoaded && e.target.hash == "#tab-capdev") {
-      // Redraw table
-      tableDatatableViewmore.draw();
-
-      // Set charts
-      setGoogleCharts();
-
-      // Numeric fields
-      $('.numericInput').numericInput();
-
-      capdevTabLoaded = true;
+      loadCapdev();
     }
   });
 
+  if(capdevTabLoaded) {
+    loadCapdev();
+  }
 });
 
-google.charts.load('current', {
-  packages: [
-      'corechart', 'bar'
-  ]
-});
+function loadCapdev() {
+  // Redraw table
+  tableDatatableViewmore.draw();
+  // Numeric fields
+  $('.numericInput').numericInput();
+  // Set charts
+  setGoogleCharts();
+
+  capdevTabLoaded = true;
+}
 
 // google.charts.setOnLoadCallback(setGoogleCharts);
 
 function setGoogleCharts() {
-
-  // On load
-  $('.chartBox').addClass('loaded');
-
+  console.log("Load Google Charts");
   // Chart #12 - Trainees in short-term
   createGooglePieChart('#chart12', {
       title: 'Trainees in short-term',

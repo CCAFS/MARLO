@@ -1,4 +1,5 @@
 [#ftl]
+
 [#-- Hidden Inputs --] 
 <input type="hidden"  name="liaisonInstitutionID" value="${(liaisonInstitutionID)!}" />
 <input type="hidden"  name="synthesisID" value="${(reportSynthesis.id)!}" />
@@ -8,7 +9,7 @@
 <input type="hidden"  name="className" value="${(reportSynthesis.class.name)!}"/>
 <input type="hidden"  name="modifiedBy.id" value="${(currentUser.id)!}"/>
 <input type="hidden"  name="actionName" value="${(actionName)!}"/>
-
+<input type="hidden"  name="indexTab" value="${(indexTab)!}"/>
 
 <input id="redirectionUrl" type="hidden" name="url" value="" />
 

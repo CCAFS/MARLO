@@ -17,6 +17,10 @@ $(document).ready(function() {
     $(e).html(urlify(text));
   });
 
+  $('a[data-toggle="tab"]').on('shown.bs.tab', function(e) {
+    $('input[name="indexTab"]').val($(this).attr("index"));
+  });
+
 });
 
 /**
@@ -42,8 +46,19 @@ function getChartDataArray(chart) {
 }
 
 function createGooglePieChart(chartID,options) {
-  var $chart = $(chartID);
-  var data = google.visualization.arrayToDataTable(getChartDataArray($chart));
-  var chart = new google.visualization.PieChart(document.getElementById($chart[0].id));
-  chart.draw(data, options);
+  google.charts.load('current', {
+    packages: [
+        'corechart', 'bar'
+    ]
+  });
+
+  google.charts.setOnLoadCallback(function() {
+    $(this).addClass('loaded');
+
+    var $chart = $(chartID);
+    var data = google.visualization.arrayToDataTable(getChartDataArray($chart));
+    var chart = new google.visualization.PieChart(document.getElementById($chart[0].id));
+    chart.draw(data, options);
+  });
+
 }
