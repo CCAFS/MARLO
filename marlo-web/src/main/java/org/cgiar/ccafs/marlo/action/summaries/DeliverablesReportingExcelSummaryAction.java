@@ -1772,28 +1772,32 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
         }
 
         // get Flagships related to the project sorted by acronym
-        for (DeliverableProgram deliverableProgram : deliverable.getDeliverablePrograms().stream()
-          .filter(dp -> dp.getCrpProgram() != null && dp.getCrpProgram().isActive() && dp.getPhase() != null
-            && dp.getPhase().equals(this.getSelectedPhase()))
-          .collect(Collectors.toList())) {
-          Integer programType = deliverableProgram.getCrpProgram().getProgramType();
-          switch (programType) {
-            case 4:
-              if (flagships == null || flagships.isEmpty()) {
-                flagships = deliverableProgram.getCrpProgram().getAcronym();
-              } else {
-                flagships += "\n " + deliverableProgram.getCrpProgram().getAcronym();
+        if (deliverable.getDeliverablePrograms() != null) {
+          for (DeliverableProgram deliverableProgram : deliverable.getDeliverablePrograms().stream()
+            .filter(dp -> dp.getCrpProgram() != null && dp.getCrpProgram().isActive()
+              && dp.getPhase().equals(this.getSelectedPhase()) && dp.getPhase() != null)
+            .collect(Collectors.toList())) {
+            Integer programType = deliverableProgram.getCrpProgram().getProgramType();
+            if (deliverableProgram.getCrpProgram().getProgramType() > 0) {
+              switch (programType) {
+                case 1:
+                  if (flagships == null || flagships.isEmpty()) {
+                    flagships = deliverableProgram.getCrpProgram().getAcronym();
+                  } else {
+                    flagships += "\n " + deliverableProgram.getCrpProgram().getAcronym();
+                  }
+                  break;
+                case 2:
+                  if (regions == null || regions.isEmpty()) {
+                    regions = deliverableProgram.getCrpProgram().getAcronym();
+                  } else {
+                    regions += "\n " + deliverableProgram.getCrpProgram().getAcronym();
+                  }
+                  break;
+                default:
+                  break;
               }
-              break;
-            case 5:
-              if (regions == null || regions.isEmpty()) {
-                regions = deliverableProgram.getCrpProgram().getAcronym();
-              } else {
-                regions += "\n " + deliverableProgram.getCrpProgram().getAcronym();
-              }
-              break;
-            default:
-              break;
+            }
           }
         }
 
