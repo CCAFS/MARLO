@@ -90,6 +90,7 @@ public class CrossCuttingDimensionAction extends BaseAction {
   private Double totalParticipantFormalTrainingShortFemale = new Double(0);
   private Double totalParticipantFormalTrainingLongFemale = new Double(0);
   private List<DeliverableParticipant> deliverableParticipants;
+  private int indexTab;
 
 
   @Inject
@@ -136,8 +137,14 @@ public class CrossCuttingDimensionAction extends BaseAction {
     return deliverableParticipants;
   }
 
+
   public List<ReportSynthesisCrossCuttingDimension> getFlagshipCCDimensions() {
     return flagshipCCDimensions;
+  }
+
+
+  public int getIndexTab() {
+    return indexTab;
   }
 
   public LiaisonInstitution getLiaisonInstitution() {
@@ -152,15 +159,14 @@ public class CrossCuttingDimensionAction extends BaseAction {
     return liaisonInstitutions;
   }
 
-
   public GlobalUnit getLoggedCrp() {
     return loggedCrp;
   }
 
+
   public ReportSynthesis getReportSynthesis() {
     return reportSynthesis;
   }
-
 
   public Long getSynthesisID() {
     return synthesisID;
@@ -181,6 +187,7 @@ public class CrossCuttingDimensionAction extends BaseAction {
     return totalParticipantFormalTrainingLongMale;
   }
 
+
   public Double getTotalParticipantFormalTrainingShortFemale() {
     return totalParticipantFormalTrainingShortFemale;
   }
@@ -188,7 +195,6 @@ public class CrossCuttingDimensionAction extends BaseAction {
   public Double getTotalParticipantFormalTrainingShortMale() {
     return totalParticipantFormalTrainingShortMale;
   }
-
 
   public Double getTotalParticipants() {
     return totalParticipants;
@@ -214,6 +220,7 @@ public class CrossCuttingDimensionAction extends BaseAction {
     return isFP;
   }
 
+
   @Override
   public boolean isPMU() {
     boolean isFP = false;
@@ -235,7 +242,6 @@ public class CrossCuttingDimensionAction extends BaseAction {
       return result;
     }
   }
-
 
   @Override
   public void prepare() throws Exception {
@@ -419,12 +425,22 @@ public class CrossCuttingDimensionAction extends BaseAction {
     // Base Permission
     String params[] = {loggedCrp.getAcronym(), reportSynthesis.getId() + ""};
     this.setBasePermission(this.getText(Permission.REPORT_SYNTHESIS_CROSS_CUTTING_BASE_PERMISSION, params));
+
+
+    // Load index tab
+    try {
+      indexTab = Integer.parseInt(this.getSession().get("indexTab").toString());
+      this.getSession().remove("indexTab");
+    } catch (Exception e) {
+      indexTab = 1;
+    }
   }
+
 
   @Override
   public String save() {
     if (this.hasPermission("canEdit")) {
-
+      this.getSession().put("indexTab", indexTab);
       ReportSynthesisCrossCuttingDimension crossCuttingDimensionDB =
         reportSynthesisManager.getReportSynthesisById(synthesisID).getReportSynthesisCrossCuttingDimension();
 
@@ -501,6 +517,10 @@ public class CrossCuttingDimensionAction extends BaseAction {
 
   public void setFlagshipCCDimensions(List<ReportSynthesisCrossCuttingDimension> flagshipCCDimensions) {
     this.flagshipCCDimensions = flagshipCCDimensions;
+  }
+
+  public void setIndexTab(int indexTab) {
+    this.indexTab = indexTab;
   }
 
 
