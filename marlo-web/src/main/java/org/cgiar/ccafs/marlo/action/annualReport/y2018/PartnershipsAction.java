@@ -212,9 +212,31 @@ public class PartnershipsAction extends BaseAction {
           if (reportSynthesisFP.getReportSynthesisKeyPartnership().getReportSynthesisKeyPartnershipExternals() != null
             && !reportSynthesisFP.getReportSynthesisKeyPartnership().getReportSynthesisKeyPartnershipExternals()
               .isEmpty()) {
-            flagshipExternalPartnerships
-              .addAll(reportSynthesisFP.getReportSynthesisKeyPartnership().getReportSynthesisKeyPartnershipExternals()
-                .stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+
+
+            List<ReportSynthesisKeyPartnershipExternal> externals = new ArrayList<>(
+              reportSynthesisFP.getReportSynthesisKeyPartnership().getReportSynthesisKeyPartnershipExternals().stream()
+                .filter(c -> c.isActive()).collect(Collectors.toList()));
+
+            for (ReportSynthesisKeyPartnershipExternal external : externals) {
+
+              if (external.getReportSynthesisKeyPartnershipExternalInstitutions() != null
+                && !external.getReportSynthesisKeyPartnershipExternalInstitutions().isEmpty()) {
+                external.setInstitutions(new ArrayList<>(external.getReportSynthesisKeyPartnershipExternalInstitutions()
+                  .stream().filter(c -> c.isActive()).collect(Collectors.toList())));
+              }
+
+              if (external.getReportSynthesisKeyPartnershipExternalMainAreas() != null
+                && !external.getReportSynthesisKeyPartnershipExternalMainAreas().isEmpty()) {
+                external.setMainAreas(new ArrayList<>(external.getReportSynthesisKeyPartnershipExternalMainAreas()
+                  .stream().filter(c -> c.isActive()).collect(Collectors.toList())));
+              }
+
+              flagshipExternalPartnerships.add(external);
+
+            }
+
+
           }
         }
       }
