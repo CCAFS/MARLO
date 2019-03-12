@@ -537,6 +537,7 @@ public class PartnershipsAction extends BaseAction {
 
           // Load Pmu External Partnerships
           reportSynthesis.getReportSynthesisKeyPartnership().setSelectedExternalPartnerships(new ArrayList<>());
+          reportSynthesis.getReportSynthesisKeyPartnership().setPlannedExternalPartnerships(new ArrayList<>());
           if (reportSynthesis.getReportSynthesisKeyPartnership().getReportSynthesisKeyPartnershipPmus() != null
             && !reportSynthesis.getReportSynthesisKeyPartnership().getReportSynthesisKeyPartnershipPmus().isEmpty()) {
             for (ReportSynthesisKeyPartnershipPmu plannedPmu : reportSynthesis.getReportSynthesisKeyPartnership()
@@ -544,6 +545,7 @@ public class PartnershipsAction extends BaseAction {
               .collect(Collectors.toList())) {
               reportSynthesis.getReportSynthesisKeyPartnership().getSelectedExternalPartnerships()
                 .add(plannedPmu.getReportSynthesisKeyPartnershipExternal());
+              reportSynthesis.getReportSynthesisKeyPartnership().getPlannedExternalPartnerships().add(plannedPmu);
             }
           }
 

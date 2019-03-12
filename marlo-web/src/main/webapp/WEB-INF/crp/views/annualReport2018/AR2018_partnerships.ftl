@@ -103,7 +103,8 @@
                               <td> [@utils.tableList list=(item.institutions)![] displayFieldName="institution.composedName" /] </td>
                               <td> [@utils.tableList list=(item.mainAreas)![] displayFieldName="partnerArea.name" /] </td>
                               <td class="text-center">
-                                [#assign isChecked = ((!reportSynthesis.reportSynthesisKeyPartnership.selectedExternalPartnerships?seq_contains(item.id))!true) /]
+                              
+                                [#assign isChecked = ((!reportSynthesis.reportSynthesisKeyPartnership.partnershipIds?seq_contains(item.id))!true) /]
                                 [@customForm.checkmark id="check-${(item.id)!}" name="reportSynthesis.reportSynthesisKeyPartnership.plannedExternalPartnershipsValue" value="${(item.id)!''}" checked=isChecked editable=editable centered=true/]
                               </td>
                             </tr>

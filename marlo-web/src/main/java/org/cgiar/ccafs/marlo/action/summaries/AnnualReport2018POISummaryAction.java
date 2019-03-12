@@ -694,6 +694,8 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     List<ReportSynthesisSrfProgressTarget> listSrfProgressTargets =
       reportSynthesisSrfProgressTargetManager.findAll().stream().filter(t -> t.isActive()).collect(Collectors.toList());
     if (listSrfProgressTargets != null && !listSrfProgressTargets.isEmpty()) {
+      listSrfProgressTargets = listSrfProgressTargets.stream().filter(l -> l.getReportSynthesisSrfProgress().getId()
+        .equals(reportSynthesisPMU.getReportSynthesisSrfProgress().getId())).collect(Collectors.toList());
       for (ReportSynthesisSrfProgressTarget reportSynthesisSrfProgressTarget : listSrfProgressTargets.stream()
         .filter(c -> c.getSrfSloIndicatorTarget().getTargetsIndicator() != null)
         .sorted((c1, c2) -> c1.getSrfSloIndicatorTarget().getTargetsIndicator()
