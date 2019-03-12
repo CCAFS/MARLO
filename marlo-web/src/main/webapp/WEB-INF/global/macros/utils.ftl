@@ -76,7 +76,7 @@
   [#if (value?trim?has_content)!false]${value}[#else]<i style="opacity:0.8"><nobr>[@s.text name="global.notDefined"/]</nobr></i>[/#if]
 [/#macro]
 
-[#macro tableList list displayFieldName="title"]
+[#macro tableList list displayFieldName="title" showEmpty=true]
   [#local levels = displayFieldName?split(".")]
   [#local valuesArray = [] /]
   [#if (list?has_content)!false]
@@ -95,7 +95,9 @@
       ${valuesArray[0]}
     [/#if]
   [#else]
-    <i style="opacity:0.8"><nobr>[@s.text name="global.notDefined"/]</nobr></i>
+    [#if showEmpty]
+      <i style="opacity:0.8"><nobr>[@s.text name="global.notDefined"/]</nobr></i>
+    [/#if]
   [/#if]
 [/#macro]
 

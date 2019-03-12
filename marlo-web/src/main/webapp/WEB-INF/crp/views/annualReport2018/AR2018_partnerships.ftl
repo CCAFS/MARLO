@@ -91,21 +91,22 @@
                             <th>Description of partnership</th>
                             <th>List of key partners</th>
                             <th>Main area of partnership</th>
-                            <th>Include in AR</th>
+                            <th class="col-md-1">Include in AR</th>
                           </tr>
                         </thead>
                         <tbody>
-                          [#list [ {}, {} , {} ] as item]
-                          <tr>
-                            <td> ${(item.reportSynthesis.crpProgram.acronym)!'FP'}</td>
-                            <td> [@utils.tableText value=(item.description)!"" /] </td>
-                            <td> [@utils.tableList list=(item.mainAreas)![] displayFieldName="title" /] </td>
-                            <td> [@utils.tableList list=(item.institutions)![] displayFieldName="title" /] </td>
-                            <td class="text-center">
-                              [#assign isChecked = ((!reportSynthesis.reportSynthesisKeyPartnership.partnershipsIds?seq_contains(item.id))!true) /]
-                              [@customForm.checkmark id="check-${(item.id)!}" name="reportSynthesis.reportSynthesisKeyPartnership.partnerships" value="${(item.id)!''}" checked=isChecked editable=editable centered=true/]
-                            </td>
-                          </tr>
+                          [#list (flagshipExternalPartnerships)![] as item]
+                            [#assign crpProgram = (item.reportSynthesisKeyPartnership.reportSynthesis.liaisonInstitution.crpProgram)!]
+                            <tr>
+                              <td> <span class="programTag" style="border-color:${(crpProgram.color)!'#fff'}">${(crpProgram.acronym)!}</span></td>
+                              <td> [@utils.tableText value=(item.description)!"" /] </td>
+                              <td> [@utils.tableList list=(item.mainAreas)![] displayFieldName="title" /] </td>
+                              <td> [@utils.tableList list=(item.institutions)![] displayFieldName="title" /] </td>
+                              <td class="text-center">
+                                [#assign isChecked = ((!reportSynthesis.reportSynthesisKeyPartnership.selectedExternalPartnerships?seq_contains(item.id))!true) /]
+                                [@customForm.checkmark id="check-${(item.id)!}" name="reportSynthesis.reportSynthesisKeyPartnership.plannedExternalPartnershipsValue" value="${(item.id)!''}" checked=isChecked editable=editable centered=true/]
+                              </td>
+                            </tr>
                           [/#list]
                         </tbody>
                       </table>
@@ -225,7 +226,14 @@
       <div class="form-group row">
         <div class="col-md-6">
           [@customForm.elementsListComponent name="${customName}.mainAreas" id="${(element.id)!'TEMPLATE'}" elementType="partnerArea" elementList=(element.mainAreas)![] label="${customLabel}.table7.mainArea" help=""  listName="mainAreasSel" keyFieldName="id" displayFieldName="name"  indexLevel=2 /]
-        </div>        
+        </div>
+        [#local otherArea = false /]  
+        [#list (element.mainAreas)![] as item] 
+          [#if (item.partnerArea.id == 6)!false][#local otherArea = true /][#break][/#if]  
+        [/#list]  
+        <div class="col-md-6 block-pleaseSpecify" style="display:${otherArea?string('block', 'none')}"> 
+          [@customForm.input name="${customName}.otherPartnershipMainArea" i18nkey="${customLabel}.table7.otherMainArea" className="" required=false editable=editable /] 
+        </div>
       </div>
     
       [#-- Partners --]
