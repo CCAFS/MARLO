@@ -15,6 +15,8 @@
 
 package org.cgiar.ccafs.marlo.rest.controller.v2.controllist;
 
+import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.arcontrollists.BroadAreaItem;
+import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.arcontrollists.BudgetTypeItem;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.arcontrollists.ContributionOfCrpItem;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.arcontrollists.CrossCuttingMarkerItem;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.arcontrollists.CrossCuttingMarkerScoreItem;
@@ -22,6 +24,7 @@ import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.arcontrollists
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.arcontrollists.InnovationTypeItem;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.arcontrollists.MaturityOfChangeItem;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.arcontrollists.OrganizationTypeItem;
+import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.arcontrollists.PartnershipMainAreaItem;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.arcontrollists.PolicyInvestmentTypeItem;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.arcontrollists.PolicyMaturityLevelItem;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.arcontrollists.PolicyOwnerTypeItem;
@@ -29,12 +32,15 @@ import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.arcontrollists
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.arcontrollists.StageOfInnovationItem;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.arcontrollists.StudyTypeItem;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.arcontrollists.TagItem;
+import org.cgiar.ccafs.marlo.rest.dto.BroadAreaDTO;
+import org.cgiar.ccafs.marlo.rest.dto.BudgetTypeDTO;
 import org.cgiar.ccafs.marlo.rest.dto.ContributionOfCrpDTO;
 import org.cgiar.ccafs.marlo.rest.dto.CrossCuttingMarkerDTO;
 import org.cgiar.ccafs.marlo.rest.dto.CrossCuttingMarkerScoreDTO;
 import org.cgiar.ccafs.marlo.rest.dto.InnovationTypeDTO;
 import org.cgiar.ccafs.marlo.rest.dto.MaturityOfChangeDTO;
 import org.cgiar.ccafs.marlo.rest.dto.OrganizationTypeDTO;
+import org.cgiar.ccafs.marlo.rest.dto.PartnershipMainAreaDTO;
 import org.cgiar.ccafs.marlo.rest.dto.PolicyInvestmentTypeDTO;
 import org.cgiar.ccafs.marlo.rest.dto.PolicyMaturityLevelDTO;
 import org.cgiar.ccafs.marlo.rest.dto.PolicyOwnerTypeDTO;
@@ -87,6 +93,9 @@ public class ARControlLists {
 	private OrganizationTypeItem<ARControlLists> organizationTypeItem;
 	private StudyTypeItem<ARControlLists> studyTypeItem;
 	private TagItem<ARControlLists> tagItem;
+	private PartnershipMainAreaItem<ARControlLists> partnershipMainAreaItem;
+	private BudgetTypeItem<ARControlLists> bugdetTypeItem;
+	private BroadAreaItem<ARControlLists> broadAreaItem;
 
 	@Inject
 	public ARControlLists(CrossCuttingMarkerScoreItem<ARControlLists> crossCuttingMarkerScoreItem,
@@ -101,7 +110,8 @@ public class ARControlLists {
 			PolicyOwnerTypeItem<ARControlLists> policyOwnerTypeItem,
 			PolicyMaturityLevelItem<ARControlLists> policyMaturityLevelItem,
 			OrganizationTypeItem<ARControlLists> organizationTypeItem, StudyTypeItem<ARControlLists> studyTypeItem,
-			TagItem<ARControlLists> tagItem) {
+			TagItem<ARControlLists> tagItem, PartnershipMainAreaItem<ARControlLists> partnershipMainAreaItem,
+			BudgetTypeItem<ARControlLists> bugdetTypeItem, BroadAreaItem<ARControlLists> broadAreaItem) {
 		this.crossCuttingMarkerScoreItem = crossCuttingMarkerScoreItem;
 		this.innovationTypesItem = innovationTypesItem;
 		this.researchPartnershipsItem = researchPartnershipsItem;
@@ -116,7 +126,42 @@ public class ARControlLists {
 		this.organizationTypeItem = organizationTypeItem;
 		this.tagItem = tagItem;
 		this.studyTypeItem = studyTypeItem;
+		this.partnershipMainAreaItem = partnershipMainAreaItem;
+		this.bugdetTypeItem = bugdetTypeItem;
+		this.broadAreaItem = broadAreaItem;
 
+	}
+
+	/**
+	 * Find a Broad Area by id
+	 * 
+	 * @param id
+	 * @return a BroadAreaDTO with the Broad Area data.
+	 */
+	@ApiOperation(tags = {
+			"Table 12 - Examples of W1/2 Use" }, value = "${ARControlLists.broad-areas.code.value}", response = BroadAreaDTO.class)
+
+	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
+	@RequestMapping(value = "/broad-areas/{code}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<BroadAreaDTO> findBroadAreaById(
+			@ApiParam(value = "${ARControlLists.broad-areas.code.param.code}", required = true) @PathVariable Long code) {
+		return this.broadAreaItem.findBroadAreaById(code);
+	}
+
+	/**
+	 * Find a Budget Type by id
+	 * 
+	 * @param id
+	 * @return a BudgetTypeDTO with the Budget Type data.
+	 */
+	@ApiOperation(tags = {
+			"Table 13 - CRP Financial Report" }, value = "${ARControlLists.budget-types.code.value}", response = BudgetTypeDTO.class)
+
+	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
+	@RequestMapping(value = "/budget-types/{code}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<BudgetTypeDTO> findBudgetTypeById(
+			@ApiParam(value = "${ARControlLists.budget-types.code.param.code}", required = true) @PathVariable Long code) {
+		return this.bugdetTypeItem.findBudgetTypeById(code);
 	}
 
 	/**
@@ -191,6 +236,21 @@ public class ARControlLists {
 	public ResponseEntity<OrganizationTypeDTO> findOrganizationTypeById(
 			@ApiParam(value = "${ARControlLists.organization-types.code.param.code}", required = true) @PathVariable Long code) {
 		return this.organizationTypeItem.findOrganizationTypeById(code);
+	}
+
+	/**
+	 * Find a partnership Main Area by id
+	 * 
+	 * @param id
+	 * @return a PartnershipMainAreaDTO with the partnership Main Area
+	 */
+	@ApiOperation(tags = {
+			"Table 8 - Key external partnerships" }, value = "${ARControlLists.partnership-main-areas.code.value}", response = PartnershipMainAreaDTO.class)
+	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
+	@RequestMapping(value = "/partnership-main-areas/{code}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<PartnershipMainAreaDTO> findPartnershipMainAreaById(
+			@ApiParam(value = "${ARControlLists.partnership-main-areas.code.param.code}", required = true) @PathVariable Long code) {
+		return this.partnershipMainAreaItem.findPartnershipMainAreaById(code);
 	}
 
 	/**
@@ -279,6 +339,35 @@ public class ARControlLists {
 	}
 
 	/**
+	 * Get All the Broad Area items
+	 * 
+	 * @return a List of BroadArea with all Cross Cutting Markers Items.
+	 */
+
+	@ApiOperation(tags = {
+			"Table 12 - Examples of W1/2 Use" }, value = "${ARControlLists.broad-areas.all.value}", response = BroadAreaDTO.class, responseContainer = "List")
+	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
+	@RequestMapping(value = "/broad-areas", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public List<BroadAreaDTO> getAllBroadAreas() {
+		return this.broadAreaItem.getAllBroadAreas();
+	}
+
+	/**
+	 * Get All the Budget types items
+	 * 
+	 * @return a List of CrossCuttingMarkersDTO with all Cross Cutting Markers
+	 * Items.
+	 */
+
+	@ApiOperation(tags = {
+			"Table 13 - CRP Financial Report" }, value = "${ARControlLists.budget-types.all.value}", response = BudgetTypeDTO.class, responseContainer = "List")
+	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
+	@RequestMapping(value = "/budget-types", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public List<BudgetTypeDTO> getAllBudgerTypes() {
+		return this.bugdetTypeItem.getAllBudgetTypes();
+	}
+
+	/**
 	 * Get All the cross cutting markers of CRP Items *
 	 * 
 	 * @return a List of cross cutting markers
@@ -342,6 +431,19 @@ public class ARControlLists {
 	@RequestMapping(value = "/organization-types", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public List<OrganizationTypeDTO> getAllOrganizationTypes() {
 		return this.organizationTypeItem.getAllOrganizationTypes();
+	}
+
+	/**
+	 * Get All the cross cutting markers of CRP Items *
+	 * 
+	 * @return a List of cross cutting markers
+	 */
+	@ApiOperation(tags = {
+			"Table 8 - Key external partnerships" }, value = "${ARControlLists.partnership-main-areas.all.value}", response = PartnershipMainAreaDTO.class, responseContainer = "List")
+	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
+	@RequestMapping(value = "/partnership-main-areas", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public List<PartnershipMainAreaDTO> getAllPartnershipMainArea() {
+		return this.partnershipMainAreaItem.getAllPartnershipMainAreas();
 	}
 
 	/**

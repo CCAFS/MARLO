@@ -99,8 +99,8 @@ public class GeneralLists {
 	 * @return a FlagshipProgramDTO with Flagship or Program data.
 	 */
 	@ApiOperation(tags = { "Table 3 - Outcome/ Impact Case Reports",
-			"Table 5 - Status of Planned Outcomes and Milestones",
-			"Table 8 - Key external partnerships" }, value = "${GeneralLists.flagships-modules.code.value}", response = FlagshipProgramDTO.class)
+			"Table 5 - Status of Planned Outcomes and Milestones", "Table 8 - Key external partnerships",
+			"Table 13 - CRP Financial Report" }, value = "${GeneralLists.flagships-modules.code.value}", response = FlagshipProgramDTO.class)
 	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
 	@RequestMapping(value = "/flagships-modules/{code}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<FlagshipProgramDTO> findFlagshipProgramBySmoCode(
@@ -137,7 +137,9 @@ public class GeneralLists {
 			"Table 5 - Status of Planned Outcomes and Milestones", "Table 6 - Peer-reviewed publications",
 			"Table 7 - Participants in CapDev Activities", "Table 8 - Key external partnerships",
 			"Table 9 - Internal Cross-CGIAR Collaborations",
-			"Table 10 - Monitoring, Evaluation, Learning and Impact Assessment (MELIA)" }, value = "${GeneralLists.cgiar-entities.code.value}", response = CGIAREntityDTO.class)
+			"Table 10 - Monitoring, Evaluation, Learning and Impact Assessment (MELIA)",
+			"Table 12 - Examples of W1/2 Use",
+			"Table 13 - CRP Financial Report" }, value = "${GeneralLists.cgiar-entities.code.value}", response = CGIAREntityDTO.class)
 	@RequestMapping(value = "/cgiar-entities/{code}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<CGIAREntityDTO> findGlobalUnitByCGIARId(
 			@ApiParam(value = "${GeneralLists.cgiar-entities.code.param.code}", required = true) @PathVariable String code) {
@@ -192,8 +194,8 @@ public class GeneralLists {
 	 * @return a List of FlagshipProgramDTO with all Flagship or Program Items.
 	 */
 	@ApiOperation(tags = { "Table 3 - Outcome/ Impact Case Reports",
-			"Table 5 - Status of Planned Outcomes and Milestones",
-			"Table 8 - Key external partnerships" }, value = "${GeneralLists.flagships-modules.all.value}", response = FlagshipProgramDTO.class, responseContainer = "List")
+			"Table 5 - Status of Planned Outcomes and Milestones", "Table 8 - Key external partnerships",
+			"Table 13 - CRP Financial Report" }, value = "${GeneralLists.flagships-modules.all.value}", response = FlagshipProgramDTO.class, responseContainer = "List")
 	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
 	@RequestMapping(value = "/flagships-modules", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public List<FlagshipProgramDTO> getAllFlagshipsPrograms() {
@@ -228,7 +230,9 @@ public class GeneralLists {
 			"Table 5 - Status of Planned Outcomes and Milestones", "Table 6 - Peer-reviewed publications",
 			"Table 7 - Participants in CapDev Activities", "Table 8 - Key external partnerships",
 			"Table 9 - Internal Cross-CGIAR Collaborations",
-			"Table 10 - Monitoring, Evaluation, Learning and Impact Assessment (MELIA)" }, value = "${GeneralLists.cgiar-entities.all.value}", response = CGIAREntityDTO.class, responseContainer = "List")
+			"Table 10 - Monitoring, Evaluation, Learning and Impact Assessment (MELIA)",
+			"Table 12 - Examples of W1/2 Use",
+			"Table 13 - CRP Financial Report" }, value = "${GeneralLists.cgiar-entities.all.value}", response = CGIAREntityDTO.class, responseContainer = "List")
 	@RequestMapping(value = "/cgiar-entities", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<CGIAREntityDTO>> getAllGlobalUnits(
 			@ApiParam(value = "${GeneralLists.cgiar-entities.all.param.typeId}") @RequestParam(value = "typeId", required = false) Long typeId) {
