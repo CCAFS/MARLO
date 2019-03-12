@@ -1,5 +1,5 @@
 $(document).ready(function() {
-  capdevTabLoaded = false;
+  var capdevTabLoaded = false;
 
   $('a[data-toggle="tab"]').on('shown.bs.tab', function(e) {
     if(!capdevTabLoaded && e.target.hash == "#tab-capdev") {

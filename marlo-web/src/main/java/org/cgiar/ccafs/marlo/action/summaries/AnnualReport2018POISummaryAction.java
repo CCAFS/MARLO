@@ -31,6 +31,7 @@ import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressManager
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressMilestoneManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisMeliaManager;
+import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisSrfProgressTargetManager;
 import org.cgiar.ccafs.marlo.data.model.CrossCuttingDimensionTableDTO;
 import org.cgiar.ccafs.marlo.data.model.CrpMilestone;
 import org.cgiar.ccafs.marlo.data.model.CrpOutcomeSubIdo;
@@ -55,7 +56,6 @@ import org.cgiar.ccafs.marlo.data.model.ReportSynthesisCrossCgiarCollaboration;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisCrossCuttingAssetDTO;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisCrossCuttingDimension;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisCrossCuttingInnovationDTO;
-import org.cgiar.ccafs.marlo.data.model.ReportSynthesisCrpProgressTarget;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisExternalPartnership;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisExternalPartnershipDTO;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFinancialSummary;
@@ -69,6 +69,7 @@ import org.cgiar.ccafs.marlo.data.model.ReportSynthesisIndicator;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisMeliaEvaluation;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisProgramVariance;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisRisk;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisSrfProgressTarget;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.POIField;
 import org.cgiar.ccafs.marlo.utils.POISummary;
@@ -173,7 +174,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
   // Managers
   private PowbExpenditureAreasManager powbExpenditureAreasManager;
   private ReportSynthesisManager reportSynthesisManager;
-  private ReportSynthesisCrpProgressTargetManager reportSynthesisCrpProgressTargetManager;
+  private ReportSynthesisSrfProgressTargetManager reportSynthesisSrfProgressTargetManager;
   private RepIndSynthesisIndicatorManager repIndSynthesisIndicatorManager;
   private ReportSynthesisExternalPartnershipManager reportSynthesisExternalPartnershipManager;
   private ReportSynthesisMeliaManager reportSynthesisMeliaManager;
@@ -184,6 +185,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
   private ReportSynthesisCrossCuttingDimensionManager reportSynthesisCrossCuttingDimensionManager;
   private ReportSynthesisCrpProgressManager reportSynthesisCrpProgressManager;
   private CrpProgramManager crpProgramManager;
+
 
   // Parameters
   private POISummary poiSummary;
@@ -219,7 +221,9 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     ReportSynthesisFinancialSummaryBudgetManager reportSynthesisFinancialSummaryBudgetManager,
     ReportSynthesisFlagshipProgressMilestoneManager reportSynthesisFlagshipProgressMilestoneManager,
     ReportSynthesisCrossCuttingDimensionManager reportSynthesisCrossCuttingDimensionManager,
-    ReportSynthesisCrpProgressManager reportSynthesisCrpProgressManager, CrpProgramManager crpProgramManager) {
+    ReportSynthesisCrpProgressManager reportSynthesisCrpProgressManager,
+    ReportSynthesisSrfProgressTargetManager reportSynthesisSrfProgressTargetManager,
+    CrpProgramManager crpProgramManager) {
     super(config, crpManager, phaseManager, projectManager);
     document = new XWPFDocument();
     poiSummary = new POISummary();
@@ -227,7 +231,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     percentageFormat = new DecimalFormat("##.##%");
     this.powbExpenditureAreasManager = powbExpenditureAreasManager;
     this.reportSynthesisManager = reportSynthesisManager;
-    this.reportSynthesisCrpProgressTargetManager = reportSynthesisCrpProgressTargetManager;
+    this.reportSynthesisSrfProgressTargetManager = reportSynthesisSrfProgressTargetManager;
     this.repIndSynthesisIndicatorManager = repIndSynthesisIndicatorManager;
     this.reportSynthesisExternalPartnershipManager = reportSynthesisExternalPartnershipManager;
     this.reportSynthesisMeliaManager = reportSynthesisMeliaManager;
@@ -451,10 +455,10 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
   }
 
   private void addExpectedCrp() {
-    if (reportSynthesisPMU != null && reportSynthesisPMU.getReportSynthesisCrpProgress() != null
-      && reportSynthesisPMU.getReportSynthesisCrpProgress().getOverallProgress() != null) {
-      String synthesisCrpDescription = reportSynthesisPMU.getReportSynthesisCrpProgress().getOverallProgress() != null
-        ? reportSynthesisPMU.getReportSynthesisCrpProgress().getOverallProgress() : "";
+    if (reportSynthesisPMU != null && reportSynthesisPMU.getReportSynthesisSrfProgress() != null
+      && reportSynthesisPMU.getReportSynthesisSrfProgress().getSummary() != null) {
+      String synthesisCrpDescription = reportSynthesisPMU.getReportSynthesisSrfProgress().getSummary() != null
+        ? reportSynthesisPMU.getReportSynthesisSrfProgress().getSummary() : "";
       poiSummary.textParagraph(document.createParagraph(), synthesisCrpDescription);
     }
   }
@@ -687,30 +691,32 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     data = new ArrayList<>();
     // Table A-1 Evidence on Progress
 
-    List<ReportSynthesisCrpProgressTarget> listCrpProgressTargets = reportSynthesisCrpProgressTargetManager
-      .flagshipSynthesis(flagshipLiaisonInstitutions, this.getSelectedPhase().getId());
-    if (listCrpProgressTargets != null && !listCrpProgressTargets.isEmpty()) {
-      for (ReportSynthesisCrpProgressTarget reportSynthesisCrpProgressTarget : listCrpProgressTargets.stream()
+    List<ReportSynthesisSrfProgressTarget> listSrfProgressTargets =
+      reportSynthesisSrfProgressTargetManager.findAll().stream().filter(t -> t.isActive()).collect(Collectors.toList());
+    if (listSrfProgressTargets != null && !listSrfProgressTargets.isEmpty()) {
+      listSrfProgressTargets = listSrfProgressTargets.stream().filter(l -> l.getReportSynthesisSrfProgress().getId()
+        .equals(reportSynthesisPMU.getReportSynthesisSrfProgress().getId())).collect(Collectors.toList());
+      for (ReportSynthesisSrfProgressTarget reportSynthesisSrfProgressTarget : listSrfProgressTargets.stream()
         .filter(c -> c.getSrfSloIndicatorTarget().getTargetsIndicator() != null)
         .sorted((c1, c2) -> c1.getSrfSloIndicatorTarget().getTargetsIndicator()
           .compareTo(c2.getSrfSloIndicatorTarget().getTargetsIndicator()))
         .collect(Collectors.toList())) {
         String sloTarget = "", briefSummaries = "", additionalContribution = "";
-        if (reportSynthesisCrpProgressTarget.getSrfSloIndicatorTarget() != null) {
-          if (reportSynthesisCrpProgressTarget.getSrfSloIndicatorTarget().getTargetsIndicator() != null
-            && !reportSynthesisCrpProgressTarget.getSrfSloIndicatorTarget().getTargetsIndicator().isEmpty()) {
-            sloTarget = reportSynthesisCrpProgressTarget.getSrfSloIndicatorTarget().getTargetsIndicator();
+        if (reportSynthesisSrfProgressTarget.getSrfSloIndicatorTarget() != null) {
+          if (reportSynthesisSrfProgressTarget.getSrfSloIndicatorTarget().getTargetsIndicator() != null
+            && !reportSynthesisSrfProgressTarget.getSrfSloIndicatorTarget().getTargetsIndicator().isEmpty()) {
+            sloTarget = reportSynthesisSrfProgressTarget.getSrfSloIndicatorTarget().getTargetsIndicator();
           }
-          if (reportSynthesisCrpProgressTarget.getSrfSloIndicatorTarget().getNarrative() != null
-            && !reportSynthesisCrpProgressTarget.getSrfSloIndicatorTarget().getNarrative().isEmpty()) {
-            sloTarget += " " + reportSynthesisCrpProgressTarget.getSrfSloIndicatorTarget().getNarrative();
+          if (reportSynthesisSrfProgressTarget.getSrfSloIndicatorTarget().getNarrative() != null
+            && !reportSynthesisSrfProgressTarget.getSrfSloIndicatorTarget().getNarrative().isEmpty()) {
+            sloTarget += " " + reportSynthesisSrfProgressTarget.getSrfSloIndicatorTarget().getNarrative();
           }
         }
 
-        briefSummaries = reportSynthesisCrpProgressTarget.getBirefSummary() != null
-          ? reportSynthesisCrpProgressTarget.getBirefSummary() : "";
-        additionalContribution = reportSynthesisCrpProgressTarget.getAdditionalContribution() != null
-          ? reportSynthesisCrpProgressTarget.getAdditionalContribution() : "";
+        briefSummaries = reportSynthesisSrfProgressTarget.getBirefSummary() != null
+          ? reportSynthesisSrfProgressTarget.getBirefSummary() : "";
+        additionalContribution = reportSynthesisSrfProgressTarget.getAdditionalContribution() != null
+          ? reportSynthesisSrfProgressTarget.getAdditionalContribution() : "";
 
         Boolean bold = false;
         String blackColor = "000000";

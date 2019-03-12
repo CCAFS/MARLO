@@ -133,17 +133,6 @@ public class CCDimension2018Validator extends BaseValidator {
           InvalidFieldsMessages.EMPTYFIELD);
       }
 
-      // TODO:Validate Number of Trainees
-
-      // Validate Climate Change
-      if (!this
-        .isValidString(reportSynthesis.getReportSynthesisCrossCuttingDimension().getClimateChangeKeyAchievements())) {
-        action.addMessage(action.getText("annualReport2018.ccDimensions.climateChange.keyAchievements.readText"));
-        action.getInvalidFields().put(
-          "input-reportSynthesis.reportSynthesisCrossCuttingDimension.climateChangeKeyAchievements",
-          InvalidFieldsMessages.EMPTYFIELD);
-      }
-
       if (!action.getFieldErrors().isEmpty()) {
         action.addActionError(action.getText("saving.fields.required"));
       } else if (action.getValidationMessage().length() > 0) {
