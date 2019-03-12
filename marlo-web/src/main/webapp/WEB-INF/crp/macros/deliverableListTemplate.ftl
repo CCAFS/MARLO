@@ -293,7 +293,7 @@
         [@customForm.select name="${dp_name}.projectPartner.id" value="${(projectPartnerObj.id)!-1}"  label="" i18nkey="" showTitle=false listName="partners" keyFieldName="id"  displayFieldName="composedName" className="responsible id " editable=editable required=isResponsable/]
         <div class="partnerPersons" listname="deliverable.responsiblePartner.projectPartnerPerson.id">
           [#if (projectPartnerObj.id??)!false]
-          [#list action.getPersons(projectPartnerObj.id) as person]            
+          [#list getPartnerPersonsFunction(projectPartnerObj.id) as person]            
               [@deliverablePerson element=person name="${dp_name}" projectPartner=(projectPartnerObj) index=person_index checked=(dp.projectPartnerPerson.id == person.id)!false isResponsable=true /]
             [/#list]
           [/#if]
@@ -315,7 +315,7 @@
           <input class="element" type="hidden" name="${dp_name}.projectPartner.id" value="${(dp.projectPartnerPerson.projectPartner.id)!}">
           <div class="partnerPersons">
           [#if (dp.projectPartnerPerson.projectPartner.id??)!false]
-            [#list action.getPersons(dp.projectPartnerPerson.projectPartner.id) as person]
+            [#list getPartnerPersonsFunction(dp.projectPartnerPerson.projectPartner.id) as person]
               [#if dp.projectPartnerPerson.id == person.id]
                 <input class="element" type="hidden" name="${dp_name}.projectPartnerPerson.id" value="${(person.id)!}">
                 <p class="checked">${person.composedCompleteName}</p>
@@ -362,9 +362,9 @@
           <div class="partnerPersons">
             [#if (projectPartner.id??)!false]
               [#assign selectedPersons =  action.getSelectedPersons(projectPartner.id) /]
-               [#local deliverablePartnerships = (action.getPersons(projectPartner.id))![] /]
+              [#local deliverablePartnerships = (getPartnerPersonsFunction(projectPartner.id))![] /]
               [#if deliverablePartnerships?has_content]
-                [#list action.getPersons(projectPartner.id) as person]
+                [#list getPartnerPersonsFunction(projectPartner.id) as person]
                   [@deliverablePerson element=person name="${dp_name}" projectPartner=projectPartner index=personsIndex checked=(action.isSelectedPerson(person.id,projectPartner.id)) isResponsable=false /]
                   [#assign personsIndex =  personsIndex + 1 /]
                 [/#list]
@@ -383,7 +383,7 @@
             <div class="partnerPersons">
             [#if (projectPartner.id??)!false]
               [#assign selectedPersons =  action.getSelectedPersons(projectPartner.id) /]
-              [#list action.getPersons(projectPartner.id) as person]
+              [#list getPartnerPersonsFunction(projectPartner.id) as person]
                 [#if selectedPersons?seq_contains(person.id)]
                   [#local deliverablePartnerShip =(action.getDeliverablePartnership((person.id)!-1))!{} /]
                   [#local partnerShipIndex = "${dp_name}[${personsIndex}]"/]
@@ -435,3 +435,12 @@
     [/#if]
   </div>
 [/#macro]
+
+[#function getPartnerPersonsFunction partnerID]
+  [#attempt]
+    [#return (action.getPersons(partnerID))![] ]
+  [#recover]
+    <p>Contact MARLO Support if the list does not load</p>
+    [#return [ ] ]
+  [/#attempt]
+[/#function]

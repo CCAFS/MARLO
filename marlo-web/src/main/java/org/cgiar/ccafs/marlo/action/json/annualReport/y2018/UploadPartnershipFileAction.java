@@ -61,9 +61,9 @@ public class UploadPartnershipFileAction extends BaseAction {
   @Override
   public String execute() throws Exception {
     fileFileName = fileFileName.replace(' ', '_');
-    FileDB fileDB = this.getFileDB(null, file, fileFileName, this.getStudiesFileResearchPath());
+    FileDB fileDB = this.getFileDB(null, file, fileFileName, this.getFilePath());
     saved = (fileDB.getId() != null) && fileDB.getId().longValue() > 0 ? true : false;
-    FileManager.copyFile(file, this.getStudiesFileResearchPath() + fileDB.getFileName());
+    FileManager.copyFile(file, this.getFilePath() + fileDB.getFileName());
     fileID = fileDB.getId();
     return SUCCESS;
   }
@@ -92,18 +92,19 @@ public class UploadPartnershipFileAction extends BaseAction {
     return fileID;
   }
 
-  public String getPath() {
-    return config.getDownloadURL() + "/" + this.getStudiesSourceFolder().replace('\\', '/');
-  }
-
-  private String getStudiesFileResearchPath() {
+  private String getFilePath() {
     String upload = config.getUploadsBaseFolder();
-    return upload + File.separator + this.getStudiesSourceFolder() + File.separator;
+    return upload + File.separator + this.getSourceFolder() + File.separator;
   }
 
-  private String getStudiesSourceFolder() {
+  public String getPath() {
+    return config.getDownloadURL() + "/" + this.getSourceFolder().replace('\\', '/');
+  }
+
+  private String getSourceFolder() {
+    String actionNameReplace = actionName.replace("/", "_");
     return APConstants.PARTNERSHIP_FOLDER.concat(File.separator).concat(this.getCrpSession()).concat(File.separator)
-      .concat(File.separator).concat(actionName.replace("/", "_")).concat(File.separator);
+      .concat(File.separator).concat(actionNameReplace).concat(File.separator);
   }
 
   public boolean isSaved() {

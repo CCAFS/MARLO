@@ -168,7 +168,8 @@ public class PoliciesAction extends BaseAction {
           for (ProjectFocus projectFocus : projectFocuses) {
             liaisonInstitutions.addAll(projectFocus.getCrpProgram().getLiaisonInstitutions().stream()
               .filter(li -> li.isActive() && li.getCrpProgram() != null
-                && li.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+                && li.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()
+                && li.getCrp() != null && li.getCrp().equals(this.getLoggedCrp()))
               .collect(Collectors.toList()));
           }
           dto.setLiaisonInstitutions(liaisonInstitutions);
@@ -261,6 +262,12 @@ public class PoliciesAction extends BaseAction {
 
           for (ProjectPolicy projectPolicy : plannedProjectPolicies) {
             projectPolicy.getProjectPolicyInfo(phase);
+            projectPolicy.setSubIdos(projectPolicy.getSubIdos(this.getActualPhase()));
+            projectPolicy.setCrossCuttingMarkers(projectPolicy.getCrossCuttingMarkers(this.getActualPhase()));
+            projectPolicy.setOwners(projectPolicy.getOwners(this.getActualPhase()));
+            projectPolicy.setGeographicScopes(projectPolicy.getGeographicScopes(this.getActualPhase()));
+            projectPolicy.setRegions(projectPolicy.getRegions(this.getActualPhase()));
+            projectPolicy.setCountries(projectPolicy.getCountries(this.getActualPhase()));
             projectPolicies.add(projectPolicy);
           }
         }
@@ -281,8 +288,19 @@ public class PoliciesAction extends BaseAction {
         ProjectPolicy projectPolicy = reportSynthesisFlagshipProgressPolicyDTO.getProjectPolicy();
         projectPolicy.getProjectPolicyInfo(phase);
         projectPolicy.setSelectedFlahsgips(new ArrayList<>());
+        // sort selected flagships
+        if (reportSynthesisFlagshipProgressPolicyDTO.getLiaisonInstitutions() != null
+          && !reportSynthesisFlagshipProgressPolicyDTO.getLiaisonInstitutions().isEmpty()) {
+          reportSynthesisFlagshipProgressPolicyDTO.getLiaisonInstitutions()
+            .sort((l1, l2) -> l1.getCrpProgram().getAcronym().compareTo(l2.getCrpProgram().getAcronym()));
+        }
         projectPolicy.getSelectedFlahsgips().addAll(reportSynthesisFlagshipProgressPolicyDTO.getLiaisonInstitutions());
-
+        projectPolicy.setSubIdos(projectPolicy.getSubIdos(this.getActualPhase()));
+        projectPolicy.setCrossCuttingMarkers(projectPolicy.getCrossCuttingMarkers(this.getActualPhase()));
+        projectPolicy.setOwners(projectPolicy.getOwners(this.getActualPhase()));
+        projectPolicy.setGeographicScopes(projectPolicy.getGeographicScopes(this.getActualPhase()));
+        projectPolicy.setRegions(projectPolicy.getRegions(this.getActualPhase()));
+        projectPolicy.setCountries(projectPolicy.getCountries(this.getActualPhase()));
         projectPolicies.add(projectPolicy);
 
       }
@@ -626,6 +644,7 @@ public class PoliciesAction extends BaseAction {
     List<ProjectPolicy> selectedProjectPolicies = new ArrayList<ProjectPolicy>();
     policiesByOrganizationTypeDTOs = new ArrayList<ReportSynthesisPoliciesByOrganizationTypeDTO>();
     if (projectPolicies != null && !projectPolicies.isEmpty()) {
+      projectPolicies.sort((p1, p2) -> p1.getId().compareTo(p2.getId()));
       selectedProjectPolicies.addAll(projectPolicies);
       // Remove unchecked policies
       if (reportSynthesis.getReportSynthesisFlagshipProgress().getProjectPolicies() != null
