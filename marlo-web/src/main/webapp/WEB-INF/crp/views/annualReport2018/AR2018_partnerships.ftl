@@ -318,8 +318,8 @@
     <br />
 
     [#-- CRP/Platform --] 
-    <div class="form-group">
-      [@customForm.select name="${customName}.crp" label="" keyFieldName="id" displayFieldName="acronym" i18nkey="${customLabel}.table8.crp" listName="globalUnitList"  required=true  className="globalUnitSelect" editable=isEditable/]
+    <div class="form-group">  
+      [@customForm.elementsListComponent name="${customName}.crps" id="${(element.id)!'TEMPLATE'}" elementType="globalUnit" elementList=(element.crps)![] label="${customLabel}.table8.crp" help=""  listName="globalUnits" keyFieldName="id" displayFieldName="composedName" indexLevel=2 /]
     </div>
     
     [#-- Description of collaboration --]
@@ -329,7 +329,7 @@
     
     [#-- Value added --]
     <div class="form-group">
-      [@customForm.input name="${customName}.value" i18nkey="${customLabel}.table8.value" help="${customLabel}.table8.value.help" helpIcon=false required=true editable=editable /]
+      [@customForm.input name="${customName}.valueAdded" i18nkey="${customLabel}.table8.value" help="${customLabel}.table8.value.help" helpIcon=false required=true editable=editable /]
     </div>
     
   </div>
