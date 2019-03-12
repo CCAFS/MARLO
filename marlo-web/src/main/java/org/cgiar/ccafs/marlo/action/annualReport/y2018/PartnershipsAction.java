@@ -687,6 +687,7 @@ public class PartnershipsAction extends BaseAction {
       if (this.isPMU()) {
 
         keyPartnershipDB.setSummary(reportSynthesis.getReportSynthesisKeyPartnership().getSummary());
+        keyPartnershipDB.setSummaryCgiar(reportSynthesis.getReportSynthesisKeyPartnership().getSummaryCgiar());
 
         if (reportSynthesis.getReportSynthesisKeyPartnership().getPlannedExternalPartnerships() != null) {
           reportSynthesis.getReportSynthesisKeyPartnership().setPlannedExternalPartnerships(new ArrayList<>());
