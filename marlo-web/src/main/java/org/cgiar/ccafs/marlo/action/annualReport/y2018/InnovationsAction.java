@@ -606,6 +606,10 @@ public class InnovationsAction extends BaseAction {
       .filter(c -> c.getCrpProgram() == null && c.isActive() && c.getAcronym() != null && c.getAcronym().equals("PMU"))
       .collect(Collectors.toList()));
 
+    if (projectInnovations != null && !projectInnovations.isEmpty()) {
+      projectInnovations.sort((p1, p2) -> p1.getId().compareTo(p2.getId()));
+    }
+
     // Base Permission
     String params[] = {loggedCrp.getAcronym(), reportSynthesis.getId() + ""};
     this.setBasePermission(this.getText(Permission.REPORT_SYNTHESIS_FLAGSHIP_PROGRESS_BASE_PERMISSION, params));
