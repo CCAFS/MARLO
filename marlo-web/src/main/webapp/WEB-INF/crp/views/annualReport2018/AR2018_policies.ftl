@@ -236,7 +236,13 @@
         </tr>
       [/#list]
     [#else]
-      
+      <tr>
+        [#if !expanded]
+         <td class="text-center" colspan="4"><i>No entries added yet.</i></td>
+        [#else]
+         <td class="text-center" colspan="11"><i>No entries added yet.</i></td>
+        [/#if]
+      </tr>
     [/#if]
     </tbody>
   </table>
