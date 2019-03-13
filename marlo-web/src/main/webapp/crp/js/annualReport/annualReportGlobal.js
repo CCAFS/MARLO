@@ -15,6 +15,13 @@ $(document).ready(function() {
       "scrollCollapse": true,
   });
 
+  $progressTableViewMore = $('.viewMoreSyntesisTable-block table');
+  tableDataProgressTableViewmore = $progressTableViewMore.DataTable({
+      "paging": false,
+      "searching": false,
+      "info": true
+  });
+
   $('.urlify').each(function(i,e) {
     var text = $(e).html();
     $(e).html(urlify(text));
@@ -42,7 +49,7 @@ function loadTab() {
 
 /**
  * Get chart data in Array
- * 
+ *
  * @param chart
  * @returns
  */
