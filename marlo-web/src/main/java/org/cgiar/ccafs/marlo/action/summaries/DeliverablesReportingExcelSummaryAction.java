@@ -19,6 +19,7 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrossCuttingScoringManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableCrossCuttingMarkerManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableGeographicScopeManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.GenderTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
@@ -34,6 +35,7 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableDissemination;
 import org.cgiar.ccafs.marlo.data.model.DeliverableFundingSource;
 import org.cgiar.ccafs.marlo.data.model.DeliverableGenderLevel;
 import org.cgiar.ccafs.marlo.data.model.DeliverableGeographicRegion;
+import org.cgiar.ccafs.marlo.data.model.DeliverableGeographicScope;
 import org.cgiar.ccafs.marlo.data.model.DeliverableLeader;
 import org.cgiar.ccafs.marlo.data.model.DeliverableLocation;
 import org.cgiar.ccafs.marlo.data.model.DeliverableMetadataElement;
@@ -102,6 +104,7 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
   private final ResourceManager resourceManager;
   private final CrossCuttingScoringManager crossCuttingScoringManager;
   private final DeliverableCrossCuttingMarkerManager deliverableCrossCuttingMarkerManager;
+  private final DeliverableGeographicScopeManager deliverableGeographicScopeManager;
   private String showAllYears;
 
 
@@ -120,7 +123,8 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
     CrpProgramManager programManager, GenderTypeManager genderTypeManager, DeliverableManager deliverableManager,
     PhaseManager phaseManager, RepositoryChannelManager repositoryChannelManager, ResourceManager resourceManager,
     CrossCuttingScoringManager crossCuttingScoringManager, ProjectManager projectManager,
-    DeliverableCrossCuttingMarkerManager deliverableCrossCuttingMarkerManager) {
+    DeliverableCrossCuttingMarkerManager deliverableCrossCuttingMarkerManager,
+    DeliverableGeographicScopeManager deliverableGeographicScopeManager) {
     super(config, crpManager, phaseManager, projectManager);
     this.genderTypeManager = genderTypeManager;
     this.programManager = programManager;
@@ -129,6 +133,7 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
     this.resourceManager = resourceManager;
     this.crossCuttingScoringManager = crossCuttingScoringManager;
     this.deliverableCrossCuttingMarkerManager = deliverableCrossCuttingMarkerManager;
+    this.deliverableGeographicScopeManager = deliverableGeographicScopeManager;
   }
 
   /**
@@ -1266,22 +1271,38 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
           }
         }
 
-
         /*
          * Geographic Scope
          */
         String geographicScope = "", region = "", country = "";
 
         // Geographic Scope
-        if (deliverable.getDeliverableInfo().getGeographicScope() != null) {
-          geographicScope = deliverable.getDeliverableInfo().getGeographicScope().getName();
-          if (deliverable.getDeliverableInfo().getGeographicScope().getId()
+        List<DeliverableGeographicScope> deliverableGeographicList = new ArrayList<>();
+        try {
+          deliverableGeographicList = deliverableGeographicScopeManager.findAll().stream()
+            .filter(d -> d.getDeliverable() != null && d.getDeliverable().equals(deliverable) && d.getPhase() != null
+              && d.getPhase().equals(this.getSelectedPhase()))
+            .collect(Collectors.toList());
+
+          if (deliverableGeographicList != null && deliverableGeographicList.get(0) != null
+            && deliverableGeographicList.get(0).getRepIndGeographicScope() != null
+            && deliverableGeographicList.get(0).getRepIndGeographicScope().getName() != null) {
+            geographicScope = deliverableGeographicList.get(0).getRepIndGeographicScope().getName();
+          }
+        } catch (Exception e) {
+
+        }
+
+        if (deliverable.getGeographicScopes() != null && deliverable.getGeographicScopes().stream()
+          .filter(d -> d.getPhase() != null && d.getPhase().equals(this.getSelectedPhase())) != null) {
+
+          if (deliverableGeographicList.get(0).getRepIndGeographicScope().getId()
             .equals(this.getReportingIndGeographicScopeGlobal())) {
             region = "<Not Applicable>";
             country = "<Not Applicable>";
           }
           // Regional
-          if (deliverable.getDeliverableInfo().getGeographicScope().getId()
+          if (deliverableGeographicList.get(0).getRepIndGeographicScope().getId()
             .equals(this.getReportingIndGeographicScopeRegional())) {
             country = "<Not Applicable>";
             List<DeliverableGeographicRegion> deliverableRegions =
