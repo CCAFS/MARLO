@@ -60,18 +60,13 @@
                 </div>
                 [#-- Chart 7 - Level of maturity --]
                 <div id="chart7" class="chartBox simpleBox">
-                  [#assign chartData = [
-                      {"name":"Level 1",  "value": "4"},
-                      {"name":"Level 2",  "value": "5"},
-                      {"name":"Level 3",  "value": "2"}
-                    ] /] 
                   <ul class="chartData" style="display:none">
                     <li>
-                      <span>[@s.text name="${customLabel}.chart13" /]</span>
-                      <span>[@s.text name="${customLabel}.chart13" /]</span>
+                      <span> </span>
+                      <span> </span>
                     </li>
-                    [#list chartData as data]
-                      <li><span>${data.name}</span><span class="number">${data.value}</span></li>
+                    [#list (policiesByRepIndStageProcessDTOs)![] as data]
+                      <li><span>${data.repIndStageProcess.name}</span><span class="number">${data.projectPolicies?size}</span></li>
                     [/#list]
                   </ul>
                 </div> 
@@ -87,14 +82,12 @@
                       <span class="json">{"role":"annotation"}</span>
                     </li>
                     [#list (policiesByOrganizationTypeDTOs)![] as data]
-                      [#if (data.repIndOrganizationType?has_content && (data.projectPolicies?has_content))!false]
                       <li>
                         <span>${(data.repIndOrganizationType.name)!}</span>
                         <span class="number">${data.projectPolicies?size}</span>
                         <span>#4285f4</span>
                         <span>${data.projectPolicies?size}</span>
                       </li>
-                      [/#if]
                     [/#list]
                   </ul>
                 </div> 
@@ -112,7 +105,7 @@
                   <div class="modal-content">
                     <div class="modal-header">
                       <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                      <h4 class="modal-title" id="myModalLabel"></h4>
+                      <h4 class="modal-title" id="myModalLabel">[@s.text name="${customLabel}.title" /]</h4>
                     </div>
                     <div class="modal-body">
                       [#-- Full table --]
@@ -155,7 +148,7 @@
         <th class="text-center" rowspan="2">[@s.text name="${customLabel}.table2.type" /]</th>
         <th class="text-center" rowspan="2">[@s.text name="${customLabel}.table2.whose" /]</th>
         <th class="text-center" rowspan="2">[@s.text name="${customLabel}.table2.geoScope" /]</th>
-        <th class="text-center" rowspan="2">Evidence</th>
+        <th class="text-center" rowspan="2">Evidence(s)</th>
         [/#if]
         [#if !expanded]
         <th class="col-md-1 text-center" rowspan="2">[@s.text name="${customLabel}.table2.includeAR" /]</th>
@@ -164,10 +157,10 @@
       </tr>
       [#if expanded]
       <tr>
-        <th class="text-center"> Gender </th>
-        <th class="text-center"> Youth </th>
-        <th class="text-center"> CapDev</th>
-        <th class="text-center"> Climate Change </th>
+        <th class="text-center"> <small>Gender</small> </th>
+        <th class="text-center"> <small>Youth</small> </th>
+        <th class="text-center"> <small>CapDev</small> </th>
+        <th class="text-center"> <small>Climate Change</small> </th>
       </tr>
       [/#if]
     </thead>
@@ -199,14 +192,24 @@
           [#if expanded]
             [#-- Gender --]
             <td class="text-center">
-              [#list (item.crossCuttingMarkers)![] as ccm]-${ccm}[/#list]
+              [#local marker = getMarker(item, "Gender") ]
+              <p class="dacMarker level-${(marker.id)!""}" title="${(marker.powbName)!""}">${(marker.acronym)!""}</p> 
             </td>
             [#-- Youth --]
-            <td class="text-center"> <p class="dacMarker level-2" title="0 - Not Targeted">0</p> </td>
+            <td class="text-center"> 
+              [#local marker = getMarker(item, "Youth") ]
+              <p class="dacMarker level-${(marker.id)!""}" title="${(marker.powbName)!""}">${(marker.acronym)!""}</p>
+            </td>
             [#-- CapDev --]
-            <td class="text-center"> <p class="dacMarker level-3" title="1 - Significant">0</p> </td>
+            <td class="text-center"> 
+              [#local marker = getMarker(item, "CapDev") ]
+              <p class="dacMarker level-${(marker.id)!""}" title="${(marker.powbName)!""}">${(marker.acronym)!""}</p>
+            </td>
             [#-- Climate Change --]
-            <td class="text-center"> <p class="dacMarker level-4" title="2 - Principal">0</p> </td>
+            <td class="text-center"> 
+              [#local marker = getMarker(item, "Climate Change") ]
+              <p class="dacMarker level-${(marker.id)!""}" title="${(marker.powbName)!""}">${(marker.acronym)!""}</p>
+            </td>
             [#-- Policy Type --]
             <td>[@utils.tableText value=(item.projectPolicyInfo.repIndOrganizationType.name)!"" /]</td>
             [#-- Owners--]
@@ -223,7 +226,18 @@
                 [@utils.tableList list=(item.countries)![]  displayFieldName="locElement.name" showEmpty=false nobr=true /]
               </div>
             </td>
-            <td>[@utils.tableList list=(item.evidences)![]  displayFieldName="projectExpectedStudy.id" nobr=true /]</td>
+            <td>
+              [#list (item.evidences)![] as item]
+                [#local summaryPDF = "${baseUrl}/projects/${crpSession}/studySummary.do?studyID=${(item.projectExpectedStudy.id)!}&cycle=Reporting&year=${(actualPhase.year)!}"]
+                <p>
+                  <a href="${summaryPDF}" class="btn btn-default btn-xs" target="_blank" style="text-decoration: none;" title="${item.projectExpectedStudy.composedName}">
+                    <img src="${baseUrl}/global/images/pdf.png" height="20"  /> ${item.projectExpectedStudy.composedIdentifier}
+                  </a>
+                </p>
+              [#else]
+                <span class="text-nowrap">Not defined</span> 
+              [/#list]
+            </td>
           [/#if]
           [#if !expanded]
           <td class="text-center">
@@ -250,8 +264,8 @@
 [#function getMarker element name]
   [#list (element.crossCuttingMarkers)![] as ccm]
     [#if ccm.cgiarCrossCuttingMarker.name == name]
-      [#return (ccm.repIndGenderYouthFocusLevel.powbName)!'0 - Not Targeted' ]
+      [#return (ccm.repIndGenderYouthFocusLevel)!{} ]
     [/#if]
   [/#list]
-  [#return "0 - Not Targeted" ]
+  [#return {} ]
 [/#function]

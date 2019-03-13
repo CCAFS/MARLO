@@ -19,16 +19,17 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectFocusManager;
-import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
-import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressInnovationManager;
+import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressDeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
+import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
@@ -36,16 +37,15 @@ import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
-import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgress;
-import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressInnovation;
-import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressInnovationDTO;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressDeliverable;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressDeliverableDTO;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
-import org.cgiar.ccafs.marlo.validation.annualreport.y2018.Innovations2018Validator;
+import org.cgiar.ccafs.marlo.validation.annualreport.y2018.Publications2018Validator;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -66,9 +66,9 @@ import org.apache.commons.lang3.StringUtils;
 /**
  * @author Andrés Valencia - CIAT/CCAFS
  */
-public class InnovationsAction extends BaseAction {
+public class PublicationsAction extends BaseAction {
 
-  private static final long serialVersionUID = 8323800211228698584L;
+  private static final long serialVersionUID = 3381503750646285390L;
 
   // Managers
   private GlobalUnitManager crpManager;
@@ -77,12 +77,12 @@ public class InnovationsAction extends BaseAction {
   private AuditLogManager auditLogManager;
   private CrpProgramManager crpProgramManager;
   private UserManager userManager;
-  private Innovations2018Validator validator;
-  private ProjectInnovationManager projectInnovationManager;
+  private Publications2018Validator validator;
+  private DeliverableManager deliverableManager;
   private ProjectFocusManager projectFocusManager;
   private ProjectManager projectManager;
   private ReportSynthesisFlagshipProgressManager reportSynthesisFlagshipProgressManager;
-  private ReportSynthesisFlagshipProgressInnovationManager reportSynthesisFlagshipProgressInnovationManager;
+  private ReportSynthesisFlagshipProgressDeliverableManager reportSynthesisFlagshipProgressDeliverableManager;
 
   // Variables
   private String transaction;
@@ -92,16 +92,16 @@ public class InnovationsAction extends BaseAction {
   private LiaisonInstitution liaisonInstitution;
   private GlobalUnit loggedCrp;
   private List<LiaisonInstitution> liaisonInstitutions;
-  private List<ProjectInnovation> projectInnovations;
+  private List<Deliverable> deliverables;
+
 
   @Inject
-  public InnovationsAction(APConfig config, GlobalUnitManager crpManager,
+  public PublicationsAction(APConfig config, GlobalUnitManager crpManager,
     LiaisonInstitutionManager liaisonInstitutionManager, ReportSynthesisManager reportSynthesisManager,
-    AuditLogManager auditLogManager, UserManager userManager, Innovations2018Validator validator,
-    CrpProgramManager crpProgramManager, ProjectInnovationManager projectInnovationManager,
-    ProjectFocusManager projectFocusManager, ProjectManager projectManager,
-    ReportSynthesisFlagshipProgressManager reportSynthesisFlagshipProgressManager,
-    ReportSynthesisFlagshipProgressInnovationManager reportSynthesisFlagshipProgressInnovationManager) {
+    AuditLogManager auditLogManager, UserManager userManager, Publications2018Validator validator,
+    CrpProgramManager crpProgramManager, DeliverableManager deliverableManager, ProjectFocusManager projectFocusManager,
+    ProjectManager projectManager, ReportSynthesisFlagshipProgressManager reportSynthesisFlagshipProgressManager,
+    ReportSynthesisFlagshipProgressDeliverableManager reportSynthesisFlagshipProgressDeliverableManager) {
     super(config);
     this.crpManager = crpManager;
     this.liaisonInstitutionManager = liaisonInstitutionManager;
@@ -110,49 +110,47 @@ public class InnovationsAction extends BaseAction {
     this.userManager = userManager;
     this.validator = validator;
     this.crpProgramManager = crpProgramManager;
-    this.projectInnovationManager = projectInnovationManager;
+    this.deliverableManager = deliverableManager;
     this.projectFocusManager = projectFocusManager;
     this.projectManager = projectManager;
     this.reportSynthesisFlagshipProgressManager = reportSynthesisFlagshipProgressManager;
-    this.reportSynthesisFlagshipProgressInnovationManager = reportSynthesisFlagshipProgressInnovationManager;
+    this.reportSynthesisFlagshipProgressDeliverableManager = reportSynthesisFlagshipProgressDeliverableManager;
   }
 
+
   /**
-   * Method to fill the list of innovations selected by flagships
+   * Method to fill the list of deliverables selected by flagships
    * 
    * @param flagshipsLiaisonInstitutions
    * @param phaseID
    * @return
    */
-  public List<ReportSynthesisFlagshipProgressInnovationDTO>
+  public List<ReportSynthesisFlagshipProgressDeliverableDTO>
     fillFpPlannedList(List<LiaisonInstitution> flagshipsLiaisonInstitutions, long phaseID) {
-    List<ReportSynthesisFlagshipProgressInnovationDTO> flagshipPlannedList = new ArrayList<>();
+    List<ReportSynthesisFlagshipProgressDeliverableDTO> flagshipPlannedList = new ArrayList<>();
 
-    if (projectInnovationManager.findAll() != null) {
+    if (deliverableManager.findAll() != null) {
 
-      // Get global unit Innovations
-      List<ProjectInnovation> projectInnovations =
-        new ArrayList<>(projectInnovationManager.findAll().stream()
-          .filter(ps -> ps.isActive() && ps.getProjectInnovationInfo(this.getActualPhase()) != null
-            && ps.getProject() != null
-            && ps.getProject().getGlobalUnitProjects().stream()
-              .filter(gup -> gup.isActive() && gup.isOrigin() && gup.getGlobalUnit().getId().equals(loggedCrp.getId()))
-              .collect(Collectors.toList()).size() > 0)
-          .collect(Collectors.toList()));
+      // Get global unit deliverables
+      List<Deliverable> deliverables = new ArrayList<>(deliverableManager.findAll().stream()
+        .filter(d -> d.isActive() && d.getDeliverableInfo(this.getActualPhase()) != null && d.getProject() != null
+          && d.getProject().getGlobalUnitProjects().stream()
+            .filter(gup -> gup.isActive() && gup.isOrigin() && gup.getGlobalUnit().getId().equals(loggedCrp.getId()))
+            .collect(Collectors.toList()).size() > 0)
+        .collect(Collectors.toList()));
 
-      // Fill all project Innovations of the global unit
-      for (ProjectInnovation projectInnovation : projectInnovations) {
-        ReportSynthesisFlagshipProgressInnovationDTO dto = new ReportSynthesisFlagshipProgressInnovationDTO();
-        projectInnovation.getProject()
-          .setProjectInfo(projectInnovation.getProject().getProjecInfoPhase(this.getActualPhase()));
-        dto.setProjectInnovation(projectInnovation);
-        if (projectInnovation.getProject().getProjectInfo().getAdministrative() != null
-          && projectInnovation.getProject().getProjectInfo().getAdministrative()) {
+      // Fill all project deliverables of the global unit
+      for (Deliverable deliverable : deliverables) {
+        ReportSynthesisFlagshipProgressDeliverableDTO dto = new ReportSynthesisFlagshipProgressDeliverableDTO();
+        deliverable.getProject().setProjectInfo(deliverable.getProject().getProjecInfoPhase(this.getActualPhase()));
+        dto.setDeliverable(deliverable);
+        if (deliverable.getProject().getProjectInfo().getAdministrative() != null
+          && deliverable.getProject().getProjectInfo().getAdministrative()) {
           dto.setLiaisonInstitutions(new ArrayList<>());
           dto.getLiaisonInstitutions().add(this.liaisonInstitution);
         } else {
-          List<ProjectFocus> projectFocuses = new ArrayList<>(projectInnovation.getProject().getProjectFocuses()
-            .stream().filter(pf -> pf.isActive() && pf.getPhase().getId() == phaseID).collect(Collectors.toList()));
+          List<ProjectFocus> projectFocuses = new ArrayList<>(deliverable.getProject().getProjectFocuses().stream()
+            .filter(pf -> pf.isActive() && pf.getPhase().getId() == phaseID).collect(Collectors.toList()));
           List<LiaisonInstitution> liaisonInstitutions = new ArrayList<>();
           for (ProjectFocus projectFocus : projectFocuses) {
             liaisonInstitutions.addAll(projectFocus.getCrpProgram().getLiaisonInstitutions().stream()
@@ -167,20 +165,22 @@ public class InnovationsAction extends BaseAction {
         flagshipPlannedList.add(dto);
       }
 
-      // Get deleted innovations
-      List<ReportSynthesisFlagshipProgressInnovation> flagshipProgressInnovations = new ArrayList<>();
+      // Get deleted deliverables
+      List<ReportSynthesisFlagshipProgressDeliverable> flagshipProgressDeliverables = new ArrayList<>();
       for (LiaisonInstitution liaisonInstitution : flagshipsLiaisonInstitutions) {
         ReportSynthesis reportSynthesis = reportSynthesisManager.findSynthesis(phaseID, liaisonInstitution.getId());
         if (reportSynthesis != null) {
           if (reportSynthesis.getReportSynthesisFlagshipProgress() != null) {
             if (reportSynthesis.getReportSynthesisFlagshipProgress()
-              .getReportSynthesisFlagshipProgressInnovations() != null) {
-              List<ReportSynthesisFlagshipProgressInnovation> innovations = new ArrayList<>(
-                reportSynthesis.getReportSynthesisFlagshipProgress().getReportSynthesisFlagshipProgressInnovations()
-                  .stream().filter(s -> s.isActive()).collect(Collectors.toList()));
-              if (innovations != null || !innovations.isEmpty()) {
-                for (ReportSynthesisFlagshipProgressInnovation reportSynthesisFlagshipProgressInnovation : innovations) {
-                  flagshipProgressInnovations.add(reportSynthesisFlagshipProgressInnovation);
+              .getReportSynthesisFlagshipProgressDeliverables() != null) {
+              List<ReportSynthesisFlagshipProgressDeliverable> reportSynthesisFlagshipProgressDeliverables =
+                new ArrayList<>(
+                  reportSynthesis.getReportSynthesisFlagshipProgress().getReportSynthesisFlagshipProgressDeliverables()
+                    .stream().filter(s -> s.isActive()).collect(Collectors.toList()));
+              if (reportSynthesisFlagshipProgressDeliverables != null
+                || !reportSynthesisFlagshipProgressDeliverables.isEmpty()) {
+                for (ReportSynthesisFlagshipProgressDeliverable reportSynthesisFlagshipProgressDeliverable : reportSynthesisFlagshipProgressDeliverables) {
+                  flagshipProgressDeliverables.add(reportSynthesisFlagshipProgressDeliverable);
                 }
               }
             }
@@ -188,9 +188,9 @@ public class InnovationsAction extends BaseAction {
         }
       }
 
-      // Get list of Innovations to remove
-      List<ReportSynthesisFlagshipProgressInnovationDTO> removeList = new ArrayList<>();
-      for (ReportSynthesisFlagshipProgressInnovationDTO dto : flagshipPlannedList) {
+      // Get list of deliverables to remove
+      List<ReportSynthesisFlagshipProgressDeliverableDTO> removeList = new ArrayList<>();
+      for (ReportSynthesisFlagshipProgressDeliverableDTO dto : flagshipPlannedList) {
 
         List<LiaisonInstitution> removeLiaison = new ArrayList<>();
         for (LiaisonInstitution liaisonInstitution : dto.getLiaisonInstitutions()) {
@@ -198,14 +198,14 @@ public class InnovationsAction extends BaseAction {
           if (reportSynthesis != null) {
             if (reportSynthesis.getReportSynthesisFlagshipProgress() != null) {
 
-              ReportSynthesisFlagshipProgressInnovation flagshipProgressInnovationNew =
-                new ReportSynthesisFlagshipProgressInnovation();
-              flagshipProgressInnovationNew = new ReportSynthesisFlagshipProgressInnovation();
-              flagshipProgressInnovationNew.setProjectInnovation(dto.getProjectInnovation());
-              flagshipProgressInnovationNew
+              ReportSynthesisFlagshipProgressDeliverable flagshipProgressDeliverableNew =
+                new ReportSynthesisFlagshipProgressDeliverable();
+              flagshipProgressDeliverableNew = new ReportSynthesisFlagshipProgressDeliverable();
+              flagshipProgressDeliverableNew.setDeliverable(dto.getDeliverable());
+              flagshipProgressDeliverableNew
                 .setReportSynthesisFlagshipProgress(reportSynthesis.getReportSynthesisFlagshipProgress());
 
-              if (flagshipProgressInnovations.contains(flagshipProgressInnovationNew)) {
+              if (flagshipProgressDeliverables.contains(flagshipProgressDeliverableNew)) {
                 removeLiaison.add(liaisonInstitution);
               }
             }
@@ -221,8 +221,8 @@ public class InnovationsAction extends BaseAction {
         }
       }
 
-      // Remove Innovations unselected by flagships
-      for (ReportSynthesisFlagshipProgressInnovationDTO i : removeList) {
+      // Remove Deliverables unselected by flagships
+      for (ReportSynthesisFlagshipProgressDeliverableDTO i : removeList) {
         flagshipPlannedList.remove(i);
       }
 
@@ -230,12 +230,11 @@ public class InnovationsAction extends BaseAction {
     return flagshipPlannedList;
   }
 
-
-  private void fillprojectInnovationsList(Long phaseID, LiaisonInstitution liaisonInstitution) {
-    projectInnovations = new ArrayList<>();
+  private void fillProjectDeliverablesList(Long phaseID, LiaisonInstitution liaisonInstitution) {
+    deliverables = new ArrayList<>();
     Phase phase = this.getActualPhase();
     if (this.isFlagship()) {
-      // Fill Project Innovations of the current flagship
+      // Fill Project Deliverables of the current flagship
       if (projectFocusManager.findAll() != null) {
         List<ProjectFocus> projectFocus = new ArrayList<>(projectFocusManager.findAll().stream()
           .filter(pf -> pf.isActive() && pf.getCrpProgram().getId() == liaisonInstitution.getCrpProgram().getId()
@@ -244,46 +243,45 @@ public class InnovationsAction extends BaseAction {
 
         for (ProjectFocus focus : projectFocus) {
           Project project = projectManager.getProjectById(focus.getProject().getId());
-          List<ProjectInnovation> plannedprojectInnovations = new ArrayList<>(project.getProjectInnovations().stream()
-            .filter(ps -> ps.isActive() && ps.getProjectInnovationInfo(phase) != null).collect(Collectors.toList()));
+          List<Deliverable> plannedDeliverables = new ArrayList<>(project.getDeliverables().stream()
+            .filter(ps -> ps.isActive() && ps.getDeliverableInfo(phase) != null).collect(Collectors.toList()));
 
-          for (ProjectInnovation projectInnovation : plannedprojectInnovations) {
-            projectInnovation.getProjectInnovationInfo(phase);
-            projectInnovations.add(projectInnovation);
+          for (Deliverable deliverable : plannedDeliverables) {
+            deliverable.getDeliverableInfo(phase);
+            deliverables.add(deliverable);
           }
         }
       }
     } else {
-      // Fill Project Innovations of the PMU, removing flagship deletions
+      // Fill Project Deliverables of the PMU, removing flagship deletions
       liaisonInstitutions = loggedCrp.getLiaisonInstitutions().stream()
         .filter(c -> c.getCrpProgram() != null && c.isActive()
           && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
         .collect(Collectors.toList());
       liaisonInstitutions.sort(Comparator.comparing(LiaisonInstitution::getAcronym));
 
-      List<ReportSynthesisFlagshipProgressInnovationDTO> flagshipPlannedList =
+      List<ReportSynthesisFlagshipProgressDeliverableDTO> flagshipPlannedList =
         this.fillFpPlannedList(liaisonInstitutions, phase.getId());
 
-      for (ReportSynthesisFlagshipProgressInnovationDTO reportSynthesisFlagshipProgressInnovationDTO : flagshipPlannedList) {
+      for (ReportSynthesisFlagshipProgressDeliverableDTO reportSynthesisFlagshipProgressDeliverableDTO : flagshipPlannedList) {
 
-        ProjectInnovation projectInnovation = reportSynthesisFlagshipProgressInnovationDTO.getProjectInnovation();
-        projectInnovation.getProjectInnovationInfo(phase);
-        projectInnovation.setSelectedFlahsgips(new ArrayList<>());
+        Deliverable deliverable = reportSynthesisFlagshipProgressDeliverableDTO.getDeliverable();
+        deliverable.getDeliverableInfo(phase);
+        deliverable.setSelectedFlahsgips(new ArrayList<>());
         // sort selected flagships
-        if (reportSynthesisFlagshipProgressInnovationDTO.getLiaisonInstitutions() != null
-          && !reportSynthesisFlagshipProgressInnovationDTO.getLiaisonInstitutions().isEmpty()) {
-          reportSynthesisFlagshipProgressInnovationDTO.getLiaisonInstitutions()
+        if (reportSynthesisFlagshipProgressDeliverableDTO.getLiaisonInstitutions() != null
+          && !reportSynthesisFlagshipProgressDeliverableDTO.getLiaisonInstitutions().isEmpty()) {
+          reportSynthesisFlagshipProgressDeliverableDTO.getLiaisonInstitutions()
             .sort((l1, l2) -> l1.getCrpProgram().getAcronym().compareTo(l2.getCrpProgram().getAcronym()));
         }
-        projectInnovation.getSelectedFlahsgips()
-          .addAll(reportSynthesisFlagshipProgressInnovationDTO.getLiaisonInstitutions());
-        projectInnovations.add(projectInnovation);
+        deliverable.getSelectedFlahsgips()
+          .addAll(reportSynthesisFlagshipProgressDeliverableDTO.getLiaisonInstitutions());
+        deliverables.add(deliverable);
 
       }
     }
 
   }
-
 
   public Long firstFlagship() {
     List<LiaisonInstitution> liaisonInstitutions = new ArrayList<>(loggedCrp.getLiaisonInstitutions().stream()
@@ -297,80 +295,80 @@ public class InnovationsAction extends BaseAction {
 
 
   private void
-    flagshipProgressprojectInnovationsNewData(ReportSynthesisFlagshipProgress reportSynthesisFlagshipProgressDB) {
+    flagshipProgressprojectDeliverablesNewData(ReportSynthesisFlagshipProgress reportSynthesisFlagshipProgressDB) {
 
     List<Long> selectedPs = new ArrayList<>();
-    List<Long> selectedInnovationsIds = new ArrayList<>();
+    List<Long> selectedDeliverablesIds = new ArrayList<>();
 
-    for (ProjectInnovation projectInnovation : projectInnovations) {
-      selectedInnovationsIds.add(projectInnovation.getId());
+    for (Deliverable deliverable : deliverables) {
+      selectedDeliverablesIds.add(deliverable.getId());
     }
 
-    // Add Innovations (active =0)
-    if (reportSynthesis.getReportSynthesisFlagshipProgress().getInnovationsValue() != null
-      && reportSynthesis.getReportSynthesisFlagshipProgress().getInnovationsValue().length() > 0) {
+    // Add Deliverable (active =0)
+    if (reportSynthesis.getReportSynthesisFlagshipProgress().getDeliverablesValue() != null
+      && reportSynthesis.getReportSynthesisFlagshipProgress().getDeliverablesValue().length() > 0) {
       List<Long> stList = new ArrayList<>();
-      for (String string : reportSynthesis.getReportSynthesisFlagshipProgress().getInnovationsValue().trim()
+      for (String string : reportSynthesis.getReportSynthesisFlagshipProgress().getDeliverablesValue().trim()
         .split(",")) {
         stList.add(Long.parseLong(string.trim()));
       }
 
-      for (Long innovationId : selectedInnovationsIds) {
-        int index = stList.indexOf(innovationId);
+      for (Long deliverableId : selectedDeliverablesIds) {
+        int index = stList.indexOf(deliverableId);
         if (index < 0) {
-          selectedPs.add(innovationId);
+          selectedPs.add(deliverableId);
         }
       }
 
-      for (ReportSynthesisFlagshipProgressInnovation flagshipProgressInnovation : reportSynthesisFlagshipProgressDB
-        .getReportSynthesisFlagshipProgressInnovations().stream().filter(rio -> rio.isActive())
+      for (ReportSynthesisFlagshipProgressDeliverable flagshipProgressDeliverable : reportSynthesisFlagshipProgressDB
+        .getReportSynthesisFlagshipProgressDeliverables().stream().filter(rio -> rio.isActive())
         .collect(Collectors.toList())) {
-        if (!selectedPs.contains(flagshipProgressInnovation.getProjectInnovation().getId())) {
-          reportSynthesisFlagshipProgressInnovationManager
-            .deleteReportSynthesisFlagshipProgressInnovation(flagshipProgressInnovation.getId());
+        if (!selectedPs.contains(flagshipProgressDeliverable.getDeliverable().getId())) {
+          reportSynthesisFlagshipProgressDeliverableManager
+            .deleteReportSynthesisFlagshipProgressDeliverable(flagshipProgressDeliverable.getId());
         }
       }
 
-      for (Long innovationId : selectedPs) {
-        ProjectInnovation projectInnovation = projectInnovationManager.getProjectInnovationById(innovationId);
+      for (Long deliverableId : selectedPs) {
+        Deliverable deliverable = deliverableManager.getDeliverableById(deliverableId);
 
-        ReportSynthesisFlagshipProgressInnovation flagshipProgressInnovationNew =
-          new ReportSynthesisFlagshipProgressInnovation();
+        ReportSynthesisFlagshipProgressDeliverable flagshipProgressDeliverableNew =
+          new ReportSynthesisFlagshipProgressDeliverable();
 
-        flagshipProgressInnovationNew.setProjectInnovation(projectInnovation);
-        flagshipProgressInnovationNew.setReportSynthesisFlagshipProgress(reportSynthesisFlagshipProgressDB);
+        flagshipProgressDeliverableNew.setDeliverable(deliverable);
+        flagshipProgressDeliverableNew.setReportSynthesisFlagshipProgress(reportSynthesisFlagshipProgressDB);
 
-        List<ReportSynthesisFlagshipProgressInnovation> flagshipProgressInnovations =
-          reportSynthesisFlagshipProgressDB.getReportSynthesisFlagshipProgressInnovations().stream()
+        List<ReportSynthesisFlagshipProgressDeliverable> flagshipProgressDeliverables =
+          reportSynthesisFlagshipProgressDB.getReportSynthesisFlagshipProgressDeliverables().stream()
             .filter(rio -> rio.isActive()).collect(Collectors.toList());
 
 
-        if (!flagshipProgressInnovations.contains(flagshipProgressInnovationNew)) {
-          flagshipProgressInnovationNew = reportSynthesisFlagshipProgressInnovationManager
-            .saveReportSynthesisFlagshipProgressInnovation(flagshipProgressInnovationNew);
+        if (!flagshipProgressDeliverables.contains(flagshipProgressDeliverableNew)) {
+          flagshipProgressDeliverableNew = reportSynthesisFlagshipProgressDeliverableManager
+            .saveReportSynthesisFlagshipProgressDeliverable(flagshipProgressDeliverableNew);
         }
 
       }
     } else {
 
-      // Delete Innovations (Save with active=1)
-      for (Long innovationId : selectedInnovationsIds) {
-        ProjectInnovation projectInnovation = projectInnovationManager.getProjectInnovationById(innovationId);
+      // Delete Deliverable (Save with active=1)
+      for (Long deliverableId : selectedDeliverablesIds) {
+        Deliverable deliverable = deliverableManager.getDeliverableById(deliverableId);
 
-        ReportSynthesisFlagshipProgressInnovation flagshipProgressPlannedInnovationNew =
-          new ReportSynthesisFlagshipProgressInnovation();
+        ReportSynthesisFlagshipProgressDeliverable flagshipProgressPlannedDeliverableNew =
+          new ReportSynthesisFlagshipProgressDeliverable();
 
-        flagshipProgressPlannedInnovationNew.setProjectInnovation(projectInnovation);
-        flagshipProgressPlannedInnovationNew.setReportSynthesisFlagshipProgress(reportSynthesisFlagshipProgressDB);
+        flagshipProgressPlannedDeliverableNew.setDeliverable(deliverable);
+        flagshipProgressPlannedDeliverableNew.setReportSynthesisFlagshipProgress(reportSynthesisFlagshipProgressDB);
 
-        List<ReportSynthesisFlagshipProgressInnovation> reportSynthesisFlagshipProgressInnovations =
-          reportSynthesisFlagshipProgressDB.getReportSynthesisFlagshipProgressInnovations().stream()
+        List<ReportSynthesisFlagshipProgressDeliverable> reportSynthesisFlagshipProgressDeliverables =
+          reportSynthesisFlagshipProgressDB.getReportSynthesisFlagshipProgressDeliverables().stream()
             .filter(rio -> rio.isActive()).collect(Collectors.toList());
 
 
-        if (!reportSynthesisFlagshipProgressInnovations.contains(flagshipProgressPlannedInnovationNew)) {
-          flagshipProgressPlannedInnovationNew = reportSynthesisFlagshipProgressInnovationManager
-            .saveReportSynthesisFlagshipProgressInnovation(flagshipProgressPlannedInnovationNew);
+        if (!reportSynthesisFlagshipProgressDeliverables.contains(flagshipProgressPlannedDeliverableNew)) {
+          flagshipProgressPlannedDeliverableNew = reportSynthesisFlagshipProgressDeliverableManager
+            .saveReportSynthesisFlagshipProgressDeliverable(flagshipProgressPlannedDeliverableNew);
         }
       }
     }
@@ -384,6 +382,11 @@ public class InnovationsAction extends BaseAction {
     String autoSaveFile = reportSynthesis.getId() + "_" + composedClassName + "_" + this.getActualPhase().getName()
       + "_" + this.getActualPhase().getYear() + "_" + actionFile + ".json";
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
+  }
+
+
+  public List<Deliverable> getDeliverables() {
+    return deliverables;
   }
 
 
@@ -407,10 +410,6 @@ public class InnovationsAction extends BaseAction {
   }
 
 
-  public List<ProjectInnovation> getProjectInnovations() {
-    return projectInnovations;
-  }
-
   public ReportSynthesis getReportSynthesis() {
     return reportSynthesis;
   }
@@ -420,10 +419,10 @@ public class InnovationsAction extends BaseAction {
     return synthesisID;
   }
 
-
   public String getTransaction() {
     return transaction;
   }
+
 
   public boolean isFlagship() {
     boolean isFP = false;
@@ -439,6 +438,7 @@ public class InnovationsAction extends BaseAction {
     return isFP;
   }
 
+
   @Override
   public boolean isPMU() {
     boolean isFP = false;
@@ -450,7 +450,6 @@ public class InnovationsAction extends BaseAction {
     return isFP;
 
   }
-
 
   @Override
   public String next() {
@@ -552,7 +551,7 @@ public class InnovationsAction extends BaseAction {
       liaisonInstitutionID = reportSynthesisDB.getLiaisonInstitution().getId();
       liaisonInstitution = liaisonInstitutionManager.getLiaisonInstitutionById(liaisonInstitutionID);
 
-      this.fillprojectInnovationsList(phase.getId(), liaisonInstitution);
+      this.fillProjectDeliverablesList(phase.getId(), liaisonInstitution);
 
       Path path = this.getAutoSaveFilePath();
       // Verify if there is a Draft file
@@ -579,15 +578,16 @@ public class InnovationsAction extends BaseAction {
         }
 
 
-        reportSynthesis.getReportSynthesisFlagshipProgress().setProjectInnovations(new ArrayList<>());
-        if (reportSynthesis.getReportSynthesisFlagshipProgress().getReportSynthesisFlagshipProgressInnovations() != null
-          && !reportSynthesis.getReportSynthesisFlagshipProgress().getReportSynthesisFlagshipProgressInnovations()
+        reportSynthesis.getReportSynthesisFlagshipProgress().setDeliverables(new ArrayList<>());
+        if (reportSynthesis.getReportSynthesisFlagshipProgress()
+          .getReportSynthesisFlagshipProgressDeliverables() != null
+          && !reportSynthesis.getReportSynthesisFlagshipProgress().getReportSynthesisFlagshipProgressDeliverables()
             .isEmpty()) {
-          for (ReportSynthesisFlagshipProgressInnovation flagshipProgressInnovation : reportSynthesis
-            .getReportSynthesisFlagshipProgress().getReportSynthesisFlagshipProgressInnovations().stream()
+          for (ReportSynthesisFlagshipProgressDeliverable flagshipProgressDeliverable : reportSynthesis
+            .getReportSynthesisFlagshipProgress().getReportSynthesisFlagshipProgressDeliverables().stream()
             .filter(ro -> ro.isActive()).collect(Collectors.toList())) {
-            reportSynthesis.getReportSynthesisFlagshipProgress().getProjectInnovations()
-              .add(flagshipProgressInnovation.getProjectInnovation());
+            reportSynthesis.getReportSynthesisFlagshipProgress().getDeliverables()
+              .add(flagshipProgressDeliverable.getDeliverable());
           }
         }
       }
@@ -606,8 +606,8 @@ public class InnovationsAction extends BaseAction {
       .filter(c -> c.getCrpProgram() == null && c.isActive() && c.getAcronym() != null && c.getAcronym().equals("PMU"))
       .collect(Collectors.toList()));
 
-    if (projectInnovations != null && !projectInnovations.isEmpty()) {
-      projectInnovations.sort((p1, p2) -> p1.getId().compareTo(p2.getId()));
+    if (deliverables != null && !deliverables.isEmpty()) {
+      deliverables.sort((p1, p2) -> p1.getId().compareTo(p2.getId()));
     }
 
     // Base Permission
@@ -615,12 +615,13 @@ public class InnovationsAction extends BaseAction {
     this.setBasePermission(this.getText(Permission.REPORT_SYNTHESIS_FLAGSHIP_PROGRESS_BASE_PERMISSION, params));
 
     if (this.isHttpPost()) {
-      if (reportSynthesis.getReportSynthesisFlagshipProgress().getPlannedInnovations() != null) {
-        reportSynthesis.getReportSynthesisFlagshipProgress().getPlannedInnovations().clear();
+      if (reportSynthesis.getReportSynthesisFlagshipProgress().getPlannedDeliverables() != null) {
+        reportSynthesis.getReportSynthesisFlagshipProgress().getPlannedDeliverables().clear();
       }
     }
 
   }
+
 
   @Override
   public String save() {
@@ -629,10 +630,10 @@ public class InnovationsAction extends BaseAction {
       ReportSynthesisFlagshipProgress reportSynthesisFlagshipProgressDB =
         reportSynthesisManager.getReportSynthesisById(synthesisID).getReportSynthesisFlagshipProgress();
 
-      this.flagshipProgressprojectInnovationsNewData(reportSynthesisFlagshipProgressDB);
+      this.flagshipProgressprojectDeliverablesNewData(reportSynthesisFlagshipProgressDB);
 
-      if (reportSynthesis.getReportSynthesisFlagshipProgress().getPlannedInnovations() == null) {
-        reportSynthesis.getReportSynthesisFlagshipProgress().setPlannedInnovations(new ArrayList<>());
+      if (reportSynthesis.getReportSynthesisFlagshipProgress().getPlannedDeliverables() == null) {
+        reportSynthesis.getReportSynthesisFlagshipProgress().setPlannedDeliverables(new ArrayList<>());
       }
 
       reportSynthesisFlagshipProgressDB =
@@ -673,10 +674,14 @@ public class InnovationsAction extends BaseAction {
     }
   }
 
+  public void setDeliverables(List<Deliverable> deliverables) {
+    this.deliverables = deliverables;
+  }
 
   public void setLiaisonInstitution(LiaisonInstitution liaisonInstitution) {
     this.liaisonInstitution = liaisonInstitution;
   }
+
 
   public void setLiaisonInstitutionID(Long liaisonInstitutionID) {
     this.liaisonInstitutionID = liaisonInstitutionID;
@@ -686,15 +691,10 @@ public class InnovationsAction extends BaseAction {
     this.liaisonInstitutions = liaisonInstitutions;
   }
 
-
   public void setLoggedCrp(GlobalUnit loggedCrp) {
     this.loggedCrp = loggedCrp;
   }
 
-
-  public void setProjectInnovations(List<ProjectInnovation> projectInnovations) {
-    this.projectInnovations = projectInnovations;
-  }
 
   public void setReportSynthesis(ReportSynthesis reportSynthesis) {
     this.reportSynthesis = reportSynthesis;

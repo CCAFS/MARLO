@@ -44,6 +44,7 @@ public class ReportSynthesis2018SectionValidator<T extends BaseAction> extends B
   private final Policies2018Validator policies2018Validator;
   private final StudiesOICR2018Validator studiesOICR2018Validator;
   private final Innovations2018Validator innovations2018Validator;
+  private final Publications2018Validator publications2018Validator;
 
 
   @Inject
@@ -51,7 +52,7 @@ public class ReportSynthesis2018SectionValidator<T extends BaseAction> extends B
     IntellectualAssetsValidator intellectualAssetsValidator, CCDimension2018Validator ccDimensionValidator,
     FundingUse2018Validator fundingUse2018Validator, FlagshipProgress2018Validator flagshipProgress2018Validator,
     Policies2018Validator policies2018Validator, StudiesOICR2018Validator studiesOICR2018Validator,
-    Innovations2018Validator innovations2018Validator) {
+    Innovations2018Validator innovations2018Validator, Publications2018Validator publications2018Validator) {
     super();
     this.reportSynthesisManager = reportSynthesisManager;
     this.intellectualAssetsValidator = intellectualAssetsValidator;
@@ -61,6 +62,7 @@ public class ReportSynthesis2018SectionValidator<T extends BaseAction> extends B
     this.policies2018Validator = policies2018Validator;
     this.studiesOICR2018Validator = studiesOICR2018Validator;
     this.innovations2018Validator = innovations2018Validator;
+    this.publications2018Validator = publications2018Validator;
   }
 
 
@@ -191,6 +193,25 @@ public class ReportSynthesis2018SectionValidator<T extends BaseAction> extends B
       reportSynthesis = reportSynthesisManager.saveReportSynthesis(reportSynthesis);
     } else {
       policies2018Validator.validate(action, reportSynthesis, false);
+    }
+
+  }
+
+  public void validatePublications(BaseAction action, ReportSynthesis reportSynthesis) {
+
+    if (reportSynthesis.getReportSynthesisFlagshipProgress() == null) {
+      ReportSynthesisFlagshipProgress flagshipProgress = new ReportSynthesisFlagshipProgress();
+
+      // create one to one relation
+      reportSynthesis.setReportSynthesisFlagshipProgress(flagshipProgress);
+      flagshipProgress.setReportSynthesis(reportSynthesis);
+
+      publications2018Validator.validate(action, reportSynthesis, false);
+
+      // save the changes
+      reportSynthesis = reportSynthesisManager.saveReportSynthesis(reportSynthesis);
+    } else {
+      publications2018Validator.validate(action, reportSynthesis, false);
     }
 
   }
