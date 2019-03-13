@@ -79,5 +79,12 @@
             </key>
             <one-to-many class="org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressInnovation" />
         </set>
+        
+         <set name="reportSynthesisFlagshipProgressDeliverables" table="report_synthesis_flagship_progress_deliverables" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="report_synthesis_flagship_progress_id" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressDeliverable" />
+        </set>
     </class>
 </hibernate-mapping>
