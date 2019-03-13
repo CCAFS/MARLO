@@ -379,6 +379,9 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
         deliverables = new ArrayList<>(deliverableManager.findAll().stream().filter(d -> d.isActive()
           && d.getProject() != null && d.getProject().isActive()
           && d.getProject().getProjecInfoPhase(this.getSelectedPhase()) != null
+          && d.getProject().getProjectInfo().getStatus() != null
+          && d.getProject().getProjectInfo().getStatus().intValue() != Integer
+            .parseInt(ProjectStatusEnum.Cancelled.getStatusId())
           && d.getProject().getGlobalUnitProjects().stream().filter(
             gup -> gup.isActive() && gup.isOrigin() && gup.getGlobalUnit().getId().equals(this.getLoggedCrp().getId()))
             .collect(Collectors.toList()).size() > 0
@@ -388,6 +391,9 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
         deliverables = new ArrayList<>(deliverableManager.findAll().stream().filter(d -> d.isActive()
           && d.getProject() != null && d.getProject().isActive()
           && d.getProject().getProjecInfoPhase(this.getSelectedPhase()) != null
+          && d.getProject().getProjectInfo().getStatus() != null
+          && d.getProject().getProjectInfo().getStatus().intValue() != Integer
+            .parseInt(ProjectStatusEnum.Cancelled.getStatusId())
           && d.getProject().getGlobalUnitProjects().stream().filter(
             gup -> gup.isActive() && gup.isOrigin() && gup.getGlobalUnit().getId().equals(this.getLoggedCrp().getId()))
             .collect(Collectors.toList()).size() > 0
