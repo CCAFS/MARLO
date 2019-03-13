@@ -149,7 +149,7 @@
     </action>
     
     <!--  2.4 MELIA  -->
-    <action name="{crp}/melia" class="org.cgiar.ccafs.marlo.action.annualReport.MeliaAction">
+    <action name="{crp}/melia" class="org.cgiar.ccafs.marlo.action.annualReport.y2018.MonitoringEvaluationAction">
       <interceptor-ref name="editReportSynthesisStack" />
       <result name="input">/WEB-INF/crp/views/annualReport2018/AR2018_melia.ftl</result>
       <result name="success" type="redirectAction">
