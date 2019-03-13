@@ -222,6 +222,7 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
     masterReport.getParameterValues().put("i8nGeographicScope", this.getText("deliverable.geographicScope"));
     masterReport.getParameterValues().put("i8nDeliverableCountry", this.getText("deliverable.countries"));
     masterReport.getParameterValues().put("i8nRegion", this.getText("deliverable.region"));
+    masterReport.getParameterValues().put("i8nProjectStatus", this.getText("deliverable.status"));
 
     /*
      * Reporting
@@ -362,7 +363,7 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
         "dataDictionary", "tools", "F", "A", "I", "R", "disseminated", "restricted_access",
         "deliv_license_modifications", "volume", "issue", "pages", "journal", "journal_indicators", "acknowledge",
         "fl_contrib", "project_ID", "project_title", "flagships", "regions", "others_responsibles", "newExceptedFlag",
-        "phaseID", "gender", "youth", "cap", "geographicScope", "region", "country"},
+        "phaseID", "gender", "youth", "cap", "geographicScope", "region", "country", "status"},
       new Class[] {Long.class, String.class, String.class, String.class, String.class, Integer.class, String.class,
         String.class, String.class, String.class, Integer.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
@@ -370,7 +371,7 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, Long.class, String.class, String.class, String.class, String.class,
-        String.class, String.class},
+        String.class, String.class, String.class},
       0);
     if (!deliverableManager.findAll().isEmpty()) {
       List<Deliverable> deliverables = new ArrayList<>();
@@ -452,13 +453,30 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
         Boolean showCompilance = false;
         String projectID = null;
         String projectTitle = null;
-        String flagships = null, regions = null;
+        String flagships = null, regions = null, status = null;
 
         if (deliverable.getProject() != null) {
           projectID = deliverable.getProject().getId().toString();
           if (deliverable.getProject().getProjectInfo().getTitle() != null
             && !deliverable.getProject().getProjectInfo().getTitle().trim().isEmpty()) {
             projectTitle = deliverable.getProject().getProjectInfo().getTitle();
+          }
+        }
+
+        if (deliverable.getDeliverableInfo().getStatus() != null) {
+          switch (deliverable.getDeliverableInfo().getStatus()) {
+            case 2:
+              status = "On-going";
+              break;
+            case 3:
+              status = "Complete";
+              break;
+            case 4:
+              status = "Extended";
+              break;
+            case 5:
+              status = "Cancelled";
+              break;
           }
         }
         Long phaseID = deliverable.getDeliverableInfo().getPhase().getId();
@@ -1313,7 +1331,7 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
           HandleMetadata, DOIMetadata, creatorAuthors, dataSharing, qualityAssurance, dataDictionary, tools, F, A, I, R,
           disseminated, restrictedAccess, delivLicenseModifications, volume, issue, pages, journal, journalIndicator,
           acknowledge, flContrib, projectID, projectTitle, flagships, regions, othersResponsibles, newExceptedFlag,
-          phaseID, gender, youth, cap, geographicScope, region, country});
+          phaseID, gender, youth, cap, geographicScope, region, country, status});
       }
     }
     return model;
