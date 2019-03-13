@@ -125,12 +125,12 @@
                         [@s.text name="${customLabel}.fullList.title" /]
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                       </div>
-                      [@listOfPublications name="fullList" list=[] allowPopups=false /]
+                      [@listOfPublications name="fullList" list=(deliverables)![] allowPopups=false /]
                     </div>
                   </div>
                 </div>
                 [#-- Table --]
-                [@listOfPublications name="fullList" list=[] allowPopups=true /]
+                [@listOfPublications name="fullList" list=(deliverables)![]  allowPopups=true /]
               </div>
             
           </div>
@@ -211,14 +211,14 @@
         [#if list?has_content]
           [#list list as item]
           <tr>
-            <td>${item.author}</td>
-            <td>${item.date}</td>
-            <td>${item.article}</td>
-            <td>${item.journal}</td>
+            <td>[@utils.tableText value=(item.deliverableInfo.title)!"" /]</td>
+            <td>${(item.date)!}</td>
+            <td>${(item.article)!}</td>
+            <td>${(item.journal)!}</td>
             [#if !allowPopups]
-              <td>${item.volume}</td>
-              <td>${item.issue}</td>
-              <td>${item.page}</td>
+              <td>${(item.volume)!}</td>
+              <td>${(item.issue)!}</td>
+              <td>${(item.page)!}</td>
             [/#if]
             <td class="text-center">
               <span style="display:none">${(item.open?string)!'false'}</span>
@@ -229,7 +229,7 @@
               <img src="${baseUrl}/global/images/checked-${(item.isi?string)!'false'}.png" alt="" />
             </td>
             [#if !allowPopups]
-              <td>${item.identifier}</td>
+              <td>${(item.identifier)!}</td>
             [/#if]
             [#if allowPopups]
               <td class="text-center">
