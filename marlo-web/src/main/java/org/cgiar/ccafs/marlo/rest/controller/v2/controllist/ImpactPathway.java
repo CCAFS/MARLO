@@ -31,6 +31,7 @@ import io.swagger.annotations.ApiParam;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -64,8 +65,11 @@ public class ImpactPathway {
 	public ResponseEntity<MilestoneDTO> findMilestoneById(
 			@ApiParam(value = "${ImpactPathway.milestones.id.param.CGIAR}", required = true) @PathVariable String CGIAREntity,
 			@ApiParam(value = "${ImpactPathway.milestones.id.param.id}", required = true) @PathVariable Long id) {
-		LOG.debug("REST request to get Institution : {}", id);
-		return this.milestoneItem.findMilestoneById(id, CGIAREntity);
+		ResponseEntity<MilestoneDTO> response = this.milestoneItem.findMilestoneById(id, CGIAREntity);
+		if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+			throw new NotFoundException("404", "Milestone not found");
+		}
+		return response;
 	}
 
 	@ApiOperation(tags = {
@@ -75,8 +79,11 @@ public class ImpactPathway {
 	public ResponseEntity<OutcomeDTO> findOutcomeById(
 			@ApiParam(value = "${ImpactPathway.outcomes.id.param.CGIAR}", required = true) @PathVariable String CGIAREntity,
 			@ApiParam(value = "${ImpactPathway.outcomes.id.param.id}", required = true) @PathVariable Long id) {
-		LOG.debug("REST request to get Institution : {}", id);
-		return this.outcomeItem.findOutcomeById(id, CGIAREntity);
+		ResponseEntity<OutcomeDTO> response = this.outcomeItem.findOutcomeById(id, CGIAREntity);
+		if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+			throw new NotFoundException("404", "Outcome not found");
+		}
+		return response;
 	}
 
 	@ApiOperation(tags = {
@@ -89,10 +96,9 @@ public class ImpactPathway {
 			@ApiParam(value = "${ImpactPathway.milestones.all.param.targetYear}") @RequestParam(value = "targetYear", required = false) Integer targetYear,
 			@ApiParam(value = "${ImpactPathway.milestones.all.param.reportYear}", required = true) @RequestParam("reportYear") Integer repoYear)
 			throws NotFoundException {
-		LOG.debug("REST request to get Institutions");
 		List<MilestoneDTO> response = this.milestoneItem.getAllMilestones(flagshipId, CGIAREntity, repoYear);
 		if (response == null || response.isEmpty()) {
-			throw new NotFoundException("404", "Outcome not found");
+			throw new NotFoundException("404", "Milestones not found");
 		}
 		return response;
 	}
@@ -107,10 +113,9 @@ public class ImpactPathway {
 			@ApiParam(value = "${ImpactPathway.outcomes.all.param.targetYear}") @RequestParam(value = "targetYear", required = false) Integer targetYear,
 			@ApiParam(value = "${ImpactPathway.outcomes.all.param.reportYear}", required = true) @RequestParam("reportYear") Integer repoYear)
 			throws NotFoundException {
-		LOG.debug("REST request to get Institutions");
 		List<OutcomeDTO> response = this.outcomeItem.getAllOutcomes(flagshipId, CGIAREntity, targetYear, repoYear);
 		if (response == null || response.isEmpty()) {
-			throw new NotFoundException("404", "Outcome not found");
+			throw new NotFoundException("404", "Outcomes not found");
 		}
 		return response;
 	}

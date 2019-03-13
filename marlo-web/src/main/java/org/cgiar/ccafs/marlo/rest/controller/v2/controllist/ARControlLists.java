@@ -47,6 +47,7 @@ import org.cgiar.ccafs.marlo.rest.dto.PolicyOwnerTypeDTO;
 import org.cgiar.ccafs.marlo.rest.dto.StageOfInnovationDTO;
 import org.cgiar.ccafs.marlo.rest.dto.StudyTypeDTO;
 import org.cgiar.ccafs.marlo.rest.dto.TagDTO;
+import org.cgiar.ccafs.marlo.rest.errors.NotFoundException;
 import org.cgiar.ccafs.marlo.security.Permission;
 
 import java.util.List;
@@ -62,6 +63,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -129,7 +131,6 @@ public class ARControlLists {
 		this.partnershipMainAreaItem = partnershipMainAreaItem;
 		this.bugdetTypeItem = bugdetTypeItem;
 		this.broadAreaItem = broadAreaItem;
-
 	}
 
 	/**
@@ -145,7 +146,12 @@ public class ARControlLists {
 	@RequestMapping(value = "/broad-areas/{code}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<BroadAreaDTO> findBroadAreaById(
 			@ApiParam(value = "${ARControlLists.broad-areas.code.param.code}", required = true) @PathVariable Long code) {
-		return this.broadAreaItem.findBroadAreaById(code);
+
+		ResponseEntity<BroadAreaDTO> response = this.broadAreaItem.findBroadAreaById(code);
+		if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+			throw new NotFoundException("404", "Broad area not found");
+		}
+		return response;
 	}
 
 	/**
@@ -161,7 +167,11 @@ public class ARControlLists {
 	@RequestMapping(value = "/budget-types/{code}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<BudgetTypeDTO> findBudgetTypeById(
 			@ApiParam(value = "${ARControlLists.budget-types.code.param.code}", required = true) @PathVariable Long code) {
-		return this.bugdetTypeItem.findBudgetTypeById(code);
+		ResponseEntity<BudgetTypeDTO> response = this.bugdetTypeItem.findBudgetTypeById(code);
+		if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+			throw new NotFoundException("404", "Budget Type not found");
+		}
+		return response;
 	}
 
 	/**
@@ -177,7 +187,12 @@ public class ARControlLists {
 	@RequestMapping(value = "/cross-cutting-markers/{code}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<CrossCuttingMarkerDTO> findCrossCuttingMarkerById(
 			@ApiParam(value = "${ARControlLists.cross-cutting-markers.code.param.code}", required = true) @PathVariable Long code) {
-		return this.crossCuttingMarkerItem.findCrossCuttingMarkerById(code);
+
+		ResponseEntity<CrossCuttingMarkerDTO> response = this.crossCuttingMarkerItem.findCrossCuttingMarkerById(code);
+		if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+			throw new NotFoundException("404", "Cross Cutting Marker not found");
+		}
+		return response;
 	}
 
 	/**
@@ -192,7 +207,12 @@ public class ARControlLists {
 	@RequestMapping(value = "/cross-cutting-marker-scores/{code}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<CrossCuttingMarkerScoreDTO> findCrossCuttingMarkerScoreById(
 			@ApiParam(value = "${ARControlLists.cross-cutting-marker-scores.code.param.code}", required = true) @PathVariable Long code) {
-		return this.crossCuttingMarkerScoreItem.findCrossCuttingMarkerScoreById(code);
+		ResponseEntity<CrossCuttingMarkerScoreDTO> response = this.crossCuttingMarkerScoreItem
+				.findCrossCuttingMarkerScoreById(code);
+		if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+			throw new NotFoundException("404", "Cross Cutting Marker score not found");
+		}
+		return response;
 	}
 
 	/**
@@ -207,7 +227,11 @@ public class ARControlLists {
 	@RequestMapping(value = "/innovation-types/{code}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<InnovationTypeDTO> findInnovationTypeById(
 			@ApiParam(value = "${ARControlLists.innovation-types.code.param.code}", required = true) @PathVariable Long code) {
-		return this.innovationTypesItem.findInnovationTypeById(code);
+		ResponseEntity<InnovationTypeDTO> response = this.innovationTypesItem.findInnovationTypeById(code);
+		if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+			throw new NotFoundException("404", "Innovation Type not found");
+		}
+		return response;
 	}
 
 	/**
@@ -221,7 +245,12 @@ public class ARControlLists {
 	@RequestMapping(value = "/maturities-of-change/{code}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<MaturityOfChangeDTO> findMaturityOfChangeById(
 			@ApiParam(value = "${ARControlLists.maturities-of-change.code.param.code}", required = true) @PathVariable Long code) {
-		return this.maturityOfChangeItem.findMaturityOfChangeById(code);
+		ResponseEntity<MaturityOfChangeDTO> response = this.maturityOfChangeItem.findMaturityOfChangeById(code);
+		if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+			throw new NotFoundException("404", "Maturity of Change not found");
+		}
+		return response;
+
 	}
 
 	/**
@@ -235,7 +264,12 @@ public class ARControlLists {
 	@RequestMapping(value = "/organization-types/{code}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<OrganizationTypeDTO> findOrganizationTypeById(
 			@ApiParam(value = "${ARControlLists.organization-types.code.param.code}", required = true) @PathVariable Long code) {
-		return this.organizationTypeItem.findOrganizationTypeById(code);
+		ResponseEntity<OrganizationTypeDTO> response = this.organizationTypeItem.findOrganizationTypeById(code);
+		if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+			throw new NotFoundException("404", "Organization Type not found");
+		}
+		return response;
+
 	}
 
 	/**
@@ -250,7 +284,13 @@ public class ARControlLists {
 	@RequestMapping(value = "/partnership-main-areas/{code}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<PartnershipMainAreaDTO> findPartnershipMainAreaById(
 			@ApiParam(value = "${ARControlLists.partnership-main-areas.code.param.code}", required = true) @PathVariable Long code) {
-		return this.partnershipMainAreaItem.findPartnershipMainAreaById(code);
+		ResponseEntity<PartnershipMainAreaDTO> response = this.partnershipMainAreaItem
+				.findPartnershipMainAreaById(code);
+		if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+			throw new NotFoundException("404", "Partnership Main Area not found");
+		}
+		return response;
+
 	}
 
 	/**
@@ -264,7 +304,12 @@ public class ARControlLists {
 	@RequestMapping(value = "/policy-investment-types/{code}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<PolicyInvestmentTypeDTO> findPolicyInvestimentTypesById(
 			@ApiParam(value = "${ARControlLists.policy-investment-types.code.param.code}", required = true) @PathVariable Long code) {
-		return this.policyInvestmentTypeItem.PolicyInvestmentTypeById(code);
+		ResponseEntity<PolicyInvestmentTypeDTO> response = this.policyInvestmentTypeItem.PolicyInvestmentTypeById(code);
+		if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+			throw new NotFoundException("404", "Policy Investment type not found");
+		}
+		return response;
+
 	}
 
 	/**
@@ -278,7 +323,12 @@ public class ARControlLists {
 	@RequestMapping(value = "/policy-maturity-levels/{code}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<PolicyMaturityLevelDTO> findPolicyMaturityLevelById(
 			@ApiParam(value = "${ARControlLists.policy-maturity-levels.code.param.code}", required = true) @PathVariable Long code) {
-		return this.policyMaturityLevelItem.PolicyMaturityLevelById(code);
+		ResponseEntity<PolicyMaturityLevelDTO> response = this.policyMaturityLevelItem.PolicyMaturityLevelById(code);
+		if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+			throw new NotFoundException("404", "Policy Level of Maturity not found");
+		}
+		return response;
+
 	}
 
 	/**
@@ -292,7 +342,12 @@ public class ARControlLists {
 	@RequestMapping(value = "/policy-owner-types/{code}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<PolicyOwnerTypeDTO> findPolicyOwnerTypeById(
 			@ApiParam(value = "${ARControlLists.policy-owner-types.code.param.code}", required = true) @PathVariable Long code) {
-		return this.policyOwnerTypeItem.findPolicyOwnerTypeById(code);
+		ResponseEntity<PolicyOwnerTypeDTO> response = this.policyOwnerTypeItem.findPolicyOwnerTypeById(code);
+		if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+			throw new NotFoundException("404", "Policy owner type not found");
+		}
+		return response;
+
 	}
 
 	/**
@@ -306,7 +361,12 @@ public class ARControlLists {
 	@RequestMapping(value = "/stage-of-innovations/{code}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<StageOfInnovationDTO> findStageOfInnovationById(
 			@ApiParam(value = "${ARControlLists.stage-of-innovations.code.param.code}", required = true) @PathVariable Long code) {
-		return this.stageOfInnovationItem.findStageOfInnovationById(code);
+		ResponseEntity<StageOfInnovationDTO> response = this.stageOfInnovationItem.findStageOfInnovationById(code);
+		if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+			throw new NotFoundException("404", "Stage of Innovation not found");
+		}
+		return response;
+
 	}
 
 	/**
@@ -321,7 +381,12 @@ public class ARControlLists {
 	@RequestMapping(value = "/study-types/{code}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<StudyTypeDTO> findStudyTypeById(
 			@ApiParam(value = "${ARControlLists.study-types.code.param.code}", required = true) @PathVariable Long code) {
-		return this.studyTypeItem.findStudyTypeById(code);
+		ResponseEntity<StudyTypeDTO> response = this.studyTypeItem.findStudyTypeById(code);
+		if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+			throw new NotFoundException("404", "Study Type not found");
+		}
+		return response;
+
 	}
 
 	/**
@@ -335,7 +400,12 @@ public class ARControlLists {
 	@RequestMapping(value = "/tags/{code}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<TagDTO> findTagsById(
 			@ApiParam(value = "${ARControlLists.tags.code.param.code}", required = true) @PathVariable Long code) {
-		return this.tagItem.findTagById(code);
+		ResponseEntity<TagDTO> response = this.tagItem.findTagById(code);
+		if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+			throw new NotFoundException("404", "Tag not found");
+		}
+		return response;
+
 	}
 
 	/**
