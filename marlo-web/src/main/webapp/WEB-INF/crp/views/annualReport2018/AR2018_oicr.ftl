@@ -3,8 +3,13 @@
 [#assign currentSectionString = "annualReport-${actionName?replace('/','-')}-${synthesisID}" /]
 [#assign currentSection = "synthesis" /]
 [#assign currentStage = actionName?split('/')[1]/]
-[#assign pageLibs = [ ] /]
-[#assign customJS = [ "${baseUrlMedia}/js/annualReport/annualReport_${currentStage}.js" ] /]
+[#assign pageLibs = [ "datatables.net", "datatables.net-bs" ] /]
+[#assign customJS = [   
+  "https://cdn.datatables.net/buttons/1.3.1/js/dataTables.buttons.min.js",
+  "//cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js",
+  "//cdn.datatables.net/buttons/1.3.1/js/buttons.print.min.js",
+  "${baseUrlMedia}/js/annualReport/annualReport_${currentStage}.js" 
+] /]
 [#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css"] /]
 
 [#assign breadCrumb = [
@@ -67,7 +72,7 @@
 
   <div class="form-group">
     [@customForm.helpLabel name="${customLabel}.help" showIcon=false editable=editable/]
-    <table class="table table-bordered">
+    <table class="annual-report-table table-border">
       <thead>
         <tr>
           <th class="text-center"> [@s.text name="${customLabel}.${name}.outcomeTitle" /] </th>
@@ -81,10 +86,11 @@
           [#list list as item]
           <tr>
             <td>[@utils.tableText value=(item.composedName)!"" /]</td>
-            <td>[@utils.tableText value=(item.projectExpectedStudyInfos.phase.name)!"" /]</td>
-            <td class="text-center">[@utils.tableText value=(item.projectExpectedStudyInfos.status.name)!"" /]</td>
+            <td>[@utils.tableText value=(item.projectExpectedStudyInfo.repIndStageStudy.name)!"" /]</td>
+            <td class="text-center">[@utils.tableText value=(item.projectExpectedStudyInfo.status.name)!"" /]</td>
             <td class="text-center">
-              [@customForm.checkmark id="" name="" checked=false editable=editable centered=true/] 
+              [#local isChecked = ((!reportSynthesis.reportSynthesisFlagshipProgress.studiesIds?seq_contains(item.id))!true) /]
+              [@customForm.checkmark id="study-${(item.id)!}" name="reportSynthesis.reportSynthesisFlagshipProgress.studiesValue" value="${(item.id)!''}" checked=isChecked editable=editable centered=true/] 
             </td>
           </tr>
           [/#list]

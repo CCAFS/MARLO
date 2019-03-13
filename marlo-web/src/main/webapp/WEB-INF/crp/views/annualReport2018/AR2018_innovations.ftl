@@ -152,7 +152,7 @@
             </div>
             
             <div class="form-group">
-                [@innovationsTable name="table4" list=[]/]
+                [@innovationsTable name="table4" list=(projectInnovations)![]  /]
             </div>
             
           </div>
@@ -186,12 +186,13 @@
         [#if list?has_content]
           [#list list as item]
           <tr>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
+            <td>[@utils.tableText value=(item.composedName)!"" /]</td>
+            <td>[@utils.tableText value=(item.projectInnovationInfo.repIndStageInnovation.name)!"" /]</td>
+            <td>[@utils.tableText value=(item.projectInnovationInfo.repIndDegreeInnovation.name)!"" /]</td>
+            <td>[@utils.tableText value=(item.projectInnovationInfo.repIndContributionOfCrp.name)!"" /]</td>
             <td class="text-center">
-              [@customForm.checkmark id="" name="" checked=false editable=editable centered=true/] 
+              [#local isChecked = ((!reportSynthesis.reportSynthesisFlagshipProgress.innovationsId?seq_contains(item.id))!true) /]
+              [@customForm.checkmark id="innovation-${(item.id)!}" name="reportSynthesis.reportSynthesisFlagshipProgress.innovationsValue" value="${(item.id)!''}" checked=isChecked editable=editable centered=true/] 
             </td>
           </tr>
           [/#list]
