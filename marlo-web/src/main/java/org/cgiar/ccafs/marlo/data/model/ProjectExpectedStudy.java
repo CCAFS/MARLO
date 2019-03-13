@@ -415,19 +415,30 @@ public class ProjectExpectedStudy extends MarloAuditableEntity implements java.i
     return srfTargets;
   }
 
+  public List<ProjectExpectedStudySrfTarget> getSrfTargets(Phase phase) {
+    return new ArrayList<>(this.getProjectExpectedStudySrfTargets().stream()
+      .filter(ps -> ps.isActive() && ps.getPhase().equals(phase)).collect(Collectors.toList()));
+  }
+
   public List<ProjectExpectedStudyRegion> getStudyRegions() {
     return studyRegions;
   }
+
 
   public List<ProjectExpectedStudySubIdo> getSubIdos() {
     return subIdos;
   }
 
 
+  public List<ProjectExpectedStudySubIdo> getSubIdos(Phase phase) {
+    return new ArrayList<>(this.getProjectExpectedStudySubIdos().stream()
+      .filter(ps -> ps.isActive() && ps.getPhase().equals(phase)).collect(Collectors.toList()));
+  }
+
+
   public String getTopicStudy() {
     return topicStudy;
   }
-
 
   public Integer getType() {
     return type;
@@ -442,6 +453,7 @@ public class ProjectExpectedStudy extends MarloAuditableEntity implements java.i
 
   }
 
+
   public Integer getYear() {
     return year;
   }
@@ -455,11 +467,9 @@ public class ProjectExpectedStudy extends MarloAuditableEntity implements java.i
     return result;
   }
 
-
   public void setCasesStudy(CaseStudy casesStudy) {
     this.casesStudy = casesStudy;
   }
-
 
   public void setComments(String comments) {
     this.comments = comments;
@@ -473,6 +483,7 @@ public class ProjectExpectedStudy extends MarloAuditableEntity implements java.i
     this.countries = countries;
   }
 
+
   public void setCountriesIds(List<String> countriesIds) {
     this.countriesIds = countriesIds;
   }
@@ -480,7 +491,6 @@ public class ProjectExpectedStudy extends MarloAuditableEntity implements java.i
   public void setCountriesIdsText(String countriesIdsText) {
     this.countriesIdsText = countriesIdsText;
   }
-
 
   public void setCrps(List<ProjectExpectedStudyCrp> crps) {
     this.crps = crps;
@@ -490,9 +500,11 @@ public class ProjectExpectedStudy extends MarloAuditableEntity implements java.i
     this.expectedStudyProjects = expectedStudyProjects;
   }
 
+
   public void setFlagships(List<ProjectExpectedStudyFlagship> flagships) {
     this.flagships = flagships;
   }
+
 
   public void setGeographicScopes(List<ProjectExpectedStudyGeographicScope> geographicScopes) {
     this.geographicScopes = geographicScopes;
@@ -538,7 +550,6 @@ public class ProjectExpectedStudy extends MarloAuditableEntity implements java.i
     this.projectExpectedStudyCountries = projectExpectedStudyCountries;
   }
 
-
   public void setProjectExpectedStudyCrps(Set<ProjectExpectedStudyCrp> projectExpectedStudyCrps) {
     this.projectExpectedStudyCrps = projectExpectedStudyCrps;
   }
@@ -547,6 +558,7 @@ public class ProjectExpectedStudy extends MarloAuditableEntity implements java.i
   public void setProjectExpectedStudyFlagships(Set<ProjectExpectedStudyFlagship> projectExpectedStudyFlagships) {
     this.projectExpectedStudyFlagships = projectExpectedStudyFlagships;
   }
+
 
   public void setProjectExpectedStudyGeographicScopes(
     Set<ProjectExpectedStudyGeographicScope> projectExpectedStudyGeographicScopes) {
@@ -590,19 +602,19 @@ public class ProjectExpectedStudy extends MarloAuditableEntity implements java.i
     this.projectExpectedStudyQuantifications = projectExpectedStudyQuantifications;
   }
 
-
   public void setProjectExpectedStudyRegions(Set<ProjectExpectedStudyRegion> projectExpectedStudyRegions) {
     this.projectExpectedStudyRegions = projectExpectedStudyRegions;
   }
-
 
   public void setProjectExpectedStudySrfTargets(Set<ProjectExpectedStudySrfTarget> projectExpectedStudySrfTargets) {
     this.projectExpectedStudySrfTargets = projectExpectedStudySrfTargets;
   }
 
+
   public void setProjectExpectedStudySubIdos(Set<ProjectExpectedStudySubIdo> projectExpectedStudySubIdos) {
     this.projectExpectedStudySubIdos = projectExpectedStudySubIdos;
   }
+
 
   public void setProjects(List<ExpectedStudyProject> projects) {
     this.projects = projects;
@@ -658,19 +670,19 @@ public class ProjectExpectedStudy extends MarloAuditableEntity implements java.i
     this.subIdos = subIdos;
   }
 
-
   public void setTopicStudy(String topicStudy) {
     this.topicStudy = topicStudy;
   }
-
 
   public void setType(Integer type) {
     this.type = type;
   }
 
+
   public void setYear(Integer year) {
     this.year = year;
   }
+
 
   @Override
   public String toString() {
