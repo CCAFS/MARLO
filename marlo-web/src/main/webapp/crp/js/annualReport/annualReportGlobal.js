@@ -23,6 +23,12 @@ $(document).ready(function() {
 
 });
 
+google.charts.load('current', {
+  packages: [
+      'corechart', 'bar'
+  ]
+});
+
 /**
  * Get chart data in Array
  * 
@@ -46,19 +52,29 @@ function getChartDataArray(chart) {
 }
 
 function createGooglePieChart(chartID,options) {
-  google.charts.load('current', {
-    packages: [
-        'corechart', 'bar'
-    ]
-  });
+  var $chart = $(chartID);
+  if($chart.exists()) {
+    google.charts.setOnLoadCallback(function() {
+      $chart.addClass('loaded');
+      var data = google.visualization.arrayToDataTable(getChartDataArray($chart));
+      var chart = new google.visualization.PieChart(document.getElementById($chart[0].id));
+      chart.draw(data, options);
+      console.log("Created " + chartID, options.title);
+    });
+  }
 
-  google.charts.setOnLoadCallback(function() {
-    $(this).addClass('loaded');
+}
 
-    var $chart = $(chartID);
-    var data = google.visualization.arrayToDataTable(getChartDataArray($chart));
-    var chart = new google.visualization.PieChart(document.getElementById($chart[0].id));
-    chart.draw(data, options);
-  });
+function createGoogleBarChart(chartID,options) {
+  var $chart = $(chartID);
+  if($chart.exists()) {
+    google.charts.setOnLoadCallback(function() {
+      var data = new google.visualization.arrayToDataTable(getChartDataArray($chart));
+      var view = new google.visualization.DataView(data);
+      var chart = new google.visualization.BarChart(document.getElementById($chart[0].id));
+      chart.draw(view, google.charts.Bar.convertOptions({}));
+      console.log("Created " + chartID, options.title);
+    });
+  }
 
 }

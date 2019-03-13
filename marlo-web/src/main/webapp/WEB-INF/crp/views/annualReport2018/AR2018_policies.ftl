@@ -144,7 +144,6 @@
 
 
 [#macro table2ListOfPolicies list=[]  id="" expanded=false]
-
   <table id="tableA" class="table table-bordered">
     <thead>
       <tr>
@@ -200,8 +199,7 @@
           [#if expanded]
             [#-- Gender --]
             <td class="text-center">
-              [#list (item.crossCuttingMarkers)![] as ccm]${ccm}[/#list]
-              <p class="dacMarker level-2" title="0 - Not Targeted"> 0 </p>  
+              [#list (item.crossCuttingMarkers)![] as ccm]-${ccm}[/#list]
             </td>
             [#-- Youth --]
             <td class="text-center"> <p class="dacMarker level-2" title="0 - Not Targeted">0</p> </td>

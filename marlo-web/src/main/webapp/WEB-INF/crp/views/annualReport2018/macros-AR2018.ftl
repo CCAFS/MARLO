@@ -48,7 +48,6 @@
             [#-- Check if there is information available --]
             [#local isEmptyRow = true /]
             [#list columns as column][#if (item[column]?has_content)!false][#local isEmptyRow = false /][#break][/#if][/#list]
-            
             [#if (isEmptyRow && showEmptyRows) || (!isEmptyRow) ]
             <tr>
               <td class="col-md-1 text-center">
