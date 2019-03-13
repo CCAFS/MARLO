@@ -3,20 +3,15 @@ $(document).ready(init);
 function init() {
   // Attaching events
   attachEvents();
+
+  // Init Google Charts
+  setGoogleCharts();
 }
 
 function attachEvents() {
 }
 
-google.charts.load('current', {
-  packages: [
-      'corechart', 'bar'
-  ]
-});
-
-google.charts.setOnLoadCallback(function() {
-  // On load
-  $('.chartBox').addClass('loaded');
+function setGoogleCharts() {
 
   // Chart #10 - Number of peer reviewed articles by Open Access status
   createGooglePieChart('#chart10', {
@@ -74,4 +69,4 @@ google.charts.setOnLoadCallback(function() {
       }
   });
 
-});
+};

@@ -24,10 +24,7 @@ function loadCapdev() {
   capdevTabLoaded = true;
 }
 
-// google.charts.setOnLoadCallback(setGoogleCharts);
-
 function setGoogleCharts() {
-  console.log("Load Google Charts");
   // Chart #12 - Trainees in short-term
   createGooglePieChart('#chart12', {
       title: 'Trainees in short-term',
