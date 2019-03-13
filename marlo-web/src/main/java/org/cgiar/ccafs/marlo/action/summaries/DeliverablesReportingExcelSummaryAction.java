@@ -223,6 +223,7 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
     masterReport.getParameterValues().put("i8nDeliverableCountry", this.getText("deliverable.countries"));
     masterReport.getParameterValues().put("i8nRegion", this.getText("deliverable.region"));
     masterReport.getParameterValues().put("i8nProjectStatus", this.getText("deliverable.status"));
+    masterReport.getParameterValues().put("i8nFundingSource", this.getText("deliverable.fundingSources"));
 
     /*
      * Reporting
