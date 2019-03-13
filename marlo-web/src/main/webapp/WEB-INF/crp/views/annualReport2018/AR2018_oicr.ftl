@@ -8,7 +8,7 @@
   "https://cdn.datatables.net/buttons/1.3.1/js/dataTables.buttons.min.js",
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js",
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.print.min.js",
-  "${baseUrlMedia}/js/annualReport/annualReport_${currentStage}.js" 
+  "${baseUrlMedia}/js/annualReport/annualReportGlobal.js" 
 ] /]
 [#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css"] /]
 
@@ -50,8 +50,32 @@
           
             [#-- Table 3: List of Outcome/Impact Case Reports --]
             <div class="form-group">
-
-              [@listOfOutcomeImpactCaseReports name="table3" list=(projectExpectedStudies)![] /]
+              [#-- Button --]
+              <button type="button" class="btn btn-default btn-xs pull-right" data-toggle="modal" data-target="#modal-policies">
+                 <span class="glyphicon glyphicon-fullscreen"></span> See Full table 2
+              </button>
+              [#-- Modal --]
+              <div class="modal fade" id="modal-policies" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                <div class="modal-dialog modal-lg" role="document">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                      <h4 class="modal-title" id="myModalLabel"></h4>
+                    </div>
+                    <div class="modal-body">
+                      [#-- Full table --]
+                      [@listOfOutcomeImpactCaseReports name="table3" list=(projectExpectedStudies)![] expanded=true /]
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              [#-- Table --]
+              [@listOfOutcomeImpactCaseReports name="table3" list=(projectExpectedStudies)![] expanded=false/]
+              
+              
             </div>
           
           </div>
@@ -67,31 +91,49 @@
 
 [#---------------------------------------------------- MACROS ----------------------------------------------------]
 
-[#macro listOfOutcomeImpactCaseReports name list=[]  isPMU=false ]
+[#macro listOfOutcomeImpactCaseReports name list=[]  isPMU=false expanded=false ]
 
 
-  <div class="form-group">
+  <div class="form-group viewMoreSyntesisTable-block">
     [@customForm.helpLabel name="${customLabel}.help" showIcon=false editable=editable/]
     <table class="annual-report-table table-border">
       <thead>
         <tr>
           <th class="text-center"> [@s.text name="${customLabel}.${name}.outcomeTitle" /] </th>
           <th class="text-center"> [@s.text name="${customLabel}.${name}.maturityLevel" /] </th>
-          <th class="col-md-2 text-center"> [@s.text name="${customLabel}.${name}.status" /] </th>
+          <th class="text-center"> [@s.text name="${customLabel}.${name}.status" /] </th>
+          [#if expanded]
+          <th> [@s.text name="${customLabel}.${name}.srfTargets" /] </th>
+          <th> [@s.text name="${customLabel}.${name}.subIdos" /] </th>
+          <th></th>
+          <th></th>
+          [/#if]
+          [#if !expanded]
           <th class="col-md-1 text-center"> [@s.text name="${customLabel}.${name}.includeAR" /] </th>
+          [/#if]
         </tr>
       </thead>
       <tbody>
         [#if list?has_content]
           [#list list as item]
+            [#local url][@s.url namespace="/projects" action="${(crpSession)!}/study"][@s.param name='expectedID']${item.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
+            [#local summaryPDF = "${baseUrl}/projects/${crpSession}/studySummary.do?studyID=${(item.id)!}&cycle=Reporting&year=${(actualPhase.year)!}"]
           <tr>
             <td>[@utils.tableText value=(item.composedName)!"" /]</td>
             <td>[@utils.tableText value=(item.projectExpectedStudyInfo.repIndStageStudy.name)!"" /]</td>
             <td class="text-center">[@utils.tableText value=(item.projectExpectedStudyInfo.status.name)!"" /]</td>
+           [#if expanded]
+            <td>[@utils.tableList list=(item.srfTargets)![] displayFieldName="srfSloIndicator.title" /]</td>
+            <td>[@utils.tableList list=(item.subIdos)![] displayFieldName="srfSubIdo.description" /]</td>
+            <td> <a href="${summaryPDF}" target="_blank"><img src="${baseUrl}/global/images/pdf.png" height="25" title="[@s.text name="projectsList.downloadPDF" /]" /></a>  </td>
+            <td> <a href="${url}" target="_blank"><span class="glyphicon glyphicon-new-window"></span></a>  </td>
+           [/#if]
+           [#if !expanded]
             <td class="text-center">
               [#local isChecked = ((!reportSynthesis.reportSynthesisFlagshipProgress.studiesIds?seq_contains(item.id))!true) /]
               [@customForm.checkmark id="study-${(item.id)!}" name="reportSynthesis.reportSynthesisFlagshipProgress.studiesValue" value="${(item.id)!''}" checked=isChecked editable=editable centered=true/] 
             </td>
+           [/#if]
           </tr>
           [/#list]
         [#else]
