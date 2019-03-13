@@ -319,18 +319,23 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
       }
     }
     if (crossCuttingGenderResearchFindings != null && !crossCuttingGenderResearchFindings.isEmpty()) {
-      poiSummary.textParagraph(document.createParagraph(), crossCuttingGenderResearchFindings);
+      // poiSummary.textParagraph(document.createParagraph(), crossCuttingGenderResearchFindings);
+      poiSummary.convertHTMLTags(document, crossCuttingGenderResearchFindings);
     }
 
     if (crossCuttingGenderLearned != null && !crossCuttingGenderLearned.isEmpty()) {
-      poiSummary.textParagraph(document.createParagraph(), crossCuttingGenderLearned);
+      // poiSummary.textParagraph(document.createParagraph(), crossCuttingGenderLearned);
+      poiSummary.convertHTMLTags(document, crossCuttingGenderLearned);
+
     }
 
     if (crossCuttingGenderProblemsArimes != null && !crossCuttingGenderProblemsArimes.isEmpty()) {
-      poiSummary.textParagraph(document.createParagraph(), crossCuttingGenderProblemsArimes);
+      // poiSummary.textParagraph(document.createParagraph(), crossCuttingGenderProblemsArimes);
+      poiSummary.convertHTMLTags(document, crossCuttingGenderProblemsArimes);
     }
 
   }
+
 
   private void addCrossCuttingIntellectualAssets() {
 
@@ -348,7 +353,9 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     }
 
     if (crossCuttingIntellectualAssets != null && !crossCuttingIntellectualAssets.isEmpty()) {
-      poiSummary.textParagraph(document.createParagraph(), crossCuttingIntellectualAssets);
+      // poiSummary.textParagraph(document.createParagraph(), crossCuttingIntellectualAssets);
+      poiSummary.convertHTMLTags(document, crossCuttingIntellectualAssets);
+
     }
 
   }
@@ -369,7 +376,8 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     }
 
     if (crossCuttingOpenData != null && !crossCuttingOpenData.isEmpty()) {
-      poiSummary.textParagraph(document.createParagraph(), crossCuttingOpenData);
+      // poiSummary.textParagraph(document.createParagraph(), crossCuttingOpenData);
+      poiSummary.convertHTMLTags(document, crossCuttingOpenData);
     }
 
   }
@@ -391,7 +399,9 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     }
 
     if (crossCuttingOtherAspects != null && !crossCuttingOtherAspects.isEmpty()) {
-      poiSummary.textParagraph(document.createParagraph(), crossCuttingOtherAspects);
+      // poiSummary.textParagraph(document.createParagraph(), crossCuttingOtherAspects);
+      poiSummary.convertHTMLTags(document, crossCuttingOtherAspects);
+
     }
 
   }
@@ -417,32 +427,36 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
       }
     }
     if (crossCuttingYouthContribution != null && !crossCuttingYouthContribution.isEmpty()) {
-      poiSummary.textParagraph(document.createParagraph(), crossCuttingYouthContribution);
+      // poiSummary.textParagraph(document.createParagraph(), crossCuttingYouthContribution);
+      poiSummary.convertHTMLTags(document, crossCuttingYouthContribution);
     }
 
     if (crossCuttingYouthResearchFindings != null && !crossCuttingYouthResearchFindings.isEmpty()) {
-      poiSummary.textParagraph(document.createParagraph(), crossCuttingYouthResearchFindings);
+      // poiSummary.textParagraph(document.createParagraph(), crossCuttingYouthResearchFindings);
+      poiSummary.convertHTMLTags(document, crossCuttingYouthResearchFindings);
     }
     if (crossCuttingYouthLearned != null && !crossCuttingYouthLearned.isEmpty()) {
-      poiSummary.textParagraph(document.createParagraph(), crossCuttingYouthLearned);
+      // poiSummary.textParagraph(document.createParagraph(), crossCuttingYouthLearned);
+      poiSummary.convertHTMLTags(document, crossCuttingYouthLearned);
     }
 
     if (crossCuttingYouthProblemsArisen != null && !crossCuttingYouthProblemsArisen.isEmpty()) {
-      poiSummary.textParagraph(document.createParagraph(), crossCuttingYouthProblemsArisen);
+      // poiSummary.textParagraph(document.createParagraph(), crossCuttingYouthProblemsArisen);
+      poiSummary.convertHTMLTags(document, crossCuttingYouthProblemsArisen);
     }
-
   }
+
 
   private void addCrossPartnerships() {
     if (reportSynthesisPMU != null) {
 
       if (reportSynthesisPMU.getReportSynthesisCrossCgiar() != null
         && reportSynthesisPMU.getReportSynthesisCrossCgiar().getHighlights() != null) {
-        poiSummary.textParagraph(document.createParagraph(),
-          reportSynthesisPMU.getReportSynthesisCrossCgiar().getHighlights());
+        // poiSummary.textParagraph(document.createParagraph(),
+        // reportSynthesisPMU.getReportSynthesisCrossCgiar().getHighlights());
+        poiSummary.convertHTMLTags(document, reportSynthesisPMU.getReportSynthesisCrossCgiar().getHighlights());
       }
     }
-
   }
 
   private void addCrpProgressOutcomes() {
