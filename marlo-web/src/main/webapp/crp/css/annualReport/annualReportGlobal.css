@@ -417,6 +417,7 @@ li#menu-oicr {
 
 .nav-tabs>li>a.fieldError {
   color: #ff4444 !important;
+  font-weight: bold;
 }
 
 .nav-tabs>li>a {

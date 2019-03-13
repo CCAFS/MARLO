@@ -84,7 +84,7 @@
     </action>
     
     <!-- Table 6: Numbers of peer-reviewed publications from current reporting period (Sphere of control)  -->
-    <action name="{crp}/publications" class="org.cgiar.ccafs.marlo.action.annualReport.FlagshipProgressAction">
+    <action name="{crp}/publications" class="org.cgiar.ccafs.marlo.action.annualReport.y2018.PublicationsAction">
       <interceptor-ref name="editReportSynthesisStack" />
       <result name="input">/WEB-INF/crp/views/annualReport2018/AR2018_publications.ftl</result>
       <result name="success" type="redirectAction">

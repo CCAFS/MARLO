@@ -6,6 +6,9 @@
 [#assign pageLibs = [ "datatables.net", "datatables.net-bs", "components-font-awesome" ] /]
 [#assign customJS = [
   "https://www.gstatic.com/charts/loader.js", 
+  "https://cdn.datatables.net/buttons/1.3.1/js/dataTables.buttons.min.js",
+  "//cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js",
+  "//cdn.datatables.net/buttons/1.3.1/js/buttons.print.min.js",
   "${baseUrlMedia}/js/annualReport2018/annualReport2018_${currentStage}.js",
   "${baseUrlMedia}/js/annualReport/annualReportGlobal.js"
 ] /]
@@ -152,7 +155,7 @@
             </div>
             
             <div class="form-group">
-                [@innovationsTable name="table4" list=[]/]
+                [@innovationsTable name="table4" list=(projectInnovations)![]  /]
             </div>
             
           </div>
@@ -171,7 +174,7 @@
 [#macro innovationsTable name list=[] ]
 
 
-  <div class="form-group">
+  <div class="form-group viewMoreSyntesisTable-block">
     <table class="table table-bordered">
       <thead>
         <tr>
@@ -186,12 +189,13 @@
         [#if list?has_content]
           [#list list as item]
           <tr>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
+            <td>[@utils.tableText value=(item.composedName)!"" /]</td>
+            <td>[@utils.tableText value=(item.projectInnovationInfo.repIndStageInnovation.name)!"" /]</td>
+            <td>[@utils.tableText value=(item.projectInnovationInfo.repIndDegreeInnovation.name)!"" /]</td>
+            <td>[@utils.tableText value=(item.projectInnovationInfo.repIndContributionOfCrp.name)!"" /]</td>
             <td class="text-center">
-              [@customForm.checkmark id="" name="" checked=false editable=editable centered=true/] 
+              [#local isChecked = ((!reportSynthesis.reportSynthesisFlagshipProgress.innovationsIds?seq_contains(item.id))!true) /]
+              [@customForm.checkmark id="innovation-${(item.id)!}" name="reportSynthesis.reportSynthesisFlagshipProgress.innovationsValue" value="${(item.id)!''}" checked=isChecked editable=editable centered=true/] 
             </td>
           </tr>
           [/#list]

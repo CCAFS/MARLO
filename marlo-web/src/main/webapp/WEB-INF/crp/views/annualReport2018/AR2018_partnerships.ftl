@@ -54,14 +54,14 @@
             <div class="bootstrapTabs">
               [#-- Tabs --] 
               <ul class="nav nav-tabs" role="tablist"> 
-                <li role="presentation" class="[#if indexTab == 1]active[/#if]"><a index="1" href="#tab-keyPartnerships" aria-controls="info" role="tab" data-toggle="tab">2.2.1 Highlights of External Partnerships </a></li>
-                <li role="presentation" class="[#if indexTab == 2]active[/#if]"><a index="2" href="#tab-crossPartnerships" aria-controls="info" role="tab" data-toggle="tab">2.2.2 Cross-CGIAR Partnerships</a></li>
+                <li role="presentation" class="active"><a index="0" href="#tab-keyPartnerships" aria-controls="info" role="tab" data-toggle="tab">2.2.1 Highlights of External Partnerships </a></li>
+                <li role="presentation" class=""><a index="1" href="#tab-crossPartnerships" aria-controls="info" role="tab" data-toggle="tab">2.2.2 Cross-CGIAR Partnerships</a></li>
               </ul>
               
               [#-- Content --] 
               <div class="tab-content ">
                 
-                <div id="tab-keyPartnerships" role="tabpanel" class="tab-pane fade [#if indexTab == 1]in active[/#if]">
+                <div id="tab-keyPartnerships" role="tabpanel" class="tab-pane fade in active">
                   [#-- 2.2.1 Highlights of External Partnerships  --]
                   <div class="form-group">
                     <h5 class="sectionSubTitle">[@s.text name="${customLabel}.highlights.title" /]</h5>
@@ -139,7 +139,7 @@
                   [/#if]
                </div>
                
-               <div id="tab-crossPartnerships" role="tabpanel" class="tab-pane fade [#if indexTab == 2]in active[/#if]">
+               <div id="tab-crossPartnerships" role="tabpanel" class="tab-pane fade ">
                   [#-- 2.2.2 Cross-CGIAR Partnerships  --]
                   <div class="form-group">
                     <h5 class="sectionSubTitle">[@s.text name="${customLabel}.crossCGIAR.title" /]</h5>
@@ -281,18 +281,12 @@
               [/#if]
             </td>
             <td class="text-justify">
-              [#if (item.lessons?has_content)!false]
-                ${item.lessons}
-              [#else]
-                <i style="opacity:0.5">From Projects</i>
-              [/#if]
-            </td>           
+              [@utils.tableText value=(item.lessons)!"" /] 
+            </td>
           </tr>
         [/#list]
       [#else]
-        <tr>
-          <td class="text-center" colspan="6"><i>No entries added yet.</i></td>
-        </tr>
+        
       [/#if]
     </tbody>
   </table>
