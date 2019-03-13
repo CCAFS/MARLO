@@ -191,7 +191,7 @@
             <td>[@utils.tableText value=(item.projectInnovationInfo.repIndDegreeInnovation.name)!"" /]</td>
             <td>[@utils.tableText value=(item.projectInnovationInfo.repIndContributionOfCrp.name)!"" /]</td>
             <td class="text-center">
-              [#local isChecked = ((!reportSynthesis.reportSynthesisFlagshipProgress.innovationsId?seq_contains(item.id))!true) /]
+              [#local isChecked = ((!reportSynthesis.reportSynthesisFlagshipProgress.innovationsIds?seq_contains(item.id))!true) /]
               [@customForm.checkmark id="innovation-${(item.id)!}" name="reportSynthesis.reportSynthesisFlagshipProgress.innovationsValue" value="${(item.id)!''}" checked=isChecked editable=editable centered=true/] 
             </td>
           </tr>
