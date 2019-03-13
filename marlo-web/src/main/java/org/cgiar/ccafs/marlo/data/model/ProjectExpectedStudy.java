@@ -195,7 +195,7 @@ public class ProjectExpectedStudy extends MarloAuditableEntity implements java.i
 
   public String getComposedName() {
     String name = "S" + this.getId();
-    if (this.getProjectExpectedStudyInfo() != null
+    if (this.getProjectExpectedStudyInfo() != null && this.getProjectExpectedStudyInfo().getStudyType() != null
       && this.getProjectExpectedStudyInfo().getStudyType().getId().intValue() == 1) {
       name = "OICR" + this.getId();
     }
