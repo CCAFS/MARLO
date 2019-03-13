@@ -68,9 +68,17 @@ public class ReportSynthesisFlagshipProgress extends MarloAuditableEntity implem
   private String innovationsValue;
 
 
+  // Publications checks
+  private Set<ReportSynthesisFlagshipProgressDeliverable> reportSynthesisFlagshipProgressDeliverables =
+    new HashSet<ReportSynthesisFlagshipProgressDeliverable>(0);
+  private List<ReportSynthesisFlagshipProgressDeliverable> plannedDeliverables;
+  private List<Deliverable> deliverables;
+
+  private String deliverablesValue;
+
+
   public ReportSynthesisFlagshipProgress() {
   }
-
 
   @Override
   public boolean equals(Object obj) {
@@ -94,7 +102,6 @@ public class ReportSynthesisFlagshipProgress extends MarloAuditableEntity implem
     return true;
   }
 
-
   public String getAltmetricScore() {
     return altmetricScore;
   }
@@ -105,15 +112,37 @@ public class ReportSynthesisFlagshipProgress extends MarloAuditableEntity implem
   }
 
 
+  public List<Deliverable> getDeliverables() {
+    return deliverables;
+  }
+
+  /**
+   * @return Get an array of deliverables IDs checked.
+   */
+  public long[] getDeliverablesIds() {
+    List<Deliverable> deliverable = this.getDeliverables();
+    if (deliverable != null) {
+      long[] ids = new long[deliverable.size()];
+      for (int i = 0; i < ids.length; i++) {
+        ids[i] = deliverable.get(i).getId();
+      }
+      return ids;
+    }
+    return null;
+  }
+
+  public String getDeliverablesValue() {
+    return deliverablesValue;
+  }
+
+
   public String getDetailedAnnex() {
     return detailedAnnex;
   }
 
-
   public String getDroppedResearchLines() {
     return droppedResearchLines;
   }
-
 
   public String getExpandedResearchAreas() {
     return expandedResearchAreas;
@@ -158,17 +187,24 @@ public class ReportSynthesisFlagshipProgress extends MarloAuditableEntity implem
   }
 
 
+  public List<ReportSynthesisFlagshipProgressDeliverable> getPlannedDeliverables() {
+    return plannedDeliverables;
+  }
+
   public List<ReportSynthesisFlagshipProgressInnovation> getPlannedInnovations() {
     return plannedInnovations;
   }
+
 
   public List<ReportSynthesisFlagshipProgressPolicy> getPlannedPolicies() {
     return plannedPolicies;
   }
 
+
   public List<ReportSynthesisFlagshipProgressStudy> getPlannedStudies() {
     return plannedStudies;
   }
+
 
   /**
    * @return Get an array of policies IDs checked.
@@ -185,14 +221,15 @@ public class ReportSynthesisFlagshipProgress extends MarloAuditableEntity implem
     return null;
   }
 
+
   public String getPoliciesValue() {
     return policiesValue;
   }
 
+
   public String getProgressByFlagships() {
     return progressByFlagships;
   }
-
 
   public List<ProjectInnovation> getProjectInnovations() {
     return projectInnovations;
@@ -203,15 +240,19 @@ public class ReportSynthesisFlagshipProgress extends MarloAuditableEntity implem
     return projectPolicies;
   }
 
-
   public List<ProjectExpectedStudy> getProjectStudies() {
     return projectStudies;
   }
 
-
   public ReportSynthesis getReportSynthesis() {
     return reportSynthesis;
   }
+
+
+  public Set<ReportSynthesisFlagshipProgressDeliverable> getReportSynthesisFlagshipProgressDeliverables() {
+    return reportSynthesisFlagshipProgressDeliverables;
+  }
+
 
   public Set<ReportSynthesisFlagshipProgressInnovation> getReportSynthesisFlagshipProgressInnovations() {
     return reportSynthesisFlagshipProgressInnovations;
@@ -226,7 +267,6 @@ public class ReportSynthesisFlagshipProgress extends MarloAuditableEntity implem
   public Set<ReportSynthesisFlagshipProgressPolicy> getReportSynthesisFlagshipProgressPolicies() {
     return reportSynthesisFlagshipProgressPolicies;
   }
-
 
   public Set<ReportSynthesisFlagshipProgressStudy> getReportSynthesisFlagshipProgressStudies() {
     return reportSynthesisFlagshipProgressStudies;
@@ -268,6 +308,17 @@ public class ReportSynthesisFlagshipProgress extends MarloAuditableEntity implem
     this.changedDirection = changedDirection;
   }
 
+
+  public void setDeliverables(List<Deliverable> deliverables) {
+    this.deliverables = deliverables;
+  }
+
+
+  public void setDeliverablesValue(String deliverablesValue) {
+    this.deliverablesValue = deliverablesValue;
+  }
+
+
   public void setDetailedAnnex(String detailedAnnex) {
     this.detailedAnnex = detailedAnnex;
   }
@@ -295,6 +346,11 @@ public class ReportSynthesisFlagshipProgress extends MarloAuditableEntity implem
 
   public void setOverallProgress(String overallProgress) {
     this.overallProgress = overallProgress;
+  }
+
+
+  public void setPlannedDeliverables(List<ReportSynthesisFlagshipProgressDeliverable> plannedDeliverables) {
+    this.plannedDeliverables = plannedDeliverables;
   }
 
 
@@ -327,6 +383,7 @@ public class ReportSynthesisFlagshipProgress extends MarloAuditableEntity implem
     this.projectInnovations = projectInnovations;
   }
 
+
   public void setProjectPolicies(List<ProjectPolicy> projectPolicies) {
     this.projectPolicies = projectPolicies;
   }
@@ -335,9 +392,14 @@ public class ReportSynthesisFlagshipProgress extends MarloAuditableEntity implem
     this.projectStudies = projectStudies;
   }
 
-
   public void setReportSynthesis(ReportSynthesis reportSynthesis) {
     this.reportSynthesis = reportSynthesis;
+  }
+
+
+  public void setReportSynthesisFlagshipProgressDeliverables(
+    Set<ReportSynthesisFlagshipProgressDeliverable> reportSynthesisFlagshipProgressDeliverables) {
+    this.reportSynthesisFlagshipProgressDeliverables = reportSynthesisFlagshipProgressDeliverables;
   }
 
 
