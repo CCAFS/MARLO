@@ -249,6 +249,8 @@ public class StudiesOICRAction extends BaseAction {
 
           for (ProjectExpectedStudy projectExpectedStudy : plannedProjectExpectedStudies) {
             projectExpectedStudy.getProjectExpectedStudyInfo(phase);
+            projectExpectedStudy.setSrfTargets(projectExpectedStudy.getSrfTargets(phase));
+            projectExpectedStudy.setSubIdos(projectExpectedStudy.getSubIdos(phase));
             projectExpectedStudies.add(projectExpectedStudy);
           }
         }
@@ -268,6 +270,8 @@ public class StudiesOICRAction extends BaseAction {
 
         ProjectExpectedStudy projectExpectedStudy = reportSynthesisFlagshipProgressStudyDTO.getProjectExpectedStudy();
         projectExpectedStudy.getProjectExpectedStudyInfo(phase);
+        projectExpectedStudy.setSrfTargets(projectExpectedStudy.getSrfTargets(phase));
+        projectExpectedStudy.setSubIdos(projectExpectedStudy.getSubIdos(phase));
         projectExpectedStudy.setSelectedFlahsgips(new ArrayList<>());
         // sort selected flagships
         if (reportSynthesisFlagshipProgressStudyDTO.getLiaisonInstitutions() != null
