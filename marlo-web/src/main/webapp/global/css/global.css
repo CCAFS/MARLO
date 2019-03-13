@@ -3164,7 +3164,7 @@ button.ipGraph-btn {
   background-color: #FFF7CF;
   padding: 6px;
   text-align: center;
-  border-bottom: 2px solid #fff;
+  /* border-bottom: 2px solid #fff; */
   font-style: italic;
 }
 
