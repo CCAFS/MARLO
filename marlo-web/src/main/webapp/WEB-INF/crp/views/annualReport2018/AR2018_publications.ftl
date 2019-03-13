@@ -159,18 +159,18 @@
       <tbody>
         <tr>
           <td class="tableTitle">[@s.text name="${customLabel}.${name}.publications" /]</td>
-          <td></td>
-          <td></td>
+          <td class="text-center"></td>
+          <td class="text-center">100%</td>
         </tr>
         <tr>
           <td class="tableTitle">[@s.text name="${customLabel}.${name}.openAccess" /]</td>
-          <td></td>
-          <td></td>
+          <td class="text-center"></td>
+          <td class="text-center"></td>
         </tr>
         <tr>
           <td class="tableTitle">[@s.text name="${customLabel}.${name}.isi" /]</td>
-          <td></td>
-          <td></td>
+          <td class="text-center"></td>
+          <td class="text-center"></td>
         </tr>
       </tbody>
     </table>
@@ -211,41 +211,47 @@
         [#if list?has_content]
           [#list list as item]
           <tr>
-            <td>[@utils.tableText value=(item.deliverableInfo.title)!"" /]</td>
+            [#-- Authors --]
+            <td></td>
+            [#-- Date of Publication --]
             <td>${(item.date)!}</td>
-            <td>${(item.article)!}</td>
+            [#-- Title --]
+            <td>[@utils.tableText value=(item.deliverableInfo.title)!"" /]</td>
+            [#-- Journal Article --]
             <td>${(item.journal)!}</td>
             [#if !allowPopups]
+              [#-- Volume --]
               <td>${(item.volume)!}</td>
+              [#-- Issue --]
               <td>${(item.issue)!}</td>
+              [#-- Page --]
               <td>${(item.page)!}</td>
             [/#if]
+            [#-- Is OpenAccess --]
             <td class="text-center">
               <span style="display:none">${(item.open?string)!'false'}</span>
               <img src="${baseUrl}/global/images/openAccess-${(item.open?string)!'false'}.png" alt="" />
             </td>
+            [#-- Is ISI --]
             <td class="text-center">
               <span style="display:none">${(item.isi?string)!'false'}</span>
               <img src="${baseUrl}/global/images/checked-${(item.isi?string)!'false'}.png" alt="" />
             </td>
             [#if !allowPopups]
+              [#-- DOI or Handle --]
               <td>${(item.identifier)!}</td>
             [/#if]
             [#if allowPopups]
+              [#-- Check --]
               <td class="text-center">
-                [@customForm.checkmark id="" name="" checked=false editable=editable centered=true/] 
+                [#local isChecked = ((!reportSynthesis.reportSynthesisFlagshipProgress.deliverablesIds?seq_contains(item.id))!true) /]
+                [@customForm.checkmark id="deliverable-${(item.id)!}" name="reportSynthesis.reportSynthesisFlagshipProgress.deliverablesValue" value="${(item.id)!''}" checked=isChecked editable=editable centered=true/]
               </td>
             [/#if]
           </tr>
           [/#list]
         [#else]
-          <tr>
-            [#if allowPopups]
-              <td class="text-center" colspan="7"><i>No entries added yet.</i></td>
-            [#else]
-              <td class="text-center" colspan="10"><i>No entries added yet.</i></td>
-            [/#if]
-          </tr>
+          
         [/#if]
       </tbody>
     </table>
