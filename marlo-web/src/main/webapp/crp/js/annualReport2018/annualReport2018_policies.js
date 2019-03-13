@@ -26,20 +26,11 @@ function setGoogleCharts() {
           top: 45,
           width: "100%"
       },
-      colors: '#7ed6df',
+      colors: [
+          '#4dd0e1', '#29b6f6', '#2196f3'
+      ],
       legend: {
         alignment: 'center'
-      },
-      slices: {
-          0: {
-            color: '#22a6b3'
-          },
-          1: {
-            color: '#7ed6df'
-          },
-          2: {
-            color: '#1ed9d4'
-          }
       }
   });
 

@@ -281,18 +281,12 @@
               [/#if]
             </td>
             <td class="text-justify">
-              [#if (item.lessons?has_content)!false]
-                ${item.lessons}
-              [#else]
-                <i style="opacity:0.5">From Projects</i>
-              [/#if]
-            </td>           
+              [@utils.tableText value=(item.lessons)!"" /] 
+            </td>
           </tr>
         [/#list]
       [#else]
-        <tr>
-          <td class="text-center" colspan="6"><i>No entries added yet.</i></td>
-        </tr>
+        
       [/#if]
     </tbody>
   </table>
