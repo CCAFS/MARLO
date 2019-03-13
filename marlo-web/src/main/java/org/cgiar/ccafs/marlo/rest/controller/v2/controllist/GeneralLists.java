@@ -27,6 +27,7 @@ import org.cgiar.ccafs.marlo.rest.dto.CountryDTO;
 import org.cgiar.ccafs.marlo.rest.dto.FlagshipProgramDTO;
 import org.cgiar.ccafs.marlo.rest.dto.GeographicScopeDTO;
 import org.cgiar.ccafs.marlo.rest.dto.RegionDTO;
+import org.cgiar.ccafs.marlo.rest.errors.NotFoundException;
 import org.cgiar.ccafs.marlo.security.Permission;
 
 import java.util.List;
@@ -40,6 +41,7 @@ import io.swagger.annotations.ApiParam;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -89,7 +91,12 @@ public class GeneralLists {
 	@RequestMapping(value = "/countries/{code}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<CountryDTO> findCountryByNumericISOCode(
 			@ApiParam(value = "${GeneralLists.countries.code.param.code}", required = true) @PathVariable("Iso Apha2 Code") String code) {
-		return this.locationItem.getContryByAlpha2ISOCode(code);
+		ResponseEntity<CountryDTO> response = this.locationItem.getContryByAlpha2ISOCode(code);
+		if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+			throw new NotFoundException("404", "Country not found");
+		}
+		return response;
+
 	}
 
 	/**
@@ -105,7 +112,11 @@ public class GeneralLists {
 	@RequestMapping(value = "/flagships-modules/{code}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<FlagshipProgramDTO> findFlagshipProgramBySmoCode(
 			@ApiParam(value = "${GeneralLists.flagships-modules.code.param.code}", required = true) @PathVariable String code) {
-		return this.flagshipProgramItem.findFlagshipProgramBySmoCode(code);
+		ResponseEntity<FlagshipProgramDTO> response = this.flagshipProgramItem.findFlagshipProgramBySmoCode(code);
+		if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+			throw new NotFoundException("404", "Flagship or Program not found");
+		}
+		return response;
 	}
 
 	/**
@@ -122,7 +133,11 @@ public class GeneralLists {
 	@RequestMapping(value = "/geographic-scopes/{code}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<GeographicScopeDTO> findGeographicScopeById(
 			@ApiParam(value = "${GeneralLists.geographic-scopes.code.param.code}", required = true) @PathVariable Long code) {
-		return this.geographicScopeItem.findGeographicScopesById(code);
+		ResponseEntity<GeographicScopeDTO> response = this.geographicScopeItem.findGeographicScopesById(code);
+		if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+			throw new NotFoundException("404", "Geographic Scope not found");
+		}
+		return response;
 	}
 
 	/**
@@ -143,7 +158,11 @@ public class GeneralLists {
 	@RequestMapping(value = "/cgiar-entities/{code}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<CGIAREntityDTO> findGlobalUnitByCGIARId(
 			@ApiParam(value = "${GeneralLists.cgiar-entities.code.param.code}", required = true) @PathVariable String code) {
-		return this.globalUnitItem.findGlobalUnitByCGIRARId(code);
+		ResponseEntity<CGIAREntityDTO> response = this.globalUnitItem.findGlobalUnitByCGIRARId(code);
+		if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+			throw new NotFoundException("404", "CGIAR entity not found");
+		}
+		return response;
 	}
 
 	/**
@@ -156,7 +175,11 @@ public class GeneralLists {
 	@RequestMapping(value = "/cgiar-entity-types/{code}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<CGIAREntityTypeDTO> findGlobalUnitTypeByCode(
 			@ApiParam(value = "${GeneralLists.cgiar-entity-types.code.param.code}", required = true) @PathVariable Long code) {
-		return this.globalUnitTypeItem.findGlobalUnitTypeById(code);
+		ResponseEntity<CGIAREntityTypeDTO> response = this.globalUnitTypeItem.findGlobalUnitTypeById(code);
+		if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+			throw new NotFoundException("404", "CGIAR entity type not found");
+		}
+		return response;
 	}
 
 	/**
@@ -171,7 +194,11 @@ public class GeneralLists {
 	@RequestMapping(value = "/un-regions/{code}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<RegionDTO> findtRegionByCode(
 			@ApiParam(value = "${GeneralLists.un-regions.code.param.code}", required = true) @PathVariable Long code) {
-		return this.locationItem.getRegionByCode(code);
+		ResponseEntity<RegionDTO> response = this.locationItem.getRegionByCode(code);
+		if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+			throw new NotFoundException("404", "Region not found");
+		}
+		return response;
 	}
 
 	/**

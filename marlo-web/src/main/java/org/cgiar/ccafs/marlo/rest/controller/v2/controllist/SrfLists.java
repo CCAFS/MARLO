@@ -25,6 +25,7 @@ import org.cgiar.ccafs.marlo.rest.dto.SrfIdoDTO;
 import org.cgiar.ccafs.marlo.rest.dto.SrfSloDTO;
 import org.cgiar.ccafs.marlo.rest.dto.SrfSloTargetDTO;
 import org.cgiar.ccafs.marlo.rest.dto.SrfSubIdoDTO;
+import org.cgiar.ccafs.marlo.rest.errors.NotFoundException;
 import org.cgiar.ccafs.marlo.security.Permission;
 
 import java.util.List;
@@ -38,6 +39,7 @@ import io.swagger.annotations.ApiParam;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -86,7 +88,11 @@ public class SrfLists {
 	@RequestMapping(value = "/srf-idos/{code}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<SrfIdoDTO> findSrfIdoById(
 			@ApiParam(value = "${SrfList.srf-ido.code.param.code}", required = true) @PathVariable Long code) {
-		return this.srfIdoItem.findSrfIdobyId(code);
+		ResponseEntity<SrfIdoDTO> response = this.srfIdoItem.findSrfIdobyId(code);
+		if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+			throw new NotFoundException("404", "SRF IDO not found");
+		}
+		return response;
 	}
 
 	/**
@@ -101,7 +107,11 @@ public class SrfLists {
 	@RequestMapping(value = "/srf-slos/{code}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<SrfSloDTO> findSrfSloById(
 			@ApiParam(value = "${SrfList.srf-slo.code.param.code}", required = true) @PathVariable Long code) {
-		return this.srfSloItem.findSrfSlobyId(code);
+		ResponseEntity<SrfSloDTO> response = this.srfSloItem.findSrfSlobyId(code);
+		if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+			throw new NotFoundException("404", "SRF SLO not found");
+		}
+		return response;
 	}
 
 	/**
@@ -118,7 +128,11 @@ public class SrfLists {
 	@RequestMapping(value = "/slo-targets/{code:.+}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<SrfSloTargetDTO> findSrfSloTargetByCode(
 			@ApiParam(value = "${SrfList.slo-targets.code.param.code}", required = true) @PathVariable String code) {
-		return this.srfSloIndicatorTargetItem.findSrfSloIndicatorTargetbyId(code);
+		ResponseEntity<SrfSloTargetDTO> response = this.srfSloIndicatorTargetItem.findSrfSloIndicatorTargetbyId(code);
+		if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+			throw new NotFoundException("404", "SLO indicator Target not found");
+		}
+		return response;
 	}
 
 	/**
@@ -133,7 +147,12 @@ public class SrfLists {
 	@RequestMapping(value = "/srf-cross-cutting-issues/{code}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<SrfCrossCuttingIssueDTO> findSrfSrfCrossCuttingIssueById(
 			@ApiParam(value = "${SrfList.srf-cross-cutting-issue.code.param.code}", required = true) @PathVariable Long code) {
-		return this.srfCrossCuttingIssueItem.findSrfCrossCuttingIssuebyId(code);
+		ResponseEntity<SrfCrossCuttingIssueDTO> response = this.srfCrossCuttingIssueItem
+				.findSrfCrossCuttingIssuebyId(code);
+		if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+			throw new NotFoundException("404", "SRF Cross Cutting Issue not found");
+		}
+		return response;
 	}
 
 	/**
@@ -149,7 +168,11 @@ public class SrfLists {
 	@RequestMapping(value = "/srf-sub-idos/{code:.+}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<SrfSubIdoDTO> findSrfSubIdoByCode(
 			@ApiParam(value = "${SrfList.srf-sub-idos.code.param.code}", required = true) @PathVariable String code) {
-		return this.srfSubIdoItem.findSrfSubIdoBycode(code);
+		ResponseEntity<SrfSubIdoDTO> response = this.srfSubIdoItem.findSrfSubIdoBycode(code);
+		if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+			throw new NotFoundException("404", "SRF SubIdo not found");
+		}
+		return response;
 	}
 
 	/**
