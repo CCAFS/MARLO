@@ -268,7 +268,7 @@ public class PoliciesAction extends BaseAction {
             projectPolicy.setGeographicScopes(projectPolicy.getGeographicScopes(this.getActualPhase()));
             projectPolicy.setRegions(projectPolicy.getRegions(this.getActualPhase()));
             projectPolicy.setCountries(projectPolicy.getCountries(this.getActualPhase()));
-            // projectPolicy.setEvidences(projectPolicy.getEvidences(this.getActualPhase()));
+            projectPolicy.setEvidences(projectPolicy.getEvidences(this.getActualPhase()));
             projectPolicies.add(projectPolicy);
           }
         }
@@ -302,7 +302,7 @@ public class PoliciesAction extends BaseAction {
         projectPolicy.setGeographicScopes(projectPolicy.getGeographicScopes(this.getActualPhase()));
         projectPolicy.setRegions(projectPolicy.getRegions(this.getActualPhase()));
         projectPolicy.setCountries(projectPolicy.getCountries(this.getActualPhase()));
-        // projectPolicy.setEvidences(projectPolicy.getEvidences(this.getActualPhase()));
+        projectPolicy.setEvidences(projectPolicy.getEvidences(this.getActualPhase()));
         projectPolicies.add(projectPolicy);
 
       }

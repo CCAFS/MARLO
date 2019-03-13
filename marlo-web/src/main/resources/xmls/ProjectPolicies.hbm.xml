@@ -114,5 +114,12 @@
       </key>
       <one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectPolicyRegion" />
     </set> 
+    <set name="projectPolicyCrossCuttingMarkers" table="project_policy_cross_cutting_markers" inverse="true"
+      lazy="true" fetch="select">
+      <key>
+        <column name="project_policy_id" />
+      </key>
+      <one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectPolicyCrossCuttingMarker" />
+    </set> 
 	</class>
 </hibernate-mapping>
