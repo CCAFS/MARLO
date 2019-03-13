@@ -175,62 +175,65 @@
     <tbody>
     [#if list?has_content]
       [#list list as item]
-      <tr>
-        [#-- Title --]
-        <td class="">
-          [@utils.tableText value=(item.composedName)!"" /]
-          [#if item.project??]<br /> <small>(From Project P${item.project.id})</small> [/#if]
-          
-          [#if PMU]
-          <br />
-          <div class="form-group">
-            [#list (item.selectedFlahsgips)![] as liason]
-              <span class="programTag" style="border-color:${(liason.crpProgram.color)!'#fff'}" title="${(liason.composedName)!}">${(liason.acronym)!}</span>
-            [/#list]
-          </div>
+        [#local url][@s.url namespace="/projects" action="${(crpSession)!}/policy"][@s.param name='policyID']${item.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
+        <tr>
+          [#-- Title --]
+          <td class="">
+            [@utils.tableText value=(item.composedName)!"" /]
+            [#if item.project??]<br /> <small>(From Project P${item.project.id})</small> [/#if]
+            
+            [#if PMU]
+            <br />
+            <div class="form-group">
+              [#list (item.selectedFlahsgips)![] as liason]
+                <span class="programTag" style="border-color:${(liason.crpProgram.color)!'#fff'}" title="${(liason.composedName)!}">${(liason.acronym)!}</span>
+              [/#list]
+            </div>
+            [/#if]
+            
+            <a href="${url}" target="_blank" class="pull-right"><span class="glyphicon glyphicon-new-window"></span></a>
+          </td>
+          [#-- Level of Maturity --]
+          <td class="text-center">[@utils.tableText value=(item.projectPolicyInfo.repIndStageProcess.name)!"" /]</td>
+          [#-- Sub-IDOs --]
+          <td> <small>[@utils.tableList list=(item.subIdos)![]  displayFieldName="srfSubIdo.description" /]</small> </td>
+          [#if expanded]
+            [#-- Gender --]
+            <td class="text-center">
+              [#list (item.crossCuttingMarkers)![] as ccm]${ccm}[/#list]
+              <p class="dacMarker level-2" title="0 - Not Targeted"> 0 </p>  
+            </td>
+            [#-- Youth --]
+            <td class="text-center"> <p class="dacMarker level-2" title="0 - Not Targeted">0</p> </td>
+            [#-- CapDev --]
+            <td class="text-center"> <p class="dacMarker level-3" title="1 - Significant">0</p> </td>
+            [#-- Climate Change --]
+            <td class="text-center"> <p class="dacMarker level-4" title="2 - Principal">0</p> </td>
+            [#-- Policy Type --]
+            <td>[@utils.tableText value=(item.projectPolicyInfo.repIndOrganizationType.name)!"" /]</td>
+            [#-- Owners--]
+            <td class="col-md-1">[@utils.tableList list=(item.owners)![]  displayFieldName="repIndPolicyType.name" nobr=true /]</td>
+            [#-- Geographic Scope--]
+            <td class="col-md-1">
+              <div class="">
+                <strong>[@utils.tableList list=(item.geographicScopes)![]  displayFieldName="repIndGeographicScope.name" nobr=true /]</strong>
+              </div>
+              <div class="">
+                [@utils.tableList list=(item.regions)![]  displayFieldName="locElement.composedName" showEmpty=false nobr=true /]
+              </div>
+              <div class="">
+                [@utils.tableList list=(item.countries)![]  displayFieldName="locElement.name" showEmpty=false nobr=true /]
+              </div>
+            </td>
+            <td>[@utils.tableList list=(item.evidences)![]  displayFieldName="projectExpectedStudy.id" nobr=true /]</td>
           [/#if]
-        </td>
-        [#-- Level of Maturity --]
-        <td class="text-center">[@utils.tableText value=(item.projectPolicyInfo.repIndStageProcess.name)!"" /]</td>
-        [#-- Sub-IDOs --]
-        <td> <small>[@utils.tableList list=(item.subIdos)![]  displayFieldName="srfSubIdo.description" /]</small> </td>
-        [#if expanded]
-          [#-- Gender --]
+          [#if !expanded]
           <td class="text-center">
-            [#list (item.crossCuttingMarkers)![] as ccm]${ccm}[/#list]
-            <p class="dacMarker level-2" title="0 - Not Targeted"> 0 </p>  
+            [#local isChecked = ((!reportSynthesis.reportSynthesisFlagshipProgress.policiesIds?seq_contains(item.id))!true) /]
+            [@customForm.checkmark id="policy-${(item.id)!}" name="reportSynthesis.reportSynthesisFlagshipProgress.policiesValue" value="${(item.id)!''}" checked=isChecked editable=editable centered=true/]
           </td>
-          [#-- Youth --]
-          <td class="text-center"> <p class="dacMarker level-2" title="0 - Not Targeted">0</p> </td>
-          [#-- CapDev --]
-          <td class="text-center"> <p class="dacMarker level-3" title="1 - Significant">0</p> </td>
-          [#-- Climate Change --]
-          <td class="text-center"> <p class="dacMarker level-4" title="2 - Principal">0</p> </td>
-          [#-- Policy Type --]
-          <td>[@utils.tableText value=(item.projectPolicyInfo.repIndOrganizationType.name)!"" /]</td>
-          [#-- Owners--]
-          <td class="col-md-1">[@utils.tableList list=(item.owners)![]  displayFieldName="repIndPolicyType.name" nobr=true /]</td>
-          [#-- Geographic Scope--]
-          <td class="col-md-1">
-            <div class="">
-              <strong>[@utils.tableList list=(item.geographicScopes)![]  displayFieldName="repIndGeographicScope.name" nobr=true /]</strong>
-            </div>
-            <div class="">
-              [@utils.tableList list=(item.regions)![]  displayFieldName="locElement.composedName" showEmpty=false nobr=true /]
-            </div>
-            <div class="">
-              [@utils.tableList list=(item.countries)![]  displayFieldName="locElement.name" showEmpty=false nobr=true /]
-            </div>
-          </td>
-          <td>[@utils.tableList list=(item.evidences)![]  displayFieldName="projectExpectedStudy.id" nobr=true /]</td>
-        [/#if]
-        [#if !expanded]
-        <td class="text-center">
-          [#local isChecked = ((!reportSynthesis.reportSynthesisFlagshipProgress.policiesIds?seq_contains(item.id))!true) /]
-          [@customForm.checkmark id="policy-${(item.id)!}" name="reportSynthesis.reportSynthesisFlagshipProgress.policiesValue" value="${(item.id)!''}" checked=isChecked editable=editable centered=true/]
-        </td>
-        [/#if]
-      </tr>
+          [/#if]
+        </tr>
       [/#list]
     [#else]
       
