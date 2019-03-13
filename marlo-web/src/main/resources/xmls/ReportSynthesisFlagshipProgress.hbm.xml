@@ -65,5 +65,19 @@
             </key>
             <one-to-many class="org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressPolicy" />
         </set>
+        
+        <set name="reportSynthesisFlagshipProgressStudies" table="report_synthesis_flagship_progress_studies" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="report_synthesis_flagship_progress_id" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressStudy" />
+        </set>
+        
+        <set name="reportSynthesisFlagshipProgressInnovations" table="report_synthesis_flagship_progress_innovations" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="report_synthesis_flagship_progress_id" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressInnovation" />
+        </set>
     </class>
 </hibernate-mapping>
