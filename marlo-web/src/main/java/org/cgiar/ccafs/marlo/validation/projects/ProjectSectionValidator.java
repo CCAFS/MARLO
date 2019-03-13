@@ -98,7 +98,6 @@ import org.cgiar.ccafs.marlo.data.model.ProjectPolicyRegion;
 import org.cgiar.ccafs.marlo.data.model.ProjectScope;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
-import org.cgiar.ccafs.marlo.data.model.StudiesStatusPlanningEnum;
 import org.cgiar.ccafs.marlo.utils.CountryLocationLevel;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
 
@@ -1329,17 +1328,7 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
       projectStudies = allProjectStudies.stream()
         .filter(ps -> ps.getProjectExpectedStudyInfo().getYear() != null
           && ps.getProjectExpectedStudyInfo().getStatus() != null
-          && ps.getProjectExpectedStudyInfo().getYear() == action.getCurrentCycleYear()
-          && ((ps.getProjectExpectedStudyInfo().getStatus().getId()
-            .equals(Long.parseLong(StudiesStatusPlanningEnum.Ongoing.getStatusId()))
-            || ps.getProjectExpectedStudyInfo().getStatus().getId()
-              .equals(Long.parseLong(StudiesStatusPlanningEnum.Extended.getStatusId()))
-            || ps.getProjectExpectedStudyInfo().getStatus().getId().equals(StudiesStatusPlanningEnum.New.getStatusId()))
-            || ((ps.getProjectExpectedStudyInfo().getStatus().getId()
-              .equals(Long.parseLong(StudiesStatusPlanningEnum.Complete.getStatusId()))
-              || ps.getProjectExpectedStudyInfo().getStatus().getId()
-                .equals(Long.parseLong(StudiesStatusPlanningEnum.Cancelled.getStatusId())))
-              && ps.getProjectExpectedStudyInfo().getYear() >= action.getActualPhase().getYear())))
+          && ps.getProjectExpectedStudyInfo().getYear() >= action.getCurrentCycleYear())
         .collect(Collectors.toList());
     }
 

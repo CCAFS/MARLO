@@ -157,7 +157,6 @@ import org.cgiar.ccafs.marlo.data.model.ReportSynthesisSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.Role;
 import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.data.model.SrfTargetUnit;
-import org.cgiar.ccafs.marlo.data.model.StudiesStatusPlanningEnum;
 import org.cgiar.ccafs.marlo.data.model.Submission;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.data.model.UserRole;
@@ -3478,18 +3477,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
           projectStudies = allProjectStudies.stream()
             .filter(ps -> ps.getProjectExpectedStudyInfo().getYear() != null
               && ps.getProjectExpectedStudyInfo().getStatus() != null
-              && ps.getProjectExpectedStudyInfo().getYear() == this.getCurrentCycleYear()
-              && ((ps.getProjectExpectedStudyInfo().getStatus().getId()
-                .equals(Long.parseLong(StudiesStatusPlanningEnum.Ongoing.getStatusId()))
-                || ps.getProjectExpectedStudyInfo().getStatus().getId()
-                  .equals(Long.parseLong(StudiesStatusPlanningEnum.Extended.getStatusId()))
-                || ps.getProjectExpectedStudyInfo().getStatus().getId()
-                  .equals(StudiesStatusPlanningEnum.New.getStatusId()))
-                || ((ps.getProjectExpectedStudyInfo().getStatus().getId()
-                  .equals(Long.parseLong(StudiesStatusPlanningEnum.Complete.getStatusId()))
-                  || ps.getProjectExpectedStudyInfo().getStatus().getId()
-                    .equals(Long.parseLong(StudiesStatusPlanningEnum.Cancelled.getStatusId())))
-                  && ps.getProjectExpectedStudyInfo().getYear() >= this.getActualPhase().getYear())))
+              && ps.getProjectExpectedStudyInfo().getYear() >= this.getCurrentCycleYear())
             .collect(Collectors.toList());
         }
 
