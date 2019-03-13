@@ -1,7 +1,9 @@
 var $tableViewMore;
-var tableDatatableViewmore
+var tableDatatableViewmore;
+var pageName;
 var googleChartsLoaded = false;
 $(document).ready(function() {
+  pageName = actionName.replace(/[^a-z0-9+]+/gi, '_');
 
   // Set data tables
   $tableViewMore = $('.viewMoreSyntesis-block table');
@@ -18,11 +20,25 @@ $(document).ready(function() {
     $(e).html(urlify(text));
   });
 
+  // Load indexTab
+  loadTab();
+
+  // Save Local storage indexTab
   $('a[data-toggle="tab"]').on('shown.bs.tab', function(e) {
-    $('input[name="indexTab"]').val($(this).attr("index"));
+    window.localStorage.setItem(pageName, JSON.stringify({
+      "indexTab": $(this).attr("index")
+    }));
   });
 
 });
+
+function loadTab() {
+  var ls = JSON.parse((window.localStorage.getItem(pageName)));
+  if((ls != null)) {
+    $('.bootstrapTabs li:eq(' + ls.indexTab + ') a').tab('show');
+  }
+
+}
 
 /**
  * Get chart data in Array
