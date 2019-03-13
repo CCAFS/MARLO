@@ -46,7 +46,7 @@
             [#-- Table 3: List of Outcome/Impact Case Reports --]
             <div class="form-group">
 
-              [@listOfOutcomeImpactCaseReports name="table3" list=[] /]
+              [@listOfOutcomeImpactCaseReports name="table3" list=(projectExpectedStudies)![] /]
             </div>
           
           </div>
@@ -80,9 +80,9 @@
         [#if list?has_content]
           [#list list as item]
           <tr>
-            <td>${item.title}</td>
-            <td>${item.maturity}</td>
-            <td class="text-center">${item.status}</td>
+            <td>[@utils.tableText value=(item.composedName)!"" /]</td>
+            <td>[@utils.tableText value=(item.projectExpectedStudyInfos.phase.name)!"" /]</td>
+            <td class="text-center">[@utils.tableText value=(item.projectExpectedStudyInfos.status.name)!"" /]</td>
             <td class="text-center">
               [@customForm.checkmark id="" name="" checked=false editable=editable centered=true/] 
             </td>
