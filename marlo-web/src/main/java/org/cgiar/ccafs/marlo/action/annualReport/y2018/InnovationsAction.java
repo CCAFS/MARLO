@@ -407,14 +407,14 @@ public class InnovationsAction extends BaseAction {
   }
 
 
-  public List<ProjectInnovation> getprojectInnovations() {
+  public List<ProjectInnovation> getProjectInnovations() {
     return projectInnovations;
   }
-
 
   public ReportSynthesis getReportSynthesis() {
     return reportSynthesis;
   }
+
 
   public Long getSynthesisID() {
     return synthesisID;
@@ -424,7 +424,6 @@ public class InnovationsAction extends BaseAction {
   public String getTransaction() {
     return transaction;
   }
-
 
   public boolean isFlagship() {
     boolean isFP = false;
@@ -452,6 +451,7 @@ public class InnovationsAction extends BaseAction {
 
   }
 
+
   @Override
   public String next() {
     String result = this.save();
@@ -461,7 +461,6 @@ public class InnovationsAction extends BaseAction {
       return result;
     }
   }
-
 
   @Override
   public void prepare() throws Exception {
@@ -670,10 +669,10 @@ public class InnovationsAction extends BaseAction {
     }
   }
 
+
   public void setLiaisonInstitution(LiaisonInstitution liaisonInstitution) {
     this.liaisonInstitution = liaisonInstitution;
   }
-
 
   public void setLiaisonInstitutionID(Long liaisonInstitutionID) {
     this.liaisonInstitutionID = liaisonInstitutionID;
@@ -683,15 +682,15 @@ public class InnovationsAction extends BaseAction {
     this.liaisonInstitutions = liaisonInstitutions;
   }
 
+
   public void setLoggedCrp(GlobalUnit loggedCrp) {
     this.loggedCrp = loggedCrp;
   }
 
 
-  public void setprojectInnovations(List<ProjectInnovation> projectInnovations) {
+  public void setProjectInnovations(List<ProjectInnovation> projectInnovations) {
     this.projectInnovations = projectInnovations;
   }
-
 
   public void setReportSynthesis(ReportSynthesis reportSynthesis) {
     this.reportSynthesis = reportSynthesis;
