@@ -248,6 +248,9 @@ public class PublicationsAction extends BaseAction {
 
           for (Deliverable deliverable : plannedDeliverables) {
             deliverable.getDeliverableInfo(phase);
+            deliverable.setUsers(deliverable.getUsers(phase));
+            deliverable.setDissemination(deliverable.getDissemination(phase));
+            deliverable.setPublication(deliverable.getPublication(phase));
             deliverables.add(deliverable);
           }
         }
@@ -267,6 +270,9 @@ public class PublicationsAction extends BaseAction {
 
         Deliverable deliverable = reportSynthesisFlagshipProgressDeliverableDTO.getDeliverable();
         deliverable.getDeliverableInfo(phase);
+        deliverable.setUsers(deliverable.getUsers(phase));
+        deliverable.setDissemination(deliverable.getDissemination(phase));
+        deliverable.setPublication(deliverable.getPublication(phase));
         deliverable.setSelectedFlahsgips(new ArrayList<>());
         // sort selected flagships
         if (reportSynthesisFlagshipProgressDeliverableDTO.getLiaisonInstitutions() != null
