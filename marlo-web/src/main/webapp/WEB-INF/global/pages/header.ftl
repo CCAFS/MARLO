@@ -89,6 +89,10 @@
   <body class="mode-${editable?string('editable', 'readOnly')}">
     [#if !(avoidHeader!false)]
       <header class="clearfix" style="display: ${((includeHeader)??)?string('none','block')}">
+        [#-- Board Messages --]
+        [#include "/WEB-INF/global/pages/boardMessage.ftl" /]
+        
+      
         [#-- MARLO Admin Menu --]
         [#include "/WEB-INF/global/pages/superadmin-menu.ftl" /]
         
