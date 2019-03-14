@@ -101,11 +101,25 @@
     <table id="tableA" class="table table-bordered">
       <thead>
         <tr>
-          <th>[@s.text name="expectedProgress.tableA.fp" /]</th>
-          <th> Outcome </th>
-          [#if !allowPopups]<th> Narrative</th>[/#if]
-          <th> Milestone </th>
+          <th rowspan="2">[@s.text name="expectedProgress.tableA.fp" /]</th>
+          <th rowspan="2"> Outcome </th>
+          [#if !allowPopups]<th rowspan="2"> Outcome Progress </th>[/#if]
+          <th rowspan="2"> Milestone </th>
+          <th rowspan="2"> Status</th>
+          [#if !allowPopups]
+          <th rowspan="2">Milestone Evidence</th>
+          <th colspan="4" class="text-center">Cross-Cutting Markers</th>
+          <th rowspan="2"></th>
+          [/#if]
         </tr>
+        [#if !allowPopups]
+        <tr>
+          <th> <small>Gender</small></th>
+          <th> <small>Youth</small></th>
+          <th> <small>CapDev</small></th>
+          <th> <small>Climate Change</small></th>
+        </tr>
+        [/#if]
       </thead>
       <tbody>
         [#list (flagships)![] as fp]
@@ -126,14 +140,38 @@
                     ${outcome.composedName}
                     [#-- Sub-IDOs --]
                     [#if !allowPopups]
-                    <ul>[#list outcome.subIdos as subIdo]<li> [#if subIdo.srfSubIdo.srfIdo.isCrossCutting] <strong title="Cross-Cutting IDO">CC</strong> [/#if]${subIdo.srfSubIdo.description}</li>[/#list]</ul>
+                    <br />
+                    <small>
+                      <ul>[#list outcome.subIdos as subIdo]<li> [#if subIdo.srfSubIdo.srfIdo.isCrossCutting] <strong title="Cross-Cutting IDO">CC</strong> [/#if]${subIdo.srfSubIdo.description}</li>[/#list]</ul>
+                    </small>
                     [/#if]
                   </td>
                 [/#if]
                 [#-- Outcomes - Narrative --]
-                [#if isOutcomeRow && !allowPopups]<td rowspan="${outcomesSize}" class="milestonesSize-${outcomesSize}"> </td>[/#if]
+                [#if isOutcomeRow && !allowPopups]
+                  <td rowspan="${outcomesSize}" class="milestonesSize-${outcomesSize}"> 
+                    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Tempore saepe illo sapiente quam consectetur eius similique. Soluta nostrum dignissimos rem id pariatur nulla velit facilis excepturi ab fugiat ad rerum.
+                  </td>
+                [/#if]
                 [#-- Milestone --]
                 <td> ${milestone.composedName} [#if allowPopups] <div class="pull-right">[@milestoneContributions element=milestone tiny=true /] [/#if]</div></td>
+                [#-- Milestone Status --]
+                <td> Completed </td>
+                [#if !allowPopups]
+                [#-- Milestone Evidence --]
+                <td>  Lorem ipsum dolor sit amet, consectetur adipisicing elit. Deleniti quibusdam at est nobis provident voluptatum quos voluptas cupiditate aliquam accusamus ratione sunt. Eaque praesentium repellendus quis id repudiandae tempora aliquam.</td>
+                [#-- Cross Cutting markers --]
+                [#-- Gender --]
+                <td class="text-center"> 0 </td>
+                [#-- Youth --]
+                <td class="text-center"> 1 </td>
+                [#-- CapDev --]
+                <td class="text-center"> 2 </td>
+                [#-- Climate Change --]
+                <td class="text-center"> 3 </td>
+                [#-- Other --]
+                <td class="text-center"> . </td>
+                [/#if]
               </tr>
             [/#list]
           [/#list]

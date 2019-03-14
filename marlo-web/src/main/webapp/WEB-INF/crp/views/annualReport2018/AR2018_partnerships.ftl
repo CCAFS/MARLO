@@ -146,13 +146,10 @@
                     [#-- Summary --]
                     [#if PMU]
                       <div class="form-group">
-                        [@customForm.textArea name="${customName}.crossCGIAR.summary" i18nkey="${customLabel}.crossCGIAR.summary" help="${customLabel}.crossCGIAR.summary.help" className="limitWords-300" helpIcon=false required=true editable=editable allowTextEditor=true /]
+                        [@customForm.textArea name="${customName}.summaryCgiar" i18nkey="${customLabel}.crossCGIAR.summary" help="${customLabel}.crossCGIAR.summary.help" className="limitWords-300" helpIcon=false required=true editable=editable allowTextEditor=true /]
                       </div>
                     [#else]
-                      <div class="textArea">
-                        <label for="">[@customForm.text name="${customLabel}.crossCGIAR.summary" readText=true /]:</label>
-                        <p>[#if (pmuText?has_content)!false]${pmuText?replace('\n', '<br>')}[#else] [@s.text name="global.prefilledByPmu"/] [/#if]</p>
-                      </div>
+                      [#--  [@utils.tableText value=(reportSynthesis.reportSynthesisKeyPartnership.crossCGIAR)!'' nobr=false emptyText="global.prefilledByPmu" /]  --]
                     [/#if]
                     <br />
                   </div>
