@@ -18,6 +18,7 @@ package org.cgiar.ccafs.marlo.action.annualReport.y2018;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
+import org.cgiar.ccafs.marlo.data.manager.CgiarCrossCuttingMarkerManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpMilestoneManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
@@ -25,10 +26,14 @@ import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectFocusManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
+import org.cgiar.ccafs.marlo.data.manager.RepIndGenderYouthFocusLevelManager;
+import org.cgiar.ccafs.marlo.data.manager.RepIndMilestoneReasonManager;
+import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressCrossCuttingMarkerManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressMilestoneManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
+import org.cgiar.ccafs.marlo.data.model.CgiarCrossCuttingMarker;
 import org.cgiar.ccafs.marlo.data.model.CrpMilestone;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
@@ -42,8 +47,11 @@ import org.cgiar.ccafs.marlo.data.model.ProjectBudgetsFlagship;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
 import org.cgiar.ccafs.marlo.data.model.ProjectMilestone;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
+import org.cgiar.ccafs.marlo.data.model.RepIndGenderYouthFocusLevel;
+import org.cgiar.ccafs.marlo.data.model.RepIndMilestoneReason;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgress;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressCrossCuttingMarker;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressMilestone;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
@@ -113,6 +121,13 @@ public class OutcomesMilestonesAction extends BaseAction {
 
   private ReportSynthesisFlagshipProgressMilestoneManager reportSynthesisFlagshipProgressMilestoneManager;
 
+  private ReportSynthesisFlagshipProgressCrossCuttingMarkerManager reportSynthesisFlagshipProgressCrossCuttingMarkerManager;
+
+  private CgiarCrossCuttingMarkerManager cgiarCrossCuttingMarkerManager;
+
+  private RepIndGenderYouthFocusLevelManager focusLevelManager;
+
+  private RepIndMilestoneReasonManager repIndMilestoneReasonManager;
 
   private CrpMilestoneManager crpMilestoneManager;
 
@@ -147,7 +162,10 @@ public class OutcomesMilestonesAction extends BaseAction {
     FlagshipProgressValidator validator, ProjectFocusManager projectFocusManager, ProjectManager projectManager,
     ReportSynthesisFlagshipProgressManager reportSynthesisFlagshipProgressManager,
     ReportSynthesisFlagshipProgressMilestoneManager reportSynthesisFlagshipProgressMilestoneManager,
-    CrpMilestoneManager crpMilestoneManager, PhaseManager phaseManager) {
+    CrpMilestoneManager crpMilestoneManager, PhaseManager phaseManager,
+    ReportSynthesisFlagshipProgressCrossCuttingMarkerManager reportSynthesisFlagshipProgressCrossCuttingMarkerManager,
+    CgiarCrossCuttingMarkerManager cgiarCrossCuttingMarkerManager, RepIndGenderYouthFocusLevelManager focusLevelManager,
+    RepIndMilestoneReasonManager repIndMilestoneReasonManager) {
     super(config);
     this.crpManager = crpManager;
     this.liaisonInstitutionManager = liaisonInstitutionManager;
@@ -162,6 +180,11 @@ public class OutcomesMilestonesAction extends BaseAction {
     this.reportSynthesisFlagshipProgressMilestoneManager = reportSynthesisFlagshipProgressMilestoneManager;
     this.crpMilestoneManager = crpMilestoneManager;
     this.phaseManager = phaseManager;
+    this.reportSynthesisFlagshipProgressCrossCuttingMarkerManager =
+      reportSynthesisFlagshipProgressCrossCuttingMarkerManager;
+    this.cgiarCrossCuttingMarkerManager = cgiarCrossCuttingMarkerManager;
+    this.focusLevelManager = focusLevelManager;
+    this.repIndMilestoneReasonManager = repIndMilestoneReasonManager;
   }
 
   public Long firstFlagship() {
@@ -215,6 +238,26 @@ public class OutcomesMilestonesAction extends BaseAction {
     }
     milestones.addAll(milestonesSet);
     return milestones;
+  }
+
+  /**
+   * Get the information for the Cross Cutting marker in the form
+   * 
+   * @param markerID
+   * @return
+   */
+  public ReportSynthesisFlagshipProgressCrossCuttingMarker getCrossCuttingMarker(long markerID, long milestoneID) {
+    ReportSynthesisFlagshipProgressCrossCuttingMarker crossCuttingMarker =
+      new ReportSynthesisFlagshipProgressCrossCuttingMarker();
+
+    crossCuttingMarker = reportSynthesisFlagshipProgressCrossCuttingMarkerManager.getCountryMarkerId(milestoneID,
+      markerID, this.getActualPhase().getId());
+
+    if (crossCuttingMarker != null) {
+      return crossCuttingMarker;
+    } else {
+      return null;
+    }
   }
 
   public List<CrpProgram> getFlagships() {
@@ -389,6 +432,7 @@ public class OutcomesMilestonesAction extends BaseAction {
 
     }
   }
+
 
   public void loadTablePMU() {
     flagships = loggedCrp.getCrpPrograms().stream()
@@ -623,7 +667,6 @@ public class OutcomesMilestonesAction extends BaseAction {
     }
   }
 
-
   @Override
   public String save() {
     if (this.hasPermission("canEdit")) {
@@ -676,6 +719,103 @@ public class OutcomesMilestonesAction extends BaseAction {
     }
   }
 
+
+  /**
+   * Save CrossCutting Information
+   * 
+   * @param projectPolicy
+   * @param phase
+   */
+  public void saveCrossCutting(ReportSynthesisFlagshipProgressMilestone milestoneDB,
+    ReportSynthesisFlagshipProgressMilestone milestone) {
+
+    // Save form Information
+    if (milestone.getCrossCuttingMarkers() != null) {
+      for (ReportSynthesisFlagshipProgressCrossCuttingMarker crossCuttingOwner : milestone.getCrossCuttingMarkers()) {
+        if (crossCuttingOwner.getId() == null) {
+          ReportSynthesisFlagshipProgressCrossCuttingMarker crossCuttingOwnerSave =
+            new ReportSynthesisFlagshipProgressCrossCuttingMarker();
+          crossCuttingOwnerSave.setReportSynthesisFlagshipProgressMilestone(milestoneDB);
+
+
+          CgiarCrossCuttingMarker cgiarCrossCuttingMarker = cgiarCrossCuttingMarkerManager
+            .getCgiarCrossCuttingMarkerById(crossCuttingOwner.getCgiarCrossCuttingMarker().getId());
+
+          crossCuttingOwnerSave.setCgiarCrossCuttingMarker(cgiarCrossCuttingMarker);
+
+          if (crossCuttingOwner.getRepIndGenderYouthFocusLevel() != null) {
+            if (crossCuttingOwner.getRepIndGenderYouthFocusLevel().getId() != null
+              && crossCuttingOwner.getRepIndGenderYouthFocusLevel().getId() != -1) {
+              RepIndGenderYouthFocusLevel focusLevel = focusLevelManager
+                .getRepIndGenderYouthFocusLevelById(crossCuttingOwner.getRepIndGenderYouthFocusLevel().getId());
+              crossCuttingOwnerSave.setRepIndGenderYouthFocusLevel(focusLevel);
+            } else {
+              crossCuttingOwnerSave.setRepIndGenderYouthFocusLevel(null);
+            }
+          } else {
+            crossCuttingOwnerSave.setRepIndGenderYouthFocusLevel(null);
+          }
+
+          crossCuttingOwnerSave.setJustification(crossCuttingOwner.getJustification());
+
+          reportSynthesisFlagshipProgressCrossCuttingMarkerManager
+            .saveReportSynthesisFlagshipProgressCrossCuttingMarker(crossCuttingOwnerSave);
+
+        } else {
+          boolean hasChanges = false;
+          ReportSynthesisFlagshipProgressCrossCuttingMarker crossCuttingOwnerSave =
+            reportSynthesisFlagshipProgressCrossCuttingMarkerManager
+              .getReportSynthesisFlagshipProgressCrossCuttingMarkerById(crossCuttingOwner.getId());
+
+          if (crossCuttingOwner.getRepIndGenderYouthFocusLevel() != null) {
+            if (crossCuttingOwner.getRepIndGenderYouthFocusLevel().getId() != null
+              && crossCuttingOwner.getRepIndGenderYouthFocusLevel().getId() != -1) {
+
+              if (crossCuttingOwnerSave.getRepIndGenderYouthFocusLevel() != null) {
+                if (crossCuttingOwner.getRepIndGenderYouthFocusLevel().getId() != crossCuttingOwnerSave
+                  .getRepIndGenderYouthFocusLevel().getId()) {
+                  RepIndGenderYouthFocusLevel focusLevel = focusLevelManager
+                    .getRepIndGenderYouthFocusLevelById(crossCuttingOwner.getRepIndGenderYouthFocusLevel().getId());
+                  crossCuttingOwnerSave.setRepIndGenderYouthFocusLevel(focusLevel);
+                  hasChanges = true;
+                }
+              } else {
+                RepIndGenderYouthFocusLevel focusLevel = focusLevelManager
+                  .getRepIndGenderYouthFocusLevelById(crossCuttingOwner.getRepIndGenderYouthFocusLevel().getId());
+                crossCuttingOwnerSave.setRepIndGenderYouthFocusLevel(focusLevel);
+                hasChanges = true;
+              }
+
+            } else {
+              crossCuttingOwnerSave.setRepIndGenderYouthFocusLevel(null);
+              hasChanges = true;
+            }
+          } else {
+            crossCuttingOwnerSave.setRepIndGenderYouthFocusLevel(null);
+            hasChanges = true;
+          }
+
+          if (crossCuttingOwner.getJustification() != null) {
+            if (crossCuttingOwner.getJustification().equals(crossCuttingOwnerSave.getJustification())) {
+              crossCuttingOwnerSave.setJustification(crossCuttingOwner.getJustification());
+              hasChanges = true;
+            }
+          } else {
+            crossCuttingOwnerSave.setJustification(null);
+            hasChanges = true;
+          }
+
+
+          if (hasChanges) {
+            reportSynthesisFlagshipProgressCrossCuttingMarkerManager
+              .saveReportSynthesisFlagshipProgressCrossCuttingMarker(crossCuttingOwnerSave);
+          }
+
+        }
+      }
+    }
+  }
+
   public void saveFlagshipProgressNewData(ReportSynthesisFlagshipProgress flagshipProgressDB) {
 
     if (reportSynthesis.getReportSynthesisFlagshipProgress().getMilestones() == null) {
@@ -702,12 +842,26 @@ public class OutcomesMilestonesAction extends BaseAction {
             .getReportSynthesisFlagshipProgressMilestoneById(flagshipProgressMilestone.getId());
         }
 
+
+        if (flagshipProgressMilestone.getRepIndMilestoneReason().getId() != null
+          && flagshipProgressMilestone.getRepIndMilestoneReason().getId() != -1) {
+
+          RepIndMilestoneReason milestoneReason = repIndMilestoneReasonManager
+            .getRepIndMilestoneReasonById(flagshipProgressMilestone.getRepIndMilestoneReason().getId());
+
+          flagshipProgressMilestoneNew.setRepIndMilestoneReason(milestoneReason);
+          flagshipProgressMilestoneNew.setOtherReason(flagshipProgressMilestone.getOtherReason());
+        }
+
+
         flagshipProgressMilestoneNew.setEvidence(flagshipProgressMilestone.getEvidence());
         flagshipProgressMilestoneNew.setMilestonesStatus(flagshipProgressMilestone.getMilestonesStatus());
         flagshipProgressMilestoneNew.setCrpMilestone(flagshipProgressMilestone.getCrpMilestone());
 
         flagshipProgressMilestoneNew = reportSynthesisFlagshipProgressMilestoneManager
           .saveReportSynthesisFlagshipProgressMilestone(flagshipProgressMilestoneNew);
+
+        this.saveCrossCutting(flagshipProgressMilestoneNew, flagshipProgressMilestone);
 
 
       }
