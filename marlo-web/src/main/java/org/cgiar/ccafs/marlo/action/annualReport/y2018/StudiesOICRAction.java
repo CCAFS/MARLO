@@ -93,6 +93,8 @@ public class StudiesOICRAction extends BaseAction {
   private GlobalUnit loggedCrp;
   private List<LiaisonInstitution> liaisonInstitutions;
   private List<ProjectExpectedStudy> projectExpectedStudies;
+  private Phase actualPhase;
+
 
   @Inject
   public StudiesOICRAction(APConfig config, GlobalUnitManager crpManager,
@@ -117,23 +119,26 @@ public class StudiesOICRAction extends BaseAction {
     this.reportSynthesisFlagshipProgressStudyManager = reportSynthesisFlagshipProgressStudyManager;
   }
 
+
   /**
    * Method to fill the list of studies selected by flagships
    * 
    * @param flagshipsLiaisonInstitutions
-   * @param phaseID
    * @return
    */
   public List<ReportSynthesisFlagshipProgressStudyDTO>
-    fillFpPlannedList(List<LiaisonInstitution> flagshipsLiaisonInstitutions, long phaseID) {
+    fillFpPlannedList(List<LiaisonInstitution> flagshipsLiaisonInstitutions) {
     List<ReportSynthesisFlagshipProgressStudyDTO> flagshipPlannedList = new ArrayList<>();
 
     if (projectExpectedStudyManager.findAll() != null) {
 
       // Get global unit studies
       List<ProjectExpectedStudy> projectExpectedStudies = new ArrayList<>(projectExpectedStudyManager.findAll().stream()
-        .filter(ps -> ps.isActive() && ps.getProjectExpectedStudyInfo(this.getActualPhase()) != null
-          && ps.getProject() != null
+        .filter(ps -> ps.isActive() && ps.getProjectExpectedStudyInfo(actualPhase) != null
+          && ps.getProjectExpectedStudyInfo().getStudyType() != null
+          && ps.getProjectExpectedStudyInfo().getStudyType().getId() == 1
+          && ps.getProjectExpectedStudyInfo().getYear() != null
+          && ps.getProjectExpectedStudyInfo().getYear() == actualPhase.getYear() && ps.getProject() != null
           && ps.getProject().getGlobalUnitProjects().stream()
             .filter(gup -> gup.isActive() && gup.isOrigin() && gup.getGlobalUnit().getId().equals(loggedCrp.getId()))
             .collect(Collectors.toList()).size() > 0)
@@ -143,7 +148,7 @@ public class StudiesOICRAction extends BaseAction {
       for (ProjectExpectedStudy projectExpectedStudy : projectExpectedStudies) {
         ReportSynthesisFlagshipProgressStudyDTO dto = new ReportSynthesisFlagshipProgressStudyDTO();
         projectExpectedStudy.getProject()
-          .setProjectInfo(projectExpectedStudy.getProject().getProjecInfoPhase(this.getActualPhase()));
+          .setProjectInfo(projectExpectedStudy.getProject().getProjecInfoPhase(actualPhase));
         dto.setProjectExpectedStudy(projectExpectedStudy);
         if (projectExpectedStudy.getProject().getProjectInfo().getAdministrative() != null
           && projectExpectedStudy.getProject().getProjectInfo().getAdministrative()) {
@@ -151,7 +156,8 @@ public class StudiesOICRAction extends BaseAction {
           dto.getLiaisonInstitutions().add(this.liaisonInstitution);
         } else {
           List<ProjectFocus> projectFocuses = new ArrayList<>(projectExpectedStudy.getProject().getProjectFocuses()
-            .stream().filter(pf -> pf.isActive() && pf.getPhase().getId() == phaseID).collect(Collectors.toList()));
+            .stream().filter(pf -> pf.isActive() && pf.getPhase().getId() == actualPhase.getId())
+            .collect(Collectors.toList()));
           List<LiaisonInstitution> liaisonInstitutions = new ArrayList<>();
           for (ProjectFocus projectFocus : projectFocuses) {
             liaisonInstitutions.addAll(projectFocus.getCrpProgram().getLiaisonInstitutions().stream()
@@ -166,10 +172,30 @@ public class StudiesOICRAction extends BaseAction {
         flagshipPlannedList.add(dto);
       }
 
+      // Get supplementary studies
+      List<ProjectExpectedStudy> projectSupplementaryStudies =
+        new ArrayList<>(projectExpectedStudyManager.findAll().stream()
+          .filter(ps -> ps.isActive() && ps.getProjectExpectedStudyInfo(actualPhase) != null && ps.getProject() == null
+            && ps.getProjectExpectedStudyInfo().getStudyType() != null
+            && ps.getProjectExpectedStudyInfo().getStudyType().getId() == 1
+            && ps.getProjectExpectedStudyInfo().getYear() != null
+            && ps.getProjectExpectedStudyInfo().getYear() == actualPhase.getYear())
+          .collect(Collectors.toList()));
+
+      // Fill all supplementary studies
+      for (ProjectExpectedStudy projectExpectedStudy : projectSupplementaryStudies) {
+        ReportSynthesisFlagshipProgressStudyDTO dto = new ReportSynthesisFlagshipProgressStudyDTO();
+        dto.setProjectExpectedStudy(projectExpectedStudy);
+        dto.setLiaisonInstitutions(new ArrayList<>());
+        dto.getLiaisonInstitutions().add(this.liaisonInstitution);
+        flagshipPlannedList.add(dto);
+      }
+
       // Get deleted studies
       List<ReportSynthesisFlagshipProgressStudy> flagshipProgressStudies = new ArrayList<>();
       for (LiaisonInstitution liaisonInstitution : flagshipsLiaisonInstitutions) {
-        ReportSynthesis reportSynthesis = reportSynthesisManager.findSynthesis(phaseID, liaisonInstitution.getId());
+        ReportSynthesis reportSynthesis =
+          reportSynthesisManager.findSynthesis(actualPhase.getId(), liaisonInstitution.getId());
         if (reportSynthesis != null) {
           if (reportSynthesis.getReportSynthesisFlagshipProgress() != null) {
             if (reportSynthesis.getReportSynthesisFlagshipProgress()
@@ -193,7 +219,8 @@ public class StudiesOICRAction extends BaseAction {
 
         List<LiaisonInstitution> removeLiaison = new ArrayList<>();
         for (LiaisonInstitution liaisonInstitution : dto.getLiaisonInstitutions()) {
-          ReportSynthesis reportSynthesis = reportSynthesisManager.findSynthesis(phaseID, liaisonInstitution.getId());
+          ReportSynthesis reportSynthesis =
+            reportSynthesisManager.findSynthesis(actualPhase.getId(), liaisonInstitution.getId());
           if (reportSynthesis != null) {
             if (reportSynthesis.getReportSynthesisFlagshipProgress() != null) {
 
@@ -229,28 +256,31 @@ public class StudiesOICRAction extends BaseAction {
     return flagshipPlannedList;
   }
 
-
-  private void fillProjectStudiesList(Long phaseID, LiaisonInstitution liaisonInstitution) {
+  private void fillProjectStudiesList(LiaisonInstitution liaisonInstitution) {
     projectExpectedStudies = new ArrayList<>();
-    Phase phase = this.getActualPhase();
     if (this.isFlagship()) {
       // Fill Project Expected Studies of the current flagship
       if (projectFocusManager.findAll() != null) {
         List<ProjectFocus> projectFocus = new ArrayList<>(projectFocusManager.findAll().stream()
           .filter(pf -> pf.isActive() && pf.getCrpProgram().getId() == liaisonInstitution.getCrpProgram().getId()
-            && pf.getPhase() != null && pf.getPhase().getId() == phaseID)
+            && pf.getPhase() != null && pf.getPhase().getId() == actualPhase.getId())
           .collect(Collectors.toList()));
 
         for (ProjectFocus focus : projectFocus) {
           Project project = projectManager.getProjectById(focus.getProject().getId());
-          List<ProjectExpectedStudy> plannedProjectExpectedStudies = new ArrayList<>(project.getProjectExpectedStudies()
-            .stream().filter(ps -> ps.isActive() && ps.getProjectExpectedStudyInfo(phase) != null)
-            .collect(Collectors.toList()));
+          List<ProjectExpectedStudy> plannedProjectExpectedStudies =
+            new ArrayList<>(project.getProjectExpectedStudies().stream()
+              .filter(ps -> ps.isActive() && ps.getProjectExpectedStudyInfo(actualPhase) != null
+                && ps.getProjectExpectedStudyInfo().getStudyType() != null
+                && ps.getProjectExpectedStudyInfo().getStudyType().getId() == 1
+                && ps.getProjectExpectedStudyInfo().getYear() != null
+                && ps.getProjectExpectedStudyInfo().getYear() == actualPhase.getYear())
+              .collect(Collectors.toList()));
 
           for (ProjectExpectedStudy projectExpectedStudy : plannedProjectExpectedStudies) {
-            projectExpectedStudy.getProjectExpectedStudyInfo(phase);
-            projectExpectedStudy.setSrfTargets(projectExpectedStudy.getSrfTargets(phase));
-            projectExpectedStudy.setSubIdos(projectExpectedStudy.getSubIdos(phase));
+            projectExpectedStudy.getProjectExpectedStudyInfo(actualPhase);
+            projectExpectedStudy.setSrfTargets(projectExpectedStudy.getSrfTargets(actualPhase));
+            projectExpectedStudy.setSubIdos(projectExpectedStudy.getSubIdos(actualPhase));
             projectExpectedStudies.add(projectExpectedStudy);
           }
         }
@@ -263,15 +293,14 @@ public class StudiesOICRAction extends BaseAction {
         .collect(Collectors.toList());
       liaisonInstitutions.sort(Comparator.comparing(LiaisonInstitution::getAcronym));
 
-      List<ReportSynthesisFlagshipProgressStudyDTO> flagshipPlannedList =
-        this.fillFpPlannedList(liaisonInstitutions, phase.getId());
+      List<ReportSynthesisFlagshipProgressStudyDTO> flagshipPlannedList = this.fillFpPlannedList(liaisonInstitutions);
 
       for (ReportSynthesisFlagshipProgressStudyDTO reportSynthesisFlagshipProgressStudyDTO : flagshipPlannedList) {
 
         ProjectExpectedStudy projectExpectedStudy = reportSynthesisFlagshipProgressStudyDTO.getProjectExpectedStudy();
-        projectExpectedStudy.getProjectExpectedStudyInfo(phase);
-        projectExpectedStudy.setSrfTargets(projectExpectedStudy.getSrfTargets(phase));
-        projectExpectedStudy.setSubIdos(projectExpectedStudy.getSubIdos(phase));
+        projectExpectedStudy.getProjectExpectedStudyInfo(actualPhase);
+        projectExpectedStudy.setSrfTargets(projectExpectedStudy.getSrfTargets(actualPhase));
+        projectExpectedStudy.setSubIdos(projectExpectedStudy.getSubIdos(actualPhase));
         projectExpectedStudy.setSelectedFlahsgips(new ArrayList<>());
         // sort selected flagships
         if (reportSynthesisFlagshipProgressStudyDTO.getLiaisonInstitutions() != null
@@ -287,7 +316,6 @@ public class StudiesOICRAction extends BaseAction {
     }
 
   }
-
 
   public Long firstFlagship() {
     List<LiaisonInstitution> liaisonInstitutions = new ArrayList<>(loggedCrp.getLiaisonInstitutions().stream()
@@ -383,8 +411,8 @@ public class StudiesOICRAction extends BaseAction {
   private Path getAutoSaveFilePath() {
     String composedClassName = reportSynthesis.getClass().getSimpleName();
     String actionFile = this.getActionName().replace("/", "_");
-    String autoSaveFile = reportSynthesis.getId() + "_" + composedClassName + "_" + this.getActualPhase().getName()
-      + "_" + this.getActualPhase().getYear() + "_" + actionFile + ".json";
+    String autoSaveFile = reportSynthesis.getId() + "_" + composedClassName + "_" + actualPhase.getName() + "_"
+      + actualPhase.getYear() + "_" + actionFile + ".json";
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
@@ -418,10 +446,10 @@ public class StudiesOICRAction extends BaseAction {
     return reportSynthesis;
   }
 
+
   public Long getSynthesisID() {
     return synthesisID;
   }
-
 
   public String getTransaction() {
     return transaction;
@@ -441,6 +469,7 @@ public class StudiesOICRAction extends BaseAction {
     }
     return isFP;
   }
+
 
   @Override
   public boolean isPMU() {
@@ -464,13 +493,14 @@ public class StudiesOICRAction extends BaseAction {
     }
   }
 
-
   @Override
   public void prepare() throws Exception {
+
+    this.actualPhase = this.getActualPhase();
+
     // Get current CRP
     loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
     loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
-    Phase phase = this.getActualPhase();
 
     // If there is a history version being loaded
     if (this.getRequest().getParameter(APConstants.TRANSACTION_ID) != null) {
@@ -531,17 +561,17 @@ public class StudiesOICRAction extends BaseAction {
         synthesisID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.REPORT_SYNTHESIS_ID)));
         reportSynthesis = reportSynthesisManager.getReportSynthesisById(synthesisID);
 
-        if (!reportSynthesis.getPhase().equals(phase)) {
-          reportSynthesis = reportSynthesisManager.findSynthesis(phase.getId(), liaisonInstitutionID);
+        if (!reportSynthesis.getPhase().equals(actualPhase)) {
+          reportSynthesis = reportSynthesisManager.findSynthesis(actualPhase.getId(), liaisonInstitutionID);
           if (reportSynthesis == null) {
-            reportSynthesis = this.createReportSynthesis(phase.getId(), liaisonInstitutionID);
+            reportSynthesis = this.createReportSynthesis(actualPhase.getId(), liaisonInstitutionID);
           }
           synthesisID = reportSynthesis.getId();
         }
       } catch (Exception e) {
-        reportSynthesis = reportSynthesisManager.findSynthesis(phase.getId(), liaisonInstitutionID);
+        reportSynthesis = reportSynthesisManager.findSynthesis(actualPhase.getId(), liaisonInstitutionID);
         if (reportSynthesis == null) {
-          reportSynthesis = this.createReportSynthesis(phase.getId(), liaisonInstitutionID);
+          reportSynthesis = this.createReportSynthesis(actualPhase.getId(), liaisonInstitutionID);
         }
         synthesisID = reportSynthesis.getId();
 
@@ -555,7 +585,7 @@ public class StudiesOICRAction extends BaseAction {
       liaisonInstitutionID = reportSynthesisDB.getLiaisonInstitution().getId();
       liaisonInstitution = liaisonInstitutionManager.getLiaisonInstitutionById(liaisonInstitutionID);
 
-      this.fillProjectStudiesList(phase.getId(), liaisonInstitution);
+      this.fillProjectStudiesList(liaisonInstitution);
 
       Path path = this.getAutoSaveFilePath();
       // Verify if there is a Draft file
@@ -625,6 +655,7 @@ public class StudiesOICRAction extends BaseAction {
 
   }
 
+
   @Override
   public String save() {
     if (this.hasPermission("canEdit")) {
@@ -650,7 +681,7 @@ public class StudiesOICRAction extends BaseAction {
        */
       this.setModificationJustification(reportSynthesis);
 
-      reportSynthesisManager.save(reportSynthesis, this.getActionName(), relationsName, this.getActualPhase());
+      reportSynthesisManager.save(reportSynthesis, this.getActionName(), relationsName, actualPhase);
 
       Path path = this.getAutoSaveFilePath();
       if (path.toFile().exists()) {
@@ -680,10 +711,10 @@ public class StudiesOICRAction extends BaseAction {
     this.liaisonInstitution = liaisonInstitution;
   }
 
-
   public void setLiaisonInstitutionID(Long liaisonInstitutionID) {
     this.liaisonInstitutionID = liaisonInstitutionID;
   }
+
 
   public void setLiaisonInstitutions(List<LiaisonInstitution> liaisonInstitutions) {
     this.liaisonInstitutions = liaisonInstitutions;

@@ -40,9 +40,9 @@
     [#include "/WEB-INF/crp/views/annualReport2018/submenu-AR2018.ftl" /]
     
     <div class="row">
-      [#-- POWB Menu --]
+      [#-- Menu --]
       <div class="col-md-3">[#include "/WEB-INF/crp/views/annualReport2018/menu-AR2018.ftl" /]</div>
-      [#-- POWB Content --]
+      [#-- Content --]
       <div class="col-md-9">
         [#-- Section Messages --]
         [#include "/WEB-INF/crp/views/annualReport2018/messages-AR2018.ftl" /]

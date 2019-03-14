@@ -124,7 +124,7 @@
             [#list outcome.milestones as milestone]
               [#assign isFlagshipRow = (outcome_index == 0) && (milestone_index == 0)]
               [#assign isOutcomeRow = (milestone_index == 0)]
-              [#assign milestoneProgress = action.getPowbExpectedCrpProgressProgram(milestone.id,fp.id) ]
+              [#assign milestoneProgress = (action.getPowbExpectedCrpProgressProgram(milestone.id,fp.id))!{} ]
               <tr class="fp-index-${fp_index} outcome-index-${outcome_index} milestone-index-${milestone_index}">
                 [#-- Flagship --]
                 [#if isFlagshipRow]<th rowspan="${milestoneSize}" class="milestoneSize-${milestoneSize}" style="background:${(fp.color)!'#fff'}"><span class="programTag" style="border-color:${(fp.color)!'#fff'}">${fp.acronym}</span></th>[/#if]
