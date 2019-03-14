@@ -18,7 +18,7 @@
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
 
-[#assign customName= "reportSynthesis" /]
+[#assign customName= "reportSynthesis.reportSynthesisFlagshipProgress" /]
 [#assign customLabel= "annualReport2018.${currentStage}" /]
 
 [#-- Helptext --]
@@ -49,8 +49,8 @@
               [#if PMU]
                 <div class="borderBox">
                   [#-- Button --]
-                  <button type="button" class="btn btn-default btn-xs pull-right" data-toggle="modal" data-target="#modal-policies">
-                     <span class="glyphicon glyphicon-fullscreen"></span> See Full table 2
+                  <button type="button" class="btn btn-default pull-right" data-toggle="modal" data-target="#modal-policies">
+                     <span class="glyphicon glyphicon-fullscreen"></span> See Full table 5
                   </button>
                   [#-- Modal --]
                   <div class="modal fade" id="modal-policies" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
@@ -63,7 +63,7 @@
                         <div class="modal-body">
                           [#-- Full table --]
                           <div class="viewMoreSyntesisTable-block">
-                            [@tableOutcomesMilestones  /]
+                            [@tableOutcomesMilestones allowPopups=false  /]
                           </div>
                         </div>
                         <div class="modal-footer">
@@ -79,7 +79,7 @@
                 </div>
               [#else]
                 [#list outcomes as outcome]
-                  [@annualReport2018OutcomesMacro element=outcome name="${customLabel}" index=outcome_index /]
+                  [@annualReport2018OutcomesMacro element=outcome name="${customName}.outcomes" index=outcome_index /]
                 [/#list]
               [/#if]
             </div>
@@ -102,11 +102,9 @@
       <thead>
         <tr>
           <th>[@s.text name="expectedProgress.tableA.fp" /]</th>
-          [#if !allowPopups]<th>[@s.text name="expectedProgress.tableA.subIDO" /]</th>[/#if]
-          [#if !allowPopups]<th>[@s.text name="expectedProgress.tableA.outcomes" /]</th>[/#if]
-          <th>[@s.text name="expectedProgress.tableA.milestone" /]</th>
-          <th>[@s.text name="expectedProgress.tableA.meansVerification" /]</th>
-          <th>[@s.text name="expectedProgress.tableA.assessment" /]</th>
+          <th> Outcome </th>
+          [#if !allowPopups]<th> Narrative</th>[/#if]
+          <th> Milestone </th>
         </tr>
       </thead>
       <tbody>
@@ -121,19 +119,21 @@
               <tr class="fp-index-${fp_index} outcome-index-${outcome_index} milestone-index-${milestone_index}">
                 [#-- Flagship --]
                 [#if isFlagshipRow]<th rowspan="${milestoneSize}" class="milestoneSize-${milestoneSize}" style="background:${(fp.color)!'#fff'}"><span class="programTag" style="border-color:${(fp.color)!'#fff'}">${fp.acronym}</span></th>[/#if]
-                [#-- Sub-IDO --]
-                [#if isOutcomeRow && !allowPopups]<td rowspan="${outcomesSize}"> 
-                  <ul>[#list outcome.subIdos as subIdo]<li> [#if subIdo.srfSubIdo.srfIdo.isCrossCutting] <strong title="Cross-Cutting IDO">CC</strong> [/#if]${subIdo.srfSubIdo.description}</li>[/#list]</ul>
-                </td>
-                [/#if]
                 [#-- Outcomes --]
-                [#if isOutcomeRow && !allowPopups]<td rowspan="${outcomesSize}" class="milestonesSize-${outcomesSize}"> ${outcome.composedName}</td>[/#if]
+                [#if isOutcomeRow]
+                  <td rowspan="${outcomesSize}" class="milestonesSize-${outcomesSize}"> 
+                    [#-- Outcome Statement --]
+                    ${outcome.composedName}
+                    [#-- Sub-IDOs --]
+                    [#if !allowPopups]
+                    <ul>[#list outcome.subIdos as subIdo]<li> [#if subIdo.srfSubIdo.srfIdo.isCrossCutting] <strong title="Cross-Cutting IDO">CC</strong> [/#if]${subIdo.srfSubIdo.description}</li>[/#list]</ul>
+                    [/#if]
+                  </td>
+                [/#if]
+                [#-- Outcomes - Narrative --]
+                [#if isOutcomeRow && !allowPopups]<td rowspan="${outcomesSize}" class="milestonesSize-${outcomesSize}"> </td>[/#if]
                 [#-- Milestone --]
                 <td> ${milestone.composedName} [#if allowPopups] <div class="pull-right">[@milestoneContributions element=milestone tiny=true /] [/#if]</div></td>
-                [#-- Means Verification --]
-                <td class="col-md-4">[#if (milestoneProgress.means?has_content)!false]${milestoneProgress.means}[#else]<i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>[/#if]</td>
-                [#-- Assessment --]
-                <td>[#if (milestoneProgress.assesmentName?has_content)!false]${milestoneProgress.assesmentName}[#else]<i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>[/#if]</td>
               </tr>
             [/#list]
           [/#list]
@@ -145,7 +145,7 @@
 
 
 [#macro annualReport2018OutcomesMacro element name index isTemplate=false]
-  [#local customName = "${name}" /]
+  [#local customName = "${name}[${index}]" /]
   <div id="powbOutcome-${isTemplate?string('template', index)}" class="powbOutcome borderBox" style="display:${isTemplate?string('none','block')}">
     [#-- Index --]
     <div class="leftHead sm"><span class="index">${index+1}</span></div>
@@ -166,7 +166,8 @@
 [/#macro]
 
 [#macro annualReport2018MilestoneMacro element name index isTemplate=false]
-  [#local annualReportElement= action.getReportSynthesisFlagshipProgressMilestone(element.id)]
+  [#local annualReportElement= action.getReportSynthesisFlagshipProgressMilestone(element.id) ]
+  ${annualReportElement}
   [#local customName = "${name}[${action.getIndex(element.id)}]" /]
   
   <div id="powbMilestone-${isTemplate?string('template', index)}" class="synthesisMilestone simpleBox" style="display:${isTemplate?string('none','block')}">
@@ -235,7 +236,7 @@
     <div class="form-group milestonesEvidence" style="display:${isComplete?string('block', 'none')}">
       [#-- Evidence for completed milestones or explanation for extended or cancelled --]
       <div class="form-group">
-        [@customForm.textArea name="${customName}.milestoneEvidence" i18nkey="${customLabel}.milestoneEvidence" help="${customLabel}.milestoneEvidence.help" helpIcon=false display=true required=false className="limitWords-50" editable=editable allowTextEditor=true /]
+        [@customForm.textArea name="${customName}.evidence" i18nkey="${customLabel}.milestoneEvidence" help="${customLabel}.milestoneEvidence.help" helpIcon=false display=true required=false className="limitWords-50" editable=editable allowTextEditor=true /]
       </div>
       
       [#-- Extendend, cancelled or changed milestones - Main reason --]
