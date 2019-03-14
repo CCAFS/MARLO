@@ -163,6 +163,16 @@
               <td>
                 [@utils.tableText value=(item.composedName)!"" /]
                 [#if item.project??]<br /> <small>(From Project P${item.project.id})</small> [/#if]
+                
+                [#if PMU]
+                <br />
+                <div class="form-group">
+                  [#list (item.selectedFlahsgips)![] as liason]
+                    <span class="programTag" style="border-color:${(liason.crpProgram.color)!'#fff'}" title="${(liason.composedName)!}">${(liason.acronym)!}</span>
+                  [/#list]
+                </div>
+                [/#if]
+                
                 <a href="${url}" target="_blank" class="pull-right"><span class="glyphicon glyphicon-new-window"></span></a>
               </td>
               <td class="text-center">
