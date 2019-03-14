@@ -63,8 +63,38 @@
                   </div>
                   
                   [#-- Table 10: MELIA --]
+                  <br />
                   <div class="form-group">
-                    [@meliaTable name="${customName}.plannedStudies" list=(studiesList)![] /]
+                    [#-- Button --]
+                    <button type="button" class="btn btn-default btn-xs pull-right" data-toggle="modal" data-target="#modal-policies">
+                       <span class="glyphicon glyphicon-fullscreen"></span> See Full table 10
+                    </button>
+                    [#-- Modal --]
+                    <div class="modal fade" id="modal-policies" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                      <div class="modal-dialog modal-lg" role="document">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title" id="myModalLabel"></h4>
+                          </div>
+                          <div class="modal-body">
+                            [#-- Full table --]
+                            <div class="">
+                              [@meliaTable name="${customName}.plannedStudies" list=(studiesList)![] expandedTable=true/]
+                            </div>
+                          </div>
+                          <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    [#-- Table --]
+                    <div class="">
+                      [@meliaTable name="${customName}.plannedStudies" list=(studiesList)![] /]
+                    </div>
+                    
                   </div>
                 </div>
                 
@@ -99,14 +129,14 @@
   [/#if] 
 </section>
 
-[@relevantEvaluationMacro element={} name="${customName}.table10" index=-1  template=true/]
+[@relevantEvaluationMacro element={} name="${customName}.evaluations" index=-1  template=true/]
 
 [#include "/WEB-INF/global/pages/footer.ftl"]
 
 
 [#---------------------------------------------------- MACROS ----------------------------------------------------]
 
-[#macro meliaTable name list=[]]
+[#macro meliaTable name list=[] expandedTable=false]
 
   <div class="form-group">
     <h4 class="subTitle headTitle annualReport-table">[@s.text name="${customLabel}.table10.title" /]</h4>
@@ -119,7 +149,7 @@
           <th class="text-center col-md-2"> [@s.text name="${customLabel}.table10.status" /] </th>
           <th class="text-center"> [@s.text name="${customLabel}.table10.type" /] </th>
           <th class="text-center col-md-4"> [@s.text name="${customLabel}.table10.comments" /] </th>
-          <th class="col-md-1 text-center"> [@s.text name="${customLabel}.table10.includeAR" /] </th>
+          <th class="col-md-1 text-center"> <small>[@s.text name="${customLabel}.table10.includeAR" /]</small>  </th>
         </tr>
       </thead>
       <tbody>
@@ -143,7 +173,8 @@
                 [@utils.tableText value=(item.projectExpectedStudyInfo.topLevelComments)!"" /]
               </td>
               <td class="text-center">
-                [@customForm.checkmark id="" name="" checked=false editable=editable centered=true/] 
+                [#local isChecked = ((!reportSynthesis.reportSynthesisMelia.studiesIds?seq_contains(item.id))!true) /]
+                [@customForm.checkmark id="study-${(item.id)!}" name="reportSynthesis.reportSynthesisMelia.plannedStudiesValue" value="${(item.id)!''}" checked=isChecked editable=editable centered=true/]
               </td>
             </tr>
           [/#list]
@@ -162,7 +193,6 @@
 [#macro relevantEvaluationMacro element name index template=false isEditable=true]
   [#local customName = "${name}[${index}]" /]
   <div id="evaluation-${template?string('template', index)}" class="evaluation borderBox form-group" style="position:relative; display:${template?string('none','block')}">
-
     [#-- Index --]
     <div class="leftHead blue sm"><span class="index">${index+1}</span></div>
     [#-- Remove Button --]
@@ -170,48 +200,40 @@
     [#-- Hidden inputs --]
     <input type="hidden" name="${customName}.id" value="${(element.id)!}"/> 
     <br />
-    
     [#-- Name of the evaluation --]
     <div class="form-group">
-      [@customForm.input name="${customName}.nameEvaluation" i18nkey="${customLabel}.table10.name" help="${customLabel}.table10.name.help" helpIcon=false required=true className="" editable=isEditable /]
+      [@customForm.input name="${customName}.nameEvaluation" i18nkey="${customLabel}.table11.name" help="${customLabel}.table11.name.help" helpIcon=false required=true className="" editable=isEditable /]
     </div>
-    
     [#-- Recommendation --] 
     <div class="form-group"> 
-      [@customForm.input name="${customName}.recommendation" i18nkey="${customLabel}.table10.recommendation" help="${customLabel}.table10.recommendation.help" helpIcon=false className="" required=true editable=isEditable /]
+      [@customForm.input name="${customName}.recommendation" i18nkey="${customLabel}.table11.recommendation" help="${customLabel}.table11.recommendation.help" helpIcon=false className="" required=true editable=isEditable /]
     </div>
-    
     [#-- Management response --] 
     <div class="form-group">
-      [@customForm.textArea name="${customName}.managementResponse" i18nkey="${customLabel}.table10.textOfRecommendation" help="${customLabel}.table10.textOfRecommendation.help" helpIcon=false className="" required=true editable=isEditable allowTextEditor=true /]
+      [@customForm.textArea name="${customName}.managementResponse" i18nkey="${customLabel}.table11.textOfRecommendation" help="${customLabel}.table11.textOfRecommendation.help" helpIcon=false className="" required=true editable=isEditable allowTextEditor=true /]
     </div>
-    
     [#-- Status --]
     <div class="form-group row">
       <div class="col-md-5">
-        [@customForm.select name="${customName}.status" i18nkey="${customLabel}.table10.status" listName="statuses"  required=true  className="" editable=isEditable/]
+        [@customForm.select name="${customName}.status" i18nkey="${customLabel}.table11.status" listName="statuses"  required=true  className="" editable=isEditable/]
       </div>
     </div>
-    
     [#-- Concrete actions --] 
     <div class="form-group">
-      [@customForm.textArea name="${customName}.actions" i18nkey="${customLabel}.table10.actions" help="${customLabel}.table10.actions.help" helpIcon=false className="" required=true editable=isEditable allowTextEditor=true /]
+      [@customForm.textArea name="${customName}.actions" i18nkey="${customLabel}.table11.actions" help="${customLabel}.table11.actions.help" helpIcon=false className="" required=true editable=isEditable allowTextEditor=true /]
     </div>
-    
     <div class="form-group row">
       <div class="col-md-6">
         [#-- By whom --]
-        [@customForm.input name="${customName}.textWhom" i18nkey="${customLabel}.table10.whom" help="${customLabel}.table10.whom.help" helpIcon=false required=true className="" editable=isEditable /]
+        [@customForm.input name="${customName}.textWhom" i18nkey="${customLabel}.table11.whom" help="${customLabel}.table11.whom.help" helpIcon=false required=true className="" editable=isEditable /]
       </div>
       <div class="col-md-6">
         [#-- By when --]
-        [@customForm.input name="${customName}.textWhen" i18nkey="${customLabel}.table10.when" help="${customLabel}.table10.when.help" helpIcon=false required=true className="" editable=isEditable /]
+        [@customForm.input name="${customName}.textWhen" i18nkey="${customLabel}.table11.when" help="${customLabel}.table11.when.help" helpIcon=false required=true className="" editable=isEditable /]
       </div>
     </div>
-    
-    
     <div class="form-group">
-        [@customForm.textArea name="${customName}.comments" i18nkey="${customLabel}.table10.comments" help="${customLabel}.table10.comments.help" helpIcon=false className="" required=true editable=isEditable allowTextEditor=true /]
+        [@customForm.textArea name="${customName}.comments" i18nkey="${customLabel}.table11.comments" help="${customLabel}.table11.comments.help" helpIcon=false className="" required=true editable=isEditable allowTextEditor=true /]
     </div>
     
   </div>
