@@ -14,6 +14,7 @@
 ]/]
 
 [#import "/WEB-INF/global/macros/utils.ftl" as utilities /]
+[#import "/WEB-INF/crp/views/annualReport2018/macros-AR2018.ftl" as macrosAR /]
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
 
@@ -31,9 +32,9 @@
     [#include "/WEB-INF/crp/views/annualReport2018/submenu-AR2018.ftl" /]
     
     <div class="row">
-      [#-- POWB Menu --]
+      [#--  Menu --]
       <div class="col-md-3">[#include "/WEB-INF/crp/views/annualReport2018/menu-AR2018.ftl" /]</div>
-      [#-- POWB Content --]
+      [#--  Content --]
       <div class="col-md-9">
         [#-- Section Messages --]
         [#include "/WEB-INF/crp/views/annualReport2018/messages-AR2018.ftl" /]
@@ -45,10 +46,42 @@
           
             [#-- Table 5: Status of Planned Outcomes and Milestones --]
             <div class="form-group">
-              <h4 class="headTitle">[@s.text name="${customLabel}.table5.title" /]</h4>
+              [#if PMU]
+                <div class="borderBox">
+                  [#-- Button --]
+                  <button type="button" class="btn btn-default btn-xs pull-right" data-toggle="modal" data-target="#modal-policies">
+                     <span class="glyphicon glyphicon-fullscreen"></span> See Full table 2
+                  </button>
+                  [#-- Modal --]
+                  <div class="modal fade" id="modal-policies" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                    <div class="modal-dialog modal-lg" role="document">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                          <h4 class="modal-title" id="myModalLabel">[@s.text name="${customLabel}.title" /]</h4>
+                        </div>
+                        <div class="modal-body">
+                          [#-- Full table --]
+                          <div class="viewMoreSyntesisTable-block">
+                            [@tableOutcomesMilestones  /]
+                          </div>
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  [#-- Table --]
+                  <div class="viewMoreSyntesisTable-block">
+                    [@tableOutcomesMilestones  /]
+                  </div>
+                </div>
+              [#else]
                 [#list outcomes as outcome]
                   [@annualReport2018OutcomesMacro element=outcome name="${customLabel}" index=outcome_index /]
                 [/#list]
+              [/#if]
             </div>
           
           </div>
@@ -63,10 +96,57 @@
 
 [#---------------------------------------------------- MACROS ----------------------------------------------------]
 
+[#macro tableOutcomesMilestones allowPopups=true id="" ]
+  <div class="">[#-- <div class="table-responsive"> --]
+    <table id="tableA" class="table table-bordered">
+      <thead>
+        <tr>
+          <th>[@s.text name="expectedProgress.tableA.fp" /]</th>
+          [#if !allowPopups]<th>[@s.text name="expectedProgress.tableA.subIDO" /]</th>[/#if]
+          [#if !allowPopups]<th>[@s.text name="expectedProgress.tableA.outcomes" /]</th>[/#if]
+          <th>[@s.text name="expectedProgress.tableA.milestone" /]</th>
+          <th>[@s.text name="expectedProgress.tableA.meansVerification" /]</th>
+          <th>[@s.text name="expectedProgress.tableA.assessment" /]</th>
+        </tr>
+      </thead>
+      <tbody>
+        [#list (flagships)![] as fp]
+          [#assign milestoneSize = fp.milestones?size]
+          [#list fp.outcomes as outcome]
+            [#assign outcomesSize = outcome.milestones?size]
+            [#list outcome.milestones as milestone]
+              [#assign isFlagshipRow = (outcome_index == 0) && (milestone_index == 0)]
+              [#assign isOutcomeRow = (milestone_index == 0)]
+              [#assign milestoneProgress = action.getReportSynthesisFlagshipProgressMilestone(milestone.id) ]
+              <tr class="fp-index-${fp_index} outcome-index-${outcome_index} milestone-index-${milestone_index}">
+                [#-- Flagship --]
+                [#if isFlagshipRow]<th rowspan="${milestoneSize}" class="milestoneSize-${milestoneSize}" style="background:${(fp.color)!'#fff'}"><span class="programTag" style="border-color:${(fp.color)!'#fff'}">${fp.acronym}</span></th>[/#if]
+                [#-- Sub-IDO --]
+                [#if isOutcomeRow && !allowPopups]<td rowspan="${outcomesSize}"> 
+                  <ul>[#list outcome.subIdos as subIdo]<li> [#if subIdo.srfSubIdo.srfIdo.isCrossCutting] <strong title="Cross-Cutting IDO">CC</strong> [/#if]${subIdo.srfSubIdo.description}</li>[/#list]</ul>
+                </td>
+                [/#if]
+                [#-- Outcomes --]
+                [#if isOutcomeRow && !allowPopups]<td rowspan="${outcomesSize}" class="milestonesSize-${outcomesSize}"> ${outcome.composedName}</td>[/#if]
+                [#-- Milestone --]
+                <td> ${milestone.composedName} [#if allowPopups] <div class="pull-right">[@milestoneContributions element=milestone tiny=true /] [/#if]</div></td>
+                [#-- Means Verification --]
+                <td class="col-md-4">[#if (milestoneProgress.means?has_content)!false]${milestoneProgress.means}[#else]<i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>[/#if]</td>
+                [#-- Assessment --]
+                <td>[#if (milestoneProgress.assesmentName?has_content)!false]${milestoneProgress.assesmentName}[#else]<i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>[/#if]</td>
+              </tr>
+            [/#list]
+          [/#list]
+        [/#list]
+      </tbody>
+    </table>
+  </div>
+[/#macro]
+
+
 [#macro annualReport2018OutcomesMacro element name index isTemplate=false]
   [#local customName = "${name}" /]
-     
-    <div id="powbOutcome-${isTemplate?string('template', index)}" class="powbOutcome borderBox" style="display:${isTemplate?string('none','block')}">
+  <div id="powbOutcome-${isTemplate?string('template', index)}" class="powbOutcome borderBox" style="display:${isTemplate?string('none','block')}">
     [#-- Index --]
     <div class="leftHead sm"><span class="index">${index+1}</span></div>
     [#-- Title --]
@@ -82,7 +162,6 @@
         [@annualReport2018MilestoneMacro element=milestone name="${customName}.milestones" index=milestone_index /]
       [/#list]
     </div> 
-    
   </div>
 [/#macro]
 
@@ -142,8 +221,9 @@
     [#-- Milestone status --]
     <div class="form-group">
       <label>[@s.text name="${customLabel}.milestoneStatus" /]:[@customForm.req required=editable  /]</label><br />
-      [#-- [#local milestoneStatus = (annualReportElement.milestonesStatus)!-1 /] --]
-      [#local milestoneStatus = -1 /]
+      [#local milestoneStatus = (annualReportElement.milestonesStatus)!-1 /]
+      [#local isComplete = (milestoneStatus == 1)!false /]
+
       [@customForm.radioFlat id="${customName}-status-1" name="${customName}.milestonesStatus" label="Complete"   value="1" checked=(milestoneStatus == 1)!false editable=editable cssClass="milestoneStatus" cssClassLabel="font-normal"/]
       [@customForm.radioFlat id="${customName}-status-2" name="${customName}.milestonesStatus" label="Extended"   value="2" checked=(milestoneStatus == 2)!false editable=editable cssClass="milestoneStatus" cssClassLabel="font-normal"/]
       [@customForm.radioFlat id="${customName}-status-3" name="${customName}.milestonesStatus" label="Cancelled"  value="3" checked=(milestoneStatus == 3)!false editable=editable cssClass="milestoneStatus" cssClassLabel="font-normal"/]
@@ -152,8 +232,7 @@
       [#if !editable && (milestoneStatus == -1)][@s.text name="form.values.fieldEmpty"/][/#if]
     </div>
     
-    [#local notComplete = true /]
-    <div class="form-group milestonesEvidence" style="display:${notComplete?string('block', 'none')}">
+    <div class="form-group milestonesEvidence" style="display:${isComplete?string('block', 'none')}">
       [#-- Evidence for completed milestones or explanation for extended or cancelled --]
       <div class="form-group">
         [@customForm.textArea name="${customName}.milestoneEvidence" i18nkey="${customLabel}.milestoneEvidence" help="${customLabel}.milestoneEvidence.help" helpIcon=false display=true required=false className="limitWords-50" editable=editable allowTextEditor=true /]
@@ -161,11 +240,11 @@
       
       [#-- Extendend, cancelled or changed milestones - Main reason --]
       <div class="form-group">
-        [@customForm.select name="${customName}.milestoneMainReason" label=""  i18nkey="${customLabel}.milestoneMainReason" listName="" keyFieldName=""  displayFieldName=""   required=true  className="milestoneMainReasonSelect" editable=editable/]
+        [@customForm.select name="${customName}.milestoneMainReason.id" label=""  i18nkey="${customLabel}.milestoneMainReason" listName="" keyFieldName=""  displayFieldName=""   required=true  className="milestoneMainReasonSelect" editable=editable/]
       </div>
       
       [#-- Extendend, cancelled or changed milestones - Other reason --]
-      [#local showOther = true /]
+      [#local showOther = (annualReportElement.milestoneMainReason.name == "other")!false /]
       <div class="form-group otherBlock" style="display:${showOther?string('block', 'none')}">
         [@customForm.input name="${customName}.milestoneOtherReason" i18nkey="${customLabel}.milestoneOtherReason" display=true required=false className="input-sm" editable=editable /]
       </div>
