@@ -58,11 +58,10 @@
             
             <div class="form-group row">
               <div class="col-md-4">
-              [#assign projectInnovationInfos = 12 /]
                 [#-- Total of CRP Innovations --]
                 <div id="" class="simpleBox numberBox">
                   <label for="">[@s.text name="${customLabel}.indicatorC1.totalInnovations" /]</label><br />
-                  <span>${(projectInnovationInfos)!}</span>
+                  <span>${(projectInnovations?size)!}</span>
                 </div>
               </div>
             </div>
@@ -70,37 +69,17 @@
             <div class="form-group row">
               [#-- Chart 8 - Innovations by Type --]
               <div class="col-md-5">
-                [#assign partnershipsByGeographicScopeDTO = [
-                      { 
-                        "repIndGeographicScope": {
-                          "name": "Name"
-                        },
-                        "projectPartnerPartnerships": [1, 2, 3]
-                      },
-                      { 
-                        "repIndGeographicScope": {
-                          "name": "Name 2"
-                        },
-                        "projectPartnerPartnerships": [1, 2, 3, 4]
-                      },
-                      { 
-                        "repIndGeographicScope": {
-                          "name": "Name 3"
-                        },
-                        "projectPartnerPartnerships": [1, 2, 3, 4, 5]
-                      }
-                    ] /]
                 <div id="chart8" class="chartBox simpleBox">
                   <ul class="chartData" style="display:none">
                     <li>
                       <span>[@s.text name="${customLabel}.indicatorC1.chart4.0" /]</span>
                       <span>[@s.text name="${customLabel}.indicatorC1.chart4.1" /]</span>
                     </li>
-                    [#list partnershipsByGeographicScopeDTO as data]
-                      [#if data.projectPartnerPartnerships?has_content]
+                    [#list innovationsByTypeDTO as data]
+                      [#if data.projectInnovationInfos?has_content]
                       <li>
-                        <span>${data.repIndGeographicScope.name}</span>
-                        <span class="number">${data.projectPartnerPartnerships?size}</span>
+                        <span>${data.repIndInnovationType.name}</span>
+                        <span class="number">${data.projectInnovationInfos?size}</span>
                       </li>
                       [/#if]
                     [/#list]
@@ -110,27 +89,8 @@
               
               [#-- Chart 9 - Innovations by Stage --]
               <div class="col-md-7">
-                [#assign innovationsByStageDTO = [
-                      { 
-                        "repIndStageInnovation": {
-                          "name": "Name"
-                        },
-                        "projectInnovationInfos": [1, 2, 3]
-                      },
-                      { 
-                        "repIndStageInnovation": {
-                          "name": "Name 2"
-                        },
-                        "projectInnovationInfos": [1, 2, 3, 4]
-                      },
-                      { 
-                        "repIndStageInnovation": {
-                          "name": "Name 3"
-                        },
-                        "projectInnovationInfos": [1, 2, 3, 4, 5]
-                      }
-                    ] /]
-                <div id="chart9" class="chartBox simpleBox">
+                
+                 <div id="chart9" class="chartBox simpleBox">
                   <ul class="chartData" style="display:none">
                     <li>
                       <span>[@s.text name="${customLabel}.indicatorC1.chart9.0" /]</span>
@@ -155,7 +115,31 @@
             </div>
             
             <div class="form-group">
-                [@innovationsTable name="table4" list=(projectInnovations)![]  /]
+                [#-- Button --]
+                <button type="button" class="btn btn-default btn-xs pull-right" data-toggle="modal" data-target="#modal-innovations">
+                   <span class="glyphicon glyphicon-fullscreen"></span> See Full table 4
+                </button>
+                [#-- Modal --]
+              <div class="modal fade" id="modal-innovations" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                <div class="modal-dialog modal-lg" role="document">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                      <h4 class="modal-title" id="myModalLabel"></h4>
+                    </div>
+                    <div class="modal-body">
+                      [#-- Full table --]
+                      [@innovationsTable name="table4" list=(projectInnovations)![]  expanded=true/]
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              [#-- Table --]
+              [@innovationsTable name="table4" list=(projectInnovations)![]  expanded=false /]
             </div>
             
           </div>
@@ -171,7 +155,7 @@
 
 [#---------------------------------------------------- MACROS ----------------------------------------------------]
 
-[#macro innovationsTable name list=[] ]
+[#macro innovationsTable name list=[] expanded=false]
 
 
   <div class="form-group viewMoreSyntesisTable-block">
@@ -181,22 +165,41 @@
           <th class="text-center"> [@s.text name="${customLabel}.${name}.innovationTitle" /] </th>
           <th class="text-center"> [@s.text name="${customLabel}.${name}.stage" /] </th>
           <th class="text-center"> [@s.text name="${customLabel}.${name}.degree" /] </th>
+          [#if expanded]
+            <th class="text-center"> [@s.text name="${customLabel}.${name}.type" /] </th>
+            <th class="text-center"> [@s.text name="${customLabel}.${name}.geoScope" /] </th>
+            <th class="text-center"> [@s.text name="${customLabel}.${name}.organization" /] </th>
+            <th class="text-center"> [@s.text name="${customLabel}.${name}.evidence" /] </th>
+          [/#if]
           <th class="text-center"> [@s.text name="${customLabel}.${name}.contribution" /] </th>
+          [#if !expanded]
           <th class="col-md-1 text-center"> [@s.text name="${customLabel}.${name}.includeAR" /] </th>
+          [/#if]
         </tr>
       </thead>
       <tbody>
         [#if list?has_content]
           [#list list as item]
+          [#local url][@s.url namespace="/projects" action="${(crpSession)!}/innovation"][@s.param name='innovationID']${item.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
           <tr>
-            <td>[@utils.tableText value=(item.composedName)!"" /]</td>
+            <td>[@utils.tableText value=(item.composedName)!"" /]
+             <a href="${url}" target="_blank" class="pull-right"><span class="glyphicon glyphicon-new-window"></span></a>
+            </td>
             <td>[@utils.tableText value=(item.projectInnovationInfo.repIndStageInnovation.name)!"" /]</td>
             <td>[@utils.tableText value=(item.projectInnovationInfo.repIndDegreeInnovation.name)!"" /]</td>
+            [#if expanded]
+            <td>[@utils.tableText value=(item.projectInnovationInfo.repIndInnovationType.name)!"" /]</td>
+            <td></td>
+            <td></td>
+            <td>[@utils.tableText value=(item.projectInnovationInfo.evidenceLink)!"" /]</td>
+            [/#if]
             <td>[@utils.tableText value=(item.projectInnovationInfo.repIndContributionOfCrp.name)!"" /]</td>
+            [#if !expanded]
             <td class="text-center">
               [#local isChecked = ((!reportSynthesis.reportSynthesisFlagshipProgress.innovationsIds?seq_contains(item.id))!true) /]
               [@customForm.checkmark id="innovation-${(item.id)!}" name="reportSynthesis.reportSynthesisFlagshipProgress.innovationsValue" value="${(item.id)!''}" checked=isChecked editable=editable centered=true/] 
             </td>
+            [/#if]
           </tr>
           [/#list]
         [#else]

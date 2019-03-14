@@ -6,6 +6,7 @@ function init() {
 
   // Init Google Charts
   setGoogleCharts();
+
 }
 
 function attachEvents() {
