@@ -266,6 +266,7 @@ public class InnovationsAction extends BaseAction {
 
           for (ProjectInnovation projectInnovation : plannedprojectInnovations) {
             projectInnovation.getProjectInnovationInfo(actualPhase);
+            projectInnovation.setGeographicScopes(projectInnovation.getGeographicScopes(actualPhase));
             projectInnovations.add(projectInnovation);
           }
         }
@@ -285,6 +286,7 @@ public class InnovationsAction extends BaseAction {
 
         ProjectInnovation projectInnovation = reportSynthesisFlagshipProgressInnovationDTO.getProjectInnovation();
         projectInnovation.getProjectInnovationInfo(actualPhase);
+        projectInnovation.setGeographicScopes(projectInnovation.getGeographicScopes(actualPhase));
         projectInnovation.setSelectedFlahsgips(new ArrayList<>());
         // sort selected flagships
         if (reportSynthesisFlagshipProgressInnovationDTO.getLiaisonInstitutions() != null
