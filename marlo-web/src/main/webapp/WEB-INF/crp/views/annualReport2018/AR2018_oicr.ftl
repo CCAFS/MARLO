@@ -51,11 +51,11 @@
             [#-- Table 3: List of Outcome/Impact Case Reports --]
             <div class="form-group">
               [#-- Button --]
-              <button type="button" class="btn btn-default btn-xs pull-right" data-toggle="modal" data-target="#modal-policies">
-                 <span class="glyphicon glyphicon-fullscreen"></span> See Full table 2
+              <button type="button" class="btn btn-default btn-xs pull-right" data-toggle="modal" data-target="#modal-oicr">
+                 <span class="glyphicon glyphicon-fullscreen"></span> See Full table 3
               </button>
               [#-- Modal --]
-              <div class="modal fade" id="modal-policies" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+              <div class="modal fade" id="modal-oicr" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
                 <div class="modal-dialog modal-lg" role="document">
                   <div class="modal-content">
                     <div class="modal-header">

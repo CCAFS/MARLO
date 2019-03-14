@@ -115,10 +115,10 @@
             [#-- Full list of publications published --]
             <div class="form-group">
               [#-- Modal Large --]
-                <button type="button" class="pull-right btn btn-link btn-sm" data-toggle="modal" data-target="#tableA-bigger"> 
-                  <span class="glyphicon glyphicon-fullscreen"></span> See Full Table 2
+                <button type="button" class="btn btn-default btn-xs pull-right" data-toggle="modal" data-target="#modal-publications">
+                 <span class="glyphicon glyphicon-fullscreen"></span> See Full table 6
                 </button>
-                <div id="tableA-bigger" class="modal fade bs-example-modal-lg " tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
+                <div id="modal-publications" class="modal fade bs-example-modal-lg " tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
                   <div class="modal-dialog modal-lg bigger" role="document">
                     <div class="modal-content">
                       <div class="modal-header">
