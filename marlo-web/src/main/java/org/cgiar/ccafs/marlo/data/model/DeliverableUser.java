@@ -51,23 +51,27 @@ public class DeliverableUser extends MarloBaseEntity implements java.io.Serializ
     return true;
   }
 
+  public String getComposedName() {
+    return this.lastName + " " + this.firstName;
+  }
+
   public Deliverable getDeliverable() {
     return this.deliverable;
   }
+
 
   public String getElementId() {
     return this.elementId;
   }
 
-
   public String getFirstName() {
     return this.firstName;
   }
 
+
   public String getLastName() {
     return this.lastName;
   }
-
 
   @Override
   public String getLogDeatil() {
@@ -137,7 +141,6 @@ public class DeliverableUser extends MarloBaseEntity implements java.io.Serializ
     return "DeliverableUser [id=" + this.getId() + ", deliverable=" + deliverable + ", firstName=" + firstName
       + ", lastName=" + lastName + ", elementId=" + elementId + "]";
   }
-
 
 }
 

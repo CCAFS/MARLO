@@ -114,21 +114,28 @@
             
             [#-- Full list of publications published --]
             <div class="form-group">
+              
               [#-- Modal Large --]
                 <button type="button" class="btn btn-default btn-xs pull-right" data-toggle="modal" data-target="#modal-publications">
                  <span class="glyphicon glyphicon-fullscreen"></span> See Full table 6
                 </button>
-                <div id="modal-publications" class="modal fade bs-example-modal-lg " tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
-                  <div class="modal-dialog modal-lg bigger" role="document">
+                <h4 class="headTitle">[@s.text name="${customLabel}.fullList.title" /]</h4>
+                <div class="modal fade" id="modal-publications" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                  <div class="modal-dialog modal-lg" role="document">
                     <div class="modal-content">
                       <div class="modal-header">
-                        [@s.text name="${customLabel}.fullList.title" /]
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="myModalLabel">[@s.text name="${customLabel}.fullList.title" /]</h4>
                       </div>
-                      [@listOfPublications name="fullList" list=(deliverables)![] allowPopups=false /]
-                    </div>
+                      <div class="modal-body">
+                        [@listOfPublications name="fullList" list=(deliverables)![] allowPopups=false /]
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                      </div>
                   </div>
                 </div>
+              </div>
                 [#-- Table --]
                 [@listOfPublications name="fullList" list=(deliverables)![]  allowPopups=true /]
               </div>
@@ -180,27 +187,24 @@
 
 [#macro listOfPublications name list=[] allowPopups=false]
 
-
-  <div class="form-group">
-    [#if allowPopups]
-      <h4 class="headTitle">[@s.text name="${customLabel}.fullList.title" /]</h4>
-    [/#if]
     <table class="table table-bordered">
       <thead>
         <tr>
+        [#if !allowPopups]
           <th class="text-center"> [@s.text name="${customLabel}.${name}.author" /] </th>
-          <th class="text-center col-md-2"> [@s.text name="${customLabel}.${name}.date" /] </th>
+          <th class="text-center"> [@s.text name="${customLabel}.${name}.date" /] </th>
+        [/#if]
           <th class="text-center"> [@s.text name="${customLabel}.${name}.article" /] </th>
           <th class="text-center"> [@s.text name="${customLabel}.${name}.journal" /] </th>
           [#if !allowPopups]
-            <th class="text-center"> [@s.text name="${customLabel}.${name}.volume" /] </th>
-            <th class="text-center"> [@s.text name="${customLabel}.${name}.issue" /] </th>
-            <th class="text-center"> [@s.text name="${customLabel}.${name}.page" /] </th>
+            <th class="text-center fullPublications-table"> [@s.text name="${customLabel}.${name}.volume" /] </th>
+            <th class="text-center fullPublications-table"> [@s.text name="${customLabel}.${name}.issue" /] </th>
+            <th class="text-center fullPublications-table"> [@s.text name="${customLabel}.${name}.page" /] </th>
           [/#if]
-            <th class="text-center col-md-2"> [@s.text name="${customLabel}.${name}.openAccess" /] </th>
+            <th class="text-center"> [@s.text name="${customLabel}.${name}.openAccess" /] </th>
             <th class="text-center"> [@s.text name="${customLabel}.${name}.isi" /] </th>
           [#if !allowPopups]
-           <th class="text-center"> [@s.text name="${customLabel}.${name}.identifier" /] </th>
+           <th class="text-center col-md-1"> [@s.text name="${customLabel}.${name}.identifier" /] </th>
           [/#if]
           [#if allowPopups]
            <th class="col-md-1 text-center"> [@s.text name="${customLabel}.${name}.includeAR" /] </th>
@@ -211,35 +215,48 @@
         [#if list?has_content]
           [#list list as item]
           <tr>
+            [#if !allowPopups]
             [#-- Authors --]
-            <td></td>
+            <td>[@utils.tableList list=(item.users)![] displayFieldName="composedName" nobr=true/]</td>
             [#-- Date of Publication --]
-            <td>${(item.date)!}</td>
+            <td>[@utils.tableText value=(item.getMetadataValue(17))!"" /]</td>
+            [/#if]
             [#-- Title --]
             <td>[@utils.tableText value=(item.deliverableInfo.title)!"" /]</td>
             [#-- Journal Article --]
-            <td>${(item.journal)!}</td>
+            <td>[@utils.tableText value=(item.publication.journal)!"" /]</td>
             [#if !allowPopups]
               [#-- Volume --]
-              <td>${(item.volume)!}</td>
+              <td class="fullPublications-table">[@utils.tableText value=(item.publication.volume)!"" /]</td>
               [#-- Issue --]
-              <td>${(item.issue)!}</td>
+              <td class="fullPublications-table">[@utils.tableText value=(item.publication.issue)!"" /]</td>
               [#-- Page --]
-              <td>${(item.page)!}</td>
+              <td class="fullPublications-table">[@utils.tableText value=(item.publication.pages)!"" /]</td>
             [/#if]
             [#-- Is OpenAccess --]
             <td class="text-center">
-              <span style="display:none">${(item.open?string)!'false'}</span>
-              <img src="${baseUrl}/global/images/openAccess-${(item.open?string)!'false'}.png" alt="" />
+              <img src="${baseUrl}/global/images/openAccess-${(item.dissemination.isOpenAccess?string)!'false'}.png" alt="" />
             </td>
             [#-- Is ISI --]
             <td class="text-center">
-              <span style="display:none">${(item.isi?string)!'false'}</span>
-              <img src="${baseUrl}/global/images/checked-${(item.isi?string)!'false'}.png" alt="" />
+              <img src="${baseUrl}/global/images/checked-${(item.publication.isiPublication?string)!'false'}.png" alt="" />
             </td>
             [#if !allowPopups]
               [#-- DOI or Handle --]
-              <td>${(item.identifier)!}</td>
+              <td class="text-center">
+              [#local doi = (item.getMetadataValue(36))!"" /]
+              
+              [#if doi?has_content && doi?contains("http") && !(doi?contains(";"))]
+              <a target="_blank" href="${doi}"><span class="glyphicon glyphicon-link"></span></a>
+              [#else]
+                [#if !(doi?has_content) ]
+                 <span class="glyphicon glyphicon-link" title="Not defined"></span>
+                [#else]
+                 <span class="glyphicon glyphicon-link" title="${doi}"></span>
+                [/#if]
+              [/#if]              
+              
+              </td>
             [/#if]
             [#if allowPopups]
               [#-- Check --]
@@ -250,10 +267,7 @@
             [/#if]
           </tr>
           [/#list]
-        [#else]
-          
         [/#if]
       </tbody>
     </table>
-  </div>
 [/#macro]
