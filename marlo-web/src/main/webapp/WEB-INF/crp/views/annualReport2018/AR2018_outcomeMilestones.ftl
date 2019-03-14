@@ -63,7 +63,7 @@
                         <div class="modal-body">
                           [#-- Full table --]
                           <div class="viewMoreSyntesisTable-block">
-                            [@tableOutcomesMilestones  /]
+                            [@tableOutcomesMilestones allowPopups=false  /]
                           </div>
                         </div>
                         <div class="modal-footer">
@@ -102,7 +102,6 @@
       <thead>
         <tr>
           <th>[@s.text name="expectedProgress.tableA.fp" /]</th>
-          [#if !allowPopups]<th> Sub-IDO(s)</th>[/#if]
           <th> Outcome </th>
           [#if !allowPopups]<th> Narrative</th>[/#if]
           <th> Milestone </th>
@@ -120,14 +119,17 @@
               <tr class="fp-index-${fp_index} outcome-index-${outcome_index} milestone-index-${milestone_index}">
                 [#-- Flagship --]
                 [#if isFlagshipRow]<th rowspan="${milestoneSize}" class="milestoneSize-${milestoneSize}" style="background:${(fp.color)!'#fff'}"><span class="programTag" style="border-color:${(fp.color)!'#fff'}">${fp.acronym}</span></th>[/#if]
-                [#-- Sub-IDO --]
-                [#if isOutcomeRow && !allowPopups]
-                  <td rowspan="${outcomesSize}"> 
+                [#-- Outcomes --]
+                [#if isOutcomeRow]
+                  <td rowspan="${outcomesSize}" class="milestonesSize-${outcomesSize}"> 
+                    [#-- Outcome Statement --]
+                    ${outcome.composedName}
+                    [#-- Sub-IDOs --]
+                    [#if !allowPopups]
                     <ul>[#list outcome.subIdos as subIdo]<li> [#if subIdo.srfSubIdo.srfIdo.isCrossCutting] <strong title="Cross-Cutting IDO">CC</strong> [/#if]${subIdo.srfSubIdo.description}</li>[/#list]</ul>
+                    [/#if]
                   </td>
                 [/#if]
-                [#-- Outcomes --]
-                [#if isOutcomeRow]<td rowspan="${outcomesSize}" class="milestonesSize-${outcomesSize}"> ${outcome.composedName}</td>[/#if]
                 [#-- Outcomes - Narrative --]
                 [#if isOutcomeRow && !allowPopups]<td rowspan="${outcomesSize}" class="milestonesSize-${outcomesSize}"> </td>[/#if]
                 [#-- Milestone --]
