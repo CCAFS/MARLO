@@ -128,8 +128,12 @@ public class CrpProgram extends MarloAuditableEntity implements java.io.Serializ
 
   private PowbSynthesis synthesis;
 
+  private Set<DeliverableProgram> deliverablePrograms = new HashSet<DeliverableProgram>(0);
+
+
   public CrpProgram() {
   }
+
 
   @Override
   public boolean equals(Object obj) {
@@ -179,14 +183,15 @@ public class CrpProgram extends MarloAuditableEntity implements java.io.Serializ
     return centerFunds;
   }
 
-
   public Set<CenterOutput> getCenterOutputs() {
     return centerOutputs;
   }
 
+
   public Set<CenterSectionStatus> getCenterSectionStatuses() {
     return centerSectionStatuses;
   }
+
 
   public Set<CenterSubmission> getCenterSubmissions() {
     return centerSubmissions;
@@ -196,29 +201,27 @@ public class CrpProgram extends MarloAuditableEntity implements java.io.Serializ
     return clusterofActivities;
   }
 
-
   public PowbCollaboration getCollaboration() {
     return collaboration;
   }
-
 
   public String getColor() {
     return color;
   }
 
+
   public String getComposedName() {
     return this.acronym + ": " + this.name;
   }
+
 
   public GlobalUnit getCrp() {
     return crp;
   }
 
-
   public Set<CrpClusterOfActivity> getCrpClusterOfActivities() {
     return this.crpClusterOfActivities;
   }
-
 
   public Set<CrpProgramCountry> getCrpProgramCountries() {
     return crpProgramCountries;
@@ -232,6 +235,11 @@ public class CrpProgram extends MarloAuditableEntity implements java.io.Serializ
 
   public Set<CrpProgramOutcome> getCrpProgramOutcomes() {
     return this.crpProgramOutcomes;
+  }
+
+
+  public Set<DeliverableProgram> getDeliverablePrograms() {
+    return deliverablePrograms;
   }
 
 
@@ -265,6 +273,7 @@ public class CrpProgram extends MarloAuditableEntity implements java.io.Serializ
     return managers;
   }
 
+
   public List<CrpMilestone> getMilestones() {
     return milestones;
   }
@@ -277,7 +286,6 @@ public class CrpProgram extends MarloAuditableEntity implements java.io.Serializ
     return outcomes;
   }
 
-
   public List<PowbExpectedCrpProgress> getPowbs() {
     return powbs;
   }
@@ -286,6 +294,7 @@ public class CrpProgram extends MarloAuditableEntity implements java.io.Serializ
   public int getProgramType() {
     return this.programType;
   }
+
 
   public Set<ProjectFocus> getProjectFocuses() {
     return projectFocuses;
@@ -299,10 +308,10 @@ public class CrpProgram extends MarloAuditableEntity implements java.io.Serializ
     return researchImpacts;
   }
 
-
   public Set<CenterTopic> getResearchTopics() {
     return researchTopics;
   }
+
 
   public Set<SectionStatus> getSectionStatuses() {
     return sectionStatuses;
@@ -311,7 +320,6 @@ public class CrpProgram extends MarloAuditableEntity implements java.io.Serializ
   public List<String> getSelectedCountries() {
     return selectedCountries;
   }
-
 
   public Set<Submission> getSubmissions() {
     return submissions;
@@ -322,14 +330,15 @@ public class CrpProgram extends MarloAuditableEntity implements java.io.Serializ
     return synthesis;
   }
 
+
   public List<CenterTopic> getTopics() {
     return topics;
   }
 
-
   public double getW1() {
     return w1;
   }
+
 
   public double getW3() {
     return w3;
@@ -347,10 +356,10 @@ public class CrpProgram extends MarloAuditableEntity implements java.io.Serializ
     this.baseLine = baseLine;
   }
 
-
   public void setCenterFunds(double centerFunds) {
     this.centerFunds = centerFunds;
   }
+
 
   public void setCenterOutputs(Set<CenterOutput> centerOutputs) {
     this.centerOutputs = centerOutputs;
@@ -360,10 +369,10 @@ public class CrpProgram extends MarloAuditableEntity implements java.io.Serializ
     this.centerSectionStatuses = centerSectionStatuses;
   }
 
-
   public void setCenterSubmissions(Set<CenterSubmission> centerSubmissions) {
     this.centerSubmissions = centerSubmissions;
   }
+
 
   public void setClusterofActivities(List<CrpClusterOfActivity> clusterofActivities) {
     this.clusterofActivities = clusterofActivities;
@@ -395,6 +404,10 @@ public class CrpProgram extends MarloAuditableEntity implements java.io.Serializ
 
   public void setCrpProgramOutcomes(Set<CrpProgramOutcome> crpProgramOutcomes) {
     this.crpProgramOutcomes = crpProgramOutcomes;
+  }
+
+  public void setDeliverablePrograms(Set<DeliverableProgram> deliverablePrograms) {
+    this.deliverablePrograms = deliverablePrograms;
   }
 
   public void setImpacts(List<CenterImpact> impacts) {
