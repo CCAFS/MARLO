@@ -24,7 +24,7 @@
 			<column length="65535" name="description" />
 		</property>
 		<property generated="never" lazy="false"
-			name="valueAdded" optimistic-lock="true" type="java.lang.Double"
+			name="valueAdded" optimistic-lock="true" type="string"
 			unique="false">
 			<column length="65535" name="value_added" />
 		</property>

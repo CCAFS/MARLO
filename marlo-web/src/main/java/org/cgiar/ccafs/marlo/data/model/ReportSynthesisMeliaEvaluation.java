@@ -32,13 +32,21 @@ public class ReportSynthesisMeliaEvaluation extends MarloAuditableEntity impleme
   private Integer status;
 
   @Expose
+  private String actions;
+
+  @Expose
   private String textWhom;
 
   @Expose
   private String textWhen;
 
+  @Expose
+  private String comments;
+
+
   public ReportSynthesisMeliaEvaluation() {
   }
+
 
   @Override
   public boolean equals(Object obj) {
@@ -62,6 +70,16 @@ public class ReportSynthesisMeliaEvaluation extends MarloAuditableEntity impleme
     return true;
   }
 
+
+  public String getActions() {
+    return actions;
+  }
+
+
+  public String getComments() {
+    return comments;
+  }
+
   @Override
   public String getLogDeatil() {
     StringBuilder sb = new StringBuilder();
@@ -73,15 +91,14 @@ public class ReportSynthesisMeliaEvaluation extends MarloAuditableEntity impleme
     return managementResponse;
   }
 
-
   public String getNameEvaluation() {
     return nameEvaluation;
   }
 
-
   public String getRecommendation() {
     return recommendation;
   }
+
 
   public ReportSynthesisMelia getReportSynthesisMelia() {
     return reportSynthesisMelia;
@@ -92,7 +109,6 @@ public class ReportSynthesisMeliaEvaluation extends MarloAuditableEntity impleme
     return status;
   }
 
-
   public String getTextWhen() {
     return textWhen;
   }
@@ -100,6 +116,16 @@ public class ReportSynthesisMeliaEvaluation extends MarloAuditableEntity impleme
 
   public String getTextWhom() {
     return textWhom;
+  }
+
+
+  public void setActions(String actions) {
+    this.actions = actions;
+  }
+
+
+  public void setComments(String comments) {
+    this.comments = comments;
   }
 
 

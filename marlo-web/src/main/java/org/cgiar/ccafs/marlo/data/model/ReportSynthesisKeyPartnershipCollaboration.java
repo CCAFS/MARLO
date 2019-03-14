@@ -23,7 +23,7 @@ public class ReportSynthesisKeyPartnershipCollaboration extends MarloBaseEntity
   @Expose
   private String description;
   @Expose
-  private Double valueAdded;
+  private String valueAdded;
 
 
   private Set<ReportSynthesisKeyPartnershipCollaborationCrp> reportSynthesisKeyPartnershipCollaborationCrps =
@@ -99,7 +99,7 @@ public class ReportSynthesisKeyPartnershipCollaboration extends MarloBaseEntity
   }
 
 
-  public Double getValueAdded() {
+  public String getValueAdded() {
     return valueAdded;
   }
 
@@ -144,7 +144,8 @@ public class ReportSynthesisKeyPartnershipCollaboration extends MarloBaseEntity
     this.reportSynthesisKeyPartnershipCollaborationCrps = reportSynthesisKeyPartnershipCollaborationCrps;
   }
 
-  public void setValueAdded(Double valueAdded) {
+
+  public void setValueAdded(String valueAdded) {
     this.valueAdded = valueAdded;
   }
 
