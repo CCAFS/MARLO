@@ -113,7 +113,7 @@
                     <div class="modal-body">
                       [#-- Full table --]
                       <div class="viewMoreSyntesisTable-block">
-                      [@table2ListOfPolicies list=(projectPolicies)![] expanded=true/]
+                        [@table2ListOfPolicies list=(projectPolicies)![] expanded=true/]
                       </div>
                     </div>
                     <div class="modal-footer">
@@ -125,7 +125,7 @@
               
               [#-- Table --]
               <div class="viewMoreSyntesisTable-block">
-              [@table2ListOfPolicies list=(projectPolicies)![] expanded=false/]
+                [@table2ListOfPolicies list=(projectPolicies)![] expanded=false/]
               </div>
             </div>
           
