@@ -112,13 +112,18 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
   }
 
 
+  public List<ProjectInnovationGeographicScope> getGeographicScopes(Phase phase) {
+    return new ArrayList<>(this.getProjectInnovationGeographicScopes().stream()
+      .filter(pg -> pg.isActive() && pg.getPhase().equals(phase)).collect(Collectors.toList()));
+  }
+
+
   @Override
   public String getLogDeatil() {
     StringBuilder sb = new StringBuilder();
     sb.append("Id : ").append(this.getId());
     return sb.toString();
   }
-
 
   public List<ProjectInnovationOrganization> getOrganizations() {
     return organizations;
@@ -132,10 +137,10 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
     return projectInnovationContributingOrganization;
   }
 
+
   public Set<ProjectInnovationCountry> getProjectInnovationCountries() {
     return projectInnovationCountries;
   }
-
 
   public Set<ProjectInnovationCrp> getProjectInnovationCrps() {
     return projectInnovationCrps;
@@ -149,10 +154,10 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
     return projectInnovationGeographicScopes;
   }
 
+
   public ProjectInnovationInfo getProjectInnovationInfo() {
     return projectInnovationInfo;
   }
-
 
   public ProjectInnovationInfo getProjectInnovationInfo(Phase phase) {
     if (this.getProjectInnovationInfo() != null) {
@@ -170,6 +175,7 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
     }
   }
 
+
   public Set<ProjectInnovationInfo> getProjectInnovationInfos() {
     return projectInnovationInfos;
   }
@@ -178,7 +184,6 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
   public Set<ProjectInnovationOrganization> getProjectInnovationOrganizations() {
     return projectInnovationOrganizations;
   }
-
 
   public Set<ProjectInnovationRegion> getProjectInnovationRegions() {
     return projectInnovationRegions;
@@ -228,10 +233,10 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
     this.organizations = organizations;
   }
 
+
   public void setProject(Project project) {
     this.project = project;
   }
-
 
   public void setProjectInnovationContributingOrganization(
     Set<ProjectInnovationContributingOrganization> projectInnovationContributingOrganization) {
@@ -282,6 +287,7 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
   public void setSelectedFlahsgips(List<LiaisonInstitution> selectedFlahsgips) {
     this.selectedFlahsgips = selectedFlahsgips;
   }
+
 
   @Override
   public String toString() {
