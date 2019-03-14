@@ -3,8 +3,12 @@
 [#assign currentSectionString = "annualReport-${actionName?replace('/','-')}-${synthesisID}" /]
 [#assign currentSection = "synthesis" /]
 [#assign currentStage = actionName?split('/')[1]/]
-[#assign pageLibs = [ "select2", "trumbowyg" ] /]
-[#assign customJS = [ "${baseUrlMedia}/js/annualReport2018/annualReport2018_${currentStage}.js" ] /]
+[#assign pageLibs = [ "select2", "trumbowyg", "datatables.net", "datatables.net-bs" ] /]
+[#assign customJS = [
+  "${baseUrlMedia}/js/annualReport/annualReportGlobal.js",
+  "${baseUrlMedia}/js/annualReport2018/annualReport2018_${currentStage}.js" 
+] 
+/]
 [#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css"] /]
 
 [#assign breadCrumb = [
@@ -17,7 +21,7 @@
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
 
-[#assign customName= "reportSynthesis" /]
+[#assign customName= "reportSynthesis.reportSynthesisMelia" /]
 [#assign customLabel= "annualReport2018.${currentStage}" /]
 
 [#-- Helptext --]
@@ -41,42 +45,51 @@
         [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
           [#-- Title --]
           <h3 class="headTitle">[@s.text name="${customLabel}.title" /]</h3>
-          <div class="borderBox">
+          <div class="">
           
-          [#-- Short narrative to introduce the table 9 --]
-          [#if PMU]
-            <div class="form-group">
-                [@customForm.textArea name="${customName}.narrative" i18nkey="${customLabel}.narrative" className="" helpIcon=false required=false editable=editable allowTextEditor=true /]
-            </div>
-          [#else]
-            <div class="textArea">
-                <label for="">[@customForm.text name="${customLabel}.narrative" readText=true /]:</label>
-                <p>[#if (pmuText?has_content)!false]${pmuText?replace('\n', '<br>')}[#else] [@s.text name="global.prefilledByPmu"/] [/#if]</p>
-            </div>
-          [/#if]
-          
-          [#-- Table 9: MELIA --]
-          [@meliaTable name="table9" list=[] /]
-          
-          [#-- Table 10: Update on actions taken in response to relevant evaluations --]
-            [#if PMU]
-              <div class="form-group">
-                <h4 class="subTitle headTitle">[@s.text name="${customLabel}.table10.title" /]</h4>
-                <div class="listEvaluations">
-                  [#-- [#list (reportSynthesis.reportSynthesisMelia.evaluations)![] as item] --]
-                  [#list (meliaUpdateList)![] as item]
-                    [@relevantEvaluationMacro element=item name="${customName}.table10" index=item_index  isEditable=editable/]
-                  [/#list]
+            <div class="bootstrapTabs">
+              [#-- Tabs --] 
+              <ul class="nav nav-tabs" role="tablist"> 
+                <li role="presentation" class="active"><a index="0" href="#tab-table10" aria-controls="info" role="tab" data-toggle="tab"> Table 10: MELIA </a></li>
+                <li role="presentation" class=""><a index="1" href="#tab-table11" aria-controls="info" role="tab" data-toggle="tab"> Table 11: Update on Actions Taken </a></li>
+              </ul>
+              
+              [#-- Content --] 
+              <div class="tab-content ">
+                <div id="tab-table10" role="tabpanel" class="tab-pane fade in active">
+                  [#-- Short narrative to introduce the table 9 --]
+                  <div class="form-group">
+                    [@customForm.textArea name="${customName}.summary" i18nkey="${customLabel}.narrative" className="" helpIcon=false required=false editable=editable allowTextEditor=true /]
+                  </div>
+                  
+                  [#-- Table 10: MELIA --]
+                  <div class="form-group">
+                    [@meliaTable name="${customName}.plannedStudies" list=(studiesList)![] /]
+                  </div>
                 </div>
-                [#if canEdit && editable]
-                <div class="text-right">
-                  <div class="addEvaluation bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> [@s.text name="form.buttons.addEvaluation"/]</div>
-                </div> 
-                [/#if]
+                
+                <div id="tab-table11" role="tabpanel" class="tab-pane fade">
+                  [#-- Table 11: Update on actions taken in response to relevant evaluations --]
+                  [#if PMU]
+                    <div class="form-group">
+                      <h4 class="subTitle headTitle">[@s.text name="${customLabel}.table11.title" /]</h4>
+                      <div class="listEvaluations">
+                        [#list (reportSynthesis.reportSynthesisMelia.evaluations)![] as item]
+                          [@relevantEvaluationMacro element=item name="${customName}.evaluations" index=item_index  isEditable=editable/]
+                        [/#list]
+                      </div>
+                      [#if canEdit && editable]
+                      <div class="text-right">
+                        <div class="addEvaluation bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> [@s.text name="form.buttons.addEvaluation"/]</div>
+                      </div> 
+                      [/#if]
+                    </div>
+                  [#else]
+                    <p class="text-center">Only for PMU</p>
+                  [/#if]
+                </div>
               </div>
-            [/#if]
-          
-          
+            </div>
           </div>
           [#-- Section Buttons & hidden inputs--]
           [#include "/WEB-INF/crp/views/annualReport2018/buttons-AR2018.ftl" /]
@@ -96,60 +109,46 @@
 [#macro meliaTable name list=[]]
 
   <div class="form-group">
-    <h4 class="subTitle headTitle annualReport-table">[@s.text name="${customLabel}.${name}.title" /]</h4>
-    [@customForm.helpLabel name="${customLabel}.${name}.help" showIcon=false editable=editable/]
+    <h4 class="subTitle headTitle annualReport-table">[@s.text name="${customLabel}.table10.title" /]</h4>
+    [@customForm.helpLabel name="${customLabel}.help" showIcon=false editable=editable/]
     
     <table class="table table-bordered">
       <thead>
         <tr>
-          <th class="text-center"> [@s.text name="${customLabel}.${name}.studies" /] </th>
-          <th class="text-center col-md-2"> [@s.text name="${customLabel}.${name}.status" /] </th>
-          <th class="text-center"> [@s.text name="${customLabel}.${name}.type" /] </th>
-          <th class="text-center col-md-4"> [@s.text name="${customLabel}.${name}.comments" /] </th>
-          <th class="col-md-1 text-center"> [@s.text name="${customLabel}.${name}.includeAR" /] </th>
+          <th class="text-center"> [@s.text name="${customLabel}.table10.studies" /] </th>
+          <th class="text-center col-md-2"> [@s.text name="${customLabel}.table10.status" /] </th>
+          <th class="text-center"> [@s.text name="${customLabel}.table10.type" /] </th>
+          <th class="text-center col-md-4"> [@s.text name="${customLabel}.table10.comments" /] </th>
+          <th class="col-md-1 text-center"> [@s.text name="${customLabel}.table10.includeAR" /] </th>
         </tr>
       </thead>
       <tbody>
         [#if list?has_content]
           [#list list as item]
-          <tr>
-            <td>
-              [#if (item.studies?has_content)!false]
-                ${item.studies}
-              [#else]
-                <i style="opacity:0.5">Prefilled</i>
-              [/#if]
-            </td>
-            <td class="text-center">
-              [#if (item.status?has_content)!false]
-                ${item.status}
-              [#else]
-                <i style="opacity:0.5">Prefilled</i>
-              [/#if]
-            </td>
-            <td class="text-center">
-              [#if (item.type?has_content)!false]
-                ${item.type}
-              [#else]
-                <i style="opacity:0.5">Prefilled</i>
-              [/#if]
-            </td>
-            <td>
-              [#if (item.comments?has_content)!false]
-                ${item.comments}
-              [#else]
-                <i style="opacity:0.5">Prefilled</i>
-              [/#if]
-            </td>
-            <td class="text-center">
-              [@customForm.checkmark id="" name="" checked=false editable=editable centered=true/] 
-            </td>
-          </tr>
+            [#local url][@s.url namespace="/projects" action="${(crpSession)!}/study"][@s.param name='expectedID']${item.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
+            [#local summaryPDF = "${baseUrl}/projects/${crpSession}/studySummary.do?studyID=${(item.id)!}&cycle=Reporting&year=${(actualPhase.year)!}"]
+            <tr>
+              <td>
+                [@utils.tableText value=(item.composedName)!"" /]
+                [#if item.project??]<br /> <small>(From Project P${item.project.id})</small> [/#if]
+                <a href="${url}" target="_blank" class="pull-right"><span class="glyphicon glyphicon-new-window"></span></a>
+              </td>
+              <td class="text-center">
+                [@utils.tableText value=(item.projectExpectedStudyInfo.status.name)!"" /]
+              </td>
+              <td class="text-center">
+                [@utils.tableText value=(item.projectExpectedStudyInfo.studyType.name)!"" /]
+              </td>
+              <td>
+                [@utils.tableText value=(item.projectExpectedStudyInfo.topLevelComments)!"" /]
+              </td>
+              <td class="text-center">
+                [@customForm.checkmark id="" name="" checked=false editable=editable centered=true/] 
+              </td>
+            </tr>
           [/#list]
-          [#else]
-          <tr>
-            <td class="text-center" colspan="6"><i>No entries added yet.</i></td>
-          </tr>
+        [#else]
+           
         [/#if]
         <tr>
         </tr>
