@@ -5,7 +5,10 @@
 [#assign currentStage = actionName?split('/')[1]/]
 [#assign pageLibs = [ "datatables.net", "datatables.net-bs", "components-font-awesome", "trumbowyg" ] /]
 [#assign customJS = [ 
-  "https://www.gstatic.com/charts/loader.js",
+  "https://www.gstatic.com/charts/loader.js",  
+  "https://cdn.datatables.net/buttons/1.3.1/js/dataTables.buttons.min.js",
+  "//cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js",
+  "//cdn.datatables.net/buttons/1.3.1/js/buttons.print.min.js",
   "${baseUrlMedia}/js/annualReport2018/annualReport2018_${currentStage}.js",
   "${baseUrlMedia}/js/annualReport/annualReportGlobal.js"
 ] /]
@@ -109,7 +112,9 @@
                     </div>
                     <div class="modal-body">
                       [#-- Full table --]
+                      <div class="viewMoreSyntesisTable-block">
                       [@table2ListOfPolicies list=(projectPolicies)![] expanded=true/]
+                      </div>
                     </div>
                     <div class="modal-footer">
                       <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -119,7 +124,9 @@
               </div>
               
               [#-- Table --]
+              <div class="viewMoreSyntesisTable-block">
               [@table2ListOfPolicies list=(projectPolicies)![] expanded=false/]
+              </div>
             </div>
           
           </div>
@@ -137,23 +144,27 @@
 
 
 [#macro table2ListOfPolicies list=[]  id="" expanded=false]
+  [#if expanded]
+  [#local rows = 2 /]
+  [#else]
+  [#local rows = 1 /]
+  [/#if]
   <table id="tableA" class="table table-bordered">
     <thead>
       <tr>
-        <th class="text-center" rowspan="2">[@s.text name="${customLabel}.table2.name" /]</th>
-        <th class="text-center" rowspan="2">[@s.text name="${customLabel}.table2.maturity" /]</th>
-        <th class="text-center" rowspan="2">[@s.text name="${customLabel}.table2.subIDOs" /]</th>
+        <th class="text-center" rowspan="${rows}">[@s.text name="${customLabel}.table2.name" /]</th>
+        <th class="text-center" rowspan="${rows}">[@s.text name="${customLabel}.table2.maturity" /]</th>
+        <th class="text-center" rowspan="${rows}">[@s.text name="${customLabel}.table2.subIDOs" /]</th>
         [#if expanded]
         <th class="text-center" colspan="4">[@s.text name="${customLabel}.table2.crossCutting" /]</th>
-        <th class="text-center" rowspan="2">[@s.text name="${customLabel}.table2.type" /]</th>
-        <th class="text-center" rowspan="2">[@s.text name="${customLabel}.table2.whose" /]</th>
-        <th class="text-center" rowspan="2">[@s.text name="${customLabel}.table2.geoScope" /]</th>
-        <th class="text-center" rowspan="2">Evidence(s)</th>
+        <th class="text-center" rowspan="${rows}">[@s.text name="${customLabel}.table2.type" /]</th>
+        <th class="text-center" rowspan="${rows}">[@s.text name="${customLabel}.table2.whose" /]</th>
+        <th class="text-center" rowspan="${rows}">[@s.text name="${customLabel}.table2.geoScope" /]</th>
+        <th class="text-center" rowspan="${rows}">Evidence(s)</th>
         [/#if]
         [#if !expanded]
-        <th class="col-md-1 text-center" rowspan="2">[@s.text name="${customLabel}.table2.includeAR" /]</th>
-        [/#if]
-        
+        <th class="col-md-1 text-center" rowspan="${rows}">[@s.text name="${customLabel}.table2.includeAR" /]</th>
+        [/#if]        
       </tr>
       [#if expanded]
       <tr>
