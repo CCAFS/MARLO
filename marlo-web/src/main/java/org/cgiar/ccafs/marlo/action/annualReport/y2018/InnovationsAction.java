@@ -24,6 +24,8 @@ import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectFocusManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
+import org.cgiar.ccafs.marlo.data.manager.RepIndInnovationTypeManager;
+import org.cgiar.ccafs.marlo.data.manager.RepIndStageInnovationManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressInnovationManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
@@ -41,6 +43,8 @@ import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgress;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressInnovation;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressInnovationDTO;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisInnovationsByStageDTO;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisInnovationsByTypeDTO;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -83,6 +87,8 @@ public class InnovationsAction extends BaseAction {
   private ProjectManager projectManager;
   private ReportSynthesisFlagshipProgressManager reportSynthesisFlagshipProgressManager;
   private ReportSynthesisFlagshipProgressInnovationManager reportSynthesisFlagshipProgressInnovationManager;
+  private RepIndStageInnovationManager repIndStageInnovationManager;
+  private RepIndInnovationTypeManager repIndInnovationTypeManager;
 
   // Variables
   private String transaction;
@@ -93,6 +99,9 @@ public class InnovationsAction extends BaseAction {
   private GlobalUnit loggedCrp;
   private List<LiaisonInstitution> liaisonInstitutions;
   private List<ProjectInnovation> projectInnovations;
+  private List<ReportSynthesisInnovationsByStageDTO> innovationsByStageDTO;
+  private List<ReportSynthesisInnovationsByTypeDTO> innovationsByTypeDTO;
+
 
   @Inject
   public InnovationsAction(APConfig config, GlobalUnitManager crpManager,
@@ -101,7 +110,9 @@ public class InnovationsAction extends BaseAction {
     CrpProgramManager crpProgramManager, ProjectInnovationManager projectInnovationManager,
     ProjectFocusManager projectFocusManager, ProjectManager projectManager,
     ReportSynthesisFlagshipProgressManager reportSynthesisFlagshipProgressManager,
-    ReportSynthesisFlagshipProgressInnovationManager reportSynthesisFlagshipProgressInnovationManager) {
+    ReportSynthesisFlagshipProgressInnovationManager reportSynthesisFlagshipProgressInnovationManager,
+    RepIndStageInnovationManager repIndStageInnovationManager,
+    RepIndInnovationTypeManager repIndInnovationTypeManager) {
     super(config);
     this.crpManager = crpManager;
     this.liaisonInstitutionManager = liaisonInstitutionManager;
@@ -115,7 +126,10 @@ public class InnovationsAction extends BaseAction {
     this.projectManager = projectManager;
     this.reportSynthesisFlagshipProgressManager = reportSynthesisFlagshipProgressManager;
     this.reportSynthesisFlagshipProgressInnovationManager = reportSynthesisFlagshipProgressInnovationManager;
+    this.repIndStageInnovationManager = repIndStageInnovationManager;
+    this.repIndInnovationTypeManager = repIndInnovationTypeManager;
   }
+
 
   /**
    * Method to fill the list of innovations selected by flagships
@@ -230,7 +244,6 @@ public class InnovationsAction extends BaseAction {
     return flagshipPlannedList;
   }
 
-
   private void fillprojectInnovationsList(Long phaseID, LiaisonInstitution liaisonInstitution) {
     projectInnovations = new ArrayList<>();
     Phase phase = this.getActualPhase();
@@ -284,7 +297,6 @@ public class InnovationsAction extends BaseAction {
 
   }
 
-
   public Long firstFlagship() {
     List<LiaisonInstitution> liaisonInstitutions = new ArrayList<>(loggedCrp.getLiaisonInstitutions().stream()
       .filter(c -> c.getCrpProgram() != null && c.isActive()
@@ -294,7 +306,6 @@ public class InnovationsAction extends BaseAction {
     long liaisonInstitutionId = liaisonInstitutions.get(0).getId();
     return liaisonInstitutionId;
   }
-
 
   private void
     flagshipProgressprojectInnovationsNewData(ReportSynthesisFlagshipProgress reportSynthesisFlagshipProgressDB) {
@@ -377,13 +388,22 @@ public class InnovationsAction extends BaseAction {
 
   }
 
-
   private Path getAutoSaveFilePath() {
     String composedClassName = reportSynthesis.getClass().getSimpleName();
     String actionFile = this.getActionName().replace("/", "_");
     String autoSaveFile = reportSynthesis.getId() + "_" + composedClassName + "_" + this.getActualPhase().getName()
       + "_" + this.getActualPhase().getYear() + "_" + actionFile + ".json";
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
+  }
+
+
+  public List<ReportSynthesisInnovationsByStageDTO> getInnovationsByStageDTO() {
+    return innovationsByStageDTO;
+  }
+
+
+  public List<ReportSynthesisInnovationsByTypeDTO> getInnovationsByTypeDTO() {
+    return innovationsByTypeDTO;
   }
 
 
@@ -411,6 +431,7 @@ public class InnovationsAction extends BaseAction {
     return projectInnovations;
   }
 
+
   public ReportSynthesis getReportSynthesis() {
     return reportSynthesis;
   }
@@ -420,10 +441,10 @@ public class InnovationsAction extends BaseAction {
     return synthesisID;
   }
 
-
   public String getTransaction() {
     return transaction;
   }
+
 
   public boolean isFlagship() {
     boolean isFP = false;
@@ -439,6 +460,7 @@ public class InnovationsAction extends BaseAction {
     return isFP;
   }
 
+
   @Override
   public boolean isPMU() {
     boolean isFP = false;
@@ -450,7 +472,6 @@ public class InnovationsAction extends BaseAction {
     return isFP;
 
   }
-
 
   @Override
   public String next() {
@@ -605,9 +626,23 @@ public class InnovationsAction extends BaseAction {
     liaisonInstitutions.addAll(loggedCrp.getLiaisonInstitutions().stream()
       .filter(c -> c.getCrpProgram() == null && c.isActive() && c.getAcronym() != null && c.getAcronym().equals("PMU"))
       .collect(Collectors.toList()));
-
+    /** Graphs and Tables */
+    List<ProjectInnovation> selectedProjectInnovations = new ArrayList<ProjectInnovation>();
     if (projectInnovations != null && !projectInnovations.isEmpty()) {
       projectInnovations.sort((p1, p2) -> p1.getId().compareTo(p2.getId()));
+      selectedProjectInnovations.addAll(projectInnovations);
+      // Remove unchecked innovations
+      if (reportSynthesis.getReportSynthesisFlagshipProgress().getProjectInnovations() != null
+        && !reportSynthesis.getReportSynthesisFlagshipProgress().getProjectInnovations().isEmpty()) {
+        for (ProjectInnovation projectInnovation : reportSynthesis.getReportSynthesisFlagshipProgress()
+          .getProjectInnovations()) {
+          selectedProjectInnovations.remove(projectInnovation);
+        }
+      }
+      // Chart: Innovations by stage
+      innovationsByStageDTO = repIndStageInnovationManager.getInnovationsByStageDTO(selectedProjectInnovations, phase);
+      // Chart: Innovations by type
+      innovationsByTypeDTO = repIndInnovationTypeManager.getInnovationsByTypeDTO(selectedProjectInnovations, phase);
     }
 
     // Base Permission
@@ -621,6 +656,7 @@ public class InnovationsAction extends BaseAction {
     }
 
   }
+
 
   @Override
   public String save() {
@@ -671,6 +707,14 @@ public class InnovationsAction extends BaseAction {
     } else {
       return NOT_AUTHORIZED;
     }
+  }
+
+  public void setInnovationsByStageDTO(List<ReportSynthesisInnovationsByStageDTO> innovationsByStageDTO) {
+    this.innovationsByStageDTO = innovationsByStageDTO;
+  }
+
+  public void setInnovationsByTypeDTO(List<ReportSynthesisInnovationsByTypeDTO> innovationsByTypeDTO) {
+    this.innovationsByTypeDTO = innovationsByTypeDTO;
   }
 
 
