@@ -191,7 +191,8 @@
     <div class="form-group grayBox"><strong>${(liaisonInstitution.crpProgram.acronym)!liaisonInstitution.acronym} Outcome: </strong> ${(element.description)!}</div>
     [#-- Narrative on progress --]
     <div class="form-group">
-      [@customForm.textArea name="${customName}.outcome.progressNarrative" i18nkey="${customLabel}.outcome.progressNarrative" help="${customLabel}.outcome.progressNarrative.help" className="limitWords-100" helpIcon=false required=true editable=editable allowTextEditor=true /]
+      <input type="hidden" name="" />
+      [@customForm.textArea name="${customName}.progressNarrative" i18nkey="${customLabel}.outcome.progressNarrative" help="${customLabel}.outcome.progressNarrative.help" className="limitWords-100" helpIcon=false required=true editable=editable allowTextEditor=true /]
     </div>
     [#-- Milestones List --]
     <h4 class="simpleTitle">[@s.text name="${customLabel}.milestones.title" /]</h4>
