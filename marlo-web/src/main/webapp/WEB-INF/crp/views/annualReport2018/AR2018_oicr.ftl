@@ -106,7 +106,6 @@
           <th> [@s.text name="${customLabel}.${name}.srfTargets" /] </th>
           <th> [@s.text name="${customLabel}.${name}.subIdos" /] </th>
           <th></th>
-          <th></th>
           [/#if]
           [#if !expanded]
           <th class="col-md-1 text-center"> [@s.text name="${customLabel}.${name}.includeAR" /] </th>
@@ -118,23 +117,37 @@
           [#list list as item]
             [#local url][@s.url namespace="/projects" action="${(crpSession)!}/study"][@s.param name='expectedID']${item.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
             [#local summaryPDF = "${baseUrl}/projects/${crpSession}/studySummary.do?studyID=${(item.id)!}&cycle=Reporting&year=${(actualPhase.year)!}"]
-          <tr>
-            <td>[@utils.tableText value=(item.composedName)!"" /]</td>
-            <td>[@utils.tableText value=(item.projectExpectedStudyInfo.repIndStageStudy.name)!"" /]</td>
-            <td class="text-center">[@utils.tableText value=(item.projectExpectedStudyInfo.status.name)!"" /]</td>
-           [#if expanded]
-            <td>[@utils.tableList list=(item.srfTargets)![] displayFieldName="srfSloIndicator.title" /]</td>
-            <td>[@utils.tableList list=(item.subIdos)![] displayFieldName="srfSubIdo.description" /]</td>
-            <td> <a href="${summaryPDF}" target="_blank"><img src="${baseUrl}/global/images/pdf.png" height="25" title="[@s.text name="projectsList.downloadPDF" /]" /></a>  </td>
-            <td> <a href="${url}" target="_blank"><span class="glyphicon glyphicon-new-window"></span></a>  </td>
-           [/#if]
-           [#if !expanded]
-            <td class="text-center">
-              [#local isChecked = ((!reportSynthesis.reportSynthesisFlagshipProgress.studiesIds?seq_contains(item.id))!true) /]
-              [@customForm.checkmark id="study-${(item.id)!}" name="reportSynthesis.reportSynthesisFlagshipProgress.studiesValue" value="${(item.id)!''}" checked=isChecked editable=editable centered=true/] 
-            </td>
-           [/#if]
-          </tr>
+            <tr>
+              <td>
+                [@utils.tableText value=(item.composedName)!"" /]
+                
+                [#if item.project??]<br /> <small>(From Project P${item.project.id})</small> [/#if]
+                
+                [#if PMU]
+                <br />
+                <div class="form-group">
+                  [#list (item.selectedFlahsgips)![] as liason]
+                    <span class="programTag" style="border-color:${(liason.crpProgram.color)!'#fff'}" title="${(liason.composedName)!}">${(liason.acronym)!}</span>
+                  [/#list]
+                </div>
+                [/#if]
+                
+                <a href="${url}" target="_blank" class="pull-right"><span class="glyphicon glyphicon-new-window"></span></a>
+              </td>
+              <td>[@utils.tableText value=(item.projectExpectedStudyInfo.repIndStageStudy.name)!"" /]</td>
+              <td class="text-center">[@utils.tableText value=(item.projectExpectedStudyInfo.status.name)!"" /]</td>
+             [#if expanded]
+              <td>[@utils.tableList list=(item.srfTargets)![] displayFieldName="srfSloIndicator.title" /]</td>
+              <td>[@utils.tableList list=(item.subIdos)![] displayFieldName="srfSubIdo.description" /]</td>
+              <td> <a href="${summaryPDF}" target="_blank"><img src="${baseUrl}/global/images/pdf.png" height="25" title="[@s.text name="projectsList.downloadPDF" /]" /></a>  </td>
+             [/#if]
+             [#if !expanded]
+              <td class="text-center">
+                [#local isChecked = ((!reportSynthesis.reportSynthesisFlagshipProgress.studiesIds?seq_contains(item.id))!true) /]
+                [@customForm.checkmark id="study-${(item.id)!}" name="reportSynthesis.reportSynthesisFlagshipProgress.studiesValue" value="${(item.id)!''}" checked=isChecked editable=editable centered=true/] 
+              </td>
+             [/#if]
+            </tr>
           [/#list]
         [#else]
           <tr>
