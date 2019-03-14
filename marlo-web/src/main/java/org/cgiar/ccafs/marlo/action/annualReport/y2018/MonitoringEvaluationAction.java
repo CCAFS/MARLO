@@ -693,6 +693,8 @@ public class MonitoringEvaluationAction extends BaseAction {
           evaluationSave.setManagementResponse(evaluation.getManagementResponse());
           evaluationSave.setTextWhom(evaluation.getTextWhom());
           evaluationSave.setTextWhen(evaluation.getTextWhen());
+          evaluationSave.setActions(evaluation.getActions());
+          evaluationSave.setComments(evaluation.getComments());
 
 
           reportSynthesisMeliaEvaluationManager.saveReportSynthesisMeliaEvaluation(evaluationSave);
@@ -708,6 +710,8 @@ public class MonitoringEvaluationAction extends BaseAction {
           evaluationPrev.setManagementResponse(evaluation.getManagementResponse());
           evaluationPrev.setTextWhom(evaluation.getTextWhom());
           evaluationPrev.setTextWhen(evaluation.getTextWhen());
+          evaluationPrev.setActions(evaluation.getActions());
+          evaluationPrev.setComments(evaluation.getComments());
 
           reportSynthesisMeliaEvaluationManager.saveReportSynthesisMeliaEvaluation(evaluationPrev);
 
