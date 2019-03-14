@@ -19,7 +19,9 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrossCuttingScoringManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableCrossCuttingMarkerManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableGeographicRegionManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableGeographicScopeManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableLocationManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.GenderTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
@@ -105,6 +107,8 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
   private final CrossCuttingScoringManager crossCuttingScoringManager;
   private final DeliverableCrossCuttingMarkerManager deliverableCrossCuttingMarkerManager;
   private final DeliverableGeographicScopeManager deliverableGeographicScopeManager;
+  private final DeliverableGeographicRegionManager deliverableGeographicRegionManager;
+  private DeliverableLocationManager deliverableLocationManager;
   private String showAllYears;
 
 
@@ -124,7 +128,9 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
     PhaseManager phaseManager, RepositoryChannelManager repositoryChannelManager, ResourceManager resourceManager,
     CrossCuttingScoringManager crossCuttingScoringManager, ProjectManager projectManager,
     DeliverableCrossCuttingMarkerManager deliverableCrossCuttingMarkerManager,
-    DeliverableGeographicScopeManager deliverableGeographicScopeManager) {
+    DeliverableGeographicScopeManager deliverableGeographicScopeManager,
+    DeliverableGeographicRegionManager deliverableGeographicRegionManager,
+    DeliverableLocationManager deliverableLocationManager) {
     super(config, crpManager, phaseManager, projectManager);
     this.genderTypeManager = genderTypeManager;
     this.programManager = programManager;
@@ -134,6 +140,8 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
     this.crossCuttingScoringManager = crossCuttingScoringManager;
     this.deliverableCrossCuttingMarkerManager = deliverableCrossCuttingMarkerManager;
     this.deliverableGeographicScopeManager = deliverableGeographicScopeManager;
+    this.deliverableGeographicRegionManager = deliverableGeographicRegionManager;
+    this.deliverableLocationManager = deliverableLocationManager;
   }
 
   /**
@@ -1277,38 +1285,55 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
         String geographicScope = "", region = "", country = "";
 
         // Geographic Scope
-        List<DeliverableGeographicScope> deliverableGeographicList = new ArrayList<>();
         try {
-          deliverableGeographicList = deliverableGeographicScopeManager.findAll().stream()
-            .filter(d -> d.getDeliverable() != null && d.getDeliverable().equals(deliverable) && d.getPhase() != null
-              && d.getPhase().equals(this.getSelectedPhase()))
-            .collect(Collectors.toList());
 
-          if (deliverableGeographicList != null && deliverableGeographicList.get(0) != null
-            && deliverableGeographicList.get(0).getRepIndGeographicScope() != null
-            && deliverableGeographicList.get(0).getRepIndGeographicScope().getName() != null) {
-            geographicScope = deliverableGeographicList.get(0).getRepIndGeographicScope().getName();
+          // Setup Geographic Scope
+          if (deliverable.getDeliverableGeographicScopes() != null) {
+            deliverable.setGeographicScopes(new ArrayList<>(deliverable.getDeliverableGeographicScopes().stream()
+              .filter(o -> o.isActive() && o.getPhase().getId() == this.getActualPhase().getId())
+              .collect(Collectors.toList())));
           }
+
+          // Deliverable Countries List
+          if (deliverable.getDeliverableLocations() == null) {
+            deliverable.setCountries(new ArrayList<>());
+          } else {
+            List<DeliverableLocation> countries = deliverableLocationManager
+              .getDeliverableLocationbyPhase(deliverable.getId(), this.getActualPhase().getId());
+            deliverable.setCountries(countries);
+          }
+
+          // Expected Study Geographic Regions List
+          if (deliverable.getDeliverableGeographicRegions() != null
+            && !deliverable.getDeliverableGeographicRegions().isEmpty()) {
+            deliverable.setDeliverableRegions(new ArrayList<>(deliverableGeographicRegionManager
+              .getDeliverableGeographicRegionbyPhase(deliverable.getId(), this.getActualPhase().getId()).stream()
+              .filter(le -> le.isActive() && le.getLocElement().getLocElementType().getId() == 1)
+              .collect(Collectors.toList())));
+          }
+
+
+          for (DeliverableGeographicScope dgs : deliverable.getGeographicScopes().stream()
+            .filter(d -> d.getPhase() != null && d.getPhase().equals(this.getSelectedPhase())
+              && d.getDeliverable().getDeliverableInfo(this.getSelectedPhase()) != null)
+            .collect(Collectors.toList())) {
+            geographicScope += "● " + dgs.getRepIndGeographicScope().getName() + "\n";
+          }
+          if (geographicScope.isEmpty()) {
+            geographicScope = null;
+          }
+
         } catch (Exception e) {
 
         }
 
-        if (deliverable.getGeographicScopes() != null && deliverable.getGeographicScopes().stream()
-          .filter(d -> d.getPhase() != null && d.getPhase().equals(this.getSelectedPhase())) != null) {
-
-          if (deliverableGeographicList.get(0).getRepIndGeographicScope().getId()
-            .equals(this.getReportingIndGeographicScopeGlobal())) {
-            region = "<Not Applicable>";
-            country = "<Not Applicable>";
-          }
+        if (deliverable.getCountries() == null && deliverable.getDeliverableRegions() == null) {
+          region = "<Not Applicable>";
+          country = "<Not Applicable>";
+        } else {
           // Regional
-          if (deliverableGeographicList.get(0).getRepIndGeographicScope().getId()
-            .equals(this.getReportingIndGeographicScopeRegional())) {
-            country = "<Not Applicable>";
-            List<DeliverableGeographicRegion> deliverableRegions =
-              deliverable.getDeliverableGeographicRegions().stream()
-                .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase()))
-                .collect(Collectors.toList());
+          if (deliverable.getDeliverableRegions() != null) {
+            List<DeliverableGeographicRegion> deliverableRegions = deliverable.getDeliverableRegions();
             if (deliverableRegions != null && deliverableRegions.size() > 0) {
               Set<String> regionsSet = new HashSet<>();
               for (DeliverableGeographicRegion deliverableRegion : deliverableRegions) {
@@ -1316,17 +1341,12 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
               }
               region = String.join(", ", regionsSet);
             }
-
+          } else {
+            region = "<Not Defined>";
           }
           // Country
-          if (!deliverable.getDeliverableInfo().getGeographicScope().getId()
-            .equals(this.getReportingIndGeographicScopeGlobal())
-            && !deliverable.getDeliverableInfo().getGeographicScope().getId()
-              .equals(this.getReportingIndGeographicScopeRegional())) {
-            region = "<Not Applicable>";
-            List<DeliverableLocation> deliverableCountries = deliverable.getDeliverableLocations().stream()
-              .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase()))
-              .collect(Collectors.toList());
+          if (deliverable.getCountries() != null) {
+            List<DeliverableLocation> deliverableCountries = deliverable.getCountries();
             if (deliverableCountries != null && deliverableCountries.size() > 0) {
               Set<String> countriesSet = new HashSet<>();
               for (DeliverableLocation deliverableCountry : deliverableCountries) {
@@ -1334,16 +1354,9 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
               }
               country = String.join(", ", countriesSet);
             }
+          } else {
+            country = "<Not Defined>";
           }
-        }
-        if (geographicScope.isEmpty()) {
-          geographicScope = null;
-        }
-        if (region.isEmpty()) {
-          region = null;
-        }
-        if (country.isEmpty()) {
-          country = null;
         }
 
         model.addRow(new Object[] {deliverable.getId(), title, delivType, delivSubType, delivStatus, delivYear,
