@@ -403,7 +403,8 @@
     <mapping resource="xmls/ReportSynthesisKeyPartnershipPmu.hbm.xml" />  
     <mapping resource="xmls/ReportSynthesisFlagshipProgressStudies.hbm.xml" />  
     <mapping resource="xmls/ReportSynthesisFlagshipProgressInnovations.hbm.xml" />  
-    <mapping resource="xmls/ReportSynthesisFlagshipProgressDeliverables.hbm.xml" />  
-    
+    <mapping resource="xmls/ReportSynthesisFlagshipProgressDeliverables.hbm.xml" />
+    <mapping resource="xmls/ReportSynthesisFlagshipProgressCross.hbm.xml" />
+    <mapping resource="xmls/RepIndMilestoneReasons.hbm.xml" />     
   </session-factory>
 </hibernate-configuration>
