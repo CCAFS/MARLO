@@ -477,22 +477,11 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
           }
         }
 
-        if (deliverable.getDeliverableInfo().getStatus() != null) {
-          switch (deliverable.getDeliverableInfo().getStatus()) {
-            case 2:
-              status = "On-going";
-              break;
-            case 3:
-              status = "Complete";
-              break;
-            case 4:
-              status = "Extended";
-              break;
-            case 5:
-              status = "Cancelled";
-              break;
-          }
+        if (deliverable.getProject() != null && deliverable.getProject().getProjectInfo() != null
+          && deliverable.getProject().getProjectInfo().getStatusName() != null) {
+          status = deliverable.getProject().getProjectInfo().getStatusName();
         }
+
         Long phaseID = deliverable.getDeliverableInfo().getPhase().getId();
         title = (deliverable.getDeliverableInfo().getTitle() != null
           && !deliverable.getDeliverableInfo().getTitle().isEmpty()) ? deliverable.getDeliverableInfo().getTitle()
@@ -598,7 +587,12 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
           .filter(d -> d.isActive() && d.getPhase() != null && d.getPhase().equals(this.getSelectedPhase())
             && d.getFundingSource().getFundingSourceInfo(this.getSelectedPhase()) != null)
           .collect(Collectors.toList())) {
-          fundingSources += "● " + dfs.getFundingSource().getFundingSourceInfo().getTitle() + "\n";
+          String financialCode = "";
+          if (dfs.getFundingSource().getFundingSourceInfo().getFinanceCode() != null) {
+            financialCode = dfs.getFundingSource().getFundingSourceInfo().getFinanceCode();
+          }
+          fundingSources += "●  FS" + dfs.getFundingSource().getId() + " (" + financialCode + ") - "
+            + dfs.getFundingSource().getFundingSourceInfo().getTitle() + "\n";
         }
         if (fundingSources.isEmpty()) {
           fundingSources = null;
@@ -1380,13 +1374,13 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
         "citationMetadata", "HandleMetadata", "DOIMetadata", "creator_authors", "F", "A", "I", "R", "restricted_access",
         "deliv_license_modifications", "volume", "issue", "pages", "journal", "journal_indicators", "acknowledge",
         "fl_contrib", "flagships", "regions", "added_by", "phaseID", "gender", "youth", "cap", "keyOutput", "outcomes",
-        "geographicScope", "region", "country"},
+        "geographicScope", "region", "country", "fundingSources"},
       new Class[] {Long.class, String.class, String.class, Integer.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, Long.class, String.class, String.class, String.class,
-        String.class, String.class, String.class, String.class, String.class},
+        String.class, String.class, String.class, String.class, String.class, String.class},
       0);
 
 
@@ -1410,6 +1404,7 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
           delivLicenseModifications = null, volume = null, issue = null, pages = null, journal = null,
           journalIndicators = "", acknowledge = null, flContrib = "", flagships = null, regions = null, addedBy = null,
           keyOutput = "", outcomes = "";
+        String fundingSources = "";
         publicationId = deliverable.getId();
         title = deliverable.getDeliverableInfo().getTitle();
         Long phaseID = deliverable.getDeliverableInfo().getPhase().getId();
@@ -1458,6 +1453,22 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
           delivYear = deliverable.getDeliverableInfo().getYear();
         }
 
+
+        // Get funding sources if exist
+        for (DeliverableFundingSource dfs : deliverable.getDeliverableFundingSources().stream()
+          .filter(d -> d.isActive() && d.getPhase() != null && d.getPhase().equals(this.getSelectedPhase())
+            && d.getFundingSource().getFundingSourceInfo(this.getSelectedPhase()) != null)
+          .collect(Collectors.toList())) {
+          String financialCode = "";
+          if (dfs.getFundingSource().getFundingSourceInfo().getFinanceCode() != null) {
+            financialCode = dfs.getFundingSource().getFundingSourceInfo().getFinanceCode();
+          }
+          fundingSources += "●  FS" + dfs.getFundingSource().getId() + " (" + financialCode + ") - "
+            + dfs.getFundingSource().getFundingSourceInfo().getTitle() + "\n";
+        }
+        if (fundingSources.isEmpty()) {
+          fundingSources = null;
+        }
 
         // Get leaders
         if (!deliverable.getDeliverableLeaders().stream().collect(Collectors.toList()).isEmpty()) {
@@ -2064,7 +2075,7 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
           descriptionMetadata, dateMetadata, languageMetadata, countryMetadata, keywordsMetadata, citationMetadata,
           HandleMetadata, DOIMetadata, creatorAuthors, F, A, I, R, restrictedAccess, delivLicenseModifications, volume,
           issue, pages, journal, journalIndicators, acknowledge, flContrib, flagships, regions, addedBy, phaseID,
-          gender, youth, cap, keyOutput, outcomes, geographicScope, region, country});
+          gender, youth, cap, keyOutput, outcomes, geographicScope, region, country, fundingSources});
       }
     }
     return model;
