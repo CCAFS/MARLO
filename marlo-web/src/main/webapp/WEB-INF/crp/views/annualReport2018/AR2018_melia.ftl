@@ -149,7 +149,9 @@
           <th class="text-center col-md-2"> [@s.text name="${customLabel}.table10.status" /] </th>
           <th class="text-center"> [@s.text name="${customLabel}.table10.type" /] </th>
           <th class="text-center col-md-4"> [@s.text name="${customLabel}.table10.comments" /] </th>
-          <th class="col-md-1 text-center"> <small>[@s.text name="${customLabel}.table10.includeAR" /]</small>  </th>
+          [#if !expandedTable]
+            <th class="col-md-1 text-center"> <small>[@s.text name="${customLabel}.table10.includeAR" /]</small>  </th>
+          [/#if]
         </tr>
       </thead>
       <tbody>
@@ -172,10 +174,12 @@
               <td>
                 [@utils.tableText value=(item.projectExpectedStudyInfo.topLevelComments)!"" /]
               </td>
+              [#if !expandedTable]
               <td class="text-center">
                 [#local isChecked = ((!reportSynthesis.reportSynthesisMelia.studiesIds?seq_contains(item.id))!true) /]
                 [@customForm.checkmark id="study-${(item.id)!}" name="reportSynthesis.reportSynthesisMelia.plannedStudiesValue" value="${(item.id)!''}" checked=isChecked editable=editable centered=true/]
               </td>
+              [/#if]
             </tr>
           [/#list]
         [#else]
