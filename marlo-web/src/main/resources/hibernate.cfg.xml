@@ -389,6 +389,9 @@
     <mapping resource="xmls/DeliverableGeographicScopes.hbm.xml" />
     <mapping resource="xmls/ReportSynthesisSrfProgress.hbm.xml" />
     <mapping resource="xmls/ReportSynthesisSrfProgressTargets.hbm.xml" />   
-    <mapping resource="xmls/ReportSynthesisIntellectualAssets.hbm.xml" />    
+    <mapping resource="xmls/ReportSynthesisIntellectualAssets.hbm.xml" />
+    <mapping resource="xmls/MarloMessages.hbm.xml" />    
+        
   </session-factory>
+  
 </hibernate-configuration>
