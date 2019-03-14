@@ -101,6 +101,7 @@ public class InnovationsAction extends BaseAction {
   private List<ProjectInnovation> projectInnovations;
   private List<ReportSynthesisInnovationsByStageDTO> innovationsByStageDTO;
   private List<ReportSynthesisInnovationsByTypeDTO> innovationsByTypeDTO;
+  private Phase actualPhase;
 
 
   @Inject
@@ -135,30 +136,28 @@ public class InnovationsAction extends BaseAction {
    * Method to fill the list of innovations selected by flagships
    * 
    * @param flagshipsLiaisonInstitutions
-   * @param phaseID
    * @return
    */
   public List<ReportSynthesisFlagshipProgressInnovationDTO>
-    fillFpPlannedList(List<LiaisonInstitution> flagshipsLiaisonInstitutions, long phaseID) {
+    fillFpPlannedList(List<LiaisonInstitution> flagshipsLiaisonInstitutions) {
     List<ReportSynthesisFlagshipProgressInnovationDTO> flagshipPlannedList = new ArrayList<>();
 
     if (projectInnovationManager.findAll() != null) {
 
       // Get global unit Innovations
-      List<ProjectInnovation> projectInnovations =
-        new ArrayList<>(projectInnovationManager.findAll().stream()
-          .filter(ps -> ps.isActive() && ps.getProjectInnovationInfo(this.getActualPhase()) != null
-            && ps.getProject() != null
-            && ps.getProject().getGlobalUnitProjects().stream()
-              .filter(gup -> gup.isActive() && gup.isOrigin() && gup.getGlobalUnit().getId().equals(loggedCrp.getId()))
-              .collect(Collectors.toList()).size() > 0)
-          .collect(Collectors.toList()));
+      List<ProjectInnovation> projectInnovations = new ArrayList<>(projectInnovationManager.findAll().stream()
+        .filter(ps -> ps.isActive() && ps.getProjectInnovationInfo(actualPhase) != null
+          && ps.getProjectInnovationInfo().getYear() != null
+          && ps.getProjectInnovationInfo().getYear() == actualPhase.getYear() && ps.getProject() != null
+          && ps.getProject().getGlobalUnitProjects().stream()
+            .filter(gup -> gup.isActive() && gup.isOrigin() && gup.getGlobalUnit().getId().equals(loggedCrp.getId()))
+            .collect(Collectors.toList()).size() > 0)
+        .collect(Collectors.toList()));
 
       // Fill all project Innovations of the global unit
       for (ProjectInnovation projectInnovation : projectInnovations) {
         ReportSynthesisFlagshipProgressInnovationDTO dto = new ReportSynthesisFlagshipProgressInnovationDTO();
-        projectInnovation.getProject()
-          .setProjectInfo(projectInnovation.getProject().getProjecInfoPhase(this.getActualPhase()));
+        projectInnovation.getProject().setProjectInfo(projectInnovation.getProject().getProjecInfoPhase(actualPhase));
         dto.setProjectInnovation(projectInnovation);
         if (projectInnovation.getProject().getProjectInfo().getAdministrative() != null
           && projectInnovation.getProject().getProjectInfo().getAdministrative()) {
@@ -166,7 +165,8 @@ public class InnovationsAction extends BaseAction {
           dto.getLiaisonInstitutions().add(this.liaisonInstitution);
         } else {
           List<ProjectFocus> projectFocuses = new ArrayList<>(projectInnovation.getProject().getProjectFocuses()
-            .stream().filter(pf -> pf.isActive() && pf.getPhase().getId() == phaseID).collect(Collectors.toList()));
+            .stream().filter(pf -> pf.isActive() && pf.getPhase().getId() == actualPhase.getId())
+            .collect(Collectors.toList()));
           List<LiaisonInstitution> liaisonInstitutions = new ArrayList<>();
           for (ProjectFocus projectFocus : projectFocuses) {
             liaisonInstitutions.addAll(projectFocus.getCrpProgram().getLiaisonInstitutions().stream()
@@ -184,7 +184,8 @@ public class InnovationsAction extends BaseAction {
       // Get deleted innovations
       List<ReportSynthesisFlagshipProgressInnovation> flagshipProgressInnovations = new ArrayList<>();
       for (LiaisonInstitution liaisonInstitution : flagshipsLiaisonInstitutions) {
-        ReportSynthesis reportSynthesis = reportSynthesisManager.findSynthesis(phaseID, liaisonInstitution.getId());
+        ReportSynthesis reportSynthesis =
+          reportSynthesisManager.findSynthesis(actualPhase.getId(), liaisonInstitution.getId());
         if (reportSynthesis != null) {
           if (reportSynthesis.getReportSynthesisFlagshipProgress() != null) {
             if (reportSynthesis.getReportSynthesisFlagshipProgress()
@@ -208,7 +209,8 @@ public class InnovationsAction extends BaseAction {
 
         List<LiaisonInstitution> removeLiaison = new ArrayList<>();
         for (LiaisonInstitution liaisonInstitution : dto.getLiaisonInstitutions()) {
-          ReportSynthesis reportSynthesis = reportSynthesisManager.findSynthesis(phaseID, liaisonInstitution.getId());
+          ReportSynthesis reportSynthesis =
+            reportSynthesisManager.findSynthesis(actualPhase.getId(), liaisonInstitution.getId());
           if (reportSynthesis != null) {
             if (reportSynthesis.getReportSynthesisFlagshipProgress() != null) {
 
@@ -244,24 +246,26 @@ public class InnovationsAction extends BaseAction {
     return flagshipPlannedList;
   }
 
-  private void fillprojectInnovationsList(Long phaseID, LiaisonInstitution liaisonInstitution) {
+  private void fillprojectInnovationsList(LiaisonInstitution liaisonInstitution) {
     projectInnovations = new ArrayList<>();
-    Phase phase = this.getActualPhase();
     if (this.isFlagship()) {
       // Fill Project Innovations of the current flagship
       if (projectFocusManager.findAll() != null) {
         List<ProjectFocus> projectFocus = new ArrayList<>(projectFocusManager.findAll().stream()
           .filter(pf -> pf.isActive() && pf.getCrpProgram().getId() == liaisonInstitution.getCrpProgram().getId()
-            && pf.getPhase() != null && pf.getPhase().getId() == phaseID)
+            && pf.getPhase() != null && pf.getPhase().getId() == actualPhase.getId())
           .collect(Collectors.toList()));
 
         for (ProjectFocus focus : projectFocus) {
           Project project = projectManager.getProjectById(focus.getProject().getId());
           List<ProjectInnovation> plannedprojectInnovations = new ArrayList<>(project.getProjectInnovations().stream()
-            .filter(ps -> ps.isActive() && ps.getProjectInnovationInfo(phase) != null).collect(Collectors.toList()));
+            .filter(ps -> ps.isActive() && ps.getProjectInnovationInfo(actualPhase) != null
+              && ps.getProjectInnovationInfo().getYear() != null
+              && ps.getProjectInnovationInfo().getYear() == actualPhase.getYear())
+            .collect(Collectors.toList()));
 
           for (ProjectInnovation projectInnovation : plannedprojectInnovations) {
-            projectInnovation.getProjectInnovationInfo(phase);
+            projectInnovation.getProjectInnovationInfo(actualPhase);
             projectInnovations.add(projectInnovation);
           }
         }
@@ -275,12 +279,12 @@ public class InnovationsAction extends BaseAction {
       liaisonInstitutions.sort(Comparator.comparing(LiaisonInstitution::getAcronym));
 
       List<ReportSynthesisFlagshipProgressInnovationDTO> flagshipPlannedList =
-        this.fillFpPlannedList(liaisonInstitutions, phase.getId());
+        this.fillFpPlannedList(liaisonInstitutions);
 
       for (ReportSynthesisFlagshipProgressInnovationDTO reportSynthesisFlagshipProgressInnovationDTO : flagshipPlannedList) {
 
         ProjectInnovation projectInnovation = reportSynthesisFlagshipProgressInnovationDTO.getProjectInnovation();
-        projectInnovation.getProjectInnovationInfo(phase);
+        projectInnovation.getProjectInnovationInfo(actualPhase);
         projectInnovation.setSelectedFlahsgips(new ArrayList<>());
         // sort selected flagships
         if (reportSynthesisFlagshipProgressInnovationDTO.getLiaisonInstitutions() != null
@@ -391,8 +395,8 @@ public class InnovationsAction extends BaseAction {
   private Path getAutoSaveFilePath() {
     String composedClassName = reportSynthesis.getClass().getSimpleName();
     String actionFile = this.getActionName().replace("/", "_");
-    String autoSaveFile = reportSynthesis.getId() + "_" + composedClassName + "_" + this.getActualPhase().getName()
-      + "_" + this.getActualPhase().getYear() + "_" + actionFile + ".json";
+    String autoSaveFile = reportSynthesis.getId() + "_" + composedClassName + "_" + actualPhase.getName() + "_"
+      + actualPhase.getYear() + "_" + actionFile + ".json";
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
@@ -485,10 +489,12 @@ public class InnovationsAction extends BaseAction {
 
   @Override
   public void prepare() throws Exception {
+
+    this.actualPhase = this.getActualPhase();
+
     // Get current CRP
     loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
     loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
-    Phase phase = this.getActualPhase();
 
     // If there is a history version being loaded
     if (this.getRequest().getParameter(APConstants.TRANSACTION_ID) != null) {
@@ -549,17 +555,17 @@ public class InnovationsAction extends BaseAction {
         synthesisID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.REPORT_SYNTHESIS_ID)));
         reportSynthesis = reportSynthesisManager.getReportSynthesisById(synthesisID);
 
-        if (!reportSynthesis.getPhase().equals(phase)) {
-          reportSynthesis = reportSynthesisManager.findSynthesis(phase.getId(), liaisonInstitutionID);
+        if (!reportSynthesis.getPhase().equals(actualPhase)) {
+          reportSynthesis = reportSynthesisManager.findSynthesis(actualPhase.getId(), liaisonInstitutionID);
           if (reportSynthesis == null) {
-            reportSynthesis = this.createReportSynthesis(phase.getId(), liaisonInstitutionID);
+            reportSynthesis = this.createReportSynthesis(actualPhase.getId(), liaisonInstitutionID);
           }
           synthesisID = reportSynthesis.getId();
         }
       } catch (Exception e) {
-        reportSynthesis = reportSynthesisManager.findSynthesis(phase.getId(), liaisonInstitutionID);
+        reportSynthesis = reportSynthesisManager.findSynthesis(actualPhase.getId(), liaisonInstitutionID);
         if (reportSynthesis == null) {
-          reportSynthesis = this.createReportSynthesis(phase.getId(), liaisonInstitutionID);
+          reportSynthesis = this.createReportSynthesis(actualPhase.getId(), liaisonInstitutionID);
         }
         synthesisID = reportSynthesis.getId();
 
@@ -573,7 +579,7 @@ public class InnovationsAction extends BaseAction {
       liaisonInstitutionID = reportSynthesisDB.getLiaisonInstitution().getId();
       liaisonInstitution = liaisonInstitutionManager.getLiaisonInstitutionById(liaisonInstitutionID);
 
-      this.fillprojectInnovationsList(phase.getId(), liaisonInstitution);
+      this.fillprojectInnovationsList(liaisonInstitution);
 
       Path path = this.getAutoSaveFilePath();
       // Verify if there is a Draft file
@@ -640,9 +646,11 @@ public class InnovationsAction extends BaseAction {
         }
       }
       // Chart: Innovations by stage
-      innovationsByStageDTO = repIndStageInnovationManager.getInnovationsByStageDTO(selectedProjectInnovations, phase);
+      innovationsByStageDTO =
+        repIndStageInnovationManager.getInnovationsByStageDTO(selectedProjectInnovations, actualPhase);
       // Chart: Innovations by type
-      innovationsByTypeDTO = repIndInnovationTypeManager.getInnovationsByTypeDTO(selectedProjectInnovations, phase);
+      innovationsByTypeDTO =
+        repIndInnovationTypeManager.getInnovationsByTypeDTO(selectedProjectInnovations, actualPhase);
     }
 
     // Base Permission
@@ -683,7 +691,7 @@ public class InnovationsAction extends BaseAction {
        */
       this.setModificationJustification(reportSynthesis);
 
-      reportSynthesisManager.save(reportSynthesis, this.getActionName(), relationsName, this.getActualPhase());
+      reportSynthesisManager.save(reportSynthesis, this.getActionName(), relationsName, actualPhase);
 
       Path path = this.getAutoSaveFilePath();
       if (path.toFile().exists()) {
