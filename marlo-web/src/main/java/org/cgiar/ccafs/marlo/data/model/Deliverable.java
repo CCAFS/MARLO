@@ -506,6 +506,16 @@ public class Deliverable extends MarloAuditableEntity implements java.io.Seriali
   }
 
 
+  public List<DeliverableMetadataElement> getMetadataElements(Phase phase) {
+    List<DeliverableMetadataElement> deliverableMetadataElements = this.getDeliverableMetadataElements().stream()
+      .filter(dm -> dm.isActive() && dm.getPhase().equals(phase)).collect(Collectors.toList());
+    if (deliverableMetadataElements != null && !deliverableMetadataElements.isEmpty()) {
+      return deliverableMetadataElements;
+    }
+    return new ArrayList<DeliverableMetadataElement>();
+  }
+
+
   public long getMetadataID(String metadataName) {
     for (MetadataElement mData : metadata) {
       if (mData != null) {
@@ -532,7 +542,6 @@ public class Deliverable extends MarloAuditableEntity implements java.io.Seriali
     return -1;
   }
 
-
   public String getMetadataValue(long metadataID) {
     String value = "";
     if (metadataElements != null) {
@@ -550,6 +559,7 @@ public class Deliverable extends MarloAuditableEntity implements java.io.Seriali
     }
     return value;
   }
+
 
   public String getMetadataValue(String metadataName) {
     if (metadataElements != null) {
@@ -619,21 +629,21 @@ public class Deliverable extends MarloAuditableEntity implements java.io.Seriali
     return new DeliverablePublicationMetadata();
   }
 
-
   public List<DeliverablePublicationMetadata> getPublicationMetadatas() {
     return publicationMetadatas;
-  }
-
-  public DeliverableQualityCheck getQualityCheck() {
-    return qualityCheck;
   }
 
   // Data List from Data Sharing
 
 
+  public DeliverableQualityCheck getQualityCheck() {
+    return qualityCheck;
+  }
+
   public List<DeliverableProgram> getRegions() {
     return regions;
   }
+
 
   public String getRegionsValue() {
     return regionsValue;
@@ -689,7 +699,6 @@ public class Deliverable extends MarloAuditableEntity implements java.io.Seriali
     this.countriesIds = countriesIds;
   }
 
-
   public void setCountriesIdsText(String countriesIdsText) {
     this.countriesIdsText = countriesIdsText;
   }
@@ -718,6 +727,7 @@ public class Deliverable extends MarloAuditableEntity implements java.io.Seriali
     this.dataSharingFiles = dataSharingFiles;
   }
 
+
   public void setDeliverableActivities(Set<DeliverableActivity> deliverableActivities) {
     this.deliverableActivities = deliverableActivities;
   }
@@ -731,7 +741,6 @@ public class Deliverable extends MarloAuditableEntity implements java.io.Seriali
   public void setDeliverableCrps(Set<DeliverableCrp> deliverableCrps) {
     this.deliverableCrps = deliverableCrps;
   }
-
 
   public void setDeliverableDataSharingFiles(Set<DeliverableDataSharingFile> deliverableDataSharingFiles) {
     this.deliverableDataSharingFiles = deliverableDataSharingFiles;
@@ -749,10 +758,10 @@ public class Deliverable extends MarloAuditableEntity implements java.io.Seriali
     this.deliverableFundingSources = deliverableFundingSources;
   }
 
+
   public void setDeliverableGenderLevels(Set<DeliverableGenderLevel> deliverableGenderLevels) {
     this.deliverableGenderLevels = deliverableGenderLevels;
   }
-
 
   public void setDeliverableGeographicRegions(Set<DeliverableGeographicRegion> deliverableGeographicRegions) {
     this.deliverableGeographicRegions = deliverableGeographicRegions;
@@ -762,14 +771,15 @@ public class Deliverable extends MarloAuditableEntity implements java.io.Seriali
     this.deliverableGeographicScopes = deliverableGeographicScopes;
   }
 
+
   public void setDeliverableInfo(DeliverableInfo deliverableInfo) {
     this.deliverableInfo = deliverableInfo;
   }
 
-
   public void setDeliverableInfos(Set<DeliverableInfo> deliverableInfos) {
     this.deliverableInfos = deliverableInfos;
   }
+
 
   public void setDeliverableIntellectualAssets(Set<DeliverableIntellectualAsset> deliverableIntellectualAssets) {
     this.deliverableIntellectualAssets = deliverableIntellectualAssets;
@@ -800,7 +810,6 @@ public class Deliverable extends MarloAuditableEntity implements java.io.Seriali
     this.deliverableParticipant = deliverableParticipant;
   }
 
-
   public void setDeliverableParticipants(Set<DeliverableParticipant> deliverableParticipants) {
     this.deliverableParticipants = deliverableParticipants;
   }
@@ -808,6 +817,7 @@ public class Deliverable extends MarloAuditableEntity implements java.io.Seriali
   public void setDeliverablePartnerships(Set<DeliverablePartnership> deliverablePartnerships) {
     this.deliverablePartnerships = deliverablePartnerships;
   }
+
 
   public void setDeliverablePrograms(Set<DeliverableProgram> deliverablePrograms) {
     this.deliverablePrograms = deliverablePrograms;
@@ -823,10 +833,10 @@ public class Deliverable extends MarloAuditableEntity implements java.io.Seriali
     this.deliverableQualityChecks = deliverableQualityChecks;
   }
 
-
   public void setDeliverableRegions(List<DeliverableGeographicRegion> deliverableRegions) {
     this.deliverableRegions = deliverableRegions;
   }
+
 
   public void setDeliverableUsers(Set<DeliverableUser> deliverableUsers) {
     this.deliverableUsers = deliverableUsers;
@@ -846,7 +856,6 @@ public class Deliverable extends MarloAuditableEntity implements java.io.Seriali
   public void setFiles(List<DeliverableFile> files) {
     this.files = files;
   }
-
 
   public void setFlagshipValue(String flagshipValue) {
     this.flagshipValue = flagshipValue;
@@ -876,19 +885,19 @@ public class Deliverable extends MarloAuditableEntity implements java.io.Seriali
     this.leaders = leaders;
   }
 
+
   public void setMetadata(List<MetadataElement> metadata) {
     this.metadata = metadata;
   }
-
 
   public void setMetadataElements(List<DeliverableMetadataElement> metadataElements) {
     this.metadataElements = metadataElements;
   }
 
+
   public void setOtherPartners(List<DeliverablePartnership> otherPartners) {
     this.otherPartners = otherPartners;
   }
-
 
   public void setPhase(Phase phase) {
     this.phase = phase;
@@ -897,6 +906,7 @@ public class Deliverable extends MarloAuditableEntity implements java.io.Seriali
   public void setPrograms(List<DeliverableProgram> programs) {
     this.programs = programs;
   }
+
 
   public void setProject(Project project) {
     this.project = project;
@@ -922,10 +932,10 @@ public class Deliverable extends MarloAuditableEntity implements java.io.Seriali
     this.regions = regions;
   }
 
-
   public void setRegionsValue(String regionsValue) {
     this.regionsValue = regionsValue;
   }
+
 
   public void setResponsiblePartner(DeliverablePartnership responsiblePartner) {
     this.responsiblePartner = responsiblePartner;
