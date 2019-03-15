@@ -53,29 +53,12 @@
                 </div>
               [/#if]
             </div>
-            
-            
-            [#assign financialList = [
-                { 
-                  "a": "FP1",
-                  "b": "expenditureArea 1",
-                  "status": "Status"
-                },
-                { 
-                  "a": "FP2",
-                  "b": "expenditureArea 2",
-                  "status": "Status 1"
-                }
-              ] /]
-            
+
             [#-- Table 12: CRP Financial Report --]
             <div class="form-group margin-panel">
-              <div class="evidence-plannedStudies-header">
-                <h4 class="subTitle headTitle">[@s.text name="${customLabel}.table12.title" /]</h4>
-              </div>
-              <hr />
-              [#-- [#list (reportSynthesis.reportSynthesisFinancialSummary.budgets)![] as item] --]
-              [#list financialList as item]
+              <br />
+              <h4 class="subTitle headTitle">[@s.text name="${customLabel}.table12.title" /]</h4>
+              [#list (reportSynthesis.reportSynthesisFinancialSummary.budgets)![] as item] 
                 [@financialReport name="${customName}.budgets" element=item element_index=item_index editable=editable && PMU /]
               [/#list]
             </div>
@@ -95,7 +78,6 @@
 
 
 [#macro financialReport name element element_index editable]
-  
   [#local customName = "${name}[${element_index}]"]
   [#assign budgetTypesList=[
     {"id":"1", "name":"W1/W2",      "p": "w1Planned",         "r": "w1Actual"   },
@@ -106,7 +88,7 @@
   <div id="flagship-${element_index}" class="flagship expandableBlock borderBox">
     <div class="blockTitle opened">
       [#-- Title --] 
-      <span>${(element.liaisonInstitution)!(element.expenditureArea)!''}</span>
+      <span>${(element.liaisonInstitution.crpProgram.composedName)!(element.expenditureArea.expenditureArea)!''}</span>
       
       [#-- Hidden Inputs --]
       <input type="hidden" name="${customName}.id" value="${(element.id)!}" />
@@ -180,6 +162,12 @@
           </tr>
         </tbody>
       </table>
+      
+      [#-- Comments --]
+      <br />
+      <div class="form-group">
+        [@customForm.textArea name="${customName}.comments" i18nkey="${customLabel}.comments" className="" required=true editable=editable allowTextEditor=true /]
+      </div>
 
     </div>
   </div>

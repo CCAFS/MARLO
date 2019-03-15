@@ -269,7 +269,6 @@
     <div class="form-group">
       <label>[@s.text name="${customLabel}.milestoneStatus" /]:[@customForm.req required=editable  /]</label><br />
       [#local milestoneStatus = (annualReportElement.milestonesStatus)!-1 /]
-      [#local isComplete = (milestoneStatus == 1)!false /]
 
       [@customForm.radioFlat id="${customName}-status-1" name="${customName}.milestonesStatus" label="Complete"   value="1" checked=(milestoneStatus == 1)!false editable=editable cssClass="milestoneStatus" cssClassLabel="font-normal"/]
       [@customForm.radioFlat id="${customName}-status-2" name="${customName}.milestonesStatus" label="Extended"   value="2" checked=(milestoneStatus == 2)!false editable=editable cssClass="milestoneStatus" cssClassLabel="font-normal"/]
@@ -279,19 +278,19 @@
       [#if !editable && (milestoneStatus == -1)][@s.text name="form.values.fieldEmpty"/][/#if]
     </div>
     
-    <div class="form-group milestonesEvidence" style="display:${isComplete?string('block', 'none')}">
-      [#-- Evidence for completed milestones or explanation for extended or cancelled --]
-      <div class="form-group">
-        [@customForm.textArea name="${customName}.evidence" i18nkey="${customLabel}.milestoneEvidence" help="${customLabel}.milestoneEvidence.help" helpIcon=false display=true required=false className="limitWords-50" editable=editable allowTextEditor=true /]
-      </div>
+    [#-- Evidence for completed milestones or explanation for extended or cancelled --]
+    <div class="form-group">
+      [@customForm.textArea name="${customName}.evidence" i18nkey="${customLabel}.milestoneEvidence" help="${customLabel}.milestoneEvidence.help" helpIcon=false display=true required=false className="limitWords-50" editable=editable allowTextEditor=true /]
+    </div>
       
+    <div class="form-group milestonesEvidence" style="display:${((milestoneStatus == 2) || (milestoneStatus == 3) || (milestoneStatus == 4))?string('block', 'none')}">
       [#-- Extendend, cancelled or changed milestones - Main reason --]
       <div class="form-group">
         [@customForm.select name="${customName}.reason.id" label=""  i18nkey="${customLabel}.milestoneMainReason" listName="reasons" keyFieldName="id"  displayFieldName="name"   required=true  className="milestoneMainReasonSelect" editable=editable/]
       </div>
       
       [#-- Extendend, cancelled or changed milestones - Other reason --]
-      [#local showOther = (annualReportElement.reason.name == "other")!false /]
+      [#local showOther = (annualReportElement.reason.id == 7)!false /]
       <div class="form-group otherBlock" style="display:${showOther?string('block', 'none')}">
         [@customForm.input name="${customName}.otherReason" i18nkey="${customLabel}.milestoneOtherReason" display=true required=false className="input-sm" editable=editable /]
       </div>

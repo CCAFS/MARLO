@@ -17,7 +17,7 @@ function attachEvents() {
     var optionSelected = this.value;
     var $block = $(this).parents('.milestonesEvidence').find('.otherBlock');
 
-    if(optionSelected == 10) {
+    if(optionSelected == 7) {
       $block.slideDown();
     } else {
       $block.slideUp();
@@ -28,7 +28,7 @@ function attachEvents() {
     var optionSelected = this.value;
     var $block = $(this).parents('.synthesisMilestone').find('.milestonesEvidence');
 
-    if (optionSelected == 2 || optionSelected == 3 || optionSelected == 4) {
+    if(optionSelected == 2 || optionSelected == 3 || optionSelected == 4) {
       $block.slideDown();
     } else {
       $block.slideUp();
