@@ -115,19 +115,25 @@
       <tbody>
         [#if list?has_content]
           [#list list as item]
-            [#local url][@s.url namespace="/projects" action="${(crpSession)!}/study"][@s.param name='expectedID']${item.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
+            [#local isFromProject = (item.project??)!false]
+            [#if isFromProject]
+              [#local url][@s.url namespace="/projects" action="${(crpSession)!}/study"][@s.param name='expectedID']${item.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
+            [#else]
+              [#local url][@s.url namespace="/studies" action="${(crpSession)!}/study"][@s.param name='expectedID']${item.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
+            [/#if]
+            
             [#local summaryPDF = "${baseUrl}/projects/${crpSession}/studySummary.do?studyID=${(item.id)!}&cycle=Reporting&year=${(actualPhase.year)!}"]
             <tr>
               <td>
                 [@utils.tableText value=(item.composedName)!"" /]
                 
-                [#if item.project??]<br /> <small>(From Project P${item.project.id})</small> [/#if]
+                [#if isFromProject]<br /> <small>(From Project P${item.project.id})</small> [/#if]
                 
                 [#if PMU]
                 <br />
                 <div class="form-group">
                   [#list (item.selectedFlahsgips)![] as liason]
-                    <span class="programTag" style="border-color:${(liason.crpProgram.color)!'#fff'}" title="${(liason.composedName)!}">${(liason.acronym)!}</span>
+                    <span class="programTag" style="border-color:${(liason.crpProgram.color)!'#444'}" title="${(liason.composedName)!}">${(liason.acronym)!}</span>
                   [/#list]
                 </div>
                 [/#if]

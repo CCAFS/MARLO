@@ -163,17 +163,20 @@
       <thead>
         <tr>
           <th class="text-center"> [@s.text name="${customLabel}.${name}.innovationTitle" /] </th>
-          <th class="text-center"> [@s.text name="${customLabel}.${name}.stage" /] </th>
-          <th class="text-center"> [@s.text name="${customLabel}.${name}.degree" /] </th>
           [#if expanded]
-            <th class="text-center"> [@s.text name="${customLabel}.${name}.type" /] </th>
-            <th class="text-center"> [@s.text name="${customLabel}.${name}.geoScope" /] </th>
+            <th class="text-center"> Description of the innovation </th>
+          [/#if]
+          <th class="text-center"> [@s.text name="${customLabel}.${name}.type" /] </th>
+          <th class="text-center"> [@s.text name="${customLabel}.${name}.stage" /] </th>
+          [#if expanded]
+            <th class="text-center"> Description of Stage reached </th>
             <th class="text-center"> [@s.text name="${customLabel}.${name}.organization" /] </th>
+            <th class="text-center"> Top five contributing partners</th>
+            <th class="text-center"> [@s.text name="${customLabel}.${name}.geoScope" /] </th>
             <th class="text-center"> [@s.text name="${customLabel}.${name}.evidence" /] </th>
           [/#if]
-          <th class="text-center"> [@s.text name="${customLabel}.${name}.contribution" /] </th>
           [#if !expanded]
-          <th class="col-md-1 text-center"> [@s.text name="${customLabel}.${name}.includeAR" /] </th>
+            <th class="col-md-1 text-center"> [@s.text name="${customLabel}.${name}.includeAR" /] </th>
           [/#if]
         </tr>
       </thead>
@@ -182,25 +185,51 @@
           [#list list as item]
           [#local url][@s.url namespace="/projects" action="${(crpSession)!}/innovation"][@s.param name='innovationID']${item.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
           <tr>
-            <td>[@utils.tableText value=(item.composedName)!"" /]
-             <a href="${url}" target="_blank" class="pull-right"><span class="glyphicon glyphicon-new-window"></span></a>
+            [#-- 1. Title of innovation--]
+            <td>
+              [@utils.tableText value=(item.composedName)!"" /]
+              [#if item.project??]<br /> <small>(From Project P${item.project.id})</small> [/#if]
+              [#if PMU]
+              <br />
+              <div class="form-group">
+                [#list (item.selectedFlahsgips)![] as liason]
+                  <span class="programTag" style="border-color:${(liason.crpProgram.color)!'#444'}" title="${(liason.composedName)!}">${(liason.acronym)!}</span>
+                [/#list]
+              </div>
+              [/#if]
+              <a href="${url}" target="_blank" class="pull-right"><span class="glyphicon glyphicon-new-window"></span></a>
             </td>
-            <td>[@utils.tableText value=(item.projectInnovationInfo.repIndStageInnovation.name)!"" /]</td>
-            <td>[@utils.tableText value=(item.projectInnovationInfo.repIndDegreeInnovation.name)!"" /]</td>
+            [#-- 3. Description of Innovation  --]
             [#if expanded]
+              <td>[@utils.tableText value=(item.projectInnovationInfo.narrative)!"" /]</td>
+            [/#if]
+            [#-- 4. Innovation Type  --]
             <td>[@utils.tableText value=(item.projectInnovationInfo.repIndInnovationType.name)!"" /]</td>
-            <td>[@utils.tableList list=(item.geographicScopes)![] displayFieldName="repIndGeographicScope.name" nobr=true/]</td>
-            <td>[@utils.tableText value=(item.projectInnovationInfo.leadOrganization.name)!"" /]</td>
-            <td class="text-center">
-            [#local innovationEvidence = (item.projectInnovationInfo.evidenceLink)!""/]
-            [#if innovationEvidence?has_content]
-             <a target="_blank" href="${innovationEvidence}"><span class="glyphicon glyphicon-link"></span></a>
-            [#else]
-              <span class="glyphicon glyphicon-link" title="Not defined"></span>
+            [#-- 5. Stage of Innovation --]
+            <td>[@utils.tableText value=(item.projectInnovationInfo.repIndStageInnovation.name)!"" /]</td>
+            [#if expanded]
+              [#-- 6. Description of stage reached --]
+              <td>[@utils.tableText value=(item.projectInnovationInfo.descriptionStage)!"" /]</td>
+              [#-- 7. Lead Organization/ entity --]
+              <td>[@utils.tableText value=(item.projectInnovationInfo.leadOrganization.name)!"" /]</td>
+              [#-- 8. Top five contributing partners/ entities to this stage --]
+              <td>[@utils.tableList list=(item.contributingOrganizations)![] displayFieldName="institution.composedName" /]</td>
+              [#-- 9. Geographic Scope --]
+              <td>
+                <div class=""><strong>[@utils.tableList list=(item.geographicScopes)![]  displayFieldName="repIndGeographicScope.name" nobr=true /]</strong></div>
+                <div class="">[@utils.tableList list=(item.regions)![]  displayFieldName="locElement.composedName" showEmpty=false nobr=true /]</div>
+                <div class="">[@utils.tableList list=(item.countries)![]  displayFieldName="locElement.name" showEmpty=false nobr=true /]</div>
+              </td>
+              [#-- 10. Evidence for Innovation --]
+              <td class="text-center">
+                [#local innovationEvidence = (item.projectInnovationInfo.evidenceLink)!""/]
+                [#if innovationEvidence?has_content]
+                  <a target="_blank" href="${innovationEvidence}"><span class="glyphicon glyphicon-link"></span></a>
+                [#else]
+                  <span class="glyphicon glyphicon-link" title="Not defined"></span>
+                [/#if]
+              </td>
             [/#if]
-            </td>
-            [/#if]
-            <td>[@utils.tableText value=(item.projectInnovationInfo.repIndContributionOfCrp.name)!"" /]</td>
             [#if !expanded]
             <td class="text-center">
               [#local isChecked = ((!reportSynthesis.reportSynthesisFlagshipProgress.innovationsIds?seq_contains(item.id))!true) /]
