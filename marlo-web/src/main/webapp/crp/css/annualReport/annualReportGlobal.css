@@ -461,3 +461,7 @@ p.dacMarker.level-4 {
   overflow: auto;
   align-items: center;
 }
+
+.modal-body {
+  overflow: auto;
+}

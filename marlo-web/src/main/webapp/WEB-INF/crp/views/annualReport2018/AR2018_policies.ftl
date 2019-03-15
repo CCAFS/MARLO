@@ -189,7 +189,7 @@
             <br />
             <div class="form-group">
               [#list (item.selectedFlahsgips)![] as liason]
-                <span class="programTag" style="border-color:${(liason.crpProgram.color)!'#fff'}" title="${(liason.composedName)!}">${(liason.acronym)!}</span>
+                <span class="programTag" style="border-color:${(liason.crpProgram.color)!'#444'}" title="${(liason.composedName)!}">${(liason.acronym)!}</span>
               [/#list]
             </div>
             [/#if]
