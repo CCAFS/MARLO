@@ -14,13 +14,11 @@ public class ReportSynthesisFlagshipProgressCrossCuttingMarker extends MarloBase
   private static final long serialVersionUID = -5739071488591041675L;
 
   @Expose
-  private CgiarCrossCuttingMarker cgiarCrossCuttingMarker;
-  @Expose
-  private Phase phase;
+  private CgiarCrossCuttingMarker marker;
   @Expose
   private ReportSynthesisFlagshipProgressOutcomeMilestone reportSynthesisFlagshipProgressOutcomeMilestone;
   @Expose
-  private RepIndGenderYouthFocusLevel repIndGenderYouthFocusLevel;
+  private RepIndGenderYouthFocusLevel focus;
   @Expose
   private String justification;
 
@@ -51,9 +49,11 @@ public class ReportSynthesisFlagshipProgressCrossCuttingMarker extends MarloBase
     return true;
   }
 
-  public CgiarCrossCuttingMarker getCgiarCrossCuttingMarker() {
-    return cgiarCrossCuttingMarker;
+
+  public RepIndGenderYouthFocusLevel getFocus() {
+    return focus;
   }
+
 
   public String getJustification() {
     return justification;
@@ -68,6 +68,11 @@ public class ReportSynthesisFlagshipProgressCrossCuttingMarker extends MarloBase
   }
 
 
+  public CgiarCrossCuttingMarker getMarker() {
+    return marker;
+  }
+
+
   @Override
   public String getModificationJustification() {
     return "";
@@ -79,16 +84,6 @@ public class ReportSynthesisFlagshipProgressCrossCuttingMarker extends MarloBase
     User u = new User();
     u.setId(new Long(3));
     return u;
-  }
-
-
-  public Phase getPhase() {
-    return phase;
-  }
-
-
-  public RepIndGenderYouthFocusLevel getRepIndGenderYouthFocusLevel() {
-    return repIndGenderYouthFocusLevel;
   }
 
 
@@ -111,8 +106,9 @@ public class ReportSynthesisFlagshipProgressCrossCuttingMarker extends MarloBase
     return true;
   }
 
-  public void setCgiarCrossCuttingMarker(CgiarCrossCuttingMarker cgiarCrossCuttingMarker) {
-    this.cgiarCrossCuttingMarker = cgiarCrossCuttingMarker;
+
+  public void setFocus(RepIndGenderYouthFocusLevel focus) {
+    this.focus = focus;
   }
 
 
@@ -121,18 +117,13 @@ public class ReportSynthesisFlagshipProgressCrossCuttingMarker extends MarloBase
   }
 
 
+  public void setMarker(CgiarCrossCuttingMarker marker) {
+    this.marker = marker;
+  }
+
+
   @Override
   public void setModifiedBy(User modifiedBy) {
-  }
-
-
-  public void setPhase(Phase phase) {
-    this.phase = phase;
-  }
-
-
-  public void setRepIndGenderYouthFocusLevel(RepIndGenderYouthFocusLevel repIndGenderYouthFocusLevel) {
-    this.repIndGenderYouthFocusLevel = repIndGenderYouthFocusLevel;
   }
 
 

@@ -853,22 +853,21 @@ public class OutcomesMilestonesAction extends BaseAction {
           crossCuttingOwnerSave.setReportSynthesisFlagshipProgressOutcomeMilestone(milestoneDB);
 
 
-          CgiarCrossCuttingMarker cgiarCrossCuttingMarker = cgiarCrossCuttingMarkerManager
-            .getCgiarCrossCuttingMarkerById(crossCuttingOwner.getCgiarCrossCuttingMarker().getId());
+          CgiarCrossCuttingMarker cgiarCrossCuttingMarker =
+            cgiarCrossCuttingMarkerManager.getCgiarCrossCuttingMarkerById(crossCuttingOwner.getMarker().getId());
 
-          crossCuttingOwnerSave.setCgiarCrossCuttingMarker(cgiarCrossCuttingMarker);
+          crossCuttingOwnerSave.setMarker(cgiarCrossCuttingMarker);
 
-          if (crossCuttingOwner.getRepIndGenderYouthFocusLevel() != null) {
-            if (crossCuttingOwner.getRepIndGenderYouthFocusLevel().getId() != null
-              && crossCuttingOwner.getRepIndGenderYouthFocusLevel().getId() != -1) {
-              RepIndGenderYouthFocusLevel focusLevel = focusLevelManager
-                .getRepIndGenderYouthFocusLevelById(crossCuttingOwner.getRepIndGenderYouthFocusLevel().getId());
-              crossCuttingOwnerSave.setRepIndGenderYouthFocusLevel(focusLevel);
+          if (crossCuttingOwner.getFocus() != null) {
+            if (crossCuttingOwner.getFocus().getId() != null && crossCuttingOwner.getFocus().getId() != -1) {
+              RepIndGenderYouthFocusLevel focusLevel =
+                focusLevelManager.getRepIndGenderYouthFocusLevelById(crossCuttingOwner.getFocus().getId());
+              crossCuttingOwnerSave.setFocus(focusLevel);
             } else {
-              crossCuttingOwnerSave.setRepIndGenderYouthFocusLevel(null);
+              crossCuttingOwnerSave.setFocus(null);
             }
           } else {
-            crossCuttingOwnerSave.setRepIndGenderYouthFocusLevel(null);
+            crossCuttingOwnerSave.setFocus(null);
           }
 
           crossCuttingOwnerSave.setJustification(crossCuttingOwner.getJustification());
@@ -882,31 +881,29 @@ public class OutcomesMilestonesAction extends BaseAction {
             reportSynthesisFlagshipProgressCrossCuttingMarkerManager
               .getReportSynthesisFlagshipProgressCrossCuttingMarkerById(crossCuttingOwner.getId());
 
-          if (crossCuttingOwner.getRepIndGenderYouthFocusLevel() != null) {
-            if (crossCuttingOwner.getRepIndGenderYouthFocusLevel().getId() != null
-              && crossCuttingOwner.getRepIndGenderYouthFocusLevel().getId() != -1) {
+          if (crossCuttingOwner.getFocus() != null) {
+            if (crossCuttingOwner.getFocus().getId() != null && crossCuttingOwner.getFocus().getId() != -1) {
 
-              if (crossCuttingOwnerSave.getRepIndGenderYouthFocusLevel() != null) {
-                if (crossCuttingOwner.getRepIndGenderYouthFocusLevel().getId() != crossCuttingOwnerSave
-                  .getRepIndGenderYouthFocusLevel().getId()) {
-                  RepIndGenderYouthFocusLevel focusLevel = focusLevelManager
-                    .getRepIndGenderYouthFocusLevelById(crossCuttingOwner.getRepIndGenderYouthFocusLevel().getId());
-                  crossCuttingOwnerSave.setRepIndGenderYouthFocusLevel(focusLevel);
+              if (crossCuttingOwnerSave.getFocus() != null) {
+                if (crossCuttingOwner.getFocus().getId() != crossCuttingOwnerSave.getFocus().getId()) {
+                  RepIndGenderYouthFocusLevel focusLevel =
+                    focusLevelManager.getRepIndGenderYouthFocusLevelById(crossCuttingOwner.getFocus().getId());
+                  crossCuttingOwnerSave.setFocus(focusLevel);
                   hasChanges = true;
                 }
               } else {
-                RepIndGenderYouthFocusLevel focusLevel = focusLevelManager
-                  .getRepIndGenderYouthFocusLevelById(crossCuttingOwner.getRepIndGenderYouthFocusLevel().getId());
-                crossCuttingOwnerSave.setRepIndGenderYouthFocusLevel(focusLevel);
+                RepIndGenderYouthFocusLevel focusLevel =
+                  focusLevelManager.getRepIndGenderYouthFocusLevelById(crossCuttingOwner.getFocus().getId());
+                crossCuttingOwnerSave.setFocus(focusLevel);
                 hasChanges = true;
               }
 
             } else {
-              crossCuttingOwnerSave.setRepIndGenderYouthFocusLevel(null);
+              crossCuttingOwnerSave.setFocus(null);
               hasChanges = true;
             }
           } else {
-            crossCuttingOwnerSave.setRepIndGenderYouthFocusLevel(null);
+            crossCuttingOwnerSave.setFocus(null);
             hasChanges = true;
           }
 
