@@ -30,7 +30,9 @@ import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
+import org.cgiar.ccafs.marlo.data.model.DeliverableDissemination;
 import org.cgiar.ccafs.marlo.data.model.DeliverableProgram;
+import org.cgiar.ccafs.marlo.data.model.DeliverablePublicationMetadata;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
@@ -95,6 +97,10 @@ public class PublicationsAction extends BaseAction {
   private List<LiaisonInstitution> liaisonInstitutions;
   private List<Deliverable> deliverables;
   private Phase actualPhase;
+  private Integer totalOpenAccess = 0;
+  private Integer totalLimited = 0;
+  private Integer totalIsis = 0;
+  private Integer totalNoIsis = 0;
 
 
   @Inject
@@ -254,6 +260,7 @@ public class PublicationsAction extends BaseAction {
     return flagshipPlannedList;
   }
 
+
   private void fillProjectDeliverablesList(LiaisonInstitution liaisonInstitution) {
     deliverables = new ArrayList<>();
     if (this.isFlagship()) {
@@ -337,6 +344,7 @@ public class PublicationsAction extends BaseAction {
     }
 
   }
+
 
   public Long firstFlagship() {
     List<LiaisonInstitution> liaisonInstitutions = new ArrayList<>(loggedCrp.getLiaisonInstitutions().stream()
@@ -430,7 +438,6 @@ public class PublicationsAction extends BaseAction {
 
   }
 
-
   private Path getAutoSaveFilePath() {
     String composedClassName = reportSynthesis.getClass().getSimpleName();
     String actionFile = this.getActionName().replace("/", "_");
@@ -439,11 +446,9 @@ public class PublicationsAction extends BaseAction {
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
-
   public List<Deliverable> getDeliverables() {
     return deliverables;
   }
-
 
   public LiaisonInstitution getLiaisonInstitution() {
     return liaisonInstitution;
@@ -459,11 +464,9 @@ public class PublicationsAction extends BaseAction {
     return liaisonInstitutions;
   }
 
-
   public GlobalUnit getLoggedCrp() {
     return loggedCrp;
   }
-
 
   public ReportSynthesis getReportSynthesis() {
     return reportSynthesis;
@@ -473,6 +476,27 @@ public class PublicationsAction extends BaseAction {
   public Long getSynthesisID() {
     return synthesisID;
   }
+
+
+  public Integer getTotalIsis() {
+    return totalIsis;
+  }
+
+
+  public Integer getTotalLimited() {
+    return totalLimited;
+  }
+
+
+  public Integer getTotalNoIsis() {
+    return totalNoIsis;
+  }
+
+
+  public Integer getTotalOpenAccess() {
+    return totalOpenAccess;
+  }
+
 
   public String getTransaction() {
     return transaction;
@@ -505,6 +529,7 @@ public class PublicationsAction extends BaseAction {
     return isFP;
 
   }
+
 
   @Override
   public String next() {
@@ -662,8 +687,71 @@ public class PublicationsAction extends BaseAction {
       .filter(c -> c.getCrpProgram() == null && c.isActive() && c.getAcronym() != null && c.getAcronym().equals("PMU"))
       .collect(Collectors.toList()));
 
+    /** Graphs and Tables */
+    List<Deliverable> selectedDeliverables = new ArrayList<Deliverable>();
     if (deliverables != null && !deliverables.isEmpty()) {
       deliverables.sort((p1, p2) -> p1.getId().compareTo(p2.getId()));
+      selectedDeliverables.addAll(deliverables);
+      // Remove unchecked deliverables
+      if (reportSynthesis.getReportSynthesisFlagshipProgress().getDeliverables() != null
+        && !reportSynthesis.getReportSynthesisFlagshipProgress().getDeliverables().isEmpty()) {
+        for (Deliverable deliverable : reportSynthesis.getReportSynthesisFlagshipProgress().getDeliverables()) {
+          selectedDeliverables.remove(deliverable);
+        }
+      }
+
+      if (selectedDeliverables != null && !selectedDeliverables.isEmpty()) {
+        if (selectedDeliverables != null && !selectedDeliverables.isEmpty()) {
+          for (Deliverable deliverable : selectedDeliverables) {
+
+            // Chart: Deliverables open access
+            List<DeliverableDissemination> deliverableDisseminations =
+              deliverable.getDeliverableInfo(actualPhase).getDeliverable().getDeliverableDisseminations().stream()
+                .filter(dd -> dd.isActive() && dd.getPhase() != null && dd.getPhase().equals(actualPhase))
+                .collect(Collectors.toList());
+            if (deliverableDisseminations != null && !deliverableDisseminations.isEmpty()) {
+              deliverable.getDeliverableInfo(actualPhase).getDeliverable()
+                .setDissemination(deliverableDisseminations.get(0));
+              if (deliverable.getDeliverableInfo(actualPhase).getDeliverable().getDissemination()
+                .getIsOpenAccess() != null) {
+                // Journal Articles by Open Access
+                if (deliverable.getDeliverableInfo(actualPhase).getDeliverable().getDissemination().getIsOpenAccess()) {
+                  totalOpenAccess++;
+                } else {
+                  totalLimited++;
+                }
+              } else {
+                totalLimited++;
+              }
+            } else {
+              totalLimited++;
+            }
+
+            // Chart: Deliverables by ISI
+            List<DeliverablePublicationMetadata> deliverablePublicationMetadatas =
+              deliverable.getDeliverableInfo(actualPhase).getDeliverable().getDeliverablePublicationMetadatas().stream()
+                .filter(dp -> dp.isActive() && dp.getPhase() != null && dp.getPhase().equals(actualPhase))
+                .collect(Collectors.toList());
+            if (deliverablePublicationMetadatas != null && !deliverablePublicationMetadatas.isEmpty()) {
+              deliverable.getDeliverableInfo(actualPhase).getDeliverable()
+                .setPublication(deliverablePublicationMetadatas.get(0));
+              // Journal Articles by ISI status
+              if (deliverable.getDeliverableInfo(actualPhase).getDeliverable().getPublication()
+                .getIsiPublication() != null) {
+                if (deliverable.getDeliverableInfo(actualPhase).getDeliverable().getPublication().getIsiPublication()) {
+                  totalIsis++;
+                } else {
+                  totalNoIsis++;
+                }
+              } else {
+                totalNoIsis++;
+              }
+            } else {
+              totalNoIsis++;
+            }
+          }
+        }
+      }
     }
 
     // Base Permission
@@ -730,6 +818,7 @@ public class PublicationsAction extends BaseAction {
     }
   }
 
+
   public void setDeliverables(List<Deliverable> deliverables) {
     this.deliverables = deliverables;
   }
@@ -738,10 +827,10 @@ public class PublicationsAction extends BaseAction {
     this.liaisonInstitution = liaisonInstitution;
   }
 
-
   public void setLiaisonInstitutionID(Long liaisonInstitutionID) {
     this.liaisonInstitutionID = liaisonInstitutionID;
   }
+
 
   public void setLiaisonInstitutions(List<LiaisonInstitution> liaisonInstitutions) {
     this.liaisonInstitutions = liaisonInstitutions;
@@ -751,13 +840,30 @@ public class PublicationsAction extends BaseAction {
     this.loggedCrp = loggedCrp;
   }
 
-
   public void setReportSynthesis(ReportSynthesis reportSynthesis) {
     this.reportSynthesis = reportSynthesis;
   }
 
+
   public void setSynthesisID(Long synthesisID) {
     this.synthesisID = synthesisID;
+  }
+
+  public void setTotalIsis(Integer totalIsis) {
+    this.totalIsis = totalIsis;
+  }
+
+  public void setTotalLimited(Integer totalLimited) {
+    this.totalLimited = totalLimited;
+  }
+
+
+  public void setTotalNoIsis(Integer totalNoIsis) {
+    this.totalNoIsis = totalNoIsis;
+  }
+
+  public void setTotalOpenAccess(Integer totalOpenAccess) {
+    this.totalOpenAccess = totalOpenAccess;
   }
 
   public void setTransaction(String transaction) {
