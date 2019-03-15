@@ -19,7 +19,9 @@ package org.cgiar.ccafs.marlo.data.dao.mysql;
 import org.cgiar.ccafs.marlo.data.dao.ReportSynthesisFlagshipProgressOutcomeDAO;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressOutcome;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -68,6 +70,32 @@ public class ReportSynthesisFlagshipProgressOutcomeMySQLDAO extends
       return list;
     }
     return null;
+
+  }
+
+  @Override
+  public ReportSynthesisFlagshipProgressOutcome getOutcomeId(long progressID, long outcomeID) {
+    StringBuilder query = new StringBuilder();
+    query.append("SELECT id as markerId FROM report_synthesis_flagship_progress_outcomes ");
+    query.append("WHERE report_synthesis_flagship_progress_id = ");
+    query.append(progressID);
+    query.append(" AND crp_outcome_id = ");
+    query.append(outcomeID);
+    List<Map<String, Object>> list = super.findCustomQuery(query.toString());
+
+    List<ReportSynthesisFlagshipProgressOutcome> reportSynthesisFlagshipProgressOutcomes =
+      new ArrayList<ReportSynthesisFlagshipProgressOutcome>();
+    for (Map<String, Object> map : list) {
+      String markerId = map.get("markerId").toString();
+      long longMarkerId = Long.parseLong(markerId);
+      ReportSynthesisFlagshipProgressOutcome reportSynthesisFlagshipProgressOutcome = this.find(longMarkerId);
+      reportSynthesisFlagshipProgressOutcomes.add(reportSynthesisFlagshipProgressOutcome);
+    }
+    if (reportSynthesisFlagshipProgressOutcomes.size() > 0) {
+      return reportSynthesisFlagshipProgressOutcomes.get(0);
+    } else {
+      return null;
+    }
 
   }
 

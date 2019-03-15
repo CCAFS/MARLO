@@ -62,8 +62,8 @@ public interface ReportSynthesisFlagshipProgressCrossCuttingMarkerDAO {
   public List<ReportSynthesisFlagshipProgressCrossCuttingMarker> findAll();
 
 
-  public ReportSynthesisFlagshipProgressCrossCuttingMarker getCountryMarkerId(long milestoneID,
-    long cgiarCrossCuttingMarkerID, long phaseID);
+  ReportSynthesisFlagshipProgressCrossCuttingMarker getMarkerId(long milestoneID, long cgiarCrossCuttingMarkerID,
+    long phaseID);
 
 
   /**
