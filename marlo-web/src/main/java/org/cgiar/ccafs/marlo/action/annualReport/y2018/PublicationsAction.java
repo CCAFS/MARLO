@@ -101,6 +101,7 @@ public class PublicationsAction extends BaseAction {
   private Integer totalLimited = 0;
   private Integer totalIsis = 0;
   private Integer totalNoIsis = 0;
+  private Integer total = 0;
 
 
   @Inject
@@ -478,6 +479,11 @@ public class PublicationsAction extends BaseAction {
   }
 
 
+  public Integer getTotal() {
+    return total;
+  }
+
+
   public Integer getTotalIsis() {
     return totalIsis;
   }
@@ -530,7 +536,6 @@ public class PublicationsAction extends BaseAction {
 
   }
 
-
   @Override
   public String next() {
     String result = this.save();
@@ -540,6 +545,7 @@ public class PublicationsAction extends BaseAction {
       return result;
     }
   }
+
 
   @Override
   public void prepare() throws Exception {
@@ -699,6 +705,7 @@ public class PublicationsAction extends BaseAction {
           selectedDeliverables.remove(deliverable);
         }
       }
+      total = selectedDeliverables.size();
 
       if (selectedDeliverables != null && !selectedDeliverables.isEmpty()) {
         if (selectedDeliverables != null && !selectedDeliverables.isEmpty()) {
@@ -823,6 +830,7 @@ public class PublicationsAction extends BaseAction {
     this.deliverables = deliverables;
   }
 
+
   public void setLiaisonInstitution(LiaisonInstitution liaisonInstitution) {
     this.liaisonInstitution = liaisonInstitution;
   }
@@ -831,10 +839,10 @@ public class PublicationsAction extends BaseAction {
     this.liaisonInstitutionID = liaisonInstitutionID;
   }
 
-
   public void setLiaisonInstitutions(List<LiaisonInstitution> liaisonInstitutions) {
     this.liaisonInstitutions = liaisonInstitutions;
   }
+
 
   public void setLoggedCrp(GlobalUnit loggedCrp) {
     this.loggedCrp = loggedCrp;
@@ -844,9 +852,13 @@ public class PublicationsAction extends BaseAction {
     this.reportSynthesis = reportSynthesis;
   }
 
-
   public void setSynthesisID(Long synthesisID) {
     this.synthesisID = synthesisID;
+  }
+
+
+  public void setTotal(Integer total) {
+    this.total = total;
   }
 
   public void setTotalIsis(Integer totalIsis) {
