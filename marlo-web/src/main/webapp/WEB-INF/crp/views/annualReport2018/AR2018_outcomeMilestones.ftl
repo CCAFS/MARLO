@@ -109,7 +109,6 @@
           [#if !allowPopups]
           <th rowspan="2">Milestone Evidence</th>
           <th colspan="4" class="text-center">Cross-Cutting Markers</th>
-          <th rowspan="2"></th>
           [/#if]
         </tr>
         [#if !allowPopups]
@@ -162,15 +161,25 @@
                 <td>  Lorem ipsum dolor sit amet, consectetur adipisicing elit. Deleniti quibusdam at est nobis provident voluptatum quos voluptas cupiditate aliquam accusamus ratione sunt. Eaque praesentium repellendus quis id repudiandae tempora aliquam.</td>
                 [#-- Cross Cutting markers --]
                 [#-- Gender --]
-                <td class="text-center"> 0 </td>
+                <td class="text-center"> 
+                  [#local marker = getMarker(milestone, "Gender") ]
+                  <p class="dacMarker level-${(marker.id)!""}" title="${(marker.powbName)!""}">${(marker.acronym)!""}</p>
+                </td>
                 [#-- Youth --]
-                <td class="text-center"> 1 </td>
+                <td class="text-center">
+                  [#local marker = getMarker(milestone, "Youth") ]
+                  <p class="dacMarker level-${(marker.id)!""}" title="${(marker.powbName)!""}">${(marker.acronym)!""}</p>
+                </td>
                 [#-- CapDev --]
-                <td class="text-center"> 2 </td>
+                <td class="text-center"> 
+                  [#local marker = getMarker(milestone, "CapDev") ]
+                  <p class="dacMarker level-${(marker.id)!""}" title="${(marker.powbName)!""}">${(marker.acronym)!""}</p>
+                </td>
                 [#-- Climate Change --]
-                <td class="text-center"> 3 </td>
-                [#-- Other --]
-                <td class="text-center"> . </td>
+                <td class="text-center">
+                  [#local marker = getMarker(milestone, "Climate Change") ]
+                  <p class="dacMarker level-${(marker.id)!""}" title="${(marker.powbName)!""}">${(marker.acronym)!""}</p>
+                </td> 
                 [/#if]
               </tr>
             [/#list]
@@ -358,3 +367,12 @@
   </div>
   [/#if]
 [/#macro]
+
+[#function getMarker element name]
+  [#list (element.crossCuttingMarkers)![] as ccm]
+    [#if ccm.cgiarCrossCuttingMarker.name == name]
+      [#return (ccm.repIndGenderYouthFocusLevel)!{} ]
+    [/#if]
+  [/#list]
+  [#return {} ]
+[/#function]

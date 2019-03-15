@@ -214,58 +214,74 @@
       <tbody>
         [#if list?has_content]
           [#list list as item]
-          <tr>
-            [#if !allowPopups]
-            [#-- Authors --]
-            <td>[@utils.tableList list=(item.users)![] displayFieldName="composedName" nobr=true/]</td>
-            [#-- Date of Publication --]
-            <td>[@utils.tableText value=(item.getMetadataValue(17))!"" /]</td>
-            [/#if]
-            [#-- Title --]
-            <td>[@utils.tableText value=(item.deliverableInfo.title)!"" /]</td>
-            [#-- Journal Article --]
-            <td>[@utils.tableText value=(item.publication.journal)!"" /]</td>
-            [#if !allowPopups]
-              [#-- Volume --]
-              <td class="fullPublications-table">[@utils.tableText value=(item.publication.volume)!"" /]</td>
-              [#-- Issue --]
-              <td class="fullPublications-table">[@utils.tableText value=(item.publication.issue)!"" /]</td>
-              [#-- Page --]
-              <td class="fullPublications-table">[@utils.tableText value=(item.publication.pages)!"" /]</td>
-            [/#if]
-            [#-- Is OpenAccess --]
-            <td class="text-center">
-              <img src="${baseUrl}/global/images/openAccess-${(item.dissemination.isOpenAccess?string)!'false'}.png" alt="" />
-            </td>
-            [#-- Is ISI --]
-            <td class="text-center">
-              <img src="${baseUrl}/global/images/checked-${(item.publication.isiPublication?string)!'false'}.png" alt="" />
-            </td>
-            [#if !allowPopups]
-              [#-- DOI or Handle --]
-              <td class="text-center">
-              [#local doi = (item.getMetadataValue(36))!"" /]
+            [#local url][@s.url namespace="/projects" action="${(crpSession)!}/deliverableList"][@s.param name='projectID']${(item.project.id?c)!}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
+            <tr>
+              [#if !allowPopups]
+              [#-- Authors --]
+              <td>[@utils.tableList list=(item.users)![] displayFieldName="composedName" nobr=true/]</td>
+              [#-- Date of Publication --]
+              <td>[@utils.tableText value=(item.getMetadataValue(17))!"" /]</td>
+              [/#if]
+              [#-- Title --]
+              <td>
+                [@utils.tableText value=(item.deliverableInfo.title)!"" /]
+                [#if item.project??]<br /> <small>(From Project P${item.project.id})</small> [/#if]
               
-              [#if doi?has_content && doi?contains("http") && !(doi?contains(";"))]
-              <a target="_blank" href="${doi}"><span class="glyphicon glyphicon-link"></span></a>
-              [#else]
-                [#if !(doi?has_content) ]
-                 <span class="glyphicon glyphicon-link" title="Not defined"></span>
-                [#else]
-                 <span class="glyphicon glyphicon-link" title="${doi}"></span>
+                [#if PMU]
+                <br />
+                <div class="form-group">
+                  [#list (item.selectedFlahsgips)![] as liason]
+                    <span class="programTag" style="border-color:${(liason.crpProgram.color)!'#fff'}" title="${(liason.composedName)!}">${(liason.acronym)!}</span>
+                  [/#list]
+                </div>
                 [/#if]
-              [/#if]              
+                
+                <a href="${url}" target="_blank" class="pull-right"><span class="glyphicon glyphicon-new-window"></span></a>
               
               </td>
-            [/#if]
-            [#if allowPopups]
-              [#-- Check --]
+              [#-- Journal Article --]
+              <td>[@utils.tableText value=(item.publication.journal)!"" /]</td>
+              [#if !allowPopups]
+                [#-- Volume --]
+                <td class="fullPublications-table">[@utils.tableText value=(item.publication.volume)!"" /]</td>
+                [#-- Issue --]
+                <td class="fullPublications-table">[@utils.tableText value=(item.publication.issue)!"" /]</td>
+                [#-- Page --]
+                <td class="fullPublications-table">[@utils.tableText value=(item.publication.pages)!"" /]</td>
+              [/#if]
+              [#-- Is OpenAccess --]
               <td class="text-center">
-                [#local isChecked = ((!reportSynthesis.reportSynthesisFlagshipProgress.deliverablesIds?seq_contains(item.id))!true) /]
-                [@customForm.checkmark id="deliverable-${(item.id)!}" name="reportSynthesis.reportSynthesisFlagshipProgress.deliverablesValue" value="${(item.id)!''}" checked=isChecked editable=editable centered=true/]
+                <img src="${baseUrl}/global/images/openAccess-${(item.dissemination.isOpenAccess?string)!'false'}.png" alt="" />
               </td>
-            [/#if]
-          </tr>
+              [#-- Is ISI --]
+              <td class="text-center">
+                <img src="${baseUrl}/global/images/checked-${(item.publication.isiPublication?string)!'false'}.png" alt="" />
+              </td>
+              [#if !allowPopups]
+                [#-- DOI or Handle --]
+                <td class="text-center">
+                [#local doi = (item.getMetadataValue(36))!"" /]
+                
+                [#if doi?has_content && doi?contains("http") && !(doi?contains(";"))]
+                <a target="_blank" href="${doi}"><span class="glyphicon glyphicon-link"></span></a>
+                [#else]
+                  [#if !(doi?has_content) ]
+                   <span class="glyphicon glyphicon-link" title="Not defined"></span>
+                  [#else]
+                   <span class="glyphicon glyphicon-link" title="${doi}"></span>
+                  [/#if]
+                [/#if]              
+                
+                </td>
+              [/#if]
+              [#if allowPopups]
+                [#-- Check --]
+                <td class="text-center">
+                  [#local isChecked = ((!reportSynthesis.reportSynthesisFlagshipProgress.deliverablesIds?seq_contains(item.id))!true) /]
+                  [@customForm.checkmark id="deliverable-${(item.id)!}" name="reportSynthesis.reportSynthesisFlagshipProgress.deliverablesValue" value="${(item.id)!''}" checked=isChecked editable=editable centered=true/]
+                </td>
+              [/#if]
+            </tr>
           [/#list]
         [/#if]
       </tbody>

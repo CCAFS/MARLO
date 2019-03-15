@@ -130,8 +130,9 @@ form .form-group.margin-panel {
   border-collapse: collapse;
 }
 
-.table-border tr {
-   border: 1px solid rgb(224, 224, 224);
+.table-border tbody td {
+  border-bottom: 1px solid rgb(224, 224, 224);
+  border-right: 1px solid rgb(241, 240, 240);
 }
 
 .table-border tr:nth-child(even) {
