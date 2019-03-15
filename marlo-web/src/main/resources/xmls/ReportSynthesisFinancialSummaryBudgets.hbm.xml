@@ -50,5 +50,8 @@
         <property name="modificationJustification" type="string">
             <column name="modification_justification" />
         </property>
+        <property name="comments" type="string">
+            <column name="comments" sql-type="TEXT" />
+        </property>        
     </class>
 </hibernate-mapping>
