@@ -33,21 +33,16 @@ public class ReportSynthesisFlagshipProgressOutcomeMilestone extends MarloAudita
   private Set<ReportSynthesisFlagshipProgressCrossCuttingMarker> reportSynthesisFlagshipProgressCrossCuttingMarkers =
     new HashSet<ReportSynthesisFlagshipProgressCrossCuttingMarker>(0);
 
-  List<ReportSynthesisFlagshipProgressCrossCuttingMarker> crossCuttingMarkers;
+  List<ReportSynthesisFlagshipProgressCrossCuttingMarker> markers;
 
   @Expose
-  private RepIndMilestoneReason repIndMilestoneReason;
+  private RepIndMilestoneReason reason;
 
   @Expose
   private String otherReason;
 
 
   public ReportSynthesisFlagshipProgressOutcomeMilestone() {
-  }
-
-
-  public List<ReportSynthesisFlagshipProgressCrossCuttingMarker> getCrossCuttingMarkers() {
-    return crossCuttingMarkers;
   }
 
 
@@ -69,6 +64,11 @@ public class ReportSynthesisFlagshipProgressOutcomeMilestone extends MarloAudita
   }
 
 
+  public List<ReportSynthesisFlagshipProgressCrossCuttingMarker> getMarkers() {
+    return markers;
+  }
+
+
   public Long getMilestonesStatus() {
     return milestonesStatus;
   }
@@ -78,9 +78,8 @@ public class ReportSynthesisFlagshipProgressOutcomeMilestone extends MarloAudita
     return otherReason;
   }
 
-
-  public RepIndMilestoneReason getRepIndMilestoneReason() {
-    return repIndMilestoneReason;
+  public RepIndMilestoneReason getReason() {
+    return reason;
   }
 
 
@@ -108,13 +107,12 @@ public class ReportSynthesisFlagshipProgressOutcomeMilestone extends MarloAudita
 
         case 3:
           return "Cancelled";
+
+        case 4:
+          return "Changed";
       }
     }
     return "";
-  }
-
-  public void setCrossCuttingMarkers(List<ReportSynthesisFlagshipProgressCrossCuttingMarker> crossCuttingMarkers) {
-    this.crossCuttingMarkers = crossCuttingMarkers;
   }
 
 
@@ -122,22 +120,28 @@ public class ReportSynthesisFlagshipProgressOutcomeMilestone extends MarloAudita
     this.crpMilestone = crpMilestone;
   }
 
+
   public void setEvidence(String evidence) {
     this.evidence = evidence;
   }
 
 
+  public void setMarkers(List<ReportSynthesisFlagshipProgressCrossCuttingMarker> markers) {
+    this.markers = markers;
+  }
+
   public void setMilestonesStatus(Long milestonesStatus) {
     this.milestonesStatus = milestonesStatus;
   }
+
 
   public void setOtherReason(String otherReason) {
     this.otherReason = otherReason;
   }
 
 
-  public void setRepIndMilestoneReason(RepIndMilestoneReason repIndMilestoneReason) {
-    this.repIndMilestoneReason = repIndMilestoneReason;
+  public void setReason(RepIndMilestoneReason reason) {
+    this.reason = reason;
   }
 
 

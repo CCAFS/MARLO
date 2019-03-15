@@ -246,7 +246,7 @@
         </thead>
         <tbody>
           [#list cgiarCrossCuttingMarkers as marker]
-            [#local ccName=  "${name}.crossCuttingMarkers[${marker_index}]"]
+            [#local ccName=  "${customName}.crossCuttingMarkers[${marker_index}]"]
             [#local annualReportCrossCuting =  (action.getCrossCuttingMarker( ((annualReportElement.id)!-1), marker.id ))! ]
             <tr>
               <td class="row-title"> 
@@ -287,13 +287,13 @@
       
       [#-- Extendend, cancelled or changed milestones - Main reason --]
       <div class="form-group">
-        [@customForm.select name="${customName}.milestoneMainReason.id" label=""  i18nkey="${customLabel}.milestoneMainReason" listName="" keyFieldName=""  displayFieldName=""   required=true  className="milestoneMainReasonSelect" editable=editable/]
+        [@customForm.select name="${customName}.reason.id" label=""  i18nkey="${customLabel}.milestoneMainReason" listName="reasons" keyFieldName="id"  displayFieldName="name"   required=true  className="milestoneMainReasonSelect" editable=editable/]
       </div>
       
       [#-- Extendend, cancelled or changed milestones - Other reason --]
-      [#local showOther = (annualReportElement.milestoneMainReason.name == "other")!false /]
+      [#local showOther = (annualReportElement.reason.name == "other")!false /]
       <div class="form-group otherBlock" style="display:${showOther?string('block', 'none')}">
-        [@customForm.input name="${customName}.milestoneOtherReason" i18nkey="${customLabel}.milestoneOtherReason" display=true required=false className="input-sm" editable=editable /]
+        [@customForm.input name="${customName}.otherReason" i18nkey="${customLabel}.milestoneOtherReason" display=true required=false className="input-sm" editable=editable /]
       </div>
     </div>
     
