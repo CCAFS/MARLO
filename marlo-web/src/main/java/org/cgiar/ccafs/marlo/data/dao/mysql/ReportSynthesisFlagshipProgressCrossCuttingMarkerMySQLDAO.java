@@ -81,12 +81,10 @@ public class ReportSynthesisFlagshipProgressCrossCuttingMarkerMySQLDAO
     long cgiarCrossCuttingMarkerID, long phaseID) {
     StringBuilder query = new StringBuilder();
     query.append("SELECT id as markerId FROM report_synthesis_flagship_progress_cross ");
-    query.append("WHERE report_synthesis_flagship_progress_milestone_id = ");
+    query.append("WHERE report_synthesis_flagship_progress_outcome_milestone_id = ");
     query.append(milestoneID);
     query.append(" AND cgiar_cross_cutting_marker_id = ");
     query.append(cgiarCrossCuttingMarkerID);
-    query.append(" AND id_phase = ");
-    query.append(phaseID);
     List<Map<String, Object>> list = super.findCustomQuery(query.toString());
 
     List<ReportSynthesisFlagshipProgressCrossCuttingMarker> crossCuttingMarkers =
