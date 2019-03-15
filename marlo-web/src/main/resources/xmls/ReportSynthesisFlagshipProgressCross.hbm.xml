@@ -12,13 +12,8 @@
 		</id>
 		<many-to-one
 			class="org.cgiar.ccafs.marlo.data.model.CgiarCrossCuttingMarker"
-			fetch="select" name="cgiarCrossCuttingMarker">
+			fetch="select" name="marker">
 			<column name="cgiar_cross_cutting_marker_id" />
-		</many-to-one>
-		<many-to-one
-			class="org.cgiar.ccafs.marlo.data.model.Phase" fetch="select"
-			name="phase">
-			<column name="id_phase" />
 		</many-to-one>
 		<property generated="never" lazy="false" name="justification"
       optimistic-lock="true" type="string" unique="false">
@@ -31,7 +26,7 @@
 		</many-to-one>
 		<many-to-one
 			class="org.cgiar.ccafs.marlo.data.model.RepIndGenderYouthFocusLevel"
-			fetch="select" name="repIndGenderYouthFocusLevel">
+			fetch="select" name="focus">
 			<column name="rep_ind_gender_youth_focus_level_id" />
 		</many-to-one>
 	</class>
