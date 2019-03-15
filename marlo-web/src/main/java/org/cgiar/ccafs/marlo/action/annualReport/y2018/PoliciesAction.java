@@ -101,6 +101,7 @@ public class PoliciesAction extends BaseAction {
   private List<ProjectPolicy> projectPolicies;
   private List<ReportSynthesisPoliciesByOrganizationTypeDTO> policiesByOrganizationTypeDTOs;
   private List<ReportSynthesisPoliciesByRepIndStageProcessDTO> policiesByRepIndStageProcessDTOs;
+  private Integer total = 0;
 
 
   @Inject
@@ -430,19 +431,19 @@ public class PoliciesAction extends BaseAction {
     return loggedCrp;
   }
 
+
   public List<ReportSynthesisPoliciesByOrganizationTypeDTO> getPoliciesByOrganizationTypeDTOs() {
     return policiesByOrganizationTypeDTOs;
   }
+
 
   public List<ReportSynthesisPoliciesByRepIndStageProcessDTO> getPoliciesByRepIndStageProcessDTOs() {
     return policiesByRepIndStageProcessDTOs;
   }
 
-
   public List<ProjectPolicy> getProjectPolicies() {
     return projectPolicies;
   }
-
 
   public ReportSynthesis getReportSynthesis() {
     return reportSynthesis;
@@ -452,6 +453,12 @@ public class PoliciesAction extends BaseAction {
   public Long getSynthesisID() {
     return synthesisID;
   }
+
+
+  public Integer getTotal() {
+    return total;
+  }
+
 
   public String getTransaction() {
     return transaction;
@@ -471,7 +478,6 @@ public class PoliciesAction extends BaseAction {
     return isFP;
   }
 
-
   @Override
   public boolean isPMU() {
     boolean isFP = false;
@@ -483,6 +489,7 @@ public class PoliciesAction extends BaseAction {
     return isFP;
 
   }
+
 
   @Override
   public String next() {
@@ -651,6 +658,7 @@ public class PoliciesAction extends BaseAction {
           selectedProjectPolicies.remove(projectPolicy);
         }
       }
+      total = selectedProjectPolicies.size();
 
       if (selectedProjectPolicies != null && !selectedProjectPolicies.isEmpty()) {
         // Chart: Policies by organization type
@@ -675,7 +683,6 @@ public class PoliciesAction extends BaseAction {
     }
 
   }
-
 
   @Override
   public String save() {
@@ -728,6 +735,7 @@ public class PoliciesAction extends BaseAction {
     }
   }
 
+
   public void setLiaisonInstitution(LiaisonInstitution liaisonInstitution) {
     this.liaisonInstitution = liaisonInstitution;
   }
@@ -736,15 +744,14 @@ public class PoliciesAction extends BaseAction {
     this.liaisonInstitutionID = liaisonInstitutionID;
   }
 
-
   public void setLiaisonInstitutions(List<LiaisonInstitution> liaisonInstitutions) {
     this.liaisonInstitutions = liaisonInstitutions;
   }
 
+
   public void setLoggedCrp(GlobalUnit loggedCrp) {
     this.loggedCrp = loggedCrp;
   }
-
 
   public void setPoliciesByOrganizationTypeDTOs(
     List<ReportSynthesisPoliciesByOrganizationTypeDTO> policiesByOrganizationTypeDTOs) {
@@ -767,8 +774,13 @@ public class PoliciesAction extends BaseAction {
     this.reportSynthesis = reportSynthesis;
   }
 
+
   public void setSynthesisID(Long synthesisID) {
     this.synthesisID = synthesisID;
+  }
+
+  public void setTotal(Integer total) {
+    this.total = total;
   }
 
   public void setTransaction(String transaction) {

@@ -58,11 +58,10 @@
             
             <div class="form-group row">
               <div class="col-md-4">
-              [#assign peerReviewedArticles = 12 /]
                 [#-- Total number of peer reviewed articles --]
                 <div id="" class="simpleBox numberBox">
                   <label for="">[@s.text name="${customLabel}.indicatorC4.totalArticles" /]</label><br />
-                  <span>${(peerReviewedArticles)!}</span>
+                  <span>${(total)!}</span>
                 </div>
               </div>
               
@@ -70,8 +69,8 @@
                 [#-- Chart 10 - Number of peer reviewed articles by Open Access status --]
                 <div id="chart10" class="chartBox simpleBox">
                   [#assign chartData = [
-                      {"name":"Open Acess",   "value": "10"},
-                      {"name":"Limited",      "value": "3"}
+                      {"name":"Open Acess",   "value": "${(totalOpenAccess)!0}"},
+                      {"name":"Limited",      "value": "${(totalLimited)!0}"}
                     ] /] 
                   <ul class="chartData" style="display:none">
                     <li>
@@ -89,8 +88,8 @@
                 [#-- Chart 11 - Number of peer reviewed articles by ISI status --]
                 <div id="chart11" class="chartBox simpleBox">
                   [#assign chartData = [
-                      {"name":"Yes",   "value": "14"},
-                      {"name":"No",    "value": "3"}
+                      {"name":"Yes",   "value": "${(totalIsis)!0}"},
+                      {"name":"No",    "value": "${(totalNoIsis)!0}"}
                     ] 
                   /] 
                   <ul class="chartData" style="display:none">
@@ -166,18 +165,18 @@
       <tbody>
         <tr>
           <td class="tableTitle">[@s.text name="${customLabel}.${name}.publications" /]</td>
-          <td class="text-center"></td>
+          <td class="text-center">${total}</td>
           <td class="text-center">100%</td>
         </tr>
         <tr>
           <td class="tableTitle">[@s.text name="${customLabel}.${name}.openAccess" /]</td>
-          <td class="text-center"></td>
-          <td class="text-center"></td>
+          <td class="text-center">${(totalOpenAccess)!0}</td>
+          <td class="text-center">${((totalOpenAccess/total)*100)?string("0.##")}%</td>
         </tr>
         <tr>
           <td class="tableTitle">[@s.text name="${customLabel}.${name}.isi" /]</td>
-          <td class="text-center"></td>
-          <td class="text-center"></td>
+          <td class="text-center">${(totalIsis)!0}</td>
+          <td class="text-center">${((totalIsis/total)*100)?string("0.##")}%</td>
         </tr>
       </tbody>
     </table>
@@ -237,7 +236,7 @@
                 <br />
                 <div class="form-group">
                   [#list (item.selectedFlahsgips)![] as liason]
-                    <span class="programTag" style="border-color:${(liason.crpProgram.color)!'#fff'}" title="${(liason.composedName)!}">${(liason.acronym)!}</span>
+                    <span class="programTag" style="border-color:${(liason.crpProgram.color)!'#444'}" title="${(liason.composedName)!}">${(liason.acronym)!}</span>
                   [/#list]
                 </div>
                 [/#if]
