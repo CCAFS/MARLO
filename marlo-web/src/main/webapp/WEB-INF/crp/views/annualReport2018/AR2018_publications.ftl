@@ -3,7 +3,7 @@
 [#assign currentSectionString = "annualReport-${actionName?replace('/','-')}-${synthesisID}" /]
 [#assign currentSection = "synthesis" /]
 [#assign currentStage = actionName?split('/')[1]/]
-[#assign pageLibs = [ "datatables.net", "datatables.net-bs" ] /]
+[#assign pageLibs = [ "datatables.net", "datatables.net-bs", "malihu-custom-scrollbar-plugin" ] /]
 [#assign customJS = [ 
   "https://www.gstatic.com/charts/loader.js",
   "https://cdn.datatables.net/buttons/1.3.1/js/dataTables.buttons.min.js",
@@ -197,9 +197,9 @@
           <th class="text-center"> [@s.text name="${customLabel}.${name}.article" /] </th>
           <th class="text-center"> [@s.text name="${customLabel}.${name}.journal" /] </th>
           [#if !allowPopups]
-            <th class="text-center fullPublications-table"> [@s.text name="${customLabel}.${name}.volume" /] </th>
-            <th class="text-center fullPublications-table"> [@s.text name="${customLabel}.${name}.issue" /] </th>
-            <th class="text-center fullPublications-table"> [@s.text name="${customLabel}.${name}.page" /] </th>
+            <th class="text-center"> [@s.text name="${customLabel}.${name}.volume" /] </th>
+            <th class="text-center"> [@s.text name="${customLabel}.${name}.issue" /] </th>
+            <th class="text-center"> [@s.text name="${customLabel}.${name}.page" /] </th>
           [/#if]
             <th class="text-center"> [@s.text name="${customLabel}.${name}.openAccess" /] </th>
             <th class="text-center"> [@s.text name="${customLabel}.${name}.isi" /] </th>
@@ -214,19 +214,25 @@
       <tbody>
         [#if list?has_content]
           [#list list as item]
-            [#local url][@s.url namespace="/projects" action="${(crpSession)!}/deliverableList"][@s.param name='projectID']${(item.project.id?c)!}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
+            [#local isFromProject = (item.project??)!false]
+            [#if isFromProject]
+              [#local url][@s.url namespace="/projects" action="${(crpSession)!}/deliverable"][@s.param name='deliverableID']${item.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
+            [#else]
+              [#local url][@s.url namespace="/publications" action="${(crpSession)!}/publication"][@s.param name='deliverableID']${item.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
+            [/#if]
             <tr>
               [#if !allowPopups]
               [#-- Authors --]
-              <td>[@utils.tableList list=(item.users)![] displayFieldName="composedName" nobr=true/]</td>
+              <td>[@utils.tableList list=(item.users)![] displayFieldName="composedName" nobr=true class="authorsList mCustomScrollbar" scroll=true /]</td>
               [#-- Date of Publication --]
               <td>[@utils.tableText value=(item.getMetadataValue(17))!"" /]</td>
               [/#if]
               [#-- Title --]
               <td>
                 [@utils.tableText value=(item.deliverableInfo.title)!"" /]
-                [#if item.project??]<br /> <small>(From Project P${item.project.id})</small> [/#if]
-              
+                
+                [#if isFromProject]<br /> <small>(From Project P${item.project.id})</small> [/#if]
+                
                 [#if PMU]
                 <br />
                 <div class="form-group">
@@ -237,7 +243,7 @@
                 [/#if]
                 
                 <a href="${url}" target="_blank" class="pull-right"><span class="glyphicon glyphicon-new-window"></span></a>
-              
+                
               </td>
               [#-- Journal Article --]
               <td>[@utils.tableText value=(item.publication.journal)!"" /]</td>

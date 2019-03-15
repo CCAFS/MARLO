@@ -18,7 +18,7 @@ public class ReportSynthesisFlagshipProgressCrossCuttingMarker extends MarloBase
   @Expose
   private Phase phase;
   @Expose
-  private ReportSynthesisFlagshipProgressMilestone reportSynthesisFlagshipProgressMilestone;
+  private ReportSynthesisFlagshipProgressOutcomeMilestone reportSynthesisFlagshipProgressOutcomeMilestone;
   @Expose
   private RepIndGenderYouthFocusLevel repIndGenderYouthFocusLevel;
   @Expose
@@ -92,9 +92,10 @@ public class ReportSynthesisFlagshipProgressCrossCuttingMarker extends MarloBase
   }
 
 
-  public ReportSynthesisFlagshipProgressMilestone getReportSynthesisFlagshipProgressMilestone() {
-    return reportSynthesisFlagshipProgressMilestone;
+  public ReportSynthesisFlagshipProgressOutcomeMilestone getReportSynthesisFlagshipProgressOutcomeMilestone() {
+    return reportSynthesisFlagshipProgressOutcomeMilestone;
   }
+
 
   @Override
   public int hashCode() {
@@ -110,10 +111,10 @@ public class ReportSynthesisFlagshipProgressCrossCuttingMarker extends MarloBase
     return true;
   }
 
-
   public void setCgiarCrossCuttingMarker(CgiarCrossCuttingMarker cgiarCrossCuttingMarker) {
     this.cgiarCrossCuttingMarker = cgiarCrossCuttingMarker;
   }
+
 
   public void setJustification(String justification) {
     this.justification = justification;
@@ -135,9 +136,9 @@ public class ReportSynthesisFlagshipProgressCrossCuttingMarker extends MarloBase
   }
 
 
-  public void setReportSynthesisFlagshipProgressMilestone(
-    ReportSynthesisFlagshipProgressMilestone reportSynthesisFlagshipProgressMilestone) {
-    this.reportSynthesisFlagshipProgressMilestone = reportSynthesisFlagshipProgressMilestone;
+  public void setReportSynthesisFlagshipProgressOutcomeMilestone(
+    ReportSynthesisFlagshipProgressOutcomeMilestone reportSynthesisFlagshipProgressOutcomeMilestone) {
+    this.reportSynthesisFlagshipProgressOutcomeMilestone = reportSynthesisFlagshipProgressOutcomeMilestone;
   }
 
 

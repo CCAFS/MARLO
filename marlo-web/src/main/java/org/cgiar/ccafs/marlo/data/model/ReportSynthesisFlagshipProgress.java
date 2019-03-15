@@ -23,29 +23,41 @@ public class ReportSynthesisFlagshipProgress extends MarloAuditableEntity implem
   @Expose
   private String summary;
 
+  private Set<ReportSynthesisFlagshipProgressOutcome> reportSynthesisFlagshipProgressOutcomes =
+    new HashSet<ReportSynthesisFlagshipProgressOutcome>(0);
+
+  private List<ReportSynthesisFlagshipProgressOutcome> outcomeList;
+
+
   private Set<ReportSynthesisFlagshipProgressMilestone> reportSynthesisFlagshipProgressMilestones =
     new HashSet<ReportSynthesisFlagshipProgressMilestone>(0);
 
   private List<ReportSynthesisFlagshipProgressMilestone> milestones;
+
 
   /**
    * AR2018 Fields
    */
   @Expose
   private String overallProgress;
+
+
   @Expose
   private String progressByFlagships;
+
+
   @Expose
   private String detailedAnnex;
+
   @Expose
   private String expandedResearchAreas;
+
   @Expose
   private String droppedResearchLines;
   @Expose
   private String changedDirection;
   @Expose
   private String altmetricScore;
-
   // policies checks
   private Set<ReportSynthesisFlagshipProgressPolicy> reportSynthesisFlagshipProgressPolicies =
     new HashSet<ReportSynthesisFlagshipProgressPolicy>(0);
@@ -67,13 +79,11 @@ public class ReportSynthesisFlagshipProgress extends MarloAuditableEntity implem
   private List<ProjectInnovation> projectInnovations;
   private String innovationsValue;
 
-
   // Publications checks
   private Set<ReportSynthesisFlagshipProgressDeliverable> reportSynthesisFlagshipProgressDeliverables =
     new HashSet<ReportSynthesisFlagshipProgressDeliverable>(0);
   private List<ReportSynthesisFlagshipProgressDeliverable> plannedDeliverables;
   private List<Deliverable> deliverables;
-
   private String deliverablesValue;
 
 
@@ -105,7 +115,6 @@ public class ReportSynthesisFlagshipProgress extends MarloAuditableEntity implem
   public String getAltmetricScore() {
     return altmetricScore;
   }
-
 
   public String getChangedDirection() {
     return changedDirection;
@@ -140,6 +149,7 @@ public class ReportSynthesisFlagshipProgress extends MarloAuditableEntity implem
     return detailedAnnex;
   }
 
+
   public String getDroppedResearchLines() {
     return droppedResearchLines;
   }
@@ -168,7 +178,6 @@ public class ReportSynthesisFlagshipProgress extends MarloAuditableEntity implem
     return innovationsValue;
   }
 
-
   @Override
   public String getLogDeatil() {
     StringBuilder sb = new StringBuilder();
@@ -176,9 +185,12 @@ public class ReportSynthesisFlagshipProgress extends MarloAuditableEntity implem
     return sb.toString();
   }
 
-
   public List<ReportSynthesisFlagshipProgressMilestone> getMilestones() {
     return milestones;
+  }
+
+  public List<ReportSynthesisFlagshipProgressOutcome> getOutcomeList() {
+    return outcomeList;
   }
 
 
@@ -191,6 +203,7 @@ public class ReportSynthesisFlagshipProgress extends MarloAuditableEntity implem
     return plannedDeliverables;
   }
 
+
   public List<ReportSynthesisFlagshipProgressInnovation> getPlannedInnovations() {
     return plannedInnovations;
   }
@@ -199,7 +212,6 @@ public class ReportSynthesisFlagshipProgress extends MarloAuditableEntity implem
   public List<ReportSynthesisFlagshipProgressPolicy> getPlannedPolicies() {
     return plannedPolicies;
   }
-
 
   public List<ReportSynthesisFlagshipProgressStudy> getPlannedStudies() {
     return plannedStudies;
@@ -231,6 +243,7 @@ public class ReportSynthesisFlagshipProgress extends MarloAuditableEntity implem
     return progressByFlagships;
   }
 
+
   public List<ProjectInnovation> getProjectInnovations() {
     return projectInnovations;
   }
@@ -244,15 +257,14 @@ public class ReportSynthesisFlagshipProgress extends MarloAuditableEntity implem
     return projectStudies;
   }
 
+
   public ReportSynthesis getReportSynthesis() {
     return reportSynthesis;
   }
 
-
   public Set<ReportSynthesisFlagshipProgressDeliverable> getReportSynthesisFlagshipProgressDeliverables() {
     return reportSynthesisFlagshipProgressDeliverables;
   }
-
 
   public Set<ReportSynthesisFlagshipProgressInnovation> getReportSynthesisFlagshipProgressInnovations() {
     return reportSynthesisFlagshipProgressInnovations;
@@ -261,6 +273,11 @@ public class ReportSynthesisFlagshipProgress extends MarloAuditableEntity implem
 
   public Set<ReportSynthesisFlagshipProgressMilestone> getReportSynthesisFlagshipProgressMilestones() {
     return reportSynthesisFlagshipProgressMilestones;
+  }
+
+
+  public Set<ReportSynthesisFlagshipProgressOutcome> getReportSynthesisFlagshipProgressOutcomes() {
+    return reportSynthesisFlagshipProgressOutcomes;
   }
 
 
@@ -344,6 +361,11 @@ public class ReportSynthesisFlagshipProgress extends MarloAuditableEntity implem
   }
 
 
+  public void setOutcomeList(List<ReportSynthesisFlagshipProgressOutcome> outcomeList) {
+    this.outcomeList = outcomeList;
+  }
+
+
   public void setOverallProgress(String overallProgress) {
     this.overallProgress = overallProgress;
   }
@@ -378,19 +400,19 @@ public class ReportSynthesisFlagshipProgress extends MarloAuditableEntity implem
     this.progressByFlagships = progressByFlagships;
   }
 
-
   public void setProjectInnovations(List<ProjectInnovation> projectInnovations) {
     this.projectInnovations = projectInnovations;
   }
-
 
   public void setProjectPolicies(List<ProjectPolicy> projectPolicies) {
     this.projectPolicies = projectPolicies;
   }
 
+
   public void setProjectStudies(List<ProjectExpectedStudy> projectStudies) {
     this.projectStudies = projectStudies;
   }
+
 
   public void setReportSynthesis(ReportSynthesis reportSynthesis) {
     this.reportSynthesis = reportSynthesis;
@@ -408,11 +430,17 @@ public class ReportSynthesisFlagshipProgress extends MarloAuditableEntity implem
     this.reportSynthesisFlagshipProgressInnovations = reportSynthesisFlagshipProgressInnovations;
   }
 
+
   public void setReportSynthesisFlagshipProgressMilestones(
     Set<ReportSynthesisFlagshipProgressMilestone> reportSynthesisFlagshipProgressMilestones) {
     this.reportSynthesisFlagshipProgressMilestones = reportSynthesisFlagshipProgressMilestones;
   }
 
+
+  public void setReportSynthesisFlagshipProgressOutcomes(
+    Set<ReportSynthesisFlagshipProgressOutcome> reportSynthesisFlagshipProgressOutcomes) {
+    this.reportSynthesisFlagshipProgressOutcomes = reportSynthesisFlagshipProgressOutcomes;
+  }
 
   public void setReportSynthesisFlagshipProgressPolicies(
     Set<ReportSynthesisFlagshipProgressPolicy> reportSynthesisFlagshipProgressPolicies) {
