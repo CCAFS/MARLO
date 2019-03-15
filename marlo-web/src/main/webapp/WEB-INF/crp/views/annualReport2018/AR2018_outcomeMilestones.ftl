@@ -256,7 +256,7 @@
                 <input type="hidden" name="${ccName}.cgiarCrossCuttingMarker.id" value="${(annualReportCrossCuting.id)!}" />
                 <input type="hidden" name="${ccName}.cgiarCrossCuttingMarker.id" value="${marker.id}"/>
               </td>
-              <td class="text-center">[@customForm.select name="${ccName}.repIndGenderYouthFocusLevel.id" label="" listName="" keyFieldName=""  displayFieldName="" required=true showTitle=false className="" editable=editable/]</td>
+              <td class="text-center">[@customForm.select name="${ccName}.repIndGenderYouthFocusLevel.id" label="" listName="focusLevels" keyFieldName="id"  displayFieldName="powbName" required=true showTitle=false className="" editable=editable/]</td>
               <td class="text-center">[@customForm.input name="${ccName}.justification" showTitle=false required=true editable=editable /]</td>
             </tr>
           [/#list]
