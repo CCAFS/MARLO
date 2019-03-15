@@ -189,24 +189,24 @@
     <table class="table table-bordered">
       <thead>
         <tr>
-        [#if !allowPopups]
-          <th class="text-center"> [@s.text name="${customLabel}.${name}.author" /] </th>
-          <th class="text-center"> [@s.text name="${customLabel}.${name}.date" /] </th>
-        [/#if]
           <th class="text-center"> [@s.text name="${customLabel}.${name}.article" /] </th>
+          [#if !allowPopups]
+            <th class="text-center"> [@s.text name="${customLabel}.${name}.author" /](s) </th>
+            <th class="text-center"> [@s.text name="${customLabel}.${name}.date" /] </th>
+          [/#if]
           <th class="text-center"> [@s.text name="${customLabel}.${name}.journal" /] </th>
           [#if !allowPopups]
             <th class="text-center"> [@s.text name="${customLabel}.${name}.volume" /] </th>
             <th class="text-center"> [@s.text name="${customLabel}.${name}.issue" /] </th>
             <th class="text-center"> [@s.text name="${customLabel}.${name}.page" /] </th>
           [/#if]
-            <th class="text-center"> [@s.text name="${customLabel}.${name}.openAccess" /] </th>
-            <th class="text-center"> [@s.text name="${customLabel}.${name}.isi" /] </th>
+          <th class="text-center"> [@s.text name="${customLabel}.${name}.openAccess" /] </th>
+          <th class="text-center"> [@s.text name="${customLabel}.${name}.isi" /] </th>
           [#if !allowPopups]
-           <th class="text-center col-md-1"> [@s.text name="${customLabel}.${name}.identifier" /] </th>
+            <th class="text-center col-md-1"> [@s.text name="${customLabel}.${name}.identifier" /] </th>
           [/#if]
           [#if allowPopups]
-           <th class="col-md-1 text-center"> [@s.text name="${customLabel}.${name}.includeAR" /] </th>
+            <th class="col-md-1 text-center"> [@s.text name="${customLabel}.${name}.includeAR" /] </th>
           [/#if]
         </tr>
       </thead>
@@ -220,12 +220,6 @@
               [#local url][@s.url namespace="/publications" action="${(crpSession)!}/publication"][@s.param name='deliverableID']${item.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
             [/#if]
             <tr>
-              [#if !allowPopups]
-              [#-- Authors --]
-              <td>[@utils.tableList list=(item.users)![] displayFieldName="composedName" nobr=true class="authorsList mCustomScrollbar" scroll=true /]</td>
-              [#-- Date of Publication --]
-              <td>[@utils.tableText value=(item.getMetadataValue(17))!"" /]</td>
-              [/#if]
               [#-- Title --]
               <td>
                 [@utils.tableText value=(item.deliverableInfo.title)!"" /]
@@ -244,15 +238,21 @@
                 <a href="${url}" target="_blank" class="pull-right"><span class="glyphicon glyphicon-new-window"></span></a>
                 
               </td>
+              [#if !allowPopups]
+              [#-- Authors --]
+              <td>[@utils.tableList list=(item.users)![] displayFieldName="composedName" nobr=true class="authorsList mCustomScrollbar" scroll=true /]</td>
+              [#-- Date of Publication --]
+              <td>[@utils.tableText value=(item.getMetadataValue(17))!"" /]</td>
+              [/#if]
               [#-- Journal Article --]
               <td>[@utils.tableText value=(item.publication.journal)!"" /]</td>
               [#if !allowPopups]
                 [#-- Volume --]
-                <td class="fullPublications-table">[@utils.tableText value=(item.publication.volume)!"" /]</td>
+                <td class="text-center col-md-1 fullPublications-table" style="width: 50px !important;">[@utils.tableText value=(item.publication.volume)!"" /]</td>
                 [#-- Issue --]
-                <td class="fullPublications-table">[@utils.tableText value=(item.publication.issue)!"" /]</td>
+                <td class="text-center col-md-1 fullPublications-table" style="width: 50px !important;">[@utils.tableText value=(item.publication.issue)!"" /]</td>
                 [#-- Page --]
-                <td class="fullPublications-table">[@utils.tableText value=(item.publication.pages)!"" /]</td>
+                <td class="text-center col-md-1 fullPublications-table" style="width: 50px !important;">[@utils.tableText value=(item.publication.pages)!"" /]</td>
               [/#if]
               [#-- Is OpenAccess --]
               <td class="text-center">

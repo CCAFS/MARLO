@@ -66,14 +66,12 @@ public class ProjectPolicy extends MarloAuditableEntity implements java.io.Seria
 
 
   public String getComposedName() {
-
-
-    if (projectPolicyInfo != null) {
+    if ((projectPolicyInfo != null) && (projectPolicyInfo.getTitle() != null)
+      && (projectPolicyInfo.getTitle().trim().length() > 0)) {
       return this.getId() + " - " + projectPolicyInfo.getTitle();
     } else {
-      return "" + this.getId();
+      return "" + this.getId() + " - Untitled";
     }
-
   }
 
 
