@@ -77,8 +77,8 @@ public class ReportSynthesisFlagshipProgressCrossCuttingMarkerMySQLDAO
   }
 
   @Override
-  public ReportSynthesisFlagshipProgressCrossCuttingMarker getCountryMarkerId(long milestoneID,
-    long cgiarCrossCuttingMarkerID, long phaseID) {
+  public ReportSynthesisFlagshipProgressCrossCuttingMarker getMarkerId(long milestoneID, long cgiarCrossCuttingMarkerID,
+    long phaseID) {
     StringBuilder query = new StringBuilder();
     query.append("SELECT id as markerId FROM report_synthesis_flagship_progress_cross ");
     query.append("WHERE report_synthesis_flagship_progress_outcome_milestone_id = ");

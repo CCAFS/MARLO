@@ -28,7 +28,8 @@ import javax.inject.Named;
  * @author CCAFS
  */
 @Named
-public class ReportSynthesisFlagshipProgressOutcomeMilestoneManagerImpl implements ReportSynthesisFlagshipProgressOutcomeMilestoneManager {
+public class ReportSynthesisFlagshipProgressOutcomeMilestoneManagerImpl
+  implements ReportSynthesisFlagshipProgressOutcomeMilestoneManager {
 
 
   private ReportSynthesisFlagshipProgressOutcomeMilestoneDAO reportSynthesisFlagshipProgressOutcomeMilestoneDAO;
@@ -36,22 +37,27 @@ public class ReportSynthesisFlagshipProgressOutcomeMilestoneManagerImpl implemen
 
 
   @Inject
-  public ReportSynthesisFlagshipProgressOutcomeMilestoneManagerImpl(ReportSynthesisFlagshipProgressOutcomeMilestoneDAO reportSynthesisFlagshipProgressOutcomeMilestoneDAO) {
+  public ReportSynthesisFlagshipProgressOutcomeMilestoneManagerImpl(
+    ReportSynthesisFlagshipProgressOutcomeMilestoneDAO reportSynthesisFlagshipProgressOutcomeMilestoneDAO) {
     this.reportSynthesisFlagshipProgressOutcomeMilestoneDAO = reportSynthesisFlagshipProgressOutcomeMilestoneDAO;
 
 
   }
 
   @Override
-  public void deleteReportSynthesisFlagshipProgressOutcomeMilestone(long reportSynthesisFlagshipProgressOutcomeMilestoneId) {
+  public void
+    deleteReportSynthesisFlagshipProgressOutcomeMilestone(long reportSynthesisFlagshipProgressOutcomeMilestoneId) {
 
-    reportSynthesisFlagshipProgressOutcomeMilestoneDAO.deleteReportSynthesisFlagshipProgressOutcomeMilestone(reportSynthesisFlagshipProgressOutcomeMilestoneId);
+    reportSynthesisFlagshipProgressOutcomeMilestoneDAO
+      .deleteReportSynthesisFlagshipProgressOutcomeMilestone(reportSynthesisFlagshipProgressOutcomeMilestoneId);
   }
 
   @Override
-  public boolean existReportSynthesisFlagshipProgressOutcomeMilestone(long reportSynthesisFlagshipProgressOutcomeMilestoneID) {
+  public boolean
+    existReportSynthesisFlagshipProgressOutcomeMilestone(long reportSynthesisFlagshipProgressOutcomeMilestoneID) {
 
-    return reportSynthesisFlagshipProgressOutcomeMilestoneDAO.existReportSynthesisFlagshipProgressOutcomeMilestone(reportSynthesisFlagshipProgressOutcomeMilestoneID);
+    return reportSynthesisFlagshipProgressOutcomeMilestoneDAO
+      .existReportSynthesisFlagshipProgressOutcomeMilestone(reportSynthesisFlagshipProgressOutcomeMilestoneID);
   }
 
   @Override
@@ -62,13 +68,20 @@ public class ReportSynthesisFlagshipProgressOutcomeMilestoneManagerImpl implemen
   }
 
   @Override
-  public ReportSynthesisFlagshipProgressOutcomeMilestone getReportSynthesisFlagshipProgressOutcomeMilestoneById(long reportSynthesisFlagshipProgressOutcomeMilestoneID) {
+  public ReportSynthesisFlagshipProgressOutcomeMilestone getMilestoneId(long progressID, long outcomeID) {
+    return reportSynthesisFlagshipProgressOutcomeMilestoneDAO.getMilestoneId(progressID, outcomeID);
+  }
+
+  @Override
+  public ReportSynthesisFlagshipProgressOutcomeMilestone
+    getReportSynthesisFlagshipProgressOutcomeMilestoneById(long reportSynthesisFlagshipProgressOutcomeMilestoneID) {
 
     return reportSynthesisFlagshipProgressOutcomeMilestoneDAO.find(reportSynthesisFlagshipProgressOutcomeMilestoneID);
   }
 
   @Override
-  public ReportSynthesisFlagshipProgressOutcomeMilestone saveReportSynthesisFlagshipProgressOutcomeMilestone(ReportSynthesisFlagshipProgressOutcomeMilestone reportSynthesisFlagshipProgressOutcomeMilestone) {
+  public ReportSynthesisFlagshipProgressOutcomeMilestone saveReportSynthesisFlagshipProgressOutcomeMilestone(
+    ReportSynthesisFlagshipProgressOutcomeMilestone reportSynthesisFlagshipProgressOutcomeMilestone) {
 
     return reportSynthesisFlagshipProgressOutcomeMilestoneDAO.save(reportSynthesisFlagshipProgressOutcomeMilestone);
   }
