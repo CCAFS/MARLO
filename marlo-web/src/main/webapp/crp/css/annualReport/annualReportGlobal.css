@@ -454,3 +454,9 @@ p.dacMarker.level-4 {
   font-size: 0.85em;
   padding: 6px 0;
 }
+
+.authorsList {
+  max-height: 140px;
+  overflow: auto;
+  align-items: center;
+}
