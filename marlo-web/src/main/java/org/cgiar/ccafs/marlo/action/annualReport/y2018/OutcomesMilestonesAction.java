@@ -870,7 +870,7 @@ public class OutcomesMilestonesAction extends BaseAction {
             crossCuttingOwnerSave.setFocus(null);
           }
 
-          crossCuttingOwnerSave.setJustification(crossCuttingOwner.getJustification());
+          crossCuttingOwnerSave.setJust(crossCuttingOwner.getJust());
 
           reportSynthesisFlagshipProgressCrossCuttingMarkerManager
             .saveReportSynthesisFlagshipProgressCrossCuttingMarker(crossCuttingOwnerSave);
@@ -907,13 +907,13 @@ public class OutcomesMilestonesAction extends BaseAction {
             hasChanges = true;
           }
 
-          if (crossCuttingOwner.getJustification() != null) {
-            if (crossCuttingOwner.getJustification().equals(crossCuttingOwnerSave.getJustification())) {
-              crossCuttingOwnerSave.setJustification(crossCuttingOwner.getJustification());
+          if (crossCuttingOwner.getJust() != null) {
+            if (!crossCuttingOwner.getJust().equals(crossCuttingOwnerSave.getJust())) {
+              crossCuttingOwnerSave.setJust(crossCuttingOwner.getJust());
               hasChanges = true;
             }
           } else {
-            crossCuttingOwnerSave.setJustification(null);
+            crossCuttingOwnerSave.setJust(null);
             hasChanges = true;
           }
 

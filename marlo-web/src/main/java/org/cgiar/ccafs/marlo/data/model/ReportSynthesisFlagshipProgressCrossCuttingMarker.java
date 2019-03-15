@@ -20,7 +20,7 @@ public class ReportSynthesisFlagshipProgressCrossCuttingMarker extends MarloBase
   @Expose
   private RepIndGenderYouthFocusLevel focus;
   @Expose
-  private String justification;
+  private String just;
 
 
   public ReportSynthesisFlagshipProgressCrossCuttingMarker() {
@@ -55,8 +55,8 @@ public class ReportSynthesisFlagshipProgressCrossCuttingMarker extends MarloBase
   }
 
 
-  public String getJustification() {
-    return justification;
+  public String getJust() {
+    return just;
   }
 
 
@@ -112,8 +112,8 @@ public class ReportSynthesisFlagshipProgressCrossCuttingMarker extends MarloBase
   }
 
 
-  public void setJustification(String justification) {
-    this.justification = justification;
+  public void setJust(String just) {
+    this.just = just;
   }
 
 
