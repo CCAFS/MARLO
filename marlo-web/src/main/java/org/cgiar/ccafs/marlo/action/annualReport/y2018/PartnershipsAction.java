@@ -581,9 +581,11 @@ public class PartnershipsAction extends BaseAction {
       }
 
       // load Crps-Platforms
-      globalUnits = crpManager.findAll().stream()
-        .filter(gu -> gu.isActive() && (gu.getGlobalUnitType().getId() == 1 || gu.getGlobalUnitType().getId() == 3))
-        .collect(Collectors.toList());
+      globalUnits =
+        crpManager
+          .findAll().stream().filter(gu -> gu.isActive() && (gu.getGlobalUnitType().getId() == 1
+            || gu.getGlobalUnitType().getId() == 3 || gu.getGlobalUnitType().getId() == 4))
+          .collect(Collectors.toList());
 
     }
 
