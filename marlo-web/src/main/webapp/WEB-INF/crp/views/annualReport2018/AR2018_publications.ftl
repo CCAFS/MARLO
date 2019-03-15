@@ -3,7 +3,7 @@
 [#assign currentSectionString = "annualReport-${actionName?replace('/','-')}-${synthesisID}" /]
 [#assign currentSection = "synthesis" /]
 [#assign currentStage = actionName?split('/')[1]/]
-[#assign pageLibs = [ "datatables.net", "datatables.net-bs" ] /]
+[#assign pageLibs = [ "datatables.net", "datatables.net-bs", "malihu-custom-scrollbar-plugin" ] /]
 [#assign customJS = [ 
   "https://www.gstatic.com/charts/loader.js",
   "https://cdn.datatables.net/buttons/1.3.1/js/dataTables.buttons.min.js",
@@ -197,9 +197,9 @@
           <th class="text-center"> [@s.text name="${customLabel}.${name}.article" /] </th>
           <th class="text-center"> [@s.text name="${customLabel}.${name}.journal" /] </th>
           [#if !allowPopups]
-            <th class="text-center fullPublications-table"> [@s.text name="${customLabel}.${name}.volume" /] </th>
-            <th class="text-center fullPublications-table"> [@s.text name="${customLabel}.${name}.issue" /] </th>
-            <th class="text-center fullPublications-table"> [@s.text name="${customLabel}.${name}.page" /] </th>
+            <th class="text-center"> [@s.text name="${customLabel}.${name}.volume" /] </th>
+            <th class="text-center"> [@s.text name="${customLabel}.${name}.issue" /] </th>
+            <th class="text-center"> [@s.text name="${customLabel}.${name}.page" /] </th>
           [/#if]
             <th class="text-center"> [@s.text name="${customLabel}.${name}.openAccess" /] </th>
             <th class="text-center"> [@s.text name="${customLabel}.${name}.isi" /] </th>
@@ -217,7 +217,7 @@
           <tr>
             [#if !allowPopups]
             [#-- Authors --]
-            <td>[@utils.tableList list=(item.users)![] displayFieldName="composedName" nobr=true/]</td>
+            <td>[@utils.tableList list=(item.users)![] displayFieldName="composedName" nobr=true class="authorsList mCustomScrollbar" scroll=true /]</td>
             [#-- Date of Publication --]
             <td>[@utils.tableText value=(item.getMetadataValue(17))!"" /]</td>
             [/#if]

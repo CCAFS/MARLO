@@ -46,7 +46,7 @@ table:not(.financial-report) thead th {
 }
 
 td {
-  padding: 3px 10px;
+  padding: 4px 10px;
   vertical-align: middle !important;
 }
 
@@ -130,8 +130,8 @@ form .form-group.margin-panel {
   border-collapse: collapse;
 }
 
-.table-border td {
-  border: 1px solid rgb(224, 224, 224);
+.table-border tr {
+   border: 1px solid rgb(224, 224, 224);
 }
 
 .table-border tr:nth-child(even) {
@@ -453,4 +453,10 @@ p.dacMarker.level-3 {
 p.dacMarker.level-4 {
   font-size: 0.85em;
   padding: 6px 0;
+}
+
+.authorsList {
+  max-height: 140px;
+  overflow: auto;
+  align-items: center;
 }
