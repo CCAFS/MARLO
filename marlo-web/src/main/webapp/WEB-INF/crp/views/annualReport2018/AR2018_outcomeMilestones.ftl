@@ -233,6 +233,14 @@
       <p class="text-justify"><strong>Milestone for ${actualPhase.year}</strong> - ${(element.title)!} </p>
     </div>
     
+    [#local crossCuttingMarkers = [
+      { "id": "1", "name": "Gender" },
+      { "id": "1", "name": "Youth" },
+      { "id": "1", "name": "CapDev" },
+      { "id": "1", "name": "ClimateChange" }
+    ] 
+    /]
+    
     [#-- Cross-Cutting --]
     <div class="form-group">
       <table class="milestones-crosscutting">
@@ -244,26 +252,19 @@
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td class="row-title">[@s.text name="${customLabel}.milestoneGenderScore" /]</td>
-            <td class="text-center">[@customForm.select name="${customName}.milestoneGenderScoreMarker" label="" listName="" keyFieldName=""  displayFieldName=""   required=true showTitle=false className="" editable=editable/]</td>
-            <td class="text-center">[@customForm.input name="${customName}.milestoneGenderScoreJustification" className="input-sm" showTitle=false required=true editable=editable /]</td>
-          </tr>
-          <tr>
-            <td class="row-title">[@s.text name="${customLabel}.milestoneYouthScore" /]</td>
-            <td class="text-center">[@customForm.select name="${customName}.milestoneYouthScoreMarker" label="" listName="" keyFieldName=""  displayFieldName=""  showTitle=false required=true  className="" editable=editable/]</td>
-            <td class="text-center">[@customForm.input name="${customName}.milestoneYouthScoreJustification" className="input-sm" showTitle=false required=true editable=editable /]</td>
-          </tr>
-          <tr>
-            <td class="row-title">[@s.text name="${customLabel}.milestoneCapDevScore" /]</td>
-            <td class="text-center">[@customForm.select name="${customName}.milestoneCapDevScoreMarker" label="" listName="" keyFieldName=""  displayFieldName="" showTitle=false required=true  className="" editable=editable/]</td>
-            <td class="text-center">[@customForm.input name="${customName}.milestoneCapDevScoreJustification" className="input-sm" showTitle=false required=true editable=editable /]</td>
-          </tr>
-          <tr>
-            <td class="row-title">[@s.text name="${customLabel}.milestoneClimateChangeScore" /]</td>
-            <td class="text-center">[@customForm.select name="${customName}.milestoneClimateChangeScoreMarker" label=""  listName="" keyFieldName=""  displayFieldName="" showTitle=false required=true  className="" editable=editable/]</td>
-            <td class="text-center">[@customForm.input name="${customName}.milestoneClimateChangeScoreJustification" className="input-sm" showTitle=false required=true editable=editable /]</td>
-          </tr>
+          [#list crossCuttingMarkers as marker]
+            [#local ccName=  "${name}.crossCuttingMarkers[${marker_index}]"]
+            [#local annualReportCrossCuting=  {} ]
+            <tr>
+              <td class="row-title"> 
+                <span class="name">${marker.name}</span>
+                <input type="hidden" name="${ccName}.cgiarCrossCuttingMarker.id" value="${(annualReportCrossCuting.id)!}" />
+                <input type="hidden" name="${ccName}.cgiarCrossCuttingMarker.id" value="${marker.id}"/>
+              </td>
+              <td class="text-center">[@customForm.select name="${ccName}.repIndGenderYouthFocusLevel.id" label="" listName="" keyFieldName=""  displayFieldName="" required=true showTitle=false className="" editable=editable/]</td>
+              <td class="text-center">[@customForm.input name="${ccName}.justification" showTitle=false required=true editable=editable /]</td>
+            </tr>
+          [/#list]
         </tbody>
       </table>
     </div>
