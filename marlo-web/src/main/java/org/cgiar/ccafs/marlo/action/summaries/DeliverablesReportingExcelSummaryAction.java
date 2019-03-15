@@ -589,8 +589,9 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
             && d.getFundingSource().getFundingSourceInfo(this.getSelectedPhase()) != null)
           .collect(Collectors.toList())) {
           String financialCode = "";
-          if (dfs.getFundingSource().getFundingSourceInfo().getFinanceCode() != null) {
-            financialCode = " (" + dfs.getFundingSource().getFundingSourceInfo().getFinanceCode() + ") - ";
+          if (dfs.getFundingSource().getFundingSourceInfo().getFinanceCode() != null
+            && !dfs.getFundingSource().getFundingSourceInfo().getFinanceCode().isEmpty()) {
+            financialCode = " (" + dfs.getFundingSource().getFundingSourceInfo().getFinanceCode() + ")";
           }
           fundingSources += "●  FS" + dfs.getFundingSource().getId() + financialCode + " - "
             + dfs.getFundingSource().getFundingSourceInfo().getTitle() + "\n";
