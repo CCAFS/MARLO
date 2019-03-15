@@ -31,8 +31,13 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class MetadataClientApi {
+
+
+  private static final Logger LOG = LoggerFactory.getLogger(MetadataClientApi.class);
 
   private RestConnectionUtil xmlReaderConnectionUtil;
 
@@ -136,43 +141,50 @@ public abstract class MetadataClientApi {
         }
         doi = doi.trim();
         if (!doi.equals("{}")) {
-          String metadataDOI = xmlReaderConnectionUtil.getJsonRestClientFromDOI(doi);
-          HashMap<String, Object> result = new ObjectMapper().readValue(metadataDOI, HashMap.class);
-          if (result != null && !result.isEmpty()) {
-            Object volume = result.get("volume");
-            Object issue = result.get("issue");
-            Object page = result.get("page");
-            Object journal = result.get("container-title");
-            Object publisher = result.get("publisher");
+          try {
+            String metadataDOI = xmlReaderConnectionUtil.getJsonRestClientFromDOI(doi);
+            HashMap<String, Object> result = new ObjectMapper().readValue(metadataDOI, HashMap.class);
+            if (result != null && !result.isEmpty()) {
+              Object volume = result.get("volume");
+              Object issue = result.get("issue");
+              Object page = result.get("page");
+              Object journal = result.get("container-title");
+              Object publisher = result.get("publisher");
 
-            // Volume
-            if (volume != null) {
-              jo.put("volume", volume.toString());
-            }
+              // Volume
+              if (volume != null) {
+                jo.put("volume", volume.toString());
+              }
 
-            // Issue
-            if (issue != null) {
-              jo.put("issue", issue.toString());
-            }
+              // Issue
+              if (issue != null) {
+                jo.put("issue", issue.toString());
+              }
 
-            // Page
-            if (page != null) {
-              jo.put("pages", page.toString());
-            }
+              // Page
+              if (page != null) {
+                jo.put("pages", page.toString());
+              }
 
-            // Journal
-            if (!jo.has("journal") || jo.get("journal") == null || jo.get("journal").toString().equals("{}")) {
-              if (journal != null) {
-                jo.put("journal", journal.toString());
-              } else {
-                // Try Publisher
-                if (publisher != null) {
-                  jo.put("journal", publisher.toString());
+              // Journal
+              if (!jo.has("journal") || jo.get("journal") == null || jo.get("journal").toString().equals("{}")) {
+                if (journal != null) {
+                  jo.put("journal", journal.toString());
+                } else {
+                  // Try Publisher
+                  if (publisher != null) {
+                    jo.put("journal", publisher.toString());
+                  }
                 }
               }
+
             }
+          } catch (JsonParseException e) {
+            e.printStackTrace();
+            LOG.error(e.getLocalizedMessage());
 
           }
+
 
         }
       }
