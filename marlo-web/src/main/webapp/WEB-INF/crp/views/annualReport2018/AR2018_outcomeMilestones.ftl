@@ -254,8 +254,7 @@
               <td class="text-center">
                 [@customForm.select name="${ccName}.focus.id" value="${(annualReportCrossCuting.focus.id)!-1}" label="" listName="focusLevels" keyFieldName="id"  displayFieldName="powbName" required=true showTitle=false className="" editable=editable/]</td>
               <td class="text-center">
-                ${(annualReportCrossCuting.justification)!}
-                [@customForm.input name="${ccName}.justification" showTitle=false required=true editable=editable /]</td>
+                [@customForm.input name="${ccName}.just" value="${(annualReportCrossCuting.just)!}" showTitle=false required=true editable=editable /]</td>
             </tr>
           [/#list]
         </tbody>
