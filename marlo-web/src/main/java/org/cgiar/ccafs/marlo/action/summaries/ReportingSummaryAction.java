@@ -3912,6 +3912,10 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       partnerPartnershipMainArea = null;
     Boolean showRegion = false, showCountry = false;
 
+    if (projectLeader.getHasPartnerships() != null) {
+      partnerPartnershipFormal = projectLeader.getHasPartnerships() ? "Yes" : "No";
+    }
+
     // Partnerships
     List<ProjectPartnerPartnership> projectPartnerPartnerships =
       projectLeader.getProjectPartnerPartnerships().stream().filter(p -> p.isActive()).collect(Collectors.toList());
@@ -3921,9 +3925,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           + this.getSelectedPhase().toString());
       }
       ProjectPartnerPartnership partnerPartnership = projectPartnerPartnerships.get(0);
-      if (projectLeader.getHasPartnerships() != null) {
-        partnerPartnershipFormal = projectLeader.getHasPartnerships() ? "Yes" : "No";
-      }
+
       List<ProjectPartnerPartnershipResearchPhase> projectPartnerPartnershipResearchPhases = partnerPartnership
         .getProjectPartnerPartnershipResearchPhases().stream().filter(pp -> pp.isActive()).collect(Collectors.toList());
       Set<String> researchPhases = new HashSet<String>();
@@ -4047,6 +4049,11 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           partnerPartnershipGeographicScope = null, partnerPartnershipRegion = null, partnerPartnershipCountries = null,
           partnerPartnershipMainArea = null;
         Boolean showRegion = false, showCountry = false;
+
+        if (projectPartner.getHasPartnerships() != null) {
+          partnerPartnershipFormal = projectPartner.getHasPartnerships() ? "Yes" : "No";
+        }
+
         // Partnerships
         List<ProjectPartnerPartnership> projectPartnerPartnerships = projectPartner.getProjectPartnerPartnerships()
           .stream().filter(p -> p.isActive()).collect(Collectors.toList());
@@ -4056,9 +4063,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
               + this.getSelectedPhase().toString());
           }
           ProjectPartnerPartnership partnerPartnership = projectPartnerPartnerships.get(0);
-          if (projectPartner.getHasPartnerships() != null) {
-            partnerPartnershipFormal = projectPartner.getHasPartnerships() ? "Yes" : "No";
-          }
+
           List<ProjectPartnerPartnershipResearchPhase> projectPartnerPartnershipResearchPhases =
             partnerPartnership.getProjectPartnerPartnershipResearchPhases().stream().filter(pp -> pp.isActive())
               .collect(Collectors.toList());
@@ -4125,6 +4130,11 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           partnerPartnershipGeographicScope = null, partnerPartnershipRegion = null, partnerPartnershipCountries = null,
           partnerPartnershipMainArea = null;
         Boolean showRegion = false, showCountry = false;
+
+        if (projectPartner.getHasPartnerships() != null) {
+          partnerPartnershipFormal = projectPartner.getHasPartnerships() ? "Yes" : "No";
+        }
+
         // Partnerships
         List<ProjectPartnerPartnership> projectPartnerPartnerships = projectPartner.getProjectPartnerPartnerships()
           .stream().filter(p -> p.isActive()).collect(Collectors.toList());
@@ -4134,9 +4144,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
               + this.getSelectedPhase().toString());
           }
           ProjectPartnerPartnership partnerPartnership = projectPartnerPartnerships.get(0);
-          if (projectPartner.getHasPartnerships() != null) {
-            partnerPartnershipFormal = projectPartner.getHasPartnerships() ? "Yes" : "No";
-          }
+
           List<ProjectPartnerPartnershipResearchPhase> projectPartnerPartnershipResearchPhases =
             partnerPartnership.getProjectPartnerPartnershipResearchPhases().stream().filter(pp -> pp.isActive())
               .collect(Collectors.toList());
