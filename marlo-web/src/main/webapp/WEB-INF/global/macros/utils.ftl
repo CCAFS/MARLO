@@ -76,7 +76,7 @@
   [#if (value?trim?has_content)!false] <span style="${nobr?string('white-space: nowrap;','')}">${value}</span> [#else]<i style="opacity:0.8"><nobr>[@s.text name="${emptyText}"/]</nobr></i>[/#if]
 [/#macro]
 
-[#macro tableList list displayFieldName="title" showEmpty=true nobr=false emptyText="global.notDefined"]
+[#macro tableList list displayFieldName="title" showEmpty=true nobr=false emptyText="global.notDefined" class="" scroll=false]
   [#local levels = displayFieldName?split(".")]
   [#local valuesArray = [] /]
   [#if (list?has_content)!false]
@@ -88,7 +88,7 @@
     [/#list]
     
     [#if valuesArray?size > 1 ]
-      <ul style="padding: 0">
+      <ul style="padding: 0" class="${class}" [#if scroll]data-mcs-theme="dark"[/#if]>
         [#list valuesArray as item]<li style="list-style-position: inside;${nobr?string('white-space: nowrap;','')}">${item}</li>[/#list]
       </ul>
     [#else]
