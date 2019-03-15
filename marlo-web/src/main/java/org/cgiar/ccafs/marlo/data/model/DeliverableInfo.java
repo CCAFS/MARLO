@@ -186,6 +186,30 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
   }
 
   /**
+   * Check if the deliverables is completed in the current cycle
+   */
+  public Boolean isCompleted() {
+    if (this.getStatus() == null) {
+      return false;
+    }
+
+    if (this.getStatus() != null
+      && this.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())) {
+      if (this.getNewExpectedYear() != null && this.getNewExpectedYear().intValue() != -1) {
+        if (this.getNewExpectedYear() == phase.getYear()) {
+          return true;
+        }
+      } else {
+        if (this.getYear() == phase.getYear()) {
+          return true;
+        }
+      }
+    }
+
+    return false;
+  }
+
+  /**
    * Check if the deliverables is from a previous year for the current cycle
    * Used in Project.getCurrentDeliverables and Project.getPreviousDeliverables to generate the deliverable list and;
    * 

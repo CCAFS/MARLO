@@ -275,7 +275,7 @@ public class PublicationsAction extends BaseAction {
           Project project = projectManager.getProjectById(focus.getProject().getId());
           List<Deliverable> plannedDeliverables = new ArrayList<>(project.getDeliverables().stream()
             .filter(d -> d.isActive() && d.getDeliverableInfo(actualPhase) != null
-              && d.getDeliverableInfo().isRequired() && d.getDeliverableInfo().getDeliverableType() != null
+              && d.getDeliverableInfo().isCompleted() && d.getDeliverableInfo().getDeliverableType() != null
               && d.getDeliverableInfo().getDeliverableType().getId() == 63)
             .collect(Collectors.toList()));
           for (Deliverable deliverable : plannedDeliverables) {
