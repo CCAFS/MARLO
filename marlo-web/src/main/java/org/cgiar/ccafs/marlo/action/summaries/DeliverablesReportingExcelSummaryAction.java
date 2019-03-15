@@ -237,6 +237,7 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
     masterReport.getParameterValues().put("i8nRegion", this.getText("deliverable.region"));
     masterReport.getParameterValues().put("i8nProjectStatus", this.getText("deliverable.status"));
     masterReport.getParameterValues().put("i8nFundingSource", this.getText("deliverable.fundingSources"));
+    masterReport.getParameterValues().put("i8nIsComplete", this.getText("deliverable.isComplete"));
 
     /*
      * Reporting
@@ -377,7 +378,7 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
         "dataDictionary", "tools", "F", "A", "I", "R", "disseminated", "restricted_access",
         "deliv_license_modifications", "volume", "issue", "pages", "journal", "journal_indicators", "acknowledge",
         "fl_contrib", "project_ID", "project_title", "flagships", "regions", "others_responsibles", "newExceptedFlag",
-        "phaseID", "gender", "youth", "cap", "geographicScope", "region", "country", "status"},
+        "phaseID", "gender", "youth", "cap", "geographicScope", "region", "country", "status", "isComplete"},
       new Class[] {Long.class, String.class, String.class, String.class, String.class, Integer.class, String.class,
         String.class, String.class, String.class, Integer.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
@@ -385,7 +386,7 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, Long.class, String.class, String.class, String.class, String.class,
-        String.class, String.class, String.class},
+        String.class, String.class, String.class, String.class},
       0);
     if (!deliverableManager.findAll().isEmpty()) {
       List<Deliverable> deliverables = new ArrayList<>();
@@ -409,7 +410,7 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
           && d.getDeliverableInfo(this.getSelectedPhase()) != null && d.getDeliverableInfo().getStatus() != null
           && ((d.getDeliverableInfo().getStatus().intValue() == Integer
             .parseInt(ProjectStatusEnum.Complete.getStatusId())
-            && (d.getDeliverableInfo().getYear() >= this.getSelectedYear()
+            && (d.getDeliverableInfo().getYear() == this.getSelectedYear()
               || (d.getDeliverableInfo().getNewExpectedYear() != null
                 && d.getDeliverableInfo().getNewExpectedYear().intValue() >= this.getSelectedYear())))
             || (d.getDeliverableInfo().getStatus().intValue() == Integer
@@ -467,7 +468,7 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
         Boolean showCompilance = false;
         String projectID = null;
         String projectTitle = null;
-        String flagships = null, regions = null, status = null;
+        String flagships = null, regions = null, status = null, isComplete = "";
 
         if (deliverable.getProject() != null) {
           projectID = deliverable.getProject().getId().toString();
@@ -589,9 +590,9 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
           .collect(Collectors.toList())) {
           String financialCode = "";
           if (dfs.getFundingSource().getFundingSourceInfo().getFinanceCode() != null) {
-            financialCode = dfs.getFundingSource().getFundingSourceInfo().getFinanceCode();
+            financialCode = " (" + dfs.getFundingSource().getFundingSourceInfo().getFinanceCode() + ") - ";
           }
-          fundingSources += "●  FS" + dfs.getFundingSource().getId() + " (" + financialCode + ") - "
+          fundingSources += "●  FS" + dfs.getFundingSource().getId() + financialCode + " - "
             + dfs.getFundingSource().getFundingSourceInfo().getTitle() + "\n";
         }
         if (fundingSources.isEmpty()) {
@@ -616,7 +617,7 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
           // Complete
           if (deliverable.getDeliverableInfo().getStatus().intValue() == Integer
             .parseInt(ProjectStatusEnum.Complete.getStatusId())) {
-            delivNewYearJustification = "<Not applicable>";
+            delivNewYear = deliverable.getDeliverableInfo().getNewExpectedYear();
           }
           // Canceled
           if (deliverable.getDeliverableInfo().getStatus().intValue() == Integer
@@ -625,6 +626,18 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
           }
         }
 
+        // Is deliverable complete
+        if (this.isDeliverableComplete(deliverable.getId(), this.getSelectedPhase().getId()) != null) {
+          Boolean completeDeliverable =
+            this.isDeliverableComplete(deliverable.getId(), this.getSelectedPhase().getId());
+          if (completeDeliverable == true) {
+            isComplete = "Yes";
+          } else {
+            isComplete = "No";
+          }
+        } else {
+          isComplete = "No";
+        }
 
         String delivDisseminationChannel = null;
         String delivDisseminationUrl = null;
@@ -1360,7 +1373,7 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
           HandleMetadata, DOIMetadata, creatorAuthors, dataSharing, qualityAssurance, dataDictionary, tools, F, A, I, R,
           disseminated, restrictedAccess, delivLicenseModifications, volume, issue, pages, journal, journalIndicator,
           acknowledge, flContrib, projectID, projectTitle, flagships, regions, othersResponsibles, newExceptedFlag,
-          phaseID, gender, youth, cap, geographicScope, region, country, status});
+          phaseID, gender, youth, cap, geographicScope, region, country, status, isComplete});
       }
     }
     return model;
