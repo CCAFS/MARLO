@@ -193,7 +193,6 @@
 
 [#macro annualReport2018OutcomesMacro element name index isTemplate=false]
   [#local annualReportElement= (action.getOutcome(reportSynthesis.reportSynthesisFlagshipProgress.id,element.id))! ]
-  ${(annualReportElement)!'null'}
   [#local customName = "${name}[${index}]" /]
   <div id="powbOutcome-${isTemplate?string('template', index)}" class="powbOutcome borderBox" style="display:${isTemplate?string('none','block')}">
     [#-- Index --]
@@ -219,8 +218,6 @@
 [#macro annualReport2018MilestoneMacro element name index reportedOutcomeID isTemplate=false]
   [#local annualReportElement= (action.getMilestone(reportedOutcomeID,element.id))! ]
   [#local customName = "${name}[${index}]" /]
-  
-  ${(annualReportElement)!'null'}
   <div id="powbMilestone-${isTemplate?string('template', index)}" class="synthesisMilestone simpleBox" style="display:${isTemplate?string('none','block')}">
     [#-- Index --]
     <div class="leftHead gray sm"><span class="index">${index+1}</span></div>
@@ -250,14 +247,15 @@
             [#local annualReportCrossCuting =  (action.getCrossCuttingMarker( ((annualReportElement.id)!-1), marker.id ))! ]
             <tr>
               <td class="row-title"> 
-                ${(annualReportCrossCuting)!'null'}
-              
                 <span class="name">${marker.name}</span>
                 <input type="hidden" name="${ccName}.id" value="${(annualReportCrossCuting.id)!}" />
                 <input type="hidden" name="${ccName}.marker.id" value="${marker.id}"/>
               </td>
-              <td class="text-center">[@customForm.select name="${ccName}.focus.id" label="" listName="focusLevels" keyFieldName="id"  displayFieldName="powbName" required=true showTitle=false className="" editable=editable/]</td>
-              <td class="text-center">[@customForm.input name="${ccName}.justification" showTitle=false required=true editable=editable /]</td>
+              <td class="text-center">
+                [@customForm.select name="${ccName}.focus.id" value="${(annualReportCrossCuting.focus.id)!-1}" label="" listName="focusLevels" keyFieldName="id"  displayFieldName="powbName" required=true showTitle=false className="" editable=editable/]</td>
+              <td class="text-center">
+                ${(annualReportCrossCuting.justification)!}
+                [@customForm.input name="${ccName}.justification" showTitle=false required=true editable=editable /]</td>
             </tr>
           [/#list]
         </tbody>
@@ -269,12 +267,10 @@
     <div class="form-group">
       <label>[@s.text name="${customLabel}.milestoneStatus" /]:[@customForm.req required=editable  /]</label><br />
       [#local milestoneStatus = (annualReportElement.milestonesStatus)!-1 /]
-
       [@customForm.radioFlat id="${customName}-status-1" name="${customName}.milestonesStatus" label="Complete"   value="1" checked=(milestoneStatus == 1)!false editable=editable cssClass="milestoneStatus" cssClassLabel="font-normal"/]
       [@customForm.radioFlat id="${customName}-status-2" name="${customName}.milestonesStatus" label="Extended"   value="2" checked=(milestoneStatus == 2)!false editable=editable cssClass="milestoneStatus" cssClassLabel="font-normal"/]
       [@customForm.radioFlat id="${customName}-status-3" name="${customName}.milestonesStatus" label="Cancelled"  value="3" checked=(milestoneStatus == 3)!false editable=editable cssClass="milestoneStatus" cssClassLabel="font-normal"/]
       [@customForm.radioFlat id="${customName}-status-4" name="${customName}.milestonesStatus" label="Changed"    value="4" checked=(milestoneStatus == 4)!false editable=editable cssClass="milestoneStatus" cssClassLabel="font-normal"/]
-      
       [#if !editable && (milestoneStatus == -1)][@s.text name="form.values.fieldEmpty"/][/#if]
     </div>
     
