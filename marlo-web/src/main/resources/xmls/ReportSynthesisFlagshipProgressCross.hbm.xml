@@ -25,9 +25,9 @@
       <column length="65535" name="justification" />
     </property>
 		<many-to-one
-			class="org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressMilestone" fetch="select"
-			name="reportSynthesisFlagshipProgressMilestone">
-			<column name="report_synthesis_flagship_progress_milestone_id" />
+			class="org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressOutcomeMilestone" fetch="select"
+			name="reportSynthesisFlagshipProgressOutcomeMilestone">
+			<column name="report_synthesis_flagship_progress_outcome_milestone_id" />
 		</many-to-one>
 		<many-to-one
 			class="org.cgiar.ccafs.marlo.data.model.RepIndGenderYouthFocusLevel"

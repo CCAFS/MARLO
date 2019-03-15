@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated Jun 6, 2018 11:11:29 AM by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+    <class name="org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressOutcome" table="report_synthesis_flagship_progress_outcomes" optimistic-lock="none">
+        <id name="id" type="java.lang.Long">
+            <column name="id" />
+            <generator class="identity" />
+        </id>
+        <many-to-one name="crpProgramOutcome" class="org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome" fetch="select">
+            <column name="crp_outcome_id" />
+        </many-to-one>
+        <many-to-one name="reportSynthesisFlagshipProgress" class="org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgress" fetch="select">
+            <column name="report_synthesis_flagship_progress_id" />
+        </many-to-one>
+        <property name="summary" type="string">
+            <column name="summary" sql-type="TEXT" />
+        </property>
+        <set name="reportSynthesisFlagshipProgressOutcomeMilestones" table="report_synthesis_flagship_progress_outcome_milestones" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="report_synthesis_outcome_id" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressOutcomeMilestone" />
+        </set>
+    </class>
+</hibernate-mapping>
