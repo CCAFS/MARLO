@@ -192,8 +192,8 @@
 
 
 [#macro annualReport2018OutcomesMacro element name index isTemplate=false]
-  [#local annualReportElement= (action.getOutcome(reportSynthesis.reportSynthesisFlagshipProgress.id,element.id))!{} ]
-  
+  [#local annualReportElement= (action.getOutcome(reportSynthesis.reportSynthesisFlagshipProgress.id,element.id))! ]
+  ${(annualReportElement)!'null'}
   [#local customName = "${name}[${index}]" /]
   <div id="powbOutcome-${isTemplate?string('template', index)}" class="powbOutcome borderBox" style="display:${isTemplate?string('none','block')}">
     [#-- Index --]
@@ -217,9 +217,10 @@
 [/#macro]
 
 [#macro annualReport2018MilestoneMacro element name index reportedOutcomeID isTemplate=false]
-  [#local annualReportElement= (action.getMilestone(reportedOutcomeID,element.id))!{} ]
+  [#local annualReportElement= (action.getMilestone(reportedOutcomeID,element.id))! ]
   [#local customName = "${name}[${index}]" /]
   
+  ${(annualReportElement)!'null'}
   <div id="powbMilestone-${isTemplate?string('template', index)}" class="synthesisMilestone simpleBox" style="display:${isTemplate?string('none','block')}">
     [#-- Index --]
     <div class="leftHead gray sm"><span class="index">${index+1}</span></div>
@@ -233,14 +234,6 @@
       <p class="text-justify"><strong>Milestone for ${actualPhase.year}</strong> - ${(element.title)!} </p>
     </div>
     
-    [#local crossCuttingMarkers = [
-      { "id": "1", "name": "Gender" },
-      { "id": "1", "name": "Youth" },
-      { "id": "1", "name": "CapDev" },
-      { "id": "1", "name": "ClimateChange" }
-    ] 
-    /]
-    
     [#-- Cross-Cutting --]
     <div class="form-group">
       <table class="milestones-crosscutting">
@@ -252,11 +245,13 @@
           </tr>
         </thead>
         <tbody>
-          [#list crossCuttingMarkers as marker]
+          [#list cgiarCrossCuttingMarkers as marker]
             [#local ccName=  "${name}.crossCuttingMarkers[${marker_index}]"]
-            [#local annualReportCrossCuting=  {} ]
+            [#local annualReportCrossCuting =  (action.getCrossCuttingMarker( ((annualReportElement.id)!-1), marker.id ))! ]
             <tr>
               <td class="row-title"> 
+                ${(annualReportCrossCuting)!'null'}
+              
                 <span class="name">${marker.name}</span>
                 <input type="hidden" name="${ccName}.cgiarCrossCuttingMarker.id" value="${(annualReportCrossCuting.id)!}" />
                 <input type="hidden" name="${ccName}.cgiarCrossCuttingMarker.id" value="${marker.id}"/>
