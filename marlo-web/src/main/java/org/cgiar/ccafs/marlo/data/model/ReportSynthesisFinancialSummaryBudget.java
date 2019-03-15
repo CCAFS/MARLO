@@ -42,8 +42,14 @@ public class ReportSynthesisFinancialSummaryBudget extends MarloAuditableEntity
   @Expose
   private Double bilateralActual;
 
+  // AR2018
+  @Expose
+  private String comments;
+
+
   public ReportSynthesisFinancialSummaryBudget() {
   }
+
 
   @Override
   public boolean equals(Object obj) {
@@ -71,10 +77,14 @@ public class ReportSynthesisFinancialSummaryBudget extends MarloAuditableEntity
     return bilateralActual;
   }
 
-
   public Double getBilateralPlanned() {
     return bilateralPlanned;
   }
+
+  public String getComments() {
+    return comments;
+  }
+
 
   public PowbExpenditureAreas getExpenditureArea() {
     return expenditureArea;
@@ -84,7 +94,6 @@ public class ReportSynthesisFinancialSummaryBudget extends MarloAuditableEntity
     return liaisonInstitution;
   }
 
-
   @Override
   public String getLogDeatil() {
     StringBuilder sb = new StringBuilder();
@@ -92,10 +101,10 @@ public class ReportSynthesisFinancialSummaryBudget extends MarloAuditableEntity
     return sb.toString();
   }
 
+
   public ReportSynthesisFinancialSummary getReportSynthesisFinancialSummary() {
     return reportSynthesisFinancialSummary;
   }
-
 
   public Double getW1Actual() {
     return w1Actual;
@@ -125,12 +134,17 @@ public class ReportSynthesisFinancialSummaryBudget extends MarloAuditableEntity
     return result;
   }
 
+
   public void setBilateralActual(Double bilateralActual) {
     this.bilateralActual = bilateralActual;
   }
 
   public void setBilateralPlanned(Double bilateralPlanned) {
     this.bilateralPlanned = bilateralPlanned;
+  }
+
+  public void setComments(String comments) {
+    this.comments = comments;
   }
 
   public void setExpenditureArea(PowbExpenditureAreas expenditureArea) {
