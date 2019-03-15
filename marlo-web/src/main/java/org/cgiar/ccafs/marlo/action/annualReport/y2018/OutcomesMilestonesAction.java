@@ -167,6 +167,7 @@ public class OutcomesMilestonesAction extends BaseAction {
   private List<CrpProgram> flagships;
 
   private List<CgiarCrossCuttingMarker> cgiarCrossCuttingMarkers;
+  private List<RepIndGenderYouthFocusLevel> focusLevels;
 
 
   @Inject
@@ -219,6 +220,7 @@ public class OutcomesMilestonesAction extends BaseAction {
     return liaisonInstitutionId;
   }
 
+
   private Path getAutoSaveFilePath() {
     String composedClassName = reportSynthesis.getClass().getSimpleName();
     String actionFile = this.getActionName().replace("/", "_");
@@ -226,6 +228,7 @@ public class OutcomesMilestonesAction extends BaseAction {
       + "_" + this.getActualPhase().getYear() + "_" + actionFile + ".json";
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
+
 
   public List<CgiarCrossCuttingMarker> getCgiarCrossCuttingMarkers() {
     return cgiarCrossCuttingMarkers;
@@ -295,12 +298,20 @@ public class OutcomesMilestonesAction extends BaseAction {
     return flagships;
   }
 
+  public List<RepIndGenderYouthFocusLevel> getFocusLevels() {
+    return focusLevels;
+  }
+
   public LiaisonInstitution getLiaisonInstitution() {
     return liaisonInstitution;
   }
 
   public Long getLiaisonInstitutionID() {
     return liaisonInstitutionID;
+  }
+
+  public List<LiaisonInstitution> getLiaisonInstitutions() {
+    return liaisonInstitutions;
   }
 
   // public int getIndex(Long crpMilestoneID) {
@@ -331,10 +342,6 @@ public class OutcomesMilestonesAction extends BaseAction {
   //
   // }
 
-
-  public List<LiaisonInstitution> getLiaisonInstitutions() {
-    return liaisonInstitutions;
-  }
 
   public GlobalUnit getLoggedCrp() {
     return loggedCrp;
@@ -389,7 +396,6 @@ public class OutcomesMilestonesAction extends BaseAction {
     return reportSynthesis;
   }
 
-
   public ReportSynthesisFlagshipProgressMilestone getReportSynthesisFlagshipProgressProgram(Long crpMilestoneID,
     Long crpProgramID) {
     List<ReportSynthesisFlagshipProgressMilestone> flagshipProgressMilestonesPrev =
@@ -403,13 +409,14 @@ public class OutcomesMilestonesAction extends BaseAction {
     return new ReportSynthesisFlagshipProgressMilestone();
   }
 
-  // public ReportSynthesisFlagshipProgressMilestone getReportSynthesisFlagshipProgressMilestone(Long crpMilestoneID) {
-  // return reportSynthesis.getReportSynthesisFlagshipProgress().getMilestones().get(this.getIndex(crpMilestoneID));
-  // }
 
   public Long getSynthesisID() {
     return synthesisID;
   }
+
+  // public ReportSynthesisFlagshipProgressMilestone getReportSynthesisFlagshipProgressMilestone(Long crpMilestoneID) {
+  // return reportSynthesis.getReportSynthesisFlagshipProgress().getMilestones().get(this.getIndex(crpMilestoneID));
+  // }
 
   public String getTransaction() {
     return transaction;
@@ -538,7 +545,6 @@ public class OutcomesMilestonesAction extends BaseAction {
     }
   }
 
-
   @Override
   public String next() {
     String result = this.save();
@@ -548,6 +554,7 @@ public class OutcomesMilestonesAction extends BaseAction {
       return result;
     }
   }
+
 
   @Override
   public void prepare() throws Exception {
@@ -734,6 +741,9 @@ public class OutcomesMilestonesAction extends BaseAction {
     // Cross Cutting Markers
     cgiarCrossCuttingMarkers = cgiarCrossCuttingMarkerManager.findAll();
 
+    // Cross Cutting Values List
+    focusLevels = focusLevelManager.findAll();
+
     // Get the list of liaison institutions Flagships and PMU.
     liaisonInstitutions = loggedCrp.getLiaisonInstitutions().stream()
       .filter(c -> c.getCrpProgram() != null && c.isActive()
@@ -911,7 +921,6 @@ public class OutcomesMilestonesAction extends BaseAction {
     }
   }
 
-
   public void saveFlagshipProgressNewData(ReportSynthesisFlagshipProgress flagshipProgressDB) {
 
     if (reportSynthesis.getReportSynthesisFlagshipProgress().getOutcomeList() == null) {
@@ -950,6 +959,7 @@ public class OutcomesMilestonesAction extends BaseAction {
     }
 
   }
+
 
   public void saveMilestones(ReportSynthesisFlagshipProgressOutcome OutcomeDB,
     ReportSynthesisFlagshipProgressOutcome outcome) {
@@ -1011,6 +1021,10 @@ public class OutcomesMilestonesAction extends BaseAction {
 
   public void setFlagships(List<CrpProgram> flagships) {
     this.flagships = flagships;
+  }
+
+  public void setFocusLevels(List<RepIndGenderYouthFocusLevel> focusLevels) {
+    this.focusLevels = focusLevels;
   }
 
   public void setLiaisonInstitution(LiaisonInstitution liaisonInstitution) {
