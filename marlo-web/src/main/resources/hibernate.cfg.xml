@@ -406,6 +406,8 @@
     <mapping resource="xmls/ReportSynthesisFlagshipProgressInnovations.hbm.xml" />  
     <mapping resource="xmls/ReportSynthesisFlagshipProgressDeliverables.hbm.xml" />
     <mapping resource="xmls/ReportSynthesisFlagshipProgressCross.hbm.xml" />
-    <mapping resource="xmls/RepIndMilestoneReasons.hbm.xml" />     
+    <mapping resource="xmls/RepIndMilestoneReasons.hbm.xml" />
+    <mapping resource="xmls/ReportSynthesisFlagshipProgressOutcomes.hbm.xml" /> 
+    <mapping resource="xmls/ReportSynthesisFlagshipProgressOutcomesMilestones.hbm.xml" />
   </session-factory>
 </hibernate-configuration>
