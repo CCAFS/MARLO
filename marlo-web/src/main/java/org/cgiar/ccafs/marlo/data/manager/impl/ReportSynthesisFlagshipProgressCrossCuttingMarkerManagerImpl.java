@@ -68,10 +68,10 @@ public class ReportSynthesisFlagshipProgressCrossCuttingMarkerManagerImpl
   }
 
   @Override
-  public ReportSynthesisFlagshipProgressCrossCuttingMarker getCountryMarkerId(long milestoneID,
-    long cgiarCrossCuttingMarkerID, long phaseID) {
-    return reportSynthesisFlagshipProgressCrossCuttingMarkerDAO.getCountryMarkerId(milestoneID,
-      cgiarCrossCuttingMarkerID, phaseID);
+  public ReportSynthesisFlagshipProgressCrossCuttingMarker getMarkerId(long milestoneID, long cgiarCrossCuttingMarkerID,
+    long phaseID) {
+    return reportSynthesisFlagshipProgressCrossCuttingMarkerDAO.getMarkerId(milestoneID, cgiarCrossCuttingMarkerID,
+      phaseID);
   }
 
   @Override

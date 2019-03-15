@@ -83,8 +83,20 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
   }
 
 
+  public List<ProjectInnovationContributingOrganization> getContributingOrganizations(Phase phase) {
+    return new ArrayList<>(this.getProjectInnovationContributingOrganization().stream()
+      .filter(pc -> pc.isActive() && pc.getPhase().equals(phase)).collect(Collectors.toList()));
+  }
+
+
   public List<ProjectInnovationCountry> getCountries() {
     return countries;
+  }
+
+
+  public List<ProjectInnovationCountry> getCountries(Phase phase) {
+    return new ArrayList<>(this.getProjectInnovationCountries().stream()
+      .filter(pc -> pc.isActive() && pc.getPhase().equals(phase)).collect(Collectors.toList()));
   }
 
 
@@ -112,12 +124,10 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
     return geographicScopes;
   }
 
-
   public List<ProjectInnovationGeographicScope> getGeographicScopes(Phase phase) {
     return new ArrayList<>(this.getProjectInnovationGeographicScopes().stream()
       .filter(pg -> pg.isActive() && pg.getPhase().equals(phase)).collect(Collectors.toList()));
   }
-
 
   @Override
   public String getLogDeatil() {
@@ -130,6 +140,7 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
     return organizations;
   }
 
+
   public Project getProject() {
     return project;
   }
@@ -138,7 +149,6 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
     return projectInnovationContributingOrganization;
   }
 
-
   public Set<ProjectInnovationCountry> getProjectInnovationCountries() {
     return projectInnovationCountries;
   }
@@ -146,6 +156,7 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
   public Set<ProjectInnovationCrp> getProjectInnovationCrps() {
     return projectInnovationCrps;
   }
+
 
   public Set<ProjectInnovationDeliverable> getProjectInnovationDeliverables() {
     return projectInnovationDeliverables;
@@ -159,6 +170,7 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
   public ProjectInnovationInfo getProjectInnovationInfo() {
     return projectInnovationInfo;
   }
+
 
   public ProjectInnovationInfo getProjectInnovationInfo(Phase phase) {
     if (this.getProjectInnovationInfo() != null) {
@@ -176,11 +188,9 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
     }
   }
 
-
   public Set<ProjectInnovationInfo> getProjectInnovationInfos() {
     return projectInnovationInfos;
   }
-
 
   public Set<ProjectInnovationOrganization> getProjectInnovationOrganizations() {
     return projectInnovationOrganizations;
@@ -192,6 +202,11 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
 
   public List<ProjectInnovationRegion> getRegions() {
     return regions;
+  }
+
+  public List<ProjectInnovationRegion> getRegions(Phase phase) {
+    return new ArrayList<>(this.getProjectInnovationRegions().stream()
+      .filter(pc -> pc.isActive() && pc.getPhase().equals(phase)).collect(Collectors.toList()));
   }
 
   public Set<SectionStatus> getSectionStatuses() {
@@ -222,6 +237,7 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
     this.crps = crps;
   }
 
+
   public void setDeliverables(List<ProjectInnovationDeliverable> deliverables) {
     this.deliverables = deliverables;
   }
@@ -233,7 +249,6 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
   public void setOrganizations(List<ProjectInnovationOrganization> organizations) {
     this.organizations = organizations;
   }
-
 
   public void setProject(Project project) {
     this.project = project;
@@ -277,13 +292,16 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
     this.projectInnovationRegions = projectInnovationRegions;
   }
 
+
   public void setRegions(List<ProjectInnovationRegion> regions) {
     this.regions = regions;
   }
 
+
   public void setSectionStatuses(Set<SectionStatus> sectionStatuses) {
     this.sectionStatuses = sectionStatuses;
   }
+
 
   public void setSelectedFlahsgips(List<LiaisonInstitution> selectedFlahsgips) {
     this.selectedFlahsgips = selectedFlahsgips;

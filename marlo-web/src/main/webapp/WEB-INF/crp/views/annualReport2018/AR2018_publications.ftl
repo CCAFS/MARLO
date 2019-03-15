@@ -58,11 +58,10 @@
             
             <div class="form-group row">
               <div class="col-md-4">
-              [#assign peerReviewedArticles = (totalOpenAccess + totalLimited)!0 /]
                 [#-- Total number of peer reviewed articles --]
                 <div id="" class="simpleBox numberBox">
                   <label for="">[@s.text name="${customLabel}.indicatorC4.totalArticles" /]</label><br />
-                  <span>${(peerReviewedArticles)!}</span>
+                  <span>${(total)!}</span>
                 </div>
               </div>
               
@@ -166,18 +165,18 @@
       <tbody>
         <tr>
           <td class="tableTitle">[@s.text name="${customLabel}.${name}.publications" /]</td>
-          <td class="text-center">${peerReviewedArticles}</td>
+          <td class="text-center">${total}</td>
           <td class="text-center">100%</td>
         </tr>
         <tr>
           <td class="tableTitle">[@s.text name="${customLabel}.${name}.openAccess" /]</td>
           <td class="text-center">${(totalOpenAccess)!0}</td>
-          <td class="text-center">${((totalOpenAccess/peerReviewedArticles)*100)?string("0.##")}%</td>
+          <td class="text-center">${((totalOpenAccess/total)*100)?string("0.##")}%</td>
         </tr>
         <tr>
           <td class="tableTitle">[@s.text name="${customLabel}.${name}.isi" /]</td>
           <td class="text-center">${(totalIsis)!0}</td>
-          <td class="text-center">${((totalIsis/peerReviewedArticles)*100)?string("0.##")}%</td>
+          <td class="text-center">${((totalIsis/total)*100)?string("0.##")}%</td>
         </tr>
       </tbody>
     </table>

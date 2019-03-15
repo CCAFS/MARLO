@@ -52,23 +52,30 @@ public interface ReportSynthesisFlagshipProgressOutcomeManager {
   public List<ReportSynthesisFlagshipProgressOutcome> findAll();
 
 
+  public ReportSynthesisFlagshipProgressOutcome getOutcomeId(long progressID, long outcomeID);
+
   /**
-   * This method gets a reportSynthesisFlagshipProgressOutcome object by a given reportSynthesisFlagshipProgressOutcome identifier.
+   * This method gets a reportSynthesisFlagshipProgressOutcome object by a given reportSynthesisFlagshipProgressOutcome
+   * identifier.
    * 
    * @param reportSynthesisFlagshipProgressOutcomeID is the reportSynthesisFlagshipProgressOutcome identifier.
    * @return a ReportSynthesisFlagshipProgressOutcome object.
    */
-  public ReportSynthesisFlagshipProgressOutcome getReportSynthesisFlagshipProgressOutcomeById(long reportSynthesisFlagshipProgressOutcomeID);
+  public ReportSynthesisFlagshipProgressOutcome
+    getReportSynthesisFlagshipProgressOutcomeById(long reportSynthesisFlagshipProgressOutcomeID);
 
   /**
    * This method saves the information of the given reportSynthesisFlagshipProgressOutcome
    * 
-   * @param reportSynthesisFlagshipProgressOutcome - is the reportSynthesisFlagshipProgressOutcome object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the reportSynthesisFlagshipProgressOutcome was
+   * @param reportSynthesisFlagshipProgressOutcome - is the reportSynthesisFlagshipProgressOutcome object with the new
+   *        information to be added/updated.
+   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the
+   *         reportSynthesisFlagshipProgressOutcome was
    *         updated
    *         or -1 is some error occurred.
    */
-  public ReportSynthesisFlagshipProgressOutcome saveReportSynthesisFlagshipProgressOutcome(ReportSynthesisFlagshipProgressOutcome reportSynthesisFlagshipProgressOutcome);
+  public ReportSynthesisFlagshipProgressOutcome saveReportSynthesisFlagshipProgressOutcome(
+    ReportSynthesisFlagshipProgressOutcome reportSynthesisFlagshipProgressOutcome);
 
 
 }
