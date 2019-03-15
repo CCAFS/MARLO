@@ -172,12 +172,12 @@
         <tr>
           <td class="tableTitle">[@s.text name="${customLabel}.${name}.openAccess" /]</td>
           <td class="text-center">${(totalOpenAccess)!0}</td>
-          <td class="text-center">${((totalOpenAccess/peerReviewedArticles)*100)!0}%</td>
+          <td class="text-center">${((totalOpenAccess/peerReviewedArticles)*100)?string("0.##")}%</td>
         </tr>
         <tr>
           <td class="tableTitle">[@s.text name="${customLabel}.${name}.isi" /]</td>
           <td class="text-center">${(totalIsis)!0}</td>
-          <td class="text-center">${((totalIsis/peerReviewedArticles)*100)!0}%</td>
+          <td class="text-center">${((totalIsis/peerReviewedArticles)*100)?string("0.##")}%</td>
         </tr>
       </tbody>
     </table>
