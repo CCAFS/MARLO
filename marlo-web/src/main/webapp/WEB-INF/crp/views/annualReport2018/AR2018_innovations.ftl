@@ -189,9 +189,16 @@
             <td>[@utils.tableText value=(item.projectInnovationInfo.repIndDegreeInnovation.name)!"" /]</td>
             [#if expanded]
             <td>[@utils.tableText value=(item.projectInnovationInfo.repIndInnovationType.name)!"" /]</td>
-            <td></td>
-            <td></td>
-            <td>[@utils.tableText value=(item.projectInnovationInfo.evidenceLink)!"" /]</td>
+            <td>[@utils.tableList list=(item.geographicScopes)![] displayFieldName="repIndGeographicScope.name" nobr=true/]</td>
+            <td>[@utils.tableText value=(item.projectInnovationInfo.leadOrganization.name)!"" /]</td>
+            <td class="text-center">
+            [#local innovationEvidence = (item.projectInnovationInfo.evidenceLink)!""/]
+            [#if innovationEvidence?has_content]
+             <a target="_blank" href="${innovationEvidence}"><span class="glyphicon glyphicon-link"></span></a>
+            [#else]
+              <span class="glyphicon glyphicon-link" title="Not defined"></span>
+            [/#if]
+            </td>
             [/#if]
             <td>[@utils.tableText value=(item.projectInnovationInfo.repIndContributionOfCrp.name)!"" /]</td>
             [#if !expanded]
