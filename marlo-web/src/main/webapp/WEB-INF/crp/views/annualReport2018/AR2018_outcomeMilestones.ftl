@@ -128,7 +128,7 @@
             [#list outcome.milestones as milestone]
               [#assign isFlagshipRow = (outcome_index == 0) && (milestone_index == 0)]
               [#assign isOutcomeRow = (milestone_index == 0)]
-              [#assign milestoneProgress = action.getReportSynthesisFlagshipProgressMilestone(milestone.id) ]
+              [#assign milestoneProgress = (action.getReportSynthesisFlagshipProgressMilestone(milestone.id))!{} ]
               <tr class="fp-index-${fp_index} outcome-index-${outcome_index} milestone-index-${milestone_index}">
                 [#-- Flagship --]
                 [#if isFlagshipRow]<th rowspan="${milestoneSize}" class="milestoneSize-${milestoneSize}" style="background:${(fp.color)!'#fff'}"><span class="programTag" style="border-color:${(fp.color)!'#fff'}">${fp.acronym}</span></th>[/#if]
@@ -141,7 +141,7 @@
                     [#if !allowPopups]
                     <br />
                     <small>
-                      <ul>[#list outcome.subIdos as subIdo]<li> [#if subIdo.srfSubIdo.srfIdo.isCrossCutting] <strong title="Cross-Cutting IDO">CC</strong> [/#if]${subIdo.srfSubIdo.description}</li>[/#list]</ul>
+                      <ul>[#list (outcome.subIdos)![] as subIdo]<li> [#if (subIdo.srfSubIdo.srfIdo.isCrossCutting)!false] <strong title="Cross-Cutting IDO">CC</strong> [/#if]${(subIdo.srfSubIdo.description)!}</li>[/#list]</ul>
                     </small>
                     [/#if]
                   </td>
@@ -214,7 +214,7 @@
 [/#macro]
 
 [#macro annualReport2018MilestoneMacro element name index isTemplate=false]
-  [#local annualReportElement= action.getReportSynthesisFlagshipProgressMilestone(element.id) ]
+  [#local annualReportElement= (action.getReportSynthesisFlagshipProgressMilestone(element.id))!{} ]
   [#local customName = "${name}[${index}]" /]
   
   <div id="powbMilestone-${isTemplate?string('template', index)}" class="synthesisMilestone simpleBox" style="display:${isTemplate?string('none','block')}">
@@ -333,7 +333,7 @@
                   <th class=""> Project Title </th>
                   [#if hasTarget]<th class="col-md-1"> ${(element.srfTargetUnit.name!)} Achieved</th>[/#if]
                   <th> [@s.text name="${customLabel}.contributionMilestone.narrativeAchieved" /]  </th>
-                  <th> </th>
+                  
                 </tr>
               </thead>
               <tbody>
@@ -342,7 +342,7 @@
                   [#local poURL][@s.url namespace="/projects" action="${(crpSession)!}/contributionCrp"][@s.param name='projectOutcomeID']${contribution.projectOutcome.id}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
                   <tr>
                     <td> <a href="${pURL}" target="_blank"> P${contribution.projectOutcome.project.id} </a> </td>
-                    <td> <a href="${pURL}" target="_blank"> ${contribution.projectOutcome.project.projectInfo.title} </a></td>
+                    <td> ${contribution.projectOutcome.project.projectInfo.title} </td>
                     [#if hasTarget]
                     <td class="text-center">[#if (contribution.expectedUnit.name??)!false]${(contribution.achievedValue)!}[#else]<i>N/A</i>[/#if]</td>
                     [/#if]
@@ -352,8 +352,10 @@
                       [#else]
                         <i class="text-center" style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
                       [/#if]
+                      
+                      <a href="${poURL}" target="_blank" class="pull-right"><span class="glyphicon glyphicon-new-window"></span></a>
                     </td>
-                    <td> <a href="${poURL}" target="_blank"><span class="glyphicon glyphicon-new-window"></span></a>  </td>
+                     
                   </tr>
                 [/#list]
               </tbody>
