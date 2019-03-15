@@ -328,21 +328,26 @@ public class OutcomesMilestonesAction extends BaseAction {
   }
 
   /**
-   * Get the information for the Outcomes in the form
+   * Get the information for the Milestones in the form
    * 
    * @param markerID
    * @return
    */
-  public ReportSynthesisFlagshipProgressOutcomeMilestone getMilestone(long outcomeID, long milestoneID) {
-    ReportSynthesisFlagshipProgressOutcomeMilestone milestone = new ReportSynthesisFlagshipProgressOutcomeMilestone();
+  public ReportSynthesisFlagshipProgressOutcomeMilestone getMilestone(Long outcomeID, long milestoneID) {
+    if (outcomeID != -1) {
+      ReportSynthesisFlagshipProgressOutcomeMilestone milestone = new ReportSynthesisFlagshipProgressOutcomeMilestone();
 
-    milestone = reportSynthesisFlagshipProgressOutcomeMilestoneManager.getMilestoneId(outcomeID, milestoneID);
+      milestone = reportSynthesisFlagshipProgressOutcomeMilestoneManager.getMilestoneId(outcomeID, milestoneID);
 
-    if (milestone != null) {
-      return milestone;
+      if (milestone != null) {
+        return milestone;
+      } else {
+        return null;
+      }
     } else {
       return null;
     }
+
   }
 
   /**
