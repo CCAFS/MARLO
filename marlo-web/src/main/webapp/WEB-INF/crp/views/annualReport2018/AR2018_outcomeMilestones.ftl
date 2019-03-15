@@ -79,7 +79,7 @@
                 </div>
               [#else]
                 [#list outcomes as outcome]
-                  [@annualReport2018OutcomesMacro element=outcome name="${customName}.outcomes" index=outcome_index /]
+                  [@annualReport2018OutcomesMacro element=outcome name="${customName}.outcomeList" index=outcome_index /]
                 [/#list]
               [/#if]
             </div>
