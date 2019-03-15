@@ -246,17 +246,17 @@
         </thead>
         <tbody>
           [#list cgiarCrossCuttingMarkers as marker]
-            [#local ccName=  "${customName}.crossCuttingMarkers[${marker_index}]"]
+            [#local ccName=  "${customName}.markers[${marker_index}]"]
             [#local annualReportCrossCuting =  (action.getCrossCuttingMarker( ((annualReportElement.id)!-1), marker.id ))! ]
             <tr>
               <td class="row-title"> 
                 ${(annualReportCrossCuting)!'null'}
               
                 <span class="name">${marker.name}</span>
-                <input type="hidden" name="${ccName}.cgiarCrossCuttingMarker.id" value="${(annualReportCrossCuting.id)!}" />
-                <input type="hidden" name="${ccName}.cgiarCrossCuttingMarker.id" value="${marker.id}"/>
+                <input type="hidden" name="${ccName}.id" value="${(annualReportCrossCuting.id)!}" />
+                <input type="hidden" name="${ccName}.marker.id" value="${marker.id}"/>
               </td>
-              <td class="text-center">[@customForm.select name="${ccName}.repIndGenderYouthFocusLevel.id" label="" listName="focusLevels" keyFieldName="id"  displayFieldName="powbName" required=true showTitle=false className="" editable=editable/]</td>
+              <td class="text-center">[@customForm.select name="${ccName}.focus.id" label="" listName="focusLevels" keyFieldName="id"  displayFieldName="powbName" required=true showTitle=false className="" editable=editable/]</td>
               <td class="text-center">[@customForm.input name="${ccName}.justification" showTitle=false required=true editable=editable /]</td>
             </tr>
           [/#list]
