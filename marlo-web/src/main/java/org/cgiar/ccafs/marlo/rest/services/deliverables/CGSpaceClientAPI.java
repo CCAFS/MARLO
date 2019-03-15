@@ -102,7 +102,6 @@ public class CGSpaceClientAPI extends MetadataClientApi {
 
       }
 
-
       this.setDoi(jo);
 
       GsonBuilder gsonBuilder = new GsonBuilder();
@@ -124,7 +123,6 @@ public class CGSpaceClientAPI extends MetadataClientApi {
       LOG.error(e.getLocalizedMessage());
 
     }
-
     return metadataModel;
 
   }
