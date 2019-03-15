@@ -19,7 +19,9 @@ package org.cgiar.ccafs.marlo.data.dao.mysql;
 import org.cgiar.ccafs.marlo.data.dao.ReportSynthesisFlagshipProgressOutcomeMilestoneDAO;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressOutcomeMilestone;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -27,7 +29,9 @@ import javax.inject.Named;
 import org.hibernate.SessionFactory;
 
 @Named
-public class ReportSynthesisFlagshipProgressOutcomeMilestoneMySQLDAO extends AbstractMarloDAO<ReportSynthesisFlagshipProgressOutcomeMilestone, Long> implements ReportSynthesisFlagshipProgressOutcomeMilestoneDAO {
+public class ReportSynthesisFlagshipProgressOutcomeMilestoneMySQLDAO
+  extends AbstractMarloDAO<ReportSynthesisFlagshipProgressOutcomeMilestone, Long>
+  implements ReportSynthesisFlagshipProgressOutcomeMilestoneDAO {
 
 
   @Inject
@@ -36,15 +40,19 @@ public class ReportSynthesisFlagshipProgressOutcomeMilestoneMySQLDAO extends Abs
   }
 
   @Override
-  public void deleteReportSynthesisFlagshipProgressOutcomeMilestone(long reportSynthesisFlagshipProgressOutcomeMilestoneId) {
-    ReportSynthesisFlagshipProgressOutcomeMilestone reportSynthesisFlagshipProgressOutcomeMilestone = this.find(reportSynthesisFlagshipProgressOutcomeMilestoneId);
+  public void
+    deleteReportSynthesisFlagshipProgressOutcomeMilestone(long reportSynthesisFlagshipProgressOutcomeMilestoneId) {
+    ReportSynthesisFlagshipProgressOutcomeMilestone reportSynthesisFlagshipProgressOutcomeMilestone =
+      this.find(reportSynthesisFlagshipProgressOutcomeMilestoneId);
     reportSynthesisFlagshipProgressOutcomeMilestone.setActive(false);
     this.update(reportSynthesisFlagshipProgressOutcomeMilestone);
   }
 
   @Override
-  public boolean existReportSynthesisFlagshipProgressOutcomeMilestone(long reportSynthesisFlagshipProgressOutcomeMilestoneID) {
-    ReportSynthesisFlagshipProgressOutcomeMilestone reportSynthesisFlagshipProgressOutcomeMilestone = this.find(reportSynthesisFlagshipProgressOutcomeMilestoneID);
+  public boolean
+    existReportSynthesisFlagshipProgressOutcomeMilestone(long reportSynthesisFlagshipProgressOutcomeMilestoneID) {
+    ReportSynthesisFlagshipProgressOutcomeMilestone reportSynthesisFlagshipProgressOutcomeMilestone =
+      this.find(reportSynthesisFlagshipProgressOutcomeMilestoneID);
     if (reportSynthesisFlagshipProgressOutcomeMilestone == null) {
       return false;
     }
@@ -70,7 +78,35 @@ public class ReportSynthesisFlagshipProgressOutcomeMilestoneMySQLDAO extends Abs
   }
 
   @Override
-  public ReportSynthesisFlagshipProgressOutcomeMilestone save(ReportSynthesisFlagshipProgressOutcomeMilestone reportSynthesisFlagshipProgressOutcomeMilestone) {
+  public ReportSynthesisFlagshipProgressOutcomeMilestone getMilestoneId(long progressID, long outcomeID) {
+    StringBuilder query = new StringBuilder();
+    query.append("SELECT id as markerId FROM report_synthesis_flagship_progress_outcome_milestones ");
+    query.append("WHERE report_synthesis_outcome_id = ");
+    query.append(progressID);
+    query.append(" AND crp_milestone_id = ");
+    query.append(outcomeID);
+    List<Map<String, Object>> list = super.findCustomQuery(query.toString());
+
+    List<ReportSynthesisFlagshipProgressOutcomeMilestone> reportSynthesisFlagshipProgressOutcomeMilestones =
+      new ArrayList<ReportSynthesisFlagshipProgressOutcomeMilestone>();
+    for (Map<String, Object> map : list) {
+      String markerId = map.get("markerId").toString();
+      long longMarkerId = Long.parseLong(markerId);
+      ReportSynthesisFlagshipProgressOutcomeMilestone reportSynthesisFlagshipProgressOutcomeMilestone =
+        this.find(longMarkerId);
+      reportSynthesisFlagshipProgressOutcomeMilestones.add(reportSynthesisFlagshipProgressOutcomeMilestone);
+    }
+    if (reportSynthesisFlagshipProgressOutcomeMilestones.size() > 0) {
+      return reportSynthesisFlagshipProgressOutcomeMilestones.get(0);
+    } else {
+      return null;
+    }
+
+  }
+
+  @Override
+  public ReportSynthesisFlagshipProgressOutcomeMilestone
+    save(ReportSynthesisFlagshipProgressOutcomeMilestone reportSynthesisFlagshipProgressOutcomeMilestone) {
     if (reportSynthesisFlagshipProgressOutcomeMilestone.getId() == null) {
       super.saveEntity(reportSynthesisFlagshipProgressOutcomeMilestone);
     } else {

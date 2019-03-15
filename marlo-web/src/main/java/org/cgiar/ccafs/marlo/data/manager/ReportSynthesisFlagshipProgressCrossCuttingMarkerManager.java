@@ -57,8 +57,8 @@ public interface ReportSynthesisFlagshipProgressCrossCuttingMarkerManager {
   public List<ReportSynthesisFlagshipProgressCrossCuttingMarker> findAll();
 
 
-  public ReportSynthesisFlagshipProgressCrossCuttingMarker getCountryMarkerId(long milestoneID,
-    long cgiarCrossCuttingMarkerID, long phaseID);
+  public ReportSynthesisFlagshipProgressCrossCuttingMarker getMarkerId(long milestoneID, long cgiarCrossCuttingMarkerID,
+    long phaseID);
 
   /**
    * This method gets a reportSynthesisFlagshipProgressCrossCuttingMarker object by a given
@@ -69,6 +69,7 @@ public interface ReportSynthesisFlagshipProgressCrossCuttingMarkerManager {
    * @return a ReportSynthesisFlagshipProgressCrossCuttingMarker object.
    */
   public ReportSynthesisFlagshipProgressCrossCuttingMarker
+
     getReportSynthesisFlagshipProgressCrossCuttingMarkerById(long reportSynthesisFlagshipProgressCrossCuttingMarkerID);
 
 

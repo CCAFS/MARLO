@@ -202,7 +202,7 @@
     </action>
     
     <!--  3.1 Financial Summary  -->
-    <action name="{crp}/financial" class="org.cgiar.ccafs.marlo.action.annualReport.FinancialSummaryAction">
+    <action name="{crp}/financial" class="org.cgiar.ccafs.marlo.action.annualReport.y2018.FinancialSummaryAction">
       <interceptor-ref name="editReportSynthesisStack" />
       <result name="input">/WEB-INF/crp/views/annualReport2018/AR2018_financial.ftl</result>
       <result name="success" type="redirectAction">

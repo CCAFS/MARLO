@@ -102,6 +102,7 @@ public class InnovationsAction extends BaseAction {
   private List<ReportSynthesisInnovationsByStageDTO> innovationsByStageDTO;
   private List<ReportSynthesisInnovationsByTypeDTO> innovationsByTypeDTO;
   private Phase actualPhase;
+  private Integer total = 0;
 
 
   @Inject
@@ -246,6 +247,7 @@ public class InnovationsAction extends BaseAction {
     return flagshipPlannedList;
   }
 
+
   private void fillprojectInnovationsList(LiaisonInstitution liaisonInstitution) {
     projectInnovations = new ArrayList<>();
     if (this.isFlagship()) {
@@ -267,6 +269,9 @@ public class InnovationsAction extends BaseAction {
           for (ProjectInnovation projectInnovation : plannedprojectInnovations) {
             projectInnovation.getProjectInnovationInfo(actualPhase);
             projectInnovation.setGeographicScopes(projectInnovation.getGeographicScopes(actualPhase));
+            projectInnovation.setCountries(projectInnovation.getCountries(actualPhase));
+            projectInnovation.setRegions(projectInnovation.getRegions(actualPhase));
+            projectInnovation.setContributingOrganizations(projectInnovation.getContributingOrganizations(actualPhase));
             projectInnovations.add(projectInnovation);
           }
         }
@@ -287,6 +292,10 @@ public class InnovationsAction extends BaseAction {
         ProjectInnovation projectInnovation = reportSynthesisFlagshipProgressInnovationDTO.getProjectInnovation();
         projectInnovation.getProjectInnovationInfo(actualPhase);
         projectInnovation.setGeographicScopes(projectInnovation.getGeographicScopes(actualPhase));
+        projectInnovation.setCountries(projectInnovation.getCountries(actualPhase));
+        projectInnovation.setRegions(projectInnovation.getRegions(actualPhase));
+        projectInnovation.setContributingOrganizations(projectInnovation.getContributingOrganizations(actualPhase));
+
         projectInnovation.setSelectedFlahsgips(new ArrayList<>());
         // sort selected flagships
         if (reportSynthesisFlagshipProgressInnovationDTO.getLiaisonInstitutions() != null
@@ -302,6 +311,7 @@ public class InnovationsAction extends BaseAction {
     }
 
   }
+
 
   public Long firstFlagship() {
     List<LiaisonInstitution> liaisonInstitutions = new ArrayList<>(loggedCrp.getLiaisonInstitutions().stream()
@@ -402,11 +412,9 @@ public class InnovationsAction extends BaseAction {
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
-
   public List<ReportSynthesisInnovationsByStageDTO> getInnovationsByStageDTO() {
     return innovationsByStageDTO;
   }
-
 
   public List<ReportSynthesisInnovationsByTypeDTO> getInnovationsByTypeDTO() {
     return innovationsByTypeDTO;
@@ -447,10 +455,15 @@ public class InnovationsAction extends BaseAction {
     return synthesisID;
   }
 
+
+  public Integer getTotal() {
+    return total;
+  }
+
+
   public String getTransaction() {
     return transaction;
   }
-
 
   public boolean isFlagship() {
     boolean isFP = false;
@@ -478,6 +491,7 @@ public class InnovationsAction extends BaseAction {
     return isFP;
 
   }
+
 
   @Override
   public String next() {
@@ -647,6 +661,7 @@ public class InnovationsAction extends BaseAction {
           selectedProjectInnovations.remove(projectInnovation);
         }
       }
+      total = selectedProjectInnovations.size();
       // Chart: Innovations by stage
       innovationsByStageDTO =
         repIndStageInnovationManager.getInnovationsByStageDTO(selectedProjectInnovations, actualPhase);
@@ -666,7 +681,6 @@ public class InnovationsAction extends BaseAction {
     }
 
   }
-
 
   @Override
   public String save() {
@@ -719,6 +733,7 @@ public class InnovationsAction extends BaseAction {
     }
   }
 
+
   public void setInnovationsByStageDTO(List<ReportSynthesisInnovationsByStageDTO> innovationsByStageDTO) {
     this.innovationsByStageDTO = innovationsByStageDTO;
   }
@@ -727,10 +742,10 @@ public class InnovationsAction extends BaseAction {
     this.innovationsByTypeDTO = innovationsByTypeDTO;
   }
 
-
   public void setLiaisonInstitution(LiaisonInstitution liaisonInstitution) {
     this.liaisonInstitution = liaisonInstitution;
   }
+
 
   public void setLiaisonInstitutionID(Long liaisonInstitutionID) {
     this.liaisonInstitutionID = liaisonInstitutionID;
@@ -739,7 +754,6 @@ public class InnovationsAction extends BaseAction {
   public void setLiaisonInstitutions(List<LiaisonInstitution> liaisonInstitutions) {
     this.liaisonInstitutions = liaisonInstitutions;
   }
-
 
   public void setLoggedCrp(GlobalUnit loggedCrp) {
     this.loggedCrp = loggedCrp;
@@ -750,12 +764,17 @@ public class InnovationsAction extends BaseAction {
     this.projectInnovations = projectInnovations;
   }
 
+
   public void setReportSynthesis(ReportSynthesis reportSynthesis) {
     this.reportSynthesis = reportSynthesis;
   }
 
   public void setSynthesisID(Long synthesisID) {
     this.synthesisID = synthesisID;
+  }
+
+  public void setTotal(Integer total) {
+    this.total = total;
   }
 
   public void setTransaction(String transaction) {

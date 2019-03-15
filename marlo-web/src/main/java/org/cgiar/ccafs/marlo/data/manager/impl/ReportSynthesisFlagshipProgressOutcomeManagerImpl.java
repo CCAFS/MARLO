@@ -28,7 +28,8 @@ import javax.inject.Named;
  * @author CCAFS
  */
 @Named
-public class ReportSynthesisFlagshipProgressOutcomeManagerImpl implements ReportSynthesisFlagshipProgressOutcomeManager {
+public class ReportSynthesisFlagshipProgressOutcomeManagerImpl
+  implements ReportSynthesisFlagshipProgressOutcomeManager {
 
 
   private ReportSynthesisFlagshipProgressOutcomeDAO reportSynthesisFlagshipProgressOutcomeDAO;
@@ -36,7 +37,8 @@ public class ReportSynthesisFlagshipProgressOutcomeManagerImpl implements Report
 
 
   @Inject
-  public ReportSynthesisFlagshipProgressOutcomeManagerImpl(ReportSynthesisFlagshipProgressOutcomeDAO reportSynthesisFlagshipProgressOutcomeDAO) {
+  public ReportSynthesisFlagshipProgressOutcomeManagerImpl(
+    ReportSynthesisFlagshipProgressOutcomeDAO reportSynthesisFlagshipProgressOutcomeDAO) {
     this.reportSynthesisFlagshipProgressOutcomeDAO = reportSynthesisFlagshipProgressOutcomeDAO;
 
 
@@ -45,13 +47,15 @@ public class ReportSynthesisFlagshipProgressOutcomeManagerImpl implements Report
   @Override
   public void deleteReportSynthesisFlagshipProgressOutcome(long reportSynthesisFlagshipProgressOutcomeId) {
 
-    reportSynthesisFlagshipProgressOutcomeDAO.deleteReportSynthesisFlagshipProgressOutcome(reportSynthesisFlagshipProgressOutcomeId);
+    reportSynthesisFlagshipProgressOutcomeDAO
+      .deleteReportSynthesisFlagshipProgressOutcome(reportSynthesisFlagshipProgressOutcomeId);
   }
 
   @Override
   public boolean existReportSynthesisFlagshipProgressOutcome(long reportSynthesisFlagshipProgressOutcomeID) {
 
-    return reportSynthesisFlagshipProgressOutcomeDAO.existReportSynthesisFlagshipProgressOutcome(reportSynthesisFlagshipProgressOutcomeID);
+    return reportSynthesisFlagshipProgressOutcomeDAO
+      .existReportSynthesisFlagshipProgressOutcome(reportSynthesisFlagshipProgressOutcomeID);
   }
 
   @Override
@@ -62,13 +66,20 @@ public class ReportSynthesisFlagshipProgressOutcomeManagerImpl implements Report
   }
 
   @Override
-  public ReportSynthesisFlagshipProgressOutcome getReportSynthesisFlagshipProgressOutcomeById(long reportSynthesisFlagshipProgressOutcomeID) {
+  public ReportSynthesisFlagshipProgressOutcome getOutcomeId(long progressID, long outcomeID) {
+    return reportSynthesisFlagshipProgressOutcomeDAO.getOutcomeId(progressID, outcomeID);
+  }
+
+  @Override
+  public ReportSynthesisFlagshipProgressOutcome
+    getReportSynthesisFlagshipProgressOutcomeById(long reportSynthesisFlagshipProgressOutcomeID) {
 
     return reportSynthesisFlagshipProgressOutcomeDAO.find(reportSynthesisFlagshipProgressOutcomeID);
   }
 
   @Override
-  public ReportSynthesisFlagshipProgressOutcome saveReportSynthesisFlagshipProgressOutcome(ReportSynthesisFlagshipProgressOutcome reportSynthesisFlagshipProgressOutcome) {
+  public ReportSynthesisFlagshipProgressOutcome saveReportSynthesisFlagshipProgressOutcome(
+    ReportSynthesisFlagshipProgressOutcome reportSynthesisFlagshipProgressOutcome) {
 
     return reportSynthesisFlagshipProgressOutcomeDAO.save(reportSynthesisFlagshipProgressOutcome);
   }
