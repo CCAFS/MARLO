@@ -59,7 +59,7 @@
               <div class="col-md-4">
                 <div class="simpleBox numberBox">
                   <label for="">[@s.text name="${customLabel}.indicatorI1.totalPolicies" /]</label><br />
-                  <span class="animated infinite bounce">${(((projectPolicies?size)!0)?number?string(",##0"))!0}</span>
+                  <span class="animated infinite bounce">${(((total)!0)?number?string(",##0"))!0}</span>
                 </div>
                 [#-- Chart 7 - Level of maturity --]
                 <div id="chart7" class="chartBox simpleBox">

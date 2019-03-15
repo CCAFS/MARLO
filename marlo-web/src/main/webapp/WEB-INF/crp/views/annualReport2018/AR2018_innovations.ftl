@@ -61,7 +61,7 @@
                 [#-- Total of CRP Innovations --]
                 <div id="" class="simpleBox numberBox">
                   <label for="">[@s.text name="${customLabel}.indicatorC1.totalInnovations" /]</label><br />
-                  <span>${(projectInnovations?size)!}</span>
+                  <span>${(total)!}</span>
                 </div>
               </div>
             </div>
