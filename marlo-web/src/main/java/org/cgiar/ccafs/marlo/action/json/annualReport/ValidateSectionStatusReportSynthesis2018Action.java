@@ -130,9 +130,9 @@ public class ValidateSectionStatusReportSynthesis2018Action extends BaseAction {
         case FUNDING_USE:
           reportSynthesisSectionValidator2018.validateFundingUse(this, reportSynthesis);
           break;
-        // case FINANCIAL:
-        // reportSynthesisSectionValidator2018.validateFinancial(this, reportSynthesis);
-        // break;
+        case FINANCIAL:
+          reportSynthesisSectionValidator2018.validateFinancial(this, reportSynthesis);
+          break;
         // case INFLUENCE:
         // reportSynthesisSectionValidator2018.validateIndicatorsInfluence(this, reportSynthesis);
         // break;
