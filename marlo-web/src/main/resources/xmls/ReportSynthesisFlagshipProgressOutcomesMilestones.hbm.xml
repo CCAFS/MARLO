@@ -20,7 +20,7 @@
         <many-to-one name="reportSynthesisFlagshipProgressOutcome" class="org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressOutcome" fetch="select">
             <column name="report_synthesis_outcome_id" />
         </many-to-one>
-        <many-to-one name="repIndMilestoneReason" class="org.cgiar.ccafs.marlo.data.model.RepIndMilestoneReason" fetch="select">
+        <many-to-one name="reason" class="org.cgiar.ccafs.marlo.data.model.RepIndMilestoneReason" fetch="select">
             <column name="rep_ind_milestone_reason_id" />
         </many-to-one>
         <property name="milestonesStatus" type="java.lang.Long">
