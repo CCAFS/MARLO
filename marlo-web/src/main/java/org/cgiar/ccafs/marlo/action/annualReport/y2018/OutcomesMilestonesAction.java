@@ -166,6 +166,9 @@ public class OutcomesMilestonesAction extends BaseAction {
   private List<CrpProgramOutcome> outcomes;
   private List<CrpProgram> flagships;
 
+  private List<CgiarCrossCuttingMarker> cgiarCrossCuttingMarkers;
+
+
   @Inject
   public OutcomesMilestonesAction(APConfig config, GlobalUnitManager crpManager,
     LiaisonInstitutionManager liaisonInstitutionManager, ReportSynthesisManager reportSynthesisManager,
@@ -205,6 +208,7 @@ public class OutcomesMilestonesAction extends BaseAction {
     this.crpProgramOutcomeManager = crpProgramOutcomeManager;
   }
 
+
   public Long firstFlagship() {
     List<LiaisonInstitution> liaisonInstitutions = new ArrayList<>(loggedCrp.getLiaisonInstitutions().stream()
       .filter(c -> c.getCrpProgram() != null && c.isActive()
@@ -221,6 +225,10 @@ public class OutcomesMilestonesAction extends BaseAction {
     String autoSaveFile = reportSynthesis.getId() + "_" + composedClassName + "_" + this.getActualPhase().getName()
       + "_" + this.getActualPhase().getYear() + "_" + actionFile + ".json";
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
+  }
+
+  public List<CgiarCrossCuttingMarker> getCgiarCrossCuttingMarkers() {
+    return cgiarCrossCuttingMarkers;
   }
 
   public List<ProjectMilestone> getContributions(long milestoneID) {
@@ -264,18 +272,23 @@ public class OutcomesMilestonesAction extends BaseAction {
    * @param markerID
    * @return
    */
-  public ReportSynthesisFlagshipProgressCrossCuttingMarker getCrossCuttingMarker(long markerID, long milestoneID) {
-    ReportSynthesisFlagshipProgressCrossCuttingMarker crossCuttingMarker =
-      new ReportSynthesisFlagshipProgressCrossCuttingMarker();
+  public ReportSynthesisFlagshipProgressCrossCuttingMarker getCrossCuttingMarker(long milestoneID, long markerID) {
+    if (milestoneID != -1) {
+      ReportSynthesisFlagshipProgressCrossCuttingMarker crossCuttingMarker =
+        new ReportSynthesisFlagshipProgressCrossCuttingMarker();
 
-    crossCuttingMarker = reportSynthesisFlagshipProgressCrossCuttingMarkerManager.getMarkerId(milestoneID, markerID,
-      this.getActualPhase().getId());
+      crossCuttingMarker = reportSynthesisFlagshipProgressCrossCuttingMarkerManager.getMarkerId(milestoneID, markerID,
+        this.getActualPhase().getId());
 
-    if (crossCuttingMarker != null) {
-      return crossCuttingMarker;
+      if (crossCuttingMarker != null) {
+        return crossCuttingMarker;
+      } else {
+        return null;
+      }
     } else {
       return null;
     }
+
   }
 
   public List<CrpProgram> getFlagships() {
@@ -284,6 +297,10 @@ public class OutcomesMilestonesAction extends BaseAction {
 
   public LiaisonInstitution getLiaisonInstitution() {
     return liaisonInstitution;
+  }
+
+  public Long getLiaisonInstitutionID() {
+    return liaisonInstitutionID;
   }
 
   // public int getIndex(Long crpMilestoneID) {
@@ -314,10 +331,6 @@ public class OutcomesMilestonesAction extends BaseAction {
   //
   // }
 
-
-  public Long getLiaisonInstitutionID() {
-    return liaisonInstitutionID;
-  }
 
   public List<LiaisonInstitution> getLiaisonInstitutions() {
     return liaisonInstitutions;
@@ -372,14 +385,10 @@ public class OutcomesMilestonesAction extends BaseAction {
     return outcomes;
   }
 
-
   public ReportSynthesis getReportSynthesis() {
     return reportSynthesis;
   }
 
-  // public ReportSynthesisFlagshipProgressMilestone getReportSynthesisFlagshipProgressMilestone(Long crpMilestoneID) {
-  // return reportSynthesis.getReportSynthesisFlagshipProgress().getMilestones().get(this.getIndex(crpMilestoneID));
-  // }
 
   public ReportSynthesisFlagshipProgressMilestone getReportSynthesisFlagshipProgressProgram(Long crpMilestoneID,
     Long crpProgramID) {
@@ -393,6 +402,10 @@ public class OutcomesMilestonesAction extends BaseAction {
     }
     return new ReportSynthesisFlagshipProgressMilestone();
   }
+
+  // public ReportSynthesisFlagshipProgressMilestone getReportSynthesisFlagshipProgressMilestone(Long crpMilestoneID) {
+  // return reportSynthesis.getReportSynthesisFlagshipProgress().getMilestones().get(this.getIndex(crpMilestoneID));
+  // }
 
   public Long getSynthesisID() {
     return synthesisID;
@@ -493,7 +506,6 @@ public class OutcomesMilestonesAction extends BaseAction {
     }
   }
 
-
   public void loadTablePMU() {
     flagships = loggedCrp.getCrpPrograms().stream()
       .filter(c -> c.isActive() && c.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
@@ -525,6 +537,7 @@ public class OutcomesMilestonesAction extends BaseAction {
 
     }
   }
+
 
   @Override
   public String next() {
@@ -717,6 +730,10 @@ public class OutcomesMilestonesAction extends BaseAction {
     outcomes.addAll(outcomesSet);
     outcomes.sort((p1, p2) -> p1.getId().compareTo(p2.getId()));
 
+
+    // Cross Cutting Markers
+    cgiarCrossCuttingMarkers = cgiarCrossCuttingMarkerManager.findAll();
+
     // Get the list of liaison institutions Flagships and PMU.
     liaisonInstitutions = loggedCrp.getLiaisonInstitutions().stream()
       .filter(c -> c.getCrpProgram() != null && c.isActive()
@@ -797,7 +814,6 @@ public class OutcomesMilestonesAction extends BaseAction {
       return NOT_AUTHORIZED;
     }
   }
-
 
   /**
    * Save CrossCutting Information
@@ -895,6 +911,7 @@ public class OutcomesMilestonesAction extends BaseAction {
     }
   }
 
+
   public void saveFlagshipProgressNewData(ReportSynthesisFlagshipProgress flagshipProgressDB) {
 
     if (reportSynthesis.getReportSynthesisFlagshipProgress().getOutcomeList() == null) {
@@ -986,6 +1003,10 @@ public class OutcomesMilestonesAction extends BaseAction {
 
     }
 
+  }
+
+  public void setCgiarCrossCuttingMarkers(List<CgiarCrossCuttingMarker> cgiarCrossCuttingMarkers) {
+    this.cgiarCrossCuttingMarkers = cgiarCrossCuttingMarkers;
   }
 
   public void setFlagships(List<CrpProgram> flagships) {
