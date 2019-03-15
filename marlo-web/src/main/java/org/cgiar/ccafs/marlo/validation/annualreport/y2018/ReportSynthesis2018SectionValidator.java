@@ -20,10 +20,14 @@ import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisCrossCuttingDimension;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFinancialSummary;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgress;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFundingUseSummary;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisIntellectualAsset;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
+
+import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -45,6 +49,7 @@ public class ReportSynthesis2018SectionValidator<T extends BaseAction> extends B
   private final StudiesOICR2018Validator studiesOICR2018Validator;
   private final Innovations2018Validator innovations2018Validator;
   private final Publications2018Validator publications2018Validator;
+  private final FinancialSummary2018Validator financialSummary2018Validator;
 
 
   @Inject
@@ -52,7 +57,8 @@ public class ReportSynthesis2018SectionValidator<T extends BaseAction> extends B
     IntellectualAssetsValidator intellectualAssetsValidator, CCDimension2018Validator ccDimensionValidator,
     FundingUse2018Validator fundingUse2018Validator, FlagshipProgress2018Validator flagshipProgress2018Validator,
     Policies2018Validator policies2018Validator, StudiesOICR2018Validator studiesOICR2018Validator,
-    Innovations2018Validator innovations2018Validator, Publications2018Validator publications2018Validator) {
+    Innovations2018Validator innovations2018Validator, Publications2018Validator publications2018Validator,
+    FinancialSummary2018Validator financialSummary2018Validator) {
     super();
     this.reportSynthesisManager = reportSynthesisManager;
     this.intellectualAssetsValidator = intellectualAssetsValidator;
@@ -63,6 +69,7 @@ public class ReportSynthesis2018SectionValidator<T extends BaseAction> extends B
     this.studiesOICR2018Validator = studiesOICR2018Validator;
     this.innovations2018Validator = innovations2018Validator;
     this.publications2018Validator = publications2018Validator;
+    this.financialSummary2018Validator = financialSummary2018Validator;
   }
 
 
@@ -101,6 +108,35 @@ public class ReportSynthesis2018SectionValidator<T extends BaseAction> extends B
 
   }
 
+  public void validateFinancial(BaseAction action, ReportSynthesis reportSynthesis) {
+
+    if (reportSynthesis.getReportSynthesisFinancialSummary() == null) {
+      ReportSynthesisFinancialSummary financial = new ReportSynthesisFinancialSummary();
+
+      // create one to one relation
+      reportSynthesis.setReportSynthesisFinancialSummary(financial);
+      financial.setReportSynthesis(reportSynthesis);
+      if (this.isPMU(reportSynthesis.getLiaisonInstitution())) {
+        // Flagships Financial Budgets
+        if (reportSynthesis.getReportSynthesisFinancialSummary().getReportSynthesisFinancialSummaryBudgets() != null
+          && !reportSynthesis.getReportSynthesisFinancialSummary().getReportSynthesisFinancialSummaryBudgets()
+            .isEmpty()) {
+          reportSynthesis.getReportSynthesisFinancialSummary()
+            .setBudgets(new ArrayList<>(
+              reportSynthesis.getReportSynthesisFinancialSummary().getReportSynthesisFinancialSummaryBudgets().stream()
+                .filter(t -> t.isActive()).collect(Collectors.toList())));
+        }
+
+        financialSummary2018Validator.validate(action, reportSynthesis, false);
+
+        // save the changes
+        reportSynthesis = reportSynthesisManager.saveReportSynthesis(reportSynthesis);
+      }
+    } else {
+      financialSummary2018Validator.validate(action, reportSynthesis, false);
+    }
+  }
+
   public void validateFlagshipProgressValidator(BaseAction action, ReportSynthesis reportSynthesis) {
 
     if (reportSynthesis.getReportSynthesisFlagshipProgress() == null) {
@@ -120,6 +156,7 @@ public class ReportSynthesis2018SectionValidator<T extends BaseAction> extends B
 
   }
 
+
   public void validateFundingUse(BaseAction action, ReportSynthesis reportSynthesis) {
 
     if (reportSynthesis.getReportSynthesisFundingUseSummary() == null) {
@@ -138,7 +175,6 @@ public class ReportSynthesis2018SectionValidator<T extends BaseAction> extends B
     }
 
   }
-
 
   public void validateInnovations(BaseAction action, ReportSynthesis reportSynthesis) {
 
