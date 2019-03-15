@@ -32,6 +32,7 @@ import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
+import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
@@ -220,6 +221,7 @@ public class PublicationListAction extends BaseAction {
   private void saveDeliverableInfo(Deliverable deliverable, Phase phase) {
     DeliverableInfo deliverableInfo = new DeliverableInfo();
     deliverableInfo.setYear(this.getCurrentCycleYear());
+    deliverableInfo.setStatus(Integer.parseInt(ProjectStatusEnum.Complete.getStatusId()));
     deliverableInfo.setDeliverable(deliverable);
     deliverableInfo.setPhase(phase);
     deliverableInfo.setModificationJustification("New publication created");
