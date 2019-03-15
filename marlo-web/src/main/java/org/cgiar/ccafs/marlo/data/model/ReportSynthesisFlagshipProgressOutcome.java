@@ -26,7 +26,6 @@ public class ReportSynthesisFlagshipProgressOutcome extends MarloBaseEntity impl
   @Expose
   private String summary;
 
-
   private Set<ReportSynthesisFlagshipProgressOutcomeMilestone> reportSynthesisFlagshipProgressOutcomeMilestones =
     new HashSet<ReportSynthesisFlagshipProgressOutcomeMilestone>(0);
 
@@ -42,6 +41,7 @@ public class ReportSynthesisFlagshipProgressOutcome extends MarloBaseEntity impl
     return crpProgramOutcome;
   }
 
+
   @Override
   public String getLogDeatil() {
     StringBuilder sb = new StringBuilder();
@@ -52,7 +52,6 @@ public class ReportSynthesisFlagshipProgressOutcome extends MarloBaseEntity impl
   public List<ReportSynthesisFlagshipProgressOutcomeMilestone> getMilestones() {
     return milestones;
   }
-
 
   @Override
   public String getModificationJustification() {
@@ -115,8 +114,15 @@ public class ReportSynthesisFlagshipProgressOutcome extends MarloBaseEntity impl
     this.reportSynthesisFlagshipProgressOutcomeMilestones = reportSynthesisFlagshipProgressOutcomeMilestones;
   }
 
+
   public void setSummary(String summary) {
     this.summary = summary;
+  }
+
+  @Override
+  public String toString() {
+    return "Id=" + this.getId() + "ReportSynthesisFlagshipProgressOutcome [reportSynthesisFlagshipProgress="
+      + reportSynthesisFlagshipProgress + "]";
   }
 
 

@@ -192,6 +192,8 @@
 
 
 [#macro annualReport2018OutcomesMacro element name index isTemplate=false]
+  [#local annualReportElement= (action.getOutcome(reportSynthesis.reportSynthesisFlagshipProgress.id,element.id))!{} ]
+  
   [#local customName = "${name}[${index}]" /]
   <div id="powbOutcome-${isTemplate?string('template', index)}" class="powbOutcome borderBox" style="display:${isTemplate?string('none','block')}">
     [#-- Index --]
@@ -200,21 +202,22 @@
     <div class="form-group grayBox"><strong>${(liaisonInstitution.crpProgram.acronym)!liaisonInstitution.acronym} Outcome: </strong> ${(element.description)!}</div>
     [#-- Narrative on progress --]
     <div class="form-group">
-      <input type="hidden" name="" />
-      [@customForm.textArea name="${customName}.progressNarrative" i18nkey="${customLabel}.outcome.progressNarrative" help="${customLabel}.outcome.progressNarrative.help" className="limitWords-100" helpIcon=false required=true editable=editable allowTextEditor=true /]
+      <input type="hidden" name="${customName}.id" value="${(annualReportElement.id)!}"/>
+      <input type="hidden" name="${customName}.crpProgramOutcome.id" value="${(element.id)!}"/>
+      [@customForm.textArea name="${customName}.summary" i18nkey="${customLabel}.outcome.progressNarrative" help="${customLabel}.outcome.progressNarrative.help" className="limitWords-100" helpIcon=false required=true editable=editable allowTextEditor=true /]
     </div>
     [#-- Milestones List --]
     <h4 class="simpleTitle">[@s.text name="${customLabel}.milestones.title" /]</h4>
     <div class="form-group">
        [#list element.milestones as milestone]
-        [@annualReport2018MilestoneMacro element=milestone name="${customName}.milestones" index=milestone_index /]
+        [@annualReport2018MilestoneMacro element=milestone name="${customName}.milestones" index=milestone_index reportedOutcomeID=(annualReportElement.id)!-1 /]
       [/#list]
     </div> 
   </div>
 [/#macro]
 
-[#macro annualReport2018MilestoneMacro element name index isTemplate=false]
-  [#local annualReportElement= (action.getReportSynthesisFlagshipProgressMilestone(element.id))!{} ]
+[#macro annualReport2018MilestoneMacro element name index reportedOutcomeID isTemplate=false]
+  [#local annualReportElement= (action.getMilestone(reportedOutcomeID,element.id))!{} ]
   [#local customName = "${name}[${index}]" /]
   
   <div id="powbMilestone-${isTemplate?string('template', index)}" class="synthesisMilestone simpleBox" style="display:${isTemplate?string('none','block')}">
@@ -222,7 +225,7 @@
     <div class="leftHead gray sm"><span class="index">${index+1}</span></div>
     [#-- Hidden inputs --]
     <input type="hidden" name="${customName}.id" value="${(annualReportElement.id)!}" >
-    <input type="hidden" name="${customName}.crpMilestone.id" value="${(annualReportElement.crpMilestone.id)!}" >
+    <input type="hidden" name="${customName}.crpMilestone.id" value="${(element.id)!}" >
     
     [#-- Title --]
     <div class="form-group grayBox">
