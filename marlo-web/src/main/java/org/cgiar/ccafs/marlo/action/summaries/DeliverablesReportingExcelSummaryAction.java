@@ -618,7 +618,9 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
           // Complete
           if (deliverable.getDeliverableInfo().getStatus().intValue() == Integer
             .parseInt(ProjectStatusEnum.Complete.getStatusId())) {
-            delivNewYear = deliverable.getDeliverableInfo().getNewExpectedYear();
+            if (deliverable.getDeliverableInfo().getNewExpectedYear() != -1) {
+              delivNewYear = deliverable.getDeliverableInfo().getNewExpectedYear();
+            }
           }
           // Canceled
           if (deliverable.getDeliverableInfo().getStatus().intValue() == Integer
