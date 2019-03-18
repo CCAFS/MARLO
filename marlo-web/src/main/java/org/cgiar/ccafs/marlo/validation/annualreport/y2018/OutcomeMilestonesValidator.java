@@ -147,22 +147,22 @@ public class OutcomeMilestonesValidator extends BaseValidator {
         action.addMessage(action.getText("CrossCutting Markers"));
         action.addMissingField("policy.crossCuttingMarkers");
         action.getInvalidFields().put("input-reportSynthesis.reportSynthesisFlagshipProgress.outcomeList[" + i
-          + "].milestones[" + j + "].milestones[" + k + "].focus.id", InvalidFieldsMessages.EMPTYFIELD);
+          + "].milestones[" + j + "].markers[" + k + "].focus.id", InvalidFieldsMessages.EMPTYFIELD);
       } else {
         // Validate Brief Justification
         if (!this.isValidString(crossCuttingMarker.getJust())) {
           action.addMessage(action.getText("Brief Justification"));
           action.addMissingField("input-reportSynthesis.reportSynthesisFlagshipProgress.outcomeList[" + i
-            + "].milestones[" + j + "].milestones[" + k + "].just");
+            + "].milestones[" + j + "].markers[" + k + "].just");
           action.getInvalidFields().put("input-reportSynthesis.reportSynthesisFlagshipProgress.outcomeList[" + i
-            + "].milestones[" + j + "].milestones[" + k + "].just", InvalidFieldsMessages.EMPTYFIELD);
+            + "].milestones[" + j + "].markers[" + k + "].just", InvalidFieldsMessages.EMPTYFIELD);
         }
       }
     } else {
       action.addMessage(action.getText("CrossCutting Markers"));
       action.addMissingField("policy.crossCuttingMarkers");
       action.getInvalidFields().put("input-reportSynthesis.reportSynthesisFlagshipProgress.outcomeList[" + i
-        + "].milestones[" + j + "].milestones[" + k + "].focus.id", InvalidFieldsMessages.EMPTYFIELD);
+        + "].milestones[" + j + "].markers[" + k + "].focus.id", InvalidFieldsMessages.EMPTYFIELD);
     }
 
   }
