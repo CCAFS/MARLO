@@ -457,7 +457,7 @@ p.dacMarker.level-4 {
 }
 
 .authorsList {
-  max-height: 140px;
+  max-height: 80px;
   overflow: auto;
   align-items: center;
 }
