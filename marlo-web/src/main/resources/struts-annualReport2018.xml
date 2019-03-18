@@ -123,7 +123,7 @@
     </action>
 
      <!--  2.1 CRP Management and Governance  -->
-    <action name="{crp}/governance" class="org.cgiar.ccafs.marlo.action.annualReport.ManagementGovernanceAction">
+    <action name="{crp}/governance" class="org.cgiar.ccafs.marlo.action.annualReport.y2018.ManagementGovernanceAction">
       <interceptor-ref name="editReportSynthesisStack" />
       <result name="input">/WEB-INF/crp/views/annualReport2018/AR2018_governance.ftl</result>
       <result name="success" type="redirectAction">
@@ -175,7 +175,7 @@
     </action>
     
     <!--  2.6 Improving Efficiency  -->
-    <action name="{crp}/efficiency" class="org.cgiar.ccafs.marlo.action.annualReport.EfficiencyAction">
+    <action name="{crp}/efficiency" class="org.cgiar.ccafs.marlo.action.annualReport.y2018.EfficiencyAction">
       <interceptor-ref name="editReportSynthesisStack" />
       <result name="input">/WEB-INF/crp/views/annualReport2018/AR2018_efficiency.ftl</result>
       <result name="success" type="redirectAction">
@@ -189,7 +189,7 @@
    
     
     <!--  2.6 Management of Risks to Your CRP  -->
-    <action name="{crp}/risks" class="org.cgiar.ccafs.marlo.action.annualReport.RisksAction">
+    <action name="{crp}/risks" class="org.cgiar.ccafs.marlo.action.annualReport.y2018.RisksAction">
       <interceptor-ref name="editReportSynthesisStack" />
       <result name="input">/WEB-INF/crp/views/annualReport2018/AR2018_risks.ftl</result>
       <result name="success" type="redirectAction">
