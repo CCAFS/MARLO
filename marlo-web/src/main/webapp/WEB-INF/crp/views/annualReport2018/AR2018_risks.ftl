@@ -17,7 +17,7 @@
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
 
-[#assign customName= "reportSynthesis" /]
+[#assign customName= "reportSynthesis.reportSynthesisRisk" /]
 [#assign customLabel= "annualReport2018.${currentStage}" /]
 
 [#-- Helptext --]
@@ -46,7 +46,7 @@
             [#if PMU]
               [#-- Efficiency description --]
               <div class="form-group">
-               [@customForm.textArea name="${customName}.summary" i18nkey="${customLabel}.summary" help="${customLabel}.summary.help" className="limitWords-250" helpIcon=false required=true editable=editable allowTextEditor=true /]
+               [@customForm.textArea name="${customName}.briefSummary" i18nkey="${customLabel}.summary" help="${customLabel}.summary.help" className="limitWords-250" helpIcon=false required=true editable=editable allowTextEditor=true /]
               </div>
               [#else]
               <div class="textArea">
