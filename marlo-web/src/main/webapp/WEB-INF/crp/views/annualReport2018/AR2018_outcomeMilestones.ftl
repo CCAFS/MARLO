@@ -108,15 +108,15 @@
           <th rowspan="2"> Status</th>
           [#if !allowPopups]
           <th rowspan="2">Milestone Evidence</th>
-          <th colspan="4" class="text-center">Cross-Cutting Markers</th>
+          <th colspan="${cgiarCrossCuttingMarkers?size}" class="text-center">Cross-Cutting Markers</th>
           [/#if]
         </tr>
         [#if !allowPopups]
         <tr>
-          <th> <small>Gender</small></th>
-          <th> <small>Youth</small></th>
-          <th> <small>CapDev</small></th>
-          <th> <small>Climate Change</small></th>
+          [#-- Cross Cutting markers --]
+          [#list cgiarCrossCuttingMarkers as marker]
+            <th> <small>${marker.name}</small></th>
+          [/#list]
         </tr>
         [/#if]
       </thead>
@@ -148,38 +148,28 @@
                 [/#if]
                 [#-- Outcomes - Narrative --]
                 [#if isOutcomeRow && !allowPopups]
-                  <td rowspan="${outcomesSize}" class="milestonesSize-${outcomesSize}"> 
-                    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Tempore saepe illo sapiente quam consectetur eius similique. Soluta nostrum dignissimos rem id pariatur nulla velit facilis excepturi ab fugiat ad rerum.
+                  [#local reportedOutcome= (action.getOutcome(reportSynthesis.reportSynthesisFlagshipProgress.id, outcome.id))! ]
+                  <td rowspan="${outcomesSize}" class="milestonesSize-${outcomesSize}">
+                    [@utils.tableText value=(reportedOutcome.summary)!"" /]
                   </td>
                 [/#if]
                 [#-- Milestone --]
                 <td> ${milestone.composedName} [#if allowPopups] <div class="pull-right">[@milestoneContributions element=milestone tiny=true /] [/#if]</div></td>
                 [#-- Milestone Status --]
-                <td> Completed </td>
+                <td> 
+                  [#local reportedMilestone= (action.getMilestone(reportedOutcome.id ,element.id))! ]
+                  [@utils.tableText value=(reportedMilestone.milestoneStatus)!"" /]
+                </td>
                 [#if !allowPopups]
-                [#-- Milestone Evidence --]
-                <td>  Lorem ipsum dolor sit amet, consectetur adipisicing elit. Deleniti quibusdam at est nobis provident voluptatum quos voluptas cupiditate aliquam accusamus ratione sunt. Eaque praesentium repellendus quis id repudiandae tempora aliquam.</td>
-                [#-- Cross Cutting markers --]
-                [#-- Gender --]
-                <td class="text-center"> 
-                  [#local marker = getMarker(milestone, "Gender") ]
-                  <p class="dacMarker level-${(marker.id)!""}" title="${(marker.powbName)!""}">${(marker.acronym)!""}</p>
-                </td>
-                [#-- Youth --]
-                <td class="text-center">
-                  [#local marker = getMarker(milestone, "Youth") ]
-                  <p class="dacMarker level-${(marker.id)!""}" title="${(marker.powbName)!""}">${(marker.acronym)!""}</p>
-                </td>
-                [#-- CapDev --]
-                <td class="text-center"> 
-                  [#local marker = getMarker(milestone, "CapDev") ]
-                  <p class="dacMarker level-${(marker.id)!""}" title="${(marker.powbName)!""}">${(marker.acronym)!""}</p>
-                </td>
-                [#-- Climate Change --]
-                <td class="text-center">
-                  [#local marker = getMarker(milestone, "Climate Change") ]
-                  <p class="dacMarker level-${(marker.id)!""}" title="${(marker.powbName)!""}">${(marker.acronym)!""}</p>
-                </td> 
+                  [#-- Milestone Evidence --]
+                  <td>[@utils.tableText value=(reportedMilestone.evidence)!"" /] </td>
+                  [#-- Cross Cutting markers --]
+                  [#list cgiarCrossCuttingMarkers as marker]
+                    [#local reportedCrossCuting =  (action.getCrossCuttingMarker( ((reportedMilestone.id)!-1), marker.id ))! ]
+                    <td class="text-center">
+                      <p class="dacMarker level-${(reportedCrossCuting.focus.id)!""}" title="${(reportedCrossCuting.focus.powbName)!""}">${(reportedCrossCuting.focus.acronym)!""}</p>
+                    </td>
+                  [/#list]
                 [/#if]
               </tr>
             [/#list]
