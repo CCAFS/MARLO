@@ -373,14 +373,14 @@ public class OutcomesMilestonesAction extends BaseAction {
    * @param markerID
    * @return
    */
-  public ReportSynthesisFlagshipProgressOutcome getOutcomeToPmu(String liaisonAcronym, long outcomeID) {
+  public ReportSynthesisFlagshipProgressOutcome getOutcomeToPmu(Long programID, long outcomeID) {
     ReportSynthesisFlagshipProgressOutcome outcome = new ReportSynthesisFlagshipProgressOutcome();
 
 
     CrpProgramOutcome crpProgramOutcome = crpProgramOutcomeManager.getCrpProgramOutcomeById(outcomeID);
 
     LiaisonInstitution inst = crpProgramOutcome.getCrpProgram().getLiaisonInstitutions().stream()
-      .filter(c -> c.isActive() && c.getAcronym().equals(liaisonAcronym)).collect(Collectors.toList()).get(0);
+      .filter(c -> c.isActive() && c.getCrpProgram().getId().equals(programID)).collect(Collectors.toList()).get(0);
 
 
     // ReportSynthesisSrfProgress crpProgress = new ReportSynthesisSrfProgress();
