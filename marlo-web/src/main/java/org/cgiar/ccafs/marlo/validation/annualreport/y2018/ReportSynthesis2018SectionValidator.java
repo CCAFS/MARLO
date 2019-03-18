@@ -24,6 +24,7 @@ import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFinancialSummary;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgress;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFundingUseSummary;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisIntellectualAsset;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisNarrative;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
 
 import java.util.ArrayList;
@@ -50,6 +51,7 @@ public class ReportSynthesis2018SectionValidator<T extends BaseAction> extends B
   private final Innovations2018Validator innovations2018Validator;
   private final Publications2018Validator publications2018Validator;
   private final FinancialSummary2018Validator financialSummary2018Validator;
+  private final NarrativeValidator narrativeValidator;
 
 
   @Inject
@@ -58,7 +60,7 @@ public class ReportSynthesis2018SectionValidator<T extends BaseAction> extends B
     FundingUse2018Validator fundingUse2018Validator, FlagshipProgress2018Validator flagshipProgress2018Validator,
     Policies2018Validator policies2018Validator, StudiesOICR2018Validator studiesOICR2018Validator,
     Innovations2018Validator innovations2018Validator, Publications2018Validator publications2018Validator,
-    FinancialSummary2018Validator financialSummary2018Validator) {
+    FinancialSummary2018Validator financialSummary2018Validator, NarrativeValidator narrativeValidator) {
     super();
     this.reportSynthesisManager = reportSynthesisManager;
     this.intellectualAssetsValidator = intellectualAssetsValidator;
@@ -70,6 +72,7 @@ public class ReportSynthesis2018SectionValidator<T extends BaseAction> extends B
     this.innovations2018Validator = innovations2018Validator;
     this.publications2018Validator = publications2018Validator;
     this.financialSummary2018Validator = financialSummary2018Validator;
+    this.narrativeValidator = narrativeValidator;
   }
 
 
@@ -210,6 +213,25 @@ public class ReportSynthesis2018SectionValidator<T extends BaseAction> extends B
       reportSynthesis = reportSynthesisManager.saveReportSynthesis(reportSynthesis);
     } else {
       intellectualAssetsValidator.validate(action, reportSynthesis, false);
+    }
+
+  }
+
+  public void validateNarrative(BaseAction action, ReportSynthesis reportSynthesis) {
+
+    if (reportSynthesis.getReportSynthesisNarrative() == null) {
+      ReportSynthesisNarrative narrative = new ReportSynthesisNarrative();
+
+      // create one to one relation
+      reportSynthesis.setReportSynthesisNarrative(narrative);
+      narrative.setReportSynthesis(reportSynthesis);
+
+      narrativeValidator.validate(action, reportSynthesis, false);
+
+      // save the changes
+      reportSynthesis = reportSynthesisManager.saveReportSynthesis(reportSynthesis);
+    } else {
+      narrativeValidator.validate(action, reportSynthesis, false);
     }
 
   }
