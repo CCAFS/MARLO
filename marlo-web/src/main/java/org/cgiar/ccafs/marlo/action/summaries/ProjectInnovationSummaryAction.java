@@ -373,43 +373,58 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
         .filter(p -> p.getPhase().getId().equals(this.getActualPhase().getId())
           && p.getProjectInnovation() == projectInnovationInfo.getProjectInnovation())
         .collect(Collectors.toList());
-    if (projectInnovationGeographicScopeList != null) {
-      geographicScope = projectInnovationGeographicScopeList.get(0).getRepIndGeographicScope().getName();
+    try {
+      if (projectInnovationGeographicScopeList != null) {
+        if (projectInnovationGeographicScopeList.get(0) != null
+          && projectInnovationGeographicScopeList.get(0).getRepIndGeographicScope() != null
+          && projectInnovationGeographicScopeList.get(0).getRepIndGeographicScope().getName() != null) {
+          geographicScope = projectInnovationGeographicScopeList.get(0).getRepIndGeographicScope().getName();
+        }
 
-      // Regional
-      if (projectInnovationGeographicScopeList.get(0).getRepIndGeographicScope().getId()
-        .equals(this.getReportingIndGeographicScopeRegional())) {
-        isRegional = true;
-        if (projectInnovationInfo.getRepIndRegion() != null) {
-          region = projectInnovationInfo.getRepIndRegion().getName();
-        }
-      }
-      // Country
-      if (!projectInnovationGeographicScopeList.get(0).getRepIndGeographicScope().getId()
-        .equals(this.getReportingIndGeographicScopeGlobal())
-        && !projectInnovationGeographicScopeList.get(0).getRepIndGeographicScope().getId()
-          .equals(this.getReportingIndGeographicScopeRegional())) {
-        isNational = true;
-        List<ProjectInnovationCountry> innovationCountries =
-          projectInnovationGeographicScopeList.get(0).getProjectInnovation().getProjectInnovationCountries().stream()
-            .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase()))
-            .collect(Collectors.toList());
-        if (innovationCountries != null && innovationCountries.size() > 0) {
-          Set<String> countriesSet = new HashSet<>();
-          for (ProjectInnovationCountry innovationCountry : innovationCountries) {
-            countriesSet.add("<br>&nbsp;&nbsp;&nbsp;&nbsp; ● " + innovationCountry.getLocElement().getName());
+        // Regional
+        if (projectInnovationGeographicScopeList != null && projectInnovationGeographicScopeList.get(0) != null
+          && projectInnovationGeographicScopeList.get(0).getRepIndGeographicScope() != null
+          && projectInnovationGeographicScopeList.get(0).getRepIndGeographicScope().getId() != null) {
+          if (projectInnovationGeographicScopeList.get(0).getRepIndGeographicScope().getId()
+            .equals(this.getReportingIndGeographicScopeRegional())) {
+            isRegional = true;
+            if (projectInnovationInfo.getRepIndRegion() != null) {
+              region = projectInnovationInfo.getRepIndRegion().getName();
+            }
           }
-          countries = String.join("", countriesSet);
         }
+        // Country
+        if (projectInnovationGeographicScopeList.get(0).getRepIndGeographicScope() != null
+          && projectInnovationGeographicScopeList.get(0).getRepIndGeographicScope().getId() != null) {
+          if (!projectInnovationGeographicScopeList.get(0).getRepIndGeographicScope().getId()
+            .equals(this.getReportingIndGeographicScopeGlobal())
+            && !projectInnovationGeographicScopeList.get(0).getRepIndGeographicScope().getId()
+              .equals(this.getReportingIndGeographicScopeRegional())) {
+            isNational = true;
+            List<ProjectInnovationCountry> innovationCountries = projectInnovationGeographicScopeList.get(0)
+              .getProjectInnovation().getProjectInnovationCountries().stream()
+              .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase()))
+              .collect(Collectors.toList());
+            if (innovationCountries != null && innovationCountries.size() > 0) {
+              Set<String> countriesSet = new HashSet<>();
+              for (ProjectInnovationCountry innovationCountry : innovationCountries) {
+                countriesSet.add("<br>&nbsp;&nbsp;&nbsp;&nbsp; ● " + innovationCountry.getLocElement().getName());
+              }
+              countries = String.join("", countriesSet);
+            }
+          }
+        }
+        /*
+         * if (region != null) {
+         * geographicScope += region;
+         * }
+         * if (countries != null) {
+         * geographicScope += countries;
+         * }
+         */
       }
-      /*
-       * if (region != null) {
-       * geographicScope += region;
-       * }
-       * if (countries != null) {
-       * geographicScope += countries;
-       * }
-       */
+    } catch (Exception e) {
+
     }
 
     // Description
