@@ -166,6 +166,8 @@
       [#-- Comments --]
       <br />
       <div class="form-group">
+        ${(element)!}
+      
         [@customForm.textArea name="${customName}.comments" i18nkey="${customLabel}.comments" className="" required=true editable=editable allowTextEditor=true /]
       </div>
 
