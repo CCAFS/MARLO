@@ -75,7 +75,7 @@
                       <span>[@s.text name="${customLabel}.indicatorC1.chart4.0" /]</span>
                       <span>[@s.text name="${customLabel}.indicatorC1.chart4.1" /]</span>
                     </li>
-                    [#list innovationsByTypeDTO as data]
+                    [#list (innovationsByTypeDTO)![] as data]
                       [#if data.projectInnovationInfos?has_content]
                       <li>
                         <span>${data.repIndInnovationType.name}</span>
@@ -98,7 +98,7 @@
                       <span class="json">{"role":"style"}</span>
                       <span class="json">{"role":"annotation"}</span>
                     </li>
-                    [#list innovationsByStageDTO as data]
+                    [#list (innovationsByStageDTO)![] as data]
                       [#if data.projectInnovationInfos?has_content]
                       <li>
                         <span>${data.repIndStageInnovation.name}</span>
