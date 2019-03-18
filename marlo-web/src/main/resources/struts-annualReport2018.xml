@@ -86,7 +86,7 @@
     <!-- Table 5: Summary of status of Planned Outcomes and Milestones (Sphere of Influence-Control)  -->
     <action name="{crp}/outomesMilestones" class="org.cgiar.ccafs.marlo.action.annualReport.y2018.OutcomesMilestonesAction">
       <interceptor-ref name="editReportSynthesisStack" />
-      <result name="input">/WEB-INF/crp/views/annualReport2018/AR2018_OutcomeMilestones.ftl</result>
+      <result name="input">/WEB-INF/crp/views/annualReport2018/AR2018_outcomeMilestones.ftl</result>
       <result name="success" type="redirectAction">
         <param name="actionName">${crpSession}/outomesMilestones</param>
         <param name="liaisonInstitutionID">${liaisonInstitutionID}</param>
