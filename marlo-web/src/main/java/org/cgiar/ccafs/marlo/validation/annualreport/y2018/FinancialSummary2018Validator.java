@@ -40,7 +40,6 @@ public class FinancialSummary2018Validator extends BaseValidator {
 
   private final GlobalUnitManager crpManager;
   private final ReportSynthesisManager reportSynthesisManager;
-  boolean missingFiled;
 
   public FinancialSummary2018Validator(GlobalUnitManager crpManager, ReportSynthesisManager reportSynthesisManager) {
     this.crpManager = crpManager;
@@ -91,7 +90,8 @@ public class FinancialSummary2018Validator extends BaseValidator {
 
         // Validate Narrative
         if (!this.isValidString(reportSynthesis.getReportSynthesisFinancialSummary().getNarrative())) {
-          action.addMessage(action.getText("reportSynthesis.reportSynthesisFinancialSummary.narrative"));
+          action.addMessage(action.getText(
+            "reportSynthesis.reportSynthesisFinancialSummary.annualReport2018.financial.financialStatus.readText"));
           action.getInvalidFields().put("input-reportSynthesis.reportSynthesisFinancialSummary.narrative",
             InvalidFieldsMessages.EMPTYFIELD);
         }
@@ -126,63 +126,53 @@ public class FinancialSummary2018Validator extends BaseValidator {
   }
 
   public void validateBudgets(BaseAction action, ReportSynthesisFinancialSummaryBudget budget, int i) {
-
-    if (i == 0) {
-      missingFiled = false;
+    // Validate Comments
+    if (!this.isValidString(budget.getComments())) {
+      action.addMessage(action.getText("annualReport2018.financial.comments") + "[" + i + "]");
+      action.getInvalidFields().put("input-reportSynthesis.reportSynthesisFinancialSummary.budgets[" + i + "].comments",
+        InvalidFieldsMessages.EMPTYFIELD);
     }
-    if (!missingFiled) {
-      // Validate W1 Planned
-      if (!this.isValidNumber(String.valueOf(budget.getW1Planned())) && budget.getW1Planned() > 0) {
-        missingFiled = true;
-      }
-
-      // Validate W3 Planned
-      if (!this.isValidNumber(String.valueOf(budget.getW3Planned())) && budget.getW3Planned() > 0) {
-        missingFiled = true;
-      }
-
-      // Validate Bilateral Planned
-      if (!this.isValidNumber(String.valueOf(budget.getBilateralPlanned())) && budget.getBilateralPlanned() > 0) {
-        missingFiled = true;
-      }
-
-      // Validate W1 Actual
-      if (!this.isValidNumber(String.valueOf(budget.getW1Actual())) && budget.getW1Actual() > 0) {
-        missingFiled = true;
-      }
-
-      // Validate W3 Actual
-      if (!this.isValidNumber(String.valueOf(budget.getW3Actual())) && budget.getW3Actual() > 0) {
-        missingFiled = true;
-      }
-
-      // Validate Bilateral Actual
-      if (!this.isValidNumber(String.valueOf(budget.getBilateralActual())) && budget.getBilateralActual() > 0) {
-        missingFiled = true;
-      }
-    }
-    if (missingFiled) {
-      action.addMessage(action.getText("reportSynthesis.reportSynthesisFinancialSummary.budgets[" + i + "].w1Planned"));
+    // Validate W1 Planned
+    if (!this.isValidNumber(String.valueOf(budget.getW1Planned())) || budget.getW1Planned() < 0) {
+      action.addMessage("w1Planned" + "[" + i + "]");
       action.getInvalidFields().put(
         "input-reportSynthesis.reportSynthesisFinancialSummary.budgets[" + i + "].w1Planned",
         InvalidFieldsMessages.EMPTYFIELD);
-      action.addMessage(action.getText("reportSynthesis.reportSynthesisFinancialSummary.budgets[" + i + "].w3Planned"));
+    }
+
+    // Validate W3 Planned
+    if (!this.isValidNumber(String.valueOf(budget.getW3Planned())) || budget.getW3Planned() < 0) {
+      action.addMessage("w3Planned" + "[" + i + "]");
       action.getInvalidFields().put(
         "input-reportSynthesis.reportSynthesisFinancialSummary.budgets[" + i + "].w3Planned",
         InvalidFieldsMessages.EMPTYFIELD);
-      action.addMessage(
-        action.getText("reportSynthesis.reportSynthesisFinancialSummary.budgets[" + i + "].bilateralPlanned"));
+    }
+
+    // Validate Bilateral Planned
+    if (!this.isValidNumber(String.valueOf(budget.getBilateralPlanned())) || budget.getBilateralPlanned() < 0) {
+      action.addMessage("bilateralPlanned" + "[" + i + "]");
       action.getInvalidFields().put(
         "input-reportSynthesis.reportSynthesisFinancialSummary.budgets[" + i + "].bilateralPlanned",
         InvalidFieldsMessages.EMPTYFIELD);
-      action.addMessage(action.getText("reportSynthesis.reportSynthesisFinancialSummary.budgets[" + i + "].w1Actual"));
+    }
+
+    // Validate W1 Actual
+    if (!this.isValidNumber(String.valueOf(budget.getW1Actual())) || budget.getW1Actual() < 0) {
+      action.addMessage("w1Actual" + "[" + i + "]");
       action.getInvalidFields().put("input-reportSynthesis.reportSynthesisFinancialSummary.budgets[" + i + "].w1Actual",
         InvalidFieldsMessages.EMPTYFIELD);
-      action.addMessage(action.getText("reportSynthesis.reportSynthesisFinancialSummary.budgets[" + i + "].w3Actual"));
+    }
+
+    // Validate W3 Actual
+    if (!this.isValidNumber(String.valueOf(budget.getW3Actual())) || budget.getW3Actual() < 0) {
+      action.addMessage("w3Actual" + "[" + i + "]");
       action.getInvalidFields().put("input-reportSynthesis.reportSynthesisFinancialSummary.budgets[" + i + "].w3Actual",
         InvalidFieldsMessages.EMPTYFIELD);
-      action.addMessage(
-        action.getText("reportSynthesis.reportSynthesisFinancialSummary.budgets[" + i + "].bilateralActual"));
+    }
+
+    // Validate Bilateral Actual
+    if (!this.isValidNumber(String.valueOf(budget.getBilateralActual())) || budget.getBilateralActual() < 0) {
+      action.addMessage("bilateralActual" + "[" + i + "]");
       action.getInvalidFields().put(
         "input-reportSynthesis.reportSynthesisFinancialSummary.budgets[" + i + "].bilateralActual",
         InvalidFieldsMessages.EMPTYFIELD);
