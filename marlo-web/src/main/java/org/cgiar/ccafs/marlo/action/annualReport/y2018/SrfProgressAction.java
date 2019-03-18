@@ -530,17 +530,6 @@ public class SrfProgressAction extends BaseAction {
 
     if (this.isPMU()) {
 
-      // // Table A-2 PMU Information
-      // flagshipPlannedList = reportSynthesisCrpProgressManager.getPlannedList(liaisonInstitutions, phase.getId(),
-      // loggedCrp, this.liaisonInstitution);
-      // // Table A-1 Evidence on Progress
-      // fpSynthesisTable = reportSynthesisCrpProgressTargetManager.flagshipSynthesis(liaisonInstitutions,
-      // phase.getId());
-      //
-      // // Flagships Synthesis Progress
-      // flagshipCrpProgress =
-      // reportSynthesisCrpProgressManager.getFlagshipCrpProgress(liaisonInstitutions, phase.getId());
-
       // Flagships Synthesis Progress
       flagshipSrfProgress =
         reportSynthesisSrfProgressManager.getFlagshipSrfProgress(liaisonInstitutions, phase.getId());
