@@ -70,6 +70,7 @@ public class ReportSynthesisFlagshipProgressOutcomeManagerImpl
     return reportSynthesisFlagshipProgressOutcomeDAO.getOutcomeId(progressID, outcomeID);
   }
 
+
   @Override
   public ReportSynthesisFlagshipProgressOutcome
     getReportSynthesisFlagshipProgressOutcomeById(long reportSynthesisFlagshipProgressOutcomeID) {
