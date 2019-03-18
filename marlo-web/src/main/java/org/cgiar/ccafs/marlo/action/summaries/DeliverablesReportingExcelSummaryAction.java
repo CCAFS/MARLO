@@ -1972,7 +1972,8 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
         } else {
           // Gender
           if (deliverableCrossCuttingMarkerGender != null) {
-            if (deliverableCrossCuttingMarkerGender.getRepIndGenderYouthFocusLevel() != null) {
+            if (deliverableCrossCuttingMarkerGender.getRepIndGenderYouthFocusLevel() != null
+              && deliverableCrossCuttingMarkerGender.getRepIndGenderYouthFocusLevel().getPowbName() != null) {
               gender = deliverableCrossCuttingMarkerGender.getRepIndGenderYouthFocusLevel().getPowbName();
             }
           }
@@ -1981,7 +1982,9 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
           }
 
           // Youth
-          if (deliverableCrossCuttingMarkerYouth != null) {
+          if (deliverableCrossCuttingMarkerYouth != null
+            && deliverableCrossCuttingMarkerYouth.getRepIndGenderYouthFocusLevel() != null
+            && deliverableCrossCuttingMarkerYouth.getRepIndGenderYouthFocusLevel().getPowbName() != null) {
             youth = deliverableCrossCuttingMarkerYouth.getRepIndGenderYouthFocusLevel().getPowbName();
           }
           if (youth.isEmpty()) {
@@ -1989,7 +1992,9 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
           }
 
           // Cap
-          if (deliverableCrossCuttingMarkerCapDev != null) {
+          if (deliverableCrossCuttingMarkerCapDev != null
+            && deliverableCrossCuttingMarkerCapDev.getRepIndGenderYouthFocusLevel() != null
+            && deliverableCrossCuttingMarkerCapDev.getRepIndGenderYouthFocusLevel().getPowbName() != null) {
             cap = deliverableCrossCuttingMarkerCapDev.getRepIndGenderYouthFocusLevel().getPowbName();
           }
           if (cap.isEmpty()) {
