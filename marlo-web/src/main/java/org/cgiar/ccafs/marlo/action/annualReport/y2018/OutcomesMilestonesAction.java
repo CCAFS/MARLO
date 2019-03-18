@@ -62,7 +62,7 @@ import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
-import org.cgiar.ccafs.marlo.validation.annualreport.FlagshipProgressValidator;
+import org.cgiar.ccafs.marlo.validation.annualreport.y2018.OutcomeMilestonesValidator;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -112,7 +112,7 @@ public class OutcomesMilestonesAction extends BaseAction {
   private CrpProgramManager crpProgramManager;
 
 
-  private FlagshipProgressValidator validator;
+  private OutcomeMilestonesValidator validator;
 
 
   private ProjectFocusManager projectFocusManager;
@@ -174,7 +174,7 @@ public class OutcomesMilestonesAction extends BaseAction {
   public OutcomesMilestonesAction(APConfig config, GlobalUnitManager crpManager,
     LiaisonInstitutionManager liaisonInstitutionManager, ReportSynthesisManager reportSynthesisManager,
     AuditLogManager auditLogManager, UserManager userManager, CrpProgramManager crpProgramManager,
-    FlagshipProgressValidator validator, ProjectFocusManager projectFocusManager, ProjectManager projectManager,
+    OutcomeMilestonesValidator validator, ProjectFocusManager projectFocusManager, ProjectManager projectManager,
     ReportSynthesisFlagshipProgressManager reportSynthesisFlagshipProgressManager,
     ReportSynthesisFlagshipProgressMilestoneManager reportSynthesisFlagshipProgressMilestoneManager,
     CrpMilestoneManager crpMilestoneManager, PhaseManager phaseManager,

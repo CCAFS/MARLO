@@ -4887,18 +4887,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
                 return false;
               }
               break;
-            case INFLUENCE:
-              secctions++;
-              if (sectionStatus.getMissingFields().length() > 0) {
-                return false;
-              }
-              break;
-            case CONTROL:
-              secctions++;
-              if (sectionStatus.getMissingFields().length() > 0) {
-                return false;
-              }
-              break;
             case NARRATIVE:
               secctions++;
               if (sectionStatus.getMissingFields().length() > 0) {
