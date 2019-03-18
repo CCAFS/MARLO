@@ -141,7 +141,7 @@
                 <a href="${url}" target="_blank" class="pull-right"><span class="glyphicon glyphicon-new-window"></span></a>
               </td>
               <td>[@utils.tableText value=(item.projectExpectedStudyInfo.repIndStageStudy.name)!"" /]</td>
-              <td class="text-center">[@utils.tableText value=(item.projectExpectedStudyInfo.status.name)!"" /]</td>
+              <td class="text-center">[@utils.tableText value=(item.projectExpectedStudyInfo.evidenceTag.name)!"" /]</td>
              [#if expanded]
               <td>[@utils.tableList list=(item.srfTargets)![] displayFieldName="srfSloIndicator.title" /]</td>
               <td>[@utils.tableList list=(item.subIdos)![] displayFieldName="srfSubIdo.description" /]</td>

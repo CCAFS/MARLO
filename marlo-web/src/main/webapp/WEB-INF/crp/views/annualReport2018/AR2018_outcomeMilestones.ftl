@@ -134,6 +134,7 @@
                 [#if isFlagshipRow]<th rowspan="${milestoneSize}" class="milestoneSize-${milestoneSize}" style="background:${(fp.color)!'#fff'}"><span class="programTag" style="border-color:${(fp.color)!'#fff'}">${fp.acronym}</span></th>[/#if]
                 [#-- Outcomes --]
                 [#if isOutcomeRow]
+                  [#local reportedOutcome= (action.getOutcomeToPmu( fp.id , outcome.id))! ]
                   <td rowspan="${outcomesSize}" class="milestonesSize-${outcomesSize}"> 
                     [#-- Outcome Statement --]
                     ${outcome.composedName}
@@ -148,21 +149,20 @@
                 [/#if]
                 [#-- Outcomes - Narrative --]
                 [#if isOutcomeRow && !allowPopups]
-                  [#local reportedOutcome= (action.getOutcome(reportSynthesis.reportSynthesisFlagshipProgress.id, outcome.id))! ]
                   <td rowspan="${outcomesSize}" class="milestonesSize-${outcomesSize}">
-                    [@utils.tableText value=(reportedOutcome.summary)!"" /]
+                    [@utils.tableText value=(reportedOutcome.summary)!"" emptyText="global.prefilledByFlagship"/]
                   </td>
                 [/#if]
                 [#-- Milestone --]
                 <td> ${milestone.composedName} [#if allowPopups] <div class="pull-right">[@milestoneContributions element=milestone tiny=true /] [/#if]</div></td>
                 [#-- Milestone Status --]
-                <td> 
-                  [#local reportedMilestone= (action.getMilestone(reportedOutcome.id ,element.id))! ]
-                  [@utils.tableText value=(reportedMilestone.milestoneStatus)!"" /]
+                <td class="text-center"> 
+                  [#local reportedMilestone= (action.getMilestone((reportedOutcome.id)!-1 , milestone.id))! ]
+                  [@utils.tableText value=(reportedMilestone.statusName)!"" emptyText="global.prefilledByFlagship" /]
                 </td>
                 [#if !allowPopups]
                   [#-- Milestone Evidence --]
-                  <td>[@utils.tableText value=(reportedMilestone.evidence)!"" /] </td>
+                  <td>[@utils.tableText value=(reportedMilestone.evidence)!"" emptyText="global.prefilledByFlagship" /] </td>
                   [#-- Cross Cutting markers --]
                   [#list cgiarCrossCuttingMarkers as marker]
                     [#local reportedCrossCuting =  (action.getCrossCuttingMarker( ((reportedMilestone.id)!-1), marker.id ))! ]
