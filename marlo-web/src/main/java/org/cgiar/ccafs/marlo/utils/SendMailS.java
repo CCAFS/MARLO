@@ -136,7 +136,10 @@ public class SendMailS {
     emailLog.setCc(ccEmail);
     emailLog.setTo(toEmail);
     emailLog.setDate(new Date());
-    emailLog.setMessage(messageContent);
+
+    String header = "<div style=\"font-family:Segoe UI, Roboto, Helvetica Neue, Arial, sans-serif; \">";
+    String footer = "</div>";
+    emailLog.setMessage(header + messageContent + footer);
     emailLog.setSubject(subject);
 
 

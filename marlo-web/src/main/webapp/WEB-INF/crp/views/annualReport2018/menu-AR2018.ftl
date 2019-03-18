@@ -3,7 +3,7 @@
 [#assign menus= [
   { 'title': '0. Narrative section', 'show': true,
     'items': [
-    { 'slug': 'narrative',    'name': 'annualReport2018.menu.executiveSummary',    'action': 'narrative',  'active': true, 'onlyPMU': !PMU, 'development': true }
+    { 'slug': 'narrative',    'name': 'annualReport2018.menu.executiveSummary',    'action': 'narrative',  'active': true, 'onlyPMU': !PMU }
     ]
   },
   { 'title': '1. Key Results', 'show': true,
@@ -23,18 +23,18 @@
   },
   { 'title': '2. Effectiveness and Efficiency', 'show': true,
     'items': [
-    { 'slug': 'governance',             'name': 'annualReport2018.menu.governance',             'action': 'governance',             'active': true, 'onlyPMU': !PMU, 'development': true }
+    { 'slug': 'governance',             'name': 'annualReport2018.menu.governance',             'action': 'governance',             'active': true, 'onlyPMU': !PMU }
     { 'slug': 'externalPartnerships',   'name': 'annualReport2018.menu.externalPartnerships',   'action': 'externalPartnerships',   'active': true, 'subName': '(Table 8 and Table 9)' },
     { 'slug': 'intellectualAssets',     'name': 'annualReport2018.menu.intellectualAssets',     'action': 'intellectualAssets',     'active': true, 'onlyPMU': !PMU },
     { 'slug': 'melia',                  'name': 'annualReport2018.menu.melia',                  'action': 'melia',                  'active': true, 'subName': '(Table 10 and Table 11)' },
-    { 'slug': 'efficiency',             'name': 'annualReport2018.menu.efficiency',             'action': 'efficiency',             'active': true, 'onlyPMU': !PMU, 'development': true },
-    { 'slug': 'risks',                  'name': 'annualReport2018.menu.risks',                  'action': 'risks',                  'active': true, 'onlyPMU': !PMU, 'development': true },
+    { 'slug': 'efficiency',             'name': 'annualReport2018.menu.efficiency',             'action': 'efficiency',             'active': true, 'onlyPMU': !PMU },
+    { 'slug': 'risks',                  'name': 'annualReport2018.menu.risks',                  'action': 'risks',                  'active': true, 'onlyPMU': !PMU },
     { 'slug': 'fundingUse',             'name': 'annualReport2018.menu.fundingUse',             'action': 'fundingUse',             'active': true, 'subName': '(Table 12)', 'onlyPMU': !PMU }
     ]
   },
   { 'title': '3. Financial Summary', 'show': true,
     'items': [
-    { 'slug': 'financial',    'name': 'annualReport2018.menu.financial',    'action': 'financial',    'active': true, 'subName': '(Table 13)', 'onlyPMU': !PMU, 'development': true }
+    { 'slug': 'financial',    'name': 'annualReport2018.menu.financial',    'action': 'financial',    'active': true, 'subName': '(Table 13)', 'onlyPMU': !PMU }
     ]
   }
   
