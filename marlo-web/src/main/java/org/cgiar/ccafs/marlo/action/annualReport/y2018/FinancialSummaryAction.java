@@ -88,6 +88,8 @@ public class FinancialSummaryAction extends BaseAction {
   private LiaisonInstitution liaisonInstitution;
   private GlobalUnit loggedCrp;
   private List<LiaisonInstitution> liaisonInstitutions;
+  private String pmuText;
+
 
   @Inject
   public FinancialSummaryAction(APConfig config, GlobalUnitManager crpManager,
@@ -109,6 +111,7 @@ public class FinancialSummaryAction extends BaseAction {
     this.reportSynthesisFinancialSummaryBudgetManager = reportSynthesisFinancialSummaryBudgetManager;
     this.powbExpenditureAreasManager = powbExpenditureAreasManager;
   }
+
 
   @Override
   public String cancel() {
@@ -161,6 +164,10 @@ public class FinancialSummaryAction extends BaseAction {
 
   public GlobalUnit getLoggedCrp() {
     return loggedCrp;
+  }
+
+  public String getPmuText() {
+    return pmuText;
   }
 
   public ReportSynthesis getReportSynthesis() {
@@ -382,12 +389,16 @@ public class FinancialSummaryAction extends BaseAction {
 
     // Informative table to Flagships
     if (this.isFlagship()) {
+
       LiaisonInstitution pmuInstitution = loggedCrp.getLiaisonInstitutions().stream()
         .filter(c -> c.getCrpProgram() == null && c.getAcronym() != null && c.getAcronym().equals("PMU"))
         .collect(Collectors.toList()).get(0);
       ReportSynthesis reportSynthesisDB = reportSynthesisManager.findSynthesis(phase.getId(), pmuInstitution.getId());
+
+
       if (reportSynthesisDB != null) {
         if (reportSynthesisDB.getReportSynthesisFinancialSummary() != null) {
+          pmuText = reportSynthesisDB.getReportSynthesisFinancialSummary().getNarrative();
           if (reportSynthesisDB.getReportSynthesisFinancialSummary().getReportSynthesisFinancialSummaryBudgets() != null
             && !reportSynthesisDB.getReportSynthesisFinancialSummary().getReportSynthesisFinancialSummaryBudgets()
               .isEmpty()) {
@@ -400,7 +411,6 @@ public class FinancialSummaryAction extends BaseAction {
       }
     }
 
-
     // Base Permission
     String params[] = {loggedCrp.getAcronym(), reportSynthesis.getId() + ""};
     this.setBasePermission(this.getText(Permission.REPORT_SYNTHESIS_CRP_PROGRESS_BASE_PERMISSION, params));
@@ -411,7 +421,6 @@ public class FinancialSummaryAction extends BaseAction {
       }
     }
   }
-
 
   @Override
   public String save() {
@@ -465,6 +474,7 @@ public class FinancialSummaryAction extends BaseAction {
 
 
   }
+
 
   /**
    * Save Financial Summary budget by Flagship Information
@@ -568,7 +578,6 @@ public class FinancialSummaryAction extends BaseAction {
     this.liaisonInstitutionID = liaisonInstitutionID;
   }
 
-
   public void setLiaisonInstitutions(List<LiaisonInstitution> liaisonInstitutions) {
     this.liaisonInstitutions = liaisonInstitutions;
   }
@@ -576,6 +585,11 @@ public class FinancialSummaryAction extends BaseAction {
 
   public void setLoggedCrp(GlobalUnit loggedCrp) {
     this.loggedCrp = loggedCrp;
+  }
+
+
+  public void setPmuText(String pmuText) {
+    this.pmuText = pmuText;
   }
 
 

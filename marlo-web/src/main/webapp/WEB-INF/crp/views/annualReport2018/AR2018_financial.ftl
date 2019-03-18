@@ -17,7 +17,7 @@
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
 
-[#assign customName= "reportSynthesis" /]
+[#assign customName= "reportSynthesis.reportSynthesisFinancialSummary" /]
 [#assign customLabel= "annualReport2018.${currentStage}" /]
 
 [#-- Helptext --]
@@ -45,7 +45,7 @@
             [#-- Narrative --]
             <div class="form-group">
               [#if PMU]
-                [@customForm.textArea name="${customName}.financialStatus" i18nkey="${customLabel}.financialStatus" help="${customLabel}.financialStatus.help" helpIcon=false required=true editable=editable allowTextEditor=true /]
+                [@customForm.textArea name="${customName}.narrative" i18nkey="${customLabel}.financialStatus" help="${customLabel}.financialStatus.help" helpIcon=false required=true editable=editable allowTextEditor=true /]
               [#else]
                 <div class="textArea">
                   <label for="">[@customForm.text name="${customLabel}.financialStatus" readText=true /]</label>:
@@ -165,7 +165,7 @@
       
       [#-- Comments --]
       <br />
-      <div class="form-group">
+      <div class="form-group">      
         [@customForm.textArea name="${customName}.comments" i18nkey="${customLabel}.comments" className="" required=true editable=editable allowTextEditor=true /]
       </div>
 
