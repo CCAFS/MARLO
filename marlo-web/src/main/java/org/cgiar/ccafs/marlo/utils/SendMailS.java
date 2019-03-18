@@ -139,7 +139,8 @@ public class SendMailS {
 
     String header = "<div style=\"font-family:Segoe UI, Roboto, Helvetica Neue, Arial, sans-serif; \">";
     String footer = "</div>";
-    emailLog.setMessage(header + messageContent + footer);
+    messageContent = header + messageContent + footer;
+    emailLog.setMessage(messageContent);
     emailLog.setSubject(subject);
 
 
