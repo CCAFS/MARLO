@@ -52,6 +52,10 @@ public class CustomParameter extends MarloAuditableEntity implements java.io.Ser
   }
 
 
+  public Long getParameterId() {
+    return this.getParameter().getId();
+  }
+
   public String getValue() {
     return value;
   }
