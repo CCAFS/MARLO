@@ -144,10 +144,11 @@
 
 
 [#macro table2ListOfPolicies list=[]  id="" expanded=false]
+  [#local crossCuttingMarkers = [{ "Gender", "Youth", "CapDev", "Climate Change"}] /]
   [#if expanded]
-  [#local rows = 2 /]
+    [#local rows = 2 /]
   [#else]
-  [#local rows = 1 /]
+    [#local rows = 1 /]
   [/#if]
   <table id="tableA" class="table table-bordered">
     <thead>
@@ -157,7 +158,7 @@
         <th class="text-center" rowspan="${rows}">[@s.text name="${customLabel}.table2.subIDOs" /]</th>
         [#if expanded]
         <th class="text-center" colspan="4">[@s.text name="${customLabel}.table2.crossCutting" /]</th>
-        <th class="text-center" rowspan="${rows}">[@s.text name="${customLabel}.table2.type" /]</th>
+        [#--  <th class="text-center" rowspan="${rows}">[@s.text name="${customLabel}.table2.type" /]</th>--]
         <th class="text-center" rowspan="${rows}">[@s.text name="${customLabel}.table2.whose" /]</th>
         <th class="text-center" rowspan="${rows}">[@s.text name="${customLabel}.table2.geoScope" /]</th>
         <th class="text-center" rowspan="${rows}">Evidence(s)</th>
@@ -221,8 +222,9 @@
               [#local marker = getMarker(item, "Climate Change") ]
               <p class="dacMarker level-${(marker.id)!""}" title="${(marker.powbName)!""}">${(marker.acronym)!""}</p>
             </td>
-            [#-- Policy Type --]
-            <td>[@utils.tableText value=(item.projectPolicyInfo.repIndOrganizationType.name)!"" /]</td>
+            [#-- Policy Type
+            <td>[@utils.tableText value=(item.projectPolicyInfo)!"" /]</td>
+             --]
             [#-- Owners--]
             <td class="col-md-1">[@utils.tableList list=(item.owners)![]  displayFieldName="repIndPolicyType.name" nobr=true /]</td>
             [#-- Geographic Scope--]
