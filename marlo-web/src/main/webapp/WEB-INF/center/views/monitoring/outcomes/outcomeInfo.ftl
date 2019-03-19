@@ -187,23 +187,22 @@
   [#assign milestoneCustomName = "${name}[${index}]" /]
   <div id="milestone-${isTemplate?string('template', index)}" class="panel-group" style="display:${isTemplate?string('none','block')}">
   
-     <a  class="milestoneStatement" data-toggle="collapse" href="#collapse-${(milestone.id)!}"> 
-          <div class="panel-heading">
-            [#-- Milestone Statement --]
-            [#assign requiredYear = (milestone.researchMilestone.targetYear == year)!false]
-              <div class="milestone-st">
-                <h6 class="milestonesTitle">[@s.text name="outcome.milestones.milestoneStatement"][/@s.text]</h6>
-                <h6 class="milestonesInfo milestonesYear">${(milestone.researchMilestone.targetYear)!}</h6>
-                [#if requiredYear]
-                  <h6 class="milestonesInfo requiredMilestones">[@s.text name="outcome.milestones.requiredMilestone"][/@s.text]</h6>
-                [/#if]
-                ${(milestone.researchMilestone.title)!}
-              </div>
-          </div>
-     </a>
+    <a class="milestoneStatement" data-toggle="collapse" href="#collapse-${(milestone.id)!}"> 
+      <div class="panel-heading">
+        [#-- Milestone Statement --]
+        [#assign requiredYear = (milestone.researchMilestone.targetYear == year)!false]
+        <div class="milestone-st">
+          <h6 class="milestonesTitle">${(milestone.researchMilestone.targetYear)!} [@s.text name="outcome.milestones.milestoneStatement"][/@s.text]</h6>
+          [#if requiredYear]
+            <h6 class="milestonesInfo requiredMilestones">[@s.text name="outcome.milestones.requiredMilestone"][/@s.text]</h6>
+          [/#if]
+          ${(milestone.researchMilestone.title)!}
+        </div>
+      </div>
+    </a>
     [#-- element id --]
-     <input type="hidden" class="elementId" name="${milestoneCustomName}.id" value="${(milestone.id)!}" />
-     <input type="hidden" class="mileStoneId" name="${milestoneCustomName}.researchMilestone.id" value="${(milestone.researchMilestone.id)!}"/>
+    <input type="hidden" class="elementId" name="${milestoneCustomName}.id" value="${(milestone.id)!}" />
+    <input type="hidden" class="mileStoneId" name="${milestoneCustomName}.researchMilestone.id" value="${(milestone.researchMilestone.id)!}"/>
     [#-- Remove Button --]
     [#if editable=!editable]
       <div class="removeMilestone removeElement sm" title="Remove Milestone"></div>
