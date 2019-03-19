@@ -17,7 +17,9 @@ package org.cgiar.ccafs.marlo.validation.center.monitoring.project;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
+import org.cgiar.ccafs.marlo.data.model.CenterMonitoringMilestone;
 import org.cgiar.ccafs.marlo.data.model.CenterMonitoringOutcome;
+import org.cgiar.ccafs.marlo.data.model.CenterMonitoringOutcomeEvidence;
 import org.cgiar.ccafs.marlo.data.model.CenterOutcome;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
@@ -71,7 +73,25 @@ public class MonitoringOutcomeValidator extends BaseValidator {
 
     this.validateOutcome(baseAction, outcome);
 
-    this.saveMissingFields(selectedProgram, outcome, "outcomesList", baseAction);
+    this.saveMissingFields(selectedProgram, outcome, "monitoringOutcome", baseAction);
+
+  }
+
+  public void validateEvidences(BaseAction baseAction, CenterMonitoringOutcomeEvidence evidence, int i, int j) {
+    if (!this.isValidUrl(evidence.getEvidenceLink())) {
+      baseAction.addMessage(baseAction.getText("Evidences Link"));
+      baseAction.getInvalidFields().put("input-outcome.monitorings[" + i + "].evidences[" + i + "].link",
+        InvalidFieldsMessages.EMPTYFIELD);
+    }
+
+  }
+
+  public void validateMilestones(BaseAction baseAction, CenterMonitoringMilestone milestones, int i, int j) {
+    if (!this.isValidString(milestones.getNarrative()) && this.wordCount(milestones.getNarrative()) <= 100) {
+      baseAction.addMessage(baseAction.getText("Milestone Narrative"));
+      baseAction.getInvalidFields().put("input-outcome.monitorings[" + i + "].milestones[" + i + "].narrative",
+        InvalidFieldsMessages.EMPTYFIELD);
+    }
 
   }
 
@@ -107,6 +127,19 @@ public class MonitoringOutcomeValidator extends BaseValidator {
             baseAction.addMessage(baseAction.getText("outcome.monitoring.whatChanged"));
             baseAction.getInvalidFields().put("input-outcome.monitorings[" + i + "].whatChanged",
               InvalidFieldsMessages.EMPTYFIELD);
+          }
+
+
+          if (monitoringOutcome.getMilestones() != null) {
+            for (int j = 0; j < monitoringOutcome.getMilestones().size(); j++) {
+              this.validateMilestones(baseAction, monitoringOutcome.getMilestones().get(j), i, j);
+            }
+          }
+
+          if (monitoringOutcome.getEvidences() != null) {
+            for (int j = 0; j < monitoringOutcome.getEvidences().size(); j++) {
+              this.validateEvidences(baseAction, monitoringOutcome.getEvidences().get(j), i, j);
+            }
           }
         }
         i++;
