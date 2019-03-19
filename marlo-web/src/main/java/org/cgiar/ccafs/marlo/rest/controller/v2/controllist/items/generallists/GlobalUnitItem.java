@@ -85,11 +85,14 @@ public class GlobalUnitItem<T> {
 			if (typeId != null) {
 				globalUnits = new ArrayList<>(this.globalUnitManager.findAll().stream()
 						.filter(c -> c.isActive() && c.getGlobalUnitType().getId() == typeId && typeId <= 4)
-						.sorted(Comparator.comparing(GlobalUnit::getSmoCode)).collect(Collectors.toList()));
+						.sorted(Comparator.comparing(GlobalUnit::getSmoCode,
+								Comparator.nullsLast(Comparator.naturalOrder())))
+						.collect(Collectors.toList()));
 			} else {
 				globalUnits = this.globalUnitManager.findAll().stream()
-						.filter(c -> c.isActive() && c.getGlobalUnitType().getId() <= 4)
-						.sorted(Comparator.comparing(GlobalUnit::getSmoCode)).collect(Collectors.toList());
+						.filter(c -> c.isActive() && c.getGlobalUnitType().getId() <= 4).sorted(Comparator
+								.comparing(GlobalUnit::getSmoCode, Comparator.nullsLast(Comparator.naturalOrder())))
+						.collect(Collectors.toList());
 				;
 				// FIXME: Should change the way to compare which CRP/PTF/Center
 				// will show on API

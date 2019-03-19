@@ -110,25 +110,5 @@ public class OutcomeItem<T> {
 
 	}
 
-	/**
-	 * Get All the Flagship or program Items *
-	 * 
-	 * @return a List of FlagshipProgramDTO with all the Flagship or program
-	 * Items.
-	 */
-	/*
-	 * public List<FlagshipProgramDTO> getAllCrpPrograms() { if
-	 * (this.crpProgramManager.findAll() != null) { List<CrpProgram> crpPrograms
-	 * = new ArrayList<>(this.crpProgramManager.findAll());
-	 * List<FlagshipProgramDTO> flagshipProgramDTOs = crpPrograms.stream()
-	 * .filter(c -> c.getProgramType() == 1 &&
-	 * c.getCrp().getGlobalUnitType().getId() <= 3)
-	 * .sorted(Comparator.comparing(CrpProgram::getSmoCode,
-	 * Comparator.nullsLast(Comparator.naturalOrder()))) .map(crpProgramsEntity
-	 * ->
-	 * this.flagshipProgramMapper.crpProgramToCrpProgramDTO(crpProgramsEntity))
-	 * .collect(Collectors.toList()); return flagshipProgramDTOs; } else {
-	 * return null; } }
-	 */
 
 }
