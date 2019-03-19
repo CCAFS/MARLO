@@ -245,6 +245,20 @@ public class DeliverableValidator extends BaseValidator {
 
     }
 
+    // Validate Status if the extended year is greater than the current phase year
+    DeliverableInfo dInfo = deliverable.getDeliverableInfo(action.getActualPhase());
+    if (dInfo != null) {
+      Integer status = dInfo.getStatus();
+      Integer newExpectedYear = dInfo.getNewExpectedYear();
+      Integer statusExtendedId = Integer.parseInt(ProjectStatusEnum.Extended.getStatusId());
+      if (status != null && newExpectedYear != null && (status.intValue() != statusExtendedId)
+        && (newExpectedYear > action.getCurrentCycleYear())) {
+        action.addMessage(action.getText("deliverable.status.validation1"));
+        action.getInvalidFields().put("input-deliverable.deliverableInfo.status",
+          action.getText("deliverable.status.validation1"));
+      }
+    }
+
 
     if (!action.getFieldErrors().isEmpty()) {
       action.addActionError(action.getText("saving.fields.required"));
