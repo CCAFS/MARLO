@@ -119,6 +119,7 @@ public final class APConstants {
   public static final String CRP_LOCATION_CSV_ACTIVITIES = "crp_location_csv_activities";
   public static final String CRP_VIEW_HIGHLIGTHS = "crp_view_highlights";
   public static final String CRP_HAS_DISEMINATION = "crp_has_disemination";
+  public static final String CRP_ENABLE_BUDGET_EXECUTION = "crp_enable_budget_execution";
 
 
   // Email parameters to copy to FL FM CL

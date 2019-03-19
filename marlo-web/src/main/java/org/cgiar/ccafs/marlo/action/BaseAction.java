@@ -2001,6 +2001,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return globalUnits;
   }
 
+  public String getCrpEnableBudgetExecution() {
+    return APConstants.CRP_ENABLE_BUDGET_EXECUTION;
+  }
+
   /**
    * Get the crp that is currently save in the session, if the user access to
    * the platform whit a diferent url, get the current action to catch the crp
