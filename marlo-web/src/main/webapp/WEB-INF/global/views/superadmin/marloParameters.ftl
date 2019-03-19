@@ -78,7 +78,7 @@
             <div role="tabpanel" class="tab-pane ${type?is_first?string('active','')}" id="type-${type_index}-${element.id}">
               <table class="table table-striped table-condensed ">
                 <tbody>
-                [#list element.parameters?sort_by("parameterId") as crpParameter]
+                [#list element.parameters as crpParameter]
                   [#if type.id ==crpParameter.parameter.category]
                     [@parameterMacro element=crpParameter name="${customName}.parameters" index=crpParameter_index crpIndex=index/]
                   [/#if]
@@ -110,7 +110,7 @@
         <input type="hidden" name="${customName}.parameter.description" value="${(element.parameter.description)!}" />
         <input type="hidden" name="${customName}.paramater.key" value="${(element.parameter.key)!}" />
         <input type="hidden" name="${customName}.parameter.category" value="${(element.parameter.category)!}" />
-        <span> <strong>${(element.parameter.key)!} </strong> <br /> <small>(<i>${(element.parameter.description?replace('\n', '<br>'))!}</i>)</small></span>
+        <strong>${(element.parameter.key)!} </strong> <br /> <small><i>(${(element.parameter.description?replace('\n', '<br>'))!})</i></small>
       [/#if]
     </td>
     <td class="col-md-3 text-center">
