@@ -80,17 +80,19 @@ public class MonitoringOutcomeValidator extends BaseValidator {
   public void validateEvidences(BaseAction baseAction, CenterMonitoringOutcomeEvidence evidence, int i, int j) {
     if (!this.isValidUrl(evidence.getEvidenceLink())) {
       baseAction.addMessage(baseAction.getText("Evidences Link"));
-      baseAction.getInvalidFields().put("input-outcome.monitorings[" + i + "].evidences[" + j + "].link",
+      baseAction.getInvalidFields().put("input-outcome.monitorings[" + i + "].evidences[" + j + "].evidenceLink",
         InvalidFieldsMessages.EMPTYFIELD);
     }
 
   }
 
-  public void validateMilestones(BaseAction baseAction, CenterMonitoringMilestone milestones, int i, int j) {
-    if (!(this.isValidString(milestones.getNarrative()) && this.wordCount(milestones.getNarrative()) <= 100)) {
-      baseAction.addMessage(baseAction.getText("Milestone Narrative"));
-      baseAction.getInvalidFields().put("input-outcome.monitorings[" + i + "].milestones[" + j + "].narrative",
-        InvalidFieldsMessages.EMPTYFIELD);
+  public void validateMilestones(BaseAction baseAction, CenterMonitoringMilestone milestones, int i, int j, int year) {
+    if (milestones.getYear() == year) {
+      if (!(this.isValidString(milestones.getNarrative()) && this.wordCount(milestones.getNarrative()) <= 100)) {
+        baseAction.addMessage(baseAction.getText("Milestone Narrative"));
+        baseAction.getInvalidFields().put("input-outcome.monitorings[" + i + "].milestones[" + j + "].narrative",
+          InvalidFieldsMessages.EMPTYFIELD);
+      }
     }
 
   }
@@ -132,7 +134,7 @@ public class MonitoringOutcomeValidator extends BaseValidator {
 
           if (monitoringOutcome.getMilestones() != null) {
             for (int j = 0; j < monitoringOutcome.getMilestones().size(); j++) {
-              this.validateMilestones(baseAction, monitoringOutcome.getMilestones().get(j), i, j);
+              this.validateMilestones(baseAction, monitoringOutcome.getMilestones().get(j), i, j, year);
             }
           }
 
