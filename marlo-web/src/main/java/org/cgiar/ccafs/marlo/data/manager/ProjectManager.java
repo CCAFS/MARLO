@@ -89,8 +89,6 @@ public interface ProjectManager {
    */
   public List<Project> getUserProjects(long userId, String crp);
 
-  public List<Project> getUserProjectsReporting(long userId, String crp);
-
   /**
    * This method saves the information of the given project
    * 
