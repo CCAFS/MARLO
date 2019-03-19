@@ -219,7 +219,7 @@
                     <input type="hidden" name="${budgetExecutionName}.budgetType.id" value="${(budgetType.id)!}" />
                     <input type="hidden" name="${budgetExecutionName}.phase.id" value="${(actualPhase.id)!}" />
                     <input type="hidden" name="${budgetExecutionName}.year" value="${(selectedYear)!}" />
-                    [@customForm.input name="${budgetExecutionName}.actualExpenditure" value="${(budgetExecution.actualExpenditure)!0}" i18nkey="budget.amount" showTitle=false className="currencyInput" required=true editable=editable && isYearEditable(selectedYear) && action.canEditExecution() /]
+                    [@customForm.input name="${budgetExecutionName}.actualExpenditure" value="${(budgetExecution.actualExpenditure)!0}" i18nkey="budget.amount" showTitle=false className="currencyInput" required=true editable=(editable || action.canModifiedProjectExecution()) && isYearEditable(selectedYear) /]
                     [#-- Index --]
                     [#assign budgetExpenditureIndex = budgetExpenditureIndex + 1 /]
                   </div>

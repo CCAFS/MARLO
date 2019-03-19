@@ -82,8 +82,6 @@ public interface ProjectDAO {
    */
   public List<Map<String, Object>> getUserProjects(long userId, String crp);
 
-  public List<Map<String, Object>> getUserProjectsReporting(long userId, String crp);
-
   /**
    * This method saves the information of the given project
    * 
