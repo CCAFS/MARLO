@@ -668,9 +668,11 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
             && (c.getFundingSource().getFundingSourceInfo(this.getActualPhase()).getStatus() != 3
               || c.getFundingSource().getFundingSourceInfo(this.getActualPhase()).getStatus() != 5))
           .collect(Collectors.toList()));
-        project.setBudgetExecutions(project.getProjectBudgetExecutions().stream()
-          .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase()))
-          .collect(Collectors.toList()));
+        if (this.hasSpecificities(this.getCrpEnableBudgetExecution())) {
+          project.setBudgetExecutions(project.getProjectBudgetExecutions().stream()
+            .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase()))
+            .collect(Collectors.toList()));
+        }
       }
 
       // Pre-load Project Co-Funded Lists.
@@ -733,9 +735,10 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
       if (project.getBudgets() != null) {
         project.getBudgets().clear();
       }
-
-      if (project.getBudgetExecutions() != null) {
-        project.getBudgetExecutions().clear();
+      if (this.hasSpecificities(this.getCrpEnableBudgetExecution())) {
+        if (project.getBudgetExecutions() != null) {
+          project.getBudgetExecutions().clear();
+        }
       }
     }
 
@@ -746,7 +749,9 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
   public String save() {
     if (this.hasPermission("canEdit")) {
       this.saveBasicBudgets();
-      this.saveDeleteBudgetExecutions();
+      if (this.hasSpecificities(this.getCrpEnableBudgetExecution())) {
+        this.saveDeleteBudgetExecutions();
+      }
 
       List<String> relationsName = new ArrayList<>();
       relationsName.add(APConstants.PROJECT_BUDGETS_RELATION);
