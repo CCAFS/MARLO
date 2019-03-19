@@ -202,6 +202,7 @@
     </a>
     [#-- element id --]
     <input type="hidden" class="elementId" name="${milestoneCustomName}.id" value="${(milestone.id)!}" />
+    <input type="hidden" class="elementId" name="${milestoneCustomName}.year" value="${(milestone.researchMilestone.targetYear)!}" />
     <input type="hidden" class="mileStoneId" name="${milestoneCustomName}.researchMilestone.id" value="${(milestone.researchMilestone.id)!}"/>
     [#-- Remove Button --]
     [#if editable=!editable]
