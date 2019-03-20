@@ -21,10 +21,12 @@ import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterAreaManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterOutcomeManager;
+import org.cgiar.ccafs.marlo.data.manager.ICenterSectionStatusManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterTopicManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.CenterArea;
 import org.cgiar.ccafs.marlo.data.model.CenterOutcome;
+import org.cgiar.ccafs.marlo.data.model.CenterSectionStatus;
 import org.cgiar.ccafs.marlo.data.model.CenterTopic;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramLeader;
@@ -67,6 +69,10 @@ public class MonitoringOutcomesListAction extends BaseAction {
 
   private ICenterAreaManager researchAreaService;
 
+  private ICenterOutcomeManager outcomeService;
+
+  private ICenterSectionStatusManager sectionStatusManager;
+
 
   private List<CrpProgram> researchPrograms;
   private List<CenterTopic> researchTopics;
@@ -83,13 +89,16 @@ public class MonitoringOutcomesListAction extends BaseAction {
   @Inject
   public MonitoringOutcomesListAction(APConfig config, GlobalUnitManager centerService,
     CrpProgramManager programService, ICenterAreaManager researchAreaService, UserManager userService,
-    ICenterTopicManager researchTopicService, ICenterOutcomeManager outcomeService) {
+    ICenterTopicManager researchTopicService, ICenterOutcomeManager outcomeService,
+    ICenterSectionStatusManager sectionStatusManager) {
     super(config);
     this.centerService = centerService;
     this.programService = programService;
     this.researchAreaService = researchAreaService;
     this.userService = userService;
     this.researchTopicService = researchTopicService;
+    this.outcomeService = outcomeService;
+    this.sectionStatusManager = sectionStatusManager;
   }
 
   public List<CenterOutcome> allProgramOutcomes() {
@@ -158,6 +167,35 @@ public class MonitoringOutcomesListAction extends BaseAction {
 
   public long getTopicID() {
     return topicID;
+  }
+
+  public boolean isCompleteOutcome(long outcomeID) {
+
+    CenterOutcome outcome = outcomeService.getResearchOutcomeById(outcomeID);
+
+    // String cycle = "";
+    // if (this.isPlanningActive()) {
+    // cycle = APConstants.PLANNING;
+    // } else {
+    // cycle = APConstants.REPORTING;
+    // }
+
+    int year = this.getActualPhase().getYear();
+
+    if (outcome != null) {
+      CenterSectionStatus sectionStatus =
+        sectionStatusManager.getSectionStatusByOutcome(selectedProgram.getId(), outcomeID, "monitoringOutcome", year);
+      if (sectionStatus == null) {
+        return false;
+      }
+
+      if (sectionStatus.getMissingFields().length() > 0) {
+        return false;
+      }
+    } else {
+      return false;
+    }
+    return true;
   }
 
   @Override
@@ -281,6 +319,7 @@ public class MonitoringOutcomesListAction extends BaseAction {
     this.areaID = areaID;
   }
 
+
   public void setCrpProgramID(long crpProgramID) {
     this.crpProgramID = crpProgramID;
   }
@@ -289,7 +328,6 @@ public class MonitoringOutcomesListAction extends BaseAction {
   public void setOutcomeID(long outcomeID) {
     this.outcomeID = outcomeID;
   }
-
 
   public void setOutcomes(List<CenterOutcome> outcomes) {
     this.outcomes = outcomes;
@@ -303,6 +341,7 @@ public class MonitoringOutcomesListAction extends BaseAction {
     this.researchAreas = researchAreas;
   }
 
+
   public void setResearchTopics(List<CenterTopic> researchTopics) {
     this.researchTopics = researchTopics;
   }
@@ -311,7 +350,6 @@ public class MonitoringOutcomesListAction extends BaseAction {
   public void setSelectedProgram(CrpProgram selectedProgram) {
     this.selectedProgram = selectedProgram;
   }
-
 
   public void setSelectedResearchArea(CenterArea selectedResearchArea) {
     this.selectedResearchArea = selectedResearchArea;
