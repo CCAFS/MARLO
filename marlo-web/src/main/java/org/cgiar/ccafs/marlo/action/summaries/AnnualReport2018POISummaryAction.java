@@ -20,6 +20,7 @@ import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.PowbExpenditureAreasManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectFocusManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndSynthesisIndicatorManager;
@@ -68,6 +69,8 @@ import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFinancialSummary;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFinancialSummaryBudget;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgress;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressMilestone;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressStudy;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressStudyDTO;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFundingUseExpendituryArea;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFundingUseSummary;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisGovernance;
@@ -192,10 +195,12 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
   private CrpProgramManager crpProgramManager;
   private ProjectPolicyManager projectPolicyManager;
   private ProjectExpectedStudyManager projectExpectedStudyManager;
+  private ProjectFocusManager projectFocusManager;
 
 
   // Parameters
   private POISummary poiSummary;
+  private LiaisonInstitution liaisonInstitution;
   private LiaisonInstitution pmuInstitution;
   private ReportSynthesis reportSynthesisPMU;
   private long startTime;
@@ -205,6 +210,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
   private DecimalFormat percentageFormat;
   private List<CrpProgram> flagships;
   private List<PowbEvidencePlannedStudyDTO> flagshipPlannedList;
+  private List<ReportSynthesisFlagshipProgressStudyDTO> flagshipPlannedListReport;
   private List<LiaisonInstitution> flagshipLiaisonInstitutions;
   private List<ReportSynthesisCrossCuttingInnovationDTO> flagshipPlannedInnovations;
   private List<ProjectPolicy> projectPolicies;
@@ -232,7 +238,8 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     ReportSynthesisCrossCuttingDimensionManager reportSynthesisCrossCuttingDimensionManager,
     ReportSynthesisCrpProgressManager reportSynthesisCrpProgressManager,
     ReportSynthesisSrfProgressTargetManager reportSynthesisSrfProgressTargetManager,
-    CrpProgramManager crpProgramManager, ProjectExpectedStudyManager projectExpectedStudyManager) {
+    CrpProgramManager crpProgramManager, ProjectExpectedStudyManager projectExpectedStudyManager,
+    ProjectFocusManager projectFocusManager) {
     super(config, crpManager, phaseManager, projectManager);
     document = new XWPFDocument();
     poiSummary = new POISummary();
@@ -253,6 +260,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     this.reportSynthesisCrpProgressManager = reportSynthesisCrpProgressManager;
     this.crpProgramManager = crpProgramManager;
     this.projectExpectedStudyManager = projectExpectedStudyManager;
+    this.projectFocusManager = projectFocusManager;
   }
 
   private void addAdjustmentDescription() {
@@ -1182,7 +1190,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
       }
     }
 
-    poiSummary.textTable(document, headers, datas, false, "table4AnnualReport2018");
+    poiSummary.textTable(document, headers, datas, false, "table3AnnualReport2018");
   }
 
   private void createTable4() {
@@ -2827,17 +2835,206 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
       + this.getSelectedCycle() + ". Time to generate: " + stopTime + "ms.");
     return SUCCESS;
   }
+  /*
+   * private void fillProjectStudiesList(LiaisonInstitution liaisonInstitution) {
+   * projectExpectedStudies = new ArrayList<>();
+   * // this.isFlagship()
+   * if (false) {
+   * // Fill Project Expected Studies of the current flagship
+   * if (projectFocusManager.findAll() != null) {
+   * List<ProjectFocus> projectFocus = new ArrayList<>(projectFocusManager.findAll().stream()
+   * .filter(pf -> pf.isActive() && pf.getCrpProgram().getId() == liaisonInstitution.getCrpProgram().getId()
+   * && pf.getPhase() != null && pf.getPhase().getId() == this.getActualPhase().getId())
+   * .collect(Collectors.toList()));
+   * for (ProjectFocus focus : projectFocus) {
+   * Project project = projectManager.getProjectById(focus.getProject().getId());
+   * List<ProjectExpectedStudy> plannedProjectExpectedStudies =
+   * new ArrayList<>(project.getProjectExpectedStudies().stream()
+   * .filter(ps -> ps.isActive() && ps.getProjectExpectedStudyInfo(this.getActualPhase()) != null
+   * && ps.getProjectExpectedStudyInfo().getStudyType() != null
+   * && ps.getProjectExpectedStudyInfo().getStudyType().getId() == 1
+   * && ps.getProjectExpectedStudyInfo().getYear() != null
+   * && ps.getProjectExpectedStudyInfo().getYear() == this.getActualPhase().getYear())
+   * .collect(Collectors.toList()));
+   * for (ProjectExpectedStudy projectExpectedStudy : plannedProjectExpectedStudies) {
+   * projectExpectedStudy.getProjectExpectedStudyInfo(this.getActualPhase());
+   * projectExpectedStudy.setSrfTargets(projectExpectedStudy.getSrfTargets(this.getActualPhase()));
+   * projectExpectedStudy.setSubIdos(projectExpectedStudy.getSubIdos(this.getActualPhase()));
+   * projectExpectedStudies.add(projectExpectedStudy);
+   * }
+   * }
+   * }
+   * } else {
+   * // Fill Project Expected Studies of the PMU, removing flagship deletions
+   * List<LiaisonInstitution> liaisonInstitutions = new ArrayList<>();
+   * liaisonInstitutions = this.getLoggedCrp().getLiaisonInstitutions().stream()
+   * .filter(c -> c.getCrpProgram() != null && c.isActive()
+   * && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+   * .collect(Collectors.toList());
+   * liaisonInstitutions.sort(Comparator.comparing(LiaisonInstitution::getAcronym));
+   * // List<ReportSynthesisFlagshipProgressStudyDTO> flagshipPlannedList =
+   * // this.fillFpPlannedList(liaisonInstitutions);
+   * for (ReportSynthesisFlagshipProgressStudyDTO reportSynthesisFlagshipProgressStudyDTO : flagshipPlannedList) {
+   * ProjectExpectedStudy projectExpectedStudy = reportSynthesisFlagshipProgressStudyDTO.getProjectExpectedStudy();
+   * projectExpectedStudy.getProjectExpectedStudyInfo(this.getActualPhase());
+   * projectExpectedStudy.setSrfTargets(projectExpectedStudy.getSrfTargets(this.getActualPhase()));
+   * projectExpectedStudy.setSubIdos(projectExpectedStudy.getSubIdos(this.getActualPhase()));
+   * projectExpectedStudy.setSelectedFlahsgips(new ArrayList<>());
+   * // sort selected flagships
+   * if (reportSynthesisFlagshipProgressStudyDTO.getLiaisonInstitutions() != null
+   * && !reportSynthesisFlagshipProgressStudyDTO.getLiaisonInstitutions().isEmpty()) {
+   * reportSynthesisFlagshipProgressStudyDTO.getLiaisonInstitutions()
+   * .sort((l1, l2) -> l1.getCrpProgram().getAcronym().compareTo(l2.getCrpProgram().getAcronym()));
+   * }
+   * projectExpectedStudy.getSelectedFlahsgips()
+   * .addAll(reportSynthesisFlagshipProgressStudyDTO.getLiaisonInstitutions());
+   * projectExpectedStudies.add(projectExpectedStudy);
+   * }
+   * }
+   * }
+   */
+
+  public List<ReportSynthesisFlagshipProgressStudyDTO>
+    fillFpPlannedList(List<LiaisonInstitution> flagshipsLiaisonInstitutions) {
+    List<ReportSynthesisFlagshipProgressStudyDTO> flagshipPlannedList = new ArrayList<>();
+
+    if (projectExpectedStudyManager.findAll() != null) {
+
+      // Get global unit studies
+      List<ProjectExpectedStudy> projectExpectedStudies = new ArrayList<>(projectExpectedStudyManager.findAll().stream()
+        .filter(ps -> ps.isActive() && ps.getProjectExpectedStudyInfo(this.getActualPhase()) != null
+          && ps.getProjectExpectedStudyInfo().getStudyType() != null
+          && ps.getProjectExpectedStudyInfo().getStudyType().getId() == 1
+          && ps.getProjectExpectedStudyInfo().getYear() != null
+          && ps.getProjectExpectedStudyInfo().getYear() == this.getActualPhase().getYear() && ps.getProject() != null
+          && ps.getProject().getGlobalUnitProjects().stream().filter(
+            gup -> gup.isActive() && gup.isOrigin() && gup.getGlobalUnit().getId().equals(this.getLoggedCrp().getId()))
+            .collect(Collectors.toList()).size() > 0)
+        .collect(Collectors.toList()));
+
+      // Fill all project studies of the global unit
+      for (ProjectExpectedStudy projectExpectedStudy : projectExpectedStudies) {
+        ReportSynthesisFlagshipProgressStudyDTO dto = new ReportSynthesisFlagshipProgressStudyDTO();
+        projectExpectedStudy.getProject()
+          .setProjectInfo(projectExpectedStudy.getProject().getProjecInfoPhase(this.getActualPhase()));
+        dto.setProjectExpectedStudy(projectExpectedStudy);
+        if (projectExpectedStudy.getProject().getProjectInfo().getAdministrative() != null
+          && projectExpectedStudy.getProject().getProjectInfo().getAdministrative()) {
+          dto.setLiaisonInstitutions(new ArrayList<>());
+          dto.getLiaisonInstitutions().add(this.liaisonInstitution);
+        } else {
+          List<ProjectFocus> projectFocuses = new ArrayList<>(projectExpectedStudy.getProject().getProjectFocuses()
+            .stream().filter(pf -> pf.isActive() && pf.getPhase().getId() == this.getActualPhase().getId())
+            .collect(Collectors.toList()));
+          List<LiaisonInstitution> liaisonInstitutions = new ArrayList<>();
+          for (ProjectFocus projectFocus : projectFocuses) {
+            liaisonInstitutions.addAll(projectFocus.getCrpProgram().getLiaisonInstitutions().stream()
+              .filter(li -> li.isActive() && li.getCrpProgram() != null
+                && li.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()
+                && li.getCrp() != null && li.getCrp().equals(this.getLoggedCrp()))
+              .collect(Collectors.toList()));
+          }
+          dto.setLiaisonInstitutions(liaisonInstitutions);
+        }
+
+        flagshipPlannedList.add(dto);
+      }
+
+      // Get supplementary studies
+      List<ProjectExpectedStudy> projectSupplementaryStudies =
+        new ArrayList<>(projectExpectedStudyManager.findAll().stream()
+          .filter(ps -> ps.isActive() && ps.getProjectExpectedStudyInfo(this.getActualPhase()) != null
+            && ps.getProject() == null && ps.getProjectExpectedStudyInfo().getStudyType() != null
+            && ps.getProjectExpectedStudyInfo().getStudyType().getId() == 1
+            && ps.getProjectExpectedStudyInfo().getYear() != null
+            && ps.getProjectExpectedStudyInfo().getYear() == this.getActualPhase().getYear())
+          .collect(Collectors.toList()));
+
+      // Fill all supplementary studies
+      for (ProjectExpectedStudy projectExpectedStudy : projectSupplementaryStudies) {
+        ReportSynthesisFlagshipProgressStudyDTO dto = new ReportSynthesisFlagshipProgressStudyDTO();
+        dto.setProjectExpectedStudy(projectExpectedStudy);
+        dto.setLiaisonInstitutions(new ArrayList<>());
+        dto.getLiaisonInstitutions().add(this.liaisonInstitution);
+        flagshipPlannedList.add(dto);
+      }
+
+      // Get deleted studies
+      List<ReportSynthesisFlagshipProgressStudy> flagshipProgressStudies = new ArrayList<>();
+      for (LiaisonInstitution liaisonInstitution : flagshipsLiaisonInstitutions) {
+        ReportSynthesis reportSynthesis =
+          reportSynthesisManager.findSynthesis(this.getActualPhase().getId(), liaisonInstitution.getId());
+        if (reportSynthesis != null) {
+          if (reportSynthesis.getReportSynthesisFlagshipProgress() != null) {
+            if (reportSynthesis.getReportSynthesisFlagshipProgress()
+              .getReportSynthesisFlagshipProgressStudies() != null) {
+              List<ReportSynthesisFlagshipProgressStudy> studies = new ArrayList<>(
+                reportSynthesis.getReportSynthesisFlagshipProgress().getReportSynthesisFlagshipProgressStudies()
+                  .stream().filter(s -> s.isActive()).collect(Collectors.toList()));
+              if (studies != null || !studies.isEmpty()) {
+                for (ReportSynthesisFlagshipProgressStudy reportSynthesisFlagshipProgressStudy : studies) {
+                  flagshipProgressStudies.add(reportSynthesisFlagshipProgressStudy);
+                }
+              }
+            }
+          }
+        }
+      }
+
+      // Get list of studies to remove
+      List<ReportSynthesisFlagshipProgressStudyDTO> removeList = new ArrayList<>();
+      for (ReportSynthesisFlagshipProgressStudyDTO dto : flagshipPlannedList) {
+
+        List<LiaisonInstitution> removeLiaison = new ArrayList<>();
+        for (LiaisonInstitution liaisonInstitution : dto.getLiaisonInstitutions()) {
+          ReportSynthesis reportSynthesis =
+            reportSynthesisManager.findSynthesis(this.getActualPhase().getId(), liaisonInstitution.getId());
+          if (reportSynthesis != null) {
+            if (reportSynthesis.getReportSynthesisFlagshipProgress() != null) {
+
+              ReportSynthesisFlagshipProgressStudy flagshipProgressStudyNew =
+                new ReportSynthesisFlagshipProgressStudy();
+              flagshipProgressStudyNew = new ReportSynthesisFlagshipProgressStudy();
+              flagshipProgressStudyNew.setProjectExpectedStudy(dto.getProjectExpectedStudy());
+              flagshipProgressStudyNew
+                .setReportSynthesisFlagshipProgress(reportSynthesis.getReportSynthesisFlagshipProgress());
+
+              if (flagshipProgressStudies.contains(flagshipProgressStudyNew)) {
+                removeLiaison.add(liaisonInstitution);
+              }
+            }
+          }
+        }
+
+        for (LiaisonInstitution li : removeLiaison) {
+          dto.getLiaisonInstitutions().remove(li);
+        }
+
+        if (dto.getLiaisonInstitutions().isEmpty()) {
+          removeList.add(dto);
+        }
+      }
+
+      // Remove studies unselected by flagships
+      for (ReportSynthesisFlagshipProgressStudyDTO i : removeList) {
+        flagshipPlannedList.remove(i);
+      }
+
+    }
+    return flagshipPlannedList;
+  }
+
 
   @Override
   public int getContentLength() {
     return bytesDOC.length;
   }
 
+
   @Override
   public String getContentType() {
     return "application/docx";
   }
-
 
   @Override
   public String getFileName() {
@@ -2873,6 +3070,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     }
     return inputStream;
   }
+
 
   public List<Deliverable> getProjectDeliverables(Project project, Phase phase) {
 
@@ -2912,7 +3110,6 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     return deliverables;
   }
 
-
   private void getProjectExpectedStudies() {
     // Table 3
     if (projectExpectedStudyManager.findAll() != null) {
@@ -2929,7 +3126,6 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         .collect(Collectors.toList()));
 
     }
-
   }
 
   public void getProjectPolicies() {

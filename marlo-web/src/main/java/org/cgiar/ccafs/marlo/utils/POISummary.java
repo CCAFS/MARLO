@@ -502,6 +502,22 @@ public class POISummary {
     return html;
   }
 
+  public void table3AnnualReport2018Style(XWPFTable table) {
+    /* horizontal merge, From format tables I */
+
+    for (int x = 0; x < table.getNumberOfRows(); x++) {
+      XWPFTableRow row = table.getRow(x);
+      for (int y = 0; y < row.getTableCells().size(); y++) {
+        XWPFTableCell cell = row.getCell(y);
+        CTTblWidth cellWidth = cell.getCTTc().addNewTcPr().addNewTcW();
+
+        CTTcPr pr = cell.getCTTc().addNewTcPr();
+        // pr.addNewNoWrap();
+        cellWidth.setW(BigInteger.valueOf(100));
+      }
+    }
+  }
+
   public void table4AnnualReport2018Style(XWPFTable table) {
     /* horizontal merge, From format tables I */
 
@@ -517,6 +533,7 @@ public class POISummary {
       }
     }
   }
+
 
   public void tableA1Annual2018ReportStyle(XWPFTable table) {
     /* horizontal merge, From format tables A1 */
@@ -1575,6 +1592,9 @@ public class POISummary {
         break;
       case "tableHAnnualReport":
         this.tableGStyle(table);
+        break;
+      case "table3AnnualReport2018":
+        this.table3AnnualReport2018Style(table);
         break;
       case "table4AnnualReport2018":
         this.table4AnnualReport2018Style(table);
