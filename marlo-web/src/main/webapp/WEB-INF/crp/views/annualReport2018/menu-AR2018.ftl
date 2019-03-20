@@ -14,7 +14,7 @@
         { 'slug': 'policies',             'name': 'annualReport2018.menu.policies',           'action': 'policies',             'active': true },
         { 'slug': 'oicr',                 'name': 'annualReport2018.menu.oicr',               'action': 'oicr',                 'active': true },
         { 'slug': 'innovations',          'name': 'annualReport2018.menu.innovations',        'action': 'innovations',          'active': true },
-        { 'slug': 'outomesMilestones',    'name': 'annualReport2018.menu.outomesMilestones',  'action': 'outomesMilestones',    'active': true },
+        { 'slug': 'outomesMilestones',    'name': 'annualReport2018.menu.outomesMilestones',  'action': 'outomesMilestones',    'active': true, 'onlyFlagship': !flagship },
         { 'slug': 'publications',         'name': 'annualReport2018.menu.publications',       'action': 'publications',         'active': true }  
       ]
     },

@@ -268,7 +268,7 @@
       [@customForm.textArea name="${customName}.evidence" i18nkey="${customLabel}.milestoneEvidence" help="${customLabel}.milestoneEvidence.help" helpIcon=false display=true required=false className="limitWords-50" editable=editable allowTextEditor=true /]
     </div>
       
-    <div class="form-group milestonesEvidence" style="display:${((milestoneStatus == 2) || (milestoneStatus == 3) || (milestoneStatus == 4))?string('block', 'none')}">
+    <div class="form-group milestonesEvidence" style="width: 100%; display:${((milestoneStatus == 2) || (milestoneStatus == 3) || (milestoneStatus == 4))?string('block', 'none')}">
       [#-- Extendend, cancelled or changed milestones - Main reason --]
       <div class="form-group">
         [@customForm.select name="${customName}.reason.id" label=""  i18nkey="${customLabel}.milestoneMainReason" listName="reasons" keyFieldName="id"  displayFieldName="name"   required=true  className="milestoneMainReasonSelect" editable=editable/]
