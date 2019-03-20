@@ -997,6 +997,24 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return this.securityContext.hasPermission(permission);
   }
 
+  public boolean canModifiedProjectExecution() {
+    String actionName = this.getActionName();
+    if (actionName.contains(ProjectSectionStatusEnum.BUDGET.getStatus()) && this.hasPermission("execution")
+      && this.hasSpecificities(this.getCrpEnableBudgetExecution())) {
+      return true;
+    }
+    return false;
+  }
+
+  public boolean canModifiedProjectStatus() {
+    String actionName = this.getActionName();
+    if (actionName.contains(ProjectSectionStatusEnum.DESCRIPTION.getStatus())
+      && this.hasPermission("statusDescription")) {
+      return true;
+    }
+    return false;
+  }
+
   public boolean canProjectSubmited(long projectID) {
     String params[] = {this.crpManager.getGlobalUnitById(this.getCrpID()).getAcronym(), projectID + ""};
     return this.hasPermission(this.generatePermission(Permission.PROJECT_SUBMISSION_PERMISSION, params));
@@ -5425,14 +5443,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
     return false;
 
-  }
-
-  public boolean isProjectDescription() {
-    String name = this.getActionName();
-    if (name.contains(ProjectSectionStatusEnum.DESCRIPTION.getStatus())) {
-      return true;
-    }
-    return false;
   }
 
   public Boolean isProjectNew(long projectID) {
