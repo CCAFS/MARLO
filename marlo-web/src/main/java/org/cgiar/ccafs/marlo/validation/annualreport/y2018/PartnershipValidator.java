@@ -167,8 +167,7 @@ public class PartnershipValidator extends BaseValidator {
     if (collaboration.getCrps() == null || collaboration.getCrps().isEmpty()) {
       action.addMessage(action.getText("Crps"));
       action.addMissingField("reportSynthesis.reportSynthesisKeyPartnership.collaborations[" + i + "].crps");
-      action.getInvalidFields().put(
-        "list-reportSynthesis.reportSynthesisExternalPartnership.collaborations[" + i + "].crps",
+      action.getInvalidFields().put("list-reportSynthesis.reportSynthesisKeyPartnership.collaborations[" + i + "].crps",
         action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"crps"}));
     }
 

@@ -92,22 +92,17 @@ public class MonitoringEvaluationValidator extends BaseValidator {
           InvalidFieldsMessages.EMPTYFIELD);
       }
 
-      // if (this.isPMU(this.getLiaisonInstitution(action, reportSynthesis.getId()))) {
-      //
-      // // Validate Evaluations
-      // if (reportSynthesis.getReportSynthesisMelia().getEvaluations() != null
-      // && !reportSynthesis.getReportSynthesisMelia().getEvaluations().isEmpty()) {
-      // for (int i = 0; i < reportSynthesis.getReportSynthesisMelia().getEvaluations().size(); i++) {
-      // this.validateEvaluations(action, reportSynthesis.getReportSynthesisMelia().getEvaluations().get(i), i);
-      // }
-      // } else {
-      // action.addMessage(action.getText("Evaluations"));
-      // action.addMissingField("reportSynthesis.reportSynthesisMelia.evaluations");
-      // action.getInvalidFields().put("list-reportSynthesis.reportSynthesisMelia.evaluations",
-      // action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Evaluations"}));
-      // }
-      //
-      // }
+      if (this.isPMU(this.getLiaisonInstitution(action, reportSynthesis.getId()))) {
+
+        // Validate Evaluations
+        if (reportSynthesis.getReportSynthesisMelia().getEvaluations() != null
+          && !reportSynthesis.getReportSynthesisMelia().getEvaluations().isEmpty()) {
+          for (int i = 0; i < reportSynthesis.getReportSynthesisMelia().getEvaluations().size(); i++) {
+            this.validateEvaluations(action, reportSynthesis.getReportSynthesisMelia().getEvaluations().get(i), i);
+          }
+        }
+
+      }
 
       if (!action.getFieldErrors().isEmpty()) {
         action.addActionError(action.getText("saving.fields.required"));
@@ -158,15 +153,29 @@ public class MonitoringEvaluationValidator extends BaseValidator {
 
     // Validate Whom
     if (!this.isValidString(evaluation.getTextWhom())) {
-      action.addMessage(action.getText("reportSynthesis.reportSynthesisMelia.evaluations[" + i + "].whom"));
-      action.getInvalidFields().put("input-reportSynthesis.reportSynthesisMelia.evaluations[" + i + "].whom",
+      action.addMessage(action.getText("reportSynthesis.reportSynthesisMelia.evaluations[" + i + "].textWhom"));
+      action.getInvalidFields().put("input-reportSynthesis.reportSynthesisMelia.evaluations[" + i + "].textWhom",
         InvalidFieldsMessages.EMPTYFIELD);
     }
 
     // Validate When
     if (!this.isValidString(evaluation.getTextWhen())) {
-      action.addMessage(action.getText("reportSynthesis.reportSynthesisMelia.evaluations[" + i + "].when"));
-      action.getInvalidFields().put("input-reportSynthesis.reportSynthesisMelia.evaluations[" + i + "].when",
+      action.addMessage(action.getText("reportSynthesis.reportSynthesisMelia.evaluations[" + i + "].textWhen"));
+      action.getInvalidFields().put("input-reportSynthesis.reportSynthesisMelia.evaluations[" + i + "].textWhen",
+        InvalidFieldsMessages.EMPTYFIELD);
+    }
+
+    // Validate actions
+    if (!this.isValidString(evaluation.getActions())) {
+      action.addMessage(action.getText("reportSynthesis.reportSynthesisMelia.evaluations[" + i + "].actions"));
+      action.getInvalidFields().put("input-reportSynthesis.reportSynthesisMelia.evaluations[" + i + "].actions",
+        InvalidFieldsMessages.EMPTYFIELD);
+    }
+
+    // Validate Comments
+    if (!this.isValidString(evaluation.getComments())) {
+      action.addMessage(action.getText("reportSynthesis.reportSynthesisMelia.evaluations[" + i + "].comments"));
+      action.getInvalidFields().put("input-reportSynthesis.reportSynthesisMelia.evaluations[" + i + "].comments",
         InvalidFieldsMessages.EMPTYFIELD);
     }
 
