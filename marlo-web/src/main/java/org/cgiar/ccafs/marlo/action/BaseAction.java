@@ -2316,6 +2316,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         ProjectBudget projectBudget = this.projectBudgetManager.getProjectBudgetById(id);
         List<DeliverableFundingSource> deList = projectBudget.getFundingSource().getDeliverableFundingSources().stream()
           .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase())
+            && c.getDeliverable().getProject() != null
             && c.getDeliverable().getProject().getId().longValue() == projectID.longValue())
           .collect(Collectors.toList());
         Set<Deliverable> deSet = new HashSet<>();
@@ -3361,8 +3362,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         break;
 
       case BUDGET:
-
-        if (this.isReportingActive()) {
+        if (this.isReportingActive() && !this.hasSpecificities(this.getCrpEnableBudgetExecution())) {
           return true;
         }
         project = this.projectManager.getProjectById(projectID);
@@ -3370,6 +3370,13 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
           .filter(d -> d.isActive() && d.getPhase() != null && d.getPhase().equals(this.getActualPhase()))
           .collect(Collectors.toList()).isEmpty()) {
           return false;
+        }
+        if (this.isReportingActive() && this.hasSpecificities(this.getCrpEnableBudgetExecution())) {
+          if (project.getProjectBudgetExecutions().stream()
+            .filter(d -> d.isActive() && d.getPhase() != null && d.getPhase().equals(this.getActualPhase()))
+            .collect(Collectors.toList()).isEmpty()) {
+            return false;
+          }
         }
 
         sectionStatus = this.sectionStatusManager.getSectionStatusByProject(projectID, this.getCurrentCycle(),
