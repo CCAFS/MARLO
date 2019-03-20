@@ -227,8 +227,8 @@
         <thead>
           <tr>
             <th></th>
-            <th class="text-center">[@s.text name="${customLabel}.milestoneScoreMarker" /]</th>
-            <th class="text-center col-md-7">[@s.text name="${customLabel}.milestoneScoreJustification" /]</th>
+            <th class="text-center">[@s.text name="${customLabel}.milestoneScoreMarker" /][@customForm.req required=editable  /]</th>
+            <th class="text-center col-md-7">[@s.text name="${customLabel}.milestoneScoreJustification" /][@customForm.req required=editable  /]</th>
           </tr>
         </thead>
         <tbody>

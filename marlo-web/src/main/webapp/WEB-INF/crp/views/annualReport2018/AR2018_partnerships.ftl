@@ -64,7 +64,6 @@
                 <div id="tab-keyPartnerships" role="tabpanel" class="tab-pane fade in active">
                   [#-- 2.2.1 Highlights of External Partnerships  --]
                   <div class="form-group">
-                    <h5 class="sectionSubTitle">[@s.text name="${customLabel}.highlights.title" /]</h5>
                     [#-- Partnerships summary --]
                     [#if PMU]
                       <div class="form-group">
@@ -141,18 +140,16 @@
                
                <div id="tab-crossPartnerships" role="tabpanel" class="tab-pane fade ">
                   [#-- 2.2.2 Cross-CGIAR Partnerships  --]
-                  <div class="form-group">
-                    <h5 class="sectionSubTitle">[@s.text name="${customLabel}.crossCGIAR.title" /]</h5>
                     [#-- Summary --]
                     [#if PMU]
                       <div class="form-group">
                         [@customForm.textArea name="${customName}.summaryCgiar" i18nkey="${customLabel}.crossCGIAR.summary" help="${customLabel}.crossCGIAR.summary.help" className="limitWords-300" helpIcon=false required=true editable=editable allowTextEditor=true /]
                       </div>
                     [#else]
-                      [#--  [@utils.tableText value=(reportSynthesis.reportSynthesisKeyPartnership.crossCGIAR)!'' nobr=false emptyText="global.prefilledByPmu" /]  --]
+                    [#-- <div class="form-group">
+                       [@utils.tableText value=(reportSynthesis.reportSynthesisKeyPartnership.crossCGIAR)!'' nobr=false emptyText="global.prefilledByPmu" /] 
+                    </div> --]
                     [/#if]
-                    <br />
-                  </div>
                   
                   [#-- Table 8: Internal Cross-CGIAR Collaborations --]
                   <div class="form-group">
