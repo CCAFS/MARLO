@@ -1680,6 +1680,10 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
           }
         }
 
+        if (country == null || country == "" || country.isEmpty()) {
+          country = "<Not Defined>";
+        }
+
 
         model.addRow(new Object[] {deliverable.getId(), title, delivType, delivSubType, delivStatus, delivYear,
           keyOutput, outcomes, leader, fundingSources, delivNewYear, delivNewYearJustification,
