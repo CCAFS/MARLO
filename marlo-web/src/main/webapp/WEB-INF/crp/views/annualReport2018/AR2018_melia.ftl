@@ -59,23 +59,24 @@
                 <div id="tab-table10" role="tabpanel" class="tab-pane fade in active">
                   [#-- Short narrative to introduce the table 9 --]
                   <div class="form-group">
-                    [@customForm.textArea name="${customName}.summary" i18nkey="${customLabel}.narrative" className="" helpIcon=false required=false editable=editable allowTextEditor=true /]
+                    [@customForm.textArea name="${customName}.summary" i18nkey="${customLabel}.narrative" className="" helpIcon=false required=true editable=editable allowTextEditor=true /]
                   </div>
                   
                   [#-- Table 10: MELIA --]
-                  <br />
                   <div class="form-group">
                     [#-- Button --]
                     <button type="button" class="btn btn-default btn-xs pull-right" data-toggle="modal" data-target="#modal-policies">
                        <span class="glyphicon glyphicon-fullscreen"></span> See Full table 10
                     </button>
+                      <h4 class="subTitle headTitle annualReport-table">[@s.text name="${customLabel}.table10.title" /]</h4>
+                      [@customForm.helpLabel name="${customLabel}.table10.help" showIcon=false editable=editable/]
                     [#-- Modal --]
                     <div class="modal fade" id="modal-policies" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
                       <div class="modal-dialog modal-lg" role="document">
                         <div class="modal-content">
                           <div class="modal-header">
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                            <h4 class="modal-title" id="myModalLabel"></h4>
+                            <h4 class="modal-title" id="myModalLabel">[@s.text name="${customLabel}.table10.title" /]</h4>
                           </div>
                           <div class="modal-body">
                             [#-- Full table --]
@@ -138,10 +139,7 @@
 
 [#macro meliaTable name list=[] expandedTable=false]
 
-  <div class="form-group">
-    <h4 class="subTitle headTitle annualReport-table">[@s.text name="${customLabel}.table10.title" /]</h4>
-    [@customForm.helpLabel name="${customLabel}.help" showIcon=false editable=editable/]
-    
+  <div class="form-group">    
     <table class="table table-bordered">
       <thead>
         <tr>
@@ -193,7 +191,9 @@
             </tr>
           [/#list]
         [#else]
-           
+           <tr>
+            <td class="text-center" colspan="5"><i>No entries added yet.</i></td>
+          </tr>
         [/#if]
         <tr>
         </tr>
