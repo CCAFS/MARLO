@@ -6062,8 +6062,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
 	public void saveLessons(GlobalUnit crp, Project project) {
 
-		if (project.getProjecInfoPhase(this.getActualPhase()).isProjectEditLeader()
-				&& !this.isProjectNew(project.getId())) {
+		if (project.getProjecInfoPhase(this.getActualPhase()).isProjectEditLeader()) {
 
 			String actionName = this.getActionName().replaceAll(crp.getAcronym() + "/", "");
 
