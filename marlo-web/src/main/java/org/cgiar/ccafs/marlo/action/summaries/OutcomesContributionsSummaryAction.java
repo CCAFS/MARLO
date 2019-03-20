@@ -400,7 +400,7 @@ public class OutcomesContributionsSummaryAction extends BaseSummariesAction impl
             communications = "";
           Double expectedValue = new Double(0);
           BigDecimal outcomeExpectedValue = new BigDecimal(0);
-          Long achievedValue = new Long(0);
+          Double achievedValue = new Double(0);
 
           projectId = project.getId().toString();
           projectUrl = "P" + project.getId().toString();
@@ -436,7 +436,7 @@ public class OutcomesContributionsSummaryAction extends BaseSummariesAction impl
                 outcomeExpectedValue = new BigDecimal(-1);
                 // Only reporting
                 if (this.getSelectedCycle() != null && this.getSelectedCycle().equals(APConstants.REPORTING)) {
-                  achievedValue = new Long(-1);
+                  achievedValue = new Double(-1);
                 }
               } else {
                 if (projectOutcome.getExpectedValue() != null) {
@@ -455,7 +455,7 @@ public class OutcomesContributionsSummaryAction extends BaseSummariesAction impl
               expectedValue = -1.0;
               // Only reporting
               if (this.getSelectedCycle() != null && this.getSelectedCycle().equals(APConstants.REPORTING)) {
-                achievedValue = new Long(-1);
+                achievedValue = new Double(-1);
               }
             }
             expectedNarrative = projectOutcome.getNarrativeTarget();

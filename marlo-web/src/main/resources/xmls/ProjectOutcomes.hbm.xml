@@ -35,7 +35,7 @@
     </many-to-one>
     
     
-        <property name="achievedValue" type="java.lang.Long">
+        <property name="achievedValue" type="java.lang.Double">
             <column name="achieved_value" precision="10" scale="0" />
         </property>
         
