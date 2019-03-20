@@ -502,6 +502,22 @@ public class POISummary {
     return html;
   }
 
+  public void table4AnnualReport2018Style(XWPFTable table) {
+    /* horizontal merge, From format tables I */
+
+    for (int x = 0; x < table.getNumberOfRows(); x++) {
+      XWPFTableRow row = table.getRow(x);
+      for (int y = 0; y < row.getTableCells().size(); y++) {
+        XWPFTableCell cell = row.getCell(y);
+        CTTblWidth cellWidth = cell.getCTTc().addNewTcPr().addNewTcW();
+
+        CTTcPr pr = cell.getCTTc().addNewTcPr();
+        // pr.addNewNoWrap();
+        cellWidth.setW(BigInteger.valueOf(100));
+      }
+    }
+  }
+
   public void tableA1Annual2018ReportStyle(XWPFTable table) {
     /* horizontal merge, From format tables A1 */
 
@@ -641,6 +657,7 @@ public class POISummary {
 
   }
 
+
   public void tableAPowbStyle(XWPFTable table) {
     /* Horizontal merge, From format tables A */
     CTHMerge hMerge = CTHMerge.Factory.newInstance();
@@ -705,7 +722,6 @@ public class POISummary {
       }
     }
   }
-
 
   public void tableAStyle(XWPFTable table) {
     /* Horizontal merge, From format tables A */
@@ -1358,17 +1374,15 @@ public class POISummary {
           // Condition for table 2a
         } else if (tableType.contains("Powb")) {
           TABLE_HEADER_FONT_COLOR = "FFF2CC";
-        } else if (tableType.contains("Report2018")) {
-          TABLE_HEADER_FONT_COLOR = "FFF2CC";
-
         } else if (tableType.contains("table2AnnualReport2018")) {
           if (record == 0) {
             TABLE_HEADER_FONT_COLOR = "D9E2F3";
 
           } else {
-            TABLE_HEADER_FONT_COLOR = "FFFFF";
-
+            TABLE_HEADER_FONT_COLOR = "FFFFFF";
           }
+        } else if (tableType.contains("Report2018")) {
+          TABLE_HEADER_FONT_COLOR = "FFF2CC";
         } else {
           TABLE_HEADER_FONT_COLOR = "FFFFFF";
         }
@@ -1562,8 +1576,8 @@ public class POISummary {
       case "tableHAnnualReport":
         this.tableGStyle(table);
         break;
-      case "tableIAnnualReport":
-        this.tableIAnnualReportStyle(table);
+      case "table4AnnualReport2018":
+        this.table4AnnualReport2018Style(table);
         break;
       case "tableJAnnualReport":
         this.tableJAnnualReportStyle(table);
