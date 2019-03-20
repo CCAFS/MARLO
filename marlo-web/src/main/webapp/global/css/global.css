@@ -1907,13 +1907,13 @@ a.currentReportingSection li, a.currentSection li {
   opacity: 0.4;
 }
 
-#secondaryMenu ul li  > ul li.submitted a {
+#secondaryMenu ul li  > ul li.submitted > a {
   background-image: url("../../global/images/submitted.png");
   background-repeat: no-repeat;
   background-position: 97% 6px;
 }
 
-#secondaryMenu ul li > ul li.toSubmit a {
+#secondaryMenu ul li > ul li.toSubmit > a {
   background-image: url("../../global/images/submitted.png");
   background-repeat: no-repeat;
   background-position: 97% -28px;
