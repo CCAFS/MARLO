@@ -52,7 +52,7 @@ import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
-import org.cgiar.ccafs.marlo.validation.annualreport.MeliaValidator;
+import org.cgiar.ccafs.marlo.validation.annualreport.y2018.MonitoringEvaluationValidator;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -94,7 +94,7 @@ public class MonitoringEvaluationAction extends BaseAction {
   private UserManager userManager;
   private CrpProgramManager crpProgramManager;
   private ReportSynthesisMeliaManager reportSynthesisMeliaManager;
-  private MeliaValidator validator;
+  private MonitoringEvaluationValidator validator;
   private ProjectFocusManager projectFocusManager;
   private ProjectManager projectManager;
   private ProjectExpectedStudyManager projectExpectedStudyManager;
@@ -120,7 +120,7 @@ public class MonitoringEvaluationAction extends BaseAction {
   public MonitoringEvaluationAction(APConfig config, GlobalUnitManager crpManager,
     LiaisonInstitutionManager liaisonInstitutionManager, ReportSynthesisManager reportSynthesisManager,
     AuditLogManager auditLogManager, UserManager userManager, CrpProgramManager crpProgramManager,
-    ReportSynthesisMeliaManager reportSynthesisMeliaManager, MeliaValidator validator,
+    ReportSynthesisMeliaManager reportSynthesisMeliaManager, MonitoringEvaluationValidator validator,
     ProjectFocusManager projectFocusManager, ProjectManager projectManager,
     ProjectExpectedStudyManager projectExpectedStudyManager,
     ReportSynthesisMeliaStudyManager reportSynthesisMeliaStudyManager,
