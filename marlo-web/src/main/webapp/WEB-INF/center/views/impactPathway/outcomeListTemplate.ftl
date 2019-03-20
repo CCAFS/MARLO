@@ -49,8 +49,7 @@
           </td>
           [#-- Delete Outcome--]
           <td class="text-center">
-
-          [#--  ${action.outcomeCanBeDeleted(outcome.id)?string} --]
+            [#--  ${action.outcomeCanBeDeleted(outcome.id)?string} --]
             [#if canEdit && action.outcomeCanBeDeleted(outcome.id)!false]
               <a id="removeOutcome-${outcome.id}" class="removeOutcome" href="#" title="">
                 <img src="${baseUrl}/global/images/trash.png" title="[@s.text name="programImpact.outcomeList.removeOutcome" /]" /> 
@@ -73,7 +72,7 @@
         <th id="idsM">[@s.text name="programImpact.outcomeList.idTable" /]</th>
         <th id="outcomeTitlesM" >[@s.text name="programImpact.outcomeList.statement" /]</th>
         <th id="outcomeTargetYearM">[@s.text name="programImpact.outcomeList.targetYear" /]</th>
-        <!-- <th id="statusM">[@s.text name="outcomeList.status" /]</th> -->
+        <th id="statusM">[@s.text name="outcomeList.status" /]</th>
         <th id="projectsLink">Contributions</th>
       </tr>
     </thead>
@@ -103,16 +102,14 @@
           [#else]
           ${(outcome.targetYear)!'none'}
           [/#if]
-          [#-- outcome status --]
-          <!--
+          [#-- Status --]
           <td class="text-center">
-            [#if outcome.status?has_content ]
-            ${(outcome.status)!'none'}
+            [#if action.isCompleteOutcome(outcome.id)]
+              <span class="icon-20 icon-check" title=""></span> 
             [#else]
-            none
+              <span class="icon-20 icon-uncheck" title=""></span> 
             [/#if] 
           </td>
-          -->
           <td class="text-center">
             <button type="button" class="btn btn-default btn-xs disabled outcomeProjects-${outcome.id}" data-toggle="modal" data-target="#outcomeProjectsModal">
               <span class="glyphicon glyphicon-pushpin"></span> Projects
