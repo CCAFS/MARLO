@@ -111,8 +111,8 @@ public class PartnershipValidator extends BaseValidator {
           || reportSynthesis.getReportSynthesisKeyPartnership().getPartnerships().isEmpty()) {
 
           action.addMessage(action.getText("Key External partnerships"));
-          action.addMissingField("reportSynthesis.reportSynthesisExternalPartnership.partnerships");
-          action.getInvalidFields().put("list-reportSynthesis.reportSynthesisExternalPartnership.partnerships",
+          action.addMissingField("reportSynthesis.reportSynthesisKeyPartnership.partnerships");
+          action.getInvalidFields().put("list-reportSynthesis.reportSynthesisKeyPartnership.partnerships",
             action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"partnerships"}));
 
         } else {
@@ -131,8 +131,8 @@ public class PartnershipValidator extends BaseValidator {
         || reportSynthesis.getReportSynthesisKeyPartnership().getCollaborations().isEmpty()) {
 
         action.addMessage(action.getText("CGIAR Collaborations"));
-        action.addMissingField("reportSynthesis.reportSynthesisExternalPartnership.collaborations");
-        action.getInvalidFields().put("list-reportSynthesis.reportSynthesisExternalPartnership.collaborations",
+        action.addMissingField("reportSynthesis.reportSynthesisKeyPartnership.collaborations");
+        action.getInvalidFields().put("list-reportSynthesis.reportSynthesisKeyPartnership.collaborations",
           action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"collaborations"}));
 
       } else {
@@ -166,7 +166,7 @@ public class PartnershipValidator extends BaseValidator {
     // Validate Crps
     if (collaboration.getCrps() == null || collaboration.getCrps().isEmpty()) {
       action.addMessage(action.getText("Crps"));
-      action.addMissingField("reportSynthesis.reportSynthesisExternalPartnership.collaborations[" + i + "].crps");
+      action.addMissingField("reportSynthesis.reportSynthesisKeyPartnership.collaborations[" + i + "].crps");
       action.getInvalidFields().put(
         "list-reportSynthesis.reportSynthesisExternalPartnership.collaborations[" + i + "].crps",
         action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"crps"}));
@@ -175,18 +175,18 @@ public class PartnershipValidator extends BaseValidator {
     // Validate Brief
     if (!(this.isValidString(collaboration.getDescription()))) {
       action.addMessage(
-        action.getText("reportSynthesis.reportSynthesisExternalPartnership.collaborations[" + i + "].description"));
+        action.getText("reportSynthesis.reportSynthesisKeyPartnership.collaborations[" + i + "].description"));
       action.getInvalidFields().put(
-        "input-reportSynthesis.reportSynthesisExternalPartnership.collaborations[" + i + "].description",
+        "input-reportSynthesis.reportSynthesisKeyPartnership.collaborations[" + i + "].description",
         InvalidFieldsMessages.EMPTYFIELD);
     }
 
     // Validate Value added
     if (!(this.isValidString(collaboration.getValueAdded()))) {
       action.addMessage(
-        action.getText("reportSynthesis.reportSynthesisExternalPartnership.collaborations[" + i + "].valueAdded"));
+        action.getText("reportSynthesis.reportSynthesisKeyPartnership.collaborations[" + i + "].valueAdded"));
       action.getInvalidFields().put(
-        "input-reportSynthesis.reportSynthesisExternalPartnership.collaborations[" + i + "].valueAdded",
+        "input-reportSynthesis.reportSynthesisKeyPartnership.collaborations[" + i + "].valueAdded",
         InvalidFieldsMessages.EMPTYFIELD);
     }
   }
@@ -195,27 +195,27 @@ public class PartnershipValidator extends BaseValidator {
     // Validate Description
     if (!(this.isValidString(external.getDescription()) && this.wordCount(external.getDescription()) <= 30)) {
       action.addMessage(
-        action.getText("reportSynthesis.reportSynthesisExternalPartnership.partnerships[" + i + "].description"));
+        action.getText("reportSynthesis.reportSynthesisKeyPartnership.partnerships[" + i + "].description"));
       action.getInvalidFields().put(
-        "input-reportSynthesis.reportSynthesisExternalPartnership.partnerships[" + i + "].description",
+        "input-reportSynthesis.reportSynthesisKeyPartnership.partnerships[" + i + "].description",
         InvalidFieldsMessages.EMPTYFIELD);
     }
 
     // Validate Main Areas
     if (external.getMainAreas() == null || external.getMainAreas().isEmpty()) {
       action.addMessage(action.getText("Main Areas"));
-      action.addMissingField("reportSynthesis.reportSynthesisExternalPartnership.partnerships[" + i + "].mainAreas");
+      action.addMissingField("reportSynthesis.reportSynthesisKeyPartnership.partnerships[" + i + "].mainAreas");
       action.getInvalidFields().put(
-        "list-reportSynthesis.reportSynthesisExternalPartnership.partnerships[" + i + "].mainAreas",
+        "list-reportSynthesis.reportSynthesisKeyPartnership.partnerships[" + i + "].mainAreas",
         action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"mainAreas"}));
     }
 
     // Validate partners
     if (external.getInstitutions() == null || external.getInstitutions().isEmpty()) {
       action.addMessage(action.getText("Partners"));
-      action.addMissingField("reportSynthesis.reportSynthesisExternalPartnership.partnerships[" + i + "].institutions");
+      action.addMissingField("reportSynthesis.reportSynthesisKeyPartnership.partnerships[" + i + "].institutions");
       action.getInvalidFields().put(
-        "list-reportSynthesis.reportSynthesisExternalPartnership.partnerships[" + i + "].institutions",
+        "list-reportSynthesis.reportSynthesisKeyPartnership.partnerships[" + i + "].institutions",
         action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"institutions"}));
     }
   }
