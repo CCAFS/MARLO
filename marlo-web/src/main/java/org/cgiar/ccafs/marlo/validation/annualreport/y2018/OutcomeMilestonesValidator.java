@@ -239,7 +239,7 @@ public class OutcomeMilestonesValidator extends BaseValidator {
   private void validateOutcomes(BaseAction action, ReportSynthesisFlagshipProgressOutcome outcome, int i) {
 
     // Validate Summary
-    if (!(this.isValidString(outcome.getSummary()) && this.wordCount(outcome.getSummary()) <= 50)) {
+    if (!(this.isValidString(outcome.getSummary()) && this.wordCount(outcome.getSummary()) <= 100)) {
       action.addMessage(action.getText("Title"));
       action.addMissingField("projectPolicy.title");
       action.getInvalidFields().put(
