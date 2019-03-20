@@ -1237,7 +1237,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
       }
     }
 
-    poiSummary.textTable(document, headers, datas, false, "tableIAnnualReport");
+    poiSummary.textTable(document, headers, datas, false, "table4AnnualReport2018");
   }
 
   private void createTableA2() {
