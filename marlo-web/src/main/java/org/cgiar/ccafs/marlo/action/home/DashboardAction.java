@@ -104,17 +104,11 @@ public class DashboardAction extends BaseAction {
             allProjects.add(projectManager.getProjectById(projectPhase.getProject().getId()));
           }
         }
-        if (this.isPlanningActive()) {
 
-          myProjects = projectManager.getUserProjects(this.getCurrentUser().getId(), loggedCrp.getAcronym()).stream()
-            .filter(p -> p.isActive()).collect(Collectors.toList());
+        myProjects = projectManager.getUserProjects(this.getCurrentUser().getId(), loggedCrp.getAcronym()).stream()
+          .filter(p -> p.isActive()).collect(Collectors.toList());
 
-        } else {
 
-          myProjects = projectManager.getUserProjectsReporting(this.getCurrentUser().getId(), loggedCrp.getAcronym())
-            .stream().filter(p -> p.isActive()).collect(Collectors.toList());
-
-        }
         List<Project> mProjects = new ArrayList<>();
         mProjects.addAll(myProjects);
 
