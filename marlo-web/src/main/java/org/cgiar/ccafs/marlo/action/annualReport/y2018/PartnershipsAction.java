@@ -1220,23 +1220,6 @@ public class PartnershipsAction extends BaseAction {
   @Override
   public void validate() {
     if (save) {
-
-
-      if (reportSynthesis.getReportSynthesisKeyPartnership().getPartnerships() != null) {
-        for (ReportSynthesisKeyPartnershipExternal external : reportSynthesis.getReportSynthesisKeyPartnership()
-          .getPartnerships()) {
-
-          /*
-           * if (external.getFile() != null && external.getFile().getId() == null
-           * || external.getFile().getId().longValue() == -1) {
-           * external.setFile(null);
-           * }
-           */
-
-        }
-      }
-
-
       validator.validate(this, reportSynthesis, true);
     }
   }
