@@ -44,79 +44,92 @@ import org.springframework.web.bind.annotation.RestController;
 @Api(tags = "Impact Pathway Lists")
 public class ImpactPathway {
 
-	private static final Logger LOG = LoggerFactory.getLogger(ImpactPathway.class);
+  private static final Logger LOG = LoggerFactory.getLogger(ImpactPathway.class);
 
-	private OutcomeItem<OutcomeDTO> outcomeItem;
-	private MilestoneItem<MilestoneDTO> milestoneItem;
+  private OutcomeItem<OutcomeDTO> outcomeItem;
+  private MilestoneItem<MilestoneDTO> milestoneItem;
 
-//	private InstitutionItem<InstitutionDTO> institutionItem;
-//	private final UserManager userManager;
-//
-	@Inject
-	public ImpactPathway(OutcomeItem<OutcomeDTO> outcomeItem, MilestoneItem<MilestoneDTO> milestoneItem) {
-		this.outcomeItem = outcomeItem;
-		this.milestoneItem = milestoneItem;
-	}
 
-	@ApiOperation(tags = {
-			"Table 5 - Status of Planned Outcomes and Milestones" }, value = "${ImpactPathway.milestones.id.value}", response = MilestoneDTO.class)
-	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
-	@RequestMapping(value = "/{CGIAREntity}/milestones/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<MilestoneDTO> findMilestoneById(
-			@ApiParam(value = "${ImpactPathway.milestones.id.param.CGIAR}", required = true) @PathVariable String CGIAREntity,
-			@ApiParam(value = "${ImpactPathway.milestones.id.param.id}", required = true) @PathVariable Long id) {
-		ResponseEntity<MilestoneDTO> response = this.milestoneItem.findMilestoneById(id, CGIAREntity);
-		if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
-			throw new NotFoundException("404", "Milestone not found");
-		}
-		return response;
-	}
+  // private InstitutionItem<InstitutionDTO> institutionItem;
+  // private final UserManager userManager;
+  //
+  @Inject
+  public ImpactPathway(OutcomeItem<OutcomeDTO> outcomeItem, MilestoneItem<MilestoneDTO> milestoneItem) {
+    this.outcomeItem = outcomeItem;
+    this.milestoneItem = milestoneItem;
+  }
 
-	@ApiOperation(tags = {
-			"Table 5 - Status of Planned Outcomes and Milestones" }, value = "${ImpactPathway.outcomes.id.value}", response = OutcomeDTO.class)
-	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
-	@RequestMapping(value = "/{CGIAREntity}/outcomes/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<OutcomeDTO> findOutcomeById(
-			@ApiParam(value = "${ImpactPathway.outcomes.id.param.CGIAR}", required = true) @PathVariable String CGIAREntity,
-			@ApiParam(value = "${ImpactPathway.outcomes.id.param.id}", required = true) @PathVariable Long id) {
-		ResponseEntity<OutcomeDTO> response = this.outcomeItem.findOutcomeById(id, CGIAREntity);
-		if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
-			throw new NotFoundException("404", "Outcome not found");
-		}
-		return response;
-	}
+  @ApiOperation(tags = {"Table 5 - Status of Planned Outcomes and Milestones"},
+    value = "${ImpactPathway.milestones.id.value}", response = MilestoneDTO.class)
+  @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
+  @RequestMapping(value = "/{CGIAREntity}/milestones/{id}", method = RequestMethod.GET,
+    produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<MilestoneDTO> findMilestoneById(
+    @ApiParam(value = "${ImpactPathway.milestones.id.param.CGIAR}", required = true) @PathVariable String CGIAREntity,
+    @ApiParam(value = "${ImpactPathway.milestones.id.param.id}", required = true) @PathVariable Long id) {
+    ResponseEntity<MilestoneDTO> response = this.milestoneItem.findMilestoneById(id, CGIAREntity);
+    if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+      throw new NotFoundException("404", "Milestone not found");
+    }
+    return response;
+  }
 
-	@ApiOperation(tags = {
-			"Table 5 - Status of Planned Outcomes and Milestones" }, value = "${ImpactPathway.milestones.all.value}", response = MilestoneDTO.class, responseContainer = "List")
-	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
-	@RequestMapping(value = "/{CGIAREntity}/milestones/", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public List<MilestoneDTO> getAllMilestones(
-			@ApiParam(value = "${ImpactPathway.milestones.all.param.CGIAR}", required = true) @PathVariable("CGIAREntity") String CGIAREntity,
-			@ApiParam(value = "${ImpactPathway.milestones.all.param.flagshipId}", required = true) @RequestParam("flagshipId") String flagshipId,
-			@ApiParam(value = "${ImpactPathway.milestones.all.param.targetYear}") @RequestParam(value = "targetYear", required = false) Integer targetYear,
-			@ApiParam(value = "${ImpactPathway.milestones.all.param.reportYear}", required = true) @RequestParam("reportYear") Integer repoYear)
-			throws NotFoundException {
-		List<MilestoneDTO> response = this.milestoneItem.getAllMilestones(flagshipId, CGIAREntity, repoYear);
-		if (response == null || response.isEmpty()) {
-			throw new NotFoundException("404", "Milestones not found");
-		}
-		return response;
-	}
+  @ApiOperation(tags = {"Table 5 - Status of Planned Outcomes and Milestones"},
+    value = "${ImpactPathway.outcomes.id.value}", response = OutcomeDTO.class)
+  @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
+  @RequestMapping(value = "/{CGIAREntity}/outcomes/{id}", method = RequestMethod.GET,
+    produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<OutcomeDTO> findOutcomeById(
+    @ApiParam(value = "${ImpactPathway.outcomes.id.param.CGIAR}", required = true) @PathVariable String CGIAREntity,
+    @ApiParam(value = "${ImpactPathway.outcomes.id.param.id}", required = true) @PathVariable Long id) {
+    ResponseEntity<OutcomeDTO> response = this.outcomeItem.findOutcomeById(id, CGIAREntity);
+    if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+      throw new NotFoundException("404", "Outcome not found");
+    }
+    return response;
+  }
 
-	@ApiOperation(tags = {
-			"Table 5 - Status of Planned Outcomes and Milestones" }, value = "${ImpactPathway.outcomes.all.value}", response = OutcomeDTO.class, responseContainer = "List")
-	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
-	@RequestMapping(value = "/{CGIAREntity}/outcomes/", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public List<OutcomeDTO> getAllOutcomes(
-			@ApiParam(value = "${ImpactPathway.outcomes.all.param.CGIAR}", required = true) @PathVariable("CGIAREntity") String CGIAREntity,
-			@ApiParam(value = "${ImpactPathway.outcomes.all.param.flagshipId}", required = true) @RequestParam("flagshipId") String flagshipId,
-			@ApiParam(value = "${ImpactPathway.outcomes.all.param.targetYear}") @RequestParam(value = "targetYear", required = false) Integer targetYear,
-			@ApiParam(value = "${ImpactPathway.outcomes.all.param.reportYear}", required = true) @RequestParam("reportYear") Integer repoYear)
-			throws NotFoundException {
-		List<OutcomeDTO> response = this.outcomeItem.getAllOutcomes(flagshipId, CGIAREntity, targetYear, repoYear);
-		if (response == null || response.isEmpty()) {
-			throw new NotFoundException("404", "Outcomes not found");
-		}
-		return response;
-	}
+  @ApiOperation(tags = {"Table 5 - Status of Planned Outcomes and Milestones"},
+    value = "${ImpactPathway.milestones.all.value}", response = MilestoneDTO.class, responseContainer = "List")
+  @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
+  @RequestMapping(value = "/{CGIAREntity}/milestones/", method = RequestMethod.GET,
+    produces = MediaType.APPLICATION_JSON_VALUE)
+  public List<MilestoneDTO> getAllMilestones(
+    @ApiParam(value = "${ImpactPathway.milestones.all.param.CGIAR}",
+      required = true) @PathVariable("CGIAREntity") String CGIAREntity,
+    @ApiParam(value = "${ImpactPathway.milestones.all.param.flagshipId}",
+      required = true) @RequestParam("flagshipId") String flagshipId,
+    @ApiParam(value = "${ImpactPathway.milestones.all.param.targetYear}") @RequestParam(value = "targetYear",
+      required = false) Integer targetYear,
+    @ApiParam(value = "${ImpactPathway.milestones.all.param.reportYear}",
+      required = true) @RequestParam("reportYear") Integer repoYear)
+    throws NotFoundException {
+    List<MilestoneDTO> response = this.milestoneItem.getAllMilestones(flagshipId, CGIAREntity, repoYear);
+    if (response == null || response.isEmpty()) {
+      throw new NotFoundException("404", "Milestones not found");
+    }
+    return response;
+  }
+
+  @ApiOperation(tags = {"Table 5 - Status of Planned Outcomes and Milestones"},
+    value = "${ImpactPathway.outcomes.all.value}", response = OutcomeDTO.class, responseContainer = "List")
+  @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
+  @RequestMapping(value = "/{CGIAREntity}/outcomes/", method = RequestMethod.GET,
+    produces = MediaType.APPLICATION_JSON_VALUE)
+  public List<OutcomeDTO> getAllOutcomes(
+    @ApiParam(value = "${ImpactPathway.outcomes.all.param.CGIAR}",
+      required = true) @PathVariable("CGIAREntity") String CGIAREntity,
+    @ApiParam(value = "${ImpactPathway.outcomes.all.param.flagshipId}",
+      required = true) @RequestParam("flagshipId") String flagshipId,
+    @ApiParam(value = "${ImpactPathway.outcomes.all.param.targetYear}") @RequestParam(value = "targetYear",
+      required = false) Integer targetYear,
+    @ApiParam(value = "${ImpactPathway.outcomes.all.param.reportYear}",
+      required = true) @RequestParam("reportYear") Integer repoYear)
+    throws NotFoundException {
+    List<OutcomeDTO> response = this.outcomeItem.getAllOutcomes(flagshipId, CGIAREntity, targetYear, repoYear);
+    if (response == null || response.isEmpty()) {
+      throw new NotFoundException("404", "Outcomes not found");
+    }
+    return response;
+  }
 }
