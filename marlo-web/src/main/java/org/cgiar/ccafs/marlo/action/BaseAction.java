@@ -3996,7 +3996,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public boolean hasPersmissionSubmitIP(long programID) {
     CrpProgram program = this.crpProgramManager.getCrpProgramById(programID);
     String permission = this.generatePermission(Permission.RESEARCH_PROGRAM_SUBMISSION_PERMISSION,
-      this.getCurrentCrp().getAcronym(), String.valueOf(program.getResearchArea().getId()), String.valueOf(programID));
+      this.getCurrentCrp().getAcronym(), String.valueOf(program.getId()), String.valueOf(programID));
     boolean permissions = this.securityContext.hasPermission(permission);
     return permissions;
   }
@@ -5452,6 +5452,14 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
+  public boolean isProjectDescription() {
+    String name = this.getActionName();
+    if (name.contains(ProjectSectionStatusEnum.DESCRIPTION.getStatus())) {
+      return true;
+    }
+    return false;
+  }
+
   public Boolean isProjectNew(long projectID) {
 
     Project project = this.projectManager.getProjectById(projectID);
@@ -6009,8 +6017,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   public void saveLessons(GlobalUnit crp, Project project) {
 
-    if (project.getProjecInfoPhase(this.getActualPhase()).isProjectEditLeader()
-      && !this.isProjectNew(project.getId())) {
+    if (project.getProjecInfoPhase(this.getActualPhase()).isProjectEditLeader()) {
 
       String actionName = this.getActionName().replaceAll(crp.getAcronym() + "/", "");
 

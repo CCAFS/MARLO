@@ -205,7 +205,7 @@ public class Permission {
   public static final String CENTER_ADMIN_BASE_PERMISSION = "center:{0}:admin:";
 
 
-  public static final String RESEARCH_PROGRAM_SUBMISSION_PERMISSION = "center:{0}:area:{1}:program:{2}:submitIP";
+  public static final String RESEARCH_PROGRAM_SUBMISSION_PERMISSION = "crp:{0}:impactPathway:{1}:submit";
 
   // Monitoring
   public static final String PROJECT_BASE_PERMISSION = "center:{0}:area:{1}:program:{2}:project:{3}";
