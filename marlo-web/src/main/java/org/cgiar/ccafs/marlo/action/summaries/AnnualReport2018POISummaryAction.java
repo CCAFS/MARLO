@@ -859,6 +859,35 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     poiSummary.textTable(document, headers, datas, true, "tableA1AnnualReport2018");
   }
 
+  private void createTable10() {
+    List<List<POIField>> headers = new ArrayList<>();
+    List<List<POIField>> datas = new ArrayList<>();
+    List<POIField> data;
+    POIField[] sHeader = {
+      new POIField(
+        this.getText("summaries.annualReport2018.table10Title1", new String[] {String.valueOf(this.getSelectedYear())}),
+        ParagraphAlignment.LEFT),
+      new POIField(this.getText("summaries.annualReport2018.table10Title2"), ParagraphAlignment.LEFT),
+      new POIField(this.getText("summaries.annualReport2018.table10Title3"), ParagraphAlignment.LEFT),
+      new POIField(this.getText("summaries.annualReport2018.table10Title4"), ParagraphAlignment.LEFT)};
+    List<POIField> header = Arrays.asList(sHeader);
+    headers.add(header);
+
+    if (flagshipPlannedList != null && !flagshipPlannedList.isEmpty()) {
+      // for (int i = 0; i < flagshipPlannedList.size(); i++) {
+      String studies = "", status = "", comments = "";
+
+      POIField[] sData =
+        {new POIField(studies, ParagraphAlignment.LEFT), new POIField(status, ParagraphAlignment.CENTER),
+          new POIField(comments, ParagraphAlignment.LEFT), new POIField(comments, ParagraphAlignment.LEFT)};
+      data = Arrays.asList(sData);
+      datas.add(data);
+      // }
+    }
+
+    poiSummary.textTable(document, headers, datas, false, "table3AnnualReport2018");
+  }
+
   private void createTable2() {
 
     List<List<POIField>> headers = new ArrayList<>();
@@ -1040,7 +1069,6 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     poiSummary.textTable(document, headers, datas, false, text);
   }
 
-
   private void createTable3() {
 
     List<List<POIField>> headers = new ArrayList<>();
@@ -1111,6 +1139,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
 
     poiSummary.textTable(document, headers, datas, false, "table3AnnualReport2018");
   }
+
 
   private void createTable4() {
 
@@ -1238,7 +1267,6 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     poiSummary.textTable(document, headers, datas, false, "table5AnnualReport2018");
   }
 
-
   public void createTable6() {
     List<List<POIField>> headers = new ArrayList<>();
     String blackColor = "000000";
@@ -1327,6 +1355,91 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     poiSummary.textTable(document, headers, datas, false, "table3AnnualReport2018");
   }
 
+  private void createTable8() {
+    List<List<POIField>> headers = new ArrayList<>();
+    List<List<POIField>> datas = new ArrayList<>();
+    List<POIField> data;
+    POIField[] sHeader = {
+      new POIField(
+        this.getText("summaries.annualReport2018.table8Title1", new String[] {String.valueOf(this.getSelectedYear())}),
+        ParagraphAlignment.LEFT),
+      new POIField(this.getText("summaries.annualReport2018.table8Title2"), ParagraphAlignment.LEFT),
+      new POIField(this.getText("summaries.annualReport2018.table8Title3"), ParagraphAlignment.LEFT),
+      new POIField(this.getText("summaries.annualReport2018.table8Title4"), ParagraphAlignment.LEFT)};
+    List<POIField> header = Arrays.asList(sHeader);
+    headers.add(header);
+
+    for (ProjectExpectedStudy projectExpectStudy : projectExpectedStudies) {
+      String title = "", maturity = "", indicator = "";
+
+      POIField[] sData = {new POIField(title, ParagraphAlignment.LEFT),
+        new POIField(maturity, ParagraphAlignment.CENTER), new POIField(indicator, ParagraphAlignment.LEFT)};
+      data = Arrays.asList(sData);
+      datas.add(data);
+    }
+
+    List<LiaisonInstitution> liaisonInstitutionsList =
+      new ArrayList<>(this.getLoggedCrp().getLiaisonInstitutions().stream()
+        .filter(c -> c.getCrpProgram() != null && c.isActive()
+          && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+        .collect(Collectors.toList()));
+    liaisonInstitutionsList.sort(Comparator.comparing(LiaisonInstitution::getAcronym));
+
+    flagshipPlannedList = reportSynthesisMeliaManager.getMeliaPlannedList(liaisonInstitutionsList,
+      this.getSelectedPhase().getId(), this.getLoggedCrp(), pmuInstitution);
+    if (flagshipPlannedList != null && !flagshipPlannedList.isEmpty()) {
+      for (int i = 0; i < flagshipPlannedList.size(); i++) {
+        String studies = "", status = "", comments = "";
+        studies = flagshipPlannedList.get(i).getProjectExpectedStudy()
+          .getProjectExpectedStudyInfo(this.getSelectedPhase()).getTitle();
+        status = flagshipPlannedList.get(i).getProjectExpectedStudy()
+          .getProjectExpectedStudyInfo(this.getSelectedPhase()).getStatusName();
+        if (flagshipPlannedList.get(i).getProjectExpectedStudy().getProjectExpectedStudyInfo(this.getSelectedPhase())
+          .getTopLevelComments() != null) {
+          comments = flagshipPlannedList.get(i).getProjectExpectedStudy()
+            .getProjectExpectedStudyInfo(this.getSelectedPhase()).getTopLevelComments();
+        }
+
+        POIField[] sData =
+          {new POIField(studies, ParagraphAlignment.LEFT), new POIField(status, ParagraphAlignment.CENTER),
+            new POIField(comments, ParagraphAlignment.LEFT), new POIField(comments, ParagraphAlignment.LEFT)};
+        data = Arrays.asList(sData);
+        datas.add(data);
+      }
+    }
+
+    poiSummary.textTable(document, headers, datas, false, "table3AnnualReport2018");
+  }
+
+  private void createTable9() {
+    List<List<POIField>> headers = new ArrayList<>();
+    List<List<POIField>> datas = new ArrayList<>();
+    List<POIField> data;
+    POIField[] sHeader = {
+      new POIField(
+        this.getText("summaries.annualReport2018.table9Title1", new String[] {String.valueOf(this.getSelectedYear())}),
+        ParagraphAlignment.LEFT),
+      new POIField(this.getText("summaries.annualReport2018.table9Title2"), ParagraphAlignment.LEFT),
+      new POIField(this.getText("summaries.annualReport2018.table9Title3"), ParagraphAlignment.LEFT)};
+    List<POIField> header = Arrays.asList(sHeader);
+    headers.add(header);
+
+
+    if (flagshipPlannedList != null && !flagshipPlannedList.isEmpty()) {
+      // for (int i = 0; i < flagshipPlannedList.size(); i++) {
+      String studies = "", status = "", comments = "";
+
+      POIField[] sData = {new POIField(studies, ParagraphAlignment.LEFT),
+        new POIField(status, ParagraphAlignment.CENTER), new POIField(comments, ParagraphAlignment.LEFT)};
+      data = Arrays.asList(sData);
+      datas.add(data);
+      // }
+    }
+
+    poiSummary.textTable(document, headers, datas, false, "table3AnnualReport2018");
+  }
+
+
   private void createTableA2() {
 
     /*
@@ -1342,7 +1455,6 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
 
     List<POIField> header = Arrays.asList(sHeader);
     headers.add(header);
-
 
     List<List<POIField>> datas = new ArrayList<>();;
     List<POIField> data;
@@ -2655,7 +2767,27 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         run.setBold(true);
         run.setText(this.getText("summaries.annualReport2018.table8"));
         paragraph.setStyle("heading 2");
-        // this.createTable8();
+        this.createTable8();
+
+        // Table 9
+        poiSummary.textLineBreak(document, 1);
+        paragraph = document.createParagraph();
+        run = paragraph.createRun();
+        run.setFontSize(13);
+        run.setBold(true);
+        run.setText(this.getText("summaries.annualReport2018.table9"));
+        paragraph.setStyle("heading 2");
+        this.createTable9();
+
+        // Table 10
+        poiSummary.textLineBreak(document, 1);
+        paragraph = document.createParagraph();
+        run = paragraph.createRun();
+        run.setFontSize(13);
+        run.setBold(true);
+        run.setText(this.getText("summaries.annualReport2018.table10"));
+        paragraph.setStyle("heading 2");
+        this.createTable10();
 
         // Table b
         poiSummary.textLineBreak(document, 1);
