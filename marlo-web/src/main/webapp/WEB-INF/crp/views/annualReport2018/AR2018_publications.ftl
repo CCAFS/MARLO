@@ -112,7 +112,7 @@
             </div>
             
             [#-- Full list of publications published --]
-            <div class="form-group">
+            <div class="form-group viewMoreSyntesisTable-block">
               
               [#-- Modal Large --]
                 <button type="button" class="btn btn-default btn-xs pull-right" data-toggle="modal" data-target="#modal-publications">

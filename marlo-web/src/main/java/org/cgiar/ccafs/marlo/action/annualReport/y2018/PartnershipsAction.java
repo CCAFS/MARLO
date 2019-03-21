@@ -521,6 +521,9 @@ public class PartnershipsAction extends BaseAction {
               reportSynthesis.getReportSynthesisKeyPartnership().getPartnerships().add(keyPartnershipExternal);
             }
 
+            reportSynthesis.getReportSynthesisKeyPartnership().getPartnerships()
+              .sort(Comparator.comparing(ReportSynthesisKeyPartnershipExternal::getId));
+
           }
 
 
@@ -566,6 +569,9 @@ public class PartnershipsAction extends BaseAction {
 
             reportSynthesis.getReportSynthesisKeyPartnership().getCollaborations().add(keyPartnershipCollaboration);
           }
+
+          reportSynthesis.getReportSynthesisKeyPartnership().getCollaborations()
+            .sort(Comparator.comparing(ReportSynthesisKeyPartnershipCollaboration::getId));
         }
 
       }

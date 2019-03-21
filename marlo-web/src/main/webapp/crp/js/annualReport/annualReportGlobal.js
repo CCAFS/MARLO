@@ -49,7 +49,7 @@ function loadTab() {
 
 /**
  * Get chart data in Array
- * 
+ *
  * @param chart
  * @returns
  */
@@ -99,7 +99,7 @@ function createGoogleChart(chartID,type,options) {
         if(type == "Bar") {
           var view = new google.visualization.DataView(data);
           var chart = new google.visualization.BarChart(document.getElementById($chart[0].id));
-          chart.draw(view, google.charts.Bar.convertOptions({}));
+          chart.draw(view, google.charts.Bar.convertOptions(options));
         } else if(type == "Pie") {
           var chart = new google.visualization.PieChart(document.getElementById($chart[0].id));
           chart.draw(data, options);

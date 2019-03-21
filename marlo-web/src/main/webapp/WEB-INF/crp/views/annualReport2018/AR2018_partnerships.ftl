@@ -154,7 +154,7 @@
                   [#-- Table 8: Internal Cross-CGIAR Collaborations --]
                   <div class="form-group">
                     <h4 class="headTitle annualReport-table">[@s.text name="${customLabel}.table8.title" /]</h4>
-                    [@customForm.helpLabel name="${customLabel}.table8.help" showIcon=false/]
+                    [@customForm.helpLabel name="${customLabel}.table8.help" showIcon=false editable=editable/]
                     <div class="listCrossParnterships">
                     [#if reportSynthesis.reportSynthesisKeyPartnership.collaborations?has_content]
                       [#list reportSynthesis.reportSynthesisKeyPartnership.collaborations as item]

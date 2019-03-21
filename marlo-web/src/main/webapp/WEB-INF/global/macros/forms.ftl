@@ -529,7 +529,7 @@
       <br /><i class="helpLabel">${nameValue}</i>
     [/#if]
   [/#if]
-  [#if helpMore]
+  [#if editable && helpMore]
     [@helpViewMore name="${name}" /]
   [/#if]
 [/#macro]

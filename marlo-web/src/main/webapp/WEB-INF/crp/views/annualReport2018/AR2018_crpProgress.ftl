@@ -69,7 +69,7 @@
               <hr />
               <div class="form-group">
                 <h4 class="headTitle annualReport-table">[@s.text name="${customLabel}.evidenceProgress" /]</h4>
-                [@customForm.helpLabel name="${customLabel}.evidenceProgress.help" showIcon=false editable=editable helpMore=true/]
+                [@customForm.helpLabel name="${customLabel}.evidenceProgress.help" showIcon=false editable=editable helpMore=true /]
                 <div class="block-selectedSLOs">
                   <div class="form-group sloTargetsList">
                     [#if sloTargets?has_content]
