@@ -633,7 +633,8 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
           // Complete
           if (deliverable.getDeliverableInfo().getStatus().intValue() == Integer
             .parseInt(ProjectStatusEnum.Complete.getStatusId())) {
-            if (deliverable.getDeliverableInfo().getNewExpectedYear() != -1) {
+            if (deliverable.getDeliverableInfo().getNewExpectedYear() != null
+              && deliverable.getDeliverableInfo().getNewExpectedYear() != -1) {
               delivNewYear = deliverable.getDeliverableInfo().getNewExpectedYear();
             }
           }
@@ -1677,6 +1678,10 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
           if (managingResponsibleList.size() > 1) {
             shared = "Yes";
           }
+        }
+
+        if (country == null || country == "" || country.isEmpty()) {
+          country = "<Not Defined>";
         }
 
 
