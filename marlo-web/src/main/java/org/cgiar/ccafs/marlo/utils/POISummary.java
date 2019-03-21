@@ -607,6 +607,7 @@ public class POISummary {
     }
   }
 
+
   public void tableAPowbCRPStyle(XWPFTable table) {
     /* Horizontal merge, From format table A */
     CTHMerge hMerge = CTHMerge.Factory.newInstance();
@@ -673,7 +674,6 @@ public class POISummary {
     }
 
   }
-
 
   public void tableAPowbStyle(XWPFTable table) {
     /* Horizontal merge, From format tables A */
@@ -1598,6 +1598,9 @@ public class POISummary {
         break;
       case "table4AnnualReport2018":
         this.table4AnnualReport2018Style(table);
+        break;
+      case "table5AnnualReport2018":
+        this.table5AnnualReport2018Style(table);
         break;
       case "tableJAnnualReport":
         this.tableJAnnualReportStyle(table);
