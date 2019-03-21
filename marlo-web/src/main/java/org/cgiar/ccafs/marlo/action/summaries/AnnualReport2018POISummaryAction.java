@@ -469,19 +469,16 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     if (crossCuttingYouthContribution != null && !crossCuttingYouthContribution.isEmpty()) {
       poiSummary.convertHTMLTags(document, crossCuttingYouthContribution);
     }
-
     if (crossCuttingYouthResearchFindings != null && !crossCuttingYouthResearchFindings.isEmpty()) {
       poiSummary.convertHTMLTags(document, crossCuttingYouthResearchFindings);
     }
     if (crossCuttingYouthLearned != null && !crossCuttingYouthLearned.isEmpty()) {
       poiSummary.convertHTMLTags(document, crossCuttingYouthLearned);
     }
-
     if (crossCuttingYouthProblemsArisen != null && !crossCuttingYouthProblemsArisen.isEmpty()) {
       poiSummary.convertHTMLTags(document, crossCuttingYouthProblemsArisen);
     }
   }
-
 
   private void addCrossPartnerships() {
     if (reportSynthesisPMU != null) {
@@ -498,7 +495,8 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
       && reportSynthesisPMU.getReportSynthesisCrpProgress().getSummaries() != null) {
       String synthesisCrpSummaries = reportSynthesisPMU.getReportSynthesisCrpProgress().getSummaries() != null
         ? reportSynthesisPMU.getReportSynthesisCrpProgress().getSummaries() : "";
-      poiSummary.textParagraph(document.createParagraph(), synthesisCrpSummaries);
+      // poiSummary.textParagraph(document.createParagraph(), synthesisCrpSummaries);
+      poiSummary.convertHTMLTags(document, synthesisCrpSummaries);
     }
   }
 
@@ -507,7 +505,8 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
       && reportSynthesisPMU.getReportSynthesisSrfProgress().getSummary() != null) {
       String synthesisCrpDescription = reportSynthesisPMU.getReportSynthesisSrfProgress().getSummary() != null
         ? reportSynthesisPMU.getReportSynthesisSrfProgress().getSummary() : "";
-      poiSummary.textParagraph(document.createParagraph(), synthesisCrpDescription);
+      // poiSummary.textParagraph(document.createParagraph(), synthesisCrpDescription);
+      poiSummary.convertHTMLTags(document, synthesisCrpDescription);
     }
   }
 
@@ -524,11 +523,12 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     }
 
     if (keyExternal != null && !keyExternal.isEmpty()) {
-      poiSummary.textParagraph(document.createParagraph(), keyExternal);
+      // poiSummary.textParagraph(document.createParagraph(), keyExternal);
+      poiSummary.convertHTMLTags(document, keyExternal);
+
     }
 
   }
-
 
   private void addFinancialSummary() {
 
@@ -545,9 +545,12 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     }
 
     if (financialSummaryNarrative != null && !financialSummaryNarrative.isEmpty()) {
-      poiSummary.textParagraph(document.createParagraph(), financialSummaryNarrative);
+      // poiSummary.textParagraph(document.createParagraph(), financialSummaryNarrative);
+      poiSummary.convertHTMLTags(document, financialSummaryNarrative);
+
     }
   }
+
 
   private void addFundingSummarize() {
     String brieflySummarize = "";
@@ -561,7 +564,9 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     }
 
     if (brieflySummarize != null && !brieflySummarize.isEmpty()) {
-      poiSummary.textParagraph(document.createParagraph(), brieflySummarize);
+      // poiSummary.textParagraph(document.createParagraph(), brieflySummarize);
+      poiSummary.convertHTMLTags(document, brieflySummarize);
+
     }
   }
 
@@ -569,25 +574,32 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     if (reportSynthesisPMU != null) {
       if (reportSynthesisPMU.getReportSynthesisEfficiency() != null
         && reportSynthesisPMU.getReportSynthesisEfficiency().getDescription() != null) {
-        poiSummary.textParagraph(document.createParagraph(),
-          reportSynthesisPMU.getReportSynthesisEfficiency().getDescription());
+        // poiSummary.textParagraph(document.createParagraph(),
+        // reportSynthesisPMU.getReportSynthesisEfficiency().getDescription());
+        poiSummary.convertHTMLTags(document, reportSynthesisPMU.getReportSynthesisEfficiency().getDescription());
+
       }
     }
   }
 
   public void addIntellectualAssets() {
     if (reportSynthesisPMU != null) {
-      if (reportSynthesisPMU.getReportSynthesisIntellectualAsset() != null
-        && reportSynthesisPMU.getReportSynthesisIntellectualAsset().getManaged() != null
-        && reportSynthesisPMU.getReportSynthesisIntellectualAsset().getPatents() != null
-        && reportSynthesisPMU.getReportSynthesisIntellectualAsset().getCriticalIssues() != null) {
-        poiSummary.textParagraph(document.createParagraph(),
-          reportSynthesisPMU.getReportSynthesisIntellectualAsset().getManaged());
-        poiSummary.textParagraph(document.createParagraph(),
-          reportSynthesisPMU.getReportSynthesisIntellectualAsset().getPatents());
-        poiSummary.textParagraph(document.createParagraph(),
-          reportSynthesisPMU.getReportSynthesisIntellectualAsset().getCriticalIssues());
+      if (reportSynthesisPMU.getReportSynthesisIntellectualAsset() != null) {
 
+
+        if (reportSynthesisPMU.getReportSynthesisIntellectualAsset().getManaged() != null) {
+          poiSummary.convertHTMLTags(document, this.getText("summaries.annualReport2018.effectiveness.intellectual1"));
+          poiSummary.convertHTMLTags(document, reportSynthesisPMU.getReportSynthesisIntellectualAsset().getManaged());
+        }
+        if (reportSynthesisPMU.getReportSynthesisIntellectualAsset().getPatents() != null) {
+          poiSummary.convertHTMLTags(document, this.getText("summaries.annualReport2018.effectiveness.intellectual2"));
+          poiSummary.convertHTMLTags(document, reportSynthesisPMU.getReportSynthesisIntellectualAsset().getPatents());
+        }
+        if (reportSynthesisPMU.getReportSynthesisIntellectualAsset().getCriticalIssues() != null) {
+          poiSummary.convertHTMLTags(document, this.getText("summaries.annualReport2018.effectiveness.intellectual3"));
+          poiSummary.convertHTMLTags(document,
+            reportSynthesisPMU.getReportSynthesisIntellectualAsset().getCriticalIssues());
+        }
       }
     }
   }
@@ -620,7 +632,9 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     }
 
     if (managementGovernanceDescription != null && !managementGovernanceDescription.isEmpty()) {
-      poiSummary.textParagraph(document.createParagraph(), managementGovernanceDescription);
+      // poiSummary.textParagraph(document.createParagraph(), managementGovernanceDescription);
+      poiSummary.convertHTMLTags(document, managementGovernanceDescription);
+
     }
   }
 
@@ -639,7 +653,17 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     }
 
     if (managementRiskBrief != null && !managementRiskBrief.isEmpty()) {
-      poiSummary.textParagraph(document.createParagraph(), managementRiskBrief);
+      // poiSummary.textParagraph(document.createParagraph(), managementRiskBrief);
+      poiSummary.convertHTMLTags(document, managementRiskBrief);
+    }
+  }
+
+  private void addNarrativeSection() {
+    if (reportSynthesisPMU != null && reportSynthesisPMU.getReportSynthesisNarrative() != null
+      && reportSynthesisPMU.getReportSynthesisNarrative().getNarrative() != null) {
+      String narrative = reportSynthesisPMU.getReportSynthesisNarrative().getNarrative();
+      // poiSummary.textParagraph(document.createParagraph(), synthesisCrpDescription);
+      poiSummary.convertHTMLTags(document, narrative);
     }
   }
 
@@ -648,7 +672,8 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
       && reportSynthesisPMU.getReportSynthesisFlagshipProgress().getOverallProgress() != null) {
       String synthesisCrpOveral = reportSynthesisPMU.getReportSynthesisFlagshipProgress().getOverallProgress() != null
         ? reportSynthesisPMU.getReportSynthesisFlagshipProgress().getOverallProgress() : "";
-      poiSummary.textParagraph(document.createParagraph(), synthesisCrpOveral);
+      // poiSummary.textParagraph(document.createParagraph(), synthesisCrpOveral);
+      poiSummary.convertHTMLTags(document, synthesisCrpOveral);
     }
   }
 
@@ -669,6 +694,8 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     }
     poiSummary.textParagraph(document.createParagraph(),
       this.getText("summaries.annualReport.participantingCenters") + ": " + participantingCenters + ":");
+    poiSummary.convertHTMLTags(document, participantingCenters);
+
   }
 
   private void addProgressFlagshipCrp() {
@@ -677,7 +704,8 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
       String synthesisCrpProgress =
         reportSynthesisPMU.getReportSynthesisFlagshipProgress().getProgressByFlagships() != null
           ? reportSynthesisPMU.getReportSynthesisFlagshipProgress().getProgressByFlagships() : "";
-      poiSummary.textParagraph(document.createParagraph(), synthesisCrpProgress);
+      // poiSummary.textParagraph(document.createParagraph(), synthesisCrpProgress);
+      poiSummary.convertHTMLTags(document, synthesisCrpProgress);
     }
   }
 
@@ -685,7 +713,10 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     if (reportSynthesisPMU != null) {
       if (reportSynthesisPMU.getReportSynthesisMelia() != null
         && reportSynthesisPMU.getReportSynthesisMelia().getSummary() != null) {
-        poiSummary.textParagraph(document.createParagraph(), reportSynthesisPMU.getReportSynthesisMelia().getSummary());
+        // poiSummary.textParagraph(document.createParagraph(),
+        // reportSynthesisPMU.getReportSynthesisMelia().getSummary());
+        poiSummary.convertHTMLTags(document, reportSynthesisPMU.getReportSynthesisMelia().getSummary());
+
       }
     }
   }
@@ -718,15 +749,21 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     }
 
     if (expanded != null && !expanded.isEmpty()) {
-      poiSummary.textParagraph(document.createParagraph(), expanded);
+      poiSummary.textParagraph(document.createParagraph(),
+        this.getText("summaries.annualReport2018.keyResults.variance1"));
+      poiSummary.convertHTMLTags(document, expanded);
     }
 
     if (cutBack != null && !cutBack.isEmpty()) {
-      poiSummary.textParagraph(document.createParagraph(), cutBack);
+      poiSummary.textParagraph(document.createParagraph(),
+        this.getText("summaries.annualReport2018.keyResults.variance2"));
+      poiSummary.convertHTMLTags(document, cutBack);
     }
 
     if (direction != null && !direction.isEmpty()) {
-      poiSummary.textParagraph(document.createParagraph(), direction);
+      poiSummary.textParagraph(document.createParagraph(),
+        this.getText("summaries.annualReport2018.keyResults.variance3"));
+      poiSummary.convertHTMLTags(document, direction);
     }
   }
 
@@ -1234,6 +1271,60 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     }
 
     poiSummary.textTable(document, headers, datas, true, "tableA1AnnualReport2018");
+  }
+
+  private void createTable7() {
+    List<List<POIField>> headers = new ArrayList<>();
+    List<List<POIField>> datas = new ArrayList<>();
+    List<POIField> data;
+    POIField[] sHeader = {
+      new POIField(
+        this.getText("summaries.annualReport2018.table7Title1", new String[] {String.valueOf(this.getSelectedYear())}),
+        ParagraphAlignment.LEFT),
+      new POIField(this.getText("summaries.annualReport2018.table7Title2"), ParagraphAlignment.LEFT),
+      new POIField(this.getText("summaries.annualReport2018.table7Title3"), ParagraphAlignment.LEFT)};
+    List<POIField> header = Arrays.asList(sHeader);
+    headers.add(header);
+
+    for (ProjectExpectedStudy projectExpectStudy : projectExpectedStudies) {
+      String title = "", maturity = "", indicator = "";
+
+      POIField[] sData = {new POIField(title, ParagraphAlignment.LEFT),
+        new POIField(maturity, ParagraphAlignment.CENTER), new POIField(indicator, ParagraphAlignment.LEFT)};
+      data = Arrays.asList(sData);
+      datas.add(data);
+    }
+
+    List<LiaisonInstitution> liaisonInstitutionsList =
+      new ArrayList<>(this.getLoggedCrp().getLiaisonInstitutions().stream()
+        .filter(c -> c.getCrpProgram() != null && c.isActive()
+          && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+        .collect(Collectors.toList()));
+    liaisonInstitutionsList.sort(Comparator.comparing(LiaisonInstitution::getAcronym));
+
+    flagshipPlannedList = reportSynthesisMeliaManager.getMeliaPlannedList(liaisonInstitutionsList,
+      this.getSelectedPhase().getId(), this.getLoggedCrp(), pmuInstitution);
+    if (flagshipPlannedList != null && !flagshipPlannedList.isEmpty()) {
+      for (int i = 0; i < flagshipPlannedList.size(); i++) {
+        String studies = "", status = "", comments = "";
+        studies = flagshipPlannedList.get(i).getProjectExpectedStudy()
+          .getProjectExpectedStudyInfo(this.getSelectedPhase()).getTitle();
+        status = flagshipPlannedList.get(i).getProjectExpectedStudy()
+          .getProjectExpectedStudyInfo(this.getSelectedPhase()).getStatusName();
+        if (flagshipPlannedList.get(i).getProjectExpectedStudy().getProjectExpectedStudyInfo(this.getSelectedPhase())
+          .getTopLevelComments() != null) {
+          comments = flagshipPlannedList.get(i).getProjectExpectedStudy()
+            .getProjectExpectedStudyInfo(this.getSelectedPhase()).getTopLevelComments();
+        }
+
+        POIField[] sData = {new POIField(studies, ParagraphAlignment.LEFT),
+          new POIField(status, ParagraphAlignment.CENTER), new POIField(comments, ParagraphAlignment.LEFT)};
+        data = Arrays.asList(sData);
+        datas.add(data);
+      }
+    }
+
+    poiSummary.textTable(document, headers, datas, false, "table3AnnualReport2018");
   }
 
   private void createTableA2() {
@@ -2185,6 +2276,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
 
         // Toc section
         addCustomHeadingStyle(document, "heading 1", 1);
+        addCustomHeadingStyle(document, "heading 0", 1);
         addCustomHeadingStyle(document, "heading 2", 1);
         addCustomHeadingStyle(document, "heading 3", 1);
         addCustomHeadingStyle(document, "heading 4", 2);
@@ -2227,6 +2319,17 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         this.addParticipatingCenters();
 
         // Part A - Narrative section
+        // Executive Summary
+        poiSummary.textLineBreak(document, 1);
+        paragraph = document.createParagraph();
+        run = paragraph.createRun();
+        run.setFontSize(14);
+        run.setColor("76923C");
+        run.setBold(true);
+        run.setText(this.getText("summaries.annualReportCRP2018.executiveSummary"));
+        this.addNarrativeSection();
+        paragraph.setStyle("heading 0");
+
         // First page
         poiSummary.textLineBreak(document, 1);
         paragraph = document.createParagraph();
@@ -2252,50 +2355,54 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         run.setFontSize(13);
         run.setBold(true);
         run.setText(this.getText("summaries.annualReport2018.keyResults.crpProgress"));
-        paragraph.setStyle("heading 4");
         this.addExpectedCrp();
+        paragraph.setStyle("heading 4");
 
 
         // 1.2 CRP progress towars outputs and outcomes
         poiSummary.textLineBreak(document, 1);
         paragraph = document.createParagraph();
         run = paragraph.createRun();
-        run.setFontSize(13);
+        run.setFontSize(14);
         run.setBold(true);
         run.setText(this.getText("summaries.annualReport2018.keyResults.progressTowards"));
         paragraph.setStyle("heading 5");
 
+        // 1.2.1
         poiSummary.textLineBreak(document, 1);
         paragraph = document.createParagraph();
         run = paragraph.createRun();
-        run.setFontSize(13);
+        run.setFontSize(11);
         run.setBold(true);
         run.setText(this.getText("summaries.annualReport2018.keyResults.overall"));
         this.addOverallProgressCrp();
         paragraph.setStyle("heading 6");
 
+        // 1.2.2
         poiSummary.textLineBreak(document, 1);
         paragraph = document.createParagraph();
         run = paragraph.createRun();
-        run.setFontSize(13);
+        run.setFontSize(11);
         run.setBold(true);
         run.setText(this.getText("summaries.annualReport2018.keyResults.progress"));
         this.addProgressFlagshipCrp();
         paragraph.setStyle("heading 7");
 
+        // 1.2.3
         poiSummary.textLineBreak(document, 1);
         paragraph = document.createParagraph();
         run = paragraph.createRun();
-        run.setFontSize(13);
+        run.setFontSize(11);
         run.setBold(true);
         run.setText(this.getText("summaries.annualReport2018.keyResults.variance"));
         this.addVariancePlanned();
         paragraph.setStyle("heading 8");
 
+        // 1.2.4
         poiSummary.textLineBreak(document, 1);
         paragraph = document.createParagraph();
         run = paragraph.createRun();
-        run.setFontSize(13);
+        run.setFontSize(11);
         run.setBold(true);
         run.setText(this.getText("summaries.annualReport2018.keyResults.altmetric"));
         this.addAlmetricCrp();
@@ -2314,7 +2421,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         //
         paragraph = document.createParagraph();
         run = paragraph.createRun();
-        run.setFontSize(13);
+        run.setFontSize(11);
         run.setBold(true);
         run.setText(this.getText("summaries.annualReport2018.crossCutting.gender"));
         this.addCrossCuttingGender();
@@ -2323,7 +2430,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         poiSummary.textLineBreak(document, 1);
         paragraph = document.createParagraph();
         run = paragraph.createRun();
-        run.setFontSize(13);
+        run.setFontSize(11);
         run.setBold(true);
         run.setText(this.getText("summaries.annualReport2018.crossCutting.youth"));
         paragraph.setStyle("heading 12");
@@ -2332,7 +2439,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         poiSummary.textLineBreak(document, 1);
         paragraph = document.createParagraph();
         run = paragraph.createRun();
-        run.setFontSize(13);
+        run.setFontSize(11);
         run.setBold(true);
         run.setText(this.getText("summaries.annualReport2018.crossCutting.capacity"));
         paragraph.setStyle("heading 13");
@@ -2341,7 +2448,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         poiSummary.textLineBreak(document, 1);
         paragraph = document.createParagraph();
         run = paragraph.createRun();
-        run.setFontSize(13);
+        run.setFontSize(11);
         run.setBold(true);
         run.setText(this.getText("summaries.annualReport2018.crossCutting.climateChange"));
         paragraph.setStyle("heading 14");
@@ -2376,21 +2483,21 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         paragraph.setStyle("heading 17");
         // this.addFundingSummarize();
 
-        // 2.1 Highlights of External Partnerships
+        // 2.2.1 Highlights of External Partnerships
         poiSummary.textLineBreak(document, 1);
         paragraph = document.createParagraph();
         run = paragraph.createRun();
-        run.setFontSize(13);
+        run.setFontSize(11);
         run.setBold(true);
         run.setText(this.getText("summaries.annualReport2018.effectiveness.highlights"));
         this.addExternalPartnerships();
         paragraph.setStyle("heading 18");
 
-        // 2.2
+        // 2.2.2
         poiSummary.textLineBreak(document, 1);
         paragraph = document.createParagraph();
         run = paragraph.createRun();
-        run.setFontSize(13);
+        run.setFontSize(11);
         run.setBold(true);
         run.setText(this.getText("summaries.annualReport2018.effectiveness.crossCgiar"));
         this.addCrossPartnerships();
@@ -2538,7 +2645,17 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         run.setBold(true);
         run.setText(this.getText("summaries.annualReport2018.table7"));
         paragraph.setStyle("heading 2");
-        // this.createTable7();
+        this.createTable7();
+
+        // Table 8
+        poiSummary.textLineBreak(document, 1);
+        paragraph = document.createParagraph();
+        run = paragraph.createRun();
+        run.setFontSize(13);
+        run.setBold(true);
+        run.setText(this.getText("summaries.annualReport2018.table8"));
+        paragraph.setStyle("heading 2");
+        // this.createTable8();
 
         // Table b
         poiSummary.textLineBreak(document, 1);
