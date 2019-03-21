@@ -277,7 +277,7 @@
       [#-- Extendend, cancelled or changed milestones - Other reason --]
       [#local showOther = (annualReportElement.reason.id == 7)!false /]
       <div class="form-group otherBlock" style="display:${showOther?string('block', 'none')}">
-        [@customForm.input name="${customName}.otherReason" i18nkey="${customLabel}.milestoneOtherReason" display=true required=false className="input-sm" editable=editable /]
+        [@customForm.input name="${customName}.otherReason" i18nkey="${customLabel}.milestoneOtherReason" display=true required=true className="input-sm" editable=editable /]
       </div>
     </div>
     
