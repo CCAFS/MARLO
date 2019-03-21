@@ -64,8 +64,7 @@
               <div class="tab-content ">
                 <div id="tab-gender" role="tabpanel" class="tab-pane fade in active">
                   [#-- 1.3.1 Gender --]
-                  <h5 class="sectionSubTitle">[@s.text name="${customLabel}.gender.title" /]</h5>
-                  <i class="helpLabel">[@s.text name="${customLabel}.gender.help" /]</i>
+                  [@customForm.helpLabel name="${customLabel}.gender.help" showIcon=false editable=editable /]
                   
                   [#-- List any important CRP research findings --]
                   <div class="form-group">
@@ -91,13 +90,12 @@
                 </div>
                 <div id="tab-youth" role="tabpanel" class="tab-pane fade ">
                   [#-- 1.3.2 Youth --]
-                  <h5 class="sectionSubTitle">[@s.text name="${customLabel}.youth.title" /]</h5>
                   [#-- CRPs contribution to youth --]
                   <div class="form-group">
                      [@customForm.textArea name="${customName}.youthContribution" i18nkey="${customLabel}.youth.youthContribution" help="${customLabel}.youth.youthContribution.help" className="limitWords-${calculateLimitWords(600)}" helpIcon=false required=!isPlatform editable=editable allowTextEditor=true /]
                   </div>
                   <div class="form-group">
-                    <i class="helpLabel">[@s.text name="${customLabel}.youth.help" /]</i>
+                    [@customForm.helpLabel name="${customLabel}.youth.help" showIcon=false editable=editable /]
                   </div>
                   
                   [#-- Youth - Research findings --]
@@ -124,7 +122,6 @@
                 </div>
                 <div id="tab-capdev" role="tabpanel" class="tab-pane fade">
                   [#-- 1.3.3 Capacity Development --]
-                  <h5 class="sectionSubTitle">[@s.text name="${customLabel}.capDev.title" /]</h5>
                   [#-- CRPs contribution to CapDev --]
                   <div class="form-group">
                     [@customForm.textArea name="${customName}.capDevKeyAchievements" i18nkey="${customLabel}.capDev.keyAchievements" help="${customLabel}.capDev.keyAchievements.help" className="limitWords-${calculateLimitWords(300)}" helpIcon=false required=true editable=editable allowTextEditor=true /]
@@ -237,7 +234,6 @@
                 </div>
                 <div id="tab-climateChange" role="tabpanel" class="tab-pane fade">
                   [#-- 1.3.4 Climate change --]
-                  <h5 class="sectionSubTitle">[@s.text name="${customLabel}.climateChange.title" /]</h5>
                   
                   [#-- CRPs contribution to Climate Change --]
                   <div class="form-group">

@@ -175,7 +175,7 @@ public class OutcomeMilestonesValidator extends BaseValidator {
       action.addMessage(action.getText("Milestone Status"));
       action.addMissingField("Milestone Status");
       action.getInvalidFields().put("input-reportSynthesis.reportSynthesisFlagshipProgress.outcomeList[" + i
-        + "].milestones[" + j + "].milestoneStatus", InvalidFieldsMessages.EMPTYFIELD);;
+        + "].milestones[" + j + "].milestonesStatus", InvalidFieldsMessages.EMPTYFIELD);;
     }
 
     // Validate Milestone Evidence

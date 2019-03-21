@@ -67,8 +67,8 @@
             
             [#-- 1.2.3 Variance from Planned Program for this year --]
             <div class="form-group">
-              <h4 class="headTitle">[@s.text name="${customLabel}.variance" /]</h4>
-              <i class="helpLabel">[@s.text name="${customLabel}.variance.help" /]</i>
+              <h4 class="simpleTitle headTitle annualReport-table">[@s.text name="${customLabel}.variance" /]</h4>
+              [@customForm.helpLabel name="${customLabel}.variance.help" showIcon=false editable=editable/]
             </div>
             
             [#-- Expandend research areas --]
