@@ -2530,6 +2530,15 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         paragraph.setStyle("heading 2");
         this.createTable6();
 
+        // Table 7
+        poiSummary.textLineBreak(document, 1);
+        paragraph = document.createParagraph();
+        run = paragraph.createRun();
+        run.setFontSize(13);
+        run.setBold(true);
+        run.setText(this.getText("summaries.annualReport2018.table7"));
+        paragraph.setStyle("heading 2");
+        // this.createTable7();
 
         // Table b
         poiSummary.textLineBreak(document, 1);
@@ -2572,7 +2581,6 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         poiSummary.textNotes(document.createParagraph(), this.getText("financialPlan.tableF.expenditureArea.help2017"));
         poiSummary.textNotes(document.createParagraph(),
           "**" + this.getText("summaries.annualReport.tableJ.description.help2"));
-
 
         // Table g
         poiSummary.textLineBreak(document, 1);
