@@ -19,6 +19,8 @@ import org.cgiar.ccafs.marlo.data.model.RepIndStageInnovation;
 import org.cgiar.ccafs.marlo.rest.dto.StageOfInnovationDTO;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.Mappings;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
@@ -27,11 +29,12 @@ import org.mapstruct.Mapper;
 @Mapper(componentModel = "jsr330")
 public interface StageOfInnovationMapper {
 
+	@Mappings({ @Mapping(source = "id", target = "code") })
+	public abstract StageOfInnovationDTO repIndStageInnovationToStageOfInnovationDTO(
+			RepIndStageInnovation repIndStageInnovation);
 
-  public abstract StageOfInnovationDTO
-    repIndStageInnovationToStageOfInnovationDTO(RepIndStageInnovation repIndStageInnovation);
-
-  public abstract RepIndStageInnovation
-    stageOfInnovationDTOToRepIndStageInnovation(StageOfInnovationDTO stageOfInnovationDTO);
+	@Mappings({ @Mapping(source = "code", target = "id") })
+	public abstract RepIndStageInnovation stageOfInnovationDTOToRepIndStageInnovation(
+			StageOfInnovationDTO stageOfInnovationDTO);
 
 }

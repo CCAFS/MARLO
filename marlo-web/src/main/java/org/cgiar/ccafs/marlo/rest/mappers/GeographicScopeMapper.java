@@ -19,6 +19,8 @@ import org.cgiar.ccafs.marlo.data.model.RepIndGeographicScope;
 import org.cgiar.ccafs.marlo.rest.dto.GeographicScopeDTO;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.Mappings;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
@@ -27,9 +29,12 @@ import org.mapstruct.Mapper;
 @Mapper(componentModel = "jsr330")
 public interface GeographicScopeMapper {
 
-  public abstract RepIndGeographicScope geographicScopeDTOToRepIndGeographicScop(GeographicScopeDTO geographicScopeDTO);
+	@Mappings({ @Mapping(source = "code", target = "id") })
+	public abstract RepIndGeographicScope geographicScopeDTOToRepIndGeographicScope(
+			GeographicScopeDTO geographicScopeDTO);
 
-  public abstract GeographicScopeDTO
-    repIndGeographicScopToGeographicScopeDTO(RepIndGeographicScope repIndGeographicScope);
+	@Mappings({ @Mapping(source = "id", target = "code") })
+	public abstract GeographicScopeDTO repIndGeographicScopToGeographicScopeDTO(
+			RepIndGeographicScope repIndGeographicScope);
 
 }

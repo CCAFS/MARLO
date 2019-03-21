@@ -19,12 +19,16 @@ import org.cgiar.ccafs.marlo.data.model.RepIndPolicyType;
 import org.cgiar.ccafs.marlo.rest.dto.PolicyOwnerTypeDTO;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.Mappings;
 
 @Mapper(componentModel = "jsr330")
 public interface PolicyOwnerTypeMapper {
 
+	@Mappings({ @Mapping(source = "code", target = "id") })
 	public abstract RepIndPolicyType policyOwnerTypeDTOToRepIndPolicyType(PolicyOwnerTypeDTO policyOwnerTypeDTO);
 
+	@Mappings({ @Mapping(source = "id", target = "code") })
 	public abstract PolicyOwnerTypeDTO repIndPolicyTypeToPolicyOwnerTypeDTO(RepIndPolicyType repIndPolicyType);
 
 }

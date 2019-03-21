@@ -19,6 +19,8 @@ import org.cgiar.ccafs.marlo.data.model.RepIndStageStudy;
 import org.cgiar.ccafs.marlo.rest.dto.MaturityOfChangeDTO;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.Mappings;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
@@ -27,8 +29,10 @@ import org.mapstruct.Mapper;
 @Mapper(componentModel = "jsr330")
 public interface MaturityOfChangeMapper {
 
-  public abstract RepIndStageStudy maturityOfChangeDTOToRepIndStageStudy(MaturityOfChangeDTO maturityOfChangeDTO);
+	@Mappings({ @Mapping(source = "code", target = "id") })
+	public abstract RepIndStageStudy maturityOfChangeDTOToRepIndStageStudy(MaturityOfChangeDTO maturityOfChangeDTO);
 
-  public abstract MaturityOfChangeDTO repIndStageStudyToMaturityOfChangeDTO(RepIndStageStudy repIndStageStudy);
+	@Mappings({ @Mapping(source = "id", target = "code") })
+	public abstract MaturityOfChangeDTO repIndStageStudyToMaturityOfChangeDTO(RepIndStageStudy repIndStageStudy);
 
 }

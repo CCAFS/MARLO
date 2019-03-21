@@ -21,6 +21,7 @@ import org.cgiar.ccafs.marlo.rest.dto.CGIAREntityDTO;
 import org.cgiar.ccafs.marlo.rest.mappers.GlobalUnitMapper;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -51,7 +52,8 @@ public class GlobalUnitItem<T> {
 	 */
 	public ResponseEntity<CGIAREntityDTO> findGlobalUnitByAcronym(String acronym) {
 		GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitByAcronym(acronym);
-		return Optional.ofNullable(globalUnitEntity).map(this.globalUnitMapper::globalUnitToGlobalUnitDTO)
+		return Optional.ofNullable(globalUnitEntity).filter(c -> c.getGlobalUnitType().getId() <= 4)
+				.map(this.globalUnitMapper::globalUnitToGlobalUnitDTO)
 				.map(result -> new ResponseEntity<>(result, HttpStatus.OK))
 				.orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
 	}
@@ -64,7 +66,9 @@ public class GlobalUnitItem<T> {
 	 */
 	public ResponseEntity<CGIAREntityDTO> findGlobalUnitByCGIRARId(String smoCode) {
 		GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitBySMOCode(smoCode);
-		return Optional.ofNullable(globalUnitEntity).map(this.globalUnitMapper::globalUnitToGlobalUnitDTO)
+		return Optional.ofNullable(globalUnitEntity).filter(c -> c.getGlobalUnitType().getId() <= 4)
+				.map(this.globalUnitMapper::globalUnitToGlobalUnitDTO)
+				// FIXME: Should change the way to compare which CRP/PTF/Center
 				.map(result -> new ResponseEntity<>(result, HttpStatus.OK))
 				.orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
 	}
@@ -75,16 +79,23 @@ public class GlobalUnitItem<T> {
 	 * @return a List of global units
 	 */
 	public ResponseEntity<List<CGIAREntityDTO>> getAllGlobaUnits(Long typeId) {
-		//
-		List<GlobalUnit> globalUnits;
 
+		List<GlobalUnit> globalUnits;
 		if (this.globalUnitManager.findAll() != null) {
 			if (typeId != null) {
 				globalUnits = new ArrayList<>(this.globalUnitManager.findAll().stream()
-						.filter(c -> c.isActive() && c.getGlobalUnitType().getId() == typeId)
+						.filter(c -> c.isActive() && c.getGlobalUnitType().getId() == typeId && typeId <= 4)
+						.sorted(Comparator.comparing(GlobalUnit::getSmoCode,
+								Comparator.nullsLast(Comparator.naturalOrder())))
 						.collect(Collectors.toList()));
 			} else {
-				globalUnits = this.globalUnitManager.findAll();
+				globalUnits = this.globalUnitManager.findAll().stream()
+						.filter(c -> c.isActive() && c.getGlobalUnitType().getId() <= 4).sorted(Comparator
+								.comparing(GlobalUnit::getSmoCode, Comparator.nullsLast(Comparator.naturalOrder())))
+						.collect(Collectors.toList());
+				;
+				// FIXME: Should change the way to compare which CRP/PTF/Center
+				// will show on API
 			}
 			List<CGIAREntityDTO> globalUnitDTOs = globalUnits.stream()
 					.map(globalUnitEntity -> this.globalUnitMapper.globalUnitToGlobalUnitDTO(globalUnitEntity))

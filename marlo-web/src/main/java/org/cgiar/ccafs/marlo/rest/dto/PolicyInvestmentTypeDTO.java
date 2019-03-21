@@ -27,7 +27,7 @@ public class PolicyInvestmentTypeDTO {
 
 	@ApiModelProperty(notes = "The Generated policy insvestiment type ID")
 	@NotNull
-	private Long id;
+	private Long code;
 
 	@ApiModelProperty(notes = "policy insvestiment type name")
 	@NotNull
@@ -40,10 +40,6 @@ public class PolicyInvestmentTypeDTO {
 		return this.definition;
 	}
 
-	public Long getId() {
-		return this.id;
-	}
-
 	public String getName() {
 		return this.name;
 	}
@@ -52,12 +48,16 @@ public class PolicyInvestmentTypeDTO {
 		this.definition = definition;
 	}
 
-	public void setId(Long id) {
-		this.id = id;
-	}
-
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public Long getCode() {
+		return code;
+	}
+
+	public void setCode(Long code) {
+		this.code = code;
 	}
 
 }

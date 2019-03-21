@@ -23,51 +23,41 @@ import io.swagger.annotations.ApiModelProperty;
  * @author Hermes Jiménez - CIAT/CCAFS
  */
 
-
 public class StageOfInnovationDTO {
 
+	@ApiModelProperty(notes = "The Generated Stage of Innovation ID")
+	@NotNull
+	private Long code;
 
-  @ApiModelProperty(notes = "The Generated Stage of Innovation ID")
-  @NotNull
-  private Long id;
+	@ApiModelProperty(notes = "Stage of Innovation name")
+	@NotNull
+	private String name;
 
+	@ApiModelProperty(notes = "Stage of Innovation definition")
+	private String definition;
 
-  @ApiModelProperty(notes = "Stage of Innovation name")
-  @NotNull
-  private String name;
+	public Long getCode() {
+		return this.code;
+	}
 
+	public String getDefinition() {
+		return this.definition;
+	}
 
-  @ApiModelProperty(notes = "Stage of Innovation definition")
-  private String definition;
+	public String getName() {
+		return this.name;
+	}
 
+	public void setCode(Long code) {
+		this.code = code;
+	}
 
-  public String getDefinition() {
-    return definition;
-  }
+	public void setDefinition(String definition) {
+		this.definition = definition;
+	}
 
-
-  public Long getId() {
-    return id;
-  }
-
-
-  public String getName() {
-    return name;
-  }
-
-
-  public void setDefinition(String definition) {
-    this.definition = definition;
-  }
-
-
-  public void setId(Long id) {
-    this.id = id;
-  }
-
-
-  public void setName(String name) {
-    this.name = name;
-  }
+	public void setName(String name) {
+		this.name = name;
+	}
 
 }

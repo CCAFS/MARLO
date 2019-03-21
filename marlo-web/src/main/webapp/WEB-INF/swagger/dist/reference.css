@@ -7,6 +7,8 @@
 #reference-index {
   font-family: 'Montserrat', sans-serif; 
   font-size: 0.75rem;
+  height:100%;
+  overflow: auto;
 }
 
 #reference-index .navbar-brand {
@@ -17,7 +19,7 @@
 .navbar-brand {
   font-weight: 900 !important;
   color: #316651 !important;
-  font-family: 'Montserrat', sans-serif; 
+  font-family: 'Montserrat', sans-serif;
 }
 
 
@@ -63,6 +65,8 @@ h5 {
   height:20px;
   font-size: 10px;
   color: #b1b1b1;
+  text-align: center;
+  padding: 30px;
 }
 
 .ml-5 {
@@ -136,10 +140,19 @@ h5 {
 
 th {
   text-align: center !important;
+  font-size: 11px;
 }
 
 table .columns p {
-  
   font-size: 11px;
-  
+}
+
+.nav-link {
+  padding: .4rem 1rem !important;
+  text-align: justify;
+}
+
+th p {
+  font-size: 9px;
+  text-align: center;
 }
