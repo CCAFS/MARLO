@@ -19,49 +19,42 @@ import javax.validation.constraints.NotNull;
 
 import io.swagger.annotations.ApiModelProperty;
 
-/**
- * @author Hermes Jiménez - CIAT/CCAFS
- */
-public class CrpProgramDTO {
+public class BroadAreaDTO {
 
-  @ApiModelProperty(notes = "The Generated Program ID")
-  private Long id;
+	@ApiModelProperty(notes = "Broad area ID")
+	@NotNull
+	private Long code;
 
-  @ApiModelProperty(notes = "The Flagship program Name")
-  @NotNull
-  private String name;
+	@ApiModelProperty(notes = "Broad area name")
+	@NotNull
+	private String name;
 
-  @ApiModelProperty(notes = "The Flagship program Acronym")
-  @NotNull
-  private String acronym;
+	@ApiModelProperty(notes = "Broad area description")
+	@NotNull
+	private String description;
 
-  public String getAcronym() {
-    return acronym;
-  }
+	public Long getCode() {
+		return this.code;
+	}
 
+	public String getDescription() {
+		return this.description;
+	}
 
-  public Long getId() {
-    return id;
-  }
+	public String getName() {
+		return this.name;
+	}
 
+	public void setCode(Long code) {
+		this.code = code;
+	}
 
-  public String getName() {
-    return name;
-  }
+	public void setDescription(String description) {
+		this.description = description;
+	}
 
-
-  public void setAcronym(String acronym) {
-    this.acronym = acronym;
-  }
-
-  public void setId(Long id) {
-    this.id = id;
-  }
-
-
-  public void setName(String name) {
-    this.name = name;
-  }
-
+	public void setName(String name) {
+		this.name = name;
+	}
 
 }

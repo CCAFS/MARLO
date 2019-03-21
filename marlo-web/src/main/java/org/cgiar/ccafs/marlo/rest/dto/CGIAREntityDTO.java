@@ -40,7 +40,7 @@ public class CGIAREntityDTO implements Serializable {
 
 	@ApiModelProperty(notes = "CGIAR entity type")
 	@NotNull
-	private CGIAREntityTypeDTO globalUnitTypeDTO;
+	private CGIAREntityTypeDTO cgiarEntityTypeDTO;
 
 	public String getAcronym() {
 		return this.acronym;
@@ -48,10 +48,6 @@ public class CGIAREntityDTO implements Serializable {
 
 	public String getCode() {
 		return this.code;
-	}
-
-	public CGIAREntityTypeDTO getGlobalUnitTypeDTO() {
-		return this.globalUnitTypeDTO;
 	}
 
 	public String getName() {
@@ -66,12 +62,16 @@ public class CGIAREntityDTO implements Serializable {
 		this.code = code;
 	}
 
-	public void setGlobalUnitTypeDTO(CGIAREntityTypeDTO globalUnitTypeDTO) {
-		this.globalUnitTypeDTO = globalUnitTypeDTO;
-	}
-
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public CGIAREntityTypeDTO getCgiarEntityTypeDTO() {
+		return cgiarEntityTypeDTO;
+	}
+
+	public void setCgiarEntityTypeDTO(CGIAREntityTypeDTO cgiarEntityTypeDTO) {
+		this.cgiarEntityTypeDTO = cgiarEntityTypeDTO;
 	}
 
 }

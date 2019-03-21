@@ -23,50 +23,41 @@ import io.swagger.annotations.ApiModelProperty;
  * @author Hermes Jiménez - CIAT/CCAFS
  */
 
-
 public class GeographicScopeDTO {
 
-  @ApiModelProperty(notes = "The Generated Geographic Scope ID")
-  @NotNull
-  private Long id;
+	@ApiModelProperty(notes = "The Generated Geographic Scope ID")
+	@NotNull
+	private Long code;
 
+	@ApiModelProperty(notes = "Geographic Scope name")
+	@NotNull
+	private String name;
 
-  @ApiModelProperty(notes = "Geographic Scope name")
-  @NotNull
-  private String name;
+	@ApiModelProperty(notes = "Geographic Scope definition")
+	private String definition;
 
+	public Long getCode() {
+		return this.code;
+	}
 
-  @ApiModelProperty(notes = "Geographic Scope definition")
-  private String definition;
+	public String getDefinition() {
+		return this.definition;
+	}
 
+	public String getName() {
+		return this.name;
+	}
 
-  public String getDefinition() {
-    return definition;
-  }
+	public void setCode(Long code) {
+		this.code = code;
+	}
 
+	public void setDefinition(String definition) {
+		this.definition = definition;
+	}
 
-  public Long getId() {
-    return id;
-  }
-
-
-  public String getName() {
-    return name;
-  }
-
-
-  public void setDefinition(String definition) {
-    this.definition = definition;
-  }
-
-
-  public void setId(Long id) {
-    this.id = id;
-  }
-
-
-  public void setName(String name) {
-    this.name = name;
-  }
+	public void setName(String name) {
+		this.name = name;
+	}
 
 }

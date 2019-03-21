@@ -25,11 +25,13 @@ import org.mapstruct.Mappings;
 @Mapper(componentModel = "jsr330")
 public interface CrossCuttingMarkerScoreMapper {
 
-	@Mappings({ @Mapping(target = "powbName", source = "crossCuttingMarkersDTO.name") })
+	@Mappings({ @Mapping(target = "powbName", source = "crossCuttingMarkersDTO.name"),
+			@Mapping(source = "code", target = "id") })
 	public abstract RepIndGenderYouthFocusLevel crossCuttingMarkersScoreDTOToRepIndGenderYouthFocusLevel(
 			CrossCuttingMarkerScoreDTO crossCuttingMarkersDTO);
 
-	@Mappings({ @Mapping(target = "name", source = "repIndGenderYouthFocusLevel.powbName") })
+	@Mappings({ @Mapping(target = "name", source = "repIndGenderYouthFocusLevel.powbName"),
+			@Mapping(source = "id", target = "code") })
 	public abstract CrossCuttingMarkerScoreDTO repIndGenderYouthFocusLevelToCrossCuttingMarkerScoreDTO(
 			RepIndGenderYouthFocusLevel repIndGenderYouthFocusLevel);
 

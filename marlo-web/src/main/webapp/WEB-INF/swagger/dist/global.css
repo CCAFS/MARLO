@@ -148,3 +148,22 @@ body {
   border: 0px;
   cursor:pointer;
 }
+
+.swagger-ui .opblock-tag {
+  font-size: 15px !important;
+  font-family: "Open Sans",sans-serif !important;
+}
+
+.swagger-ui .opblock-tag small {
+  font-size: 12px !important;
+}
+
+.swagger-ui .opblock-tag small .markdown {
+  width: 250px;
+  float: right;
+}
+
+.swagger-ui .model-title {
+  font-size: 13px !important;
+  font-family: "Open Sans",sans-serif !important;
+}
