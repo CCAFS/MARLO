@@ -85,12 +85,15 @@
                       <span class="json">{"role":"annotation"}</span>
                     </li>
                     [#list (policiesByOrganizationTypeDTOs)![] as data]
+                      [#assign policiesSize = (data.projectPolicies?size) /]
+                      [#if  policiesSize > 0]
                       <li>
                         <span>${(data.repIndOrganizationType.name)!}</span>
                         <span class="number">${data.projectPolicies?size}</span>
                         <span>#4285f4</span>
                         <span>${data.projectPolicies?size}</span>
                       </li>
+                      [/#if]
                     [/#list]
                   </ul>
                 </div> 
