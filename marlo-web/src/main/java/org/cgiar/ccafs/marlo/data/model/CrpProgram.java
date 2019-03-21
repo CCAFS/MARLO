@@ -28,427 +28,428 @@ import com.google.gson.annotations.Expose;
  */
 public class CrpProgram extends MarloAuditableEntity implements java.io.Serializable, IAuditLog {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -799819119525448185L;
+  /**
+   * 
+   */
+  private static final long serialVersionUID = -799819119525448185L;
 
-	@Expose
-	private GlobalUnit crp;
+  @Expose
+  private GlobalUnit crp;
 
-	@Expose
-	private String name;
+  @Expose
+  private String name;
 
-	@Expose
-	private String acronym;
+  @Expose
+  private String acronym;
 
-	@Expose
-	private String smoCode;
+  @Expose
+  private String smoCode;
 
-	@Expose
-	private int programType;
+  @Expose
+  private int programType;
 
-	private String action;
 
-	@Expose
-	private CenterArea researchArea;
+  private String action;
 
-	private Set<CrpClusterOfActivity> crpClusterOfActivities = new HashSet<CrpClusterOfActivity>(0);
+  @Expose
+  private CenterArea researchArea;
 
-	private Set<CrpProgramLeader> crpProgramLeaders = new HashSet<CrpProgramLeader>(0);
+  private Set<CrpClusterOfActivity> crpClusterOfActivities = new HashSet<CrpClusterOfActivity>(0);
 
-	private Set<CrpProgramOutcome> crpProgramOutcomes = new HashSet<CrpProgramOutcome>(0);
+  private Set<CrpProgramLeader> crpProgramLeaders = new HashSet<CrpProgramLeader>(0);
 
-	private Set<SectionStatus> sectionStatuses = new HashSet<SectionStatus>(0);
+  private Set<CrpProgramOutcome> crpProgramOutcomes = new HashSet<CrpProgramOutcome>(0);
 
-	private Set<CrpProgramCountry> crpProgramCountries = new HashSet<CrpProgramCountry>(0);
+  private Set<SectionStatus> sectionStatuses = new HashSet<SectionStatus>(0);
 
-	private Set<Submission> submissions = new HashSet<Submission>(0);
+  private Set<CrpProgramCountry> crpProgramCountries = new HashSet<CrpProgramCountry>(0);
 
-	private List<String> selectedCountries;
+  private Set<Submission> submissions = new HashSet<Submission>(0);
 
-	private List<CrpProgramOutcome> outcomes;
+  private List<String> selectedCountries;
 
-	private List<CrpClusterOfActivity> clusterofActivities;
+  private List<CrpProgramOutcome> outcomes;
 
-	private Set<LiaisonInstitution> liaisonInstitutions = new HashSet<LiaisonInstitution>(0);
+  private List<CrpClusterOfActivity> clusterofActivities;
 
-	private Set<ProjectFocus> projectFocuses = new HashSet<ProjectFocus>(0);
+  private Set<LiaisonInstitution> liaisonInstitutions = new HashSet<LiaisonInstitution>(0);
 
-	private Set<CenterTopic> researchTopics = new HashSet<CenterTopic>(0);
+  private Set<ProjectFocus> projectFocuses = new HashSet<ProjectFocus>(0);
 
-	private Set<CenterImpact> researchImpacts = new HashSet<CenterImpact>(0);
+  private Set<CenterTopic> researchTopics = new HashSet<CenterTopic>(0);
 
-	private List<CenterImpact> impacts;
+  private Set<CenterImpact> researchImpacts = new HashSet<CenterImpact>(0);
 
-	private List<CenterTopic> topics;
+  private List<CenterImpact> impacts;
 
-	private Set<CenterOutput> centerOutputs = new HashSet<CenterOutput>(0);
+  private List<CenterTopic> topics;
 
-	private Set<CenterSectionStatus> centerSectionStatuses = new HashSet<CenterSectionStatus>(0);
+  private Set<CenterOutput> centerOutputs = new HashSet<CenterOutput>(0);
 
-	private Set<CenterSubmission> centerSubmissions = new HashSet<CenterSubmission>(0);
+  private Set<CenterSectionStatus> centerSectionStatuses = new HashSet<CenterSectionStatus>(0);
 
-	private List<CrpProgramLeader> leaders;
+  private Set<CenterSubmission> centerSubmissions = new HashSet<CenterSubmission>(0);
 
-	private List<CrpProgramLeader> managers;
+  private List<CrpProgramLeader> leaders;
 
-	private List<PowbExpectedCrpProgress> powbs;
+  private List<CrpProgramLeader> managers;
 
-	private List<CrpMilestone> milestones;
+  private List<PowbExpectedCrpProgress> powbs;
 
-	@Expose
-	private String color;
+  private List<CrpMilestone> milestones;
 
-	@Expose
-	private Boolean baseLine;
+  @Expose
+  private String color;
 
-	private double w1;
+  @Expose
+  private Boolean baseLine;
 
-	private double w3;
+  private double w1;
 
-	private double centerFunds;
-	private PowbCollaboration collaboration;
+  private double w3;
 
-	private PowbSynthesis synthesis;
+  private double centerFunds;
+  private PowbCollaboration collaboration;
 
-	public CrpProgram() {
-	}
+  private PowbSynthesis synthesis;
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (obj == null) {
-			return false;
-		}
+  public CrpProgram() {
+  }
 
-		CrpProgram other = (CrpProgram) obj;
-		if (this.getId() == null) {
-			if (other.getId() != null) {
-				return false;
-			}
-		} else if (!this.getId().equals(other.getId())) {
-			return false;
-		}
-		return true;
-	}
-
-	public String getAcronym() {
-		return this.acronym;
-	}
-
-	public String getAction() {
-		return this.action;
-	}
-
-	public Boolean getBaseLine() {
-		return this.baseLine;
-	}
-
-	public String getCenterComposedName() {
-		String name = "";
-		if (this.getResearchArea() != null) {
-			name = name + this.getResearchArea().getAcronym() + " : " + this.getName();
-		}
-
-		return name;
-	}
-
-	public double getCenterFunds() {
-		return this.centerFunds;
-	}
-
-	public Set<CenterOutput> getCenterOutputs() {
-		return this.centerOutputs;
-	}
-
-	public Set<CenterSectionStatus> getCenterSectionStatuses() {
-		return this.centerSectionStatuses;
-	}
-
-	public Set<CenterSubmission> getCenterSubmissions() {
-		return this.centerSubmissions;
-	}
-
-	public List<CrpClusterOfActivity> getClusterofActivities() {
-		return this.clusterofActivities;
-	}
-
-	public PowbCollaboration getCollaboration() {
-		return this.collaboration;
-	}
-
-	public String getColor() {
-		return this.color;
-	}
-
-	public String getComposedName() {
-		return this.acronym + ": " + this.name;
-	}
-
-	public GlobalUnit getCrp() {
-		return this.crp;
-	}
-
-	public Set<CrpClusterOfActivity> getCrpClusterOfActivities() {
-		return this.crpClusterOfActivities;
-	}
-
-	public Set<CrpProgramCountry> getCrpProgramCountries() {
-		return this.crpProgramCountries;
-	}
-
-	public Set<CrpProgramLeader> getCrpProgramLeaders() {
-		return this.crpProgramLeaders;
-	}
-
-	public Set<CrpProgramOutcome> getCrpProgramOutcomes() {
-		return this.crpProgramOutcomes;
-	}
-
-	public List<CenterImpact> getImpacts() {
-		return this.impacts;
-	}
-
-	public List<CrpProgramLeader> getLeaders() {
-		return this.leaders;
-	}
-
-	public Set<LiaisonInstitution> getLiaisonInstitutions() {
-		return this.liaisonInstitutions;
-	}
-
-	@Override
-	public String getLogDeatil() {
-		StringBuilder sb = new StringBuilder();
-
-		sb.append("Id : ").append(this.getId());
-
-		return sb.toString();
-	}
-
-	public List<CrpProgramLeader> getManagers() {
-		return this.managers;
-	}
-
-	public List<CrpMilestone> getMilestones() {
-		return this.milestones;
-	}
-
-	public String getName() {
-		return this.name;
-	}
-
-	public List<CrpProgramOutcome> getOutcomes() {
-		return this.outcomes;
-	}
-
-	public List<PowbExpectedCrpProgress> getPowbs() {
-		return this.powbs;
-	}
-
-	public int getProgramType() {
-		return this.programType;
-	}
-
-	public Set<ProjectFocus> getProjectFocuses() {
-		return this.projectFocuses;
-	}
-
-	public CenterArea getResearchArea() {
-		return this.researchArea;
-	}
-
-	public Set<CenterImpact> getResearchImpacts() {
-		return this.researchImpacts;
-	}
-
-	public Set<CenterTopic> getResearchTopics() {
-		return this.researchTopics;
-	}
-
-	public Set<SectionStatus> getSectionStatuses() {
-		return this.sectionStatuses;
-	}
-
-	public List<String> getSelectedCountries() {
-		return this.selectedCountries;
-	}
-
-	public String getSmoCode() {
-		return this.smoCode;
-	}
-
-	public Set<Submission> getSubmissions() {
-		return this.submissions;
-	}
-
-	public PowbSynthesis getSynthesis() {
-		return this.synthesis;
-	}
-
-	public List<CenterTopic> getTopics() {
-		return this.topics;
-	}
-
-	public double getW1() {
-		return this.w1;
-	}
-
-	public double getW3() {
-		return this.w3;
-	}
-
-	public void setAcronym(String acronym) {
-		this.acronym = acronym;
-	}
-
-	public void setAction(String action) {
-		this.action = action;
-	}
-
-	public void setBaseLine(Boolean baseLine) {
-		this.baseLine = baseLine;
-	}
-
-	public void setCenterFunds(double centerFunds) {
-		this.centerFunds = centerFunds;
-	}
-
-	public void setCenterOutputs(Set<CenterOutput> centerOutputs) {
-		this.centerOutputs = centerOutputs;
-	}
-
-	public void setCenterSectionStatuses(Set<CenterSectionStatus> centerSectionStatuses) {
-		this.centerSectionStatuses = centerSectionStatuses;
-	}
-
-	public void setCenterSubmissions(Set<CenterSubmission> centerSubmissions) {
-		this.centerSubmissions = centerSubmissions;
-	}
-
-	public void setClusterofActivities(List<CrpClusterOfActivity> clusterofActivities) {
-		this.clusterofActivities = clusterofActivities;
-	}
-
-	public void setCollaboration(PowbCollaboration collaboration) {
-		this.collaboration = collaboration;
-	}
-
-	public void setColor(String color) {
-		this.color = color;
-	}
-
-	public void setCrp(GlobalUnit crp) {
-		this.crp = crp;
-	}
-
-	public void setCrpClusterOfActivities(Set<CrpClusterOfActivity> crpClusterOfActivities) {
-		this.crpClusterOfActivities = crpClusterOfActivities;
-	}
-
-	public void setCrpProgramCountries(Set<CrpProgramCountry> crpProgramCountries) {
-		this.crpProgramCountries = crpProgramCountries;
-	}
-
-	public void setCrpProgramLeaders(Set<CrpProgramLeader> crpProgramLeaders) {
-		this.crpProgramLeaders = crpProgramLeaders;
-	}
-
-	public void setCrpProgramOutcomes(Set<CrpProgramOutcome> crpProgramOutcomes) {
-		this.crpProgramOutcomes = crpProgramOutcomes;
-	}
-
-	public void setImpacts(List<CenterImpact> impacts) {
-		this.impacts = impacts;
-	}
-
-	public void setLeaders(List<CrpProgramLeader> leaders) {
-		this.leaders = leaders;
-	}
-
-	public void setLiaisonInstitutions(Set<LiaisonInstitution> liaisonInstitutions) {
-		this.liaisonInstitutions = liaisonInstitutions;
-	}
-
-	public void setManagers(List<CrpProgramLeader> managers) {
-		this.managers = managers;
-	}
-
-	public void setMilestones(List<CrpMilestone> milestones) {
-		this.milestones = milestones;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public void setOutcomes(List<CrpProgramOutcome> outcomes) {
-		this.outcomes = outcomes;
-	}
-
-	public void setPowbs(List<PowbExpectedCrpProgress> powbs) {
-		this.powbs = powbs;
-	}
-
-	public void setProgramType(int programType) {
-		this.programType = programType;
-	}
-
-	public void setProjectFocuses(Set<ProjectFocus> projectFocuses) {
-		this.projectFocuses = projectFocuses;
-	}
-
-	public void setResearchArea(CenterArea researchArea) {
-		this.researchArea = researchArea;
-	}
-
-	public void setResearchImpacts(Set<CenterImpact> researchImpacts) {
-		this.researchImpacts = researchImpacts;
-	}
-
-	public void setResearchTopics(Set<CenterTopic> researchTopics) {
-		this.researchTopics = researchTopics;
-	}
-
-	public void setSectionStatuses(Set<SectionStatus> sectionStatuses) {
-		this.sectionStatuses = sectionStatuses;
-	}
-
-	public void setSelectedCountries(List<String> selectedCountries) {
-		this.selectedCountries = selectedCountries;
-	}
-
-	public void setSmoCode(String smoCode) {
-		this.smoCode = smoCode;
-	}
-
-	public void setSubmissions(Set<Submission> submissions) {
-		this.submissions = submissions;
-	}
-
-	public void setSynthesis(PowbSynthesis synthesis) {
-		this.synthesis = synthesis;
-	}
-
-	public void setTopics(List<CenterTopic> topics) {
-		this.topics = topics;
-	}
-
-	public void setW1(double w1) {
-		this.w1 = w1;
-	}
-
-	public void setW3(double w3) {
-		this.w3 = w3;
-	}
-
-	@Override
-	public String toString() {
-		return "CrpProgram [id=" + this.getId() + ", crp=" + this.crp + ", name=" + this.name + ", acronym="
-				+ this.acronym + ", programType=" + this.programType + "]";
-	}
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+
+    CrpProgram other = (CrpProgram) obj;
+    if (this.getId() == null) {
+      if (other.getId() != null) {
+        return false;
+      }
+    } else if (!this.getId().equals(other.getId())) {
+      return false;
+    }
+    return true;
+  }
+
+  public String getAcronym() {
+    return this.acronym;
+  }
+
+  public String getAction() {
+    return this.action;
+  }
+
+  public Boolean getBaseLine() {
+    return this.baseLine;
+  }
+
+  public String getCenterComposedName() {
+    String name = "";
+    if (this.getResearchArea() != null) {
+      name = name + this.getResearchArea().getAcronym() + " : " + this.getName();
+    }
+
+    return name;
+  }
+
+  public double getCenterFunds() {
+    return this.centerFunds;
+  }
+
+  public Set<CenterOutput> getCenterOutputs() {
+    return this.centerOutputs;
+  }
+
+  public Set<CenterSectionStatus> getCenterSectionStatuses() {
+    return this.centerSectionStatuses;
+  }
+
+  public Set<CenterSubmission> getCenterSubmissions() {
+    return this.centerSubmissions;
+  }
+
+  public List<CrpClusterOfActivity> getClusterofActivities() {
+    return this.clusterofActivities;
+  }
+
+  public PowbCollaboration getCollaboration() {
+    return this.collaboration;
+  }
+
+  public String getColor() {
+    return this.color;
+  }
+
+  public String getComposedName() {
+    return this.acronym + ": " + this.name;
+  }
+
+  public GlobalUnit getCrp() {
+    return this.crp;
+  }
+
+  public Set<CrpClusterOfActivity> getCrpClusterOfActivities() {
+    return this.crpClusterOfActivities;
+  }
+
+  public Set<CrpProgramCountry> getCrpProgramCountries() {
+    return this.crpProgramCountries;
+  }
+
+  public Set<CrpProgramLeader> getCrpProgramLeaders() {
+    return this.crpProgramLeaders;
+  }
+
+  public Set<CrpProgramOutcome> getCrpProgramOutcomes() {
+    return this.crpProgramOutcomes;
+  }
+
+  public List<CenterImpact> getImpacts() {
+    return this.impacts;
+  }
+
+  public List<CrpProgramLeader> getLeaders() {
+    return this.leaders;
+  }
+
+  public Set<LiaisonInstitution> getLiaisonInstitutions() {
+    return this.liaisonInstitutions;
+  }
+
+  @Override
+  public String getLogDeatil() {
+    StringBuilder sb = new StringBuilder();
+
+    sb.append("Id : ").append(this.getId());
+
+    return sb.toString();
+  }
+
+  public List<CrpProgramLeader> getManagers() {
+    return this.managers;
+  }
+
+  public List<CrpMilestone> getMilestones() {
+    return this.milestones;
+  }
+
+  public String getName() {
+    return this.name;
+  }
+
+  public List<CrpProgramOutcome> getOutcomes() {
+    return this.outcomes;
+  }
+
+  public List<PowbExpectedCrpProgress> getPowbs() {
+    return this.powbs;
+  }
+
+  public int getProgramType() {
+    return this.programType;
+  }
+
+  public Set<ProjectFocus> getProjectFocuses() {
+    return this.projectFocuses;
+  }
+
+  public CenterArea getResearchArea() {
+    return this.researchArea;
+  }
+
+  public Set<CenterImpact> getResearchImpacts() {
+    return this.researchImpacts;
+  }
+
+  public Set<CenterTopic> getResearchTopics() {
+    return this.researchTopics;
+  }
+
+  public Set<SectionStatus> getSectionStatuses() {
+    return this.sectionStatuses;
+  }
+
+  public List<String> getSelectedCountries() {
+    return this.selectedCountries;
+  }
+
+  public String getSmoCode() {
+    return this.smoCode;
+  }
+
+  public Set<Submission> getSubmissions() {
+    return this.submissions;
+  }
+
+  public PowbSynthesis getSynthesis() {
+    return this.synthesis;
+  }
+
+  public List<CenterTopic> getTopics() {
+    return this.topics;
+  }
+
+  public double getW1() {
+    return this.w1;
+  }
+
+  public double getW3() {
+    return this.w3;
+  }
+
+  public void setAcronym(String acronym) {
+    this.acronym = acronym;
+  }
+
+  public void setAction(String action) {
+    this.action = action;
+  }
+
+  public void setBaseLine(Boolean baseLine) {
+    this.baseLine = baseLine;
+  }
+
+  public void setCenterFunds(double centerFunds) {
+    this.centerFunds = centerFunds;
+  }
+
+  public void setCenterOutputs(Set<CenterOutput> centerOutputs) {
+    this.centerOutputs = centerOutputs;
+  }
+
+  public void setCenterSectionStatuses(Set<CenterSectionStatus> centerSectionStatuses) {
+    this.centerSectionStatuses = centerSectionStatuses;
+  }
+
+  public void setCenterSubmissions(Set<CenterSubmission> centerSubmissions) {
+    this.centerSubmissions = centerSubmissions;
+  }
+
+  public void setClusterofActivities(List<CrpClusterOfActivity> clusterofActivities) {
+    this.clusterofActivities = clusterofActivities;
+  }
+
+  public void setCollaboration(PowbCollaboration collaboration) {
+    this.collaboration = collaboration;
+  }
+
+  public void setColor(String color) {
+    this.color = color;
+  }
+
+  public void setCrp(GlobalUnit crp) {
+    this.crp = crp;
+  }
+
+  public void setCrpClusterOfActivities(Set<CrpClusterOfActivity> crpClusterOfActivities) {
+    this.crpClusterOfActivities = crpClusterOfActivities;
+  }
+
+  public void setCrpProgramCountries(Set<CrpProgramCountry> crpProgramCountries) {
+    this.crpProgramCountries = crpProgramCountries;
+  }
+
+  public void setCrpProgramLeaders(Set<CrpProgramLeader> crpProgramLeaders) {
+    this.crpProgramLeaders = crpProgramLeaders;
+  }
+
+  public void setCrpProgramOutcomes(Set<CrpProgramOutcome> crpProgramOutcomes) {
+    this.crpProgramOutcomes = crpProgramOutcomes;
+  }
+
+  public void setImpacts(List<CenterImpact> impacts) {
+    this.impacts = impacts;
+  }
+
+  public void setLeaders(List<CrpProgramLeader> leaders) {
+    this.leaders = leaders;
+  }
+
+  public void setLiaisonInstitutions(Set<LiaisonInstitution> liaisonInstitutions) {
+    this.liaisonInstitutions = liaisonInstitutions;
+  }
+
+  public void setManagers(List<CrpProgramLeader> managers) {
+    this.managers = managers;
+  }
+
+  public void setMilestones(List<CrpMilestone> milestones) {
+    this.milestones = milestones;
+  }
+
+  public void setName(String name) {
+    this.name = name;
+  }
+
+  public void setOutcomes(List<CrpProgramOutcome> outcomes) {
+    this.outcomes = outcomes;
+  }
+
+  public void setPowbs(List<PowbExpectedCrpProgress> powbs) {
+    this.powbs = powbs;
+  }
+
+  public void setProgramType(int programType) {
+    this.programType = programType;
+  }
+
+  public void setProjectFocuses(Set<ProjectFocus> projectFocuses) {
+    this.projectFocuses = projectFocuses;
+  }
+
+  public void setResearchArea(CenterArea researchArea) {
+    this.researchArea = researchArea;
+  }
+
+  public void setResearchImpacts(Set<CenterImpact> researchImpacts) {
+    this.researchImpacts = researchImpacts;
+  }
+
+  public void setResearchTopics(Set<CenterTopic> researchTopics) {
+    this.researchTopics = researchTopics;
+  }
+
+  public void setSectionStatuses(Set<SectionStatus> sectionStatuses) {
+    this.sectionStatuses = sectionStatuses;
+  }
+
+  public void setSelectedCountries(List<String> selectedCountries) {
+    this.selectedCountries = selectedCountries;
+  }
+
+  public void setSmoCode(String smoCode) {
+    this.smoCode = smoCode;
+  }
+
+  public void setSubmissions(Set<Submission> submissions) {
+    this.submissions = submissions;
+  }
+
+  public void setSynthesis(PowbSynthesis synthesis) {
+    this.synthesis = synthesis;
+  }
+
+  public void setTopics(List<CenterTopic> topics) {
+    this.topics = topics;
+  }
+
+  public void setW1(double w1) {
+    this.w1 = w1;
+  }
+
+  public void setW3(double w3) {
+    this.w3 = w3;
+  }
+
+  @Override
+  public String toString() {
+    return "CrpProgram [id=" + this.getId() + ", crp=" + this.crp + ", name=" + this.name + ", acronym=" + this.acronym
+      + ", programType=" + this.programType + "]";
+  }
 
 }
