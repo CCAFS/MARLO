@@ -545,6 +545,8 @@ public class MonitoringEvaluationAction extends BaseAction {
             reportSynthesis.getReportSynthesisMelia()
               .setEvaluations(new ArrayList<>(reportSynthesis.getReportSynthesisMelia()
                 .getReportSynthesisMeliaEvaluations().stream().filter(e -> e.isActive()).collect(Collectors.toList())));
+            reportSynthesis.getReportSynthesisMelia().getEvaluations()
+              .sort(Comparator.comparing(ReportSynthesisMeliaEvaluation::getId));
           }
         }
       }
