@@ -251,6 +251,8 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
     masterReport.getParameterValues().put("i8nPartnersResponsible", this.getText("deliverable.managing"));
     masterReport.getParameterValues().put("i8nManagingResponsible", this.getText("deliverable.project.managing"));
     masterReport.getParameterValues().put("i8nClimate", this.getText("deliverable.climateChange"));
+    masterReport.getParameterValues().put("i8nJustification", this.getText("deliverable.justification"));
+    masterReport.getParameterValues().put("i8nDeliverableDescription", this.getText("deliverable.description"));
 
     /*
      * Reporting
@@ -392,7 +394,7 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
         "deliv_license_modifications", "volume", "issue", "pages", "journal", "journal_indicators", "acknowledge",
         "fl_contrib", "project_ID", "project_title", "flagships", "regions", "others_responsibles", "newExceptedFlag",
         "phaseID", "gender", "youth", "cap", "geographicScope", "region", "country", "status", "isComplete",
-        "individual", "ppaResponsible", "managingResponsible", "climate"},
+        "individual", "ppaResponsible", "managingResponsible", "climate", "justification", "description"},
       new Class[] {Long.class, String.class, String.class, String.class, String.class, Integer.class, String.class,
         String.class, String.class, String.class, Integer.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
@@ -400,7 +402,8 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, Long.class, String.class, String.class, String.class, String.class,
-        String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class},
+        String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
+        String.class, String.class},
       0);
     if (!deliverableManager.findAll().isEmpty()) {
       List<Deliverable> deliverables = new ArrayList<>();
@@ -483,7 +486,7 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
         Boolean showCompilance = false;
         String projectID = null;
         String projectTitle = null;
-        String flagships = null, regions = null, status = null, isComplete = "";
+        String flagships = null, regions = null, status = null, isComplete = "", justification = "", description = "";
 
         if (deliverable.getProject() != null) {
           projectID = deliverable.getProject().getId().toString();
@@ -493,8 +496,35 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
           }
         }
 
+        // Justification
+        if (deliverable.getDeliverableInfo() != null) {
+          if (deliverable.getDeliverableInfo().getModificationJustification() != null
+            || !deliverable.getDeliverableInfo().getModificationJustification().isEmpty()) {
+            justification = deliverable.getDeliverableInfo().getModificationJustification();
+          } else {
+            justification = "<Not applicable>";
+          }
+        } else {
+
+          justification = "<Not applicable>";
+        }
+
+        // Description
+        if (deliverable.getDeliverableInfo() != null) {
+          if (deliverable.getDeliverableInfo().getDescription() != null
+            || deliverable.getDeliverableInfo().getDescription().isEmpty()) {
+            description = deliverable.getDeliverableInfo().getDescription();
+          } else {
+            description = "<Not applicable>";
+          }
+        } else {
+          description = "<Not applicable>";
+        }
+
         if (deliverable.getProject() != null && deliverable.getProject().getProjectInfo() != null
-          && deliverable.getProject().getProjectInfo().getStatusName() != null) {
+          && deliverable.getProject().getProjectInfo().getStatusName() != null)
+
+        {
           status = deliverable.getProject().getProjectInfo().getStatusName();
         }
 
@@ -1448,12 +1478,20 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
               if (responsible.getProjectPartner().getInstitution() != null) {
                 if (responsible.getProjectPartner().getInstitution().getAcronym() != null
                   && !responsible.getProjectPartner().getInstitution().getAcronym().isEmpty()) {
-                  ppaResponsibleList.add("<span style='font-family: Segoe UI;color:#ff0000;font-size: 10'>"
-                    + responsible.getProjectPartner().getInstitution().getAcronym() + "</span>");
+                  ppaResponsibleList.add("*" + responsible.getProjectPartner().getInstitution().getAcronym());
                   responsibleAcronym = responsible.getProjectPartner().getInstitution().getAcronym();
+
+                  /*
+                   * ppaResponsibleList.add("<span style='font-family: Segoe UI;color:#ff0000;font-size: 10'>"
+                   * + responsible.getProjectPartner().getInstitution().getAcronym() + "</span>");
+                   * responsibleAcronym = responsible.getProjectPartner().getInstitution().getAcronym();
+                   */
                 } else {
-                  ppaResponsibleList.add("<span style='font-family: Segoe UI;color:#ff0000;font-size: 10'>"
-                    + responsible.getProjectPartner().getInstitution().getName() + "</span>");
+                  /*
+                   * ppaResponsibleList.add("<span style='font-family: Segoe UI;color:#ff0000;font-size: 10'>"
+                   * + responsible.getProjectPartner().getInstitution().getName() + "</span>");
+                   */
+                  ppaResponsibleList.add("*" + responsible.getProjectPartner().getInstitution().getName());
                   responsibleName = responsible.getProjectPartner().getInstitution().getName();
                 }
               }
@@ -1464,20 +1502,27 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
             }
 
           } else if (responsible.getProjectPartnerPerson() != null) {
-            individual += "<span style='font-family: Segoe UI;color:#ff0000;font-size: 10'>";
+            // individual += "<span style='font-family: Segoe UI;color:#ff0000;font-size: 10'>";
+            individual += "*";
             ProjectPartnerPerson responsibleppp = responsible.getProjectPartnerPerson();
             if (responsibleppp.getProjectPartner() != null) {
               if (responsibleppp.getProjectPartner().getInstitution() != null) {
                 if (responsibleppp.getProjectPartner().getInstitution().getAcronym() != null
                   && !responsibleppp.getProjectPartner().getInstitution().getAcronym().isEmpty()) {
                   individual += responsibleppp.getProjectPartner().getInstitution().getAcronym() + " - ";
-                  ppaResponsible += "<span style='font-family: Segoe UI;color:#ff0000;font-size: 10'>"
-                    + responsibleppp.getProjectPartner().getInstitution().getAcronym() + "</span>";
+                  /*
+                   * ppaResponsible += "<span style='font-family: Segoe UI;color:#ff0000;font-size: 10'>"
+                   * + responsibleppp.getProjectPartner().getInstitution().getAcronym() + "</span>";
+                   */
+                  ppaResponsible += "*" + responsibleppp.getProjectPartner().getInstitution().getAcronym();
                   responsibleAcronym = responsibleppp.getProjectPartner().getInstitution().getAcronym();
                 } else {
                   individual += responsibleppp.getProjectPartner().getInstitution().getName() + " - ";
-                  ppaResponsible += "<span style='font-family: Segoe UI;color:#ff0000;font-size: 10'>"
-                    + responsibleppp.getProjectPartner().getInstitution().getName() + "</span>";
+                  /*
+                   * ppaResponsible += "<span style='font-family: Segoe UI;color:#ff0000;font-size: 10'>"
+                   * + responsibleppp.getProjectPartner().getInstitution().getName() + "</span>";
+                   */
+                  ppaResponsible += "*" + responsibleppp.getProjectPartner().getInstitution().getName();
                   responsibleName = responsibleppp.getProjectPartner().getInstitution().getName();
                 }
               }
@@ -1491,7 +1536,7 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
               individual += " (" + responsible.getPartnerDivision().getAcronym() + ") ";// All individual resposible
             }
 
-            individual += "</span>";
+            // individual += "</span>";
           }
         }
 
@@ -1513,7 +1558,7 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
             }
             if (deliverablePartnership.getProjectPartnerPerson() != null) {
               if (individual.isEmpty()) {
-                individual += "<span style='font-family: Segoe UI;font-size: 10'>";
+                // individual += "<span style='font-family: Segoe UI;font-size: 10'>";
               }
 
               ProjectPartnerPerson responsibleppp = deliverablePartnership.getProjectPartnerPerson();
@@ -1542,7 +1587,7 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
                 && !deliverablePartnership.getPartnerDivision().getAcronym().isEmpty()) {
                 individual += " (" + deliverablePartnership.getPartnerDivision().getAcronym() + ")";
               }
-              individual += "</span>";
+              // individual += "</span>";
             } else {
 
               // get deliverable information from deliverablePartnership
@@ -1580,9 +1625,11 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
         LinkedHashSet<Institution> managingResponsibleList = new LinkedHashSet<>();
         for (String ppaOher : ppaResponsibleList) {
           if (ppaResponsible.isEmpty()) {
-            ppaResponsible += "<span style='font-family: Segoe UI;font-size: 10'>" + ppaOher + "</span>";
+            // ppaResponsible += "<span style='font-family: Segoe UI;font-size: 10'>" + ppaOher + "</span>";
+            ppaResponsible += ppaOher;
           } else {
-            ppaResponsible += ", <span style='font-family: Segoe UI;font-size: 10'>" + ppaOher + "</span>";
+            ppaResponsible += ppaOher;
+            // ppaResponsible += ", <span style='font-family: Segoe UI;font-size: 10'>" + ppaOher + "</span>";
           }
         }
 
@@ -1657,11 +1704,17 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
           }
 
           if (managingResponsible.isEmpty()) {
-            managingResponsible +=
-              "<span style='font-family: Segoe UI;font-size: 10" + color + "'>" + institution + "</span>";
+            /*
+             * managingResponsible +=
+             * "<span style='font-family: Segoe UI;font-size: 10" + color + "'>" + institution + "</span>";
+             */
+            managingResponsible += "*" + institution;
           } else {
-            managingResponsible +=
-              ", <span style='font-family: Segoe UI;font-size: 10" + color + "'>" + institution + "</span>";
+            /*
+             * managingResponsible +=
+             * ", <span style='font-family: Segoe UI;font-size: 10" + color + "'>" + institution + "</span>";
+             */
+            managingResponsible += "*" + institution;
           }
         }
         if (managingResponsible.isEmpty()) {
@@ -1693,7 +1746,7 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
           disseminated, restrictedAccess, delivLicenseModifications, volume, issue, pages, journal, journalIndicator,
           acknowledge, flContrib, projectID, projectTitle, flagships, regions, othersResponsibles, newExceptedFlag,
           phaseID, gender, youth, cap, geographicScope, region, country, status, isComplete, individual, ppaResponsible,
-          managingResponsible, climate});
+          managingResponsible, climate, justification, description});
       }
     }
     return model;
