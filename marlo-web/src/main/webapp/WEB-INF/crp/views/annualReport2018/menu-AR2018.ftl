@@ -41,18 +41,13 @@
 ]/]
 
 
-[#assign submission = false /]
-[#assign canSubmit = false /]
-[#attempt]
-  [#assign completed = (action.isCompleteReportSynthesis2018(synthesisID))!false /]
-[#recover]
-  [#assign completed = false /]
-[/#attempt]
-
+[#assign submission = (action.isAr2018Submitted(synthesisID))!false /]
+[#assign canSubmit = (action.hasPersmissionSubmitAR2018(synthesisID))!false /]
 [#assign canUnSubmit = false /]
-
 [#assign sectionsForChecking = [] /]
 [#assign currentMenuItem = {} /]
+[#assign sectionsChecked = 0 /]
+
 
 [#-- Menu--]
 <nav id="secondaryMenu" class="">
@@ -71,6 +66,8 @@
     [/#list]
   </ul> 
 </nav>
+
+[#assign completed = (sectionsChecked == sectionsForChecking?size) /]
 
 <div class="clearfix"></div>
 
@@ -143,7 +140,7 @@
 
 [#macro menuItem item]
   [#local itemRequired = (((item.onlyPMU)!false) && PMU) || (((item.onlyFlagship)!false) && flagship) || (!((item.onlyFlagship)!false) && !((item.onlyPMU)!false)) /]
-  [#local submitStatus = (action.getReportSynthesisSectionStatus(item.action, synthesisID))!false /]
+  [#local submitStatus = (action.getReportSynthesis2018SectionStatus(item.action, synthesisID))!false /]
   [#local hasDraft = (action.getAutoSaveFilePath(reportSynthesis.class.simpleName, item.action, reportSynthesis.id))!false /]
   [#if (item.show)!true ]
     <li id="menu-${item.action}" class="${hasDraft?string('draft', '')} [#if item.slug == currentStage]currentSection[/#if] [#if item.active && itemRequired]${submitStatus?string('submitted','toSubmit')}[/#if] ${(item.active)?string('enabled','disabled')}">
@@ -167,6 +164,9 @@
     [#-- Set current Item --]
     [#if item.slug == currentStage][#assign currentMenuItem = item /][/#if]
     [#-- Set sections for checking --]
-    [#if item.active && itemRequired][#assign sectionsForChecking = sectionsForChecking + ["${item.action}"] /][/#if]
+    [#if item.active && itemRequired]
+      [#if submitStatus][#assign sectionsChecked = sectionsChecked + 1 /][/#if]
+      [#assign sectionsForChecking = sectionsForChecking + ["${item.action}"] /]
+    [/#if]
   [/#if]
 [/#macro]

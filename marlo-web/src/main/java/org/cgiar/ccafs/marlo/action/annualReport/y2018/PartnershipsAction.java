@@ -438,13 +438,6 @@ public class PartnershipsAction extends BaseAction {
       liaisonInstitutionID = reportSynthesisDB.getLiaisonInstitution().getId();
       liaisonInstitution = liaisonInstitutionManager.getLiaisonInstitutionById(liaisonInstitutionID);
 
-      // Fill Flagship Expected Studies
-      // TODO
-      // if (this.isFlagship()) {
-      // this.partnerShipList(phase.getId(), liaisonInstitution);
-      // }
-
-
       Path path = this.getAutoSaveFilePath();
       // Verify if there is a Draft file
       if (path.toFile().exists() && this.getCurrentUser().isAutoSave()) {
