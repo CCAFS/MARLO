@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressInnovation" table="report_synthesis_flagship_progress_innovations" optimistic-lock="none">
+        <id name="id" type="java.lang.Long">
+            <column name="id" />
+            <generator class="identity" />
+        </id>
+        <many-to-one name="modifiedBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
+            <column name="modified_by" />
+        </many-to-one>
+        <many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select" update="false">
+            <column name="created_by" not-null="true" />
+        </many-to-one>
+        <many-to-one name="reportSynthesisFlagshipProgress" class="org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgress" fetch="select">
+            <column name="report_synthesis_flagship_progress_id" not-null="true" />
+        </many-to-one>   
+        <many-to-one name="projectInnovation" class="org.cgiar.ccafs.marlo.data.model.ProjectInnovation" fetch="select">
+            <column name="project_innovation_id" not-null="true" />
+        </many-to-one>      
+        <property name="active" type="boolean">
+            <column name="is_active" not-null="true" />
+        </property>
+        <property name="activeSince" type="timestamp" update="false">
+            <column name="active_since" length="19" not-null="true" />
+        </property>
+        <property name="modificationJustification" type="string">
+            <column name="modification_justification" sql-type="TEXT" />
+        </property>
+    </class>
+</hibernate-mapping>

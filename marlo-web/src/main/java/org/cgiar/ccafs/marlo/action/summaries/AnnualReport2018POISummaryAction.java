@@ -16,10 +16,15 @@
 package org.cgiar.ccafs.marlo.action.summaries;
 
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
+import org.cgiar.ccafs.marlo.data.manager.CrpProgramOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.PowbExpenditureAreasManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectFocusManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndSynthesisIndicatorManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisCrossCgiarCollaborationManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisCrossCuttingDimensionManager;
@@ -29,11 +34,12 @@ import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisExternalPartnershipMana
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFinancialSummaryBudgetManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressMilestoneManager;
+import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisMeliaManager;
+import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisSrfProgressTargetManager;
 import org.cgiar.ccafs.marlo.data.model.CrossCuttingDimensionTableDTO;
 import org.cgiar.ccafs.marlo.data.model.CrpMilestone;
-import org.cgiar.ccafs.marlo.data.model.CrpOutcomeSubIdo;
 import org.cgiar.ccafs.marlo.data.model.CrpPpaPartner;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
@@ -45,30 +51,31 @@ import org.cgiar.ccafs.marlo.data.model.PowbExpenditureAreas;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectBudgetsFlagship;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
-import org.cgiar.ccafs.marlo.data.model.ProjectInnovationInfo;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationGeographicScope;
+import org.cgiar.ccafs.marlo.data.model.ProjectPolicy;
+import org.cgiar.ccafs.marlo.data.model.ProjectPolicyCrossCuttingMarker;
+import org.cgiar.ccafs.marlo.data.model.ProjectPolicyGeographicScope;
+import org.cgiar.ccafs.marlo.data.model.ProjectPolicySubIdo;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
-import org.cgiar.ccafs.marlo.data.model.RepIndSynthesisIndicator;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
-import org.cgiar.ccafs.marlo.data.model.ReportSynthesisCrossCgiarCollaboration;
-import org.cgiar.ccafs.marlo.data.model.ReportSynthesisCrossCuttingAssetDTO;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisCrossCuttingDimension;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisCrossCuttingInnovationDTO;
-import org.cgiar.ccafs.marlo.data.model.ReportSynthesisCrpProgressTarget;
-import org.cgiar.ccafs.marlo.data.model.ReportSynthesisExternalPartnership;
-import org.cgiar.ccafs.marlo.data.model.ReportSynthesisExternalPartnershipDTO;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFinancialSummary;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFinancialSummaryBudget;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgress;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressInnovationDTO;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressMilestone;
-import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFundingUseExpendituryArea;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressOutcome;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressStudy;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressStudyDTO;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFundingUseSummary;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisGovernance;
-import org.cgiar.ccafs.marlo.data.model.ReportSynthesisIndicator;
-import org.cgiar.ccafs.marlo.data.model.ReportSynthesisMeliaEvaluation;
-import org.cgiar.ccafs.marlo.data.model.ReportSynthesisProgramVariance;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisRisk;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisSrfProgressTarget;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.POIField;
 import org.cgiar.ccafs.marlo.utils.POISummary;
@@ -173,7 +180,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
   // Managers
   private PowbExpenditureAreasManager powbExpenditureAreasManager;
   private ReportSynthesisManager reportSynthesisManager;
-  private ReportSynthesisCrpProgressTargetManager reportSynthesisCrpProgressTargetManager;
+  private ReportSynthesisSrfProgressTargetManager reportSynthesisSrfProgressTargetManager;
   private RepIndSynthesisIndicatorManager repIndSynthesisIndicatorManager;
   private ReportSynthesisExternalPartnershipManager reportSynthesisExternalPartnershipManager;
   private ReportSynthesisMeliaManager reportSynthesisMeliaManager;
@@ -184,9 +191,17 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
   private ReportSynthesisCrossCuttingDimensionManager reportSynthesisCrossCuttingDimensionManager;
   private ReportSynthesisCrpProgressManager reportSynthesisCrpProgressManager;
   private CrpProgramManager crpProgramManager;
+  private ProjectPolicyManager projectPolicyManager;
+  private ProjectExpectedStudyManager projectExpectedStudyManager;
+  private ProjectFocusManager projectFocusManager;
+  private ProjectInnovationManager projectInnovationManager;
+  private CrpProgramOutcomeManager crpProgramOutcomeManager;
+  private ReportSynthesisFlagshipProgressOutcomeManager reportSynthesisFlagshipProgressOutcomeManager;
+
 
   // Parameters
   private POISummary poiSummary;
+  private LiaisonInstitution liaisonInstitution;
   private LiaisonInstitution pmuInstitution;
   private ReportSynthesis reportSynthesisPMU;
   private long startTime;
@@ -196,8 +211,12 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
   private DecimalFormat percentageFormat;
   private List<CrpProgram> flagships;
   private List<PowbEvidencePlannedStudyDTO> flagshipPlannedList;
+  private List<ReportSynthesisFlagshipProgressStudyDTO> flagshipPlannedListReport;
   private List<LiaisonInstitution> flagshipLiaisonInstitutions;
   private List<ReportSynthesisCrossCuttingInnovationDTO> flagshipPlannedInnovations;
+  private List<ProjectPolicy> projectPolicies;
+  private List<ProjectExpectedStudy> projectExpectedStudies;
+  private List<ProjectInnovation> projectInnovations;
 
 
   Double totalw1w2 = 0.0, totalw1w2Planned = 0.0, totalCenter = 0.0, grandTotal = 0.0, totalw1w2Actual = 0.0,
@@ -213,13 +232,18 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     ReportSynthesisCrpProgressTargetManager reportSynthesisCrpProgressTargetManager,
     RepIndSynthesisIndicatorManager repIndSynthesisIndicatorManager, ProjectManager projectManager,
     ReportSynthesisExternalPartnershipManager reportSynthesisExternalPartnershipManager,
-    ReportSynthesisMeliaManager reportSynthesisMeliaManager,
+    ProjectPolicyManager projectPolicyManager, ReportSynthesisMeliaManager reportSynthesisMeliaManager,
     ReportSynthesisCrossCgiarCollaborationManager reportSynthesisCrossCgiarCollaborationManager,
     ReportSynthesisFlagshipProgressManager reportSynthesisFlagshipProgressManager,
+    ProjectInnovationManager projectInnovationManager,
     ReportSynthesisFinancialSummaryBudgetManager reportSynthesisFinancialSummaryBudgetManager,
     ReportSynthesisFlagshipProgressMilestoneManager reportSynthesisFlagshipProgressMilestoneManager,
+    ReportSynthesisFlagshipProgressOutcomeManager reportSynthesisFlagshipProgressOutcomeManager,
     ReportSynthesisCrossCuttingDimensionManager reportSynthesisCrossCuttingDimensionManager,
-    ReportSynthesisCrpProgressManager reportSynthesisCrpProgressManager, CrpProgramManager crpProgramManager) {
+    ReportSynthesisCrpProgressManager reportSynthesisCrpProgressManager,
+    ReportSynthesisSrfProgressTargetManager reportSynthesisSrfProgressTargetManager,
+    CrpProgramManager crpProgramManager, ProjectExpectedStudyManager projectExpectedStudyManager,
+    ProjectFocusManager projectFocusManager, CrpProgramOutcomeManager crpProgramOutcomeManager) {
     super(config, crpManager, phaseManager, projectManager);
     document = new XWPFDocument();
     poiSummary = new POISummary();
@@ -227,7 +251,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     percentageFormat = new DecimalFormat("##.##%");
     this.powbExpenditureAreasManager = powbExpenditureAreasManager;
     this.reportSynthesisManager = reportSynthesisManager;
-    this.reportSynthesisCrpProgressTargetManager = reportSynthesisCrpProgressTargetManager;
+    this.reportSynthesisSrfProgressTargetManager = reportSynthesisSrfProgressTargetManager;
     this.repIndSynthesisIndicatorManager = repIndSynthesisIndicatorManager;
     this.reportSynthesisExternalPartnershipManager = reportSynthesisExternalPartnershipManager;
     this.reportSynthesisMeliaManager = reportSynthesisMeliaManager;
@@ -236,8 +260,14 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     this.reportSynthesisFinancialSummaryBudgetManager = reportSynthesisFinancialSummaryBudgetManager;
     this.reportSynthesisFlagshipProgressMilestoneManager = reportSynthesisFlagshipProgressMilestoneManager;
     this.reportSynthesisCrossCuttingDimensionManager = reportSynthesisCrossCuttingDimensionManager;
+    this.projectPolicyManager = projectPolicyManager;
+    this.projectInnovationManager = projectInnovationManager;
     this.reportSynthesisCrpProgressManager = reportSynthesisCrpProgressManager;
     this.crpProgramManager = crpProgramManager;
+    this.projectExpectedStudyManager = projectExpectedStudyManager;
+    this.projectFocusManager = projectFocusManager;
+    this.crpProgramOutcomeManager = crpProgramOutcomeManager;
+    this.reportSynthesisFlagshipProgressOutcomeManager = reportSynthesisFlagshipProgressOutcomeManager;
   }
 
   private void addAdjustmentDescription() {
@@ -263,17 +293,23 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     }
   }
 
+  private void addAlmetricCrp() {
+    if (reportSynthesisPMU != null && reportSynthesisPMU.getReportSynthesisFlagshipProgress() != null
+      && reportSynthesisPMU.getReportSynthesisFlagshipProgress().getAltmetricScore() != null) {
+      String synthesisCrpAltmetric = reportSynthesisPMU.getReportSynthesisFlagshipProgress().getAltmetricScore() != null
+        ? reportSynthesisPMU.getReportSynthesisFlagshipProgress().getAltmetricScore() : "";
+      poiSummary.textParagraph(document.createParagraph(), synthesisCrpAltmetric);
+    }
+  }
+
   private void addCrossCuttingCapacityDevelopment() {
-
     String crossCuttingCapacityDevelopment = "";
-
     if (reportSynthesisPMU != null) {
-
       if (reportSynthesisPMU.getReportSynthesisCrossCuttingDimension() != null) {
         ReportSynthesisCrossCuttingDimension crossCutting =
           reportSynthesisPMU.getReportSynthesisCrossCuttingDimension();
         if (crossCutting != null) {
-          crossCuttingCapacityDevelopment = crossCutting.getCapDev();
+          crossCuttingCapacityDevelopment = crossCutting.getCapDevKeyAchievements();
         }
       }
     }
@@ -281,35 +317,57 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     if (crossCuttingCapacityDevelopment != null && !crossCuttingCapacityDevelopment.isEmpty()) {
       poiSummary.textParagraph(document.createParagraph(), crossCuttingCapacityDevelopment);
     }
+  }
 
+  private void addCrossCuttingClimateChange() {
+    String crossCuttingClimateChange = "";
+    if (reportSynthesisPMU != null) {
+      if (reportSynthesisPMU.getReportSynthesisCrossCuttingDimension() != null) {
+        ReportSynthesisCrossCuttingDimension crossCutting =
+          reportSynthesisPMU.getReportSynthesisCrossCuttingDimension();
+        if (crossCutting != null) {
+          crossCuttingClimateChange = crossCutting.getClimateChangeKeyAchievements();
+        }
+      }
+    }
 
+    if (crossCuttingClimateChange != null && !crossCuttingClimateChange.isEmpty()) {
+      poiSummary.textParagraph(document.createParagraph(), crossCuttingClimateChange);
+    }
   }
 
   private void addCrossCuttingGender() {
 
-    String crossCuttingGenderDescription = "";
-    String crossCuttingGenderLessons = "";
+    String crossCuttingGenderResearchFindings = "";
+    String crossCuttingGenderLearned = "";
+    String crossCuttingGenderProblemsArimes = "";
     if (reportSynthesisPMU != null) {
       // Cross Cutting Gender Info
       if (reportSynthesisPMU.getReportSynthesisCrossCuttingDimension() != null) {
         ReportSynthesisCrossCuttingDimension crossCutting =
           reportSynthesisPMU.getReportSynthesisCrossCuttingDimension();
         if (crossCutting != null) {
-          crossCuttingGenderDescription = crossCutting.getGenderDescription();
-          crossCuttingGenderLessons = crossCutting.getGenderLessons();
+          crossCuttingGenderResearchFindings = crossCutting.getGenderResearchFindings();
+          crossCuttingGenderLearned = crossCutting.getGenderLearned();
+          crossCuttingGenderProblemsArimes = crossCutting.getGenderProblemsArisen();
         }
       }
     }
-
-    if (crossCuttingGenderDescription != null && !crossCuttingGenderDescription.isEmpty()) {
-      poiSummary.textParagraph(document.createParagraph(), crossCuttingGenderDescription);
+    if (crossCuttingGenderResearchFindings != null && !crossCuttingGenderResearchFindings.isEmpty()) {
+      poiSummary.convertHTMLTags(document, crossCuttingGenderResearchFindings);
     }
 
-    if (crossCuttingGenderLessons != null && !crossCuttingGenderLessons.isEmpty()) {
-      poiSummary.textParagraph(document.createParagraph(), crossCuttingGenderLessons);
+    if (crossCuttingGenderLearned != null && !crossCuttingGenderLearned.isEmpty()) {
+      poiSummary.convertHTMLTags(document, crossCuttingGenderLearned);
+
+    }
+
+    if (crossCuttingGenderProblemsArimes != null && !crossCuttingGenderProblemsArimes.isEmpty()) {
+      poiSummary.convertHTMLTags(document, crossCuttingGenderProblemsArimes);
     }
 
   }
+
 
   private void addCrossCuttingIntellectualAssets() {
 
@@ -327,7 +385,8 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     }
 
     if (crossCuttingIntellectualAssets != null && !crossCuttingIntellectualAssets.isEmpty()) {
-      poiSummary.textParagraph(document.createParagraph(), crossCuttingIntellectualAssets);
+      poiSummary.convertHTMLTags(document, crossCuttingIntellectualAssets);
+
     }
 
   }
@@ -348,7 +407,8 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     }
 
     if (crossCuttingOpenData != null && !crossCuttingOpenData.isEmpty()) {
-      poiSummary.textParagraph(document.createParagraph(), crossCuttingOpenData);
+      // poiSummary.textParagraph(document.createParagraph(), crossCuttingOpenData);
+      poiSummary.convertHTMLTags(document, crossCuttingOpenData);
     }
 
   }
@@ -370,15 +430,19 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     }
 
     if (crossCuttingOtherAspects != null && !crossCuttingOtherAspects.isEmpty()) {
-      poiSummary.textParagraph(document.createParagraph(), crossCuttingOtherAspects);
+      // poiSummary.textParagraph(document.createParagraph(), crossCuttingOtherAspects);
+      poiSummary.convertHTMLTags(document, crossCuttingOtherAspects);
+
     }
 
   }
 
   private void addCrossCuttingYouth() {
 
-    String crossCuttingYouthDescription = "";
-    String crossCuttingYouthLessons = "";
+    String crossCuttingYouthContribution = "";
+    String crossCuttingYouthResearchFindings = "";
+    String crossCuttingYouthLearned = "";
+    String crossCuttingYouthProblemsArisen = "";
     if (reportSynthesisPMU != null) {
 
       // Cross Cutting Gender Info
@@ -386,32 +450,35 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         ReportSynthesisCrossCuttingDimension crossCutting =
           reportSynthesisPMU.getReportSynthesisCrossCuttingDimension();
         if (crossCutting != null) {
-          crossCuttingYouthDescription = crossCutting.getYouthDescription();
-          crossCuttingYouthLessons = crossCutting.getYouthLessons();
+          crossCuttingYouthContribution = crossCutting.getYouthContribution();
+          crossCuttingYouthResearchFindings = crossCutting.getYouthResearchFindings();
+          crossCuttingYouthLearned = crossCutting.getYouthLearned();
+          crossCuttingYouthProblemsArisen = crossCutting.getYouthProblemsArisen();
         }
       }
     }
-
-    if (crossCuttingYouthDescription != null && !crossCuttingYouthDescription.isEmpty()) {
-      poiSummary.textParagraph(document.createParagraph(), crossCuttingYouthDescription);
+    if (crossCuttingYouthContribution != null && !crossCuttingYouthContribution.isEmpty()) {
+      poiSummary.convertHTMLTags(document, crossCuttingYouthContribution);
     }
-
-    if (crossCuttingYouthLessons != null && !crossCuttingYouthLessons.isEmpty()) {
-      poiSummary.textParagraph(document.createParagraph(), crossCuttingYouthLessons);
+    if (crossCuttingYouthResearchFindings != null && !crossCuttingYouthResearchFindings.isEmpty()) {
+      poiSummary.convertHTMLTags(document, crossCuttingYouthResearchFindings);
     }
-
+    if (crossCuttingYouthLearned != null && !crossCuttingYouthLearned.isEmpty()) {
+      poiSummary.convertHTMLTags(document, crossCuttingYouthLearned);
+    }
+    if (crossCuttingYouthProblemsArisen != null && !crossCuttingYouthProblemsArisen.isEmpty()) {
+      poiSummary.convertHTMLTags(document, crossCuttingYouthProblemsArisen);
+    }
   }
 
   private void addCrossPartnerships() {
     if (reportSynthesisPMU != null) {
 
-      if (reportSynthesisPMU.getReportSynthesisCrossCgiar() != null
-        && reportSynthesisPMU.getReportSynthesisCrossCgiar().getHighlights() != null) {
-        poiSummary.textParagraph(document.createParagraph(),
-          reportSynthesisPMU.getReportSynthesisCrossCgiar().getHighlights());
+      if (reportSynthesisPMU.getReportSynthesisKeyPartnership() != null
+        && reportSynthesisPMU.getReportSynthesisKeyPartnership().getSummaryCgiar() != null) {
+        poiSummary.convertHTMLTags(document, reportSynthesisPMU.getReportSynthesisKeyPartnership().getSummaryCgiar());
       }
     }
-
   }
 
   private void addCrpProgressOutcomes() {
@@ -419,16 +486,18 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
       && reportSynthesisPMU.getReportSynthesisCrpProgress().getSummaries() != null) {
       String synthesisCrpSummaries = reportSynthesisPMU.getReportSynthesisCrpProgress().getSummaries() != null
         ? reportSynthesisPMU.getReportSynthesisCrpProgress().getSummaries() : "";
-      poiSummary.textParagraph(document.createParagraph(), synthesisCrpSummaries);
+      // poiSummary.textParagraph(document.createParagraph(), synthesisCrpSummaries);
+      poiSummary.convertHTMLTags(document, synthesisCrpSummaries);
     }
   }
 
   private void addExpectedCrp() {
-    if (reportSynthesisPMU != null && reportSynthesisPMU.getReportSynthesisCrpProgress() != null
-      && reportSynthesisPMU.getReportSynthesisCrpProgress().getOverallProgress() != null) {
-      String synthesisCrpDescription = reportSynthesisPMU.getReportSynthesisCrpProgress().getOverallProgress() != null
-        ? reportSynthesisPMU.getReportSynthesisCrpProgress().getOverallProgress() : "";
-      poiSummary.textParagraph(document.createParagraph(), synthesisCrpDescription);
+    if (reportSynthesisPMU != null && reportSynthesisPMU.getReportSynthesisSrfProgress() != null
+      && reportSynthesisPMU.getReportSynthesisSrfProgress().getSummary() != null) {
+      String synthesisCrpDescription = reportSynthesisPMU.getReportSynthesisSrfProgress().getSummary() != null
+        ? reportSynthesisPMU.getReportSynthesisSrfProgress().getSummary() : "";
+      // poiSummary.textParagraph(document.createParagraph(), synthesisCrpDescription);
+      poiSummary.convertHTMLTags(document, synthesisCrpDescription);
     }
   }
 
@@ -438,17 +507,16 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
 
     if (reportSynthesisPMU != null) {
 
-      if (reportSynthesisPMU.getReportSynthesisExternalPartnership() != null) {
-        ReportSynthesisExternalPartnership externalPartnership =
-          reportSynthesisPMU.getReportSynthesisExternalPartnership();
-        if (externalPartnership != null) {
-          keyExternal = externalPartnership.getHighlights();
-        }
+      if (reportSynthesisPMU.getReportSynthesisKeyPartnership() != null
+        && reportSynthesisPMU.getReportSynthesisKeyPartnership().getSummary() != null) {
+        keyExternal = reportSynthesisPMU.getReportSynthesisKeyPartnership().getSummary();
       }
     }
 
     if (keyExternal != null && !keyExternal.isEmpty()) {
-      poiSummary.textParagraph(document.createParagraph(), keyExternal);
+      // poiSummary.textParagraph(document.createParagraph(), keyExternal);
+      poiSummary.convertHTMLTags(document, keyExternal);
+
     }
 
   }
@@ -468,25 +536,28 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     }
 
     if (financialSummaryNarrative != null && !financialSummaryNarrative.isEmpty()) {
-      poiSummary.textParagraph(document.createParagraph(), financialSummaryNarrative);
+      // poiSummary.textParagraph(document.createParagraph(), financialSummaryNarrative);
+      poiSummary.convertHTMLTags(document, financialSummaryNarrative);
+
     }
   }
 
+
   private void addFundingSummarize() {
     String brieflySummarize = "";
-
     if (reportSynthesisPMU != null) {
-
       if (reportSynthesisPMU.getReportSynthesisFundingUseSummary() != null) {
         ReportSynthesisFundingUseSummary funding = reportSynthesisPMU.getReportSynthesisFundingUseSummary();
         if (funding != null) {
-          brieflySummarize = funding.getMainArea();
+          brieflySummarize = funding.getInterestingPoints();
         }
       }
     }
 
     if (brieflySummarize != null && !brieflySummarize.isEmpty()) {
-      poiSummary.textParagraph(document.createParagraph(), brieflySummarize);
+      // poiSummary.textParagraph(document.createParagraph(), brieflySummarize);
+      poiSummary.convertHTMLTags(document, brieflySummarize);
+
     }
   }
 
@@ -494,8 +565,32 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     if (reportSynthesisPMU != null) {
       if (reportSynthesisPMU.getReportSynthesisEfficiency() != null
         && reportSynthesisPMU.getReportSynthesisEfficiency().getDescription() != null) {
-        poiSummary.textParagraph(document.createParagraph(),
-          reportSynthesisPMU.getReportSynthesisEfficiency().getDescription());
+        // poiSummary.textParagraph(document.createParagraph(),
+        // reportSynthesisPMU.getReportSynthesisEfficiency().getDescription());
+        poiSummary.convertHTMLTags(document, reportSynthesisPMU.getReportSynthesisEfficiency().getDescription());
+
+      }
+    }
+  }
+
+  public void addIntellectualAssets() {
+    if (reportSynthesisPMU != null) {
+      if (reportSynthesisPMU.getReportSynthesisIntellectualAsset() != null) {
+
+
+        if (reportSynthesisPMU.getReportSynthesisIntellectualAsset().getManaged() != null) {
+          poiSummary.convertHTMLTags(document, this.getText("summaries.annualReport2018.effectiveness.intellectual1"));
+          poiSummary.convertHTMLTags(document, reportSynthesisPMU.getReportSynthesisIntellectualAsset().getManaged());
+        }
+        if (reportSynthesisPMU.getReportSynthesisIntellectualAsset().getPatents() != null) {
+          poiSummary.convertHTMLTags(document, this.getText("summaries.annualReport2018.effectiveness.intellectual2"));
+          poiSummary.convertHTMLTags(document, reportSynthesisPMU.getReportSynthesisIntellectualAsset().getPatents());
+        }
+        if (reportSynthesisPMU.getReportSynthesisIntellectualAsset().getCriticalIssues() != null) {
+          poiSummary.convertHTMLTags(document, this.getText("summaries.annualReport2018.effectiveness.intellectual3"));
+          poiSummary.convertHTMLTags(document,
+            reportSynthesisPMU.getReportSynthesisIntellectualAsset().getCriticalIssues());
+        }
       }
     }
   }
@@ -528,7 +623,9 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     }
 
     if (managementGovernanceDescription != null && !managementGovernanceDescription.isEmpty()) {
-      poiSummary.textParagraph(document.createParagraph(), managementGovernanceDescription);
+      // poiSummary.textParagraph(document.createParagraph(), managementGovernanceDescription);
+      poiSummary.convertHTMLTags(document, managementGovernanceDescription);
+
     }
   }
 
@@ -547,7 +644,27 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     }
 
     if (managementRiskBrief != null && !managementRiskBrief.isEmpty()) {
-      poiSummary.textParagraph(document.createParagraph(), managementRiskBrief);
+      // poiSummary.textParagraph(document.createParagraph(), managementRiskBrief);
+      poiSummary.convertHTMLTags(document, managementRiskBrief);
+    }
+  }
+
+  private void addNarrativeSection() {
+    if (reportSynthesisPMU != null && reportSynthesisPMU.getReportSynthesisNarrative() != null
+      && reportSynthesisPMU.getReportSynthesisNarrative().getNarrative() != null) {
+      String narrative = reportSynthesisPMU.getReportSynthesisNarrative().getNarrative();
+      // poiSummary.textParagraph(document.createParagraph(), synthesisCrpDescription);
+      poiSummary.convertHTMLTags(document, narrative);
+    }
+  }
+
+  private void addOverallProgressCrp() {
+    if (reportSynthesisPMU != null && reportSynthesisPMU.getReportSynthesisFlagshipProgress() != null
+      && reportSynthesisPMU.getReportSynthesisFlagshipProgress().getOverallProgress() != null) {
+      String synthesisCrpOveral = reportSynthesisPMU.getReportSynthesisFlagshipProgress().getOverallProgress() != null
+        ? reportSynthesisPMU.getReportSynthesisFlagshipProgress().getOverallProgress() : "";
+      // poiSummary.textParagraph(document.createParagraph(), synthesisCrpOveral);
+      poiSummary.convertHTMLTags(document, synthesisCrpOveral);
     }
   }
 
@@ -568,35 +685,77 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     }
     poiSummary.textParagraph(document.createParagraph(),
       this.getText("summaries.annualReport.participantingCenters") + ": " + participantingCenters + ":");
+    poiSummary.convertHTMLTags(document, participantingCenters);
+
+  }
+
+  private void addProgressFlagshipCrp() {
+    if (reportSynthesisPMU != null && reportSynthesisPMU.getReportSynthesisFlagshipProgress() != null
+      && reportSynthesisPMU.getReportSynthesisFlagshipProgress().getProgressByFlagships() != null) {
+      String synthesisCrpProgress =
+        reportSynthesisPMU.getReportSynthesisFlagshipProgress().getProgressByFlagships() != null
+          ? reportSynthesisPMU.getReportSynthesisFlagshipProgress().getProgressByFlagships() : "";
+      // poiSummary.textParagraph(document.createParagraph(), synthesisCrpProgress);
+      poiSummary.convertHTMLTags(document, synthesisCrpProgress);
+    }
   }
 
   public void addReportSynthesisMelia() {
     if (reportSynthesisPMU != null) {
       if (reportSynthesisPMU.getReportSynthesisMelia() != null
         && reportSynthesisPMU.getReportSynthesisMelia().getSummary() != null) {
-        poiSummary.textParagraph(document.createParagraph(), reportSynthesisPMU.getReportSynthesisMelia().getSummary());
+        // poiSummary.textParagraph(document.createParagraph(),
+        // reportSynthesisPMU.getReportSynthesisMelia().getSummary());
+        poiSummary.convertHTMLTags(document, reportSynthesisPMU.getReportSynthesisMelia().getSummary());
+
       }
     }
   }
 
   private void addVariancePlanned() {
 
-    String variancePlanned = "";
+    String expanded = "";
+    String cutBack = "";
+    String direction = "";
 
     if (reportSynthesisPMU != null) {
 
-      if (reportSynthesisPMU.getReportSynthesisProgramVariance() != null) {
-        ReportSynthesisProgramVariance programVariance = reportSynthesisPMU.getReportSynthesisProgramVariance();
-        if (programVariance != null) {
-          variancePlanned = programVariance.getDescription();
-        }
+      if (reportSynthesisPMU != null && reportSynthesisPMU.getReportSynthesisFlagshipProgress() != null
+        && reportSynthesisPMU.getReportSynthesisFlagshipProgress().getExpandedResearchAreas() != null) {
+        expanded = reportSynthesisPMU.getReportSynthesisFlagshipProgress().getExpandedResearchAreas() != null
+          ? reportSynthesisPMU.getReportSynthesisFlagshipProgress().getExpandedResearchAreas() : "";
+      }
+
+      if (reportSynthesisPMU != null && reportSynthesisPMU.getReportSynthesisFlagshipProgress() != null
+        && reportSynthesisPMU.getReportSynthesisFlagshipProgress().getDroppedResearchLines() != null) {
+        cutBack = reportSynthesisPMU.getReportSynthesisFlagshipProgress().getDroppedResearchLines() != null
+          ? reportSynthesisPMU.getReportSynthesisFlagshipProgress().getDroppedResearchLines() : "";
+      }
+
+      if (reportSynthesisPMU != null && reportSynthesisPMU.getReportSynthesisFlagshipProgress() != null
+        && reportSynthesisPMU.getReportSynthesisFlagshipProgress().getChangedDirection() != null) {
+        direction = reportSynthesisPMU.getReportSynthesisFlagshipProgress().getChangedDirection() != null
+          ? reportSynthesisPMU.getReportSynthesisFlagshipProgress().getChangedDirection() : "";
       }
     }
 
-    if (variancePlanned != null && !variancePlanned.isEmpty()) {
-      poiSummary.textParagraph(document.createParagraph(), variancePlanned);
+    if (expanded != null && !expanded.isEmpty()) {
+      poiSummary.textParagraph(document.createParagraph(),
+        this.getText("summaries.annualReport2018.keyResults.variance1"));
+      poiSummary.convertHTMLTags(document, expanded);
     }
 
+    if (cutBack != null && !cutBack.isEmpty()) {
+      poiSummary.textParagraph(document.createParagraph(),
+        this.getText("summaries.annualReport2018.keyResults.variance2"));
+      poiSummary.convertHTMLTags(document, cutBack);
+    }
+
+    if (direction != null && !direction.isEmpty()) {
+      poiSummary.textParagraph(document.createParagraph(),
+        this.getText("summaries.annualReport2018.keyResults.variance3"));
+      poiSummary.convertHTMLTags(document, direction);
+    }
   }
 
   public void createPageFooter() {
@@ -622,14 +781,15 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     }
   }
 
-
-  public void createTableA1() {
+  public void createTable1() {
     List<List<POIField>> headers = new ArrayList<>();
+    String blackColor = "000000";
 
-    POIField[] sHeader =
-      {new POIField(this.getText("annualReport.crpProgress.selectSLOTarget"), ParagraphAlignment.LEFT),
-        new POIField(this.getText("annualReport.crpProgress.summaryNewEvidence.readText"), ParagraphAlignment.LEFT),
-        new POIField(this.getText("annualReport.crpProgress.additionalContribution"), ParagraphAlignment.LEFT),};
+    POIField[] sHeader = {
+      new POIField(this.getText("annualReport.crpProgress.selectSLOTarget"), ParagraphAlignment.CENTER, true,
+        blackColor),
+      new POIField(this.getText("summaries.annualReport2018.table1a"), ParagraphAlignment.LEFT, true, blackColor),
+      new POIField(this.getText("summaries.annualReport2018.table1b"), ParagraphAlignment.LEFT, true, blackColor)};
 
     List<POIField> header = Arrays.asList(sHeader);
     headers.add(header);
@@ -645,33 +805,40 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     data = new ArrayList<>();
     // Table A-1 Evidence on Progress
 
-    List<ReportSynthesisCrpProgressTarget> listCrpProgressTargets = reportSynthesisCrpProgressTargetManager
-      .flagshipSynthesis(flagshipLiaisonInstitutions, this.getSelectedPhase().getId());
-    if (listCrpProgressTargets != null && !listCrpProgressTargets.isEmpty()) {
-      for (ReportSynthesisCrpProgressTarget reportSynthesisCrpProgressTarget : listCrpProgressTargets.stream()
+    List<ReportSynthesisSrfProgressTarget> listSrfProgressTargets = new ArrayList<>();
+    try {
+      listSrfProgressTargets = reportSynthesisSrfProgressTargetManager.findAll().stream().filter(t -> t.isActive())
+        .collect(Collectors.toList());
+    } catch (Exception e) {
+      System.out.println(e);
+    }
+    if (listSrfProgressTargets != null && !listSrfProgressTargets.isEmpty()
+      && reportSynthesisPMU.getReportSynthesisSrfProgress() != null) {
+      listSrfProgressTargets = listSrfProgressTargets.stream().filter(l -> l.getReportSynthesisSrfProgress().getId()
+        .equals(reportSynthesisPMU.getReportSynthesisSrfProgress().getId())).collect(Collectors.toList());
+      for (ReportSynthesisSrfProgressTarget reportSynthesisSrfProgressTarget : listSrfProgressTargets.stream()
         .filter(c -> c.getSrfSloIndicatorTarget().getTargetsIndicator() != null)
         .sorted((c1, c2) -> c1.getSrfSloIndicatorTarget().getTargetsIndicator()
           .compareTo(c2.getSrfSloIndicatorTarget().getTargetsIndicator()))
         .collect(Collectors.toList())) {
         String sloTarget = "", briefSummaries = "", additionalContribution = "";
-        if (reportSynthesisCrpProgressTarget.getSrfSloIndicatorTarget() != null) {
-          if (reportSynthesisCrpProgressTarget.getSrfSloIndicatorTarget().getTargetsIndicator() != null
-            && !reportSynthesisCrpProgressTarget.getSrfSloIndicatorTarget().getTargetsIndicator().isEmpty()) {
-            sloTarget = reportSynthesisCrpProgressTarget.getSrfSloIndicatorTarget().getTargetsIndicator();
+        if (reportSynthesisSrfProgressTarget.getSrfSloIndicatorTarget() != null) {
+          if (reportSynthesisSrfProgressTarget.getSrfSloIndicatorTarget().getTargetsIndicator() != null
+            && !reportSynthesisSrfProgressTarget.getSrfSloIndicatorTarget().getTargetsIndicator().isEmpty()) {
+            sloTarget = reportSynthesisSrfProgressTarget.getSrfSloIndicatorTarget().getTargetsIndicator();
           }
-          if (reportSynthesisCrpProgressTarget.getSrfSloIndicatorTarget().getNarrative() != null
-            && !reportSynthesisCrpProgressTarget.getSrfSloIndicatorTarget().getNarrative().isEmpty()) {
-            sloTarget += " " + reportSynthesisCrpProgressTarget.getSrfSloIndicatorTarget().getNarrative();
+          if (reportSynthesisSrfProgressTarget.getSrfSloIndicatorTarget().getNarrative() != null
+            && !reportSynthesisSrfProgressTarget.getSrfSloIndicatorTarget().getNarrative().isEmpty()) {
+            sloTarget += " " + reportSynthesisSrfProgressTarget.getSrfSloIndicatorTarget().getNarrative();
           }
         }
 
-        briefSummaries = reportSynthesisCrpProgressTarget.getBirefSummary() != null
-          ? reportSynthesisCrpProgressTarget.getBirefSummary() : "";
-        additionalContribution = reportSynthesisCrpProgressTarget.getAdditionalContribution() != null
-          ? reportSynthesisCrpProgressTarget.getAdditionalContribution() : "";
+        briefSummaries = reportSynthesisSrfProgressTarget.getBirefSummary() != null
+          ? reportSynthesisSrfProgressTarget.getBirefSummary() : "";
+        additionalContribution = reportSynthesisSrfProgressTarget.getAdditionalContribution() != null
+          ? reportSynthesisSrfProgressTarget.getAdditionalContribution() : "";
 
         Boolean bold = false;
-        String blackColor = "000000";
         String blueColor = "000099";
         POIField[] sData = {new POIField(sloTarget, ParagraphAlignment.LEFT, bold, blackColor),
           new POIField(briefSummaries, ParagraphAlignment.LEFT, bold, blueColor),
@@ -681,8 +848,775 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
       }
     }
 
-    poiSummary.textTable(document, headers, datas, true, "tableA1AnnualReport");
+    poiSummary.textTable(document, headers, datas, true, "tableA1AnnualReport2018");
   }
+
+  private void createTable10() {
+    List<List<POIField>> headers = new ArrayList<>();
+    List<List<POIField>> datas = new ArrayList<>();
+    List<POIField> data;
+    POIField[] sHeader = {
+      new POIField(
+        this.getText("summaries.annualReport2018.table10Title1", new String[] {String.valueOf(this.getSelectedYear())}),
+        ParagraphAlignment.LEFT),
+      new POIField(this.getText("summaries.annualReport2018.table10Title2"), ParagraphAlignment.LEFT),
+      new POIField(this.getText("summaries.annualReport2018.table10Title3"), ParagraphAlignment.LEFT, true, "839B49"),
+      new POIField(this.getText("summaries.annualReport2018.table10Title4"), ParagraphAlignment.LEFT)};
+    List<POIField> header = Arrays.asList(sHeader);
+    headers.add(header);
+
+    if (flagshipPlannedList != null && !flagshipPlannedList.isEmpty()) {
+      // for (int i = 0; i < flagshipPlannedList.size(); i++) {
+      String studies = "", status = "", comments = "";
+
+      POIField[] sData =
+        {new POIField(studies, ParagraphAlignment.LEFT), new POIField(status, ParagraphAlignment.CENTER),
+          new POIField(comments, ParagraphAlignment.LEFT), new POIField(comments, ParagraphAlignment.LEFT)};
+      data = Arrays.asList(sData);
+      datas.add(data);
+      // }
+    }
+
+    poiSummary.textTable(document, headers, datas, false, "table3AnnualReport2018");
+  }
+
+  private void createTable11() {
+    List<List<POIField>> headers = new ArrayList<>();
+    List<List<POIField>> datas = new ArrayList<>();
+    List<POIField> data;
+    POIField[] sHeader = {
+      new POIField(
+        this.getText("summaries.annualReport2018.table11Title1", new String[] {String.valueOf(this.getSelectedYear())}),
+        ParagraphAlignment.LEFT),
+      new POIField(this.getText("summaries.annualReport2018.table11Title2"), ParagraphAlignment.CENTER, true, "000000"),
+      new POIField(this.getText("summaries.annualReport2018.table11Title3"), ParagraphAlignment.CENTER, true, "76923C"),
+      new POIField(this.getText("summaries.annualReport2018.table11Title4"), ParagraphAlignment.CENTER, true, "000000"),
+      new POIField(this.getText("summaries.annualReport2018.table11Title5"), ParagraphAlignment.CENTER, true, "000000"),
+      new POIField(this.getText("summaries.annualReport2018.table11Title6"), ParagraphAlignment.CENTER, true, "76923C"),
+      new POIField(this.getText("summaries.annualReport2018.table11Title7"), ParagraphAlignment.CENTER, true, "76923C"),
+      new POIField(this.getText("summaries.annualReport2018.table11Title8"), ParagraphAlignment.CENTER, true,
+        "000000")};
+    List<POIField> header = Arrays.asList(sHeader);
+    headers.add(header);
+
+    if (flagshipPlannedList != null && !flagshipPlannedList.isEmpty()) {
+      // for (int i = 0; i < flagshipPlannedList.size(); i++) {
+      String name = "", recomendation = "", text = "", status = "", actions = "", whom = "", when = "", comments = "";
+
+      POIField[] sData = {new POIField(name, ParagraphAlignment.LEFT, false, "000000"),
+        new POIField(recomendation, ParagraphAlignment.LEFT, false, "000000"),
+        new POIField(text, ParagraphAlignment.LEFT, false, "000000"),
+        new POIField(status, ParagraphAlignment.LEFT, false, "000000"),
+        new POIField(actions, ParagraphAlignment.LEFT, false, "000000"),
+        new POIField(whom, ParagraphAlignment.LEFT, false, "000000"),
+        new POIField(when, ParagraphAlignment.LEFT, false, "000000"),
+        new POIField(comments, ParagraphAlignment.LEFT, false, "000000")};
+      data = Arrays.asList(sData);
+      datas.add(data);
+      // }
+    }
+
+    poiSummary.textTable(document, headers, datas, false, "table3AnnualReport2018");
+  }
+
+  private void createTable12() {
+    List<List<POIField>> headers = new ArrayList<>();
+    List<List<POIField>> datas = new ArrayList<>();
+    List<POIField> data;
+    POIField[] sHeader = {
+      new POIField(
+        this.getText("summaries.annualReport2018.table12Title1", new String[] {String.valueOf(this.getSelectedYear())}),
+        ParagraphAlignment.LEFT),
+      new POIField(this.getText("summaries.annualReport2018.table12Title2"), ParagraphAlignment.LEFT)};
+    List<POIField> header = Arrays.asList(sHeader);
+    headers.add(header);
+
+    if (flagshipPlannedList != null && !flagshipPlannedList.isEmpty()) {
+      // for (int i = 0; i < flagshipPlannedList.size(); i++) {
+      String examples = "", area = "";
+
+      POIField[] sData = {new POIField(examples, ParagraphAlignment.LEFT, true, "000000"),
+        new POIField(area, ParagraphAlignment.LEFT, true, "0000")};
+      data = Arrays.asList(sData);
+      datas.add(data);
+      // }
+    }
+
+    poiSummary.textTable(document, headers, datas, false, "table3AnnualReport2018");
+  }
+
+  private void createTable13() {
+    try {
+
+      if (reportSynthesisPMU.getReportSynthesisFinancialSummary() != null && reportSynthesisPMU
+        .getReportSynthesisFinancialSummary().getReportSynthesisFinancialSummaryBudgets() != null) {
+        reportSynthesisPMU.getReportSynthesisFinancialSummary()
+          .setBudgets(new ArrayList<>(
+            reportSynthesisPMU.getReportSynthesisFinancialSummary().getReportSynthesisFinancialSummaryBudgets().stream()
+              .filter(t -> t.isActive()).collect(Collectors.toList())));
+      } else {
+        flagshipLiaisonInstitutions.sort(Comparator.comparing(LiaisonInstitution::getAcronym));
+        reportSynthesisPMU.getReportSynthesisFinancialSummary().setBudgets(new ArrayList<>());
+        for (LiaisonInstitution liInstitution : flagshipLiaisonInstitutions) {
+          ReportSynthesisFinancialSummaryBudget financialSummaryBudget = new ReportSynthesisFinancialSummaryBudget();
+          financialSummaryBudget.setLiaisonInstitution(liInstitution);
+          reportSynthesisPMU.getReportSynthesisFinancialSummary().getBudgets().add(financialSummaryBudget);
+        }
+
+        List<PowbExpenditureAreas> expAreas = new ArrayList<>(powbExpenditureAreasManager.findAll().stream()
+          .filter(x -> x.isActive() && !x.getIsExpenditure()).collect(Collectors.toList()));
+        for (PowbExpenditureAreas powbExpenditureAreas : expAreas) {
+          ReportSynthesisFinancialSummaryBudget financialSummaryBudget = new ReportSynthesisFinancialSummaryBudget();
+          financialSummaryBudget.setExpenditureArea(powbExpenditureAreas);
+          reportSynthesisPMU.getReportSynthesisFinancialSummary().getBudgets().add(financialSummaryBudget);
+        }
+      }
+
+      List<ReportSynthesisFinancialSummaryBudget> reportSynthesisFinancialSummaryBudgetList =
+        reportSynthesisPMU.getReportSynthesisFinancialSummary().getBudgets();
+
+      List<List<POIField>> headers = new ArrayList<>();
+      POIField[] sHeader = {new POIField("", ParagraphAlignment.CENTER),
+        new POIField(
+          this.getText("annualReport.financial.tableJ.budget", new String[] {String.valueOf(this.getSelectedYear())})
+            + "*",
+          ParagraphAlignment.CENTER),
+        new POIField("", ParagraphAlignment.CENTER), new POIField("", ParagraphAlignment.CENTER),
+        new POIField(this.getText("annualReport.financial.tableJ.expenditure") + "*", ParagraphAlignment.CENTER),
+        new POIField("", ParagraphAlignment.CENTER), new POIField("", ParagraphAlignment.CENTER),
+        new POIField(this.getText("annualReport.financial.tableJ.difference") + "*", ParagraphAlignment.CENTER),
+        new POIField("", ParagraphAlignment.CENTER), new POIField("", ParagraphAlignment.CENTER),
+        new POIField(this.getText("summaries.annualReport2018.table13Title1"), ParagraphAlignment.CENTER)};
+
+      POIField[] sHeader2 = {new POIField(" ", ParagraphAlignment.CENTER),
+        new POIField(this.getText("financialPlan.tableE.w1w2"), ParagraphAlignment.CENTER),
+        new POIField(this.getText("financialPlan.tableE.w3bilateral"), ParagraphAlignment.CENTER),
+        new POIField(this.getText("financialPlan.tableE.total"), ParagraphAlignment.CENTER),
+        new POIField(this.getText("financialPlan.tableE.w1w2"), ParagraphAlignment.CENTER),
+        new POIField(this.getText("financialPlan.tableE.w3bilateral"), ParagraphAlignment.CENTER),
+        new POIField(this.getText("financialPlan.tableE.total"), ParagraphAlignment.CENTER),
+        new POIField(this.getText("financialPlan.tableE.w1w2"), ParagraphAlignment.CENTER),
+        new POIField(this.getText("financialPlan.tableE.w3bilateral"), ParagraphAlignment.CENTER),
+        new POIField(this.getText("financialPlan.tableE.total"), ParagraphAlignment.CENTER),
+        new POIField(this.getText(""), ParagraphAlignment.CENTER)};
+
+      List<POIField> header = Arrays.asList(sHeader);
+      List<POIField> header2 = Arrays.asList(sHeader2);
+      headers.add(header);
+      headers.add(header2);
+
+      List<List<POIField>> datas = new ArrayList<>();
+      List<POIField> data;
+
+      double totalW1w2Difference = 0.0, totalW3Difference = 0.0, grandTotalDifference = 0.0;
+      if (reportSynthesisFinancialSummaryBudgetList != null && !reportSynthesisFinancialSummaryBudgetList.isEmpty()) {
+
+        for (ReportSynthesisFinancialSummaryBudget reportSynthesisFinancialSummaryBudget : reportSynthesisFinancialSummaryBudgetList) {
+
+          String category = "", comments = "";
+          Double w1w2Planned = 0.0, w3Planned = 0.0, w1w2Actual = 0.0, w3Actual = 0.0, totalPlanned = 0.0,
+            totalActual = 0.0, w1w2Difference = 0.0, w3Difference = 0.0, totalDifference = 0.0;
+
+          /** Getting category name **/
+          if (reportSynthesisFinancialSummaryBudget.getLiaisonInstitution() != null) {
+            category = reportSynthesisFinancialSummaryBudget.getLiaisonInstitution().getComposedName();
+          } else if (reportSynthesisFinancialSummaryBudget.getExpenditureArea().getExpenditureArea() != null) {
+            category = reportSynthesisFinancialSummaryBudget.getExpenditureArea().getExpenditureArea();
+          }
+          if (reportSynthesisFinancialSummaryBudget.getW1Planned() != null) {
+            w1w2Planned = reportSynthesisFinancialSummaryBudget.getW1Planned();
+          }
+
+          if (reportSynthesisFinancialSummaryBudget.getW3Planned() != null) {
+            w3Planned = reportSynthesisFinancialSummaryBudget.getW3Planned()
+              + reportSynthesisFinancialSummaryBudget.getBilateralPlanned();
+          }
+
+          totalPlanned = w1w2Planned + w3Planned;
+          if (reportSynthesisFinancialSummaryBudget.getW1Actual() != null) {
+            w1w2Actual = reportSynthesisFinancialSummaryBudget.getW1Actual();
+          }
+
+          if (reportSynthesisFinancialSummaryBudget.getW3Actual() != null) {
+            w3Actual = reportSynthesisFinancialSummaryBudget.getW3Actual()
+              + reportSynthesisFinancialSummaryBudget.getBilateralActual();
+          }
+
+          if (reportSynthesisFinancialSummaryBudget.getComments() != null) {
+            comments = reportSynthesisFinancialSummaryBudget.getComments();
+          }
+          totalActual = w1w2Actual + w3Actual;
+
+          w1w2Difference = w1w2Planned - w1w2Actual;
+          w3Difference = w3Planned - w3Actual;
+          totalDifference = totalPlanned - totalActual;
+
+          totalw1w2Planned += w1w2Planned;
+          totalW3Planned += w3Planned;
+          grandTotalPlanned += totalPlanned;
+
+          totalw1w2Actual += w1w2Actual;
+          totalW3Actual += w3Actual;
+          grandTotalActual += totalActual;
+
+          totalW1w2Difference += w1w2Difference;
+          totalW3Difference += w3Difference;
+          grandTotalDifference += totalDifference;
+
+          POIField[] sData = {new POIField(category, ParagraphAlignment.CENTER),
+            new POIField(currencyFormat.format(round(w1w2Planned / 1000, 2)), ParagraphAlignment.CENTER),
+            new POIField(currencyFormat.format(round(w3Planned / 1000, 2)), ParagraphAlignment.CENTER),
+            new POIField(currencyFormat.format(round(totalPlanned / 1000, 2)), ParagraphAlignment.CENTER),
+            new POIField(currencyFormat.format(round(w1w2Actual / 1000, 2)), ParagraphAlignment.CENTER),
+            new POIField(currencyFormat.format(round(w3Actual / 1000, 2)), ParagraphAlignment.CENTER),
+            new POIField(currencyFormat.format(round(totalActual / 1000, 2)), ParagraphAlignment.CENTER),
+            new POIField(currencyFormat.format(round(w1w2Difference / 1000, 2)), ParagraphAlignment.CENTER),
+            new POIField(currencyFormat.format(round(w3Difference / 1000, 2)), ParagraphAlignment.CENTER),
+            new POIField(currencyFormat.format(round(totalDifference / 1000, 2)), ParagraphAlignment.CENTER),
+            new POIField(comments, ParagraphAlignment.CENTER)};
+
+          data = Arrays.asList(sData);
+          datas.add(data);
+        }
+      }
+
+      Boolean bold = true;
+      String blackColor = "000000";
+      POIField[] sData = {new POIField("CRP Total", ParagraphAlignment.CENTER, bold, blackColor),
+
+        new POIField(currencyFormat.format(round(totalw1w2Planned / 1000, 2)), ParagraphAlignment.CENTER, bold,
+          blackColor),
+        new POIField(currencyFormat.format(round(totalW3Planned / 1000, 2)), ParagraphAlignment.CENTER, bold,
+          blackColor),
+        new POIField(currencyFormat.format(round(grandTotalPlanned / 1000, 2)), ParagraphAlignment.CENTER, bold,
+          blackColor),
+        new POIField(currencyFormat.format(round(totalw1w2Actual / 1000, 2)), ParagraphAlignment.CENTER, bold,
+          blackColor),
+        new POIField(currencyFormat.format(round(totalW3Actual / 1000, 2)), ParagraphAlignment.CENTER, bold,
+          blackColor),
+        new POIField(currencyFormat.format(round(grandTotalActual / 1000, 2)), ParagraphAlignment.CENTER, bold,
+          blackColor),
+        new POIField(currencyFormat.format(round(totalW1w2Difference / 1000, 2)), ParagraphAlignment.CENTER, bold,
+          blackColor),
+        new POIField(currencyFormat.format(round(totalW3Difference / 1000, 2)), ParagraphAlignment.CENTER, bold,
+          blackColor),
+        new POIField(currencyFormat.format(round(grandTotalDifference / 1000, 2)), ParagraphAlignment.CENTER, bold,
+          blackColor),};
+
+      data = Arrays.asList(sData);
+      datas.add(data);
+
+      poiSummary.textTable(document, headers, datas, true, "tableJAnnualReport");
+    } catch (Exception e) {
+    }
+  }
+
+  private void createTable2() {
+
+    List<List<POIField>> headers = new ArrayList<>();
+
+    String blackColor = "000000";
+    if (this.isEntityPlatform()) {
+      Boolean bold = false;
+      POIField[] sHeader = {
+        new POIField(this.getText("summaries.annualReport2018.table2Title1"), ParagraphAlignment.LEFT, bold,
+          blackColor),
+        new POIField(this.getText("summaries.annualReport2018.table2Title2"), ParagraphAlignment.LEFT, bold,
+          blackColor),
+        new POIField(this.getText("summaries.annualReport2018.table2Title3"), ParagraphAlignment.LEFT, bold,
+          blackColor),
+        new POIField(this.getText("summaries.annualReport2018.table2Title4"), ParagraphAlignment.LEFT, true,
+          blackColor),
+        new POIField(this.getText(""), ParagraphAlignment.LEFT, bold, blackColor),
+        new POIField(this.getText(""), ParagraphAlignment.LEFT, bold, blackColor),
+        new POIField(this.getText(""), ParagraphAlignment.LEFT, bold, blackColor),
+        new POIField(this.getText("summaries.annualReport2018.table2Title8"), ParagraphAlignment.LEFT, bold,
+          blackColor),
+        new POIField("", ParagraphAlignment.LEFT, bold, blackColor)};
+
+      POIField[] sHeader2 = {new POIField("", ParagraphAlignment.LEFT, bold, blackColor),
+        new POIField("", ParagraphAlignment.LEFT, bold, blackColor),
+        new POIField("", ParagraphAlignment.LEFT, bold, blackColor),
+        new POIField(this.getText("summaries.annualReport2018.table2Gender"), ParagraphAlignment.CENTER, bold,
+          blackColor),
+        new POIField(this.getText("summaries.annualReport2018.table2Youth"), ParagraphAlignment.CENTER, bold,
+          blackColor),
+        new POIField(this.getText("summaries.annualReport2018.table2Capdev"), ParagraphAlignment.CENTER, bold,
+          blackColor),
+        new POIField(this.getText("summaries.annualReport2018.table2ClimateChange"), ParagraphAlignment.CENTER, bold,
+          blackColor)};
+
+      List<POIField> header = Arrays.asList(sHeader);
+      List<POIField> header2 = Arrays.asList(sHeader2);
+      headers.add(header);
+      headers.add(header2);
+    }
+
+    if (this.isEntityCRP()) {
+      Boolean bold = true;
+      POIField[] sHeader = {
+        new POIField(this.getText("summaries.annualReport2018.table2Title1"), ParagraphAlignment.LEFT, bold,
+          blackColor),
+        new POIField(this.getText("summaries.annualReport2018.table2Title2"), ParagraphAlignment.LEFT, false,
+          blackColor),
+        new POIField(this.getText("summaries.annualReport2018.table2Title3"), ParagraphAlignment.LEFT, false,
+          blackColor),
+        new POIField(this.getText("summaries.annualReport2018.table2Title4"), ParagraphAlignment.CENTER, false,
+          blackColor),
+        new POIField("", ParagraphAlignment.CENTER, false, blackColor),
+        new POIField("", ParagraphAlignment.CENTER, false, blackColor),
+        new POIField("", ParagraphAlignment.CENTER, false, blackColor),
+        new POIField(this.getText(""), ParagraphAlignment.CENTER, false, blackColor), new POIField(
+          this.getText("summaries.annualReport2018.table2Title8"), ParagraphAlignment.LEFT, false, blackColor)};
+
+      bold = false;
+      POIField[] sHeader2 = {new POIField("", ParagraphAlignment.LEFT, bold, blackColor),
+        new POIField("", ParagraphAlignment.LEFT, bold, blackColor),
+        new POIField("", ParagraphAlignment.LEFT, bold, blackColor),
+        new POIField(this.getText("summaries.annualReport2018.table2Gender"), ParagraphAlignment.LEFT, bold,
+          blackColor),
+        new POIField(this.getText("summaries.annualReport2018.table2Youth"), ParagraphAlignment.LEFT, bold, blackColor),
+        new POIField(this.getText("summaries.annualReport2018.table2Capdev"), ParagraphAlignment.LEFT, bold,
+          blackColor),
+        new POIField(this.getText("summaries.annualReport2018.table2ClimateChange"), ParagraphAlignment.LEFT, bold,
+          blackColor)};
+
+      List<POIField> header = Arrays.asList(sHeader);
+      List<POIField> header2 = Arrays.asList(sHeader2);
+      headers.add(header);
+      headers.add(header2);
+    }
+    List<List<POIField>> datas = new ArrayList<>();
+    List<POIField> data;
+    data = new ArrayList<>();
+
+    String name = null, levelMaturity = "", srfSubIdo = "", gender = "", youth = "", capdev = "", climateChange = "",
+      investmentType = "", policytype = "", geographicScope = "";
+
+    for (ProjectPolicy projectPolicy : projectPolicies) {
+      if (projectPolicy != null && projectPolicy.getProjectPolicyInfo() != null) {
+
+        if (projectPolicy.getProjectPolicyInfo().getTitle() != null) {
+          name = projectPolicy.getProjectPolicyInfo().getId() + " - " + projectPolicy.getProjectPolicyInfo().getTitle();
+        }
+        if (projectPolicy.getProjectPolicyInfo().getRepIndStageProcess() != null
+          && projectPolicy.getProjectPolicyInfo().getRepIndStageProcess().getName() != null) {
+          levelMaturity = projectPolicy.getProjectPolicyInfo().getRepIndStageProcess().getName();
+        }
+        if (projectPolicy.getSubIdos(this.getActualPhase()) != null) {
+          for (ProjectPolicySubIdo subIdo : projectPolicy.getSubIdos(this.getActualPhase())) {
+            if (subIdo.getSrfSubIdo() != null && subIdo.getSrfSubIdo().getDescription() != null) {
+              srfSubIdo += subIdo.getSrfSubIdo().getDescription() + " ";
+            }
+          }
+        }
+
+        if (projectPolicy.getProjectPolicyInfo().getRepIndOrganizationType() != null
+          && projectPolicy.getProjectPolicyInfo().getRepIndOrganizationType().getName() != null) {
+          investmentType = projectPolicy.getProjectPolicyInfo().getRepIndOrganizationType().getName();
+        }
+
+        if (projectPolicy.getProjectPolicyInfo().getRepIndPolicyInvestimentType() != null
+          && projectPolicy.getProjectPolicyInfo().getRepIndPolicyInvestimentType().getName() != null) {
+          investmentType = "";
+        }
+
+        if (projectPolicy.getGeographicScopes(this.getActualPhase()) != null) {
+          for (ProjectPolicyGeographicScope policyGeographicScope : projectPolicy
+            .getGeographicScopes(this.getActualPhase())) {
+            if (policyGeographicScope != null && policyGeographicScope.getRepIndGeographicScope() != null
+              && policyGeographicScope.getRepIndGeographicScope().getName() != null) {
+
+            }
+            geographicScope = policyGeographicScope.getRepIndGeographicScope().getName();
+          }
+        }
+        if (projectPolicy.getCrossCuttingMarkers(this.getActualPhase()) != null) {
+          for (ProjectPolicyCrossCuttingMarker policyCrossCutting : projectPolicy
+            .getCrossCuttingMarkers(this.getActualPhase())) {
+            if (policyCrossCutting != null && policyCrossCutting.getCgiarCrossCuttingMarker() != null
+              && policyCrossCutting.getCgiarCrossCuttingMarker().getId() != null) {
+              if (policyCrossCutting.getRepIndGenderYouthFocusLevel() != null
+                && policyCrossCutting.getRepIndGenderYouthFocusLevel().getName() != null) {
+                if (policyCrossCutting.getCgiarCrossCuttingMarker().getId() == 1) {
+                  gender = policyCrossCutting.getRepIndGenderYouthFocusLevel().getName();
+                }
+                if (policyCrossCutting.getCgiarCrossCuttingMarker().getId() == 2) {
+                  youth = policyCrossCutting.getRepIndGenderYouthFocusLevel().getName();
+                }
+                if (policyCrossCutting.getCgiarCrossCuttingMarker().getId() == 3) {
+                  capdev = policyCrossCutting.getRepIndGenderYouthFocusLevel().getName();
+                }
+                if (policyCrossCutting.getCgiarCrossCuttingMarker().getId() == 4) {
+                  climateChange = policyCrossCutting.getRepIndGenderYouthFocusLevel().getName();
+                }
+              }
+            }
+          }
+        }
+      }
+      POIField[] sData = {new POIField(name, ParagraphAlignment.LEFT),
+        new POIField(levelMaturity, ParagraphAlignment.LEFT), new POIField(srfSubIdo, ParagraphAlignment.LEFT),
+        new POIField(gender, ParagraphAlignment.LEFT, false, blackColor), new POIField(youth, ParagraphAlignment.LEFT),
+        new POIField(capdev, ParagraphAlignment.LEFT), new POIField(climateChange, ParagraphAlignment.CENTER),
+        new POIField(investmentType, ParagraphAlignment.CENTER)};
+      data = Arrays.asList(sData);
+      datas.add(data);
+    }
+
+
+    String text = "";
+
+    if (this.isEntityPlatform()) {
+      text = "table2AnnualReport2018PLT";
+    }
+    if (this.isEntityCRP()) {
+      text = "table2AnnualReport2018CRP";
+    }
+    if (text == null || text.isEmpty()) {
+      text = "table2AnnualReport2018CRP";
+    }
+    poiSummary.textTable(document, headers, datas, false, text);
+  }
+
+
+  private void createTable3() {
+
+    List<List<POIField>> headers = new ArrayList<>();
+    List<List<POIField>> datas = new ArrayList<>();
+    List<POIField> data;
+    POIField[] sHeader = {
+      new POIField(
+        this.getText("summaries.annualReport2018.table3Title1", new String[] {String.valueOf(this.getSelectedYear())}),
+        ParagraphAlignment.LEFT),
+      new POIField(this.getText("summaries.annualReport2018.table3Title2"), ParagraphAlignment.LEFT),
+      new POIField("", ParagraphAlignment.LEFT)};
+    List<POIField> header = Arrays.asList(sHeader);
+    headers.add(header);
+
+    for (ProjectExpectedStudy projectExpectStudy : projectExpectedStudies) {
+      String title = "", maturity = "", indicator = "";
+      if (projectExpectStudy != null && projectExpectStudy.getProjectExpectedStudyInfo(this.getActualPhase()) != null) {
+        if (projectExpectStudy.getProjectExpectedStudyInfo(this.getActualPhase()).getTitle() != null) {
+          title = "OICR " + projectExpectStudy.getId() + " - "
+            + projectExpectStudy.getProjectExpectedStudyInfo(this.getActualPhase()).getTitle();
+        }
+        if (projectExpectStudy.getProjectExpectedStudyInfo().getRepIndStageProcess() != null
+          && projectExpectStudy.getProjectExpectedStudyInfo().getRepIndStageProcess().getName() != null) {
+          maturity = projectExpectStudy.getProjectExpectedStudyInfo().getRepIndStageProcess().getName();
+        }
+        if (projectExpectStudy.getProjectExpectedStudyInfo(this.getActualPhase()).getEvidenceTag() != null
+          && projectExpectStudy.getProjectExpectedStudyInfo(this.getActualPhase()).getEvidenceTag().getName() != null) {
+          indicator = projectExpectStudy.getProjectExpectedStudyInfo(this.getActualPhase()).getEvidenceTag().getName();
+        }
+      }
+
+      POIField[] sData = {new POIField(title, ParagraphAlignment.LEFT),
+        new POIField(maturity, ParagraphAlignment.CENTER), new POIField(indicator, ParagraphAlignment.LEFT)};
+      data = Arrays.asList(sData);
+      datas.add(data);
+
+    }
+
+    List<LiaisonInstitution> liaisonInstitutionsList =
+      new ArrayList<>(this.getLoggedCrp().getLiaisonInstitutions().stream()
+        .filter(c -> c.getCrpProgram() != null && c.isActive()
+          && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+        .collect(Collectors.toList()));
+    liaisonInstitutionsList.sort(Comparator.comparing(LiaisonInstitution::getAcronym));
+
+    flagshipPlannedList = reportSynthesisMeliaManager.getMeliaPlannedList(liaisonInstitutionsList,
+      this.getSelectedPhase().getId(), this.getLoggedCrp(), pmuInstitution);
+    if (flagshipPlannedList != null && !flagshipPlannedList.isEmpty()) {
+      for (int i = 0; i < flagshipPlannedList.size(); i++) {
+        String studies = "", status = "", comments = "";
+        studies = flagshipPlannedList.get(i).getProjectExpectedStudy()
+          .getProjectExpectedStudyInfo(this.getSelectedPhase()).getTitle();
+        status = flagshipPlannedList.get(i).getProjectExpectedStudy()
+          .getProjectExpectedStudyInfo(this.getSelectedPhase()).getStatusName();
+        if (flagshipPlannedList.get(i).getProjectExpectedStudy().getProjectExpectedStudyInfo(this.getSelectedPhase())
+          .getTopLevelComments() != null) {
+          comments = flagshipPlannedList.get(i).getProjectExpectedStudy()
+            .getProjectExpectedStudyInfo(this.getSelectedPhase()).getTopLevelComments();
+        }
+
+        POIField[] sData = {new POIField(studies, ParagraphAlignment.LEFT),
+          new POIField(status, ParagraphAlignment.CENTER), new POIField(comments, ParagraphAlignment.LEFT)};
+        data = Arrays.asList(sData);
+        datas.add(data);
+      }
+    }
+
+    poiSummary.textTable(document, headers, datas, false, "table3AnnualReport2018");
+  }
+
+  private void createTable4() {
+
+    List<List<POIField>> headers = new ArrayList<>();
+    List<List<POIField>> datas = new ArrayList<>();
+    List<POIField> data;
+    POIField[] sHeader = {
+      new POIField(
+        this.getText("summaries.annualReport2018.table4Title1", new String[] {String.valueOf(this.getSelectedYear())}),
+        ParagraphAlignment.LEFT),
+      new POIField(this.getText("summaries.annualReport2018.table4Title2"), ParagraphAlignment.LEFT),
+      new POIField(this.getText("summaries.annualReport2018.table4Title3"), ParagraphAlignment.LEFT),
+      new POIField(this.getText("summaries.annualReport2018.table4Title4"), ParagraphAlignment.LEFT)};
+    List<POIField> header = Arrays.asList(sHeader);
+    headers.add(header);
+    for (ProjectInnovation projectInnovation : projectInnovations) {
+      String title = "", type = "", stage = "", geographic = "";
+
+      if (projectInnovation != null && projectInnovation.getProjectInnovationInfo(this.getActualPhase()) != null) {
+        if (projectInnovation.getProjectInnovationInfo(this.getActualPhase()).getTitle() != null) {
+          title = projectInnovation.getId() + " - "
+            + projectInnovation.getProjectInnovationInfo(this.getActualPhase()).getTitle();
+        }
+        if (projectInnovation.getProjectInnovationInfo(this.getActualPhase()).getRepIndInnovationType() != null
+          && projectInnovation.getProjectInnovationInfo(this.getActualPhase()).getRepIndInnovationType()
+            .getName() != null) {
+          type = projectInnovation.getProjectInnovationInfo(this.getActualPhase()).getRepIndInnovationType().getName();
+        }
+        if (projectInnovation.getProjectInnovationInfo(this.getActualPhase()).getRepIndStageInnovation() != null
+          && projectInnovation.getProjectInnovationInfo(this.getActualPhase()).getRepIndStageInnovation()
+            .getName() != null) {
+          stage =
+            projectInnovation.getProjectInnovationInfo(this.getActualPhase()).getRepIndStageInnovation().getName();
+        }
+        if (projectInnovation.getGeographicScopes(this.getActualPhase()) != null) {
+          List<ProjectInnovationGeographicScope> innovationGeographics =
+            projectInnovation.getGeographicScopes(this.getActualPhase());
+          for (ProjectInnovationGeographicScope innovationGeographic : innovationGeographics) {
+            if (innovationGeographic != null && innovationGeographic.getRepIndGeographicScope() != null
+              && innovationGeographic.getRepIndGeographicScope().getName() != null) {
+              geographic += innovationGeographic.getRepIndGeographicScope().getName() + ", ";
+            }
+          }
+        }
+
+      }
+
+      POIField[] sData = {new POIField(title, ParagraphAlignment.LEFT), new POIField(type, ParagraphAlignment.CENTER),
+        new POIField(stage, ParagraphAlignment.LEFT), new POIField(geographic, ParagraphAlignment.LEFT)};
+      data = Arrays.asList(sData);
+      datas.add(data);
+    }
+    poiSummary.textTable(document, headers, datas, false, "table4AnnualReport2018");
+  }
+
+  private void createTable5() {
+
+    List<List<POIField>> headers = new ArrayList<>();
+    List<List<POIField>> datas = new ArrayList<>();
+    List<POIField> data;
+    POIField[] sHeader = {
+      new POIField(
+        this.getText("summaries.annualReport2018.table5Title1", new String[] {String.valueOf(this.getSelectedYear())}),
+        ParagraphAlignment.LEFT, false, "000000"),
+      new POIField(this.getText("summaries.annualReport2018.table5Title2"), ParagraphAlignment.CENTER, false, "000000"),
+      new POIField(this.getText("summaries.annualReport2018.table5Title3"), ParagraphAlignment.LEFT, false, "76923C"),
+      new POIField(this.getText("summaries.annualReport2018.table5Title4"), ParagraphAlignment.CENTER, false, "000000"),
+      new POIField(this.getText("summaries.annualReport2018.table5Title5") + " "
+        + this.getText("summaries.annualReport2018.table5Title51"), ParagraphAlignment.LEFT, false, "000000"),
+      new POIField(this.getText("summaries.annualReport2018.table5Title6") + " "
+        + this.getText("summaries.annualReport2018.table5Title61"), ParagraphAlignment.LEFT, false, "000000")};
+    List<POIField> header = Arrays.asList(sHeader);
+    headers.add(header);
+
+    String fp = "", outcomes = "", narrative = "", milestone = "", milestoneStatus = "", evidenceMilestone = "",
+      lastFP = "";
+
+    if (flagships != null && !flagships.isEmpty()) {
+      flagships.sort((p1, p2) -> p1.getAcronym().compareTo(p2.getAcronym()));
+
+      for (CrpProgram flagship : flagships) {
+        int outcome_index = 0;
+        for (CrpProgramOutcome outcome : flagship.getOutcomes()) {
+
+          int milestone_index = 0;
+          for (CrpMilestone crpMilestone : outcome.getMilestones()) {
+            Boolean isFlagshipRow = (outcome_index == 0) && (milestone_index == 0);
+            Boolean isOutcomeRow = (milestone_index == 0);
+
+
+            if (isFlagshipRow) {
+              fp = flagship.getAcronym();
+            } else {
+              fp = "";
+            }
+            if (fp.equals(lastFP)) {
+              fp = "";
+            } else {
+              lastFP = fp;
+            }
+
+
+            if (isOutcomeRow) {
+              outcomes = outcome.getComposedName();
+            } else {
+              outcomes = "";
+            }
+
+            milestone = crpMilestone.getComposedName();
+
+
+            POIField[] sData = {new POIField(fp, ParagraphAlignment.CENTER),
+              new POIField(outcomes, ParagraphAlignment.LEFT), new POIField(narrative, ParagraphAlignment.LEFT),
+              new POIField(milestone, ParagraphAlignment.LEFT), new POIField(milestoneStatus, ParagraphAlignment.LEFT),
+              new POIField(evidenceMilestone, ParagraphAlignment.LEFT)};
+            data = Arrays.asList(sData);
+            datas.add(data);
+
+
+          }
+        }
+      }
+    }
+
+
+    poiSummary.textTable(document, headers, datas, false, "table5AnnualReport2018");
+  }
+
+  public void createTable6() {
+    List<List<POIField>> headers = new ArrayList<>();
+    String blackColor = "000000";
+
+    POIField[] sHeader = {new POIField("", ParagraphAlignment.CENTER, true, blackColor),
+      new POIField(this.getText("summaries.annualReport2018.table6Title4"), ParagraphAlignment.LEFT, true, blackColor),
+      new POIField(this.getText("summaries.annualReport2018.table6Title5"), ParagraphAlignment.LEFT, true, blackColor)};
+    List<POIField> header = Arrays.asList(sHeader);
+    headers.add(header);
+
+    List<List<POIField>> datas = new ArrayList<>();
+    List<POIField> data;
+
+    data = new ArrayList<>();
+
+    String number = "", percent = "";
+    List<String> titles = new ArrayList<>();
+    titles.add(this.getText("summaries.annualReport2018.table6Title1"));
+    titles.add(this.getText("summaries.annualReport2018.table6Title2"));
+    titles.add(this.getText("summaries.annualReport2018.table6Title3"));
+
+    for (String title : titles) {
+      Boolean bold = false;
+      String blueColor = "000099";
+      POIField[] sData = {new POIField(title, ParagraphAlignment.LEFT, true, blackColor),
+        new POIField(number, ParagraphAlignment.LEFT, bold, blueColor),
+        new POIField(percent, ParagraphAlignment.LEFT, bold, blueColor)};
+      data = Arrays.asList(sData);
+      datas.add(data);
+    }
+
+    poiSummary.textTable(document, headers, datas, false, "table6AnnualReport2018");
+  }
+
+  private void createTable7() {
+    List<List<POIField>> headers = new ArrayList<>();
+    List<List<POIField>> datas = new ArrayList<>();
+    List<POIField> data;
+    POIField[] sHeader = {
+      new POIField(
+        this.getText("summaries.annualReport2018.table7Title1", new String[] {String.valueOf(this.getSelectedYear())}),
+        ParagraphAlignment.LEFT),
+      new POIField(this.getText("summaries.annualReport2018.table7Title2"), ParagraphAlignment.LEFT),
+      new POIField(this.getText("summaries.annualReport2018.table7Title3"), ParagraphAlignment.LEFT)};
+    List<POIField> header = Arrays.asList(sHeader);
+    headers.add(header);
+
+    for (ProjectExpectedStudy projectExpectStudy : projectExpectedStudies) {
+      String trinees = "", female = "", male = "";
+
+      POIField[] sData = {new POIField(trinees, ParagraphAlignment.LEFT),
+        new POIField(female, ParagraphAlignment.CENTER), new POIField(male, ParagraphAlignment.LEFT)};
+      data = Arrays.asList(sData);
+      datas.add(data);
+    }
+
+
+    // for (int i = 0; i < flagshipPlannedList.size(); i++) {
+    String studies = "", status = "", comments = "";
+
+
+    POIField[] sData = {new POIField(studies, ParagraphAlignment.LEFT), new POIField(status, ParagraphAlignment.CENTER),
+      new POIField(comments, ParagraphAlignment.LEFT)};
+    data = Arrays.asList(sData);
+    datas.add(data);
+
+    // }
+
+    poiSummary.textTable(document, headers, datas, false, "table3AnnualReport2018");
+  }
+
+  private void createTable8() {
+    List<List<POIField>> headers = new ArrayList<>();
+    List<List<POIField>> datas = new ArrayList<>();
+    List<POIField> data;
+    POIField[] sHeader = {
+      new POIField(
+        this.getText("summaries.annualReport2018.table8Title1", new String[] {String.valueOf(this.getSelectedYear())}),
+        ParagraphAlignment.LEFT),
+      new POIField(this.getText("summaries.annualReport2018.table8Title2"), ParagraphAlignment.LEFT),
+      new POIField(this.getText("summaries.annualReport2018.table8Title3"), ParagraphAlignment.LEFT),
+      new POIField(this.getText("summaries.annualReport2018.table8Title4"), ParagraphAlignment.LEFT)};
+    List<POIField> header = Arrays.asList(sHeader);
+    headers.add(header);
+
+    for (ProjectExpectedStudy projectExpectStudy : projectExpectedStudies) {
+      String title = "", maturity = "", indicator = "";
+
+      POIField[] sData = {new POIField(title, ParagraphAlignment.LEFT),
+        new POIField(maturity, ParagraphAlignment.CENTER), new POIField(indicator, ParagraphAlignment.LEFT)};
+      data = Arrays.asList(sData);
+      datas.add(data);
+    }
+
+
+    if (flagshipPlannedList != null && !flagshipPlannedList.isEmpty()) {
+      // for (int i = 0; i < flagshipPlannedList.size(); i++) {
+      String studies = "", status = "", comments = "";
+
+
+      POIField[] sData =
+        {new POIField(studies, ParagraphAlignment.LEFT), new POIField(status, ParagraphAlignment.CENTER),
+          new POIField(comments, ParagraphAlignment.LEFT), new POIField(comments, ParagraphAlignment.LEFT)};
+      data = Arrays.asList(sData);
+      datas.add(data);
+      // }
+    }
+
+    poiSummary.textTable(document, headers, datas, false, "table3AnnualReport2018");
+  }
+
+
+  private void createTable9() {
+    List<List<POIField>> headers = new ArrayList<>();
+    List<List<POIField>> datas = new ArrayList<>();
+    List<POIField> data;
+    POIField[] sHeader = {
+      new POIField(
+        this.getText("summaries.annualReport2018.table9Title1", new String[] {String.valueOf(this.getSelectedYear())}),
+        ParagraphAlignment.LEFT),
+      new POIField(this.getText("summaries.annualReport2018.table9Title2"), ParagraphAlignment.LEFT),
+      new POIField(this.getText("summaries.annualReport2018.table9Title3"), ParagraphAlignment.LEFT)};
+    List<POIField> header = Arrays.asList(sHeader);
+    headers.add(header);
+
+
+    if (flagshipPlannedList != null && !flagshipPlannedList.isEmpty()) {
+      // for (int i = 0; i < flagshipPlannedList.size(); i++) {
+      String studies = "", status = "", comments = "";
+
+      POIField[] sData = {new POIField(studies, ParagraphAlignment.LEFT),
+        new POIField(status, ParagraphAlignment.CENTER), new POIField(comments, ParagraphAlignment.LEFT)};
+      data = Arrays.asList(sData);
+      datas.add(data);
+      // }
+    }
+
+    poiSummary.textTable(document, headers, datas, false, "table3AnnualReport2018");
+  }
+
 
   private void createTableA2() {
 
@@ -699,7 +1633,6 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
 
     List<POIField> header = Arrays.asList(sHeader);
     headers.add(header);
-
 
     List<List<POIField>> datas = new ArrayList<>();;
     List<POIField> data;
@@ -791,84 +1724,6 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     poiSummary.textTable(document, headers, datas, false, "tableA2AnnualReport");
   }
 
-  private void createTableB() {
-
-    List<List<POIField>> headers = new ArrayList<>();
-
-    POIField[] sHeader = {new POIField(this.getText("expectedProgress.tableA.fp"), ParagraphAlignment.LEFT),
-      new POIField(this.getText("expectedProgress.tableA.subIDO"), ParagraphAlignment.LEFT),
-      new POIField(this.getText("expectedProgress.tableA.outcomes"), ParagraphAlignment.LEFT),
-      new POIField(this.getText("expectedProgress.tableA.milestone") + "*", ParagraphAlignment.LEFT),
-      new POIField(this.getText("summaries.annualReport.tableB.field5"), ParagraphAlignment.LEFT),
-      new POIField(this.getText("summaries.annualReport.tableB.field6"), ParagraphAlignment.LEFT)};
-    List<POIField> header = Arrays.asList(sHeader);
-    headers.add(header);
-
-    List<List<POIField>> datas = new ArrayList<>();
-    List<POIField> data;
-
-    for (CrpProgram flagship : flagships) {
-
-      data = new ArrayList<>();
-      int outcome_index = 0;
-
-      for (CrpProgramOutcome outcome : flagship.getOutcomes()) {
-        String subIDO = "";
-        int milestone_index = 0;
-        for (CrpOutcomeSubIdo subIdo : outcome.getSubIdos()) {
-          if (subIdo.getSrfSubIdo() != null) {
-            if (subIDO.isEmpty()) {
-              if (subIdo.getSrfSubIdo().getSrfIdo().isIsCrossCutting()) {
-                subIDO = "• CC " + subIdo.getSrfSubIdo().getDescription();
-              } else {
-                subIDO = "• " + subIdo.getSrfSubIdo().getDescription();
-              }
-            } else {
-              if (subIdo.getSrfSubIdo().getSrfIdo().isIsCrossCutting()) {
-                subIDO += "\n • CC " + subIdo.getSrfSubIdo().getDescription();
-              } else {
-                subIDO += "\n • " + subIdo.getSrfSubIdo().getDescription();
-              }
-            }
-          }
-        }
-        for (CrpMilestone crpMilestone : outcome.getMilestones()) {
-          String FP = "", outcomes = "", milestone = "", status = "", evidence = "";
-          Boolean isFlagshipRow = (outcome_index == 0) && (milestone_index == 0);
-          Boolean isOutcomeRow = (milestone_index == 0);
-          if (isFlagshipRow) {
-            FP = "  " + flagship.getAcronym() + " ";
-          } else {
-            FP = " ";
-          }
-          if (isOutcomeRow) {
-            outcomes = outcome.getComposedName();
-          } else {
-            outcomes = " ";
-          }
-          milestone = crpMilestone.getComposedName() != null ? crpMilestone.getComposedName() : "";
-          ReportSynthesisFlagshipProgressMilestone reportSynthesisFlagshipProgressMilestoneList =
-            this.getReportSynthesisFlagshipProgressProgram(crpMilestone.getId(), flagship.getId());
-          if (reportSynthesisFlagshipProgressMilestoneList != null
-            && reportSynthesisFlagshipProgressMilestoneList.getId() != null) {
-            evidence = reportSynthesisFlagshipProgressMilestoneList.getEvidence();
-            status = reportSynthesisFlagshipProgressMilestoneList.getStatusName();
-          }
-
-          POIField[] sData = {new POIField(FP, ParagraphAlignment.LEFT), new POIField(subIDO, ParagraphAlignment.LEFT),
-            new POIField(outcomes, ParagraphAlignment.LEFT), new POIField(milestone, ParagraphAlignment.LEFT),
-            new POIField(status, ParagraphAlignment.LEFT), new POIField(evidence, ParagraphAlignment.LEFT)};
-          data = Arrays.asList(sData);
-          datas.add(data);
-
-          milestone_index++;
-        }
-        outcome_index++;
-      }
-    }
-
-    poiSummary.textTable(document, headers, datas, false, "tableBAnnualReport");
-  }
 
   private void createTableC() {
     List<List<POIField>> headers = new ArrayList<>();
@@ -920,670 +1775,6 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     poiSummary.textTable(document, headers, datas, true, "tableCAnnualReport");
   }
 
-  public void createTableD1() {
-    List<List<POIField>> headers = new ArrayList<>();
-
-    POIField[] sHeader =
-      {new POIField(this.getText("summaries.annualReport.tableD1.field1"), ParagraphAlignment.CENTER),
-        new POIField(this.getText("summaries.annualReport.tableD1.field2"), ParagraphAlignment.CENTER),
-        new POIField(this.getText("summaries.annualReport.tableD1.field3"), ParagraphAlignment.CENTER),
-        new POIField(this.getText("summaries.annualReport.tableD1.field4"), ParagraphAlignment.CENTER)};
-
-
-    List<RepIndSynthesisIndicator> listRepIndSynthesis = repIndSynthesisIndicatorManager.findAll();
-    List<ReportSynthesisIndicator> reportSynthesisIndicatorList =
-      reportSynthesisPMU.getReportSynthesisIndicatorGeneral().getReportSynthesisIndicators().stream()
-        .filter(
-          si -> si.isActive() && si.getRepIndSynthesisIndicator() != null && si.getRepIndSynthesisIndicator().isMarlo())
-        .sorted((i1, i2) -> i1.getRepIndSynthesisIndicator().getIndicator()
-          .compareTo(i2.getRepIndSynthesisIndicator().getIndicator()))
-        .collect(Collectors.toList());
-
-    List<POIField> header = Arrays.asList(sHeader);
-    headers.add(header);
-    List<List<POIField>> datas = new ArrayList<>();
-    List<POIField> data;
-
-    String lastType = "";
-
-    if (listRepIndSynthesis != null && !listRepIndSynthesis.isEmpty()) {
-      for (RepIndSynthesisIndicator repIndSynthesisIndicator : listRepIndSynthesis) {
-        String type = "", indicator = "", name = "", dataRep = "", comments = "";
-
-        if (type.equals(lastType)) {
-          type = "";
-        } else {
-          lastType = type;
-        }
-
-        type = repIndSynthesisIndicator.getType();
-        indicator = repIndSynthesisIndicator.getIndicator();
-        name = repIndSynthesisIndicator.getName();
-
-        if (reportSynthesisIndicatorList != null && !reportSynthesisIndicatorList.isEmpty()) {
-          for (ReportSynthesisIndicator reportSynthesisIndicator : reportSynthesisIndicatorList) {
-            if (reportSynthesisIndicator.getRepIndSynthesisIndicator().getId() == repIndSynthesisIndicator.getId()) {
-
-              if (reportSynthesisIndicator.getData() != null) {
-                dataRep = reportSynthesisIndicator.getData();
-              }
-
-              if (reportSynthesisIndicator.getComment() != null) {
-                comments = reportSynthesisIndicator.getComment();
-              }
-
-            }
-          }
-        }
-
-        Boolean bold = false;
-        String blackColor = "000000";
-        POIField[] sData = {new POIField(type, ParagraphAlignment.CENTER, bold, blackColor),
-          new POIField(indicator + "." + name, ParagraphAlignment.LEFT, bold, blackColor),
-          new POIField(dataRep, ParagraphAlignment.LEFT, bold, blackColor),
-          new POIField(comments, ParagraphAlignment.LEFT, bold, blackColor)};
-        data = new ArrayList<>();
-        data = Arrays.asList(sData);
-        datas.add(data);
-      }
-    }
-    poiSummary.textTable(document, headers, datas, true, "tableD1AnnualReport");
-
-  }
-
-  private void createTableD2() {
-    List<List<POIField>> headers = new ArrayList<>();
-    POIField[] sHeader =
-      {new POIField(this.getText("summaries.annualReport.tableD2.field1"), ParagraphAlignment.CENTER),
-        new POIField(this.getText("summaries.annualReport.tableD2.field2"), ParagraphAlignment.CENTER),
-        new POIField(this.getText("summaries.annualReport.tableD2.field3"), ParagraphAlignment.CENTER),
-        new POIField(this.getText("summaries.annualReport.tableD2.field4"), ParagraphAlignment.CENTER),
-        new POIField(this.getText("summaries.annualReport.tableD2.field5"), ParagraphAlignment.CENTER),};
-    List<POIField> header = Arrays.asList(sHeader);
-    headers.add(header);
-
-    List<List<POIField>> datas = new ArrayList<>();
-    List<POIField> data;
-
-    flagshipPlannedInnovations = reportSynthesisCrossCuttingDimensionManager.getPlannedInnovationList(
-      flagshipLiaisonInstitutions, this.getSelectedPhase().getId(), this.getLoggedCrp(), pmuInstitution);
-
-    if (flagshipPlannedInnovations != null && !flagshipPlannedInnovations.isEmpty()) {
-      for (ReportSynthesisCrossCuttingInnovationDTO reportSynthesisCrossCuttingInnovationDTO : flagshipPlannedInnovations
-        .stream()
-        .sorted((f1, f2) -> f1.getProjectInnovation().getProjectInnovationInfo(this.getSelectedPhase()).getTitle()
-          .compareTo(f2.getProjectInnovation().getProjectInnovationInfo(this.getSelectedPhase()).getTitle()))
-        .collect(Collectors.toList())) {
-        String title = " ", stage = "", degree = " ", contribution = " ", geographicScope = " ";
-        if (reportSynthesisCrossCuttingInnovationDTO.getProjectInnovation()
-          .getProjectInnovationInfo(this.getSelectedPhase()) != null) {
-          ProjectInnovationInfo projectInnovationInfo = reportSynthesisCrossCuttingInnovationDTO.getProjectInnovation()
-            .getProjectInnovationInfo(this.getSelectedPhase());
-          title = projectInnovationInfo.getTitle() != null && !projectInnovationInfo.getTitle().isEmpty()
-            ? projectInnovationInfo.getTitle() : this.getText("global.untitled");
-          stage = projectInnovationInfo.getRepIndStageInnovation() != null
-            && projectInnovationInfo.getRepIndStageInnovation().getName() != null
-            && !projectInnovationInfo.getRepIndStageInnovation().getName().isEmpty()
-              ? projectInnovationInfo.getRepIndStageInnovation().getName() : this.getText("global.untitled");
-          if (projectInnovationInfo.getRepIndDegreeInnovation() != null) {
-            degree = projectInnovationInfo.getRepIndDegreeInnovation().getName();
-          }
-          if (projectInnovationInfo.getRepIndContributionOfCrp() != null) {
-            contribution = projectInnovationInfo.getRepIndContributionOfCrp().getName();
-          }
-          if (projectInnovationInfo.getRepIndGeographicScope() != null) {
-            geographicScope = projectInnovationInfo.getRepIndGeographicScope().getName();
-          }
-
-          if (title != null && stage != null && degree != null && contribution != null && geographicScope != null) {
-            POIField[] sData =
-              {new POIField(title, ParagraphAlignment.CENTER), new POIField(stage, ParagraphAlignment.CENTER),
-                new POIField(degree, ParagraphAlignment.CENTER), new POIField(contribution, ParagraphAlignment.CENTER),
-                new POIField(geographicScope, ParagraphAlignment.CENTER)};
-
-            data = Arrays.asList(sData);
-            datas.add(data);
-          }
-        }
-      }
-    }
-
-    poiSummary.textTable(document, headers, datas, false, "tableD2AnnualReport");
-
-  }
-
-  private void createTableE() {
-    List<ReportSynthesisCrossCuttingAssetDTO> flagshipPlannedAssets =
-      reportSynthesisCrossCuttingDimensionManager.getPlannedAssetsList(flagshipLiaisonInstitutions,
-        this.getSelectedPhase().getId(), this.getLoggedCrp(), pmuInstitution);
-    List<List<POIField>> headers = new ArrayList<>();
-
-    POIField[] sHeader = {new POIField(this.getText("summaries.annualReport.tableE.field1"), ParagraphAlignment.LEFT),
-      new POIField(this.getText("summaries.annualReport.tableE.field2"), ParagraphAlignment.CENTER),
-      new POIField(this.getText("summaries.annualReport.tableE.field3"), ParagraphAlignment.CENTER),
-      new POIField(this.getText("summaries.annualReport.tableE.field4"), ParagraphAlignment.CENTER),
-      new POIField(this.getText("summaries.annualReport.tableE.field5"), ParagraphAlignment.CENTER),
-      new POIField(this.getText("summaries.annualReport.tableE.field6"), ParagraphAlignment.CENTER)};
-
-    List<POIField> header = Arrays.asList(sHeader);
-    headers.add(header);
-    List<List<POIField>> datas = new ArrayList<>();
-    List<POIField> data;
-
-
-    if (flagshipPlannedAssets != null && !flagshipPlannedAssets.isEmpty()) {
-      for (ReportSynthesisCrossCuttingAssetDTO reportSynthesisCrossCuttingAssetDTO : flagshipPlannedAssets) {
-        String year = "", patent = "", applicant = "", aditional = "", registration = "", communication = "",
-          status = "";
-
-        if (reportSynthesisCrossCuttingAssetDTO.getDeliverableIntellectualAsset().getDeliverable()
-          .getDeliverableInfo(this.getSelectedPhase()) != null) {
-          if (reportSynthesisCrossCuttingAssetDTO.getDeliverableIntellectualAsset().getDeliverable()
-            .getDeliverableInfo().getStatus() != null
-            && reportSynthesisCrossCuttingAssetDTO.getDeliverableIntellectualAsset().getDeliverable()
-              .getDeliverableInfo().getStatus() != -1) {
-            status = ProjectStatusEnum.getValue(reportSynthesisCrossCuttingAssetDTO.getDeliverableIntellectualAsset()
-              .getDeliverable().getDeliverableInfo().getStatus()).getStatus();
-          }
-          if (status.equals(ProjectStatusEnum.Extended.getStatus())) {
-            year = reportSynthesisCrossCuttingAssetDTO.getDeliverableIntellectualAsset().getDeliverable()
-              .getDeliverableInfo().getNewExpectedYear() + "";
-          } else {
-            year = reportSynthesisCrossCuttingAssetDTO.getDeliverableIntellectualAsset().getDeliverable()
-              .getDeliverableInfo().getYear() + "";
-          }
-        }
-
-        if (reportSynthesisCrossCuttingAssetDTO.getDeliverableIntellectualAsset().getApplicant() != null) {
-          applicant = reportSynthesisCrossCuttingAssetDTO.getDeliverableIntellectualAsset().getApplicant();
-        }
-
-        if (reportSynthesisCrossCuttingAssetDTO.getDeliverableIntellectualAsset().getType() != null) {
-          patent = reportSynthesisCrossCuttingAssetDTO.getDeliverableIntellectualAsset().getTypeName();
-        }
-        if (reportSynthesisCrossCuttingAssetDTO.getDeliverableIntellectualAsset().getAdditionalInformation() != null) {
-          aditional = reportSynthesisCrossCuttingAssetDTO.getDeliverableIntellectualAsset().getAdditionalInformation();
-        }
-
-        if (reportSynthesisCrossCuttingAssetDTO.getDeliverableIntellectualAsset().getLink() != null) {
-          registration = reportSynthesisCrossCuttingAssetDTO.getDeliverableIntellectualAsset().getLink();
-        }
-
-        if (reportSynthesisCrossCuttingAssetDTO.getDeliverableIntellectualAsset().getPublicCommunication() != null) {
-          communication =
-            reportSynthesisCrossCuttingAssetDTO.getDeliverableIntellectualAsset().getPublicCommunication();
-        }
-
-        POIField[] sData =
-          {new POIField(year, ParagraphAlignment.CENTER), new POIField(applicant, ParagraphAlignment.LEFT),
-            new POIField(patent, ParagraphAlignment.CENTER), new POIField(aditional, ParagraphAlignment.LEFT),
-            new POIField(registration, ParagraphAlignment.LEFT), new POIField(communication, ParagraphAlignment.LEFT)};
-        data = Arrays.asList(sData);
-        datas.add(data);
-      }
-    }
-    poiSummary.textTable(document, headers, datas, false, "tableAAnnualReport");
-  }
-
-  private void createTableF() {
-
-    List<List<POIField>> headers = new ArrayList<>();
-    POIField[] sHeader =
-      {new POIField(this.getText("financialPlan.tableF.expenditureArea") + "*", ParagraphAlignment.LEFT),
-        new POIField(this.getText("financialPlan.tableF.estimatedPercentage",
-          new String[] {String.valueOf(this.getSelectedYear())}) + "**", ParagraphAlignment.LEFT),
-        new POIField(this.getText("financialPlan.tableF.comments2017"), ParagraphAlignment.LEFT)};
-
-    List<POIField> header = Arrays.asList(sHeader);
-    headers.add(header);
-
-    List<List<POIField>> datas = new ArrayList<>();
-    List<POIField> data;
-
-
-    if (reportSynthesisPMU.getReportSynthesisFundingUseSummary().getReportSynthesisFundingUseExpendituryAreas() != null
-      && !reportSynthesisPMU.getReportSynthesisFundingUseSummary().getReportSynthesisFundingUseExpendituryAreas()
-        .isEmpty()) {
-      reportSynthesisPMU.getReportSynthesisFundingUseSummary()
-        .setExpenditureAreas(new ArrayList<>(reportSynthesisPMU.getReportSynthesisFundingUseSummary()
-          .getReportSynthesisFundingUseExpendituryAreas().stream().filter(t -> t.isActive())
-          .sorted((f1, f2) -> f1.getId().compareTo(f2.getId())).collect(Collectors.toList())));
-    } else {
-      reportSynthesisPMU.getReportSynthesisFundingUseSummary().setExpenditureAreas(new ArrayList<>());
-      List<PowbExpenditureAreas> expAreas =
-        new ArrayList<>(powbExpenditureAreasManager.findAll().stream().filter(x -> x.isActive() && x.getIsExpenditure())
-          .sorted((f1, f2) -> f1.getId().compareTo(f2.getId())).collect(Collectors.toList()));
-      for (PowbExpenditureAreas powbExpenditureAreas : expAreas) {
-        ReportSynthesisFundingUseExpendituryArea fundingUseExpenditureArea =
-          new ReportSynthesisFundingUseExpendituryArea();
-        fundingUseExpenditureArea.setExpenditureArea(powbExpenditureAreas);
-        reportSynthesisPMU.getReportSynthesisFundingUseSummary().getExpenditureAreas().add(fundingUseExpenditureArea);
-      }
-    }
-    List<ReportSynthesisFundingUseExpendituryArea> reportSynthesisFundingUseExpendituryAreaList =
-      reportSynthesisPMU.getReportSynthesisFundingUseSummary().getExpenditureAreas();
-    Double totalEstimatedPercentajeFS = 0.0;
-    if (reportSynthesisFundingUseExpendituryAreaList != null
-      && !reportSynthesisFundingUseExpendituryAreaList.isEmpty()) {
-      for (ReportSynthesisFundingUseExpendituryArea reportSynthesisFundingUseExpendituryArea : reportSynthesisFundingUseExpendituryAreaList) {
-
-        String expenditureArea = "", commentsSpace = "";
-        Double estimatedPercentajeFS = 0.0;
-        expenditureArea = reportSynthesisFundingUseExpendituryArea.getExpenditureArea().getExpenditureArea() != null
-          ? reportSynthesisFundingUseExpendituryArea.getExpenditureArea().getExpenditureArea() : "";
-        estimatedPercentajeFS = reportSynthesisFundingUseExpendituryArea.getW1w2Percentage() != null
-          ? reportSynthesisFundingUseExpendituryArea.getW1w2Percentage() : 0;
-        commentsSpace = reportSynthesisFundingUseExpendituryArea.getComments() != null
-          ? reportSynthesisFundingUseExpendituryArea.getComments() : "";
-
-        totalEstimatedPercentajeFS += estimatedPercentajeFS;
-        POIField[] sData = {new POIField(expenditureArea, ParagraphAlignment.LEFT),
-          new POIField(percentageFormat.format(round(estimatedPercentajeFS / 100, 4)), ParagraphAlignment.CENTER),
-          new POIField(commentsSpace, ParagraphAlignment.LEFT)};
-        data = Arrays.asList(sData);
-        datas.add(data);
-      }
-
-    }
-
-    Boolean bold = true;
-    String blackColor = "000000";
-
-    totalw1w2 = reportSynthesisFinancialSummaryBudgetManager.getTotalW1W2ActualExpenditure(reportSynthesisPMU.getId());
-
-    POIField[] sData = {new POIField("TOTAL FUNDING (AMOUNT)***", ParagraphAlignment.LEFT, bold, blackColor),
-      new POIField(currencyFormat.format(round(((totalw1w2) * totalEstimatedPercentajeFS / 100) / 1000, 2)),
-        ParagraphAlignment.CENTER, bold, blackColor)};
-
-    data = Arrays.asList(sData);
-    datas.add(data);
-
-    poiSummary.textTable(document, headers, datas, true, "tableFAnnualReport");
-  }
-
-  private void createTableG() {
-    List<List<POIField>> headers = new ArrayList<>();
-
-    List<LiaisonInstitution> liaisonInstitutions = new ArrayList<>(this.getLoggedCrp().getLiaisonInstitutions().stream()
-      .filter(c -> c.getCrpProgram() != null && c.isActive()
-        && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
-      .collect(Collectors.toList()));
-
-    POIField[] sHeader = {new POIField(this.getText("summaries.annualReport.tableG.field1"), ParagraphAlignment.LEFT),
-      new POIField(this.getText("summaries.annualReport.tableG.field2"), ParagraphAlignment.LEFT),
-      new POIField(this.getText("summaries.annualReport.tableG.field3"), ParagraphAlignment.LEFT),
-      new POIField(this.getText("summaries.annualReport.tableG.field4"), ParagraphAlignment.LEFT),
-      new POIField(this.getText("summaries.annualReport.tableG.field5"), ParagraphAlignment.LEFT)};
-
-    List<POIField> header = Arrays.asList(sHeader);
-    headers.add(header);
-    List<List<POIField>> datas = new ArrayList<>();
-    List<POIField> data;
-
-    List<ReportSynthesisExternalPartnershipDTO> flagshipExternalPlannedList =
-      reportSynthesisExternalPartnershipManager.getPlannedPartnershipList(liaisonInstitutions,
-        this.getSelectedPhase().getId(), this.getLoggedCrp(), pmuInstitution);
-
-    if (flagshipExternalPlannedList != null && !flagshipExternalPlannedList.isEmpty()) {
-      for (int i = 0; i < flagshipExternalPlannedList.size(); i++) {
-
-        String FP = "", stage = "", partner = "", partnerType = "", mainArea = "";
-        if (flagshipExternalPlannedList.get(i).getProjectPartnerPartnership() != null) {
-
-          // **Getting flagships **/
-
-          for (ProjectFocus projectFocuses : flagshipExternalPlannedList.get(i).getProjectPartnerPartnership()
-            .getProjectPartner().getProject().getProjectFocuses().stream()
-            .sorted((o1, o2) -> o1.getCrpProgram().getAcronym().compareTo(o2.getCrpProgram().getAcronym()))
-            .filter(
-              c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()
-                && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase()))
-            .collect(Collectors.toList())) {
-            if (FP != "") {
-              FP += ", ";
-            }
-            FP += crpProgramManager.getCrpProgramById(projectFocuses.getCrpProgram().getId()).getAcronym();
-
-          }
-
-          if (flagshipExternalPlannedList.get(i).getProjectPartnerPartnership().getProjectPartner().getInstitution()
-            .getName() != null
-            && !flagshipExternalPlannedList.get(i).getProjectPartnerPartnership().getProjectPartner().getInstitution()
-              .getName().isEmpty()) {
-            partner = flagshipExternalPlannedList.get(i).getProjectPartnerPartnership().getProjectPartner()
-              .getInstitution().getName();
-          }
-          if (flagshipExternalPlannedList.get(i).getProjectPartnerPartnership().getPartnershipResearchPhases() != null
-            && !flagshipExternalPlannedList.get(i).getProjectPartnerPartnership().getPartnershipResearchPhases()
-              .isEmpty()) {
-            for (int j = 0; j < flagshipExternalPlannedList.get(i).getProjectPartnerPartnership()
-              .getPartnershipResearchPhases().size(); j++) {
-
-              stage += flagshipExternalPlannedList.get(i).getProjectPartnerPartnership().getPartnershipResearchPhases()
-                .get(j).getRepIndPhaseResearchPartnership().getName() + "\n";
-            }
-          }
-          if (stage == null || stage.isEmpty()) {
-            stage = this.getText("global.untitled");
-          }
-          if (flagshipExternalPlannedList.get(i).getProjectPartnerPartnership().getMainArea() != null) {
-            mainArea = flagshipExternalPlannedList.get(i).getProjectPartnerPartnership().getMainArea();
-          }
-          partnerType = flagshipExternalPlannedList.get(i).getProjectPartnerPartnership().getProjectPartner()
-            .getInstitution().getInstitutionType().getRepIndOrganizationType().getName();
-
-          POIField[] sData = {new POIField(FP, ParagraphAlignment.CENTER),
-            new POIField(stage, ParagraphAlignment.CENTER), new POIField(partner, ParagraphAlignment.CENTER),
-            new POIField(partnerType, ParagraphAlignment.CENTER), new POIField(mainArea, ParagraphAlignment.LEFT)};
-          data = Arrays.asList(sData);
-          datas.add(data);
-        }
-      }
-    }
-    poiSummary.textTable(document, headers, datas, false, "tableAAnnualReport");
-  }
-
-
-  private void createTableH() {
-    List<List<POIField>> headers = new ArrayList<>();
-    POIField[] sHeader = {new POIField(this.getText("summaries.annualReport.tableG.crpName"), ParagraphAlignment.LEFT),
-      new POIField(this.getText("summaries.annualReport.tableG.description"), ParagraphAlignment.LEFT),
-      new POIField(this.getText("summaries.annualReport.tableG.relevantFP"), ParagraphAlignment.LEFT)};
-    List<POIField> header = Arrays.asList(sHeader);
-    headers.add(header);
-
-    List<List<POIField>> datas = new ArrayList<>();
-    List<POIField> data;
-
-    List<ReportSynthesisCrossCgiarCollaboration> reportSynthesisCrossCgiarCollaborationList =
-      reportSynthesisCrossCgiarCollaborationManager.getFlagshipCollaborations(flagshipLiaisonInstitutions,
-        this.getSelectedPhase().getId());
-    if (reportSynthesisCrossCgiarCollaborationList != null && !reportSynthesisCrossCgiarCollaborationList.isEmpty()) {
-      for (ReportSynthesisCrossCgiarCollaboration reportSynthesisCrossCgiarCollaboration : reportSynthesisCrossCgiarCollaborationList) {
-        String crpPlatform = " ", descriptionCollaboration = " ", relevantFP = " ";
-
-        if (reportSynthesisCrossCgiarCollaboration.getGlobalUnit().getAcronym() != null) {
-          crpPlatform = reportSynthesisCrossCgiarCollaboration.getGlobalUnit().getAcronym();
-        }
-
-        if (reportSynthesisCrossCgiarCollaboration.getDescription() != null) {
-          descriptionCollaboration = reportSynthesisCrossCgiarCollaboration.getDescription();
-        }
-
-        if (reportSynthesisCrossCgiarCollaboration.getFlagship() != null) {
-          relevantFP = reportSynthesisCrossCgiarCollaboration.getFlagship();
-        }
-
-        POIField[] sData = {new POIField(crpPlatform, ParagraphAlignment.CENTER),
-          new POIField(descriptionCollaboration, ParagraphAlignment.LEFT),
-          new POIField(relevantFP, ParagraphAlignment.LEFT)};
-        data = Arrays.asList(sData);
-        datas.add(data);
-      }
-    }
-
-    poiSummary.textTable(document, headers, datas, false, "tableAAnnualReport");
-  }
-
-
-  private void createTableI1() {
-
-    List<List<POIField>> headers = new ArrayList<>();
-    List<List<POIField>> datas = new ArrayList<>();
-    List<POIField> data;
-    POIField[] sHeader = {
-      new POIField(
-        this.getText("annualReport.melia.tableI.studies", new String[] {String.valueOf(this.getSelectedYear())}),
-        ParagraphAlignment.CENTER),
-      new POIField(this.getText("annualReport.melia.tableI.status"), ParagraphAlignment.CENTER),
-      new POIField(this.getText("annualReport.melia.tableI.comments"), ParagraphAlignment.CENTER)};
-    List<POIField> header = Arrays.asList(sHeader);
-    headers.add(header);
-
-    List<LiaisonInstitution> liaisonInstitutionsList =
-      new ArrayList<>(this.getLoggedCrp().getLiaisonInstitutions().stream()
-        .filter(c -> c.getCrpProgram() != null && c.isActive()
-          && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
-        .collect(Collectors.toList()));
-    liaisonInstitutionsList.sort(Comparator.comparing(LiaisonInstitution::getAcronym));
-
-    flagshipPlannedList = reportSynthesisMeliaManager.getMeliaPlannedList(liaisonInstitutionsList,
-      this.getSelectedPhase().getId(), this.getLoggedCrp(), pmuInstitution);
-    if (flagshipPlannedList != null && !flagshipPlannedList.isEmpty()) {
-      for (int i = 0; i < flagshipPlannedList.size(); i++) {
-        String studies = "", status = "", comments = "";
-        studies = flagshipPlannedList.get(i).getProjectExpectedStudy()
-          .getProjectExpectedStudyInfo(this.getSelectedPhase()).getTitle();
-        status = flagshipPlannedList.get(i).getProjectExpectedStudy()
-          .getProjectExpectedStudyInfo(this.getSelectedPhase()).getStatusName();
-        if (flagshipPlannedList.get(i).getProjectExpectedStudy().getProjectExpectedStudyInfo(this.getSelectedPhase())
-          .getTopLevelComments() != null) {
-          comments = flagshipPlannedList.get(i).getProjectExpectedStudy()
-            .getProjectExpectedStudyInfo(this.getSelectedPhase()).getTopLevelComments();
-        }
-
-        POIField[] sData = {new POIField(studies, ParagraphAlignment.LEFT),
-          new POIField(status, ParagraphAlignment.CENTER), new POIField(comments, ParagraphAlignment.LEFT)};
-        data = Arrays.asList(sData);
-        datas.add(data);
-      }
-    }
-
-    poiSummary.textTable(document, headers, datas, false, "tableIAnnualReport");
-  }
-
-  private void createTableI2() {
-    List<List<POIField>> headers = new ArrayList<>();
-    POIField[] sHeader = {new POIField(this.getText("annualReport.melia.evaluation.name"), ParagraphAlignment.CENTER),
-      new POIField(this.getText("annualReport.melia.evaluation.recommendation"), ParagraphAlignment.CENTER),
-      new POIField(this.getText("annualReport.melia.evaluation.managementResponse") + " - Action Plan",
-        ParagraphAlignment.CENTER),
-      new POIField(this.getText("annualReport.melia.evaluation.whom"), ParagraphAlignment.CENTER),
-      new POIField(this.getText("annualReport.melia.evaluation.when"), ParagraphAlignment.CENTER),
-      new POIField(this.getText("summaries.annualReport.tableI2.field6"), ParagraphAlignment.CENTER)};
-    List<POIField> header = Arrays.asList(sHeader);
-    headers.add(header);
-
-    List<List<POIField>> datas = new ArrayList<>();
-    List<POIField> data;
-    if (reportSynthesisPMU.getReportSynthesisMelia().getReportSynthesisMeliaEvaluations() != null
-      && !reportSynthesisPMU.getReportSynthesisMelia().getReportSynthesisMeliaEvaluations().isEmpty()) {
-      List<ReportSynthesisMeliaEvaluation> reportSynthesisMeliaEvaluationList =
-        reportSynthesisPMU.getReportSynthesisMelia().getReportSynthesisMeliaEvaluations().stream()
-          .filter(e -> e.isActive()).collect(Collectors.toList());
-
-      for (ReportSynthesisMeliaEvaluation reportSynthesisMeliaEvaluation : reportSynthesisMeliaEvaluationList) {
-        String nameEvaluation = "", recommendation = "", response = "", whom = "", when = "", status = "";
-
-        if (reportSynthesisMeliaEvaluation.getNameEvaluation() != null) {
-          nameEvaluation = reportSynthesisMeliaEvaluation.getNameEvaluation();
-        }
-        if (reportSynthesisMeliaEvaluation.getRecommendation() != null) {
-          recommendation = reportSynthesisMeliaEvaluation.getRecommendation();
-        }
-        if (reportSynthesisMeliaEvaluation.getManagementResponse() != null) {
-          response = reportSynthesisMeliaEvaluation.getManagementResponse();
-        }
-        if (reportSynthesisMeliaEvaluation.getTextWhom() != null) {
-          whom = reportSynthesisMeliaEvaluation.getTextWhom();
-        }
-        if (reportSynthesisMeliaEvaluation.getTextWhen() != null) {
-          when = reportSynthesisMeliaEvaluation.getTextWhen();
-        }
-
-        if (reportSynthesisMeliaEvaluation.getStatus() != null && reportSynthesisMeliaEvaluation.getStatus() != -1) {
-          int temp = Integer.parseInt(reportSynthesisMeliaEvaluation.getStatus().toString());
-          status = ProjectStatusEnum.getValue(temp).getStatus();
-        }
-
-        POIField[] sData = {new POIField(nameEvaluation, ParagraphAlignment.CENTER),
-          new POIField(recommendation, ParagraphAlignment.LEFT), new POIField(response, ParagraphAlignment.LEFT),
-          new POIField(whom, ParagraphAlignment.LEFT), new POIField(when, ParagraphAlignment.LEFT),
-          new POIField(status, ParagraphAlignment.LEFT)};
-
-        data = Arrays.asList(sData);
-        datas.add(data);
-      }
-    }
-
-    poiSummary.textTable(document, headers, datas, false, "tableIAnnualReport");
-  }
-
-  private void createTableJ() {
-    if (reportSynthesisPMU.getReportSynthesisFinancialSummary().getReportSynthesisFinancialSummaryBudgets() != null
-      && !reportSynthesisPMU.getReportSynthesisFinancialSummary().getReportSynthesisFinancialSummaryBudgets()
-        .isEmpty()) {
-      reportSynthesisPMU.getReportSynthesisFinancialSummary()
-        .setBudgets(new ArrayList<>(
-          reportSynthesisPMU.getReportSynthesisFinancialSummary().getReportSynthesisFinancialSummaryBudgets().stream()
-            .filter(t -> t.isActive()).collect(Collectors.toList())));
-    } else {
-
-      flagshipLiaisonInstitutions.sort(Comparator.comparing(LiaisonInstitution::getAcronym));
-      reportSynthesisPMU.getReportSynthesisFinancialSummary().setBudgets(new ArrayList<>());
-      for (LiaisonInstitution liInstitution : flagshipLiaisonInstitutions) {
-        ReportSynthesisFinancialSummaryBudget financialSummaryBudget = new ReportSynthesisFinancialSummaryBudget();
-        financialSummaryBudget.setLiaisonInstitution(liInstitution);
-        reportSynthesisPMU.getReportSynthesisFinancialSummary().getBudgets().add(financialSummaryBudget);
-      }
-
-      List<PowbExpenditureAreas> expAreas = new ArrayList<>(powbExpenditureAreasManager.findAll().stream()
-        .filter(x -> x.isActive() && !x.getIsExpenditure()).collect(Collectors.toList()));
-      for (PowbExpenditureAreas powbExpenditureAreas : expAreas) {
-        ReportSynthesisFinancialSummaryBudget financialSummaryBudget = new ReportSynthesisFinancialSummaryBudget();
-        financialSummaryBudget.setExpenditureArea(powbExpenditureAreas);
-        reportSynthesisPMU.getReportSynthesisFinancialSummary().getBudgets().add(financialSummaryBudget);
-      }
-    }
-
-
-    List<ReportSynthesisFinancialSummaryBudget> reportSynthesisFinancialSummaryBudgetList =
-      reportSynthesisPMU.getReportSynthesisFinancialSummary().getBudgets();
-
-    List<List<POIField>> headers = new ArrayList<>();
-    POIField[] sHeader = {new POIField("", ParagraphAlignment.CENTER), new POIField(
-      this.getText("annualReport.financial.tableJ.budget", new String[] {String.valueOf(this.getSelectedYear())}) + "*",
-      ParagraphAlignment.CENTER), new POIField("", ParagraphAlignment.CENTER),
-      new POIField("", ParagraphAlignment.CENTER),
-      new POIField(this.getText("annualReport.financial.tableJ.expenditure") + "*", ParagraphAlignment.CENTER),
-      new POIField("", ParagraphAlignment.CENTER), new POIField("", ParagraphAlignment.CENTER),
-      new POIField(this.getText("annualReport.financial.tableJ.difference") + "*", ParagraphAlignment.CENTER),
-      new POIField("", ParagraphAlignment.CENTER), new POIField("", ParagraphAlignment.CENTER)};
-
-    POIField[] sHeader2 = {new POIField(" ", ParagraphAlignment.CENTER),
-      new POIField(this.getText("financialPlan.tableE.w1w2"), ParagraphAlignment.CENTER),
-      new POIField(this.getText("financialPlan.tableE.w3bilateral"), ParagraphAlignment.CENTER),
-      new POIField(this.getText("financialPlan.tableE.total"), ParagraphAlignment.CENTER),
-      new POIField(this.getText("financialPlan.tableE.w1w2"), ParagraphAlignment.CENTER),
-      new POIField(this.getText("financialPlan.tableE.w3bilateral"), ParagraphAlignment.CENTER),
-      new POIField(this.getText("financialPlan.tableE.total"), ParagraphAlignment.CENTER),
-      new POIField(this.getText("financialPlan.tableE.w1w2"), ParagraphAlignment.CENTER),
-      new POIField(this.getText("financialPlan.tableE.w3bilateral"), ParagraphAlignment.CENTER),
-      new POIField(this.getText("financialPlan.tableE.total"), ParagraphAlignment.CENTER)};
-
-    List<POIField> header = Arrays.asList(sHeader);
-    List<POIField> header2 = Arrays.asList(sHeader2);
-    headers.add(header);
-    headers.add(header2);
-
-    List<List<POIField>> datas = new ArrayList<>();
-    List<POIField> data;
-
-    double totalW1w2Difference = 0.0, totalW3Difference = 0.0, grandTotalDifference = 0.0;
-    if (reportSynthesisFinancialSummaryBudgetList != null && !reportSynthesisFinancialSummaryBudgetList.isEmpty()) {
-
-      for (ReportSynthesisFinancialSummaryBudget reportSynthesisFinancialSummaryBudget : reportSynthesisFinancialSummaryBudgetList) {
-
-        String category = "";
-        Double w1w2Planned = 0.0, w3Planned = 0.0, w1w2Actual = 0.0, w3Actual = 0.0, totalPlanned = 0.0,
-          totalActual = 0.0, w1w2Difference = 0.0, w3Difference = 0.0, totalDifference = 0.0;
-
-        /** Getting category name **/
-        if (reportSynthesisFinancialSummaryBudget.getLiaisonInstitution() != null) {
-          category = reportSynthesisFinancialSummaryBudget.getLiaisonInstitution().getComposedName();
-        } else if (reportSynthesisFinancialSummaryBudget.getExpenditureArea().getExpenditureArea() != null) {
-          category = reportSynthesisFinancialSummaryBudget.getExpenditureArea().getExpenditureArea();
-        }
-        if (reportSynthesisFinancialSummaryBudget.getW1Planned() != null) {
-          w1w2Planned = reportSynthesisFinancialSummaryBudget.getW1Planned();
-        }
-
-        if (reportSynthesisFinancialSummaryBudget.getW3Planned() != null) {
-          w3Planned = reportSynthesisFinancialSummaryBudget.getW3Planned()
-            + reportSynthesisFinancialSummaryBudget.getBilateralPlanned();
-        }
-
-        totalPlanned = w1w2Planned + w3Planned;
-        if (reportSynthesisFinancialSummaryBudget.getW1Actual() != null) {
-          w1w2Actual = reportSynthesisFinancialSummaryBudget.getW1Actual();
-        }
-
-        if (reportSynthesisFinancialSummaryBudget.getW3Actual() != null) {
-          w3Actual = reportSynthesisFinancialSummaryBudget.getW3Actual()
-            + reportSynthesisFinancialSummaryBudget.getBilateralActual();
-        }
-
-        totalActual = w1w2Actual + w3Actual;
-
-        w1w2Difference = w1w2Planned - w1w2Actual;
-        w3Difference = w3Planned - w3Actual;
-        totalDifference = totalPlanned - totalActual;
-
-        totalw1w2Planned += w1w2Planned;
-        totalW3Planned += w3Planned;
-        grandTotalPlanned += totalPlanned;
-
-        totalw1w2Actual += w1w2Actual;
-        totalW3Actual += w3Actual;
-        grandTotalActual += totalActual;
-
-        totalW1w2Difference += w1w2Difference;
-        totalW3Difference += w3Difference;
-        grandTotalDifference += totalDifference;
-
-        POIField[] sData = {new POIField(category, ParagraphAlignment.CENTER),
-          new POIField(currencyFormat.format(round(w1w2Planned / 1000, 2)), ParagraphAlignment.CENTER),
-          new POIField(currencyFormat.format(round(w3Planned / 1000, 2)), ParagraphAlignment.CENTER),
-          new POIField(currencyFormat.format(round(totalPlanned / 1000, 2)), ParagraphAlignment.CENTER),
-          new POIField(currencyFormat.format(round(w1w2Actual / 1000, 2)), ParagraphAlignment.CENTER),
-          new POIField(currencyFormat.format(round(w3Actual / 1000, 2)), ParagraphAlignment.CENTER),
-          new POIField(currencyFormat.format(round(totalActual / 1000, 2)), ParagraphAlignment.CENTER),
-          new POIField(currencyFormat.format(round(w1w2Difference / 1000, 2)), ParagraphAlignment.CENTER),
-          new POIField(currencyFormat.format(round(w3Difference / 1000, 2)), ParagraphAlignment.CENTER),
-          new POIField(currencyFormat.format(round(totalDifference / 1000, 2)), ParagraphAlignment.CENTER)};
-
-        data = Arrays.asList(sData);
-        datas.add(data);
-      }
-    }
-
-    Boolean bold = true;
-    String blackColor = "000000";
-    POIField[] sData = {new POIField("CRP Total", ParagraphAlignment.CENTER, bold, blackColor),
-
-      new POIField(currencyFormat.format(round(totalw1w2Planned / 1000, 2)), ParagraphAlignment.CENTER, bold,
-        blackColor),
-      new POIField(currencyFormat.format(round(totalW3Planned / 1000, 2)), ParagraphAlignment.CENTER, bold, blackColor),
-      new POIField(currencyFormat.format(round(grandTotalPlanned / 1000, 2)), ParagraphAlignment.CENTER, bold,
-        blackColor),
-      new POIField(currencyFormat.format(round(totalw1w2Actual / 1000, 2)), ParagraphAlignment.CENTER, bold,
-        blackColor),
-      new POIField(currencyFormat.format(round(totalW3Actual / 1000, 2)), ParagraphAlignment.CENTER, bold, blackColor),
-      new POIField(currencyFormat.format(round(grandTotalActual / 1000, 2)), ParagraphAlignment.CENTER, bold,
-        blackColor),
-      new POIField(currencyFormat.format(round(totalW1w2Difference / 1000, 2)), ParagraphAlignment.CENTER, bold,
-        blackColor),
-      new POIField(currencyFormat.format(round(totalW3Difference / 1000, 2)), ParagraphAlignment.CENTER, bold,
-        blackColor),
-      new POIField(currencyFormat.format(round(grandTotalDifference / 1000, 2)), ParagraphAlignment.CENTER, bold,
-        blackColor),};
-
-    data = Arrays.asList(sData);
-    datas.add(data);
-
-    poiSummary.textTable(document, headers, datas, true, "tableJAnnualReport");
-  }
-
   @Override
   public String execute() throws Exception {
     if (this.getSelectedPhase() == null) {
@@ -1627,6 +1818,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
 
         // Toc section
         addCustomHeadingStyle(document, "heading 1", 1);
+        addCustomHeadingStyle(document, "heading 0", 1);
         addCustomHeadingStyle(document, "heading 2", 1);
         addCustomHeadingStyle(document, "heading 3", 1);
         addCustomHeadingStyle(document, "heading 4", 2);
@@ -1639,8 +1831,8 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         addCustomHeadingStyle(document, "heading 11", 2);
         addCustomHeadingStyle(document, "heading 12", 2);
         addCustomHeadingStyle(document, "heading 13", 2);
-        addCustomHeadingStyle(document, "heading 14", 1);
-        addCustomHeadingStyle(document, "heading 15", 2);
+        addCustomHeadingStyle(document, "heading 14", 2);
+        addCustomHeadingStyle(document, "heading 15", 1);
         addCustomHeadingStyle(document, "heading 16", 2);
         addCustomHeadingStyle(document, "heading 17", 2);
         addCustomHeadingStyle(document, "heading 18", 2);
@@ -1649,7 +1841,8 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         addCustomHeadingStyle(document, "heading 21", 2);
         addCustomHeadingStyle(document, "heading 22", 2);
         addCustomHeadingStyle(document, "heading 23", 2);
-        addCustomHeadingStyle(document, "heading 24", 1);
+        addCustomHeadingStyle(document, "heading 24", 2);
+        addCustomHeadingStyle(document, "heading 25", 1);
 
         // First page
         document.createParagraph().setPageBreak(true);
@@ -1668,6 +1861,17 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         this.addParticipatingCenters();
 
         // Part A - Narrative section
+        // Executive Summary
+        poiSummary.textLineBreak(document, 1);
+        paragraph = document.createParagraph();
+        run = paragraph.createRun();
+        run.setFontSize(14);
+        run.setColor("76923C");
+        run.setBold(true);
+        run.setText(this.getText("summaries.annualReportCRP2018.executiveSummary"));
+        this.addNarrativeSection();
+        paragraph.setStyle("heading 0");
+
         // First page
         poiSummary.textLineBreak(document, 1);
         paragraph = document.createParagraph();
@@ -1686,57 +1890,67 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         run.setText(this.getText("summaries.annualReport.keyResults"));
         paragraph.setStyle("heading 3");
 
+        // 1.1 Progress Towards SDG and SLO
         poiSummary.textLineBreak(document, 1);
         paragraph = document.createParagraph();
         run = paragraph.createRun();
         run.setFontSize(13);
         run.setBold(true);
         run.setText(this.getText("summaries.annualReport2018.keyResults.crpProgress"));
-        paragraph.setStyle("heading 4");
         this.addExpectedCrp();
-        this.addCrpProgressOutcomes();
+        paragraph.setStyle("heading 4");
 
+
+        // 1.2 CRP progress towars outputs and outcomes
         poiSummary.textLineBreak(document, 1);
         paragraph = document.createParagraph();
         run = paragraph.createRun();
-        run.setFontSize(13);
+        run.setFontSize(14);
         run.setBold(true);
         run.setText(this.getText("summaries.annualReport2018.keyResults.progressTowards"));
         paragraph.setStyle("heading 5");
-        this.addAdjustmentDescription();
 
+        // 1.2.1
         poiSummary.textLineBreak(document, 1);
         paragraph = document.createParagraph();
         run = paragraph.createRun();
-        run.setFontSize(13);
+        run.setFontSize(11);
         run.setBold(true);
         run.setText(this.getText("summaries.annualReport2018.keyResults.overall"));
+        this.addOverallProgressCrp();
         paragraph.setStyle("heading 6");
 
+        // 1.2.2
         poiSummary.textLineBreak(document, 1);
         paragraph = document.createParagraph();
         run = paragraph.createRun();
-        run.setFontSize(13);
+        run.setFontSize(11);
         run.setBold(true);
         run.setText(this.getText("summaries.annualReport2018.keyResults.progress"));
+        this.addProgressFlagshipCrp();
         paragraph.setStyle("heading 7");
 
+        // 1.2.3
         poiSummary.textLineBreak(document, 1);
         paragraph = document.createParagraph();
         run = paragraph.createRun();
-        run.setFontSize(13);
+        run.setFontSize(11);
         run.setBold(true);
         run.setText(this.getText("summaries.annualReport2018.keyResults.variance"));
+        this.addVariancePlanned();
         paragraph.setStyle("heading 8");
 
+        // 1.2.4
         poiSummary.textLineBreak(document, 1);
         paragraph = document.createParagraph();
         run = paragraph.createRun();
-        run.setFontSize(13);
+        run.setFontSize(11);
         run.setBold(true);
         run.setText(this.getText("summaries.annualReport2018.keyResults.altmetric"));
+        this.addAlmetricCrp();
         paragraph.setStyle("heading 9");
 
+        // 1.3 Cross cutting dimensions
         poiSummary.textLineBreak(document, 1);
         paragraph = document.createParagraph();
         run = paragraph.createRun();
@@ -1745,19 +1959,20 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         run.setText(this.getText("summaries.annualReport2018.crossCutting"));
         paragraph.setStyle("heading 10");
 
-        poiSummary.textLineBreak(document, 1);
+        // poiSummary.textLineBreak(document, 1);
+        //
         paragraph = document.createParagraph();
         run = paragraph.createRun();
-        run.setFontSize(13);
+        run.setFontSize(11);
         run.setBold(true);
         run.setText(this.getText("summaries.annualReport2018.crossCutting.gender"));
-        paragraph.setStyle("heading 11");
         this.addCrossCuttingGender();
+        paragraph.setStyle("heading 11");
 
         poiSummary.textLineBreak(document, 1);
         paragraph = document.createParagraph();
         run = paragraph.createRun();
-        run.setFontSize(13);
+        run.setFontSize(11);
         run.setBold(true);
         run.setText(this.getText("summaries.annualReport2018.crossCutting.youth"));
         paragraph.setStyle("heading 12");
@@ -1766,11 +1981,20 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         poiSummary.textLineBreak(document, 1);
         paragraph = document.createParagraph();
         run = paragraph.createRun();
-        run.setFontSize(13);
+        run.setFontSize(11);
         run.setBold(true);
         run.setText(this.getText("summaries.annualReport2018.crossCutting.capacity"));
         paragraph.setStyle("heading 13");
-        this.addCrossCuttingOtherAspects();
+        this.addCrossCuttingCapacityDevelopment();
+
+        poiSummary.textLineBreak(document, 1);
+        paragraph = document.createParagraph();
+        run = paragraph.createRun();
+        run.setFontSize(11);
+        run.setBold(true);
+        run.setText(this.getText("summaries.annualReport2018.crossCutting.climateChange"));
+        paragraph.setStyle("heading 14");
+        this.addCrossCuttingClimateChange();
 
         // section 2 - Effectiveness and Efficiency
         poiSummary.textLineBreak(document, 1);
@@ -1779,61 +2003,67 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         run.setFontSize(14);
         run.setBold(true);
         run.setText(this.getText("summaries.annualReport2018.effectiveness"));
-        paragraph.setStyle("heading 14");
+        paragraph.setStyle("heading 15");
 
+        // 2.1 Management and governance
         poiSummary.textLineBreak(document, 1);
         paragraph = document.createParagraph();
         run = paragraph.createRun();
         run.setFontSize(13);
         run.setBold(true);
         run.setText(this.getText("summaries.annualReport2018.effectiveness.management"));
-        paragraph.setStyle("heading 15");
-        this.addVariancePlanned();
+        paragraph.setStyle("heading 16");
+        this.addManagementGovernance();
 
+        // 2.2 Partnerships
         poiSummary.textLineBreak(document, 1);
         paragraph = document.createParagraph();
         run = paragraph.createRun();
         run.setFontSize(13);
         run.setBold(true);
         run.setText(this.getText("summaries.annualReport2018.effectiveness.partnerships"));
-        paragraph.setStyle("heading 16");
-        this.addFundingSummarize();
+        paragraph.setStyle("heading 17");
+        // this.addFundingSummarize();
 
+        // 2.2.1 Highlights of External Partnerships
         poiSummary.textLineBreak(document, 1);
         paragraph = document.createParagraph();
         run = paragraph.createRun();
-        run.setFontSize(13);
+        run.setFontSize(11);
         run.setBold(true);
         run.setText(this.getText("summaries.annualReport2018.effectiveness.highlights"));
-        paragraph.setStyle("heading 17");
         this.addExternalPartnerships();
+        paragraph.setStyle("heading 18");
 
+        // 2.2.2
         poiSummary.textLineBreak(document, 1);
         paragraph = document.createParagraph();
         run = paragraph.createRun();
-        run.setFontSize(13);
+        run.setFontSize(11);
         run.setBold(true);
         run.setText(this.getText("summaries.annualReport2018.effectiveness.crossCgiar"));
-        paragraph.setStyle("heading 18");
         this.addCrossPartnerships();
+        paragraph.setStyle("heading 19");
 
+        // 2.3 Intellectual Assets
         poiSummary.textLineBreak(document, 1);
         paragraph = document.createParagraph();
         run = paragraph.createRun();
         run.setFontSize(13);
         run.setBold(true);
         run.setText(this.getText("summaries.annualReport2018.effectiveness.intellectual"));
-        paragraph.setStyle("heading 19");
-        this.addReportSynthesisMelia();
+        this.addIntellectualAssets();
+        paragraph.setStyle("heading 20");
 
+        // 2.4 Melia
         poiSummary.textLineBreak(document, 1);
         paragraph = document.createParagraph();
         run = paragraph.createRun();
         run.setFontSize(13);
         run.setBold(true);
         run.setText(this.getText("summaries.annualReport2018.effectiveness.monitoring"));
-        paragraph.setStyle("heading 20");
-        this.addImprovingEfficiency();
+        this.addReportSynthesisMelia();
+        paragraph.setStyle("heading 21");
 
         poiSummary.textLineBreak(document, 1);
         paragraph = document.createParagraph();
@@ -1841,15 +2071,6 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         run.setFontSize(13);
         run.setBold(true);
         run.setText(this.getText("summaries.annualReport2018.effectiveness.efficiency"));
-        paragraph.setStyle("heading 21");
-        this.addImprovingEfficiency();
-
-        poiSummary.textLineBreak(document, 1);
-        paragraph = document.createParagraph();
-        run = paragraph.createRun();
-        run.setFontSize(13);
-        run.setBold(true);
-        run.setText(this.getText("summaries.annualReport2018.effectiveness.risk"));
         paragraph.setStyle("heading 22");
         this.addImprovingEfficiency();
 
@@ -1858,9 +2079,18 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         run = paragraph.createRun();
         run.setFontSize(13);
         run.setBold(true);
-        run.setText(this.getText("summaries.annualReport2018.effectiveness.funding"));
+        run.setText(this.getText("summaries.annualReport2018.effectiveness.risk"));
         paragraph.setStyle("heading 23");
-        this.addImprovingEfficiency();
+        this.addManagementRisks();
+
+        poiSummary.textLineBreak(document, 1);
+        paragraph = document.createParagraph();
+        run = paragraph.createRun();
+        run.setFontSize(13);
+        run.setBold(true);
+        run.setText(this.getText("summaries.annualReport2018.effectiveness.funding"));
+        paragraph.setStyle("heading 24");
+        this.addFundingSummarize();
 
         // section 3 - Financial summary
         poiSummary.textLineBreak(document, 1);
@@ -1869,8 +2099,8 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         run.setFontSize(14);
         run.setBold(true);
         run.setText(this.getText("summaries.annualReport2018.financial"));
-        paragraph.setStyle("heading 24");
-        this.addManagement();
+        paragraph.setStyle("heading 25");
+        this.addFinancialSummary();
 
         /* Create a landscape text Section */
         paragraph = document.createParagraph();
@@ -1885,94 +2115,155 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         pageSizeTable.setH(BigInteger.valueOf(595 * 20));
         this.loadTablePMU();
 
-        // Table a1
-        poiSummary.textLineBreak(document, 1);
-        poiSummary.textHead1Title(document.createParagraph(), "TABLES");
-        poiSummary.textHead2Title(document.createParagraph(), this.getText("summaries.annualReport.tableA.title"));
-        poiSummary.textHead3Title(document.createParagraph(), this.getText("summaries.annualReport.tableA1.title"));
-        this.createTableA1();
 
-        // Table a2
         poiSummary.textLineBreak(document, 1);
-        poiSummary.textHead3Title(document.createParagraph(), this.getText("summaries.annualReport.tableA2.title"));
-        // this.createTableA2();
+        poiSummary.textHead1Title(document.createParagraph(), "Part B. TABLES");
 
-        // Table b
+        // Table 1
         poiSummary.textLineBreak(document, 1);
-        poiSummary.textHead2Title(document.createParagraph(), this.getText("summaries.annualReport.tableB.title"));
-        this.createTableB();
-        poiSummary.textNotes(document.createParagraph(), this.getText("summaries.annualReport.tableB.description1"));
-        poiSummary.textNotes(document.createParagraph(), this.getText("summaries.annualReport.tableB.description2"));
+        paragraph = document.createParagraph();
+        run = paragraph.createRun();
+        run.setFontSize(13);
+        run.setBold(true);
+        run.setText(this.getText("summaries.annualReport2018.table1"));
+        paragraph.setStyle("heading 2");
+        this.createTable1();
+
+        // Table 2
+        poiSummary.textLineBreak(document, 1);
+        paragraph = document.createParagraph();
+        run = paragraph.createRun();
+        run.setFontSize(13);
+        run.setBold(true);
+        run.setText(this.getText("summaries.annualReport2018.table2"));
+        paragraph.setStyle("heading 2");
+        this.createTable2();
+
+        // Table 3
+        poiSummary.textLineBreak(document, 1);
+        paragraph = document.createParagraph();
+        run = paragraph.createRun();
+        run.setFontSize(13);
+        run.setBold(true);
+        run.setText(this.getText("summaries.annualReport2018.table3"));
+        paragraph.setStyle("heading 2");
+        this.createTable3();
+
+        // Table 4
+        poiSummary.textLineBreak(document, 1);
+        paragraph = document.createParagraph();
+        run = paragraph.createRun();
+        run.setFontSize(13);
+        run.setBold(true);
+        run.setText(this.getText("summaries.annualReport2018.table4"));
+        paragraph.setStyle("heading 2");
+        this.createTable4();
+
+        // Table 5
+        poiSummary.textLineBreak(document, 1);
+        paragraph = document.createParagraph();
+        run = paragraph.createRun();
+        run.setFontSize(13);
+        run.setBold(true);
+        run.setText(this.getText("summaries.annualReport2018.table5"));
+        paragraph.setStyle("heading 2");
+        this.createTable5();
+
+        // Table 6
+        poiSummary.textLineBreak(document, 1);
+        paragraph = document.createParagraph();
+        run = paragraph.createRun();
+        run.setFontSize(13);
+        run.setBold(true);
+        run.setText(this.getText("summaries.annualReport2018.table6"));
+        paragraph.setStyle("heading 2");
+        this.createTable6();
+
+        // Table 7
+        poiSummary.textLineBreak(document, 1);
+        paragraph = document.createParagraph();
+        run = paragraph.createRun();
+        run.setFontSize(13);
+        run.setBold(true);
+        run.setText(this.getText("summaries.annualReport2018.table7"));
+        paragraph.setStyle("heading 2");
+        this.createTable7();
+
+        // Table 8
+        poiSummary.textLineBreak(document, 1);
+        paragraph = document.createParagraph();
+        run = paragraph.createRun();
+        run.setFontSize(13);
+        run.setBold(true);
+        run.setText(this.getText("summaries.annualReport2018.table8"));
+        paragraph.setStyle("heading 2");
+        this.createTable8();
+
+        // Table 9
+        poiSummary.textLineBreak(document, 1);
+        paragraph = document.createParagraph();
+        run = paragraph.createRun();
+        run.setFontSize(13);
+        run.setBold(true);
+        run.setText(this.getText("summaries.annualReport2018.table9"));
+        paragraph.setStyle("heading 2");
+        this.createTable9();
+
+        // Table 10
+        poiSummary.textLineBreak(document, 1);
+        paragraph = document.createParagraph();
+        run = paragraph.createRun();
+        run.setFontSize(13);
+        run.setBold(true);
+        run.setText(this.getText("summaries.annualReport2018.table10"));
+        paragraph.setStyle("heading 2");
+        this.createTable10();
+
+        // Table 11
+        poiSummary.textLineBreak(document, 1);
+        paragraph = document.createParagraph();
+        run = paragraph.createRun();
+        run.setFontSize(13);
+        run.setBold(true);
+        run.setText(this.getText("summaries.annualReport2018.table11"));
+        paragraph.setStyle("heading 2");
+        this.createTable11();
+
+        // Table 12
+        poiSummary.textLineBreak(document, 1);
+        paragraph = document.createParagraph();
+        run = paragraph.createRun();
+        run.setFontSize(13);
+        run.setBold(true);
+        run.setText(this.getText("summaries.annualReport2018.table12"));
+        paragraph.setStyle("heading 2");
+        this.createTable12();
+
+        // Table 12
+        poiSummary.textLineBreak(document, 1);
+        paragraph = document.createParagraph();
+        run = paragraph.createRun();
+        run.setFontSize(13);
+        run.setBold(true);
+        run.setText(this.getText("summaries.annualReport2018.table12"));
+        paragraph.setStyle("heading 2");
+        this.createTable12();
+
+        // Table 13
+        poiSummary.textLineBreak(document, 1);
+        paragraph = document.createParagraph();
+        run = paragraph.createRun();
+        run.setFontSize(13);
+        run.setBold(true);
+        run.setText(this.getText("summaries.annualReport2018.table13"));
+        paragraph.setStyle("heading 2");
+        this.createTable13();
 
         // Table c
         poiSummary.textLineBreak(document, 1);
         poiSummary.textHead2Title(document.createParagraph(), this.getText("annualReport.ccDimensions.tableCTitle"));
         this.createTableC();
 
-        // Table d
-        poiSummary.textLineBreak(document, 1);
-        poiSummary.textHead2Title(document.createParagraph(), this.getText("summaries.annualReport.tableD.title"));
-
-        // Table d1
-        poiSummary.textHead3Title(document.createParagraph(), this.getText("summaries.annualReport.tableD1.title"));
-        // this.createTableD1();
-        poiSummary.textNotes(document.createParagraph(), this.getText("summaries.annualReport.tableD1.footer"));
-
-        // Table d2
-        poiSummary.textHead3Title(document.createParagraph(), this.getText("summaries.annualReport.tableD2.title"));
-        this.createTableD2();
-        poiSummary.textNotes(document.createParagraph(), this.getText("summaries.annualReport.tableD2.footer"));
-
-        // Table e
-        poiSummary.textLineBreak(document, 1);
-        poiSummary.textHead2Title(document.createParagraph(),
-          this.getText("annualReport.ccDimensions.tableETitle", new String[] {String.valueOf(this.getSelectedYear())}));
-        this.createTableE();
-        poiSummary.textNotes(document.createParagraph(), this.getText("intellectualAsset.title.help2017"));
-
-        // Table f
-        poiSummary.textLineBreak(document, 1);
-        poiSummary.textHead2Title(document.createParagraph(), this.getText("financialPlan.tableF.title2017"));
-        // this.createTableF();
-        poiSummary.textNotes(document.createParagraph(), this.getText("financialPlan.tableF.expenditureArea.help"));
-        poiSummary.textNotes(document.createParagraph(), this.getText("financialPlan.tableF.expenditureArea.help2017"));
-        poiSummary.textNotes(document.createParagraph(),
-          "**" + this.getText("summaries.annualReport.tableJ.description.help2"));
-
-
-        // Table g
-        poiSummary.textLineBreak(document, 1);
-        poiSummary.textHead2Title(document.createParagraph(), this.getText("summaries.annualReport.tableG.title"));
-        this.createTableG();
-
-        // Table h
-        poiSummary.textLineBreak(document, 1);
-        poiSummary.textHead2Title(document.createParagraph(), this.getText("summaries.annualReport.tableH.title"));
-        this.createTableH();
-        poiSummary.textNotes(document.createParagraph(), this.getText("summaries.powb.tableG.description.help"));
-
-        // Table i1
-        poiSummary.textLineBreak(document, 1);
-        poiSummary.textHead2Title(document.createParagraph(), this.getText("summaries.annualReport.tableI.title"));
-        poiSummary.textHead3Title(document.createParagraph(),
-          this.getText("annualReport.melia.tableI.title", new String[] {String.valueOf(this.getSelectedYear())})
-            + " POWB");
-        this.createTableI1();
-
-        // Table i2
-        poiSummary.textLineBreak(document, 1);
-        poiSummary.textHead3Title(document.createParagraph(), this.getText("annualReport.melia.evaluation.title"));
-        // this.createTableI2();
-
-        // Table j
-        poiSummary.textLineBreak(document, 1);
-        poiSummary.textHead2Title(document.createParagraph(), this.getText("summaries.annualReport.tableJ.title"));
-        // this.createTableJ();
-        poiSummary.textNotes(document.createParagraph(),
-          this.getText("summaries.annualReport.tableJ.description.help2"));
-
-        poiSummary.textNotes(document.createParagraph(),
-          "*" + this.getText("summaries.annualReport.tableJ.description.help"));
 
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         document.write(os);
@@ -2093,7 +2384,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         // section 3 - crp management
         poiSummary.textLineBreak(document, 1);
         poiSummary.textHead1Title(document.createParagraph(), this.getText("summaries.annualReport.management"));
-        this.addManagement();
+        // this.addManagement();
 
         /* Create a landscape text Section */
         XWPFParagraph para = document.createParagraph();
@@ -2113,19 +2404,13 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         poiSummary.textHead1Title(document.createParagraph(), "TABLES");
         poiSummary.textHead2Title(document.createParagraph(), this.getText("summaries.annualReport.tableA.title"));
         poiSummary.textHead3Title(document.createParagraph(), this.getText("summaries.annualReport.tableA1.title"));
-        this.createTableA1();
+        this.createTable1();
 
         // Table a2
         poiSummary.textLineBreak(document, 1);
         poiSummary.textHead3Title(document.createParagraph(), this.getText("summaries.annualReport.tableA2.title"));
         this.createTableA2();
 
-        // Table b
-        poiSummary.textLineBreak(document, 1);
-        poiSummary.textHead2Title(document.createParagraph(), this.getText("summaries.annualReport.tableB.title"));
-        this.createTableB();
-        poiSummary.textNotes(document.createParagraph(), this.getText("summaries.annualReport.tableB.description1"));
-        poiSummary.textNotes(document.createParagraph(), this.getText("summaries.annualReport.tableB.description2"));
 
         // Table c
         poiSummary.textLineBreak(document, 1);
@@ -2136,66 +2421,6 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         poiSummary.textLineBreak(document, 1);
         poiSummary.textHead2Title(document.createParagraph(), this.getText("summaries.annualReport.tableD.title"));
 
-        // Table d1
-        poiSummary.textHead3Title(document.createParagraph(), this.getText("summaries.annualReport.tableD1.title"));
-        this.createTableD1();
-        poiSummary.textNotes(document.createParagraph(), this.getText("summaries.annualReport.tableD1.footer"));
-
-        // Table d2
-        poiSummary.textHead3Title(document.createParagraph(), this.getText("summaries.annualReport.tableD2.title"));
-        this.createTableD2();
-        poiSummary.textNotes(document.createParagraph(), this.getText("summaries.annualReport.tableD2.footer"));
-
-        // Table e
-        poiSummary.textLineBreak(document, 1);
-        poiSummary.textHead2Title(document.createParagraph(),
-          this.getText("annualReport.ccDimensions.tableETitle", new String[] {String.valueOf(this.getSelectedYear())}));
-        this.createTableE();
-        poiSummary.textNotes(document.createParagraph(), this.getText("intellectualAsset.title.help2017"));
-
-        // Table f
-        poiSummary.textLineBreak(document, 1);
-        poiSummary.textHead2Title(document.createParagraph(), this.getText("financialPlan.tableF.title2017"));
-        this.createTableF();
-        poiSummary.textNotes(document.createParagraph(), this.getText("financialPlan.tableF.expenditureArea.help"));
-        poiSummary.textNotes(document.createParagraph(), this.getText("financialPlan.tableF.expenditureArea.help2017"));
-        poiSummary.textNotes(document.createParagraph(),
-          "**" + this.getText("summaries.annualReport.tableJ.description.help2"));
-
-
-        // Table g
-        poiSummary.textLineBreak(document, 1);
-        poiSummary.textHead2Title(document.createParagraph(), this.getText("summaries.annualReport.tableG.title"));
-        this.createTableG();
-
-        // Table h
-        poiSummary.textLineBreak(document, 1);
-        poiSummary.textHead2Title(document.createParagraph(), this.getText("summaries.annualReport.tableH.title"));
-        this.createTableH();
-        poiSummary.textNotes(document.createParagraph(), this.getText("summaries.powb.tableG.description.help"));
-
-        // Table i1
-        poiSummary.textLineBreak(document, 1);
-        poiSummary.textHead2Title(document.createParagraph(), this.getText("summaries.annualReport.tableI.title"));
-        poiSummary.textHead3Title(document.createParagraph(),
-          this.getText("annualReport.melia.tableI.title", new String[] {String.valueOf(this.getSelectedYear())})
-            + " POWB");
-        this.createTableI1();
-
-        // Table i2
-        poiSummary.textLineBreak(document, 1);
-        poiSummary.textHead3Title(document.createParagraph(), this.getText("annualReport.melia.evaluation.title"));
-        this.createTableI2();
-
-        // Table j
-        poiSummary.textLineBreak(document, 1);
-        poiSummary.textHead2Title(document.createParagraph(), this.getText("summaries.annualReport.tableJ.title"));
-        this.createTableJ();
-        poiSummary.textNotes(document.createParagraph(),
-          this.getText("summaries.annualReport.tableJ.description.help2"));
-
-        poiSummary.textNotes(document.createParagraph(),
-          "*" + this.getText("summaries.annualReport.tableJ.description.help"));
 
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         document.write(os);
@@ -2216,17 +2441,206 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
       + this.getSelectedCycle() + ". Time to generate: " + stopTime + "ms.");
     return SUCCESS;
   }
+  /*
+   * private void fillProjectStudiesList(LiaisonInstitution liaisonInstitution) {
+   * projectExpectedStudies = new ArrayList<>();
+   * // this.isFlagship()
+   * if (false) {
+   * // Fill Project Expected Studies of the current flagship
+   * if (projectFocusManager.findAll() != null) {
+   * List<ProjectFocus> projectFocus = new ArrayList<>(projectFocusManager.findAll().stream()
+   * .filter(pf -> pf.isActive() && pf.getCrpProgram().getId() == liaisonInstitution.getCrpProgram().getId()
+   * && pf.getPhase() != null && pf.getPhase().getId() == this.getActualPhase().getId())
+   * .collect(Collectors.toList()));
+   * for (ProjectFocus focus : projectFocus) {
+   * Project project = projectManager.getProjectById(focus.getProject().getId());
+   * List<ProjectExpectedStudy> plannedProjectExpectedStudies =
+   * new ArrayList<>(project.getProjectExpectedStudies().stream()
+   * .filter(ps -> ps.isActive() && ps.getProjectExpectedStudyInfo(this.getActualPhase()) != null
+   * && ps.getProjectExpectedStudyInfo().getStudyType() != null
+   * && ps.getProjectExpectedStudyInfo().getStudyType().getId() == 1
+   * && ps.getProjectExpectedStudyInfo().getYear() != null
+   * && ps.getProjectExpectedStudyInfo().getYear() == this.getActualPhase().getYear())
+   * .collect(Collectors.toList()));
+   * for (ProjectExpectedStudy projectExpectedStudy : plannedProjectExpectedStudies) {
+   * projectExpectedStudy.getProjectExpectedStudyInfo(this.getActualPhase());
+   * projectExpectedStudy.setSrfTargets(projectExpectedStudy.getSrfTargets(this.getActualPhase()));
+   * projectExpectedStudy.setSubIdos(projectExpectedStudy.getSubIdos(this.getActualPhase()));
+   * projectExpectedStudies.add(projectExpectedStudy);
+   * }
+   * }
+   * }
+   * } else {
+   * // Fill Project Expected Studies of the PMU, removing flagship deletions
+   * List<LiaisonInstitution> liaisonInstitutions = new ArrayList<>();
+   * liaisonInstitutions = this.getLoggedCrp().getLiaisonInstitutions().stream()
+   * .filter(c -> c.getCrpProgram() != null && c.isActive()
+   * && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+   * .collect(Collectors.toList());
+   * liaisonInstitutions.sort(Comparator.comparing(LiaisonInstitution::getAcronym));
+   * // List<ReportSynthesisFlagshipProgressStudyDTO> flagshipPlannedList =
+   * // this.fillFpPlannedList(liaisonInstitutions);
+   * for (ReportSynthesisFlagshipProgressStudyDTO reportSynthesisFlagshipProgressStudyDTO : flagshipPlannedList) {
+   * ProjectExpectedStudy projectExpectedStudy = reportSynthesisFlagshipProgressStudyDTO.getProjectExpectedStudy();
+   * projectExpectedStudy.getProjectExpectedStudyInfo(this.getActualPhase());
+   * projectExpectedStudy.setSrfTargets(projectExpectedStudy.getSrfTargets(this.getActualPhase()));
+   * projectExpectedStudy.setSubIdos(projectExpectedStudy.getSubIdos(this.getActualPhase()));
+   * projectExpectedStudy.setSelectedFlahsgips(new ArrayList<>());
+   * // sort selected flagships
+   * if (reportSynthesisFlagshipProgressStudyDTO.getLiaisonInstitutions() != null
+   * && !reportSynthesisFlagshipProgressStudyDTO.getLiaisonInstitutions().isEmpty()) {
+   * reportSynthesisFlagshipProgressStudyDTO.getLiaisonInstitutions()
+   * .sort((l1, l2) -> l1.getCrpProgram().getAcronym().compareTo(l2.getCrpProgram().getAcronym()));
+   * }
+   * projectExpectedStudy.getSelectedFlahsgips()
+   * .addAll(reportSynthesisFlagshipProgressStudyDTO.getLiaisonInstitutions());
+   * projectExpectedStudies.add(projectExpectedStudy);
+   * }
+   * }
+   * }
+   */
+
+
+  public List<ReportSynthesisFlagshipProgressStudyDTO>
+    fillFpPlannedList(List<LiaisonInstitution> flagshipsLiaisonInstitutions) {
+    List<ReportSynthesisFlagshipProgressStudyDTO> flagshipPlannedList = new ArrayList<>();
+
+    if (projectExpectedStudyManager.findAll() != null) {
+
+      // Get global unit studies
+      List<ProjectExpectedStudy> projectExpectedStudies = new ArrayList<>(projectExpectedStudyManager.findAll().stream()
+        .filter(ps -> ps.isActive() && ps.getProjectExpectedStudyInfo(this.getActualPhase()) != null
+          && ps.getProjectExpectedStudyInfo().getStudyType() != null
+          && ps.getProjectExpectedStudyInfo().getStudyType().getId() == 1
+          && ps.getProjectExpectedStudyInfo().getYear() != null
+          && ps.getProjectExpectedStudyInfo().getYear() == this.getActualPhase().getYear() && ps.getProject() != null
+          && ps.getProject().getGlobalUnitProjects().stream().filter(
+            gup -> gup.isActive() && gup.isOrigin() && gup.getGlobalUnit().getId().equals(this.getLoggedCrp().getId()))
+            .collect(Collectors.toList()).size() > 0)
+        .collect(Collectors.toList()));
+
+      // Fill all project studies of the global unit
+      for (ProjectExpectedStudy projectExpectedStudy : projectExpectedStudies) {
+        ReportSynthesisFlagshipProgressStudyDTO dto = new ReportSynthesisFlagshipProgressStudyDTO();
+        projectExpectedStudy.getProject()
+          .setProjectInfo(projectExpectedStudy.getProject().getProjecInfoPhase(this.getActualPhase()));
+        dto.setProjectExpectedStudy(projectExpectedStudy);
+        if (projectExpectedStudy.getProject().getProjectInfo().getAdministrative() != null
+          && projectExpectedStudy.getProject().getProjectInfo().getAdministrative()) {
+          dto.setLiaisonInstitutions(new ArrayList<>());
+          dto.getLiaisonInstitutions().add(this.liaisonInstitution);
+        } else {
+          List<ProjectFocus> projectFocuses = new ArrayList<>(projectExpectedStudy.getProject().getProjectFocuses()
+            .stream().filter(pf -> pf.isActive() && pf.getPhase().getId() == this.getActualPhase().getId())
+            .collect(Collectors.toList()));
+          List<LiaisonInstitution> liaisonInstitutions = new ArrayList<>();
+          for (ProjectFocus projectFocus : projectFocuses) {
+            liaisonInstitutions.addAll(projectFocus.getCrpProgram().getLiaisonInstitutions().stream()
+              .filter(li -> li.isActive() && li.getCrpProgram() != null
+                && li.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()
+                && li.getCrp() != null && li.getCrp().equals(this.getLoggedCrp()))
+              .collect(Collectors.toList()));
+          }
+          dto.setLiaisonInstitutions(liaisonInstitutions);
+        }
+
+        flagshipPlannedList.add(dto);
+      }
+
+      // Get supplementary studies
+      List<ProjectExpectedStudy> projectSupplementaryStudies =
+        new ArrayList<>(projectExpectedStudyManager.findAll().stream()
+          .filter(ps -> ps.isActive() && ps.getProjectExpectedStudyInfo(this.getActualPhase()) != null
+            && ps.getProject() == null && ps.getProjectExpectedStudyInfo().getStudyType() != null
+            && ps.getProjectExpectedStudyInfo().getStudyType().getId() == 1
+            && ps.getProjectExpectedStudyInfo().getYear() != null
+            && ps.getProjectExpectedStudyInfo().getYear() == this.getActualPhase().getYear())
+          .collect(Collectors.toList()));
+
+      // Fill all supplementary studies
+      for (ProjectExpectedStudy projectExpectedStudy : projectSupplementaryStudies) {
+        ReportSynthesisFlagshipProgressStudyDTO dto = new ReportSynthesisFlagshipProgressStudyDTO();
+        dto.setProjectExpectedStudy(projectExpectedStudy);
+        dto.setLiaisonInstitutions(new ArrayList<>());
+        dto.getLiaisonInstitutions().add(this.liaisonInstitution);
+        flagshipPlannedList.add(dto);
+      }
+
+      // Get deleted studies
+      List<ReportSynthesisFlagshipProgressStudy> flagshipProgressStudies = new ArrayList<>();
+      for (LiaisonInstitution liaisonInstitution : flagshipsLiaisonInstitutions) {
+        ReportSynthesis reportSynthesis =
+          reportSynthesisManager.findSynthesis(this.getActualPhase().getId(), liaisonInstitution.getId());
+        if (reportSynthesis != null) {
+          if (reportSynthesis.getReportSynthesisFlagshipProgress() != null) {
+            if (reportSynthesis.getReportSynthesisFlagshipProgress()
+              .getReportSynthesisFlagshipProgressStudies() != null) {
+              List<ReportSynthesisFlagshipProgressStudy> studies = new ArrayList<>(
+                reportSynthesis.getReportSynthesisFlagshipProgress().getReportSynthesisFlagshipProgressStudies()
+                  .stream().filter(s -> s.isActive()).collect(Collectors.toList()));
+              if (studies != null || !studies.isEmpty()) {
+                for (ReportSynthesisFlagshipProgressStudy reportSynthesisFlagshipProgressStudy : studies) {
+                  flagshipProgressStudies.add(reportSynthesisFlagshipProgressStudy);
+                }
+              }
+            }
+          }
+        }
+      }
+
+      // Get list of studies to remove
+      List<ReportSynthesisFlagshipProgressStudyDTO> removeList = new ArrayList<>();
+      for (ReportSynthesisFlagshipProgressStudyDTO dto : flagshipPlannedList) {
+
+        List<LiaisonInstitution> removeLiaison = new ArrayList<>();
+        for (LiaisonInstitution liaisonInstitution : dto.getLiaisonInstitutions()) {
+          ReportSynthesis reportSynthesis =
+            reportSynthesisManager.findSynthesis(this.getActualPhase().getId(), liaisonInstitution.getId());
+          if (reportSynthesis != null) {
+            if (reportSynthesis.getReportSynthesisFlagshipProgress() != null) {
+
+              ReportSynthesisFlagshipProgressStudy flagshipProgressStudyNew =
+                new ReportSynthesisFlagshipProgressStudy();
+              flagshipProgressStudyNew = new ReportSynthesisFlagshipProgressStudy();
+              flagshipProgressStudyNew.setProjectExpectedStudy(dto.getProjectExpectedStudy());
+              flagshipProgressStudyNew
+                .setReportSynthesisFlagshipProgress(reportSynthesis.getReportSynthesisFlagshipProgress());
+
+              if (flagshipProgressStudies.contains(flagshipProgressStudyNew)) {
+                removeLiaison.add(liaisonInstitution);
+              }
+            }
+          }
+        }
+
+        for (LiaisonInstitution li : removeLiaison) {
+          dto.getLiaisonInstitutions().remove(li);
+        }
+
+        if (dto.getLiaisonInstitutions().isEmpty()) {
+          removeList.add(dto);
+        }
+      }
+
+      // Remove studies unselected by flagships
+      for (ReportSynthesisFlagshipProgressStudyDTO i : removeList) {
+        flagshipPlannedList.remove(i);
+      }
+
+    }
+    return flagshipPlannedList;
+  }
 
   @Override
   public int getContentLength() {
     return bytesDOC.length;
   }
 
-
   @Override
   public String getContentType() {
     return "application/docx";
   }
+
 
   @Override
   public String getFileName() {
@@ -2241,6 +2655,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     fileName.append(".docx");
     return fileName.toString();
   }
+
 
   public List<LiaisonInstitution> getFlagships() {
     List<LiaisonInstitution> flagshipsList = this.getLoggedCrp().getLiaisonInstitutions().stream()
@@ -2263,6 +2678,39 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     return inputStream;
   }
 
+  public ReportSynthesisFlagshipProgressOutcome getOutcomeToPmu(Long fpId, long outcomeID) {
+    ReportSynthesisFlagshipProgressOutcome outcome = new ReportSynthesisFlagshipProgressOutcome();
+
+
+    CrpProgramOutcome crpProgramOutcome = crpProgramOutcomeManager.getCrpProgramOutcomeById(outcomeID);
+
+    LiaisonInstitution inst = crpProgramOutcome.getCrpProgram().getLiaisonInstitutions().stream()
+      .filter(c -> c.isActive() && c.getCrpProgram().getId().equals(fpId)).collect(Collectors.toList()).get(0);
+
+
+    // ReportSynthesisSrfProgress crpProgress = new ReportSynthesisSrfProgress();
+    ReportSynthesis reportSynthesisFP =
+      reportSynthesisManager.findSynthesis(this.getActualPhase().getId(), inst.getId());
+
+
+    ReportSynthesisFlagshipProgress flagshipProgress = new ReportSynthesisFlagshipProgress();
+    if (reportSynthesisFP != null) {
+      if (reportSynthesisFP.getReportSynthesisFlagshipProgress() != null) {
+        flagshipProgress = reportSynthesisFP.getReportSynthesisFlagshipProgress();
+
+        outcome = reportSynthesisFlagshipProgressOutcomeManager.getOutcomeId(flagshipProgress.getId(), outcomeID);
+
+        if (outcome != null) {
+          return outcome;
+        } else {
+          return null;
+        }
+      }
+    }
+
+    return null;
+
+  }
 
   public List<Deliverable> getProjectDeliverables(Project project, Phase phase) {
 
@@ -2300,6 +2748,81 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
 
 
     return deliverables;
+  }
+
+
+  private void getProjectExpectedStudies() {
+    // Table 3
+    if (projectExpectedStudyManager.findAll() != null) {
+      // Get global unit studies
+      projectExpectedStudies = new ArrayList<>(projectExpectedStudyManager.findAll().stream()
+        .filter(ps -> ps.isActive() && ps.getProjectExpectedStudyInfo(this.getActualPhase()) != null
+          && ps.getProjectExpectedStudyInfo().getStudyType() != null
+          && ps.getProjectExpectedStudyInfo().getStudyType().getId() == 1
+          && ps.getProjectExpectedStudyInfo().getYear() != null
+          && ps.getProjectExpectedStudyInfo().getYear() == this.getActualPhase().getYear() && ps.getProject() != null
+          && ps.getProject().getGlobalUnitProjects().stream().filter(
+            gup -> gup.isActive() && gup.isOrigin() && gup.getGlobalUnit().getId().equals(this.getLoggedCrp().getId()))
+            .collect(Collectors.toList()).size() > 0)
+        .collect(Collectors.toList()));
+
+    }
+  }
+
+  public void getProjectPolicies() {
+    projectPolicies = new ArrayList<>();
+    projectPolicies =
+      (projectPolicyManager.findAll().stream()
+        .filter(ps -> ps.isActive() && ps.getProjectPolicyInfo(this.getActualPhase()) != null
+          && ps.getProjectPolicyInfo().isRequired() && ps.getProject() != null
+          && ps.getProject().getGlobalUnitProjects().stream().filter(
+            gup -> gup.isActive() && gup.isOrigin() && gup.getGlobalUnit().getId().equals(this.getCurrentCrp().getId()))
+            .collect(Collectors.toList()).size() > 0)
+        .collect(Collectors.toList()));
+  }
+
+  public void getProjectsInnovations() {
+    if (projectInnovationManager.findAll() != null) {
+
+      // Get global unit Innovations
+      projectInnovations = new ArrayList<>(projectInnovationManager.findAll().stream()
+        .filter(ps -> ps.isActive() && ps.getProjectInnovationInfo(this.getActualPhase()) != null
+          && ps.getProjectInnovationInfo().getYear() != null
+          && ps.getProjectInnovationInfo().getYear() == this.getActualPhase().getYear() && ps.getProject() != null
+          && ps.getProject().getGlobalUnitProjects().stream().filter(
+            gup -> gup.isActive() && gup.isOrigin() && gup.getGlobalUnit().getId().equals(this.getLoggedCrp().getId()))
+            .collect(Collectors.toList()).size() > 0)
+        .collect(Collectors.toList()));
+
+      // Fill all project Innovations of the global unit
+      for (ProjectInnovation projectInnovation : projectInnovations) {
+        ReportSynthesisFlagshipProgressInnovationDTO dto = new ReportSynthesisFlagshipProgressInnovationDTO();
+        projectInnovation.getProject()
+          .setProjectInfo(projectInnovation.getProject().getProjecInfoPhase(this.getActualPhase()));
+        dto.setProjectInnovation(projectInnovation);
+        if (projectInnovation.getProject().getProjectInfo().getAdministrative() != null
+          && projectInnovation.getProject().getProjectInfo().getAdministrative()) {
+          dto.setLiaisonInstitutions(new ArrayList<>());
+          dto.getLiaisonInstitutions().add(this.liaisonInstitution);
+        } else {
+          List<ProjectFocus> projectFocuses = new ArrayList<>(projectInnovation.getProject().getProjectFocuses()
+            .stream().filter(pf -> pf.isActive() && pf.getPhase().getId() == this.getActualPhase().getId())
+            .collect(Collectors.toList()));
+          List<LiaisonInstitution> liaisonInstitutions = new ArrayList<>();
+          for (ProjectFocus projectFocus : projectFocuses) {
+            liaisonInstitutions.addAll(projectFocus.getCrpProgram().getLiaisonInstitutions().stream()
+              .filter(li -> li.isActive() && li.getCrpProgram() != null
+                && li.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()
+                && li.getCrp() != null && li.getCrp().equals(this.getLoggedCrp()))
+              .collect(Collectors.toList()));
+          }
+          dto.setLiaisonInstitutions(liaisonInstitutions);
+        }
+
+        // flagshipPlannedList.add(dto);
+      }
+
+    }
   }
 
   public ReportSynthesisFlagshipProgressMilestone getReportSynthesisFlagshipProgressProgram(Long crpMilestoneID,
@@ -2427,7 +2950,9 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
       .filter(c -> c.getCrpProgram() == null && c.getAcronym().equals("PMU")).collect(Collectors.toList()).get(0);
 
     reportSynthesisPMU = reportSynthesisManager.findSynthesis(this.getSelectedPhase().getId(), pmuInstitution.getId());
-
+    this.getProjectPolicies();
+    this.getProjectExpectedStudies();
+    this.getProjectsInnovations();
 
     // Get the list of liaison institutions Flagships.
     flagshipLiaisonInstitutions = this.getLoggedCrp().getLiaisonInstitutions().stream()

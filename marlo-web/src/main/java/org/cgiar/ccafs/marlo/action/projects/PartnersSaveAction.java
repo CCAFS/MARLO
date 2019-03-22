@@ -354,10 +354,6 @@ public class PartnersSaveAction extends BaseAction {
     // message subject
     subject = this.getText("marloRequestInstitution.email.subject",
       new String[] {this.getCrpSession().toUpperCase(), institutionName});
-
-    // Message Header
-    message.append("<div style=\"font-family:Segoe UI, Roboto, Helvetica Neue, Arial, sans-serif; \">");
-
     // Message Content
     message.append(this.getCurrentUser().getFirstName() + " " + this.getCurrentUser().getLastName() + " ");
     message.append("(" + this.getCurrentUser().getEmail() + ") ");
@@ -417,8 +413,6 @@ public class PartnersSaveAction extends BaseAction {
     message.append(".</br>");
     message.append("</br>");
 
-    // Message Footer
-    message.append("</div>");
 
     try {
       sendMail.send(config.getEmailNotification(), null, config.getEmailNotification(), subject, message.toString(),

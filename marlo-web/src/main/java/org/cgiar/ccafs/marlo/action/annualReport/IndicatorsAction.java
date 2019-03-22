@@ -620,18 +620,21 @@ public class IndicatorsAction extends BaseAction {
       Double totalFemales = new Double(0);
       if (deliverableParticipants != null && !deliverableParticipants.isEmpty()) {
         for (DeliverableParticipant deliverableParticipant : deliverableParticipants) {
-          // Total Participants
-          if (deliverableParticipant.getParticipants() != null) {
-            totalParticipants += deliverableParticipant.getParticipants();
-          }
-          if (deliverableParticipant.getFemales() != null) {
-            totalFemales += deliverableParticipant.getFemales();
-          }
+          if (deliverableParticipant.getDeliverable().getDeliverableInfo(phase) != null
+            && deliverableParticipant.getDeliverable().getDeliverableInfo(phase).isRequired()) {
+            // Total Participants
+            if (deliverableParticipant.getParticipants() != null) {
+              totalParticipants += deliverableParticipant.getParticipants();
+            }
+            if (deliverableParticipant.getFemales() != null) {
+              totalFemales += deliverableParticipant.getFemales();
+            }
 
-          // Total Formal Training
-          if (deliverableParticipant.getRepIndTypeActivity() != null && deliverableParticipant.getRepIndTypeActivity()
-            .getName().contains(APConstants.REP_IND_SYNTHESIS_TYPE_ACTIVITY_FORMAL_TRAINING)) {
-            totalParticipantFormalTraining += deliverableParticipant.getParticipants();
+            // Total Formal Training
+            if (deliverableParticipant.getRepIndTypeActivity() != null && deliverableParticipant.getRepIndTypeActivity()
+              .getName().contains(APConstants.REP_IND_SYNTHESIS_TYPE_ACTIVITY_FORMAL_TRAINING)) {
+              totalParticipantFormalTraining += deliverableParticipant.getParticipants();
+            }
           }
         }
       }

@@ -106,13 +106,13 @@ public class ProjectBudgetsFlagshipValidator extends BaseValidator {
 
   public void validate(BaseAction action, Project project, boolean saving, boolean sMessage) {
 
-    if (!sMessage) {
+    if (sMessage) {
       action.setMissingFields(new StringBuilder());
+      action.setInvalidFields(new HashMap<>());
     }
 
     this.sMessage = sMessage;
 
-    action.setInvalidFields(new HashMap<>());
 
     if (project != null) {
       if (!saving) {

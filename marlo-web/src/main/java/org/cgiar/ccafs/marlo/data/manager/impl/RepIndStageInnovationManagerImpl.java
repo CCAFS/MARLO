@@ -19,6 +19,8 @@ import org.cgiar.ccafs.marlo.data.dao.ProjectInnovationInfoDAO;
 import org.cgiar.ccafs.marlo.data.dao.RepIndStageInnovationDAO;
 import org.cgiar.ccafs.marlo.data.manager.RepIndStageInnovationManager;
 import org.cgiar.ccafs.marlo.data.model.Phase;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationInfo;
 import org.cgiar.ccafs.marlo.data.model.RepIndStageInnovation;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisInnovationsByStageDTO;
 
@@ -67,6 +69,40 @@ public class RepIndStageInnovationManagerImpl implements RepIndStageInnovationMa
 
     return repIndStageInnovationDAO.findAll();
 
+  }
+
+  @Override
+  public List<ReportSynthesisInnovationsByStageDTO>
+    getInnovationsByStageDTO(List<ProjectInnovation> selectedProjectInnovations, Phase phase) {
+    List<ReportSynthesisInnovationsByStageDTO> innovationsByStageDTO = new ArrayList<>();
+    List<RepIndStageInnovation> stageInnovations =
+      this.findAll().stream().sorted((o1, o2) -> o1.getName().compareTo(o2.getName())).collect(Collectors.toList());
+    if (stageInnovations != null) {
+      for (RepIndStageInnovation stageInnovation : stageInnovations) {
+        ReportSynthesisInnovationsByStageDTO reportSynthesisInnovationsByStageDTO =
+          new ReportSynthesisInnovationsByStageDTO();
+        reportSynthesisInnovationsByStageDTO.setRepIndStageInnovation(stageInnovation);
+        List<ProjectInnovation> projectInnovationByStageInnnovation = selectedProjectInnovations.stream()
+          .filter(pp -> pp.isActive() && pp.getProjectInnovationInfo(phase) != null
+            && pp.getProjectInnovationInfo().getRepIndStageInnovation() != null
+            && pp.getProjectInnovationInfo().getRepIndStageInnovation().equals(stageInnovation))
+          .collect(Collectors.toList());
+        List<ProjectInnovationInfo> projectInnovationInfos = new ArrayList<ProjectInnovationInfo>();
+        if (projectInnovationByStageInnnovation != null && !projectInnovationByStageInnnovation.isEmpty()) {
+          for (ProjectInnovation projectInnovation : projectInnovationByStageInnnovation) {
+            projectInnovationInfos.add(projectInnovation.getProjectInnovationInfo(phase));
+          }
+          reportSynthesisInnovationsByStageDTO.setProjectInnovationInfos(projectInnovationInfos);
+        } else {
+          reportSynthesisInnovationsByStageDTO.setProjectInnovationInfos(projectInnovationInfos);
+        }
+
+        innovationsByStageDTO.add(reportSynthesisInnovationsByStageDTO);
+      }
+    }
+
+    return innovationsByStageDTO.stream().sorted((o1, o2) -> new Integer(o2.getProjectInnovationInfos().size())
+      .compareTo(new Integer(o1.getProjectInnovationInfos().size()))).collect(Collectors.toList());
   }
 
   @Override

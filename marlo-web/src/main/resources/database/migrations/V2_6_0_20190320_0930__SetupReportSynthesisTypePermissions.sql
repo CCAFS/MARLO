@@ -1,0 +1,1 @@
+Update permissions set `type`= 3 where `permission` like '%crp:{0}:reportSynthesis:{1}%';

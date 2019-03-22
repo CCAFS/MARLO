@@ -61,21 +61,28 @@ public class ProjectPolicy extends MarloAuditableEntity implements java.io.Seria
 
   private Set<ProjectPolicyRegion> projectPolicyRegions = new HashSet<ProjectPolicyRegion>(0);
 
+  // AR2018 Field
+  private List<LiaisonInstitution> selectedFlahsgips;
+
 
   public String getComposedName() {
-
-
-    if (projectPolicyInfo != null) {
+    if ((projectPolicyInfo != null) && (projectPolicyInfo.getTitle() != null)
+      && (projectPolicyInfo.getTitle().trim().length() > 0)) {
       return this.getId() + " - " + projectPolicyInfo.getTitle();
     } else {
-      return "" + this.getId();
+      return "" + this.getId() + " - Untitled";
     }
-
   }
 
 
   public List<ProjectPolicyCountry> getCountries() {
     return countries;
+  }
+
+
+  public List<ProjectPolicyCountry> getCountries(Phase phase) {
+    return new ArrayList<>(this.getProjectPolicyCountries().stream()
+      .filter(pc -> pc.isActive() && pc.getPhase().equals(phase)).collect(Collectors.toList()));
   }
 
 
@@ -94,6 +101,12 @@ public class ProjectPolicy extends MarloAuditableEntity implements java.io.Seria
   }
 
 
+  public List<ProjectPolicyCrossCuttingMarker> getCrossCuttingMarkers(Phase phase) {
+    return new ArrayList<>(this.getProjectPolicyCrossCuttingMarkers().stream()
+      .filter(pc -> pc.isActive() && pc.getPhase().equals(phase)).collect(Collectors.toList()));
+  }
+
+
   public List<ProjectPolicyCrp> getCrps() {
     return crps;
   }
@@ -103,8 +116,21 @@ public class ProjectPolicy extends MarloAuditableEntity implements java.io.Seria
     return evidences;
   }
 
+  public List<ProjectExpectedStudyPolicy> getEvidences(Phase phase) {
+    return new ArrayList<>(this.getProjectExpectedStudyPolicies().stream()
+      .filter(pp -> pp.isActive() && pp.getPhase().equals(phase) && pp.getProjectExpectedStudy() != null
+        && pp.getProjectExpectedStudy().getProjectExpectedStudyInfo(phase) != null)
+      .collect(Collectors.toList()));
+  }
+
   public List<ProjectPolicyGeographicScope> getGeographicScopes() {
     return geographicScopes;
+  }
+
+
+  public List<ProjectPolicyGeographicScope> getGeographicScopes(Phase phase) {
+    return new ArrayList<>(this.getProjectPolicyGeographicScopes().stream()
+      .filter(pg -> pg.isActive() && pg.getPhase().equals(phase)).collect(Collectors.toList()));
   }
 
 
@@ -125,14 +151,20 @@ public class ProjectPolicy extends MarloAuditableEntity implements java.io.Seria
     return owners;
   }
 
+  public List<ProjectPolicyOwner> getOwners(Phase phase) {
+    return new ArrayList<>(this.getProjectPolicyOwners().stream()
+      .filter(po -> po.isActive() && po.getPhase().equals(phase)).collect(Collectors.toList()));
+  }
 
   public Project getProject() {
     return project;
   }
 
+
   public Set<ProjectExpectedStudyPolicy> getProjectExpectedStudyPolicies() {
     return projectExpectedStudyPolicies;
   }
+
 
   public Set<ProjectPolicyCountry> getProjectPolicyCountries() {
     return ProjectPolicyCountries;
@@ -158,7 +190,6 @@ public class ProjectPolicy extends MarloAuditableEntity implements java.io.Seria
     return projectPolicyInfo;
   }
 
-
   public ProjectPolicyInfo getProjectPolicyInfo(Phase phase) {
     if (this.getProjectPolicyInfo() != null) {
       return this.getProjectPolicyInfo();
@@ -179,6 +210,7 @@ public class ProjectPolicy extends MarloAuditableEntity implements java.io.Seria
   public Set<ProjectPolicyInfo> getProjectPolicyInfos() {
     return projectPolicyInfos;
   }
+
 
   public Set<ProjectPolicyInnovation> getProjectPolicyInnovations() {
     return projectPolicyInnovations;
@@ -204,9 +236,18 @@ public class ProjectPolicy extends MarloAuditableEntity implements java.io.Seria
     return regions;
   }
 
+  public List<ProjectPolicyRegion> getRegions(Phase phase) {
+    return new ArrayList<>(this.getProjectPolicyRegions().stream()
+      .filter(pr -> pr.isActive() && pr.getPhase().equals(phase)).collect(Collectors.toList()));
+  }
 
   public Set<SectionStatus> getSectionStatuses() {
     return sectionStatuses;
+  }
+
+
+  public List<LiaisonInstitution> getSelectedFlahsgips() {
+    return selectedFlahsgips;
   }
 
 
@@ -214,6 +255,16 @@ public class ProjectPolicy extends MarloAuditableEntity implements java.io.Seria
     return subIdos;
   }
 
+  /**
+   * Get SubIdo list from DB (from ProjectPolicySubIdo set)
+   * 
+   * @param phase
+   * @return SubIdo List of current phase
+   */
+  public List<ProjectPolicySubIdo> getSubIdos(Phase phase) {
+    return new ArrayList<>(this.getProjectPolicySubIdos().stream()
+      .filter(ps -> ps.isActive() && ps.getPhase().equals(phase)).collect(Collectors.toList()));
+  }
 
   public void setCountries(List<ProjectPolicyCountry> countries) {
     this.countries = countries;
@@ -229,24 +280,23 @@ public class ProjectPolicy extends MarloAuditableEntity implements java.io.Seria
     this.countriesIdsText = countriesIdsText;
   }
 
-
   public void setCrossCuttingMarkers(List<ProjectPolicyCrossCuttingMarker> crossCuttingMarkers) {
     this.crossCuttingMarkers = crossCuttingMarkers;
   }
-
 
   public void setCrps(List<ProjectPolicyCrp> crps) {
     this.crps = crps;
   }
 
-
   public void setEvidences(List<ProjectExpectedStudyPolicy> evidences) {
     this.evidences = evidences;
   }
 
+
   public void setGeographicScopes(List<ProjectPolicyGeographicScope> geographicScopes) {
     this.geographicScopes = geographicScopes;
   }
+
 
   public void setInnovations(List<ProjectPolicyInnovation> innovations) {
     this.innovations = innovations;
@@ -283,11 +333,9 @@ public class ProjectPolicy extends MarloAuditableEntity implements java.io.Seria
     this.projectPolicyCrps = projectPolicyCrps;
   }
 
-
   public void setProjectPolicyGeographicScopes(Set<ProjectPolicyGeographicScope> projectPolicyGeographicScopes) {
     this.projectPolicyGeographicScopes = projectPolicyGeographicScopes;
   }
-
 
   public void setProjectPolicyInfo(ProjectPolicyInfo projectPolicyInfo) {
     this.projectPolicyInfo = projectPolicyInfo;
@@ -317,14 +365,18 @@ public class ProjectPolicy extends MarloAuditableEntity implements java.io.Seria
     this.regions = regions;
   }
 
-
   public void setSectionStatuses(Set<SectionStatus> sectionStatuses) {
     this.sectionStatuses = sectionStatuses;
+  }
+
+  public void setSelectedFlahsgips(List<LiaisonInstitution> selectedFlahsgips) {
+    this.selectedFlahsgips = selectedFlahsgips;
   }
 
   public void setSubIdos(List<ProjectPolicySubIdo> subIdos) {
     this.subIdos = subIdos;
   }
+
 
   @Override
   public String toString() {

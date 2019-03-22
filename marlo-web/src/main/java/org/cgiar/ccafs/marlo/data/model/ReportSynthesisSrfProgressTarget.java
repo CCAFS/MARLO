@@ -17,7 +17,7 @@ public class ReportSynthesisSrfProgressTarget extends MarloAuditableEntity imple
   private ReportSynthesisSrfProgress reportSynthesisSrfProgress;
 
   @Expose
-  private SrfSloIndicatorTarget srfSloIndicatorTargets;
+  private SrfSloIndicatorTarget srfSloIndicatorTarget;
 
 
   @Expose
@@ -55,14 +55,15 @@ public class ReportSynthesisSrfProgressTarget extends MarloAuditableEntity imple
   }
 
 
-  public SrfSloIndicatorTarget getSrfSloIndicatorTargets() {
-    return srfSloIndicatorTargets;
+  public SrfSloIndicatorTarget getSrfSloIndicatorTarget() {
+    return srfSloIndicatorTarget;
   }
 
 
   public void setAdditionalContribution(String additionalContribution) {
     this.additionalContribution = additionalContribution;
   }
+
 
   public void setBirefSummary(String birefSummary) {
     this.birefSummary = birefSummary;
@@ -72,8 +73,8 @@ public class ReportSynthesisSrfProgressTarget extends MarloAuditableEntity imple
     this.reportSynthesisSrfProgress = reportSynthesisSrfProgress;
   }
 
-  public void setSrfSloIndicatorTargets(SrfSloIndicatorTarget srfSloIndicatorTargets) {
-    this.srfSloIndicatorTargets = srfSloIndicatorTargets;
+  public void setSrfSloIndicatorTarget(SrfSloIndicatorTarget srfSloIndicatorTarget) {
+    this.srfSloIndicatorTarget = srfSloIndicatorTarget;
   }
 
 

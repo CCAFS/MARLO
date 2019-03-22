@@ -997,6 +997,24 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return this.securityContext.hasPermission(permission);
   }
 
+  public boolean canModifiedProjectExecution() {
+    String actionName = this.getActionName();
+    if (actionName.contains(ProjectSectionStatusEnum.BUDGET.getStatus()) && this.hasPermission("execution")
+      && this.hasSpecificities(this.getCrpEnableBudgetExecution())) {
+      return true;
+    }
+    return false;
+  }
+
+  public boolean canModifiedProjectStatus() {
+    String actionName = this.getActionName();
+    if (actionName.contains(ProjectSectionStatusEnum.DESCRIPTION.getStatus())
+      && this.hasPermission("statusDescription")) {
+      return true;
+    }
+    return false;
+  }
+
   public boolean canProjectSubmited(long projectID) {
     String params[] = {this.crpManager.getGlobalUnitById(this.getCrpID()).getAcronym(), projectID + ""};
     return this.hasPermission(this.generatePermission(Permission.PROJECT_SUBMISSION_PERMISSION, params));
@@ -2001,6 +2019,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return globalUnits;
   }
 
+  public String getCrpEnableBudgetExecution() {
+    return APConstants.CRP_ENABLE_BUDGET_EXECUTION;
+  }
+
   /**
    * Get the crp that is currently save in the session, if the user access to
    * the platform whit a diferent url, get the current action to catch the crp
@@ -2294,6 +2316,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         ProjectBudget projectBudget = this.projectBudgetManager.getProjectBudgetById(id);
         List<DeliverableFundingSource> deList = projectBudget.getFundingSource().getDeliverableFundingSources().stream()
           .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase())
+            && c.getDeliverable().getProject() != null
             && c.getDeliverable().getProject().getId().longValue() == projectID.longValue())
           .collect(Collectors.toList());
         Set<Deliverable> deSet = new HashSet<>();
@@ -3339,8 +3362,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         break;
 
       case BUDGET:
-
-        if (this.isReportingActive()) {
+        if (this.isReportingActive() && !this.hasSpecificities(this.getCrpEnableBudgetExecution())) {
           return true;
         }
         project = this.projectManager.getProjectById(projectID);
@@ -3348,6 +3370,13 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
           .filter(d -> d.isActive() && d.getPhase() != null && d.getPhase().equals(this.getActualPhase()))
           .collect(Collectors.toList()).isEmpty()) {
           return false;
+        }
+        if (this.isReportingActive() && this.hasSpecificities(this.getCrpEnableBudgetExecution())) {
+          if (project.getProjectBudgetExecutions().stream()
+            .filter(d -> d.isActive() && d.getPhase() != null && d.getPhase().equals(this.getActualPhase()))
+            .collect(Collectors.toList()).isEmpty()) {
+            return false;
+          }
         }
 
         sectionStatus = this.sectionStatusManager.getSectionStatusByProject(projectID, this.getCurrentCycle(),
@@ -4803,6 +4832,36 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
                 return false;
               }
               break;
+            case POLICIES:
+              secctions++;
+              if (sectionStatus.getMissingFields().length() > 0) {
+                return false;
+              }
+              break;
+            case OICR:
+              secctions++;
+              if (sectionStatus.getMissingFields().length() > 0) {
+                return false;
+              }
+              break;
+            case INNOVATIONS:
+              secctions++;
+              if (sectionStatus.getMissingFields().length() > 0) {
+                return false;
+              }
+              break;
+            case OUTOMESMILESTONES:
+              secctions++;
+              if (sectionStatus.getMissingFields().length() > 0) {
+                return false;
+              }
+              break;
+            case PUBLICATIONS:
+              secctions++;
+              if (sectionStatus.getMissingFields().length() > 0) {
+                return false;
+              }
+              break;
             case CC_DIMENSIONS:
               secctions++;
               if (sectionStatus.getMissingFields().length() > 0) {
@@ -4852,18 +4911,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
               }
               break;
             case FINANCIAL:
-              secctions++;
-              if (sectionStatus.getMissingFields().length() > 0) {
-                return false;
-              }
-              break;
-            case INFLUENCE:
-              secctions++;
-              if (sectionStatus.getMissingFields().length() > 0) {
-                return false;
-              }
-              break;
-            case CONTROL:
               secctions++;
               if (sectionStatus.getMissingFields().length() > 0) {
                 return false;
@@ -5801,7 +5848,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   public void loadLessons(GlobalUnit crp, Project project, String actionName) {
 
-    Project projectDB = this.projectManager.getProjectById(project.getId());
+    Project projectDB = projectManager.getProjectById(project.getId());
     if (this.isReportingActive()) {
 
       List<ProjectComponentLesson> lessons = projectDB.getProjectComponentLessons().stream()

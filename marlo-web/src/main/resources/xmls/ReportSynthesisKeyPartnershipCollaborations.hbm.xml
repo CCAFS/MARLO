@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Generated Mar 7, 2019 7:42:16 AM by Hibernate Tools 5.3.6.Final --><!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping auto-import="true"
+	default-access="property" default-cascade="none" default-lazy="true">
+	<class dynamic-insert="false"
+		dynamic-update="false" mutable="true"
+		name="org.cgiar.ccafs.marlo.data.model.ReportSynthesisKeyPartnershipCollaboration"
+		optimistic-lock="version" polymorphism="implicit"
+		select-before-update="false"
+		table="report_synthesis_key_partnership_collaborations">
+		<id name="id" type="java.lang.Long">
+			<column name="id" />
+			<generator class="identity" />
+		</id>
+		<many-to-one
+			class="org.cgiar.ccafs.marlo.data.model.ReportSynthesisKeyPartnership" embed-xml="true"
+			fetch="select" insert="true" name="reportSynthesisKeyPartnership"
+			not-found="exception" optimistic-lock="true" unique="false"
+			update="true">
+			<column name="report_synthesis_key_partnership_id" />
+		</many-to-one>
+		<property generated="never" lazy="false" name="description"
+			optimistic-lock="true" type="string" unique="false">
+			<column length="65535" name="description" />
+		</property>
+		<property generated="never" lazy="false"
+			name="valueAdded" optimistic-lock="true" type="string"
+			unique="false">
+			<column length="65535" name="value_added" />
+		</property>
+		<set embed-xml="true" fetch="select" inverse="true" lazy="true"
+			mutable="true"
+			name="reportSynthesisKeyPartnershipCollaborationCrps"
+			optimistic-lock="true" sort="unsorted"
+			table="report_synthesis_key_partnership_collaboration_crps">
+			<key on-delete="noaction">
+				<column name="report_synthesis_key_partnership_collaboration_id" />
+			</key>
+			<one-to-many
+				class="org.cgiar.ccafs.marlo.data.model.ReportSynthesisKeyPartnershipCollaborationCrp"
+				embed-xml="true" not-found="exception" />
+		</set>
+	</class>
+</hibernate-mapping>

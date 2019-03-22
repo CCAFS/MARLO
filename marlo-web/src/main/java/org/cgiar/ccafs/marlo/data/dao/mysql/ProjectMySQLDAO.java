@@ -291,20 +291,6 @@ public class ProjectMySQLDAO extends AbstractMarloDAO<Project, Long> implements 
     return list;
   }
 
-  @Override
-  public List<Map<String, Object>> getUserProjectsReporting(long userId, String crp) {
-    List<Map<String, Object>> list = new ArrayList<>();
-    StringBuilder builder = new StringBuilder();
-    builder.append("select DISTINCT project_id from user_permission where crp_acronym='" + crp
-      + "' and project_id is not null and  permission_id  in (110,195)");
-    if (super.getTemTableUserId() == userId) {
-      list = super.findCustomQuery(builder.toString());
-    } else {
-      list = super.excuteStoreProcedure(" call getPermissions(" + userId + ")", builder.toString());
-    }
-    return list;
-
-  }
 
   @Override
   public Project save(Project project) {

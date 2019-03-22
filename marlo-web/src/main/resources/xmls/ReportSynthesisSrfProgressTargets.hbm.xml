@@ -21,7 +21,7 @@
 		</many-to-one>
 		<many-to-one class="org.cgiar.ccafs.marlo.data.model.SrfSloIndicatorTarget"
 			embed-xml="true" fetch="select" insert="true"
-			name="srfSloIndicatorTargets" not-found="exception"
+			name="srfSloIndicatorTarget" not-found="exception"
 			optimistic-lock="true" unique="false" update="true">
 			<column name="srf_slo_indicator_targets_id" />
 		</many-to-one>

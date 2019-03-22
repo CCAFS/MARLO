@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,12 +17,18 @@ package org.cgiar.ccafs.marlo.data.manager.impl;
 
 import org.cgiar.ccafs.marlo.data.dao.RepIndInnovationTypeDAO;
 import org.cgiar.ccafs.marlo.data.manager.RepIndInnovationTypeManager;
+import org.cgiar.ccafs.marlo.data.model.Phase;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationInfo;
 import org.cgiar.ccafs.marlo.data.model.RepIndInnovationType;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisInnovationsByTypeDTO;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
-import javax.inject.Named;
 import javax.inject.Inject;
+import javax.inject.Named;
 
 /**
  * @author Christian Garcia
@@ -59,6 +65,40 @@ public class RepIndInnovationTypeManagerImpl implements RepIndInnovationTypeMana
 
     return repIndInnovationTypeDAO.findAll();
 
+  }
+
+  @Override
+  public List<ReportSynthesisInnovationsByTypeDTO>
+    getInnovationsByTypeDTO(List<ProjectInnovation> selectedProjectInnovations, Phase phase) {
+    List<ReportSynthesisInnovationsByTypeDTO> innovationsByTypeDTO = new ArrayList<>();
+    List<RepIndInnovationType> innovationTypes =
+      this.findAll().stream().sorted((o1, o2) -> o1.getName().compareTo(o2.getName())).collect(Collectors.toList());
+    if (innovationTypes != null) {
+      for (RepIndInnovationType innovationType : innovationTypes) {
+        ReportSynthesisInnovationsByTypeDTO reportSynthesisInnovationsByTypeDTO =
+          new ReportSynthesisInnovationsByTypeDTO();
+        reportSynthesisInnovationsByTypeDTO.setRepIndInnovationType(innovationType);
+        List<ProjectInnovation> projectInnovationByInnnovationType = selectedProjectInnovations.stream()
+          .filter(pp -> pp.isActive() && pp.getProjectInnovationInfo(phase) != null
+            && pp.getProjectInnovationInfo().getRepIndInnovationType() != null
+            && pp.getProjectInnovationInfo().getRepIndInnovationType().equals(innovationType))
+          .collect(Collectors.toList());
+        List<ProjectInnovationInfo> projectInnovationInfos = new ArrayList<ProjectInnovationInfo>();
+        if (projectInnovationByInnnovationType != null && !projectInnovationByInnnovationType.isEmpty()) {
+          for (ProjectInnovation projectInnovation : projectInnovationByInnnovationType) {
+            projectInnovationInfos.add(projectInnovation.getProjectInnovationInfo(phase));
+          }
+          reportSynthesisInnovationsByTypeDTO.setProjectInnovationInfos(projectInnovationInfos);
+        } else {
+          reportSynthesisInnovationsByTypeDTO.setProjectInnovationInfos(projectInnovationInfos);
+        }
+
+        innovationsByTypeDTO.add(reportSynthesisInnovationsByTypeDTO);
+      }
+    }
+
+    return innovationsByTypeDTO.stream().sorted((o1, o2) -> new Integer(o2.getProjectInnovationInfos().size())
+      .compareTo(new Integer(o1.getProjectInnovationInfos().size()))).collect(Collectors.toList());
   }
 
   @Override

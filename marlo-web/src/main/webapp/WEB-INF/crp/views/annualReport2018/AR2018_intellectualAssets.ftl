@@ -43,7 +43,7 @@
           <h3 class="headTitle">[@s.text name="${customLabel}.title" /]</h3>
           <div class="borderBox">
             [#-- Section description --]
-            <i class="helpLabel">[@s.text name="${customLabel}.help" /]</i>
+            [@customForm.helpLabel name="${customLabel}.help" showIcon=false editable=editable/]
             
             [#if PMU]
               [#-- Strategically managed assets --]

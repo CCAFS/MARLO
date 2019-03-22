@@ -43,6 +43,9 @@ $(document).ready(function() {
   setViewMore();
   $('.viewMore').on("click", expandViewMoreBlock);
 
+  // View More link button
+  $('#helpViewMoreLink').on("click", expandViewMoreLink);
+
   $(".removeHelp").on("click", function() {
     $(this).parent().parent().fadeOut(function() {
       console.log(this);
@@ -318,19 +321,7 @@ $(document).ready(function() {
   // Set autogrow
   $("textarea[id!='justification']").autoGrow();
 
-  if($.fn.trumbowyg) {
-    $('.allowTextEditor').trumbowyg({
-        btns: [
-          [
-            'link'
-          ]
-        ],
-        autogrow: true,
-        minimalLinks: true,
-        semantic: true,
-        removeformatPasted: true
-    });
-  }
+  $('form .allowTextEditor').setTrumbowyg();
 
   $('.decodeHTML').each(function(i,e) {
     $(this).html($(this).text());
@@ -344,6 +335,22 @@ $(document).ready(function() {
   });
 
 });
+
+jQuery.fn.setTrumbowyg = function() {
+  if($.fn.trumbowyg) {
+    $(this).trumbowyg({
+        btns: [
+          [
+              'link', 'strong', 'em'
+          ]
+        ],
+        autogrow: true,
+        minimalLinks: true,
+        semantic: true,
+        removeformatPasted: true
+    });
+  }
+};
 
 function turnSavingStateOn(button) {
   $(button).addClass('disabled animated flipInY');
@@ -431,6 +438,18 @@ function expandViewMoreBlock() {
     $(this).removeClass("opened");
   }
 
+}
+
+function expandViewMoreLink() {
+  if($(this).hasClass("viewMoreLinkclosed")) {
+    $(this).html('View Less');
+    $(this).addClass("viewMoreLinkopened");
+    $(this).removeClass("viewMoreLinkclosed");
+  } else if($(this).hasClass("viewMoreLinkopened")) {
+    $(this).html('View More');
+    $(this).addClass("viewMoreLinkclosed");
+    $(this).removeClass("viewMoreLinkopened");
+  }
 }
 
 /**
@@ -535,53 +554,62 @@ function notificationError(message) {
   noty(notyOptions);
 }
 
-/* Set elementsListComponent function to the functioning of the customForm macro */
+/**
+ * One to Many component
+ * 
+ * @description elementsListComponent function to the functioning of the customForm macro
+ */
 function setElementsListComponent() {
-
   // Settings
   $('select[class*="elementType-"]').each(function(i,e) {
-    var $parent = $(e).parents('.elementsListComponent');
-    var $select = $parent.find('select');
-    var elementType = $select.classParam('elementType');
-    var maxLimit = $select.classParam('maxLimit');
-    var $list = $('.listType-' + elementType);
-    var counted = $list.find('li').length;
+    $(this).setOneToManyComponent();
+  });
+}
 
-    // Disabled elements already selected
-    $parent.find("ul.list li").each(function(index,domElement) {
-      var id = $(domElement).find('.elementRelationID').val();
-      $select.find('option[value="' + id + '"]').prop("disabled", true);
-    });
+jQuery.fn.setOneToManyComponent = function() {
+  var $parent = $(this).parents('.elementsListComponent');
+  var $select = $parent.find('select');
+  var elementType = $select.classParam('elementType');
+  var maxLimit = $select.classParam('maxLimit');
+  var $list = $parent.find('ul.list');
+  var counted = $list.find('li').length;
 
-    // Validate limit reached
-    if((maxLimit > 0) && (counted >= maxLimit)) {
-      $select.prop('disabled', true).trigger('change.select2');
-    }
+  console.log("init", elementType);
 
-    // Set placeholder
-    if((maxLimit == 0)) {
-      $select.find('option[value="-1"]').text("Select multiple options...");
-    } else if((maxLimit > 1)) {
-      $select.find('option[value="-1"]').text("Select multiple options (Max " + maxLimit + ")...");
-    } else if((maxLimit == 1)) {
-      $select.find('option[value="-1"]').text("Select a single option...");
-    }
-
+  // Disabled elements already selected
+  $list.find("li").each(function(index,domElement) {
+    var id = $(domElement).find('.elementRelationID').val();
+    $select.find('option[value="' + id + '"]').prop("disabled", true);
   });
 
+  // Validate limit reached
+  if((maxLimit > 0) && (counted >= maxLimit)) {
+    $select.prop('disabled', true).trigger('change.select2');
+  }
+
+  // Set placeholder
+  if((maxLimit == 0)) {
+    $select.find('option[value="-1"]').text("Select multiple options...");
+  } else if((maxLimit > 1)) {
+    $select.find('option[value="-1"]').text("Select multiple options (Max " + maxLimit + ")...");
+  } else if((maxLimit == 1)) {
+    $select.find('option[value="-1"]').text("Select a single option...");
+  }
+
   // On select element
-  $('select[class*="elementType-"]').on('change', onSelectElement);
+  $select.on('change', onSelectElement);
 
   // On click remove button
-  $('[class*="removeElementType-"]').on('click', onClickRemoveElement);
-}
+  $parent.find('[class*="removeElementType-"]').on('click', onClickRemoveElement);
+};
 
 function onSelectElement() {
   var $select = $(this);
+  var $parent = $(this).parents('.elementsListComponent');
   var $option = $select.find('option:selected');
   var elementType = $select.classParam('elementType');
   var maxLimit = $select.classParam('maxLimit');
-  var $list = $('.listType-' + elementType);
+  var $list = $parent.find('ul.list');
   var counted = $list.find('li').length;
 
   // Select an option
@@ -589,25 +617,9 @@ function onSelectElement() {
     return;
   }
 
-  // Verify limit if applicable
-  if((maxLimit > 0) && (counted >= maxLimit)) {
-    $select.val('-1').trigger('change.select2');
-    $select.parent().animateCss('shake');
-    notificationError('Only ' + maxLimit + ' can be selected');
-    return;
-  }
-
-  // Verify repeated selection
-  var $repeatedElement = $list.find('.elementRelationID[value="' + $option.val() + '"]');
-  if($repeatedElement.length) {
-    $select.val('-1').trigger('change.select2');
-    $repeatedElement.parent().animateCss('shake');
-    notificationError('It was already selected');
-    return;
-  }
-
   // Clone the new element
-  var $element = $('#relationElement-' + elementType + '-template').clone(true).removeAttr("id");
+  var $element = $parent.find('.relationElement-template').clone(true);
+  $element.removeClass('relationElement-template');
 
   // Remove template tag
   $element.find('input').each(function(i,e) {
@@ -649,11 +661,12 @@ function onClickRemoveElement() {
   var removeElementType = $(this).classParam('removeElementType');
   var $parent = $(this).parent();
   var $select = $(this).parents(".panel-body").find('select');
-  var $list = $('.listType-' + removeElementType);
+  var $list = $(this).parents('.elementsListComponent').find('ul.list');
   var counted = $list.find('li').length;
   var maxLimit = $select.classParam('maxLimit');
   var id = $parent.find(".elementRelationID").val();
   var name = $parent.find(".elementName").text();
+
   $parent.slideUp(100, function() {
     $parent.remove();
 

@@ -139,7 +139,8 @@ public class ValidateProjectSectionAction extends BaseAction {
         case PARTNERS:
           this.projectSectionValidator.validateProjectParnters(this, this.getProjectID(), this.loggedCrp);
         case BUDGET:
-          if (this.isPlanningActive()) {
+          if (this.isPlanningActive()
+            || (this.isReportingActive() && this.hasSpecificities(this.getCrpEnableBudgetExecution()))) {
             this.projectSectionValidator.validateProjectBudgets(this, this.getProjectID());
           }
           break;
@@ -449,7 +450,7 @@ public class ValidateProjectSectionAction extends BaseAction {
 
         case BUDGET:
 
-          if (this.isReportingActive()) {
+          if (this.isReportingActive() && !this.hasSpecificities(this.getCrpEnableBudgetExecution())) {
             section = new HashMap<String, Object>();
 
             section.put("sectionName", ProjectSectionStatusEnum.BUDGET);
