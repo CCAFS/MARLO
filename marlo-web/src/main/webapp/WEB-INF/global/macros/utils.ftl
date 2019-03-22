@@ -72,11 +72,11 @@
 
 [#macro prefilledTag]<i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>[/#macro]
 
-[#macro tableText value]
-  [#if (value?trim?has_content)!false]${value}[#else]<i style="opacity:0.8"><nobr>[@s.text name="global.notDefined"/]</nobr></i>[/#if]
+[#macro tableText value nobr=false emptyText="global.notDefined"]
+  [#if (value?trim?has_content)!false] <span style="${nobr?string('white-space: nowrap;','word-wrap: break-word;')}"> ${value?trim} </span> [#else]<i style="font-weight: normal;opacity:0.8;"><nobr>[@s.text name="${emptyText}"/]</nobr></i>[/#if]
 [/#macro]
 
-[#macro tableList list displayFieldName="title"]
+[#macro tableList list displayFieldName="title" showEmpty=true nobr=false emptyText="global.notDefined" class="" scroll=false]
   [#local levels = displayFieldName?split(".")]
   [#local valuesArray = [] /]
   [#if (list?has_content)!false]
@@ -85,17 +85,19 @@
       [#local itemValue = (item)!'null' /]
       [#list levels as level][#local itemValue = (itemValue[level])!'null' /][/#list]
       [#local valuesArray = valuesArray + [itemValue] /]
-    [/#list]     
+    [/#list]
     
     [#if valuesArray?size > 1 ]
-      <ul style="padding: 0">
-        [#list valuesArray as item]<li style="list-style-position: inside;">${item}</li>[/#list]
+      <ul style="padding: 0" class="${class}" [#if scroll]data-mcs-theme="dark"[/#if]>
+        [#list valuesArray as item]<li style="list-style-position: inside;${nobr?string('white-space: nowrap;','')}">${item}</li>[/#list]
       </ul>
     [#else]
       ${valuesArray[0]}
     [/#if]
   [#else]
-    <i style="opacity:0.8"><nobr>[@s.text name="global.notDefined"/]</nobr></i>
+    [#if showEmpty]
+      <i style="font-weight: normal;opacity:0.8;"><nobr>[@s.text name="${emptyText}"/]</nobr></i>
+    [/#if]
   [/#if]
 [/#macro]
 

@@ -1886,16 +1886,16 @@ a.currentReportingSection li, a.currentSection li {
   font-size: 0.95em !important;
 }
 
-#secondaryMenu ul li ul li.draft {
+#secondaryMenu ul li  > ul li.draft {
   font-style: italic;
 }
 
-#secondaryMenu ul li ul li.currentSection {
+#secondaryMenu ul li ul > li.currentSection {
   font-weight: bold;
 }
 
-#secondaryMenu ul li ul li {
-  margin: 2px 0 5px 0;
+#secondaryMenu ul li > ul li {
+  margin: 2px 0 3px 0;
   list-style: none;
   font-size: 0.9em;
   border: 1px solid #e8e7e7;
@@ -1903,17 +1903,17 @@ a.currentReportingSection li, a.currentSection li {
   background: #fff;
 }
 
-#secondaryMenu ul li ul li.disabled {
+#secondaryMenu ul li  > ul li.disabled {
   opacity: 0.4;
 }
 
-#secondaryMenu ul li ul li.submitted a {
+#secondaryMenu ul li  > ul li.submitted > a {
   background-image: url("../../global/images/submitted.png");
   background-repeat: no-repeat;
   background-position: 97% 6px;
 }
 
-#secondaryMenu ul li ul li.toSubmit a {
+#secondaryMenu ul li > ul li.toSubmit > a {
   background-image: url("../../global/images/submitted.png");
   background-repeat: no-repeat;
   background-position: 97% -28px;
@@ -1931,7 +1931,7 @@ a.currentReportingSection li, a.currentSection li {
   background-position: 97% 6px;
 }
 
-#secondaryMenu ul li ul li a {
+#secondaryMenu ul li > ul li a {
   display: block;
   text-decoration: none;
   color: #5E5E5E;
@@ -1939,16 +1939,24 @@ a.currentReportingSection li, a.currentSection li {
   /* border-left: 5px solid; */
 }
 
-#secondaryMenu ul li ul li:hover {
+#secondaryMenu ul li > ul li ul li a {
+  padding: 6px 20px 6px 10px !important;
+}
+
+#secondaryMenu ul li  > ul li:hover {
   background-color: #F7F7F7;
 }
 
-#secondaryMenu ul li ul {
+#secondaryMenu ul li  > ul li:hover a {
+  color: #000;
+}
+
+#secondaryMenu ul li  > ul {
   /* display:none; */
   /* margin-top: 5px; */
   padding: 0;
   color: #5a5a5a;
-  padding: 5px 11px;
+  padding: 5px 9px;
 }
 
 #secondaryMenu a.goBack {
@@ -2009,6 +2017,18 @@ a.currentReportingSection li, a.currentSection li {
   float: left;
   margin-left: -40px;
   margin-top: 40px;
+}
+
+#secondaryMenu ul li ul li ul li {
+  margin: 0;
+  border: none;
+  box-shadow: 0px 0px 0px rgba(0,0,0,0.1);
+  font-weight: normal; 
+}
+
+#secondaryMenu ul li ul li ul  {
+  margin: 2px 0px 0px 0px;
+  padding: 2px 0px 0 2px;
 }
 
 /*************** REPORTING STEP MENU ****************/
@@ -3144,7 +3164,7 @@ button.ipGraph-btn {
   background-color: #FFF7CF;
   padding: 6px;
   text-align: center;
-  border-bottom: 2px solid #fff;
+  /* border-bottom: 2px solid #fff; */
   font-style: italic;
 }
 
@@ -4299,6 +4319,15 @@ li.fileUploaded span {
   background-size: 360%;
   vertical-align: middle;
 }
+
+
+.icon-20.files {
+  background-image: url(../../global/images/summaries/summaries-icons.png);
+  background-position: -28px 22px;
+  background-size: 360%;
+  vertical-align: middle;
+}
+
 
 .icon-uncheck {
   background: url('../../global/images/sprite-icons-activities.png') 0 -85px;
@@ -6848,3 +6877,7 @@ span.doc-badge {
 
 
 i.authorVisibles {}
+
+#helpViewMoreLink {
+  cursor: pointer;
+}

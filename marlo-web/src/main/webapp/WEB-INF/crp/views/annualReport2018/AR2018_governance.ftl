@@ -17,7 +17,7 @@
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
 
-[#assign customName= "reportSynthesis" /]
+[#assign customName= "reportSynthesis.reportSynthesisGovernance" /]
 [#assign customLabel= "annualReport2018.${currentStage}" /]
 
 [#-- Helptext --]
@@ -46,7 +46,7 @@
             [#if PMU]
               [#-- Governance description --]
               <div class="form-group">
-               [@customForm.textArea name="${customName}.describe" i18nkey="${customLabel}.describe" help="${customLabel}.describe.help" className="limitWords-300" helpIcon=false required=true editable=editable allowTextEditor=true/]
+               [@customForm.textArea name="${customName}.description" i18nkey="${customLabel}.describe" help="${customLabel}.describe.help" className="limitWords-300" helpIcon=false required=true editable=editable allowTextEditor=true/]
               </div>
               [#else]
               <div class="textArea">

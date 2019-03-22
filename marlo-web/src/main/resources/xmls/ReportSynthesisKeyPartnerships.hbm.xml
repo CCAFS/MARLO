@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Generated Mar 7, 2019 7:42:16 AM by Hibernate Tools 5.3.6.Final -->
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping auto-import="true"
+	default-access="property" default-cascade="none" default-lazy="true">
+	<class dynamic-insert="false" dynamic-update="false"
+		mutable="true"
+		name="org.cgiar.ccafs.marlo.data.model.ReportSynthesisKeyPartnership"
+		optimistic-lock="version" polymorphism="implicit"
+		select-before-update="false" table="report_synthesis_key_partnerships">
+		<id name="id" type="java.lang.Long">
+			<column name="id" />
+			<generator class="foreign">
+				<param name="property">reportSynthesis</param>
+			</generator>
+		</id>
+		<one-to-one
+			class="org.cgiar.ccafs.marlo.data.model.ReportSynthesis"
+			constrained="true" embed-xml="true" name="reportSynthesis" />
+		<property generated="never" lazy="false" name="summary"
+			optimistic-lock="true" type="string" unique="false">
+			<column length="65535" name="summary" />
+		</property>
+		<property generated="never" lazy="false" name="summaryCgiar"
+      optimistic-lock="true" type="string" unique="false">
+      <column length="65535" name="summary_cgiar" />
+    </property>
+		<property generated="never" lazy="false" name="active"
+			optimistic-lock="true" type="boolean" unique="false">
+			<column name="is_active" not-null="true" />
+		</property>
+		<property generated="never" lazy="false" name="activeSince"
+			optimistic-lock="true" type="timestamp" unique="false">
+			<column length="19" name="active_since" />
+		</property>
+		<many-to-one name="createdBy"
+			class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
+			<column name="created_by" />
+		</many-to-one>
+		<many-to-one name="modifiedBy"
+			class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
+			<column name="modified_by" />
+		</many-to-one>
+		<property generated="never" lazy="false"
+			name="modificationJustification" optimistic-lock="true" type="string"
+			unique="false">
+			<column length="65535" name="modification_justification" />
+		</property>
+		<set embed-xml="true" fetch="select" inverse="true" lazy="true"
+			mutable="true" name="reportSynthesisKeyPartnershipExternals"
+			optimistic-lock="true" sort="unsorted"
+			table="report_synthesis_key_partnership_external">
+			<key on-delete="noaction">
+				<column name="report_synthesis_key_partnership_id" />
+			</key>
+			<one-to-many
+				class="org.cgiar.ccafs.marlo.data.model.ReportSynthesisKeyPartnershipExternal"
+				embed-xml="true" not-found="exception" />
+		</set>
+		<set embed-xml="true" fetch="select" inverse="true" lazy="true"
+			mutable="true" name="reportSynthesisKeyPartnershipCollaborations"
+			optimistic-lock="true" sort="unsorted"
+			table="report_synthesis_key_partnership_collaborations">
+			<key on-delete="noaction">
+				<column name="report_synthesis_key_partnership_id" />
+			</key>
+			<one-to-many
+				class="org.cgiar.ccafs.marlo.data.model.ReportSynthesisKeyPartnershipCollaboration"
+				embed-xml="true" not-found="exception" />
+		</set>
+		<set embed-xml="true" fetch="select" inverse="true" lazy="true"
+			mutable="true" name="reportSynthesisKeyPartnershipPmus"
+			optimistic-lock="true" sort="unsorted"
+			table="report_synthesis_key_partnership_pmu">
+			<key on-delete="noaction">
+				<column name="report_synthesis_key_partnership_id" />
+			</key>
+			<one-to-many
+				class="org.cgiar.ccafs.marlo.data.model.ReportSynthesisKeyPartnershipPmu"
+				embed-xml="true" not-found="exception" />
+		</set>
+	</class>
+</hibernate-mapping>

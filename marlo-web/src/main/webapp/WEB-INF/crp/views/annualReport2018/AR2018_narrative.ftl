@@ -4,7 +4,7 @@
 [#assign currentSection = "synthesis" /]
 [#assign currentStage = actionName?split('/')[1]/]
 [#assign pageLibs = [ "trumbowyg" ] /]
-[#assign customJS = [ "${baseUrlMedia}/js/annualReport/annualReport_${currentStage}.js" ] /]
+[#assign customJS = [  ] /]
 [#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css"] /]
 
 [#assign breadCrumb = [
@@ -17,7 +17,7 @@
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
 
-[#assign customName= "reportSynthesis" /]
+[#assign customName= "reportSynthesis.reportSynthesisNarrative" /]
 [#assign customLabel= "annualReport2018.${currentStage}" /]
 
 [#-- Helptext --]
@@ -42,10 +42,11 @@
           [#-- Title --]
           <h3 class="headTitle">[@s.text name="${customLabel}.title" /]</h3>
           <div class="borderBox">
+            
             [#-- Executive Summary --]
             [#if PMU]
               <div class="form-group">
-               [@customForm.textArea name="${customName}.narrative" i18nkey="${customLabel}.progress" help="${customLabel}.progress.help" className="limitWords-500" helpIcon=false required=true editable=editable allowTextEditor=true /]
+               [@customForm.textArea name="${customName}.narrative" i18nkey="${customLabel}.progress" help="${customLabel}.progress.help" className="limitWords-500" helpIcon=false required=!isPlatform editable=editable allowTextEditor=true /]
               </div>
             [#else]
               <div class="textArea">

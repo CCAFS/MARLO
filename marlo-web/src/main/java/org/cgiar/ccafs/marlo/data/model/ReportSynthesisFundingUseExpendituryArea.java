@@ -26,8 +26,19 @@ public class ReportSynthesisFundingUseExpendituryArea extends MarloAuditableEnti
   @Expose
   private String comments;
 
+
+  /** AR2018 Fields */
+  @Expose
+  private String exampleExpenditure;
+  @Expose
+  private ReportSynthesisExpenditureCategory expenditureCategory;
+  @Expose
+  private String otherCategory;
+
+
   public ReportSynthesisFundingUseExpendituryArea() {
   }
+
 
   @Override
   public boolean equals(Object obj) {
@@ -51,14 +62,23 @@ public class ReportSynthesisFundingUseExpendituryArea extends MarloAuditableEnti
     return true;
   }
 
+
   public String getComments() {
     return comments;
+  }
+
+
+  public String getExampleExpenditure() {
+    return exampleExpenditure;
   }
 
   public PowbExpenditureAreas getExpenditureArea() {
     return expenditureArea;
   }
 
+  public ReportSynthesisExpenditureCategory getExpenditureCategory() {
+    return expenditureCategory;
+  }
 
   @Override
   public String getLogDeatil() {
@@ -67,11 +87,13 @@ public class ReportSynthesisFundingUseExpendituryArea extends MarloAuditableEnti
     return sb.toString();
   }
 
+  public String getOtherCategory() {
+    return otherCategory;
+  }
 
   public ReportSynthesisFundingUseSummary getReportSynthesisFundingUseSummary() {
     return reportSynthesisFundingUseSummary;
   }
-
 
   public Double getW1w2Percentage() {
     return w1w2Percentage;
@@ -91,8 +113,23 @@ public class ReportSynthesisFundingUseExpendituryArea extends MarloAuditableEnti
     this.comments = comments;
   }
 
+
+  public void setExampleExpenditure(String exampleExpenditure) {
+    this.exampleExpenditure = exampleExpenditure;
+  }
+
+
   public void setExpenditureArea(PowbExpenditureAreas expenditureArea) {
     this.expenditureArea = expenditureArea;
+  }
+
+
+  public void setExpenditureCategory(ReportSynthesisExpenditureCategory expenditureCategory) {
+    this.expenditureCategory = expenditureCategory;
+  }
+
+  public void setOtherCategory(String otherCategory) {
+    this.otherCategory = otherCategory;
   }
 
 
@@ -105,14 +142,13 @@ public class ReportSynthesisFundingUseExpendituryArea extends MarloAuditableEnti
     this.w1w2Percentage = w1w2Percentage;
   }
 
-
   @Override
   public String toString() {
     return "ReportSynthesisFundingUseExpendituryArea [Id=" + this.getId() + ", reportSynthesisFundingUseSummary="
-      + reportSynthesisFundingUseSummary + ", expenditureArea=" + expenditureArea + ", w1w2Percentage=" + w1w2Percentage
-      + ", comments=" + comments + ", isActive()=" + this.isActive() + "]";
+      + reportSynthesisFundingUseSummary + ", exampleExpenditure=" + exampleExpenditure + ", expenditureCategory="
+      + expenditureCategory + ", otherCategory=" + otherCategory + ", expenditureArea=" + expenditureArea
+      + ", w1w2Percentage=" + w1w2Percentage + ", comments=" + comments + ", isActive()=" + this.isActive() + "]";
   }
-
 
 }
 

@@ -708,6 +708,7 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
         clearLead = false;
       }
 
+
       if (innovation.getCountries() != null) {
         for (ProjectInnovationCountry country : innovation.getCountries()) {
           innovation.getCountriesIds().add(country.getLocElement().getIsoAlpha2());
@@ -917,6 +918,11 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
           || c.getFundingSource().getFundingSourceInfo(action.getActualPhase()).getStatus() != 5))
       .collect(Collectors.toList()));
 
+    if (action.isReportingActive() && action.hasSpecificities(action.getCrpEnableBudgetExecution())) {
+      project.setBudgetExecutions(project.getProjectBudgetExecutions().stream()
+        .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(action.getActualPhase()))
+        .collect(Collectors.toList()));
+    }
 
     projectBudgetsValidator.validate(action, project, false);
 

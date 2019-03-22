@@ -35,5 +35,61 @@
             </key>
             <one-to-many class="org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressMilestone" />
         </set>
+        <set name="reportSynthesisFlagshipProgressOutcomes" table="report_synthesis_flagship_progress_outcomes" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="report_synthesis_flagship_progress_id" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressOutcome" />
+        </set>        
+        <!-- AR2018 Fields -->
+        <property name="overallProgress" type="string">
+            <column name="overall_progress" sql-type="TEXT" />
+        </property>
+        <property name="progressByFlagships" type="string">
+            <column name="progress_by_flagships" sql-type="TEXT" />
+        </property>
+        <property name="detailedAnnex" type="string">
+            <column name="detailed_annex" sql-type="TEXT" />
+        </property>
+        <property name="expandedResearchAreas" type="string">
+            <column name="expanded_research_areas" sql-type="TEXT" />
+        </property>
+        <property name="droppedResearchLines" type="string">
+            <column name="dropped_research_lines" sql-type="TEXT" />
+        </property>
+        <property name="changedDirection" type="string">
+            <column name="changed_direction" sql-type="TEXT" />
+        </property>
+        <property name="altmetricScore" type="string">
+            <column name="altmetric_score" sql-type="TEXT" />
+        </property>
+        
+        <set name="reportSynthesisFlagshipProgressPolicies" table="report_synthesis_flagship_progress_policies" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="report_synthesis_flagship_progress_id" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressPolicy" />
+        </set>
+        
+        <set name="reportSynthesisFlagshipProgressStudies" table="report_synthesis_flagship_progress_studies" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="report_synthesis_flagship_progress_id" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressStudy" />
+        </set>
+        
+        <set name="reportSynthesisFlagshipProgressInnovations" table="report_synthesis_flagship_progress_innovations" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="report_synthesis_flagship_progress_id" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressInnovation" />
+        </set>
+        
+         <set name="reportSynthesisFlagshipProgressDeliverables" table="report_synthesis_flagship_progress_deliverables" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="report_synthesis_flagship_progress_id" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressDeliverable" />
+        </set>
     </class>
 </hibernate-mapping>

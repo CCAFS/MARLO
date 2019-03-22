@@ -3,8 +3,12 @@
 [#assign currentSectionString = "annualReport-${actionName?replace('/','-')}-${synthesisID}" /]
 [#assign currentSection = "synthesis" /]
 [#assign currentStage = actionName?split('/')[1]/]
-[#assign pageLibs = [ "select2", "trumbowyg" ] /]
-[#assign customJS = [ "${baseUrlMedia}/js/annualReport/annualReport_${currentStage}.js" ] /]
+[#assign pageLibs = [ "select2", "trumbowyg", "datatables.net", "datatables.net-bs" ] /]
+[#assign customJS = [
+  "${baseUrlMedia}/js/annualReport/annualReportGlobal.js",
+  "${baseUrlMedia}/js/annualReport2018/annualReport2018_${currentStage}.js" 
+] 
+/]
 [#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css"] /]
 
 [#assign breadCrumb = [
@@ -17,7 +21,7 @@
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
 
-[#assign customName= "reportSynthesis" /]
+[#assign customName= "reportSynthesis.reportSynthesisMelia" /]
 [#assign customLabel= "annualReport2018.${currentStage}" /]
 
 [#-- Helptext --]
@@ -41,70 +45,82 @@
         [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
           [#-- Title --]
           <h3 class="headTitle">[@s.text name="${customLabel}.title" /]</h3>
-          <div class="borderBox">
+          <div class="">
           
-          [#-- Short narrative to introduce the table 9 --]
-          [#if PMU]
-            <div class="form-group">
-                [@customForm.textArea name="${customName}.narrative" i18nkey="${customLabel}.narrative" className="" helpIcon=false required=false editable=editable allowTextEditor=true /]
-            </div>
-          [#else]
-            <div class="textArea">
-                <label for="">[@customForm.text name="${customLabel}.narrative" readText=true /]:</label>
-                <p>[#if (pmuText?has_content)!false]${pmuText?replace('\n', '<br>')}[#else] [@s.text name="global.prefilledByPmu"/] [/#if]</p>
-            </div>
-          [/#if]
-          
-          [#-- Table 9: MELIA --]
-          [#assign meliaList = [
-                { 
-                  "studies": "Studies",
-                  "status": "Status",
-                  "type": "Type",
-                  "comments": "Comments"
-                },
-                { 
-                  "studies": "",
-                  "status": "",
-                  "type": "",
-                  "comments": ""
-                }
-              ] /]
-          [@meliaTable name="table9" list=meliaList /]
-          
-          
-          [#assign meliaUpdateList = [
-                { 
-                  "title": "Title",
-                  "maturity": "Maturity Level",
-                  "status": "Status"
-                },
-                { 
-                  "title": "Title 1",
-                  "maturity": "Maturity Level 1",
-                  "status": "Status 1"
-                }
-              ] /]
-          
-          [#-- Table 10: Update on actions taken in response to relevant evaluations --]
-            [#if PMU]
-              <div class="form-group">
-                <h4 class="subTitle headTitle">[@s.text name="${customLabel}.table10.title" /]</h4>
-                <div class="listEvaluations">
-                  [#-- [#list (reportSynthesis.reportSynthesisMelia.evaluations)![] as item] --]
-                  [#list (meliaUpdateList)![] as item]
-                    [@relevantEvaluationMacro element=item name="${customName}.table10" index=item_index  isEditable=editable/]
-                  [/#list]
+            <div class="bootstrapTabs">
+              [#-- Tabs --] 
+              <ul class="nav nav-tabs" role="tablist"> 
+                <li role="presentation" class="active"><a index="0" href="#tab-table10" aria-controls="info" role="tab" data-toggle="tab"> Table 10: MELIA </a></li>
+                <li role="presentation" class=""><a index="1" href="#tab-table11" aria-controls="info" role="tab" data-toggle="tab"> Table 11: Update on Actions Taken </a></li>
+              </ul>
+              
+              [#-- Content --] 
+              <div class="tab-content ">
+                <div id="tab-table10" role="tabpanel" class="tab-pane fade in active">
+                  [#-- Short narrative to introduce the table 9 --]
+                  <div class="form-group">
+                    [@customForm.textArea name="${customName}.summary" i18nkey="${customLabel}.narrative" className="" helpIcon=false required=true editable=editable allowTextEditor=true /]
+                  </div>
+                  
+                  [#-- Table 10: MELIA --]
+                  <div class="form-group">
+                    [#-- Button --]
+                    <button type="button" class="btn btn-default btn-xs pull-right" data-toggle="modal" data-target="#modal-policies">
+                       <span class="glyphicon glyphicon-fullscreen"></span> See Full table 10
+                    </button>
+                      <h4 class="subTitle headTitle annualReport-table">[@s.text name="${customLabel}.table10.title" /]</h4>
+                      [@customForm.helpLabel name="${customLabel}.table10.help" showIcon=false editable=editable/]
+                    [#-- Modal --]
+                    <div class="modal fade" id="modal-policies" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                      <div class="modal-dialog modal-lg" role="document">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title" id="myModalLabel">[@s.text name="${customLabel}.table10.title" /]</h4>
+                          </div>
+                          <div class="modal-body">
+                            [#-- Full table --]
+                            <div class="">
+                              [@meliaTable name="${customName}.plannedStudies" list=(studiesList)![] expandedTable=true/]
+                            </div>
+                          </div>
+                          <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    [#-- Table --]
+                    <div class="">
+                      [@meliaTable name="${customName}.plannedStudies" list=(studiesList)![] /]
+                    </div>
+                    
+                  </div>
                 </div>
-                [#if canEdit && editable]
-                <div class="text-right">
-                  <div class="addEvaluation bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> [@s.text name="form.buttons.addEvaluation"/]</div>
-                </div> 
-                [/#if]
+                
+                <div id="tab-table11" role="tabpanel" class="tab-pane fade">
+                  [#-- Table 11: Update on actions taken in response to relevant evaluations --]
+                  [#if PMU]
+                    <div class="form-group">
+                      <h4 class="subTitle headTitle">[@s.text name="${customLabel}.table11.title" /]</h4>
+                      <div class="listEvaluations">
+                        [#list (reportSynthesis.reportSynthesisMelia.evaluations)![] as item]
+                          [@relevantEvaluationMacro element=item name="${customName}.evaluations" index=item_index  isEditable=editable/]
+                        [/#list]
+                      </div>
+                      [#if canEdit && editable]
+                      <div class="text-right">
+                        <div class="addEvaluation bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> [@s.text name="form.buttons.addEvaluation"/]</div>
+                      </div> 
+                      [/#if]
+                    </div>
+                  [#else]
+                    <p class="text-center">Only for PMU</p>
+                  [/#if]
+                </div>
               </div>
-            [/#if]
-          
-          
+            </div>
           </div>
           [#-- Section Buttons & hidden inputs--]
           [#include "/WEB-INF/crp/views/annualReport2018/buttons-AR2018.ftl" /]
@@ -113,67 +129,70 @@
     </div>
   [/#if] 
 </section>
+
+[@relevantEvaluationMacro element={} name="${customName}.evaluations" index=-1  template=true/]
+
 [#include "/WEB-INF/global/pages/footer.ftl"]
 
 
 [#---------------------------------------------------- MACROS ----------------------------------------------------]
 
-[#macro meliaTable name list=[]]
+[#macro meliaTable name list=[] expandedTable=false]
 
-  <div class="form-group">
-    <h4 class="subTitle headTitle annualReport-table">[@s.text name="${customLabel}.${name}.title" /]</h4>
-    [@customForm.helpLabel name="${customLabel}.${name}.help" showIcon=false editable=editable/]
-    
+  <div class="form-group">    
     <table class="table table-bordered">
       <thead>
         <tr>
-          <th class="text-center"> [@s.text name="${customLabel}.${name}.studies" /] </th>
-          <th class="text-center col-md-2"> [@s.text name="${customLabel}.${name}.status" /] </th>
-          <th class="text-center"> [@s.text name="${customLabel}.${name}.type" /] </th>
-          <th class="text-center col-md-4"> [@s.text name="${customLabel}.${name}.comments" /] </th>
-          <th class="col-md-1 text-center"> [@s.text name="${customLabel}.${name}.includeAR" /] </th>
+          <th class="text-center"> [@s.text name="${customLabel}.table10.studies" /] </th>
+          <th class="text-center col-md-2"> [@s.text name="${customLabel}.table10.status" /] </th>
+          <th class="text-center"> [@s.text name="${customLabel}.table10.type" /] </th>
+          <th class="text-center col-md-4"> [@s.text name="${customLabel}.table10.comments" /] </th>
+          [#if !expandedTable]
+            <th class="col-md-1 text-center"> <small>[@s.text name="${customLabel}.table10.includeAR" /]</small>  </th>
+          [/#if]
         </tr>
       </thead>
       <tbody>
         [#if list?has_content]
           [#list list as item]
-          <tr>
-            <td>
-              [#if (item.studies?has_content)!false]
-                ${item.studies}
-              [#else]
-                <i style="opacity:0.5">Prefilled</i>
+            [#local url][@s.url namespace="/projects" action="${(crpSession)!}/study"][@s.param name='expectedID']${item.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
+            [#local summaryPDF = "${baseUrl}/projects/${crpSession}/studySummary.do?studyID=${(item.id)!}&cycle=Reporting&year=${(actualPhase.year)!}"]
+            <tr>
+              <td>
+                [@utils.tableText value=(item.composedName)!"" /]
+                [#if item.project??]<br /> <small>(From Project P${item.project.id})</small> [/#if]
+                
+                [#if PMU]
+                <br />
+                <div class="form-group">
+                  [#list (item.selectedFlahsgips)![] as liason]
+                    <span class="programTag" style="border-color:${(liason.crpProgram.color)!'#fff'}" title="${(liason.composedName)!}">${(liason.acronym)!}</span>
+                  [/#list]
+                </div>
+                [/#if]
+                
+                <a href="${url}" target="_blank" class="pull-right"><span class="glyphicon glyphicon-new-window"></span></a>
+              </td>
+              <td class="text-center">
+                [@utils.tableText value=(item.projectExpectedStudyInfo.status.name)!"" /]
+              </td>
+              <td class="text-center">
+                [@utils.tableText value=(item.projectExpectedStudyInfo.studyType.name)!"" /]
+              </td>
+              <td>
+                [@utils.tableText value=(item.projectExpectedStudyInfo.topLevelComments)!"" /]
+              </td>
+              [#if !expandedTable]
+              <td class="text-center">
+                [#local isChecked = ((!reportSynthesis.reportSynthesisMelia.studiesIds?seq_contains(item.id))!true) /]
+                [@customForm.checkmark id="study-${(item.id)!}" name="reportSynthesis.reportSynthesisMelia.plannedStudiesValue" value="${(item.id)!''}" checked=isChecked editable=editable centered=true/]
+              </td>
               [/#if]
-            </td>
-            <td class="text-center">
-              [#if (item.status?has_content)!false]
-                ${item.status}
-              [#else]
-                <i style="opacity:0.5">Prefilled</i>
-              [/#if]
-            </td>
-            <td class="text-center">
-              [#if (item.type?has_content)!false]
-                ${item.type}
-              [#else]
-                <i style="opacity:0.5">Prefilled</i>
-              [/#if]
-            </td>
-            <td>
-              [#if (item.comments?has_content)!false]
-                ${item.comments}
-              [#else]
-                <i style="opacity:0.5">Prefilled</i>
-              [/#if]
-            </td>
-            <td class="text-center">
-              [@customForm.checkmark id="" name="" checked=false editable=editable centered=true/] 
-            </td>
-          </tr>
+            </tr>
           [/#list]
-          [#else]
-          <tr>
-            <td class="text-center" colspan="6"><i>No entries added yet.</i></td>
+        [#else]
+           <tr>
+            <td class="text-center" colspan="5"><i>No entries added yet.</i></td>
           </tr>
         [/#if]
         <tr>
@@ -188,7 +207,6 @@
 [#macro relevantEvaluationMacro element name index template=false isEditable=true]
   [#local customName = "${name}[${index}]" /]
   <div id="evaluation-${template?string('template', index)}" class="evaluation borderBox form-group" style="position:relative; display:${template?string('none','block')}">
-
     [#-- Index --]
     <div class="leftHead blue sm"><span class="index">${index+1}</span></div>
     [#-- Remove Button --]
@@ -196,48 +214,40 @@
     [#-- Hidden inputs --]
     <input type="hidden" name="${customName}.id" value="${(element.id)!}"/> 
     <br />
-    
     [#-- Name of the evaluation --]
     <div class="form-group">
-      [@customForm.input name="${customName}.nameEvaluation" i18nkey="${customLabel}.table10.name" help="${customLabel}.table10.name.help" helpIcon=false required=true className="" editable=isEditable /]
+      [@customForm.input name="${customName}.nameEvaluation" i18nkey="${customLabel}.table11.name" help="${customLabel}.table11.name.help" helpIcon=false required=true className="" editable=isEditable /]
     </div>
-    
     [#-- Recommendation --] 
     <div class="form-group"> 
-      [@customForm.input name="${customName}.recommendation" i18nkey="${customLabel}.table10.recommendation" help="${customLabel}.table10.recommendation.help" helpIcon=false className="" required=true editable=isEditable /]
+      [@customForm.input name="${customName}.recommendation" i18nkey="${customLabel}.table11.recommendation" help="${customLabel}.table11.recommendation.help" helpIcon=false className="" required=true editable=isEditable /]
     </div>
-    
     [#-- Management response --] 
     <div class="form-group">
-      [@customForm.textArea name="${customName}.managementResponse" i18nkey="${customLabel}.table10.textOfRecommendation" help="${customLabel}.table10.textOfRecommendation.help" helpIcon=false className="" required=true editable=isEditable allowTextEditor=true /]
+      [@customForm.textArea name="${customName}.managementResponse" i18nkey="${customLabel}.table11.textOfRecommendation" help="${customLabel}.table11.textOfRecommendation.help" helpIcon=false className="" required=true editable=isEditable allowTextEditor=true /]
     </div>
-    
     [#-- Status --]
     <div class="form-group row">
       <div class="col-md-5">
-        [@customForm.select name="${customName}.status" i18nkey="${customLabel}.table10.status" listName="statuses"  required=true  className="" editable=isEditable/]
+        [@customForm.select name="${customName}.status" i18nkey="${customLabel}.table11.status" listName="statuses"  required=true  className="" editable=isEditable/]
       </div>
     </div>
-    
     [#-- Concrete actions --] 
     <div class="form-group">
-      [@customForm.textArea name="${customName}.actions" i18nkey="${customLabel}.table10.actions" help="${customLabel}.table10.actions.help" helpIcon=false className="" required=true editable=isEditable allowTextEditor=true /]
+      [@customForm.textArea name="${customName}.actions" i18nkey="${customLabel}.table11.actions" help="${customLabel}.table11.actions.help" helpIcon=false className="" required=true editable=isEditable allowTextEditor=true /]
     </div>
-    
     <div class="form-group row">
       <div class="col-md-6">
         [#-- By whom --]
-        [@customForm.input name="${customName}.textWhom" i18nkey="${customLabel}.table10.whom" help="${customLabel}.table10.whom.help" helpIcon=false required=true className="" editable=isEditable /]
+        [@customForm.input name="${customName}.textWhom" i18nkey="${customLabel}.table11.whom" help="${customLabel}.table11.whom.help" helpIcon=false required=true className="" editable=isEditable /]
       </div>
       <div class="col-md-6">
         [#-- By when --]
-        [@customForm.input name="${customName}.textWhen" i18nkey="${customLabel}.table10.when" help="${customLabel}.table10.when.help" helpIcon=false required=true className="" editable=isEditable /]
+        [@customForm.input name="${customName}.textWhen" i18nkey="${customLabel}.table11.when" help="${customLabel}.table11.when.help" helpIcon=false required=true className="" editable=isEditable /]
       </div>
     </div>
-    
-    
     <div class="form-group">
-        [@customForm.textArea name="${customName}.comments" i18nkey="${customLabel}.table10.comments" help="${customLabel}.table10.comments.help" helpIcon=false className="" required=true editable=isEditable allowTextEditor=true /]
+        [@customForm.textArea name="${customName}.comments" i18nkey="${customLabel}.table11.comments" help="${customLabel}.table11.comments.help" helpIcon=false className="" required=true editable=isEditable allowTextEditor=true /]
     </div>
     
   </div>

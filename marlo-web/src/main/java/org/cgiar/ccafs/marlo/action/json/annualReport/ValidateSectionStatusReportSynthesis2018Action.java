@@ -90,45 +90,58 @@ public class ValidateSectionStatusReportSynthesis2018Action extends BaseAction {
         // case CRP_PROGRESS:
         // reportSynthesisSectionValidator2018.validateCrpProgress(this, reportSynthesis);
         // break;
-        // case FLAGSHIP_PROGRESS:
-        // reportSynthesisSectionValidator2018.validateFlagshipProgress(this, reportSynthesis);
-        // break;
-        // case CC_DIMENSIONS:
-        // reportSynthesisSectionValidator2018.validateCrossCuttingDimensions(this, reportSynthesis);
-        // break;
-        // case GOVERNANCE:
-        // reportSynthesisSectionValidator2018.validateGovernance(this, reportSynthesis);
-        // break;
+        case FLAGSHIP_PROGRESS:
+          reportSynthesisSectionValidator2018.validateFlagshipProgressValidator(this, reportSynthesis);
+          break;
+        case CC_DIMENSIONS:
+          reportSynthesisSectionValidator2018.validateCrossCuttingDimensionValidator(this, reportSynthesis);
+          break;
+        case GOVERNANCE:
+          reportSynthesisSectionValidator2018.validateGovernance(this, reportSynthesis);
+          break;
         // case EXTERNAL_PARTNERSHIPS:
         // reportSynthesisSectionValidator2018.validateExternalPartnerships(this, reportSynthesis);
         // break;
         case INTELLECTUAL_ASSETS:
           reportSynthesisSectionValidator2018.validateIntellectualAssets(this, reportSynthesis);
           break;
+        case POLICIES:
+          reportSynthesisSectionValidator2018.validatePolicies(this, reportSynthesis);
+          break;
+        case OICR:
+          reportSynthesisSectionValidator2018.validateStudiesOICR(this, reportSynthesis);
+          break;
+        case INNOVATIONS:
+          reportSynthesisSectionValidator2018.validateInnovations(this, reportSynthesis);
+          break;
+        case PUBLICATIONS:
+          reportSynthesisSectionValidator2018.validatePublications(this, reportSynthesis);
+          break;
+
         // case MELIA:
         // reportSynthesisSectionValidator2018.validateMelia(this, reportSynthesis);
         // break;
-        // case EFFICIENCY:
-        // reportSynthesisSectionValidator2018.validateEfficency(this, reportSynthesis);
-        // break;
-        // case RISKS:
-        // reportSynthesisSectionValidator2018.validateRisk(this, reportSynthesis);
-        // break;
-        // case FUNDING_USE:
-        // reportSynthesisSectionValidator2018.validateFundingUse(this, reportSynthesis);
-        // break;
-        // case FINANCIAL:
-        // reportSynthesisSectionValidator2018.validateFinancial(this, reportSynthesis);
-        // break;
+        case EFFICIENCY:
+          reportSynthesisSectionValidator2018.validateEfficiency(this, reportSynthesis);
+          break;
+        case RISKS:
+          reportSynthesisSectionValidator2018.validateRisk(this, reportSynthesis);
+          break;
+        case FUNDING_USE:
+          reportSynthesisSectionValidator2018.validateFundingUse(this, reportSynthesis);
+          break;
+        case FINANCIAL:
+          reportSynthesisSectionValidator2018.validateFinancial(this, reportSynthesis);
+          break;
         // case INFLUENCE:
         // reportSynthesisSectionValidator2018.validateIndicatorsInfluence(this, reportSynthesis);
         // break;
         // case CONTROL:
         // reportSynthesisSectionValidator2018.validateControlIndicators(this, reportSynthesis);
         // break;
-        // case NARRATIVE:
-        // reportSynthesisSectionValidator2018.validateNarrative(this, reportSynthesis);
-        // break;
+        case NARRATIVE:
+          reportSynthesisSectionValidator2018.validateNarrative(this, reportSynthesis);
+          break;
         default:
           break;
       }
@@ -150,6 +163,12 @@ public class ValidateSectionStatusReportSynthesis2018Action extends BaseAction {
 
     switch (ReportSynthesis2018SectionStatusEnum.value(sectionName.toUpperCase())) {
       case INTELLECTUAL_ASSETS:
+      case FUNDING_USE:
+      case NARRATIVE:
+      case GOVERNANCE:
+      case EFFICIENCY:
+      case RISKS:
+      case FINANCIAL:
         if (this.isPMU(reportSynthesis.getLiaisonInstitution())) {
           sectionStatus = sectionStatusManager.getSectionStatusByReportSynthesis(reportSynthesis.getId(), cycle,
             phase.getYear(), phase.getUpkeep(), sectionName);
@@ -238,6 +257,5 @@ public class ValidateSectionStatusReportSynthesis2018Action extends BaseAction {
   public void setSectionName(String sectionName) {
     this.sectionName = sectionName;
   }
-
 
 }

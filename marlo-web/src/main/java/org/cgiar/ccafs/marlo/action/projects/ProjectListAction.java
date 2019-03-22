@@ -581,13 +581,10 @@ public class ProjectListAction extends BaseAction {
           }
 
         }
-        if (this.isPlanningActive()) {
-          myProjects = projectManager.getUserProjects(this.getCurrentUser().getId(), loggedCrp.getAcronym()).stream()
-            .filter(p -> p.isActive()).collect(Collectors.toList());
-        } else {
-          myProjects = projectManager.getUserProjectsReporting(this.getCurrentUser().getId(), loggedCrp.getAcronym())
-            .stream().filter(p -> p.isActive()).collect(Collectors.toList());
-        }
+
+        myProjects = projectManager.getUserProjects(this.getCurrentUser().getId(), loggedCrp.getAcronym()).stream()
+          .filter(p -> p.isActive()).collect(Collectors.toList());
+
         List<Project> mProjects = new ArrayList<>();
         mProjects.addAll(myProjects);
         for (Project project : mProjects) {
@@ -674,7 +671,6 @@ public class ProjectListAction extends BaseAction {
 
       SimpleDateFormat dateFormat = new SimpleDateFormat("y");
 
-      System.out.println(myProjects.size());
       myProjects = myProjects.stream()
         .filter(mp -> mp.isActive() && mp.getProjecInfoPhase(this.getActualPhase()) != null
           && (mp.getProjecInfoPhase(this.getActualPhase()).getEndDate() == null

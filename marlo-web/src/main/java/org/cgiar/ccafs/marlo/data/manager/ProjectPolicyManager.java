@@ -62,6 +62,13 @@ public interface ProjectPolicyManager {
   public ProjectPolicy getProjectPolicyById(long projectPolicyID);
 
   /**
+   * This method gets a list of ProjectPolicy that are active by a given phase
+   * 
+   * @return a list from ProjectPolicy null if no exist records
+   */
+  public List<ProjectPolicy> getProjectPolicyByPhase(Phase phase);
+
+  /**
    * This method saves the information of the given projectPolicy
    * 
    * @param projectPolicy - is the projectPolicy object with the new information to be added/updated.
@@ -73,6 +80,5 @@ public interface ProjectPolicyManager {
 
   public ProjectPolicy saveProjectPolicy(ProjectPolicy projectPolicy, String section, List<String> relationsName,
     Phase phase);
-
 
 }

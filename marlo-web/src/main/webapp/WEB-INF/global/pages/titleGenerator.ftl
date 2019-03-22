@@ -1,6 +1,6 @@
 [#ftl]
 [#-- Global Unit  --]
-[#if currentCrp??]${(currentCrp.acronym)!} | [/#if]
+[#if currentCrp??]${(currentCrp.acronym)!} |  [/#if]
 [#-- CRP Program --]
 [#if (selectedProgram??)!false]${(selectedProgram.acronym)!} - [/#if]
 [#-- Project > Deliverable --]
@@ -22,3 +22,6 @@ ${(title)!"MARLO"}
 
 [#-- Testing Environment --]
 [#if !config.production][Testing Environment][/#if]
+
+[#-- Phase --]
+[#if (actualPhase.id??)!false](${(actualPhase.composedName)!})[/#if]

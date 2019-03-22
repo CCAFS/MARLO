@@ -29,11 +29,17 @@
         <property name="status" type="java.lang.Integer">
             <column name="status" precision="2" scale="0" />
         </property>
+        <property name="actions" type="string">
+            <column name="actions" length="65535" />
+        </property>
         <property name="textWhom" type="string">
             <column name="text_whon" length="65535" />
         </property>
         <property name="textWhen" type="string">
             <column name="text_when" length="65535" />
+        </property>
+        <property name="comments" type="string">
+            <column name="comments" length="65535" />
         </property>
         <property name="active" type="boolean">
             <column name="is_active" not-null="true" />

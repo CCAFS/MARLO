@@ -20,8 +20,10 @@ import org.cgiar.ccafs.marlo.data.dao.RepIndOrganizationTypeDAO;
 import org.cgiar.ccafs.marlo.data.manager.RepIndOrganizationTypeManager;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPartnership;
+import org.cgiar.ccafs.marlo.data.model.ProjectPolicy;
 import org.cgiar.ccafs.marlo.data.model.RepIndOrganizationType;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisPartnershipsByRepIndOrganizationTypeDTO;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisPoliciesByOrganizationTypeDTO;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisStudiesByOrganizationTypeDTO;
 
 import java.util.ArrayList;
@@ -125,6 +127,39 @@ public class RepIndOrganizationTypeManagerImpl implements RepIndOrganizationType
         .compareTo(new Integer(d1.getProjectPartnerPartnerships().size())))
       .collect(Collectors.toList());
   }
+
+  @Override
+  public List<ReportSynthesisPoliciesByOrganizationTypeDTO>
+    getPoliciesByOrganizationTypes(List<ProjectPolicy> selectedProjectPolicies, Phase phase) {
+    List<ReportSynthesisPoliciesByOrganizationTypeDTO> policiesByOrganizationTypeDTOs = new ArrayList<>();
+    List<RepIndOrganizationType> organizationTypes =
+      this.findAll().stream().sorted((o1, o2) -> o1.getName().compareTo(o2.getName())).collect(Collectors.toList());
+    if (organizationTypes != null) {
+      for (RepIndOrganizationType organizationType : organizationTypes) {
+        ReportSynthesisPoliciesByOrganizationTypeDTO reportSynthesisStudiesByOrganizationTypeDTO =
+          new ReportSynthesisPoliciesByOrganizationTypeDTO();
+        reportSynthesisStudiesByOrganizationTypeDTO.setRepIndOrganizationType(organizationType);
+        List<ProjectPolicy> projectPoliciesByOrganizationType = selectedProjectPolicies.stream()
+          .filter(pp -> pp.isActive() && pp.getProjectPolicyInfo(phase) != null
+            && pp.getProjectPolicyInfo().getRepIndOrganizationType() != null
+            && pp.getProjectPolicyInfo().getRepIndOrganizationType().equals(organizationType))
+          .collect(Collectors.toList());
+        if (projectPoliciesByOrganizationType != null && !projectPoliciesByOrganizationType.isEmpty()) {
+          reportSynthesisStudiesByOrganizationTypeDTO.setProjectPolicies(projectPoliciesByOrganizationType);
+        } else {
+          reportSynthesisStudiesByOrganizationTypeDTO.setProjectPolicies(new ArrayList<>());
+        }
+
+        policiesByOrganizationTypeDTOs.add(reportSynthesisStudiesByOrganizationTypeDTO);
+      }
+    }
+
+    return policiesByOrganizationTypeDTOs.stream()
+      .sorted(
+        (o1, o2) -> new Integer(o2.getProjectPolicies().size()).compareTo(new Integer(o1.getProjectPolicies().size())))
+      .collect(Collectors.toList());
+  }
+
 
   @Override
   public RepIndOrganizationType getRepIndOrganizationTypeById(long repIndOrganizationTypeID) {
