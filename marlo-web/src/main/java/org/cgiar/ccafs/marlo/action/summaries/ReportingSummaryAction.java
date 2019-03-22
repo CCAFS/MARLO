@@ -728,7 +728,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     masterReport.getParameterValues().put("i8nStudiesROtherCrossCuttingDimensions",
       this.getText("summaries.study.otherCrossCutting"));
     masterReport.getParameterValues().put("i8nStudiesRComunicationsMaterial",
-      this.getText("summaries.study.communicationMaterials"));
+      this.getText("study.outcomestory.readText"));
     masterReport.getParameterValues().put("i8nStudiesRComunicationsFile",
       this.getText("study.communicationMaterialsAttach.readText"));
     masterReport.getParameterValues().put("i8nStudiesRContacts", this.getText("summaries.study.contacts"));
