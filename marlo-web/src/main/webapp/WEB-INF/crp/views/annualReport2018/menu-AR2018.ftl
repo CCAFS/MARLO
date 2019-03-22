@@ -96,7 +96,7 @@
 
  
 [#-- Submit button --]
-[#if false && canEdit && canSubmit]
+[#if canEdit && canSubmit]
   [#assign showSubmit=(canSubmit && !submission && completed)]
   <a id="submitProject-${synthesisID}" class="projectSubmitButton" style="display:${showSubmit?string('block','none')}" href="[@s.url action="${crpSession}/submitAnnualReport"][@s.param name='synthesisID']${synthesisID}[/@s.param][/@s.url]" >
     [@s.text name="form.buttons.submit" /]
