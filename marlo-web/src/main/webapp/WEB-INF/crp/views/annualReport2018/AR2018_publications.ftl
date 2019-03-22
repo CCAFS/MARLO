@@ -171,12 +171,12 @@
         <tr>
           <td class="tableTitle">[@s.text name="${customLabel}.${name}.openAccess" /]</td>
           <td class="text-center">${(totalOpenAccess)!0}</td>
-          <td class="text-center">${((totalOpenAccess/total)*100)?string("0.##")}%</td>
+          <td class="text-center">[#if totalOpenAccess != 0]${((totalOpenAccess/total)*100)?string("0.##")}[#else]0[/#if]%</td>
         </tr>
         <tr>
           <td class="tableTitle">[@s.text name="${customLabel}.${name}.isi" /]</td>
           <td class="text-center">${(totalIsis)!0}</td>
-          <td class="text-center">${((totalIsis/total)*100)?string("0.##")}%</td>
+          <td class="text-center">[#if totalOpenAccess != 0]${((totalIsis/total)*100)?string("0.##")}[#else]0[/#if]%</td>
         </tr>
       </tbody>
     </table>
@@ -245,14 +245,14 @@
               <td>[@utils.tableText value=(item.getMetadataValue(17))!"" /]</td>
               [/#if]
               [#-- Journal Article --]
-              <td>[@utils.tableText value=(item.publication.journal)!"" /]</td>
+              <td class="urlify">[@utils.tableText value=(item.publication.journal)!"" /]</td>
               [#if !allowPopups]
                 [#-- Volume --]
-                <td class="text-center col-md-1 fullPublications-table" style="width: 50px !important;">[@utils.tableText value=(item.publication.volume)!"" /]</td>
+                <td class="text-center urlify"  style="width: 50px !important;">[@utils.tableText value=(item.publication.volume)!"" /]</td>
                 [#-- Issue --]
-                <td class="text-center col-md-1 fullPublications-table" style="width: 50px !important;">[@utils.tableText value=(item.publication.issue)!"" /]</td>
+                <td class="text-center col-md-1" style="width: 50px !important;">[@utils.tableText value=(item.publication.issue)!"" /]</td>
                 [#-- Page --]
-                <td class="text-center col-md-1 fullPublications-table" style="width: 50px !important;">[@utils.tableText value=(item.publication.pages)!"" /]</td>
+                <td class="text-center col-md-1" style="width: 50px !important;">[@utils.tableText value=(item.publication.pages)!"" /]</td>
               [/#if]
               [#-- Is OpenAccess --]
               <td class="text-center">
