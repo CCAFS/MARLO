@@ -40,6 +40,7 @@ public class CGSpaceClientAPI extends MetadataClientApi {
   private final String CGSPACE_HANDLE = "https://cgspace.cgiar.org/rest/handle/{0}";
   private final String HANDLE_URL = "http://hdl.handle.net/";
   private final String CGSPACE_URL = "https://cgspace.cgiar.org/handle/";
+  private final String HANDLE_HTTPS_URL = "https://hdl.handle.net/";
   private final String REST_URL = "https://cgspace.cgiar.org/rest/items/{0}/metadata";
   private RestConnectionUtil xmlReaderConnectionUtil;
   private Map<String, String> coverterAtrributes;
@@ -138,6 +139,10 @@ public class CGSpaceClientAPI extends MetadataClientApi {
     // if the link contains http://hdl.handle.net/ we remove it from the link
     if (link.contains(HANDLE_URL)) {
       this.setId(link.replace(HANDLE_URL, ""));
+    }
+    // if the link contains https://hdl.handle.net/ we remove it from the link
+    if (link.contains(HANDLE_HTTPS_URL)) {
+      this.setId(link.replace(HANDLE_HTTPS_URL, ""));
     }
     // if the link https://cgspace.cgiar.org/handle/ we remove it from the link
     if (link.contains(CGSPACE_URL)) {
