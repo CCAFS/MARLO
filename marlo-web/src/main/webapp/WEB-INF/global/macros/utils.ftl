@@ -73,7 +73,7 @@
 [#macro prefilledTag]<i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>[/#macro]
 
 [#macro tableText value nobr=false emptyText="global.notDefined"]
-  [#if (value?trim?has_content)!false] <span style="${nobr?string('white-space: nowrap;','word-wrap: break-word;')}">${value?trim}</span> [#else]<i style="font-weight: normal;opacity:0.8;"><nobr>[@s.text name="${emptyText}"/]</nobr></i>[/#if]
+  [#if (value?trim?has_content)!false] <span style="${nobr?string('white-space: nowrap;','word-wrap: break-word;')}"> ${value?trim} </span> [#else]<i style="font-weight: normal;opacity:0.8;"><nobr>[@s.text name="${emptyText}"/]</nobr></i>[/#if]
 [/#macro]
 
 [#macro tableList list displayFieldName="title" showEmpty=true nobr=false emptyText="global.notDefined" class="" scroll=false]
