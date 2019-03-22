@@ -1536,8 +1536,20 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     titles.add(this.getText("summaries.annualReport2018.table6Title1"));
     titles.add(this.getText("summaries.annualReport2018.table6Title2"));
     titles.add(this.getText("summaries.annualReport2018.table6Title3"));
-
+    int i = 0;
     for (String title : titles) {
+
+      switch (i) {
+        case 0:
+          number = String.valueOf(totalLimited);
+          break;
+        case 1:
+          number = String.valueOf(totalOpenAccess);
+          break;
+        case 2:
+          number = String.valueOf(totalIsis);
+          break;
+      }
 
       Boolean bold = false;
       String blueColor = "000099";
@@ -1546,8 +1558,8 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         new POIField(percent, ParagraphAlignment.LEFT, bold, blueColor)};
       data = Arrays.asList(sData);
       datas.add(data);
+      i++;
     }
-
     poiSummary.textTable(document, headers, datas, false, "table6AnnualReport2018");
   }
 
