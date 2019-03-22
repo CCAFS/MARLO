@@ -17,6 +17,7 @@ package org.cgiar.ccafs.marlo.action.summaries;
 
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramOutcomeManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.PowbExpenditureAreasManager;
@@ -44,6 +45,8 @@ import org.cgiar.ccafs.marlo.data.model.CrpPpaPartner;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
+import org.cgiar.ccafs.marlo.data.model.DeliverableDissemination;
+import org.cgiar.ccafs.marlo.data.model.DeliverablePublicationMetadata;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.PowbEvidencePlannedStudyDTO;
@@ -55,7 +58,9 @@ import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCountry;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationGeographicScope;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationRegion;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicy;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicyCrossCuttingMarker;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicyGeographicScope;
@@ -197,6 +202,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
   private ProjectInnovationManager projectInnovationManager;
   private CrpProgramOutcomeManager crpProgramOutcomeManager;
   private ReportSynthesisFlagshipProgressOutcomeManager reportSynthesisFlagshipProgressOutcomeManager;
+  private DeliverableManager deliverableManager;
 
 
   // Parameters
@@ -221,6 +227,12 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
 
   Double totalw1w2 = 0.0, totalw1w2Planned = 0.0, totalCenter = 0.0, grandTotal = 0.0, totalw1w2Actual = 0.0,
     totalW3Actual = 0.0, totalW3Bilateral = 0.0, totalW3Planned = 0.0, grandTotalPlanned = 0.0, grandTotalActual = 0.0;
+
+  private Integer totalOpenAccess = 0;
+  private Integer totalLimited = 0;
+  private Integer totalIsis = 0;
+  private Integer totalNoIsis = 0;
+  private Integer total = 0;
   // Streams
   private InputStream inputStream;
 
@@ -243,7 +255,8 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     ReportSynthesisCrpProgressManager reportSynthesisCrpProgressManager,
     ReportSynthesisSrfProgressTargetManager reportSynthesisSrfProgressTargetManager,
     CrpProgramManager crpProgramManager, ProjectExpectedStudyManager projectExpectedStudyManager,
-    ProjectFocusManager projectFocusManager, CrpProgramOutcomeManager crpProgramOutcomeManager) {
+    ProjectFocusManager projectFocusManager, CrpProgramOutcomeManager crpProgramOutcomeManager,
+    DeliverableManager deliverableManager) {
     super(config, crpManager, phaseManager, projectManager);
     document = new XWPFDocument();
     poiSummary = new POISummary();
@@ -268,6 +281,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     this.projectFocusManager = projectFocusManager;
     this.crpProgramOutcomeManager = crpProgramOutcomeManager;
     this.reportSynthesisFlagshipProgressOutcomeManager = reportSynthesisFlagshipProgressOutcomeManager;
+    this.deliverableManager = deliverableManager;
   }
 
   private void addAdjustmentDescription() {
@@ -1195,7 +1209,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
 
     for (ProjectPolicy projectPolicy : projectPolicies) {
       if (projectPolicy != null && projectPolicy.getProjectPolicyInfo() != null) {
-
+        srfSubIdo = "";
         if (projectPolicy.getProjectPolicyInfo().getTitle() != null) {
           name = projectPolicy.getProjectPolicyInfo().getId() + " - " + projectPolicy.getProjectPolicyInfo().getTitle();
         }
@@ -1226,9 +1240,8 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
             .getGeographicScopes(this.getActualPhase())) {
             if (policyGeographicScope != null && policyGeographicScope.getRepIndGeographicScope() != null
               && policyGeographicScope.getRepIndGeographicScope().getName() != null) {
-
+              geographicScope = policyGeographicScope.getRepIndGeographicScope().getName();
             }
-            geographicScope = policyGeographicScope.getRepIndGeographicScope().getName();
           }
         }
         if (projectPolicy.getCrossCuttingMarkers(this.getActualPhase()) != null) {
@@ -1298,16 +1311,16 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
       String title = "", maturity = "", indicator = "";
       if (projectExpectStudy != null && projectExpectStudy.getProjectExpectedStudyInfo(this.getActualPhase()) != null) {
         if (projectExpectStudy.getProjectExpectedStudyInfo(this.getActualPhase()).getTitle() != null) {
-          title = "OICR " + projectExpectStudy.getId() + " - "
+          title = "OICR" + projectExpectStudy.getId() + " - "
             + projectExpectStudy.getProjectExpectedStudyInfo(this.getActualPhase()).getTitle();
         }
         if (projectExpectStudy.getProjectExpectedStudyInfo().getRepIndStageProcess() != null
           && projectExpectStudy.getProjectExpectedStudyInfo().getRepIndStageProcess().getName() != null) {
           maturity = projectExpectStudy.getProjectExpectedStudyInfo().getRepIndStageProcess().getName();
         }
-        if (projectExpectStudy.getProjectExpectedStudyInfo(this.getActualPhase()).getEvidenceTag() != null
-          && projectExpectStudy.getProjectExpectedStudyInfo(this.getActualPhase()).getEvidenceTag().getName() != null) {
-          indicator = projectExpectStudy.getProjectExpectedStudyInfo(this.getActualPhase()).getEvidenceTag().getName();
+        if (projectExpectStudy.getProjectExpectedStudyInfo().getEvidenceTag() != null
+          && projectExpectStudy.getProjectExpectedStudyInfo().getEvidenceTag().getName() != null) {
+          indicator = projectExpectStudy.getProjectExpectedStudyInfo().getEvidenceTag().getName();
         }
       }
 
@@ -1365,7 +1378,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     List<POIField> header = Arrays.asList(sHeader);
     headers.add(header);
     for (ProjectInnovation projectInnovation : projectInnovations) {
-      String title = "", type = "", stage = "", geographic = "";
+      String title = "", type = "", stage = "", geographic = "", country = "", region = "";
 
       if (projectInnovation != null && projectInnovation.getProjectInnovationInfo(this.getActualPhase()) != null) {
         if (projectInnovation.getProjectInnovationInfo(this.getActualPhase()).getTitle() != null) {
@@ -1394,6 +1407,32 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
           }
         }
 
+        if (projectInnovation.getRegions(this.getActualPhase()) != null) {
+          List<ProjectInnovationRegion> innovationGeographics = projectInnovation.getRegions(this.getActualPhase());
+          for (ProjectInnovationRegion innovationGeographic : innovationGeographics) {
+            if (innovationGeographic != null && innovationGeographic.getLocElement() != null
+              && innovationGeographic.getLocElement().getName() != null) {
+              region += innovationGeographic.getLocElement().getName() + ", ";
+            }
+          }
+        }
+
+        if (projectInnovation.getCountries(this.getActualPhase()) != null) {
+          List<ProjectInnovationCountry> innovationGeographics = projectInnovation.getCountries(this.getActualPhase());
+          for (ProjectInnovationCountry innovationGeographic : innovationGeographics) {
+            if (innovationGeographic != null && innovationGeographic.getLocElement() != null
+              && innovationGeographic.getLocElement().getName() != null) {
+              country += innovationGeographic.getLocElement().getName() + ", ";
+            }
+          }
+        }
+      }
+
+      if (country != null) {
+        geographic += country;
+      }
+      if (region != null) {
+        geographic += region;
       }
 
       POIField[] sData = {new POIField(title, ParagraphAlignment.LEFT), new POIField(type, ParagraphAlignment.CENTER),
@@ -1424,7 +1463,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     headers.add(header);
 
     String fp = "", outcomes = "", narrative = "", milestone = "", milestoneStatus = "", evidenceMilestone = "",
-      lastFP = "";
+      lastFP = "", lastOutcome = "";
 
     if (flagships != null && !flagships.isEmpty()) {
       flagships.sort((p1, p2) -> p1.getAcronym().compareTo(p2.getAcronym()));
@@ -1438,7 +1477,6 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
             Boolean isFlagshipRow = (outcome_index == 0) && (milestone_index == 0);
             Boolean isOutcomeRow = (milestone_index == 0);
 
-
             if (isFlagshipRow) {
               fp = flagship.getAcronym();
             } else {
@@ -1450,15 +1488,20 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
               lastFP = fp;
             }
 
-
             if (isOutcomeRow) {
               outcomes = outcome.getComposedName();
             } else {
               outcomes = "";
             }
+            if (outcomes.equals(lastOutcome)) {
+              outcomes = "";
+            } else {
+              lastOutcome = outcomes;
+            }
 
             milestone = crpMilestone.getComposedName();
 
+            evidenceMilestone = crpMilestone.getModificationJustification();
 
             POIField[] sData = {new POIField(fp, ParagraphAlignment.CENTER),
               new POIField(outcomes, ParagraphAlignment.LEFT), new POIField(narrative, ParagraphAlignment.LEFT),
@@ -1466,14 +1509,10 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
               new POIField(evidenceMilestone, ParagraphAlignment.LEFT)};
             data = Arrays.asList(sData);
             datas.add(data);
-
-
           }
         }
       }
     }
-
-
     poiSummary.textTable(document, headers, datas, false, "table5AnnualReport2018");
   }
 
@@ -1499,6 +1538,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     titles.add(this.getText("summaries.annualReport2018.table6Title3"));
 
     for (String title : titles) {
+
       Boolean bold = false;
       String blueColor = "000099";
       POIField[] sData = {new POIField(title, ParagraphAlignment.LEFT, true, blackColor),
@@ -1587,7 +1627,6 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
 
     poiSummary.textTable(document, headers, datas, false, "table3AnnualReport2018");
   }
-
 
   private void createTable9() {
     List<List<POIField>> headers = new ArrayList<>();
@@ -1774,6 +1813,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
 
     poiSummary.textTable(document, headers, datas, true, "tableCAnnualReport");
   }
+
 
   @Override
   public String execute() throws Exception {
@@ -2500,7 +2540,6 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
    * }
    */
 
-
   public List<ReportSynthesisFlagshipProgressStudyDTO>
     fillFpPlannedList(List<LiaisonInstitution> flagshipsLiaisonInstitutions) {
     List<ReportSynthesisFlagshipProgressStudyDTO> flagshipPlannedList = new ArrayList<>();
@@ -2631,6 +2670,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     return flagshipPlannedList;
   }
 
+
   @Override
   public int getContentLength() {
     return bytesDOC.length;
@@ -2640,7 +2680,6 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
   public String getContentType() {
     return "application/docx";
   }
-
 
   @Override
   public String getFileName() {
@@ -2669,6 +2708,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
       return new ArrayList<>();
     }
   }
+
 
   @Override
   public InputStream getInputStream() {
@@ -2750,7 +2790,6 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     return deliverables;
   }
 
-
   private void getProjectExpectedStudies() {
     // Table 3
     if (projectExpectedStudyManager.findAll() != null) {
@@ -2768,6 +2807,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
 
     }
   }
+
 
   public void getProjectPolicies() {
     projectPolicies = new ArrayList<>();
@@ -2836,6 +2876,85 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
       return flagshipProgressMilestones.get(0);
     }
     return new ReportSynthesisFlagshipProgressMilestone();
+  }
+
+  private void getTable6Info() {
+    /** Graphs and Tables */
+
+    List<Deliverable> deliverables = new ArrayList<>(deliverableManager.findAll().stream()
+      .filter(d -> d.isActive() && d.getDeliverableInfo(this.getActualPhase()) != null
+        && d.getDeliverableInfo().isRequired() && d.getDeliverableInfo().getDeliverableType() != null
+        && d.getDeliverableInfo().getDeliverableType().getId() == 63)
+      .collect(Collectors.toList()));
+
+    List<Deliverable> selectedDeliverables = new ArrayList<Deliverable>();
+    if (deliverables != null && !deliverables.isEmpty()) {
+      deliverables.sort((p1, p2) -> p1.getId().compareTo(p2.getId()));
+      selectedDeliverables.addAll(deliverables);
+      // Remove unchecked deliverables
+      if (reportSynthesisPMU.getReportSynthesisFlagshipProgress().getDeliverables() != null
+        && !reportSynthesisPMU.getReportSynthesisFlagshipProgress().getDeliverables().isEmpty()) {
+        for (Deliverable deliverable : reportSynthesisPMU.getReportSynthesisFlagshipProgress().getDeliverables()) {
+          selectedDeliverables.remove(deliverable);
+        }
+      }
+      total = selectedDeliverables.size();
+
+      if (selectedDeliverables != null && !selectedDeliverables.isEmpty()) {
+        if (selectedDeliverables != null && !selectedDeliverables.isEmpty()) {
+          for (Deliverable deliverable : selectedDeliverables) {
+
+            // Chart: Deliverables open access
+            List<DeliverableDissemination> deliverableDisseminations = deliverable
+              .getDeliverableInfo(this.getActualPhase()).getDeliverable().getDeliverableDisseminations().stream()
+              .filter(dd -> dd.isActive() && dd.getPhase() != null && dd.getPhase().equals(this.getActualPhase()))
+              .collect(Collectors.toList());
+            if (deliverableDisseminations != null && !deliverableDisseminations.isEmpty()) {
+              deliverable.getDeliverableInfo(this.getActualPhase()).getDeliverable()
+                .setDissemination(deliverableDisseminations.get(0));
+              if (deliverable.getDeliverableInfo(this.getActualPhase()).getDeliverable().getDissemination()
+                .getIsOpenAccess() != null) {
+                // Journal Articles by Open Access
+                if (deliverable.getDeliverableInfo(this.getActualPhase()).getDeliverable().getDissemination()
+                  .getIsOpenAccess()) {
+                  totalOpenAccess++;
+                } else {
+                  totalLimited++;
+                }
+              } else {
+                totalLimited++;
+              }
+            } else {
+              totalLimited++;
+            }
+
+            // Chart: Deliverables by ISI
+            List<DeliverablePublicationMetadata> deliverablePublicationMetadatas = deliverable
+              .getDeliverableInfo(this.getActualPhase()).getDeliverable().getDeliverablePublicationMetadatas().stream()
+              .filter(dp -> dp.isActive() && dp.getPhase() != null && dp.getPhase().equals(this.getActualPhase()))
+              .collect(Collectors.toList());
+            if (deliverablePublicationMetadatas != null && !deliverablePublicationMetadatas.isEmpty()) {
+              deliverable.getDeliverableInfo(this.getActualPhase()).getDeliverable()
+                .setPublication(deliverablePublicationMetadatas.get(0));
+              // Journal Articles by ISI status
+              if (deliverable.getDeliverableInfo(this.getActualPhase()).getDeliverable().getPublication()
+                .getIsiPublication() != null) {
+                if (deliverable.getDeliverableInfo(this.getActualPhase()).getDeliverable().getPublication()
+                  .getIsiPublication()) {
+                  totalIsis++;
+                } else {
+                  totalNoIsis++;
+                }
+              } else {
+                totalNoIsis++;
+              }
+            } else {
+              totalNoIsis++;
+            }
+          }
+        }
+      }
+    }
   }
 
   public boolean isPMU(LiaisonInstitution institution) {
@@ -2953,6 +3072,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     this.getProjectPolicies();
     this.getProjectExpectedStudies();
     this.getProjectsInnovations();
+    this.getTable6Info();
 
     // Get the list of liaison institutions Flagships.
     flagshipLiaisonInstitutions = this.getLoggedCrp().getLiaisonInstitutions().stream()
