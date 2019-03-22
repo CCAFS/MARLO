@@ -53,131 +53,135 @@ import org.springframework.web.bind.annotation.RestController;
 @Api(tags = "Institutions Lists")
 public class Institutions {
 
-	private static final Logger LOG = LoggerFactory.getLogger(Institutions.class);
+  private static final Logger LOG = LoggerFactory.getLogger(Institutions.class);
 
-	private InstitutionTypeItem<InstitutionTypeDTO> institutionTypeItem;
-	private InstitutionItem<InstitutionDTO> institutionItem;
-	private final UserManager userManager;
+  private InstitutionTypeItem<InstitutionTypeDTO> institutionTypeItem;
+  private InstitutionItem<InstitutionDTO> institutionItem;
+  private final UserManager userManager;
 
-	@Inject
-	public Institutions(InstitutionTypeItem<InstitutionTypeDTO> institutionTypeItem,
-			InstitutionItem<InstitutionDTO> institutionItem, GlobalUnitItem<InstitutionDTO> globalUnitItem,
-			UserManager userManager) {
-		this.institutionTypeItem = institutionTypeItem;
-		this.institutionItem = institutionItem;
-		this.userManager = userManager;
-	}
+  @Inject
+  public Institutions(InstitutionTypeItem<InstitutionTypeDTO> institutionTypeItem,
+    InstitutionItem<InstitutionDTO> institutionItem, GlobalUnitItem<InstitutionDTO> globalUnitItem,
+    UserManager userManager) {
+    this.institutionTypeItem = institutionTypeItem;
+    this.institutionItem = institutionItem;
+    this.userManager = userManager;
+  }
 
-	/**
-	 * Create a new institution request *
-	 * 
-	 * @param acronym of global unit
-	 * @param NewInstitutionDTO of institution to be created
-	 * @return a institution request created
-	 *
-	 */
-	@ApiOperation(value = "${Institutions.institution-requests.create.value}", response = InstitutionRequestDTO.class)
-	@RequiresPermissions(Permission.FULL_CREATE_REST_API_PERMISSION)
-	@RequestMapping(value = "/institutions/{CGIAREntity}/institution-requests", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<InstitutionRequestDTO> createPartnerRequest(
-			@ApiParam(value = "${Institutions.institution-requests.create.param.CGIAR}", required = true) @PathVariable("CGIAREntity") String CGIAREntity,
-			@ApiParam(value = "${Institutions.institution-requests.create.param.institution}", required = true) @Valid @RequestBody NewInstitutionDTO newInstitutionDTO) {
-		return this.institutionItem.createPartnerRequest(newInstitutionDTO, CGIAREntity, this.getCurrentUser());
-	}
 
-	/**
-	 * Find a institution by ID *
-	 * 
-	 * @param intitution id
-	 * @return a InstitutionDTO with institution data item
-	 *
-	 */
-	@ApiOperation(tags = { "Table 4 - CRP Innovations",
-			"Table 3 - Outcome/ Impact Case Reports" }, value = "${Institutions.institutions.code.value}", response = InstitutionDTO.class)
-	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
-	@RequestMapping(value = "/institutions/{code}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<InstitutionDTO> findInstitutionById(
-			@ApiParam(value = "${Institutions.institution.code.param.code}", required = true) @PathVariable Long code) {
-		ResponseEntity<InstitutionDTO> response = this.institutionItem.findInstitutionById(code);
-		if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
-			throw new NotFoundException("404", "Institution not found");
-		}
-		return response;
-	}
+  /**
+   * Create a new institution request *
+   * 
+   * @param acronym of global unit
+   * @param NewInstitutionDTO of institution to be created
+   * @return a institution request created
+   */
+  @ApiOperation(value = "${Institutions.institution-requests.create.value}", response = InstitutionRequestDTO.class)
+  @RequiresPermissions(Permission.FULL_CREATE_REST_API_PERMISSION)
+  @RequestMapping(value = "/institutions/{CGIAREntity}/institution-requests", method = RequestMethod.POST,
+    produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<InstitutionRequestDTO> createPartnerRequest(
+    @ApiParam(value = "${Institutions.institution-requests.create.param.CGIAR}",
+      required = true) @PathVariable("CGIAREntity") String CGIAREntity,
+    @ApiParam(value = "${Institutions.institution-requests.create.param.institution}",
+      required = true) @Valid @RequestBody NewInstitutionDTO newInstitutionDTO) {
+    return this.institutionItem.createPartnerRequest(newInstitutionDTO, CGIAREntity, this.getCurrentUser());
+  }
 
-	/**
-	 * Find a institution type by ID *
-	 * 
-	 * @param institution type id
-	 * @return a InstitutionTypeDTO with institution type data item
-	 *
-	 */
-	@ApiOperation(value = "${Institutions.institution-types.code.value}", response = InstitutionTypeDTO.class)
-	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
-	@RequestMapping(value = "/institution-types/{code}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<InstitutionTypeDTO> findInstitutionTypeById(
-			@ApiParam(value = "${Institutions.institution-types.code.param.code}", required = true) @PathVariable Long code) {
-		ResponseEntity<InstitutionTypeDTO> response = this.institutionTypeItem.findInstitutionTypeById(code);
-		if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
-			throw new NotFoundException("404", "Institution type not found");
-		}
-		return response;
-	}
+  /**
+   * Find a institution by ID *
+   * 
+   * @param intitution id
+   * @return a InstitutionDTO with institution data item
+   */
+  @ApiOperation(tags = {"Table 4 - CRP Innovations", "Table 3 - Outcome/ Impact Case Reports"},
+    value = "${Institutions.institutions.code.value}", response = InstitutionDTO.class)
+  @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
+  @RequestMapping(value = "/institutions/{code}", method = RequestMethod.GET,
+    produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<InstitutionDTO> findInstitutionById(
+    @ApiParam(value = "${Institutions.institution.code.param.code}", required = true) @PathVariable Long code) {
+    ResponseEntity<InstitutionDTO> response = this.institutionItem.findInstitutionById(code);
+    if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+      throw new NotFoundException("404", "Institution not found");
+    }
+    return response;
+  }
 
-	/**
-	 * Find a institution request by ID *
-	 * 
-	 * @param acronym of global unit
-	 * @param id of institution request
-	 * @return a InstitutionRequestDTO with institution request data item
-	 *
-	 */
-	@ApiOperation(value = "${Institutions.institution-requests.code.value}", response = InstitutionRequestDTO.class)
-	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
-	@RequestMapping(value = "/institutions/{CGIAREntity}/institution-requests/{requestId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<InstitutionRequestDTO> findPartnerRequestById(
-			@ApiParam(value = "${Institutions.institution-requests.code.param.CGIAR}", required = true) @PathVariable(name = "CGIAREntity") String CGIAREntity,
-			@ApiParam(value = "${Institutions.institution-requests.code.param.requestId}", required = true) @PathVariable(name = "requestId") Long requestId) {
-		ResponseEntity<InstitutionRequestDTO> response = this.institutionItem.getPartnerRequest(requestId, CGIAREntity);
-		if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
-			throw new NotFoundException("404", "Institution request not found");
-		}
-		return response;
+  /**
+   * Find a institution type by ID *
+   * 
+   * @param institution type id
+   * @return a InstitutionTypeDTO with institution type data item
+   */
+  @ApiOperation(value = "${Institutions.institution-types.code.value}", response = InstitutionTypeDTO.class)
+  @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
+  @RequestMapping(value = "/institution-types/{code}", method = RequestMethod.GET,
+    produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<InstitutionTypeDTO> findInstitutionTypeById(
+    @ApiParam(value = "${Institutions.institution-types.code.param.code}", required = true) @PathVariable Long code) {
+    ResponseEntity<InstitutionTypeDTO> response = this.institutionTypeItem.findInstitutionTypeById(code);
+    if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+      throw new NotFoundException("404", "Institution type not found");
+    }
+    return response;
+  }
 
-	}
+  /**
+   * Find a institution request by ID *
+   * 
+   * @param acronym of global unit
+   * @param id of institution request
+   * @return a InstitutionRequestDTO with institution request data item
+   */
+  @ApiOperation(value = "${Institutions.institution-requests.code.value}", response = InstitutionRequestDTO.class)
+  @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
+  @RequestMapping(value = "/institutions/{CGIAREntity}/institution-requests/{requestId}", method = RequestMethod.GET,
+    produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<InstitutionRequestDTO> findPartnerRequestById(
+    @ApiParam(value = "${Institutions.institution-requests.code.param.CGIAR}",
+      required = true) @PathVariable(name = "CGIAREntity") String CGIAREntity,
+    @ApiParam(value = "${Institutions.institution-requests.code.param.requestId}",
+      required = true) @PathVariable(name = "requestId") Long requestId) {
+    ResponseEntity<InstitutionRequestDTO> response = this.institutionItem.getPartnerRequest(requestId, CGIAREntity);
+    if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+      throw new NotFoundException("404", "Institution request not found");
+    }
+    return response;
 
-	/**
-	 * Get all institutions *
-	 * 
-	 * @return a InstitutionDTO with institution item
-	 *
-	 */
-	@ApiOperation(tags = { "Table 4 - CRP Innovations",
-			"Table 3 - Outcome/ Impact Case Reports" }, value = "${Institutions.institutions.all.value}", response = InstitutionDTO.class, responseContainer = "List")
-	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
-	@RequestMapping(value = "/institutions", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public List<InstitutionDTO> getAllInstitutions() {
-		return this.institutionItem.getAllInstitutions();
-	}
+  }
 
-	/**
-	 * Get all institution types *
-	 * 
-	 * @return a List of InstitutionTypeDTO with institution type items
-	 *
-	 */
-	@ApiOperation(value = "${Institutions.institution-types.all.value}", response = InstitutionTypeDTO.class, responseContainer = "List")
-	@RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
-	@RequestMapping(value = "/institution-types", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public List<InstitutionTypeDTO> getAllInstitutionsTypes() {
-		return this.institutionTypeItem.getAllInstitutionTypes();
-	}
+  /**
+   * Get all institutions *
+   * 
+   * @return a InstitutionDTO with institution item
+   */
+  @ApiOperation(tags = {"Table 4 - CRP Innovations", "Table 3 - Outcome/ Impact Case Reports"},
+    value = "${Institutions.institutions.all.value}", response = InstitutionDTO.class, responseContainer = "List")
+  @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
+  @RequestMapping(value = "/institutions", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+  public List<InstitutionDTO> getAllInstitutions() {
+    return this.institutionItem.getAllInstitutions();
+  }
 
-	private User getCurrentUser() {
-		Subject subject = SecurityUtils.getSubject();
-		Long principal = (Long) subject.getPrincipal();
-		User user = this.userManager.getUser(principal);
-		return user;
-	}
+  /**
+   * Get all institution types *
+   * 
+   * @return a List of InstitutionTypeDTO with institution type items
+   */
+  @ApiOperation(value = "${Institutions.institution-types.all.value}", response = InstitutionTypeDTO.class,
+    responseContainer = "List")
+  @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
+  @RequestMapping(value = "/institution-types", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+  public List<InstitutionTypeDTO> getAllInstitutionsTypes() {
+    return this.institutionTypeItem.getAllInstitutionTypes();
+  }
+
+  private User getCurrentUser() {
+    Subject subject = SecurityUtils.getSubject();
+    Long principal = (Long) subject.getPrincipal();
+    User user = this.userManager.getUser(principal);
+    return user;
+  }
 
 }

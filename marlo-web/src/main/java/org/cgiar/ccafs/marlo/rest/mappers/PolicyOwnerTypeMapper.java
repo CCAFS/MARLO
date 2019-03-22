@@ -25,10 +25,10 @@ import org.mapstruct.Mappings;
 @Mapper(componentModel = "jsr330")
 public interface PolicyOwnerTypeMapper {
 
-	@Mappings({ @Mapping(source = "code", target = "id") })
-	public abstract RepIndPolicyType policyOwnerTypeDTOToRepIndPolicyType(PolicyOwnerTypeDTO policyOwnerTypeDTO);
+  @Mappings({@Mapping(source = "code", target = "id")})
+  public abstract RepIndPolicyType policyOwnerTypeDTOToRepIndPolicyType(PolicyOwnerTypeDTO policyOwnerTypeDTO);
 
-	@Mappings({ @Mapping(source = "id", target = "code") })
-	public abstract PolicyOwnerTypeDTO repIndPolicyTypeToPolicyOwnerTypeDTO(RepIndPolicyType repIndPolicyType);
+  @Mappings({@Mapping(source = "id", target = "code")})
+  public abstract PolicyOwnerTypeDTO repIndPolicyTypeToPolicyOwnerTypeDTO(RepIndPolicyType repIndPolicyType);
 
 }

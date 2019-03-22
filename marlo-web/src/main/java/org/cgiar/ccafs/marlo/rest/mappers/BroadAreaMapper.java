@@ -29,12 +29,12 @@ import org.mapstruct.Mappings;
 @Mapper(componentModel = "jsr330")
 public interface BroadAreaMapper {
 
-	@Mappings({ @Mapping(source = "code", target = "id") })
-	public abstract ReportSynthesisExpenditureCategory broadAreaDTOToReportSynthesisExpenditureCategory(
-			BroadAreaDTO broadAreaDTO);
+  @Mappings({@Mapping(source = "code", target = "id")})
+  public abstract ReportSynthesisExpenditureCategory
+    broadAreaDTOToReportSynthesisExpenditureCategory(BroadAreaDTO broadAreaDTO);
 
-	@Mappings({ @Mapping(source = "id", target = "code") })
-	public abstract BroadAreaDTO reportSynthesisExpenditureCategoryToBroadAreaDTO(
-			ReportSynthesisExpenditureCategory reportSynthesisExpenditureCategory);
+  @Mappings({@Mapping(source = "id", target = "code")})
+  public abstract BroadAreaDTO reportSynthesisExpenditureCategoryToBroadAreaDTO(
+    ReportSynthesisExpenditureCategory reportSynthesisExpenditureCategory);
 
 }

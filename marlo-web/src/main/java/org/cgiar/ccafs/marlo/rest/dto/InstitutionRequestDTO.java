@@ -22,102 +22,102 @@ import io.swagger.annotations.ApiModelProperty;
  */
 public class InstitutionRequestDTO {
 
-	@ApiModelProperty(notes = "The id of the Partner Request", position = 1)
-	private Long id;
+  @ApiModelProperty(notes = "The id of the Partner Request", position = 1)
+  private Long id;
 
-	@ApiModelProperty(notes = "Name of institution", position = 2)
-	private String partnerName;
+  @ApiModelProperty(notes = "Name of institution", position = 2)
+  private String partnerName;
 
-	@ApiModelProperty(notes = "Acronym of institution", position = 3)
-	private String acronym;
-	@ApiModelProperty(notes = "Web Page of institution", position = 4)
-	private String webPage;
+  @ApiModelProperty(notes = "Acronym of institution", position = 3)
+  private String acronym;
+  @ApiModelProperty(notes = "Web Page of institution", position = 4)
+  private String webPage;
 
-	@ApiModelProperty(notes = "Partner Request Status", position = 5)
-	private Boolean isAcepted;
+  @ApiModelProperty(notes = "Partner Request Status", position = 5)
+  private Boolean isAcepted;
 
-	@ApiModelProperty(notes = "Reject justification", position = 6)
-	private String rejectJustification;
+  @ApiModelProperty(notes = "Reject justification", position = 6)
+  private String rejectJustification;
 
-	@ApiModelProperty(notes = "Country of partner request", position = 7)
-	CountryDTO locElementDTO;
+  @ApiModelProperty(notes = "Country of partner request", position = 7)
+  CountryDTO locElementDTO;
 
-	@ApiModelProperty(notes = "Institution type", position = 8)
-	InstitutionTypeDTO institutionTypeDTO;
+  @ApiModelProperty(notes = "Institution type", position = 8)
+  InstitutionTypeDTO institutionTypeDTO;
 
-	@ApiModelProperty(notes = "Intitution created", position = 9)
-	InstitutionDTO institutionDTO;
+  @ApiModelProperty(notes = "Intitution created", position = 9)
+  InstitutionDTO institutionDTO;
 
-	public String getAcronym() {
-		return this.acronym;
-	}
+  public String getAcronym() {
+    return this.acronym;
+  }
 
-	public Long getId() {
-		return this.id;
-	}
+  public Long getId() {
+    return this.id;
+  }
 
-	public InstitutionDTO getInstitutionDTO() {
-		return this.institutionDTO;
-	}
+  public InstitutionDTO getInstitutionDTO() {
+    return this.institutionDTO;
+  }
 
-	public InstitutionTypeDTO getInstitutionTypeDTO() {
-		return this.institutionTypeDTO;
-	}
+  public InstitutionTypeDTO getInstitutionTypeDTO() {
+    return this.institutionTypeDTO;
+  }
 
-	public Boolean getIsAcepted() {
-		return this.isAcepted;
-	}
+  public Boolean getIsAcepted() {
+    return this.isAcepted;
+  }
 
-	public CountryDTO getLocElementDTO() {
-		return this.locElementDTO;
-	}
+  public CountryDTO getLocElementDTO() {
+    return this.locElementDTO;
+  }
 
-	public String getPartnerName() {
-		return this.partnerName;
-	}
+  public String getPartnerName() {
+    return this.partnerName;
+  }
 
-	public String getRejectJustification() {
-		return this.rejectJustification;
-	}
+  public String getRejectJustification() {
+    return this.rejectJustification;
+  }
 
-	public String getWebPage() {
-		return this.webPage;
-	}
+  public String getWebPage() {
+    return this.webPage;
+  }
 
-	public void setAcronym(String acronym) {
-		this.acronym = acronym;
-	}
+  public void setAcronym(String acronym) {
+    this.acronym = acronym;
+  }
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+  public void setId(Long id) {
+    this.id = id;
+  }
 
-	public void setInstitutionDTO(InstitutionDTO institutionDTO) {
-		this.institutionDTO = institutionDTO;
-	}
+  public void setInstitutionDTO(InstitutionDTO institutionDTO) {
+    this.institutionDTO = institutionDTO;
+  }
 
-	public void setInstitutionTypeDTO(InstitutionTypeDTO institutionTypeDTO) {
-		this.institutionTypeDTO = institutionTypeDTO;
-	}
+  public void setInstitutionTypeDTO(InstitutionTypeDTO institutionTypeDTO) {
+    this.institutionTypeDTO = institutionTypeDTO;
+  }
 
-	public void setIsAcepted(Boolean isAcepted) {
-		this.isAcepted = isAcepted;
-	}
+  public void setIsAcepted(Boolean isAcepted) {
+    this.isAcepted = isAcepted;
+  }
 
-	public void setLocElementDTO(CountryDTO locElementDTO) {
-		this.locElementDTO = locElementDTO;
-	}
+  public void setLocElementDTO(CountryDTO locElementDTO) {
+    this.locElementDTO = locElementDTO;
+  }
 
-	public void setPartnerName(String partnerName) {
-		this.partnerName = partnerName;
-	}
+  public void setPartnerName(String partnerName) {
+    this.partnerName = partnerName;
+  }
 
-	public void setRejectJustification(String rejectJustification) {
-		this.rejectJustification = rejectJustification;
-	}
+  public void setRejectJustification(String rejectJustification) {
+    this.rejectJustification = rejectJustification;
+  }
 
-	public void setWebPage(String webPage) {
-		this.webPage = webPage;
-	}
+  public void setWebPage(String webPage) {
+    this.webPage = webPage;
+  }
 
 }

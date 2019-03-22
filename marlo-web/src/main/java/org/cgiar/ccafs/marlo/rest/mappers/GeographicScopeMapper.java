@@ -29,12 +29,12 @@ import org.mapstruct.Mappings;
 @Mapper(componentModel = "jsr330")
 public interface GeographicScopeMapper {
 
-	@Mappings({ @Mapping(source = "code", target = "id") })
-	public abstract RepIndGeographicScope geographicScopeDTOToRepIndGeographicScope(
-			GeographicScopeDTO geographicScopeDTO);
+  @Mappings({@Mapping(source = "code", target = "id")})
+  public abstract RepIndGeographicScope
+    geographicScopeDTOToRepIndGeographicScope(GeographicScopeDTO geographicScopeDTO);
 
-	@Mappings({ @Mapping(source = "id", target = "code") })
-	public abstract GeographicScopeDTO repIndGeographicScopToGeographicScopeDTO(
-			RepIndGeographicScope repIndGeographicScope);
+  @Mappings({@Mapping(source = "id", target = "code")})
+  public abstract GeographicScopeDTO
+    repIndGeographicScopToGeographicScopeDTO(RepIndGeographicScope repIndGeographicScope);
 
 }

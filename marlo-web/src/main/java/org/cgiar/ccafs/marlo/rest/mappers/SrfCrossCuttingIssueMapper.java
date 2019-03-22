@@ -29,15 +29,15 @@ import org.mapstruct.Mappings;
 @Mapper(componentModel = "jsr330")
 public interface SrfCrossCuttingIssueMapper {
 
-	@Mappings({ @Mapping(source = "code", target = "id") })
-	public abstract SrfCrossCuttingIssue srfCrossCuttingIssueDTOToSrfCrossCuttingIssue(
-			SrfCrossCuttingIssueDTO srfCrossCuttingIssueDTO);
+  @Mappings({@Mapping(source = "code", target = "id")})
+  public abstract SrfCrossCuttingIssue
+    srfCrossCuttingIssueDTOToSrfCrossCuttingIssue(SrfCrossCuttingIssueDTO srfCrossCuttingIssueDTO);
 
-	@Mappings({ @Mapping(source = "id", target = "code") })
-	public abstract SrfCrossCuttingIssueDTO srfCrossCuttingIssueToSrfCrossCuttingIssueDTO(
-			SrfCrossCuttingIssue srfCrossCuttingIssue);
+  @Mappings({@Mapping(source = "id", target = "code")})
+  public abstract SrfCrossCuttingIssueDTO
+    srfCrossCuttingIssueToSrfCrossCuttingIssueDTO(SrfCrossCuttingIssue srfCrossCuttingIssue);
 
-	public abstract SrfCrossCuttingIssue updateSrfCrossCuttingIssueFromSrfCrossCuttingIssueDto(
-			SrfCrossCuttingIssueDTO srfCrossCuttingIssueDTO, @MappingTarget SrfCrossCuttingIssue srfCrossCuttingIssue);
+  public abstract SrfCrossCuttingIssue updateSrfCrossCuttingIssueFromSrfCrossCuttingIssueDto(
+    SrfCrossCuttingIssueDTO srfCrossCuttingIssueDTO, @MappingTarget SrfCrossCuttingIssue srfCrossCuttingIssue);
 
 }

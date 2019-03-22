@@ -56,9 +56,10 @@ public class ContributionOfCrpItem<T> {
    * @return a ContributionOfCrpDTO with the Contribution of CRP data.
    */
   public ResponseEntity<ContributionOfCrpDTO> findContributionOfCrpById(Long id) {
-    RepIndContributionOfCrp repIndContributionOfCrp = repIndContributionOfCrpManager.getRepIndContributionOfCrpById(id);
+    RepIndContributionOfCrp repIndContributionOfCrp =
+      this.repIndContributionOfCrpManager.getRepIndContributionOfCrpById(id);
     return Optional.ofNullable(repIndContributionOfCrp)
-      .map(contributionOfCrpMapper::repIndContributionOfCrpToContributionOfCrpDTO)
+      .map(this.contributionOfCrpMapper::repIndContributionOfCrpToContributionOfCrpDTO)
       .map(result -> new ResponseEntity<>(result, HttpStatus.OK)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
   }
 
@@ -68,11 +69,11 @@ public class ContributionOfCrpItem<T> {
    * @return a List of ContributionOfCrpDTO with all RepIndContributionOfCrp Items.
    */
   public List<ContributionOfCrpDTO> getAllContributionOfCrps() {
-    if (repIndContributionOfCrpManager.findAll() != null) {
+    if (this.repIndContributionOfCrpManager.findAll() != null) {
       List<RepIndContributionOfCrp> repIndContributionOfCrps =
-        new ArrayList<>(repIndContributionOfCrpManager.findAll());
+        new ArrayList<>(this.repIndContributionOfCrpManager.findAll());
       List<ContributionOfCrpDTO> contributionOfCrpDTOs =
-        repIndContributionOfCrps.stream().map(repIndContributionOfCrpEntity -> contributionOfCrpMapper
+        repIndContributionOfCrps.stream().map(repIndContributionOfCrpEntity -> this.contributionOfCrpMapper
           .repIndContributionOfCrpToContributionOfCrpDTO(repIndContributionOfCrpEntity)).collect(Collectors.toList());
       return contributionOfCrpDTOs;
     } else {

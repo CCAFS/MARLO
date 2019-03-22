@@ -24,58 +24,58 @@ import org.hibernate.validator.constraints.NotEmpty;
 
 public class NewInstitutionDTO {
 
-	@ApiModelProperty(notes = "The Institution Name", position = 1)
-	@NotNull
-	private String name;
-	@ApiModelProperty(notes = "The Institution Acronym", position = 2)
-	private String acronym;
-	@ApiModelProperty(notes = "The Institution Website", position = 3)
-	private String websiteLink;
-	@ApiModelProperty(notes = "The Institution type", position = 4)
-	@NotNull
-	private InstitutionTypeDTO institutionType;
-	@NotEmpty
-	@ApiModelProperty(notes = "List of countries where are offices", position = 5)
-	private List<CountryDTO> countryDTO;
+  @ApiModelProperty(notes = "The Institution Name", position = 1)
+  @NotNull
+  private String name;
+  @ApiModelProperty(notes = "The Institution Acronym", position = 2)
+  private String acronym;
+  @ApiModelProperty(notes = "The Institution Website", position = 3)
+  private String websiteLink;
+  @ApiModelProperty(notes = "The Institution type", position = 4)
+  @NotNull
+  private InstitutionTypeDTO institutionType;
+  @NotEmpty
+  @ApiModelProperty(notes = "List of countries where are offices", position = 5)
+  private List<CountryDTO> countryDTO;
 
-	public String getAcronym() {
-		return this.acronym;
-	}
+  public String getAcronym() {
+    return this.acronym;
+  }
 
-	public List<CountryDTO> getCountryDTO() {
-		return this.countryDTO;
-	}
+  public List<CountryDTO> getCountryDTO() {
+    return this.countryDTO;
+  }
 
-	public InstitutionTypeDTO getInstitutionType() {
-		return this.institutionType;
-	}
+  public InstitutionTypeDTO getInstitutionType() {
+    return this.institutionType;
+  }
 
-	public String getName() {
-		return this.name;
-	}
+  public String getName() {
+    return this.name;
+  }
 
-	public String getWebsiteLink() {
-		return this.websiteLink;
-	}
+  public String getWebsiteLink() {
+    return this.websiteLink;
+  }
 
-	public void setAcronym(String acronym) {
-		this.acronym = acronym;
-	}
+  public void setAcronym(String acronym) {
+    this.acronym = acronym;
+  }
 
-	public void setCountryDTO(List<CountryDTO> countryDTO) {
-		this.countryDTO = countryDTO;
-	}
+  public void setCountryDTO(List<CountryDTO> countryDTO) {
+    this.countryDTO = countryDTO;
+  }
 
-	public void setInstitutionType(InstitutionTypeDTO institutionType) {
-		this.institutionType = institutionType;
-	}
+  public void setInstitutionType(InstitutionTypeDTO institutionType) {
+    this.institutionType = institutionType;
+  }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+  public void setName(String name) {
+    this.name = name;
+  }
 
-	public void setWebsiteLink(String websiteLink) {
-		this.websiteLink = websiteLink;
-	}
+  public void setWebsiteLink(String websiteLink) {
+    this.websiteLink = websiteLink;
+  }
 
 }

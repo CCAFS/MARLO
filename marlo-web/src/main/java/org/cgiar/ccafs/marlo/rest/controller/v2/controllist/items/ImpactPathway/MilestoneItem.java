@@ -43,76 +43,74 @@ import org.springframework.http.ResponseEntity;
 @Named
 public class MilestoneItem<T> {
 
-	private CrpMilestoneManager crpMilestoneManager;
-	private CrpProgramManager crpProgramManager;
-	private PhaseManager phaseManager;
-	private MilestoneMapper milestoneMapper;
+  private CrpMilestoneManager crpMilestoneManager;
+  private CrpProgramManager crpProgramManager;
+  private PhaseManager phaseManager;
+  private MilestoneMapper milestoneMapper;
 
-	@Inject
-	public MilestoneItem(CrpMilestoneManager crpMilestoneManager, MilestoneMapper milestoneMapper,
-			CrpProgramManager crpProgramManager, PhaseManager phaseManager) {
-		super();
-		this.crpMilestoneManager = crpMilestoneManager;
-		this.milestoneMapper = milestoneMapper;
-		this.crpProgramManager = crpProgramManager;
-		this.phaseManager = phaseManager;
-	}
+  @Inject
+  public MilestoneItem(CrpMilestoneManager crpMilestoneManager, MilestoneMapper milestoneMapper,
+    CrpProgramManager crpProgramManager, PhaseManager phaseManager) {
+    super();
+    this.crpMilestoneManager = crpMilestoneManager;
+    this.milestoneMapper = milestoneMapper;
+    this.crpProgramManager = crpProgramManager;
+    this.phaseManager = phaseManager;
+  }
 
-	/**
-	 * Find a milestone by smo id
-	 * 
-	 * @param id of milestone
-	 * @param CGIARentityAcronym acronym of the CRP/PTF
-	 * @return a OutcomeDTO with the milestone data.
-	 */
+  /**
+   * Find a milestone by smo id
+   * 
+   * @param id of milestone
+   * @param CGIARentityAcronym acronym of the CRP/PTF
+   * @return a OutcomeDTO with the milestone data.
+   */
 
-	public ResponseEntity<MilestoneDTO> findMilestoneById(Long id, String CGIARentityAcronym) {
+  public ResponseEntity<MilestoneDTO> findMilestoneById(Long id, String CGIARentityAcronym) {
 
-		CrpMilestone crpMilestone = this.crpMilestoneManager.getCrpMilestoneById(id);
-		if (!crpMilestone.getCrpProgramOutcome().getCrpProgram().getCrp().getAcronym()
-				.equalsIgnoreCase(CGIARentityAcronym)) {
-			crpMilestone = null;
-		}
-		return Optional.ofNullable(crpMilestone).map(this.milestoneMapper::crpMilestoneToMilestoneDTO)
-				.map(result -> new ResponseEntity<>(result, HttpStatus.OK))
-				.orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
-	}
+    CrpMilestone crpMilestone = this.crpMilestoneManager.getCrpMilestoneById(id);
+    if (!crpMilestone.getCrpProgramOutcome().getCrpProgram().getCrp().getAcronym()
+      .equalsIgnoreCase(CGIARentityAcronym)) {
+      crpMilestone = null;
+    }
+    return Optional.ofNullable(crpMilestone).map(this.milestoneMapper::crpMilestoneToMilestoneDTO)
+      .map(result -> new ResponseEntity<>(result, HttpStatus.OK)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+  }
 
-	/**
-	 * Find all milestones of a flagship
-	 * 
-	 * @param crpProgramCode code of flagship
-	 * @param CGIARentityAcronym acronym of the CRP/PTF
-	 * @param targetYear target year of milestone
-	 * @param repoYear year of the reporting
-	 * @return a OutcomeDTO with the flagship or program data.
-	 */
-	public List<MilestoneDTO> getAllMilestones(String crpProgramCode, String CGIARentityAcronym, Integer repoYear) {
-		List<MilestoneDTO> milestonesDTOs = null;
-		List<CrpMilestone> milestoneList = new ArrayList<CrpMilestone>();
-		CrpProgram crpProgram = this.crpProgramManager.getCrpProgramBySmoCode(crpProgramCode);
+  /**
+   * Find all milestones of a flagship
+   * 
+   * @param crpProgramCode code of flagship
+   * @param CGIARentityAcronym acronym of the CRP/PTF
+   * @param targetYear target year of milestone
+   * @param repoYear year of the reporting
+   * @return a OutcomeDTO with the flagship or program data.
+   */
+  public List<MilestoneDTO> getAllMilestones(String crpProgramCode, String CGIARentityAcronym, Integer repoYear) {
+    List<MilestoneDTO> milestonesDTOs = null;
+    List<CrpMilestone> milestoneList = new ArrayList<CrpMilestone>();
+    CrpProgram crpProgram = this.crpProgramManager.getCrpProgramBySmoCode(crpProgramCode);
 
-		List<Phase> phases = this.phaseManager.findAll().stream()
-				.filter(c -> c.getCrp().getAcronym().equalsIgnoreCase(CGIARentityAcronym) && c.getYear() == repoYear
-						&& c.getName().equalsIgnoreCase("AR"))
-				.collect(Collectors.toList());
-		if (crpProgram != null && phases != null && !phases.isEmpty()
-				&& crpProgram.getCrp().equals(phases.get(0).getCrp())) {
-			List<CrpProgramOutcome> crpProgramOutcomes = crpProgram.getCrpProgramOutcomes().stream()
-					.filter(c -> c.isActive() && c.getPhase().equals(phases.get(0))).collect(Collectors.toList());
+    List<Phase> phases =
+      this.phaseManager.findAll().stream().filter(c -> c.getCrp().getAcronym().equalsIgnoreCase(CGIARentityAcronym)
+        && c.getYear() == repoYear && c.getName().equalsIgnoreCase("AR")).collect(Collectors.toList());
+    if (crpProgram != null && phases != null && !phases.isEmpty()
+      && crpProgram.getCrp().equals(phases.get(0).getCrp())) {
+      List<CrpProgramOutcome> crpProgramOutcomes = crpProgram.getCrpProgramOutcomes().stream()
+        .filter(c -> c.isActive() && c.getPhase().equals(phases.get(0))).collect(Collectors.toList());
 
-			for (CrpProgramOutcome crpProgramOutcome : crpProgramOutcomes) {
-				milestoneList.addAll(crpProgramOutcome.getCrpMilestones().stream()
-						.filter(c -> c.getYear() == phases.get(0).getYear()).collect(Collectors.toList()));
-			}
+      for (CrpProgramOutcome crpProgramOutcome : crpProgramOutcomes) {
+        milestoneList.addAll(crpProgramOutcome.getCrpMilestones().stream()
+          .filter(c -> c.getYear() == phases.get(0).getYear()).collect(Collectors.toList()));
+      }
 
-			milestonesDTOs = milestoneList.stream()
-					.map(milestoneEntity -> this.milestoneMapper.crpMilestoneToMilestoneDTO(milestoneEntity))
-					.collect(Collectors.toList());
+      milestonesDTOs =
+        milestoneList.stream().map(milestoneEntity -> this.milestoneMapper.crpMilestoneToMilestoneDTO(milestoneEntity))
+          .collect(Collectors.toList());
 
-		}
-		return milestonesDTOs;
+    }
+    return milestonesDTOs;
 
-	}
+  }
 
 }

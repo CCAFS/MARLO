@@ -39,63 +39,60 @@ import org.springframework.http.ResponseEntity;
 @Named
 public class FlagshipProgramItem<T> {
 
-	private CrpProgramManager crpProgramManager;
-	private FlagshipProgramMapper flagshipProgramMapper;
+  private CrpProgramManager crpProgramManager;
+  private FlagshipProgramMapper flagshipProgramMapper;
 
-	@Inject
-	public FlagshipProgramItem(CrpProgramManager crpProgramManager, FlagshipProgramMapper flagshipProgramMapper) {
-		super();
-		this.crpProgramManager = crpProgramManager;
-		this.flagshipProgramMapper = flagshipProgramMapper;
-	}
+  @Inject
+  public FlagshipProgramItem(CrpProgramManager crpProgramManager, FlagshipProgramMapper flagshipProgramMapper) {
+    super();
+    this.crpProgramManager = crpProgramManager;
+    this.flagshipProgramMapper = flagshipProgramMapper;
+  }
 
-	/**
-	 * Find a Flagship or program requesting by id
-	 * 
-	 * @param id
-	 * @return a FlagshipProgramDTO with the flagship or program data.
-	 */
-	public ResponseEntity<FlagshipProgramDTO> findFlagshipProgramById(Long id) {
-		CrpProgram crpProgram = this.crpProgramManager.getCrpProgramById(id);
-		return Optional.ofNullable(crpProgram).map(this.flagshipProgramMapper::crpProgramToCrpProgramDTO)
-				.map(result -> new ResponseEntity<>(result, HttpStatus.OK))
-				.orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
-	}
+  /**
+   * Find a Flagship or program requesting by id
+   * 
+   * @param id
+   * @return a FlagshipProgramDTO with the flagship or program data.
+   */
+  public ResponseEntity<FlagshipProgramDTO> findFlagshipProgramById(Long id) {
+    CrpProgram crpProgram = this.crpProgramManager.getCrpProgramById(id);
+    return Optional.ofNullable(crpProgram).map(this.flagshipProgramMapper::crpProgramToCrpProgramDTO)
+      .map(result -> new ResponseEntity<>(result, HttpStatus.OK)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+  }
 
-	/**
-	 * Find a Flagship or program requesting by smo Code
-	 * 
-	 * @param smo code
-	 * @return a FlagshipProgramDTO with the flagship or program data.
-	 */
-	public ResponseEntity<FlagshipProgramDTO> findFlagshipProgramBySmoCode(String smoCode) {
-		CrpProgram crpProgram = this.crpProgramManager.getCrpProgramBySmoCode(smoCode);
-		return Optional.ofNullable(crpProgram)
-				.filter(c -> c.getProgramType() == 1 && c.getCrp().getGlobalUnitType().getId() <= 3)
-				.map(this.flagshipProgramMapper::crpProgramToCrpProgramDTO)
-				.map(result -> new ResponseEntity<>(result, HttpStatus.OK))
-				.orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
-	}
+  /**
+   * Find a Flagship or program requesting by smo Code
+   * 
+   * @param smo code
+   * @return a FlagshipProgramDTO with the flagship or program data.
+   */
+  public ResponseEntity<FlagshipProgramDTO> findFlagshipProgramBySmoCode(String smoCode) {
+    CrpProgram crpProgram = this.crpProgramManager.getCrpProgramBySmoCode(smoCode);
+    return Optional.ofNullable(crpProgram)
+      .filter(c -> c.getProgramType() == 1 && c.getCrp().getGlobalUnitType().getId() <= 3)
+      .map(this.flagshipProgramMapper::crpProgramToCrpProgramDTO)
+      .map(result -> new ResponseEntity<>(result, HttpStatus.OK)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+  }
 
-	/**
-	 * Get All the Flagship or program Items *
-	 * 
-	 * @return a List of FlagshipProgramDTO with all the Flagship or program
-	 * Items.
-	 */
-	public List<FlagshipProgramDTO> getAllCrpPrograms() {
-		if (this.crpProgramManager.findAll() != null) {
-			List<CrpProgram> crpPrograms = new ArrayList<>(this.crpProgramManager.findAll());
-			List<FlagshipProgramDTO> flagshipProgramDTOs = crpPrograms.stream()
-					.filter(c -> c.getProgramType() == 1 && c.getCrp().getGlobalUnitType().getId() <= 3)
-					.sorted(Comparator.comparing(CrpProgram::getSmoCode,
-							Comparator.nullsLast(Comparator.naturalOrder())))
-					.map(crpProgramsEntity -> this.flagshipProgramMapper.crpProgramToCrpProgramDTO(crpProgramsEntity))
-					.collect(Collectors.toList());
-			return flagshipProgramDTOs;
-		} else {
-			return null;
-		}
-	}
+  /**
+   * Get All the Flagship or program Items *
+   * 
+   * @return a List of FlagshipProgramDTO with all the Flagship or program
+   *         Items.
+   */
+  public List<FlagshipProgramDTO> getAllCrpPrograms() {
+    if (this.crpProgramManager.findAll() != null) {
+      List<CrpProgram> crpPrograms = new ArrayList<>(this.crpProgramManager.findAll());
+      List<FlagshipProgramDTO> flagshipProgramDTOs =
+        crpPrograms.stream().filter(c -> c.getProgramType() == 1 && c.getCrp().getGlobalUnitType().getId() <= 3)
+          .sorted(Comparator.comparing(CrpProgram::getSmoCode, Comparator.nullsLast(Comparator.naturalOrder())))
+          .map(crpProgramsEntity -> this.flagshipProgramMapper.crpProgramToCrpProgramDTO(crpProgramsEntity))
+          .collect(Collectors.toList());
+      return flagshipProgramDTOs;
+    } else {
+      return null;
+    }
+  }
 
 }

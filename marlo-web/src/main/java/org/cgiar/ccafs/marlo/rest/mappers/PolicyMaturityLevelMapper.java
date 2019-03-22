@@ -25,11 +25,11 @@ import org.mapstruct.Mappings;
 @Mapper(componentModel = "jsr330")
 public interface PolicyMaturityLevelMapper {
 
-	@Mappings({ @Mapping(source = "code", target = "id") })
-	public abstract RepIndStageProcess policyMaturityLevelDTOToRepIndStageProcess(
-			PolicyMaturityLevelDTO policyLevelOfMaturityDTO);
+  @Mappings({@Mapping(source = "code", target = "id")})
+  public abstract RepIndStageProcess
+    policyMaturityLevelDTOToRepIndStageProcess(PolicyMaturityLevelDTO policyLevelOfMaturityDTO);
 
-	@Mappings({ @Mapping(source = "id", target = "code") })
-	public abstract PolicyMaturityLevelDTO repIndStageProcessToPolicyMaturityLevelDTO(
-			RepIndStageProcess repIndStageProcess);
+  @Mappings({@Mapping(source = "id", target = "code")})
+  public abstract PolicyMaturityLevelDTO
+    repIndStageProcessToPolicyMaturityLevelDTO(RepIndStageProcess repIndStageProcess);
 }

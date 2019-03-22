@@ -59,7 +59,7 @@ public abstract class InstitutionLocationMapper {
   }
 
   public LocElement isoAlphaCountryCodeToLocElement(String isoAlphaCountryCode) {
-    LocElement locElementByISOCode = locElementManager.getLocElementByISOCode(isoAlphaCountryCode);
+    LocElement locElementByISOCode = this.locElementManager.getLocElementByISOCode(isoAlphaCountryCode);
 
     return locElementByISOCode;
   }

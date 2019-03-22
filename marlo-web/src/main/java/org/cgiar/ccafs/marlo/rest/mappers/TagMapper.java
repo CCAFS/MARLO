@@ -29,10 +29,10 @@ import org.mapstruct.Mappings;
 @Mapper(componentModel = "jsr330")
 public interface TagMapper {
 
-	@Mappings({ @Mapping(source = "id", target = "code") })
-	public abstract TagDTO evidenceTagToTagDTO(EvidenceTag evidenceTag);
+  @Mappings({@Mapping(source = "id", target = "code")})
+  public abstract TagDTO evidenceTagToTagDTO(EvidenceTag evidenceTag);
 
-	@Mappings({ @Mapping(source = "code", target = "id") })
-	public abstract EvidenceTag tagDTOToEvidenceTag(TagDTO tagDTO);
+  @Mappings({@Mapping(source = "code", target = "id")})
+  public abstract EvidenceTag tagDTOToEvidenceTag(TagDTO tagDTO);
 
 }

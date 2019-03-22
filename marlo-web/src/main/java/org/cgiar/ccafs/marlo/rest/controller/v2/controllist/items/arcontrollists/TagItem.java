@@ -38,44 +38,42 @@ import org.springframework.http.ResponseEntity;
 @Named
 public class TagItem<T> {
 
-	private EvidenceTagManager evidenceTagManager;
-	private TagMapper tagMapper;
+  private EvidenceTagManager evidenceTagManager;
+  private TagMapper tagMapper;
 
-	@Inject
-	public TagItem(EvidenceTagManager evidenceTagManager, TagMapper tagMapper) {
-		super();
-		this.evidenceTagManager = evidenceTagManager;
-		this.tagMapper = tagMapper;
-	}
+  @Inject
+  public TagItem(EvidenceTagManager evidenceTagManager, TagMapper tagMapper) {
+    super();
+    this.evidenceTagManager = evidenceTagManager;
+    this.tagMapper = tagMapper;
+  }
 
-	/**
-	 * Find a Tag requesting by id
-	 * 
-	 * @param id
-	 * @return a TagDTO with the tag data.
-	 */
-	public ResponseEntity<TagDTO> findTagById(Long id) {
-		EvidenceTag evidenceTag = this.evidenceTagManager.getEvidenceTagById(id);
-		return Optional.ofNullable(evidenceTag).map(this.tagMapper::evidenceTagToTagDTO)
-				.map(result -> new ResponseEntity<>(result, HttpStatus.OK))
-				.orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
-	}
+  /**
+   * Find a Tag requesting by id
+   * 
+   * @param id
+   * @return a TagDTO with the tag data.
+   */
+  public ResponseEntity<TagDTO> findTagById(Long id) {
+    EvidenceTag evidenceTag = this.evidenceTagManager.getEvidenceTagById(id);
+    return Optional.ofNullable(evidenceTag).map(this.tagMapper::evidenceTagToTagDTO)
+      .map(result -> new ResponseEntity<>(result, HttpStatus.OK)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+  }
 
-	/**
-	 * Get All Tags Items *
-	 * 
-	 * @return a List of TagDTO with all TAGS Items.
-	 */
-	public List<TagDTO> getAllTags() {
-		if (this.evidenceTagManager.findAll() != null) {
-			List<EvidenceTag> evidenceTags = new ArrayList<>(this.evidenceTagManager.findAll());
-			List<TagDTO> tagDTOs = evidenceTags.stream()
-					.map(evidenceTagsEntity -> this.tagMapper.evidenceTagToTagDTO(evidenceTagsEntity))
-					.collect(Collectors.toList());
-			return tagDTOs;
-		} else {
-			return null;
-		}
-	}
+  /**
+   * Get All Tags Items *
+   * 
+   * @return a List of TagDTO with all TAGS Items.
+   */
+  public List<TagDTO> getAllTags() {
+    if (this.evidenceTagManager.findAll() != null) {
+      List<EvidenceTag> evidenceTags = new ArrayList<>(this.evidenceTagManager.findAll());
+      List<TagDTO> tagDTOs = evidenceTags.stream()
+        .map(evidenceTagsEntity -> this.tagMapper.evidenceTagToTagDTO(evidenceTagsEntity)).collect(Collectors.toList());
+      return tagDTOs;
+    } else {
+      return null;
+    }
+  }
 
 }

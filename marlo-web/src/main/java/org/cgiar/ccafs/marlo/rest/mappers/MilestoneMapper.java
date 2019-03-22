@@ -24,14 +24,15 @@ import org.mapstruct.Mappings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@Mapper(componentModel = "jsr330", uses = { OutcomeMapper.class })
+@Mapper(componentModel = "jsr330", uses = {OutcomeMapper.class})
 public abstract class MilestoneMapper {
-	private static final Logger LOG = LoggerFactory.getLogger(MilestoneMapper.class);
 
-	@Mappings({ @Mapping(source = "crpProgramOutcome", target = "outcomeDTO"),
-			@Mapping(source = "srfTargetUnit", target = "targetUnitDTO"), })
-	public abstract MilestoneDTO crpMilestoneToMilestoneDTO(CrpMilestone crpMilestone);
+  private static final Logger LOG = LoggerFactory.getLogger(MilestoneMapper.class);
 
-	public abstract CrpMilestone milestoneDTOToCrpMilestone(MilestoneDTO milestoneDTO);
+  @Mappings({@Mapping(source = "crpProgramOutcome", target = "outcomeDTO"),
+    @Mapping(source = "srfTargetUnit", target = "targetUnitDTO"),})
+  public abstract MilestoneDTO crpMilestoneToMilestoneDTO(CrpMilestone crpMilestone);
+
+  public abstract CrpMilestone milestoneDTOToCrpMilestone(MilestoneDTO milestoneDTO);
 
 }

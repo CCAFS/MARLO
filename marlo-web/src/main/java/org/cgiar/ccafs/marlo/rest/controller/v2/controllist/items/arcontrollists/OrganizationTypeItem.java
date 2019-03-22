@@ -34,50 +34,48 @@ import org.springframework.http.ResponseEntity;
 @Named
 public class OrganizationTypeItem<T> {
 
-	private RepIndOrganizationTypeManager repIndOrganizationTypeManager;
-	private OrganizationTypeMapper organizationTypeMapper;
+  private RepIndOrganizationTypeManager repIndOrganizationTypeManager;
+  private OrganizationTypeMapper organizationTypeMapper;
 
-	@Inject
-	public OrganizationTypeItem(RepIndOrganizationTypeManager repIndOrganizationTypeManager,
-			OrganizationTypeMapper organizationTypeMapper) {
-		this.repIndOrganizationTypeManager = repIndOrganizationTypeManager;
-		this.organizationTypeMapper = organizationTypeMapper;
-	}
+  @Inject
+  public OrganizationTypeItem(RepIndOrganizationTypeManager repIndOrganizationTypeManager,
+    OrganizationTypeMapper organizationTypeMapper) {
+    this.repIndOrganizationTypeManager = repIndOrganizationTypeManager;
+    this.organizationTypeMapper = organizationTypeMapper;
+  }
 
-	/**
-	 * Find a Organization Type Item MARLO id
-	 * 
-	 * @param id
-	 * @return a OrganizationTypeDTO with the Organization Type Item
-	 */
-	public ResponseEntity<OrganizationTypeDTO> findOrganizationTypeById(Long id) {
-		RepIndOrganizationType repIndOrganizationType = this.repIndOrganizationTypeManager
-				.getRepIndOrganizationTypeById(id);
-		return Optional.ofNullable(repIndOrganizationType)
-				.map(this.organizationTypeMapper::repIndOrganizationTypeToOrganizationTypeDTO)
-				.map(result -> new ResponseEntity<>(result, HttpStatus.OK))
-				.orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
-	}
+  /**
+   * Find a Organization Type Item MARLO id
+   * 
+   * @param id
+   * @return a OrganizationTypeDTO with the Organization Type Item
+   */
+  public ResponseEntity<OrganizationTypeDTO> findOrganizationTypeById(Long id) {
+    RepIndOrganizationType repIndOrganizationType =
+      this.repIndOrganizationTypeManager.getRepIndOrganizationTypeById(id);
+    return Optional.ofNullable(repIndOrganizationType)
+      .map(this.organizationTypeMapper::repIndOrganizationTypeToOrganizationTypeDTO)
+      .map(result -> new ResponseEntity<>(result, HttpStatus.OK)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+  }
 
-	/**
-	 * Get All the Organization Types Items *
-	 * 
-	 * @return a List of OrganizationTypeDTO with all Organization Types items
-	 * Items.
-	 */
-	public List<OrganizationTypeDTO> getAllOrganizationTypes() {
-		if (this.repIndOrganizationTypeManager.findAll() != null) {
-			List<RepIndOrganizationType> repIndOrganizationTypes = new ArrayList<>(
-					this.repIndOrganizationTypeManager.findAll());
+  /**
+   * Get All the Organization Types Items *
+   * 
+   * @return a List of OrganizationTypeDTO with all Organization Types items
+   *         Items.
+   */
+  public List<OrganizationTypeDTO> getAllOrganizationTypes() {
+    if (this.repIndOrganizationTypeManager.findAll() != null) {
+      List<RepIndOrganizationType> repIndOrganizationTypes =
+        new ArrayList<>(this.repIndOrganizationTypeManager.findAll());
 
-			List<OrganizationTypeDTO> organizationTypeDTOs = repIndOrganizationTypes.stream()
-					.map(repIndOrganizationTypeEntity -> this.organizationTypeMapper
-							.repIndOrganizationTypeToOrganizationTypeDTO(repIndOrganizationTypeEntity))
-					.collect(Collectors.toList());
-			return organizationTypeDTOs;
-		} else {
-			return null;
-		}
-	}
+      List<OrganizationTypeDTO> organizationTypeDTOs =
+        repIndOrganizationTypes.stream().map(repIndOrganizationTypeEntity -> this.organizationTypeMapper
+          .repIndOrganizationTypeToOrganizationTypeDTO(repIndOrganizationTypeEntity)).collect(Collectors.toList());
+      return organizationTypeDTOs;
+    } else {
+      return null;
+    }
+  }
 
 }

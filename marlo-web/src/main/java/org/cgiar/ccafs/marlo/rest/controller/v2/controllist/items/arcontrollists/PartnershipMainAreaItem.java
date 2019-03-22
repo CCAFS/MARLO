@@ -34,50 +34,49 @@ import org.springframework.http.ResponseEntity;
 @Named
 public class PartnershipMainAreaItem<T> {
 
-	private RepIndPartnershipMainAreaManager repIndPartnershipMainAreaManager;
-	private PartnershipMainAreaMapper partnershipMainAreaMapper;
+  private RepIndPartnershipMainAreaManager repIndPartnershipMainAreaManager;
+  private PartnershipMainAreaMapper partnershipMainAreaMapper;
 
-	@Inject
-	public PartnershipMainAreaItem(RepIndPartnershipMainAreaManager repIndPartnershipMainAreaManager,
-			PartnershipMainAreaMapper partnershipMainAreaMapper) {
-		this.repIndPartnershipMainAreaManager = repIndPartnershipMainAreaManager;
-		this.partnershipMainAreaMapper = partnershipMainAreaMapper;
-	}
+  @Inject
+  public PartnershipMainAreaItem(RepIndPartnershipMainAreaManager repIndPartnershipMainAreaManager,
+    PartnershipMainAreaMapper partnershipMainAreaMapper) {
+    this.repIndPartnershipMainAreaManager = repIndPartnershipMainAreaManager;
+    this.partnershipMainAreaMapper = partnershipMainAreaMapper;
+  }
 
-	/**
-	 * Find a Partnership main area Item MARLO id
-	 * 
-	 * @param id
-	 * @return a PartnershipMainAreaDTO with the Partnership main area Item
-	 */
-	public ResponseEntity<PartnershipMainAreaDTO> findPartnershipMainAreaById(Long id) {
-		RepIndPartnershipMainArea repIndPartnershipMainArea = this.repIndPartnershipMainAreaManager
-				.getRepIndPartnershipMainAreaById(id);
+  /**
+   * Find a Partnership main area Item MARLO id
+   * 
+   * @param id
+   * @return a PartnershipMainAreaDTO with the Partnership main area Item
+   */
+  public ResponseEntity<PartnershipMainAreaDTO> findPartnershipMainAreaById(Long id) {
+    RepIndPartnershipMainArea repIndPartnershipMainArea =
+      this.repIndPartnershipMainAreaManager.getRepIndPartnershipMainAreaById(id);
 
-		return Optional.ofNullable(repIndPartnershipMainArea)
-				.map(this.partnershipMainAreaMapper::repIndPartnershipMainAreaToPartnershipMainArea)
-				.map(result -> new ResponseEntity<>(result, HttpStatus.OK))
-				.orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
-	}
+    return Optional.ofNullable(repIndPartnershipMainArea)
+      .map(this.partnershipMainAreaMapper::repIndPartnershipMainAreaToPartnershipMainArea)
+      .map(result -> new ResponseEntity<>(result, HttpStatus.OK)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+  }
 
-	/**
-	 * Get All the Study Types Items *
-	 * 
-	 * @return a List of Study type with all Study Types items Items.
-	 */
-	public List<PartnershipMainAreaDTO> getAllPartnershipMainAreas() {
-		if (this.repIndPartnershipMainAreaManager.findAll() != null) {
-			List<RepIndPartnershipMainArea> repIndPartnershipMainArea = new ArrayList<>(
-					this.repIndPartnershipMainAreaManager.findAll());
+  /**
+   * Get All the Study Types Items *
+   * 
+   * @return a List of Study type with all Study Types items Items.
+   */
+  public List<PartnershipMainAreaDTO> getAllPartnershipMainAreas() {
+    if (this.repIndPartnershipMainAreaManager.findAll() != null) {
+      List<RepIndPartnershipMainArea> repIndPartnershipMainArea =
+        new ArrayList<>(this.repIndPartnershipMainAreaManager.findAll());
 
-			List<PartnershipMainAreaDTO> PartnershipMainAreaDTOs = repIndPartnershipMainArea.stream()
-					.map(repIndPartnershipMainAreaEntity -> this.partnershipMainAreaMapper
-							.repIndPartnershipMainAreaToPartnershipMainArea(repIndPartnershipMainAreaEntity))
-					.collect(Collectors.toList());
-			return PartnershipMainAreaDTOs;
-		} else {
-			return null;
-		}
-	}
+      List<PartnershipMainAreaDTO> PartnershipMainAreaDTOs = repIndPartnershipMainArea.stream()
+        .map(repIndPartnershipMainAreaEntity -> this.partnershipMainAreaMapper
+          .repIndPartnershipMainAreaToPartnershipMainArea(repIndPartnershipMainAreaEntity))
+        .collect(Collectors.toList());
+      return PartnershipMainAreaDTOs;
+    } else {
+      return null;
+    }
+  }
 
 }

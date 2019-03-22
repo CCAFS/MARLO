@@ -28,12 +28,12 @@ import org.mapstruct.Mappings;
 @Mapper(componentModel = "jsr330")
 public interface SrfSloIndicatorTargetMapper {
 
-	public abstract SrfSloIndicatorTarget srfSloIndicatorTargetDTOToSrfSloIndicatorTarget(
-			SrfSloTargetDTO srfSloIndicatorTargetDTO);
+  public abstract SrfSloIndicatorTarget
+    srfSloIndicatorTargetDTOToSrfSloIndicatorTarget(SrfSloTargetDTO srfSloIndicatorTargetDTO);
 
-	@Mappings({ @Mapping(source = "targetsIndicator", target = "code"),
-			@Mapping(source = "srfSloIndicatorTarget.srfSloIndicator.srfSlo", target = "srfSloDTO") })
-	public abstract SrfSloTargetDTO srfSloIndicatorTargetToSrfSloIndicatorTargetDTO(
-			SrfSloIndicatorTarget srfSloIndicatorTarget);
+  @Mappings({@Mapping(source = "targetsIndicator", target = "code"),
+    @Mapping(source = "srfSloIndicatorTarget.srfSloIndicator.srfSlo", target = "srfSloDTO")})
+  public abstract SrfSloTargetDTO
+    srfSloIndicatorTargetToSrfSloIndicatorTargetDTO(SrfSloIndicatorTarget srfSloIndicatorTarget);
 
 }

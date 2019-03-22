@@ -38,49 +38,45 @@ import org.springframework.http.ResponseEntity;
 @Named
 public class GeographicScopeItem<T> {
 
-	private RepIndGeographicScopeManager repIndGeographicScopeManager;
-	private GeographicScopeMapper geographicScopeMapper;
+  private RepIndGeographicScopeManager repIndGeographicScopeManager;
+  private GeographicScopeMapper geographicScopeMapper;
 
-	@Inject
-	public GeographicScopeItem(RepIndGeographicScopeManager repIndGeographicScopeManager,
-			GeographicScopeMapper geographicScopeMapper) {
-		super();
-		this.repIndGeographicScopeManager = repIndGeographicScopeManager;
-		this.geographicScopeMapper = geographicScopeMapper;
-	}
+  @Inject
+  public GeographicScopeItem(RepIndGeographicScopeManager repIndGeographicScopeManager,
+    GeographicScopeMapper geographicScopeMapper) {
+    super();
+    this.repIndGeographicScopeManager = repIndGeographicScopeManager;
+    this.geographicScopeMapper = geographicScopeMapper;
+  }
 
-	/**
-	 * Get a Geographic Scope by id *
-	 * 
-	 * @return GeographicScopeDTO founded.
-	 */
-	public ResponseEntity<GeographicScopeDTO> findGeographicScopesById(Long id) {
-		RepIndGeographicScope repIndGeographicScope = this.repIndGeographicScopeManager
-				.getRepIndGeographicScopeById(id);
-		return Optional.ofNullable(repIndGeographicScope)
-				.map(this.geographicScopeMapper::repIndGeographicScopToGeographicScopeDTO)
-				.map(result -> new ResponseEntity<>(result, HttpStatus.OK))
-				.orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
-	}
+  /**
+   * Get a Geographic Scope by id *
+   * 
+   * @return GeographicScopeDTO founded.
+   */
+  public ResponseEntity<GeographicScopeDTO> findGeographicScopesById(Long id) {
+    RepIndGeographicScope repIndGeographicScope = this.repIndGeographicScopeManager.getRepIndGeographicScopeById(id);
+    return Optional.ofNullable(repIndGeographicScope)
+      .map(this.geographicScopeMapper::repIndGeographicScopToGeographicScopeDTO)
+      .map(result -> new ResponseEntity<>(result, HttpStatus.OK)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+  }
 
-	/**
-	 * Get All the Geographic Scope items *
-	 * 
-	 * @return a List of GeographicScopeDTO with all RepIndGeographicScope
-	 * Items.
-	 */
-	public List<GeographicScopeDTO> getAllGeographicScopes() {
-		if (this.repIndGeographicScopeManager.findAll() != null) {
-			List<RepIndGeographicScope> repIndGeographicScopes = new ArrayList<>(
-					this.repIndGeographicScopeManager.findAll());
-			List<GeographicScopeDTO> geographicScopeDTOs = repIndGeographicScopes.stream()
-					.map(geographicScopeEntity -> this.geographicScopeMapper
-							.repIndGeographicScopToGeographicScopeDTO(geographicScopeEntity))
-					.collect(Collectors.toList());
-			return geographicScopeDTOs;
-		} else {
-			return null;
-		}
-	}
+  /**
+   * Get All the Geographic Scope items *
+   * 
+   * @return a List of GeographicScopeDTO with all RepIndGeographicScope
+   *         Items.
+   */
+  public List<GeographicScopeDTO> getAllGeographicScopes() {
+    if (this.repIndGeographicScopeManager.findAll() != null) {
+      List<RepIndGeographicScope> repIndGeographicScopes = new ArrayList<>(this.repIndGeographicScopeManager.findAll());
+      List<GeographicScopeDTO> geographicScopeDTOs =
+        repIndGeographicScopes.stream().map(geographicScopeEntity -> this.geographicScopeMapper
+          .repIndGeographicScopToGeographicScopeDTO(geographicScopeEntity)).collect(Collectors.toList());
+      return geographicScopeDTOs;
+    } else {
+      return null;
+    }
+  }
 
 }

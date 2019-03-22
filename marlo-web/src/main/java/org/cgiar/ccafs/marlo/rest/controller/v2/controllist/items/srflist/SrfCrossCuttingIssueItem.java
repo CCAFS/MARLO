@@ -57,9 +57,9 @@ public class SrfCrossCuttingIssueItem<T> {
    * @return a SrfCrossCuttingIssueDTO with the SRL-SLO data.
    */
   public ResponseEntity<SrfCrossCuttingIssueDTO> findSrfCrossCuttingIssuebyId(Long id) {
-    SrfCrossCuttingIssue srfCrossCuttingIssue = srfCrossCuttingIssueManager.getSrfCrossCuttingIssueById(id);
+    SrfCrossCuttingIssue srfCrossCuttingIssue = this.srfCrossCuttingIssueManager.getSrfCrossCuttingIssueById(id);
     return Optional.ofNullable(srfCrossCuttingIssue)
-      .map(srfCrossCuttingIssueMapper::srfCrossCuttingIssueToSrfCrossCuttingIssueDTO)
+      .map(this.srfCrossCuttingIssueMapper::srfCrossCuttingIssueToSrfCrossCuttingIssueDTO)
       .map(result -> new ResponseEntity<>(result, HttpStatus.OK)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
   }
 
@@ -69,10 +69,10 @@ public class SrfCrossCuttingIssueItem<T> {
    * @return a List of SrfCrossCuttingIssueDTO with all SRF-SLO Items.
    */
   public List<SrfCrossCuttingIssueDTO> getAllSrfCrossCuttingIssues() {
-    if (srfCrossCuttingIssueManager.findAll() != null) {
-      List<SrfCrossCuttingIssue> srfCrossCuttingIssues = new ArrayList<>(srfCrossCuttingIssueManager.findAll());
+    if (this.srfCrossCuttingIssueManager.findAll() != null) {
+      List<SrfCrossCuttingIssue> srfCrossCuttingIssues = new ArrayList<>(this.srfCrossCuttingIssueManager.findAll());
       List<SrfCrossCuttingIssueDTO> srfCrossCuttingIssuesDTOs =
-        srfCrossCuttingIssues.stream().map(srfCrossCuttingIssueEntity -> srfCrossCuttingIssueMapper
+        srfCrossCuttingIssues.stream().map(srfCrossCuttingIssueEntity -> this.srfCrossCuttingIssueMapper
           .srfCrossCuttingIssueToSrfCrossCuttingIssueDTO(srfCrossCuttingIssueEntity)).collect(Collectors.toList());
       return srfCrossCuttingIssuesDTOs;
     } else {

@@ -34,52 +34,52 @@ import org.springframework.http.ResponseEntity;
 @Named
 public class CrossCuttingMarkerItem<T> {
 
-	private CgiarCrossCuttingMarkerManager cgiarCrossCuttingMarkerManager;
-	private CrossCuttingMarkerMapper crossCuttingMarkerMapper;
+  private CgiarCrossCuttingMarkerManager cgiarCrossCuttingMarkerManager;
+  private CrossCuttingMarkerMapper crossCuttingMarkerMapper;
 
-	@Inject
-	public CrossCuttingMarkerItem(CgiarCrossCuttingMarkerManager cgiarCrossCuttingMarkerManager,
-			CrossCuttingMarkerMapper crossCuttingMarkerMapper) {
-		this.cgiarCrossCuttingMarkerManager = cgiarCrossCuttingMarkerManager;
-		this.crossCuttingMarkerMapper = crossCuttingMarkerMapper;
-	}
+  @Inject
+  public CrossCuttingMarkerItem(CgiarCrossCuttingMarkerManager cgiarCrossCuttingMarkerManager,
+    CrossCuttingMarkerMapper crossCuttingMarkerMapper) {
+    this.cgiarCrossCuttingMarkerManager = cgiarCrossCuttingMarkerManager;
+    this.crossCuttingMarkerMapper = crossCuttingMarkerMapper;
+  }
 
-	/**
-	 * Find a Cross Cutting Marker requesting a MARLO id
-	 * 
-	 * @param id
-	 * @return a CrossCuttingMarkersDTO with the Cross Cutting Marker data.
-	 */
-	public ResponseEntity<CrossCuttingMarkerDTO> findCrossCuttingMarkerById(Long id) {
-		CgiarCrossCuttingMarker cgiarCrossCuttingMarker = this.cgiarCrossCuttingMarkerManager
-				.getCgiarCrossCuttingMarkerById(id);
+  /**
+   * Find a Cross Cutting Marker requesting a MARLO id
+   * 
+   * @param id
+   * @return a CrossCuttingMarkersDTO with the Cross Cutting Marker data.
+   */
+  public ResponseEntity<CrossCuttingMarkerDTO> findCrossCuttingMarkerById(Long id) {
+    CgiarCrossCuttingMarker cgiarCrossCuttingMarker =
+      this.cgiarCrossCuttingMarkerManager.getCgiarCrossCuttingMarkerById(id);
 
-		return Optional.ofNullable(cgiarCrossCuttingMarker)
-				.map(this.crossCuttingMarkerMapper::cgiarCrossCuttingMarkerToCrossCuttingMarkerDTO)
-				.map(result -> new ResponseEntity<>(result, HttpStatus.OK))
-				.orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
-	}
+    return Optional.ofNullable(cgiarCrossCuttingMarker)
+      .map(this.crossCuttingMarkerMapper::cgiarCrossCuttingMarkerToCrossCuttingMarkerDTO)
+      .map(result -> new ResponseEntity<>(result, HttpStatus.OK)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+  }
 
-	/**
-	 * Get All the Cross Cutting Markers Items *
-	 * 
-	 * @return a List of CrossCuttingMarkersDTO with all
-	 * RepIndGenderYouthFocusLevel Items.
-	 */
-	public List<CrossCuttingMarkerDTO> getAllCrossCuttingMarker() {
-		if (this.cgiarCrossCuttingMarkerManager.findAll() != null) {
-			List<CgiarCrossCuttingMarker> cgiarCrossCuttingMarker = new ArrayList<>(
-					this.cgiarCrossCuttingMarkerManager.findAll());
+  /**
+   * Get All the Cross Cutting Markers Items *
+   * 
+   * @return a List of CrossCuttingMarkersDTO with all
+   *         RepIndGenderYouthFocusLevel Items.
+   */
+  public List<CrossCuttingMarkerDTO> getAllCrossCuttingMarker() {
+    if (this.cgiarCrossCuttingMarkerManager.findAll() != null) {
+      List<CgiarCrossCuttingMarker> cgiarCrossCuttingMarker =
+        new ArrayList<>(this.cgiarCrossCuttingMarkerManager.findAll());
 
-			List<CrossCuttingMarkerDTO> crossCuttingMarkersDTO = cgiarCrossCuttingMarker.stream()
-					.map(cgiarCrossCuttingMarkerEntity -> this.crossCuttingMarkerMapper
-							.cgiarCrossCuttingMarkerToCrossCuttingMarkerDTO(cgiarCrossCuttingMarkerEntity))
-					.collect(Collectors.toList());
+      List<CrossCuttingMarkerDTO> crossCuttingMarkersDTO =
+        cgiarCrossCuttingMarker.stream()
+          .map(cgiarCrossCuttingMarkerEntity -> this.crossCuttingMarkerMapper
+            .cgiarCrossCuttingMarkerToCrossCuttingMarkerDTO(cgiarCrossCuttingMarkerEntity))
+          .collect(Collectors.toList());
 
-			return crossCuttingMarkersDTO;
-		} else {
-			return null;
-		}
-	}
+      return crossCuttingMarkersDTO;
+    } else {
+      return null;
+    }
+  }
 
 }

@@ -25,11 +25,10 @@ import org.mapstruct.Mappings;
 @Mapper(componentModel = "jsr330")
 public interface InnovationTypeMapper {
 
-	@Mappings({ @Mapping(source = "code", target = "id") })
-	public abstract RepIndInnovationType innovationTypesDTOToRepIndInnovationType(InnovationTypeDTO innovationTypesDTO);
+  @Mappings({@Mapping(source = "code", target = "id")})
+  public abstract RepIndInnovationType innovationTypesDTOToRepIndInnovationType(InnovationTypeDTO innovationTypesDTO);
 
-	@Mappings({ @Mapping(source = "id", target = "code") })
-	public abstract InnovationTypeDTO repIndInnovationTypeToInnovationTypesDTO(
-			RepIndInnovationType repIndInnovationType);
+  @Mappings({@Mapping(source = "id", target = "code")})
+  public abstract InnovationTypeDTO repIndInnovationTypeToInnovationTypesDTO(RepIndInnovationType repIndInnovationType);
 
 }
