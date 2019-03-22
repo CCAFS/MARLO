@@ -108,11 +108,13 @@ public class Permission {
   public static final String REPORT_SYNTHESIS_INFLUENCE_BASE_PERMISSION = "crp:{0}:reportSynthesis:{1}:influence";
   public static final String REPORT_SYNTHESIS_CONTROL_BASE_PERMISSION = "crp:{0}:reportSynthesis:{1}:control";
   public static final String REPORT_SYNTHESIS_NARRATIVE_BASE_PERMISSION = "crp:{0}:reportSynthesis:{1}:narrative";
-  public static final String CRP_INDICATORS_BASE_PERMISSION = "crp:{0}:crpIndicators:{1}";
-  public static final String CRP_INDICATORS_PERMISSION = "crp:{0}:crpIndicators:{1}:*";
-
+  public static final String REPORT_SYNTHESIS_SUBMIT_PERMISSION = "crp:{0}:reportSynthesis:{1}:submit";
   public static final String REPORT_SYNTHESIS_CROSS_CGIAR_BASE_PERMISSION =
     "crp:{0}:reportSynthesis:{1}:crossPartnerships";
+
+
+  public static final String CRP_INDICATORS_BASE_PERMISSION = "crp:{0}:crpIndicators:{1}";
+  public static final String CRP_INDICATORS_PERMISSION = "crp:{0}:crpIndicators:{1}:*";
 
   public static final String PROJECT__PERMISSION = "crp:{0}:project:{1}:{2}:canEdit";
 
