@@ -37,7 +37,7 @@
   [#-- Submission Message --]
   [#if submission]
     <div class="submission-mode text-center animated flipInX">
-      [#assign lastSubmission =action.getPowbSynthesisSubmissions(reportSynthesis)?last /]
+      [#assign lastSubmission =action.getAR2018Submissions(synthesisID)?last /]
       <p>[@s.text name="powb.messages.submittedOn" ][@s.param]${(lastSubmission.dateTime?string["MMMM dd, yyyy"])!}[/@s.param][@s.param]${(lastSubmission.user.composedCompleteName)!}[/@s.param][/@s.text]</p>
     </div>
   [/#if]

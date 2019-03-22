@@ -1590,6 +1590,18 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return allYears;
   }
 
+  public List<Submission> getAR2018Submissions(long synthesisID) {
+    ReportSynthesis reportSynthesis = this.reportSynthesisManager.getReportSynthesisById(synthesisID);
+    List<Submission> submissions = reportSynthesis
+      .getSubmissions().stream().filter(c -> c.getCycle().equals(this.getCurrentCycle())
+        && c.getYear().intValue() == this.getCurrentCycleYear() && (c.isUnSubmit() == null || !c.isUnSubmit()))
+      .collect(Collectors.toList());
+    if (submissions.isEmpty()) {
+      return new ArrayList<>();
+    }
+    return submissions;
+  }
+
   public Boolean getAutoSaveFilePath(String simpleName, String actionName, long id) {
     String composedClassName = simpleName;
     String actionFile = this.getCrpSession() + "_" + actionName;
