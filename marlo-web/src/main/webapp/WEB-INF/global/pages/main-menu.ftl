@@ -40,7 +40,7 @@
     ]
   },
   [#-- SYNTHESIS REPORTING - CRP --]
-  { 'slug': 'synthesis', 'name': 'menu.synthesis',      'namespace': '/annualReport${annualReport2018?string("2018", "")}',       'action': '${(crpSession)!}/crpProgress',    'visible': logged && reportingActive && !centerGlobalUnit && !upKeepActive, 'active': (actualPhase.year <= 2017) || !config.production,    
+  { 'slug': 'synthesis', 'name': 'menu.synthesis',      'namespace': '/annualReport${annualReport2018?string("2018", "")}',       'action': '${(crpSession)!}/crpProgress',    'visible': logged && reportingActive && !centerGlobalUnit && !upKeepActive, 'active': true,    
     'subItems' : [
       { 'slug': 'annualReport', 'name': 'menu.synthesis.annualReport', 'namespace': '/annualReport${annualReport2018?string("2018", "")}',  'action': '${(crpSession)!}/crpProgress',  'visible': logged, 'active': true },
       { 'slug': 'projectsEvaluation', 'name': 'menu.synthesis.projectsEvaluation', 'namespace': '/synthesis',  'action': '${(crpSession)!}/projectsEvaluation',  'visible': logged, 'active': false, "development": true }
