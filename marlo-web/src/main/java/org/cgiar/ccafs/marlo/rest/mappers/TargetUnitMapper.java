@@ -29,10 +29,10 @@ import org.mapstruct.Mappings;
 @Mapper(componentModel = "jsr330")
 public interface TargetUnitMapper {
 
-	@Mappings({ @Mapping(source = "id", target = "code") })
-	public abstract TargetUnitDTO srfTargetUnitToTargetUnitDTO(SrfTargetUnit srfTargetUnit);
+  @Mappings({@Mapping(source = "id", target = "code")})
+  public abstract TargetUnitDTO srfTargetUnitToTargetUnitDTO(SrfTargetUnit srfTargetUnit);
 
-	@Mappings({ @Mapping(source = "code", target = "id") })
-	public abstract SrfTargetUnit targetUnitDTOToSrfTargetUnit(TargetUnitDTO targetUnitDTO);
+  @Mappings({@Mapping(source = "code", target = "id")})
+  public abstract SrfTargetUnit targetUnitDTOToSrfTargetUnit(TargetUnitDTO targetUnitDTO);
 
 }

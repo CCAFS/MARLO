@@ -34,15 +34,15 @@ public class FieldErrorDTO implements Serializable {
   }
 
   public String getField() {
-    return field;
+    return this.field;
   }
 
   public String getMessage() {
-    return message;
+    return this.message;
   }
 
   public String getObjectName() {
-    return objectName;
+    return this.objectName;
   }
 
 }

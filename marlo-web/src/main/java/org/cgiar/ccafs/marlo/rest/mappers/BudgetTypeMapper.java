@@ -29,10 +29,10 @@ import org.mapstruct.Mappings;
 @Mapper(componentModel = "jsr330")
 public interface BudgetTypeMapper {
 
-	@Mappings({ @Mapping(source = "code", target = "id") })
-	public abstract BudgetType budgetTypeDTOToBudgetType(BudgetTypeDTO budgetTypeDTO);
+  @Mappings({@Mapping(source = "code", target = "id")})
+  public abstract BudgetType budgetTypeDTOToBudgetType(BudgetTypeDTO budgetTypeDTO);
 
-	@Mappings({ @Mapping(source = "id", target = "code") })
-	public abstract BudgetTypeDTO budgetTypeToBudgetTypeDTO(BudgetType budgetType);
+  @Mappings({@Mapping(source = "id", target = "code")})
+  public abstract BudgetTypeDTO budgetTypeToBudgetTypeDTO(BudgetType budgetType);
 
 }

@@ -32,32 +32,33 @@ import org.mapstruct.Mappings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@Mapper(componentModel = "jsr330", uses = { LocationMapper.class, InstitutionTypeMapper.class }, imports = Date.class)
+@Mapper(componentModel = "jsr330", uses = {LocationMapper.class, InstitutionTypeMapper.class}, imports = Date.class)
 public abstract class InstitutionMapper {
-	private static final Logger LOG = LoggerFactory.getLogger(InstitutionMapper.class);
 
-	@Mappings({ @Mapping(source = "locElement", target = "locElement"),
-			@Mapping(source = "newInstitutionDTO.institutionType", target = "institutionType"),
-			@Mapping(source = "newInstitutionDTO.name", target = "partnerName"),
-			@Mapping(source = "newInstitutionDTO.acronym", target = "acronym"),
-			@Mapping(source = "newInstitutionDTO.websiteLink", target = "webPage"),
-			@Mapping(source = "globalUnit", target = "crp"), @Mapping(source = "user", target = "createdBy"),
-			@Mapping(source = "user", target = "modifiedBy"), @Mapping(target = "office", constant = "0"),
-			@Mapping(target = "modificationJustification", constant = "0"), @Mapping(target = "id", constant = "0"),
-			@Mapping(target = "active", constant = "1"), @Mapping(target = "requestSource", constant = "REST API"),
-			@Mapping(target = "activeSince", expression = "java(new Date())"),
-			@Mapping(target = "institution", expression = "java(null)") })
-	public abstract PartnerRequest institutionDTOToPartnerRequest(NewInstitutionDTO newInstitutionDTO,
-			GlobalUnit globalUnit, LocElement locElement, User user);
+  private static final Logger LOG = LoggerFactory.getLogger(InstitutionMapper.class);
 
-	@Mappings({ @Mapping(source = "id", target = "code"),
-			@Mapping(source = "institutionsLocations", target = "countryDTO") })
-	public abstract InstitutionDTO institutionToInstitutionDTO(Institution institution);
+  @Mappings({@Mapping(source = "locElement", target = "locElement"),
+    @Mapping(source = "newInstitutionDTO.institutionType", target = "institutionType"),
+    @Mapping(source = "newInstitutionDTO.name", target = "partnerName"),
+    @Mapping(source = "newInstitutionDTO.acronym", target = "acronym"),
+    @Mapping(source = "newInstitutionDTO.websiteLink", target = "webPage"),
+    @Mapping(source = "globalUnit", target = "crp"), @Mapping(source = "user", target = "createdBy"),
+    @Mapping(source = "user", target = "modifiedBy"), @Mapping(target = "office", constant = "0"),
+    @Mapping(target = "modificationJustification", constant = "0"), @Mapping(target = "id", constant = "0"),
+    @Mapping(target = "active", constant = "1"), @Mapping(target = "requestSource", constant = "REST API"),
+    @Mapping(target = "activeSince", expression = "java(new Date())"),
+    @Mapping(target = "institution", expression = "java(null)")})
+  public abstract PartnerRequest institutionDTOToPartnerRequest(NewInstitutionDTO newInstitutionDTO,
+    GlobalUnit globalUnit, LocElement locElement, User user);
 
-	@Mappings({ @Mapping(source = "locElement", target = "locElementDTO"),
-			@Mapping(source = "institution", target = "institutionDTO"),
-			@Mapping(source = "institutionType", target = "institutionTypeDTO"),
-			@Mapping(source = "acepted", target = "isAcepted") })
-	public abstract InstitutionRequestDTO partnerRequestToPartnerRequestDTO(PartnerRequest PartnerRequest);
+  @Mappings({@Mapping(source = "id", target = "code"),
+    @Mapping(source = "institutionsLocations", target = "countryDTO")})
+  public abstract InstitutionDTO institutionToInstitutionDTO(Institution institution);
+
+  @Mappings({@Mapping(source = "locElement", target = "locElementDTO"),
+    @Mapping(source = "institution", target = "institutionDTO"),
+    @Mapping(source = "institutionType", target = "institutionTypeDTO"),
+    @Mapping(source = "acepted", target = "isAcepted")})
+  public abstract InstitutionRequestDTO partnerRequestToPartnerRequestDTO(PartnerRequest PartnerRequest);
 
 }

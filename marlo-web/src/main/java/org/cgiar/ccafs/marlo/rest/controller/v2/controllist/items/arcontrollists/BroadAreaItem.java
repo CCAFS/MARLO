@@ -34,50 +34,49 @@ import org.springframework.http.ResponseEntity;
 @Named
 public class BroadAreaItem<T> {
 
-	private ReportSynthesisExpenditureCategoryManager reportSynthesisExpenditureCategoryManager;
-	private BroadAreaMapper broadAreaMapper;
+  private ReportSynthesisExpenditureCategoryManager reportSynthesisExpenditureCategoryManager;
+  private BroadAreaMapper broadAreaMapper;
 
-	@Inject
-	public BroadAreaItem(ReportSynthesisExpenditureCategoryManager reportSynthesisExpenditureCategoryManager,
-			BroadAreaMapper broadAreaMapper) {
-		this.reportSynthesisExpenditureCategoryManager = reportSynthesisExpenditureCategoryManager;
-		this.broadAreaMapper = broadAreaMapper;
-	}
+  @Inject
+  public BroadAreaItem(ReportSynthesisExpenditureCategoryManager reportSynthesisExpenditureCategoryManager,
+    BroadAreaMapper broadAreaMapper) {
+    this.reportSynthesisExpenditureCategoryManager = reportSynthesisExpenditureCategoryManager;
+    this.broadAreaMapper = broadAreaMapper;
+  }
 
-	/**
-	 * Find a Broad area Item MARLO id
-	 * 
-	 * @param id
-	 * @return a BroadAreaDTO with the broad area Item
-	 */
-	public ResponseEntity<BroadAreaDTO> findBroadAreaById(Long id) {
-		ReportSynthesisExpenditureCategory reportSynthesisExpenditureCategory = this.reportSynthesisExpenditureCategoryManager
-				.getReportSynthesisExpenditureCategoryById(id);
+  /**
+   * Find a Broad area Item MARLO id
+   * 
+   * @param id
+   * @return a BroadAreaDTO with the broad area Item
+   */
+  public ResponseEntity<BroadAreaDTO> findBroadAreaById(Long id) {
+    ReportSynthesisExpenditureCategory reportSynthesisExpenditureCategory =
+      this.reportSynthesisExpenditureCategoryManager.getReportSynthesisExpenditureCategoryById(id);
 
-		return Optional.ofNullable(reportSynthesisExpenditureCategory)
-				.map(this.broadAreaMapper::reportSynthesisExpenditureCategoryToBroadAreaDTO)
-				.map(result -> new ResponseEntity<>(result, HttpStatus.OK))
-				.orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
-	}
+    return Optional.ofNullable(reportSynthesisExpenditureCategory)
+      .map(this.broadAreaMapper::reportSynthesisExpenditureCategoryToBroadAreaDTO)
+      .map(result -> new ResponseEntity<>(result, HttpStatus.OK)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+  }
 
-	/**
-	 * Get All the Broad Areas Items *
-	 * 
-	 * @return a List of BroadAreaDTO with all the Broad Areas Items.
-	 */
-	public List<BroadAreaDTO> getAllBroadAreas() {
-		if (this.reportSynthesisExpenditureCategoryManager.findAll() != null) {
-			List<ReportSynthesisExpenditureCategory> reportSynthesisExpenditureCategories = new ArrayList<>(
-					this.reportSynthesisExpenditureCategoryManager.findAll());
+  /**
+   * Get All the Broad Areas Items *
+   * 
+   * @return a List of BroadAreaDTO with all the Broad Areas Items.
+   */
+  public List<BroadAreaDTO> getAllBroadAreas() {
+    if (this.reportSynthesisExpenditureCategoryManager.findAll() != null) {
+      List<ReportSynthesisExpenditureCategory> reportSynthesisExpenditureCategories =
+        new ArrayList<>(this.reportSynthesisExpenditureCategoryManager.findAll());
 
-			List<BroadAreaDTO> broadAreaDTOs = reportSynthesisExpenditureCategories.stream()
-					.map(reportSynthesisExpenditureCategoryEntity -> this.broadAreaMapper
-							.reportSynthesisExpenditureCategoryToBroadAreaDTO(reportSynthesisExpenditureCategoryEntity))
-					.collect(Collectors.toList());
-			return broadAreaDTOs;
-		} else {
-			return null;
-		}
-	}
+      List<BroadAreaDTO> broadAreaDTOs = reportSynthesisExpenditureCategories.stream()
+        .map(reportSynthesisExpenditureCategoryEntity -> this.broadAreaMapper
+          .reportSynthesisExpenditureCategoryToBroadAreaDTO(reportSynthesisExpenditureCategoryEntity))
+        .collect(Collectors.toList());
+      return broadAreaDTOs;
+    } else {
+      return null;
+    }
+  }
 
 }

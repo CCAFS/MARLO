@@ -21,40 +21,40 @@ import io.swagger.annotations.ApiModelProperty;
 
 public class BroadAreaDTO {
 
-	@ApiModelProperty(notes = "Broad area ID")
-	@NotNull
-	private Long code;
+  @ApiModelProperty(notes = "Broad area ID")
+  @NotNull
+  private Long code;
 
-	@ApiModelProperty(notes = "Broad area name")
-	@NotNull
-	private String name;
+  @ApiModelProperty(notes = "Broad area name")
+  @NotNull
+  private String name;
 
-	@ApiModelProperty(notes = "Broad area description")
-	@NotNull
-	private String description;
+  @ApiModelProperty(notes = "Broad area description")
+  @NotNull
+  private String description;
 
-	public Long getCode() {
-		return this.code;
-	}
+  public Long getCode() {
+    return this.code;
+  }
 
-	public String getDescription() {
-		return this.description;
-	}
+  public String getDescription() {
+    return this.description;
+  }
 
-	public String getName() {
-		return this.name;
-	}
+  public String getName() {
+    return this.name;
+  }
 
-	public void setCode(Long code) {
-		this.code = code;
-	}
+  public void setCode(Long code) {
+    this.code = code;
+  }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+  public void setDescription(String description) {
+    this.description = description;
+  }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+  public void setName(String name) {
+    this.name = name;
+  }
 
 }

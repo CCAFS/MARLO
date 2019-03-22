@@ -29,12 +29,12 @@ import org.mapstruct.Mappings;
 @Mapper(componentModel = "jsr330")
 public interface ContributionOfCrpMapper {
 
-	@Mappings({ @Mapping(source = "code", target = "id") })
-	public abstract RepIndContributionOfCrp contributionOfCrpDTOToRepIndContributionOfCrp(
-			ContributionOfCrpDTO contributionOfCrpDTO);
+  @Mappings({@Mapping(source = "code", target = "id")})
+  public abstract RepIndContributionOfCrp
+    contributionOfCrpDTOToRepIndContributionOfCrp(ContributionOfCrpDTO contributionOfCrpDTO);
 
-	@Mappings({ @Mapping(source = "id", target = "code") })
-	public abstract ContributionOfCrpDTO repIndContributionOfCrpToContributionOfCrpDTO(
-			RepIndContributionOfCrp repIndContributionOfCrp);
+  @Mappings({@Mapping(source = "id", target = "code")})
+  public abstract ContributionOfCrpDTO
+    repIndContributionOfCrpToContributionOfCrpDTO(RepIndContributionOfCrp repIndContributionOfCrp);
 
 }

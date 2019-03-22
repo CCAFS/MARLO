@@ -25,41 +25,41 @@ import io.swagger.annotations.ApiModelProperty;
 @ApiModel(description = "List of organization types")
 public class OrganizationTypeDTO implements Serializable {
 
-	private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 1L;
 
-	@ApiModelProperty(notes = "Organization type id")
-	private Long code;
+  @ApiModelProperty(notes = "Organization type id")
+  private Long code;
 
-	@ApiModelProperty(notes = "Organization type name")
-	@NotNull
-	private String name;
+  @ApiModelProperty(notes = "Organization type name")
+  @NotNull
+  private String name;
 
-	@ApiModelProperty(notes = "Organization type definition")
-	@NotNull
-	private String definition;
+  @ApiModelProperty(notes = "Organization type definition")
+  @NotNull
+  private String definition;
 
-	public Long getCode() {
-		return this.code;
-	}
+  public Long getCode() {
+    return this.code;
+  }
 
-	public String getDefinition() {
-		return this.definition;
-	}
+  public String getDefinition() {
+    return this.definition;
+  }
 
-	public String getName() {
-		return this.name;
-	}
+  public String getName() {
+    return this.name;
+  }
 
-	public void setCode(Long code) {
-		this.code = code;
-	}
+  public void setCode(Long code) {
+    this.code = code;
+  }
 
-	public void setDefinition(String definition) {
-		this.definition = definition;
-	}
+  public void setDefinition(String definition) {
+    this.definition = definition;
+  }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+  public void setName(String name) {
+    this.name = name;
+  }
 
 }

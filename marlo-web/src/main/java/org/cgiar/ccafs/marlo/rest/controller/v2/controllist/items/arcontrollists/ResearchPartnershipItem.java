@@ -53,9 +53,9 @@ public class ResearchPartnershipItem<T> {
    */
   public ResponseEntity<ResearchPartnershipDTO> findResearchPartnershipById(Long id) {
     RepIndPhaseResearchPartnership repIndPhaseResearchPartnership =
-      repIndPhaseResearchPartnershipManager.getRepIndPhaseResearchPartnershipById(id);
+      this.repIndPhaseResearchPartnershipManager.getRepIndPhaseResearchPartnershipById(id);
     return Optional.ofNullable(repIndPhaseResearchPartnership)
-      .map(researchPartnershipsMapper::repIndPhaseResearchPartnershipToResearchPartnershipsDTO)
+      .map(this.researchPartnershipsMapper::repIndPhaseResearchPartnershipToResearchPartnershipsDTO)
       .map(result -> new ResponseEntity<>(result, HttpStatus.OK)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
   }
 
@@ -66,11 +66,11 @@ public class ResearchPartnershipItem<T> {
    * @return a List of InnovationTypesDTO with all repIndInnovationType Items.
    */
   public List<ResearchPartnershipDTO> getAllResearchPartnerships() {
-    if (repIndPhaseResearchPartnershipManager.findAll() != null) {
+    if (this.repIndPhaseResearchPartnershipManager.findAll() != null) {
       List<RepIndPhaseResearchPartnership> repIndPhaseResearchPartnerships =
-        new ArrayList<>(repIndPhaseResearchPartnershipManager.findAll());
+        new ArrayList<>(this.repIndPhaseResearchPartnershipManager.findAll());
       List<ResearchPartnershipDTO> researchPartnershipsDTOs = repIndPhaseResearchPartnerships.stream()
-        .map(repIndPhaseResearchPartnershipEntity -> researchPartnershipsMapper
+        .map(repIndPhaseResearchPartnershipEntity -> this.researchPartnershipsMapper
           .repIndPhaseResearchPartnershipToResearchPartnershipsDTO(repIndPhaseResearchPartnershipEntity))
         .collect(Collectors.toList());
       return researchPartnershipsDTOs;

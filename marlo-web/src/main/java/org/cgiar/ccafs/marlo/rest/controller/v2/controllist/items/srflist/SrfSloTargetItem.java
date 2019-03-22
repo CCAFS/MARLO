@@ -37,63 +37,61 @@ import org.springframework.http.ResponseEntity;
 @Named
 public class SrfSloTargetItem<T> {
 
-	// Managers
-	private SrfSloIndicatorTargetManager srfSloIndicatorTargetManager;
+  // Managers
+  private SrfSloIndicatorTargetManager srfSloIndicatorTargetManager;
 
-	// Mappers
-	private SrfSloIndicatorTargetMapper srfSloIndicatorTargetMapper;
+  // Mappers
+  private SrfSloIndicatorTargetMapper srfSloIndicatorTargetMapper;
 
-	@Inject
-	public SrfSloTargetItem(SrfSloIndicatorTargetManager srfSloIndicatorTargetManager,
-			SrfSloIndicatorTargetMapper srfSloIndicatorTargetMapper) {
-		this.srfSloIndicatorTargetManager = srfSloIndicatorTargetManager;
-		this.srfSloIndicatorTargetMapper = srfSloIndicatorTargetMapper;
-	}
+  @Inject
+  public SrfSloTargetItem(SrfSloIndicatorTargetManager srfSloIndicatorTargetManager,
+    SrfSloIndicatorTargetMapper srfSloIndicatorTargetMapper) {
+    this.srfSloIndicatorTargetManager = srfSloIndicatorTargetManager;
+    this.srfSloIndicatorTargetMapper = srfSloIndicatorTargetMapper;
+  }
 
-	/**
-	 * Find a SRF slo target Indicator requesting a code
-	 * 
-	 * @param smo code
-	 * @return a SrfSloIndicatorTargetDTO with SRF slo target Indicator
-	 * requesting data.
-	 */
-	public ResponseEntity<SrfSloTargetDTO> findSrfSloIndicatorTargetbyId(String code) {
-		SrfSloIndicatorTarget SrfSloIndicatorTarget = this.srfSloIndicatorTargetManager.findbyTargetIndicatorCode(code);
+  /**
+   * Find a SRF slo target Indicator requesting a code
+   * 
+   * @param smo code
+   * @return a SrfSloIndicatorTargetDTO with SRF slo target Indicator
+   *         requesting data.
+   */
+  public ResponseEntity<SrfSloTargetDTO> findSrfSloIndicatorTargetbyId(String code) {
+    SrfSloIndicatorTarget SrfSloIndicatorTarget = this.srfSloIndicatorTargetManager.findbyTargetIndicatorCode(code);
 
-		return Optional.ofNullable(SrfSloIndicatorTarget)
-				.map(this.srfSloIndicatorTargetMapper::srfSloIndicatorTargetToSrfSloIndicatorTargetDTO)
-				.map(result -> new ResponseEntity<>(result, HttpStatus.OK))
-				.orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
-	}
+    return Optional.ofNullable(SrfSloIndicatorTarget)
+      .map(this.srfSloIndicatorTargetMapper::srfSloIndicatorTargetToSrfSloIndicatorTargetDTO)
+      .map(result -> new ResponseEntity<>(result, HttpStatus.OK)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+  }
 
-	/**
-	 * Get All the slo target Indicator items *
-	 * 
-	 * @return a List of SrfSloIndicatorTargetDTO with all slo target Indicator
-	 * Items.
-	 */
-	public ResponseEntity<List<SrfSloTargetDTO>> getAllSrfSloIndicatorTargets(Long year) {
-		List<SrfSloIndicatorTarget> SrfSloIndicatorTargets;
+  /**
+   * Get All the slo target Indicator items *
+   * 
+   * @return a List of SrfSloIndicatorTargetDTO with all slo target Indicator
+   *         Items.
+   */
+  public ResponseEntity<List<SrfSloTargetDTO>> getAllSrfSloIndicatorTargets(Long year) {
+    List<SrfSloIndicatorTarget> SrfSloIndicatorTargets;
 
-		if (this.srfSloIndicatorTargetManager.findAll() != null) {
-			if (year != null) {
-				SrfSloIndicatorTargets = new ArrayList<>(this.srfSloIndicatorTargetManager.findAll().stream()
-						.filter(c -> c.getYear() == year).collect(Collectors.toList()));
-			} else {
-				SrfSloIndicatorTargets = new ArrayList<>(this.srfSloIndicatorTargetManager.findAll());
-			}
-			List<SrfSloTargetDTO> srfSloIndicatorTargetDTOs = SrfSloIndicatorTargets.stream()
-					.map(srfSloIndicatorTargetEntity -> this.srfSloIndicatorTargetMapper
-							.srfSloIndicatorTargetToSrfSloIndicatorTargetDTO(srfSloIndicatorTargetEntity))
-					.collect(Collectors.toList());
-			if (srfSloIndicatorTargetDTOs == null || srfSloIndicatorTargetDTOs.size() == 0) {
-				return new ResponseEntity<List<SrfSloTargetDTO>>(HttpStatus.NOT_FOUND);
-			} else {
-				return new ResponseEntity<List<SrfSloTargetDTO>>(srfSloIndicatorTargetDTOs, HttpStatus.OK);
-			}
-		} else {
-			return new ResponseEntity<List<SrfSloTargetDTO>>(HttpStatus.NOT_FOUND);
-		}
-	}
+    if (this.srfSloIndicatorTargetManager.findAll() != null) {
+      if (year != null) {
+        SrfSloIndicatorTargets = new ArrayList<>(this.srfSloIndicatorTargetManager.findAll().stream()
+          .filter(c -> c.getYear() == year).collect(Collectors.toList()));
+      } else {
+        SrfSloIndicatorTargets = new ArrayList<>(this.srfSloIndicatorTargetManager.findAll());
+      }
+      List<SrfSloTargetDTO> srfSloIndicatorTargetDTOs =
+        SrfSloIndicatorTargets.stream().map(srfSloIndicatorTargetEntity -> this.srfSloIndicatorTargetMapper
+          .srfSloIndicatorTargetToSrfSloIndicatorTargetDTO(srfSloIndicatorTargetEntity)).collect(Collectors.toList());
+      if (srfSloIndicatorTargetDTOs == null || srfSloIndicatorTargetDTOs.size() == 0) {
+        return new ResponseEntity<List<SrfSloTargetDTO>>(HttpStatus.NOT_FOUND);
+      } else {
+        return new ResponseEntity<List<SrfSloTargetDTO>>(srfSloIndicatorTargetDTOs, HttpStatus.OK);
+      }
+    } else {
+      return new ResponseEntity<List<SrfSloTargetDTO>>(HttpStatus.NOT_FOUND);
+    }
+  }
 
 }

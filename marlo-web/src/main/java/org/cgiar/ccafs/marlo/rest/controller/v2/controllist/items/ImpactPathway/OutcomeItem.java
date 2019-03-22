@@ -41,74 +41,73 @@ import org.springframework.http.ResponseEntity;
 @Named
 public class OutcomeItem<T> {
 
-	private CrpProgramOutcomeManager crpProgramOutcomeManager;
-	private CrpProgramManager crpProgramManager;
-	private OutcomeMapper outcomeMapper;
-	private PhaseManager phaseManager;
+  private CrpProgramOutcomeManager crpProgramOutcomeManager;
+  private CrpProgramManager crpProgramManager;
+  private OutcomeMapper outcomeMapper;
+  private PhaseManager phaseManager;
 
-	@Inject
-	public OutcomeItem(CrpProgramOutcomeManager crpProgramOutcomeManager, OutcomeMapper outcomeMapper,
-			CrpProgramManager crpProgramManager, PhaseManager phaseManager) {
-		super();
-		this.crpProgramOutcomeManager = crpProgramOutcomeManager;
-		this.outcomeMapper = outcomeMapper;
-		this.crpProgramManager = crpProgramManager;
-		this.phaseManager = phaseManager;
-	}
+  @Inject
+  public OutcomeItem(CrpProgramOutcomeManager crpProgramOutcomeManager, OutcomeMapper outcomeMapper,
+    CrpProgramManager crpProgramManager, PhaseManager phaseManager) {
+    super();
+    this.crpProgramOutcomeManager = crpProgramOutcomeManager;
+    this.outcomeMapper = outcomeMapper;
+    this.crpProgramManager = crpProgramManager;
+    this.phaseManager = phaseManager;
+  }
 
-	/**
-	 * Find a Flagship or program requesting by smo Code
-	 * 
-	 * @param smo code
-	 * @return a FlagshipProgramDTO with the flagship or program data.
-	 */
+  /**
+   * Find a Flagship or program requesting by smo Code
+   * 
+   * @param smo code
+   * @return a FlagshipProgramDTO with the flagship or program data.
+   */
 
-	public ResponseEntity<OutcomeDTO> findOutcomeById(Long id, String CGIARentityAcronym) {
+  public ResponseEntity<OutcomeDTO> findOutcomeById(Long id, String CGIARentityAcronym) {
 
-		CrpProgramOutcome crpProgramOutcome = this.crpProgramOutcomeManager.getCrpProgramOutcomeById(id);
-		if (!crpProgramOutcome.getCrpProgram().getCrp().getAcronym().equalsIgnoreCase(CGIARentityAcronym)) {
-			crpProgramOutcome = null;
-		}
-		return Optional.ofNullable(crpProgramOutcome).map(this.outcomeMapper::crpProgramOutcomeToOutcomeDTO)
-				.map(result -> new ResponseEntity<>(result, HttpStatus.OK))
-				.orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
-	}
+    CrpProgramOutcome crpProgramOutcome = this.crpProgramOutcomeManager.getCrpProgramOutcomeById(id);
+    if (!crpProgramOutcome.getCrpProgram().getCrp().getAcronym().equalsIgnoreCase(CGIARentityAcronym)) {
+      crpProgramOutcome = null;
+    }
+    return Optional.ofNullable(crpProgramOutcome).map(this.outcomeMapper::crpProgramOutcomeToOutcomeDTO)
+      .map(result -> new ResponseEntity<>(result, HttpStatus.OK)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+  }
 
-	/**
-	 * Find a Flagship or program requesting by id
-	 * 
-	 * @param id
-	 * @return a FlagshipProgramDTO with the flagship or program data.
-	 */
-	public List<OutcomeDTO> getAllOutcomes(String crpProgramCode, String CGIARentityAcronym, Integer targetYear,
-			Integer repoYear) {
-		List<OutcomeDTO> outcomeDTOs = null;
-		CrpProgram crpProgram = this.crpProgramManager.getCrpProgramBySmoCode(crpProgramCode);
-		List<Phase> phases = this.phaseManager.findAll().stream()
-				.filter(c -> c.getCrp().getAcronym().equalsIgnoreCase(CGIARentityAcronym) && c.getYear() == repoYear
-						&& c.getName().equalsIgnoreCase("AR"))
-				.collect(Collectors.toList());
+  /**
+   * Find a Flagship or program requesting by id
+   * 
+   * @param id
+   * @return a FlagshipProgramDTO with the flagship or program data.
+   */
+  public List<OutcomeDTO> getAllOutcomes(String crpProgramCode, String CGIARentityAcronym, Integer targetYear,
+    Integer repoYear) {
+    List<OutcomeDTO> outcomeDTOs = null;
+    CrpProgram crpProgram = this.crpProgramManager.getCrpProgramBySmoCode(crpProgramCode);
+    List<Phase> phases =
+      this.phaseManager.findAll().stream().filter(c -> c.getCrp().getAcronym().equalsIgnoreCase(CGIARentityAcronym)
+        && c.getYear() == repoYear && c.getName().equalsIgnoreCase("AR")).collect(Collectors.toList());
 
-		if (crpProgram != null && phases != null && !phases.isEmpty()
-				&& crpProgram.getCrp().equals(phases.get(0).getCrp())) {
+    if (crpProgram != null && phases != null && !phases.isEmpty()
+      && crpProgram.getCrp().equals(phases.get(0).getCrp())) {
 
-			List<CrpProgramOutcome> crpProgramOutcomes = crpProgram.getCrpProgramOutcomes().stream()
-					.filter(c -> c.isActive() && c.getPhase().equals(phases.get(0))).collect(Collectors.toList());
-			if (targetYear != null) {
-				outcomeDTOs = crpProgramOutcomes.stream().filter(c -> c.getYear().equals(targetYear))
-						.map(outcomeEntity -> this.outcomeMapper.crpProgramOutcomeToOutcomeDTO(outcomeEntity))
-						.collect(Collectors.toList());
-			} else {
-				outcomeDTOs = crpProgramOutcomes.stream()
-						.map(outcomeEntity -> this.outcomeMapper.crpProgramOutcomeToOutcomeDTO(outcomeEntity))
-						.collect(Collectors.toList());
-			}
+      List<CrpProgramOutcome> crpProgramOutcomes = crpProgram.getCrpProgramOutcomes().stream()
+        .filter(c -> c.isActive() && c.getPhase().equals(phases.get(0))).collect(Collectors.toList());
+      if (targetYear != null) {
+        outcomeDTOs = crpProgramOutcomes.stream().filter(c -> c.getYear().equals(targetYear))
+          .map(outcomeEntity -> this.outcomeMapper.crpProgramOutcomeToOutcomeDTO(outcomeEntity))
+          .collect(Collectors.toList());
+      } else {
+        outcomeDTOs = crpProgramOutcomes.stream()
+          .map(outcomeEntity -> this.outcomeMapper.crpProgramOutcomeToOutcomeDTO(outcomeEntity))
+          .collect(Collectors.toList());
+      }
 
-		}
-		return outcomeDTOs;
-//		Optional.ofNullable(outcomeDTOs).map(result -> new ResponseEntity<>(result, HttpStatus.OK)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    }
+    return outcomeDTOs;
+    // Optional.ofNullable(outcomeDTOs).map(result -> new ResponseEntity<>(result, HttpStatus.OK)).orElse(new
+    // ResponseEntity<>(HttpStatus.NOT_FOUND));
 
-	}
+  }
 
 
 }

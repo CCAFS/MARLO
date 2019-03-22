@@ -34,45 +34,44 @@ import org.springframework.http.ResponseEntity;
 @Named
 public class StudyTypeItem<T> {
 
-	private StudyTypeManager studyTypeManager;
-	private StudyTypeMapper studyTypeMapper;
+  private StudyTypeManager studyTypeManager;
+  private StudyTypeMapper studyTypeMapper;
 
-	@Inject
-	public StudyTypeItem(StudyTypeManager studyTypeManager, StudyTypeMapper studyTypeMapper) {
-		this.studyTypeManager = studyTypeManager;
-		this.studyTypeMapper = studyTypeMapper;
-	}
+  @Inject
+  public StudyTypeItem(StudyTypeManager studyTypeManager, StudyTypeMapper studyTypeMapper) {
+    this.studyTypeManager = studyTypeManager;
+    this.studyTypeMapper = studyTypeMapper;
+  }
 
-	/**
-	 * Find a Study Type Item MARLO id
-	 * 
-	 * @param id
-	 * @return a StudyTypeDTO with the Study Type Item
-	 */
-	public ResponseEntity<StudyTypeDTO> findStudyTypeById(Long id) {
-		StudyType studyType = this.studyTypeManager.getStudyTypeById(id);
+  /**
+   * Find a Study Type Item MARLO id
+   * 
+   * @param id
+   * @return a StudyTypeDTO with the Study Type Item
+   */
+  public ResponseEntity<StudyTypeDTO> findStudyTypeById(Long id) {
+    StudyType studyType = this.studyTypeManager.getStudyTypeById(id);
 
-		return Optional.ofNullable(studyType).map(this.studyTypeMapper::studyTipeToStudyTypeDTO)
-				.map(result -> new ResponseEntity<>(result, HttpStatus.OK))
-				.orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
-	}
+    return Optional.ofNullable(studyType).map(this.studyTypeMapper::studyTipeToStudyTypeDTO)
+      .map(result -> new ResponseEntity<>(result, HttpStatus.OK)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+  }
 
-	/**
-	 * Get All the Study Types Items *
-	 * 
-	 * @return a List of Study type with all Study Types items Items.
-	 */
-	public List<StudyTypeDTO> getAllStudyTypes() {
-		if (this.studyTypeManager.findAll() != null) {
-			List<StudyType> studyTypes = new ArrayList<>(this.studyTypeManager.findAll());
+  /**
+   * Get All the Study Types Items *
+   * 
+   * @return a List of Study type with all Study Types items Items.
+   */
+  public List<StudyTypeDTO> getAllStudyTypes() {
+    if (this.studyTypeManager.findAll() != null) {
+      List<StudyType> studyTypes = new ArrayList<>(this.studyTypeManager.findAll());
 
-			List<StudyTypeDTO> organizationTypeDTOs = studyTypes.stream()
-					.map(studyTypeEntity -> this.studyTypeMapper.studyTipeToStudyTypeDTO(studyTypeEntity))
-					.collect(Collectors.toList());
-			return organizationTypeDTOs;
-		} else {
-			return null;
-		}
-	}
+      List<StudyTypeDTO> organizationTypeDTOs =
+        studyTypes.stream().map(studyTypeEntity -> this.studyTypeMapper.studyTipeToStudyTypeDTO(studyTypeEntity))
+          .collect(Collectors.toList());
+      return organizationTypeDTOs;
+    } else {
+      return null;
+    }
+  }
 
 }
