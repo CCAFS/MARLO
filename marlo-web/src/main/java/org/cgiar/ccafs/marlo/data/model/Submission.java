@@ -43,9 +43,12 @@ public class Submission extends MarloBaseEntity implements java.io.Serializable 
   private Boolean unSubmit;
   private String unSubmitJustification;
   private PowbSynthesis powbSynthesis;
+  private ReportSynthesis reportSynthesis;
+
 
   public Submission() {
   }
+
 
   public CrpProgram getCrpProgram() {
     return this.crpProgram;
@@ -59,11 +62,9 @@ public class Submission extends MarloBaseEntity implements java.io.Serializable 
     return this.dateTime;
   }
 
-
   public String getModificationJustification() {
     return this.modificationJustification;
   }
-
 
   public PowbSynthesis getPowbSynthesis() {
     return powbSynthesis;
@@ -75,9 +76,15 @@ public class Submission extends MarloBaseEntity implements java.io.Serializable 
   }
 
 
+  public ReportSynthesis getReportSynthesis() {
+    return reportSynthesis;
+  }
+
+
   public String getUnSubmitJustification() {
     return unSubmitJustification;
   }
+
 
   public User getUnSubmitUser() {
     return unSubmitUser;
@@ -87,10 +94,10 @@ public class Submission extends MarloBaseEntity implements java.io.Serializable 
     return this.user;
   }
 
-
   public Short getYear() {
     return this.year;
   }
+
 
   public Boolean isUnSubmit() {
     return unSubmit;
@@ -118,6 +125,10 @@ public class Submission extends MarloBaseEntity implements java.io.Serializable 
 
   public void setProject(Project project) {
     this.project = project;
+  }
+
+  public void setReportSynthesis(ReportSynthesis reportSynthesis) {
+    this.reportSynthesis = reportSynthesis;
   }
 
   public void setUnSubmit(Boolean unSubmit) {
