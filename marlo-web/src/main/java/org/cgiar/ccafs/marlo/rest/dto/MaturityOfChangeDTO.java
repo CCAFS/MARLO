@@ -25,39 +25,39 @@ import io.swagger.annotations.ApiModelProperty;
 
 public class MaturityOfChangeDTO {
 
-	@ApiModelProperty(notes = "The Generated Maturity of Change ID")
-	@NotNull
-	private Long code;
+  @ApiModelProperty(notes = "The Generated Maturity of Change ID")
+  @NotNull
+  private Long code;
 
-	@ApiModelProperty(notes = "Maturity of Change  name")
-	@NotNull
-	private String name;
+  @ApiModelProperty(notes = "Maturity of Change  name")
+  @NotNull
+  private String name;
 
-	@ApiModelProperty(notes = "Maturity of Change  description")
-	private String description;
+  @ApiModelProperty(notes = "Maturity of Change  description")
+  private String description;
 
-	public Long getCode() {
-		return this.code;
-	}
+  public Long getCode() {
+    return this.code;
+  }
 
-	public String getDescription() {
-		return this.description;
-	}
+  public String getDescription() {
+    return this.description;
+  }
 
-	public String getName() {
-		return this.name;
-	}
+  public String getName() {
+    return this.name;
+  }
 
-	public void setCode(Long code) {
-		this.code = code;
-	}
+  public void setCode(Long code) {
+    this.code = code;
+  }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+  public void setDescription(String description) {
+    this.description = description;
+  }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+  public void setName(String name) {
+    this.name = name;
+  }
 
 }

@@ -56,9 +56,10 @@ public class DegreeOfInnovationItem<T> {
    * @return a DegreeOfInnovationDTO with the Degree of Innovation data.
    */
   public ResponseEntity<DegreeOfInnovationDTO> findDegreeOfInnovationById(Long id) {
-    RepIndDegreeInnovation repIndDegreeInnovation = repIndDegreeInnovationManager.getRepIndDegreeInnovationById(id);
+    RepIndDegreeInnovation repIndDegreeInnovation =
+      this.repIndDegreeInnovationManager.getRepIndDegreeInnovationById(id);
     return Optional.ofNullable(repIndDegreeInnovation)
-      .map(degreeOfInnovationMapper::repIndDegreeInnovationToDegreeOfInnovationDTO)
+      .map(this.degreeOfInnovationMapper::repIndDegreeInnovationToDegreeOfInnovationDTO)
       .map(result -> new ResponseEntity<>(result, HttpStatus.OK)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
   }
 
@@ -68,10 +69,11 @@ public class DegreeOfInnovationItem<T> {
    * @return a List of DegreeOfInnovationDTO with all RepIndDegreeInnovation Items.
    */
   public List<DegreeOfInnovationDTO> getAllDegreeOfInnovations() {
-    if (repIndDegreeInnovationManager.findAll() != null) {
-      List<RepIndDegreeInnovation> repIndDegreeInnovations = new ArrayList<>(repIndDegreeInnovationManager.findAll());
+    if (this.repIndDegreeInnovationManager.findAll() != null) {
+      List<RepIndDegreeInnovation> repIndDegreeInnovations =
+        new ArrayList<>(this.repIndDegreeInnovationManager.findAll());
       List<DegreeOfInnovationDTO> degreeOfInnovationDTOs =
-        repIndDegreeInnovations.stream().map(repIndDegreeInnovationEntity -> degreeOfInnovationMapper
+        repIndDegreeInnovations.stream().map(repIndDegreeInnovationEntity -> this.degreeOfInnovationMapper
           .repIndDegreeInnovationToDegreeOfInnovationDTO(repIndDegreeInnovationEntity)).collect(Collectors.toList());
       return degreeOfInnovationDTOs;
     } else {

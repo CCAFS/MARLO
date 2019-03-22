@@ -24,51 +24,51 @@ import io.swagger.annotations.ApiModelProperty;
  */
 public class FlagshipProgramDTO {
 
-	@ApiModelProperty(notes = "The Generated Flagship/Program ID")
-	private String code;
+  @ApiModelProperty(notes = "The Generated Flagship/Program ID")
+  private String code;
 
-	@ApiModelProperty(notes = "The Flagship/program Name")
-	@NotNull
-	private String name;
+  @ApiModelProperty(notes = "The Flagship/program Name")
+  @NotNull
+  private String name;
 
-	@ApiModelProperty(notes = "The Flagship/program Acronym")
-	@NotNull
-	private String acronym;
+  @ApiModelProperty(notes = "The Flagship/program Acronym")
+  @NotNull
+  private String acronym;
 
-	@ApiModelProperty(notes = "The CRP/Platform of Flagship/program")
-	@NotNull
-	private CGIAREntityDTO cgiarEntityDTO;
+  @ApiModelProperty(notes = "The CRP/Platform of Flagship/program")
+  @NotNull
+  private CGIAREntityDTO cgiarEntityDTO;
 
-	public String getAcronym() {
-		return this.acronym;
-	}
+  public String getAcronym() {
+    return this.acronym;
+  }
 
-	public CGIAREntityDTO getCgiarEntityDTO() {
-		return this.cgiarEntityDTO;
-	}
+  public CGIAREntityDTO getCgiarEntityDTO() {
+    return this.cgiarEntityDTO;
+  }
 
-	public String getName() {
-		return this.name;
-	}
+  public String getCode() {
+    return this.code;
+  }
 
-	public void setAcronym(String acronym) {
-		this.acronym = acronym;
-	}
+  public String getName() {
+    return this.name;
+  }
 
-	public void setCgiarEntityDTO(CGIAREntityDTO cgiarEntityDTO) {
-		this.cgiarEntityDTO = cgiarEntityDTO;
-	}
+  public void setAcronym(String acronym) {
+    this.acronym = acronym;
+  }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+  public void setCgiarEntityDTO(CGIAREntityDTO cgiarEntityDTO) {
+    this.cgiarEntityDTO = cgiarEntityDTO;
+  }
 
-	public String getCode() {
-		return code;
-	}
+  public void setCode(String code) {
+    this.code = code;
+  }
 
-	public void setCode(String code) {
-		this.code = code;
-	}
+  public void setName(String name) {
+    this.name = name;
+  }
 
 }

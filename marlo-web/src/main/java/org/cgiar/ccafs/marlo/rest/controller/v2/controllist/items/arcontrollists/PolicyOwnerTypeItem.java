@@ -34,46 +34,43 @@ import org.springframework.http.ResponseEntity;
 @Named
 public class PolicyOwnerTypeItem<T> {
 
-	private RepIndPolicyTypeManager repIndPolicyTypeManager;
-	private PolicyOwnerTypeMapper policyOwnerTypeMapper;
+  private RepIndPolicyTypeManager repIndPolicyTypeManager;
+  private PolicyOwnerTypeMapper policyOwnerTypeMapper;
 
-	@Inject
-	public PolicyOwnerTypeItem(RepIndPolicyTypeManager repIndPolicyTypeManager,
-			PolicyOwnerTypeMapper policyOwnerTypeMapper) {
-		this.repIndPolicyTypeManager = repIndPolicyTypeManager;
-		this.policyOwnerTypeMapper = policyOwnerTypeMapper;
-	}
+  @Inject
+  public PolicyOwnerTypeItem(RepIndPolicyTypeManager repIndPolicyTypeManager,
+    PolicyOwnerTypeMapper policyOwnerTypeMapper) {
+    this.repIndPolicyTypeManager = repIndPolicyTypeManager;
+    this.policyOwnerTypeMapper = policyOwnerTypeMapper;
+  }
 
-	/**
-	 * Find a Policy owner type by id
-	 * 
-	 * @param id
-	 * @return a PolicyOwnerTypeDTO with the Policy owner type by id
-	 */
-	public ResponseEntity<PolicyOwnerTypeDTO> findPolicyOwnerTypeById(Long id) {
-		RepIndPolicyType repIndPolicyType = this.repIndPolicyTypeManager.getRepIndPolicyTypeById(id);
-		return Optional.ofNullable(repIndPolicyType)
-				.map(this.policyOwnerTypeMapper::repIndPolicyTypeToPolicyOwnerTypeDTO)
-				.map(result -> new ResponseEntity<>(result, HttpStatus.OK))
-				.orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
-	}
+  /**
+   * Find a Policy owner type by id
+   * 
+   * @param id
+   * @return a PolicyOwnerTypeDTO with the Policy owner type by id
+   */
+  public ResponseEntity<PolicyOwnerTypeDTO> findPolicyOwnerTypeById(Long id) {
+    RepIndPolicyType repIndPolicyType = this.repIndPolicyTypeManager.getRepIndPolicyTypeById(id);
+    return Optional.ofNullable(repIndPolicyType).map(this.policyOwnerTypeMapper::repIndPolicyTypeToPolicyOwnerTypeDTO)
+      .map(result -> new ResponseEntity<>(result, HttpStatus.OK)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+  }
 
-	/**
-	 * Get All the Innovation Types Items *
-	 * 
-	 * @return a List of InnovationTypesDTO with all repIndInnovationType Items.
-	 */
-	public List<PolicyOwnerTypeDTO> getAllPolicyOwnerTypes() {
-		if (this.repIndPolicyTypeManager.findAll() != null) {
-			List<RepIndPolicyType> repIndPolicyType = new ArrayList<>(this.repIndPolicyTypeManager.findAll());
-			List<PolicyOwnerTypeDTO> policyOwnerTypeDTO = repIndPolicyType.stream()
-					.map(policyOwnerTypeEntity -> this.policyOwnerTypeMapper
-							.repIndPolicyTypeToPolicyOwnerTypeDTO(policyOwnerTypeEntity))
-					.collect(Collectors.toList());
-			return policyOwnerTypeDTO;
-		} else {
-			return null;
-		}
-	}
+  /**
+   * Get All the Innovation Types Items *
+   * 
+   * @return a List of InnovationTypesDTO with all repIndInnovationType Items.
+   */
+  public List<PolicyOwnerTypeDTO> getAllPolicyOwnerTypes() {
+    if (this.repIndPolicyTypeManager.findAll() != null) {
+      List<RepIndPolicyType> repIndPolicyType = new ArrayList<>(this.repIndPolicyTypeManager.findAll());
+      List<PolicyOwnerTypeDTO> policyOwnerTypeDTO = repIndPolicyType.stream().map(
+        policyOwnerTypeEntity -> this.policyOwnerTypeMapper.repIndPolicyTypeToPolicyOwnerTypeDTO(policyOwnerTypeEntity))
+        .collect(Collectors.toList());
+      return policyOwnerTypeDTO;
+    } else {
+      return null;
+    }
+  }
 
 }

@@ -29,11 +29,11 @@ import org.mapstruct.Mappings;
 @Mapper(componentModel = "jsr330")
 public interface OrganizationTypeMapper {
 
-	@Mappings({ @Mapping(source = "code", target = "id") })
-	public abstract RepIndOrganizationType organizationTypeDTOToRepIndOrganizationType(
-			OrganizationTypeDTO organizationTypeDTO);
+  @Mappings({@Mapping(source = "code", target = "id")})
+  public abstract RepIndOrganizationType
+    organizationTypeDTOToRepIndOrganizationType(OrganizationTypeDTO organizationTypeDTO);
 
-	@Mappings({ @Mapping(source = "id", target = "code") })
-	public abstract OrganizationTypeDTO repIndOrganizationTypeToOrganizationTypeDTO(
-			RepIndOrganizationType repIndOrganizationType);
+  @Mappings({@Mapping(source = "id", target = "code")})
+  public abstract OrganizationTypeDTO
+    repIndOrganizationTypeToOrganizationTypeDTO(RepIndOrganizationType repIndOrganizationType);
 }

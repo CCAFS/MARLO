@@ -26,12 +26,12 @@ import org.mapstruct.Mappings;
 @Mapper(componentModel = "jsr330")
 public interface InstitutionTypeMapper {
 
-	@Mappings({ @Mapping(source = "code", target = "id") })
-	public InstitutionType institutionTypeDTOToInstitutionType(InstitutionTypeDTO institutionTypeDTO);
+  @Mappings({@Mapping(source = "code", target = "id")})
+  public InstitutionType institutionTypeDTOToInstitutionType(InstitutionTypeDTO institutionTypeDTO);
 
-	@Mappings({ @Mapping(source = "id", target = "code") })
-	public InstitutionTypeDTO institutionTypeToInstitutionTypeDTO(InstitutionType institutionType);
+  @Mappings({@Mapping(source = "id", target = "code")})
+  public InstitutionTypeDTO institutionTypeToInstitutionTypeDTO(InstitutionType institutionType);
 
-	public InstitutionType updateInstitutionTypeFromInstitutionTypeDto(InstitutionTypeDTO institutionTypeDTO,
-			@MappingTarget InstitutionType institutionType);
+  public InstitutionType updateInstitutionTypeFromInstitutionTypeDto(InstitutionTypeDTO institutionTypeDTO,
+    @MappingTarget InstitutionType institutionType);
 }

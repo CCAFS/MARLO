@@ -25,12 +25,12 @@ import org.mapstruct.Mappings;
 @Mapper(componentModel = "jsr330")
 public interface PolicyInvestmentTypeMapper {
 
-	@Mappings({ @Mapping(source = "code", target = "id") })
-	public abstract RepIndPolicyInvestimentType policyInvestimentTypeDTOToRepIndPolicyInvestimentType(
-			PolicyInvestmentTypeDTO policyInvestimentTypeDTO);
+  @Mappings({@Mapping(source = "code", target = "id")})
+  public abstract RepIndPolicyInvestimentType
+    policyInvestimentTypeDTOToRepIndPolicyInvestimentType(PolicyInvestmentTypeDTO policyInvestimentTypeDTO);
 
-	@Mappings({ @Mapping(source = "id", target = "code") })
-	public abstract PolicyInvestmentTypeDTO RepIndPolicyInvestimentTypeToPolicyInvestimentTypeDTO(
-			RepIndPolicyInvestimentType repIndPolicyInvestimentType);
+  @Mappings({@Mapping(source = "id", target = "code")})
+  public abstract PolicyInvestmentTypeDTO
+    RepIndPolicyInvestimentTypeToPolicyInvestimentTypeDTO(RepIndPolicyInvestimentType repIndPolicyInvestimentType);
 
 }

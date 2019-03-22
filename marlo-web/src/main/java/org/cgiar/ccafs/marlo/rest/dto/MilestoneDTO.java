@@ -27,72 +27,72 @@ import io.swagger.annotations.ApiModelProperty;
 
 public class MilestoneDTO {
 
-	@ApiModelProperty(notes = "Id of milestone")
-	@NotNull
-	private Long id;
+  @ApiModelProperty(notes = "Id of milestone")
+  @NotNull
+  private Long id;
 
-	@ApiModelProperty(notes = "Milestone title")
-	@NotNull
-	private String title;
+  @ApiModelProperty(notes = "Milestone title")
+  @NotNull
+  private String title;
 
-	@ApiModelProperty(notes = "Milestone target year")
-	private Integer year;
+  @ApiModelProperty(notes = "Milestone target year")
+  private Integer year;
 
-	@ApiModelProperty(notes = "Target unit")
-	private TargetUnitDTO targetUnitDTO;
+  @ApiModelProperty(notes = "Target unit")
+  private TargetUnitDTO targetUnitDTO;
 
-	@ApiModelProperty(notes = "Target Unit value")
-	private BigDecimal value;
+  @ApiModelProperty(notes = "Target Unit value")
+  private BigDecimal value;
 
-	@ApiModelProperty(notes = "Outcome of the milestone")
-	private OutcomeDTO outcomeDTO;
+  @ApiModelProperty(notes = "Outcome of the milestone")
+  private OutcomeDTO outcomeDTO;
 
-	public Long getId() {
-		return this.id;
-	}
+  public Long getId() {
+    return this.id;
+  }
 
-	public OutcomeDTO getOutcomeDTO() {
-		return this.outcomeDTO;
-	}
+  public OutcomeDTO getOutcomeDTO() {
+    return this.outcomeDTO;
+  }
 
-	public TargetUnitDTO getTargetUnitDTO() {
-		return this.targetUnitDTO;
-	}
+  public TargetUnitDTO getTargetUnitDTO() {
+    return this.targetUnitDTO;
+  }
 
-	public String getTitle() {
-		return this.title;
-	}
+  public String getTitle() {
+    return this.title;
+  }
 
-	public BigDecimal getValue() {
-		return this.value;
-	}
+  public BigDecimal getValue() {
+    return this.value;
+  }
 
-	public Integer getYear() {
-		return this.year;
-	}
+  public Integer getYear() {
+    return this.year;
+  }
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+  public void setId(Long id) {
+    this.id = id;
+  }
 
-	public void setOutcomeDTO(OutcomeDTO outcomeDTO) {
-		this.outcomeDTO = outcomeDTO;
-	}
+  public void setOutcomeDTO(OutcomeDTO outcomeDTO) {
+    this.outcomeDTO = outcomeDTO;
+  }
 
-	public void setTargetUnitDTO(TargetUnitDTO targetUnitDTO) {
-		this.targetUnitDTO = targetUnitDTO;
-	}
+  public void setTargetUnitDTO(TargetUnitDTO targetUnitDTO) {
+    this.targetUnitDTO = targetUnitDTO;
+  }
 
-	public void setTitle(String title) {
-		this.title = title;
-	}
+  public void setTitle(String title) {
+    this.title = title;
+  }
 
-	public void setValue(BigDecimal value) {
-		this.value = value;
-	}
+  public void setValue(BigDecimal value) {
+    this.value = value;
+  }
 
-	public void setYear(Integer year) {
-		this.year = year;
-	}
+  public void setYear(Integer year) {
+    this.year = year;
+  }
 
 }

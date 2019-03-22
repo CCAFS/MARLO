@@ -25,39 +25,39 @@ import io.swagger.annotations.ApiModelProperty;
 
 public class PolicyMaturityLevelDTO {
 
-	@ApiModelProperty(notes = "Level of maturity of policy ID")
-	@NotNull
-	private Long code;
+  @ApiModelProperty(notes = "Level of maturity of policy ID")
+  @NotNull
+  private Long code;
 
-	@ApiModelProperty(notes = "Level of maturity of policy name")
-	@NotNull
-	private String name;
+  @ApiModelProperty(notes = "Level of maturity of policy name")
+  @NotNull
+  private String name;
 
-	@ApiModelProperty(notes = "Level of maturity of policy definition")
-	private String description;
+  @ApiModelProperty(notes = "Level of maturity of policy definition")
+  private String description;
 
-	public String getDescription() {
-		return this.description;
-	}
+  public Long getCode() {
+    return this.code;
+  }
 
-	public String getName() {
-		return this.name;
-	}
+  public String getDescription() {
+    return this.description;
+  }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+  public String getName() {
+    return this.name;
+  }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+  public void setCode(Long code) {
+    this.code = code;
+  }
 
-	public Long getCode() {
-		return code;
-	}
+  public void setDescription(String description) {
+    this.description = description;
+  }
 
-	public void setCode(Long code) {
-		this.code = code;
-	}
+  public void setName(String name) {
+    this.name = name;
+  }
 
 }
