@@ -89,6 +89,8 @@ public class ReportSynthesis extends MarloAuditableEntity implements java.io.Ser
 
   private Set<SectionStatus> sectionStatuses = new HashSet<SectionStatus>(0);
 
+  private Set<Submission> submissions = new HashSet<Submission>(0);
+
 
   public ReportSynthesis() {
   }
@@ -129,9 +131,11 @@ public class ReportSynthesis extends MarloAuditableEntity implements java.io.Ser
     return sb.toString();
   }
 
+
   public Phase getPhase() {
     return phase;
   }
+
 
   public ReportSynthesisCrossCgiar getReportSynthesisCrossCgiar() {
     return reportSynthesisCrossCgiar;
@@ -140,7 +144,6 @@ public class ReportSynthesis extends MarloAuditableEntity implements java.io.Ser
   public ReportSynthesisCrossCuttingDimension getReportSynthesisCrossCuttingDimension() {
     return reportSynthesisCrossCuttingDimension;
   }
-
 
   public ReportSynthesisCrpProgress getReportSynthesisCrpProgress() {
     return reportSynthesisCrpProgress;
@@ -173,7 +176,6 @@ public class ReportSynthesis extends MarloAuditableEntity implements java.io.Ser
     return reportSynthesisGovernance;
   }
 
-
   public ReportSynthesisIndicatorGeneral getReportSynthesisIndicatorGeneral() {
     return reportSynthesisIndicatorGeneral;
   }
@@ -193,9 +195,11 @@ public class ReportSynthesis extends MarloAuditableEntity implements java.io.Ser
     return reportSynthesisMelia;
   }
 
+
   public ReportSynthesisNarrative getReportSynthesisNarrative() {
     return reportSynthesisNarrative;
   }
+
 
   public ReportSynthesisProgramVariance getReportSynthesisProgramVariance() {
     return reportSynthesisProgramVariance;
@@ -211,6 +215,10 @@ public class ReportSynthesis extends MarloAuditableEntity implements java.io.Ser
 
   public Set<SectionStatus> getSectionStatuses() {
     return sectionStatuses;
+  }
+
+  public Set<Submission> getSubmissions() {
+    return submissions;
   }
 
   @Override
@@ -232,7 +240,6 @@ public class ReportSynthesis extends MarloAuditableEntity implements java.io.Ser
   public void setReportSynthesisCrossCgiar(ReportSynthesisCrossCgiar reportSynthesisCrossCgiar) {
     this.reportSynthesisCrossCgiar = reportSynthesisCrossCgiar;
   }
-
 
   public void
     setReportSynthesisCrossCuttingDimension(ReportSynthesisCrossCuttingDimension reportSynthesisCrossCuttingDimension) {
@@ -270,6 +277,7 @@ public class ReportSynthesis extends MarloAuditableEntity implements java.io.Ser
     this.reportSynthesisFundingUseSummary = reportSynthesisFundingUseSummary;
   }
 
+
   public void setReportSynthesisGovernance(ReportSynthesisGovernance reportSynthesisGovernance) {
     this.reportSynthesisGovernance = reportSynthesisGovernance;
   }
@@ -298,7 +306,6 @@ public class ReportSynthesis extends MarloAuditableEntity implements java.io.Ser
     this.reportSynthesisProgramVariance = reportSynthesisProgramVariance;
   }
 
-
   public void setReportSynthesisRisk(ReportSynthesisRisk reportSynthesisRisk) {
     this.reportSynthesisRisk = reportSynthesisRisk;
   }
@@ -311,6 +318,11 @@ public class ReportSynthesis extends MarloAuditableEntity implements java.io.Ser
 
   public void setSectionStatuses(Set<SectionStatus> sectionStatuses) {
     this.sectionStatuses = sectionStatuses;
+  }
+
+
+  public void setSubmissions(Set<Submission> submissions) {
+    this.submissions = submissions;
   }
 
 
