@@ -174,7 +174,7 @@
             <th class="text-center"> Top five contributing partners</th>
             <th class="text-center"> [@s.text name="${customLabel}.${name}.geoScope" /] </th>
             <th class="text-center col-md-1"> [@s.text name="${customLabel}.${name}.evidence" /] </th>
-            <th class="text-center col-md-1"> PDF </th>
+            <th class="text-center"></th>
           [/#if]
           [#if !expanded]
             <th class="col-md-1 text-center"> [@s.text name="${customLabel}.${name}.includeAR" /] </th>
