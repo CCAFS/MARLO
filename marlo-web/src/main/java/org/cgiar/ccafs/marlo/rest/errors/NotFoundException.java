@@ -22,19 +22,19 @@ package org.cgiar.ccafs.marlo.rest.errors;
  */
 public class NotFoundException extends RuntimeException {
 
-	private final String code;
-	private final String description;
+  private final String code;
+  private final String description;
 
-	public NotFoundException(String code, String description) {
-		this.code = code;
-		this.description = description;
-	}
+  public NotFoundException(String code, String description) {
+    this.code = code;
+    this.description = description;
+  }
 
-	public String getCode() {
-		return this.code;
-	}
+  public String getCode() {
+    return this.code;
+  }
 
-	public String getDescription() {
-		return this.description;
-	}
+  public String getDescription() {
+    return this.description;
+  }
 }

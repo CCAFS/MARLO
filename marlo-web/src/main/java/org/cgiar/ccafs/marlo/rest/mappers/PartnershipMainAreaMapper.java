@@ -29,12 +29,12 @@ import org.mapstruct.Mappings;
 @Mapper(componentModel = "jsr330")
 public interface PartnershipMainAreaMapper {
 
-	@Mappings({ @Mapping(source = "code", target = "id") })
-	public abstract RepIndPartnershipMainArea partnershipMainAreaDTOToRepIndPartnershipMainArea(
-			PartnershipMainAreaDTO partnershipMainAreaDTO);
+  @Mappings({@Mapping(source = "code", target = "id")})
+  public abstract RepIndPartnershipMainArea
+    partnershipMainAreaDTOToRepIndPartnershipMainArea(PartnershipMainAreaDTO partnershipMainAreaDTO);
 
-	@Mappings({ @Mapping(source = "id", target = "code") })
-	public abstract PartnershipMainAreaDTO repIndPartnershipMainAreaToPartnershipMainArea(
-			RepIndPartnershipMainArea repIndPartnershipMainArea);
+  @Mappings({@Mapping(source = "id", target = "code")})
+  public abstract PartnershipMainAreaDTO
+    repIndPartnershipMainAreaToPartnershipMainArea(RepIndPartnershipMainArea repIndPartnershipMainArea);
 
 }

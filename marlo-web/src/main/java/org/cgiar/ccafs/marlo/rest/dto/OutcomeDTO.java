@@ -1,5 +1,5 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
+ * This file is part of Managing Agricultural Research for Learning &
  * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,75 +21,75 @@ import io.swagger.annotations.ApiModelProperty;
 
 public class OutcomeDTO implements Serializable {
 
-	private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 1L;
 
-	@ApiModelProperty(notes = "Outcome id")
-	private Long id;
+  @ApiModelProperty(notes = "Outcome id")
+  private Long id;
 
-	@ApiModelProperty(notes = "Outcome description")
-	private String description;
+  @ApiModelProperty(notes = "Outcome description")
+  private String description;
 
-	@ApiModelProperty(notes = "Target Year")
-	private Integer year;
+  @ApiModelProperty(notes = "Target Year")
+  private Integer year;
 
-	@ApiModelProperty(notes = "Flagship of the outcome")
-	private FlagshipProgramDTO flagshipProgramDTO;
+  @ApiModelProperty(notes = "Flagship of the outcome")
+  private FlagshipProgramDTO flagshipProgramDTO;
 
-	@ApiModelProperty(notes = "Target unit")
-	private TargetUnitDTO targetUnitDTO;
+  @ApiModelProperty(notes = "Target unit")
+  private TargetUnitDTO targetUnitDTO;
 
-	@ApiModelProperty(notes = "Target value")
-	private BigDecimal value;
+  @ApiModelProperty(notes = "Target value")
+  private BigDecimal value;
 
-//	@ApiModelProperty(notes = "List of sub-idos")
-//	private List<SrfSubIdoDTO> subIdoDTOs;
+  // @ApiModelProperty(notes = "List of sub-idos")
+  // private List<SrfSubIdoDTO> subIdoDTOs;
 
-	public String getDescription() {
-		return this.description;
-	}
+  public String getDescription() {
+    return this.description;
+  }
 
-	public FlagshipProgramDTO getFlagshipProgramDTO() {
-		return this.flagshipProgramDTO;
-	}
+  public FlagshipProgramDTO getFlagshipProgramDTO() {
+    return this.flagshipProgramDTO;
+  }
 
-	public Long getId() {
-		return this.id;
-	}
+  public Long getId() {
+    return this.id;
+  }
 
-	public TargetUnitDTO getTargetUnitDTO() {
-		return this.targetUnitDTO;
-	}
+  public TargetUnitDTO getTargetUnitDTO() {
+    return this.targetUnitDTO;
+  }
 
-	public BigDecimal getValue() {
-		return this.value;
-	}
+  public BigDecimal getValue() {
+    return this.value;
+  }
 
-	public Integer getYear() {
-		return this.year;
-	}
+  public Integer getYear() {
+    return this.year;
+  }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+  public void setDescription(String description) {
+    this.description = description;
+  }
 
-	public void setFlagshipProgramDTO(FlagshipProgramDTO flagshipProgramDTO) {
-		this.flagshipProgramDTO = flagshipProgramDTO;
-	}
+  public void setFlagshipProgramDTO(FlagshipProgramDTO flagshipProgramDTO) {
+    this.flagshipProgramDTO = flagshipProgramDTO;
+  }
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+  public void setId(Long id) {
+    this.id = id;
+  }
 
-	public void setTargetUnitDTO(TargetUnitDTO targetUnitDTO) {
-		this.targetUnitDTO = targetUnitDTO;
-	}
+  public void setTargetUnitDTO(TargetUnitDTO targetUnitDTO) {
+    this.targetUnitDTO = targetUnitDTO;
+  }
 
-	public void setValue(BigDecimal value) {
-		this.value = value;
-	}
+  public void setValue(BigDecimal value) {
+    this.value = value;
+  }
 
-	public void setYear(Integer year) {
-		this.year = year;
-	}
+  public void setYear(Integer year) {
+    this.year = year;
+  }
 
 }

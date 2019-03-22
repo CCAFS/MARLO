@@ -34,45 +34,44 @@ import org.springframework.http.ResponseEntity;
 @Named
 public class BudgetTypeItem<T> {
 
-	private BudgetTypeManager budgetTypeManager;
-	private BudgetTypeMapper budgetTypeMapper;
+  private BudgetTypeManager budgetTypeManager;
+  private BudgetTypeMapper budgetTypeMapper;
 
-	@Inject
-	public BudgetTypeItem(BudgetTypeManager budgetTypeManager, BudgetTypeMapper budgetTypeMapper) {
-		this.budgetTypeManager = budgetTypeManager;
-		this.budgetTypeMapper = budgetTypeMapper;
-	}
+  @Inject
+  public BudgetTypeItem(BudgetTypeManager budgetTypeManager, BudgetTypeMapper budgetTypeMapper) {
+    this.budgetTypeManager = budgetTypeManager;
+    this.budgetTypeMapper = budgetTypeMapper;
+  }
 
-	/**
-	 * Find a Budget type Item MARLO id
-	 * 
-	 * @param id
-	 * @return a BudgetTypeDTO with the Budget type Item
-	 */
-	public ResponseEntity<BudgetTypeDTO> findBudgetTypeById(Long id) {
-		BudgetType budgetType = this.budgetTypeManager.getBudgetTypeById(id);
+  /**
+   * Find a Budget type Item MARLO id
+   * 
+   * @param id
+   * @return a BudgetTypeDTO with the Budget type Item
+   */
+  public ResponseEntity<BudgetTypeDTO> findBudgetTypeById(Long id) {
+    BudgetType budgetType = this.budgetTypeManager.getBudgetTypeById(id);
 
-		return Optional.ofNullable(budgetType).map(this.budgetTypeMapper::budgetTypeToBudgetTypeDTO)
-				.map(result -> new ResponseEntity<>(result, HttpStatus.OK))
-				.orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
-	}
+    return Optional.ofNullable(budgetType).map(this.budgetTypeMapper::budgetTypeToBudgetTypeDTO)
+      .map(result -> new ResponseEntity<>(result, HttpStatus.OK)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+  }
 
-	/**
-	 * Get All the Budget type Items *
-	 * 
-	 * @return a List of BudgetTypeDTO with all the Budget type Items.
-	 */
-	public List<BudgetTypeDTO> getAllBudgetTypes() {
-		if (this.budgetTypeManager.findAll() != null) {
-			List<BudgetType> budgetTypes = new ArrayList<>(this.budgetTypeManager.findAll());
+  /**
+   * Get All the Budget type Items *
+   * 
+   * @return a List of BudgetTypeDTO with all the Budget type Items.
+   */
+  public List<BudgetTypeDTO> getAllBudgetTypes() {
+    if (this.budgetTypeManager.findAll() != null) {
+      List<BudgetType> budgetTypes = new ArrayList<>(this.budgetTypeManager.findAll());
 
-			List<BudgetTypeDTO> budgetTypeDTOs = budgetTypes.stream()
-					.map(budgetTypesEntity -> this.budgetTypeMapper.budgetTypeToBudgetTypeDTO(budgetTypesEntity))
-					.collect(Collectors.toList());
-			return budgetTypeDTOs;
-		} else {
-			return null;
-		}
-	}
+      List<BudgetTypeDTO> budgetTypeDTOs = budgetTypes.stream()
+        .map(budgetTypesEntity -> this.budgetTypeMapper.budgetTypeToBudgetTypeDTO(budgetTypesEntity))
+        .collect(Collectors.toList());
+      return budgetTypeDTOs;
+    } else {
+      return null;
+    }
+  }
 
 }

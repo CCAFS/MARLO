@@ -29,12 +29,12 @@ import org.mapstruct.Mappings;
 @Mapper(componentModel = "jsr330")
 public interface StageOfInnovationMapper {
 
-	@Mappings({ @Mapping(source = "id", target = "code") })
-	public abstract StageOfInnovationDTO repIndStageInnovationToStageOfInnovationDTO(
-			RepIndStageInnovation repIndStageInnovation);
+  @Mappings({@Mapping(source = "id", target = "code")})
+  public abstract StageOfInnovationDTO
+    repIndStageInnovationToStageOfInnovationDTO(RepIndStageInnovation repIndStageInnovation);
 
-	@Mappings({ @Mapping(source = "code", target = "id") })
-	public abstract RepIndStageInnovation stageOfInnovationDTOToRepIndStageInnovation(
-			StageOfInnovationDTO stageOfInnovationDTO);
+  @Mappings({@Mapping(source = "code", target = "id")})
+  public abstract RepIndStageInnovation
+    stageOfInnovationDTOToRepIndStageInnovation(StageOfInnovationDTO stageOfInnovationDTO);
 
 }

@@ -29,12 +29,12 @@ import org.mapstruct.Mappings;
 @Mapper(componentModel = "jsr330")
 public interface DegreeOfInnovationMapper {
 
-	@Mappings({ @Mapping(source = "code", target = "id") })
-	public abstract RepIndDegreeInnovation degreeOfInnovationDTOToRepIndDegreeInnovation(
-			DegreeOfInnovationDTO degreeOfInnovationDTO);
+  @Mappings({@Mapping(source = "code", target = "id")})
+  public abstract RepIndDegreeInnovation
+    degreeOfInnovationDTOToRepIndDegreeInnovation(DegreeOfInnovationDTO degreeOfInnovationDTO);
 
-	@Mappings({ @Mapping(source = "id", target = "code") })
-	public abstract DegreeOfInnovationDTO repIndDegreeInnovationToDegreeOfInnovationDTO(
-			RepIndDegreeInnovation repIndDegreeInnovation);
+  @Mappings({@Mapping(source = "id", target = "code")})
+  public abstract DegreeOfInnovationDTO
+    repIndDegreeInnovationToDegreeOfInnovationDTO(RepIndDegreeInnovation repIndDegreeInnovation);
 
 }

@@ -54,180 +54,176 @@ import org.springframework.http.ResponseEntity;
 @Named
 public class InstitutionItem<T> {
 
-	private static final Logger LOG = LoggerFactory.getLogger(Institutions.class);
-	@Autowired
-	private Environment env;
-	private final SendMailS sendMail;
-	private InstitutionManager institutionManager;
-	private LocElementManager locElementManager;
-	private InstitutionMapper institutionMapper;
-	private PartnerRequestManager partnerRequestManager;
-	private GlobalUnitManager globalUnitManager;
-	private boolean messageSent;
-	protected APConfig config;
+  private static final Logger LOG = LoggerFactory.getLogger(Institutions.class);
+  @Autowired
+  private Environment env;
+  private final SendMailS sendMail;
+  private InstitutionManager institutionManager;
+  private LocElementManager locElementManager;
+  private InstitutionMapper institutionMapper;
+  private PartnerRequestManager partnerRequestManager;
+  private GlobalUnitManager globalUnitManager;
+  private boolean messageSent;
+  protected APConfig config;
 
-	@Inject
-	public InstitutionItem(InstitutionManager institutionManager, InstitutionMapper institutionMapper,
-			LocElementManager locElementManager, PartnerRequestManager partnerRequestManager,
-			GlobalUnitManager globalUnitManager, SendMailS sendMail, APConfig config) {
-		this.institutionManager = institutionManager;
-		this.institutionMapper = institutionMapper;
-		this.locElementManager = locElementManager;
-		this.partnerRequestManager = partnerRequestManager;
-		this.globalUnitManager = globalUnitManager;
-		this.sendMail = sendMail;
-		this.config = config;
+  @Inject
+  public InstitutionItem(InstitutionManager institutionManager, InstitutionMapper institutionMapper,
+    LocElementManager locElementManager, PartnerRequestManager partnerRequestManager,
+    GlobalUnitManager globalUnitManager, SendMailS sendMail, APConfig config) {
+    this.institutionManager = institutionManager;
+    this.institutionMapper = institutionMapper;
+    this.locElementManager = locElementManager;
+    this.partnerRequestManager = partnerRequestManager;
+    this.globalUnitManager = globalUnitManager;
+    this.sendMail = sendMail;
+    this.config = config;
 
-	}
+  }
 
-	public ResponseEntity<InstitutionRequestDTO> createPartnerRequest(NewInstitutionDTO newInstitutionDTO,
-			String entityAcronym, User user) {
+  public ResponseEntity<InstitutionRequestDTO> createPartnerRequest(NewInstitutionDTO newInstitutionDTO,
+    String entityAcronym, User user) {
 
-		GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitByAcronym(entityAcronym);
+    GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitByAcronym(entityAcronym);
 
-		if (globalUnitEntity == null) {
-			return new ResponseEntity<InstitutionRequestDTO>(HttpStatus.BAD_REQUEST);
-		}
-		// CountryDTO countryDTO = institutionDTO.getCountryDTO().get(0);
+    if (globalUnitEntity == null) {
+      return new ResponseEntity<InstitutionRequestDTO>(HttpStatus.BAD_REQUEST);
+    }
+    // CountryDTO countryDTO = institutionDTO.getCountryDTO().get(0);
 
-		LocElement locElement = this.locElementManager
-				.getLocElementByNumericISOCode(newInstitutionDTO.getCountryDTO().get(0).getCode());
-		if (locElement == null) {
-			return new ResponseEntity<InstitutionRequestDTO>(HttpStatus.BAD_REQUEST);
-		}
+    LocElement locElement =
+      this.locElementManager.getLocElementByNumericISOCode(newInstitutionDTO.getCountryDTO().get(0).getCode());
+    if (locElement == null) {
+      return new ResponseEntity<InstitutionRequestDTO>(HttpStatus.BAD_REQUEST);
+    }
 
-		PartnerRequest partnerRequestParent = this.institutionMapper.institutionDTOToPartnerRequest(newInstitutionDTO,
-				globalUnitEntity, locElement, user);
+    PartnerRequest partnerRequestParent =
+      this.institutionMapper.institutionDTOToPartnerRequest(newInstitutionDTO, globalUnitEntity, locElement, user);
 
-		partnerRequestParent = this.partnerRequestManager.savePartnerRequest(partnerRequestParent);
+    partnerRequestParent = this.partnerRequestManager.savePartnerRequest(partnerRequestParent);
 
-		/**
-		 * Need to create a parent child relationship for the partnerRequest to
-		 * display. That design might need to be re-visited.
-		 */
-		PartnerRequest partnerRequestChild = this.institutionMapper.institutionDTOToPartnerRequest(newInstitutionDTO,
-				globalUnitEntity, locElement, user);
+    /**
+     * Need to create a parent child relationship for the partnerRequest to
+     * display. That design might need to be re-visited.
+     */
+    PartnerRequest partnerRequestChild =
+      this.institutionMapper.institutionDTOToPartnerRequest(newInstitutionDTO, globalUnitEntity, locElement, user);
 
-		partnerRequestChild.setPartnerRequest(partnerRequestParent);
+    partnerRequestChild.setPartnerRequest(partnerRequestParent);
 
-		partnerRequestChild = this.partnerRequestManager.savePartnerRequest(partnerRequestChild);
+    partnerRequestChild = this.partnerRequestManager.savePartnerRequest(partnerRequestChild);
 
-		// SEND THE MAIL
-		this.sendPartnerRequestEmail(partnerRequestChild, user, entityAcronym);
+    // SEND THE MAIL
+    this.sendPartnerRequestEmail(partnerRequestChild, user, entityAcronym);
 
-		return new ResponseEntity<InstitutionRequestDTO>(
-				this.institutionMapper.partnerRequestToPartnerRequestDTO(partnerRequestChild), HttpStatus.CREATED);
+    return new ResponseEntity<InstitutionRequestDTO>(
+      this.institutionMapper.partnerRequestToPartnerRequestDTO(partnerRequestChild), HttpStatus.CREATED);
 
-	}
+  }
 
-	/**
-	 * Find a institution requesting a MARLO id
-	 * 
-	 * 
-	 * @param id
-	 * @return a InstitutionDTO with the Institution Type data.
-	 */
-	public ResponseEntity<InstitutionDTO> findInstitutionById(Long id) {
-		Institution institution = this.institutionManager.getInstitutionById(id);
+  /**
+   * Find a institution requesting a MARLO id
+   * 
+   * @param id
+   * @return a InstitutionDTO with the Institution Type data.
+   */
+  public ResponseEntity<InstitutionDTO> findInstitutionById(Long id) {
+    Institution institution = this.institutionManager.getInstitutionById(id);
 
-		return Optional.ofNullable(institution).map(this.institutionMapper::institutionToInstitutionDTO)
-				.map(result -> new ResponseEntity<>(result, HttpStatus.OK))
-				.orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
-	}
+    return Optional.ofNullable(institution).map(this.institutionMapper::institutionToInstitutionDTO)
+      .map(result -> new ResponseEntity<>(result, HttpStatus.OK)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+  }
 
-	/**
-	 * Get All the institution *
-	 * 
-	 * @return a List of institutions.
-	 */
-	public List<InstitutionDTO> getAllInstitutions() {
-		List<Institution> institutions = this.institutionManager.findAll();
-		List<InstitutionDTO> institutionDTOs = institutions.stream()
-				.map(institution -> this.institutionMapper.institutionToInstitutionDTO(institution))
-				.collect(Collectors.toList());
-		return institutionDTOs;
-	}
+  /**
+   * Get All the institution *
+   * 
+   * @return a List of institutions.
+   */
+  public List<InstitutionDTO> getAllInstitutions() {
+    List<Institution> institutions = this.institutionManager.findAll();
+    List<InstitutionDTO> institutionDTOs = institutions.stream()
+      .map(institution -> this.institutionMapper.institutionToInstitutionDTO(institution)).collect(Collectors.toList());
+    return institutionDTOs;
+  }
 
-	/**
-	 * Get a partner request by an id *
-	 * 
-	 * @return PartnerRequestDTO founded
-	 */
-	public ResponseEntity<InstitutionRequestDTO> getPartnerRequest(Long id, String entityAcronym) {
-		PartnerRequest partnerRequest = this.partnerRequestManager.getPartnerRequestById(id);
-		if (partnerRequest != null && partnerRequest.getPartnerRequest() == null) {
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		}
-		return Optional.ofNullable(partnerRequest).map(this.institutionMapper::partnerRequestToPartnerRequestDTO)
-				.map(result -> new ResponseEntity<>(result, HttpStatus.OK))
-				.orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+  /**
+   * Get a partner request by an id *
+   * 
+   * @return PartnerRequestDTO founded
+   */
+  public ResponseEntity<InstitutionRequestDTO> getPartnerRequest(Long id, String entityAcronym) {
+    PartnerRequest partnerRequest = this.partnerRequestManager.getPartnerRequestById(id);
+    if (partnerRequest != null && partnerRequest.getPartnerRequest() == null) {
+      return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+    return Optional.ofNullable(partnerRequest).map(this.institutionMapper::partnerRequestToPartnerRequestDTO)
+      .map(result -> new ResponseEntity<>(result, HttpStatus.OK)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
 
-	}
+  }
 
-	String getText(String property, String[] params) {
-		String value = this.env.getProperty(property);
-		MessageFormat message = new MessageFormat(value);
-		return message.format(params);
+  String getText(String property, String[] params) {
+    String value = this.env.getProperty(property);
+    MessageFormat message = new MessageFormat(value);
+    return message.format(params);
 
-	}
+  }
 
-	private void sendPartnerRequestEmail(PartnerRequest partnerRequest, User user, String entityAcronym) {
-		String institutionName, institutionAcronym, institutionTypeName, countryName, partnerWebPage;
-		institutionName = partnerRequest.getPartnerName();
-		institutionAcronym = partnerRequest.getAcronym();
-		institutionTypeName = partnerRequest.getInstitutionType().getName();
-		countryName = partnerRequest.getLocElement().getName();
-		partnerWebPage = partnerRequest.getWebPage();
-		String subject;
-		StringBuilder message = new StringBuilder();
+  private void sendPartnerRequestEmail(PartnerRequest partnerRequest, User user, String entityAcronym) {
+    String institutionName, institutionAcronym, institutionTypeName, countryName, partnerWebPage;
+    institutionName = partnerRequest.getPartnerName();
+    institutionAcronym = partnerRequest.getAcronym();
+    institutionTypeName = partnerRequest.getInstitutionType().getName();
+    countryName = partnerRequest.getLocElement().getName();
+    partnerWebPage = partnerRequest.getWebPage();
+    String subject;
+    StringBuilder message = new StringBuilder();
 
-		// message subject
+    // message subject
 
-		subject = this.getText("marloRequestInstitution.email.subject",
-				new String[] { entityAcronym.toUpperCase(), institutionName });
+    subject = this.getText("marloRequestInstitution.email.subject",
+      new String[] {entityAcronym.toUpperCase(), institutionName});
 
-		// Message content
-		message.append(user.getFirstName() + " " + user.getLastName() + " ");
-		message.append("(" + user.getEmail() + ") ");
-		message.append("is requesting to add the following partner information:");
-		message.append("</br></br>");
-		message.append("Partner Name: ");
-		message.append(institutionName);
-		message.append("</br>");
-		message.append("Acronym: ");
-		message.append(institutionAcronym);
-		message.append(" </br>");
-		message.append("Partner type: ");
-		message.append(institutionTypeName);
-		message.append(" </br>");
+    // Message content
+    message.append(user.getFirstName() + " " + user.getLastName() + " ");
+    message.append("(" + user.getEmail() + ") ");
+    message.append("is requesting to add the following partner information:");
+    message.append("</br></br>");
+    message.append("Partner Name: ");
+    message.append(institutionName);
+    message.append("</br>");
+    message.append("Acronym: ");
+    message.append(institutionAcronym);
+    message.append(" </br>");
+    message.append("Partner type: ");
+    message.append(institutionTypeName);
+    message.append(" </br>");
 
-		message.append("Headquarter country location: ");
-		message.append(countryName);
-		message.append(" </br>");
+    message.append("Headquarter country location: ");
+    message.append(countryName);
+    message.append(" </br>");
 
-		// Is there a web page?
-		if (partnerWebPage != null && !partnerWebPage.isEmpty()) {
-			message.append("Web Page: ");
-			message.append(partnerWebPage);
-			message.append(" </br>");
-		}
-		message.append(" </br>");
-		message.append(".</br>");
-		message.append("</br>");
-		try {
-			this.sendMail.send(this.config.getEmailNotification(), null, this.config.getEmailNotification(), subject,
-					message.toString(), null, null, null, true);
-		} catch (Exception e) {
-			LOG.error("unable to send mail", e);
-			this.messageSent = false;
-			/**
-			 * Original code swallows the exception and didn't even log it. Now
-			 * we at least log it, but we need to revisit to see if we should
-			 * continue processing or re-throw the exception.
-			 */
-		}
-		this.messageSent = true;
+    // Is there a web page?
+    if (partnerWebPage != null && !partnerWebPage.isEmpty()) {
+      message.append("Web Page: ");
+      message.append(partnerWebPage);
+      message.append(" </br>");
+    }
+    message.append(" </br>");
+    message.append(".</br>");
+    message.append("</br>");
+    try {
+      this.sendMail.send(this.config.getEmailNotification(), null, this.config.getEmailNotification(), subject,
+        message.toString(), null, null, null, true);
+    } catch (Exception e) {
+      LOG.error("unable to send mail", e);
+      this.messageSent = false;
+      /**
+       * Original code swallows the exception and didn't even log it. Now
+       * we at least log it, but we need to revisit to see if we should
+       * continue processing or re-throw the exception.
+       */
+    }
+    this.messageSent = true;
 
-	}
+  }
 
 }

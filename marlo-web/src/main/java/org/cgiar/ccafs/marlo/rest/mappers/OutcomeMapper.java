@@ -24,17 +24,17 @@ import org.mapstruct.Mappings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@Mapper(componentModel = "jsr330", uses = { TargetUnitMapper.class, FlagshipProgramMapper.class,
-		SrfSubIdoMapper.class })
+@Mapper(componentModel = "jsr330", uses = {TargetUnitMapper.class, FlagshipProgramMapper.class, SrfSubIdoMapper.class})
 public abstract class OutcomeMapper {
-	private static final Logger LOG = LoggerFactory.getLogger(OutcomeMapper.class);
 
-	@Mappings({ @Mapping(source = "crpProgram", target = "flagshipProgramDTO"),
-			@Mapping(source = "srfTargetUnit", target = "targetUnitDTO"),
-//			@Mapping(source = "crpOutcomeSubIdos", target = "subIdoDTOs")
-	})
-	public abstract OutcomeDTO crpProgramOutcomeToOutcomeDTO(CrpProgramOutcome crpProgramOutcome);
+  private static final Logger LOG = LoggerFactory.getLogger(OutcomeMapper.class);
 
-	public abstract CrpProgramOutcome outcomeDTOToCrpProgramOutcome(OutcomeDTO outcomeDTO);
+  @Mappings({@Mapping(source = "crpProgram", target = "flagshipProgramDTO"),
+    @Mapping(source = "srfTargetUnit", target = "targetUnitDTO"),
+    // @Mapping(source = "crpOutcomeSubIdos", target = "subIdoDTOs")
+  })
+  public abstract OutcomeDTO crpProgramOutcomeToOutcomeDTO(CrpProgramOutcome crpProgramOutcome);
+
+  public abstract CrpProgramOutcome outcomeDTOToCrpProgramOutcome(OutcomeDTO outcomeDTO);
 
 }

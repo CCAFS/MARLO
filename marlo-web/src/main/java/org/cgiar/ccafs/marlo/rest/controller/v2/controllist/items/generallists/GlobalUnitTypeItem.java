@@ -38,49 +38,47 @@ import org.springframework.http.ResponseEntity;
 @Named
 public class GlobalUnitTypeItem<T> {
 
-	private GlobalUnitTypeManager globalUnitTypeManager;
-	private GlobalUnitTypeMapper globalUnitTypeMapper;
+  private GlobalUnitTypeManager globalUnitTypeManager;
+  private GlobalUnitTypeMapper globalUnitTypeMapper;
 
-	@Inject
-	public GlobalUnitTypeItem(GlobalUnitTypeMapper globalUnitTypeMapper, GlobalUnitTypeManager globalUnitTypeManager) {
-		super();
-		this.globalUnitTypeManager = globalUnitTypeManager;
-		this.globalUnitTypeMapper = globalUnitTypeMapper;
-	}
+  @Inject
+  public GlobalUnitTypeItem(GlobalUnitTypeMapper globalUnitTypeMapper, GlobalUnitTypeManager globalUnitTypeManager) {
+    super();
+    this.globalUnitTypeManager = globalUnitTypeManager;
+    this.globalUnitTypeMapper = globalUnitTypeMapper;
+  }
 
-	/**
-	 * Get a Geographic Scope by id *
-	 * 
-	 * @return GeographicScopeDTO founded.
-	 */
-	public ResponseEntity<CGIAREntityTypeDTO> findGlobalUnitTypeById(Long id) {
-		GlobalUnitType globalUnitType = this.globalUnitTypeManager.getGlobalUnitTypeById(id);
-		return Optional.ofNullable(globalUnitType).filter(c -> c.getId() <= 4)
-				.map(this.globalUnitTypeMapper::globalUnitTypeToCGIAREntityTypeDTO)
-				.map(result -> new ResponseEntity<>(result, HttpStatus.OK))
-				.orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
-	}
+  /**
+   * Get a Geographic Scope by id *
+   * 
+   * @return GeographicScopeDTO founded.
+   */
+  public ResponseEntity<CGIAREntityTypeDTO> findGlobalUnitTypeById(Long id) {
+    GlobalUnitType globalUnitType = this.globalUnitTypeManager.getGlobalUnitTypeById(id);
+    return Optional.ofNullable(globalUnitType).filter(c -> c.getId() <= 4)
+      .map(this.globalUnitTypeMapper::globalUnitTypeToCGIAREntityTypeDTO)
+      .map(result -> new ResponseEntity<>(result, HttpStatus.OK)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+  }
 
-	/**
-	 * Get All the Global Unit types*
-	 * 
-	 * @return a List of CGIAREntityTypeDTO with All the Global Unit types
-	 * Items.
-	 */
-	public List<CGIAREntityTypeDTO> getAllGlobalUnitTypes() {
-		if (this.globalUnitTypeManager.findAll() != null) {
-			List<GlobalUnitType> globalUnitTypes = new ArrayList<>(this.globalUnitTypeManager.findAll().stream()
-					.filter(c -> c.getId() <= 4).collect(Collectors.toList()));
-			// FIXME: Should change the way to compare which CRP/PTF/Center will
-			// show on API
-			List<CGIAREntityTypeDTO> cgiarEntityTypeList = globalUnitTypes.stream()
-					.map(globalUnitTypeEntity -> this.globalUnitTypeMapper
-							.globalUnitTypeToCGIAREntityTypeDTO(globalUnitTypeEntity))
-					.collect(Collectors.toList());
-			return cgiarEntityTypeList;
-		} else {
-			return null;
-		}
-	}
+  /**
+   * Get All the Global Unit types*
+   * 
+   * @return a List of CGIAREntityTypeDTO with All the Global Unit types
+   *         Items.
+   */
+  public List<CGIAREntityTypeDTO> getAllGlobalUnitTypes() {
+    if (this.globalUnitTypeManager.findAll() != null) {
+      List<GlobalUnitType> globalUnitTypes = new ArrayList<>(
+        this.globalUnitTypeManager.findAll().stream().filter(c -> c.getId() <= 4).collect(Collectors.toList()));
+      // FIXME: Should change the way to compare which CRP/PTF/Center will
+      // show on API
+      List<CGIAREntityTypeDTO> cgiarEntityTypeList = globalUnitTypes.stream()
+        .map(globalUnitTypeEntity -> this.globalUnitTypeMapper.globalUnitTypeToCGIAREntityTypeDTO(globalUnitTypeEntity))
+        .collect(Collectors.toList());
+      return cgiarEntityTypeList;
+    } else {
+      return null;
+    }
+  }
 
 }

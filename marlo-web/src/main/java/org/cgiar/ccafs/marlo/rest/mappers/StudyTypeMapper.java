@@ -29,10 +29,10 @@ import org.mapstruct.Mappings;
 @Mapper(componentModel = "jsr330")
 public interface StudyTypeMapper {
 
-	@Mappings({ @Mapping(source = "id", target = "code") })
-	public abstract StudyTypeDTO studyTipeToStudyTypeDTO(StudyType studyTipe);
+  @Mappings({@Mapping(source = "id", target = "code")})
+  public abstract StudyTypeDTO studyTipeToStudyTypeDTO(StudyType studyTipe);
 
-	@Mappings({ @Mapping(source = "code", target = "id") })
-	public abstract StudyType studyTypeDTOToStudyType(StudyTypeDTO studyTypeDTO);
+  @Mappings({@Mapping(source = "code", target = "id")})
+  public abstract StudyType studyTypeDTOToStudyType(StudyTypeDTO studyTypeDTO);
 
 }

@@ -30,15 +30,15 @@ import org.mapstruct.Mappings;
 @Mapper(componentModel = "jsr330", uses = GlobalUnitMapper.class)
 public interface FlagshipProgramMapper {
 
-	@Mappings({ @Mapping(source = "code", target = "smoCode"), @Mapping(source = "cgiarEntityDTO", target = "crp") })
-	public abstract CrpProgram crpProgramDTOToCrpProgram(FlagshipProgramDTO crpProgramDTO);
+  @Mappings({@Mapping(source = "code", target = "smoCode"), @Mapping(source = "cgiarEntityDTO", target = "crp")})
+  public abstract CrpProgram crpProgramDTOToCrpProgram(FlagshipProgramDTO crpProgramDTO);
 
-	@Mappings({ @Mapping(source = "smoCode", target = "code"), @Mapping(source = "crp", target = "cgiarEntityDTO") })
-	public abstract FlagshipProgramDTO crpProgramToCrpProgramDTO(CrpProgram crpProgram);
+  @Mappings({@Mapping(source = "smoCode", target = "code"), @Mapping(source = "crp", target = "cgiarEntityDTO")})
+  public abstract FlagshipProgramDTO crpProgramToCrpProgramDTO(CrpProgram crpProgram);
 
-	public abstract CrpProgram newFlagshipDTOToCrpProgram(NewFlagshipDTO newFlagshipDTO);
+  public abstract CrpProgram newFlagshipDTOToCrpProgram(NewFlagshipDTO newFlagshipDTO);
 
-	public abstract CrpProgram updateCrpProgramFromCrpProgramDto(FlagshipProgramDTO crpProgramDTO,
-			@MappingTarget CrpProgram crpProgram);
+  public abstract CrpProgram updateCrpProgramFromCrpProgramDto(FlagshipProgramDTO crpProgramDTO,
+    @MappingTarget CrpProgram crpProgram);
 
 }

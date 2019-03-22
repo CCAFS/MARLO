@@ -35,79 +35,75 @@ import org.springframework.http.ResponseEntity;
 @Named
 public class GlobalUnitItem<T> {
 
-	private GlobalUnitManager globalUnitManager;
-	private GlobalUnitMapper globalUnitMapper;
+  private GlobalUnitManager globalUnitManager;
+  private GlobalUnitMapper globalUnitMapper;
 
-	@Inject
-	public GlobalUnitItem(GlobalUnitManager globalUnitManager, GlobalUnitMapper globalUnitMapper) {
-		this.globalUnitManager = globalUnitManager;
-		this.globalUnitMapper = globalUnitMapper;
-	}
+  @Inject
+  public GlobalUnitItem(GlobalUnitManager globalUnitManager, GlobalUnitMapper globalUnitMapper) {
+    this.globalUnitManager = globalUnitManager;
+    this.globalUnitMapper = globalUnitMapper;
+  }
 
-	/**
-	 * Find a Global Unit by Acronym
-	 * 
-	 * @param CRP Acronym
-	 * @return a GlobalUnitDTO with the smoCode
-	 */
-	public ResponseEntity<CGIAREntityDTO> findGlobalUnitByAcronym(String acronym) {
-		GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitByAcronym(acronym);
-		return Optional.ofNullable(globalUnitEntity).filter(c -> c.getGlobalUnitType().getId() <= 4)
-				.map(this.globalUnitMapper::globalUnitToGlobalUnitDTO)
-				.map(result -> new ResponseEntity<>(result, HttpStatus.OK))
-				.orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
-	}
+  /**
+   * Find a Global Unit by Acronym
+   * 
+   * @param CRP Acronym
+   * @return a GlobalUnitDTO with the smoCode
+   */
+  public ResponseEntity<CGIAREntityDTO> findGlobalUnitByAcronym(String acronym) {
+    GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitByAcronym(acronym);
+    return Optional.ofNullable(globalUnitEntity).filter(c -> c.getGlobalUnitType().getId() <= 4)
+      .map(this.globalUnitMapper::globalUnitToGlobalUnitDTO).map(result -> new ResponseEntity<>(result, HttpStatus.OK))
+      .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+  }
 
-	/**
-	 * Find a Global Unit by CGIAR code
-	 * 
-	 * @param CGIAR id
-	 * @return a GlobalUnitDTO with the smoCode
-	 */
-	public ResponseEntity<CGIAREntityDTO> findGlobalUnitByCGIRARId(String smoCode) {
-		GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitBySMOCode(smoCode);
-		return Optional.ofNullable(globalUnitEntity).filter(c -> c.getGlobalUnitType().getId() <= 4)
-				.map(this.globalUnitMapper::globalUnitToGlobalUnitDTO)
-				// FIXME: Should change the way to compare which CRP/PTF/Center
-				.map(result -> new ResponseEntity<>(result, HttpStatus.OK))
-				.orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
-	}
+  /**
+   * Find a Global Unit by CGIAR code
+   * 
+   * @param CGIAR id
+   * @return a GlobalUnitDTO with the smoCode
+   */
+  public ResponseEntity<CGIAREntityDTO> findGlobalUnitByCGIRARId(String smoCode) {
+    GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitBySMOCode(smoCode);
+    return Optional.ofNullable(globalUnitEntity).filter(c -> c.getGlobalUnitType().getId() <= 4)
+      .map(this.globalUnitMapper::globalUnitToGlobalUnitDTO)
+      // FIXME: Should change the way to compare which CRP/PTF/Center
+      .map(result -> new ResponseEntity<>(result, HttpStatus.OK)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+  }
 
-	/**
-	 * Get All the Global units
-	 * 
-	 * @return a List of global units
-	 */
-	public ResponseEntity<List<CGIAREntityDTO>> getAllGlobaUnits(Long typeId) {
+  /**
+   * Get All the Global units
+   * 
+   * @return a List of global units
+   */
+  public ResponseEntity<List<CGIAREntityDTO>> getAllGlobaUnits(Long typeId) {
 
-		List<GlobalUnit> globalUnits;
-		if (this.globalUnitManager.findAll() != null) {
-			if (typeId != null) {
-				globalUnits = new ArrayList<>(this.globalUnitManager.findAll().stream()
-						.filter(c -> c.isActive() && c.getGlobalUnitType().getId() == typeId && typeId <= 4)
-						.sorted(Comparator.comparing(GlobalUnit::getSmoCode,
-								Comparator.nullsLast(Comparator.naturalOrder())))
-						.collect(Collectors.toList()));
-			} else {
-				globalUnits = this.globalUnitManager.findAll().stream()
-						.filter(c -> c.isActive() && c.getGlobalUnitType().getId() <= 4).sorted(Comparator
-								.comparing(GlobalUnit::getSmoCode, Comparator.nullsLast(Comparator.naturalOrder())))
-						.collect(Collectors.toList());
-				;
-				// FIXME: Should change the way to compare which CRP/PTF/Center
-				// will show on API
-			}
-			List<CGIAREntityDTO> globalUnitDTOs = globalUnits.stream()
-					.map(globalUnitEntity -> this.globalUnitMapper.globalUnitToGlobalUnitDTO(globalUnitEntity))
-					.collect(Collectors.toList());
-			if (globalUnitDTOs == null) {
-				return new ResponseEntity<List<CGIAREntityDTO>>(HttpStatus.NOT_FOUND);
-			} else {
-				return new ResponseEntity<List<CGIAREntityDTO>>(globalUnitDTOs, HttpStatus.OK);
-			}
+    List<GlobalUnit> globalUnits;
+    if (this.globalUnitManager.findAll() != null) {
+      if (typeId != null) {
+        globalUnits = new ArrayList<>(this.globalUnitManager.findAll().stream()
+          .filter(c -> c.isActive() && c.getGlobalUnitType().getId() == typeId && typeId <= 4)
+          .sorted(Comparator.comparing(GlobalUnit::getSmoCode, Comparator.nullsLast(Comparator.naturalOrder())))
+          .collect(Collectors.toList()));
+      } else {
+        globalUnits =
+          this.globalUnitManager.findAll().stream().filter(c -> c.isActive() && c.getGlobalUnitType().getId() <= 4)
+            .sorted(Comparator.comparing(GlobalUnit::getSmoCode, Comparator.nullsLast(Comparator.naturalOrder())))
+            .collect(Collectors.toList());;
+        // FIXME: Should change the way to compare which CRP/PTF/Center
+        // will show on API
+      }
+      List<CGIAREntityDTO> globalUnitDTOs =
+        globalUnits.stream().map(globalUnitEntity -> this.globalUnitMapper.globalUnitToGlobalUnitDTO(globalUnitEntity))
+          .collect(Collectors.toList());
+      if (globalUnitDTOs == null) {
+        return new ResponseEntity<List<CGIAREntityDTO>>(HttpStatus.NOT_FOUND);
+      } else {
+        return new ResponseEntity<List<CGIAREntityDTO>>(globalUnitDTOs, HttpStatus.OK);
+      }
 
-		} else {
-			return new ResponseEntity<List<CGIAREntityDTO>>(HttpStatus.NOT_FOUND);
-		}
-	}
+    } else {
+      return new ResponseEntity<List<CGIAREntityDTO>>(HttpStatus.NOT_FOUND);
+    }
+  }
 }

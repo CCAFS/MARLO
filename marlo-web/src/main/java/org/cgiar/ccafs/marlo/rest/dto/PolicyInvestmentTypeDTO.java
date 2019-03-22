@@ -25,39 +25,39 @@ import io.swagger.annotations.ApiModelProperty;
 
 public class PolicyInvestmentTypeDTO {
 
-	@ApiModelProperty(notes = "The Generated policy insvestiment type ID")
-	@NotNull
-	private Long code;
+  @ApiModelProperty(notes = "The Generated policy insvestiment type ID")
+  @NotNull
+  private Long code;
 
-	@ApiModelProperty(notes = "policy insvestiment type name")
-	@NotNull
-	private String name;
+  @ApiModelProperty(notes = "policy insvestiment type name")
+  @NotNull
+  private String name;
 
-	@ApiModelProperty(notes = "policy insvestiment type definition")
-	private String definition;
+  @ApiModelProperty(notes = "policy insvestiment type definition")
+  private String definition;
 
-	public String getDefinition() {
-		return this.definition;
-	}
+  public Long getCode() {
+    return this.code;
+  }
 
-	public String getName() {
-		return this.name;
-	}
+  public String getDefinition() {
+    return this.definition;
+  }
 
-	public void setDefinition(String definition) {
-		this.definition = definition;
-	}
+  public String getName() {
+    return this.name;
+  }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+  public void setCode(Long code) {
+    this.code = code;
+  }
 
-	public Long getCode() {
-		return code;
-	}
+  public void setDefinition(String definition) {
+    this.definition = definition;
+  }
 
-	public void setCode(Long code) {
-		this.code = code;
-	}
+  public void setName(String name) {
+    this.name = name;
+  }
 
 }

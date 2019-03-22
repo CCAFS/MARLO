@@ -29,10 +29,10 @@ import org.mapstruct.Mappings;
 @Mapper(componentModel = "jsr330")
 public interface MaturityOfChangeMapper {
 
-	@Mappings({ @Mapping(source = "code", target = "id") })
-	public abstract RepIndStageStudy maturityOfChangeDTOToRepIndStageStudy(MaturityOfChangeDTO maturityOfChangeDTO);
+  @Mappings({@Mapping(source = "code", target = "id")})
+  public abstract RepIndStageStudy maturityOfChangeDTOToRepIndStageStudy(MaturityOfChangeDTO maturityOfChangeDTO);
 
-	@Mappings({ @Mapping(source = "id", target = "code") })
-	public abstract MaturityOfChangeDTO repIndStageStudyToMaturityOfChangeDTO(RepIndStageStudy repIndStageStudy);
+  @Mappings({@Mapping(source = "id", target = "code")})
+  public abstract MaturityOfChangeDTO repIndStageStudyToMaturityOfChangeDTO(RepIndStageStudy repIndStageStudy);
 
 }

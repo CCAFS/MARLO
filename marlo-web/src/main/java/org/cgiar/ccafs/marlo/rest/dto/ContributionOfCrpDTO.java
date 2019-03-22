@@ -25,28 +25,28 @@ import io.swagger.annotations.ApiModelProperty;
 
 public class ContributionOfCrpDTO {
 
-	@ApiModelProperty(notes = "The Generated Contribution of CRP ID")
-	@NotNull
-	private Long code;
+  @ApiModelProperty(notes = "The Generated Contribution of CRP ID")
+  @NotNull
+  private Long code;
 
-	@ApiModelProperty(notes = "Contribution of CRP name")
-	@NotNull
-	private String name;
+  @ApiModelProperty(notes = "Contribution of CRP name")
+  @NotNull
+  private String name;
 
-	public Long getCode() {
-		return this.code;
-	}
+  public Long getCode() {
+    return this.code;
+  }
 
-	public String getName() {
-		return this.name;
-	}
+  public String getName() {
+    return this.name;
+  }
 
-	public void setCode(Long code) {
-		this.code = code;
-	}
+  public void setCode(Long code) {
+    this.code = code;
+  }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+  public void setName(String name) {
+    this.name = name;
+  }
 
 }

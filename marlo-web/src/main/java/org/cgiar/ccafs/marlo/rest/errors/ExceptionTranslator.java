@@ -44,125 +44,125 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @ControllerAdvice
 public class ExceptionTranslator {
 
-	// This is just for exceptions that don't get processed by the LoggingAspect
-	// (e.g. UnauthorizedException)
-	private static final Logger LOG = LoggerFactory.getLogger(ExceptionTranslator.class);
+  // This is just for exceptions that don't get processed by the LoggingAspect
+  // (e.g. UnauthorizedException)
+  private static final Logger LOG = LoggerFactory.getLogger(ExceptionTranslator.class);
 
-	@ExceptionHandler(AuthorizationException.class)
-	@ResponseBody
-	@ResponseStatus(HttpStatus.UNAUTHORIZED)
-	public ErrorDTO processAuthorizationException(final RuntimeException ex) {
-		// This one doesn't get logged by our aspectj logger due to Shiro's
-		// aspects being applied first.
-		LOG.error("AuthorizationException - user does does not have correct permissions");
-		return new ErrorDTO(ErrorConstants.ERR_ACCESS_DENIED,
-				"Please contact the crp administrator to request permissions");
-	}
+  @ExceptionHandler(AuthorizationException.class)
+  @ResponseBody
+  @ResponseStatus(HttpStatus.UNAUTHORIZED)
+  public ErrorDTO processAuthorizationException(final RuntimeException ex) {
+    // This one doesn't get logged by our aspectj logger due to Shiro's
+    // aspects being applied first.
+    LOG.error("AuthorizationException - user does does not have correct permissions");
+    return new ErrorDTO(ErrorConstants.ERR_ACCESS_DENIED,
+      "Please contact the crp administrator to request permissions");
+  }
 
-	@ExceptionHandler({ IllegalArgumentException.class, DataIntegrityViolationException.class })
-	@ResponseBody
-	@ResponseStatus(HttpStatus.BAD_REQUEST)
-	public ErrorDTO processBadRequest(final RuntimeException ex) {
-		return new ErrorDTO(ErrorConstants.ERR_VALIDATION, ex.getMessage());
-	}
+  @ExceptionHandler({IllegalArgumentException.class, DataIntegrityViolationException.class})
+  @ResponseBody
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  public ErrorDTO processBadRequest(final RuntimeException ex) {
+    return new ErrorDTO(ErrorConstants.ERR_VALIDATION, ex.getMessage());
+  }
 
-	@ExceptionHandler(ConcurrencyFailureException.class)
-	@ResponseStatus(HttpStatus.CONFLICT)
-	@ResponseBody
-	public ErrorDTO processConcurencyError(ConcurrencyFailureException ex) {
-		return new ErrorDTO(ErrorConstants.ERR_CONCURRENCY_FAILURE);
-	}
+  @ExceptionHandler(ConcurrencyFailureException.class)
+  @ResponseStatus(HttpStatus.CONFLICT)
+  @ResponseBody
+  public ErrorDTO processConcurencyError(ConcurrencyFailureException ex) {
+    return new ErrorDTO(ErrorConstants.ERR_CONCURRENCY_FAILURE);
+  }
 
-	@ExceptionHandler({ ConstraintViolationException.class })
-	@ResponseBody
-	@ResponseStatus(HttpStatus.BAD_REQUEST)
-	public ErrorDTO processConstraintViolations(final ConstraintViolationException e) {
+  @ExceptionHandler({ConstraintViolationException.class})
+  @ResponseBody
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  public ErrorDTO processConstraintViolations(final ConstraintViolationException e) {
 
-		StringBuilder errorMessageBuilder = new StringBuilder();
+    StringBuilder errorMessageBuilder = new StringBuilder();
 
-		for (ConstraintViolation<?> violation : e.getConstraintViolations()) {
-			if (errorMessageBuilder.length() > 0) {
-				errorMessageBuilder.append(", ");
-			}
-			errorMessageBuilder.append(violation.getInvalidValue()).append(": ").append(violation.getMessage());
-		}
+    for (ConstraintViolation<?> violation : e.getConstraintViolations()) {
+      if (errorMessageBuilder.length() > 0) {
+        errorMessageBuilder.append(", ");
+      }
+      errorMessageBuilder.append(violation.getInvalidValue()).append(": ").append(violation.getMessage());
+    }
 
-		return new ErrorDTO(ErrorConstants.ERR_VALIDATION, errorMessageBuilder.toString());
-	}
+    return new ErrorDTO(ErrorConstants.ERR_VALIDATION, errorMessageBuilder.toString());
+  }
 
-	private ErrorDTO processFieldErrors(List<FieldError> fieldErrors) {
-		ErrorDTO dto = new ErrorDTO(ErrorConstants.ERR_VALIDATION);
+  private ErrorDTO processFieldErrors(List<FieldError> fieldErrors) {
+    ErrorDTO dto = new ErrorDTO(ErrorConstants.ERR_VALIDATION);
 
-		for (FieldError fieldError : fieldErrors) {
-			dto.add(fieldError.getObjectName(), fieldError.getField(), fieldError.getCode());
-		}
+    for (FieldError fieldError : fieldErrors) {
+      dto.add(fieldError.getObjectName(), fieldError.getField(), fieldError.getCode());
+    }
 
-		return dto;
-	}
+    return dto;
+  }
 
-	@ExceptionHandler(HttpMessageNotWritableException.class)
-	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-	@ResponseBody
-	public ErrorDTO processHttpMessageNotWritable(HttpMessageNotWritableException ex) {
-		return new ErrorDTO(ErrorConstants.ERR_INTERNAL_SERVER, ex.getMessage());
-	}
+  @ExceptionHandler(HttpMessageNotWritableException.class)
+  @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+  @ResponseBody
+  public ErrorDTO processHttpMessageNotWritable(HttpMessageNotWritableException ex) {
+    return new ErrorDTO(ErrorConstants.ERR_INTERNAL_SERVER, ex.getMessage());
+  }
 
-	@ExceptionHandler({ NullPointerException.class, IllegalStateException.class })
-	@ResponseBody
-	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-	public ErrorDTO processInternalServerError(final RuntimeException ex) {
-		return new ErrorDTO(ErrorConstants.ERR_INTERNAL_SERVER, ex.getMessage());
-	}
+  @ExceptionHandler({NullPointerException.class, IllegalStateException.class})
+  @ResponseBody
+  @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+  public ErrorDTO processInternalServerError(final RuntimeException ex) {
+    return new ErrorDTO(ErrorConstants.ERR_INTERNAL_SERVER, ex.getMessage());
+  }
 
-	@ExceptionHandler(HttpRequestMethodNotSupportedException.class)
-	@ResponseBody
-	@ResponseStatus(HttpStatus.METHOD_NOT_ALLOWED)
-	public ErrorDTO processMethodNotSupportedException(HttpRequestMethodNotSupportedException exception) {
-		return new ErrorDTO(ErrorConstants.ERR_METHOD_NOT_SUPPORTED, exception.getMessage());
-	}
+  @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+  @ResponseBody
+  @ResponseStatus(HttpStatus.METHOD_NOT_ALLOWED)
+  public ErrorDTO processMethodNotSupportedException(HttpRequestMethodNotSupportedException exception) {
+    return new ErrorDTO(ErrorConstants.ERR_METHOD_NOT_SUPPORTED, exception.getMessage());
+  }
 
-	@ExceptionHandler(NotFoundException.class)
-	@ResponseBody
-	@ResponseStatus(HttpStatus.NOT_FOUND)
-	public ErrorDTO processNotFoundException(final NotFoundException ex) {
-		return new ErrorDTO(ex.getCode() + " - " + ex.getDescription());
-	}
+  @ExceptionHandler(NotFoundException.class)
+  @ResponseBody
+  @ResponseStatus(HttpStatus.NOT_FOUND)
+  public ErrorDTO processNotFoundException(final NotFoundException ex) {
+    return new ErrorDTO(ex.getCode() + " - " + ex.getDescription());
+  }
 
-	@ExceptionHandler(Exception.class)
-	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-	@ResponseBody
-	public ErrorDTO processRemainingExceptions(Exception ex) {
-		return new ErrorDTO(ErrorConstants.ERR_INTERNAL_SERVER, ex.getMessage());
-	}
+  @ExceptionHandler(Exception.class)
+  @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+  @ResponseBody
+  public ErrorDTO processRemainingExceptions(Exception ex) {
+    return new ErrorDTO(ErrorConstants.ERR_INTERNAL_SERVER, ex.getMessage());
+  }
 
-	@ExceptionHandler({ ResourceConflictException.class, ResourceAlreadyExistsException.class })
-	@ResponseBody
-	@ResponseStatus(HttpStatus.CONFLICT)
-	protected ErrorDTO processResourceAlreadyExists(final RuntimeException ex) {
-		return new ErrorDTO(ErrorConstants.ERR_RESOURCE_ALREADY_EXISTS, ex.getMessage());
-	}
+  @ExceptionHandler({ResourceConflictException.class, ResourceAlreadyExistsException.class})
+  @ResponseBody
+  @ResponseStatus(HttpStatus.CONFLICT)
+  protected ErrorDTO processResourceAlreadyExists(final RuntimeException ex) {
+    return new ErrorDTO(ErrorConstants.ERR_RESOURCE_ALREADY_EXISTS, ex.getMessage());
+  }
 
-	@ExceptionHandler(ResourceNotFoundException.class)
-	@ResponseBody
-	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-	public ErrorDTO processResourceNotFoundException(final RuntimeException ex) {
-		return new ErrorDTO(ErrorConstants.ERR_INTERNAL_SERVER, ex.getMessage());
-	}
+  @ExceptionHandler(ResourceNotFoundException.class)
+  @ResponseBody
+  @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+  public ErrorDTO processResourceNotFoundException(final RuntimeException ex) {
+    return new ErrorDTO(ErrorConstants.ERR_INTERNAL_SERVER, ex.getMessage());
+  }
 
-	@ExceptionHandler(UnauthenticatedException.class)
-	@ResponseStatus(HttpStatus.UNAUTHORIZED)
-	public ErrorDTO processUnauthenticedException(UnauthenticatedException e) {
-		return new ErrorDTO(ErrorConstants.ERR_ACCESS_DENIED, "Please check your username and password");
-	}
+  @ExceptionHandler(UnauthenticatedException.class)
+  @ResponseStatus(HttpStatus.UNAUTHORIZED)
+  public ErrorDTO processUnauthenticedException(UnauthenticatedException e) {
+    return new ErrorDTO(ErrorConstants.ERR_ACCESS_DENIED, "Please check your username and password");
+  }
 
-	@ExceptionHandler(MethodArgumentNotValidException.class)
-	@ResponseStatus(HttpStatus.BAD_REQUEST)
-	@ResponseBody
-	public ErrorDTO processValidationError(MethodArgumentNotValidException ex) {
-		BindingResult result = ex.getBindingResult();
-		List<FieldError> fieldErrors = result.getFieldErrors();
+  @ExceptionHandler(MethodArgumentNotValidException.class)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  @ResponseBody
+  public ErrorDTO processValidationError(MethodArgumentNotValidException ex) {
+    BindingResult result = ex.getBindingResult();
+    List<FieldError> fieldErrors = result.getFieldErrors();
 
-		return this.processFieldErrors(fieldErrors);
-	}
+    return this.processFieldErrors(fieldErrors);
+  }
 
 }
