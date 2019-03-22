@@ -116,6 +116,7 @@
 [/#if]
 
 [#-- Generate WORD Document --]
+[#if !config.production]
 <br />
 <div class="text-center">
   [#assign documentLink][@s.url namespace="/summaries" action="${crpSession}/AnnualReportSummary2018"][@s.param name='phaseID']${actualPhase.id}[/@s.param][/@s.url][/#assign]
@@ -123,6 +124,7 @@
    <img  src="${baseUrl}/global/images/icons/file-doc.png" alt="" /> Generate DOC file <small>(Beta version)</small>
   </a>
 </div>
+[/#if]
 
 [#-- Justification --]
 <div id="unSubmit-justification" title="Unsubmit justification" style="display:none"> 
