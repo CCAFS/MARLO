@@ -173,7 +173,8 @@
             <th class="text-center"> [@s.text name="${customLabel}.${name}.organization" /] </th>
             <th class="text-center"> Top five contributing partners</th>
             <th class="text-center"> [@s.text name="${customLabel}.${name}.geoScope" /] </th>
-            <th class="text-center"> [@s.text name="${customLabel}.${name}.evidence" /] </th>
+            <th class="text-center col-md-1"> [@s.text name="${customLabel}.${name}.evidence" /] </th>
+            <th class="text-center col-md-1"> PDF </th>
           [/#if]
           [#if !expanded]
             <th class="col-md-1 text-center"> [@s.text name="${customLabel}.${name}.includeAR" /] </th>
@@ -209,7 +210,7 @@
             <td>[@utils.tableText value=(item.projectInnovationInfo.repIndStageInnovation.name)!"" /]</td>
             [#if expanded]
               [#-- 6. Description of stage reached --]
-              <td>[@utils.tableText value=(item.projectInnovationInfo.descriptionStage)!"" /]</td>
+              <td class="urlify">[@utils.tableText value=(item.projectInnovationInfo.descriptionStage)!"" /]</td>
               [#-- 7. Lead Organization/ entity --]
               <td>[@utils.tableText value=(item.projectInnovationInfo.leadOrganization.name)!"" /]</td>
               [#-- 8. Top five contributing partners/ entities to this stage --]
@@ -228,6 +229,11 @@
                 [#else]
                   <span class="glyphicon glyphicon-link" title="Not defined"></span>
                 [/#if]
+              </td>
+              <td class="text-center">
+                <a href="[@s.url namespace="/summaries" action='${(crpSession)!}/projectInnovationSummary'][@s.param name='innovationID']${item.id?c}[/@s.param][@s.param name='phaseID']${(item.projectInnovationInfo.phase.id)!''}[/@s.param][/@s.url]" target="__BLANK">
+                  <img src="${baseUrl}/global/images/pdf.png" height="25" title="[@s.text name="projectsList.downloadPDF" /]" />
+                </a>
               </td>
             [/#if]
             [#if !expanded]
