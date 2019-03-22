@@ -274,7 +274,7 @@ public class EditDeliverableInterceptor extends AbstractInterceptor implements S
           && deliverable.getDeliverableInfo(baseAction.getActualPhase()).getStatus().intValue() == Integer
             .parseInt(ProjectStatusEnum.Complete.getStatusId())
           && deliverable.getDeliverableInfo(baseAction.getActualPhase()).getNewExpectedYear() != null
-          && deliverable.getDeliverableInfo(baseAction.getActualPhase()).getNewExpectedYear().intValue() == baseAction
+          && deliverable.getDeliverableInfo(baseAction.getActualPhase()).getNewExpectedYear().intValue() >= baseAction
             .getCurrentCycleYear()) {
           canEdit = true;
         }
