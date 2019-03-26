@@ -280,7 +280,7 @@ public class ProjectMySQLDAO extends AbstractMarloDAO<Project, Long> implements 
     List<Map<String, Object>> list = new ArrayList<>();
     StringBuilder builder = new StringBuilder();
     builder.append("select DISTINCT project_id from user_permission where crp_acronym='" + crp
-      + "' and project_id is not null and  permission_id not in (438,462,467)");
+      + "' and project_id is not null and  permission LIKE '%project%'");
 
     if (super.getTemTableUserId() == userId) {
       list = super.findCustomQuery(builder.toString());
