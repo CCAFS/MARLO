@@ -55,6 +55,7 @@
             </div>
 
             [#-- Table 12: CRP Financial Report --]
+            [#if PMU]
             <div class="form-group margin-panel">
               <br />
               <h4 class="subTitle headTitle">[@s.text name="${customLabel}.table12.title" /]</h4>
@@ -62,6 +63,7 @@
                 [@financialReport name="${customName}.budgets" element=item element_index=item_index editable=editable && PMU /]
               [/#list]
             </div>
+            [/#if]
             
           </div>
           [#-- Section Buttons & hidden inputs--]
@@ -80,9 +82,9 @@
 [#macro financialReport name element element_index editable]
   [#local customName = "${name}[${element_index}]"]
   [#assign budgetTypesList=[
-    {"id":"1", "name":"W1/W2",      "p": "w1Planned",         "r": "w1Actual"   },
-    {"id":"2", "name":"W3",         "p": "w3Planned",         "r": "w3Actual"    },
-    {"id":"3", "name":"Bilateral",  "p": "bilateralPlanned",  "r": "bilateralActual" }
+    {"id":"1", "name":"W1/W2",        "p": "w1Planned",         "r": "w1Actual"   },
+    {"id":"2", "name":"W3/Bilateral", "p": "w3Planned",         "r": "w3Actual"    }
+    [#--  {"id":"3", "name":"Bilateral",    "p": "bilateralPlanned",  "r": "bilateralActual" } --]
   ] /]
   
   <div id="flagship-${element_index}" class="flagship expandableBlock borderBox">
