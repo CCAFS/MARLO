@@ -41,13 +41,14 @@ import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
+import org.cgiar.ccafs.marlo.data.model.PartnershipsSynthesis;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectComponentLesson;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
+import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPartnership;
-import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.RepIndPartnershipMainArea;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis2018SectionStatusEnum;
@@ -128,9 +129,12 @@ public class PartnershipsAction extends BaseAction {
   private List<RepIndPartnershipMainArea> mainAreasSel;
   private List<Institution> partners;
   private List<ProjectComponentLesson> projectKeyPartnerships;
-  private List<GlobalUnit> globalUnits;
-  private int indexTab;
+  private List<PartnershipsSynthesis> projectPartners;
 
+  private List<GlobalUnit> globalUnits;
+
+
+  private int indexTab;
 
   @Inject
   public PartnershipsAction(APConfig config, GlobalUnitManager crpManager,
@@ -169,7 +173,6 @@ public class PartnershipsAction extends BaseAction {
     this.reportSynthesisKeyPartnershipCollaborationCrpManager = reportSynthesisKeyPartnershipCollaborationCrpManager;
     this.reportSynthesisKeyPartnershipPmuManager = reportSynthesisKeyPartnershipPmuManager;
   }
-
 
   public Long firstFlagship() {
     List<LiaisonInstitution> liaisonInstitutions = new ArrayList<>(loggedCrp.getLiaisonInstitutions().stream()
@@ -266,9 +269,11 @@ public class PartnershipsAction extends BaseAction {
     return indexTab;
   }
 
+
   public LiaisonInstitution getLiaisonInstitution() {
     return liaisonInstitution;
   }
+
 
   public Long getLiaisonInstitutionID() {
     return liaisonInstitutionID;
@@ -278,11 +283,9 @@ public class PartnershipsAction extends BaseAction {
     return liaisonInstitutions;
   }
 
-
   public GlobalUnit getLoggedCrp() {
     return loggedCrp;
   }
-
 
   public List<RepIndPartnershipMainArea> getMainAreasSel() {
     return mainAreasSel;
@@ -295,27 +298,33 @@ public class PartnershipsAction extends BaseAction {
       .concat(ReportSynthesis2018SectionStatusEnum.EXTERNAL_PARTNERSHIPS.getStatus()).concat(File.separator);
   }
 
+
   public List<Institution> getPartners() {
     return partners;
   }
+
 
   public List<ProjectPartnerPartnership> getPartnerShipList() {
     return partnerShipList;
   }
 
-
   public List<ProjectComponentLesson> getProjectKeyPartnerships() {
     return projectKeyPartnerships;
   }
+
+  public List<PartnershipsSynthesis> getProjectPartners() {
+    return projectPartners;
+  }
+
 
   public ReportSynthesis getReportSynthesis() {
     return reportSynthesis;
   }
 
-
   public Long getSynthesisID() {
     return synthesisID;
   }
+
 
   public String getTransaction() {
     return transaction;
@@ -574,9 +583,6 @@ public class PartnershipsAction extends BaseAction {
         // Charge Main Areas and Partners Selection List
         mainAreasSel = repIndPartnershipMainAreaManager.findAll();
         partners = institutionManager.findAll().stream().filter(i -> i.isActive()).collect(Collectors.toList());
-
-        // Load Project Flagship Partnerships
-        this.projectPartnerships(phase.getId(), liaisonInstitution);
       }
 
       // load Crps-Platforms
@@ -634,41 +640,49 @@ public class PartnershipsAction extends BaseAction {
   /*
    * Load The Project Key Partnership of each Flagship/Module
    */
-  public void projectPartnerships(long phaseID, LiaisonInstitution liaisonInstitution) {
+  public List<PartnershipsSynthesis> projectPartnerships(boolean isCgiar) {
 
-    this.projectKeyPartnerships = new ArrayList<>();
+    List<PartnershipsSynthesis> partnershipsSynthesis = new ArrayList<>();
 
-    Phase phase = phaseManager.getPhaseById(phaseID);
+    Phase phase = phaseManager.getPhaseById(this.getActualPhase().getId());
 
     if (projectFocusManager.findAll() != null) {
 
       List<ProjectFocus> projectFocus = new ArrayList<>(projectFocusManager.findAll().stream()
         .filter(pf -> pf.isActive() && pf.getCrpProgram().getId() == liaisonInstitution.getCrpProgram().getId()
-          && pf.getPhase() != null && pf.getPhase().getId() == phaseID)
+          && pf.getPhase() != null && pf.getPhase().getId() == phase.getId())
         .collect(Collectors.toList()));
 
       for (ProjectFocus focus : projectFocus) {
 
         Project project = projectManager.getProjectById(focus.getProject().getId());
 
-        if (project.getProjectComponentLessons() != null) {
+        if (project.getProjectPartners() != null) {
 
-          List<ProjectComponentLesson> projectKeyPartnershipsList = project.getProjectComponentLessons().stream()
-            .filter(co -> co.isActive() && co.getPhase().getId().equals(phase.getId())
-              && co.getYear() == this.getCurrentCycleYear()
-              && co.getComponentName().equals(ProjectSectionStatusEnum.PARTNERS.getStatus()))
-            .collect(Collectors.toList());
+          PartnershipsSynthesis partnershipsSynt = new PartnershipsSynthesis();
+          partnershipsSynt.setProject(project);
+          partnershipsSynt.setPartners(new ArrayList<>());
+          List<ProjectPartner> projectPartnersList = project.getProjectPartners().stream()
+            .filter(co -> co.isActive() && co.getPhase().getId().equals(phase.getId())).collect(Collectors.toList());
 
-          if (projectKeyPartnershipsList != null && !projectKeyPartnershipsList.isEmpty()) {
-
-            for (ProjectComponentLesson projectKeyPartnership : projectKeyPartnershipsList) {
-              this.projectKeyPartnerships.add(projectKeyPartnership);
+          if (projectPartnersList != null && !projectPartnersList.isEmpty()) {
+            if (isCgiar) {
+              partnershipsSynt.getPartners().addAll(projectPartnersList.stream()
+                .filter(c -> c.getInstitution().getInstitutionType().getId().equals(3L)).collect(Collectors.toList()));
+            } else {
+              partnershipsSynt.getPartners().addAll(projectPartnersList.stream()
+                .filter(c -> !c.getInstitution().getInstitutionType().getId().equals(3L)).collect(Collectors.toList()));
             }
 
+
           }
+          partnershipsSynthesis.add(partnershipsSynt);
+
         }
       }
     }
+
+    return partnershipsSynthesis;
   }
 
   @Override
@@ -812,7 +826,6 @@ public class PartnershipsAction extends BaseAction {
 
     }
   }
-
 
   /**
    * Save Key External Collaborations Information
@@ -1166,6 +1179,7 @@ public class PartnershipsAction extends BaseAction {
     this.globalUnits = globalUnits;
   }
 
+
   public void setIndexTab(int indexTab) {
     this.indexTab = indexTab;
   }
@@ -1186,10 +1200,10 @@ public class PartnershipsAction extends BaseAction {
     this.loggedCrp = loggedCrp;
   }
 
-
   public void setMainAreasSel(List<RepIndPartnershipMainArea> mainAreasSel) {
     this.mainAreasSel = mainAreasSel;
   }
+
 
   public void setPartners(List<Institution> partners) {
     this.partners = partners;
@@ -1201,6 +1215,10 @@ public class PartnershipsAction extends BaseAction {
 
   public void setProjectKeyPartnerships(List<ProjectComponentLesson> projectKeyPartnerships) {
     this.projectKeyPartnerships = projectKeyPartnerships;
+  }
+
+  public void setProjectPartners(List<PartnershipsSynthesis> projectPartners) {
+    this.projectPartners = projectPartners;
   }
 
   public void setReportSynthesis(ReportSynthesis reportSynthesis) {
