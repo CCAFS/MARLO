@@ -490,29 +490,25 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
 
         if (deliverable.getProject() != null) {
           projectID = deliverable.getProject().getId().toString();
-          if (deliverable.getProject().getProjectInfo().getTitle() != null
-            && !deliverable.getProject().getProjectInfo().getTitle().trim().isEmpty()) {
+          if (deliverable.getProject().getProjectInfo().getTitle() != null) {
             projectTitle = deliverable.getProject().getProjectInfo().getTitle();
           }
         }
 
         // Justification
         if (deliverable.getDeliverableInfo() != null) {
-          if (deliverable.getDeliverableInfo().getModificationJustification() != null
-            || !deliverable.getDeliverableInfo().getModificationJustification().isEmpty()) {
+          if (deliverable.getDeliverableInfo().getModificationJustification() != null) {
             justification = deliverable.getDeliverableInfo().getModificationJustification();
           } else {
             justification = "<Not applicable>";
           }
         } else {
-
           justification = "<Not applicable>";
         }
 
         // Description
         if (deliverable.getDeliverableInfo() != null) {
-          if (deliverable.getDeliverableInfo().getDescription() != null
-            || deliverable.getDeliverableInfo().getDescription().isEmpty()) {
+          if (deliverable.getDeliverableInfo().getDescription() != null) {
             description = deliverable.getDeliverableInfo().getDescription();
           } else {
             description = "<Not applicable>";
@@ -522,9 +518,7 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
         }
 
         if (deliverable.getProject() != null && deliverable.getProject().getProjectInfo() != null
-          && deliverable.getProject().getProjectInfo().getStatusName() != null)
-
-        {
+          && deliverable.getProject().getProjectInfo().getStatusName() != null) {
           status = deliverable.getProject().getProjectInfo().getStatusName();
         }
 
@@ -534,7 +528,9 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
             : null;
 
         if (deliverable.getDeliverableInfo().getDeliverableType() != null) {
-          delivSubType = deliverable.getDeliverableInfo().getDeliverableType().getName();
+          if (deliverable.getDeliverableInfo().getDeliverableType().getName() != null) {
+            delivSubType = deliverable.getDeliverableInfo().getDeliverableType().getName();
+          }
           if (deliverable.getDeliverableInfo().getDeliverableType().getId() == 51
             || deliverable.getDeliverableInfo().getDeliverableType().getId() == 56
             || deliverable.getDeliverableInfo().getDeliverableType().getId() == 57
