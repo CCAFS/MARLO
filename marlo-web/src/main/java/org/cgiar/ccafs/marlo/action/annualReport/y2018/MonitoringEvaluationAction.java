@@ -60,7 +60,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -170,7 +169,7 @@ public class MonitoringEvaluationAction extends BaseAction {
         if (projectExpectedStudy.getProjectExpectedStudyInfo(this.getActualPhase()).getStudyType() != null
           && projectExpectedStudy.getProjectExpectedStudyInfo(this.getActualPhase()).getStudyType().getId() != 1
           && projectExpectedStudy.getProjectExpectedStudyInfo().getStatus() != null
-          && projectExpectedStudy.getProjectExpectedStudyInfo().getYear() == this.getCurrentCycleYear()) {
+          && projectExpectedStudy.getProjectExpectedStudyInfo().getYear().equals(this.getCurrentCycleYear())) {
 
           ReportSynthesisFlagshipProgressStudyDTO dto = new ReportSynthesisFlagshipProgressStudyDTO();
           projectExpectedStudy.getProject()
@@ -182,8 +181,9 @@ public class MonitoringEvaluationAction extends BaseAction {
               dto.setLiaisonInstitutions(new ArrayList<>());
               dto.getLiaisonInstitutions().add(this.liaisonInstitution);
             } else {
-              List<ProjectFocus> projectFocuses = new ArrayList<>(projectExpectedStudy.getProject().getProjectFocuses()
-                .stream().filter(pf -> pf.isActive() && pf.getPhase().getId() == phaseID).collect(Collectors.toList()));
+              List<ProjectFocus> projectFocuses =
+                new ArrayList<>(projectExpectedStudy.getProject().getProjectFocuses().stream()
+                  .filter(pf -> pf.isActive() && pf.getPhase().getId().equals(phaseID)).collect(Collectors.toList()));
               List<LiaisonInstitution> liaisonInstitutions = new ArrayList<>();
               for (ProjectFocus projectFocus : projectFocuses) {
                 liaisonInstitutions.addAll(projectFocus.getCrpProgram().getLiaisonInstitutions().stream()
@@ -204,7 +204,7 @@ public class MonitoringEvaluationAction extends BaseAction {
 
       List<ProjectExpectedStudy> expectedStudies = new ArrayList<>(projectExpectedStudyManager.findAll().stream()
         .filter(es -> es.isActive() && es.getProjectExpectedStudyInfo(this.getActualPhase()) != null
-          && es.getProjectExpectedStudyInfo(this.getActualPhase()).getYear() == this.getCurrentCycleYear()
+          && es.getProjectExpectedStudyInfo(this.getActualPhase()).getYear().equals(this.getCurrentCycleYear())
           && es.getProject() == null)
         .collect(Collectors.toList()));
 
@@ -212,7 +212,7 @@ public class MonitoringEvaluationAction extends BaseAction {
         if (projectExpectedStudy.getProjectExpectedStudyInfo(this.getActualPhase()) != null) {
           List<ProjectExpectedStudyFlagship> studiesPrograms =
             new ArrayList<>(projectExpectedStudy.getProjectExpectedStudyFlagships().stream()
-              .filter(s -> s.isActive() && s.getPhase().getId() == this.getActualPhase().getId())
+              .filter(s -> s.isActive() && s.getPhase().getId().equals(this.getActualPhase().getId()))
               .collect(Collectors.toList()));
           for (ProjectExpectedStudyFlagship projectExpectedStudyFlagship : studiesPrograms) {
             CrpProgram crpProgram = liaisonInstitution.getCrpProgram();
@@ -221,7 +221,7 @@ public class MonitoringEvaluationAction extends BaseAction {
                 if (projectExpectedStudy.getProjectExpectedStudyInfo(this.getActualPhase()).getStudyType() != null
                   && projectExpectedStudy.getProjectExpectedStudyInfo(this.getActualPhase()).getStudyType().getId() != 1
                   && projectExpectedStudy.getProjectExpectedStudyInfo().getStatus() != null
-                  && projectExpectedStudy.getProjectExpectedStudyInfo().getYear() == this.getCurrentCycleYear()) {
+                  && projectExpectedStudy.getProjectExpectedStudyInfo().getYear().equals(this.getCurrentCycleYear())) {
                   ReportSynthesisFlagshipProgressStudyDTO dto = new ReportSynthesisFlagshipProgressStudyDTO();
                   projectExpectedStudy.getProject()
                     .setProjectInfo(projectExpectedStudy.getProject().getProjecInfoPhase(this.getActualPhase()));
@@ -233,9 +233,10 @@ public class MonitoringEvaluationAction extends BaseAction {
                       dto.setLiaisonInstitutions(new ArrayList<>());
                       dto.getLiaisonInstitutions().add(this.liaisonInstitution);
                     } else {
-                      List<ProjectFocus> projectFocuses = new ArrayList<>(projectExpectedStudy.getProject()
-                        .getProjectFocuses().stream().filter(pf -> pf.isActive() && pf.getPhase().getId() == phaseID)
-                        .collect(Collectors.toList()));
+                      List<ProjectFocus> projectFocuses =
+                        new ArrayList<>(projectExpectedStudy.getProject().getProjectFocuses().stream()
+                          .filter(pf -> pf.isActive() && pf.getPhase().getId().equals(phaseID))
+                          .collect(Collectors.toList()));
                       List<LiaisonInstitution> liaisonInstitutions = new ArrayList<>();
                       for (ProjectFocus projectFocus : projectFocuses) {
                         liaisonInstitutions.addAll(projectFocus.getCrpProgram().getLiaisonInstitutions().stream()
@@ -446,7 +447,7 @@ public class MonitoringEvaluationAction extends BaseAction {
         if (user.getLiasonsUsers() != null || !user.getLiasonsUsers().isEmpty()) {
           List<LiaisonUser> liaisonUsers = new ArrayList<>(user.getLiasonsUsers().stream()
             .filter(lu -> lu.isActive() && lu.getLiaisonInstitution().isActive()
-              && lu.getLiaisonInstitution().getCrp().getId() == loggedCrp.getId()
+              && lu.getLiaisonInstitution().getCrp().getId().equals(loggedCrp.getId())
               && lu.getLiaisonInstitution().getInstitution() == null)
             .collect(Collectors.toList()));
           if (!liaisonUsers.isEmpty()) {
@@ -650,7 +651,7 @@ public class MonitoringEvaluationAction extends BaseAction {
         path.toFile().delete();
       }
 
-      Collection<String> messages = this.getActionMessages();
+      this.getActionMessages();
       if (!this.getInvalidFields().isEmpty()) {
         this.setActionMessages(null);
         // this.addActionMessage(Map.toString(this.getInvalidFields().toArray()));
@@ -868,15 +869,15 @@ public class MonitoringEvaluationAction extends BaseAction {
       if (projectFocusManager.findAll() != null) {
 
         List<ProjectFocus> projectFocus = new ArrayList<>(projectFocusManager.findAll().stream()
-          .filter(pf -> pf.isActive() && pf.getCrpProgram().getId() == liaisonInstitution.getCrpProgram().getId()
-            && pf.getPhase() != null && pf.getPhase().getId() == phaseID)
+          .filter(pf -> pf.isActive() && pf.getCrpProgram().getId().equals(liaisonInstitution.getCrpProgram().getId())
+            && pf.getPhase() != null && pf.getPhase().getId().equals(phaseID))
           .collect(Collectors.toList()));
 
         for (ProjectFocus focus : projectFocus) {
           Project project = projectManager.getProjectById(focus.getProject().getId());
           List<ProjectExpectedStudy> expectedStudies = new ArrayList<>(project.getProjectExpectedStudies().stream()
             .filter(es -> es.isActive() && es.getProjectExpectedStudyInfo(phase) != null
-              && es.getProjectExpectedStudyInfo(phase).getYear() == this.getCurrentCycleYear())
+              && es.getProjectExpectedStudyInfo(phase).getYear().equals(this.getCurrentCycleYear()))
             .collect(Collectors.toList()));
           for (ProjectExpectedStudy projectExpectedStudy : expectedStudies) {
             if (projectExpectedStudy.getProjectExpectedStudyInfo(phase) != null) {
@@ -890,22 +891,23 @@ public class MonitoringEvaluationAction extends BaseAction {
 
         List<ProjectExpectedStudy> expectedStudies = new ArrayList<>(projectExpectedStudyManager.findAll().stream()
           .filter(es -> es.isActive() && es.getProjectExpectedStudyInfo(phase) != null
-            && es.getProjectExpectedStudyInfo(phase).getYear() == this.getCurrentCycleYear() && es.getProject() == null)
+            && es.getProjectExpectedStudyInfo(phase).getYear().equals(this.getCurrentCycleYear())
+            && es.getProject() == null)
           .collect(Collectors.toList()));
 
         for (ProjectExpectedStudy projectExpectedStudy : expectedStudies) {
           if (projectExpectedStudy.getProjectExpectedStudyInfo(phase) != null) {
             List<ProjectExpectedStudyFlagship> studiesPrograms =
               new ArrayList<>(projectExpectedStudy.getProjectExpectedStudyFlagships().stream()
-                .filter(s -> s.isActive() && s.getPhase().getId() == phase.getId()).collect(Collectors.toList()));
+                .filter(s -> s.isActive() && s.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
             for (ProjectExpectedStudyFlagship projectExpectedStudyFlagship : studiesPrograms) {
               CrpProgram crpProgram = liaisonInstitution.getCrpProgram();
               if (crpProgram.equals(projectExpectedStudyFlagship.getCrpProgram())) {
                 if (projectExpectedStudy.getProjectExpectedStudyInfo(phase) != null) {
                   if (projectExpectedStudy.getProjectExpectedStudyInfo(phase).getStudyType() != null
                     && projectExpectedStudy.getProjectExpectedStudyInfo(phase).getStudyType().getId() != 1
-                    && projectExpectedStudy.getProjectExpectedStudyInfo().getStatus() != null
-                    && projectExpectedStudy.getProjectExpectedStudyInfo().getYear() == this.getCurrentCycleYear()) {
+                    && projectExpectedStudy.getProjectExpectedStudyInfo().getStatus() != null && projectExpectedStudy
+                      .getProjectExpectedStudyInfo().getYear().equals(this.getCurrentCycleYear())) {
                     studiesList.add(projectExpectedStudy);
                     break;
                   }
@@ -919,7 +921,7 @@ public class MonitoringEvaluationAction extends BaseAction {
           if (projectExpectedStudy.getProjectExpectedStudySubIdos() != null
             && !projectExpectedStudy.getProjectExpectedStudySubIdos().isEmpty()) {
             projectExpectedStudy.setSubIdos(new ArrayList<>(projectExpectedStudy.getProjectExpectedStudySubIdos()
-              .stream().filter(s -> s.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
+              .stream().filter(s -> s.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
           }
         }
 
