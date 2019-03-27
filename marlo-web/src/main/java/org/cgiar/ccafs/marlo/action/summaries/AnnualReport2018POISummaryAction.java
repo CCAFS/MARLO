@@ -2904,10 +2904,12 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
       deliverables.sort((p1, p2) -> p1.getId().compareTo(p2.getId()));
       selectedDeliverables.addAll(deliverables);
       // Remove unchecked deliverables
-      if (reportSynthesisPMU.getReportSynthesisFlagshipProgress().getDeliverables() != null
-        && !reportSynthesisPMU.getReportSynthesisFlagshipProgress().getDeliverables().isEmpty()) {
-        for (Deliverable deliverable : reportSynthesisPMU.getReportSynthesisFlagshipProgress().getDeliverables()) {
-          selectedDeliverables.remove(deliverable);
+      if (reportSynthesisPMU.getReportSynthesisFlagshipProgress() != null) {
+        if (reportSynthesisPMU.getReportSynthesisFlagshipProgress().getDeliverables() != null
+          && !reportSynthesisPMU.getReportSynthesisFlagshipProgress().getDeliverables().isEmpty()) {
+          for (Deliverable deliverable : reportSynthesisPMU.getReportSynthesisFlagshipProgress().getDeliverables()) {
+            selectedDeliverables.remove(deliverable);
+          }
         }
       }
       total = selectedDeliverables.size();
