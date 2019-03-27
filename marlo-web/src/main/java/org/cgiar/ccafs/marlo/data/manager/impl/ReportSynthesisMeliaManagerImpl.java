@@ -164,7 +164,8 @@ public class ReportSynthesisMeliaManagerImpl implements ReportSynthesisMeliaMana
             projectExpectedStudy.getProject()
               .setProjectInfo(projectExpectedStudy.getProject().getProjecInfoPhase(phase));
             dto.setProjectExpectedStudy(projectExpectedStudy);
-            if (projectExpectedStudy.getProject().getProjectInfo().getAdministrative() != null
+            if (projectExpectedStudy.getProject().getProjectInfo() != null
+              && projectExpectedStudy.getProject().getProjectInfo().getAdministrative() != null
               && projectExpectedStudy.getProject().getProjectInfo().getAdministrative()) {
               dto.setLiaisonInstitutions(new ArrayList<>());
               dto.getLiaisonInstitutions().add(liaisonInstitutionPMU);

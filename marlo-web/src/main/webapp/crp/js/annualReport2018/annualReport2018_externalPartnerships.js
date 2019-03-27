@@ -24,6 +24,11 @@ function init() {
       }
     }
   });
+
+  $('a[data-toggle="tab"]').on('shown.bs.tab', function(e) {
+    // Redraw table
+    tableDatatableViewmore.draw();
+  });
 }
 
 function attachEvents() {
