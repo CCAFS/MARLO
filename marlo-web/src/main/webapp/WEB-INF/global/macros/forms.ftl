@@ -479,7 +479,7 @@
        [#if label?has_content || i18nkey?has_content]<label for="${id}" class="labelText ${cssClassLabel}">[#if i18nkey?has_content][@s.text name=i18nkey /][#else]${label}[/#if]</label>[/#if]
     [#else]
       <p class="checked-${checked?string}">
-        [#if label?has_content]<span class="${cssClassLabel}">${label}</span>[/#if] 
+        [#if label?has_content || i18nkey?has_content ]<span class="${cssClassLabel}">[#if i18nkey?has_content][@s.text name=i18nkey /][#else]${label}[/#if]</span>[[/#if] 
       </p>
     [/#if]
   </label>
