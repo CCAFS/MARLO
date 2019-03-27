@@ -284,6 +284,8 @@ public final class APConstants {
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.Project.projectBudgetsFlagships)";
   public static final String PROJECT_BUDGETS_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.Project.projectBudgets)";
+  public static final String PROJECT_BUDGETS_EXECUTION_RELATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.Project.projectBudgetExecutions)";
   public static final String PROJECT_CASE_STUDIES_INDICATORS_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.CaseStudy.caseStudyIndicators)";
   public static final String PROJECT_CASE_STUDIES_PROJECTS_RELATION =
