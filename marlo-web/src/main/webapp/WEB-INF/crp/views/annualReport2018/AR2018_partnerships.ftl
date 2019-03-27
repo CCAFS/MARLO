@@ -10,7 +10,7 @@
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js",
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.print.min.js",
   "${baseUrlMedia}/js/annualReport/annualReportGlobal.js",
-  "${baseUrlMedia}/js/annualReport2018/annualReport2018_${currentStage}.js"
+  "${baseUrlMedia}/js/annualReport2018/annualReport2018_${currentStage}.js?20190327"
   ]
 /]
 [#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css"] /]
@@ -128,11 +128,12 @@
                       <br />
                     </div>
                     
-                    [#-- Projects Key Partnerships --]
+                    [#-- Projects Key Partner (ALL) --]
+                    <hr />
                     <div class="form-group">
-                      <h4 class="simpleTitle headTitle">[@customForm.text name="${customLabel}.projectsPartnerships.title" param="${currentCycleYear}" /] (${projectKeyPartnerships?size})</h4>
+                      <h4 class="simpleTitle headTitle">[@customForm.text name="${customLabel}.projectsPartnerships.title" param="${currentCycleYear}" /] </h4>
                       <div class="viewMoreSyntesis-block">
-                        [@projectsKeyPartnershipsTable name="${customName}.projectsPartnerships" list=projectKeyPartnerships /]
+                        [@projectsKeyPartnershipsTable name="" list=action.projectPartnerships(false) /]
                       </div>
                     </div>
                   [/#if]
@@ -167,6 +168,15 @@
                         <div class="addCrossPartnership bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> [@s.text name="annualReport2018.externalPartnerships.addPlatformCollaborationButton"/]</div>
                       </div> 
                     [/#if]
+                  </div>
+                  
+                  [#-- Projects Key Partner (Only CGIAR Institutions) --]
+                  <hr />
+                  <div class="form-group">
+                    <h4 class="simpleTitle headTitle">[@customForm.text name="${customLabel}.projectsPartnerships.keyCgiarPartners" param="${currentCycleYear}" /] </h4>
+                    <div class="viewMoreSyntesis-block">
+                      [@projectsKeyPartnershipsTable name="" list=action.projectPartnerships(true) /]
+                    </div>
                   </div>
                   
                </div>
@@ -258,26 +268,36 @@
   <table class="annual-report-table table-border">
     <thead>
       <tr class="subHeader">
-        <th id="tb-projectId">[@s.text name="${customLabel}.projectsPartnerships.id" /]</th>
-        <th id="tb-phase">[@s.text name="${customLabel}.projectsPartnerships.mainArea" /]</th>
+        <th class="col-md-1"> Project</th>
+        <th class="col-md-3"> Partner </th>
+        <th class="col-md-1"> Formal</th>
+        <th class="col-md-7"> Responsibilities </th>
       </tr>
     </thead>
     <tbody>
       [#if list?has_content]
         [#list list as item]
-          [#local url][@s.url namespace="/projects" action="${(crpSession)!}/partners"][@s.param name='projectID']${(item.project.id)!}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
-          <tr>
-            <td class="text-center">
-              [#if (item.project.id?has_content)!false]
-                <a href="${url}" target="_blank"> P${item.project.id} </a>
-              [#else]
-                <i style="opacity:0.5">PID</i>
-              [/#if]
-            </td>
-            <td class="text-justify">
-              [@utils.tableText value=(item.lessons)!"" /] 
-            </td>
-          </tr>
+          [#list item.partners as partner]
+            [#local url][@s.url namespace="/projects" action="${(crpSession)!}/partners"][@s.param name='projectID']${(item.project.id)!}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
+            <tr>
+              <td class="text-center">
+                [#if (item.project.id?has_content)!false]
+                  <a href="${url}" target="_blank"> P${item.project.id} </a>
+                [#else]
+                  <i style="opacity:0.5">PID</i>
+                [/#if]
+              </td>
+              <td class="text-justify">
+                [@utils.tableText value=(partner.institution.composedName)!"" /] 
+              </td>
+              <td class="text-center">
+                [@utils.tableText value=(partner.hasPartnerships?string('Yes', 'No'))!"" /]
+              </td>
+               <td class="text-justify">
+                [@utils.tableText value=(partner.responsibilities)!"" /] 
+              </td>
+            </tr>
+          [/#list]
         [/#list]
       [#else]
         
