@@ -567,7 +567,9 @@ public class MonitoringEvaluationAction extends BaseAction {
     statuses = new HashMap<>();
     List<ProjectStatusEnum> listStatus = Arrays.asList(ProjectStatusEnum.values());
     for (ProjectStatusEnum globalStatusEnum : listStatus) {
-      statuses.put(Integer.parseInt(globalStatusEnum.getStatusId()), globalStatusEnum.getStatus());
+      if (globalStatusEnum.getStatusId().equals("2") || globalStatusEnum.getStatusId().equals("3")) {
+        statuses.put(Integer.parseInt(globalStatusEnum.getStatusId()), globalStatusEnum.getStatus());
+      }
     }
 
     // Get the list of liaison institutions Flagships and PMU.
