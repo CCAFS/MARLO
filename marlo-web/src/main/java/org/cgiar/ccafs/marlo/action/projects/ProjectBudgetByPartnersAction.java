@@ -757,7 +757,8 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
         this.saveBasicBudgets();
       }
 
-      if (this.isReportingActive() && this.hasSpecificities(this.getCrpEnableBudgetExecution())) {
+      if ((this.isReportingActive() || this.isUpKeepActive())
+        && this.hasSpecificities(this.getCrpEnableBudgetExecution())) {
         this.saveDeleteBudgetExecutions();
       }
 
