@@ -1470,45 +1470,48 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
 
       for (CrpProgram flagship : flagships) {
         int outcome_index = 0;
-        for (CrpProgramOutcome outcome : flagship.getOutcomes()) {
+        if (flagship.getOutcomes() != null) {
+          for (CrpProgramOutcome outcome : flagship.getOutcomes()) {
 
-          int milestone_index = 0;
-          for (CrpMilestone crpMilestone : outcome.getMilestones()) {
-            Boolean isFlagshipRow = (outcome_index == 0) && (milestone_index == 0);
-            Boolean isOutcomeRow = (milestone_index == 0);
+            int milestone_index = 0;
+            for (CrpMilestone crpMilestone : outcome.getMilestones()) {
+              Boolean isFlagshipRow = (outcome_index == 0) && (milestone_index == 0);
+              Boolean isOutcomeRow = (milestone_index == 0);
 
-            if (isFlagshipRow) {
-              fp = flagship.getAcronym();
-            } else {
-              fp = "";
+              if (isFlagshipRow) {
+                fp = flagship.getAcronym();
+              } else {
+                fp = "";
+              }
+              if (fp.equals(lastFP)) {
+                fp = "";
+              } else {
+                lastFP = fp;
+              }
+
+              if (isOutcomeRow) {
+                outcomes = outcome.getComposedName();
+              } else {
+                outcomes = "";
+              }
+              if (outcomes.equals(lastOutcome)) {
+                outcomes = "";
+              } else {
+                lastOutcome = outcomes;
+              }
+
+              milestone = crpMilestone.getComposedName();
+
+              evidenceMilestone = crpMilestone.getModificationJustification();
+
+              POIField[] sData =
+                {new POIField(fp, ParagraphAlignment.CENTER), new POIField(outcomes, ParagraphAlignment.LEFT),
+                  new POIField(narrative, ParagraphAlignment.LEFT), new POIField(milestone, ParagraphAlignment.LEFT),
+                  new POIField(milestoneStatus, ParagraphAlignment.LEFT),
+                  new POIField(evidenceMilestone, ParagraphAlignment.LEFT)};
+              data = Arrays.asList(sData);
+              datas.add(data);
             }
-            if (fp.equals(lastFP)) {
-              fp = "";
-            } else {
-              lastFP = fp;
-            }
-
-            if (isOutcomeRow) {
-              outcomes = outcome.getComposedName();
-            } else {
-              outcomes = "";
-            }
-            if (outcomes.equals(lastOutcome)) {
-              outcomes = "";
-            } else {
-              lastOutcome = outcomes;
-            }
-
-            milestone = crpMilestone.getComposedName();
-
-            evidenceMilestone = crpMilestone.getModificationJustification();
-
-            POIField[] sData = {new POIField(fp, ParagraphAlignment.CENTER),
-              new POIField(outcomes, ParagraphAlignment.LEFT), new POIField(narrative, ParagraphAlignment.LEFT),
-              new POIField(milestone, ParagraphAlignment.LEFT), new POIField(milestoneStatus, ParagraphAlignment.LEFT),
-              new POIField(evidenceMilestone, ParagraphAlignment.LEFT)};
-            data = Arrays.asList(sData);
-            datas.add(data);
           }
         }
       }
