@@ -584,7 +584,7 @@ jQuery.fn.setOneToManyComponent = function() {
 
     // Verify if already exist and remove
     if(($list.find('.elementRelationID[value="' + id + '"]').length) > 1) {
-      $(domElement).remove();
+      // $(domElement).remove();
       updateIndex++;
     }
   });

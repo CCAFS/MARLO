@@ -645,6 +645,7 @@ public class SrfProgressAction extends BaseAction {
           srfTargetSave.setAdditionalContribution(srfTarget.getAdditionalContribution());
 
           srfTargetSave.setSrfSloIndicatorTarget(sloIndicator);
+          srfTargetSave.setActive(true);
 
           reportSynthesisSrfProgressTargetManager.saveReportSynthesisSrfProgressTarget(srfTargetSave);
         } else {
@@ -664,6 +665,7 @@ public class SrfProgressAction extends BaseAction {
           }
 
           if (hasChanges) {
+            srfTargetPrev.setActive(true);
             reportSynthesisSrfProgressTargetManager.saveReportSynthesisSrfProgressTarget(srfTargetPrev);
           }
         }
