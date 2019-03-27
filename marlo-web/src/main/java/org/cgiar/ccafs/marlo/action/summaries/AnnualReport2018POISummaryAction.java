@@ -883,13 +883,18 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     List<POIField> header = Arrays.asList(sHeader);
     headers.add(header);
 
-    if (flagshipPlannedList != null && !flagshipPlannedList.isEmpty()) {
+    if (reportSynthesisPMU.getReportSynthesisMelia() != null
+      && reportSynthesisPMU.getReportSynthesisMelia().getPlannedStudies() != null) {
       // for (int i = 0; i < flagshipPlannedList.size(); i++) {
-      String studies = "", status = "", comments = "";
+      String name = "", recommendationNumber = "", recommendationText = "", status = "", actions = "", whom = "",
+        when = "", comments = "";
+
 
       POIField[] sData =
-        {new POIField(studies, ParagraphAlignment.LEFT), new POIField(status, ParagraphAlignment.CENTER),
-          new POIField(comments, ParagraphAlignment.LEFT), new POIField(comments, ParagraphAlignment.LEFT)};
+        {new POIField(name, ParagraphAlignment.LEFT), new POIField(recommendationNumber, ParagraphAlignment.CENTER),
+          new POIField(recommendationText, ParagraphAlignment.LEFT), new POIField(status, ParagraphAlignment.LEFT),
+          new POIField(actions, ParagraphAlignment.LEFT), new POIField(whom, ParagraphAlignment.LEFT),
+          new POIField(when, ParagraphAlignment.LEFT), new POIField(comments, ParagraphAlignment.LEFT)};
       data = Arrays.asList(sData);
       datas.add(data);
       // }
