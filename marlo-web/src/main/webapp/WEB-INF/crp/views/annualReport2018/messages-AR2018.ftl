@@ -37,8 +37,8 @@
   [#-- Submission Message --]
   [#if submission]
     <div class="submission-mode text-center animated flipInX">
-      [#assign lastSubmission =action.getPowbSynthesisSubmissions(reportSynthesis)?last /]
-      <p>[@s.text name="powb.messages.submittedOn" ][@s.param]${(lastSubmission.dateTime?string["MMMM dd, yyyy"])!}[/@s.param][@s.param]${(lastSubmission.user.composedCompleteName)!}[/@s.param][/@s.text]</p>
+      [#assign lastSubmission =action.getAR2018Submissions(synthesisID)?last /]
+      <p>[@s.text name="annualReport2018.messages.submittedOn" ][@s.param]${(lastSubmission.dateTime?string["MMMM dd, yyyy"])!}[/@s.param][@s.param]${(lastSubmission.user.composedCompleteName)!}[/@s.param][/@s.text]</p>
     </div>
   [/#if]
   
@@ -55,7 +55,7 @@
   [#-- Completed Message--]
   [#if (canSubmit && !submission && completed) && !crpClosed]
     <div class="completed-mode text-center animated flipInX">
-      <p>[@s.text name="powb.messages.completed" /]</p>
+      <p>[@s.text name="annualReport2018.messages.completed" /]</p>
     </div>
   [/#if]
   

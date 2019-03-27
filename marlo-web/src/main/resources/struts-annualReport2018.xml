@@ -251,7 +251,17 @@
         <param name="phaseID">${phaseID}</param>
         <param name="edit">true</param>        
       </result>
-    </action>    
+    </action>  
+    
+    <action name="{crp}/submitAnnualReport"
+      class="org.cgiar.ccafs.marlo.action.annualReport.y2018.SynthesisSubmissionAction">
+      <result name="success" type="redirectAction">
+        <param name="actionName">${crpSession}/crpProgress</param>
+        <param name="synthesisID">${synthesisID}</param>
+        <param name="liaisonInstitutionID">${liaisonInstitutionID}</param>
+        <param name="phaseID">${phaseID}</param>
+      </result>
+    </action>  
     
     
   </package>

@@ -92,5 +92,12 @@
 			<one-to-many
 				class="org.cgiar.ccafs.marlo.data.model.SectionStatus" />
 		</set>
+		<set name="submissions" table="submissions" inverse="true" lazy="true"
+      fetch="select">
+      <key>
+        <column name="report_synthesis_id" not-null="true" />
+      </key>
+      <one-to-many class="org.cgiar.ccafs.marlo.data.model.Submission" />
+    </set>
 	</class>
 </hibernate-mapping>

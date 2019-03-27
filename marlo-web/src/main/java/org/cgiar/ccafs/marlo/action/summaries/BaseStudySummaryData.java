@@ -127,6 +127,18 @@ public class BaseStudySummaryData extends BaseSummariesAction {
     masterReport.getParameterValues().put("i8nStudiesRCommissioningStudy",
       this.getText("study.commissioningStudy.readText"));
     masterReport.getParameterValues().put("i8nStudiesRStudyLink", this.getText("summaries.study.link"));
+    masterReport.getParameterValues().put("i8nStudiesRQuantification", this.getText("study.quantification.readText"));
+    masterReport.getParameterValues().put("i8nStudiesRQuantificationType", this.getText("study.quantificationType"));
+    masterReport.getParameterValues().put("i8nStudiesRQuantificationNumber",
+      this.getText("study.quantification.number"));
+    masterReport.getParameterValues().put("i8nStudiesRQuantificationTargetUnit",
+      this.getText("study.quantification.targetUnit"));
+    masterReport.getParameterValues().put("i8nStudiesRQuantificationComments",
+      this.getText("study.quantification.comments.readText"));
+    masterReport.getParameterValues().put("i8nStudiesRQuantificationType1",
+      this.getText("study.quantification.quantificationType-1"));
+    masterReport.getParameterValues().put("i8nStudiesRQuantificationType2",
+      this.getText("study.quantification.quantificationType-2"));
 
 
     return masterReport;
