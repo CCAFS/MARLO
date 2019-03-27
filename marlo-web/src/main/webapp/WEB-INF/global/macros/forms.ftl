@@ -591,7 +591,7 @@
   [#if id?has_content]
     [#local composedID = "${type}-${id}" /]
   [/#if]
-  <li class="relationElement-template relationElement indexLevel-${indexLevel}">
+  <li class="[#if template]relationElement-template[/#if] relationElement indexLevel-${indexLevel}">
     [#-- Hidden Inputs --]
     <input type="hidden" class="elementID" name="${customName}.id" value="${(element.id)!}" />
     <input type="hidden" class="elementRelationID" name="${customName}.${type}.id" value="${(element[type][keyFieldName])!}" />
