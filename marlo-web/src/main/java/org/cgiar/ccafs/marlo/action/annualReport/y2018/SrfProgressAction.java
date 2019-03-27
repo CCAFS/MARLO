@@ -326,7 +326,7 @@ public class SrfProgressAction extends BaseAction {
       if (reportSynthesis.getReportSynthesisSrfProgress().getSloTargets() != null) {
         for (ReportSynthesisSrfProgressTarget reportSynthesisSrfProgressTargets : reportSynthesis
           .getReportSynthesisSrfProgress().getSloTargets()) {
-          if (reportSynthesisSrfProgressTargets.getSrfSloIndicatorTarget().getId() == targetID) {
+          if (reportSynthesisSrfProgressTargets.getSrfSloIndicatorTarget().getId().equals(targetID)) {
             target = reportSynthesisSrfProgressTargets;
           }
         }
@@ -411,7 +411,7 @@ public class SrfProgressAction extends BaseAction {
         if (user.getLiasonsUsers() != null || !user.getLiasonsUsers().isEmpty()) {
           List<LiaisonUser> liaisonUsers = new ArrayList<>(user.getLiasonsUsers().stream()
             .filter(lu -> lu.isActive() && lu.getLiaisonInstitution().isActive()
-              && lu.getLiaisonInstitution().getCrp().getId() == loggedCrp.getId()
+              && lu.getLiaisonInstitution().getCrp().getId().equals(loggedCrp.getId())
               && lu.getLiaisonInstitution().getInstitution() == null)
             .collect(Collectors.toList()));
           if (!liaisonUsers.isEmpty()) {
@@ -587,7 +587,7 @@ public class SrfProgressAction extends BaseAction {
         path.toFile().delete();
       }
 
-      Collection<String> messages = this.getActionMessages();
+      this.getActionMessages();
       if (!this.getInvalidFields().isEmpty()) {
         this.setActionMessages(null);
         // this.addActionMessage(Map.toString(this.getInvalidFields().toArray()));
@@ -759,8 +759,8 @@ public class SrfProgressAction extends BaseAction {
     if (projectFocusManager.findAll() != null) {
 
       List<ProjectFocus> projectFocus = new ArrayList<>(projectFocusManager.findAll().stream()
-        .filter(pf -> pf.isActive() && pf.getCrpProgram().getId() == liaisonInstitution.getCrpProgram().getId()
-          && pf.getPhase() != null && pf.getPhase().getId() == phaseID)
+        .filter(pf -> pf.isActive() && pf.getCrpProgram().getId().equals(liaisonInstitution.getCrpProgram().getId())
+          && pf.getPhase() != null && pf.getPhase().getId().equals(phaseID))
         .collect(Collectors.toList()));
 
       for (ProjectFocus focus : projectFocus) {
@@ -769,25 +769,27 @@ public class SrfProgressAction extends BaseAction {
 
         List<ProjectExpectedStudy> expectedStudies = new ArrayList<>(project.getProjectExpectedStudies().stream()
           .filter(es -> es.isActive() && es.getProjectExpectedStudyInfo(phase) != null
-            && es.getProjectExpectedStudyInfo(phase).getYear() == this.getCurrentCycleYear())
+            && es.getProjectExpectedStudyInfo(phase).getYear().equals(this.getCurrentCycleYear()))
           .collect(Collectors.toList()));
 
 
         List<ProjectExpectedStudy> expectedStudiesFiltered = new ArrayList<>();
 
-        expectedStudiesFiltered = expectedStudies.stream().filter(ps -> ps.getProjectExpectedStudyInfo()
-          .getYear() != null && ps.getProjectExpectedStudyInfo().getStatus() != null
-          && ps.getProjectExpectedStudyInfo().getYear() == this.getCurrentCycleYear()
-          && ((ps.getProjectExpectedStudyInfo().getStatus().getId()
-            .equals(Long.parseLong(StudiesStatusPlanningEnum.Ongoing.getStatusId()))
-            || ps.getProjectExpectedStudyInfo().getStatus().getId()
-              .equals(Long.parseLong(StudiesStatusPlanningEnum.Extended.getStatusId()))
-            || ps.getProjectExpectedStudyInfo().getStatus().getId().equals(StudiesStatusPlanningEnum.New.getStatusId()))
-            || ((ps.getProjectExpectedStudyInfo().getStatus().getId()
-              .equals(Long.parseLong(StudiesStatusPlanningEnum.Complete.getStatusId()))
+        expectedStudiesFiltered = expectedStudies.stream()
+          .filter(ps -> ps.getProjectExpectedStudyInfo().getYear() != null
+            && ps.getProjectExpectedStudyInfo().getStatus() != null
+            && ps.getProjectExpectedStudyInfo().getYear().equals(this.getCurrentCycleYear())
+            && ((ps.getProjectExpectedStudyInfo().getStatus().getId()
+              .equals(Long.parseLong(StudiesStatusPlanningEnum.Ongoing.getStatusId()))
               || ps.getProjectExpectedStudyInfo().getStatus().getId()
-                .equals(Long.parseLong(StudiesStatusPlanningEnum.Cancelled.getStatusId())))
-              && ps.getProjectExpectedStudyInfo().getYear() >= this.getActualPhase().getYear())))
+                .equals(Long.parseLong(StudiesStatusPlanningEnum.Extended.getStatusId()))
+              || ps.getProjectExpectedStudyInfo().getStatus().getId()
+                .equals(Long.parseLong(StudiesStatusPlanningEnum.New.getStatusId()))
+              || ((ps.getProjectExpectedStudyInfo().getStatus().getId()
+                .equals(Long.parseLong(StudiesStatusPlanningEnum.Complete.getStatusId()))
+                || ps.getProjectExpectedStudyInfo().getStatus().getId()
+                  .equals(Long.parseLong(StudiesStatusPlanningEnum.Cancelled.getStatusId())))
+                && ps.getProjectExpectedStudyInfo().getYear() >= this.getActualPhase().getYear()))))
           .collect(Collectors.toList());
 
         for (ProjectExpectedStudy projectExpectedStudy : expectedStudiesFiltered) {
@@ -797,15 +799,16 @@ public class SrfProgressAction extends BaseAction {
               if (projectExpectedStudy.getProjectExpectedStudySrfTargets() != null
                 && projectExpectedStudy.getProjectExpectedStudySrfTargets().size() > 0) {
                 // AR Synthesis 2018 add Studies wiht Target
-                List<ProjectExpectedStudySrfTarget> targetPrev = new ArrayList<>(projectExpectedStudy
-                  .getProjectExpectedStudySrfTargets().stream()
-                  .filter(nu -> nu.isActive() && nu.getPhase().getId() == phase.getId()).collect(Collectors.toList()));
+                List<ProjectExpectedStudySrfTarget> targetPrev =
+                  new ArrayList<>(projectExpectedStudy.getProjectExpectedStudySrfTargets().stream()
+                    .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId()))
+                    .collect(Collectors.toList()));
 
                 for (ProjectExpectedStudySrfTarget studytarget : targetPrev) {
                   if (studytarget.getSrfSloIndicator().getId().equals(target.getId())) {
                     projectExpectedStudy
                       .setSrfTargets(new ArrayList<>(projectExpectedStudy.getProjectExpectedStudySrfTargets().stream()
-                        .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId())
+                        .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId()))
                         .collect(Collectors.toList())));
                     studies.add(projectExpectedStudy);
                   }
@@ -819,7 +822,8 @@ public class SrfProgressAction extends BaseAction {
 
       List<ProjectExpectedStudy> expectedStudies = new ArrayList<>(projectExpectedStudyManager.findAll().stream()
         .filter(es -> es.isActive() && es.getProjectExpectedStudyInfo(phase) != null
-          && es.getProjectExpectedStudyInfo(phase).getYear() == this.getCurrentCycleYear() && es.getProject() == null)
+          && es.getProjectExpectedStudyInfo(phase).getYear().equals(this.getCurrentCycleYear())
+          && es.getProject() == null)
         .collect(Collectors.toList()));
 
 
@@ -828,12 +832,13 @@ public class SrfProgressAction extends BaseAction {
       expectedStudiesFiltered = expectedStudies.stream()
         .filter(ps -> ps.getProjectExpectedStudyInfo().getYear() != null
           && ps.getProjectExpectedStudyInfo().getStatus() != null
-          && ps.getProjectExpectedStudyInfo().getYear() == this.getCurrentCycleYear()
+          && ps.getProjectExpectedStudyInfo().getYear().equals(this.getCurrentCycleYear())
           && ((ps.getProjectExpectedStudyInfo().getStatus().getId()
             .equals(Long.parseLong(StudiesStatusPlanningEnum.Ongoing.getStatusId()))
             || ps.getProjectExpectedStudyInfo().getStatus().getId()
               .equals(Long.parseLong(StudiesStatusPlanningEnum.Extended.getStatusId()))
-            || ps.getProjectExpectedStudyInfo().getStatus().getId().equals(StudiesStatusPlanningEnum.New.getStatusId()))
+            || ps.getProjectExpectedStudyInfo().getStatus().getId()
+              .equals(Long.parseLong(StudiesStatusPlanningEnum.New.getStatusId())))
             || ((ps.getProjectExpectedStudyInfo().getStatus().getId()
               .equals(Long.parseLong(StudiesStatusPlanningEnum.Complete.getStatusId()))
               || ps.getProjectExpectedStudyInfo().getStatus().getId()
@@ -845,7 +850,7 @@ public class SrfProgressAction extends BaseAction {
         if (projectExpectedStudy.getProjectExpectedStudyInfo(phase) != null) {
           List<ProjectExpectedStudyFlagship> studiesPrograms =
             new ArrayList<>(projectExpectedStudy.getProjectExpectedStudyFlagships().stream()
-              .filter(s -> s.isActive() && s.getPhase().getId() == phase.getId()).collect(Collectors.toList()));
+              .filter(s -> s.isActive() && s.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
           for (ProjectExpectedStudyFlagship projectExpectedStudyFlagship : studiesPrograms) {
             CrpProgram crpProgram = liaisonInstitution.getCrpProgram();
             if (crpProgram.equals(projectExpectedStudyFlagship.getCrpProgram())) {
@@ -857,14 +862,14 @@ public class SrfProgressAction extends BaseAction {
                     // AR Synthesis 2018 add Studies wiht Target
                     List<ProjectExpectedStudySrfTarget> targetPrev =
                       new ArrayList<>(projectExpectedStudy.getProjectExpectedStudySrfTargets().stream()
-                        .filter(nu -> nu.isActive() && nu.getPhase().getId() == phase.getId())
+                        .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId()))
                         .collect(Collectors.toList()));
 
                     for (ProjectExpectedStudySrfTarget studytarget : targetPrev) {
                       if (studytarget.getSrfSloIndicator().getId().equals(target.getId())) {
                         projectExpectedStudy
                           .setSrfTargets(new ArrayList<>(projectExpectedStudy.getProjectExpectedStudySrfTargets()
-                            .stream().filter(o -> o.isActive() && o.getPhase().getId() == phase.getId())
+                            .stream().filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId()))
                             .collect(Collectors.toList())));
                         studies.add(projectExpectedStudy);
                         break;
@@ -882,7 +887,7 @@ public class SrfProgressAction extends BaseAction {
         if (projectExpectedStudy.getProjectExpectedStudySubIdos() != null
           && !projectExpectedStudy.getProjectExpectedStudySubIdos().isEmpty()) {
           projectExpectedStudy.setSubIdos(new ArrayList<>(projectExpectedStudy.getProjectExpectedStudySubIdos().stream()
-            .filter(s -> s.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
+            .filter(s -> s.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
         }
       }
 

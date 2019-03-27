@@ -164,7 +164,7 @@ public class PoliciesAction extends BaseAction {
           dto.getLiaisonInstitutions().add(this.liaisonInstitution);
         } else {
           List<ProjectFocus> projectFocuses = new ArrayList<>(projectPolicy.getProject().getProjectFocuses().stream()
-            .filter(pf -> pf.isActive() && pf.getPhase().getId() == phaseID).collect(Collectors.toList()));
+            .filter(pf -> pf.isActive() && pf.getPhase().getId().equals(phaseID)).collect(Collectors.toList()));
           List<LiaisonInstitution> liaisonInstitutions = new ArrayList<>();
           for (ProjectFocus projectFocus : projectFocuses) {
             liaisonInstitutions.addAll(projectFocus.getCrpProgram().getLiaisonInstitutions().stream()
@@ -250,8 +250,8 @@ public class PoliciesAction extends BaseAction {
       // Fill Project policies of the current flagship
       if (projectFocusManager.findAll() != null) {
         List<ProjectFocus> projectFocus = new ArrayList<>(projectFocusManager.findAll().stream()
-          .filter(pf -> pf.isActive() && pf.getCrpProgram().getId() == liaisonInstitution.getCrpProgram().getId()
-            && pf.getPhase() != null && pf.getPhase().getId() == phaseID)
+          .filter(pf -> pf.isActive() && pf.getCrpProgram().getId().equals(liaisonInstitution.getCrpProgram().getId())
+            && pf.getPhase() != null && pf.getPhase().getId().equals(phaseID))
           .collect(Collectors.toList()));
 
         for (ProjectFocus focus : projectFocus) {
@@ -529,7 +529,7 @@ public class PoliciesAction extends BaseAction {
         if (user.getLiasonsUsers() != null || !user.getLiasonsUsers().isEmpty()) {
           List<LiaisonUser> liaisonUsers = new ArrayList<>(user.getLiasonsUsers().stream()
             .filter(lu -> lu.isActive() && lu.getLiaisonInstitution().isActive()
-              && lu.getLiaisonInstitution().getCrp().getId() == loggedCrp.getId()
+              && lu.getLiaisonInstitution().getCrp().getId().equals(loggedCrp.getId())
               && lu.getLiaisonInstitution().getInstitution() == null)
             .collect(Collectors.toList()));
           if (!liaisonUsers.isEmpty()) {
