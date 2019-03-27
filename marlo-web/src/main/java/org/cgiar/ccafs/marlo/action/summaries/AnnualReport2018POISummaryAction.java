@@ -1645,14 +1645,20 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         if (flagshipExternalPartnership.getInstitutions() != null) {
           for (ReportSynthesisKeyPartnershipExternalInstitution institution : flagshipExternalPartnership
             .getInstitutions()) {
-            keyPartners += institution + ",";
+            if (institution != null && institution.getInstitution() != null
+              && institution.getInstitution().getComposedName() != null) {
+              keyPartners += institution.getInstitution().getComposedName() + ",";
+            }
           }
         }
 
         if (flagshipExternalPartnership.getMainAreas() != null) {
           for (ReportSynthesisKeyPartnershipExternalMainArea externalMainArea : flagshipExternalPartnership
             .getMainAreas()) {
-            mainArea += mainArea + ",";
+            if (externalMainArea != null && externalMainArea.getPartnerArea() != null
+              && externalMainArea.getPartnerArea().getName() != null) {
+              mainArea += externalMainArea.getPartnerArea().getName() + ",";
+            }
           }
         }
 
