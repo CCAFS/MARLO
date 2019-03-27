@@ -763,6 +763,7 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
 
       List<String> relationsName = new ArrayList<>();
       relationsName.add(APConstants.PROJECT_BUDGETS_RELATION);
+      relationsName.add(APConstants.PROJECT_BUDGETS_EXECUTION_RELATION);
       relationsName.add(APConstants.PROJECT_INFO_RELATION);
 
       project = projectManager.getProjectById(projectID);

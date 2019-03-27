@@ -1590,6 +1590,18 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return allYears;
   }
 
+  public List<Submission> getAR2018Submissions(long synthesisID) {
+    ReportSynthesis reportSynthesis = this.reportSynthesisManager.getReportSynthesisById(synthesisID);
+    List<Submission> submissions = reportSynthesis
+      .getSubmissions().stream().filter(c -> c.getCycle().equals(this.getCurrentCycle())
+        && c.getYear().intValue() == this.getCurrentCycleYear() && (c.isUnSubmit() == null || !c.isUnSubmit()))
+      .collect(Collectors.toList());
+    if (submissions.isEmpty()) {
+      return new ArrayList<>();
+    }
+    return submissions;
+  }
+
   public Boolean getAutoSaveFilePath(String simpleName, String actionName, long id) {
     String composedClassName = simpleName;
     String actionFile = this.getCrpSession() + "_" + actionName;
@@ -3600,6 +3612,83 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return Integer.parseInt(this.getSession().get(APConstants.CRP_REPORTING_YEAR).toString());
   }
 
+
+  /**
+   * Check the annual report 2018 Section Status
+   * 
+   * @param section
+   * @return
+   */
+  public boolean getReportSynthesis2018SectionStatus(String sectionName, long synthesisID) {
+
+    boolean returnValue = false;
+    SectionStatus sectionStatus;
+
+    ReportSynthesis reportSynthesis = this.reportSynthesisManager.getReportSynthesisById(synthesisID);
+
+    if (ReportSynthesis2018SectionStatusEnum.value(sectionName.toUpperCase()) == null) {
+      return false;
+    }
+
+    switch (ReportSynthesis2018SectionStatusEnum.value(sectionName.toUpperCase())) {
+      // case FLAGSHIP_PROGRESS:
+      // if (this.isPowbFlagship(reportSynthesis.getLiaisonInstitution())) {
+      //
+      // sectionStatus =
+      // this.sectionStatusManager.getSectionStatusByReportSynthesis(reportSynthesis.getId(), this.getCurrentCycle(),
+      // reportSynthesis.getPhase().getYear(), reportSynthesis.getPhase().getUpkeep(), sectionName);
+      //
+      // if (sectionStatus == null) {
+      // return false;
+      // }
+      // if (sectionStatus.getMissingFields().length() > 0) {
+      // return false;
+      // }
+      // returnValue = true;
+      //
+      // }
+      // break;
+
+      // case FLAGSHIP_PROGRESS:
+      // case CRP_PROGRESS:
+      // case EFFICIENCY:
+      // case GOVERNANCE:
+      // case RISKS:
+      // case CC_DIMENSIONS:
+      //
+      // if (this.isPowbPMU(reportSynthesis.getLiaisonInstitution())) {
+      // sectionStatus =
+      // this.sectionStatusManager.getSectionStatusByReportSynthesis(reportSynthesis.getId(), this.getCurrentCycle(),
+      // reportSynthesis.getPhase().getYear(), reportSynthesis.getPhase().getUpkeep(), sectionName);
+      //
+      // if (sectionStatus == null) {
+      // return false;
+      // }
+      // if (sectionStatus.getMissingFields().length() > 0) {
+      // return false;
+      // }
+      // returnValue = true;
+      // }
+      //
+      // break;
+
+      default:
+        sectionStatus =
+          this.sectionStatusManager.getSectionStatusByReportSynthesis(reportSynthesis.getId(), this.getCurrentCycle(),
+            reportSynthesis.getPhase().getYear(), reportSynthesis.getPhase().getUpkeep(), sectionName);
+        if (sectionStatus == null) {
+          return false;
+        }
+        if (sectionStatus.getMissingFields().length() > 0) {
+          return false;
+        }
+        returnValue = true;
+        break;
+    }
+
+    return returnValue;
+  }
+
   /**
    * Check the annual report Section Status
    * 
@@ -3969,6 +4058,18 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
   }
 
+
+  public boolean hasPersmissionSubmitAR2018(long synthesisId) {
+    if (!this.getActualPhase().getUpkeep()) {
+      String permission = this.generatePermission(Permission.REPORT_SYNTHESIS_SUBMIT_PERMISSION,
+        this.getCurrentCrp().getAcronym(), String.valueOf(synthesisId));
+      boolean permissions = this.securityContext.hasPermission(permission);
+      return permissions;
+    } else {
+      return false;
+    }
+  }
+
   /**
    * TODO ************************ CENTER METHOD *********************
    * validate if the user can submit the capdev
@@ -4139,6 +4240,24 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       return false;
     }
     return false;
+  }
+
+  public boolean isAr2018Submitted(long synthesisID) {
+    if (!this.getActualPhase().getUpkeep()) {
+
+      ReportSynthesis reportSynthesis = this.reportSynthesisManager.getReportSynthesisById(synthesisID);
+
+      List<Submission> submissions = reportSynthesis
+        .getSubmissions().stream().filter(c -> c.getCycle().equals(this.getCurrentCycle())
+          && c.getYear().intValue() == this.getCurrentCycleYear() && (c.isUnSubmit() == null || !c.isUnSubmit()))
+        .collect(Collectors.toList());
+      if (submissions.isEmpty()) {
+        return false;
+      }
+      return true;
+    } else {
+      return false;
+    }
   }
 
   public boolean isAvailabePhase() {
@@ -5495,6 +5614,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
     }
   }
+
 
   public boolean isProjectSubmitted(long projectID) {
     if (!this.getActualPhase().getUpkeep()) {
