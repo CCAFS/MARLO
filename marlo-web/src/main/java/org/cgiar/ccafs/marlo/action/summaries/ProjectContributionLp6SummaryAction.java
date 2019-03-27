@@ -37,7 +37,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -346,11 +345,12 @@ public class ProjectContributionLp6SummaryAction extends BaseSummariesAction imp
 
     projectLp6Contributions = projectLp6ContributionManager.findAll();
 
-    if (projectLp6Contributions != null) {
-      projectLp6Contributions = projectLp6Contributions.stream()
-        .filter(c -> c.isActive() && c.getPhase().equals(this.getSelectedPhase())).collect(Collectors.toList());
-    }
-
+    /*
+     * if (projectLp6Contributions != null) {
+     * projectLp6Contributions = projectLp6Contributions.stream()
+     * .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList());
+     * }
+     */
     if (projectLp6Contributions == null) {
       projectLp6Contributions = new ArrayList<>();
     }
