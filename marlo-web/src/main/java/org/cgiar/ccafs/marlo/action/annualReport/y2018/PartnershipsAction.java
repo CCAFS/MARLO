@@ -72,7 +72,6 @@ import java.io.FileReader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -240,7 +239,7 @@ public class PartnershipsAction extends BaseAction {
     String actionFile = this.getActionName().replace("/", "_");
     String autoSaveFile = reportSynthesis.getId() + "_" + composedClassName + "_" + this.getActualPhase().getName()
       + "_" + this.getActualPhase().getYear() + "_" + actionFile + ".json";
-    String fl = config.getAutoSaveFolder();
+    config.getAutoSaveFolder();
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
@@ -384,7 +383,7 @@ public class PartnershipsAction extends BaseAction {
         if (user.getLiasonsUsers() != null || !user.getLiasonsUsers().isEmpty()) {
           List<LiaisonUser> liaisonUsers = new ArrayList<>(user.getLiasonsUsers().stream()
             .filter(lu -> lu.isActive() && lu.getLiaisonInstitution().isActive()
-              && lu.getLiaisonInstitution().getCrp().getId() == loggedCrp.getId()
+              && lu.getLiaisonInstitution().getCrp().getId().equals(loggedCrp.getId())
               && lu.getLiaisonInstitution().getInstitution() == null)
             .collect(Collectors.toList()));
           if (!liaisonUsers.isEmpty()) {
@@ -649,8 +648,8 @@ public class PartnershipsAction extends BaseAction {
     if (projectFocusManager.findAll() != null) {
 
       List<ProjectFocus> projectFocus = new ArrayList<>(projectFocusManager.findAll().stream()
-        .filter(pf -> pf.isActive() && pf.getCrpProgram().getId() == liaisonInstitution.getCrpProgram().getId()
-          && pf.getPhase() != null && pf.getPhase().getId() == phase.getId())
+        .filter(pf -> pf.isActive() && pf.getCrpProgram().getId().equals(liaisonInstitution.getCrpProgram().getId())
+          && pf.getPhase() != null && pf.getPhase().getId().equals(phase.getId()))
         .collect(Collectors.toList()));
 
       for (ProjectFocus focus : projectFocus) {
@@ -732,7 +731,7 @@ public class PartnershipsAction extends BaseAction {
         path.toFile().delete();
       }
 
-      Collection<String> messages = this.getActionMessages();
+      this.getActionMessages();
       if (!this.getInvalidFields().isEmpty()) {
         this.setActionMessages(null);
         // this.addActionMessage(Map.toString(this.getInvalidFields().toArray()));
