@@ -1029,7 +1029,7 @@ public class ProjectPolicyAction extends BaseAction {
     if (projectPolicy.getProjectPolicyCrps() != null && projectPolicy.getProjectPolicyCrps().size() > 0) {
 
       List<ProjectPolicyCrp> crpPrev = new ArrayList<>(projectPolicy.getProjectPolicyCrps().stream()
-        .filter(nu -> nu.isActive() && nu.getPhase().getId() == phase.getId()).collect(Collectors.toList()));
+        .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
 
       for (ProjectPolicyCrp policyCrp : crpPrev) {
         if (policy.getCrps() == null || !policy.getCrps().contains(policyCrp)) {
@@ -1200,7 +1200,7 @@ public class ProjectPolicyAction extends BaseAction {
     if (projectPolicy.getProjectPolicyOwners() != null && projectPolicy.getProjectPolicyOwners().size() > 0) {
 
       List<ProjectPolicyOwner> ownerPrev = new ArrayList<>(projectPolicy.getProjectPolicyOwners().stream()
-        .filter(nu -> nu.isActive() && nu.getPhase().getId() == phase.getId()).collect(Collectors.toList()));
+        .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
 
       for (ProjectPolicyOwner policyOwner : ownerPrev) {
         if (policy.getOwners() == null || !policy.getOwners().contains(policyOwner)) {

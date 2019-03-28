@@ -93,7 +93,7 @@ public class POISummary {
   }
 
   private void addParagraphTextBreak(XWPFRun paragraphRun, String text) {
-    if (text.contains("\n")) {
+    if (text != null && text.contains("\n")) {
       String[] lines = text.split("\n");
       paragraphRun.setText(lines[0], 0); // set first line into XWPFRun
       for (int i = 1; i < lines.length; i++) {

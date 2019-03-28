@@ -157,7 +157,7 @@ public class PublicationsAction extends BaseAction {
             dto.getLiaisonInstitutions().add(this.liaisonInstitution);
           } else {
             List<ProjectFocus> projectFocuses = new ArrayList<>(deliverable.getProject().getProjectFocuses().stream()
-              .filter(pf -> pf.isActive() && pf.getPhase().getId() == actualPhase.getId())
+              .filter(pf -> pf.isActive() && pf.getPhase().getId().equals(actualPhase.getId()))
               .collect(Collectors.toList()));
             List<LiaisonInstitution> liaisonInstitutions = new ArrayList<>();
             for (ProjectFocus projectFocus : projectFocuses) {
@@ -268,8 +268,8 @@ public class PublicationsAction extends BaseAction {
       // Fill Project Deliverables of the current flagship
       if (projectFocusManager.findAll() != null) {
         List<ProjectFocus> projectFocus = new ArrayList<>(projectFocusManager.findAll().stream()
-          .filter(pf -> pf.isActive() && pf.getCrpProgram().getId() == liaisonInstitution.getCrpProgram().getId()
-            && pf.getPhase() != null && pf.getPhase().getId() == actualPhase.getId())
+          .filter(pf -> pf.isActive() && pf.getCrpProgram().getId().equals(liaisonInstitution.getCrpProgram().getId())
+            && pf.getPhase() != null && pf.getPhase().getId().equals(actualPhase.getId()))
           .collect(Collectors.toList()));
 
         for (ProjectFocus focus : projectFocus) {
@@ -576,7 +576,7 @@ public class PublicationsAction extends BaseAction {
         if (user.getLiasonsUsers() != null || !user.getLiasonsUsers().isEmpty()) {
           List<LiaisonUser> liaisonUsers = new ArrayList<>(user.getLiasonsUsers().stream()
             .filter(lu -> lu.isActive() && lu.getLiaisonInstitution().isActive()
-              && lu.getLiaisonInstitution().getCrp().getId() == loggedCrp.getId()
+              && lu.getLiaisonInstitution().getCrp().getId().equals(loggedCrp.getId())
               && lu.getLiaisonInstitution().getInstitution() == null)
             .collect(Collectors.toList()));
           if (!liaisonUsers.isEmpty()) {
