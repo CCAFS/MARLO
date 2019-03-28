@@ -1891,11 +1891,11 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         addCustomHeadingStyle(document, "heading 2", 1);
         addCustomHeadingStyle(document, "heading 3", 1);
         addCustomHeadingStyle(document, "heading 4", 2);
-        addCustomHeadingStyle(document, "heading 5", 1);
+        addCustomHeadingStyle(document, "heading 5", 2);
         addCustomHeadingStyle(document, "heading 6", 2);
-        addCustomHeadingStyle(document, "heading 7", 1);
-        addCustomHeadingStyle(document, "heading 8", 1);
-        addCustomHeadingStyle(document, "heading 9", 1);
+        addCustomHeadingStyle(document, "heading 7", 2);
+        addCustomHeadingStyle(document, "heading 8", 2);
+        addCustomHeadingStyle(document, "heading 9", 2);
         addCustomHeadingStyle(document, "heading 10", 2);
         addCustomHeadingStyle(document, "heading 11", 2);
         addCustomHeadingStyle(document, "heading 12", 2);
@@ -1906,11 +1906,11 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         addCustomHeadingStyle(document, "heading 17", 2);
         addCustomHeadingStyle(document, "heading 18", 2);
         addCustomHeadingStyle(document, "heading 19", 2);
-        addCustomHeadingStyle(document, "heading 20", 2);
-        addCustomHeadingStyle(document, "heading 21", 1);
-        addCustomHeadingStyle(document, "heading 22", 1);
-        addCustomHeadingStyle(document, "heading 23", 1);
-        addCustomHeadingStyle(document, "heading 24", 1);
+        addCustomHeadingStyle(document, "heading 20", 1);
+        addCustomHeadingStyle(document, "heading 21", 2);
+        addCustomHeadingStyle(document, "heading 22", 2);
+        addCustomHeadingStyle(document, "heading 23", 2);
+        addCustomHeadingStyle(document, "heading 24", 2);
         addCustomHeadingStyle(document, "heading 25", 1);
 
         // First page
@@ -2379,9 +2379,6 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         toc.setDirty(STOnOff.TRUE);
         XWPFRun run = paragraph.createRun();
 
-        // Toc section
-        addCustomHeadingStyle(document, "heading 1", 1);
-        addCustomHeadingStyle(document, "heading 2", 2);
 
         // First page
         document.createParagraph().setPageBreak(true);
@@ -3102,8 +3099,6 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
       bilateral = bilateral * (percentageB) / 100;
       crpProgram.setW1(crpProgram.getW1() + w1);
       crpProgram.setW3(crpProgram.getW3() + w3 + bilateral);
-
-
     }
   }
 
@@ -3159,7 +3154,6 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
       .collect(Collectors.toList());
     flagshipLiaisonInstitutions.sort(Comparator.comparing(LiaisonInstitution::getAcronym));
-
 
     this.flagshipExternalPartnerships(flagshipLiaisonInstitutions);
 
