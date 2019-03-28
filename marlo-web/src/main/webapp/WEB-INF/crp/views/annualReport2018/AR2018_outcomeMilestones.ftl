@@ -162,7 +162,7 @@
                 </td>
                 [#if !allowPopups]
                   [#-- Milestone Evidence --]
-                  <td>[@utils.tableText value=(reportedMilestone.evidence)!"" emptyText="global.prefilledByFlagship" /] </td>
+                  <td class="urlify">[@utils.tableText value=(reportedMilestone.evidence)!"" emptyText="global.prefilledByFlagship" /] </td>
                   [#-- Cross Cutting markers --]
                   [#list cgiarCrossCuttingMarkers as marker]
                     [#local reportedCrossCuting =  (action.getCrossCuttingMarker( ((reportedMilestone.id)!-1), marker.id ))! ]
