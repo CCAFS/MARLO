@@ -94,16 +94,17 @@
             [/#if]
             
             [#-- Altmetric Score --]
+            [#if PMU]
             <div class="form-group">
               [@customForm.textArea name="${customName}.altmetricScore" i18nkey="${customLabel}.altmetricScore" help="${customLabel}.altmetricScore.help" className="limitWords-${calculateLimitWords(400)}" helpIcon=false required=true editable=editable allowTextEditor=true /]
             </div>
+            [/#if]
             
-            [#if PMU]
-            [#-- Flagships - Synthesis (Altmetric Score) --]
+            [#-- Flagships - Synthesis (Altmetric Score) 
             <div class="form-group">
               [@macrosAR.tableFPSynthesis tableName="${customLabel}.tableFlagshipAltmetric" list=flagshipsReportSynthesisFlagshipProgress columns=["altmetricScore"] /]
             </div>
-            [/#if]
+            --]
             
           </div>
           [#-- Section Buttons & hidden inputs--]
