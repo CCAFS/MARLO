@@ -539,13 +539,15 @@ public class MonitoringOutcomeAction extends BaseAction {
 
   public void saveEvidences(CenterMonitoringOutcome monitoringOutcomeDB, CenterMonitoringOutcome monitoringOutcome) {
 
-    if (monitoringOutcomeDB.getEvidences() != null && monitoringOutcomeDB.getEvidences().size() > 0) {
+    if (monitoringOutcomeDB.getMonitorignOutcomeEvidences() != null
+      && monitoringOutcomeDB.getMonitorignOutcomeEvidences().size() > 0) {
 
       List<CenterMonitoringOutcomeEvidence> evidences = new ArrayList<>(monitoringOutcomeDB
         .getMonitorignOutcomeEvidences().stream().filter(ev -> ev.isActive()).collect(Collectors.toList()));
 
       for (CenterMonitoringOutcomeEvidence monitorignOutcomeEvidence : evidences) {
-        if (!monitoringOutcome.getEvidences().contains(monitorignOutcomeEvidence)) {
+        if (monitoringOutcome.getEvidences() == null
+          || !monitoringOutcome.getEvidences().contains(monitorignOutcomeEvidence)) {
           evidenceService.deleteMonitorignOutcomeEvidence(monitorignOutcomeEvidence.getId());
         }
       }
