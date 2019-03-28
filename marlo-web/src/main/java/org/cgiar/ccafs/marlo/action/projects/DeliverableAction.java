@@ -528,7 +528,7 @@ public class DeliverableAction extends BaseAction {
       if (deliverable.getDeliverableLocations() != null && deliverable.getDeliverableLocations().size() > 0) {
 
         List<DeliverableLocation> regionPrev = new ArrayList<>(deliverable.getDeliverableLocations().stream()
-          .filter(nu -> nu.isActive() && nu.getPhase().getId() == phase.getId()).collect(Collectors.toList()));
+          .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
 
         for (DeliverableLocation region : regionPrev) {
 
@@ -540,8 +540,9 @@ public class DeliverableAction extends BaseAction {
       if (deliverable.getDeliverableGeographicRegions() != null
         && deliverable.getDeliverableGeographicRegions().size() > 0) {
 
-        List<DeliverableGeographicRegion> regionPrev = new ArrayList<>(deliverable.getDeliverableGeographicRegions()
-          .stream().filter(nu -> nu.isActive() && nu.getPhase().getId() == phase.getId()).collect(Collectors.toList()));
+        List<DeliverableGeographicRegion> regionPrev =
+          new ArrayList<>(deliverable.getDeliverableGeographicRegions().stream()
+            .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
 
         for (DeliverableGeographicRegion region : regionPrev) {
 
@@ -1298,7 +1299,7 @@ public class DeliverableAction extends BaseAction {
         // Setup Geographic Scope
         if (deliverable.getDeliverableGeographicScopes() != null) {
           deliverable.setGeographicScopes(new ArrayList<>(deliverable.getDeliverableGeographicScopes().stream()
-            .filter(o -> o.isActive() && o.getPhase().getId() == this.getActualPhase().getId())
+            .filter(o -> o.isActive() && o.getPhase().getId().equals(this.getActualPhase().getId()))
             .collect(Collectors.toList())));
         }
 
@@ -1539,7 +1540,7 @@ public class DeliverableAction extends BaseAction {
         // Cgiar Cross Cutting Markers List
         if (deliverable.getCrossCuttingMarkers() != null) {
           deliverable.setCrossCuttingMarkers(new ArrayList<>(deliverable.getDeliverableCrossCuttingMarkers().stream()
-            .filter(o -> o.isActive() && o.getPhase().getId() == this.getActualPhase().getId())
+            .filter(o -> o.isActive() && o.getPhase().getId().equals(this.getActualPhase().getId()))
             .collect(Collectors.toList())));
         }
 
@@ -2526,7 +2527,7 @@ public class DeliverableAction extends BaseAction {
       && deliverable.getDeliverableGeographicScopes().size() > 0) {
 
       List<DeliverableGeographicScope> scopePrev = new ArrayList<>(deliverable.getDeliverableGeographicScopes().stream()
-        .filter(nu -> nu.isActive() && nu.getPhase().getId() == phase.getId()).collect(Collectors.toList()));
+        .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
 
       for (DeliverableGeographicScope deliverableScope : scopePrev) {
         if (this.deliverable.getGeographicScopes() == null

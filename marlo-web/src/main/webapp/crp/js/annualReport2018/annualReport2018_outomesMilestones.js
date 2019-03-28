@@ -7,6 +7,11 @@ function init() {
     width: '100%'
   });
 
+  $('.urlify').each(function(i,e) {
+    var text = $(e).html();
+    $(e).html(urlify(text));
+  });
+
   attachEvents();
 }
 
