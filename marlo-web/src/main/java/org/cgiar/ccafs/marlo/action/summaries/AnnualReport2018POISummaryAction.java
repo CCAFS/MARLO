@@ -316,7 +316,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
       && reportSynthesisPMU.getReportSynthesisFlagshipProgress().getAltmetricScore() != null) {
       String synthesisCrpAltmetric = reportSynthesisPMU.getReportSynthesisFlagshipProgress().getAltmetricScore() != null
         ? reportSynthesisPMU.getReportSynthesisFlagshipProgress().getAltmetricScore() : "";
-      poiSummary.textParagraph(document.createParagraph(), synthesisCrpAltmetric);
+      poiSummary.convertHTMLTags(document, synthesisCrpAltmetric);
     }
   }
 
@@ -333,7 +333,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     }
 
     if (crossCuttingCapacityDevelopment != null && !crossCuttingCapacityDevelopment.isEmpty()) {
-      poiSummary.textParagraph(document.createParagraph(), crossCuttingCapacityDevelopment);
+      poiSummary.convertHTMLTags(document, crossCuttingCapacityDevelopment);
     }
   }
 
@@ -348,9 +348,8 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         }
       }
     }
-
     if (crossCuttingClimateChange != null && !crossCuttingClimateChange.isEmpty()) {
-      poiSummary.textParagraph(document.createParagraph(), crossCuttingClimateChange);
+      poiSummary.convertHTMLTags(document, crossCuttingClimateChange);
     }
   }
 
@@ -392,7 +391,6 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     String crossCuttingIntellectualAssets = "";
 
     if (reportSynthesisPMU != null) {
-
       if (reportSynthesisPMU.getReportSynthesisCrossCuttingDimension() != null) {
         ReportSynthesisCrossCuttingDimension crossCutting =
           reportSynthesisPMU.getReportSynthesisCrossCuttingDimension();
@@ -404,9 +402,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
 
     if (crossCuttingIntellectualAssets != null && !crossCuttingIntellectualAssets.isEmpty()) {
       poiSummary.convertHTMLTags(document, crossCuttingIntellectualAssets);
-
     }
-
   }
 
   private void addCrossCuttingOpenData() {
@@ -425,7 +421,6 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     }
 
     if (crossCuttingOpenData != null && !crossCuttingOpenData.isEmpty()) {
-      // poiSummary.textParagraph(document.createParagraph(), crossCuttingOpenData);
       poiSummary.convertHTMLTags(document, crossCuttingOpenData);
     }
 
@@ -448,7 +443,6 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     }
 
     if (crossCuttingOtherAspects != null && !crossCuttingOtherAspects.isEmpty()) {
-      // poiSummary.textParagraph(document.createParagraph(), crossCuttingOtherAspects);
       poiSummary.convertHTMLTags(document, crossCuttingOtherAspects);
 
     }
@@ -504,7 +498,6 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
       && reportSynthesisPMU.getReportSynthesisCrpProgress().getSummaries() != null) {
       String synthesisCrpSummaries = reportSynthesisPMU.getReportSynthesisCrpProgress().getSummaries() != null
         ? reportSynthesisPMU.getReportSynthesisCrpProgress().getSummaries() : "";
-      // poiSummary.textParagraph(document.createParagraph(), synthesisCrpSummaries);
       poiSummary.convertHTMLTags(document, synthesisCrpSummaries);
     }
   }
@@ -514,7 +507,6 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
       && reportSynthesisPMU.getReportSynthesisSrfProgress().getSummary() != null) {
       String synthesisCrpDescription = reportSynthesisPMU.getReportSynthesisSrfProgress().getSummary() != null
         ? reportSynthesisPMU.getReportSynthesisSrfProgress().getSummary() : "";
-      // poiSummary.textParagraph(document.createParagraph(), synthesisCrpDescription);
       poiSummary.convertHTMLTags(document, synthesisCrpDescription);
     }
   }
@@ -532,7 +524,6 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     }
 
     if (keyExternal != null && !keyExternal.isEmpty()) {
-      // poiSummary.textParagraph(document.createParagraph(), keyExternal);
       poiSummary.convertHTMLTags(document, keyExternal);
 
     }
@@ -554,7 +545,6 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     }
 
     if (financialSummaryNarrative != null && !financialSummaryNarrative.isEmpty()) {
-      // poiSummary.textParagraph(document.createParagraph(), financialSummaryNarrative);
       poiSummary.convertHTMLTags(document, financialSummaryNarrative);
 
     }
@@ -573,9 +563,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     }
 
     if (brieflySummarize != null && !brieflySummarize.isEmpty()) {
-      // poiSummary.textParagraph(document.createParagraph(), brieflySummarize);
       poiSummary.convertHTMLTags(document, brieflySummarize);
-
     }
   }
 
@@ -597,15 +585,18 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
 
 
         if (reportSynthesisPMU.getReportSynthesisIntellectualAsset().getManaged() != null) {
-          poiSummary.convertHTMLTags(document, this.getText("summaries.annualReport2018.effectiveness.intellectual1"));
+          poiSummary.textParagraphBold(document.createParagraph(),
+            this.getText("summaries.annualReport2018.effectiveness.intellectual1"));
           poiSummary.convertHTMLTags(document, reportSynthesisPMU.getReportSynthesisIntellectualAsset().getManaged());
         }
         if (reportSynthesisPMU.getReportSynthesisIntellectualAsset().getPatents() != null) {
-          poiSummary.convertHTMLTags(document, this.getText("summaries.annualReport2018.effectiveness.intellectual2"));
+          poiSummary.textParagraphBold(document.createParagraph(),
+            this.getText("summaries.annualReport2018.effectiveness.intellectual2"));
           poiSummary.convertHTMLTags(document, reportSynthesisPMU.getReportSynthesisIntellectualAsset().getPatents());
         }
         if (reportSynthesisPMU.getReportSynthesisIntellectualAsset().getCriticalIssues() != null) {
-          poiSummary.convertHTMLTags(document, this.getText("summaries.annualReport2018.effectiveness.intellectual3"));
+          poiSummary.textParagraphBold(document.createParagraph(),
+            this.getText("summaries.annualReport2018.effectiveness.intellectual3"));
           poiSummary.convertHTMLTags(document,
             reportSynthesisPMU.getReportSynthesisIntellectualAsset().getCriticalIssues());
         }
@@ -671,7 +662,6 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     if (reportSynthesisPMU != null && reportSynthesisPMU.getReportSynthesisNarrative() != null
       && reportSynthesisPMU.getReportSynthesisNarrative().getNarrative() != null) {
       String narrative = reportSynthesisPMU.getReportSynthesisNarrative().getNarrative();
-      // poiSummary.textParagraph(document.createParagraph(), synthesisCrpDescription);
       poiSummary.convertHTMLTags(document, narrative);
     }
   }
@@ -681,7 +671,6 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
       && reportSynthesisPMU.getReportSynthesisFlagshipProgress().getOverallProgress() != null) {
       String synthesisCrpOveral = reportSynthesisPMU.getReportSynthesisFlagshipProgress().getOverallProgress() != null
         ? reportSynthesisPMU.getReportSynthesisFlagshipProgress().getOverallProgress() : "";
-      // poiSummary.textParagraph(document.createParagraph(), synthesisCrpOveral);
       poiSummary.convertHTMLTags(document, synthesisCrpOveral);
     }
   }
@@ -703,8 +692,6 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     }
     poiSummary.textParagraph(document.createParagraph(),
       this.getText("summaries.annualReport.participantingCenters") + ": " + participantingCenters + ":");
-    poiSummary.convertHTMLTags(document, participantingCenters);
-
   }
 
   private void addProgressFlagshipCrp() {
@@ -713,7 +700,6 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
       String synthesisCrpProgress =
         reportSynthesisPMU.getReportSynthesisFlagshipProgress().getProgressByFlagships() != null
           ? reportSynthesisPMU.getReportSynthesisFlagshipProgress().getProgressByFlagships() : "";
-      // poiSummary.textParagraph(document.createParagraph(), synthesisCrpProgress);
       poiSummary.convertHTMLTags(document, synthesisCrpProgress);
     }
   }
@@ -758,19 +744,19 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     }
 
     if (expanded != null && !expanded.isEmpty()) {
-      poiSummary.textParagraph(document.createParagraph(),
+      poiSummary.textParagraphBold(document.createParagraph(),
         this.getText("summaries.annualReport2018.keyResults.variance1"));
       poiSummary.convertHTMLTags(document, expanded);
     }
 
     if (cutBack != null && !cutBack.isEmpty()) {
-      poiSummary.textParagraph(document.createParagraph(),
+      poiSummary.textParagraphBold(document.createParagraph(),
         this.getText("summaries.annualReport2018.keyResults.variance2"));
       poiSummary.convertHTMLTags(document, cutBack);
     }
 
     if (direction != null && !direction.isEmpty()) {
-      poiSummary.textParagraph(document.createParagraph(),
+      poiSummary.textParagraphBold(document.createParagraph(),
         this.getText("summaries.annualReport2018.keyResults.variance3"));
       poiSummary.convertHTMLTags(document, direction);
     }
@@ -865,7 +851,6 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         datas.add(data);
       }
     }
-
     poiSummary.textTable(document, headers, datas, true, "tableA1AnnualReport2018");
   }
 
@@ -1312,7 +1297,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         this.getText("summaries.annualReport2018.table3Title1", new String[] {String.valueOf(this.getSelectedYear())}),
         ParagraphAlignment.LEFT),
       new POIField(this.getText("summaries.annualReport2018.table3Title2"), ParagraphAlignment.LEFT),
-      new POIField("", ParagraphAlignment.LEFT)};
+      new POIField("summaries.annualReport2018.table3Title3", ParagraphAlignment.LEFT)};
     List<POIField> header = Arrays.asList(sHeader);
     headers.add(header);
 
@@ -1323,9 +1308,9 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
           title = "OICR" + projectExpectStudy.getId() + " - "
             + projectExpectStudy.getProjectExpectedStudyInfo(this.getActualPhase()).getTitle();
         }
-        if (projectExpectStudy.getProjectExpectedStudyInfo().getRepIndStageProcess() != null
-          && projectExpectStudy.getProjectExpectedStudyInfo().getRepIndStageProcess().getName() != null) {
-          maturity = projectExpectStudy.getProjectExpectedStudyInfo().getRepIndStageProcess().getName();
+        if (projectExpectStudy.getProjectExpectedStudyInfo().getRepIndStageStudy() != null
+          && projectExpectStudy.getProjectExpectedStudyInfo().getRepIndStageStudy().getName() != null) {
+          maturity = projectExpectStudy.getProjectExpectedStudyInfo().getRepIndStageStudy().getName();
         }
         if (projectExpectStudy.getProjectExpectedStudyInfo().getEvidenceTag() != null
           && projectExpectStudy.getProjectExpectedStudyInfo().getEvidenceTag().getName() != null) {
@@ -1597,10 +1582,8 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
       datas.add(data);
     }
 
-
     // for (int i = 0; i < flagshipPlannedList.size(); i++) {
     String studies = "", status = "", comments = "";
-
 
     POIField[] sData = {new POIField(studies, ParagraphAlignment.LEFT), new POIField(status, ParagraphAlignment.CENTER),
       new POIField(comments, ParagraphAlignment.LEFT)};
@@ -1652,7 +1635,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
             .getInstitutions()) {
             if (institution != null && institution.getInstitution() != null
               && institution.getInstitution().getComposedName() != null) {
-              keyPartners += institution.getInstitution().getComposedName() + ",";
+              keyPartners += institution.getInstitution().getComposedName() + ", ";
             }
           }
         }
@@ -1662,7 +1645,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
             .getMainAreas()) {
             if (externalMainArea != null && externalMainArea.getPartnerArea() != null
               && externalMainArea.getPartnerArea().getName() != null) {
-              mainArea += externalMainArea.getPartnerArea().getName() + ",";
+              mainArea += externalMainArea.getPartnerArea().getName() + ", ";
             }
           }
         }
@@ -1870,7 +1853,6 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
       return NOT_FOUND;
     }
 
-
     if (this.isEntityCRP()) {
       try {
 
@@ -1911,11 +1893,11 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         addCustomHeadingStyle(document, "heading 2", 1);
         addCustomHeadingStyle(document, "heading 3", 1);
         addCustomHeadingStyle(document, "heading 4", 2);
-        addCustomHeadingStyle(document, "heading 5", 2);
+        addCustomHeadingStyle(document, "heading 5", 1);
         addCustomHeadingStyle(document, "heading 6", 2);
-        addCustomHeadingStyle(document, "heading 7", 2);
-        addCustomHeadingStyle(document, "heading 8", 2);
-        addCustomHeadingStyle(document, "heading 9", 2);
+        addCustomHeadingStyle(document, "heading 7", 1);
+        addCustomHeadingStyle(document, "heading 8", 1);
+        addCustomHeadingStyle(document, "heading 9", 1);
         addCustomHeadingStyle(document, "heading 10", 2);
         addCustomHeadingStyle(document, "heading 11", 2);
         addCustomHeadingStyle(document, "heading 12", 2);
@@ -1927,10 +1909,10 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         addCustomHeadingStyle(document, "heading 18", 2);
         addCustomHeadingStyle(document, "heading 19", 2);
         addCustomHeadingStyle(document, "heading 20", 2);
-        addCustomHeadingStyle(document, "heading 21", 2);
-        addCustomHeadingStyle(document, "heading 22", 2);
-        addCustomHeadingStyle(document, "heading 23", 2);
-        addCustomHeadingStyle(document, "heading 24", 2);
+        addCustomHeadingStyle(document, "heading 21", 1);
+        addCustomHeadingStyle(document, "heading 22", 1);
+        addCustomHeadingStyle(document, "heading 23", 1);
+        addCustomHeadingStyle(document, "heading 24", 1);
         addCustomHeadingStyle(document, "heading 25", 1);
 
         // First page
@@ -1962,7 +1944,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         paragraph.setStyle("heading 0");
 
         // First page
-        poiSummary.textLineBreak(document, 1);
+        // poiSummary.textLineBreak(document, 1);
         paragraph = document.createParagraph();
         run = paragraph.createRun();
         run.setFontSize(14);
@@ -1971,7 +1953,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         paragraph.setStyle("heading 2");
 
         // section 1 - Key Results
-        poiSummary.textLineBreak(document, 1);
+        // poiSummary.textLineBreak(document, 1);
         paragraph = document.createParagraph();
         run = paragraph.createRun();
         run.setFontSize(14);
@@ -2048,8 +2030,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         run.setText(this.getText("summaries.annualReport2018.crossCutting"));
         paragraph.setStyle("heading 10");
 
-        // poiSummary.textLineBreak(document, 1);
-        //
+        // 1.3.1 Gender
         paragraph = document.createParagraph();
         run = paragraph.createRun();
         run.setFontSize(11);
@@ -2058,32 +2039,35 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         this.addCrossCuttingGender();
         paragraph.setStyle("heading 11");
 
+        // 1.3.2 Youth
         poiSummary.textLineBreak(document, 1);
         paragraph = document.createParagraph();
         run = paragraph.createRun();
         run.setFontSize(11);
         run.setBold(true);
         run.setText(this.getText("summaries.annualReport2018.crossCutting.youth"));
-        paragraph.setStyle("heading 12");
         this.addCrossCuttingYouth();
+        paragraph.setStyle("heading 12");
 
+        // 1.3.3 Capdev
         poiSummary.textLineBreak(document, 1);
         paragraph = document.createParagraph();
         run = paragraph.createRun();
         run.setFontSize(11);
         run.setBold(true);
         run.setText(this.getText("summaries.annualReport2018.crossCutting.capacity"));
-        paragraph.setStyle("heading 13");
         this.addCrossCuttingCapacityDevelopment();
+        paragraph.setStyle("heading 13");
 
+        // 1.3.4 Climate Change
         poiSummary.textLineBreak(document, 1);
         paragraph = document.createParagraph();
         run = paragraph.createRun();
         run.setFontSize(11);
         run.setBold(true);
         run.setText(this.getText("summaries.annualReport2018.crossCutting.climateChange"));
-        paragraph.setStyle("heading 14");
         this.addCrossCuttingClimateChange();
+        paragraph.setStyle("heading 14");
 
         // section 2 - Effectiveness and Efficiency
         poiSummary.textLineBreak(document, 1);
@@ -2112,7 +2096,6 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         run.setBold(true);
         run.setText(this.getText("summaries.annualReport2018.effectiveness.partnerships"));
         paragraph.setStyle("heading 17");
-        // this.addFundingSummarize();
 
         // 2.2.1 Highlights of External Partnerships
         poiSummary.textLineBreak(document, 1);

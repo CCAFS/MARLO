@@ -132,10 +132,13 @@ public class FlagshipProgress2018Validator extends BaseValidator {
         action.getInvalidFields().put("input-reportSynthesis.reportSynthesisFlagshipProgress.changedDirection",
           InvalidFieldsMessages.EMPTYFIELD);
       }
-      if (!(this.isValidString(reportSynthesis.getReportSynthesisFlagshipProgress().getAltmetricScore()))) {
-        action.addMissingField(action.getText("annualReport2018.flagshipProgress.altmetricScore.readText"));
-        action.getInvalidFields().put("input-reportSynthesis.reportSynthesisFlagshipProgress.altmetricScore",
-          InvalidFieldsMessages.EMPTYFIELD);
+
+      if (action.isPMU()) {
+        if (!(this.isValidString(reportSynthesis.getReportSynthesisFlagshipProgress().getAltmetricScore()))) {
+          action.addMissingField(action.getText("annualReport2018.flagshipProgress.altmetricScore.readText"));
+          action.getInvalidFields().put("input-reportSynthesis.reportSynthesisFlagshipProgress.altmetricScore",
+            InvalidFieldsMessages.EMPTYFIELD);
+        }
       }
 
       if (!action.getFieldErrors().isEmpty()) {
