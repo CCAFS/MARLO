@@ -287,7 +287,7 @@
                   <i style="opacity:0.5">PID</i>
                 [/#if]
               </td>
-              <td class="text-justify">
+              <td class="">
                 [@utils.tableText value=(partner.institution.composedName)!"" /] 
               </td>
               <td class="text-center">
