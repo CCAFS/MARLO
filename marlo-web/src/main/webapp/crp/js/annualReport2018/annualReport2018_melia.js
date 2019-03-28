@@ -18,6 +18,29 @@ function attachEvents() {
   // Remove a program collaboration
   $('.removeEvaluation').on('click', removeEvaluation);
 
+  // Add Evaluation Action
+  $('.addEvaluationAction').on('click', addEvaluationAction);
+
+  // Remove Evaluation Action
+  $('.removeEvaluationAction').on('click', removeEvaluationAction);
+
+}
+
+function addEvaluationAction() {
+  var $list = $(this).parents(".evaluationActions").find('.list-block');
+  var $item = $('#evaluationAction-template').clone(true).removeAttr("id");
+  $list.append($item);
+  $item.find('textarea').setTrumbowyg();
+  $item.show('slow');
+  updateIndexes();
+}
+
+function removeEvaluationAction() {
+  var $item = $(this).parents('.evaluationAction');
+  $item.hide(function() {
+    $item.remove();
+    updateIndexes();
+  });
 }
 
 function addEvaluation() {
