@@ -691,7 +691,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
       }
     }
     poiSummary.textParagraph(document.createParagraph(),
-      this.getText("summaries.annualReport.participantingCenters") + ": " + participantingCenters + ":");
+      this.getText("summaries.annualReport.participantingCenters") + ": " + participantingCenters);
   }
 
   private void addProgressFlagshipCrp() {
@@ -708,8 +708,6 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     if (reportSynthesisPMU != null) {
       if (reportSynthesisPMU.getReportSynthesisMelia() != null
         && reportSynthesisPMU.getReportSynthesisMelia().getSummary() != null) {
-        // poiSummary.textParagraph(document.createParagraph(),
-        // reportSynthesisPMU.getReportSynthesisMelia().getSummary());
         poiSummary.convertHTMLTags(document, reportSynthesisPMU.getReportSynthesisMelia().getSummary());
 
       }
@@ -1944,7 +1942,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         paragraph.setStyle("heading 0");
 
         // First page
-        // poiSummary.textLineBreak(document, 1);
+        poiSummary.textLineBreak(document, 1);
         paragraph = document.createParagraph();
         run = paragraph.createRun();
         run.setFontSize(14);
@@ -1953,7 +1951,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         paragraph.setStyle("heading 2");
 
         // section 1 - Key Results
-        // poiSummary.textLineBreak(document, 1);
+        poiSummary.textLineBreak(document, 1);
         paragraph = document.createParagraph();
         run = paragraph.createRun();
         run.setFontSize(14);
@@ -1962,7 +1960,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         paragraph.setStyle("heading 3");
 
         // 1.1 Progress Towards SDG and SLO
-        poiSummary.textLineBreak(document, 1);
+        // poiSummary.textLineBreak(document, 1);
         paragraph = document.createParagraph();
         run = paragraph.createRun();
         run.setFontSize(13);
@@ -1970,7 +1968,6 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         run.setText(this.getText("summaries.annualReport2018.keyResults.crpProgress"));
         this.addExpectedCrp();
         paragraph.setStyle("heading 4");
-
 
         // 1.2 CRP progress towars outputs and outcomes
         poiSummary.textLineBreak(document, 1);
@@ -2187,8 +2184,8 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         pageSizeTable.setH(BigInteger.valueOf(595 * 20));
         this.loadTablePMU();
 
-
-        poiSummary.textLineBreak(document, 1);
+        // Part B
+        document.createParagraph().setPageBreak(true);
         poiSummary.textHead1Title(document.createParagraph(), "Part B. TABLES");
 
         // Table 1
@@ -2202,7 +2199,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         this.createTable1();
 
         // Table 2
-        poiSummary.textLineBreak(document, 1);
+        document.createParagraph().setPageBreak(true);
         paragraph = document.createParagraph();
         run = paragraph.createRun();
         run.setFontSize(13);
@@ -2212,7 +2209,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         this.createTable2();
 
         // Table 3
-        poiSummary.textLineBreak(document, 1);
+        document.createParagraph().setPageBreak(true);
         paragraph = document.createParagraph();
         run = paragraph.createRun();
         run.setFontSize(13);
@@ -2222,7 +2219,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         this.createTable3();
 
         // Table 4
-        poiSummary.textLineBreak(document, 1);
+        document.createParagraph().setPageBreak(true);
         paragraph = document.createParagraph();
         run = paragraph.createRun();
         run.setFontSize(13);
@@ -2232,7 +2229,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         this.createTable4();
 
         // Table 5
-        poiSummary.textLineBreak(document, 1);
+        document.createParagraph().setPageBreak(true);
         paragraph = document.createParagraph();
         run = paragraph.createRun();
         run.setFontSize(13);
@@ -2242,7 +2239,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         this.createTable5();
 
         // Table 6
-        poiSummary.textLineBreak(document, 1);
+        document.createParagraph().setPageBreak(true);
         paragraph = document.createParagraph();
         run = paragraph.createRun();
         run.setFontSize(13);
@@ -2252,7 +2249,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         this.createTable6();
 
         // Table 7
-        poiSummary.textLineBreak(document, 1);
+        document.createParagraph().setPageBreak(true);
         paragraph = document.createParagraph();
         run = paragraph.createRun();
         run.setFontSize(13);
@@ -2262,7 +2259,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         this.createTable7();
 
         // Table 8
-        poiSummary.textLineBreak(document, 1);
+        document.createParagraph().setPageBreak(true);
         paragraph = document.createParagraph();
         run = paragraph.createRun();
         run.setFontSize(13);
@@ -2272,7 +2269,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         this.createTable8();
 
         // Table 9
-        poiSummary.textLineBreak(document, 1);
+        document.createParagraph().setPageBreak(true);
         paragraph = document.createParagraph();
         run = paragraph.createRun();
         run.setFontSize(13);
@@ -2282,7 +2279,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         this.createTable9();
 
         // Table 10
-        poiSummary.textLineBreak(document, 1);
+        document.createParagraph().setPageBreak(true);
         paragraph = document.createParagraph();
         run = paragraph.createRun();
         run.setFontSize(13);
@@ -2292,7 +2289,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         this.createTable10();
 
         // Table 11
-        poiSummary.textLineBreak(document, 1);
+        document.createParagraph().setPageBreak(true);
         paragraph = document.createParagraph();
         run = paragraph.createRun();
         run.setFontSize(13);
@@ -2302,7 +2299,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         this.createTable11();
 
         // Table 12
-        poiSummary.textLineBreak(document, 1);
+        document.createParagraph().setPageBreak(true);
         paragraph = document.createParagraph();
         run = paragraph.createRun();
         run.setFontSize(13);
@@ -2312,7 +2309,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         this.createTable12();
 
         // Table 12
-        poiSummary.textLineBreak(document, 1);
+        document.createParagraph().setPageBreak(true);
         paragraph = document.createParagraph();
         run = paragraph.createRun();
         run.setFontSize(13);
@@ -2322,7 +2319,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         this.createTable12();
 
         // Table 13
-        poiSummary.textLineBreak(document, 1);
+        document.createParagraph().setPageBreak(true);
         paragraph = document.createParagraph();
         run = paragraph.createRun();
         run.setFontSize(13);
