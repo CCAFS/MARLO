@@ -218,8 +218,8 @@
               [#-- 9. Geographic Scope --]
               <td>
                 <div class=""><strong>[@utils.tableList list=(item.geographicScopes)![]  displayFieldName="repIndGeographicScope.name" nobr=true /]</strong></div>
-                <div class="">[@utils.tableList list=(item.regions)![]  displayFieldName="locElement.composedName" showEmpty=false nobr=true /]</div>
-                <div class="">[@utils.tableList list=(item.countries)![]  displayFieldName="locElement.name" showEmpty=false nobr=true /]</div>
+                <div class="">[@utils.tableList list=(item.regions)![]  displayFieldName="locElement.composedName" showEmpty=false nobr=false /]</div>
+                <div class="">[@utils.tableList list=(item.countries)![]  displayFieldName="locElement.name" showEmpty=false nobr=false /]</div>
               </td>
               [#-- 10. Evidence for Innovation --]
               <td class="text-center">
