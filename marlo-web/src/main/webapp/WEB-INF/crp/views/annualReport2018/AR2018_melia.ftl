@@ -240,7 +240,7 @@
     <div class="evaluationActions">
       <h5 class="sectionSubTitle"> [@s.text name="${customLabel}.table11.actions" /] </h5>
       <div class="list-block">
-        [#if (element.meliaEvaluationActions??)!false]
+        [#if (element.meliaEvaluationActions?has_content)!false]
           [#list (element.meliaEvaluationActions)![] as evalAction]
             [@evaluationActionMacro element=evalAction name="${customName}.meliaEvaluationActions" index=evalAction_index  isEditable=editable/]
           [/#list]
