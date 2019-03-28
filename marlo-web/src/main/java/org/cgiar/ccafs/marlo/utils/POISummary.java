@@ -93,16 +93,20 @@ public class POISummary {
   }
 
   private void addParagraphTextBreak(XWPFRun paragraphRun, String text) {
-    if (text != null && text.contains("\n")) {
-      String[] lines = text.split("\n");
-      paragraphRun.setText(lines[0], 0); // set first line into XWPFRun
-      for (int i = 1; i < lines.length; i++) {
-        // add break and insert new text
-        paragraphRun.addBreak();
-        paragraphRun.setText(lines[i]);
+    try {
+      if (text.contains("\n")) {
+        String[] lines = text.split("\n");
+        paragraphRun.setText(lines[0], 0); // set first line into XWPFRun
+        for (int i = 1; i < lines.length; i++) {
+          // add break and insert new text
+          paragraphRun.addBreak();
+          paragraphRun.setText(lines[i]);
+        }
+      } else {
+        paragraphRun.setText(text, 0);
       }
-    } else {
-      paragraphRun.setText(text, 0);
+    } catch (Exception e) {
+      System.out.println(e);
     }
   }
 
@@ -251,7 +255,7 @@ public class POISummary {
           paragraphRun.setItalic(false);
         }
         startPosition = i + expression.length() + 1;
-
+        System.out.println("stringTemp " + stringTemp);
         /*
          * Create paragraph with last position after the start of html tag until the close of this
          */
@@ -1368,6 +1372,17 @@ public class POISummary {
     this.addParagraphTextBreak(paragraphRun, text);
     paragraphRun.setColor(TEXT_FONT_COLOR);
     paragraphRun.setBold(false);
+    paragraphRun.setFontFamily(FONT_TYPE);
+    paragraphRun.setFontSize(11);
+  }
+
+  public void textParagraphBold(XWPFParagraph paragraph, String text) {
+    paragraph.setAlignment(ParagraphAlignment.BOTH);
+    XWPFRun paragraphRun = paragraph.createRun();
+
+    this.addParagraphTextBreak(paragraphRun, text);
+    paragraphRun.setColor(TEXT_FONT_COLOR);
+    paragraphRun.setBold(true);
     paragraphRun.setFontFamily(FONT_TYPE);
     paragraphRun.setFontSize(11);
   }
