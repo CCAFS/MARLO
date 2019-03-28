@@ -382,9 +382,11 @@ public class CrossCuttingDimensionAction extends BaseAction {
 
     /** Graphs and Tables */
     // Deliverables Participants
-    deliverableParticipants = deliverableParticipantManager.getDeliverableParticipantByPhase(phase);
+    deliverableParticipants = new ArrayList<>();
+
+    List<DeliverableParticipant> participants = deliverableParticipantManager.getDeliverableParticipantByPhase(phase);
     if (deliverableParticipants != null && !deliverableParticipants.isEmpty()) {
-      for (DeliverableParticipant deliverableParticipant : deliverableParticipants) {
+      for (DeliverableParticipant deliverableParticipant : participants) {
         if (deliverableParticipant.getDeliverable().getDeliverableInfo(phase) != null
           && deliverableParticipant.getDeliverable().getDeliverableInfo(phase).isRequired()) {
           // Total Participants
@@ -418,6 +420,8 @@ public class CrossCuttingDimensionAction extends BaseAction {
               }
             }
           }
+
+          deliverableParticipants.add(deliverableParticipant);
         }
       }
     }
