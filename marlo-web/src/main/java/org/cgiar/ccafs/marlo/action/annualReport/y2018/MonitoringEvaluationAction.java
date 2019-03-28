@@ -216,43 +216,46 @@ public class MonitoringEvaluationAction extends BaseAction {
               .collect(Collectors.toList()));
           for (ProjectExpectedStudyFlagship projectExpectedStudyFlagship : studiesPrograms) {
             CrpProgram crpProgram = liaisonInstitution.getCrpProgram();
-            if (crpProgram.equals(projectExpectedStudyFlagship.getCrpProgram())) {
-              if (projectExpectedStudy.getProjectExpectedStudyInfo(this.getActualPhase()) != null) {
-                if (projectExpectedStudy.getProjectExpectedStudyInfo(this.getActualPhase()).getStudyType() != null
-                  && projectExpectedStudy.getProjectExpectedStudyInfo(this.getActualPhase()).getStudyType().getId() != 1
-                  && projectExpectedStudy.getProjectExpectedStudyInfo().getStatus() != null
-                  && projectExpectedStudy.getProjectExpectedStudyInfo().getYear().equals(this.getCurrentCycleYear())) {
-                  ReportSynthesisFlagshipProgressStudyDTO dto = new ReportSynthesisFlagshipProgressStudyDTO();
-                  projectExpectedStudy.getProject()
-                    .setProjectInfo(projectExpectedStudy.getProject().getProjecInfoPhase(this.getActualPhase()));
-                  dto.setProjectExpectedStudy(projectExpectedStudy);
+            if (crpProgram != null) {
+              if (crpProgram.equals(projectExpectedStudyFlagship.getCrpProgram())) {
+                if (projectExpectedStudy.getProjectExpectedStudyInfo(this.getActualPhase()) != null) {
+                  if (projectExpectedStudy.getProjectExpectedStudyInfo(this.getActualPhase()).getStudyType() != null
+                    && projectExpectedStudy.getProjectExpectedStudyInfo(this.getActualPhase()).getStudyType()
+                      .getId() != 1
+                    && projectExpectedStudy.getProjectExpectedStudyInfo().getStatus() != null && projectExpectedStudy
+                      .getProjectExpectedStudyInfo().getYear().equals(this.getCurrentCycleYear())) {
+                    ReportSynthesisFlagshipProgressStudyDTO dto = new ReportSynthesisFlagshipProgressStudyDTO();
+                    projectExpectedStudy.getProject()
+                      .setProjectInfo(projectExpectedStudy.getProject().getProjecInfoPhase(this.getActualPhase()));
+                    dto.setProjectExpectedStudy(projectExpectedStudy);
 
-                  if (projectExpectedStudy.getProject().getProjectInfo() != null) {
-                    if (projectExpectedStudy.getProject().getProjectInfo().getAdministrative() != null
-                      && projectExpectedStudy.getProject().getProjectInfo().getAdministrative()) {
-                      dto.setLiaisonInstitutions(new ArrayList<>());
-                      dto.getLiaisonInstitutions().add(this.liaisonInstitution);
-                    } else {
-                      List<ProjectFocus> projectFocuses =
-                        new ArrayList<>(projectExpectedStudy.getProject().getProjectFocuses().stream()
-                          .filter(pf -> pf.isActive() && pf.getPhase().getId().equals(phaseID))
-                          .collect(Collectors.toList()));
-                      List<LiaisonInstitution> liaisonInstitutions = new ArrayList<>();
-                      for (ProjectFocus projectFocus : projectFocuses) {
-                        liaisonInstitutions.addAll(projectFocus.getCrpProgram().getLiaisonInstitutions().stream()
-                          .filter(li -> li.isActive() && li.getCrpProgram() != null
-                            && li.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()
-                            && li.getCrp() != null && li.getCrp().equals(this.getLoggedCrp()))
-                          .collect(Collectors.toList()));
+                    if (projectExpectedStudy.getProject().getProjectInfo() != null) {
+                      if (projectExpectedStudy.getProject().getProjectInfo().getAdministrative() != null
+                        && projectExpectedStudy.getProject().getProjectInfo().getAdministrative()) {
+                        dto.setLiaisonInstitutions(new ArrayList<>());
+                        dto.getLiaisonInstitutions().add(this.liaisonInstitution);
+                      } else {
+                        List<ProjectFocus> projectFocuses =
+                          new ArrayList<>(projectExpectedStudy.getProject().getProjectFocuses().stream()
+                            .filter(pf -> pf.isActive() && pf.getPhase().getId().equals(phaseID))
+                            .collect(Collectors.toList()));
+                        List<LiaisonInstitution> liaisonInstitutions = new ArrayList<>();
+                        for (ProjectFocus projectFocus : projectFocuses) {
+                          liaisonInstitutions.addAll(projectFocus.getCrpProgram().getLiaisonInstitutions().stream()
+                            .filter(li -> li.isActive() && li.getCrpProgram() != null
+                              && li.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()
+                              && li.getCrp() != null && li.getCrp().equals(this.getLoggedCrp()))
+                            .collect(Collectors.toList()));
+                        }
+                        dto.setLiaisonInstitutions(liaisonInstitutions);
                       }
-                      dto.setLiaisonInstitutions(liaisonInstitutions);
+
+                      flagshipPlannedList.add(dto);
+                      break;
                     }
 
-                    flagshipPlannedList.add(dto);
-                    break;
+
                   }
-
-
                 }
               }
             }
