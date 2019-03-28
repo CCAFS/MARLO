@@ -131,6 +131,9 @@
 </section>
 
 [@relevantEvaluationMacro element={} name="${customName}.evaluations" index=-1  template=true/]
+[@evaluationActionMacro element={} name="${customName}.evaluations[-1].meliaEvaluationActions" index=-1  template=true/]
+
+
 
 [#include "/WEB-INF/global/pages/footer.ftl"]
 
@@ -234,20 +237,24 @@
     </div>
     
     [#-- Concrete actions --]
-    <h5 class="sectionSubTitle"> [@s.text name="${customLabel}.table11.actions" /] </h5>
-    [#if (element.meliaEvaluationActions??)!false]
-      [#list (element.meliaEvaluationActions)![] as evalAction]
-        [@evaluationActionMacro element=evalAction name="${customName}.meliaEvaluationActions" index=evalAction_index  isEditable=editable/]
-      [/#list]
-    [#else]
-      [@evaluationActionMacro element={} name="${customName}.meliaEvaluationActions" index=0  isEditable=editable/]
-    [/#if]
-    
-    [#if editable]
-      <div class="text-right">
-        <div class="addAction button-blue text-right"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> [@s.text name="form.buttons.addAction"/]</div>
+    <div class="evaluationActions">
+      <h5 class="sectionSubTitle"> [@s.text name="${customLabel}.table11.actions" /] </h5>
+      <div class="list-block">
+        [#if (element.meliaEvaluationActions??)!false]
+          [#list (element.meliaEvaluationActions)![] as evalAction]
+            [@evaluationActionMacro element=evalAction name="${customName}.meliaEvaluationActions" index=evalAction_index  isEditable=editable/]
+          [/#list]
+        [#else]
+          [@evaluationActionMacro element={} name="${customName}.meliaEvaluationActions" index=0  isEditable=editable/]
+        [/#if]
       </div>
-    [/#if]
+      
+      [#if editable]
+        <div class="text-right">
+          <div class="addEvaluationAction button-blue text-right"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> [@s.text name="form.buttons.addAction"/]</div>
+        </div>
+      [/#if]
+    </div>
     
     [#-- Comments --] 
     <div class="form-group">
@@ -260,9 +267,13 @@
 [#macro evaluationActionMacro element name index template=false isEditable=true]
   [#local customName = "${name}[${index}]" /]
   <div id="evaluationAction-${template?string('template', index)}" class="evaluationAction simpleBox form-group" style="position:relative; display:${template?string('none','block')}">
-    [#-- Action title --] 
+    [#-- Remove Button --]
+    [#if isEditable]<div class="removeEvaluationAction removeElement sm" title="Remove"></div>[/#if]
+    [#-- Hidden inputs --]
+    <input type="hidden" name="${customName}.id" value="${(element.id)!}"/> 
+    [#-- Action title --]
     <div class="form-group">
-      [@customForm.textArea name="${customName}.actions" i18nkey="${customLabel}.table11.action" help="${customLabel}.table11.action.help" helpIcon=false className="" required=true editable=isEditable allowTextEditor=true /]
+      [@customForm.textArea name="${customName}.actions" i18nkey="${customLabel}.table11.action" className="" required=true editable=isEditable allowTextEditor=true /]
     </div>
     <div class="form-group row">
       <div class="col-md-6">
