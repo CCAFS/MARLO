@@ -558,6 +558,21 @@ public class MonitoringEvaluationAction extends BaseAction {
                 .getReportSynthesisMeliaEvaluations().stream().filter(e -> e.isActive()).collect(Collectors.toList())));
             reportSynthesis.getReportSynthesisMelia().getEvaluations()
               .sort(Comparator.comparing(ReportSynthesisMeliaEvaluation::getId));
+
+            // load evaluation actions
+            if (reportSynthesis.getReportSynthesisMelia().getEvaluations() != null
+              && !reportSynthesis.getReportSynthesisMelia().getEvaluations().isEmpty()) {
+              for (ReportSynthesisMeliaEvaluation reportSynthesisMeliaEvaluation : reportSynthesis
+                .getReportSynthesisMelia().getEvaluations()) {
+                if (reportSynthesisMeliaEvaluation.getReportSynthesisMeliaEvaluationActions() != null
+                  && !reportSynthesisMeliaEvaluation.getReportSynthesisMeliaEvaluationActions().isEmpty()) {
+                  reportSynthesisMeliaEvaluation.setMeliaEvaluationActions(
+                    new ArrayList<>(reportSynthesisMeliaEvaluation.getReportSynthesisMeliaEvaluationActions().stream()
+                      .filter(e -> e.isActive()).collect(Collectors.toList())));
+                }
+              }
+            }
+
           }
         }
       }
