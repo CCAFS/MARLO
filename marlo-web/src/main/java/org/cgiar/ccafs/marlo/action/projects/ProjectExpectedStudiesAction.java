@@ -285,7 +285,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
         List<ProjectExpectedStudyCountry> regionPrev =
           new ArrayList<>(this.expectedStudy.getProjectExpectedStudyCountries().stream()
-            .filter(nu -> nu.isActive() && nu.getPhase().getId() == phase.getId()).collect(Collectors.toList()));
+            .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
 
         for (ProjectExpectedStudyCountry region : regionPrev) {
           this.projectExpectedStudyCountryManager.deleteProjectExpectedStudyCountry(region.getId());
@@ -297,7 +297,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
         List<ProjectExpectedStudyRegion> regionPrev =
           new ArrayList<>(this.expectedStudy.getProjectExpectedStudyRegions().stream()
-            .filter(nu -> nu.isActive() && nu.getPhase().getId() == phase.getId()).collect(Collectors.toList()));
+            .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
 
         for (ProjectExpectedStudyRegion policyRegion : regionPrev) {
 
@@ -670,7 +670,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
         if (this.expectedStudy.getProjectExpectedStudyGeographicScopes() != null) {
           this.expectedStudy
             .setGeographicScopes(new ArrayList<>(this.expectedStudy.getProjectExpectedStudyGeographicScopes().stream()
-              .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
+              .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
         }
 
         // Expected Study Countries List
@@ -698,13 +698,13 @@ public class ProjectExpectedStudiesAction extends BaseAction {
         // Expected Study SubIdos List
         if (this.expectedStudy.getProjectExpectedStudySubIdos() != null) {
           this.expectedStudy.setSubIdos(new ArrayList<>(this.expectedStudy.getProjectExpectedStudySubIdos().stream()
-            .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
+            .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
         }
 
         // Expected Study Flagship List
         if (this.expectedStudy.getProjectExpectedStudyFlagships() != null) {
           this.expectedStudy.setFlagships(new ArrayList<>(this.expectedStudy.getProjectExpectedStudyFlagships().stream()
-            .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()
+            .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())
               && o.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
             .collect(Collectors.toList())));
         }
@@ -712,7 +712,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
         // Expected Study Regions List
         if (this.expectedStudy.getProjectExpectedStudyFlagships() != null) {
           this.expectedStudy.setRegions(new ArrayList<>(this.expectedStudy.getProjectExpectedStudyFlagships().stream()
-            .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()
+            .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())
               && o.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue())
             .collect(Collectors.toList())));
         }
@@ -720,50 +720,53 @@ public class ProjectExpectedStudiesAction extends BaseAction {
         // Expected Study Crp List
         if (this.expectedStudy.getProjectExpectedStudyCrps() != null) {
           this.expectedStudy.setCrps(new ArrayList<>(this.expectedStudy.getProjectExpectedStudyCrps().stream()
-            .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
+            .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
         }
 
         // Expected Study Institutions List
         if (this.expectedStudy.getProjectExpectedStudyInstitutions() != null) {
-          this.expectedStudy.setInstitutions(new ArrayList<>(this.expectedStudy.getProjectExpectedStudyInstitutions()
-            .stream().filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
+          this.expectedStudy
+            .setInstitutions(new ArrayList<>(this.expectedStudy.getProjectExpectedStudyInstitutions().stream()
+              .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
         }
 
         // Expected Study Srf Target List
         if (this.expectedStudy.getProjectExpectedStudySrfTargets() != null) {
-          this.expectedStudy.setSrfTargets(new ArrayList<>(this.expectedStudy.getProjectExpectedStudySrfTargets()
-            .stream().filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
+          this.expectedStudy
+            .setSrfTargets(new ArrayList<>(this.expectedStudy.getProjectExpectedStudySrfTargets().stream()
+              .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
         }
 
         // Expected Study Projects List
         if (this.expectedStudy.getExpectedStudyProjects() != null) {
           this.expectedStudy.setProjects(new ArrayList<>(this.expectedStudy.getExpectedStudyProjects().stream()
-            .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
+            .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
         }
 
         // Expected Study Link List
         if (this.expectedStudy.getProjectExpectedStudyLinks() != null) {
           this.expectedStudy.setLinks(new ArrayList<>(this.expectedStudy.getProjectExpectedStudyLinks().stream()
-            .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
+            .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
         }
 
         // Expected Study Policies List
         if (this.expectedStudy.getProjectExpectedStudyPolicies() != null) {
           this.expectedStudy.setPolicies(new ArrayList<>(this.expectedStudy.getProjectExpectedStudyPolicies().stream()
-            .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
+            .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
         }
 
         // Expected Study Quantifications List
         if (this.expectedStudy.getProjectExpectedStudyQuantifications() != null) {
           this.expectedStudy
             .setQuantifications(new ArrayList<>(this.expectedStudy.getProjectExpectedStudyQuantifications().stream()
-              .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
+              .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
         }
 
         // Expected Study Quantifications List
         if (this.expectedStudy.getProjectExpectedStudyInnovations() != null) {
-          this.expectedStudy.setInnovations(new ArrayList<>(this.expectedStudy.getProjectExpectedStudyInnovations()
-            .stream().filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
+          this.expectedStudy
+            .setInnovations(new ArrayList<>(this.expectedStudy.getProjectExpectedStudyInnovations().stream()
+              .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
         }
 
       }
@@ -802,8 +805,9 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
       // Expected Study Projects List
       if (this.expectedStudy.getExpectedStudyProjects() != null) {
-        List<ExpectedStudyProject> expectedStudyProjects = new ArrayList<>(this.expectedStudy.getExpectedStudyProjects()
-          .stream().filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()).collect(Collectors.toList()));
+        List<ExpectedStudyProject> expectedStudyProjects =
+          new ArrayList<>(this.expectedStudy.getExpectedStudyProjects().stream()
+            .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
 
         for (ExpectedStudyProject expectedStudyProject : expectedStudyProjects) {
 
@@ -1257,8 +1261,9 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     // Search and deleted form Information
     if (projectExpectedStudy.getProjectExpectedStudyCrps() != null
       && projectExpectedStudy.getProjectExpectedStudyCrps().size() > 0) {
-      List<ProjectExpectedStudyCrp> crpPrev = new ArrayList<>(projectExpectedStudy.getProjectExpectedStudyCrps()
-        .stream().filter(nu -> nu.isActive() && nu.getPhase().getId() == phase.getId()).collect(Collectors.toList()));
+      List<ProjectExpectedStudyCrp> crpPrev =
+        new ArrayList<>(projectExpectedStudy.getProjectExpectedStudyCrps().stream()
+          .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
 
       for (ProjectExpectedStudyCrp studyCrp : crpPrev) {
         if (this.expectedStudy.getCrps() == null || !this.expectedStudy.getCrps().contains(studyCrp)) {
@@ -1302,7 +1307,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
       List<ProjectExpectedStudyFlagship> flagshipPrev =
         new ArrayList<>(projectExpectedStudy.getProjectExpectedStudyFlagships().stream()
-          .filter(nu -> nu.isActive() && nu.getPhase().getId() == phase.getId()
+          .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())
             && nu.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
           .collect(Collectors.toList()));
 
@@ -1349,7 +1354,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
       List<ProjectExpectedStudyGeographicScope> scopePrev =
         new ArrayList<>(projectExpectedStudy.getProjectExpectedStudyGeographicScopes().stream()
-          .filter(nu -> nu.isActive() && nu.getPhase().getId() == phase.getId()).collect(Collectors.toList()));
+          .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
 
       for (ProjectExpectedStudyGeographicScope studyScope : scopePrev) {
         if (this.expectedStudy.getGeographicScopes() == null
@@ -1394,7 +1399,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       && projectExpectedStudy.getProjectExpectedStudyInnovations().size() > 0) {
       List<ProjectExpectedStudyInnovation> innovationPrev =
         new ArrayList<>(projectExpectedStudy.getProjectExpectedStudyInnovations().stream()
-          .filter(nu -> nu.isActive() && nu.getPhase().getId() == phase.getId()).collect(Collectors.toList()));
+          .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
 
       for (ProjectExpectedStudyInnovation studyInnovation : innovationPrev) {
         if (this.expectedStudy.getInnovations() == null
@@ -1440,7 +1445,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
       List<ProjectExpectedStudyInstitution> institutionPrev =
         new ArrayList<>(projectExpectedStudy.getProjectExpectedStudyInstitutions().stream()
-          .filter(nu -> nu.isActive() && nu.getPhase().getId() == phase.getId()).collect(Collectors.toList()));
+          .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
 
       for (ProjectExpectedStudyInstitution studyInstitution : institutionPrev) {
         if (this.expectedStudy.getInstitutions() == null
@@ -1484,8 +1489,9 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     // Search and deleted form Information
     if (projectExpectedStudy.getProjectExpectedStudyLinks() != null
       && projectExpectedStudy.getProjectExpectedStudyLinks().size() > 0) {
-      List<ProjectExpectedStudyLink> linkPrev = new ArrayList<>(projectExpectedStudy.getProjectExpectedStudyLinks()
-        .stream().filter(nu -> nu.isActive() && nu.getPhase().getId() == phase.getId()).collect(Collectors.toList()));
+      List<ProjectExpectedStudyLink> linkPrev =
+        new ArrayList<>(projectExpectedStudy.getProjectExpectedStudyLinks().stream()
+          .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
 
       for (ProjectExpectedStudyLink studyLink : linkPrev) {
         if (this.expectedStudy.getLinks() == null || !this.expectedStudy.getLinks().contains(studyLink)) {
@@ -1536,7 +1542,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       && projectExpectedStudy.getProjectExpectedStudyPolicies().size() > 0) {
       List<ProjectExpectedStudyPolicy> policyPrev =
         new ArrayList<>(projectExpectedStudy.getProjectExpectedStudyPolicies().stream()
-          .filter(nu -> nu.isActive() && nu.getPhase().getId() == phase.getId()).collect(Collectors.toList()));
+          .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
 
       for (ProjectExpectedStudyPolicy studyPolicy : policyPrev) {
         if (this.expectedStudy.getPolicies() == null || !this.expectedStudy.getPolicies().contains(studyPolicy)) {
@@ -1580,7 +1586,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       && projectExpectedStudy.getExpectedStudyProjects().size() > 0) {
 
       List<ExpectedStudyProject> projectPrev = new ArrayList<>(projectExpectedStudy.getExpectedStudyProjects().stream()
-        .filter(nu -> nu.isActive() && nu.getPhase().getId() == phase.getId()).collect(Collectors.toList()));
+        .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
 
       for (ExpectedStudyProject studyProject : projectPrev) {
         if (this.expectedStudy.getProjects() == null || !this.expectedStudy.getProjects().contains(studyProject)) {
@@ -1624,7 +1630,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       && projectExpectedStudy.getProjectExpectedStudyQuantifications().size() > 0) {
       List<ProjectExpectedStudyQuantification> quantificationPrev =
         new ArrayList<>(projectExpectedStudy.getProjectExpectedStudyQuantifications().stream()
-          .filter(nu -> nu.isActive() && nu.getPhase().getId() == phase.getId()).collect(Collectors.toList()));
+          .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
 
       for (ProjectExpectedStudyQuantification studyQuantification : quantificationPrev) {
         if (this.expectedStudy.getQuantifications() == null
@@ -1687,7 +1693,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
       List<ProjectExpectedStudyFlagship> flagshipPrev =
         new ArrayList<>(projectExpectedStudy.getProjectExpectedStudyFlagships().stream()
-          .filter(nu -> nu.isActive() && nu.getPhase().getId() == phase.getId()
+          .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())
             && nu.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue())
           .collect(Collectors.toList()));
 
@@ -1734,7 +1740,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
       List<ProjectExpectedStudySrfTarget> targetPrev =
         new ArrayList<>(projectExpectedStudy.getProjectExpectedStudySrfTargets().stream()
-          .filter(nu -> nu.isActive() && nu.getPhase().getId() == phase.getId()).collect(Collectors.toList()));
+          .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
 
       for (ProjectExpectedStudySrfTarget studytarget : targetPrev) {
         if (this.expectedStudy.getSrfTargets() == null || !this.expectedStudy.getSrfTargets().contains(studytarget)) {
@@ -1776,7 +1782,8 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
     List<ProjectExpectedStudyRegion> regionPrev = this.projectExpectedStudyRegionManager
       .getProjectExpectedStudyRegionbyPhase(this.expectedStudy.getId(), phase.getId()).stream()
-      .filter(le -> le.isActive() && le.getLocElement().getLocElementType().getId() == 1).collect(Collectors.toList());
+      .filter(le -> le.isActive() && le.getLocElement().getLocElementType().getId().equals(1L))
+      .collect(Collectors.toList());
 
     // Search and deleted form Information
     if (regionPrev != null && regionPrev.size() > 0) {
@@ -1823,7 +1830,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
       List<ProjectExpectedStudySubIdo> subIdoPrev =
         new ArrayList<>(projectExpectedStudy.getProjectExpectedStudySubIdos().stream()
-          .filter(nu -> nu.isActive() && nu.getPhase().getId() == phase.getId()).collect(Collectors.toList()));
+          .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
 
       for (ProjectExpectedStudySubIdo studySubIdo : subIdoPrev) {
         if (this.expectedStudy.getSubIdos() == null || !this.expectedStudy.getSubIdos().contains(studySubIdo)) {
