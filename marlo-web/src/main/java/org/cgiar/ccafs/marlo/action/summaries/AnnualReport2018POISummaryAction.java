@@ -1765,7 +1765,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
 
       switch (i) {
         case 0:
-          number = String.valueOf(totalLimited);
+          number = String.valueOf(total);
           break;
         case 1:
           number = String.valueOf(totalOpenAccess);
