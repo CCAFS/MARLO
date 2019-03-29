@@ -23,6 +23,7 @@ import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis2018SectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisMeliaEvaluation;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisMeliaEvaluationAction;
 import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
 
@@ -119,6 +120,39 @@ public class MonitoringEvaluationValidator extends BaseValidator {
 
   }
 
+  private void validateEvaluationActions(BaseAction action,
+    ReportSynthesisMeliaEvaluationAction reportSynthesisMeliaEvaluationAction, int j, int i) {
+
+    // Validate actions
+    if (!this.isValidString(reportSynthesisMeliaEvaluationAction.getActions())) {
+      action.addMessage(action.getText("annualReport2018.melia.table11.actions.readText") + ".evaluations[" + i
+        + "].meliaEvaluationActions[" + j + "]");
+      action.getInvalidFields().put(
+        "input-reportSynthesis.reportSynthesisMelia.evaluations[" + i + "].meliaEvaluationActions[" + j + "].actions",
+        InvalidFieldsMessages.EMPTYFIELD);
+    }
+
+    // Validate Whom
+    if (!this.isValidString(reportSynthesisMeliaEvaluationAction.getTextWhom())) {
+      action.addMessage(action.getText("annualReport2018.melia.table11.whom") + ".evaluations[" + i
+        + "].meliaEvaluationActions[" + j + "]");
+      action.getInvalidFields().put(
+        "input-reportSynthesis.reportSynthesisMelia.evaluations[" + i + "].meliaEvaluationActions[" + j + "].textWhom",
+        InvalidFieldsMessages.EMPTYFIELD);
+    }
+
+    // Validate When
+    if (!this.isValidString(reportSynthesisMeliaEvaluationAction.getTextWhen())) {
+      action.addMessage(action.getText("annualReport2018.melia.table11.when") + ".evaluations[" + i
+        + "].meliaEvaluationActions[" + j + "]");
+      action.getInvalidFields().put(
+        "input-reportSynthesis.reportSynthesisMelia.evaluations[" + i + "].meliaEvaluationActions[" + j + "].textWhen",
+        InvalidFieldsMessages.EMPTYFIELD);
+    }
+
+  }
+
+
   public void validateEvaluations(BaseAction action, ReportSynthesisMeliaEvaluation evaluation, int i) {
 
     // Validate Name Evaluation
@@ -151,32 +185,39 @@ public class MonitoringEvaluationValidator extends BaseValidator {
         InvalidFieldsMessages.EMPTYFIELD);
     }
 
-    // Validate Whom
-    if (!this.isValidString(evaluation.getTextWhom())) {
-      action.addMessage(action.getText("reportSynthesis.reportSynthesisMelia.evaluations[" + i + "].textWhom"));
-      action.getInvalidFields().put("input-reportSynthesis.reportSynthesisMelia.evaluations[" + i + "].textWhom",
-        InvalidFieldsMessages.EMPTYFIELD);
-    }
-
-    // Validate When
-    if (!this.isValidString(evaluation.getTextWhen())) {
-      action.addMessage(action.getText("reportSynthesis.reportSynthesisMelia.evaluations[" + i + "].textWhen"));
-      action.getInvalidFields().put("input-reportSynthesis.reportSynthesisMelia.evaluations[" + i + "].textWhen",
-        InvalidFieldsMessages.EMPTYFIELD);
-    }
-
-    // Validate actions
-    if (!this.isValidString(evaluation.getActions())) {
-      action.addMessage(action.getText("reportSynthesis.reportSynthesisMelia.evaluations[" + i + "].actions"));
-      action.getInvalidFields().put("input-reportSynthesis.reportSynthesisMelia.evaluations[" + i + "].actions",
-        InvalidFieldsMessages.EMPTYFIELD);
-    }
-
     // Validate Comments
     if (!this.isValidString(evaluation.getComments())) {
       action.addMessage(action.getText("reportSynthesis.reportSynthesisMelia.evaluations[" + i + "].comments"));
       action.getInvalidFields().put("input-reportSynthesis.reportSynthesisMelia.evaluations[" + i + "].comments",
         InvalidFieldsMessages.EMPTYFIELD);
+    }
+
+    // Validate Evaluation Actions
+    if (evaluation.getMeliaEvaluationActions() != null && !evaluation.getMeliaEvaluationActions().isEmpty()) {
+      for (int j = 0; j < evaluation.getMeliaEvaluationActions().size(); j++) {
+        this.validateEvaluationActions(action, evaluation.getMeliaEvaluationActions().get(j), j, i);
+      }
+    } else {
+
+      action.addMessage(action.getText("annualReport2018.melia.table11.actions.readText") + ".evaluations[" + i
+        + "].meliaEvaluationActions[" + 0 + "]");
+      action.getInvalidFields().put(
+        "input-reportSynthesis.reportSynthesisMelia.evaluations[" + i + "].meliaEvaluationActions[" + 0 + "].actions",
+        InvalidFieldsMessages.EMPTYFIELD);
+
+      action.addMessage(action.getText("annualReport2018.melia.table11.whom") + ".evaluations[" + i
+        + "].meliaEvaluationActions[" + 0 + "]");
+      action.getInvalidFields().put(
+        "input-reportSynthesis.reportSynthesisMelia.evaluations[" + i + "].meliaEvaluationActions[" + 0 + "].textWhom",
+        InvalidFieldsMessages.EMPTYFIELD);
+
+      // Validate When
+      action.addMessage(action.getText("annualReport2018.melia.table11.when") + ".evaluations[" + i
+        + "].meliaEvaluationActions[" + 0 + "]");
+      action.getInvalidFields().put(
+        "input-reportSynthesis.reportSynthesisMelia.evaluations[" + i + "].meliaEvaluationActions[" + 0 + "].textWhen",
+        InvalidFieldsMessages.EMPTYFIELD);
+
     }
 
   }

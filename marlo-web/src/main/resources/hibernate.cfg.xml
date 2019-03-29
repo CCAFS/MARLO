@@ -410,5 +410,7 @@
     <mapping resource="xmls/ReportSynthesisFlagshipProgressOutcomes.hbm.xml" /> 
     <mapping resource="xmls/ReportSynthesisFlagshipProgressOutcomesMilestones.hbm.xml" />
     <mapping resource="xmls/ReportSynthesisNarratives.hbm.xml" />
+    <mapping resource="xmls/ReportSynthesisMeliaEvaluationActions.hbm.xml" />
+    
   </session-factory>
 </hibernate-configuration>
