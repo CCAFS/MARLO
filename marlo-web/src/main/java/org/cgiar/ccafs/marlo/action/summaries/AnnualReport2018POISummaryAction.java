@@ -1766,12 +1766,15 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
       switch (i) {
         case 0:
           number = String.valueOf(total);
+          percent = "100%";
           break;
         case 1:
           number = String.valueOf(totalOpenAccess);
+          percent = (Integer.valueOf(number) * 100) / total + "%";
           break;
         case 2:
           number = String.valueOf(totalIsis);
+          percent = (Integer.valueOf(number) * 100) / total + "%";
           break;
       }
 
