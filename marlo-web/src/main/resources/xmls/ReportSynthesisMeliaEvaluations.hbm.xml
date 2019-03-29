@@ -3,52 +3,67 @@
 "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 <!-- Generated Jun 20, 2018 1:50:26 PM by Hibernate Tools 3.4.0.CR1 -->
 <hibernate-mapping>
-    <class name="org.cgiar.ccafs.marlo.data.model.ReportSynthesisMeliaEvaluation" table="report_synthesis_melia_evaluations" optimistic-lock="none">
-        <id name="id" type="java.lang.Long">
-            <column name="id" />
-            <generator class="identity" />
-        </id>
-        <many-to-one name="modifiedBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
-            <column name="modified_by" />
-        </many-to-one>
-        <many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
-            <column name="created_by" />
-        </many-to-one>
-        <many-to-one name="reportSynthesisMelia" class="org.cgiar.ccafs.marlo.data.model.ReportSynthesisMelia" fetch="select">
-            <column name="report_synhtesis_melia_id" />
-        </many-to-one>
-        <property name="nameEvaluation" type="string">
-            <column name="name_evaluation" length="65535" />
-        </property>
-        <property name="recommendation" type="string">
-            <column name="recommendation" length="65535" />
-        </property>
-        <property name="managementResponse" type="string">
-            <column name="management_response" length="65535" />
-        </property>
-        <property name="status" type="java.lang.Integer">
-            <column name="status" precision="2" scale="0" />
-        </property>
-        <property name="actions" type="string">
-            <column name="actions" length="65535" />
-        </property>
-        <property name="textWhom" type="string">
-            <column name="text_whon" length="65535" />
-        </property>
-        <property name="textWhen" type="string">
-            <column name="text_when" length="65535" />
-        </property>
-        <property name="comments" type="string">
-            <column name="comments" length="65535" />
-        </property>
-        <property name="active" type="boolean">
-            <column name="is_active" not-null="true" />
-        </property>
-        <property name="activeSince" type="timestamp">
-            <column name="active_since" length="19" />
-        </property>
-        <property name="modificationJustification" type="string">
-            <column name="modification_justification" length="65535" />
-        </property>
-    </class>
+	<class
+		name="org.cgiar.ccafs.marlo.data.model.ReportSynthesisMeliaEvaluation"
+		table="report_synthesis_melia_evaluations" optimistic-lock="none">
+		<id name="id" type="java.lang.Long">
+			<column name="id" />
+			<generator class="identity" />
+		</id>
+		<many-to-one name="modifiedBy"
+			class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
+			<column name="modified_by" />
+		</many-to-one>
+		<many-to-one name="createdBy"
+			class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
+			<column name="created_by" />
+		</many-to-one>
+		<many-to-one name="reportSynthesisMelia"
+			class="org.cgiar.ccafs.marlo.data.model.ReportSynthesisMelia"
+			fetch="select">
+			<column name="report_synhtesis_melia_id" />
+		</many-to-one>
+		<property name="nameEvaluation" type="string">
+			<column name="name_evaluation" length="65535" />
+		</property>
+		<property name="recommendation" type="string">
+			<column name="recommendation" length="65535" />
+		</property>
+		<property name="managementResponse" type="string">
+			<column name="management_response" length="65535" />
+		</property>
+		<property name="status" type="java.lang.Integer">
+			<column name="status" precision="2" scale="0" />
+		</property>
+		<property name="actions" type="string">
+			<column name="actions" length="65535" />
+		</property>
+		<property name="textWhom" type="string">
+			<column name="text_whon" length="65535" />
+		</property>
+		<property name="textWhen" type="string">
+			<column name="text_when" length="65535" />
+		</property>
+		<property name="comments" type="string">
+			<column name="comments" length="65535" />
+		</property>
+		<property name="active" type="boolean">
+			<column name="is_active" not-null="true" />
+		</property>
+		<property name="activeSince" type="timestamp">
+			<column name="active_since" length="19" />
+		</property>
+		<property name="modificationJustification" type="string">
+			<column name="modification_justification" length="65535" />
+		</property>
+		<set name="reportSynthesisMeliaEvaluationActions"
+			table="report_synthesis_melia_evaluation_actions" inverse="true"
+			lazy="true" fetch="select">
+			<key>
+				<column name="report_synthesis_melia_evaluation_id" />
+			</key>
+			<one-to-many
+				class="org.cgiar.ccafs.marlo.data.model.ReportSynthesisMeliaEvaluationAction" />
+		</set>
+	</class>
 </hibernate-mapping>

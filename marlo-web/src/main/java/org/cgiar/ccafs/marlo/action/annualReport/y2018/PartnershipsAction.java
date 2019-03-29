@@ -647,38 +647,49 @@ public class PartnershipsAction extends BaseAction {
 
     if (projectFocusManager.findAll() != null) {
 
-      List<ProjectFocus> projectFocus = new ArrayList<>(projectFocusManager.findAll().stream()
-        .filter(pf -> pf.isActive() && pf.getCrpProgram().getId().equals(liaisonInstitution.getCrpProgram().getId())
-          && pf.getPhase() != null && pf.getPhase().getId().equals(phase.getId()))
-        .collect(Collectors.toList()));
+      try {
 
-      for (ProjectFocus focus : projectFocus) {
+        List<ProjectFocus> projectFocus = new ArrayList<>(projectFocusManager.findAll().stream()
+          .filter(pf -> pf.isActive() && pf.getCrpProgram().getId().equals(liaisonInstitution.getCrpProgram().getId())
+            && pf.getPhase() != null && pf.getPhase().getId().equals(phase.getId()))
+          .collect(Collectors.toList()));
 
-        Project project = projectManager.getProjectById(focus.getProject().getId());
+        for (ProjectFocus focus : projectFocus) {
 
-        if (project.getProjectPartners() != null) {
+          Project project = projectManager.getProjectById(focus.getProject().getId());
 
-          PartnershipsSynthesis partnershipsSynt = new PartnershipsSynthesis();
-          partnershipsSynt.setProject(project);
-          partnershipsSynt.setPartners(new ArrayList<>());
-          List<ProjectPartner> projectPartnersList = project.getProjectPartners().stream()
-            .filter(co -> co.isActive() && co.getPhase().getId().equals(phase.getId())).collect(Collectors.toList());
+          if (project.getProjectPartners() != null) {
 
-          if (projectPartnersList != null && !projectPartnersList.isEmpty()) {
-            if (isCgiar) {
-              partnershipsSynt.getPartners().addAll(projectPartnersList.stream()
-                .filter(c -> c.getInstitution().getInstitutionType().getId().equals(3L)).collect(Collectors.toList()));
-            } else {
-              partnershipsSynt.getPartners().addAll(projectPartnersList.stream()
-                .filter(c -> !c.getInstitution().getInstitutionType().getId().equals(3L)).collect(Collectors.toList()));
+            PartnershipsSynthesis partnershipsSynt = new PartnershipsSynthesis();
+            partnershipsSynt.setProject(project);
+            partnershipsSynt.setPartners(new ArrayList<>());
+            List<ProjectPartner> projectPartnersList = project.getProjectPartners().stream()
+              .filter(co -> co.isActive() && co.getPhase().getId().equals(phase.getId())).collect(Collectors.toList());
+
+            if (projectPartnersList != null && !projectPartnersList.isEmpty()) {
+              if (isCgiar) {
+                partnershipsSynt.getPartners().addAll(
+                  projectPartnersList.stream().filter(c -> c.getInstitution().getInstitutionType().getId().equals(3L))
+                    .collect(Collectors.toList()));
+              } else {
+                partnershipsSynt.getPartners()
+                  .addAll(projectPartnersList.stream()
+                    .filter(c -> !c.getInstitution().getInstitutionType().getId().equals(3L))
+                    .collect(Collectors.toList()));
+              }
+
+
             }
-
+            partnershipsSynthesis.add(partnershipsSynt);
 
           }
-          partnershipsSynthesis.add(partnershipsSynt);
-
         }
+
+      } catch (Exception e) {
+        // TODO: handle exception
       }
+
+
     }
 
     return partnershipsSynthesis;
