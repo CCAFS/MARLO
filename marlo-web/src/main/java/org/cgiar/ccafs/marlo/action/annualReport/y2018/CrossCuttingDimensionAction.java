@@ -385,7 +385,7 @@ public class CrossCuttingDimensionAction extends BaseAction {
     deliverableParticipants = new ArrayList<>();
 
     List<DeliverableParticipant> participants = deliverableParticipantManager.getDeliverableParticipantByPhase(phase);
-    if (deliverableParticipants != null && !deliverableParticipants.isEmpty()) {
+    if (participants != null && !participants.isEmpty()) {
       for (DeliverableParticipant deliverableParticipant : participants) {
         if (deliverableParticipant.getDeliverable().getDeliverableInfo(phase) != null
           && deliverableParticipant.getDeliverable().getDeliverableInfo(phase).isRequired()) {
