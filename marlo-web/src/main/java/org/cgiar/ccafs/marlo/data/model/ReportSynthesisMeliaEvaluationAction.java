@@ -78,6 +78,16 @@ public class ReportSynthesisMeliaEvaluationAction extends MarloAuditableEntity
   }
 
 
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result =
+      prime * result + ((reportSynthesisMeliaEvaluation == null) ? 0 : reportSynthesisMeliaEvaluation.hashCode());
+    return result;
+  }
+
+
   public void setActions(String actions) {
     this.actions = actions;
   }
