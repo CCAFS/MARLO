@@ -126,27 +126,27 @@ public class MonitoringEvaluationValidator extends BaseValidator {
     // Validate actions
     if (!this.isValidString(reportSynthesisMeliaEvaluationAction.getActions())) {
       action.addMessage(action.getText("annualReport2018.melia.table11.actions.readText") + ".evaluations[" + i
-        + "].actions[" + j + "]");
+        + "].meliaEvaluationActions[" + j + "]");
       action.getInvalidFields().put(
-        "input-reportSynthesis.reportSynthesisMelia.evaluations[" + i + "].actions[" + j + "].actions",
+        "input-reportSynthesis.reportSynthesisMelia.evaluations[" + i + "].meliaEvaluationActions[" + j + "].actions",
         InvalidFieldsMessages.EMPTYFIELD);
     }
 
     // Validate Whom
     if (!this.isValidString(reportSynthesisMeliaEvaluationAction.getTextWhom())) {
-      action.addMessage(
-        action.getText("annualReport2018.melia.table11.whom") + ".evaluations[" + i + "].actions[" + j + "]");
+      action.addMessage(action.getText("annualReport2018.melia.table11.whom") + ".evaluations[" + i
+        + "].meliaEvaluationActions[" + j + "]");
       action.getInvalidFields().put(
-        "input-reportSynthesis.reportSynthesisMelia.evaluations[" + i + "].actions[" + j + "].textWhom",
+        "input-reportSynthesis.reportSynthesisMelia.evaluations[" + i + "].meliaEvaluationActions[" + j + "].textWhom",
         InvalidFieldsMessages.EMPTYFIELD);
     }
 
     // Validate When
     if (!this.isValidString(reportSynthesisMeliaEvaluationAction.getTextWhen())) {
-      action.addMessage(
-        action.getText("annualReport2018.melia.table11.when") + ".evaluations[" + i + "].actions[" + j + "]");
+      action.addMessage(action.getText("annualReport2018.melia.table11.when") + ".evaluations[" + i
+        + "].meliaEvaluationActions[" + j + "]");
       action.getInvalidFields().put(
-        "input-reportSynthesis.reportSynthesisMelia.evaluations[" + i + "].actions[" + j + "].textWhen",
+        "input-reportSynthesis.reportSynthesisMelia.evaluations[" + i + "].meliaEvaluationActions[" + j + "].textWhen",
         InvalidFieldsMessages.EMPTYFIELD);
     }
 
@@ -197,6 +197,10 @@ public class MonitoringEvaluationValidator extends BaseValidator {
       for (int j = 0; j < evaluation.getMeliaEvaluationActions().size(); j++) {
         this.validateEvaluationActions(action, evaluation.getMeliaEvaluationActions().get(j), j, i);
       }
+    } else {
+      action.addMessage(action.getText("annualReport2018.melia.table11.actions.readText"));
+      action.getInvalidFields().put("input-reportSynthesis.reportSynthesisMelia.meliaEvaluationActions",
+        InvalidFieldsMessages.EMPTYFIELD);
     }
 
   }

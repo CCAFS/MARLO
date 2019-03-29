@@ -26,6 +26,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectFocusManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
+import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisMeliaEvaluationActionManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisMeliaEvaluationManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisMeliaManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisMeliaStudyManager;
@@ -47,6 +48,7 @@ import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressStudy;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressStudyDTO;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisMelia;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisMeliaEvaluation;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisMeliaEvaluationAction;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisMeliaStudy;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
@@ -99,6 +101,7 @@ public class MonitoringEvaluationAction extends BaseAction {
   private ProjectExpectedStudyManager projectExpectedStudyManager;
   private ReportSynthesisMeliaStudyManager reportSynthesisMeliaStudyManager;
   private ReportSynthesisMeliaEvaluationManager reportSynthesisMeliaEvaluationManager;
+  private ReportSynthesisMeliaEvaluationActionManager reportSynthesisMeliaEvaluationActionManager;
   private PhaseManager phaseManager;
   // Variables
   private String transaction;
@@ -123,7 +126,8 @@ public class MonitoringEvaluationAction extends BaseAction {
     ProjectFocusManager projectFocusManager, ProjectManager projectManager,
     ProjectExpectedStudyManager projectExpectedStudyManager,
     ReportSynthesisMeliaStudyManager reportSynthesisMeliaStudyManager,
-    ReportSynthesisMeliaEvaluationManager reportSynthesisMeliaEvaluationManager, PhaseManager phaseManager) {
+    ReportSynthesisMeliaEvaluationManager reportSynthesisMeliaEvaluationManager, PhaseManager phaseManager,
+    ReportSynthesisMeliaEvaluationActionManager reportSynthesisMeliaEvaluationActionManager) {
     super(config);
     this.crpManager = crpManager;
     this.liaisonInstitutionManager = liaisonInstitutionManager;
@@ -138,6 +142,7 @@ public class MonitoringEvaluationAction extends BaseAction {
     this.projectExpectedStudyManager = projectExpectedStudyManager;
     this.reportSynthesisMeliaStudyManager = reportSynthesisMeliaStudyManager;
     this.reportSynthesisMeliaEvaluationManager = reportSynthesisMeliaEvaluationManager;
+    this.reportSynthesisMeliaEvaluationActionManager = reportSynthesisMeliaEvaluationActionManager;
     this.phaseManager = phaseManager;
   }
 
@@ -707,6 +712,15 @@ public class MonitoringEvaluationAction extends BaseAction {
       for (ReportSynthesisMeliaEvaluation evaluation : evaluationPrev) {
         if (!reportSynthesis.getReportSynthesisMelia().getEvaluations().contains(evaluation)) {
           reportSynthesisMeliaEvaluationManager.deleteReportSynthesisMeliaEvaluation(evaluation.getId());
+          // Delete evaluationActions
+          if (evaluation.getReportSynthesisMeliaEvaluationActions() != null
+            && !evaluation.getReportSynthesisMeliaEvaluationActions().isEmpty()) {
+            for (ReportSynthesisMeliaEvaluationAction reportSynthesisMeliaEvaluationAction : evaluation
+              .getReportSynthesisMeliaEvaluationActions()) {
+              reportSynthesisMeliaEvaluationActionManager
+                .deleteReportSynthesisMeliaEvaluationAction(reportSynthesisMeliaEvaluationAction.getId());
+            }
+          }
         }
       }
     }
@@ -719,35 +733,79 @@ public class MonitoringEvaluationAction extends BaseAction {
 
           evaluationSave.setReportSynthesisMelia(meliaDB);
 
-
           evaluationSave.setStatus(evaluation.getStatus());
           evaluationSave.setNameEvaluation(evaluation.getNameEvaluation());
           evaluationSave.setRecommendation(evaluation.getRecommendation());
           evaluationSave.setManagementResponse(evaluation.getManagementResponse());
-          evaluationSave.setTextWhom(evaluation.getTextWhom());
-          evaluationSave.setTextWhen(evaluation.getTextWhen());
-          evaluationSave.setActions(evaluation.getActions());
           evaluationSave.setComments(evaluation.getComments());
+          evaluationSave = reportSynthesisMeliaEvaluationManager.saveReportSynthesisMeliaEvaluation(evaluationSave);
 
-
-          reportSynthesisMeliaEvaluationManager.saveReportSynthesisMeliaEvaluation(evaluationSave);
+          // Save evaluationActions
+          for (ReportSynthesisMeliaEvaluationAction reportSynthesisMeliaEvaluationAction : evaluation
+            .getMeliaEvaluationActions()) {
+            ReportSynthesisMeliaEvaluationAction meliaEvaluationActionSave = new ReportSynthesisMeliaEvaluationAction();
+            meliaEvaluationActionSave.setActions(reportSynthesisMeliaEvaluationAction.getActions());
+            meliaEvaluationActionSave.setTextWhom(reportSynthesisMeliaEvaluationAction.getTextWhom());
+            meliaEvaluationActionSave.setTextWhen(reportSynthesisMeliaEvaluationAction.getTextWhen());
+            meliaEvaluationActionSave.setReportSynthesisMeliaEvaluation(evaluationSave);
+            reportSynthesisMeliaEvaluationActionManager
+              .saveReportSynthesisMeliaEvaluationAction(meliaEvaluationActionSave);
+          }
         } else {
 
           ReportSynthesisMeliaEvaluation evaluationPrev =
             reportSynthesisMeliaEvaluationManager.getReportSynthesisMeliaEvaluationById(evaluation.getId());
 
-
           evaluationPrev.setStatus(evaluation.getStatus());
           evaluationPrev.setNameEvaluation(evaluation.getNameEvaluation());
           evaluationPrev.setRecommendation(evaluation.getRecommendation());
           evaluationPrev.setManagementResponse(evaluation.getManagementResponse());
-          evaluationPrev.setTextWhom(evaluation.getTextWhom());
-          evaluationPrev.setTextWhen(evaluation.getTextWhen());
-          evaluationPrev.setActions(evaluation.getActions());
           evaluationPrev.setComments(evaluation.getComments());
 
-          reportSynthesisMeliaEvaluationManager.saveReportSynthesisMeliaEvaluation(evaluationPrev);
+          List<ReportSynthesisMeliaEvaluationAction> evaluationActionsPrev =
+            new ArrayList<>(evaluationPrev.getReportSynthesisMeliaEvaluationActions().stream()
+              .filter(nu -> nu.isActive()).collect(Collectors.toList()));
 
+          for (ReportSynthesisMeliaEvaluationAction evaluationAction : evaluationActionsPrev) {
+            if (evaluation.getMeliaEvaluationActions() == null || evaluation.getMeliaEvaluationActions().isEmpty()
+              || !evaluation.getMeliaEvaluationActions().contains(evaluationAction)) {
+              reportSynthesisMeliaEvaluationActionManager
+                .deleteReportSynthesisMeliaEvaluationAction(evaluationAction.getId());
+            }
+          }
+
+
+          // Save evaluation actions
+          if (evaluation.getMeliaEvaluationActions() != null && !evaluation.getMeliaEvaluationActions().isEmpty()) {
+            for (ReportSynthesisMeliaEvaluationAction reportSynthesisMeliaEvaluationAction : evaluation
+              .getMeliaEvaluationActions()) {
+
+              if (reportSynthesisMeliaEvaluationAction.getId() == null) {
+                ReportSynthesisMeliaEvaluationAction meliaEvaluationActionSave =
+                  new ReportSynthesisMeliaEvaluationAction();
+                meliaEvaluationActionSave.setActions(reportSynthesisMeliaEvaluationAction.getActions());
+                meliaEvaluationActionSave.setTextWhom(reportSynthesisMeliaEvaluationAction.getTextWhom());
+                meliaEvaluationActionSave.setTextWhen(reportSynthesisMeliaEvaluationAction.getTextWhen());
+                meliaEvaluationActionSave.setReportSynthesisMeliaEvaluation(evaluationPrev);
+                reportSynthesisMeliaEvaluationActionManager
+                  .saveReportSynthesisMeliaEvaluationAction(meliaEvaluationActionSave);
+              } else {
+                ReportSynthesisMeliaEvaluationAction evaluationActionUpdate =
+                  reportSynthesisMeliaEvaluationActionManager
+                    .getReportSynthesisMeliaEvaluationActionById(reportSynthesisMeliaEvaluationAction.getId());
+
+                evaluationActionUpdate.setActions(reportSynthesisMeliaEvaluationAction.getActions());
+                evaluationActionUpdate.setTextWhom(reportSynthesisMeliaEvaluationAction.getTextWhom());
+                evaluationActionUpdate.setTextWhen(reportSynthesisMeliaEvaluationAction.getTextWhen());
+                reportSynthesisMeliaEvaluationActionManager
+                  .saveReportSynthesisMeliaEvaluationAction(evaluationActionUpdate);
+              }
+
+            }
+
+          }
+
+          reportSynthesisMeliaEvaluationManager.saveReportSynthesisMeliaEvaluation(evaluationPrev);
         }
       }
     }
