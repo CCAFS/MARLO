@@ -1850,8 +1850,8 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
       Boolean bold = false;
       String blueColor = "000099";
       POIField[] sData = {new POIField(title, ParagraphAlignment.LEFT, true, blackColor),
-        new POIField(number, ParagraphAlignment.LEFT, bold, blueColor),
-        new POIField(percent, ParagraphAlignment.LEFT, bold, blueColor)};
+        new POIField(number, ParagraphAlignment.LEFT, bold, blackColor),
+        new POIField(percent, ParagraphAlignment.LEFT, bold, blackColor)};
       data = Arrays.asList(sData);
       datas.add(data);
       i++;
@@ -1873,7 +1873,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     headers.add(header);
     String trainees = "", female = "", male = "";
 
-    for (int i = 0; i < 1; i++) {
+    for (int i = 0; i < 2; i++) {
       switch (i) {
         case 0:
           trainees = this.getText("summaries.annualReport2018.table7.field1");
@@ -1907,16 +1907,12 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
       datas.add(data);
     }
 
-    // for (int i = 0; i < flagshipPlannedList.size(); i++) {
     String studies = "", status = "", comments = "";
 
     POIField[] sData = {new POIField(studies, ParagraphAlignment.LEFT), new POIField(status, ParagraphAlignment.CENTER),
       new POIField(comments, ParagraphAlignment.LEFT)};
     data = Arrays.asList(sData);
     datas.add(data);
-
-    // }
-
     poiSummary.textTable(document, headers, datas, false, "table3AnnualReport2018");
   }
 
@@ -2190,6 +2186,34 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
       return NOT_FOUND;
     }
 
+    // Toc section
+    addCustomHeadingStyle(document, "heading 1", 1);
+    addCustomHeadingStyle(document, "heading 0", 1);
+    addCustomHeadingStyle(document, "heading 2", 1);
+    addCustomHeadingStyle(document, "heading 3", 1);
+    addCustomHeadingStyle(document, "heading 4", 2);
+    addCustomHeadingStyle(document, "heading 5", 2);
+    addCustomHeadingStyle(document, "heading 6", 2);
+    addCustomHeadingStyle(document, "heading 7", 2);
+    addCustomHeadingStyle(document, "heading 8", 2);
+    addCustomHeadingStyle(document, "heading 9", 2);
+    addCustomHeadingStyle(document, "heading 10", 2);
+    addCustomHeadingStyle(document, "heading 11", 2);
+    addCustomHeadingStyle(document, "heading 12", 2);
+    addCustomHeadingStyle(document, "heading 13", 2);
+    addCustomHeadingStyle(document, "heading 14", 2);
+    addCustomHeadingStyle(document, "heading 15", 1);
+    addCustomHeadingStyle(document, "heading 16", 2);
+    addCustomHeadingStyle(document, "heading 17", 2);
+    addCustomHeadingStyle(document, "heading 18", 2);
+    addCustomHeadingStyle(document, "heading 19", 2);
+    addCustomHeadingStyle(document, "heading 20", 1);
+    addCustomHeadingStyle(document, "heading 21", 2);
+    addCustomHeadingStyle(document, "heading 22", 2);
+    addCustomHeadingStyle(document, "heading 23", 2);
+    addCustomHeadingStyle(document, "heading 24", 2);
+    addCustomHeadingStyle(document, "heading 25", 1);
+
     if (this.isEntityCRP()) {
       try {
 
@@ -2224,33 +2248,6 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         toc.setDirty(STOnOff.TRUE);
         XWPFRun run = paragraph.createRun();
 
-        // Toc section
-        addCustomHeadingStyle(document, "heading 1", 1);
-        addCustomHeadingStyle(document, "heading 0", 1);
-        addCustomHeadingStyle(document, "heading 2", 1);
-        addCustomHeadingStyle(document, "heading 3", 1);
-        addCustomHeadingStyle(document, "heading 4", 2);
-        addCustomHeadingStyle(document, "heading 5", 2);
-        addCustomHeadingStyle(document, "heading 6", 2);
-        addCustomHeadingStyle(document, "heading 7", 2);
-        addCustomHeadingStyle(document, "heading 8", 2);
-        addCustomHeadingStyle(document, "heading 9", 2);
-        addCustomHeadingStyle(document, "heading 10", 2);
-        addCustomHeadingStyle(document, "heading 11", 2);
-        addCustomHeadingStyle(document, "heading 12", 2);
-        addCustomHeadingStyle(document, "heading 13", 2);
-        addCustomHeadingStyle(document, "heading 14", 2);
-        addCustomHeadingStyle(document, "heading 15", 1);
-        addCustomHeadingStyle(document, "heading 16", 2);
-        addCustomHeadingStyle(document, "heading 17", 2);
-        addCustomHeadingStyle(document, "heading 18", 2);
-        addCustomHeadingStyle(document, "heading 19", 2);
-        addCustomHeadingStyle(document, "heading 20", 1);
-        addCustomHeadingStyle(document, "heading 21", 2);
-        addCustomHeadingStyle(document, "heading 22", 2);
-        addCustomHeadingStyle(document, "heading 23", 2);
-        addCustomHeadingStyle(document, "heading 24", 2);
-        addCustomHeadingStyle(document, "heading 25", 1);
 
         // First page
         document.createParagraph().setPageBreak(true);
@@ -2686,7 +2683,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         // poiSummary.pageFooter(document, "This report was generated on " + currentDate);
 
         // Cover
-        poiSummary.textLineBreak(document, 6);
+        poiSummary.textLineBreak(document, 2);
         poiSummary.textHeadCoverTitleAR2018(document.createParagraph(),
           this.getText("summaries.annualReportPlatform2018.mainTitle"));
         document.createParagraph().setPageBreak(true);
@@ -2701,7 +2698,6 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         toc.setInstr("TOC \\h");
         toc.setDirty(STOnOff.TRUE);
         XWPFRun run = paragraph.createRun();
-
 
         // First page
         document.createParagraph().setPageBreak(true);
@@ -2719,67 +2715,254 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         poiSummary.textLineBreak(document, 1);
         this.addParticipatingCenters();
 
-        // section 1 - key results
-        poiSummary.textHead1Title(document.createParagraph(), this.getText("summaries.annualReport.keyResults"));
-        poiSummary.textHead2Title(document.createParagraph(),
-          this.getText("summaries.annualReport.keyResults.crpProgress"));
+        // Part A - Narrative section
+        // Executive Summary
+        poiSummary.textLineBreak(document, 1);
+        paragraph = document.createParagraph();
+        run = paragraph.createRun();
+        run.setFontSize(14);
+        run.setColor("76923C");
+        run.setBold(true);
+        run.setText(this.getText("summaries.annualReportCRP2018.executiveSummary"));
+        this.addNarrativeSection();
+        paragraph.setStyle("heading 0");
+
+        // First page
+        poiSummary.textLineBreak(document, 1);
+        paragraph = document.createParagraph();
+        run = paragraph.createRun();
+        run.setFontSize(14);
+        run.setBold(true);
+        run.setText(this.getText("summaries.annualReportCRP2018.narrative"));
+        paragraph.setStyle("heading 2");
+
+        // section 1 - Key Results
+        poiSummary.textLineBreak(document, 1);
+        paragraph = document.createParagraph();
+        run = paragraph.createRun();
+        run.setFontSize(14);
+        run.setBold(true);
+        run.setText(this.getText("summaries.annualReport.keyResults"));
+        paragraph.setStyle("heading 3");
+
+        // 1.1 Progress Towards SDG and SLO
+        // poiSummary.textLineBreak(document, 1);
+        paragraph = document.createParagraph();
+        run = paragraph.createRun();
+        run.setFontSize(13);
+        run.setBold(true);
+        run.setText(this.getText("summaries.annualReport2018Platform.keyResults.crpProgress"));
         this.addExpectedCrp();
-        this.addCrpProgressOutcomes();
-        poiSummary.textHead2Title(document.createParagraph(),
-          this.getText("summaries.annualReport.keyResults.progressFlagships"));
-        this.addAdjustmentDescription();
-        poiSummary.textHead2Title(document.createParagraph(),
-          this.getText("summaries.annualReport.keyResults.dimensions"));
-        poiSummary.textHead3Title(document.createParagraph(),
-          this.getText("summaries.annualReport.keyResults.dimensions.gender"));
-        this.addCrossCuttingGender();
-        poiSummary.textHead3Title(document.createParagraph(),
-          this.getText("summaries.annualReport.keyResults.dimensions.youth"));
-        this.addCrossCuttingYouth();
-        poiSummary.textHead3Title(document.createParagraph(),
-          this.getText("summaries.annualReport.keyResults.dimensions.otherAspects"));
-        this.addCrossCuttingOtherAspects();
-        poiSummary.textHead3Title(document.createParagraph(),
-          this.getText("summaries.annualReport.keyResults.dimensions.capacityDevelopment"));
-        this.addCrossCuttingCapacityDevelopment();
-        poiSummary.textHead3Title(document.createParagraph(),
-          this.getText("summaries.annualReport.keyResults.dimensions.openData"));
-        this.addCrossCuttingOpenData();
-        poiSummary.textHead3Title(document.createParagraph(),
-          this.getText("summaries.annualReport.keyResults.dimensions.intellectualAssets"));
-        this.addCrossCuttingIntellectualAssets();
+        paragraph.setStyle("heading 4");
 
-        // section 2 - variance from planned program
-        poiSummary.textHead1Title(document.createParagraph(), this.getText("summaries.annualReport.effectiveness"));
-        poiSummary.textHead2Title(document.createParagraph(),
-          this.getText("summaries.annualReport.effectiveness.program"));
+        // 1.2 CRP progress towars outputs and outcomes
+        poiSummary.textLineBreak(document, 1);
+        paragraph = document.createParagraph();
+        run = paragraph.createRun();
+        run.setFontSize(14);
+        run.setBold(true);
+        run.setText(this.getText("summaries.annualReport2018Platform.keyResults.progressTowards"));
+        paragraph.setStyle("heading 5");
+
+        // 1.2.1
+        poiSummary.textLineBreak(document, 1);
+        paragraph = document.createParagraph();
+        run = paragraph.createRun();
+        run.setFontSize(11);
+        run.setBold(true);
+        run.setText(this.getText("summaries.annualReport2018Platform.keyResults.overall"));
+        this.addOverallProgressCrp();
+        paragraph.setStyle("heading 6");
+
+        // 1.2.2
+        poiSummary.textLineBreak(document, 1);
+        paragraph = document.createParagraph();
+        run = paragraph.createRun();
+        run.setFontSize(11);
+        run.setBold(true);
+        run.setText(this.getText("summaries.annualReport2018Platform.keyResults.progress"));
+        this.addProgressFlagshipCrp();
+        paragraph.setStyle("heading 7");
+
+        // 1.2.3
+        poiSummary.textLineBreak(document, 1);
+        paragraph = document.createParagraph();
+        run = paragraph.createRun();
+        run.setFontSize(11);
+        run.setBold(true);
+        run.setText(this.getText("summaries.annualReport2018.keyResults.variance"));
         this.addVariancePlanned();
+        paragraph.setStyle("heading 8");
 
-        poiSummary.textHead2Title(document.createParagraph(),
-          this.getText("summaries.annualReport.effectiveness.funding"));
-        this.addFundingSummarize();
-        poiSummary.textHead2Title(document.createParagraph(),
-          this.getText("summaries.annualReport.effectiveness.partnership"));
+        // 1.2.4
+        poiSummary.textLineBreak(document, 1);
+        paragraph = document.createParagraph();
+        run = paragraph.createRun();
+        run.setFontSize(11);
+        run.setBold(true);
+        run.setText(this.getText("summaries.annualReport2018.keyResults.altmetric"));
+        this.addAlmetricCrp();
+        paragraph.setStyle("heading 9");
+
+        // 1.3 Cross cutting dimensions
+        poiSummary.textLineBreak(document, 1);
+        paragraph = document.createParagraph();
+        run = paragraph.createRun();
+        run.setFontSize(13);
+        run.setBold(true);
+        run.setText(this.getText("summaries.annualReport2018Platform.crossCutting"));
+        paragraph.setStyle("heading 10");
+
+        // 1.3.1 Gender
+        paragraph = document.createParagraph();
+        run = paragraph.createRun();
+        run.setFontSize(11);
+        run.setBold(true);
+        run.setText(this.getText("summaries.annualReport2018.crossCutting.gender"));
+        this.addCrossCuttingGender();
+        paragraph.setStyle("heading 11");
+
+        // 1.3.2 Youth
+        poiSummary.textLineBreak(document, 1);
+        paragraph = document.createParagraph();
+        run = paragraph.createRun();
+        run.setFontSize(11);
+        run.setBold(true);
+        run.setText(this.getText("summaries.annualReport2018.crossCutting.youth"));
+        this.addCrossCuttingYouth();
+        paragraph.setStyle("heading 12");
+
+        // 1.3.3 Capdev
+        poiSummary.textLineBreak(document, 1);
+        paragraph = document.createParagraph();
+        run = paragraph.createRun();
+        run.setFontSize(11);
+        run.setBold(true);
+        run.setText(this.getText("summaries.annualReport2018.crossCutting.capacity"));
+        this.addCrossCuttingCapacityDevelopment();
+        paragraph.setStyle("heading 13");
+
+        // 1.3.4 Climate Change
+        poiSummary.textLineBreak(document, 1);
+        paragraph = document.createParagraph();
+        run = paragraph.createRun();
+        run.setFontSize(11);
+        run.setBold(true);
+        run.setText(this.getText("summaries.annualReport2018.crossCutting.climateChange"));
+        this.addCrossCuttingClimateChange();
+        paragraph.setStyle("heading 14");
+
+        // section 2 - Effectiveness and Efficiency
+        poiSummary.textLineBreak(document, 1);
+        paragraph = document.createParagraph();
+        run = paragraph.createRun();
+        run.setFontSize(14);
+        run.setBold(true);
+        run.setText(this.getText("summaries.annualReport2018.effectiveness"));
+        paragraph.setStyle("heading 15");
+
+        // 2.1 Management and governance
+        poiSummary.textLineBreak(document, 1);
+        paragraph = document.createParagraph();
+        run = paragraph.createRun();
+        run.setFontSize(13);
+        run.setBold(true);
+        run.setText(this.getText("summaries.annualReport2018.effectiveness.management"));
+        paragraph.setStyle("heading 16");
+        this.addManagementGovernance();
+
+        // 2.2 Partnerships
+        poiSummary.textLineBreak(document, 1);
+        paragraph = document.createParagraph();
+        run = paragraph.createRun();
+        run.setFontSize(13);
+        run.setBold(true);
+        run.setText(this.getText("summaries.annualReport2018.effectiveness.partnerships"));
+        paragraph.setStyle("heading 17");
+
+        // 2.2.1 Highlights of External Partnerships
+        poiSummary.textLineBreak(document, 1);
+        paragraph = document.createParagraph();
+        run = paragraph.createRun();
+        run.setFontSize(11);
+        run.setBold(true);
+        run.setText(this.getText("summaries.annualReport2018.effectiveness.highlights"));
         this.addExternalPartnerships();
-        poiSummary.textHead2Title(document.createParagraph(),
-          this.getText("summaries.annualReport.effectiveness.cross"));
+        paragraph.setStyle("heading 18");
+
+        // 2.2.2
+        poiSummary.textLineBreak(document, 1);
+        paragraph = document.createParagraph();
+        run = paragraph.createRun();
+        run.setFontSize(11);
+        run.setBold(true);
+        run.setText(this.getText("summaries.annualReport2018.effectiveness.crossCgiar"));
         this.addCrossPartnerships();
-        poiSummary.textHead2Title(document.createParagraph(), this.getText("summaries.annualReport.effectiveness.mel"));
+        paragraph.setStyle("heading 19");
+
+        // 2.3 Intellectual Assets
+        poiSummary.textLineBreak(document, 1);
+        paragraph = document.createParagraph();
+        run = paragraph.createRun();
+        run.setFontSize(13);
+        run.setBold(true);
+        run.setText(this.getText("summaries.annualReport2018.effectiveness.intellectual"));
+        this.addIntellectualAssets();
+        paragraph.setStyle("heading 20");
+
+        // 2.4 Melia
+        poiSummary.textLineBreak(document, 1);
+        paragraph = document.createParagraph();
+        run = paragraph.createRun();
+        run.setFontSize(13);
+        run.setBold(true);
+        run.setText(this.getText("summaries.annualReport2018.effectiveness.monitoring"));
         this.addReportSynthesisMelia();
-        poiSummary.textHead2Title(document.createParagraph(),
-          this.getText("summaries.annualReport.effectiveness.efficiency"));
+        paragraph.setStyle("heading 21");
+
+        poiSummary.textLineBreak(document, 1);
+        paragraph = document.createParagraph();
+        run = paragraph.createRun();
+        run.setFontSize(13);
+        run.setBold(true);
+        run.setText(this.getText("summaries.annualReport2018.effectiveness.efficiency"));
+        paragraph.setStyle("heading 22");
         this.addImprovingEfficiency();
 
-        // section 3 - crp management
+        // 2.6 Management of Risk
         poiSummary.textLineBreak(document, 1);
-        poiSummary.textHead1Title(document.createParagraph(), this.getText("summaries.annualReport.management"));
-        // this.addManagement();
+        paragraph = document.createParagraph();
+        run = paragraph.createRun();
+        run.setFontSize(13);
+        run.setBold(true);
+        run.setText(this.getText("summaries.annualReport2018Platform.effectiveness.risk"));
+        paragraph.setStyle("heading 23");
+        this.addManagementRisks();
+
+        poiSummary.textLineBreak(document, 1);
+        paragraph = document.createParagraph();
+        run = paragraph.createRun();
+        run.setFontSize(13);
+        run.setBold(true);
+        run.setText(this.getText("summaries.annualReport2018.effectiveness.funding"));
+        paragraph.setStyle("heading 24");
+        this.addFundingSummarize();
+
+        // section 3 - Financial summary
+        poiSummary.textLineBreak(document, 1);
+        paragraph = document.createParagraph();
+        run = paragraph.createRun();
+        run.setFontSize(14);
+        run.setBold(true);
+        run.setText(this.getText("summaries.annualReport2018.financial"));
+        paragraph.setStyle("heading 25");
+        this.addFinancialSummary();
 
         /* Create a landscape text Section */
-        XWPFParagraph para = document.createParagraph();
+        paragraph = document.createParagraph();
         CTSectPr sectionTable = body.getSectPr();
         CTPageSz pageSizeTable = sectionTable.addNewPgSz();
-        CTP ctpTable = para.getCTP();
+        CTP ctpTable = paragraph.getCTP();
         CTPPr brTable = ctpTable.addNewPPr();
         brTable.setSectPr(sectionTable);
         /* standard Letter page size */
@@ -2788,28 +2971,139 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         pageSizeTable.setH(BigInteger.valueOf(595 * 20));
         this.loadTablePMU();
 
-        // Table a1
+        // Part B
+        document.createParagraph().setPageBreak(true);
+        poiSummary.textHead1Title(document.createParagraph(), "Part B. TABLES");
+
+        // Table 1
         poiSummary.textLineBreak(document, 1);
-        poiSummary.textHead1Title(document.createParagraph(), "TABLES");
-        poiSummary.textHead2Title(document.createParagraph(), this.getText("summaries.annualReport.tableA.title"));
-        poiSummary.textHead3Title(document.createParagraph(), this.getText("summaries.annualReport.tableA1.title"));
+        paragraph = document.createParagraph();
+        run = paragraph.createRun();
+        run.setFontSize(13);
+        run.setBold(true);
+        run.setText(this.getText("summaries.annualReport2018.table1"));
+        paragraph.setStyle("heading 2");
         this.createTable1();
 
-        // Table a2
-        poiSummary.textLineBreak(document, 1);
-        poiSummary.textHead3Title(document.createParagraph(), this.getText("summaries.annualReport.tableA2.title"));
-        this.createTableA2();
+        // Table 2
+        document.createParagraph().setPageBreak(true);
+        paragraph = document.createParagraph();
+        run = paragraph.createRun();
+        run.setFontSize(13);
+        run.setBold(true);
+        run.setText(this.getText("summaries.annualReport2018.table2"));
+        paragraph.setStyle("heading 2");
+        this.createTable2();
 
+        // Table 3
+        document.createParagraph().setPageBreak(true);
+        paragraph = document.createParagraph();
+        run = paragraph.createRun();
+        run.setFontSize(13);
+        run.setBold(true);
+        run.setText(this.getText("summaries.annualReport2018.table3"));
+        paragraph.setStyle("heading 2");
+        this.createTable3();
 
-        // Table c
-        poiSummary.textLineBreak(document, 1);
-        poiSummary.textHead2Title(document.createParagraph(), this.getText("annualReport.ccDimensions.tableCTitle"));
-        this.createTableC();
+        // Table 4
+        document.createParagraph().setPageBreak(true);
+        paragraph = document.createParagraph();
+        run = paragraph.createRun();
+        run.setFontSize(13);
+        run.setBold(true);
+        run.setText(this.getText("summaries.annualReport2018.table4"));
+        paragraph.setStyle("heading 2");
+        this.createTable4();
 
-        // Table d
-        poiSummary.textLineBreak(document, 1);
-        poiSummary.textHead2Title(document.createParagraph(), this.getText("summaries.annualReport.tableD.title"));
+        // Table 5
+        document.createParagraph().setPageBreak(true);
+        paragraph = document.createParagraph();
+        run = paragraph.createRun();
+        run.setFontSize(13);
+        run.setBold(true);
+        run.setText(this.getText("summaries.annualReport2018.table5"));
+        paragraph.setStyle("heading 2");
+        this.createTable5();
 
+        // Table 6
+        document.createParagraph().setPageBreak(true);
+        paragraph = document.createParagraph();
+        run = paragraph.createRun();
+        run.setFontSize(13);
+        run.setBold(true);
+        run.setText(this.getText("summaries.annualReport2018Platform.table6"));
+        paragraph.setStyle("heading 2");
+        this.createTable6();
+
+        // Table 7
+        document.createParagraph().setPageBreak(true);
+        paragraph = document.createParagraph();
+        run = paragraph.createRun();
+        run.setFontSize(13);
+        run.setBold(true);
+        run.setText(this.getText("summaries.annualReport2018.table7"));
+        paragraph.setStyle("heading 2");
+        this.createTable7();
+
+        // Table 8
+        document.createParagraph().setPageBreak(true);
+        paragraph = document.createParagraph();
+        run = paragraph.createRun();
+        run.setFontSize(13);
+        run.setBold(true);
+        run.setText(this.getText("summaries.annualReport2018.table8"));
+        paragraph.setStyle("heading 2");
+        this.createTable8();
+
+        // Table 9
+        document.createParagraph().setPageBreak(true);
+        paragraph = document.createParagraph();
+        run = paragraph.createRun();
+        run.setFontSize(13);
+        run.setBold(true);
+        run.setText(this.getText("summaries.annualReport2018.table9"));
+        paragraph.setStyle("heading 2");
+        this.createTable9();
+
+        // Table 10
+        document.createParagraph().setPageBreak(true);
+        paragraph = document.createParagraph();
+        run = paragraph.createRun();
+        run.setFontSize(13);
+        run.setBold(true);
+        run.setText(this.getText("summaries.annualReport2018.table10"));
+        paragraph.setStyle("heading 2");
+        this.createTable10();
+
+        // Table 11
+        document.createParagraph().setPageBreak(true);
+        paragraph = document.createParagraph();
+        run = paragraph.createRun();
+        run.setFontSize(13);
+        run.setBold(true);
+        run.setText(this.getText("summaries.annualReport2018.table11"));
+        paragraph.setStyle("heading 2");
+        this.createTable11();
+
+        // Table 12
+        document.createParagraph().setPageBreak(true);
+        paragraph = document.createParagraph();
+        run = paragraph.createRun();
+        run.setFontSize(13);
+        run.setBold(true);
+        run.setText(this.getText("summaries.annualReport2018.table12"));
+        paragraph.setStyle("heading 2");
+        this.createTable12();
+
+        // Table 13
+        document.createParagraph().setPageBreak(true);
+        paragraph = document.createParagraph();
+        run = paragraph.createRun();
+        run.setFontSize(13);
+        run.setBold(true);
+        run.setText(this.getText("summaries.annualReport2018Platform.table13"));
+        paragraph.setStyle("heading 2");
+        this.createTable13a();
 
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         document.write(os);
@@ -3206,7 +3500,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     for (LiaisonInstitution liaisonInstitution : flagshipliaisonInstitutions) {
       ReportSynthesis reportSynthesisFP = null;
       try {
-         reportSynthesisFP =
+        reportSynthesisFP =
           reportSynthesisManager.findSynthesis(this.getActualPhase().getId(), liaisonInstitution.getId());
       } catch (Exception e) {
 
