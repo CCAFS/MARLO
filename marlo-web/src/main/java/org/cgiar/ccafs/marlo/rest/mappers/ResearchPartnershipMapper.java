@@ -19,15 +19,18 @@ import org.cgiar.ccafs.marlo.data.model.RepIndPhaseResearchPartnership;
 import org.cgiar.ccafs.marlo.rest.dto.ResearchPartnershipDTO;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.Mappings;
 
 @Mapper(componentModel = "jsr330")
 public interface ResearchPartnershipMapper {
 
+  @Mappings({@Mapping(source = "id", target = "code")})
   public abstract ResearchPartnershipDTO repIndPhaseResearchPartnershipToResearchPartnershipsDTO(
     RepIndPhaseResearchPartnership repIndPhaseResearchPartnership);
 
+  @Mappings({@Mapping(source = "code", target = "id")})
   public abstract RepIndPhaseResearchPartnership
     researchPartnershipsDTOToRepIndPhaseResearchPartnership(ResearchPartnershipDTO researchPartnershipsDTO);
-
 
 }

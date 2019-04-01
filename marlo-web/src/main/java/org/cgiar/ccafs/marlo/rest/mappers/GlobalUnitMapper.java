@@ -37,14 +37,14 @@ import org.mapstruct.Mappings;
 @Mapper(componentModel = "jsr330")
 public interface GlobalUnitMapper {
 
-	public GlobalUnit globalUnitDTOToGlobalUnit(CGIAREntityDTO globalUnitDTO);
+  public GlobalUnit globalUnitDTOToGlobalUnit(CGIAREntityDTO globalUnitDTO);
 
-	@Mappings({ @Mapping(source = "globalUnit.smoCode", target = "code"),
-			@Mapping(source = "globalUnitType.id", target = "globalUnitTypeDTO.id"),
-			@Mapping(source = "globalUnitType.name", target = "globalUnitTypeDTO.name") })
-	public CGIAREntityDTO globalUnitToGlobalUnitDTO(GlobalUnit globalUnit);
+  @Mappings({@Mapping(source = "globalUnit.smoCode", target = "code"),
+    @Mapping(source = "globalUnitType.id", target = "cgiarEntityTypeDTO.code"),
+    @Mapping(source = "globalUnitType.name", target = "cgiarEntityTypeDTO.name")})
+  public CGIAREntityDTO globalUnitToGlobalUnitDTO(GlobalUnit globalUnit);
 
-	public GlobalUnit updateGlobalUnitFromGlobalUnitDto(CGIAREntityDTO globalUnitDTO,
-			@MappingTarget GlobalUnit globalUnit);
+  public GlobalUnit updateGlobalUnitFromGlobalUnitDto(CGIAREntityDTO globalUnitDTO,
+    @MappingTarget GlobalUnit globalUnit);
 
 }

@@ -1,5 +1,5 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
+ * This file is part of Managing Agricultural Research for Learning &
  * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,37 +18,37 @@ import io.swagger.annotations.ApiModelProperty;
 
 public class RegionDTO {
 
-	@ApiModelProperty(notes = "The ISO Region code")
-	private Long UM49Code;
+  @ApiModelProperty(notes = "The ISO Region code", position = 1)
+  private Long UM49Code;
 
-	@ApiModelProperty(notes = "Region Name")
-	private String name;
+  @ApiModelProperty(notes = "Region Name", position = 2)
+  private String name;
 
-	@ApiModelProperty(notes = "Parent Region")
-	private ParentRegionDTO parentRegion;
+  @ApiModelProperty(notes = "Parent Region", position = 3)
+  private ParentRegionDTO parentRegion;
 
-	public String getName() {
-		return this.name;
-	}
+  public String getName() {
+    return this.name;
+  }
 
-	public Long getUM49Code() {
-		return this.UM49Code;
-	}
+  public ParentRegionDTO getParentRegion() {
+    return this.parentRegion;
+  }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+  public Long getUM49Code() {
+    return this.UM49Code;
+  }
 
-	public void setUM49Code(Long uM49Code) {
-		this.UM49Code = uM49Code;
-	}
+  public void setName(String name) {
+    this.name = name;
+  }
 
-	public ParentRegionDTO getParentRegion() {
-		return parentRegion;
-	}
+  public void setParentRegion(ParentRegionDTO parentRegion) {
+    this.parentRegion = parentRegion;
+  }
 
-	public void setParentRegion(ParentRegionDTO parentRegion) {
-		this.parentRegion = parentRegion;
-	}
+  public void setUM49Code(Long uM49Code) {
+    this.UM49Code = uM49Code;
+  }
 
 }

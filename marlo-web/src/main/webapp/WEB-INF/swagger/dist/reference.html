@@ -36,12 +36,12 @@
 	  </nav>
 	  
 	<div class="container-fluid row">
-				<nav id="reference-index" class="col-sm-3 col-md-2 bg-light sidebar">
+				<nav id="reference-index" class="col-sm-4 col-md-2 bg-light sidebar">
 				 <a class="navbar-brand ml-auto mr-auto" href="#">API REFERENCE</a>
 				 <!-- Table 1. Item 1 -->
 				 <ul class="nav flex-column">
 				  <li class="nav-item">
-				    <a class="nav-link reference-link" href="#Table1">Evidence on Progress towards SRF targets (Sphere of interest)</a>
+				    <a class="nav-link reference-link" href="#Table1">Table 1. Evidence on Progress towards SRF targets (Sphere of interest)</a>
 				  </li>
 				  <!-- Table 1. Item 1 -->
 				  <li class="nav-item">
@@ -62,16 +62,13 @@
 				 <!-- Table 2 -->
 				 <ul class="nav flex-column">
 				  <li class="nav-item">
-				    <a class="nav-link" href="#Table2">Condensed list of policy contributions in this reporting year (Policies Guidance) </a>
+				    <a class="nav-link" href="#Table2">Table 2. Condensed list of policy contributions in this reporting year (Policies Guidance) </a>
 				  </li>
 				  <!-- Table 2. Item 1 -->
 				  <li class="nav-item">
 				    <a class="nav-link ml-3 my-1" href="#2-1Control-List">Control List for the disaggregation</a>
           </li>
           <!-- Sub Items -->
-          <li class="nav-item">
-            <a class="nav-link ml-5 my-1" href="#2-1-1CGIAR-Entities">CGIAR Entities </a>
-          </li>
           <li class="nav-item">
             <a class="nav-link ml-5 my-1" href="#2-1-2Sub-IDOs">CGIAR Sub-IDOs</a>
           </li>
@@ -103,8 +100,10 @@
           <li class="nav-item">
             <a class="nav-link ml-3 my-1" href="#2-2Indicator-Administration">Indicator administration</a>
           </li>
+          <li class="menu-credit">
+            Developed by MARLO Team
+          </li>
 				 </ul>
-				 <div class="menu-credit mr-5 ml-5 mt-5">Developed by MARLO Team</div>
 				</nav>
 			<div class="col-sm-6 offset-sm-3 col-md-6 offset-md-2 pt-5 mt-5">
 			 <div data-spy="scroll" data-target="#reference-index" data-offset="0">
@@ -115,17 +114,12 @@
 					  <table class="table table-bordered">
 						  <thead>
 						    <tr class="d-flex">
-                  <th scope="col" class="col-sm-5">Column 1</th>
-                  <th scope="col" class="col-sm-4">Column 2</th>
-                  <th scope="col" class="col-sm-3">Column 3</th>
-                </tr>
-						    <tr class="d-flex">
 						      <th scope="col" class="col-sm-5">SLO Target (2022)</th>
 						      <th scope="col" class="col-sm-4">Brief summary of new evidence of CGIAR contribution
 						      <p class="table-title">[Put N/A if the specific SRF target is not applicable to your CRP. Put "No new evidence in 2018" if 
-						      the target is potentially relevant, but there is no new evidence available. Spell out all acronyms.]</p></th>
+						        the target is potentially relevant, but there is no new evidence available. Spell out all acronyms.]</p></th>
 						      <th scope="col" class="col-sm-3">Expected additional contribution before end of 2022
-						      <p class="table-title">(If not already fully covered.)<br>
+						      <p class="table-title">(If not already fully covered.)<br />
 						      <strong>[Optional narrative. Evidence not required.]</strong></p></th>
 						    </tr>
 							  </thead>
@@ -142,7 +136,7 @@
 								  <td class="col-sm-3"></td>
 							  </tr>
 							  <tr class="d-flex">
-                  <td class="col-sm-5">1.2. 30 million people, of which 50% are women, assited to exit poverty</td>
+                  <td class="col-sm-5">1.2. 30 million people, of which 50% are women, assisted to exit poverty</td>
                   <td class="col-sm-4"></td>
                   <td class="col-sm-3"></td>
                 </tr>
@@ -157,7 +151,7 @@
                   <td class="col-sm-3"></td>
                 </tr>
                 <tr class="d-flex">
-                  <td class="col-sm-5">2.3. 150 million more people, of which 50% are women, wihout deficiencies in one or more essential micronutriets</td>
+                  <td class="col-sm-5">2.3. 150 million more people, of which 50% are women, without deficiencies in one or more essential micronutriets</td>
                   <td class="col-sm-4"></td>
                   <td class="col-sm-3"></td>
                 </tr>
@@ -209,8 +203,8 @@
 						    this indicator should include just the “CRP” and “Platforms” types.</p>
 							  <p class="ml-3"><i>GET:</i></p>
 			                 <p class="ml-5">Get all:  /v2/cgiar-entities</p>
-			                 <p class="ml-5">Get all by type: /v2/ cgiar-entities?type={entity-type}</p>
-			                 <p class="ml-5">Get one by id:  /v2/ cgiar-entities /{id}</p> 		            
+			                 <p class="ml-5">Get all by type: /v2/cgiar-entities?type={entity-type}</p>
+			                 <p class="ml-5">Get one by id:  /v2/cgiar-entities/{id}</p> 		            
 			          <p class="ml-3"><i>POST:</i> Not applicable as this control list will be updated internally </p>
 			          <p class="ml-3"><i>DELETE:</i> Not applicable as this control list will be updated internally</p>
 			          <p class="ml-3"><i>PUT:</i> Not applicable as this control list will be updated internally</p>
@@ -237,33 +231,21 @@
 						  <table class="table table-bordered">
 	              <thead>
 	               <tr>
-                  <th scope="col">Column 1</th>
-                  <th scope="col">Column 2</th>
-                  <th scope="col">Column 3</th>
-                  <th scope="col">Column 4a</th>
-                  <th scope="col">Column 4b</th>
-                  <th scope="col">Column 4c</th>
-                  <th scope="col">Column 4d</th>
-                  <th scope="col">Column 4e</th>
-                </tr>
+                    <th rowspan="2">Name and description of policy, legal instrument, investment or curriculum to which CGIAR 
+                    contributed <p>(20-50 words, ideally around 20 words)<br />Spell out acronyms in every row</p></th>
+                    <th rowspan="2">Level of Maturity</th>
+                    <th rowspan="2">Link to sub-IDOs (max. 2)</th>
+                    <th colspan="4">CGIAR cross-cutting market score</th>
+                    <th rowspan="2">Link to OICR or link to evidence</th>
+                  </tr>
+                  <tr>
+                   <th>Gender</th>
+                   <th>Youth</th>
+                   <th>CapDev</th>
+                   <th>Climate Change</th>
+                  </tr>
 	              </thead>
 	              <tbody>
-		              <tr class="columns">
-	                  <td rowspan="2"><p>Name and description of policy, legal instrument, investment or curriculum to which CGIAR 
-	                  contributed (20-50 words, ideally around 30 words)</p>
-	                  <p>Spell out acronyms in every row</p></td>
-	                  <td rowspan="2">Level of Maturity</td>
-	                  <td rowspan="2">Link to sub-IDOs (max. 2)</td>
-	                  <td colspan="4">CGIAR cross-cutting market score</td>
-	                  <td>Link to OICR (obligatory if Level of Maturity is 2 or 3) or link to evidence (e.g. PDF generated from MIS)</td>
-	                </tr>
-	                <tr>
-	                 <td>Gender</td>
-	                 <td>Youth</td>
-	                 <td>CapDev</td>
-	                 <td>Climate Change</td>
-	                 <td></td>
-	                </tr>
 	                <tr>
                    <td></td>
                    <td></td>

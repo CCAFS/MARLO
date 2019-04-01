@@ -34,50 +34,49 @@ import org.springframework.http.ResponseEntity;
 @Named
 public class PolicyInvestmentTypeItem<T> {
 
-	private RepIndPolicyInvestimentTypeManager repIndPolicyInvestimentTypeManager;
-	private PolicyInvestmentTypeMapper policyInvestimentTypeMapper;
+  private RepIndPolicyInvestimentTypeManager repIndPolicyInvestimentTypeManager;
+  private PolicyInvestmentTypeMapper policyInvestimentTypeMapper;
 
-	@Inject
-	public PolicyInvestmentTypeItem(RepIndPolicyInvestimentTypeManager repIndPolicyInvestimentTypeManager,
-			PolicyInvestmentTypeMapper policyInvestimentTypeMapper) {
-		this.repIndPolicyInvestimentTypeManager = repIndPolicyInvestimentTypeManager;
-		this.policyInvestimentTypeMapper = policyInvestimentTypeMapper;
-	}
+  @Inject
+  public PolicyInvestmentTypeItem(RepIndPolicyInvestimentTypeManager repIndPolicyInvestimentTypeManager,
+    PolicyInvestmentTypeMapper policyInvestimentTypeMapper) {
+    this.repIndPolicyInvestimentTypeManager = repIndPolicyInvestimentTypeManager;
+    this.policyInvestimentTypeMapper = policyInvestimentTypeMapper;
+  }
 
-	/**
-	 * Get All the policy Investment Types Items *
-	 * 
-	 * @return a List of PolicyInvestmentTypeDTO with all repIndInnovationType
-	 * Items.
-	 */
-	public List<PolicyInvestmentTypeDTO> getAllPolicyInvestmentType() {
-		if (this.repIndPolicyInvestimentTypeManager.findAll() != null) {
-			List<RepIndPolicyInvestimentType> repIndPolicyInvestimentType = new ArrayList<>(
-					this.repIndPolicyInvestimentTypeManager.findAll());
+  /**
+   * Get All the policy Investment Types Items *
+   * 
+   * @return a List of PolicyInvestmentTypeDTO with all repIndInnovationType
+   *         Items.
+   */
+  public List<PolicyInvestmentTypeDTO> getAllPolicyInvestmentType() {
+    if (this.repIndPolicyInvestimentTypeManager.findAll() != null) {
+      List<RepIndPolicyInvestimentType> repIndPolicyInvestimentType =
+        new ArrayList<>(this.repIndPolicyInvestimentTypeManager.findAll());
 
-			List<PolicyInvestmentTypeDTO> policyInvestimentTypeDTOs = repIndPolicyInvestimentType.stream()
-					.map(repIndPolicyInvestimentTypeEntity -> this.policyInvestimentTypeMapper
-							.RepIndPolicyInvestimentTypeToPolicyInvestimentTypeDTO(repIndPolicyInvestimentTypeEntity))
-					.collect(Collectors.toList());
-			return policyInvestimentTypeDTOs;
-		} else {
-			return null;
-		}
-	}
+      List<PolicyInvestmentTypeDTO> policyInvestimentTypeDTOs = repIndPolicyInvestimentType.stream()
+        .map(repIndPolicyInvestimentTypeEntity -> this.policyInvestimentTypeMapper
+          .RepIndPolicyInvestimentTypeToPolicyInvestimentTypeDTO(repIndPolicyInvestimentTypeEntity))
+        .collect(Collectors.toList());
+      return policyInvestimentTypeDTOs;
+    } else {
+      return null;
+    }
+  }
 
-	/**
-	 * Find a Policy Invesiment Type requesting a MARLO id
-	 * 
-	 * @param id
-	 * @return a PolicyInvestmentTypeDTO with the Policy Type data.
-	 */
-	public ResponseEntity<PolicyInvestmentTypeDTO> PolicyInvestmentTypeById(Long id) {
-		RepIndPolicyInvestimentType repIndPolicyInvestimentType = this.repIndPolicyInvestimentTypeManager
-				.getRepIndPolicyInvestimentTypeById(id);
-		return Optional.ofNullable(repIndPolicyInvestimentType)
-				.map(this.policyInvestimentTypeMapper::RepIndPolicyInvestimentTypeToPolicyInvestimentTypeDTO)
-				.map(result -> new ResponseEntity<>(result, HttpStatus.OK))
-				.orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
-	}
+  /**
+   * Find a Policy Invesiment Type requesting a MARLO id
+   * 
+   * @param id
+   * @return a PolicyInvestmentTypeDTO with the Policy Type data.
+   */
+  public ResponseEntity<PolicyInvestmentTypeDTO> PolicyInvestmentTypeById(Long id) {
+    RepIndPolicyInvestimentType repIndPolicyInvestimentType =
+      this.repIndPolicyInvestimentTypeManager.getRepIndPolicyInvestimentTypeById(id);
+    return Optional.ofNullable(repIndPolicyInvestimentType)
+      .map(this.policyInvestimentTypeMapper::RepIndPolicyInvestimentTypeToPolicyInvestimentTypeDTO)
+      .map(result -> new ResponseEntity<>(result, HttpStatus.OK)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+  }
 
 }

@@ -51,8 +51,8 @@ public class SrfSloItem<T> {
    * @return a SrfSloDTO with the SRL-SLO data.
    */
   public ResponseEntity<SrfSloDTO> findSrfSlobyId(Long id) {
-    SrfSlo srfSlo = srfSloManager.getSrfSloById(id);
-    return Optional.ofNullable(srfSlo).map(srfSloMapper::SrfSloToSrfSloDTO)
+    SrfSlo srfSlo = this.srfSloManager.getSrfSloById(id);
+    return Optional.ofNullable(srfSlo).map(this.srfSloMapper::SrfSloToSrfSloDTO)
       .map(result -> new ResponseEntity<>(result, HttpStatus.OK)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
   }
 
@@ -62,10 +62,10 @@ public class SrfSloItem<T> {
    * @return a List of SrfSloDTO with all SRF-SLO Items.
    */
   public List<SrfSloDTO> getAllSrfSlos() {
-    if (srfSloManager.findAll() != null) {
-      List<SrfSlo> srfSlos = new ArrayList<>(srfSloManager.findAll());
-      List<SrfSloDTO> srfSloDTOs =
-        srfSlos.stream().map(srfSloEntity -> srfSloMapper.SrfSloToSrfSloDTO(srfSloEntity)).collect(Collectors.toList());
+    if (this.srfSloManager.findAll() != null) {
+      List<SrfSlo> srfSlos = new ArrayList<>(this.srfSloManager.findAll());
+      List<SrfSloDTO> srfSloDTOs = srfSlos.stream()
+        .map(srfSloEntity -> this.srfSloMapper.SrfSloToSrfSloDTO(srfSloEntity)).collect(Collectors.toList());
       return srfSloDTOs;
     } else {
       return null;

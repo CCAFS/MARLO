@@ -31,27 +31,27 @@ public class InstitutionLocationDTO {
   private Long institutionId;
 
   public String getCountryIsoAlpha2Code() {
-    return countryIsoAlpha2Code;
+    return this.countryIsoAlpha2Code;
   }
 
 
   public String getCountryName() {
-    return countryName;
+    return this.countryName;
   }
 
 
   public Long getId() {
-    return id;
+    return this.id;
   }
 
 
   public Long getInstitutionId() {
-    return institutionId;
+    return this.institutionId;
   }
 
 
   public boolean isHeadquater() {
-    return headquater;
+    return this.headquater;
   }
 
   public void setCountryIsoAlpha2Code(String countryIsoAlpha2Code) {

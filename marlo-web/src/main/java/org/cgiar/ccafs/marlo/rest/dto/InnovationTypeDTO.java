@@ -23,39 +23,33 @@ public class InnovationTypeDTO {
 
   @ApiModelProperty(notes = "The Generated Innovation Type ID")
   @NotNull
-  private Long id;
-
+  private Long code;
 
   @ApiModelProperty(notes = "Innovation Type name")
   @NotNull
   private String name;
 
-
   @ApiModelProperty(notes = "Innovation Type definition")
   private String definition;
 
+  public Long getCode() {
+    return this.code;
+  }
 
   public String getDefinition() {
-    return definition;
+    return this.definition;
   }
-
-
-  public Long getId() {
-    return id;
-  }
-
 
   public String getName() {
-    return name;
+    return this.name;
   }
 
+  public void setCode(Long code) {
+    this.code = code;
+  }
 
   public void setDefinition(String definition) {
     this.definition = definition;
-  }
-
-  public void setId(Long id) {
-    this.id = id;
   }
 
   public void setName(String name) {
