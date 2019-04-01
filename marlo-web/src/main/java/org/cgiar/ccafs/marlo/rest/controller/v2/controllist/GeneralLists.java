@@ -41,6 +41,8 @@ import io.swagger.annotations.ApiParam;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -67,6 +69,9 @@ public class GeneralLists {
   private GlobalUnitTypeItem<GeneralLists> globalUnitTypeItem;
   private FlagshipProgramItem<GeneralLists> flagshipProgramItem;
 
+  @Autowired
+  private Environment env;
+
   @Inject
   public GeneralLists(LocationItem<GeneralLists> countryItem, GeographicScopeItem<GeneralLists> geographicScopeItem,
     GlobalUnitItem<GeneralLists> globalUnitItem, GlobalUnitTypeItem<GeneralLists> globalUnitTypeItem,
@@ -92,12 +97,11 @@ public class GeneralLists {
     value = "${GeneralLists.countries.code.value}", response = ContributionOfCrpDTO.class)
   @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
   @RequestMapping(value = "/countries/{code}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<CountryDTO>
-    findCountryByNumericISOCode(@ApiParam(value = "${GeneralLists.countries.code.param.code}",
-      required = true) @PathVariable("Iso Apha2 Code") String code) {
+  public ResponseEntity<CountryDTO> findCountryByNumericISOCode(
+    @ApiParam(value = "${GeneralLists.countries.code.param.code}", required = true) @PathVariable String code) {
     ResponseEntity<CountryDTO> response = this.locationItem.getContryByAlpha2ISOCode(code);
     if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
-      throw new NotFoundException("404", "Country not found");
+      throw new NotFoundException("404", this.env.getProperty("GeneralLists.countries.code.404"));
     }
     return response;
 
@@ -120,7 +124,7 @@ public class GeneralLists {
     @ApiParam(value = "${GeneralLists.flagships-modules.code.param.code}", required = true) @PathVariable String code) {
     ResponseEntity<FlagshipProgramDTO> response = this.flagshipProgramItem.findFlagshipProgramBySmoCode(code);
     if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
-      throw new NotFoundException("404", "Flagship or Program not found");
+      throw new NotFoundException("404", this.env.getProperty("GeneralLists.flagships-modules.code.404"));
     }
     return response;
   }
@@ -143,7 +147,7 @@ public class GeneralLists {
     @ApiParam(value = "${GeneralLists.geographic-scopes.code.param.code}", required = true) @PathVariable Long code) {
     ResponseEntity<GeographicScopeDTO> response = this.geographicScopeItem.findGeographicScopesById(code);
     if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
-      throw new NotFoundException("404", "Geographic Scope not found");
+      throw new NotFoundException("404", this.env.getProperty("GeneralLists.geographic-scopes.code.404"));
     }
     return response;
   }
@@ -161,7 +165,8 @@ public class GeneralLists {
       "Table 5 - Status of Planned Outcomes and Milestones", "Table 6 - Peer-reviewed publications",
       "Table 7 - Participants in CapDev Activities", "Table 8 - Key external partnerships",
       "Table 9 - Internal Cross-CGIAR Collaborations",
-      "Table 10 - Monitoring, Evaluation, Learning and Impact Assessment (MELIA)", "Table 12 - Examples of W1/2 Use",
+      "Table 10 - Monitoring, Evaluation, Learning and Impact Assessment (MELIA)",
+      "Table 11 - Update on Actions Taken in Response to Relevant Evaluations", "Table 12 - Examples of W1/2 Use",
       "Table 13 - CRP Financial Report"},
     value = "${GeneralLists.cgiar-entities.code.value}", response = CGIAREntityDTO.class)
   @RequestMapping(value = "/cgiar-entities/{code}", method = RequestMethod.GET,
@@ -170,7 +175,7 @@ public class GeneralLists {
     @ApiParam(value = "${GeneralLists.cgiar-entities.code.param.code}", required = true) @PathVariable String code) {
     ResponseEntity<CGIAREntityDTO> response = this.globalUnitItem.findGlobalUnitByCGIRARId(code);
     if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
-      throw new NotFoundException("404", "CGIAR entity not found");
+      throw new NotFoundException("404", this.env.getProperty("GeneralLists.cgiar-entities.code.404"));
     }
     return response;
   }
@@ -188,7 +193,7 @@ public class GeneralLists {
     @ApiParam(value = "${GeneralLists.cgiar-entity-types.code.param.code}", required = true) @PathVariable Long code) {
     ResponseEntity<CGIAREntityTypeDTO> response = this.globalUnitTypeItem.findGlobalUnitTypeById(code);
     if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
-      throw new NotFoundException("404", "CGIAR entity type not found");
+      throw new NotFoundException("404", this.env.getProperty("GeneralLists.cgiar-entity-types.code.404"));
     }
     return response;
   }
@@ -208,7 +213,7 @@ public class GeneralLists {
     @ApiParam(value = "${GeneralLists.un-regions.code.param.code}", required = true) @PathVariable Long code) {
     ResponseEntity<RegionDTO> response = this.locationItem.getRegionByCode(code);
     if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
-      throw new NotFoundException("404", "Region not found");
+      throw new NotFoundException("404", this.env.getProperty("GeneralLists.un-regions.code.404"));
     }
     return response;
   }
@@ -247,8 +252,7 @@ public class GeneralLists {
   /**
    * Get All the Geographic Scope items *
    * 
-   * @return a List of GeographicScopeDTO with all RepIndGeographicScope
-   *         Items.
+   * @return a List of GeographicScopeDTO with all RepIndGeographicScope Items.
    */
 
   @ApiOperation(
@@ -275,14 +279,19 @@ public class GeneralLists {
       "Table 5 - Status of Planned Outcomes and Milestones", "Table 6 - Peer-reviewed publications",
       "Table 7 - Participants in CapDev Activities", "Table 8 - Key external partnerships",
       "Table 9 - Internal Cross-CGIAR Collaborations",
-      "Table 10 - Monitoring, Evaluation, Learning and Impact Assessment (MELIA)", "Table 12 - Examples of W1/2 Use",
+      "Table 10 - Monitoring, Evaluation, Learning and Impact Assessment (MELIA)",
+      "Table 11 - Update on Actions Taken in Response to Relevant Evaluations", "Table 12 - Examples of W1/2 Use",
       "Table 13 - CRP Financial Report"},
     value = "${GeneralLists.cgiar-entities.all.value}", response = CGIAREntityDTO.class, responseContainer = "List")
   @RequestMapping(value = "/cgiar-entities", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<List<CGIAREntityDTO>> getAllGlobalUnits(
     @ApiParam(value = "${GeneralLists.cgiar-entities.all.param.typeId}") @RequestParam(value = "typeId",
       required = false) Long typeId) {
-    return this.globalUnitItem.getAllGlobaUnits(typeId);
+    ResponseEntity<List<CGIAREntityDTO>> response = this.globalUnitItem.getAllGlobaUnits(typeId);
+    if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+      throw new NotFoundException("404", this.env.getProperty("GeneralLists.cgiar-entities.all.404"));
+    }
+    return response;
   }
 
   /**
