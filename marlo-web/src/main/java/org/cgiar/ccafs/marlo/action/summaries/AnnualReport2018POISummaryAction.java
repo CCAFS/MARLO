@@ -757,21 +757,15 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     }
 
     if (expanded != null && !expanded.isEmpty()) {
-      poiSummary.textParagraphBold(document.createParagraph(),
-        this.getText("summaries.annualReport2018.keyResults.variance1"));
-      poiSummary.convertHTMLTags(document, expanded);
+      poiSummary.convertHTMLTags(document, "a) " + expanded);
     }
 
     if (cutBack != null && !cutBack.isEmpty()) {
-      poiSummary.textParagraphBold(document.createParagraph(),
-        this.getText("summaries.annualReport2018.keyResults.variance2"));
-      poiSummary.convertHTMLTags(document, cutBack);
+      poiSummary.convertHTMLTags(document, "b) " + cutBack);
     }
 
     if (direction != null && !direction.isEmpty()) {
-      poiSummary.textParagraphBold(document.createParagraph(),
-        this.getText("summaries.annualReport2018.keyResults.variance3"));
-      poiSummary.convertHTMLTags(document, direction);
+      poiSummary.convertHTMLTags(document, "c) " + direction);
     }
   }
 
@@ -1750,7 +1744,6 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
               if (crpMilestone.getComposedName() != null) {
                 milestone = crpMilestone.getComposedName();
               }
-              System.out.println("milestone " + crpMilestone);
               ReportSynthesisFlagshipProgressOutcomeMilestone milestoneOb = null;
               if (reportSynthesisFlagshipProgressOutcomeMilestoneManager.findAll().stream()
                 .filter(m -> m.getCrpMilestone().getId().equals(crpMilestone.getId()))
@@ -2006,12 +1999,20 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
 
         if (collaboration.getReportSynthesisKeyPartnership() != null) {
           for (ReportSynthesisKeyPartnershipCollaborationCrp partner : collaboration.getCrps()) {
-            name += partner.getGlobalUnit().getAcronym();
+            name += partner.getGlobalUnit().getAcronym() + "";
           }
         }
 
         if (collaboration.getValueAdded() != null) {
           optional = collaboration.getValueAdded();
+        }
+
+        try {
+          if (name.contains(",")) {
+            name = name.substring(0, name.length() - 2);
+          }
+        } catch (Exception e) {
+
         }
         POIField[] sData = {new POIField(description, ParagraphAlignment.LEFT),
           new POIField(name, ParagraphAlignment.CENTER), new POIField(optional, ParagraphAlignment.LEFT)};
@@ -2212,7 +2213,19 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     addCustomHeadingStyle(document, "heading 23", 2);
     addCustomHeadingStyle(document, "heading 24", 2);
     addCustomHeadingStyle(document, "heading 25", 1);
-
+    addCustomHeadingStyle(document, "heading 26", 1);
+    addCustomHeadingStyle(document, "heading 27", 1);
+    addCustomHeadingStyle(document, "heading 28", 1);
+    addCustomHeadingStyle(document, "heading 29", 1);
+    addCustomHeadingStyle(document, "heading 30", 1);
+    addCustomHeadingStyle(document, "heading 31", 1);
+    addCustomHeadingStyle(document, "heading 32", 1);
+    addCustomHeadingStyle(document, "heading 33", 1);
+    addCustomHeadingStyle(document, "heading 34", 1);
+    addCustomHeadingStyle(document, "heading 35", 1);
+    addCustomHeadingStyle(document, "heading 36", 1);
+    addCustomHeadingStyle(document, "heading 37", 1);
+    addCustomHeadingStyle(document, "heading 38", 1);
     if (this.isEntityCRP()) {
       try {
 
@@ -2529,7 +2542,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         run.setFontSize(13);
         run.setBold(true);
         run.setText(this.getText("summaries.annualReport2018.table1"));
-        paragraph.setStyle("heading 2");
+        paragraph.setStyle("heading 26");
         this.createTable1();
 
         // Table 2
@@ -2539,7 +2552,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         run.setFontSize(13);
         run.setBold(true);
         run.setText(this.getText("summaries.annualReport2018.table2"));
-        paragraph.setStyle("heading 2");
+        paragraph.setStyle("heading 27");
         this.createTable2();
 
         // Table 3
@@ -2549,7 +2562,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         run.setFontSize(13);
         run.setBold(true);
         run.setText(this.getText("summaries.annualReport2018.table3"));
-        paragraph.setStyle("heading 2");
+        paragraph.setStyle("heading 28");
         this.createTable3();
 
         // Table 4
@@ -2559,7 +2572,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         run.setFontSize(13);
         run.setBold(true);
         run.setText(this.getText("summaries.annualReport2018.table4"));
-        paragraph.setStyle("heading 2");
+        paragraph.setStyle("heading 29");
         this.createTable4();
 
         // Table 5
@@ -2569,7 +2582,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         run.setFontSize(13);
         run.setBold(true);
         run.setText(this.getText("summaries.annualReport2018.table5"));
-        paragraph.setStyle("heading 2");
+        paragraph.setStyle("heading 30");
         this.createTable5();
 
         // Table 6
@@ -2579,7 +2592,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         run.setFontSize(13);
         run.setBold(true);
         run.setText(this.getText("summaries.annualReport2018.table6"));
-        paragraph.setStyle("heading 2");
+        paragraph.setStyle("heading 31");
         this.createTable6();
 
         // Table 7
@@ -2589,7 +2602,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         run.setFontSize(13);
         run.setBold(true);
         run.setText(this.getText("summaries.annualReport2018.table7"));
-        paragraph.setStyle("heading 2");
+        paragraph.setStyle("heading 32");
         this.createTable7();
 
         // Table 8
@@ -2599,7 +2612,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         run.setFontSize(13);
         run.setBold(true);
         run.setText(this.getText("summaries.annualReport2018.table8"));
-        paragraph.setStyle("heading 2");
+        paragraph.setStyle("heading 33");
         this.createTable8();
 
         // Table 9
@@ -2609,7 +2622,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         run.setFontSize(13);
         run.setBold(true);
         run.setText(this.getText("summaries.annualReport2018.table9"));
-        paragraph.setStyle("heading 2");
+        paragraph.setStyle("heading 34");
         this.createTable9();
 
         // Table 10
@@ -2619,7 +2632,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         run.setFontSize(13);
         run.setBold(true);
         run.setText(this.getText("summaries.annualReport2018.table10"));
-        paragraph.setStyle("heading 2");
+        paragraph.setStyle("heading 35");
         this.createTable10();
 
         // Table 11
@@ -2629,7 +2642,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         run.setFontSize(13);
         run.setBold(true);
         run.setText(this.getText("summaries.annualReport2018.table11"));
-        paragraph.setStyle("heading 2");
+        paragraph.setStyle("heading 36");
         this.createTable11();
 
         // Table 12
@@ -2639,7 +2652,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         run.setFontSize(13);
         run.setBold(true);
         run.setText(this.getText("summaries.annualReport2018.table12"));
-        paragraph.setStyle("heading 2");
+        paragraph.setStyle("heading 37");
         this.createTable12();
 
         // Table 13
@@ -2649,7 +2662,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         run.setFontSize(13);
         run.setBold(true);
         run.setText(this.getText("summaries.annualReport2018.table13"));
-        paragraph.setStyle("heading 2");
+        paragraph.setStyle("heading 38");
         this.createTable13a();
 
         ByteArrayOutputStream os = new ByteArrayOutputStream();
@@ -2980,7 +2993,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         run.setFontSize(13);
         run.setBold(true);
         run.setText(this.getText("summaries.annualReport2018.table1"));
-        paragraph.setStyle("heading 2");
+        paragraph.setStyle("heading 26");
         this.createTable1();
 
         // Table 2
@@ -2990,7 +3003,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         run.setFontSize(13);
         run.setBold(true);
         run.setText(this.getText("summaries.annualReport2018.table2"));
-        paragraph.setStyle("heading 2");
+        paragraph.setStyle("heading 27");
         this.createTable2();
 
         // Table 3
@@ -3000,7 +3013,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         run.setFontSize(13);
         run.setBold(true);
         run.setText(this.getText("summaries.annualReport2018.table3"));
-        paragraph.setStyle("heading 2");
+        paragraph.setStyle("heading 28");
         this.createTable3();
 
         // Table 4
@@ -3010,7 +3023,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         run.setFontSize(13);
         run.setBold(true);
         run.setText(this.getText("summaries.annualReport2018.table4"));
-        paragraph.setStyle("heading 2");
+        paragraph.setStyle("heading 29");
         this.createTable4();
 
         // Table 5
@@ -3020,7 +3033,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         run.setFontSize(13);
         run.setBold(true);
         run.setText(this.getText("summaries.annualReport2018.table5"));
-        paragraph.setStyle("heading 2");
+        paragraph.setStyle("heading 30");
         this.createTable5();
 
         // Table 6
@@ -3030,7 +3043,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         run.setFontSize(13);
         run.setBold(true);
         run.setText(this.getText("summaries.annualReport2018Platform.table6"));
-        paragraph.setStyle("heading 2");
+        paragraph.setStyle("heading 31");
         this.createTable6();
 
         // Table 7
@@ -3040,7 +3053,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         run.setFontSize(13);
         run.setBold(true);
         run.setText(this.getText("summaries.annualReport2018.table7"));
-        paragraph.setStyle("heading 2");
+        paragraph.setStyle("heading 32");
         this.createTable7();
 
         // Table 8
@@ -3050,7 +3063,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         run.setFontSize(13);
         run.setBold(true);
         run.setText(this.getText("summaries.annualReport2018.table8"));
-        paragraph.setStyle("heading 2");
+        paragraph.setStyle("heading 33");
         this.createTable8();
 
         // Table 9
@@ -3060,7 +3073,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         run.setFontSize(13);
         run.setBold(true);
         run.setText(this.getText("summaries.annualReport2018.table9"));
-        paragraph.setStyle("heading 2");
+        paragraph.setStyle("heading 34");
         this.createTable9();
 
         // Table 10
@@ -3070,7 +3083,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         run.setFontSize(13);
         run.setBold(true);
         run.setText(this.getText("summaries.annualReport2018.table10"));
-        paragraph.setStyle("heading 2");
+        paragraph.setStyle("heading 35");
         this.createTable10();
 
         // Table 11
@@ -3080,7 +3093,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         run.setFontSize(13);
         run.setBold(true);
         run.setText(this.getText("summaries.annualReport2018.table11"));
-        paragraph.setStyle("heading 2");
+        paragraph.setStyle("heading 36");
         this.createTable11();
 
         // Table 12
@@ -3090,7 +3103,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         run.setFontSize(13);
         run.setBold(true);
         run.setText(this.getText("summaries.annualReport2018.table12"));
-        paragraph.setStyle("heading 2");
+        paragraph.setStyle("heading 37");
         this.createTable12();
 
         // Table 13
@@ -3100,7 +3113,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         run.setFontSize(13);
         run.setBold(true);
         run.setText(this.getText("summaries.annualReport2018Platform.table13"));
-        paragraph.setStyle("heading 2");
+        paragraph.setStyle("heading 38");
         this.createTable13a();
 
         ByteArrayOutputStream os = new ByteArrayOutputStream();
