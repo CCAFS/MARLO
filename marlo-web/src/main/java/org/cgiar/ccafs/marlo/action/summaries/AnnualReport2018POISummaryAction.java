@@ -1699,13 +1699,16 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
                 milestone = crpMilestone.getComposedName();
               }
               ReportSynthesisFlagshipProgressOutcomeMilestone milestoneOb = null;
-              if (reportSynthesisFlagshipProgressOutcomeMilestoneManager.findAll().stream()
-                .filter(m -> m.getCrpMilestone().getId().equals(crpMilestone.getId()))
-                .collect(Collectors.toList()) != null) {
+              if (reportSynthesisFlagshipProgressOutcomeMilestoneManager.findAll() != null
+                && reportSynthesisFlagshipProgressOutcomeMilestoneManager.findAll().stream().filter(
+                  m -> m.getCrpMilestone().getId() != null && m.getCrpMilestone().getId().equals(crpMilestone.getId()))
+                  .collect(Collectors.toList()) != null) {
                 try {
-                  milestoneOb = reportSynthesisFlagshipProgressOutcomeMilestoneManager.findAll().stream()
-                    .filter(m -> m.getCrpMilestone().getId().equals(crpMilestone.getId())).collect(Collectors.toList())
-                    .get(0);
+                  milestoneOb =
+                    reportSynthesisFlagshipProgressOutcomeMilestoneManager.findAll().stream()
+                      .filter(m -> m.getCrpMilestone().getId() != null
+                        && m.getCrpMilestone().getId().equals(crpMilestone.getId()))
+                      .collect(Collectors.toList()).get(0);
                 } catch (Exception e) {
 
                 }
@@ -1721,13 +1724,17 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
               }
 
               ReportSynthesisFlagshipProgressOutcome outcomeOb = null;
-              if (reportSynthesisFlagshipProgressOutcomeManager.findAll().stream()
-                .filter(o -> o.getCrpProgramOutcome().getId().equals(outcome.getId()))
-                .collect(Collectors.toList()) != null) {
+              if (reportSynthesisFlagshipProgressOutcomeManager.findAll() != null
+                && reportSynthesisFlagshipProgressOutcomeManager.findAll().stream()
+                  .filter(o -> o.getCrpProgramOutcome().getId() != null
+                    && o.getCrpProgramOutcome().getId().equals(outcome.getId()))
+                  .collect(Collectors.toList()) != null) {
                 try {
-                  outcomeOb = reportSynthesisFlagshipProgressOutcomeManager.findAll().stream()
-                    .filter(o -> o.getCrpProgramOutcome().getId().equals(outcome.getId())).collect(Collectors.toList())
-                    .get(0);
+                  outcomeOb =
+                    reportSynthesisFlagshipProgressOutcomeManager.findAll().stream()
+                      .filter(o -> o.getCrpProgramOutcome().getId() != null
+                        && o.getCrpProgramOutcome().getId().equals(outcome.getId()))
+                      .collect(Collectors.toList()).get(0);
                 } catch (Exception e) {
 
                 }
