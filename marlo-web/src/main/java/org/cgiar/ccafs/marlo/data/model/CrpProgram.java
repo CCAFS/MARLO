@@ -218,7 +218,7 @@ public class CrpProgram extends MarloAuditableEntity implements java.io.Serializ
   }
 
   public Set<DeliverableProgram> getDeliverablePrograms() {
-    return deliverablePrograms;
+    return this.deliverablePrograms;
   }
 
   public List<CenterImpact> getImpacts() {
@@ -297,6 +297,7 @@ public class CrpProgram extends MarloAuditableEntity implements java.io.Serializ
     return this.smoCode;
   }
 
+
   public Set<Submission> getSubmissions() {
     return this.submissions;
   }
@@ -305,15 +306,14 @@ public class CrpProgram extends MarloAuditableEntity implements java.io.Serializ
     return this.synthesis;
   }
 
-
   public List<CenterTopic> getTopics() {
     return this.topics;
   }
 
+
   public double getW1() {
     return this.w1;
   }
-
 
   public double getW3() {
     return this.w3;
@@ -331,10 +331,10 @@ public class CrpProgram extends MarloAuditableEntity implements java.io.Serializ
     this.baseLine = baseLine;
   }
 
+
   public void setCenterFunds(double centerFunds) {
     this.centerFunds = centerFunds;
   }
-
 
   public void setCenterOutputs(Set<CenterOutput> centerOutputs) {
     this.centerOutputs = centerOutputs;
@@ -343,6 +343,7 @@ public class CrpProgram extends MarloAuditableEntity implements java.io.Serializ
   public void setCenterSectionStatuses(Set<CenterSectionStatus> centerSectionStatuses) {
     this.centerSectionStatuses = centerSectionStatuses;
   }
+
 
   public void setCenterSubmissions(Set<CenterSubmission> centerSubmissions) {
     this.centerSubmissions = centerSubmissions;

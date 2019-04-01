@@ -22,17 +22,18 @@ import io.swagger.annotations.ApiModelProperty;
  */
 public class SrfIdoDTO {
 
-  @ApiModelProperty(notes = "Cross cutting Issue associated")
-  private SrfCrossCuttingIssueDTO srfCrossCuttingIssue;
 
-  @ApiModelProperty(notes = "TheCode for SRF IDO")
+  @ApiModelProperty(notes = "TheCode for SRF IDO", position = 1)
   private String code;
 
-  @ApiModelProperty(notes = "The SRF IDO description ")
+  @ApiModelProperty(notes = "The SRF IDO description ", position = 2)
   private String description;
 
-  @ApiModelProperty(notes = "Indicator if the SRF IDO is a Cross Cutting Issue")
+  @ApiModelProperty(notes = "Indicator if the SRF IDO is a Cross Cutting Issue", position = 3)
   private Boolean isCrossCutting;
+
+  @ApiModelProperty(notes = "Cross cutting Issue associated", position = 4)
+  private SrfCrossCuttingIssueDTO srfCrossCuttingIssue;
 
   public String getCode() {
     return this.code;

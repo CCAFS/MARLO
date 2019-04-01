@@ -96,7 +96,7 @@ public class GlobalUnitItem<T> {
       List<CGIAREntityDTO> globalUnitDTOs =
         globalUnits.stream().map(globalUnitEntity -> this.globalUnitMapper.globalUnitToGlobalUnitDTO(globalUnitEntity))
           .collect(Collectors.toList());
-      if (globalUnitDTOs == null) {
+      if (globalUnitDTOs == null || globalUnitDTOs.size() == 0) {
         return new ResponseEntity<List<CGIAREntityDTO>>(HttpStatus.NOT_FOUND);
       } else {
         return new ResponseEntity<List<CGIAREntityDTO>>(globalUnitDTOs, HttpStatus.OK);
