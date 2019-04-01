@@ -22,35 +22,29 @@ import io.swagger.annotations.ApiModelProperty;
  */
 public class SrfCrossCuttingIssueDTO {
 
-
   @ApiModelProperty(notes = "The Generated srf Cross Cutting Issue ID")
-  private Long id;
-
+  private Long code;
 
   @ApiModelProperty(notes = "The srf Cross Cutting Issue name")
   private String name;
 
-
   @ApiModelProperty(notes = "The Generated SMO Code for Srf Cross Cutting Issue")
   private String smoCode;
 
-
-  public Long getId() {
-    return id;
+  public Long getCode() {
+    return this.code;
   }
-
 
   public String getName() {
-    return name;
+    return this.name;
   }
-
 
   public String getSmoCode() {
-    return smoCode;
+    return this.smoCode;
   }
 
-  public void setId(Long id) {
-    this.id = id;
+  public void setCode(Long code) {
+    this.code = code;
   }
 
   public void setName(String name) {

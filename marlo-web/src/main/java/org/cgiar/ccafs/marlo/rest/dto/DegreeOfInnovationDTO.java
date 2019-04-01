@@ -23,34 +23,27 @@ import io.swagger.annotations.ApiModelProperty;
  * @author Hermes Jiménez - CIAT/CCAFS
  */
 
-
 public class DegreeOfInnovationDTO {
-
 
   @ApiModelProperty(notes = "The Generated Degree of Innovation ID")
   @NotNull
-  private Long id;
-
+  private Long code;
 
   @ApiModelProperty(notes = "Degree of Innovation name")
   @NotNull
   private String name;
 
-
-  public Long getId() {
-    return id;
+  public Long getCode() {
+    return this.code;
   }
-
 
   public String getName() {
-    return name;
+    return this.name;
   }
 
-
-  public void setId(Long id) {
-    this.id = id;
+  public void setCode(Long code) {
+    this.code = code;
   }
-
 
   public void setName(String name) {
     this.name = name;

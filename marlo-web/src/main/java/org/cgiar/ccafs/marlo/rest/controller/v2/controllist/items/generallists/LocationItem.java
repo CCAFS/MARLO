@@ -36,102 +36,99 @@ import org.springframework.http.ResponseEntity;
 @Named
 public class LocationItem<T> {
 
-	private LocElementManager locElementManager;
-	private LocationMapper locationMapper;
+  private LocElementManager locElementManager;
+  private LocationMapper locationMapper;
 
-	public LocationItem(LocElementManager locElementManager, LocationMapper locationMapper) {
-		this.locElementManager = locElementManager;
-		this.locationMapper = locationMapper;
-	}
+  public LocationItem(LocElementManager locElementManager, LocationMapper locationMapper) {
+    this.locElementManager = locElementManager;
+    this.locationMapper = locationMapper;
+  }
 
-	/**
-	 * Get All the Country items *
-	 * 
-	 * @return a List of LocElementDTO with all LocElements Items.
-	 */
-	public List<CountryDTO> getAllCountries() {
-		if (this.locElementManager.findAll() != null) {
-			List<LocElement> countries = new ArrayList<>(this.locElementManager.findAll().stream()
-					.filter(c -> c.isActive() && c.getLocElementType().getId() == 2).collect(Collectors.toList()));
+  /**
+   * Get All the Country items *
+   * 
+   * @return a List of LocElementDTO with all LocElements Items.
+   */
+  public List<CountryDTO> getAllCountries() {
+    if (this.locElementManager.findAll() != null) {
+      List<LocElement> countries = new ArrayList<>(this.locElementManager.findAll().stream()
+        .filter(c -> c.isActive() && c.getLocElementType().getId() == 2).collect(Collectors.toList()));
 
-			List<CountryDTO> countryDTOs = countries.stream()
-					.map(countryEntity -> this.locationMapper.locElementToCountryDTO(countryEntity))
-					.collect(Collectors.toList());
-			return countryDTOs;
-		} else {
-			return null;
-		}
-	}
+      List<CountryDTO> countryDTOs = countries.stream()
+        .map(countryEntity -> this.locationMapper.locElementToCountryDTO(countryEntity)).collect(Collectors.toList());
+      return countryDTOs;
+    } else {
+      return null;
+    }
+  }
 
-	/**
-	 * Get All the Regions items *
-	 * 
-	 * @return a List of RegionDTO with all region LocElements Items.
-	 */
-	public List<RegionDTO> getAllRegions() {
-		if (this.locElementManager.findAll() != null) {
-			List<LocElement> regions = new ArrayList<>(this.locElementManager.findAll().stream()
-					.filter(c -> c.isActive() && c.getLocElementType().getId() == 1).collect(Collectors.toList()));
+  /**
+   * Get All the Regions items *
+   * 
+   * @return a List of RegionDTO with all region LocElements Items.
+   */
+  public List<RegionDTO> getAllRegions() {
+    if (this.locElementManager.findAll() != null) {
+      List<LocElement> regions = new ArrayList<>(this.locElementManager.findAll().stream()
+        .filter(c -> c.isActive() && c.getLocElementType().getId() == 1).collect(Collectors.toList()));
+      List<RegionDTO> regionDTOs = regions.stream()
+        .map(regionEntity -> this.locationMapper.locElementToRegionDTO(regionEntity)).collect(Collectors.toList());
+      return regionDTOs;
+    } else {
+      return null;
+    }
+  }
 
-			List<RegionDTO> regionDTOs = regions.stream()
-					.map(regionEntity -> this.locationMapper.locElementToRegionDTO(regionEntity))
-					.collect(Collectors.toList());
-			return regionDTOs;
-		} else {
-			return null;
-		}
-	}
+  /**
+   * Get the country by Alpha2 ISO Code
+   * 
+   * @param alpha2 ISO code
+   * @return a List of LocElementDTO with all LocElements Items.
+   */
+  public ResponseEntity<CountryDTO> getContryByAlpha2ISOCode(String ISOCode) {
+    LocElement locElement = this.locElementManager.getLocElementByISOCode(ISOCode.toUpperCase());
+    ResponseEntity<CountryDTO> response;
+    if (locElement != null && locElement.getLocElementType().getId() == 2) {
+      response = new ResponseEntity<>(this.locationMapper.locElementToCountryDTO(locElement), HttpStatus.OK);
+    } else {
+      response = new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+    return response;
+  }
 
-	/**
-	 * Get the country by Alpha2 ISO Code
-	 * 
-	 * @param alpha2 ISO code
-	 * @return a List of LocElementDTO with all LocElements Items.
-	 */
-	public ResponseEntity<CountryDTO> getContryByAlpha2ISOCode(String ISOCode) {
-		LocElement locElement = this.locElementManager.getLocElementByISOCode(ISOCode.toUpperCase());
-		ResponseEntity<CountryDTO> response;
-		if (locElement != null && locElement.getLocElementType().getId() == 2) {
-			response = new ResponseEntity<>(this.locationMapper.locElementToCountryDTO(locElement), HttpStatus.OK);
-		} else {
-			response = new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		}
-		return response;
-	}
+  /**
+   * Get the country by numeric ISO Code
+   * 
+   * @param Numeric iso code
+   * @return a List of LocElementDTO with all LocElements Items.
+   */
+  public ResponseEntity<CountryDTO> getContryByNumericISOCode(Long ISOCode) {
+    LocElement locElement = this.locElementManager.getLocElementByNumericISOCode(ISOCode);
+    ResponseEntity<CountryDTO> response;
+    if (locElement != null && locElement.getLocElementType().getId() == 2) {
+      response = new ResponseEntity<>(this.locationMapper.locElementToCountryDTO(locElement), HttpStatus.OK);
+    } else {
+      response = new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
 
-	/**
-	 * Get the country by numeric ISO Code
-	 * 
-	 * @param Numeric iso code
-	 * @return a List of LocElementDTO with all LocElements Items.
-	 */
-	public ResponseEntity<CountryDTO> getContryByNumericISOCode(Long ISOCode) {
-		LocElement locElement = this.locElementManager.getLocElementByNumericISOCode(ISOCode);
-		ResponseEntity<CountryDTO> response;
-		if (locElement != null && locElement.getLocElementType().getId() == 2) {
-			response = new ResponseEntity<>(this.locationMapper.locElementToCountryDTO(locElement), HttpStatus.OK);
-		} else {
-			response = new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		}
+    return response;
+  }
 
-		return response;
-	}
+  /**
+   * Get the country by UN code
+   * 
+   * @param UN M.49 code
+   * @return RegionDTO founded
+   */
+  public ResponseEntity<RegionDTO> getRegionByCode(Long code) {
+    LocElement locElement = this.locElementManager.getLocElementByNumericISOCode(code);
+    ResponseEntity<RegionDTO> response;
+    if (locElement != null && locElement.getLocElementType().getId() == 1) {
+      response = new ResponseEntity<>(this.locationMapper.locElementToRegionDTO(locElement), HttpStatus.OK);
+    } else {
+      response = new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
 
-	/**
-	 * Get the country by UN code
-	 * 
-	 * @param UN M.49 code
-	 * @return RegionDTO founded
-	 */
-	public ResponseEntity<RegionDTO> getRegionByCode(Long code) {
-		LocElement locElement = this.locElementManager.getLocElementByNumericISOCode(code);
-		ResponseEntity<RegionDTO> response;
-		if (locElement != null && locElement.getLocElementType().getId() == 1) {
-			response = new ResponseEntity<>(this.locationMapper.locElementToRegionDTO(locElement), HttpStatus.OK);
-		} else {
-			response = new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		}
-
-		return response;
-	}
+    return response;
+  }
 }

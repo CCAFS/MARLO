@@ -33,40 +33,39 @@ import org.springframework.http.ResponseEntity;
 @Named
 public class InstitutionTypeItem<T> {
 
-	private InstitutionTypeManager institutionTypeManager;
-	private InstitutionTypeMapper institutionTypeMapper;
+  private InstitutionTypeManager institutionTypeManager;
+  private InstitutionTypeMapper institutionTypeMapper;
 
-	@Inject
-	public InstitutionTypeItem(InstitutionTypeManager institutionTypeManager,
-			InstitutionTypeMapper institutionTypeMapper) {
-		this.institutionTypeManager = institutionTypeManager;
-		this.institutionTypeMapper = institutionTypeMapper;
-	}
+  @Inject
+  public InstitutionTypeItem(InstitutionTypeManager institutionTypeManager,
+    InstitutionTypeMapper institutionTypeMapper) {
+    this.institutionTypeManager = institutionTypeManager;
+    this.institutionTypeMapper = institutionTypeMapper;
+  }
 
-	/**
-	 * Find a institution type requesting a MARLO id
-	 * 
-	 * @param id
-	 * @return a InstitutionType with the Institution Type data.
-	 */
-	public ResponseEntity<InstitutionTypeDTO> findInstitutionTypeById(Long id) {
-		InstitutionType institutionType = this.institutionTypeManager.getInstitutionTypeById(id);
-		return Optional.ofNullable(institutionType).map(this.institutionTypeMapper::institutionTypeToInstitutionTypeDTO)
-				.map(result -> new ResponseEntity<>(result, HttpStatus.OK))
-				.orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
-	}
+  /**
+   * Find a institution type requesting a MARLO id
+   * 
+   * @param id
+   * @return a InstitutionType with the Institution Type data.
+   */
+  public ResponseEntity<InstitutionTypeDTO> findInstitutionTypeById(Long id) {
+    InstitutionType institutionType = this.institutionTypeManager.getInstitutionTypeById(id);
+    return Optional.ofNullable(institutionType).map(this.institutionTypeMapper::institutionTypeToInstitutionTypeDTO)
+      .map(result -> new ResponseEntity<>(result, HttpStatus.OK)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+  }
 
-	/**
-	 * Get All the Innovation Types Items *
-	 * 
-	 * @return a List of InnovationTypesDTO with all repIndInnovationType Items.
-	 */
-	public List<InstitutionTypeDTO> getAllInstitutionTypes() {
-		List<InstitutionType> institutionTypes = this.institutionTypeManager.findAll();
-		List<InstitutionTypeDTO> institutionDTOs = institutionTypes.stream()
-				.map(institution -> this.institutionTypeMapper.institutionTypeToInstitutionTypeDTO(institution))
-				.collect(Collectors.toList());
-		return institutionDTOs;
-	}
+  /**
+   * Get All the Innovation Types Items *
+   * 
+   * @return a List of InnovationTypesDTO with all repIndInnovationType Items.
+   */
+  public List<InstitutionTypeDTO> getAllInstitutionTypes() {
+    List<InstitutionType> institutionTypes = this.institutionTypeManager.findAll();
+    List<InstitutionTypeDTO> institutionDTOs = institutionTypes.stream()
+      .map(institution -> this.institutionTypeMapper.institutionTypeToInstitutionTypeDTO(institution))
+      .collect(Collectors.toList());
+    return institutionDTOs;
+  }
 
 }

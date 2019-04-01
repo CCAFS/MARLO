@@ -54,6 +54,8 @@ public class CrpProgram extends MarloAuditableEntity implements java.io.Serializ
 
   private String action;
 
+  private String smoCode;
+
 
   @Expose
   private CenterArea researchArea;
@@ -161,12 +163,12 @@ public class CrpProgram extends MarloAuditableEntity implements java.io.Serializ
   }
 
   public String getAction() {
-    return action;
+    return this.action;
   }
 
 
   public Boolean getBaseLine() {
-    return baseLine;
+    return this.baseLine;
   }
 
   public String getCenterComposedName() {
@@ -180,33 +182,33 @@ public class CrpProgram extends MarloAuditableEntity implements java.io.Serializ
 
 
   public double getCenterFunds() {
-    return centerFunds;
+    return this.centerFunds;
   }
 
   public Set<CenterOutput> getCenterOutputs() {
-    return centerOutputs;
+    return this.centerOutputs;
   }
 
 
   public Set<CenterSectionStatus> getCenterSectionStatuses() {
-    return centerSectionStatuses;
+    return this.centerSectionStatuses;
   }
 
 
   public Set<CenterSubmission> getCenterSubmissions() {
-    return centerSubmissions;
+    return this.centerSubmissions;
   }
 
   public List<CrpClusterOfActivity> getClusterofActivities() {
-    return clusterofActivities;
+    return this.clusterofActivities;
   }
 
   public PowbCollaboration getCollaboration() {
-    return collaboration;
+    return this.collaboration;
   }
 
   public String getColor() {
-    return color;
+    return this.color;
   }
 
 
@@ -216,7 +218,7 @@ public class CrpProgram extends MarloAuditableEntity implements java.io.Serializ
 
 
   public GlobalUnit getCrp() {
-    return crp;
+    return this.crp;
   }
 
   public Set<CrpClusterOfActivity> getCrpClusterOfActivities() {
@@ -224,7 +226,7 @@ public class CrpProgram extends MarloAuditableEntity implements java.io.Serializ
   }
 
   public Set<CrpProgramCountry> getCrpProgramCountries() {
-    return crpProgramCountries;
+    return this.crpProgramCountries;
   }
 
 
@@ -239,22 +241,22 @@ public class CrpProgram extends MarloAuditableEntity implements java.io.Serializ
 
 
   public Set<DeliverableProgram> getDeliverablePrograms() {
-    return deliverablePrograms;
+    return this.deliverablePrograms;
   }
 
 
   public List<CenterImpact> getImpacts() {
-    return impacts;
+    return this.impacts;
   }
 
 
   public List<CrpProgramLeader> getLeaders() {
-    return leaders;
+    return this.leaders;
   }
 
 
   public Set<LiaisonInstitution> getLiaisonInstitutions() {
-    return liaisonInstitutions;
+    return this.liaisonInstitutions;
   }
 
 
@@ -270,12 +272,12 @@ public class CrpProgram extends MarloAuditableEntity implements java.io.Serializ
 
 
   public List<CrpProgramLeader> getManagers() {
-    return managers;
+    return this.managers;
   }
 
 
   public List<CrpMilestone> getMilestones() {
-    return milestones;
+    return this.milestones;
   }
 
   public String getName() {
@@ -283,11 +285,11 @@ public class CrpProgram extends MarloAuditableEntity implements java.io.Serializ
   }
 
   public List<CrpProgramOutcome> getOutcomes() {
-    return outcomes;
+    return this.outcomes;
   }
 
   public List<PowbExpectedCrpProgress> getPowbs() {
-    return powbs;
+    return this.powbs;
   }
 
 
@@ -297,51 +299,55 @@ public class CrpProgram extends MarloAuditableEntity implements java.io.Serializ
 
 
   public Set<ProjectFocus> getProjectFocuses() {
-    return projectFocuses;
+    return this.projectFocuses;
   }
 
   public CenterArea getResearchArea() {
-    return researchArea;
+    return this.researchArea;
   }
 
   public Set<CenterImpact> getResearchImpacts() {
-    return researchImpacts;
+    return this.researchImpacts;
   }
 
   public Set<CenterTopic> getResearchTopics() {
-    return researchTopics;
+    return this.researchTopics;
   }
 
 
   public Set<SectionStatus> getSectionStatuses() {
-    return sectionStatuses;
+    return this.sectionStatuses;
   }
 
   public List<String> getSelectedCountries() {
-    return selectedCountries;
+    return this.selectedCountries;
   }
 
+  public String getSmoCode() {
+    return this.smoCode;
+  }
+
+
   public Set<Submission> getSubmissions() {
-    return submissions;
+    return this.submissions;
   }
 
 
   public PowbSynthesis getSynthesis() {
-    return synthesis;
+    return this.synthesis;
   }
-
 
   public List<CenterTopic> getTopics() {
-    return topics;
+    return this.topics;
   }
+
 
   public double getW1() {
-    return w1;
+    return this.w1;
   }
 
-
   public double getW3() {
-    return w3;
+    return this.w3;
   }
 
   public void setAcronym(String acronym) {
@@ -356,10 +362,10 @@ public class CrpProgram extends MarloAuditableEntity implements java.io.Serializ
     this.baseLine = baseLine;
   }
 
+
   public void setCenterFunds(double centerFunds) {
     this.centerFunds = centerFunds;
   }
-
 
   public void setCenterOutputs(Set<CenterOutput> centerOutputs) {
     this.centerOutputs = centerOutputs;
@@ -369,10 +375,10 @@ public class CrpProgram extends MarloAuditableEntity implements java.io.Serializ
     this.centerSectionStatuses = centerSectionStatuses;
   }
 
+
   public void setCenterSubmissions(Set<CenterSubmission> centerSubmissions) {
     this.centerSubmissions = centerSubmissions;
   }
-
 
   public void setClusterofActivities(List<CrpClusterOfActivity> clusterofActivities) {
     this.clusterofActivities = clusterofActivities;
@@ -470,6 +476,12 @@ public class CrpProgram extends MarloAuditableEntity implements java.io.Serializ
     this.selectedCountries = selectedCountries;
   }
 
+
+  public void setSmoCode(String smoCode) {
+    this.smoCode = smoCode;
+  }
+
+
   public void setSubmissions(Set<Submission> submissions) {
     this.submissions = submissions;
   }
@@ -497,10 +509,9 @@ public class CrpProgram extends MarloAuditableEntity implements java.io.Serializ
 
   @Override
   public String toString() {
-    return "CrpProgram [id=" + this.getId() + ", crp=" + crp + ", name=" + name + ", acronym=" + acronym
-      + ", programType=" + programType + "]";
+    return "CrpProgram [id=" + this.getId() + ", crp=" + this.crp + ", name=" + this.name + ", acronym=" + this.acronym
+      + ", programType=" + this.programType + "]";
   }
 
 
 }
-

@@ -56,8 +56,8 @@ public class SrfIdoItem<T> {
    * @return a SrfIdoDTO with the SRL-SLO data.
    */
   public ResponseEntity<SrfIdoDTO> findSrfIdobyId(Long id) {
-    SrfIdo srfIdo = srfIdoManager.getSrfIdoById(id);
-    return Optional.ofNullable(srfIdo).map(srfIdoMapper::srfIdoToSrfIdoDTO)
+    SrfIdo srfIdo = this.srfIdoManager.getSrfIdoById(id);
+    return Optional.ofNullable(srfIdo).map(this.srfIdoMapper::srfIdoToSrfIdoDTO)
       .map(result -> new ResponseEntity<>(result, HttpStatus.OK)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
   }
 
@@ -67,10 +67,10 @@ public class SrfIdoItem<T> {
    * @return a List of SrfIdoDTO with all SRF-SLO Items.
    */
   public List<SrfIdoDTO> getAllSrfIdos() {
-    if (srfIdoManager.findAll() != null) {
-      List<SrfIdo> srfIdos = new ArrayList<>(srfIdoManager.findAll());
-      List<SrfIdoDTO> srfIdoDTOs =
-        srfIdos.stream().map(srfIdoEntity -> srfIdoMapper.srfIdoToSrfIdoDTO(srfIdoEntity)).collect(Collectors.toList());
+    if (this.srfIdoManager.findAll() != null) {
+      List<SrfIdo> srfIdos = new ArrayList<>(this.srfIdoManager.findAll());
+      List<SrfIdoDTO> srfIdoDTOs = srfIdos.stream()
+        .map(srfIdoEntity -> this.srfIdoMapper.srfIdoToSrfIdoDTO(srfIdoEntity)).collect(Collectors.toList());
       return srfIdoDTOs;
     } else {
       return null;
