@@ -57,9 +57,9 @@ public class StageOfInnovationItem<T> {
    * @return a StageOfInnovationDTO with the Stage of Innovation data.
    */
   public ResponseEntity<StageOfInnovationDTO> findStageOfInnovationById(Long id) {
-    RepIndStageInnovation repIndStageInnovation = repIndStageInnovationManager.getRepIndStageInnovationById(id);
+    RepIndStageInnovation repIndStageInnovation = this.repIndStageInnovationManager.getRepIndStageInnovationById(id);
     return Optional.ofNullable(repIndStageInnovation)
-      .map(stageOfInnovationMapper::repIndStageInnovationToStageOfInnovationDTO)
+      .map(this.stageOfInnovationMapper::repIndStageInnovationToStageOfInnovationDTO)
       .map(result -> new ResponseEntity<>(result, HttpStatus.OK)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
   }
 
@@ -69,10 +69,10 @@ public class StageOfInnovationItem<T> {
    * @return a List of StageOfInnovationDTO with all RepIndStageInnovation Items.
    */
   public List<StageOfInnovationDTO> getAllStageOfInnovations() {
-    if (repIndStageInnovationManager.findAll() != null) {
-      List<RepIndStageInnovation> repIndStageInnovations = new ArrayList<>(repIndStageInnovationManager.findAll());
+    if (this.repIndStageInnovationManager.findAll() != null) {
+      List<RepIndStageInnovation> repIndStageInnovations = new ArrayList<>(this.repIndStageInnovationManager.findAll());
       List<StageOfInnovationDTO> stageOfInnovationDTOs =
-        repIndStageInnovations.stream().map(repIndStageInnovationEntity -> stageOfInnovationMapper
+        repIndStageInnovations.stream().map(repIndStageInnovationEntity -> this.stageOfInnovationMapper
           .repIndStageInnovationToStageOfInnovationDTO(repIndStageInnovationEntity)).collect(Collectors.toList());
       return stageOfInnovationDTOs;
     } else {

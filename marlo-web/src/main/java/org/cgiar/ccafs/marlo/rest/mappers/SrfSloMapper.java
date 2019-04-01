@@ -27,10 +27,10 @@ import org.mapstruct.MappingTarget;
 @Mapper(componentModel = "jsr330")
 public interface SrfSloMapper {
 
-	public abstract SrfSlo srfSloDTOToSrfSlo(SrfSloDTO srfSloDTO);
+  public abstract SrfSlo srfSloDTOToSrfSlo(SrfSloDTO srfSloDTO);
 
-	public abstract SrfSloDTO SrfSloToSrfSloDTO(SrfSlo srfSlo);
+  public abstract SrfSloDTO SrfSloToSrfSloDTO(SrfSlo srfSlo);
 
-	public abstract SrfSlo updateSrfSloFromSrfSloDto(SrfSloDTO srfSloDTO, @MappingTarget SrfSlo srfSlo);
+  public abstract SrfSlo updateSrfSloFromSrfSloDto(SrfSloDTO srfSloDTO, @MappingTarget SrfSlo srfSlo);
 
 }

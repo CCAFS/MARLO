@@ -33,55 +33,53 @@ import org.springframework.http.ResponseEntity;
 @Named
 public class PolicyMaturityLevelItem<T> {
 
-	private RepIndStageProcessManager repIndStageProcessManager;
-	private PolicyMaturityLevelMapper policyMaturityLevelMapper;
+  private RepIndStageProcessManager repIndStageProcessManager;
+  private PolicyMaturityLevelMapper policyMaturityLevelMapper;
 
-	@Inject
-	public PolicyMaturityLevelItem(RepIndStageProcessManager repIndStageProcessManager,
-			PolicyMaturityLevelMapper policyMaturityLevelMapper) {
-		this.repIndStageProcessManager = repIndStageProcessManager;
-		this.policyMaturityLevelMapper = policyMaturityLevelMapper;
-	}
+  @Inject
+  public PolicyMaturityLevelItem(RepIndStageProcessManager repIndStageProcessManager,
+    PolicyMaturityLevelMapper policyMaturityLevelMapper) {
+    this.repIndStageProcessManager = repIndStageProcessManager;
+    this.policyMaturityLevelMapper = policyMaturityLevelMapper;
+  }
 
-	/**
-	 * Get All the Policy Level Of Maturity Items *
-	 * 
-	 * @return a List of PolicyLevelOfMaturityDTO with all repIndStageProcess
-	 * Items.
-	 */
-	public List<PolicyMaturityLevelDTO> getAllPolicyMaturityLevel() {
-		if (this.repIndStageProcessManager.findAll() != null) {
-			List<RepIndStageProcess> repIndStageProcess = new ArrayList<>(this.repIndStageProcessManager.findAll()
-					.stream().filter(c -> c.getYear() == 2018).collect(Collectors.toList()));
+  /**
+   * Get All the Policy Level Of Maturity Items *
+   * 
+   * @return a List of PolicyLevelOfMaturityDTO with all repIndStageProcess
+   *         Items.
+   */
+  public List<PolicyMaturityLevelDTO> getAllPolicyMaturityLevel() {
+    if (this.repIndStageProcessManager.findAll() != null) {
+      List<RepIndStageProcess> repIndStageProcess = new ArrayList<>(this.repIndStageProcessManager.findAll().stream()
+        .filter(c -> c.getYear() == 2018).collect(Collectors.toList()));
 
-			List<PolicyMaturityLevelDTO> policyLevelOfMaturityDTO = repIndStageProcess.stream()
-					.map(repIndStageProcessEntity -> this.policyMaturityLevelMapper
-							.repIndStageProcessToPolicyMaturityLevelDTO(repIndStageProcessEntity))
-					.collect(Collectors.toList());
-			return policyLevelOfMaturityDTO;
-		} else {
-			return null;
-		}
-	}
+      List<PolicyMaturityLevelDTO> policyLevelOfMaturityDTO =
+        repIndStageProcess.stream().map(repIndStageProcessEntity -> this.policyMaturityLevelMapper
+          .repIndStageProcessToPolicyMaturityLevelDTO(repIndStageProcessEntity)).collect(Collectors.toList());
+      return policyLevelOfMaturityDTO;
+    } else {
+      return null;
+    }
+  }
 
-	/**
-	 * Find a Policy Level Of Maturity requesting a MARLO id
-	 * 
-	 * @param id
-	 * @return a PolicyLevelOfMaturityDTO with the Policy Level Of Maturity
-	 * data.
-	 */
-	public ResponseEntity<PolicyMaturityLevelDTO> PolicyMaturityLevelById(Long id) {
-		RepIndStageProcess repIndStageProcess = this.repIndStageProcessManager.getRepIndStageProcessById(id);
-		ResponseEntity<PolicyMaturityLevelDTO> response;
-		if (repIndStageProcess != null && repIndStageProcess.getYear() == 2018) {
-			response = new ResponseEntity<>(
-					this.policyMaturityLevelMapper.repIndStageProcessToPolicyMaturityLevelDTO(repIndStageProcess),
-					HttpStatus.OK);
-		} else {
-			response = new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		}
-		return response;
-	}
+  /**
+   * Find a Policy Level Of Maturity requesting a MARLO id
+   * 
+   * @param id
+   * @return a PolicyLevelOfMaturityDTO with the Policy Level Of Maturity
+   *         data.
+   */
+  public ResponseEntity<PolicyMaturityLevelDTO> PolicyMaturityLevelById(Long id) {
+    RepIndStageProcess repIndStageProcess = this.repIndStageProcessManager.getRepIndStageProcessById(id);
+    ResponseEntity<PolicyMaturityLevelDTO> response;
+    if (repIndStageProcess != null && repIndStageProcess.getYear() == 2018) {
+      response = new ResponseEntity<>(
+        this.policyMaturityLevelMapper.repIndStageProcessToPolicyMaturityLevelDTO(repIndStageProcess), HttpStatus.OK);
+    } else {
+      response = new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+    return response;
+  }
 
 }

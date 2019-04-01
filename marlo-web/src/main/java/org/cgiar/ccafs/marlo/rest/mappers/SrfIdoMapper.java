@@ -29,11 +29,11 @@ import org.mapstruct.Mappings;
 @Mapper(componentModel = "jsr330")
 public interface SrfIdoMapper {
 
-	public abstract SrfIdo srfIdoDTOToSrfIdo(SrfIdoDTO srfIdoDTO);
+  public abstract SrfIdo srfIdoDTOToSrfIdo(SrfIdoDTO srfIdoDTO);
 
-	@Mappings({ @Mapping(source = "srfIdo.smoCode", target = "code") })
-	public abstract SrfIdoDTO srfIdoToSrfIdoDTO(SrfIdo srfIdo);
+  @Mappings({@Mapping(source = "srfIdo.smoCode", target = "code")})
+  public abstract SrfIdoDTO srfIdoToSrfIdoDTO(SrfIdo srfIdo);
 
-	public abstract SrfIdo updateSrfIdoFromSrfIdoDto(SrfIdoDTO srfIdoDTO, @MappingTarget SrfIdo srfIdo);
+  public abstract SrfIdo updateSrfIdoFromSrfIdoDto(SrfIdoDTO srfIdoDTO, @MappingTarget SrfIdo srfIdo);
 
 }

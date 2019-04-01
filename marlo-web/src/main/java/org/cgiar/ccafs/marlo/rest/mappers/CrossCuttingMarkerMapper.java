@@ -1,5 +1,5 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
+ * This file is part of Managing Agricultural Research for Learning &
  * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,14 +18,18 @@ import org.cgiar.ccafs.marlo.data.model.CgiarCrossCuttingMarker;
 import org.cgiar.ccafs.marlo.rest.dto.CrossCuttingMarkerDTO;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.Mappings;
 
 @Mapper(componentModel = "jsr330")
 public interface CrossCuttingMarkerMapper {
 
-	public abstract CrossCuttingMarkerDTO cgiarCrossCuttingMarkerToCrossCuttingMarkerDTO(
-			CgiarCrossCuttingMarker cgiarCrossCuttingMarker);
+  @Mappings({@Mapping(source = "id", target = "code")})
+  public abstract CrossCuttingMarkerDTO
+    cgiarCrossCuttingMarkerToCrossCuttingMarkerDTO(CgiarCrossCuttingMarker cgiarCrossCuttingMarker);
 
-	public abstract CgiarCrossCuttingMarker crossCuttingMarkerDTOToCgiarCrossCuttingMarker(
-			CrossCuttingMarkerDTO crossCuttingMarkerDTO);
+  @Mappings({@Mapping(source = "code", target = "id")})
+  public abstract CgiarCrossCuttingMarker
+    crossCuttingMarkerDTOToCgiarCrossCuttingMarker(CrossCuttingMarkerDTO crossCuttingMarkerDTO);
 
 }

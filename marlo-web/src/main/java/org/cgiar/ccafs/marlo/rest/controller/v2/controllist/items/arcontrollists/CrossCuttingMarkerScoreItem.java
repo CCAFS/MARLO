@@ -34,50 +34,48 @@ import org.springframework.http.ResponseEntity;
 @Named
 public class CrossCuttingMarkerScoreItem<T> {
 
-	private RepIndGenderYouthFocusLevelManager repIndGenderYouthFocusLevelManager;
-	private CrossCuttingMarkerScoreMapper crossCuttingMarkerScoreMapper;
+  private RepIndGenderYouthFocusLevelManager repIndGenderYouthFocusLevelManager;
+  private CrossCuttingMarkerScoreMapper crossCuttingMarkerScoreMapper;
 
-	@Inject
-	public CrossCuttingMarkerScoreItem(RepIndGenderYouthFocusLevelManager repIndGenderYouthFocusLevelManager,
-			CrossCuttingMarkerScoreMapper crossCuttingMarkerScoreMapper) {
-		this.repIndGenderYouthFocusLevelManager = repIndGenderYouthFocusLevelManager;
-		this.crossCuttingMarkerScoreMapper = crossCuttingMarkerScoreMapper;
-	}
+  @Inject
+  public CrossCuttingMarkerScoreItem(RepIndGenderYouthFocusLevelManager repIndGenderYouthFocusLevelManager,
+    CrossCuttingMarkerScoreMapper crossCuttingMarkerScoreMapper) {
+    this.repIndGenderYouthFocusLevelManager = repIndGenderYouthFocusLevelManager;
+    this.crossCuttingMarkerScoreMapper = crossCuttingMarkerScoreMapper;
+  }
 
-	/**
-	 * Find a Cross Cutting Marker requesting a MARLO id
-	 * 
-	 * @param id
-	 * @return a CrossCuttingMarkersDTO with the Cross Cutting Marker data.
-	 */
-	public ResponseEntity<CrossCuttingMarkerScoreDTO> findCrossCuttingMarkerScoreById(Long id) {
-		RepIndGenderYouthFocusLevel repIndGenderYouthFocusLevel = this.repIndGenderYouthFocusLevelManager
-				.getRepIndGenderYouthFocusLevelById(id);
-		return Optional.ofNullable(repIndGenderYouthFocusLevel)
-				.map(this.crossCuttingMarkerScoreMapper::repIndGenderYouthFocusLevelToCrossCuttingMarkerScoreDTO)
-				.map(result -> new ResponseEntity<>(result, HttpStatus.OK))
-				.orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
-	}
+  /**
+   * Find a Cross Cutting Marker requesting a MARLO id
+   * 
+   * @param id
+   * @return a CrossCuttingMarkersDTO with the Cross Cutting Marker data.
+   */
+  public ResponseEntity<CrossCuttingMarkerScoreDTO> findCrossCuttingMarkerScoreById(Long id) {
+    RepIndGenderYouthFocusLevel repIndGenderYouthFocusLevel =
+      this.repIndGenderYouthFocusLevelManager.getRepIndGenderYouthFocusLevelById(id);
+    return Optional.ofNullable(repIndGenderYouthFocusLevel)
+      .map(this.crossCuttingMarkerScoreMapper::repIndGenderYouthFocusLevelToCrossCuttingMarkerScoreDTO)
+      .map(result -> new ResponseEntity<>(result, HttpStatus.OK)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+  }
 
-	/**
-	 * Get All the Cross Cutting Markers Items *
-	 * 
-	 * @return a List of CrossCuttingMarkersDTO with all
-	 * RepIndGenderYouthFocusLevel Items.
-	 */
-	public List<CrossCuttingMarkerScoreDTO> getAllCrossCuttingMarkersScores() {
-		if (this.repIndGenderYouthFocusLevelManager.findAll() != null) {
-			List<RepIndGenderYouthFocusLevel> repIndGenderYouthFocusLevels = new ArrayList<>(
-					this.repIndGenderYouthFocusLevelManager.findAll());
-			List<CrossCuttingMarkerScoreDTO> crossCuttingMarkerScoresDTO = repIndGenderYouthFocusLevels.stream()
-					.map(repIndGenderYouthFocusLevelsEntity -> this.crossCuttingMarkerScoreMapper
-							.repIndGenderYouthFocusLevelToCrossCuttingMarkerScoreDTO(
-									repIndGenderYouthFocusLevelsEntity))
-					.collect(Collectors.toList());
-			return crossCuttingMarkerScoresDTO;
-		} else {
-			return null;
-		}
-	}
+  /**
+   * Get All the Cross Cutting Markers Items *
+   * 
+   * @return a List of CrossCuttingMarkersDTO with all
+   *         RepIndGenderYouthFocusLevel Items.
+   */
+  public List<CrossCuttingMarkerScoreDTO> getAllCrossCuttingMarkersScores() {
+    if (this.repIndGenderYouthFocusLevelManager.findAll() != null) {
+      List<RepIndGenderYouthFocusLevel> repIndGenderYouthFocusLevels =
+        new ArrayList<>(this.repIndGenderYouthFocusLevelManager.findAll());
+      List<CrossCuttingMarkerScoreDTO> crossCuttingMarkerScoresDTO = repIndGenderYouthFocusLevels.stream()
+        .map(repIndGenderYouthFocusLevelsEntity -> this.crossCuttingMarkerScoreMapper
+          .repIndGenderYouthFocusLevelToCrossCuttingMarkerScoreDTO(repIndGenderYouthFocusLevelsEntity))
+        .collect(Collectors.toList());
+      return crossCuttingMarkerScoresDTO;
+    } else {
+      return null;
+    }
+  }
 
 }

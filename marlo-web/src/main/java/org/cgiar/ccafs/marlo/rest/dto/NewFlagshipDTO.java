@@ -34,12 +34,12 @@ public class NewFlagshipDTO {
 
 
   public String getAcronym() {
-    return acronym;
+    return this.acronym;
   }
 
 
   public String getName() {
-    return name;
+    return this.name;
   }
 
   public void setAcronym(String acronym) {

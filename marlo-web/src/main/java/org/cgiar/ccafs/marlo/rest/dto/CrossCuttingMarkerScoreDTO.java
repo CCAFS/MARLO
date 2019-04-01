@@ -21,28 +21,28 @@ import io.swagger.annotations.ApiModelProperty;
 
 public class CrossCuttingMarkerScoreDTO {
 
-	@ApiModelProperty(notes = "The Generated Cross Cutting Score Marker ID")
-	@NotNull
-	private Long id;
+  @ApiModelProperty(notes = "The Generated Cross Cutting Score Marker ID")
+  @NotNull
+  private Long code;
 
-	@ApiModelProperty(notes = "Cross Cutting Marker Score name")
-	@NotNull
-	private String name;
+  @ApiModelProperty(notes = "Cross Cutting Marker Score name")
+  @NotNull
+  private String name;
 
-	public Long getId() {
-		return this.id;
-	}
+  public Long getCode() {
+    return this.code;
+  }
 
-	public String getName() {
-		return this.name;
-	}
+  public String getName() {
+    return this.name;
+  }
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+  public void setCode(Long code) {
+    this.code = code;
+  }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+  public void setName(String name) {
+    this.name = name;
+  }
 
 }
