@@ -26,16 +26,23 @@ import org.mapstruct.Mappings;
  * @author Hermes Jiménez - CIAT/CCAFS
  */
 
-@Mapper(componentModel = "jsr330")
+@Mapper(componentModel = "jsr330", uses = {SrfIdoMapper.class})
 public interface SrfSubIdoMapper {
 
-//
-//	@Mappings({ @Mapping(source = "srfIdo.smoCode", target = "code") })
-//	public abstract SrfIdoDTO srfIdoToSrfIdoDTO(SrfIdo srfIdo);
+  //
+  // @Mappings({ @Mapping(source = "srfIdo.smoCode", target = "code") })
+  // public abstract SrfIdoDTO srfIdoToSrfIdoDTO(SrfIdo srfIdo);
 
-	public abstract SrfSubIdo srfSubIdoDTOToSrfSubIdo(SrfSubIdoDTO srfSubIdoDTO);
+  // @Mappings({ @Mapping(source = "srfSubIdo.smoCode", target = "code"),
+  // @Mapping(source = "srfSubIdo.description", target = "description"),
+  // @Mapping(source = "srfSubIdo.srfIdo", target = "srfIdoDTO") })
+  // public abstract SrfSubIdoDTO crpOutcomeSubIdoToSrfSubIdoDTO(CrpOutcomeSubIdo crpOutcomeSubIdo);
+  //
+  // public abstract CrpOutcomeSubIdo srfSubIdoDTOToCrpOutcomeSubIdo(SrfSubIdoDTO srfSubIdoDTO);
 
-	@Mappings({ @Mapping(source = "srfSubIdo.smoCode", target = "code"),
-			@Mapping(source = "srfSubIdo.srfIdo.smoCode", target = "srfIdoDTO.code") })
-	public abstract SrfSubIdoDTO srfSubIdoToSrfSubIdoDTO(SrfSubIdo srfSubIdo);
+  public abstract SrfSubIdo srfSubIdoDTOToSrfSubIdo(SrfSubIdoDTO srfSubIdoDTO);
+
+  @Mappings({@Mapping(source = "srfSubIdo.smoCode", target = "code"),
+    @Mapping(source = "srfSubIdo.srfIdo.smoCode", target = "srfIdoDTO.code")})
+  public abstract SrfSubIdoDTO srfSubIdoToSrfSubIdoDTO(SrfSubIdo srfSubIdo);
 }

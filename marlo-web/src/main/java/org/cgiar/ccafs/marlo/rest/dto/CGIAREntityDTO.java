@@ -25,53 +25,53 @@ import io.swagger.annotations.ApiModelProperty;
 @ApiModel(description = "Official list of CGIAR Centers, CGIAR Research Programs (CRPs) and CGIAR Platforms (PTFs)")
 public class CGIAREntityDTO implements Serializable {
 
-	private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 1L;
 
-	@ApiModelProperty(notes = "Code of CGIAR entity")
-	private String code;
+  @ApiModelProperty(notes = "Code of CGIAR entity")
+  private String code;
 
-	@ApiModelProperty(notes = "CGIAR entity name")
-	@NotNull
-	private String name;
+  @ApiModelProperty(notes = "CGIAR entity name")
+  @NotNull
+  private String name;
 
-	@ApiModelProperty(notes = "Acronym of CGIAR entity")
-	@NotNull
-	private String acronym;
+  @ApiModelProperty(notes = "Acronym of CGIAR entity")
+  @NotNull
+  private String acronym;
 
-	@ApiModelProperty(notes = "CGIAR entity type")
-	@NotNull
-	private CGIAREntityTypeDTO globalUnitTypeDTO;
+  @ApiModelProperty(notes = "CGIAR entity type")
+  @NotNull
+  private CGIAREntityTypeDTO cgiarEntityTypeDTO;
 
-	public String getAcronym() {
-		return this.acronym;
-	}
+  public String getAcronym() {
+    return this.acronym;
+  }
 
-	public String getCode() {
-		return this.code;
-	}
+  public CGIAREntityTypeDTO getCgiarEntityTypeDTO() {
+    return this.cgiarEntityTypeDTO;
+  }
 
-	public CGIAREntityTypeDTO getGlobalUnitTypeDTO() {
-		return this.globalUnitTypeDTO;
-	}
+  public String getCode() {
+    return this.code;
+  }
 
-	public String getName() {
-		return this.name;
-	}
+  public String getName() {
+    return this.name;
+  }
 
-	public void setAcronym(String acronym) {
-		this.acronym = acronym;
-	}
+  public void setAcronym(String acronym) {
+    this.acronym = acronym;
+  }
 
-	public void setCode(String code) {
-		this.code = code;
-	}
+  public void setCgiarEntityTypeDTO(CGIAREntityTypeDTO cgiarEntityTypeDTO) {
+    this.cgiarEntityTypeDTO = cgiarEntityTypeDTO;
+  }
 
-	public void setGlobalUnitTypeDTO(CGIAREntityTypeDTO globalUnitTypeDTO) {
-		this.globalUnitTypeDTO = globalUnitTypeDTO;
-	}
+  public void setCode(String code) {
+    this.code = code;
+  }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+  public void setName(String name) {
+    this.name = name;
+  }
 
 }

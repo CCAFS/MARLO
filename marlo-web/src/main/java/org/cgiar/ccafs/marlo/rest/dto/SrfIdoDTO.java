@@ -22,47 +22,53 @@ import io.swagger.annotations.ApiModelProperty;
  */
 public class SrfIdoDTO {
 
-	private SrfCrossCuttingIssueDTO srfCrossCuttingIssue;
 
-	@ApiModelProperty(notes = "TheCode for SRF IDO")
-	private String code;
+  @ApiModelProperty(notes = "TheCode for SRF IDO", position = 1)
+  private String code;
 
-	@ApiModelProperty(notes = "The SRF IDO description ")
-	private String description;
+  @ApiModelProperty(notes = "The SRF IDO description ", position = 2)
+  private String description;
 
-	@ApiModelProperty(notes = "Indicator if the SRF IDO is a Cross Cutting Issue")
-	private boolean isCrossCutting;
+  @ApiModelProperty(notes = "Indicator if the SRF IDO is a Cross Cutting Issue", position = 3)
+  private Boolean isCrossCutting;
 
-	public String getDescription() {
-		return this.description;
-	}
+  @ApiModelProperty(notes = "Cross cutting Issue associated", position = 4)
+  private SrfCrossCuttingIssueDTO srfCrossCuttingIssue;
 
-	public SrfCrossCuttingIssueDTO getSrfCrossCuttingIssue() {
-		return this.srfCrossCuttingIssue;
-	}
+  public String getCode() {
+    return this.code;
+  }
 
-	public boolean isCrossCutting() {
-		return this.isCrossCutting;
-	}
+  public String getDescription() {
+    return this.description;
+  }
 
-	public void setCrossCutting(boolean isCrossCutting) {
-		this.isCrossCutting = isCrossCutting;
-	}
+  public Boolean getIsCrossCutting() {
+    return this.isCrossCutting;
+  }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+  public SrfCrossCuttingIssueDTO getSrfCrossCuttingIssue() {
+    return this.srfCrossCuttingIssue;
+  }
 
-	public void setSrfCrossCuttingIssue(SrfCrossCuttingIssueDTO srfCrossCuttingIssue) {
-		this.srfCrossCuttingIssue = srfCrossCuttingIssue;
-	}
+  public void setCode(String code) {
+    this.code = code;
+  }
 
-	public String getCode() {
-		return code;
-	}
+  public void setCrossCutting(boolean isCrossCutting) {
+    this.setIsCrossCutting(isCrossCutting);
+  }
 
-	public void setCode(String code) {
-		this.code = code;
-	}
+  public void setDescription(String description) {
+    this.description = description;
+  }
+
+  public void setIsCrossCutting(Boolean isCrossCutting) {
+    this.isCrossCutting = isCrossCutting;
+  }
+
+  public void setSrfCrossCuttingIssue(SrfCrossCuttingIssueDTO srfCrossCuttingIssue) {
+    this.srfCrossCuttingIssue = srfCrossCuttingIssue;
+  }
 
 }

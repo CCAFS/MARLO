@@ -23,39 +23,33 @@ public class ResearchPartnershipDTO {
 
   @ApiModelProperty(notes = "The Generated Research Partnership ID")
   @NotNull
-  private Long id;
-
+  private Long code;
 
   @ApiModelProperty(notes = "Research Partnership name")
   @NotNull
   private String name;
 
-
   @ApiModelProperty(notes = "Research Partnership definition")
   private String definition;
 
+  public Long getCode() {
+    return this.code;
+  }
 
   public String getDefinition() {
-    return definition;
+    return this.definition;
   }
-
-
-  public Long getId() {
-    return id;
-  }
-
 
   public String getName() {
-    return name;
+    return this.name;
   }
 
+  public void setCode(Long code) {
+    this.code = code;
+  }
 
   public void setDefinition(String definition) {
     this.definition = definition;
-  }
-
-  public void setId(Long id) {
-    this.id = id;
   }
 
   public void setName(String name) {

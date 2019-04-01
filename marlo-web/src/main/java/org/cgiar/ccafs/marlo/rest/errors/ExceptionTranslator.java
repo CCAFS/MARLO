@@ -38,19 +38,22 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 /**
- * Controller advice to translate the server side exceptions to client-friendly json structures.
+ * Controller advice to translate the server side exceptions to client-friendly
+ * json structures.
  */
 @ControllerAdvice
 public class ExceptionTranslator {
 
-  // This is just for exceptions that don't get processed by the LoggingAspect (e.g. UnauthorizedException)
+  // This is just for exceptions that don't get processed by the LoggingAspect
+  // (e.g. UnauthorizedException)
   private static final Logger LOG = LoggerFactory.getLogger(ExceptionTranslator.class);
 
   @ExceptionHandler(AuthorizationException.class)
   @ResponseBody
   @ResponseStatus(HttpStatus.UNAUTHORIZED)
   public ErrorDTO processAuthorizationException(final RuntimeException ex) {
-    // This one doesn't get logged by our aspectj logger due to Shiro's aspects being applied first.
+    // This one doesn't get logged by our aspectj logger due to Shiro's
+    // aspects being applied first.
     LOG.error("AuthorizationException - user does does not have correct permissions");
     return new ErrorDTO(ErrorConstants.ERR_ACCESS_DENIED,
       "Please contact the crp administrator to request permissions");
@@ -116,6 +119,13 @@ public class ExceptionTranslator {
   @ResponseStatus(HttpStatus.METHOD_NOT_ALLOWED)
   public ErrorDTO processMethodNotSupportedException(HttpRequestMethodNotSupportedException exception) {
     return new ErrorDTO(ErrorConstants.ERR_METHOD_NOT_SUPPORTED, exception.getMessage());
+  }
+
+  @ExceptionHandler(NotFoundException.class)
+  @ResponseBody
+  @ResponseStatus(HttpStatus.NOT_FOUND)
+  public ErrorDTO processNotFoundException(final NotFoundException ex) {
+    return new ErrorDTO(ex.getCode() + " - " + ex.getDescription());
   }
 
   @ExceptionHandler(Exception.class)

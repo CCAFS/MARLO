@@ -19,14 +19,16 @@ import org.cgiar.ccafs.marlo.data.model.RepIndInnovationType;
 import org.cgiar.ccafs.marlo.rest.dto.InnovationTypeDTO;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.Mappings;
 
 @Mapper(componentModel = "jsr330")
 public interface InnovationTypeMapper {
 
+  @Mappings({@Mapping(source = "code", target = "id")})
   public abstract RepIndInnovationType innovationTypesDTOToRepIndInnovationType(InnovationTypeDTO innovationTypesDTO);
 
-  public abstract InnovationTypeDTO
-    repIndInnovationTypeToInnovationTypesDTO(RepIndInnovationType repIndInnovationType);
-
+  @Mappings({@Mapping(source = "id", target = "code")})
+  public abstract InnovationTypeDTO repIndInnovationTypeToInnovationTypesDTO(RepIndInnovationType repIndInnovationType);
 
 }

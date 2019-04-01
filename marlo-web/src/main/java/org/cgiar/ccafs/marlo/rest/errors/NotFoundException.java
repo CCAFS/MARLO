@@ -13,29 +13,28 @@
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
 
-package org.cgiar.ccafs.marlo.rest.mappers;
-
-import org.cgiar.ccafs.marlo.data.model.CrpProgram;
-import org.cgiar.ccafs.marlo.rest.dto.CrpProgramDTO;
-import org.cgiar.ccafs.marlo.rest.dto.NewFlagshipDTO;
-
-import org.mapstruct.Mapper;
-import org.mapstruct.MappingTarget;
+package org.cgiar.ccafs.marlo.rest.errors;
 
 /**
- * @author Hermes Jiménez - CIAT/CCAFS
+ * A custom exception for when trying to update resources that don't exist.
+ * 
+ * @author GrantL
  */
-@Mapper(componentModel = "jsr330")
-public interface CrpProgramMapper {
+public class NotFoundException extends RuntimeException {
 
-  public abstract CrpProgram crpProgramDTOToCrpProgram(CrpProgramDTO crpProgramDTO);
+  private final String code;
+  private final String description;
 
-  public abstract CrpProgramDTO crpProgramToCrpProgramDTO(CrpProgram crpProgram);
+  public NotFoundException(String code, String description) {
+    this.code = code;
+    this.description = description;
+  }
 
-  public abstract CrpProgram newFlagshipDTOToCrpProgram(NewFlagshipDTO newFlagshipDTO);
+  public String getCode() {
+    return this.code;
+  }
 
-  public abstract CrpProgram updateCrpProgramFromCrpProgramDto(CrpProgramDTO crpProgramDTO,
-    @MappingTarget CrpProgram crpProgram);
-
-
+  public String getDescription() {
+    return this.description;
+  }
 }

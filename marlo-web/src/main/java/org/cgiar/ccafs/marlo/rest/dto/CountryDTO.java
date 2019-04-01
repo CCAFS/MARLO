@@ -22,48 +22,48 @@ import io.swagger.annotations.ApiModelProperty;
  */
 public class CountryDTO {
 
-	@ApiModelProperty(notes = "The ISO country code")
-	private Long code;
+  @ApiModelProperty(notes = "The ISO country code")
+  private Long code;
 
-	@ApiModelProperty(notes = "The ISO Alpha 2 letters code")
-	private String isoAlpha2;
+  @ApiModelProperty(notes = "The ISO Alpha 2 letters code")
+  private String isoAlpha2;
 
-	@ApiModelProperty(notes = "Country Name")
-	private String name;
+  @ApiModelProperty(notes = "Country Name")
+  private String name;
 
-	@ApiModelProperty(notes = "Region")
-	private RegionDTO regionDTO;
+  @ApiModelProperty(notes = "Region")
+  private RegionDTO regionDTO;
 
-	public Long getCode() {
-		return this.code;
-	}
+  public Long getCode() {
+    return this.code;
+  }
 
-	public String getIsoAlpha2() {
-		return this.isoAlpha2;
-	}
+  public String getIsoAlpha2() {
+    return this.isoAlpha2;
+  }
 
-	public String getName() {
-		return this.name;
-	}
+  public String getName() {
+    return this.name;
+  }
 
-	public RegionDTO getRegionDTO() {
-		return this.regionDTO;
-	}
+  public RegionDTO getRegionDTO() {
+    return this.regionDTO;
+  }
 
-	public void setCode(Long code) {
-		this.code = code;
-	}
+  public void setCode(Long code) {
+    this.code = code;
+  }
 
-	public void setIsoAlpha2(String isoAlpha2) {
-		this.isoAlpha2 = isoAlpha2;
-	}
+  public void setIsoAlpha2(String isoAlpha2) {
+    this.isoAlpha2 = isoAlpha2;
+  }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+  public void setName(String name) {
+    this.name = name;
+  }
 
-	public void setRegionDTO(RegionDTO regionDTO) {
-		this.regionDTO = regionDTO;
-	}
+  public void setRegionDTO(RegionDTO regionDTO) {
+    this.regionDTO = regionDTO;
+  }
 
 }

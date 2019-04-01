@@ -87,12 +87,13 @@ body {
 }
 
 .versionTitle {
-  font-size:  14px;
+  font-size:  1.2rem;
   font-weight: 500;
-  margin: 0 auto;
+  margin: 0 auto 20px;
   text-align: center;
   text-transform: uppercase;
-  position: relative;
+  font-family: "Montserrat", sans-serif;
+  font-weight: 600;
 }
 
 .clarisaHeader {
@@ -147,4 +148,27 @@ body {
   left: 1.2%;
   border: 0px;
   cursor:pointer;
+}
+
+.swagger-ui .opblock-tag {
+  font-size: 1.1rem !important;
+  font-family: "Open Sans",sans-serif !important;
+}
+
+.swagger-ui .opblock-tag small {
+  font-size: 0.8rem !important;
+}
+
+.swagger-ui .opblock-tag small .markdown {
+  width: 300px;
+  float: right;
+}
+
+.swagger-ui .model-title {
+  font-size: 0.9rem !important;
+  font-family: "Open Sans",sans-serif !important;
+}
+
+.swagger-ui .wrapper {
+  width: 60%;
 }

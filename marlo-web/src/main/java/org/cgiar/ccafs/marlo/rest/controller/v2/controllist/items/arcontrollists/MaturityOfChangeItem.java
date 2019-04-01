@@ -57,8 +57,8 @@ public class MaturityOfChangeItem<T> {
    * @return a MaturityOfChangeDTO with the Maturity of Change data.
    */
   public ResponseEntity<MaturityOfChangeDTO> findMaturityOfChangeById(Long id) {
-    RepIndStageStudy repIndStageStudy = repIndStageStudyManager.getRepIndStageStudyById(id);
-    return Optional.ofNullable(repIndStageStudy).map(maturityOfChangeMapper::repIndStageStudyToMaturityOfChangeDTO)
+    RepIndStageStudy repIndStageStudy = this.repIndStageStudyManager.getRepIndStageStudyById(id);
+    return Optional.ofNullable(repIndStageStudy).map(this.maturityOfChangeMapper::repIndStageStudyToMaturityOfChangeDTO)
       .map(result -> new ResponseEntity<>(result, HttpStatus.OK)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
   }
 
@@ -68,11 +68,11 @@ public class MaturityOfChangeItem<T> {
    * @return a List of MaturityOfChangeDTO with all RepIndStageStudy Items.
    */
   public List<MaturityOfChangeDTO> getAllMaturityOfChanges() {
-    if (repIndStageStudyManager.findAll() != null) {
-      List<RepIndStageStudy> repIndStageStudys = new ArrayList<>(repIndStageStudyManager.findAll());
-      List<MaturityOfChangeDTO> maturityOfChangeDTOs = repIndStageStudys.stream().map(
-        repIndStageStudyEntity -> maturityOfChangeMapper.repIndStageStudyToMaturityOfChangeDTO(repIndStageStudyEntity))
-        .collect(Collectors.toList());
+    if (this.repIndStageStudyManager.findAll() != null) {
+      List<RepIndStageStudy> repIndStageStudys = new ArrayList<>(this.repIndStageStudyManager.findAll());
+      List<MaturityOfChangeDTO> maturityOfChangeDTOs =
+        repIndStageStudys.stream().map(repIndStageStudyEntity -> this.maturityOfChangeMapper
+          .repIndStageStudyToMaturityOfChangeDTO(repIndStageStudyEntity)).collect(Collectors.toList());
       return maturityOfChangeDTOs;
     } else {
       return null;

@@ -19,6 +19,8 @@ import org.cgiar.ccafs.marlo.data.model.RepIndContributionOfCrp;
 import org.cgiar.ccafs.marlo.rest.dto.ContributionOfCrpDTO;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.Mappings;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
@@ -27,9 +29,11 @@ import org.mapstruct.Mapper;
 @Mapper(componentModel = "jsr330")
 public interface ContributionOfCrpMapper {
 
+  @Mappings({@Mapping(source = "code", target = "id")})
   public abstract RepIndContributionOfCrp
     contributionOfCrpDTOToRepIndContributionOfCrp(ContributionOfCrpDTO contributionOfCrpDTO);
 
+  @Mappings({@Mapping(source = "id", target = "code")})
   public abstract ContributionOfCrpDTO
     repIndContributionOfCrpToContributionOfCrpDTO(RepIndContributionOfCrp repIndContributionOfCrp);
 

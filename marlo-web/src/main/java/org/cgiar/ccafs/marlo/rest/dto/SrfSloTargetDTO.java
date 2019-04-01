@@ -22,48 +22,48 @@ import io.swagger.annotations.ApiModelProperty;
  */
 public class SrfSloTargetDTO {
 
-	@ApiModelProperty(notes = "SLO target indicator code")
-	private String code;
+  @ApiModelProperty(notes = "SLO target indicator code")
+  private String code;
 
-	@ApiModelProperty(notes = "SLO target indicator year")
-	private String year;
+  @ApiModelProperty(notes = "SLO target indicator year")
+  private String year;
 
-	@ApiModelProperty(notes = "SLO target indicator narrative")
-	private String narrative;
+  @ApiModelProperty(notes = "SLO target indicator narrative")
+  private String narrative;
 
-	@ApiModelProperty(notes = "SLO of target indicator ")
-	private SrfSloDTO srfSloDTO;
+  @ApiModelProperty(notes = "SLO of target indicator ")
+  private SrfSloDTO srfSloDTO;
 
-	public String getCode() {
-		return this.code;
-	}
+  public String getCode() {
+    return this.code;
+  }
 
-	public String getNarrative() {
-		return this.narrative;
-	}
+  public String getNarrative() {
+    return this.narrative;
+  }
 
-	public SrfSloDTO getSrfSloDTO() {
-		return this.srfSloDTO;
-	}
+  public SrfSloDTO getSrfSloDTO() {
+    return this.srfSloDTO;
+  }
 
-	public String getYear() {
-		return this.year;
-	}
+  public String getYear() {
+    return this.year;
+  }
 
-	public void setCode(String code) {
-		this.code = code;
-	}
+  public void setCode(String code) {
+    this.code = code;
+  }
 
-	public void setNarrative(String narrative) {
-		this.narrative = narrative;
-	}
+  public void setNarrative(String narrative) {
+    this.narrative = narrative;
+  }
 
-	public void setSrfSloDTO(SrfSloDTO srfSloDTO) {
-		this.srfSloDTO = srfSloDTO;
-	}
+  public void setSrfSloDTO(SrfSloDTO srfSloDTO) {
+    this.srfSloDTO = srfSloDTO;
+  }
 
-	public void setYear(String year) {
-		this.year = year;
-	}
+  public void setYear(String year) {
+    this.year = year;
+  }
 
 }

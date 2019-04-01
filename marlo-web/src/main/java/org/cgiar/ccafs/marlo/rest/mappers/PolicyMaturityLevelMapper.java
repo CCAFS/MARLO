@@ -19,14 +19,17 @@ import org.cgiar.ccafs.marlo.data.model.RepIndStageProcess;
 import org.cgiar.ccafs.marlo.rest.dto.PolicyMaturityLevelDTO;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.Mappings;
 
 @Mapper(componentModel = "jsr330")
 public interface PolicyMaturityLevelMapper {
 
-	public abstract RepIndStageProcess policyMaturityLevelDTOToRepIndStageProcess(
-			PolicyMaturityLevelDTO policyLevelOfMaturityDTO);
+  @Mappings({@Mapping(source = "code", target = "id")})
+  public abstract RepIndStageProcess
+    policyMaturityLevelDTOToRepIndStageProcess(PolicyMaturityLevelDTO policyLevelOfMaturityDTO);
 
-	public abstract PolicyMaturityLevelDTO repIndStageProcessToPolicyMaturityLevelDTO(
-			RepIndStageProcess repIndStageProcess);
-
+  @Mappings({@Mapping(source = "id", target = "code")})
+  public abstract PolicyMaturityLevelDTO
+    repIndStageProcessToPolicyMaturityLevelDTO(RepIndStageProcess repIndStageProcess);
 }
