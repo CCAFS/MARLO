@@ -39,6 +39,8 @@ import io.swagger.annotations.ApiParam;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -58,6 +60,8 @@ import springfox.documentation.annotations.ApiIgnore;
 public class SrfLists {
 
   private static final Logger LOG = LoggerFactory.getLogger(SrfLists.class);
+  @Autowired
+  private Environment env;
 
   private SrfSloItem<SrfLists> srfSloItem;
   private SrfIdoItem<SrfLists> srfIdoItem;
@@ -90,7 +94,7 @@ public class SrfLists {
     findSrfIdoById(@ApiParam(value = "${SrfList.srf-ido.code.param.code}", required = true) @PathVariable Long code) {
     ResponseEntity<SrfIdoDTO> response = this.srfIdoItem.findSrfIdobyId(code);
     if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
-      throw new NotFoundException("404", "SRF IDO not found");
+      throw new NotFoundException("404", this.env.getProperty("SrfList.srf-ido.code.404"));
     }
     return response;
   }
@@ -109,7 +113,7 @@ public class SrfLists {
     findSrfSloById(@ApiParam(value = "${SrfList.srf-slo.code.param.code}", required = true) @PathVariable Long code) {
     ResponseEntity<SrfSloDTO> response = this.srfSloItem.findSrfSlobyId(code);
     if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
-      throw new NotFoundException("404", "SRF SLO not found");
+      throw new NotFoundException("404", this.env.getProperty("SrfList.srf-slo.code.404"));
     }
     return response;
   }
@@ -132,7 +136,7 @@ public class SrfLists {
     @ApiParam(value = "${SrfList.slo-targets.code.param.code}", required = true) @PathVariable String code) {
     ResponseEntity<SrfSloTargetDTO> response = this.srfSloIndicatorTargetItem.findSrfSloIndicatorTargetbyId(code);
     if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
-      throw new NotFoundException("404", "SLO indicator Target not found");
+      throw new NotFoundException("404", this.env.getProperty("SrfList.slo-targets.code.404"));
     }
     return response;
   }
@@ -152,7 +156,7 @@ public class SrfLists {
     @ApiParam(value = "${SrfList.srf-cross-cutting-issue.code.param.code}", required = true) @PathVariable Long code) {
     ResponseEntity<SrfCrossCuttingIssueDTO> response = this.srfCrossCuttingIssueItem.findSrfCrossCuttingIssuebyId(code);
     if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
-      throw new NotFoundException("404", "SRF Cross Cutting Issue not found");
+      throw new NotFoundException("404", this.env.getProperty("SrfList.srf-cross-cutting-issue.code.404"));
     }
     return response;
   }
@@ -175,7 +179,7 @@ public class SrfLists {
     @ApiParam(value = "${SrfList.srf-sub-idos.code.param.code}", required = true) @PathVariable String code) {
     ResponseEntity<SrfSubIdoDTO> response = this.srfSubIdoItem.findSrfSubIdoBycode(code);
     if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
-      throw new NotFoundException("404", "SRF SubIdo not found");
+      throw new NotFoundException("404", this.env.getProperty("SrfList.srf-sub-idos.code.404"));
     }
     return response;
   }
@@ -218,9 +222,13 @@ public class SrfLists {
     value = "${SrfList.slo-targets.all.value}", response = SrfSloTargetDTO.class, responseContainer = "List")
   @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
   @RequestMapping(value = "/slo-targets", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<List<SrfSloTargetDTO>>
-    getAllSrfSloTarget(@RequestParam(required = false, value = "target year (2022 or 2030)") Long year) {
-    return this.srfSloIndicatorTargetItem.getAllSrfSloIndicatorTargets(year);
+  public ResponseEntity<List<SrfSloTargetDTO>> getAllSrfSloTarget(
+    @ApiParam(value = "${SrfList.srf-sub-idos.code.param.code}") @RequestParam(required = false) Long year) {
+    ResponseEntity<List<SrfSloTargetDTO>> response = this.srfSloIndicatorTargetItem.getAllSrfSloIndicatorTargets(year);
+    if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+      throw new NotFoundException("404", this.env.getProperty("SrfList.slo-targets.all.404"));
+    }
+    return response;
   }
 
   /**
