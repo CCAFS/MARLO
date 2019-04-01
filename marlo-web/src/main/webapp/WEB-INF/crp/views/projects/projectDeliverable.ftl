@@ -7,7 +7,7 @@
   "${baseUrlMedia}/js/projects/deliverables/deliverableDissemination.js?20190229", 
   "${baseUrlMedia}/js/projects/deliverables/deliverableQualityCheck.js?20190228",
   [#--  "${baseUrlMedia}/js/projects/deliverables/deliverableDataSharing.js?20180523",--]
-  "${baseUrl}/global/js/autoSave.js",
+  [#-- "${baseUrl}/global/js/autoSave.js",--]
   "${baseUrl}/global/js/fieldsValidation.js?20180529"
 ] /]
 [#assign customCSS = ["${baseUrl}/crp/css/projects/projectDeliverable.css"] /]

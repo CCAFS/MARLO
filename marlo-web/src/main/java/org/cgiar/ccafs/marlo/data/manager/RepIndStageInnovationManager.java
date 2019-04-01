@@ -15,6 +15,7 @@
 package org.cgiar.ccafs.marlo.data.manager;
 
 import org.cgiar.ccafs.marlo.data.model.Phase;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
 import org.cgiar.ccafs.marlo.data.model.RepIndStageInnovation;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisInnovationsByStageDTO;
 
@@ -53,6 +54,14 @@ public interface RepIndStageInnovationManager {
    */
   public List<RepIndStageInnovation> findAll();
 
+  /**
+   * This method gets a list of ReportSynthesisInnovationsByStageDTO from a given innovation list:
+   * List of Innovations grouped by Stage
+   * 
+   * @return a list from reportSynthesisInnovationsByStageDTO null if no exist records
+   */
+  public List<ReportSynthesisInnovationsByStageDTO>
+    getInnovationsByStageDTO(List<ProjectInnovation> selectedProjectInnovations, Phase phase);
 
   /**
    * This method gets a list of ReportSynthesisInnovationsByStageDTO that are active:
@@ -69,6 +78,7 @@ public interface RepIndStageInnovationManager {
    * @return a RepIndStageInnovation object.
    */
   public RepIndStageInnovation getRepIndStageInnovationById(long repIndStageInnovationID);
+
 
   /**
    * This method saves the information of the given repIndStageInnovation

@@ -3,7 +3,7 @@
 [#assign currentSectionString = "annualReport-${actionName?replace('/','-')}-${synthesisID}" /]
 [#assign currentSection = "synthesis" /]
 [#assign currentStage = actionName?split('/')[1]/]
-[#assign pageLibs = [ "datatables.net", "datatables.net-bs" ] /]
+[#assign pageLibs = [ "datatables.net", "datatables.net-bs", "malihu-custom-scrollbar-plugin" ] /]
 [#assign customJS = [ 
   "https://www.gstatic.com/charts/loader.js",
   "https://cdn.datatables.net/buttons/1.3.1/js/dataTables.buttons.min.js",
@@ -58,11 +58,10 @@
             
             <div class="form-group row">
               <div class="col-md-4">
-              [#assign peerReviewedArticles = 12 /]
                 [#-- Total number of peer reviewed articles --]
                 <div id="" class="simpleBox numberBox">
                   <label for="">[@s.text name="${customLabel}.indicatorC4.totalArticles" /]</label><br />
-                  <span>${(peerReviewedArticles)!}</span>
+                  <span>${(total)!}</span>
                 </div>
               </div>
               
@@ -70,8 +69,8 @@
                 [#-- Chart 10 - Number of peer reviewed articles by Open Access status --]
                 <div id="chart10" class="chartBox simpleBox">
                   [#assign chartData = [
-                      {"name":"Open Acess",   "value": "10"},
-                      {"name":"Limited",      "value": "3"}
+                      {"name":"Open Acess",   "value": "${(totalOpenAccess)!0}"},
+                      {"name":"Limited",      "value": "${(totalLimited)!0}"}
                     ] /] 
                   <ul class="chartData" style="display:none">
                     <li>
@@ -89,8 +88,8 @@
                 [#-- Chart 11 - Number of peer reviewed articles by ISI status --]
                 <div id="chart11" class="chartBox simpleBox">
                   [#assign chartData = [
-                      {"name":"Yes",   "value": "14"},
-                      {"name":"No",    "value": "3"}
+                      {"name":"Yes",   "value": "${(totalIsis)!0}"},
+                      {"name":"No",    "value": "${(totalNoIsis)!0}"}
                     ] 
                   /] 
                   <ul class="chartData" style="display:none">
@@ -113,24 +112,31 @@
             </div>
             
             [#-- Full list of publications published --]
-            <div class="form-group">
+            <div class="form-group viewMoreSyntesisTable-block">
+              
               [#-- Modal Large --]
-                <button type="button" class="pull-right btn btn-link btn-sm" data-toggle="modal" data-target="#tableA-bigger"> 
-                  <span class="glyphicon glyphicon-fullscreen"></span> See Full Table 2
+                <button type="button" class="btn btn-default btn-xs pull-right" data-toggle="modal" data-target="#modal-publications">
+                 <span class="glyphicon glyphicon-fullscreen"></span> See Full table 6
                 </button>
-                <div id="tableA-bigger" class="modal fade bs-example-modal-lg " tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
-                  <div class="modal-dialog modal-lg bigger" role="document">
+                <h4 class="headTitle">[@s.text name="${customLabel}.fullList.title" /]</h4>
+                <div class="modal fade" id="modal-publications" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                  <div class="modal-dialog modal-lg" role="document">
                     <div class="modal-content">
                       <div class="modal-header">
-                        [@s.text name="${customLabel}.fullList.title" /]
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="myModalLabel">[@s.text name="${customLabel}.fullList.title" /]</h4>
                       </div>
-                      [@listOfPublications name="fullList" list=[] allowPopups=false /]
-                    </div>
+                      <div class="modal-body">
+                        [@listOfPublications name="fullList" list=(deliverables)![] allowPopups=false /]
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                      </div>
                   </div>
                 </div>
+              </div>
                 [#-- Table --]
-                [@listOfPublications name="fullList" list=[] allowPopups=true /]
+                [@listOfPublications name="fullList" list=(deliverables)![]  allowPopups=true /]
               </div>
             
           </div>
@@ -159,18 +165,18 @@
       <tbody>
         <tr>
           <td class="tableTitle">[@s.text name="${customLabel}.${name}.publications" /]</td>
-          <td></td>
-          <td></td>
+          <td class="text-center">${total}</td>
+          <td class="text-center">100%</td>
         </tr>
         <tr>
           <td class="tableTitle">[@s.text name="${customLabel}.${name}.openAccess" /]</td>
-          <td></td>
-          <td></td>
+          <td class="text-center">${(totalOpenAccess)!0}</td>
+          <td class="text-center">[#if totalOpenAccess != 0]${((totalOpenAccess/total)*100)?string("0.##")}[#else]0[/#if]%</td>
         </tr>
         <tr>
           <td class="tableTitle">[@s.text name="${customLabel}.${name}.isi" /]</td>
-          <td></td>
-          <td></td>
+          <td class="text-center">${(totalIsis)!0}</td>
+          <td class="text-center">[#if totalOpenAccess != 0]${((totalIsis/total)*100)?string("0.##")}[#else]0[/#if]%</td>
         </tr>
       </tbody>
     </table>
@@ -180,74 +186,114 @@
 
 [#macro listOfPublications name list=[] allowPopups=false]
 
-
-  <div class="form-group">
-    [#if allowPopups]
-      <h4 class="headTitle">[@s.text name="${customLabel}.fullList.title" /]</h4>
-    [/#if]
     <table class="table table-bordered">
       <thead>
         <tr>
-          <th class="text-center"> [@s.text name="${customLabel}.${name}.author" /] </th>
-          <th class="text-center col-md-2"> [@s.text name="${customLabel}.${name}.date" /] </th>
           <th class="text-center"> [@s.text name="${customLabel}.${name}.article" /] </th>
+          [#if !allowPopups]
+            <th class="text-center"> [@s.text name="${customLabel}.${name}.author" /](s) </th>
+            <th class="text-center"> [@s.text name="${customLabel}.${name}.date" /] </th>
+          [/#if]
           <th class="text-center"> [@s.text name="${customLabel}.${name}.journal" /] </th>
           [#if !allowPopups]
             <th class="text-center"> [@s.text name="${customLabel}.${name}.volume" /] </th>
             <th class="text-center"> [@s.text name="${customLabel}.${name}.issue" /] </th>
             <th class="text-center"> [@s.text name="${customLabel}.${name}.page" /] </th>
           [/#if]
-            <th class="text-center col-md-2"> [@s.text name="${customLabel}.${name}.openAccess" /] </th>
-            <th class="text-center"> [@s.text name="${customLabel}.${name}.isi" /] </th>
+          <th class="text-center"> [@s.text name="${customLabel}.${name}.openAccess" /] </th>
+          <th class="text-center"> [@s.text name="${customLabel}.${name}.isi" /] </th>
           [#if !allowPopups]
-           <th class="text-center"> [@s.text name="${customLabel}.${name}.identifier" /] </th>
+            <th class="text-center col-md-1"> [@s.text name="${customLabel}.${name}.identifier" /] </th>
           [/#if]
           [#if allowPopups]
-           <th class="col-md-1 text-center"> [@s.text name="${customLabel}.${name}.includeAR" /] </th>
+            <th class="col-md-1 text-center"> [@s.text name="${customLabel}.${name}.includeAR" /] </th>
           [/#if]
         </tr>
       </thead>
       <tbody>
         [#if list?has_content]
           [#list list as item]
-          <tr>
-            <td>${item.author}</td>
-            <td>${item.date}</td>
-            <td>${item.article}</td>
-            <td>${item.journal}</td>
-            [#if !allowPopups]
-              <td>${item.volume}</td>
-              <td>${item.issue}</td>
-              <td>${item.page}</td>
-            [/#if]
-            <td class="text-center">
-              <span style="display:none">${(item.open?string)!'false'}</span>
-              <img src="${baseUrl}/global/images/openAccess-${(item.open?string)!'false'}.png" alt="" />
-            </td>
-            <td class="text-center">
-              <span style="display:none">${(item.isi?string)!'false'}</span>
-              <img src="${baseUrl}/global/images/checked-${(item.isi?string)!'false'}.png" alt="" />
-            </td>
-            [#if !allowPopups]
-              <td>${item.identifier}</td>
-            [/#if]
-            [#if allowPopups]
-              <td class="text-center">
-                [@customForm.checkmark id="" name="" checked=false editable=editable centered=true/] 
-              </td>
-            [/#if]
-          </tr>
-          [/#list]
-        [#else]
-          <tr>
-            [#if allowPopups]
-              <td class="text-center" colspan="7"><i>No entries added yet.</i></td>
+            [#local isFromProject = (item.project??)!false]
+            [#if isFromProject]
+              [#local url][@s.url namespace="/projects" action="${(crpSession)!}/deliverable"][@s.param name='deliverableID']${item.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
             [#else]
-              <td class="text-center" colspan="10"><i>No entries added yet.</i></td>
+              [#local url][@s.url namespace="/publications" action="${(crpSession)!}/publication"][@s.param name='deliverableID']${item.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
             [/#if]
-          </tr>
+            <tr>
+              [#-- Title --]
+              <td>
+                [#local publicationTitle = (item.getMetadataValue(1))!""]
+                [#if !(publicationTitle?has_content) ]
+                  [#local publicationTitle = (item.deliverableInfo.title)!"" ]
+                [/#if]
+                
+                [@utils.tableText value=publicationTitle /]
+                
+                [#if isFromProject]<br /> <small>(From Project P${item.project.id})</small> [/#if]
+                
+                [#if PMU]
+                <br />
+                <div class="form-group">
+                  [#list (item.selectedFlahsgips)![] as liason]
+                    <span class="programTag" style="border-color:${(liason.crpProgram.color)!'#444'}" title="${(liason.composedName)!}">${(liason.acronym)!}</span>
+                  [/#list]
+                </div>
+                [/#if]
+                
+                <a href="${url}" target="_blank" class="pull-right"><span class="glyphicon glyphicon-new-window"></span></a>
+                
+              </td>
+              [#if !allowPopups]
+              [#-- Authors --]
+              <td>[@utils.tableList list=(item.users)![] displayFieldName="composedName" nobr=true class="authorsList mCustomScrollbar" scroll=true /]</td>
+              [#-- Date of Publication --]
+              <td>[@utils.tableText value=(item.getMetadataValue(17))!"" /]</td>
+              [/#if]
+              [#-- Journal Article --]
+              <td class="urlify">[@utils.tableText value=(item.publication.journal)!"" /]</td>
+              [#if !allowPopups]
+                [#-- Volume --]
+                <td class="text-center urlify"  style="width: 50px !important;">[@utils.tableText value=(item.publication.volume)!"" /]</td>
+                [#-- Issue --]
+                <td class="text-center col-md-1" style="width: 50px !important;">[@utils.tableText value=(item.publication.issue)!"" /]</td>
+                [#-- Page --]
+                <td class="text-center col-md-1" style="width: 50px !important;">[@utils.tableText value=(item.publication.pages)!"" /]</td>
+              [/#if]
+              [#-- Is OpenAccess --]
+              <td class="text-center">
+                <img src="${baseUrl}/global/images/openAccess-${(item.dissemination.isOpenAccess?string)!'false'}.png" alt="" />
+              </td>
+              [#-- Is ISI --]
+              <td class="text-center">
+                <img src="${baseUrl}/global/images/checked-${(item.publication.isiPublication?string)!'false'}.png" alt="" />
+              </td>
+              [#if !allowPopups]
+                [#-- DOI or Handle --]
+                <td class="text-center">
+                [#local doi = (item.getMetadataValue(36))!"" /]
+                
+                [#if doi?has_content && doi?contains("http") && !(doi?contains(";"))]
+                <a target="_blank" href="${doi}"><span class="glyphicon glyphicon-link"></span></a>
+                [#else]
+                  [#if !(doi?has_content) ]
+                   <span class="glyphicon glyphicon-link" title="Not defined"></span>
+                  [#else]
+                   <span class="glyphicon glyphicon-link" title="${doi}"></span>
+                  [/#if]
+                [/#if]              
+                
+                </td>
+              [/#if]
+              [#if allowPopups]
+                [#-- Check --]
+                <td class="text-center">
+                  [#local isChecked = ((!reportSynthesis.reportSynthesisFlagshipProgress.deliverablesIds?seq_contains(item.id))!true) /]
+                  [@customForm.checkmark id="deliverable-${(item.id)!}" name="reportSynthesis.reportSynthesisFlagshipProgress.deliverablesValue" value="${(item.id)!''}" checked=isChecked editable=editable centered=true/]
+                </td>
+              [/#if]
+            </tr>
+          [/#list]
         [/#if]
       </tbody>
     </table>
-  </div>
 [/#macro]

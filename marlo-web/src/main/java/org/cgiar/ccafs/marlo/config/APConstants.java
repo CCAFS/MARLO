@@ -119,11 +119,12 @@ public final class APConstants {
   public static final String CRP_LOCATION_CSV_ACTIVITIES = "crp_location_csv_activities";
   public static final String CRP_VIEW_HIGHLIGTHS = "crp_view_highlights";
   public static final String CRP_HAS_DISEMINATION = "crp_has_disemination";
+  public static final String CRP_ENABLE_BUDGET_EXECUTION = "crp_enable_budget_execution";
 
 
   // Email parameters to copy to FL FM CL
   public static final String CRP_EMAIL_CC_FL_FM_CL = "crp_email_cc_fl_fm_cl";
-  public static final String CRP_EMAIL_PL_CRPADMIN_FL = "crp_email_pl_crpAdmin_fl";
+  // public static final String CRP_EMAIL_PL_CRPADMIN_FL = "crp_email_pl_crpAdmin_fl";
   public static final String GENDER_KEYWORDS = "show_gender_keywords_summaries";
 
   public static final String CYCLE = "cycle";
@@ -283,6 +284,8 @@ public final class APConstants {
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.Project.projectBudgetsFlagships)";
   public static final String PROJECT_BUDGETS_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.Project.projectBudgets)";
+  public static final String PROJECT_BUDGETS_EXECUTION_RELATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.Project.projectBudgetExecutions)";
   public static final String PROJECT_CASE_STUDIES_INDICATORS_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.CaseStudy.caseStudyIndicators)";
   public static final String PROJECT_CASE_STUDIES_PROJECTS_RELATION =

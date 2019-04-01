@@ -22,6 +22,9 @@ import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis2018SectionStatusEnum;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisKeyPartnershipCollaboration;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisKeyPartnershipExternal;
+import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
 
 import java.nio.file.Path;
@@ -83,20 +86,64 @@ public class PartnershipValidator extends BaseValidator {
         }
       }
 
-      // // Validate Summary
-      // if (!(this.isValidString(reportSynthesis.getReportSynthesisSrfProgress().getSummary())
-      // && this.wordCount(reportSynthesis.getReportSynthesisSrfProgress().getSummary()) <= 400)) {
-      // action.addMessage(action.getText("reportSynthesis.reportSynthesisSrfProgress.overallContribution"));
-      // action.getInvalidFields().put("input-reportSynthesis.reportSynthesisSrfProgress.summary",
-      // InvalidFieldsMessages.EMPTYFIELD);
-      // }
-      //
-      // // Validate Targets
-      // if (reportSynthesis.getReportSynthesisSrfProgress().getSloTargets() != null) {
-      // for (int i = 0; i < reportSynthesis.getReportSynthesisSrfProgress().getSloTargets().size(); i++) {
-      // this.validateTargets(action, reportSynthesis.getReportSynthesisSrfProgress().getSloTargets().get(i), i);
-      // }
-      // }
+
+      if (this.isPMU(this.getLiaisonInstitution(action, reportSynthesis.getId()))) {
+
+        // Validate Summary
+        if (!(this.isValidString(reportSynthesis.getReportSynthesisKeyPartnership().getSummary())
+          && this.wordCount(reportSynthesis.getReportSynthesisKeyPartnership().getSummary()) <= 300)) {
+          action.addMessage(action.getText("reportSynthesis.reportSynthesisKeyPartnership.summary"));
+          action.getInvalidFields().put("input-reportSynthesis.reportSynthesisKeyPartnership.summary",
+            InvalidFieldsMessages.EMPTYFIELD);
+        }
+
+        // Validate Cgiar Summary
+        if (!(this.isValidString(reportSynthesis.getReportSynthesisKeyPartnership().getSummaryCgiar())
+          && this.wordCount(reportSynthesis.getReportSynthesisKeyPartnership().getSummaryCgiar()) <= 300)) {
+          action.addMessage(action.getText("reportSynthesis.reportSynthesisKeyPartnership.summaryCgiar"));
+          action.getInvalidFields().put("input-reportSynthesis.reportSynthesisKeyPartnership.summaryCgiar",
+            InvalidFieldsMessages.EMPTYFIELD);
+        }
+
+      } else {
+
+        if (reportSynthesis.getReportSynthesisKeyPartnership().getPartnerships() == null
+          || reportSynthesis.getReportSynthesisKeyPartnership().getPartnerships().isEmpty()) {
+
+          action.addMessage(action.getText("Key External partnerships"));
+          action.addMissingField("reportSynthesis.reportSynthesisKeyPartnership.partnerships");
+          action.getInvalidFields().put("list-reportSynthesis.reportSynthesisKeyPartnership.partnerships",
+            action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"partnerships"}));
+
+        } else {
+          // Validate Key external partnerships
+          if (reportSynthesis.getReportSynthesisKeyPartnership().getPartnerships() != null) {
+            for (int i = 0; i < reportSynthesis.getReportSynthesisKeyPartnership().getPartnerships().size(); i++) {
+              this.validateExternal(action, reportSynthesis.getReportSynthesisKeyPartnership().getPartnerships().get(i),
+                i);
+            }
+          }
+        }
+
+      }
+
+      if (reportSynthesis.getReportSynthesisKeyPartnership().getCollaborations() == null
+        || reportSynthesis.getReportSynthesisKeyPartnership().getCollaborations().isEmpty()) {
+
+        action.addMessage(action.getText("CGIAR Collaborations"));
+        action.addMissingField("reportSynthesis.reportSynthesisKeyPartnership.collaborations");
+        action.getInvalidFields().put("list-reportSynthesis.reportSynthesisKeyPartnership.collaborations",
+          action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"collaborations"}));
+
+      } else {
+        // Validate Key external partnerships
+        if (reportSynthesis.getReportSynthesisKeyPartnership().getCollaborations() != null) {
+          for (int i = 0; i < reportSynthesis.getReportSynthesisKeyPartnership().getCollaborations().size(); i++) {
+            this.validateCollaboration(action,
+              reportSynthesis.getReportSynthesisKeyPartnership().getCollaborations().get(i), i);
+          }
+        }
+      }
 
 
       if (!action.getFieldErrors().isEmpty()) {
@@ -113,27 +160,63 @@ public class PartnershipValidator extends BaseValidator {
 
   }
 
-  // public void validateTargets(BaseAction action, ReportSynthesisSrfProgressTarget target, int i) {
-  //
-  // // Validate Brief Summary
-  // if (!(this.isValidString(target.getBirefSummary()) && this.wordCount(target.getBirefSummary()) <= 150)) {
-  // action.addMessage(action.getText("Brief Summary"));
-  // action.addMissingField("Brief Summary");
-  // action.getInvalidFields().put(
-  // "input-reportSynthesis.reportSynthesisSrfProgress.srfTargets[" + i + "].birefSummary",
-  // InvalidFieldsMessages.EMPTYFIELD);;
-  // }
-  //
-  // // Validate Brief Summary
-  // if (!(this.isValidString(target.getAdditionalContribution())
-  // && this.wordCount(target.getAdditionalContribution()) <= 100)) {
-  // action.addMessage(action.getText("Additional Contribution"));
-  // action.addMissingField("Additional Contribution");
-  // action.getInvalidFields().put(
-  // "input-reportSynthesis.reportSynthesisSrfProgress.srfTargets[" + i + "].additionalContribution",
-  // InvalidFieldsMessages.EMPTYFIELD);;
-  // }
-  //
-  // }
+  private void validateCollaboration(BaseAction action, ReportSynthesisKeyPartnershipCollaboration collaboration,
+    int i) {
+
+    // Validate Crps
+    if (collaboration.getCrps() == null || collaboration.getCrps().isEmpty()) {
+      action.addMessage(action.getText("Crps"));
+      action.addMissingField("reportSynthesis.reportSynthesisKeyPartnership.collaborations[" + i + "].crps");
+      action.getInvalidFields().put("list-reportSynthesis.reportSynthesisKeyPartnership.collaborations[" + i + "].crps",
+        action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"crps"}));
+    }
+
+    // Validate Brief
+    if (!(this.isValidString(collaboration.getDescription()))) {
+      action.addMessage(
+        action.getText("reportSynthesis.reportSynthesisKeyPartnership.collaborations[" + i + "].description"));
+      action.getInvalidFields().put(
+        "input-reportSynthesis.reportSynthesisKeyPartnership.collaborations[" + i + "].description",
+        InvalidFieldsMessages.EMPTYFIELD);
+    }
+
+    // Validate Value added
+    if (!(this.isValidString(collaboration.getValueAdded()))) {
+      action.addMessage(
+        action.getText("reportSynthesis.reportSynthesisKeyPartnership.collaborations[" + i + "].valueAdded"));
+      action.getInvalidFields().put(
+        "input-reportSynthesis.reportSynthesisKeyPartnership.collaborations[" + i + "].valueAdded",
+        InvalidFieldsMessages.EMPTYFIELD);
+    }
+  }
+
+  private void validateExternal(BaseAction action, ReportSynthesisKeyPartnershipExternal external, int i) {
+    // Validate Description
+    if (!(this.isValidString(external.getDescription()) && this.wordCount(external.getDescription()) <= 30)) {
+      action.addMessage(
+        action.getText("reportSynthesis.reportSynthesisKeyPartnership.partnerships[" + i + "].description"));
+      action.getInvalidFields().put(
+        "input-reportSynthesis.reportSynthesisKeyPartnership.partnerships[" + i + "].description",
+        InvalidFieldsMessages.EMPTYFIELD);
+    }
+
+    // Validate Main Areas
+    if (external.getMainAreas() == null || external.getMainAreas().isEmpty()) {
+      action.addMessage(action.getText("Main Areas"));
+      action.addMissingField("reportSynthesis.reportSynthesisKeyPartnership.partnerships[" + i + "].mainAreas");
+      action.getInvalidFields().put(
+        "list-reportSynthesis.reportSynthesisKeyPartnership.partnerships[" + i + "].mainAreas",
+        action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"mainAreas"}));
+    }
+
+    // Validate partners
+    if (external.getInstitutions() == null || external.getInstitutions().isEmpty()) {
+      action.addMessage(action.getText("Partners"));
+      action.addMissingField("reportSynthesis.reportSynthesisKeyPartnership.partnerships[" + i + "].institutions");
+      action.getInvalidFields().put(
+        "list-reportSynthesis.reportSynthesisKeyPartnership.partnerships[" + i + "].institutions",
+        action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"institutions"}));
+    }
+  }
 
 }

@@ -4,6 +4,10 @@ package org.cgiar.ccafs.marlo.data.model;
 
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import com.google.gson.annotations.Expose;
 
 /**
@@ -27,12 +31,31 @@ public class ReportSynthesisFlagshipProgressMilestone extends MarloAuditableEnti
   @Expose
   private String evidence;
 
+  private Set<ReportSynthesisFlagshipProgressCrossCuttingMarker> reportSynthesisFlagshipProgressCrossCuttingMarkers =
+    new HashSet<ReportSynthesisFlagshipProgressCrossCuttingMarker>(0);
+
+  List<ReportSynthesisFlagshipProgressCrossCuttingMarker> crossCuttingMarkers;
+
+  @Expose
+  private RepIndMilestoneReason repIndMilestoneReason;
+
+  @Expose
+  private String otherReason;
+
+
   public ReportSynthesisFlagshipProgressMilestone() {
   }
+
+
+  public List<ReportSynthesisFlagshipProgressCrossCuttingMarker> getCrossCuttingMarkers() {
+    return crossCuttingMarkers;
+  }
+
 
   public CrpMilestone getCrpMilestone() {
     return crpMilestone;
   }
+
 
   public String getEvidence() {
     return evidence;
@@ -46,13 +69,28 @@ public class ReportSynthesisFlagshipProgressMilestone extends MarloAuditableEnti
     return sb.toString();
   }
 
+
   public Long getMilestonesStatus() {
     return milestonesStatus;
   }
 
 
+  public String getOtherReason() {
+    return otherReason;
+  }
+
+
+  public RepIndMilestoneReason getRepIndMilestoneReason() {
+    return repIndMilestoneReason;
+  }
+
   public ReportSynthesisFlagshipProgress getReportSynthesisFlagshipProgress() {
     return reportSynthesisFlagshipProgress;
+  }
+
+  public Set<ReportSynthesisFlagshipProgressCrossCuttingMarker>
+    getReportSynthesisFlagshipProgressCrossCuttingMarkers() {
+    return reportSynthesisFlagshipProgressCrossCuttingMarkers;
   }
 
   public String getStatusName() {
@@ -75,9 +113,14 @@ public class ReportSynthesisFlagshipProgressMilestone extends MarloAuditableEnti
   }
 
 
+  public void setCrossCuttingMarkers(List<ReportSynthesisFlagshipProgressCrossCuttingMarker> crossCuttingMarkers) {
+    this.crossCuttingMarkers = crossCuttingMarkers;
+  }
+
   public void setCrpMilestone(CrpMilestone crpMilestone) {
     this.crpMilestone = crpMilestone;
   }
+
 
   public void setEvidence(String evidence) {
     this.evidence = evidence;
@@ -87,8 +130,22 @@ public class ReportSynthesisFlagshipProgressMilestone extends MarloAuditableEnti
     this.milestonesStatus = milestonesStatus;
   }
 
+
+  public void setOtherReason(String otherReason) {
+    this.otherReason = otherReason;
+  }
+
+  public void setRepIndMilestoneReason(RepIndMilestoneReason repIndMilestoneReason) {
+    this.repIndMilestoneReason = repIndMilestoneReason;
+  }
+
   public void setReportSynthesisFlagshipProgress(ReportSynthesisFlagshipProgress reportSynthesisFlagshipProgress) {
     this.reportSynthesisFlagshipProgress = reportSynthesisFlagshipProgress;
+  }
+
+  public void setReportSynthesisFlagshipProgressCrossCuttingMarkers(
+    Set<ReportSynthesisFlagshipProgressCrossCuttingMarker> reportSynthesisFlagshipProgressCrossCuttingMarkers) {
+    this.reportSynthesisFlagshipProgressCrossCuttingMarkers = reportSynthesisFlagshipProgressCrossCuttingMarkers;
   }
 
 

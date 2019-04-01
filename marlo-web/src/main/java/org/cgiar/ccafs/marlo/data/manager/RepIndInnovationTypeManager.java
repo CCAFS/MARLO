@@ -14,7 +14,10 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.manager;
 
+import org.cgiar.ccafs.marlo.data.model.Phase;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
 import org.cgiar.ccafs.marlo.data.model.RepIndInnovationType;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisInnovationsByTypeDTO;
 
 import java.util.List;
 
@@ -53,12 +56,22 @@ public interface RepIndInnovationTypeManager {
 
 
   /**
+   * This method gets a list of ReportSynthesisInnovationsByTypeDTO from a given innovation list:
+   * List of Innovations grouped by Type
+   * 
+   * @return a list from ReportSynthesisInnovationsByTypeDTO null if no exist records
+   */
+  public List<ReportSynthesisInnovationsByTypeDTO>
+    getInnovationsByTypeDTO(List<ProjectInnovation> selectedProjectInnovations, Phase phase);
+
+  /**
    * This method gets a repIndInnovationType object by a given repIndInnovationType identifier.
    * 
    * @param repIndInnovationTypeID is the repIndInnovationType identifier.
    * @return a RepIndInnovationType object.
    */
   public RepIndInnovationType getRepIndInnovationTypeById(long repIndInnovationTypeID);
+
 
   /**
    * This method saves the information of the given repIndInnovationType

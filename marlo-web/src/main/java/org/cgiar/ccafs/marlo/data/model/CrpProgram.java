@@ -15,6 +15,7 @@
 package org.cgiar.ccafs.marlo.data.model;
 // Generated May 26, 2016 9:42:28 AM by Hibernate Tools 4.3.1.Final
 
+
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 
 import java.util.HashSet;

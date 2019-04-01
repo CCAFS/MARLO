@@ -3,6 +3,10 @@ package org.cgiar.ccafs.marlo.data.model;
 
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import com.google.gson.annotations.Expose;
 
 /**
@@ -32,13 +36,26 @@ public class ReportSynthesisMeliaEvaluation extends MarloAuditableEntity impleme
   private Integer status;
 
   @Expose
+  private String actions;
+
+  @Expose
   private String textWhom;
 
   @Expose
   private String textWhen;
 
+  @Expose
+  private String comments;
+
+  private Set<ReportSynthesisMeliaEvaluationAction> reportSynthesisMeliaEvaluationActions =
+    new HashSet<ReportSynthesisMeliaEvaluationAction>(0);
+
+  private List<ReportSynthesisMeliaEvaluationAction> meliaEvaluationActions;
+
+
   public ReportSynthesisMeliaEvaluation() {
   }
+
 
   @Override
   public boolean equals(Object obj) {
@@ -62,6 +79,17 @@ public class ReportSynthesisMeliaEvaluation extends MarloAuditableEntity impleme
     return true;
   }
 
+
+  public String getActions() {
+    return actions;
+  }
+
+
+  public String getComments() {
+    return comments;
+  }
+
+
   @Override
   public String getLogDeatil() {
     StringBuilder sb = new StringBuilder();
@@ -69,15 +97,20 @@ public class ReportSynthesisMeliaEvaluation extends MarloAuditableEntity impleme
     return sb.toString();
   }
 
+
   public String getManagementResponse() {
     return managementResponse;
+  }
+
+
+  public List<ReportSynthesisMeliaEvaluationAction> getMeliaEvaluationActions() {
+    return meliaEvaluationActions;
   }
 
 
   public String getNameEvaluation() {
     return nameEvaluation;
   }
-
 
   public String getRecommendation() {
     return recommendation;
@@ -87,6 +120,9 @@ public class ReportSynthesisMeliaEvaluation extends MarloAuditableEntity impleme
     return reportSynthesisMelia;
   }
 
+  public Set<ReportSynthesisMeliaEvaluationAction> getReportSynthesisMeliaEvaluationActions() {
+    return reportSynthesisMeliaEvaluationActions;
+  }
 
   public Integer getStatus() {
     return status;
@@ -102,9 +138,23 @@ public class ReportSynthesisMeliaEvaluation extends MarloAuditableEntity impleme
     return textWhom;
   }
 
+  public void setActions(String actions) {
+    this.actions = actions;
+  }
+
+
+  public void setComments(String comments) {
+    this.comments = comments;
+  }
+
 
   public void setManagementResponse(String managementResponse) {
     this.managementResponse = managementResponse;
+  }
+
+
+  public void setMeliaEvaluationActions(List<ReportSynthesisMeliaEvaluationAction> meliaEvaluationActions) {
+    this.meliaEvaluationActions = meliaEvaluationActions;
   }
 
 
@@ -117,8 +167,14 @@ public class ReportSynthesisMeliaEvaluation extends MarloAuditableEntity impleme
     this.recommendation = recommendation;
   }
 
+
   public void setReportSynthesisMelia(ReportSynthesisMelia reportSynthesisMelia) {
     this.reportSynthesisMelia = reportSynthesisMelia;
+  }
+
+  public void setReportSynthesisMeliaEvaluationActions(
+    Set<ReportSynthesisMeliaEvaluationAction> reportSynthesisMeliaEvaluationActions) {
+    this.reportSynthesisMeliaEvaluationActions = reportSynthesisMeliaEvaluationActions;
   }
 
   public void setStatus(Integer status) {

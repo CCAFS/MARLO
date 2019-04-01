@@ -14,10 +14,11 @@
 ]/]
 
 [#import "/WEB-INF/global/macros/utils.ftl" as utilities /]
+[#import "/WEB-INF/crp/views/annualReport2018/macros-AR2018.ftl" as macrosAR /]
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
 
-[#assign customName= "reportSynthesis" /]
+[#assign customName= "reportSynthesis.reportSynthesisFlagshipProgress" /]
 [#assign customLabel= "annualReport2018.${currentStage}" /]
 
 [#-- Helptext --]
@@ -31,9 +32,9 @@
     [#include "/WEB-INF/crp/views/annualReport2018/submenu-AR2018.ftl" /]
     
     <div class="row">
-      [#-- POWB Menu --]
+      [#--  Menu --]
       <div class="col-md-3">[#include "/WEB-INF/crp/views/annualReport2018/menu-AR2018.ftl" /]</div>
-      [#-- POWB Content --]
+      [#--  Content --]
       <div class="col-md-9">
         [#-- Section Messages --]
         [#include "/WEB-INF/crp/views/annualReport2018/messages-AR2018.ftl" /]
@@ -45,10 +46,42 @@
           
             [#-- Table 5: Status of Planned Outcomes and Milestones --]
             <div class="form-group">
-              <h4 class="headTitle">[@s.text name="${customLabel}.table5.title" /]</h4>
+              [#if PMU]
+                <div class="borderBox">
+                  [#-- Button --]
+                  <button type="button" class="btn btn-default pull-right" data-toggle="modal" data-target="#modal-policies">
+                     <span class="glyphicon glyphicon-fullscreen"></span> See Full table 5
+                  </button>
+                  [#-- Modal --]
+                  <div class="modal fade" id="modal-policies" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                    <div class="modal-dialog modal-lg" role="document">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                          <h4 class="modal-title" id="myModalLabel">[@s.text name="${customLabel}.title" /]</h4>
+                        </div>
+                        <div class="modal-body">
+                          [#-- Full table --]
+                          <div class="viewMoreSyntesisTable-block">
+                            [@tableOutcomesMilestones allowPopups=false  /]
+                          </div>
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  [#-- Table --]
+                  <div class="viewMoreSyntesisTable-block">
+                    [@tableOutcomesMilestones  /]
+                  </div>
+                </div>
+              [#else]
                 [#list outcomes as outcome]
-                  [@annualReport2018OutcomesMacro element=outcome name="${customLabel}" index=outcome_index /]
+                  [@annualReport2018OutcomesMacro element=outcome name="${customName}.outcomeList" index=outcome_index /]
                 [/#list]
+              [/#if]
             </div>
           
           </div>
@@ -63,39 +96,124 @@
 
 [#---------------------------------------------------- MACROS ----------------------------------------------------]
 
+[#macro tableOutcomesMilestones allowPopups=true id="" ]
+  <div class="">[#-- <div class="table-responsive"> --]
+    <table id="tableA" class="table table-bordered">
+      <thead>
+        <tr>
+          <th rowspan="2">[@s.text name="expectedProgress.tableA.fp" /]</th>
+          <th rowspan="2"> Outcome </th>
+          [#if !allowPopups]<th rowspan="2"> Outcome Progress </th>[/#if]
+          <th rowspan="2"> Milestone </th>
+          <th rowspan="2"> Status</th>
+          [#if !allowPopups]
+          <th rowspan="2">Milestone Evidence</th>
+          <th colspan="${cgiarCrossCuttingMarkers?size}" class="text-center">Cross-Cutting Markers</th>
+          [/#if]
+        </tr>
+        [#if !allowPopups]
+        <tr>
+          [#-- Cross Cutting markers --]
+          [#list cgiarCrossCuttingMarkers as marker]
+            <th> <small>${marker.name}</small></th>
+          [/#list]
+        </tr>
+        [/#if]
+      </thead>
+      <tbody>
+        [#list (flagships)![] as fp]
+          [#assign milestoneSize = fp.milestones?size]
+          [#list fp.outcomes as outcome]
+            [#assign outcomesSize = outcome.milestones?size]
+            [#list outcome.milestones as milestone]
+              [#assign isFlagshipRow = (outcome_index == 0) && (milestone_index == 0)]
+              [#assign isOutcomeRow = (milestone_index == 0)]
+              [#assign milestoneProgress = (action.getReportSynthesisFlagshipProgressMilestone(milestone.id))!{} ]
+              <tr class="fp-index-${fp_index} outcome-index-${outcome_index} milestone-index-${milestone_index}">
+                [#-- Flagship --]
+                [#if isFlagshipRow]<th rowspan="${milestoneSize}" class="milestoneSize-${milestoneSize}" style="background:${(fp.color)!'#fff'}"><span class="programTag" style="border-color:${(fp.color)!'#fff'}">${fp.acronym}</span></th>[/#if]
+                [#-- Outcomes --]
+                [#if isOutcomeRow]
+                  [#local reportedOutcome= (action.getOutcomeToPmu( fp.id , outcome.id))! ]
+                  <td rowspan="${outcomesSize}" class="milestonesSize-${outcomesSize}"> 
+                    [#-- Outcome Statement --]
+                    ${outcome.composedName}
+                    [#-- Sub-IDOs --]
+                    [#if !allowPopups]
+                    <br />
+                    <small>
+                      <ul>[#list (outcome.subIdos)![] as subIdo]<li> [#if (subIdo.srfSubIdo.srfIdo.isCrossCutting)!false] <strong title="Cross-Cutting IDO">CC</strong> [/#if]${(subIdo.srfSubIdo.description)!}</li>[/#list]</ul>
+                    </small>
+                    [/#if]
+                  </td>
+                [/#if]
+                [#-- Outcomes - Narrative --]
+                [#if isOutcomeRow && !allowPopups]
+                  <td rowspan="${outcomesSize}" class="milestonesSize-${outcomesSize}">
+                    [@utils.tableText value=(reportedOutcome.summary)!"" emptyText="global.prefilledByFlagship"/]
+                  </td>
+                [/#if]
+                [#-- Milestone --]
+                <td> ${milestone.composedName} [#if allowPopups] <div class="pull-right">[@milestoneContributions element=milestone tiny=true /] [/#if]</div></td>
+                [#-- Milestone Status --]
+                <td class="text-center"> 
+                  [#local reportedMilestone= (action.getMilestone((reportedOutcome.id)!-1 , milestone.id))! ]
+                  [@utils.tableText value=(reportedMilestone.statusName)!"" emptyText="global.prefilledByFlagship" /]
+                </td>
+                [#if !allowPopups]
+                  [#-- Milestone Evidence --]
+                  <td class="urlify">[@utils.tableText value=(reportedMilestone.evidence)!"" emptyText="global.prefilledByFlagship" /] </td>
+                  [#-- Cross Cutting markers --]
+                  [#list cgiarCrossCuttingMarkers as marker]
+                    [#local reportedCrossCuting =  (action.getCrossCuttingMarker( ((reportedMilestone.id)!-1), marker.id ))! ]
+                    <td class="text-center">
+                      <p class="dacMarker level-${(reportedCrossCuting.focus.id)!""}" title="${(reportedCrossCuting.focus.powbName)!""}">${(reportedCrossCuting.focus.acronym)!""}</p>
+                    </td>
+                  [/#list]
+                [/#if]
+              </tr>
+            [/#list]
+          [/#list]
+        [/#list]
+      </tbody>
+    </table>
+  </div>
+[/#macro]
+
+
 [#macro annualReport2018OutcomesMacro element name index isTemplate=false]
-  [#local customName = "${name}" /]
-     
-    <div id="powbOutcome-${isTemplate?string('template', index)}" class="powbOutcome borderBox" style="display:${isTemplate?string('none','block')}">
+  [#local annualReportElement= (action.getOutcome(reportSynthesis.reportSynthesisFlagshipProgress.id,element.id))! ]
+  [#local customName = "${name}[${index}]" /]
+  <div id="powbOutcome-${isTemplate?string('template', index)}" class="powbOutcome borderBox" style="display:${isTemplate?string('none','block')}">
     [#-- Index --]
     <div class="leftHead sm"><span class="index">${index+1}</span></div>
     [#-- Title --]
     <div class="form-group grayBox"><strong>${(liaisonInstitution.crpProgram.acronym)!liaisonInstitution.acronym} Outcome: </strong> ${(element.description)!}</div>
     [#-- Narrative on progress --]
     <div class="form-group">
-      [@customForm.textArea name="${customName}.outcome.progressNarrative" i18nkey="${customLabel}.outcome.progressNarrative" help="${customLabel}.outcome.progressNarrative.help" className="limitWords-100" helpIcon=false required=true editable=editable allowTextEditor=true /]
+      <input type="hidden" name="${customName}.id" value="${(annualReportElement.id)!}"/>
+      <input type="hidden" name="${customName}.crpProgramOutcome.id" value="${(element.id)!}"/>
+      [@customForm.textArea name="${customName}.summary" i18nkey="${customLabel}.outcome.progressNarrative" help="${customLabel}.outcome.progressNarrative.help" className="limitWords-100" helpIcon=false required=true editable=editable allowTextEditor=true /]
     </div>
     [#-- Milestones List --]
     <h4 class="simpleTitle">[@s.text name="${customLabel}.milestones.title" /]</h4>
     <div class="form-group">
        [#list element.milestones as milestone]
-        [@annualReport2018MilestoneMacro element=milestone name="${customName}.milestones" index=milestone_index /]
+        [@annualReport2018MilestoneMacro element=milestone name="${customName}.milestones" index=milestone_index reportedOutcomeID=(annualReportElement.id)!-1 /]
       [/#list]
     </div> 
-    
   </div>
 [/#macro]
 
-[#macro annualReport2018MilestoneMacro element name index isTemplate=false]
-  [#local annualReportElement= action.getReportSynthesisFlagshipProgressMilestone(element.id)]
-  [#local customName = "${name}[${action.getIndex(element.id)}]" /]
-  
+[#macro annualReport2018MilestoneMacro element name index reportedOutcomeID isTemplate=false]
+  [#local annualReportElement= (action.getMilestone(reportedOutcomeID,element.id))! ]
+  [#local customName = "${name}[${index}]" /]
   <div id="powbMilestone-${isTemplate?string('template', index)}" class="synthesisMilestone simpleBox" style="display:${isTemplate?string('none','block')}">
     [#-- Index --]
     <div class="leftHead gray sm"><span class="index">${index+1}</span></div>
     [#-- Hidden inputs --]
     <input type="hidden" name="${customName}.id" value="${(annualReportElement.id)!}" >
-    <input type="hidden" name="${customName}.crpMilestone.id" value="${(annualReportElement.crpMilestone.id)!}" >
+    <input type="hidden" name="${customName}.crpMilestone.id" value="${(element.id)!}" >
     
     [#-- Title --]
     <div class="form-group grayBox">
@@ -109,31 +227,26 @@
         <thead>
           <tr>
             <th></th>
-            <th class="text-center">[@s.text name="${customLabel}.milestoneScoreMarker" /]</th>
-            <th class="text-center col-md-7">[@s.text name="${customLabel}.milestoneScoreJustification" /]</th>
+            <th class="text-center">[@s.text name="${customLabel}.milestoneScoreMarker" /][@customForm.req required=editable  /]</th>
+            <th class="text-center col-md-7">[@s.text name="${customLabel}.milestoneScoreJustification" /][@customForm.req required=editable  /]</th>
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td class="row-title">[@s.text name="${customLabel}.milestoneGenderScore" /]</td>
-            <td class="text-center">[@customForm.select name="${customName}.milestoneGenderScoreMarker" label="" listName="" keyFieldName=""  displayFieldName=""   required=true showTitle=false className="" editable=editable/]</td>
-            <td class="text-center">[@customForm.input name="${customName}.milestoneGenderScoreJustification" className="input-sm" showTitle=false required=true editable=editable /]</td>
-          </tr>
-          <tr>
-            <td class="row-title">[@s.text name="${customLabel}.milestoneYouthScore" /]</td>
-            <td class="text-center">[@customForm.select name="${customName}.milestoneYouthScoreMarker" label="" listName="" keyFieldName=""  displayFieldName=""  showTitle=false required=true  className="" editable=editable/]</td>
-            <td class="text-center">[@customForm.input name="${customName}.milestoneYouthScoreJustification" className="input-sm" showTitle=false required=true editable=editable /]</td>
-          </tr>
-          <tr>
-            <td class="row-title">[@s.text name="${customLabel}.milestoneCapDevScore" /]</td>
-            <td class="text-center">[@customForm.select name="${customName}.milestoneCapDevScoreMarker" label="" listName="" keyFieldName=""  displayFieldName="" showTitle=false required=true  className="" editable=editable/]</td>
-            <td class="text-center">[@customForm.input name="${customName}.milestoneCapDevScoreJustification" className="input-sm" showTitle=false required=true editable=editable /]</td>
-          </tr>
-          <tr>
-            <td class="row-title">[@s.text name="${customLabel}.milestoneClimateChangeScore" /]</td>
-            <td class="text-center">[@customForm.select name="${customName}.milestoneClimateChangeScoreMarker" label=""  listName="" keyFieldName=""  displayFieldName="" showTitle=false required=true  className="" editable=editable/]</td>
-            <td class="text-center">[@customForm.input name="${customName}.milestoneClimateChangeScoreJustification" className="input-sm" showTitle=false required=true editable=editable /]</td>
-          </tr>
+          [#list cgiarCrossCuttingMarkers as marker]
+            [#local ccName=  "${customName}.markers[${marker_index}]"]
+            [#local annualReportCrossCuting =  (action.getCrossCuttingMarker( ((annualReportElement.id)!-1), marker.id ))! ]
+            <tr>
+              <td class="row-title"> 
+                <span class="name">${marker.name}</span>
+                <input type="hidden" name="${ccName}.id" value="${(annualReportCrossCuting.id)!}" />
+                <input type="hidden" name="${ccName}.marker.id" value="${marker.id}"/>
+              </td>
+              <td class="text-center">
+                [@customForm.select name="${ccName}.focus.id" value="${(annualReportCrossCuting.focus.id)!-1}" label="" listName="focusLevels" keyFieldName="id"  displayFieldName="powbName" required=true showTitle=false className="" editable=editable/]</td>
+              <td class="text-center">
+                [@customForm.input name="${ccName}.just" value="${(annualReportCrossCuting.just)!}" showTitle=false required=true editable=editable /]</td>
+            </tr>
+          [/#list]
         </tbody>
       </table>
     </div>
@@ -142,32 +255,29 @@
     [#-- Milestone status --]
     <div class="form-group">
       <label>[@s.text name="${customLabel}.milestoneStatus" /]:[@customForm.req required=editable  /]</label><br />
-      [#-- [#local milestoneStatus = (annualReportElement.milestonesStatus)!-1 /] --]
-      [#local milestoneStatus = -1 /]
+      [#local milestoneStatus = (annualReportElement.milestonesStatus)!-1 /]
       [@customForm.radioFlat id="${customName}-status-1" name="${customName}.milestonesStatus" label="Complete"   value="1" checked=(milestoneStatus == 1)!false editable=editable cssClass="milestoneStatus" cssClassLabel="font-normal"/]
       [@customForm.radioFlat id="${customName}-status-2" name="${customName}.milestonesStatus" label="Extended"   value="2" checked=(milestoneStatus == 2)!false editable=editable cssClass="milestoneStatus" cssClassLabel="font-normal"/]
       [@customForm.radioFlat id="${customName}-status-3" name="${customName}.milestonesStatus" label="Cancelled"  value="3" checked=(milestoneStatus == 3)!false editable=editable cssClass="milestoneStatus" cssClassLabel="font-normal"/]
       [@customForm.radioFlat id="${customName}-status-4" name="${customName}.milestonesStatus" label="Changed"    value="4" checked=(milestoneStatus == 4)!false editable=editable cssClass="milestoneStatus" cssClassLabel="font-normal"/]
-      
       [#if !editable && (milestoneStatus == -1)][@s.text name="form.values.fieldEmpty"/][/#if]
     </div>
     
-    [#local notComplete = true /]
-    <div class="form-group milestonesEvidence" style="display:${notComplete?string('block', 'none')}">
-      [#-- Evidence for completed milestones or explanation for extended or cancelled --]
-      <div class="form-group">
-        [@customForm.textArea name="${customName}.milestoneEvidence" i18nkey="${customLabel}.milestoneEvidence" help="${customLabel}.milestoneEvidence.help" helpIcon=false display=true required=false className="limitWords-50" editable=editable allowTextEditor=true /]
-      </div>
+    [#-- Evidence for completed milestones or explanation for extended or cancelled --]
+    <div class="form-group">
+      [@customForm.textArea name="${customName}.evidence" i18nkey="${customLabel}.milestoneEvidence" help="${customLabel}.milestoneEvidence.help" helpIcon=false display=true required=false className="limitWords-50" editable=editable allowTextEditor=true /]
+    </div>
       
+    <div class="form-group milestonesEvidence" style="width: 100%; display:${((milestoneStatus == 2) || (milestoneStatus == 3) || (milestoneStatus == 4))?string('block', 'none')}">
       [#-- Extendend, cancelled or changed milestones - Main reason --]
       <div class="form-group">
-        [@customForm.select name="${customName}.milestoneMainReason" label=""  i18nkey="${customLabel}.milestoneMainReason" listName="" keyFieldName=""  displayFieldName=""   required=true  className="milestoneMainReasonSelect" editable=editable/]
+        [@customForm.select name="${customName}.reason.id" label=""  i18nkey="${customLabel}.milestoneMainReason" listName="reasons" keyFieldName="id"  displayFieldName="name"   required=true  className="milestoneMainReasonSelect" editable=editable/]
       </div>
       
       [#-- Extendend, cancelled or changed milestones - Other reason --]
-      [#local showOther = true /]
+      [#local showOther = (annualReportElement.reason.id == 7)!false /]
       <div class="form-group otherBlock" style="display:${showOther?string('block', 'none')}">
-        [@customForm.input name="${customName}.milestoneOtherReason" i18nkey="${customLabel}.milestoneOtherReason" display=true required=false className="input-sm" editable=editable /]
+        [@customForm.input name="${customName}.otherReason" i18nkey="${customLabel}.milestoneOtherReason" display=true required=true className="input-sm" editable=editable /]
       </div>
     </div>
     
@@ -206,7 +316,7 @@
                   <th class=""> Project Title </th>
                   [#if hasTarget]<th class="col-md-1"> ${(element.srfTargetUnit.name!)} Achieved</th>[/#if]
                   <th> [@s.text name="${customLabel}.contributionMilestone.narrativeAchieved" /]  </th>
-                  <th> </th>
+                  
                 </tr>
               </thead>
               <tbody>
@@ -215,7 +325,7 @@
                   [#local poURL][@s.url namespace="/projects" action="${(crpSession)!}/contributionCrp"][@s.param name='projectOutcomeID']${contribution.projectOutcome.id}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
                   <tr>
                     <td> <a href="${pURL}" target="_blank"> P${contribution.projectOutcome.project.id} </a> </td>
-                    <td> <a href="${pURL}" target="_blank"> ${contribution.projectOutcome.project.projectInfo.title} </a></td>
+                    <td> ${contribution.projectOutcome.project.projectInfo.title} </td>
                     [#if hasTarget]
                     <td class="text-center">[#if (contribution.expectedUnit.name??)!false]${(contribution.achievedValue)!}[#else]<i>N/A</i>[/#if]</td>
                     [/#if]
@@ -225,8 +335,10 @@
                       [#else]
                         <i class="text-center" style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
                       [/#if]
+                      
+                      <a href="${poURL}" target="_blank" class="pull-right"><span class="glyphicon glyphicon-new-window"></span></a>
                     </td>
-                    <td> <a href="${poURL}" target="_blank"><span class="glyphicon glyphicon-new-window"></span></a>  </td>
+                     
                   </tr>
                 [/#list]
               </tbody>
@@ -240,3 +352,12 @@
   </div>
   [/#if]
 [/#macro]
+
+[#function getMarker element name]
+  [#list (element.crossCuttingMarkers)![] as ccm]
+    [#if ccm.cgiarCrossCuttingMarker.name == name]
+      [#return (ccm.repIndGenderYouthFocusLevel)!{} ]
+    [/#if]
+  [/#list]
+  [#return {} ]
+[/#function]

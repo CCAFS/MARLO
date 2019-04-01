@@ -41,7 +41,6 @@ import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.data.model.SharedProjectSectionStatusEnum;
-import org.cgiar.ccafs.marlo.data.model.StudiesStatusPlanningEnum;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.validation.projects.ProjectSectionValidator;
 
@@ -140,7 +139,8 @@ public class ValidateProjectSectionAction extends BaseAction {
         case PARTNERS:
           this.projectSectionValidator.validateProjectParnters(this, this.getProjectID(), this.loggedCrp);
         case BUDGET:
-          if (this.isPlanningActive()) {
+          if (this.isPlanningActive() || ((this.isReportingActive() || this.isUpKeepActive())
+            && this.hasSpecificities(this.getCrpEnableBudgetExecution()))) {
             this.projectSectionValidator.validateProjectBudgets(this, this.getProjectID());
           }
           break;
@@ -362,18 +362,7 @@ public class ValidateProjectSectionAction extends BaseAction {
             projectStudies = allProjectStudies.stream()
               .filter(ps -> ps.getProjectExpectedStudyInfo().getYear() != null
                 && ps.getProjectExpectedStudyInfo().getStatus() != null
-                && ps.getProjectExpectedStudyInfo().getYear() == this.getCurrentCycleYear()
-                && ((ps.getProjectExpectedStudyInfo().getStatus().getId()
-                  .equals(Long.parseLong(StudiesStatusPlanningEnum.Ongoing.getStatusId()))
-                  || ps.getProjectExpectedStudyInfo().getStatus().getId()
-                    .equals(Long.parseLong(StudiesStatusPlanningEnum.Extended.getStatusId()))
-                  || ps.getProjectExpectedStudyInfo().getStatus().getId()
-                    .equals(StudiesStatusPlanningEnum.New.getStatusId()))
-                  || ((ps.getProjectExpectedStudyInfo().getStatus().getId()
-                    .equals(Long.parseLong(StudiesStatusPlanningEnum.Complete.getStatusId()))
-                    || ps.getProjectExpectedStudyInfo().getStatus().getId()
-                      .equals(Long.parseLong(StudiesStatusPlanningEnum.Cancelled.getStatusId())))
-                    && ps.getProjectExpectedStudyInfo().getYear() >= this.getActualPhase().getYear())))
+                && ps.getProjectExpectedStudyInfo().getYear() >= this.getCurrentCycleYear())
               .collect(Collectors.toList());
           }
 
@@ -461,7 +450,7 @@ public class ValidateProjectSectionAction extends BaseAction {
 
         case BUDGET:
 
-          if (this.isReportingActive()) {
+          if (this.isReportingActive() && !this.hasSpecificities(this.getCrpEnableBudgetExecution())) {
             section = new HashMap<String, Object>();
 
             section.put("sectionName", ProjectSectionStatusEnum.BUDGET);

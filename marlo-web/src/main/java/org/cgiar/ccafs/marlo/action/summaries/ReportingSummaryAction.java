@@ -728,7 +728,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     masterReport.getParameterValues().put("i8nStudiesROtherCrossCuttingDimensions",
       this.getText("summaries.study.otherCrossCutting"));
     masterReport.getParameterValues().put("i8nStudiesRComunicationsMaterial",
-      this.getText("summaries.study.communicationMaterials"));
+      this.getText("study.outcomestory.readText"));
     masterReport.getParameterValues().put("i8nStudiesRComunicationsFile",
       this.getText("study.communicationMaterialsAttach.readText"));
     masterReport.getParameterValues().put("i8nStudiesRContacts", this.getText("summaries.study.contacts"));
@@ -770,6 +770,8 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       this.getText("project.deliverable.dissemination.v.DisseminationChanel"));
     masterReport.getParameterValues().put("i8nDeliverablesRDisseminationUrl",
       this.getText("project.deliverable.dissemination.disseminationUrl"));
+    masterReport.getParameterValues().put("i8nDeliverablesRConfidentialUrl",
+      this.getText("project.deliverable.dissemination.confidentialURL"));
     masterReport.getParameterValues().put("i8nDeliverablesRIsOpenAccess",
       this.getText("project.deliverable.dissemination.v.isOpenAccess"));
     masterReport.getParameterValues().put("i8nDeliverablesROpenAccessRestriction",
@@ -1922,7 +1924,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         "intellectualAssetPvpCountry", "intellectualAssetPvpApplicationNumber", "intellectualAssetPvpBreederCrop",
         "intellectualAssetDateFilling", "intellectualAssetDateRegistration", "intellectualAssetDateExpiry",
         "intellectualAssetAdditionalInformation", "intellectualAssetLinkPublished", "intellectualAssetCommunication",
-        "otherPartner"},
+        "otherPartner", "deliv_confidential_url"},
       new Class[] {Long.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
@@ -1934,7 +1936,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        String.class, String.class},
+        String.class, String.class, String.class},
       0);
     SimpleDateFormat formatter = new SimpleDateFormat("MMM yyyy");
     if (!project.getDeliverables().isEmpty()) {
@@ -2146,6 +2148,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         }
         String delivDisseminationChannel = null;
         String delivDisseminationUrl = null;
+        String delivConfidentialUrl = null;
         String delivOpenAccess = null;
         String delivLicense = null;
         String delivLicenseModifications = null;
@@ -2177,6 +2180,11 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           if (deliverableDissemination.getDisseminationUrl() != null
             && !deliverableDissemination.getDisseminationUrl().isEmpty()) {
             delivDisseminationUrl = deliverableDissemination.getDisseminationUrl().replace(" ", "%20");
+          }
+          if (deliverableDissemination.getConfidentialUrl() != null
+            && !deliverableDissemination.getConfidentialUrl().isEmpty()) {
+            delivConfidentialUrl = deliverableDissemination.getConfidentialUrl().replace(" ", "%20");
+            System.out.println("confidential " + delivConfidentialUrl);
           }
           if (deliverableDissemination.getIsOpenAccess() != null) {
             if (deliverableDissemination.getIsOpenAccess() == true) {
@@ -2696,7 +2704,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           intellectualAssetPvpStatus, intellectualAssetPvpCountry, intellectualAssetPvpApplicationNumber,
           intellectualAssetPvpBreederCrop, intellectualAssetDateFilling, intellectualAssetDateRegistration,
           intellectualAssetDateExpiry, intellectualAssetAdditionalInformation, intellectualAssetLinkPublished,
-          intellectualAssetCommunication, otherPartner});
+          intellectualAssetCommunication, otherPartner, delivConfidentialUrl});
       }
     }
     return model;
@@ -3912,6 +3920,10 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       partnerPartnershipMainArea = null;
     Boolean showRegion = false, showCountry = false;
 
+    if (projectLeader.getHasPartnerships() != null) {
+      partnerPartnershipFormal = projectLeader.getHasPartnerships() ? "Yes" : "No";
+    }
+
     // Partnerships
     List<ProjectPartnerPartnership> projectPartnerPartnerships =
       projectLeader.getProjectPartnerPartnerships().stream().filter(p -> p.isActive()).collect(Collectors.toList());
@@ -3921,9 +3933,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           + this.getSelectedPhase().toString());
       }
       ProjectPartnerPartnership partnerPartnership = projectPartnerPartnerships.get(0);
-      if (projectLeader.getHasPartnerships() != null) {
-        partnerPartnershipFormal = projectLeader.getHasPartnerships() ? "Yes" : "No";
-      }
+
       List<ProjectPartnerPartnershipResearchPhase> projectPartnerPartnershipResearchPhases = partnerPartnership
         .getProjectPartnerPartnershipResearchPhases().stream().filter(pp -> pp.isActive()).collect(Collectors.toList());
       Set<String> researchPhases = new HashSet<String>();
@@ -4047,6 +4057,11 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           partnerPartnershipGeographicScope = null, partnerPartnershipRegion = null, partnerPartnershipCountries = null,
           partnerPartnershipMainArea = null;
         Boolean showRegion = false, showCountry = false;
+
+        if (projectPartner.getHasPartnerships() != null) {
+          partnerPartnershipFormal = projectPartner.getHasPartnerships() ? "Yes" : "No";
+        }
+
         // Partnerships
         List<ProjectPartnerPartnership> projectPartnerPartnerships = projectPartner.getProjectPartnerPartnerships()
           .stream().filter(p -> p.isActive()).collect(Collectors.toList());
@@ -4056,9 +4071,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
               + this.getSelectedPhase().toString());
           }
           ProjectPartnerPartnership partnerPartnership = projectPartnerPartnerships.get(0);
-          if (projectPartner.getHasPartnerships() != null) {
-            partnerPartnershipFormal = projectPartner.getHasPartnerships() ? "Yes" : "No";
-          }
+
           List<ProjectPartnerPartnershipResearchPhase> projectPartnerPartnershipResearchPhases =
             partnerPartnership.getProjectPartnerPartnershipResearchPhases().stream().filter(pp -> pp.isActive())
               .collect(Collectors.toList());
@@ -4125,6 +4138,11 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           partnerPartnershipGeographicScope = null, partnerPartnershipRegion = null, partnerPartnershipCountries = null,
           partnerPartnershipMainArea = null;
         Boolean showRegion = false, showCountry = false;
+
+        if (projectPartner.getHasPartnerships() != null) {
+          partnerPartnershipFormal = projectPartner.getHasPartnerships() ? "Yes" : "No";
+        }
+
         // Partnerships
         List<ProjectPartnerPartnership> projectPartnerPartnerships = projectPartner.getProjectPartnerPartnerships()
           .stream().filter(p -> p.isActive()).collect(Collectors.toList());
@@ -4134,9 +4152,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
               + this.getSelectedPhase().toString());
           }
           ProjectPartnerPartnership partnerPartnership = projectPartnerPartnerships.get(0);
-          if (projectPartner.getHasPartnerships() != null) {
-            partnerPartnershipFormal = projectPartner.getHasPartnerships() ? "Yes" : "No";
-          }
+
           List<ProjectPartnerPartnershipResearchPhase> projectPartnerPartnershipResearchPhases =
             partnerPartnership.getProjectPartnerPartnershipResearchPhases().stream().filter(pp -> pp.isActive())
               .collect(Collectors.toList());

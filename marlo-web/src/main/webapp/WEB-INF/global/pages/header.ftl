@@ -36,7 +36,7 @@
     <![endif]-->
     
     [#-- Second, import global javascripts and templates. --]
-    <link rel="stylesheet" type="text/css" href="${baseUrl}/global/css/global.css?20190216" />
+    <link rel="stylesheet" type="text/css" href="${baseUrl}/global/css/global.css?20190327" />
     <link rel="stylesheet" type="text/css" href="${baseUrl}/global/css/jquery-ui.custom.css" />
     [#if centerGlobalUnit]
       <link rel="stylesheet" type="text/css" href="${baseUrl}/global/css/global-center.css" />
@@ -89,6 +89,10 @@
   <body class="mode-${editable?string('editable', 'readOnly')}">
     [#if !(avoidHeader!false)]
       <header class="clearfix" style="display: ${((includeHeader)??)?string('none','block')}">
+        [#-- Board Messages --]
+        [#include "/WEB-INF/global/pages/boardMessage.ftl" /]
+        
+      
         [#-- MARLO Admin Menu --]
         [#include "/WEB-INF/global/pages/superadmin-menu.ftl" /]
         

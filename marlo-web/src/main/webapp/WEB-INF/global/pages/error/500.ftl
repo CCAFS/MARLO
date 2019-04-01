@@ -10,7 +10,7 @@
   <article class="container">
     <div class="content ">
     
-      [#if config.debug]
+      [#if !config.production]
         <div class="grayBox">
           <strong>Debug mode:</strong>
           <br />

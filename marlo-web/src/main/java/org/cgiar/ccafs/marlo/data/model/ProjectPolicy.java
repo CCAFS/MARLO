@@ -66,14 +66,12 @@ public class ProjectPolicy extends MarloAuditableEntity implements java.io.Seria
 
 
   public String getComposedName() {
-
-
-    if (projectPolicyInfo != null) {
+    if ((projectPolicyInfo != null) && (projectPolicyInfo.getTitle() != null)
+      && (projectPolicyInfo.getTitle().trim().length() > 0)) {
       return this.getId() + " - " + projectPolicyInfo.getTitle();
     } else {
-      return "" + this.getId();
+      return "" + this.getId() + " - Untitled";
     }
-
   }
 
 
@@ -116,6 +114,13 @@ public class ProjectPolicy extends MarloAuditableEntity implements java.io.Seria
 
   public List<ProjectExpectedStudyPolicy> getEvidences() {
     return evidences;
+  }
+
+  public List<ProjectExpectedStudyPolicy> getEvidences(Phase phase) {
+    return new ArrayList<>(this.getProjectExpectedStudyPolicies().stream()
+      .filter(pp -> pp.isActive() && pp.getPhase().equals(phase) && pp.getProjectExpectedStudy() != null
+        && pp.getProjectExpectedStudy().getProjectExpectedStudyInfo(phase) != null)
+      .collect(Collectors.toList()));
   }
 
   public List<ProjectPolicyGeographicScope> getGeographicScopes() {

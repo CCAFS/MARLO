@@ -19,9 +19,11 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationContributingOrganizationManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationCountryManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationDeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationGeographicScopeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationRegionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.Project;
@@ -32,6 +34,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectInnovationDeliverable;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationGeographicScope;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationOrganization;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationRegion;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.io.ByteArrayInputStream;
@@ -80,6 +83,9 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
   private final ProjectInnovationDeliverableManager projectInnovationDeliverableManager;
   private final ResourceManager resourceManager;
   private final ProjectInnovationGeographicScopeManager projectInnovationGeographicScopeManager;
+  private final ProjectInnovationRegionManager projectInnovationRegionManager;
+  private final ProjectInnovationCountryManager projectInnovationCountryManager;
+
   // Parameters
   private long startTime;
   private Long projectInnovationID;
@@ -96,13 +102,17 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
     ProjectManager projectManager,
     ProjectInnovationContributingOrganizationManager projectInnovationContributingOrganizationManager,
     ProjectInnovationDeliverableManager projectInnovationDeliverableManager,
-    ProjectInnovationGeographicScopeManager projectInnovationGeographicScopeManager) {
+    ProjectInnovationGeographicScopeManager projectInnovationGeographicScopeManager,
+    ProjectInnovationRegionManager projectInnovationRegionManager,
+    ProjectInnovationCountryManager projectInnovationCountryManager) {
     super(config, crpManager, phaseManager, projectManager);
     this.projectInnovationManager = projectInnovationManager;
     this.resourceManager = resourceManager;
     this.projectInnovationContributingOrganizationManager = projectInnovationContributingOrganizationManager;
     this.projectInnovationDeliverableManager = projectInnovationDeliverableManager;
     this.projectInnovationGeographicScopeManager = projectInnovationGeographicScopeManager;
+    this.projectInnovationRegionManager = projectInnovationRegionManager;
+    this.projectInnovationCountryManager = projectInnovationCountryManager;
   }
 
   /**
@@ -373,43 +383,68 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
         .filter(p -> p.getPhase().getId().equals(this.getActualPhase().getId())
           && p.getProjectInnovation() == projectInnovationInfo.getProjectInnovation())
         .collect(Collectors.toList());
-    if (projectInnovationGeographicScopeList != null) {
-      geographicScope = projectInnovationGeographicScopeList.get(0).getRepIndGeographicScope().getName();
 
-      // Regional
-      if (projectInnovationGeographicScopeList.get(0).getRepIndGeographicScope().getId()
-        .equals(this.getReportingIndGeographicScopeRegional())) {
-        isRegional = true;
-        if (projectInnovationInfo.getRepIndRegion() != null) {
-          region = projectInnovationInfo.getRepIndRegion().getName();
+    List<ProjectInnovationRegion> projectInnovationRegionList = projectInnovationRegionManager.findAll().stream()
+      .filter(p -> p.getPhase().getId().equals(this.getActualPhase().getId())
+        && p.getProjectInnovation().getId().equals(projectInnovationID))
+      .collect(Collectors.toList());
+    List<ProjectInnovationCountry> projectInnovationCountryList = projectInnovationCountryManager.findAll().stream()
+      .filter(p -> p.getPhase().getId().equals(this.getActualPhase().getId())
+        && p.getProjectInnovation().getId().equals(projectInnovationID))
+      .collect(Collectors.toList());
+
+    try {
+      if (projectInnovationGeographicScopeList != null) {
+        if (projectInnovationGeographicScopeList.get(0) != null
+          && projectInnovationGeographicScopeList.get(0).getRepIndGeographicScope() != null
+          && projectInnovationGeographicScopeList.get(0).getRepIndGeographicScope().getName() != null) {
+          geographicScope = projectInnovationGeographicScopeList.get(0).getRepIndGeographicScope().getName();
         }
-      }
-      // Country
-      if (!projectInnovationGeographicScopeList.get(0).getRepIndGeographicScope().getId()
-        .equals(this.getReportingIndGeographicScopeGlobal())
-        && !projectInnovationGeographicScopeList.get(0).getRepIndGeographicScope().getId()
-          .equals(this.getReportingIndGeographicScopeRegional())) {
-        isNational = true;
-        List<ProjectInnovationCountry> innovationCountries =
-          projectInnovationGeographicScopeList.get(0).getProjectInnovation().getProjectInnovationCountries().stream()
-            .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase()))
-            .collect(Collectors.toList());
-        if (innovationCountries != null && innovationCountries.size() > 0) {
-          Set<String> countriesSet = new HashSet<>();
-          for (ProjectInnovationCountry innovationCountry : innovationCountries) {
-            countriesSet.add("<br>&nbsp;&nbsp;&nbsp;&nbsp; ● " + innovationCountry.getLocElement().getName());
+
+        // Regional
+        if (projectInnovationGeographicScopeList != null && projectInnovationGeographicScopeList.get(0) != null
+          && projectInnovationGeographicScopeList.get(0).getRepIndGeographicScope() != null
+          && projectInnovationGeographicScopeList.get(0).getRepIndGeographicScope().getId() != null) {
+          if (projectInnovationGeographicScopeList.get(0).getRepIndGeographicScope().getId()
+            .equals(this.getReportingIndGeographicScopeRegional())) {
+            isRegional = true;
+            if (projectInnovationRegionList != null && projectInnovationRegionList.size() > 0) {
+              Set<String> regionsSet = new HashSet<>();
+              for (ProjectInnovationRegion innovationRegion : projectInnovationRegionList) {
+                regionsSet.add("<br>&nbsp;&nbsp;&nbsp;&nbsp; ● " + innovationRegion.getLocElement().getName());
+              }
+              region = String.join("", regionsSet);
+            }
           }
-          countries = String.join("", countriesSet);
         }
+        // Country
+        if (projectInnovationGeographicScopeList.get(0).getRepIndGeographicScope() != null
+          && projectInnovationGeographicScopeList.get(0).getRepIndGeographicScope().getId() != null) {
+          if (!projectInnovationGeographicScopeList.get(0).getRepIndGeographicScope().getId()
+            .equals(this.getReportingIndGeographicScopeGlobal())
+            && !projectInnovationGeographicScopeList.get(0).getRepIndGeographicScope().getId()
+              .equals(this.getReportingIndGeographicScopeRegional())) {
+            isNational = true;
+            if (projectInnovationCountryList != null && projectInnovationCountryList.size() > 0) {
+              Set<String> countriesSet = new HashSet<>();
+              for (ProjectInnovationCountry innovationCountry : projectInnovationCountryList) {
+                countriesSet.add("<br>&nbsp;&nbsp;&nbsp;&nbsp; ● " + innovationCountry.getLocElement().getName());
+              }
+              countries = String.join("", countriesSet);
+            }
+          }
+        }
+        /*
+         * if (region != null) {
+         * geographicScope += region;
+         * }
+         * if (countries != null) {
+         * geographicScope += countries;
+         * }
+         */
       }
-      /*
-       * if (region != null) {
-       * geographicScope += region;
-       * }
-       * if (countries != null) {
-       * geographicScope += countries;
-       * }
-       */
+    } catch (Exception e) {
+
     }
 
     // Description

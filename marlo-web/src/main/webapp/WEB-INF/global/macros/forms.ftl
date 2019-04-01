@@ -479,7 +479,7 @@
        [#if label?has_content || i18nkey?has_content]<label for="${id}" class="labelText ${cssClassLabel}">[#if i18nkey?has_content][@s.text name=i18nkey /][#else]${label}[/#if]</label>[/#if]
     [#else]
       <p class="checked-${checked?string}">
-        [#if label?has_content]<span class="${cssClassLabel}">${label}</span>[/#if] 
+        [#if label?has_content || i18nkey?has_content ]<span class="${cssClassLabel}">[#if i18nkey?has_content][@s.text name=i18nkey /][#else]${label}[/#if]</span>[[/#if] 
       </p>
     [/#if]
   </label>
@@ -529,7 +529,7 @@
       <br /><i class="helpLabel">${nameValue}</i>
     [/#if]
   [/#if]
-  [#if helpMore]
+  [#if editable && helpMore]
     [@helpViewMore name="${name}" /]
   [/#if]
 [/#macro]
@@ -591,7 +591,7 @@
   [#if id?has_content]
     [#local composedID = "${type}-${id}" /]
   [/#if]
-  <li class="relationElement-template relationElement indexLevel-${indexLevel}">
+  <li class="[#if template]relationElement-template[/#if] relationElement indexLevel-${indexLevel}">
     [#-- Hidden Inputs --]
     <input type="hidden" class="elementID" name="${customName}.id" value="${(element.id)!}" />
     <input type="hidden" class="elementRelationID" name="${customName}.${type}.id" value="${(element[type][keyFieldName])!}" />
