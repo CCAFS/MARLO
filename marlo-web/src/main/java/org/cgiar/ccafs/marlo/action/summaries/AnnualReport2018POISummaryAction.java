@@ -3358,7 +3358,10 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
               .filter(s -> s.isActive() && s.getPhase().getId().equals(this.getActualPhase().getId()))
               .collect(Collectors.toList()));
           for (ProjectExpectedStudyFlagship projectExpectedStudyFlagship : studiesPrograms) {
-            CrpProgram crpProgram = liaisonInstitution.getCrpProgram();
+            CrpProgram crpProgram = null;
+            if (liaisonInstitution != null && liaisonInstitution.getCrpProgram() != null) {
+              crpProgram = liaisonInstitution.getCrpProgram();
+            }
             if (crpProgram != null) {
               if (crpProgram.equals(projectExpectedStudyFlagship.getCrpProgram())) {
                 if (projectExpectedStudy.getProjectExpectedStudyInfo(this.getActualPhase()) != null) {
