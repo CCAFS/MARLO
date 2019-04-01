@@ -388,7 +388,7 @@ public class CrossCuttingDimensionAction extends BaseAction {
     if (participants != null && !participants.isEmpty()) {
       for (DeliverableParticipant deliverableParticipant : participants) {
         if (deliverableParticipant.getDeliverable().getDeliverableInfo(phase) != null
-          && deliverableParticipant.getDeliverable().getDeliverableInfo(phase).isRequired()) {
+          && deliverableParticipant.getDeliverable().getDeliverableInfo(phase).isRequiredToComplete()) {
           // Total Participants
           Double numberParticipant = 0.0;
           if (deliverableParticipant.getParticipants() != null) {

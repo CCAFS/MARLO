@@ -2285,7 +2285,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
           if (deliverable.getDeliverableInfo() != null) {
 
             if (this.isReportingActive() || this.isUpKeepActive()) {
-              if (deliverable.getDeliverableInfo().isRequired()) {
+              if (deliverable.getDeliverableInfo().isRequiredToComplete()
+                || deliverable.getDeliverableInfo().isStatusCompleteInNextPhases()) {
                 deSet.add(deliverable);
               }
             } else {
@@ -2338,7 +2339,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
           if (deliverable.getProject() != null && projectDB == projectID) {
             if (deliverable.getDeliverableInfo() != null) {
               if (this.isReportingActive() || this.isUpKeepActive()) {
-                if (deliverable.getDeliverableInfo().isRequired()) {
+                if (deliverable.getDeliverableInfo().isRequiredToComplete()
+                  || deliverable.getDeliverableInfo().isStatusCompleteInNextPhases()) {
                   deSet.add(deliverable);
                 }
               } else {
@@ -2378,7 +2380,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
           if (deliverable.getProject() != null && projectDB == projectID) {
             if (deliverable.getDeliverableInfo() != null) {
               if (this.isReportingActive() || this.isUpKeepActive()) {
-                if (deliverable.getDeliverableInfo().isRequired()) {
+                if (deliverable.getDeliverableInfo().isRequiredToComplete()) {
                   deSet.add(deliverable);
                 }
               } else {
@@ -2423,7 +2425,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
             && deliverable.getProject().getId().longValue() == projectID.longValue()) {
             if (deliverable.getDeliverableInfo() != null) {
               if (this.isReportingActive() || this.isUpKeepActive()) {
-                if (deliverable.getDeliverableInfo().isRequired()) {
+                if (deliverable.getDeliverableInfo().isRequiredToComplete()) {
                   deList.add(deliverable);
                 }
               } else {
@@ -5150,7 +5152,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     if (deliverable.getDeliverableInfo(phase) != null) {
       DeliverableInfo deliverableInfo = deliverable.getDeliverableInfo(phase);
 
-      if (deliverableInfo.isRequired()) {
+      if (deliverableInfo.isRequiredToComplete() || deliverableInfo.isStatusCompleteInNextPhases()) {
         SectionStatus sectionStatus = this.sectionStatusManager.getSectionStatusByDeliverable(deliverable.getId(),
           phase.getDescription(), phase.getYear(), phase.getUpkeep(), "deliverableList");
         if (sectionStatus == null) {
