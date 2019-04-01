@@ -63,14 +63,24 @@ $(document).ready(function() {
   });
 
   Tawk_API.onChatMaximized = function() {
+    setCustomEvent('CGIAR_Entity', 'onChatMaximized', currentCrpSession);
     $dragButton.fadeOut();
   };
 
   Tawk_API.onChatMinimized = function() {
+    setCustomEvent('CGIAR_Entity', 'onChatMinimized', currentCrpSession);
     hideDragButton();
   };
   Tawk_API.onChatHidden = function() {
+    setCustomEvent('CGIAR_Entity', 'onChatHidden', currentCrpSession);
     hideDragButton();
+  };
+
+  Tawk_API.onChatStarted = function() {
+    setCustomEvent('CGIAR_Entity', 'onChatStarted', currentCrpSession);
+  };
+  Tawk_API.onChatEnded = function() {
+    setCustomEvent('CGIAR_Entity', 'onChatEnded', currentCrpSession);
   };
 
   function hideDragButton() {
