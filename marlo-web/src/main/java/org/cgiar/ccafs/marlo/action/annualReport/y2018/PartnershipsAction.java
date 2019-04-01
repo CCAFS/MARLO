@@ -82,6 +82,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
@@ -91,6 +93,7 @@ public class PartnershipsAction extends BaseAction {
 
   private static final long serialVersionUID = 575869881576979848L;
 
+  private static Logger LOG = LoggerFactory.getLogger(PartnershipsAction.class);
 
   // Managers
   private GlobalUnitManager crpManager;
@@ -649,10 +652,17 @@ public class PartnershipsAction extends BaseAction {
 
       try {
 
-        List<ProjectFocus> projectFocus = new ArrayList<>(projectFocusManager.findAll().stream()
-          .filter(pf -> pf.isActive() && pf.getCrpProgram().getId().equals(liaisonInstitution.getCrpProgram().getId())
-            && pf.getPhase() != null && pf.getPhase().getId().equals(phase.getId()))
-          .collect(Collectors.toList()));
+        List<ProjectFocus> projectFocus = new ArrayList<>();
+        if (this.isPMU()) {
+          projectFocus = new ArrayList<>(projectFocusManager.findAll().stream()
+            .filter(pf -> pf.isActive() && pf.getPhase() != null && pf.getPhase().getId().equals(phase.getId()))
+            .collect(Collectors.toList()));
+        } else {
+          projectFocus = new ArrayList<>(projectFocusManager.findAll().stream()
+            .filter(pf -> pf.isActive() && pf.getCrpProgram().getId().equals(liaisonInstitution.getCrpProgram().getId())
+              && pf.getPhase() != null && pf.getPhase().getId().equals(phase.getId()))
+            .collect(Collectors.toList()));
+        }
 
         for (ProjectFocus focus : projectFocus) {
 
@@ -686,12 +696,16 @@ public class PartnershipsAction extends BaseAction {
         }
 
       } catch (Exception e) {
-        // TODO: handle exception
+        e.printStackTrace();
+        LOG.error("Error getting partnerships list: " + e.getMessage());
       }
 
 
     }
-
+    if (partnershipsSynthesis != null && !partnershipsSynthesis.isEmpty()) {
+      partnershipsSynthesis = partnershipsSynthesis.stream()
+        .sorted((p1, p2) -> p1.getProject().getId().compareTo(p2.getProject().getId())).collect(Collectors.toList());
+    }
     return partnershipsSynthesis;
   }
 
