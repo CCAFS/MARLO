@@ -4035,8 +4035,11 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
   public void prepare() {
     this.setGeneralParameters();
 
-    pmuInstitution = this.getLoggedCrp().getLiaisonInstitutions().stream()
-      .filter(c -> c.getCrpProgram() == null && c.getAcronym().equals("PMU")).collect(Collectors.toList()).get(0);
+    if (this.getLoggedCrp() != null && this.getLoggedCrp().getLiaisonInstitutions() != null) {
+      pmuInstitution = this.getLoggedCrp().getLiaisonInstitutions().stream()
+        .filter(c -> c.getCrpProgram() == null && c.getAcronym() != null && c.getAcronym().equals("PMU"))
+        .collect(Collectors.toList()).get(0);
+    }
 
     reportSynthesisPMU = reportSynthesisManager.findSynthesis(this.getSelectedPhase().getId(), pmuInstitution.getId());
     this.getProjectPolicies();
