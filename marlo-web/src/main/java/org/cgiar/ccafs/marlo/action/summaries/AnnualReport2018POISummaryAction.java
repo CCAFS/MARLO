@@ -706,7 +706,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
       }
     }
     poiSummary.textParagraph(document.createParagraph(),
-      this.getText("summaries.annualReport.participantingCenters") + ": " + participantingCenters);
+      this.getText("summaries.powb2019.otherParticipans") + ": " + participantingCenters);
   }
 
   private void addProgressFlagshipCrp() {
