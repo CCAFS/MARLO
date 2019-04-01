@@ -389,7 +389,8 @@
     <mapping resource="xmls/DeliverableGeographicScopes.hbm.xml" />
     <mapping resource="xmls/ReportSynthesisSrfProgress.hbm.xml" />
     <mapping resource="xmls/ReportSynthesisSrfProgressTargets.hbm.xml" />   
-    <mapping resource="xmls/ReportSynthesisIntellectualAssets.hbm.xml" />    
+    <mapping resource="xmls/ReportSynthesisIntellectualAssets.hbm.xml" />
+    <mapping resource="xmls/MarloMessages.hbm.xml" />    
     <mapping resource="xmls/ReportSynthesisExpenditureCategories.hbm.xml" />    
     <mapping resource="xmls/ProjectBudgetExecutions.hbm.xml" />
     <mapping resource="xmls/RepIndPartnershipMainArea.hbm.xml" />
@@ -401,5 +402,15 @@
     <mapping resource="xmls/ReportSynthesisKeyPartnershipCollaborationCrps.hbm.xml" />
     <mapping resource="xmls/ReportSynthesisKeyPartnershipCollaborations.hbm.xml" />
     <mapping resource="xmls/ReportSynthesisKeyPartnershipPmu.hbm.xml" />  
+    <mapping resource="xmls/ReportSynthesisFlagshipProgressStudies.hbm.xml" />  
+    <mapping resource="xmls/ReportSynthesisFlagshipProgressInnovations.hbm.xml" />  
+    <mapping resource="xmls/ReportSynthesisFlagshipProgressDeliverables.hbm.xml" />
+    <mapping resource="xmls/ReportSynthesisFlagshipProgressCross.hbm.xml" />
+    <mapping resource="xmls/RepIndMilestoneReasons.hbm.xml" />
+    <mapping resource="xmls/ReportSynthesisFlagshipProgressOutcomes.hbm.xml" /> 
+    <mapping resource="xmls/ReportSynthesisFlagshipProgressOutcomesMilestones.hbm.xml" />
+    <mapping resource="xmls/ReportSynthesisNarratives.hbm.xml" />
+    <mapping resource="xmls/ReportSynthesisMeliaEvaluationActions.hbm.xml" />
+    
   </session-factory>
 </hibernate-configuration>

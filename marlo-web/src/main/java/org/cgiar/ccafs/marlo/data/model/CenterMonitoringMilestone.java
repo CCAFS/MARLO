@@ -27,9 +27,12 @@ public class CenterMonitoringMilestone extends MarloAuditableEntity implements j
   @Expose
   private String narrative;
 
+  private int year;
+
 
   public CenterMonitoringMilestone() {
   }
+
 
   public BigDecimal getAchievedValue() {
     return achievedValue;
@@ -42,7 +45,6 @@ public class CenterMonitoringMilestone extends MarloAuditableEntity implements j
     return sb.toString();
   }
 
-
   public CenterMonitoringOutcome getMonitoringOutcome() {
     return monitoringOutcome;
   }
@@ -51,8 +53,13 @@ public class CenterMonitoringMilestone extends MarloAuditableEntity implements j
     return narrative;
   }
 
+
   public CenterMilestone getResearchMilestone() {
     return researchMilestone;
+  }
+
+  public int getYear() {
+    return year;
   }
 
   public void setAchievedValue(BigDecimal achievedValue) {
@@ -63,13 +70,17 @@ public class CenterMonitoringMilestone extends MarloAuditableEntity implements j
     this.monitoringOutcome = monitoringOutcome;
   }
 
-
   public void setNarrative(String narrative) {
     this.narrative = narrative;
   }
 
+
   public void setResearchMilestone(CenterMilestone researchMilestone) {
     this.researchMilestone = researchMilestone;
+  }
+
+  public void setYear(int year) {
+    this.year = year;
   }
 
   @Override

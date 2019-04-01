@@ -80,7 +80,7 @@ $(document).ready(function() {
               $item.find(".milestone-targetYear").val(response.newMilestone[0].targetYear);
               $item.find(".milestone-targetYear").parent().find("p").text(response.newMilestone[0].targetYear);
               $item.find(".mileStoneId").val(response.newMilestone[0].id);
-              $item.find(".elementId").val(response.newMilestone[i + 1].Elementid);
+              // $item.find(".elementId").val(response.newMilestone[i + 1].Elementid);
               if(data.targetUnit == "-1") {
                 $item.find(".achieved").parent().parent().remove();
               }

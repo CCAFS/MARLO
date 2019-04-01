@@ -216,7 +216,7 @@ public class ProjectInnovationAction extends BaseAction {
       if (innovation.getProjectInnovationCountries() != null && innovation.getProjectInnovationCountries().size() > 0) {
 
         List<ProjectInnovationCountry> regionPrev = new ArrayList<>(innovation.getProjectInnovationCountries().stream()
-          .filter(nu -> nu.isActive() && nu.getPhase().getId() == phase.getId()).collect(Collectors.toList()));
+          .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
 
         for (ProjectInnovationCountry policyRegion : regionPrev) {
 
@@ -228,7 +228,7 @@ public class ProjectInnovationAction extends BaseAction {
       if (innovation.getProjectInnovationRegions() != null && innovation.getProjectInnovationRegions().size() > 0) {
 
         List<ProjectInnovationRegion> regionPrev = new ArrayList<>(innovation.getProjectInnovationRegions().stream()
-          .filter(nu -> nu.isActive() && nu.getPhase().getId() == phase.getId()).collect(Collectors.toList()));
+          .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
 
         for (ProjectInnovationRegion policyRegion : regionPrev) {
 
@@ -605,7 +605,7 @@ public class ProjectInnovationAction extends BaseAction {
         // Setup Geographic Scope
         if (innovation.getProjectInnovationGeographicScopes() != null) {
           innovation.setGeographicScopes(new ArrayList<>(innovation.getProjectInnovationGeographicScopes().stream()
-            .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
+            .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
         }
 
         // Innovation Countries List
@@ -631,7 +631,7 @@ public class ProjectInnovationAction extends BaseAction {
         // Innovation Organization Type List
         if (innovation.getProjectInnovationOrganizations() != null) {
           innovation.setOrganizations(new ArrayList<>(innovation.getProjectInnovationOrganizations().stream()
-            .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
+            .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
         }
 
         // Innovation Deliverable List
@@ -650,7 +650,7 @@ public class ProjectInnovationAction extends BaseAction {
         // Innovation Crp list
         if (innovation.getProjectInnovationCrps() != null) {
           innovation.setCrps(new ArrayList<>(innovation.getProjectInnovationCrps().stream()
-            .filter(c -> c.isActive() && c.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
+            .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
         }
       }
 
@@ -971,7 +971,7 @@ public class ProjectInnovationAction extends BaseAction {
 
       List<ProjectInnovationContributingOrganization> organizationPrev =
         new ArrayList<>(projectInnovation.getProjectInnovationContributingOrganization().stream()
-          .filter(nu -> nu.isActive() && nu.getPhase().getId() == phase.getId()).collect(Collectors.toList()));
+          .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
 
       if (organizationPrev != null) {
         for (ProjectInnovationContributingOrganization innovationOrganization : organizationPrev) {
@@ -1025,7 +1025,7 @@ public class ProjectInnovationAction extends BaseAction {
       && projectInnovation.getProjectInnovationCrps().size() > 0) {
 
       List<ProjectInnovationCrp> crpPrev = new ArrayList<>(projectInnovation.getProjectInnovationCrps().stream()
-        .filter(nu -> nu.isActive() && nu.getPhase().getId() == phase.getId()).collect(Collectors.toList()));
+        .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
 
       for (ProjectInnovationCrp innovationCrp : crpPrev) {
         if (innovation.getCrps() == null || !innovation.getCrps().contains(innovationCrp)) {
@@ -1063,7 +1063,7 @@ public class ProjectInnovationAction extends BaseAction {
 
       List<ProjectInnovationDeliverable> deliverablePrev =
         new ArrayList<>(projectInnovation.getProjectInnovationDeliverables().stream()
-          .filter(nu -> nu.isActive() && nu.getPhase().getId() == phase.getId()).collect(Collectors.toList()));
+          .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
 
       for (ProjectInnovationDeliverable innovationDeliverable : deliverablePrev) {
         if (!innovation.getDeliverables().contains(innovationDeliverable)) {
@@ -1107,7 +1107,7 @@ public class ProjectInnovationAction extends BaseAction {
 
       List<ProjectInnovationGeographicScope> scopePrev =
         new ArrayList<>(projectInnovation.getProjectInnovationGeographicScopes().stream()
-          .filter(nu -> nu.isActive() && nu.getPhase().getId() == phase.getId()).collect(Collectors.toList()));
+          .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
 
       for (ProjectInnovationGeographicScope innovationScope : scopePrev) {
         if (innovation.getGeographicScopes() == null || !innovation.getGeographicScopes().contains(innovationScope)) {
@@ -1152,7 +1152,7 @@ public class ProjectInnovationAction extends BaseAction {
 
       List<ProjectInnovationOrganization> organizationPrev =
         new ArrayList<>(projectInnovation.getProjectInnovationOrganizations().stream()
-          .filter(nu -> nu.isActive() && nu.getPhase().getId() == phase.getId()).collect(Collectors.toList()));
+          .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
 
       for (ProjectInnovationOrganization innovationOrganization : organizationPrev) {
         if (!innovation.getOrganizations().contains(innovationOrganization)) {
@@ -1194,8 +1194,9 @@ public class ProjectInnovationAction extends BaseAction {
     if (projectInnovation.getProjectInnovationRegions() != null
       && projectInnovation.getProjectInnovationRegions().size() > 0) {
 
-      List<ProjectInnovationRegion> regionPrev = new ArrayList<>(projectInnovation.getProjectInnovationRegions()
-        .stream().filter(nu -> nu.isActive() && nu.getPhase().getId() == phase.getId()).collect(Collectors.toList()));
+      List<ProjectInnovationRegion> regionPrev =
+        new ArrayList<>(projectInnovation.getProjectInnovationRegions().stream()
+          .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
 
       for (ProjectInnovationRegion innovationRegion : regionPrev) {
         if (innovation.getRegions() == null || !innovation.getRegions().contains(innovationRegion)) {

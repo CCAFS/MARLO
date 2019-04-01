@@ -148,5 +148,12 @@
       </key>
       <one-to-many class="org.cgiar.ccafs.marlo.data.model.CenterOutput" />
     </set>
+    <set lazy="true" name="deliverablePrograms" table="deliverable_programs"
+      inverse="true" fetch="select" order-by="id">
+      <key>
+        <column name="crp_program" not-null="true" />
+      </key>
+      <one-to-many class="org.cgiar.ccafs.marlo.data.model.DeliverableProgram" />
+    </set>    
 	</class>
 </hibernate-mapping>

@@ -20,6 +20,9 @@
         <many-to-one name="reportSynthesisFlagshipProgress" class="org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgress" fetch="select">
             <column name="report_synthesis_flagship_progress_id" />
         </many-to-one>
+        <many-to-one name="repIndMilestoneReason" class="org.cgiar.ccafs.marlo.data.model.RepIndMilestoneReason" fetch="select">
+            <column name="rep_ind_milestone_reason_id" />
+        </many-to-one>
         <property name="milestonesStatus" type="java.lang.Long">
             <column name="milestones_status" precision="10" scale="0" />
         </property>
@@ -35,5 +38,14 @@
         <property name="modificationJustification" type="string">
             <column name="modification_justification" sql-type="TEXT" />
         </property>
+        <property name="otherReason" type="string">
+            <column name="other_reason" sql-type="TEXT" />
+        </property>
+        <set name="reportSynthesisFlagshipProgressCrossCuttingMarkers" table="report_synthesis_flagship_progress_cross" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="report_synthesis_flagship_progress_milestone_id" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressCrossCuttingMarker" />
+        </set>
     </class>
 </hibernate-mapping>

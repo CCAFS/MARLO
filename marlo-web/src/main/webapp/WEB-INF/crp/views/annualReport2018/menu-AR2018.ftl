@@ -3,7 +3,7 @@
 [#assign menus= [
   { 'title': '0. Narrative section', 'show': true,
     'items': [
-    { 'slug': 'narrative',    'name': 'annualReport2018.menu.executiveSummary',    'action': 'narrative',  'active': true, 'onlyPMU': !PMU, 'development': true }
+    { 'slug': 'narrative',    'name': 'annualReport2018.menu.executiveSummary',    'action': 'narrative',  'active': true, 'onlyPMU': !PMU }
     ]
   },
   { 'title': '1. Key Results', 'show': true,
@@ -11,11 +11,11 @@
     { 'slug': 'crpProgress',          'name': 'annualReport2018.menu.crpProgress',          'action': 'crpProgress',        'active': true, 'subName': 'annualReport2018.menu.crpProgress.subName' },
     { 'slug': 'flagshipProgress',     'name': 'annualReport2018.menu.flagshipProgress',     'action': 'flagshipProgress',   'active': true,
       'items': [
-        { 'slug': 'policies',             'name': 'annualReport2018.menu.policies',           'action': 'policies',             'active': true, 'development': true },
-        { 'slug': 'oicr',                 'name': 'annualReport2018.menu.oicr',               'action': 'oicr',                 'active': true, 'development': true },
-        { 'slug': 'innovations',          'name': 'annualReport2018.menu.innovations',        'action': 'innovations',          'active': true, 'development': true },
-        { 'slug': 'outomesMilestones',    'name': 'annualReport2018.menu.outomesMilestones',  'action': 'outomesMilestones',    'active': true, 'development': true },
-        { 'slug': 'publications',         'name': 'annualReport2018.menu.publications',       'action': 'publications',         'active': true, 'development': true }  
+        { 'slug': 'policies',             'name': 'annualReport2018.menu.policies',           'action': 'policies',             'active': true },
+        { 'slug': 'oicr',                 'name': 'annualReport2018.menu.oicr',               'action': 'oicr',                 'active': true },
+        { 'slug': 'innovations',          'name': 'annualReport2018.menu.innovations',        'action': 'innovations',          'active': true },
+        { 'slug': 'outomesMilestones',    'name': 'annualReport2018.menu.outomesMilestones',  'action': 'outomesMilestones',    'active': true, 'onlyFlagship': !flagship },
+        { 'slug': 'publications',         'name': 'annualReport2018.menu.publications',       'action': 'publications',         'active': true }  
       ]
     },
     { 'slug': 'ccDimensions',         'name': 'annualReport2018.menu.ccDimensions',         'action': 'ccDimensions',       'active': true, 'subName': '(Table 7: CapDev)'}
@@ -23,36 +23,31 @@
   },
   { 'title': '2. Effectiveness and Efficiency', 'show': true,
     'items': [
-    { 'slug': 'governance',             'name': 'annualReport2018.menu.governance',             'action': 'governance',             'active': true, 'onlyPMU': !PMU, 'development': true }
-    { 'slug': 'externalPartnerships',   'name': 'annualReport2018.menu.externalPartnerships',   'action': 'externalPartnerships',   'active': true, 'subName': '(Table 8 and Table 9)', 'development': true },
+    { 'slug': 'governance',             'name': 'annualReport2018.menu.governance',             'action': 'governance',             'active': true, 'onlyPMU': !PMU }
+    { 'slug': 'externalPartnerships',   'name': 'annualReport2018.menu.externalPartnerships',   'action': 'externalPartnerships',   'active': true, 'subName': '(Table 8 and Table 9)' },
     { 'slug': 'intellectualAssets',     'name': 'annualReport2018.menu.intellectualAssets',     'action': 'intellectualAssets',     'active': true, 'onlyPMU': !PMU },
-    { 'slug': 'melia',                  'name': 'annualReport2018.menu.melia',                  'action': 'melia',                  'active': true, 'subName': '(Table 10 and Table 11)', 'development': true },
-    { 'slug': 'efficiency',             'name': 'annualReport2018.menu.efficiency',             'action': 'efficiency',             'active': true, 'onlyPMU': !PMU, 'development': true },
-    { 'slug': 'risks',                  'name': 'annualReport2018.menu.risks',                  'action': 'risks',                  'active': true, 'onlyPMU': !PMU, 'development': true },
+    { 'slug': 'melia',                  'name': 'annualReport2018.menu.melia',                  'action': 'melia',                  'active': true, 'subName': '(Table 10 and Table 11)' },
+    { 'slug': 'efficiency',             'name': 'annualReport2018.menu.efficiency',             'action': 'efficiency',             'active': true, 'onlyPMU': !PMU },
+    { 'slug': 'risks',                  'name': 'annualReport2018.menu.risks',                  'action': 'risks',                  'active': true, 'onlyPMU': !PMU },
     { 'slug': 'fundingUse',             'name': 'annualReport2018.menu.fundingUse',             'action': 'fundingUse',             'active': true, 'subName': '(Table 12)', 'onlyPMU': !PMU }
     ]
   },
   { 'title': '3. Financial Summary', 'show': true,
     'items': [
-    { 'slug': 'financial',    'name': 'annualReport2018.menu.financial',    'action': 'financial',    'active': true, 'subName': '(Table 13)', 'onlyPMU': !PMU, 'development': true }
+    { 'slug': 'financial',    'name': 'annualReport2018.menu.financial',    'action': 'financial',    'active': true, 'subName': '(Table 13)', 'onlyPMU': !PMU }
     ]
   }
   
 ]/]
 
 
-[#assign submission = false /]
-[#assign canSubmit = false /]
-[#attempt]
-  [#assign completed = (action.isCompleteReportSynthesis2018(synthesisID))!false /]
-[#recover]
-  [#assign completed = false /]
-[/#attempt]
-
+[#assign submission = (action.isAr2018Submitted(synthesisID))!false /]
+[#assign canSubmit = (action.hasPersmissionSubmitAR2018(synthesisID))!false /]
 [#assign canUnSubmit = false /]
-
 [#assign sectionsForChecking = [] /]
 [#assign currentMenuItem = {} /]
+[#assign sectionsChecked = 0 /]
+
 
 [#-- Menu--]
 <nav id="secondaryMenu" class="">
@@ -71,6 +66,8 @@
     [/#list]
   </ul> 
 </nav>
+
+[#assign completed = (sectionsChecked == sectionsForChecking?size) /]
 
 <div class="clearfix"></div>
 
@@ -99,7 +96,7 @@
 
  
 [#-- Submit button --]
-[#if false && canEdit && canSubmit]
+[#if canEdit && canSubmit]
   [#assign showSubmit=(canSubmit && !submission && completed)]
   <a id="submitProject-${synthesisID}" class="projectSubmitButton" style="display:${showSubmit?string('block','none')}" href="[@s.url action="${crpSession}/submitAnnualReport"][@s.param name='synthesisID']${synthesisID}[/@s.param][/@s.url]" >
     [@s.text name="form.buttons.submit" /]
@@ -116,13 +113,15 @@
 [/#if]
 
 [#-- Generate WORD Document --]
+[#if !config.production]
 <br />
 <div class="text-center">
-  [#assign documentLink][@s.url namespace="/summaries" action="${crpSession}/AnnualReportSummary"][@s.param name='phaseID']${actualPhase.id}[/@s.param][/@s.url][/#assign]
+  [#assign documentLink][@s.url namespace="/summaries" action="${crpSession}/AnnualReportSummary2018"][@s.param name='phaseID']${actualPhase.id}[/@s.param][/@s.url][/#assign]
   <a class="btn btn-default" href="${documentLink}" target="_blank">
-   <img  src="${baseUrl}/global/images/icons/file-doc.png" alt="" /> Generate DOC file
+   <img  src="${baseUrl}/global/images/icons/file-doc.png" alt="" /> Generate DOC file <small>(Beta version)</small>
   </a>
 </div>
+[/#if]
 
 [#-- Justification --]
 <div id="unSubmit-justification" title="Unsubmit justification" style="display:none"> 
@@ -141,7 +140,7 @@
 
 [#macro menuItem item]
   [#local itemRequired = (((item.onlyPMU)!false) && PMU) || (((item.onlyFlagship)!false) && flagship) || (!((item.onlyFlagship)!false) && !((item.onlyPMU)!false)) /]
-  [#local submitStatus = (action.getReportSynthesisSectionStatus(item.action, synthesisID))!false /]
+  [#local submitStatus = (action.getReportSynthesis2018SectionStatus(item.action, synthesisID))!false /]
   [#local hasDraft = (action.getAutoSaveFilePath(reportSynthesis.class.simpleName, item.action, reportSynthesis.id))!false /]
   [#if (item.show)!true ]
     <li id="menu-${item.action}" class="${hasDraft?string('draft', '')} [#if item.slug == currentStage]currentSection[/#if] [#if item.active && itemRequired]${submitStatus?string('submitted','toSubmit')}[/#if] ${(item.active)?string('enabled','disabled')}">
@@ -165,6 +164,9 @@
     [#-- Set current Item --]
     [#if item.slug == currentStage][#assign currentMenuItem = item /][/#if]
     [#-- Set sections for checking --]
-    [#if item.active && itemRequired][#assign sectionsForChecking = sectionsForChecking + ["${item.action}"] /][/#if]
+    [#if item.active && itemRequired]
+      [#if submitStatus][#assign sectionsChecked = sectionsChecked + 1 /][/#if]
+      [#assign sectionsForChecking = sectionsForChecking + ["${item.action}"] /]
+    [/#if]
   [/#if]
 [/#macro]

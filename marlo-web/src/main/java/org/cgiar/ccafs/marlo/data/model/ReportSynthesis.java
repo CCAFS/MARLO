@@ -83,8 +83,13 @@ public class ReportSynthesis extends MarloAuditableEntity implements java.io.Ser
   @Expose
   private ReportSynthesisKeyPartnership reportSynthesisKeyPartnership;
 
+  @Expose
+  private ReportSynthesisNarrative reportSynthesisNarrative;
+
 
   private Set<SectionStatus> sectionStatuses = new HashSet<SectionStatus>(0);
+
+  private Set<Submission> submissions = new HashSet<Submission>(0);
 
 
   public ReportSynthesis() {
@@ -113,9 +118,11 @@ public class ReportSynthesis extends MarloAuditableEntity implements java.io.Ser
     return true;
   }
 
+
   public LiaisonInstitution getLiaisonInstitution() {
     return liaisonInstitution;
   }
+
 
   @Override
   public String getLogDeatil() {
@@ -123,6 +130,7 @@ public class ReportSynthesis extends MarloAuditableEntity implements java.io.Ser
     sb.append("Id : ").append(this.getId());
     return sb.toString();
   }
+
 
   public Phase getPhase() {
     return phase;
@@ -136,7 +144,6 @@ public class ReportSynthesis extends MarloAuditableEntity implements java.io.Ser
   public ReportSynthesisCrossCuttingDimension getReportSynthesisCrossCuttingDimension() {
     return reportSynthesisCrossCuttingDimension;
   }
-
 
   public ReportSynthesisCrpProgress getReportSynthesisCrpProgress() {
     return reportSynthesisCrpProgress;
@@ -160,7 +167,6 @@ public class ReportSynthesis extends MarloAuditableEntity implements java.io.Ser
     return reportSynthesisFlagshipProgress;
   }
 
-
   public ReportSynthesisFundingUseSummary getReportSynthesisFundingUseSummary() {
     return reportSynthesisFundingUseSummary;
   }
@@ -169,7 +175,6 @@ public class ReportSynthesis extends MarloAuditableEntity implements java.io.Ser
   public ReportSynthesisGovernance getReportSynthesisGovernance() {
     return reportSynthesisGovernance;
   }
-
 
   public ReportSynthesisIndicatorGeneral getReportSynthesisIndicatorGeneral() {
     return reportSynthesisIndicatorGeneral;
@@ -180,13 +185,21 @@ public class ReportSynthesis extends MarloAuditableEntity implements java.io.Ser
     return reportSynthesisIntellectualAsset;
   }
 
+
   public ReportSynthesisKeyPartnership getReportSynthesisKeyPartnership() {
     return reportSynthesisKeyPartnership;
   }
 
+
   public ReportSynthesisMelia getReportSynthesisMelia() {
     return reportSynthesisMelia;
   }
+
+
+  public ReportSynthesisNarrative getReportSynthesisNarrative() {
+    return reportSynthesisNarrative;
+  }
+
 
   public ReportSynthesisProgramVariance getReportSynthesisProgramVariance() {
     return reportSynthesisProgramVariance;
@@ -202,6 +215,10 @@ public class ReportSynthesis extends MarloAuditableEntity implements java.io.Ser
 
   public Set<SectionStatus> getSectionStatuses() {
     return sectionStatuses;
+  }
+
+  public Set<Submission> getSubmissions() {
+    return submissions;
   }
 
   @Override
@@ -220,11 +237,9 @@ public class ReportSynthesis extends MarloAuditableEntity implements java.io.Ser
     this.phase = phase;
   }
 
-
   public void setReportSynthesisCrossCgiar(ReportSynthesisCrossCgiar reportSynthesisCrossCgiar) {
     this.reportSynthesisCrossCgiar = reportSynthesisCrossCgiar;
   }
-
 
   public void
     setReportSynthesisCrossCuttingDimension(ReportSynthesisCrossCuttingDimension reportSynthesisCrossCuttingDimension) {
@@ -257,9 +272,11 @@ public class ReportSynthesis extends MarloAuditableEntity implements java.io.Ser
     this.reportSynthesisFlagshipProgress = reportSynthesisFlagshipProgress;
   }
 
+
   public void setReportSynthesisFundingUseSummary(ReportSynthesisFundingUseSummary reportSynthesisFundingUseSummary) {
     this.reportSynthesisFundingUseSummary = reportSynthesisFundingUseSummary;
   }
+
 
   public void setReportSynthesisGovernance(ReportSynthesisGovernance reportSynthesisGovernance) {
     this.reportSynthesisGovernance = reportSynthesisGovernance;
@@ -281,10 +298,13 @@ public class ReportSynthesis extends MarloAuditableEntity implements java.io.Ser
     this.reportSynthesisMelia = reportSynthesisMelia;
   }
 
+  public void setReportSynthesisNarrative(ReportSynthesisNarrative reportSynthesisNarrative) {
+    this.reportSynthesisNarrative = reportSynthesisNarrative;
+  }
+
   public void setReportSynthesisProgramVariance(ReportSynthesisProgramVariance reportSynthesisProgramVariance) {
     this.reportSynthesisProgramVariance = reportSynthesisProgramVariance;
   }
-
 
   public void setReportSynthesisRisk(ReportSynthesisRisk reportSynthesisRisk) {
     this.reportSynthesisRisk = reportSynthesisRisk;
@@ -298,6 +318,11 @@ public class ReportSynthesis extends MarloAuditableEntity implements java.io.Ser
 
   public void setSectionStatuses(Set<SectionStatus> sectionStatuses) {
     this.sectionStatuses = sectionStatuses;
+  }
+
+
+  public void setSubmissions(Set<Submission> submissions) {
+    this.submissions = submissions;
   }
 
 

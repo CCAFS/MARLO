@@ -47,9 +47,8 @@
           <div class="borderBox">
             [#-- Overall contribution towards SRF targets --]
             <div class="form-group">
-              [#if PMU]
-                [@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/]
-              [/#if]
+              [#-- Word Document Tag --]
+              [#if PMU][@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/][/#if]
               [@customForm.textArea name="${customName}.summary" i18nkey="${customLabel}.overallContribution" help="${customLabel}.overallContribution.help" className="limitWords-${calculateLimitWords(400)}" helpIcon=false required=true editable=editable allowTextEditor=true /]
               <br />
             </div>
@@ -69,7 +68,7 @@
               <hr />
               <div class="form-group">
                 <h4 class="headTitle annualReport-table">[@s.text name="${customLabel}.evidenceProgress" /]</h4>
-                [@customForm.helpLabel name="${customLabel}.evidenceProgress.help" showIcon=false editable=editable helpMore=true/]
+                [@customForm.helpLabel name="${customLabel}.evidenceProgress.help" showIcon=false editable=editable helpMore=true /]
                 <div class="block-selectedSLOs">
                   <div class="form-group sloTargetsList">
                     [#if sloTargets?has_content]

@@ -76,11 +76,14 @@
 			class="org.cgiar.ccafs.marlo.data.model.ReportSynthesisSrfProgress"
 			cascade="save-update"></one-to-one>
 		<one-to-one name="reportSynthesisIntellectualAsset"
-      class="org.cgiar.ccafs.marlo.data.model.ReportSynthesisIntellectualAsset"
-      cascade="save-update"></one-to-one>
-    <one-to-one name="reportSynthesisKeyPartnership"
-      class="org.cgiar.ccafs.marlo.data.model.ReportSynthesisKeyPartnership"
-      cascade="save-update"></one-to-one>
+			class="org.cgiar.ccafs.marlo.data.model.ReportSynthesisIntellectualAsset"
+			cascade="save-update"></one-to-one>
+		<one-to-one name="reportSynthesisKeyPartnership"
+			class="org.cgiar.ccafs.marlo.data.model.ReportSynthesisKeyPartnership"
+			cascade="save-update"></one-to-one>
+		<one-to-one name="reportSynthesisNarrative"
+			class="org.cgiar.ccafs.marlo.data.model.ReportSynthesisNarrative"
+			cascade="save-update"></one-to-one>
 		<set name="sectionStatuses" table="section_statuses"
 			inverse="true" lazy="true" fetch="select">
 			<key>
@@ -89,5 +92,12 @@
 			<one-to-many
 				class="org.cgiar.ccafs.marlo.data.model.SectionStatus" />
 		</set>
+		<set name="submissions" table="submissions" inverse="true" lazy="true"
+      fetch="select">
+      <key>
+        <column name="report_synthesis_id" not-null="true" />
+      </key>
+      <one-to-many class="org.cgiar.ccafs.marlo.data.model.Submission" />
+    </set>
 	</class>
 </hibernate-mapping>

@@ -26,7 +26,7 @@ public enum ReportSynthesis2018SectionStatusEnum {
   INNOVATIONS("innovations"), OUTOMESMILESTONES("outomesMilestones"), PUBLICATIONS("publications"),
   CC_DIMENSIONS("ccDimensions"), GOVERNANCE("governance"), EXTERNAL_PARTNERSHIPS("externalPartnerships"),
   INTELLECTUAL_ASSETS("intellectualAssets"), MELIA("melia"), EFFICIENCY("efficiency"), RISKS("risks"),
-  FUNDING_USE("fundingUse"), FINANCIAL("financial"), INFLUENCE("influence"), CONTROL("control"), NARRATIVE("narrative");
+  FUNDING_USE("fundingUse"), FINANCIAL("financial"), NARRATIVE("narrative");
 
 
   public static ReportSynthesis2018SectionStatusEnum value(String status) {

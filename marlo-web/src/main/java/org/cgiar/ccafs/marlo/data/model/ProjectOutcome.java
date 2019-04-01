@@ -30,7 +30,7 @@ public class ProjectOutcome extends MarloAuditableEntity implements java.io.Seri
   @Expose
   private SrfTargetUnit expectedUnit;
   @Expose
-  private Long achievedValue;
+  private Double achievedValue;
   @Expose
   private SrfTargetUnit achievedUnit;
 
@@ -76,7 +76,8 @@ public class ProjectOutcome extends MarloAuditableEntity implements java.io.Seri
     return achievedUnit;
   }
 
-  public Long getAchievedValue() {
+
+  public Double getAchievedValue() {
     return achievedValue;
   }
 
@@ -87,6 +88,7 @@ public class ProjectOutcome extends MarloAuditableEntity implements java.io.Seri
   public CrpProgramOutcome getCrpProgramOutcome() {
     return crpProgramOutcome;
   }
+
 
   public SrfTargetUnit getExpectedUnit() {
     return expectedUnit;
@@ -148,7 +150,6 @@ public class ProjectOutcome extends MarloAuditableEntity implements java.io.Seri
     return project;
   }
 
-
   public Set<ProjectCommunication> getProjectCommunications() {
     return projectCommunications;
   }
@@ -156,6 +157,7 @@ public class ProjectOutcome extends MarloAuditableEntity implements java.io.Seri
   public ProjectComponentLesson getProjectComponentLesson() {
     return projectComponentLesson;
   }
+
 
   public ProjectComponentLesson getProjectComponentLessonPreview() {
     return projectComponentLessonPreview;
@@ -197,10 +199,9 @@ public class ProjectOutcome extends MarloAuditableEntity implements java.io.Seri
   }
 
 
-  public void setAchievedValue(Long achievedValue) {
+  public void setAchievedValue(Double achievedValue) {
     this.achievedValue = achievedValue;
   }
-
 
   public void setCommunications(List<ProjectCommunication> communications) {
     this.communications = communications;

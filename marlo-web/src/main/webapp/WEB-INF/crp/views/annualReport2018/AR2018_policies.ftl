@@ -5,7 +5,10 @@
 [#assign currentStage = actionName?split('/')[1]/]
 [#assign pageLibs = [ "datatables.net", "datatables.net-bs", "components-font-awesome", "trumbowyg" ] /]
 [#assign customJS = [ 
-  "https://www.gstatic.com/charts/loader.js",
+  "https://www.gstatic.com/charts/loader.js",  
+  "https://cdn.datatables.net/buttons/1.3.1/js/dataTables.buttons.min.js",
+  "//cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js",
+  "//cdn.datatables.net/buttons/1.3.1/js/buttons.print.min.js",
   "${baseUrlMedia}/js/annualReport2018/annualReport2018_${currentStage}.js",
   "${baseUrlMedia}/js/annualReport/annualReportGlobal.js"
 ] /]
@@ -56,22 +59,17 @@
               <div class="col-md-4">
                 <div class="simpleBox numberBox">
                   <label for="">[@s.text name="${customLabel}.indicatorI1.totalPolicies" /]</label><br />
-                  <span class="animated infinite bounce">${(((projectPolicies?size)!0)?number?string(",##0"))!0}</span>
+                  <span class="animated infinite bounce">${(((total)!0)?number?string(",##0"))!0}</span>
                 </div>
                 [#-- Chart 7 - Level of maturity --]
                 <div id="chart7" class="chartBox simpleBox">
-                  [#assign chartData = [
-                      {"name":"Level 1",  "value": "4"},
-                      {"name":"Level 2",  "value": "5"},
-                      {"name":"Level 3",  "value": "2"}
-                    ] /] 
                   <ul class="chartData" style="display:none">
                     <li>
-                      <span>[@s.text name="${customLabel}.chart13" /]</span>
-                      <span>[@s.text name="${customLabel}.chart13" /]</span>
+                      <span> </span>
+                      <span> </span>
                     </li>
-                    [#list chartData as data]
-                      <li><span>${data.name}</span><span class="number">${data.value}</span></li>
+                    [#list (policiesByRepIndStageProcessDTOs)![] as data]
+                      <li><span>${data.repIndStageProcess.name}</span><span class="number">${data.projectPolicies?size}</span></li>
                     [/#list]
                   </ul>
                 </div> 
@@ -87,7 +85,8 @@
                       <span class="json">{"role":"annotation"}</span>
                     </li>
                     [#list (policiesByOrganizationTypeDTOs)![] as data]
-                      [#if (data.repIndOrganizationType?has_content && (data.projectPolicies?has_content))!false]
+                      [#assign policiesSize = (data.projectPolicies?size) /]
+                      [#if  policiesSize > 0]
                       <li>
                         <span>${(data.repIndOrganizationType.name)!}</span>
                         <span class="number">${data.projectPolicies?size}</span>
@@ -112,11 +111,13 @@
                   <div class="modal-content">
                     <div class="modal-header">
                       <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                      <h4 class="modal-title" id="myModalLabel"></h4>
+                      <h4 class="modal-title" id="myModalLabel">[@s.text name="${customLabel}.title" /]</h4>
                     </div>
                     <div class="modal-body">
                       [#-- Full table --]
-                      [@table2ListOfPolicies list=(projectPolicies)![] expanded=true/]
+                      <div class="viewMoreSyntesisTable-block">
+                        [@table2ListOfPolicies list=(projectPolicies)![] expanded=true/]
+                      </div>
                     </div>
                     <div class="modal-footer">
                       <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -126,7 +127,9 @@
               </div>
               
               [#-- Table --]
-              [@table2ListOfPolicies list=(projectPolicies)![] expanded=false/]
+              <div class="viewMoreSyntesisTable-block">
+                [@table2ListOfPolicies list=(projectPolicies)![] expanded=false/]
+              </div>
             </div>
           
           </div>
@@ -144,89 +147,130 @@
 
 
 [#macro table2ListOfPolicies list=[]  id="" expanded=false]
-
+  [#local crossCuttingMarkers = [{ "Gender", "Youth", "CapDev", "Climate Change"}] /]
+  [#if expanded]
+    [#local rows = 2 /]
+  [#else]
+    [#local rows = 1 /]
+  [/#if]
   <table id="tableA" class="table table-bordered">
     <thead>
       <tr>
-        <th class="text-center" rowspan="2">[@s.text name="${customLabel}.table2.name" /]</th>
-        <th class="text-center" rowspan="2">[@s.text name="${customLabel}.table2.maturity" /]</th>
-        <th class="text-center" rowspan="2">[@s.text name="${customLabel}.table2.subIDOs" /]</th>
+        <th class="text-center" rowspan="${rows}">[@s.text name="${customLabel}.table2.name" /]</th>
+        <th class="text-center" rowspan="${rows}">[@s.text name="${customLabel}.table2.maturity" /]</th>
+        <th class="text-center" rowspan="${rows}">[@s.text name="${customLabel}.table2.subIDOs" /]</th>
         [#if expanded]
         <th class="text-center" colspan="4">[@s.text name="${customLabel}.table2.crossCutting" /]</th>
-        <th class="text-center" rowspan="2">[@s.text name="${customLabel}.table2.type" /]</th>
-        <th class="text-center" rowspan="2">[@s.text name="${customLabel}.table2.whose" /]</th>
-        <th class="text-center" rowspan="2">[@s.text name="${customLabel}.table2.geoScope" /]</th>
+        [#--  <th class="text-center" rowspan="${rows}">[@s.text name="${customLabel}.table2.type" /]</th>--]
+        <th class="text-center" rowspan="${rows}">[@s.text name="${customLabel}.table2.whose" /]</th>
+        <th class="text-center" rowspan="${rows}">[@s.text name="${customLabel}.table2.geoScope" /]</th>
+        <th class="text-center" rowspan="${rows}">Evidence(s)</th>
         [/#if]
         [#if !expanded]
-        <th class="col-md-1 text-center" rowspan="2">[@s.text name="${customLabel}.table2.includeAR" /]</th>
-        [/#if]
+        <th class="col-md-1 text-center" rowspan="${rows}">[@s.text name="${customLabel}.table2.includeAR" /]</th>
+        [/#if]        
       </tr>
       [#if expanded]
       <tr>
-        <th class="text-center"> Gender </th>
-        <th class="text-center"> Youth </th>
-        <th class="text-center"> CapDev</th>
-        <th class="text-center"> Climate Change </th>
+        <th class="text-center"> <small>Gender</small> </th>
+        <th class="text-center"> <small>Youth</small> </th>
+        <th class="text-center"> <small>CapDev</small> </th>
+        <th class="text-center"> <small>Climate Change</small> </th>
       </tr>
       [/#if]
     </thead>
     <tbody>
     [#if list?has_content]
       [#list list as item]
-      <tr>
-        [#-- Title --]
-        <td class="">
-          [@utils.tableText value=(item.composedName)!"" /]
-          [#if item.project??]<br /> <small>(From Project P${item.project.id})</small> [/#if]
-          
-          [#if PMU]
-          <br />
-          <div class="form-group">
-            [#list (item.selectedFlahsgips)![] as liason]
-              <span class="programTag" style="border-color:${(liason.crpProgram.color)!'#fff'}" title="${(liason.composedName)!}">${(liason.acronym)!}</span>
-            [/#list]
-          </div>
+        [#local url][@s.url namespace="/projects" action="${(crpSession)!}/policy"][@s.param name='policyID']${item.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
+        <tr>
+          [#-- Title --]
+          <td class="">
+            [@utils.tableText value=(item.composedName)!"" /]
+            [#if item.project??]<br /> <small>(From Project P${item.project.id})</small> [/#if]
+            
+            [#if PMU]
+            <br />
+            <div class="form-group">
+              [#list (item.selectedFlahsgips)![] as liason]
+                <span class="programTag" style="border-color:${(liason.crpProgram.color)!'#444'}" title="${(liason.composedName)!}">${(liason.acronym)!}</span>
+              [/#list]
+            </div>
+            [/#if]
+            
+            <a href="${url}" target="_blank" class="pull-right"><span class="glyphicon glyphicon-new-window"></span></a>
+          </td>
+          [#-- Level of Maturity --]
+          <td class="text-center">[@utils.tableText value=(item.projectPolicyInfo.repIndStageProcess.name)!"" /]</td>
+          [#-- Sub-IDOs --]
+          <td> <small>[@utils.tableList list=(item.subIdos)![]  displayFieldName="srfSubIdo.description" /]</small> </td>
+          [#if expanded]
+            [#-- Gender --]
+            <td class="text-center">
+              [#local marker = getMarker(item, "Gender") ]
+              <p class="dacMarker level-${(marker.id)!""}" title="${(marker.powbName)!""}">${(marker.acronym)!""}</p> 
+            </td>
+            [#-- Youth --]
+            <td class="text-center"> 
+              [#local marker = getMarker(item, "Youth") ]
+              <p class="dacMarker level-${(marker.id)!""}" title="${(marker.powbName)!""}">${(marker.acronym)!""}</p>
+            </td>
+            [#-- CapDev --]
+            <td class="text-center"> 
+              [#local marker = getMarker(item, "CapDev") ]
+              <p class="dacMarker level-${(marker.id)!""}" title="${(marker.powbName)!""}">${(marker.acronym)!""}</p>
+            </td>
+            [#-- Climate Change --]
+            <td class="text-center"> 
+              [#local marker = getMarker(item, "Climate Change") ]
+              <p class="dacMarker level-${(marker.id)!""}" title="${(marker.powbName)!""}">${(marker.acronym)!""}</p>
+            </td>
+            [#-- Policy Type
+            <td>[@utils.tableText value=(item.projectPolicyInfo)!"" /]</td>
+             --]
+            [#-- Owners--]
+            <td class="col-md-1">[@utils.tableList list=(item.owners)![]  displayFieldName="repIndPolicyType.name" nobr=true /]</td>
+            [#-- Geographic Scope--]
+            <td class="col-md-1">
+              <div class="">
+                <strong>[@utils.tableList list=(item.geographicScopes)![]  displayFieldName="repIndGeographicScope.name" nobr=true /]</strong>
+              </div>
+              <div class="">
+                [@utils.tableList list=(item.regions)![]  displayFieldName="locElement.composedName" showEmpty=false nobr=true /]
+              </div>
+              <div class="">
+                [@utils.tableList list=(item.countries)![]  displayFieldName="locElement.name" showEmpty=false nobr=true /]
+              </div>
+            </td>
+            <td>
+              [#list (item.evidences)![] as item]
+                [#local summaryPDF = "${baseUrl}/projects/${crpSession}/studySummary.do?studyID=${(item.projectExpectedStudy.id)!}&cycle=Reporting&year=${(actualPhase.year)!}"]
+                <p>
+                  <a href="${summaryPDF}" class="btn btn-default btn-xs" target="_blank" style="text-decoration: none;" title="${item.projectExpectedStudy.composedName}">
+                    <img src="${baseUrl}/global/images/pdf.png" height="20"  /> ${item.projectExpectedStudy.composedIdentifier}
+                  </a>
+                </p>
+              [#else]
+                <span class="text-nowrap">Not defined</span> 
+              [/#list]
+            </td>
           [/#if]
-        </td>
-        [#-- Level of Maturity --]
-        <td class="text-center">[@utils.tableText value=(item.projectPolicyInfo.repIndStageProcess.name)!"" /]</td>
-        [#-- Sub-IDOs --]
-        <td> <small>[@utils.tableList list=(item.subIdos)![]  displayFieldName="srfSubIdo.description" /]</small> </td>
-        [#if expanded]
-          [#-- Gender --]
+          [#if !expanded]
           <td class="text-center">
-            [#list (item.crossCuttingMarkers)![] as ccm]
-              - ${ccm}
-            [/#list] 
-            <p class="dacMarker level-2" title="0 - Not Targeted"> 0 </p>  
+            [#local isChecked = ((!reportSynthesis.reportSynthesisFlagshipProgress.policiesIds?seq_contains(item.id))!true) /]
+            [@customForm.checkmark id="policy-${(item.id)!}" name="reportSynthesis.reportSynthesisFlagshipProgress.policiesValue" value="${(item.id)!''}" checked=isChecked editable=editable centered=true/]
           </td>
-          [#-- Youth --]
-          <td class="text-center"> <p class="dacMarker level-2" title="0 - Not Targeted">0</p> </td>
-          [#-- CapDev --]
-          <td class="text-center"> <p class="dacMarker level-3" title="1 - Significant">0</p> </td>
-          [#-- Climate Change --]
-          <td class="text-center"> <p class="dacMarker level-4" title="2 - Principal">0</p> </td>
-          [#-- Policy Type --]
-          <td>[@utils.tableText value=(item.projectPolicyInfo.repIndOrganizationType.name)!"" /]</td>
-          [#-- Owners--]
-          <td class="col-md-1">[@utils.tableList list=(item.owners)![]  displayFieldName="repIndPolicyType.name"/]</td>
-          [#-- Geographic Scope--]
-          <td class="col-md-1">
-            [@utils.tableList list=(item.geographicScopes)![]  displayFieldName="repIndGeographicScope.name" showEmpty=false /] <br />
-            [@utils.tableList list=(item.regions)![]  displayFieldName="locElement.composedName" showEmpty=false /] <br />
-            [@utils.tableList list=(item.countries)![]  displayFieldName="locElement.name" showEmpty=false /]
-          </td>
-        [/#if]
-        [#if !expanded]
-        <td class="text-center">
-          [#local isChecked = ((!reportSynthesis.reportSynthesisFlagshipProgress.policiesIds?seq_contains(item.id))!true) /]
-          [@customForm.checkmark id="policy-${(item.id)!}" name="reportSynthesis.reportSynthesisFlagshipProgress.policiesValue" value="${(item.id)!''}" checked=isChecked editable=editable centered=true/]
-        </td>
-        [/#if]
-      </tr>
+          [/#if]
+        </tr>
       [/#list]
     [#else]
-      
+      <tr>
+        [#if !expanded]
+         <td class="text-center" colspan="4"><i>No entries added yet.</i></td>
+        [#else]
+         <td class="text-center" colspan="11"><i>No entries added yet.</i></td>
+        [/#if]
+      </tr>
     [/#if]
     </tbody>
   </table>
@@ -236,8 +280,8 @@
 [#function getMarker element name]
   [#list (element.crossCuttingMarkers)![] as ccm]
     [#if ccm.cgiarCrossCuttingMarker.name == name]
-      [#return (ccm.repIndGenderYouthFocusLevel.powbName)!'0 - Not Targeted' ]
+      [#return (ccm.repIndGenderYouthFocusLevel)!{} ]
     [/#if]
   [/#list]
-  [#return "0 - Not Targeted" ]
+  [#return {} ]
 [/#function]

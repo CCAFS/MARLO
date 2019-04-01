@@ -40,9 +40,9 @@
     [#include "/WEB-INF/crp/views/annualReport2018/submenu-AR2018.ftl" /]
     
     <div class="row">
-      [#-- POWB Menu --]
+      [#-- Menu --]
       <div class="col-md-3">[#include "/WEB-INF/crp/views/annualReport2018/menu-AR2018.ftl" /]</div>
-      [#-- POWB Content --]
+      [#-- Content --]
       <div class="col-md-9">
         [#-- Section Messages --]
         [#include "/WEB-INF/crp/views/annualReport2018/messages-AR2018.ftl" /]
@@ -55,17 +55,16 @@
             <div class="bootstrapTabs">
               [#-- Tabs --] 
               <ul class="nav nav-tabs" role="tablist"> 
-                <li role="presentation" class="active"><a index="1" href="#tab-gender" aria-controls="info" role="tab" data-toggle="tab">1.3.1 Gender</a></li>
-                <li role="presentation" class=" "><a index="2" href="#tab-youth" aria-controls="info" role="tab" data-toggle="tab">1.3.2 Youth</a></li>
-                <li role="presentation" class=" "><a index="2" href="#tab-capdev" aria-controls="info" role="tab" data-toggle="tab">1.3.3 Capacity Development</small> </a></li>
-                <li role="presentation" class=" "><a index="2" href="#tab-climateChange" aria-controls="info" role="tab" data-toggle="tab">1.3.4 Climate Change</a></li>
+                <li role="presentation" class="active"><a index="0" href="#tab-gender" aria-controls="info" role="tab" data-toggle="tab">1.3.1 Gender</a></li>
+                <li role="presentation" class=""><a index="1" href="#tab-youth" aria-controls="info" role="tab" data-toggle="tab">1.3.2 Youth</a></li>
+                <li role="presentation" class=""><a index="2" href="#tab-capdev" aria-controls="info" role="tab" data-toggle="tab">1.3.3 Capacity Development</small> </a></li>
+                <li role="presentation" class=""><a index="3" href="#tab-climateChange" aria-controls="info" role="tab" data-toggle="tab">1.3.4 Climate Change</a></li>
               </ul>
               [#-- Content --] 
               <div class="tab-content ">
                 <div id="tab-gender" role="tabpanel" class="tab-pane fade in active">
                   [#-- 1.3.1 Gender --]
-                  <h5 class="sectionSubTitle">[@s.text name="${customLabel}.gender.title" /]</h5>
-                  <i class="helpLabel">[@s.text name="${customLabel}.gender.help" /]</i>
+                  [@customForm.helpLabel name="${customLabel}.gender.help" showIcon=false editable=editable /]
                   
                   [#-- List any important CRP research findings --]
                   <div class="form-group">
@@ -89,15 +88,14 @@
                     </div>
                   [/#if]
                 </div>
-                <div id="tab-youth" role="tabpanel" class="tab-pane fade  ">
+                <div id="tab-youth" role="tabpanel" class="tab-pane fade ">
                   [#-- 1.3.2 Youth --]
-                  <h5 class="sectionSubTitle">[@s.text name="${customLabel}.youth.title" /]</h5>
                   [#-- CRPs contribution to youth --]
                   <div class="form-group">
                      [@customForm.textArea name="${customName}.youthContribution" i18nkey="${customLabel}.youth.youthContribution" help="${customLabel}.youth.youthContribution.help" className="limitWords-${calculateLimitWords(600)}" helpIcon=false required=!isPlatform editable=editable allowTextEditor=true /]
                   </div>
                   <div class="form-group">
-                    <i class="helpLabel">[@s.text name="${customLabel}.youth.help" /]</i>
+                    [@customForm.helpLabel name="${customLabel}.youth.help" showIcon=false editable=editable /]
                   </div>
                   
                   [#-- Youth - Research findings --]
@@ -122,9 +120,8 @@
                     </div>
                   [/#if]
                 </div>
-                <div id="tab-capdev" role="tabpanel" class="tab-pane fade  ">
+                <div id="tab-capdev" role="tabpanel" class="tab-pane fade">
                   [#-- 1.3.3 Capacity Development --]
-                  <h5 class="sectionSubTitle">[@s.text name="${customLabel}.capDev.title" /]</h5>
                   [#-- CRPs contribution to CapDev --]
                   <div class="form-group">
                     [@customForm.textArea name="${customName}.capDevKeyAchievements" i18nkey="${customLabel}.capDev.keyAchievements" help="${customLabel}.capDev.keyAchievements.help" className="limitWords-${calculateLimitWords(300)}" helpIcon=false required=true editable=editable allowTextEditor=true /]
@@ -235,9 +232,8 @@
                     </div> 
                   [/#if]
                 </div>
-                <div id="tab-climateChange" role="tabpanel" class="tab-pane fade  ">
+                <div id="tab-climateChange" role="tabpanel" class="tab-pane fade">
                   [#-- 1.3.4 Climate change --]
-                  <h5 class="sectionSubTitle">[@s.text name="${customLabel}.climateChange.title" /]</h5>
                   
                   [#-- CRPs contribution to Climate Change --]
                   <div class="form-group">

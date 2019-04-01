@@ -98,7 +98,6 @@ import org.cgiar.ccafs.marlo.data.model.ProjectPolicyRegion;
 import org.cgiar.ccafs.marlo.data.model.ProjectScope;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
-import org.cgiar.ccafs.marlo.data.model.StudiesStatusPlanningEnum;
 import org.cgiar.ccafs.marlo.utils.CountryLocationLevel;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
 
@@ -698,12 +697,17 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
       }
 
       // Innovation clear lead
-      if (innovation.getProjectInnovationInfo() != null && innovation.getProjectInnovationInfo().getClearLead() != null
-        && (innovation.getProjectInnovationInfo().getClearLead() == true)) {
-        clearLead = true;
+      if (innovation != null && innovation.getProjectInnovationInfo() != null) {
+        if (innovation.getProjectInnovationInfo().getClearLead() == null
+          || innovation.getProjectInnovationInfo().getClearLead() == false) {
+          clearLead = false;
+        } else {
+          clearLead = true;
+        }
       } else {
         clearLead = false;
       }
+
 
       if (innovation.getCountries() != null) {
         for (ProjectInnovationCountry country : innovation.getCountries()) {
@@ -914,6 +918,12 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
           || c.getFundingSource().getFundingSourceInfo(action.getActualPhase()).getStatus() != 5))
       .collect(Collectors.toList()));
 
+    if ((action.isReportingActive() || action.isUpKeepActive())
+      && action.hasSpecificities(action.getCrpEnableBudgetExecution())) {
+      project.setBudgetExecutions(project.getProjectBudgetExecutions().stream()
+        .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(action.getActualPhase()))
+        .collect(Collectors.toList()));
+    }
 
     projectBudgetsValidator.validate(action, project, false);
 
@@ -1329,17 +1339,7 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
       projectStudies = allProjectStudies.stream()
         .filter(ps -> ps.getProjectExpectedStudyInfo().getYear() != null
           && ps.getProjectExpectedStudyInfo().getStatus() != null
-          && ps.getProjectExpectedStudyInfo().getYear() == action.getCurrentCycleYear()
-          && ((ps.getProjectExpectedStudyInfo().getStatus().getId()
-            .equals(Long.parseLong(StudiesStatusPlanningEnum.Ongoing.getStatusId()))
-            || ps.getProjectExpectedStudyInfo().getStatus().getId()
-              .equals(Long.parseLong(StudiesStatusPlanningEnum.Extended.getStatusId()))
-            || ps.getProjectExpectedStudyInfo().getStatus().getId().equals(StudiesStatusPlanningEnum.New.getStatusId()))
-            || ((ps.getProjectExpectedStudyInfo().getStatus().getId()
-              .equals(Long.parseLong(StudiesStatusPlanningEnum.Complete.getStatusId()))
-              || ps.getProjectExpectedStudyInfo().getStatus().getId()
-                .equals(Long.parseLong(StudiesStatusPlanningEnum.Cancelled.getStatusId())))
-              && ps.getProjectExpectedStudyInfo().getYear() >= action.getActualPhase().getYear())))
+          && ps.getProjectExpectedStudyInfo().getYear() >= action.getCurrentCycleYear())
         .collect(Collectors.toList());
     }
 

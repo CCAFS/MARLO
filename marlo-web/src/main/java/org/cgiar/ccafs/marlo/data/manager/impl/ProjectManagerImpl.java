@@ -98,34 +98,13 @@ public class ProjectManagerImpl implements ProjectManager {
 
     if (view != null) {
       for (Map<String, Object> map : view) {
-        long projectId = (Long.parseLong(map.get("project_id").toString()));
-        Project project = this.getProjectById(projectId);
-        if (project != null) {
-          projects.add(project);
-        }
-      }
-    }
-
-
-    return projects;
-  }
-
-  @Override
-  public List<Project> getUserProjectsReporting(long userId, String crp) {
-
-    List<Project> projects = new ArrayList<>();
-
-    List<Map<String, Object>> view = projectDAO.getUserProjectsReporting(userId, crp);
-
-    if (view != null) {
-      for (Map<String, Object> map : view) {
         projects.add(this.getProjectById((Long.parseLong(map.get("project_id").toString()))));
       }
     }
 
-
     return projects;
   }
+
 
   @Override
   public Project saveProject(Project project) {

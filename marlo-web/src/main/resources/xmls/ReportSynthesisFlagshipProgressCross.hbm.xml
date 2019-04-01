@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Generated Jan 11, 2019 9:52:42 AM by Hibernate Tools 5.3.6.Final -->
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping auto-import="true"
+	default-access="property" default-cascade="none" default-lazy="true">
+	<class
+		name="org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressCrossCuttingMarker"
+		optimistic-lock="none" table="report_synthesis_flagship_progress_cross">
+		<id name="id" type="java.lang.Long">
+			<column name="id" />
+			<generator class="identity" />
+		</id>
+		<many-to-one
+			class="org.cgiar.ccafs.marlo.data.model.CgiarCrossCuttingMarker"
+			fetch="select" name="marker">
+			<column name="cgiar_cross_cutting_marker_id" />
+		</many-to-one>
+		<property generated="never" lazy="false" name="just"
+      optimistic-lock="true" type="string" unique="false">
+      <column length="65535" name="justification" />
+    </property>
+		<many-to-one
+			class="org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressOutcomeMilestone" fetch="select"
+			name="reportSynthesisFlagshipProgressOutcomeMilestone">
+			<column name="report_synthesis_flagship_progress_outcome_milestone_id" />
+		</many-to-one>
+		<many-to-one
+			class="org.cgiar.ccafs.marlo.data.model.RepIndGenderYouthFocusLevel"
+			fetch="select" name="focus">
+			<column name="rep_ind_gender_youth_focus_level_id" />
+		</many-to-one>
+	</class>
+</hibernate-mapping>

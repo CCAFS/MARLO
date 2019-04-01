@@ -25,7 +25,6 @@ import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis2018SectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisExpenditureCategory;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFundingUseExpendituryArea;
-import org.cgiar.ccafs.marlo.data.model.ReportSynthesisSectionStatusEnum;
 import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
 
@@ -56,7 +55,7 @@ public class FundingUse2018Validator extends BaseValidator {
   private Path getAutoSaveFilePath(ReportSynthesis reportSynthesis, long crpID, BaseAction baseAction) {
     GlobalUnit crp = crpManager.getGlobalUnitById(crpID);
     String composedClassName = reportSynthesis.getClass().getSimpleName();
-    String actionFile = ReportSynthesisSectionStatusEnum.FUNDING_USE.getStatus().replace("/", "_");
+    String actionFile = ReportSynthesis2018SectionStatusEnum.FUNDING_USE.getStatus().replace("/", "_");
     String autoSaveFile =
       reportSynthesis.getId() + "_" + composedClassName + "_" + baseAction.getActualPhase().getName() + "_"
         + baseAction.getActualPhase().getYear() + "_" + crp.getAcronym() + "_" + actionFile + ".json";

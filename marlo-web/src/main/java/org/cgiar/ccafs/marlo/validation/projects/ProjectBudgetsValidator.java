@@ -23,6 +23,7 @@ import org.cgiar.ccafs.marlo.data.model.FundingSource;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectBudget;
+import org.cgiar.ccafs.marlo.data.model.ProjectBudgetExecution;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
@@ -93,7 +94,6 @@ public class ProjectBudgetsValidator extends BaseValidator {
           action.addMissingField("draft");
         }
       }
-      action.getFieldErrors().clear();
 
       int totalPartnerBudgetsCurrentYear = 0;
       if (project.getBudgets() != null && project.getBudgets().size() > 0) {
@@ -162,7 +162,27 @@ public class ProjectBudgetsValidator extends BaseValidator {
           action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Budgets"}));
       }
 
-
+      if ((action.isReportingActive() || action.isUpKeepActive())
+        && action.hasSpecificities(action.getCrpEnableBudgetExecution())) {
+        if (project.getBudgetExecutions() != null && project.getBudgetExecutions().size() > 0) {
+          int i = 0;
+          for (ProjectBudgetExecution projectBudgetExecution : project.getBudgetExecutions()) {
+            if (projectBudgetExecution.getYear() >= action.getActualPhase().getYear()) {
+              if (!this.isValidNumber(String.valueOf(projectBudgetExecution.getActualExpenditure()))
+                || projectBudgetExecution.getActualExpenditure() < 0) {
+                action.addMessage("Actual expenditure" + "[" + i + "]");
+                action.getInvalidFields().put("input-project.budgetExecutions[" + i + "].actualExpenditure",
+                  InvalidFieldsMessages.EMPTYFIELD);
+              }
+            }
+            i++;
+          }
+        } else {
+          action.addMessage(action.getText("projectBudgetsExecution"));
+          action.getInvalidFields().put("input-project.budgetExecutions[0].actualExpenditure",
+            action.getText(InvalidFieldsMessages.EMPTYFIELD));
+        }
+      }
       if (!action.getFieldErrors().isEmpty()) {
         hasErros = true;
         action.addActionError(action.getText("saving.fields.required"));

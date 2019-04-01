@@ -160,8 +160,8 @@ public class ProjectPolicyInfo extends MarloBaseEntity implements java.io.Serial
   }
 
   public Boolean isRequired() {
-    if (this.getYear() != null) {
-      if (this.getYear() == phase.getYear()) {
+    if (this.getYear() != null && this.getPhase() != null) {
+      if (this.getYear() == this.getPhase().getYear()) {
         return true;
       } else {
         return false;

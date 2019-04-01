@@ -1475,8 +1475,8 @@ public class ProjectLocationAction extends BaseAction {
     if (save) {
       if (this.hasSpecificities(this.crpLocationCsvActivities())) {
         if (project.getProjecInfoPhase(this.getActualPhase()).getActivitiesCSVFile() != null
-          && project.getProjecInfoPhase(this.getActualPhase()).getActivitiesCSVFile().getId() == null
-          || project.getProjecInfoPhase(this.getActualPhase()).getActivitiesCSVFile().getId().longValue() == -1) {
+          && (project.getProjecInfoPhase(this.getActualPhase()).getActivitiesCSVFile().getId() == null
+            || project.getProjecInfoPhase(this.getActualPhase()).getActivitiesCSVFile().getId().longValue() == -1)) {
           project.getProjecInfoPhase(this.getActualPhase()).setActivitiesCSVFile(null);
         }
       }

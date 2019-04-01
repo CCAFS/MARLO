@@ -29,7 +29,6 @@ import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInfo;
 import org.cgiar.ccafs.marlo.data.model.SectionStatus;
-import org.cgiar.ccafs.marlo.data.model.StudiesStatusPlanningEnum;
 import org.cgiar.ccafs.marlo.data.model.StudyType;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -235,19 +234,10 @@ public class ProjectExpectedStudiesListAction extends BaseAction {
         // Editable project studies: Current cycle year-1 will be editable except Complete and Cancelled.
         // Every study of the current cycle year will be editable
         projectStudies = new ArrayList<ProjectExpectedStudy>();
-        projectStudies = allProjectStudies.stream().filter(ps -> ps.getProjectExpectedStudyInfo().getYear() != null
-          && ps.getProjectExpectedStudyInfo().getStatus() != null
-          && ps.getProjectExpectedStudyInfo().getYear() >= this.getCurrentCycleYear()
-          && ((ps.getProjectExpectedStudyInfo().getStatus().getId()
-            .equals(Long.parseLong(StudiesStatusPlanningEnum.Ongoing.getStatusId()))
-            || ps.getProjectExpectedStudyInfo().getStatus().getId()
-              .equals(Long.parseLong(StudiesStatusPlanningEnum.Extended.getStatusId()))
-            || ps.getProjectExpectedStudyInfo().getStatus().getId().equals(StudiesStatusPlanningEnum.New.getStatusId()))
-            || ((ps.getProjectExpectedStudyInfo().getStatus().getId()
-              .equals(Long.parseLong(StudiesStatusPlanningEnum.Complete.getStatusId()))
-              || ps.getProjectExpectedStudyInfo().getStatus().getId()
-                .equals(Long.parseLong(StudiesStatusPlanningEnum.Cancelled.getStatusId())))
-              && ps.getProjectExpectedStudyInfo().getYear() >= this.getActualPhase().getYear())))
+        projectStudies = allProjectStudies.stream()
+          .filter(ps -> ps.getProjectExpectedStudyInfo().getYear() != null
+            && ps.getProjectExpectedStudyInfo().getStatus() != null
+            && ps.getProjectExpectedStudyInfo().getYear() >= this.getCurrentCycleYear())
           .collect(Collectors.toList());
 
         // Non Editable project studies

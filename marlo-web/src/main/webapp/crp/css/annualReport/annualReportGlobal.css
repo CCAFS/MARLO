@@ -46,7 +46,7 @@ table:not(.financial-report) thead th {
 }
 
 td {
-  padding: 3px 10px;
+  padding: 4px 10px;
   vertical-align: middle !important;
 }
 
@@ -130,8 +130,9 @@ form .form-group.margin-panel {
   border-collapse: collapse;
 }
 
-.table-border td {
-  border: 1px solid rgb(224, 224, 224);
+.table-border tbody td {
+  border-bottom: 1px solid rgb(224, 224, 224);
+  border-right: 1px solid rgb(241, 240, 240);
 }
 
 .table-border tr:nth-child(even) {
@@ -385,8 +386,8 @@ li#menu-oicr {
 }
 
 .modal-dialog.modal-lg {
-  max-width: 1170px;
-  width: 90%;
+  max-width: 1250px;
+  width: 99%;
 }
 
 /* Bootstrap Tabs */
@@ -417,6 +418,7 @@ li#menu-oicr {
 
 .nav-tabs>li>a.fieldError {
   color: #ff4444 !important;
+  font-weight: bold;
 }
 
 .nav-tabs>li>a {
@@ -452,4 +454,14 @@ p.dacMarker.level-3 {
 p.dacMarker.level-4 {
   font-size: 0.85em;
   padding: 6px 0;
+}
+
+.authorsList {
+  max-height: 80px;
+  overflow: auto;
+  align-items: center;
+}
+
+.modal-body {
+  overflow: auto;
 }

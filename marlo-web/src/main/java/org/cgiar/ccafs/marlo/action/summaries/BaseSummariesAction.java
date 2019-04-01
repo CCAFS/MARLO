@@ -48,7 +48,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Abstract class for summaries
+ * Parent class for summaries
  * 
  * @author AVALENCIA
  */

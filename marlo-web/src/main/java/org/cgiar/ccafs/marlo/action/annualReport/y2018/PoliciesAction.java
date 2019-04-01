@@ -101,6 +101,7 @@ public class PoliciesAction extends BaseAction {
   private List<ProjectPolicy> projectPolicies;
   private List<ReportSynthesisPoliciesByOrganizationTypeDTO> policiesByOrganizationTypeDTOs;
   private List<ReportSynthesisPoliciesByRepIndStageProcessDTO> policiesByRepIndStageProcessDTOs;
+  private Integer total = 0;
 
 
   @Inject
@@ -163,7 +164,7 @@ public class PoliciesAction extends BaseAction {
           dto.getLiaisonInstitutions().add(this.liaisonInstitution);
         } else {
           List<ProjectFocus> projectFocuses = new ArrayList<>(projectPolicy.getProject().getProjectFocuses().stream()
-            .filter(pf -> pf.isActive() && pf.getPhase().getId() == phaseID).collect(Collectors.toList()));
+            .filter(pf -> pf.isActive() && pf.getPhase().getId().equals(phaseID)).collect(Collectors.toList()));
           List<LiaisonInstitution> liaisonInstitutions = new ArrayList<>();
           for (ProjectFocus projectFocus : projectFocuses) {
             liaisonInstitutions.addAll(projectFocus.getCrpProgram().getLiaisonInstitutions().stream()
@@ -249,8 +250,8 @@ public class PoliciesAction extends BaseAction {
       // Fill Project policies of the current flagship
       if (projectFocusManager.findAll() != null) {
         List<ProjectFocus> projectFocus = new ArrayList<>(projectFocusManager.findAll().stream()
-          .filter(pf -> pf.isActive() && pf.getCrpProgram().getId() == liaisonInstitution.getCrpProgram().getId()
-            && pf.getPhase() != null && pf.getPhase().getId() == phaseID)
+          .filter(pf -> pf.isActive() && pf.getCrpProgram().getId().equals(liaisonInstitution.getCrpProgram().getId())
+            && pf.getPhase() != null && pf.getPhase().getId().equals(phaseID))
           .collect(Collectors.toList()));
 
         for (ProjectFocus focus : projectFocus) {
@@ -262,12 +263,13 @@ public class PoliciesAction extends BaseAction {
 
           for (ProjectPolicy projectPolicy : plannedProjectPolicies) {
             projectPolicy.getProjectPolicyInfo(phase);
-            projectPolicy.setSubIdos(projectPolicy.getSubIdos(this.getActualPhase()));
-            projectPolicy.setCrossCuttingMarkers(projectPolicy.getCrossCuttingMarkers(this.getActualPhase()));
-            projectPolicy.setOwners(projectPolicy.getOwners(this.getActualPhase()));
-            projectPolicy.setGeographicScopes(projectPolicy.getGeographicScopes(this.getActualPhase()));
-            projectPolicy.setRegions(projectPolicy.getRegions(this.getActualPhase()));
-            projectPolicy.setCountries(projectPolicy.getCountries(this.getActualPhase()));
+            projectPolicy.setSubIdos(projectPolicy.getSubIdos(phase));
+            projectPolicy.setCrossCuttingMarkers(projectPolicy.getCrossCuttingMarkers(phase));
+            projectPolicy.setOwners(projectPolicy.getOwners(phase));
+            projectPolicy.setGeographicScopes(projectPolicy.getGeographicScopes(phase));
+            projectPolicy.setRegions(projectPolicy.getRegions(phase));
+            projectPolicy.setCountries(projectPolicy.getCountries(phase));
+            projectPolicy.setEvidences(projectPolicy.getEvidences(phase));
             projectPolicies.add(projectPolicy);
           }
         }
@@ -295,12 +297,13 @@ public class PoliciesAction extends BaseAction {
             .sort((l1, l2) -> l1.getCrpProgram().getAcronym().compareTo(l2.getCrpProgram().getAcronym()));
         }
         projectPolicy.getSelectedFlahsgips().addAll(reportSynthesisFlagshipProgressPolicyDTO.getLiaisonInstitutions());
-        projectPolicy.setSubIdos(projectPolicy.getSubIdos(this.getActualPhase()));
-        projectPolicy.setCrossCuttingMarkers(projectPolicy.getCrossCuttingMarkers(this.getActualPhase()));
-        projectPolicy.setOwners(projectPolicy.getOwners(this.getActualPhase()));
-        projectPolicy.setGeographicScopes(projectPolicy.getGeographicScopes(this.getActualPhase()));
-        projectPolicy.setRegions(projectPolicy.getRegions(this.getActualPhase()));
-        projectPolicy.setCountries(projectPolicy.getCountries(this.getActualPhase()));
+        projectPolicy.setSubIdos(projectPolicy.getSubIdos(phase));
+        projectPolicy.setCrossCuttingMarkers(projectPolicy.getCrossCuttingMarkers(phase));
+        projectPolicy.setOwners(projectPolicy.getOwners(phase));
+        projectPolicy.setGeographicScopes(projectPolicy.getGeographicScopes(phase));
+        projectPolicy.setRegions(projectPolicy.getRegions(phase));
+        projectPolicy.setCountries(projectPolicy.getCountries(phase));
+        projectPolicy.setEvidences(projectPolicy.getEvidences(phase));
         projectPolicies.add(projectPolicy);
 
       }
@@ -359,8 +362,6 @@ public class PoliciesAction extends BaseAction {
 
         ReportSynthesisFlagshipProgressPolicy flagshipProgressPolicyNew = new ReportSynthesisFlagshipProgressPolicy();
 
-        flagshipProgressPolicyNew = new ReportSynthesisFlagshipProgressPolicy();
-
         flagshipProgressPolicyNew.setProjectPolicy(projectPolicy);
         flagshipProgressPolicyNew.setReportSynthesisFlagshipProgress(reportSynthesisFlagshipProgressDB);
 
@@ -383,8 +384,6 @@ public class PoliciesAction extends BaseAction {
 
         ReportSynthesisFlagshipProgressPolicy flagshipProgressPlannedPolicyNew =
           new ReportSynthesisFlagshipProgressPolicy();
-
-        flagshipProgressPlannedPolicyNew = new ReportSynthesisFlagshipProgressPolicy();
 
         flagshipProgressPlannedPolicyNew.setProjectPolicy(projectPolicy);
         flagshipProgressPlannedPolicyNew.setReportSynthesisFlagshipProgress(reportSynthesisFlagshipProgressDB);
@@ -432,19 +431,19 @@ public class PoliciesAction extends BaseAction {
     return loggedCrp;
   }
 
+
   public List<ReportSynthesisPoliciesByOrganizationTypeDTO> getPoliciesByOrganizationTypeDTOs() {
     return policiesByOrganizationTypeDTOs;
   }
+
 
   public List<ReportSynthesisPoliciesByRepIndStageProcessDTO> getPoliciesByRepIndStageProcessDTOs() {
     return policiesByRepIndStageProcessDTOs;
   }
 
-
   public List<ProjectPolicy> getProjectPolicies() {
     return projectPolicies;
   }
-
 
   public ReportSynthesis getReportSynthesis() {
     return reportSynthesis;
@@ -454,6 +453,12 @@ public class PoliciesAction extends BaseAction {
   public Long getSynthesisID() {
     return synthesisID;
   }
+
+
+  public Integer getTotal() {
+    return total;
+  }
+
 
   public String getTransaction() {
     return transaction;
@@ -473,7 +478,6 @@ public class PoliciesAction extends BaseAction {
     return isFP;
   }
 
-
   @Override
   public boolean isPMU() {
     boolean isFP = false;
@@ -485,6 +489,7 @@ public class PoliciesAction extends BaseAction {
     return isFP;
 
   }
+
 
   @Override
   public String next() {
@@ -524,7 +529,7 @@ public class PoliciesAction extends BaseAction {
         if (user.getLiasonsUsers() != null || !user.getLiasonsUsers().isEmpty()) {
           List<LiaisonUser> liaisonUsers = new ArrayList<>(user.getLiasonsUsers().stream()
             .filter(lu -> lu.isActive() && lu.getLiaisonInstitution().isActive()
-              && lu.getLiaisonInstitution().getCrp().getId() == loggedCrp.getId()
+              && lu.getLiaisonInstitution().getCrp().getId().equals(loggedCrp.getId())
               && lu.getLiaisonInstitution().getInstitution() == null)
             .collect(Collectors.toList()));
           if (!liaisonUsers.isEmpty()) {
@@ -653,6 +658,7 @@ public class PoliciesAction extends BaseAction {
           selectedProjectPolicies.remove(projectPolicy);
         }
       }
+      total = selectedProjectPolicies.size();
 
       if (selectedProjectPolicies != null && !selectedProjectPolicies.isEmpty()) {
         // Chart: Policies by organization type
@@ -677,7 +683,6 @@ public class PoliciesAction extends BaseAction {
     }
 
   }
-
 
   @Override
   public String save() {
@@ -730,6 +735,7 @@ public class PoliciesAction extends BaseAction {
     }
   }
 
+
   public void setLiaisonInstitution(LiaisonInstitution liaisonInstitution) {
     this.liaisonInstitution = liaisonInstitution;
   }
@@ -738,15 +744,14 @@ public class PoliciesAction extends BaseAction {
     this.liaisonInstitutionID = liaisonInstitutionID;
   }
 
-
   public void setLiaisonInstitutions(List<LiaisonInstitution> liaisonInstitutions) {
     this.liaisonInstitutions = liaisonInstitutions;
   }
 
+
   public void setLoggedCrp(GlobalUnit loggedCrp) {
     this.loggedCrp = loggedCrp;
   }
-
 
   public void setPoliciesByOrganizationTypeDTOs(
     List<ReportSynthesisPoliciesByOrganizationTypeDTO> policiesByOrganizationTypeDTOs) {
@@ -769,8 +774,13 @@ public class PoliciesAction extends BaseAction {
     this.reportSynthesis = reportSynthesis;
   }
 
+
   public void setSynthesisID(Long synthesisID) {
     this.synthesisID = synthesisID;
+  }
+
+  public void setTotal(Integer total) {
+    this.total = total;
   }
 
   public void setTransaction(String transaction) {
