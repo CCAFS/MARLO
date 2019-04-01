@@ -2238,7 +2238,8 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
           ? this.getLoggedCrp().getAcronym() : this.getLoggedCrp().getName();
         poiSummary.textParagraph(document.createParagraph(),
           this.getText("summaries.annualReportCRP2018.unitName") + ": " + unitName);
-        poiSummary.textParagraph(document.createParagraph(), this.getText("summaries.annualReport.LeadCenter") + ":");
+        poiSummary.textParagraph(document.createParagraph(), this.getText("summaries.annualReport.LeadCenter") + ": "
+          + this.getLoggedCrp().getInstitution().getAcronymName());
         this.addParticipatingCenters();
 
         // Part A - Narrative section
