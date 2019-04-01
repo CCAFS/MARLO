@@ -387,16 +387,15 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
       }
     }
     if (crossCuttingGenderResearchFindings != null && !crossCuttingGenderResearchFindings.isEmpty()) {
-      poiSummary.convertHTMLTags(document, crossCuttingGenderResearchFindings);
+      poiSummary.convertHTMLTags(document, "a) " + crossCuttingGenderResearchFindings);
     }
 
     if (crossCuttingGenderLearned != null && !crossCuttingGenderLearned.isEmpty()) {
-      poiSummary.convertHTMLTags(document, crossCuttingGenderLearned);
-
+      poiSummary.convertHTMLTags(document, "b) " + crossCuttingGenderLearned);
     }
 
     if (crossCuttingGenderProblemsArimes != null && !crossCuttingGenderProblemsArimes.isEmpty()) {
-      poiSummary.convertHTMLTags(document, crossCuttingGenderProblemsArimes);
+      poiSummary.convertHTMLTags(document, "c) " + crossCuttingGenderProblemsArimes);
     }
 
   }
@@ -1547,7 +1546,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         this.getText("summaries.annualReport2018.table3Title1", new String[] {String.valueOf(this.getSelectedYear())}),
         ParagraphAlignment.LEFT),
       new POIField(this.getText("summaries.annualReport2018.table3Title2"), ParagraphAlignment.LEFT),
-      new POIField("summaries.annualReport2018.table3Title3", ParagraphAlignment.LEFT)};
+      new POIField(this.getText("summaries.annualReport2018.table3Title3"), ParagraphAlignment.LEFT)};
     List<POIField> header = Arrays.asList(sHeader);
     headers.add(header);
 
@@ -2247,7 +2246,6 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         toc.setInstr("TOC \\h");
         toc.setDirty(STOnOff.TRUE);
         XWPFRun run = paragraph.createRun();
-
 
         // First page
         document.createParagraph().setPageBreak(true);
