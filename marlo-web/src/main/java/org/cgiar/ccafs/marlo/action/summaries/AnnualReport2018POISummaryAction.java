@@ -706,7 +706,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
       }
     }
     poiSummary.textParagraph(document.createParagraph(),
-      this.getText("summaries.annualReport.participantingCenters") + ": " + participantingCenters);
+      this.getText("summaries.powb2019.otherParticipans") + ": " + participantingCenters);
   }
 
   private void addProgressFlagshipCrp() {
@@ -1741,9 +1741,10 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
 
               POIField[] sData =
                 {new POIField(fp, ParagraphAlignment.CENTER), new POIField(outcomes, ParagraphAlignment.LEFT),
-                  new POIField(narrative, ParagraphAlignment.LEFT), new POIField(milestone, ParagraphAlignment.LEFT),
+                  new POIField(poiSummary.replaceHTMLTags(narrative), ParagraphAlignment.LEFT),
+                  new POIField(milestone, ParagraphAlignment.LEFT),
                   new POIField(milestoneStatus, ParagraphAlignment.LEFT),
-                  new POIField(evidenceMilestone, ParagraphAlignment.LEFT)};
+                  new POIField(poiSummary.replaceHTMLTags(evidenceMilestone), ParagraphAlignment.LEFT)};
               data = Arrays.asList(sData);
               datas.add(data);
             }
@@ -1978,7 +1979,8 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
 
         }
         POIField[] sData = {new POIField(description, ParagraphAlignment.LEFT),
-          new POIField(name, ParagraphAlignment.CENTER), new POIField(optional, ParagraphAlignment.LEFT)};
+          new POIField(poiSummary.replaceHTMLTags(name), ParagraphAlignment.CENTER),
+          new POIField(optional, ParagraphAlignment.LEFT)};
         data = Arrays.asList(sData);
         datas.add(data);
       }

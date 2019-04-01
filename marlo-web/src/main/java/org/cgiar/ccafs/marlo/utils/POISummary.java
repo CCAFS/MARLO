@@ -1660,7 +1660,8 @@ public class POISummary {
             dataRow.getCell(record).setColor("D9EAD3");
           } else if (tableType.contains("table2AnnualReport2018") && record < 1) {
             dataRow.getCell(record).setColor("D9E2F3");
-
+          } else if (tableType.contains("table6AnnualReport2018") && record < 1) {
+            dataRow.getCell(record).setColor("E2EFD9");
           } else {
             if (highlightFirstColumn && record == 0) {
               dataRow.getCell(record).setColor(TABLE_HEADER_FONT_COLOR);
