@@ -162,7 +162,8 @@ public class ProjectBudgetsValidator extends BaseValidator {
           action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Budgets"}));
       }
 
-      if (action.isReportingActive() && action.hasSpecificities(action.getCrpEnableBudgetExecution())) {
+      if ((action.isReportingActive() || action.isUpKeepActive())
+        && action.hasSpecificities(action.getCrpEnableBudgetExecution())) {
         if (project.getBudgetExecutions() != null && project.getBudgetExecutions().size() > 0) {
           int i = 0;
           for (ProjectBudgetExecution projectBudgetExecution : project.getBudgetExecutions()) {

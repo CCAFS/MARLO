@@ -251,12 +251,12 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
   }
 
   /**
-   * Check if the deliverables is required for the current cycle
+   * Check if the deliverable is required for the current cycle
    * Used in BaseAction.isDeliverableComplete to know if the Deliverable is Complete
    * 
    * @return
    */
-  public Boolean isRequired() {
+  public Boolean isRequiredToComplete() {
     if (this.getStatus() == null) {
       return true;
     }
@@ -264,7 +264,7 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
     if (this.getStatus() != null
       && this.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())) {
       if (this.getNewExpectedYear() != null && this.getNewExpectedYear().intValue() != -1) {
-        if (this.getNewExpectedYear() == phase.getYear()) {
+        if (this.getNewExpectedYear() == this.getPhase().getYear()) {
           return true;
         }
       } else {
@@ -275,11 +275,11 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
     if (this.getStatus() != null
       && this.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())) {
       if (this.getNewExpectedYear() != null && this.getNewExpectedYear().intValue() != -1) {
-        if (this.getNewExpectedYear() >= phase.getYear()) {
+        if (this.getNewExpectedYear() == this.getPhase().getYear()) {
           return true;
         }
       } else {
-        if (this.getYear() == phase.getYear()) {
+        if (this.getYear() == this.getPhase().getYear()) {
           return true;
         }
       }
@@ -292,8 +292,35 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
 
     if (this.getStatus() != null
       && (this.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId()))) {
-      if (this.getYear() == phase.getYear()) {
+      if (this.getYear() == this.getPhase().getYear()) {
         return true;
+      }
+    }
+
+    return false;
+  }
+
+  /**
+   * Check if the deliverable has complete status for the current cycle with the expected year >= phase.year
+   * Used in BaseAction.isDeliverableComplete to know if the Deliverable is Complete
+   * 
+   * @return
+   */
+  public Boolean isStatusCompleteInNextPhases() {
+    if (this.getStatus() == null) {
+      return true;
+    }
+
+    if (this.getStatus() != null
+      && this.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())) {
+      if (this.getNewExpectedYear() != null && this.getNewExpectedYear().intValue() != -1) {
+        if (this.getNewExpectedYear() >= this.getPhase().getYear()) {
+          return true;
+        }
+      } else {
+        if (this.getYear() == this.getPhase().getYear()) {
+          return true;
+        }
       }
     }
 

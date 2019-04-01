@@ -138,7 +138,7 @@ public class StudiesOICRAction extends BaseAction {
           && ps.getProjectExpectedStudyInfo().getStudyType() != null
           && ps.getProjectExpectedStudyInfo().getStudyType().getId() == 1
           && ps.getProjectExpectedStudyInfo().getYear() != null
-          && ps.getProjectExpectedStudyInfo().getYear() == actualPhase.getYear() && ps.getProject() != null
+          && ps.getProjectExpectedStudyInfo().getYear().equals(actualPhase.getYear()) && ps.getProject() != null
           && ps.getProject().getGlobalUnitProjects().stream()
             .filter(gup -> gup.isActive() && gup.isOrigin() && gup.getGlobalUnit().getId().equals(loggedCrp.getId()))
             .collect(Collectors.toList()).size() > 0)
@@ -156,7 +156,7 @@ public class StudiesOICRAction extends BaseAction {
           dto.getLiaisonInstitutions().add(this.liaisonInstitution);
         } else {
           List<ProjectFocus> projectFocuses = new ArrayList<>(projectExpectedStudy.getProject().getProjectFocuses()
-            .stream().filter(pf -> pf.isActive() && pf.getPhase().getId() == actualPhase.getId())
+            .stream().filter(pf -> pf.isActive() && pf.getPhase().getId().equals(actualPhase.getId()))
             .collect(Collectors.toList()));
           List<LiaisonInstitution> liaisonInstitutions = new ArrayList<>();
           for (ProjectFocus projectFocus : projectFocuses) {
@@ -179,7 +179,7 @@ public class StudiesOICRAction extends BaseAction {
             && ps.getProjectExpectedStudyInfo().getStudyType() != null
             && ps.getProjectExpectedStudyInfo().getStudyType().getId() == 1
             && ps.getProjectExpectedStudyInfo().getYear() != null
-            && ps.getProjectExpectedStudyInfo().getYear() == actualPhase.getYear())
+            && ps.getProjectExpectedStudyInfo().getYear().equals(actualPhase.getYear()))
           .collect(Collectors.toList()));
 
       // Fill all supplementary studies
@@ -262,8 +262,8 @@ public class StudiesOICRAction extends BaseAction {
       // Fill Project Expected Studies of the current flagship
       if (projectFocusManager.findAll() != null) {
         List<ProjectFocus> projectFocus = new ArrayList<>(projectFocusManager.findAll().stream()
-          .filter(pf -> pf.isActive() && pf.getCrpProgram().getId() == liaisonInstitution.getCrpProgram().getId()
-            && pf.getPhase() != null && pf.getPhase().getId() == actualPhase.getId())
+          .filter(pf -> pf.isActive() && pf.getCrpProgram().getId().equals(liaisonInstitution.getCrpProgram().getId())
+            && pf.getPhase() != null && pf.getPhase().getId().equals(actualPhase.getId()))
           .collect(Collectors.toList()));
 
         for (ProjectFocus focus : projectFocus) {
@@ -274,7 +274,7 @@ public class StudiesOICRAction extends BaseAction {
                 && ps.getProjectExpectedStudyInfo().getStudyType() != null
                 && ps.getProjectExpectedStudyInfo().getStudyType().getId() == 1
                 && ps.getProjectExpectedStudyInfo().getYear() != null
-                && ps.getProjectExpectedStudyInfo().getYear() == actualPhase.getYear())
+                && ps.getProjectExpectedStudyInfo().getYear().equals(actualPhase.getYear()))
               .collect(Collectors.toList()));
 
           for (ProjectExpectedStudy projectExpectedStudy : plannedProjectExpectedStudies) {
@@ -523,7 +523,7 @@ public class StudiesOICRAction extends BaseAction {
         if (user.getLiasonsUsers() != null || !user.getLiasonsUsers().isEmpty()) {
           List<LiaisonUser> liaisonUsers = new ArrayList<>(user.getLiasonsUsers().stream()
             .filter(lu -> lu.isActive() && lu.getLiaisonInstitution().isActive()
-              && lu.getLiaisonInstitution().getCrp().getId() == loggedCrp.getId()
+              && lu.getLiaisonInstitution().getCrp().getId().equals(loggedCrp.getId())
               && lu.getLiaisonInstitution().getInstitution() == null)
             .collect(Collectors.toList()));
           if (!liaisonUsers.isEmpty()) {

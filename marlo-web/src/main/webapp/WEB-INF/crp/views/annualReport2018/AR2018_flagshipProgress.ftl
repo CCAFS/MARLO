@@ -46,43 +46,57 @@
             [#if flagship]
               [#-- Progress by flagships --]
               <div class="form-group">
-                  [@customForm.textArea name="${customName}.progressByFlagships" i18nkey="${customLabel}.progressByFlagships" help="${customLabel}.progressByFlagships.help" className="limitWords-200" helpIcon=false required=true editable=editable allowTextEditor=true /]
+                [#-- Word Document Tag --]
+                [@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/]
+                [@customForm.textArea name="${customName}.progressByFlagships" i18nkey="${customLabel}.progressByFlagships" help="${customLabel}.progressByFlagships.help" className="limitWords-200" helpIcon=false required=true editable=editable allowTextEditor=true /]
               </div>
               [#-- Detailed annex --]
               <div class="form-group">
-                  [@customForm.textArea name="${customName}.detailedAnnex" i18nkey="${customLabel}.detailedAnnex" className="limitWords-800" helpIcon=false required=false editable=editable allowTextEditor=true /]
+                [#-- Word Document Tag --]
+                [@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/]
+                [@customForm.textArea name="${customName}.detailedAnnex" i18nkey="${customLabel}.detailedAnnex" className="limitWords-800" helpIcon=false required=false editable=editable allowTextEditor=true /]
               </div>
             [#else]
               [#-- Overall CRP progress --]
               <div class="form-group">
-                  [@customForm.textArea name="${customName}.overallProgress" i18nkey="${customLabel}.overallProgress" help="${customLabel}.overallProgress.help" className="limitWords-250" helpIcon=false required=true editable=editable allowTextEditor=true /]
+                [#-- Word Document Tag --]
+                [#if PMU][@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/][/#if]
+                [@customForm.textArea name="${customName}.overallProgress" i18nkey="${customLabel}.overallProgress" help="${customLabel}.overallProgress.help" className="limitWords-250" helpIcon=false required=true editable=editable allowTextEditor=true /]
               </div>
               
-              [#-- Flagship Synthesis --]
+              [#-- Flagship Synthesis (1.2.2)--]
+              </br>
               <div class="form-group">
-                  [@macrosAR.tableFPSynthesis tableName="${customLabel}.tableflagshipSynthesis" list=flagshipsReportSynthesisFlagshipProgress columns=["progressByFlagships", "detailedAnnex"] /]
+                [#-- Word Document Tag --]
+                [#if PMU][@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/][/#if]
+                <h4 class="simpleTitle">[@s.text name="${customLabel}.progressByFlagships" /]</h4>
+                [@macrosAR.tableFPSynthesis tableName="${customLabel}.tableflagshipSynthesis" list=flagshipsReportSynthesisFlagshipProgress columns=["progressByFlagships", "detailedAnnex"] showTitle=false allInOne=true /]
               </div>
             [/#if]
             
             
             [#-- 1.2.3 Variance from Planned Program for this year --]
-            <div class="form-group">
-              <h4 class="simpleTitle headTitle annualReport-table">[@s.text name="${customLabel}.variance" /]</h4>
-              [@customForm.helpLabel name="${customLabel}.variance.help" showIcon=false editable=editable/]
-            </div>
+            <h4 class="simpleTitle headTitle annualReport-table">[@s.text name="${customLabel}.variance" /]</h4>
+            [@customForm.helpLabel name="${customLabel}.variance.help" showIcon=false editable=editable/]
             
             [#-- Expandend research areas --]
             <div class="form-group">
+              [#-- Word Document Tag --]
+              [#if PMU][@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/][/#if]
               [@customForm.textArea name="${customName}.expandedResearchAreas" i18nkey="${customLabel}.expandedResearchAreas" help="${customLabel}.expandedResearchAreas.help" className="limitWords-${calculateLimitWords(200)}" helpIcon=false required=true editable=editable allowTextEditor=true /]
             </div>
             
             [#-- Dropped research lines --]
             <div class="form-group">
+              [#-- Word Document Tag --]
+              [#if PMU][@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/][/#if]
               [@customForm.textArea name="${customName}.droppedResearchLines" i18nkey="${customLabel}.droppedResearchLines" help="${customLabel}.droppedResearchLines.help" className="limitWords-${calculateLimitWords(200)}" helpIcon=false required=true editable=editable allowTextEditor=true /]
             </div>
             
             [#-- Changed direction --]
             <div class="form-group">
+              [#-- Word Document Tag --]
+              [#if PMU][@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/][/#if]
               [@customForm.textArea name="${customName}.changedDirection" i18nkey="${customLabel}.changedDirection" help="${customLabel}.changedDirection.help" className="limitWords-${calculateLimitWords(200)}" helpIcon=false required=true editable=editable allowTextEditor=true /]
             </div>
             
@@ -94,16 +108,19 @@
             [/#if]
             
             [#-- Altmetric Score --]
+            [#if PMU]
             <div class="form-group">
+              [#-- Word Document Tag --]
+              [#if PMU][@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/][/#if]
               [@customForm.textArea name="${customName}.altmetricScore" i18nkey="${customLabel}.altmetricScore" help="${customLabel}.altmetricScore.help" className="limitWords-${calculateLimitWords(400)}" helpIcon=false required=true editable=editable allowTextEditor=true /]
             </div>
+            [/#if]
             
-            [#if PMU]
-            [#-- Flagships - Synthesis (Altmetric Score) --]
+            [#-- Flagships - Synthesis (Altmetric Score) 
             <div class="form-group">
               [@macrosAR.tableFPSynthesis tableName="${customLabel}.tableFlagshipAltmetric" list=flagshipsReportSynthesisFlagshipProgress columns=["altmetricScore"] /]
             </div>
-            [/#if]
+            --]
             
           </div>
           [#-- Section Buttons & hidden inputs--]

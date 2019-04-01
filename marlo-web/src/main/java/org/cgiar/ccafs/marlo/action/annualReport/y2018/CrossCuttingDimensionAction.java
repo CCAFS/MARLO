@@ -271,7 +271,7 @@ public class CrossCuttingDimensionAction extends BaseAction {
         if (user.getLiasonsUsers() != null || !user.getLiasonsUsers().isEmpty()) {
           List<LiaisonUser> liaisonUsers = new ArrayList<>(user.getLiasonsUsers().stream()
             .filter(lu -> lu.isActive() && lu.getLiaisonInstitution().isActive()
-              && lu.getLiaisonInstitution().getCrp().getId() == loggedCrp.getId()
+              && lu.getLiaisonInstitution().getCrp().getId().equals(loggedCrp.getId())
               && lu.getLiaisonInstitution().getInstitution() == null)
             .collect(Collectors.toList()));
           if (!liaisonUsers.isEmpty()) {
@@ -382,11 +382,13 @@ public class CrossCuttingDimensionAction extends BaseAction {
 
     /** Graphs and Tables */
     // Deliverables Participants
-    deliverableParticipants = deliverableParticipantManager.getDeliverableParticipantByPhase(phase);
-    if (deliverableParticipants != null && !deliverableParticipants.isEmpty()) {
-      for (DeliverableParticipant deliverableParticipant : deliverableParticipants) {
+    deliverableParticipants = new ArrayList<>();
+
+    List<DeliverableParticipant> participants = deliverableParticipantManager.getDeliverableParticipantByPhase(phase);
+    if (participants != null && !participants.isEmpty()) {
+      for (DeliverableParticipant deliverableParticipant : participants) {
         if (deliverableParticipant.getDeliverable().getDeliverableInfo(phase) != null
-          && deliverableParticipant.getDeliverable().getDeliverableInfo(phase).isRequired()) {
+          && deliverableParticipant.getDeliverable().getDeliverableInfo(phase).isRequiredToComplete()) {
           // Total Participants
           Double numberParticipant = 0.0;
           if (deliverableParticipant.getParticipants() != null) {
@@ -418,6 +420,8 @@ public class CrossCuttingDimensionAction extends BaseAction {
               }
             }
           }
+
+          deliverableParticipants.add(deliverableParticipant);
         }
       }
     }

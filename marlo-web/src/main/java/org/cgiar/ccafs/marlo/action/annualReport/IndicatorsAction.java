@@ -621,7 +621,7 @@ public class IndicatorsAction extends BaseAction {
       if (deliverableParticipants != null && !deliverableParticipants.isEmpty()) {
         for (DeliverableParticipant deliverableParticipant : deliverableParticipants) {
           if (deliverableParticipant.getDeliverable().getDeliverableInfo(phase) != null
-            && deliverableParticipant.getDeliverable().getDeliverableInfo(phase).isRequired()) {
+            && deliverableParticipant.getDeliverable().getDeliverableInfo(phase).isRequiredToComplete()) {
             // Total Participants
             if (deliverableParticipant.getParticipants() != null) {
               totalParticipants += deliverableParticipant.getParticipants();

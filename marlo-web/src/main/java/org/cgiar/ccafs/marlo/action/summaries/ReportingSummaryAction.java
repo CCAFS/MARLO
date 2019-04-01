@@ -770,6 +770,8 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       this.getText("project.deliverable.dissemination.v.DisseminationChanel"));
     masterReport.getParameterValues().put("i8nDeliverablesRDisseminationUrl",
       this.getText("project.deliverable.dissemination.disseminationUrl"));
+    masterReport.getParameterValues().put("i8nDeliverablesRConfidentialUrl",
+      this.getText("project.deliverable.dissemination.confidentialURL"));
     masterReport.getParameterValues().put("i8nDeliverablesRIsOpenAccess",
       this.getText("project.deliverable.dissemination.v.isOpenAccess"));
     masterReport.getParameterValues().put("i8nDeliverablesROpenAccessRestriction",
@@ -1922,7 +1924,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         "intellectualAssetPvpCountry", "intellectualAssetPvpApplicationNumber", "intellectualAssetPvpBreederCrop",
         "intellectualAssetDateFilling", "intellectualAssetDateRegistration", "intellectualAssetDateExpiry",
         "intellectualAssetAdditionalInformation", "intellectualAssetLinkPublished", "intellectualAssetCommunication",
-        "otherPartner"},
+        "otherPartner", "deliv_confidential_url"},
       new Class[] {Long.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
@@ -1934,7 +1936,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        String.class, String.class},
+        String.class, String.class, String.class},
       0);
     SimpleDateFormat formatter = new SimpleDateFormat("MMM yyyy");
     if (!project.getDeliverables().isEmpty()) {
@@ -2146,6 +2148,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         }
         String delivDisseminationChannel = null;
         String delivDisseminationUrl = null;
+        String delivConfidentialUrl = null;
         String delivOpenAccess = null;
         String delivLicense = null;
         String delivLicenseModifications = null;
@@ -2177,6 +2180,11 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           if (deliverableDissemination.getDisseminationUrl() != null
             && !deliverableDissemination.getDisseminationUrl().isEmpty()) {
             delivDisseminationUrl = deliverableDissemination.getDisseminationUrl().replace(" ", "%20");
+          }
+          if (deliverableDissemination.getConfidentialUrl() != null
+            && !deliverableDissemination.getConfidentialUrl().isEmpty()) {
+            delivConfidentialUrl = deliverableDissemination.getConfidentialUrl().replace(" ", "%20");
+            System.out.println("confidential " + delivConfidentialUrl);
           }
           if (deliverableDissemination.getIsOpenAccess() != null) {
             if (deliverableDissemination.getIsOpenAccess() == true) {
@@ -2696,7 +2704,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           intellectualAssetPvpStatus, intellectualAssetPvpCountry, intellectualAssetPvpApplicationNumber,
           intellectualAssetPvpBreederCrop, intellectualAssetDateFilling, intellectualAssetDateRegistration,
           intellectualAssetDateExpiry, intellectualAssetAdditionalInformation, intellectualAssetLinkPublished,
-          intellectualAssetCommunication, otherPartner});
+          intellectualAssetCommunication, otherPartner, delivConfidentialUrl});
       }
     }
     return model;
