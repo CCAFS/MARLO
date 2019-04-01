@@ -141,7 +141,7 @@ public class PublicationsAction extends BaseAction {
 
       // Get global unit deliverables
       List<Deliverable> deliverables = new ArrayList<>(deliverableManager.findAll().stream()
-        .filter(d -> d.isActive() && d.getDeliverableInfo(actualPhase) != null && d.getDeliverableInfo().isRequired()
+        .filter(d -> d.isActive() && d.getDeliverableInfo(actualPhase) != null && d.getDeliverableInfo().isRequiredToComplete()
           && d.getDeliverableInfo().getDeliverableType() != null
           && d.getDeliverableInfo().getDeliverableType().getId() == 63)
         .collect(Collectors.toList()));
@@ -295,7 +295,7 @@ public class PublicationsAction extends BaseAction {
         .stream()
         .filter(dp -> dp.isActive() && dp.getPhase().equals(actualPhase) && dp.getDeliverable() != null
           && dp.getDeliverable().isActive() && dp.getDeliverable().getDeliverableInfo(actualPhase) != null
-          && dp.getDeliverable().getDeliverableInfo().isRequired()
+          && dp.getDeliverable().getDeliverableInfo().isRequiredToComplete()
           && dp.getDeliverable().getDeliverableInfo().getDeliverableType() != null
           && dp.getDeliverable().getDeliverableInfo().getDeliverableType().getId() == 63)
         .collect(Collectors.toList());

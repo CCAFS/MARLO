@@ -3812,7 +3812,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
 
     List<Deliverable> deliverables = new ArrayList<>(deliverableManager.findAll().stream()
       .filter(d -> d.isActive() && d.getDeliverableInfo(this.getActualPhase()) != null
-        && d.getDeliverableInfo().isRequired() && d.getDeliverableInfo().getDeliverableType() != null
+        && d.getDeliverableInfo().isRequiredToComplete() && d.getDeliverableInfo().getDeliverableType() != null
         && d.getDeliverableInfo().getDeliverableType().getId() == 63)
       .collect(Collectors.toList()));
 
