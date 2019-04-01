@@ -44,6 +44,7 @@ public interface LocationMapper {
     @Mapping(source = "locElement", target = "parentRegion")})
   public abstract RegionDTO locElementToRegionDTO(LocElement regElement);
 
+
   /*
    * public abstract LocElement updateLocElementFromLocElementDto(CountryDTO
    * locElementDTO,

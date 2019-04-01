@@ -40,6 +40,8 @@ import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.subject.Subject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -54,6 +56,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class Institutions {
 
   private static final Logger LOG = LoggerFactory.getLogger(Institutions.class);
+  @Autowired
+  private Environment env;
 
   private InstitutionTypeItem<InstitutionTypeDTO> institutionTypeItem;
   private InstitutionItem<InstitutionDTO> institutionItem;
@@ -103,7 +107,7 @@ public class Institutions {
     @ApiParam(value = "${Institutions.institution.code.param.code}", required = true) @PathVariable Long code) {
     ResponseEntity<InstitutionDTO> response = this.institutionItem.findInstitutionById(code);
     if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
-      throw new NotFoundException("404", "Institution not found");
+      throw new NotFoundException("404", this.env.getProperty("Institutions.institutions.code.404"));
     }
     return response;
   }
@@ -122,7 +126,7 @@ public class Institutions {
     @ApiParam(value = "${Institutions.institution-types.code.param.code}", required = true) @PathVariable Long code) {
     ResponseEntity<InstitutionTypeDTO> response = this.institutionTypeItem.findInstitutionTypeById(code);
     if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
-      throw new NotFoundException("404", "Institution type not found");
+      throw new NotFoundException("404", this.env.getProperty("Institutions.institution-types.code.404"));
     }
     return response;
   }
@@ -145,7 +149,7 @@ public class Institutions {
       required = true) @PathVariable(name = "requestId") Long requestId) {
     ResponseEntity<InstitutionRequestDTO> response = this.institutionItem.getPartnerRequest(requestId, CGIAREntity);
     if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
-      throw new NotFoundException("404", "Institution request not found");
+      throw new NotFoundException("404", this.env.getProperty("Institutions.institution-requests.code.404"));
     }
     return response;
 

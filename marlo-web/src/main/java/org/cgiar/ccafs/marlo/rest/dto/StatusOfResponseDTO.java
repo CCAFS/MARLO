@@ -12,43 +12,41 @@
  * You should have received a copy of the GNU General Public License
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
+
 package org.cgiar.ccafs.marlo.rest.dto;
+
+import javax.validation.constraints.NotNull;
 
 import io.swagger.annotations.ApiModelProperty;
 
-public class RegionDTO {
+/**
+ * @author Hermes Jiménez - CIAT/CCAFS
+ */
 
-  @ApiModelProperty(notes = "The ISO Region code", position = 1)
-  private Long UM49Code;
+public class StatusOfResponseDTO {
 
-  @ApiModelProperty(notes = "Region Name", position = 2)
+  @ApiModelProperty(notes = "The Generated Status of response ID")
+  @NotNull
+  private Long code;
+
+  @ApiModelProperty(notes = "Status of response name")
+  @NotNull
   private String name;
 
-  @ApiModelProperty(notes = "Parent Region", position = 3)
-  private ParentRegionDTO parentRegion;
+  public Long getCode() {
+    return this.code;
+  }
 
   public String getName() {
     return this.name;
   }
 
-  public ParentRegionDTO getParentRegion() {
-    return this.parentRegion;
-  }
-
-  public Long getUM49Code() {
-    return this.UM49Code;
+  public void setCode(Long code) {
+    this.code = code;
   }
 
   public void setName(String name) {
     this.name = name;
-  }
-
-  public void setParentRegion(ParentRegionDTO parentRegion) {
-    this.parentRegion = parentRegion;
-  }
-
-  public void setUM49Code(Long uM49Code) {
-    this.UM49Code = uM49Code;
   }
 
 }

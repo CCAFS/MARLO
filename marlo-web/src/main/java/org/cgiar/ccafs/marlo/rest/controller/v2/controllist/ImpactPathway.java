@@ -31,6 +31,8 @@ import io.swagger.annotations.ApiParam;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -45,6 +47,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class ImpactPathway {
 
   private static final Logger LOG = LoggerFactory.getLogger(ImpactPathway.class);
+  @Autowired
+  private Environment env;
 
   private OutcomeItem<OutcomeDTO> outcomeItem;
   private MilestoneItem<MilestoneDTO> milestoneItem;
@@ -69,7 +73,7 @@ public class ImpactPathway {
     @ApiParam(value = "${ImpactPathway.milestones.id.param.id}", required = true) @PathVariable Long id) {
     ResponseEntity<MilestoneDTO> response = this.milestoneItem.findMilestoneById(id, CGIAREntity);
     if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
-      throw new NotFoundException("404", "Milestone not found");
+      throw new NotFoundException("404", this.env.getProperty("ImpactPathway.milestones.id.404"));
     }
     return response;
   }
@@ -84,7 +88,7 @@ public class ImpactPathway {
     @ApiParam(value = "${ImpactPathway.outcomes.id.param.id}", required = true) @PathVariable Long id) {
     ResponseEntity<OutcomeDTO> response = this.outcomeItem.findOutcomeById(id, CGIAREntity);
     if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
-      throw new NotFoundException("404", "Outcome not found");
+      throw new NotFoundException("404", this.env.getProperty("ImpactPathway.outcomes.id.404"));
     }
     return response;
   }
@@ -106,7 +110,7 @@ public class ImpactPathway {
     throws NotFoundException {
     List<MilestoneDTO> response = this.milestoneItem.getAllMilestones(flagshipId, CGIAREntity, repoYear);
     if (response == null || response.isEmpty()) {
-      throw new NotFoundException("404", "Milestones not found");
+      throw new NotFoundException("404", this.env.getProperty("ImpactPathway.milestones.all.404"));
     }
     return response;
   }
@@ -128,7 +132,7 @@ public class ImpactPathway {
     throws NotFoundException {
     List<OutcomeDTO> response = this.outcomeItem.getAllOutcomes(flagshipId, CGIAREntity, targetYear, repoYear);
     if (response == null || response.isEmpty()) {
-      throw new NotFoundException("404", "Outcomes not found");
+      throw new NotFoundException("404", this.env.getProperty("ImpactPathway.outcomes.all.404"));
     }
     return response;
   }
