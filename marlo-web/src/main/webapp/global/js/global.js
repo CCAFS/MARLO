@@ -71,6 +71,7 @@ $(document).ready(function() {
     setCustomEvent('CGIAR_Entity', 'onChatMinimized', currentCrpSession);
     hideDragButton();
   };
+
   Tawk_API.onChatHidden = function() {
     setCustomEvent('CGIAR_Entity', 'onChatHidden', currentCrpSession);
     hideDragButton();
@@ -79,6 +80,7 @@ $(document).ready(function() {
   Tawk_API.onChatStarted = function() {
     setCustomEvent('CGIAR_Entity', 'onChatStarted', currentCrpSession);
   };
+
   Tawk_API.onChatEnded = function() {
     setCustomEvent('CGIAR_Entity', 'onChatEnded', currentCrpSession);
   };

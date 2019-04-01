@@ -222,7 +222,12 @@
             <tr>
               [#-- Title --]
               <td>
-                [@utils.tableText value=(item.deliverableInfo.title)!"" /]
+                [#local publicationTitle = (item.getMetadataValue(1))!""]
+                [#if !(publicationTitle?has_content) ]
+                  [#local publicationTitle = (item.deliverableInfo.title)!"" ]
+                [/#if]
+                
+                [@utils.tableText value=publicationTitle /]
                 
                 [#if isFromProject]<br /> <small>(From Project P${item.project.id})</small> [/#if]
                 
