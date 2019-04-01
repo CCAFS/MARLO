@@ -918,7 +918,8 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
           || c.getFundingSource().getFundingSourceInfo(action.getActualPhase()).getStatus() != 5))
       .collect(Collectors.toList()));
 
-    if (action.isReportingActive() && action.hasSpecificities(action.getCrpEnableBudgetExecution())) {
+    if ((action.isReportingActive() || action.isUpKeepActive())
+      && action.hasSpecificities(action.getCrpEnableBudgetExecution())) {
       project.setBudgetExecutions(project.getProjectBudgetExecutions().stream()
         .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(action.getActualPhase()))
         .collect(Collectors.toList()));

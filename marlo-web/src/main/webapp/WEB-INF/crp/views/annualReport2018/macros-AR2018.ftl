@@ -25,7 +25,7 @@
 [/#macro]
 
 
-[#macro tableFPSynthesis tableName="tableName" list=[] columns=[] crpProgramField="reportSynthesis.liaisonInstitution.crpProgram" showEmptyRows=true showTitle=true showHeader=true]
+[#macro tableFPSynthesis tableName="tableName" list=[] columns=[] crpProgramField="reportSynthesis.liaisonInstitution.crpProgram" showEmptyRows=true showTitle=true showHeader=true allInOne=false]
   <div class="form-group">
     [#if showTitle]
       <h4 class="simpleTitle">[@s.text name="${tableName}.title" /]</h4>
@@ -35,7 +35,12 @@
       <thead>
         <tr>
           <th class="col-md-1 text-center"> [@s.text name="annualReport2018.tableFP" /] </th>
-          [#list columns as column]<th class="text-center"> [@s.text name="${tableName}.column${column_index}" /] </th>[/#list]
+          [#if allInOne]
+            <th class="text-center"> Progress By [@s.text name="global.flagship" /]s </th>
+          [#else]
+            [#list columns as column]<th class="text-center"> [@s.text name="${tableName}.column${column_index}" /] </th>[/#list]
+          [/#if]
+          
         </tr>
       </thead>
       [/#if]
@@ -53,15 +58,31 @@
               <td class="col-md-1 text-center">
                 <span class="programTag" style="border-color:${(crpProgram.color)!'#fff'}">${(crpProgram.acronym)!}</span>
               </td>
-              [#list columns as column]
+              [#if allInOne]
                 <td>
-                  [#if (item[column]?has_content)!false] 
-                    ${item[column]?replace('\n', '<br>')} 
-                  [#else]
-                    <i style="opacity:0.5">[@s.text name="global.prefilledByFlagship"/]</i>
-                  [/#if]
+                  [#list columns as column]
+                    <div class="form-group">
+                       <strong> [@s.text name="${tableName}.column${column_index}" /]: </strong> <br />
+                      [#if (item[column]?has_content)!false] 
+                        ${item[column]?replace('\n', '<br>')} 
+                      [#else]
+                        <i style="opacity:0.5">[@s.text name="global.prefilledByFlagship"/]</i>
+                      [/#if]
+                    </div>
+                  [/#list]
                 </td>
-              [/#list]
+              [#else]
+                [#list columns as column]
+                  <td>
+                    [#if (item[column]?has_content)!false] 
+                      ${item[column]?replace('\n', '<br>')} 
+                    [#else]
+                      <i style="opacity:0.5">[@s.text name="global.prefilledByFlagship"/]</i>
+                    [/#if]
+                  </td>
+                [/#list]
+              [/#if]
+              
             </tr>
             [/#if]
           [/#list]

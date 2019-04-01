@@ -210,7 +210,7 @@ public class ProjectPolicyAction extends BaseAction {
       if (policy.getProjectPolicyCountries() != null && policy.getProjectPolicyCountries().size() > 0) {
 
         List<ProjectPolicyCountry> regionPrev = new ArrayList<>(policy.getProjectPolicyCountries().stream()
-          .filter(nu -> nu.isActive() && nu.getPhase().getId() == phase.getId()).collect(Collectors.toList()));
+          .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
 
         for (ProjectPolicyCountry policyRegion : regionPrev) {
 
@@ -222,7 +222,7 @@ public class ProjectPolicyAction extends BaseAction {
       if (policy.getProjectPolicyRegions() != null && policy.getProjectPolicyRegions().size() > 0) {
 
         List<ProjectPolicyRegion> regionPrev = new ArrayList<>(policy.getProjectPolicyRegions().stream()
-          .filter(nu -> nu.isActive() && nu.getPhase().getId() == phase.getId()).collect(Collectors.toList()));
+          .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
 
         for (ProjectPolicyRegion policyRegion : regionPrev) {
 
@@ -559,7 +559,7 @@ public class ProjectPolicyAction extends BaseAction {
         // Setup Geographic Scope
         if (policy.getProjectPolicyGeographicScopes() != null) {
           policy.setGeographicScopes(new ArrayList<>(policy.getProjectPolicyGeographicScopes().stream()
-            .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
+            .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
         }
 
 
@@ -592,37 +592,37 @@ public class ProjectPolicyAction extends BaseAction {
         // Policy Type ( Whose Policy is This ? ) List
         if (policy.getProjectPolicyOwners() != null) {
           policy.setOwners(new ArrayList<>(policy.getProjectPolicyOwners().stream()
-            .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
+            .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
         }
 
         // Crp List
         if (policy.getProjectPolicyCrps() != null) {
           policy.setCrps(new ArrayList<>(policy.getProjectPolicyCrps().stream()
-            .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
+            .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
         }
 
         // SubIdos List
         if (policy.getProjectPolicySubIdos() != null) {
           policy.setSubIdos(new ArrayList<>(policy.getProjectPolicySubIdos().stream()
-            .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
+            .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
         }
 
         // Innovations List
         if (policy.getProjectPolicyInnovations() != null) {
           policy.setInnovations(new ArrayList<>(policy.getProjectPolicyInnovations().stream()
-            .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
+            .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
         }
 
         // Evidence List
         if (policy.getProjectExpectedStudyPolicies() != null) {
           policy.setEvidences(new ArrayList<>(policy.getProjectExpectedStudyPolicies().stream()
-            .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
+            .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
         }
 
         // Cgiar Cross Cutting Markers List
         if (policy.getCrossCuttingMarkers() != null) {
           policy.setCrossCuttingMarkers(new ArrayList<>(policy.getProjectPolicyCrossCuttingMarkers().stream()
-            .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
+            .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
         }
 
 
@@ -1029,7 +1029,7 @@ public class ProjectPolicyAction extends BaseAction {
     if (projectPolicy.getProjectPolicyCrps() != null && projectPolicy.getProjectPolicyCrps().size() > 0) {
 
       List<ProjectPolicyCrp> crpPrev = new ArrayList<>(projectPolicy.getProjectPolicyCrps().stream()
-        .filter(nu -> nu.isActive() && nu.getPhase().getId() == phase.getId()).collect(Collectors.toList()));
+        .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
 
       for (ProjectPolicyCrp policyCrp : crpPrev) {
         if (policy.getCrps() == null || !policy.getCrps().contains(policyCrp)) {
@@ -1069,8 +1069,9 @@ public class ProjectPolicyAction extends BaseAction {
     // Search and deleted form Information
     if (projectPolicy.getProjectExpectedStudyPolicies() != null
       && projectPolicy.getProjectExpectedStudyPolicies().size() > 0) {
-      List<ProjectExpectedStudyPolicy> policyPrev = new ArrayList<>(projectPolicy.getProjectExpectedStudyPolicies()
-        .stream().filter(nu -> nu.isActive() && nu.getPhase().getId() == phase.getId()).collect(Collectors.toList()));
+      List<ProjectExpectedStudyPolicy> policyPrev =
+        new ArrayList<>(projectPolicy.getProjectExpectedStudyPolicies().stream()
+          .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
 
       for (ProjectExpectedStudyPolicy studyPolicy : policyPrev) {
         if (policy.getEvidences() == null || !policy.getEvidences().contains(studyPolicy)) {
@@ -1113,8 +1114,9 @@ public class ProjectPolicyAction extends BaseAction {
     if (projectPolicy.getProjectPolicyGeographicScopes() != null
       && projectPolicy.getProjectPolicyGeographicScopes().size() > 0) {
 
-      List<ProjectPolicyGeographicScope> scopePrev = new ArrayList<>(projectPolicy.getProjectPolicyGeographicScopes()
-        .stream().filter(nu -> nu.isActive() && nu.getPhase().getId() == phase.getId()).collect(Collectors.toList()));
+      List<ProjectPolicyGeographicScope> scopePrev =
+        new ArrayList<>(projectPolicy.getProjectPolicyGeographicScopes().stream()
+          .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
 
       for (ProjectPolicyGeographicScope scope : scopePrev) {
         if (policy.getGeographicScopes() == null || !policy.getGeographicScopes().contains(scope)) {
@@ -1156,8 +1158,9 @@ public class ProjectPolicyAction extends BaseAction {
     // Search and deleted form Information
     if (projectPolicy.getProjectPolicyInnovations() != null && projectPolicy.getProjectPolicyInnovations().size() > 0) {
 
-      List<ProjectPolicyInnovation> innovationPrev = new ArrayList<>(projectPolicy.getProjectPolicyInnovations()
-        .stream().filter(nu -> nu.isActive() && nu.getPhase().getId() == phase.getId()).collect(Collectors.toList()));
+      List<ProjectPolicyInnovation> innovationPrev =
+        new ArrayList<>(projectPolicy.getProjectPolicyInnovations().stream()
+          .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
 
       for (ProjectPolicyInnovation policyInnovation : innovationPrev) {
         if (policy.getInnovations() == null || !policy.getInnovations().contains(policyInnovation)) {
@@ -1200,7 +1203,7 @@ public class ProjectPolicyAction extends BaseAction {
     if (projectPolicy.getProjectPolicyOwners() != null && projectPolicy.getProjectPolicyOwners().size() > 0) {
 
       List<ProjectPolicyOwner> ownerPrev = new ArrayList<>(projectPolicy.getProjectPolicyOwners().stream()
-        .filter(nu -> nu.isActive() && nu.getPhase().getId() == phase.getId()).collect(Collectors.toList()));
+        .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
 
       for (ProjectPolicyOwner policyOwner : ownerPrev) {
         if (policy.getOwners() == null || !policy.getOwners().contains(policyOwner)) {
@@ -1242,7 +1245,7 @@ public class ProjectPolicyAction extends BaseAction {
     if (projectPolicy.getProjectPolicyRegions() != null && projectPolicy.getProjectPolicyRegions().size() > 0) {
 
       List<ProjectPolicyRegion> regionPrev = new ArrayList<>(projectPolicy.getProjectPolicyRegions().stream()
-        .filter(nu -> nu.isActive() && nu.getPhase().getId() == phase.getId()).collect(Collectors.toList()));
+        .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
 
       for (ProjectPolicyRegion policyRegion : regionPrev) {
         if (policy.getRegions() == null || !policy.getRegions().contains(policyRegion)) {
@@ -1284,7 +1287,7 @@ public class ProjectPolicyAction extends BaseAction {
     if (projectPolicy.getProjectPolicySubIdos() != null && projectPolicy.getProjectPolicySubIdos().size() > 0) {
 
       List<ProjectPolicySubIdo> subIdoPrev = new ArrayList<>(projectPolicy.getProjectPolicySubIdos().stream()
-        .filter(nu -> nu.isActive() && nu.getPhase().getId() == phase.getId()).collect(Collectors.toList()));
+        .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
 
       for (ProjectPolicySubIdo policySubIdo : subIdoPrev) {
         if (policy.getSubIdos() == null || !policy.getSubIdos().contains(policySubIdo)) {

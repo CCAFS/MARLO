@@ -26,6 +26,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectFocusManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
+import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisMeliaEvaluationActionManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisMeliaEvaluationManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisMeliaManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisMeliaStudyManager;
@@ -47,6 +48,7 @@ import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressStudy;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressStudyDTO;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisMelia;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisMeliaEvaluation;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisMeliaEvaluationAction;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisMeliaStudy;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
@@ -60,7 +62,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -100,6 +101,7 @@ public class MonitoringEvaluationAction extends BaseAction {
   private ProjectExpectedStudyManager projectExpectedStudyManager;
   private ReportSynthesisMeliaStudyManager reportSynthesisMeliaStudyManager;
   private ReportSynthesisMeliaEvaluationManager reportSynthesisMeliaEvaluationManager;
+  private ReportSynthesisMeliaEvaluationActionManager reportSynthesisMeliaEvaluationActionManager;
   private PhaseManager phaseManager;
   // Variables
   private String transaction;
@@ -124,7 +126,8 @@ public class MonitoringEvaluationAction extends BaseAction {
     ProjectFocusManager projectFocusManager, ProjectManager projectManager,
     ProjectExpectedStudyManager projectExpectedStudyManager,
     ReportSynthesisMeliaStudyManager reportSynthesisMeliaStudyManager,
-    ReportSynthesisMeliaEvaluationManager reportSynthesisMeliaEvaluationManager, PhaseManager phaseManager) {
+    ReportSynthesisMeliaEvaluationManager reportSynthesisMeliaEvaluationManager, PhaseManager phaseManager,
+    ReportSynthesisMeliaEvaluationActionManager reportSynthesisMeliaEvaluationActionManager) {
     super(config);
     this.crpManager = crpManager;
     this.liaisonInstitutionManager = liaisonInstitutionManager;
@@ -139,6 +142,7 @@ public class MonitoringEvaluationAction extends BaseAction {
     this.projectExpectedStudyManager = projectExpectedStudyManager;
     this.reportSynthesisMeliaStudyManager = reportSynthesisMeliaStudyManager;
     this.reportSynthesisMeliaEvaluationManager = reportSynthesisMeliaEvaluationManager;
+    this.reportSynthesisMeliaEvaluationActionManager = reportSynthesisMeliaEvaluationActionManager;
     this.phaseManager = phaseManager;
   }
 
@@ -170,7 +174,7 @@ public class MonitoringEvaluationAction extends BaseAction {
         if (projectExpectedStudy.getProjectExpectedStudyInfo(this.getActualPhase()).getStudyType() != null
           && projectExpectedStudy.getProjectExpectedStudyInfo(this.getActualPhase()).getStudyType().getId() != 1
           && projectExpectedStudy.getProjectExpectedStudyInfo().getStatus() != null
-          && projectExpectedStudy.getProjectExpectedStudyInfo().getYear() == this.getCurrentCycleYear()) {
+          && projectExpectedStudy.getProjectExpectedStudyInfo().getYear().equals(this.getCurrentCycleYear())) {
 
           ReportSynthesisFlagshipProgressStudyDTO dto = new ReportSynthesisFlagshipProgressStudyDTO();
           projectExpectedStudy.getProject()
@@ -182,8 +186,9 @@ public class MonitoringEvaluationAction extends BaseAction {
               dto.setLiaisonInstitutions(new ArrayList<>());
               dto.getLiaisonInstitutions().add(this.liaisonInstitution);
             } else {
-              List<ProjectFocus> projectFocuses = new ArrayList<>(projectExpectedStudy.getProject().getProjectFocuses()
-                .stream().filter(pf -> pf.isActive() && pf.getPhase().getId() == phaseID).collect(Collectors.toList()));
+              List<ProjectFocus> projectFocuses =
+                new ArrayList<>(projectExpectedStudy.getProject().getProjectFocuses().stream()
+                  .filter(pf -> pf.isActive() && pf.getPhase().getId().equals(phaseID)).collect(Collectors.toList()));
               List<LiaisonInstitution> liaisonInstitutions = new ArrayList<>();
               for (ProjectFocus projectFocus : projectFocuses) {
                 liaisonInstitutions.addAll(projectFocus.getCrpProgram().getLiaisonInstitutions().stream()
@@ -204,7 +209,7 @@ public class MonitoringEvaluationAction extends BaseAction {
 
       List<ProjectExpectedStudy> expectedStudies = new ArrayList<>(projectExpectedStudyManager.findAll().stream()
         .filter(es -> es.isActive() && es.getProjectExpectedStudyInfo(this.getActualPhase()) != null
-          && es.getProjectExpectedStudyInfo(this.getActualPhase()).getYear() == this.getCurrentCycleYear()
+          && es.getProjectExpectedStudyInfo(this.getActualPhase()).getYear().equals(this.getCurrentCycleYear())
           && es.getProject() == null)
         .collect(Collectors.toList()));
 
@@ -212,46 +217,50 @@ public class MonitoringEvaluationAction extends BaseAction {
         if (projectExpectedStudy.getProjectExpectedStudyInfo(this.getActualPhase()) != null) {
           List<ProjectExpectedStudyFlagship> studiesPrograms =
             new ArrayList<>(projectExpectedStudy.getProjectExpectedStudyFlagships().stream()
-              .filter(s -> s.isActive() && s.getPhase().getId() == this.getActualPhase().getId())
+              .filter(s -> s.isActive() && s.getPhase().getId().equals(this.getActualPhase().getId()))
               .collect(Collectors.toList()));
           for (ProjectExpectedStudyFlagship projectExpectedStudyFlagship : studiesPrograms) {
             CrpProgram crpProgram = liaisonInstitution.getCrpProgram();
-            if (crpProgram.equals(projectExpectedStudyFlagship.getCrpProgram())) {
-              if (projectExpectedStudy.getProjectExpectedStudyInfo(this.getActualPhase()) != null) {
-                if (projectExpectedStudy.getProjectExpectedStudyInfo(this.getActualPhase()).getStudyType() != null
-                  && projectExpectedStudy.getProjectExpectedStudyInfo(this.getActualPhase()).getStudyType().getId() != 1
-                  && projectExpectedStudy.getProjectExpectedStudyInfo().getStatus() != null
-                  && projectExpectedStudy.getProjectExpectedStudyInfo().getYear() == this.getCurrentCycleYear()) {
-                  ReportSynthesisFlagshipProgressStudyDTO dto = new ReportSynthesisFlagshipProgressStudyDTO();
-                  projectExpectedStudy.getProject()
-                    .setProjectInfo(projectExpectedStudy.getProject().getProjecInfoPhase(this.getActualPhase()));
-                  dto.setProjectExpectedStudy(projectExpectedStudy);
+            if (crpProgram != null) {
+              if (crpProgram.equals(projectExpectedStudyFlagship.getCrpProgram())) {
+                if (projectExpectedStudy.getProjectExpectedStudyInfo(this.getActualPhase()) != null) {
+                  if (projectExpectedStudy.getProjectExpectedStudyInfo(this.getActualPhase()).getStudyType() != null
+                    && projectExpectedStudy.getProjectExpectedStudyInfo(this.getActualPhase()).getStudyType()
+                      .getId() != 1
+                    && projectExpectedStudy.getProjectExpectedStudyInfo().getStatus() != null && projectExpectedStudy
+                      .getProjectExpectedStudyInfo().getYear().equals(this.getCurrentCycleYear())) {
+                    ReportSynthesisFlagshipProgressStudyDTO dto = new ReportSynthesisFlagshipProgressStudyDTO();
+                    projectExpectedStudy.getProject()
+                      .setProjectInfo(projectExpectedStudy.getProject().getProjecInfoPhase(this.getActualPhase()));
+                    dto.setProjectExpectedStudy(projectExpectedStudy);
 
-                  if (projectExpectedStudy.getProject().getProjectInfo() != null) {
-                    if (projectExpectedStudy.getProject().getProjectInfo().getAdministrative() != null
-                      && projectExpectedStudy.getProject().getProjectInfo().getAdministrative()) {
-                      dto.setLiaisonInstitutions(new ArrayList<>());
-                      dto.getLiaisonInstitutions().add(this.liaisonInstitution);
-                    } else {
-                      List<ProjectFocus> projectFocuses = new ArrayList<>(projectExpectedStudy.getProject()
-                        .getProjectFocuses().stream().filter(pf -> pf.isActive() && pf.getPhase().getId() == phaseID)
-                        .collect(Collectors.toList()));
-                      List<LiaisonInstitution> liaisonInstitutions = new ArrayList<>();
-                      for (ProjectFocus projectFocus : projectFocuses) {
-                        liaisonInstitutions.addAll(projectFocus.getCrpProgram().getLiaisonInstitutions().stream()
-                          .filter(li -> li.isActive() && li.getCrpProgram() != null
-                            && li.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()
-                            && li.getCrp() != null && li.getCrp().equals(this.getLoggedCrp()))
-                          .collect(Collectors.toList()));
+                    if (projectExpectedStudy.getProject().getProjectInfo() != null) {
+                      if (projectExpectedStudy.getProject().getProjectInfo().getAdministrative() != null
+                        && projectExpectedStudy.getProject().getProjectInfo().getAdministrative()) {
+                        dto.setLiaisonInstitutions(new ArrayList<>());
+                        dto.getLiaisonInstitutions().add(this.liaisonInstitution);
+                      } else {
+                        List<ProjectFocus> projectFocuses =
+                          new ArrayList<>(projectExpectedStudy.getProject().getProjectFocuses().stream()
+                            .filter(pf -> pf.isActive() && pf.getPhase().getId().equals(phaseID))
+                            .collect(Collectors.toList()));
+                        List<LiaisonInstitution> liaisonInstitutions = new ArrayList<>();
+                        for (ProjectFocus projectFocus : projectFocuses) {
+                          liaisonInstitutions.addAll(projectFocus.getCrpProgram().getLiaisonInstitutions().stream()
+                            .filter(li -> li.isActive() && li.getCrpProgram() != null
+                              && li.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()
+                              && li.getCrp() != null && li.getCrp().equals(this.getLoggedCrp()))
+                            .collect(Collectors.toList()));
+                        }
+                        dto.setLiaisonInstitutions(liaisonInstitutions);
                       }
-                      dto.setLiaisonInstitutions(liaisonInstitutions);
+
+                      flagshipPlannedList.add(dto);
+                      break;
                     }
 
-                    flagshipPlannedList.add(dto);
-                    break;
+
                   }
-
-
                 }
               }
             }
@@ -446,7 +455,7 @@ public class MonitoringEvaluationAction extends BaseAction {
         if (user.getLiasonsUsers() != null || !user.getLiasonsUsers().isEmpty()) {
           List<LiaisonUser> liaisonUsers = new ArrayList<>(user.getLiasonsUsers().stream()
             .filter(lu -> lu.isActive() && lu.getLiaisonInstitution().isActive()
-              && lu.getLiaisonInstitution().getCrp().getId() == loggedCrp.getId()
+              && lu.getLiaisonInstitution().getCrp().getId().equals(loggedCrp.getId())
               && lu.getLiaisonInstitution().getInstitution() == null)
             .collect(Collectors.toList()));
           if (!liaisonUsers.isEmpty()) {
@@ -557,6 +566,21 @@ public class MonitoringEvaluationAction extends BaseAction {
                 .getReportSynthesisMeliaEvaluations().stream().filter(e -> e.isActive()).collect(Collectors.toList())));
             reportSynthesis.getReportSynthesisMelia().getEvaluations()
               .sort(Comparator.comparing(ReportSynthesisMeliaEvaluation::getId));
+
+            // load evaluation actions
+            if (reportSynthesis.getReportSynthesisMelia().getEvaluations() != null
+              && !reportSynthesis.getReportSynthesisMelia().getEvaluations().isEmpty()) {
+              for (ReportSynthesisMeliaEvaluation reportSynthesisMeliaEvaluation : reportSynthesis
+                .getReportSynthesisMelia().getEvaluations()) {
+                if (reportSynthesisMeliaEvaluation.getReportSynthesisMeliaEvaluationActions() != null
+                  && !reportSynthesisMeliaEvaluation.getReportSynthesisMeliaEvaluationActions().isEmpty()) {
+                  reportSynthesisMeliaEvaluation.setMeliaEvaluationActions(
+                    new ArrayList<>(reportSynthesisMeliaEvaluation.getReportSynthesisMeliaEvaluationActions().stream()
+                      .filter(e -> e.isActive()).collect(Collectors.toList())));
+                }
+              }
+            }
+
           }
         }
       }
@@ -566,7 +590,9 @@ public class MonitoringEvaluationAction extends BaseAction {
     statuses = new HashMap<>();
     List<ProjectStatusEnum> listStatus = Arrays.asList(ProjectStatusEnum.values());
     for (ProjectStatusEnum globalStatusEnum : listStatus) {
-      statuses.put(Integer.parseInt(globalStatusEnum.getStatusId()), globalStatusEnum.getStatus());
+      if (globalStatusEnum.getStatusId().equals("2") || globalStatusEnum.getStatusId().equals("3")) {
+        statuses.put(Integer.parseInt(globalStatusEnum.getStatusId()), globalStatusEnum.getStatus());
+      }
     }
 
     // Get the list of liaison institutions Flagships and PMU.
@@ -650,7 +676,7 @@ public class MonitoringEvaluationAction extends BaseAction {
         path.toFile().delete();
       }
 
-      Collection<String> messages = this.getActionMessages();
+      this.getActionMessages();
       if (!this.getInvalidFields().isEmpty()) {
         this.setActionMessages(null);
         // this.addActionMessage(Map.toString(this.getInvalidFields().toArray()));
@@ -686,6 +712,15 @@ public class MonitoringEvaluationAction extends BaseAction {
       for (ReportSynthesisMeliaEvaluation evaluation : evaluationPrev) {
         if (!reportSynthesis.getReportSynthesisMelia().getEvaluations().contains(evaluation)) {
           reportSynthesisMeliaEvaluationManager.deleteReportSynthesisMeliaEvaluation(evaluation.getId());
+          // Delete evaluationActions
+          if (evaluation.getReportSynthesisMeliaEvaluationActions() != null
+            && !evaluation.getReportSynthesisMeliaEvaluationActions().isEmpty()) {
+            for (ReportSynthesisMeliaEvaluationAction reportSynthesisMeliaEvaluationAction : evaluation
+              .getReportSynthesisMeliaEvaluationActions()) {
+              reportSynthesisMeliaEvaluationActionManager
+                .deleteReportSynthesisMeliaEvaluationAction(reportSynthesisMeliaEvaluationAction.getId());
+            }
+          }
         }
       }
     }
@@ -698,35 +733,79 @@ public class MonitoringEvaluationAction extends BaseAction {
 
           evaluationSave.setReportSynthesisMelia(meliaDB);
 
-
           evaluationSave.setStatus(evaluation.getStatus());
           evaluationSave.setNameEvaluation(evaluation.getNameEvaluation());
           evaluationSave.setRecommendation(evaluation.getRecommendation());
           evaluationSave.setManagementResponse(evaluation.getManagementResponse());
-          evaluationSave.setTextWhom(evaluation.getTextWhom());
-          evaluationSave.setTextWhen(evaluation.getTextWhen());
-          evaluationSave.setActions(evaluation.getActions());
           evaluationSave.setComments(evaluation.getComments());
+          evaluationSave = reportSynthesisMeliaEvaluationManager.saveReportSynthesisMeliaEvaluation(evaluationSave);
 
-
-          reportSynthesisMeliaEvaluationManager.saveReportSynthesisMeliaEvaluation(evaluationSave);
+          // Save evaluationActions
+          for (ReportSynthesisMeliaEvaluationAction reportSynthesisMeliaEvaluationAction : evaluation
+            .getMeliaEvaluationActions()) {
+            ReportSynthesisMeliaEvaluationAction meliaEvaluationActionSave = new ReportSynthesisMeliaEvaluationAction();
+            meliaEvaluationActionSave.setActions(reportSynthesisMeliaEvaluationAction.getActions());
+            meliaEvaluationActionSave.setTextWhom(reportSynthesisMeliaEvaluationAction.getTextWhom());
+            meliaEvaluationActionSave.setTextWhen(reportSynthesisMeliaEvaluationAction.getTextWhen());
+            meliaEvaluationActionSave.setReportSynthesisMeliaEvaluation(evaluationSave);
+            reportSynthesisMeliaEvaluationActionManager
+              .saveReportSynthesisMeliaEvaluationAction(meliaEvaluationActionSave);
+          }
         } else {
 
           ReportSynthesisMeliaEvaluation evaluationPrev =
             reportSynthesisMeliaEvaluationManager.getReportSynthesisMeliaEvaluationById(evaluation.getId());
 
-
           evaluationPrev.setStatus(evaluation.getStatus());
           evaluationPrev.setNameEvaluation(evaluation.getNameEvaluation());
           evaluationPrev.setRecommendation(evaluation.getRecommendation());
           evaluationPrev.setManagementResponse(evaluation.getManagementResponse());
-          evaluationPrev.setTextWhom(evaluation.getTextWhom());
-          evaluationPrev.setTextWhen(evaluation.getTextWhen());
-          evaluationPrev.setActions(evaluation.getActions());
           evaluationPrev.setComments(evaluation.getComments());
 
-          reportSynthesisMeliaEvaluationManager.saveReportSynthesisMeliaEvaluation(evaluationPrev);
+          List<ReportSynthesisMeliaEvaluationAction> evaluationActionsPrev =
+            new ArrayList<>(evaluationPrev.getReportSynthesisMeliaEvaluationActions().stream()
+              .filter(nu -> nu.isActive()).collect(Collectors.toList()));
 
+          for (ReportSynthesisMeliaEvaluationAction evaluationAction : evaluationActionsPrev) {
+            if (evaluation.getMeliaEvaluationActions() == null || evaluation.getMeliaEvaluationActions().isEmpty()
+              || !evaluation.getMeliaEvaluationActions().contains(evaluationAction)) {
+              reportSynthesisMeliaEvaluationActionManager
+                .deleteReportSynthesisMeliaEvaluationAction(evaluationAction.getId());
+            }
+          }
+
+
+          // Save evaluation actions
+          if (evaluation.getMeliaEvaluationActions() != null && !evaluation.getMeliaEvaluationActions().isEmpty()) {
+            for (ReportSynthesisMeliaEvaluationAction reportSynthesisMeliaEvaluationAction : evaluation
+              .getMeliaEvaluationActions()) {
+
+              if (reportSynthesisMeliaEvaluationAction.getId() == null) {
+                ReportSynthesisMeliaEvaluationAction meliaEvaluationActionSave =
+                  new ReportSynthesisMeliaEvaluationAction();
+                meliaEvaluationActionSave.setActions(reportSynthesisMeliaEvaluationAction.getActions());
+                meliaEvaluationActionSave.setTextWhom(reportSynthesisMeliaEvaluationAction.getTextWhom());
+                meliaEvaluationActionSave.setTextWhen(reportSynthesisMeliaEvaluationAction.getTextWhen());
+                meliaEvaluationActionSave.setReportSynthesisMeliaEvaluation(evaluationPrev);
+                reportSynthesisMeliaEvaluationActionManager
+                  .saveReportSynthesisMeliaEvaluationAction(meliaEvaluationActionSave);
+              } else {
+                ReportSynthesisMeliaEvaluationAction evaluationActionUpdate =
+                  reportSynthesisMeliaEvaluationActionManager
+                    .getReportSynthesisMeliaEvaluationActionById(reportSynthesisMeliaEvaluationAction.getId());
+
+                evaluationActionUpdate.setActions(reportSynthesisMeliaEvaluationAction.getActions());
+                evaluationActionUpdate.setTextWhom(reportSynthesisMeliaEvaluationAction.getTextWhom());
+                evaluationActionUpdate.setTextWhen(reportSynthesisMeliaEvaluationAction.getTextWhen());
+                reportSynthesisMeliaEvaluationActionManager
+                  .saveReportSynthesisMeliaEvaluationAction(evaluationActionUpdate);
+              }
+
+            }
+
+          }
+
+          reportSynthesisMeliaEvaluationManager.saveReportSynthesisMeliaEvaluation(evaluationPrev);
         }
       }
     }
@@ -868,15 +947,15 @@ public class MonitoringEvaluationAction extends BaseAction {
       if (projectFocusManager.findAll() != null) {
 
         List<ProjectFocus> projectFocus = new ArrayList<>(projectFocusManager.findAll().stream()
-          .filter(pf -> pf.isActive() && pf.getCrpProgram().getId() == liaisonInstitution.getCrpProgram().getId()
-            && pf.getPhase() != null && pf.getPhase().getId() == phaseID)
+          .filter(pf -> pf.isActive() && pf.getCrpProgram().getId().equals(liaisonInstitution.getCrpProgram().getId())
+            && pf.getPhase() != null && pf.getPhase().getId().equals(phaseID))
           .collect(Collectors.toList()));
 
         for (ProjectFocus focus : projectFocus) {
           Project project = projectManager.getProjectById(focus.getProject().getId());
           List<ProjectExpectedStudy> expectedStudies = new ArrayList<>(project.getProjectExpectedStudies().stream()
             .filter(es -> es.isActive() && es.getProjectExpectedStudyInfo(phase) != null
-              && es.getProjectExpectedStudyInfo(phase).getYear() == this.getCurrentCycleYear())
+              && es.getProjectExpectedStudyInfo(phase).getYear().equals(this.getCurrentCycleYear()))
             .collect(Collectors.toList()));
           for (ProjectExpectedStudy projectExpectedStudy : expectedStudies) {
             if (projectExpectedStudy.getProjectExpectedStudyInfo(phase) != null) {
@@ -890,22 +969,23 @@ public class MonitoringEvaluationAction extends BaseAction {
 
         List<ProjectExpectedStudy> expectedStudies = new ArrayList<>(projectExpectedStudyManager.findAll().stream()
           .filter(es -> es.isActive() && es.getProjectExpectedStudyInfo(phase) != null
-            && es.getProjectExpectedStudyInfo(phase).getYear() == this.getCurrentCycleYear() && es.getProject() == null)
+            && es.getProjectExpectedStudyInfo(phase).getYear().equals(this.getCurrentCycleYear())
+            && es.getProject() == null)
           .collect(Collectors.toList()));
 
         for (ProjectExpectedStudy projectExpectedStudy : expectedStudies) {
           if (projectExpectedStudy.getProjectExpectedStudyInfo(phase) != null) {
             List<ProjectExpectedStudyFlagship> studiesPrograms =
               new ArrayList<>(projectExpectedStudy.getProjectExpectedStudyFlagships().stream()
-                .filter(s -> s.isActive() && s.getPhase().getId() == phase.getId()).collect(Collectors.toList()));
+                .filter(s -> s.isActive() && s.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
             for (ProjectExpectedStudyFlagship projectExpectedStudyFlagship : studiesPrograms) {
               CrpProgram crpProgram = liaisonInstitution.getCrpProgram();
               if (crpProgram.equals(projectExpectedStudyFlagship.getCrpProgram())) {
                 if (projectExpectedStudy.getProjectExpectedStudyInfo(phase) != null) {
                   if (projectExpectedStudy.getProjectExpectedStudyInfo(phase).getStudyType() != null
                     && projectExpectedStudy.getProjectExpectedStudyInfo(phase).getStudyType().getId() != 1
-                    && projectExpectedStudy.getProjectExpectedStudyInfo().getStatus() != null
-                    && projectExpectedStudy.getProjectExpectedStudyInfo().getYear() == this.getCurrentCycleYear()) {
+                    && projectExpectedStudy.getProjectExpectedStudyInfo().getStatus() != null && projectExpectedStudy
+                      .getProjectExpectedStudyInfo().getYear().equals(this.getCurrentCycleYear())) {
                     studiesList.add(projectExpectedStudy);
                     break;
                   }
@@ -919,7 +999,7 @@ public class MonitoringEvaluationAction extends BaseAction {
           if (projectExpectedStudy.getProjectExpectedStudySubIdos() != null
             && !projectExpectedStudy.getProjectExpectedStudySubIdos().isEmpty()) {
             projectExpectedStudy.setSubIdos(new ArrayList<>(projectExpectedStudy.getProjectExpectedStudySubIdos()
-              .stream().filter(s -> s.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
+              .stream().filter(s -> s.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
           }
         }
 

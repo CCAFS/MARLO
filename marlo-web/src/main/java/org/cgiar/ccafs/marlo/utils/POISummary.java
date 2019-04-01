@@ -93,16 +93,20 @@ public class POISummary {
   }
 
   private void addParagraphTextBreak(XWPFRun paragraphRun, String text) {
-    if (text.contains("\n")) {
-      String[] lines = text.split("\n");
-      paragraphRun.setText(lines[0], 0); // set first line into XWPFRun
-      for (int i = 1; i < lines.length; i++) {
-        // add break and insert new text
-        paragraphRun.addBreak();
-        paragraphRun.setText(lines[i]);
+    try {
+      if (text.contains("\n")) {
+        String[] lines = text.split("\n");
+        paragraphRun.setText(lines[0], 0); // set first line into XWPFRun
+        for (int i = 1; i < lines.length; i++) {
+          // add break and insert new text
+          paragraphRun.addBreak();
+          paragraphRun.setText(lines[i]);
+        }
+      } else {
+        paragraphRun.setText(text, 0);
       }
-    } else {
-      paragraphRun.setText(text, 0);
+    } catch (Exception e) {
+      System.out.println(e);
     }
   }
 
@@ -251,7 +255,6 @@ public class POISummary {
           paragraphRun.setItalic(false);
         }
         startPosition = i + expression.length() + 1;
-
         /*
          * Create paragraph with last position after the start of html tag until the close of this
          */
@@ -502,6 +505,73 @@ public class POISummary {
     return html;
   }
 
+  public void table2AnnualReportCRPStyle(XWPFTable table) {
+    /* Horizontal merge, From format table A */
+    CTHMerge hMerge = CTHMerge.Factory.newInstance();
+    CTHMerge hMerge1 = CTHMerge.Factory.newInstance();
+
+    /* Vertical merge, From format table A */
+    CTVMerge vmerge = CTVMerge.Factory.newInstance();
+    CTVMerge vmerge1 = CTVMerge.Factory.newInstance();
+
+
+    XWPFTableRow row = table.getRow(0);
+    int numberOfCell = row.getTableCells().size();
+    for (int y = 0; y < numberOfCell - 1; y++) {
+      XWPFTableCell cell = row.getCell(y);
+      if (cell.getCTTc() == null) {
+        ((CTTc) cell).addNewTcPr();
+      }
+      if (cell.getCTTc().getTcPr() == null) {
+        cell.getCTTc().addNewTcPr();
+      }
+      if (y > 0 && y < numberOfCell) {
+        if (cell.getText().trim().length() > 0) {
+          hMerge.setVal(STMerge.RESTART);
+          cell.getCTTc().getTcPr().setHMerge(hMerge);
+        } else {
+          hMerge1.setVal(STMerge.CONTINUE);
+          cell.getCTTc().getTcPr().setHMerge(hMerge1);
+        }
+      }
+    }
+
+    for (int x = 0; x < table.getNumberOfRows(); x++) {
+      if (x >= 0) {
+        XWPFTableRow row1 = table.getRow(x);
+        for (int y = 0; y <= 7; y++) {
+          XWPFTableCell cell = row1.getCell(y);
+
+          if (cell.getCTTc() == null) {
+            ((CTTc) cell).addNewTcPr();
+          }
+
+          if (cell.getCTTc().getTcPr() == null) {
+            cell.getCTTc().addNewTcPr();
+          }
+          if (x == 2 && !(cell.getText().trim().length() > 0)) {
+            break;
+          }
+          if (cell.getText().trim().length() > 0) {
+            if (y == 0) {
+              cell.getCTTc().getTcPr().addNewTcW().setW(BigInteger.valueOf(1500));
+            }
+            vmerge.setVal(STMerge.RESTART);
+            cell.getCTTc().getTcPr().setVMerge(vmerge);
+          } else {
+            if (y == 0) {
+              cell.getCTTc().getTcPr().addNewTcW().setW(BigInteger.valueOf(1500));
+            }
+            vmerge1.setVal(STMerge.CONTINUE);
+            cell.getCTTc().getTcPr().setVMerge(vmerge1);
+          }
+        }
+
+      }
+    }
+
+  }
+
   public void table3AnnualReport2018Style(XWPFTable table) {
     /* horizontal merge, From format tables I */
 
@@ -518,6 +588,7 @@ public class POISummary {
     }
   }
 
+
   public void table4AnnualReport2018Style(XWPFTable table) {
     /* horizontal merge, From format tables I */
 
@@ -533,7 +604,6 @@ public class POISummary {
       }
     }
   }
-
 
   public void table5AnnualReport2018Style(XWPFTable table) {
     /* Horizontal merge, From format tables B */
@@ -1372,6 +1442,17 @@ public class POISummary {
     paragraphRun.setFontSize(11);
   }
 
+  public void textParagraphBold(XWPFParagraph paragraph, String text) {
+    paragraph.setAlignment(ParagraphAlignment.BOTH);
+    XWPFRun paragraphRun = paragraph.createRun();
+
+    this.addParagraphTextBreak(paragraphRun, text);
+    paragraphRun.setColor(TEXT_FONT_COLOR);
+    paragraphRun.setBold(true);
+    paragraphRun.setFontFamily(FONT_TYPE);
+    paragraphRun.setFontSize(11);
+  }
+
   public void textParagraphFontCalibri(XWPFParagraph paragraph, String text) {
     paragraph.setAlignment(ParagraphAlignment.BOTH);
     XWPFRun paragraphRun = paragraph.createRun();
@@ -1527,6 +1608,385 @@ public class POISummary {
         TABLE_HEADER_FONT_COLOR = "D9EAD3";
       } else if (tableType.contains("table2AnnualReport2018") && (record == 0 || record == 1)) {
         TABLE_HEADER_FONT_COLOR = "D9E2F3";
+      } else if (tableType.contains("table6AnnualReport2018") && (record == 0 || record == 1)) {
+        TABLE_HEADER_FONT_COLOR = "E2EFD9";
+      } else {
+        TABLE_HEADER_FONT_COLOR = "FFFFFF";
+      }
+
+      XWPFTableRow dataRow = table.createRow();
+      for (POIField poiParameter : poiParameters) {
+        count++;
+        XWPFParagraph paragraph = dataRow.getCell(record).addParagraph();
+        paragraph.setAlignment(poiParameter.getAlignment());
+        // Hyperlink
+        if (poiParameter.getUrl() != null && !poiParameter.getUrl().isEmpty()) {
+          this.textHyperlink(poiParameter.getUrl(), poiParameter.getText(), paragraph);
+        } else {
+          XWPFRun paragraphRun = paragraph.createRun();
+          this.addParagraphTextBreak(paragraphRun, poiParameter.getText());
+          if (poiParameter.getFontColor() != null) {
+            paragraphRun.setColor(poiParameter.getFontColor());
+          } else {
+            paragraphRun.setColor(TEXT_FONT_COLOR);
+          }
+          paragraphRun.setFontFamily(FONT_TYPE);
+          paragraphRun.setFontSize(TABLE_TEXT_FONT_SIZE);
+
+          // Condition for table b cell color in fields 5 and 6
+          if (tableType.equals("tableBAnnualReport") && (record == 4 || record == 5)) {
+            TABLE_HEADER_FONT_COLOR = "DEEAF6";
+            dataRow.getCell(record).setColor("DEEAF6");
+          } else if (tableType.equals("table2AnnualReport2018")) {
+            if (record == 0) {
+              TABLE_HEADER_FONT_COLOR = "D9E2F3";
+
+            } else {
+              TABLE_HEADER_FONT_COLOR = "FFFFFF";
+            }
+          } else {
+            TABLE_HEADER_FONT_COLOR = "FFF2CC";
+          }
+
+          // highlight and bold first and SecondColumn for table D1
+          if (tableType.equals("tableD1AnnualReport") && (record == 0 || record == 1) && count < 9) {
+            dataRow.getCell(record).setColor("DEEAF6");
+            paragraphRun.setBold(true);
+          } else if (tableType.equals("tableD1AnnualReport") && count >= 9 && (record == 0 || record == 1)) {
+            dataRow.getCell(record).setColor("E2EFD9");
+            paragraphRun.setBold(true);
+
+          } else if (tableType.contains("tableA2Powb") && record < 6) {
+            dataRow.getCell(record).setColor("D9EAD3");
+          } else if (tableType.contains("table2AnnualReport2018") && record < 1) {
+            dataRow.getCell(record).setColor("D9E2F3");
+          } else if (tableType.contains("table6AnnualReport2018") && record < 1) {
+            dataRow.getCell(record).setColor("E2EFD9");
+          } else {
+            if (highlightFirstColumn && record == 0) {
+              dataRow.getCell(record).setColor(TABLE_HEADER_FONT_COLOR);
+              if (poiParameter.getBold() != null) {
+                paragraphRun.setBold(poiParameter.getBold());
+              } else {
+                paragraphRun.setBold(true);
+              }
+            } else {
+              if (poiParameter.getBold() != null) {
+                paragraphRun.setBold(poiParameter.getBold());
+              } else {
+                paragraphRun.setBold(false);
+              }
+            }
+          }
+        }
+        record++;
+      }
+    }
+
+    switch (tableType) {
+      case "tableA":
+        this.tableAStyle(table);
+        break;
+      case "tableE":
+        this.tableEStyle(table);
+        break;
+      case "tableC":
+        this.tableCStyle(table);
+        break;
+      case "tableF":
+        this.tableFStyle(table);
+        break;
+      case "tableG":
+        this.tableGStyle(table);
+        break;
+
+      // Annual report tables
+      case "tableAAnnualReport":
+        this.tableA1AnnualReportStyle(table);
+        break;
+      case "tableA1AnnualReport":
+        this.tableA1AnnualReportStyle(table);
+        break;
+      case "tableA2AnnualReport":
+        this.tableA1AnnualReportStyle(table);
+        break;
+      case "tableBAnnualReport":
+        this.tableBAnnualReportStyle(table);
+        break;
+      case "tableCAnnualReport":
+        count = 0;
+        this.tableCStyle(table);
+        break;
+      case "tableD1AnnualReport":
+        this.tableD1AnnualReportStyle(table);
+        break;
+      case "tableD2AnnualReport":
+        count = 0;
+        this.tableAStyle(table);
+        break;
+      case "tableEAnnualReport":
+        this.tableGStyle(table);
+        break;
+      case "tableFAnnualReport":
+        this.tableFStyle(table);
+        break;
+      case "tableGAnnualReport":
+        this.tableGStyle(table);
+        break;
+      case "tableHAnnualReport":
+        this.tableGStyle(table);
+        break;
+      case "table3AnnualReport2018":
+        this.table3AnnualReport2018Style(table);
+        break;
+      case "table4AnnualReport2018":
+        this.table4AnnualReport2018Style(table);
+        break;
+      case "table5AnnualReport2018":
+        this.table5AnnualReport2018Style(table);
+        break;
+      case "tableJAnnualReport":
+        this.tableJAnnualReportStyle(table);
+        break;
+
+      // Annual report tables 2018
+      case "table6AnnualReport2018":
+        this.table6Annual2018ReportStyle(table);
+        break;
+      case "tableA1AnnualReport2018":
+        this.tableA1Annual2018ReportStyle(table);
+        break;
+      case "tableA2AnnualReport2018":
+        this.tableA1AnnualReportStyle(table);
+        break;
+      case "tableBAnnualReport2018":
+        this.tableBAnnualReportStyle(table);
+        break;
+      case "tableCAnnualReport2018":
+        count = 0;
+        this.tableCStyle(table);
+        break;
+      case "tableD1AnnualReport2018":
+        this.tableD1AnnualReportStyle(table);
+        break;
+      case "tableD2AnnualReport2018":
+        count = 0;
+        this.tableAStyle(table);
+        break;
+      case "tableEAnnualReport2018":
+        this.tableGStyle(table);
+        break;
+      case "tableFAnnualReport2018":
+        this.tableFStyle(table);
+        break;
+      case "tableGAnnualReport2018":
+        this.tableGStyle(table);
+        break;
+      case "tableHAnnualReport2018":
+        this.tableGStyle(table);
+        break;
+      case "tableIAnnualReport2018":
+        this.tableIAnnualReportStyle(table);
+        break;
+      case "tableJAnnualReport2018":
+        this.tableJAnnualReportStyle(table);
+        break;
+
+      // powb 2019 template tables
+      case "table2AnnualReport2018PLT":
+        count = 0;
+        this.tableAPowbStyle(table);
+        break;
+      case "table2AnnualReport2018CRP":
+        count = 0;
+        this.table2AnnualReportCRPStyle(table);
+        break;
+      case "tableBPowbPLT":
+        count = 0;
+        // this.tableB2PowbStyle(table);
+        break;
+      case "tableBPowbCRP":
+        count = 0;
+        // this.tableB2PowbStyle(table);
+        break;
+      case "tableC2PowbPLT":
+        count = 0;
+        // this.tableC2PowbStyle(table);
+        break;
+      case "tableC2PowbCRP":
+        count = 0;
+        // this.tableC2PowbStyle(table);
+        break;
+      case "tableEPowbPLT":
+        count = 0;
+        this.tableEPowbStyle(table);
+        break;
+      case "tableEPowbCRP":
+        count = 0;
+        this.tableEPowbStyle(table);
+        break;
+    }
+    if (tableType.contains("AnnualReport")) {
+      table.getCTTbl().addNewTblPr().addNewTblW().setW(BigInteger.valueOf(13350));
+    } else if (tableType.contains("Powb")) {
+      table.getCTTbl().addNewTblPr().addNewTblW().setW(BigInteger.valueOf(13700));
+    } else {
+      table.getCTTbl().addNewTblPr().addNewTblW().setW(BigInteger.valueOf(12000));
+    }
+
+  }
+
+  public void textTableAnnualReport(XWPFDocument document, List<List<POIField>> sHeaders, List<List<POIField>> sData,
+    Boolean highlightFirstColumn, String tableType) {
+
+    if (tableType.contains("Powb")) {
+      TABLE_TEXT_FONT_SIZE = 11;
+      FONT_TYPE = "Calibri";
+    } else {
+      TABLE_TEXT_FONT_SIZE = 10;
+    }
+
+    if (tableType.equals("tableC2PowbPLT")) {
+      TABLE_TEXT_FONT_SIZE = 11;
+    } else if (tableType.equals("tableC2PowbCRP")) {
+      TABLE_TEXT_FONT_SIZE = 10;
+    }
+
+    if (tableType.equals("tableEPowbPLT")) {
+      TABLE_TEXT_FONT_SIZE = 11;
+    } else if (tableType.equals("tableEPowbCRP")) {
+      TABLE_TEXT_FONT_SIZE = 10;
+    }
+
+    if (tableType.equals("tableA2PowbPLT")) {
+      TABLE_TEXT_FONT_SIZE = 11;
+    } else if (tableType.equals("tableA2PowbCRP")) {
+      TABLE_TEXT_FONT_SIZE = 10;
+    }
+
+    if (tableType.equals("tableBPowbPLT")) {
+      TABLE_TEXT_FONT_SIZE = 11;
+    } else if (tableType.equals("tableBPowbCRP")) {
+      TABLE_TEXT_FONT_SIZE = 10;
+    }
+
+    XWPFTable table = document.createTable();
+    int record = 0;
+    int headerIndex = 0;
+    for (List<POIField> poiParameters : sHeaders) {
+
+      // Setting the Header
+      XWPFTableRow tableRowHeader;
+      if (headerIndex == 0) {
+        tableRowHeader = table.getRow(0);
+      } else {
+        tableRowHeader = table.createRow();
+      }
+      int index = 0;
+      int lastIndex = 0;
+      for (POIField poiParameter : poiParameters) {
+
+        // Condition for table b cell color in fields 5 and 6 in annual report
+        if (tableType.equals("tableBAnnualReport") && (record == 4 || record == 5)) {
+          TABLE_HEADER_FONT_COLOR = "DEEAF6";
+          // Condition for table 2a
+        } else if (tableType.contains("Powb")) {
+          TABLE_HEADER_FONT_COLOR = "FFF2CC";
+        } else if (tableType.contains("table2AnnualReport2018")) {
+          if (record == 0) {
+            TABLE_HEADER_FONT_COLOR = "D9E2F3";
+
+          } else {
+            TABLE_HEADER_FONT_COLOR = "FFFFFF";
+          }
+        } else if (tableType.contains("table6AnnualReport2018")) {
+          TABLE_HEADER_FONT_COLOR = "E2EFD9";
+
+        } else if (tableType.contains("Report2018")) {
+          TABLE_HEADER_FONT_COLOR = "FFF2CC";
+        } else {
+          TABLE_HEADER_FONT_COLOR = "FFFFFF";
+        }
+
+
+        index = poiParameter.getIndex();
+        lastIndex = index;
+
+        if (index == lastIndex) {
+          index = -1;
+        } else {
+          lastIndex = index;
+        }
+
+        if (headerIndex == 0) {
+          if (record == 0) {
+            XWPFParagraph paragraph = tableRowHeader.getCell(0).addParagraph();
+            paragraph.setAlignment(poiParameter.getAlignment());
+            XWPFRun paragraphRun = paragraph.createRun();
+
+            if (index != -1) {
+              this.addParagraphTextBreak(paragraphRun, poiParameter.getText());
+            }
+            paragraphRun.setColor(TEXT_FONT_COLOR);
+            if (poiParameter.getBold() != null) {
+              paragraphRun.setBold(poiParameter.getBold());
+            } else {
+              paragraphRun.setBold(true);
+            }
+            paragraphRun.setFontFamily(FONT_TYPE);
+            paragraphRun.setFontSize(TABLE_TEXT_FONT_SIZE);
+
+            tableRowHeader.getCell(record).setColor(TABLE_HEADER_FONT_COLOR);
+          } else {
+            XWPFParagraph paragraph = tableRowHeader.createCell().addParagraph();
+            paragraph.setAlignment(poiParameter.getAlignment());
+            XWPFRun paragraphRun = paragraph.createRun();
+            this.addParagraphTextBreak(paragraphRun, poiParameter.getText());
+            paragraphRun.setColor(TEXT_FONT_COLOR);
+            if (poiParameter.getBold() != null) {
+              paragraphRun.setBold(poiParameter.getBold());
+            } else {
+              paragraphRun.setBold(true);
+            }
+            paragraphRun.setFontFamily(FONT_TYPE);
+            paragraphRun.setFontSize(TABLE_TEXT_FONT_SIZE);
+
+            tableRowHeader.getCell(record).setColor(TABLE_HEADER_FONT_COLOR);
+          }
+        } else {
+          XWPFParagraph paragraph = tableRowHeader.getCell(record).addParagraph();
+          paragraph.setAlignment(poiParameter.getAlignment());
+          XWPFRun paragraphRun = paragraph.createRun();
+          this.addParagraphTextBreak(paragraphRun, poiParameter.getText());
+          paragraphRun.setColor(TEXT_FONT_COLOR);
+          if (poiParameter.getBold() != null) {
+            paragraphRun.setBold(poiParameter.getBold());
+          } else {
+            paragraphRun.setBold(true);
+          }
+          paragraphRun.setFontFamily(FONT_TYPE);
+          paragraphRun.setFontSize(TABLE_TEXT_FONT_SIZE);
+
+          tableRowHeader.getCell(record).setColor(TABLE_HEADER_FONT_COLOR);
+        }
+        record++;
+      }
+      headerIndex++;
+      record = 0;
+    }
+
+    for (List<POIField> poiParameters : sData) {
+      record = 0;
+
+      // Condition for table b cell color in fields 5 and 6
+      if (tableType.equals("tableBAnnualReport") && (record == 4 || record == 5)) {
+        TABLE_HEADER_FONT_COLOR = "DEEAF6";
+      } else if (tableType.contains("tableA2Powb")) {
+        TABLE_HEADER_FONT_COLOR = "D9EAD3";
+      } else if (tableType.contains("table2AnnualReport2018") && (record == 0 || record == 1)) {
+        TABLE_HEADER_FONT_COLOR = "D9E2F3";
+      } else if (tableType.contains("table6AnnualReport2018") && (record == 0 || record == 1)) {
+        TABLE_HEADER_FONT_COLOR = "E2EFD9";
       } else {
         TABLE_HEADER_FONT_COLOR = "FFFFFF";
       }
@@ -1715,7 +2175,7 @@ public class POISummary {
         break;
       case "table2AnnualReport2018CRP":
         count = 0;
-        this.tableAPowbCRPStyle(table);
+        this.table2AnnualReportCRPStyle(table);
         break;
       case "tableBPowbPLT":
         count = 0;
@@ -1751,5 +2211,6 @@ public class POISummary {
     }
 
   }
+
 
 }

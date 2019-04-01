@@ -25,6 +25,7 @@ public class POIField {
   private String fontColor;
   private Boolean underlined;
   private String url;
+  private int index;
 
 
   public POIField(String text, ParagraphAlignment alignment) {
@@ -52,6 +53,16 @@ public class POIField {
     this.url = url;
   }
 
+  public POIField(String text, ParagraphAlignment alignment, Boolean bold, String fontColor, String url, int index) {
+    super();
+    this.text = text;
+    this.alignment = alignment;
+    this.bold = bold;
+    this.fontColor = fontColor;
+    this.url = url;
+    this.index = index;
+  }
+
 
   public ParagraphAlignment getAlignment() {
     return alignment;
@@ -64,6 +75,10 @@ public class POIField {
 
   public String getFontColor() {
     return fontColor;
+  }
+
+  public int getIndex() {
+    return index;
   }
 
 
@@ -97,15 +112,18 @@ public class POIField {
   }
 
 
+  public void setIndex(int index) {
+    this.index = index;
+  }
+
+
   public void setText(String text) {
     this.text = text;
   }
 
-
   public void setUnderlined(Boolean underlined) {
     this.underlined = underlined;
   }
-
 
   public void setUrl(String url) {
     this.url = url;

@@ -63,14 +63,26 @@ $(document).ready(function() {
   });
 
   Tawk_API.onChatMaximized = function() {
+    setCustomEvent('CGIAR_Entity', 'onChatMaximized', currentCrpSession);
     $dragButton.fadeOut();
   };
 
   Tawk_API.onChatMinimized = function() {
+    setCustomEvent('CGIAR_Entity', 'onChatMinimized', currentCrpSession);
     hideDragButton();
   };
+
   Tawk_API.onChatHidden = function() {
+    setCustomEvent('CGIAR_Entity', 'onChatHidden', currentCrpSession);
     hideDragButton();
+  };
+
+  Tawk_API.onChatStarted = function() {
+    setCustomEvent('CGIAR_Entity', 'onChatStarted', currentCrpSession);
+  };
+
+  Tawk_API.onChatEnded = function() {
+    setCustomEvent('CGIAR_Entity', 'onChatEnded', currentCrpSession);
   };
 
   function hideDragButton() {
@@ -573,6 +585,7 @@ jQuery.fn.setOneToManyComponent = function() {
   var maxLimit = $select.classParam('maxLimit');
   var $list = $parent.find('ul.list');
   var counted = $list.find('li').length;
+  var updateIndex = 0;
 
   console.log("init", elementType);
 
@@ -580,7 +593,21 @@ jQuery.fn.setOneToManyComponent = function() {
   $list.find("li").each(function(index,domElement) {
     var id = $(domElement).find('.elementRelationID').val();
     $select.find('option[value="' + id + '"]').prop("disabled", true);
+
+    // Verify if already exist and remove
+    if(($list.find('.elementRelationID[value="' + id + '"]').length) > 1) {
+      // $(domElement).remove();
+      updateIndex++;
+    }
   });
+
+  // Update indexes
+  if(updateIndex) {
+    $list.find('li.relationElement').each(function(i,element) {
+      var indexLevel = $(element).classParam('indexLevel');
+      $(element).setNameIndexes(indexLevel, i);
+    });
+  }
 
   // Validate limit reached
   if((maxLimit > 0) && (counted >= maxLimit)) {
@@ -631,6 +658,11 @@ function onSelectElement() {
   var name = $option.text();
   $element.find('.elementRelationID').val(id);
   $element.find('.elementName').html(name);
+
+  // Add Item
+  console.log("Add item: " + id);
+  console.log($element);
+
   // Show the element
   $element.appendTo($list).hide().show(350, function() {
     $select.val('-1').trigger('change.select2');

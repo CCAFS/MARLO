@@ -497,8 +497,8 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
 
         // Justification
         if (deliverable.getDeliverableInfo() != null) {
-          if (deliverable.getDeliverableInfo().getModificationJustification() != null) {
-            justification = deliverable.getDeliverableInfo().getModificationJustification();
+          if (deliverable.getDeliverableInfo().getStatusDescription() != null) {
+            justification = deliverable.getDeliverableInfo().getStatusDescription();
           } else {
             justification = "<Not applicable>";
           }

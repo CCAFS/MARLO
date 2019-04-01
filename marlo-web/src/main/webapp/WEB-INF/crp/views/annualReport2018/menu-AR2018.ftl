@@ -24,9 +24,9 @@
   { 'title': '2. Effectiveness and Efficiency', 'show': true,
     'items': [
     { 'slug': 'governance',             'name': 'annualReport2018.menu.governance',             'action': 'governance',             'active': true, 'onlyPMU': !PMU }
-    { 'slug': 'externalPartnerships',   'name': 'annualReport2018.menu.externalPartnerships',   'action': 'externalPartnerships',   'active': true, 'subName': '(Table 8 and Table 9)', 'development': true },
+    { 'slug': 'externalPartnerships',   'name': 'annualReport2018.menu.externalPartnerships',   'action': 'externalPartnerships',   'active': true, 'subName': '(Table 8 and Table 9)' },
     { 'slug': 'intellectualAssets',     'name': 'annualReport2018.menu.intellectualAssets',     'action': 'intellectualAssets',     'active': true, 'onlyPMU': !PMU },
-    { 'slug': 'melia',                  'name': 'annualReport2018.menu.melia',                  'action': 'melia',                  'active': true, 'subName': '(Table 10 and Table 11)', 'development': true },
+    { 'slug': 'melia',                  'name': 'annualReport2018.menu.melia',                  'action': 'melia',                  'active': true, 'subName': '(Table 10 and Table 11)' },
     { 'slug': 'efficiency',             'name': 'annualReport2018.menu.efficiency',             'action': 'efficiency',             'active': true, 'onlyPMU': !PMU },
     { 'slug': 'risks',                  'name': 'annualReport2018.menu.risks',                  'action': 'risks',                  'active': true, 'onlyPMU': !PMU },
     { 'slug': 'fundingUse',             'name': 'annualReport2018.menu.fundingUse',             'action': 'fundingUse',             'active': true, 'subName': '(Table 12)', 'onlyPMU': !PMU }
