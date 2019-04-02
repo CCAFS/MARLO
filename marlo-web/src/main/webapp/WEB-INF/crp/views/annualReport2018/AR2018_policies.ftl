@@ -101,6 +101,9 @@
             </div>
               
             <div class="form-group">
+              [#-- Word Document Tag --]
+              [#if PMU][@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/][/#if]
+              
               [#-- Button --]
               <button type="button" class="btn btn-default btn-xs pull-right" data-toggle="modal" data-target="#modal-policies">
                  <span class="glyphicon glyphicon-fullscreen"></span> See Full table 2

@@ -45,6 +45,9 @@
             [#-- Narrative --]
             <div class="form-group">
               [#if PMU]
+                [#-- Word Document Tag --]
+                [@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/]
+                    
                 [@customForm.textArea name="${customName}.narrative" i18nkey="${customLabel}.financialStatus" help="${customLabel}.financialStatus.help" helpIcon=false required=true editable=editable allowTextEditor=true /]
               [#else]
                 <div class="textArea">
@@ -54,10 +57,13 @@
               [/#if]
             </div>
 
-            [#-- Table 12: CRP Financial Report --]
+            [#-- Table 13: CRP Financial Report --]
             [#if PMU]
             <div class="form-group margin-panel">
               <br />
+              [#-- Word Document Tag --]
+              [@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/]
+              
               <h4 class="subTitle headTitle">[@s.text name="${customLabel}.table12.title" /]</h4>
               [#list (reportSynthesis.reportSynthesisFinancialSummary.budgets)![] as item] 
                 [@financialReport name="${customName}.budgets" element=item element_index=item_index editable=editable && PMU /]
