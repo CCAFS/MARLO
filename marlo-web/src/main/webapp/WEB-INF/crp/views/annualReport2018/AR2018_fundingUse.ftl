@@ -46,6 +46,9 @@
             [#-- Interesting points on the use of W1/2 --]
             <div class="form-group">
               [#if PMU]
+                [#-- Word Document Tag --]
+                [@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/]
+                    
                 [@customForm.textArea name="${customName}.interestingPoints" i18nkey="${customLabel}.interestingPoints" help="${customLabel}.interestingPoints.help" helpIcon=false required=true className="limitWords-250" editable=editable allowTextEditor=true /]
               [#else]
                 <div class="textArea">
@@ -58,6 +61,9 @@
             
             [#-- Table 11 - Examples of W1/2 Use --]
             <div class="form-group">
+              [#-- Word Document Tag --]
+              [#if PMU][@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/][/#if]
+                    
               <h4 class="simpleTitle headTitle annualReport-table">[@s.text name="${customLabel}.table11.title" /]</h4>
               [@customForm.helpLabel name="${customLabel}.table11.help" showIcon=false editable=editable/]
               <div class="listExamples">

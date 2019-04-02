@@ -52,8 +52,8 @@
           
            [#-- Table 4: Condensed list of innovations --]
             <div class="form-group">
-                [#assign guideSheetURL = "https://drive.google.com/file/d/1JvceA0bdvqS5Een056ctL7zJr3hidToe/view" /]
-                <small class="pull-right"><a href="${guideSheetURL}" target="_blank"> <img src="${baseUrl}/global/images/icon-file.png" alt="" /> #C1 Innovations -  Guideline </a> </small>
+              [#assign guideSheetURL = "https://drive.google.com/file/d/1JvceA0bdvqS5Een056ctL7zJr3hidToe/view" /]
+              <small class="pull-right"><a href="${guideSheetURL}" target="_blank"> <img src="${baseUrl}/global/images/icon-file.png" alt="" /> #C1 Innovations -  Guideline </a> </small>
             </div>
             
             <div class="form-group row">
@@ -115,11 +115,15 @@
             </div>
             
             <div class="form-group">
-                [#-- Button --]
-                <button type="button" class="btn btn-default btn-xs pull-right" data-toggle="modal" data-target="#modal-innovations">
-                   <span class="glyphicon glyphicon-fullscreen"></span> See Full table 4
-                </button>
-                [#-- Modal --]
+              [#-- Word Document Tag --]
+              [#if PMU][@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/][/#if]
+              
+              [#-- Button --]
+              <button type="button" class="btn btn-default btn-xs pull-right" data-toggle="modal" data-target="#modal-innovations">
+                <span class="glyphicon glyphicon-fullscreen"></span> See Full table 4
+              </button>
+    
+              [#-- Modal --]
               <div class="modal fade" id="modal-innovations" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
                 <div class="modal-dialog modal-lg" role="document">
                   <div class="modal-content">
