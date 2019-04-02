@@ -522,7 +522,9 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
       && reportSynthesisPMU.getReportSynthesisSrfProgress().getSummary() != null) {
       String synthesisCrpDescription = reportSynthesisPMU.getReportSynthesisSrfProgress().getSummary() != null
         ? reportSynthesisPMU.getReportSynthesisSrfProgress().getSummary() : "";
-      poiSummary.convertHTMLTags(document, synthesisCrpDescription);
+      if (synthesisCrpDescription != null) {
+        poiSummary.convertHTMLTags(document, synthesisCrpDescription);
+      }
     }
   }
 
@@ -3443,7 +3445,10 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
 
         List<LiaisonInstitution> removeLiaison = new ArrayList<>();
         for (LiaisonInstitution liaisonInstitution : dto.getLiaisonInstitutions()) {
-          ReportSynthesis reportSynthesis = reportSynthesisManager.findSynthesis(phaseID, liaisonInstitution.getId());
+          ReportSynthesis reportSynthesis = null;
+          if (liaisonInstitution != null && liaisonInstitution.getId() != null) {
+            reportSynthesis = reportSynthesisManager.findSynthesis(phaseID, liaisonInstitution.getId());
+          }
           if (reportSynthesis != null) {
             if (reportSynthesis.getReportSynthesisFlagshipProgress() != null) {
 
@@ -3810,7 +3815,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
       deliverables.sort((p1, p2) -> p1.getId().compareTo(p2.getId()));
       selectedDeliverables.addAll(deliverables);
       // Remove unchecked deliverables
-      if (reportSynthesisPMU.getReportSynthesisFlagshipProgress() != null) {
+      if (reportSynthesisPMU != null && reportSynthesisPMU.getReportSynthesisFlagshipProgress() != null) {
         if (reportSynthesisPMU.getReportSynthesisFlagshipProgress().getDeliverables() != null
           && !reportSynthesisPMU.getReportSynthesisFlagshipProgress().getDeliverables().isEmpty()) {
           for (Deliverable deliverable : reportSynthesisPMU.getReportSynthesisFlagshipProgress().getDeliverables()) {
