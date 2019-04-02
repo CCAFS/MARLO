@@ -73,7 +73,13 @@
                 file: '檔案',
                 errFileReaderNotSupported: '你的瀏覽器不支援FileReader',
                 errInvalidImage: '不正確的檔案格式'
-             },
+            },
+            pt_br: {
+                base64: 'Imagem em base64',
+                file: 'Arquivo',
+                errFileReaderNotSupported: 'FileReader não é suportado pelo seu navegador.',
+                errInvalidImage: 'Arquivo de imagem inválido.'
+            },
         },
         // jshint camelcase:true
 
@@ -112,7 +118,7 @@
 
                                     fReader.onloadend = function (e) {
                                         if (isValidImage(e.target.result)) {
-                                            trumbowyg.execCmd('insertImage', fReader.result);
+                                            trumbowyg.execCmd('insertImage', fReader.result, false, true);
                                             $(['img[src="', fReader.result, '"]:not([alt])'].join(''), trumbowyg.$box).attr('alt', values.alt);
                                             trumbowyg.closeModal();
                                         } else {

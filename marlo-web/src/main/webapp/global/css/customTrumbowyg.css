@@ -49,7 +49,6 @@
   top: 19px;
 }
 
-
 p.decodeHTML.trumbowyg-editor {
   background: none;
   box-shadow: none;
@@ -71,4 +70,8 @@ p.decodeHTML.trumbowyg-editor {
 
 .trumbowyg-dropdown button {
   font-size: 14px;
+}
+
+.trumbowyg-editor.trumbowyg-reset-css blockquote, .trumbowyg-editor.trumbowyg-reset-css div, .trumbowyg-editor.trumbowyg-reset-css ol, .trumbowyg-editor.trumbowyg-reset-css p, .trumbowyg-editor.trumbowyg-reset-css ul {
+  margin: 0 0 0px!important;
 }

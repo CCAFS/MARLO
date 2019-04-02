@@ -58,6 +58,11 @@
                 file: 'Fil',
                 uploadError: 'Fejl'
             },
+            de: {
+                upload: 'Hochladen',
+                file: 'Datei',
+                uploadError: 'Fehler'
+            },
             sk: {
                 upload: 'Nahrať',
                 file: 'Súbor',
@@ -193,7 +198,7 @@
                                             } else {
                                                 if (!!getDeep(data, trumbowyg.o.plugins.upload.statusPropertyName.split('.'))) {
                                                     var url = getDeep(data, trumbowyg.o.plugins.upload.urlPropertyName.split('.'));
-                                                    trumbowyg.execCmd('insertImage', url);
+                                                    trumbowyg.execCmd('insertImage', url, false, true);
                                                     var $img = $('img[src="' + url + '"]:not([alt])', trumbowyg.$box);
                                                     $img.attr('alt', values.alt);
                                                     if (trumbowyg.o.imageWidthModalEdit && parseInt(values.width) > 0) {

@@ -178,7 +178,7 @@
                             <span>${(totalParticipants?number?string(",##0"))!0}</span>
                           </div>
                           <div id="" class="simpleBox numberBox">
-                            <label for="">[@s.text name="${customLabel}.totalParticipantFormalTraining" /]</label><br />
+                            <label for="">Participants in [@s.text name="${customLabel}.totalParticipantFormalTraining" /]</label><br />
                             <span>${(totalParticipantFormalTraining?number?string(",##0"))!0}</span>
                           </div>
                         </div>
