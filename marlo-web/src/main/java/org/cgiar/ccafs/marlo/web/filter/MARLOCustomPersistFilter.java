@@ -97,6 +97,7 @@ public class MARLOCustomPersistFilter extends OncePerRequestFilter {
 
       if (sessionFactory.getCurrentSession() != null && sessionFactory.getCurrentSession().getTransaction() != null) {
         Transaction tr = sessionFactory.getCurrentSession().getTransaction();
+        tr.setTimeout(120);
         tr.commit();
 
       }
