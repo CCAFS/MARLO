@@ -54,6 +54,9 @@
                 table: 'Insérer un tableau',
                 tableAddRow: 'Ajouter des lignes',
                 tableAddColumn: 'Ajouter des colonnes',
+                tableDeleteRow: 'Effacer la ligne',
+                tableDeleteColumn: 'Effacer la colonne',
+                tableDestroy: 'Effacer le tableau',
                 error: 'Erreur'
             },
             cs: {
@@ -92,6 +95,24 @@
               tableDestroy: '刪除表格',
               error: '錯誤'
             },
+            id: {
+                table: 'Sisipkan tabel',
+                tableAddRow: 'Sisipkan baris',
+                tableAddColumn: 'Sisipkan kolom',
+                tableDeleteRow: 'Hapus baris',
+                tableDeleteColumn: 'Hapus kolom',
+                tableDestroy: 'Hapus tabel',
+                error: 'Galat'
+            },
+            pt_br: {
+                table: 'Inserir tabela',
+                tableAddRow: 'Adicionar linha',
+                tableAddColumn: 'Adicionar coluna',
+                tableDeleteRow: 'Deletar linha',
+                tableDeleteColumn: 'Deletar coluna',
+                tableDestroy: 'Deletar tabela',
+                error: 'Erro'
+            }
         },
 
         plugins: {

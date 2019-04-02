@@ -349,17 +349,28 @@ $(document).ready(function() {
 });
 
 jQuery.fn.setTrumbowyg = function() {
+  var $editor = $(this);
   if($.fn.trumbowyg) {
-    $(this).trumbowyg({
+    $editor.trumbowyg({
         btns: [
           [
               'link', 'strong', 'em'
           ]
         ],
+        tagsToKeep: [
+          'a'
+        ],
+        // tagsToRemove: [ 'strong', 'b', 'i'],
+        urlProtocol: true,
         autogrow: true,
         minimalLinks: true,
         semantic: true,
-        removeformatPasted: true
+        resetCss: true,
+        removeformatPasted: false
+    });
+
+    $editor.trumbowyg().on('tbwpaste ', function() {
+      console.log('tbwpaste !');
     });
   }
 };

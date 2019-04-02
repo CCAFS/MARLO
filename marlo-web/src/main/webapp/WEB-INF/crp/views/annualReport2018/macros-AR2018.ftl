@@ -64,7 +64,7 @@
                     <div class="form-group">
                        <strong> [@s.text name="${tableName}.column${column_index}" /]: </strong> <br />
                       [#if (item[column]?has_content)!false] 
-                        ${item[column]?replace('\n', '<br>')} 
+                        ${item[column]?replace('\n', '')} 
                       [#else]
                         <i style="opacity:0.5">[@s.text name="global.prefilledByFlagship"/]</i>
                       [/#if]
@@ -75,7 +75,7 @@
                 [#list columns as column]
                   <td>
                     [#if (item[column]?has_content)!false] 
-                      ${item[column]?replace('\n', '<br>')} 
+                      ${item[column]?replace('\n', '')} 
                     [#else]
                       <i style="opacity:0.5">[@s.text name="global.prefilledByFlagship"/]</i>
                     [/#if]

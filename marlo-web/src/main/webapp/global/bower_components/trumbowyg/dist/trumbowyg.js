@@ -1,5 +1,5 @@
 /**
- * Trumbowyg v2.11.0 - A lightweight WYSIWYG editor
+ * Trumbowyg v2.15.1 - A lightweight WYSIWYG editor
  * Trumbowyg core file
  * ------------------------
  * @link http://alex-d.github.io/Trumbowyg
@@ -90,9 +90,12 @@ Object.defineProperty(jQuery.trumbowyg, 'defaultOptions', {
         prefix: 'trumbowyg-',
 
         semantic: true,
+        semanticKeepAttributes: false,
         resetCss: false,
         removeformatPasted: false,
+        tabToIndent: false,
         tagsToRemove: [],
+        tagsToKeep: ['hr', 'img', 'embed', 'iframe', 'input'],
         btns: [
             ['viewHTML'],
             ['undo', 'redo'], // Only supported in Blink browsers
@@ -584,11 +587,22 @@ Object.defineProperty(jQuery.trumbowyg, 'defaultOptions', {
                     if ((e.ctrlKey || e.metaKey) && !e.altKey) {
                         ctrl = true;
                         var key = t.keys[String.fromCharCode(e.which).toUpperCase()];
-
+                        
                         try {
                             t.execCmd(key.fn, key.param);
                             return false;
-                        } catch (c) {
+                        } catch (c) {}
+                    } else {
+                        
+                        if (t.o.tabToIndent && e.key === 'Tab') {
+                            try {
+                                if (e.shiftKey) {
+                                    t.execCmd('outdent', true, null);
+                                } else {
+                                    t.execCmd('indent', true, null);
+                                }
+                                return false;
+                            } catch (c) {}
                         }
                     }
                 })
@@ -609,6 +623,7 @@ Object.defineProperty(jQuery.trumbowyg, 'defaultOptions', {
                     }
 
                     if ((e.ctrlKey || e.metaKey) && (keyCode === 89 || keyCode === 90)) {
+                        t.semanticCode(false, true);
                         t.$c.trigger('tbwchange');
                     } else if (!ctrl && keyCode !== 17) {
                         var compositionEndIE = t.isIE ? e.type === 'compositionend' : true;
@@ -652,7 +667,7 @@ Object.defineProperty(jQuery.trumbowyg, 'defaultOptions', {
                         }
                     }
                 })
-                .on('cut', function () {
+                .on('cut drop', function () {
                     setTimeout(function () {
                         t.semanticCode(false, true);
                         t.$c.trigger('tbwchange');
@@ -692,6 +707,7 @@ Object.defineProperty(jQuery.trumbowyg, 'defaultOptions', {
                     setTimeout(function () {
                         t.semanticCode(false, true);
                         t.$c.trigger('tbwpaste', e);
+                        t.$c.trigger('tbwchange');
                     }, 0);
                 });
 
@@ -779,7 +795,7 @@ Object.defineProperty(jQuery.trumbowyg, 'defaultOptions', {
                     type: 'button',
                     class: prefix + btnName + '-button ' + (btn.class || '') + (!hasIcon ? ' ' + prefix + 'textual-button' : ''),
                     html: t.hasSvg && hasIcon ?
-                        '<svg><use xlink:href="' + t.svgPath + '#' + prefix + (btn.ico || btnName).replace(/([A-Z]+)/g, '-$1').toLowerCase() + '"/></svg>' :
+                        '<svg><use href="' + t.svgPath + '#' + prefix + (btn.ico || btnName).replace(/([A-Z]+)/g, '-$1').toLowerCase() + '"/></svg>' :
                         t.hideButtonTexts ? '' : (btn.text || btn.title || t.lang[btnName] || btnName),
                     title: (btn.title || btn.text || textDef) + ((btn.key) ? ' (Ctrl + ' + btn.key + ')' : ''),
                     tabindex: -1,
@@ -1082,7 +1098,7 @@ Object.defineProperty(jQuery.trumbowyg, 'defaultOptions', {
         },
         syncTextarea: function () {
             var t = this;
-            t.$ta.val(t.$ed.text().trim().length > 0 || t.$ed.find('hr,img,embed,iframe,input').length > 0 ? t.$ed.html() : '');
+            t.$ta.val(t.$ed.text().trim().length > 0 || t.$ed.find(t.o.tagsToKeep.join(',')).length > 0 ? t.$ed.html() : '');
         },
         syncCode: function (force) {
             var t = this;
@@ -1125,10 +1141,10 @@ Object.defineProperty(jQuery.trumbowyg, 'defaultOptions', {
             t.syncCode(force);
 
             if (t.o.semantic) {
-                t.semanticTag('b');
-                t.semanticTag('i');
-                t.semanticTag('s');
-                t.semanticTag('strike');
+                t.semanticTag('b', t.o.semanticKeepAttributes);
+                t.semanticTag('i', t.o.semanticKeepAttributes);
+                t.semanticTag('s', t.o.semanticKeepAttributes);
+                t.semanticTag('strike', t.o.semanticKeepAttributes);
 
                 if (full) {
                     var inlineElementsSelector = t.o.inlineElementsSelector,
@@ -1161,7 +1177,7 @@ Object.defineProperty(jQuery.trumbowyg, 'defaultOptions', {
                         return $(this).text().trim().length === 0 && $(this).children().not('br,span').length === 0;
                     }).contents().unwrap();
 
-                    // Get rid of temporial span's
+                    // Get rid of temporary span's
                     $('[data-tbw]', t.$ed).contents().unwrap();
 
                     // Remove empty <p>
@@ -1189,6 +1205,10 @@ Object.defineProperty(jQuery.trumbowyg, 'defaultOptions', {
 
             $(oldTag, this.$ed).each(function () {
                 var $oldTag = $(this);
+                if($oldTag.contents().length === 0) {
+                    return false;
+                }
+
                 $oldTag.wrap('<' + newTag + '/>');
                 if (copyAttributes) {
                     $.each($oldTag.prop('attributes'), function () {
@@ -1333,7 +1353,7 @@ Object.defineProperty(jQuery.trumbowyg, 'defaultOptions', {
             }
 
             t.openModalInsert(t.lang.insertImage, options, function (v) { // v are values
-                t.execCmd('insertImage', v.url);
+                t.execCmd('insertImage', v.url, false, true);
                 var $img = $('img[src="' + v.url + '"]:not([alt])', t.$box);
                 $img.attr('alt', v.alt);
 
@@ -1430,8 +1450,9 @@ Object.defineProperty(jQuery.trumbowyg, 'defaultOptions', {
             var $modal = $('<div/>', {
                 class: prefix + 'modal ' + prefix + 'fixed-top'
             }).css({
-                top: t.$btnPane.height()
-            }).appendTo(t.$box);
+                top: t.$box.offset().top + t.$btnPane.height(),
+                zIndex: 99999
+            }).appendTo($(t.doc.body));
 
             // Click on overlay close modal by cancelling them
             t.$overlay.one('click', function () {
@@ -1517,7 +1538,7 @@ Object.defineProperty(jQuery.trumbowyg, 'defaultOptions', {
             t.$overlay.off();
 
             // Find the modal box
-            var $modalBox = $('.' + prefix + 'modal-box', t.$box);
+            var $modalBox = $('.' + prefix + 'modal-box', $(document.body));
 
             $modalBox.animate({
                 top: '-' + $modalBox.height()
@@ -1683,18 +1704,20 @@ Object.defineProperty(jQuery.trumbowyg, 'defaultOptions', {
 
             t.range = null;
 
-            if (documentSelection.rangeCount) {
-                var savedRange = t.range = documentSelection.getRangeAt(0),
-                    range = t.doc.createRange(),
-                    rangeStart;
-                range.selectNodeContents(t.$ed[0]);
-                range.setEnd(savedRange.startContainer, savedRange.startOffset);
-                rangeStart = (range + '').length;
-                t.metaRange = {
-                    start: rangeStart,
-                    end: rangeStart + (savedRange + '').length
-                };
+            if (!documentSelection || !documentSelection.rangeCount) {
+                return;
             }
+
+            var savedRange = t.range = documentSelection.getRangeAt(0),
+                range = t.doc.createRange(),
+                rangeStart;
+            range.selectNodeContents(t.$ed[0]);
+            range.setEnd(savedRange.startContainer, savedRange.startOffset);
+            rangeStart = (range + '').length;
+            t.metaRange = {
+                start: rangeStart,
+                end: rangeStart + (savedRange + '').length
+            };
         },
         restoreRange: function () {
             var t = this,
@@ -1740,7 +1763,13 @@ Object.defineProperty(jQuery.trumbowyg, 'defaultOptions', {
                 }
             }
 
-            documentSelection.removeAllRanges();
+            // Fix IE11 Error 'Could not complete the operation due to error 800a025e'.
+            // https://stackoverflow.com/questions/16160996/could-not-complete-the-operation-due-to-error-800a025e
+            try {
+                documentSelection.removeAllRanges();
+            } catch (e) {
+            }
+            
             documentSelection.addRange(range || savedRange);
         },
         getRangeText: function () {
