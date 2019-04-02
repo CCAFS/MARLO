@@ -113,7 +113,11 @@ public class POISummary {
   private void addParagraphTextBreakPOW2019(XWPFRun paragraphRun, String text) {
     if (text.contains("\n")) {
       String[] lines = text.split("\n");
-      paragraphRun.setText(lines[0], 0); // set first line into XWPFRun
+      try {
+        paragraphRun.setText(lines[0], 0); // set first line into XWPFRun
+      } catch (Exception e) {
+
+      }
       for (int i = 1; i < lines.length; i++) {
         // add break and insert new text
         paragraphRun.addCarriageReturn();
@@ -136,11 +140,26 @@ public class POISummary {
     text = text.replace("</strong>", "");
     text = text.replace("<em>", "");
     text = text.replace("</em>", "");
+    text = text.replaceAll("<td>", "");
+    text = text.replaceAll("<tr>", "");
+    text = text.replaceAll("</td>", " ");
+    text = text.replaceAll("<th>", "");
+    text = text.replaceAll("</th>", " | ");
+    text = text.replaceAll("</table>", "\n");
+    text = text.replaceAll("<thead>", "");
+    text = text.replaceAll("</thead>", "");
+    text = text.replaceAll("<tbody>", "");
+    text = text.replaceAll("</tbody>", "");
+    text = text.replaceAll("</br>", "");
 
     /*
      * recognize the tag as a line break
      */
-    text = text.replace("</p>", "\n");
+    text = text.replaceAll("<table>", "\n");
+    text = text.replace("</p>", " \n");
+    text = text.replaceAll("</tr>", "\n");
+    text = text.replaceAll("<br>", "\n");
+
 
     int textLength = 0;
     this.addExpressionsToList();
@@ -247,7 +266,10 @@ public class POISummary {
           stringTemp = stringTemp.replaceAll("&nbsp;", " ");
           stringTemp = stringTemp.replaceAll(">", "");
           stringTemp = this.replaceHTMLTags(stringTemp);
-          this.addParagraphTextBreakPOW2019(paragraphRun, stringTemp);
+          if (stringTemp != null) {
+            this.addParagraphTextBreakPOW2019(paragraphRun, stringTemp);
+            System.out.println("stringTemp" + stringTemp);
+          }
 
           paragraphRun.setColor(TEXT_FONT_COLOR);
           paragraphRun.setFontFamily(FONT_TYPE);
@@ -500,6 +522,19 @@ public class POISummary {
       html = html.replaceAll("<span style=\"font-size: 1em;\"", "");
       html = html.replaceAll("</span", "");
       html = html.replaceAll("<br", "");
+      html = html.replaceAll("<td", "");
+      html = html.replaceAll("<tr", "");
+      html = html.replaceAll("</td", "");
+      html = html.replaceAll("</tr", "");
+      html = html.replaceAll("<th", "");
+      html = html.replaceAll("</th", "");
+      html = html.replaceAll("<table", "");
+      html = html.replaceAll("</table", "");
+      html = html.replaceAll("<thead", "");
+      html = html.replaceAll("</thead", "");
+      html = html.replaceAll("<tbody", "");
+      html = html.replaceAll("</tbody", "");
+
     } catch (Exception e) {
       throw e;
     }
