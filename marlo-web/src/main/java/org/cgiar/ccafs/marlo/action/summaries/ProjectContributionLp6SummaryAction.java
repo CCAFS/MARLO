@@ -254,7 +254,8 @@ public class ProjectContributionLp6SummaryAction extends BaseSummariesAction imp
       List<ProjectLp6ContributionDeliverable> deliverableList = new ArrayList<ProjectLp6ContributionDeliverable>();
       if (deliverableManager.findAll() != null) {
         deliverableList = deliverableManager.findAll().stream()
-          .filter(d -> d.getProjectLp6Contribution().getId().equals(projectLp6Contribution.getId()))
+          .filter(d -> d.getProjectLp6Contribution().getId().equals(projectLp6Contribution.getId())
+            && d.getPhase().getId().equals(this.getSelectedPhase()))
           .collect(Collectors.toList());
       }
 
