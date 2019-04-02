@@ -127,6 +127,7 @@
       "main": [
         "dist/trumbowyg.min.js",
         "dist/plugins/cleanpaste/trumbowyg.cleanpaste.min.js",
+        "dist/plugins/allowtagsfrompaste/trumbowyg.allowtagsfrompaste.js",
         "dist/ui/trumbowyg.min.css"
       ]
     }
