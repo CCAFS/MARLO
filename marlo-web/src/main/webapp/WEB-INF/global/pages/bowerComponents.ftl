@@ -70,6 +70,7 @@
   [#if libraryName="pusher-js"]<script src="${baseUrl}/global/bower_components/pusher-js/dist/web/pusher.js"></script>[/#if]
   [#if libraryName="trumbowyg"]<script src="${baseUrl}/global/bower_components/trumbowyg/dist/trumbowyg.min.js"></script>[/#if]
   [#if libraryName="trumbowyg"]<script src="${baseUrl}/global/bower_components/trumbowyg/dist/plugins/cleanpaste/trumbowyg.cleanpaste.min.js"></script>[/#if]
+  [#if libraryName="trumbowyg"]<script src="${baseUrl}/global/bower_components/trumbowyg/dist/plugins/allowtagsfrompaste/trumbowyg.allowtagsfrompaste.js"></script>[/#if]
   [#if libraryName="jquery-mousewheel"]<script src="${baseUrl}/global/bower_components/jquery-mousewheel/jquery.mousewheel.js"></script>[/#if]
   [#if libraryName="malihu-custom-scrollbar-plugin"]<script src="${baseUrl}/global/bower_components/malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.js"></script>[/#if]
   [#if libraryName="cookieconsent"]<script src="${baseUrl}/global/bower_components/cookieconsent/build/cookieconsent.min.js"></script>[/#if]
