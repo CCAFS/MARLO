@@ -24,6 +24,7 @@ import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectPhase;
+import org.cgiar.ccafs.marlo.security.APCustomRealm;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.text.SimpleDateFormat;
@@ -33,6 +34,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
+
+import org.apache.shiro.authz.AuthorizationInfo;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
@@ -44,7 +47,6 @@ public class DashboardAction extends BaseAction {
 
 
   private PhaseManager phaseManager;
-
 
   private List<Project> myProjects;
 
@@ -86,71 +88,85 @@ public class DashboardAction extends BaseAction {
       this.clearPermissionsCache();
     }
 
-    if (projectManager.findAll() != null) {
+    // if (projectManager.findAll() != null) {
+    myProjects = new ArrayList<>();
+    if (this.canAccessSuperAdmin() || this.canAcessCrpAdmin()) {
 
-      if (this.canAccessSuperAdmin() || this.canAcessCrpAdmin()) {
-        myProjects = new ArrayList<>();
-        for (ProjectPhase projectPhase : phase.getProjectPhases()) {
-          projectPhase.getProject().setProjectInfo(projectPhase.getProject().getProjecInfoPhase(this.getActualPhase()));
-          myProjects.add(projectPhase.getProject());
-        }
-
-
-      } else {
-
-        List<Project> allProjects = new ArrayList<>();
-        if (phase != null) {
-          for (ProjectPhase projectPhase : phase.getProjectPhases()) {
-            allProjects.add(projectManager.getProjectById(projectPhase.getProject().getId()));
-          }
-        }
-
-        myProjects = projectManager.getUserProjects(this.getCurrentUser().getId(), loggedCrp.getAcronym()).stream()
-          .filter(p -> p.isActive()).collect(Collectors.toList());
-
-
-        List<Project> mProjects = new ArrayList<>();
-        mProjects.addAll(myProjects);
-
-
-        for (Project project : mProjects) {
-          project.getProjecInfoPhase(this.getActualPhase());
-
-          if (!allProjects.contains(project)) {
-            myProjects.remove(project);
-          }
-        }
-
-
+      for (ProjectPhase projectPhase : phase.getProjectPhases()) {
+        projectPhase.getProject().setProjectInfo(projectPhase.getProject().getProjecInfoPhase(this.getActualPhase()));
+        myProjects.add(projectPhase.getProject());
       }
-      // Skip closed projects for Reporting
-      if (this.isPlanningActive()) {
-        if (this.getActualPhase() != null && this.getActualPhase().getId() != null) {
-          List<Project> closedProjects =
-            projectManager.getCompletedProjects(this.getCrpID(), this.getActualPhase().getId());
-          if (closedProjects != null) {
-            // closedProjects.addAll(projectManager.getNoPhaseProjects(this.getCrpID(), this.getActualPhase()));
-            myProjects.removeAll(closedProjects);
-          }
-          Collections.sort(myProjects, (p1, p2) -> p1.getId().compareTo(p2.getId()));
 
+
+    } else {
+
+      List<Project> allProjects = new ArrayList<>();
+      if (phase != null) {
+        for (ProjectPhase projectPhase : phase.getProjectPhases()) {
+          allProjects.add(projectManager.getProjectById(projectPhase.getProject().getId()));
         }
-      } else {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("y");
+      }
 
-        System.out.println(myProjects.size());
-        myProjects = myProjects.stream()
-          .filter(mp -> mp.isActive() && mp.getProjecInfoPhase(this.getActualPhase()) != null
-            && (mp.getProjecInfoPhase(this.getActualPhase()).getEndDate() == null
-              || Integer.parseInt(dateFormat.format(mp.getProjecInfoPhase(this.getActualPhase()).getEndDate())) >= this
-                .getCurrentCycleYear()))
-          .collect(Collectors.toList());
-        System.out.println(myProjects.size());
 
+      AuthorizationInfo info = ((APCustomRealm) this.securityContext.getRealm())
+        .getAuthorizationInfo(this.securityContext.getSubject().getPrincipals());
+
+
+      for (String permission : info.getStringPermissions()) {
+        if (permission.contains("project")) {
+          for (int i = 0; i > permission.split(":").length; i++) {
+            System.out.println(permission.split(":")[i]);
+          }
+        }
+      }
+
+
+      myProjects = projectManager.getUserProjects(this.getCurrentUser().getId(), loggedCrp.getAcronym()).stream()
+        .filter(p -> p.isActive()).collect(Collectors.toList());
+
+
+      List<Project> mProjects = new ArrayList<>();
+      mProjects.addAll(myProjects);
+
+
+      for (Project project : mProjects) {
+        project.getProjecInfoPhase(this.getActualPhase());
+
+        if (!allProjects.contains(project)) {
+          myProjects.remove(project);
+        }
       }
 
 
     }
+    // Skip closed projects for Reporting
+    if (this.isPlanningActive()) {
+      if (this.getActualPhase() != null && this.getActualPhase().getId() != null) {
+        List<Project> closedProjects =
+          projectManager.getCompletedProjects(this.getCrpID(), this.getActualPhase().getId());
+        if (closedProjects != null) {
+          // closedProjects.addAll(projectManager.getNoPhaseProjects(this.getCrpID(), this.getActualPhase()));
+          myProjects.removeAll(closedProjects);
+        }
+        Collections.sort(myProjects, (p1, p2) -> p1.getId().compareTo(p2.getId()));
+
+      }
+    } else {
+      SimpleDateFormat dateFormat = new SimpleDateFormat("y");
+
+      System.out.println(myProjects.size());
+      myProjects = myProjects.stream()
+        .filter(mp -> mp.isActive() && mp.getProjecInfoPhase(this.getActualPhase()) != null
+          && (mp.getProjecInfoPhase(this.getActualPhase()).getEndDate() == null
+            || Integer.parseInt(dateFormat.format(mp.getProjecInfoPhase(this.getActualPhase()).getEndDate())) >= this
+              .getCurrentCycleYear()))
+        .collect(Collectors.toList());
+      System.out.println(myProjects.size());
+
+    }
+
+
+    // }
 
 
   }
