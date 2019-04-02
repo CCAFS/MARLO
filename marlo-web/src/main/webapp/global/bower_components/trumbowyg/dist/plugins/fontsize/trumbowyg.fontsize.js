@@ -20,6 +20,22 @@
                     value: '48px'
                 }
             },
+            es: {
+                fontsize: 'Tamaño de Fuente',
+                fontsizes: {
+                    'x-small': 'Extra pequeña',
+                    'small': 'Pegueña',
+                    'medium': 'Regular',
+                    'large': 'Grande',
+                    'x-large': 'Extra Grande',
+                    'custom': 'Customizada'
+                },
+                fontCustomSize: {
+                    title: 'Tamaño de Fuente Customizada',
+                    label: 'Tamaño de Fuente',
+                    value: '48px'
+                }
+            },
             da: {
                 fontsize: 'Skriftstørrelse',
                 fontsizes: {
@@ -51,6 +67,11 @@
                     'large': 'Groß',
                     'x-large': 'Sehr groß',
                     'custom': 'Benutzerdefiniert'
+                },
+                fontCustomSize: {
+                    title: 'Benutzerdefinierte Schriftgröße',
+                    label: 'Schriftgröße',
+                    value: '48px'
                 }
             },
             nl: {
@@ -88,6 +109,38 @@
                 fontCustomSize: {
                     title: '自訂義字體大小',
                     label: '字體大小',
+                    value: '48px'
+                }
+            },
+            pt_br: {
+                fontsize: 'Tamanho da fonte',
+                fontsizes: {
+                        'x-small':'Extra pequeno',
+                        'small':'Pequeno',
+                        'regular':'Médio',
+                        'large':'Grande',
+                        'x-large':'Extra grande',
+                        'custom':'Personalizado'
+                },
+                fontCustomSize: {
+                    title: 'Tamanho de Fonte Personalizado',
+                    label: 'Tamanho de Fonte',
+                    value: '48px'
+                }
+            },
+            it: {
+                fontsize: 'Dimensioni del testo',
+                fontsizes: {
+                        'x-small':'Molto piccolo',
+                        'small':'piccolo',
+                        'regular':'normale',
+                        'large':'grande',
+                        'x-large':'Molto grande',
+                        'custom':'Personalizzato'
+                },
+                fontCustomSize: {
+                    title: 'Dimensioni del testo personalizzato',
+                    label: 'Dimensioni del testo',
                     value: '48px'
                 }
             }

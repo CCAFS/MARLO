@@ -13,13 +13,27 @@ You can support it's ongoing development by being a backer or a sponsor:
 
 <p align="center">
     <a href="https://avot.nl/?ref=trumbowyg">
-        <img src="https://cdn.rawgit.com/Alex-D/Trumbowyg/develop/sponsors/avot.svg" alt="avot®" width="200px"/>
+        <img src="https://rawcdn.githack.com/Alex-D/Trumbowyg/develop/sponsors/avot.svg" alt="avot®" width="200px"/>
     </a>
-    &nbsp;
-    &nbsp;
-    &nbsp;
-    <a href="https://www.appseed.us/?ref=trumbowyg">
-        <img src="https://cdn.rawgit.com/Alex-D/Trumbowyg/develop/sponsors/appseed.png" alt="AppSeed" width="200px"/>
+</p>
+
+<p align="center">
+    <a href="https://bookingninja.io/?ref=trumbowyg">
+        <img src="https://rawcdn.githack.com/Alex-D/Trumbowyg/develop/sponsors/bookingninja.png" alt="BookingNinja" width="200px"/>
+    </a>
+</p>
+
+<p align="center">
+    <a href="https://www.patreon.com/bePatron?c=1176005&rid=1940456">
+        Become a Sponsor
+    </a>
+</p>
+
+<h2 align="center">Silver sponsors</h2>
+
+<p align="center">
+    <a href="https://socialoptic.com/?ref=trumbowyg">
+        <img src="https://rawcdn.githack.com/Alex-D/Trumbowyg/develop/sponsors/socialoptic.png" alt="SocialOptic" width="150px"/>
     </a>
 </p>
 
@@ -31,8 +45,8 @@ You can support it's ongoing development by being a backer or a sponsor:
 
 <h2 align="center">Backers</h2>
 
-- Thomas Walli
 - Johan Rosenson
+- Integrious Ltd
 
 <p align="center">
     <a href="https://www.patreon.com/bePatron?c=1176005&rid=1940349">
