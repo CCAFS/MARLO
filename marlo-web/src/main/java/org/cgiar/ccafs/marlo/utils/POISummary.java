@@ -132,6 +132,10 @@ public class POISummary {
     List<String> referenceList = new ArrayList<String>();
 
     text = text.replace("<p>", "");
+    text = text.replace("<strong>", "");
+    text = text.replace("</strong>", "");
+    text = text.replace("<em>", "");
+    text = text.replace("</em>", "");
 
     /*
      * recognize the tag as a line break
@@ -162,13 +166,13 @@ public class POISummary {
           if ((text.charAt(j) == expressionListActual.charAt(0))
             && text.charAt(j + 1) == expressionListActual.charAt(1)) {
 
-            startsPosList.add(j);
-            tagsAddList.add(expressionsList.get(i));
+            startsPosList.add(j); // pos init expression
+            tagsAddList.add(expressionsList.get(i)); // expression list
 
             /*
              * Getting close tag
              */
-            posFinal = text.indexOf(expressionsListClose.get(i), j);
+            posFinal = text.indexOf(expressionsListClose.get(i), j); // pos final expression
             finalPosList.add(posFinal);
 
             /*
@@ -195,8 +199,8 @@ public class POISummary {
     String expression = "";
     int startPosition = 0;
     int finalPosition = 0;
-    int i = 0;
-    int j = 0;
+    int posText = 0;
+    int posStart = 0;
 
     String stringTemp = "";
     XWPFRun paragraphRun;
@@ -205,13 +209,13 @@ public class POISummary {
     String textIndicatorLink1 = "";
     int k = 0;
 
-    for (i = 0; i < text.length(); i++) {
+    for (posText = 0; posText < text.length(); posText++) {
 
-      if (startsPosList.contains(i)) {
-        for (j = 0; j < startsPosList.size(); j++) {
-          if (startsPosList.get(j) == i) {
-            finalPosition = finalPosList.get(j);
-            expression = tagsAddList.get(j);
+      if (startsPosList.contains(posText)) {
+        for (posStart = 0; posStart < startsPosList.size(); posStart++) {
+          if (startsPosList.get(posStart) == posText) {
+            finalPosition = finalPosList.get(posStart);
+            expression = tagsAddList.get(posStart);
 
             if (expression.equals("<a")) {
               url1 = urlList.get(k);
@@ -223,12 +227,15 @@ public class POISummary {
           }
         }
 
-        if (i > 0) {
-          stringTemp = text.substring(startPosition, i);
+        if (posText > 0) {
+          stringTemp = text.substring(startPosition, posText);
 
           try {
+
             paragraph.setAlignment(ParagraphAlignment.BOTH);
+
             paragraphRun = paragraph.createRun();
+            paragraphRun.setText(stringTemp);
           } catch (Exception e) {
             paragraph = document.createParagraph();
             paragraph.setAlignment(ParagraphAlignment.BOTH);
@@ -249,7 +256,7 @@ public class POISummary {
           paragraphRun.setUnderline(UnderlinePatterns.NONE);
           paragraphRun.setItalic(false);
         }
-        startPosition = i + expression.length() + 1;
+        startPosition = posText + expression.length() + 1;
         /*
          * Create paragraph with last position after the start of html tag until the close of this
          */
@@ -342,7 +349,7 @@ public class POISummary {
         }
         startPosition = finalPosition + expression.length() + 1;
         expression = "";
-        i = finalPosition;
+        posText = finalPosition;
       }
     }
 
@@ -395,7 +402,6 @@ public class POISummary {
     }
   }
 
-
   public void pageCenterBoldHeader(XWPFDocument document, String text) throws IOException {
     CTSectPr sectPr = document.getDocument().getBody().addNewSectPr();
     XWPFHeaderFooterPolicy policy = new XWPFHeaderFooterPolicy(document, sectPr);
@@ -409,6 +415,7 @@ public class POISummary {
     parsHeader[0] = headerParagraph;
     policy.createHeader(XWPFHeaderFooterPolicy.DEFAULT, parsHeader);
   }
+
 
   /**
    * Footer title
@@ -483,7 +490,6 @@ public class POISummary {
     policy.createHeader(XWPFHeaderFooterPolicy.DEFAULT, parsHeader);
   }
 
-
   public String replaceHTMLTags(String html) {
     try {
       html = html.replaceAll("\\<.*?>", "");
@@ -499,6 +505,7 @@ public class POISummary {
     }
     return html;
   }
+
 
   public void table2AnnualReportCRPStyle(XWPFTable table) {
     /* Horizontal merge, From format table A */
@@ -583,7 +590,6 @@ public class POISummary {
     }
   }
 
-
   public void table4AnnualReport2018Style(XWPFTable table) {
     /* horizontal merge, From format tables I */
 
@@ -599,6 +605,7 @@ public class POISummary {
       }
     }
   }
+
 
   public void table5AnnualReport2018Style(XWPFTable table) {
     /* Horizontal merge, From format tables B */
@@ -728,7 +735,6 @@ public class POISummary {
     }
   }
 
-
   public void tableAPowbCRPStyle(XWPFTable table) {
     /* Horizontal merge, From format table A */
     CTHMerge hMerge = CTHMerge.Factory.newInstance();
@@ -795,6 +801,7 @@ public class POISummary {
     }
 
   }
+
 
   public void tableAPowbStyle(XWPFTable table) {
     /* Horizontal merge, From format tables A */
@@ -1278,6 +1285,90 @@ public class POISummary {
     }
   }
 
+  public void test(XWPFDocument document, String text) {
+    List<String> expressionsListFound = new ArrayList<String>();
+    List<Integer> initPositions = new ArrayList<Integer>();
+    List<Integer> finalPositions = new ArrayList<Integer>();
+    XWPFRun paragraphRun = null;
+    XWPFParagraph paragraph = null;
+    paragraph = document.createParagraph();
+    paragraph.setAlignment(ParagraphAlignment.BOTH);
+    String expressionFound = null;
+    for (int textPos = 0; textPos < text.length() - 1; textPos++) {
+      if (expressionsList.contains((text.charAt(textPos) + text.charAt(textPos + 1) + "").toString())) {
+        expressionFound = expressionsList
+          .get(expressionsList.indexOf((text.charAt(textPos) + text.charAt(textPos + 1) + "").toString()));
+        expressionsListFound.add(expressionFound);
+        initPositions.add(textPos + expressionFound.length());
+      }
+      if (expressionsListClose.contains((text.charAt(textPos) + text.charAt(textPos + 1) + "").toString())) {
+        finalPositions.add(textPos + expressionFound.length() + 1);
+      }
+    }
+
+    String textTag = null;
+    int textPos = 0;
+    String expressionDetected = null;
+    for (textPos = 0; textPos < text.length() - 1; textPos++) {
+      if (initPositions.contains(textPos)) {
+        textTag = text.substring(initPositions.get(initPositions.indexOf(textPos)),
+          finalPositions.get(finalPositions.indexOf(textPos)));
+        expressionDetected = expressionsListFound.get(initPositions.indexOf(textPos));
+        this.test2(paragraph, paragraphRun, textTag, expressionDetected);
+      }
+      textPos = finalPositions.get(finalPositions.indexOf(textPos)) + expressionDetected.length() + 1;
+    }
+  }
+
+  public void test2(XWPFParagraph paragraph, XWPFRun paragraphRun, String textTag, String expression) {
+
+    paragraphRun = paragraph.createRun();
+    paragraphRun.setColor(TEXT_FONT_COLOR);
+    paragraphRun.setFontFamily(FONT_TYPE);
+    paragraphRun.setFontSize(11);
+    paragraphRun.setText(textTag);
+
+    switch (expression) {
+      /*
+       * Open tags detection
+       */
+      case "<b>":
+        paragraphRun.setBold(true);
+        break;
+      case "<strong>":
+        paragraphRun.setBold(true);
+        break;
+      case "<i>":
+        paragraphRun.setItalic(true);
+        break;
+      case "<em>":
+        paragraphRun.setItalic(true);
+        break;
+      case "<u>":
+        paragraphRun.setUnderline(UnderlinePatterns.SINGLE);
+        break;
+      case "<strike>":
+        break;
+      case "<del>":
+        break;
+      case "<p>":
+        break;
+      case "<a":
+        String urlText = textTag.substring(textTag.indexOf(">") + 1, textTag.indexOf("</a"));
+        String url = textTag.substring(textTag.indexOf("=") + 2, textTag.indexOf(">") - 1);
+
+        if (!url.contains("http://") && !url.contains("https://")) {
+          url = "http://" + url;
+        }
+        this.textHyperlink(url, urlText, paragraph);
+        break;
+
+      default:
+        paragraphRun.setBold(false);
+        paragraphRun.setUnderline(UnderlinePatterns.NONE);
+        paragraphRun.setItalic(false);
+    }
+  }
 
   /**
    * Head 1 Title
