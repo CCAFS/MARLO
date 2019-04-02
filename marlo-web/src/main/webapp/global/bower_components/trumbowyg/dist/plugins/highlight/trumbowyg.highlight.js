@@ -24,7 +24,7 @@
                         var options = '';
 
                         for (var lang in Prism.languages) {
-                            if (Prism.languages[lang].comment) {
+                            if (Prism.languages.hasOwnProperty(lang)) {
                                 options += '<option value="' + lang + '">' + lang + '</option>';
                             }
                         }
@@ -61,6 +61,9 @@
         langs: {
             en: {
                 highlight: 'Code syntax highlight'
+            },
+            pt_br: {
+                highlight: 'Realçar sintaxe de código'
             }
         },
         // Add our plugin to Trumbowyg registred plugins

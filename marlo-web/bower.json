@@ -47,7 +47,7 @@
     "pickadate": "^3.5.6",
     "components-font-awesome": "^5.0.6",
     "pusher-js": "pusher#^4.2.2",
-    "trumbowyg": "^2.11.0",
+    "trumbowyg": "^2.15.1",
     "malihu-custom-scrollbar-plugin": "^3.1.5",
     "cookieconsent": "^3.1.0"
   },
@@ -126,6 +126,7 @@
     "trumbowyg": {
       "main": [
         "dist/trumbowyg.min.js",
+        "dist/plugins/cleanpaste/trumbowyg.cleanpaste.min.js",
         "dist/ui/trumbowyg.min.css"
       ]
     }
