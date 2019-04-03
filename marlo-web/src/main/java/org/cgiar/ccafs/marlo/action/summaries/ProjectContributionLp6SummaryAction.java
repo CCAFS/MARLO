@@ -249,7 +249,6 @@ public class ProjectContributionLp6SummaryAction extends BaseSummariesAction imp
         this.getBaseUrl() + "/projects/" + this.getCurrentCrp().getAcronym() + "/" + "contributionsLP6.do?projectID="
           + projectLp6Contribution.getProject().getId() + "&edit=true&phaseID=" + this.getSelectedPhase().getId();
 
-      // marlo.cgiar.org/projects/CCAFS/contributionsLP6.do?projectID=48&edit=true&phaseID=56
 
       narrativeLp6 =
         projectLp6Contribution.getNarrative() != null && !projectLp6Contribution.getNarrative().trim().isEmpty()

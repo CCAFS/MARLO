@@ -43,7 +43,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -52,8 +51,6 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 
 import com.ibm.icu.util.Calendar;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.struts2.dispatcher.Parameter;
 import org.pentaho.reporting.engine.classic.core.CompoundDataFactory;
 import org.pentaho.reporting.engine.classic.core.Element;
 import org.pentaho.reporting.engine.classic.core.ItemBand;
@@ -166,6 +163,8 @@ public class ProjectContributionLp6SummaryAction2 extends BaseSummariesAction im
     masterReport.getParameterValues().put("i8nGeographicScope", this.getText("deliverable.geographicScope"));
     masterReport.getParameterValues().put("i8nCountry", this.getText("deliverable.countries"));
     masterReport.getParameterValues().put("i8nRegion", this.getText("deliverable.region"));
+    masterReport.getParameterValues().put("i8nProjectContribution",
+      this.getText("summaries.lp6contribution.projectContribution"));
 
 
     masterReport.getParameterValues().put("i8nHeader",
@@ -233,7 +232,6 @@ public class ProjectContributionLp6SummaryAction2 extends BaseSummariesAction im
 
       MasterReport masterReport = (MasterReport) reportResource.getResource();
 
-
       // Set Main_Query
       CompoundDataFactory cdf = CompoundDataFactory.normalize(masterReport.getDataFactory());
       String masterQueryName = "main";
@@ -290,7 +288,6 @@ public class ProjectContributionLp6SummaryAction2 extends BaseSummariesAction im
     subReport.setDataFactory(cdf);
   }
 
-
   private int getCalendarFromDate(Date date) {
     try {
       Calendar cal = Calendar.getInstance();
@@ -313,15 +310,12 @@ public class ProjectContributionLp6SummaryAction2 extends BaseSummariesAction im
 
   private TypedTableModel getDeliverablesDetailsTableModel() {
     TypedTableModel model = new TypedTableModel(
-      new String[] {"deliverableId", "deliverableTitle", "completionYear", "deliverableType", "deliverableSubType",
-        "keyOutput", "delivStatus", "delivNewYear", "projectID", "projectTitle", "projectClusterActivities",
-        "flagships", "regions", "individual", "partnersResponsible", "shared", "openFS", "fsWindows", "outcomes",
-        "projectLeadPartner", "managingResponsible", "phaseID", "finishedFS", "gender", "youth", "cap",
-        "deliverableDescription", "geographicScope", "region", "country"},
-      new Class[] {Long.class, String.class, Integer.class, String.class, String.class, String.class, String.class,
-        String.class, Long.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        String.class, String.class, String.class, String.class, String.class, String.class, Long.class, String.class,
-        String.class, String.class, String.class, String.class, String.class, String.class, String.class},
+      new String[] {"project", "narrative", "deliverables", "geographicScope", "workingAcross",
+        "workingAcrossNarrative", "undertakingEfforts", "undertakingEffortsNarrative", "providing", "keyLearnings",
+        "top3", "undertakingCSA", "undertakingCSAN", "undertaking", "undertakingN", "id"},
+      new Class[] {String.class, String.class, String.class, String.class, String.class, String.class, String.class,
+        String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
+        String.class},
       0);
 
     String deliverableId = null, deliverableTitle = null, completionYear = null, deliverableType = null,
@@ -340,12 +334,16 @@ public class ProjectContributionLp6SummaryAction2 extends BaseSummariesAction im
 
       id = projectLp6Contribution.getProject() != null && projectLp6Contribution.getProject().getId() != null
         ? projectLp6Contribution.getProject().getId() + "" : null;
+      /*
+       * projectId = "=HYPERLINK(\"" + this.getBaseUrl() + "/projects/" + this.getCurrentCrp().getAcronym() + "/"
+       * + "contributionsLP6.do?projectID=" + projectLp6Contribution.getProject().getId() + "&edit=true&phaseID="
+       * + this.getSelectedPhase().getId() + "\",\"" + projectLp6Contribution.getProject().getId() + "\")";
+       */
 
       projectId =
         this.getBaseUrl() + "/projects/" + this.getCurrentCrp().getAcronym() + "/" + "contributionsLP6.do?projectID="
           + projectLp6Contribution.getProject().getId() + "&edit=true&phaseID=" + this.getSelectedPhase().getId();
 
-      // marlo.cgiar.org/projects/CCAFS/contributionsLP6.do?projectID=48&edit=true&phaseID=56
 
       narrativeLp6 =
         projectLp6Contribution.getNarrative() != null && !projectLp6Contribution.getNarrative().trim().isEmpty()
@@ -387,6 +385,14 @@ public class ProjectContributionLp6SummaryAction2 extends BaseSummariesAction im
           deliverables += deliverable.getId() + ", ";
         }
       }
+
+      try {
+        if (deliverables.contains(",")) {
+          deliverables = deliverables.substring(0, deliverables.length() - 2);
+        }
+      } catch (Exception e) {
+
+      }
       /****/
       if (deliverables != null && deliverables.isEmpty()) {
         deliverables = null;
@@ -402,7 +408,7 @@ public class ProjectContributionLp6SummaryAction2 extends BaseSummariesAction im
         && !projectLp6Contribution.getWorkingAcrossFlagshipsNarrative().isEmpty()
           ? projectLp6Contribution.getWorkingAcrossFlagshipsNarrative() : null;
 
-      if (workingAcross != null && workingAcross.equals("No") && workingAcrossNarrative == null) {
+      if (workingAcross != null && workingAcross.equals("Yes") && workingAcrossNarrative == null) {
         workingAcrossNarrative = "<Not Specified>";
       }
 
@@ -413,18 +419,18 @@ public class ProjectContributionLp6SummaryAction2 extends BaseSummariesAction im
         && !projectLp6Contribution.getUndertakingEffortsLeadingNarrative().isEmpty()
           ? projectLp6Contribution.getUndertakingEffortsLeadingNarrative() + "" : null;
 
-      if (undertakingEfforts != null && undertakingEfforts.equals("No") && undertakingEffortsNarrative == null) {
+      if (undertakingEfforts != null && undertakingEfforts.equals("Yes") && undertakingEffortsNarrative == null) {
         undertakingEffortsNarrative = "<Not Specified>";
       }
 
-      providing =
-        projectLp6Contribution.isProvidingPathways() != null ? projectLp6Contribution.isProvidingPathways() + "" : null;
+      providing = projectLp6Contribution.isProvidingPathways() != null
+        ? this.convertBoolean(projectLp6Contribution.isProvidingPathways()) + "" : null;
 
       keyOutputs = projectLp6Contribution.getProvidingPathwaysNarrative() != null
         && !projectLp6Contribution.getProvidingPathwaysNarrative().isEmpty()
           ? projectLp6Contribution.getProvidingPathwaysNarrative() + "" : null;
 
-      if (providing != null && providing.equals("No") && keyOutputs == null) {
+      if (providing != null && providing.equals("Yes") && keyOutputs == null) {
         keyOutputs = "<Not Specified>";
       }
 
@@ -439,7 +445,7 @@ public class ProjectContributionLp6SummaryAction2 extends BaseSummariesAction im
         && !projectLp6Contribution.getUndertakingEffortsCsaNarrative().isEmpty()
           ? projectLp6Contribution.getUndertakingEffortsCsaNarrative() + "" : null;
 
-      if (undertakingCSA != null && undertakingCSA.equals("No") && undertakingCSANarrative == null) {
+      if (undertakingCSA != null && undertakingCSA.equals("Yes") && undertakingCSANarrative == null) {
         undertakingCSANarrative = "<Not Specified>";
       }
 
@@ -450,16 +456,13 @@ public class ProjectContributionLp6SummaryAction2 extends BaseSummariesAction im
         && !projectLp6Contribution.getInitiativeRelatedNarrative().isEmpty()
           ? projectLp6Contribution.getInitiativeRelatedNarrative() + "" : null;
 
-      if (initiativeRelated != null && initiativeRelated.equals("No") && initiativeRelatedNarrative == null) {
+      if (initiativeRelated != null && initiativeRelated.equals("Yes") && initiativeRelatedNarrative == null) {
         initiativeRelatedNarrative = "<Not Specified>";
       }
 
       model.addRow(new Object[] {projectId, narrativeLp6, deliverables, geographicScope, workingAcross,
         workingAcrossNarrative, undertakingEfforts, undertakingEffortsNarrative, providing, keyOutputs, top3,
-        undertakingCSA, undertakingCSANarrative, initiativeRelated, initiativeRelatedNarrative, id, openFS, fsWindows,
-        outcomes, projectLeadPartner, managingResponsible, phaseID, finishedFS, gender, youth, cap,
-        deliverableDescription, geographicScope, region, country});
-
+        undertakingCSA, undertakingCSANarrative, initiativeRelated, initiativeRelatedNarrative, id});
     }
     return model;
 
@@ -504,17 +507,15 @@ public class ProjectContributionLp6SummaryAction2 extends BaseSummariesAction im
   @Override
   public String getFileName() {
     StringBuffer fileName = new StringBuffer();
-    fileName.append("ExpectedDeliverablesSummary");
-    if (showAllYears.equals("true")) {
-      fileName.append("_AllYears");
-    }
-    fileName.append("-" + this.getLoggedCrp().getAcronym() + "-");
+
+    fileName.append("ProjectContributionToLP6-");
+
+    fileName.append(this.getLoggedCrp().getAcronym() + "-");
+    fileName.append(this.getSelectedCycle() + "-");
     fileName.append(this.getSelectedYear() + "_");
     fileName.append(new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date()));
     fileName.append(".xlsx");
-
     return fileName.toString();
-
   }
 
   @Override
@@ -559,34 +560,22 @@ public class ProjectContributionLp6SummaryAction2 extends BaseSummariesAction im
     if (projectLp6Contributions == null) {
       projectLp6Contributions = new ArrayList<>();
     }
-    /*
-     * projectLp6Contributions = projectLp6Contributions.stream()
-     * .filter(l -> l.getPhase().getId().equals(this.getSelectedPhase().getId())).collect(Collectors.toList());
-     */
 
-    try {
-      Map<String, Parameter> parameters = this.getParameters();
-      ppa = StringUtils.trim(parameters.get(APConstants.SUMMARY_DELIVERABLE_PPA).getMultipleValues()[0]);
-    } catch (Exception e) {
-      LOG.warn("Failed to get " + APConstants.SUMMARY_DELIVERABLE_PPA
-        + " parameter. Parameter will be set as All. Exception: " + e.getMessage());
-      ppa = "All";
+
+    if (projectLp6Contributions != null) {
+      projectLp6Contributions = projectLp6Contributions.stream()
+        .filter(
+          c -> c.isActive() && c.isContribution() == true && c.getPhase().getId().equals(this.getActualPhase().getId()))
+        .collect(Collectors.toList());
     }
-    try {
-      Map<String, Parameter> parameters = this.getParameters();
-      showAllYears = StringUtils.trim(parameters.get(APConstants.SUMMARY_DELIVERABLE_ALL_YEARS).getMultipleValues()[0]);
-    } catch (Exception e) {
-      LOG.warn("Failed to get " + APConstants.SUMMARY_DELIVERABLE_ALL_YEARS
-        + " parameter. Parameter will be set as false. Exception: " + e.getMessage());
-      showAllYears = "false";
-    }
+
+
     this.setGeneralParameters();
     // Calculate time to generate report
     startTime = System.currentTimeMillis();
     LOG.info("Start report download: " + this.getFileName() + ". User: "
       + this.getCurrentUser().getComposedCompleteName() + ". CRP: " + this.getLoggedCrp().getAcronym());
   }
-
 
   public void setShowAllYears(String showAllYears) {
     this.showAllYears = showAllYears;
