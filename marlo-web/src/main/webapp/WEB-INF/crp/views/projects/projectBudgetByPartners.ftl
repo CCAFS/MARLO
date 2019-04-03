@@ -3,7 +3,7 @@
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2", "dropzone", "blueimp-file-upload"] /]
 [#assign customJS = [
-  "${baseUrlMedia}/js/projects/projectBudgetByPartners.js?20190403", 
+  "${baseUrlMedia}/js/projects/projectBudgetByPartners.js?20190403",
   "${baseUrl}/global/js/autoSave.js",
   "${baseUrl}/global/js/fieldsValidation.js"
   ] 
@@ -80,51 +80,49 @@
             <div class="tab-content budget-content">
               [#list startYear .. selectedYear as year]
                 <div role="tabpanel" class="tab-pane [#if year == selectedYear]active[/#if]" id="year-${year}">
-                    [#-- Budgest cannot be editable message --]
-                    [#if !isYearEditable(year) && editable]<div class="note"> ${year} budgets for cannot be editable.</div>[/#if]
-                  
-                    <div class="overallYearBudget clearfix">
-                      <div class="row fieldset" listname="project.budgets">
-                        <table>
-                          [#-- Window Type --]
+                  [#-- Budgest cannot be editable message --]
+                  [#if !isYearEditable(year) && editable]<div class="note"> ${year} budgets for cannot be editable.</div>[/#if]
+                  <div class="overallYearBudget clearfix">
+                    <div class="row fieldset" listname="project.budgets">
+                      <table>
+                        [#-- Window Type --]
+                        <tr>
+                          <td></td>
+                          [#list budgetTypesList as budgetType]
+                            <td class="text-right"><h5 class="subTitle"> ${budgetType.name} <img title="${budgetType.description}" src="${baseUrl}/global/images/icon-help2.png" alt="" /></h5></td>
+                          [/#list]
+                          <td class="text-right"><h5 class="title">Overall ${year}</h5></td>
+                        </tr>
+                        [#-- Planning --]
+                        <tr>
+                          <td class="amountType"><small> Planned Budget </small></td>
+                          [#list budgetTypesList as budgetType]
+                            <td class="text-right"><small>US$ <span class="totalByYear cycle-planning year-${year} totalByYear-${budgetType.id}">${action.getTotalYear(year,budgetType.id)?number?string(",##0.00")}</span></small></td>
+                          [/#list]
+                          <td class="text-right"><strong><small>US$ <span class="overallAmount cycle-planning year-${year}">0.00</span></small></strong></td>
+                        </tr>
+                        [#-- Reporting--]
+                        [#if (reportingActive || upKeepActive)  && action.hasSpecificities(crpEnableBudgetExecution)]
                           <tr>
-                            <td></td>
+                            <td class="amountType"> <small>Actual Expenditure</small> </td>
                             [#list budgetTypesList as budgetType]
-                              <td class="text-right"><h5 class="subTitle"> ${budgetType.name} <img title="${budgetType.description}" src="${baseUrl}/global/images/icon-help2.png" alt="" /></h5></td>
+                              <td class="text-right"><small>US$ <span class="totalByYear cycle-reporting year-${year} totalByYear-${budgetType.id}">${((action.getTotalProjectBudgetExecution(year, budgetType.id)?number)!0)?string(",##0.00")}</span></small></td>
                             [/#list]
-                            <td class="text-right"><h5 class="title">Overall ${year}</h5></td>
+                            <td class="text-right"><strong><small>US$ <span class="overallAmount cycle-reporting year-${year}"> ${((action.getTotalProjectBudgetExecution(year))!0)?string(",##0.00")}</span></small></strong></td>
                           </tr>
-                          [#-- Planning --]
-                          <tr>
-                            <td class="amountType"><small> Planned Budget </small></td>
-                            [#list budgetTypesList as budgetType]
-                              <td class="text-right"><small>US$ <span class="totalByYear cycle-planning year-${year} totalByYear-${budgetType.id}">${action.getTotalYear(year,budgetType.id)?number?string(",##0.00")}</span></small></td>
-                            [/#list]
-                            <td class="text-right"><strong><small>US$ <span class="overallAmount cycle-planning year-${year}">0.00</span></small></strong></td>
-                          </tr>
-                          [#-- Reporting--]
-                          [#if (reportingActive || upKeepActive)  && action.hasSpecificities(crpEnableBudgetExecution)]
-                            <tr>
-                              <td class="amountType"> <small>Actual Expenditure</small> </td>
-                              [#list budgetTypesList as budgetType]
-                                <td class="text-right"><small>US$ <span class="totalByYear cycle-reporting year-${year} totalByYear-${budgetType.id}">${((action.getTotalProjectBudgetExecution(year, budgetType.id)?number)!0)?string(",##0.00")}</span></small></td>
-                              [/#list]
-                              <td class="text-right"><strong><small>US$ <span class="overallAmount cycle-reporting year-${year}"> ${((action.getTotalProjectBudgetExecution(year))!0)?string(",##0.00")}</span></small></strong></td>
-                            </tr>
-                          [/#if]
-                        </table>
-                      </div>
-                    </div>                   
-                    [#if projectPPAPartners?has_content]
-                      [#list projectPPAPartners as projectPartner]
-                        [#if action.existOnYear(projectPartner.id,year)]
-                          [@projectPartnerMacro element=projectPartner name="project.partners[${projectPartner_index}]" index=projectPartner_index selectedYear=year/]
                         [/#if]
-                      [/#list]
-                    [#else]
-                      <div class="simpleBox emptyMessage text-center">[@s.text name="projectBudgetByPartners.beforeEnteringBudgetInformation" /] <a href="[@s.url action="${crpSession}/partners"][@s.param name="projectID" value=projectID /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">partners section</a></div>
-                    [/#if]
-                
+                      </table>
+                    </div>
+                  </div>
+                  [#if projectPPAPartners?has_content]
+                    [#list projectPPAPartners as projectPartner]
+                      [#if action.existOnYear(projectPartner.id,year)]
+                        [@projectPartnerMacro element=projectPartner name="project.partners[${projectPartner_index}]" index=projectPartner_index selectedYear=year/]
+                      [/#if]
+                    [/#list]
+                  [#else]
+                    <div class="simpleBox emptyMessage text-center">[@s.text name="projectBudgetByPartners.beforeEnteringBudgetInformation" /] <a href="[@s.url action="${crpSession}/partners"][@s.param name="projectID" value=projectID /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">partners section</a></div>
+                  [/#if]
                 </div>
               [/#list]  
             </div>
@@ -249,8 +247,8 @@
             [#list budgetTypesList as budgetType]
               [#-- Budget Type--]
               <td class="budgetColumn">
-                <div class="input"><p><span class="percentageLabel type-${budgetType.id}">${((action.getTotalGenderPer(element.institution.id, selectedYear, budgetType.id,1))!0)}%</span></p></div>
-                <div class="row percentageAmount type-${budgetType.id} text-center">
+                <div class="input"><p><span class="percentageLabel cycle-planning type-${budgetType.id}">${((action.getTotalGenderPer(element.institution.id, selectedYear, budgetType.id,1))!0)}%</span></p></div>
+                <div class="row percentageAmount cycle-planning type-${budgetType.id} text-center">
                   <small>US$ <span>${((action.getTotalGender(element.institution.id, selectedYear, budgetType.id,1))!0)?number?string(",##0.00")}</span></small>
                 </div>
               </td>
@@ -371,7 +369,7 @@
       [#-- TODO: Allow to add funding sources when there is no aggregate (problem with permissions)  --]
       [#-- Added action.canSearchFunding to allow to modify gender depending on institution  --]
       [#if (editable && isYearEditable(selectedYear) && action.canSearchFunding(element.institution.id) && action.canEditGender()) || isTemplate]
-        [@customForm.input name="${customName}.genderPercentage" i18nkey="budget.genderPercentage" showTitle=false className="percentageInput type-${(element.fundingSource.fundingSourceInfo.budgetType.id)!'none'}" required=true   /]
+        [@customForm.input name="${customName}.genderPercentage" i18nkey="budget.genderPercentage" showTitle=false className="percentageInput cycle-planning type-${(element.fundingSource.fundingSourceInfo.budgetType.id)!'none'}" required=true   /]
       [#else]  
         <div class="${customForm.changedField(customName+'.genderPercentage')}">
           <div class="input"><p><span>${((element.genderPercentage)!0)}%</span></p></div>
@@ -475,7 +473,7 @@
             [#-- TODO: Allow to add funding sources when there is no aggregate (problem with permissions)  --]
             [#-- Added action.canSearchFunding to allow to modify gender depending on institution  --]
             [#if (editable && isYearEditable(selectedYear) && action.canSearchFunding(element.institution.id) && action.canEditGender()) || isTemplate]
-              [@customForm.input name="${customName}.genderPercentage" i18nkey="budget.genderPercentage" showTitle=false className="percentageInput type-${(element.fundingSource.fundingSourceInfo.budgetType.id)!'none'}" required=true   /]
+              [@customForm.input name="${customName}.genderPercentage" i18nkey="budget.genderPercentage" showTitle=false className="percentageInput cycle-planning type-${(element.fundingSource.fundingSourceInfo.budgetType.id)!'none'}" required=true   /]
             [#else]  
             <div class="${customForm.changedField(customName+'.genderPercentage')}">
               <div class="input"><p><span>${((element.genderPercentage)!0)}%</span></p></div>

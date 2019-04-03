@@ -579,7 +579,7 @@ function applyWordCounter($textArea,wordCount) {
 
 function word_count(field) {
   var value = $.trim($(field).val());
-  value = $.trim(value.replace(/<\/?[^>]+>/ig, " "));
+  value = $.trim(value.replace(/<\/?[^>]+>/ig, ""));
   if(typeof value === "undefined" || value.length == 0) {
     return 0;
   } else {
