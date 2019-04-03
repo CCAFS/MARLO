@@ -107,37 +107,39 @@
             
             [#-- Number of peer-reviewed publications --]
             <div class="form-group">
+              [#-- Word Document Tag --]
+              [@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/]
+              
               <h4 class="headTitle">[@s.text name="${customLabel}.peerReviewed.title" /]</h4>
               [@numberOfPublications name="peerReviewed" list=["", ""]/]
             </div>
             
             [#-- Full list of publications published --]
             <div class="form-group viewMoreSyntesisTable-block">
-              
               [#-- Modal Large --]
-                <button type="button" class="btn btn-default btn-xs pull-right" data-toggle="modal" data-target="#modal-publications">
-                 <span class="glyphicon glyphicon-fullscreen"></span> See Full table 6
-                </button>
-                <h4 class="headTitle">[@s.text name="${customLabel}.fullList.title" /]</h4>
-                <div class="modal fade" id="modal-publications" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-                  <div class="modal-dialog modal-lg" role="document">
-                    <div class="modal-content">
-                      <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                        <h4 class="modal-title" id="myModalLabel">[@s.text name="${customLabel}.fullList.title" /]</h4>
-                      </div>
-                      <div class="modal-body">
-                        [@listOfPublications name="fullList" list=(deliverables)![] allowPopups=false /]
-                      </div>
-                      <div class="modal-footer">
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                      </div>
+              <button type="button" class="btn btn-default btn-xs pull-right" data-toggle="modal" data-target="#modal-publications">
+               <span class="glyphicon glyphicon-fullscreen"></span> See Full table 6
+              </button>
+              <h4 class="headTitle">[@s.text name="${customLabel}.fullList.title" /]</h4>
+              <div class="modal fade" id="modal-publications" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                <div class="modal-dialog modal-lg" role="document">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                      <h4 class="modal-title" id="myModalLabel">[@s.text name="${customLabel}.fullList.title" /]</h4>
+                    </div>
+                    <div class="modal-body">
+                      [@listOfPublications name="fullList" list=(deliverables)![] allowPopups=false /]
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
                   </div>
                 </div>
               </div>
-                [#-- Table --]
-                [@listOfPublications name="fullList" list=(deliverables)![]  allowPopups=true /]
-              </div>
+              [#-- Table --]
+              [@listOfPublications name="fullList" list=(deliverables)![]  allowPopups=true /]
+            </div>
             
           </div>
           [#-- Section Buttons & hidden inputs--]

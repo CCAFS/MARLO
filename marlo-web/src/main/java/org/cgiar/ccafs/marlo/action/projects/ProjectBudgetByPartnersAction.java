@@ -212,7 +212,6 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
       loggedCrp.getAcronym(), projectID + ""));
   }
 
-
   public boolean canSearchFunding(long institutionID) {
 
     boolean permission = this.hasPermissionNoBase(
@@ -231,6 +230,7 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     return permission;
 
   }
+
 
   /**
    * This method clears the cache and re-load the user permissions in the next iteration.
@@ -309,7 +309,6 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
   public Map<String, String> getBudgetTypes() {
     return budgetTypes;
   }
-
 
   public List<BudgetType> getBudgetTypesList() {
     return budgetTypesList;
@@ -402,6 +401,7 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     return project;
   }
 
+
   public ProjectBudgetExecution getProjectBudgetExecution(long institutionId, int year, long budgetType) {
     if (project.getBudgetExecutions() != null && !project.getBudgetExecutions().isEmpty()) {
       List<ProjectBudgetExecution> projectBudgetExecutions = project.getBudgetExecutions().stream()
@@ -418,10 +418,10 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     return null;
   }
 
-
   public long getProjectID() {
     return projectID;
   }
+
 
   public List<ProjectPartner> getProjectPPAPartners() {
     return projectPPAPartners;
@@ -431,10 +431,10 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     return sharedPhaseID;
   }
 
-
   public Map<String, String> getStatus() {
     return status;
   }
+
 
   public String getTotalAmount(long institutionId, int year, long budgetType, Integer coFinancing) {
     Phase sharedPhase = phaseManager.getPhaseById(sharedPhaseID);
@@ -476,6 +476,15 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     } else {
       return 0.0;
     }
+  }
+
+  public double getTotalProjectBudgetExecution(int year) {
+    return projectBudgetExecutionManager.getTotalProjectBudgetExecution(projectID, year, this.getActualPhase().getId());
+  }
+
+  public double getTotalProjectBudgetExecution(int year, long budgetTypeId) {
+    return projectBudgetExecutionManager.getTotalProjectBudgetExecution(projectID, year, this.getActualPhase().getId(),
+      budgetTypeId);
   }
 
 

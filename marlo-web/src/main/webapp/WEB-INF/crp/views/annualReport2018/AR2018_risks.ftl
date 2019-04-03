@@ -42,11 +42,13 @@
           [#-- Title --]
           <h3 class="headTitle">[@s.text name="${customLabel}.title" /]</h3>
           <div class="borderBox">
-            [@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/]
             [#if PMU]
               [#-- Efficiency description --]
               <div class="form-group">
-               [@customForm.textArea name="${customName}.briefSummary" i18nkey="${customLabel}.summary" help="${customLabel}.summary.help" className="limitWords-250" helpIcon=false required=true editable=editable allowTextEditor=true /]
+                [#-- Word Document Tag --]
+                [@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/]
+                
+                [@customForm.textArea name="${customName}.briefSummary" i18nkey="${customLabel}.summary" help="${customLabel}.summary.help" className="limitWords-250" helpIcon=false required=true editable=editable allowTextEditor=true /]
               </div>
               [#else]
               <div class="textArea">
