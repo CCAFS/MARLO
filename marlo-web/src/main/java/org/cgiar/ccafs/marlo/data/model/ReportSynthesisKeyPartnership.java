@@ -48,8 +48,20 @@ public class ReportSynthesisKeyPartnership extends MarloAuditableEntity implemen
 
   private List<ReportSynthesisKeyPartnershipExternal> selectedExternalPartnerships;
 
+  // CGIAR Collaborations Structure
+  private Set<ReportSynthesisKeyPartnershipCollaborationPmu> reportSynthesisKeyPartnershipCollaborationPmus =
+    new HashSet<ReportSynthesisKeyPartnershipCollaborationPmu>(0);
+
+  private List<ReportSynthesisKeyPartnershipCollaborationPmu> plannedCollaborations;
+
+  private String plannedCollaborationsValue;
+
+  private List<ReportSynthesisKeyPartnershipCollaboration> selectedCollaborations;
+
+
   public ReportSynthesisKeyPartnership() {
   }
+
 
   @Override
   public boolean equals(Object obj) {
@@ -73,6 +85,24 @@ public class ReportSynthesisKeyPartnership extends MarloAuditableEntity implemen
     return true;
   }
 
+
+  /**
+   * @return an array of integers.
+   */
+  public long[] getCollaborationIds() {
+
+    List<ReportSynthesisKeyPartnershipCollaboration> collaborations = this.getSelectedCollaborations();
+    if (collaborations != null) {
+      long[] ids = new long[collaborations.size()];
+      for (int i = 0; i < ids.length; i++) {
+        ids[i] = collaborations.get(i).getId();
+      }
+      return ids;
+    }
+    return null;
+  }
+
+
   public List<ReportSynthesisKeyPartnershipCollaboration> getCollaborations() {
     return collaborations;
   }
@@ -84,7 +114,6 @@ public class ReportSynthesisKeyPartnership extends MarloAuditableEntity implemen
     sb.append("Id : ").append(this.getId());
     return sb.toString();
   }
-
 
   /**
    * @return an array of integers.
@@ -108,6 +137,15 @@ public class ReportSynthesisKeyPartnership extends MarloAuditableEntity implemen
   }
 
 
+  public List<ReportSynthesisKeyPartnershipCollaborationPmu> getPlannedCollaborations() {
+    return plannedCollaborations;
+  }
+
+
+  public String getPlannedCollaborationsValue() {
+    return plannedCollaborationsValue;
+  }
+
   public List<ReportSynthesisKeyPartnershipPmu> getPlannedExternalPartnerships() {
     return plannedExternalPartnerships;
   }
@@ -116,9 +154,13 @@ public class ReportSynthesisKeyPartnership extends MarloAuditableEntity implemen
     return plannedExternalPartnershipsValue;
   }
 
-
   public ReportSynthesis getReportSynthesis() {
     return reportSynthesis;
+  }
+
+
+  public Set<ReportSynthesisKeyPartnershipCollaborationPmu> getReportSynthesisKeyPartnershipCollaborationPmus() {
+    return reportSynthesisKeyPartnershipCollaborationPmus;
   }
 
 
@@ -134,6 +176,10 @@ public class ReportSynthesisKeyPartnership extends MarloAuditableEntity implemen
 
   public Set<ReportSynthesisKeyPartnershipPmu> getReportSynthesisKeyPartnershipPmus() {
     return reportSynthesisKeyPartnershipPmus;
+  }
+
+  public List<ReportSynthesisKeyPartnershipCollaboration> getSelectedCollaborations() {
+    return selectedCollaborations;
   }
 
 
@@ -171,6 +217,16 @@ public class ReportSynthesisKeyPartnership extends MarloAuditableEntity implemen
   }
 
 
+  public void setPlannedCollaborations(List<ReportSynthesisKeyPartnershipCollaborationPmu> plannedCollaborations) {
+    this.plannedCollaborations = plannedCollaborations;
+  }
+
+
+  public void setPlannedCollaborationsValue(String plannedCollaborationsValue) {
+    this.plannedCollaborationsValue = plannedCollaborationsValue;
+  }
+
+
   public void setPlannedExternalPartnerships(List<ReportSynthesisKeyPartnershipPmu> plannedExternalPartnerships) {
     this.plannedExternalPartnerships = plannedExternalPartnerships;
   }
@@ -180,25 +236,36 @@ public class ReportSynthesisKeyPartnership extends MarloAuditableEntity implemen
     this.plannedExternalPartnershipsValue = plannedExternalPartnershipsValue;
   }
 
+
   public void setReportSynthesis(ReportSynthesis reportSynthesis) {
     this.reportSynthesis = reportSynthesis;
   }
 
+
+  public void setReportSynthesisKeyPartnershipCollaborationPmus(
+    Set<ReportSynthesisKeyPartnershipCollaborationPmu> reportSynthesisKeyPartnershipCollaborationPmus) {
+    this.reportSynthesisKeyPartnershipCollaborationPmus = reportSynthesisKeyPartnershipCollaborationPmus;
+  }
 
   public void setReportSynthesisKeyPartnershipCollaborations(
     Set<ReportSynthesisKeyPartnershipCollaboration> reportSynthesisKeyPartnershipCollaborations) {
     this.reportSynthesisKeyPartnershipCollaborations = reportSynthesisKeyPartnershipCollaborations;
   }
 
+
   public void setReportSynthesisKeyPartnershipExternals(
     Set<ReportSynthesisKeyPartnershipExternal> reportSynthesisKeyPartnershipExternals) {
     this.reportSynthesisKeyPartnershipExternals = reportSynthesisKeyPartnershipExternals;
   }
 
-
   public void
     setReportSynthesisKeyPartnershipPmus(Set<ReportSynthesisKeyPartnershipPmu> reportSynthesisKeyPartnershipPmus) {
     this.reportSynthesisKeyPartnershipPmus = reportSynthesisKeyPartnershipPmus;
+  }
+
+
+  public void setSelectedCollaborations(List<ReportSynthesisKeyPartnershipCollaboration> selectedCollaborations) {
+    this.selectedCollaborations = selectedCollaborations;
   }
 
 
