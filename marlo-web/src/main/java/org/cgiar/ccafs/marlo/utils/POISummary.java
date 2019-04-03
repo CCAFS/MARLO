@@ -533,6 +533,7 @@ public class POISummary {
       html = html.replaceAll("</thead", "");
       html = html.replaceAll("<tbody", "");
       html = html.replaceAll("</tbody", "");
+      html = html.replaceAll(">", "");
 
     } catch (Exception e) {
       throw e;
