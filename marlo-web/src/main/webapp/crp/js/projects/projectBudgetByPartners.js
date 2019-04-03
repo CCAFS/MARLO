@@ -25,7 +25,8 @@ function init() {
   $('form input.percentageInput').percentageInput();
 
   // Update total budget currency per Year
-  updateYearsTotalCurrency();
+  updateYearsTotalCurrency('planning');
+  updateYearsTotalCurrency('reporting');
 
   // Attaching events
   attachEvents();
@@ -78,17 +79,21 @@ function removeBilateralFund() {
     $parent.remove();
     // Update overalls
     $.each(budgetTypeJson, function(i,e) {
-      updateActiveYearCurrency(e.id, $partner);
+      updateActiveYearCurrency(e.id, $partner, 'planning');
     });
-    updateYearsTotalCurrency();
+    updateYearsTotalCurrency('planning');
   });
 }
 
 function calculateCurrencyPercentage() {
   var type = getClassParameter($(this), 'type');
+  var cycle = getClassParameter($(this), 'cycle');
+
+  console.log(type, cycle);
+
   var $partner = $(this).parents('.projectPartner');
-  updateActiveYearCurrency(type, $partner);
-  updateYearsTotalCurrency();
+  updateActiveYearCurrency(type, $partner, cycle);
+  updateYearsTotalCurrency(cycle);
 }
 
 /**
@@ -154,9 +159,9 @@ function addFundingSource(fs) {
   $partner.find('span.fsCounter').parent().animateCss('bounceIn');
 }
 
-function updateActiveYearCurrency(type,partner) {
-  var totalyear = getCurrencyByType(type);
-  var $target = $('.tab-pane.active .totalByYear-' + type);
+function updateActiveYearCurrency(type,partner,cycle) {
+  var totalyear = getCurrencyByType(type, cycle);
+  var $target = $('.tab-pane.active .cycle-' + cycle + '.totalByYear-' + type);
   // Set total budget amount of the active year
   $target.text(setCurrencyFormat(totalyear));
   // Animate CSS
@@ -164,16 +169,16 @@ function updateActiveYearCurrency(type,partner) {
 
   // For each partner
   $('.tab-pane.active .projectPartner').each(function(i,e) {
-    var totalPartner = getCurrencyByTypeAndPartner(type, $(e));
+    var totalPartner = getCurrencyByTypeAndPartner(type, $(e), cycle);
     // Set label no editable amount
-    var $targetPartner = $(e).find('.currencyInput.totalByPartner-' + type);
+    var $targetPartner = $(e).find('.currencyInput.cycle-' + cycle + '.totalByPartner-' + type);
     $targetPartner.text(setCurrencyFormat(totalPartner));
     // Animate CSS
     $targetPartner.parent().animateCss('flipInX');
   });
 
   // Calculate gender
-  calculateGenderBudget(type, $(partner));
+  calculateGenderBudget(type, $(partner), cycle);
 }
 
 function showHelpText() {
@@ -181,11 +186,11 @@ function showHelpText() {
   $('.helpMessage').addClass('animated flipInX');
 }
 
-function updateYearsTotalCurrency() {
+function updateYearsTotalCurrency(cycle) {
   $('.tab-pane').each(function(i,pane) {
     var year = $(pane).attr('id').split('-')[1];
-    var totalyear = getTotalByYear(year);
-    var $target = $('.totalYear.year-' + year);
+    var totalyear = getTotalByYear(year, cycle);
+    var $target = $('.overallAmount.cycle-' + cycle + '.year-' + year);
     // Set total budget amount of the year
     $target.text(setCurrencyFormat(totalyear));
     // Animate CSS
@@ -199,9 +204,9 @@ function updateYearsTotalCurrency() {
  * @param {int} Budget Type ID
  * @returns {number} Total
  */
-function getCurrencyByType(type) {
+function getCurrencyByType(type,cycle) {
   var total = 0
-  $('.tab-pane.active input.currencyInput.type-' + type + ':enabled').each(function(i,e) {
+  $('.tab-pane.active input.currencyInput.cycle-' + cycle + '.type-' + type + ':enabled').each(function(i,e) {
     total = total + removeCurrencyFormat($(e).val() || "0");
   });
   return total;
@@ -213,9 +218,9 @@ function getCurrencyByType(type) {
  * @param {int} Year
  * @returns {number} Total
  */
-function getTotalByYear(year) {
+function getTotalByYear(year,cycle) {
   var total = 0
-  $('span.totalByYear.year-' + year).each(function(i,e) {
+  $('span.cycle-' + cycle + '.totalByYear.year-' + year).each(function(i,e) {
     total = total + removeCurrencyFormat($(e).text() || "0");
   });
   return total;
@@ -227,9 +232,9 @@ function getTotalByYear(year) {
  * @param {int} Budget Type ID
  * @param {DOM} Partner
  */
-function getCurrencyByTypeAndPartner(type,partner) {
+function getCurrencyByTypeAndPartner(type,partner,cycle) {
   var total = 0
-  $(partner).find('input.currencyInput.type-' + type + ':enabled').each(function(i,e) {
+  $(partner).find('input.currencyInput.cycle-' + cycle + '.type-' + type + ':enabled').each(function(i,e) {
     total = total + removeCurrencyFormat($(e).val() || "0");
   });
   return total;
@@ -241,17 +246,23 @@ function getCurrencyByTypeAndPartner(type,partner) {
  * @param {int} Budget Type ID
  * @param {DOM} Partner
  */
-function calculateGenderBudget(type,partner) {
+function calculateGenderBudget(type,partner,cycle) {
   var totalAmount = 0;
   var percentage = 0;
   var genderAmount = 0;
 
-  $(partner).find('.projectW3bilateralFund').each(function(i,e) {
-    var amount = removeCurrencyFormat($(e).find('input.currencyInput.type-' + type + ':enabled').val() || "0");
-    var pcg = removePercentageFormat($(e).find('input.percentageInput.type-' + type + ':enabled').val() || "0");
-    totalAmount = totalAmount + amount;
-    genderAmount = genderAmount + ((amount / 100) * pcg);
-  });
+  $(partner).find('.projectW3bilateralFund').each(
+      function(i,e) {
+        var amount =
+            removeCurrencyFormat($(e).find('input.currencyInput.cycle-' + cycle + '.type-' + type + ':enabled').val()
+                || "0");
+        var pcg =
+            removePercentageFormat($(e).find('input.percentageInput.cycle-' + cycle + '.type-' + type + ':enabled')
+                .val()
+                || "0");
+        totalAmount = totalAmount + amount;
+        genderAmount = genderAmount + ((amount / 100) * pcg);
+      });
 
   percentage = ((genderAmount / totalAmount) * 100).toFixed(2);
 

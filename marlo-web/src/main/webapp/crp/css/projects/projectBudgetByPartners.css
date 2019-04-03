@@ -48,7 +48,7 @@ ul.nav.nav-tabs.budget-tabs>li>a:hover {
 
 .amountType {
     font-weight: bold;
-    width: 90px;
+    width: 115px;
     color: #ceb286;
 }
 
@@ -95,10 +95,10 @@ ul.nav.nav-tabs.budget-tabs>li>a:hover {
 
 
 .overallYearBudget .title{
-    margin: 0;
+    /* margin: 0; */
     font-weight: bold;
     color: #5f96c5;
-    padding: 5px 0px;
+    padding: 0px 0px;
     margin-bottom: 7px;
 }
 
