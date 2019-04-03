@@ -380,21 +380,13 @@ public class ProjectContributionLp6SummaryAction2 extends BaseSummariesAction im
 
       for (ProjectLp6ContributionDeliverable deliverable : deliverableList) {
         if (deliverable.getId() != null) {
-          deliverables += deliverable.getId() + ", ";
+          Deliverable deliverableBD = deliverableManager.getDeliverableById(deliverable.getId());
+          if (deliverableBD != null && deliverableBD.getDeliverableInfo(this.getSelectedPhase()) != null) {
+            deliverables += deliverableBD.getId() + "-" + deliverableBD.getDeliverableInfo().getTitle() + "\n ";
+          }
         }
       }
 
-      try {
-        if (deliverables.contains(",")) {
-          deliverables = deliverables.substring(0, deliverables.length() - 2);
-        }
-      } catch (Exception e) {
-
-      }
-      /****/
-      if (deliverables != null && deliverables.isEmpty()) {
-        deliverables = null;
-      }
       geographicScope = projectLp6Contribution.getGeographicScopeNarrative() != null
         && !projectLp6Contribution.getGeographicScopeNarrative().trim().isEmpty()
           ? projectLp6Contribution.getGeographicScopeNarrative() : null;
@@ -407,7 +399,10 @@ public class ProjectContributionLp6SummaryAction2 extends BaseSummariesAction im
           ? projectLp6Contribution.getWorkingAcrossFlagshipsNarrative() : null;
 
       if (workingAcross != null && workingAcross.equals("Yes") && workingAcrossNarrative == null) {
-        workingAcrossNarrative = "<Not Specified>";
+        workingAcrossNarrative = "<Not Defined>";
+      }
+      if (workingAcross != null && workingAcross.equals("No") && workingAcrossNarrative == null) {
+        workingAcrossNarrative = "<Not Applicable>";
       }
 
       undertakingEfforts = projectLp6Contribution.isUndertakingEffortsLeading() != null
@@ -418,7 +413,10 @@ public class ProjectContributionLp6SummaryAction2 extends BaseSummariesAction im
           ? projectLp6Contribution.getUndertakingEffortsLeadingNarrative() + "" : null;
 
       if (undertakingEfforts != null && undertakingEfforts.equals("Yes") && undertakingEffortsNarrative == null) {
-        undertakingEffortsNarrative = "<Not Specified>";
+        undertakingEffortsNarrative = "<Not Defined>";
+      }
+      if (undertakingEfforts != null && undertakingEfforts.equals("No") && undertakingEffortsNarrative == null) {
+        undertakingEffortsNarrative = "<Not Applicable>";
       }
 
       providing = projectLp6Contribution.isProvidingPathways() != null
@@ -429,7 +427,10 @@ public class ProjectContributionLp6SummaryAction2 extends BaseSummariesAction im
           ? projectLp6Contribution.getProvidingPathwaysNarrative() + "" : null;
 
       if (providing != null && providing.equals("Yes") && keyOutputs == null) {
-        keyOutputs = "<Not Specified>";
+        keyOutputs = "<Not Defined>";
+      }
+      if (providing != null && providing.equals("No") && keyOutputs == null) {
+        keyOutputs = "<Not Applicable>";
       }
 
       top3 = projectLp6Contribution.getTopThreePartnershipsNarrative() != null
@@ -444,7 +445,10 @@ public class ProjectContributionLp6SummaryAction2 extends BaseSummariesAction im
           ? projectLp6Contribution.getUndertakingEffortsCsaNarrative() + "" : null;
 
       if (undertakingCSA != null && undertakingCSA.equals("Yes") && undertakingCSANarrative == null) {
-        undertakingCSANarrative = "<Not Specified>";
+        undertakingCSANarrative = "<Not Defined>";
+      }
+      if (undertakingCSA != null && undertakingCSA.equals("No") && undertakingCSANarrative == null) {
+        undertakingCSANarrative = "<Not Applicable>";
       }
 
       initiativeRelated = projectLp6Contribution.isInitiativeRelated() != null
@@ -455,7 +459,10 @@ public class ProjectContributionLp6SummaryAction2 extends BaseSummariesAction im
           ? projectLp6Contribution.getInitiativeRelatedNarrative() + "" : null;
 
       if (initiativeRelated != null && initiativeRelated.equals("Yes") && initiativeRelatedNarrative == null) {
-        initiativeRelatedNarrative = "<Not Specified>";
+        initiativeRelatedNarrative = "<Not Defined>";
+      }
+      if (initiativeRelated != null && initiativeRelated.equals("No") && initiativeRelatedNarrative == null) {
+        initiativeRelatedNarrative = "<Not Applicable>";
       }
 
       model.addRow(new Object[] {projectId, narrativeLp6, deliverables, geographicScope, workingAcross,
