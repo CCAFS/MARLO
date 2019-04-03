@@ -170,6 +170,42 @@
                     
                     <h4 class="headTitle annualReport-table">[@s.text name="${customLabel}.table8.title" /]</h4>
                     [@customForm.helpLabel name="${customLabel}.table8.help" showIcon=false editable=editable/]
+                    
+                    [#if PMU]
+                      <table class="table">
+                        <thead>
+                          <tr>
+                            <th> Center, CRP or Platform</th>
+                            <th> Description of collaboration</th>
+                            <th> Value Added</th>
+                            [#-- 
+                            <th class="col-md-1">Include in AR</th>
+                             --]
+                          </tr>
+                        </thead>
+                        <tbody>
+                          [#list (flagshipExternalCollaborations?sort_by("id"))![] as item]
+                            [#assign crpProgramColl = (item.reportSynthesisKeyPartnership.reportSynthesis.liaisonInstitution.crpProgram)!]
+                            <tr>
+                              <td> 
+                                [@utils.tableList list=(item.crps)![] displayFieldName="globalUnit.acronym" nobr=true /] 
+                                 
+                                <span class="programTag" style="border-color:${(crpProgramColl.color)!'#fff'}">${(crpProgramColl.acronym)!}</span>
+                              </td>
+                              <td> [@utils.tableText value=(item.description)!"" /] </td>
+                              <td> [@utils.tableText value=(item.valueAdded)!"" /] </td>
+                              [#-- 
+                              <td class="text-center">
+                                [#assign isChecked = ((!reportSynthesis.reportSynthesisKeyPartnership.plannedCollaborationsIds?seq_contains(item.id))!true) /]
+                                [@customForm.checkmark id="check-${(item.id)!}" name="reportSynthesis.reportSynthesisKeyPartnership.plannedCollaborationsValue" value="${(item.id)!''}" checked=isChecked editable=editable centered=true/]
+                              </td>
+                               --]
+                            </tr>
+                          [/#list]
+                        </tbody>
+                      </table>
+                    [/#if]
+                    
                     <div class="listCrossParnterships">
                     [#if reportSynthesis.reportSynthesisKeyPartnership.collaborations?has_content]
                       [#list reportSynthesis.reportSynthesisKeyPartnership.collaborations as item]
