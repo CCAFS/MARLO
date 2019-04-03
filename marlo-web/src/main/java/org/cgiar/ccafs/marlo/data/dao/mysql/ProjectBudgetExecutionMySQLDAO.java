@@ -27,7 +27,8 @@ import javax.inject.Named;
 import org.hibernate.SessionFactory;
 
 @Named
-public class ProjectBudgetExecutionMySQLDAO extends AbstractMarloDAO<ProjectBudgetExecution, Long> implements ProjectBudgetExecutionDAO {
+public class ProjectBudgetExecutionMySQLDAO extends AbstractMarloDAO<ProjectBudgetExecution, Long>
+  implements ProjectBudgetExecutionDAO {
 
 
   @Inject
@@ -67,6 +68,28 @@ public class ProjectBudgetExecutionMySQLDAO extends AbstractMarloDAO<ProjectBudg
     }
     return null;
 
+  }
+
+  @Override
+  public List<ProjectBudgetExecution> findAllByParameters(long projectId, int year, long phaseId) {
+    String query = "from " + ProjectBudgetExecution.class.getName() + " where is_active=1 and " + "project_id="
+      + projectId + " and year=" + year + " and phase_id=" + phaseId;
+    List<ProjectBudgetExecution> list = super.findAll(query);
+    if (list.size() > 0) {
+      return list;
+    }
+    return null;
+  }
+
+  @Override
+  public List<ProjectBudgetExecution> findAllByParameters(long projectId, int year, long phaseId, long budgetTypeId) {
+    String query = "from " + ProjectBudgetExecution.class.getName() + " where is_active=1 and " + "project_id="
+      + projectId + " and year=" + year + " and phase_id=" + phaseId + " and budget_type_id=" + budgetTypeId;
+    List<ProjectBudgetExecution> list = super.findAll(query);
+    if (list.size() > 0) {
+      return list;
+    }
+    return null;
   }
 
   @Override
