@@ -5,7 +5,7 @@
 <hibernate-mapping>
 	<class
 		name="org.cgiar.ccafs.marlo.data.model.ReportSynthesisKeyPartnershipCollaborationPmu"
-		table="report_synthesis_key_partnership_pmu" optimistic-lock="none">
+		table="report_synthesis_key_partnership_collaboration_pmu" optimistic-lock="none">
 		<id name="id" type="java.lang.Long">
 			<column name="id" />
 			<generator class="identity" />
