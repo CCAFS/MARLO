@@ -59,17 +59,23 @@
                 <div id="tab-table10" role="tabpanel" class="tab-pane fade in active">
                   [#-- Short narrative to introduce the table 9 --]
                   <div class="form-group">
+                    [#-- Word Document Tag --]
+                    [#if PMU][@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/][/#if]
+                    
                     [@customForm.textArea name="${customName}.summary" i18nkey="${customLabel}.narrative" className="" helpIcon=false required=true editable=editable allowTextEditor=true /]
                   </div>
                   
                   [#-- Table 10: MELIA --]
                   <div class="form-group">
+                    [#-- Word Document Tag --]
+                    [#if PMU][@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/][/#if]
+                    
                     [#-- Button --]
                     <button type="button" class="btn btn-default btn-xs pull-right" data-toggle="modal" data-target="#modal-policies">
                        <span class="glyphicon glyphicon-fullscreen"></span> See Full table 10
                     </button>
-                      <h4 class="subTitle headTitle annualReport-table">[@s.text name="${customLabel}.table10.title" /]</h4>
-                      [@customForm.helpLabel name="${customLabel}.table10.help" showIcon=false editable=editable/]
+                    <h4 class="subTitle headTitle annualReport-table">[@s.text name="${customLabel}.table10.title" /]</h4>
+                    [@customForm.helpLabel name="${customLabel}.table10.help" showIcon=false editable=editable/]
                     [#-- Modal --]
                     <div class="modal fade" id="modal-policies" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
                       <div class="modal-dialog modal-lg" role="document">
@@ -103,6 +109,9 @@
                   [#-- Table 11: Update on actions taken in response to relevant evaluations --]
                   [#if PMU]
                     <div class="form-group">
+                      [#-- Word Document Tag --]
+                      [@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/]
+                      
                       <h4 class="subTitle headTitle">[@s.text name="${customLabel}.table11.title" /]</h4>
                       <div class="listEvaluations">
                         [#list (reportSynthesis.reportSynthesisMelia.evaluations)![] as item]

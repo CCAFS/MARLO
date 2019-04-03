@@ -46,7 +46,9 @@
             [#-- Executive Summary --]
             [#if PMU]
               <div class="form-group">
-               [@customForm.textArea name="${customName}.narrative" i18nkey="${customLabel}.progress" help="${customLabel}.progress.help" className="limitWords-500" helpIcon=false required=!isPlatform editable=editable allowTextEditor=true /]
+                [#-- Word Document Tag --]
+                [@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/]
+                [@customForm.textArea name="${customName}.narrative" i18nkey="${customLabel}.progress" help="${customLabel}.progress.help" className="limitWords-500" helpIcon=false required=!isPlatform editable=editable allowTextEditor=true /]
               </div>
             [#else]
               <div class="textArea">
