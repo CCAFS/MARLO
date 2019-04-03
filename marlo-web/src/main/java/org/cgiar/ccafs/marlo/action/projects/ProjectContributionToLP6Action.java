@@ -72,6 +72,7 @@ public class ProjectContributionToLP6Action extends BaseAction {
   private AuditLogManager auditLogManager;
   private DeliverableManager deliverableManager;
   private DeliverableInfoManager deliverableInfoManager;
+  private ProjectLp6ContributionDeliverableManager deliverableManagerLp6;
 
   // Front-end
   private long projectID;
@@ -90,7 +91,7 @@ public class ProjectContributionToLP6Action extends BaseAction {
     AuditLogManager auditLogManager, ProjectLP6Validator validator,
     ProjectLp6ContributionDeliverableManager projectLp6ContributionDeliverableManager,
     ProjectLp6ContributionManager projectLp6ContributionManager, DeliverableManager deliverableManager,
-    DeliverableInfoManager deliverableInfoManager) {
+    DeliverableInfoManager deliverableInfoManager, ProjectLp6ContributionDeliverableManager deliverableManagerLp6) {
     super(config);
     this.projectManager = projectManager;
     this.crpManager = crpManager;
@@ -100,6 +101,7 @@ public class ProjectContributionToLP6Action extends BaseAction {
     this.projectLp6ContributionManager = projectLp6ContributionManager;
     this.deliverableManager = deliverableManager;
     this.deliverableInfoManager = deliverableInfoManager;
+    this.projectLp6ContributionDeliverableManager = deliverableManagerLp6;
   }
 
 

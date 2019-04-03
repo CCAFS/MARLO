@@ -51,6 +51,20 @@ public interface ProjectBudgetExecutionManager {
    */
   public List<ProjectBudgetExecution> findAll();
 
+  /**
+   * This method gets a list of projectBudgetExecution by project year and phase that are active
+   * 
+   * @param projectId
+   * @return a list from ProjectBudgetExecution null if no exist records
+   */
+  public List<ProjectBudgetExecution> findAllByParameters(long projectId, int year, long phaseId);
+
+  /**
+   * This method gets a list of projectBudgetExecution by project year phase and budgetType that are active
+   * 
+   * @return a list from ProjectBudgetExecution null if no exist records
+   */
+  public List<ProjectBudgetExecution> findAllByParameters(long projectId, int year, long phaseId, long budgetTypeId);
 
   /**
    * This method gets a projectBudgetExecution object by a given projectBudgetExecution identifier.
@@ -61,10 +75,25 @@ public interface ProjectBudgetExecutionManager {
   public ProjectBudgetExecution getProjectBudgetExecutionById(long projectBudgetExecutionID);
 
   /**
+   * This method gets the total projectBudgetExecution for an specific project year and phase
+   * 
+   * @return total expenditure 0 if no exist records
+   */
+  public double getTotalProjectBudgetExecution(long projectId, int year, long phaseId);
+
+  /**
+   * This method gets the total projectBudgetExecution for an specific project year phase and budgetType
+   * 
+   * @return total expenditure 0 if no exist records
+   */
+  public double getTotalProjectBudgetExecution(long projectId, int year, long phaseId, long budgetTypeId);
+
+  /**
    * This method saves the information of the given projectBudgetExecution
    * 
    * @param projectBudgetExecution - is the projectBudgetExecution object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the projectBudgetExecution was
+   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the projectBudgetExecution
+   *         was
    *         updated
    *         or -1 is some error occurred.
    */

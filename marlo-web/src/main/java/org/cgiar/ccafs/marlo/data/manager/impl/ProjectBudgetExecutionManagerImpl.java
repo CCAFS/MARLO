@@ -124,9 +124,45 @@ public class ProjectBudgetExecutionManagerImpl implements ProjectBudgetExecution
   }
 
   @Override
+  public List<ProjectBudgetExecution> findAllByParameters(long projectId, int year, long phaseId) {
+    return projectBudgetExecutionDAO.findAllByParameters(projectId, year, phaseId);
+  }
+
+  @Override
+  public List<ProjectBudgetExecution> findAllByParameters(long projectId, int year, long phaseId, long budgetTypeId) {
+    return projectBudgetExecutionDAO.findAllByParameters(projectId, year, phaseId);
+  }
+
+
+  @Override
   public ProjectBudgetExecution getProjectBudgetExecutionById(long projectBudgetExecutionID) {
 
     return projectBudgetExecutionDAO.find(projectBudgetExecutionID);
+  }
+
+  @Override
+  public double getTotalProjectBudgetExecution(long projectId, int year, long phaseId) {
+    double total = 0.0;
+    List<ProjectBudgetExecution> projectBudgetExecutions = this.findAllByParameters(projectId, year, phaseId);
+    if (projectBudgetExecutions != null && !projectBudgetExecutions.isEmpty()) {
+      for (ProjectBudgetExecution projectBudgetExecution : projectBudgetExecutions) {
+        total += projectBudgetExecution.getActualExpenditure();
+      }
+    }
+    return total;
+  }
+
+  @Override
+  public double getTotalProjectBudgetExecution(long projectId, int year, long phaseId, long budgetTypeId) {
+    double total = 0.0;
+    List<ProjectBudgetExecution> projectBudgetExecutions =
+      this.findAllByParameters(projectId, year, phaseId, budgetTypeId);
+    if (projectBudgetExecutions != null && !projectBudgetExecutions.isEmpty()) {
+      for (ProjectBudgetExecution projectBudgetExecution : projectBudgetExecutions) {
+        total += projectBudgetExecution.getActualExpenditure();
+      }
+    }
+    return total;
   }
 
   private void saveBudgetExecutionPhase(Phase next, Long projectID, ProjectBudgetExecution projectBudgetExecution) {

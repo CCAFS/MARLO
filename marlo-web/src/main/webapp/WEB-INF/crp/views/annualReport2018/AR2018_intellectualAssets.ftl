@@ -48,17 +48,26 @@
             [#if PMU]
               [#-- Strategically managed assets --]
               <div class="form-group">
+                [#-- Word Document Tag --]
+                [@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/]
+                
                 [@customForm.textArea name="${customName}.managed" i18nkey="${customLabel}.managed" help="${customLabel}.managed.help" className="" helpIcon=false required=true editable=editable allowTextEditor=true /]
               </div>
               [#-- Published patents --]
               <div class="form-group">
+                [#-- Word Document Tag --]
+                [@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/]
+                    
                 [@customForm.textArea name="${customName}.patents" i18nkey="${customLabel}.patents" help="${customLabel}.patents.help" className="" helpIcon=false required=true editable=editable allowTextEditor=true /]
               </div>
               [#-- Critical issues --]
               <div class="form-group">
+                [#-- Word Document Tag --]
+                [@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/]
+                    
                 [@customForm.textArea name="${customName}.criticalIssues" i18nkey="${customLabel}.criticalIssues" help="${customLabel}.criticalIssues.help" className="" helpIcon=false required=true editable=editable allowTextEditor=true /]
               </div>
-              [#else]
+            [#else]
               <div class="textArea">
                 <label for="">[@customForm.text name="${customLabel}.managed" readText=true /]:</label>
                 <p>[#if (managedPMUText?has_content)!false]${managedPMUText?replace('\n', '<br>')}[#else] [@s.text name="global.prefilledByPmu"/] [/#if]</p>
