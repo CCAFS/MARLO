@@ -13,14 +13,20 @@ public class ClarisaMonitoring implements java.io.Serializable {
   private Long id;
   private User user;
   private GlobalUnit globalUnit;
+  private LocElement locElement;
+
   private String serviceName;
-  private String serviceArg;
+
+
+  private String serviceUrl;
+
+
   private String serviceType;
+  private String userIp;
   Date date;
 
   public ClarisaMonitoring() {
   }
-
 
   public Date getDate() {
     return date;
@@ -36,9 +42,8 @@ public class ClarisaMonitoring implements java.io.Serializable {
     return id;
   }
 
-
-  public String getServiceArg() {
-    return serviceArg;
+  public LocElement getLocElement() {
+    return locElement;
   }
 
 
@@ -52,8 +57,18 @@ public class ClarisaMonitoring implements java.io.Serializable {
   }
 
 
+  public String getServiceUrl() {
+    return serviceUrl;
+  }
+
+
   public User getUser() {
     return user;
+  }
+
+
+  public String getUserIp() {
+    return userIp;
   }
 
 
@@ -72,8 +87,8 @@ public class ClarisaMonitoring implements java.io.Serializable {
   }
 
 
-  public void setServiceArg(String serviceArg) {
-    this.serviceArg = serviceArg;
+  public void setLocElement(LocElement locElement) {
+    this.locElement = locElement;
   }
 
 
@@ -87,8 +102,18 @@ public class ClarisaMonitoring implements java.io.Serializable {
   }
 
 
+  public void setServiceUrl(String serviceUrl) {
+    this.serviceUrl = serviceUrl;
+  }
+
+
   public void setUser(User user) {
     this.user = user;
+  }
+
+
+  public void setUserIp(String userIp) {
+    this.userIp = userIp;
   }
 
 

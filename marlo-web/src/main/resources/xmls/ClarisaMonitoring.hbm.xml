@@ -21,15 +21,24 @@
 			<column name="global_unit_id">
 			</column>
 		</many-to-one>
+		<many-to-one name="locElement"
+      class="org.cgiar.ccafs.marlo.data.model.LocElement" fetch="select"
+      update="false">
+      <column name="loc_element_id">
+      </column>
+    </many-to-one>
 		<property name="date" type="timestamp">
 			<column name="date" length="19" />
 		</property>
 		<property name="serviceName" type="string">
 			<column name="service_name" length="8" />
 		</property>
-		<property name="serviceArg" type="string">
-			<column name="service_args" />
+		<property name="serviceUrl" type="string">
+			<column name="service_url" />
 		</property>
+		<property name="userIp" type="string">
+      <column name="user_ip" />
+    </property>
 		<property name="serviceType" type="string">
 			<column name="service_type" />
 		</property>
