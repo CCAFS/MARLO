@@ -73,7 +73,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -654,6 +656,7 @@ public class PartnershipsAction extends BaseAction {
 
         List<ProjectFocus> projectFocus = new ArrayList<>();
         if (this.isPMU()) {
+          // All project focus for PMU
           projectFocus = new ArrayList<>(projectFocusManager.findAll().stream()
             .filter(pf -> pf.isActive() && pf.getPhase() != null && pf.getPhase().getId().equals(phase.getId()))
             .collect(Collectors.toList()));
@@ -664,10 +667,15 @@ public class PartnershipsAction extends BaseAction {
             .collect(Collectors.toList()));
         }
 
+        // Get project list (removing repeated records)
+        Set<Project> projects = new HashSet<Project>();
+
         for (ProjectFocus focus : projectFocus) {
-
           Project project = projectManager.getProjectById(focus.getProject().getId());
+          projects.add(project);
+        }
 
+        for (Project project : projects) {
           if (project.getProjectPartners() != null) {
 
             PartnershipsSynthesis partnershipsSynt = new PartnershipsSynthesis();
