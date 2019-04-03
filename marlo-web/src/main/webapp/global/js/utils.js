@@ -546,7 +546,6 @@ function applyCharCounter($textArea,charCount) {
 
 /* Add a word counter to a specific text area */
 function applyWordCounter($textArea,wordCount) {
-  console.log();
   var eventType = 'keyup ';
   if($textArea.hasClass('allowTextEditor')) {
     eventType += ' tbwchange tbwfocus tbwblur tbwpaste ';
@@ -579,7 +578,16 @@ function applyWordCounter($textArea,wordCount) {
 
 function word_count(field) {
   var value = $.trim($(field).val());
-  value = $.trim(value.replace(/<\/?[^>]+>/ig, ""));
+
+  // Replace Tag P to an space
+  value = $.trim(value.replace(/<p[^>]*>/g, ' ').replace(/<\/p>/g, ' '));
+  // Replace Tag BR to an space
+  value = $.trim(value.replace(/<br[^>]*>/g, ' ').replace(/<\/br>/g, ' '));
+
+  // Remove all tags
+  var htmlRegex = /(<([^>]+)>)/ig
+  value = $.trim(value.replace(htmlRegex, ""));
+
   if(typeof value === "undefined" || value.length == 0) {
     return 0;
   } else {
