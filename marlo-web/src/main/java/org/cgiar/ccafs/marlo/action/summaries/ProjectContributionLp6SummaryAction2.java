@@ -24,6 +24,7 @@ import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.GenderTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectLp6ContributionDeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectLp6ContributionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
@@ -93,6 +94,7 @@ public class ProjectContributionLp6SummaryAction2 extends BaseSummariesAction im
 
   private final CrossCuttingScoringManager crossCuttingScoringManager;
   private final ProjectLp6ContributionManager projectLp6ContributionManager;
+  private final ProjectLp6ContributionDeliverableManager projectLp6ContributionDeliverableManager;
   private final DeliverableManager deliverableManager;
   private final CrpPpaPartnerManager crpPpaPartnerManager;
   private final ResourceManager resourceManager;
@@ -107,7 +109,9 @@ public class ProjectContributionLp6SummaryAction2 extends BaseSummariesAction im
     GenderTypeManager genderTypeManager, CrpProgramManager crpProgramManager,
     ProjectLp6ContributionManager projectLp6ContributionManager, CrossCuttingScoringManager crossCuttingScoringManager,
     CrpPpaPartnerManager crpPpaPartnerManager, ResourceManager resourceManager, ProjectManager projectManager,
-    DeliverableManager deliverableManager, DeliverableCrossCuttingMarkerManager deliverableCrossCuttingMarkerManager) {
+    DeliverableManager deliverableManager,
+    ProjectLp6ContributionDeliverableManager projectLp6ContributionDeliverableManager,
+    DeliverableCrossCuttingMarkerManager deliverableCrossCuttingMarkerManager) {
     super(config, crpManager, phaseManager, projectManager);
     this.genderTypeManager = genderTypeManager;
     this.crpProgramManager = crpProgramManager;
@@ -117,6 +121,7 @@ public class ProjectContributionLp6SummaryAction2 extends BaseSummariesAction im
     this.projectLp6ContributionManager = projectLp6ContributionManager;
     this.deliverableManager = deliverableManager;
     this.deliverableCrossCuttingMarkerManager = deliverableCrossCuttingMarkerManager;
+    this.projectLp6ContributionDeliverableManager = projectLp6ContributionDeliverableManager;
   }
 
   /**
@@ -366,19 +371,12 @@ public class ProjectContributionLp6SummaryAction2 extends BaseSummariesAction im
 
       /***/
 
-      if (projectLp6Contribution.getDeliverables() == null) {
-        projectLp6Contribution.setDeliverables(new ArrayList<>());
-      }
-      List<ProjectLp6ContributionDeliverable> deliverableList =
-        projectLp6Contribution.getProjectLp6ContributionDeliverable().stream()
-          .filter(ld -> ld.isActive() && ld.getPhase().equals(this.getActualPhase())).collect(Collectors.toList());
-      for (ProjectLp6ContributionDeliverable projectLp6ContributionDeliverable : deliverableList) {
-        if (projectLp6ContributionDeliverable.getDeliverable() != null
-          && projectLp6ContributionDeliverable.getDeliverable().getId() != null) {
-          projectLp6ContributionDeliverable.setDeliverable(
-            deliverableManager.getDeliverableById(projectLp6ContributionDeliverable.getDeliverable().getId()));
-        }
-      }
+
+      List<ProjectLp6ContributionDeliverable> deliverableList = projectLp6ContributionDeliverableManager.findAll()
+        .stream().filter(d -> d.getProjectLp6Contribution().getId().equals(projectLp6Contribution.getId())
+          && d.getPhase().getId().equals(this.getSelectedPhase().getId()))
+        .collect(Collectors.toList());
+
 
       for (ProjectLp6ContributionDeliverable deliverable : deliverableList) {
         if (deliverable.getId() != null) {
