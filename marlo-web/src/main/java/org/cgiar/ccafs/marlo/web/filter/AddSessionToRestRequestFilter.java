@@ -17,13 +17,19 @@ package org.cgiar.ccafs.marlo.web.filter;
 
 
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.ClarisaMonitoringManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
+import org.cgiar.ccafs.marlo.data.manager.UserManager;
+import org.cgiar.ccafs.marlo.data.model.ClarisaMonitoring;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
+import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.APCustomRealm;
 import org.cgiar.ccafs.marlo.security.BaseSecurityContext;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Date;
+import java.util.Enumeration;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -56,6 +62,12 @@ public class AddSessionToRestRequestFilter extends OncePerRequestFilter {
   private GlobalUnitManager globalUnitManager;
 
   @Inject
+  private UserManager userManager;
+
+  @Inject
+  private ClarisaMonitoringManager clarisaMonitoringManager;
+
+  @Inject
   private APCustomRealm realm;
 
   private final Logger LOG = LoggerFactory.getLogger(AddSessionToRestRequestFilter.class);
@@ -83,16 +95,90 @@ public class AddSessionToRestRequestFilter extends OncePerRequestFilter {
   }
 
 
+  /**
+   * Add to the database the Service request information
+   * 
+   * @param serviceType - The type of service (GET, POST.. etc)
+   * @param restApiString - The Url shorted by the Api elements
+   * @param request - The http Request
+   */
+  private void addMonitoringInfo(String serviceType, String restApiString, HttpServletRequest request) {
+
+    // initial variables
+    String serviceName;
+    String serviceArg = "";
+    int maxArg;
+
+    // New clarisa monitoring Object to add in the database
+    ClarisaMonitoring monitoring = new ClarisaMonitoring();
+    monitoring.setServiceType(serviceType);
+
+    String[] split = restApiString.split("/");
+
+    String arg1 = split[0];
+
+    // If arg1 contains Crp Acronym the arg2 is the ServiceName, on the contrary the arg1 is the service name (Public
+    // Service)
+    GlobalUnit globalUnit = globalUnitManager.findGlobalUnitByAcronym(arg1);
+
+    if (globalUnit != null) {
+      serviceName = split[1];
+      maxArg = 2;
+    } else {
+      serviceName = arg1;
+      maxArg = 1;
+    }
+
+    // Get the url arguments if the request is GET
+    if (serviceType.equals("GET")) {
+      // If there are more than 2 args, theses args are the serviceArg, for example the id of the element to search.
+      if (split.length > maxArg) {
+        for (int i = maxArg; i < split.length; i++) {
+          serviceArg = serviceArg + "-" + split[i];
+        }
+      }
+    }
+
+    // Get the Http request parameters
+    Enumeration<String> enumeration = request.getParameterNames();
+    while (enumeration.hasMoreElements()) {
+      if (request.getParameter(enumeration.nextElement().toString()) != null) {
+        serviceArg = serviceArg + "-" + request.getParameter(enumeration.nextElement().toString());
+      }
+    }
+
+
+    // Get the user
+    Subject subject = securityContext.getSubject();
+    Long currentUserId = (Long) subject.getPrincipal();
+
+    User user = userManager.getUser(currentUserId);
+
+    // Save the information to Clarisa Monitoring Table
+    monitoring.setServiceName(serviceName);
+    monitoring.setGlobalUnit(globalUnit);
+    monitoring.setUser(user);
+    monitoring.setServiceArg(serviceArg);
+    monitoring.setDate(new Date());
+
+    clarisaMonitoringManager.saveClarisaMonitoring(monitoring);
+
+
+  }
+
+
   @Override
   public void destroy() {
   }
-
 
   @Override
   protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
     throws ServletException, IOException {
 
     URL url = new URL(request.getRequestURL().toString());
+
+    // Get the HTTP method with which thisrequest was made, for example, GET, POST, or PUT.
+    String serviceType = request.getMethod();
 
     String path = url.getPath();
 
@@ -105,8 +191,12 @@ public class AddSessionToRestRequestFilter extends OncePerRequestFilter {
     // Check to see if a swagger request and if so, skip trying to extract the globalUnit from the url.
     if (StringUtils.isNotEmpty(globalUnitAcronym) && !globalUnitAcronym.equals("v2")
       && !globalUnitAcronym.equals("swagger-ui.html") && !globalUnitAcronym.equals("webjars")
-      && !globalUnitAcronym.equals("swagger-resources") && !globalUnitAcronym.equals("configuration")) {
+      && !globalUnitAcronym.equals("swagger-resources") && !globalUnitAcronym.equals("configuration")
+      && !globalUnitAcronym.equals("index.html") && !globalUnitAcronym.contains(".js")
+      && !globalUnitAcronym.contains(".css") && !globalUnitAcronym.contains(".jpg")
+      && !globalUnitAcronym.contains(".png")) {
       this.addCrpToSession(globalUnitAcronym);
+      this.addMonitoringInfo(serviceType, restApiString, request);
     }
 
     filterChain.doFilter(request, response);
