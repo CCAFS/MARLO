@@ -268,7 +268,6 @@ public class POISummary {
           stringTemp = this.replaceHTMLTags(stringTemp);
           if (stringTemp != null) {
             this.addParagraphTextBreakPOW2019(paragraphRun, stringTemp);
-            System.out.println("stringTemp" + stringTemp);
           }
 
           paragraphRun.setColor(TEXT_FONT_COLOR);

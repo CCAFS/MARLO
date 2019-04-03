@@ -191,6 +191,9 @@
     <div class="form-group grayBox"><strong>${(liaisonInstitution.crpProgram.acronym)!liaisonInstitution.acronym} Outcome: </strong> ${(element.description)!}</div>
     [#-- Narrative on progress --]
     <div class="form-group">
+      [#-- Word Document Tag --]
+      [@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/]
+              
       <input type="hidden" name="${customName}.id" value="${(annualReportElement.id)!}"/>
       <input type="hidden" name="${customName}.crpProgramOutcome.id" value="${(element.id)!}"/>
       [@customForm.textArea name="${customName}.summary" i18nkey="${customLabel}.outcome.progressNarrative" help="${customLabel}.outcome.progressNarrative.help" className="limitWords-100" helpIcon=false required=true editable=editable allowTextEditor=true /]
@@ -221,8 +224,11 @@
       <p class="text-justify"><strong>Milestone for ${actualPhase.year}</strong> - ${(element.title)!} </p>
     </div>
     
+    
     [#-- Cross-Cutting --]
     <div class="form-group">
+      [#-- Word Document Tag --]
+      [@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/]
       <table class="milestones-crosscutting">
         <thead>
           <tr>
@@ -254,6 +260,9 @@
     
     [#-- Milestone status --]
     <div class="form-group">
+      [#-- Word Document Tag --]
+      [@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/]
+    
       <label>[@s.text name="${customLabel}.milestoneStatus" /]:[@customForm.req required=editable  /]</label><br />
       [#local milestoneStatus = (annualReportElement.milestonesStatus)!-1 /]
       [@customForm.radioFlat id="${customName}-status-1" name="${customName}.milestonesStatus" label="Complete"   value="1" checked=(milestoneStatus == 1)!false editable=editable cssClass="milestoneStatus" cssClassLabel="font-normal"/]

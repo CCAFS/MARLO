@@ -52,6 +52,7 @@
               </div>
               [#-- Detailed annex --]
               <div class="form-group">
+                <br />
                 [#-- Word Document Tag --]
                 [@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/]
                 [@customForm.textArea name="${customName}.detailedAnnex" i18nkey="${customLabel}.detailedAnnex" className="limitWords-800" helpIcon=false required=false editable=editable allowTextEditor=true /]

@@ -150,10 +150,10 @@ public class FinancialSummary2018Validator extends BaseValidator {
 
     // Validate Bilateral Planned
     if (!this.isValidNumber(String.valueOf(budget.getBilateralPlanned())) || budget.getBilateralPlanned() < 0) {
-      action.addMessage("bilateralPlanned" + "[" + i + "]");
-      action.getInvalidFields().put(
-        "input-reportSynthesis.reportSynthesisFinancialSummary.budgets[" + i + "].bilateralPlanned",
-        InvalidFieldsMessages.EMPTYFIELD);
+      // action.addMessage("bilateralPlanned" + "[" + i + "]");
+      // action.getInvalidFields().put(
+      // "input-reportSynthesis.reportSynthesisFinancialSummary.budgets[" + i + "].bilateralPlanned",
+      // InvalidFieldsMessages.EMPTYFIELD);
     }
 
     // Validate W1 Actual
@@ -172,10 +172,10 @@ public class FinancialSummary2018Validator extends BaseValidator {
 
     // Validate Bilateral Actual
     if (!this.isValidNumber(String.valueOf(budget.getBilateralActual())) || budget.getBilateralActual() < 0) {
-      action.addMessage("bilateralActual" + "[" + i + "]");
-      action.getInvalidFields().put(
-        "input-reportSynthesis.reportSynthesisFinancialSummary.budgets[" + i + "].bilateralActual",
-        InvalidFieldsMessages.EMPTYFIELD);
+      // action.addMessage("bilateralActual" + "[" + i + "]");
+      // action.getInvalidFields().put(
+      // "input-reportSynthesis.reportSynthesisFinancialSummary.budgets[" + i + "].bilateralActual",
+      // InvalidFieldsMessages.EMPTYFIELD);
     }
 
   }

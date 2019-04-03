@@ -3,7 +3,7 @@
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2", "dropzone", "blueimp-file-upload"] /]
 [#assign customJS = [
-  "${baseUrlMedia}/js/projects/projectBudgetByPartners.js?20190207", 
+  "${baseUrlMedia}/js/projects/projectBudgetByPartners.js?20190403", 
   "${baseUrl}/global/js/autoSave.js",
   "${baseUrl}/global/js/fieldsValidation.js"
   ] 
@@ -80,23 +80,38 @@
             <div class="tab-content budget-content">
               [#list startYear .. selectedYear as year]
                 <div role="tabpanel" class="tab-pane [#if year == selectedYear]active[/#if]" id="year-${year}">
-                  [#-- No Budget available for this year --]
-           
                     [#-- Budgest cannot be editable message --]
                     [#if !isYearEditable(year) && editable]<div class="note"> ${year} budgets for cannot be editable.</div>[/#if]
                   
                     <div class="overallYearBudget clearfix">
-                      [#-- Total year --]
-                      <h4 class="title text-right">Overall ${year} budget <small>US$ <span class="totalYear year-${year}">0.00</span></small></h4>
                       <div class="row fieldset" listname="project.budgets">
-                        [#-- Total year budget type --]
-                        <table class="text-center">
+                        <table>
+                          [#-- Window Type --]
                           <tr>
-                          [#list budgetTypesList as budgetType]
-                            [#-- Budget Type--]
-                            <td class=""><h5 class="subTitle"> ${budgetType.name} <img title="${budgetType.description}" src="${baseUrl}/global/images/icon-help2.png" alt="" /> <br /> <small>US$ <span class="totalByYear year-${year} totalByYear-${budgetType.id}">${action.getTotalYear(year,budgetType.id)?number?string(",##0.00")}</span></small></h5></td>
-                          [/#list]
+                            <td></td>
+                            [#list budgetTypesList as budgetType]
+                              <td class="text-right"><h5 class="subTitle"> ${budgetType.name} <img title="${budgetType.description}" src="${baseUrl}/global/images/icon-help2.png" alt="" /></h5></td>
+                            [/#list]
+                            <td class="text-right"><h5 class="title">Overall ${year}</h5></td>
                           </tr>
+                          [#-- Planning --]
+                          <tr>
+                            <td class="amountType"><small> Planned Budget </small></td>
+                            [#list budgetTypesList as budgetType]
+                              <td class="text-right"><small>US$ <span class="totalByYear cycle-planning year-${year} totalByYear-${budgetType.id}">${action.getTotalYear(year,budgetType.id)?number?string(",##0.00")}</span></small></td>
+                            [/#list]
+                            <td class="text-right"><strong><small>US$ <span class="overallAmount cycle-planning year-${year}">0.00</span></small></strong></td>
+                          </tr>
+                          [#-- Reporting--]
+                          [#if (reportingActive || upKeepActive)  && action.hasSpecificities(crpEnableBudgetExecution)]
+                            <tr>
+                              <td class="amountType"> <small>Actual Expenditure</small> </td>
+                              [#list budgetTypesList as budgetType]
+                                <td class="text-right"><small>US$ <span class="totalByYear cycle-reporting year-${year} totalByYear-${budgetType.id}">${((action.getTotalProjectBudgetExecution(year, budgetType.id)?number)!0)?string(",##0.00")}</span></small></td>
+                              [/#list]
+                              <td class="text-right"><strong><small>US$ <span class="overallAmount cycle-reporting year-${year}"> ${((action.getTotalProjectBudgetExecution(year))!0)?string(",##0.00")}</span></small></strong></td>
+                            </tr>
+                          [/#if]
                         </table>
                       </div>
                     </div>                   
@@ -200,7 +215,7 @@
             [#list budgetTypesList as budgetType]
               [#-- Budget--]
               <td class="budgetColumn">
-                <div class="input"><p>US$ <span class="currencyInput totalByPartner-${budgetType.id}">${((action.getTotalAmount(element.institution.id, selectedYear, budgetType.id,1))!0)?number?string(",##0.00")}</span></p></div>
+                <div class="input"><p>US$ <span class="currencyInput cycle-planning totalByPartner-${budgetType.id}">${((action.getTotalAmount(element.institution.id, selectedYear, budgetType.id,1))!0)?number?string(",##0.00")}</span></p></div>
               </td>
             [/#list]
           </tr>
@@ -219,7 +234,7 @@
                     <input type="hidden" name="${budgetExecutionName}.budgetType.id" value="${(budgetType.id)!}" />
                     <input type="hidden" name="${budgetExecutionName}.phase.id" value="${(actualPhase.id)!}" />
                     <input type="hidden" name="${budgetExecutionName}.year" value="${(selectedYear)!}" />
-                    [@customForm.input name="${budgetExecutionName}.actualExpenditure" value="${(budgetExecution.actualExpenditure)!0}" i18nkey="budget.amount" showTitle=false className="currencyInput" required=true editable=(editable || action.canModifiedProjectExecution()) && isYearEditable(selectedYear) && !(transaction??) /]
+                    [@customForm.input name="${budgetExecutionName}.actualExpenditure" value="${(budgetExecution.actualExpenditure)!0}" i18nkey="budget.amount" showTitle=false className="currencyInput cycle-reporting year-${selectedYear} type-${budgetType.id}" required=true editable=(editable || action.canModifiedProjectExecution()) && isYearEditable(selectedYear) && !(transaction??) /]
                     [#-- Index --]
                     [#assign budgetExpenditureIndex = budgetExpenditureIndex + 1 /]
                   </div>
@@ -341,7 +356,7 @@
       [#-- TODO: Allow to add funding sources when there is no aggregate (problem with permissions)  --]
       [#-- Added action.canSearchFunding to allow to modify gender depending on institution  --]
       [#if (editable && isYearEditable(selectedYear) && (action.canEditFunding(((element.fundingSource.fundingSourceInfo.budgetType.id)!-1),(element.institution.id)!-1) ))|| isTemplate]
-        [@customForm.input name="${customName}.amount"    i18nkey="budget.amount" showTitle=false className="currencyInput fundInput type-${(element.fundingSource.fundingSourceInfo.budgetType.id)!'none'}" required=true /]
+        [@customForm.input name="${customName}.amount"    i18nkey="budget.amount" showTitle=false className="currencyInput cycle-planning fundInput type-${(element.fundingSource.fundingSourceInfo.budgetType.id)!'none'}" required=true /]
       [#else]
         <div class="${customForm.changedField(customName+'.amount')}">
           <div class="input"><p>US$ <span>${((element.amount)!0)?number?string(",##0.00")}</span></p></div>
@@ -444,7 +459,7 @@
           [#-- TODO: Allow to add funding sources when there is no aggregate (problem with permissions)  --]
           [#-- Added action.canSearchFunding to allow to modify gender depending on institution  --]
           [#if (editable && isYearEditable(selectedYear) && (action.canEditFunding(((element.fundingSource.fundingSourceInfo.budgetType.id)!-1),(element.institution.id)!-1) ))|| isTemplate]
-            [@customForm.input name="${customName}.amount"    i18nkey="budget.amount" showTitle=false className="currencyInput fundInput type-${(element.fundingSource.fundingSourceInfo.budgetType.id)!'none'}" required=true /]
+            [@customForm.input name="${customName}.amount"    i18nkey="budget.amount" showTitle=false className="currencyInput cycle-planning fundInput type-${(element.fundingSource.fundingSourceInfo.budgetType.id)!'none'}" required=true /]
           [#else]
             <div class="${customForm.changedField(customName + '.amount')}">
               <div class="input"><p>US$ <span>${((element.amount)!0)?number?string(",##0.00")}</span></p></div>

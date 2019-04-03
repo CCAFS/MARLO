@@ -67,6 +67,9 @@
                     [#-- Partnerships summary --]
                     [#if PMU]
                       <div class="form-group">
+                        [#-- Word Document Tag --]
+                        [@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/]
+                    
                         [@customForm.textArea name="${customName}.summary" i18nkey="${customLabel}.summary" help="${customLabel}.summary.help" className="limitWords-300" helpIcon=false required=true editable=editable allowTextEditor=true /]
                       </div>
                     [#else]
@@ -82,6 +85,9 @@
                   [#-- Table 8: Key external partnerships --]
                   [#if PMU]
                     <div class="form-group">
+                      [#-- Word Document Tag --]
+                      [@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/]
+                      
                       <h4 class="simpleTitle headTitle">[@s.text name="${customLabel}.table7.title" /]</h4>
                       <table class="table">
                         <thead>
@@ -144,6 +150,9 @@
                     [#-- Summary --]
                     [#if PMU]
                       <div class="form-group">
+                        [#-- Word Document Tag --]
+                        [@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/]
+                    
                         [@customForm.textArea name="${customName}.summaryCgiar" i18nkey="${customLabel}.crossCGIAR.summary" help="${customLabel}.crossCGIAR.summary.help" className="limitWords-300" helpIcon=false required=true editable=editable allowTextEditor=true /]
                       </div>
                     [#else]
@@ -152,8 +161,13 @@
                     </div> --]
                     [/#if]
                   
-                  [#-- Table 8: Internal Cross-CGIAR Collaborations --]
+                  [#-- Table 9: Internal Cross-CGIAR Collaborations --]
                   <div class="form-group">
+                    <br />
+                    <hr />
+                    [#-- Word Document Tag --]
+                    [@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/]
+                    
                     <h4 class="headTitle annualReport-table">[@s.text name="${customLabel}.table8.title" /]</h4>
                     [@customForm.helpLabel name="${customLabel}.table8.help" showIcon=false editable=editable/]
                     <div class="listCrossParnterships">
@@ -171,8 +185,9 @@
                   </div>
                   
                   [#-- Projects Key Partner (Only CGIAR Institutions) --]
-                  <hr />
                   <div class="form-group">
+                    <br />
+                    <hr />
                     <h4 class="simpleTitle headTitle">[@customForm.text name="${customLabel}.projectsPartnerships.keyCgiarPartners" param="${currentCycleYear}" /] </h4>
                     <div class="viewMoreSyntesis-block">
                       [@projectsKeyPartnershipsTable name="" list=action.projectPartnerships(true) /]

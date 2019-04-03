@@ -16,8 +16,10 @@
 package org.cgiar.ccafs.marlo.action.summaries;
 
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectLp6ContributionDeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectLp6ContributionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.ProjectLp6Contribution;
@@ -37,6 +39,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -70,10 +73,11 @@ public class ProjectContributionLp6SummaryAction extends BaseSummariesAction imp
     return bd.doubleValue();
   }
 
-
   // Managers
   private final ResourceManager resourceManager;
   private final ProjectLp6ContributionManager projectLp6ContributionManager;
+  private final ProjectLp6ContributionDeliverableManager deliverableLp6Manager;
+  private final DeliverableManager deliverableManager;
 
   // Parameters
   private long startTime;
@@ -86,10 +90,13 @@ public class ProjectContributionLp6SummaryAction extends BaseSummariesAction imp
   @Inject
   public ProjectContributionLp6SummaryAction(APConfig config, GlobalUnitManager crpManager, PhaseManager phaseManager,
     ResourceManager resourceManager, ProjectManager projectManager,
-    ProjectLp6ContributionManager projectLp6ContributionManager) {
+    ProjectLp6ContributionManager projectLp6ContributionManager,
+    ProjectLp6ContributionDeliverableManager deliverableLp6Manager, DeliverableManager deliverableManager) {
     super(config, crpManager, phaseManager, projectManager);
     this.resourceManager = resourceManager;
     this.projectLp6ContributionManager = projectLp6ContributionManager;
+    this.deliverableLp6Manager = deliverableLp6Manager;
+    this.deliverableManager = deliverableManager;
   }
 
   /**
@@ -139,6 +146,16 @@ public class ProjectContributionLp6SummaryAction extends BaseSummariesAction imp
     return masterReport;
   }
 
+
+  public String convertBoolean(Boolean value) {
+    String result = null;
+    if (value == true) {
+      result = "Yes";
+    } else if (value == false) {
+      result = "No";
+    }
+    return result;
+  }
 
   @Override
   public String execute() throws Exception {
@@ -213,29 +230,67 @@ public class ProjectContributionLp6SummaryAction extends BaseSummariesAction imp
     TypedTableModel model = new TypedTableModel(
       new String[] {"project", "narrative", "deliverables", "geographicScope", "workingAcross",
         "workingAcrossNarrative", "undertakingEfforts", "undertakingEffortsNarrative", "providing", "keyLearnings",
-        "top3", "undertakingCSA", "undertakingCSAN", "undertaking", "undertakingN"},
+        "top3", "undertakingCSA", "undertakingCSAN", "undertaking", "undertakingN", "id"},
       new Class[] {String.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class},
+        String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
+        String.class},
       0);
 
     for (ProjectLp6Contribution projectLp6Contribution : projectLp6Contributions) {
       String projectId = "", narrativeLp6 = "", deliverables = "", geographicScope = "", workingAcross = "",
         workingAcrossNarrative = "", undertakingEfforts = "", undertakingEffortsNarrative = "", providing = "",
         keyOutputs = "", top3 = "", undertakingCSA = "", undertakingCSANarrative = "", initiativeRelated = "",
-        initiativeRelatedNarrative = "";
+        initiativeRelatedNarrative = "", id = "";
 
-      projectId = projectLp6Contribution.getProject() != null && projectLp6Contribution.getProject().getId() != null
+      id = projectLp6Contribution.getProject() != null && projectLp6Contribution.getProject().getId() != null
         ? projectLp6Contribution.getProject().getId() + "" : null;
+
+      projectId =
+        this.getBaseUrl() + "/projects/" + this.getCurrentCrp().getAcronym() + "/" + "contributionsLP6.do?projectID="
+          + projectLp6Contribution.getProject().getId() + "&edit=true&phaseID=" + this.getSelectedPhase().getId();
+
 
       narrativeLp6 =
         projectLp6Contribution.getNarrative() != null && !projectLp6Contribution.getNarrative().trim().isEmpty()
           ? projectLp6Contribution.getNarrative() : null;
-      if (projectLp6Contribution.getDeliverables() != null && !projectLp6Contribution.getDeliverables().isEmpty()) {
-        for (ProjectLp6ContributionDeliverable deliverable : projectLp6Contribution.getDeliverables()) {
-          deliverables += deliverable + ", ";
+
+      /*
+       * List<ProjectLp6ContributionDeliverable> deliverableList = new ArrayList<ProjectLp6ContributionDeliverable>();
+       * if (deliverableManager.findAll() != null) {
+       * deliverableList = deliverableLp6Manager.findAll().stream()
+       * .filter(d -> d.getProjectLp6Contribution().getId().equals(projectLp6Contribution.getId())
+       * && d.getPhase().getId().equals(this.getSelectedPhase().getId()))
+       * .collect(Collectors.toList());
+       * }
+       * for (ProjectLp6ContributionDeliverable deliverable : deliverableList) {
+       * if (deliverable.getId() != null) {
+       * deliverables += deliverable.getId() + ", ";
+       * }
+       * }
+       */
+
+      /***/
+
+      if (projectLp6Contribution.getDeliverables() == null) {
+        projectLp6Contribution.setDeliverables(new ArrayList<>());
+      }
+      List<ProjectLp6ContributionDeliverable> deliverableList =
+        projectLp6Contribution.getProjectLp6ContributionDeliverable().stream()
+          .filter(ld -> ld.isActive() && ld.getPhase().equals(this.getActualPhase())).collect(Collectors.toList());
+      for (ProjectLp6ContributionDeliverable projectLp6ContributionDeliverable : deliverableList) {
+        if (projectLp6ContributionDeliverable.getDeliverable() != null
+          && projectLp6ContributionDeliverable.getDeliverable().getId() != null) {
+          projectLp6ContributionDeliverable.setDeliverable(
+            deliverableManager.getDeliverableById(projectLp6ContributionDeliverable.getDeliverable().getId()));
         }
       }
 
+      for (ProjectLp6ContributionDeliverable deliverable : deliverableList) {
+        if (deliverable.getId() != null) {
+          deliverables += deliverable.getId() + ", ";
+        }
+      }
+      /****/
       if (deliverables != null && deliverables.isEmpty()) {
         deliverables = null;
       }
@@ -244,48 +299,67 @@ public class ProjectContributionLp6SummaryAction extends BaseSummariesAction imp
           ? projectLp6Contribution.getGeographicScopeNarrative() : null;
 
       workingAcross = projectLp6Contribution.isWorkingAcrossFlagships() != null
-        ? projectLp6Contribution.isWorkingAcrossFlagships() + "" : null;
+        ? this.convertBoolean(projectLp6Contribution.isWorkingAcrossFlagships()) + "" : null;
 
       workingAcrossNarrative = projectLp6Contribution.getWorkingAcrossFlagshipsNarrative() != null
         && !projectLp6Contribution.getWorkingAcrossFlagshipsNarrative().isEmpty()
           ? projectLp6Contribution.getWorkingAcrossFlagshipsNarrative() : null;
 
+      if (workingAcross != null && workingAcross.equals("No") && workingAcrossNarrative == null) {
+        workingAcrossNarrative = "<Not Specified>";
+      }
+
       undertakingEfforts = projectLp6Contribution.isUndertakingEffortsLeading() != null
-        ? projectLp6Contribution.isUndertakingEffortsLeading() + "" : null;
+        ? this.convertBoolean(projectLp6Contribution.isUndertakingEffortsLeading()) + "" : null;
 
       undertakingEffortsNarrative = projectLp6Contribution.getUndertakingEffortsLeadingNarrative() != null
         && !projectLp6Contribution.getUndertakingEffortsLeadingNarrative().isEmpty()
           ? projectLp6Contribution.getUndertakingEffortsLeadingNarrative() + "" : null;
 
+      if (undertakingEfforts != null && undertakingEfforts.equals("No") && undertakingEffortsNarrative == null) {
+        undertakingEffortsNarrative = "<Not Specified>";
+      }
+
       providing =
         projectLp6Contribution.isProvidingPathways() != null ? projectLp6Contribution.isProvidingPathways() + "" : null;
-
 
       keyOutputs = projectLp6Contribution.getProvidingPathwaysNarrative() != null
         && !projectLp6Contribution.getProvidingPathwaysNarrative().isEmpty()
           ? projectLp6Contribution.getProvidingPathwaysNarrative() + "" : null;
+
+      if (providing != null && providing.equals("No") && keyOutputs == null) {
+        keyOutputs = "<Not Specified>";
+      }
 
       top3 = projectLp6Contribution.getTopThreePartnershipsNarrative() != null
         && !projectLp6Contribution.getTopThreePartnershipsNarrative().isEmpty()
           ? projectLp6Contribution.getTopThreePartnershipsNarrative() + "" : null;
 
       undertakingCSA = projectLp6Contribution.isUndertakingEffortsCsa() != null
-        ? projectLp6Contribution.isUndertakingEffortsCsa() + "" : null;
+        ? this.convertBoolean(projectLp6Contribution.isUndertakingEffortsCsa()) + "" : null;
 
       undertakingCSANarrative = projectLp6Contribution.getUndertakingEffortsCsaNarrative() != null
         && !projectLp6Contribution.getUndertakingEffortsCsaNarrative().isEmpty()
           ? projectLp6Contribution.getUndertakingEffortsCsaNarrative() + "" : null;
 
+      if (undertakingCSA != null && undertakingCSA.equals("No") && undertakingCSANarrative == null) {
+        undertakingCSANarrative = "<Not Specified>";
+      }
+
       initiativeRelated = projectLp6Contribution.isInitiativeRelated() != null
-        ? projectLp6Contribution.isUndertakingEffortsCsa() + "" : null;
+        ? this.convertBoolean(projectLp6Contribution.isUndertakingEffortsCsa()) + "" : null;
 
       initiativeRelatedNarrative = projectLp6Contribution.getInitiativeRelatedNarrative() != null
         && !projectLp6Contribution.getInitiativeRelatedNarrative().isEmpty()
           ? projectLp6Contribution.getInitiativeRelatedNarrative() + "" : null;
 
+      if (initiativeRelated != null && initiativeRelated.equals("No") && initiativeRelatedNarrative == null) {
+        initiativeRelatedNarrative = "<Not Specified>";
+      }
+
       model.addRow(new Object[] {projectId, narrativeLp6, deliverables, geographicScope, workingAcross,
         workingAcrossNarrative, undertakingEfforts, undertakingEffortsNarrative, providing, keyOutputs, top3,
-        undertakingCSA, undertakingCSANarrative, initiativeRelated, initiativeRelatedNarrative});
+        undertakingCSA, undertakingCSANarrative, initiativeRelated, initiativeRelatedNarrative, id});
     }
 
     return model;
@@ -354,6 +428,9 @@ public class ProjectContributionLp6SummaryAction extends BaseSummariesAction imp
     if (projectLp6Contributions == null) {
       projectLp6Contributions = new ArrayList<>();
     }
+
+    projectLp6Contributions = projectLp6Contributions.stream()
+      .filter(l -> l.getPhase().getId().equals(this.getSelectedPhase().getId())).collect(Collectors.toList());
 
     // Calculate time to generate report
     startTime = System.currentTimeMillis();

@@ -19,14 +19,18 @@ package org.cgiar.ccafs.marlo.web.filter;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.ClarisaMonitoringManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
+import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.ClarisaMonitoring;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
+import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.APCustomRealm;
 import org.cgiar.ccafs.marlo.security.BaseSecurityContext;
 
+import java.io.File;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.URL;
 import java.util.Date;
 import java.util.Enumeration;
@@ -38,6 +42,10 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.maxmind.geoip2.DatabaseReader;
+import com.maxmind.geoip2.exception.GeoIp2Exception;
+import com.maxmind.geoip2.model.CountryResponse;
+import com.maxmind.geoip2.record.Country;
 import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.session.Session;
@@ -66,6 +74,9 @@ public class AddSessionToRestRequestFilter extends OncePerRequestFilter {
 
   @Inject
   private ClarisaMonitoringManager clarisaMonitoringManager;
+
+  @Inject
+  private LocElementManager locElementManager;
 
   @Inject
   private APCustomRealm realm;
@@ -102,16 +113,26 @@ public class AddSessionToRestRequestFilter extends OncePerRequestFilter {
    * @param restApiString - The Url shorted by the Api elements
    * @param request - The http Request
    */
-  private void addMonitoringInfo(String serviceType, String restApiString, HttpServletRequest request) {
+  private void addMonitoringInfo(String serviceType, String restApiString, HttpServletRequest request,
+    HttpServletResponse response) {
 
     // initial variables
     String serviceName;
-    String serviceArg = "";
-    int maxArg;
 
     // New clarisa monitoring Object to add in the database
     ClarisaMonitoring monitoring = new ClarisaMonitoring();
     monitoring.setServiceType(serviceType);
+
+    monitoring.setServiceUrl(request.getRequestURL().toString());
+
+    // Get the Ip Remote
+    if (request != null) {
+      String remoteAddr = request.getHeader("X-FORWARDED-FOR");
+      if (remoteAddr == null || "".equals(remoteAddr)) {
+        remoteAddr = request.getRemoteAddr();
+        monitoring.setUserIp(request.getRemoteAddr());
+      }
+    }
 
     String[] split = restApiString.split("/");
 
@@ -123,30 +144,20 @@ public class AddSessionToRestRequestFilter extends OncePerRequestFilter {
 
     if (globalUnit != null) {
       serviceName = split[1];
-      maxArg = 2;
     } else {
       serviceName = arg1;
-      maxArg = 1;
-    }
-
-    // Get the url arguments if the request is GET
-    if (serviceType.equals("GET")) {
-      // If there are more than 2 args, theses args are the serviceArg, for example the id of the element to search.
-      if (split.length > maxArg) {
-        for (int i = maxArg; i < split.length; i++) {
-          serviceArg = serviceArg + "-" + split[i];
-        }
-      }
     }
 
     // Get the Http request parameters
     Enumeration<String> enumeration = request.getParameterNames();
     while (enumeration.hasMoreElements()) {
       if (request.getParameter(enumeration.nextElement().toString()) != null) {
-        serviceArg = serviceArg + "-" + request.getParameter(enumeration.nextElement().toString());
+        // TODO try to get all the parameters (POST) specially the JSON structure
       }
     }
 
+    // Get the country
+    LocElement locElement = this.getCountrybyIp(monitoring.getUserIp());
 
     // Get the user
     Subject subject = securityContext.getSubject();
@@ -158,7 +169,7 @@ public class AddSessionToRestRequestFilter extends OncePerRequestFilter {
     monitoring.setServiceName(serviceName);
     monitoring.setGlobalUnit(globalUnit);
     monitoring.setUser(user);
-    monitoring.setServiceArg(serviceArg);
+    monitoring.setLocElement(locElement);
     monitoring.setDate(new Date());
 
     clarisaMonitoringManager.saveClarisaMonitoring(monitoring);
@@ -166,10 +177,10 @@ public class AddSessionToRestRequestFilter extends OncePerRequestFilter {
 
   }
 
-
   @Override
   public void destroy() {
   }
+
 
   @Override
   protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -196,10 +207,49 @@ public class AddSessionToRestRequestFilter extends OncePerRequestFilter {
       && !globalUnitAcronym.contains(".css") && !globalUnitAcronym.contains(".jpg")
       && !globalUnitAcronym.contains(".png")) {
       this.addCrpToSession(globalUnitAcronym);
-      this.addMonitoringInfo(serviceType, restApiString, request);
+      this.addMonitoringInfo(serviceType, restApiString, request, response);
     }
 
     filterChain.doFilter(request, response);
+  }
+
+  /**
+   * Get the Country trough the Remote IP address
+   * 
+   * @param ip - The remote ip address
+   * @return
+   */
+  public LocElement getCountrybyIp(String ip) {
+
+    LocElement element = new LocElement();
+
+    ClassLoader classLoader = new AddSessionToRestRequestFilter().getClass().getClassLoader();
+
+    File countryFile = new File(classLoader.getResource("maps//" + APConstants.DATABASE_COUNTRY_PATH).getFile());
+
+    try {
+
+      DatabaseReader reader = new DatabaseReader.Builder(countryFile).build();
+
+      InetAddress ipAddress = InetAddress.getByName(ip);
+
+      CountryResponse countryResonse = reader.country(ipAddress);
+
+      Country country = countryResonse.getCountry();
+
+      String isoCode = country.getIsoCode();
+
+      element = locElementManager.getLocElementByISOCode(isoCode);
+
+    } catch (IOException e) {
+      e.printStackTrace();
+    } catch (GeoIp2Exception e) {
+      e.printStackTrace();
+    }
+
+
+    return element;
+
   }
 
 

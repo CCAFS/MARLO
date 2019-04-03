@@ -61,6 +61,7 @@
 		<quartz.version>2.1.5</quartz.version>
 		<commons-validator>1.4.0</commons-validator>
 		<jsoup.version>1.11.3</jsoup.version>
+		<geoip2.version>2.12.0</geoip2.version>
 	</properties>
 	<developers>
 		<developer>
@@ -589,7 +590,13 @@
 				<artifactId>jsoup</artifactId>
 				<version>${jsoup.version}</version>
 			</dependency>
-		</dependencies>
+			<!-- geoip2 library to know the country trough the remote IP-->
+			<dependency>
+        <groupId>com.maxmind.geoip2</groupId>
+        <artifactId>geoip2</artifactId>
+        <version>${geoip2.version}</version>
+    </dependency>
+		</dependencies>		
 	</dependencyManagement>
 	<reporting>
 		<plugins>

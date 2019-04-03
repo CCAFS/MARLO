@@ -238,7 +238,7 @@ div.disabled {
 
 .fieldset {
   position: relative;
-  padding: 0px 10px;
+  padding: 0px 10px 12px 8px;
   margin: 6px 0px;
   border: 1px dotted #5f96c5;
   border-radius: 10px 0px;
