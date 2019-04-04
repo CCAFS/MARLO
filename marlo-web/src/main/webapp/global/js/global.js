@@ -55,34 +55,23 @@ $(document).ready(function() {
 
   // Tawkto Widget
   var $dragButton = $("#draggable-button");
-  // hideDragButton();
-  $dragButton.animateCss('flipInY');
-  $dragButton.draggable();
-  $dragButton.find('p').on('click', function() {
-    Tawk_API.toggle();
-  });
+  $dragButton.hide();
 
-  Tawk_API.onChatMaximized = function() {
-    setCustomEvent('CGIAR_Entity', 'onChatMaximized', currentCrpSession);
-    $dragButton.fadeOut();
-  };
-
-  Tawk_API.onChatMinimized = function() {
-    setCustomEvent('CGIAR_Entity', 'onChatMinimized', currentCrpSession);
-    hideDragButton();
-  };
-
-  Tawk_API.onChatHidden = function() {
-    setCustomEvent('CGIAR_Entity', 'onChatHidden', currentCrpSession);
-    hideDragButton();
+  Tawk_API.onLoad = function() {
+    $dragButton.show();
+    $dragButton.animateCss('flipInY');
+    $dragButton.draggable();
+    $dragButton.find('p').on('click', function() {
+      Tawk_API.toggle();
+    });
   };
 
   Tawk_API.onChatStarted = function() {
-    setCustomEvent('CGIAR_Entity', 'onChatStarted', currentCrpSession);
+    setCustomEvent('Tawto_CGIAR_Entity', 'onChatStarted', currentCrpSession);
   };
 
   Tawk_API.onChatEnded = function() {
-    setCustomEvent('CGIAR_Entity', 'onChatEnded', currentCrpSession);
+    setCustomEvent('Tawto_CGIAR_Entity', 'onChatEnded', currentCrpSession);
   };
 
   function hideDragButton() {

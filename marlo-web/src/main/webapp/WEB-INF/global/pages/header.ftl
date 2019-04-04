@@ -74,15 +74,21 @@
     </script>
     
     [#-- Google Analytics --]
-    <script>
-      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-      })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+    [#if config.production]
+      [#assign googleAnalyticsID = "UA-86349544-1"]
+    [#else]
+      [#assign googleAnalyticsID = "UA-86349544-3"]
+    [/#if]
       
-      ga('create', 'UA-86349544-1', 'cgiar.org');
-      ga('set', 'userId', '${(currentUser.composedID)!"Unknown"}' ); // Set the user ID using signed-in user_id.
-      ga('send', 'pageview');   
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=${googleAnalyticsID}"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      
+      gtag('set', {'user_id': '${(currentUser.composedID)!"Unknown"}'});
+      gtag('config', '${googleAnalyticsID}');
     </script>
     
   </head>
