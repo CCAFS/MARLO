@@ -616,7 +616,7 @@ public class PartnershipsAction extends BaseAction {
 
         }
         // Load CGIAR collaborations
-        reportSynthesis.getReportSynthesisKeyPartnership().setCollaborations(new ArrayList<>());
+        reportSynthesis.getReportSynthesisKeyPartnership().setSelectedCollaborations(new ArrayList<>());
 
         if (reportSynthesis.getReportSynthesisKeyPartnership().getReportSynthesisKeyPartnershipCollaborations() != null
           && !reportSynthesis.getReportSynthesisKeyPartnership().getReportSynthesisKeyPartnershipCollaborations()
@@ -639,10 +639,11 @@ public class PartnershipsAction extends BaseAction {
             }
 
 
-            reportSynthesis.getReportSynthesisKeyPartnership().getCollaborations().add(keyPartnershipCollaboration);
+            reportSynthesis.getReportSynthesisKeyPartnership().getSelectedCollaborations()
+              .add(keyPartnershipCollaboration);
           }
 
-          reportSynthesis.getReportSynthesisKeyPartnership().getCollaborations()
+          reportSynthesis.getReportSynthesisKeyPartnership().getSelectedCollaborations()
             .sort(Comparator.comparing(ReportSynthesisKeyPartnershipCollaboration::getId));
         }
 
@@ -811,6 +812,7 @@ public class PartnershipsAction extends BaseAction {
         }
 
         this.saveExternalPmu(keyPartnershipDB);
+        this.saveCollaborationPmu(keyPartnershipDB);
       }
 
 
