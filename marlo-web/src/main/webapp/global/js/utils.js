@@ -770,10 +770,11 @@ function postMessageToSlack(messageJson) {
  * @param event_label
  * @returns
  */
-function setCustomEvent(eventName,event_category,event_label) {
+function setCustomEvent(event_category,eventName,event_label) {
+  console.log(eventName, event_category, event_label);
   gtag('event', eventName, {
       'event_category': event_category,
-      'event_label': event_label
+      'event_label': event_label,
+      'value': 1
   });
-  console.log(eventName, event_category, event_label);
 }

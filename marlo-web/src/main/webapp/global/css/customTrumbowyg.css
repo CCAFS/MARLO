@@ -74,4 +74,6 @@ p.decodeHTML.trumbowyg-editor {
 
 .trumbowyg-editor.trumbowyg-reset-css blockquote, .trumbowyg-editor.trumbowyg-reset-css div, .trumbowyg-editor.trumbowyg-reset-css ol, .trumbowyg-editor.trumbowyg-reset-css p, .trumbowyg-editor.trumbowyg-reset-css ul {
   margin: 0 0 0px!important;
+  line-height: 1.6em!important;
+  color: #696969 !important;
 }
