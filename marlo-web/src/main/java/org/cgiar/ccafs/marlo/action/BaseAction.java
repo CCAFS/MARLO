@@ -17,6 +17,7 @@ package org.cgiar.ccafs.marlo.action;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
+import org.cgiar.ccafs.marlo.data.manager.BudgetTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.CenterOutputsOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpClusterKeyOutputManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpClusterKeyOutputOutcomeManager;
@@ -71,6 +72,7 @@ import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.manager.UserRoleManager;
 import org.cgiar.ccafs.marlo.data.model.Activity;
 import org.cgiar.ccafs.marlo.data.model.Auditlog;
+import org.cgiar.ccafs.marlo.data.model.BudgetType;
 import org.cgiar.ccafs.marlo.data.model.CapDevSectionEnum;
 import org.cgiar.ccafs.marlo.data.model.CapacityDevelopment;
 import org.cgiar.ccafs.marlo.data.model.CaseStudy;
@@ -401,6 +403,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   private int reportingYear;
 
   protected HttpServletRequest request;
+
+  @Inject
+  private BudgetTypeManager budgetTypeManager;
 
   /*********************************************************
    * CENTER VARIABLES *******************************************************
@@ -966,6 +971,20 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return CANCEL;
   }
 
+  public boolean canEditAnyProjectExecution() {
+
+    List<BudgetType> budgetTypes = budgetTypeManager.findAll().stream().collect(Collectors.toList());
+    if (budgetTypes != null && !budgetTypes.isEmpty()) {
+      for (BudgetType budgetType : budgetTypes) {
+        if (this.canEditProjectExecution(budgetType.getId())) {
+          return true;
+        }
+      }
+    }
+
+    return false;
+  }
+
   /**
    * Verify if the project have Cluster of Activity to activate Budget by CoA
    * 
@@ -997,10 +1016,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return this.securityContext.hasPermission(permission);
   }
 
-  public boolean canModifiedProjectExecution() {
+  public boolean canEditProjectExecution(long budgetTypeID) {
     String actionName = this.getActionName();
-    if (actionName.contains(ProjectSectionStatusEnum.BUDGET.getStatus()) && this.hasPermission("execution")
-      && this.hasSpecificities(this.getCrpEnableBudgetExecution())) {
+    if (actionName.contains(ProjectSectionStatusEnum.BUDGET.getStatus())
+      && this.hasPermission("execution:" + budgetTypeID) && this.hasSpecificities(this.getCrpEnableBudgetExecution())) {
       return true;
     }
     return false;
