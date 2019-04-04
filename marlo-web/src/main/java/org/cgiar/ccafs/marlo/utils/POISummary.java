@@ -150,15 +150,19 @@ public class POISummary {
     text = text.replaceAll("</thead>", "");
     text = text.replaceAll("<tbody>", "");
     text = text.replaceAll("</tbody>", "");
-    text = text.replaceAll("</br>", "");
+    text = text.replaceAll("<br>", "");
+    text = text.replaceAll("   ", "");
 
     /*
      * recognize the tag as a line break
      */
+    text = text.replaceAll("\r", "");
+    text = text.replaceAll("\n", "");
     text = text.replaceAll("<table>", "\n");
     text = text.replace("</p>", " \n");
     text = text.replaceAll("</tr>", "\n");
-    text = text.replaceAll("<br>", "\n");
+    text = text.replaceAll("</br>", "\n");
+    text = text.replaceAll("\r", "      ");
 
 
     int textLength = 0;
@@ -209,6 +213,8 @@ public class POISummary {
 
               urlList.add(url);
               referenceList.add(textIndicatorLink);
+              System.out
+                .println("textIndicatorLink " + textIndicatorLink + " /Reference List size " + referenceList.size());
             }
           }
         }
@@ -235,14 +241,16 @@ public class POISummary {
           if (startsPosList.get(posStart) == posText) {
             finalPosition = finalPosList.get(posStart);
             expression = tagsAddList.get(posStart);
-
-            if (expression.equals("<a")) {
-              url1 = urlList.get(k);
-              textIndicatorLink1 = referenceList.get(k);
-              if (k <= hrefTagsCount) {
-                k++;
-              }
-            }
+            /*
+             * if (expression.equals("<a")) {
+             * url1 = urlList.get(k);
+             * textIndicatorLink1 = referenceList.get(k);
+             * System.out.println("textIndicatorLink1 " + textIndicatorLink1 + " /k " + k);
+             * if (k <= hrefTagsCount) {
+             * k++;
+             * }
+             * }
+             */
           }
         }
 
@@ -265,6 +273,7 @@ public class POISummary {
           paragraphRun = paragraph.createRun();
           stringTemp = stringTemp.replaceAll("&nbsp;", " ");
           stringTemp = stringTemp.replaceAll(">", "");
+          stringTemp = stringTemp.replaceAll("&nbsp;", " ");
           stringTemp = this.replaceHTMLTags(stringTemp);
           if (stringTemp != null) {
             this.addParagraphTextBreakPOW2019(paragraphRun, stringTemp);
@@ -335,6 +344,19 @@ public class POISummary {
           case "<p>":
             break;
           case "<a":
+
+            for (posStart = 0; posStart < startsPosList.size(); posStart++) {
+              if (startsPosList.get(posStart) == posText) {
+
+                url1 = urlList.get(k);
+                textIndicatorLink1 = referenceList.get(k);
+                if (k <= hrefTagsCount) {
+                  k++;
+                }
+                break;
+              }
+            }
+
             this.textHyperlink(url1, textIndicatorLink1, paragraph);
             break;
 
@@ -374,7 +396,9 @@ public class POISummary {
       }
     }
 
-    if (finalPosition < textLength) {
+    if (finalPosition < textLength)
+
+    {
       int length = startText.length();
 
       startText = startText.substring(finalPosition + expression.length(), length);
@@ -395,6 +419,8 @@ public class POISummary {
       }
 
       startText = this.replaceHTMLTags(startText);
+      startText = startText.replaceAll("&nbsp;", " ");
+      startText = startText.replaceAll(">", "");
       this.addParagraphTextBreakPOW2019(paragraphRun, startText);
 
       paragraphRun.setColor(TEXT_FONT_COLOR);
@@ -534,13 +560,14 @@ public class POISummary {
       html = html.replaceAll("<tbody", "");
       html = html.replaceAll("</tbody", "");
       html = html.replaceAll(">", "");
+      html = html.replaceAll(">", "");
+      html = html.replaceAll("   ", "");
 
     } catch (Exception e) {
       throw e;
     }
     return html;
   }
-
 
   public void table2AnnualReportCRPStyle(XWPFTable table) {
     /* Horizontal merge, From format table A */
