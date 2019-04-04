@@ -130,7 +130,7 @@ public class ProjectBudgetExecutionManagerImpl implements ProjectBudgetExecution
 
   @Override
   public List<ProjectBudgetExecution> findAllByParameters(long projectId, int year, long phaseId, long budgetTypeId) {
-    return projectBudgetExecutionDAO.findAllByParameters(projectId, year, phaseId);
+    return projectBudgetExecutionDAO.findAllByParameters(projectId, year, phaseId, budgetTypeId);
   }
 
 
