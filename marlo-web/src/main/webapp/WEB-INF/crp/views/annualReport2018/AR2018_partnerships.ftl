@@ -178,9 +178,7 @@
                             <th> Center, CRP or Platform</th>
                             <th> Description of collaboration</th>
                             <th> Value Added</th>
-                            [#-- 
                             <th class="col-md-1">Include in AR</th>
-                             --]
                           </tr>
                         </thead>
                         <tbody>
@@ -189,17 +187,15 @@
                             <tr>
                               <td> 
                                 [@utils.tableList list=(item.crps)![] displayFieldName="globalUnit.acronym" nobr=true /] 
-                                 
                                 <span class="programTag" style="border-color:${(crpProgramColl.color)!'#fff'}">${(crpProgramColl.acronym)!}</span>
                               </td>
                               <td> [@utils.tableText value=(item.description)!"" /] </td>
                               <td> [@utils.tableText value=(item.valueAdded)!"" /] </td>
-                              [#-- 
                               <td class="text-center">
-                                [#assign isChecked = ((!reportSynthesis.reportSynthesisKeyPartnership.plannedCollaborationsIds?seq_contains(item.id))!true) /]
+                                [#assign isChecked = ((!reportSynthesis.reportSynthesisKeyPartnership.collaborationIds?seq_contains(item.id))!true) /]
                                 [@customForm.checkmark id="check-${(item.id)!}" name="reportSynthesis.reportSynthesisKeyPartnership.plannedCollaborationsValue" value="${(item.id)!''}" checked=isChecked editable=editable centered=true/]
                               </td>
-                               --]
+                               
                             </tr>
                           [/#list]
                         </tbody>
@@ -207,11 +203,11 @@
                     [/#if]
                     
                     <div class="listCrossParnterships">
-                    [#if reportSynthesis.reportSynthesisKeyPartnership.collaborations?has_content]
-                      [#list reportSynthesis.reportSynthesisKeyPartnership.collaborations as item]
-                        [@addCrossCGIARPartnerships element=item name="${customName}.collaborations" index=item_index  isEditable=editable/]
-                      [/#list]
-                    [/#if]
+                      [#if reportSynthesis.reportSynthesisKeyPartnership.collaborations?has_content]
+                        [#list reportSynthesis.reportSynthesisKeyPartnership.collaborations as item]
+                          [@addCrossCGIARPartnerships element=item name="${customName}.collaborations" index=item_index  isEditable=editable/]
+                        [/#list]
+                      [/#if]
                     </div>
                     [#if canEdit && editable]
                       <div class="text-right">
