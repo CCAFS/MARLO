@@ -365,7 +365,9 @@ public class ProjectContributionLp6SummaryAction2 extends BaseSummariesAction im
         if (deliverable.getId() != null) {
           Deliverable deliverableBD = deliverableManager.getDeliverableById(deliverable.getDeliverable().getId());
           if (deliverableBD != null && deliverableBD.getDeliverableInfo(this.getSelectedPhase()) != null) {
-            deliverables += "D" + deliverableBD.getId() + "-" + deliverableBD.getDeliverableInfo().getTitle() + "\n ";
+            deliverables +=
+              "(D" + deliverableBD.getId() + ") " + deliverableBD.getDeliverableInfo().getDeliverableType().getName()
+                + " - " + deliverableBD.getDeliverableInfo().getTitle() + "\n ";
           }
         }
       }
