@@ -711,7 +711,22 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
       this.getText("summaries.powb2019.otherParticipans") + ": " + participantingCenters);
   }
 
+  private void addPolicyContribution() {
+    String name = null;
+    for (ProjectPolicy projectPolicy : projectPolicies) {
+      if (projectPolicy != null && projectPolicy.getProjectPolicyInfo(this.getActualPhase()) != null) {
+
+        if (projectPolicy.getProjectPolicyInfo(this.getActualPhase()).getTitle() != null) {
+          name += "• " + projectPolicy.getProjectPolicyInfo(this.getActualPhase()).getTitle() + "\n";
+          name = name.replaceAll("null•", "");
+        }
+        poiSummary.convertHTMLTags(document, name);
+      }
+    }
+  }
+
   private void addProgressFlagshipCrp() {
+
     if (reportSynthesisPMU != null && reportSynthesisPMU.getReportSynthesisFlagshipProgress() != null
       && reportSynthesisPMU.getReportSynthesisFlagshipProgress().getProgressByFlagships() != null) {
       String synthesisCrpProgress =
@@ -807,7 +822,6 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     List<POIField> header = Arrays.asList(sHeader);
     headers.add(header);
 
-
     /*
      * Get all crp Progress Targets and compare the slo indicador Target id with the actual slotarget id
      */
@@ -817,7 +831,6 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
 
     data = new ArrayList<>();
     // Table A-1 Evidence on Progress
-
     List<ReportSynthesisSrfProgressTarget> listSrfProgressTargets = new ArrayList<>();
     try {
       listSrfProgressTargets = reportSynthesisSrfProgressTargetManager.findAll().stream().filter(t -> t.isActive())
@@ -851,6 +864,9 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         additionalContribution = reportSynthesisSrfProgressTarget.getAdditionalContribution() != null
           ? reportSynthesisSrfProgressTarget.getAdditionalContribution() : "";
 
+        if (sloTarget != null) {
+          poiSummary.convertHTMLTags(document, sloTarget);
+        }
         Boolean bold = false;
         String blueColor = "000099";
         POIField[] sData = {new POIField(sloTarget, ParagraphAlignment.LEFT, bold, blackColor),
@@ -1987,6 +2003,11 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         } catch (Exception e) {
 
         }
+
+        if (description != null) {
+          poiSummary.convertHTMLTags(document, description);
+        }
+
         POIField[] sData = {new POIField(description, ParagraphAlignment.LEFT),
           new POIField(poiSummary.replaceHTMLTags(name), ParagraphAlignment.CENTER),
           new POIField(optional, ParagraphAlignment.LEFT)};
@@ -2161,16 +2182,16 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     }
 
     // Toc section
-    addCustomHeadingStyle(document, "heading 1", 1);
-    addCustomHeadingStyle(document, "heading 0", 1);
-    addCustomHeadingStyle(document, "heading 2", 1);
-    addCustomHeadingStyle(document, "heading 3", 1);
-    addCustomHeadingStyle(document, "heading 4", 2);
-    addCustomHeadingStyle(document, "heading 5", 2);
-    addCustomHeadingStyle(document, "heading 6", 2);
-    addCustomHeadingStyle(document, "heading 7", 2);
-    addCustomHeadingStyle(document, "heading 8", 2);
-    addCustomHeadingStyle(document, "heading 9", 2);
+    addCustomHeadingStyle(document, "headingTitle1", 1);
+    addCustomHeadingStyle(document, "headingTitle0", 1);
+    addCustomHeadingStyle(document, "headingTitle2", 1);
+    addCustomHeadingStyle(document, "headingTitle3", 1);
+    addCustomHeadingStyle(document, "headingTitle4", 2);
+    addCustomHeadingStyle(document, "headingTitle5", 2);
+    addCustomHeadingStyle(document, "headingTitle6", 2);
+    addCustomHeadingStyle(document, "headingTitle7", 2);
+    addCustomHeadingStyle(document, "headingTitle8", 2);
+    addCustomHeadingStyle(document, "headingTitle9", 2);
     addCustomHeadingStyle(document, "heading 10", 2);
     addCustomHeadingStyle(document, "heading 11", 2);
     addCustomHeadingStyle(document, "heading 12", 2);
@@ -2241,7 +2262,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         run.setFontSize(14);
         run.setBold(true);
         run.setText(this.getText("summaries.annualReportCRP2018.cover"));
-        paragraph.setStyle("heading 1");
+        paragraph.setStyle("headingTitle1");
 
         String unitName = this.getLoggedCrp().getAcronym() != null && !this.getLoggedCrp().getAcronym().isEmpty()
           ? this.getLoggedCrp().getAcronym() : this.getLoggedCrp().getName();
@@ -2261,7 +2282,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         run.setBold(true);
         run.setText(this.getText("summaries.annualReportCRP2018.executiveSummary"));
         this.addNarrativeSection();
-        paragraph.setStyle("heading 0");
+        paragraph.setStyle("headingTitle0");
 
         // First page
         poiSummary.textLineBreak(document, 1);
@@ -2270,7 +2291,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         run.setFontSize(14);
         run.setBold(true);
         run.setText(this.getText("summaries.annualReportCRP2018.narrative"));
-        paragraph.setStyle("heading 2");
+        paragraph.setStyle("headingTitle2");
 
         // section 1 - Key Results
         poiSummary.textLineBreak(document, 1);
@@ -2279,7 +2300,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         run.setFontSize(14);
         run.setBold(true);
         run.setText(this.getText("summaries.annualReport.keyResults"));
-        paragraph.setStyle("heading 3");
+        paragraph.setStyle("headingTitle3");
 
         // 1.1 Progress Towards SDG and SLO
         // poiSummary.textLineBreak(document, 1);
@@ -2289,7 +2310,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         run.setBold(true);
         run.setText(this.getText("summaries.annualReport2018.keyResults.crpProgress"));
         this.addExpectedCrp();
-        paragraph.setStyle("heading 4");
+        paragraph.setStyle("headingTitle4");
 
         // 1.2 CRP progress towars outputs and outcomes
         poiSummary.textLineBreak(document, 1);
@@ -2298,7 +2319,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         run.setFontSize(14);
         run.setBold(true);
         run.setText(this.getText("summaries.annualReport2018.keyResults.progressTowards"));
-        paragraph.setStyle("heading 5");
+        paragraph.setStyle("headingTitle5");
 
         // 1.2.1
         poiSummary.textLineBreak(document, 1);
@@ -2308,7 +2329,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         run.setBold(true);
         run.setText(this.getText("summaries.annualReport2018.keyResults.overall"));
         this.addOverallProgressCrp();
-        paragraph.setStyle("heading 6");
+        paragraph.setStyle("headingTitle6");
 
         // 1.2.2
         poiSummary.textLineBreak(document, 1);
@@ -2317,8 +2338,8 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         run.setFontSize(11);
         run.setBold(true);
         run.setText(this.getText("summaries.annualReport2018.keyResults.progress"));
-        this.addProgressFlagshipCrp();
-        paragraph.setStyle("heading 7");
+        this.addPolicyContribution();
+        paragraph.setStyle("headingTitle7");
 
         // 1.2.3
         poiSummary.textLineBreak(document, 1);
@@ -2328,7 +2349,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         run.setBold(true);
         run.setText(this.getText("summaries.annualReport2018.keyResults.variance"));
         this.addVariancePlanned();
-        paragraph.setStyle("heading 8");
+        paragraph.setStyle("headingTitle8");
 
         // 1.2.4
         poiSummary.textLineBreak(document, 1);
@@ -2338,7 +2359,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         run.setBold(true);
         run.setText(this.getText("summaries.annualReport2018.keyResults.altmetric"));
         this.addAlmetricCrp();
-        paragraph.setStyle("heading 9");
+        paragraph.setStyle("headingTitle9");
 
         // 1.3 Cross cutting dimensions
         poiSummary.textLineBreak(document, 1);
