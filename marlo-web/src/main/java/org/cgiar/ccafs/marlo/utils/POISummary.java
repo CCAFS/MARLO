@@ -122,6 +122,26 @@ public class POISummary {
         // add break and insert new text
         paragraphRun.addCarriageReturn();
         paragraphRun.setText(lines[i]);
+        paragraphRun.setFontFamily(FONT_TYPE);
+
+      }
+    } else {
+      paragraphRun.setText(text, 0);
+    }
+  }
+
+  private void addParagraphTextBreakPOW2019B(XWPFRun paragraphRun, String text) {
+    if (text.contains("\n")) {
+      String[] lines = text.split("\n");
+      try {
+        paragraphRun.setText(lines[0], 0); // set first line into XWPFRun
+      } catch (Exception e) {
+
+      }
+      for (int i = 1; i < lines.length; i++) {
+        // add break and insert new text
+        paragraphRun.addCarriageReturn();
+        paragraphRun.setText(lines[i]);
       }
     } else {
       paragraphRun.setText(text, 0);
@@ -135,6 +155,8 @@ public class POISummary {
     List<String> urlList = new ArrayList<String>();
     List<String> referenceList = new ArrayList<String>();
 
+    text = text.replace("</span>", " ");
+    text = text.replace("<span>", " ");
     text = text.replace("<p>", "");
     text = text.replace("<strong>", "");
     text = text.replace("</strong>", "");
@@ -150,20 +172,19 @@ public class POISummary {
     text = text.replaceAll("</thead>", "");
     text = text.replaceAll("<tbody>", "");
     text = text.replaceAll("</tbody>", "");
-    text = text.replaceAll("<br>", "");
+    text = text.replaceAll("</br>", "");
     text = text.replaceAll("   ", "");
+    text = text.replaceAll("&nbsp;", " ");
 
     /*
      * recognize the tag as a line break
      */
-    text = text.replaceAll("\r", "");
     text = text.replaceAll("\n", "");
     text = text.replaceAll("<table>", "\n");
     text = text.replace("</p>", " \n");
     text = text.replaceAll("</tr>", "\n");
-    text = text.replaceAll("</br>", "\n");
-    text = text.replaceAll("\r", "      ");
-
+    text = text.replaceAll("<br>", "\n");
+    // text = text.replaceAll("\r", " ");
 
     int textLength = 0;
     this.addExpressionsToList();
@@ -213,8 +234,6 @@ public class POISummary {
 
               urlList.add(url);
               referenceList.add(textIndicatorLink);
-              System.out
-                .println("textIndicatorLink " + textIndicatorLink + " /Reference List size " + referenceList.size());
             }
           }
         }
@@ -241,16 +260,6 @@ public class POISummary {
           if (startsPosList.get(posStart) == posText) {
             finalPosition = finalPosList.get(posStart);
             expression = tagsAddList.get(posStart);
-            /*
-             * if (expression.equals("<a")) {
-             * url1 = urlList.get(k);
-             * textIndicatorLink1 = referenceList.get(k);
-             * System.out.println("textIndicatorLink1 " + textIndicatorLink1 + " /k " + k);
-             * if (k <= hrefTagsCount) {
-             * k++;
-             * }
-             * }
-             */
           }
         }
 
@@ -258,9 +267,7 @@ public class POISummary {
           stringTemp = text.substring(startPosition, posText);
 
           try {
-
             paragraph.setAlignment(ParagraphAlignment.BOTH);
-
             paragraphRun = paragraph.createRun();
             paragraphRun.setText(stringTemp);
           } catch (Exception e) {
@@ -276,6 +283,7 @@ public class POISummary {
           stringTemp = stringTemp.replaceAll("&nbsp;", " ");
           stringTemp = this.replaceHTMLTags(stringTemp);
           if (stringTemp != null) {
+            stringTemp = stringTemp.replaceAll(">", "");
             this.addParagraphTextBreakPOW2019(paragraphRun, stringTemp);
           }
 
@@ -286,6 +294,7 @@ public class POISummary {
           paragraphRun.setUnderline(UnderlinePatterns.NONE);
           paragraphRun.setItalic(false);
         }
+
         startPosition = posText + expression.length() + 1;
         /*
          * Create paragraph with last position after the start of html tag until the close of this
@@ -299,6 +308,7 @@ public class POISummary {
         try {
           paragraph.setAlignment(ParagraphAlignment.BOTH);
           paragraphRun = paragraph.createRun();
+          paragraphRun.setFontFamily(FONT_TYPE);
         } catch (Exception e) {
           paragraph = document.createParagraph();
           paragraph.setAlignment(ParagraphAlignment.BOTH);
@@ -310,7 +320,6 @@ public class POISummary {
           stringTemp = this.replaceHTMLTags(stringTemp);
 
           this.addParagraphTextBreakPOW2019(paragraphRun, stringTemp);
-
           paragraphRun.setColor(TEXT_FONT_COLOR);
           paragraphRun.setFontFamily(FONT_TYPE);
           paragraphRun.setFontSize(11);
@@ -386,6 +395,7 @@ public class POISummary {
           case "</a>":
             break;
           default:
+            paragraphRun.setFontFamily(FONT_TYPE);
             paragraphRun.setBold(false);
             paragraphRun.setUnderline(UnderlinePatterns.NONE);
             paragraphRun.setItalic(false);
@@ -406,10 +416,12 @@ public class POISummary {
       try {
         paragraph.setAlignment(ParagraphAlignment.BOTH);
         paragraphRun = paragraph.createRun();
+        paragraphRun.setFontFamily(FONT_TYPE);
       } catch (Exception e) {
         paragraph = document.createParagraph();
         paragraph.setAlignment(ParagraphAlignment.BOTH);
         paragraphRun = paragraph.createRun();
+        paragraphRun.setFontFamily(FONT_TYPE);
       }
 
       if (startText != null && !startText.isEmpty() && startText != "" && finalPosition != 0) {
@@ -540,7 +552,7 @@ public class POISummary {
   public String replaceHTMLTags(String html) {
     try {
       html = html.replaceAll("\\<.*?>", "");
-      html = html.replaceAll("&nbsp;", "");
+      html = html.replaceAll("&nbsp;", " ");
       html = html.replaceAll("&amp;", "");
       html = html.replaceAll("&gt;", "");
       html = html.replaceAll("&lt;", "");
