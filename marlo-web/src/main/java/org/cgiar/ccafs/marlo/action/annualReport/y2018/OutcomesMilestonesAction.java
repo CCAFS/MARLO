@@ -251,7 +251,9 @@ public class OutcomesMilestonesAction extends BaseAction {
           if (project.getProjecInfoPhase(this.getActualPhase()).getStatus().longValue() == Long
             .parseLong(ProjectStatusEnum.Ongoing.getStatusId())
             || project.getProjecInfoPhase(this.getActualPhase()).getStatus().longValue() == Long
-              .parseLong(ProjectStatusEnum.Extended.getStatusId())) {
+              .parseLong(ProjectStatusEnum.Extended.getStatusId())
+            || project.getProjecInfoPhase(this.getActualPhase()).getStatus().longValue() == Long
+              .parseLong(ProjectStatusEnum.Complete.getStatusId())) {
             if (project.getProjecInfoPhase(this.getActualPhase()).getEndDate() != null) {
               Calendar cal = Calendar.getInstance();
               cal.setTime(project.getProjecInfoPhase(this.getActualPhase()).getEndDate());
