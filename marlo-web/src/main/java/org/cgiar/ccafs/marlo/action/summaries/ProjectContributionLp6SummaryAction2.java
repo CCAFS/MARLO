@@ -354,23 +354,6 @@ public class ProjectContributionLp6SummaryAction2 extends BaseSummariesAction im
         projectLp6Contribution.getNarrative() != null && !projectLp6Contribution.getNarrative().trim().isEmpty()
           ? projectLp6Contribution.getNarrative() : null;
 
-      /*
-       * List<ProjectLp6ContributionDeliverable> deliverableList = new ArrayList<ProjectLp6ContributionDeliverable>();
-       * if (deliverableManager.findAll() != null) {
-       * deliverableList = deliverableLp6Manager.findAll().stream()
-       * .filter(d -> d.getProjectLp6Contribution().getId().equals(projectLp6Contribution.getId())
-       * && d.getPhase().getId().equals(this.getSelectedPhase().getId()))
-       * .collect(Collectors.toList());
-       * }
-       * for (ProjectLp6ContributionDeliverable deliverable : deliverableList) {
-       * if (deliverable.getId() != null) {
-       * deliverables += deliverable.getId() + ", ";
-       * }
-       * }
-       */
-
-      /***/
-
 
       List<ProjectLp6ContributionDeliverable> deliverableList = projectLp6ContributionDeliverableManager.findAll()
         .stream().filter(d -> d.getProjectLp6Contribution().getId().equals(projectLp6Contribution.getId())
@@ -380,9 +363,11 @@ public class ProjectContributionLp6SummaryAction2 extends BaseSummariesAction im
 
       for (ProjectLp6ContributionDeliverable deliverable : deliverableList) {
         if (deliverable.getId() != null) {
-          Deliverable deliverableBD = deliverableManager.getDeliverableById(deliverable.getId());
+          Deliverable deliverableBD = deliverableManager.getDeliverableById(deliverable.getDeliverable().getId());
           if (deliverableBD != null && deliverableBD.getDeliverableInfo(this.getSelectedPhase()) != null) {
-            deliverables += deliverableBD.getId() + "-" + deliverableBD.getDeliverableInfo().getTitle() + "\n ";
+            deliverables +=
+              "(D" + deliverableBD.getId() + ") " + deliverableBD.getDeliverableInfo().getDeliverableType().getName()
+                + " - " + deliverableBD.getDeliverableInfo().getTitle() + "\n ";
           }
         }
       }

@@ -810,7 +810,12 @@ public class PartnershipsAction extends BaseAction {
           reportSynthesis.getReportSynthesisKeyPartnership().setPlannedExternalPartnerships(new ArrayList<>());
         }
 
+        if (reportSynthesis.getReportSynthesisKeyPartnership().getPlannedCollaborations() == null) {
+          reportSynthesis.getReportSynthesisKeyPartnership().setPlannedCollaborations(new ArrayList<>());
+        }
+
         this.saveExternalPmu(keyPartnershipDB);
+        this.saveCollaborationPmu(keyPartnershipDB);
       }
 
 
@@ -861,7 +866,7 @@ public class PartnershipsAction extends BaseAction {
     List<Long> selectedPs = new ArrayList<>();
     List<Long> externalIds = new ArrayList<>();
 
-    for (ReportSynthesisKeyPartnershipExternal ext : flagshipExternalPartnerships) {
+    for (ReportSynthesisKeyPartnershipCollaboration ext : flagshipExternalCollaborations) {
       externalIds.add(ext.getId());
     }
 
@@ -1028,7 +1033,8 @@ public class PartnershipsAction extends BaseAction {
           .filter(nu -> nu.isActive()).collect(Collectors.toList()));
 
       for (ReportSynthesisKeyPartnershipCollaboration collaboration : collaborationPrev) {
-        if (!reportSynthesis.getReportSynthesisKeyPartnership().getCollaborations().contains(collaboration)) {
+        if (reportSynthesis.getReportSynthesisKeyPartnership().getCollaborations() != null
+          && !reportSynthesis.getReportSynthesisKeyPartnership().getCollaborations().contains(collaboration)) {
 
           // Delete Crp to the deleteable Collaboration
           if (collaboration.getReportSynthesisKeyPartnershipCollaborationCrps() != null
