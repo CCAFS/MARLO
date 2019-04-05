@@ -226,9 +226,7 @@ public class POISummary {
 
               hrefTagsCount++;
               textIndicatorLink = text.substring(text.indexOf(">", j) + 1, posFinal);
-              System.out.println("textindicator link " + textIndicatorLink);
               url = text.substring(text.indexOf("=", j) + 2, text.indexOf(">", j) - 1);
-              System.out.println("url " + url);
               if (!url.contains("http://") && !url.contains("https://")) {
                 url = "http://" + url;
               }
@@ -267,7 +265,6 @@ public class POISummary {
         if (posText > 0) {
           stringTemp = text.substring(startPosition, posText);
           stringTemp = stringTemp.replaceAll(">", "");
-          System.out.println("stringtemp1" + stringTemp);
 
           try {
             paragraph.setAlignment(ParagraphAlignment.BOTH);
@@ -276,7 +273,6 @@ public class POISummary {
             paragraphRun.setText(stringTemp);
           } catch (Exception e) {
 
-            System.out.println("entro exception1");
             paragraph = document.createParagraph();
             paragraph.setAlignment(ParagraphAlignment.BOTH);
             paragraphRun = paragraph.createRun();
@@ -289,7 +285,6 @@ public class POISummary {
            */
           stringTemp = this.replaceHTMLTags(stringTemp);
           if (stringTemp != null) {
-            System.out.println("stringtemp1" + stringTemp);
             this.addParagraphTextBreakPOW2019(paragraphRun, stringTemp);
           }
 
@@ -308,7 +303,6 @@ public class POISummary {
          */
         if (finalPosition + expression.length() <= text.length()) {
           stringTemp = text.substring(startPosition, finalPosition + expression.length());
-          System.out.println("stringtemp2" + stringTemp);
         } else {
           stringTemp = text;
         }
@@ -421,7 +415,6 @@ public class POISummary {
       int length = startText.length();
 
       startText = startText.substring(finalPosition + expression.length(), length);
-      System.out.println("starttext" + startText);
 
       try {
         paragraph.setAlignment(ParagraphAlignment.BOTH);
@@ -591,6 +584,69 @@ public class POISummary {
     return html;
   }
 
+  public void table10AnnualReport2018Style(XWPFTable table) {
+    /* horizontal merge, From format tables I */
+
+    for (int x = 0; x < table.getNumberOfRows(); x++) {
+      XWPFTableRow row = table.getRow(x);
+      for (int y = 0; y < row.getTableCells().size(); y++) {
+        XWPFTableCell cell = row.getCell(y);
+        CTTblWidth cellWidth = cell.getCTTc().addNewTcPr().addNewTcW();
+
+        CTTcPr pr = cell.getCTTc().addNewTcPr();
+        // pr.addNewNoWrap();
+        cellWidth.setW(BigInteger.valueOf(100));
+      }
+    }
+  }
+
+  public void table13AnnualReportStyle(XWPFTable table) {
+    /* Horizontal merge, From format tables 13 */
+    CTHMerge hMerge = CTHMerge.Factory.newInstance();
+    CTHMerge hMerge1 = CTHMerge.Factory.newInstance();
+
+    XWPFTableRow row = table.getRow(0);
+    int numberOfCell = row.getTableCells().size();
+    for (int y = 0; y < numberOfCell; y++) {
+      XWPFTableCell cell = row.getCell(y);
+
+      if (cell.getCTTc() == null) {
+        ((CTTc) cell).addNewTcPr();
+      }
+
+      if (cell.getCTTc().getTcPr() == null) {
+        cell.getCTTc().addNewTcPr();
+      }
+      if (y > 0 && y <= numberOfCell) {
+        if (cell.getText().trim().length() > 0) {
+          hMerge.setVal(STMerge.RESTART);
+          cell.getCTTc().getTcPr().setHMerge(hMerge);
+        } else {
+          hMerge1.setVal(STMerge.CONTINUE);
+          cell.getCTTc().getTcPr().setHMerge(hMerge1);
+        }
+      }
+    }
+
+    for (int x = 0; x < table.getNumberOfRows(); x++) {
+      if (x > 1) {
+        XWPFTableRow rowCom = table.getRow(x);
+        XWPFTableCell cell = rowCom.getCell(10);
+
+        if (cell.getCTTc() == null) {
+          ((CTTc) cell).addNewTcPr();
+        }
+
+        if (cell.getCTTc().getTcPr() == null) {
+          cell.getCTTc().addNewTcPr();
+        }
+
+        cell.getCTTc().getTcPr().addNewTcW().setW(BigInteger.valueOf(5000));
+
+      }
+    }
+  }
+
   public void table2AnnualReportCRPStyle(XWPFTable table) {
     /* Horizontal merge, From format table A */
     CTHMerge hMerge = CTHMerge.Factory.newInstance();
@@ -674,6 +730,7 @@ public class POISummary {
     }
   }
 
+
   public void table4AnnualReport2018Style(XWPFTable table) {
     /* horizontal merge, From format tables I */
 
@@ -689,7 +746,6 @@ public class POISummary {
       }
     }
   }
-
 
   public void table5AnnualReport2018Style(XWPFTable table) {
     /* Horizontal merge, From format tables B */
@@ -819,6 +875,7 @@ public class POISummary {
     }
   }
 
+
   public void tableAPowbCRPStyle(XWPFTable table) {
     /* Horizontal merge, From format table A */
     CTHMerge hMerge = CTHMerge.Factory.newInstance();
@@ -885,7 +942,6 @@ public class POISummary {
     }
 
   }
-
 
   public void tableAPowbStyle(XWPFTable table) {
     /* Horizontal merge, From format tables A */
@@ -1708,6 +1764,8 @@ public class POISummary {
         TABLE_HEADER_FONT_COLOR = "D9E2F3";
       } else if (tableType.contains("table6AnnualReport2018") && (record == 0 || record == 1)) {
         TABLE_HEADER_FONT_COLOR = "E2EFD9";
+      } else if (tableType.contains("table13AnnualReport2018") && (record == 0 || record == 1)) {
+        TABLE_HEADER_FONT_COLOR = "FFF2CC";
       } else {
         TABLE_HEADER_FONT_COLOR = "FFFFFF";
       }
@@ -1760,6 +1818,10 @@ public class POISummary {
             dataRow.getCell(record).setColor("D9E2F3");
           } else if (tableType.contains("table6AnnualReport2018") && record < 1) {
             dataRow.getCell(record).setColor("E2EFD9");
+          } else if (tableType.contains("table13AnnualReport2018") && record < 1) {
+            dataRow.getCell(record).setColor("FFF2CC");
+          } else if (tableType.contains("table10AnnualReport2018") && record < 1) {
+            dataRow.getCell(record).setColor("EAF1DD");
           } else {
             if (highlightFirstColumn && record == 0) {
               dataRow.getCell(record).setColor(TABLE_HEADER_FONT_COLOR);
@@ -1837,15 +1899,22 @@ public class POISummary {
       case "table3AnnualReport2018":
         this.table3AnnualReport2018Style(table);
         break;
+      case "table10AnnualReport2018":
+        this.table10AnnualReport2018Style(table);
+        break;
       case "table4AnnualReport2018":
         this.table4AnnualReport2018Style(table);
         break;
       case "table5AnnualReport2018":
-        this.table5AnnualReport2018Style(table);
+        this.table4AnnualReport2018Style(table);
         break;
       case "tableJAnnualReport":
         this.tableJAnnualReportStyle(table);
         break;
+      case "table13AnnualReport2018":
+        this.table13AnnualReportStyle(table);
+        break;
+
 
       // Annual report tables 2018
       case "table6AnnualReport2018":
@@ -1997,8 +2066,21 @@ public class POISummary {
           } else {
             TABLE_HEADER_FONT_COLOR = "FFFFFF";
           }
+        } else if (tableType.contains("table5AnnualReport2018")) {
+          if (record == 0 || record == 1 || record == 3) {
+            TABLE_HEADER_FONT_COLOR = "FFF2CC";
+          }
+          if (record == 2 || record == 4 || record == 5) {
+            TABLE_HEADER_FONT_COLOR = "EAF1DD";
+
+          } else {
+            TABLE_HEADER_FONT_COLOR = "FFFFFF";
+          }
+
         } else if (tableType.contains("table6AnnualReport2018")) {
           TABLE_HEADER_FONT_COLOR = "E2EFD9";
+        } else if (tableType.contains("table13AnnualReport2018")) {
+          TABLE_HEADER_FONT_COLOR = "FFF2CC";
 
         } else if (tableType.contains("Report2018")) {
           TABLE_HEADER_FONT_COLOR = "FFF2CC";
@@ -2073,7 +2155,9 @@ public class POISummary {
       record = 0;
     }
 
-    for (List<POIField> poiParameters : sData) {
+    for (
+
+    List<POIField> poiParameters : sData) {
       record = 0;
 
       // Condition for table b cell color in fields 5 and 6
@@ -2085,6 +2169,9 @@ public class POISummary {
         TABLE_HEADER_FONT_COLOR = "D9E2F3";
       } else if (tableType.contains("table6AnnualReport2018") && (record == 0 || record == 1)) {
         TABLE_HEADER_FONT_COLOR = "E2EFD9";
+      } else if (tableType.contains("table13AnnualReport2018") && (record == 0 || record == 1)) {
+        TABLE_HEADER_FONT_COLOR = "FFF2CC";
+
       } else {
         TABLE_HEADER_FONT_COLOR = "FFFFFF";
       }
@@ -2115,6 +2202,17 @@ public class POISummary {
           } else if (tableType.equals("table2AnnualReport2018")) {
             if (record == 0) {
               TABLE_HEADER_FONT_COLOR = "D9E2F3";
+
+            } else {
+              TABLE_HEADER_FONT_COLOR = "FFFFFF";
+            }
+          } else if (tableType.equals("table5AnnualReport2018")) {
+
+            if (record == 0 || record == 1 || record == 3) {
+              TABLE_HEADER_FONT_COLOR = "FFF2CC";
+            }
+            if (record == 2 || record == 4 || record == 5) {
+              TABLE_HEADER_FONT_COLOR = "EAF1DD";
 
             } else {
               TABLE_HEADER_FONT_COLOR = "FFFFFF";
@@ -2157,7 +2255,9 @@ public class POISummary {
       }
     }
 
-    switch (tableType) {
+    switch (tableType)
+
+    {
       case "tableA":
         this.tableAStyle(table);
         break;
@@ -2217,7 +2317,7 @@ public class POISummary {
         this.table4AnnualReport2018Style(table);
         break;
       case "table5AnnualReport2018":
-        this.table5AnnualReport2018Style(table);
+        this.table4AnnualReport2018Style(table);
         break;
       case "tableJAnnualReport":
         this.tableJAnnualReportStyle(table);
