@@ -488,13 +488,13 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
       poiSummary.convertHTMLTags(document, crossCuttingYouthContribution);
     }
     if (crossCuttingYouthResearchFindings != null && !crossCuttingYouthResearchFindings.isEmpty()) {
-      poiSummary.convertHTMLTags(document, crossCuttingYouthResearchFindings);
+      poiSummary.convertHTMLTags(document, "a) " + crossCuttingYouthResearchFindings);
     }
     if (crossCuttingYouthLearned != null && !crossCuttingYouthLearned.isEmpty()) {
-      poiSummary.convertHTMLTags(document, crossCuttingYouthLearned);
+      poiSummary.convertHTMLTags(document, "b) " + crossCuttingYouthLearned);
     }
     if (crossCuttingYouthProblemsArisen != null && !crossCuttingYouthProblemsArisen.isEmpty()) {
-      poiSummary.convertHTMLTags(document, crossCuttingYouthProblemsArisen);
+      poiSummary.convertHTMLTags(document, "c) " + crossCuttingYouthProblemsArisen);
     }
   }
 
@@ -711,7 +711,24 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
       this.getText("summaries.powb2019.otherParticipans") + ": " + participantingCenters);
   }
 
+  private void addPolicyContribution() {
+    String name = null;
+    for (ProjectPolicy projectPolicy : projectPolicies) {
+
+      if (projectPolicy != null && projectPolicy.getProjectPolicyInfo(this.getActualPhase()) != null) {
+
+        if (projectPolicy.getProjectPolicyInfo(this.getActualPhase()).getTitle() != null) {
+          name += "• " + projectPolicy.getProjectPolicyInfo(this.getActualPhase()).getTitle() + "\n";
+          name = name.replaceAll("null•", "");
+        }
+
+      }
+    }
+    poiSummary.convertHTMLTags(document, name);
+  }
+
   private void addProgressFlagshipCrp() {
+
     if (reportSynthesisPMU != null && reportSynthesisPMU.getReportSynthesisFlagshipProgress() != null
       && reportSynthesisPMU.getReportSynthesisFlagshipProgress().getProgressByFlagships() != null) {
       String synthesisCrpProgress =
@@ -807,7 +824,6 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     List<POIField> header = Arrays.asList(sHeader);
     headers.add(header);
 
-
     /*
      * Get all crp Progress Targets and compare the slo indicador Target id with the actual slotarget id
      */
@@ -817,7 +833,6 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
 
     data = new ArrayList<>();
     // Table A-1 Evidence on Progress
-
     List<ReportSynthesisSrfProgressTarget> listSrfProgressTargets = new ArrayList<>();
     try {
       listSrfProgressTargets = reportSynthesisSrfProgressTargetManager.findAll().stream().filter(t -> t.isActive())
@@ -851,11 +866,15 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         additionalContribution = reportSynthesisSrfProgressTarget.getAdditionalContribution() != null
           ? reportSynthesisSrfProgressTarget.getAdditionalContribution() : "";
 
+        if (sloTarget != null) {
+          poiSummary.convertHTMLTags(document, sloTarget);
+        }
         Boolean bold = false;
         String blueColor = "000099";
-        POIField[] sData = {new POIField(sloTarget, ParagraphAlignment.LEFT, bold, blackColor),
-          new POIField(briefSummaries, ParagraphAlignment.LEFT, bold, blueColor),
-          new POIField(additionalContribution, ParagraphAlignment.LEFT, bold, blueColor)};
+        POIField[] sData =
+          {new POIField(poiSummary.replaceHTMLTags(sloTarget), ParagraphAlignment.LEFT, bold, blackColor),
+            new POIField(poiSummary.replaceHTMLTags(briefSummaries), ParagraphAlignment.LEFT, bold, blackColor),
+            new POIField(additionalContribution, ParagraphAlignment.LEFT, bold, blackColor)};
         data = Arrays.asList(sData);
         datas.add(data);
       }
@@ -970,13 +989,13 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         }
 
         POIField[] sData = {new POIField(name, ParagraphAlignment.LEFT, false, "000000"),
-          new POIField(recomendation, ParagraphAlignment.LEFT, false, "000000"),
+          new POIField(poiSummary.replaceHTMLTags(recomendation), ParagraphAlignment.LEFT, false, "000000"),
           new POIField(text, ParagraphAlignment.LEFT, false, "000000"),
           new POIField(status, ParagraphAlignment.LEFT, false, "000000"),
           new POIField(actions, ParagraphAlignment.LEFT, false, "000000"),
           new POIField(whom, ParagraphAlignment.LEFT, false, "000000"),
           new POIField(when, ParagraphAlignment.LEFT, false, "000000"),
-          new POIField(comments, ParagraphAlignment.LEFT, false, "000000")};
+          new POIField(poiSummary.replaceHTMLTags(comments), ParagraphAlignment.LEFT, false, "000000")};
         data = Arrays.asList(sData);
         datas.add(data);
       }
@@ -1011,7 +1030,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
           area = expenditureArea.getExpenditureCategory().getName();
         }
 
-        POIField[] sData = {new POIField(examples, ParagraphAlignment.LEFT, true, "000000"),
+        POIField[] sData = {new POIField(poiSummary.replaceHTMLTags(examples), ParagraphAlignment.LEFT, true, "000000"),
           new POIField(area, ParagraphAlignment.LEFT, true, "0000")};
         data = Arrays.asList(sData);
         datas.add(data);
@@ -1987,7 +2006,8 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         } catch (Exception e) {
 
         }
-        POIField[] sData = {new POIField(description, ParagraphAlignment.LEFT),
+
+        POIField[] sData = {new POIField(poiSummary.replaceHTMLTags(description), ParagraphAlignment.LEFT),
           new POIField(poiSummary.replaceHTMLTags(name), ParagraphAlignment.CENTER),
           new POIField(optional, ParagraphAlignment.LEFT)};
         data = Arrays.asList(sData);
@@ -2161,45 +2181,46 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     }
 
     // Toc section
-    addCustomHeadingStyle(document, "heading 1", 1);
-    addCustomHeadingStyle(document, "heading 0", 1);
-    addCustomHeadingStyle(document, "heading 2", 1);
-    addCustomHeadingStyle(document, "heading 3", 1);
-    addCustomHeadingStyle(document, "heading 4", 2);
-    addCustomHeadingStyle(document, "heading 5", 2);
-    addCustomHeadingStyle(document, "heading 6", 2);
-    addCustomHeadingStyle(document, "heading 7", 2);
-    addCustomHeadingStyle(document, "heading 8", 2);
-    addCustomHeadingStyle(document, "heading 9", 2);
-    addCustomHeadingStyle(document, "heading 10", 2);
-    addCustomHeadingStyle(document, "heading 11", 2);
-    addCustomHeadingStyle(document, "heading 12", 2);
-    addCustomHeadingStyle(document, "heading 13", 2);
-    addCustomHeadingStyle(document, "heading 14", 2);
-    addCustomHeadingStyle(document, "heading 15", 1);
-    addCustomHeadingStyle(document, "heading 16", 2);
-    addCustomHeadingStyle(document, "heading 17", 2);
-    addCustomHeadingStyle(document, "heading 18", 2);
-    addCustomHeadingStyle(document, "heading 19", 2);
-    addCustomHeadingStyle(document, "heading 20", 1);
-    addCustomHeadingStyle(document, "heading 21", 2);
-    addCustomHeadingStyle(document, "heading 22", 2);
-    addCustomHeadingStyle(document, "heading 23", 2);
-    addCustomHeadingStyle(document, "heading 24", 2);
-    addCustomHeadingStyle(document, "heading 25", 1);
-    addCustomHeadingStyle(document, "heading 26", 1);
-    addCustomHeadingStyle(document, "heading 27", 1);
-    addCustomHeadingStyle(document, "heading 28", 1);
-    addCustomHeadingStyle(document, "heading 29", 1);
-    addCustomHeadingStyle(document, "heading 30", 1);
-    addCustomHeadingStyle(document, "heading 31", 1);
-    addCustomHeadingStyle(document, "heading 32", 1);
-    addCustomHeadingStyle(document, "heading 33", 1);
-    addCustomHeadingStyle(document, "heading 34", 1);
-    addCustomHeadingStyle(document, "heading 35", 1);
-    addCustomHeadingStyle(document, "heading 36", 1);
-    addCustomHeadingStyle(document, "heading 37", 1);
-    addCustomHeadingStyle(document, "heading 38", 1);
+    addCustomHeadingStyle(document, "headingTitle1", 1);
+    addCustomHeadingStyle(document, "headingTitle0", 1);
+    addCustomHeadingStyle(document, "headingTitle2", 1);
+    addCustomHeadingStyle(document, "headingTitle3", 2);
+    addCustomHeadingStyle(document, "headingTitle4", 3);
+    addCustomHeadingStyle(document, "headingTitle5", 3);
+    addCustomHeadingStyle(document, "headingTitle6", 4);
+    addCustomHeadingStyle(document, "headingTitle7", 4);
+    addCustomHeadingStyle(document, "headingTitle8", 4);
+    addCustomHeadingStyle(document, "headingTitle9", 4);
+    addCustomHeadingStyle(document, "heading 10", 3);
+    addCustomHeadingStyle(document, "heading 11", 4);
+    addCustomHeadingStyle(document, "heading 12", 4);
+    addCustomHeadingStyle(document, "heading 13", 4);
+    addCustomHeadingStyle(document, "heading 14", 4);
+    addCustomHeadingStyle(document, "heading 15", 2);
+    addCustomHeadingStyle(document, "heading 16", 3);
+    addCustomHeadingStyle(document, "heading 17", 3);
+    addCustomHeadingStyle(document, "heading 18", 4);
+    addCustomHeadingStyle(document, "heading 19", 4);
+    addCustomHeadingStyle(document, "heading 20", 3);
+    addCustomHeadingStyle(document, "heading 21", 3);
+    addCustomHeadingStyle(document, "heading 22", 3);
+    addCustomHeadingStyle(document, "heading 23", 3);
+    addCustomHeadingStyle(document, "heading 24", 3);
+    addCustomHeadingStyle(document, "heading 25", 2);
+    addCustomHeadingStyle(document, "headingTitleB", 1);
+    addCustomHeadingStyle(document, "heading 26", 2);
+    addCustomHeadingStyle(document, "heading 27", 2);
+    addCustomHeadingStyle(document, "heading 28", 2);
+    addCustomHeadingStyle(document, "heading 29", 2);
+    addCustomHeadingStyle(document, "heading 30", 2);
+    addCustomHeadingStyle(document, "heading 31", 2);
+    addCustomHeadingStyle(document, "heading 32", 2);
+    addCustomHeadingStyle(document, "heading 33", 2);
+    addCustomHeadingStyle(document, "heading 34", 2);
+    addCustomHeadingStyle(document, "heading 35", 2);
+    addCustomHeadingStyle(document, "heading 36", 2);
+    addCustomHeadingStyle(document, "heading 37", 2);
+    addCustomHeadingStyle(document, "heading 38", 2);
     if (this.isEntityCRP()) {
       try {
 
@@ -2241,7 +2262,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         run.setFontSize(14);
         run.setBold(true);
         run.setText(this.getText("summaries.annualReportCRP2018.cover"));
-        paragraph.setStyle("heading 1");
+        paragraph.setStyle("headingTitle1");
 
         String unitName = this.getLoggedCrp().getAcronym() != null && !this.getLoggedCrp().getAcronym().isEmpty()
           ? this.getLoggedCrp().getAcronym() : this.getLoggedCrp().getName();
@@ -2261,7 +2282,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         run.setBold(true);
         run.setText(this.getText("summaries.annualReportCRP2018.executiveSummary"));
         this.addNarrativeSection();
-        paragraph.setStyle("heading 0");
+        paragraph.setStyle("headingTitle0");
 
         // First page
         poiSummary.textLineBreak(document, 1);
@@ -2270,7 +2291,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         run.setFontSize(14);
         run.setBold(true);
         run.setText(this.getText("summaries.annualReportCRP2018.narrative"));
-        paragraph.setStyle("heading 2");
+        paragraph.setStyle("headingTitle2");
 
         // section 1 - Key Results
         poiSummary.textLineBreak(document, 1);
@@ -2279,7 +2300,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         run.setFontSize(14);
         run.setBold(true);
         run.setText(this.getText("summaries.annualReport.keyResults"));
-        paragraph.setStyle("heading 3");
+        paragraph.setStyle("headingTitle3");
 
         // 1.1 Progress Towards SDG and SLO
         // poiSummary.textLineBreak(document, 1);
@@ -2289,7 +2310,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         run.setBold(true);
         run.setText(this.getText("summaries.annualReport2018.keyResults.crpProgress"));
         this.addExpectedCrp();
-        paragraph.setStyle("heading 4");
+        paragraph.setStyle("headingTitle4");
 
         // 1.2 CRP progress towars outputs and outcomes
         poiSummary.textLineBreak(document, 1);
@@ -2298,7 +2319,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         run.setFontSize(14);
         run.setBold(true);
         run.setText(this.getText("summaries.annualReport2018.keyResults.progressTowards"));
-        paragraph.setStyle("heading 5");
+        paragraph.setStyle("headingTitle5");
 
         // 1.2.1
         poiSummary.textLineBreak(document, 1);
@@ -2308,7 +2329,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         run.setBold(true);
         run.setText(this.getText("summaries.annualReport2018.keyResults.overall"));
         this.addOverallProgressCrp();
-        paragraph.setStyle("heading 6");
+        paragraph.setStyle("headingTitle6");
 
         // 1.2.2
         poiSummary.textLineBreak(document, 1);
@@ -2317,8 +2338,8 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         run.setFontSize(11);
         run.setBold(true);
         run.setText(this.getText("summaries.annualReport2018.keyResults.progress"));
-        this.addProgressFlagshipCrp();
-        paragraph.setStyle("heading 7");
+        this.addPolicyContribution();
+        paragraph.setStyle("headingTitle7");
 
         // 1.2.3
         poiSummary.textLineBreak(document, 1);
@@ -2328,7 +2349,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         run.setBold(true);
         run.setText(this.getText("summaries.annualReport2018.keyResults.variance"));
         this.addVariancePlanned();
-        paragraph.setStyle("heading 8");
+        paragraph.setStyle("headingTitle8");
 
         // 1.2.4
         poiSummary.textLineBreak(document, 1);
@@ -2338,7 +2359,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         run.setBold(true);
         run.setText(this.getText("summaries.annualReport2018.keyResults.altmetric"));
         this.addAlmetricCrp();
-        paragraph.setStyle("heading 9");
+        paragraph.setStyle("headingTitle9");
 
         // 1.3 Cross cutting dimensions
         poiSummary.textLineBreak(document, 1);
@@ -2508,7 +2529,13 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
 
         // Part B
         document.createParagraph().setPageBreak(true);
-        poiSummary.textHead1Title(document.createParagraph(), "Part B. TABLES");
+        paragraph = document.createParagraph();
+        run = paragraph.createRun();
+        run.setFontSize(16);
+        run.setBold(true);
+        run.setText("Part B. TABLES");
+        paragraph.setStyle("headingTitleB");
+
 
         // Table 1
         poiSummary.textLineBreak(document, 1);
