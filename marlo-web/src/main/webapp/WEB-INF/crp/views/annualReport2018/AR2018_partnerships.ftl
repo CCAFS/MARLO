@@ -155,6 +155,8 @@
                     
                         [@customForm.textArea name="${customName}.summaryCgiar" i18nkey="${customLabel}.crossCGIAR.summary" help="${customLabel}.crossCGIAR.summary.help" className="limitWords-300" helpIcon=false required=true editable=editable allowTextEditor=true /]
                       </div>
+                      
+                      <hr />
                     [#else]
                     [#-- <div class="form-group">
                        [@utils.tableText value=(reportSynthesis.reportSynthesisKeyPartnership.crossCGIAR)!'' nobr=false emptyText="global.prefilledByPmu" /] 
@@ -164,9 +166,8 @@
                   [#-- Table 9: Internal Cross-CGIAR Collaborations --]
                   <div class="form-group">
                     <br />
-                    <hr />
                     [#-- Word Document Tag --]
-                    [@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/]
+                    [#if PMU][@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/][/#if]
                     
                     <h4 class="headTitle annualReport-table">[@s.text name="${customLabel}.table8.title" /]</h4>
                     [@customForm.helpLabel name="${customLabel}.table8.help" showIcon=false editable=editable/]
@@ -175,27 +176,25 @@
                       <table class="table">
                         <thead>
                           <tr>
+                            <th></th>
                             <th> Center, CRP or Platform</th>
                             <th> Description of collaboration</th>
                             <th> Value Added</th>
-                            <th class="col-md-1">Include in AR</th>
+                            <th class="col-md-1"><small> Include in AR </small></th>
                           </tr>
                         </thead>
                         <tbody>
                           [#list (flagshipExternalCollaborations?sort_by("id"))![] as item]
                             [#assign crpProgramColl = (item.reportSynthesisKeyPartnership.reportSynthesis.liaisonInstitution.crpProgram)!]
                             <tr>
-                              <td> 
-                                [@utils.tableList list=(item.crps)![] displayFieldName="globalUnit.acronym" nobr=true /] 
-                                <span class="programTag" style="border-color:${(crpProgramColl.color)!'#fff'}">${(crpProgramColl.acronym)!}</span>
-                              </td>
+                              <td><span class="programTag" style="border-color:${(crpProgramColl.color)!'#fff'}">${(crpProgramColl.acronym)!}</span></td>
+                              <td> [@utils.tableList list=(item.crps)![] displayFieldName="globalUnit.acronym" nobr=true /] </td>
                               <td> [@utils.tableText value=(item.description)!"" /] </td>
                               <td> [@utils.tableText value=(item.valueAdded)!"" /] </td>
                               <td class="text-center">
                                 [#assign isChecked = ((!reportSynthesis.reportSynthesisKeyPartnership.collaborationIds?seq_contains(item.id))!true) /]
                                 [@customForm.checkmark id="check-${(item.id)!}" name="reportSynthesis.reportSynthesisKeyPartnership.plannedCollaborationsValue" value="${(item.id)!''}" checked=isChecked editable=editable centered=true/]
                               </td>
-                               
                             </tr>
                           [/#list]
                         </tbody>

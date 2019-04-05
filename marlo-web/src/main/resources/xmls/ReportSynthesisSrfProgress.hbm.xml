@@ -8,7 +8,7 @@
 		name="org.cgiar.ccafs.marlo.data.model.ReportSynthesisSrfProgress"
 		optimistic-lock="version" polymorphism="implicit"
 		select-before-update="false" table="report_synthesis_srf_progress">
-		<id name="id" type="long">
+		<id name="id" type="java.lang.Long">
 			<column name="id" />
 			<generator class="foreign">
 				<param name="property">reportSynthesis</param>

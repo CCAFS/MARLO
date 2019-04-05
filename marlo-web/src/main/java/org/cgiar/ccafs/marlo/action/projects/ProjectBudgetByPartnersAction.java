@@ -175,11 +175,6 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     return SUCCESS;
   }
 
-  public boolean canEditExecution() {
-    return this.hasPermissionNoBase(this.generatePermission(Permission.PROJECT_BUDGET_EXECUTION_BASE_PERMISSION,
-      loggedCrp.getAcronym(), projectID + ""));
-  }
-
   public boolean canEditFunding(long type, long institutionID) {
     if (type == 1) {
       boolean permission = this.hasPermissionNoBase(
