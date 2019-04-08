@@ -1270,7 +1270,7 @@ public class PartnershipsAction extends BaseAction {
           .filter(nu -> nu.isActive()).collect(Collectors.toList()));
 
       for (ReportSynthesisKeyPartnershipExternalInstitution institution : institutionPrev) {
-        if (!external.getInstitutions().contains(institution)) {
+        if (external.getInstitutions() == null || !external.getInstitutions().contains(institution)) {
           reportSynthesisKeyPartnershipExternalInstitutionManager
             .deleteReportSynthesisKeyPartnershipExternalInstitution(institution.getId());
         }
