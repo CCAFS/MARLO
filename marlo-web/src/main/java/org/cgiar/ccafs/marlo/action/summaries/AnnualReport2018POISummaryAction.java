@@ -869,9 +869,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         additionalContribution = reportSynthesisSrfProgressTarget.getAdditionalContribution() != null
           ? reportSynthesisSrfProgressTarget.getAdditionalContribution() : "";
 
-        if (sloTarget != null) {
-          poiSummary.convertHTMLTags(document, sloTarget);
-        }
+
         Boolean bold = false;
         String blueColor = "000099";
         POIField[] sData =
@@ -3659,11 +3657,14 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     if (flagshipsReportSynthesisFlagshipProgress != null) {
       int i = 1;
       for (ReportSynthesisFlagshipProgress flagshipProgress : flagshipsReportSynthesisFlagshipProgress) {
-        poiSummary.textParagraphBold(document.createParagraph(), "F" + i);
-        poiSummary.textParagraphBold(document.createParagraph(), "Flagship progress");
+        if (flagshipProgress.getProgressByFlagships() != null) {
+          poiSummary.textParagraphBold(document.createParagraph(), "F" + i);
+          poiSummary.textParagraphBold(document.createParagraph(), "Flagship progress");
+        }
         poiSummary.convertHTMLTags(document, flagshipProgress.getProgressByFlagships());
-        if (flagshipProgress.getDetailedAnnex() != null) {
+        if (flagshipProgress.getDetailedAnnex() != null && !flagshipProgress.getDetailedAnnex().isEmpty()) {
           poiSummary.textParagraphBold(document.createParagraph(), "Detailed Annex");
+          poiSummary.convertHTMLTags(document, flagshipProgress.getDetailedAnnex());
         }
         poiSummary.textLineBreak(document, 2);
         i++;
