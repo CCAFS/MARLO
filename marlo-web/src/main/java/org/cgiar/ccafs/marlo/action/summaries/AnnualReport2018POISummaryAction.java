@@ -1262,6 +1262,9 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
       List<POIField> data;
 
       double totalW1w2Difference = 0.0, totalW3Difference = 0.0, grandTotalDifference = 0.0;
+      reportSynthesisFinancialSummaryBudgetList
+        .sort(Comparator.comparing(ReportSynthesisFinancialSummaryBudget::getId));
+
       if (reportSynthesisFinancialSummaryBudgetList != null && !reportSynthesisFinancialSummaryBudgetList.isEmpty()) {
 
         for (ReportSynthesisFinancialSummaryBudget reportSynthesisFinancialSummaryBudget : reportSynthesisFinancialSummaryBudgetList) {
@@ -1325,10 +1328,11 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
             new POIField("US$ " + (w1w2Difference), ParagraphAlignment.CENTER),
             new POIField("US$ " + (w3Difference), ParagraphAlignment.CENTER),
             new POIField("US$ " + (totalDifference), ParagraphAlignment.CENTER),
-            new POIField(comments, ParagraphAlignment.CENTER)};
+            new POIField(poiSummary.replaceHTMLTags(comments), ParagraphAlignment.CENTER)};
 
           data = Arrays.asList(sData);
           datas.add(data);
+
         }
       }
 
