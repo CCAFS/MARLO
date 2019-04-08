@@ -30,7 +30,6 @@ import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
-import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.SharedProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.User;
@@ -248,11 +247,7 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
           }
         }
 
-        String actionName = baseAction.getActionName().replaceAll(crp.getAcronym() + "/", "");
-        if (baseAction.isReportingActive()
-          && actionName.equalsIgnoreCase(ProjectSectionStatusEnum.BUDGET.getStatus())) {
-          canEdit = false;
-        }
+
         if (project.getProjecInfoPhase(baseAction.getActualPhase()).getPhase().getDescription()
           .equals(APConstants.REPORTING)
           && project.getProjecInfoPhase(baseAction.getActualPhase()).getPhase().getYear() == 2016) {
@@ -303,7 +298,7 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
           canEdit = false;
           baseAction.setCanEditPhase(false);
         }
-
+        String actionName = baseAction.getActionName().replaceAll(crp.getAcronym() + "/", "");
         // Check if is a Shared project (Crp to Center)
         if (!globalUnitProject.isOrigin()) {
           canEdit = false;
@@ -315,11 +310,6 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
 
         }
 
-        if (baseAction.getActionName().replaceAll(crp.getAcronym() + "/", "").equals(ProjectSectionStatusEnum.BUDGET)) {
-          if (baseAction.isReportingActive()) {
-            canEdit = false;
-          }
-        }
         if (!editParameter) {
           baseAction.setEditStatus(false);
         }

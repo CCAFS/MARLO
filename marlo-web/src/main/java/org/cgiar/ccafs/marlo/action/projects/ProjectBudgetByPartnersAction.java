@@ -139,6 +139,10 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
   }
 
   public boolean canAddFunding(long institutionID) {
+    if (this.isReportingActive()) {
+      return false;
+    }
+
     boolean permission = this.hasPermissionNoBase(
       this.generatePermission(Permission.PROJECT_FUNDING_W1_BASE_PERMISSION, loggedCrp.getAcronym()))
 
@@ -176,6 +180,9 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
   }
 
   public boolean canEditFunding(long type, long institutionID) {
+    if (this.isReportingActive()) {
+      return false;
+    }
     if (type == 1) {
       boolean permission = this.hasPermissionNoBase(
         this.generatePermission(Permission.PROJECT_FUNDING_W1_BASE_PERMISSION, loggedCrp.getAcronym()));
@@ -196,18 +203,28 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
   }
 
   public boolean canEditFundingSourceBudget() {
+    if (this.isReportingActive()) {
+      return false;
+    }
+
     return this.hasPermissionNoBase(
       this.generatePermission(Permission.PROJECT_FUNDING_SOURCE_ADD_BUDGET_PERMISSION, loggedCrp.getAcronym()));
-
-
   }
 
   public boolean canEditGender() {
+    if (this.isReportingActive()) {
+      return false;
+    }
+
     return this.hasPermissionNoBase(this.generatePermission(Permission.PROJECT_GENDER_PROJECT_BASE_PERMISSION,
       loggedCrp.getAcronym(), projectID + ""));
   }
 
   public boolean canSearchFunding(long institutionID) {
+
+    if (this.isReportingActive()) {
+      return false;
+    }
 
     boolean permission = this.hasPermissionNoBase(
       this.generatePermission(Permission.PROJECT_FUNDING_W1_BASE_PERMISSION, loggedCrp.getAcronym()))
