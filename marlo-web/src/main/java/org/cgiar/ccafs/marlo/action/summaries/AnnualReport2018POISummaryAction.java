@@ -1395,12 +1395,11 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
       flagships.sort((p1, p2) -> p1.getAcronym().compareTo(p2.getAcronym()));
 
       for (CrpProgram flagship : flagships) {
-        String fp = "", outcomes = "", narrative = "", milestone = "", milestoneStatus = "", evidenceMilestone = "",
-          lastFP = "", lastOutcome = "";
         int outcome_index = 0;
         if (flagship.getOutcomes() != null) {
           for (CrpProgramOutcome outcome : flagship.getOutcomes()) {
-
+            String fp = "", outcomes = "", narrative = "", milestone = "", milestoneStatus = "", evidenceMilestone = "",
+              lastFP = "", lastOutcome = "", lastNarrative = "";
             int milestone_index = 0;
             for (CrpMilestone crpMilestone : outcome.getMilestones()) {
               Boolean isFlagshipRow = (outcome_index == 0) && (milestone_index == 0);
@@ -1415,6 +1414,17 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
                 fp = "";
               } else {
                 lastFP = fp;
+              }
+
+              if (narrative == null) {
+                narrative = " ";
+              } else {
+
+                if (narrative.equals(lastNarrative)) {
+                  narrative = "";
+                } else {
+                  lastNarrative = narrative;
+                }
               }
 
               if (isOutcomeRow) {
