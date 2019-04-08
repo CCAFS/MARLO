@@ -1203,7 +1203,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         new POIField(levelMaturity, ParagraphAlignment.LEFT), new POIField(srfSubIdo, ParagraphAlignment.LEFT),
         new POIField(gender, ParagraphAlignment.LEFT, false, blackColor), new POIField(youth, ParagraphAlignment.LEFT),
         new POIField(capdev, ParagraphAlignment.LEFT), new POIField(climateChange, ParagraphAlignment.CENTER),
-        new POIField(evidences, ParagraphAlignment.LEFT)};
+        new POIField(evidences, ParagraphAlignment.LEFT, false, blackColor, evidences, 1)};
       data = Arrays.asList(sData);
       datas.add(data);
     }
