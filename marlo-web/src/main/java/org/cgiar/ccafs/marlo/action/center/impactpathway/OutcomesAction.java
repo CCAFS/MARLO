@@ -301,8 +301,10 @@ public class OutcomesAction extends BaseAction {
           outcome.getResearchMilestones().stream().filter(rm -> rm.isActive()).collect(Collectors.toList())));
 
       }
-      outcome.getMilestones().sort(Comparator.nullsLast((p1, p2) -> p1.getTargetYear().compareTo(p2.getTargetYear())));
-
+      if (outcome.getMilestones() != null) {
+        outcome.getMilestones()
+          .sort(Comparator.nullsLast((p1, p2) -> p1.getTargetYear().compareTo(p2.getTargetYear())));
+      }
       if (selectedProgram.getResearchTopics() != null) {
         researchTopics = new ArrayList<>(selectedProgram.getResearchTopics().stream()
           .filter(rt -> rt.isActive() && rt.getResearchTopic().trim().length() > 0).collect(Collectors.toList()));
@@ -441,7 +443,7 @@ public class OutcomesAction extends BaseAction {
         outcomeSave.getResearchMilestones().stream().filter(rm -> rm.isActive()).collect(Collectors.toList()));
 
       for (CenterMilestone researchMilestone : milestonesPrew) {
-        if (!outcome.getMilestones().contains(researchMilestone)) {
+        if (outcome.getMilestones() == null || !outcome.getMilestones().contains(researchMilestone)) {
           milestoneService.deleteCenterMilestone(researchMilestone.getId());
         }
       }
