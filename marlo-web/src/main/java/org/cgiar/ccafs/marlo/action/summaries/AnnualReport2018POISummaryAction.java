@@ -29,7 +29,6 @@ import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressManager
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressOutcomeMilestoneManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
-import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisMeliaManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisSrfProgressTargetManager;
 import org.cgiar.ccafs.marlo.data.model.CrpMilestone;
 import org.cgiar.ccafs.marlo.data.model.CrpPpaPartner;
@@ -40,7 +39,6 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableDissemination;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePublicationMetadata;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.Phase;
-import org.cgiar.ccafs.marlo.data.model.PowbEvidencePlannedStudyDTO;
 import org.cgiar.ccafs.marlo.data.model.PowbExpenditureAreas;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
@@ -187,7 +185,6 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
   private PowbExpenditureAreasManager powbExpenditureAreasManager;
   private ReportSynthesisManager reportSynthesisManager;
   private ReportSynthesisSrfProgressTargetManager reportSynthesisSrfProgressTargetManager;
-  private ReportSynthesisMeliaManager reportSynthesisMeliaManager;
   private ReportSynthesisFlagshipProgressManager reportSynthesisFlagshipProgressManager;
   private ReportSynthesisFlagshipProgressOutcomeMilestoneManager reportSynthesisFlagshipProgressOutcomeMilestoneManager;
   private ProjectPolicyManager projectPolicyManager;
@@ -207,10 +204,9 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
   private long startTime;
   private XWPFDocument document;
   private List<CrpProgram> flagships;
-  private List<PowbEvidencePlannedStudyDTO> flagshipPlannedList;
   private List<LiaisonInstitution> flagshipLiaisonInstitutions;
   private List<ProjectPolicy> projectPolicies;
-  private List<ProjectExpectedStudy> projectExpectedStudies;
+  private Set<ProjectExpectedStudy> projectExpectedStudies;
   private List<ProjectInnovation> projectInnovations;
   private List<ProjectExpectedStudy> studiesList;
   private List<ReportSynthesisFlagshipProgress> flagshipsReportSynthesisFlagshipProgress;
@@ -233,7 +229,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
   public AnnualReport2018POISummaryAction(APConfig config, GlobalUnitManager crpManager, PhaseManager phaseManager,
     PowbExpenditureAreasManager powbExpenditureAreasManager, ReportSynthesisManager reportSynthesisManager,
     ReportSynthesisCrpProgressTargetManager reportSynthesisCrpProgressTargetManager, ProjectManager projectManager,
-    ProjectPolicyManager projectPolicyManager, ReportSynthesisMeliaManager reportSynthesisMeliaManager,
+    ProjectPolicyManager projectPolicyManager,
     ReportSynthesisFlagshipProgressManager reportSynthesisFlagshipProgressManager,
     ProjectInnovationManager projectInnovationManager,
     ReportSynthesisFlagshipProgressOutcomeMilestoneManager reportSynthesisFlagshipProgressOutcomeMilestoneManager,
@@ -247,7 +243,6 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     this.powbExpenditureAreasManager = powbExpenditureAreasManager;
     this.reportSynthesisManager = reportSynthesisManager;
     this.reportSynthesisSrfProgressTargetManager = reportSynthesisSrfProgressTargetManager;
-    this.reportSynthesisMeliaManager = reportSynthesisMeliaManager;
     this.reportSynthesisFlagshipProgressManager = reportSynthesisFlagshipProgressManager;
     this.reportSynthesisFlagshipProgressOutcomeMilestoneManager =
       reportSynthesisFlagshipProgressOutcomeMilestoneManager;
@@ -3100,10 +3095,9 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
 
 
   private void fillProjectStudiesList() {
-    projectExpectedStudies = new ArrayList<>();
+    projectExpectedStudies = new HashSet<>();
 
     List<ReportSynthesisFlagshipProgressStudyDTO> flagshipPlannedList = this.fillFpStudiesPlannedList();
-
     for (ReportSynthesisFlagshipProgressStudyDTO reportSynthesisFlagshipProgressStudyDTO : flagshipPlannedList) {
       ProjectExpectedStudy projectExpectedStudy = reportSynthesisFlagshipProgressStudyDTO.getProjectExpectedStudy();
       projectExpectedStudies.add(projectExpectedStudy);
