@@ -1066,6 +1066,12 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       return false;
     }
 
+    // Validation to PMU (Due to full permissions grant in projects): This shouldn't be done but, in this case we need
+    // to avoid editing this field by the PMU
+    if (this.isRole("PMU") && !this.isRole("FM")) {
+      return false;
+    }
+
     String params[] = {this.crpManager.getGlobalUnitById(this.getCrpID()).getAcronym(), projectID + "",
       budgetTypeID + "", institutionID + ""};
     Boolean canEditBudget =
@@ -5690,7 +5696,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
   }
 
-
   public boolean isProjectSubmitted(long projectID) {
     if (!this.getActualPhase().getUpkeep()) {
       Project project = this.projectManager.getProjectById(projectID);
@@ -5706,6 +5711,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       return false;
     }
   }
+
 
   /**
    * Reusable
@@ -5755,6 +5761,14 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
     return Boolean.parseBoolean(this.getSession().get(APConstants.CRP_REPORTING_ACTIVE).toString());
 
+  }
+
+  public boolean isRole(String roleAcronym) {
+    String roles = this.getRoles();
+    if (roles.contains(roleAcronym)) {
+      return true;
+    }
+    return false;
   }
 
   public boolean isSaveable() {
