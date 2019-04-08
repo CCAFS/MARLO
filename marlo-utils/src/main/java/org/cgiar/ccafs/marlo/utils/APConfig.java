@@ -93,6 +93,12 @@ public class APConfig {
   @Value("${file.uploads.fundingSourceFolder}")
   private String FUNDING_SOURCE_FOLDER;
 
+  // Add public user to call the Clarisa Rest Services
+  @Value("${clarisa.publicUser}")
+  private String CLARISA_PUBLIC_USER;
+  @Value("${clarisa.publicPass}")
+  private String CLARISA_PUBLIC_PASSWORD;
+
   public APConfig() {
   }
 
@@ -161,6 +167,26 @@ public class APConfig {
     }
 
     return PROJECT_BILATERAL_PROPOSAL_FOLDER;
+  }
+
+  public String getClarisaPassword() {
+
+    if (CLARISA_PUBLIC_PASSWORD == null) {
+      LOG.error("there is not an clarisa public user configured.");
+      return "";
+    }
+
+    return CLARISA_PUBLIC_PASSWORD;
+  }
+
+  public String getClarisaUser() {
+
+    if (CLARISA_PUBLIC_USER == null) {
+      LOG.error("there is not an clarisa public user configured.");
+      return "";
+    }
+
+    return CLARISA_PUBLIC_USER;
   }
 
   /**
