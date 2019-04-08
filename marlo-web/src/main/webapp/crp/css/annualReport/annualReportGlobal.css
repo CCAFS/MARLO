@@ -302,7 +302,7 @@ table.financial-report .row-title {
 .chartBox {
   background: url(../../../global/images/saving.gif) no-repeat;
   background-position: 50%;
-  /* height: 500px; */
+  min-height: 100px;
   padding: 1em;
   padding-top: 0;
   margin: 0;
@@ -464,4 +464,12 @@ p.dacMarker.level-4 {
 
 .modal-body {
   overflow: auto;
+}
+
+div#chart12 {
+  height: 222px;
+}
+
+div#chart13 {
+  height: 222px;
 }
