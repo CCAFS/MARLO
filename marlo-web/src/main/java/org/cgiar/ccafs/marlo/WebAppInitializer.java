@@ -108,6 +108,11 @@ public class WebAppInitializer implements WebApplicationInitializer {
       addSessionToRestRequestFilter.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true,
         REST_API_REQUESTS);
 
+      FilterRegistration.Dynamic clarisaPublicAccesFilter =
+        servletContext.addFilter("ClarisaPublicAccesFilter", new DelegatingFilterProxy("ClarisaPublicAccesFilter"));
+      clarisaPublicAccesFilter.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true,
+        REST_SWAGGER_REQUESTS);
+
       /** Now add the Spring MVC dispatacher servlet config for our REST api **/
       AnnotationConfigWebApplicationContext dispatcherContext = new AnnotationConfigWebApplicationContext();
       dispatcherContext.register(MarloRestApiConfig.class, MarloSwaggerConfiguration.class);
