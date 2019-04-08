@@ -1783,7 +1783,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
                 {new POIField(fp, ParagraphAlignment.CENTER), new POIField(outcomes, ParagraphAlignment.LEFT),
                   new POIField(poiSummary.replaceHTMLTags(narrative), ParagraphAlignment.LEFT),
                   new POIField(milestone, ParagraphAlignment.LEFT),
-                  new POIField(milestoneStatus, ParagraphAlignment.LEFT),
+                  new POIField(milestoneStatus, ParagraphAlignment.CENTER),
                   new POIField(poiSummary.replaceHTMLTags(evidenceMilestone), ParagraphAlignment.LEFT)};
               data = Arrays.asList(sData);
               datas.add(data);
@@ -3668,34 +3668,27 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     if (flagshipsReportSynthesisFlagshipProgress != null) {
       int i = 1;
       for (ReportSynthesisFlagshipProgress flagshipProgress : flagshipsReportSynthesisFlagshipProgress) {
-        try {
 
-
-          if (flagshipProgress.getProgressByFlagships() != null) {
-            poiSummary.textParagraphBold(document.createParagraph(), "F" + i);
-            poiSummary.textParagraphBold(document.createParagraph(), "Flagship progress:");
+        if (flagshipProgress.getProgressByFlagships() != null) {
+          poiSummary.textParagraphBold(document.createParagraph(), "F" + i);
+          poiSummary.textParagraphBold(document.createParagraph(), "Flagship progress:");
+          try {
             poiSummary.convertHTMLTags(document, flagshipProgress.getProgressByFlagships());
-          }
-
-          if (flagshipProgress.getDetailedAnnex() != null && !flagshipProgress.getDetailedAnnex().isEmpty()) {
-            poiSummary.textParagraphBold(document.createParagraph(), "Detailed Annex:");
-            poiSummary.convertHTMLTags(document, flagshipProgress.getDetailedAnnex());
-          }
-          poiSummary.textLineBreak(document, 1);
-
-        } catch (Exception e) {
-          if (flagshipProgress.getProgressByFlagships() != null) {
-            poiSummary.textParagraphBold(document.createParagraph(), "F" + i);
-            poiSummary.textParagraphBold(document.createParagraph(), "Flagship progress:");
+          } catch (Exception e) {
             poiSummary.convertHTMLTags(document, poiSummary.replaceHTMLTags(flagshipProgress.getProgressByFlagships()));
           }
+        }
 
-          if (flagshipProgress.getDetailedAnnex() != null && !flagshipProgress.getDetailedAnnex().isEmpty()) {
-            poiSummary.textParagraphBold(document.createParagraph(), "Detailed Annex:");
+        if (flagshipProgress.getDetailedAnnex() != null && !flagshipProgress.getDetailedAnnex().isEmpty()) {
+          poiSummary.textParagraphBold(document.createParagraph(), "Detailed Annex:");
+          try {
+            poiSummary.convertHTMLTags(document, flagshipProgress.getDetailedAnnex());
+          } catch (Exception e) {
             poiSummary.convertHTMLTags(document, poiSummary.replaceHTMLTags(flagshipProgress.getDetailedAnnex()));
           }
-          poiSummary.textLineBreak(document, 1);
         }
+
+        poiSummary.textLineBreak(document, 1);
         i++;
       }
     }
