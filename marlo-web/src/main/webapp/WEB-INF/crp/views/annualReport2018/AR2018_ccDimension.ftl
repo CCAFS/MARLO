@@ -222,16 +222,18 @@
                                     <span>[@s.text name="${customLabel}.chart12" /]</span>
                                     <span>[@s.text name="${customLabel}.chart12" /]</span>
                                   </li>
-                                  [#list chartData as data]
-                                    <li><span>${data.name}</span><span class="number">${data.value}</span></li>
-                                  [/#list]
+                                  [#if (((totalParticipantFormalTrainingShortMale)!0) + ((totalParticipantFormalTrainingShortFemale)!0)) > 0 ]
+                                    [#list chartData as data]
+                                      <li><span>${data.name}</span><span class="number">${data.value}</span></li>
+                                    [/#list]
+                                  [/#if]
                                 </ul>
                               </div>
                             </div>
                             <div class="col-md-6">
                               <div id="chart13" class="chartBox simpleBox">
                                 [#assign chartData = [
-                                    {"name":"Male",   "value": "${(totalParticipantFormalTrainingLongMale)!0} "},
+                                    {"name":"Male",   "value": "${(totalParticipantFormalTrainingLongMale)!0}"},
                                     {"name":"Female", "value": "${(totalParticipantFormalTrainingLongFemale)!0}"}
                                   ] /] 
                                 <ul class="chartData" style="display:none">
@@ -239,9 +241,11 @@
                                     <span>[@s.text name="${customLabel}.chart13" /]</span>
                                     <span>[@s.text name="${customLabel}.chart13" /]</span>
                                   </li>
-                                  [#list chartData as data]
-                                    <li><span>${data.name}</span><span class="number">${data.value}</span></li>
-                                  [/#list]
+                                  [#if (((totalParticipantFormalTrainingLongMale)!0) + ((totalParticipantFormalTrainingLongFemale)!0)) > 0 ]
+                                    [#list chartData as data]
+                                      <li><span>${data.name}</span><span class="number">${data.value}</span></li>
+                                    [/#list]
+                                  [/#if]
                                 </ul>
                               </div>
                             </div>
