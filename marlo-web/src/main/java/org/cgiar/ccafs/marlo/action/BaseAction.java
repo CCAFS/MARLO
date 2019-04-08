@@ -971,13 +971,45 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return CANCEL;
   }
 
-  public boolean canEditAnyProjectExecution() {
+  /**
+   * Verify the permissions to edit any project budget execution in the project
+   */
+  public boolean canEditAnyProjectExecution(long projectID) {
+    String actionName = this.getActionName();
+
+    if (!actionName.contains(ProjectSectionStatusEnum.BUDGET.getStatus())) {
+      return false;
+    }
+
+    if (!this.hasSpecificities(this.getCrpEnableBudgetExecution())) {
+      return false;
+    }
+
+    if (this.isPlanningActive()) {
+      return false;
+    }
+
+    Project project = projectManager.getProjectById(projectID);
+    project.setPartners(project.getProjectPartners().stream()
+      .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase()))
+      .collect(Collectors.toList()));
+    List<ProjectPartner> projectPPAPartners = new ArrayList<ProjectPartner>();
+    if (project.getPartners() != null && !project.getPartners().isEmpty()) {
+      for (ProjectPartner pp : project.getPartners()) {
+        if (this.isPPA(pp.getInstitution())) {
+          projectPPAPartners.add(pp);
+        }
+      }
+    }
+
 
     List<BudgetType> budgetTypes = budgetTypeManager.findAll().stream().collect(Collectors.toList());
     if (budgetTypes != null && !budgetTypes.isEmpty()) {
       for (BudgetType budgetType : budgetTypes) {
-        if (this.canEditProjectExecution(budgetType.getId())) {
-          return true;
+        for (ProjectPartner projectPartner : projectPPAPartners) {
+          if (this.canEditProjectExecution(budgetType.getId(), projectID, projectPartner.getInstitution().getId())) {
+            return true;
+          }
         }
       }
     }
@@ -1016,10 +1048,32 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return this.securityContext.hasPermission(permission);
   }
 
-  public boolean canEditProjectExecution(long budgetTypeID) {
+  /**
+   * Verify permission to edit project budget execution for an specific project, budget type and/or institution
+   */
+  public boolean canEditProjectExecution(long budgetTypeID, long projectID, long institutionID) {
     String actionName = this.getActionName();
-    if (actionName.contains(ProjectSectionStatusEnum.BUDGET.getStatus())
-      && this.hasPermission("execution:" + budgetTypeID) && this.hasSpecificities(this.getCrpEnableBudgetExecution())) {
+
+    if (!actionName.contains(ProjectSectionStatusEnum.BUDGET.getStatus())) {
+      return false;
+    }
+
+    if (!this.hasSpecificities(this.getCrpEnableBudgetExecution())) {
+      return false;
+    }
+
+    if (this.isPlanningActive()) {
+      return false;
+    }
+
+    String params[] = {this.crpManager.getGlobalUnitById(this.getCrpID()).getAcronym(), projectID + "",
+      budgetTypeID + "", institutionID + ""};
+    Boolean canEditBudget =
+      this.hasPermissionNoBase(this.generatePermission(Permission.PROJECT_BUDGET_EXECUTION_BASE_PERMISSION, params));
+    Boolean canEditBudgetLiaison =
+      this.hasPermissionNoBase(this.generatePermission(Permission.PROJECT_BUDGET_EXECUTION_LIAISON_PERMISSION, params));
+
+    if (canEditBudget || canEditBudgetLiaison) {
       return true;
     }
     return false;
