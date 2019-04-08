@@ -225,7 +225,7 @@ public class AddSessionToRestRequestFilter extends OncePerRequestFilter {
 
     ClassLoader classLoader = this.getClass().getClassLoader();
 
-    File countryFile = new File(classLoader.getResource("maps//" + APConstants.DATABASE_COUNTRY_PATH).getFile());
+    File countryFile = new File(classLoader.getResource("/maps/" + APConstants.DATABASE_COUNTRY_PATH).getFile());
 
     try {
 
