@@ -41,6 +41,8 @@ public class WebAppInitializer implements WebApplicationInitializer {
 
   private static final String REST_API_REQUESTS = "/api/*";
 
+  private static final String REST_SWAGGER_REQUESTS = "/swagger/*";
+
   private static final String[] STRUTS2_REQUESTS = {"*.do", "*.json", "/"};
 
   @Override
@@ -115,6 +117,7 @@ public class WebAppInitializer implements WebApplicationInitializer {
         servletContext.addServlet("dispatcher", new DispatcherServlet(dispatcherContext));
       dispatcher.setLoadOnStartup(1);
       dispatcher.addMapping(REST_API_REQUESTS);
+      dispatcher.addMapping(REST_SWAGGER_REQUESTS);
 
     }
     // End Check Spring Profile filters

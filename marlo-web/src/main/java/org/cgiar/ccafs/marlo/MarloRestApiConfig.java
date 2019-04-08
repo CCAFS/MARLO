@@ -41,6 +41,7 @@ public class MarloRestApiConfig {
     getAuthorizationAttributeSourceAdvisor(WebSecurityManager securityManager) {
     AuthorizationAttributeSourceAdvisor advisor = new AuthorizationAttributeSourceAdvisor();
     advisor.setSecurityManager(securityManager);
+
     return advisor;
   }
 
