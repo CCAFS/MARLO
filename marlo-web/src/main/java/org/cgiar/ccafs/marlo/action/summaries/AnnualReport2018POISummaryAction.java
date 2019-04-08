@@ -603,20 +603,28 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
 
 
         if (reportSynthesisPMU.getReportSynthesisIntellectualAsset().getManaged() != null) {
-          poiSummary.textParagraphBold(document.createParagraph(),
-            this.getText("summaries.annualReport2018.effectiveness.intellectual1"));
-          poiSummary.convertHTMLTags(document, reportSynthesisPMU.getReportSynthesisIntellectualAsset().getManaged());
+          /*
+           * poiSummary.textParagraphBold(document.createParagraph(),
+           * this.getText("summaries.annualReport2018.effectiveness.intellectual1"));
+           */
+          poiSummary.convertHTMLTags(document,
+            "a) " + reportSynthesisPMU.getReportSynthesisIntellectualAsset().getManaged());
         }
         if (reportSynthesisPMU.getReportSynthesisIntellectualAsset().getPatents() != null) {
-          poiSummary.textParagraphBold(document.createParagraph(),
-            this.getText("summaries.annualReport2018.effectiveness.intellectual2"));
-          poiSummary.convertHTMLTags(document, reportSynthesisPMU.getReportSynthesisIntellectualAsset().getPatents());
+          /*
+           * poiSummary.textParagraphBold(document.createParagraph(),
+           * this.getText("summaries.annualReport2018.effectiveness.intellectual2"));
+           */
+          poiSummary.convertHTMLTags(document,
+            "b) " + reportSynthesisPMU.getReportSynthesisIntellectualAsset().getPatents());
         }
         if (reportSynthesisPMU.getReportSynthesisIntellectualAsset().getCriticalIssues() != null) {
-          poiSummary.textParagraphBold(document.createParagraph(),
-            this.getText("summaries.annualReport2018.effectiveness.intellectual3"));
+          /*
+           * poiSummary.textParagraphBold(document.createParagraph(),
+           * this.getText("summaries.annualReport2018.effectiveness.intellectual3"));
+           */
           poiSummary.convertHTMLTags(document,
-            reportSynthesisPMU.getReportSynthesisIntellectualAsset().getCriticalIssues());
+            "c) " + reportSynthesisPMU.getReportSynthesisIntellectualAsset().getCriticalIssues());
         }
       }
     }
@@ -991,7 +999,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
 
         POIField[] sData = {new POIField(name, ParagraphAlignment.LEFT, false, "000000"),
           new POIField(poiSummary.replaceHTMLTags(recomendation), ParagraphAlignment.LEFT, false, "000000"),
-          new POIField(text, ParagraphAlignment.LEFT, false, "000000"),
+          new POIField(poiSummary.replaceHTMLTags(text), ParagraphAlignment.LEFT, false, "000000"),
           new POIField(status, ParagraphAlignment.LEFT, false, "000000"),
           new POIField(actions, ParagraphAlignment.LEFT, false, "000000"),
           new POIField(whom, ParagraphAlignment.LEFT, false, "000000"),
@@ -1031,8 +1039,9 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
           area = expenditureArea.getExpenditureCategory().getName();
         }
 
-        POIField[] sData = {new POIField(poiSummary.replaceHTMLTags(examples), ParagraphAlignment.LEFT, true, "000000"),
-          new POIField(area, ParagraphAlignment.LEFT, true, "0000")};
+        POIField[] sData =
+          {new POIField(poiSummary.replaceHTMLTags(examples), ParagraphAlignment.LEFT, false, "000000"),
+            new POIField(area, ParagraphAlignment.LEFT, false, "0000")};
         data = Arrays.asList(sData);
         datas.add(data);
       }
@@ -1328,7 +1337,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
             new POIField("US$ " + (w1w2Difference), ParagraphAlignment.CENTER),
             new POIField("US$ " + (w3Difference), ParagraphAlignment.CENTER),
             new POIField("US$ " + (totalDifference), ParagraphAlignment.CENTER),
-            new POIField(poiSummary.replaceHTMLTags(comments), ParagraphAlignment.CENTER)};
+            new POIField(poiSummary.replaceHTMLTags(comments), ParagraphAlignment.LEFT)};
 
           data = Arrays.asList(sData);
           datas.add(data);
@@ -1403,7 +1412,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
       if (projectPolicy != null && projectPolicy.getProjectPolicyInfo() != null) {
         srfSubIdo = "";
         if (projectPolicy.getProjectPolicyInfo().getTitle() != null) {
-          name = projectPolicy.getProjectPolicyInfo().getId() + " - " + projectPolicy.getProjectPolicyInfo().getTitle();
+          name = projectPolicy.getId() + " - " + projectPolicy.getProjectPolicyInfo().getTitle();
         }
 
         if (projectPolicy.getProjectPolicyInfo().getRepIndStageProcess() != null
@@ -1414,7 +1423,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         if (projectPolicy.getSubIdos(this.getActualPhase()) != null) {
           for (ProjectPolicySubIdo subIdo : projectPolicy.getSubIdos(this.getActualPhase())) {
             if (subIdo.getSrfSubIdo() != null && subIdo.getSrfSubIdo().getDescription() != null) {
-              srfSubIdo += subIdo.getSrfSubIdo().getDescription() + ", ";
+              srfSubIdo += "• " + subIdo.getSrfSubIdo().getDescription() + "\n";
             }
           }
         }
@@ -1477,8 +1486,6 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
           }
         }
 
-        //
-
         try {
           if (evidences.contains(",")) {
             evidences = evidences.substring(0, evidences.length() - 2);
@@ -1499,7 +1506,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         new POIField(levelMaturity, ParagraphAlignment.LEFT), new POIField(srfSubIdo, ParagraphAlignment.LEFT),
         new POIField(gender, ParagraphAlignment.LEFT, false, blackColor), new POIField(youth, ParagraphAlignment.LEFT),
         new POIField(capdev, ParagraphAlignment.LEFT), new POIField(climateChange, ParagraphAlignment.CENTER),
-        new POIField(evidences, ParagraphAlignment.CENTER)};
+        new POIField(evidences, ParagraphAlignment.LEFT)};
       data = Arrays.asList(sData);
       datas.add(data);
     }
@@ -2298,7 +2305,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         paragraph.setStyle("headingTitle2");
 
         // section 1 - Key Results
-        poiSummary.textLineBreak(document, 1);
+        // poiSummary.textLineBreak(document, 1);
         paragraph = document.createParagraph();
         run = paragraph.createRun();
         run.setFontSize(14);
@@ -2326,7 +2333,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         paragraph.setStyle("headingTitle5");
 
         // 1.2.1
-        poiSummary.textLineBreak(document, 1);
+        // poiSummary.textLineBreak(document, 1);
         paragraph = document.createParagraph();
         run = paragraph.createRun();
         run.setFontSize(11);
@@ -2443,7 +2450,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         paragraph.setStyle("heading 17");
 
         // 2.2.1 Highlights of External Partnerships
-        poiSummary.textLineBreak(document, 1);
+        // poiSummary.textLineBreak(document, 1);
         paragraph = document.createParagraph();
         run = paragraph.createRun();
         run.setFontSize(11);
@@ -3661,16 +3668,34 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     if (flagshipsReportSynthesisFlagshipProgress != null) {
       int i = 1;
       for (ReportSynthesisFlagshipProgress flagshipProgress : flagshipsReportSynthesisFlagshipProgress) {
-        if (flagshipProgress.getProgressByFlagships() != null) {
-          poiSummary.textParagraphBold(document.createParagraph(), "F" + i);
-          poiSummary.textParagraphBold(document.createParagraph(), "Flagship progress");
+        try {
+
+
+          if (flagshipProgress.getProgressByFlagships() != null) {
+            poiSummary.textParagraphBold(document.createParagraph(), "F" + i);
+            poiSummary.textParagraphBold(document.createParagraph(), "Flagship progress:");
+            poiSummary.convertHTMLTags(document, flagshipProgress.getProgressByFlagships());
+          }
+
+          if (flagshipProgress.getDetailedAnnex() != null && !flagshipProgress.getDetailedAnnex().isEmpty()) {
+            poiSummary.textParagraphBold(document.createParagraph(), "Detailed Annex:");
+            poiSummary.convertHTMLTags(document, flagshipProgress.getDetailedAnnex());
+          }
+          poiSummary.textLineBreak(document, 1);
+
+        } catch (Exception e) {
+          if (flagshipProgress.getProgressByFlagships() != null) {
+            poiSummary.textParagraphBold(document.createParagraph(), "F" + i);
+            poiSummary.textParagraphBold(document.createParagraph(), "Flagship progress:");
+            poiSummary.convertHTMLTags(document, poiSummary.replaceHTMLTags(flagshipProgress.getProgressByFlagships()));
+          }
+
+          if (flagshipProgress.getDetailedAnnex() != null && !flagshipProgress.getDetailedAnnex().isEmpty()) {
+            poiSummary.textParagraphBold(document.createParagraph(), "Detailed Annex:");
+            poiSummary.convertHTMLTags(document, poiSummary.replaceHTMLTags(flagshipProgress.getDetailedAnnex()));
+          }
+          poiSummary.textLineBreak(document, 1);
         }
-        poiSummary.convertHTMLTags(document, flagshipProgress.getProgressByFlagships());
-        if (flagshipProgress.getDetailedAnnex() != null && !flagshipProgress.getDetailedAnnex().isEmpty()) {
-          poiSummary.textParagraphBold(document.createParagraph(), "Detailed Annex");
-          poiSummary.convertHTMLTags(document, flagshipProgress.getDetailedAnnex());
-        }
-        poiSummary.textLineBreak(document, 2);
         i++;
       }
     }
