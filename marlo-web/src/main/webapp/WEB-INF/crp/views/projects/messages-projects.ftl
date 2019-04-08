@@ -58,11 +58,11 @@
       [#--  Project --]
       [#if project??]
         [#if project.projectInfo.isProjectEditLeader()]
-          [#if !(action.hasPermission("statusDescription")) && !action.canEditAnyProjectExecution() ]
+          [#if !(action.hasPermission("statusDescription")) && !action.canEditAnyProjectExecution(project.id) ]
             <p class="readPrivileges">[@s.text name="saving.read.privileges.section" /]</p>
           [/#if]
         [#else]
-          [#if !editStatus && !action.canEditAnyProjectExecution()]
+          [#if !editStatus && !action.canEditAnyProjectExecution(project.id)]
             <p class="readPrivileges">[@s.text name="project.preset.messagge" /]</p>
           [/#if]    
         [/#if]

@@ -44,7 +44,9 @@ public class Permission {
   public static final String PROJECT_PARTNER_BASE_PERMISSION = "crp:{0}:project:{1}:partners";
   public static final String PROJECT_BUDGET_BASE_PERMISSION = "crp:{0}:project:{1}:budgetByPartners";
   public static final String PROJECT_BUDGET_EXECUTION_BASE_PERMISSION =
-    "crp:{0}:project:{1}:budgetByPartners:execution";
+    "crp:{0}:project:{1}:budgetByPartners:execution:{2}";
+  public static final String PROJECT_BUDGET_EXECUTION_LIAISON_PERMISSION =
+    "crp:{0}:project:{1}:budgetByPartners:execution:{2}:liaison:{3}";
   public static final String PROJECT_BUDGET_CLUSTER_BASE_PERMISSION = "crp:{0}:project:{1}:budgetByCoAs";
   public static final String PROJECT_MANAGE_BASE_PERMISSION = "crp:{0}:project:{1}:manage";
   public static final String PROJECT_SUBMISSION_PERMISSION = "crp:{0}:project:{1}:manage:submitProject";
