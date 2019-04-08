@@ -37,7 +37,7 @@ public class WebAppInitializer implements WebApplicationInitializer {
 
   private static final String ALL_REQUESTS = "/*";
 
-  private static final String[] NON_STATIC_RESOURCE_REQUESTS = {"*.do", "*.json", "/", "/api/*"};
+  private static final String[] NON_STATIC_RESOURCE_REQUESTS = {"*.do", "*.json", "/", "/api/*", "/swagger/*"};
 
   private static final String REST_API_REQUESTS = "/api/*";
 

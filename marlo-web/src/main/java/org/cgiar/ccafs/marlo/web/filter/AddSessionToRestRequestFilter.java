@@ -225,11 +225,11 @@ public class AddSessionToRestRequestFilter extends OncePerRequestFilter {
 
     LocElement element = new LocElement();
 
-    ClassLoader classLoader = this.getClass().getClassLoader();
-
-    File countryFile = new File(classLoader.getResource("/maps/" + APConstants.DATABASE_COUNTRY_PATH).getFile());
-
     try {
+      ClassLoader classLoader = this.getClass().getClassLoader();
+
+      File countryFile = new File(classLoader.getResource("maps/" + APConstants.DATABASE_COUNTRY_PATH).getFile());
+
 
       DatabaseReader reader = new DatabaseReader.Builder(countryFile).build();
 

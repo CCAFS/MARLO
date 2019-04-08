@@ -34,6 +34,8 @@ import org.apache.shiro.subject.Subject;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 /**
+ * Filter to create an automatic public user session to consume the
+ * 
  * @author Hermes Jiménez - CIAT/CCAFS
  */
 
@@ -64,13 +66,14 @@ public class ClarisaPublicAccesFilter extends OncePerRequestFilter {
 
       Subject subject = SecurityUtils.getSubject();
 
-      Long currentUserId = (Long) subject.getPrincipal();
+      // Verify if there not are public user session
+      if (!subject.isAuthenticated()) {
+        String user = this.config.getClarisaUser();
+        String password = this.config.getClarisaPassword();
 
-      String user = this.config.getClarisaUser();
-      String password = this.config.getClarisaPassword();
+        userManager.login(user, password);
 
-      userManager.login(user, password);
-
+      }
     }
 
     filterChain.doFilter(request, response);
