@@ -78,6 +78,7 @@ public class AddSessionToRestRequestFilter extends OncePerRequestFilter {
   @Inject
   private LocElementManager locElementManager;
 
+
   @Inject
   private APCustomRealm realm;
 
@@ -209,6 +210,7 @@ public class AddSessionToRestRequestFilter extends OncePerRequestFilter {
       this.addCrpToSession(globalUnitAcronym);
       this.addMonitoringInfo(serviceType, restApiString, request, response);
     }
+
 
     filterChain.doFilter(request, response);
   }
