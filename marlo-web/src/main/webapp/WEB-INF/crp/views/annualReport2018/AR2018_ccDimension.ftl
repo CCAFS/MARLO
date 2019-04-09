@@ -93,7 +93,7 @@
                   [#if PMU]
                     [#-- Flagships - Gender Synthesis --]
                     <div class="form-group">
-                      [@macrosAR.tableFPSynthesis tableName="${customLabel}.gender.flagshipSynthesis" list=flagshipCCDimensions columns=["genderResearchFindings", "genderLearned", "genderProblemsArisen"] /]
+                      [@macrosAR.tableFPSynthesis tableName="${customLabel}.gender.flagshipSynthesis" list=flagshipCCDimensions columns=["genderResearchFindings", "genderLearned", "genderProblemsArisen"] allInOne=true /]
                     </div>
                   [/#if]
                 </div>
@@ -137,7 +137,7 @@
                   [#if PMU]
                     [#-- Flagships - Youth Synthesis --]
                     <div class="form-group">
-                      [@macrosAR.tableFPSynthesis tableName="${customLabel}.youth.flagshipSynthesis" list=flagshipCCDimensions columns=["youthContribution", "youthResearchFindings", "youthLearned", "youthProblemsArisen"] /]
+                      [@macrosAR.tableFPSynthesis tableName="${customLabel}.youth.flagshipSynthesis" list=flagshipCCDimensions columns=["youthContribution", "youthResearchFindings", "youthLearned", "youthProblemsArisen"]  allInOne=true  /]
                     </div>
                   [/#if]
                 </div>
