@@ -22,6 +22,7 @@ import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisKeyPartnershipCollaboration;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisKeyPartnershipCollaborationCrp;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisKeyPartnershipCollaborationPmu;
 
 import java.util.ArrayList;
@@ -156,6 +157,37 @@ public class ReportSynthesisKeyPartnershipCollaborationManagerImpl
         table9.removeAll(excludeColaborations);
       }
 
+      // Add the CGIAR collaborations that the PUM created
+      List<ReportSynthesisKeyPartnershipCollaboration> pmuCollaborations = new ArrayList<>();
+
+      if (reportSynthesisPMU.getReportSynthesisKeyPartnership().getReportSynthesisKeyPartnershipCollaborations() != null
+        && !reportSynthesisPMU.getReportSynthesisKeyPartnership().getReportSynthesisKeyPartnershipCollaborations()
+          .isEmpty()) {
+
+        for (ReportSynthesisKeyPartnershipCollaboration keyPartnershipCollaboration : reportSynthesisPMU
+          .getReportSynthesisKeyPartnership().getReportSynthesisKeyPartnershipCollaborations().stream()
+          .filter(ro -> ro.isActive()).collect(Collectors.toList())) {
+
+          keyPartnershipCollaboration.setCrps(new ArrayList<>());
+
+          if (keyPartnershipCollaboration.getReportSynthesisKeyPartnershipCollaborationCrps() != null
+            && !keyPartnershipCollaboration.getReportSynthesisKeyPartnershipCollaborationCrps().isEmpty()) {
+
+            for (ReportSynthesisKeyPartnershipCollaborationCrp crp : keyPartnershipCollaboration
+              .getReportSynthesisKeyPartnershipCollaborationCrps().stream().filter(c -> c.isActive())
+              .collect(Collectors.toList())) {
+              keyPartnershipCollaboration.getCrps().add(crp);
+            }
+          }
+          pmuCollaborations.add(keyPartnershipCollaboration);
+        }
+
+
+        if (!pmuCollaborations.isEmpty()) {
+          table9.addAll(pmuCollaborations);
+        }
+
+      }
     }
 
     return table9;
