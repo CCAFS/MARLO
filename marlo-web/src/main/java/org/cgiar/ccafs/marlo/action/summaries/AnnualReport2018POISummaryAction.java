@@ -205,7 +205,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
   private XWPFDocument document;
   private List<CrpProgram> flagships;
   private List<LiaisonInstitution> flagshipLiaisonInstitutions;
-  private List<ProjectPolicy> projectPolicies;
+  private LinkedHashSet<ProjectPolicy> projectPoliciesTable2;
   private LinkedHashSet<ProjectExpectedStudy> projectExpectedStudiesTable3;
   private List<ProjectInnovation> projectInnovations;
 
@@ -1089,7 +1089,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     data = new ArrayList<>();
 
 
-    for (ProjectPolicy projectPolicy : projectPolicies) {
+    for (ProjectPolicy projectPolicy : projectPoliciesTable2) {
       String name = null, levelMaturity = "", srfSubIdo = "", gender = "", youth = "", capdev = "", climateChange = "",
         evidences = "", evidenceComposed = "";
       if (projectPolicy != null && projectPolicy.getProjectPolicyInfo() != null) {
@@ -2783,32 +2783,17 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
   }
 
 
-  private void fillProjectPoliciesList() {
-    projectPolicies = new ArrayList<>();
+  private void fillProjectPoliciesTable2List() {
+    projectPoliciesTable2 =
+      new LinkedHashSet<>(projectPolicyManager.getProjectPoliciesList(pmuInstitution, this.getSelectedPhase()));
 
-    List<ReportSynthesisFlagshipProgressPolicyDTO> flagshipPlannedList = this.fillFpPolicyPlannedList();
-
-    for (ReportSynthesisFlagshipProgressPolicyDTO reportSynthesisFlagshipProgressPolicyDTO : flagshipPlannedList) {
-      ProjectPolicy projectPolicy = reportSynthesisFlagshipProgressPolicyDTO.getProjectPolicy();
-      projectPolicies.add(projectPolicy);
-    }
-
-    reportSynthesisPMU.getReportSynthesisFlagshipProgress().setProjectPolicies(new ArrayList<>());
     if (reportSynthesisPMU.getReportSynthesisFlagshipProgress().getReportSynthesisFlagshipProgressPolicies() != null
       && !reportSynthesisPMU.getReportSynthesisFlagshipProgress().getReportSynthesisFlagshipProgressPolicies()
         .isEmpty()) {
       for (ReportSynthesisFlagshipProgressPolicy flagshipProgressPolicy : reportSynthesisPMU
         .getReportSynthesisFlagshipProgress().getReportSynthesisFlagshipProgressPolicies().stream()
         .filter(ro -> ro.isActive()).collect(Collectors.toList())) {
-        reportSynthesisPMU.getReportSynthesisFlagshipProgress().getProjectPolicies()
-          .add(flagshipProgressPolicy.getProjectPolicy());
-      }
-    }
-
-    if (reportSynthesisPMU.getReportSynthesisFlagshipProgress().getProjectPolicies() != null
-      && !reportSynthesisPMU.getReportSynthesisFlagshipProgress().getProjectPolicies().isEmpty()) {
-      for (ProjectPolicy projectPolicy : reportSynthesisPMU.getReportSynthesisFlagshipProgress().getProjectPolicies()) {
-        projectPolicies.remove(projectPolicy);
+        projectPoliciesTable2.remove(flagshipProgressPolicy.getProjectPolicy());
       }
     }
 
@@ -3431,7 +3416,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
       .collect(Collectors.toList());
     flagshipLiaisonInstitutions.sort(Comparator.comparing(LiaisonInstitution::getAcronym));
 
-    this.fillProjectPoliciesList();
+    this.fillProjectPoliciesTable2List();
     this.fillProjectStudiesTable3List();
     this.getProjectsInnovations();
     this.getTable6Info();
