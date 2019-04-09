@@ -31,6 +31,7 @@ import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressOutcome
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisKeyPartnershipCollaborationManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisKeyPartnershipExternalManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
+import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisMeliaManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisSrfProgressTargetManager;
 import org.cgiar.ccafs.marlo.data.model.CrpMilestone;
 import org.cgiar.ccafs.marlo.data.model.CrpPpaPartner;
@@ -41,6 +42,7 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableDissemination;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePublicationMetadata;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.Phase;
+import org.cgiar.ccafs.marlo.data.model.PowbEvidencePlannedStudyDTO;
 import org.cgiar.ccafs.marlo.data.model.PowbExpenditureAreas;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
@@ -195,6 +197,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
   private ReportSynthesisFlagshipProgressOutcomeManager reportSynthesisFlagshipProgressOutcomeManager;
   private ReportSynthesisKeyPartnershipExternalManager reportSynthesisKeyPartnershipExternalManager;
   private ReportSynthesisKeyPartnershipCollaborationManager reportSynthesisKeyPartnershipCollaborationManager;
+  private ReportSynthesisMeliaManager reportSynthesisMeliaManager;
 
 
   private DeliverableManager deliverableManager;
@@ -2990,32 +2993,10 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
    */
 
   public void getTable10Info() {
-    // this.studiesList();
 
+    List<PowbEvidencePlannedStudyDTO> meliaDto = reportSynthesisMeliaManager.getMeliaPlannedList(
+      flagshipLiaisonInstitutions, this.getSelectedPhase().getId(), this.getLoggedCrp(), pmuInstitution);
 
-    if (reportSynthesisPMU.getReportSynthesisMelia().getReportSynthesisMeliaEvaluations() != null
-      && !reportSynthesisPMU.getReportSynthesisMelia().getReportSynthesisMeliaEvaluations().isEmpty()) {
-      reportSynthesisPMU.getReportSynthesisMelia()
-        .setEvaluations(new ArrayList<>(reportSynthesisPMU.getReportSynthesisMelia()
-          .getReportSynthesisMeliaEvaluations().stream().filter(e -> e.isActive()).collect(Collectors.toList())));
-      reportSynthesisPMU.getReportSynthesisMelia().getEvaluations()
-        .sort(Comparator.comparing(ReportSynthesisMeliaEvaluation::getId));
-
-      // load evaluation actions
-      if (reportSynthesisPMU.getReportSynthesisMelia().getEvaluations() != null
-        && !reportSynthesisPMU.getReportSynthesisMelia().getEvaluations().isEmpty()) {
-        for (ReportSynthesisMeliaEvaluation reportSynthesisMeliaEvaluation : reportSynthesisPMU
-          .getReportSynthesisMelia().getEvaluations()) {
-          if (reportSynthesisMeliaEvaluation.getReportSynthesisMeliaEvaluationActions() != null
-            && !reportSynthesisMeliaEvaluation.getReportSynthesisMeliaEvaluationActions().isEmpty()) {
-            reportSynthesisMeliaEvaluation.setMeliaEvaluationActions(
-              new ArrayList<>(reportSynthesisMeliaEvaluation.getReportSynthesisMeliaEvaluationActions().stream()
-                .filter(e -> e.isActive()).collect(Collectors.toList())));
-          }
-        }
-      }
-
-    }
 
   }
 
