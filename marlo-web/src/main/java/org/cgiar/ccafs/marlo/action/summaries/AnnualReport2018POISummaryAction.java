@@ -59,6 +59,7 @@ import org.cgiar.ccafs.marlo.data.model.ReportSynthesisCrossCuttingDimension;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFinancialSummary;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFinancialSummaryBudget;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgress;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressDeliverable;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressInnovation;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressOutcome;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressOutcomeMilestone;
@@ -3028,80 +3029,72 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
 
   private void getTable6Info() {
     /** Graphs and Tables */
+    LinkedHashSet<Deliverable> deliverables =
+      new LinkedHashSet<>(deliverableManager.getPublicationsList(pmuInstitution, this.getSelectedPhase()));
 
-    List<Deliverable> deliverables = new ArrayList<>(deliverableManager.findAll().stream()
-      .filter(d -> d.isActive() && d.getDeliverableInfo(this.getSelectedPhase()) != null
-        && d.getDeliverableInfo().isRequiredToComplete() && d.getDeliverableInfo().getDeliverableType() != null
-        && d.getDeliverableInfo().getDeliverableType().getId() == 63)
-      .collect(Collectors.toList()));
-
-    List<Deliverable> selectedDeliverables = new ArrayList<Deliverable>();
-    if (deliverables != null && !deliverables.isEmpty()) {
-      deliverables.sort((p1, p2) -> p1.getId().compareTo(p2.getId()));
-      selectedDeliverables.addAll(deliverables);
-      // Remove unchecked deliverables
-      if (reportSynthesisPMU != null && reportSynthesisPMU.getReportSynthesisFlagshipProgress() != null) {
-        if (reportSynthesisPMU.getReportSynthesisFlagshipProgress().getDeliverables() != null
-          && !reportSynthesisPMU.getReportSynthesisFlagshipProgress().getDeliverables().isEmpty()) {
-          for (Deliverable deliverable : reportSynthesisPMU.getReportSynthesisFlagshipProgress().getDeliverables()) {
-            selectedDeliverables.remove(deliverable);
-          }
-        }
+    if (reportSynthesisPMU.getReportSynthesisFlagshipProgress().getReportSynthesisFlagshipProgressDeliverables() != null
+      && !reportSynthesisPMU.getReportSynthesisFlagshipProgress().getReportSynthesisFlagshipProgressDeliverables()
+        .isEmpty()) {
+      for (ReportSynthesisFlagshipProgressDeliverable flagshipProgressDeliverable : reportSynthesisPMU
+        .getReportSynthesisFlagshipProgress().getReportSynthesisFlagshipProgressDeliverables().stream()
+        .filter(ro -> ro.isActive()).collect(Collectors.toList())) {
+        deliverables.remove(flagshipProgressDeliverable.getDeliverable());
       }
-      total = selectedDeliverables.size();
+    }
 
-      if (selectedDeliverables != null && !selectedDeliverables.isEmpty()) {
-        if (selectedDeliverables != null && !selectedDeliverables.isEmpty()) {
-          for (Deliverable deliverable : selectedDeliverables) {
+    if (deliverables != null && !deliverables.isEmpty()) {
 
-            // Chart: Deliverables open access
-            List<DeliverableDissemination> deliverableDisseminations = deliverable
-              .getDeliverableInfo(this.getSelectedPhase()).getDeliverable().getDeliverableDisseminations().stream()
-              .filter(dd -> dd.isActive() && dd.getPhase() != null && dd.getPhase().equals(this.getSelectedPhase()))
-              .collect(Collectors.toList());
-            if (deliverableDisseminations != null && !deliverableDisseminations.isEmpty()) {
-              deliverable.getDeliverableInfo(this.getSelectedPhase()).getDeliverable()
-                .setDissemination(deliverableDisseminations.get(0));
+      total = deliverables.size();
+
+      if (deliverables != null && !deliverables.isEmpty()) {
+        for (Deliverable deliverable : deliverables) {
+
+          // Chart: Deliverables open access
+          List<DeliverableDissemination> deliverableDisseminations = deliverable
+            .getDeliverableInfo(this.getSelectedPhase()).getDeliverable().getDeliverableDisseminations().stream()
+            .filter(dd -> dd.isActive() && dd.getPhase() != null && dd.getPhase().equals(this.getSelectedPhase()))
+            .collect(Collectors.toList());
+          if (deliverableDisseminations != null && !deliverableDisseminations.isEmpty()) {
+            deliverable.getDeliverableInfo(this.getSelectedPhase()).getDeliverable()
+              .setDissemination(deliverableDisseminations.get(0));
+            if (deliverable.getDeliverableInfo(this.getSelectedPhase()).getDeliverable().getDissemination()
+              .getIsOpenAccess() != null) {
+              // Journal Articles by Open Access
               if (deliverable.getDeliverableInfo(this.getSelectedPhase()).getDeliverable().getDissemination()
-                .getIsOpenAccess() != null) {
-                // Journal Articles by Open Access
-                if (deliverable.getDeliverableInfo(this.getSelectedPhase()).getDeliverable().getDissemination()
-                  .getIsOpenAccess()) {
-                  totalOpenAccess++;
-                } else {
-                  totalLimited++;
-                }
+                .getIsOpenAccess()) {
+                totalOpenAccess++;
               } else {
                 totalLimited++;
               }
             } else {
               totalLimited++;
             }
+          } else {
+            totalLimited++;
+          }
 
-            // Chart: Deliverables by ISI
-            List<DeliverablePublicationMetadata> deliverablePublicationMetadatas =
-              deliverable.getDeliverableInfo(this.getSelectedPhase()).getDeliverable()
-                .getDeliverablePublicationMetadatas().stream()
-                .filter(dp -> dp.isActive() && dp.getPhase() != null && dp.getPhase().equals(this.getSelectedPhase()))
-                .collect(Collectors.toList());
-            if (deliverablePublicationMetadatas != null && !deliverablePublicationMetadatas.isEmpty()) {
-              deliverable.getDeliverableInfo(this.getSelectedPhase()).getDeliverable()
-                .setPublication(deliverablePublicationMetadatas.get(0));
-              // Journal Articles by ISI status
+          // Chart: Deliverables by ISI
+          List<DeliverablePublicationMetadata> deliverablePublicationMetadatas = deliverable
+            .getDeliverableInfo(this.getSelectedPhase()).getDeliverable().getDeliverablePublicationMetadatas().stream()
+            .filter(dp -> dp.isActive() && dp.getPhase() != null && dp.getPhase().equals(this.getSelectedPhase()))
+            .collect(Collectors.toList());
+          if (deliverablePublicationMetadatas != null && !deliverablePublicationMetadatas.isEmpty()) {
+            deliverable.getDeliverableInfo(this.getSelectedPhase()).getDeliverable()
+              .setPublication(deliverablePublicationMetadatas.get(0));
+            // Journal Articles by ISI status
+            if (deliverable.getDeliverableInfo(this.getSelectedPhase()).getDeliverable().getPublication()
+              .getIsiPublication() != null) {
               if (deliverable.getDeliverableInfo(this.getSelectedPhase()).getDeliverable().getPublication()
-                .getIsiPublication() != null) {
-                if (deliverable.getDeliverableInfo(this.getSelectedPhase()).getDeliverable().getPublication()
-                  .getIsiPublication()) {
-                  totalIsis++;
-                } else {
-                  totalNoIsis++;
-                }
+                .getIsiPublication()) {
+                totalIsis++;
               } else {
                 totalNoIsis++;
               }
             } else {
               totalNoIsis++;
             }
+          } else {
+            totalNoIsis++;
           }
         }
       }

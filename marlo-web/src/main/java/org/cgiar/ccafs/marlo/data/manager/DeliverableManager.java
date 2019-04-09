@@ -15,6 +15,7 @@
 package org.cgiar.ccafs.marlo.data.manager;
 
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
+import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 
 import java.util.List;
@@ -70,6 +71,17 @@ public interface DeliverableManager {
   public List<Deliverable> getDeliverablesByPhase(long phase);
 
   /**
+   * This method gets a list of publications that are active for an specific liaisonInstitution
+   * Flagship: Get the list of projects that have project_focus equal to the liaisonInstitution
+   * PMU: Get the list of liaison according to what was selected by the flagships
+   * 
+   * @param liaisonInstitution
+   * @param phase
+   * @return a list from Deliverable null if no exist records
+   */
+  public List<Deliverable> getPublicationsList(LiaisonInstitution liaisonInstitution, Phase phase);
+
+  /**
    * This method saves the information of the given deliverable
    * 
    * @param deliverable - is the deliverable object with the new information to be added/updated.
@@ -88,6 +100,5 @@ public interface DeliverableManager {
    * @return
    */
   public Deliverable saveDeliverable(Deliverable deliverable, String section, List<String> relationsName, Phase phase);
-
 
 }
