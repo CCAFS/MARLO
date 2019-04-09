@@ -104,7 +104,7 @@
             [#if PMU]
             [#-- Flagships - Synthesis (Variance from Planned Program) --]
             <div class="form-group">
-              [@macrosAR.tableFPSynthesis tableName="${customLabel}.tableFlagshipVariance" list=flagshipsReportSynthesisFlagshipProgress columns=["expandedResearchAreas", "droppedResearchLines", "changedDirection"] /]
+              [@macrosAR.tableFPSynthesis tableName="${customLabel}.tableFlagshipVariance" list=flagshipsReportSynthesisFlagshipProgress columns=["expandedResearchAreas", "droppedResearchLines", "changedDirection"] allInOne=true /]
             </div>
             [/#if]
             

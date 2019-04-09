@@ -679,7 +679,7 @@ public class POISummary {
     }
 
     for (int x = 0; x < table.getNumberOfRows(); x++) {
-      if (x >= 0 && x < 2) {
+      if (x >= 0 && x < 3) {
         XWPFTableRow row1 = table.getRow(x);
         for (int y = 0; y <= 7; y++) {
           XWPFTableCell cell = row1.getCell(y);

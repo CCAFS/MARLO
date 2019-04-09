@@ -1910,13 +1910,14 @@ a.currentReportingSection li, a.currentSection li {
 #secondaryMenu ul li  > ul li.submitted > a {
   background-image: url("../../global/images/submitted.png");
   background-repeat: no-repeat;
+  /* background-size: 15px; */
   background-position: 97% 6px;
 }
 
 #secondaryMenu ul li > ul li.toSubmit > a {
   background-image: url("../../global/images/submitted.png");
   background-repeat: no-repeat;
-  background-position: 97% -28px;
+  background-position: 97% -49px;
 }
 
 #secondaryMenu ul li ul li.loadingSection a {
