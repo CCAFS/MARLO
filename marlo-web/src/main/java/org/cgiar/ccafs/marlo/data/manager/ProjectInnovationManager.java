@@ -14,6 +14,7 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.manager;
 
+import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
 
@@ -52,7 +53,6 @@ public interface ProjectInnovationManager {
    */
   public List<ProjectInnovation> findAll();
 
-
   /**
    * This method gets a projectInnovation object by a given projectInnovation identifier.
    * 
@@ -60,6 +60,18 @@ public interface ProjectInnovationManager {
    * @return a ProjectInnovation object.
    */
   public ProjectInnovation getProjectInnovationById(long projectInnovationID);
+
+
+  /**
+   * This method gets a list of projectInnovation that are active for an specific liaisonInstitution
+   * Flagship: Get the list of projects that have project_focus equal to the liaisonInstitution
+   * PMU: Get the list of liaison according to what was selected by the flagships
+   * 
+   * @param liaisonInstitution
+   * @param phase
+   * @return a list from ProjectInnovation null if no exist records
+   */
+  public List<ProjectInnovation> getProjectInnovationsList(LiaisonInstitution liaisonInstitution, Phase phase);
 
   /**
    * This method saves the information of the given projectInnovation

@@ -36,13 +36,10 @@ import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
-import org.cgiar.ccafs.marlo.data.model.Project;
-import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgress;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressInnovation;
-import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressInnovationDTO;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisInnovationsByStageDTO;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisInnovationsByTypeDTO;
 import org.cgiar.ccafs.marlo.data.model.User;
@@ -130,186 +127,6 @@ public class InnovationsAction extends BaseAction {
     this.reportSynthesisFlagshipProgressInnovationManager = reportSynthesisFlagshipProgressInnovationManager;
     this.repIndStageInnovationManager = repIndStageInnovationManager;
     this.repIndInnovationTypeManager = repIndInnovationTypeManager;
-  }
-
-
-  /**
-   * Method to fill the list of innovations selected by flagships
-   * 
-   * @param flagshipsLiaisonInstitutions
-   * @return
-   */
-  public List<ReportSynthesisFlagshipProgressInnovationDTO>
-    fillFpPlannedList(List<LiaisonInstitution> flagshipsLiaisonInstitutions) {
-    List<ReportSynthesisFlagshipProgressInnovationDTO> flagshipPlannedList = new ArrayList<>();
-
-    if (projectInnovationManager.findAll() != null) {
-
-      // Get global unit Innovations
-      List<ProjectInnovation> projectInnovations = new ArrayList<>(projectInnovationManager.findAll().stream()
-        .filter(ps -> ps.isActive() && ps.getProjectInnovationInfo(actualPhase) != null
-          && ps.getProjectInnovationInfo().getYear() != null
-          && ps.getProjectInnovationInfo().getYear().intValue() == actualPhase.getYear() && ps.getProject() != null
-          && ps.getProject().getGlobalUnitProjects().stream()
-            .filter(gup -> gup.isActive() && gup.isOrigin() && gup.getGlobalUnit().getId().equals(loggedCrp.getId()))
-            .collect(Collectors.toList()).size() > 0)
-        .collect(Collectors.toList()));
-
-      // Fill all project Innovations of the global unit
-      for (ProjectInnovation projectInnovation : projectInnovations) {
-        ReportSynthesisFlagshipProgressInnovationDTO dto = new ReportSynthesisFlagshipProgressInnovationDTO();
-        projectInnovation.getProject().setProjectInfo(projectInnovation.getProject().getProjecInfoPhase(actualPhase));
-        dto.setProjectInnovation(projectInnovation);
-        if (projectInnovation.getProject().getProjectInfo().getAdministrative() != null
-          && projectInnovation.getProject().getProjectInfo().getAdministrative()) {
-          dto.setLiaisonInstitutions(new ArrayList<>());
-          dto.getLiaisonInstitutions().add(this.liaisonInstitution);
-        } else {
-          List<ProjectFocus> projectFocuses = new ArrayList<>(projectInnovation.getProject().getProjectFocuses()
-            .stream().filter(pf -> pf.isActive() && pf.getPhase().getId().equals(actualPhase.getId()))
-            .collect(Collectors.toList()));
-          List<LiaisonInstitution> liaisonInstitutions = new ArrayList<>();
-          for (ProjectFocus projectFocus : projectFocuses) {
-            liaisonInstitutions.addAll(projectFocus.getCrpProgram().getLiaisonInstitutions().stream()
-              .filter(li -> li.isActive() && li.getCrpProgram() != null
-                && li.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()
-                && li.getCrp() != null && li.getCrp().equals(this.getLoggedCrp()))
-              .collect(Collectors.toList()));
-          }
-          dto.setLiaisonInstitutions(liaisonInstitutions);
-        }
-
-        flagshipPlannedList.add(dto);
-      }
-
-      // Get deleted innovations
-      List<ReportSynthesisFlagshipProgressInnovation> flagshipProgressInnovations = new ArrayList<>();
-      for (LiaisonInstitution liaisonInstitution : flagshipsLiaisonInstitutions) {
-        ReportSynthesis reportSynthesis =
-          reportSynthesisManager.findSynthesis(actualPhase.getId(), liaisonInstitution.getId());
-        if (reportSynthesis != null) {
-          if (reportSynthesis.getReportSynthesisFlagshipProgress() != null) {
-            if (reportSynthesis.getReportSynthesisFlagshipProgress()
-              .getReportSynthesisFlagshipProgressInnovations() != null) {
-              List<ReportSynthesisFlagshipProgressInnovation> innovations = new ArrayList<>(
-                reportSynthesis.getReportSynthesisFlagshipProgress().getReportSynthesisFlagshipProgressInnovations()
-                  .stream().filter(s -> s.isActive()).collect(Collectors.toList()));
-              if (innovations != null || !innovations.isEmpty()) {
-                for (ReportSynthesisFlagshipProgressInnovation reportSynthesisFlagshipProgressInnovation : innovations) {
-                  flagshipProgressInnovations.add(reportSynthesisFlagshipProgressInnovation);
-                }
-              }
-            }
-          }
-        }
-      }
-
-      // Get list of Innovations to remove
-      List<ReportSynthesisFlagshipProgressInnovationDTO> removeList = new ArrayList<>();
-      for (ReportSynthesisFlagshipProgressInnovationDTO dto : flagshipPlannedList) {
-
-        List<LiaisonInstitution> removeLiaison = new ArrayList<>();
-        for (LiaisonInstitution liaisonInstitution : dto.getLiaisonInstitutions()) {
-          ReportSynthesis reportSynthesis =
-            reportSynthesisManager.findSynthesis(actualPhase.getId(), liaisonInstitution.getId());
-          if (reportSynthesis != null) {
-            if (reportSynthesis.getReportSynthesisFlagshipProgress() != null) {
-
-              ReportSynthesisFlagshipProgressInnovation flagshipProgressInnovationNew =
-                new ReportSynthesisFlagshipProgressInnovation();
-              flagshipProgressInnovationNew = new ReportSynthesisFlagshipProgressInnovation();
-              flagshipProgressInnovationNew.setProjectInnovation(dto.getProjectInnovation());
-              flagshipProgressInnovationNew
-                .setReportSynthesisFlagshipProgress(reportSynthesis.getReportSynthesisFlagshipProgress());
-
-              if (flagshipProgressInnovations.contains(flagshipProgressInnovationNew)) {
-                removeLiaison.add(liaisonInstitution);
-              }
-            }
-          }
-        }
-
-        for (LiaisonInstitution li : removeLiaison) {
-          dto.getLiaisonInstitutions().remove(li);
-        }
-
-        if (dto.getLiaisonInstitutions().isEmpty()) {
-          removeList.add(dto);
-        }
-      }
-
-      // Remove Innovations unselected by flagships
-      for (ReportSynthesisFlagshipProgressInnovationDTO i : removeList) {
-        flagshipPlannedList.remove(i);
-      }
-
-    }
-    return flagshipPlannedList;
-  }
-
-
-  private void fillprojectInnovationsList(LiaisonInstitution liaisonInstitution) {
-    projectInnovations = new ArrayList<>();
-    if (this.isFlagship()) {
-      // Fill Project Innovations of the current flagship
-      if (projectFocusManager.findAll() != null) {
-        List<ProjectFocus> projectFocus = new ArrayList<>(projectFocusManager.findAll().stream()
-          .filter(pf -> pf.isActive() && pf.getCrpProgram().getId().equals(liaisonInstitution.getCrpProgram().getId())
-            && pf.getPhase() != null && pf.getPhase().getId().equals(actualPhase.getId()))
-          .collect(Collectors.toList()));
-
-        for (ProjectFocus focus : projectFocus) {
-          Project project = projectManager.getProjectById(focus.getProject().getId());
-          List<ProjectInnovation> plannedprojectInnovations = new ArrayList<>(project.getProjectInnovations().stream()
-            .filter(ps -> ps.isActive() && ps.getProjectInnovationInfo(actualPhase) != null
-              && ps.getProjectInnovationInfo().getYear() != null
-              && ps.getProjectInnovationInfo().getYear().intValue() == actualPhase.getYear())
-            .collect(Collectors.toList()));
-
-          for (ProjectInnovation projectInnovation : plannedprojectInnovations) {
-            projectInnovation.getProjectInnovationInfo(actualPhase);
-            projectInnovation.setGeographicScopes(projectInnovation.getGeographicScopes(actualPhase));
-            projectInnovation.setCountries(projectInnovation.getCountries(actualPhase));
-            projectInnovation.setRegions(projectInnovation.getRegions(actualPhase));
-            projectInnovation.setContributingOrganizations(projectInnovation.getContributingOrganizations(actualPhase));
-            projectInnovations.add(projectInnovation);
-          }
-        }
-      }
-    } else {
-      // Fill Project Innovations of the PMU, removing flagship deletions
-      liaisonInstitutions = loggedCrp.getLiaisonInstitutions().stream()
-        .filter(c -> c.getCrpProgram() != null && c.isActive()
-          && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
-        .collect(Collectors.toList());
-      liaisonInstitutions.sort(Comparator.comparing(LiaisonInstitution::getAcronym));
-
-      List<ReportSynthesisFlagshipProgressInnovationDTO> flagshipPlannedList =
-        this.fillFpPlannedList(liaisonInstitutions);
-
-      for (ReportSynthesisFlagshipProgressInnovationDTO reportSynthesisFlagshipProgressInnovationDTO : flagshipPlannedList) {
-
-        ProjectInnovation projectInnovation = reportSynthesisFlagshipProgressInnovationDTO.getProjectInnovation();
-        projectInnovation.getProjectInnovationInfo(actualPhase);
-        projectInnovation.setGeographicScopes(projectInnovation.getGeographicScopes(actualPhase));
-        projectInnovation.setCountries(projectInnovation.getCountries(actualPhase));
-        projectInnovation.setRegions(projectInnovation.getRegions(actualPhase));
-        projectInnovation.setContributingOrganizations(projectInnovation.getContributingOrganizations(actualPhase));
-
-        projectInnovation.setSelectedFlahsgips(new ArrayList<>());
-        // sort selected flagships
-        if (reportSynthesisFlagshipProgressInnovationDTO.getLiaisonInstitutions() != null
-          && !reportSynthesisFlagshipProgressInnovationDTO.getLiaisonInstitutions().isEmpty()) {
-          reportSynthesisFlagshipProgressInnovationDTO.getLiaisonInstitutions()
-            .sort((l1, l2) -> l1.getCrpProgram().getAcronym().compareTo(l2.getCrpProgram().getAcronym()));
-        }
-        projectInnovation.getSelectedFlahsgips()
-          .addAll(reportSynthesisFlagshipProgressInnovationDTO.getLiaisonInstitutions());
-        projectInnovations.add(projectInnovation);
-
-      }
-    }
-
   }
 
 
@@ -595,7 +412,7 @@ public class InnovationsAction extends BaseAction {
       liaisonInstitutionID = reportSynthesisDB.getLiaisonInstitution().getId();
       liaisonInstitution = liaisonInstitutionManager.getLiaisonInstitutionById(liaisonInstitutionID);
 
-      this.fillprojectInnovationsList(liaisonInstitution);
+      projectInnovations = projectInnovationManager.getProjectInnovationsList(liaisonInstitution, actualPhase);
 
       Path path = this.getAutoSaveFilePath();
       // Verify if there is a Draft file
