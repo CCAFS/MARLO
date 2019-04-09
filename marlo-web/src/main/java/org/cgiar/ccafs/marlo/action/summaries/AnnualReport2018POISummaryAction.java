@@ -204,6 +204,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
   private List<ReportSynthesisKeyPartnershipExternal> flagshipExternalPartnerships;
   private List<ReportSynthesisKeyPartnershipExternal> externalPartnerships;
   private List<ReportSynthesisKeyPartnershipCollaboration> collaborations;
+  private List<PowbEvidencePlannedStudyDTO> meliaDto;
   // Parameters
   private POISummary poiSummary;
   private LiaisonInstitution pmuInstitution;
@@ -247,7 +248,8 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     ProjectExpectedStudyManager projectExpectedStudyManager, CrpProgramOutcomeManager crpProgramOutcomeManager,
     DeliverableManager deliverableManager,
     ReportSynthesisKeyPartnershipExternalManager reportSynthesisKeyPartnershipExternalManager,
-    ReportSynthesisKeyPartnershipCollaborationManager reportSynthesisKeyPartnershipCollaborationManager) {
+    ReportSynthesisKeyPartnershipCollaborationManager reportSynthesisKeyPartnershipCollaborationManager,
+    ReportSynthesisMeliaManager reportSynthesisMeliaManager) {
     super(config, crpManager, phaseManager, projectManager);
     document = new XWPFDocument();
     poiSummary = new POISummary();
@@ -266,6 +268,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     this.phaseManager = phaseManager;
     this.reportSynthesisKeyPartnershipExternalManager = reportSynthesisKeyPartnershipExternalManager;
     this.reportSynthesisKeyPartnershipCollaborationManager = reportSynthesisKeyPartnershipCollaborationManager;
+    this.reportSynthesisMeliaManager = reportSynthesisMeliaManager;
   }
 
   private void addAlmetricCrp() {
@@ -780,26 +783,34 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     List<POIField> header = Arrays.asList(sHeader);
     headers.add(header);
 
-    if (studiesList != null) {
-      for (ProjectExpectedStudy study : studiesList) {
+    if (meliaDto != null) {
+      for (PowbEvidencePlannedStudyDTO study : meliaDto) {
         String name = "", status = "", type = "", comments = "";
-        if (study.getProjectExpectedStudyInfo(this.getSelectedPhase()) != null) {
-          if (study.getProjectExpectedStudyInfo(this.getSelectedPhase()).getTitle() != null) {
-            name = "S" + study.getId() + " - " + study.getProjectExpectedStudyInfo(this.getSelectedPhase()).getTitle();
+        if (study.getProjectExpectedStudy().getProjectExpectedStudyInfo(this.getSelectedPhase()) != null) {
+          if (study.getProjectExpectedStudy().getProjectExpectedStudyInfo(this.getSelectedPhase()).getTitle() != null) {
+            name = "S" + study.getProjectExpectedStudy().getId() + " - "
+              + study.getProjectExpectedStudy().getProjectExpectedStudyInfo(this.getSelectedPhase()).getTitle();
           }
 
-          if (study.getProjectExpectedStudyInfo(this.getSelectedPhase()).getStatus() != null
-            && study.getProjectExpectedStudyInfo(this.getSelectedPhase()).getStatus().getName() != null) {
-            status = study.getProjectExpectedStudyInfo(this.getSelectedPhase()).getStatus().getName();
+          if (study.getProjectExpectedStudy().getProjectExpectedStudyInfo(this.getSelectedPhase()).getStatus() != null
+            && study.getProjectExpectedStudy().getProjectExpectedStudyInfo(this.getSelectedPhase()).getStatus()
+              .getName() != null) {
+            status = study.getProjectExpectedStudy().getProjectExpectedStudyInfo(this.getSelectedPhase()).getStatus()
+              .getName();
           }
 
-          if (study.getProjectExpectedStudyInfo(this.getSelectedPhase()).getStudyType() != null
-            && study.getProjectExpectedStudyInfo(this.getSelectedPhase()).getStudyType().getName() != null) {
-            type = study.getProjectExpectedStudyInfo(this.getSelectedPhase()).getStudyType().getName();
+          if (study.getProjectExpectedStudy().getProjectExpectedStudyInfo(this.getSelectedPhase())
+            .getStudyType() != null
+            && study.getProjectExpectedStudy().getProjectExpectedStudyInfo(this.getSelectedPhase()).getStudyType()
+              .getName() != null) {
+            type = study.getProjectExpectedStudy().getProjectExpectedStudyInfo(this.getSelectedPhase()).getStudyType()
+              .getName();
           }
 
-          if (study.getProjectExpectedStudyInfo(this.getSelectedPhase()).getTopLevelComments() != null) {
-            comments = study.getProjectExpectedStudyInfo(this.getSelectedPhase()).getTopLevelComments();
+          if (study.getProjectExpectedStudy().getProjectExpectedStudyInfo(this.getSelectedPhase())
+            .getTopLevelComments() != null) {
+            comments = study.getProjectExpectedStudy().getProjectExpectedStudyInfo(this.getSelectedPhase())
+              .getTopLevelComments();
           }
 
           POIField[] sData =
@@ -2977,27 +2988,10 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     return deliverables;
   }
 
-  /*
-   * public ReportSynthesisFlagshipProgressMilestone getReportSynthesisFlagshipProgressProgram(Long crpMilestoneID,
-   * Long crpProgramID) {
-   * List<ReportSynthesisFlagshipProgressMilestone> flagshipProgressMilestonesPrev =
-   * reportSynthesisFlagshipProgressMilestoneManager.findByProgram(crpProgramID);
-   * List<ReportSynthesisFlagshipProgressMilestone> flagshipProgressMilestones = flagshipProgressMilestonesPrev.stream()
-   * .filter(c -> c.getCrpMilestone().getId().longValue() == crpMilestoneID.longValue() && c.isActive())
-   * .collect(Collectors.toList());
-   * if (!flagshipProgressMilestones.isEmpty()) {
-   * return flagshipProgressMilestones.get(0);
-   * }
-   * return new ReportSynthesisFlagshipProgressMilestone();
-   * }
-   */
-
   public void getTable10Info() {
 
-    List<PowbEvidencePlannedStudyDTO> meliaDto = reportSynthesisMeliaManager.getMeliaPlannedList(
-      flagshipLiaisonInstitutions, this.getSelectedPhase().getId(), this.getLoggedCrp(), pmuInstitution);
-
-
+    meliaDto = reportSynthesisMeliaManager.getMeliaPlannedList(flagshipLiaisonInstitutions,
+      this.getSelectedPhase().getId(), this.getLoggedCrp(), pmuInstitution);
   }
 
   private void getTable11Info() {
