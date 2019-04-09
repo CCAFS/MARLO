@@ -31,19 +31,15 @@ import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableDissemination;
-import org.cgiar.ccafs.marlo.data.model.DeliverableProgram;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePublicationMetadata;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
-import org.cgiar.ccafs.marlo.data.model.Project;
-import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgress;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressDeliverable;
-import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressDeliverableDTO;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -124,226 +120,6 @@ public class PublicationsAction extends BaseAction {
     this.projectManager = projectManager;
     this.reportSynthesisFlagshipProgressManager = reportSynthesisFlagshipProgressManager;
     this.reportSynthesisFlagshipProgressDeliverableManager = reportSynthesisFlagshipProgressDeliverableManager;
-  }
-
-
-  /**
-   * Method to fill the list of deliverables selected by flagships
-   * 
-   * @param flagshipsLiaisonInstitutions
-   * @return
-   */
-  public List<ReportSynthesisFlagshipProgressDeliverableDTO>
-    fillFpPlannedList(List<LiaisonInstitution> flagshipsLiaisonInstitutions) {
-    List<ReportSynthesisFlagshipProgressDeliverableDTO> flagshipPlannedList = new ArrayList<>();
-
-    if (deliverableManager.findAll() != null) {
-
-      // Get global unit deliverables
-      List<Deliverable> deliverables = new ArrayList<>(deliverableManager.findAll().stream()
-        .filter(d -> d.isActive() && d.getDeliverableInfo(actualPhase) != null && d.getDeliverableInfo().isRequiredToComplete()
-          && d.getDeliverableInfo().getDeliverableType() != null
-          && d.getDeliverableInfo().getDeliverableType().getId() == 63)
-        .collect(Collectors.toList()));
-
-      // Fill all deliverables of the global unit
-      for (Deliverable deliverable : deliverables) {
-        ReportSynthesisFlagshipProgressDeliverableDTO dto = new ReportSynthesisFlagshipProgressDeliverableDTO();
-        if (deliverable.getProject() != null) {
-          deliverable.getProject().setProjectInfo(deliverable.getProject().getProjecInfoPhase(actualPhase));
-          if (deliverable.getProject().getProjectInfo().getAdministrative() != null
-            && deliverable.getProject().getProjectInfo().getAdministrative()) {
-            dto.setLiaisonInstitutions(new ArrayList<>());
-            dto.getLiaisonInstitutions().add(this.liaisonInstitution);
-          } else {
-            List<ProjectFocus> projectFocuses = new ArrayList<>(deliverable.getProject().getProjectFocuses().stream()
-              .filter(pf -> pf.isActive() && pf.getPhase().getId().equals(actualPhase.getId()))
-              .collect(Collectors.toList()));
-            List<LiaisonInstitution> liaisonInstitutions = new ArrayList<>();
-            for (ProjectFocus projectFocus : projectFocuses) {
-              liaisonInstitutions.addAll(projectFocus.getCrpProgram().getLiaisonInstitutions().stream()
-                .filter(li -> li.isActive() && li.getCrpProgram() != null
-                  && li.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()
-                  && li.getCrp() != null && li.getCrp().equals(this.getLoggedCrp()))
-                .collect(Collectors.toList()));
-            }
-            dto.setLiaisonInstitutions(liaisonInstitutions);
-          }
-        } else {
-          // Fill Supplementary Deliverable programs
-          List<LiaisonInstitution> liaisonInstitutions = new ArrayList<>();
-          List<DeliverableProgram> deliverablePrograms = deliverable.getDeliverablePrograms().stream()
-            .filter(dp -> dp.isActive() && dp.getPhase().equals(actualPhase)).collect(Collectors.toList());
-          for (DeliverableProgram deliverableProgram : deliverablePrograms) {
-            liaisonInstitutions.addAll(deliverableProgram.getCrpProgram().getLiaisonInstitutions().stream()
-              .filter(li -> li.isActive() && li.getCrpProgram() != null
-                && li.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()
-                && li.getCrp() != null && li.getCrp().equals(this.getLoggedCrp()))
-              .collect(Collectors.toList()));
-
-          }
-          if (liaisonInstitutions != null && !liaisonInstitutions.isEmpty()) {
-            dto.setLiaisonInstitutions(liaisonInstitutions);
-          } else {
-            dto.setLiaisonInstitutions(new ArrayList<>());
-            dto.getLiaisonInstitutions().add(this.liaisonInstitution);
-          }
-        }
-
-        dto.setDeliverable(deliverable);
-        flagshipPlannedList.add(dto);
-      }
-
-      // Get deleted deliverables
-      List<ReportSynthesisFlagshipProgressDeliverable> flagshipProgressDeliverables = new ArrayList<>();
-      for (LiaisonInstitution liaisonInstitution : flagshipsLiaisonInstitutions) {
-        ReportSynthesis reportSynthesis =
-          reportSynthesisManager.findSynthesis(actualPhase.getId(), liaisonInstitution.getId());
-        if (reportSynthesis != null) {
-          if (reportSynthesis.getReportSynthesisFlagshipProgress() != null) {
-            if (reportSynthesis.getReportSynthesisFlagshipProgress()
-              .getReportSynthesisFlagshipProgressDeliverables() != null) {
-              List<ReportSynthesisFlagshipProgressDeliverable> reportSynthesisFlagshipProgressDeliverables =
-                new ArrayList<>(
-                  reportSynthesis.getReportSynthesisFlagshipProgress().getReportSynthesisFlagshipProgressDeliverables()
-                    .stream().filter(s -> s.isActive()).collect(Collectors.toList()));
-              if (reportSynthesisFlagshipProgressDeliverables != null
-                || !reportSynthesisFlagshipProgressDeliverables.isEmpty()) {
-                for (ReportSynthesisFlagshipProgressDeliverable reportSynthesisFlagshipProgressDeliverable : reportSynthesisFlagshipProgressDeliverables) {
-                  flagshipProgressDeliverables.add(reportSynthesisFlagshipProgressDeliverable);
-                }
-              }
-            }
-          }
-        }
-      }
-
-      // Get list of deliverables to remove
-      List<ReportSynthesisFlagshipProgressDeliverableDTO> removeList = new ArrayList<>();
-      for (ReportSynthesisFlagshipProgressDeliverableDTO dto : flagshipPlannedList) {
-
-        List<LiaisonInstitution> removeLiaison = new ArrayList<>();
-        for (LiaisonInstitution liaisonInstitution : dto.getLiaisonInstitutions()) {
-          ReportSynthesis reportSynthesis =
-            reportSynthesisManager.findSynthesis(actualPhase.getId(), liaisonInstitution.getId());
-          if (reportSynthesis != null) {
-            if (reportSynthesis.getReportSynthesisFlagshipProgress() != null) {
-
-              ReportSynthesisFlagshipProgressDeliverable flagshipProgressDeliverableNew =
-                new ReportSynthesisFlagshipProgressDeliverable();
-              flagshipProgressDeliverableNew = new ReportSynthesisFlagshipProgressDeliverable();
-              flagshipProgressDeliverableNew.setDeliverable(dto.getDeliverable());
-              flagshipProgressDeliverableNew
-                .setReportSynthesisFlagshipProgress(reportSynthesis.getReportSynthesisFlagshipProgress());
-
-              if (flagshipProgressDeliverables.contains(flagshipProgressDeliverableNew)) {
-                removeLiaison.add(liaisonInstitution);
-              }
-            }
-          }
-        }
-
-        for (LiaisonInstitution li : removeLiaison) {
-          dto.getLiaisonInstitutions().remove(li);
-        }
-
-        if (dto.getLiaisonInstitutions().isEmpty()) {
-          removeList.add(dto);
-        }
-      }
-
-      // Remove Deliverables unselected by flagships
-      for (ReportSynthesisFlagshipProgressDeliverableDTO i : removeList) {
-        flagshipPlannedList.remove(i);
-      }
-
-    }
-    return flagshipPlannedList;
-  }
-
-
-  private void fillProjectDeliverablesList(LiaisonInstitution liaisonInstitution) {
-    deliverables = new ArrayList<>();
-    if (this.isFlagship()) {
-      // Fill Project Deliverables of the current flagship
-      if (projectFocusManager.findAll() != null) {
-        List<ProjectFocus> projectFocus = new ArrayList<>(projectFocusManager.findAll().stream()
-          .filter(pf -> pf.isActive() && pf.getCrpProgram().getId().equals(liaisonInstitution.getCrpProgram().getId())
-            && pf.getPhase() != null && pf.getPhase().getId().equals(actualPhase.getId()))
-          .collect(Collectors.toList()));
-
-        for (ProjectFocus focus : projectFocus) {
-          Project project = projectManager.getProjectById(focus.getProject().getId());
-          List<Deliverable> plannedDeliverables = new ArrayList<>(project.getDeliverables().stream()
-            .filter(d -> d.isActive() && d.getDeliverableInfo(actualPhase) != null
-              && d.getDeliverableInfo().isCompleted() && d.getDeliverableInfo().getDeliverableType() != null
-              && d.getDeliverableInfo().getDeliverableType().getId() == 63)
-            .collect(Collectors.toList()));
-          for (Deliverable deliverable : plannedDeliverables) {
-            deliverable.getDeliverableInfo(actualPhase);
-            deliverable.setUsers(deliverable.getUsers(actualPhase));
-            deliverable.setDissemination(deliverable.getDissemination(actualPhase));
-            deliverable.setPublication(deliverable.getPublication(actualPhase));
-            deliverable.setMetadataElements(deliverable.getMetadataElements(actualPhase));
-            deliverables.add(deliverable);
-          }
-        }
-      }
-
-      // Fill Supplementary Deliverables
-      List<DeliverableProgram> deliverablePrograms = liaisonInstitution.getCrpProgram().getDeliverablePrograms()
-        .stream()
-        .filter(dp -> dp.isActive() && dp.getPhase().equals(actualPhase) && dp.getDeliverable() != null
-          && dp.getDeliverable().isActive() && dp.getDeliverable().getDeliverableInfo(actualPhase) != null
-          && dp.getDeliverable().getDeliverableInfo().isRequiredToComplete()
-          && dp.getDeliverable().getDeliverableInfo().getDeliverableType() != null
-          && dp.getDeliverable().getDeliverableInfo().getDeliverableType().getId() == 63)
-        .collect(Collectors.toList());
-
-      if (deliverablePrograms != null && !deliverablePrograms.isEmpty()) {
-        for (DeliverableProgram deliverableProgram : deliverablePrograms) {
-          Deliverable deliverable = deliverableProgram.getDeliverable();
-          deliverable.getDeliverableInfo(actualPhase);
-          deliverable.setUsers(deliverable.getUsers(actualPhase));
-          deliverable.setDissemination(deliverable.getDissemination(actualPhase));
-          deliverable.setPublication(deliverable.getPublication(actualPhase));
-          deliverable.setMetadataElements(deliverable.getMetadataElements(actualPhase));
-          deliverables.add(deliverable);
-        }
-      }
-    } else {
-      // Fill Project Deliverables of the PMU, removing flagship deletions
-      liaisonInstitutions = loggedCrp.getLiaisonInstitutions().stream()
-        .filter(c -> c.getCrpProgram() != null && c.isActive()
-          && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
-        .collect(Collectors.toList());
-      liaisonInstitutions.sort(Comparator.comparing(LiaisonInstitution::getAcronym));
-
-      List<ReportSynthesisFlagshipProgressDeliverableDTO> flagshipPlannedList =
-        this.fillFpPlannedList(liaisonInstitutions);
-
-      for (ReportSynthesisFlagshipProgressDeliverableDTO reportSynthesisFlagshipProgressDeliverableDTO : flagshipPlannedList) {
-
-        Deliverable deliverable = reportSynthesisFlagshipProgressDeliverableDTO.getDeliverable();
-        deliverable.getDeliverableInfo(actualPhase);
-        deliverable.setUsers(deliverable.getUsers(actualPhase));
-        deliverable.setDissemination(deliverable.getDissemination(actualPhase));
-        deliverable.setPublication(deliverable.getPublication(actualPhase));
-        deliverable.setMetadataElements(deliverable.getMetadataElements(actualPhase));
-        deliverable.setSelectedFlahsgips(new ArrayList<>());
-        // sort selected flagships
-        if (reportSynthesisFlagshipProgressDeliverableDTO.getLiaisonInstitutions() != null
-          && !reportSynthesisFlagshipProgressDeliverableDTO.getLiaisonInstitutions().isEmpty()) {
-          reportSynthesisFlagshipProgressDeliverableDTO.getLiaisonInstitutions()
-            .sort((l1, l2) -> l1.getCrpProgram().getAcronym().compareTo(l2.getCrpProgram().getAcronym()));
-        }
-        deliverable.getSelectedFlahsgips()
-          .addAll(reportSynthesisFlagshipProgressDeliverableDTO.getLiaisonInstitutions());
-        deliverables.add(deliverable);
-
-      }
-    }
-
   }
 
 
@@ -638,7 +414,7 @@ public class PublicationsAction extends BaseAction {
       liaisonInstitutionID = reportSynthesisDB.getLiaisonInstitution().getId();
       liaisonInstitution = liaisonInstitutionManager.getLiaisonInstitutionById(liaisonInstitutionID);
 
-      this.fillProjectDeliverablesList(liaisonInstitution);
+      deliverables = deliverableManager.getPublicationsList(liaisonInstitution, actualPhase);
 
       Path path = this.getAutoSaveFilePath();
       // Verify if there is a Draft file
