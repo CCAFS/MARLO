@@ -14,6 +14,7 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.manager;
 
+import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicy;
 
@@ -54,6 +55,17 @@ public interface ProjectPolicyManager {
 
 
   /**
+   * This method gets a list of projectPolicies that are active for an specific liaisonInstitution
+   * Flagship: Get the list of projects that have project_focus equal to the liaisonInstitution
+   * PMU: Get the list of liaison according to what was selected by the flagships
+   * 
+   * @param liaisonInstitution
+   * @param phase
+   * @return a list from ProjectPolicy null if no exist records
+   */
+  public List<ProjectPolicy> getProjectPoliciesList(LiaisonInstitution liaisonInstitution, Phase phase);
+
+  /**
    * This method gets a projectPolicy object by a given projectPolicy identifier.
    * 
    * @param projectPolicyID is the projectPolicy identifier.
@@ -80,5 +92,4 @@ public interface ProjectPolicyManager {
 
   public ProjectPolicy saveProjectPolicy(ProjectPolicy projectPolicy, String section, List<String> relationsName,
     Phase phase);
-
 }
