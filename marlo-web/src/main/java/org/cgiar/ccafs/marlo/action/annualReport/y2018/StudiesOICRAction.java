@@ -22,8 +22,6 @@ import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyManager;
-import org.cgiar.ccafs.marlo.data.manager.ProjectFocusManager;
-import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressStudyManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
@@ -34,13 +32,10 @@ import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
-import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
-import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgress;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressStudy;
-import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressStudyDTO;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -79,8 +74,6 @@ public class StudiesOICRAction extends BaseAction {
   private UserManager userManager;
   private StudiesOICR2018Validator validator;
   private ProjectExpectedStudyManager projectExpectedStudyManager;
-  private ProjectFocusManager projectFocusManager;
-  private ProjectManager projectManager;
   private ReportSynthesisFlagshipProgressManager reportSynthesisFlagshipProgressManager;
   private ReportSynthesisFlagshipProgressStudyManager reportSynthesisFlagshipProgressStudyManager;
 
@@ -101,7 +94,6 @@ public class StudiesOICRAction extends BaseAction {
     LiaisonInstitutionManager liaisonInstitutionManager, ReportSynthesisManager reportSynthesisManager,
     AuditLogManager auditLogManager, UserManager userManager, StudiesOICR2018Validator validator,
     CrpProgramManager crpProgramManager, ProjectExpectedStudyManager projectExpectedStudyManager,
-    ProjectFocusManager projectFocusManager, ProjectManager projectManager,
     ReportSynthesisFlagshipProgressManager reportSynthesisFlagshipProgressManager,
     ReportSynthesisFlagshipProgressStudyManager reportSynthesisFlagshipProgressStudyManager) {
     super(config);
@@ -113,209 +105,10 @@ public class StudiesOICRAction extends BaseAction {
     this.validator = validator;
     this.crpProgramManager = crpProgramManager;
     this.projectExpectedStudyManager = projectExpectedStudyManager;
-    this.projectFocusManager = projectFocusManager;
-    this.projectManager = projectManager;
     this.reportSynthesisFlagshipProgressManager = reportSynthesisFlagshipProgressManager;
     this.reportSynthesisFlagshipProgressStudyManager = reportSynthesisFlagshipProgressStudyManager;
   }
 
-
-  /**
-   * Method to fill the list of studies selected by flagships
-   * 
-   * @param flagshipsLiaisonInstitutions
-   * @return
-   */
-  public List<ReportSynthesisFlagshipProgressStudyDTO>
-    fillFpPlannedList(List<LiaisonInstitution> flagshipsLiaisonInstitutions) {
-    List<ReportSynthesisFlagshipProgressStudyDTO> flagshipPlannedList = new ArrayList<>();
-
-    if (projectExpectedStudyManager.findAll() != null) {
-
-      // Get global unit studies
-      List<ProjectExpectedStudy> projectExpectedStudies = new ArrayList<>(projectExpectedStudyManager.findAll().stream()
-        .filter(ps -> ps.isActive() && ps.getProjectExpectedStudyInfo(actualPhase) != null
-          && ps.getProjectExpectedStudyInfo().getStudyType() != null
-          && ps.getProjectExpectedStudyInfo().getStudyType().getId() == 1
-          && ps.getProjectExpectedStudyInfo().getYear() != null
-          && ps.getProjectExpectedStudyInfo().getYear().equals(actualPhase.getYear()) && ps.getProject() != null
-          && ps.getProject().getGlobalUnitProjects().stream()
-            .filter(gup -> gup.isActive() && gup.isOrigin() && gup.getGlobalUnit().getId().equals(loggedCrp.getId()))
-            .collect(Collectors.toList()).size() > 0)
-        .collect(Collectors.toList()));
-
-      // Fill all project studies of the global unit
-      for (ProjectExpectedStudy projectExpectedStudy : projectExpectedStudies) {
-        ReportSynthesisFlagshipProgressStudyDTO dto = new ReportSynthesisFlagshipProgressStudyDTO();
-        projectExpectedStudy.getProject()
-          .setProjectInfo(projectExpectedStudy.getProject().getProjecInfoPhase(actualPhase));
-        dto.setProjectExpectedStudy(projectExpectedStudy);
-        if (projectExpectedStudy.getProject().getProjectInfo().getAdministrative() != null
-          && projectExpectedStudy.getProject().getProjectInfo().getAdministrative()) {
-          dto.setLiaisonInstitutions(new ArrayList<>());
-          dto.getLiaisonInstitutions().add(this.liaisonInstitution);
-        } else {
-          List<ProjectFocus> projectFocuses = new ArrayList<>(projectExpectedStudy.getProject().getProjectFocuses()
-            .stream().filter(pf -> pf.isActive() && pf.getPhase().getId().equals(actualPhase.getId()))
-            .collect(Collectors.toList()));
-          List<LiaisonInstitution> liaisonInstitutions = new ArrayList<>();
-          for (ProjectFocus projectFocus : projectFocuses) {
-            liaisonInstitutions.addAll(projectFocus.getCrpProgram().getLiaisonInstitutions().stream()
-              .filter(li -> li.isActive() && li.getCrpProgram() != null
-                && li.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()
-                && li.getCrp() != null && li.getCrp().equals(this.getLoggedCrp()))
-              .collect(Collectors.toList()));
-          }
-          dto.setLiaisonInstitutions(liaisonInstitutions);
-        }
-
-        flagshipPlannedList.add(dto);
-      }
-
-      // Get supplementary studies
-      List<ProjectExpectedStudy> projectSupplementaryStudies =
-        new ArrayList<>(projectExpectedStudyManager.findAll().stream()
-          .filter(ps -> ps.isActive() && ps.getProjectExpectedStudyInfo(actualPhase) != null && ps.getProject() == null
-            && ps.getProjectExpectedStudyInfo().getStudyType() != null
-            && ps.getProjectExpectedStudyInfo().getStudyType().getId() == 1
-            && ps.getProjectExpectedStudyInfo().getYear() != null
-            && ps.getProjectExpectedStudyInfo().getYear().equals(actualPhase.getYear()))
-          .collect(Collectors.toList()));
-
-      // Fill all supplementary studies
-      for (ProjectExpectedStudy projectExpectedStudy : projectSupplementaryStudies) {
-        ReportSynthesisFlagshipProgressStudyDTO dto = new ReportSynthesisFlagshipProgressStudyDTO();
-        dto.setProjectExpectedStudy(projectExpectedStudy);
-        dto.setLiaisonInstitutions(new ArrayList<>());
-        dto.getLiaisonInstitutions().add(this.liaisonInstitution);
-        flagshipPlannedList.add(dto);
-      }
-
-      // Get deleted studies
-      List<ReportSynthesisFlagshipProgressStudy> flagshipProgressStudies = new ArrayList<>();
-      for (LiaisonInstitution liaisonInstitution : flagshipsLiaisonInstitutions) {
-        ReportSynthesis reportSynthesis =
-          reportSynthesisManager.findSynthesis(actualPhase.getId(), liaisonInstitution.getId());
-        if (reportSynthesis != null) {
-          if (reportSynthesis.getReportSynthesisFlagshipProgress() != null) {
-            if (reportSynthesis.getReportSynthesisFlagshipProgress()
-              .getReportSynthesisFlagshipProgressStudies() != null) {
-              List<ReportSynthesisFlagshipProgressStudy> studies = new ArrayList<>(
-                reportSynthesis.getReportSynthesisFlagshipProgress().getReportSynthesisFlagshipProgressStudies()
-                  .stream().filter(s -> s.isActive()).collect(Collectors.toList()));
-              if (studies != null || !studies.isEmpty()) {
-                for (ReportSynthesisFlagshipProgressStudy reportSynthesisFlagshipProgressStudy : studies) {
-                  flagshipProgressStudies.add(reportSynthesisFlagshipProgressStudy);
-                }
-              }
-            }
-          }
-        }
-      }
-
-      // Get list of studies to remove
-      List<ReportSynthesisFlagshipProgressStudyDTO> removeList = new ArrayList<>();
-      for (ReportSynthesisFlagshipProgressStudyDTO dto : flagshipPlannedList) {
-
-        List<LiaisonInstitution> removeLiaison = new ArrayList<>();
-        for (LiaisonInstitution liaisonInstitution : dto.getLiaisonInstitutions()) {
-          ReportSynthesis reportSynthesis =
-            reportSynthesisManager.findSynthesis(actualPhase.getId(), liaisonInstitution.getId());
-          if (reportSynthesis != null) {
-            if (reportSynthesis.getReportSynthesisFlagshipProgress() != null) {
-
-              ReportSynthesisFlagshipProgressStudy flagshipProgressStudyNew =
-                new ReportSynthesisFlagshipProgressStudy();
-              flagshipProgressStudyNew = new ReportSynthesisFlagshipProgressStudy();
-              flagshipProgressStudyNew.setProjectExpectedStudy(dto.getProjectExpectedStudy());
-              flagshipProgressStudyNew
-                .setReportSynthesisFlagshipProgress(reportSynthesis.getReportSynthesisFlagshipProgress());
-
-              if (flagshipProgressStudies.contains(flagshipProgressStudyNew)) {
-                removeLiaison.add(liaisonInstitution);
-              }
-            }
-          }
-        }
-
-        for (LiaisonInstitution li : removeLiaison) {
-          dto.getLiaisonInstitutions().remove(li);
-        }
-
-        if (dto.getLiaisonInstitutions().isEmpty()) {
-          removeList.add(dto);
-        }
-      }
-
-      // Remove studies unselected by flagships
-      for (ReportSynthesisFlagshipProgressStudyDTO i : removeList) {
-        flagshipPlannedList.remove(i);
-      }
-
-    }
-    return flagshipPlannedList;
-  }
-
-  private void fillProjectStudiesList(LiaisonInstitution liaisonInstitution) {
-    projectExpectedStudies = new ArrayList<>();
-    if (this.isFlagship()) {
-      // Fill Project Expected Studies of the current flagship
-      if (projectFocusManager.findAll() != null) {
-        List<ProjectFocus> projectFocus = new ArrayList<>(projectFocusManager.findAll().stream()
-          .filter(pf -> pf.isActive() && pf.getCrpProgram().getId().equals(liaisonInstitution.getCrpProgram().getId())
-            && pf.getPhase() != null && pf.getPhase().getId().equals(actualPhase.getId()))
-          .collect(Collectors.toList()));
-
-        for (ProjectFocus focus : projectFocus) {
-          Project project = projectManager.getProjectById(focus.getProject().getId());
-          List<ProjectExpectedStudy> plannedProjectExpectedStudies =
-            new ArrayList<>(project.getProjectExpectedStudies().stream()
-              .filter(ps -> ps.isActive() && ps.getProjectExpectedStudyInfo(actualPhase) != null
-                && ps.getProjectExpectedStudyInfo().getStudyType() != null
-                && ps.getProjectExpectedStudyInfo().getStudyType().getId() == 1
-                && ps.getProjectExpectedStudyInfo().getYear() != null
-                && ps.getProjectExpectedStudyInfo().getYear().equals(actualPhase.getYear()))
-              .collect(Collectors.toList()));
-
-          for (ProjectExpectedStudy projectExpectedStudy : plannedProjectExpectedStudies) {
-            projectExpectedStudy.getProjectExpectedStudyInfo(actualPhase);
-            projectExpectedStudy.setSrfTargets(projectExpectedStudy.getSrfTargets(actualPhase));
-            projectExpectedStudy.setSubIdos(projectExpectedStudy.getSubIdos(actualPhase));
-            projectExpectedStudies.add(projectExpectedStudy);
-          }
-        }
-      }
-    } else {
-      // Fill Project Expected Studies of the PMU, removing flagship deletions
-      liaisonInstitutions = loggedCrp.getLiaisonInstitutions().stream()
-        .filter(c -> c.getCrpProgram() != null && c.isActive()
-          && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
-        .collect(Collectors.toList());
-      liaisonInstitutions.sort(Comparator.comparing(LiaisonInstitution::getAcronym));
-
-      List<ReportSynthesisFlagshipProgressStudyDTO> flagshipPlannedList = this.fillFpPlannedList(liaisonInstitutions);
-
-      for (ReportSynthesisFlagshipProgressStudyDTO reportSynthesisFlagshipProgressStudyDTO : flagshipPlannedList) {
-
-        ProjectExpectedStudy projectExpectedStudy = reportSynthesisFlagshipProgressStudyDTO.getProjectExpectedStudy();
-        projectExpectedStudy.getProjectExpectedStudyInfo(actualPhase);
-        projectExpectedStudy.setSrfTargets(projectExpectedStudy.getSrfTargets(actualPhase));
-        projectExpectedStudy.setSubIdos(projectExpectedStudy.getSubIdos(actualPhase));
-        projectExpectedStudy.setSelectedFlahsgips(new ArrayList<>());
-        // sort selected flagships
-        if (reportSynthesisFlagshipProgressStudyDTO.getLiaisonInstitutions() != null
-          && !reportSynthesisFlagshipProgressStudyDTO.getLiaisonInstitutions().isEmpty()) {
-          reportSynthesisFlagshipProgressStudyDTO.getLiaisonInstitutions()
-            .sort((l1, l2) -> l1.getCrpProgram().getAcronym().compareTo(l2.getCrpProgram().getAcronym()));
-        }
-        projectExpectedStudy.getSelectedFlahsgips()
-          .addAll(reportSynthesisFlagshipProgressStudyDTO.getLiaisonInstitutions());
-        projectExpectedStudies.add(projectExpectedStudy);
-
-      }
-    }
-
-  }
 
   public Long firstFlagship() {
     List<LiaisonInstitution> liaisonInstitutions = new ArrayList<>(loggedCrp.getLiaisonInstitutions().stream()
@@ -585,7 +378,8 @@ public class StudiesOICRAction extends BaseAction {
       liaisonInstitutionID = reportSynthesisDB.getLiaisonInstitution().getId();
       liaisonInstitution = liaisonInstitutionManager.getLiaisonInstitutionById(liaisonInstitutionID);
 
-      this.fillProjectStudiesList(liaisonInstitution);
+      projectExpectedStudies =
+        projectExpectedStudyManager.getProjectStudiesList(liaisonInstitution, this.getActualPhase());
 
       Path path = this.getAutoSaveFilePath();
       // Verify if there is a Draft file
@@ -638,10 +432,6 @@ public class StudiesOICRAction extends BaseAction {
     liaisonInstitutions.addAll(loggedCrp.getLiaisonInstitutions().stream()
       .filter(c -> c.getCrpProgram() == null && c.isActive() && c.getAcronym() != null && c.getAcronym().equals("PMU"))
       .collect(Collectors.toList()));
-
-    if (projectExpectedStudies != null && !projectExpectedStudies.isEmpty()) {
-      projectExpectedStudies.sort((p1, p2) -> p1.getId().compareTo(p2.getId()));
-    }
 
     // Base Permission
     String params[] = {loggedCrp.getAcronym(), reportSynthesis.getId() + ""};

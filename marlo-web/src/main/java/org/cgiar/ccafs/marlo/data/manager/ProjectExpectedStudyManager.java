@@ -14,6 +14,7 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.manager;
 
+import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.data.model.RepIndOrganizationType;
@@ -45,7 +46,6 @@ public interface ProjectExpectedStudyManager {
    */
   public boolean existProjectExpectedStudy(long projectExpectedStudyID);
 
-
   /**
    * This method gets a list of projectExpectedStudy that are active
    * 
@@ -61,6 +61,17 @@ public interface ProjectExpectedStudyManager {
    * @return a ProjectExpectedStudy object.
    */
   public ProjectExpectedStudy getProjectExpectedStudyById(long projectExpectedStudyID);
+
+  /**
+   * This method gets a list of projectExpectedStudy that are active for an specific liaisonInstitution
+   * Flagship: Get the list of projects that have project_focus equal to the @param
+   * PMU: Get the list of liaison according to what was selected by the flagships
+   * 
+   * @param liaisonInstitution
+   * @param phase
+   * @return a list from ProjectExpectedStudy null if no exist records
+   */
+  public List<ProjectExpectedStudy> getProjectStudiesList(LiaisonInstitution liaisonInstitution, Phase phase);
 
   /**
    * This method gets a list of projectExpectedStudy that are active by a given organizationType and phase
