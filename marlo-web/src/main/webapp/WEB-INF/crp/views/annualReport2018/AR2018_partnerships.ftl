@@ -108,7 +108,7 @@
                               <td> [@utils.tableList list=(item.institutions)![] displayFieldName="institution.composedName" /] </td>
                               <td> [@utils.tableList list=(item.mainAreas)![] displayFieldName="partnerArea.name"  nobr=true /] 
                                 [#-- Other --]
-                                [@utils.tableText value=(item.otherPartnershipMainArea)!"" emptyText="" /]
+                                [@utils.tableText value=(item.other)!"" emptyText="" /]
                               </td>
                               <td class="text-center">
                                 [#assign isChecked = ((!reportSynthesis.reportSynthesisKeyPartnership.partnershipIds?seq_contains(item.id))!true) /]
@@ -285,7 +285,7 @@
           [#if (item.partnerArea.id == 6)!false][#local otherArea = true /][#break][/#if]  
         [/#list]  
         <div class="col-md-6 block-pleaseSpecify" style="display:${otherArea?string('block', 'none')}"> 
-          [@customForm.input name="${customName}.otherPartnershipMainArea" i18nkey="${customLabel}.table7.otherMainArea" className="" required=false editable=editable /] 
+          [@customForm.input name="${customName}.other" i18nkey="${customLabel}.table7.otherMainArea" className="" required=false editable=editable /] 
         </div>
       </div>
     
