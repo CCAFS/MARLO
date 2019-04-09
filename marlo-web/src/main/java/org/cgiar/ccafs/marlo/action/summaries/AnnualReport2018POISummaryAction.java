@@ -877,6 +877,12 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
           && expenditureArea.getExpenditureCategory().getName() != null) {
           area = expenditureArea.getExpenditureCategory().getName();
         }
+        if (expenditureArea.getExpenditureCategory() != null
+          && expenditureArea.getExpenditureCategory().getName() != null
+          && expenditureArea.getExpenditureCategory().getName().equals("Other")
+          && expenditureArea.getOtherCategory() != null) {
+          area += ": " + expenditureArea.getOtherCategory();
+        }
 
         POIField[] sData =
           {new POIField(poiSummary.replaceHTMLTags(examples), ParagraphAlignment.LEFT, false, "000000"),
