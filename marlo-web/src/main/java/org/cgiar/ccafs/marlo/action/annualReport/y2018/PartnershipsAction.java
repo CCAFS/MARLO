@@ -1158,6 +1158,11 @@ public class PartnershipsAction extends BaseAction {
 
           externalSave.setReportSynthesisKeyPartnership(keyPartnershipDB);
           externalSave.setDescription(external.getDescription());
+          if (external.getOther() != null) {
+            externalSave.setOther(external.getOther());
+          } else {
+            externalSave.setOther(null);
+          }
 
           // Save File
           if (external.getFile() != null) {
@@ -1185,6 +1190,11 @@ public class PartnershipsAction extends BaseAction {
           this.saveKeyExternalPartnershipInstitutions(externalSave, external);
 
           externalSave.setDescription(external.getDescription());
+          if (external.getOther() != null) {
+            externalSave.setOther(external.getOther());
+          } else {
+            externalSave.setOther(null);
+          }
 
           // Save File
           if (external.getFile() != null) {
