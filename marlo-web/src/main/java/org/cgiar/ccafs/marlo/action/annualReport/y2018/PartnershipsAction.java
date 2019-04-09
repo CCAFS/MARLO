@@ -233,8 +233,6 @@ public class PartnershipsAction extends BaseAction {
       }
 
     }
-
-
   }
 
   public void flagshipExternalPartnerships(List<LiaisonInstitution> flagshipliaisonInstitutions) {
