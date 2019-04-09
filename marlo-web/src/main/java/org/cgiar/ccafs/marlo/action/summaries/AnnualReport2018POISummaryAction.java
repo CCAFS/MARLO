@@ -1562,7 +1562,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
       }
 
       POIField[] sData = {new POIField(trainees, ParagraphAlignment.LEFT),
-        new POIField(female, ParagraphAlignment.CENTER), new POIField(male, ParagraphAlignment.LEFT)};
+        new POIField(female, ParagraphAlignment.CENTER), new POIField(male, ParagraphAlignment.CENTER)};
       data = Arrays.asList(sData);
       datas.add(data);
     }
