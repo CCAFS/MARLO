@@ -88,6 +88,7 @@ public class ReportSynthesisKeyPartnershipExternalManagerImpl implements ReportS
    * @param phase - The phase for get the information
    * @return - A list of the key external partnerships that include in the current AR synthesis
    */
+  @Override
   public List<ReportSynthesisKeyPartnershipExternal> getTable8(List<LiaisonInstitution> flagships,
     LiaisonInstitution pmu, Phase phase) {
 
