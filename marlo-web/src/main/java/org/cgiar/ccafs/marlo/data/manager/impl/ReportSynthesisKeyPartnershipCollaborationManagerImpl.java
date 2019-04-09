@@ -91,6 +91,7 @@ public class ReportSynthesisKeyPartnershipCollaborationManagerImpl
    * @param phase - The phase for get the information
    * @return - A list of the CGIAR collaborations that include in the current AR synthesis
    */
+  @Override
   public List<ReportSynthesisKeyPartnershipCollaboration> getTable9(List<LiaisonInstitution> flagships,
     LiaisonInstitution pmu, Phase phase) {
 

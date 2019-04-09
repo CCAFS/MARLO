@@ -14,6 +14,8 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.manager;
 
+import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisKeyPartnershipExternal;
 
 import java.util.List;
@@ -53,22 +55,38 @@ public interface ReportSynthesisKeyPartnershipExternalManager {
 
 
   /**
-   * This method gets a reportSynthesisKeyPartnershipExternal object by a given reportSynthesisKeyPartnershipExternal identifier.
+   * This method gets a reportSynthesisKeyPartnershipExternal object by a given reportSynthesisKeyPartnershipExternal
+   * identifier.
    * 
    * @param reportSynthesisKeyPartnershipExternalID is the reportSynthesisKeyPartnershipExternal identifier.
    * @return a ReportSynthesisKeyPartnershipExternal object.
    */
-  public ReportSynthesisKeyPartnershipExternal getReportSynthesisKeyPartnershipExternalById(long reportSynthesisKeyPartnershipExternalID);
+  public ReportSynthesisKeyPartnershipExternal
+    getReportSynthesisKeyPartnershipExternalById(long reportSynthesisKeyPartnershipExternalID);
+
+  /**
+   * Get the table 8 Information to load in the word document.
+   * 
+   * @param flagships - The list of the liaison institution of the flagships
+   * @param pmu - The liaison institution of the PMU
+   * @param phase - The phase for get the information
+   * @return - A list of the key external partnerships that include in the current AR synthesis
+   */
+  public List<ReportSynthesisKeyPartnershipExternal> getTable8(List<LiaisonInstitution> flagships,
+    LiaisonInstitution pmu, Phase phase);
 
   /**
    * This method saves the information of the given reportSynthesisKeyPartnershipExternal
    * 
-   * @param reportSynthesisKeyPartnershipExternal - is the reportSynthesisKeyPartnershipExternal object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the reportSynthesisKeyPartnershipExternal was
+   * @param reportSynthesisKeyPartnershipExternal - is the reportSynthesisKeyPartnershipExternal object with the new
+   *        information to be added/updated.
+   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the
+   *         reportSynthesisKeyPartnershipExternal was
    *         updated
    *         or -1 is some error occurred.
    */
-  public ReportSynthesisKeyPartnershipExternal saveReportSynthesisKeyPartnershipExternal(ReportSynthesisKeyPartnershipExternal reportSynthesisKeyPartnershipExternal);
+  public ReportSynthesisKeyPartnershipExternal saveReportSynthesisKeyPartnershipExternal(
+    ReportSynthesisKeyPartnershipExternal reportSynthesisKeyPartnershipExternal);
 
 
 }
