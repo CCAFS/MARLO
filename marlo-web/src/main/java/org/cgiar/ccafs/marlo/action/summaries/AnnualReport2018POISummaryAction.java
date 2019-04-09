@@ -836,35 +836,37 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     if (reportSynthesisPMU.getReportSynthesisMelia() != null
       && reportSynthesisPMU.getReportSynthesisMelia().getEvaluations() != null) {
       for (ReportSynthesisMeliaEvaluation evaluation : reportSynthesisPMU.getReportSynthesisMelia().getEvaluations()) {
-        String name = "", recomendation = "", text = "", status = "", actions = "", whom = "", when = "", comments = "";
-        if (evaluation.getNameEvaluation() != null) {
-          name = evaluation.getNameEvaluation();
-
-        }
-        if (evaluation.getRecommendation() != null) {
-          recomendation = evaluation.getRecommendation();
-        }
-
-        if (evaluation.getManagementResponse() != null) {
-          text = evaluation.getManagementResponse();
-        }
-
-        if (evaluation.getStatus() != null) {
-          switch (evaluation.getStatus()) {
-            case 2:
-              status = "On Going";
-              break;
-            case 3:
-              status = "Complete";
-              break;
-          }
-        }
-
-        if (evaluation.getComments() != null) {
-          comments = evaluation.getComments();
-        }
-
         for (ReportSynthesisMeliaEvaluationAction action : evaluation.getMeliaEvaluationActions()) {
+          String name = "", recomendation = "", text = "", status = "", actions = "", whom = "", when = "",
+            comments = "";
+          if (action.getReportSynthesisMeliaEvaluation().getNameEvaluation() != null) {
+            name = action.getReportSynthesisMeliaEvaluation().getNameEvaluation();
+
+          }
+          if (action.getReportSynthesisMeliaEvaluation().getRecommendation() != null) {
+            recomendation = action.getReportSynthesisMeliaEvaluation().getRecommendation();
+          }
+
+          if (action.getReportSynthesisMeliaEvaluation().getManagementResponse() != null) {
+            text = action.getReportSynthesisMeliaEvaluation().getManagementResponse();
+          }
+
+          if (action.getReportSynthesisMeliaEvaluation().getStatus() != null) {
+            switch (action.getReportSynthesisMeliaEvaluation().getStatus()) {
+              case 2:
+                status = "On Going";
+                break;
+              case 3:
+                status = "Complete";
+                break;
+            }
+          }
+
+          if (action.getReportSynthesisMeliaEvaluation().getComments() != null) {
+            comments = action.getReportSynthesisMeliaEvaluation().getComments();
+          }
+
+
           if (action != null && action.getActions() != null) {
             actions += "• " + poiSummary.replaceHTMLTags(action.getActions() + "\n");
           }
@@ -874,18 +876,19 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
           if (action != null && action.getTextWhen() != null) {
             when = "• " + action.getTextWhen() + "(" + action.getActions() + ")" + "\n";
           }
-        }
 
-        POIField[] sData = {new POIField(name, ParagraphAlignment.LEFT, false, "000000"),
-          new POIField(poiSummary.replaceHTMLTags(recomendation), ParagraphAlignment.LEFT, false, "000000"),
-          new POIField(poiSummary.replaceHTMLTags(text), ParagraphAlignment.LEFT, false, "000000"),
-          new POIField(status, ParagraphAlignment.LEFT, false, "000000"),
-          new POIField(actions, ParagraphAlignment.LEFT, false, "000000"),
-          new POIField(whom, ParagraphAlignment.LEFT, false, "000000"),
-          new POIField(when, ParagraphAlignment.LEFT, false, "000000"),
-          new POIField(poiSummary.replaceHTMLTags(comments), ParagraphAlignment.LEFT, false, "000000")};
-        data = Arrays.asList(sData);
-        datas.add(data);
+
+          POIField[] sData = {new POIField(name, ParagraphAlignment.LEFT, false, "000000"),
+            new POIField(poiSummary.replaceHTMLTags(recomendation), ParagraphAlignment.LEFT, false, "000000"),
+            new POIField(poiSummary.replaceHTMLTags(text), ParagraphAlignment.LEFT, false, "000000"),
+            new POIField(status, ParagraphAlignment.LEFT, false, "000000"),
+            new POIField(actions, ParagraphAlignment.LEFT, false, "000000"),
+            new POIField(whom, ParagraphAlignment.LEFT, false, "000000"),
+            new POIField(when, ParagraphAlignment.LEFT, false, "000000"),
+            new POIField(poiSummary.replaceHTMLTags(comments), ParagraphAlignment.LEFT, false, "000000")};
+          data = Arrays.asList(sData);
+          datas.add(data);
+        }
       }
     }
 
