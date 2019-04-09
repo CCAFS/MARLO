@@ -17,7 +17,9 @@ package org.cgiar.ccafs.marlo.data.manager.impl;
 import org.cgiar.ccafs.marlo.data.dao.CrpProgramDAO;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
+import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.Phase;
+import org.cgiar.ccafs.marlo.data.model.ProgramType;
 
 import java.util.List;
 
@@ -30,62 +32,75 @@ import javax.inject.Named;
 @Named
 public class CrpProgramManagerImpl implements CrpProgramManager {
 
-	private CrpProgramDAO crpProgramDAO;
-	// Managers
+  private CrpProgramDAO crpProgramDAO;
+  // Managers
 
-	@Inject
-	public CrpProgramManagerImpl(CrpProgramDAO crpProgramDAO) {
-		this.crpProgramDAO = crpProgramDAO;
+  @Inject
+  public CrpProgramManagerImpl(CrpProgramDAO crpProgramDAO) {
+    this.crpProgramDAO = crpProgramDAO;
 
-	}
+  }
 
-	@Override
-	public void deleteCrpProgram(long crpProgramId) {
+  @Override
+  public void deleteCrpProgram(long crpProgramId) {
 
-		this.crpProgramDAO.deleteCrpProgram(crpProgramId);
-	}
+    this.crpProgramDAO.deleteCrpProgram(crpProgramId);
+  }
 
-	@Override
-	public boolean existCrpProgram(long crpProgramID) {
+  @Override
+  public boolean existCrpProgram(long crpProgramID) {
 
-		return this.crpProgramDAO.existCrpProgram(crpProgramID);
-	}
+    return this.crpProgramDAO.existCrpProgram(crpProgramID);
+  }
 
-	@Override
-	public List<CrpProgram> findAll() {
+  @Override
+  public List<CrpProgram> findAll() {
 
-		return this.crpProgramDAO.findAll();
+    return this.crpProgramDAO.findAll();
 
-	}
+  }
 
-	@Override
-	public List<CrpProgram> findCrpProgramsByType(long id, int programType) {
-		return this.crpProgramDAO.findCrpProgramsByType(id, programType);
-	}
+  @Override
+  public List<CrpProgram> findCrpProgramsByType(long id, int programType) {
+    return this.crpProgramDAO.findCrpProgramsByType(id, programType);
+  }
 
-	@Override
-	public CrpProgram getCrpProgramById(long crpProgramID) {
+  @Override
+  public CrpProgram getCrpProgramById(long crpProgramID) {
 
-		return this.crpProgramDAO.find(crpProgramID);
-	}
+    return this.crpProgramDAO.find(crpProgramID);
+  }
 
-	@Override
-	public CrpProgram getCrpProgramBySmoCode(String smoCode) {
+  @Override
+  public CrpProgram getCrpProgramBySmoCode(String smoCode) {
 
-		return this.crpProgramDAO.findCrpProgramsBySmoCode(smoCode);
-	}
+    return this.crpProgramDAO.findCrpProgramsBySmoCode(smoCode);
+  }
 
-	@Override
-	public CrpProgram saveCrpProgram(CrpProgram crpProgram) {
+  @Override
+  public boolean isFlagship(LiaisonInstitution liaisonInstitution) {
+    boolean isFP = false;
+    if (liaisonInstitution != null) {
+      if (liaisonInstitution.getCrpProgram() != null && liaisonInstitution.getCrpProgram().getId() != null) {
+        CrpProgram crpProgram = this.getCrpProgramById(liaisonInstitution.getCrpProgram().getId().longValue());
+        if (crpProgram.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()) {
+          isFP = true;
+        }
+      }
+    }
+    return isFP;
+  }
 
-		return this.crpProgramDAO.save(crpProgram);
-	}
+  @Override
+  public CrpProgram saveCrpProgram(CrpProgram crpProgram) {
 
-	@Override
-	public CrpProgram saveCrpProgram(CrpProgram crpProgram, String actionName, List<String> relationsName,
-			Phase phase) {
+    return this.crpProgramDAO.save(crpProgram);
+  }
 
-		return this.crpProgramDAO.save(crpProgram, actionName, relationsName, phase);
-	}
+  @Override
+  public CrpProgram saveCrpProgram(CrpProgram crpProgram, String actionName, List<String> relationsName, Phase phase) {
+
+    return this.crpProgramDAO.save(crpProgram, actionName, relationsName, phase);
+  }
 
 }
