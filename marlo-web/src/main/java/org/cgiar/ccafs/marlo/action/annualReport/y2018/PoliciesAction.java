@@ -21,8 +21,6 @@ import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
-import org.cgiar.ccafs.marlo.data.manager.ProjectFocusManager;
-import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndOrganizationTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndStageProcessManager;
@@ -36,13 +34,10 @@ import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
-import org.cgiar.ccafs.marlo.data.model.Project;
-import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicy;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgress;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressPolicy;
-import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressPolicyDTO;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisPoliciesByOrganizationTypeDTO;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisPoliciesByRepIndStageProcessDTO;
 import org.cgiar.ccafs.marlo.data.model.User;
@@ -83,8 +78,6 @@ public class PoliciesAction extends BaseAction {
   private UserManager userManager;
   private Policies2018Validator validator;
   private ProjectPolicyManager projectPolicyManager;
-  private ProjectFocusManager projectFocusManager;
-  private ProjectManager projectManager;
   private ReportSynthesisFlagshipProgressManager reportSynthesisFlagshipProgressManager;
   private ReportSynthesisFlagshipProgressPolicyManager reportSynthesisFlagshipProgressPolicyManager;
   private RepIndOrganizationTypeManager repIndOrganizationTypeManager;
@@ -109,7 +102,6 @@ public class PoliciesAction extends BaseAction {
     LiaisonInstitutionManager liaisonInstitutionManager, ReportSynthesisManager reportSynthesisManager,
     AuditLogManager auditLogManager, UserManager userManager, Policies2018Validator validator,
     CrpProgramManager crpProgramManager, ProjectPolicyManager projectPolicyManager,
-    ProjectFocusManager projectFocusManager, ProjectManager projectManager,
     ReportSynthesisFlagshipProgressManager reportSynthesisFlagshipProgressManager,
     ReportSynthesisFlagshipProgressPolicyManager reportSynthesisFlagshipProgressPolicyManager,
     RepIndOrganizationTypeManager repIndOrganizationTypeManager, RepIndStageProcessManager repIndStageProcessManager) {
@@ -122,193 +114,10 @@ public class PoliciesAction extends BaseAction {
     this.validator = validator;
     this.crpProgramManager = crpProgramManager;
     this.projectPolicyManager = projectPolicyManager;
-    this.projectFocusManager = projectFocusManager;
-    this.projectManager = projectManager;
     this.reportSynthesisFlagshipProgressManager = reportSynthesisFlagshipProgressManager;
     this.reportSynthesisFlagshipProgressPolicyManager = reportSynthesisFlagshipProgressPolicyManager;
     this.repIndOrganizationTypeManager = repIndOrganizationTypeManager;
     this.repIndStageProcessManager = repIndStageProcessManager;
-  }
-
-
-  /**
-   * Method to fill the list of policies selected by flagships
-   * 
-   * @param flagshipsLiaisonInstitutions
-   * @param phaseID
-   * @return
-   */
-  public List<ReportSynthesisFlagshipProgressPolicyDTO>
-    fillFpPlannedList(List<LiaisonInstitution> flagshipsLiaisonInstitutions, long phaseID) {
-    List<ReportSynthesisFlagshipProgressPolicyDTO> flagshipPlannedList = new ArrayList<>();
-
-    if (projectPolicyManager.findAll() != null) {
-
-      // Get global unit policies
-      List<ProjectPolicy> projectPolicies = new ArrayList<>(projectPolicyManager.findAll().stream()
-        .filter(ps -> ps.isActive() && ps.getProjectPolicyInfo(this.getActualPhase()) != null
-          && ps.getProjectPolicyInfo().isRequired() && ps.getProject() != null
-          && ps.getProject().getGlobalUnitProjects().stream()
-            .filter(gup -> gup.isActive() && gup.isOrigin() && gup.getGlobalUnit().getId().equals(loggedCrp.getId()))
-            .collect(Collectors.toList()).size() > 0)
-        .collect(Collectors.toList()));
-
-      // Fill all project policies of the global unit
-      for (ProjectPolicy projectPolicy : projectPolicies) {
-        ReportSynthesisFlagshipProgressPolicyDTO dto = new ReportSynthesisFlagshipProgressPolicyDTO();
-        projectPolicy.getProject().setProjectInfo(projectPolicy.getProject().getProjecInfoPhase(this.getActualPhase()));
-        dto.setProjectPolicy(projectPolicy);
-        if (projectPolicy.getProject().getProjectInfo().getAdministrative() != null
-          && projectPolicy.getProject().getProjectInfo().getAdministrative()) {
-          dto.setLiaisonInstitutions(new ArrayList<>());
-          dto.getLiaisonInstitutions().add(this.liaisonInstitution);
-        } else {
-          List<ProjectFocus> projectFocuses = new ArrayList<>(projectPolicy.getProject().getProjectFocuses().stream()
-            .filter(pf -> pf.isActive() && pf.getPhase().getId().equals(phaseID)).collect(Collectors.toList()));
-          List<LiaisonInstitution> liaisonInstitutions = new ArrayList<>();
-          for (ProjectFocus projectFocus : projectFocuses) {
-            liaisonInstitutions.addAll(projectFocus.getCrpProgram().getLiaisonInstitutions().stream()
-              .filter(li -> li.isActive() && li.getCrpProgram() != null
-                && li.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()
-                && li.getCrp() != null && li.getCrp().equals(this.getLoggedCrp()))
-              .collect(Collectors.toList()));
-          }
-          dto.setLiaisonInstitutions(liaisonInstitutions);
-        }
-
-        flagshipPlannedList.add(dto);
-      }
-
-      // Get deleted policies
-      List<ReportSynthesisFlagshipProgressPolicy> flagshipProgressPolicies = new ArrayList<>();
-      for (LiaisonInstitution liaisonInstitution : flagshipsLiaisonInstitutions) {
-        ReportSynthesis reportSynthesis = reportSynthesisManager.findSynthesis(phaseID, liaisonInstitution.getId());
-        if (reportSynthesis != null) {
-          if (reportSynthesis.getReportSynthesisFlagshipProgress() != null) {
-            if (reportSynthesis.getReportSynthesisFlagshipProgress()
-              .getReportSynthesisFlagshipProgressPolicies() != null) {
-              List<ReportSynthesisFlagshipProgressPolicy> policies = new ArrayList<>(
-                reportSynthesis.getReportSynthesisFlagshipProgress().getReportSynthesisFlagshipProgressPolicies()
-                  .stream().filter(s -> s.isActive()).collect(Collectors.toList()));
-              if (policies != null || !policies.isEmpty()) {
-                for (ReportSynthesisFlagshipProgressPolicy reportSynthesisFlagshipProgressPolicy : policies) {
-                  flagshipProgressPolicies.add(reportSynthesisFlagshipProgressPolicy);
-                }
-              }
-            }
-          }
-        }
-      }
-
-      // Get list of policies to remove
-      List<ReportSynthesisFlagshipProgressPolicyDTO> removeList = new ArrayList<>();
-      for (ReportSynthesisFlagshipProgressPolicyDTO dto : flagshipPlannedList) {
-
-        List<LiaisonInstitution> removeLiaison = new ArrayList<>();
-        for (LiaisonInstitution liaisonInstitution : dto.getLiaisonInstitutions()) {
-          ReportSynthesis reportSynthesis = reportSynthesisManager.findSynthesis(phaseID, liaisonInstitution.getId());
-          if (reportSynthesis != null) {
-            if (reportSynthesis.getReportSynthesisFlagshipProgress() != null) {
-
-              ReportSynthesisFlagshipProgressPolicy flagshipProgressPolicyNew =
-                new ReportSynthesisFlagshipProgressPolicy();
-              flagshipProgressPolicyNew = new ReportSynthesisFlagshipProgressPolicy();
-              flagshipProgressPolicyNew.setProjectPolicy(dto.getProjectPolicy());
-              flagshipProgressPolicyNew
-                .setReportSynthesisFlagshipProgress(reportSynthesis.getReportSynthesisFlagshipProgress());
-
-              if (flagshipProgressPolicies.contains(flagshipProgressPolicyNew)) {
-                removeLiaison.add(liaisonInstitution);
-              }
-            }
-          }
-        }
-
-        for (LiaisonInstitution li : removeLiaison) {
-          dto.getLiaisonInstitutions().remove(li);
-        }
-
-        if (dto.getLiaisonInstitutions().isEmpty()) {
-          removeList.add(dto);
-        }
-      }
-
-      // Remove policies unselected by flagships
-      for (ReportSynthesisFlagshipProgressPolicyDTO i : removeList) {
-        flagshipPlannedList.remove(i);
-      }
-
-    }
-    return flagshipPlannedList;
-  }
-
-
-  private void fillProjectPoliciesList(Long phaseID, LiaisonInstitution liaisonInstitution) {
-    projectPolicies = new ArrayList<>();
-    Phase phase = this.getActualPhase();
-    if (this.isFlagship()) {
-      // Fill Project policies of the current flagship
-      if (projectFocusManager.findAll() != null) {
-        List<ProjectFocus> projectFocus = new ArrayList<>(projectFocusManager.findAll().stream()
-          .filter(pf -> pf.isActive() && pf.getCrpProgram().getId().equals(liaisonInstitution.getCrpProgram().getId())
-            && pf.getPhase() != null && pf.getPhase().getId().equals(phaseID))
-          .collect(Collectors.toList()));
-
-        for (ProjectFocus focus : projectFocus) {
-          Project project = projectManager.getProjectById(focus.getProject().getId());
-          List<ProjectPolicy> plannedProjectPolicies = new ArrayList<>(project.getProjectPolicies().stream()
-            .filter(
-              pp -> pp.isActive() && pp.getProjectPolicyInfo(phase) != null && pp.getProjectPolicyInfo().isRequired())
-            .collect(Collectors.toList()));
-
-          for (ProjectPolicy projectPolicy : plannedProjectPolicies) {
-            projectPolicy.getProjectPolicyInfo(phase);
-            projectPolicy.setSubIdos(projectPolicy.getSubIdos(phase));
-            projectPolicy.setCrossCuttingMarkers(projectPolicy.getCrossCuttingMarkers(phase));
-            projectPolicy.setOwners(projectPolicy.getOwners(phase));
-            projectPolicy.setGeographicScopes(projectPolicy.getGeographicScopes(phase));
-            projectPolicy.setRegions(projectPolicy.getRegions(phase));
-            projectPolicy.setCountries(projectPolicy.getCountries(phase));
-            projectPolicy.setEvidences(projectPolicy.getEvidences(phase));
-            projectPolicies.add(projectPolicy);
-          }
-        }
-      }
-    } else {
-      // Fill Project policies of the PMU, removing flagship deletions
-      liaisonInstitutions = loggedCrp.getLiaisonInstitutions().stream()
-        .filter(c -> c.getCrpProgram() != null && c.isActive()
-          && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
-        .collect(Collectors.toList());
-      liaisonInstitutions.sort(Comparator.comparing(LiaisonInstitution::getAcronym));
-
-      List<ReportSynthesisFlagshipProgressPolicyDTO> flagshipPlannedList =
-        this.fillFpPlannedList(liaisonInstitutions, phase.getId());
-
-      for (ReportSynthesisFlagshipProgressPolicyDTO reportSynthesisFlagshipProgressPolicyDTO : flagshipPlannedList) {
-
-        ProjectPolicy projectPolicy = reportSynthesisFlagshipProgressPolicyDTO.getProjectPolicy();
-        projectPolicy.getProjectPolicyInfo(phase);
-        projectPolicy.setSelectedFlahsgips(new ArrayList<>());
-        // sort selected flagships
-        if (reportSynthesisFlagshipProgressPolicyDTO.getLiaisonInstitutions() != null
-          && !reportSynthesisFlagshipProgressPolicyDTO.getLiaisonInstitutions().isEmpty()) {
-          reportSynthesisFlagshipProgressPolicyDTO.getLiaisonInstitutions()
-            .sort((l1, l2) -> l1.getCrpProgram().getAcronym().compareTo(l2.getCrpProgram().getAcronym()));
-        }
-        projectPolicy.getSelectedFlahsgips().addAll(reportSynthesisFlagshipProgressPolicyDTO.getLiaisonInstitutions());
-        projectPolicy.setSubIdos(projectPolicy.getSubIdos(phase));
-        projectPolicy.setCrossCuttingMarkers(projectPolicy.getCrossCuttingMarkers(phase));
-        projectPolicy.setOwners(projectPolicy.getOwners(phase));
-        projectPolicy.setGeographicScopes(projectPolicy.getGeographicScopes(phase));
-        projectPolicy.setRegions(projectPolicy.getRegions(phase));
-        projectPolicy.setCountries(projectPolicy.getCountries(phase));
-        projectPolicy.setEvidences(projectPolicy.getEvidences(phase));
-        projectPolicies.add(projectPolicy);
-
-      }
-    }
-
   }
 
 
@@ -591,7 +400,7 @@ public class PoliciesAction extends BaseAction {
       liaisonInstitutionID = reportSynthesisDB.getLiaisonInstitution().getId();
       liaisonInstitution = liaisonInstitutionManager.getLiaisonInstitutionById(liaisonInstitutionID);
 
-      this.fillProjectPoliciesList(phase.getId(), liaisonInstitution);
+      projectPolicies = projectPolicyManager.getProjectPoliciesList(liaisonInstitution, phase);
 
       Path path = this.getAutoSaveFilePath();
       // Verify if there is a Draft file
