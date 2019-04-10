@@ -42,7 +42,6 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableDissemination;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePublicationMetadata;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.Phase;
-import org.cgiar.ccafs.marlo.data.model.PowbEvidencePlannedStudyDTO;
 import org.cgiar.ccafs.marlo.data.model.PowbExpenditureAreas;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
@@ -204,7 +203,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
   private List<ReportSynthesisKeyPartnershipExternal> flagshipExternalPartnerships;
   private List<ReportSynthesisKeyPartnershipExternal> externalPartnerships;
   private List<ReportSynthesisKeyPartnershipCollaboration> collaborations;
-  private List<PowbEvidencePlannedStudyDTO> meliaDto;
+  private List<ProjectExpectedStudy> meliaDto;
   // Parameters
   private POISummary poiSummary;
   private LiaisonInstitution pmuInstitution;
@@ -785,33 +784,25 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     headers.add(header);
 
     if (meliaDto != null) {
-      for (PowbEvidencePlannedStudyDTO study : meliaDto) {
+      for (ProjectExpectedStudy study : meliaDto) {
         String name = "", status = "", type = "", comments = "";
-        if (study.getProjectExpectedStudy().getProjectExpectedStudyInfo(this.getSelectedPhase()) != null) {
-          if (study.getProjectExpectedStudy().getProjectExpectedStudyInfo(this.getSelectedPhase()).getTitle() != null) {
-            name = "S" + study.getProjectExpectedStudy().getId() + " - "
-              + study.getProjectExpectedStudy().getProjectExpectedStudyInfo(this.getSelectedPhase()).getTitle();
+        if (study.getProjectExpectedStudyInfo(this.getSelectedPhase()) != null) {
+          if (study.getProjectExpectedStudyInfo(this.getSelectedPhase()).getTitle() != null) {
+            name = "S" + study.getId() + " - " + study.getProjectExpectedStudyInfo(this.getSelectedPhase()).getTitle();
           }
 
-          if (study.getProjectExpectedStudy().getProjectExpectedStudyInfo(this.getSelectedPhase()).getStatus() != null
-            && study.getProjectExpectedStudy().getProjectExpectedStudyInfo(this.getSelectedPhase()).getStatus()
-              .getName() != null) {
-            status = study.getProjectExpectedStudy().getProjectExpectedStudyInfo(this.getSelectedPhase()).getStatus()
-              .getName();
+          if (study.getProjectExpectedStudyInfo(this.getSelectedPhase()).getStatus() != null
+            && study.getProjectExpectedStudyInfo(this.getSelectedPhase()).getStatus().getName() != null) {
+            status = study.getProjectExpectedStudyInfo(this.getSelectedPhase()).getStatus().getName();
           }
 
-          if (study.getProjectExpectedStudy().getProjectExpectedStudyInfo(this.getSelectedPhase())
-            .getStudyType() != null
-            && study.getProjectExpectedStudy().getProjectExpectedStudyInfo(this.getSelectedPhase()).getStudyType()
-              .getName() != null) {
-            type = study.getProjectExpectedStudy().getProjectExpectedStudyInfo(this.getSelectedPhase()).getStudyType()
-              .getName();
+          if (study.getProjectExpectedStudyInfo(this.getSelectedPhase()).getStudyType() != null
+            && study.getProjectExpectedStudyInfo(this.getSelectedPhase()).getStudyType().getName() != null) {
+            type = study.getProjectExpectedStudyInfo(this.getSelectedPhase()).getStudyType().getName();
           }
 
-          if (study.getProjectExpectedStudy().getProjectExpectedStudyInfo(this.getSelectedPhase())
-            .getTopLevelComments() != null) {
-            comments = study.getProjectExpectedStudy().getProjectExpectedStudyInfo(this.getSelectedPhase())
-              .getTopLevelComments();
+          if (study.getProjectExpectedStudyInfo(this.getSelectedPhase()).getTopLevelComments() != null) {
+            comments = study.getProjectExpectedStudyInfo(this.getSelectedPhase()).getTopLevelComments();
           }
 
           POIField[] sData =
@@ -3009,8 +3000,8 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
 
   public void getTable10Info() {
 
-    meliaDto = reportSynthesisMeliaManager.getMeliaPlannedList(flagshipLiaisonInstitutions,
-      this.getSelectedPhase().getId(), this.getLoggedCrp(), pmuInstitution);
+    meliaDto = reportSynthesisMeliaManager.getTable10(flagshipLiaisonInstitutions, this.getSelectedPhase().getId(),
+      this.getLoggedCrp(), pmuInstitution);
   }
 
   private void getTable11Info() {
