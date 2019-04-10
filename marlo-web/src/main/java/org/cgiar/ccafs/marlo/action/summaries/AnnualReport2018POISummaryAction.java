@@ -718,18 +718,15 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     data = new ArrayList<>();
     // Table A-1 Evidence on Progress
     List<ReportSynthesisSrfProgressTarget> listSrfProgressTargets = new ArrayList<>();
-    try {
-      listSrfProgressTargets = reportSynthesisSrfProgressTargetManager.findAll().stream().filter(t -> t.isActive())
-        .collect(Collectors.toList());
-    } catch (Exception e) {
-      System.out.println(e);
+
+    if (reportSynthesisPMU.getReportSynthesisSrfProgress() != null) {
+      if (reportSynthesisPMU.getReportSynthesisSrfProgress().getReportSynthesisSrfProgressTargets() != null) {
+        listSrfProgressTargets = new ArrayList<>(reportSynthesisPMU.getReportSynthesisSrfProgress()
+          .getReportSynthesisSrfProgressTargets().stream().filter(t -> t.isActive()).collect(Collectors.toList()));
+      }
     }
-    if (listSrfProgressTargets != null && !listSrfProgressTargets.isEmpty()
-      && reportSynthesisPMU.getReportSynthesisSrfProgress() != null) {
 
-      listSrfProgressTargets = listSrfProgressTargets.stream().filter(l -> l.getReportSynthesisSrfProgress().getId()
-        .equals(reportSynthesisPMU.getReportSynthesisSrfProgress().getId())).collect(Collectors.toList());
-
+    if (listSrfProgressTargets != null && !listSrfProgressTargets.isEmpty()) {
 
       for (ReportSynthesisSrfProgressTarget reportSynthesisSrfProgressTarget : listSrfProgressTargets.stream()
         .filter(c -> c.getSrfSloIndicatorTarget().getTargetsIndicator() != null)
