@@ -878,15 +878,14 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
             comments = action.getReportSynthesisMeliaEvaluation().getComments();
           }
 
-
           if (action != null && action.getActions() != null) {
-            actions += "• " + poiSummary.replaceHTMLTags(action.getActions() + "\n");
+            actions += poiSummary.replaceHTMLTags(action.getActions());
           }
           if (action != null && action.getTextWhom() != null) {
-            whom = "• " + action.getTextWhom() + "(" + action.getActions() + ")" + "\n";
+            whom = action.getTextWhom();
           }
           if (action != null && action.getTextWhen() != null) {
-            when = "• " + action.getTextWhen() + "(" + action.getActions() + ")" + "\n";
+            when = action.getTextWhen();
           }
 
           if (name.equals(lastName)) {
