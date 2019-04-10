@@ -126,7 +126,7 @@
     </div>
     [#-- Expected additional contribution before end of 2022 (if not already fully covered). --]
     <div class="form-group">
-      [@customForm.textArea name="${customName}.additionalContribution" value="${(sloTargetContribution.additionalContribution)!}" i18nkey="${customLabel}.additionalContribution" className="limitWords-100" help="${customLabel}.additionalContribution.help" helpIcon=false required=false editable=editable allowTextEditor=true /]
+      [@customForm.textArea name="${customName}.additionalContribution" value="${(sloTargetContribution.additionalContribution?html)!}" i18nkey="${customLabel}.additionalContribution" className="limitWords-100" help="${customLabel}.additionalContribution.help" helpIcon=false required=false editable=editable allowTextEditor=true /]
       [#-- FP Synthesis table --]
       [#if PMU]
         [@macrosAR.tableFPSynthesis tableName="${customLabel}.tableSloTargetBriefSummary" list=otherContributions columns=["additionalContribution"] crpProgramField="reportSynthesisSrfProgress.reportSynthesis.liaisonInstitution.crpProgram" showTitle=false showHeader=false showEmptyRows=false /]

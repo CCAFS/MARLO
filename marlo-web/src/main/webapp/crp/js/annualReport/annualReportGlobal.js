@@ -6,36 +6,40 @@ $(document).ready(function() {
   pageName = actionName.replace(/[^a-z0-9+]+/gi, '_');
 
   // Set data tables
-  $tableViewMore = $('.viewMoreSyntesis-block table');
-  tableDatatableViewmore = $tableViewMore.DataTable({
-      "paging": false,
-      "searching": false,
-      "info": false,
-      "scrollY": "320px",
-      "scrollCollapse": true,
-  });
-
-  $progressTableViewMore = $('.viewMoreSyntesisTable-block table');
-  tableDataProgressTableViewmore = $progressTableViewMore.DataTable({
-      "paging": false,
-      "searching": false,
-      "info": true
-  });
-
-  $('.urlify').each(function(i,e) {
-    var text = $(e).html();
-    // Take out Anchor tag
-    // $(e).find('a').contents().unwrap();
-
-    // URLfy links (Works only for plain text)
-    // $(e).html(urlifyComplete(text))
-
-    // Short URLs text
-    $(e).find('a').each(function(iAnchor,anchor) {
-      $(anchor).addClass('dont-break-out');
-      var anchorText = $(anchor).text();
-      $(anchor).text(truncate(anchorText, 50));
+  if($.fn.DataTable) {
+    $tableViewMore = $('.viewMoreSyntesis-block table');
+    tableDatatableViewmore = $tableViewMore.DataTable({
+        "paging": false,
+        "searching": false,
+        "info": false,
+        "scrollY": "320px",
+        "scrollCollapse": true,
     });
+
+    $progressTableViewMore = $('.viewMoreSyntesisTable-block table');
+    tableDataProgressTableViewmore = $progressTableViewMore.DataTable({
+        "paging": false,
+        "searching": false,
+        "info": true
+    });
+  }
+
+  $('.urlify').each(function(i,urlifyText) {
+    var text = $(urlifyText).html();
+
+    if($(urlifyText).find('a').length > 0) {
+      // Short URLs text
+      $(urlifyText).find('a').each(function(iAnchor,anchor) {
+        var anchorText = $(anchor).text();
+        $(anchor).text(truncate(anchorText, 50));
+      });
+    } else {
+      // URLfy links (Works only for plain text)
+      $(urlifyText).html(urlifyComplete(text));
+    }
+
+    $(urlifyText).find('a').addClass('dont-break-out');
+
   });
 
   // Load indexTab
