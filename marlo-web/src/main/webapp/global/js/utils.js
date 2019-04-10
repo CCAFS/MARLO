@@ -519,7 +519,7 @@ function urlifyComplete(text) {
   var urlRegex = /(https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*))/g;
   return text.replace(urlRegex, function(url) {
     var l = getLocation(url);
-    return '<a href="' + url + '">' + truncate(url, 50) + '</a>';
+    return '<a href="' + url + '">' + truncate(url, 45) + '</a>';
   })
   // or alternatively
   // return text.replace(urlRegex, '<a href="$1">$1</a>')
@@ -527,7 +527,6 @@ function urlifyComplete(text) {
 
 function truncate(str,no_words) {
   if(str.length > no_words) {
-    console.log('cut');
     return str.slice(0, no_words) + "...";
   } else {
     return str;
