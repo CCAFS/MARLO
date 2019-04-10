@@ -1708,7 +1708,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
 
       }
       POIField[] sData =
-        {new POIField(leadFP, ParagraphAlignment.LEFT), new POIField(description, ParagraphAlignment.CENTER),
+        {new POIField(leadFP, ParagraphAlignment.LEFT), new POIField(description, ParagraphAlignment.LEFT),
           new POIField(keyPartners, ParagraphAlignment.LEFT), new POIField(mainArea, ParagraphAlignment.LEFT)};
       data = Arrays.asList(sData);
       datas.add(data);
