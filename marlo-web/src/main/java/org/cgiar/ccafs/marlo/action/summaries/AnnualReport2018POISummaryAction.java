@@ -1662,7 +1662,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     List<POIField> data;
     if (this.isEntityCRP() == true) {
       POIField[] sHeader = {
-        new POIField(this.getText("summaries.annualReportCRP2018.moduleLead",
+        new POIField(this.getText("summaries.annualReportCRP2018.table8Title1",
           new String[] {String.valueOf(this.getSelectedYear())}), ParagraphAlignment.LEFT),
         new POIField(this.getText("summaries.annualReport2018.table8Title2"), ParagraphAlignment.LEFT),
         new POIField(this.getText("summaries.annualReport2018.table8Title3"), ParagraphAlignment.LEFT),
@@ -1673,9 +1673,8 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
 
     if (this.isEntityPlatform() == true) {
       POIField[] sHeader = {
-        new POIField(
-          this.getText("summaries.annualReportCRP2018.module", new String[] {String.valueOf(this.getSelectedYear())}),
-          ParagraphAlignment.LEFT),
+        new POIField(this.getText("summaries.annualReportCRP2018.moduleLead",
+          new String[] {String.valueOf(this.getSelectedYear())}), ParagraphAlignment.LEFT),
         new POIField(this.getText("summaries.annualReport2018.table8Title2"), ParagraphAlignment.LEFT),
         new POIField(this.getText("summaries.annualReport2018.table8Title3"), ParagraphAlignment.LEFT),
         new POIField(this.getText("summaries.annualReport2018.table8Title4"), ParagraphAlignment.LEFT)};
@@ -2364,8 +2363,20 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
           ? this.getLoggedCrp().getAcronym() : this.getLoggedCrp().getName();
         poiSummary.textParagraph(document.createParagraph(),
           this.getText("summaries.annualReportPlatform2018.unitName") + ": " + unitName);
-        run.setText(this.getText("summaries.annualReport.LeadCenter") + ":");
-        poiSummary.textLineBreak(document, 1);
+        poiSummary.textParagraph(document.createParagraph(), this.getText("summaries.annualReport.LeadCenter") + ": "
+          + this.getLoggedCrp().getInstitution().getAcronymName());
+        // Flagships lead institutions
+        poiSummary.textParagraph(document.createParagraph(), this.getText("summaries.powb2019.flagshipLeadInst"));
+        run.addTab();
+
+        if (flagshipLiaisonInstitutions != null) {
+          for (int i = 0; i < flagshipLiaisonInstitutions.size(); i++) {
+
+            poiSummary.textParagraph(document.createParagraph(),
+              "         " + this.getText("summaries.annualReportCRP2018.module") + " " + (i + 1) + ": "
+                + flagshipLiaisonInstitutions.get(i).getName());
+          }
+        }
         this.addParticipatingCenters();
 
         // Part A - Narrative section
@@ -2418,7 +2429,6 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         paragraph.setStyle("heading 5");
 
         // 1.2.1
-        poiSummary.textLineBreak(document, 1);
         paragraph = document.createParagraph();
         run = paragraph.createRun();
         run.setFontSize(11);
@@ -2515,7 +2525,6 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         paragraph.setStyle("heading 15");
 
         // 2.1 Management and governance
-        poiSummary.textLineBreak(document, 1);
         paragraph = document.createParagraph();
         run = paragraph.createRun();
         run.setFontSize(13);
@@ -2534,7 +2543,6 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         paragraph.setStyle("heading 17");
 
         // 2.2.1 Highlights of External Partnerships
-        poiSummary.textLineBreak(document, 1);
         paragraph = document.createParagraph();
         run = paragraph.createRun();
         run.setFontSize(11);
