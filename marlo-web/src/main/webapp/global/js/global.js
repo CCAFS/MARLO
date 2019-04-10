@@ -347,13 +347,12 @@ jQuery.fn.setTrumbowyg = function() {
           ]
         ],
         allowTagsFromPaste: [
-            'div', 'a', 'p', 'br', 'b', 'strong', 'i', 'em'
+            'a', 'p', 'br', 'b', 'strong', 'i', 'em'
         ],
         urlProtocol: true,
         autogrow: true,
         minimalLinks: true,
-        semantic: true,
-        resetCss: true
+        semantic: true
     });
 
     $editor.trumbowyg().on('tbwpaste ', function() {
