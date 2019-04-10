@@ -17,6 +17,7 @@ package org.cgiar.ccafs.marlo.data.manager;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.PowbEvidencePlannedStudyDTO;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisMelia;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisMeliaEvaluation;
 
@@ -92,6 +93,10 @@ public interface ReportSynthesisMeliaManager {
    * @return a ReportSynthesisMelia object.
    */
   public ReportSynthesisMelia getReportSynthesisMeliaById(long reportSynthesisMeliaID);
+
+  public List<ProjectExpectedStudy> getTable10(List<LiaisonInstitution> lInstitutions, long phaseID,
+    GlobalUnit loggedCrp, LiaisonInstitution liaisonInstitutionPMU);
+
 
   /**
    * This method saves the information of the given reportSynthesisMelia
