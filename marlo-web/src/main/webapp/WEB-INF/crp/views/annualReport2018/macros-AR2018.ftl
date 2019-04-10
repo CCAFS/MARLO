@@ -25,7 +25,7 @@
 [/#macro]
 
 
-[#macro tableFPSynthesis tableName="tableName" list=[] columns=[] crpProgramField="reportSynthesis.liaisonInstitution.crpProgram" showEmptyRows=true showTitle=true showHeader=true allInOne=false]
+[#macro tableFPSynthesis tableName="tableName" list=[] columns=[] crpProgramField="reportSynthesis.liaisonInstitution.crpProgram" showEmptyRows=true showTitle=true showHeader=true allInOne=false urlify=true]
   <div class="form-group">
     [#if showTitle]
       <h4 class="simpleTitle">[@s.text name="${tableName}.title" /]</h4>
@@ -39,8 +39,7 @@
             <th class="text-center"> Progress By [@s.text name="global.flagship" /]s </th>
           [#else]
             [#list columns as column]<th class="text-center"> [@s.text name="${tableName}.column${column_index}" /] </th>[/#list]
-          [/#if]
-          
+          [/#if] 
         </tr>
       </thead>
       [/#if]
@@ -61,7 +60,7 @@
               [#if allInOne]
                 <td>
                   [#list columns as column]
-                    <div class="form-group">
+                    <div class="form-group [#if urlify]urlify[/#if]">
                        <strong> [@s.text name="${tableName}.column${column_index}" /]: </strong> <br />
                       [#if (item[column]?has_content)!false] 
                         ${item[column]?replace('\n', '')} 
@@ -73,7 +72,7 @@
                 </td>
               [#else]
                 [#list columns as column]
-                  <td>
+                  <td class="[#if urlify]urlify[/#if]">
                     [#if (item[column]?has_content)!false] 
                       ${item[column]?replace('\n', '')} 
                     [#else]
