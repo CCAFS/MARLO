@@ -24,7 +24,18 @@ $(document).ready(function() {
 
   $('.urlify').each(function(i,e) {
     var text = $(e).html();
-    $(e).html(urlify(text));
+    // Take out Anchor tag
+    // $(e).find('a').contents().unwrap();
+
+    // URLfy links (Works only for plain text)
+    // $(e).html(urlifyComplete(text))
+
+    // Short URLs text
+    $(e).find('a').each(function(iAnchor,anchor) {
+      $(anchor).addClass('dont-break-out');
+      var anchorText = $(anchor).text();
+      $(anchor).text(truncate(anchorText, 50));
+    });
   });
 
   // Load indexTab
