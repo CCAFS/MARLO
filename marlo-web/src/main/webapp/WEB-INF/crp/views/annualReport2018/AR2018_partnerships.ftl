@@ -89,35 +89,38 @@
                       [@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/]
                       
                       <h4 class="simpleTitle headTitle">[@s.text name="${customLabel}.table7.title" /]</h4>
-                      <table class="table">
-                        <thead>
-                          <tr>
-                            <th>Lead FP</th>
-                            <th>Description of partnership</th>
-                            <th>List of key partners</th>
-                            <th>Main area of partnership</th>
-                            <th class="col-md-1">Include in AR</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          [#list (flagshipExternalPartnerships?sort_by("id"))![] as item]
-                            [#assign crpProgram = (item.reportSynthesisKeyPartnership.reportSynthesis.liaisonInstitution.crpProgram)!]
+                      
+                      <div class="viewMoreSyntesisTable-block">
+                        <table class="table">
+                          <thead>
                             <tr>
-                              <td> <span class="programTag" style="border-color:${(crpProgram.color)!'#fff'}">${(crpProgram.acronym)!}</span></td>
-                              <td> [@utils.tableText value=(item.description)!"" /] </td>
-                              <td> [@utils.tableList list=(item.institutions)![] displayFieldName="institution.composedName" /] </td>
-                              <td> [@utils.tableList list=(item.mainAreas)![] displayFieldName="partnerArea.name"  nobr=true /] 
-                                [#-- Other --]
-                                [@utils.tableText value=(item.other)!"" emptyText="" /]
-                              </td>
-                              <td class="text-center">
-                                [#assign isChecked = ((!reportSynthesis.reportSynthesisKeyPartnership.partnershipIds?seq_contains(item.id))!true) /]
-                                [@customForm.checkmark id="check-${(item.id)!}" name="reportSynthesis.reportSynthesisKeyPartnership.plannedExternalPartnershipsValue" value="${(item.id)!''}" checked=isChecked editable=editable centered=true/]
-                              </td>
+                              <th>Lead FP</th>
+                              <th>Description of partnership</th>
+                              <th>List of key partners</th>
+                              <th>Main area of partnership</th>
+                              <th class="col-md-1">Include in AR</th>
                             </tr>
-                          [/#list]
-                        </tbody>
-                      </table>
+                          </thead>
+                          <tbody>
+                            [#list (flagshipExternalPartnerships?sort_by("id"))![] as item]
+                              [#assign crpProgram = (item.reportSynthesisKeyPartnership.reportSynthesis.liaisonInstitution.crpProgram)!]
+                              <tr>
+                                <td> <span class="programTag" style="border-color:${(crpProgram.color)!'#fff'}">${(crpProgram.acronym)!}</span></td>
+                                <td> [@utils.tableText value=(item.description)!"" /] </td>
+                                <td> [@utils.tableList list=(item.institutions)![] displayFieldName="institution.composedName" /] </td>
+                                <td> [@utils.tableList list=(item.mainAreas)![] displayFieldName="partnerArea.name"  nobr=true /] 
+                                  [#-- Other --]
+                                  [@utils.tableText value=(item.other)!"" emptyText="" /]
+                                </td>
+                                <td class="text-center">
+                                  [#assign isChecked = ((!reportSynthesis.reportSynthesisKeyPartnership.partnershipIds?seq_contains(item.id))!true) /]
+                                  [@customForm.checkmark id="check-${(item.id)!}" name="reportSynthesis.reportSynthesisKeyPartnership.plannedExternalPartnershipsValue" value="${(item.id)!''}" checked=isChecked editable=editable centered=true/]
+                                </td>
+                              </tr>
+                            [/#list]
+                          </tbody>
+                        </table>
+                      </div>
                     </div>
                   [#else]
                     <div class="form-group">
@@ -176,32 +179,34 @@
                     [@customForm.helpLabel name="${customLabel}.table8.help" showIcon=false editable=editable/]
                     
                     [#if PMU]
-                      <table class="table">
-                        <thead>
-                          <tr>
-                            <th></th>
-                            <th> Center, CRP or Platform</th>
-                            <th> Description of collaboration</th>
-                            <th> Value Added</th>
-                            <th class="col-md-1"><small> Include in AR </small></th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          [#list (flagshipExternalCollaborations?sort_by("id"))![] as item]
-                            [#assign crpProgramColl = (item.reportSynthesisKeyPartnership.reportSynthesis.liaisonInstitution.crpProgram)!]
+                      <div class="viewMoreSyntesisTable-block">
+                        <table class="table">
+                          <thead>
                             <tr>
-                              <td><span class="programTag" style="border-color:${(crpProgramColl.color)!'#fff'}">${(crpProgramColl.acronym)!}</span></td>
-                              <td> [@utils.tableList list=(item.crps)![] displayFieldName="globalUnit.acronym" nobr=true /] </td>
-                              <td> [@utils.tableText value=(item.description)!"" /] </td>
-                              <td> [@utils.tableText value=(item.valueAdded)!"" /] </td>
-                              <td class="text-center">
-                                [#assign isChecked = ((!reportSynthesis.reportSynthesisKeyPartnership.collaborationIds?seq_contains(item.id))!true) /]
-                                [@customForm.checkmark id="check-${(item.id)!}" name="reportSynthesis.reportSynthesisKeyPartnership.plannedCollaborationsValue" value="${(item.id)!''}" checked=isChecked editable=editable centered=true/]
-                              </td>
+                              <th></th>
+                              <th> Description of collaboration</th>
+                              <th> Center, CRP or Platform</th>
+                              <th> Value Added</th>
+                              <th class="col-md-1"><small> Include in AR </small></th>
                             </tr>
-                          [/#list]
-                        </tbody>
-                      </table>
+                          </thead>
+                          <tbody>
+                            [#list (flagshipExternalCollaborations?sort_by("id"))![] as item]
+                              [#assign crpProgramColl = (item.reportSynthesisKeyPartnership.reportSynthesis.liaisonInstitution.crpProgram)!]
+                              <tr>
+                                <td><span class="programTag" style="border-color:${(crpProgramColl.color)!'#fff'}">${(crpProgramColl.acronym)!}</span></td>
+                                <td> [@utils.tableText value=(item.description)!"" /] </td>
+                                <td> [@utils.tableList list=(item.crps)![] displayFieldName="globalUnit.acronym" nobr=true /] </td>
+                                <td> [@utils.tableText value=(item.valueAdded)!"" /] </td>
+                                <td class="text-center">
+                                  [#assign isChecked = ((!reportSynthesis.reportSynthesisKeyPartnership.collaborationIds?seq_contains(item.id))!true) /]
+                                  [@customForm.checkmark id="check-${(item.id)!}" name="reportSynthesis.reportSynthesisKeyPartnership.plannedCollaborationsValue" value="${(item.id)!''}" checked=isChecked editable=editable centered=true/]
+                                </td>
+                              </tr>
+                            [/#list]
+                          </tbody>
+                        </table>
+                      </div>
                     [/#if]
                     
                     <div class="listCrossParnterships">

@@ -14,13 +14,33 @@ $(document).ready(function() {
         "info": false,
         "scrollY": "320px",
         "scrollCollapse": true,
+        aoColumnDefs: [
+          {
+              sType: "natural",
+              aTargets: [
+                0
+              ]
+          }
+        ]
     });
 
     $progressTableViewMore = $('.viewMoreSyntesisTable-block table');
     tableDataProgressTableViewmore = $progressTableViewMore.DataTable({
         "paging": false,
         "searching": false,
-        "info": true
+        "info": true,
+        aoColumnDefs: [
+          {
+              sType: "natural",
+              aTargets: [
+                0
+              ]
+          }
+        ]
+    /*
+     * , dom: 'Bfrtip', buttons: [ { extend: 'csv', title: 'Data_export_' + currentSectionString + '_' +
+     * getDateString(), autoFilter: true }, { extend: 'print' } ]
+     */
     });
   }
 
