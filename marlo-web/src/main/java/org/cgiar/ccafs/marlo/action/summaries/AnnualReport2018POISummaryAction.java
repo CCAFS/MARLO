@@ -1947,7 +1947,6 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         run.setBold(true);
         run.setText(this.getText("summaries.annualReport2018.keyResults.progress"));
         this.getProgressByFlagships();
-        // this.addPolicyContribution();
         paragraph.setStyle("headingTitle7");
 
         // 1.2.3
@@ -2028,7 +2027,6 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         paragraph.setStyle("heading 15");
 
         // 2.1 Management and governance
-        poiSummary.textLineBreak(document, 1);
         paragraph = document.createParagraph();
         run = paragraph.createRun();
         run.setFontSize(13);
@@ -2947,13 +2945,13 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
       for (ReportSynthesisFlagshipProgress flagshipProgress : flagshipsReportSynthesisFlagshipProgress) {
 
         if (flagshipProgress.getProgressByFlagships() != null) {
-          poiSummary.textParagraphBold(document.createParagraph(), "F" + i);
-          poiSummary.textParagraphBold(document.createParagraph(), "Flagship progress:");
+          poiSummary.textParagraphBold(document.createParagraph(), "F" + i + " - Flagship progress:");
           try {
             poiSummary.convertHTMLTags(document, flagshipProgress.getProgressByFlagships());
           } catch (Exception e) {
             poiSummary.convertHTMLTags(document, poiSummary.replaceHTMLTags(flagshipProgress.getProgressByFlagships()));
           }
+          poiSummary.textLineBreak(document, 1);
         }
 
         if (flagshipProgress.getDetailedAnnex() != null && !flagshipProgress.getDetailedAnnex().isEmpty()) {
@@ -2963,9 +2961,9 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
           } catch (Exception e) {
             poiSummary.convertHTMLTags(document, poiSummary.replaceHTMLTags(flagshipProgress.getDetailedAnnex()));
           }
+          poiSummary.textLineBreak(document, 1);
         }
 
-        poiSummary.textLineBreak(document, 1);
         i++;
       }
     }
