@@ -1145,6 +1145,16 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     for (ProjectPolicy projectPolicy : projectPoliciesTable2) {
       String name = null, levelMaturity = "", srfSubIdo = "", gender = "", youth = "", capdev = "", climateChange = "",
         evidences = "", evidenceComposed = "";
+
+      if (projectPolicy.getProjectPolicyInfo().getRepIndStageProcess() != null
+        && projectPolicy.getProjectPolicyInfo().getRepIndStageProcess().getId() == 3) {
+        if (projectPolicy.getProjectPolicyInfo().getNarrativeEvidence() != null
+          && !projectPolicy.getProjectPolicyInfo().getNarrativeEvidence().isEmpty()) {
+          evidences += projectPolicy.getProjectPolicyInfo().getNarrativeEvidence() + "\n";
+        }
+      }
+
+
       if (projectPolicy != null && projectPolicy.getProjectPolicyInfo() != null) {
         srfSubIdo = "";
         if (projectPolicy.getProjectPolicyInfo().getTitle() != null) {
@@ -1385,17 +1395,40 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     List<List<POIField>> headers = new ArrayList<>();
     List<List<POIField>> datas = new ArrayList<>();
     List<POIField> data;
-    POIField[] sHeader = {
-      new POIField(this.getText("summaries.annualReport2018.table5Title1"), ParagraphAlignment.LEFT, true, "000000"),
-      new POIField(this.getText("summaries.annualReport2018.table5Title2"), ParagraphAlignment.CENTER, true, "000000"),
-      new POIField(this.getText("summaries.annualReport2018.table5Title3"), ParagraphAlignment.LEFT, true, "000000"),
-      new POIField(this.getText("summaries.annualReport2018.table5Title4"), ParagraphAlignment.CENTER, true, "000000"),
-      new POIField(this.getText("summaries.annualReport2018.table5Title5") + " "
-        + this.getText("summaries.annualReport2018.table5Title51"), ParagraphAlignment.LEFT, true, "000000"),
-      new POIField(this.getText("summaries.annualReport2018.table5Title6") + " "
-        + this.getText("summaries.annualReport2018.table5Title61"), ParagraphAlignment.LEFT, true, "000000")};
-    List<POIField> header = Arrays.asList(sHeader);
-    headers.add(header);
+    if (this.isEntityCRP() == true) {
+      POIField[] sHeader = {
+        new POIField(this.getText("summaries.annualReport2018.table5Title1"), ParagraphAlignment.LEFT, true, "000000"),
+        new POIField(this.getText("summaries.annualReport2018.table5Title2"), ParagraphAlignment.CENTER, true,
+          "000000"),
+        new POIField(this.getText("summaries.annualReport2018.table5Title3"), ParagraphAlignment.LEFT, true, "000000"),
+        new POIField(this.getText("summaries.annualReport2018.table5Title4"), ParagraphAlignment.CENTER, true,
+          "000000"),
+        new POIField(this.getText("summaries.annualReport2018.table5Title5") + " "
+          + this.getText("summaries.annualReport2018.table5Title51"), ParagraphAlignment.LEFT, true, "000000"),
+        new POIField(this.getText("summaries.annualReport2018.table5Title6") + " "
+          + this.getText("summaries.annualReport2018.table5Title61"), ParagraphAlignment.LEFT, true, "000000")};
+
+      List<POIField> header = Arrays.asList(sHeader);
+      headers.add(header);
+    }
+
+    if (this.isEntityPlatform() == true) {
+      POIField[] sHeader = {
+        new POIField(this.getText("summaries.annualReportCRP2018.module"), ParagraphAlignment.LEFT, true, "000000"),
+        new POIField(this.getText("summaries.annualReport2018.table5Title2"), ParagraphAlignment.CENTER, true,
+          "000000"),
+        new POIField(this.getText("summaries.annualReport2018.table5Title3"), ParagraphAlignment.LEFT, true, "000000"),
+        new POIField(this.getText("summaries.annualReport2018.table5Title4"), ParagraphAlignment.CENTER, true,
+          "000000"),
+        new POIField(this.getText("summaries.annualReport2018.table5Title5") + " "
+          + this.getText("summaries.annualReport2018.table5Title51"), ParagraphAlignment.LEFT, true, "000000"),
+        new POIField(this.getText("summaries.annualReport2018.table5Title6") + " "
+          + this.getText("summaries.annualReport2018.table5Title61"), ParagraphAlignment.LEFT, true, "000000")};
+
+      List<POIField> header = Arrays.asList(sHeader);
+      headers.add(header);
+    }
+
 
     if (flagships != null && !flagships.isEmpty()) {
       flagships.sort((p1, p2) -> p1.getAcronym().compareTo(p2.getAcronym()));
@@ -1627,15 +1660,27 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     List<List<POIField>> headers = new ArrayList<>();
     List<List<POIField>> datas = new ArrayList<>();
     List<POIField> data;
-    POIField[] sHeader = {
-      new POIField(
-        this.getText("summaries.annualReport2018.table8Title1", new String[] {String.valueOf(this.getSelectedYear())}),
-        ParagraphAlignment.LEFT),
-      new POIField(this.getText("summaries.annualReport2018.table8Title2"), ParagraphAlignment.LEFT),
-      new POIField(this.getText("summaries.annualReport2018.table8Title3"), ParagraphAlignment.LEFT),
-      new POIField(this.getText("summaries.annualReport2018.table8Title4"), ParagraphAlignment.LEFT)};
-    List<POIField> header = Arrays.asList(sHeader);
-    headers.add(header);
+    if (this.isEntityCRP() == true) {
+      POIField[] sHeader = {
+        new POIField(this.getText("summaries.annualReportCRP2018.table8Title1",
+          new String[] {String.valueOf(this.getSelectedYear())}), ParagraphAlignment.LEFT),
+        new POIField(this.getText("summaries.annualReport2018.table8Title2"), ParagraphAlignment.LEFT),
+        new POIField(this.getText("summaries.annualReport2018.table8Title3"), ParagraphAlignment.LEFT),
+        new POIField(this.getText("summaries.annualReport2018.table8Title4"), ParagraphAlignment.LEFT)};
+      List<POIField> header = Arrays.asList(sHeader);
+      headers.add(header);
+    }
+
+    if (this.isEntityPlatform() == true) {
+      POIField[] sHeader = {
+        new POIField(this.getText("summaries.annualReportCRP2018.moduleLead",
+          new String[] {String.valueOf(this.getSelectedYear())}), ParagraphAlignment.LEFT),
+        new POIField(this.getText("summaries.annualReport2018.table8Title2"), ParagraphAlignment.LEFT),
+        new POIField(this.getText("summaries.annualReport2018.table8Title3"), ParagraphAlignment.LEFT),
+        new POIField(this.getText("summaries.annualReport2018.table8Title4"), ParagraphAlignment.LEFT)};
+      List<POIField> header = Arrays.asList(sHeader);
+      headers.add(header);
+    }
 
     for (ReportSynthesisKeyPartnershipExternal flagshipExternalPartnership : externalPartnerships) {
       String leadFP = "", description = "", keyPartners = "", mainArea = "";
@@ -2318,8 +2363,20 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
           ? this.getLoggedCrp().getAcronym() : this.getLoggedCrp().getName();
         poiSummary.textParagraph(document.createParagraph(),
           this.getText("summaries.annualReportPlatform2018.unitName") + ": " + unitName);
-        run.setText(this.getText("summaries.annualReport.LeadCenter") + ":");
-        poiSummary.textLineBreak(document, 1);
+        poiSummary.textParagraph(document.createParagraph(), this.getText("summaries.annualReport.LeadCenter") + ": "
+          + this.getLoggedCrp().getInstitution().getAcronymName());
+        // Flagships lead institutions
+        poiSummary.textParagraph(document.createParagraph(), this.getText("summaries.powb2019.flagshipLeadInst"));
+        run.addTab();
+
+        if (flagshipLiaisonInstitutions != null) {
+          for (int i = 0; i < flagshipLiaisonInstitutions.size(); i++) {
+
+            poiSummary.textParagraph(document.createParagraph(),
+              "         " + this.getText("summaries.annualReportCRP2018.module") + " " + (i + 1) + ": "
+                + flagshipLiaisonInstitutions.get(i).getName());
+          }
+        }
         this.addParticipatingCenters();
 
         // Part A - Narrative section
@@ -2372,7 +2429,6 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         paragraph.setStyle("heading 5");
 
         // 1.2.1
-        poiSummary.textLineBreak(document, 1);
         paragraph = document.createParagraph();
         run = paragraph.createRun();
         run.setFontSize(11);
@@ -2469,7 +2525,6 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         paragraph.setStyle("heading 15");
 
         // 2.1 Management and governance
-        poiSummary.textLineBreak(document, 1);
         paragraph = document.createParagraph();
         run = paragraph.createRun();
         run.setFontSize(13);
@@ -2488,7 +2543,6 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         paragraph.setStyle("heading 17");
 
         // 2.2.1 Highlights of External Partnerships
-        poiSummary.textLineBreak(document, 1);
         paragraph = document.createParagraph();
         run = paragraph.createRun();
         run.setFontSize(11);

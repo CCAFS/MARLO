@@ -31,7 +31,7 @@ $(document).ready(function() {
       // Short URLs text
       $(urlifyText).find('a').each(function(iAnchor,anchor) {
         var anchorText = $(anchor).text();
-        $(anchor).text(truncate(anchorText, 50));
+        $(anchor).text(truncate(anchorText, 45));
       });
     } else {
       // URLfy links (Works only for plain text)
