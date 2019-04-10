@@ -690,7 +690,8 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     paragraph = document.createParagraph();
     run = paragraph.createRun();
     run.setFontSize(11);
-    run.setBold(false);
+    run.setFontFamily("Calibri Light");
+    run.setBold(true);
     run.setColor("444444");
     run.setText(this.getText(text));
   }
@@ -843,7 +844,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         "000000")};
     List<POIField> header = Arrays.asList(sHeader);
     headers.add(header);
-
+    String lastName = "";
     if (reportSynthesisPMU.getReportSynthesisMelia() != null
       && reportSynthesisPMU.getReportSynthesisMelia().getEvaluations() != null) {
       for (ReportSynthesisMeliaEvaluation evaluation : reportSynthesisPMU.getReportSynthesisMelia().getEvaluations()) {
@@ -888,6 +889,11 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
             when = "• " + action.getTextWhen() + "(" + action.getActions() + ")" + "\n";
           }
 
+          if (name.equals(lastName)) {
+            name = "";
+          } else {
+            lastName = name;
+          }
 
           POIField[] sData = {new POIField(name, ParagraphAlignment.LEFT, false, "000000"),
             new POIField(poiSummary.replaceHTMLTags(recomendation), ParagraphAlignment.LEFT, false, "000000"),
@@ -903,7 +909,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
       }
     }
 
-    poiSummary.textTable(document, headers, datas, false, "table3AnnualReport2018");
+    poiSummary.textTable(document, headers, datas, false, "table11AnnualReport2018");
   }
 
   private void createTable12() {
@@ -1393,11 +1399,9 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     List<List<POIField>> datas = new ArrayList<>();
     List<POIField> data;
     POIField[] sHeader = {
-      new POIField(
-        this.getText("summaries.annualReport2018.table5Title1", new String[] {String.valueOf(this.getSelectedYear())}),
-        ParagraphAlignment.LEFT, true, "000000"),
+      new POIField(this.getText("summaries.annualReport2018.table5Title1"), ParagraphAlignment.LEFT, true, "000000"),
       new POIField(this.getText("summaries.annualReport2018.table5Title2"), ParagraphAlignment.CENTER, true, "000000"),
-      new POIField(this.getText("summaries.annualReport2018.table5Title3"), ParagraphAlignment.LEFT, true, "76923C"),
+      new POIField(this.getText("summaries.annualReport2018.table5Title3"), ParagraphAlignment.LEFT, true, "000000"),
       new POIField(this.getText("summaries.annualReport2018.table5Title4"), ParagraphAlignment.CENTER, true, "000000"),
       new POIField(this.getText("summaries.annualReport2018.table5Title5") + " "
         + this.getText("summaries.annualReport2018.table5Title51"), ParagraphAlignment.LEFT, true, "000000"),
@@ -1518,7 +1522,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         }
       }
     }
-    poiSummary.textTable(document, headers, datas, false, "table5AnnualReport2018");
+    poiSummary.textTable(document, headers, datas, false, "table3AnnualReport2018");
   }
 
   public void createTable6() {
