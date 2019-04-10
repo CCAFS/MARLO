@@ -138,6 +138,7 @@ public class ReportSynthesisMeliaManagerImpl implements ReportSynthesisMeliaMana
 
   }
 
+
   @Override
   public List<PowbEvidencePlannedStudyDTO> getMeliaPlannedList(List<LiaisonInstitution> lInstitutions, long phaseID,
     GlobalUnit loggedCrp, LiaisonInstitution liaisonInstitutionPMU) {
@@ -259,6 +260,154 @@ public class ReportSynthesisMeliaManagerImpl implements ReportSynthesisMeliaMana
   public ReportSynthesisMelia getReportSynthesisMeliaById(long reportSynthesisMeliaID) {
 
     return reportSynthesisMeliaDAO.find(reportSynthesisMeliaID);
+  }
+
+  @Override
+  public List<ProjectExpectedStudy> getTable10(List<LiaisonInstitution> lInstitutions, long phaseID,
+    GlobalUnit loggedCrp, LiaisonInstitution liaisonInstitutionPMU) {
+
+    List<PowbEvidencePlannedStudyDTO> flagshipPlannedList = new ArrayList<>();
+    Phase phase = phaseManager.getPhaseById(phaseID);
+
+    if (projectExpectedStudyManager.findAll() != null) {
+      List<ProjectExpectedStudy> expectedStudies = new ArrayList<>(projectExpectedStudyManager.findAll().stream()
+        .filter(ps -> ps.isActive() && ps.getProjectExpectedStudyInfo(phase) != null
+          && ps.getProjectExpectedStudyInfo(phase).getStudyType() != null
+          && ps.getProjectExpectedStudyInfo(phase).getStudyType().getId() != 1
+          && ps.getProjectExpectedStudyInfo(phase).getPhase().getId() == phaseID
+          && ps.getProjectExpectedStudyInfo(phase).getYear() == phase.getYear())
+        .collect(Collectors.toList()));
+
+      for (ProjectExpectedStudy projectExpectedStudy : expectedStudies) {
+        PowbEvidencePlannedStudyDTO dto = new PowbEvidencePlannedStudyDTO();
+        if (projectExpectedStudy.getProjectExpectedStudyInfo(phase) != null) {
+          dto.setProjectExpectedStudy(projectExpectedStudy);
+
+          if (projectExpectedStudy.getProject() != null) {
+            projectExpectedStudy.getProject()
+              .setProjectInfo(projectExpectedStudy.getProject().getProjecInfoPhase(phase));
+            dto.setProjectExpectedStudy(projectExpectedStudy);
+            if (projectExpectedStudy.getProject().getProjectInfo() != null
+              && projectExpectedStudy.getProject().getProjectInfo().getAdministrative() != null
+              && projectExpectedStudy.getProject().getProjectInfo().getAdministrative()) {
+              dto.setLiaisonInstitutions(new ArrayList<>());
+              dto.getLiaisonInstitutions().add(liaisonInstitutionPMU);
+            } else {
+              List<ProjectFocus> projectFocuses =
+                new ArrayList<>(projectExpectedStudy.getProject().getProjectFocuses().stream()
+                  .filter(pf -> pf.isActive() && pf.getPhase().getId().equals(phaseID)).collect(Collectors.toList()));
+              List<LiaisonInstitution> liaisonInstitutions = new ArrayList<>();
+              for (ProjectFocus projectFocus : projectFocuses) {
+                liaisonInstitutions.addAll(projectFocus.getCrpProgram().getLiaisonInstitutions().stream()
+                  .filter(li -> li.isActive() && li.getCrpProgram() != null
+                    && li.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+                  .collect(Collectors.toList()));
+              }
+              dto.setLiaisonInstitutions(liaisonInstitutions);
+            }
+          } else {
+            dto.setLiaisonInstitutions(new ArrayList<>());
+            dto.getLiaisonInstitutions().add(liaisonInstitutionPMU);
+          }
+
+          if (projectExpectedStudy.getProjectExpectedStudySubIdos() != null
+            && !projectExpectedStudy.getProjectExpectedStudySubIdos().isEmpty()) {
+            projectExpectedStudy.setSubIdos(new ArrayList<>(projectExpectedStudy.getProjectExpectedStudySubIdos()
+              .stream().filter(s -> s.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
+          }
+
+          flagshipPlannedList.add(dto);
+        }
+      }
+      List<ReportSynthesisMeliaStudy> reportStudies = new ArrayList<>();
+
+
+      for (LiaisonInstitution liaisonInstitution : lInstitutions) {
+        ReportSynthesis reportSynthesisFP = reportSynthesisManager.findSynthesis(phaseID, liaisonInstitution.getId());
+        if (reportSynthesisFP != null) {
+          if (reportSynthesisFP.getReportSynthesisMelia() != null) {
+            if (reportSynthesisFP.getReportSynthesisMelia().getReportSynthesisMeliaStudies() != null) {
+              List<ReportSynthesisMeliaStudy> studies = new ArrayList<>(reportSynthesisFP.getReportSynthesisMelia()
+                .getReportSynthesisMeliaStudies().stream().filter(s -> s.isActive()).collect(Collectors.toList()));
+              if (studies != null || !studies.isEmpty()) {
+                for (ReportSynthesisMeliaStudy meliaStudy : studies) {
+                  reportStudies.add(meliaStudy);
+                }
+              }
+            }
+          }
+        }
+
+      }
+
+      List<PowbEvidencePlannedStudyDTO> removeList = new ArrayList<>();
+      for (PowbEvidencePlannedStudyDTO dto : flagshipPlannedList) {
+
+        List<LiaisonInstitution> removeLiaison = new ArrayList<>();
+        for (LiaisonInstitution liaisonInstitution : dto.getLiaisonInstitutions()) {
+          ReportSynthesis reportSynthesisFP = reportSynthesisManager.findSynthesis(phaseID, liaisonInstitution.getId());
+          if (reportSynthesisFP != null) {
+            if (reportSynthesisFP.getReportSynthesisMelia() != null) {
+
+              ReportSynthesisMeliaStudy reportStudyNew = new ReportSynthesisMeliaStudy();
+              reportStudyNew.setProjectExpectedStudy(dto.getProjectExpectedStudy());
+              reportStudyNew.setReportSynthesisMelia(reportSynthesisFP.getReportSynthesisMelia());
+
+              if (reportStudies.contains(reportStudyNew)) {
+                removeLiaison.add(liaisonInstitution);
+              }
+            }
+          }
+        }
+
+        for (LiaisonInstitution li : removeLiaison) {
+          dto.getLiaisonInstitutions().remove(li);
+        }
+
+        if (dto.getLiaisonInstitutions().isEmpty()) {
+          removeList.add(dto);
+        }
+      }
+
+
+      for (PowbEvidencePlannedStudyDTO i : removeList) {
+        flagshipPlannedList.remove(i);
+      }
+
+    }
+
+    List<ProjectExpectedStudy> studiesWord = new ArrayList<>();
+
+    for (PowbEvidencePlannedStudyDTO dtoAdd : flagshipPlannedList) {
+      studiesWord.add(dtoAdd.getProjectExpectedStudy());
+    }
+
+
+    ReportSynthesis reportSynthesisPMU =
+      reportSynthesisManager.findSynthesis(phase.getId(), liaisonInstitutionPMU.getId());
+
+    if (reportSynthesisPMU != null) {
+
+      List<ProjectExpectedStudy> pmuStudies = new ArrayList<>();
+
+      // check if the PMU exclude some key external partnership
+      if (reportSynthesisPMU.getReportSynthesisMelia().getReportSynthesisMeliaStudies() != null
+        && !reportSynthesisPMU.getReportSynthesisMelia().getReportSynthesisMeliaStudies().isEmpty()) {
+        for (ReportSynthesisMeliaStudy plannedPmu : reportSynthesisPMU.getReportSynthesisMelia()
+          .getReportSynthesisMeliaStudies().stream().filter(ro -> ro.isActive()).collect(Collectors.toList())) {
+          pmuStudies.add(plannedPmu.getProjectExpectedStudy());
+        }
+      }
+
+      if (!pmuStudies.isEmpty()) {
+        // Remove for the list the key external partnership the the PMU exclude it.
+        studiesWord.removeAll(pmuStudies);
+      }
+
+    }
+
+
+    return studiesWord;
   }
 
   @Override
