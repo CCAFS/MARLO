@@ -1864,6 +1864,20 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
           this.getText("summaries.annualReportCRP2018.unitName") + ": " + unitName);
         poiSummary.textParagraph(document.createParagraph(), this.getText("summaries.annualReport.LeadCenter") + ": "
           + this.getLoggedCrp().getInstitution().getAcronymName());
+
+        // Flagships lead institutions
+        poiSummary.textParagraph(document.createParagraph(), this.getText("summaries.powb2019.flagshipLeadInst"));
+        run.addTab();
+
+        if (flagshipLiaisonInstitutions != null) {
+          for (int i = 0; i < flagshipLiaisonInstitutions.size(); i++) {
+
+            poiSummary.textParagraph(document.createParagraph(),
+              "         " + this.getText("summaries.powb2019.flagShip") + " " + (i + 1) + ": "
+                + flagshipLiaisonInstitutions.get(i).getName());
+          }
+        }
+
         this.addParticipatingCenters();
 
         // Part A - Narrative section
