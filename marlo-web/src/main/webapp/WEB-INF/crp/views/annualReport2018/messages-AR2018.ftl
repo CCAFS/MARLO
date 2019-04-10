@@ -53,7 +53,7 @@
   
   
   [#-- Completed Message--]
-  [#if (canSubmit && !submission && completed) && !crpClosed]
+  [#if false && (canSubmit && !submission && completed) && !crpClosed]
     <div class="completed-mode text-center animated flipInX">
       <p>[@s.text name="annualReport2018.messages.completed" /]</p>
     </div>
