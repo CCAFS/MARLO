@@ -82,7 +82,6 @@ public class OutcomesContributionsSummaryAction extends BaseSummariesAction impl
   private final ResourceManager resourceManager;
   // XLSX bytes
   private byte[] bytesXLSX;
-  private String projectSummary = "";
   // Streams
   InputStream inputStream;
 
@@ -293,13 +292,19 @@ public class OutcomesContributionsSummaryAction extends BaseSummariesAction impl
 
       String projectId = "", title = "", flagship = "", outcome = "", projectUrl = "", milestone = "",
         expectedUnit = "", narrativeTarget = "", outcomeIndicator = null, achievedTarget = "", startDate = "",
-        endDate = "";
+        endDate = "", projectSummary = "";
       Double expectedValue = new Double(0);
       Long phaseID = null;
       projectId = projectMilestone.getProjectOutcome().getProject().getId().toString();
       BigDecimal outcomeExpectedValue = new BigDecimal(0);
       Long achievedValue = new Long(0);
-      if (projectSummary == null && projectSummary.isEmpty()) {
+      if (projectMilestone.getProjectOutcome().getProject().getProjecInfoPhase(this.getSelectedPhase())
+        .getSummary() != null
+        && !projectMilestone.getProjectOutcome().getProject().getProjecInfoPhase(this.getSelectedPhase()).getSummary()
+          .isEmpty()) {
+        projectSummary =
+          projectMilestone.getProjectOutcome().getProject().getProjecInfoPhase(this.getSelectedPhase()).getSummary();
+      } else {
         projectSummary = "";
       }
       if (projectMilestone.getProjectOutcome().getProject().getProjecInfoPhase(this.getSelectedPhase()) != null) {
@@ -397,7 +402,7 @@ public class OutcomesContributionsSummaryAction extends BaseSummariesAction impl
           .collect(Collectors.toList())) {
           String projectId = "", title = "", flagship = "", outcome = "", outcomeIndicator = null, expectedUnit = "",
             expectedNarrative = "", projectUrl = "", achievedNarrative = "", startDate = "", endDate = "",
-            communications = "";
+            communications = "", projectSummary = "";
           Double expectedValue = new Double(0);
           BigDecimal outcomeExpectedValue = new BigDecimal(0);
           Double achievedValue = new Double(0);

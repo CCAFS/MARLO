@@ -6,25 +6,60 @@ $(document).ready(function() {
   pageName = actionName.replace(/[^a-z0-9+]+/gi, '_');
 
   // Set data tables
-  $tableViewMore = $('.viewMoreSyntesis-block table');
-  tableDatatableViewmore = $tableViewMore.DataTable({
-      "paging": false,
-      "searching": false,
-      "info": false,
-      "scrollY": "320px",
-      "scrollCollapse": true,
-  });
+  if($.fn.DataTable) {
+    $tableViewMore = $('.viewMoreSyntesis-block table');
+    tableDatatableViewmore = $tableViewMore.DataTable({
+        "paging": false,
+        "searching": false,
+        "info": false,
+        "scrollY": "320px",
+        "scrollCollapse": true,
+        aoColumnDefs: [
+          {
+              sType: "natural",
+              aTargets: [
+                0
+              ]
+          }
+        ]
+    });
 
-  $progressTableViewMore = $('.viewMoreSyntesisTable-block table');
-  tableDataProgressTableViewmore = $progressTableViewMore.DataTable({
-      "paging": false,
-      "searching": false,
-      "info": true
-  });
+    $progressTableViewMore = $('.viewMoreSyntesisTable-block table');
+    tableDataProgressTableViewmore = $progressTableViewMore.DataTable({
+        "paging": false,
+        "searching": false,
+        "info": true,
+        aoColumnDefs: [
+          {
+              sType: "natural",
+              aTargets: [
+                0
+              ]
+          }
+        ]
+    /*
+     * , dom: 'Bfrtip', buttons: [ { extend: 'csv', title: 'Data_export_' + currentSectionString + '_' +
+     * getDateString(), autoFilter: true }, { extend: 'print' } ]
+     */
+    });
+  }
 
-  $('.urlify').each(function(i,e) {
-    var text = $(e).html();
-    $(e).html(urlify(text));
+  $('.urlify').each(function(i,urlifyText) {
+    var text = $(urlifyText).html();
+
+    if($(urlifyText).find('a').length > 0) {
+      // Short URLs text
+      $(urlifyText).find('a').each(function(iAnchor,anchor) {
+        var anchorText = $(anchor).text();
+        $(anchor).text(truncate(anchorText, 45));
+      });
+    } else {
+      // URLfy links (Works only for plain text)
+      $(urlifyText).html(urlifyComplete(text));
+    }
+
+    $(urlifyText).find('a').addClass('dont-break-out');
+
   });
 
   // Load indexTab
@@ -101,7 +136,6 @@ function createGoogleChart(chartID,type,options) {
           var chart = new google.visualization.BarChart(document.getElementById($chart[0].id));
           chart.draw(view, google.charts.Bar.convertOptions(options));
         } else if(type == "Pie") {
-          console.log($chart[0].id);
           var chart = new google.visualization.PieChart(document.getElementById($chart[0].id));
           chart.draw(data, options);
         }

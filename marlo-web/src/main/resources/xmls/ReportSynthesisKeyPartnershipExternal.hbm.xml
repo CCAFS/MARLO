@@ -24,7 +24,7 @@
 			<column length="65535" name="description" />
 		</property>
 		<property generated="never" lazy="false"
-			name="otherPartnershipMainArea" optimistic-lock="true" type="string"
+			name="other" optimistic-lock="true" type="string"
 			unique="false">
 			<column length="65535" name="other_partnership_main_area" />
 		</property>

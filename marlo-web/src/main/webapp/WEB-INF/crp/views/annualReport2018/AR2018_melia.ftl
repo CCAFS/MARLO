@@ -191,7 +191,7 @@
               <td class="text-center">
                 [@utils.tableText value=(item.projectExpectedStudyInfo.studyType.name)!"" /]
               </td>
-              <td>
+              <td class="urlify">
                 [@utils.tableText value=(item.projectExpectedStudyInfo.topLevelComments)!"" /]
               </td>
               [#if !expandedTable]
