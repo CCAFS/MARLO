@@ -581,9 +581,10 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
     List<List<POIField>> headers = new ArrayList<>();
 
     POIField[] sHeader =
-      {new POIField(this.getText("annualReport.crpProgress.selectSLOTarget"), ParagraphAlignment.LEFT),
-        new POIField(this.getText("annualReport.crpProgress.summaryNewEvidence.readText"), ParagraphAlignment.LEFT),
-        new POIField(this.getText("annualReport.crpProgress.additionalContribution"), ParagraphAlignment.LEFT),};
+      {new POIField(this.getText("annualReport.crpProgress.selectSLOTarget"), ParagraphAlignment.LEFT, false),
+        new POIField(this.getText("annualReport.crpProgress.summaryNewEvidence.readText"), ParagraphAlignment.LEFT,
+          false),
+        new POIField(this.getText("annualReport.crpProgress.additionalContribution"), ParagraphAlignment.LEFT, false),};
 
     List<POIField> header = Arrays.asList(sHeader);
     headers.add(header);
@@ -646,10 +647,11 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
 
     List<List<POIField>> headers = new ArrayList<>();
 
-    POIField[] sHeader = {new POIField(this.getText("summaries.annualReport.tableA2.field1"), ParagraphAlignment.LEFT),
-      new POIField(this.getText("summaries.annualReport.tableA2.field2"), ParagraphAlignment.LEFT),
-      new POIField(this.getText("summaries.annualReport.tableA2.field3"), ParagraphAlignment.LEFT),
-      new POIField(this.getText("summaries.annualReport.tableA2.field4"), ParagraphAlignment.LEFT)};
+    POIField[] sHeader =
+      {new POIField(this.getText("summaries.annualReport.tableA2.field1"), ParagraphAlignment.LEFT, false),
+        new POIField(this.getText("summaries.annualReport.tableA2.field2"), ParagraphAlignment.LEFT, false),
+        new POIField(this.getText("summaries.annualReport.tableA2.field3"), ParagraphAlignment.LEFT, false),
+        new POIField(this.getText("summaries.annualReport.tableA2.field4"), ParagraphAlignment.LEFT, false)};
 
     List<POIField> header = Arrays.asList(sHeader);
     headers.add(header);
@@ -735,8 +737,9 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
           String blueColor = "0000EE";
           additional = "Gender: " + describeGender + "\nYouth: " + describeYouth + " \nCapDev: " + describeCapDev;
           POIField[] sData = {new POIField(title, ParagraphAlignment.LEFT, bold, blueColor, outcomeReportLink),
-            new POIField(subIdo, ParagraphAlignment.LEFT), new POIField(linkToEvidence, ParagraphAlignment.LEFT),
-            new POIField(additional, ParagraphAlignment.LEFT)};
+            new POIField(subIdo, ParagraphAlignment.LEFT, false),
+            new POIField(linkToEvidence, ParagraphAlignment.LEFT, false),
+            new POIField(additional, ParagraphAlignment.LEFT, false)};
           data = Arrays.asList(sData);
           datas.add(data);
         }
@@ -749,12 +752,12 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
 
     List<List<POIField>> headers = new ArrayList<>();
 
-    POIField[] sHeader = {new POIField(this.getText("expectedProgress.tableA.fp"), ParagraphAlignment.LEFT),
-      new POIField(this.getText("expectedProgress.tableA.subIDO"), ParagraphAlignment.LEFT),
-      new POIField(this.getText("expectedProgress.tableA.outcomes"), ParagraphAlignment.LEFT),
-      new POIField(this.getText("expectedProgress.tableA.milestone") + "*", ParagraphAlignment.LEFT),
-      new POIField(this.getText("summaries.annualReport.tableB.field5"), ParagraphAlignment.LEFT),
-      new POIField(this.getText("summaries.annualReport.tableB.field6"), ParagraphAlignment.LEFT)};
+    POIField[] sHeader = {new POIField(this.getText("expectedProgress.tableA.fp"), ParagraphAlignment.LEFT, false),
+      new POIField(this.getText("expectedProgress.tableA.subIDO"), ParagraphAlignment.LEFT, false),
+      new POIField(this.getText("expectedProgress.tableA.outcomes"), ParagraphAlignment.LEFT, false),
+      new POIField(this.getText("expectedProgress.tableA.milestone") + "*", ParagraphAlignment.LEFT, false),
+      new POIField(this.getText("summaries.annualReport.tableB.field5"), ParagraphAlignment.LEFT, false),
+      new POIField(this.getText("summaries.annualReport.tableB.field6"), ParagraphAlignment.LEFT, false)};
     List<POIField> header = Arrays.asList(sHeader);
     headers.add(header);
 
@@ -809,9 +812,12 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
             status = reportSynthesisFlagshipProgressMilestoneList.getStatusName();
           }
 
-          POIField[] sData = {new POIField(FP, ParagraphAlignment.LEFT), new POIField(subIDO, ParagraphAlignment.LEFT),
-            new POIField(outcomes, ParagraphAlignment.LEFT), new POIField(milestone, ParagraphAlignment.LEFT),
-            new POIField(status, ParagraphAlignment.LEFT), new POIField(evidence, ParagraphAlignment.LEFT)};
+          POIField[] sData =
+            {new POIField(FP, ParagraphAlignment.LEFT, false), new POIField(subIDO, ParagraphAlignment.LEFT, false),
+              new POIField(outcomes, ParagraphAlignment.LEFT, false),
+              new POIField(milestone, ParagraphAlignment.LEFT, false),
+              new POIField(status, ParagraphAlignment.LEFT, false),
+              new POIField(evidence, ParagraphAlignment.LEFT, false)};
           data = Arrays.asList(sData);
           datas.add(data);
 
@@ -827,11 +833,11 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
   private void createTableC() {
     List<List<POIField>> headers = new ArrayList<>();
     POIField[] sHeader =
-      {new POIField(this.getText("crossCuttingDimensions.tableC.crossCutting"), ParagraphAlignment.CENTER),
-        new POIField(this.getText("crossCuttingDimensions.tableC.principal"), ParagraphAlignment.CENTER),
-        new POIField(this.getText("crossCuttingDimensions.tableC.significant"), ParagraphAlignment.CENTER),
-        new POIField(this.getText("crossCuttingDimensions.tableC.notTargeted"), ParagraphAlignment.CENTER),
-        new POIField(this.getText("summaries.annualreport.tablec.field5"), ParagraphAlignment.CENTER)};
+      {new POIField(this.getText("crossCuttingDimensions.tableC.crossCutting"), ParagraphAlignment.CENTER, false),
+        new POIField(this.getText("crossCuttingDimensions.tableC.principal"), ParagraphAlignment.CENTER, false),
+        new POIField(this.getText("crossCuttingDimensions.tableC.significant"), ParagraphAlignment.CENTER, false),
+        new POIField(this.getText("crossCuttingDimensions.tableC.notTargeted"), ParagraphAlignment.CENTER, false),
+        new POIField(this.getText("summaries.annualreport.tablec.field5"), ParagraphAlignment.CENTER, false)};
     List<POIField> header = Arrays.asList(sHeader);
     headers.add(header);
     List<List<POIField>> datas = new ArrayList<>();
@@ -839,34 +845,34 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
     // Setup Table C
     tableC = reportSynthesisCrossCuttingDimensionManager.getTableC(this.getSelectedPhase(), this.getLoggedCrp());
     if (tableC != null) {
-      POIField[] sData = {new POIField("Gender", ParagraphAlignment.LEFT),
+      POIField[] sData = {new POIField("Gender", ParagraphAlignment.LEFT, false),
         new POIField(percentageFormat.format(round(tableC.getPercentageGenderPrincipal() / 100, 4)),
-          ParagraphAlignment.CENTER),
+          ParagraphAlignment.CENTER, false),
         new POIField(percentageFormat.format(round(tableC.getPercentageGenderSignificant() / 100, 4)),
-          ParagraphAlignment.CENTER),
+          ParagraphAlignment.CENTER, false),
         new POIField(percentageFormat.format(round(tableC.getPercentageGenderNotScored() / 100, 4)),
-          ParagraphAlignment.CENTER),
-        new POIField(String.valueOf((int) tableC.getTotal()), ParagraphAlignment.CENTER)};
+          ParagraphAlignment.CENTER, false),
+        new POIField(String.valueOf((int) tableC.getTotal()), ParagraphAlignment.CENTER, false)};
       data = Arrays.asList(sData);
       datas.add(data);
-      POIField[] sData2 = {new POIField("Youth", ParagraphAlignment.LEFT),
+      POIField[] sData2 = {new POIField("Youth", ParagraphAlignment.LEFT, false),
         new POIField(percentageFormat.format(round(tableC.getPercentageYouthPrincipal() / 100, 4)),
-          ParagraphAlignment.CENTER),
+          ParagraphAlignment.CENTER, false),
         new POIField(percentageFormat.format(round(tableC.getPercentageYouthSignificant() / 100, 4)),
-          ParagraphAlignment.CENTER),
+          ParagraphAlignment.CENTER, false),
         new POIField(percentageFormat.format(round(tableC.getPercentageYouthNotScored() / 100, 4)),
-          ParagraphAlignment.CENTER),
-        new POIField("", ParagraphAlignment.LEFT)};
+          ParagraphAlignment.CENTER, false),
+        new POIField("", ParagraphAlignment.LEFT, false)};
       data = Arrays.asList(sData2);
       datas.add(data);
-      POIField[] sData3 = {new POIField("CapDev", ParagraphAlignment.LEFT),
+      POIField[] sData3 = {new POIField("CapDev", ParagraphAlignment.LEFT, false),
         new POIField(percentageFormat.format(round(tableC.getPercentageCapDevPrincipal() / 100, 4)),
-          ParagraphAlignment.CENTER),
+          ParagraphAlignment.CENTER, false),
         new POIField(percentageFormat.format(round(tableC.getPercentageCapDevSignificant() / 100, 4)),
-          ParagraphAlignment.CENTER),
+          ParagraphAlignment.CENTER, false),
         new POIField(percentageFormat.format(round(tableC.getPercentageCapDevNotScored() / 100, 4)),
-          ParagraphAlignment.CENTER),
-        new POIField("", ParagraphAlignment.LEFT)};
+          ParagraphAlignment.CENTER, false),
+        new POIField("", ParagraphAlignment.LEFT, false)};
       data = Arrays.asList(sData3);
       datas.add(data);
     }
@@ -878,10 +884,10 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
     List<List<POIField>> headers = new ArrayList<>();
 
     POIField[] sHeader =
-      {new POIField(this.getText("summaries.annualReport.tableD1.field1"), ParagraphAlignment.CENTER),
-        new POIField(this.getText("summaries.annualReport.tableD1.field2"), ParagraphAlignment.CENTER),
-        new POIField(this.getText("summaries.annualReport.tableD1.field3"), ParagraphAlignment.CENTER),
-        new POIField(this.getText("summaries.annualReport.tableD1.field4"), ParagraphAlignment.CENTER)};
+      {new POIField(this.getText("summaries.annualReport.tableD1.field1"), ParagraphAlignment.CENTER, false),
+        new POIField(this.getText("summaries.annualReport.tableD1.field2"), ParagraphAlignment.CENTER, false),
+        new POIField(this.getText("summaries.annualReport.tableD1.field3"), ParagraphAlignment.CENTER, false),
+        new POIField(this.getText("summaries.annualReport.tableD1.field4"), ParagraphAlignment.CENTER, false)};
 
 
     List<RepIndSynthesisIndicator> listRepIndSynthesis = repIndSynthesisIndicatorManager.findAll();
@@ -948,11 +954,11 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
   private void createTableD2() {
     List<List<POIField>> headers = new ArrayList<>();
     POIField[] sHeader =
-      {new POIField(this.getText("summaries.annualReport.tableD2.field1"), ParagraphAlignment.CENTER),
-        new POIField(this.getText("summaries.annualReport.tableD2.field2"), ParagraphAlignment.CENTER),
-        new POIField(this.getText("summaries.annualReport.tableD2.field3"), ParagraphAlignment.CENTER),
-        new POIField(this.getText("summaries.annualReport.tableD2.field4"), ParagraphAlignment.CENTER),
-        new POIField(this.getText("summaries.annualReport.tableD2.field5"), ParagraphAlignment.CENTER),};
+      {new POIField(this.getText("summaries.annualReport.tableD2.field1"), ParagraphAlignment.CENTER, false),
+        new POIField(this.getText("summaries.annualReport.tableD2.field2"), ParagraphAlignment.CENTER, false),
+        new POIField(this.getText("summaries.annualReport.tableD2.field3"), ParagraphAlignment.CENTER, false),
+        new POIField(this.getText("summaries.annualReport.tableD2.field4"), ParagraphAlignment.CENTER, false),
+        new POIField(this.getText("summaries.annualReport.tableD2.field5"), ParagraphAlignment.CENTER, false),};
     List<POIField> header = Arrays.asList(sHeader);
     headers.add(header);
 
@@ -990,10 +996,11 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
           }
 
           if (title != null && stage != null && degree != null && contribution != null && geographicScope != null) {
-            POIField[] sData =
-              {new POIField(title, ParagraphAlignment.CENTER), new POIField(stage, ParagraphAlignment.CENTER),
-                new POIField(degree, ParagraphAlignment.CENTER), new POIField(contribution, ParagraphAlignment.CENTER),
-                new POIField(geographicScope, ParagraphAlignment.CENTER)};
+            POIField[] sData = {new POIField(title, ParagraphAlignment.CENTER, false),
+              new POIField(stage, ParagraphAlignment.CENTER, false),
+              new POIField(degree, ParagraphAlignment.CENTER, false),
+              new POIField(contribution, ParagraphAlignment.CENTER, false),
+              new POIField(geographicScope, ParagraphAlignment.CENTER, false)};
 
             data = Arrays.asList(sData);
             datas.add(data);
@@ -1012,12 +1019,13 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
         this.getSelectedPhase().getId(), this.getLoggedCrp(), pmuInstitution);
     List<List<POIField>> headers = new ArrayList<>();
 
-    POIField[] sHeader = {new POIField(this.getText("summaries.annualReport.tableE.field1"), ParagraphAlignment.LEFT),
-      new POIField(this.getText("summaries.annualReport.tableE.field2"), ParagraphAlignment.CENTER),
-      new POIField(this.getText("summaries.annualReport.tableE.field3"), ParagraphAlignment.CENTER),
-      new POIField(this.getText("summaries.annualReport.tableE.field4"), ParagraphAlignment.CENTER),
-      new POIField(this.getText("summaries.annualReport.tableE.field5"), ParagraphAlignment.CENTER),
-      new POIField(this.getText("summaries.annualReport.tableE.field6"), ParagraphAlignment.CENTER)};
+    POIField[] sHeader =
+      {new POIField(this.getText("summaries.annualReport.tableE.field1"), ParagraphAlignment.LEFT, false),
+        new POIField(this.getText("summaries.annualReport.tableE.field2"), ParagraphAlignment.CENTER, false),
+        new POIField(this.getText("summaries.annualReport.tableE.field3"), ParagraphAlignment.CENTER, false),
+        new POIField(this.getText("summaries.annualReport.tableE.field4"), ParagraphAlignment.CENTER, false),
+        new POIField(this.getText("summaries.annualReport.tableE.field5"), ParagraphAlignment.CENTER, false),
+        new POIField(this.getText("summaries.annualReport.tableE.field6"), ParagraphAlignment.CENTER, false)};
 
     List<POIField> header = Arrays.asList(sHeader);
     headers.add(header);
@@ -1068,10 +1076,12 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
             reportSynthesisCrossCuttingAssetDTO.getDeliverableIntellectualAsset().getPublicCommunication();
         }
 
-        POIField[] sData =
-          {new POIField(year, ParagraphAlignment.CENTER), new POIField(applicant, ParagraphAlignment.LEFT),
-            new POIField(patent, ParagraphAlignment.CENTER), new POIField(aditional, ParagraphAlignment.LEFT),
-            new POIField(registration, ParagraphAlignment.LEFT), new POIField(communication, ParagraphAlignment.LEFT)};
+        POIField[] sData = {new POIField(year, ParagraphAlignment.CENTER, false),
+          new POIField(applicant, ParagraphAlignment.LEFT, false),
+          new POIField(patent, ParagraphAlignment.CENTER, false),
+          new POIField(aditional, ParagraphAlignment.LEFT, false),
+          new POIField(registration, ParagraphAlignment.LEFT, false),
+          new POIField(communication, ParagraphAlignment.LEFT, false)};
         data = Arrays.asList(sData);
         datas.add(data);
       }
@@ -1083,10 +1093,10 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
 
     List<List<POIField>> headers = new ArrayList<>();
     POIField[] sHeader =
-      {new POIField(this.getText("financialPlan.tableF.expenditureArea") + "*", ParagraphAlignment.LEFT),
+      {new POIField(this.getText("financialPlan.tableF.expenditureArea") + "*", ParagraphAlignment.LEFT, false),
         new POIField(this.getText("financialPlan.tableF.estimatedPercentage",
-          new String[] {String.valueOf(this.getSelectedYear())}) + "**", ParagraphAlignment.LEFT),
-        new POIField(this.getText("financialPlan.tableF.comments2017"), ParagraphAlignment.LEFT)};
+          new String[] {String.valueOf(this.getSelectedYear())}) + "**", ParagraphAlignment.LEFT, false),
+        new POIField(this.getText("financialPlan.tableF.comments2017"), ParagraphAlignment.LEFT, false)};
 
     List<POIField> header = Arrays.asList(sHeader);
     headers.add(header);
@@ -1131,9 +1141,10 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
           ? reportSynthesisFundingUseExpendituryArea.getComments() : "";
 
         totalEstimatedPercentajeFS += estimatedPercentajeFS;
-        POIField[] sData = {new POIField(expenditureArea, ParagraphAlignment.LEFT),
-          new POIField(percentageFormat.format(round(estimatedPercentajeFS / 100, 4)), ParagraphAlignment.CENTER),
-          new POIField(commentsSpace, ParagraphAlignment.LEFT)};
+        POIField[] sData = {new POIField(expenditureArea, ParagraphAlignment.LEFT, false),
+          new POIField(percentageFormat.format(round(estimatedPercentajeFS / 100, 4)), ParagraphAlignment.CENTER,
+            false),
+          new POIField(commentsSpace, ParagraphAlignment.LEFT, false)};
         data = Arrays.asList(sData);
         datas.add(data);
       }
@@ -1163,11 +1174,12 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
         && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
       .collect(Collectors.toList()));
 
-    POIField[] sHeader = {new POIField(this.getText("summaries.annualReport.tableG.field1"), ParagraphAlignment.LEFT),
-      new POIField(this.getText("summaries.annualReport.tableG.field2"), ParagraphAlignment.LEFT),
-      new POIField(this.getText("summaries.annualReport.tableG.field3"), ParagraphAlignment.LEFT),
-      new POIField(this.getText("summaries.annualReport.tableG.field4"), ParagraphAlignment.LEFT),
-      new POIField(this.getText("summaries.annualReport.tableG.field5"), ParagraphAlignment.LEFT)};
+    POIField[] sHeader =
+      {new POIField(this.getText("summaries.annualReport.tableG.field1"), ParagraphAlignment.LEFT, false),
+        new POIField(this.getText("summaries.annualReport.tableG.field2"), ParagraphAlignment.LEFT, false),
+        new POIField(this.getText("summaries.annualReport.tableG.field3"), ParagraphAlignment.LEFT, false),
+        new POIField(this.getText("summaries.annualReport.tableG.field4"), ParagraphAlignment.LEFT, false),
+        new POIField(this.getText("summaries.annualReport.tableG.field5"), ParagraphAlignment.LEFT, false)};
 
     List<POIField> header = Arrays.asList(sHeader);
     headers.add(header);
@@ -1226,9 +1238,11 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
           partnerType = flagshipExternalPlannedList.get(i).getProjectPartnerPartnership().getProjectPartner()
             .getInstitution().getInstitutionType().getRepIndOrganizationType().getName();
 
-          POIField[] sData = {new POIField(FP, ParagraphAlignment.CENTER),
-            new POIField(stage, ParagraphAlignment.CENTER), new POIField(partner, ParagraphAlignment.CENTER),
-            new POIField(partnerType, ParagraphAlignment.CENTER), new POIField(mainArea, ParagraphAlignment.LEFT)};
+          POIField[] sData =
+            {new POIField(FP, ParagraphAlignment.CENTER, false), new POIField(stage, ParagraphAlignment.CENTER, false),
+              new POIField(partner, ParagraphAlignment.CENTER, false),
+              new POIField(partnerType, ParagraphAlignment.CENTER, false),
+              new POIField(mainArea, ParagraphAlignment.LEFT, false)};
           data = Arrays.asList(sData);
           datas.add(data);
         }
@@ -1240,9 +1254,10 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
 
   private void createTableH() {
     List<List<POIField>> headers = new ArrayList<>();
-    POIField[] sHeader = {new POIField(this.getText("summaries.annualReport.tableG.crpName"), ParagraphAlignment.LEFT),
-      new POIField(this.getText("summaries.annualReport.tableG.description"), ParagraphAlignment.LEFT),
-      new POIField(this.getText("summaries.annualReport.tableG.relevantFP"), ParagraphAlignment.LEFT)};
+    POIField[] sHeader =
+      {new POIField(this.getText("summaries.annualReport.tableG.crpName"), ParagraphAlignment.LEFT, false),
+        new POIField(this.getText("summaries.annualReport.tableG.description"), ParagraphAlignment.LEFT, false),
+        new POIField(this.getText("summaries.annualReport.tableG.relevantFP"), ParagraphAlignment.LEFT, false)};
     List<POIField> header = Arrays.asList(sHeader);
     headers.add(header);
 
@@ -1268,9 +1283,9 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
           relevantFP = reportSynthesisCrossCgiarCollaboration.getFlagship();
         }
 
-        POIField[] sData = {new POIField(crpPlatform, ParagraphAlignment.CENTER),
-          new POIField(descriptionCollaboration, ParagraphAlignment.LEFT),
-          new POIField(relevantFP, ParagraphAlignment.LEFT)};
+        POIField[] sData = {new POIField(crpPlatform, ParagraphAlignment.CENTER, false),
+          new POIField(descriptionCollaboration, ParagraphAlignment.LEFT, false),
+          new POIField(relevantFP, ParagraphAlignment.LEFT, false)};
         data = Arrays.asList(sData);
         datas.add(data);
       }
@@ -1288,9 +1303,9 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
     POIField[] sHeader = {
       new POIField(
         this.getText("annualReport.melia.tableI.studies", new String[] {String.valueOf(this.getSelectedYear())}),
-        ParagraphAlignment.CENTER),
-      new POIField(this.getText("annualReport.melia.tableI.status"), ParagraphAlignment.CENTER),
-      new POIField(this.getText("annualReport.melia.tableI.comments"), ParagraphAlignment.CENTER)};
+        ParagraphAlignment.CENTER, false),
+      new POIField(this.getText("annualReport.melia.tableI.status"), ParagraphAlignment.CENTER, false),
+      new POIField(this.getText("annualReport.melia.tableI.comments"), ParagraphAlignment.CENTER, false)};
     List<POIField> header = Arrays.asList(sHeader);
     headers.add(header);
 
@@ -1316,8 +1331,9 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
             .getProjectExpectedStudyInfo(this.getSelectedPhase()).getTopLevelComments();
         }
 
-        POIField[] sData = {new POIField(studies, ParagraphAlignment.LEFT),
-          new POIField(status, ParagraphAlignment.CENTER), new POIField(comments, ParagraphAlignment.LEFT)};
+        POIField[] sData = {new POIField(studies, ParagraphAlignment.LEFT, false),
+          new POIField(status, ParagraphAlignment.CENTER, false),
+          new POIField(comments, ParagraphAlignment.LEFT, false)};
         data = Arrays.asList(sData);
         datas.add(data);
       }
@@ -1328,13 +1344,14 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
 
   private void createTableI2() {
     List<List<POIField>> headers = new ArrayList<>();
-    POIField[] sHeader = {new POIField(this.getText("annualReport.melia.evaluation.name"), ParagraphAlignment.CENTER),
-      new POIField(this.getText("annualReport.melia.evaluation.recommendation"), ParagraphAlignment.CENTER),
-      new POIField(this.getText("annualReport.melia.evaluation.managementResponse") + " - Action Plan",
-        ParagraphAlignment.CENTER),
-      new POIField(this.getText("annualReport.melia.evaluation.whom"), ParagraphAlignment.CENTER),
-      new POIField(this.getText("annualReport.melia.evaluation.when"), ParagraphAlignment.CENTER),
-      new POIField(this.getText("summaries.annualReport.tableI2.field6"), ParagraphAlignment.CENTER)};
+    POIField[] sHeader =
+      {new POIField(this.getText("annualReport.melia.evaluation.name"), ParagraphAlignment.CENTER, false),
+        new POIField(this.getText("annualReport.melia.evaluation.recommendation"), ParagraphAlignment.CENTER, false),
+        new POIField(this.getText("annualReport.melia.evaluation.managementResponse") + " - Action Plan",
+          ParagraphAlignment.CENTER, false),
+        new POIField(this.getText("annualReport.melia.evaluation.whom"), ParagraphAlignment.CENTER, false),
+        new POIField(this.getText("annualReport.melia.evaluation.when"), ParagraphAlignment.CENTER, false),
+        new POIField(this.getText("summaries.annualReport.tableI2.field6"), ParagraphAlignment.CENTER, false)};
     List<POIField> header = Arrays.asList(sHeader);
     headers.add(header);
 
@@ -1370,10 +1387,10 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
           status = ProjectStatusEnum.getValue(temp).getStatus();
         }
 
-        POIField[] sData = {new POIField(nameEvaluation, ParagraphAlignment.CENTER),
-          new POIField(recommendation, ParagraphAlignment.LEFT), new POIField(response, ParagraphAlignment.LEFT),
-          new POIField(whom, ParagraphAlignment.LEFT), new POIField(when, ParagraphAlignment.LEFT),
-          new POIField(status, ParagraphAlignment.LEFT)};
+        POIField[] sData = {new POIField(nameEvaluation, ParagraphAlignment.CENTER, false),
+          new POIField(recommendation, ParagraphAlignment.LEFT, false),
+          new POIField(response, ParagraphAlignment.LEFT, false), new POIField(whom, ParagraphAlignment.LEFT, false),
+          new POIField(when, ParagraphAlignment.LEFT, false), new POIField(status, ParagraphAlignment.LEFT, false)};
 
         data = Arrays.asList(sData);
         datas.add(data);
@@ -1415,25 +1432,25 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
       reportSynthesisPMU.getReportSynthesisFinancialSummary().getBudgets();
 
     List<List<POIField>> headers = new ArrayList<>();
-    POIField[] sHeader = {new POIField("", ParagraphAlignment.CENTER), new POIField(
+    POIField[] sHeader = {new POIField("", ParagraphAlignment.CENTER, false), new POIField(
       this.getText("annualReport.financial.tableJ.budget", new String[] {String.valueOf(this.getSelectedYear())}) + "*",
-      ParagraphAlignment.CENTER), new POIField("", ParagraphAlignment.CENTER),
-      new POIField("", ParagraphAlignment.CENTER),
-      new POIField(this.getText("annualReport.financial.tableJ.expenditure") + "*", ParagraphAlignment.CENTER),
-      new POIField("", ParagraphAlignment.CENTER), new POIField("", ParagraphAlignment.CENTER),
-      new POIField(this.getText("annualReport.financial.tableJ.difference") + "*", ParagraphAlignment.CENTER),
-      new POIField("", ParagraphAlignment.CENTER), new POIField("", ParagraphAlignment.CENTER)};
+      ParagraphAlignment.CENTER, false), new POIField("", ParagraphAlignment.CENTER, false),
+      new POIField("", ParagraphAlignment.CENTER, false),
+      new POIField(this.getText("annualReport.financial.tableJ.expenditure") + "*", ParagraphAlignment.CENTER, false),
+      new POIField("", ParagraphAlignment.CENTER, false), new POIField("", ParagraphAlignment.CENTER, false),
+      new POIField(this.getText("annualReport.financial.tableJ.difference") + "*", ParagraphAlignment.CENTER, false),
+      new POIField("", ParagraphAlignment.CENTER, false), new POIField("", ParagraphAlignment.CENTER, false)};
 
-    POIField[] sHeader2 = {new POIField(" ", ParagraphAlignment.CENTER),
-      new POIField(this.getText("financialPlan.tableE.w1w2"), ParagraphAlignment.CENTER),
-      new POIField(this.getText("financialPlan.tableE.w3bilateral"), ParagraphAlignment.CENTER),
-      new POIField(this.getText("financialPlan.tableE.total"), ParagraphAlignment.CENTER),
-      new POIField(this.getText("financialPlan.tableE.w1w2"), ParagraphAlignment.CENTER),
-      new POIField(this.getText("financialPlan.tableE.w3bilateral"), ParagraphAlignment.CENTER),
-      new POIField(this.getText("financialPlan.tableE.total"), ParagraphAlignment.CENTER),
-      new POIField(this.getText("financialPlan.tableE.w1w2"), ParagraphAlignment.CENTER),
-      new POIField(this.getText("financialPlan.tableE.w3bilateral"), ParagraphAlignment.CENTER),
-      new POIField(this.getText("financialPlan.tableE.total"), ParagraphAlignment.CENTER)};
+    POIField[] sHeader2 = {new POIField(" ", ParagraphAlignment.CENTER, false),
+      new POIField(this.getText("financialPlan.tableE.w1w2"), ParagraphAlignment.CENTER, false),
+      new POIField(this.getText("financialPlan.tableE.w3bilateral"), ParagraphAlignment.CENTER, false),
+      new POIField(this.getText("financialPlan.tableE.total"), ParagraphAlignment.CENTER, false),
+      new POIField(this.getText("financialPlan.tableE.w1w2"), ParagraphAlignment.CENTER, false),
+      new POIField(this.getText("financialPlan.tableE.w3bilateral"), ParagraphAlignment.CENTER, false),
+      new POIField(this.getText("financialPlan.tableE.total"), ParagraphAlignment.CENTER, false),
+      new POIField(this.getText("financialPlan.tableE.w1w2"), ParagraphAlignment.CENTER, false),
+      new POIField(this.getText("financialPlan.tableE.w3bilateral"), ParagraphAlignment.CENTER, false),
+      new POIField(this.getText("financialPlan.tableE.total"), ParagraphAlignment.CENTER, false)};
 
     List<POIField> header = Arrays.asList(sHeader);
     List<POIField> header2 = Arrays.asList(sHeader2);
@@ -1495,16 +1512,16 @@ public class AnualReportPOISummaryAction extends BaseSummariesAction implements 
         totalW3Difference += w3Difference;
         grandTotalDifference += totalDifference;
 
-        POIField[] sData = {new POIField(category, ParagraphAlignment.CENTER),
-          new POIField(currencyFormat.format(round(w1w2Planned / 1000, 2)), ParagraphAlignment.CENTER),
-          new POIField(currencyFormat.format(round(w3Planned / 1000, 2)), ParagraphAlignment.CENTER),
-          new POIField(currencyFormat.format(round(totalPlanned / 1000, 2)), ParagraphAlignment.CENTER),
-          new POIField(currencyFormat.format(round(w1w2Actual / 1000, 2)), ParagraphAlignment.CENTER),
-          new POIField(currencyFormat.format(round(w3Actual / 1000, 2)), ParagraphAlignment.CENTER),
-          new POIField(currencyFormat.format(round(totalActual / 1000, 2)), ParagraphAlignment.CENTER),
-          new POIField(currencyFormat.format(round(w1w2Difference / 1000, 2)), ParagraphAlignment.CENTER),
-          new POIField(currencyFormat.format(round(w3Difference / 1000, 2)), ParagraphAlignment.CENTER),
-          new POIField(currencyFormat.format(round(totalDifference / 1000, 2)), ParagraphAlignment.CENTER)};
+        POIField[] sData = {new POIField(category, ParagraphAlignment.CENTER, false),
+          new POIField(currencyFormat.format(round(w1w2Planned / 1000, 2)), ParagraphAlignment.CENTER, false),
+          new POIField(currencyFormat.format(round(w3Planned / 1000, 2)), ParagraphAlignment.CENTER, false),
+          new POIField(currencyFormat.format(round(totalPlanned / 1000, 2)), ParagraphAlignment.CENTER, false),
+          new POIField(currencyFormat.format(round(w1w2Actual / 1000, 2)), ParagraphAlignment.CENTER, false),
+          new POIField(currencyFormat.format(round(w3Actual / 1000, 2)), ParagraphAlignment.CENTER, false),
+          new POIField(currencyFormat.format(round(totalActual / 1000, 2)), ParagraphAlignment.CENTER, false),
+          new POIField(currencyFormat.format(round(w1w2Difference / 1000, 2)), ParagraphAlignment.CENTER, false),
+          new POIField(currencyFormat.format(round(w3Difference / 1000, 2)), ParagraphAlignment.CENTER, false),
+          new POIField(currencyFormat.format(round(totalDifference / 1000, 2)), ParagraphAlignment.CENTER, false)};
 
         data = Arrays.asList(sData);
         datas.add(data);

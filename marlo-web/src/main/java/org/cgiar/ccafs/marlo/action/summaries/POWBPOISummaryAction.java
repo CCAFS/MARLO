@@ -395,13 +395,13 @@ public class POWBPOISummaryAction extends BaseSummariesAction implements Summary
   public void createTableA1() {
     List<List<POIField>> headers = new ArrayList<>();
 
-    POIField[] sHeader = {new POIField(this.getText("expectedProgress.tableA.fp"), ParagraphAlignment.CENTER),
-      new POIField(this.getText("expectedProgress.tableA.subIDO"), ParagraphAlignment.CENTER),
-      new POIField(this.getText("summaries.powb.tableA1.outcomes"), ParagraphAlignment.CENTER),
+    POIField[] sHeader = {new POIField(this.getText("expectedProgress.tableA.fp"), ParagraphAlignment.CENTER, false),
+      new POIField(this.getText("expectedProgress.tableA.subIDO"), ParagraphAlignment.CENTER, false),
+      new POIField(this.getText("summaries.powb.tableA1.outcomes"), ParagraphAlignment.CENTER, false),
       new POIField(this.getSelectedYear() + " Budget  " + this.getText("expectedProgress.tableA.w1w2"),
-        ParagraphAlignment.CENTER),
+        ParagraphAlignment.CENTER, false),
       new POIField(this.getSelectedYear() + " Budget  " + this.getText("expectedProgress.tableA.w3bilateral"),
-        ParagraphAlignment.CENTER)};
+        ParagraphAlignment.CENTER, false)};
 
     List<POIField> header = Arrays.asList(sHeader);
     headers.add(header);
@@ -461,11 +461,11 @@ public class POWBPOISummaryAction extends BaseSummariesAction implements Summary
 
     List<List<POIField>> headers = new ArrayList<>();
 
-    POIField[] sHeader = {new POIField(this.getText("expectedProgress.tableA.fp"), ParagraphAlignment.CENTER),
-      new POIField(this.getText("summaries.powb.tableA1.outcomes"), ParagraphAlignment.CENTER),
-      new POIField(this.getText("expectedProgress.tableA.milestone") + "*", ParagraphAlignment.CENTER),
-      new POIField(this.getText("expectedProgress.tableA.meansVerification"), ParagraphAlignment.CENTER),
-      new POIField(this.getText("expectedProgress.tableA.assessment"), ParagraphAlignment.CENTER)};
+    POIField[] sHeader = {new POIField(this.getText("expectedProgress.tableA.fp"), ParagraphAlignment.CENTER, false),
+      new POIField(this.getText("summaries.powb.tableA1.outcomes"), ParagraphAlignment.CENTER, false),
+      new POIField(this.getText("expectedProgress.tableA.milestone") + "*", ParagraphAlignment.CENTER, false),
+      new POIField(this.getText("expectedProgress.tableA.meansVerification"), ParagraphAlignment.CENTER, false),
+      new POIField(this.getText("expectedProgress.tableA.assessment"), ParagraphAlignment.CENTER, false)};
 
     List<POIField> header = Arrays.asList(sHeader);
     headers.add(header);
@@ -503,10 +503,11 @@ public class POWBPOISummaryAction extends BaseSummariesAction implements Summary
           meansVerifications = milestoneProgress.getMeans() != null && !milestoneProgress.getMeans().trim().isEmpty()
             ? milestoneProgress.getMeans() : " ";
 
-          POIField[] sData = {new POIField(FP, ParagraphAlignment.CENTER),
-            new POIField(outcomes, ParagraphAlignment.LEFT), new POIField(milestone, ParagraphAlignment.LEFT),
-            new POIField(meansVerifications, ParagraphAlignment.LEFT),
-            new POIField(assessment, ParagraphAlignment.CENTER)};
+          POIField[] sData =
+            {new POIField(FP, ParagraphAlignment.CENTER, false), new POIField(outcomes, ParagraphAlignment.LEFT, false),
+              new POIField(milestone, ParagraphAlignment.LEFT, false),
+              new POIField(meansVerifications, ParagraphAlignment.LEFT, false),
+              new POIField(assessment, ParagraphAlignment.CENTER, false)};
           data = Arrays.asList(sData);
           datas.add(data);
 
@@ -522,10 +523,12 @@ public class POWBPOISummaryAction extends BaseSummariesAction implements Summary
 
   private void createTableB() {
     List<List<POIField>> headers = new ArrayList<>();
-    POIField[] sHeader = {new POIField(this.getText("evidenceRelevant.table.plannedTopic"), ParagraphAlignment.CENTER),
-      new POIField(this.getText("evidenceRelevant.tablePlannedStudies.geographicScope"), ParagraphAlignment.CENTER),
-      new POIField(this.getText("evidenceRelevant.tablePlannedStudies.relevant"), ParagraphAlignment.CENTER),
-      new POIField(this.getText("evidenceRelevant.tablePlannedStudies.comments"), ParagraphAlignment.CENTER)};
+    POIField[] sHeader =
+      {new POIField(this.getText("evidenceRelevant.table.plannedTopic"), ParagraphAlignment.CENTER, false),
+        new POIField(this.getText("evidenceRelevant.tablePlannedStudies.geographicScope"), ParagraphAlignment.CENTER,
+          false),
+        new POIField(this.getText("evidenceRelevant.tablePlannedStudies.relevant"), ParagraphAlignment.CENTER, false),
+        new POIField(this.getText("evidenceRelevant.tablePlannedStudies.comments"), ParagraphAlignment.CENTER, false)};
     List<POIField> header = Arrays.asList(sHeader);
     headers.add(header);
     List<List<POIField>> datas = new ArrayList<>();
@@ -571,9 +574,10 @@ public class POWBPOISummaryAction extends BaseSummariesAction implements Summary
         && !powbEvidencePlannedStudyDTO.getProjectExpectedStudy().getComments().trim().isEmpty()
           ? powbEvidencePlannedStudyDTO.getProjectExpectedStudy().getComments() : " ";
 
-      POIField[] sData = {new POIField(plannedStudy, ParagraphAlignment.CENTER),
-        new POIField(geographicScope, ParagraphAlignment.CENTER), new POIField(revelantSubIDO, ParagraphAlignment.LEFT),
-        new POIField(comments, ParagraphAlignment.LEFT)};
+      POIField[] sData = {new POIField(plannedStudy, ParagraphAlignment.CENTER, false),
+        new POIField(geographicScope, ParagraphAlignment.CENTER, false),
+        new POIField(revelantSubIDO, ParagraphAlignment.LEFT, false),
+        new POIField(comments, ParagraphAlignment.LEFT, false)};
       data = Arrays.asList(sData);
 
       datas.add(data);
@@ -584,11 +588,11 @@ public class POWBPOISummaryAction extends BaseSummariesAction implements Summary
   private void createTableC() {
     List<List<POIField>> headers = new ArrayList<>();
     POIField[] sHeader =
-      {new POIField(this.getText("crossCuttingDimensions.tableC.crossCutting"), ParagraphAlignment.CENTER),
-        new POIField(this.getText("crossCuttingDimensions.tableC.principal"), ParagraphAlignment.CENTER),
-        new POIField(this.getText("crossCuttingDimensions.tableC.significant"), ParagraphAlignment.CENTER),
-        new POIField(this.getText("crossCuttingDimensions.tableC.notTargeted"), ParagraphAlignment.CENTER),
-        new POIField(this.getText("crossCuttingDimensions.tableC.overall"), ParagraphAlignment.CENTER)};
+      {new POIField(this.getText("crossCuttingDimensions.tableC.crossCutting"), ParagraphAlignment.CENTER, false),
+        new POIField(this.getText("crossCuttingDimensions.tableC.principal"), ParagraphAlignment.CENTER, false),
+        new POIField(this.getText("crossCuttingDimensions.tableC.significant"), ParagraphAlignment.CENTER, false),
+        new POIField(this.getText("crossCuttingDimensions.tableC.notTargeted"), ParagraphAlignment.CENTER, false),
+        new POIField(this.getText("crossCuttingDimensions.tableC.overall"), ParagraphAlignment.CENTER, false)};
     List<POIField> header = Arrays.asList(sHeader);
     headers.add(header);
     List<List<POIField>> datas = new ArrayList<>();
@@ -597,34 +601,34 @@ public class POWBPOISummaryAction extends BaseSummariesAction implements Summary
     this.tableCInfo(this.getSelectedPhase());
 
     if (tableC != null) {
-      POIField[] sData = {new POIField("Gender", ParagraphAlignment.CENTER),
+      POIField[] sData = {new POIField("Gender", ParagraphAlignment.CENTER, false),
         new POIField(percentageFormat.format(round(tableC.getPercentageGenderPrincipal() / 100, 4)),
-          ParagraphAlignment.CENTER),
+          ParagraphAlignment.CENTER, false),
         new POIField(percentageFormat.format(round(tableC.getPercentageGenderSignificant() / 100, 4)),
-          ParagraphAlignment.CENTER),
+          ParagraphAlignment.CENTER, false),
         new POIField(percentageFormat.format(round(tableC.getPercentageGenderNotScored() / 100, 4)),
-          ParagraphAlignment.CENTER),
-        new POIField(String.valueOf((int) tableC.getTotal()), ParagraphAlignment.CENTER)};
+          ParagraphAlignment.CENTER, false),
+        new POIField(String.valueOf((int) tableC.getTotal()), ParagraphAlignment.CENTER, false)};
       data = Arrays.asList(sData);
       datas.add(data);
-      POIField[] sData2 = {new POIField("Youth", ParagraphAlignment.CENTER),
+      POIField[] sData2 = {new POIField("Youth", ParagraphAlignment.CENTER, false),
         new POIField(percentageFormat.format(round(tableC.getPercentageYouthPrincipal() / 100, 4)),
-          ParagraphAlignment.CENTER),
+          ParagraphAlignment.CENTER, false),
         new POIField(percentageFormat.format(round(tableC.getPercentageYouthSignificant() / 100, 4)),
-          ParagraphAlignment.CENTER),
+          ParagraphAlignment.CENTER, false),
         new POIField(percentageFormat.format(round(tableC.getPercentageYouthNotScored() / 100, 4)),
-          ParagraphAlignment.CENTER),
-        new POIField("", ParagraphAlignment.CENTER)};
+          ParagraphAlignment.CENTER, false),
+        new POIField("", ParagraphAlignment.CENTER, false)};
       data = Arrays.asList(sData2);
       datas.add(data);
-      POIField[] sData3 = {new POIField("CapDev", ParagraphAlignment.CENTER),
+      POIField[] sData3 = {new POIField("CapDev", ParagraphAlignment.CENTER, false),
         new POIField(percentageFormat.format(round(tableC.getPercentageCapDevPrincipal() / 100, 4)),
-          ParagraphAlignment.CENTER),
+          ParagraphAlignment.CENTER, false),
         new POIField(percentageFormat.format(round(tableC.getPercentageCapDevSignificant() / 100, 4)),
-          ParagraphAlignment.CENTER),
+          ParagraphAlignment.CENTER, false),
         new POIField(percentageFormat.format(round(tableC.getPercentageCapDevNotScored() / 100, 4)),
-          ParagraphAlignment.CENTER),
-        new POIField("", ParagraphAlignment.CENTER)};
+          ParagraphAlignment.CENTER, false),
+        new POIField("", ParagraphAlignment.CENTER, false)};
       data = Arrays.asList(sData3);
       datas.add(data);
     }
@@ -634,11 +638,11 @@ public class POWBPOISummaryAction extends BaseSummariesAction implements Summary
 
   private void createTableD() {
     List<List<POIField>> headers = new ArrayList<>();
-    POIField[] sHeader = {new POIField(this.getText("crpStaffing.tableD.category"), ParagraphAlignment.CENTER),
-      new POIField(this.getText("crpStaffing.tableD.female"), ParagraphAlignment.CENTER),
-      new POIField(this.getText("crpStaffing.tableD.male"), ParagraphAlignment.CENTER),
-      new POIField(this.getText("crpStaffing.tableD.total"), ParagraphAlignment.CENTER),
-      new POIField(this.getText("crpStaffing.tableD.percFemale"), ParagraphAlignment.CENTER)};
+    POIField[] sHeader = {new POIField(this.getText("crpStaffing.tableD.category"), ParagraphAlignment.CENTER, false),
+      new POIField(this.getText("crpStaffing.tableD.female"), ParagraphAlignment.CENTER, false),
+      new POIField(this.getText("crpStaffing.tableD.male"), ParagraphAlignment.CENTER, false),
+      new POIField(this.getText("crpStaffing.tableD.total"), ParagraphAlignment.CENTER, false),
+      new POIField(this.getText("crpStaffing.tableD.percFemale"), ParagraphAlignment.CENTER, false)};
     List<POIField> header = Arrays.asList(sHeader);
     headers.add(header);
 
@@ -678,11 +682,13 @@ public class POWBPOISummaryAction extends BaseSummariesAction implements Summary
           totalFTE = powbSynthesisCrpStaffingCategory.getTotalFTE();
         }
       }
-      POIField[] sData = {new POIField(category, ParagraphAlignment.LEFT),
-        new POIField(String.valueOf(round(female, 2)) + " (" + round(femaleNoCg, 2) + ")", ParagraphAlignment.CENTER),
-        new POIField(String.valueOf(round(male, 2)) + " (" + round(maleNoCg, 2) + ")", ParagraphAlignment.CENTER),
-        new POIField(String.valueOf(round(totalFTE, 2)), ParagraphAlignment.CENTER),
-        new POIField(percentageFormat.format(round(femalePercentaje, 4)), ParagraphAlignment.CENTER)};
+      POIField[] sData = {new POIField(category, ParagraphAlignment.LEFT, false),
+        new POIField(String.valueOf(round(female, 2)) + " (" + round(femaleNoCg, 2) + ")", ParagraphAlignment.CENTER,
+          false),
+        new POIField(String.valueOf(round(male, 2)) + " (" + round(maleNoCg, 2) + ")", ParagraphAlignment.CENTER,
+          false),
+        new POIField(String.valueOf(round(totalFTE, 2)), ParagraphAlignment.CENTER, false),
+        new POIField(percentageFormat.format(round(femalePercentaje, 4)), ParagraphAlignment.CENTER, false)};
       data = Arrays.asList(sData);
       datas.add(data);
     }
@@ -716,22 +722,22 @@ public class POWBPOISummaryAction extends BaseSummariesAction implements Summary
 
   private void createTableE() {
     List<List<POIField>> headers = new ArrayList<>();
-    POIField[] sHeader = {new POIField("", ParagraphAlignment.CENTER),
+    POIField[] sHeader = {new POIField("", ParagraphAlignment.CENTER, false),
       new POIField(
         this.getText("financialPlan.tableE.plannedBudget", new String[] {String.valueOf(this.getSelectedYear())}),
-        ParagraphAlignment.CENTER),
-      new POIField("", ParagraphAlignment.CENTER), new POIField("", ParagraphAlignment.CENTER),
-      new POIField("", ParagraphAlignment.CENTER), new POIField("", ParagraphAlignment.CENTER),
-      new POIField(this.getText("financialPlan.tableE.comments"), ParagraphAlignment.CENTER)};
-    POIField[] sHeader2 = {new POIField(" ", ParagraphAlignment.CENTER),
+        ParagraphAlignment.CENTER, false),
+      new POIField("", ParagraphAlignment.CENTER, false), new POIField("", ParagraphAlignment.CENTER, false),
+      new POIField("", ParagraphAlignment.CENTER, false), new POIField("", ParagraphAlignment.CENTER, false),
+      new POIField(this.getText("financialPlan.tableE.comments"), ParagraphAlignment.CENTER, false)};
+    POIField[] sHeader2 = {new POIField(" ", ParagraphAlignment.CENTER, false),
       new POIField(
         this.getText("financialPlan.tableE.carryOver", new String[] {String.valueOf(this.getSelectedYear() - 1)}),
-        ParagraphAlignment.CENTER),
-      new POIField(this.getText("financialPlan.tableE.w1w2"), ParagraphAlignment.CENTER),
-      new POIField(this.getText("financialPlan.tableE.w3bilateral"), ParagraphAlignment.CENTER),
-      new POIField(this.getText("financialPlan.tableE.centerFunds"), ParagraphAlignment.CENTER),
-      new POIField(this.getText("financialPlan.tableE.total"), ParagraphAlignment.CENTER),
-      new POIField(" ", ParagraphAlignment.CENTER)};
+        ParagraphAlignment.CENTER, false),
+      new POIField(this.getText("financialPlan.tableE.w1w2"), ParagraphAlignment.CENTER, false),
+      new POIField(this.getText("financialPlan.tableE.w3bilateral"), ParagraphAlignment.CENTER, false),
+      new POIField(this.getText("financialPlan.tableE.centerFunds"), ParagraphAlignment.CENTER, false),
+      new POIField(this.getText("financialPlan.tableE.total"), ParagraphAlignment.CENTER, false),
+      new POIField(" ", ParagraphAlignment.CENTER, false)};
 
     List<POIField> header = Arrays.asList(sHeader);
     List<POIField> header2 = Arrays.asList(sHeader2);
@@ -775,13 +781,13 @@ public class POWBPOISummaryAction extends BaseSummariesAction implements Summary
         totalw3Bilateral += w3Bilateral;
         totalCenter += center;
         grandTotal += total;
-        POIField[] sData = {new POIField(category, ParagraphAlignment.CENTER),
-          new POIField(currencyFormat.format(round(carry, 2)), ParagraphAlignment.CENTER),
-          new POIField(currencyFormat.format(round(w1w2, 2)), ParagraphAlignment.CENTER),
-          new POIField(currencyFormat.format(round(w3Bilateral, 2)), ParagraphAlignment.CENTER),
-          new POIField(currencyFormat.format(round(center, 2)), ParagraphAlignment.CENTER),
-          new POIField(currencyFormat.format(round(total, 2)), ParagraphAlignment.CENTER),
-          new POIField(comments, ParagraphAlignment.LEFT)};
+        POIField[] sData = {new POIField(category, ParagraphAlignment.CENTER, false),
+          new POIField(currencyFormat.format(round(carry, 2)), ParagraphAlignment.CENTER, false),
+          new POIField(currencyFormat.format(round(w1w2, 2)), ParagraphAlignment.CENTER, false),
+          new POIField(currencyFormat.format(round(w3Bilateral, 2)), ParagraphAlignment.CENTER, false),
+          new POIField(currencyFormat.format(round(center, 2)), ParagraphAlignment.CENTER, false),
+          new POIField(currencyFormat.format(round(total, 2)), ParagraphAlignment.CENTER, false),
+          new POIField(comments, ParagraphAlignment.LEFT, false)};
 
         data = Arrays.asList(sData);
         datas.add(data);
@@ -817,13 +823,13 @@ public class POWBPOISummaryAction extends BaseSummariesAction implements Summary
         totalw3Bilateral += w3Bilateral;
         totalCenter += center;
         grandTotal += total;
-        POIField[] sData = {new POIField(category, ParagraphAlignment.CENTER),
-          new POIField(currencyFormat.format(round(carry, 2)), ParagraphAlignment.CENTER),
-          new POIField(currencyFormat.format(round(w1w2, 2)), ParagraphAlignment.CENTER),
-          new POIField(currencyFormat.format(round(w3Bilateral, 2)), ParagraphAlignment.CENTER),
-          new POIField(currencyFormat.format(round(center, 2)), ParagraphAlignment.CENTER),
-          new POIField(currencyFormat.format(round(total, 2)), ParagraphAlignment.CENTER),
-          new POIField(comments, ParagraphAlignment.LEFT)};
+        POIField[] sData = {new POIField(category, ParagraphAlignment.CENTER, false),
+          new POIField(currencyFormat.format(round(carry, 2)), ParagraphAlignment.CENTER, false),
+          new POIField(currencyFormat.format(round(w1w2, 2)), ParagraphAlignment.CENTER, false),
+          new POIField(currencyFormat.format(round(w3Bilateral, 2)), ParagraphAlignment.CENTER, false),
+          new POIField(currencyFormat.format(round(center, 2)), ParagraphAlignment.CENTER, false),
+          new POIField(currencyFormat.format(round(total, 2)), ParagraphAlignment.CENTER, false),
+          new POIField(comments, ParagraphAlignment.LEFT, false)};
 
         data = Arrays.asList(sData);
         datas.add(data);
@@ -850,10 +856,10 @@ public class POWBPOISummaryAction extends BaseSummariesAction implements Summary
   private void createTableF() {
     List<List<POIField>> headers = new ArrayList<>();
     POIField[] sHeader =
-      {new POIField(this.getText("financialPlan.tableF.expenditureArea") + "*", ParagraphAlignment.CENTER),
+      {new POIField(this.getText("financialPlan.tableF.expenditureArea") + "*", ParagraphAlignment.CENTER, false),
         new POIField(this.getText("financialPlan.tableF.estimatedPercentage",
-          new String[] {String.valueOf(this.getSelectedYear())}) + "**", ParagraphAlignment.CENTER),
-        new POIField(this.getText("financialPlan.tableF.comments"), ParagraphAlignment.CENTER)};
+          new String[] {String.valueOf(this.getSelectedYear())}) + "**", ParagraphAlignment.CENTER, false),
+        new POIField(this.getText("financialPlan.tableF.comments"), ParagraphAlignment.CENTER, false)};
 
     List<POIField> header = Arrays.asList(sHeader);
     headers.add(header);
@@ -883,9 +889,9 @@ public class POWBPOISummaryAction extends BaseSummariesAction implements Summary
         }
       }
 
-      POIField[] sData = {new POIField(expenditureArea, ParagraphAlignment.LEFT),
-        new POIField(percentageFormat.format(round(estimatedPercentajeFS / 100, 4)), ParagraphAlignment.CENTER),
-        new POIField(commentsSpace, ParagraphAlignment.LEFT)};
+      POIField[] sData = {new POIField(expenditureArea, ParagraphAlignment.LEFT, false),
+        new POIField(percentageFormat.format(round(estimatedPercentajeFS / 100, 4)), ParagraphAlignment.CENTER, false),
+        new POIField(commentsSpace, ParagraphAlignment.LEFT, false)};
       data = Arrays.asList(sData);
       datas.add(data);
     }
@@ -907,9 +913,9 @@ public class POWBPOISummaryAction extends BaseSummariesAction implements Summary
 
   private void createTableG() {
     List<List<POIField>> headers = new ArrayList<>();
-    POIField[] sHeader = {new POIField(this.getText("summaries.powb.tableG.crpName"), ParagraphAlignment.CENTER),
-      new POIField(this.getText("summaries.powb.tableG.description"), ParagraphAlignment.CENTER),
-      new POIField(this.getText("summaries.powb.tableG.relevantFP"), ParagraphAlignment.CENTER)};
+    POIField[] sHeader = {new POIField(this.getText("summaries.powb.tableG.crpName"), ParagraphAlignment.CENTER, false),
+      new POIField(this.getText("summaries.powb.tableG.description"), ParagraphAlignment.CENTER, false),
+      new POIField(this.getText("summaries.powb.tableG.relevantFP"), ParagraphAlignment.CENTER, false)};
     List<POIField> header = Arrays.asList(sHeader);
     headers.add(header);
 
@@ -935,9 +941,9 @@ public class POWBPOISummaryAction extends BaseSummariesAction implements Summary
             powbCollaborationGlobalUnit.getFlagship() != null && !powbCollaborationGlobalUnit.getFlagship().isEmpty()
               ? powbCollaborationGlobalUnit.getFlagship() : " ";
 
-          POIField[] sData = {new POIField(crpPlatform, ParagraphAlignment.CENTER),
-            new POIField(descriptionCollaboration, ParagraphAlignment.LEFT),
-            new POIField(relevantFP, ParagraphAlignment.LEFT)};
+          POIField[] sData = {new POIField(crpPlatform, ParagraphAlignment.CENTER, false),
+            new POIField(descriptionCollaboration, ParagraphAlignment.LEFT, false),
+            new POIField(relevantFP, ParagraphAlignment.LEFT, false)};
 
           data = Arrays.asList(sData);
           datas.add(data);
@@ -952,8 +958,8 @@ public class POWBPOISummaryAction extends BaseSummariesAction implements Summary
     POIField[] sHeader = {
       new POIField(
         this.getText("monitoringLearning.table.plannedStudies", new String[] {String.valueOf(this.getSelectedYear())}),
-        ParagraphAlignment.CENTER),
-      new POIField(this.getText("monitoringLearning.table.comments"), ParagraphAlignment.CENTER)};
+        ParagraphAlignment.CENTER, false),
+      new POIField(this.getText("monitoringLearning.table.comments"), ParagraphAlignment.CENTER, false)};
     List<POIField> header = Arrays.asList(sHeader);
     headers.add(header);
 
@@ -978,8 +984,8 @@ public class POWBPOISummaryAction extends BaseSummariesAction implements Summary
         && !powbEvidencePlannedStudyDTO.getProjectExpectedStudy().getComments().trim().isEmpty()
           ? powbEvidencePlannedStudyDTO.getProjectExpectedStudy().getComments() : " ";
 
-      POIField[] sData =
-        {new POIField(plannedStudy, ParagraphAlignment.LEFT), new POIField(comments, ParagraphAlignment.LEFT)};
+      POIField[] sData = {new POIField(plannedStudy, ParagraphAlignment.LEFT, false),
+        new POIField(comments, ParagraphAlignment.LEFT, false)};
 
       data = Arrays.asList(sData);
       datas.add(data);
