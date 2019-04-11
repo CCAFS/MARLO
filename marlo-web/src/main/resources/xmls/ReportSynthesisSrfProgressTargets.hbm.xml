@@ -34,10 +34,9 @@
 			unique="false">
 			<column length="65535" name="additional_contribution" />
 		</property>
-		<property generated="never" lazy="false" name="active"
-			optimistic-lock="true" type="boolean" unique="false">
-			<column name="is_active" not-null="true" />
-		</property>
+		<property name="active" type="boolean">
+      <column name="is_active" not-null="true" />
+    </property>
 		<property generated="never" lazy="false" name="activeSince"
 			optimistic-lock="true" type="timestamp" unique="false">
 			<column length="19" name="active_since" />
