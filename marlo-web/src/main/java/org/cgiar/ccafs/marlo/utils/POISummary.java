@@ -148,6 +148,7 @@ public class POISummary {
     }
   }
 
+
   public void convertHTMLTags(XWPFDocument document, String text) {
     List<Integer> startsPosList = new ArrayList<Integer>();
     List<Integer> finalPosList = new ArrayList<Integer>();
@@ -464,6 +465,7 @@ public class POISummary {
     }
   }
 
+
   public void pageCenterBoldHeader(XWPFDocument document, String text) throws IOException {
     CTSectPr sectPr = document.getDocument().getBody().addNewSectPr();
     XWPFHeaderFooterPolicy policy = new XWPFHeaderFooterPolicy(document, sectPr);
@@ -477,7 +479,6 @@ public class POISummary {
     parsHeader[0] = headerParagraph;
     policy.createHeader(XWPFHeaderFooterPolicy.DEFAULT, parsHeader);
   }
-
 
   /**
    * Footer title
@@ -754,6 +755,7 @@ public class POISummary {
 
   }
 
+
   public void table3AnnualReport2018Style(XWPFTable table) {
     /* horizontal merge, From format tables I */
 
@@ -769,7 +771,6 @@ public class POISummary {
       }
     }
   }
-
 
   public void table4AnnualReport2018Style(XWPFTable table) {
     /* horizontal merge, From format tables I */
@@ -875,6 +876,7 @@ public class POISummary {
     }
   }
 
+
   public void tableA2PowbStyle(XWPFTable table) {
     /* Horizontal merge, From format tables A */
     CTVMerge vmerge = CTVMerge.Factory.newInstance();
@@ -914,7 +916,6 @@ public class POISummary {
       }
     }
   }
-
 
   public void tableAPowbCRPStyle(XWPFTable table) {
     /* Horizontal merge, From format table A */
@@ -1642,6 +1643,7 @@ public class POISummary {
     h1.setBorderBottom(Borders.SINGLE);
   }
 
+
   public void textHeadPrincipalTitlefirtsPageCRP(XWPFParagraph h1, String text) {
     h1.setAlignment(ParagraphAlignment.CENTER);
     XWPFRun h1Run = h1.createRun();
@@ -1882,8 +1884,23 @@ public class POISummary {
         count++;
         XWPFParagraph paragraph = dataRow.getCell(record).addParagraph();
         paragraph.setAlignment(poiParameter.getAlignment());
+        // HiperLinks
+        if (poiParameter.getUrls() != null && !poiParameter.getUrls().isEmpty()) {
+          for (int i = 0; i < poiParameter.getUrls().size(); i++) {
+            // For don't hurt the implementation'for the others paragraph options
+            if (i == 0) {
+              this.textHyperlink(poiParameter.getUrls().get(i), poiParameter.getTexts().get(i), paragraph);
+            } else {
+              XWPFParagraph breakParagraph = dataRow.getCell(record).addParagraph();
+              breakParagraph.setAlignment(poiParameter.getAlignment());
+              this.textHyperlink(poiParameter.getUrls().get(i), poiParameter.getTexts().get(i), breakParagraph);
+            }
+
+
+          }
+        }
         // Hyperlink
-        if (poiParameter.getUrl() != null && !poiParameter.getUrl().isEmpty()) {
+        else if (poiParameter.getUrl() != null && !poiParameter.getUrl().isEmpty()) {
           this.textHyperlink(poiParameter.getUrl(), poiParameter.getText(), paragraph);
         } else {
           XWPFRun paragraphRun = paragraph.createRun();

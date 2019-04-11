@@ -1159,13 +1159,10 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
       String name = null, levelMaturity = "", srfSubIdo = "", gender = "", youth = "", capdev = "", climateChange = "",
         evidences = "", evidenceComposed = "";
 
-      if (projectPolicy.getProjectPolicyInfo().getRepIndStageProcess() != null
-        && projectPolicy.getProjectPolicyInfo().getRepIndStageProcess().getId() == 3) {
-        if (projectPolicy.getProjectPolicyInfo().getNarrativeEvidence() != null
-          && !projectPolicy.getProjectPolicyInfo().getNarrativeEvidence().isEmpty()) {
-          evidences += projectPolicy.getProjectPolicyInfo().getNarrativeEvidence() + "\n";
-        }
-      }
+      // List of Urls
+      List<String> urls = new ArrayList<>();
+      // List of Texts
+      List<String> texts = new ArrayList<>();
 
 
       if (projectPolicy != null && projectPolicy.getProjectPolicyInfo() != null) {
@@ -1188,7 +1185,15 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
           }
         }
 
-        evidences = "";
+
+        if (projectPolicy.getProjectPolicyInfo().getRepIndStageProcess() != null
+          && projectPolicy.getProjectPolicyInfo().getRepIndStageProcess().getId() == 3) {
+          if (projectPolicy.getProjectPolicyInfo().getNarrativeEvidence() != null
+            && !projectPolicy.getProjectPolicyInfo().getNarrativeEvidence().isEmpty()) {
+            evidences += projectPolicy.getProjectPolicyInfo().getNarrativeEvidence() + " \n";
+          }
+        }
+
         if (projectPolicy.getEvidences(this.getSelectedPhase()) != null) {
           String temp = "";
           for (ProjectExpectedStudyPolicy evidence : projectPolicy.getEvidences(this.getSelectedPhase())) {
@@ -1197,14 +1202,17 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
                 + (evidence.getProjectExpectedStudy().getId()).toString() + "&cycle=" + this.getCurrentCycle()
                 + "&year=" + this.getSelectedPhase().getYear();
               // ${baseUrl}/projects/${crpSession}/studySummary.do?studyID=${(item.projectExpectedStudy.id)!}&cycle=Reporting&year=${(actualPhase.year)!}
-              evidences += temp + ", ";
+              // evidences += temp + ", ";
+              urls.add(temp);
               if (evidence.getProjectExpectedStudy().getComposedName() != null) {
-                evidenceComposed = evidence.getProjectExpectedStudy().getComposedIdentifier();
+                // evidenceComposed = evidence.getProjectExpectedStudy().getComposedIdentifier();
+                texts.add(evidence.getProjectExpectedStudy().getComposedIdentifier());
+              } else {
+                texts.add(evidence.getProjectExpectedStudy().getId().toString());
               }
             }
           }
         }
-
 
         if (projectPolicy.getCrossCuttingMarkers(this.getSelectedPhase()) != null) {
           for (ProjectPolicyCrossCuttingMarker policyCrossCutting : projectPolicy
@@ -1230,13 +1238,13 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
           }
         }
 
-        try {
-          if (evidences.contains(",")) {
-            evidences = evidences.substring(0, evidences.length() - 2);
-          }
-        } catch (Exception e) {
-
-        }
+        // try {
+        // if (evidences.contains(",")) {
+        // evidences = evidences.substring(0, evidences.length() - 2);
+        // }
+        // } catch (Exception e) {
+        //
+        // }
         try {
           if (srfSubIdo.contains(",")) {
             srfSubIdo = srfSubIdo.substring(0, srfSubIdo.length() - 2);
@@ -1246,14 +1254,15 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         }
       }
 
-
-      if (evidences.startsWith("http") && !evidences.contains(" ")) {
+      // if (evidences.startsWith("http") && !evidences.contains(" ")) {
+      if (urls != null && !urls.isEmpty()) {
         POIField[] sData = {new POIField(name, ParagraphAlignment.LEFT),
           new POIField(levelMaturity, ParagraphAlignment.LEFT), new POIField(srfSubIdo, ParagraphAlignment.LEFT),
           new POIField(gender, ParagraphAlignment.LEFT, false, blackColor),
           new POIField(youth, ParagraphAlignment.LEFT), new POIField(capdev, ParagraphAlignment.LEFT),
           new POIField(climateChange, ParagraphAlignment.CENTER),
-          new POIField(evidenceComposed, ParagraphAlignment.LEFT, false, blackColor, evidences, 1)};
+          // new POIField(evidenceComposed, ParagraphAlignment.LEFT, false, blackColor, evidences, 1)};
+          new POIField(texts, urls, ParagraphAlignment.LEFT, false, blackColor, 1)};
         data = Arrays.asList(sData);
         datas.add(data);
       } else {
@@ -1288,8 +1297,11 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     List<POIField> header = Arrays.asList(sHeader);
     headers.add(header);
 
+
+    // "${baseUrl}/projects/${crpSession}/studySummary.do?studyID=${(item.id)!}&cycle=Reporting&year=${(actualPhase.year)!}"]
+
     for (ProjectExpectedStudy projectExpectStudy : projectExpectedStudiesTable3) {
-      String title = "", maturity = "", indicator = "";
+      String title = "", maturity = "", indicator = "", url = "";
       if (projectExpectStudy != null
         && projectExpectStudy.getProjectExpectedStudyInfo(this.getSelectedPhase()) != null) {
         if (projectExpectStudy.getProjectExpectedStudyInfo(this.getSelectedPhase()).getTitle() != null) {
@@ -1306,7 +1318,11 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         }
       }
 
-      POIField[] sData = {new POIField(title, ParagraphAlignment.LEFT),
+      url = this.getBaseUrl() + "/projects/" + this.getCrpSession() + "/studySummary.do?studyID="
+        + (projectExpectStudy.getId()).toString() + "&cycle=" + this.getCurrentCycle() + "&year="
+        + this.getSelectedPhase().getYear();
+
+      POIField[] sData = {new POIField(title, ParagraphAlignment.LEFT, false, "000000", url),
         new POIField(maturity, ParagraphAlignment.CENTER), new POIField(indicator, ParagraphAlignment.LEFT)};
       data = Arrays.asList(sData);
       datas.add(data);
@@ -1329,7 +1345,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     List<POIField> header = Arrays.asList(sHeader);
     headers.add(header);
     for (ProjectInnovation projectInnovation : projectInnovationsTable4) {
-      String title = "", type = "", stage = "", geographic = "", country = "", region = "";
+      String title = "", type = "", stage = "", geographic = "", country = "", region = "", url = "";
 
       if (projectInnovation != null && projectInnovation.getProjectInnovationInfo(this.getSelectedPhase()) != null) {
         if (projectInnovation.getProjectInnovationInfo(this.getSelectedPhase()).getTitle() != null) {
@@ -1381,6 +1397,13 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         }
       }
 
+      // ${(crpSession)!}/projectInnovationSummary'][@s.param name='innovationID']${item.id?c}[/@s.param][@s.param
+      // name='phaseID']${(item.projectInnovationInfo.phase.id)!''}
+
+
+      url = this.getBaseUrl() + "/summaries/" + this.getCrpSession() + "/projectInnovationSummary.do?innovationID="
+        + (projectInnovation.getId()).toString() + "&phaseID=" + this.getSelectedPhase().getId();
+
       if (country != null) {
         geographic += country;
       }
@@ -1394,8 +1417,9 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
 
       }
 
-      POIField[] sData = {new POIField(title, ParagraphAlignment.LEFT), new POIField(type, ParagraphAlignment.CENTER),
-        new POIField(stage, ParagraphAlignment.LEFT), new POIField(geographic, ParagraphAlignment.LEFT)};
+      POIField[] sData = {new POIField(title, ParagraphAlignment.LEFT, false, "0000", url),
+        new POIField(type, ParagraphAlignment.CENTER), new POIField(stage, ParagraphAlignment.LEFT),
+        new POIField(geographic, ParagraphAlignment.LEFT)};
       data = Arrays.asList(sData);
       datas.add(data);
     }
