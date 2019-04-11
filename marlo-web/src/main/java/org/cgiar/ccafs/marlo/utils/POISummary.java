@@ -278,12 +278,16 @@ public class POISummary {
             paragraphRun.setFontFamily(FONT_TYPE);
             paragraphRun.setText(stringTemp);
           } catch (Exception e) {
-
-            paragraph = document.createParagraph();
-
-            paragraph.setAlignment(ParagraphAlignment.BOTH);
-            paragraphRun = paragraph.createRun();
-            paragraphRun.setFontFamily(FONT_TYPE);
+            if (cell != null) {
+              paragraph = null;
+              paragraph = cell.addParagraph();
+              paragraph.setAlignment(ParagraphAlignment.BOTH);
+              paragraphRun = paragraph.createRun();
+            } else {
+              paragraph = document.createParagraph();
+              paragraph.setAlignment(ParagraphAlignment.BOTH);
+              paragraphRun = paragraph.createRun();
+            }
           }
           /*
            * paragraph.setAlignment(ParagraphAlignment.BOTH);
@@ -319,12 +323,16 @@ public class POISummary {
           paragraphRun = paragraph.createRun();
           paragraphRun.setFontFamily(FONT_TYPE);
         } catch (Exception e) {
-
-          paragraph = document.createParagraph();
-
-          paragraph.setAlignment(ParagraphAlignment.BOTH);
-          paragraphRun = paragraph.createRun();
-          paragraphRun.setFontFamily(FONT_TYPE);
+          if (cell != null) {
+            paragraph = null;
+            paragraph = cell.addParagraph();
+            paragraph.setAlignment(ParagraphAlignment.BOTH);
+            paragraphRun = paragraph.createRun();
+          } else {
+            paragraph = document.createParagraph();
+            paragraph.setAlignment(ParagraphAlignment.BOTH);
+            paragraphRun = paragraph.createRun();
+          }
         }
 
         if (expressionListActual.contains("<a") == false) {
@@ -430,12 +438,16 @@ public class POISummary {
         paragraphRun = paragraph.createRun();
         paragraphRun.setFontFamily(FONT_TYPE);
       } catch (Exception e) {
-
-        paragraph = document.createParagraph();
-
-        paragraph.setAlignment(ParagraphAlignment.BOTH);
-        paragraphRun = paragraph.createRun();
-        paragraphRun.setFontFamily(FONT_TYPE);
+        if (cell != null) {
+          paragraph = null;
+          paragraph = cell.addParagraph();
+          paragraph.setAlignment(ParagraphAlignment.BOTH);
+          paragraphRun = paragraph.createRun();
+        } else {
+          paragraph = document.createParagraph();
+          paragraph.setAlignment(ParagraphAlignment.BOTH);
+          paragraphRun = paragraph.createRun();
+        }
       }
 
       if (startText != null && !startText.isEmpty() && startText != "" && finalPosition != 0) {
