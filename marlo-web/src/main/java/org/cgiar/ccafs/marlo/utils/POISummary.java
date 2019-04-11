@@ -149,7 +149,7 @@ public class POISummary {
   }
 
 
-  public void convertHTMLTags(XWPFDocument document, String text) {
+  public void convertHTMLTags(XWPFDocument document, String text, XWPFTableCell cell) {
     List<Integer> startsPosList = new ArrayList<Integer>();
     List<Integer> finalPosList = new ArrayList<Integer>();
     List<String> tagsAddList = new ArrayList<String>();
@@ -249,6 +249,11 @@ public class POISummary {
     String stringTemp = "";
     XWPFRun paragraphRun;
     XWPFParagraph paragraph = null;
+
+    if (cell != null) {
+      paragraph = cell.addParagraph();
+    }
+
     String url1 = "";
     String textIndicatorLink1 = "";
     int k = 0;
@@ -275,6 +280,7 @@ public class POISummary {
           } catch (Exception e) {
 
             paragraph = document.createParagraph();
+
             paragraph.setAlignment(ParagraphAlignment.BOTH);
             paragraphRun = paragraph.createRun();
             paragraphRun.setFontFamily(FONT_TYPE);
@@ -313,7 +319,9 @@ public class POISummary {
           paragraphRun = paragraph.createRun();
           paragraphRun.setFontFamily(FONT_TYPE);
         } catch (Exception e) {
+
           paragraph = document.createParagraph();
+
           paragraph.setAlignment(ParagraphAlignment.BOTH);
           paragraphRun = paragraph.createRun();
           paragraphRun.setFontFamily(FONT_TYPE);
@@ -422,7 +430,9 @@ public class POISummary {
         paragraphRun = paragraph.createRun();
         paragraphRun.setFontFamily(FONT_TYPE);
       } catch (Exception e) {
+
         paragraph = document.createParagraph();
+
         paragraph.setAlignment(ParagraphAlignment.BOTH);
         paragraphRun = paragraph.createRun();
         paragraphRun.setFontFamily(FONT_TYPE);
@@ -1882,8 +1892,11 @@ public class POISummary {
       XWPFTableRow dataRow = table.createRow();
       for (POIField poiParameter : poiParameters) {
         count++;
-        XWPFParagraph paragraph = dataRow.getCell(record).addParagraph();
-        paragraph.setAlignment(poiParameter.getAlignment());
+        XWPFParagraph paragraph = null;
+        if (!poiParameter.isHtml()) {
+          paragraph = dataRow.getCell(record).addParagraph();
+          paragraph.setAlignment(poiParameter.getAlignment());
+        }
         // HiperLinks
         if (poiParameter.getUrls() != null && !poiParameter.getUrls().isEmpty()) {
           for (int i = 0; i < poiParameter.getUrls().size(); i++) {
@@ -1895,70 +1908,73 @@ public class POISummary {
               breakParagraph.setAlignment(poiParameter.getAlignment());
               this.textHyperlink(poiParameter.getUrls().get(i), poiParameter.getTexts().get(i), breakParagraph);
             }
-
-
           }
         }
         // Hyperlink
         else if (poiParameter.getUrl() != null && !poiParameter.getUrl().isEmpty()) {
           this.textHyperlink(poiParameter.getUrl(), poiParameter.getText(), paragraph);
         } else {
-          XWPFRun paragraphRun = paragraph.createRun();
-          this.addParagraphTextBreak(paragraphRun, poiParameter.getText());
-          if (poiParameter.getFontColor() != null) {
-            paragraphRun.setColor(poiParameter.getFontColor());
+
+          if (poiParameter.isHtml()) {
+            this.convertHTMLTags(null, poiParameter.getText(), dataRow.getCell(record));
           } else {
-            paragraphRun.setColor(TEXT_FONT_COLOR);
-          }
-          paragraphRun.setFontFamily(FONT_TYPE);
-          paragraphRun.setFontSize(TABLE_TEXT_FONT_SIZE);
-
-          // Condition for table b cell color in fields 5 and 6
-          if (tableType.equals("tableBAnnualReport") && (record == 4 || record == 5)) {
-            TABLE_HEADER_FONT_COLOR = "DEEAF6";
-            dataRow.getCell(record).setColor("DEEAF6");
-          } else if (tableType.equals("table2AnnualReport2018")) {
-            if (record == 0) {
-              TABLE_HEADER_FONT_COLOR = "D9E2F3";
-
+            XWPFRun paragraphRun = paragraph.createRun();
+            this.addParagraphTextBreak(paragraphRun, poiParameter.getText());
+            if (poiParameter.getFontColor() != null) {
+              paragraphRun.setColor(poiParameter.getFontColor());
             } else {
-              TABLE_HEADER_FONT_COLOR = "FFFFFF";
+              paragraphRun.setColor(TEXT_FONT_COLOR);
             }
-          } else {
-            TABLE_HEADER_FONT_COLOR = "FFF2CC";
-          }
+            paragraphRun.setFontFamily(FONT_TYPE);
+            paragraphRun.setFontSize(TABLE_TEXT_FONT_SIZE);
 
-          // highlight and bold first and SecondColumn for table D1
-          if (tableType.equals("tableD1AnnualReport") && (record == 0 || record == 1) && count < 9) {
-            dataRow.getCell(record).setColor("DEEAF6");
-            paragraphRun.setBold(true);
-          } else if (tableType.equals("tableD1AnnualReport") && count >= 9 && (record == 0 || record == 1)) {
-            dataRow.getCell(record).setColor("E2EFD9");
-            paragraphRun.setBold(true);
+            // Condition for table b cell color in fields 5 and 6
+            if (tableType.equals("tableBAnnualReport") && (record == 4 || record == 5)) {
+              TABLE_HEADER_FONT_COLOR = "DEEAF6";
+              dataRow.getCell(record).setColor("DEEAF6");
+            } else if (tableType.equals("table2AnnualReport2018")) {
+              if (record == 0) {
+                TABLE_HEADER_FONT_COLOR = "D9E2F3";
 
-          } else if (tableType.contains("tableA2Powb") && record < 6) {
-            dataRow.getCell(record).setColor("D9EAD3");
-          } else if (tableType.contains("table2AnnualReport2018") && record < 1) {
-            dataRow.getCell(record).setColor("D9E2F3");
-          } else if (tableType.contains("table6AnnualReport2018") && record < 1) {
-            dataRow.getCell(record).setColor("E2EFD9");
-          } else if (tableType.contains("table13AnnualReport2018") && record < 1) {
-            dataRow.getCell(record).setColor("FFF2CC");
-          } else if (tableType.contains("table10AnnualReport2018") && record < 1) {
-            dataRow.getCell(record).setColor("EAF1DD");
-          } else {
-            if (highlightFirstColumn && record == 0) {
-              dataRow.getCell(record).setColor(TABLE_HEADER_FONT_COLOR);
-              if (poiParameter.getBold() != null) {
-                paragraphRun.setBold(poiParameter.getBold());
               } else {
-                paragraphRun.setBold(true);
+                TABLE_HEADER_FONT_COLOR = "FFFFFF";
               }
             } else {
-              if (poiParameter.getBold() != null) {
-                paragraphRun.setBold(poiParameter.getBold());
+              TABLE_HEADER_FONT_COLOR = "FFF2CC";
+            }
+
+            // highlight and bold first and SecondColumn for table D1
+            if (tableType.equals("tableD1AnnualReport") && (record == 0 || record == 1) && count < 9) {
+              dataRow.getCell(record).setColor("DEEAF6");
+              paragraphRun.setBold(true);
+            } else if (tableType.equals("tableD1AnnualReport") && count >= 9 && (record == 0 || record == 1)) {
+              dataRow.getCell(record).setColor("E2EFD9");
+              paragraphRun.setBold(true);
+
+            } else if (tableType.contains("tableA2Powb") && record < 6) {
+              dataRow.getCell(record).setColor("D9EAD3");
+            } else if (tableType.contains("table2AnnualReport2018") && record < 1) {
+              dataRow.getCell(record).setColor("D9E2F3");
+            } else if (tableType.contains("table6AnnualReport2018") && record < 1) {
+              dataRow.getCell(record).setColor("E2EFD9");
+            } else if (tableType.contains("table13AnnualReport2018") && record < 1) {
+              dataRow.getCell(record).setColor("FFF2CC");
+            } else if (tableType.contains("table10AnnualReport2018") && record < 1) {
+              dataRow.getCell(record).setColor("EAF1DD");
+            } else {
+              if (highlightFirstColumn && record == 0) {
+                dataRow.getCell(record).setColor(TABLE_HEADER_FONT_COLOR);
+                if (poiParameter.getBold() != null) {
+                  paragraphRun.setBold(poiParameter.getBold());
+                } else {
+                  paragraphRun.setBold(true);
+                }
               } else {
-                paragraphRun.setBold(false);
+                if (poiParameter.getBold() != null) {
+                  paragraphRun.setBold(poiParameter.getBold());
+                } else {
+                  paragraphRun.setBold(false);
+                }
               }
             }
           }
