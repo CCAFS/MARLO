@@ -39,7 +39,7 @@
       [@logHistory.logList list=recordsList itemName=auditObjectName itemId=auditObjectID /]
       <a href="" onclick="return false" class="form-button button-history"><span class="glyphicon glyphicon-glyphicon glyphicon-list-alt" aria-hidden="true"></span> [@s.text name="form.buttons.history" /]</a>
     [/#if]
-    [#if (editable || action.canModifiedProjectStatus() || action.canEditAnyProjectExecution(project.id)) && !(transaction??)]
+    [#if (action.canModifiedProjectStatus() || action.canEditAnyProjectExecution(project.id)) && !(transaction??) && editable]
       [#-- Discard Button --]
       [@s.submit type="button" cssStyle="display:none" name="cancel" cssClass="button-cancel"]<span class="glyphicon glyphicon-trash" aria-hidden="true"></span> [@s.text name="form.buttons.discard" /] [/@s.submit]
       [#-- Save Button --]
