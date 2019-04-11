@@ -1854,6 +1854,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return null;
   }
 
+
   /**
    * ***********************CENTER METHOD******************** This method gets
    * the specific section status from the sectionStatuses array for a Output.
@@ -2653,6 +2654,27 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       }
     }
     return false;
+  }
+
+  public SectionStatus getInnovationStatus(long innovationID) {
+
+    ProjectInnovation innovation = this.projectInnovationManager.getProjectInnovationById(innovationID);
+
+    List<SectionStatus> sectionStatuses;
+
+    if (innovation.getSectionStatuses() != null) {
+      sectionStatuses = new ArrayList<>(innovation.getSectionStatuses().stream()
+        .filter(c -> c.getYear().equals(this.getActualPhase().getYear()) && c.getCycle().equals(this.getCurrentCycle()))
+        .collect(Collectors.toList()));
+    } else {
+      return null;
+    }
+
+    if (!sectionStatuses.isEmpty()) {
+      return sectionStatuses.get(0);
+    }
+    return null;
+
   }
 
   public HashMap<String, String> getInvalidFields() {
