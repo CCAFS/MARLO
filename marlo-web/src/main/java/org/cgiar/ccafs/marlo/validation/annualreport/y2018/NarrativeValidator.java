@@ -86,7 +86,8 @@ public class NarrativeValidator extends BaseValidator {
 
       if (this.isPMU(this.getLiaisonInstitution(action, reportSynthesis.getId()))) {
         // Validate Narrative
-        if (!this.isValidString(reportSynthesis.getReportSynthesisNarrative().getNarrative())) {
+        if (!(this.isValidString(reportSynthesis.getReportSynthesisNarrative().getNarrative())
+          && this.wordCount(reportSynthesis.getReportSynthesisNarrative().getNarrative()) <= 500)) {
           action.addMessage(action.getText("annualReport2018.narrative.progress.readText"));
           action.getInvalidFields().put("input-reportSynthesis.reportSynthesisNarrative.narrative",
             InvalidFieldsMessages.EMPTYFIELD);
