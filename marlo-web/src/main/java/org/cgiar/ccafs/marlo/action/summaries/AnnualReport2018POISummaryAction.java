@@ -1812,7 +1812,8 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         }
 
         if (collaboration.getReportSynthesisKeyPartnership() != null) {
-          for (ReportSynthesisKeyPartnershipCollaborationCrp partner : collaboration.getCrps()) {
+          for (ReportSynthesisKeyPartnershipCollaborationCrp partner : collaboration
+            .getReportSynthesisKeyPartnershipCollaborationCrps()) {
             name += partner.getGlobalUnit().getAcronym() + ", ";
           }
         }
