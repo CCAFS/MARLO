@@ -1159,6 +1159,11 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
       String name = null, levelMaturity = "", srfSubIdo = "", gender = "", youth = "", capdev = "", climateChange = "",
         evidences = "", evidenceComposed = "";
 
+      // List of Urls
+      List<String> urls = new ArrayList<>();
+      // List of Texts
+      List<String> texts = new ArrayList<>();
+
       if (projectPolicy.getProjectPolicyInfo().getRepIndStageProcess() != null
         && projectPolicy.getProjectPolicyInfo().getRepIndStageProcess().getId() == 3) {
         if (projectPolicy.getProjectPolicyInfo().getNarrativeEvidence() != null
@@ -1188,6 +1193,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
           }
         }
 
+
         evidences = "";
         if (projectPolicy.getEvidences(this.getSelectedPhase()) != null) {
           String temp = "";
@@ -1197,9 +1203,15 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
                 + (evidence.getProjectExpectedStudy().getId()).toString() + "&cycle=" + this.getCurrentCycle()
                 + "&year=" + this.getSelectedPhase().getYear();
               // ${baseUrl}/projects/${crpSession}/studySummary.do?studyID=${(item.projectExpectedStudy.id)!}&cycle=Reporting&year=${(actualPhase.year)!}
-              evidences += temp + ", ";
+              // evidences += temp + ", ";
+
+              urls.add(temp);
+
               if (evidence.getProjectExpectedStudy().getComposedName() != null) {
-                evidenceComposed = evidence.getProjectExpectedStudy().getComposedIdentifier();
+                // evidenceComposed = evidence.getProjectExpectedStudy().getComposedIdentifier();
+                texts.add(evidence.getProjectExpectedStudy().getComposedIdentifier());
+              } else {
+                texts.add(evidence.getProjectExpectedStudy().getId().toString());
               }
             }
           }
@@ -1230,13 +1242,13 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
           }
         }
 
-        try {
-          if (evidences.contains(",")) {
-            evidences = evidences.substring(0, evidences.length() - 2);
-          }
-        } catch (Exception e) {
-
-        }
+        // try {
+        // if (evidences.contains(",")) {
+        // evidences = evidences.substring(0, evidences.length() - 2);
+        // }
+        // } catch (Exception e) {
+        //
+        // }
         try {
           if (srfSubIdo.contains(",")) {
             srfSubIdo = srfSubIdo.substring(0, srfSubIdo.length() - 2);
@@ -1246,14 +1258,15 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         }
       }
 
-
-      if (evidences.startsWith("http") && !evidences.contains(" ")) {
+      // if (evidences.startsWith("http") && !evidences.contains(" ")) {
+      if (urls != null && !urls.isEmpty()) {
         POIField[] sData = {new POIField(name, ParagraphAlignment.LEFT),
           new POIField(levelMaturity, ParagraphAlignment.LEFT), new POIField(srfSubIdo, ParagraphAlignment.LEFT),
           new POIField(gender, ParagraphAlignment.LEFT, false, blackColor),
           new POIField(youth, ParagraphAlignment.LEFT), new POIField(capdev, ParagraphAlignment.LEFT),
           new POIField(climateChange, ParagraphAlignment.CENTER),
-          new POIField(evidenceComposed, ParagraphAlignment.LEFT, false, blackColor, evidences, 1)};
+          // new POIField(evidenceComposed, ParagraphAlignment.LEFT, false, blackColor, evidences, 1)};
+          new POIField(texts, urls, ParagraphAlignment.LEFT, false, blackColor, 1)};
         data = Arrays.asList(sData);
         datas.add(data);
       } else {

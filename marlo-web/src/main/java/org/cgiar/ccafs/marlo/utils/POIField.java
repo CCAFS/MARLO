@@ -15,6 +15,8 @@
 
 package org.cgiar.ccafs.marlo.utils;
 
+import java.util.List;
+
 import org.apache.poi.xwpf.usermodel.ParagraphAlignment;
 
 public class POIField {
@@ -26,6 +28,26 @@ public class POIField {
   private Boolean underlined;
   private String url;
   private int index;
+  // New filed to Manage hiperlinks bullets
+  private List<String> urls;
+  private List<String> texts;
+
+  /**
+   * Constructor for make and cell-paragraph with hiperlink bullets
+   * 
+   * @param texts - The list of the Texts that include into the hiperlink
+   * @param urls - the list of hiperlinks urls to transform
+   */
+  public POIField(List<String> texts, List<String> urls, ParagraphAlignment alignment, Boolean bold, String fontColor,
+    int index) {
+    super();
+    this.alignment = alignment;
+    this.bold = bold;
+    this.fontColor = fontColor;
+    this.index = index;
+    this.urls = urls;
+    this.texts = texts;
+  }
 
 
   public POIField(String text, ParagraphAlignment alignment) {
@@ -73,6 +95,7 @@ public class POIField {
     return bold;
   }
 
+
   public String getFontColor() {
     return fontColor;
   }
@@ -87,13 +110,21 @@ public class POIField {
   }
 
 
+  public List<String> getTexts() {
+    return texts;
+  }
+
   public Boolean getUnderlined() {
     return underlined;
   }
 
-
   public String getUrl() {
     return url;
+  }
+
+
+  public List<String> getUrls() {
+    return urls;
   }
 
 
@@ -121,12 +152,22 @@ public class POIField {
     this.text = text;
   }
 
+
+  public void setTexts(List<String> texts) {
+    this.texts = texts;
+  }
+
+
   public void setUnderlined(Boolean underlined) {
     this.underlined = underlined;
   }
 
   public void setUrl(String url) {
     this.url = url;
+  }
+
+  public void setUrls(List<String> urls) {
+    this.urls = urls;
   }
 
 }
