@@ -544,7 +544,7 @@
 
 [#macro elementsListComponent name elementType id="" elementList=[] label="" paramText="" help="" helpIcon=true listName="" keyFieldName="" displayFieldName="" maxLimit=0 indexLevel=1 required=true ]
   [#attempt]
-    [#local list = ((listName?eval)?sort_by(id))![] /] 
+    [#local list = ((listName?eval)?sort_by(displayFieldName))![] /] 
   [#recover]
     [#local list = [] /] 
   [/#attempt]
