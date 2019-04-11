@@ -31,6 +31,9 @@ public class POIField {
   // New filed to Manage hiperlinks bullets
   private List<String> urls;
   private List<String> texts;
+  // If the text contains HTML tags
+  private boolean html;
+
 
   /**
    * Constructor for make and cell-paragraph with hiperlink bullets
@@ -50,10 +53,11 @@ public class POIField {
   }
 
 
-  public POIField(String text, ParagraphAlignment alignment) {
+  public POIField(String text, ParagraphAlignment alignment, boolean html) {
     super();
     this.text = text;
     this.alignment = alignment;
+    this.html = html;
   }
 
 
@@ -75,6 +79,7 @@ public class POIField {
     this.url = url;
   }
 
+
   public POIField(String text, ParagraphAlignment alignment, Boolean bold, String fontColor, String url, int index) {
     super();
     this.text = text;
@@ -90,7 +95,6 @@ public class POIField {
     return alignment;
   }
 
-
   public Boolean getBold() {
     return bold;
   }
@@ -99,6 +103,7 @@ public class POIField {
   public String getFontColor() {
     return fontColor;
   }
+
 
   public int getIndex() {
     return index;
@@ -109,22 +114,26 @@ public class POIField {
     return text;
   }
 
-
   public List<String> getTexts() {
     return texts;
   }
+
 
   public Boolean getUnderlined() {
     return underlined;
   }
 
+
   public String getUrl() {
     return url;
   }
 
-
   public List<String> getUrls() {
     return urls;
+  }
+
+  public boolean isHtml() {
+    return html;
   }
 
 
@@ -140,6 +149,11 @@ public class POIField {
 
   public void setFontColor(String fontColor) {
     this.fontColor = fontColor;
+  }
+
+
+  public void setHtml(boolean html) {
+    this.html = html;
   }
 
 
