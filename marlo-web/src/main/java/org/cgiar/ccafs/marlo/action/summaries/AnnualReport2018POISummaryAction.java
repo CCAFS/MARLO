@@ -367,17 +367,17 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
       poiSummary.convertHTMLTags(document, crossCuttingYouthContribution, null);
     }
     if (crossCuttingYouthResearchFindings != null && !crossCuttingYouthResearchFindings.isEmpty()) {
-      this.createSubtitle("annualReport2018.ccDimensions.gender.researchFindings");
+      this.createSubtitle("annualReport2018.ccDimensions.youth.researchFindings");
       // poiSummary.convertHTMLTags(document, this.getText("annualReport2018.ccDimensions.gender.researchFindings"));
       poiSummary.convertHTMLTags(document, crossCuttingYouthResearchFindings, null);
     }
     if (crossCuttingYouthLearned != null && !crossCuttingYouthLearned.isEmpty()) {
-      this.createSubtitle("annualReport2018.ccDimensions.gender.learned");
+      this.createSubtitle("annualReport2018.ccDimensions.youth.learned");
       // poiSummary.convertHTMLTags(document, this.getText("annualReport2018.ccDimensions.gender.learned"));
       poiSummary.convertHTMLTags(document, crossCuttingYouthLearned, null);
     }
     if (crossCuttingYouthProblemsArisen != null && !crossCuttingYouthProblemsArisen.isEmpty()) {
-      this.createSubtitle("annualReport2018.ccDimensions.gender.problemsArisen");
+      this.createSubtitle("annualReport2018.ccDimensions.youth.problemsArisen");
       // poiSummary.convertHTMLTags(document, this.getText("annualReport2018.ccDimensions.gender.problemsArisen"));
       poiSummary.convertHTMLTags(document, crossCuttingYouthProblemsArisen, null);
     }
@@ -2699,16 +2699,6 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         // Part B
         document.createParagraph().setPageBreak(true);
         poiSummary.textHead1Title(document.createParagraph(), "Part B. TABLES");
-
-        // Table 1
-        poiSummary.textLineBreak(document, 1);
-        paragraph = document.createParagraph();
-        run = paragraph.createRun();
-        run.setFontSize(13);
-        run.setBold(true);
-        run.setText(this.getText("summaries.annualReport2018.table1"));
-        paragraph.setStyle("heading 26");
-        this.createTable1();
 
         // Table 2
         document.createParagraph().setPageBreak(true);
