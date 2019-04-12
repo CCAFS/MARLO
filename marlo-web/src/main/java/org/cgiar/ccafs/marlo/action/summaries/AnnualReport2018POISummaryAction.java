@@ -2700,16 +2700,6 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         document.createParagraph().setPageBreak(true);
         poiSummary.textHead1Title(document.createParagraph(), "Part B. TABLES");
 
-        // Table 1
-        poiSummary.textLineBreak(document, 1);
-        paragraph = document.createParagraph();
-        run = paragraph.createRun();
-        run.setFontSize(13);
-        run.setBold(true);
-        run.setText(this.getText("summaries.annualReport2018.table1"));
-        paragraph.setStyle("heading 26");
-        this.createTable1();
-
         // Table 2
         document.createParagraph().setPageBreak(true);
         paragraph = document.createParagraph();
