@@ -109,12 +109,13 @@ table.milestones-crosscutting {
 
 /** MARLO Responsibe Tables **/
 .table-responsive table {
-  min-width: 1500px;
+  /* min-width: 1500px; */
   margin-bottom: 0;
 }
 
 .table-responsive {
-  border: 1px solid #ddd;
+  padding: 15px 0;
+  /* border: 1px solid #ddd; */
   max-height: 500px;
 }
 

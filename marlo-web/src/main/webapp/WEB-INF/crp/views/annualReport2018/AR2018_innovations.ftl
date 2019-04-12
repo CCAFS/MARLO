@@ -118,10 +118,10 @@
               [#-- Word Document Tag --]
               [#if PMU][@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/][/#if]
               
-              [#-- Button --]
-              <button type="button" class="btn btn-default btn-xs pull-right" data-toggle="modal" data-target="#modal-innovations">
-                <span class="glyphicon glyphicon-fullscreen"></span> See Full table 4
-              </button>
+              [#-- Buttons --]
+              <div class="form-group btn-group btn-group-sm pull-right" role="group" aria-label="...">
+                <button type="button" class="btn btn-default" data-toggle="modal" data-target="#modal-innovations"><span class="glyphicon glyphicon-fullscreen"></span> See Full Table 4</button>
+              </div>
     
               [#-- Modal --]
               <div class="modal fade" id="modal-innovations" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
