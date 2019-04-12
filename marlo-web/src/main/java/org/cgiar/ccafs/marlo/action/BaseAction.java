@@ -996,8 +996,18 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     List<ProjectPartner> projectPPAPartners = new ArrayList<ProjectPartner>();
     if (project.getPartners() != null && !project.getPartners().isEmpty()) {
       for (ProjectPartner pp : project.getPartners()) {
-        if (this.isPPA(pp.getInstitution())) {
-          projectPPAPartners.add(pp);
+
+        if (pp.getInstitution().getId() != null) {
+          Institution institution = this.institutionManager.getInstitutionById(pp.getInstitution().getId());
+          if (institution != null) {
+            if (institution
+              .getCrpPpaPartners().stream().filter(c -> c.getCrp().getId().longValue() == this.getCrpID()
+                && c.isActive() && c.getPhase().equals(this.getActualPhase()))
+              .collect(Collectors.toList()).size() > 0) {
+              projectPPAPartners.add(pp);
+            }
+          }
+
         }
       }
     }
