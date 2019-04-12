@@ -114,8 +114,7 @@
       <interceptor-ref name="unloggedStack" />
       <result name="input">/WEB-INF/crp/views/summaries/boardSummaries.ftl
       </result>
-    </action>		
-		
+    </action>			
 	</package>
 
 </struts>
