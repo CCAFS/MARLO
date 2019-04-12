@@ -94,7 +94,7 @@
                         <table class="table">
                           <thead>
                             <tr>
-                              <th>Lead FP</th>
+                              <th>Lead [@s.text name="global.flagship" /] </th>
                               <th>Description of partnership</th>
                               <th>List of key partners</th>
                               <th>Main area of partnership</th>
