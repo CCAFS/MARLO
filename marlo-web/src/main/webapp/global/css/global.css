@@ -476,10 +476,27 @@ textarea#justification {
 .textArea p, .input p, .select p, .uploadContainer p {
   text-align: justify;
   width: 98%;
-  font-size: 1em;
+  font-size: 0.98em;
+  line-height: 1.5em;
   word-wrap: break-word;
   color: #828282;
   margin: 0;
+}
+
+.dont-break-out {
+  /* These are technically the same, but use both */
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  -ms-word-break: break-all;
+  /* This is the dangerous one in WebKit, as it breaks things wherever */
+  word-break: break-all;
+  /* Instead use this non-standard one: */
+  word-break: break-word;
+  /* Adds a hyphen where the word breaks, if supported (No Blink) */
+  -ms-hyphens: auto;
+  -moz-hyphens: auto;
+  -webkit-hyphens: auto;
+  hyphens: auto;
 }
 
 .fileUploaded {
@@ -1908,14 +1925,14 @@ a.currentReportingSection li, a.currentSection li {
 }
 
 #secondaryMenu ul li  > ul li.submitted > a {
-  background-image: url("../../global/images/submitted.png");
+  background-image: url("../../global/images/submitted.png?20190411");
   background-repeat: no-repeat;
   /* background-size: 15px; */
   background-position: 97% 6px;
 }
 
 #secondaryMenu ul li > ul li.toSubmit > a {
-  background-image: url("../../global/images/submitted.png");
+  background-image: url("../../global/images/submitted.png?20190411");
   background-repeat: no-repeat;
   background-position: 97% -49px;
 }
