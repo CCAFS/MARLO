@@ -30,6 +30,7 @@ import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
+import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.SharedProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.User;
@@ -272,7 +273,13 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
         // String paramsPermissions[] = {loggedCrp.getAcronym(), project.getId() + ""};
         // baseAction
         // .setBasePermission(baseAction.getText(Permission.PROJECT_DESCRIPTION_BASE_PERMISSION, paramsPermissions));
+        String actionName = baseAction.getActionName().replaceAll(crp.getAcronym() + "/", "");
 
+
+        // check permission to edit budget execution in reporting
+        if (baseAction.isReportingActive() && actionName.contains(ProjectSectionStatusEnum.BUDGET.getStatus())) {
+          canEdit = baseAction.canEditAnyProjectExecution(projectId);
+        }
 
         // TODO Validate is the project is new
         if (parameters.get(APConstants.EDITABLE_REQUEST).isDefined()) {
@@ -298,7 +305,7 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
           canEdit = false;
           baseAction.setCanEditPhase(false);
         }
-        String actionName = baseAction.getActionName().replaceAll(crp.getAcronym() + "/", "");
+
         // Check if is a Shared project (Crp to Center)
         if (!globalUnitProject.isOrigin()) {
           canEdit = false;
