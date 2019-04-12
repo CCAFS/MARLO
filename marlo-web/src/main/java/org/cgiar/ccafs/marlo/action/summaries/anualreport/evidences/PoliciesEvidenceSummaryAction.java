@@ -182,7 +182,7 @@ public class PoliciesEvidenceSummaryAction extends BaseSummariesAction implement
       // Uncomment to see which Subreports are detecting the method getAllSubreports
       // System.out.println("Pentaho SubReports: " + hm);
 
-      this.fillSubreport((SubReport) hm.get("leverages"), "leverages");
+      this.fillSubreport((SubReport) hm.get("details"), "details");
       ExcelReportUtil.createXLSX(masterReport, os);
       bytesXLSX = os.toByteArray();
       os.close();
@@ -204,7 +204,7 @@ public class PoliciesEvidenceSummaryAction extends BaseSummariesAction implement
     TableDataFactory sdf = (TableDataFactory) cdf.getDataFactoryForQuery(query);
     TypedTableModel model = null;
     switch (query) {
-      case "leverages":
+      case "details":
         model = this.getPolicyEvidenceReportingTableModel();
         break;
     }
