@@ -127,6 +127,7 @@ public class PartnerRequestAction extends BaseAction {
 							.getPartnerRequestById(Long.valueOf(partnerRequestId));
 					partnerRequest.setAcepted(new Boolean(true));
 					partnerRequest.setAceptedDate(new Date());
+					partnerRequest.setActive(false);
 					// Store the list of user to send the email
 					users.add(partnerRequest.getCreatedBy());
 					// verify if the location has been added previously
@@ -151,6 +152,7 @@ public class PartnerRequestAction extends BaseAction {
 							LOG.warn(warningMessage);
 							partnerRequest.setAcepted(new Boolean(false));
 							partnerRequest.setModificationJustification(warningMessage);
+							partnerRequest.setActive(true);
 						}
 					}
 					this.partnerRequestManager.savePartnerRequest(partnerRequest);
