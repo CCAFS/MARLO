@@ -169,8 +169,11 @@
           [#list list as item]
             [#local url][@s.url namespace="/projects" action="${(crpSession)!}/study"][@s.param name='expectedID']${item.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
             [#local summaryPDF = "${baseUrl}/projects/${crpSession}/studySummary.do?studyID=${(item.id)!}&cycle=Reporting&year=${(actualPhase.year)!}"]
+            [#-- Is new --]
+            [#local isNew = (action.isEvidenceNew(item.id)) /]
             <tr>
               <td>
+                [#if isNew] <span class="label label-info">[@s.text name="global.new" /]</span> [/#if] 
                 [@utils.tableText value=(item.composedName)!"" /]
                 [#if item.project??]<br /> <small>(From Project P${item.project.id})</small> [/#if]
                 
@@ -182,7 +185,6 @@
                   [/#list]
                 </div>
                 [/#if]
-                
                 <a href="${url}" target="_blank" class="pull-right"><span class="glyphicon glyphicon-new-window"></span></a>
               </td>
               <td class="text-center">
