@@ -2512,7 +2512,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         paragraph.setStyle("headingTitle7");
 
         // 1.2.3
-        // poiSummary.textLineBreak(document, 1);
+        poiSummary.textLineBreak(document, 1);
         paragraph = document.createParagraph();
         run = paragraph.createRun();
         run.setFontSize(11);
