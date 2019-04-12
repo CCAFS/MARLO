@@ -261,6 +261,7 @@
           [#if !expanded]
           <td class="text-center">
             [#local isChecked = ((!reportSynthesis.reportSynthesisFlagshipProgress.policiesIds?seq_contains(item.id))!true) /]
+            <div class="hidden">${isChecked?string}</div>
             [@customForm.checkmark id="policy-${(item.id)!}" name="reportSynthesis.reportSynthesisFlagshipProgress.policiesValue" value="${(item.id)!''}" checked=isChecked editable=editable centered=true/]
           </td>
           [/#if]
