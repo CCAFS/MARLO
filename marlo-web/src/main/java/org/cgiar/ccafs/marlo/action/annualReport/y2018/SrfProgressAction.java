@@ -616,18 +616,18 @@ public class SrfProgressAction extends BaseAction {
 
 
     // Search and deleted form Information
-    if (srfProgressDB.getReportSynthesisSrfProgressTargets() != null
-      && srfProgressDB.getReportSynthesisSrfProgressTargets().size() > 0) {
-
-      List<ReportSynthesisSrfProgressTarget> targetPrev = new ArrayList<>(srfProgressDB
-        .getReportSynthesisSrfProgressTargets().stream().filter(nu -> nu.isActive()).collect(Collectors.toList()));
-
-      for (ReportSynthesisSrfProgressTarget srfTarget : targetPrev) {
-        if (!reportSynthesis.getReportSynthesisSrfProgress().getSloTargets().contains(srfTarget)) {
-          reportSynthesisSrfProgressTargetManager.deleteReportSynthesisSrfProgressTarget(srfTarget.getId());
-        }
-      }
-    }
+    // if (srfProgressDB.getReportSynthesisSrfProgressTargets() != null
+    // && srfProgressDB.getReportSynthesisSrfProgressTargets().size() > 0) {
+    //
+    // List<ReportSynthesisSrfProgressTarget> targetPrev = new ArrayList<>(srfProgressDB
+    // .getReportSynthesisSrfProgressTargets().stream().filter(nu -> nu.isActive()).collect(Collectors.toList()));
+    //
+    // for (ReportSynthesisSrfProgressTarget srfTarget : targetPrev) {
+    // if (!reportSynthesis.getReportSynthesisSrfProgress().getSloTargets().contains(srfTarget)) {
+    // reportSynthesisSrfProgressTargetManager.deleteReportSynthesisSrfProgressTarget(srfTarget.getId());
+    // }
+    // }
+    // }
 
     // Save form Information
     if (reportSynthesis.getReportSynthesisSrfProgress().getSloTargets() != null) {

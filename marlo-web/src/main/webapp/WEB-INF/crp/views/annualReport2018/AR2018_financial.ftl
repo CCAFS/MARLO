@@ -65,7 +65,7 @@
               [@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/]
               
               <h4 class="subTitle headTitle">[@s.text name="${customLabel}.table12.title" /]</h4>
-              [#list (reportSynthesis.reportSynthesisFinancialSummary.budgets)![] as item] 
+              [#list (reportSynthesis.reportSynthesisFinancialSummary.budgets?sort_by('id'))![] as item] 
                 [@financialReport name="${customName}.budgets" element=item element_index=item_index editable=editable && PMU /]
               [/#list]
             </div>

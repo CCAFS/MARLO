@@ -22,7 +22,7 @@ public class ReportSynthesisKeyPartnershipExternal extends MarloBaseEntity imple
   @Expose
   private String description;
   @Expose
-  private String otherPartnershipMainArea;
+  private String other;
   @Expose
   private FileDB file;
 
@@ -107,8 +107,8 @@ public class ReportSynthesisKeyPartnershipExternal extends MarloBaseEntity imple
   }
 
 
-  public String getOtherPartnershipMainArea() {
-    return otherPartnershipMainArea;
+  public String getOther() {
+    return other;
   }
 
 
@@ -135,7 +135,6 @@ public class ReportSynthesisKeyPartnershipExternal extends MarloBaseEntity imple
     return result;
   }
 
-
   @Override
   public boolean isActive() {
     return true;
@@ -144,6 +143,7 @@ public class ReportSynthesisKeyPartnershipExternal extends MarloBaseEntity imple
   public void setDescription(String description) {
     this.description = description;
   }
+
 
   public void setFile(FileDB file) {
     this.file = file;
@@ -164,8 +164,9 @@ public class ReportSynthesisKeyPartnershipExternal extends MarloBaseEntity imple
   public void setModifiedBy(User modifiedBy) {
   }
 
-  public void setOtherPartnershipMainArea(String otherPartnershipMainArea) {
-    this.otherPartnershipMainArea = otherPartnershipMainArea;
+
+  public void setOther(String other) {
+    this.other = other;
   }
 
   public void setReportSynthesisKeyPartnership(ReportSynthesisKeyPartnership reportSynthesisKeyPartnership) {

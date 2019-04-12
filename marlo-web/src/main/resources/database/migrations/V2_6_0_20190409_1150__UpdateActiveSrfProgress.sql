@@ -1,0 +1,1 @@
+update report_synthesis_srf_progress_targets set is_active =1;
