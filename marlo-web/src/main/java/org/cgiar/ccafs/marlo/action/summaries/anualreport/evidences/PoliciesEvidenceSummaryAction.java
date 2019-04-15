@@ -236,8 +236,9 @@ public class PoliciesEvidenceSummaryAction extends BaseSummariesAction implement
   @Override
   public String getFileName() {
     StringBuffer fileName = new StringBuffer();
-    fileName.append("PoliciesEvidence-");
+    fileName.append("Policies-");
     fileName.append(this.getLoggedCrp().getAcronym() + "-");
+    fileName.append(this.getSelectedPhase().getName());
     fileName.append(this.getSelectedYear() + "_");
     fileName.append(new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date()));
     fileName.append(".xlsx");

@@ -131,7 +131,7 @@
     </action>	
     
     <!-- Innovation evidences -->
-    <action name="{crp}/InnovationsEvidences"
+    <action name="{crp}/innovationsEvidences"
       class="org.cgiar.ccafs.marlo.action.summaries.anualreport.evidences.InnovationsEvidenceSummaryAction">
       <interceptor-ref name="homeStack" />
       <result name="success" type="stream">
