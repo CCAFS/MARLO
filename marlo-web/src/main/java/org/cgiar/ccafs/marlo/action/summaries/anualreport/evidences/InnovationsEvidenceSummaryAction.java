@@ -121,12 +121,13 @@ public class InnovationsEvidenceSummaryAction extends BaseSummariesAction implem
     masterReport.getParameterValues().put("i8nColumnJ", this.getText("projectInnovations.region"));
     masterReport.getParameterValues().put("i8nColumnK", this.getText("projectInnovations.countries"));
     masterReport.getParameterValues().put("i8nColumnL", this.getText("projectInnovations.stageDescription"));
-    masterReport.getParameterValues().put("i8nColumnM", this.getText("projectInnovations.table.leadOrganization"));
-    masterReport.getParameterValues().put("i8nColumnN", this.getText("projectInnovations.table.organizations"));
-    masterReport.getParameterValues().put("i8nColumnO", this.getText("projectInnovations.table.OICR"));
-    masterReport.getParameterValues().put("i8nColumnP", this.getText("projectInnovations.table.deliverable"));
-    masterReport.getParameterValues().put("i8nColumnQ", this.getText("projectInnovations.contributing"));
-    masterReport.getParameterValues().put("i8nColumnR", this.getText("projectInnovations.table.include"));
+    masterReport.getParameterValues().put("i8nColumnM", this.getText("projectInnovations.table.clearLead"));
+    masterReport.getParameterValues().put("i8nColumnN", this.getText("projectInnovations.table.leadOrganization"));
+    masterReport.getParameterValues().put("i8nColumnO", this.getText("projectInnovations.table.organizations"));
+    masterReport.getParameterValues().put("i8nColumnP", this.getText("projectInnovations.table.OICR"));
+    masterReport.getParameterValues().put("i8nColumnQ", this.getText("projectInnovations.table.deliverable"));
+    masterReport.getParameterValues().put("i8nColumnR", this.getText("projectInnovations.contributing"));
+    masterReport.getParameterValues().put("i8nColumnS", this.getText("projectInnovations.table.include"));
     masterReport.getParameterValues().put("i8nHeader", this.getText("projectInnovations.table.header"));
 
     return masterReport;
@@ -261,21 +262,22 @@ public class InnovationsEvidenceSummaryAction extends BaseSummariesAction implem
      * paramJ - regions
      * paramK - countries
      * paramL - descriptionStage
-     * paramM - leadOrganization
-     * paramN - organizations
-     * paramO - OICR - study
-     * paramP - deliverable
-     * paramQ - crps/plts
-     * paramR - includeAR
+     * paramM - clearLead
+     * paramN - leadOrganization
+     * paramO - organizations
+     * paramP - OICR - study
+     * paramQ - deliverable
+     * paramR - crps/plts
+     * paramS - includeAR
      * innovationURL
      * NOTE : does not mater the order into the implementation (ex: the paramO will be setup first that the paramA)
      */
     TypedTableModel model = new TypedTableModel(
       new String[] {"paramA", "paramB", "paramC", "paramD", "paramE", "paramF", "paramG", "paramH", "paramI", "paramJ",
-        "paramK", "paramL", "paramM", "paramN", "paramO", "paramP", "paramQ", "paramR", "innovationURL"},
+        "paramK", "paramL", "paramM", "paramN", "paramO", "paramP", "paramQ", "paramR", "paramS", "innovationURL"},
       new Class[] {Long.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        String.class, String.class, String.class, String.class},
+        String.class, String.class, String.class, String.class, String.class},
       0);
 
     // Load the Innovations information
@@ -285,7 +287,7 @@ public class InnovationsEvidenceSummaryAction extends BaseSummariesAction implem
       Long paramA = null, paramB = null;
       String paramC = "", paramD = "", paramE = "", paramF = "", paramG = "", paramH = "", paramI = "", paramJ = "",
         paramK = "", paramL = "", paramM = "", paramN = "", paramO = "", paramP = "", paramQ = "", paramR = "",
-        innovationURL = "";
+        paramS = "", innovationURL = "";
 
       // Condition to know if the project innovation have information in the selected phase
       if (innovationEvidences.getProjectInnovation().getProjectInnovationInfo(this.getSelectedPhase()) != null) {
@@ -444,13 +446,28 @@ public class InnovationsEvidenceSummaryAction extends BaseSummariesAction implem
           paramL = "<Not Defined>";
         }
 
+
+        // Clear lead
+        if (innovationEvidences.getProjectInnovation().getProjectInnovationInfo(this.getSelectedPhase())
+          .getClearLead() != null) {
+          if (innovationEvidences.getProjectInnovation().getProjectInnovationInfo(this.getSelectedPhase())
+            .getClearLead()) {
+            paramM = "No";
+
+          } else {
+            paramM = "Yes";
+          }
+        } else {
+          paramM = "Yes";
+        }
+
         // Lead organization
         if (innovationEvidences.getProjectInnovation().getProjectInnovationInfo(this.getSelectedPhase())
           .getLeadOrganization() != null) {
-          paramM = innovationEvidences.getProjectInnovation().getProjectInnovationInfo(this.getSelectedPhase())
+          paramN = innovationEvidences.getProjectInnovation().getProjectInnovationInfo(this.getSelectedPhase())
             .getLeadOrganization().getComposedName();
         } else {
-          paramM = "<Not Defined>";
+          paramN = "<Not Defined>";
         }
 
         // Organizations
@@ -461,10 +478,10 @@ public class InnovationsEvidenceSummaryAction extends BaseSummariesAction implem
               .collect(Collectors.toList()));
           if (organizations != null && !organizations.isEmpty()) {
             for (ProjectInnovationContributingOrganization organization : organizations) {
-              paramN += "● " + organization.getInstitution().getComposedName() + "\n";
+              paramO += "● " + organization.getInstitution().getComposedName() + "\n";
             }
           } else {
-            paramN = "<Not Defined>";
+            paramO = "<Not Defined>";
           }
         } else {
           paramN = "<Not Defined>";
@@ -473,10 +490,10 @@ public class InnovationsEvidenceSummaryAction extends BaseSummariesAction implem
         // OICR
         if (innovationEvidences.getProjectInnovation().getProjectInnovationInfo(this.getSelectedPhase())
           .getProjectExpectedStudy() != null) {
-          paramO = innovationEvidences.getProjectInnovation().getProjectInnovationInfo(this.getSelectedPhase())
+          paramP = innovationEvidences.getProjectInnovation().getProjectInnovationInfo(this.getSelectedPhase())
             .getProjectExpectedStudy().getComposedName();
         } else {
-          paramO = "<Not Defined>";
+          paramP = "<Not Defined>";
         }
 
         // Deliverables
@@ -487,14 +504,14 @@ public class InnovationsEvidenceSummaryAction extends BaseSummariesAction implem
               .collect(Collectors.toList()));
           if (deliverables != null && !deliverables.isEmpty()) {
             for (ProjectInnovationDeliverable deliverable : deliverables) {
-              paramP += "● " + "(D" + deliverable.getDeliverable().getId() + ") "
+              paramQ += "● " + "(D" + deliverable.getDeliverable().getId() + ") "
                 + deliverable.getDeliverable().getDeliverableInfo(this.getSelectedPhase()).getTitle() + "\n";
             }
           } else {
-            paramP = "<Not Defined>";
+            paramQ = "<Not Defined>";
           }
         } else {
-          paramP = "<Not Defined>";
+          paramQ = "<Not Defined>";
         }
 
         // CRPs / PLTs
@@ -505,20 +522,20 @@ public class InnovationsEvidenceSummaryAction extends BaseSummariesAction implem
               .collect(Collectors.toList()));
           if (crps != null && !crps.isEmpty()) {
             for (ProjectInnovationCrp crp : crps) {
-              paramQ += "● " + crp.getGlobalUnit().getComposedName() + "\n";
+              paramR += "● " + crp.getGlobalUnit().getComposedName() + "\n";
             }
           } else {
-            paramQ = "<Not Defined>";
+            paramR = "<Not Defined>";
           }
         } else {
-          paramQ = "<Not Defined>";
+          paramR = "<Not Defined>";
         }
 
         // Is included in the AR
         if (innovationEvidences.isInclude()) {
-          paramR = "Yes";
+          paramS = "Yes";
         } else {
-          paramR = "No";
+          paramS = "No";
         }
 
         // Generate the innovation url of MARLO
@@ -530,7 +547,7 @@ public class InnovationsEvidenceSummaryAction extends BaseSummariesAction implem
       }
 
       model.addRow(new Object[] {paramA, paramB, paramC, paramD, paramE, paramF, paramG, paramH, paramI, paramJ, paramK,
-        paramL, paramM, paramN, paramO, paramP, paramQ, paramR, innovationURL});
+        paramL, paramM, paramN, paramO, paramP, paramQ, paramR, paramS, innovationURL});
     }
     return model;
   }
