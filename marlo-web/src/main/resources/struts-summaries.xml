@@ -128,7 +128,18 @@
         <param name="contentType">${contentType}</param>               
         <param name="contentDisposition">filename="${fileName}"</param>
       </result>
-    </action>			
+    </action>	
+    
+    <!-- Innovation evidences -->
+    <action name="{crp}/InnovationsEvidences"
+      class="org.cgiar.ccafs.marlo.action.summaries.anualreport.evidences.InnovationsEvidenceSummaryAction">
+      <interceptor-ref name="homeStack" />
+      <result name="success" type="stream">
+        <param name="inputName">inputStream</param>             
+        <param name="contentType">${contentType}</param>               
+        <param name="contentDisposition">filename="${fileName}"</param>
+      </result>
+    </action> 		
     
 	</package>
 
