@@ -364,10 +364,9 @@ public class PoliciesEvidenceSummaryAction extends BaseSummariesAction implement
 
     for (ARPoliciesEvidence policyEvidence : policyEvidences) {
 
-      String param1 = null, param2 = null, param3 = null, param4 = null, param5 = null, param6 = null, param7 = null,
-        param8 = null, param9 = null, param10 = null, param11 = null, param12 = null, param13 = null, param14 = null,
-        param15 = null, param16 = null, param17 = null, param18 = null, param19 = null, param20 = null, param21 = null,
-        param22 = null, policyURL = null;
+      String param1 = "", param2 = "", param3 = "", param4 = "", param5 = "", param6 = "", param7 = "", param8 = "",
+        param9 = "", param10 = "", param11 = "", param12 = "", param13 = "", param14 = "", param15 = "", param16 = "",
+        param17 = "", param18 = "", param19 = "", param20 = "", param21 = "", param22 = "", policyURL = "";
 
       // Condition to know if the project policy have information in the selected phase
       if (policyEvidence.getProjectPolicy().getProjectPolicyInfo(this.getSelectedPhase()) != null) {
@@ -660,6 +659,10 @@ public class PoliciesEvidenceSummaryAction extends BaseSummariesAction implement
           param22 = "No";
         }
 
+        // Generate the policy url of MARLO
+        policyURL = this.getBaseUrl() + "/projects/" + this.getCrpSession() + "/policy.do?policyID="
+          + policyEvidence.getProjectPolicy().getId().toString() + "&phaseID="
+          + this.getSelectedPhase().getId().toString();
 
       }
 
