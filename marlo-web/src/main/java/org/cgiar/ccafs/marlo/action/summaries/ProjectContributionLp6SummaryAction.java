@@ -233,7 +233,7 @@ public class ProjectContributionLp6SummaryAction extends BaseSummariesAction imp
 
     try {
       Resource reportResource = resourceManager
-        .createDirectly(this.getClass().getResource("/pentaho/crp/ProjectLp6Contribution2.prpt"), MasterReport.class);
+        .createDirectly(this.getClass().getResource("/pentaho/crp/ProjectLp6Contribution.prpt"), MasterReport.class);
 
       MasterReport masterReport = (MasterReport) reportResource.getResource();
 
