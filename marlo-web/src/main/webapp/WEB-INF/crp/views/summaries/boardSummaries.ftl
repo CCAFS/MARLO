@@ -68,6 +68,24 @@
         }
       ]
     },
+    { "active": !centerGlobalUnit,
+      "available": false,
+      "title": "summaries.board.report.policies", 
+      "description": "summaries.board.report.policies.description",
+      "namespace": "/summaries",
+      "action": "${crpSession}/policiesEvidences",
+      "formats": [ "Excel" ],
+      "cycles": [ "Reporting" ]
+    },
+    { "active": !centerGlobalUnit,
+      "available": false,
+      "title": "summaries.board.report.innovations", 
+      "description": "summaries.board.report.innovations.description",
+      "namespace": "/summaries",
+      "action": "${crpSession}/policiesEvidences",
+      "formats": [ "Excel" ],
+      "cycles": [ "Reporting" ]
+    },
     { "active": !centerGlobalUnit && action.hasSpecificities("crp_view_highlights"),
       "available": true,
       "title": "summaries.board.report.projectHighlights", 
