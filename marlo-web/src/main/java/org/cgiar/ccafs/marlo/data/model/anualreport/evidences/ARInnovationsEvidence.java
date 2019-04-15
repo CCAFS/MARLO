@@ -15,7 +15,7 @@
 
 package org.cgiar.ccafs.marlo.data.model.anualreport.evidences;
 
-import org.cgiar.ccafs.marlo.data.model.ProjectPolicy;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
 
 import java.io.Serializable;
 
@@ -24,28 +24,30 @@ import java.io.Serializable;
  */
 
 
-public class ARPoliciesEvidence implements Serializable {
+public class ARInnovationsEvidence implements Serializable {
 
+  private static final long serialVersionUID = -8079271132976780268L;
 
-  private static final long serialVersionUID = -8349295005328781514L;
-
-  private ProjectPolicy projectPolicy;
+  private ProjectInnovation projectInnovation;
   private boolean include;
 
-  public ProjectPolicy getProjectPolicy() {
-    return projectPolicy;
+
+  public ProjectInnovation getProjectInnovation() {
+    return projectInnovation;
   }
 
   public boolean isInclude() {
     return include;
   }
 
+
   public void setInclude(boolean include) {
     this.include = include;
   }
 
-  public void setProjectPolicy(ProjectPolicy projectPolicy) {
-    this.projectPolicy = projectPolicy;
+
+  public void setProjectInnovation(ProjectInnovation projectInnovation) {
+    this.projectInnovation = projectInnovation;
   }
 
 
