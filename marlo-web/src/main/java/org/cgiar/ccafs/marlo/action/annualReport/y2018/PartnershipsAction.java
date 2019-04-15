@@ -701,6 +701,16 @@ public class PartnershipsAction extends BaseAction {
             && !externalPartner.getReportSynthesisKeyPartnershipExternalInstitutions().isEmpty()) {
             for (ReportSynthesisKeyPartnershipExternalInstitution extInstitutions : externalPartner
               .getReportSynthesisKeyPartnershipExternalInstitutions()) {
+
+              if (extInstitutions.getInstitution() != null) {
+                extInstitutions.getInstitution().setLocations(new ArrayList<>());
+                if (extInstitutions.getInstitution().getInstitutionsLocations() != null
+                  && !extInstitutions.getInstitution().getInstitutionsLocations().isEmpty()) {
+                  extInstitutions.getInstitution().getLocations().addAll(extInstitutions.getInstitution()
+                    .getInstitutionsLocations().stream().filter(o -> o.isActive()).collect(Collectors.toList()));
+                }
+              }
+
               if (evidencePartners.isEmpty()) {
                 evidencePartners.add(extInstitutions.getInstitution());
               } else {

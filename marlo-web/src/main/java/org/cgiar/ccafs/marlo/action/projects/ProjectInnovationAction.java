@@ -644,7 +644,7 @@ public class ProjectInnovationAction extends BaseAction {
         if (innovation.getProjectInnovationContributingOrganization() != null) {
           innovation
             .setContributingOrganizations(new ArrayList<>(innovation.getProjectInnovationContributingOrganization()
-              .stream().filter(d -> d.getPhase().equals(phase)).collect(Collectors.toList())));
+              .stream().filter(d -> d.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
         }
 
         // Innovation Crp list
