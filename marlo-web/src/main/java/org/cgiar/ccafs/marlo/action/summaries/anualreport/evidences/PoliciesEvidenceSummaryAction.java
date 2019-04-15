@@ -42,6 +42,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.InputStream;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -50,6 +51,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -195,6 +197,7 @@ public class PoliciesEvidenceSummaryAction extends BaseSummariesAction implement
     return SUCCESS;
   }
 
+
   private void fillSubreport(SubReport subReport, String query) {
     CompoundDataFactory cdf = CompoundDataFactory.normalize(subReport.getDataFactory());
     TableDataFactory sdf = (TableDataFactory) cdf.getDataFactoryForQuery(query);
@@ -207,7 +210,6 @@ public class PoliciesEvidenceSummaryAction extends BaseSummariesAction implement
     sdf.addTable(query, model);
     subReport.setDataFactory(cdf);
   }
-
 
   public byte[] getBytesXLSX() {
     return bytesXLSX;
@@ -259,6 +261,7 @@ public class PoliciesEvidenceSummaryAction extends BaseSummariesAction implement
     return inputStream;
   }
 
+
   private TypedTableModel getMasterTableModel(String center, String date, String year) {
     // Initialization of Model
     TypedTableModel model = new TypedTableModel(new String[] {"center", "date", "year", "baseUrl"},
@@ -266,7 +269,6 @@ public class PoliciesEvidenceSummaryAction extends BaseSummariesAction implement
     model.addRow(new Object[] {center, date, year, this.getBaseUrl()});
     return model;
   }
-
 
   /**
    * Get the information of all project policies adding if these project polices include in the annual report
@@ -321,6 +323,7 @@ public class PoliciesEvidenceSummaryAction extends BaseSummariesAction implement
     return policiesPMU;
   }
 
+
   private TypedTableModel getPolicyEvidenceReportingTableModel() {
 
     /*
@@ -363,28 +366,25 @@ public class PoliciesEvidenceSummaryAction extends BaseSummariesAction implement
     List<ARPoliciesEvidence> policyEvidences = this.getPoliciesInfo();
 
     for (ARPoliciesEvidence policyEvidence : policyEvidences) {
-
-      String param1 = "", param2 = "", param3 = "", param4 = "", param5 = "", param6 = "", param7 = "", param8 = "",
-        param9 = "", param10 = "", param11 = "", param12 = "", param13 = "", param14 = "", param15 = "", param16 = "",
-        param17 = "", param18 = "", param19 = "", param20 = "", param21 = "", param22 = "", policyURL = "";
+      Long param1 = null, param2 = null;
+      String param3 = "", param4 = "", param5 = "", param6 = "", param7 = "", param8 = "", param9 = "", param10 = "",
+        param11 = "", param12 = "", param13 = "", param14 = "", param15 = "", param16 = "", param17 = "", param18 = "",
+        param19 = "", param20 = "", param21 = "", param22 = "", policyURL = "";
 
       // Condition to know if the project policy have information in the selected phase
       if (policyEvidence.getProjectPolicy().getProjectPolicyInfo(this.getSelectedPhase()) != null) {
 
         // Policy Id
-        param1 = policyEvidence.getProjectPolicy().getId().toString();
-
+        param1 = policyEvidence.getProjectPolicy().getId();
         // Year
-        param2 = policyEvidence.getProjectPolicy().getProjectPolicyInfo(this.getSelectedPhase()).getYear().toString();
-
+        param2 = policyEvidence.getProjectPolicy().getProjectPolicyInfo(this.getSelectedPhase()).getYear();
         // Title
         if (policyEvidence.getProjectPolicy().getProjectPolicyInfo(this.getSelectedPhase()).getTitle() != null
           && !policyEvidence.getProjectPolicy().getProjectPolicyInfo(this.getSelectedPhase()).getTitle().isEmpty()) {
           param3 = policyEvidence.getProjectPolicy().getProjectPolicyInfo(this.getSelectedPhase()).getTitle();
         } else {
-          param3 = "&lt;Not Defined&gt;";
+          param3 = "<Not Defined>";
         }
-
         // Policy / Investment Type and amount (If Investment type Id = 3)
         if (policyEvidence.getProjectPolicy().getProjectPolicyInfo(this.getSelectedPhase())
           .getRepIndPolicyInvestimentType() != null) {
@@ -396,15 +396,21 @@ public class PoliciesEvidenceSummaryAction extends BaseSummariesAction implement
             // amount
             if (policyEvidence.getProjectPolicy().getProjectPolicyInfo(this.getSelectedPhase()).getAmount() != null
               && policyEvidence.getProjectPolicy().getProjectPolicyInfo(this.getSelectedPhase()).getAmount() != 0) {
+
+              Locale.setDefault(Locale.US);
+              DecimalFormat num = new DecimalFormat("#,###.00");
               param5 =
-                policyEvidence.getProjectPolicy().getProjectPolicyInfo(this.getSelectedPhase()).getAmount().toString();
+                num.format(policyEvidence.getProjectPolicy().getProjectPolicyInfo(this.getSelectedPhase()).getAmount());
+
             } else {
-              param5 = "&lt;Not Defined&gt;";
+              param5 = "<Not Defined>";
             }
+          } else {
+            param5 = "<Not Applicable>";
           }
         } else {
-          param4 = "&lt;Not Defined&gt;";
-          param5 = "&lt;Not Defined&gt;";
+          param4 = "<Not Defined>";
+          param5 = "<Not Defined>";
         }
 
         // Organization type
@@ -413,7 +419,7 @@ public class PoliciesEvidenceSummaryAction extends BaseSummariesAction implement
           param6 = policyEvidence.getProjectPolicy().getProjectPolicyInfo(this.getSelectedPhase())
             .getRepIndOrganizationType().getName();
         } else {
-          param6 = "&lt;Not Defined&gt;";
+          param6 = "<Not Defined>";
         }
 
         // Level of Maturity
@@ -422,7 +428,7 @@ public class PoliciesEvidenceSummaryAction extends BaseSummariesAction implement
           param7 = policyEvidence.getProjectPolicy().getProjectPolicyInfo(this.getSelectedPhase())
             .getRepIndStageProcess().getName();
         } else {
-          param7 = "&lt;Not Defined&gt;";
+          param7 = "<Not Defined>";
         }
 
         // Whose policy is and Other (If policy type == 4)
@@ -433,7 +439,7 @@ public class PoliciesEvidenceSummaryAction extends BaseSummariesAction implement
           if (owners != null && !owners.isEmpty()) {
             boolean bOther = false;
             for (ProjectPolicyOwner owner : owners) {
-              param8 += "● " + owner.getRepIndPolicyType().getName() + "<br>";
+              param8 += "● " + owner.getRepIndPolicyType().getName() + "\n";
               // Check if has Other value
               if (owner.getRepIndPolicyType().getId() == 4) {
                 bOther = true;
@@ -447,19 +453,19 @@ public class PoliciesEvidenceSummaryAction extends BaseSummariesAction implement
                   .isEmpty()) {
                 param9 = policyEvidence.getProjectPolicy().getProjectPolicyInfo(this.getSelectedPhase()).getOther();
               } else {
-                param9 = "&lt;Not Defined&gt;";
+                param9 = "<Not Defined>";
               }
             } else {
-              param9 = "&lt;Not applicable&gt;";
+              param9 = "<Not Applicable>";
             }
 
           } else {
-            param8 = "&lt;Not Defined&gt;";
-            param9 = "&lt;Not Defined&gt;";
+            param8 = "<Not Defined>";
+            param9 = "<Not Defined>";
           }
         } else {
-          param8 = "&lt;Not Defined&gt;";
-          param9 = "&lt;Not Defined&gt;";
+          param8 = "<Not Defined>";
+          param9 = "<Not Defined>";
         }
 
         // Evidences
@@ -470,11 +476,11 @@ public class PoliciesEvidenceSummaryAction extends BaseSummariesAction implement
               .collect(Collectors.toList()));
           if (evidences != null && !evidences.isEmpty()) {
             for (ProjectExpectedStudyPolicy evidence : evidences) {
-              param10 += "● " + evidence.getProjectExpectedStudy().getComposedName() + "<br>";
+              param10 += "● " + evidence.getProjectExpectedStudy().getComposedName() + "\n";
             }
           }
         } else {
-          param10 = "&lt;Not Defined&gt;";
+          param10 = "<Not Defined>";
         }
 
 
@@ -486,7 +492,7 @@ public class PoliciesEvidenceSummaryAction extends BaseSummariesAction implement
           param11 =
             policyEvidence.getProjectPolicy().getProjectPolicyInfo(this.getSelectedPhase()).getNarrativeEvidence();
         } else {
-          param11 = "&lt;Not Defined&gt;";
+          param11 = "<Not Defined>";
         }
 
 
@@ -498,11 +504,13 @@ public class PoliciesEvidenceSummaryAction extends BaseSummariesAction implement
               .collect(Collectors.toList()));
           if (innovations != null && !innovations.isEmpty()) {
             for (ProjectPolicyInnovation innovation : innovations) {
-              param12 += "● " + innovation.getProjectInnovation().getComposedName() + "<br>";
+              param12 += "● " + innovation.getProjectInnovation().getComposedName() + "\n";
             }
+          } else {
+            param12 = "<Not Defined>";
           }
         } else {
-          param12 = "&lt;Not Defined&gt;";
+          param12 = "<Not Defined>";
         }
 
         // Crp and Platforms
@@ -512,11 +520,11 @@ public class PoliciesEvidenceSummaryAction extends BaseSummariesAction implement
             .collect(Collectors.toList()));
           if (crps != null && !crps.isEmpty()) {
             for (ProjectPolicyCrp crp : crps) {
-              param13 += "● " + crp.getGlobalUnit().getAcronym() + "<br>";
+              param13 += "● " + crp.getGlobalUnit().getAcronym() + "\n";
             }
           }
         } else {
-          param13 = "&lt;Not Defined&gt;";
+          param13 = "<Not Defined>";
         }
 
         // Sub-IDOs
@@ -527,11 +535,11 @@ public class PoliciesEvidenceSummaryAction extends BaseSummariesAction implement
               .collect(Collectors.toList()));
           if (subIdos != null && !subIdos.isEmpty()) {
             for (ProjectPolicySubIdo subIdo : subIdos) {
-              param14 += "● " + subIdo.getSrfSubIdo().getDescription() + "<br>";
+              param14 += "● " + subIdo.getSrfSubIdo().getDescription() + "\n";
             }
           }
         } else {
-          param14 = "&lt;Not Defined&gt;";
+          param14 = "<Not Defined>";
         }
 
         // CGIAR Cross-cutting Markers
@@ -549,7 +557,7 @@ public class PoliciesEvidenceSummaryAction extends BaseSummariesAction implement
                 if (marker.getRepIndGenderYouthFocusLevel() != null) {
                   param15 = marker.getRepIndGenderYouthFocusLevel().getName();
                 } else {
-                  param15 = "&lt;Not Defined&gt;";
+                  param15 = "<Not Defined>";
                 }
               }
               // Youth
@@ -557,7 +565,7 @@ public class PoliciesEvidenceSummaryAction extends BaseSummariesAction implement
                 if (marker.getRepIndGenderYouthFocusLevel() != null) {
                   param16 = marker.getRepIndGenderYouthFocusLevel().getName();
                 } else {
-                  param16 = "&lt;Not Defined&gt;";
+                  param16 = "<Not Defined>";
                 }
               }
               // CapDev
@@ -565,7 +573,7 @@ public class PoliciesEvidenceSummaryAction extends BaseSummariesAction implement
                 if (marker.getRepIndGenderYouthFocusLevel() != null) {
                   param17 = marker.getRepIndGenderYouthFocusLevel().getName();
                 } else {
-                  param17 = "&lt;Not Defined&gt;";
+                  param17 = "<Not Defined>";
                 }
               }
               // Climate Change
@@ -573,17 +581,17 @@ public class PoliciesEvidenceSummaryAction extends BaseSummariesAction implement
                 if (marker.getRepIndGenderYouthFocusLevel() != null) {
                   param18 = marker.getRepIndGenderYouthFocusLevel().getName();
                 } else {
-                  param18 = "&lt;Not Defined&gt;";
+                  param18 = "<Not Defined>";
                 }
               }
             }
           }
 
         } else {
-          param15 = "&lt;Not Defined&gt;";
-          param16 = "&lt;Not Defined&gt;";
-          param17 = "&lt;Not Defined&gt;";
-          param18 = "&lt;Not Defined&gt;";
+          param15 = "<Not Defined>";
+          param16 = "<Not Defined>";
+          param17 = "<Not Defined>";
+          param18 = "<Not Defined>";
         }
 
         // Geographic scopes, regions and countries
@@ -607,11 +615,11 @@ public class PoliciesEvidenceSummaryAction extends BaseSummariesAction implement
                 && projectPolicyGeographicScope.getRepIndGeographicScope().getId() != 2) {
                 haveCountries = true;
               }
-              param19 += "● " + projectPolicyGeographicScope.getRepIndGeographicScope().getName() + "<br>";
+              param19 += "● " + projectPolicyGeographicScope.getRepIndGeographicScope().getName() + "\n";
             }
           }
         } else {
-          param19 = "&lt;Not Defined&gt;";
+          param19 = "<Not Defined>";
         }
 
         if (haveRegions) {
@@ -623,14 +631,14 @@ public class PoliciesEvidenceSummaryAction extends BaseSummariesAction implement
                 .collect(Collectors.toList()));
             if (regions != null && !regions.isEmpty()) {
               for (ProjectPolicyRegion region : regions) {
-                param20 += "● " + region.getLocElement().getName() + "<br>";
+                param20 += "● " + region.getLocElement().getName() + "\n";
               }
             }
           } else {
-            param20 = "&lt;Not Defined&gt;";
+            param20 = "<Not Defined>";
           }
         } else {
-          param20 = "&lt;Not applicable&gt;";
+          param20 = "<Not Applicable>";
         }
 
         if (haveCountries) {
@@ -642,14 +650,14 @@ public class PoliciesEvidenceSummaryAction extends BaseSummariesAction implement
                 .collect(Collectors.toList()));
             if (countries != null && !countries.isEmpty()) {
               for (ProjectPolicyCountry country : countries) {
-                param21 += "● " + country.getLocElement().getName() + "<br>";
+                param21 += "● " + country.getLocElement().getName() + "\n";
               }
             }
           } else {
-            param21 = "&lt;Not Defined&gt;";
+            param21 = "<Not Defined>";
           }
         } else {
-          param21 = "&lt;Not applicable&gt;";
+          param21 = "<Not Applicable>";
         }
 
         // Is included in the AR
@@ -658,7 +666,6 @@ public class PoliciesEvidenceSummaryAction extends BaseSummariesAction implement
         } else {
           param22 = "No";
         }
-
         // Generate the policy url of MARLO
         policyURL = this.getBaseUrl() + "/projects/" + this.getCrpSession() + "/policy.do?policyID="
           + policyEvidence.getProjectPolicy().getId().toString() + "&phaseID="
@@ -672,7 +679,6 @@ public class PoliciesEvidenceSummaryAction extends BaseSummariesAction implement
     }
     return model;
   }
-
 
   @Override
   public void prepare() throws Exception {
