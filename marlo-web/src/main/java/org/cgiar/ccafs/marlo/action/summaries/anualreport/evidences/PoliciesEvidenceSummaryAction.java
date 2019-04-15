@@ -19,7 +19,6 @@ import org.cgiar.ccafs.marlo.action.summaries.BaseSummariesAction;
 import org.cgiar.ccafs.marlo.action.summaries.Summary;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
-import org.cgiar.ccafs.marlo.data.manager.ProjectLeverageManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
@@ -80,7 +79,6 @@ public class PoliciesEvidenceSummaryAction extends BaseSummariesAction implement
   private static final long serialVersionUID = -2543743013961311798L;
   private static Logger LOG = LoggerFactory.getLogger(PoliciesEvidenceSummaryAction.class);
   // Managers
-  private final ProjectLeverageManager projectLeverageManager;
   private final ResourceManager resourceManager;
 
   private final ReportSynthesisManager reportSynthesisManager;
@@ -95,12 +93,10 @@ public class PoliciesEvidenceSummaryAction extends BaseSummariesAction implement
   InputStream inputStream;
 
   @Inject
-  public PoliciesEvidenceSummaryAction(APConfig config, GlobalUnitManager crpManager,
-    ProjectLeverageManager projectLeverageManager, PhaseManager phaseManager, ResourceManager resourceManager,
-    ProjectManager projectManager, ReportSynthesisManager reportSynthesisManager,
+  public PoliciesEvidenceSummaryAction(APConfig config, GlobalUnitManager crpManager, PhaseManager phaseManager,
+    ResourceManager resourceManager, ProjectManager projectManager, ReportSynthesisManager reportSynthesisManager,
     ProjectPolicyManager projectPolicyManager) {
     super(config, crpManager, phaseManager, projectManager);
-    this.projectLeverageManager = projectLeverageManager;
     this.resourceManager = resourceManager;
     this.projectPolicyManager = projectPolicyManager;
     this.reportSynthesisManager = reportSynthesisManager;
@@ -387,7 +383,7 @@ public class PoliciesEvidenceSummaryAction extends BaseSummariesAction implement
           && !policyEvidence.getProjectPolicy().getProjectPolicyInfo(this.getSelectedPhase()).getTitle().isEmpty()) {
           param3 = policyEvidence.getProjectPolicy().getProjectPolicyInfo(this.getSelectedPhase()).getTitle();
         } else {
-          param3 = "<Not Defined>";
+          param3 = "&lt;Not Defined&gt;";
         }
 
         // Policy / Investment Type and amount (If Investment type Id = 3)
@@ -404,12 +400,12 @@ public class PoliciesEvidenceSummaryAction extends BaseSummariesAction implement
               param5 =
                 policyEvidence.getProjectPolicy().getProjectPolicyInfo(this.getSelectedPhase()).getAmount().toString();
             } else {
-              param5 = "<Not Defined>";
+              param5 = "&lt;Not Defined&gt;";
             }
           }
         } else {
-          param4 = "<Not Defined>";
-          param5 = "<Not Defined>";
+          param4 = "&lt;Not Defined&gt;";
+          param5 = "&lt;Not Defined&gt;";
         }
 
         // Organization type
@@ -418,7 +414,7 @@ public class PoliciesEvidenceSummaryAction extends BaseSummariesAction implement
           param6 = policyEvidence.getProjectPolicy().getProjectPolicyInfo(this.getSelectedPhase())
             .getRepIndOrganizationType().getName();
         } else {
-          param6 = "<Not Defined>";
+          param6 = "&lt;Not Defined&gt;";
         }
 
         // Level of Maturity
@@ -427,7 +423,7 @@ public class PoliciesEvidenceSummaryAction extends BaseSummariesAction implement
           param7 = policyEvidence.getProjectPolicy().getProjectPolicyInfo(this.getSelectedPhase())
             .getRepIndStageProcess().getName();
         } else {
-          param7 = "<Not Defined>";
+          param7 = "&lt;Not Defined&gt;";
         }
 
         // Whose policy is and Other (If policy type == 4)
@@ -438,7 +434,7 @@ public class PoliciesEvidenceSummaryAction extends BaseSummariesAction implement
           if (owners != null && !owners.isEmpty()) {
             boolean bOther = false;
             for (ProjectPolicyOwner owner : owners) {
-              param8 += "● " + owner.getRepIndPolicyType().getName() + "\n";
+              param8 += "● " + owner.getRepIndPolicyType().getName() + "<br>";
               // Check if has Other value
               if (owner.getRepIndPolicyType().getId() == 4) {
                 bOther = true;
@@ -452,19 +448,19 @@ public class PoliciesEvidenceSummaryAction extends BaseSummariesAction implement
                   .isEmpty()) {
                 param9 = policyEvidence.getProjectPolicy().getProjectPolicyInfo(this.getSelectedPhase()).getOther();
               } else {
-                param9 = "<Not Defined>";
+                param9 = "&lt;Not Defined&gt;";
               }
             } else {
-              param9 = "<Not applicable>";
+              param9 = "&lt;Not applicable&gt;";
             }
 
           } else {
-            param8 = "<Not Defined>";
-            param9 = "<Not Defined>";
+            param8 = "&lt;Not Defined&gt;";
+            param9 = "&lt;Not Defined&gt;";
           }
         } else {
-          param8 = "<Not Defined>";
-          param9 = "<Not Defined>";
+          param8 = "&lt;Not Defined&gt;";
+          param9 = "&lt;Not Defined&gt;";
         }
 
         // Evidences
@@ -475,11 +471,11 @@ public class PoliciesEvidenceSummaryAction extends BaseSummariesAction implement
               .collect(Collectors.toList()));
           if (evidences != null && !evidences.isEmpty()) {
             for (ProjectExpectedStudyPolicy evidence : evidences) {
-              param10 += "● " + evidence.getProjectExpectedStudy().getComposedName() + "\n";
+              param10 += "● " + evidence.getProjectExpectedStudy().getComposedName() + "<br>";
             }
           }
         } else {
-          param10 = "<Not Defined>";
+          param10 = "&lt;Not Defined&gt;";
         }
 
 
@@ -491,7 +487,7 @@ public class PoliciesEvidenceSummaryAction extends BaseSummariesAction implement
           param11 =
             policyEvidence.getProjectPolicy().getProjectPolicyInfo(this.getSelectedPhase()).getNarrativeEvidence();
         } else {
-          param11 = "<Not Defined>";
+          param11 = "&lt;Not Defined&gt;";
         }
 
 
@@ -503,11 +499,11 @@ public class PoliciesEvidenceSummaryAction extends BaseSummariesAction implement
               .collect(Collectors.toList()));
           if (innovations != null && !innovations.isEmpty()) {
             for (ProjectPolicyInnovation innovation : innovations) {
-              param12 += "● " + innovation.getProjectInnovation().getComposedName() + "\n";
+              param12 += "● " + innovation.getProjectInnovation().getComposedName() + "<br>";
             }
           }
         } else {
-          param12 = "<Not Defined>";
+          param12 = "&lt;Not Defined&gt;";
         }
 
         // Crp and Platforms
@@ -517,11 +513,11 @@ public class PoliciesEvidenceSummaryAction extends BaseSummariesAction implement
             .collect(Collectors.toList()));
           if (crps != null && !crps.isEmpty()) {
             for (ProjectPolicyCrp crp : crps) {
-              param13 += "● " + crp.getGlobalUnit().getAcronym() + "\n";
+              param13 += "● " + crp.getGlobalUnit().getAcronym() + "<br>";
             }
           }
         } else {
-          param13 = "<Not Defined>";
+          param13 = "&lt;Not Defined&gt;";
         }
 
         // Sub-IDOs
@@ -532,11 +528,11 @@ public class PoliciesEvidenceSummaryAction extends BaseSummariesAction implement
               .collect(Collectors.toList()));
           if (subIdos != null && !subIdos.isEmpty()) {
             for (ProjectPolicySubIdo subIdo : subIdos) {
-              param14 += "● " + subIdo.getSrfSubIdo().getDescription() + "\n";
+              param14 += "● " + subIdo.getSrfSubIdo().getDescription() + "<br>";
             }
           }
         } else {
-          param14 = "<Not Defined>";
+          param14 = "&lt;Not Defined&gt;";
         }
 
         // CGIAR Cross-cutting Markers
@@ -554,7 +550,7 @@ public class PoliciesEvidenceSummaryAction extends BaseSummariesAction implement
                 if (marker.getRepIndGenderYouthFocusLevel() != null) {
                   param15 = marker.getRepIndGenderYouthFocusLevel().getName();
                 } else {
-                  param15 = "<Not Defined>";
+                  param15 = "&lt;Not Defined&gt;";
                 }
               }
               // Youth
@@ -562,7 +558,7 @@ public class PoliciesEvidenceSummaryAction extends BaseSummariesAction implement
                 if (marker.getRepIndGenderYouthFocusLevel() != null) {
                   param16 = marker.getRepIndGenderYouthFocusLevel().getName();
                 } else {
-                  param16 = "<Not Defined>";
+                  param16 = "&lt;Not Defined&gt;";
                 }
               }
               // CapDev
@@ -570,7 +566,7 @@ public class PoliciesEvidenceSummaryAction extends BaseSummariesAction implement
                 if (marker.getRepIndGenderYouthFocusLevel() != null) {
                   param17 = marker.getRepIndGenderYouthFocusLevel().getName();
                 } else {
-                  param17 = "<Not Defined>";
+                  param17 = "&lt;Not Defined&gt;";
                 }
               }
               // Climate Change
@@ -578,17 +574,17 @@ public class PoliciesEvidenceSummaryAction extends BaseSummariesAction implement
                 if (marker.getRepIndGenderYouthFocusLevel() != null) {
                   param18 = marker.getRepIndGenderYouthFocusLevel().getName();
                 } else {
-                  param18 = "<Not Defined>";
+                  param18 = "&lt;Not Defined&gt;";
                 }
               }
             }
           }
 
         } else {
-          param15 = "<Not Defined>";
-          param16 = "<Not Defined>";
-          param17 = "<Not Defined>";
-          param18 = "<Not Defined>";
+          param15 = "&lt;Not Defined&gt;";
+          param16 = "&lt;Not Defined&gt;";
+          param17 = "&lt;Not Defined&gt;";
+          param18 = "&lt;Not Defined&gt;";
         }
 
         // Geographic scopes, regions and countries
@@ -612,11 +608,11 @@ public class PoliciesEvidenceSummaryAction extends BaseSummariesAction implement
                 && projectPolicyGeographicScope.getRepIndGeographicScope().getId() != 2) {
                 haveCountries = true;
               }
-              param19 += "● " + projectPolicyGeographicScope.getRepIndGeographicScope().getName() + "\n";
+              param19 += "● " + projectPolicyGeographicScope.getRepIndGeographicScope().getName() + "<br>";
             }
           }
         } else {
-          param19 = "<Not Defined>";
+          param19 = "&lt;Not Defined&gt;";
         }
 
         if (haveRegions) {
@@ -628,14 +624,14 @@ public class PoliciesEvidenceSummaryAction extends BaseSummariesAction implement
                 .collect(Collectors.toList()));
             if (regions != null && !regions.isEmpty()) {
               for (ProjectPolicyRegion region : regions) {
-                param20 += "● " + region.getLocElement().getName() + "\n";
+                param20 += "● " + region.getLocElement().getName() + "<br>";
               }
             }
           } else {
-            param20 = "<Not Defined>";
+            param20 = "&lt;Not Defined&gt;";
           }
         } else {
-          param20 = "<Not applicable>";
+          param20 = "&lt;Not applicable&gt;";
         }
 
         if (haveCountries) {
@@ -647,14 +643,14 @@ public class PoliciesEvidenceSummaryAction extends BaseSummariesAction implement
                 .collect(Collectors.toList()));
             if (countries != null && !countries.isEmpty()) {
               for (ProjectPolicyCountry country : countries) {
-                param21 += "● " + country.getLocElement().getName() + "\n";
+                param21 += "● " + country.getLocElement().getName() + "<br>";
               }
             }
           } else {
-            param21 = "<Not Defined>";
+            param21 = "&lt;Not Defined&gt;";
           }
         } else {
-          param21 = "<Not applicable>";
+          param21 = "&lt;Not applicable&gt;";
         }
 
         // Is included in the AR
