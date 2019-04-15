@@ -81,6 +81,7 @@
         <th id="tb-year" width="8%">[@s.text name="projectInnovations.table.year" /]</th>
         <th id="projectDownload" class="no-sort"></th>
         [#if currentTable]
+        <th></th>
         <th id="tb-remove" width="4%" class="no-sort"></th>
         [/#if]
       </tr>
@@ -89,7 +90,8 @@
     [#if list?has_content]
       [#list list as innovation]
         [#local tsURL][@s.url namespace="/projects" action="${(crpSession)!}/innovation"][@s.param name='innovationID']${(innovation.id)!''}[/@s.param][@s.param name='projectID']${(innovation.project.id)!''}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
-        
+        [#-- Is this complete --]
+        [#local isThisComplete = (action.hasInnovationMissingFields(innovation.id))!false ]
         [#-- Is New --]
         [#local isNew = (action.isInnovationNew(innovation.id))!false ]
         <tr>
@@ -120,8 +122,16 @@
               <img src="${baseUrl}/global/images/pdf.png" height="25" title="[@s.text name="projectsList.downloadPDF" /]" />
             </a>            
           </td>
-          [#-- Remove --]
           [#if currentTable]
+          [#-- Missing fields --]
+          <td>
+            [#if isThisComplete]
+              <span class="icon-20 icon-check" title="Complete"></span> 
+            [#else]
+              <span class="icon-20 icon-uncheck" title=""></span> 
+            [/#if]
+          </td>
+          [#-- Remove --]
           <td class="text-center">
             [#if canEdit ]
               <a id="removeElement-${(innovation.id)!}" class="removeElementList" href="#" title="" data-toggle="modal" data-target="#removeItem-${innovation_index}" >

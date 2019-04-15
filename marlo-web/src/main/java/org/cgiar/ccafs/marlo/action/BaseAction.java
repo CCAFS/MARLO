@@ -4106,6 +4106,33 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return true;
   }
 
+  /**
+   * Validate Missing fields in Innovations
+   * 
+   * @return
+   */
+  public boolean hasInnovationMissingFields(long id) {
+    SectionStatus sectionStatus = null;
+
+
+    ProjectInnovation innovation = this.projectInnovationManager.getProjectInnovationById(id);
+
+
+    sectionStatus =
+      this.sectionStatusManager.getSectionStatusByProjectInnovation(innovation.getId(), this.getCurrentCycle(),
+        this.getCurrentCycleYear(), this.isUpKeepActive(), ProjectSectionStatusEnum.INNOVATIONS.getStatus());
+
+    if (sectionStatus != null) {
+      if (sectionStatus.getMissingFields() != null) {
+        if (sectionStatus.getMissingFields().trim().equals("")) {
+          return true;
+        }
+      }
+    }
+
+    return false;
+  }
+
   public boolean hasPermission(String fieldName) {
 
     if (this.basePermission == null) {

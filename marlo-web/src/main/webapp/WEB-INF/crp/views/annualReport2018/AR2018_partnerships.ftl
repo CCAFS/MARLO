@@ -88,7 +88,7 @@
                       [#-- Word Document Tag --]
                       [@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/]
 
-                      [#if false]
+                      [#if true]
                       <div class="form-group btn-group btn-group-sm pull-right" role="group" aria-label="...">
                         <button type="button" class="btn btn-default" data-toggle="modal" data-target="#modal-evidenceF"><span class="glyphicon glyphicon-fullscreen"></span> AR Evidence F</button>
                       </div>
@@ -418,24 +418,26 @@
     <table class="table table-bordered">
       <thead>
         <tr>
+          <th> ID </th>
           <th> Name of partner organization</th>
           <th> Organization Type</th>
           <th> Partner Headquarter </th>
         </tr>
       </thead>
       <tbody>
-        [#list (flagshipExternalPartnerships?sort_by("id"))![] as item]
-          [#list (item.institutions)![] as partnerInstitution]
-            <tr>
-              <td> ${(partnerInstitution.institution.composedName)!""} </td>
-              <td> ${(partnerInstitution.institution.institutionType.repIndOrganizationType.name)!""} </td>
-              <td> 
-                [#list (partnerInstitution.institution.locations)![] as location]
+        [#list (evidencePartners)![] as institution ]
+          <tr>
+            <td> ${(institution.id)!""}  </td>
+            <td> ${(institution.composedName)!""} </td>
+            <td> ${(institution.institutionType.repIndOrganizationType.name)!""} </td>
+            <td> 
+              [#list (institution.locations)![] as location]
+                [#if (location.headquater)!false]
                   ${(location.locElement.name)!""}
-                [/#list]
-              </td>
-            </tr>
-          [/#list]
+                [/#if]
+              [/#list]
+            </td>
+          </tr>
         [/#list]
       </tbody>
     </table>
