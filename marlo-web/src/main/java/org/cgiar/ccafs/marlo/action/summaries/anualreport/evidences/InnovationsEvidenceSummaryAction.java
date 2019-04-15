@@ -487,10 +487,8 @@ public class InnovationsEvidenceSummaryAction extends BaseSummariesAction implem
               .collect(Collectors.toList()));
           if (deliverables != null && !deliverables.isEmpty()) {
             for (ProjectInnovationDeliverable deliverable : deliverables) {
-              if (deliverable.getDeliverable().getDeliverableInfo() != null) {
-                paramP += "● " + "(D" + deliverable.getDeliverable().getId() + ") "
-                  + deliverable.getDeliverable().getDeliverableInfo().getDeliverableType().getName() + "\n";
-              }
+              paramP += "● " + "(D" + deliverable.getDeliverable().getId() + ") "
+                + deliverable.getDeliverable().getDeliverableInfo(this.getSelectedPhase()).getTitle() + "\n";
             }
           } else {
             paramP = "<Not Defined>";
