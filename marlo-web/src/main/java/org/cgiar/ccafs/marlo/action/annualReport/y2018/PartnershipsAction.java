@@ -132,6 +132,11 @@ public class PartnershipsAction extends BaseAction {
   private List<LiaisonInstitution> liaisonInstitutions;
   private List<ProjectPartnerPartnership> partnerShipList;
 
+  // Values for AR part C Evidence Information
+  private List<Institution> evidencePartners;
+  private List<ReportSynthesisKeyPartnershipExternal> externalPartnerships;
+
+  //
   private List<ReportSynthesisKeyPartnershipExternal> flagshipExternalPartnerships;
 
 
@@ -141,6 +146,7 @@ public class PartnershipsAction extends BaseAction {
   private List<RepIndPartnershipMainArea> mainAreasSel;
   private List<Institution> partners;
   private List<ProjectComponentLesson> projectKeyPartnerships;
+
   private List<PartnershipsSynthesis> projectPartners;
   private List<GlobalUnit> globalUnits;
   private int indexTab;
@@ -184,7 +190,6 @@ public class PartnershipsAction extends BaseAction {
     this.reportSynthesisKeyPartnershipPmuManager = reportSynthesisKeyPartnershipPmuManager;
     this.reportSynthesisKeyPartnershipCollaborationPmuManager = reportSynthesisKeyPartnershipCollaborationPmuManager;
   }
-
 
   public Long firstFlagship() {
     List<LiaisonInstitution> liaisonInstitutions = new ArrayList<>(loggedCrp.getLiaisonInstitutions().stream()
@@ -293,8 +298,17 @@ public class PartnershipsAction extends BaseAction {
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
+
   public GlobalUnitManager getCrpManager() {
     return crpManager;
+  }
+
+  public List<Institution> getEvidencePartners() {
+    return evidencePartners;
+  }
+
+  public List<ReportSynthesisKeyPartnershipExternal> getExternalPartnerships() {
+    return externalPartnerships;
   }
 
 
@@ -337,6 +351,7 @@ public class PartnershipsAction extends BaseAction {
     return liaisonInstitutions;
   }
 
+
   public GlobalUnit getLoggedCrp() {
     return loggedCrp;
   }
@@ -350,7 +365,6 @@ public class PartnershipsAction extends BaseAction {
       .concat(File.separator).concat(this.getCrpSession() + "_")
       .concat(ReportSynthesis2018SectionStatusEnum.EXTERNAL_PARTNERSHIPS.getStatus()).concat(File.separator);
   }
-
 
   public List<Institution> getPartners() {
     return partners;
@@ -366,6 +380,7 @@ public class PartnershipsAction extends BaseAction {
     return projectKeyPartnerships;
   }
 
+
   public List<PartnershipsSynthesis> getProjectPartners() {
     return projectPartners;
   }
@@ -374,15 +389,14 @@ public class PartnershipsAction extends BaseAction {
     return reportSynthesis;
   }
 
-
   public Long getSynthesisID() {
     return synthesisID;
   }
 
+
   public String getTransaction() {
     return transaction;
   }
-
 
   public boolean isFlagship() {
     boolean isFP = false;
@@ -397,6 +411,7 @@ public class PartnershipsAction extends BaseAction {
     }
     return isFP;
   }
+
 
   @Override
   public boolean isPMU() {
@@ -674,6 +689,30 @@ public class PartnershipsAction extends BaseAction {
     if (this.isPMU()) {
       this.flagshipExternalPartnerships(liaisonInstitutions);
       this.flagshipExternalCollaborations(liaisonInstitutions);
+
+      // Load Institutions Partnerships evidences
+      externalPartnerships =
+        reportSynthesisKeyPartnershipExternalManager.getTable8(liaisonInstitutions, liaisonInstitution, phase);
+      evidencePartners = new ArrayList<>();
+      if (externalPartnerships != null && !externalPartnerships.isEmpty()) {
+
+        for (ReportSynthesisKeyPartnershipExternal externalPartner : externalPartnerships) {
+          if (externalPartner.getReportSynthesisKeyPartnershipExternalInstitutions() != null
+            && !externalPartner.getReportSynthesisKeyPartnershipExternalInstitutions().isEmpty()) {
+            for (ReportSynthesisKeyPartnershipExternalInstitution extInstitutions : externalPartner
+              .getReportSynthesisKeyPartnershipExternalInstitutions()) {
+              if (evidencePartners.isEmpty()) {
+                evidencePartners.add(extInstitutions.getInstitution());
+              } else {
+                if (!evidencePartners.contains(extInstitutions.getInstitution())) {
+                  evidencePartners.add(extInstitutions.getInstitution());
+                }
+              }
+            }
+          }
+        }
+      }
+
     }
 
     // ADD PMU as liasion Institution too
@@ -1214,7 +1253,6 @@ public class PartnershipsAction extends BaseAction {
     }
   }
 
-
   /**
    * Save Key External Partnership Crps Information
    */
@@ -1358,6 +1396,16 @@ public class PartnershipsAction extends BaseAction {
 
   public void setCrpManager(GlobalUnitManager crpManager) {
     this.crpManager = crpManager;
+  }
+
+
+  public void setEvidencePartners(List<Institution> evidencePartners) {
+    this.evidencePartners = evidencePartners;
+  }
+
+
+  public void setExternalPartnerships(List<ReportSynthesisKeyPartnershipExternal> externalPartnerships) {
+    this.externalPartnerships = externalPartnerships;
   }
 
 
