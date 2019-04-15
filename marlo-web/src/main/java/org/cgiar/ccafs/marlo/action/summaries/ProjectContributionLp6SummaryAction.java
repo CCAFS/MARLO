@@ -16,12 +16,18 @@
 package org.cgiar.ccafs.marlo.action.summaries;
 
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.CrossCuttingScoringManager;
+import org.cgiar.ccafs.marlo.data.manager.CrpPpaPartnerManager;
+import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableCrossCuttingMarkerManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
+import org.cgiar.ccafs.marlo.data.manager.GenderTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectLp6ContributionDeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectLp6ContributionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
+import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.ProjectLp6Contribution;
 import org.cgiar.ccafs.marlo.data.model.ProjectLp6ContributionDeliverable;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -30,19 +36,22 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.InputStream;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
+import com.ibm.icu.util.Calendar;
 import org.pentaho.reporting.engine.classic.core.CompoundDataFactory;
 import org.pentaho.reporting.engine.classic.core.Element;
 import org.pentaho.reporting.engine.classic.core.ItemBand;
@@ -59,44 +68,60 @@ import org.slf4j.LoggerFactory;
 
 public class ProjectContributionLp6SummaryAction extends BaseSummariesAction implements Summary {
 
-  private static final long serialVersionUID = 4871536980466987571L;
+  /**
+   * 
+   */
+  private static final long serialVersionUID = 1L;
 
   private static Logger LOG = LoggerFactory.getLogger(ProjectContributionLp6SummaryAction.class);
-
-  public static double round(double value, int places) {
-    if (places < 0) {
-      throw new IllegalArgumentException();
-    }
-
-    BigDecimal bd = new BigDecimal(value);
-    bd = bd.setScale(places, RoundingMode.HALF_UP);
-    return bd.doubleValue();
-  }
-
-  // Managers
-  private final ResourceManager resourceManager;
-  private final ProjectLp6ContributionManager projectLp6ContributionManager;
-  private final ProjectLp6ContributionDeliverableManager deliverableLp6Manager;
-  private final DeliverableManager deliverableManager;
-
   // Parameters
   private long startTime;
+  private Set<Deliverable> currentPhaseDeliverables = new HashSet<>();
+  private String ppa;
+  // Store deliverables with year and type HashMap<Deliverable, List<year, type>>
+  HashMap<Integer, Set<Deliverable>> deliverablePerYearList = new HashMap<Integer, Set<Deliverable>>();
+  HashMap<String, Set<Deliverable>> deliverablePerTypeList = new HashMap<String, Set<Deliverable>>();
+  Set<Long> projectsList = new HashSet<Long>();
+  private String showAllYears;
+
+
+  // Managers
+  private final GenderTypeManager genderTypeManager;
+
   private List<ProjectLp6Contribution> projectLp6Contributions;
-  // XLSX bytes
+  private final CrpProgramManager crpProgramManager;
+
+
+  private final CrossCuttingScoringManager crossCuttingScoringManager;
+  private final ProjectLp6ContributionManager projectLp6ContributionManager;
+  private final ProjectLp6ContributionDeliverableManager projectLp6ContributionDeliverableManager;
+  private final DeliverableManager deliverableManager;
+  private final CrpPpaPartnerManager crpPpaPartnerManager;
+  private final ResourceManager resourceManager;
+  private final DeliverableCrossCuttingMarkerManager deliverableCrossCuttingMarkerManager;
+  // XLS bytes
   private byte[] bytesXLSX;
   // Streams
   InputStream inputStream;
 
   @Inject
   public ProjectContributionLp6SummaryAction(APConfig config, GlobalUnitManager crpManager, PhaseManager phaseManager,
-    ResourceManager resourceManager, ProjectManager projectManager,
-    ProjectLp6ContributionManager projectLp6ContributionManager,
-    ProjectLp6ContributionDeliverableManager deliverableLp6Manager, DeliverableManager deliverableManager) {
+    GenderTypeManager genderTypeManager, CrpProgramManager crpProgramManager,
+    ProjectLp6ContributionManager projectLp6ContributionManager, CrossCuttingScoringManager crossCuttingScoringManager,
+    CrpPpaPartnerManager crpPpaPartnerManager, ResourceManager resourceManager, ProjectManager projectManager,
+    DeliverableManager deliverableManager,
+    ProjectLp6ContributionDeliverableManager projectLp6ContributionDeliverableManager,
+    DeliverableCrossCuttingMarkerManager deliverableCrossCuttingMarkerManager) {
     super(config, crpManager, phaseManager, projectManager);
+    this.genderTypeManager = genderTypeManager;
+    this.crpProgramManager = crpProgramManager;
+    this.crossCuttingScoringManager = crossCuttingScoringManager;
+    this.crpPpaPartnerManager = crpPpaPartnerManager;
     this.resourceManager = resourceManager;
     this.projectLp6ContributionManager = projectLp6ContributionManager;
-    this.deliverableLp6Manager = deliverableLp6Manager;
     this.deliverableManager = deliverableManager;
+    this.deliverableCrossCuttingMarkerManager = deliverableCrossCuttingMarkerManager;
+    this.projectLp6ContributionDeliverableManager = projectLp6ContributionDeliverableManager;
   }
 
   /**
@@ -106,6 +131,46 @@ public class ProjectContributionLp6SummaryAction extends BaseSummariesAction imp
    * @return masterReport with i8n parameters added
    */
   private MasterReport addi8nParameters(MasterReport masterReport) {
+    /*
+     * Deliverables
+     */
+    masterReport.getParameterValues().put("i8nDeliverableID", this.getText("searchTerms.deliverableId"));
+    masterReport.getParameterValues().put("i8nDeliverableTitle",
+      this.getText("summaries.deliverable.deliverableTitle"));
+    masterReport.getParameterValues().put("i8nDeliverableDescription",
+      this.getText("summaries.deliverable.deliverableDescription"));
+    masterReport.getParameterValues().put("i8nKeyOutput",
+      this.getText("project.deliverable.generalInformation.keyOutput"));
+    masterReport.getParameterValues().put("i8nExpectedYear", this.getText("summaries.deliverable.expectedYear"));
+    masterReport.getParameterValues().put("i8nType", this.getText("deliverable.type"));
+    masterReport.getParameterValues().put("i8nSubType", this.getText("deliverable.subtype"));
+    masterReport.getParameterValues().put("i8nGender", this.getText("summaries.gender"));
+    masterReport.getParameterValues().put("i8nYouth", this.getText("summaries.youth"));
+    masterReport.getParameterValues().put("i8nCap", this.getText("summaries.capacityDevelopment"));
+    masterReport.getParameterValues().put("i8nStatus", this.getText("project.deliverable.generalInformation.status"));
+    masterReport.getParameterValues().put("i8nProjectID", this.getText("searchTerms.projectId"));
+    masterReport.getParameterValues().put("i8nProjectTitle", this.getText("project.title.readText"));
+    masterReport.getParameterValues().put("i8nCoas", this.getText("deliverable.coas"));
+    masterReport.getParameterValues().put("i8nFlagships", this.getText("project.Flagships"));
+    masterReport.getParameterValues().put("i8nRegions", this.getText("project.Regions"));
+    masterReport.getParameterValues().put("i8nIndividual", this.getText("deliverable.individual"));
+    masterReport.getParameterValues().put("i8nPartnersResponsible", this.getText("deliverable.managing"));
+    masterReport.getParameterValues().put("i8nShared", this.getText("deliverable.shared"));
+    masterReport.getParameterValues().put("i8nOpenFundingSourcesID",
+      this.getText("summaries.fundingSource.openFundingSource"));
+    masterReport.getParameterValues().put("i8nFinishedFundingSourcesID",
+      this.getText("summaries.fundingSource.finishedFundingSource"));
+    masterReport.getParameterValues().put("i8nFundingWindows", this.getText("deliverable.fundingWindows"));
+    masterReport.getParameterValues().put("i8nNewExpectedYear", this.getText("deliverable.newExpectedYear"));
+    masterReport.getParameterValues().put("i8nOutcomes", this.getText("impactPathway.menu.hrefOutcomes"));
+    masterReport.getParameterValues().put("i8nManagingResponsible", this.getText("deliverable.project.managing"));
+    masterReport.getParameterValues().put("i8nProjectLeadPartner", this.getText("summaries.deliverable.leadPartner"));
+    masterReport.getParameterValues().put("i8nGeographicScope", this.getText("deliverable.geographicScope"));
+    masterReport.getParameterValues().put("i8nCountry", this.getText("deliverable.countries"));
+    masterReport.getParameterValues().put("i8nRegion", this.getText("deliverable.region"));
+    masterReport.getParameterValues().put("i8nProjectContribution",
+      this.getText("summaries.lp6contribution.projectContribution"));
+
 
     masterReport.getParameterValues().put("i8nHeader",
       this.getText("summaries.lp6contribution.header", new String[] {this.getLoggedCrp().getAcronym()}));
@@ -143,9 +208,9 @@ public class ProjectContributionLp6SummaryAction extends BaseSummariesAction imp
     masterReport.getParameterValues().put("i8nUndertakingN",
       this.getText("summaries.lp6contribution.undertakingInitiative"));
 
+
     return masterReport;
   }
-
 
   public String convertBoolean(Boolean value) {
     String result = null;
@@ -165,11 +230,13 @@ public class ProjectContributionLp6SummaryAction extends BaseSummariesAction imp
     }
 
     ByteArrayOutputStream os = new ByteArrayOutputStream();
+
     try {
       Resource reportResource = resourceManager
         .createDirectly(this.getClass().getResource("/pentaho/crp/ProjectLp6Contribution.prpt"), MasterReport.class);
 
       MasterReport masterReport = (MasterReport) reportResource.getResource();
+
       // Set Main_Query
       CompoundDataFactory cdf = CompoundDataFactory.normalize(masterReport.getDataFactory());
       String masterQueryName = "main";
@@ -185,35 +252,55 @@ public class ProjectContributionLp6SummaryAction extends BaseSummariesAction imp
       HashMap<String, Element> hm = new HashMap<String, Element>();
       // method to get all the subreports in the prpt and store in the HashMap
       this.getAllSubreports(hm, masteritemBand);
-
-      this.fillSubreport((SubReport) hm.get("summary"), "summary");
+      // Uncomment to see which Subreports are detecting the method getAllSubreports
+      this.fillSubreport((SubReport) hm.get("details"), "details");
+      masterReport.getParameterValues().put("total_deliv", currentPhaseDeliverables.size());
+      masterReport.getParameterValues().put("total_projects", projectsList.size());
       ExcelReportUtil.createXLSX(masterReport, os);
       bytesXLSX = os.toByteArray();
       os.close();
     } catch (Exception e) {
-      LOG.error("Error generating ProjectLp6Contribution " + e.getMessage());
+      LOG.error("Error generating ExpectedDeliverables " + e.getMessage());
       throw e;
     }
     // Calculate time of generation
     long stopTime = System.currentTimeMillis();
     stopTime = stopTime - startTime;
-    LOG.info("Downloaded successfully: " + this.getFileName() + ". User: "
-      + this.getCurrentUser().getComposedCompleteName() + ". CRP: " + this.getLoggedCrp().getAcronym() + ". Cycle: "
-      + this.getSelectedCycle() + ". Time to generate: " + stopTime + "ms.");
+    LOG.info(
+      "Downloaded successfully: " + this.getFileName() + ". User: " + this.getCurrentUser().getComposedCompleteName()
+        + ". CRP: " + this.getLoggedCrp().getAcronym() + ". Time to generate: " + stopTime + "ms.");
     return SUCCESS;
   }
+
 
   private void fillSubreport(SubReport subReport, String query) {
     CompoundDataFactory cdf = CompoundDataFactory.normalize(subReport.getDataFactory());
     TableDataFactory sdf = (TableDataFactory) cdf.getDataFactoryForQuery(query);
     TypedTableModel model = null;
     switch (query) {
-      case "summary":
-        model = this.getDetailsTableModel();
+      case "details":
+        model = this.getDeliverablesDetailsTableModel();
         break;
+      case "summary":
+        model = this.getDeliverablesPerYearTableModel();
+        break;
+      case "summaryPerType":
+        model = this.getDeliverablesPerTypeTableModel();
+        break;
+
     }
     sdf.addTable(query, model);
     subReport.setDataFactory(cdf);
+  }
+
+  private int getCalendarFromDate(Date date) {
+    try {
+      Calendar cal = Calendar.getInstance();
+      cal.setTime(date);
+      return cal.get(Calendar.YEAR);
+    } catch (NullPointerException e) {
+      return 0;
+    }
   }
 
   @Override
@@ -226,7 +313,7 @@ public class ProjectContributionLp6SummaryAction extends BaseSummariesAction imp
     return "application/xlsx";
   }
 
-  private TypedTableModel getDetailsTableModel() {
+  private TypedTableModel getDeliverablesDetailsTableModel() {
     TypedTableModel model = new TypedTableModel(
       new String[] {"project", "narrative", "deliverables", "geographicScope", "workingAcross",
         "workingAcrossNarrative", "undertakingEfforts", "undertakingEffortsNarrative", "providing", "keyLearnings",
@@ -236,6 +323,14 @@ public class ProjectContributionLp6SummaryAction extends BaseSummariesAction imp
         String.class},
       0);
 
+    String deliverableId = null, deliverableTitle = null, completionYear = null, deliverableType = null,
+      deliverableSubType = null, keyOutput = null, delivStatus = null, delivNewYear = null, projectID = null,
+      projectTitle = null, ppaRespondible = null, projectClusterActivities = null, flagships = null, regions = null,
+      individual = null, partnersResponsible = null, shared = null, openFS = null, fsWindows = null, outcomes = null,
+      projectLeadPartner = null, managingResponsible = null, phaseID = null, finishedFS = null, gender = null,
+      youth = null, cap = null, deliverableDescription = null, geographicScope2 = null, region = null, country = null;
+
+
     for (ProjectLp6Contribution projectLp6Contribution : projectLp6Contributions) {
       String projectId = "", narrativeLp6 = "", deliverables = "", geographicScope = "", workingAcross = "",
         workingAcrossNarrative = "", undertakingEfforts = "", undertakingEffortsNarrative = "", providing = "",
@@ -244,6 +339,11 @@ public class ProjectContributionLp6SummaryAction extends BaseSummariesAction imp
 
       id = projectLp6Contribution.getProject() != null && projectLp6Contribution.getProject().getId() != null
         ? projectLp6Contribution.getProject().getId() + "" : null;
+      /*
+       * projectId = "=HYPERLINK(\"" + this.getBaseUrl() + "/projects/" + this.getCurrentCrp().getAcronym() + "/"
+       * + "contributionsLP6.do?projectID=" + projectLp6Contribution.getProject().getId() + "&edit=true&phaseID="
+       * + this.getSelectedPhase().getId() + "\",\"" + projectLp6Contribution.getProject().getId() + "\")";
+       */
 
       projectId =
         this.getBaseUrl() + "/projects/" + this.getCurrentCrp().getAcronym() + "/" + "contributionsLP6.do?projectID="
@@ -254,46 +354,24 @@ public class ProjectContributionLp6SummaryAction extends BaseSummariesAction imp
         projectLp6Contribution.getNarrative() != null && !projectLp6Contribution.getNarrative().trim().isEmpty()
           ? projectLp6Contribution.getNarrative() : null;
 
-      /*
-       * List<ProjectLp6ContributionDeliverable> deliverableList = new ArrayList<ProjectLp6ContributionDeliverable>();
-       * if (deliverableManager.findAll() != null) {
-       * deliverableList = deliverableLp6Manager.findAll().stream()
-       * .filter(d -> d.getProjectLp6Contribution().getId().equals(projectLp6Contribution.getId())
-       * && d.getPhase().getId().equals(this.getSelectedPhase().getId()))
-       * .collect(Collectors.toList());
-       * }
-       * for (ProjectLp6ContributionDeliverable deliverable : deliverableList) {
-       * if (deliverable.getId() != null) {
-       * deliverables += deliverable.getId() + ", ";
-       * }
-       * }
-       */
 
-      /***/
+      List<ProjectLp6ContributionDeliverable> deliverableList = projectLp6ContributionDeliverableManager.findAll()
+        .stream().filter(d -> d.getProjectLp6Contribution().getId().equals(projectLp6Contribution.getId())
+          && d.getPhase().getId().equals(this.getSelectedPhase().getId()))
+        .collect(Collectors.toList());
 
-      if (projectLp6Contribution.getDeliverables() == null) {
-        projectLp6Contribution.setDeliverables(new ArrayList<>());
-      }
-      List<ProjectLp6ContributionDeliverable> deliverableList =
-        projectLp6Contribution.getProjectLp6ContributionDeliverable().stream()
-          .filter(ld -> ld.isActive() && ld.getPhase().equals(this.getActualPhase())).collect(Collectors.toList());
-      for (ProjectLp6ContributionDeliverable projectLp6ContributionDeliverable : deliverableList) {
-        if (projectLp6ContributionDeliverable.getDeliverable() != null
-          && projectLp6ContributionDeliverable.getDeliverable().getId() != null) {
-          projectLp6ContributionDeliverable.setDeliverable(
-            deliverableManager.getDeliverableById(projectLp6ContributionDeliverable.getDeliverable().getId()));
-        }
-      }
 
       for (ProjectLp6ContributionDeliverable deliverable : deliverableList) {
         if (deliverable.getId() != null) {
-          deliverables += deliverable.getId() + ", ";
+          Deliverable deliverableBD = deliverableManager.getDeliverableById(deliverable.getDeliverable().getId());
+          if (deliverableBD != null && deliverableBD.getDeliverableInfo(this.getSelectedPhase()) != null) {
+            deliverables +=
+              "(D" + deliverableBD.getId() + ") " + deliverableBD.getDeliverableInfo().getDeliverableType().getName()
+                + " - " + deliverableBD.getDeliverableInfo().getTitle() + "\n ";
+          }
         }
       }
-      /****/
-      if (deliverables != null && deliverables.isEmpty()) {
-        deliverables = null;
-      }
+
       geographicScope = projectLp6Contribution.getGeographicScopeNarrative() != null
         && !projectLp6Contribution.getGeographicScopeNarrative().trim().isEmpty()
           ? projectLp6Contribution.getGeographicScopeNarrative() : null;
@@ -305,8 +383,11 @@ public class ProjectContributionLp6SummaryAction extends BaseSummariesAction imp
         && !projectLp6Contribution.getWorkingAcrossFlagshipsNarrative().isEmpty()
           ? projectLp6Contribution.getWorkingAcrossFlagshipsNarrative() : null;
 
+      if (workingAcross != null && workingAcross.equals("Yes") && workingAcrossNarrative == null) {
+        workingAcrossNarrative = "<Not Defined>";
+      }
       if (workingAcross != null && workingAcross.equals("No") && workingAcrossNarrative == null) {
-        workingAcrossNarrative = "<Not Specified>";
+        workingAcrossNarrative = "<Not Applicable>";
       }
 
       undertakingEfforts = projectLp6Contribution.isUndertakingEffortsLeading() != null
@@ -316,19 +397,25 @@ public class ProjectContributionLp6SummaryAction extends BaseSummariesAction imp
         && !projectLp6Contribution.getUndertakingEffortsLeadingNarrative().isEmpty()
           ? projectLp6Contribution.getUndertakingEffortsLeadingNarrative() + "" : null;
 
+      if (undertakingEfforts != null && undertakingEfforts.equals("Yes") && undertakingEffortsNarrative == null) {
+        undertakingEffortsNarrative = "<Not Defined>";
+      }
       if (undertakingEfforts != null && undertakingEfforts.equals("No") && undertakingEffortsNarrative == null) {
-        undertakingEffortsNarrative = "<Not Specified>";
+        undertakingEffortsNarrative = "<Not Applicable>";
       }
 
-      providing =
-        projectLp6Contribution.isProvidingPathways() != null ? projectLp6Contribution.isProvidingPathways() + "" : null;
+      providing = projectLp6Contribution.isProvidingPathways() != null
+        ? this.convertBoolean(projectLp6Contribution.isProvidingPathways()) + "" : null;
 
       keyOutputs = projectLp6Contribution.getProvidingPathwaysNarrative() != null
         && !projectLp6Contribution.getProvidingPathwaysNarrative().isEmpty()
           ? projectLp6Contribution.getProvidingPathwaysNarrative() + "" : null;
 
+      if (providing != null && providing.equals("Yes") && keyOutputs == null) {
+        keyOutputs = "<Not Defined>";
+      }
       if (providing != null && providing.equals("No") && keyOutputs == null) {
-        keyOutputs = "<Not Specified>";
+        keyOutputs = "<Not Applicable>";
       }
 
       top3 = projectLp6Contribution.getTopThreePartnershipsNarrative() != null
@@ -342,8 +429,11 @@ public class ProjectContributionLp6SummaryAction extends BaseSummariesAction imp
         && !projectLp6Contribution.getUndertakingEffortsCsaNarrative().isEmpty()
           ? projectLp6Contribution.getUndertakingEffortsCsaNarrative() + "" : null;
 
+      if (undertakingCSA != null && undertakingCSA.equals("Yes") && undertakingCSANarrative == null) {
+        undertakingCSANarrative = "<Not Defined>";
+      }
       if (undertakingCSA != null && undertakingCSA.equals("No") && undertakingCSANarrative == null) {
-        undertakingCSANarrative = "<Not Specified>";
+        undertakingCSANarrative = "<Not Applicable>";
       }
 
       initiativeRelated = projectLp6Contribution.isInitiativeRelated() != null
@@ -353,17 +443,48 @@ public class ProjectContributionLp6SummaryAction extends BaseSummariesAction imp
         && !projectLp6Contribution.getInitiativeRelatedNarrative().isEmpty()
           ? projectLp6Contribution.getInitiativeRelatedNarrative() + "" : null;
 
+      if (initiativeRelated != null && initiativeRelated.equals("Yes") && initiativeRelatedNarrative == null) {
+        initiativeRelatedNarrative = "<Not Defined>";
+      }
       if (initiativeRelated != null && initiativeRelated.equals("No") && initiativeRelatedNarrative == null) {
-        initiativeRelatedNarrative = "<Not Specified>";
+        initiativeRelatedNarrative = "<Not Applicable>";
       }
 
       model.addRow(new Object[] {projectId, narrativeLp6, deliverables, geographicScope, workingAcross,
         workingAcrossNarrative, undertakingEfforts, undertakingEffortsNarrative, providing, keyOutputs, top3,
         undertakingCSA, undertakingCSANarrative, initiativeRelated, initiativeRelatedNarrative, id});
     }
+    return model;
 
+  }
+
+  private TypedTableModel getDeliverablesPerTypeTableModel() {
+    TypedTableModel model = new TypedTableModel(new String[] {"deliverableType", "delivetableTotal"},
+      new Class[] {String.class, Integer.class}, 0);
+    Integer grandTotalTypes = 0;
+    for (String type : deliverablePerTypeList.keySet()) {
+      grandTotalTypes += deliverablePerTypeList.get(type).size();
+    }
+    SortedSet<String> keys = new TreeSet<String>(deliverablePerTypeList.keySet());
+    for (String type : keys) {
+      Integer totalType = deliverablePerTypeList.get(type).size();
+      Float percentageOfTotal = (totalType * 100f) / grandTotalTypes;
+      model.addRow(type + " - " + String.format("%.02f", percentageOfTotal) + "%", totalType);
+    }
     return model;
   }
+
+
+  private TypedTableModel getDeliverablesPerYearTableModel() {
+    TypedTableModel model = new TypedTableModel(new String[] {"deliverableYear", "delivetableTotal"},
+      new Class[] {String.class, Integer.class}, 0);
+    SortedSet<Integer> keys = new TreeSet<Integer>(deliverablePerYearList.keySet());
+    for (Integer year : keys) {
+      model.addRow(year, deliverablePerYearList.get(year).size());
+    }
+    return model;
+  }
+
 
   @SuppressWarnings("unused")
   private File getFile(String fileName) {
@@ -398,8 +519,9 @@ public class ProjectContributionLp6SummaryAction extends BaseSummariesAction imp
 
   private TypedTableModel getMasterTableModel() {
     // Initialization of Model
-    TypedTableModel model = new TypedTableModel(new String[] {"date", "center", "showDescription"},
-      new Class[] {String.class, String.class, Boolean.class});
+    TypedTableModel model =
+      new TypedTableModel(new String[] {"center", "date", "year", "regionalAvalaible", "showDescription", "cycle"},
+        new Class[] {String.class, String.class, String.class, Boolean.class, Boolean.class, String.class});
     String center = this.getLoggedCrp().getAcronym();
 
     ZonedDateTime timezone = ZonedDateTime.now();
@@ -409,34 +531,45 @@ public class ProjectContributionLp6SummaryAction extends BaseSummariesAction imp
       zone = "+0";
     }
     String date = timezone.format(format) + "(GMT" + zone + ")";
-    model.addRow(new Object[] {date, center, this.hasSpecificities(APConstants.CRP_REPORTS_DESCRIPTION)});
+    String year = this.getSelectedYear() + "";
+    model.addRow(new Object[] {center, date, year, this.hasProgramnsRegions(),
+      this.hasSpecificities(APConstants.CRP_REPORTS_DESCRIPTION), this.getSelectedCycle()});
     return model;
+  }
+
+  public String getShowAllYears() {
+    return showAllYears;
   }
 
   @Override
   public void prepare() {
-    this.setGeneralParameters();
+    // Get PPA for filtering
 
     projectLp6Contributions = projectLp6ContributionManager.findAll();
 
-    /*
-     * if (projectLp6Contributions != null) {
-     * projectLp6Contributions = projectLp6Contributions.stream()
-     * .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList());
-     * }
-     */
     if (projectLp6Contributions == null) {
       projectLp6Contributions = new ArrayList<>();
     }
 
-    projectLp6Contributions = projectLp6Contributions.stream()
-      .filter(l -> l.getPhase().getId().equals(this.getSelectedPhase().getId())).collect(Collectors.toList());
 
+    if (projectLp6Contributions != null) {
+      projectLp6Contributions = projectLp6Contributions.stream()
+        .filter(
+          c -> c.isActive() && c.isContribution() == true && c.getPhase().getId().equals(this.getActualPhase().getId()))
+        .collect(Collectors.toList());
+    }
+
+
+    this.setGeneralParameters();
     // Calculate time to generate report
     startTime = System.currentTimeMillis();
-    LOG.info(
-      "Start report download: " + this.getFileName() + ". User: " + this.getCurrentUser().getComposedCompleteName()
-        + ". CRP: " + this.getLoggedCrp().getAcronym() + ". Cycle: " + this.getSelectedCycle());
+    LOG.info("Start report download: " + this.getFileName() + ". User: "
+      + this.getCurrentUser().getComposedCompleteName() + ". CRP: " + this.getLoggedCrp().getAcronym());
   }
+
+  public void setShowAllYears(String showAllYears) {
+    this.showAllYears = showAllYears;
+  }
+
 
 }

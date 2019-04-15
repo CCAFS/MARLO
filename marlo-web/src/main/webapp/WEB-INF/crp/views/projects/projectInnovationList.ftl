@@ -79,9 +79,11 @@
         <th id="tb-type" width="22%">[@s.text name="projectInnovations.table.type" /]</th>
         <th id="tb-stage" width="15%">[@s.text name="projectInnovations.table.stage" /]</th>
         <th id="tb-year" width="8%">[@s.text name="projectInnovations.table.year" /]</th>
-        <th id="projectDownload" class="no-sort"></th>
         [#if currentTable]
         <th></th>
+        [/#if]
+        <th id="projectDownload" class="no-sort"></th>
+        [#if currentTable]
         <th id="tb-remove" width="4%" class="no-sort"></th>
         [/#if]
       </tr>
@@ -116,14 +118,8 @@
           <td class="text-center">
             [@utils.tableText value=(innovation.projectInnovationInfo.year)!"" /]
           </td>
-          [#-- Summary PDF download --]
-          <td class="text-center">
-            <a href="[@s.url namespace="/summaries" action='${(crpSession)!}/projectInnovationSummary'][@s.param name='innovationID']${innovation.id?c}[/@s.param][@s.param name='phaseID']${(innovation.projectInnovationInfo.phase.id)!''}[/@s.param][/@s.url]" target="__BLANK">
-              <img src="${baseUrl}/global/images/pdf.png" height="25" title="[@s.text name="projectsList.downloadPDF" /]" />
-            </a>            
-          </td>
-          [#if currentTable]
           [#-- Missing fields --]
+          [#if currentTable]
           <td>
             [#if isThisComplete]
               <span class="icon-20 icon-check" title="Complete"></span> 
@@ -131,7 +127,15 @@
               <span class="icon-20 icon-uncheck" title=""></span> 
             [/#if]
           </td>
+          [/#if]
+          [#-- Summary PDF download --]
+          <td class="text-center">
+            <a href="[@s.url namespace="/summaries" action='${(crpSession)!}/projectInnovationSummary'][@s.param name='innovationID']${innovation.id?c}[/@s.param][@s.param name='phaseID']${(innovation.projectInnovationInfo.phase.id)!''}[/@s.param][/@s.url]" target="__BLANK">
+              <img src="${baseUrl}/global/images/pdf.png" height="25" title="[@s.text name="projectsList.downloadPDF" /]" />
+            </a>            
+          </td>
           [#-- Remove --]
+          [#if currentTable]
           <td class="text-center">
             [#if canEdit ]
               <a id="removeElement-${(innovation.id)!}" class="removeElementList" href="#" title="" data-toggle="modal" data-target="#removeItem-${innovation_index}" >

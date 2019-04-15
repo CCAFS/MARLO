@@ -130,10 +130,12 @@ public class PartnershipValidator extends BaseValidator {
       if (reportSynthesis.getReportSynthesisKeyPartnership().getCollaborations() == null
         || reportSynthesis.getReportSynthesisKeyPartnership().getCollaborations().isEmpty()) {
 
-        action.addMessage(action.getText("CGIAR Collaborations"));
-        action.addMissingField("reportSynthesis.reportSynthesisKeyPartnership.collaborations");
-        action.getInvalidFields().put("list-reportSynthesis.reportSynthesisKeyPartnership.collaborations",
-          action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"collaborations"}));
+        if (!action.isPMU()) {
+          action.addMessage(action.getText("CGIAR Collaborations"));
+          action.addMissingField("reportSynthesis.reportSynthesisKeyPartnership.collaborations");
+          action.getInvalidFields().put("list-reportSynthesis.reportSynthesisKeyPartnership.collaborations",
+            action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"collaborations"}));
+        }
 
       } else {
         // Validate Key external partnerships
