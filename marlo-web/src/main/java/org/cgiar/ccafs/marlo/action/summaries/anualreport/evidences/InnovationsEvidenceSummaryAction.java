@@ -228,8 +228,9 @@ public class InnovationsEvidenceSummaryAction extends BaseSummariesAction implem
   @Override
   public String getFileName() {
     StringBuffer fileName = new StringBuffer();
-    fileName.append("PoliciesEvidence-");
+    fileName.append("Innovations-");
     fileName.append(this.getLoggedCrp().getAcronym() + "-");
+    fileName.append(this.getSelectedPhase().getName());
     fileName.append(this.getSelectedYear() + "_");
     fileName.append(new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date()));
     fileName.append(".xlsx");
@@ -353,6 +354,8 @@ public class InnovationsEvidenceSummaryAction extends BaseSummariesAction implem
             for (ProjectInnovationOrganization organization : organizations) {
               paramH += "● " + organization.getRepIndOrganizationType().getName() + "\n";
             }
+          } else {
+            paramH = "<Not Defined>";
           }
         } else {
           paramH = "<Not Defined>";
@@ -381,6 +384,8 @@ public class InnovationsEvidenceSummaryAction extends BaseSummariesAction implem
               }
               paramI += "● " + projectInnovationGeographicScope.getRepIndGeographicScope().getName() + "\n";
             }
+          } else {
+            paramI = "<Not Defined>";
           }
         } else {
           paramI = "<Not Defined>";
@@ -397,6 +402,8 @@ public class InnovationsEvidenceSummaryAction extends BaseSummariesAction implem
               for (ProjectInnovationRegion region : regions) {
                 paramJ += "● " + region.getLocElement().getName() + "\n";
               }
+            } else {
+              paramJ = "<Not Defined>";
             }
           } else {
             paramJ = "<Not Defined>";
@@ -416,6 +423,8 @@ public class InnovationsEvidenceSummaryAction extends BaseSummariesAction implem
               for (ProjectInnovationCountry country : countries) {
                 paramK += "● " + country.getLocElement().getName() + "\n";
               }
+            } else {
+              paramK = "<Not Defined>";
             }
           } else {
             paramK = "<Not Defined>";
@@ -454,6 +463,8 @@ public class InnovationsEvidenceSummaryAction extends BaseSummariesAction implem
             for (ProjectInnovationContributingOrganization organization : organizations) {
               paramN += "● " + organization.getInstitution().getComposedName() + "\n";
             }
+          } else {
+            paramN = "<Not Defined>";
           }
         } else {
           paramN = "<Not Defined>";
@@ -481,6 +492,8 @@ public class InnovationsEvidenceSummaryAction extends BaseSummariesAction implem
                   + deliverable.getDeliverable().getDeliverableInfo().getDeliverableType().getName() + "\n";
               }
             }
+          } else {
+            paramP = "<Not Defined>";
           }
         } else {
           paramP = "<Not Defined>";
@@ -496,6 +509,8 @@ public class InnovationsEvidenceSummaryAction extends BaseSummariesAction implem
             for (ProjectInnovationCrp crp : crps) {
               paramQ += "● " + crp.getGlobalUnit().getComposedName() + "\n";
             }
+          } else {
+            paramQ = "<Not Defined>";
           }
         } else {
           paramQ = "<Not Defined>";
@@ -509,7 +524,7 @@ public class InnovationsEvidenceSummaryAction extends BaseSummariesAction implem
         }
 
         // Generate the innovation url of MARLO
-        innovationURL = this.getBaseUrl() + "/projects/" + this.getCrpSession() + "/policy.do?policyID="
+        innovationURL = this.getBaseUrl() + "/projects/" + this.getCrpSession() + "/innovation.do?innovationID="
           + innovationEvidences.getProjectInnovation().getId().toString() + "&phaseID="
           + this.getSelectedPhase().getId().toString() + "&projectID="
           + innovationEvidences.getProjectInnovation().getProject().getId().toString();
