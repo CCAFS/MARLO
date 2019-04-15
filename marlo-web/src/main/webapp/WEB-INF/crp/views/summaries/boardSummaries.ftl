@@ -62,8 +62,8 @@
           "name":   "studyType",
           "data" : [ 
             { "label": "All",                 "value": "all"},
-            { "label": "Outcome Case Study",  "value": "outcome_case_study"}, 
-            { "label": "Others",              "value": "others"}
+            { "label": "Outcome/Impact Case Reports",  "value": "outcome_case_study"}, 
+            { "label": "Other Studies",              "value": "others"}
           ] 
         }
       ]
