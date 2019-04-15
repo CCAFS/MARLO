@@ -476,7 +476,10 @@ public class PoliciesEvidenceSummaryAction extends BaseSummariesAction implement
               .collect(Collectors.toList()));
           if (evidences != null && !evidences.isEmpty()) {
             for (ProjectExpectedStudyPolicy evidence : evidences) {
-              paramJ += "● " + evidence.getProjectExpectedStudy().getComposedName() + "\n";
+              if (evidence.getProjectExpectedStudy() != null
+                && evidence.getProjectExpectedStudy().getProjectExpectedStudyInfo(this.getSelectedPhase()) != null) {
+                paramJ += "● " + evidence.getProjectExpectedStudy().getComposedName() + "\n";
+              }
             }
           } else {
             paramJ = "<Not Defined>";
@@ -506,7 +509,10 @@ public class PoliciesEvidenceSummaryAction extends BaseSummariesAction implement
               .collect(Collectors.toList()));
           if (innovations != null && !innovations.isEmpty()) {
             for (ProjectPolicyInnovation innovation : innovations) {
-              paramL += "● " + innovation.getProjectInnovation().getComposedName() + "\n";
+              if (innovation.getProjectInnovation() != null
+                && innovation.getProjectInnovation().getProjectInnovationInfo(this.getSelectedPhase()) != null) {
+                paramL += "● " + innovation.getProjectInnovation().getComposedName() + "\n";
+              }
             }
           } else {
             paramL = "<Not Defined>";
