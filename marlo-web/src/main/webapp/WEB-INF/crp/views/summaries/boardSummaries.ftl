@@ -69,7 +69,7 @@
       ]
     },
     { "active": !centerGlobalUnit,
-      "available": false,
+      "available": true,
       "title": "summaries.board.report.policies", 
       "description": "summaries.board.report.policies.description",
       "namespace": "/summaries",
@@ -78,11 +78,11 @@
       "cycles": [ "Reporting" ]
     },
     { "active": !centerGlobalUnit,
-      "available": false,
+      "available": true,
       "title": "summaries.board.report.innovations", 
       "description": "summaries.board.report.innovations.description",
       "namespace": "/summaries",
-      "action": "${crpSession}/policiesEvidences",
+      "action": "${crpSession}/innovationsEvidences",
       "formats": [ "Excel" ],
       "cycles": [ "Reporting" ]
     },
