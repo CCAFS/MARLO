@@ -15,6 +15,7 @@
 
 package org.cgiar.ccafs.marlo.web.filter;
 
+import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
@@ -30,6 +31,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.session.Session;
 import org.apache.shiro.subject.Subject;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -72,6 +74,10 @@ public class ClarisaPublicAccesFilter extends OncePerRequestFilter {
         String password = this.config.getClarisaPassword();
 
         userManager.login(user, password);
+
+        Session session = subject.getSession();
+
+        session.setAttribute(APConstants.CLARISA_PUBLIC, true);
 
       }
     }
