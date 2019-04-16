@@ -213,6 +213,14 @@ public class AddSessionToRestRequestFilter extends OncePerRequestFilter {
 
     String globalUnitAcronym = split[0];
 
+
+    if (StringUtils.isNotEmpty(globalUnitAcronym) && globalUnitAcronym.equals("index.html")) {
+      if (this.isPublicUser()) {
+        Subject subject = SecurityUtils.getSubject();
+        subject.logout();
+      }
+    }
+
     // Check to see if a swagger request and if so, skip trying to extract the globalUnit from the url.
     if (StringUtils.isNotEmpty(globalUnitAcronym) && !globalUnitAcronym.equals("v2")
       && !globalUnitAcronym.equals("swagger-ui.html") && !globalUnitAcronym.equals("webjars")
@@ -270,6 +278,17 @@ public class AddSessionToRestRequestFilter extends OncePerRequestFilter {
   private Path getCountryFilePath() {
     String countryFilename = APConstants.DATABASE_COUNTRY_FILENAME;
     return Paths.get(config.getClarisaMapDatabase() + countryFilename);
+  }
+
+  private boolean isPublicUser() {
+    Subject subject = SecurityUtils.getSubject();
+    if (subject.isAuthenticated()) {
+      Session session = subject.getSession();
+      if (session.getAttribute(APConstants.CLARISA_PUBLIC) != null) {
+        return true;
+      }
+    }
+    return false;
   }
 
 

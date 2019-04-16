@@ -694,6 +694,9 @@ public final class APConstants {
   public static final String DATABASE_COUNTRY_FILENAME = "GeoLite2-Country.mmdb";
   public static final String DATABASE_CITY_FILENAME = "GeoLite2-City.mmdb";
 
+  // Clarisa public
+  public static final String CLARISA_PUBLIC = "clarisa_public";
+
   public static String getFilterBy() {
     return FILTER_BY;
   }
