@@ -29,8 +29,10 @@ import org.cgiar.ccafs.marlo.security.APCustomRealm;
 import org.cgiar.ccafs.marlo.security.BaseSecurityContext;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.InetAddress;
 import java.net.URL;
 import java.nio.file.Path;
@@ -131,14 +133,20 @@ public class AddSessionToRestRequestFilter extends OncePerRequestFilter {
 
     monitoring.setServiceUrl(request.getRequestURL().toString());
 
-    // Get the Ip Remote
-    if (request != null) {
-      String remoteAddr = request.getHeader("X-FORWARDED-FOR");
-      if (remoteAddr == null || "".equals(remoteAddr)) {
-        remoteAddr = request.getRemoteAddr();
-        monitoring.setUserIp(request.getRemoteAddr());
-      }
+    String ip = "";
+    // Get the Ip Public
+    try {
+      URL whatismyip = new URL("http://checkip.amazonaws.com");
+      BufferedReader in = new BufferedReader(new InputStreamReader(whatismyip.openStream()));
+
+      ip = in.readLine();
+
+      monitoring.setUserIp(ip);
+    } catch (Exception e) {
+      // TODO: get message
+      monitoring.setUserIp("");
     }
+
 
     String[] split = restApiString.split("/");
 
