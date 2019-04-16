@@ -27,11 +27,14 @@ import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.APCustomRealm;
 import org.cgiar.ccafs.marlo.security.BaseSecurityContext;
+import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.URL;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Date;
 import java.util.Enumeration;
 
@@ -78,6 +81,8 @@ public class AddSessionToRestRequestFilter extends OncePerRequestFilter {
   @Inject
   private LocElementManager locElementManager;
 
+  @Inject
+  APConfig config;
 
   @Inject
   private APCustomRealm realm;
@@ -226,10 +231,8 @@ public class AddSessionToRestRequestFilter extends OncePerRequestFilter {
     LocElement element = new LocElement();
 
     try {
-      ClassLoader classLoader = this.getClass().getClassLoader();
 
-      File countryFile = new File(classLoader.getResource("maps/" + APConstants.DATABASE_COUNTRY_PATH).getFile());
-
+      File countryFile = this.getCountryFilePath().toFile();
 
       DatabaseReader reader = new DatabaseReader.Builder(countryFile).build();
 
@@ -245,13 +248,20 @@ public class AddSessionToRestRequestFilter extends OncePerRequestFilter {
 
     } catch (IOException e) {
       e.printStackTrace();
+      element = null;
     } catch (GeoIp2Exception e) {
       e.printStackTrace();
+      element = null;
     }
 
 
     return element;
 
+  }
+
+  private Path getCountryFilePath() {
+    String countryFilename = APConstants.DATABASE_COUNTRY_FILENAME;
+    return Paths.get(config.getClarisaMapDatabase() + "\\" + countryFilename);
   }
 
 
