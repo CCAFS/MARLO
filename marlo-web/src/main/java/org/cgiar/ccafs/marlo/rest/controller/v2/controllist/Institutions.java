@@ -82,7 +82,7 @@ public class Institutions {
    */
   @ApiOperation(value = "${Institutions.institution-requests.create.value}", response = InstitutionRequestDTO.class)
   @RequiresPermissions(Permission.FULL_CREATE_REST_API_PERMISSION)
-  @RequestMapping(value = "/institutions/{CGIAREntity}/institution-requests", method = RequestMethod.POST,
+  @RequestMapping(value = "/{CGIAREntity}/institutions/institution-requests", method = RequestMethod.POST,
     produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<InstitutionRequestDTO> createPartnerRequest(
     @ApiParam(value = "${Institutions.institution-requests.create.param.CGIAR}",
@@ -140,7 +140,7 @@ public class Institutions {
    */
   @ApiOperation(value = "${Institutions.institution-requests.code.value}", response = InstitutionRequestDTO.class)
   @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
-  @RequestMapping(value = "/institutions/{CGIAREntity}/institution-requests/{requestId}", method = RequestMethod.GET,
+  @RequestMapping(value = "/{CGIAREntity}/institutions/institution-requests/{requestId}", method = RequestMethod.GET,
     produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<InstitutionRequestDTO> findPartnerRequestById(
     @ApiParam(value = "${Institutions.institution-requests.code.param.CGIAR}",

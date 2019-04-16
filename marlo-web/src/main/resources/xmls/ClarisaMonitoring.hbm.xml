@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated Jun 27, 2017 2:55:00 PM by Hibernate Tools 4.3.1.Final -->
+<hibernate-mapping>
+	<class name="org.cgiar.ccafs.marlo.data.model.ClarisaMonitoring"
+		table="clarisa_monitoring" optimistic-lock="none">
+		<id name="id" type="java.lang.Long">
+			<column name="id" />
+			<generator class="identity" />
+		</id>
+		<many-to-one name="user"
+			class="org.cgiar.ccafs.marlo.data.model.User" fetch="select"
+			update="false">
+			<column name="user_id">
+			</column>
+		</many-to-one>
+		<many-to-one name="globalUnit"
+			class="org.cgiar.ccafs.marlo.data.model.GlobalUnit" fetch="select"
+			update="false">
+			<column name="global_unit_id">
+			</column>
+		</many-to-one>
+		<many-to-one name="locElement"
+      class="org.cgiar.ccafs.marlo.data.model.LocElement" fetch="select"
+      update="false">
+      <column name="loc_element_id">
+      </column>
+    </many-to-one>
+		<property name="date" type="timestamp">
+			<column name="date" length="19" />
+		</property>
+		<property name="serviceName" type="string">
+			<column name="service_name" length="8" />
+		</property>
+		<property name="serviceUrl" type="string">
+			<column name="service_url" />
+		</property>
+		<property name="userIp" type="string">
+      <column name="user_ip" />
+    </property>
+		<property name="serviceType" type="string">
+			<column name="service_type" />
+		</property>
+	</class>
+</hibernate-mapping>
