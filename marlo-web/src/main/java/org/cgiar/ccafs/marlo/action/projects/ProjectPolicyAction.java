@@ -44,6 +44,7 @@ import org.cgiar.ccafs.marlo.data.manager.RepIndPolicyTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndStageProcessManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfSubIdoManager;
 import org.cgiar.ccafs.marlo.data.model.CgiarCrossCuttingMarker;
+import org.cgiar.ccafs.marlo.data.model.ExpectedStudyProject;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.Phase;
@@ -688,18 +689,40 @@ public class ProjectPolicyAction extends BaseAction {
         }
       }
 
-      // Evidences List
-      expectedStudyList = new ArrayList<>();
-      List<ProjectExpectedStudy> expectedStudies = projectExpectedStudyManager.findAll().stream()
-        .filter(ex -> ex.isActive() && ex.getProjectExpectedStudyInfo(phase) != null
-          && ex.getProjectExpectedStudyInfo().getStudyType() != null
-          && ex.getProjectExpectedStudyInfo().getStudyType().getId().intValue() == 1 && ex.getProject() != null
-          && ex.getProject().getId() == project.getId())
+      List<ProjectExpectedStudy> allProjectStudies = new ArrayList<ProjectExpectedStudy>();
+
+      // Load Studies
+      List<ProjectExpectedStudy> studies = project.getProjectExpectedStudies().stream()
+        .filter(c -> c.isActive() && c.getProjectExpectedStudyInfo(this.getActualPhase()) != null)
         .collect(Collectors.toList());
-      for (ProjectExpectedStudy study : expectedStudies) {
-        expectedStudyList.add(study);
+      if (studies != null && studies.size() > 0) {
+        allProjectStudies.addAll(studies);
       }
 
+      // Load Shared studies
+      List<ExpectedStudyProject> expectedStudyProject = new ArrayList<>(project.getExpectedStudyProjects().stream()
+        .filter(px -> px.isActive() && px.getPhase().getId() == this.getActualPhase().getId()
+          && px.getProjectExpectedStudy().isActive()
+          && px.getProjectExpectedStudy().getProjectExpectedStudyInfo(this.getActualPhase()) != null)
+        .collect(Collectors.toList()));
+      if (expectedStudyProject != null && expectedStudyProject.size() > 0) {
+        for (ExpectedStudyProject expectedStudy : expectedStudyProject) {
+          if (!allProjectStudies.contains(expectedStudy.getProjectExpectedStudy())) {
+            allProjectStudies.add(expectedStudy.getProjectExpectedStudy());
+          }
+        }
+      }
+
+      if (allProjectStudies != null && allProjectStudies.size() > 0) {
+        // Every study of the current cycle year will be editable
+        expectedStudyList = new ArrayList<ProjectExpectedStudy>();
+        expectedStudyList = allProjectStudies.stream()
+          .filter(ex -> ex.isActive() && ex.getProjectExpectedStudyInfo(phase) != null
+            && ex.getProjectExpectedStudyInfo().getStudyType() != null
+            && ex.getProjectExpectedStudyInfo().getStudyType().getId().intValue() == 1 && ex.getProject() != null
+            && ex.getProject().getId() == project.getId())
+          .collect(Collectors.toList());
+      }
       // Crps/Platforms List
       crps = globalUnitManager.findAll().stream()
         .filter(gu -> gu.isActive() && (gu.getGlobalUnitType().getId() == 1 || gu.getGlobalUnitType().getId() == 3))

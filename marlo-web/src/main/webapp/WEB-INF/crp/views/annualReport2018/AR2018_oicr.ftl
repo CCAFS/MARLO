@@ -125,9 +125,15 @@
               [#local url][@s.url namespace="/studies" action="${(crpSession)!}/study"][@s.param name='expectedID']${item.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
             [/#if]
             
+            [#-- Is new --]
+            [#local isNew = (action.isEvidenceNew(item.id)) /]
+            
             [#local summaryPDF = "${baseUrl}/projects/${crpSession}/studySummary.do?studyID=${(item.id)!}&cycle=Reporting&year=${(actualPhase.year)!}"]
             <tr>
               <td>
+                [#-- Report Tag --]
+                [#if isNew] <span class="label label-info">[@s.text name="global.new" /]</span> [/#if]
+              
                 [@utils.tableText value=(item.composedName)!"" /]
                 
                 [#if isFromProject]<br /> <small>(From Project P${item.project.id})</small> [/#if]

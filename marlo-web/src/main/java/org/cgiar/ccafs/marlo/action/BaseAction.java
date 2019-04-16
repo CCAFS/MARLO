@@ -996,8 +996,18 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     List<ProjectPartner> projectPPAPartners = new ArrayList<ProjectPartner>();
     if (project.getPartners() != null && !project.getPartners().isEmpty()) {
       for (ProjectPartner pp : project.getPartners()) {
-        if (this.isPPA(pp.getInstitution())) {
-          projectPPAPartners.add(pp);
+
+        if (pp.getInstitution().getId() != null) {
+          Institution institution = this.institutionManager.getInstitutionById(pp.getInstitution().getId());
+          if (institution != null) {
+            if (institution
+              .getCrpPpaPartners().stream().filter(c -> c.getCrp().getId().longValue() == this.getCrpID()
+                && c.isActive() && c.getPhase().equals(this.getActualPhase()))
+              .collect(Collectors.toList()).size() > 0) {
+              projectPPAPartners.add(pp);
+            }
+          }
+
         }
       }
     }
@@ -4094,6 +4104,33 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
 
     return true;
+  }
+
+  /**
+   * Validate Missing fields in Innovations
+   * 
+   * @return
+   */
+  public boolean hasInnovationMissingFields(long id) {
+    SectionStatus sectionStatus = null;
+
+
+    ProjectInnovation innovation = this.projectInnovationManager.getProjectInnovationById(id);
+
+
+    sectionStatus =
+      this.sectionStatusManager.getSectionStatusByProjectInnovation(innovation.getId(), this.getCurrentCycle(),
+        this.getCurrentCycleYear(), this.isUpKeepActive(), ProjectSectionStatusEnum.INNOVATIONS.getStatus());
+
+    if (sectionStatus != null) {
+      if (sectionStatus.getMissingFields() != null) {
+        if (sectionStatus.getMissingFields().trim().equals("")) {
+          return true;
+        }
+      }
+    }
+
+    return false;
   }
 
   public boolean hasPermission(String fieldName) {
