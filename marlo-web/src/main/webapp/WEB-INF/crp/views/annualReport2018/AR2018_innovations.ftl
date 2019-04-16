@@ -189,6 +189,7 @@
         [#if list?has_content]
           [#list list as item]
           [#local url][@s.url namespace="/projects" action="${(crpSession)!}/innovation"][@s.param name='innovationID']${item.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
+          [#local isStageFour = (item.projectInnovationInfo.repIndStageInnovation.id == 4)!false]
           <tr>
             [#-- 1. Title of innovation--]
             <td>
@@ -216,7 +217,14 @@
               [#-- 6. Description of stage reached --]
               <td class="urlify">[@utils.tableText value=(item.projectInnovationInfo.descriptionStage)!"" /]</td>
               [#-- 7. Lead Organization/ entity --]
-              <td>[@utils.tableText value=(item.projectInnovationInfo.leadOrganization.name)!"" /]</td>
+              <td>
+                [#if (item.projectInnovationInfo.clearLead)!false] 
+                  <p><i>[@s.text name="projectInnovations.clearLead" /]</i></p>
+                  [@utils.tableText value=(item.projectInnovationInfo.leadOrganization.name)!"" emptyText="" /]
+                [#else]
+                  [@utils.tableText value=(item.projectInnovationInfo.leadOrganization.name)!"" /]
+                [/#if] 
+              </td>
               [#-- 8. Top five contributing partners/ entities to this stage --]
               <td>[@utils.tableList list=(item.contributingOrganizations)![] displayFieldName="institution.composedName" /]</td>
               [#-- 9. Geographic Scope --]
@@ -227,11 +235,20 @@
               </td>
               [#-- 10. Evidence for Innovation --]
               <td class="text-center">
-                [#local innovationEvidence = (item.projectInnovationInfo.evidenceLink)!""/]
-                [#if innovationEvidence?has_content]
-                  <a target="_blank" href="${innovationEvidence}"><span class="glyphicon glyphicon-link"></span></a>
-                [#else]
-                  <span class="glyphicon glyphicon-link" title="Not defined"></span>
+                [#if isStageFour]
+                  [#local summaryPDF = "${baseUrl}/projects/${crpSession}/studySummary.do?studyID=${(item.projectInnovationInfo.projectExpectedStudy.id)!}&cycle=Reporting&year=${(actualPhase.year)!}"]
+                  <p>
+                    <a href="${summaryPDF}" class="btn btn-default btn-xs" target="_blank" style="text-decoration: none;" title="${item.projectInnovationInfo.projectExpectedStudy.composedName}">
+                      <img src="${baseUrl}/global/images/pdf.png" height="20"  /> ${item.projectInnovationInfo.projectExpectedStudy.composedIdentifier}
+                    </a>
+                  </p>
+                [#else]                
+                  [#local innovationEvidence = (item.projectInnovationInfo.evidenceLink)!""/]
+                  [#if innovationEvidence?has_content]
+                    <a target="_blank" href="${innovationEvidence}"><span class="glyphicon glyphicon-link"></span></a>
+                  [#else]
+                    <span class="glyphicon glyphicon-link" title="Not defined"></span>
+                  [/#if]
                 [/#if]
               </td>
               <td class="text-center">
