@@ -37,9 +37,11 @@ public class WebAppInitializer implements WebApplicationInitializer {
 
   private static final String ALL_REQUESTS = "/*";
 
-  private static final String[] NON_STATIC_RESOURCE_REQUESTS = {"*.do", "*.json", "/", "/api/*"};
+  private static final String[] NON_STATIC_RESOURCE_REQUESTS = {"*.do", "*.json", "/", "/api/*", "/swagger/*"};
 
   private static final String REST_API_REQUESTS = "/api/*";
+
+  private static final String REST_SWAGGER_REQUESTS = "/swagger/*";
 
   private static final String[] STRUTS2_REQUESTS = {"*.do", "*.json", "/"};
 
@@ -106,6 +108,11 @@ public class WebAppInitializer implements WebApplicationInitializer {
       addSessionToRestRequestFilter.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true,
         REST_API_REQUESTS);
 
+      FilterRegistration.Dynamic clarisaPublicAccesFilter =
+        servletContext.addFilter("ClarisaPublicAccesFilter", new DelegatingFilterProxy("ClarisaPublicAccesFilter"));
+      clarisaPublicAccesFilter.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true,
+        REST_SWAGGER_REQUESTS);
+
       /** Now add the Spring MVC dispatacher servlet config for our REST api **/
       AnnotationConfigWebApplicationContext dispatcherContext = new AnnotationConfigWebApplicationContext();
       dispatcherContext.register(MarloRestApiConfig.class, MarloSwaggerConfiguration.class);
@@ -115,6 +122,7 @@ public class WebAppInitializer implements WebApplicationInitializer {
         servletContext.addServlet("dispatcher", new DispatcherServlet(dispatcherContext));
       dispatcher.setLoadOnStartup(1);
       dispatcher.addMapping(REST_API_REQUESTS);
+      dispatcher.addMapping(REST_SWAGGER_REQUESTS);
 
     }
     // End Check Spring Profile filters
