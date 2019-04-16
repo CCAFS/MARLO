@@ -99,6 +99,10 @@ public class APConfig {
   @Value("${clarisa.publicPass}")
   private String CLARISA_PUBLIC_PASSWORD;
 
+  // Path to get the IP maps database
+  @Value("${clarisa.mapDatabase.path}")
+  private String CLARISA_MAP_DATABASE_PATH;
+
   public APConfig() {
   }
 
@@ -167,6 +171,16 @@ public class APConfig {
     }
 
     return PROJECT_BILATERAL_PROPOSAL_FOLDER;
+  }
+
+  public String getClarisaMapDatabase() {
+
+    if (CLARISA_MAP_DATABASE_PATH == null) {
+      LOG.error("there is not an clarisa map database configured.");
+      return "";
+    }
+
+    return CLARISA_MAP_DATABASE_PATH;
   }
 
   public String getClarisaPassword() {
