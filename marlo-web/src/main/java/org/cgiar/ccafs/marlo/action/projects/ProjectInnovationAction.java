@@ -45,6 +45,7 @@ import org.cgiar.ccafs.marlo.data.manager.RepIndRegionManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndStageInnovationManager;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableInfo;
+import org.cgiar.ccafs.marlo.data.model.ExpectedStudyProject;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
@@ -644,7 +645,7 @@ public class ProjectInnovationAction extends BaseAction {
         if (innovation.getProjectInnovationContributingOrganization() != null) {
           innovation
             .setContributingOrganizations(new ArrayList<>(innovation.getProjectInnovationContributingOrganization()
-              .stream().filter(d -> d.getPhase().equals(phase)).collect(Collectors.toList())));
+              .stream().filter(d -> d.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
         }
 
         // Innovation Crp list
@@ -685,16 +686,43 @@ public class ProjectInnovationAction extends BaseAction {
       contributionCrpList = repIndContributionOfCrpManager.findAll();
       degreeInnovationList = repIndDegreeInnovationManager.findAll();
 
-      expectedStudyList = new ArrayList<>();
-      List<ProjectExpectedStudy> expectedStudies = projectExpectedStudyManager.findAll().stream()
-        .filter(ex -> ex.isActive() && ex.getProjectExpectedStudyInfo(phase) != null
-          && ex.getProjectExpectedStudyInfo().getStudyType() != null
-          && ex.getProjectExpectedStudyInfo().getStudyType().getId().intValue() == 1 && ex.getProject() != null
-          && ex.getProject().getId() == project.getId())
+
+      List<ProjectExpectedStudy> allProjectStudies = new ArrayList<ProjectExpectedStudy>();
+
+      // Load Studies
+      List<ProjectExpectedStudy> studies = project.getProjectExpectedStudies().stream()
+        .filter(c -> c.isActive() && c.getProjectExpectedStudyInfo(this.getActualPhase()) != null)
         .collect(Collectors.toList());
-      for (ProjectExpectedStudy study : expectedStudies) {
-        expectedStudyList.add(study);
+      if (studies != null && studies.size() > 0) {
+        allProjectStudies.addAll(studies);
       }
+
+      // Load Shared studies
+      List<ExpectedStudyProject> expectedStudyProject = new ArrayList<>(project.getExpectedStudyProjects().stream()
+        .filter(px -> px.isActive() && px.getPhase().getId() == this.getActualPhase().getId()
+          && px.getProjectExpectedStudy().isActive()
+          && px.getProjectExpectedStudy().getProjectExpectedStudyInfo(this.getActualPhase()) != null)
+        .collect(Collectors.toList()));
+      if (expectedStudyProject != null && expectedStudyProject.size() > 0) {
+        for (ExpectedStudyProject expectedStudy : expectedStudyProject) {
+          if (!allProjectStudies.contains(expectedStudy.getProjectExpectedStudy())) {
+            allProjectStudies.add(expectedStudy.getProjectExpectedStudy());
+          }
+        }
+      }
+
+      if (allProjectStudies != null && allProjectStudies.size() > 0) {
+        // Editable project studies: Current cycle year-1 will be editable except Complete and Cancelled.
+        // Every study of the current cycle year will be editable
+        expectedStudyList = new ArrayList<ProjectExpectedStudy>();
+        expectedStudyList = allProjectStudies.stream()
+          .filter(ex -> ex.isActive() && ex.getProjectExpectedStudyInfo(phase) != null
+            && ex.getProjectExpectedStudyInfo().getStudyType() != null
+            && ex.getProjectExpectedStudyInfo().getStudyType().getId().intValue() == 1 && ex.getProject() != null
+            && ex.getProject().getId() == project.getId())
+          .collect(Collectors.toList());
+      }
+
 
       List<DeliverableInfo> infos = phase
         .getDeliverableInfos().stream().filter(c -> c.getDeliverable().getProject() != null

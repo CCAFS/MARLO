@@ -87,9 +87,34 @@
                     <div class="form-group">
                       [#-- Word Document Tag --]
                       [@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/]
-                      
+
+                      [#if true]
+                      <div class="form-group btn-group btn-group-sm pull-right" role="group" aria-label="...">
+                        <button type="button" class="btn btn-default" data-toggle="modal" data-target="#modal-evidenceF"><span class="glyphicon glyphicon-fullscreen"></span> AR Evidence F</button>
+                      </div>
+                      [#-- Evidence F: Full List of Current External Partners --]
+                      <div class="modal fade" id="modal-evidenceF" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                        <div class="modal-dialog modal-lg" role="document">
+                          <div class="modal-content">
+                            <div class="modal-header">
+                              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                              <h4 class="modal-title" id="myModalLabel"> Evidence F: Full List of Current External Partners </h4>
+                            </div>
+                            <div class="modal-body">
+                              [#-- Full table --]
+                              <div class="dataTableExport">
+                                [@tableEvidenceF  /]
+                              </div>
+                            </div>
+                            <div class="modal-footer">
+                              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      [/#if]
+                                                                  
                       <h4 class="simpleTitle headTitle">[@s.text name="${customLabel}.table7.title" /]</h4>
-                      
                       <div class="viewMoreSyntesisTable-block">
                         <table class="table">
                           <thead>
@@ -314,7 +339,6 @@
       </div>
     
   </div>
-
 [/#macro]
 
 
@@ -383,5 +407,39 @@
     <div class="form-group">
       [@customForm.input name="${customName}.valueAdded" i18nkey="${customLabel}.table8.value" help="${customLabel}.table8.value.help" helpIcon=false required=true editable=editable /]
     </div>
+  </div>
+[/#macro]
+
+
+
+
+[#macro tableEvidenceF]
+  <div class="table-responsive">
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th> ID </th>
+          <th> Name of partner organization</th>
+          <th> Organization Type</th>
+          <th> Partner Headquarter </th>
+        </tr>
+      </thead>
+      <tbody>
+        [#list (evidencePartners)![] as institution ]
+          <tr>
+            <td> ${(institution.id)!""}  </td>
+            <td> ${(institution.composedName)!""} </td>
+            <td> ${(institution.institutionType.repIndOrganizationType.name)!""} </td>
+            <td> 
+              [#list (institution.locations)![] as location]
+                [#if (location.headquater)!false]
+                  ${(location.locElement.name)!""}
+                [/#if]
+              [/#list]
+            </td>
+          </tr>
+        [/#list]
+      </tbody>
+    </table>
   </div>
 [/#macro]

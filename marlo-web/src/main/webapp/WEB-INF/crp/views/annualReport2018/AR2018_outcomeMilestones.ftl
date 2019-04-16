@@ -3,10 +3,15 @@
 [#assign currentSectionString = "annualReport-${actionName?replace('/','-')}-${synthesisID}" /]
 [#assign currentSection = "synthesis" /]
 [#assign currentStage = actionName?split('/')[1]/]
-[#assign pageLibs = [ "select2", "trumbowyg" ] /]
+[#assign pageLibs = [ "select2", "trumbowyg", "components-font-awesome", "datatables.net", "datatables.net-bs"] /]
 [#assign customJS = [ 
+  "https://www.gstatic.com/charts/loader.js",  
+  "https://cdn.datatables.net/buttons/1.3.1/js/dataTables.buttons.min.js",
+  "//cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js",
+  "//cdn.datatables.net/buttons/1.3.1/js/buttons.print.min.js",
   "${baseUrlMedia}/js/annualReport2018/annualReport2018_${currentStage}.js",
-  "${baseUrlMedia}/js/annualReport/annualReportGlobal.js" ] /]
+  "${baseUrlMedia}/js/annualReport/annualReportGlobal.js"
+] /]
 [#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css"] /]
 
 [#assign breadCrumb = [
@@ -50,22 +55,24 @@
             <div class="form-group">
               [#if PMU]
                 <div class="borderBox">
-                  [#-- Button --]
-                  <button type="button" class="btn btn-default pull-right" data-toggle="modal" data-target="#modal-policies">
-                     <span class="glyphicon glyphicon-fullscreen"></span> See Full table 5
-                  </button>
-                  [#-- Modal --]
-                  <div class="modal fade" id="modal-policies" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                
+                  <div class="form-group btn-group btn-group-sm pull-right" role="group" aria-label="...">
+                    <button type="button" class="btn btn-default" data-toggle="modal" data-target="#modal-evidenceC"><span class="glyphicon glyphicon-fullscreen"></span> AR Evidence C</button>
+                    <button type="button" class="btn btn-default" data-toggle="modal" data-target="#modal-table5"><span class="glyphicon glyphicon-fullscreen"></span> See Full Table 5</button>
+                  </div>
+                  
+                  [#-- Table 5: Evidence C --]
+                  <div class="modal fade" id="modal-evidenceC" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
                     <div class="modal-dialog modal-lg" role="document">
                       <div class="modal-content">
                         <div class="modal-header">
                           <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                          <h4 class="modal-title" id="myModalLabel">[@s.text name="${customLabel}.title" /]</h4>
+                          <h4 class="modal-title" id="myModalLabel"> Evidence C: Outcomes and milestones </h4>
                         </div>
                         <div class="modal-body">
                           [#-- Full table --]
-                          <div class="viewMoreSyntesisTable-block">
-                            [@tableOutcomesMilestones allowPopups=false  /]
+                          <div class="dataTableExport">
+                            [@tableEvidenceC  /]
                           </div>
                         </div>
                         <div class="modal-footer">
@@ -74,10 +81,28 @@
                       </div>
                     </div>
                   </div>
-                  [#-- Table --]
-                  <div class="viewMoreSyntesisTable-block">
-                    [@tableOutcomesMilestones  /]
+                  
+                  [#-- Full table 5 --]
+                  <div class="modal fade" id="modal-table5" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                    <div class="modal-dialog modal-lg" role="document">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                          <h4 class="modal-title" id="myModalLabel">[@s.text name="${customLabel}.title" /]</h4>
+                        </div>
+                        <div class="modal-body">
+                          
+                          [@tableOutcomesMilestones allowPopups=false  /]
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        </div>
+                      </div>
+                    </div>
                   </div>
+                  
+                  [#-- Table 5--]
+                  [@tableOutcomesMilestones  /]
                 </div>
               [#else]
                 [#list outcomes as outcome]
@@ -173,6 +198,67 @@
                     </td>
                   [/#list]
                 [/#if]
+              </tr>
+            [/#list]
+          [/#list]
+        [/#list]
+      </tbody>
+    </table>
+  </div>
+[/#macro]
+
+[#macro tableEvidenceC ]
+  <div class="table-responsive">[#-- <div class="table-responsive"> --]
+    <table id="tableA" class="table table-bordered">
+      <thead>
+        <tr>
+          <th>[@s.text name="expectedProgress.tableA.fp" /]</th>
+          <th> Outcome </th>
+          <th> Outcome Progress </th>
+          <th> Milestone </th>
+          <th> Status</th>
+          <th> Status predominant reason</th>
+          <th> Milestone Evidence</th>
+          [#-- Cross Cutting markers --]
+          [#list cgiarCrossCuttingMarkers as marker]
+            <th> <small>${marker.name}</small></th>
+            <th> <small>${marker.name} Justification</small></th>
+          [/#list]
+        </tr> 
+      </thead>
+      <tbody>
+        [#list (flagships)![] as fp]
+          [#list fp.outcomes as outcome]
+            [#list outcome.milestones as milestone]
+              [#assign milestoneProgress = (action.getReportSynthesisFlagshipProgressMilestone(milestone.id))!{} ]
+              <tr class="fp-index-${fp_index} outcome-index-${outcome_index} milestone-index-${milestone_index}">
+                [#-- Flagship --]
+                <th>${fp.acronym}</th>
+                [#local reportedOutcome= (action.getOutcomeToPmu( fp.id , outcome.id))! ]
+                [#-- Outcome Statement --]
+                <td>${outcome.composedName}</td>
+                [#-- Outcomes - Narrative --]
+                <td>[@utils.tableText value=(reportedOutcome.summary)!"" emptyText="global.prefilledByFlagship"/]</td>
+                [#-- Milestone --]
+                <td> [@utils.tableText value=(milestone.composedName)!"" emptyText="" /] </td>
+                [#-- Milestone Status --]
+                <td class="text-center"> 
+                  [#local reportedMilestone= (action.getMilestone((reportedOutcome.id)!-1 , milestone.id))! ]
+                  [@utils.tableText value=(reportedMilestone.statusName)!"" emptyText="global.prefilledByFlagship" /]
+                </td>
+                [#-- Status predominant reason --]
+                <td>
+                  [@utils.tableText value=(reportedMilestone.reason.name)!"" emptyText="" nobr=true /] 
+                  [#if (reportedMilestone.otherReason?has_content)!false && (reportedMilestone.reason.id == 7)!false] (${reportedMilestone.otherReason}) [/#if]                   
+                </td>
+                [#-- Milestone Evidence --]
+                <td class="urlify">[@utils.tableText value=(reportedMilestone.evidence)!"" emptyText="global.prefilledByFlagship" /] </td>
+                [#-- Cross Cutting markers --]
+                [#list cgiarCrossCuttingMarkers as marker]
+                  [#local reportedCrossCuting =  (action.getCrossCuttingMarker( ((reportedMilestone.id)!-1), marker.id ))! ]
+                  <td class="text-center"> [@utils.tableText value=(reportedCrossCuting.focus.powbName)!"" emptyText="" nobr=true /]</td>
+                  <td class="text-center"> [@utils.tableText value=(reportedCrossCuting.just)!"" emptyText="" /] </td>
+                [/#list]
               </tr>
             [/#list]
           [/#list]

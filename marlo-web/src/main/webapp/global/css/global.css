@@ -6818,12 +6818,21 @@ div.radioFlat {
 }
 
 /* Datatables button*/
+.dt-buttons{
+  height: 33px;
+}
+
 a.dt-button {
   padding: 0px 10px;
   border: 1px solid #ccc;
   border-radius: 2px;
   margin-right: 3px;
   background: #fff;
+}
+
+a.dt-button.exportCSV {
+  padding: 9px 12px;
+  margin: 0;
 }
 
 i.helpLabel {

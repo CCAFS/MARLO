@@ -261,8 +261,7 @@
         <param name="liaisonInstitutionID">${liaisonInstitutionID}</param>
         <param name="phaseID">${phaseID}</param>
       </result>
-    </action>  
-    
+    </action>     
     
   </package>
 </struts>

@@ -188,7 +188,7 @@
 			</result>
 		</action>
 		<action name="{crp}/projectContributionLp6Summary"
-			class="org.cgiar.ccafs.marlo.action.summaries.ProjectContributionLp6SummaryAction2">
+			class="org.cgiar.ccafs.marlo.action.summaries.ProjectContributionLp6SummaryAction">
 			<interceptor-ref name="homeStack" />
 			<result name="success" type="stream">
 				<param name="inputName">inputStream</param>

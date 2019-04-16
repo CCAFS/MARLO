@@ -19,16 +19,14 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitProjectManager;
+import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyManager;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
-import org.cgiar.ccafs.marlo.data.model.GlobalUnitProject;
 import org.cgiar.ccafs.marlo.data.model.Phase;
-import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 
 import java.io.Serializable;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -48,20 +46,23 @@ public class EditPrivateStudyInterceptor extends AbstractInterceptor implements 
   private GlobalUnit crp;
   private long expectedId = 0;
   private boolean isPrivate;
+  private Phase phase;
 
   private ProjectExpectedStudyManager projectExpectedStudyManager;
 
   // GlobalUnit Manager
   private GlobalUnitManager crpManager;
   private GlobalUnitProjectManager globalUnitProjectManager;
+  private PhaseManager phaseManager;
 
 
   @Inject
   public EditPrivateStudyInterceptor(ProjectExpectedStudyManager projectExpectedStudyManager,
-    GlobalUnitManager crpManager, GlobalUnitProjectManager globalUnitProjectManager) {
+    GlobalUnitManager crpManager, GlobalUnitProjectManager globalUnitProjectManager, PhaseManager phaseManager) {
     this.projectExpectedStudyManager = projectExpectedStudyManager;
     this.crpManager = crpManager;
     this.globalUnitProjectManager = globalUnitProjectManager;
+    this.phaseManager = phaseManager;
   }
 
   @Override
@@ -96,45 +97,24 @@ public class EditPrivateStudyInterceptor extends AbstractInterceptor implements 
 
     String cycle = parameters.get(APConstants.CYCLE).getMultipleValues()[0];
     String year = parameters.get(APConstants.YEAR_REQUEST).getMultipleValues()[0];
+    // String crpID = parameters.get(APConstants.CRP_ID).getMultipleValues()[0];
 
     expectedId = Long.parseLong(projectParameter);
 
     ProjectExpectedStudy projectExpectedStudy = projectExpectedStudyManager.getProjectExpectedStudyById(expectedId);
+    Long crpID = baseAction.getCrpID();
 
-    // && projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()) != null
+    phase = phaseManager.findCycle(cycle, Integer.valueOf(year), false, crpID);
 
     if (projectExpectedStudy != null && projectExpectedStudy.isActive()) {
       isPrivate = false;
-      Project project = projectExpectedStudy.getProject();
 
-      GlobalUnitProject globalUnitProjectOrigin = globalUnitProjectManager.findByProjectId(project.getId());
-
-      if (globalUnitProjectOrigin.isOrigin()) {
-        GlobalUnit globalUnit = globalUnitProjectOrigin.getGlobalUnit();
-
-        try {
-          Phase phase = globalUnit.getPhases().stream()
-            .filter(c -> c.isActive() && c.getDescription().equals(cycle) && c.getYear() == Integer.parseInt(year))
-            .collect(Collectors.toList()).get(0);
-
-          if (phase != null) {
-            if (projectExpectedStudy.getProjectExpectedStudyInfo(phase).getIsPublic() != null
-              && !projectExpectedStudy.getProjectExpectedStudyInfo(phase).getIsPublic()) {
-              isPrivate = true;
-            }
-          }
-
-        } catch (Exception e) {
-          throw new NullPointerException();
-        }
-
-
+      if (projectExpectedStudy.getProjectExpectedStudyInfo(phase).getIsPublic() != null
+        && !projectExpectedStudy.getProjectExpectedStudyInfo(phase).getIsPublic()) {
+        isPrivate = true;
       }
-
-
-    } else {
-      throw new NullPointerException();
     }
+
 
   }
 
