@@ -53,6 +53,7 @@ public class MarloShiroConfiguration {
 
     // RESTfull services basic authentication filter setup.
     Map<String, String> filterChainDefinitionMap = new HashMap<>();
+    filterChainDefinitionMap.put("/swagger/index.html", "anon");
     filterChainDefinitionMap.put("/api/**", "authcBasic");
     shiroFilterFactoryBean.setFilterChainDefinitionMap(filterChainDefinitionMap);
 

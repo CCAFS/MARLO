@@ -690,6 +690,13 @@ public final class APConstants {
   // Marlo PDF Manual Name
   public static final String MARLO_PDF_MANUAL_NAME = "Introduction_To_MARLO_v2.5.pdf";
 
+  // GeoiIp maps database
+  public static final String DATABASE_COUNTRY_FILENAME = "GeoLite2-Country.mmdb";
+  public static final String DATABASE_CITY_FILENAME = "GeoLite2-City.mmdb";
+
+  // Clarisa public
+  public static final String CLARISA_PUBLIC = "clarisa_public";
+
   public static String getFilterBy() {
     return FILTER_BY;
   }
