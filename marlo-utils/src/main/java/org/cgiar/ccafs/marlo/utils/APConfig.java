@@ -93,6 +93,16 @@ public class APConfig {
   @Value("${file.uploads.fundingSourceFolder}")
   private String FUNDING_SOURCE_FOLDER;
 
+  // Add public user to call the Clarisa Rest Services
+  @Value("${clarisa.publicUser}")
+  private String CLARISA_PUBLIC_USER;
+  @Value("${clarisa.publicPass}")
+  private String CLARISA_PUBLIC_PASSWORD;
+
+  // Path to get the IP maps database
+  @Value("${clarisa.mapDatabase.path}")
+  private String CLARISA_MAP_DATABASE_PATH;
+
   public APConfig() {
   }
 
@@ -161,6 +171,36 @@ public class APConfig {
     }
 
     return PROJECT_BILATERAL_PROPOSAL_FOLDER;
+  }
+
+  public String getClarisaMapDatabase() {
+
+    if (CLARISA_MAP_DATABASE_PATH == null) {
+      LOG.error("there is not an clarisa map database configured.");
+      return "";
+    }
+
+    return CLARISA_MAP_DATABASE_PATH;
+  }
+
+  public String getClarisaPassword() {
+
+    if (CLARISA_PUBLIC_PASSWORD == null) {
+      LOG.error("there is not an clarisa public user configured.");
+      return "";
+    }
+
+    return CLARISA_PUBLIC_PASSWORD;
+  }
+
+  public String getClarisaUser() {
+
+    if (CLARISA_PUBLIC_USER == null) {
+      LOG.error("there is not an clarisa public user configured.");
+      return "";
+    }
+
+    return CLARISA_PUBLIC_USER;
   }
 
   /**
