@@ -261,7 +261,7 @@ public class AddSessionToRestRequestFilter extends OncePerRequestFilter {
 
   private Path getCountryFilePath() {
     String countryFilename = APConstants.DATABASE_COUNTRY_FILENAME;
-    return Paths.get(config.getClarisaMapDatabase() + "\\" + countryFilename);
+    return Paths.get(config.getClarisaMapDatabase() + countryFilename);
   }
 
 
