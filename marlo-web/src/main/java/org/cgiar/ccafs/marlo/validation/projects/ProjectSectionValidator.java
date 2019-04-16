@@ -647,7 +647,7 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
       // Setup Geographic Scope
       if (innovation.getProjectInnovationGeographicScopes() != null) {
         innovation.setGeographicScopes(new ArrayList<>(innovation.getProjectInnovationGeographicScopes().stream()
-          .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
+          .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
       }
 
       // Innovation Countries List
@@ -674,32 +674,32 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
       // Innovation Organization Type List
       if (innovation.getProjectInnovationOrganizations() != null) {
         innovation.setOrganizations(new ArrayList<>(innovation.getProjectInnovationOrganizations().stream()
-          .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
+          .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
       }
 
       // Innovation Deliverable List
       if (innovation.getProjectInnovationDeliverables() != null) {
         innovation.setDeliverables(new ArrayList<>(innovation.getProjectInnovationDeliverables().stream()
-          .filter(d -> d.isActive() && d.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
+          .filter(d -> d.isActive() && d.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
       }
 
       // Innovation Contributing organizations List
       if (innovation.getProjectInnovationContributingOrganization() != null) {
         innovation
           .setContributingOrganizations(new ArrayList<>(innovation.getProjectInnovationContributingOrganization()
-            .stream().filter(d -> d.getPhase().equals(phase)).collect(Collectors.toList())));
+            .stream().filter(d -> d.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
       }
 
       // Innovation Crp list
       if (innovation.getProjectInnovationCrps() != null) {
         innovation.setCrps(new ArrayList<>(innovation.getProjectInnovationCrps().stream()
-          .filter(c -> c.isActive() && c.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
+          .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
       }
 
       // Innovation clear lead
-      if (innovation != null && innovation.getProjectInnovationInfo() != null) {
-        if (innovation.getProjectInnovationInfo().getClearLead() == null
-          || innovation.getProjectInnovationInfo().getClearLead() == false) {
+      if (innovation != null && innovation.getProjectInnovationInfo(phase) != null) {
+        if (innovation.getProjectInnovationInfo(phase).getClearLead() == null
+          || innovation.getProjectInnovationInfo(phase).getClearLead() == false) {
           clearLead = false;
         } else {
           clearLead = true;
@@ -798,7 +798,7 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
       // Setup Geographic Scope
       if (policy.getProjectPolicyGeographicScopes() != null) {
         policy.setGeographicScopes(new ArrayList<>(policy.getProjectPolicyGeographicScopes().stream()
-          .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
+          .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
       }
 
 
@@ -831,37 +831,37 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
       // Policy Type ( Whose Policy is This ? ) List
       if (policy.getProjectPolicyOwners() != null) {
         policy.setOwners(new ArrayList<>(policy.getProjectPolicyOwners().stream()
-          .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
+          .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
       }
 
       // Crp List
       if (policy.getProjectPolicyCrps() != null) {
         policy.setCrps(new ArrayList<>(policy.getProjectPolicyCrps().stream()
-          .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
+          .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
       }
 
       // SubIdos List
       if (policy.getProjectPolicySubIdos() != null) {
         policy.setSubIdos(new ArrayList<>(policy.getProjectPolicySubIdos().stream()
-          .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
+          .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
       }
 
       // Innovations List
       if (policy.getProjectPolicyInnovations() != null) {
         policy.setInnovations(new ArrayList<>(policy.getProjectPolicyInnovations().stream()
-          .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
+          .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
       }
 
       // Evidence List
       if (policy.getProjectExpectedStudyPolicies() != null) {
         policy.setEvidences(new ArrayList<>(policy.getProjectExpectedStudyPolicies().stream()
-          .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
+          .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
       }
 
       // Cgiar Cross Cutting Markers List
       if (policy.getCrossCuttingMarkers() != null) {
         policy.setCrossCuttingMarkers(new ArrayList<>(policy.getProjectPolicyCrossCuttingMarkers().stream()
-          .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
+          .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
       }
 
       if (policy.getCountries() != null) {
@@ -1037,7 +1037,7 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
         // Setup Geographic Scope
         if (deliverable.getDeliverableGeographicScopes() != null) {
           deliverable.setGeographicScopes(new ArrayList<>(deliverable.getDeliverableGeographicScopes().stream()
-            .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
+            .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
         }
 
         // Deliverable Countries List
@@ -1353,8 +1353,9 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
 
       // Setup Geographic Scope
       if (expectedStudy.getProjectExpectedStudyGeographicScopes() != null) {
-        expectedStudy.setGeographicScopes(new ArrayList<>(expectedStudy.getProjectExpectedStudyGeographicScopes()
-          .stream().filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
+        expectedStudy
+          .setGeographicScopes(new ArrayList<>(expectedStudy.getProjectExpectedStudyGeographicScopes().stream()
+            .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
       }
 
       // Expected Study Countries List
@@ -1382,13 +1383,13 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
       // Expected Study SubIdos List
       if (expectedStudy.getProjectExpectedStudySubIdos() != null) {
         expectedStudy.setSubIdos(new ArrayList<>(expectedStudy.getProjectExpectedStudySubIdos().stream()
-          .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
+          .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
       }
 
       // Expected Study Flagship List
       if (expectedStudy.getProjectExpectedStudyFlagships() != null) {
         expectedStudy.setFlagships(new ArrayList<>(expectedStudy.getProjectExpectedStudyFlagships().stream()
-          .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()
+          .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())
             && o.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
           .collect(Collectors.toList())));
       }
@@ -1396,7 +1397,7 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
       // Expected Study Regions List
       if (expectedStudy.getProjectExpectedStudyFlagships() != null) {
         expectedStudy.setRegions(new ArrayList<>(expectedStudy.getProjectExpectedStudyFlagships().stream()
-          .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()
+          .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())
             && o.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue())
           .collect(Collectors.toList())));
       }
@@ -1404,49 +1405,49 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
       // Expected Study Crp List
       if (expectedStudy.getProjectExpectedStudyCrps() != null) {
         expectedStudy.setCrps(new ArrayList<>(expectedStudy.getProjectExpectedStudyCrps().stream()
-          .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
+          .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
       }
 
       // Expected Study Institutions List
       if (expectedStudy.getProjectExpectedStudyInstitutions() != null) {
         expectedStudy.setInstitutions(new ArrayList<>(expectedStudy.getProjectExpectedStudyInstitutions().stream()
-          .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
+          .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
       }
 
       // Expected Study Srf Target List
       if (expectedStudy.getProjectExpectedStudySrfTargets() != null) {
         expectedStudy.setSrfTargets(new ArrayList<>(expectedStudy.getProjectExpectedStudySrfTargets().stream()
-          .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
+          .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
       }
 
       // Expected Study Projects List
       if (expectedStudy.getExpectedStudyProjects() != null) {
         expectedStudy.setProjects(new ArrayList<>(expectedStudy.getExpectedStudyProjects().stream()
-          .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
+          .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
       }
 
       // Expected Study Link List
       if (expectedStudy.getProjectExpectedStudyLinks() != null) {
         expectedStudy.setLinks(new ArrayList<>(expectedStudy.getProjectExpectedStudyLinks().stream()
-          .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
+          .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
       }
 
       // Expected Study Policies List
       if (expectedStudy.getProjectExpectedStudyPolicies() != null) {
         expectedStudy.setPolicies(new ArrayList<>(expectedStudy.getProjectExpectedStudyPolicies().stream()
-          .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
+          .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
       }
 
       // Expected Study Quantifications List
       if (expectedStudy.getProjectExpectedStudyQuantifications() != null) {
         expectedStudy.setQuantifications(new ArrayList<>(expectedStudy.getProjectExpectedStudyQuantifications().stream()
-          .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
+          .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
       }
 
       // Expected Study Quantifications List
       if (expectedStudy.getProjectExpectedStudyInnovations() != null) {
         expectedStudy.setInnovations(new ArrayList<>(expectedStudy.getProjectExpectedStudyInnovations().stream()
-          .filter(o -> o.isActive() && o.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
+          .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
       }
 
       if (expectedStudy.getCountries() != null) {

@@ -79,6 +79,9 @@
         <th id="tb-type" width="22%">[@s.text name="projectInnovations.table.type" /]</th>
         <th id="tb-stage" width="15%">[@s.text name="projectInnovations.table.stage" /]</th>
         <th id="tb-year" width="8%">[@s.text name="projectInnovations.table.year" /]</th>
+        [#if currentTable]
+        <th></th>
+        [/#if]
         <th id="projectDownload" class="no-sort"></th>
         [#if currentTable]
         <th id="tb-remove" width="4%" class="no-sort"></th>
@@ -89,7 +92,8 @@
     [#if list?has_content]
       [#list list as innovation]
         [#local tsURL][@s.url namespace="/projects" action="${(crpSession)!}/innovation"][@s.param name='innovationID']${(innovation.id)!''}[/@s.param][@s.param name='projectID']${(innovation.project.id)!''}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
-        
+        [#-- Is this complete --]
+        [#local isThisComplete = (action.hasInnovationMissingFields(innovation.id))!false ]
         [#-- Is New --]
         [#local isNew = (action.isInnovationNew(innovation.id))!false ]
         <tr>
@@ -114,6 +118,16 @@
           <td class="text-center">
             [@utils.tableText value=(innovation.projectInnovationInfo.year)!"" /]
           </td>
+          [#-- Missing fields --]
+          [#if currentTable]
+          <td>
+            [#if isThisComplete]
+              <span class="icon-20 icon-check" title="Complete"></span> 
+            [#else]
+              <span class="icon-20 icon-uncheck" title=""></span> 
+            [/#if]
+          </td>
+          [/#if]
           [#-- Summary PDF download --]
           <td class="text-center">
             <a href="[@s.url namespace="/summaries" action='${(crpSession)!}/projectInnovationSummary'][@s.param name='innovationID']${innovation.id?c}[/@s.param][@s.param name='phaseID']${(innovation.projectInnovationInfo.phase.id)!''}[/@s.param][/@s.url]" target="__BLANK">

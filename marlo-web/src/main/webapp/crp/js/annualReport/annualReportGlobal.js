@@ -1,5 +1,5 @@
 var $tableViewMore;
-var tableDatatableViewmore;
+var tableDatatableViewmore, tableDataProgressTableViewmore;
 var pageName;
 var googleChartsLoaded = false;
 $(document).ready(function() {
@@ -37,10 +37,23 @@ $(document).ready(function() {
               ]
           }
         ]
-    /*
-     * , dom: 'Bfrtip', buttons: [ { extend: 'csv', title: 'Data_export_' + currentSectionString + '_' +
-     * getDateString(), autoFilter: true }, { extend: 'print' } ]
-     */
+    });
+
+    tableDataExport = $('.dataTableExport table').DataTable({
+        "paging": false,
+        "searching": false,
+        "info": true,
+        dom: 'Bfrtip',
+        buttons: [
+          {
+              text: '<i class="fas fa-download"></i> Export CSV Data',
+              extend: 'csv',
+              title: 'Data_export_' + currentSectionString + '_' + getDateString(),
+              autoFilter: true,
+              bom: true, // UTF-8
+              className: 'exportCSV'
+          }
+        ]
     });
   }
 
