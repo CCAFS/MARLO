@@ -222,7 +222,8 @@ public class OutcomeMilestonesValidator extends BaseValidator {
     }
 
     // Validate Milestone Evidence
-    if (!this.isValidString(milestone.getEvidence()) && this.wordCount(milestone.getEvidence()) <= 50) {
+    if (!this.isValidString(milestone.getEvidence())
+      && this.wordCount(this.removeHtmlTags(milestone.getEvidence())) <= 50) {
       action.addMessage(action.getText("Evidence"));
       action.addMissingField(
         "input-reportSynthesis.reportSynthesisFlagshipProgress.outcomeList[" + i + "].milestones[" + j + "].evidence");
@@ -249,7 +250,8 @@ public class OutcomeMilestonesValidator extends BaseValidator {
   private void validateOutcomes(BaseAction action, ReportSynthesisFlagshipProgressOutcome outcome, int i) {
 
     // Validate Summary
-    if (!(this.isValidString(outcome.getSummary()) && this.wordCount(outcome.getSummary()) <= 100)) {
+    if (!(this.isValidString(outcome.getSummary())
+      && this.wordCount(this.removeHtmlTags(outcome.getSummary())) <= 100)) {
       action.addMessage(action.getText("Title"));
       action.addMissingField("projectPolicy.title");
       action.getInvalidFields().put(
