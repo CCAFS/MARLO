@@ -5059,12 +5059,16 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   /**
-   * Check if the annual Report is complete by the flagships or the PMU.
+   * Check if the annual Report 2018 is complete by the flagships or the PMU.
    * 
    * @param phaseID
    * @return
    */
   public boolean isCompleteReportSynthesis2018(long synthesisID) {
+
+    if (this.getActualPhase().getYear() != 2018) {
+      return false;
+    }
 
     int secctions = 0;
     if (this.sectionStatusManager.findAll() == null) {
