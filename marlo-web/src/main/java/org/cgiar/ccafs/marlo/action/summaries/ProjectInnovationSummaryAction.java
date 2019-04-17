@@ -515,8 +515,9 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
         if (projectInnovationDeliverable.getDeliverable() != null
           && projectInnovationDeliverable.getDeliverable().getId() != null
           && projectInnovationDeliverable.getDeliverable().getDeliverableInfo(this.getActualPhase()) != null) {
-          deliverablesSet.add("<br>&nbsp;&nbsp;&nbsp;&nbsp; ● " + projectInnovationDeliverable.getDeliverable().getId()
-            + " - " + projectInnovationDeliverable.getDeliverable().getDeliverableInfo().getTitle());
+          deliverablesSet
+            .add("<br>&nbsp;&nbsp;&nbsp;&nbsp; ● " + "D" + projectInnovationDeliverable.getDeliverable().getId() + " - "
+              + projectInnovationDeliverable.getDeliverable().getDeliverableInfo().getTitle());
         }
       }
       deliverables = String.join("", deliverablesSet);
