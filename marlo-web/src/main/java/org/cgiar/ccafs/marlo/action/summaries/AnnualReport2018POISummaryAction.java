@@ -1679,7 +1679,8 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
       new POIField(this.getText("summaries.annualReport2018.table7Title3"), ParagraphAlignment.LEFT, false)};
     List<POIField> header = Arrays.asList(sHeader);
     headers.add(header);
-    String trainees = "", female = "", male = "";
+    String trainees = "";
+    int female = 0, male = 0;
 
     for (int i = 0; i < 2; i++) {
       switch (i) {
@@ -1688,10 +1689,10 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
           if (reportSynthesisPMU.getReportSynthesisCrossCuttingDimension() != null) {
             if (reportSynthesisPMU.getReportSynthesisCrossCuttingDimension().getTraineesShortTermFemale() != null) {
               female =
-                reportSynthesisPMU.getReportSynthesisCrossCuttingDimension().getTraineesShortTermFemale().toString();
+                reportSynthesisPMU.getReportSynthesisCrossCuttingDimension().getTraineesShortTermFemale().intValue();
             }
             if (reportSynthesisPMU.getReportSynthesisCrossCuttingDimension().getTraineesShortTermMale() != null) {
-              male = reportSynthesisPMU.getReportSynthesisCrossCuttingDimension().getTraineesShortTermMale().toString();
+              male = reportSynthesisPMU.getReportSynthesisCrossCuttingDimension().getTraineesShortTermMale().intValue();
             }
           }
           break;
@@ -1700,17 +1701,18 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
           if (reportSynthesisPMU.getReportSynthesisCrossCuttingDimension() != null) {
             if (reportSynthesisPMU.getReportSynthesisCrossCuttingDimension().getTraineesLongTermFemale() != null) {
               female =
-                reportSynthesisPMU.getReportSynthesisCrossCuttingDimension().getTraineesLongTermFemale().toString();
+                reportSynthesisPMU.getReportSynthesisCrossCuttingDimension().getTraineesLongTermFemale().intValue();
             }
             if (reportSynthesisPMU.getReportSynthesisCrossCuttingDimension().getTraineesLongTermMale() != null) {
-              male = reportSynthesisPMU.getReportSynthesisCrossCuttingDimension().getTraineesLongTermMale().toString();
+              male = reportSynthesisPMU.getReportSynthesisCrossCuttingDimension().getTraineesLongTermMale().intValue();
             }
           }
           break;
       }
 
       POIField[] sData = {new POIField(trainees, ParagraphAlignment.LEFT, false),
-        new POIField(female, ParagraphAlignment.CENTER, false), new POIField(male, ParagraphAlignment.CENTER, false)};
+        new POIField(female + "", ParagraphAlignment.CENTER, false),
+        new POIField(male + "", ParagraphAlignment.CENTER, false)};
       data = Arrays.asList(sData);
       datas.add(data);
     }
