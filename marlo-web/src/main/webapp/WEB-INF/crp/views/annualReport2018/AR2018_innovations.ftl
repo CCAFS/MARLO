@@ -238,8 +238,8 @@
                 [#if isStageFour]
                   [#local summaryPDF = "${baseUrl}/projects/${crpSession}/studySummary.do?studyID=${(item.projectInnovationInfo.projectExpectedStudy.id)!}&cycle=Reporting&year=${(actualPhase.year)!}"]
                   <p>
-                    <a href="${summaryPDF}" class="btn btn-default btn-xs" target="_blank" style="text-decoration: none;" title="${item.projectInnovationInfo.projectExpectedStudy.composedName}">
-                      <img src="${baseUrl}/global/images/pdf.png" height="20"  /> ${item.projectInnovationInfo.projectExpectedStudy.composedIdentifier}
+                    <a href="${summaryPDF}" class="btn btn-default btn-xs" target="_blank" style="text-decoration: none;" title="${(item.projectInnovationInfo.projectExpectedStudy.composedName)!''}">
+                      <img src="${baseUrl}/global/images/pdf.png" height="20"  /> ${(item.projectInnovationInfo.projectExpectedStudy.composedIdentifier)!''}
                     </a>
                   </p>
                 [#else]                
