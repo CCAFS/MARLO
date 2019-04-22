@@ -127,7 +127,8 @@ public class InnovationsEvidenceSummaryAction extends BaseSummariesAction implem
     masterReport.getParameterValues().put("i8nColumnP", this.getText("projectInnovations.table.OICR"));
     masterReport.getParameterValues().put("i8nColumnQ", this.getText("projectInnovations.table.deliverable"));
     masterReport.getParameterValues().put("i8nColumnR", this.getText("projectInnovations.contributing"));
-    masterReport.getParameterValues().put("i8nColumnS", this.getText("projectInnovations.table.include"));
+    masterReport.getParameterValues().put("i8nColumnS", this.getText("projectInnovations.table.modification"));
+    masterReport.getParameterValues().put("i8nColumnT", this.getText("projectInnovations.table.include"));
     masterReport.getParameterValues().put("i8nHeader", this.getText("projectInnovations.table.header"));
 
     return masterReport;
@@ -268,18 +269,19 @@ public class InnovationsEvidenceSummaryAction extends BaseSummariesAction implem
      * paramP - OICR - study
      * paramQ - deliverable
      * paramR - crps/plts
-     * paramS - includeAR
+     * paramS - General last modification date
+     * paramT - includeAR
      * innovationURL
      * studyURL
      * NOTE : does not mater the order into the implementation (ex: the paramO will be setup first that the paramA)
      */
     TypedTableModel model = new TypedTableModel(
       new String[] {"paramA", "paramB", "paramC", "paramD", "paramE", "paramF", "paramG", "paramH", "paramI", "paramJ",
-        "paramK", "paramL", "paramM", "paramN", "paramO", "paramP", "paramQ", "paramR", "paramS", "innovationURL",
-        "studyURL"},
+        "paramK", "paramL", "paramM", "paramN", "paramO", "paramP", "paramQ", "paramR", "paramS", "paramT",
+        "innovationURL", "studyURL"},
       new Class[] {Long.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        String.class, String.class, String.class, String.class, String.class, String.class},
+        String.class, String.class, String.class, String.class, String.class, String.class, String.class},
       0);
 
     // Load the Innovations information
@@ -289,7 +291,7 @@ public class InnovationsEvidenceSummaryAction extends BaseSummariesAction implem
       Long paramA = null, paramB = null;
       String paramC = "", paramD = "", paramE = "", paramF = "", paramG = "", paramH = "", paramI = "", paramJ = "",
         paramK = "", paramL = "", paramM = "", paramN = "", paramO = "", paramP = "", paramQ = "", paramR = "",
-        paramS = "", innovationURL = "", studyURL = "";
+        paramS = "", paramT = "", innovationURL = "", studyURL = "";
 
       // Condition to know if the project innovation have information in the selected phase
       if (innovationEvidences.getProjectInnovation().getProjectInnovationInfo(this.getSelectedPhase()) != null) {
@@ -546,14 +548,16 @@ public class InnovationsEvidenceSummaryAction extends BaseSummariesAction implem
 
         // Is included in the AR
         if (this.getSelectedPhase().getYear() < 2018) {
-          paramS = "<Not Applicable>";
+          paramT = "<Not Applicable>";
         } else {
           if (innovationEvidences.isInclude()) {
-            paramS = "Yes";
+            paramT = "Yes";
           } else {
-            paramS = "No";
+            paramT = "No";
           }
         }
+
+        paramS = innovationEvidences.getProjectInnovation().getActiveSince().toLocaleString();
 
         // Generate the innovation url of MARLO
         innovationURL = this.getBaseUrl() + "/projects/" + this.getCrpSession() + "/innovation.do?innovationID="
@@ -565,7 +569,7 @@ public class InnovationsEvidenceSummaryAction extends BaseSummariesAction implem
       }
 
       model.addRow(new Object[] {paramA, paramB, paramC, paramD, paramE, paramF, paramG, paramH, paramI, paramJ, paramK,
-        paramL, paramM, paramN, paramO, paramP, paramQ, paramR, paramS, innovationURL, studyURL});
+        paramL, paramM, paramN, paramO, paramP, paramQ, paramR, paramS, paramT, innovationURL, studyURL});
     }
     return model;
   }
