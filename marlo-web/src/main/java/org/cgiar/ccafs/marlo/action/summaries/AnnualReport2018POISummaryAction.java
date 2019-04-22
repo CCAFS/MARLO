@@ -1464,7 +1464,8 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     List<POIField> data;
     if (this.isEntityCRP() == true) {
       POIField[] sHeader = {
-        new POIField(this.getText("summaries.annualReport2018.table5Title1"), ParagraphAlignment.LEFT, true, "000000"),
+        new POIField(this.getText("summaries.annualReport2018.table5Title1"), ParagraphAlignment.CENTER, true,
+          "000000"),
         new POIField(this.getText("summaries.annualReport2018.table5Title2"), ParagraphAlignment.CENTER, true,
           "000000"),
         new POIField(this.getText("summaries.annualReport2018.table5Title3"), ParagraphAlignment.LEFT, true, "000000"),
@@ -1481,7 +1482,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
 
     if (this.isEntityPlatform() == true) {
       POIField[] sHeader = {
-        new POIField(this.getText("summaries.annualReportCRP2018.module"), ParagraphAlignment.LEFT, true, "000000"),
+        new POIField(this.getText("summaries.annualReportCRP2018.module"), ParagraphAlignment.CENTER, true, "000000"),
         new POIField(this.getText("summaries.annualReport2018.table5Title2"), ParagraphAlignment.CENTER, true,
           "000000"),
         new POIField(this.getText("summaries.annualReport2018.table5Title3"), ParagraphAlignment.LEFT, true, "000000"),
@@ -1604,7 +1605,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         }
       }
     }
-    poiSummary.textTable(document, headers, datas, false, "table11AnnualReport2018");
+    poiSummary.textTable(document, headers, datas, false, "table5AnnualReport2018");
   }
 
   public void createTable6() {
