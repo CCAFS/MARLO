@@ -134,7 +134,8 @@ public class PoliciesEvidenceSummaryAction extends BaseSummariesAction implement
     masterReport.getParameterValues().put("i8nColumnS", this.getText("policy.geographicScope"));
     masterReport.getParameterValues().put("i8nColumnT", this.getText("policy.regions"));
     masterReport.getParameterValues().put("i8nColumnU", this.getText("policy.countries"));
-    masterReport.getParameterValues().put("i8nColumnV", this.getText("policy.include.table"));
+    masterReport.getParameterValues().put("i8nColumnV", this.getText("policy.include.modification"));
+    masterReport.getParameterValues().put("i8nColumnW", this.getText("policy.include.table"));
     masterReport.getParameterValues().put("i8nHeader", this.getText("policy.header.table"));
 
     return masterReport;
@@ -350,17 +351,19 @@ public class PoliciesEvidenceSummaryAction extends BaseSummariesAction implement
      * paramS - geographicScope
      * paramT - regions
      * paramU - countries
-     * paramV - includeAR
+     * paramV - General last modification date
+     * paramW - includeAR
      * policyURL
      * NOTE : does not mater the order into the implementation (ex: the paramV will be setup first that the paramA)
      */
     TypedTableModel model = new TypedTableModel(
       new String[] {"paramA", "paramB", "paramC", "paramD", "paramE", "paramF", "paramG", "paramH", "paramI", "paramJ",
         "paramK", "paramL", "paramM", "paramN", "paramO", "paramP", "paramQ", "paramR", "paramS", "paramT", "paramU",
-        "paramV", "policyURL"},
+        "paramV", "paramW", "policyURL"},
       new Class[] {Long.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class},
+        String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
+        String.class},
       0);
 
     // Load the policies information
@@ -370,7 +373,7 @@ public class PoliciesEvidenceSummaryAction extends BaseSummariesAction implement
       Long paramA = null, paramB = null;
       String paramC = "", paramD = "", paramE = "", paramF = "", paramG = "", paramH = "", paramI = "", paramJ = "",
         paramK = "", paramL = "", paramM = "", paramN = "", paramO = "", paramP = "", paramQ = "", paramR = "",
-        paramS = "", paramT = "", paramU = "", paramV = "", policyURL = "";
+        paramS = "", paramT = "", paramU = "", paramV = "", paramW = "", policyURL = "";
 
       // Condition to know if the project policy have information in the selected phase
       if (policyEvidence.getProjectPolicy().getProjectPolicyInfo(this.getSelectedPhase()) != null) {
@@ -671,14 +674,17 @@ public class PoliciesEvidenceSummaryAction extends BaseSummariesAction implement
 
         // Is included in the AR
         if (this.getSelectedPhase().getYear() < 2018) {
-          paramV = "<Not Applicable>";
+          paramW = "<Not Applicable>";
         } else {
           if (policyEvidence.isInclude()) {
-            paramV = "Yes";
+            paramW = "Yes";
           } else {
-            paramV = "No";
+            paramW = "No";
           }
         }
+
+        paramV = policyEvidence.getProjectPolicy().getActiveSince().toLocaleString();
+
         // Generate the policy url of MARLO
         policyURL = this.getBaseUrl() + "/projects/" + this.getCrpSession() + "/policy.do?policyID="
           + policyEvidence.getProjectPolicy().getId().toString() + "&phaseID="
@@ -687,7 +693,7 @@ public class PoliciesEvidenceSummaryAction extends BaseSummariesAction implement
       }
 
       model.addRow(new Object[] {paramA, paramB, paramC, paramD, paramE, paramF, paramG, paramH, paramI, paramJ, paramK,
-        paramL, paramM, paramN, paramO, paramP, paramQ, paramR, paramS, paramT, paramU, paramV, policyURL});
+        paramL, paramM, paramN, paramO, paramP, paramQ, paramR, paramS, paramT, paramU, paramV, paramW, policyURL});
     }
     return model;
   }
