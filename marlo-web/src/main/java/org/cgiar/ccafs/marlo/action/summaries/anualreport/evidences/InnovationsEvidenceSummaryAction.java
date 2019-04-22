@@ -144,8 +144,8 @@ public class InnovationsEvidenceSummaryAction extends BaseSummariesAction implem
 
     ByteArrayOutputStream os = new ByteArrayOutputStream();
     try {
-      Resource reportResource = resourceManager
-        .createDirectly(this.getClass().getResource("/pentaho/crp/InnovationsAR2018.prpt"), MasterReport.class);
+      Resource reportResource = resourceManager.createDirectly(
+        this.getClass().getResource("/pentaho/crp/AR-Evidences/InnovationsAR2018.prpt"), MasterReport.class);
       MasterReport masterReport = (MasterReport) reportResource.getResource();
       String center = this.getLoggedCrp().getAcronym();
       // Get datetime
