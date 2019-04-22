@@ -7,7 +7,9 @@ import com.google.gson.annotations.Expose;
 
 public class ProjectInnovationShared extends MarloAuditableEntity implements java.io.Serializable, IAuditLog {
 
-  private static final long serialVersionUID = 131925401132219339L;
+
+  private static final long serialVersionUID = -6439487165967165797L;
+
 
   @Expose
   private Phase phase;
