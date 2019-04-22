@@ -67,6 +67,10 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
   // AR2018 Field
   private List<LiaisonInstitution> selectedFlahsgips;
 
+  // Shared Project Innovations
+  private List<ProjectInnovationShared> sharedInnovations;
+  private Set<ProjectInnovationShared> projectInnovationShareds = new HashSet<ProjectInnovationShared>(0);
+
 
   public String getComposedName() {
     if ((projectInnovationInfo != null) && (projectInnovationInfo.getTitle() != null)
@@ -124,10 +128,12 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
     return geographicScopes;
   }
 
+
   public List<ProjectInnovationGeographicScope> getGeographicScopes(Phase phase) {
     return new ArrayList<>(this.getProjectInnovationGeographicScopes().stream()
       .filter(pg -> pg.isActive() && pg.getPhase().equals(phase)).collect(Collectors.toList()));
   }
+
 
   @Override
   public String getLogDeatil() {
@@ -135,6 +141,7 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
     sb.append("Id : ").append(this.getId());
     return sb.toString();
   }
+
 
   public List<ProjectInnovationOrganization> getOrganizations() {
     return organizations;
@@ -166,11 +173,9 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
     return projectInnovationGeographicScopes;
   }
 
-
   public ProjectInnovationInfo getProjectInnovationInfo() {
     return projectInnovationInfo;
   }
-
 
   public ProjectInnovationInfo getProjectInnovationInfo(Phase phase) {
     if (this.getProjectInnovationInfo() != null) {
@@ -188,6 +193,7 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
     }
   }
 
+
   public Set<ProjectInnovationInfo> getProjectInnovationInfos() {
     return projectInnovationInfos;
   }
@@ -196,8 +202,14 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
     return projectInnovationOrganizations;
   }
 
+
   public Set<ProjectInnovationRegion> getProjectInnovationRegions() {
     return projectInnovationRegions;
+  }
+
+
+  public Set<ProjectInnovationShared> getProjectInnovationShareds() {
+    return projectInnovationShareds;
   }
 
   public List<ProjectInnovationRegion> getRegions() {
@@ -215,6 +227,10 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
 
   public List<LiaisonInstitution> getSelectedFlahsgips() {
     return selectedFlahsgips;
+  }
+
+  public List<ProjectInnovationShared> getSharedInnovations() {
+    return sharedInnovations;
   }
 
   public void setContributingOrganizations(List<ProjectInnovationContributingOrganization> contributingOrganizations) {
@@ -237,7 +253,6 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
     this.crps = crps;
   }
 
-
   public void setDeliverables(List<ProjectInnovationDeliverable> deliverables) {
     this.deliverables = deliverables;
   }
@@ -245,6 +260,7 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
   public void setGeographicScopes(List<ProjectInnovationGeographicScope> geographicScopes) {
     this.geographicScopes = geographicScopes;
   }
+
 
   public void setOrganizations(List<ProjectInnovationOrganization> organizations) {
     this.organizations = organizations;
@@ -292,6 +308,9 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
     this.projectInnovationRegions = projectInnovationRegions;
   }
 
+  public void setProjectInnovationShareds(Set<ProjectInnovationShared> projectInnovationShareds) {
+    this.projectInnovationShareds = projectInnovationShareds;
+  }
 
   public void setRegions(List<ProjectInnovationRegion> regions) {
     this.regions = regions;
@@ -305,6 +324,11 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
 
   public void setSelectedFlahsgips(List<LiaisonInstitution> selectedFlahsgips) {
     this.selectedFlahsgips = selectedFlahsgips;
+  }
+
+
+  public void setSharedInnovations(List<ProjectInnovationShared> sharedInnovations) {
+    this.sharedInnovations = sharedInnovations;
   }
 
 
