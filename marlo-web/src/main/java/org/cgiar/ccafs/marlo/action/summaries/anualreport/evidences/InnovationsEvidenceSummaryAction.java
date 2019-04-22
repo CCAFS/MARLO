@@ -66,8 +66,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This action prepare and create the Project Policies evidences to fill the part C of the annual report document.
- * == NOTE : this report works only works for annual report 2018 and later phases ==
+ * This action prepare and create the Project Innovations evidences to fill the part C of the annual report document.
+ * == NOTE : this report works only for annual report 2018 and later phases ==
  * 
  * @author Hermes Jimenez - CIAT/CCAFS
  */
@@ -275,7 +275,8 @@ public class InnovationsEvidenceSummaryAction extends BaseSummariesAction implem
      */
     TypedTableModel model = new TypedTableModel(
       new String[] {"paramA", "paramB", "paramC", "paramD", "paramE", "paramF", "paramG", "paramH", "paramI", "paramJ",
-        "paramK", "paramL", "paramM", "paramN", "paramO", "paramP", "paramQ", "paramR", "paramS", "innovationURL"},
+        "paramK", "paramL", "paramM", "paramN", "paramO", "paramP", "paramQ", "paramR", "paramS", "innovationURL",
+        "studyURL"},
       new Class[] {Long.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class},
@@ -544,10 +545,14 @@ public class InnovationsEvidenceSummaryAction extends BaseSummariesAction implem
         }
 
         // Is included in the AR
-        if (innovationEvidences.isInclude()) {
-          paramS = "Yes";
+        if (this.getSelectedPhase().getYear() < 2018) {
+          paramS = "<Not Applicable>";
         } else {
-          paramS = "No";
+          if (innovationEvidences.isInclude()) {
+            paramS = "Yes";
+          } else {
+            paramS = "No";
+          }
         }
 
         // Generate the innovation url of MARLO

@@ -71,7 +71,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * This action prepare and create the Project Policies evidences to fill the part C of the annual report document.
- * == NOTE : this report works only works for annual report 2018 and later phases ==
+ * == NOTE : this report works only for annual report 2018 and later phases ==
  * 
  * @author Hermes Jimenez - CIAT/CCAFS
  */
@@ -670,10 +670,14 @@ public class PoliciesEvidenceSummaryAction extends BaseSummariesAction implement
         }
 
         // Is included in the AR
-        if (policyEvidence.isInclude()) {
-          paramV = "Yes";
+        if (this.getSelectedPhase().getYear() < 2018) {
+          paramV = "<Not Applicable>";
         } else {
-          paramV = "No";
+          if (policyEvidence.isInclude()) {
+            paramV = "Yes";
+          } else {
+            paramV = "No";
+          }
         }
         // Generate the policy url of MARLO
         policyURL = this.getBaseUrl() + "/projects/" + this.getCrpSession() + "/policy.do?policyID="
