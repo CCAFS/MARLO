@@ -1290,7 +1290,7 @@ public class ProjectInnovationAction extends BaseAction {
           innovationProjectSave.setProjectInnovation(projectInnovation);
           innovationProjectSave.setPhase(phase);
 
-          Project project = this.projectManager.getProjectById(projectInnovation.getProject().getId());
+          Project project = this.projectManager.getProjectById(innovationProject.getProject().getId());
 
           innovationProjectSave.setProject(project);
 
