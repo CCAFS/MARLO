@@ -19,6 +19,7 @@ package org.cgiar.ccafs.marlo.data.dao.mysql;
 import org.cgiar.ccafs.marlo.data.dao.DeliverableDAO;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.Phase;
+import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -70,6 +71,58 @@ public class DeliverableMySQLDAO extends AbstractMarloDAO<Deliverable, Long> imp
     }
     return null;
 
+  }
+
+  @Override
+  public List<Deliverable> getDeliverablesByParameters(Phase phase, boolean filterPhaseYear,
+    boolean filterParticipants) {
+    StringBuilder query = new StringBuilder();
+    query.append("SELECT DISTINCT  ");
+    query.append("d.id as id ");
+    query.append("FROM ");
+    query.append("deliverables AS d ");
+    query
+      .append("INNER JOIN deliverables_info AS di ON d.id = di.deliverable_id AND di.is_active = 1 AND di.`id_phase` = "
+        + phase.getId() + " ");
+    if (filterPhaseYear) {
+      query.append("AND di.status IS NOT NULL AND ");
+      query.append("AND di.`status` != " + Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId()) + " AND ");
+
+      query.append("AND (");
+      // Extended with equal new expected year
+      query.append("(di.`status` = " + Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
+        + " AND di.new_expected_year = " + phase.getYear() + " )");
+      // Completed with equal new expected year -equal year (if extended doesn't exists)-
+      query.append("OR ");
+      query.append("(di.`status` = " + Integer.parseInt(ProjectStatusEnum.Complete.getStatusId()) + " AND "
+        + "((di.new_expected_year IS NOT NULL AND di.new_expected_year !=-1 AND di.new_expected_year = "
+        + phase.getYear() + " ) " + "OR ((di.new_expected_year IS NULL OR di.new_expected_year =-1) AND di.year = "
+        + phase.getYear() + " )))");
+      // Ongoing
+      query.append("OR ");
+      query.append("(di.`status` = " + Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId()) + " AND di.year = "
+        + phase.getYear() + ")");
+      query.append(")");
+    }
+
+    if (filterParticipants) {
+      query.append(
+        "INNER JOIN deliverable_participants AS dp ON d.id = dp.deliverable_id AND dp.has_participants = 1 AND dp.is_active = 1 AND dp.phase_id = "
+          + phase.getId() + " ");
+    }
+    query.append("WHERE d.is_active = 1 ");
+
+    List<Map<String, Object>> rList = super.findCustomQuery(query.toString());
+    List<Deliverable> deliverables = new ArrayList<>();
+
+    if (rList != null) {
+      for (Map<String, Object> map : rList) {
+        Deliverable deliverable = this.find(Long.parseLong(map.get("id").toString()));
+        deliverables.add(deliverable);
+      }
+    }
+
+    return deliverables;
   }
 
   @Override
