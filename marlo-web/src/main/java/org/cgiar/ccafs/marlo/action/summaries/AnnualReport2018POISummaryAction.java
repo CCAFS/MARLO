@@ -1866,6 +1866,75 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     poiSummary.textTable(document, headers, datas, false, "table3AnnualReport2018");
   }
 
+  private void createTableAnnexes() {
+
+    List<List<POIField>> headers = new ArrayList<>();
+    List<List<POIField>> datas = new ArrayList<>();
+    List<POIField> data;
+    POIField[] sHeader = {
+      new POIField(this.getText("summaries.annualReport2018.tableAnnexesTitle1",
+        new String[] {String.valueOf(this.getSelectedYear())}), ParagraphAlignment.LEFT, false),
+      new POIField(this.getText("summaries.annualReport2018.tableAnnexesTitle2"), ParagraphAlignment.LEFT, false)};
+    List<POIField> header = Arrays.asList(sHeader);
+    headers.add(header);
+
+    // Flagship - Synthesis
+
+    flagshipsReportSynthesisFlagshipProgress = reportSynthesisFlagshipProgressManager
+      .getFlagshipsReportSynthesisFlagshipProgress(flagshipLiaisonInstitutions, this.getSelectedPhase().getId());
+
+    if (flagshipsReportSynthesisFlagshipProgress != null) {
+      int i = 1;
+      for (ReportSynthesisFlagshipProgress flagshipProgress : flagshipsReportSynthesisFlagshipProgress) {
+
+        if (flagshipProgress.getProgressByFlagships() != null) {
+          if (this.isEntityCRP()) {
+            this.createSubtitle("F" + i + " - Flagship progress:");
+          } else {
+            this.createSubtitle("M" + i + " - Module progress:");
+          }
+          try {
+            poiSummary.convertHTMLTags(document, flagshipProgress.getProgressByFlagships(), null);
+          } catch (Exception e) {
+            poiSummary.convertHTMLTags(document, poiSummary.replaceHTMLTags(flagshipProgress.getProgressByFlagships()),
+              null);
+          }
+          // poiSummary.textLineBreak(document, 1);
+        }
+
+        if (flagshipProgress.getDetailedAnnex() != null && !flagshipProgress.getDetailedAnnex().isEmpty()) {
+          this.createSubtitle("Detailed Annex:");
+          try {
+            poiSummary.convertHTMLTags(document, flagshipProgress.getDetailedAnnex(), null);
+          } catch (Exception e) {
+            poiSummary.convertHTMLTags(document, poiSummary.replaceHTMLTags(flagshipProgress.getDetailedAnnex()), null);
+          }
+          // poiSummary.textLineBreak(document, 1);
+        }
+        i++;
+
+        String FP = "", annex = "", optional = "";
+        if (flagshipProgress.getDetailedAnnex() != null) {
+          annex = flagshipProgress.getDetailedAnnex();
+        }
+
+        if (this.isEntityPlatform()) {
+          FP = "M" + i;
+        } else {
+          FP = "F" + i;
+        }
+
+
+        POIField[] sData = {new POIField(FP, ParagraphAlignment.CENTER, true),
+          new POIField(poiSummary.replaceHTMLTags(annex), ParagraphAlignment.CENTER, true)};
+        data = Arrays.asList(sData);
+        datas.add(data);
+      }
+    }
+
+    poiSummary.textTable(document, headers, datas, false, "tableAnnexesAnnualReport2018");
+  }
+
 
   @Override
   public String execute() throws Exception {
@@ -2373,6 +2442,21 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         paragraph.setStyle("heading 38");
         this.createTable13();
 
+        // Part C
+        document.createParagraph().setPageBreak(true);
+        poiSummary.textHead1Title(document.createParagraph(), "Part C. Annexes");
+
+        // Table Annexes
+        document.createParagraph().setPageBreak(true);
+        paragraph = document.createParagraph();
+        run = paragraph.createRun();
+        run.setFontSize(13);
+        run.setBold(true);
+        // run.setText(this.getText("summaries.annualReport2018Platform.table13"));
+        // paragraph.setStyle("heading 38");
+        this.createTableAnnexes();
+
+
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         document.write(os);
         bytesDOC = os.toByteArray();
@@ -2822,6 +2906,22 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         run.setText(this.getText("summaries.annualReport2018Platform.table13"));
         paragraph.setStyle("heading 38");
         this.createTable13();
+
+
+        // Part C
+        document.createParagraph().setPageBreak(true);
+        poiSummary.textHead1Title(document.createParagraph(), "Part C. Annexes");
+
+        // Table Annexes
+        document.createParagraph().setPageBreak(true);
+        paragraph = document.createParagraph();
+        run = paragraph.createRun();
+        run.setFontSize(13);
+        run.setBold(true);
+        // run.setText(this.getText("summaries.annualReport2018Platform.table13"));
+        // paragraph.setStyle("heading 38");
+        this.createTableAnnexes();
+
 
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         document.write(os);
