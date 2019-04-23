@@ -940,6 +940,22 @@ public class POISummary {
     }
   }
 
+  public void tableAnnexesAnnualReportStyle(XWPFTable table) {
+    /* horizontal merge, From format tables A1 */
+
+    for (int x = 0; x < table.getNumberOfRows(); x++) {
+      XWPFTableRow row = table.getRow(x);
+      for (int y = 0; y < row.getTableCells().size(); y++) {
+        XWPFTableCell cell = row.getCell(y);
+        CTTblWidth cellWidth = cell.getCTTc().addNewTcPr().addNewTcW();
+
+        CTTcPr pr = cell.getCTTc().addNewTcPr();
+        // pr.addNewNoWrap();
+        cellWidth.setW(BigInteger.valueOf(100));
+      }
+    }
+  }
+
   public void tableAPowbCRPStyle(XWPFTable table) {
     /* Horizontal merge, From format table A */
     CTHMerge hMerge = CTHMerge.Factory.newInstance();
