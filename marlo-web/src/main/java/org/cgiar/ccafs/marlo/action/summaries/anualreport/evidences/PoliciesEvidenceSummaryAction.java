@@ -331,7 +331,7 @@ public class PoliciesEvidenceSummaryAction extends BaseSummariesAction implement
      */
     for (LiaisonInstitution liaisonInstitution : liaisonInstitutions) {
       List<ProjectPolicy> notSynthesisPolicies =
-        projectPolicyManager.getProjectPoliciesNoSynthesisList(liaisonInstitutionPMU, this.getSelectedPhase());
+        projectPolicyManager.getProjectPoliciesNoSynthesisList(liaisonInstitution, this.getSelectedPhase());
       for (ProjectPolicy notSynthesisPolicy : notSynthesisPolicies) {
         ARPoliciesEvidence policiesEvidence = new ARPoliciesEvidence();
         policiesEvidence.setProjectPolicy(notSynthesisPolicy);
