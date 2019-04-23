@@ -21,15 +21,12 @@ import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
-import org.cgiar.ciat.auth.LDAPService;
 import org.cgiar.ciat.auth.LDAPUser;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 
@@ -150,12 +147,17 @@ public class ManageUsersAction extends BaseAction {
         }
 
 
-        // Validate if is a CGIAR email.
-        if (this.validateOutlookUser(newUser.getEmail())) {
+        // Get the user if it is a CGIAR email.
+        LDAPUser LDAPUser = this.getOutlookUser(newUser.getEmail());
+
+        if (LDAPUser != null) {
+          newUser.setFirstName(LDAPUser.getFirstName());
+          newUser.setLastName(LDAPUser.getLastName());
+          newUser.setUsername(LDAPUser.getLogin().toLowerCase());
           newUser.setCgiarUser(true); // marking it as CGIAR user.
           this.addUser();
         } else {
-
+          // Non cgiar email
           if (newUser.getFirstName() != null && newUser.getLastName() != null
             && newUser.getFirstName().trim().length() > 0 && newUser.getLastName().trim().length() > 0) {
             newUser.setCgiarUser(false);
@@ -209,16 +211,6 @@ public class ManageUsersAction extends BaseAction {
     return showInputs;
   }
 
-
-  private boolean isValidEmail(String emailStr) {
-    boolean isValid = false;
-    Matcher matcher =
-      Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE).matcher(emailStr);
-    if (matcher.find()) {
-      isValid = true;
-    }
-    return isValid;
-  }
 
   @Override
   public void prepare() throws Exception {
@@ -289,33 +281,5 @@ public class ManageUsersAction extends BaseAction {
     this.showInputs = showInputs;
   }
 
-
-  /**
-   * Validate if a given user exists in the Outlook Active Directory .
-   * 
-   * @param email is the CGIAR email.
-   * @return a populated user with all the information that is coming from the OAD, or null if the email does not exist.
-   */
-  private boolean validateOutlookUser(String email) {
-    LDAPService service = new LDAPService();
-    if (config.isProduction()) {
-      service.setInternalConnection(false);
-    } else {
-      service.setInternalConnection(true);
-    }
-    LDAPUser user = null;
-    try {
-      user = service.searchUserByEmail(email);
-    } catch (Exception e) {
-      user = null;
-    }
-    if (user != null) {
-      newUser.setFirstName(user.getFirstName());
-      newUser.setLastName(user.getLastName());
-      newUser.setUsername(user.getLogin().toLowerCase());
-      return true;
-    }
-    return false;
-  }
 
 }

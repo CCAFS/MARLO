@@ -15,7 +15,6 @@
  
 [#include "/WEB-INF/global/pages/header.ftl" /]
 <hr />
-
 <div class="container">
   [#include "/WEB-INF/global/pages/breadcrumb.ftl" /]
 </div>
@@ -31,10 +30,20 @@
 
         [#-- Create User Guest --]
         <h4 class="sectionTitle">MARLO Create Guest User</h4>
-        <div class="borderBox">
+        <div class="borderBox">        
           [@s.form action=actionName enctype="multipart/form-data" ]
+          ${message}
           <input type="hidden" class="userId" name="user.id" />
           <div class="form-group row">
+            <div class="col-md-4">
+              <div class="form-group">
+                <label for="globalUnitID">Global Unit:</label>
+                <select name="selectedGlobalUnitID" id="globalUnitID" class="form-control">
+                  <option value="-1">Select an option...</option>
+                  [#list (crps)![] as globalUnit]<option value="${globalUnit.id}">${globalUnit.acronym}</option>[/#list]
+                </select>
+              </div>
+            </div>
             <div class="col-md-12 ">
               [@customForm.input name="user.email" i18nkey="Email" value="" className="userEmail" type="text"  required=true required=true editable=true /]
             </div>
