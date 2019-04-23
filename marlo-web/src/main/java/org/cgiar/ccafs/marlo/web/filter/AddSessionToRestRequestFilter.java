@@ -29,8 +29,10 @@ import org.cgiar.ccafs.marlo.security.APCustomRealm;
 import org.cgiar.ccafs.marlo.security.BaseSecurityContext;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.InetAddress;
 import java.net.URL;
 import java.nio.file.Path;
@@ -131,14 +133,20 @@ public class AddSessionToRestRequestFilter extends OncePerRequestFilter {
 
     monitoring.setServiceUrl(request.getRequestURL().toString());
 
-    // Get the Ip Remote
-    if (request != null) {
-      String remoteAddr = request.getHeader("X-FORWARDED-FOR");
-      if (remoteAddr == null || "".equals(remoteAddr)) {
-        remoteAddr = request.getRemoteAddr();
-        monitoring.setUserIp(request.getRemoteAddr());
-      }
+    String ip = "";
+    // Get the Ip Public
+    try {
+      URL whatismyip = new URL("http://checkip.amazonaws.com");
+      BufferedReader in = new BufferedReader(new InputStreamReader(whatismyip.openStream()));
+
+      ip = in.readLine();
+
+      monitoring.setUserIp(ip);
+    } catch (Exception e) {
+      // TODO: get message
+      monitoring.setUserIp("");
     }
+
 
     String[] split = restApiString.split("/");
 
@@ -205,6 +213,14 @@ public class AddSessionToRestRequestFilter extends OncePerRequestFilter {
 
     String globalUnitAcronym = split[0];
 
+
+    if (StringUtils.isNotEmpty(globalUnitAcronym) && globalUnitAcronym.equals("index.html")) {
+      if (this.isPublicUser()) {
+        Subject subject = SecurityUtils.getSubject();
+        subject.logout();
+      }
+    }
+
     // Check to see if a swagger request and if so, skip trying to extract the globalUnit from the url.
     if (StringUtils.isNotEmpty(globalUnitAcronym) && !globalUnitAcronym.equals("v2")
       && !globalUnitAcronym.equals("swagger-ui.html") && !globalUnitAcronym.equals("webjars")
@@ -262,6 +278,17 @@ public class AddSessionToRestRequestFilter extends OncePerRequestFilter {
   private Path getCountryFilePath() {
     String countryFilename = APConstants.DATABASE_COUNTRY_FILENAME;
     return Paths.get(config.getClarisaMapDatabase() + countryFilename);
+  }
+
+  private boolean isPublicUser() {
+    Subject subject = SecurityUtils.getSubject();
+    if (subject.isAuthenticated()) {
+      Session session = subject.getSession();
+      if (session.getAttribute(APConstants.CLARISA_PUBLIC) != null) {
+        return true;
+      }
+    }
+    return false;
   }
 
 

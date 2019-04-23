@@ -90,8 +90,8 @@ public class PartnershipValidator extends BaseValidator {
       if (this.isPMU(this.getLiaisonInstitution(action, reportSynthesis.getId()))) {
 
         // Validate Summary
-        if (!(this.isValidString(reportSynthesis.getReportSynthesisKeyPartnership().getSummary())
-          && this.wordCount(reportSynthesis.getReportSynthesisKeyPartnership().getSummary()) <= 300)) {
+        if (!(this.isValidString(reportSynthesis.getReportSynthesisKeyPartnership().getSummary()) && this
+          .wordCount(this.removeHtmlTags(reportSynthesis.getReportSynthesisKeyPartnership().getSummary())) <= 300)) {
           action.addMessage(action.getText("reportSynthesis.reportSynthesisKeyPartnership.summary"));
           action.getInvalidFields().put("input-reportSynthesis.reportSynthesisKeyPartnership.summary",
             InvalidFieldsMessages.EMPTYFIELD);
@@ -99,7 +99,8 @@ public class PartnershipValidator extends BaseValidator {
 
         // Validate Cgiar Summary
         if (!(this.isValidString(reportSynthesis.getReportSynthesisKeyPartnership().getSummaryCgiar())
-          && this.wordCount(reportSynthesis.getReportSynthesisKeyPartnership().getSummaryCgiar()) <= 300)) {
+          && this.wordCount(
+            this.removeHtmlTags(reportSynthesis.getReportSynthesisKeyPartnership().getSummaryCgiar())) <= 300)) {
           action.addMessage(action.getText("reportSynthesis.reportSynthesisKeyPartnership.summaryCgiar"));
           action.getInvalidFields().put("input-reportSynthesis.reportSynthesisKeyPartnership.summaryCgiar",
             InvalidFieldsMessages.EMPTYFIELD);
@@ -194,7 +195,8 @@ public class PartnershipValidator extends BaseValidator {
 
   private void validateExternal(BaseAction action, ReportSynthesisKeyPartnershipExternal external, int i) {
     // Validate Description
-    if (!(this.isValidString(external.getDescription()) && this.wordCount(external.getDescription()) <= 30)) {
+    if (!(this.isValidString(external.getDescription())
+      && this.wordCount(this.removeHtmlTags(external.getDescription())) <= 30)) {
       action.addMessage(
         action.getText("reportSynthesis.reportSynthesisKeyPartnership.partnerships[" + i + "].description"));
       action.getInvalidFields().put(

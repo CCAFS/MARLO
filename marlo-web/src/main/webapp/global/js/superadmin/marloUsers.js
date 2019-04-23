@@ -69,7 +69,17 @@ function init() {
                 return data || '<i>No Date<i>';
               }
           }
+      ],
+      aoColumnDefs: [
+        {
+            sType: "natural",
+            aTargets: [
+              0
+            ],
+            asSorting: [ "desc" ]
+        }
       ]
+      
   });
   $marloUsersTable.on('draw.dt', function() {
     $marloUsersTable.find('tbody tr').on("click", function() {
@@ -81,13 +91,12 @@ function init() {
        * $('html, body').animate({ scrollTop: $inputEmail.offset().top - 110 }, 1500);
        */
       // Find user details
-      ajaxService(userSelectedEmail);
+      // ajaxService(userSelectedEmail);
       
       // Modal
-      $('#myModal').on('shown.bs.modal', function () {
-        console.log('Modla open');
-      })
-      $('#myModal').modal();
+      /*
+       * $('#myModal').on('shown.bs.modal', function () { console.log('Modla open'); }) $('#myModal').modal();
+       */
     })
   });
   
@@ -118,7 +127,7 @@ function init() {
 
 function attachEvents() {
 
-  $(".button-save").on("click", checkAllFields);
+  // $(".button-save").on("click", checkAllFields);
 
   $('.blockTitle.closed').on('click', function() {
     if($(this).hasClass('closed')) {

@@ -408,6 +408,8 @@ public final class APConstants {
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.ProjectInnovation.projectInnovationOrganizations)";
   public static final String PROJECT_INNOVATION_CONTRIBUTING_ORGANIZATION_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.ProjectInnovation.projectInnovationContributingOrganization)";
+  public static final String PROJECT_INNOVATION_SHARED_RELATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.ProjectInnovation.projectInnovationShareds)";
   public static final String PROJECT_INNOVATION_CRP_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.ProjectInnovation.projectInnovationCrps)";
   public static final String PROJECT_DELIVERABLE_CRP_RELATION =
@@ -693,6 +695,9 @@ public final class APConstants {
   // GeoiIp maps database
   public static final String DATABASE_COUNTRY_FILENAME = "GeoLite2-Country.mmdb";
   public static final String DATABASE_CITY_FILENAME = "GeoLite2-City.mmdb";
+
+  // Clarisa public
+  public static final String CLARISA_PUBLIC = "clarisa_public";
 
   public static String getFilterBy() {
     return FILTER_BY;

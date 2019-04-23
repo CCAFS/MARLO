@@ -762,7 +762,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
               .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
         }
 
-        // Expected Study Quantifications List
+        // Expected Study Innovations List
         if (this.expectedStudy.getProjectExpectedStudyInnovations() != null) {
           this.expectedStudy
             .setInnovations(new ArrayList<>(this.expectedStudy.getProjectExpectedStudyInnovations().stream()

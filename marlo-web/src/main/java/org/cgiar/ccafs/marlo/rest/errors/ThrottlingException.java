@@ -15,20 +15,17 @@
 
 package org.cgiar.ccafs.marlo.rest.errors;
 
-public final class ErrorConstants {
 
-  public static final String ERR_CONCURRENCY_FAILURE = "error.concurrencyFailure";
-  public static final String ERR_ACCESS_DENIED = "error.accessDenied";
-  public static final String ERR_VALIDATION = "error.validation";
-  public static final String ERR_METHOD_NOT_SUPPORTED = "error.methodNotSupported";
+public class ThrottlingException extends RuntimeException {
 
-  public static final String ERR_RESOURCE_ALREADY_EXISTS = "error.resourceAlreadyExists";
-  public static final String ERR_INTERNAL_SERVER = "error.internalServerError";
-  public static final String ERR_RESOURCE_NOT_FOUND = "error.resourceNotFound";
+  /**
+   * 
+   */
+  private static final long serialVersionUID = 1L;
 
-  public static final String ERR_TOO_MANY_REQUEST = "error.TooManyRequest";
-
-  private ErrorConstants() {
+  public ThrottlingException(String message) {
+    super(message);
   }
+
 
 }

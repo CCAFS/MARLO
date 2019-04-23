@@ -172,6 +172,9 @@ import org.cgiar.ccafs.marlo.security.UserToken;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.HistoryDifference;
 
+import org.cgiar.ciat.auth.LDAPService;
+import org.cgiar.ciat.auth.LDAPUser;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -195,6 +198,8 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.TimeZone;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -1864,7 +1869,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return null;
   }
 
-
   /**
    * ***********************CENTER METHOD******************** This method gets
    * the specific section status from the sectionStatuses array for a Output.
@@ -1891,6 +1895,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
     return null;
   }
+
 
   /**
    * ************************ CENTER METHOD ********************* Validate the
@@ -2857,6 +2862,28 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
     return openDeliverables;
 
+  }
+
+  /**
+   * Validate if a given user exists in the Outlook Active Directory .
+   * 
+   * @param email is the CGIAR email.
+   * @return a populated user with all the information that is coming from the OAD, or null if the email does not exist.
+   */
+  public LDAPUser getOutlookUser(String email) {
+    LDAPService service = new LDAPService();
+    if (config.isProduction()) {
+      service.setInternalConnection(false);
+    } else {
+      service.setInternalConnection(true);
+    }
+    LDAPUser user = null;
+    try {
+      user = service.searchUserByEmail(email);
+    } catch (Exception e) {
+      user = null;
+    }
+    return user;
   }
 
   public Map<String, Parameter> getParameters() {
@@ -5059,12 +5086,16 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   /**
-   * Check if the annual Report is complete by the flagships or the PMU.
+   * Check if the annual Report 2018 is complete by the flagships or the PMU.
    * 
    * @param phaseID
    * @return
    */
   public boolean isCompleteReportSynthesis2018(long synthesisID) {
+
+    if (this.getActualPhase().getYear() != 2018) {
+      return false;
+    }
 
     int secctions = 0;
     if (this.sectionStatusManager.findAll() == null) {
@@ -5932,6 +5963,16 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
     return this.getActualPhase().getUpkeep();
 
+  }
+
+  public boolean isValidEmail(String emailStr) {
+    boolean isValid = false;
+    Matcher matcher =
+      Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE).matcher(emailStr);
+    if (matcher.find()) {
+      isValid = true;
+    }
+    return isValid;
   }
 
   /**

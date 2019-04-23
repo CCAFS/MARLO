@@ -23,6 +23,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
+import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationContributingOrganization;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCountry;
@@ -44,6 +45,7 @@ import java.text.SimpleDateFormat;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
@@ -66,8 +68,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This action prepare and create the Project Policies evidences to fill the part C of the annual report document.
- * == NOTE : this report works only works for annual report 2018 and later phases ==
+ * This action prepare and create the Project Innovations evidences to fill the part C of the annual report document.
+ * == NOTE : this report works only for annual report 2018 and later phases ==
  * 
  * @author Hermes Jimenez - CIAT/CCAFS
  */
@@ -127,7 +129,8 @@ public class InnovationsEvidenceSummaryAction extends BaseSummariesAction implem
     masterReport.getParameterValues().put("i8nColumnP", this.getText("projectInnovations.table.OICR"));
     masterReport.getParameterValues().put("i8nColumnQ", this.getText("projectInnovations.table.deliverable"));
     masterReport.getParameterValues().put("i8nColumnR", this.getText("projectInnovations.contributing"));
-    masterReport.getParameterValues().put("i8nColumnS", this.getText("projectInnovations.table.include"));
+    masterReport.getParameterValues().put("i8nColumnS", this.getText("projectInnovations.table.modification"));
+    masterReport.getParameterValues().put("i8nColumnT", this.getText("projectInnovations.table.include"));
     masterReport.getParameterValues().put("i8nHeader", this.getText("projectInnovations.table.header"));
 
     return masterReport;
@@ -143,8 +146,8 @@ public class InnovationsEvidenceSummaryAction extends BaseSummariesAction implem
 
     ByteArrayOutputStream os = new ByteArrayOutputStream();
     try {
-      Resource reportResource = resourceManager
-        .createDirectly(this.getClass().getResource("/pentaho/crp/InnovationsAR2018.prpt"), MasterReport.class);
+      Resource reportResource = resourceManager.createDirectly(
+        this.getClass().getResource("/pentaho/crp/AR-Evidences/InnovationsAR2018.prpt"), MasterReport.class);
       MasterReport masterReport = (MasterReport) reportResource.getResource();
       String center = this.getLoggedCrp().getAcronym();
       // Get datetime
@@ -268,16 +271,19 @@ public class InnovationsEvidenceSummaryAction extends BaseSummariesAction implem
      * paramP - OICR - study
      * paramQ - deliverable
      * paramR - crps/plts
-     * paramS - includeAR
+     * paramS - General last modification date
+     * paramT - includeAR
      * innovationURL
+     * studyURL
      * NOTE : does not mater the order into the implementation (ex: the paramO will be setup first that the paramA)
      */
     TypedTableModel model = new TypedTableModel(
       new String[] {"paramA", "paramB", "paramC", "paramD", "paramE", "paramF", "paramG", "paramH", "paramI", "paramJ",
-        "paramK", "paramL", "paramM", "paramN", "paramO", "paramP", "paramQ", "paramR", "paramS", "innovationURL"},
+        "paramK", "paramL", "paramM", "paramN", "paramO", "paramP", "paramQ", "paramR", "paramS", "paramT",
+        "innovationURL", "studyURL"},
       new Class[] {Long.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        String.class, String.class, String.class, String.class, String.class},
+        String.class, String.class, String.class, String.class, String.class, String.class, String.class},
       0);
 
     // Load the Innovations information
@@ -287,7 +293,7 @@ public class InnovationsEvidenceSummaryAction extends BaseSummariesAction implem
       Long paramA = null, paramB = null;
       String paramC = "", paramD = "", paramE = "", paramF = "", paramG = "", paramH = "", paramI = "", paramJ = "",
         paramK = "", paramL = "", paramM = "", paramN = "", paramO = "", paramP = "", paramQ = "", paramR = "",
-        paramS = "", innovationURL = "";
+        paramS = "", paramT = "", innovationURL = "", studyURL = "";
 
       // Condition to know if the project innovation have information in the selected phase
       if (innovationEvidences.getProjectInnovation().getProjectInnovationInfo(this.getSelectedPhase()) != null) {
@@ -484,14 +490,25 @@ public class InnovationsEvidenceSummaryAction extends BaseSummariesAction implem
             paramO = "<Not Defined>";
           }
         } else {
-          paramN = "<Not Defined>";
+          paramO = "<Not Defined>";
         }
 
         // OICR
         if (innovationEvidences.getProjectInnovation().getProjectInnovationInfo(this.getSelectedPhase())
           .getProjectExpectedStudy() != null) {
+
           paramP = innovationEvidences.getProjectInnovation().getProjectInnovationInfo(this.getSelectedPhase())
             .getProjectExpectedStudy().getComposedName();
+
+
+          // Generate the innovation - study url of MARLO
+          studyURL = this.getBaseUrl() + "/projects/" + this.getCrpSession() + "/study.do?expectedID="
+            + innovationEvidences.getProjectInnovation().getProjectInnovationInfo(this.getSelectedPhase())
+              .getProjectExpectedStudy().getId().toString()
+            + "&phaseID=" + this.getSelectedPhase().getId().toString() + "&projectID="
+            + innovationEvidences.getProjectInnovation().getProjectInnovationInfo(this.getSelectedPhase())
+              .getProjectExpectedStudy().getProject().getId().toString();
+
         } else {
           paramP = "<Not Defined>";
         }
@@ -532,11 +549,17 @@ public class InnovationsEvidenceSummaryAction extends BaseSummariesAction implem
         }
 
         // Is included in the AR
-        if (innovationEvidences.isInclude()) {
-          paramS = "Yes";
+        if (innovationEvidences.getInclude() == null) {
+          paramT = "<Not Applicable>";
         } else {
-          paramS = "No";
+          if (innovationEvidences.getInclude()) {
+            paramT = "Yes";
+          } else {
+            paramT = "No";
+          }
         }
+
+        paramS = innovationEvidences.getProjectInnovation().getActiveSince().toLocaleString();
 
         // Generate the innovation url of MARLO
         innovationURL = this.getBaseUrl() + "/projects/" + this.getCrpSession() + "/innovation.do?innovationID="
@@ -544,10 +567,11 @@ public class InnovationsEvidenceSummaryAction extends BaseSummariesAction implem
           + this.getSelectedPhase().getId().toString() + "&projectID="
           + innovationEvidences.getProjectInnovation().getProject().getId().toString();
 
+
       }
 
       model.addRow(new Object[] {paramA, paramB, paramC, paramD, paramE, paramF, paramG, paramH, paramI, paramJ, paramK,
-        paramL, paramM, paramN, paramO, paramP, paramQ, paramR, paramS, innovationURL});
+        paramL, paramM, paramN, paramO, paramP, paramQ, paramR, paramS, paramT, innovationURL, studyURL});
     }
     return model;
   }
@@ -566,8 +590,16 @@ public class InnovationsEvidenceSummaryAction extends BaseSummariesAction implem
     LiaisonInstitution liaisonInstitutionPMU = this.getLoggedCrp().getLiaisonInstitutions().stream()
       .filter(o -> o.isActive() && o.getAcronym().equals("PMU")).collect(Collectors.toList()).get(0);
 
+    List<LiaisonInstitution> liaisonInstitutions = this.getLoggedCrp().getLiaisonInstitutions().stream()
+      .filter(c -> c.getCrpProgram() != null && c.isActive()
+        && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+      .collect(Collectors.toList());
+    liaisonInstitutions.sort(Comparator.comparing(LiaisonInstitution::getAcronym));
+
+
     ReportSynthesis reportSynthesisPMU =
       reportSynthesisManager.findSynthesis(this.getSelectedPhase().getId(), liaisonInstitutionPMU.getId());
+
 
     if (reportSynthesisPMU.getReportSynthesisFlagshipProgress() != null) {
 
@@ -598,6 +630,26 @@ public class InnovationsEvidenceSummaryAction extends BaseSummariesAction implem
         innovationsPMU.add(innovationsEvidence);
       }
     }
+
+
+    /*
+     * Update 04/23/2019
+     * Add the Project Innovations that no belongs in the AR Synthesis.
+     */
+    for (LiaisonInstitution liaisonInstitution : liaisonInstitutions) {
+
+      List<ProjectInnovation> notSynthesisInnovations =
+        projectInnovationManager.getProjectInnovationsNoSynthesisList(liaisonInstitution, this.getSelectedPhase());
+
+      for (ProjectInnovation notSynthesisInnovation : notSynthesisInnovations) {
+        ARInnovationsEvidence innovationsEvidence = new ARInnovationsEvidence();
+        innovationsEvidence.setProjectInnovation(notSynthesisInnovation);
+        innovationsEvidence.setInclude(null);
+        innovationsPMU.add(innovationsEvidence);
+      }
+
+    }
+
 
     // sorted the list by ID
     if (innovationsPMU != null && !innovationsPMU.isEmpty()) {

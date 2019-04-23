@@ -74,7 +74,7 @@
   <table id="table-innovations" class="table table-striped table-hover">
     <thead>
       <tr class="subHeader">
-        <th id="tb-id" width="9%">[@s.text name="projectInnovations.table.id" /]</th>
+        <th id="tb-id" width="1%">ID</th>
         <th id="tb-title" width="40%">[@s.text name="projectInnovations.table.title" /]</th>
         <th id="tb-type" width="22%">[@s.text name="projectInnovations.table.type" /]</th>
         <th id="tb-stage" width="15%">[@s.text name="projectInnovations.table.stage" /]</th>

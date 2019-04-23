@@ -87,7 +87,7 @@ public class SrfProgressValidator extends BaseValidator {
 
       // Validate Summary
       if (!(this.isValidString(reportSynthesis.getReportSynthesisSrfProgress().getSummary())
-        && this.wordCount(reportSynthesis.getReportSynthesisSrfProgress().getSummary()) <= 400)) {
+        && this.wordCount(this.removeHtmlTags(reportSynthesis.getReportSynthesisSrfProgress().getSummary())) <= 400)) {
         action.addMessage(action.getText("reportSynthesis.reportSynthesisSrfProgress.overallContribution"));
         action.getInvalidFields().put("input-reportSynthesis.reportSynthesisSrfProgress.summary",
           InvalidFieldsMessages.EMPTYFIELD);
@@ -118,7 +118,8 @@ public class SrfProgressValidator extends BaseValidator {
   public void validateTargets(BaseAction action, ReportSynthesisSrfProgressTarget target, int i) {
 
     // Validate Brief Summary
-    if (!(this.isValidString(target.getBirefSummary()) && this.wordCount(target.getBirefSummary()) <= 150)) {
+    if (!(this.isValidString(target.getBirefSummary())
+      && this.wordCount(this.removeHtmlTags(target.getBirefSummary())) <= 150)) {
       action.addMessage(action.getText("Brief Summary"));
       action.addMissingField("Brief Summary");
       action.getInvalidFields().put(
@@ -128,15 +129,15 @@ public class SrfProgressValidator extends BaseValidator {
 
     // Validate Brief Summary
     /*
-    if (!(this.isValidString(target.getAdditionalContribution())
-      && this.wordCount(target.getAdditionalContribution()) <= 100)) {
-      action.addMessage(action.getText("Additional Contribution"));
-      action.addMissingField("Additional Contribution");
-      action.getInvalidFields().put(
-        "input-reportSynthesis.reportSynthesisSrfProgress.sloTargets[" + i + "].additionalContribution",
-        InvalidFieldsMessages.EMPTYFIELD);;
-    }
-*/
+     * if (!(this.isValidString(target.getAdditionalContribution())
+     * && this.wordCount(target.getAdditionalContribution()) <= 100)) {
+     * action.addMessage(action.getText("Additional Contribution"));
+     * action.addMissingField("Additional Contribution");
+     * action.getInvalidFields().put(
+     * "input-reportSynthesis.reportSynthesisSrfProgress.sloTargets[" + i + "].additionalContribution",
+     * InvalidFieldsMessages.EMPTYFIELD);;
+     * }
+     */
   }
 
 }
