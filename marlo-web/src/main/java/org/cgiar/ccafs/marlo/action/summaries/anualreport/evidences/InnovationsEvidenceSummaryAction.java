@@ -23,6 +23,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
+import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationContributingOrganization;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCountry;
@@ -44,6 +45,7 @@ import java.text.SimpleDateFormat;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
@@ -547,10 +549,10 @@ public class InnovationsEvidenceSummaryAction extends BaseSummariesAction implem
         }
 
         // Is included in the AR
-        if (this.getSelectedPhase().getYear() < 2018) {
+        if (innovationEvidences.getInclude() == null) {
           paramT = "<Not Applicable>";
         } else {
-          if (innovationEvidences.isInclude()) {
+          if (innovationEvidences.getInclude()) {
             paramT = "Yes";
           } else {
             paramT = "No";
@@ -588,8 +590,16 @@ public class InnovationsEvidenceSummaryAction extends BaseSummariesAction implem
     LiaisonInstitution liaisonInstitutionPMU = this.getLoggedCrp().getLiaisonInstitutions().stream()
       .filter(o -> o.isActive() && o.getAcronym().equals("PMU")).collect(Collectors.toList()).get(0);
 
+    List<LiaisonInstitution> liaisonInstitutions = this.getLoggedCrp().getLiaisonInstitutions().stream()
+      .filter(c -> c.getCrpProgram() != null && c.isActive()
+        && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+      .collect(Collectors.toList());
+    liaisonInstitutions.sort(Comparator.comparing(LiaisonInstitution::getAcronym));
+
+
     ReportSynthesis reportSynthesisPMU =
       reportSynthesisManager.findSynthesis(this.getSelectedPhase().getId(), liaisonInstitutionPMU.getId());
+
 
     if (reportSynthesisPMU.getReportSynthesisFlagshipProgress() != null) {
 
@@ -620,6 +630,26 @@ public class InnovationsEvidenceSummaryAction extends BaseSummariesAction implem
         innovationsPMU.add(innovationsEvidence);
       }
     }
+
+
+    /*
+     * Update 04/23/2019
+     * Add the Project Innovations that no belongs in the AR Synthesis.
+     */
+    for (LiaisonInstitution liaisonInstitution : liaisonInstitutions) {
+
+      List<ProjectInnovation> notSynthesisInnovations =
+        projectInnovationManager.getProjectInnovationsNoSynthesisList(liaisonInstitution, this.getSelectedPhase());
+
+      for (ProjectInnovation notSynthesisInnovation : notSynthesisInnovations) {
+        ARInnovationsEvidence innovationsEvidence = new ARInnovationsEvidence();
+        innovationsEvidence.setProjectInnovation(notSynthesisInnovation);
+        innovationsEvidence.setInclude(null);
+        innovationsPMU.add(innovationsEvidence);
+      }
+
+    }
+
 
     // sorted the list by ID
     if (innovationsPMU != null && !innovationsPMU.isEmpty()) {

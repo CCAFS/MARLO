@@ -66,6 +66,18 @@ public interface ProjectPolicyManager {
   public List<ProjectPolicy> getProjectPoliciesList(LiaisonInstitution liaisonInstitution, Phase phase);
 
   /**
+   * This method gets a list of projectPolicies that are active for an specific liaisonInstitution thats not belong in
+   * AR sytnhesis of the current phase
+   * Flagship: Get the list of projects that have project_focus equal to the liaisonInstitution
+   * PMU: Get the list of liaison according to what was selected by the flagships
+   * 
+   * @param liaisonInstitution
+   * @param phase
+   * @return a list from ProjectPolicy null if no exist records
+   */
+  public List<ProjectPolicy> getProjectPoliciesNoSynthesisList(LiaisonInstitution liaisonInstitution, Phase phase);
+
+  /**
    * This method gets a projectPolicy object by a given projectPolicy identifier.
    * 
    * @param projectPolicyID is the projectPolicy identifier.
