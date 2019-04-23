@@ -85,24 +85,24 @@ public class DeliverableMySQLDAO extends AbstractMarloDAO<Deliverable, Long> imp
       .append("INNER JOIN deliverables_info AS di ON d.id = di.deliverable_id AND di.is_active = 1 AND di.`id_phase` = "
         + phase.getId() + " ");
     if (filterPhaseYear) {
-      query.append("AND di.status IS NOT NULL AND ");
-      query.append("AND di.`status` != " + Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId()) + " AND ");
+      query.append("AND di.status IS NOT NULL ");
+      query.append("AND di.`status` != " + Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId()) + " ");
 
       query.append("AND (");
       // Extended with equal new expected year
       query.append("(di.`status` = " + Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
-        + " AND di.new_expected_year = " + phase.getYear() + " )");
+        + " AND di.new_expected_year = " + phase.getYear() + " ) ");
       // Completed with equal new expected year -equal year (if extended doesn't exists)-
       query.append("OR ");
       query.append("(di.`status` = " + Integer.parseInt(ProjectStatusEnum.Complete.getStatusId()) + " AND "
         + "((di.new_expected_year IS NOT NULL AND di.new_expected_year !=-1 AND di.new_expected_year = "
         + phase.getYear() + " ) " + "OR ((di.new_expected_year IS NULL OR di.new_expected_year =-1) AND di.year = "
-        + phase.getYear() + " )))");
+        + phase.getYear() + " ))) ");
       // Ongoing
       query.append("OR ");
       query.append("(di.`status` = " + Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId()) + " AND di.year = "
         + phase.getYear() + ")");
-      query.append(")");
+      query.append(") ");
     }
 
     if (filterParticipants) {

@@ -760,7 +760,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         Boolean bold = false;
         POIField[] sData =
           {new POIField(poiSummary.replaceHTMLTags(sloTarget), ParagraphAlignment.LEFT, bold, blackColor),
-            new POIField(briefSummaries, ParagraphAlignment.LEFT, true),
+            new POIField(this.deleteSpanTags(briefSummaries), ParagraphAlignment.LEFT, true),
             new POIField(additionalContribution, ParagraphAlignment.LEFT, true)};
         data = Arrays.asList(sData);
         datas.add(data);
@@ -1550,8 +1550,8 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
                         && m.getCrpMilestone().getId().equals(crpMilestone.getId()))
                       .collect(Collectors.toList()).get(0);
                 } catch (Exception e) {
-
                 }
+
                 if (milestoneOb != null) {
 
                   if (milestoneOb.getEvidence() != null) {
@@ -1884,7 +1884,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
       .getFlagshipsReportSynthesisFlagshipProgress(flagshipLiaisonInstitutions, this.getSelectedPhase().getId());
 
     if (flagshipsReportSynthesisFlagshipProgress != null) {
-      int i = 1;
+      int i = 0;
       for (ReportSynthesisFlagshipProgress flagshipProgress : flagshipsReportSynthesisFlagshipProgress) {
 
 
@@ -1894,9 +1894,9 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         }
 
         if (this.isEntityPlatform()) {
-          FP = "M" + i;
+          FP = flagships.get(i).getComposedName();
         } else {
-          FP = "F" + i;
+          FP = flagships.get(i).getComposedName();
         }
 
         i++;
@@ -1911,9 +1911,11 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     poiSummary.textTable(document, headers, datas, false, "tableAnnexesAnnualReport2018");
   }
 
-  public void deleteSpanTags(String text) {
+  public String deleteSpanTags(String text) {
     text = text.replaceAll("<span style=\"color: rgb(130, 130, 130); font-size: 0.98em;\">", "");
+    text = text.replaceAll("<span style=\"color: rgb(130, 130, 130); font-size: 0.98em;", "");
     text = text.replaceAll("</span>", "");
+    return text;
   }
 
 
@@ -2434,7 +2436,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         run = paragraph.createRun();
         run.setFontSize(13);
         run.setBold(true);
-        // run.setText(this.getText("summaries.annualReport2018Platform.table13"));
+        run.setText(this.getText("summaries.annualReport2018.tableAnnexes"));
         paragraph.setStyle("heading 39");
         this.createTableAnnexes();
 
@@ -2900,7 +2902,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         run = paragraph.createRun();
         run.setFontSize(13);
         run.setBold(true);
-        // run.setText(this.getText("summaries.annualReport2018Platform.table13"));
+        run.setText(this.getText("summaries.annualReport2018.tableAnnexes"));
         paragraph.setStyle("heading 39");
         this.createTableAnnexes();
 
