@@ -1887,33 +1887,8 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
       int i = 1;
       for (ReportSynthesisFlagshipProgress flagshipProgress : flagshipsReportSynthesisFlagshipProgress) {
 
-        if (flagshipProgress.getProgressByFlagships() != null) {
-          if (this.isEntityCRP()) {
-            this.createSubtitle("F" + i + " - Flagship progress:");
-          } else {
-            this.createSubtitle("M" + i + " - Module progress:");
-          }
-          try {
-            poiSummary.convertHTMLTags(document, flagshipProgress.getProgressByFlagships(), null);
-          } catch (Exception e) {
-            poiSummary.convertHTMLTags(document, poiSummary.replaceHTMLTags(flagshipProgress.getProgressByFlagships()),
-              null);
-          }
-          // poiSummary.textLineBreak(document, 1);
-        }
 
-        if (flagshipProgress.getDetailedAnnex() != null && !flagshipProgress.getDetailedAnnex().isEmpty()) {
-          this.createSubtitle("Detailed Annex:");
-          try {
-            poiSummary.convertHTMLTags(document, flagshipProgress.getDetailedAnnex(), null);
-          } catch (Exception e) {
-            poiSummary.convertHTMLTags(document, poiSummary.replaceHTMLTags(flagshipProgress.getDetailedAnnex()), null);
-          }
-          // poiSummary.textLineBreak(document, 1);
-        }
-        i++;
-
-        String FP = "", annex = "", optional = "";
+        String FP = "", annex = "";
         if (flagshipProgress.getDetailedAnnex() != null) {
           annex = flagshipProgress.getDetailedAnnex();
         }
@@ -1924,6 +1899,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
           FP = "F" + i;
         }
 
+        i++;
 
         POIField[] sData = {new POIField(FP, ParagraphAlignment.CENTER, true),
           new POIField(poiSummary.replaceHTMLTags(annex), ParagraphAlignment.CENTER, true)};
@@ -1933,6 +1909,11 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     }
 
     poiSummary.textTable(document, headers, datas, false, "tableAnnexesAnnualReport2018");
+  }
+
+  public void deleteSpanTags(String text) {
+    text = text.replaceAll("<span style=\"color: rgb(130, 130, 130); font-size: 0.98em;\">", "");
+    text = text.replaceAll("</span>", "");
   }
 
 
@@ -1983,6 +1964,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     addCustomHeadingStyle(document, "heading 36", 2);
     addCustomHeadingStyle(document, "heading 37", 2);
     addCustomHeadingStyle(document, "heading 38", 2);
+    addCustomHeadingStyle(document, "heading 39", 2);
     if (this.isEntityCRP()) {
       try {
 
@@ -2447,13 +2429,13 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         poiSummary.textHead1Title(document.createParagraph(), "Part C. Annexes");
 
         // Table Annexes
-        document.createParagraph().setPageBreak(true);
+        // document.createParagraph().setPageBreak(true);
         paragraph = document.createParagraph();
         run = paragraph.createRun();
         run.setFontSize(13);
         run.setBold(true);
         // run.setText(this.getText("summaries.annualReport2018Platform.table13"));
-        // paragraph.setStyle("heading 38");
+        paragraph.setStyle("heading 39");
         this.createTableAnnexes();
 
 
@@ -2913,13 +2895,13 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
         poiSummary.textHead1Title(document.createParagraph(), "Part C. Annexes");
 
         // Table Annexes
-        document.createParagraph().setPageBreak(true);
+        // document.createParagraph().setPageBreak(true);
         paragraph = document.createParagraph();
         run = paragraph.createRun();
         run.setFontSize(13);
         run.setBold(true);
         // run.setText(this.getText("summaries.annualReport2018Platform.table13"));
-        // paragraph.setStyle("heading 38");
+        paragraph.setStyle("heading 39");
         this.createTableAnnexes();
 
 
