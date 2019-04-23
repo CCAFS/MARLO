@@ -23,6 +23,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
+import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyPolicy;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicy;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicyCountry;
@@ -47,6 +48,7 @@ import java.text.SimpleDateFormat;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
@@ -285,6 +287,12 @@ public class PoliciesEvidenceSummaryAction extends BaseSummariesAction implement
     LiaisonInstitution liaisonInstitutionPMU = this.getLoggedCrp().getLiaisonInstitutions().stream()
       .filter(o -> o.isActive() && o.getAcronym().equals("PMU")).collect(Collectors.toList()).get(0);
 
+    List<LiaisonInstitution> liaisonInstitutions = this.getLoggedCrp().getLiaisonInstitutions().stream()
+      .filter(c -> c.getCrpProgram() != null && c.isActive()
+        && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+      .collect(Collectors.toList());
+    liaisonInstitutions.sort(Comparator.comparing(LiaisonInstitution::getAcronym));
+
     ReportSynthesis reportSynthesisPMU =
       reportSynthesisManager.findSynthesis(this.getSelectedPhase().getId(), liaisonInstitutionPMU.getId());
 
@@ -313,6 +321,21 @@ public class PoliciesEvidenceSummaryAction extends BaseSummariesAction implement
         ARPoliciesEvidence policiesEvidence = new ARPoliciesEvidence();
         policiesEvidence.setProjectPolicy(projectPolicy);
         policiesEvidence.setInclude(true);
+        policiesPMU.add(policiesEvidence);
+      }
+    }
+
+    /*
+     * Update 04/23/2019
+     * Add the Project Policies that no belongs in the AR Synthesis.
+     */
+    for (LiaisonInstitution liaisonInstitution : liaisonInstitutions) {
+      List<ProjectPolicy> notSynthesisPolicies =
+        projectPolicyManager.getProjectPoliciesNoSynthesisList(liaisonInstitutionPMU, this.getSelectedPhase());
+      for (ProjectPolicy notSynthesisPolicy : notSynthesisPolicies) {
+        ARPoliciesEvidence policiesEvidence = new ARPoliciesEvidence();
+        policiesEvidence.setProjectPolicy(notSynthesisPolicy);
+        policiesEvidence.setInclude(null);
         policiesPMU.add(policiesEvidence);
       }
     }
@@ -673,10 +696,10 @@ public class PoliciesEvidenceSummaryAction extends BaseSummariesAction implement
         }
 
         // Is included in the AR
-        if (this.getSelectedPhase().getYear() < 2018) {
+        if (policyEvidence.getInclude() == null) {
           paramW = "<Not Applicable>";
         } else {
-          if (policyEvidence.isInclude()) {
+          if (policyEvidence.getInclude()) {
             paramW = "Yes";
           } else {
             paramW = "No";

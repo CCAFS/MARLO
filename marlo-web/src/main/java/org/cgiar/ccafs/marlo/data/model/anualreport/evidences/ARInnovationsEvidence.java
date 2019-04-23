@@ -29,19 +29,20 @@ public class ARInnovationsEvidence implements Serializable {
   private static final long serialVersionUID = -8079271132976780268L;
 
   private ProjectInnovation projectInnovation;
-  private boolean include;
+  private Boolean include;
+
+
+  public Boolean getInclude() {
+    return include;
+  }
 
 
   public ProjectInnovation getProjectInnovation() {
     return projectInnovation;
   }
 
-  public boolean isInclude() {
-    return include;
-  }
 
-
-  public void setInclude(boolean include) {
+  public void setInclude(Boolean include) {
     this.include = include;
   }
 

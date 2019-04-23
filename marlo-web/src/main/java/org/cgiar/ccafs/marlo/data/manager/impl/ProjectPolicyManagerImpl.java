@@ -272,6 +272,41 @@ public class ProjectPolicyManagerImpl implements ProjectPolicyManager {
   }
 
   @Override
+  public List<ProjectPolicy> getProjectPoliciesNoSynthesisList(LiaisonInstitution liaisonInstitution, Phase phase) {
+    List<ProjectPolicy> projectPolicies = new ArrayList<>();
+    Phase phaseDB = phaseManager.getPhaseById(phase.getId());
+    // Fill Project policies of the current flagship
+    if (projectFocusManager.findAll() != null) {
+      List<ProjectFocus> projectFocus = new ArrayList<>(projectFocusManager.findAll().stream()
+        .filter(pf -> pf.isActive() && pf.getCrpProgram().getId().equals(liaisonInstitution.getCrpProgram().getId())
+          && pf.getPhase() != null && pf.getPhase().getId().equals(phaseDB.getId()))
+        .collect(Collectors.toList()));
+
+      for (ProjectFocus focus : projectFocus) {
+        Project project = projectManager.getProjectById(focus.getProject().getId());
+        List<ProjectPolicy> plannedProjectPolicies = new ArrayList<>(project.getProjectPolicies().stream()
+          .filter(
+            pp -> pp.isActive() && pp.getProjectPolicyInfo(phaseDB) != null && !pp.getProjectPolicyInfo().isRequired())
+          .collect(Collectors.toList()));
+
+        for (ProjectPolicy projectPolicy : plannedProjectPolicies) {
+          projectPolicy.getProjectPolicyInfo(phaseDB);
+          projectPolicy.setSubIdos(projectPolicy.getSubIdos(phaseDB));
+          projectPolicy.setCrossCuttingMarkers(projectPolicy.getCrossCuttingMarkers(phaseDB));
+          projectPolicy.setOwners(projectPolicy.getOwners(phaseDB));
+          projectPolicy.setGeographicScopes(projectPolicy.getGeographicScopes(phaseDB));
+          projectPolicy.setRegions(projectPolicy.getRegions(phaseDB));
+          projectPolicy.setCountries(projectPolicy.getCountries(phaseDB));
+          projectPolicy.setEvidences(projectPolicy.getEvidences(phaseDB));
+          projectPolicies.add(projectPolicy);
+        }
+      }
+    }
+
+    return projectPolicies;
+  }
+
+  @Override
   public ProjectPolicy getProjectPolicyById(long projectPolicyID) {
 
     return projectPolicyDAO.find(projectPolicyID);
