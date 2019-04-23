@@ -7,7 +7,7 @@
 <body>
 	 
   <script type="text/javascript">
-    window.location.href = window.location.href + "api/index.html";
+    window.location.href = window.location.href + "swagger/index.html";
   </script>
 
 </body>

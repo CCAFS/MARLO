@@ -175,8 +175,18 @@
           </div>
         
         </div>
+        
+         
       </div>
         
+      [#-- Projects shared --]
+      [#if false]
+      <h3 class="headTitle">[@s.text name="projectInnovations.sharedProjects.title" /]</h3>
+      <div class="borderBox">
+        [@customForm.elementsListComponent name="innovation.sharedInnovations" elementType="project" elementList=(innovation.sharedInnovations)![] label="projectInnovations.sharedProjects"  listName="myProjects" keyFieldName="id" displayFieldName="composedName" required=false /]
+      </div>
+      [/#if]
+      
       [#-- Section Buttons & hidden inputs--]
       [#include "/WEB-INF/crp/views/projects/buttons-innovation.ftl" /]
         
