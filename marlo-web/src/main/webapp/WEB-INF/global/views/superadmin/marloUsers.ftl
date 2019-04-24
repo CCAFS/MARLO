@@ -33,7 +33,6 @@
         <div class="borderBox">        
           [@s.form action=actionName enctype="multipart/form-data" ]
           
-          ${message}
           <input type="hidden" class="userId" name="user.id" />
           <div class="form-group">
             <div class="form-group row">
