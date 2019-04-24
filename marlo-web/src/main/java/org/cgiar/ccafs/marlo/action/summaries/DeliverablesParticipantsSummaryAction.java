@@ -217,7 +217,7 @@ public class DeliverablesParticipantsSummaryAction extends BaseSummariesAction i
     TypedTableModel model = new TypedTableModel(
       new String[] {"paramA", "paramB", "paramC", "paramD", "paramE", "paramF", "paramG", "paramH", "paramI", "paramJ",
         "paramK", "paramL", "paramM", "paramN", "paramO", "paramP", "paramQ", "deliverableURL"},
-      new Class[] {Long.class, String.class, String.class, String.class, String.class, String.class, String.class,
+      new Class[] {String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class},
       0);
@@ -232,13 +232,12 @@ public class DeliverablesParticipantsSummaryAction extends BaseSummariesAction i
 
     if (deliverables != null && !deliverables.isEmpty()) {
       for (Deliverable deliverable : deliverables) {
-        Long paramA = null;
-        String paramB = null, paramC = null, paramD = null, paramE = null, paramF = null, paramG = null, paramH = null,
-          paramI = null, paramJ = null, paramK = null, paramL = null, paramM = null, paramN = null, paramO = null,
-          paramP = null, paramQ = null, deliverableURL = null;
+        String paramA = null, paramB = null, paramC = null, paramD = null, paramE = null, paramF = null, paramG = null,
+          paramH = null, paramI = null, paramJ = null, paramK = null, paramL = null, paramM = null, paramN = null,
+          paramO = null, paramP = null, paramQ = null, deliverableURL = null;
 
         // paramA - DeliverableID
-        paramA = deliverable.getId();
+        paramA = "D" + deliverable.getId();
 
         DeliverableInfo deliverableInfo = deliverable.getDeliverableInfo(this.getSelectedPhase());
         if (deliverableInfo != null) {
@@ -306,17 +305,36 @@ public class DeliverablesParticipantsSummaryAction extends BaseSummariesAction i
             && !deliverableParticipant.getEventActivityName().isEmpty()) {
             paramI = deliverableParticipant.getEventActivityName();
           }
-          // paramJ - Type of Activity
+
           if (deliverableParticipant.getRepIndTypeActivity() != null
             && deliverableParticipant.getRepIndTypeActivity().getName() != null
             && !deliverableParticipant.getRepIndTypeActivity().getName().isEmpty()) {
+
+            // paramJ - Type of Activity
             paramJ = deliverableParticipant.getRepIndTypeActivity().getName();
+
+            if (deliverableParticipant.getRepIndTypeActivity().getId()
+              .equals(this.getReportingIndTypeActivityAcademicDegree())) {
+              // paramK - Academic Degree
+              if (deliverableParticipant.getAcademicDegree() != null
+                && !deliverableParticipant.getAcademicDegree().isEmpty()) {
+                paramK = deliverableParticipant.getAcademicDegree();
+              }
+            } else {
+              paramK = "<Not Applicable>";
+            }
+
+            if (deliverableParticipant.getRepIndTypeActivity().getIsFormal()) {
+              // paramQ - Training period of time
+              if (deliverableParticipant.getRepIndTrainingTerm() != null) {
+                paramQ = deliverableParticipant.getRepIndTrainingTerm().getName();
+              }
+            } else {
+              paramQ = "<Not Applicable>";
+            }
           }
-          // paramK - Academic Degree
-          if (deliverableParticipant.getAcademicDegree() != null
-            && !deliverableParticipant.getAcademicDegree().isEmpty()) {
-            paramJ = deliverableParticipant.getRepIndTypeActivity().getName();
-          }
+
+
           // paramL - Total number of participants
           if (deliverableParticipant.getParticipants() != null) {
             paramL = deliverableParticipant.getParticipants() + "";
@@ -353,10 +371,20 @@ public class DeliverablesParticipantsSummaryAction extends BaseSummariesAction i
           if (deliverableParticipant.getRepIndTypeParticipant() != null) {
             paramP = deliverableParticipant.getRepIndTypeParticipant().getName();
           }
-          // paramQ - Training period of time
-          if (deliverableParticipant.getRepIndTrainingTerm() != null) {
-            paramQ = deliverableParticipant.getRepIndTrainingTerm().getName();
+
+          // Generate the deliverable url of MARLO
+          // Publication
+          if (deliverable.getIsPublication() != null && deliverable.getIsPublication()
+            && deliverable.getProject() == null) {
+            deliverableURL = this.getBaseUrl() + "/publications/" + this.getSelectedPhase().getCrp().getAcronym()
+              + "/publication.do?deliverableID=" + deliverable.getId() + "&phaseID=" + this.getSelectedPhase().getId();
+          } else {
+            // Project deliverable
+            deliverableURL = this.getBaseUrl() + "/projects/" + this.getSelectedPhase().getCrp().getAcronym()
+              + "/deliverable.do?deliverableID=" + deliverable.getId() + "&phaseID=" + this.getSelectedPhase().getId();
           }
+
+
           model.addRow(new Object[] {paramA, paramB, paramC, paramD, paramE, paramF, paramG, paramH, paramI, paramJ,
             paramK, paramL, paramM, paramN, paramO, paramP, paramQ, deliverableURL});
         }
