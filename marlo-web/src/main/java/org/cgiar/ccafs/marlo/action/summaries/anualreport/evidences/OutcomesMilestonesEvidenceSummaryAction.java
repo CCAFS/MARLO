@@ -22,11 +22,9 @@ import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
-import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyPolicy;
-import org.cgiar.ccafs.marlo.data.model.ProjectPolicy;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicyCountry;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicyCrossCuttingMarker;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicyCrp;
@@ -37,6 +35,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectPolicyRegion;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicySubIdo;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressOutcome;
+import org.cgiar.ccafs.marlo.data.model.anualreport.evidences.AROutcomeMilestoneEvidence;
 import org.cgiar.ccafs.marlo.data.model.anualreport.evidences.ARPoliciesEvidence;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
@@ -52,7 +51,6 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
@@ -274,15 +272,9 @@ public class OutcomesMilestonesEvidenceSummaryAction extends BaseSummariesAction
    * 
    * @return a list of all project policies with the indicator if this is included in the Annual Report
    */
-  public List<ReportSynthesisFlagshipProgressOutcome> getPoliciesInfo() {
+  public List<AROutcomeMilestoneEvidence> getOutcomeMilestonesInfo() {
 
-    List<ReportSynthesisFlagshipProgressOutcome> reportOutcomes =
-      new ArrayList<ReportSynthesisFlagshipProgressOutcome>();
-
-    LinkedHashSet<ProjectPolicy> AllPolicies = new LinkedHashSet<>();
-
-    LiaisonInstitution liaisonInstitutionPMU = this.getLoggedCrp().getLiaisonInstitutions().stream()
-      .filter(o -> o.isActive() && o.getAcronym().equals("PMU")).collect(Collectors.toList()).get(0);
+    List<AROutcomeMilestoneEvidence> arOutcomeMilestoneEvidences = new ArrayList<AROutcomeMilestoneEvidence>();
 
     List<LiaisonInstitution> liaisonInstitutions = this.getLoggedCrp().getLiaisonInstitutions().stream()
       .filter(c -> c.getCrpProgram() != null && c.isActive()
@@ -300,21 +292,22 @@ public class OutcomesMilestonesEvidenceSummaryAction extends BaseSummariesAction
         if (reportSynthesisFG.getReportSynthesisFlagshipProgress().getReportSynthesisFlagshipProgressOutcomes() != null
           && !reportSynthesisFG.getReportSynthesisFlagshipProgress().getReportSynthesisFlagshipProgressOutcomes()
             .isEmpty()) {
+
+          List<ReportSynthesisFlagshipProgressOutcome> progressOutcomes = new ArrayList<>(
+            reportSynthesisFG.getReportSynthesisFlagshipProgress().getReportSynthesisFlagshipProgressOutcomes().stream()
+              .filter(o -> o.isActive()).collect(Collectors.toList()));
+
+          for (ReportSynthesisFlagshipProgressOutcome progressOutcome : progressOutcomes) {
+            // TODO
+
+          }
         }
       }
 
     }
 
-    ReportSynthesis reportSynthesisPMU =
-      reportSynthesisManager.findSynthesis(this.getSelectedPhase().getId(), liaisonInstitutionPMU.getId());
 
-
-    for (LiaisonInstitution liaisonInstitution : liaisonInstitutions) {
-      CrpProgram flagship = liaisonInstitution.getCrpProgram();
-
-    }
-
-    return reportOutcomes;
+    return arOutcomeMilestoneEvidences;
   }
 
 
