@@ -3,7 +3,7 @@
   [#-- Messages are going to show using notify plugin (see global.js) --]
   <ul class="messages" style="display: none;">
      [@s.iterator value="actionMessages"]<li id="message" class="success">[@s.property escape="false" /]</li>[/@s.iterator]
-     [@s.iterator value="errorMessages"]<li id="message" class="error">[@s.property escape="false" /]</li>[/@s.iterator]
+     [@s.iterator value="actionErrors"]<li id="message" class="error">[@s.property escape="false" /]</li>[/@s.iterator]
   </ul>
 </section>
 
@@ -17,10 +17,10 @@
         </ul>
       </li>
       [/#if]
-      [#if errorMessages?has_content]
+      [#if actionErrors?has_content]
       <li><strong>Debug Mode: Error Messages:</strong>
         <ul>
-          [#list errorMessages as message]<li>${message}</li>[/#list]
+          [#list actionErrors as message]<li>${message}</li>[/#list]
         </ul>
       </li>
       [/#if]
