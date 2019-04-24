@@ -83,8 +83,25 @@ public class DeliverablesParticipantsSummaryAction extends BaseSummariesAction i
    * @return masterReport with i8n parameters added
    */
   private MasterReport addi8nParameters(MasterReport masterReport) {
-    masterReport.getParameterValues().put("i8nColumnA", this.getText("projectInnovations.table.id"));
-    masterReport.getParameterValues().put("i8nHeader", this.getText("projectInnovations.table.header"));
+    masterReport.getParameterValues().put("i8nColumnA", this.getText("searchTerms.deliverableId"));
+    masterReport.getParameterValues().put("i8nColumnB", this.getText("project.deliverable.generalInformation.title"));
+    masterReport.getParameterValues().put("i8nColumnC",
+      this.getText("project.deliverable.generalInformation.description"));
+    masterReport.getParameterValues().put("i8nColumnD", this.getText("project.deliverable.generalInformation.type"));
+    masterReport.getParameterValues().put("i8nColumnE", this.getText("project.deliverable.generalInformation.subType"));
+    masterReport.getParameterValues().put("i8nColumnF", this.getText("project.deliverable.generalInformation.status"));
+    masterReport.getParameterValues().put("i8nColumnG", this.getText("project.deliverable.generalInformation.year"));
+    masterReport.getParameterValues().put("i8nColumnH", this.getText("deliverable.newExpectedYear"));
+    masterReport.getParameterValues().put("i8nColumnI", this.getText("involveParticipants.title"));
+    masterReport.getParameterValues().put("i8nColumnJ", this.getText("involveParticipants.typeActivity"));
+    masterReport.getParameterValues().put("i8nColumnK", this.getText("involveParticipants.academicDegree"));
+    masterReport.getParameterValues().put("i8nColumnL", this.getText("involveParticipants.participants"));
+    masterReport.getParameterValues().put("i8nColumnM", this.getText("involveParticipants.estimate.participant"));
+    masterReport.getParameterValues().put("i8nColumnN", this.getText("involveParticipants.females"));
+    masterReport.getParameterValues().put("i8nColumnO", this.getText("involveParticipants.estimate.female"));
+    masterReport.getParameterValues().put("i8nColumnP", this.getText("involveParticipants.participantsType"));
+    masterReport.getParameterValues().put("i8nColumnQ", this.getText("involveParticipants.trainingPeriod"));
+    masterReport.getParameterValues().put("i8nHeader", this.getText("summaries.deliverable.participants"));
     return masterReport;
   }
 
