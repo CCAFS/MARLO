@@ -101,7 +101,10 @@ public class DeliverablesParticipantsSummaryAction extends BaseSummariesAction i
     masterReport.getParameterValues().put("i8nColumnO", this.getText("involveParticipants.estimate.female"));
     masterReport.getParameterValues().put("i8nColumnP", this.getText("involveParticipants.participantsType"));
     masterReport.getParameterValues().put("i8nColumnQ", this.getText("involveParticipants.trainingPeriod"));
-    masterReport.getParameterValues().put("i8nHeader", this.getText("summaries.deliverable.participants"));
+    masterReport.getParameterValues().put("i8nHeader",
+      this.getLoggedCrp().getAcronym() + " " + this.getSelectedPhase().getName() + " " + this.getSelectedYear() + " "
+        + this.getText("summaries.deliverable.participants"));
+
     return masterReport;
   }
 
