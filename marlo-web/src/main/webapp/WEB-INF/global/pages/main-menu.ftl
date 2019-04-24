@@ -3,6 +3,14 @@
 
 [#assign reportingActiveMenu = (reportingActive)!false ]
 
+[#if annualReport2018]
+  [#assign reportingDefaultAction = '${((PMU)!false)?string("narrative","crpProgress")}' ]
+  [#assign reportingDefaultNamespace = 'annualReport2018' ]
+[#else]
+  [#assign reportingDefaultAction = 'crpProgress' ]
+  [#assign reportingDefaultNamespace = 'annualReport' ]
+[/#if]
+
 [#attempt]
   [#assign canAcessPublications = (action.canAcessPublications())!false ]
   [#assign canAcessCrp = (action.canAcessCrp())!false ]
@@ -40,9 +48,9 @@
     ]
   },
   [#-- SYNTHESIS REPORTING - CRP --]
-  { 'slug': 'synthesis', 'name': 'menu.synthesis',      'namespace': '/annualReport${annualReport2018?string("2018", "")}',       'action': '${(crpSession)!}/${((PMU)!false)?string("narrative","crpProgress")}',    'visible': logged && reportingActive && !centerGlobalUnit && !upKeepActive, 'active': true,    
+  { 'slug': 'synthesis', 'name': 'menu.synthesis',      'namespace': '/${reportingDefaultNamespace}',       'action': '${(crpSession)!}/${reportingDefaultAction}',    'visible': logged && reportingActive && !centerGlobalUnit && !upKeepActive, 'active': true,    
     'subItems' : [
-      { 'slug': 'annualReport', 'name': 'menu.synthesis.annualReport', 'namespace': '/annualReport${annualReport2018?string("2018", "")}',  'action': '${(crpSession)!}/${((PMU)!false)?string("narrative","crpProgress")}',  'visible': logged, 'active': true },
+      { 'slug': 'annualReport', 'name': 'menu.synthesis.annualReport', 'namespace': '/${reportingDefaultNamespace}',  'action': '${(crpSession)!}/${reportingDefaultAction}',  'visible': logged, 'active': true },
       { 'slug': 'projectsEvaluation', 'name': 'menu.synthesis.projectsEvaluation', 'namespace': '/synthesis',  'action': '${(crpSession)!}/projectsEvaluation',  'visible': logged, 'active': false, "development": true }
     ]
   },
