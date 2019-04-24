@@ -29,6 +29,7 @@ import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.data.model.UserRole;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.SendMailS;
+import org.cgiar.ccafs.marlo.validation.superadmin.GuestUsersValidator;
 
 import org.cgiar.ciat.auth.LDAPUser;
 
@@ -83,15 +84,15 @@ public class GuestUsersAction extends BaseAction {
   private final SendMailS sendMailS;
   // Parameters
   private List<GlobalUnit> crps;
-
   private User user;
-
   private long selectedGlobalUnitID;
-  private String message = "";
+  private String message;
+  private GuestUsersValidator validator;
 
   @Inject
   public GuestUsersAction(APConfig config, GlobalUnitManager globalUnitManager, UserManager userManager,
-    CrpUserManager crpUserManager, UserRoleManager userRoleManager, RoleManager roleManager, SendMailS sendMailS) {
+    CrpUserManager crpUserManager, UserRoleManager userRoleManager, RoleManager roleManager, SendMailS sendMailS,
+    GuestUsersValidator validator) {
     super(config);
     this.globalUnitManager = globalUnitManager;
     this.userManager = userManager;
@@ -99,6 +100,7 @@ public class GuestUsersAction extends BaseAction {
     this.userRoleManager = userRoleManager;
     this.roleManager = roleManager;
     this.sendMailS = sendMailS;
+    this.validator = validator;
   }
 
 
@@ -130,96 +132,101 @@ public class GuestUsersAction extends BaseAction {
   public void prepare() throws Exception {
     crps = new ArrayList<>(
       globalUnitManager.findAll().stream().filter(c -> c.isActive() && c.isMarlo()).collect(Collectors.toList()));
-
   }
 
 
   @Override
   public String save() {
-    if (selectedGlobalUnitID != -1) {
-      GlobalUnit globalUnit = globalUnitManager.getGlobalUnitById(selectedGlobalUnitID);
+    if (this.canAccessSuperAdmin()) {
+      if (selectedGlobalUnitID != -1) {
+        GlobalUnit globalUnit = globalUnitManager.getGlobalUnitById(selectedGlobalUnitID);
 
-      User newUser = new User();
-      newUser.setFirstName(user.getFirstName());
-      newUser.setLastName(user.getLastName());
-      newUser.setEmail(user.getEmail());
-      newUser.setModificationJustification("User created in MARLO " + this.getActionName().replace("/", "-"));
-      newUser.setAutoSave(true);
-      newUser.setId(null);
-      newUser.setActive(true);
+        User newUser = new User();
+        newUser.setFirstName(user.getFirstName());
+        newUser.setLastName(user.getLastName());
+        newUser.setEmail(user.getEmail());
+        newUser.setModificationJustification("User created in MARLO " + this.getActionName().replace("/", "-"));
+        newUser.setAutoSave(true);
+        newUser.setId(null);
+        newUser.setActive(true);
 
-      // Check if the email is valid
-      if (newUser.getEmail() != null && this.isValidEmail(newUser.getEmail())) {
-        boolean emailExists = false;
-        // We need to validate that the email does not exist yet into our database.
-        emailExists = userManager.getUserByEmail(newUser.getEmail()) == null ? false : true;
+        // Check if the email is valid
+        if (newUser.getEmail() != null && this.isValidEmail(newUser.getEmail())) {
+          boolean emailExists = false;
+          // We need to validate that the email does not exist yet into our database.
+          emailExists = userManager.getUserByEmail(newUser.getEmail()) == null ? false : true;
 
-        // If email already exists.
-        if (emailExists) {
-          // If email already exists into our database.
-          newUser = null;
-          LOG.warn(this.getText("manageUsers.email.existing"));
-          message = this.getText("manageUsers.email.existing");
-          return SUCCESS;
-        }
+          // If email already exists.
+          if (emailExists) {
+            // If email already exists into our database.
+            newUser = null;
+            LOG.warn(this.getText("manageUsers.email.existing"));
+            message = this.getText("manageUsers.email.existing");
+            return SUCCESS;
+          }
 
-        // Get the user if it is a CGIAR email.
-        LDAPUser LDAPUser = this.getOutlookUser(newUser.getEmail());
+          // Get the user if it is a CGIAR email.
+          LDAPUser LDAPUser = this.getOutlookUser(newUser.getEmail());
 
-        String password = this.getText("email.outlookPassword");
-        if (LDAPUser != null) {
-          // CGIAR user
-          newUser.setFirstName(LDAPUser.getFirstName());
-          newUser.setLastName(LDAPUser.getLastName());
-          newUser.setUsername(LDAPUser.getLogin().toLowerCase());
-          newUser.setCgiarUser(true);
-          newUser = userManager.saveUser(newUser);
-          message = this.getText("saving.saved");
-        } else {
-          // Non CGIAR user
-          if (newUser.getFirstName() != null && newUser.getLastName() != null
-            && newUser.getFirstName().trim().length() > 0 && newUser.getLastName().trim().length() > 0) {
-            newUser.setCgiarUser(false);
-            newUser.setModificationJustification("User created in MARLO " + this.getActionName().replace("/", "-"));
-            password = RandomStringUtils.randomNumeric(6);
-            newUser.setPassword(password);
+          String password = this.getText("email.outlookPassword");
+          if (LDAPUser != null) {
+            // CGIAR user
+            newUser.setFirstName(LDAPUser.getFirstName());
+            newUser.setLastName(LDAPUser.getLastName());
+            newUser.setUsername(LDAPUser.getLogin().toLowerCase());
+            newUser.setCgiarUser(true);
             newUser = userManager.saveUser(newUser);
             message = this.getText("saving.saved");
+          } else {
+            // Non CGIAR user
+            if (newUser.getFirstName() != null && newUser.getLastName() != null
+              && newUser.getFirstName().trim().length() > 0 && newUser.getLastName().trim().length() > 0) {
+              newUser.setCgiarUser(false);
+              newUser.setModificationJustification("User created in MARLO " + this.getActionName().replace("/", "-"));
+              password = RandomStringUtils.randomNumeric(6);
+              newUser.setPassword(password);
+              newUser = userManager.saveUser(newUser);
+              message = this.getText("saving.saved");
+            }
           }
+
+          try {
+            this.sendMailNewUser(newUser, globalUnit, password);
+          } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+            LOG.error(e.getMessage());
+          }
+
+          // Add Crp Users
+          CrpUser crpUser = new CrpUser();
+          crpUser.setUser(newUser);
+          crpUser.setCrp(globalUnit);
+          crpUser = crpUserManager.saveCrpUser(crpUser);
+
+          // Add guest user role
+          UserRole userRole = new UserRole();
+          Role guestRole =
+            globalUnit.getRoles().stream().filter(r -> r.getAcronym().equals("G")).collect(Collectors.toList()).get(0);
+          userRole.setRole(guestRole);
+          userRole.setUser(newUser);
+          userRole = userRoleManager.saveUserRole(userRole);
+
+
+        } else {
+          LOG.warn(this.getText("manageUsers.email.notValid"));
+          message = this.getText("manageUsers.email.notValid");
         }
-
-        try {
-          this.sendMailNewUser(newUser, globalUnit, password);
-        } catch (NoSuchAlgorithmException e) {
-          e.printStackTrace();
-          LOG.error(e.getMessage());
-        }
-
-        // Add Crp Users
-        CrpUser crpUser = new CrpUser();
-        crpUser.setUser(newUser);
-        crpUser.setCrp(globalUnit);
-        crpUser = crpUserManager.saveCrpUser(crpUser);
-
-        // Add guest user role
-        UserRole userRole = new UserRole();
-        Role guestRole =
-          globalUnit.getRoles().stream().filter(r -> r.getAcronym().equals("G")).collect(Collectors.toList()).get(0);
-        userRole.setRole(guestRole);
-        userRole.setUser(newUser);
-        userRole = userRoleManager.saveUserRole(userRole);
-
-
       } else {
-        LOG.warn(this.getText("manageUsers.email.notValid"));
-        message = this.getText("manageUsers.email.notValid");
+        message = this.getText("login.error.selectCrp");
+        LOG.warn(this.getText("login.error.selectCrp"));
       }
-    } else {
-      message = this.getText("login.error.selectCrp");
-      LOG.warn(this.getText("login.error.selectCrp"));
-    }
 
-    return SUCCESS;
+      this.addActionMessage("message:" + this.getText("saving.saved"));
+      return SUCCESS;
+
+    } else {
+      return NOT_AUTHORIZED;
+    }
   }
 
 
@@ -302,6 +309,13 @@ public class GuestUsersAction extends BaseAction {
 
   public void setUser(User user) {
     this.user = user;
+  }
+
+  @Override
+  public void validate() {
+    if (save) {
+      validator.validate(this, user, selectedGlobalUnitID, true);
+    }
   }
 
 }
