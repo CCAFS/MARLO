@@ -15,9 +15,13 @@
 
 package org.cgiar.ccafs.marlo.data.model.anualreport.evidences;
 
+import org.cgiar.ccafs.marlo.data.model.CrpMilestone;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
+import org.cgiar.ccafs.marlo.data.model.RepIndMilestoneReason;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressCrossCuttingMarker;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
@@ -28,8 +32,69 @@ public class AROutcomeMilestoneEvidence implements Serializable {
 
   private static final long serialVersionUID = -8081297800002633467L;
 
-  CrpProgramOutcome crpProgramOutcome;
-  String outcomeProgress;
+  private CrpProgramOutcome crpProgramOutcome;
+  private String outcomeProgress;
+  private CrpMilestone crpMilestone;
+  private Long milestonesStatus;
+  private RepIndMilestoneReason repIndMilestoneReason;
+  private String evidence;
+  List<ReportSynthesisFlagshipProgressCrossCuttingMarker> crossCuttingMarkers;
+
+  public List<ReportSynthesisFlagshipProgressCrossCuttingMarker> getCrossCuttingMarkers() {
+    return crossCuttingMarkers;
+  }
+
+  public CrpMilestone getCrpMilestone() {
+    return crpMilestone;
+  }
+
+  public CrpProgramOutcome getCrpProgramOutcome() {
+    return crpProgramOutcome;
+  }
+
+  public String getEvidence() {
+    return evidence;
+  }
+
+  public Long getMilestonesStatus() {
+    return milestonesStatus;
+  }
+
+  public String getOutcomeProgress() {
+    return outcomeProgress;
+  }
+
+  public RepIndMilestoneReason getRepIndMilestoneReason() {
+    return repIndMilestoneReason;
+  }
+
+  public void setCrossCuttingMarkers(List<ReportSynthesisFlagshipProgressCrossCuttingMarker> crossCuttingMarkers) {
+    this.crossCuttingMarkers = crossCuttingMarkers;
+  }
+
+  public void setCrpMilestone(CrpMilestone crpMilestone) {
+    this.crpMilestone = crpMilestone;
+  }
+
+  public void setCrpProgramOutcome(CrpProgramOutcome crpProgramOutcome) {
+    this.crpProgramOutcome = crpProgramOutcome;
+  }
+
+  public void setEvidence(String evidence) {
+    this.evidence = evidence;
+  }
+
+  public void setMilestonesStatus(Long milestonesStatus) {
+    this.milestonesStatus = milestonesStatus;
+  }
+
+  public void setOutcomeProgress(String outcomeProgress) {
+    this.outcomeProgress = outcomeProgress;
+  }
+
+  public void setRepIndMilestoneReason(RepIndMilestoneReason repIndMilestoneReason) {
+    this.repIndMilestoneReason = repIndMilestoneReason;
+  }
 
 
 }
