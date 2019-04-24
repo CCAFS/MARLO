@@ -21,19 +21,22 @@ import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
+import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressMilestoneManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
+import org.cgiar.ccafs.marlo.data.model.CrpMilestone;
+import org.cgiar.ccafs.marlo.data.model.CrpProgram;
+import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationContributingOrganization;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCountry;
-import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCrp;
-import org.cgiar.ccafs.marlo.data.model.ProjectInnovationDeliverable;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationGeographicScope;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationOrganization;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationRegion;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressInnovation;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressMilestone;
 import org.cgiar.ccafs.marlo.data.model.anualreport.evidences.ARInnovationsEvidence;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
@@ -83,6 +86,8 @@ public class OutcomesMilestonesSummaryAction extends BaseSummariesAction impleme
 
   private final ReportSynthesisManager reportSynthesisManager;
   private final ProjectInnovationManager projectInnovationManager;
+  private ReportSynthesisFlagshipProgressMilestoneManager reportSynthesisFlagshipProgressMilestoneManager;
+  private List<CrpProgram> flagships;
 
 
   // Parameters
@@ -95,11 +100,14 @@ public class OutcomesMilestonesSummaryAction extends BaseSummariesAction impleme
   @Inject
   public OutcomesMilestonesSummaryAction(APConfig config, GlobalUnitManager crpManager, PhaseManager phaseManager,
     ResourceManager resourceManager, ProjectManager projectManager, ReportSynthesisManager reportSynthesisManager,
-    ProjectInnovationManager projectInnovationManager) {
+    ProjectInnovationManager projectInnovationManager,
+    ReportSynthesisFlagshipProgressMilestoneManager reportSynthesisFlagshipProgressMilestoneManager) {
     super(config, crpManager, phaseManager, projectManager);
     this.resourceManager = resourceManager;
     this.projectInnovationManager = projectInnovationManager;
     this.reportSynthesisManager = reportSynthesisManager;
+    this.reportSynthesisFlagshipProgressMilestoneManager = reportSynthesisFlagshipProgressMilestoneManager;
+
   }
 
   /**
@@ -155,7 +163,7 @@ public class OutcomesMilestonesSummaryAction extends BaseSummariesAction impleme
     ByteArrayOutputStream os = new ByteArrayOutputStream();
     try {
       Resource reportResource = resourceManager.createDirectly(
-        this.getClass().getResource("/pentaho/crp/AR-Evidences/InnovationsAR2018.prpt"), MasterReport.class);
+        this.getClass().getResource("/pentaho/crp/AR-Evidences/OutcomesMilestonesAR2018.prpt"), MasterReport.class);
       MasterReport masterReport = (MasterReport) reportResource.getResource();
       String center = this.getLoggedCrp().getAcronym();
       // Get datetime
@@ -249,6 +257,7 @@ public class OutcomesMilestonesSummaryAction extends BaseSummariesAction impleme
     return fileName.toString();
   }
 
+
   public String getHighlightsImagesUrl(String projectId) {
     return config.getDownloadURL() + "/" + this.getHighlightsImagesUrlPath(projectId).replace('\\', '/');
   }
@@ -285,300 +294,255 @@ public class OutcomesMilestonesSummaryAction extends BaseSummariesAction impleme
       new String[] {"paramA", "paramB", "paramC", "paramD", "paramE", "paramF", "paramG", "paramH", "paramI", "paramJ",
         "paramK", "paramL", "paramM", "paramN", "paramO", "paramP", "innovationURL", "studyURL"},
       new Class[] {Long.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        String.class, String.class, String.class},
+        String.class, String.class, String.class, String.class, String.class, String.class, String.class},
       0);
 
     // Load the Innovations information
     List<ARInnovationsEvidence> innovationsEvidences = this.getInnovationsInfo();
+    List<CrpProgramOutcome> outcomesList;
 
-    for (ARInnovationsEvidence innovationEvidences : innovationsEvidences) {
-      Long paramA = null, paramB = null;
-      String paramC = "", paramD = "", paramE = "", paramF = "", paramG = "", paramH = "", paramI = "", paramJ = "",
-        paramK = "", paramL = "", paramM = "", paramN = "", paramO = "", paramP = "", paramQ = "", paramR = "",
-        paramS = "", paramT = "", innovationURL = "", studyURL = "";
+
+    for (CrpProgram flagship : flagships) {
+      Long paramA = null;
+      String paramB = "", paramC = "", paramD = "", paramE = "", paramF = "", paramG = "", paramH = "", paramI = "",
+        paramJ = "", paramK = "", paramL = "", paramM = "", paramN = "", paramO = "", paramP = "", outcomeURL = "",
+        studyURL = "";
 
       // Condition to know if the project innovation have information in the selected phase
-      if (innovationEvidences.getProjectInnovation().getProjectInnovationInfo(this.getSelectedPhase()) != null) {
+      if (flagship.getOutcomes() != null) {
+        outcomesList = flagship.getOutcomes();
 
-        // Innovation Id
-        paramA = innovationEvidences.getProjectInnovation().getId();
-        // Year
-        paramB = innovationEvidences.getProjectInnovation().getProjectInnovationInfo(this.getSelectedPhase()).getYear();
-        // Title
-        if (innovationEvidences.getProjectInnovation().getProjectInnovationInfo(this.getSelectedPhase())
-          .getTitle() != null
-          && !innovationEvidences.getProjectInnovation().getProjectInnovationInfo(this.getSelectedPhase()).getTitle()
-            .isEmpty()) {
-          paramC =
-            innovationEvidences.getProjectInnovation().getProjectInnovationInfo(this.getSelectedPhase()).getTitle();
-        } else {
-          paramC = "<Not Defined>";
-        }
+        for (CrpProgramOutcome outcome : outcomesList) {
+          for (CrpMilestone milestone : outcome.getMilestones()) {
+            ReportSynthesisFlagshipProgressMilestone reportSynthesisFlagshipProgressMilestone =
+              this.getReportSynthesisFlagshipProgressProgram(milestone.getId(), flagship.getId());
 
-        // Description
-        if (innovationEvidences.getProjectInnovation().getProjectInnovationInfo(this.getSelectedPhase())
-          .getNarrative() != null
-          && !innovationEvidences.getProjectInnovation().getProjectInnovationInfo(this.getSelectedPhase())
-            .getNarrative().isEmpty()) {
-          paramD =
-            innovationEvidences.getProjectInnovation().getProjectInnovationInfo(this.getSelectedPhase()).getNarrative();
-        } else {
-          paramD = "<Not Defined>";
-        }
-
-        // Stage of Innovation
-        if (innovationEvidences.getProjectInnovation().getProjectInnovationInfo(this.getSelectedPhase())
-          .getRepIndStageInnovation() != null) {
-          paramE = innovationEvidences.getProjectInnovation().getProjectInnovationInfo(this.getSelectedPhase())
-            .getRepIndStageInnovation().getName();
-        } else {
-          paramE = "<Not Defined>";
-        }
-
-        // Innovation Type
-        if (innovationEvidences.getProjectInnovation().getProjectInnovationInfo(this.getSelectedPhase())
-          .getRepIndInnovationType() != null) {
-          paramF = innovationEvidences.getProjectInnovation().getProjectInnovationInfo(this.getSelectedPhase())
-            .getRepIndInnovationType().getName();
-        } else {
-          paramF = "<Not Defined>";
-        }
-
-        // Crp contribution
-        if (innovationEvidences.getProjectInnovation().getProjectInnovationInfo(this.getSelectedPhase())
-          .getRepIndContributionOfCrp() != null) {
-          paramG = innovationEvidences.getProjectInnovation().getProjectInnovationInfo(this.getSelectedPhase())
-            .getRepIndContributionOfCrp().getName();
-        } else {
-          paramG = "<Not Defined>";
-        }
-
-
-        // Next Users
-        if (innovationEvidences.getProjectInnovation().getProjectInnovationOrganizations() != null) {
-          List<ProjectInnovationOrganization> organizations =
-            new ArrayList<>(innovationEvidences.getProjectInnovation().getProjectInnovationOrganizations().stream()
-              .filter(o -> o.isActive() && o.getPhase().getId().equals(this.getSelectedPhase().getId()))
-              .collect(Collectors.toList()));
-          if (organizations != null && !organizations.isEmpty()) {
-            for (ProjectInnovationOrganization organization : organizations) {
-              paramH += "● " + organization.getRepIndOrganizationType().getName() + "\n";
+            // outcome Id
+            paramA = null;
+            // FP
+            paramB = flagship.getAcronym();
+            // Outcome
+            if (milestone.getTitle() != null) {
+              paramC = milestone.getTitle();
+            } else {
+              paramC = "<Not Defined>";
             }
-          } else {
-            paramH = "<Not Defined>";
-          }
-        } else {
-          paramH = "<Not Defined>";
-        }
 
-        // Geographic scopes, regions and countries
-        boolean haveRegions = false;
-        boolean haveCountries = false;
-
-        if (innovationEvidences.getProjectInnovation().getProjectInnovationGeographicScopes() != null) {
-
-          List<ProjectInnovationGeographicScope> geoScopes =
-            new ArrayList<>(innovationEvidences.getProjectInnovation().getProjectInnovationGeographicScopes().stream()
-              .filter(o -> o.isActive() && o.getPhase().getId().equals(this.getSelectedPhase().getId()))
-              .collect(Collectors.toList()));
-          if (geoScopes != null && !geoScopes.isEmpty()) {
-            // Ask if the selection of the geographic scope needs add a Region or a Country
-            for (ProjectInnovationGeographicScope projectInnovationGeographicScope : geoScopes) {
-
-              if (projectInnovationGeographicScope.getRepIndGeographicScope().getId() == 2) {
-                haveRegions = true;
-              }
-              if (projectInnovationGeographicScope.getRepIndGeographicScope().getId() != 1
-                && projectInnovationGeographicScope.getRepIndGeographicScope().getId() != 2) {
-                haveCountries = true;
-              }
-              paramI += "● " + projectInnovationGeographicScope.getRepIndGeographicScope().getName() + "\n";
+            // outcome Progress
+            if (outcome != null) {
+              paramD = innovationEvidences.getProjectInnovation().getProjectInnovationInfo(this.getSelectedPhase())
+                .getNarrative();
+            } else {
+              paramD = "<Not Defined>";
             }
-          } else {
-            paramI = "<Not Defined>";
-          }
-        } else {
-          paramI = "<Not Defined>";
-        }
 
-        if (haveRegions) {
-          // Load Regions
-          if (innovationEvidences.getProjectInnovation().getProjectInnovationRegions() != null) {
-            List<ProjectInnovationRegion> regions =
-              new ArrayList<>(innovationEvidences.getProjectInnovation().getProjectInnovationRegions().stream()
-                .filter(o -> o.isActive() && o.getPhase().getId().equals(this.getSelectedPhase().getId()))
-                .collect(Collectors.toList()));
-            if (regions != null && !regions.isEmpty()) {
-              for (ProjectInnovationRegion region : regions) {
-                paramJ += "● " + region.getLocElement().getName() + "\n";
+            // Milestone
+            if (milestone != null && milestone.getComposedName() != null) {
+              paramE = milestone.getComposedName();
+            } else {
+              paramE = "<Not Defined>";
+            }
+
+            // Status
+            if (innovationEvidences.getProjectInnovation().getProjectInnovationInfo(this.getSelectedPhase())
+              .getRepIndInnovationType() != null) {
+              paramF = innovationEvidences.getProjectInnovation().getProjectInnovationInfo(this.getSelectedPhase())
+                .getRepIndInnovationType().getName();
+            } else {
+              paramF = "<Not Defined>";
+            }
+
+            // Crp contribution
+            if (innovationEvidences.getProjectInnovation().getProjectInnovationInfo(this.getSelectedPhase())
+              .getRepIndContributionOfCrp() != null) {
+              paramG = innovationEvidences.getProjectInnovation().getProjectInnovationInfo(this.getSelectedPhase())
+                .getRepIndContributionOfCrp().getName();
+            } else {
+              paramG = "<Not Defined>";
+            }
+
+
+            // Next Users
+            if (innovationEvidences.getProjectInnovation().getProjectInnovationOrganizations() != null) {
+              List<ProjectInnovationOrganization> organizations =
+                new ArrayList<>(innovationEvidences.getProjectInnovation().getProjectInnovationOrganizations().stream()
+                  .filter(o -> o.isActive() && o.getPhase().getId().equals(this.getSelectedPhase().getId()))
+                  .collect(Collectors.toList()));
+              if (organizations != null && !organizations.isEmpty()) {
+                for (ProjectInnovationOrganization organization : organizations) {
+                  paramH += "● " + organization.getRepIndOrganizationType().getName() + "\n";
+                }
+              } else {
+                paramH = "<Not Defined>";
               }
             } else {
-              paramJ = "<Not Defined>";
+              paramH = "<Not Defined>";
             }
-          } else {
-            paramJ = "<Not Defined>";
-          }
-        } else {
-          paramJ = "<Not Applicable>";
-        }
 
-        if (haveCountries) {
-          // Load Countries
-          if (innovationEvidences.getProjectInnovation().getProjectInnovationCountries() != null) {
-            List<ProjectInnovationCountry> countries =
-              new ArrayList<>(innovationEvidences.getProjectInnovation().getProjectInnovationCountries().stream()
-                .filter(o -> o.isActive() && o.getPhase().getId().equals(this.getSelectedPhase().getId()))
-                .collect(Collectors.toList()));
-            if (countries != null && !countries.isEmpty()) {
-              for (ProjectInnovationCountry country : countries) {
-                paramK += "● " + country.getLocElement().getName() + "\n";
+            // Geographic scopes, regions and countries
+            boolean haveRegions = false;
+            boolean haveCountries = false;
+
+            if (innovationEvidences.getProjectInnovation().getProjectInnovationGeographicScopes() != null) {
+
+              List<ProjectInnovationGeographicScope> geoScopes =
+                new ArrayList<>(innovationEvidences.getProjectInnovation().getProjectInnovationGeographicScopes()
+                  .stream().filter(o -> o.isActive() && o.getPhase().getId().equals(this.getSelectedPhase().getId()))
+                  .collect(Collectors.toList()));
+              if (geoScopes != null && !geoScopes.isEmpty()) {
+                // Ask if the selection of the geographic scope needs add a Region or a Country
+                for (ProjectInnovationGeographicScope projectInnovationGeographicScope : geoScopes) {
+
+                  if (projectInnovationGeographicScope.getRepIndGeographicScope().getId() == 2) {
+                    haveRegions = true;
+                  }
+                  if (projectInnovationGeographicScope.getRepIndGeographicScope().getId() != 1
+                    && projectInnovationGeographicScope.getRepIndGeographicScope().getId() != 2) {
+                    haveCountries = true;
+                  }
+                  paramI += "● " + projectInnovationGeographicScope.getRepIndGeographicScope().getName() + "\n";
+                }
+              } else {
+                paramI = "<Not Defined>";
               }
             } else {
-              paramK = "<Not Defined>";
+              paramI = "<Not Defined>";
             }
-          } else {
-            paramK = "<Not Defined>";
-          }
-        } else {
-          paramK = "<Not Applicable>";
-        }
 
-        // Description Stage
-        if (innovationEvidences.getProjectInnovation().getProjectInnovationInfo(this.getSelectedPhase())
-          .getDescriptionStage() != null
-          && !innovationEvidences.getProjectInnovation().getProjectInnovationInfo(this.getSelectedPhase())
-            .getDescriptionStage().isEmpty()) {
-          paramL = innovationEvidences.getProjectInnovation().getProjectInnovationInfo(this.getSelectedPhase())
-            .getDescriptionStage();
-        } else {
-          paramL = "<Not Defined>";
-        }
-
-
-        // Clear lead
-        if (innovationEvidences.getProjectInnovation().getProjectInnovationInfo(this.getSelectedPhase())
-          .getClearLead() != null) {
-          if (innovationEvidences.getProjectInnovation().getProjectInnovationInfo(this.getSelectedPhase())
-            .getClearLead()) {
-            paramM = "No";
-
-          } else {
-            paramM = "Yes";
-          }
-        } else {
-          paramM = "Yes";
-        }
-
-        // Lead organization
-        if (innovationEvidences.getProjectInnovation().getProjectInnovationInfo(this.getSelectedPhase())
-          .getLeadOrganization() != null) {
-          paramN = innovationEvidences.getProjectInnovation().getProjectInnovationInfo(this.getSelectedPhase())
-            .getLeadOrganization().getComposedName();
-        } else {
-          paramN = "<Not Defined>";
-        }
-
-        // Organizations
-        if (innovationEvidences.getProjectInnovation().getProjectInnovationContributingOrganization() != null) {
-          List<ProjectInnovationContributingOrganization> organizations =
-            new ArrayList<>(innovationEvidences.getProjectInnovation().getProjectInnovationContributingOrganization()
-              .stream().filter(o -> o.isActive() && o.getPhase().getId().equals(this.getSelectedPhase().getId()))
-              .collect(Collectors.toList()));
-          if (organizations != null && !organizations.isEmpty()) {
-            for (ProjectInnovationContributingOrganization organization : organizations) {
-              paramO += "● " + organization.getInstitution().getComposedName() + "\n";
+            if (haveRegions) {
+              // Load Regions
+              if (innovationEvidences.getProjectInnovation().getProjectInnovationRegions() != null) {
+                List<ProjectInnovationRegion> regions =
+                  new ArrayList<>(innovationEvidences.getProjectInnovation().getProjectInnovationRegions().stream()
+                    .filter(o -> o.isActive() && o.getPhase().getId().equals(this.getSelectedPhase().getId()))
+                    .collect(Collectors.toList()));
+                if (regions != null && !regions.isEmpty()) {
+                  for (ProjectInnovationRegion region : regions) {
+                    paramJ += "● " + region.getLocElement().getName() + "\n";
+                  }
+                } else {
+                  paramJ = "<Not Defined>";
+                }
+              } else {
+                paramJ = "<Not Defined>";
+              }
+            } else {
+              paramJ = "<Not Applicable>";
             }
-          } else {
-            paramO = "<Not Defined>";
-          }
-        } else {
-          paramO = "<Not Defined>";
-        }
 
-        // OICR
-        if (innovationEvidences.getProjectInnovation().getProjectInnovationInfo(this.getSelectedPhase())
-          .getProjectExpectedStudy() != null) {
-
-          paramP = innovationEvidences.getProjectInnovation().getProjectInnovationInfo(this.getSelectedPhase())
-            .getProjectExpectedStudy().getComposedName();
-
-
-          // Generate the innovation - study url of MARLO
-          studyURL = this.getBaseUrl() + "/projects/" + this.getCrpSession() + "/study.do?expectedID="
-            + innovationEvidences.getProjectInnovation().getProjectInnovationInfo(this.getSelectedPhase())
-              .getProjectExpectedStudy().getId().toString()
-            + "&phaseID=" + this.getSelectedPhase().getId().toString() + "&projectID="
-            + innovationEvidences.getProjectInnovation().getProjectInnovationInfo(this.getSelectedPhase())
-              .getProjectExpectedStudy().getProject().getId().toString();
-
-        } else {
-          paramP = "<Not Defined>";
-        }
-
-        // Deliverables
-        if (innovationEvidences.getProjectInnovation().getProjectInnovationDeliverables() != null) {
-          List<ProjectInnovationDeliverable> deliverables =
-            new ArrayList<>(innovationEvidences.getProjectInnovation().getProjectInnovationDeliverables().stream()
-              .filter(o -> o.isActive() && o.getPhase().getId().equals(this.getSelectedPhase().getId()))
-              .collect(Collectors.toList()));
-          if (deliverables != null && !deliverables.isEmpty()) {
-            for (ProjectInnovationDeliverable deliverable : deliverables) {
-              paramQ += "● " + "(D" + deliverable.getDeliverable().getId() + ") "
-                + deliverable.getDeliverable().getDeliverableInfo(this.getSelectedPhase()).getTitle() + "\n";
+            if (haveCountries) {
+              // Load Countries
+              if (innovationEvidences.getProjectInnovation().getProjectInnovationCountries() != null) {
+                List<ProjectInnovationCountry> countries =
+                  new ArrayList<>(innovationEvidences.getProjectInnovation().getProjectInnovationCountries().stream()
+                    .filter(o -> o.isActive() && o.getPhase().getId().equals(this.getSelectedPhase().getId()))
+                    .collect(Collectors.toList()));
+                if (countries != null && !countries.isEmpty()) {
+                  for (ProjectInnovationCountry country : countries) {
+                    paramK += "● " + country.getLocElement().getName() + "\n";
+                  }
+                } else {
+                  paramK = "<Not Defined>";
+                }
+              } else {
+                paramK = "<Not Defined>";
+              }
+            } else {
+              paramK = "<Not Applicable>";
             }
-          } else {
-            paramQ = "<Not Defined>";
-          }
-        } else {
-          paramQ = "<Not Defined>";
-        }
 
-        // CRPs / PLTs
-        if (innovationEvidences.getProjectInnovation().getProjectInnovationCrps() != null) {
-          List<ProjectInnovationCrp> crps =
-            new ArrayList<>(innovationEvidences.getProjectInnovation().getProjectInnovationCrps().stream()
-              .filter(o -> o.isActive() && o.getPhase().getId().equals(this.getSelectedPhase().getId()))
-              .collect(Collectors.toList()));
-          if (crps != null && !crps.isEmpty()) {
-            for (ProjectInnovationCrp crp : crps) {
-              paramR += "● " + crp.getGlobalUnit().getComposedName() + "\n";
+            // Description Stage
+            if (innovationEvidences.getProjectInnovation().getProjectInnovationInfo(this.getSelectedPhase())
+              .getDescriptionStage() != null
+              && !innovationEvidences.getProjectInnovation().getProjectInnovationInfo(this.getSelectedPhase())
+                .getDescriptionStage().isEmpty()) {
+              paramL = innovationEvidences.getProjectInnovation().getProjectInnovationInfo(this.getSelectedPhase())
+                .getDescriptionStage();
+            } else {
+              paramL = "<Not Defined>";
             }
-          } else {
-            paramR = "<Not Defined>";
+
+
+            // Clear lead
+            if (innovationEvidences.getProjectInnovation().getProjectInnovationInfo(this.getSelectedPhase())
+              .getClearLead() != null) {
+              if (innovationEvidences.getProjectInnovation().getProjectInnovationInfo(this.getSelectedPhase())
+                .getClearLead()) {
+                paramM = "No";
+
+              } else {
+                paramM = "Yes";
+              }
+            } else {
+              paramM = "Yes";
+            }
+
+            // Lead organization
+            if (innovationEvidences.getProjectInnovation().getProjectInnovationInfo(this.getSelectedPhase())
+              .getLeadOrganization() != null) {
+              paramN = innovationEvidences.getProjectInnovation().getProjectInnovationInfo(this.getSelectedPhase())
+                .getLeadOrganization().getComposedName();
+            } else {
+              paramN = "<Not Defined>";
+            }
+
+            // Organizations
+            if (innovationEvidences.getProjectInnovation().getProjectInnovationContributingOrganization() != null) {
+              List<ProjectInnovationContributingOrganization> organizations = new ArrayList<>(
+                innovationEvidences.getProjectInnovation().getProjectInnovationContributingOrganization().stream()
+                  .filter(o -> o.isActive() && o.getPhase().getId().equals(this.getSelectedPhase().getId()))
+                  .collect(Collectors.toList()));
+              if (organizations != null && !organizations.isEmpty()) {
+                for (ProjectInnovationContributingOrganization organization : organizations) {
+                  paramO += "● " + organization.getInstitution().getComposedName() + "\n";
+                }
+              } else {
+                paramO = "<Not Defined>";
+              }
+            } else {
+              paramO = "<Not Defined>";
+            }
+
+            // OICR
+            if (innovationEvidences.getProjectInnovation().getProjectInnovationInfo(this.getSelectedPhase())
+              .getProjectExpectedStudy() != null) {
+
+              paramP = innovationEvidences.getProjectInnovation().getProjectInnovationInfo(this.getSelectedPhase())
+                .getProjectExpectedStudy().getComposedName();
+
+
+              // Generate the innovation - study url of MARLO
+              studyURL = this.getBaseUrl() + "/projects/" + this.getCrpSession() + "/study.do?expectedID="
+                + innovationEvidences.getProjectInnovation().getProjectInnovationInfo(this.getSelectedPhase())
+                  .getProjectExpectedStudy().getId().toString()
+                + "&phaseID=" + this.getSelectedPhase().getId().toString() + "&projectID="
+                + innovationEvidences.getProjectInnovation().getProjectInnovationInfo(this.getSelectedPhase())
+                  .getProjectExpectedStudy().getProject().getId().toString();
+
+            } else {
+              paramP = "<Not Defined>";
+            }
+
+
+            // Generate the innovation url of MARLO
+            outcomeURL = this.getBaseUrl() + "/projects/" + this.getCrpSession() + "/innovation.do?innovationID="
+              + innovationEvidences.getProjectInnovation().getId().toString() + "&phaseID="
+              + this.getSelectedPhase().getId().toString() + "&projectID="
+              + innovationEvidences.getProjectInnovation().getProject().getId().toString();
+
           }
-        } else {
-          paramR = "<Not Defined>";
+
+
         }
-
-        // Is included in the AR
-        if (innovationEvidences.getInclude() == null) {
-          paramT = "<Not Applicable>";
-        } else {
-          if (innovationEvidences.getInclude()) {
-            paramT = "Yes";
-          } else {
-            paramT = "No";
-          }
-        }
-
-        paramS = innovationEvidences.getProjectInnovation().getActiveSince().toLocaleString();
-
-        // Generate the innovation url of MARLO
-        innovationURL = this.getBaseUrl() + "/projects/" + this.getCrpSession() + "/innovation.do?innovationID="
-          + innovationEvidences.getProjectInnovation().getId().toString() + "&phaseID="
-          + this.getSelectedPhase().getId().toString() + "&projectID="
-          + innovationEvidences.getProjectInnovation().getProject().getId().toString();
 
 
       }
 
       model.addRow(new Object[] {paramA, paramB, paramC, paramD, paramE, paramF, paramG, paramH, paramI, paramJ, paramK,
-        paramL, paramM, paramN, paramO, paramP, paramQ, paramR, paramS, paramT, innovationURL, studyURL});
+        paramL, paramM, paramN, paramO, paramP, outcomeURL, studyURL});
     }
     return model;
   }
-
 
   /**
    * Get the information of all project innovations adding if these project innovations include in the annual report
@@ -586,6 +550,37 @@ public class OutcomesMilestonesSummaryAction extends BaseSummariesAction impleme
    * @return a list of all project innovations with the indicator if this is included in the Annual Report
    */
   public List<ARInnovationsEvidence> getInnovationsInfo() {
+
+    flagships = this.getLoggedCrp().getCrpPrograms().stream()
+      .filter(c -> c.isActive() && c.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+      .collect(Collectors.toList());
+    flagships.sort((p1, p2) -> p1.getAcronym().compareTo(p2.getAcronym()));
+
+
+    for (CrpProgram crpProgram : flagships) {
+      crpProgram.setMilestones(new ArrayList<>());
+      crpProgram.setW1(new Double(0));
+      crpProgram.setW3(new Double(0));
+
+      crpProgram.setOutcomes(crpProgram.getCrpProgramOutcomes().stream()
+        .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList()));
+      List<CrpProgramOutcome> validOutcomes = new ArrayList<>();
+      for (CrpProgramOutcome crpProgramOutcome : crpProgram.getOutcomes()) {
+
+        crpProgramOutcome.setMilestones(crpProgramOutcome.getCrpMilestones().stream()
+          .filter(c -> c.isActive() && c.getYear().intValue() == this.getActualPhase().getYear())
+          .collect(Collectors.toList()));
+        crpProgramOutcome.setSubIdos(
+          crpProgramOutcome.getCrpOutcomeSubIdos().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+        crpProgram.getMilestones().addAll(crpProgramOutcome.getMilestones());
+        if (!crpProgram.getMilestones().isEmpty()) {
+          validOutcomes.add(crpProgramOutcome);
+        }
+      }
+      crpProgram.setOutcomes(validOutcomes);
+
+    }
+
 
     List<ARInnovationsEvidence> innovationsPMU = new ArrayList<ARInnovationsEvidence>();
     LinkedHashSet<ProjectInnovation> AllInnovations = new LinkedHashSet<>();
@@ -662,6 +657,7 @@ public class OutcomesMilestonesSummaryAction extends BaseSummariesAction impleme
     return innovationsPMU;
   }
 
+
   @Override
   public InputStream getInputStream() {
     if (inputStream == null) {
@@ -670,13 +666,26 @@ public class OutcomesMilestonesSummaryAction extends BaseSummariesAction impleme
     return inputStream;
   }
 
-
   private TypedTableModel getMasterTableModel(String center, String date, String year) {
     // Initialization of Model
     TypedTableModel model = new TypedTableModel(new String[] {"center", "date", "year", "baseUrl"},
       new Class[] {String.class, String.class, String.class, String.class});
     model.addRow(new Object[] {center, date, year, this.getBaseUrl()});
     return model;
+  }
+
+
+  public ReportSynthesisFlagshipProgressMilestone getReportSynthesisFlagshipProgressProgram(Long crpMilestoneID,
+    Long crpProgramID) {
+    List<ReportSynthesisFlagshipProgressMilestone> flagshipProgressMilestonesPrev =
+      reportSynthesisFlagshipProgressMilestoneManager.findByProgram(crpProgramID);
+    List<ReportSynthesisFlagshipProgressMilestone> flagshipProgressMilestones = flagshipProgressMilestonesPrev.stream()
+      .filter(c -> c.getCrpMilestone().getId().longValue() == crpMilestoneID.longValue() && c.isActive())
+      .collect(Collectors.toList());
+    if (!flagshipProgressMilestones.isEmpty()) {
+      return flagshipProgressMilestones.get(0);
+    }
+    return new ReportSynthesisFlagshipProgressMilestone();
   }
 
   @Override
