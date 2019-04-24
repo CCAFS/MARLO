@@ -32,11 +32,14 @@
         <h4 class="sectionTitle">MARLO Create Guest User</h4>
         <div class="borderBox">        
           [@s.form action=actionName enctype="multipart/form-data" ]
-          ${message}
+          
           <input type="hidden" class="userId" name="user.id" />
-          <div class="form-group row">
-            <div class="col-md-4">
-              <div class="form-group">
+          <div class="form-group">
+            <div class="form-group row">
+              <div class="col-md-8">
+                [@customForm.input name="user.email" i18nkey="Email" value="" className="userEmail" type="text"  required=true required=true editable=true /]
+              </div>
+              <div class="col-md-4">
                 <label for="globalUnitID">Global Unit:</label>
                 <select name="selectedGlobalUnitID" id="globalUnitID" class="form-control">
                   <option value="-1">Select an option...</option>
@@ -44,14 +47,13 @@
                 </select>
               </div>
             </div>
-            <div class="col-md-12 ">
-              [@customForm.input name="user.email" i18nkey="Email" value="" className="userEmail" type="text"  required=true required=true editable=true /]
-            </div>
-            <div class="col-md-6 ">
-              [@customForm.input name="user.firstName" i18nkey="First name" value="" className="userFirstName" type="text"  required=false  editable=true /]
-            </div>
-            <div class="col-md-6">
-              [@customForm.input name="user.lastName" i18nkey="Last name" value="" className="userLastName" type="text"  required=false  editable=true /]
+            <div class="form-group row">
+              <div class="col-md-6 ">
+                [@customForm.input name="user.firstName" i18nkey="First name" value="" className="userFirstName" type="text"  required=false  editable=true /]
+              </div>
+              <div class="col-md-6">
+                [@customForm.input name="user.lastName" i18nkey="Last name" value="" className="userLastName" type="text"  required=false  editable=true /]
+              </div>
             </div>
           </div>
           <br />
