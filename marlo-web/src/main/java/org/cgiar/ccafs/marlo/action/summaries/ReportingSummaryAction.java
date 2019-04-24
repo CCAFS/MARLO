@@ -57,7 +57,6 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableCrp;
 import org.cgiar.ccafs.marlo.data.model.DeliverableDataSharingFile;
 import org.cgiar.ccafs.marlo.data.model.DeliverableDissemination;
 import org.cgiar.ccafs.marlo.data.model.DeliverableFundingSource;
-import org.cgiar.ccafs.marlo.data.model.DeliverableGenderLevel;
 import org.cgiar.ccafs.marlo.data.model.DeliverableIntellectualAsset;
 import org.cgiar.ccafs.marlo.data.model.DeliverableIntellectualAssetPantentTypeEnum;
 import org.cgiar.ccafs.marlo.data.model.DeliverableIntellectualAssetTypeEnum;
@@ -2071,27 +2070,11 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           .getDeliverableCrossCuttingMarkerId(deliverable.getId(), 3, this.getSelectedPhase().getId());
         DeliverableCrossCuttingMarker deliverableCrossCuttingMarkerClimate = deliverableCrossCuttingMarkerManager
           .getDeliverableCrossCuttingMarkerId(deliverable.getId(), 4, this.getSelectedPhase().getId());
+
         if (deliverableCrossCuttingMarkerGender != null) {
           if (deliverableCrossCuttingMarkerGender.getRepIndGenderYouthFocusLevel() != null) {
             crossCutting += "&nbsp;&nbsp;&nbsp;&nbsp;● Gender ("
               + deliverableCrossCuttingMarkerGender.getRepIndGenderYouthFocusLevel().getPowbName() + ")<br>";
-
-            if (deliverable.getDeliverableGenderLevels() == null) {
-              crossCutting += "<br><b>Gender level(s):</b><br>&nbsp;&nbsp;&nbsp;&nbsp;&lt;Not Defined&gt;";
-            } else {
-              crossCutting += "<br><b>Gender level(s): </b><br>";
-              for (DeliverableGenderLevel dgl : deliverable.getDeliverableGenderLevels().stream()
-                .filter(
-                  dgl -> dgl.isActive() && dgl.getPhase() != null && dgl.getPhase().equals(this.getSelectedPhase()))
-                .collect(Collectors.toList())) {
-                if (dgl.getGenderLevel() != 0.0) {
-                  if (genderTypeManager.getGenderTypeById(dgl.getGenderLevel()) != null) {
-                    crossCutting += "&nbsp;&nbsp;&nbsp;&nbsp;● "
-                      + genderTypeManager.getGenderTypeById(dgl.getGenderLevel()).getDescription() + "<br>";
-                  }
-                }
-              }
-            }
           } else {
             crossCutting += "&nbsp;&nbsp;&nbsp;&nbsp;● Gender <br>";
           }
@@ -2823,30 +2806,15 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           .getDeliverableCrossCuttingMarkerId(deliverable.getId(), 3, this.getSelectedPhase().getId());
         DeliverableCrossCuttingMarker deliverableCrossCuttingMarkerClimate = deliverableCrossCuttingMarkerManager
           .getDeliverableCrossCuttingMarkerId(deliverable.getId(), 4, this.getSelectedPhase().getId());
+
         if (deliverableCrossCuttingMarkerGender != null) {
           if (deliverableCrossCuttingMarkerGender.getRepIndGenderYouthFocusLevel() != null) {
             crossCutting += "&nbsp;&nbsp;&nbsp;&nbsp;● Gender ("
               + deliverableCrossCuttingMarkerGender.getRepIndGenderYouthFocusLevel().getPowbName() + ")<br>";
-
-            if (deliverable.getDeliverableGenderLevels() == null) {
-              crossCutting += "<br><b>Gender level(s):</b><br>&nbsp;&nbsp;&nbsp;&nbsp;&lt;Not Defined&gt;";
-            } else {
-              crossCutting += "<br><b>Gender level(s): </b><br>";
-              for (DeliverableGenderLevel dgl : deliverable.getDeliverableGenderLevels().stream()
-                .filter(
-                  dgl -> dgl.isActive() && dgl.getPhase() != null && dgl.getPhase().equals(this.getSelectedPhase()))
-                .collect(Collectors.toList())) {
-                if (dgl.getGenderLevel() != 0.0) {
-                  crossCutting += "&nbsp;&nbsp;&nbsp;&nbsp;● "
-                    + genderTypeManager.getGenderTypeById(dgl.getGenderLevel()).getDescription() + "<br>";
-                }
-              }
-            }
           } else {
             crossCutting += "&nbsp;&nbsp;&nbsp;&nbsp;● Gender <br>";
           }
         }
-
         if (deliverableCrossCuttingMarkerYouth != null) {
           if (deliverableCrossCuttingMarkerYouth.getRepIndGenderYouthFocusLevel() != null) {
             crossCutting += "&nbsp;&nbsp;&nbsp;&nbsp;● Youth ("
