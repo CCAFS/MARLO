@@ -36,7 +36,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectPolicyOwner;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicyRegion;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicySubIdo;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
-import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressOutcomeMilestone;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressOutcome;
 import org.cgiar.ccafs.marlo.data.model.anualreport.evidences.ARPoliciesEvidence;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
@@ -274,10 +274,11 @@ public class OutcomesMilestonesEvidenceSummaryAction extends BaseSummariesAction
    * 
    * @return a list of all project policies with the indicator if this is included in the Annual Report
    */
-  public List<ReportSynthesisFlagshipProgressOutcomeMilestone> getPoliciesInfo() {
+  public List<ReportSynthesisFlagshipProgressOutcome> getPoliciesInfo() {
 
-    List<ReportSynthesisFlagshipProgressOutcomeMilestone> ReportMilestones =
-      new ArrayList<ReportSynthesisFlagshipProgressOutcomeMilestone>();
+    List<ReportSynthesisFlagshipProgressOutcome> reportOutcomes =
+      new ArrayList<ReportSynthesisFlagshipProgressOutcome>();
+
     LinkedHashSet<ProjectPolicy> AllPolicies = new LinkedHashSet<>();
 
     LiaisonInstitution liaisonInstitutionPMU = this.getLoggedCrp().getLiaisonInstitutions().stream()
@@ -289,6 +290,21 @@ public class OutcomesMilestonesEvidenceSummaryAction extends BaseSummariesAction
       .collect(Collectors.toList());
     liaisonInstitutions.sort(Comparator.comparing(LiaisonInstitution::getAcronym));
 
+    for (LiaisonInstitution liaisonInstitution : liaisonInstitutions) {
+
+      ReportSynthesis reportSynthesisFG =
+        reportSynthesisManager.findSynthesis(this.getSelectedPhase().getId(), liaisonInstitution.getId());
+
+      if (reportSynthesisFG.getReportSynthesisFlagshipProgress() != null) {
+
+        if (reportSynthesisFG.getReportSynthesisFlagshipProgress().getReportSynthesisFlagshipProgressOutcomes() != null
+          && !reportSynthesisFG.getReportSynthesisFlagshipProgress().getReportSynthesisFlagshipProgressOutcomes()
+            .isEmpty()) {
+        }
+      }
+
+    }
+
     ReportSynthesis reportSynthesisPMU =
       reportSynthesisManager.findSynthesis(this.getSelectedPhase().getId(), liaisonInstitutionPMU.getId());
 
@@ -298,7 +314,7 @@ public class OutcomesMilestonesEvidenceSummaryAction extends BaseSummariesAction
 
     }
 
-    return ReportMilestones;
+    return reportOutcomes;
   }
 
 
