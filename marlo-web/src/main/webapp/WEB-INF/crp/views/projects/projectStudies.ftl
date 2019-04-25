@@ -100,6 +100,9 @@
         <th class="owner">Owner</th>
         <th class="year">Year</th>
         <th class="status">Status</th>
+        [#if reportingActive]
+        <th id="projectDownload" class="no-sort"></th>
+        [/#if]
         [#if !previousTable]
         <th></th>
         <th class="removeHighlight"></th> 
@@ -146,6 +149,18 @@
             <td class="status">
               [@utils.tableText value=(item.projectExpectedStudyInfo.statusName)!"" /]
             </td>
+            [#-- Summary PDF download --]
+            [#if reportingActive]
+            <td class="text-center">
+              [#if (item.projectExpectedStudyInfo.isPublic)!true ]
+              <a href="[@s.url namespace="/projects" action='${(crpSession)!}/studySummary'][@s.param name='studyID']${item.id?c}[/@s.param][@s.param name='cycle']Reporting[/@s.param][@s.param name='year']${(actualPhase.year)!}[/@s.param][/@s.url]" target="__BLANK">
+                <img src="${baseUrl}/global/images/pdf.png" height="25" title="[@s.text name="projectsList.downloadPDF" /]" />
+              </a>
+              [#else]
+                <img src="${baseUrl}/global/images/private-page-icon.png" alt="Private" />
+              [/#if]
+            </td>
+            [/#if]
             [#if !previousTable]
             <td>
               [#if isThisComplete || ((item.projectExpectedStudyInfo.year lt  currentCycleYear)!false)]
