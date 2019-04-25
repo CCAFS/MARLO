@@ -16,12 +16,15 @@
 package org.cgiar.ccafs.marlo.action.summaries;
 
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableGeographicRegionManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableLocationManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableGeographicRegion;
+import org.cgiar.ccafs.marlo.data.model.DeliverableGeographicScope;
 import org.cgiar.ccafs.marlo.data.model.DeliverableInfo;
 import org.cgiar.ccafs.marlo.data.model.DeliverableLocation;
 import org.cgiar.ccafs.marlo.data.model.DeliverableParticipant;
@@ -66,6 +69,8 @@ public class DeliverablesParticipantsSummaryAction extends BaseSummariesAction i
   // Managers
   private final ResourceManager resourceManager;
   private final DeliverableManager deliverableManager;
+  private final DeliverableGeographicRegionManager deliverableGeographicRegionManager;
+  private final DeliverableLocationManager deliverableLocationManager;
 
   // Parameters
   private byte[] bytesXLSX;
@@ -74,10 +79,14 @@ public class DeliverablesParticipantsSummaryAction extends BaseSummariesAction i
   private InputStream inputStream;
 
   public DeliverablesParticipantsSummaryAction(APConfig config, GlobalUnitManager crpManager, PhaseManager phaseManager,
-    ProjectManager projectManager, ResourceManager resourceManager, DeliverableManager deliverableManager) {
+    ProjectManager projectManager, ResourceManager resourceManager, DeliverableManager deliverableManager,
+    DeliverableGeographicRegionManager deliverableGeographicRegionManager,
+    DeliverableLocationManager deliverableLocationManager) {
     super(config, crpManager, phaseManager, projectManager);
     this.resourceManager = resourceManager;
     this.deliverableManager = deliverableManager;
+    this.deliverableGeographicRegionManager = deliverableGeographicRegionManager;
+    this.deliverableLocationManager = deliverableLocationManager;
   }
 
   /**
@@ -96,15 +105,19 @@ public class DeliverablesParticipantsSummaryAction extends BaseSummariesAction i
     masterReport.getParameterValues().put("i8nColumnF", this.getText("project.deliverable.generalInformation.status"));
     masterReport.getParameterValues().put("i8nColumnG", this.getText("project.deliverable.generalInformation.year"));
     masterReport.getParameterValues().put("i8nColumnH", this.getText("deliverable.newExpectedYear"));
-    masterReport.getParameterValues().put("i8nColumnI", this.getText("involveParticipants.title"));
-    masterReport.getParameterValues().put("i8nColumnJ", this.getText("involveParticipants.typeActivity"));
-    masterReport.getParameterValues().put("i8nColumnK", this.getText("involveParticipants.academicDegree"));
-    masterReport.getParameterValues().put("i8nColumnL", this.getText("involveParticipants.participants"));
-    masterReport.getParameterValues().put("i8nColumnM", this.getText("involveParticipants.estimate.participant"));
-    masterReport.getParameterValues().put("i8nColumnN", this.getText("involveParticipants.females"));
-    masterReport.getParameterValues().put("i8nColumnO", this.getText("involveParticipants.estimate.female"));
-    masterReport.getParameterValues().put("i8nColumnP", this.getText("involveParticipants.participantsType"));
-    masterReport.getParameterValues().put("i8nColumnQ", this.getText("involveParticipants.trainingPeriod"));
+    masterReport.getParameterValues().put("i8nColumnI", this.getText("deliverable.geographicScope"));
+    masterReport.getParameterValues().put("i8nColumnJ", this.getText("project.Regions"));
+    masterReport.getParameterValues().put("i8nColumnK", this.getText("deliverable.countries"));
+    masterReport.getParameterValues().put("i8nColumnL", this.getText("involveParticipants.title"));
+    masterReport.getParameterValues().put("i8nColumnM", this.getText("involveParticipants.typeActivity"));
+    masterReport.getParameterValues().put("i8nColumnN", this.getText("involveParticipants.academicDegree"));
+    masterReport.getParameterValues().put("i8nColumnO", this.getText("involveParticipants.participants"));
+    masterReport.getParameterValues().put("i8nColumnP", this.getText("involveParticipants.estimate.participant"));
+    masterReport.getParameterValues().put("i8nColumnQ", this.getText("involveParticipants.females"));
+    masterReport.getParameterValues().put("i8nColumnR", this.getText("involveParticipants.estimate.female"));
+    masterReport.getParameterValues().put("i8nColumnS", this.getText("involveParticipants.participantsType"));
+    masterReport.getParameterValues().put("i8nColumnT", this.getText("involveParticipants.trainingPeriod"));
+
     masterReport.getParameterValues().put("i8nHeader",
       this.getLoggedCrp().getAcronym() + " " + this.getSelectedPhase().getName() + " " + this.getSelectedYear() + " "
         + this.getText("summaries.deliverable.participants"));
@@ -209,24 +222,28 @@ public class DeliverablesParticipantsSummaryAction extends BaseSummariesAction i
      * paramF - Status
      * paramG - Year
      * paramH - Expected Year (Possible <Not applicable>)
-     * paramI - Event/Activity name
-     * paramJ - Type of Activity
-     * paramK - Academic Degree (Possible <Not applicable>)
-     * paramL - Total number of participants
-     * paramM - Total estimate
-     * paramN - Number of females (Possible <Not applicable>)
-     * paramO - Female Estimate (Possible <Not applicable>)
-     * paramP - Type of Participant(s)
-     * paramQ - Training period of time
+     * paramI - Geographic Scopes
+     * paramJ - Regions
+     * paramK - Countries
+     * paramL - Event/Activity name
+     * paramM - Type of Activity
+     * paramN - Academic Degree (Possible <Not applicable>)
+     * paramO - Total number of participants
+     * paramP - Total estimate
+     * paramQ - Number of females (Possible <Not applicable>)
+     * paramR - Female Estimate (Possible <Not applicable>)
+     * paramS - Type of Participant(s)
+     * paramT - Training period of time
      * deliverableURL
      * NOTE : does not mater the order into the implementation (ex: the paramO will be setup first that the paramA)
      */
     TypedTableModel model = new TypedTableModel(
       new String[] {"paramA", "paramB", "paramC", "paramD", "paramE", "paramF", "paramG", "paramH", "paramI", "paramJ",
-        "paramK", "paramL", "paramM", "paramN", "paramO", "paramP", "paramQ", "deliverableURL"},
+        "paramK", "paramL", "paramM", "paramN", "paramO", "paramP", "paramQ", "paramR", "paramS", "paramT",
+        "deliverableURL"},
       new Class[] {String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        String.class, String.class, String.class},
+        String.class, String.class, String.class, String.class, String.class, String.class},
       0);
 
 
@@ -241,7 +258,8 @@ public class DeliverablesParticipantsSummaryAction extends BaseSummariesAction i
       for (Deliverable deliverable : deliverables) {
         String paramA = null, paramB = null, paramC = null, paramD = null, paramE = null, paramF = null, paramG = null,
           paramH = null, paramI = null, paramJ = null, paramK = null, paramL = null, paramM = null, paramN = null,
-          paramO = null, paramP = null, paramQ = null, deliverableURL = null;
+          paramO = null, paramP = null, paramQ = null, paramR = null, paramS = null, paramT = null,
+          deliverableURL = null;
 
         // paramA - DeliverableID
         paramA = "D" + deliverable.getId();
@@ -302,81 +320,142 @@ public class DeliverablesParticipantsSummaryAction extends BaseSummariesAction i
             paramG = deliverable.getDeliverableInfo().getYear() + "";
           }
 
+          boolean haveRegions = false;
+          boolean haveCountries = false;
+
+          // paramI - Geographic Scopes
+          if (deliverable.getDeliverableGeographicScopes() != null) {
+            List<DeliverableGeographicScope> deliverableGeographicScopes = new ArrayList<>(deliverable
+              .getDeliverableGeographicScopes().stream()
+              .filter(dg -> dg.isActive() && dg.getPhase().equals(this.getActualPhase())).collect(Collectors.toList()));
+            Set<String> geographicScopeSet = new HashSet<>();
+            if (deliverableGeographicScopes != null) {
+              for (DeliverableGeographicScope dgs : deliverableGeographicScopes) {
+                geographicScopeSet.add(dgs.getRepIndGeographicScope().getName());
+
+                if (dgs.getRepIndGeographicScope().getId() == 2) {
+                  haveRegions = true;
+                }
+
+                if (dgs.getRepIndGeographicScope().getId() != 1 && dgs.getRepIndGeographicScope().getId() != 2) {
+                  haveCountries = true;
+                }
+              }
+            }
+            paramI = String.join(", ", geographicScopeSet);
+          }
+
+          // paramJ - Regions
+          if (haveRegions) {
+            List<DeliverableGeographicRegion> deliverableGeographicRegions =
+              new ArrayList<>(deliverableGeographicRegionManager
+                .getDeliverableGeographicRegionbyPhase(deliverable.getId(), this.getActualPhase().getId()).stream()
+                .filter(le -> le.isActive() && le.getLocElement().getLocElementType().getId() == 1)
+                .collect(Collectors.toList()));
+            Set<String> geographicRegionSet = new HashSet<>();
+            if (deliverableGeographicRegions != null) {
+              for (DeliverableGeographicRegion dgr : deliverableGeographicRegions) {
+                geographicRegionSet.add(dgr.getLocElement().getName());
+              }
+              paramJ = String.join(", ", geographicRegionSet);
+            }
+          } else {
+            paramJ = "<Not Applicable>";
+          }
+
+
+          // paramK - Countries
+          if (haveCountries) {
+
+            List<DeliverableLocation> deliverableGeographicCountries = new ArrayList<>(deliverableLocationManager
+              .getDeliverableLocationbyPhase(deliverable.getId(), this.getActualPhase().getId()));
+            Set<String> geographicCountrySet = new HashSet<>();
+            if (deliverableGeographicCountries != null) {
+              for (DeliverableLocation dl : deliverableGeographicCountries) {
+                geographicCountrySet.add(dl.getLocElement().getName());
+              }
+              paramK = String.join(", ", geographicCountrySet);
+            }
+          } else {
+            paramK = "<Not Applicable>";
+          }
+
+
           // Deliverable Participant
           DeliverableParticipant deliverableParticipant = deliverable.getDeliverableParticipants().stream()
             .filter(ds -> ds.isActive() && ds.getPhase() != null && ds.getPhase().equals(this.getSelectedPhase())
               && ds.getHasParticipants() != null && ds.getHasParticipants())
             .collect(Collectors.toList()).get(0);
-          // paramI - Event/Activity name
+          // paramL - Event/Activity name
           if (deliverableParticipant.getEventActivityName() != null
             && !deliverableParticipant.getEventActivityName().isEmpty()) {
-            paramI = deliverableParticipant.getEventActivityName();
+            paramL = deliverableParticipant.getEventActivityName();
           }
 
           if (deliverableParticipant.getRepIndTypeActivity() != null
             && deliverableParticipant.getRepIndTypeActivity().getName() != null
             && !deliverableParticipant.getRepIndTypeActivity().getName().isEmpty()) {
 
-            // paramJ - Type of Activity
-            paramJ = deliverableParticipant.getRepIndTypeActivity().getName();
+            // paramM - Type of Activity
+            paramM = deliverableParticipant.getRepIndTypeActivity().getName();
 
             if (deliverableParticipant.getRepIndTypeActivity().getId()
               .equals(this.getReportingIndTypeActivityAcademicDegree())) {
-              // paramK - Academic Degree
+              // paramN - Academic Degree
               if (deliverableParticipant.getAcademicDegree() != null
                 && !deliverableParticipant.getAcademicDegree().isEmpty()) {
-                paramK = deliverableParticipant.getAcademicDegree();
+                paramN = deliverableParticipant.getAcademicDegree();
               }
             } else {
-              paramK = "<Not Applicable>";
+              paramN = "<Not Applicable>";
             }
 
             if (deliverableParticipant.getRepIndTypeActivity().getIsFormal()) {
-              // paramQ - Training period of time
+              // paramT - Training period of time
               if (deliverableParticipant.getRepIndTrainingTerm() != null) {
-                paramQ = deliverableParticipant.getRepIndTrainingTerm().getName();
+                paramT = deliverableParticipant.getRepIndTrainingTerm().getName();
               }
             } else {
-              paramQ = "<Not Applicable>";
+              paramT = "<Not Applicable>";
             }
           }
 
 
-          // paramL - Total number of participants
+          // paramO - Total number of participants
           if (deliverableParticipant.getParticipants() != null) {
-            paramL = deliverableParticipant.getParticipants() + "";
+            paramO = deliverableParticipant.getParticipants() + "";
           }
-          // paramM - Total estimate
+          // paramP - Total estimate
           if (deliverableParticipant.getEstimateParticipants() != null) {
             if (deliverableParticipant.getEstimateParticipants()) {
-              paramM = "Yes";
+              paramP = "Yes";
             } else {
-              paramM = "No";
+              paramP = "No";
             }
           }
 
           if (deliverableParticipant.getDontKnowFemale() != null && deliverableParticipant.getDontKnowFemale()) {
-            // paramN - Number of females (Possible <Not applicable>)
-            paramN = "<Not Applicable>";
-            // paramO - Female Estimate (Possible <Not applicable>)
-            paramO = "<Not Applicable>";
+            // paramQ - Number of females (Possible <Not applicable>)
+            paramQ = "<Not Applicable>";
+            // paramR - Female Estimate (Possible <Not applicable>)
+            paramR = "<Not Applicable>";
           } else {
-            // paramN - Number of females (Possible <Not applicable>)
+            // paramQ - Number of females (Possible <Not applicable>)
             if (deliverableParticipant.getFemales() != null) {
-              paramN = deliverableParticipant.getFemales() + "";
+              paramQ = deliverableParticipant.getFemales() + "";
             }
-            // paramO - Female Estimate (Possible <Not applicable>)
+            // paramR - Female Estimate (Possible <Not applicable>)
             if (deliverableParticipant.getEstimateFemales() != null) {
               if (deliverableParticipant.getEstimateFemales()) {
-                paramO = "Yes";
+                paramR = "Yes";
               } else {
-                paramO = "No";
+                paramR = "No";
               }
             }
           }
-          // paramP - Type of Participant(s)
+          // paramS - Type of Participant(s)
           if (deliverableParticipant.getRepIndTypeParticipant() != null) {
-            paramP = deliverableParticipant.getRepIndTypeParticipant().getName();
+            paramS = deliverableParticipant.getRepIndTypeParticipant().getName();
           }
 
           // Generate the deliverable url of MARLO
@@ -392,63 +471,8 @@ public class DeliverablesParticipantsSummaryAction extends BaseSummariesAction i
           }
 
 
-          /*
-           * Geographic Scope
-           */
-          String geographicScope = "", region = "", country = "";
-
-          // Geographic Scope
-          if (deliverableInfo.getGeographicScope() != null) {
-            geographicScope = deliverableInfo.getGeographicScope().getName();
-            if (deliverableInfo.getGeographicScope().getId().equals(this.getReportingIndGeographicScopeGlobal())) {
-              region = "&lt;Not Applicable&gt;";
-              country = "&lt;Not Applicable&gt;";
-            }
-            // Regional
-            if (deliverableInfo.getGeographicScope().getId().equals(this.getReportingIndGeographicScopeRegional())) {
-              country = "&lt;Not Applicable&gt;";
-              List<DeliverableGeographicRegion> deliverableRegions =
-                deliverable.getDeliverableGeographicRegions().stream()
-                  .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase()))
-                  .collect(Collectors.toList());
-              if (deliverableRegions != null && deliverableRegions.size() > 0) {
-                Set<String> regionsSet = new HashSet<>();
-                for (DeliverableGeographicRegion deliverableRegion : deliverableRegions) {
-                  regionsSet.add(deliverableRegion.getLocElement().getName());
-                }
-                region = String.join(", ", regionsSet);
-              }
-
-            }
-            // Country
-            if (!deliverableInfo.getGeographicScope().getId().equals(this.getReportingIndGeographicScopeGlobal())
-              && !deliverableInfo.getGeographicScope().getId().equals(this.getReportingIndGeographicScopeRegional())) {
-              region = "&lt;Not Applicable&gt;";
-              List<DeliverableLocation> deliverableCountries = deliverable.getDeliverableLocations().stream()
-                .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase()))
-                .collect(Collectors.toList());
-              if (deliverableCountries != null && deliverableCountries.size() > 0) {
-                Set<String> countriesSet = new HashSet<>();
-                for (DeliverableLocation deliverableCountry : deliverableCountries) {
-                  countriesSet.add(deliverableCountry.getLocElement().getName());
-                }
-                country = String.join(", ", countriesSet);
-              }
-            }
-          }
-          if (geographicScope.isEmpty()) {
-            geographicScope = null;
-          }
-          if (region.isEmpty()) {
-            region = null;
-          }
-          if (country.isEmpty()) {
-            country = null;
-          }
-
-
           model.addRow(new Object[] {paramA, paramB, paramC, paramD, paramE, paramF, paramG, paramH, paramI, paramJ,
-            paramK, paramL, paramM, paramN, paramO, paramP, paramQ, deliverableURL});
+            paramK, paramL, paramM, paramN, paramO, paramP, paramQ, paramR, paramS, paramT, deliverableURL});
         }
       }
     }
