@@ -110,7 +110,7 @@ public class DeliverableMySQLDAO extends AbstractMarloDAO<Deliverable, Long> imp
         "INNER JOIN deliverable_participants AS dp ON d.id = dp.deliverable_id AND dp.has_participants = 1 AND dp.is_active = 1 AND dp.phase_id = "
           + phase.getId() + " ");
     }
-    query.append("WHERE d.is_active = 1 ");
+    query.append("WHERE d.is_active = 1 ORDER BY d.id");
     if (filterPublications != null) {
       if (filterPublications) {
 
