@@ -38,7 +38,7 @@
         [#-- Innovations List --]
         <h3 class="headTitle">[@s.text name="projectInnovations" /]</h3>
         <div class="simpleBox">
-          [@innovationsTableMacro list=(project.innovations)![] /]
+          [@innovationsTableMacro list=(projectInnovations)![] /]
         </div>
         
         [#-- Add Innovation Button --]
@@ -79,6 +79,7 @@
         <th id="tb-type" width="22%">[@s.text name="projectInnovations.table.type" /]</th>
         <th id="tb-stage" width="15%">[@s.text name="projectInnovations.table.stage" /]</th>
         <th id="tb-year" width="8%">[@s.text name="projectInnovations.table.year" /]</th>
+        <th class="owner">Owner</th>
         [#if currentTable]
         <th></th>
         [/#if]
@@ -96,6 +97,8 @@
         [#local isThisComplete = (action.hasInnovationMissingFields(innovation.id))!false ]
         [#-- Is New --]
         [#local isNew = (action.isInnovationNew(innovation.id))!false ]
+        [#-- Owner --]
+        [#local isOwner = (innovation.project.id == projectID)!false]
         <tr>
           [#-- ID --]
           <td class="tb-id text-center">
@@ -114,9 +117,12 @@
           <td class="text-center">
             [@utils.tableText value=(innovation.projectInnovationInfo.repIndStageInnovation.name)!"" /]
           </td>
-          [#-- Stage --]
+          [#-- Year --]
           <td class="text-center">
             [@utils.tableText value=(innovation.projectInnovationInfo.year)!"" /]
+          </td>
+          <td class="owner text-center">
+            [#if isOwner] <small><nobr>This Project</nobr></small>  [#else][#if innovation.project?has_content]P${innovation.project.id}[#else]Not defined[/#if][/#if]
           </td>
           [#-- Missing fields --]
           [#if currentTable]
