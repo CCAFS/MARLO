@@ -126,7 +126,7 @@ public class SrfLists {
    */
 
   @ApiOperation(
-    tags = {"Table 1 - Evidence on Progress towards SRF targets", "Table 3 - Outcome/ Impact Case Reports",
+    tags = {"Table 1 - Progress towards SRF targets", "Table 3 - Outcome/ Impact Case Reports",
       "Table 10 - Monitoring, Evaluation, Learning and Impact Assessment (MELIA)"},
     value = "${SrfList.slo-targets.code.value}", response = SrfSloTargetDTO.class)
   @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
@@ -217,7 +217,7 @@ public class SrfLists {
    */
 
   @ApiOperation(
-    tags = {"Table 1 - Evidence on Progress towards SRF targets", "Table 3 - Outcome/ Impact Case Reports",
+    tags = {"Table 1 - Progress towards SRF targets", "Table 3 - Outcome/ Impact Case Reports",
       "Table 10 - Monitoring, Evaluation, Learning and Impact Assessment (MELIA)"},
     value = "${SrfList.slo-targets.all.value}", response = SrfSloTargetDTO.class, responseContainer = "List")
   @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
