@@ -74,8 +74,8 @@ public class DeliverableMySQLDAO extends AbstractMarloDAO<Deliverable, Long> imp
   }
 
   @Override
-  public List<Deliverable> getDeliverablesByParameters(Phase phase, boolean filterPhaseYear,
-    boolean filterParticipants) {
+  public List<Deliverable> getDeliverablesByParameters(Phase phase, boolean filterPhaseYear, boolean filterParticipants,
+    Boolean filterPublications) {
     StringBuilder query = new StringBuilder();
     query.append("SELECT DISTINCT  ");
     query.append("d.id as id ");
@@ -111,6 +111,13 @@ public class DeliverableMySQLDAO extends AbstractMarloDAO<Deliverable, Long> imp
           + phase.getId() + " ");
     }
     query.append("WHERE d.is_active = 1 ");
+    if (filterPublications != null) {
+      if (filterPublications) {
+
+      } else {
+
+      }
+    }
 
     List<Map<String, Object>> rList = super.findCustomQuery(query.toString());
     List<Deliverable> deliverables = new ArrayList<>();
