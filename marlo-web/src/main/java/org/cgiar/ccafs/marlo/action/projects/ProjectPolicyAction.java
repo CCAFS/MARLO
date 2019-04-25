@@ -52,6 +52,7 @@ import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyPolicy;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationShared;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicy;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicyCountry;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicyCrossCuttingMarker;
@@ -686,6 +687,22 @@ public class ProjectPolicyAction extends BaseAction {
       for (ProjectInnovation projectInnovation : innovations) {
         if (projectInnovation.getProjectInnovationInfo(this.getActualPhase()) != null) {
           innovationList.add(projectInnovation);
+        }
+      }
+
+      /*
+       * Update 4/25/2019 Adding Shared Project Innovation in the lists.
+       */
+      List<ProjectInnovationShared> innovationShareds = new ArrayList<>(project.getProjectInnovationShareds().stream()
+        .filter(px -> px.isActive() && px.getPhase().getId() == this.getActualPhase().getId()
+          && px.getProjectInnovation().isActive()
+          && px.getProjectInnovation().getProjectInnovationInfo(this.getActualPhase()) != null)
+        .collect(Collectors.toList()));
+      if (innovationShareds != null && innovationShareds.size() > 0) {
+        for (ProjectInnovationShared innovationShared : innovationShareds) {
+          if (!innovationList.contains(innovationShared.getProjectInnovation())) {
+            this.innovationList.add(innovationShared.getProjectInnovation());
+          }
         }
       }
 

@@ -30,6 +30,7 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
 import org.apache.struts2.dispatcher.Parameter;
@@ -102,7 +103,16 @@ public class EditPrivateStudyInterceptor extends AbstractInterceptor implements 
     expectedId = Long.parseLong(projectParameter);
 
     ProjectExpectedStudy projectExpectedStudy = projectExpectedStudyManager.getProjectExpectedStudyById(expectedId);
+
     Long crpID = baseAction.getCrpID();
+    // Crp session is empty
+    if (crpID == null) {
+      String[] actionMap = ActionContext.getContext().getName().split("/");
+      if (actionMap.length > 1) {
+        String enteredCrp = actionMap[0];
+        crpID = crpManager.findGlobalUnitByAcronym(enteredCrp).getId();
+      }
+    }
 
     phase = phaseManager.findCycle(cycle, Integer.valueOf(year), false, crpID);
 
