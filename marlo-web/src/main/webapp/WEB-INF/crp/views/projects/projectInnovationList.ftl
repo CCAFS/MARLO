@@ -78,8 +78,8 @@
         <th id="tb-title" width="40%">[@s.text name="projectInnovations.table.title" /]</th>
         <th id="tb-type" width="22%">[@s.text name="projectInnovations.table.type" /]</th>
         <th id="tb-stage" width="15%">[@s.text name="projectInnovations.table.stage" /]</th>
-        <th class="owner">Owner</th>
         <th id="tb-year" width="8%">[@s.text name="projectInnovations.table.year" /]</th>
+        <th class="owner">Owner</th>
         [#if currentTable]
         <th></th>
         [/#if]
@@ -117,7 +117,7 @@
           <td class="text-center">
             [@utils.tableText value=(innovation.projectInnovationInfo.repIndStageInnovation.name)!"" /]
           </td>
-          [#-- Stage --]
+          [#-- Year --]
           <td class="text-center">
             [@utils.tableText value=(innovation.projectInnovationInfo.year)!"" /]
           </td>
