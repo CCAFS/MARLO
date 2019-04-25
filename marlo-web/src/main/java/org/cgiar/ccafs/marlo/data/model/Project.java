@@ -242,12 +242,13 @@ public class Project extends MarloAuditableEntity implements java.io.Serializabl
 
   private List<ProjectPolicy> policies;
 
+  private Set<ProjectInnovationShared> projectInnovationShareds = new HashSet<ProjectInnovationShared>(0);
+
 
   private double coreBudget;
 
 
   private double w3Budget;
-
 
   private double bilateralBudget;
 
@@ -275,30 +276,31 @@ public class Project extends MarloAuditableEntity implements java.io.Serializabl
 
   private double totalW3;
 
+
   private double totalCenterFunds;
 
 
   private Set<GlobalUnitProject> globalUnitProjects = new HashSet<GlobalUnitProject>(0);
-
 
   private Phase currentPhase;
 
 
   private Set<ProjectLp6Contribution> projectLp6Contributions = new HashSet<ProjectLp6Contribution>(0);
 
+
   private ProjectLp6Contribution projectLp6Contribution;
+
 
   private Set<ProjectBudgetExecution> projectBudgetExecutions = new HashSet<ProjectBudgetExecution>(0);
 
   private List<ProjectBudgetExecution> budgetExecutions;
 
-
   // It is only for LP6 Autosave
   private List<ProjectLp6ContributionDeliverable> projectLp6ContributionDeliverables;
 
-
   public Project() {
   }
+
 
   @Override
   public boolean equals(Object obj) {
@@ -319,6 +321,7 @@ public class Project extends MarloAuditableEntity implements java.io.Serializabl
     }
     return true;
   }
+
 
   public Set<Activity> getActivities() {
     return activities;
@@ -342,11 +345,9 @@ public class Project extends MarloAuditableEntity implements java.io.Serializabl
     return total;
   }
 
-
   public List<ProjectBudgetExecution> getBudgetExecutions() {
     return budgetExecutions;
   }
-
 
   public List<ProjectBudget> getBudgets() {
     return budgets;
@@ -402,9 +403,11 @@ public class Project extends MarloAuditableEntity implements java.io.Serializabl
     return centerProject;
   }
 
+
   public List<Activity> getClosedProjectActivities() {
     return closedProjectActivities;
   }
+
 
   public List<ProjectClusterActivity> getClusterActivities() {
     return clusterActivities;
@@ -420,7 +423,6 @@ public class Project extends MarloAuditableEntity implements java.io.Serializabl
     }
 
   }
-
 
   /**
    * get the composed name of one phase
@@ -439,7 +441,6 @@ public class Project extends MarloAuditableEntity implements java.io.Serializabl
     }
 
   }
-
 
   /**
    * This method gets all the coordinators working for this project.
@@ -521,6 +522,7 @@ public class Project extends MarloAuditableEntity implements java.io.Serializabl
     return total;
   }
 
+
   public List<CountryFundingSources> getCountryFS() {
     return countryFS;
   }
@@ -530,14 +532,15 @@ public class Project extends MarloAuditableEntity implements java.io.Serializabl
     return createDate;
   }
 
-
   public List<CrpClusterOfActivity> getCrpActivities() {
     return crpActivities;
   }
 
+
   public List<ProjectCrpContribution> getCrpContributions() {
     return crpContributions;
   }
+
 
   public List<Deliverable> getCurrentDeliverables(Phase phase) {
     List<Deliverable> deliverables = new ArrayList<Deliverable>();
@@ -554,11 +557,9 @@ public class Project extends MarloAuditableEntity implements java.io.Serializabl
     return deliverables;
   }
 
-
   public Phase getCurrentPhase() {
     return currentPhase;
   }
-
 
   public String getCustomID() {
     return customID;
@@ -574,6 +575,7 @@ public class Project extends MarloAuditableEntity implements java.io.Serializabl
     return expectedStudies;
   }
 
+
   public Set<ExpectedStudyProject> getExpectedStudyProjects() {
     return expectedStudyProjects;
   }
@@ -582,7 +584,6 @@ public class Project extends MarloAuditableEntity implements java.io.Serializabl
   public List<CrpProgram> getFlagships() {
     return flagships;
   }
-
 
   public String getFlagshipValue() {
     return flagshipValue;
@@ -593,6 +594,7 @@ public class Project extends MarloAuditableEntity implements java.io.Serializabl
     return globalUnitProjects;
   }
 
+
   public List<ProjectHighlight> getHighligths() {
     return highligths;
   }
@@ -601,7 +603,6 @@ public class Project extends MarloAuditableEntity implements java.io.Serializabl
   public List<IpIndicator> getIndicators() {
     return indicators;
   }
-
 
   public List<ProjectInnovation> getInnovations() {
     return innovations;
@@ -716,6 +717,7 @@ public class Project extends MarloAuditableEntity implements java.io.Serializabl
     return null;
   }
 
+
   /**
    * This method returns the project partner person who is leading the project.
    * 
@@ -755,6 +757,7 @@ public class Project extends MarloAuditableEntity implements java.io.Serializabl
     return null;
   }
 
+
   /**
    * This method returns the project partner person who is leading the project.
    * 
@@ -787,11 +790,9 @@ public class Project extends MarloAuditableEntity implements java.io.Serializabl
     return leveragesClosed;
   }
 
-
   public List<ProjectLocation> getLocations() {
     return locations;
   }
-
 
   public List<CountryLocationLevel> getLocationsData() {
     return locationsData;
@@ -810,9 +811,11 @@ public class Project extends MarloAuditableEntity implements java.io.Serializabl
     return mogs;
   }
 
+
   public Set<OtherContribution> getOtherContributions() {
     return otherContributions;
   }
+
 
   public List<OtherContribution> getOtherContributionsList() {
     return otherContributionsList;
@@ -838,11 +841,9 @@ public class Project extends MarloAuditableEntity implements java.io.Serializabl
     return partners;
   }
 
-
   public double getPercentageBilateral() {
     return percentageBilateral;
   }
-
 
   public double getPercentageFundsBudget() {
     return percentageFundsBudget;
@@ -858,9 +859,11 @@ public class Project extends MarloAuditableEntity implements java.io.Serializabl
     return percentageW3;
   }
 
+
   public List<ProjectPolicy> getPolicies() {
     return policies;
   }
+
 
   public List<Deliverable> getPreviousDeliverables(Phase phase) {
     List<Deliverable> deliverables = new ArrayList<Deliverable>();
@@ -901,11 +904,9 @@ public class Project extends MarloAuditableEntity implements java.io.Serializabl
     return projectActivities;
   }
 
-
   public Set<ProjectBudget> getProjectBudgetCofinances() {
     return projectBudgetCofinances;
   }
-
 
   public Set<ProjectBudgetExecution> getProjectBudgetExecutions() {
     return projectBudgetExecutions;
@@ -926,6 +927,7 @@ public class Project extends MarloAuditableEntity implements java.io.Serializabl
     return projectBudgetsFlagships;
   }
 
+
   public Set<ProjectCenterOutcome> getProjectCenterOutcomes() {
     return projectCenterOutcomes;
   }
@@ -934,7 +936,6 @@ public class Project extends MarloAuditableEntity implements java.io.Serializabl
   public Set<ProjectClusterActivity> getProjectClusterActivities() {
     return projectClusterActivities;
   }
-
 
   public ProjectComponentLesson getProjectComponentLesson() {
     return projectComponentLesson;
@@ -949,6 +950,7 @@ public class Project extends MarloAuditableEntity implements java.io.Serializabl
   public Set<ProjectComponentLesson> getProjectComponentLessons() {
     return projectComponentLessons;
   }
+
 
   public Set<ProjectCrpContribution> getProjectCrpContributions() {
     return projectCrpContributions;
@@ -967,7 +969,6 @@ public class Project extends MarloAuditableEntity implements java.io.Serializabl
   public Set<ProjectFocus> getProjectFocuses() {
     return projectFocuses;
   }
-
 
   public Set<ProjectFocusPrev> getProjectFocusPrevs() {
     return projectFocusPrevs;
@@ -998,6 +999,7 @@ public class Project extends MarloAuditableEntity implements java.io.Serializabl
     return projectInfo;
   }
 
+
   public ProjectInfo getProjectInfoLast(Phase phase) {
     if (this.getProjectInfo() != null) {
       return this.getProjectInfo();
@@ -1017,13 +1019,17 @@ public class Project extends MarloAuditableEntity implements java.io.Serializabl
 
   }
 
+
   public Set<ProjectInfo> getProjectInfos() {
     return projectInfos;
   }
 
-
   public Set<ProjectInnovation> getProjectInnovations() {
     return projectInnovations;
+  }
+
+  public Set<ProjectInnovationShared> getProjectInnovationShareds() {
+    return projectInnovationShareds;
   }
 
 
@@ -1081,6 +1087,7 @@ public class Project extends MarloAuditableEntity implements java.io.Serializabl
     return projectPartners;
   }
 
+
   public Set<ProjectPhase> getProjectPhases() {
     return projectPhases;
   }
@@ -1097,10 +1104,10 @@ public class Project extends MarloAuditableEntity implements java.io.Serializabl
     return projectScopes;
   }
 
-
   public List<CountryFundingSources> getRegionFS() {
     return regionFS;
   }
+
 
   public List<CrpProgram> getRegions() {
     return regions;
@@ -1117,7 +1124,6 @@ public class Project extends MarloAuditableEntity implements java.io.Serializabl
   public Set<SectionStatus> getSectionStatuses() {
     return sectionStatuses;
   }
-
 
   public List<ProjectExpectedStudy> getSharedExpectedStudies() {
     return sharedExpectedStudies;
@@ -1196,6 +1202,7 @@ public class Project extends MarloAuditableEntity implements java.io.Serializabl
     return result;
   }
 
+
   public boolean isCenterProject() {
     ProjectInfo projectInfo = this.getProjectInfo();
     if (projectInfo != null) {
@@ -1203,7 +1210,6 @@ public class Project extends MarloAuditableEntity implements java.io.Serializabl
     }
     return false;
   }
-
 
   public boolean isCrpProject() {
     ProjectInfo projectInfo = this.getProjectInfo();
@@ -1223,19 +1229,19 @@ public class Project extends MarloAuditableEntity implements java.io.Serializabl
     this.bilateralBudget = bilateralBudget;
   }
 
+
   public void setBudgetExecutions(List<ProjectBudgetExecution> budgetExecutions) {
     this.budgetExecutions = budgetExecutions;
   }
-
 
   public void setBudgets(List<ProjectBudget> budgets) {
     this.budgets = budgets;
   }
 
+
   public void setBudgetsCluserActvities(List<ProjectBudgetsCluserActvity> budgetsCluserActvities) {
     this.budgetsCluserActvities = budgetsCluserActvities;
   }
-
 
   public void setBudgetsFlagship(List<ProjectBudgetsFlagship> budgetsFlagship) {
     this.budgetsFlagship = budgetsFlagship;
@@ -1251,19 +1257,19 @@ public class Project extends MarloAuditableEntity implements java.io.Serializabl
     this.caseStudyProjects = caseStudyProjects;
   }
 
+
   public void setCentenFundsBudget(double centenFundsBudget) {
     this.centenFundsBudget = centenFundsBudget;
   }
-
 
   public void setCenterOutcomes(List<ProjectCenterOutcome> centerOutcomes) {
     this.centerOutcomes = centerOutcomes;
   }
 
+
   public void setCenterProject(CenterProject centerProject) {
     this.centerProject = centerProject;
   }
-
 
   public void setClosedProjectActivities(List<Activity> closedProjectActivities) {
     this.closedProjectActivities = closedProjectActivities;
@@ -1319,6 +1325,7 @@ public class Project extends MarloAuditableEntity implements java.io.Serializabl
     this.expectedStudies = expectedStudies;
   }
 
+
   public void setExpectedStudyProjects(Set<ExpectedStudyProject> expectedStudyProjects) {
     this.expectedStudyProjects = expectedStudyProjects;
   }
@@ -1326,7 +1333,6 @@ public class Project extends MarloAuditableEntity implements java.io.Serializabl
   public void setFlagships(List<CrpProgram> flagships) {
     this.flagships = flagships;
   }
-
 
   public void setFlagshipValue(String flagshipValue) {
     this.flagshipValue = flagshipValue;
@@ -1342,10 +1348,10 @@ public class Project extends MarloAuditableEntity implements java.io.Serializabl
     this.highligths = highligths;
   }
 
+
   public void setIndicators(List<IpIndicator> indicators) {
     this.indicators = indicators;
   }
-
 
   public void setInnovations(List<ProjectInnovation> innovations) {
     this.innovations = innovations;
@@ -1391,14 +1397,15 @@ public class Project extends MarloAuditableEntity implements java.io.Serializabl
     this.mogs = mogs;
   }
 
+
   public void setOtherContributions(Set<OtherContribution> otherContributions) {
     this.otherContributions = otherContributions;
   }
 
-
   public void setOtherContributionsList(List<OtherContribution> otherContributionsList) {
     this.otherContributionsList = otherContributionsList;
   }
+
 
   public void setOutcomes(List<ProjectOutcome> outcomes) {
     this.outcomes = outcomes;
@@ -1407,7 +1414,6 @@ public class Project extends MarloAuditableEntity implements java.io.Serializabl
   public void setOutcomesPandr(List<ProjectOutcomePandr> outcomesPandr) {
     this.outcomesPandr = outcomesPandr;
   }
-
 
   public void setOutputs(List<IpElement> outputs) {
     this.outputs = outputs;
@@ -1422,6 +1428,7 @@ public class Project extends MarloAuditableEntity implements java.io.Serializabl
   public void setPartners(List<ProjectPartner> partners) {
     this.partners = partners;
   }
+
 
   public void setPercentageBilateral(double percentageBilateral) {
     this.percentageBilateral = percentageBilateral;
@@ -1491,10 +1498,10 @@ public class Project extends MarloAuditableEntity implements java.io.Serializabl
     this.projectCrpContributions = projectCrpContributions;
   }
 
-
   public void setProjectDeliverables(List<Deliverable> projectDeliverables) {
     this.projectDeliverables = projectDeliverables;
   }
+
 
   public void setProjectExpectedStudies(Set<ProjectExpectedStudy> projectExpectedStudies) {
     this.projectExpectedStudies = projectExpectedStudies;
@@ -1516,10 +1523,10 @@ public class Project extends MarloAuditableEntity implements java.io.Serializabl
     this.projectHighlights = projectHighlights;
   }
 
-
   public void setProjectIndicators(List<IpProjectIndicator> projectIndicators) {
     this.projectIndicators = projectIndicators;
   }
+
 
   public void setProjectInfo(ProjectInfo projectInfo) {
     this.projectInfo = projectInfo;
@@ -1531,6 +1538,10 @@ public class Project extends MarloAuditableEntity implements java.io.Serializabl
 
   public void setProjectInnovations(Set<ProjectInnovation> projectInnovations) {
     this.projectInnovations = projectInnovations;
+  }
+
+  public void setProjectInnovationShareds(Set<ProjectInnovationShared> projectInnovationShareds) {
+    this.projectInnovationShareds = projectInnovationShareds;
   }
 
   public void setProjectLeverages(Set<ProjectLeverage> projectLeverages) {
