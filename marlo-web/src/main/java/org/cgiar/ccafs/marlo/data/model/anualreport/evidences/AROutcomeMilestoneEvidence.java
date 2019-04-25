@@ -37,7 +37,10 @@ public class AROutcomeMilestoneEvidence implements Serializable {
   private CrpMilestone crpMilestone;
   private Long milestonesStatus;
   private RepIndMilestoneReason repIndMilestoneReason;
+  private String otherReason;
   private String evidence;
+
+
   List<ReportSynthesisFlagshipProgressCrossCuttingMarker> crossCuttingMarkers;
 
   public List<ReportSynthesisFlagshipProgressCrossCuttingMarker> getCrossCuttingMarkers() {
@@ -60,12 +63,38 @@ public class AROutcomeMilestoneEvidence implements Serializable {
     return milestonesStatus;
   }
 
+  public String getOtherReason() {
+    return otherReason;
+  }
+
   public String getOutcomeProgress() {
     return outcomeProgress;
   }
 
   public RepIndMilestoneReason getRepIndMilestoneReason() {
     return repIndMilestoneReason;
+  }
+
+  public String getStatusName() {
+
+    if (milestonesStatus == null) {
+      return "";
+    } else {
+      switch (milestonesStatus.intValue()) {
+        case 1:
+          return "Complete";
+
+        case 2:
+          return "Extended";
+
+        case 3:
+          return "Cancelled";
+
+        case 4:
+          return "Changed";
+      }
+    }
+    return "";
   }
 
   public void setCrossCuttingMarkers(List<ReportSynthesisFlagshipProgressCrossCuttingMarker> crossCuttingMarkers) {
@@ -86,6 +115,10 @@ public class AROutcomeMilestoneEvidence implements Serializable {
 
   public void setMilestonesStatus(Long milestonesStatus) {
     this.milestonesStatus = milestonesStatus;
+  }
+
+  public void setOtherReason(String otherReason) {
+    this.otherReason = otherReason;
   }
 
   public void setOutcomeProgress(String outcomeProgress) {
