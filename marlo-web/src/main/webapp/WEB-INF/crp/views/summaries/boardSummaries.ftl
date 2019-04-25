@@ -188,6 +188,26 @@
           ] 
         }
       ]
+    },
+    { "active": true,
+      "available": true,
+      "title": "summaries.board.report.capDev", 
+      "description": "summaries.board.report.capDev.description",
+      "namespace": "/summaries",
+      "action": "${crpSession}/deliverablesParticipantsSummary",
+      "formats": [ "Excel" ],
+      "cycles": [ "Reporting", "Upkeep" ],
+      "components" : [
+        { 
+          "type" :  "radio",
+          "label":  "Type of report",
+          "name":   "showAllYears",
+          "data" : [ 
+            { "label": "Only the specific cycle year",  "value": "false"},
+            { "label": "All Years",                     "value": "true"}
+          ] 
+        }
+      ]
     }
   ]},
   [#-- BUDGET REPORTS --]

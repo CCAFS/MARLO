@@ -21,7 +21,9 @@ import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
+import org.cgiar.ccafs.marlo.data.model.DeliverableGeographicRegion;
 import org.cgiar.ccafs.marlo.data.model.DeliverableInfo;
+import org.cgiar.ccafs.marlo.data.model.DeliverableLocation;
 import org.cgiar.ccafs.marlo.data.model.DeliverableParticipant;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -35,8 +37,10 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -228,9 +232,9 @@ public class DeliverablesParticipantsSummaryAction extends BaseSummariesAction i
 
     List<Deliverable> deliverables = new ArrayList<Deliverable>();
     if (showAllYears.equals("true")) {
-      deliverables = deliverableManager.getDeliverablesByParameters(this.getSelectedPhase(), false, true);
+      deliverables = deliverableManager.getDeliverablesByParameters(this.getSelectedPhase(), false, true, null);
     } else {
-      deliverables = deliverableManager.getDeliverablesByParameters(this.getSelectedPhase(), true, true);
+      deliverables = deliverableManager.getDeliverablesByParameters(this.getSelectedPhase(), true, true, null);
     }
 
     if (deliverables != null && !deliverables.isEmpty()) {
@@ -385,6 +389,61 @@ public class DeliverablesParticipantsSummaryAction extends BaseSummariesAction i
             // Project deliverable
             deliverableURL = this.getBaseUrl() + "/projects/" + this.getSelectedPhase().getCrp().getAcronym()
               + "/deliverable.do?deliverableID=" + deliverable.getId() + "&phaseID=" + this.getSelectedPhase().getId();
+          }
+
+
+          /*
+           * Geographic Scope
+           */
+          String geographicScope = "", region = "", country = "";
+
+          // Geographic Scope
+          if (deliverableInfo.getGeographicScope() != null) {
+            geographicScope = deliverableInfo.getGeographicScope().getName();
+            if (deliverableInfo.getGeographicScope().getId().equals(this.getReportingIndGeographicScopeGlobal())) {
+              region = "&lt;Not Applicable&gt;";
+              country = "&lt;Not Applicable&gt;";
+            }
+            // Regional
+            if (deliverableInfo.getGeographicScope().getId().equals(this.getReportingIndGeographicScopeRegional())) {
+              country = "&lt;Not Applicable&gt;";
+              List<DeliverableGeographicRegion> deliverableRegions =
+                deliverable.getDeliverableGeographicRegions().stream()
+                  .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase()))
+                  .collect(Collectors.toList());
+              if (deliverableRegions != null && deliverableRegions.size() > 0) {
+                Set<String> regionsSet = new HashSet<>();
+                for (DeliverableGeographicRegion deliverableRegion : deliverableRegions) {
+                  regionsSet.add(deliverableRegion.getLocElement().getName());
+                }
+                region = String.join(", ", regionsSet);
+              }
+
+            }
+            // Country
+            if (!deliverableInfo.getGeographicScope().getId().equals(this.getReportingIndGeographicScopeGlobal())
+              && !deliverableInfo.getGeographicScope().getId().equals(this.getReportingIndGeographicScopeRegional())) {
+              region = "&lt;Not Applicable&gt;";
+              List<DeliverableLocation> deliverableCountries = deliverable.getDeliverableLocations().stream()
+                .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase()))
+                .collect(Collectors.toList());
+              if (deliverableCountries != null && deliverableCountries.size() > 0) {
+                Set<String> countriesSet = new HashSet<>();
+                for (DeliverableLocation deliverableCountry : deliverableCountries) {
+                  countriesSet.add(deliverableCountry.getLocElement().getName());
+                }
+                country = String.join(", ", countriesSet);
+              }
+            }
+          }
+          if (geographicScope.isEmpty()) {
+            geographicScope = null;
+          }
+          if (region.isEmpty()) {
+            region = null;
+          }
+          if (country.isEmpty()) {
+            country = null;
           }
 
 
