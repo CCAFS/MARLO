@@ -160,7 +160,7 @@ public class GeneralLists {
    */
   @RequiresPermissions(Permission.CRPS_READ_REST_API_PERMISSION)
   @ApiOperation(
-    tags = {"Table 1 - Evidence on Progress towards SRF targets", "Table 2 - CRP Policies",
+    tags = {"Table 1 - Progress towards SRF targets", "Table 2 - CRP Policies",
       "Table 3 - Outcome/ Impact Case Reports", "Table 4 - CRP Innovations",
       "Table 5 - Status of Planned Outcomes and Milestones", "Table 6 - Peer-reviewed publications",
       "Table 7 - Participants in CapDev Activities", "Table 8 - Key external partnerships",
@@ -274,7 +274,7 @@ public class GeneralLists {
    */
   @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
   @ApiOperation(
-    tags = {"Table 1 - Evidence on Progress towards SRF targets", "Table 2 - CRP Policies",
+    tags = {"Table 1 - Progress towards SRF targets", "Table 2 - CRP Policies",
       "Table 3 - Outcome/ Impact Case Reports", "Table 4 - CRP Innovations",
       "Table 5 - Status of Planned Outcomes and Milestones", "Table 6 - Peer-reviewed publications",
       "Table 7 - Participants in CapDev Activities", "Table 8 - Key external partnerships",
