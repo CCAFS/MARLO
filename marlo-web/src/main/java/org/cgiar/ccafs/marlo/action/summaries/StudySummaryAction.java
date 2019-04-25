@@ -132,7 +132,7 @@ public class StudySummaryAction extends BaseStudySummaryData implements Summary 
       MasterReport masterReport = (MasterReport) reportResource.getResource();
 
       crp = this.getLoggedCrp().getAcronym();
-      if (crp == null) {
+      if (crp == null || crp.isEmpty()) {
         String[] actionMap = ActionContext.getContext().getName().split("/");
         if (actionMap.length > 1) {
           String enteredCrp = actionMap[0];
