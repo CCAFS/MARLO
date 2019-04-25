@@ -137,9 +137,9 @@ public class DeliverableManagerImpl implements DeliverableManager {
   }
 
   @Override
-  public List<Deliverable> getDeliverablesByParameters(Phase phase, boolean filterPhaseYear,
-    boolean filterParticipants) {
-    return deliverableDAO.getDeliverablesByParameters(phase, filterPhaseYear, filterParticipants);
+  public List<Deliverable> getDeliverablesByParameters(Phase phase, boolean filterPhaseYear, boolean filterParticipants,
+    Boolean filterPublications) {
+    return deliverableDAO.getDeliverablesByParameters(phase, filterPhaseYear, filterParticipants, filterPublications);
   }
 
   @Override

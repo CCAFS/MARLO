@@ -228,9 +228,9 @@ public class DeliverablesParticipantsSummaryAction extends BaseSummariesAction i
 
     List<Deliverable> deliverables = new ArrayList<Deliverable>();
     if (showAllYears.equals("true")) {
-      deliverables = deliverableManager.getDeliverablesByParameters(this.getSelectedPhase(), false, true);
+      deliverables = deliverableManager.getDeliverablesByParameters(this.getSelectedPhase(), false, true, null);
     } else {
-      deliverables = deliverableManager.getDeliverablesByParameters(this.getSelectedPhase(), true, true);
+      deliverables = deliverableManager.getDeliverablesByParameters(this.getSelectedPhase(), true, true, null);
     }
 
     if (deliverables != null && !deliverables.isEmpty()) {
