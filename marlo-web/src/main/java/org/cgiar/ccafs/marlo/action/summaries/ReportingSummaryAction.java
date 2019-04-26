@@ -108,6 +108,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCrp;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationDeliverable;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationOrganization;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationShared;
 import org.cgiar.ccafs.marlo.data.model.ProjectLeverage;
 import org.cgiar.ccafs.marlo.data.model.ProjectLocation;
 import org.cgiar.ccafs.marlo.data.model.ProjectLocationElementType;
@@ -3351,6 +3352,26 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     List<ProjectInnovation> projectInnovations = project.getProjectInnovations().stream()
       .filter(p -> p.isActive() && p.getProjectInnovationInfo(this.getSelectedPhase()) != null)
       .sorted((i1, i2) -> i1.getId().compareTo(i2.getId())).collect(Collectors.toList());
+
+    /*
+     * Update 4/25/2019 Adding Shared Project Innovation in the lists.
+     */
+    List<ProjectInnovationShared> innovationShareds = new ArrayList<>(project.getProjectInnovationShareds().stream()
+      .filter(px -> px.isActive() && px.getPhase().getId() == this.getActualPhase().getId()
+        && px.getProjectInnovation().isActive()
+        && px.getProjectInnovation().getProjectInnovationInfo(this.getActualPhase()) != null)
+      .collect(Collectors.toList()));
+    if (innovationShareds != null && innovationShareds.size() > 0) {
+      for (ProjectInnovationShared innovationShared : innovationShareds) {
+        if (!projectInnovations.contains(innovationShared.getProjectInnovation())) {
+          if (innovationShared.getProjectInnovation().getProjectInnovationInfo(this.getActualPhase()) != null) {
+            projectInnovations.add(innovationShared.getProjectInnovation());
+          }
+        }
+      }
+    }
+
+
     if (projectInnovations != null && !projectInnovations.isEmpty()) {
       for (ProjectInnovation projectInnovation : projectInnovations) {
         ProjectInnovationInfo innovationInfo = projectInnovation.getProjectInnovationInfo();
