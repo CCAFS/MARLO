@@ -240,6 +240,18 @@
       "cycles": [ "Planning" ]
     }
   ]},
+  [#-- CRP/PTF Level --]
+  { "slug": "globalUnitLevel", "active": !centerGlobalUnit, "title":"summaries.board.options.globalUnitLevel", "reportsList": [
+    { "active": true,
+      "available": true,
+      "title": "summaries.board.report.outcomeMilestoneEvidence", 
+      "description": "summaries.board.report.outcomeMilestoneEvidence.description", 
+      "namespace": "/summaries",
+      "action": "${crpSession}/outcomeMilestoneEvidence",
+      "formats": [ "Excel" ],
+      "cycles": [ "Reporting" ]
+    }
+  ]},
   [#-- MONITORING --]
   { "slug": "monitoring", "active": centerGlobalUnit, "title":"summaries.board.options.monitoring", "reportsList": [
     { "active": true,
