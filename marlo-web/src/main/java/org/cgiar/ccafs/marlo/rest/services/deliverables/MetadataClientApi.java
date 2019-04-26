@@ -179,7 +179,7 @@ public abstract class MetadataClientApi {
               }
 
             }
-          } catch (JsonParseException e) {
+          } catch (JsonParseException | RuntimeException e) {
             e.printStackTrace();
             LOG.error(e.getLocalizedMessage());
 
