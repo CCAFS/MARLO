@@ -127,10 +127,6 @@ public class ProjectInnovationListAction extends BaseAction {
   }
 
 
-  public List<ProjectInnovation> get() {
-    return projectInnovations;
-  }
-
   @Override
   public List<Integer> getAllYears() {
     return allYears;
@@ -149,9 +145,13 @@ public class ProjectInnovationListAction extends BaseAction {
     return project;
   }
 
-
   public long getProjectID() {
     return projectID;
+  }
+
+
+  public List<ProjectInnovation> getProjectInnovations() {
+    return projectInnovations;
   }
 
   public List<ProjectInnovation> getProjectOldInnovations() {

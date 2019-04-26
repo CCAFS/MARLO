@@ -361,14 +361,14 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
 
         // Studies
         if (projectInnovationInfo.getProjectExpectedStudy() != null && projectInnovationInfo.getProjectExpectedStudy()
-          .getProjectExpectedStudyInfo(this.getActualPhase()) != null) {
+          .getProjectExpectedStudyInfo(this.getSelectedPhase()) != null) {
           projectExpectedStudy = projectInnovationInfo.getProjectExpectedStudy().getId() + " - "
             + projectInnovationInfo.getProjectExpectedStudy().getProjectExpectedStudyInfo().getTitle();
 
           // oicr link
           oicr = this.getBaseUrl() + "/projects/" + this.getCurrentCrp().getAcronym() + "/studySummary.do?studyID="
             + projectInnovationInfo.getProjectExpectedStudy().getId() + "&cycle=" + this.getCurrentCycle() + "&year="
-            + this.getActualPhase().getYear();
+            + this.getSelectedPhase().getYear();
           System.out.println(oicr);
         }
       }
@@ -389,16 +389,16 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
     // Geographic Scope
     List<ProjectInnovationGeographicScope> projectInnovationGeographicScopeList =
       projectInnovationGeographicScopeManager.findAll().stream()
-        .filter(p -> p.getPhase().getId().equals(this.getActualPhase().getId())
+        .filter(p -> p.getPhase().getId().equals(this.getSelectedPhase().getId())
           && p.getProjectInnovation() == projectInnovationInfo.getProjectInnovation())
         .collect(Collectors.toList());
 
     List<ProjectInnovationRegion> projectInnovationRegionList = projectInnovationRegionManager.findAll().stream()
-      .filter(p -> p.getPhase().getId().equals(this.getActualPhase().getId())
+      .filter(p -> p.getPhase().getId().equals(this.getSelectedPhase().getId())
         && p.getProjectInnovation().getId().equals(projectInnovationID))
       .collect(Collectors.toList());
     List<ProjectInnovationCountry> projectInnovationCountryList = projectInnovationCountryManager.findAll().stream()
-      .filter(p -> p.getPhase().getId().equals(this.getActualPhase().getId())
+      .filter(p -> p.getPhase().getId().equals(this.getSelectedPhase().getId())
         && p.getProjectInnovation().getId().equals(projectInnovationID))
       .collect(Collectors.toList());
 
@@ -514,7 +514,7 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
       for (ProjectInnovationDeliverable projectInnovationDeliverable : projectInnovationDeliverables) {
         if (projectInnovationDeliverable.getDeliverable() != null
           && projectInnovationDeliverable.getDeliverable().getId() != null
-          && projectInnovationDeliverable.getDeliverable().getDeliverableInfo(this.getActualPhase()) != null) {
+          && projectInnovationDeliverable.getDeliverable().getDeliverableInfo(this.getSelectedPhase()) != null) {
           deliverablesSet
             .add("<br>&nbsp;&nbsp;&nbsp;&nbsp; ● " + "D" + projectInnovationDeliverable.getDeliverable().getId() + " - "
               + projectInnovationDeliverable.getDeliverable().getDeliverableInfo().getTitle());
