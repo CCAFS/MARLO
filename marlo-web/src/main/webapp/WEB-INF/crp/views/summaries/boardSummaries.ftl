@@ -250,6 +250,16 @@
       "action": "${crpSession}/outcomeMilestoneEvidence",
       "formats": [ "Excel" ],
       "cycles": [ "Reporting" ]
+    },
+     [#-- List of Current External Partners --]
+    { "active": true,
+      "available": false,
+      "title": "summaries.board.report.externalPartnersEvidence", 
+      "description": "summaries.board.report.externalPartnersEvidence.description", 
+      "namespace": "/summaries",
+      "action": "${crpSession}/externalPartnersEvidence",
+      "formats": [ "Excel" ],
+      "cycles": [ "Reporting" ]
     }
   ]},
   [#-- MONITORING --]
