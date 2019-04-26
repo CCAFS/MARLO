@@ -80,7 +80,7 @@
   background-repeat: no-repeat;
   width: 60px;
   height: 50px;
-  margin-left: 35px;
+  margin-left: 28px;
   display: block;
   float: left;
   cursor: pointer;
@@ -149,6 +149,14 @@
 
 #budget.summariesSection.current span {
   background-position: -92px -173px;
+}
+
+#globalUnitLevel.summariesSection span {
+  background-position: 5px -317px;
+}
+
+#globalUnitLevel.summariesSection.current span {
+  background-position: -92px -316px;
 }
 
 #capdev.summariesSection span {
