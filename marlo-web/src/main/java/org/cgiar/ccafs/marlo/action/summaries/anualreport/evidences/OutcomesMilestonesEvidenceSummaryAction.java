@@ -121,7 +121,7 @@ public class OutcomesMilestonesEvidenceSummaryAction extends BaseSummariesAction
     masterReport.getParameterValues().put("i8nColumnO", this.getText("outcomesMilestones.table.climateChange"));
     masterReport.getParameterValues().put("i8nColumnP",
       this.getText("outcomesMilestones.table.climateChangeJustification"));
-    masterReport.getParameterValues().put("i8nHeader", this.getText("policy.header.table"));
+    masterReport.getParameterValues().put("i8nHeader", this.getText("outcomesMilestones.table.header"));
 
     return masterReport;
   }
@@ -222,7 +222,7 @@ public class OutcomesMilestonesEvidenceSummaryAction extends BaseSummariesAction
   @Override
   public String getFileName() {
     StringBuffer fileName = new StringBuffer();
-    fileName.append("Policies-");
+    fileName.append("OutcomesMilestones-");
     fileName.append(this.getLoggedCrp().getAcronym() + "-");
     fileName.append(this.getSelectedPhase().getName());
     fileName.append(this.getSelectedYear() + "_");
