@@ -112,7 +112,7 @@ public class ProjectInnovationListAction extends BaseAction {
 
   @Override
   public String delete() {
-    for (ProjectInnovation projectInnovation : project.getInnovations()) {
+    for (ProjectInnovation projectInnovation : projectInnovations) {
       if (projectInnovation.getId().longValue() == innovationID) {
         ProjectInnovation projectInnovationBD = projectInnovationManager.getProjectInnovationById(innovationID);
 
@@ -126,6 +126,10 @@ public class ProjectInnovationListAction extends BaseAction {
     return SUCCESS;
   }
 
+
+  public List<ProjectInnovation> get() {
+    return projectInnovations;
+  }
 
   @Override
   public List<Integer> getAllYears() {
@@ -145,13 +149,9 @@ public class ProjectInnovationListAction extends BaseAction {
     return project;
   }
 
+
   public long getProjectID() {
     return projectID;
-  }
-
-
-  public List<ProjectInnovation> getProjectInnovations() {
-    return projectInnovations;
   }
 
   public List<ProjectInnovation> getProjectOldInnovations() {
