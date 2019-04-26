@@ -101,7 +101,7 @@ public class Institutions {
    * @param intitution id
    * @return a InstitutionDTO with institution data item
    */
-  @Throttling(type = ThrottlingType.RemoteAddr, limit = 1, timeUnit = TimeUnit.MINUTES)
+  @Throttling(type = ThrottlingType.HeaderValue, limit = 1, timeUnit = TimeUnit.SECONDS)
   @ApiOperation(tags = {"Table 4 - CRP Innovations", "Table 3 - Outcome/ Impact Case Reports"},
     value = "${Institutions.institutions.code.value}", response = InstitutionDTO.class)
   @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
