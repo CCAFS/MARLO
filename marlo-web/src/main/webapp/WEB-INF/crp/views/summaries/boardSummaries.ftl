@@ -253,7 +253,7 @@
     },
      [#-- List of Current External Partners --]
     { "active": true,
-      "available": false,
+      "available": true,
       "title": "summaries.board.report.externalPartnersEvidence", 
       "description": "summaries.board.report.externalPartnersEvidence.description", 
       "namespace": "/summaries",
