@@ -118,7 +118,7 @@ public class ExternalPartnersSummaryAction extends BaseSummariesAction implement
     ByteArrayOutputStream os = new ByteArrayOutputStream();
     try {
       Resource reportResource = resourceManager.createDirectly(
-        this.getClass().getResource("/pentaho/crp/AR-Evidences/PoliciesAR2018.prpt"), MasterReport.class);
+        this.getClass().getResource("/pentaho/crp/AR-Evidences/ExternalPartnersAR2018.prpt"), MasterReport.class);
       MasterReport masterReport = (MasterReport) reportResource.getResource();
       String center = this.getLoggedCrp().getAcronym();
       // Get datetime

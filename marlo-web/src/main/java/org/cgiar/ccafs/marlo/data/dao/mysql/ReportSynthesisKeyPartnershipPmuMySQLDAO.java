@@ -27,7 +27,8 @@ import javax.inject.Named;
 import org.hibernate.SessionFactory;
 
 @Named
-public class ReportSynthesisKeyPartnershipPmuMySQLDAO extends AbstractMarloDAO<ReportSynthesisKeyPartnershipPmu, Long> implements ReportSynthesisKeyPartnershipPmuDAO {
+public class ReportSynthesisKeyPartnershipPmuMySQLDAO extends AbstractMarloDAO<ReportSynthesisKeyPartnershipPmu, Long>
+  implements ReportSynthesisKeyPartnershipPmuDAO {
 
 
   @Inject
@@ -68,6 +69,25 @@ public class ReportSynthesisKeyPartnershipPmuMySQLDAO extends AbstractMarloDAO<R
     return null;
 
   }
+
+  @Override
+  public List<ReportSynthesisKeyPartnershipPmu> findByExternalId(Long externalID) {
+    String query = "from " + ReportSynthesisKeyPartnershipPmu.class.getName()
+      + " where is_active=1 and report_synthesis_key_partnership_external_id=" + externalID;
+    List<ReportSynthesisKeyPartnershipPmu> list = super.findAll(query);
+    if (list.size() > 0) {
+      return list;
+    }
+    return null;
+
+  }
+
+  @Override
+  public void hardDeleteReportSynthesisKeyPartnershipPmu(long reportSynthesisKeyPartnershipPmuId) {
+    ReportSynthesisKeyPartnershipPmu reportSynthesisKeyPartnershipPmu = this.find(reportSynthesisKeyPartnershipPmuId);
+    this.delete(reportSynthesisKeyPartnershipPmu);
+  }
+
 
   @Override
   public ReportSynthesisKeyPartnershipPmu save(ReportSynthesisKeyPartnershipPmu reportSynthesisKeyPartnershipPmu) {
