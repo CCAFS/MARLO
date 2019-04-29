@@ -769,35 +769,6 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     poiSummary.textTable(document, headers, datas, true, "tableA1AnnualReport2018");
   }
 
-  public void deleteFormatTags(String text) {
-    // Add format tags to remove to the list
-    List<String> tagsToRemove = new ArrayList<String>();
-    tagsToRemove.add("<span");
-    tagsToRemove.add("<style");
-
-    // Search tags in the current text
-    for (int i = 0; i < tagsToRemove.size(); i++) {
-      if (text.contains(tagsToRemove.get(i))) {
-
-        // Search for the position of the tag in the text
-        int finalTagPos = 0;
-        String tagText = "";
-        for (int j = 0; j < text.length(); j++) {
-          if (text.substring(j, j + tagsToRemove.get(i).length() - 1).equals(tagsToRemove.get(j))) {
-
-            // Detect the close part of the tag
-            finalTagPos = text.indexOf(">", j);
-            if (finalTagPos != 0) {
-              tagText = text.substring(j, finalTagPos);
-              text = text.replaceAll(tagText, "");
-              j = j + tagsToRemove.get(i).length();
-            }
-          }
-        }
-      }
-    }
-  }
-
   private void createTable10() {
     List<List<POIField>> headers = new ArrayList<>();
     List<List<POIField>> datas = new ArrayList<>();
@@ -994,7 +965,6 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     poiSummary.textTable(document, headers, datas, false, "table3AnnualReport2018");
   }
 
-
   private void createTable13() {
     try {
       String blackColor = "000000";
@@ -1168,6 +1138,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
       System.out.println(e);
     }
   }
+
 
   private void createTable2() {
 
@@ -1484,7 +1455,6 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     poiSummary.textTable(document, headers, datas, false, "table4AnnualReport2018");
   }
 
-
   private void createTable5() {
 
     List<List<POIField>> headers = new ArrayList<>();
@@ -1635,6 +1605,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     }
     poiSummary.textTable(document, headers, datas, false, "table5AnnualReport2018");
   }
+
 
   public void createTable6() {
     List<List<POIField>> headers = new ArrayList<>();
@@ -1937,6 +1908,36 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     }
 
     poiSummary.textTable(document, headers, datas, false, "tableAnnexesAnnualReport2018");
+  }
+
+  public String deleteFormatTags(String text) {
+    // Add format tags to remove to the list
+    List<String> tagsToRemove = new ArrayList<String>();
+    tagsToRemove.add("<span");
+    tagsToRemove.add("<style");
+
+    // Search tags in the current text
+    for (int i = 0; i < tagsToRemove.size(); i++) {
+      if (text.contains(tagsToRemove.get(i))) {
+
+        // Search for the position of the tag in the text
+        int finalTagPos = 0;
+        String tagText = "";
+        for (int j = 0; j < text.length(); j++) {
+          if (text.substring(j, j + tagsToRemove.get(i).length() - 1).equals(tagsToRemove.get(j))) {
+
+            // Detect the close part of the tag
+            finalTagPos = text.indexOf(">", j);
+            if (finalTagPos != 0) {
+              tagText = text.substring(j, finalTagPos);
+              text = text.replaceAll(tagText, "");
+              j = j + tagsToRemove.get(i).length();
+            }
+          }
+        }
+      }
+    }
+    return text;
   }
 
   public String deleteSpanTags(String text) {
@@ -2456,7 +2457,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
 
         // Part C
         document.createParagraph().setPageBreak(true);
-        poiSummary.textHead1Title(document.createParagraph(), "Part C. Annexes");
+        poiSummary.textHead1Title(document.createParagraph(), "Annexes");
 
         // Table Annexes
         // document.createParagraph().setPageBreak(true);
