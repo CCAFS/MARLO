@@ -203,7 +203,7 @@ public class ExternalPartnersSummaryAction extends BaseSummariesAction implement
   @Override
   public String getFileName() {
     StringBuffer fileName = new StringBuffer();
-    fileName.append("Policies-");
+    fileName.append("ExternalPartners-");
     fileName.append(this.getLoggedCrp().getAcronym() + "-");
     fileName.append(this.getSelectedPhase().getName());
     fileName.append(this.getSelectedYear() + "_");

@@ -114,7 +114,6 @@ public class CrpProgramOutcome extends MarloAuditableEntity implements java.io.S
     return this.getCrpProgram().getAcronym() + " Outcome: " + description;
   }
 
-
   public String getComposeID() {
     if (composeID != null) {
       return composeID;
@@ -131,6 +130,7 @@ public class CrpProgramOutcome extends MarloAuditableEntity implements java.io.S
     return crpClusterKeyOutputOutcomes;
   }
 
+
   public Set<CrpMilestone> getCrpMilestones() {
     return this.crpMilestones;
   }
@@ -143,19 +143,19 @@ public class CrpProgramOutcome extends MarloAuditableEntity implements java.io.S
     return this.crpProgram;
   }
 
-
   public Set<CrpProgramOutcomeIndicator> getCrpProgramOutcomeIndicators() {
     return crpProgramOutcomeIndicators;
   }
+
 
   public Set<Deliverable> getDeliverables() {
     return deliverables;
   }
 
-
   public String getDescription() {
     return this.description;
   }
+
 
   public FileDB getFile() {
     return file;
@@ -178,6 +178,10 @@ public class CrpProgramOutcome extends MarloAuditableEntity implements java.io.S
 
   public List<CrpMilestone> getMilestones() {
     return milestones;
+  }
+
+  public String getPAcronym() {
+    return this.getCrpProgram().getAcronym();
   }
 
   public Phase getPhase() {

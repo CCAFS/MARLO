@@ -298,7 +298,7 @@ public class OutcomesMilestonesEvidenceSummaryAction extends BaseSummariesAction
       // Id
       paramA = outcomeMilestone.getCrpMilestone().getId().toString();
       // FP
-      paramB = outcomeMilestone.getCrpProgramOutcome().getCrpProgram().getAcronym();
+      paramB = outcomeMilestone.getCrpProgramOutcome().getPAcronym();
       // Outcome
       paramC = outcomeMilestone.getCrpProgramOutcome().getComposedName();
       // Outcome Progress
