@@ -73,7 +73,7 @@ public class POISummary {
     expressionsList.add("<s>");
     expressionsList.add("<del>");
     expressionsList.add("<p>");
-    expressionsList.add("<a ");
+    expressionsList.add("<a");
 
     expressionsListClose.add("</b>");
     expressionsListClose.add("</strong>");
@@ -227,7 +227,7 @@ public class POISummary {
             /*
              * Detect start of a href tags
              */
-            if (expressionListActual.equals("<a ")) {
+            if (expressionListActual.equals("<a")) {
 
               hrefTagsCount++;
               textIndicatorLink = text.substring(text.indexOf(">", j) + 1, posFinal);
@@ -342,7 +342,7 @@ public class POISummary {
           }
         }
 
-        if (expressionListActual.contains("<a ") == false) {
+        if (expressionListActual.contains("<a") == false) {
           paragraph.setAlignment(ParagraphAlignment.BOTH);
           stringTemp = this.replaceHTMLTags(stringTemp);
 
