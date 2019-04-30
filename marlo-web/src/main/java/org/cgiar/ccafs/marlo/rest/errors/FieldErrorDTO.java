@@ -17,7 +17,7 @@ package org.cgiar.ccafs.marlo.rest.errors;
 
 import java.io.Serializable;
 
-public class FieldErrorDTO implements Serializable {
+public class FieldErrorDTO extends RuntimeException implements Serializable {
 
   private static final long serialVersionUID = 1L;
 
@@ -27,7 +27,7 @@ public class FieldErrorDTO implements Serializable {
 
   private final String message;
 
-  FieldErrorDTO(String dto, String field, String message) {
+  public FieldErrorDTO(String dto, String field, String message) {
     this.objectName = dto;
     this.field = field;
     this.message = message;
@@ -37,6 +37,7 @@ public class FieldErrorDTO implements Serializable {
     return this.field;
   }
 
+  @Override
   public String getMessage() {
     return this.message;
   }

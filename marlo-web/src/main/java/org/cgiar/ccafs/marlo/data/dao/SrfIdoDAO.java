@@ -56,6 +56,14 @@ public interface SrfIdoDAO {
 
 
   /**
+   * This method gets a srfIdo object by a given srfIdo smo code.
+   * 
+   * @param srfIdoID is the srfIdo identifier.
+   * @return a SrfIdo object.
+   */
+  public SrfIdo findBySmoCode(String smoCode);
+
+  /**
    * This method saves the information of the given srfIdo
    * 
    * @param srfIdo - is the srfIdo object with the new information to be added/updated.
