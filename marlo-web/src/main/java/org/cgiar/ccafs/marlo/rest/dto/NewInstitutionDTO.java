@@ -37,6 +37,12 @@ public class NewInstitutionDTO {
   @NotEmpty
   @ApiModelProperty(notes = "List of countries where are offices", position = 5)
   private List<CountryDTO> countryDTO;
+  @ApiModelProperty(notes = "Mail of the external user who is requesting the institution", position = 6)
+  private String externalUserMail;
+  @ApiModelProperty(notes = "Name of the external user who is requesting the institution", position = 7)
+  private String externalUserName;
+  @ApiModelProperty(notes = "comments from the external user", position = 8)
+  private String externalUserComments;
 
   public String getAcronym() {
     return this.acronym;
@@ -44,6 +50,18 @@ public class NewInstitutionDTO {
 
   public List<CountryDTO> getCountryDTO() {
     return this.countryDTO;
+  }
+
+  public String getExternalUserComments() {
+    return this.externalUserComments;
+  }
+
+  public String getExternalUserMail() {
+    return this.externalUserMail;
+  }
+
+  public String getExternalUserName() {
+    return this.externalUserName;
   }
 
   public InstitutionTypeDTO getInstitutionType() {
@@ -64,6 +82,18 @@ public class NewInstitutionDTO {
 
   public void setCountryDTO(List<CountryDTO> countryDTO) {
     this.countryDTO = countryDTO;
+  }
+
+  public void setExternalUserComments(String externalUserComments) {
+    this.externalUserComments = externalUserComments;
+  }
+
+  public void setExternalUserMail(String externalUserMail) {
+    this.externalUserMail = externalUserMail;
+  }
+
+  public void setExternalUserName(String externalUserName) {
+    this.externalUserName = externalUserName;
   }
 
   public void setInstitutionType(InstitutionTypeDTO institutionType) {

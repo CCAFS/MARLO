@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -21,8 +21,8 @@ import org.cgiar.ccafs.marlo.data.model.SrfIdo;
 
 import java.util.List;
 
-import javax.inject.Named;
 import javax.inject.Inject;
+import javax.inject.Named;
 
 /**
  * @author Christian Garcia
@@ -45,32 +45,37 @@ public class SrfIdoManagerImpl implements SrfIdoManager {
   @Override
   public void deleteSrfIdo(long srfIdoId) {
 
-    srfIdoDAO.deleteSrfIdo(srfIdoId);
+    this.srfIdoDAO.deleteSrfIdo(srfIdoId);
   }
 
   @Override
   public boolean existSrfIdo(long srfIdoID) {
 
-    return srfIdoDAO.existSrfIdo(srfIdoID);
+    return this.srfIdoDAO.existSrfIdo(srfIdoID);
   }
 
   @Override
   public List<SrfIdo> findAll() {
 
-    return srfIdoDAO.findAll();
+    return this.srfIdoDAO.findAll();
 
   }
 
   @Override
   public SrfIdo getSrfIdoById(long srfIdoID) {
 
-    return srfIdoDAO.find(srfIdoID);
+    return this.srfIdoDAO.find(srfIdoID);
+  }
+
+  public SrfIdo getSrfIdoBySmoCode(String smoCode) {
+
+    return this.srfIdoDAO.findBySmoCode(smoCode);
   }
 
   @Override
   public SrfIdo saveSrfIdo(SrfIdo srfIdo) {
 
-    return srfIdoDAO.save(srfIdo);
+    return this.srfIdoDAO.save(srfIdo);
   }
 
 
