@@ -220,6 +220,7 @@ import org.apache.struts2.interceptor.SessionAware;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.safety.Whitelist;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -1508,6 +1509,11 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return ServletActionContext.getActionMapping().getName();
   }
 
+  public String getActionNameSimple() {
+    return ServletActionContext.getActionMapping().getName().split("/")[1];
+  }
+
+
   /**
    * get the actual
    * 
@@ -1852,13 +1858,24 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * @param section is the name of some section.
    * @return a CenterSectionStatus object with the information requested.
    */
-  public CenterSectionStatus getCenterOutcomeStatus(long outcomeID) {
+  public CenterSectionStatus getCenterOutcomeStatus(long outcomeID, String nameAction) {
+
+    String name;
+
+    if (nameAction.equals("centerOutcomesList")) {
+      name = "outcomesList";
+    } else if (nameAction.equals("monitoringOutcomesList")) {
+      name = "monitoringOutcome";
+    } else {
+      name = nameAction;
+    }
 
     CenterOutcome outcome = this.outcomeService.getResearchOutcomeById(outcomeID);
     List<CenterSectionStatus> sectionStatuses;
     if (outcome.getSectionStatuses() != null) {
       sectionStatuses = new ArrayList<>(outcome.getSectionStatuses().stream()
-        .filter(c -> c.getYear() == this.getActualPhase().getYear()).collect(Collectors.toList()));
+        .filter(c -> c.getYear().equals(this.getActualPhase().getYear()) && c.getSectionName().equals(name))
+        .collect(Collectors.toList()));
     } else {
       return null;
     }
@@ -1896,7 +1913,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return null;
   }
 
-
   /**
    * ************************ CENTER METHOD ********************* Validate the
    * sections of CapDev *
@@ -1923,6 +1939,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
     return true;
   }
+
 
   /**
    * ************************ CENTER METHOD ********************* Validate the
@@ -3752,7 +3769,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return Integer.parseInt(this.getSession().get(APConstants.CRP_REPORTING_YEAR).toString());
   }
 
-
   /**
    * Check the annual report 2018 Section Status
    * 
@@ -3828,6 +3844,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
     return returnValue;
   }
+
 
   /**
    * Check the annual report Section Status
@@ -4225,7 +4242,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
   }
 
-
   public boolean hasPersmissionSubmitAR2018(long synthesisId) {
     if (!this.getActualPhase().getUpkeep()) {
       String permission = this.generatePermission(Permission.REPORT_SYNTHESIS_SUBMIT_PERMISSION,
@@ -4236,6 +4252,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       return false;
     }
   }
+
 
   /**
    * TODO ************************ CENTER METHOD *********************
@@ -5802,7 +5819,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
   }
 
-
   /**
    * Reusable
    * 
@@ -5837,6 +5853,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       return false;
     }
   }
+
 
   public boolean isReportingActive() {
 
@@ -6319,6 +6336,26 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
+  /**
+   * Remove HTML tags
+   * 
+   * @param html
+   * @return
+   */
+  public String removeHtmlTags(String html) {
+    if (html != null) {
+      Whitelist whitelist = Whitelist.none();
+      whitelist.addTags("a");
+      whitelist.addAttributes("a", "href");
+
+      String noTags = Jsoup.clean(html, whitelist);
+      return noTags;
+    } else {
+      return "";
+    }
+
+  }
+
   /* Override this method depending of the save action. */
   public String save() {
     return SUCCESS;
@@ -6759,7 +6796,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
           if (outcomes != null && !outcomes.isEmpty()) {
             hasOutcomes = true;
             for (CenterOutcome researchOutcome : outcomes) {
-              CenterSectionStatus sectionStatus = this.getCenterOutcomeStatus(researchOutcome.getId());
+              CenterSectionStatus sectionStatus = this.getCenterOutcomeStatus(researchOutcome.getId(), "outcomesList");
               if (sectionStatus == null) {
                 return false;
               } else {
