@@ -28,12 +28,15 @@ import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.Institutions;
 import org.cgiar.ccafs.marlo.rest.dto.InstitutionDTO;
 import org.cgiar.ccafs.marlo.rest.dto.InstitutionRequestDTO;
 import org.cgiar.ccafs.marlo.rest.dto.NewInstitutionDTO;
+import org.cgiar.ccafs.marlo.rest.errors.FieldErrorDTO;
 import org.cgiar.ccafs.marlo.rest.mappers.InstitutionMapper;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.SendMailS;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -84,18 +87,30 @@ public class InstitutionItem<T> {
     String entityAcronym, User user) {
 
     GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitByAcronym(entityAcronym);
+    String regex = "^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$";
 
     if (globalUnitEntity == null) {
       return new ResponseEntity<InstitutionRequestDTO>(HttpStatus.BAD_REQUEST);
     }
-    // CountryDTO countryDTO = institutionDTO.getCountryDTO().get(0);
 
     LocElement locElement =
       this.locElementManager.getLocElementByNumericISOCode(newInstitutionDTO.getCountryDTO().get(0).getCode());
     if (locElement == null) {
       return new ResponseEntity<InstitutionRequestDTO>(HttpStatus.BAD_REQUEST);
     }
+    // externalUserMail is mandatory
 
+
+    Pattern pattern = Pattern.compile(regex);
+
+    if (newInstitutionDTO.getExternalUserMail() != null) {
+      Matcher matcher = pattern.matcher(newInstitutionDTO.getExternalUserMail());
+      if (!matcher.matches()) {
+        throw new FieldErrorDTO("InstitutionRequestDTO", "getExternalUserMail", "Bad external email format");
+      }
+    } else {
+      throw new FieldErrorDTO("InstitutionRequestDTO", "getExternalUserMail", "External email is empty");
+    }
     PartnerRequest partnerRequestParent =
       this.institutionMapper.institutionDTOToPartnerRequest(newInstitutionDTO, globalUnitEntity, locElement, user);
 
@@ -183,8 +198,10 @@ public class InstitutionItem<T> {
       new String[] {entityAcronym.toUpperCase(), institutionName});
 
     // Message content
-    message.append(user.getFirstName() + " " + user.getLastName() + " ");
-    message.append("(" + user.getEmail() + ") ");
+    message.append(partnerRequest.getExternalUserName() == null ? (user.getFirstName() + " " + user.getLastName() + " ")
+      : partnerRequest.getExternalUserName());
+    message.append(" (" + partnerRequest.getExternalUserMail() == null ? user.getEmail()
+      : partnerRequest.getExternalUserMail() + ") ");
     message.append("is requesting to add the following partner information:");
     message.append("</br></br>");
     message.append("Partner Name: ");
@@ -201,14 +218,16 @@ public class InstitutionItem<T> {
     message.append(countryName);
     message.append(" </br>");
 
+
     // Is there a web page?
     if (partnerWebPage != null && !partnerWebPage.isEmpty()) {
       message.append("Web Page: ");
       message.append(partnerWebPage);
       message.append(" </br>");
     }
-    message.append(" </br>");
-    message.append(".</br>");
+    message.append(" </br></br>");
+    message.append("This request was sent through the rest api with the user " + user.getFirstName() + " "
+      + user.getLastName() + "(" + user.getEmail() + ")  </br>");
     message.append("</br>");
     try {
       this.sendMail.send(this.config.getEmailNotification(), null, this.config.getEmailNotification(), subject,

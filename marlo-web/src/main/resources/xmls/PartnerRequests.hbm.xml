@@ -83,5 +83,14 @@
     <property name="rejectedDate" type="timestamp">
       <column name="rejected_date" length="19" not-null="false" />
     </property>
+    <property name="externalUserMail" type="string">
+      <column name="external_user_mail" sql-type="TEXT" />
+    </property>
+    <property name="externalUserComments" type="string">
+      <column name="external_user_comments" sql-type="TEXT" />
+    </property>
+    <property name="externalUserName" type="string">
+      <column name="external_user_name" sql-type="TEXT" />
+    </property>
 	</class>
 </hibernate-mapping>
