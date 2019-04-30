@@ -366,7 +366,7 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
             + projectInnovationInfo.getProjectExpectedStudy().getProjectExpectedStudyInfo().getTitle();
 
           // oicr link
-          oicr = this.getBaseUrl() + "/projects/" + this.getCurrentCrp().getAcronym() + "/studySummary.do?studyID="
+          oicr = this.getBaseUrl() + "/projects/" + this.getLoggedCrp().getAcronym() + "/studySummary.do?studyID="
             + projectInnovationInfo.getProjectExpectedStudy().getId() + "&cycle=" + this.getSelectedCycle() + "&year="
             + this.getSelectedPhase().getYear();
           System.out.println(oicr);
