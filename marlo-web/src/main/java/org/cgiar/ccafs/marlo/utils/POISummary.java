@@ -231,7 +231,10 @@ public class POISummary {
 
               hrefTagsCount++;
               textIndicatorLink = text.substring(text.indexOf(">", j) + 1, posFinal);
+
               url = text.substring(text.indexOf("=", j) + 2, text.indexOf(">", j) - 1);
+
+
               if (!url.contains("http://") && !url.contains("https://")) {
                 url = "http://" + url;
               }

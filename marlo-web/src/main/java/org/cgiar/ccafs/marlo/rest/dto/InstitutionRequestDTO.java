@@ -48,8 +48,29 @@ public class InstitutionRequestDTO {
   @ApiModelProperty(notes = "Intitution created", position = 9)
   InstitutionDTO institutionDTO;
 
+  @ApiModelProperty(notes = "External user mail", position = 10)
+  private String externalUserMail;
+
+  @ApiModelProperty(notes = "External user name", position = 11)
+  private String externalUserName;
+
+  @ApiModelProperty(notes = "External user comments", position = 12)
+  private String externalUserComments;
+
   public String getAcronym() {
     return this.acronym;
+  }
+
+  public String getExternalUserComments() {
+    return this.externalUserComments;
+  }
+
+  public String getExternalUserMail() {
+    return this.externalUserMail;
+  }
+
+  public String getExternalUserName() {
+    return this.externalUserName;
   }
 
   public Long getId() {
@@ -80,12 +101,25 @@ public class InstitutionRequestDTO {
     return this.rejectJustification;
   }
 
+
   public String getWebPage() {
     return this.webPage;
   }
 
   public void setAcronym(String acronym) {
     this.acronym = acronym;
+  }
+
+  public void setExternalUserComments(String externalUserComments) {
+    this.externalUserComments = externalUserComments;
+  }
+
+  public void setExternalUserMail(String externalUserMail) {
+    this.externalUserMail = externalUserMail;
+  }
+
+  public void setExternalUserName(String externalUserName) {
+    this.externalUserName = externalUserName;
   }
 
   public void setId(Long id) {
@@ -104,9 +138,11 @@ public class InstitutionRequestDTO {
     this.isAcepted = isAcepted;
   }
 
+
   public void setLocElementDTO(CountryDTO locElementDTO) {
     this.locElementDTO = locElementDTO;
   }
+
 
   public void setPartnerName(String partnerName) {
     this.partnerName = partnerName;
