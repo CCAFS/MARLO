@@ -52,23 +52,31 @@ public interface ReportSynthesisKeyPartnershipPmuManager {
   public List<ReportSynthesisKeyPartnershipPmu> findAll();
 
 
+  List<ReportSynthesisKeyPartnershipPmu> findByExternalId(Long externalID);
+
   /**
    * This method gets a reportSynthesisKeyPartnershipPmu object by a given reportSynthesisKeyPartnershipPmu identifier.
    * 
    * @param reportSynthesisKeyPartnershipPmuID is the reportSynthesisKeyPartnershipPmu identifier.
    * @return a ReportSynthesisKeyPartnershipPmu object.
    */
-  public ReportSynthesisKeyPartnershipPmu getReportSynthesisKeyPartnershipPmuById(long reportSynthesisKeyPartnershipPmuID);
+  public ReportSynthesisKeyPartnershipPmu
+    getReportSynthesisKeyPartnershipPmuById(long reportSynthesisKeyPartnershipPmuID);
+
+  public void hardDeleteReportSynthesisKeyPartnershipPmu(long reportSynthesisKeyPartnershipPmuId);
 
   /**
    * This method saves the information of the given reportSynthesisKeyPartnershipPmu
    * 
-   * @param reportSynthesisKeyPartnershipPmu - is the reportSynthesisKeyPartnershipPmu object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the reportSynthesisKeyPartnershipPmu was
+   * @param reportSynthesisKeyPartnershipPmu - is the reportSynthesisKeyPartnershipPmu object with the new information
+   *        to be added/updated.
+   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the
+   *         reportSynthesisKeyPartnershipPmu was
    *         updated
    *         or -1 is some error occurred.
    */
-  public ReportSynthesisKeyPartnershipPmu saveReportSynthesisKeyPartnershipPmu(ReportSynthesisKeyPartnershipPmu reportSynthesisKeyPartnershipPmu);
+  public ReportSynthesisKeyPartnershipPmu
+    saveReportSynthesisKeyPartnershipPmu(ReportSynthesisKeyPartnershipPmu reportSynthesisKeyPartnershipPmu);
 
 
 }

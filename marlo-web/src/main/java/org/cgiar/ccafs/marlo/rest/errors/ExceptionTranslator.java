@@ -146,8 +146,16 @@ public class ExceptionTranslator {
   @ResponseBody
   @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
   public ErrorDTO processResourceNotFoundException(final RuntimeException ex) {
-    return new ErrorDTO(ErrorConstants.ERR_INTERNAL_SERVER, ex.getMessage());
+    return new ErrorDTO(ErrorConstants.ERR_TOO_MANY_REQUEST, ex.getMessage());
   }
+
+  @ExceptionHandler(ThrottlingException.class)
+  @ResponseBody
+  @ResponseStatus(HttpStatus.TOO_MANY_REQUESTS)
+  protected ErrorDTO processThrottlingException(final RuntimeException ex) {
+    return new ErrorDTO(ErrorConstants.ERR_RESOURCE_ALREADY_EXISTS, ex.getMessage());
+  }
+
 
   @ExceptionHandler(UnauthenticatedException.class)
   @ResponseStatus(HttpStatus.UNAUTHORIZED)

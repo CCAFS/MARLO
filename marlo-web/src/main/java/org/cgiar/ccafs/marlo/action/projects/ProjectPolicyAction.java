@@ -52,6 +52,7 @@ import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyPolicy;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationShared;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicy;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicyCountry;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicyCrossCuttingMarker;
@@ -689,6 +690,22 @@ public class ProjectPolicyAction extends BaseAction {
         }
       }
 
+      /*
+       * Update 4/25/2019 Adding Shared Project Innovation in the lists.
+       */
+      List<ProjectInnovationShared> innovationShareds = new ArrayList<>(project.getProjectInnovationShareds().stream()
+        .filter(px -> px.isActive() && px.getPhase().getId() == this.getActualPhase().getId()
+          && px.getProjectInnovation().isActive()
+          && px.getProjectInnovation().getProjectInnovationInfo(this.getActualPhase()) != null)
+        .collect(Collectors.toList()));
+      if (innovationShareds != null && innovationShareds.size() > 0) {
+        for (ProjectInnovationShared innovationShared : innovationShareds) {
+          if (!innovationList.contains(innovationShared.getProjectInnovation())) {
+            this.innovationList.add(innovationShared.getProjectInnovation());
+          }
+        }
+      }
+
       List<ProjectExpectedStudy> allProjectStudies = new ArrayList<ProjectExpectedStudy>();
 
       // Load Studies
@@ -701,7 +718,7 @@ public class ProjectPolicyAction extends BaseAction {
 
       // Load Shared studies
       List<ExpectedStudyProject> expectedStudyProject = new ArrayList<>(project.getExpectedStudyProjects().stream()
-        .filter(px -> px.isActive() && px.getPhase().getId() == this.getActualPhase().getId()
+        .filter(px -> px.isActive() && px.getPhase().getId().equals(this.getActualPhase().getId())
           && px.getProjectExpectedStudy().isActive()
           && px.getProjectExpectedStudy().getProjectExpectedStudyInfo(this.getActualPhase()) != null)
         .collect(Collectors.toList()));
@@ -719,8 +736,7 @@ public class ProjectPolicyAction extends BaseAction {
         expectedStudyList = allProjectStudies.stream()
           .filter(ex -> ex.isActive() && ex.getProjectExpectedStudyInfo(phase) != null
             && ex.getProjectExpectedStudyInfo().getStudyType() != null
-            && ex.getProjectExpectedStudyInfo().getStudyType().getId().intValue() == 1 && ex.getProject() != null
-            && ex.getProject().getId() == project.getId())
+            && ex.getProjectExpectedStudyInfo().getStudyType().getId().intValue() == 1 && ex.getProject() != null)
           .collect(Collectors.toList());
       }
       // Crps/Platforms List

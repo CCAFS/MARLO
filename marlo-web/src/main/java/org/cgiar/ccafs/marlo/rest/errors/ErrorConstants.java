@@ -26,6 +26,8 @@ public final class ErrorConstants {
   public static final String ERR_INTERNAL_SERVER = "error.internalServerError";
   public static final String ERR_RESOURCE_NOT_FOUND = "error.resourceNotFound";
 
+  public static final String ERR_TOO_MANY_REQUEST = "error.TooManyRequest";
+
   private ErrorConstants() {
   }
 

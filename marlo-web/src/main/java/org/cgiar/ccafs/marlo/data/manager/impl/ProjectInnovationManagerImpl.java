@@ -272,6 +272,42 @@ public class ProjectInnovationManagerImpl implements ProjectInnovationManager {
   }
 
   @Override
+  public List<ProjectInnovation> getProjectInnovationsNoSynthesisList(LiaisonInstitution liaisonInstitution,
+    Phase phase) {
+    Phase phaseDB = phaseManager.getPhaseById(phase.getId());
+    List<ProjectInnovation> projectInnovations = new ArrayList<>();
+    // Fill Project Innovations of the current flagship
+    if (projectFocusManager.findAll() != null) {
+      List<ProjectFocus> projectFocus = new ArrayList<>(projectFocusManager.findAll().stream()
+        .filter(pf -> pf.isActive() && pf.getCrpProgram().getId().equals(liaisonInstitution.getCrpProgram().getId())
+          && pf.getPhase() != null && pf.getPhase().getId().equals(phaseDB.getId()))
+        .collect(Collectors.toList()));
+
+      for (ProjectFocus focus : projectFocus) {
+        Project project = projectManager.getProjectById(focus.getProject().getId());
+        List<ProjectInnovation> plannedprojectInnovations = new ArrayList<>(project.getProjectInnovations().stream()
+          .filter(ps -> ps.isActive() && ps.getProjectInnovationInfo(phaseDB) != null
+            && ps.getProjectInnovationInfo().getYear() != null
+            && ps.getProjectInnovationInfo().getYear().intValue() != phaseDB.getYear())
+          .collect(Collectors.toList()));
+
+        for (ProjectInnovation projectInnovation : plannedprojectInnovations) {
+          projectInnovation.getProjectInnovationInfo(phaseDB);
+          projectInnovation.setGeographicScopes(projectInnovation.getGeographicScopes(phaseDB));
+          projectInnovation.setCountries(projectInnovation.getCountries(phaseDB));
+          projectInnovation.setRegions(projectInnovation.getRegions(phaseDB));
+          projectInnovation.setContributingOrganizations(projectInnovation.getContributingOrganizations(phaseDB));
+          projectInnovations.add(projectInnovation);
+        }
+      }
+    }
+    if (projectInnovations != null && !projectInnovations.isEmpty()) {
+      projectInnovations.sort((p1, p2) -> p1.getId().compareTo(p2.getId()));
+    }
+    return projectInnovations;
+  }
+
+  @Override
   public ProjectInnovation saveProjectInnovation(ProjectInnovation projectInnovation) {
     return projectInnovationDAO.save(projectInnovation);
   }

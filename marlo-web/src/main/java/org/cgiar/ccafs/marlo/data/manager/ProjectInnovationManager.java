@@ -74,6 +74,19 @@ public interface ProjectInnovationManager {
   public List<ProjectInnovation> getProjectInnovationsList(LiaisonInstitution liaisonInstitution, Phase phase);
 
   /**
+   * This method gets a list of projectInnovation that are active for an specific liaisonInstitution but that no belongs
+   * to the AR of the current phase
+   * Flagship: Get the list of projects that have project_focus equal to the liaisonInstitution
+   * PMU: Get the list of liaison according to what was selected by the flagships
+   * 
+   * @param liaisonInstitution
+   * @param phase
+   * @return a list from ProjectInnovation null if no exist records
+   */
+  public List<ProjectInnovation> getProjectInnovationsNoSynthesisList(LiaisonInstitution liaisonInstitution,
+    Phase phase);
+
+  /**
    * This method saves the information of the given projectInnovation
    * 
    * @param projectInnovation - is the projectInnovation object with the new information to be added/updated.

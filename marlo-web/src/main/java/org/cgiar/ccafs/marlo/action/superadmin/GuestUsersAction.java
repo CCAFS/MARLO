@@ -29,6 +29,9 @@ import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.data.model.UserRole;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.SendMailS;
+import org.cgiar.ccafs.marlo.validation.superadmin.GuestUsersValidator;
+
+import org.cgiar.ciat.auth.LDAPUser;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
@@ -36,21 +39,20 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
+ * @author Andres Valencia - CIAT/CCAFS
  */
 public class GuestUsersAction extends BaseAction {
-
 
   private static final long serialVersionUID = 6860177996446505143L;
 
@@ -73,183 +75,166 @@ public class GuestUsersAction extends BaseAction {
   }
 
   private final Logger LOG = LoggerFactory.getLogger(GuestUsersAction.class);
-
-  private final UserManager userManager;
-
-
-  // GlobalUnit Manager
-  private GlobalUnitManager crpManager;
-
-  private final UserRoleManager userRoleManager;
-
+  // Managers
+  private GlobalUnitManager globalUnitManager;
+  private UserManager userManager;
   private CrpUserManager crpUserManager;
-
+  private UserRoleManager userRoleManager;
   private RoleManager roleManager;
-
   private final SendMailS sendMailS;
-  private User user;
-
-  private boolean cigarUser;
-
-  private Boolean isNewUser;
-
+  // Parameters
   private List<GlobalUnit> crps;
-
-
-  private long userID;
+  private User user;
+  private long selectedGlobalUnitID;
+  private String message;
+  private GuestUsersValidator validator;
 
   @Inject
-  public GuestUsersAction(APConfig config, UserManager userManager, GlobalUnitManager crpManager,
-    CrpUserManager crpUserManager, UserRoleManager userRoleManager, SendMailS sendMailS, RoleManager roleManager) {
+  public GuestUsersAction(APConfig config, GlobalUnitManager globalUnitManager, UserManager userManager,
+    CrpUserManager crpUserManager, UserRoleManager userRoleManager, RoleManager roleManager, SendMailS sendMailS,
+    GuestUsersValidator validator) {
     super(config);
+    this.globalUnitManager = globalUnitManager;
     this.userManager = userManager;
-    this.crpManager = crpManager;
     this.crpUserManager = crpUserManager;
     this.userRoleManager = userRoleManager;
-    this.sendMailS = sendMailS;
     this.roleManager = roleManager;
+    this.sendMailS = sendMailS;
+    this.validator = validator;
   }
+
 
   public List<GlobalUnit> getCrps() {
     return crps;
   }
 
 
-  public Boolean getIsNewUser() {
-    return isNewUser;
+  /**
+   * @return the message
+   */
+  public String getMessage() {
+    return message;
+  }
+
+
+  /**
+   * @return the selectedGlobalUnitID
+   */
+  public long getSelectedGlobalUnitID() {
+    return selectedGlobalUnitID;
   }
 
   public User getUser() {
     return user;
   }
 
-  public long getUserID() {
-    return userID;
-  }
-
-
-  public boolean isCigarUser() {
-    return cigarUser;
-  }
-
   @Override
   public void prepare() throws Exception {
-
-    try {
-      userID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.USER_ID)));
-      user = userManager.getUser(userID);
-    } catch (Exception e) {
-      LOG.error("unable to parse userID", e);
-      /**
-       * Original code swallows the exception and didn't even log it. Now we at least log it,
-       * but we need to revisit to see if we should continue processing or re-throw the exception.
-       */
-    }
-
     crps = new ArrayList<>(
-      crpManager.findAll().stream().filter(c -> c.isActive() && c.isMarlo()).collect(Collectors.toList()));
-
-    if (this.isHttpPost()) {
-      isNewUser = null;
-    }
-
+      globalUnitManager.findAll().stream().filter(c -> c.isActive() && c.isMarlo()).collect(Collectors.toList()));
   }
+
 
   @Override
   public String save() {
-    User newUser;
+    if (this.canAccessSuperAdmin()) {
+      if (selectedGlobalUnitID != -1) {
+        GlobalUnit globalUnit = globalUnitManager.getGlobalUnitById(selectedGlobalUnitID);
 
-    if (isNewUser) {
+        User newUser = new User();
+        newUser.setFirstName(user.getFirstName());
+        newUser.setLastName(user.getLastName());
+        newUser.setEmail(user.getEmail());
+        newUser.setModificationJustification("User created in MARLO " + this.getActionName().replace("/", "-"));
+        newUser.setAutoSave(true);
+        newUser.setId(null);
+        newUser.setActive(true);
 
-      newUser = new User();
+        // Check if the email is valid
+        if (newUser.getEmail() != null && this.isValidEmail(newUser.getEmail())) {
+          boolean emailExists = false;
+          // We need to validate that the email does not exist yet into our database.
+          emailExists = userManager.getUserByEmail(newUser.getEmail()) == null ? false : true;
 
-      newUser.setFirstName(user.getFirstName());
-      newUser.setLastName(user.getLastName());
-      newUser.setUsername(user.getUsername());
-      newUser.setActive(user.isActive());
-      newUser.setCgiarUser(user.isCgiarUser());
-      newUser.setAutoSave(user.isAutoSave());
-      newUser.setEmail(user.getEmail());
+          // If email already exists.
+          if (emailExists) {
+            // If email already exists into our database.
+            newUser = null;
+            LOG.warn(this.getText("manageUsers.email.existing"));
+            message = this.getText("manageUsers.email.existing");
+            return SUCCESS;
+          }
 
+          // Get the user if it is a CGIAR email.
+          LDAPUser LDAPUser = this.getOutlookUser(newUser.getEmail());
 
-      if (!user.isCgiarUser()) {
-        newUser.setPassword(user.getPassword());
-      }
-      newUser = userManager.saveUser(newUser);
-
-
-    } else {
-
-      newUser = userManager.getUser(user.getId());
-
-      newUser.setActive(user.isActive());
-      newUser.setAutoSave(user.isAutoSave());
-
-      if (!user.isCgiarUser()) {
-        newUser.setPassword(user.getPassword());
-      }
-      newUser = userManager.saveUser(newUser);
-    }
-
-
-    if (newUser.getId() != -1) {
-      if (user.getCrpUser() != null) {
-        for (CrpUser crpUser : user.getCrpUser()) {
-          if (crpUser.getId() == -1) {
-
-            GlobalUnit crp = crpManager.getGlobalUnitById(crpUser.getCrp().getId());
-
-            CrpUser newCrpUser = new CrpUser();
-            newCrpUser.setCrp(crp);
-            newCrpUser.setUser(newUser);
-
-            newCrpUser = crpUserManager.saveCrpUser(newCrpUser);
-
-            if (newCrpUser.getId() != -1) {
-
-              UserRole userRole = new UserRole();
-
-              List<Role> roles = new ArrayList<>(crp.getRoles());
-
-              Role guestRole =
-                roles.stream().filter(r -> r.getAcronym().equals("G")).collect(Collectors.toList()).get(0);
-
-              userRole.setRole(guestRole);
-              userRole.setUser(newUser);
-
-              userRole = userRoleManager.saveUserRole(userRole);
-
-              if (isNewUser && userRole.getId() != -1) {
-                try {
-                  this.sendMailNewUser(newUser, crp);
-                } catch (NoSuchAlgorithmException e) {
-                  e.printStackTrace();
-                }
-              }
+          String password = this.getText("email.outlookPassword");
+          if (LDAPUser != null) {
+            // CGIAR user
+            newUser.setFirstName(LDAPUser.getFirstName());
+            newUser.setLastName(LDAPUser.getLastName());
+            newUser.setUsername(LDAPUser.getLogin().toLowerCase());
+            newUser.setCgiarUser(true);
+            newUser = userManager.saveUser(newUser);
+            message = this.getText("saving.saved");
+          } else {
+            // Non CGIAR user
+            if (newUser.getFirstName() != null && newUser.getLastName() != null
+              && newUser.getFirstName().trim().length() > 0 && newUser.getLastName().trim().length() > 0) {
+              newUser.setCgiarUser(false);
+              newUser.setModificationJustification("User created in MARLO " + this.getActionName().replace("/", "-"));
+              password = RandomStringUtils.randomNumeric(6);
+              newUser.setPassword(password);
+              newUser = userManager.saveUser(newUser);
+              message = this.getText("saving.saved");
             }
           }
-        }
-      }
-    }
 
-    this.setInvalidFields(new HashMap<>());
-    this.addActionMessage(this.getText("saving.saved"));
-    return SUCCESS;
+          try {
+            this.sendMailNewUser(newUser, globalUnit, password);
+          } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+            LOG.error(e.getMessage());
+          }
+
+          // Add Crp Users
+          CrpUser crpUser = new CrpUser();
+          crpUser.setUser(newUser);
+          crpUser.setCrp(globalUnit);
+          crpUser = crpUserManager.saveCrpUser(crpUser);
+
+          // Add guest user role
+          UserRole userRole = new UserRole();
+          Role guestRole =
+            globalUnit.getRoles().stream().filter(r -> r.getAcronym().equals("G")).collect(Collectors.toList()).get(0);
+          userRole.setRole(guestRole);
+          userRole.setUser(newUser);
+          userRole = userRoleManager.saveUserRole(userRole);
+
+
+        } else {
+          LOG.warn(this.getText("manageUsers.email.notValid"));
+          message = this.getText("manageUsers.email.notValid");
+        }
+      } else {
+        message = this.getText("login.error.selectCrp");
+        LOG.warn(this.getText("login.error.selectCrp"));
+      }
+
+      this.addActionMessage("message:" + this.getText("saving.saved"));
+      return SUCCESS;
+
+    } else {
+      return NOT_AUTHORIZED;
+    }
   }
 
 
-  public void sendMailNewUser(User user, GlobalUnit loggedCrp) throws NoSuchAlgorithmException {
-    String toEmail = user.getEmail();
+  public void sendMailNewUser(User user, GlobalUnit loggedCrp, String password) throws NoSuchAlgorithmException {
+    String toEmail = this.config.getEmailNotification();
     String ccEmail = null;
     String bbcEmails = this.config.getEmailNotification();
     String subject = this.getText("email.newUser.subject", new String[] {user.getFirstName()});
-    // Setting the password
-    String password = this.getText("email.outlookPassword");
-    if (!user.isCgiarUser()) {
-      password = this.user.getPassword();
-      // Applying the password to the user.
-      user.setPassword(password);
-    }
 
     // get CRPAdmin contacts
     String crpAdmins = "";
@@ -285,17 +270,17 @@ public class GuestUsersAction extends BaseAction {
       inputStream = this.getClass().getResourceAsStream("/manual/" + APConstants.MARLO_PDF_MANUAL_NAME);
       buffer = readFully(inputStream);
     } catch (FileNotFoundException e) {
-      // TODO Auto-generated catch block
+      LOG.error(e.getMessage());
       e.printStackTrace();
     } catch (IOException e) {
-      // TODO Auto-generated catch block
+      LOG.error(e.getMessage());
       e.printStackTrace();
     } finally {
       if (inputStream != null) {
         try {
           inputStream.close();
         } catch (IOException e) {
-          // TODO Auto-generated catch block
+          LOG.error(e.getMessage());
           e.printStackTrace();
         }
       }
@@ -309,24 +294,28 @@ public class GuestUsersAction extends BaseAction {
 
   }
 
+
   public void setCrps(List<GlobalUnit> crps) {
     this.crps = crps;
   }
 
-  public void setIsNewUser(Boolean isNewUser) {
-    this.isNewUser = isNewUser;
-  }
 
-  public void setNewUser(boolean isNewUser) {
-    this.isNewUser = isNewUser;
+  /**
+   * @param selectedGlobalUnitID the selectedGlobalUnitID to set
+   */
+  public void setSelectedGlobalUnitID(long selectedGlobalUnitID) {
+    this.selectedGlobalUnitID = selectedGlobalUnitID;
   }
 
   public void setUser(User user) {
     this.user = user;
   }
 
-  public void setUserID(long userID) {
-    this.userID = userID;
+  @Override
+  public void validate() {
+    if (save) {
+      validator.validate(this, user, selectedGlobalUnitID, true);
+    }
   }
 
 }

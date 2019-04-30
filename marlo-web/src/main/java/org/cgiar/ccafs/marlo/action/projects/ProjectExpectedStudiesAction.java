@@ -78,6 +78,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyRegion;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudySrfTarget;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudySubIdo;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationShared;
 import org.cgiar.ccafs.marlo.data.model.ProjectPhase;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicy;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
@@ -762,7 +763,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
               .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
         }
 
-        // Expected Study Quantifications List
+        // Expected Study Innovations List
         if (this.expectedStudy.getProjectExpectedStudyInnovations() != null) {
           this.expectedStudy
             .setInnovations(new ArrayList<>(this.expectedStudy.getProjectExpectedStudyInnovations().stream()
@@ -893,6 +894,22 @@ public class ProjectExpectedStudiesAction extends BaseAction {
         for (ProjectPolicy projectPolicy : policies) {
           if (projectPolicy.getProjectPolicyInfo(this.getActualPhase()) != null) {
             this.policyList.add(projectPolicy);
+          }
+        }
+
+        /*
+         * Update 4/25/2019 Adding Shared Project Innovation in the lists.
+         */
+        List<ProjectInnovationShared> innovationShareds = new ArrayList<>(project.getProjectInnovationShareds().stream()
+          .filter(px -> px.isActive() && px.getPhase().getId() == this.getActualPhase().getId()
+            && px.getProjectInnovation().isActive()
+            && px.getProjectInnovation().getProjectInnovationInfo(this.getActualPhase()) != null)
+          .collect(Collectors.toList()));
+        if (innovationShareds != null && innovationShareds.size() > 0) {
+          for (ProjectInnovationShared innovationShared : innovationShareds) {
+            if (!innovationsList.contains(innovationShared.getProjectInnovation())) {
+              this.innovationsList.add(innovationShared.getProjectInnovation());
+            }
           }
         }
       } else {

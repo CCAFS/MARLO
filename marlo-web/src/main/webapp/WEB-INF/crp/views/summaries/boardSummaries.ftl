@@ -188,6 +188,26 @@
           ] 
         }
       ]
+    },
+    { "active": true,
+      "available": true,
+      "title": "summaries.board.report.capDev", 
+      "description": "summaries.board.report.capDev.description",
+      "namespace": "/summaries",
+      "action": "${crpSession}/deliverablesParticipantsSummary",
+      "formats": [ "Excel" ],
+      "cycles": [ "Reporting", "Upkeep" ],
+      "components" : [
+        { 
+          "type" :  "radio",
+          "label":  "Type of report",
+          "name":   "showAllYears",
+          "data" : [ 
+            { "label": "Only the specific cycle year",  "value": "false"},
+            { "label": "All Years",                     "value": "true"}
+          ] 
+        }
+      ]
     }
   ]},
   [#-- BUDGET REPORTS --]
@@ -218,6 +238,28 @@
       "action": "${crpSession}/FundingSourcesSummary",
       "formats": [ "Excel" ],
       "cycles": [ "Planning" ]
+    }
+  ]},
+  [#-- CRP/PTF Level --]
+  { "slug": "globalUnitLevel", "active": !centerGlobalUnit, "title":"summaries.board.options.globalUnitLevel", "reportsList": [
+    { "active": true,
+      "available": true,
+      "title": "summaries.board.report.outcomeMilestoneEvidence", 
+      "description": "summaries.board.report.outcomeMilestoneEvidence.description", 
+      "namespace": "/summaries",
+      "action": "${crpSession}/outcomeMilestoneEvidence",
+      "formats": [ "Excel" ],
+      "cycles": [ "Reporting" ]
+    },
+     [#-- List of Current External Partners --]
+    { "active": true,
+      "available": true,
+      "title": "summaries.board.report.externalPartnersEvidence", 
+      "description": "summaries.board.report.externalPartnersEvidence.description", 
+      "namespace": "/summaries",
+      "action": "${crpSession}/externalPartnersEvidence",
+      "formats": [ "Excel" ],
+      "cycles": [ "Reporting" ]
     }
   ]},
   [#-- MONITORING --]

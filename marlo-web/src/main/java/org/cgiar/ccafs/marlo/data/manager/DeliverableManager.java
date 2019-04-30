@@ -64,6 +64,17 @@ public interface DeliverableManager {
   public Deliverable getDeliverableById(long deliverableID);
 
   /**
+   * This method gets a list of Deliverable that are active by a given parameters
+   * 
+   * @param filterPhaseYear: true for specific phase year (excluding cancelled), false for all years and statuses
+   * @param filterParticipants: filter deliverables that have participants
+   * @param filterPublications: filter publications -null for all deliverables and publications-
+   * @return a list from Deliverable null if no exist records
+   */
+  public List<Deliverable> getDeliverablesByParameters(Phase phase, boolean filterPhaseYear, boolean filterParticipants,
+    Boolean filterPublications);
+
+  /**
    * This method gets a list of Deliverable that are active by a given phase
    * 
    * @return a list from Deliverable null if no exist records

@@ -23,6 +23,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
+import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyPolicy;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicy;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicyCountry;
@@ -47,6 +48,7 @@ import java.text.SimpleDateFormat;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
@@ -71,7 +73,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * This action prepare and create the Project Policies evidences to fill the part C of the annual report document.
- * == NOTE : this report works only works for annual report 2018 and later phases ==
+ * == NOTE : this report works only for annual report 2018 and later phases ==
  * 
  * @author Hermes Jimenez - CIAT/CCAFS
  */
@@ -134,7 +136,8 @@ public class PoliciesEvidenceSummaryAction extends BaseSummariesAction implement
     masterReport.getParameterValues().put("i8nColumnS", this.getText("policy.geographicScope"));
     masterReport.getParameterValues().put("i8nColumnT", this.getText("policy.regions"));
     masterReport.getParameterValues().put("i8nColumnU", this.getText("policy.countries"));
-    masterReport.getParameterValues().put("i8nColumnV", this.getText("policy.include.table"));
+    masterReport.getParameterValues().put("i8nColumnV", this.getText("policy.include.modification"));
+    masterReport.getParameterValues().put("i8nColumnW", this.getText("policy.include.table"));
     masterReport.getParameterValues().put("i8nHeader", this.getText("policy.header.table"));
 
     return masterReport;
@@ -150,8 +153,8 @@ public class PoliciesEvidenceSummaryAction extends BaseSummariesAction implement
 
     ByteArrayOutputStream os = new ByteArrayOutputStream();
     try {
-      Resource reportResource = resourceManager
-        .createDirectly(this.getClass().getResource("/pentaho/crp/PoliciesAR2018.prpt"), MasterReport.class);
+      Resource reportResource = resourceManager.createDirectly(
+        this.getClass().getResource("/pentaho/crp/AR-Evidences/PoliciesAR2018.prpt"), MasterReport.class);
       MasterReport masterReport = (MasterReport) reportResource.getResource();
       String center = this.getLoggedCrp().getAcronym();
       // Get datetime
@@ -284,6 +287,12 @@ public class PoliciesEvidenceSummaryAction extends BaseSummariesAction implement
     LiaisonInstitution liaisonInstitutionPMU = this.getLoggedCrp().getLiaisonInstitutions().stream()
       .filter(o -> o.isActive() && o.getAcronym().equals("PMU")).collect(Collectors.toList()).get(0);
 
+    List<LiaisonInstitution> liaisonInstitutions = this.getLoggedCrp().getLiaisonInstitutions().stream()
+      .filter(c -> c.getCrpProgram() != null && c.isActive()
+        && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+      .collect(Collectors.toList());
+    liaisonInstitutions.sort(Comparator.comparing(LiaisonInstitution::getAcronym));
+
     ReportSynthesis reportSynthesisPMU =
       reportSynthesisManager.findSynthesis(this.getSelectedPhase().getId(), liaisonInstitutionPMU.getId());
 
@@ -312,6 +321,21 @@ public class PoliciesEvidenceSummaryAction extends BaseSummariesAction implement
         ARPoliciesEvidence policiesEvidence = new ARPoliciesEvidence();
         policiesEvidence.setProjectPolicy(projectPolicy);
         policiesEvidence.setInclude(true);
+        policiesPMU.add(policiesEvidence);
+      }
+    }
+
+    /*
+     * Update 04/23/2019
+     * Add the Project Policies that no belongs in the AR Synthesis.
+     */
+    for (LiaisonInstitution liaisonInstitution : liaisonInstitutions) {
+      List<ProjectPolicy> notSynthesisPolicies =
+        projectPolicyManager.getProjectPoliciesNoSynthesisList(liaisonInstitution, this.getSelectedPhase());
+      for (ProjectPolicy notSynthesisPolicy : notSynthesisPolicies) {
+        ARPoliciesEvidence policiesEvidence = new ARPoliciesEvidence();
+        policiesEvidence.setProjectPolicy(notSynthesisPolicy);
+        policiesEvidence.setInclude(null);
         policiesPMU.add(policiesEvidence);
       }
     }
@@ -350,17 +374,19 @@ public class PoliciesEvidenceSummaryAction extends BaseSummariesAction implement
      * paramS - geographicScope
      * paramT - regions
      * paramU - countries
-     * paramV - includeAR
+     * paramV - General last modification date
+     * paramW - includeAR
      * policyURL
      * NOTE : does not mater the order into the implementation (ex: the paramV will be setup first that the paramA)
      */
     TypedTableModel model = new TypedTableModel(
       new String[] {"paramA", "paramB", "paramC", "paramD", "paramE", "paramF", "paramG", "paramH", "paramI", "paramJ",
         "paramK", "paramL", "paramM", "paramN", "paramO", "paramP", "paramQ", "paramR", "paramS", "paramT", "paramU",
-        "paramV", "policyURL"},
+        "paramV", "paramW", "policyURL"},
       new Class[] {Long.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class},
+        String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
+        String.class},
       0);
 
     // Load the policies information
@@ -370,7 +396,7 @@ public class PoliciesEvidenceSummaryAction extends BaseSummariesAction implement
       Long paramA = null, paramB = null;
       String paramC = "", paramD = "", paramE = "", paramF = "", paramG = "", paramH = "", paramI = "", paramJ = "",
         paramK = "", paramL = "", paramM = "", paramN = "", paramO = "", paramP = "", paramQ = "", paramR = "",
-        paramS = "", paramT = "", paramU = "", paramV = "", policyURL = "";
+        paramS = "", paramT = "", paramU = "", paramV = "", paramW = "", policyURL = "";
 
       // Condition to know if the project policy have information in the selected phase
       if (policyEvidence.getProjectPolicy().getProjectPolicyInfo(this.getSelectedPhase()) != null) {
@@ -670,11 +696,18 @@ public class PoliciesEvidenceSummaryAction extends BaseSummariesAction implement
         }
 
         // Is included in the AR
-        if (policyEvidence.isInclude()) {
-          paramV = "Yes";
+        if (policyEvidence.getInclude() == null) {
+          paramW = "<Not Applicable>";
         } else {
-          paramV = "No";
+          if (policyEvidence.getInclude()) {
+            paramW = "Yes";
+          } else {
+            paramW = "No";
+          }
         }
+
+        paramV = policyEvidence.getProjectPolicy().getActiveSince().toLocaleString();
+
         // Generate the policy url of MARLO
         policyURL = this.getBaseUrl() + "/projects/" + this.getCrpSession() + "/policy.do?policyID="
           + policyEvidence.getProjectPolicy().getId().toString() + "&phaseID="
@@ -683,7 +716,7 @@ public class PoliciesEvidenceSummaryAction extends BaseSummariesAction implement
       }
 
       model.addRow(new Object[] {paramA, paramB, paramC, paramD, paramE, paramF, paramG, paramH, paramI, paramJ, paramK,
-        paramL, paramM, paramN, paramO, paramP, paramQ, paramR, paramS, paramT, paramU, paramV, policyURL});
+        paramL, paramM, paramN, paramO, paramP, paramQ, paramR, paramS, paramT, paramU, paramV, paramW, policyURL});
     }
     return model;
   }

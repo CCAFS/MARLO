@@ -38,7 +38,7 @@
         [#-- Innovations List --]
         <h3 class="headTitle">[@s.text name="projectInnovations" /]</h3>
         <div class="simpleBox">
-          [@innovationsTableMacro list=(project.innovations)![] /]
+          [@innovationsTableMacro list=(projectInnovations)![] /]
         </div>
         
         [#-- Add Innovation Button --]
@@ -74,11 +74,12 @@
   <table id="table-innovations" class="table table-striped table-hover">
     <thead>
       <tr class="subHeader">
-        <th id="tb-id" width="9%">[@s.text name="projectInnovations.table.id" /]</th>
+        <th id="tb-id" width="1%">ID</th>
         <th id="tb-title" width="40%">[@s.text name="projectInnovations.table.title" /]</th>
         <th id="tb-type" width="22%">[@s.text name="projectInnovations.table.type" /]</th>
         <th id="tb-stage" width="15%">[@s.text name="projectInnovations.table.stage" /]</th>
         <th id="tb-year" width="8%">[@s.text name="projectInnovations.table.year" /]</th>
+        <th class="owner">Owner</th>
         [#if currentTable]
         <th></th>
         [/#if]
@@ -96,6 +97,8 @@
         [#local isThisComplete = (action.hasInnovationMissingFields(innovation.id))!false ]
         [#-- Is New --]
         [#local isNew = (action.isInnovationNew(innovation.id))!false ]
+        [#-- Owner --]
+        [#local isOwner = (innovation.project.id == projectID)!false]
         <tr>
           [#-- ID --]
           <td class="tb-id text-center">
@@ -114,9 +117,12 @@
           <td class="text-center">
             [@utils.tableText value=(innovation.projectInnovationInfo.repIndStageInnovation.name)!"" /]
           </td>
-          [#-- Stage --]
+          [#-- Year --]
           <td class="text-center">
             [@utils.tableText value=(innovation.projectInnovationInfo.year)!"" /]
+          </td>
+          <td class="owner text-center">
+            [#if isOwner] <small><nobr>This Project</nobr></small>  [#else][#if innovation.project?has_content]P${innovation.project.id}[#else]Not defined[/#if][/#if]
           </td>
           [#-- Missing fields --]
           [#if currentTable]
@@ -137,7 +143,7 @@
           [#-- Remove --]
           [#if currentTable]
           <td class="text-center">
-            [#if canEdit ]
+            [#if canEdit && isOwner ]
               <a id="removeElement-${(innovation.id)!}" class="removeElementList" href="#" title="" data-toggle="modal" data-target="#removeItem-${innovation_index}" >
                [#--<a id="remove-innovation" class="remove-innovation" href="[@s.url namespace="/projects" action="${(crpSession)!}/deleteInnovation"][@s.param name='innovationID']${(innovation.id)!''}[/@s.param][@s.param name='projectID']${(innovation.project.id)!''}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" title="" > --]
                 <img src="${baseUrl}/global/images/trash.png" title="[@s.text name="projectInnovations.table.remove" /]" /> 
