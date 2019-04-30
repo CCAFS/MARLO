@@ -585,7 +585,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
       }
     }
     poiSummary.textParagraph(document.createParagraph(),
-      this.getText("summaries.powb2019.otherParticipans") + ": " + participantingCenters);
+      this.getText("summaries.ar2018.otherParticipans") + ": " + participantingCenters);
   }
 
 
