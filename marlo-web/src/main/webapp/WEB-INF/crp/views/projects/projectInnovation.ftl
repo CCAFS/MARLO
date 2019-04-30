@@ -49,9 +49,11 @@
         [#--  Innovation Title --]
         <h3 class="headTitle">[@s.text name="projectInnovations" /]</h3> 
         <div id="innovations" class="borderBox clearfix">
+        
+        <span class="pull-right">${(item.projectExpectedStudyInfo.year)!'No Year'}</span>
 
         <div class="">
-          [#-- Title --] 
+          [#-- Title --]
           <div class="form-group">
             [@customForm.input name="innovation.projectInnovationInfo.title" type="text" i18nkey="projectInnovations.title"  placeholder="" className="limitWords-30" help="projectInnovations.title.helpText" helpIcon=false required=true editable=editable /]
           </div>
@@ -175,8 +177,17 @@
           </div>
         
         </div>
+        
+         
       </div>
         
+      [#-- Projects shared --]
+      <h3 class="headTitle">[@s.text name="projectInnovations.sharedProjects.title" /]</h3>
+      <div class="borderBox">
+        [@customForm.elementsListComponent name="innovation.sharedInnovations" elementType="project" elementList=(innovation.sharedInnovations)![] label="projectInnovations.sharedProjects"  listName="myProjects" keyFieldName="id" displayFieldName="composedName" required=false /]
+      </div>
+
+      
       [#-- Section Buttons & hidden inputs--]
       [#include "/WEB-INF/crp/views/projects/buttons-innovation.ftl" /]
         

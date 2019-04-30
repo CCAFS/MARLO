@@ -729,7 +729,15 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
               delivDisseminationUrl = deliverableDissemination.getDisseminationUrl().replace(" ", "%20");
             }
           } else {
-            delivDisseminationUrl = "<Not applicable>";
+
+            if (deliverableDissemination.getConfidentialUrl() != null
+              && !deliverableDissemination.getConfidentialUrl().isEmpty()) {
+              if (deliverableDissemination.getConfidentialUrl().contains("REQUIRED")) {
+                delivDisseminationUrl = deliverableDissemination.getConfidentialUrl();
+              } else {
+                delivDisseminationUrl = deliverableDissemination.getConfidentialUrl().replace(" ", "%20");
+              }
+            }
           }
 
           if (deliverableDissemination.getIsOpenAccess() != null) {

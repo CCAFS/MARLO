@@ -36,7 +36,8 @@ public class ReportSynthesisKeyPartnershipPmuManagerImpl implements ReportSynthe
 
 
   @Inject
-  public ReportSynthesisKeyPartnershipPmuManagerImpl(ReportSynthesisKeyPartnershipPmuDAO reportSynthesisKeyPartnershipPmuDAO) {
+  public ReportSynthesisKeyPartnershipPmuManagerImpl(
+    ReportSynthesisKeyPartnershipPmuDAO reportSynthesisKeyPartnershipPmuDAO) {
     this.reportSynthesisKeyPartnershipPmuDAO = reportSynthesisKeyPartnershipPmuDAO;
 
 
@@ -51,7 +52,8 @@ public class ReportSynthesisKeyPartnershipPmuManagerImpl implements ReportSynthe
   @Override
   public boolean existReportSynthesisKeyPartnershipPmu(long reportSynthesisKeyPartnershipPmuID) {
 
-    return reportSynthesisKeyPartnershipPmuDAO.existReportSynthesisKeyPartnershipPmu(reportSynthesisKeyPartnershipPmuID);
+    return reportSynthesisKeyPartnershipPmuDAO
+      .existReportSynthesisKeyPartnershipPmu(reportSynthesisKeyPartnershipPmuID);
   }
 
   @Override
@@ -62,13 +64,28 @@ public class ReportSynthesisKeyPartnershipPmuManagerImpl implements ReportSynthe
   }
 
   @Override
-  public ReportSynthesisKeyPartnershipPmu getReportSynthesisKeyPartnershipPmuById(long reportSynthesisKeyPartnershipPmuID) {
+  public List<ReportSynthesisKeyPartnershipPmu> findByExternalId(Long externalID) {
+
+    return reportSynthesisKeyPartnershipPmuDAO.findByExternalId(externalID);
+  }
+
+  @Override
+  public ReportSynthesisKeyPartnershipPmu
+    getReportSynthesisKeyPartnershipPmuById(long reportSynthesisKeyPartnershipPmuID) {
 
     return reportSynthesisKeyPartnershipPmuDAO.find(reportSynthesisKeyPartnershipPmuID);
   }
 
   @Override
-  public ReportSynthesisKeyPartnershipPmu saveReportSynthesisKeyPartnershipPmu(ReportSynthesisKeyPartnershipPmu reportSynthesisKeyPartnershipPmu) {
+  public void hardDeleteReportSynthesisKeyPartnershipPmu(long reportSynthesisKeyPartnershipPmuId) {
+    this.reportSynthesisKeyPartnershipPmuDAO
+      .hardDeleteReportSynthesisKeyPartnershipPmu(reportSynthesisKeyPartnershipPmuId);
+
+  }
+
+  @Override
+  public ReportSynthesisKeyPartnershipPmu
+    saveReportSynthesisKeyPartnershipPmu(ReportSynthesisKeyPartnershipPmu reportSynthesisKeyPartnershipPmu) {
 
     return reportSynthesisKeyPartnershipPmuDAO.save(reportSynthesisKeyPartnershipPmu);
   }

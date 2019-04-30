@@ -57,7 +57,6 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableCrp;
 import org.cgiar.ccafs.marlo.data.model.DeliverableDataSharingFile;
 import org.cgiar.ccafs.marlo.data.model.DeliverableDissemination;
 import org.cgiar.ccafs.marlo.data.model.DeliverableFundingSource;
-import org.cgiar.ccafs.marlo.data.model.DeliverableGenderLevel;
 import org.cgiar.ccafs.marlo.data.model.DeliverableIntellectualAsset;
 import org.cgiar.ccafs.marlo.data.model.DeliverableIntellectualAssetPantentTypeEnum;
 import org.cgiar.ccafs.marlo.data.model.DeliverableIntellectualAssetTypeEnum;
@@ -107,8 +106,11 @@ import org.cgiar.ccafs.marlo.data.model.ProjectInnovationContributingOrganizatio
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCountry;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCrp;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationDeliverable;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationGeographicScope;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationOrganization;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationRegion;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationShared;
 import org.cgiar.ccafs.marlo.data.model.ProjectLeverage;
 import org.cgiar.ccafs.marlo.data.model.ProjectLocation;
 import org.cgiar.ccafs.marlo.data.model.ProjectLocationElementType;
@@ -2071,27 +2073,11 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           .getDeliverableCrossCuttingMarkerId(deliverable.getId(), 3, this.getSelectedPhase().getId());
         DeliverableCrossCuttingMarker deliverableCrossCuttingMarkerClimate = deliverableCrossCuttingMarkerManager
           .getDeliverableCrossCuttingMarkerId(deliverable.getId(), 4, this.getSelectedPhase().getId());
+
         if (deliverableCrossCuttingMarkerGender != null) {
           if (deliverableCrossCuttingMarkerGender.getRepIndGenderYouthFocusLevel() != null) {
             crossCutting += "&nbsp;&nbsp;&nbsp;&nbsp;● Gender ("
               + deliverableCrossCuttingMarkerGender.getRepIndGenderYouthFocusLevel().getPowbName() + ")<br>";
-
-            if (deliverable.getDeliverableGenderLevels() == null) {
-              crossCutting += "<br><b>Gender level(s):</b><br>&nbsp;&nbsp;&nbsp;&nbsp;&lt;Not Defined&gt;";
-            } else {
-              crossCutting += "<br><b>Gender level(s): </b><br>";
-              for (DeliverableGenderLevel dgl : deliverable.getDeliverableGenderLevels().stream()
-                .filter(
-                  dgl -> dgl.isActive() && dgl.getPhase() != null && dgl.getPhase().equals(this.getSelectedPhase()))
-                .collect(Collectors.toList())) {
-                if (dgl.getGenderLevel() != 0.0) {
-                  if (genderTypeManager.getGenderTypeById(dgl.getGenderLevel()) != null) {
-                    crossCutting += "&nbsp;&nbsp;&nbsp;&nbsp;● "
-                      + genderTypeManager.getGenderTypeById(dgl.getGenderLevel()).getDescription() + "<br>";
-                  }
-                }
-              }
-            }
           } else {
             crossCutting += "&nbsp;&nbsp;&nbsp;&nbsp;● Gender <br>";
           }
@@ -2823,30 +2809,15 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           .getDeliverableCrossCuttingMarkerId(deliverable.getId(), 3, this.getSelectedPhase().getId());
         DeliverableCrossCuttingMarker deliverableCrossCuttingMarkerClimate = deliverableCrossCuttingMarkerManager
           .getDeliverableCrossCuttingMarkerId(deliverable.getId(), 4, this.getSelectedPhase().getId());
+
         if (deliverableCrossCuttingMarkerGender != null) {
           if (deliverableCrossCuttingMarkerGender.getRepIndGenderYouthFocusLevel() != null) {
             crossCutting += "&nbsp;&nbsp;&nbsp;&nbsp;● Gender ("
               + deliverableCrossCuttingMarkerGender.getRepIndGenderYouthFocusLevel().getPowbName() + ")<br>";
-
-            if (deliverable.getDeliverableGenderLevels() == null) {
-              crossCutting += "<br><b>Gender level(s):</b><br>&nbsp;&nbsp;&nbsp;&nbsp;&lt;Not Defined&gt;";
-            } else {
-              crossCutting += "<br><b>Gender level(s): </b><br>";
-              for (DeliverableGenderLevel dgl : deliverable.getDeliverableGenderLevels().stream()
-                .filter(
-                  dgl -> dgl.isActive() && dgl.getPhase() != null && dgl.getPhase().equals(this.getSelectedPhase()))
-                .collect(Collectors.toList())) {
-                if (dgl.getGenderLevel() != 0.0) {
-                  crossCutting += "&nbsp;&nbsp;&nbsp;&nbsp;● "
-                    + genderTypeManager.getGenderTypeById(dgl.getGenderLevel()).getDescription() + "<br>";
-                }
-              }
-            }
           } else {
             crossCutting += "&nbsp;&nbsp;&nbsp;&nbsp;● Gender <br>";
           }
         }
-
         if (deliverableCrossCuttingMarkerYouth != null) {
           if (deliverableCrossCuttingMarkerYouth.getRepIndGenderYouthFocusLevel() != null) {
             crossCutting += "&nbsp;&nbsp;&nbsp;&nbsp;● Youth ("
@@ -3383,6 +3354,26 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     List<ProjectInnovation> projectInnovations = project.getProjectInnovations().stream()
       .filter(p -> p.isActive() && p.getProjectInnovationInfo(this.getSelectedPhase()) != null)
       .sorted((i1, i2) -> i1.getId().compareTo(i2.getId())).collect(Collectors.toList());
+
+    /*
+     * Update 4/25/2019 Adding Shared Project Innovation in the lists.
+     */
+    List<ProjectInnovationShared> innovationShareds = new ArrayList<>(project.getProjectInnovationShareds().stream()
+      .filter(px -> px.isActive() && px.getPhase().getId() == this.getActualPhase().getId()
+        && px.getProjectInnovation().isActive()
+        && px.getProjectInnovation().getProjectInnovationInfo(this.getActualPhase()) != null)
+      .collect(Collectors.toList()));
+    if (innovationShareds != null && innovationShareds.size() > 0) {
+      for (ProjectInnovationShared innovationShared : innovationShareds) {
+        if (!projectInnovations.contains(innovationShared.getProjectInnovation())) {
+          if (innovationShared.getProjectInnovation().getProjectInnovationInfo(this.getActualPhase()) != null) {
+            projectInnovations.add(innovationShared.getProjectInnovation());
+          }
+        }
+      }
+    }
+
+
     if (projectInnovations != null && !projectInnovations.isEmpty()) {
       for (ProjectInnovation projectInnovation : projectInnovations) {
         ProjectInnovationInfo innovationInfo = projectInnovation.getProjectInnovationInfo();
@@ -3444,34 +3435,78 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         if (innovationInfo.getRepIndDegreeInnovation() != null) {
           degreeInnovation = innovationInfo.getRepIndDegreeInnovation().getName();
         }
-        // Geographic Scope
-        if (innovationInfo.getRepIndGeographicScope() != null) {
-          geographicScope = innovationInfo.getRepIndGeographicScope().getName();
-          // Regional
-          if (innovationInfo.getRepIndGeographicScope().getId().equals(this.getReportingIndGeographicScopeRegional())) {
-            isRegional = true;
-            if (innovationInfo.getRepIndRegion() != null) {
-              region = innovationInfo.getRepIndRegion().getName();
+
+
+        // Validate Geographic Scope
+        boolean haveRegions = false;
+        boolean haveCountries = false;
+
+        if (projectInnovation.getProjectInnovationGeographicScopes() == null
+          || projectInnovation.getProjectInnovationGeographicScopes().isEmpty()) {
+          geographicScope = "<Not Defined>";
+        } else {
+          Set<String> geographicSet = new HashSet<>();
+          for (ProjectInnovationGeographicScope innovationGeographicScope : projectInnovation
+            .getProjectInnovationGeographicScopes().stream()
+            .filter(g -> g.isActive() && g.getPhase().getId().equals(this.getSelectedPhase().getId()))
+            .collect(Collectors.toList())) {
+
+            geographicSet
+              .add("<br>&nbsp;&nbsp;&nbsp;&nbsp; ● " + innovationGeographicScope.getRepIndGeographicScope().getName());
+
+            if (innovationGeographicScope.getRepIndGeographicScope().getId() == 2) {
+              haveRegions = true;
+            }
+            if (innovationGeographicScope.getRepIndGeographicScope().getId() != 1
+              && innovationGeographicScope.getRepIndGeographicScope().getId() != 2) {
+              haveCountries = true;
             }
           }
-          // Country
-          if (!innovationInfo.getRepIndGeographicScope().getId().equals(this.getReportingIndGeographicScopeGlobal())
-            && !innovationInfo.getRepIndGeographicScope().getId()
-              .equals(this.getReportingIndGeographicScopeRegional())) {
-            isNational = true;
-            List<ProjectInnovationCountry> innovationCountries =
-              projectInnovation.getProjectInnovationCountries().stream()
-                .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase()))
-                .collect(Collectors.toList());
-            if (innovationCountries != null && innovationCountries.size() > 0) {
-              Set<String> countriesSet = new HashSet<>();
-              for (ProjectInnovationCountry innovationCountry : innovationCountries) {
-                countriesSet.add("<br>&nbsp;&nbsp;&nbsp;&nbsp; ● " + innovationCountry.getLocElement().getName());
-              }
-              countries = String.join("", countriesSet);
-            }
-          }
+          geographicScope = String.join("", geographicSet);
         }
+
+
+        if (haveRegions) {
+          isRegional = true;
+          List<ProjectInnovationRegion> regions = new ArrayList<>(projectInnovation.getProjectInnovationRegions()
+            .stream().filter(r -> r.isActive() && r.getPhase().getId().equals(this.getSelectedPhase().getId()))
+            .collect(Collectors.toList()));
+
+          if (regions != null && !regions.isEmpty()) {
+            Set<String> regionsSet = new HashSet<>();
+            for (ProjectInnovationRegion geoRegion : regions) {
+              regionsSet.add("<br>&nbsp;&nbsp;&nbsp;&nbsp; ● " + geoRegion.getLocElement().getName());
+            }
+            region = String.join("", regionsSet);
+          } else {
+            region = "<Not Defined>";
+          }
+
+        } else {
+          region = "<Not Aplicable>";
+        }
+
+        if (haveCountries) {
+          isNational = true;
+          List<ProjectInnovationCountry> geoCountries =
+            new ArrayList<>(projectInnovation.getProjectInnovationCountries().stream()
+              .filter(r -> r.isActive() && r.getPhase().getId().equals(this.getSelectedPhase().getId()))
+              .collect(Collectors.toList()));
+
+          if (geoCountries != null && !geoCountries.isEmpty()) {
+            Set<String> countriesSet = new HashSet<>();
+            for (ProjectInnovationCountry geoCountry : geoCountries) {
+              countriesSet.add("<br>&nbsp;&nbsp;&nbsp;&nbsp; ● " + geoCountry.getLocElement().getName());
+            }
+            countries = String.join("", countriesSet);
+          } else {
+            countries = "<Not Defined>";
+          }
+
+        } else {
+          countries = "<Not Aplicable>";
+        }
+
 
         // Description
         if (innovationInfo.getDescriptionStage() != null && !innovationInfo.getDescriptionStage().trim().isEmpty()) {
@@ -3484,13 +3519,10 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         }
         // Contributing Organizations
         List<ProjectInnovationContributingOrganization> contributingOrganizationsList =
-          new ArrayList<ProjectInnovationContributingOrganization>();
-        contributingOrganizationsList = projectInnovationContributingOrganizationManager.findAll();
-        if (contributingOrganizationsList != null && contributingOrganizationsList.size() > 0) {
-          contributingOrganizationsList.stream()
-            .filter(p -> p.getProjectInnovation().getId() == projectInnovation.getId()
-              && p.getPhase().getId() == this.getSelectedPhase().getId());
-        }
+          new ArrayList<ProjectInnovationContributingOrganization>(projectInnovationContributingOrganizationManager
+            .findAll().stream().filter(p -> p.getProjectInnovation().getId().equals(projectInnovation.getId())
+              && p.getPhase().getId().equals(this.getSelectedPhase().getId()))
+            .collect(Collectors.toList()));
         if (contributingOrganizationsList != null && !contributingOrganizationsList.isEmpty()) {
           Set<String> contributingSet = new HashSet<>();
           for (ProjectInnovationContributingOrganization contributingOrganization : contributingOrganizationsList) {

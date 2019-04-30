@@ -89,6 +89,18 @@
 		<system>Github issue tracker</system>
 		<url>https://github.com/CCAFS/marlo/issues</url>
 	</issueManagement>
+	<!-- Setup repositories -->
+	<repositories>
+		<repository>
+			<id>spring-boot-throttling-repo</id>
+			<url>https://raw.github.com/weddini/spring-boot-throttling/mvn-repo/</url>
+			<snapshots>
+				<enabled>true</enabled>
+				<updatePolicy>always</updatePolicy>
+			</snapshots>
+		</repository>
+	</repositories>
+	
 	<!-- Common dependencies go here. -->
 	<dependencyManagement>
 		<dependencies>
@@ -596,6 +608,12 @@
         <artifactId>geoip2</artifactId>
         <version>${geoip2.version}</version>
     </dependency>
+    <!-- throttling library to REST API-->
+		<dependency>
+			<groupId>com.weddini.throttling</groupId>
+			<artifactId>spring-boot-throttling-starter</artifactId>
+			<version>0.0.9</version>
+		</dependency>
 		</dependencies>		
 	</dependencyManagement>
 	<reporting>

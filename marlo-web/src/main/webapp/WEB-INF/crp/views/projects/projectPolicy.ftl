@@ -49,7 +49,7 @@
           
           [#-- Outcome case studies list --]
           <h3 class="headTitle">[@s.text name="projectPolicies.policyTitle" /]</h3>
-          <div id="" class="borderBox">
+          <div id="" class="">
             [@policyMacro element=(policy)!{} name="policy" index=0  /]
           </div> 
           
@@ -71,7 +71,7 @@
   [#-- Is new --]
   [#local isNew = (action.isPolicyNew(element.id)) /]
 
-  <div id="${customId}" class="policy" style="display:${template?string('none','block')}">
+  <div id="${customId}" class="policy borderBox" style="display:${template?string('none','block')}">
     
     [#-- Year --]
     <div class="form-group row">
@@ -199,8 +199,16 @@
         </div>
       </div>
     </div>
-    
   </div>
+    
+    
+  [#-- Projects shared --]
+  [#if false]
+  <h3 class="headTitle">[@s.text name="policy.sharedProjects.title" /]</h3>
+  <div class="borderBox">
+    [@customForm.elementsListComponent name="${customName}.sharedInnovations" elementType="project" elementList=(element.sharedInnovations)![] label="policy.sharedProjects"  listName="myProjects" keyFieldName="id" displayFieldName="composedName" required=false /]
+  </div>
+  [/#if]
 [/#macro]
 
 [#function findElementID list id]

@@ -30,19 +30,22 @@ public class ARPoliciesEvidence implements Serializable {
   private static final long serialVersionUID = -8349295005328781514L;
 
   private ProjectPolicy projectPolicy;
-  private boolean include;
+  private Boolean include;
+
+  public Boolean getInclude() {
+    return include;
+  }
+
 
   public ProjectPolicy getProjectPolicy() {
     return projectPolicy;
   }
 
-  public boolean isInclude() {
-    return include;
-  }
 
-  public void setInclude(boolean include) {
+  public void setInclude(Boolean include) {
     this.include = include;
   }
+
 
   public void setProjectPolicy(ProjectPolicy projectPolicy) {
     this.projectPolicy = projectPolicy;

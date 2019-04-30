@@ -408,6 +408,8 @@ public final class APConstants {
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.ProjectInnovation.projectInnovationOrganizations)";
   public static final String PROJECT_INNOVATION_CONTRIBUTING_ORGANIZATION_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.ProjectInnovation.projectInnovationContributingOrganization)";
+  public static final String PROJECT_INNOVATION_SHARED_RELATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.ProjectInnovation.projectInnovationShareds)";
   public static final String PROJECT_INNOVATION_CRP_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.ProjectInnovation.projectInnovationCrps)";
   public static final String PROJECT_DELIVERABLE_CRP_RELATION =

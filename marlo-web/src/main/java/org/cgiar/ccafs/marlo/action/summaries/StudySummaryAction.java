@@ -43,6 +43,7 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import com.opensymphony.xwork2.ActionContext;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.dispatcher.Parameter;
 import org.pentaho.reporting.engine.classic.core.CompoundDataFactory;
@@ -72,6 +73,8 @@ public class StudySummaryAction extends BaseStudySummaryData implements Summary 
   private final ResourceManager resourceManager;
   private final HTMLParser htmlParser;;
   private List<ProjectExpectedStudyInfo> projectExpectedStudyInfos = new ArrayList<>();
+  private GlobalUnitManager crpManager;
+  private String crp;
 
   // PDF bytes
   private byte[] bytesPDF;
@@ -84,7 +87,6 @@ public class StudySummaryAction extends BaseStudySummaryData implements Summary 
   private long startTime;
   private Long projectExpectedStudyID;
   private ProjectExpectedStudyInfo projectExpectedStudyInfo;
-  private ProjectExpectedStudyCountryManager projectExpectedStudyCountryManager;
   private String studyProjects = null;
 
   @Inject
@@ -96,7 +98,7 @@ public class StudySummaryAction extends BaseStudySummaryData implements Summary 
     this.resourceManager = resourceManager;
     this.projectExpectedStudyManager = projectExpectedStudyManager;
     this.htmlParser = htmlParser;
-    this.projectExpectedStudyCountryManager = projectExpectedStudyCountryManager;
+    this.crpManager = crpManager;
   }
 
 
@@ -128,7 +130,17 @@ public class StudySummaryAction extends BaseStudySummaryData implements Summary 
       Resource reportResource =
         resourceManager.createDirectly(this.getClass().getResource("/pentaho/crp/StudiesPDF.prpt"), MasterReport.class);
       MasterReport masterReport = (MasterReport) reportResource.getResource();
-      String center = this.getLoggedCrp().getAcronym();
+
+      crp = this.getLoggedCrp().getAcronym();
+      if (crp == null || crp.isEmpty()) {
+        String[] actionMap = ActionContext.getContext().getName().split("/");
+        if (actionMap.length > 1) {
+          String enteredCrp = actionMap[0];
+          crp = crpManager.findGlobalUnitByAcronym(enteredCrp).getAcronym();
+        }
+      }
+
+      String center = crp;
 
       // Get datetime
       ZonedDateTime timezone = ZonedDateTime.now();
@@ -139,11 +151,12 @@ public class StudySummaryAction extends BaseStudySummaryData implements Summary 
       }
       String date = timezone.format(format) + "(GMT" + zone + ")";
 
+
       // Set Main_Query
       CompoundDataFactory cdf = CompoundDataFactory.normalize(masterReport.getDataFactory());
       String masterQueryName = "main";
       TableDataFactory sdf = (TableDataFactory) cdf.getDataFactoryForQuery(masterQueryName);
-      TypedTableModel model = this.getMasterTableModel(center, date, String.valueOf(this.getSelectedYear()));
+      TypedTableModel model = this.getMasterTableModel(crp, date, String.valueOf(this.getSelectedYear()));
       sdf.addTable(masterQueryName, model);
       masterReport.setDataFactory(cdf);
       // Set i8n for pentaho
@@ -198,8 +211,8 @@ public class StudySummaryAction extends BaseStudySummaryData implements Summary 
   }
 
   public String getCaseStudyUrlPath(String project) {
-    return config.getProjectsBaseFolder(this.getLoggedCrp().getAcronym()) + File.separator + project + File.separator
-      + "caseStudy" + File.separator;
+
+    return config.getProjectsBaseFolder(crp) + File.separator + project + File.separator + "caseStudy" + File.separator;
   }
 
   @Override
@@ -273,9 +286,8 @@ public class StudySummaryAction extends BaseStudySummaryData implements Summary 
   }
 
   private String getStudiesSourceFolder() {
-    return APConstants.STUDIES_FOLDER.concat(File.separator).concat(this.getLoggedCrp().getAcronym())
-      .concat(File.separator).concat(File.separator).concat(this.getLoggedCrp().getAcronym() + "_")
-      .concat(ProjectSectionStatusEnum.EXPECTEDSTUDY.getStatus()).concat(File.separator);
+    return APConstants.STUDIES_FOLDER.concat(File.separator).concat(crp).concat(File.separator).concat(File.separator)
+      .concat(crp + "_").concat(ProjectSectionStatusEnum.EXPECTEDSTUDY.getStatus()).concat(File.separator);
   }
 
 

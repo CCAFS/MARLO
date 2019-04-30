@@ -116,6 +116,15 @@
       </result>
     </action>
     
+    <action name="{crp}/deliverablesParticipantsSummary"
+      class="org.cgiar.ccafs.marlo.action.summaries.DeliverablesParticipantsSummaryAction">
+      <interceptor-ref name="unloggedStack" />
+      <result name="success" type="stream">
+        <param name="inputName">inputStream</param>             
+        <param name="contentType">${contentType}</param>               
+        <param name="contentDisposition">filename="${fileName}"</param>
+      </result>
+    </action>
     
     <!--  Annual Report Evidences Actions -->
     
@@ -139,7 +148,29 @@
         <param name="contentType">${contentType}</param>               
         <param name="contentDisposition">filename="${fileName}"</param>
       </result>
-    </action> 		
+    </action> 	
+    
+     <!-- External Partners evidences -->
+    <action name="{crp}/externalPartnersEvidence"
+      class="org.cgiar.ccafs.marlo.action.summaries.anualreport.evidences.ExternalPartnersSummaryAction">
+      <interceptor-ref name="homeStack" />
+      <result name="success" type="stream">
+        <param name="inputName">inputStream</param>             
+        <param name="contentType">${contentType}</param>               
+        <param name="contentDisposition">filename="${fileName}"</param>
+      </result>
+    </action>	
+    
+    <!-- Outcome Milestones evidences -->
+    <action name="{crp}/outcomeMilestoneEvidence"
+      class="org.cgiar.ccafs.marlo.action.summaries.anualreport.evidences.OutcomesMilestonesEvidenceSummaryAction">
+      <interceptor-ref name="homeStack" />
+      <result name="success" type="stream">
+        <param name="inputName">inputStream</param>             
+        <param name="contentType">${contentType}</param>               
+        <param name="contentDisposition">filename="${fileName}"</param>
+      </result>
+    </action> 
     
 	</package>
 

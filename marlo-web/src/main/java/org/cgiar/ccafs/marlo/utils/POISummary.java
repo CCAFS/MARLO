@@ -175,7 +175,11 @@ public class POISummary {
     text = text.replaceAll("</tbody>", "");
     text = text.replaceAll("</br>", "");
     text = text.replaceAll("   ", "");
+    text = text.replaceAll("<a></a>", "");
     text = text.replaceAll("&nbsp;", " ");
+    text = text.replaceAll("<span style=\"color: rgb(130, 130, 130); font-size: 0.98em;\">", "");
+    text = text.replaceAll("<span style=\"color: rgb(130, 130, 130); font-size: 0.98em;", "");
+    text = text.replaceAll("</span>", "");
 
     /*
      * recognize the tag as a line break
@@ -227,7 +231,10 @@ public class POISummary {
 
               hrefTagsCount++;
               textIndicatorLink = text.substring(text.indexOf(">", j) + 1, posFinal);
+
               url = text.substring(text.indexOf("=", j) + 2, text.indexOf(">", j) - 1);
+
+
               if (!url.contains("http://") && !url.contains("https://")) {
                 url = "http://" + url;
               }
@@ -777,7 +784,6 @@ public class POISummary {
 
   }
 
-
   public void table3AnnualReport2018Style(XWPFTable table) {
     /* horizontal merge, From format tables I */
 
@@ -793,6 +799,7 @@ public class POISummary {
       }
     }
   }
+
 
   public void table4AnnualReport2018Style(XWPFTable table) {
     /* horizontal merge, From format tables I */
@@ -811,14 +818,14 @@ public class POISummary {
   }
 
   public void table5AnnualReport2018Style(XWPFTable table) {
-    /* Horizontal merge, From format tables B */
+    /* Horizontal merge, From format tables D1 Annual report */
     CTVMerge vmerge = CTVMerge.Factory.newInstance();
     CTVMerge vmerge1 = CTVMerge.Factory.newInstance();
 
     for (int x = 0; x < table.getNumberOfRows(); x++) {
       if (x > 0) {
         XWPFTableRow row = table.getRow(x);
-        for (int y = 0; y < 2; y++) {
+        for (int y = 0; y < 4; y++) {
           XWPFTableCell cell = row.getCell(y);
 
           if (cell.getCTTc() == null) {
@@ -833,13 +840,13 @@ public class POISummary {
           }
           if (cell.getText().trim().length() > 0) {
             if (y == 0) {
-              cell.getCTTc().getTcPr().addNewTcW().setW(BigInteger.valueOf(1500));
+              // cell.getCTTc().getTcPr().addNewTcW().setW(BigInteger.valueOf(1500));
             }
             vmerge.setVal(STMerge.RESTART);
             cell.getCTTc().getTcPr().setVMerge(vmerge);
           } else {
             if (y == 0) {
-              cell.getCTTc().getTcPr().addNewTcW().setW(BigInteger.valueOf(1500));
+              // cell.getCTTc().getTcPr().addNewTcW().setW(BigInteger.valueOf(1500));
             }
             vmerge1.setVal(STMerge.CONTINUE);
             cell.getCTTc().getTcPr().setVMerge(vmerge1);
@@ -849,6 +856,7 @@ public class POISummary {
       }
     }
   }
+
 
   public void table6Annual2018ReportStyle(XWPFTable table) {
     /* horizontal merge, From format tables A1 */
@@ -935,6 +943,22 @@ public class POISummary {
           }
         }
 
+      }
+    }
+  }
+
+  public void tableAnnexesAnnualReportStyle(XWPFTable table) {
+    /* horizontal merge, From format tables A1 */
+
+    for (int x = 0; x < table.getNumberOfRows(); x++) {
+      XWPFTableRow row = table.getRow(x);
+      for (int y = 0; y < row.getTableCells().size(); y++) {
+        XWPFTableCell cell = row.getCell(y);
+        CTTblWidth cellWidth = cell.getCTTc().addNewTcPr().addNewTcW();
+
+        CTTcPr pr = cell.getCTTc().addNewTcPr();
+        // pr.addNewNoWrap();
+        cellWidth.setW(BigInteger.valueOf(100));
       }
     }
   }
@@ -2057,9 +2081,7 @@ public class POISummary {
       case "table4AnnualReport2018":
         this.table4AnnualReport2018Style(table);
         break;
-      case "table5AnnualReport2018":
-        this.table4AnnualReport2018Style(table);
-        break;
+
       case "tableJAnnualReport":
         this.tableJAnnualReportStyle(table);
         break;
@@ -2091,6 +2113,10 @@ public class POISummary {
       case "tableD2AnnualReport2018":
         count = 0;
         this.tableAStyle(table);
+        break;
+      case "table5AnnualReport2018":
+        count = 0;
+        this.table5AnnualReport2018Style(table);
         break;
       case "table11AnnualReport2018":
         count = 0;
@@ -2477,7 +2503,7 @@ public class POISummary {
         this.table4AnnualReport2018Style(table);
         break;
       case "table5AnnualReport2018":
-        this.table4AnnualReport2018Style(table);
+        this.table5AnnualReport2018Style(table);
         break;
       case "tableJAnnualReport":
         this.tableJAnnualReportStyle(table);

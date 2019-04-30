@@ -26,6 +26,7 @@ import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCrp;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationInfo;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationShared;
 import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
@@ -61,6 +62,7 @@ public class ProjectInnovationListAction extends BaseAction {
   private long innovationID;
   private List<Integer> allYears;
   private List<ProjectInnovation> projectOldInnovations;
+  private List<ProjectInnovation> projectInnovations;
   private String justification;
 
 
@@ -75,7 +77,6 @@ public class ProjectInnovationListAction extends BaseAction {
     this.projectManager = projectManager;
     this.projectInnovationCrpManager = projectInnovationCrpManager;
   }
-
 
   @Override
   public String add() {
@@ -108,9 +109,10 @@ public class ProjectInnovationListAction extends BaseAction {
     return INPUT;
   }
 
+
   @Override
   public String delete() {
-    for (ProjectInnovation projectInnovation : project.getInnovations()) {
+    for (ProjectInnovation projectInnovation : projectInnovations) {
       if (projectInnovation.getId().longValue() == innovationID) {
         ProjectInnovation projectInnovationBD = projectInnovationManager.getProjectInnovationById(innovationID);
 
@@ -123,6 +125,7 @@ public class ProjectInnovationListAction extends BaseAction {
     }
     return SUCCESS;
   }
+
 
   @Override
   public List<Integer> getAllYears() {
@@ -138,13 +141,17 @@ public class ProjectInnovationListAction extends BaseAction {
     return justification;
   }
 
-
   public Project getProject() {
     return project;
   }
 
   public long getProjectID() {
     return projectID;
+  }
+
+
+  public List<ProjectInnovation> getProjectInnovations() {
+    return projectInnovations;
   }
 
   public List<ProjectInnovation> getProjectOldInnovations() {
@@ -162,7 +169,10 @@ public class ProjectInnovationListAction extends BaseAction {
     projectOldInnovations = new ArrayList<ProjectInnovation>();
     List<ProjectInnovation> innovations =
       project.getProjectInnovations().stream().filter(c -> c.isActive()).collect(Collectors.toList());
-    project.setInnovations(new ArrayList<ProjectInnovation>());
+
+    projectInnovations = new ArrayList<ProjectInnovation>();
+
+
     for (ProjectInnovation projectInnovation : innovations) {
 
       if (projectInnovation.getProjectInnovationInfo(this.getActualPhase()) != null
@@ -175,9 +185,41 @@ public class ProjectInnovationListAction extends BaseAction {
             .collect(Collectors.toList())));
         }
 
-        project.getInnovations().add(projectInnovation);
+        projectInnovations.add(projectInnovation);
       } else {
         projectOldInnovations.add(projectInnovation);
+      }
+    }
+
+    /*
+     * Update 4/25/2019 Adding Shared Project Innovation in the lists.
+     */
+    List<ProjectInnovationShared> innovationShareds = new ArrayList<>(project.getProjectInnovationShareds().stream()
+      .filter(px -> px.isActive() && px.getPhase().getId() == this.getActualPhase().getId()
+        && px.getProjectInnovation().isActive()
+        && px.getProjectInnovation().getProjectInnovationInfo(this.getActualPhase()) != null)
+      .collect(Collectors.toList()));
+    if (innovationShareds != null && innovationShareds.size() > 0) {
+      for (ProjectInnovationShared innovationShared : innovationShareds) {
+        if (!projectInnovations.contains(innovationShared.getProjectInnovation())
+          && !projectOldInnovations.contains(innovationShared.getProjectInnovation())) {
+          if (innovationShared.getProjectInnovation().getProjectInnovationInfo(this.getActualPhase()) != null
+            && innovationShared.getProjectInnovation().getProjectInnovationInfo().getYear() >= this.getActualPhase()
+              .getYear()) {
+
+            // Geographic Scope List
+            if (innovationShared.getProjectInnovation().getProjectInnovationGeographicScopes() != null) {
+              innovationShared.getProjectInnovation().setGeographicScopes(
+                new ArrayList<>(innovationShared.getProjectInnovation().getProjectInnovationGeographicScopes().stream()
+                  .filter(o -> o.isActive() && o.getPhase().getId() == this.getActualPhase().getId())
+                  .collect(Collectors.toList())));
+            }
+
+            projectInnovations.add(innovationShared.getProjectInnovation());
+          } else {
+            projectOldInnovations.add(innovationShared.getProjectInnovation());
+          }
+        }
       }
     }
 
@@ -203,6 +245,10 @@ public class ProjectInnovationListAction extends BaseAction {
 
   public void setProjectID(long projectID) {
     this.projectID = projectID;
+  }
+
+  public void setProjectInnovations(List<ProjectInnovation> projectInnovations) {
+    this.projectInnovations = projectInnovations;
   }
 
   public void setProjectOldInnovations(List<ProjectInnovation> projectOldInnovations) {
