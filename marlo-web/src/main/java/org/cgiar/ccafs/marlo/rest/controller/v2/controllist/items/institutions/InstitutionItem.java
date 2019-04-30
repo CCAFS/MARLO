@@ -200,8 +200,9 @@ public class InstitutionItem<T> {
     // Message content
     message.append(partnerRequest.getExternalUserName() == null ? (user.getFirstName() + " " + user.getLastName() + " ")
       : partnerRequest.getExternalUserName());
-    message.append(" (" + partnerRequest.getExternalUserMail() == null ? user.getEmail()
-      : partnerRequest.getExternalUserMail() + ") ");
+    message.append(" (");
+    message.append(
+      partnerRequest.getExternalUserMail() == null ? user.getEmail() : partnerRequest.getExternalUserMail() + ") ");
     message.append("is requesting to add the following partner information:");
     message.append("</br></br>");
     message.append("Partner Name: ");
