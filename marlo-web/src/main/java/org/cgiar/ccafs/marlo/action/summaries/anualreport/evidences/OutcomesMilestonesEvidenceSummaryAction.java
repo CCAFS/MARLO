@@ -302,24 +302,29 @@ public class OutcomesMilestonesEvidenceSummaryAction extends BaseSummariesAction
       // Outcome
       paramC = outcomeMilestone.getCrpProgramOutcome().getComposedName();
       // Outcome Progress
-      paramD = outcomeMilestone.getOutcomeProgress();
+      paramD = this.removeHtmlTags(outcomeMilestone.getOutcomeProgress());
+      paramD = this.removeHrefTags(paramD);
       // Milestone
       paramE = outcomeMilestone.getCrpMilestone().getComposedName();
       // Milestone Status
       paramF = outcomeMilestone.getStatusName();
       // Reason
-      if (outcomeMilestone.getRepIndMilestoneReason() != null) {
-        if (outcomeMilestone.getRepIndMilestoneReason().getId().equals(7L)) {
-          paramG = outcomeMilestone.getOtherReason();
+      if (outcomeMilestone.getMilestonesStatus() != 1L) {
+        if (outcomeMilestone.getRepIndMilestoneReason() != null) {
+          if (outcomeMilestone.getRepIndMilestoneReason().getId().equals(7L)) {
+            paramG = outcomeMilestone.getOtherReason();
+          } else {
+            paramG = outcomeMilestone.getRepIndMilestoneReason().getName();
+          }
         } else {
-          paramG = outcomeMilestone.getRepIndMilestoneReason().getName();
+          paramG = "<Not Defined>";
         }
       } else {
-        paramG = "<Not Defined>";
+        paramG = "<Not Applicable>";
       }
       // milestone evidence
-      paramH = outcomeMilestone.getEvidence();
-
+      paramH = this.removeHtmlTags(outcomeMilestone.getEvidence());
+      paramH = this.removeHrefTags(paramH);
       // CGIAR Cross-cutting Markers
       if (outcomeMilestone.getCrossCuttingMarkers() != null) {
 
@@ -463,6 +468,7 @@ public class OutcomesMilestonesEvidenceSummaryAction extends BaseSummariesAction
     return arOutcomeMilestoneEvidences;
   }
 
+
   @Override
   public void prepare() throws Exception {
     this.setGeneralParameters();
@@ -471,6 +477,17 @@ public class OutcomesMilestonesEvidenceSummaryAction extends BaseSummariesAction
     LOG.info(
       "Start report download: " + this.getFileName() + ". User: " + this.getCurrentUser().getComposedCompleteName()
         + ". CRP: " + this.getLoggedCrp().getAcronym() + ". Cycle: " + this.getSelectedCycle());
+  }
+
+  private String removeHrefTags(String text) {
+
+    text = text.replaceAll("<a href=", "");
+    text = text.replaceAll("</a>", "");
+    text = text.replaceAll("amp;", "");
+    text = text.replaceAll("&nbsp;", "");
+
+    return text;
+
   }
 
   public void setBytesXLSX(byte[] bytesXLSX) {

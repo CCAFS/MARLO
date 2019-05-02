@@ -91,7 +91,7 @@ public class SrfLists {
   @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
   @RequestMapping(value = "/srf-idos/{code}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<SrfIdoDTO>
-    findSrfIdoById(@ApiParam(value = "${SrfList.srf-ido.code.param.code}", required = true) @PathVariable Long code) {
+    findSrfIdoById(@ApiParam(value = "${SrfList.srf-ido.code.param.code}", required = true) @PathVariable String code) {
     ResponseEntity<SrfIdoDTO> response = this.srfIdoItem.findSrfIdobyId(code);
     if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
       throw new NotFoundException("404", this.env.getProperty("SrfList.srf-ido.code.404"));

@@ -60,6 +60,15 @@ public interface SrfIdoManager {
    */
   public SrfIdo getSrfIdoById(long srfIdoID);
 
+
+  /**
+   * This method gets a srfIdo object by a given srfIdo smo code.
+   * 
+   * @param srfIdoID is the srfIdo identifier.
+   * @return a SrfIdo object.
+   */
+  public SrfIdo getSrfIdoBySmoCode(String id);
+
   /**
    * This method saves the information of the given srfIdo
    * 

@@ -718,7 +718,7 @@ public class ProjectPolicyAction extends BaseAction {
 
       // Load Shared studies
       List<ExpectedStudyProject> expectedStudyProject = new ArrayList<>(project.getExpectedStudyProjects().stream()
-        .filter(px -> px.isActive() && px.getPhase().getId() == this.getActualPhase().getId()
+        .filter(px -> px.isActive() && px.getPhase().getId().equals(this.getActualPhase().getId())
           && px.getProjectExpectedStudy().isActive()
           && px.getProjectExpectedStudy().getProjectExpectedStudyInfo(this.getActualPhase()) != null)
         .collect(Collectors.toList()));
@@ -736,8 +736,7 @@ public class ProjectPolicyAction extends BaseAction {
         expectedStudyList = allProjectStudies.stream()
           .filter(ex -> ex.isActive() && ex.getProjectExpectedStudyInfo(phase) != null
             && ex.getProjectExpectedStudyInfo().getStudyType() != null
-            && ex.getProjectExpectedStudyInfo().getStudyType().getId().intValue() == 1 && ex.getProject() != null
-            && ex.getProject().getId() == project.getId())
+            && ex.getProjectExpectedStudyInfo().getStudyType().getId().intValue() == 1 && ex.getProject() != null)
           .collect(Collectors.toList());
       }
       // Crps/Platforms List
