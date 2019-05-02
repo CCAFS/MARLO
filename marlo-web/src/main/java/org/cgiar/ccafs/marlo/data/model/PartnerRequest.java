@@ -79,6 +79,15 @@ public class PartnerRequest extends MarloAuditableEntity implements java.io.Seri
   private Date rejectedDate;
 
   @Expose
+  private String externalUserMail;
+
+  @Expose
+  private String externalUserComments;
+
+  @Expose
+  private String externalUserName;
+
+  @Expose
   private Phase phase;
 
 
@@ -87,15 +96,15 @@ public class PartnerRequest extends MarloAuditableEntity implements java.io.Seri
 
 
   public Boolean getAcepted() {
-    return acepted;
+    return this.acepted;
   }
 
   public Date getAceptedDate() {
-    return aceptedDate;
+    return this.aceptedDate;
   }
 
   public String getAcronym() {
-    return acronym;
+    return this.acronym;
   }
 
   public String getCountryInfo() {
@@ -107,27 +116,42 @@ public class PartnerRequest extends MarloAuditableEntity implements java.io.Seri
   }
 
   public GlobalUnit getCrp() {
-    return crp;
+    return this.crp;
+  }
+
+
+  public String getExternalUserComments() {
+    return this.externalUserComments;
+  }
+
+
+  public String getExternalUserMail() {
+    return this.externalUserMail;
+  }
+
+
+  public String getExternalUserName() {
+    return this.externalUserName;
   }
 
 
   public Institution getInstitution() {
-    return institution;
+    return this.institution;
   }
 
 
   public InstitutionType getInstitutionType() {
-    return institutionType;
+    return this.institutionType;
   }
 
 
   public LocElement getLocElement() {
-    return locElement;
+    return this.locElement;
   }
 
 
   public Boolean getModified() {
-    return modified;
+    return this.modified;
   }
 
 
@@ -140,44 +164,40 @@ public class PartnerRequest extends MarloAuditableEntity implements java.io.Seri
 
 
   public String getPartnerName() {
-    return partnerName;
+    return this.partnerName;
   }
-
 
   public PartnerRequest getPartnerRequest() {
-    return partnerRequest;
+    return this.partnerRequest;
   }
-
 
   public Phase getPhase() {
-    return phase;
+    return this.phase;
   }
 
-
   public User getRejectedBy() {
-    return rejectedBy;
+    return this.rejectedBy;
   }
 
 
   public Date getRejectedDate() {
-    return rejectedDate;
+    return this.rejectedDate;
   }
 
   public String getRejectJustification() {
-    return rejectJustification;
+    return this.rejectJustification;
   }
 
   public String getRequestSource() {
-    return requestSource;
+    return this.requestSource;
   }
 
   public String getWebPage() {
-    return webPage;
+    return this.webPage;
   }
 
-
   public boolean isOffice() {
-    return office;
+    return this.office;
   }
 
   public void setAcepted(Boolean acepted) {
@@ -188,6 +208,7 @@ public class PartnerRequest extends MarloAuditableEntity implements java.io.Seri
     this.aceptedDate = aceptedDate;
   }
 
+
   public void setAcronym(String acronym) {
     this.acronym = acronym;
   }
@@ -196,9 +217,22 @@ public class PartnerRequest extends MarloAuditableEntity implements java.io.Seri
     this.crp = crp;
   }
 
+  public void setExternalUserComments(String externalUserComments) {
+    this.externalUserComments = externalUserComments;
+  }
+
+  public void setExternalUserMail(String externalUserMail) {
+    this.externalUserMail = externalUserMail;
+  }
+
+  public void setExternalUserName(String externalUserName) {
+    this.externalUserName = externalUserName;
+  }
+
   public void setInstitution(Institution institution) {
     this.institution = institution;
   }
+
 
   public void setInstitutionType(InstitutionType institutionType) {
     this.institutionType = institutionType;
@@ -216,17 +250,21 @@ public class PartnerRequest extends MarloAuditableEntity implements java.io.Seri
     this.office = office;
   }
 
+
   public void setPartnerName(String partnerName) {
     this.partnerName = partnerName;
   }
+
 
   public void setPartnerRequest(PartnerRequest partnerRequest) {
     this.partnerRequest = partnerRequest;
   }
 
+
   public void setPhase(Phase phase) {
     this.phase = phase;
   }
+
 
   public void setRejectedBy(User rejectedBy) {
     this.rejectedBy = rejectedBy;
@@ -237,13 +275,16 @@ public class PartnerRequest extends MarloAuditableEntity implements java.io.Seri
     this.rejectedDate = rejectedDate;
   }
 
+
   public void setRejectJustification(String rejectJustification) {
     this.rejectJustification = rejectJustification;
   }
 
+
   public void setRequestSource(String requestSource) {
     this.requestSource = requestSource;
   }
+
 
   public void setWebPage(String webPage) {
     this.webPage = webPage;

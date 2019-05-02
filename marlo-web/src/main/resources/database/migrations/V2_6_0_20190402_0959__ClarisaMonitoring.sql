@@ -1,21 +1,8 @@
-SET FOREIGN_KEY_CHECKS=0;
 
--- ----------------------------
--- Table structure for clarisa_monitoring
--- ----------------------------
-DROP TABLE IF EXISTS `clarisa_monitoring`;
-CREATE TABLE `clarisa_monitoring` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `user_id` bigint(20) DEFAULT NULL,
-  `global_unit_id` bigint(20) DEFAULT NULL,
-  `service_name` text,
-  `service_args` text,
-  `service_type` text,
-  `date` timestamp NULL DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- ----------------------------
--- Records of clarisa_monitoring
--- ----------------------------
-SET FOREIGN_KEY_CHECKS=1;
+/************************************************
+ *  New Filds of external users on API
+ ************************************************/
+alter table partner_requests 
+ADD external_user_mail varchar(255) after reject_justification,
+ADD external_user_name text after external_user_mail
+ADD external_user_comments text after external_user_name;
