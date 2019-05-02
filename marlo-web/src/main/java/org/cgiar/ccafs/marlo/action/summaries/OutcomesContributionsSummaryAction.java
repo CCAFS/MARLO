@@ -279,10 +279,11 @@ public class OutcomesContributionsSummaryAction extends BaseSummariesAction impl
     TypedTableModel model = new TypedTableModel(
       new String[] {"project_id", "flagship", "projectSummary", "outcome", "project_url", "milestone", "expected_value",
         "expected_unit", "narrative_target", "title", "outcomeIndicator", "phaseID", "outcome_expected_value",
-        "achieved_value", "achieved_narrative", "startDate", "endDate"},
+        "achieved_value", "achieved_narrative", "startDate", "endDate", "outcomeTargetValue", "milestoneExpectedValue",
+        "achieved_value_string"},
       new Class[] {String.class, String.class, String.class, String.class, String.class, String.class, Long.class,
         String.class, String.class, String.class, String.class, Long.class, BigDecimal.class, Long.class, String.class,
-        String.class, String.class},
+        String.class, String.class, String.class, String.class, String.class},
       0);
     SimpleDateFormat formatter = new SimpleDateFormat("MMM yyyy");
 
@@ -292,7 +293,8 @@ public class OutcomesContributionsSummaryAction extends BaseSummariesAction impl
 
       String projectId = "", title = "", flagship = "", outcome = "", projectUrl = "", milestone = "",
         expectedUnit = "", narrativeTarget = "", outcomeIndicator = null, achievedTarget = "", startDate = "",
-        endDate = "", projectSummary = "";
+        endDate = "", projectSummary = "", outcomeTargetValue = "", milestoneExpectedValue = "",
+        achievedValueString = "";
       Double expectedValue = new Double(0);
       Long phaseID = null;
       projectId = projectMilestone.getProjectOutcome().getProject().getId().toString();
@@ -341,19 +343,40 @@ public class OutcomesContributionsSummaryAction extends BaseSummariesAction impl
         } else {
           if (projectMilestone.getExpectedValue() != null) {
             outcomeExpectedValue = projectMilestone.getCrpMilestone().getValue();
+            outcomeTargetValue = projectMilestone.getCrpMilestone().getValue().toString();
             expectedValue = projectMilestone.getExpectedValue();
+            milestoneExpectedValue = projectMilestone.getExpectedValue().toString();
+
+            if (outcomeTargetValue.equals("0") || outcomeTargetValue.equals("-1") || achievedValueString == null
+              || achievedValueString.isEmpty()) {
+              outcomeTargetValue = "<Not Defined>";
+            }
+
+            if (milestoneExpectedValue.equals("0") || milestoneExpectedValue.equals("-1")
+              || milestoneExpectedValue == null || milestoneExpectedValue.isEmpty()) {
+              milestoneExpectedValue = "<Not Defined>";
+            }
           }
           // Only reporting
           if (this.getSelectedCycle() != null && this.getSelectedCycle().equals(APConstants.REPORTING)) {
             if (projectMilestone.getAchievedValue() != null) {
               achievedValue = projectMilestone.getAchievedValue();
+              achievedValueString = projectMilestone.getAchievedValue().toString();
+
+              if (achievedValueString.equals("0") || achievedValueString.equals("-1") || achievedValueString == null
+                || achievedValueString.isEmpty()) {
+                achievedValueString = "<Not Defined>";
+              }
             }
           }
         }
       } else {
         expectedUnit = "Not Applicable";
         expectedValue = -1.0;
+        outcomeTargetValue = "<Not Applicable>";
         outcomeExpectedValue = new BigDecimal(-1);
+        milestoneExpectedValue = "<Not Applicable>";
+        achievedValueString = "<Not Applicable>";
         // Only reporting
         if (this.getSelectedCycle() != null && this.getSelectedCycle().equals(APConstants.REPORTING)) {
           achievedValue = new Long(-1);
@@ -361,6 +384,10 @@ public class OutcomesContributionsSummaryAction extends BaseSummariesAction impl
       }
 
       narrativeTarget = projectMilestone.getNarrativeTarget();
+
+      if (narrativeTarget == null || narrativeTarget.isEmpty()) {
+        narrativeTarget = "<Not Defined>";
+      }
       // Only reporting
       if (this.getSelectedCycle() != null && this.getSelectedCycle().equals(APConstants.REPORTING)) {
         achievedTarget = projectMilestone.getNarrativeAchieved();
@@ -368,7 +395,7 @@ public class OutcomesContributionsSummaryAction extends BaseSummariesAction impl
 
       model.addRow(new Object[] {projectId, flagship, projectSummary, outcome, projectUrl, milestone, expectedValue,
         expectedUnit, narrativeTarget, title, outcomeIndicator, phaseID, outcomeExpectedValue, achievedValue,
-        achievedTarget, startDate, endDate});
+        achievedTarget, startDate, endDate, outcomeTargetValue, milestoneExpectedValue, achievedValueString});
     }
     return model;
   }
@@ -378,10 +405,11 @@ public class OutcomesContributionsSummaryAction extends BaseSummariesAction impl
     TypedTableModel model = new TypedTableModel(
       new String[] {"project_id", "title", "projectSummary", "flagship", "outcome", "expected_value", "expected_unit",
         "expected_narrative", "project_url", "outcomeIndicator", "phaseID", "outcome_expected_value", "achieved_value",
-        "achieved_narrative", "startDate", "endDate", "communications"},
+        "achieved_narrative", "startDate", "endDate", "communications", "outcomeTargetValue", "expectedValueS",
+        "achieved_value_string"},
       new Class[] {String.class, String.class, String.class, String.class, String.class, BigDecimal.class, String.class,
         String.class, String.class, String.class, Long.class, BigDecimal.class, Long.class, String.class, String.class,
-        String.class, String.class},
+        String.class, String.class, String.class, String.class, String.class},
       0);
 
     SimpleDateFormat formatter = new SimpleDateFormat("MMM yyyy");
@@ -402,7 +430,8 @@ public class OutcomesContributionsSummaryAction extends BaseSummariesAction impl
           .collect(Collectors.toList())) {
           String projectId = "", title = "", flagship = "", outcome = "", outcomeIndicator = null, expectedUnit = "",
             expectedNarrative = "", projectUrl = "", achievedNarrative = "", startDate = "", endDate = "",
-            communications = "", projectSummary = "";
+            communications = "", projectSummary = "", outcomeTargetValue = "", expectedValueS = "",
+            achievedValueString = "";
           Double expectedValue = new Double(0);
           BigDecimal outcomeExpectedValue = new BigDecimal(0);
           Double achievedValue = new Double(0);
@@ -446,11 +475,29 @@ public class OutcomesContributionsSummaryAction extends BaseSummariesAction impl
               } else {
                 if (projectOutcome.getExpectedValue() != null) {
                   outcomeExpectedValue = projectOutcome.getCrpProgramOutcome().getValue();
+                  outcomeTargetValue = projectOutcome.getCrpProgramOutcome().getValue().toString();
+                  if (outcomeTargetValue.equals("0") || outcomeTargetValue.equals("-1") || outcomeTargetValue == null
+                    || outcomeTargetValue.isEmpty()) {
+                    outcomeTargetValue = "<Not Defined>";
+                  }
                   expectedValue = projectOutcome.getExpectedValue();
+                  expectedValueS = projectOutcome.getExpectedValue().toString();
+
+                  if (expectedValueS.equals("0") || expectedValueS.equals("-1") || expectedValueS == null
+                    || expectedValueS.isEmpty()) {
+                    expectedValueS = "<Not Defined>";
+                  }
                 }
                 if (this.getSelectedCycle() != null && this.getSelectedCycle().equals(APConstants.REPORTING)) {
                   if (projectOutcome.getAchievedValue() != null) {
                     achievedValue = projectOutcome.getAchievedValue();
+                    achievedValueString = projectOutcome.getAchievedValue().toString();
+
+
+                    if (achievedValueString.equals("0") || achievedValueString.equals("-1")
+                      || achievedValueString == null || achievedValueString.isEmpty()) {
+                      achievedValueString = "<Not Defined>";
+                    }
                   }
                 }
               }
@@ -458,14 +505,24 @@ public class OutcomesContributionsSummaryAction extends BaseSummariesAction impl
               expectedUnit = "Not Applicable";
               outcomeExpectedValue = new BigDecimal(-1);
               expectedValue = -1.0;
+              expectedValueS = "<Not Applicable>";
+              outcomeTargetValue = "<Not Applicable>";
+              achievedValueString = "<Not Defined>";
               // Only reporting
               if (this.getSelectedCycle() != null && this.getSelectedCycle().equals(APConstants.REPORTING)) {
                 achievedValue = new Double(-1);
               }
             }
             expectedNarrative = projectOutcome.getNarrativeTarget();
+            if (expectedNarrative == null || expectedNarrative.isEmpty()) {
+              expectedNarrative = "<Not Defined>";
+            }
             if (this.getSelectedCycle() != null && this.getSelectedCycle().equals(APConstants.REPORTING)) {
               achievedNarrative = projectOutcome.getNarrativeAchieved();
+            }
+
+            if (achievedNarrative == null || achievedNarrative.isEmpty()) {
+              achievedNarrative = "<Not Defined>";
             }
             List<ProjectCommunication> projectCommunications = projectOutcome.getProjectCommunications().stream()
               .filter(pc -> pc.isActive() && pc.getYear() == this.getSelectedYear())
@@ -473,12 +530,16 @@ public class OutcomesContributionsSummaryAction extends BaseSummariesAction impl
             if (projectCommunications != null && !projectCommunications.isEmpty()) {
               ProjectCommunication projectCommunication = projectCommunications.get(0);
               communications = projectCommunication.getCommunication();
+
+              if (communications == null || communications.isEmpty()) {
+                communications = "<Not Defined>";
+              }
             }
           }
           Long phaseID = this.getSelectedPhase().getId();
           model.addRow(new Object[] {projectId, title, projectSummary, flagship, outcome, expectedValue, expectedUnit,
             expectedNarrative, projectUrl, outcomeIndicator, phaseID, outcomeExpectedValue, achievedValue,
-            achievedNarrative, startDate, endDate, communications});
+            achievedNarrative, startDate, endDate, communications, outcomeTargetValue, expectedValueS});
           if (projectOutcome.getProjectMilestones() != null && projectOutcome.getProjectMilestones().size() > 0) {
             for (ProjectMilestone projectMilestone : projectOutcome.getProjectMilestones().stream()
               .filter(pm -> pm.isActive()).collect(Collectors.toList())) {
