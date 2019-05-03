@@ -309,7 +309,7 @@ public class OutcomesMilestonesEvidenceSummaryAction extends BaseSummariesAction
       // Milestone Status
       paramF = outcomeMilestone.getStatusName();
       // Reason
-      if (outcomeMilestone.getMilestonesStatus() != 1L) {
+      if (outcomeMilestone.getMilestonesStatus() != null && outcomeMilestone.getMilestonesStatus() != 1L) {
         if (outcomeMilestone.getRepIndMilestoneReason() != null) {
           if (outcomeMilestone.getRepIndMilestoneReason().getId().equals(7L)) {
             paramG = outcomeMilestone.getOtherReason();
