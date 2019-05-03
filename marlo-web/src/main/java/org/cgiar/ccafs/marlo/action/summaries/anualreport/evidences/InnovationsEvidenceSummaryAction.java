@@ -588,7 +588,8 @@ public class InnovationsEvidenceSummaryAction extends BaseSummariesAction implem
     LinkedHashSet<ProjectInnovation> AllInnovations = new LinkedHashSet<>();
 
     LiaisonInstitution liaisonInstitutionPMU = this.getLoggedCrp().getLiaisonInstitutions().stream()
-      .filter(o -> o.isActive() && o.getAcronym().equals("PMU")).collect(Collectors.toList()).get(0);
+      .filter(o -> o.isActive() && o.getAcronym() != null && o.getAcronym().equals("PMU")).collect(Collectors.toList())
+      .get(0);
 
     List<LiaisonInstitution> liaisonInstitutions = this.getLoggedCrp().getLiaisonInstitutions().stream()
       .filter(c -> c.getCrpProgram() != null && c.isActive()
