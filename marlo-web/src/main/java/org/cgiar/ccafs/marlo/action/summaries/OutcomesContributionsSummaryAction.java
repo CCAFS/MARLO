@@ -347,8 +347,8 @@ public class OutcomesContributionsSummaryAction extends BaseSummariesAction impl
             expectedValue = projectMilestone.getExpectedValue();
             milestoneExpectedValue = projectMilestone.getExpectedValue().toString();
 
-            if (outcomeTargetValue.equals("0") || outcomeTargetValue.equals("-1") || outcomeTargetValue == null
-              || outcomeTargetValue.isEmpty()) {
+            if (outcomeTargetValue.equals("0") || outcomeTargetValue.equals("-1") || achievedValueString == null
+              || achievedValueString.isEmpty()) {
               outcomeTargetValue = "<Not Defined>";
             }
 
@@ -363,7 +363,8 @@ public class OutcomesContributionsSummaryAction extends BaseSummariesAction impl
               achievedValue = projectMilestone.getAchievedValue();
               achievedValueString = projectMilestone.getAchievedValue().toString();
 
-              if (achievedValueString.equals("-1") || achievedValueString == null || achievedValueString.isEmpty()) {
+              if (achievedValueString.equals("0") || achievedValueString.equals("-1") || achievedValueString == null
+                || achievedValueString.isEmpty()) {
                 achievedValueString = "<Not Defined>";
               }
             }
@@ -493,8 +494,8 @@ public class OutcomesContributionsSummaryAction extends BaseSummariesAction impl
                     achievedValueString = projectOutcome.getAchievedValue().toString();
 
 
-                    if (achievedValueString.equals("-1") || achievedValueString == null
-                      || achievedValueString.isEmpty()) {
+                    if (achievedValueString.equals("0") || achievedValueString.equals("-1")
+                      || achievedValueString == null || achievedValueString.isEmpty()) {
                       achievedValueString = "<Not Defined>";
                     }
                   }

@@ -337,7 +337,7 @@ public class OutcomesMilestonesEvidenceSummaryAction extends BaseSummariesAction
             // Gender
             if (marker.getMarker().getId() == 1) {
               if (marker.getFocus() != null) {
-                paramI = marker.getFocus().getPowbName();
+                paramI = marker.getFocus().getName();
                 paramJ = marker.getJust();
               } else {
                 paramI = "<Not Defined>";
@@ -347,7 +347,7 @@ public class OutcomesMilestonesEvidenceSummaryAction extends BaseSummariesAction
             // Youth
             if (marker.getMarker().getId() == 2) {
               if (marker.getFocus() != null) {
-                paramK = marker.getFocus().getPowbName();
+                paramK = marker.getFocus().getName();
                 paramL = marker.getJust();
               } else {
                 paramK = "<Not Defined>";
@@ -357,7 +357,7 @@ public class OutcomesMilestonesEvidenceSummaryAction extends BaseSummariesAction
             // CapDev
             if (marker.getMarker().getId() == 3) {
               if (marker.getFocus() != null) {
-                paramM = marker.getFocus().getPowbName();
+                paramM = marker.getFocus().getName();
                 paramN = marker.getJust();
               } else {
                 paramM = "<Not Defined>";
@@ -367,7 +367,7 @@ public class OutcomesMilestonesEvidenceSummaryAction extends BaseSummariesAction
             // Climate Change
             if (marker.getMarker().getId() == 4) {
               if (marker.getFocus() != null) {
-                paramO = marker.getFocus().getPowbName();
+                paramO = marker.getFocus().getName();
                 paramP = marker.getJust();
               } else {
                 paramO = "<Not Defined>";
