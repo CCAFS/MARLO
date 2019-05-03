@@ -308,6 +308,9 @@ public class OutcomesMilestonesEvidenceSummaryAction extends BaseSummariesAction
       paramE = outcomeMilestone.getCrpMilestone().getComposedName();
       // Milestone Status
       paramF = outcomeMilestone.getStatusName();
+      if (outcomeMilestone.getStatusName() == null && outcomeMilestone.getStatusName().isEmpty()) {
+        paramF = "<Not Defined>";
+      }
       // Reason
       if (outcomeMilestone.getMilestonesStatus() != null && outcomeMilestone.getMilestonesStatus() != 1L) {
         if (outcomeMilestone.getRepIndMilestoneReason() != null) {
@@ -325,6 +328,11 @@ public class OutcomesMilestonesEvidenceSummaryAction extends BaseSummariesAction
       // milestone evidence
       paramH = this.removeHtmlTags(outcomeMilestone.getEvidence());
       paramH = this.removeHrefTags(paramH);
+
+      if (paramH == null || paramH.isEmpty()) {
+        paramH = "<Not Defined>";
+      }
+
       // CGIAR Cross-cutting Markers
       if (outcomeMilestone.getCrossCuttingMarkers() != null) {
 
@@ -405,7 +413,7 @@ public class OutcomesMilestonesEvidenceSummaryAction extends BaseSummariesAction
     List<AROutcomeMilestoneEvidence> arOutcomeMilestoneEvidences = new ArrayList<AROutcomeMilestoneEvidence>();
 
     List<LiaisonInstitution> liaisonInstitutions = this.getLoggedCrp().getLiaisonInstitutions().stream()
-      .filter(c -> c.getCrpProgram() != null && c.isActive()
+      .filter(c -> c.getCrpProgram() != null && c.isActive() && c.getCrpProgram().isActive()
         && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
       .collect(Collectors.toList());
     liaisonInstitutions.sort(Comparator.comparing(LiaisonInstitution::getAcronym));
@@ -419,11 +427,12 @@ public class OutcomesMilestonesEvidenceSummaryAction extends BaseSummariesAction
 
         if (reportSynthesisFG.getReportSynthesisFlagshipProgress().getReportSynthesisFlagshipProgressOutcomes() != null
           && !reportSynthesisFG.getReportSynthesisFlagshipProgress().getReportSynthesisFlagshipProgressOutcomes()
-            .isEmpty()) {
+            .isEmpty()
+          && reportSynthesisFG.isActive() && reportSynthesisFG.getReportSynthesisFlagshipProgress().isActive()) {
 
           List<ReportSynthesisFlagshipProgressOutcome> progressOutcomes = new ArrayList<>(
             reportSynthesisFG.getReportSynthesisFlagshipProgress().getReportSynthesisFlagshipProgressOutcomes().stream()
-              .filter(o -> o.isActive()).collect(Collectors.toList()));
+              .filter(o -> o.isActive() && o.getCrpProgramOutcome().isActive()).collect(Collectors.toList()));
 
           for (ReportSynthesisFlagshipProgressOutcome progressOutcome : progressOutcomes) {
 
@@ -431,7 +440,7 @@ public class OutcomesMilestonesEvidenceSummaryAction extends BaseSummariesAction
               && !progressOutcome.getReportSynthesisFlagshipProgressOutcomeMilestones().isEmpty()) {
               List<ReportSynthesisFlagshipProgressOutcomeMilestone> outcomeMilestones =
                 new ArrayList<>(progressOutcome.getReportSynthesisFlagshipProgressOutcomeMilestones().stream()
-                  .filter(o -> o.isActive()).collect(Collectors.toList()));
+                  .filter(o -> o.isActive() && o.getCrpMilestone().isActive()).collect(Collectors.toList()));
               for (ReportSynthesisFlagshipProgressOutcomeMilestone outcomeMilestone : outcomeMilestones) {
 
                 AROutcomeMilestoneEvidence milestoneEvidence = new AROutcomeMilestoneEvidence();
@@ -450,7 +459,6 @@ public class OutcomesMilestonesEvidenceSummaryAction extends BaseSummariesAction
                   milestoneEvidence.getCrossCuttingMarkers()
                     .addAll(outcomeMilestone.getReportSynthesisFlagshipProgressCrossCuttingMarkers().stream()
                       .filter(o -> o.isActive()).collect(Collectors.toList()));
-
                 }
 
                 arOutcomeMilestoneEvidences.add(milestoneEvidence);
