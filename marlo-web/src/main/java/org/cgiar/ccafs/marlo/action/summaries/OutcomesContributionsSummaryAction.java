@@ -347,12 +347,13 @@ public class OutcomesContributionsSummaryAction extends BaseSummariesAction impl
             expectedValue = projectMilestone.getExpectedValue();
             milestoneExpectedValue = projectMilestone.getExpectedValue().toString();
 
-            if (outcomeTargetValue.equals("-1") || outcomeTargetValue == null || outcomeTargetValue.isEmpty()) {
+            if (outcomeTargetValue.trim().equals("-1") || outcomeTargetValue.trim() == null
+              || outcomeTargetValue.trim().isEmpty()) {
               outcomeTargetValue = "<Not Defined>";
             }
 
-            if (milestoneExpectedValue.equals("-1") || milestoneExpectedValue == null
-              || milestoneExpectedValue.isEmpty()) {
+            if (milestoneExpectedValue.trim().equals("-1") || milestoneExpectedValue == null
+              || milestoneExpectedValue.trim().isEmpty()) {
               milestoneExpectedValue = "<Not Defined>";
             }
           }
@@ -360,9 +361,15 @@ public class OutcomesContributionsSummaryAction extends BaseSummariesAction impl
           if (this.getSelectedCycle() != null && this.getSelectedCycle().equals(APConstants.REPORTING)) {
             if (projectMilestone.getAchievedValue() != null) {
               achievedValue = projectMilestone.getAchievedValue();
-              achievedValueString = projectMilestone.getAchievedValue().toString();
+              achievedValueString = String.valueOf(projectMilestone.getAchievedValue());
 
-              if (achievedValueString.equals("-1") || achievedValueString == null || achievedValueString.isEmpty()) {
+              if (projectId.endsWith("8")) {
+                System.out.println(projectMilestone.getAchievedValue() + "achievedValue/n" + "achievedValueString"
+                  + projectMilestone.getAchievedValue().toString());
+              }
+
+              if (achievedValueString.trim().equals("-1") || achievedValueString.trim() == null
+                || achievedValueString.trim().isEmpty()) {
                 achievedValueString = "<Not Defined>";
               }
             }
@@ -537,7 +544,8 @@ public class OutcomesContributionsSummaryAction extends BaseSummariesAction impl
           Long phaseID = this.getSelectedPhase().getId();
           model.addRow(new Object[] {projectId, title, projectSummary, flagship, outcome, expectedValue, expectedUnit,
             expectedNarrative, projectUrl, outcomeIndicator, phaseID, outcomeExpectedValue, achievedValue,
-            achievedNarrative, startDate, endDate, communications, outcomeTargetValue, expectedValueS});
+            achievedNarrative, startDate, endDate, communications, outcomeTargetValue, expectedValueS,
+            achievedValueString});
           if (projectOutcome.getProjectMilestones() != null && projectOutcome.getProjectMilestones().size() > 0) {
             for (ProjectMilestone projectMilestone : projectOutcome.getProjectMilestones().stream()
               .filter(pm -> pm.isActive()).collect(Collectors.toList())) {
