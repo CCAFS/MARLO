@@ -363,15 +363,13 @@ public class OutcomesContributionsSummaryAction extends BaseSummariesAction impl
               achievedValue = projectMilestone.getAchievedValue();
               achievedValueString = String.valueOf(projectMilestone.getAchievedValue());
 
-              if (projectId.endsWith("8")) {
-                System.out.println(projectMilestone.getAchievedValue() + "achievedValue/n" + "achievedValueString"
-                  + projectMilestone.getAchievedValue().toString());
-              }
-
-              if (achievedValueString.trim().equals("-1") || achievedValueString.trim() == null
-                || achievedValueString.trim().isEmpty()) {
+              if (achievedValue == null || achievedValue == -1 || achievedValueString.trim().equals("-1")
+                || achievedValueString.trim() == null || achievedValueString.trim().isEmpty()) {
                 achievedValueString = "<Not Defined>";
               }
+            } else {
+              achievedValue = null;
+              achievedValueString = "<Not Defined>";
             }
           }
         }
@@ -536,7 +534,7 @@ public class OutcomesContributionsSummaryAction extends BaseSummariesAction impl
               ProjectCommunication projectCommunication = projectCommunications.get(0);
               communications = projectCommunication.getCommunication();
 
-              if (communications == null || communications.isEmpty()) {
+              if (communications == null || communications.isEmpty() || communications.length() == 0) {
                 communications = "<Not Defined>";
               }
             }
