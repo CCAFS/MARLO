@@ -347,12 +347,13 @@ public class OutcomesContributionsSummaryAction extends BaseSummariesAction impl
             expectedValue = projectMilestone.getExpectedValue();
             milestoneExpectedValue = projectMilestone.getExpectedValue().toString();
 
-            if (outcomeTargetValue.equals("-1") || outcomeTargetValue == null || outcomeTargetValue.isEmpty()) {
+            if (outcomeTargetValue.trim().equals("-1") || outcomeTargetValue.trim() == null
+              || outcomeTargetValue.trim().isEmpty()) {
               outcomeTargetValue = "<Not Defined>";
             }
 
-            if (milestoneExpectedValue.equals("-1") || milestoneExpectedValue == null
-              || milestoneExpectedValue.isEmpty()) {
+            if (milestoneExpectedValue.trim().equals("-1") || milestoneExpectedValue == null
+              || milestoneExpectedValue.trim().isEmpty()) {
               milestoneExpectedValue = "<Not Defined>";
             }
           }
@@ -360,11 +361,15 @@ public class OutcomesContributionsSummaryAction extends BaseSummariesAction impl
           if (this.getSelectedCycle() != null && this.getSelectedCycle().equals(APConstants.REPORTING)) {
             if (projectMilestone.getAchievedValue() != null) {
               achievedValue = projectMilestone.getAchievedValue();
-              achievedValueString = projectMilestone.getAchievedValue().toString();
+              achievedValueString = String.valueOf(projectMilestone.getAchievedValue());
 
-              if (achievedValueString.equals("-1") || achievedValueString == null || achievedValueString.isEmpty()) {
+              if (achievedValue == null || achievedValue == -1 || achievedValueString.trim().equals("-1")
+                || achievedValueString.trim() == null || achievedValueString.trim().isEmpty()) {
                 achievedValueString = "<Not Defined>";
               }
+            } else {
+              achievedValue = null;
+              achievedValueString = "<Not Defined>";
             }
           }
         }
@@ -492,10 +497,13 @@ public class OutcomesContributionsSummaryAction extends BaseSummariesAction impl
                     achievedValueString = projectOutcome.getAchievedValue().toString();
 
 
-                    if (achievedValueString.equals("0") || achievedValueString.equals("-1")
-                      || achievedValueString == null || achievedValueString.isEmpty()) {
+                    if (achievedValueString.equals("-1") || achievedValueString == null
+                      || achievedValueString.isEmpty()) {
                       achievedValueString = "<Not Defined>";
                     }
+                  } else {
+                    achievedValue = null;
+                    achievedValueString = "<Not Defined>";
                   }
                 }
               }
@@ -529,15 +537,18 @@ public class OutcomesContributionsSummaryAction extends BaseSummariesAction impl
               ProjectCommunication projectCommunication = projectCommunications.get(0);
               communications = projectCommunication.getCommunication();
 
-              if (communications == null || communications.isEmpty()) {
+              if (communications == null || communications.isEmpty() || communications.length() == 0) {
                 communications = "<Not Defined>";
               }
+            } else {
+              communications = "<Not Defined>";
             }
           }
           Long phaseID = this.getSelectedPhase().getId();
           model.addRow(new Object[] {projectId, title, projectSummary, flagship, outcome, expectedValue, expectedUnit,
             expectedNarrative, projectUrl, outcomeIndicator, phaseID, outcomeExpectedValue, achievedValue,
-            achievedNarrative, startDate, endDate, communications, outcomeTargetValue, expectedValueS});
+            achievedNarrative, startDate, endDate, communications, outcomeTargetValue, expectedValueS,
+            achievedValueString});
           if (projectOutcome.getProjectMilestones() != null && projectOutcome.getProjectMilestones().size() > 0) {
             for (ProjectMilestone projectMilestone : projectOutcome.getProjectMilestones().stream()
               .filter(pm -> pm.isActive()).collect(Collectors.toList())) {
