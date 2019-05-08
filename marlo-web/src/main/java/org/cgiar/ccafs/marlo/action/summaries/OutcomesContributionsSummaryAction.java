@@ -497,10 +497,13 @@ public class OutcomesContributionsSummaryAction extends BaseSummariesAction impl
                     achievedValueString = projectOutcome.getAchievedValue().toString();
 
 
-                    if (achievedValueString.equals("0") || achievedValueString.equals("-1")
-                      || achievedValueString == null || achievedValueString.isEmpty()) {
+                    if (achievedValueString.equals("-1") || achievedValueString == null
+                      || achievedValueString.isEmpty()) {
                       achievedValueString = "<Not Defined>";
                     }
+                  } else {
+                    achievedValue = null;
+                    achievedValueString = "<Not Defined>";
                   }
                 }
               }
@@ -537,6 +540,8 @@ public class OutcomesContributionsSummaryAction extends BaseSummariesAction impl
               if (communications == null || communications.isEmpty() || communications.length() == 0) {
                 communications = "<Not Defined>";
               }
+            } else {
+              communications = "<Not Defined>";
             }
           }
           Long phaseID = this.getSelectedPhase().getId();
