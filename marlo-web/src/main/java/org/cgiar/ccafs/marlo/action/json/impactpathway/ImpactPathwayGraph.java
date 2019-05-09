@@ -84,8 +84,8 @@ public class ImpactPathwayGraph extends BaseAction {
 
   @Override
   public String execute() throws Exception {
-    CrpProgram crpProgram = crpProgramManager.getCrpProgramById(crpProgramID);
-    elements = new HashMap<>();
+    CrpProgram crpProgram = this.crpProgramManager.getCrpProgramById(this.crpProgramID);
+    this.elements = new HashMap<>();
     Set<SrfSlo> slos = new HashSet<>();
     Set<SrfSubIdo> subIdos = new HashSet<>();
     Set<SrfIdo> srfIdos = new HashSet<>();
@@ -123,7 +123,7 @@ public class ImpactPathwayGraph extends BaseAction {
 
 
       CrpProgramOutcome crpProgramOutcomeDB =
-        crpProgramOutcomeManager.getCrpProgramOutcomeById(crpProgramOutcome.getId());
+        this.crpProgramOutcomeManager.getCrpProgramOutcomeById(crpProgramOutcome.getId());
       for (CrpOutcomeSubIdo crpOutcomeSubIdo : crpProgramOutcomeDB.getCrpOutcomeSubIdos().stream()
         .filter(c -> c.isActive()).collect(Collectors.toList())) {
 
@@ -132,7 +132,7 @@ public class ImpactPathwayGraph extends BaseAction {
           dataSubIdos = new HashMap<>();
           HashMap<String, Object> dataDetaiSubIDO = new HashMap<>();
           dataDetaiSubIDO.put("id", "SD" + crpOutcomeSubIdo.getSrfSubIdo().getId());
-          dataDetaiSubIDO.put("label", "Sub-IDO #" + crpOutcomeSubIdo.getSrfSubIdo().getId());
+          dataDetaiSubIDO.put("label", "Sub-IDO " + crpOutcomeSubIdo.getSrfSubIdo().getSmoCode());
           dataDetaiSubIDO.put("description", crpOutcomeSubIdo.getSrfSubIdo().getDescription());
 
           dataDetaiSubIDO.put("type", "SD");
@@ -150,14 +150,14 @@ public class ImpactPathwayGraph extends BaseAction {
           if (crpOutcomeSubIdo.getSrfSubIdo().getSrfIdo().isIsCrossCutting()) {
             dataDetaiSIDO.put("color", "#676b6d");
           }
-          dataDetaiSIDO.put("label", "IDO #" + crpOutcomeSubIdo.getSrfSubIdo().getSrfIdo().getId());
+          dataDetaiSIDO.put("label", "IDO " + crpOutcomeSubIdo.getSrfSubIdo().getSrfIdo().getSmoCode());
           dataDetaiSIDO.put("description", crpOutcomeSubIdo.getSrfSubIdo().getSrfIdo().getDescription());
 
           dataDetaiSIDO.put("type", "IDO");
 
           dataIdos.put("data", dataDetaiSIDO);
 
-          SrfIdo srfIDODB = srfIdoManager.getSrfIdoById(crpOutcomeSubIdo.getSrfSubIdo().getSrfIdo().getId());
+          SrfIdo srfIDODB = this.srfIdoManager.getSrfIdoById(crpOutcomeSubIdo.getSrfSubIdo().getSrfIdo().getId());
           if (!srfIdos.contains(srfIDODB)) {
             dataNodes.add(dataIdos);
             srfIdos.add(srfIDODB);
@@ -170,7 +170,7 @@ public class ImpactPathwayGraph extends BaseAction {
             dataSlos = new HashMap<>();
             HashMap<String, Object> dataDetaiSlo = new HashMap<>();
             dataDetaiSlo.put("id", "SLO" + srfSloIdo.getSrfSlo().getId());
-            dataDetaiSlo.put("label", "SLO #" + srfSloIdo.getSrfSlo().getId());
+            dataDetaiSlo.put("label", "SLO " + srfSloIdo.getSrfSlo().getSmoCode());
             dataDetaiSlo.put("description", srfSloIdo.getSrfSlo().getDescription());
             dataDetaiSlo.put("type", "SLO");
 
@@ -236,10 +236,10 @@ public class ImpactPathwayGraph extends BaseAction {
        * dataNodes.add(dataIdos);
        * }
        */ /*
-          * if (dataSlos.containsKey("data")) {
-          * dataNodes.add(dataSlos);
-          * }
-          */
+           * if (dataSlos.containsKey("data")) {
+           * dataNodes.add(dataSlos);
+           * }
+           */
 
       i++;
     }
@@ -298,7 +298,7 @@ public class ImpactPathwayGraph extends BaseAction {
 
 
     for (SrfSubIdo subIdo : subIdos) {
-      subIdo = srfSubIdoManager.getSrfSubIdoById(subIdo.getId());
+      subIdo = this.srfSubIdoManager.getSrfSubIdoById(subIdo.getId());
       HashMap<String, Object> dataEdgeDetailIDO = new HashMap<>();
       dataEdgeDetailIDO.put("target", "SD" + subIdo.getId());
       dataEdgeDetailIDO.put("source", "IDO" + subIdo.getSrfIdo().getId());
@@ -319,8 +319,8 @@ public class ImpactPathwayGraph extends BaseAction {
         return compareTO;
       }
     });
-    elements.put("nodes", dataNodes);
-    elements.put("edges", dataEdges);
+    this.elements.put("nodes", dataNodes);
+    this.elements.put("edges", dataEdges);
 
 
     return SUCCESS;
@@ -328,7 +328,7 @@ public class ImpactPathwayGraph extends BaseAction {
 
 
   public HashMap<String, Object> getElements() {
-    return elements;
+    return this.elements;
   }
 
 
@@ -339,13 +339,13 @@ public class ImpactPathwayGraph extends BaseAction {
 
     // Validating parameters.
     // sectionName = StringUtils.trim(((String[]) parameters.get(APConstants.SECTION_NAME))[0]);
-    sectionName = StringUtils.trim(parameters.get(APConstants.SECTION_NAME).getMultipleValues()[0]);
+    this.sectionName = StringUtils.trim(parameters.get(APConstants.SECTION_NAME).getMultipleValues()[0]);
 
-    crpProgramID = -1;
+    this.crpProgramID = -1;
 
     try {
       // crpProgramID = Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.CRP_PROGRAM_ID))[0]));
-      crpProgramID =
+      this.crpProgramID =
         Long.parseLong(StringUtils.trim(parameters.get(APConstants.CRP_PROGRAM_ID).getMultipleValues()[0]));
     } catch (Exception e) {
       LOG.error("There was an exception trying to parse the crp program id = {} ",

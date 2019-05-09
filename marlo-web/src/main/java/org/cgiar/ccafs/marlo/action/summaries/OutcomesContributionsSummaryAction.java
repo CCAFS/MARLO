@@ -343,28 +343,33 @@ public class OutcomesContributionsSummaryAction extends BaseSummariesAction impl
         } else {
           if (projectMilestone.getExpectedValue() != null) {
             outcomeExpectedValue = projectMilestone.getCrpMilestone().getValue();
-            outcomeTargetValue = projectMilestone.getCrpMilestone().getValue().toString();
+            outcomeTargetValue = String.valueOf(projectMilestone.getCrpMilestone().getValue().toString());
             expectedValue = projectMilestone.getExpectedValue();
             milestoneExpectedValue = projectMilestone.getExpectedValue().toString();
 
-            if (outcomeTargetValue.trim().equals("-1") || outcomeTargetValue.trim() == null
-              || outcomeTargetValue.trim().isEmpty()) {
+            if (outcomeTargetValue.equals("-1") || outcomeTargetValue == null || outcomeTargetValue.isEmpty()
+              || outcomeTargetValue.length() == 0 || outcomeTargetValue.equals("")) {
               outcomeTargetValue = "<Not Defined>";
             }
 
-            if (milestoneExpectedValue.trim().equals("-1") || milestoneExpectedValue == null
-              || milestoneExpectedValue.trim().isEmpty()) {
+            if (milestoneExpectedValue.equals("-1") || milestoneExpectedValue == null
+              || milestoneExpectedValue.isEmpty() || milestoneExpectedValue.length() == 0
+              || milestoneExpectedValue.equals("")) {
               milestoneExpectedValue = "<Not Defined>";
             }
+          } else {
+            outcomeTargetValue = "<Not Defined>";
+            milestoneExpectedValue = "<Not Defined>";
           }
+
           // Only reporting
           if (this.getSelectedCycle() != null && this.getSelectedCycle().equals(APConstants.REPORTING)) {
             if (projectMilestone.getAchievedValue() != null) {
               achievedValue = projectMilestone.getAchievedValue();
-              achievedValueString = String.valueOf(projectMilestone.getAchievedValue());
+              achievedValueString = String.valueOf(projectMilestone.getAchievedValue().toString());
 
-              if (achievedValue == null || achievedValue == -1 || achievedValueString.trim().equals("-1")
-                || achievedValueString.trim() == null || achievedValueString.trim().isEmpty()) {
+              if (achievedValue == null || achievedValueString.equals("-1") || achievedValueString == null
+                || achievedValueString.isEmpty() || achievedValueString.length() == 0) {
                 achievedValueString = "<Not Defined>";
               }
             } else {
@@ -394,6 +399,10 @@ public class OutcomesContributionsSummaryAction extends BaseSummariesAction impl
       // Only reporting
       if (this.getSelectedCycle() != null && this.getSelectedCycle().equals(APConstants.REPORTING)) {
         achievedTarget = projectMilestone.getNarrativeAchieved();
+      }
+
+      if (achievedTarget == null || achievedTarget.isEmpty() || achievedTarget.length() == 0) {
+        achievedTarget = "<Not Defined>";
       }
 
       model.addRow(new Object[] {projectId, flagship, projectSummary, outcome, projectUrl, milestone, expectedValue,

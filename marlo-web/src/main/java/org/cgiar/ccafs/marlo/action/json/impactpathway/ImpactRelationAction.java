@@ -116,9 +116,9 @@ public class ImpactRelationAction extends BaseAction {
     dataProgram.put("type", "F");
     dataProgram.put("order", new Integer(4));
 
-    if (relations.stream().filter(c -> c.get("id").equals(dataProgram.get("id"))).collect(Collectors.toList())
+    if (this.relations.stream().filter(c -> c.get("id").equals(dataProgram.get("id"))).collect(Collectors.toList())
       .isEmpty()) {
-      relations.add(dataProgram);
+      this.relations.add(dataProgram);
     }
     int i = 1;
     for (CrpProgramOutcome crpProgramOutcome : crpProgram.getCrpProgramOutcomes().stream()
@@ -139,7 +139,7 @@ public class ImpactRelationAction extends BaseAction {
         if (this.hasSpecificities(APConstants.CRP_IP_OUTCOME_INDICATOR)) {
           datacrpProgramOutcome.put("indicator", crpProgramOutcome.getIndicator());
         }
-        relations.add(datacrpProgramOutcome);
+        this.relations.add(datacrpProgramOutcome);
 
         Set<SrfSubIdo> subIdos = new HashSet<>();
 
@@ -152,20 +152,20 @@ public class ImpactRelationAction extends BaseAction {
             subIdos.add(crpOutcomeSubIdo.getSrfSubIdo());
             HashMap<String, Object> dataDetaiSubIDO = new HashMap<>();
             dataDetaiSubIDO.put("id", "SD" + crpOutcomeSubIdo.getSrfSubIdo().getId());
-            dataDetaiSubIDO.put("label", "Sub-IDO #" + crpOutcomeSubIdo.getSrfSubIdo().getId());
+            dataDetaiSubIDO.put("label", "Sub-IDO " + crpOutcomeSubIdo.getSrfSubIdo().getSmoCode());
             dataDetaiSubIDO.put("description", crpOutcomeSubIdo.getSrfSubIdo().getDescription());
 
             dataDetaiSubIDO.put("type", "SD");
             dataDetaiSubIDO.put("order", new Integer(3));
 
-            if (relations.stream().filter(c -> c.get("id").equals(dataDetaiSubIDO.get("id")))
+            if (this.relations.stream().filter(c -> c.get("id").equals(dataDetaiSubIDO.get("id")))
               .collect(Collectors.toList()).isEmpty()) {
               if (srfSubIdo == null) {
-                relations.add(dataDetaiSubIDO);
+                this.relations.add(dataDetaiSubIDO);
                 add = true;
               } else {
                 if (srfSubIdo.getId().equals(crpOutcomeSubIdo.getSrfSubIdo().getId())) {
-                  relations.add(dataDetaiSubIDO);
+                  this.relations.add(dataDetaiSubIDO);
                   add = true;
                 }
               }
@@ -176,28 +176,29 @@ public class ImpactRelationAction extends BaseAction {
               HashMap<String, Object> dataDetaiSIDO = new HashMap<>();
               dataDetaiSIDO.put("id", "IDO" + crpOutcomeSubIdo.getSrfSubIdo().getSrfIdo().getId());
               if (crpOutcomeSubIdo.getSrfSubIdo().getSrfIdo().isIsCrossCutting()) {
-                dataDetaiSIDO.put("label", "Cross-Cutting IDO #" + crpOutcomeSubIdo.getSrfSubIdo().getSrfIdo().getId());
+                dataDetaiSIDO.put("label",
+                  "Cross-Cutting IDO " + crpOutcomeSubIdo.getSrfSubIdo().getSrfIdo().getSmoCode());
               } else {
-                dataDetaiSIDO.put("label", "IDO #" + crpOutcomeSubIdo.getSrfSubIdo().getSrfIdo().getId());
+                dataDetaiSIDO.put("label", "IDO " + crpOutcomeSubIdo.getSrfSubIdo().getSrfIdo().getSmoCode());
               }
               dataDetaiSIDO.put("description", crpOutcomeSubIdo.getSrfSubIdo().getSrfIdo().getDescription());
               dataDetaiSIDO.put("order", new Integer(2));
               dataDetaiSIDO.put("type", "IDO");
 
-              if (relations.stream().filter(c -> c.get("id").equals(dataDetaiSIDO.get("id")))
+              if (this.relations.stream().filter(c -> c.get("id").equals(dataDetaiSIDO.get("id")))
                 .collect(Collectors.toList()).isEmpty()) {
 
                 if (srfIdo == null) {
-                  relations.add(dataDetaiSIDO);
+                  this.relations.add(dataDetaiSIDO);
                 } else {
                   if (srfIdo.getId().equals(crpOutcomeSubIdo.getSrfSubIdo().getSrfIdo().getId())) {
                     if (srfSlo == null) {
-                      relations.add(dataDetaiSIDO);
+                      this.relations.add(dataDetaiSIDO);
                     } else {
                       if (crpOutcomeSubIdo.getSrfSubIdo().getSrfIdo().getSrfSloIdos().stream()
                         .filter(c -> c.getSrfIdo().getId().longValue() == srfSlo.getId().longValue())
                         .collect(Collectors.toList()).size() > 0) {
-                        relations.add(dataDetaiSIDO);
+                        this.relations.add(dataDetaiSIDO);
                       }
                     }
                   }
@@ -210,19 +211,19 @@ public class ImpactRelationAction extends BaseAction {
 
                 HashMap<String, Object> dataDetaiSlo = new HashMap<>();
                 dataDetaiSlo.put("id", "SLO" + srfSloIdo.getSrfSlo().getId());
-                dataDetaiSlo.put("label", "SLO #" + srfSloIdo.getSrfSlo().getId());
+                dataDetaiSlo.put("label", "SLO " + srfSloIdo.getSrfSlo().getSmoCode());
                 dataDetaiSlo.put("description", srfSloIdo.getSrfSlo().getDescription());
                 dataDetaiSlo.put("order", new Integer(1));
                 dataDetaiSlo.put("type", "SLO");
 
 
-                if (relations.stream().filter(c -> c.get("id").equals(dataDetaiSlo.get("id")))
+                if (this.relations.stream().filter(c -> c.get("id").equals(dataDetaiSlo.get("id")))
                   .collect(Collectors.toList()).isEmpty()) {
                   if (srfSlo == null) {
-                    relations.add(dataDetaiSlo);
+                    this.relations.add(dataDetaiSlo);
                   } else {
                     if (srfSlo.getId().equals(srfSloIdo.getSrfSlo().getId())) {
-                      relations.add(dataDetaiSlo);
+                      this.relations.add(dataDetaiSlo);
                     }
                   }
 
@@ -254,9 +255,9 @@ public class ImpactRelationAction extends BaseAction {
             dataDetailKeyOutput.put("order2", this.getIndex(crpClusterKeyOutput.getCrpProgramOutcome().getCrpProgram(),
               crpClusterKeyOutput.getCrpClusterKeyOutput()));
 
-            if (relations.stream().filter(c -> c.get("id").equals(dataDetailKeyOutput.get("id")))
+            if (this.relations.stream().filter(c -> c.get("id").equals(dataDetailKeyOutput.get("id")))
               .collect(Collectors.toList()).isEmpty()) {
-              relations.add(dataDetailKeyOutput);
+              this.relations.add(dataDetailKeyOutput);
               activities.add(crpClusterKeyOutput.getCrpClusterKeyOutput().getCrpClusterOfActivity());
             }
 
@@ -272,9 +273,9 @@ public class ImpactRelationAction extends BaseAction {
             dataDetailOutcome.put("color", "#c0c0c0");
             dataDetailOutcome.put("type", "CoA");
             dataDetailOutcome.put("order", new Integer(6));
-            if (relations.stream().filter(c -> c.get("id").equals(dataDetailOutcome.get("id")))
+            if (this.relations.stream().filter(c -> c.get("id").equals(dataDetailOutcome.get("id")))
               .collect(Collectors.toList()).isEmpty()) {
-              relations.add(dataDetailOutcome);
+              this.relations.add(dataDetailOutcome);
             }
 
           }
@@ -300,7 +301,7 @@ public class ImpactRelationAction extends BaseAction {
         dataDetailOutcome.put("order", new Integer(6));
 
 
-        relations.add(dataDetailOutcome);
+        this.relations.add(dataDetailOutcome);
 
         for (CrpClusterKeyOutput keyOutput : crpClusterOfActivity.getCrpClusterKeyOutputs().stream()
           .filter(ko -> ko.isActive()).collect(Collectors.toList())) {
@@ -316,7 +317,7 @@ public class ImpactRelationAction extends BaseAction {
           dataDetailKeyOutput.put("order2", this.getIndex(crpClusterOfActivity.getCrpProgram(), keyOutput));
           j++;
 
-          relations.add(dataDetailKeyOutput);
+          this.relations.add(dataDetailKeyOutput);
         }
 
 
@@ -336,9 +337,9 @@ public class ImpactRelationAction extends BaseAction {
     dataProgram.put("type", "F");
     dataProgram.put("order", new Integer(4));
 
-    if (relations.stream().filter(c -> c.get("id").equals(dataProgram.get("id"))).collect(Collectors.toList())
+    if (this.relations.stream().filter(c -> c.get("id").equals(dataProgram.get("id"))).collect(Collectors.toList())
       .isEmpty()) {
-      relations.add(dataProgram);
+      this.relations.add(dataProgram);
     }
 
 
@@ -363,7 +364,7 @@ public class ImpactRelationAction extends BaseAction {
 
         dataDetailOutcome.put("order", new Integer(6));
 
-        relations.add(dataDetailOutcome);
+        this.relations.add(dataDetailOutcome);
 
         for (CrpClusterKeyOutput keyOutput : crpClusterOfActivity.getCrpClusterKeyOutputs().stream()
           .filter(ko -> ko.isActive()).collect(Collectors.toList())) {
@@ -385,7 +386,7 @@ public class ImpactRelationAction extends BaseAction {
             dataDetailKeyOutput.put("order2", this.getIndex(crpClusterOfActivity.getCrpProgram(), keyOutput));
             j++;
 
-            relations.add(dataDetailKeyOutput);
+            this.relations.add(dataDetailKeyOutput);
             for (CrpClusterKeyOutputOutcome crpClusterKeyOutputOutcome : keyOutput.getCrpClusterKeyOutputOutcomes()
               .stream().filter(c -> c.isActive()).collect(Collectors.toList())) {
               CrpProgramOutcome crpProgramOutcome = crpClusterKeyOutputOutcome.getCrpProgramOutcome();
@@ -401,9 +402,9 @@ public class ImpactRelationAction extends BaseAction {
 
               datacrpProgramOutcome.put("type", "O");
 
-              if (relations.stream().filter(c -> c.get("id").equals(datacrpProgramOutcome.get("id")))
+              if (this.relations.stream().filter(c -> c.get("id").equals(datacrpProgramOutcome.get("id")))
                 .collect(Collectors.toList()).isEmpty()) {
-                relations.add(datacrpProgramOutcome);
+                this.relations.add(datacrpProgramOutcome);
               }
 
 
@@ -418,14 +419,14 @@ public class ImpactRelationAction extends BaseAction {
                   subIdos.add(crpOutcomeSubIdo.getSrfSubIdo());
                   HashMap<String, Object> dataDetaiSubIDO = new HashMap<>();
                   dataDetaiSubIDO.put("id", "SD" + crpOutcomeSubIdo.getSrfSubIdo().getId());
-                  dataDetaiSubIDO.put("label", "Sub-IDO #" + crpOutcomeSubIdo.getSrfSubIdo().getId());
+                  dataDetaiSubIDO.put("label", "Sub-IDO " + crpOutcomeSubIdo.getSrfSubIdo().getSmoCode());
                   dataDetaiSubIDO.put("description", crpOutcomeSubIdo.getSrfSubIdo().getDescription());
                   dataDetaiSubIDO.put("order", new Integer(3));
 
                   dataDetaiSubIDO.put("type", "SD");
-                  if (relations.stream().filter(c -> c.get("id").equals(dataDetaiSubIDO.get("id")))
+                  if (this.relations.stream().filter(c -> c.get("id").equals(dataDetaiSubIDO.get("id")))
                     .collect(Collectors.toList()).isEmpty()) {
-                    relations.add(dataDetaiSubIDO);
+                    this.relations.add(dataDetaiSubIDO);
                   }
 
 
@@ -433,18 +434,18 @@ public class ImpactRelationAction extends BaseAction {
                   dataDetaiSIDO.put("id", "IDO" + crpOutcomeSubIdo.getSrfSubIdo().getSrfIdo().getId());
                   if (crpOutcomeSubIdo.getSrfSubIdo().getSrfIdo().isIsCrossCutting()) {
                     dataDetaiSIDO.put("label",
-                      "Cross-Cutting IDO #" + crpOutcomeSubIdo.getSrfSubIdo().getSrfIdo().getId());
+                      "Cross-Cutting IDO " + crpOutcomeSubIdo.getSrfSubIdo().getSrfIdo().getSmoCode());
                   } else {
-                    dataDetaiSIDO.put("label", "IDO #" + crpOutcomeSubIdo.getSrfSubIdo().getSrfIdo().getId());
+                    dataDetaiSIDO.put("label", "IDO " + crpOutcomeSubIdo.getSrfSubIdo().getSrfIdo().getSmoCode());
                   }
                   dataDetaiSIDO.put("description", crpOutcomeSubIdo.getSrfSubIdo().getSrfIdo().getDescription());
 
                   dataDetaiSIDO.put("type", "IDO");
                   dataDetaiSIDO.put("order", new Integer(2));
 
-                  if (relations.stream().filter(c -> c.get("id").equals(dataDetaiSIDO.get("id")))
+                  if (this.relations.stream().filter(c -> c.get("id").equals(dataDetaiSIDO.get("id")))
                     .collect(Collectors.toList()).isEmpty()) {
-                    relations.add(dataDetaiSIDO);
+                    this.relations.add(dataDetaiSIDO);
                   }
 
 
@@ -452,15 +453,15 @@ public class ImpactRelationAction extends BaseAction {
 
                     HashMap<String, Object> dataDetaiSlo = new HashMap<>();
                     dataDetaiSlo.put("id", "SLO" + srfSloIdo.getSrfSlo().getId());
-                    dataDetaiSlo.put("label", "SLO #" + srfSloIdo.getSrfSlo().getId());
+                    dataDetaiSlo.put("label", "SLO " + srfSloIdo.getSrfSlo().getSmoCode());
                     dataDetaiSlo.put("description", srfSloIdo.getSrfSlo().getDescription());
                     dataDetaiSlo.put("order", new Integer(1));
 
                     dataDetaiSlo.put("type", "SLO");
 
-                    if (relations.stream().filter(c -> c.get("id").equals(dataDetaiSlo.get("id")))
+                    if (this.relations.stream().filter(c -> c.get("id").equals(dataDetaiSlo.get("id")))
                       .collect(Collectors.toList()).isEmpty()) {
-                      relations.add(dataDetaiSlo);
+                      this.relations.add(dataDetaiSlo);
                     }
 
 
@@ -488,22 +489,22 @@ public class ImpactRelationAction extends BaseAction {
     Set<CrpProgram> crpPrograms = new HashSet<>();
     Set<CrpOutcomeSubIdo> outcomesSubIdos = new HashSet<>();
 
-    switch (type) {
+    switch (this.type) {
       case "F":
-        CrpProgram crpProgram = crpProgramManager.getCrpProgramById(Long.parseLong(id.replace("F", "")));
+        CrpProgram crpProgram = this.crpProgramManager.getCrpProgramById(Long.parseLong(this.id.replace("F", "")));
         this.addRelations(crpProgram, null, null, null, null);
 
         break;
 
       case "O":
         CrpProgramOutcome crpProgramOutcome =
-          crpProgramOutcomeManager.getCrpProgramOutcomeById(Long.parseLong(id.replace("O", "")));
+          this.crpProgramOutcomeManager.getCrpProgramOutcomeById(Long.parseLong(this.id.replace("O", "")));
         this.addRelations(crpProgramOutcome.getCrpProgram(), crpProgramOutcome, null, null, null);
 
         break;
       case "SD":
 
-        SrfSubIdo srfSubIdo = srfSubIdoManager.getSrfSubIdoById(Long.parseLong(id.replace("SD", "")));
+        SrfSubIdo srfSubIdo = this.srfSubIdoManager.getSrfSubIdoById(Long.parseLong(this.id.replace("SD", "")));
         for (CrpOutcomeSubIdo outcomeSubIdo : srfSubIdo.getCrpOutcomeSubIdos().stream().filter(c -> c.isActive())
           .collect(Collectors.toList())) {
           outcomesSubIdos.add(outcomeSubIdo);
@@ -511,7 +512,7 @@ public class ImpactRelationAction extends BaseAction {
         }
 
         for (CrpProgram myProgram : crpPrograms) {
-          if (flagshipId == null) {
+          if (this.flagshipId == null) {
             CrpOutcomeSubIdo subIdoOutcome = outcomesSubIdos.stream()
               .filter(c -> c.isActive()
                 && c.getCrpProgramOutcome().getCrpProgram().getId().longValue() == myProgram.getId().longValue())
@@ -519,7 +520,7 @@ public class ImpactRelationAction extends BaseAction {
             this.addRelations(myProgram, subIdoOutcome.getCrpProgramOutcome(), null, subIdoOutcome.getSrfSubIdo(),
               null);
           } else {
-            if (Long.parseLong(flagshipId) == myProgram.getId().longValue()) {
+            if (Long.parseLong(this.flagshipId) == myProgram.getId().longValue()) {
               CrpOutcomeSubIdo subIdoOutcome = outcomesSubIdos.stream()
                 .filter(c -> c.isActive()
                   && c.getCrpProgramOutcome().getCrpProgram().getId().longValue() == myProgram.getId().longValue())
@@ -534,7 +535,7 @@ public class ImpactRelationAction extends BaseAction {
 
       case "IDO":
 
-        SrfIdo srfIdo = srfIdoManager.getSrfIdoById(Long.parseLong(id.replace("IDO", "")));
+        SrfIdo srfIdo = this.srfIdoManager.getSrfIdoById(Long.parseLong(this.id.replace("IDO", "")));
         for (SrfSubIdo srfSubIdoElement : srfIdo.getSrfSubIdos().stream().filter(c -> c.isActive())
           .collect(Collectors.toList())) {
           for (CrpOutcomeSubIdo outcomeSubIdo : srfSubIdoElement.getCrpOutcomeSubIdos().stream()
@@ -547,7 +548,7 @@ public class ImpactRelationAction extends BaseAction {
         }
 
         for (CrpProgram myProgram : crpPrograms) {
-          if (flagshipId == null) {
+          if (this.flagshipId == null) {
             List<CrpOutcomeSubIdo> subIdoOutcomes = outcomesSubIdos.stream()
               .filter(c -> c.isActive()
                 && c.getCrpProgramOutcome().getCrpProgram().getId().longValue() == myProgram.getId().longValue())
@@ -558,7 +559,7 @@ public class ImpactRelationAction extends BaseAction {
             }
 
           } else {
-            if (Long.parseLong(flagshipId) == myProgram.getId().longValue()) {
+            if (Long.parseLong(this.flagshipId) == myProgram.getId().longValue()) {
               List<CrpOutcomeSubIdo> subIdoOutcomes = outcomesSubIdos.stream()
                 .filter(c -> c.isActive()
                   && c.getCrpProgramOutcome().getCrpProgram().getId().longValue() == myProgram.getId().longValue())
@@ -575,7 +576,7 @@ public class ImpactRelationAction extends BaseAction {
 
         break;
       case "SLO":
-        SrfSlo srfSlo = srfSloManager.getSrfSloById(Long.parseLong(id.replace("SLO", "")));
+        SrfSlo srfSlo = this.srfSloManager.getSrfSloById(Long.parseLong(this.id.replace("SLO", "")));
 
         for (SrfSloIdo srfSloIdo : srfSlo.getSrfSloIdos().stream().filter(c -> c.isActive())
           .collect(Collectors.toList())) {
@@ -595,7 +596,7 @@ public class ImpactRelationAction extends BaseAction {
 
 
         for (CrpProgram myProgram : crpPrograms) {
-          if (flagshipId == null) {
+          if (this.flagshipId == null) {
             List<CrpOutcomeSubIdo> subIdoOutcomes = outcomesSubIdos.stream()
               .filter(c -> c.isActive()
                 && c.getCrpProgramOutcome().getCrpProgram().getId().longValue() == myProgram.getId().longValue())
@@ -605,7 +606,7 @@ public class ImpactRelationAction extends BaseAction {
             }
 
           } else {
-            if (Long.parseLong(flagshipId) == myProgram.getId().longValue()) {
+            if (Long.parseLong(this.flagshipId) == myProgram.getId().longValue()) {
               List<CrpOutcomeSubIdo> subIdoOutcomes = outcomesSubIdos.stream()
                 .filter(c -> c.isActive()
                   && c.getCrpProgramOutcome().getCrpProgram().getId().longValue() == myProgram.getId().longValue())
@@ -622,14 +623,14 @@ public class ImpactRelationAction extends BaseAction {
 
       case "CoA":
         CrpClusterOfActivity crpClusterOfActivity =
-          crpClusterOfActivityManager.getCrpClusterOfActivityById(Long.parseLong(id.replace("C", "")));
+          this.crpClusterOfActivityManager.getCrpClusterOfActivityById(Long.parseLong(this.id.replace("C", "")));
         this.addRelationsCluster(crpClusterOfActivity.getCrpProgram(), crpClusterOfActivity, null);
 
         break;
 
       case "KO":
         CrpClusterKeyOutput crpClusterKeyOutput =
-          crpClusterKeyOutputManager.getCrpClusterKeyOutputById(Long.parseLong(id.replace("KO", "")));
+          this.crpClusterKeyOutputManager.getCrpClusterKeyOutputById(Long.parseLong(this.id.replace("KO", "")));
         this.addRelationsCluster(crpClusterKeyOutput.getCrpClusterOfActivity().getCrpProgram(),
           crpClusterKeyOutput.getCrpClusterOfActivity(), crpClusterKeyOutput);
 
@@ -638,7 +639,7 @@ public class ImpactRelationAction extends BaseAction {
         break;
     }
 
-    Collections.sort(relations, new Comparator<HashMap<String, Object>>() {
+    Collections.sort(this.relations, new Comparator<HashMap<String, Object>>() {
 
       @Override
       public int compare(HashMap<String, Object> one, HashMap<String, Object> two) {
@@ -689,7 +690,7 @@ public class ImpactRelationAction extends BaseAction {
   }
 
   public List<HashMap<String, Object>> getRelations() {
-    return relations;
+    return this.relations;
   }
 
 
@@ -698,10 +699,10 @@ public class ImpactRelationAction extends BaseAction {
     Map<String, Parameter> parameters = this.getParameters();
     // Validating parameters.
 
-    id = "";
+    this.id = "";
 
     try {
-      id = (StringUtils.trim(parameters.get(APConstants.ID).getMultipleValues()[0]));
+      this.id = (StringUtils.trim(parameters.get(APConstants.ID).getMultipleValues()[0]));
     } catch (Exception e) {
       LOG.error("There was an exception trying to parse the   id = {} ",
         StringUtils.trim(parameters.get(APConstants.ID).getMultipleValues()[0]));
@@ -709,7 +710,7 @@ public class ImpactRelationAction extends BaseAction {
     }
 
     try {
-      type = (StringUtils.trim(parameters.get(APConstants.TYPE).getMultipleValues()[0]));
+      this.type = (StringUtils.trim(parameters.get(APConstants.TYPE).getMultipleValues()[0]));
     } catch (Exception e) {
       LOG.error("There was an exception trying to parse the   type = {} ",
         StringUtils.trim(parameters.get(APConstants.TYPE).getMultipleValues()[0]));
@@ -718,14 +719,14 @@ public class ImpactRelationAction extends BaseAction {
 
 
     try {
-      flagshipId = (StringUtils.trim(parameters.get(APConstants.FLAGSHIP_ID).getMultipleValues()[0]));
-      if (flagshipId.isEmpty()) {
-        flagshipId = null;
+      this.flagshipId = (StringUtils.trim(parameters.get(APConstants.FLAGSHIP_ID).getMultipleValues()[0]));
+      if (this.flagshipId.isEmpty()) {
+        this.flagshipId = null;
       }
     } catch (Exception e) {
       LOG.error("There was an exception trying to parse the   FLAGSHIP_ID = {} ",
         StringUtils.trim(parameters.get(APConstants.FLAGSHIP_ID).getMultipleValues()[0]));
-      flagshipId = null;
+      this.flagshipId = null;
     }
   }
 
