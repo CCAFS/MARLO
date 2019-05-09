@@ -37,8 +37,8 @@
           </td>
           [#-- Outcome required fields --]
           <td class="text-center">
-            [#if action.getCenterOutcomeStatus(outcome.id)??]
-              [#if !((action.getCenterOutcomeStatus(outcome.id)).missingFields)?has_content]
+            [#if action.getCenterOutcomeStatus(outcome.id, actionNameSimple)??]
+              [#if !((action.getCenterOutcomeStatus(outcome.id, actionNameSimple)).missingFields)?has_content]
                 <span class="icon-20 icon-check" title="Complete"></span>
               [#else]
                 <span class="icon-20 icon-uncheck" title=""></span> 
