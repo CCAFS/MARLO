@@ -97,21 +97,17 @@ public class PublicationInterceptor extends AbstractInterceptor implements Seria
         canEdit = false;
       } else {
 
-        if (!baseAction.getActualPhase().getEditable()) {
-          canEdit = false;
-          baseAction.setCanEditPhase(false);
+        if (baseAction.canAccessSuperAdmin() || baseAction.canEditCrpAdmin()) {
+          canEdit = true;
         } else {
-          if (baseAction.canAccessSuperAdmin() || baseAction.canEditCrpAdmin()) {
+          if (isCreator || hasPublicationFullPermission || hasPublicationPermission) {
             canEdit = true;
-          } else {
-            if (isCreator || hasPublicationFullPermission || hasPublicationPermission) {
-              canEdit = true;
-            }
-            if (baseAction.isCrpClosed()) {
-              canEdit = false;
-            }
+          }
+          if (baseAction.isCrpClosed()) {
+            canEdit = false;
           }
         }
+
       }
       if (canEdit) {
         if (editableDefined) {
@@ -123,11 +119,13 @@ public class PublicationInterceptor extends AbstractInterceptor implements Seria
         }
         // Set the variable that indicates if the user can edit the section
         baseAction.setCanEdit(canEdit);
-        baseAction.setEditableParameter(editParameter && canEdit && !isTransaction);
+        baseAction.setEditableParameter(
+          editParameter && canEdit && !isTransaction && baseAction.getActualPhase().getEditable());
       } else {
         baseAction.setCanEdit(false);
         baseAction.setEditableParameter(false);
       }
+
 
     } else {
       throw new NullPointerException();
