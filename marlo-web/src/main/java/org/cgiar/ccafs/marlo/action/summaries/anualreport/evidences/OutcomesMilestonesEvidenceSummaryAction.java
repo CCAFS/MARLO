@@ -302,23 +302,36 @@ public class OutcomesMilestonesEvidenceSummaryAction extends BaseSummariesAction
       // Outcome
       paramC = outcomeMilestone.getCrpProgramOutcome().getComposedName();
       // Outcome Progress
-      paramD = outcomeMilestone.getOutcomeProgress();
+      paramD = this.removeHtmlTags(outcomeMilestone.getOutcomeProgress());
+      paramD = this.removeHrefTags(paramD);
       // Milestone
       paramE = outcomeMilestone.getCrpMilestone().getComposedName();
       // Milestone Status
       paramF = outcomeMilestone.getStatusName();
+      if (outcomeMilestone.getStatusName() == null && outcomeMilestone.getStatusName().isEmpty()) {
+        paramF = "<Not Defined>";
+      }
       // Reason
-      if (outcomeMilestone.getRepIndMilestoneReason() != null) {
-        if (outcomeMilestone.getRepIndMilestoneReason().getId().equals(7L)) {
-          paramG = outcomeMilestone.getOtherReason();
+      if (outcomeMilestone.getMilestonesStatus() != null && outcomeMilestone.getMilestonesStatus() != 1L) {
+        if (outcomeMilestone.getRepIndMilestoneReason() != null) {
+          if (outcomeMilestone.getRepIndMilestoneReason().getId().equals(7L)) {
+            paramG = outcomeMilestone.getOtherReason();
+          } else {
+            paramG = outcomeMilestone.getRepIndMilestoneReason().getName();
+          }
         } else {
-          paramG = outcomeMilestone.getRepIndMilestoneReason().getName();
+          paramG = "<Not Defined>";
         }
       } else {
-        paramG = "<Not Defined>";
+        paramG = "<Not Applicable>";
       }
       // milestone evidence
-      paramH = outcomeMilestone.getEvidence();
+      paramH = this.removeHtmlTags(outcomeMilestone.getEvidence());
+      paramH = this.removeHrefTags(paramH);
+
+      if (paramH == null || paramH.isEmpty()) {
+        paramH = "<Not Defined>";
+      }
 
       // CGIAR Cross-cutting Markers
       if (outcomeMilestone.getCrossCuttingMarkers() != null) {
@@ -332,7 +345,7 @@ public class OutcomesMilestonesEvidenceSummaryAction extends BaseSummariesAction
             // Gender
             if (marker.getMarker().getId() == 1) {
               if (marker.getFocus() != null) {
-                paramI = marker.getFocus().getName();
+                paramI = marker.getFocus().getPowbName();
                 paramJ = marker.getJust();
               } else {
                 paramI = "<Not Defined>";
@@ -342,7 +355,7 @@ public class OutcomesMilestonesEvidenceSummaryAction extends BaseSummariesAction
             // Youth
             if (marker.getMarker().getId() == 2) {
               if (marker.getFocus() != null) {
-                paramK = marker.getFocus().getName();
+                paramK = marker.getFocus().getPowbName();
                 paramL = marker.getJust();
               } else {
                 paramK = "<Not Defined>";
@@ -352,7 +365,7 @@ public class OutcomesMilestonesEvidenceSummaryAction extends BaseSummariesAction
             // CapDev
             if (marker.getMarker().getId() == 3) {
               if (marker.getFocus() != null) {
-                paramM = marker.getFocus().getName();
+                paramM = marker.getFocus().getPowbName();
                 paramN = marker.getJust();
               } else {
                 paramM = "<Not Defined>";
@@ -362,7 +375,7 @@ public class OutcomesMilestonesEvidenceSummaryAction extends BaseSummariesAction
             // Climate Change
             if (marker.getMarker().getId() == 4) {
               if (marker.getFocus() != null) {
-                paramO = marker.getFocus().getName();
+                paramO = marker.getFocus().getPowbName();
                 paramP = marker.getJust();
               } else {
                 paramO = "<Not Defined>";
@@ -400,7 +413,7 @@ public class OutcomesMilestonesEvidenceSummaryAction extends BaseSummariesAction
     List<AROutcomeMilestoneEvidence> arOutcomeMilestoneEvidences = new ArrayList<AROutcomeMilestoneEvidence>();
 
     List<LiaisonInstitution> liaisonInstitutions = this.getLoggedCrp().getLiaisonInstitutions().stream()
-      .filter(c -> c.getCrpProgram() != null && c.isActive()
+      .filter(c -> c.getCrpProgram() != null && c.isActive() && c.getCrpProgram().isActive()
         && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
       .collect(Collectors.toList());
     liaisonInstitutions.sort(Comparator.comparing(LiaisonInstitution::getAcronym));
@@ -414,11 +427,12 @@ public class OutcomesMilestonesEvidenceSummaryAction extends BaseSummariesAction
 
         if (reportSynthesisFG.getReportSynthesisFlagshipProgress().getReportSynthesisFlagshipProgressOutcomes() != null
           && !reportSynthesisFG.getReportSynthesisFlagshipProgress().getReportSynthesisFlagshipProgressOutcomes()
-            .isEmpty()) {
+            .isEmpty()
+          && reportSynthesisFG.isActive() && reportSynthesisFG.getReportSynthesisFlagshipProgress().isActive()) {
 
           List<ReportSynthesisFlagshipProgressOutcome> progressOutcomes = new ArrayList<>(
             reportSynthesisFG.getReportSynthesisFlagshipProgress().getReportSynthesisFlagshipProgressOutcomes().stream()
-              .filter(o -> o.isActive()).collect(Collectors.toList()));
+              .filter(o -> o.isActive() && o.getCrpProgramOutcome().isActive()).collect(Collectors.toList()));
 
           for (ReportSynthesisFlagshipProgressOutcome progressOutcome : progressOutcomes) {
 
@@ -426,7 +440,7 @@ public class OutcomesMilestonesEvidenceSummaryAction extends BaseSummariesAction
               && !progressOutcome.getReportSynthesisFlagshipProgressOutcomeMilestones().isEmpty()) {
               List<ReportSynthesisFlagshipProgressOutcomeMilestone> outcomeMilestones =
                 new ArrayList<>(progressOutcome.getReportSynthesisFlagshipProgressOutcomeMilestones().stream()
-                  .filter(o -> o.isActive()).collect(Collectors.toList()));
+                  .filter(o -> o.isActive() && o.getCrpMilestone().isActive()).collect(Collectors.toList()));
               for (ReportSynthesisFlagshipProgressOutcomeMilestone outcomeMilestone : outcomeMilestones) {
 
                 AROutcomeMilestoneEvidence milestoneEvidence = new AROutcomeMilestoneEvidence();
@@ -445,7 +459,6 @@ public class OutcomesMilestonesEvidenceSummaryAction extends BaseSummariesAction
                   milestoneEvidence.getCrossCuttingMarkers()
                     .addAll(outcomeMilestone.getReportSynthesisFlagshipProgressCrossCuttingMarkers().stream()
                       .filter(o -> o.isActive()).collect(Collectors.toList()));
-
                 }
 
                 arOutcomeMilestoneEvidences.add(milestoneEvidence);
@@ -463,6 +476,7 @@ public class OutcomesMilestonesEvidenceSummaryAction extends BaseSummariesAction
     return arOutcomeMilestoneEvidences;
   }
 
+
   @Override
   public void prepare() throws Exception {
     this.setGeneralParameters();
@@ -471,6 +485,17 @@ public class OutcomesMilestonesEvidenceSummaryAction extends BaseSummariesAction
     LOG.info(
       "Start report download: " + this.getFileName() + ". User: " + this.getCurrentUser().getComposedCompleteName()
         + ". CRP: " + this.getLoggedCrp().getAcronym() + ". Cycle: " + this.getSelectedCycle());
+  }
+
+  private String removeHrefTags(String text) {
+
+    text = text.replaceAll("<a href=", "");
+    text = text.replaceAll("</a>", "");
+    text = text.replaceAll("amp;", "");
+    text = text.replaceAll("&nbsp;", "");
+
+    return text;
+
   }
 
   public void setBytesXLSX(byte[] bytesXLSX) {
