@@ -96,18 +96,23 @@ public class PublicationInterceptor extends AbstractInterceptor implements Seria
       if (!isInDeliverablePhase) {
         canEdit = false;
       } else {
-        if (baseAction.canAccessSuperAdmin() || baseAction.canEditCrpAdmin()) {
-          canEdit = true;
+
+        if (!baseAction.getActualPhase().getEditable()) {
+          canEdit = false;
+          baseAction.setCanEditPhase(false);
         } else {
-          if (isCreator || hasPublicationFullPermission || hasPublicationPermission) {
+          if (baseAction.canAccessSuperAdmin() || baseAction.canEditCrpAdmin()) {
             canEdit = true;
-          }
-          if (baseAction.isCrpClosed()) {
-            canEdit = false;
+          } else {
+            if (isCreator || hasPublicationFullPermission || hasPublicationPermission) {
+              canEdit = true;
+            }
+            if (baseAction.isCrpClosed()) {
+              canEdit = false;
+            }
           }
         }
       }
-
       if (canEdit) {
         if (editableDefined) {
           String stringEditable = parameters.get(APConstants.EDITABLE_REQUEST).getMultipleValues()[0];
