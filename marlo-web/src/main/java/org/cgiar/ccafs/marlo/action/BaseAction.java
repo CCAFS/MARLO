@@ -1103,8 +1103,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   public boolean canModifiedProjectStatus() {
     String actionName = this.getActionName();
-    if (actionName.contains(ProjectSectionStatusEnum.DESCRIPTION.getStatus())
-      && this.hasPermission("statusDescription")) {
+    if (actionName.contains(ProjectSectionStatusEnum.DESCRIPTION.getStatus()) && this.hasPermission("statusDescription")
+      && this.getActualPhase().getEditable()) {
       return true;
     }
     return false;
