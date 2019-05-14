@@ -2961,7 +2961,8 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     projectPoliciesTable2 =
       new LinkedHashSet<>(projectPolicyManager.getProjectPoliciesList(pmuInstitution, this.getSelectedPhase()));
 
-    if (reportSynthesisPMU.getReportSynthesisFlagshipProgress().getReportSynthesisFlagshipProgressPolicies() != null
+    if (reportSynthesisPMU.getReportSynthesisFlagshipProgress() != null
+      && reportSynthesisPMU.getReportSynthesisFlagshipProgress().getReportSynthesisFlagshipProgressPolicies() != null
       && !reportSynthesisPMU.getReportSynthesisFlagshipProgress().getReportSynthesisFlagshipProgressPolicies()
         .isEmpty()) {
       for (ReportSynthesisFlagshipProgressPolicy flagshipProgressPolicy : reportSynthesisPMU
@@ -2978,7 +2979,8 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     projectInnovationsTable4 =
       new LinkedHashSet<>(projectInnovationManager.getProjectInnovationsList(pmuInstitution, this.getSelectedPhase()));
 
-    if (reportSynthesisPMU.getReportSynthesisFlagshipProgress().getReportSynthesisFlagshipProgressInnovations() != null
+    if (reportSynthesisPMU.getReportSynthesisFlagshipProgress() != null
+      && reportSynthesisPMU.getReportSynthesisFlagshipProgress().getReportSynthesisFlagshipProgressInnovations() != null
       && !reportSynthesisPMU.getReportSynthesisFlagshipProgress().getReportSynthesisFlagshipProgressInnovations()
         .isEmpty()) {
       for (ReportSynthesisFlagshipProgressInnovation flagshipProgressInnovation : reportSynthesisPMU
@@ -2994,9 +2996,11 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
 
     projectExpectedStudiesTable3 =
       new LinkedHashSet<>(projectExpectedStudyManager.getProjectStudiesList(pmuInstitution, this.getSelectedPhase()));
-
-    reportSynthesisPMU.getReportSynthesisFlagshipProgress().setProjectStudies(new ArrayList<>());
-    if (reportSynthesisPMU.getReportSynthesisFlagshipProgress().getReportSynthesisFlagshipProgressStudies() != null
+    if (reportSynthesisPMU.getReportSynthesisFlagshipProgress() != null) {
+      reportSynthesisPMU.getReportSynthesisFlagshipProgress().setProjectStudies(new ArrayList<>());
+    }
+    if (reportSynthesisPMU.getReportSynthesisFlagshipProgress() != null
+      && reportSynthesisPMU.getReportSynthesisFlagshipProgress().getReportSynthesisFlagshipProgressStudies() != null
       && !reportSynthesisPMU.getReportSynthesisFlagshipProgress().getReportSynthesisFlagshipProgressStudies()
         .isEmpty()) {
       for (ReportSynthesisFlagshipProgressStudy flagshipProgressStudy : reportSynthesisPMU
@@ -3241,7 +3245,8 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     }
 
     // load evaluation actions
-    if (reportSynthesisPMU.getReportSynthesisMelia().getEvaluations() != null
+    if (reportSynthesisPMU.getReportSynthesisMelia() != null
+      && reportSynthesisPMU.getReportSynthesisMelia().getEvaluations() != null
       && !reportSynthesisPMU.getReportSynthesisMelia().getEvaluations().isEmpty()) {
       for (ReportSynthesisMeliaEvaluation reportSynthesisMeliaEvaluation : reportSynthesisPMU.getReportSynthesisMelia()
         .getEvaluations()) {
@@ -3277,7 +3282,9 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     LinkedHashSet<Deliverable> deliverables =
       new LinkedHashSet<>(deliverableManager.getPublicationsList(pmuInstitution, this.getSelectedPhase()));
 
-    if (reportSynthesisPMU.getReportSynthesisFlagshipProgress().getReportSynthesisFlagshipProgressDeliverables() != null
+    if (reportSynthesisPMU.getReportSynthesisFlagshipProgress() != null
+      && reportSynthesisPMU.getReportSynthesisFlagshipProgress()
+        .getReportSynthesisFlagshipProgressDeliverables() != null
       && !reportSynthesisPMU.getReportSynthesisFlagshipProgress().getReportSynthesisFlagshipProgressDeliverables()
         .isEmpty()) {
       for (ReportSynthesisFlagshipProgressDeliverable flagshipProgressDeliverable : reportSynthesisPMU
