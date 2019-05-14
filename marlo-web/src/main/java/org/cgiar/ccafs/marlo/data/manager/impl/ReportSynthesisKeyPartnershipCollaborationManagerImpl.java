@@ -141,8 +141,9 @@ public class ReportSynthesisKeyPartnershipCollaborationManagerImpl
       List<ReportSynthesisKeyPartnershipCollaboration> excludeColaborations = new ArrayList<>();
 
       // check if the PMU exclude some CGIAR collaborations
-      if (reportSynthesisPMU.getReportSynthesisKeyPartnership()
-        .getReportSynthesisKeyPartnershipCollaborationPmus() != null
+      if (reportSynthesisPMU.getReportSynthesisKeyPartnership() != null
+        && reportSynthesisPMU.getReportSynthesisKeyPartnership()
+          .getReportSynthesisKeyPartnershipCollaborationPmus() != null
         && !reportSynthesisPMU.getReportSynthesisKeyPartnership().getReportSynthesisKeyPartnershipCollaborationPmus()
           .isEmpty()) {
         for (ReportSynthesisKeyPartnershipCollaborationPmu plannedPmu : reportSynthesisPMU
@@ -160,7 +161,9 @@ public class ReportSynthesisKeyPartnershipCollaborationManagerImpl
       // Add the CGIAR collaborations that the PUM created
       List<ReportSynthesisKeyPartnershipCollaboration> pmuCollaborations = new ArrayList<>();
 
-      if (reportSynthesisPMU.getReportSynthesisKeyPartnership().getReportSynthesisKeyPartnershipCollaborations() != null
+      if (reportSynthesisPMU.getReportSynthesisKeyPartnership() != null
+        && reportSynthesisPMU.getReportSynthesisKeyPartnership()
+          .getReportSynthesisKeyPartnershipCollaborations() != null
         && !reportSynthesisPMU.getReportSynthesisKeyPartnership().getReportSynthesisKeyPartnershipCollaborations()
           .isEmpty()) {
 

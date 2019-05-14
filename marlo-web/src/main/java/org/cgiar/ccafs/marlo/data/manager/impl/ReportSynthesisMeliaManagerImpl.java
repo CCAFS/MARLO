@@ -391,7 +391,8 @@ public class ReportSynthesisMeliaManagerImpl implements ReportSynthesisMeliaMana
       List<ProjectExpectedStudy> pmuStudies = new ArrayList<>();
 
       // check if the PMU exclude some key external partnership
-      if (reportSynthesisPMU.getReportSynthesisMelia().getReportSynthesisMeliaStudies() != null
+      if (reportSynthesisPMU.getReportSynthesisMelia() != null
+        && reportSynthesisPMU.getReportSynthesisMelia().getReportSynthesisMeliaStudies() != null
         && !reportSynthesisPMU.getReportSynthesisMelia().getReportSynthesisMeliaStudies().isEmpty()) {
         for (ReportSynthesisMeliaStudy plannedPmu : reportSynthesisPMU.getReportSynthesisMelia()
           .getReportSynthesisMeliaStudies().stream().filter(ro -> ro.isActive()).collect(Collectors.toList())) {
