@@ -4983,6 +4983,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    */
   public boolean isCompleteReportSynthesis(long synthesisID) {
 
+    if (this.getActualPhase().getYear() == 2018) {
+      return false;
+    }
+
     int secctions = 0;
     if (this.sectionStatusManager.findAll() == null) {
       return false;
