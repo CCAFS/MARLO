@@ -2917,8 +2917,13 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         .getProjectBudgets().stream().filter(pb -> pb.isActive() && pb.getYear() == this.getSelectedYear()
           && pb.getFundingSource() != null && pb.getPhase() != null && pb.getPhase().equals(this.getSelectedPhase()))
         .collect(Collectors.toList())) {
-        typeList.add(
-          projectBudget.getFundingSource().getFundingSourceInfo(this.getSelectedPhase()).getBudgetType().getName());
+        if (projectBudget.getFundingSource().getFundingSourceInfo(this.getSelectedPhase()) != null
+          && projectBudget.getFundingSource().getFundingSourceInfo(this.getSelectedPhase()).getBudgetType() != null
+          && projectBudget.getFundingSource().getFundingSourceInfo(this.getSelectedPhase()).getBudgetType()
+            .getName() != null) {
+          typeList.add(
+            projectBudget.getFundingSource().getFundingSourceInfo(this.getSelectedPhase()).getBudgetType().getName());
+        }
       }
       // Remove duplicates
       Set<String> s = new LinkedHashSet<String>(typeList);
