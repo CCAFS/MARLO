@@ -46,7 +46,13 @@ public class GuestUsersValidator extends BaseValidator {
       action.addFieldError("input-selectedGlobalUnitID", InvalidFieldsMessages.EMPTYFIELD);
     }
 
-    this.validateGuessUsers(action, user);
+    // Validate email
+    if (!(this.isValidEmail(user.getEmail()) && this.wordCount(user.getEmail()) <= 5)) {
+      action.addMessage(action.getText("guestUsers.emptyEmail"));
+      action.getInvalidFields().put("input-user.email", InvalidFieldsMessages.EMPTYFIELD);
+      action.addFieldError("input-user.email", InvalidFieldsMessages.EMPTYFIELD);
+    }
+
 
     if (!action.getFieldErrors().isEmpty()) {
       action.addActionError(action.getText("saving.fields.required"));
@@ -64,13 +70,5 @@ public class GuestUsersValidator extends BaseValidator {
 
   }
 
-  private void validateGuessUsers(BaseAction action, User user) {
-
-    // Validate email
-    if (!(this.isValidEmail(user.getEmail()) && this.wordCount(user.getEmail()) <= 5)) {
-      action.addMessage(action.getText("guestUsers.email"));
-      action.getInvalidFields().put("input-guestUsers.email", InvalidFieldsMessages.EMPTYFIELD);
-    }
-  }
 
 }
