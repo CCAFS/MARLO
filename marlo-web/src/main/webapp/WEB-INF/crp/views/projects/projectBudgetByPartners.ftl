@@ -167,7 +167,7 @@
 [#include "/WEB-INF/global/macros/fundingSourcesPopup.ftl"]
 
 [#-- W3/bilaterl Fund Template --]
-[@fundingSourceMacro element={} name="project.budgets" selectedYear=-1 index=-1  isTemplate=true /]
+[@projectFundingBudget element={} name="project.budgets" selectedYear=-1 index=-1  isTemplate=true /]
 
 
 [#include "/WEB-INF/global/pages/footer.ftl"]
@@ -277,7 +277,7 @@
         <div class="projectW3bilateralFund-list simpleBox project-fs-expandible-true" style="display:${expandedProjectFundingSource?string('block', 'none')}">
           [#list projectFundingSources as budget ] 
             [#local indexBudgetfundingSource=action.getIndexBudget(element.institution.id,selectedYear,budget.fundingSource.fundingSourceInfo.budgetType.id,budget.fundingSource.id) ]
-            [@fundingSourceMacro element=budget name="project.budgets" selectedYear=selectedYear  index=indexBudgetfundingSource /]
+            [@projectFundingBudget element=budget name="project.budgets" selectedYear=selectedYear  index=indexBudgetfundingSource /]
           [#else]
             [#if editable && isYearEditable(selectedYear) && action.canSearchFunding(element.institution.id)]
               <p class="emptyMessage text-center">[@s.text name="projectBudgetByPartners.assginFundingSourceClicking" /] "[@s.text name="form.buttons.selectProject" /]".</p>
@@ -393,7 +393,7 @@
   </tr>
 [/#macro]
 
-[#macro fundingSourceMacro element name selectedYear index=-1  isTemplate=false]
+[#macro projectFundingBudget element name selectedYear index=-1  isTemplate=false]
   <div id="projectW3bilateralFund-${isTemplate?string('template', index )}" class="projectW3bilateralFund expandableBlock grayBox" style="display:${isTemplate?string('none','block')}">
     [#local customName = "${name}[${index}]" /]
     [#-- Remove --]
@@ -406,6 +406,12 @@
       [#if !isTemplate]
       <div class="pull-right">[@popUps.relationsMacro element=element /] </div>
       [/#if]
+    [/#if]
+    
+    [#-- End Date --]
+    [#local fsEndDate]${(element.fundingSource.fundingSourceInfo.endDate)!}[/#local]
+    [#if (element.fundingSource.fundingSourceInfo.status == 4)!true]
+      [#local fsEndDate][#if (element.fundingSource.fundingSourceInfo.extensionDate??)!false]${(element.fundingSource.fundingSourceInfo.extensionDate)!}[#else]${(element.fundingSource.fundingSourceInfo.endDate)!}[/#if][/#local]
     [/#if]
     
     <p class="checked">
@@ -439,7 +445,7 @@
     <input type="hidden"  name="${customName}.phase.id" value="${(element.phase.id)!}"/>
     
     [#-- Project Fund --]
-    <div class="row w3bilateralFund">
+    <div class="row form-group w3bilateralFund">
       <div class="col-md-4">
         <div class="row col-md-6"> <strong>Type:</strong> </div>
         <div class="row col-md-8">
@@ -483,6 +489,19 @@
           </div>
         [/#if]
       </div>
+    </div>
+    
+    <div class="">
+      <small class="pull-right">
+        [#if fsEndDate?has_content]
+          [#local fsYear = fsEndDate?date?string('yyyy')?number ]
+          [#local validDate = (fsYear >= actualPhase.year)!false ]
+          <nobr><p class="${(!validDate)?string('fieldError', '')}">End date: ${fsEndDate}</p></nobr>
+        [#else]
+          <p style="opacity:0.5">Not defined</p>
+        [/#if]
+      </small>
+      <div class="clearfix"></div>
     </div>
   </div>
 [/#macro]
