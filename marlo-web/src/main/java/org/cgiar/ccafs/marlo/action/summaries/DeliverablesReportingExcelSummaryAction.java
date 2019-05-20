@@ -253,6 +253,7 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
     masterReport.getParameterValues().put("i8nClimate", this.getText("deliverable.climateChange"));
     masterReport.getParameterValues().put("i8nJustification", this.getText("deliverable.justification"));
     masterReport.getParameterValues().put("i8nDeliverableDescription", this.getText("deliverable.description"));
+    masterReport.getParameterValues().put("i8nProjectLeadPartner", this.getText("summaries.deliverable.leadPartner"));
 
     /*
      * Reporting
@@ -416,7 +417,6 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
             gup -> gup.isActive() && gup.isOrigin() && gup.getGlobalUnit().getId().equals(this.getLoggedCrp().getId()))
             .collect(Collectors.toList()).size() > 0
           && d.getDeliverableInfo(this.getSelectedPhase()) != null).collect(Collectors.toList()));
-
       } else {
         deliverables = new ArrayList<>(deliverableManager.findAll().stream().filter(d -> d.isActive()
           && d.getProject() != null && d.getProject().isActive()
@@ -612,12 +612,16 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
           if (responisble.getProjectPartnerPerson() != null) {
             ProjectPartnerPerson responsibleppp = responisble.getProjectPartnerPerson();
 
-            leader = responsibleppp.getUser().getComposedName();
-            if (responsibleppp.getProjectPartner() != null) {
-              if (responsibleppp.getProjectPartner().getInstitution() != null) {
-                leader += " - " + responsibleppp.getProjectPartner().getInstitution().getAcronym();
-                if (responisble.getPartnerDivision() != null) {
-                  leader += " (" + responisble.getPartnerDivision().getComposedName() + ")";
+            // Get project leader
+
+            if (deliverable.getProject().getLeader(this.getSelectedPhase()) != null) {
+              ProjectPartner leaderProject = deliverable.getProject().getLeader(this.getSelectedPhase());
+              if (leaderProject.getInstitution() != null) {
+                if (leaderProject.getInstitution().getAcronym() != null
+                  && !leaderProject.getInstitution().getAcronym().trim().isEmpty()) {
+                  leader = leaderProject.getInstitution().getAcronym();
+                } else {
+                  leader = leaderProject.getInstitution().getName();
                 }
               }
             }
@@ -1482,8 +1486,8 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
               if (responsible.getProjectPartner().getInstitution() != null) {
                 if (responsible.getProjectPartner().getInstitution().getAcronym() != null
                   && !responsible.getProjectPartner().getInstitution().getAcronym().isEmpty()) {
-                  ppaResponsibleList.add("*" + responsible.getProjectPartner().getInstitution().getAcronym());
-                  responsibleAcronym = responsible.getProjectPartner().getInstitution().getAcronym();
+                  ppaResponsibleList.add("*" + responsible.getProjectPartner().getInstitution().getAcronym() + " ");
+                  responsibleAcronym = responsible.getProjectPartner().getInstitution().getAcronym() + " ";
 
                   /*
                    * ppaResponsibleList.add("<span style='font-family: Segoe UI;color:#ff0000;font-size: 10'>"
@@ -1495,8 +1499,8 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
                    * ppaResponsibleList.add("<span style='font-family: Segoe UI;color:#ff0000;font-size: 10'>"
                    * + responsible.getProjectPartner().getInstitution().getName() + "</span>");
                    */
-                  ppaResponsibleList.add("*" + responsible.getProjectPartner().getInstitution().getName());
-                  responsibleName = responsible.getProjectPartner().getInstitution().getName();
+                  ppaResponsibleList.add("*" + responsible.getProjectPartner().getInstitution().getName() + " ");
+                  responsibleName = responsible.getProjectPartner().getInstitution().getName() + " ";
                 }
               }
             }
@@ -1518,16 +1522,16 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
                    * ppaResponsible += "<span style='font-family: Segoe UI;color:#ff0000;font-size: 10'>"
                    * + responsibleppp.getProjectPartner().getInstitution().getAcronym() + "</span>";
                    */
-                  ppaResponsible += "*" + responsibleppp.getProjectPartner().getInstitution().getAcronym();
-                  responsibleAcronym = responsibleppp.getProjectPartner().getInstitution().getAcronym();
+                  ppaResponsible += "*" + responsibleppp.getProjectPartner().getInstitution().getAcronym() + " ";
+                  responsibleAcronym = responsibleppp.getProjectPartner().getInstitution().getAcronym() + " ";
                 } else {
                   individual += responsibleppp.getProjectPartner().getInstitution().getName() + " - ";
                   /*
                    * ppaResponsible += "<span style='font-family: Segoe UI;color:#ff0000;font-size: 10'>"
                    * + responsibleppp.getProjectPartner().getInstitution().getName() + "</span>";
                    */
-                  ppaResponsible += "*" + responsibleppp.getProjectPartner().getInstitution().getName();
-                  responsibleName = responsibleppp.getProjectPartner().getInstitution().getName();
+                  ppaResponsible += "*" + responsibleppp.getProjectPartner().getInstitution().getName() + " ";
+                  responsibleName = responsibleppp.getProjectPartner().getInstitution().getName() + " ";
                 }
               }
             }
@@ -1572,12 +1576,12 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
                     && !responsibleppp.getProjectPartner().getInstitution().getAcronym().isEmpty()) {
                     individual += responsibleppp.getProjectPartner().getInstitution().getAcronym() + " - ";
                     if (!responsibleAcronym.equals(responsibleppp.getProjectPartner().getInstitution().getAcronym())) {
-                      ppaResponsibleList.add(responsibleppp.getProjectPartner().getInstitution().getAcronym());
+                      ppaResponsibleList.add(responsibleppp.getProjectPartner().getInstitution().getAcronym() + " ");
                     }
                   } else {
                     individual += responsibleppp.getProjectPartner().getInstitution().getName() + " - ";
                     if (!responsibleAcronym.equals(responsibleppp.getProjectPartner().getInstitution().getName())) {
-                      ppaResponsibleList.add(responsibleppp.getProjectPartner().getInstitution().getName());
+                      ppaResponsibleList.add(responsibleppp.getProjectPartner().getInstitution().getName() + " ");
                     }
                   }
                 }
@@ -1630,9 +1634,9 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
         for (String ppaOher : ppaResponsibleList) {
           if (ppaResponsible.isEmpty()) {
             // ppaResponsible += "<span style='font-family: Segoe UI;font-size: 10'>" + ppaOher + "</span>";
-            ppaResponsible += ppaOher;
+            ppaResponsible += ppaOher + " ";
           } else {
-            ppaResponsible += ppaOher;
+            ppaResponsible += ppaOher + " ";
             // ppaResponsible += ", <span style='font-family: Segoe UI;font-size: 10'>" + ppaOher + "</span>";
           }
         }
