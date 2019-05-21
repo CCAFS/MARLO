@@ -15,8 +15,6 @@
 
 package org.cgiar.ccafs.marlo.rest.dto;
 
-import java.util.List;
-
 import javax.validation.constraints.NotNull;
 
 import io.swagger.annotations.ApiModelProperty;
@@ -31,12 +29,12 @@ public class NewInstitutionDTO {
   private String acronym;
   @ApiModelProperty(notes = "The Institution Website", position = 3)
   private String websiteLink;
-  @ApiModelProperty(notes = "The Institution type", position = 4)
+  @ApiModelProperty(notes = "The Institution type code", position = 4)
   @NotNull
-  private InstitutionTypeDTO institutionType;
+  private String institutionTypeCode;
   @NotEmpty
-  @ApiModelProperty(notes = "List of countries where are offices", position = 5)
-  private List<CountryDTO> countryDTO;
+  @ApiModelProperty(notes = "Headquarter country iso Alpha 2 ", position = 5)
+  private String hqCountryIso;
   @ApiModelProperty(notes = "Mail of the external user who is requesting the institution", position = 6)
   private String externalUserMail;
   @ApiModelProperty(notes = "Name of the external user who is requesting the institution", position = 7)
@@ -48,9 +46,6 @@ public class NewInstitutionDTO {
     return this.acronym;
   }
 
-  public List<CountryDTO> getCountryDTO() {
-    return this.countryDTO;
-  }
 
   public String getExternalUserComments() {
     return this.externalUserComments;
@@ -64,9 +59,6 @@ public class NewInstitutionDTO {
     return this.externalUserName;
   }
 
-  public InstitutionTypeDTO getInstitutionType() {
-    return this.institutionType;
-  }
 
   public String getName() {
     return this.name;
@@ -80,9 +72,6 @@ public class NewInstitutionDTO {
     this.acronym = acronym;
   }
 
-  public void setCountryDTO(List<CountryDTO> countryDTO) {
-    this.countryDTO = countryDTO;
-  }
 
   public void setExternalUserComments(String externalUserComments) {
     this.externalUserComments = externalUserComments;
@@ -96,9 +85,6 @@ public class NewInstitutionDTO {
     this.externalUserName = externalUserName;
   }
 
-  public void setInstitutionType(InstitutionTypeDTO institutionType) {
-    this.institutionType = institutionType;
-  }
 
   public void setName(String name) {
     this.name = name;
@@ -106,6 +92,26 @@ public class NewInstitutionDTO {
 
   public void setWebsiteLink(String websiteLink) {
     this.websiteLink = websiteLink;
+  }
+
+
+  public String getHqCountryIso() {
+    return hqCountryIso;
+  }
+
+
+  public void setHqCountryIso(String hqCountryIso) {
+    this.hqCountryIso = hqCountryIso;
+  }
+
+
+  public String getInstitutionTypeCode() {
+    return institutionTypeCode;
+  }
+
+
+  public void setInstitutionTypeCode(String institutionTypeCode) {
+    this.institutionTypeCode = institutionTypeCode;
   }
 
 }

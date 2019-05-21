@@ -18,11 +18,12 @@ package org.cgiar.ccafs.marlo.rest.mappers;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.InstitutionLocation;
+import org.cgiar.ccafs.marlo.data.model.InstitutionType;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.PartnerRequest;
 import org.cgiar.ccafs.marlo.data.model.User;
-import org.cgiar.ccafs.marlo.rest.dto.CountryDTO;
 import org.cgiar.ccafs.marlo.rest.dto.InstitutionDTO;
+import org.cgiar.ccafs.marlo.rest.dto.InstitutionOfficeCountryDTO;
 import org.cgiar.ccafs.marlo.rest.dto.InstitutionRequestDTO;
 import org.cgiar.ccafs.marlo.rest.dto.NewInstitutionDTO;
 
@@ -40,7 +41,7 @@ public abstract class InstitutionMapper {
   private static final Logger LOG = LoggerFactory.getLogger(InstitutionMapper.class);
 
   @Mappings({@Mapping(source = "locElement", target = "locElement"),
-    @Mapping(source = "newInstitutionDTO.institutionType", target = "institutionType"),
+    @Mapping(source = "institutionType", target = "institutionType"),
     @Mapping(source = "newInstitutionDTO.name", target = "partnerName"),
     @Mapping(source = "newInstitutionDTO.acronym", target = "acronym"),
     @Mapping(source = "newInstitutionDTO.websiteLink", target = "webPage"),
@@ -51,13 +52,15 @@ public abstract class InstitutionMapper {
     @Mapping(target = "activeSince", expression = "java(new Date())"),
     @Mapping(target = "institution", expression = "java(null)")})
   public abstract PartnerRequest institutionDTOToPartnerRequest(NewInstitutionDTO newInstitutionDTO,
-    GlobalUnit globalUnit, LocElement locElement, User user);
+    GlobalUnit globalUnit, LocElement locElement, InstitutionType institutionType, User user);
 
-  @Mappings({@Mapping(source = "locElement.isoNumeric", target = "code"),
+  @Mappings({@Mapping(source = "headquater", target = "isHeadquarter"),
+    @Mapping(source = "locElement.isoNumeric", target = "code"),
     @Mapping(source = "locElement.isoAlpha2.", target = "isoAlpha2"),
     @Mapping(source = "locElement.name.", target = "name"),
     @Mapping(source = "locElement.locElement.", target = "regionDTO")})
-  public abstract CountryDTO institutionLocationToCountryDTO(InstitutionLocation institutionLocation);
+  public abstract InstitutionOfficeCountryDTO
+    institutionLocationToInstitutionOfficeCountryDTO(InstitutionLocation institutionLocation);
 
   @Mappings({@Mapping(source = "id", target = "code"),
     @Mapping(source = "institutionsLocations", target = "countriesDTOs")})
