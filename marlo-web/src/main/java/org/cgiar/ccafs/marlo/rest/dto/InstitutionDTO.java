@@ -43,7 +43,7 @@ public class InstitutionDTO {
   private InstitutionTypeDTO institutionType;
   @NotEmpty
   @ApiModelProperty(notes = "List of countries where are offices")
-  private List<CountryDTO> countriesDTOs;
+  private List<InstitutionOfficeCountryDTO> countriesDTOs;
 
   public String getAcronym() {
     return this.acronym;
@@ -58,7 +58,7 @@ public class InstitutionDTO {
   }
 
 
-  public List<CountryDTO> getCountriesDTOs() {
+  public List<InstitutionOfficeCountryDTO> getCountriesDTOs() {
     return this.countriesDTOs;
   }
 
@@ -78,6 +78,7 @@ public class InstitutionDTO {
     this.acronym = acronym;
   }
 
+
   public void setAdded(Date added) {
     this.added = added;
   }
@@ -87,7 +88,7 @@ public class InstitutionDTO {
     this.code = code;
   }
 
-  public void setCountriesDTOs(List<CountryDTO> countriesDTOs) {
+  public void setCountriesDTOs(List<InstitutionOfficeCountryDTO> countriesDTOs) {
     this.countriesDTOs = countriesDTOs;
   }
 
