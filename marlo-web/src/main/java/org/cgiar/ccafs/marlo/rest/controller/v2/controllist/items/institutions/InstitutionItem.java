@@ -119,7 +119,7 @@ public class InstitutionItem<T> {
     } else {
       throw new FieldErrorDTO("InstitutionRequestDTO", "getExternalUserMail", "External email is empty");
     }
-    PartnerRequest partnerRequestParent = this.institutionMapper.institutionDTOToPartnerRequest(newInstitutionDTO,
+    PartnerRequest partnerRequestParent = this.institutionMapper.newInstitutionDTOToPartnerRequest(newInstitutionDTO,
       globalUnitEntity, locElement, institutionType, user);
 
     partnerRequestParent = this.partnerRequestManager.savePartnerRequest(partnerRequestParent);
@@ -128,7 +128,7 @@ public class InstitutionItem<T> {
      * Need to create a parent child relationship for the partnerRequest to
      * display. That design might need to be re-visited.
      */
-    PartnerRequest partnerRequestChild = this.institutionMapper.institutionDTOToPartnerRequest(newInstitutionDTO,
+    PartnerRequest partnerRequestChild = this.institutionMapper.newInstitutionDTOToPartnerRequest(newInstitutionDTO,
       globalUnitEntity, locElement, institutionType, user);
 
     partnerRequestChild.setPartnerRequest(partnerRequestParent);
@@ -139,7 +139,7 @@ public class InstitutionItem<T> {
     this.sendPartnerRequestEmail(partnerRequestChild, user, entityAcronym);
 
     return new ResponseEntity<InstitutionRequestDTO>(
-      this.institutionMapper.partnerRequestToPartnerRequestDTO(partnerRequestChild), HttpStatus.CREATED);
+      this.institutionMapper.partnerRequestToInstitutionRequestDTO(partnerRequestChild), HttpStatus.CREATED);
 
   }
 
@@ -178,7 +178,7 @@ public class InstitutionItem<T> {
     if (partnerRequest != null && partnerRequest.getPartnerRequest() == null) {
       return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
-    return Optional.ofNullable(partnerRequest).map(this.institutionMapper::partnerRequestToPartnerRequestDTO)
+    return Optional.ofNullable(partnerRequest).map(this.institutionMapper::partnerRequestToInstitutionRequestDTO)
       .map(result -> new ResponseEntity<>(result, HttpStatus.OK)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
 
   }
@@ -204,7 +204,7 @@ public class InstitutionItem<T> {
 
     subject = this.getText("marloRequestInstitution.email.subject",
       new String[] {entityAcronym.toUpperCase(), institutionName});
-
+    String ccEmail = user.getEmail();
     // Message content
     message.append(partnerRequest.getExternalUserName() == null ? (user.getFirstName() + " " + user.getLastName() + " ")
       : partnerRequest.getExternalUserName());
@@ -235,11 +235,11 @@ public class InstitutionItem<T> {
       message.append(" </br>");
     }
     message.append(" </br></br>");
-    message.append("This request was sent through the rest api with the user " + user.getFirstName() + " "
+    message.append("This request was sent through CLARISA logged with the user " + user.getFirstName() + " "
       + user.getLastName() + "(" + user.getEmail() + ")  </br>");
     message.append("</br>");
     try {
-      this.sendMail.send(this.config.getEmailNotification(), null, this.config.getEmailNotification(), subject,
+      this.sendMail.send(this.config.getEmailNotification(), ccEmail, this.config.getEmailNotification(), subject,
         message.toString(), null, null, null, true);
     } catch (Exception e) {
       LOG.error("unable to send mail", e);
