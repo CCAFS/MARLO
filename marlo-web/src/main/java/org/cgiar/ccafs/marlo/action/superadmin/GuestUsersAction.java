@@ -157,65 +157,65 @@ public class GuestUsersAction extends BaseAction {
           emailExists = userManager.getUserByEmail(newUser.getEmail()) == null ? false : true;
 
           // If email already exists.
-          if (emailExists) {
-            // If email already exists into our database.
-            newUser = null;
-            LOG.warn(this.getText("manageUsers.email.existing"));
-            message = this.getText("manageUsers.email.existing");
-            return SUCCESS;
-          }
+          if (!emailExists) {
 
-          // Get the user if it is a CGIAR email.
-          LDAPUser LDAPUser = this.getOutlookUser(newUser.getEmail());
+            // Get the user if it is a CGIAR email.
+            LDAPUser LDAPUser = this.getOutlookUser(newUser.getEmail());
 
-          String password = this.getText("email.outlookPassword");
-          if (LDAPUser != null) {
-            // CGIAR user
-            newUser.setFirstName(LDAPUser.getFirstName());
-            newUser.setLastName(LDAPUser.getLastName());
-            newUser.setUsername(LDAPUser.getLogin().toLowerCase());
-            newUser.setCgiarUser(true);
-            newUser = userManager.saveUser(newUser);
-            message = this.getText("saving.saved");
-          } else {
-            // Non CGIAR user
-            if (newUser.getFirstName() != null && newUser.getLastName() != null
-              && newUser.getFirstName().trim().length() > 0 && newUser.getLastName().trim().length() > 0) {
-              newUser.setCgiarUser(false);
-              newUser.setModificationJustification("User created in MARLO " + this.getActionName().replace("/", "-"));
-              password = RandomStringUtils.randomNumeric(6);
-              newUser.setPassword(password);
+            String password = this.getText("email.outlookPassword");
+            if (LDAPUser != null) {
+              // CGIAR user
+              newUser.setFirstName(LDAPUser.getFirstName());
+              newUser.setLastName(LDAPUser.getLastName());
+              newUser.setUsername(LDAPUser.getLogin().toLowerCase());
+              newUser.setCgiarUser(true);
               newUser = userManager.saveUser(newUser);
               message = this.getText("saving.saved");
+            } else {
+              // Non CGIAR user
+              if (newUser.getFirstName() != null && newUser.getLastName() != null
+                && newUser.getFirstName().trim().length() > 0 && newUser.getLastName().trim().length() > 0) {
+                newUser.setCgiarUser(false);
+                newUser.setModificationJustification("User created in MARLO " + this.getActionName().replace("/", "-"));
+                password = RandomStringUtils.randomNumeric(6);
+                newUser.setPassword(password);
+                newUser = userManager.saveUser(newUser);
+                message = this.getText("saving.saved");
+              }
             }
+
+            try {
+              this.sendMailNewUser(newUser, globalUnit, password);
+            } catch (NoSuchAlgorithmException e) {
+              e.printStackTrace();
+              LOG.error(e.getMessage());
+            }
+
+            // Add Crp Users
+            CrpUser crpUser = new CrpUser();
+            crpUser.setUser(newUser);
+            crpUser.setCrp(globalUnit);
+            crpUser = crpUserManager.saveCrpUser(crpUser);
+
+            // Add guest user role
+            UserRole userRole = new UserRole();
+            Role guestRole = globalUnit.getRoles().stream().filter(r -> r.getAcronym().equals("G"))
+              .collect(Collectors.toList()).get(0);
+            userRole.setRole(guestRole);
+            userRole.setUser(newUser);
+            userRole = userRoleManager.saveUserRole(userRole);
+
+          } else {
+            // If email already exists into our database.
+            LOG.warn(this.getText("manageUsers.email.existing"));
+            message = this.getText("manageUsers.email.existing");
+
           }
-
-          try {
-            this.sendMailNewUser(newUser, globalUnit, password);
-          } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-            LOG.error(e.getMessage());
-          }
-
-          // Add Crp Users
-          CrpUser crpUser = new CrpUser();
-          crpUser.setUser(newUser);
-          crpUser.setCrp(globalUnit);
-          crpUser = crpUserManager.saveCrpUser(crpUser);
-
-          // Add guest user role
-          UserRole userRole = new UserRole();
-          Role guestRole =
-            globalUnit.getRoles().stream().filter(r -> r.getAcronym().equals("G")).collect(Collectors.toList()).get(0);
-          userRole.setRole(guestRole);
-          userRole.setUser(newUser);
-          userRole = userRoleManager.saveUserRole(userRole);
-
-
         } else {
           LOG.warn(this.getText("manageUsers.email.notValid"));
           message = this.getText("manageUsers.email.notValid");
         }
+
       } else {
         message = this.getText("login.error.selectCrp");
         LOG.warn(this.getText("login.error.selectCrp"));
@@ -231,7 +231,7 @@ public class GuestUsersAction extends BaseAction {
 
 
   public void sendMailNewUser(User user, GlobalUnit loggedCrp, String password) throws NoSuchAlgorithmException {
-    String toEmail = this.config.getEmailNotification();
+    String toEmail = user.getEmail();
     String ccEmail = null;
     String bbcEmails = this.config.getEmailNotification();
     String subject = this.getText("email.newUser.subject", new String[] {user.getFirstName()});

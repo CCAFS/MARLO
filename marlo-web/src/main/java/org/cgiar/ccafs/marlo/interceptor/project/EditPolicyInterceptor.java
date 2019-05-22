@@ -146,7 +146,7 @@ public class EditPolicyInterceptor extends AbstractInterceptor implements Serial
 
 
       // Set the variable that indicates if the user can edit the section
-      baseAction.setEditableParameter(hasPermissionToEdit && canEdit);
+      baseAction.setEditableParameter(hasPermissionToEdit && canEdit && baseAction.getActualPhase().getEditable());
       baseAction.setCanEdit(canEdit);
       baseAction.setCanSwitchProject(canSwitchProject);
 

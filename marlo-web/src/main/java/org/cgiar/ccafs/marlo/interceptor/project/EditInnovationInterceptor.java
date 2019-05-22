@@ -146,7 +146,7 @@ public class EditInnovationInterceptor extends AbstractInterceptor implements Se
 
 
       // Set the variable that indicates if the user can edit the section
-      baseAction.setEditableParameter(hasPermissionToEdit && canEdit);
+      baseAction.setEditableParameter(hasPermissionToEdit && canEdit && baseAction.getActualPhase().getEditable());
       baseAction.setCanEdit(canEdit);
       baseAction.setCanSwitchProject(canSwitchProject);
 

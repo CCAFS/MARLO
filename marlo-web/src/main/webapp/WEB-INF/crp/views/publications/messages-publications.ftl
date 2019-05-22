@@ -26,6 +26,10 @@
     [/#if]
   [/#if]
   
+   [#if !action.getActualPhase().editable]
+        <p class="readPrivileges">[@s.text name="phase.read.privileges.section" /]</p>
+   [/#if]
+  
   
   [#-- Concurrence Message --]
   <div id="concurrenceMessage" class="text-center" style="display:none">

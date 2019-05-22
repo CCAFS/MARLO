@@ -142,7 +142,8 @@ public class ReportSynthesisKeyPartnershipExternalManagerImpl implements ReportS
       List<ReportSynthesisKeyPartnershipExternal> excludeKeyPartnerships = new ArrayList<>();
 
       // check if the PMU exclude some key external partnership
-      if (reportSynthesisPMU.getReportSynthesisKeyPartnership().getReportSynthesisKeyPartnershipPmus() != null
+      if (reportSynthesisPMU.getReportSynthesisKeyPartnership() != null
+        && reportSynthesisPMU.getReportSynthesisKeyPartnership().getReportSynthesisKeyPartnershipPmus() != null
         && !reportSynthesisPMU.getReportSynthesisKeyPartnership().getReportSynthesisKeyPartnershipPmus().isEmpty()) {
         for (ReportSynthesisKeyPartnershipPmu plannedPmu : reportSynthesisPMU.getReportSynthesisKeyPartnership()
           .getReportSynthesisKeyPartnershipPmus().stream().filter(ro -> ro.isActive()).collect(Collectors.toList())) {
