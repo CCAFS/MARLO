@@ -88,7 +88,7 @@ public class MonitoringOutcomeValidator extends BaseValidator {
 
   public void validateMilestones(BaseAction baseAction, CenterMonitoringMilestone milestones, int i, int j, int year) {
     if (milestones.getYear() == year) {
-      if (!(this.isValidString(milestones.getNarrative()) && this.wordCount(milestones.getNarrative()) <= 100)) {
+      if (!this.isValidString(milestones.getNarrative()) && this.wordCount(milestones.getNarrative()) <= 100) {
         baseAction.addMessage(baseAction.getText("Milestone Narrative"));
         baseAction.getInvalidFields().put("input-outcome.monitorings[" + i + "].milestones[" + j + "].narrative",
           InvalidFieldsMessages.EMPTYFIELD);

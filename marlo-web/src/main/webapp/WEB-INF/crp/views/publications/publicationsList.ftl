@@ -31,13 +31,14 @@
       <div style="display:none">[@publicationsList.publicationsList publications=action.getPublications(true) canValidate=true canEdit=true namespace="/publications" defaultAction="${(crpSession)!}/publication" /]</div>
   
       [#-- Section Buttons --]
-      <div class="buttons">
-        <div class="buttons-content">
-          <a class="addButton" href="[@s.url action='${crpSession}/addNewPublication'][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]"> <span class="saveText">[@s.text name="publicationsList.addPublication" /]</span></a>
-          <div class="clearfix"></div>
+      [#if (action.getActualPhase().editable)]
+        <div class="buttons">
+          <div class="buttons-content">
+            <a class="addButton" href="[@s.url action='${crpSession}/addNewPublication'][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]"> <span class="saveText">[@s.text name="publicationsList.addPublication" /]</span></a>
+            <div class="clearfix"></div>
+          </div>
         </div>
-      </div>
-      
+      [/#if]
       <div class="clearfix"></div>
       <hr/>
       

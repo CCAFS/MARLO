@@ -180,6 +180,7 @@ public class POISummary {
     text = text.replaceAll("<span style=\"color: rgb(130, 130, 130); font-size: 0.98em;\">", "");
     text = text.replaceAll("<span style=\"color: rgb(130, 130, 130); font-size: 0.98em;", "");
     text = text.replaceAll("</span>", "");
+    text = text.replaceAll("title=\"\"", "");
 
     /*
      * recognize the tag as a line break
@@ -231,7 +232,10 @@ public class POISummary {
 
               hrefTagsCount++;
               textIndicatorLink = text.substring(text.indexOf(">", j) + 1, posFinal);
+
               url = text.substring(text.indexOf("=", j) + 2, text.indexOf(">", j) - 1);
+
+
               if (!url.contains("http://") && !url.contains("https://")) {
                 url = "http://" + url;
               }

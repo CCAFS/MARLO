@@ -17,10 +17,12 @@ package org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.institutions;
 
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
+import org.cgiar.ccafs.marlo.data.manager.InstitutionTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.manager.PartnerRequestManager;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Institution;
+import org.cgiar.ccafs.marlo.data.model.InstitutionType;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.PartnerRequest;
 import org.cgiar.ccafs.marlo.data.model.User;
@@ -66,13 +68,16 @@ public class InstitutionItem<T> {
   private InstitutionMapper institutionMapper;
   private PartnerRequestManager partnerRequestManager;
   private GlobalUnitManager globalUnitManager;
+  private InstitutionTypeManager institutionTypeManager;
   private boolean messageSent;
   protected APConfig config;
 
   @Inject
-  public InstitutionItem(InstitutionManager institutionManager, InstitutionMapper institutionMapper,
-    LocElementManager locElementManager, PartnerRequestManager partnerRequestManager,
-    GlobalUnitManager globalUnitManager, SendMailS sendMail, APConfig config) {
+  public InstitutionItem(InstitutionTypeManager institutionTypeManager, InstitutionManager institutionManager,
+    InstitutionMapper institutionMapper, LocElementManager locElementManager,
+    PartnerRequestManager partnerRequestManager, GlobalUnitManager globalUnitManager, SendMailS sendMail,
+    APConfig config) {
+    this.institutionTypeManager = institutionTypeManager;
     this.institutionManager = institutionManager;
     this.institutionMapper = institutionMapper;
     this.locElementManager = locElementManager;
@@ -88,21 +93,24 @@ public class InstitutionItem<T> {
 
     GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitByAcronym(entityAcronym);
     String regex = "^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$";
-
-    if (globalUnitEntity == null) {
-      return new ResponseEntity<InstitutionRequestDTO>(HttpStatus.BAD_REQUEST);
-    }
-
-    LocElement locElement =
-      this.locElementManager.getLocElementByNumericISOCode(newInstitutionDTO.getCountryDTO().get(0).getCode());
-    if (locElement == null) {
-      return new ResponseEntity<InstitutionRequestDTO>(HttpStatus.BAD_REQUEST);
-    }
-    // externalUserMail is mandatory
-
-
     Pattern pattern = Pattern.compile(regex);
 
+    if (globalUnitEntity == null) {
+      throw new FieldErrorDTO("InstitutionRequestDTO", "GlobalUnitEntity", "Invalid CGIAR entity acronym");
+    }
+
+    LocElement locElement = this.locElementManager.getLocElementByISOCode(newInstitutionDTO.getHqCountryIso());
+    if (locElement == null) {
+      throw new FieldErrorDTO("InstitutionRequestDTO", "Country", "Invalid country iso Alpha code");
+    }
+
+    InstitutionType institutionType =
+      this.institutionTypeManager.getInstitutionTypeById(Long.parseLong(newInstitutionDTO.getInstitutionTypeCode()));
+    if (institutionType == null) {
+      throw new FieldErrorDTO("InstitutionRequestDTO", "institutionType", "Invalid Institution type code");
+    }
+
+    // externalUserMail is mandatory
     if (newInstitutionDTO.getExternalUserMail() != null) {
       Matcher matcher = pattern.matcher(newInstitutionDTO.getExternalUserMail());
       if (!matcher.matches()) {
@@ -111,8 +119,8 @@ public class InstitutionItem<T> {
     } else {
       throw new FieldErrorDTO("InstitutionRequestDTO", "getExternalUserMail", "External email is empty");
     }
-    PartnerRequest partnerRequestParent =
-      this.institutionMapper.institutionDTOToPartnerRequest(newInstitutionDTO, globalUnitEntity, locElement, user);
+    PartnerRequest partnerRequestParent = this.institutionMapper.newInstitutionDTOToPartnerRequest(newInstitutionDTO,
+      globalUnitEntity, locElement, institutionType, user);
 
     partnerRequestParent = this.partnerRequestManager.savePartnerRequest(partnerRequestParent);
 
@@ -120,8 +128,8 @@ public class InstitutionItem<T> {
      * Need to create a parent child relationship for the partnerRequest to
      * display. That design might need to be re-visited.
      */
-    PartnerRequest partnerRequestChild =
-      this.institutionMapper.institutionDTOToPartnerRequest(newInstitutionDTO, globalUnitEntity, locElement, user);
+    PartnerRequest partnerRequestChild = this.institutionMapper.newInstitutionDTOToPartnerRequest(newInstitutionDTO,
+      globalUnitEntity, locElement, institutionType, user);
 
     partnerRequestChild.setPartnerRequest(partnerRequestParent);
 
@@ -131,7 +139,7 @@ public class InstitutionItem<T> {
     this.sendPartnerRequestEmail(partnerRequestChild, user, entityAcronym);
 
     return new ResponseEntity<InstitutionRequestDTO>(
-      this.institutionMapper.partnerRequestToPartnerRequestDTO(partnerRequestChild), HttpStatus.CREATED);
+      this.institutionMapper.partnerRequestToInstitutionRequestDTO(partnerRequestChild), HttpStatus.CREATED);
 
   }
 
@@ -170,7 +178,7 @@ public class InstitutionItem<T> {
     if (partnerRequest != null && partnerRequest.getPartnerRequest() == null) {
       return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
-    return Optional.ofNullable(partnerRequest).map(this.institutionMapper::partnerRequestToPartnerRequestDTO)
+    return Optional.ofNullable(partnerRequest).map(this.institutionMapper::partnerRequestToInstitutionRequestDTO)
       .map(result -> new ResponseEntity<>(result, HttpStatus.OK)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
 
   }
@@ -196,12 +204,13 @@ public class InstitutionItem<T> {
 
     subject = this.getText("marloRequestInstitution.email.subject",
       new String[] {entityAcronym.toUpperCase(), institutionName});
-
+    String ccEmail = user.getEmail();
     // Message content
     message.append(partnerRequest.getExternalUserName() == null ? (user.getFirstName() + " " + user.getLastName() + " ")
       : partnerRequest.getExternalUserName());
-    message.append(" (" + partnerRequest.getExternalUserMail() == null ? user.getEmail()
-      : partnerRequest.getExternalUserMail() + ") ");
+    message.append(" (");
+    message.append(
+      partnerRequest.getExternalUserMail() == null ? user.getEmail() : partnerRequest.getExternalUserMail() + ") ");
     message.append("is requesting to add the following partner information:");
     message.append("</br></br>");
     message.append("Partner Name: ");
@@ -226,11 +235,11 @@ public class InstitutionItem<T> {
       message.append(" </br>");
     }
     message.append(" </br></br>");
-    message.append("This request was sent through the rest api with the user " + user.getFirstName() + " "
+    message.append("This request was sent through CLARISA logged with the user " + user.getFirstName() + " "
       + user.getLastName() + "(" + user.getEmail() + ")  </br>");
     message.append("</br>");
     try {
-      this.sendMail.send(this.config.getEmailNotification(), null, this.config.getEmailNotification(), subject,
+      this.sendMail.send(this.config.getEmailNotification(), ccEmail, this.config.getEmailNotification(), subject,
         message.toString(), null, null, null, true);
     } catch (Exception e) {
       LOG.error("unable to send mail", e);
