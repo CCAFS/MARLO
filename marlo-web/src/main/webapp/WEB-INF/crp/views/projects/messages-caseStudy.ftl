@@ -27,12 +27,18 @@
       <p>[@s.text name="project.message.submittedOn" ][@s.param]${(lastSubmission.dateTime?string["MMMM dd, yyyy"])!}[/@s.param][@s.param]${(lastSubmission.user.composedCompleteName)!}[/@s.param][/@s.text]</p>
     </div>
   [/#if]
-  
+    
   [#-- Privileges Message --]
-  [#if !canEdit && !(transaction??) && !(submission)]
-    <p class="readPrivileges">[@s.text name="saving.read.privileges.section" /]</p>
+  [#if (!canEdit && !(transaction??)) || crpClosed]
+    [#if crpClosed]
+      <p class="readPrivileges">MARLO is closed.</p>
+    [#else]
+      [#if !action.getActualPhase().editable]
+        <p class="readPrivileges">[@s.text name="phase.read.privileges.section" /]</p>
+      [/#if]
+                
+    [/#if]
   [/#if]
-  
   
   [#-- Program completed Message--]
   [#if canSubmit && !submission && completed]

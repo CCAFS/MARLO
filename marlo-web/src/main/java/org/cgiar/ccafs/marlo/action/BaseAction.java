@@ -1103,8 +1103,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   public boolean canModifiedProjectStatus() {
     String actionName = this.getActionName();
-    if (actionName.contains(ProjectSectionStatusEnum.DESCRIPTION.getStatus())
-      && this.hasPermission("statusDescription")) {
+    if (actionName.contains(ProjectSectionStatusEnum.DESCRIPTION.getStatus()) && this.hasPermission("statusDescription")
+      && this.getActualPhase().getEditable()) {
       return true;
     }
     return false;
@@ -4982,6 +4982,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * @return
    */
   public boolean isCompleteReportSynthesis(long synthesisID) {
+
+    if (this.getActualPhase().getYear() == 2018) {
+      return false;
+    }
 
     int secctions = 0;
     if (this.sectionStatusManager.findAll() == null) {
