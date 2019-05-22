@@ -112,7 +112,7 @@ public class ProjectInnovationListAction extends BaseAction {
 
   @Override
   public String delete() {
-    for (ProjectInnovation projectInnovation : project.getInnovations()) {
+    for (ProjectInnovation projectInnovation : projectInnovations) {
       if (projectInnovation.getId().longValue() == innovationID) {
         ProjectInnovation projectInnovationBD = projectInnovationManager.getProjectInnovationById(innovationID);
 

@@ -46,6 +46,14 @@ public class GuestUsersValidator extends BaseValidator {
       action.addFieldError("input-selectedGlobalUnitID", InvalidFieldsMessages.EMPTYFIELD);
     }
 
+    // Validate email
+    if (!(this.isValidEmail(user.getEmail()) && this.wordCount(user.getEmail()) <= 5)) {
+      action.addMessage(action.getText("guestUsers.emptyEmail"));
+      action.getInvalidFields().put("input-user.email", InvalidFieldsMessages.EMPTYFIELD);
+      action.addFieldError("input-user.email", InvalidFieldsMessages.EMPTYFIELD);
+    }
+
+
     if (!action.getFieldErrors().isEmpty()) {
       action.addActionError(action.getText("saving.fields.required"));
       action.addActionMessage(
@@ -61,5 +69,6 @@ public class GuestUsersValidator extends BaseValidator {
 
 
   }
+
 
 }

@@ -24,26 +24,17 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
-import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyPolicy;
-import org.cgiar.ccafs.marlo.data.model.ProjectPolicyCountry;
-import org.cgiar.ccafs.marlo.data.model.ProjectPolicyCrossCuttingMarker;
-import org.cgiar.ccafs.marlo.data.model.ProjectPolicyCrp;
-import org.cgiar.ccafs.marlo.data.model.ProjectPolicyGeographicScope;
-import org.cgiar.ccafs.marlo.data.model.ProjectPolicyInnovation;
-import org.cgiar.ccafs.marlo.data.model.ProjectPolicyOwner;
-import org.cgiar.ccafs.marlo.data.model.ProjectPolicyRegion;
-import org.cgiar.ccafs.marlo.data.model.ProjectPolicySubIdo;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressCrossCuttingMarker;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressOutcome;
+import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressOutcomeMilestone;
 import org.cgiar.ccafs.marlo.data.model.anualreport.evidences.AROutcomeMilestoneEvidence;
-import org.cgiar.ccafs.marlo.data.model.anualreport.evidences.ARPoliciesEvidence;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.InputStream;
-import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -52,7 +43,6 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -107,7 +97,7 @@ public class OutcomesMilestonesEvidenceSummaryAction extends BaseSummariesAction
 
   /**
    * Method to add i8n parameters to masterReport in Pentaho
-   * the order of the parameters is the same order for the getPolicyEvidenceReportingTableModel() method
+   * the order of the parameters is the same order for the getOutcomeMilestoneReportingTableModel() method
    * 
    * @param masterReport
    * @return masterReport with i8n parameters added
@@ -131,7 +121,7 @@ public class OutcomesMilestonesEvidenceSummaryAction extends BaseSummariesAction
     masterReport.getParameterValues().put("i8nColumnO", this.getText("outcomesMilestones.table.climateChange"));
     masterReport.getParameterValues().put("i8nColumnP",
       this.getText("outcomesMilestones.table.climateChangeJustification"));
-    masterReport.getParameterValues().put("i8nHeader", this.getText("policy.header.table"));
+    masterReport.getParameterValues().put("i8nHeader", this.getText("outcomesMilestones.table.header"));
 
     return masterReport;
   }
@@ -200,7 +190,7 @@ public class OutcomesMilestonesEvidenceSummaryAction extends BaseSummariesAction
     TypedTableModel model = null;
     switch (query) {
       case "details":
-        model = this.getPolicyEvidenceReportingTableModel();
+        model = this.getOutcomeMilestoneReportingTableModel();
         break;
     }
     sdf.addTable(query, model);
@@ -232,7 +222,7 @@ public class OutcomesMilestonesEvidenceSummaryAction extends BaseSummariesAction
   @Override
   public String getFileName() {
     StringBuffer fileName = new StringBuffer();
-    fileName.append("Policies-");
+    fileName.append("OutcomesMilestones-");
     fileName.append(this.getLoggedCrp().getAcronym() + "-");
     fileName.append(this.getSelectedPhase().getName());
     fileName.append(this.getSelectedYear() + "_");
@@ -267,51 +257,7 @@ public class OutcomesMilestonesEvidenceSummaryAction extends BaseSummariesAction
     return model;
   }
 
-  /**
-   * Get the information of all project policies adding if these project polices include in the annual report
-   * 
-   * @return a list of all project policies with the indicator if this is included in the Annual Report
-   */
-  public List<AROutcomeMilestoneEvidence> getOutcomeMilestonesInfo() {
-
-    List<AROutcomeMilestoneEvidence> arOutcomeMilestoneEvidences = new ArrayList<AROutcomeMilestoneEvidence>();
-
-    List<LiaisonInstitution> liaisonInstitutions = this.getLoggedCrp().getLiaisonInstitutions().stream()
-      .filter(c -> c.getCrpProgram() != null && c.isActive()
-        && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
-      .collect(Collectors.toList());
-    liaisonInstitutions.sort(Comparator.comparing(LiaisonInstitution::getAcronym));
-
-    for (LiaisonInstitution liaisonInstitution : liaisonInstitutions) {
-
-      ReportSynthesis reportSynthesisFG =
-        reportSynthesisManager.findSynthesis(this.getSelectedPhase().getId(), liaisonInstitution.getId());
-
-      if (reportSynthesisFG.getReportSynthesisFlagshipProgress() != null) {
-
-        if (reportSynthesisFG.getReportSynthesisFlagshipProgress().getReportSynthesisFlagshipProgressOutcomes() != null
-          && !reportSynthesisFG.getReportSynthesisFlagshipProgress().getReportSynthesisFlagshipProgressOutcomes()
-            .isEmpty()) {
-
-          List<ReportSynthesisFlagshipProgressOutcome> progressOutcomes = new ArrayList<>(
-            reportSynthesisFG.getReportSynthesisFlagshipProgress().getReportSynthesisFlagshipProgressOutcomes().stream()
-              .filter(o -> o.isActive()).collect(Collectors.toList()));
-
-          for (ReportSynthesisFlagshipProgressOutcome progressOutcome : progressOutcomes) {
-            // TODO
-
-          }
-        }
-      }
-
-    }
-
-
-    return arOutcomeMilestoneEvidences;
-  }
-
-
-  private TypedTableModel getPolicyEvidenceReportingTableModel() {
+  private TypedTableModel getOutcomeMilestoneReportingTableModel() {
 
     /*
      * Parameters variables to send to the file
@@ -335,346 +281,201 @@ public class OutcomesMilestonesEvidenceSummaryAction extends BaseSummariesAction
      */
     TypedTableModel model = new TypedTableModel(
       new String[] {"paramA", "paramB", "paramC", "paramD", "paramE", "paramF", "paramG", "paramH", "paramI", "paramJ",
-        "paramK", "paramL", "paramM", "paramN", "paramO", "paramP", "paramQ", "paramR", "paramS", "paramT", "paramU",
-        "paramV", "paramW", "policyURL"},
+        "paramK", "paramL", "paramM", "paramN", "paramO", "paramP"},
       new Class[] {Long.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class},
       0);
 
-    // Load the policies information
-    List<ARPoliciesEvidence> policyEvidences = // this.getPoliciesInfo();
-      new ArrayList<>();
+    // Load the information
+    List<AROutcomeMilestoneEvidence> outcomeMilestones = this.getOutcomeMilestonesInfo();
 
-    for (ARPoliciesEvidence policyEvidence : policyEvidences) {
-      Long paramA = null, paramB = null;
-      String paramC = "", paramD = "", paramE = "", paramF = "", paramG = "", paramH = "", paramI = "", paramJ = "",
-        paramK = "", paramL = "", paramM = "", paramN = "", paramO = "", paramP = "", paramQ = "", paramR = "",
-        paramS = "", paramT = "", paramU = "", paramV = "", paramW = "", policyURL = "";
+    for (AROutcomeMilestoneEvidence outcomeMilestone : outcomeMilestones) {
 
-      // Condition to know if the project policy have information in the selected phase
-      if (policyEvidence.getProjectPolicy().getProjectPolicyInfo(this.getSelectedPhase()) != null) {
+      String paramA = "", paramB = "", paramC = "", paramD = "", paramE = "", paramF = "", paramG = "", paramH = "",
+        paramI = "", paramJ = "", paramK = "", paramL = "", paramM = "", paramN = "", paramO = "", paramP = "";
 
-        // Policy Id
-        paramA = policyEvidence.getProjectPolicy().getId();
-        // Year
-        paramB = policyEvidence.getProjectPolicy().getProjectPolicyInfo(this.getSelectedPhase()).getYear();
-        // Title
-        if (policyEvidence.getProjectPolicy().getProjectPolicyInfo(this.getSelectedPhase()).getTitle() != null
-          && !policyEvidence.getProjectPolicy().getProjectPolicyInfo(this.getSelectedPhase()).getTitle().isEmpty()) {
-          paramC = policyEvidence.getProjectPolicy().getProjectPolicyInfo(this.getSelectedPhase()).getTitle();
-        } else {
-          paramC = "<Not Defined>";
-        }
-        // Policy / Investment Type and amount (If Investment type Id = 3)
-        if (policyEvidence.getProjectPolicy().getProjectPolicyInfo(this.getSelectedPhase())
-          .getRepIndPolicyInvestimentType() != null) {
-          paramD = policyEvidence.getProjectPolicy().getProjectPolicyInfo(this.getSelectedPhase())
-            .getRepIndPolicyInvestimentType().getName();
-          // If Investment type Id = 3, check the amount value
-          if (policyEvidence.getProjectPolicy().getProjectPolicyInfo(this.getSelectedPhase())
-            .getRepIndPolicyInvestimentType().getId() == 3) {
-            // amount
-            if (policyEvidence.getProjectPolicy().getProjectPolicyInfo(this.getSelectedPhase()).getAmount() != null
-              && policyEvidence.getProjectPolicy().getProjectPolicyInfo(this.getSelectedPhase()).getAmount() != 0) {
-
-              Locale.setDefault(Locale.US);
-              DecimalFormat num = new DecimalFormat("#,###.00");
-              paramE =
-                num.format(policyEvidence.getProjectPolicy().getProjectPolicyInfo(this.getSelectedPhase()).getAmount());
-
-            } else {
-              paramE = "<Not Defined>";
-            }
+      // Id
+      paramA = outcomeMilestone.getCrpMilestone().getId().toString();
+      // FP
+      paramB = outcomeMilestone.getCrpProgramOutcome().getPAcronym();
+      // Outcome
+      paramC = outcomeMilestone.getCrpProgramOutcome().getComposedName();
+      // Outcome Progress
+      paramD = this.removeHtmlTags(outcomeMilestone.getOutcomeProgress());
+      paramD = this.removeHrefTags(paramD);
+      // Milestone
+      paramE = outcomeMilestone.getCrpMilestone().getComposedName();
+      // Milestone Status
+      paramF = outcomeMilestone.getStatusName();
+      if (outcomeMilestone.getStatusName() == null && outcomeMilestone.getStatusName().isEmpty()) {
+        paramF = "<Not Defined>";
+      }
+      // Reason
+      if (outcomeMilestone.getMilestonesStatus() != null && outcomeMilestone.getMilestonesStatus() != 1L) {
+        if (outcomeMilestone.getRepIndMilestoneReason() != null) {
+          if (outcomeMilestone.getRepIndMilestoneReason().getId().equals(7L)) {
+            paramG = outcomeMilestone.getOtherReason();
           } else {
-            paramE = "<Not Applicable>";
+            paramG = outcomeMilestone.getRepIndMilestoneReason().getName();
           }
-        } else {
-          paramD = "<Not Defined>";
-          paramE = "<Not Defined>";
-        }
-
-        // Organization type
-        if (policyEvidence.getProjectPolicy().getProjectPolicyInfo(this.getSelectedPhase())
-          .getRepIndOrganizationType() != null) {
-          paramF = policyEvidence.getProjectPolicy().getProjectPolicyInfo(this.getSelectedPhase())
-            .getRepIndOrganizationType().getName();
-        } else {
-          paramF = "<Not Defined>";
-        }
-
-        // Level of Maturity
-        if (policyEvidence.getProjectPolicy().getProjectPolicyInfo(this.getSelectedPhase())
-          .getRepIndStageProcess() != null) {
-          paramG = policyEvidence.getProjectPolicy().getProjectPolicyInfo(this.getSelectedPhase())
-            .getRepIndStageProcess().getName();
         } else {
           paramG = "<Not Defined>";
         }
+      } else {
+        paramG = "<Not Applicable>";
+      }
+      // milestone evidence
+      paramH = this.removeHtmlTags(outcomeMilestone.getEvidence());
+      paramH = this.removeHrefTags(paramH);
 
-        // Whose policy is and Other (If policy type == 4)
-        if (policyEvidence.getProjectPolicy().getProjectPolicyOwners() != null) {
-          List<ProjectPolicyOwner> owners = new ArrayList<>(policyEvidence.getProjectPolicy().getProjectPolicyOwners()
-            .stream().filter(o -> o.isActive() && o.getPhase().getId().equals(this.getSelectedPhase().getId()))
-            .collect(Collectors.toList()));
-          if (owners != null && !owners.isEmpty()) {
-            boolean bOther = false;
-            for (ProjectPolicyOwner owner : owners) {
-              paramH += "● " + owner.getRepIndPolicyType().getName() + "\n";
-              // Check if has Other value
-              if (owner.getRepIndPolicyType().getId() == 4) {
-                bOther = true;
-              }
-            }
+      if (paramH == null || paramH.isEmpty()) {
+        paramH = "<Not Defined>";
+      }
 
-            if (bOther) {
-              // Other
-              if (policyEvidence.getProjectPolicy().getProjectPolicyInfo(this.getSelectedPhase()).getOther() != null
-                && !policyEvidence.getProjectPolicy().getProjectPolicyInfo(this.getSelectedPhase()).getOther()
-                  .isEmpty()) {
-                paramI = policyEvidence.getProjectPolicy().getProjectPolicyInfo(this.getSelectedPhase()).getOther();
+      // CGIAR Cross-cutting Markers
+      if (outcomeMilestone.getCrossCuttingMarkers() != null) {
+
+        List<ReportSynthesisFlagshipProgressCrossCuttingMarker> markers = new ArrayList<>(
+
+          outcomeMilestone.getCrossCuttingMarkers().stream().filter(o -> o.isActive()).collect(Collectors.toList()));
+
+        if (markers != null && !markers.isEmpty()) {
+          for (ReportSynthesisFlagshipProgressCrossCuttingMarker marker : markers) {
+            // Gender
+            if (marker.getMarker().getId() == 1) {
+              if (marker.getFocus() != null) {
+                paramI = marker.getFocus().getPowbName();
+                paramJ = marker.getJust();
               } else {
                 paramI = "<Not Defined>";
-              }
-            } else {
-              paramI = "<Not Applicable>";
-            }
-
-          } else {
-            paramH = "<Not Defined>";
-            paramI = "<Not Defined>";
-          }
-        } else {
-          paramH = "<Not Defined>";
-          paramI = "<Not Defined>";
-        }
-
-        // Evidences
-        if (policyEvidence.getProjectPolicy().getProjectExpectedStudyPolicies() != null) {
-          List<ProjectExpectedStudyPolicy> evidences =
-            new ArrayList<>(policyEvidence.getProjectPolicy().getProjectExpectedStudyPolicies().stream()
-              .filter(o -> o.isActive() && o.getPhase().getId().equals(this.getSelectedPhase().getId()))
-              .collect(Collectors.toList()));
-          if (evidences != null && !evidences.isEmpty()) {
-            for (ProjectExpectedStudyPolicy evidence : evidences) {
-              if (evidence.getProjectExpectedStudy() != null
-                && evidence.getProjectExpectedStudy().getProjectExpectedStudyInfo(this.getSelectedPhase()) != null) {
-                paramJ += "● " + evidence.getProjectExpectedStudy().getComposedName() + "\n";
+                paramJ = "<Not Defined>";
               }
             }
-          } else {
-            paramJ = "<Not Defined>";
-          }
-        } else {
-          paramJ = "<Not Defined>";
-        }
-
-
-        // Narrative of evidence
-        if (policyEvidence.getProjectPolicy().getProjectPolicyInfo(this.getSelectedPhase())
-          .getNarrativeEvidence() != null
-          && !policyEvidence.getProjectPolicy().getProjectPolicyInfo(this.getSelectedPhase()).getNarrativeEvidence()
-            .isEmpty()) {
-          paramK =
-            policyEvidence.getProjectPolicy().getProjectPolicyInfo(this.getSelectedPhase()).getNarrativeEvidence();
-        } else {
-          paramK = "<Not Defined>";
-        }
-
-
-        // Innovations
-        if (policyEvidence.getProjectPolicy().getProjectPolicyInnovations() != null) {
-          List<ProjectPolicyInnovation> innovations =
-            new ArrayList<>(policyEvidence.getProjectPolicy().getProjectPolicyInnovations().stream()
-              .filter(o -> o.isActive() && o.getPhase().getId().equals(this.getSelectedPhase().getId()))
-              .collect(Collectors.toList()));
-          if (innovations != null && !innovations.isEmpty()) {
-            for (ProjectPolicyInnovation innovation : innovations) {
-              if (innovation.getProjectInnovation() != null
-                && innovation.getProjectInnovation().getProjectInnovationInfo(this.getSelectedPhase()) != null) {
-                paramL += "● " + innovation.getProjectInnovation().getComposedName() + "\n";
+            // Youth
+            if (marker.getMarker().getId() == 2) {
+              if (marker.getFocus() != null) {
+                paramK = marker.getFocus().getPowbName();
+                paramL = marker.getJust();
+              } else {
+                paramK = "<Not Defined>";
+                paramL = "<Not Defined>";
               }
             }
-          } else {
-            paramL = "<Not Defined>";
-          }
-        } else {
-          paramL = "<Not Defined>";
-        }
-
-        // Crp and Platforms
-        if (policyEvidence.getProjectPolicy().getProjectPolicyCrps() != null) {
-          List<ProjectPolicyCrp> crps = new ArrayList<>(policyEvidence.getProjectPolicy().getProjectPolicyCrps()
-            .stream().filter(o -> o.isActive() && o.getPhase().getId().equals(this.getSelectedPhase().getId()))
-            .collect(Collectors.toList()));
-          if (crps != null && !crps.isEmpty()) {
-            for (ProjectPolicyCrp crp : crps) {
-              paramM += "● " + crp.getGlobalUnit().getAcronym() + "\n";
+            // CapDev
+            if (marker.getMarker().getId() == 3) {
+              if (marker.getFocus() != null) {
+                paramM = marker.getFocus().getPowbName();
+                paramN = marker.getJust();
+              } else {
+                paramM = "<Not Defined>";
+                paramN = "<Not Defined>";
+              }
             }
-          }
-        } else {
-          paramM = "<Not Defined>";
-        }
-
-        // Sub-IDOs
-        if (policyEvidence.getProjectPolicy().getProjectPolicySubIdos() != null) {
-          List<ProjectPolicySubIdo> subIdos =
-            new ArrayList<>(policyEvidence.getProjectPolicy().getProjectPolicySubIdos().stream()
-              .filter(o -> o.isActive() && o.getPhase().getId().equals(this.getSelectedPhase().getId()))
-              .collect(Collectors.toList()));
-          if (subIdos != null && !subIdos.isEmpty()) {
-            for (ProjectPolicySubIdo subIdo : subIdos) {
-              paramN += "● " + subIdo.getSrfSubIdo().getDescription() + "\n";
-            }
-          }
-        } else {
-          paramN = "<Not Defined>";
-        }
-
-        // CGIAR Cross-cutting Markers
-        if (policyEvidence.getProjectPolicy().getProjectPolicyCrossCuttingMarkers() != null) {
-
-          List<ProjectPolicyCrossCuttingMarker> markers =
-            new ArrayList<>(policyEvidence.getProjectPolicy().getProjectPolicyCrossCuttingMarkers().stream()
-              .filter(o -> o.isActive() && o.getPhase().getId().equals(this.getSelectedPhase().getId()))
-              .collect(Collectors.toList()));
-
-          if (markers != null && !markers.isEmpty()) {
-            for (ProjectPolicyCrossCuttingMarker marker : markers) {
-              // Gender
-              if (marker.getCgiarCrossCuttingMarker().getId() == 1) {
-                if (marker.getRepIndGenderYouthFocusLevel() != null) {
-                  paramO = marker.getRepIndGenderYouthFocusLevel().getName();
-                } else {
-                  paramO = "<Not Defined>";
-                }
-              }
-              // Youth
-              if (marker.getCgiarCrossCuttingMarker().getId() == 2) {
-                if (marker.getRepIndGenderYouthFocusLevel() != null) {
-                  paramP = marker.getRepIndGenderYouthFocusLevel().getName();
-                } else {
-                  paramP = "<Not Defined>";
-                }
-              }
-              // CapDev
-              if (marker.getCgiarCrossCuttingMarker().getId() == 3) {
-                if (marker.getRepIndGenderYouthFocusLevel() != null) {
-                  paramQ = marker.getRepIndGenderYouthFocusLevel().getName();
-                } else {
-                  paramQ = "<Not Defined>";
-                }
-              }
-              // Climate Change
-              if (marker.getCgiarCrossCuttingMarker().getId() == 4) {
-                if (marker.getRepIndGenderYouthFocusLevel() != null) {
-                  paramR = marker.getRepIndGenderYouthFocusLevel().getName();
-                } else {
-                  paramR = "<Not Defined>";
-                }
+            // Climate Change
+            if (marker.getMarker().getId() == 4) {
+              if (marker.getFocus() != null) {
+                paramO = marker.getFocus().getPowbName();
+                paramP = marker.getJust();
+              } else {
+                paramO = "<Not Defined>";
+                paramP = "<Not Defined>";
               }
             }
           }
-
-        } else {
-          paramO = "<Not Defined>";
-          paramP = "<Not Defined>";
-          paramQ = "<Not Defined>";
-          paramR = "<Not Defined>";
         }
 
-        // Geographic scopes, regions and countries
-        boolean haveRegions = false;
-        boolean haveCountries = false;
-
-        if (policyEvidence.getProjectPolicy().getProjectPolicyGeographicScopes() != null) {
-
-          List<ProjectPolicyGeographicScope> geoScopes =
-            new ArrayList<>(policyEvidence.getProjectPolicy().getProjectPolicyGeographicScopes().stream()
-              .filter(o -> o.isActive() && o.getPhase().getId().equals(this.getSelectedPhase().getId()))
-              .collect(Collectors.toList()));
-          if (geoScopes != null && !geoScopes.isEmpty()) {
-            // Ask if the selection of the geographic scope needs add a Region or a Country
-            for (ProjectPolicyGeographicScope projectPolicyGeographicScope : geoScopes) {
-
-              if (projectPolicyGeographicScope.getRepIndGeographicScope().getId() == 2) {
-                haveRegions = true;
-              }
-              if (projectPolicyGeographicScope.getRepIndGeographicScope().getId() != 1
-                && projectPolicyGeographicScope.getRepIndGeographicScope().getId() != 2) {
-                haveCountries = true;
-              }
-              paramS += "● " + projectPolicyGeographicScope.getRepIndGeographicScope().getName() + "\n";
-            }
-          }
-        } else {
-          paramS = "<Not Defined>";
-        }
-
-        if (haveRegions) {
-          // Load Regions
-          if (policyEvidence.getProjectPolicy().getProjectPolicyRegions() != null) {
-            List<ProjectPolicyRegion> regions =
-              new ArrayList<>(policyEvidence.getProjectPolicy().getProjectPolicyRegions().stream()
-                .filter(o -> o.isActive() && o.getPhase().getId().equals(this.getSelectedPhase().getId()))
-                .collect(Collectors.toList()));
-            if (regions != null && !regions.isEmpty()) {
-              for (ProjectPolicyRegion region : regions) {
-                paramT += "● " + region.getLocElement().getName() + "\n";
-              }
-            }
-          } else {
-            paramT = "<Not Defined>";
-          }
-        } else {
-          paramT = "<Not Applicable>";
-        }
-
-        if (haveCountries) {
-          // Load Countries
-          if (policyEvidence.getProjectPolicy().getProjectPolicyCountries() != null) {
-            List<ProjectPolicyCountry> countries =
-              new ArrayList<>(policyEvidence.getProjectPolicy().getProjectPolicyCountries().stream()
-                .filter(o -> o.isActive() && o.getPhase().getId().equals(this.getSelectedPhase().getId()))
-                .collect(Collectors.toList()));
-            if (countries != null && !countries.isEmpty()) {
-              for (ProjectPolicyCountry country : countries) {
-                paramU += "● " + country.getLocElement().getName() + "\n";
-              }
-            }
-          } else {
-            paramU = "<Not Defined>";
-          }
-        } else {
-          paramU = "<Not Applicable>";
-        }
-
-        // Is included in the AR
-        if (policyEvidence.getInclude() == null) {
-          paramW = "<Not Applicable>";
-        } else {
-          if (policyEvidence.getInclude()) {
-            paramW = "Yes";
-          } else {
-            paramW = "No";
-          }
-        }
-
-        paramV = policyEvidence.getProjectPolicy().getActiveSince().toLocaleString();
-
-        // Generate the policy url of MARLO
-        policyURL = this.getBaseUrl() + "/projects/" + this.getCrpSession() + "/policy.do?policyID="
-          + policyEvidence.getProjectPolicy().getId().toString() + "&phaseID="
-          + this.getSelectedPhase().getId().toString();
-
+      } else {
+        paramI = "<Not Defined>";
+        paramJ = "<Not Defined>";
+        paramK = "<Not Defined>";
+        paramL = "<Not Defined>";
+        paramM = "<Not Defined>";
+        paramN = "<Not Defined>";
+        paramO = "<Not Defined>";
+        paramP = "<Not Defined>";
       }
 
       model.addRow(new Object[] {paramA, paramB, paramC, paramD, paramE, paramF, paramG, paramH, paramI, paramJ, paramK,
-        paramL, paramM, paramN, paramO, paramP, paramQ, paramR, paramS, paramT, paramU, paramV, paramW, policyURL});
+        paramL, paramM, paramN, paramO, paramP});
     }
     return model;
   }
+
+
+  /**
+   * Get the information of all Outcomes and milestones synthetized in the annual report
+   * 
+   * @return a list of all Outcomes and milestones synthetized in the annual report
+   */
+  public List<AROutcomeMilestoneEvidence> getOutcomeMilestonesInfo() {
+
+    List<AROutcomeMilestoneEvidence> arOutcomeMilestoneEvidences = new ArrayList<AROutcomeMilestoneEvidence>();
+
+    List<LiaisonInstitution> liaisonInstitutions = this.getLoggedCrp().getLiaisonInstitutions().stream()
+      .filter(c -> c.getCrpProgram() != null && c.isActive() && c.getCrpProgram().isActive()
+        && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+      .collect(Collectors.toList());
+    liaisonInstitutions.sort(Comparator.comparing(LiaisonInstitution::getAcronym));
+
+    for (LiaisonInstitution liaisonInstitution : liaisonInstitutions) {
+
+      ReportSynthesis reportSynthesisFG =
+        reportSynthesisManager.findSynthesis(this.getSelectedPhase().getId(), liaisonInstitution.getId());
+
+      if (reportSynthesisFG.getReportSynthesisFlagshipProgress() != null) {
+
+        if (reportSynthesisFG.getReportSynthesisFlagshipProgress().getReportSynthesisFlagshipProgressOutcomes() != null
+          && !reportSynthesisFG.getReportSynthesisFlagshipProgress().getReportSynthesisFlagshipProgressOutcomes()
+            .isEmpty()
+          && reportSynthesisFG.isActive() && reportSynthesisFG.getReportSynthesisFlagshipProgress().isActive()) {
+
+          List<ReportSynthesisFlagshipProgressOutcome> progressOutcomes = new ArrayList<>(
+            reportSynthesisFG.getReportSynthesisFlagshipProgress().getReportSynthesisFlagshipProgressOutcomes().stream()
+              .filter(o -> o.isActive() && o.getCrpProgramOutcome().isActive()).collect(Collectors.toList()));
+
+          for (ReportSynthesisFlagshipProgressOutcome progressOutcome : progressOutcomes) {
+
+            if (progressOutcome.getReportSynthesisFlagshipProgressOutcomeMilestones() != null
+              && !progressOutcome.getReportSynthesisFlagshipProgressOutcomeMilestones().isEmpty()) {
+              List<ReportSynthesisFlagshipProgressOutcomeMilestone> outcomeMilestones =
+                new ArrayList<>(progressOutcome.getReportSynthesisFlagshipProgressOutcomeMilestones().stream()
+                  .filter(o -> o.isActive() && o.getCrpMilestone().isActive()).collect(Collectors.toList()));
+              for (ReportSynthesisFlagshipProgressOutcomeMilestone outcomeMilestone : outcomeMilestones) {
+
+                AROutcomeMilestoneEvidence milestoneEvidence = new AROutcomeMilestoneEvidence();
+                milestoneEvidence.setCrpProgramOutcome(progressOutcome.getCrpProgramOutcome());
+                milestoneEvidence.setOutcomeProgress(progressOutcome.getSummary());
+                milestoneEvidence.setCrpMilestone(outcomeMilestone.getCrpMilestone());
+                milestoneEvidence.setMilestonesStatus(outcomeMilestone.getMilestonesStatus());
+                milestoneEvidence.setRepIndMilestoneReason(outcomeMilestone.getReason());
+                milestoneEvidence.setOtherReason(outcomeMilestone.getOtherReason());
+                milestoneEvidence.setEvidence(outcomeMilestone.getEvidence());
+
+                milestoneEvidence.setCrossCuttingMarkers(new ArrayList<>());
+                if (outcomeMilestone.getReportSynthesisFlagshipProgressCrossCuttingMarkers() != null
+                  && !outcomeMilestone.getReportSynthesisFlagshipProgressCrossCuttingMarkers().isEmpty()) {
+
+                  milestoneEvidence.getCrossCuttingMarkers()
+                    .addAll(outcomeMilestone.getReportSynthesisFlagshipProgressCrossCuttingMarkers().stream()
+                      .filter(o -> o.isActive()).collect(Collectors.toList()));
+                }
+
+                arOutcomeMilestoneEvidences.add(milestoneEvidence);
+
+              }
+            }
+
+          }
+        }
+      }
+
+    }
+
+
+    return arOutcomeMilestoneEvidences;
+  }
+
 
   @Override
   public void prepare() throws Exception {
@@ -684,6 +485,17 @@ public class OutcomesMilestonesEvidenceSummaryAction extends BaseSummariesAction
     LOG.info(
       "Start report download: " + this.getFileName() + ". User: " + this.getCurrentUser().getComposedCompleteName()
         + ". CRP: " + this.getLoggedCrp().getAcronym() + ". Cycle: " + this.getSelectedCycle());
+  }
+
+  private String removeHrefTags(String text) {
+
+    text = text.replaceAll("<a href=", "");
+    text = text.replaceAll("</a>", "");
+    text = text.replaceAll("amp;", "");
+    text = text.replaceAll("&nbsp;", "");
+
+    return text;
+
   }
 
   public void setBytesXLSX(byte[] bytesXLSX) {

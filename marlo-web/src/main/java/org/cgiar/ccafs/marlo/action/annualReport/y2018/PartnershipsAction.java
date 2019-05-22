@@ -1189,6 +1189,18 @@ public class PartnershipsAction extends BaseAction {
 
           }
 
+          List<ReportSynthesisKeyPartnershipPmu> externalPmus =
+            reportSynthesisKeyPartnershipPmuManager.findByExternalId(external.getId());
+
+          if (externalPmus != null && !externalPmus.isEmpty()) {
+
+            for (ReportSynthesisKeyPartnershipPmu externalPmu : externalPmus) {
+              reportSynthesisKeyPartnershipPmuManager.hardDeleteReportSynthesisKeyPartnershipPmu(externalPmu.getId());
+            }
+
+          }
+
+
           // Delete Key External partnership
           reportSynthesisKeyPartnershipExternalManager.deleteReportSynthesisKeyPartnershipExternal(external.getId());
 

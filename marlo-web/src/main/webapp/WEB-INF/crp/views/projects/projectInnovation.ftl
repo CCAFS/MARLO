@@ -53,7 +53,7 @@
         <span class="pull-right">${(item.projectExpectedStudyInfo.year)!'No Year'}</span>
 
         <div class="">
-          [#-- Title --] 
+          [#-- Title --]
           <div class="form-group">
             [@customForm.input name="innovation.projectInnovationInfo.title" type="text" i18nkey="projectInnovations.title"  placeholder="" className="limitWords-30" help="projectInnovations.title.helpText" helpIcon=false required=true editable=editable /]
           </div>

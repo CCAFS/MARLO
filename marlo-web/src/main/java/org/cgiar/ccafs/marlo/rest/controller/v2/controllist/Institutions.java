@@ -18,11 +18,14 @@ package org.cgiar.ccafs.marlo.rest.controller.v2.controllist;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.generallists.GlobalUnitItem;
+import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.institutions.CountryOfficeRequestItem;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.institutions.InstitutionItem;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.institutions.InstitutionTypeItem;
+import org.cgiar.ccafs.marlo.rest.dto.CountryOfficeRequestDTO;
 import org.cgiar.ccafs.marlo.rest.dto.InstitutionDTO;
 import org.cgiar.ccafs.marlo.rest.dto.InstitutionRequestDTO;
 import org.cgiar.ccafs.marlo.rest.dto.InstitutionTypeDTO;
+import org.cgiar.ccafs.marlo.rest.dto.NewCountryOfficeRequestDTO;
 import org.cgiar.ccafs.marlo.rest.dto.NewInstitutionDTO;
 import org.cgiar.ccafs.marlo.rest.errors.NotFoundException;
 import org.cgiar.ccafs.marlo.security.Permission;
@@ -64,17 +67,41 @@ public class Institutions {
 
   private InstitutionTypeItem<InstitutionTypeDTO> institutionTypeItem;
   private InstitutionItem<InstitutionDTO> institutionItem;
+  private CountryOfficeRequestItem<CountryOfficeRequestDTO> countryOfficeRequestItem;
   private final UserManager userManager;
 
   @Inject
   public Institutions(InstitutionTypeItem<InstitutionTypeDTO> institutionTypeItem,
-    InstitutionItem<InstitutionDTO> institutionItem, GlobalUnitItem<InstitutionDTO> globalUnitItem,
-    UserManager userManager) {
+    InstitutionItem<InstitutionDTO> institutionItem,
+    CountryOfficeRequestItem<CountryOfficeRequestDTO> countryOfficeRequestItem,
+    GlobalUnitItem<InstitutionDTO> globalUnitItem, UserManager userManager) {
     this.institutionTypeItem = institutionTypeItem;
     this.institutionItem = institutionItem;
     this.userManager = userManager;
+    this.countryOfficeRequestItem = countryOfficeRequestItem;
   }
 
+
+  /**
+   * Create a new Country Office Request *
+   * 
+   * @param acronym of global unit
+   * @param NewCountryOfficeRequestDTO of country office to be created
+   * @return a Country Office request created
+   */
+  @ApiOperation(value = "${Institutions.country-office-requests.create.value}",
+    response = CountryOfficeRequestDTO.class)
+  @RequiresPermissions(Permission.FULL_CREATE_REST_API_PERMISSION)
+  @RequestMapping(value = "/{CGIAREntity}/institutions/country-office-requests", method = RequestMethod.POST,
+    produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<CountryOfficeRequestDTO> createCountryOfficeRequest(
+    @ApiParam(value = "${Institutions.country-office-requests.create.param.CGIAR}",
+      required = true) @PathVariable("CGIAREntity") String CGIAREntity,
+    @ApiParam(value = "${Institutions.country-office-requests.create.param.country}",
+      required = true) @Valid @RequestBody NewCountryOfficeRequestDTO newCountryOfficeRequestDTO) {
+    return this.countryOfficeRequestItem.createCountryOfficeRequest(newCountryOfficeRequestDTO, CGIAREntity,
+      this.getCurrentUser());
+  }
 
   /**
    * Create a new institution request *
@@ -96,12 +123,37 @@ public class Institutions {
   }
 
   /**
+   * Find a country office request by ID *
+   * 
+   * @param acronym of global unit
+   * @param id of country office request
+   * @return a CountryOfficeRequestDTO with country office request data item
+   */
+  @ApiOperation(value = "${Institutions.country-office-requests.code.value}", response = CountryOfficeRequestDTO.class)
+  @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
+  @RequestMapping(value = "/{CGIAREntity}/institutions/country-office-requests/{requestId}", method = RequestMethod.GET,
+    produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<CountryOfficeRequestDTO> findCountryOfficeRequestById(
+    @ApiParam(value = "${Institutions.country-office-requests.code.param.CGIAR}",
+      required = true) @PathVariable(name = "CGIAREntity") String CGIAREntity,
+    @ApiParam(value = "${Institutions.country-office-requests.code.param.requestId}",
+      required = true) @PathVariable(name = "requestId") Long requestId) {
+    ResponseEntity<CountryOfficeRequestDTO> response =
+      this.countryOfficeRequestItem.getCountryOfficeRequest(requestId, CGIAREntity);
+    if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+      throw new NotFoundException("404", this.env.getProperty("Institutions.country-office-requests.code.404"));
+    }
+    return response;
+
+  }
+
+  /**
    * Find a institution by ID *
    * 
    * @param intitution id
    * @return a InstitutionDTO with institution data item
    */
-  @Throttling(type = ThrottlingType.RemoteAddr, limit = 1, timeUnit = TimeUnit.MINUTES)
+  @Throttling(type = ThrottlingType.HeaderValue, limit = 1, timeUnit = TimeUnit.SECONDS)
   @ApiOperation(tags = {"Table 4 - CRP Innovations", "Table 3 - Outcome/ Impact Case Reports"},
     value = "${Institutions.institutions.code.value}", response = InstitutionDTO.class)
   @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)

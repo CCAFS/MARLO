@@ -118,7 +118,7 @@ public class ExternalPartnersSummaryAction extends BaseSummariesAction implement
     ByteArrayOutputStream os = new ByteArrayOutputStream();
     try {
       Resource reportResource = resourceManager.createDirectly(
-        this.getClass().getResource("/pentaho/crp/AR-Evidences/PoliciesAR2018.prpt"), MasterReport.class);
+        this.getClass().getResource("/pentaho/crp/AR-Evidences/ExternalPartnersAR2018.prpt"), MasterReport.class);
       MasterReport masterReport = (MasterReport) reportResource.getResource();
       String center = this.getLoggedCrp().getAcronym();
       // Get datetime
@@ -203,7 +203,7 @@ public class ExternalPartnersSummaryAction extends BaseSummariesAction implement
   @Override
   public String getFileName() {
     StringBuffer fileName = new StringBuffer();
-    fileName.append("Policies-");
+    fileName.append("ExternalPartners-");
     fileName.append(this.getLoggedCrp().getAcronym() + "-");
     fileName.append(this.getSelectedPhase().getName());
     fileName.append(this.getSelectedYear() + "_");
@@ -251,7 +251,8 @@ public class ExternalPartnersSummaryAction extends BaseSummariesAction implement
     List<Institution> evidencePartners;
 
     LiaisonInstitution liaisonInstitutionPMU = this.getLoggedCrp().getLiaisonInstitutions().stream()
-      .filter(o -> o.isActive() && o.getAcronym().equals("PMU")).collect(Collectors.toList()).get(0);
+      .filter(o -> o.isActive() && o.getAcronym() != null && o.getAcronym().equals("PMU")).collect(Collectors.toList())
+      .get(0);
 
     List<LiaisonInstitution> liaisonInstitutions = this.getLoggedCrp().getLiaisonInstitutions().stream()
       .filter(c -> c.getCrpProgram() != null && c.isActive()

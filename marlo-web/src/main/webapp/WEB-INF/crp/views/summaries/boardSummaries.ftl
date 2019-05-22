@@ -170,7 +170,7 @@
       ]
     },
     { "active": true,
-      "available": true,
+      "available": false,
       "title": "summaries.board.report.reportedDeliverables", 
       "description": "summaries.board.report.reportedDeliverables.description",
       "namespace": "/projects",
@@ -238,6 +238,28 @@
       "action": "${crpSession}/FundingSourcesSummary",
       "formats": [ "Excel" ],
       "cycles": [ "Planning" ]
+    }
+  ]},
+  [#-- CRP/PTF Level --]
+  { "slug": "globalUnitLevel", "active": !centerGlobalUnit, "title":"summaries.board.options.globalUnitLevel", "reportsList": [
+    { "active": true,
+      "available": true,
+      "title": "summaries.board.report.outcomeMilestoneEvidence", 
+      "description": "summaries.board.report.outcomeMilestoneEvidence.description", 
+      "namespace": "/summaries",
+      "action": "${crpSession}/outcomeMilestoneEvidence",
+      "formats": [ "Excel" ],
+      "cycles": [ "Reporting" ]
+    },
+     [#-- List of Current External Partners --]
+    { "active": true,
+      "available": true,
+      "title": "summaries.board.report.externalPartnersEvidence", 
+      "description": "summaries.board.report.externalPartnersEvidence.description", 
+      "namespace": "/summaries",
+      "action": "${crpSession}/externalPartnersEvidence",
+      "formats": [ "Excel" ],
+      "cycles": [ "Reporting" ]
     }
   ]},
   [#-- MONITORING --]

@@ -420,7 +420,6 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
 
     if (keyExternal != null && !keyExternal.isEmpty()) {
       poiSummary.convertHTMLTags(document, keyExternal, null);
-
     }
 
   }
@@ -586,7 +585,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
       }
     }
     poiSummary.textParagraph(document.createParagraph(),
-      this.getText("summaries.powb2019.otherParticipans") + ": " + participantingCenters);
+      this.getText("summaries.ar2018.otherParticipans") + ": " + participantingCenters);
   }
 
 
@@ -966,7 +965,6 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     poiSummary.textTable(document, headers, datas, false, "table3AnnualReport2018");
   }
 
-
   private void createTable13() {
     try {
       String blackColor = "000000";
@@ -1140,6 +1138,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
       System.out.println(e);
     }
   }
+
 
   private void createTable2() {
 
@@ -1456,7 +1455,6 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     poiSummary.textTable(document, headers, datas, false, "table4AnnualReport2018");
   }
 
-
   private void createTable5() {
 
     List<List<POIField>> headers = new ArrayList<>();
@@ -1607,6 +1605,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     }
     poiSummary.textTable(document, headers, datas, false, "table5AnnualReport2018");
   }
+
 
   public void createTable6() {
     List<List<POIField>> headers = new ArrayList<>();
@@ -1909,6 +1908,36 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     }
 
     poiSummary.textTable(document, headers, datas, false, "tableAnnexesAnnualReport2018");
+  }
+
+  public String deleteFormatTags(String text) {
+    // Add format tags to remove to the list
+    List<String> tagsToRemove = new ArrayList<String>();
+    tagsToRemove.add("<span");
+    tagsToRemove.add("<style");
+
+    // Search tags in the current text
+    for (int i = 0; i < tagsToRemove.size(); i++) {
+      if (text.contains(tagsToRemove.get(i))) {
+
+        // Search for the position of the tag in the text
+        int finalTagPos = 0;
+        String tagText = "";
+        for (int j = 0; j < text.length(); j++) {
+          if (text.substring(j, j + tagsToRemove.get(i).length() - 1).equals(tagsToRemove.get(j))) {
+
+            // Detect the close part of the tag
+            finalTagPos = text.indexOf(">", j);
+            if (finalTagPos != 0) {
+              tagText = text.substring(j, finalTagPos);
+              text = text.replaceAll(tagText, "");
+              j = j + tagsToRemove.get(i).length();
+            }
+          }
+        }
+      }
+    }
+    return text;
   }
 
   public String deleteSpanTags(String text) {
@@ -2428,7 +2457,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
 
         // Part C
         document.createParagraph().setPageBreak(true);
-        poiSummary.textHead1Title(document.createParagraph(), "Part C. Annexes");
+        poiSummary.textHead1Title(document.createParagraph(), "Annexes");
 
         // Table Annexes
         // document.createParagraph().setPageBreak(true);
@@ -2932,7 +2961,8 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     projectPoliciesTable2 =
       new LinkedHashSet<>(projectPolicyManager.getProjectPoliciesList(pmuInstitution, this.getSelectedPhase()));
 
-    if (reportSynthesisPMU.getReportSynthesisFlagshipProgress().getReportSynthesisFlagshipProgressPolicies() != null
+    if (reportSynthesisPMU.getReportSynthesisFlagshipProgress() != null
+      && reportSynthesisPMU.getReportSynthesisFlagshipProgress().getReportSynthesisFlagshipProgressPolicies() != null
       && !reportSynthesisPMU.getReportSynthesisFlagshipProgress().getReportSynthesisFlagshipProgressPolicies()
         .isEmpty()) {
       for (ReportSynthesisFlagshipProgressPolicy flagshipProgressPolicy : reportSynthesisPMU
@@ -2949,7 +2979,8 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     projectInnovationsTable4 =
       new LinkedHashSet<>(projectInnovationManager.getProjectInnovationsList(pmuInstitution, this.getSelectedPhase()));
 
-    if (reportSynthesisPMU.getReportSynthesisFlagshipProgress().getReportSynthesisFlagshipProgressInnovations() != null
+    if (reportSynthesisPMU.getReportSynthesisFlagshipProgress() != null
+      && reportSynthesisPMU.getReportSynthesisFlagshipProgress().getReportSynthesisFlagshipProgressInnovations() != null
       && !reportSynthesisPMU.getReportSynthesisFlagshipProgress().getReportSynthesisFlagshipProgressInnovations()
         .isEmpty()) {
       for (ReportSynthesisFlagshipProgressInnovation flagshipProgressInnovation : reportSynthesisPMU
@@ -2965,9 +2996,11 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
 
     projectExpectedStudiesTable3 =
       new LinkedHashSet<>(projectExpectedStudyManager.getProjectStudiesList(pmuInstitution, this.getSelectedPhase()));
-
-    reportSynthesisPMU.getReportSynthesisFlagshipProgress().setProjectStudies(new ArrayList<>());
-    if (reportSynthesisPMU.getReportSynthesisFlagshipProgress().getReportSynthesisFlagshipProgressStudies() != null
+    if (reportSynthesisPMU.getReportSynthesisFlagshipProgress() != null) {
+      reportSynthesisPMU.getReportSynthesisFlagshipProgress().setProjectStudies(new ArrayList<>());
+    }
+    if (reportSynthesisPMU.getReportSynthesisFlagshipProgress() != null
+      && reportSynthesisPMU.getReportSynthesisFlagshipProgress().getReportSynthesisFlagshipProgressStudies() != null
       && !reportSynthesisPMU.getReportSynthesisFlagshipProgress().getReportSynthesisFlagshipProgressStudies()
         .isEmpty()) {
       for (ReportSynthesisFlagshipProgressStudy flagshipProgressStudy : reportSynthesisPMU
@@ -3212,7 +3245,8 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     }
 
     // load evaluation actions
-    if (reportSynthesisPMU.getReportSynthesisMelia().getEvaluations() != null
+    if (reportSynthesisPMU.getReportSynthesisMelia() != null
+      && reportSynthesisPMU.getReportSynthesisMelia().getEvaluations() != null
       && !reportSynthesisPMU.getReportSynthesisMelia().getEvaluations().isEmpty()) {
       for (ReportSynthesisMeliaEvaluation reportSynthesisMeliaEvaluation : reportSynthesisPMU.getReportSynthesisMelia()
         .getEvaluations()) {
@@ -3248,7 +3282,9 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     LinkedHashSet<Deliverable> deliverables =
       new LinkedHashSet<>(deliverableManager.getPublicationsList(pmuInstitution, this.getSelectedPhase()));
 
-    if (reportSynthesisPMU.getReportSynthesisFlagshipProgress().getReportSynthesisFlagshipProgressDeliverables() != null
+    if (reportSynthesisPMU.getReportSynthesisFlagshipProgress() != null
+      && reportSynthesisPMU.getReportSynthesisFlagshipProgress()
+        .getReportSynthesisFlagshipProgressDeliverables() != null
       && !reportSynthesisPMU.getReportSynthesisFlagshipProgress().getReportSynthesisFlagshipProgressDeliverables()
         .isEmpty()) {
       for (ReportSynthesisFlagshipProgressDeliverable flagshipProgressDeliverable : reportSynthesisPMU

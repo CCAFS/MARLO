@@ -608,6 +608,7 @@
         <artifactId>geoip2</artifactId>
         <version>${geoip2.version}</version>
     </dependency>
+    <!-- throttling library to REST API-->
 		<dependency>
 			<groupId>com.weddini.throttling</groupId>
 			<artifactId>spring-boot-throttling-starter</artifactId>

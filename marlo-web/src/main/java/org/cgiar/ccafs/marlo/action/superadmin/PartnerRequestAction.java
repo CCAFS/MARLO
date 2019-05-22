@@ -129,6 +129,14 @@ public class PartnerRequestAction extends BaseAction {
           partnerRequest.setActive(false);
           // Store the list of user to send the email
           users.add(partnerRequest.getCreatedBy());
+          // If the request comes from CLARISA, include external mail
+          if (partnerRequest.getExternalUserMail() != null
+            && !"".equalsIgnoreCase(partnerRequest.getExternalUserMail())) {
+            User externalUser = new User();
+            externalUser.setEmail(partnerRequest.getExternalUserMail());
+            externalUser.setFirstName(partnerRequest.getExternalUserName());
+            users.add(externalUser);
+          }
           // verify if the location has been added previously
           if (locElements.contains(partnerRequest.getLocElement())) {
             LOG.warn("LocElement duplicated: " + partnerRequest.getLocElement().getId() + " will be skipped");
@@ -147,7 +155,7 @@ public class PartnerRequestAction extends BaseAction {
               LOG.warn(warningMessage);
               partnerRequest.setAcepted(new Boolean(false));
               partnerRequest.setModificationJustification(warningMessage);
-              partnerRequest.setActive(true);
+              partnerRequest.setActive(false);
             }
           }
           this.partnerRequestManager.savePartnerRequest(partnerRequest);
@@ -312,6 +320,14 @@ public class PartnerRequestAction extends BaseAction {
             this.partnerRequestManager.getPartnerRequestById(Long.valueOf(partnerRequestId));
           // Store the list of user to send the email
           users.add(partnerRequest.getCreatedBy());
+          // If the request comes from CLARISA, include external mail
+          if (partnerRequest.getExternalUserMail() != null
+            && !"".equalsIgnoreCase(partnerRequest.getExternalUserMail())) {
+            User externalUser = new User();
+            externalUser.setEmail(partnerRequest.getExternalUserMail());
+            externalUser.setFirstName(partnerRequest.getExternalUserName());
+            users.add(externalUser);
+          }
           locElements.add(partnerRequest.getLocElement());
           partnerRequest.setAcepted(new Boolean(false));
           partnerRequest.setActive(false);
@@ -333,15 +349,17 @@ public class PartnerRequestAction extends BaseAction {
 
   private void sendAcceptedNotficationEmail(PartnerRequest partnerRequest) {
     String toEmail = "";
-    // ToEmail: User who requested the partner
-    toEmail = partnerRequest.getCreatedBy().getEmail();
 
     // CC Email: User who accepted the request
     String ccEmail = this.getCurrentUser().getEmail();
 
-    // if the request was through the API rest
+    // ToEmail: User who requested the partner or the mail received by CLARISA
     if (partnerRequest.getExternalUserMail() != null) {
-      ccEmail = ccEmail + ", " + partnerRequest.getExternalUserMail();
+      toEmail = partnerRequest.getExternalUserMail();
+      ccEmail = ccEmail + ", " + partnerRequest.getCreatedBy().getEmail();
+    } else {
+
+      toEmail = partnerRequest.getCreatedBy().getEmail();
     }
 
     // BBC: Our gmail notification email.
@@ -353,13 +371,14 @@ public class PartnerRequestAction extends BaseAction {
 
     // Building the email message
     StringBuilder message = new StringBuilder();
-    message.append(this.getText("email.dear", new String[] {partnerRequest.getExternalUserName() == null
-      ? partnerRequest.getCreatedBy().getFirstName() : partnerRequest.getExternalUserName()}));
+    String userName = partnerRequest.getExternalUserName() == null ? partnerRequest.getCreatedBy().getFirstName()
+      : partnerRequest.getExternalUserName();
+    message.append(this.getText("email.dear", new String[] {userName}));
     message
       .append(this.getText("marloRequestInstitution.accept.email", new String[] {partnerRequest.getPartnerInfo()}));
 
     message.append(this.getText("email.support.noCrpAdmins"));
-    message.append(this.getText("email.getStarted"));
+    // message.append(this.getText("email.getStarted"));
     message.append(this.getText("email.bye"));
     this.sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
   }
@@ -438,7 +457,7 @@ public class PartnerRequestAction extends BaseAction {
         this.getText("marloRequestInstitution.office.reject.email", new String[] {loc_elements, this.justification}));
 
       message.append(this.getText("email.support.noCrpAdmins"));
-      message.append(this.getText("email.getStarted"));
+      // message.append(this.getText("email.getStarted"));
       message.append(this.getText("email.bye"));
       this.sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
     }

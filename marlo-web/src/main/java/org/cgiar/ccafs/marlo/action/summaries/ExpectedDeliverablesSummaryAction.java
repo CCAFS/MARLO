@@ -794,7 +794,8 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
             ? deliverableInfo.getStatusName(this.getActualPhase()) : null;
         String delivNewYear = null;
         if (deliverableInfo.getStatus() != null
-          && deliverableInfo.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())) {
+          && (deliverableInfo.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
+            || deliverableInfo.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId()))) {
           delivNewYear = deliverableInfo.getNewExpectedYear() != null && deliverableInfo.getNewExpectedYear() != -1
             ? deliverableInfo.getNewExpectedYear().toString() : null;
         } else {

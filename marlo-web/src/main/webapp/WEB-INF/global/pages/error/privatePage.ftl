@@ -15,7 +15,8 @@
             <h2> [@s.text name="privatePage.title" /] </h2>
             <span>  [@s.text name="privatePage.message" /]  </span>
             <br />
-            <br /> 
+            ${(projectExpectedStudy)!''}
+            <br />
           </div>
         </div>
       </div>
