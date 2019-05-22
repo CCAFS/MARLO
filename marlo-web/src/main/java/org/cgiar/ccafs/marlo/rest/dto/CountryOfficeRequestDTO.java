@@ -18,35 +18,24 @@ package org.cgiar.ccafs.marlo.rest.dto;
 import io.swagger.annotations.ApiModelProperty;
 
 /**
- * @author Hermes Jiménez - CIAT/CCAFS
+ * @author Manuel almanzar - CIAT/CCAFS
  */
-public class InstitutionRequestDTO {
+public class CountryOfficeRequestDTO {
 
-  @ApiModelProperty(notes = "The id of the Partner Request", position = 1)
+  @ApiModelProperty(notes = "The id of the country office request", position = 1)
   private Long id;
 
-  @ApiModelProperty(notes = "Name of institution", position = 2)
-  private String partnerName;
+  @ApiModelProperty(notes = "Intitution", position = 9)
+  InstitutionDTO institutionDTO;
 
-  @ApiModelProperty(notes = "Acronym of institution", position = 3)
-  private String acronym;
-  @ApiModelProperty(notes = "Web Page of institution", position = 4)
-  private String webPage;
-
-  @ApiModelProperty(notes = "Partner Request Status", position = 5)
+  @ApiModelProperty(notes = "Country office request status", position = 5)
   private Boolean isAcepted;
 
   @ApiModelProperty(notes = "Reject justification", position = 6)
   private String rejectJustification;
 
-  @ApiModelProperty(notes = "Country of partner request headquarter", position = 7)
+  @ApiModelProperty(notes = "Country of office request", position = 7)
   private CountryDTO countryDTO;
-
-  @ApiModelProperty(notes = "Institution type", position = 8)
-  private InstitutionTypeDTO institutionTypeDTO;
-
-  @ApiModelProperty(notes = "Intitution created", position = 9)
-  private InstitutionDTO institutionDTO;
 
   @ApiModelProperty(notes = "External user mail", position = 10)
   private String externalUserMail;
@@ -57,36 +46,29 @@ public class InstitutionRequestDTO {
   @ApiModelProperty(notes = "External user comments", position = 12)
   private String externalUserComments;
 
-  public String getAcronym() {
-    return this.acronym;
-  }
-
-  public CountryDTO getCountryDTO() {
-    return this.countryDTO;
-  }
 
   public String getExternalUserComments() {
     return this.externalUserComments;
   }
 
+
   public String getExternalUserMail() {
     return this.externalUserMail;
   }
+
 
   public String getExternalUserName() {
     return this.externalUserName;
   }
 
+
   public Long getId() {
     return this.id;
   }
 
+
   public InstitutionDTO getInstitutionDTO() {
     return this.institutionDTO;
-  }
-
-  public InstitutionTypeDTO getInstitutionTypeDTO() {
-    return this.institutionTypeDTO;
   }
 
   public Boolean getIsAcepted() {
@@ -94,33 +76,20 @@ public class InstitutionRequestDTO {
   }
 
 
-  public String getPartnerName() {
-    return this.partnerName;
-  }
-
   public String getRejectJustification() {
     return this.rejectJustification;
   }
 
-  public String getWebPage() {
-    return this.webPage;
-  }
-
-  public void setAcronym(String acronym) {
-    this.acronym = acronym;
-  }
-
-  public void setCountryDTO(CountryDTO countryDTO) {
-    this.countryDTO = countryDTO;
-  }
 
   public void setExternalUserComments(String externalUserComments) {
     this.externalUserComments = externalUserComments;
   }
 
+
   public void setExternalUserMail(String externalUserMail) {
     this.externalUserMail = externalUserMail;
   }
+
 
   public void setExternalUserName(String externalUserName) {
     this.externalUserName = externalUserName;
@@ -135,24 +104,25 @@ public class InstitutionRequestDTO {
     this.institutionDTO = institutionDTO;
   }
 
-  public void setInstitutionTypeDTO(InstitutionTypeDTO institutionTypeDTO) {
-    this.institutionTypeDTO = institutionTypeDTO;
-  }
 
   public void setIsAcepted(Boolean isAcepted) {
     this.isAcepted = isAcepted;
   }
 
-  public void setPartnerName(String partnerName) {
-    this.partnerName = partnerName;
-  }
 
   public void setRejectJustification(String rejectJustification) {
     this.rejectJustification = rejectJustification;
   }
 
-  public void setWebPage(String webPage) {
-    this.webPage = webPage;
+
+  public CountryDTO getCountryDTO() {
+    return countryDTO;
   }
+
+
+  public void setCountryDTO(CountryDTO countryDTO) {
+    this.countryDTO = countryDTO;
+  }
+
 
 }

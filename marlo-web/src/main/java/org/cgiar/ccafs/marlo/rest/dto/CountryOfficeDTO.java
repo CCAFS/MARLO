@@ -20,7 +20,7 @@ import io.swagger.annotations.ApiModelProperty;
 /**
  * @author Mralmanzar - CIAT/CCAFS
  */
-public class InstitutionOfficeCountryDTO {
+public class CountryOfficeDTO {
 
   @ApiModelProperty(notes = "The ISO country code")
   private Long code;
