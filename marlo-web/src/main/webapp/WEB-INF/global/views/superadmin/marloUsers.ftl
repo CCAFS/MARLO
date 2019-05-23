@@ -37,7 +37,7 @@
           <div class="form-group">
             <div class="form-group row">
               <div class="col-md-8">
-                [@customForm.input name="user.email" i18nkey="guestUsers.email" value="" className="userEmail" type="text"  required=true required=true editable=true /]
+                [@customForm.input name="user.email" i18nkey="guestUsers.email" value="${(user.email)!}" className="userEmail" type="text"  required=true editable=true /]
               </div>
               <div class="col-md-4">
                 <label for="globalUnitID">Global Unit:</label>
@@ -49,10 +49,10 @@
             </div>
             <div class="form-group row">
               <div class="col-md-6 ">
-                [@customForm.input name="user.firstName" i18nkey="guestUsers.firstName" value="" className="userFirstName" type="text"  required=false  editable=true /]
+                [@customForm.input name="user.firstName" i18nkey="guestUsers.firstName" value="${(user.firstName)!}" className="userFirstName" type="text"  required=true  editable=true /]
               </div>
               <div class="col-md-6">
-                [@customForm.input name="user.lastName" i18nkey="guestUsers.firstName" value="" className="userLastName" type="text"  required=false  editable=true /]
+                [@customForm.input name="user.lastName" i18nkey="guestUsers.lastName" value="${(user.lastName)!}" className="userLastName" type="text"  required=true  editable=true /]
               </div>
             </div>
           </div>
