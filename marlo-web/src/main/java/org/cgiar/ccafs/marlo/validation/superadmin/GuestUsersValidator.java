@@ -43,16 +43,23 @@ public class GuestUsersValidator extends BaseValidator {
     if (selectedGlobalUnitID == -1) {
       action.addMessage(action.getText("login.error.selectCrp"));
       action.getInvalidFields().put("input-selectedGlobalUnitID", InvalidFieldsMessages.EMPTYFIELD);
-      action.addFieldError("input-selectedGlobalUnitID", InvalidFieldsMessages.EMPTYFIELD);
     }
 
     // Validate email
     if (!(this.isValidEmail(user.getEmail()) && this.wordCount(user.getEmail()) <= 5)) {
-      action.addMessage(action.getText("guestUsers.emptyEmail"));
+      action.addMessage(action.getText("guestUsers.email"));
       action.getInvalidFields().put("input-user.email", InvalidFieldsMessages.EMPTYFIELD);
-      action.addFieldError("input-user.email", InvalidFieldsMessages.EMPTYFIELD);
     }
 
+    if (user.getFirstName() != null || !user.getFirstName().isEmpty()) {
+      action.addMessage(action.getText("guestUsers.firstName"));
+      action.getInvalidFields().put("input-user.firstName", InvalidFieldsMessages.EMPTYFIELD);
+    }
+
+    if (user.getLastName() != null || !user.getLastName().isEmpty()) {
+      action.addMessage(action.getText("guestUsers.lastName"));
+      action.getInvalidFields().put("input-user.lastName", InvalidFieldsMessages.EMPTYFIELD);
+    }
 
     if (!action.getFieldErrors().isEmpty()) {
       action.addActionError(action.getText("saving.fields.required"));
@@ -67,6 +74,12 @@ public class GuestUsersValidator extends BaseValidator {
       }
     }
 
+    if (!action.getFieldErrors().isEmpty()) {
+      action.addActionError(action.getText("saving.fields.required"));
+    } else if (action.getValidationMessage().length() > 0) {
+      action.addActionMessage(
+        " " + action.getText("saving.missingFields", new String[] {action.getValidationMessage().toString()}));
+    }
 
   }
 

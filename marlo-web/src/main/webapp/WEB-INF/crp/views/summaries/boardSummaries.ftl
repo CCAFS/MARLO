@@ -170,7 +170,7 @@
       ]
     },
     { "active": true,
-      "available": false,
+      "available": true,
       "title": "summaries.board.report.reportedDeliverables", 
       "description": "summaries.board.report.reportedDeliverables.description",
       "namespace": "/projects",
@@ -183,8 +183,9 @@
           "label":  "Type of report",
           "name":   "showAllYears",
           "data" : [ 
-            { "label": "Only the specific cycle year",  "value": "false"},
+            { "label": "Only the specific cycle year",  "value": "false"}[#--,
             { "label": "All Years",                     "value": "true"}
+            --]
           ] 
         }
       ]

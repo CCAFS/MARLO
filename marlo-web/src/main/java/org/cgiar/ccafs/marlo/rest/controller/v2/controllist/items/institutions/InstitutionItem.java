@@ -202,7 +202,7 @@ public class InstitutionItem<T> {
 
     // message subject
 
-    subject = this.getText("marloRequestInstitution.email.subject",
+    subject = this.getText("marloRequestInstitution.clarisa.email.subject",
       new String[] {entityAcronym.toUpperCase(), institutionName});
     String ccEmail = user.getEmail();
     // Message content
@@ -235,8 +235,8 @@ public class InstitutionItem<T> {
       message.append(" </br>");
     }
     message.append(" </br></br>");
-    message.append("This request was sent through CLARISA logged with the user " + user.getFirstName() + " "
-      + user.getLastName() + "(" + user.getEmail() + ")  </br>");
+    message.append("This request was sent through CLARISA logged as " + user.getFirstName() + " " + user.getLastName()
+      + " (" + user.getEmail() + ")  </br>");
     message.append("</br>");
     try {
       this.sendMail.send(this.config.getEmailNotification(), ccEmail, this.config.getEmailNotification(), subject,

@@ -168,7 +168,7 @@ public class CountryOfficeRequestItem<T> {
     // message subject
     String ccEmail = user.getEmail();
 
-    subject = this.getText("marloRequestInstitution.office.email.subject",
+    subject = this.getText("marloRequestInstitution.office.clarisa.email.subject",
       new String[] {entityAcronym.toUpperCase(), countryISOAlpha, institutionName});
 
     // Message content
@@ -185,8 +185,8 @@ public class CountryOfficeRequestItem<T> {
     message.append("Countries: ");
     message.append(countryName);
     message.append(" </br></br>");
-    message.append("This request was sent through CLARISA logged with the user " + user.getFirstName() + " "
-      + user.getLastName() + "(" + user.getEmail() + ")  </br>");
+    message.append("This request was sent through CLARISA logged as " + user.getFirstName() + " " + user.getLastName()
+      + " (" + user.getEmail() + ")  </br>");
     message.append("</br>");
     try {
       this.sendMail.send(this.config.getEmailNotification(), ccEmail, this.config.getEmailNotification(), subject,
