@@ -68,24 +68,24 @@ public class RejectPartnerRequestAction extends BaseAction {
   @Override
   public String execute() throws Exception {
     try {
-      PartnerRequest partnerRequest = partnerRequestManager.getPartnerRequestById(Long.parseLong(requestID));
+      PartnerRequest partnerRequest = this.partnerRequestManager.getPartnerRequestById(Long.parseLong(this.requestID));
       partnerRequest.setAcepted(new Boolean(false));
-      partnerRequest.setRejectJustification(justification);
+      partnerRequest.setRejectJustification(this.justification);
       partnerRequest.setRejectedBy(this.getCurrentUser());
       partnerRequest.setRejectedDate(new Date());
       partnerRequest.setActive(false);
-      partnerRequest = partnerRequestManager.savePartnerRequest(partnerRequest);
+      partnerRequest = this.partnerRequestManager.savePartnerRequest(partnerRequest);
       // inactive the parent partnerRequest
       PartnerRequest partnerRequestParent =
-        partnerRequestManager.getPartnerRequestById(partnerRequest.getPartnerRequest().getId());
+        this.partnerRequestManager.getPartnerRequestById(partnerRequest.getPartnerRequest().getId());
       partnerRequestParent.setActive(false);
-      partnerRequestManager.savePartnerRequest(partnerRequestParent);
+      this.partnerRequestManager.savePartnerRequest(partnerRequestParent);
       // Send notification email
-      if (sendNotification) {
+      if (this.sendNotification) {
         this.sendRejectedNotficationEmail(partnerRequest);
       }
     } catch (Exception e) {
-      success = false;
+      this.success = false;
     }
 
     return SUCCESS;
@@ -94,37 +94,43 @@ public class RejectPartnerRequestAction extends BaseAction {
 
   @Override
   public String getJustification() {
-    return justification;
+    return this.justification;
   }
 
   public String getRequestID() {
-    return requestID;
+    return this.requestID;
   }
 
   public boolean isSuccess() {
-    return success;
+    return this.success;
   }
 
   @Override
   public void prepare() throws Exception {
-    success = true;
+    this.success = true;
     try {
       Map<String, Parameter> parameters = this.getParameters();
-      justification = StringUtils.trim(parameters.get(APConstants.JUSTIFICATION_REQUEST).getMultipleValues()[0]);
-      requestID = StringUtils.trim(parameters.get(APConstants.PARTNER_REQUEST_ID).getMultipleValues()[0]);
-      sendNotification = Boolean.valueOf(
+      this.justification = StringUtils.trim(parameters.get(APConstants.JUSTIFICATION_REQUEST).getMultipleValues()[0]);
+      this.requestID = StringUtils.trim(parameters.get(APConstants.PARTNER_REQUEST_ID).getMultipleValues()[0]);
+      this.sendNotification = Boolean.valueOf(
         StringUtils.trim(parameters.get(APConstants.PARTNER_REQUEST_SEND_NOTIFICATION).getMultipleValues()[0]));
     } catch (Exception e) {
-      success = false;
+      this.success = false;
     }
   }
 
   private void sendRejectedNotficationEmail(PartnerRequest partnerRequest) {
     String toEmail = "";
-    // ToEmail: User who requested the partner
-    toEmail = partnerRequest.getCreatedBy().getEmail();
     // CC Email: User who rejected the request
     String ccEmail = this.getCurrentUser().getEmail();
+
+    // ToEmail: User who requested the partner or the mail received by CLARISA
+    if (partnerRequest.getExternalUserMail() != null) {
+      toEmail = partnerRequest.getExternalUserMail();
+      ccEmail = ccEmail + ", " + partnerRequest.getCreatedBy().getEmail();
+    } else {
+      toEmail = partnerRequest.getCreatedBy().getEmail();
+    }
     // BBC: Our gmail notification email.
     String bbcEmails = this.config.getEmailNotification();
     // subject
@@ -132,12 +138,14 @@ public class RejectPartnerRequestAction extends BaseAction {
       this.getText("marloRequestInstitution.reject.email.subject", new String[] {partnerRequest.getPartnerName()});
     // Building the email message
     StringBuilder message = new StringBuilder();
-    message.append(this.getText("email.dear", new String[] {partnerRequest.getCreatedBy().getFirstName()}));
+    String userName = partnerRequest.getExternalUserName() == null ? partnerRequest.getCreatedBy().getFirstName()
+      : partnerRequest.getExternalUserName();
+    message.append(this.getText("email.dear", new String[] {userName}));
     message.append(this.getText("marloRequestInstitution.reject.email",
-      new String[] {partnerRequest.getPartnerInfo(), justification}));
+      new String[] {partnerRequest.getPartnerInfo(), this.justification}));
     message.append(this.getText("email.support.noCrpAdmins"));
     message.append(this.getText("email.bye"));
-    sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
+    this.sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
   }
 
 

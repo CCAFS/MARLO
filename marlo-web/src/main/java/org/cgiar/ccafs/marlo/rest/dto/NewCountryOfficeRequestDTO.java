@@ -18,34 +18,32 @@ package org.cgiar.ccafs.marlo.rest.dto;
 import javax.validation.constraints.NotNull;
 
 import io.swagger.annotations.ApiModelProperty;
-import org.hibernate.validator.constraints.NotEmpty;
 
-public class NewInstitutionDTO {
+/**
+ * @author Hermes Jiménez - CIAT/CCAFS
+ */
 
-  @ApiModelProperty(notes = "The Institution Name", position = 1)
+public class NewCountryOfficeRequestDTO {
+
+  @ApiModelProperty(notes = "Institution code")
   @NotNull
-  private String name;
-  @ApiModelProperty(notes = "The Institution Acronym", position = 2)
-  private String acronym;
-  @ApiModelProperty(notes = "The Institution Website", position = 3)
-  private String websiteLink;
-  @ApiModelProperty(notes = "The Institution type code", position = 4)
+  private Long institutionCode;
+
+  @ApiModelProperty(notes = "Country Alpha iso code of Office")
   @NotNull
-  private String institutionTypeCode;
-  @NotEmpty
-  @ApiModelProperty(notes = "Headquarter country iso Alpha 2 ", position = 5)
-  private String hqCountryIso;
-  @ApiModelProperty(notes = "Mail of the external user who is requesting the institution", position = 6)
+  private String countryIso;
+
+  @ApiModelProperty(notes = "Mail of the external user who is requesting the Office Location", position = 6)
+  @NotNull
   private String externalUserMail;
-  @ApiModelProperty(notes = "Name of the external user who is requesting the institution", position = 7)
+  @ApiModelProperty(notes = "Name of the external user who is requesting the  Office Location", position = 7)
   private String externalUserName;
-  @ApiModelProperty(notes = "comments from the external user", position = 8)
+  @ApiModelProperty(notes = "Comments from the external user", position = 8)
   private String externalUserComments;
 
-  public String getAcronym() {
-    return this.acronym;
+  public String getCountryIso() {
+    return this.countryIso;
   }
-
 
   public String getExternalUserComments() {
     return this.externalUserComments;
@@ -59,19 +57,13 @@ public class NewInstitutionDTO {
     return this.externalUserName;
   }
 
-
-  public String getName() {
-    return this.name;
+  public Long getInstitutionCode() {
+    return this.institutionCode;
   }
 
-  public String getWebsiteLink() {
-    return this.websiteLink;
+  public void setCountryIso(String countryIso) {
+    this.countryIso = countryIso;
   }
-
-  public void setAcronym(String acronym) {
-    this.acronym = acronym;
-  }
-
 
   public void setExternalUserComments(String externalUserComments) {
     this.externalUserComments = externalUserComments;
@@ -85,33 +77,9 @@ public class NewInstitutionDTO {
     this.externalUserName = externalUserName;
   }
 
-
-  public void setName(String name) {
-    this.name = name;
+  public void setInstitutionCode(Long institutionCode) {
+    this.institutionCode = institutionCode;
   }
 
-  public void setWebsiteLink(String websiteLink) {
-    this.websiteLink = websiteLink;
-  }
-
-
-  public String getHqCountryIso() {
-    return hqCountryIso;
-  }
-
-
-  public void setHqCountryIso(String hqCountryIso) {
-    this.hqCountryIso = hqCountryIso;
-  }
-
-
-  public String getInstitutionTypeCode() {
-    return institutionTypeCode;
-  }
-
-
-  public void setInstitutionTypeCode(String institutionTypeCode) {
-    this.institutionTypeCode = institutionTypeCode;
-  }
 
 }
