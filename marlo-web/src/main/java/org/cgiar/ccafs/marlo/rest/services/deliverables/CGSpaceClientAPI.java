@@ -39,8 +39,8 @@ public class CGSpaceClientAPI extends MetadataClientApi {
   private static final Logger LOG = LoggerFactory.getLogger(CGSpaceClientAPI.class);
   private final String CGSPACE_HANDLE = "https://cgspace.cgiar.org/rest/handle/{0}";
   private final String HANDLE_URL = "http://hdl.handle.net/";
-  private final String CGSPACE_URL = "https://cgspace.cgiar.org/handle/";
   private final String HANDLE_HTTPS_URL = "https://hdl.handle.net/";
+  private final String CGSPACE_URL = "https://cgspace.cgiar.org/handle/";
   private final String REST_URL = "https://cgspace.cgiar.org/rest/items/{0}/metadata";
   private RestConnectionUtil xmlReaderConnectionUtil;
   private Map<String, String> coverterAtrributes;
