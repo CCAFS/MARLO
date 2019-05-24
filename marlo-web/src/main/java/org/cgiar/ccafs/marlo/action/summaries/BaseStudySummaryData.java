@@ -36,6 +36,12 @@ import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudySubIdo;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.HTMLParser;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -154,13 +160,13 @@ public class BaseStudySummaryData extends BaseSummariesAction {
         "capacityRelevance", "otherCrossCuttingDimensions", "comunicationsMaterial", "contacts", "studyProjects",
         "tagged", "cgiarInnovation", "cgiarInnovations", "climateRelevance", "link", "links", "studyPolicies",
         "isSrfTargetText", "otherCrossCuttingDimensionsSelection", "isContribution", "isRegional", "isNational",
-        "isOutcomeCaseStudy", "isSrfTarget"},
+        "isOutcomeCaseStudy", "isSrfTarget", "url", "studiesReference"},
       new Class[] {Long.class, Integer.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        Boolean.class, Boolean.class, Boolean.class, Boolean.class, Boolean.class},
+        Boolean.class, Boolean.class, Boolean.class, Boolean.class, Boolean.class, String.class, String.class},
       0);
 
     if (projectExpectedStudyInfos != null && !projectExpectedStudyInfos.isEmpty()) {
@@ -178,7 +184,7 @@ public class BaseStudySummaryData extends BaseSummariesAction {
           capacityRelevance = null, otherCrossCuttingDimensions = null, comunicationsMaterial = null, contacts = null,
           studyProjects = null, tagged = null, cgiarInnovation = null, cgiarInnovations = null, climateRelevance = null,
           link = null, links = null, studyPolicies = null, isSrfTargetText = null,
-          otherCrossCuttingDimensionsSelection = null;
+          otherCrossCuttingDimensionsSelection = null, url = null, studiesReference = null;
 
         Boolean isContribution = false, isRegional = false, isNational = false, isOutcomeCaseStudy = false,
           isSrfTarget = false;
@@ -438,7 +444,60 @@ public class BaseStudySummaryData extends BaseSummariesAction {
         // References cited
         if (projectExpectedStudyInfo.getReferencesText() != null
           && !projectExpectedStudyInfo.getReferencesText().trim().isEmpty()) {
+          studiesReference = htmlParser.plainTextToHtml(projectExpectedStudyInfo.getReferencesText());
           referenceText = htmlParser.plainTextToHtml(projectExpectedStudyInfo.getReferencesText());
+
+          // Get the html part of the References text into url var
+
+          if (studiesReference.length() > 0 && studiesReference.contains("http")) {
+            String textPart = null;
+            int startUrl = 0, finalUrl = 0;
+
+            for (int i = 0; i < studiesReference.length(); i++) {
+
+              if (i < studiesReference.length() - 6) {
+
+                if ((studiesReference.charAt(i) == 'h' && studiesReference.charAt(i + 1) == 't'
+                  && studiesReference.charAt(i + 2) == 't' && studiesReference.charAt(i + 3) == 'p'
+                  && studiesReference.charAt(i + 4) == ':' && studiesReference.charAt(i + 5) == '/'
+                  && studiesReference.charAt(i + 6) == '/')
+                  || (studiesReference.charAt(i) == 'h' && studiesReference.charAt(i + 1) == 't'
+                    && studiesReference.charAt(i + 2) == 't' && studiesReference.charAt(i + 3) == 'p'
+                    && studiesReference.charAt(i + 4) == 's' && studiesReference.charAt(i + 5) == ':'
+                    && studiesReference.charAt(i + 6) == '/' && studiesReference.charAt(i + 7) == '/')) {
+                  startUrl = i;
+                  textPart = studiesReference.substring(1, i - 1);
+                  i = i + 6;
+                }
+              }
+              if (studiesReference.charAt(i) == '<' && studiesReference.charAt(i + 1) == 'b'
+                && studiesReference.charAt(i + 2) == 'r' && studiesReference.charAt(i + 3) == '>' && startUrl > 0) {
+                finalUrl = i - 1;
+                i = i + 3;
+              }
+
+              if (startUrl > 0) {
+                if (finalUrl > 0) {
+
+                  url = studiesReference.substring(startUrl, finalUrl);
+                  System.out.println(textPart);
+                  if (url.length() > 93) {
+                    String shortURL = null;
+
+                    shortURL = this.getShortUrlService(url);
+                    if (shortURL != null) {
+                      referenceText = referenceText.replaceAll(url, shortURL);
+                    }
+                  }
+
+                  startUrl = 0;
+                  finalUrl = 0;
+                  url = "";
+                  textPart = "";
+                }
+              }
+            }
+          }
         }
 
         // TODO: Add Quantifications in Pentaho/MySQL
@@ -534,7 +593,6 @@ public class BaseStudySummaryData extends BaseSummariesAction {
           studyProjects = String.join("", studyProjectSet);
         }
 
-
         model.addRow(
           new Object[] {id, year, title, commissioningStudy, status, type, outcomeImpactStatement, isContributionText,
             stageStudy, srfTargets, subIdos, topLevelComments, geographicScopes, regions, countries, scopeComments,
@@ -542,11 +600,38 @@ public class BaseStudySummaryData extends BaseSummariesAction {
             quantification, genderRelevance, youthRelevance, capacityRelevance, otherCrossCuttingDimensions,
             comunicationsMaterial, contacts, studyProjects, tagged, cgiarInnovation, cgiarInnovations, climateRelevance,
             link, links, studyPolicies, isSrfTargetText, otherCrossCuttingDimensionsSelection, isContribution,
-            isRegional, isNational, isOutcomeCaseStudy, isSrfTarget});
+            isRegional, isNational, isOutcomeCaseStudy, isSrfTarget, url, studiesReference});
 
       }
     }
 
     return model;
+  }
+
+  public String getShortUrlService(String link) {
+    String output = null;
+    String shortUrl = null;
+    try {
+
+      URL url = new URL("http://tinyurl.com/api-create.php?url=" + link);
+      HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+      conn.setRequestMethod("GET");
+      if (conn.getResponseCode() != 200) {
+        throw new RuntimeException("Failed : HTTP error code : " + conn.getResponseCode());
+      }
+      BufferedReader br = new BufferedReader(new InputStreamReader((conn.getInputStream())));
+
+      while ((output = br.readLine()) != null) {
+        shortUrl = output;
+      }
+      conn.disconnect();
+
+    } catch (MalformedURLException e) {
+      e.printStackTrace();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+
+    return shortUrl;
   }
 }
