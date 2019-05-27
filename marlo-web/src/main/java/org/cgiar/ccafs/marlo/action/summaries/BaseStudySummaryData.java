@@ -494,9 +494,13 @@ public class BaseStudySummaryData extends BaseSummariesAction {
                   if (url.length() > 93) {
                     String shortURL = null;
                     System.out.println("url " + url);
-                    shortURL = this.getShortUrlService(url);
+                    try {
+                      shortURL = this.getShortUrlService(url);
+                    } catch (Exception e) {
+                      System.out.println(e);
+                    }
 
-                    if (shortURL != null || !shortURL.isEmpty()) {
+                    if (shortURL != null) {
                       referenceText = referenceText.replaceAll(url, shortURL);
                     }
                   }
