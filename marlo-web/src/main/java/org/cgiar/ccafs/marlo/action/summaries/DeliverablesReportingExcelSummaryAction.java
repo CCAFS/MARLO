@@ -432,8 +432,9 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
                 && d.getDeliverableInfo().getNewExpectedYear().intValue() >= this.getSelectedYear())))
             || (d.getDeliverableInfo().getStatus().intValue() == Integer
               .parseInt(ProjectStatusEnum.Extended.getStatusId())
-              && (d.getDeliverableInfo().getNewExpectedYear() != null
-                && d.getDeliverableInfo().getNewExpectedYear().intValue() == this.getSelectedYear()))
+              && (d.getDeliverableInfo().getYear() == this.getSelectedYear()
+                || (d.getDeliverableInfo().getNewExpectedYear() != null
+                  && d.getDeliverableInfo().getNewExpectedYear().intValue() == this.getSelectedYear())))
             || (d.getDeliverableInfo().getStatus().intValue() == Integer
               .parseInt(ProjectStatusEnum.Cancelled.getStatusId())
               && (d.getDeliverableInfo().getYear() == this.getSelectedYear()
