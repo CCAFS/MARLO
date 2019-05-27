@@ -203,7 +203,8 @@ public class Institutions {
       required = true) @PathVariable(name = "CGIAREntity") String CGIAREntity,
     @ApiParam(value = "${Institutions.institution-requests.code.param.requestId}",
       required = true) @PathVariable(name = "requestId") Long requestId) {
-    ResponseEntity<InstitutionRequestDTO> response = this.institutionItem.getPartnerRequest(requestId, CGIAREntity);
+    ResponseEntity<InstitutionRequestDTO> response =
+      this.institutionItem.getPartnerRequest(requestId, CGIAREntity, this.getCurrentUser());
     if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
       throw new NotFoundException("404", this.env.getProperty("Institutions.institution-requests.code.404"));
     }

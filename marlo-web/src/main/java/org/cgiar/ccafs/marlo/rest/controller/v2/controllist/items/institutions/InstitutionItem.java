@@ -20,6 +20,7 @@ import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.manager.PartnerRequestManager;
+import org.cgiar.ccafs.marlo.data.model.CrpUser;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.InstitutionType;
@@ -37,6 +38,7 @@ import org.cgiar.ccafs.marlo.utils.SendMailS;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -95,6 +97,10 @@ public class InstitutionItem<T> {
     String regex = "^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$";
     Pattern pattern = Pattern.compile(regex);
 
+    Set<CrpUser> lstUser = user.getCrpUsers();
+    if (!lstUser.stream().anyMatch(crp -> crp.getCrp().getAcronym().equalsIgnoreCase(entityAcronym))) {
+      throw new FieldErrorDTO("InstitutionRequestDTO", "GlobalUnitEntity", "CGIAR entity not autorized");
+    }
     if (globalUnitEntity == null) {
       throw new FieldErrorDTO("InstitutionRequestDTO", "GlobalUnitEntity", "Invalid CGIAR entity acronym");
     }
@@ -173,14 +179,23 @@ public class InstitutionItem<T> {
    * 
    * @return PartnerRequestDTO founded
    */
-  public ResponseEntity<InstitutionRequestDTO> getPartnerRequest(Long id, String entityAcronym) {
+  public ResponseEntity<InstitutionRequestDTO> getPartnerRequest(Long id, String entityAcronym, User user) {
     PartnerRequest partnerRequest = this.partnerRequestManager.getPartnerRequestById(id);
+    Set<CrpUser> lstUser = user.getCrpUsers();
+    // If not exists
     if (partnerRequest != null && partnerRequest.getPartnerRequest() == null) {
+      return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+    // if the request was from an CRP which the user don't have authorization
+    if (!lstUser.stream().anyMatch(crp -> crp.getCrp().getAcronym().equalsIgnoreCase(entityAcronym))) {
+      return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+    // if the request was from an CRP diferent to the acronym
+    if (!entityAcronym.equalsIgnoreCase(partnerRequest.getCrp().getAcronym())) {
       return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
     return Optional.ofNullable(partnerRequest).map(this.institutionMapper::partnerRequestToInstitutionRequestDTO)
       .map(result -> new ResponseEntity<>(result, HttpStatus.OK)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
-
   }
 
   String getText(String property, String[] params) {

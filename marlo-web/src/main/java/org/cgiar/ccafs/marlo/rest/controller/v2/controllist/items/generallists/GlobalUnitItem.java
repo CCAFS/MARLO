@@ -15,9 +15,7 @@
 
 package org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.generallists;
 
-import org.cgiar.ccafs.marlo.data.manager.GeneralStatusManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
-import org.cgiar.ccafs.marlo.data.model.GeneralStatus;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.rest.dto.CGIAREntityDTO;
 import org.cgiar.ccafs.marlo.rest.mappers.GlobalUnitMapper;
@@ -38,15 +36,16 @@ import org.springframework.http.ResponseEntity;
 public class GlobalUnitItem<T> {
 
   private GlobalUnitManager globalUnitManager;
-  private GeneralStatusManager generalStatusManager;
+  // private GeneralStatusManager generalStatusManager;
   private GlobalUnitMapper globalUnitMapper;
 
   @Inject
-  public GlobalUnitItem(GlobalUnitManager globalUnitManager, GlobalUnitMapper globalUnitMapper,
-    GeneralStatusManager generalStatusManager) {
+  public GlobalUnitItem(GlobalUnitManager globalUnitManager, GlobalUnitMapper globalUnitMapper
+  // ,GeneralStatusManager generalStatusManager
+  ) {
     this.globalUnitManager = globalUnitManager;
     this.globalUnitMapper = globalUnitMapper;
-    this.generalStatusManager = generalStatusManager;
+    // this.generalStatusManager = generalStatusManager;
   }
 
   /**
@@ -70,8 +69,8 @@ public class GlobalUnitItem<T> {
    */
   public ResponseEntity<CGIAREntityDTO> findGlobalUnitByCGIRARId(String smoCode) {
     GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitBySMOCode(smoCode);
-    List<GeneralStatus> general;
-    general = this.generalStatusManager.findByTable("report_synthesis_flagship_progress_milestones");
+    // List<GeneralStatus> general;
+    // general = this.generalStatusManager.findByTable("report_synthesis_flagship_progress_milestones");
 
 
     return Optional.ofNullable(globalUnitEntity).filter(c -> c.getGlobalUnitType().getId() <= 4)

@@ -31,8 +31,10 @@ import org.cgiar.ccafs.marlo.rest.dto.NewInstitutionDTO;
 
 import java.util.Date;
 
+import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 import org.mapstruct.Mappings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,6 +43,28 @@ import org.slf4j.LoggerFactory;
 public abstract class InstitutionMapper {
 
   private static final Logger LOG = LoggerFactory.getLogger(InstitutionMapper.class);
+
+  @AfterMapping
+  void afterMapping(@MappingTarget InstitutionRequestDTO institutionRequestDTO, PartnerRequest partnerRequest) {
+    if (partnerRequest.getAcepted() == null) {
+      institutionRequestDTO.setRequestStatus("PENDING");
+      institutionRequestDTO.setRequestJustification("");
+    } else {
+      switch (partnerRequest.getAcepted().toString()) {
+        case "true":
+          institutionRequestDTO.setRequestStatus("APPROVED");
+          institutionRequestDTO.setRequestJustification(partnerRequest.getModificationJustification());
+          break;
+        case "false":
+          institutionRequestDTO.setRequestStatus("REJECTED");
+          institutionRequestDTO.setRequestJustification(partnerRequest.getRejectJustification());
+          break;
+        default:
+          institutionRequestDTO.setRequestStatus("ERROR");
+
+      }
+    }
+  }
 
   @Mappings({@Mapping(source = "headquater", target = "isHeadquarter"),
     @Mapping(source = "locElement.isoNumeric", target = "code"),
@@ -54,6 +78,7 @@ public abstract class InstitutionMapper {
     @Mapping(source = "institutionsLocations", target = "countriesDTOs")})
   public abstract InstitutionDTO institutionToInstitutionDTO(Institution institution);
 
+
   @Mappings({@Mapping(source = "locElement", target = "locElement"), @Mapping(source = "globalUnit", target = "crp"),
     @Mapping(source = "user", target = "createdBy"), @Mapping(source = "user", target = "modifiedBy"),
     @Mapping(target = "office", constant = "true"), @Mapping(target = "modificationJustification", constant = "0"),
@@ -65,7 +90,6 @@ public abstract class InstitutionMapper {
   public abstract PartnerRequest NewCountryOfficeRequestDTOToPartnerRequest(
     NewCountryOfficeRequestDTO newCountryOfficeRequestDTO, GlobalUnit globalUnit, LocElement locElement,
     Institution institution, User user);
-
 
   @Mappings({@Mapping(source = "locElement", target = "locElement"),
     @Mapping(source = "institutionType", target = "institutionType"),
@@ -81,14 +105,15 @@ public abstract class InstitutionMapper {
   public abstract PartnerRequest newInstitutionDTOToPartnerRequest(NewInstitutionDTO newInstitutionDTO,
     GlobalUnit globalUnit, LocElement locElement, InstitutionType institutionType, User user);
 
+
   @Mappings({@Mapping(source = "locElement", target = "countryDTO"),
     @Mapping(source = "institution", target = "institutionDTO"), @Mapping(source = "acepted", target = "isAcepted")})
   public abstract CountryOfficeRequestDTO PartnerRequestToCountryOfficeRequestDTO(PartnerRequest PartnerRequest);
 
+
   @Mappings({@Mapping(source = "locElement", target = "countryDTO"),
     @Mapping(source = "institution", target = "institutionDTO"),
-    @Mapping(source = "institutionType", target = "institutionTypeDTO"),
-    @Mapping(source = "acepted", target = "isAcepted")})
+    @Mapping(source = "institutionType", target = "institutionTypeDTO")})
   public abstract InstitutionRequestDTO partnerRequestToInstitutionRequestDTO(PartnerRequest PartnerRequest);
 
 }
