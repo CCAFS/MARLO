@@ -454,7 +454,6 @@ public class BaseStudySummaryData extends BaseSummariesAction {
             int startUrl = 0, finalUrl = 0;
 
             for (int i = 0; i < studiesReference.length(); i++) {
-
               if (i < studiesReference.length() - 6) {
 
                 if ((studiesReference.charAt(i) == 'h' && studiesReference.charAt(i + 1) == 't'
@@ -466,26 +465,38 @@ public class BaseStudySummaryData extends BaseSummariesAction {
                     && studiesReference.charAt(i + 4) == 's' && studiesReference.charAt(i + 5) == ':'
                     && studiesReference.charAt(i + 6) == '/' && studiesReference.charAt(i + 7) == '/')) {
                   startUrl = i;
-                  textPart = studiesReference.substring(1, i - 1);
+                  if (i > 1) {
+                    textPart = studiesReference.substring(1, i - 1);
+                  }
                   i = i + 6;
                 }
+
               }
-              if (studiesReference.charAt(i) == '<' && studiesReference.charAt(i + 1) == 'b'
-                && studiesReference.charAt(i + 2) == 'r' && studiesReference.charAt(i + 3) == '>' && startUrl > 0) {
-                finalUrl = i - 1;
-                i = i + 3;
+              if (startUrl > 0) {
+                if ((studiesReference.charAt(i) == '<' && studiesReference.charAt(i + 1) == 'b'
+                  && studiesReference.charAt(i + 2) == 'r' && studiesReference.charAt(i + 3) == '>')) {
+                  finalUrl = i - 1;
+                  i = i + 3;
+                }
+                if (studiesReference.charAt(i) == ')') {
+                  finalUrl = i - 1;
+                }
+
+                if (studiesReference.charAt(i) == ' ') {
+                  finalUrl = i - 1;
+                }
               }
 
               if (startUrl > 0) {
                 if (finalUrl > 0) {
 
                   url = studiesReference.substring(startUrl, finalUrl);
-                  System.out.println(textPart);
                   if (url.length() > 93) {
                     String shortURL = null;
-
+                    System.out.println("url " + url);
                     shortURL = this.getShortUrlService(url);
-                    if (shortURL != null) {
+
+                    if (shortURL != null || !shortURL.isEmpty()) {
                       referenceText = referenceText.replaceAll(url, shortURL);
                     }
                   }
