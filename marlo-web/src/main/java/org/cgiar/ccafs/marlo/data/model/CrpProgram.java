@@ -15,7 +15,6 @@
 package org.cgiar.ccafs.marlo.data.model;
 // Generated May 26, 2016 9:42:28 AM by Hibernate Tools 4.3.1.Final
 
-
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 
 import java.util.HashSet;
@@ -29,24 +28,22 @@ import com.google.gson.annotations.Expose;
  */
 public class CrpProgram extends MarloAuditableEntity implements java.io.Serializable, IAuditLog {
 
-
   /**
    * 
    */
   private static final long serialVersionUID = -799819119525448185L;
 
-
   @Expose
   private GlobalUnit crp;
-
 
   @Expose
   private String name;
 
-
   @Expose
   private String acronym;
 
+  @Expose
+  private String smoCode;
 
   @Expose
   private int programType;
@@ -54,46 +51,32 @@ public class CrpProgram extends MarloAuditableEntity implements java.io.Serializ
 
   private String action;
 
-  private String smoCode;
-
-
   @Expose
   private CenterArea researchArea;
 
-
   private Set<CrpClusterOfActivity> crpClusterOfActivities = new HashSet<CrpClusterOfActivity>(0);
-
 
   private Set<CrpProgramLeader> crpProgramLeaders = new HashSet<CrpProgramLeader>(0);
 
-
   private Set<CrpProgramOutcome> crpProgramOutcomes = new HashSet<CrpProgramOutcome>(0);
-
 
   private Set<SectionStatus> sectionStatuses = new HashSet<SectionStatus>(0);
 
-
   private Set<CrpProgramCountry> crpProgramCountries = new HashSet<CrpProgramCountry>(0);
-
 
   private Set<Submission> submissions = new HashSet<Submission>(0);
 
-
   private List<String> selectedCountries;
-
 
   private List<CrpProgramOutcome> outcomes;
 
-
   private List<CrpClusterOfActivity> clusterofActivities;
-
 
   private Set<LiaisonInstitution> liaisonInstitutions = new HashSet<LiaisonInstitution>(0);
 
   private Set<ProjectFocus> projectFocuses = new HashSet<ProjectFocus>(0);
 
   private Set<CenterTopic> researchTopics = new HashSet<CenterTopic>(0);
-
 
   private Set<CenterImpact> researchImpacts = new HashSet<CenterImpact>(0);
 
@@ -157,7 +140,6 @@ public class CrpProgram extends MarloAuditableEntity implements java.io.Serializ
     return true;
   }
 
-
   public String getAcronym() {
     return this.acronym;
   }
@@ -165,7 +147,6 @@ public class CrpProgram extends MarloAuditableEntity implements java.io.Serializ
   public String getAction() {
     return this.action;
   }
-
 
   public Boolean getBaseLine() {
     return this.baseLine;
@@ -179,7 +160,6 @@ public class CrpProgram extends MarloAuditableEntity implements java.io.Serializ
 
     return name;
   }
-
 
   public double getCenterFunds() {
     return this.centerFunds;
@@ -229,36 +209,29 @@ public class CrpProgram extends MarloAuditableEntity implements java.io.Serializ
     return this.crpProgramCountries;
   }
 
-
   public Set<CrpProgramLeader> getCrpProgramLeaders() {
     return this.crpProgramLeaders;
   }
-
 
   public Set<CrpProgramOutcome> getCrpProgramOutcomes() {
     return this.crpProgramOutcomes;
   }
 
-
   public Set<DeliverableProgram> getDeliverablePrograms() {
     return this.deliverablePrograms;
   }
-
 
   public List<CenterImpact> getImpacts() {
     return this.impacts;
   }
 
-
   public List<CrpProgramLeader> getLeaders() {
     return this.leaders;
   }
 
-
   public Set<LiaisonInstitution> getLiaisonInstitutions() {
     return this.liaisonInstitutions;
   }
-
 
   @Override
   public String getLogDeatil() {
@@ -266,10 +239,8 @@ public class CrpProgram extends MarloAuditableEntity implements java.io.Serializ
 
     sb.append("Id : ").append(this.getId());
 
-
     return sb.toString();
   }
-
 
   public List<CrpProgramLeader> getManagers() {
     return this.managers;
@@ -291,7 +262,6 @@ public class CrpProgram extends MarloAuditableEntity implements java.io.Serializ
   public List<PowbExpectedCrpProgress> getPowbs() {
     return this.powbs;
   }
-
 
   public int getProgramType() {
     return this.programType;
@@ -331,7 +301,6 @@ public class CrpProgram extends MarloAuditableEntity implements java.io.Serializ
   public Set<Submission> getSubmissions() {
     return this.submissions;
   }
-
 
   public PowbSynthesis getSynthesis() {
     return this.synthesis;
@@ -476,42 +445,34 @@ public class CrpProgram extends MarloAuditableEntity implements java.io.Serializ
     this.selectedCountries = selectedCountries;
   }
 
-
   public void setSmoCode(String smoCode) {
     this.smoCode = smoCode;
   }
-
 
   public void setSubmissions(Set<Submission> submissions) {
     this.submissions = submissions;
   }
 
-
   public void setSynthesis(PowbSynthesis synthesis) {
     this.synthesis = synthesis;
   }
-
 
   public void setTopics(List<CenterTopic> topics) {
     this.topics = topics;
   }
 
-
   public void setW1(double w1) {
     this.w1 = w1;
   }
 
-
   public void setW3(double w3) {
     this.w3 = w3;
   }
-
 
   @Override
   public String toString() {
     return "CrpProgram [id=" + this.getId() + ", crp=" + this.crp + ", name=" + this.name + ", acronym=" + this.acronym
       + ", programType=" + this.programType + "]";
   }
-
 
 }
