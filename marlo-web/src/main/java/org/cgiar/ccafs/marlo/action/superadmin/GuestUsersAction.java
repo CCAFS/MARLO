@@ -125,18 +125,14 @@ public class GuestUsersAction extends BaseAction {
   public long getSelectedGlobalUnitID() {
     return selectedGlobalUnitID;
   }
-   
-  public boolean isCGIARUser() {
-    return isCGIARUser;
-  }
-
- 
-  public void setCGIARUser(boolean isCGIARUser) {
-    this.isCGIARUser = isCGIARUser;
-  }
 
   public User getUser() {
     return user;
+  }
+
+
+  public boolean isCGIARUser() {
+    return isCGIARUser;
   }
 
   @Override
@@ -144,7 +140,6 @@ public class GuestUsersAction extends BaseAction {
     crps = new ArrayList<>(
       globalUnitManager.findAll().stream().filter(c -> c.isActive() && c.isMarlo()).collect(Collectors.toList()));
   }
-
 
   @Override
   public String save() {
@@ -176,24 +171,23 @@ public class GuestUsersAction extends BaseAction {
             String password = this.getText("email.outlookPassword");
             if (LDAPUser != null) {
               // CGIAR user
-              isCGIARUser=true;
+              isCGIARUser = true;
               newUser.setFirstName(LDAPUser.getFirstName());
               newUser.setLastName(LDAPUser.getLastName());
               newUser.setUsername(LDAPUser.getLogin().toLowerCase());
               newUser.setCgiarUser(true);
-              newUser = userManager.saveUser(newUser);              
+              newUser = userManager.saveUser(newUser);
               message = this.getText("saving.saved");
             } else {
               // Non CGIAR user
               if (newUser.getFirstName() != null && newUser.getLastName() != null
                 && newUser.getFirstName().trim().length() > 0 && newUser.getLastName().trim().length() > 0) {
-                isCGIARUser=false;
+                isCGIARUser = false;
                 newUser.setCgiarUser(false);
                 newUser.setModificationJustification("User created in MARLO " + this.getActionName().replace("/", "-"));
                 password = RandomStringUtils.randomNumeric(6);
                 newUser.setPassword(password);
                 newUser = userManager.saveUser(newUser);
-                
                 message = this.getText("saving.saved");
               }
             }
@@ -309,6 +303,11 @@ public class GuestUsersAction extends BaseAction {
   }
 
 
+  public void setCGIARUser(boolean isCGIARUser) {
+    this.isCGIARUser = isCGIARUser;
+  }
+
+
   public void setCrps(List<GlobalUnit> crps) {
     this.crps = crps;
   }
@@ -328,7 +327,7 @@ public class GuestUsersAction extends BaseAction {
   @Override
   public void validate() {
     if (save) {
-      validator.validate(this, user, selectedGlobalUnitID, true);
+      validator.validate(this, user, selectedGlobalUnitID, isCGIARUser, true);
     }
   }
 
