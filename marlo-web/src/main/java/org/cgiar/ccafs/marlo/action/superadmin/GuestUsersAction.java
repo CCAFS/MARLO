@@ -82,6 +82,7 @@ public class GuestUsersAction extends BaseAction {
   private UserRoleManager userRoleManager;
   private RoleManager roleManager;
   private final SendMailS sendMailS;
+
   // Parameters
   private List<GlobalUnit> crps;
   private User user;
@@ -137,33 +138,39 @@ public class GuestUsersAction extends BaseAction {
 
   @Override
   public void prepare() throws Exception {
+    // if (filter) {
     crps = new ArrayList<>(
       globalUnitManager.findAll().stream().filter(c -> c.isActive() && c.isMarlo()).collect(Collectors.toList()));
   }
 
+
   @Override
   public String save() {
+    String response = SUCCESS;
     if (this.canAccessSuperAdmin()) {
-      if (selectedGlobalUnitID != -1) {
-        GlobalUnit globalUnit = globalUnitManager.getGlobalUnitById(selectedGlobalUnitID);
 
-        User newUser = new User();
-        newUser.setFirstName(user.getFirstName());
-        newUser.setLastName(user.getLastName());
-        newUser.setEmail(user.getEmail());
-        newUser.setModificationJustification("User created in MARLO " + this.getActionName().replace("/", "-"));
-        newUser.setAutoSave(true);
-        newUser.setId(null);
-        newUser.setActive(true);
+      // Check if the email is valid
+      if (user.getEmail() != null && this.isValidEmail(user.getEmail())) {
 
-        // Check if the email is valid
-        if (newUser.getEmail() != null && this.isValidEmail(newUser.getEmail())) {
-          boolean emailExists = false;
-          // We need to validate that the email does not exist yet into our database.
-          emailExists = userManager.getUserByEmail(newUser.getEmail()) == null ? false : true;
+        boolean emailExists = false;
+        // We need to validate that the email does not exist yet into our database.
+        emailExists = userManager.getUserByEmail(user.getEmail()) == null ? false : true;
 
-          // If email already exists.
-          if (!emailExists) {
+        // If email already exists.
+        if (!emailExists) {
+
+          if (selectedGlobalUnitID != -1) {
+            GlobalUnit globalUnit = globalUnitManager.getGlobalUnitById(selectedGlobalUnitID);
+
+            User newUser = new User();
+            newUser.setFirstName(user.getFirstName());
+            newUser.setLastName(user.getLastName());
+            newUser.setEmail(user.getEmail());
+            newUser.setModificationJustification("User created in MARLO " + this.getActionName().replace("/", "-"));
+            newUser.setAutoSave(true);
+            newUser.setId(null);
+            newUser.setActive(true);
+
 
             // Get the user if it is a CGIAR email.
             LDAPUser LDAPUser = this.getOutlookUser(newUser.getEmail());
@@ -180,6 +187,7 @@ public class GuestUsersAction extends BaseAction {
               message = this.getText("saving.saved");
             } else {
               // Non CGIAR user
+              isCGIARUser = false;
               if (newUser.getFirstName() != null && newUser.getLastName() != null
                 && newUser.getFirstName().trim().length() > 0 && newUser.getLastName().trim().length() > 0) {
                 isCGIARUser = false;
@@ -214,24 +222,27 @@ public class GuestUsersAction extends BaseAction {
             userRole = userRoleManager.saveUserRole(userRole);
 
           } else {
-            // If email already exists into our database.
-            LOG.warn(this.getText("manageUsers.email.existing"));
-            message = this.getText("manageUsers.email.existing");
-
+            message = this.getText("login.error.selectCrp");
+            LOG.warn(this.getText("login.error.selectCrp"));
+            // return "Error";
+            return response;
           }
+
         } else {
-          LOG.warn(this.getText("manageUsers.email.notValid"));
-          message = this.getText("manageUsers.email.notValid");
+          // If email already exists into our database.
+          LOG.warn(this.getText("manageUsers.email.existing"));
+          message = this.getText("manageUsers.email.existing");
+          // return "Error";
+          return response;
         }
-
       } else {
-        message = this.getText("login.error.selectCrp");
-        LOG.warn(this.getText("login.error.selectCrp"));
+        LOG.warn(this.getText("manageUsers.email.notValid"));
+        message = this.getText("manageUsers.email.notValid");
+        // return "Error";
+        return response;
       }
-
-      this.addActionMessage("message:" + this.getText("saving.saved"));
-      return SUCCESS;
-
+      message = this.getText("saving.saved");
+      return response;
     } else {
       return NOT_AUTHORIZED;
     }
@@ -246,7 +257,15 @@ public class GuestUsersAction extends BaseAction {
 
     // get CRPAdmin contacts
     String crpAdmins = "";
-    long adminRol = Long.parseLong((String) this.getSession().get(APConstants.CRP_ADMIN_ROLE));
+    GlobalUnit globalUnit = null;
+    if (selectedGlobalUnitID != -1) {
+      globalUnit = globalUnitManager.getGlobalUnitById(selectedGlobalUnitID);
+    }
+
+    long adminRol = globalUnit.getRoles().stream().filter(r -> r.getAcronym().equals("CRP-Admin"))
+      .collect(Collectors.toList()).get(0).getId();
+
+    // long adminRol = Long.parseLong((String) this.getSession().get(APConstants.CRP_ADMIN_ROLE));
     Role roleAdmin = roleManager.getRoleById(adminRol);
     List<UserRole> userRoles = roleAdmin.getUserRoles().stream()
       .filter(ur -> ur.getUser() != null && ur.getUser().isActive()).collect(Collectors.toList());
