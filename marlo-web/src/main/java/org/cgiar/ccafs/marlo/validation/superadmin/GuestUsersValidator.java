@@ -82,8 +82,5 @@ public class GuestUsersValidator extends BaseValidator {
       action.addActionMessage(
         " " + action.getText("saving.missingFields", new String[] {action.getValidationMessage().toString()}));
     }
-
   }
-
-
 }
