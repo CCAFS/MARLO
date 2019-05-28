@@ -150,7 +150,7 @@ public class GuestUsersAction extends BaseAction {
     if (this.canAccessSuperAdmin()) {
 
       // Check if the email is valid
-      if (user.getEmail() != null && this.isValidEmail(user.getEmail())) {
+      if (user.getEmail() != null && this.isValidEmail(user.getEmail()) && user.getEmail().length() > 0) {
 
         boolean emailExists = false;
         // We need to validate that the email does not exist yet into our database.
@@ -184,7 +184,7 @@ public class GuestUsersAction extends BaseAction {
               newUser.setUsername(LDAPUser.getLogin().toLowerCase());
               newUser.setCgiarUser(true);
               newUser = userManager.saveUser(newUser);
-              message = this.getText("saving.saved");
+              this.addActionMessage("message:" + this.getText("saving.saved"));
             } else {
               // Non CGIAR user
               isCGIARUser = false;
@@ -196,7 +196,7 @@ public class GuestUsersAction extends BaseAction {
                 password = RandomStringUtils.randomNumeric(6);
                 newUser.setPassword(password);
                 newUser = userManager.saveUser(newUser);
-                message = this.getText("saving.saved");
+                this.addActionMessage("message:" + this.getText("saving.saved"));
               }
             }
 
@@ -222,27 +222,26 @@ public class GuestUsersAction extends BaseAction {
             userRole = userRoleManager.saveUserRole(userRole);
 
           } else {
-            message = this.getText("login.error.selectCrp");
+            this.addActionMessage("message:" + "login.error.selectCrp");
             LOG.warn(this.getText("login.error.selectCrp"));
-            // return "Error";
-            return response;
+            return SUCCESS;
           }
 
         } else {
           // If email already exists into our database.
           LOG.warn(this.getText("manageUsers.email.existing"));
           message = this.getText("manageUsers.email.existing");
-          // return "Error";
-          return response;
+          this.addActionMessage("message:" + this.getText("manageUsers.email.existing"));
+          return INPUT;
         }
       } else {
         LOG.warn(this.getText("manageUsers.email.notValid"));
         message = this.getText("manageUsers.email.notValid");
-        // return "Error";
-        return response;
+        this.addActionMessage("message:" + this.getText("manageUsers.email.notValid"));
+        return SUCCESS;
       }
-      message = this.getText("saving.saved");
-      return response;
+
+      return SUCCESS;
     } else {
       return NOT_AUTHORIZED;
     }

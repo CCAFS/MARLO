@@ -40,7 +40,7 @@ public class GuestUsersValidator extends BaseValidator {
   public void validate(BaseAction action, User user, long selectedGlobalUnitID, boolean isCGIARUser, boolean saving) {
     action.setInvalidFields(new HashMap<>());
 
-    if (isCGIARUser) {
+    if (!isCGIARUser) {
       if (user.getFirstName() != null || !user.getFirstName().isEmpty()) {
         action.addMessage(action.getText("guestUsers.firstName"));
         action.getInvalidFields().put("input-user.firstName", InvalidFieldsMessages.EMPTYFIELD);
