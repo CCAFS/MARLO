@@ -89,6 +89,8 @@ public class GuestUsersAction extends BaseAction {
   private String message;
   private GuestUsersValidator validator;
 
+  private boolean isCGIARUser;
+
   @Inject
   public GuestUsersAction(APConfig config, GlobalUnitManager globalUnitManager, UserManager userManager,
     CrpUserManager crpUserManager, UserRoleManager userRoleManager, RoleManager roleManager, SendMailS sendMailS,
@@ -122,6 +124,15 @@ public class GuestUsersAction extends BaseAction {
    */
   public long getSelectedGlobalUnitID() {
     return selectedGlobalUnitID;
+  }
+   
+  public boolean isCGIARUser() {
+    return isCGIARUser;
+  }
+
+ 
+  public void setCGIARUser(boolean isCGIARUser) {
+    this.isCGIARUser = isCGIARUser;
   }
 
   public User getUser() {
@@ -165,21 +176,24 @@ public class GuestUsersAction extends BaseAction {
             String password = this.getText("email.outlookPassword");
             if (LDAPUser != null) {
               // CGIAR user
+              isCGIARUser=true;
               newUser.setFirstName(LDAPUser.getFirstName());
               newUser.setLastName(LDAPUser.getLastName());
               newUser.setUsername(LDAPUser.getLogin().toLowerCase());
               newUser.setCgiarUser(true);
-              newUser = userManager.saveUser(newUser);
+              newUser = userManager.saveUser(newUser);              
               message = this.getText("saving.saved");
             } else {
               // Non CGIAR user
               if (newUser.getFirstName() != null && newUser.getLastName() != null
                 && newUser.getFirstName().trim().length() > 0 && newUser.getLastName().trim().length() > 0) {
+                isCGIARUser=false;
                 newUser.setCgiarUser(false);
                 newUser.setModificationJustification("User created in MARLO " + this.getActionName().replace("/", "-"));
                 password = RandomStringUtils.randomNumeric(6);
                 newUser.setPassword(password);
                 newUser = userManager.saveUser(newUser);
+                
                 message = this.getText("saving.saved");
               }
             }
