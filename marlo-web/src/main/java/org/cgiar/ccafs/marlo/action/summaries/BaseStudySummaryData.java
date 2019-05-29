@@ -501,7 +501,6 @@ public class BaseStudySummaryData extends BaseSummariesAction {
                   url = studiesReference.substring(startUrl, finalUrl);
                   if (url.length() > 93) {
                     String shortURL = null;
-                    System.out.println("url " + url);
                     try {
                       shortURL = this.getShortUrlService(url);
                     } catch (Exception e) {
@@ -509,7 +508,7 @@ public class BaseStudySummaryData extends BaseSummariesAction {
                     }
 
                     if (shortURL != null) {
-                      referenceText = referenceText.replaceAll(url, shortURL + " (" + url + ") ");
+                      referenceText = referenceText.replaceAll(url, shortURL);
                     }
                   }
 
