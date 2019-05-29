@@ -482,6 +482,14 @@ public class BaseStudySummaryData extends BaseSummariesAction {
                   finalUrl = i - 1;
                 }
 
+                if (studiesReference.charAt(i) == '(') {
+                  finalUrl = i - 1;
+                }
+
+                if (studiesReference.charAt(i) == '[') {
+                  finalUrl = i - 1;
+                }
+
                 if (studiesReference.charAt(i) == ' ') {
                   finalUrl = i - 1;
                 }
@@ -501,7 +509,7 @@ public class BaseStudySummaryData extends BaseSummariesAction {
                     }
 
                     if (shortURL != null) {
-                      referenceText = referenceText.replaceAll(url, shortURL);
+                      referenceText = referenceText.replaceAll(url, shortURL + " (" + url + ") ");
                     }
                   }
 
