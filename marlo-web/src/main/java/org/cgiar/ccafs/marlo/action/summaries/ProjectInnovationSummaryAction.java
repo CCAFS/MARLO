@@ -502,7 +502,7 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
     URLShortener urlShortener = new URLShortener();
     if (projectInnovationInfo.getEvidenceLink() != null && !projectInnovationInfo.getEvidenceLink().trim().isEmpty()) {
       links = projectInnovationInfo.getEvidenceLink();
-      evidenceLink = urlShortener.convertText(links);
+      evidenceLink = urlShortener.getShortUrlService(links);
     }
 
     // Deliverables
