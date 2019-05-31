@@ -36,6 +36,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectInnovationInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationOrganization;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationRegion;
 import org.cgiar.ccafs.marlo.utils.APConfig;
+import org.cgiar.ccafs.marlo.utils.URLShortener;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -321,9 +322,9 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
     String title = null, narrative = null, phaseResearch = null, stageInnovation = null, innovationType = null,
       contributionOfCrp = null, degreeInnovation = null, geographicScope = null, region = null, countries = null,
       organizations = null, projectExpectedStudy = null, descriptionStage = null, leadOrganization = null,
-      contributingOrganization = null, adaptativeResearch = null, evidenceLink = null, deliverables = null, crps = null,
-      genderFocusLevel = null, genderExplaniation = null, youthFocusLevel = null, youthExplaniation = null,
-      project = null, oicr = "";
+      contributingOrganization = null, adaptativeResearch = null, evidenceLink = null, links = null,
+      deliverables = null, crps = null, genderFocusLevel = null, genderExplaniation = null, youthFocusLevel = null,
+      youthExplaniation = null, project = null, oicr = "";
     Boolean isRegional = false, isNational = false, isStage4 = false;
     // Id
     id = projectInnovationID;
@@ -498,8 +499,10 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
     }
 
     // Evidence Link
+    URLShortener urlShortener = new URLShortener();
     if (projectInnovationInfo.getEvidenceLink() != null && !projectInnovationInfo.getEvidenceLink().trim().isEmpty()) {
-      evidenceLink = projectInnovationInfo.getEvidenceLink();
+      links = projectInnovationInfo.getEvidenceLink();
+      evidenceLink = urlShortener.getShortUrlService(links);
     }
 
     // Deliverables
