@@ -35,13 +35,8 @@ import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudySrfTarget;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudySubIdo;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.HTMLParser;
+import org.cgiar.ccafs.marlo.utils.URLShortener;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -169,6 +164,7 @@ public class BaseStudySummaryData extends BaseSummariesAction {
         Boolean.class, Boolean.class, Boolean.class, Boolean.class, Boolean.class, String.class, String.class},
       0);
 
+    URLShortener urlShortener = new URLShortener();
     if (projectExpectedStudyInfos != null && !projectExpectedStudyInfos.isEmpty()) {
       projectExpectedStudyInfos
         .sort((p1, p2) -> p1.getProjectExpectedStudy().getId().compareTo(p2.getProjectExpectedStudy().getId()));
@@ -445,81 +441,9 @@ public class BaseStudySummaryData extends BaseSummariesAction {
         if (projectExpectedStudyInfo.getReferencesText() != null
           && !projectExpectedStudyInfo.getReferencesText().trim().isEmpty()) {
           studiesReference = htmlParser.plainTextToHtml(projectExpectedStudyInfo.getReferencesText());
-          referenceText = htmlParser.plainTextToHtml(projectExpectedStudyInfo.getReferencesText());
 
-          // Get the html part of the References text into url var
+          referenceText = urlShortener.detectAndShortenLinks(studiesReference);
 
-          if (studiesReference.length() > 0 && studiesReference.contains("http")) {
-            String textPart = null;
-            int startUrl = 0, finalUrl = 0;
-
-            for (int i = 0; i < studiesReference.length(); i++) {
-              if (i < studiesReference.length() - 6) {
-
-                if ((studiesReference.charAt(i) == 'h' && studiesReference.charAt(i + 1) == 't'
-                  && studiesReference.charAt(i + 2) == 't' && studiesReference.charAt(i + 3) == 'p'
-                  && studiesReference.charAt(i + 4) == ':' && studiesReference.charAt(i + 5) == '/'
-                  && studiesReference.charAt(i + 6) == '/')
-                  || (studiesReference.charAt(i) == 'h' && studiesReference.charAt(i + 1) == 't'
-                    && studiesReference.charAt(i + 2) == 't' && studiesReference.charAt(i + 3) == 'p'
-                    && studiesReference.charAt(i + 4) == 's' && studiesReference.charAt(i + 5) == ':'
-                    && studiesReference.charAt(i + 6) == '/' && studiesReference.charAt(i + 7) == '/')) {
-                  startUrl = i;
-                  if (i > 1) {
-                    textPart = studiesReference.substring(1, i - 1);
-                  }
-                  i = i + 6;
-                }
-
-              }
-              if (startUrl > 0) {
-                if ((studiesReference.charAt(i) == '<' && studiesReference.charAt(i + 1) == 'b'
-                  && studiesReference.charAt(i + 2) == 'r' && studiesReference.charAt(i + 3) == '>')) {
-                  finalUrl = i - 1;
-                  i = i + 3;
-                }
-                if (studiesReference.charAt(i) == ')') {
-                  finalUrl = i - 1;
-                }
-
-                if (studiesReference.charAt(i) == '(') {
-                  finalUrl = i - 1;
-                }
-
-                if (studiesReference.charAt(i) == '[') {
-                  finalUrl = i - 1;
-                }
-
-                if (studiesReference.charAt(i) == ' ') {
-                  finalUrl = i - 1;
-                }
-              }
-
-              if (startUrl > 0) {
-                if (finalUrl > 0) {
-
-                  url = studiesReference.substring(startUrl, finalUrl);
-                  if (url.length() > 93) {
-                    String shortURL = null;
-                    try {
-                      shortURL = this.getShortUrlService(url);
-                    } catch (Exception e) {
-                      System.out.println(e);
-                    }
-
-                    if (shortURL != null) {
-                      referenceText = referenceText.replaceAll(url, shortURL);
-                    }
-                  }
-
-                  startUrl = 0;
-                  finalUrl = 0;
-                  url = "";
-                  textPart = "";
-                }
-              }
-            }
-          }
         }
 
         // TODO: Add Quantifications in Pentaho/MySQL
@@ -630,30 +554,4 @@ public class BaseStudySummaryData extends BaseSummariesAction {
     return model;
   }
 
-  public String getShortUrlService(String link) {
-    String output = null;
-    String shortUrl = null;
-    try {
-
-      URL url = new URL("http://tinyurl.com/api-create.php?url=" + link);
-      HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-      conn.setRequestMethod("GET");
-      if (conn.getResponseCode() != 200) {
-        throw new RuntimeException("Failed : HTTP error code : " + conn.getResponseCode());
-      }
-      BufferedReader br = new BufferedReader(new InputStreamReader((conn.getInputStream())));
-
-      while ((output = br.readLine()) != null) {
-        shortUrl = output;
-      }
-      conn.disconnect();
-
-    } catch (MalformedURLException e) {
-      e.printStackTrace();
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-
-    return shortUrl;
-  }
 }
