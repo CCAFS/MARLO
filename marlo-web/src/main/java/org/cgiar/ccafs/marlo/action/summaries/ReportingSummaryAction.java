@@ -135,6 +135,7 @@ import org.cgiar.ccafs.marlo.data.model.SrfTargetUnit;
 import org.cgiar.ccafs.marlo.data.model.Submission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.FileManager;
+import org.cgiar.ccafs.marlo.utils.URLShortener;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -3540,8 +3541,13 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         }
 
         // Evidence Link
+        URLShortener urlShortener = new URLShortener();
         if (innovationInfo.getEvidenceLink() != null && !innovationInfo.getEvidenceLink().trim().isEmpty()) {
-          evidenceLink = innovationInfo.getEvidenceLink();
+
+          /*
+           * Get short url calling tinyURL service
+           */
+          evidenceLink = urlShortener.getShortUrlService(innovationInfo.getEvidenceLink());
         }
         // Deliverables
         List<ProjectInnovationDeliverable> projectInnovationDeliverables =
