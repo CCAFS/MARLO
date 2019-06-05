@@ -442,6 +442,9 @@ public class BaseStudySummaryData extends BaseSummariesAction {
           && !projectExpectedStudyInfo.getReferencesText().trim().isEmpty()) {
           studiesReference = htmlParser.plainTextToHtml(projectExpectedStudyInfo.getReferencesText());
 
+          /*
+           * Get short url calling tinyURL service
+           */
           referenceText = urlShortener.detectAndShortenLinks(studiesReference);
 
         }
