@@ -233,8 +233,10 @@ public class MonitoringOutcomeAction extends BaseAction {
 
       }
 
-      monitoringOutcome.setMilestones(new ArrayList<>(
-        monitoringOutcome.getMonitoringMilestones().stream().filter(mm -> mm.isActive()).collect(Collectors.toList())));
+      monitoringOutcome
+        .setMilestones(new ArrayList<>(monitoringOutcome.getMonitoringMilestones().stream().filter(mm -> mm.isActive())
+          .sorted((f1, f2) -> f1.getResearchMilestone().getTitle().compareTo(f2.getResearchMilestone().getTitle()))
+          .collect(Collectors.toList())));
       monitoringOutcome.setEvidences(new ArrayList<>());
 
 
