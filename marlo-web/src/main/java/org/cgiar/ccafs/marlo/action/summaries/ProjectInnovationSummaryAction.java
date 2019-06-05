@@ -501,8 +501,11 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
     // Evidence Link
     URLShortener urlShortener = new URLShortener();
     if (projectInnovationInfo.getEvidenceLink() != null && !projectInnovationInfo.getEvidenceLink().trim().isEmpty()) {
-      links = projectInnovationInfo.getEvidenceLink();
-      evidenceLink = urlShortener.getShortUrlService(links);
+
+      /*
+       * Get short url calling tinyURL service
+       */
+      evidenceLink = urlShortener.getShortUrlService(projectInnovationInfo.getEvidenceLink());
     }
 
     // Deliverables
