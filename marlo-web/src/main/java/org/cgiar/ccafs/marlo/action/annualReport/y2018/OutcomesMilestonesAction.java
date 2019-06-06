@@ -860,6 +860,10 @@ public class OutcomesMilestonesAction extends BaseAction {
     // Save form Information
     if (milestone.getMarkers() != null) {
       for (ReportSynthesisFlagshipProgressCrossCuttingMarker crossCuttingOwner : milestone.getMarkers()) {
+        if (crossCuttingOwner.getJust() != null && !crossCuttingOwner.getJust().isEmpty()) {
+          crossCuttingOwner.setJust(crossCuttingOwner.getJust().replaceAll("\"", "'"));
+        }
+
         if (crossCuttingOwner.getId() == null) {
           ReportSynthesisFlagshipProgressCrossCuttingMarker crossCuttingOwnerSave =
             new ReportSynthesisFlagshipProgressCrossCuttingMarker();
@@ -883,6 +887,7 @@ public class OutcomesMilestonesAction extends BaseAction {
             crossCuttingOwnerSave.setFocus(null);
           }
 
+          System.out.println("text to save " + crossCuttingOwner.getJust());
           crossCuttingOwnerSave.setJust(crossCuttingOwner.getJust());
 
           reportSynthesisFlagshipProgressCrossCuttingMarkerManager
@@ -890,6 +895,7 @@ public class OutcomesMilestonesAction extends BaseAction {
 
         } else {
           boolean hasChanges = false;
+          System.out.println(crossCuttingOwner.getJust());
           ReportSynthesisFlagshipProgressCrossCuttingMarker crossCuttingOwnerSave =
             reportSynthesisFlagshipProgressCrossCuttingMarkerManager
               .getReportSynthesisFlagshipProgressCrossCuttingMarkerById(crossCuttingOwner.getId());
