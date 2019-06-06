@@ -3356,6 +3356,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class},
       0);
+    URLShortener urlShortener = new URLShortener();
 
     List<ProjectInnovation> projectInnovations = project.getProjectInnovations().stream()
       .filter(p -> p.isActive() && p.getProjectInnovationInfo(this.getSelectedPhase()) != null)
@@ -3541,7 +3542,6 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         }
 
         // Evidence Link
-        URLShortener urlShortener = new URLShortener();
         if (innovationInfo.getEvidenceLink() != null && !innovationInfo.getEvidenceLink().trim().isEmpty()) {
 
           /*
@@ -3613,6 +3613,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
   private TypedTableModel getLeveragesTableModel() {
     // Decimal format
     DecimalFormat myFormatter = new DecimalFormat("###,###.00");
+
     TypedTableModel model =
       new TypedTableModel(new String[] {"id", "title", "partner_name", "leverage_year", "flagship", "budget"},
         new Class[] {Long.class, String.class, String.class, String.class, String.class, String.class}, 0);
@@ -4560,7 +4561,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         countries = "", narrative = "";
 
       Boolean isRegional = false, isNational = false;
-
+      URLShortener urlShortener = new URLShortener();
       // Title
       if (projectPolicy.getProjectPolicyInfo() != null && projectPolicy.getProjectPolicyInfo().getTitle() != null) {
         title = projectPolicy.getProjectPolicyInfo().getTitle();
@@ -4817,6 +4818,9 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     if (projectExpectedStudies != null && !projectExpectedStudies.isEmpty()) {
       myStudies.addAll(projectExpectedStudies);
     }
+
+    URLShortener urlShortener = new URLShortener();
+
     // Shared Studies
     List<ExpectedStudyProject> sharedStudies = project.getExpectedStudyProjects().stream()
       .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase())
@@ -4891,7 +4895,12 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         // OutcomeStory
         if (projectExpectedStudy.getProjectExpectedStudyInfo() != null
           && projectExpectedStudy.getProjectExpectedStudyInfo().getComunicationsMaterial() != null) {
-          outcomeHistory = projectExpectedStudy.getProjectExpectedStudyInfo().getComunicationsMaterial();
+
+          /*
+           * Get short url calling tinyURL service
+           */
+          outcomeHistory = urlShortener
+            .detectAndShortenLinks(projectExpectedStudy.getProjectExpectedStudyInfo().getComunicationsMaterial());
         }
         // Policy
         if (projectExpectedStudy != null && projectExpectedStudy.getProject() != null
@@ -4956,6 +4965,12 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         // cgiarInnovations
         if (studyinfo.getCgiarInnovation() != null) {
           cgiarInnovations = studyinfo.getCgiarInnovation();
+
+          /*
+           * Get short url calling tinyURL service
+           */
+          cgiarInnovations = urlShortener.detectAndShortenLinks(studyinfo.getCgiarInnovation());
+
         }
         // Innovations
         if (this.project != null) {
@@ -5148,10 +5163,16 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           elaborationOutcomeImpactStatement = studyinfo.getElaborationOutcomeImpactStatement();
         }
 
+
         // References cited
         if (studyinfo.getReferencesText() != null && !studyinfo.getReferencesText().trim().isEmpty()) {
           referenceText = studyinfo.getReferencesText();
+          /*
+           * Get short url calling tinyURL service
+           */
+          referenceText = urlShortener.detectAndShortenLinks(studyinfo.getReferencesText());
         }
+
         // Atached material
         if (studyinfo.getReferencesFile() != null) {
           hasreferencesFile = true;
@@ -5254,6 +5275,11 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           && this.getBaseUrl() != null) {
           link = this.getBaseUrl() + "/projects/" + this.getCrpSession() + "/studySummary.do?studyID="
             + studyinfo.getProjectExpectedStudy().getId() + "&cycle=Reporting&year=" + studyinfo.getPhase().getYear();
+
+          /*
+           * Get short url calling tinyURL service
+           */
+          link = urlShortener.getShortUrlService(link);
         }
 
         // Contact person
@@ -5267,8 +5293,10 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
             contacts +=
               "<br></br><p><font size=2 face='Segoe UI' \n> <b>Outcome Impact Case Report link:</b></font></p> "
                 + "<p><font size=2 face='Segoe UI' \n>" + link + "</font></p>";
+
           }
         }
+
 
         // Projects
         List<ExpectedStudyProject> studyProjectList =
