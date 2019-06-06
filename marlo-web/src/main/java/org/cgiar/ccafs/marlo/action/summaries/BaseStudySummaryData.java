@@ -228,6 +228,7 @@ public class BaseStudySummaryData extends BaseSummariesAction {
           comunicationsMaterial = htmlParser.plainTextToHtml(projectExpectedStudyInfo.getComunicationsMaterial());
         }
         // Links
+
         List<ProjectExpectedStudyLink> linksList =
           projectExpectedStudyInfo.getProjectExpectedStudy().getProjectExpectedStudyLinks().stream()
             .filter(s -> s.isActive() && s.getPhase() != null && s.getPhase().equals(this.getSelectedPhase()))
@@ -236,7 +237,13 @@ public class BaseStudySummaryData extends BaseSummariesAction {
         if (linksList != null && linksList.size() > 0) {
           linksList.sort((l1, l2) -> l1.getId().compareTo(l2.getId()));
           for (ProjectExpectedStudyLink projectExpectedStudyLink : linksList) {
-            linkSet.add("<br>&nbsp;&nbsp;&nbsp;&nbsp;● " + projectExpectedStudyLink.getLink());
+            if (!projectExpectedStudyLink.getLink().isEmpty() && projectExpectedStudyLink.getLink() != null) {
+              /*
+               * Get short url calling tinyURL service
+               */
+              linkSet.add(
+                "<br>&nbsp;&nbsp;&nbsp;&nbsp;● " + urlShortener.getShortUrlService(projectExpectedStudyLink.getLink()));
+            }
           }
           links = String.join("", linkSet);
         }
@@ -359,7 +366,14 @@ public class BaseStudySummaryData extends BaseSummariesAction {
         // Geographic Scope comment
         if (projectExpectedStudyInfo.getScopeComments() != null
           && !projectExpectedStudyInfo.getScopeComments().trim().isEmpty()) {
+
           scopeComments = htmlParser.plainTextToHtml(projectExpectedStudyInfo.getScopeComments());
+
+          /*
+           * Get short url calling tinyURL service
+           */
+          scopeComments = urlShortener.detectAndShortenLinks(scopeComments);
+
         }
         // Key Contributions
         // CRPs/Platforms

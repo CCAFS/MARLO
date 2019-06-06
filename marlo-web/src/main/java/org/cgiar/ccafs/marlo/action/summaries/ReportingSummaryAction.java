@@ -4895,7 +4895,12 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         // OutcomeStory
         if (projectExpectedStudy.getProjectExpectedStudyInfo() != null
           && projectExpectedStudy.getProjectExpectedStudyInfo().getComunicationsMaterial() != null) {
-          outcomeHistory = projectExpectedStudy.getProjectExpectedStudyInfo().getComunicationsMaterial();
+
+          /*
+           * Get short url calling tinyURL service
+           */
+          outcomeHistory = urlShortener
+            .detectAndShortenLinks(projectExpectedStudy.getProjectExpectedStudyInfo().getComunicationsMaterial());
         }
         // Policy
         if (projectExpectedStudy != null && projectExpectedStudy.getProject() != null
