@@ -17,7 +17,7 @@ public class URLShortener {
   }
 
   /*
-   * @param text - to detect url links and shorten them
+   * @param text + url - to detect url links and shorten them
    * @return the text with tiny urllinks
    */
   public String detectAndShortenLinks(String text) {
@@ -182,27 +182,35 @@ public class URLShortener {
   public String getShortUrlService(String link) {
     String output = null;
     String shortUrl = null;
-    try {
 
-      URL url = new URL("http://tinyurl.com/api-create.php?url=" + link);
-      HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-      conn.setRequestMethod("GET");
-      if (conn.getResponseCode() != 200) {
-        shortUrl = link;
-        // throw new RuntimeException("Failed : HTTP error code : " + conn.getResponseCode());
-      } else {
-        BufferedReader br = new BufferedReader(new InputStreamReader((conn.getInputStream())));
+    if (link.length() > 93) {
 
-        while ((output = br.readLine()) != null) {
-          shortUrl = output;
+      try {
+
+        URL url = new URL("http://tinyurl.com/api-create.php?url=" + link);
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setRequestMethod("GET");
+        if (conn.getResponseCode() != 200) {
+          shortUrl = link;
+          // throw new RuntimeException("Failed : HTTP error code : " + conn.getResponseCode());
+        } else {
+          BufferedReader br = new BufferedReader(new InputStreamReader((conn.getInputStream())));
+
+          while ((output = br.readLine()) != null) {
+            shortUrl = output;
+          }
         }
-      }
-      conn.disconnect();
+        conn.disconnect();
 
-    } catch (MalformedURLException e) {
-      e.printStackTrace();
-    } catch (IOException e) {
-      e.printStackTrace();
+      } catch (MalformedURLException e) {
+        shortUrl = link;
+        e.printStackTrace();
+      } catch (IOException e) {
+        shortUrl = link;
+        e.printStackTrace();
+      }
+    } else {
+      shortUrl = link;
     }
 
     return shortUrl;
