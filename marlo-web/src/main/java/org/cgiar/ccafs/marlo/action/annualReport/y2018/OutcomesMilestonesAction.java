@@ -887,7 +887,6 @@ public class OutcomesMilestonesAction extends BaseAction {
             crossCuttingOwnerSave.setFocus(null);
           }
 
-          System.out.println("text to save " + crossCuttingOwner.getJust());
           crossCuttingOwnerSave.setJust(crossCuttingOwner.getJust());
 
           reportSynthesisFlagshipProgressCrossCuttingMarkerManager
@@ -895,7 +894,6 @@ public class OutcomesMilestonesAction extends BaseAction {
 
         } else {
           boolean hasChanges = false;
-          System.out.println(crossCuttingOwner.getJust());
           ReportSynthesisFlagshipProgressCrossCuttingMarker crossCuttingOwnerSave =
             reportSynthesisFlagshipProgressCrossCuttingMarkerManager
               .getReportSynthesisFlagshipProgressCrossCuttingMarkerById(crossCuttingOwner.getId());
