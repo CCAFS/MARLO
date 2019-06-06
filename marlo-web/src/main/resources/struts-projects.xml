@@ -49,7 +49,6 @@
 
 		<action name="reportingSummary"
 			class="org.cgiar.ccafs.marlo.action.summaries.ReportingSummaryAction">
-
 			<result name="success" type="stream">
 				<param name="inputName">inputStream</param>
 				<param name="contentType">${contentType}</param>
