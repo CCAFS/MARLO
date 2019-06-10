@@ -1118,6 +1118,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       relationsName.add(APConstants.PROJECT_EXPECTED_STUDIES_INSTITUTION_RELATION);
       relationsName.add(APConstants.PROJECT_EXPECTED_STUDIES_COUNTRY_RELATION);
       relationsName.add(APConstants.PROJECT_EXPECTED_STUDIES_SRF_TARGET_RELATION);
+      relationsName.add(APConstants.PROJECT_EXPECTED_STUDIES_GEOGRAPHIC_SCOPE);
 
       this.expectedStudy.setModificationJustification(this.getJustification());
 
