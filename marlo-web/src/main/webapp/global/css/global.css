@@ -1582,6 +1582,7 @@ a#userLogOut {
   box-shadow: inset 1px 1px 1px rgba(0, 0, 0, 0.1);
 }
 
+
 #mainMenu .menuContent ul li ul.subMenu {
   display: none;
 }
@@ -1601,6 +1602,18 @@ a#userLogOut {
 
 #mainMenu .menuContent ul li ul.subMenu li a {
   padding: 0 5px;
+}
+
+#mainMenu .menuContent ul.hidden-md li:hover ul.subMenuItems {
+  position: initial;
+  box-shadow: none;
+  margin-top: 5px;
+  width: 100%;
+}
+
+#mainMenu .menuContent ul.hidden-md li ul.subMenuItems li {
+  padding: 6px 0px;
+  border-left: solid 1px #1b6d8c;
 }
 
 #mainMenu .menuContent ul li:hover ul.subMenu {
