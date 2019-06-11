@@ -136,12 +136,23 @@ public class SendMailS {
     emailLog.setCc(ccEmail);
     emailLog.setTo(toEmail);
     emailLog.setDate(new Date());
-
+    try {
+      emailLog.setMessageID(msg.getMessageID());
+    } catch (MessagingException e1) {
+      // TODO Auto-generated catch block
+      e1.printStackTrace();
+    }
     String header = "<div style=\"font-family:Segoe UI, Roboto, Helvetica Neue, Arial, sans-serif; \">";
     String footer = "</div>";
     messageContent = header + messageContent + footer;
     emailLog.setMessage(messageContent);
     emailLog.setSubject(subject);
+    try {
+      emailLog.setMessageID(msg.getMessageID());
+    } catch (MessagingException e1) {
+      // TODO Auto-generated catch block
+      e1.printStackTrace();
+    }
 
 
     // Set the FROM and TO fields
@@ -209,6 +220,12 @@ public class SendMailS {
         mimeMultipart.addBodyPart(attachmentBodyPart);
         emailLog.setFileName(fileName);
         emailLog.setFileContent(attachment);
+        try {
+          emailLog.setMessageID(msg.getMessageID());
+        } catch (MessagingException e1) {
+          // TODO Auto-generated catch block
+          e1.printStackTrace();
+        }
       }
 
       LOG.info("Message ID: \n" + msg.getMessageID());
@@ -293,7 +310,12 @@ public class SendMailS {
     emailLog.setDate(new Date());
     emailLog.setMessage(messageContent);
     emailLog.setSubject(subject);
-
+    try {
+      emailLog.setMessageID(msg.getMessageID());
+    } catch (MessagingException e1) {
+      // TODO Auto-generated catch block
+      e1.printStackTrace();
+    }
 
     // Set the FROM and TO fields
     try {
