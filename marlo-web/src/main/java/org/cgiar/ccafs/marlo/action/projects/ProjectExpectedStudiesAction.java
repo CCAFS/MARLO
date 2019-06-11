@@ -1000,6 +1000,10 @@ public class ProjectExpectedStudiesAction extends BaseAction {
         this.expectedStudy.getQuantifications().clear();
       }
 
+      if (this.expectedStudy.getGeographicScopes() != null) {
+        this.expectedStudy.getGeographicScopes().clear();
+      }
+
       // HTTP Post info Values
       this.expectedStudy.getProjectExpectedStudyInfo().setRepIndRegion(null);
       this.expectedStudy.getProjectExpectedStudyInfo().setRepIndOrganizationType(null);
