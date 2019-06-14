@@ -320,7 +320,6 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
       // method to get all the subreports in the prpt and store in the HashMap
       this.getAllSubreports(hm, masteritemBand);
       // Uncomment to see which Subreports are detecting the method getAllSubreports
-      // System.out.println("Pentaho SubReports: " + hm);
 
       this.fillSubreport((SubReport) hm.get("deliverables_reporting_data"), "deliverables_reporting_data");
       this.fillSubreport((SubReport) hm.get("deliverables_reporting_publications"),
@@ -432,8 +431,9 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
                 && d.getDeliverableInfo().getNewExpectedYear().intValue() >= this.getSelectedYear())))
             || (d.getDeliverableInfo().getStatus().intValue() == Integer
               .parseInt(ProjectStatusEnum.Extended.getStatusId())
-              && (d.getDeliverableInfo().getNewExpectedYear() != null
-                && d.getDeliverableInfo().getNewExpectedYear().intValue() == this.getSelectedYear()))
+              && (d.getDeliverableInfo().getYear() == this.getSelectedYear()
+                || (d.getDeliverableInfo().getNewExpectedYear() != null
+                  && d.getDeliverableInfo().getNewExpectedYear().intValue() == this.getSelectedYear())))
             || (d.getDeliverableInfo().getStatus().intValue() == Integer
               .parseInt(ProjectStatusEnum.Cancelled.getStatusId())
               && (d.getDeliverableInfo().getYear() == this.getSelectedYear()
@@ -1522,7 +1522,7 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
                    * ppaResponsible += "<span style='font-family: Segoe UI;color:#ff0000;font-size: 10'>"
                    * + responsibleppp.getProjectPartner().getInstitution().getAcronym() + "</span>";
                    */
-                  ppaResponsible += "*" + responsibleppp.getProjectPartner().getInstitution().getAcronym() + " ";
+                  ppaResponsible += "*" + responsibleppp.getProjectPartner().getInstitution().getAcronym() + ", ";
                   responsibleAcronym = responsibleppp.getProjectPartner().getInstitution().getAcronym() + " ";
                 } else {
                   individual += responsibleppp.getProjectPartner().getInstitution().getName() + " - ";
@@ -1530,7 +1530,7 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
                    * ppaResponsible += "<span style='font-family: Segoe UI;color:#ff0000;font-size: 10'>"
                    * + responsibleppp.getProjectPartner().getInstitution().getName() + "</span>";
                    */
-                  ppaResponsible += "*" + responsibleppp.getProjectPartner().getInstitution().getName() + " ";
+                  ppaResponsible += "*" + responsibleppp.getProjectPartner().getInstitution().getName() + ", ";
                   responsibleName = responsibleppp.getProjectPartner().getInstitution().getName() + " ";
                 }
               }
@@ -1639,6 +1639,7 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
             ppaResponsible += ppaOher + " ";
             // ppaResponsible += ", <span style='font-family: Segoe UI;font-size: 10'>" + ppaOher + "</span>";
           }
+          ppaResponsible += ", ";
         }
 
         for (Institution partnerResponsible : institutionsResponsibleList) {
@@ -1671,7 +1672,22 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
 
         if (ppaResponsible.isEmpty()) {
           ppaResponsible = null;
+        } else {
+          ppaResponsible = ppaResponsible.replaceAll("  ,", ",");
+          ppaResponsible = ppaResponsible.replaceAll(",  ", ",");
+          ppaResponsible = ppaResponsible.substring(0, ppaResponsible.length() - 2);
         }
+
+        if (individual != null) {
+
+          if (individual.charAt(0) == ',') {
+            individual = individual.substring(1);
+          }
+          if (individual.charAt(1) == ',') {
+            individual = individual.substring(2);
+          }
+        }
+
 
         String managingResponsible = "";
         CrpPpaPartner ppaFilter;

@@ -27,6 +27,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectHighligthsTypeEnum;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.FileManager;
 import org.cgiar.ccafs.marlo.utils.HTMLParser;
+import org.cgiar.ccafs.marlo.utils.URLShortener;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -414,6 +415,7 @@ public class ProjectHighlightsSummaryAction extends BaseSummariesAction implemen
           results = HTMLParser.plainTextToHtml(projectHighlight.getProjectHighlightInfo().getResults());
         }
       }
+      URLShortener urlShortener = new URLShortener();
       if (projectHighlight.getProjectHighlightInfo().getPartners() != null
         && !projectHighlight.getProjectHighlightInfo().getPartners().isEmpty()) {
         if (this.getSelectedFormat().equals(APConstants.SUMMARY_FORMAT_EXCEL)) {
@@ -429,6 +431,11 @@ public class ProjectHighlightsSummaryAction extends BaseSummariesAction implemen
         } else {
           links = HTMLParser.plainTextToHtml(projectHighlight.getProjectHighlightInfo().getLinks());
         }
+
+        /*
+         * Get short url calling tinyURL service
+         */
+        links = urlShortener.detectAndShortenLinks(links);
       }
       if (projectHighlight.getProject() != null) {
         projectId = projectHighlight.getProject().getId().toString();

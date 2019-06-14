@@ -1642,6 +1642,21 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   /**
+   * Get the phases created for the crp
+   * 
+   * @return the list of all the phases for the crp
+   */
+  public List<Phase> getAllCreatedPhases() {
+
+    List<Phase> phases = this.phaseManager.findAll().stream()
+      .filter(c -> c.getCrp().getId().longValue() == this.getCrpID().longValue()).collect(Collectors.toList());
+    phases.sort((p1, p2) -> p1.getStartDate().compareTo(p2.getStartDate()));
+    this.getSession().put(APConstants.PHASES, phases);
+    return phases;
+
+  }
+
+  /**
    * get all phases per CRP
    * 
    * @return the list of the phases for the crp
@@ -1661,6 +1676,29 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
     }
     return (Map<Long, Phase>) this.getSession().get(APConstants.ALL_PHASES);
+  }
+
+  /**
+   * Years for all phases
+   * 
+   * @return String of years for a CRP/Platform/Center for all created phases
+   */
+  public ArrayList<String> getAllPhaseYears() {
+    this.years = new ArrayList<>();
+    Set<Integer> yearsSet = new HashSet<>();
+    List<Phase> phases = this.getAllCreatedPhases();
+    if (phases != null && !phases.isEmpty()) {
+      for (Phase phase : phases) {
+        yearsSet.add(phase.getYear());
+      }
+      if (yearsSet != null && !yearsSet.isEmpty()) {
+        for (Integer yearInt : yearsSet) {
+          this.years.add(yearInt.toString());
+        }
+        java.util.Collections.sort(this.years);
+      }
+    }
+    return this.years;
   }
 
   /**
@@ -1886,6 +1924,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return null;
   }
 
+
   /**
    * ***********************CENTER METHOD******************** This method gets
    * the specific section status from the sectionStatuses array for a Output.
@@ -1939,7 +1978,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
     return true;
   }
-
 
   /**
    * ************************ CENTER METHOD ********************* Validate the
@@ -3769,6 +3807,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return Integer.parseInt(this.getSession().get(APConstants.CRP_REPORTING_YEAR).toString());
   }
 
+
   /**
    * Check the annual report 2018 Section Status
    * 
@@ -3844,7 +3883,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
     return returnValue;
   }
-
 
   /**
    * Check the annual report Section Status
@@ -4017,6 +4055,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
     return this.years;
   }
+
 
   public int goldDataValue(long deliverableID) {
     Deliverable deliverableBD = this.deliverableManager.getDeliverableById(deliverableID);

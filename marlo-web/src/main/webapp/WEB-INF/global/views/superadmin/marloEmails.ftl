@@ -55,6 +55,7 @@
                 <th>Subject</th>
                 <th>Error</th>
                 <th>Date</th>
+                <th>Message ID</th>
               </tr>
             </thead>
             <tbody>
@@ -69,6 +70,7 @@
                     <a href="#" class="" data-toggle="modal" data-target="#emailPopup-${email.id}">${email.error}</a>
                   </td>
                   <td>${email.date}</td>
+                  <td>${(email.messageID)!}</td>
                 </tr>
               [/#list]
               [/#if]
@@ -115,6 +117,7 @@
               <p><strong>Error: </strong>${(email.error)!}</p>
               <p><strong>Times tried: </strong>${(email.tried)!}</p>
               <p><strong>File: </strong>${(email.fileName)!}</p>
+              <p><strong>message ID: </strong>${(email.messageID)!}</p>
             </div>
           </div>
           <hr />

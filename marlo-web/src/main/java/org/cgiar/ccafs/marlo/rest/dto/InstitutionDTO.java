@@ -25,7 +25,7 @@ import org.hibernate.validator.constraints.NotEmpty;
 
 public class InstitutionDTO {
 
-  @ApiModelProperty(notes = "The Generated Institution Name")
+  @ApiModelProperty(notes = "The Generated Institution Code")
   private Long code;
   @ApiModelProperty(notes = "The Institution Name")
   @NotNull
@@ -43,7 +43,7 @@ public class InstitutionDTO {
   private InstitutionTypeDTO institutionType;
   @NotEmpty
   @ApiModelProperty(notes = "List of countries where are offices")
-  private List<CountryDTO> countriesDTOs;
+  private List<CountryOfficeDTO> countryOfficeDTO;
 
   public String getAcronym() {
     return this.acronym;
@@ -58,8 +58,8 @@ public class InstitutionDTO {
   }
 
 
-  public List<CountryDTO> getCountriesDTOs() {
-    return this.countriesDTOs;
+  public List<CountryOfficeDTO> getCountriesDTOs() {
+    return this.countryOfficeDTO;
   }
 
   public InstitutionTypeDTO getInstitutionType() {
@@ -78,6 +78,7 @@ public class InstitutionDTO {
     this.acronym = acronym;
   }
 
+
   public void setAdded(Date added) {
     this.added = added;
   }
@@ -87,8 +88,8 @@ public class InstitutionDTO {
     this.code = code;
   }
 
-  public void setCountriesDTOs(List<CountryDTO> countriesDTOs) {
-    this.countriesDTOs = countriesDTOs;
+  public void setCountriesDTOs(List<CountryOfficeDTO> countriesDTOs) {
+    this.countryOfficeDTO = countriesDTOs;
   }
 
   public void setInstitutionType(InstitutionTypeDTO institutionType) {
