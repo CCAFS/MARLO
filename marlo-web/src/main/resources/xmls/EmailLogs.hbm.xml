@@ -41,5 +41,8 @@
         <property name="fileContent" type="binary">
             <column name="fileContent" />
         </property>
+        <property name="messageID" type="string">
+            <column name="message_id" sql-type="TEXT" />
+        </property>
     </class>
 </hibernate-mapping>

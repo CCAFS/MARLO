@@ -4,54 +4,82 @@
 <head>
 <meta charset="UTF-8">
 <title>CLARISA</title>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
 <link rel="stylesheet" type="text/css" href="./css/swagger-ui.css">
+<link rel="stylesheet" type="text/css" href="./css/api.css">
 <link rel="stylesheet" type="text/css" href="./css/global.css">
-<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" 
-integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
 <link rel="icon" type="image/png" href="./images/cgiar-32x32.png" sizes="32x32" />
 <link rel="icon" type="image/png" href="./images/cgiar-16x16.png" sizes="16x16" />
 <link href="https://fonts.googleapis.com/css?family=Montserrat"
   rel="stylesheet">
 <link href="https://fonts.googleapis.com/css?family=Open+Sans"
   rel="stylesheet">
+  
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+  
 </head>
 
 <body>
  <header>
- <nav>
-  <a class="navtitle">CLARISA</a>
-  <ul class="nav margin-auto">
-      <li><a href="mailto:MARLOSupport@cgiar.org">Contact</a></li>
-    </ul>
+    <nav class="navbar navbar-light navbar-inverse bg-white">
+      <a class="navbar-brand" href="#">CLARISA</a>
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a class="nav-link btn btn-link" data-toggle="modal" data-target="#apiFramework">API Framework</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="mailto:MARLOSupport@cgiar.org">Contact</a>
+        </li>
+      </ul>
     </nav>
     <div class="clarisaHeader">
-    <div class="headerTitle">
-      <img class="cgiar-logo" src="./images/cgiarlogo.png" width="100px">
-        <div class="cTitle">CLARISA</div>
-        <div class="sTitle">
-          CGIAR Level Agricultural Results <br>Interoperable System Architecture
-        </div>
+    <div class="titleContainer row justify-content-md-center">
+      <div class="col-sm-auto">
+        <img src="./images/cgiarlogo.png" height="115px">
+      </div>
+      <div class="title col-sm-auto">
+        <h1>CLARISA</h1>
+        <h5>CGIAR Level Agricultural Results <br>Interoperable System Architecture</h5>
+      </div>
     </div>
     </div>
   </header>
   <div class="container">
-    <div class="info-disclaimer"><img src="./images/under-construction.png" width="23px"> <span class="message">
+    <div class="alert info-disclaimer">
     This is a service envisioned to provide standards in form of control lists that should be used across management 
     information systems in CGIAR to enable interoperability. It is currently under construction and expected to be 
-    finalized and functionalities available for use in Q4 of 2019.
-    </span> </div>
+    finalized and functionalities available for use in Q4 of 2019.</div>
     <br />
     <div class="versionTitle">
        Annual Report 2018 (Control Lists)
     </div>
     <div id="swagger-ui"></div>
+    
+    <div class="modal fade" id="apiFramework" tabindex="-1" role="dialog" aria-labelledby="apiFrameworkModal" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered framework-modal" role="document">
+       <div class="modal-content">
+          <div class="modal-header">
+           <h5 class="modal-title">REST-RAPI Framework</h5>
+           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+             <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <img src="./images/framework.png" width="700px">
+          </div>
+        </div>
+      </div>
+    </div>
+    
   </div>
   <div class="chat-icon" onClick="javascript:void(Tawk_API.toggle())"><img src="./images/chat-icon.png" width="100%" draggable="false"></div>
   <footer class="clarisaFooter">
     <div class="credit">Resources taken from CCAFS | Developed by MARLO Team</div>
     <script src="./swagger-ui-bundle.js"></script>
     <script src="./swagger-ui-standalone-preset.js"></script>
-    <script type="text/javascript" src="./clarisa-tawkto.js"></script>
+    <script type="text/javascript" src="./js/clarisa-tawkto.js"></script>
     <script src="./swagger-ui-setup.js"></script>
   </footer>
 

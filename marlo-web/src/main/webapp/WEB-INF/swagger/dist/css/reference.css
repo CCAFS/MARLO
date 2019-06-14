@@ -11,7 +11,7 @@ body{
 
 #reference-index {
   font-family: 'Montserrat', sans-serif; 
-  font-size: 0.75rem;
+  font-size: 0.80rem;
   height:100%;
   overflow: auto;
 }
@@ -19,18 +19,11 @@ body{
 #reference-index .navbar-brand {
   font-size: 1rem;
   font-weight: 500 !important;
+  border-right: 0;
 }
-
-.navbar-brand {
-  font-size:18px !important;
-  font-weight: 900 !important;
-  color: #316651 !important;
-  font-family: 'Montserrat', sans-serif;
-}
-
 
 #reference-index a {
-  color: #4f4f4f;
+  color: #4f4f4f !important;
 }
 
 #reference-index a:hover {
@@ -63,26 +56,11 @@ h5 {
 }
 
 .menu-credit {
-  bottom: 0; 
-  height:20px;
   font-size: 10px;
-  color: #b1b1b1;
+  color: #adadad;
+  font-family: 'Montserrat', sans-serif !important;
   text-align: center;
-  padding: 30px;
-}
-
-.ml-5 {
-  margin-top: -15px !important;
-}
-
-.navbar {
-  border-bottom: 1px solid #ccc;
-  border-width: 1px 0;
-}
-
-.top-title {
-  padding-right: 13px;
-  border-right: 1px solid #dce2df;
+  padding: 10px;
 }
 
 .navbar-nav {
@@ -92,22 +70,12 @@ h5 {
 .top-items .nav-item {
   display: inline-block !important;
   font-family: 'Montserrat', sans-serif;
-  font-weight: 800;
-}
-
-.top-items .nav-link {
-  color: #122525 !important;
-  margin-left: 15px;
-  margin-right: 15px;
-  padding: 0 !important;
-}
-
-.top-items .nav-link:hover {
-  color: #3f8569 !important;
 }
 
 #reference-index .nav-link {
-  padding: .4rem 1rem !important;
+  font-weight: normal;
+  margin: 0;
+  padding: .5rem 1rem;
   text-align: justify;
 }
 
@@ -121,7 +89,6 @@ h5 {
   background-color: transparent !important;
   border-right: solid 1.5px #3f8569 !important;
 }
-
 
 .api-button {
   color: #2c382d;
@@ -168,7 +135,7 @@ th p {
 
 .api-container {
   position: relative;
-  margin-left: 350px;
+  max-width: 100%;
   margin-top: 65px;
   max-height: 93vh;
   overflow: auto;
@@ -176,10 +143,6 @@ th p {
 
 .api-content {
   width: 50%;
-}
-
-#reference-index {
-  width: 300px;
 }
 
 .subsection {
@@ -194,3 +157,8 @@ th p {
   margin-bottom: 15px;
 }
 
+.footer {
+  margin-top: 20px;
+  height: 30px;
+  border-top: solid 1px #f2f2f2;
+}

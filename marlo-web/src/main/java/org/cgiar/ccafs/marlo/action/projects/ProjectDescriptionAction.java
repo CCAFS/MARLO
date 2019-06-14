@@ -339,7 +339,7 @@ public class ProjectDescriptionAction extends BaseAction {
 
     List<CrpProgram> projectFocuses = project.getFlagships();
 
-    if (projectFocuses != null) {
+    if (projectFocuses != null && !projectFocuses.isEmpty()) {
       long[] ids = new long[projectFocuses.size()];
       for (int c = 0; c < ids.length; c++) {
         ids[c] = projectFocuses.get(c).getId();
@@ -399,7 +399,7 @@ public class ProjectDescriptionAction extends BaseAction {
 
     List<CrpProgram> projectFocuses = project.getRegions();
 
-    if (projectFocuses != null) {
+    if (projectFocuses != null && !projectFocuses.isEmpty()) {
       long[] ids = new long[projectFocuses.size()];
       for (int c = 0; c < ids.length; c++) {
         ids[c] = projectFocuses.get(c).getId();
