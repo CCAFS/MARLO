@@ -398,7 +398,7 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
             && !responsible.getPartnerDivision().getAcronym().isEmpty()) {
           }
 
-        } else if (responsible.getProjectPartnerPerson() != null) {
+        } else if (responsible.getProjectPartnerPerson() != null && responsible.getProjectPartnerPerson().isActive()) {
           individual += "<span style='font-family: Segoe UI;color:#ff0000;font-size: 10'>";
           ProjectPartnerPerson responsibleppp = responsible.getProjectPartnerPerson();
           if (responsibleppp.getProjectPartner() != null) {
@@ -446,7 +446,8 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
           if (deliverablePartnership.getProjectPartner() != null) {
             institutionsResponsibleList.add(deliverablePartnership.getProjectPartner().getInstitution());
           }
-          if (deliverablePartnership.getProjectPartnerPerson() != null) {
+          if (deliverablePartnership.getProjectPartnerPerson() != null
+            && deliverablePartnership.getProjectPartnerPerson().isActive()) {
             if (individual.isEmpty()) {
               individual += "<span style='font-family: Segoe UI;font-size: 10'>";
             }
