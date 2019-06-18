@@ -28,6 +28,9 @@
         [#include "/WEB-INF/global/views/superadmin/menu-superadmin.ftl" /]
       </div>
       <div class="col-md-9">
+      
+        <p class="note">[@s.text name="menu.superadmin.guestUserMessage"][@s.param]${currentCycleYear}[/@s.param][@s.param]<span class="label label-primary"><span class="glyphicon glyphicon-flash" ></span> </span>[/@s.param][/@s.text]</p>
+
 
         [#-- Create User Guest --]
         <h4 class="sectionTitle">MARLO Create Guest User</h4>
