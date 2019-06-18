@@ -849,7 +849,8 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
         // get Flagships related to the project sorted by acronym
         for (ProjectFocus projectFocuses : deliverable.getProject().getProjectFocuses().stream()
           .filter(c -> c.isActive() && c.getPhase().equals(this.getSelectedPhase())
-            && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+            && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()
+            && c.getCrpProgram().getCrp().getId().equals(this.getCurrentCrp().getId()))
           .sorted((o1, o2) -> o1.getCrpProgram().getAcronym().compareTo(o2.getCrpProgram().getAcronym()))
           .collect(Collectors.toList())) {
           if (flagships == null || flagships.isEmpty()) {
