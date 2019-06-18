@@ -384,7 +384,9 @@ public class ClusterActivitiesAction extends BaseAction {
     }
     // Also others Cluster Leaders
     for (CrpClusterActivityLeader crpClusterActivityLeader : crpClusterPreview.getCrpClusterActivityLeaders().stream()
-      .filter(cal -> cal.isActive() && cal.getUser().isActive()).collect(Collectors.toList())) {
+      .filter(cal -> cal.isActive() && cal.getUser().isActive()
+        && cal.getCrpClusterOfActivity().getPhase().getId().equals(this.getActualPhase().getId()))
+      .collect(Collectors.toList())) {
       if (ccEmail.isEmpty()) {
         ccEmail += crpClusterActivityLeader.getUser().getEmail();
       } else {
