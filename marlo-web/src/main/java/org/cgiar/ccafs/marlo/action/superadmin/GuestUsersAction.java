@@ -146,7 +146,9 @@ public class GuestUsersAction extends BaseAction {
 
   @Override
   public String save() {
+    GlobalUnit globalUnit = null;
     String response = SUCCESS;
+
     if (this.canAccessSuperAdmin()) {
 
       // Check if the email is valid
@@ -160,8 +162,7 @@ public class GuestUsersAction extends BaseAction {
         if (!emailExists) {
 
           if (selectedGlobalUnitID != -1) {
-            GlobalUnit globalUnit = globalUnitManager.getGlobalUnitById(selectedGlobalUnitID);
-
+            globalUnit = globalUnitManager.getGlobalUnitById(selectedGlobalUnitID);
             User newUser = new User();
             newUser.setFirstName(user.getFirstName());
             newUser.setLastName(user.getLastName());
@@ -228,12 +229,49 @@ public class GuestUsersAction extends BaseAction {
           }
 
         } else {
-          // If email already exists into our database.
-          LOG.warn(this.getText("manageUsers.email.existing"));
-          message = this.getText("manageUsers.email.existing");
-          this.addActionMessage("message:" + this.getText("manageUsers.email.existing"));
-          return INPUT;
+          User existingUser = userManager.getUserByEmail(user.getEmail());
+          System.out.println(existingUser.getFirstName());
+          List<CrpUser> crpUserList = new ArrayList<CrpUser>();
+
+          crpUserList = crpUserManager.findAll().stream()
+            .filter(u -> u.getUser() != null && u.getUser().getId().equals(existingUser.getId()))
+            .collect(Collectors.toList());
+
+          if (selectedGlobalUnitID != -1) {
+            final GlobalUnit globalUnitE = globalUnitManager.getGlobalUnitById(selectedGlobalUnitID);
+            if (crpUserList != null) {
+              crpUserList =
+                crpUserList.stream().filter(c -> c.getCrp() != null && c.getCrp().getId().equals(globalUnitE.getId()))
+                  .collect(Collectors.toList());
+
+              if (crpUserList != null) {
+                // Add Crp Users
+                CrpUser crpUser = new CrpUser();
+                crpUser.setUser(existingUser);
+                crpUser.setCrp(globalUnitE);
+                crpUser = crpUserManager.saveCrpUser(crpUser);
+
+                // Add guest user role
+                UserRole userRole = new UserRole();
+                Role guestRole = globalUnitE.getRoles().stream().filter(r -> r.getAcronym().equals("G"))
+                  .collect(Collectors.toList()).get(0);
+                userRole.setRole(guestRole);
+                userRole.setUser(existingUser);
+                userRole = userRoleManager.saveUserRole(userRole);
+              }
+            }
+
+
+            // If email already exists into our database.
+            /*
+             * LOG.warn(this.getText("manageUsers.email.existing"));
+             * message = this.getText("manageUsers.email.existing");
+             * this.addActionMessage("message:" + this.getText("manageUsers.email.existing"));
+             * return INPUT;
+             */
+          }
         }
+
       } else {
         LOG.warn(this.getText("manageUsers.email.notValid"));
         message = this.getText("manageUsers.email.notValid");
