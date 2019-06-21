@@ -10,7 +10,7 @@
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.print.min.js",
   "${baseUrlMedia}/js/annualReport/annualReportGlobal.js" 
 ] /]
-[#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css"] /]
+[#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20190621"] /]
 
 [#assign breadCrumb = [
   {"label":"${currentSection}",   "nameSpace":"",             "action":""},
