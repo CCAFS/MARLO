@@ -40,16 +40,15 @@ public class GuestUsersValidator extends BaseValidator {
   public void validate(BaseAction action, User user, long selectedGlobalUnitID, boolean isCGIARUser, boolean saving) {
     action.setInvalidFields(new HashMap<>());
 
-    if (!isCGIARUser) {
-      if (user.getFirstName() != null || !user.getFirstName().isEmpty()) {
-        action.addMessage(action.getText("guestUsers.firstName"));
-        action.getInvalidFields().put("input-user.firstName", InvalidFieldsMessages.EMPTYFIELD);
-      }
 
-      if (user.getLastName() != null || !user.getLastName().isEmpty()) {
-        action.addMessage(action.getText("guestUsers.lastName"));
-        action.getInvalidFields().put("input-user.lastName", InvalidFieldsMessages.EMPTYFIELD);
-      }
+    if (user.getFirstName() == null || user.getFirstName().isEmpty()) {
+      action.addMessage(action.getText("guestUsers.firstName"));
+      action.getInvalidFields().put("input-user.firstName", InvalidFieldsMessages.EMPTYFIELD);
+    }
+
+    if (user.getLastName() == null || user.getLastName().isEmpty()) {
+      action.addMessage(action.getText("guestUsers.lastName"));
+      action.getInvalidFields().put("input-user.lastName", InvalidFieldsMessages.EMPTYFIELD);
     }
 
     if (selectedGlobalUnitID == -1) {
@@ -58,7 +57,7 @@ public class GuestUsersValidator extends BaseValidator {
     }
 
     // Validate email
-    if (!(this.isValidEmail(user.getEmail()) && this.wordCount(user.getEmail()) <= 5)) {
+    if (!(this.isValidEmail(user.getEmail()) && this.wordCount(user.getEmail()) >= 5)) {
       action.addMessage(action.getText("guestUsers.email"));
       action.getInvalidFields().put("input-user.email", InvalidFieldsMessages.EMPTYFIELD);
     }

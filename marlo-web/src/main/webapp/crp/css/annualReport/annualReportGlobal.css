@@ -474,3 +474,7 @@ div#chart12 {
 div#chart13 {
   height: 222px;
 }
+
+.urlify {
+  word-break: break-word;
+}
