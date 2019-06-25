@@ -75,6 +75,8 @@ public class FundingSourceListAction extends BaseAction {
   private LiaisonUserManager liaisonUserManager;
   private InstitutionManager institutionManager;
   private List<FundingSource> closedProjects;
+  private List<FundingSourceInstitution> fundingSourceInstitutions;
+
   private long fundingSourceID;
   private long fundingSourceInfoID;
   private String justification;
@@ -230,6 +232,11 @@ public class FundingSourceListAction extends BaseAction {
     return fundingSourceID;
   }
 
+  public List<FundingSourceInstitution> getFundingSourceInstitutions() {
+    return fundingSourceInstitutions;
+  }
+
+
   /**
    * Migrated from the BaseAction. Leaving this in here as the call to the fundingSourceValidator
    * may be required in a situation that I am not aware of.
@@ -270,11 +277,6 @@ public class FundingSourceListAction extends BaseAction {
     return justification;
   }
 
-
-  public GlobalUnit getLoggedCrp() {
-    return loggedCrp;
-  }
-
   // public void getBudgetAmount(long fundingsourceID){
   //
   // FundingSource fundingSource = fundingSourceManager.getFundingSourceById(fundingsourceID);
@@ -285,6 +287,11 @@ public class FundingSourceListAction extends BaseAction {
   //
   //
   // }
+
+
+  public GlobalUnit getLoggedCrp() {
+    return loggedCrp;
+  }
 
 
   public List<FundingSource> getMyProjects() {
@@ -311,6 +318,7 @@ public class FundingSourceListAction extends BaseAction {
 
     this.myProjects = new ArrayList<>();
     this.closedProjects = new ArrayList<>();
+    this.fundingSourceInstitutions = new ArrayList<>();
 
     if (allFundingSources != null && allFundingSources.size() > 0) {
 
@@ -339,6 +347,19 @@ public class FundingSourceListAction extends BaseAction {
       }
     }
 
+    if (myProjects != null) {
+      for (FundingSource fundingSource : myProjects) {
+        if (fundingSource.getInstitutions() != null) {
+          for (FundingSourceInstitution institution : fundingSource.getInstitutions()) {
+            if (fundingSourceInstitutions != null && !fundingSourceInstitutions.contains(institution)) {
+              fundingSourceInstitutions.add(institution);
+            } else {
+              fundingSourceInstitutions.add(institution);
+            }
+          }
+        }
+      }
+    }
   }
 
 
@@ -346,9 +367,13 @@ public class FundingSourceListAction extends BaseAction {
     this.closedProjects = closedProjects;
   }
 
-
   public void setFundingSourceID(long projectID) {
     this.fundingSourceID = projectID;
+  }
+
+
+  public void setFundingSourceInstitutions(List<FundingSourceInstitution> fundingSourceInstitutions) {
+    this.fundingSourceInstitutions = fundingSourceInstitutions;
   }
 
   @Override
