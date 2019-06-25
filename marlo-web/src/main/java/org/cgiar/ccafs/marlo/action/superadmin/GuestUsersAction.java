@@ -198,7 +198,6 @@ public class GuestUsersAction extends BaseAction {
   @Override
   public String save() {
     GlobalUnit globalUnit = null;
-    String response = SUCCESS;
 
     if (this.canAccessSuperAdmin()) {
 
@@ -209,7 +208,7 @@ public class GuestUsersAction extends BaseAction {
         // We need to validate that the email does not exist yet into our database.
         emailExists = userManager.getUserByEmail(user.getEmail()) == null ? false : true;
 
-        // If email already exists.
+        // If email doesn't exists.
         if (!emailExists) {
 
           if (selectedGlobalUnitID != -1) {
@@ -279,20 +278,25 @@ public class GuestUsersAction extends BaseAction {
           }
 
         } else {
+          // if email exist
           User existingUser = userManager.getUserByEmail(user.getEmail());
           List<CrpUser> crpUserList = new ArrayList<CrpUser>();
           List<UserRole> userRoleList = new ArrayList<UserRole>();
+          List<Role> roleListCRP = new ArrayList<Role>();
           crpUserList = null;
           userRoleList = null;
           if (selectedGlobalUnitID != -1) {
             final GlobalUnit globalUnitE = globalUnitManager.getGlobalUnitById(selectedGlobalUnitID);
 
+            // Get user permisions for selected CRP
             crpUserList = crpUserManager.findAll().stream()
               .filter(
                 u -> u.getUser().getId().equals(existingUser.getId()) && u.getCrp().getId().equals(globalUnitE.getId()))
               .collect(Collectors.toList());
 
             if (crpUserList == null || crpUserList.isEmpty()) {
+              // if the user doens't have permission for selected CRP
+
               // Add Crp Users
               CrpUser crpUser = new CrpUser();
               crpUser.setUser(existingUser);
@@ -303,34 +307,47 @@ public class GuestUsersAction extends BaseAction {
             Role guestRole = globalUnitE.getRoles().stream().filter(r -> r.getAcronym().equals("G"))
               .collect(Collectors.toList()).get(0);
 
+            // get user roles
             userRoleList = userRoleManager.findAll().stream()
-              .filter(
-                u -> u.getRole().getId().equals(guestRole.getId()) && u.getUser().getId().equals(existingUser.getId()))
+              .filter(u -> u.getUser().getId().equals(existingUser.getId())).collect(Collectors.toList());
+
+            // get roles for selected CRP
+            roleListCRP = roleManager.findAll().stream().filter(r -> r.getCrp().getId().equals(globalUnitE.getId()))
               .collect(Collectors.toList());
+            boolean containsRol = false;
 
-            if (userRoleList == null || userRoleList.isEmpty()) {
-              // Add guest user role
-              UserRole userRole = new UserRole();
-              userRole.setRole(guestRole);
-              userRole.setUser(existingUser);
-              userRole = userRoleManager.saveUserRole(userRole);
+            if (userRoleList != null) {
+              // Search for Rol for the user in the selected CRP
+              for (UserRole userRol : userRoleList) {
+                if (roleListCRP.contains(userRol.getRole())) {
+                  containsRol = true;
+                }
+              }
+
+              if (containsRol == false) {
+                // If no exist any role for this user in the selected CRP
+
+                // Add guest user role
+                UserRole userRole = new UserRole();
+                userRole.setRole(guestRole);
+                userRole.setUser(existingUser);
+                userRole = userRoleManager.saveUserRole(userRole);
+
+                // Send email message for Guest rol assignation in selected CRP
+                try {
+                  this.notifyRoleAssigned(existingUser);
+                } catch (Exception e) {
+                  e.printStackTrace();
+                  LOG.error(e.getMessage());
+                }
+
+              } else {
+                // If already exist a role for this user in the selected CRP
+                LOG.warn(this.getText("manageUsers.email.roleExisting"));
+                message = this.getText("manageUsers.email.roleExisting");
+                this.addActionMessage("message:" + this.getText("manageUsers.email.roleExisting"));
+              }
             }
-
-            try {
-              this.notifyRoleAssigned(existingUser);
-            } catch (Exception e) {
-              e.printStackTrace();
-              LOG.error(e.getMessage());
-            }
-
-
-            // If email already exists into our database.
-            /*
-             * LOG.warn(this.getText("manageUsers.email.existing"));
-             * message = this.getText("manageUsers.email.existing");
-             * this.addActionMessage("message:" + this.getText("manageUsers.email.existing"));
-             * return INPUT;
-             */
           }
         }
 
@@ -346,7 +363,6 @@ public class GuestUsersAction extends BaseAction {
       return NOT_AUTHORIZED;
     }
   }
-
 
   public void sendMailNewUser(User user, GlobalUnit loggedCrp, String password) throws NoSuchAlgorithmException {
     String toEmail = user.getEmail();
