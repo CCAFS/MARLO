@@ -3980,6 +3980,17 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return roles;
   }
 
+  public List<Role> getRolesList() {
+    List<Role> roles = new ArrayList<>();
+    User u = this.userManager.getUser(this.getCurrentUser().getId());
+    for (UserRole userRole : u.getUserRoles().stream()
+      .filter(c -> c.getRole().getCrp().getId().intValue() == this.getCrpID().intValue())
+      .collect(Collectors.toList())) {
+      roles.add(userRole.getRole());
+    }
+    return roles;
+  }
+
   public BaseSecurityContext getSecurityContext() {
     return this.securityContext;
   }
