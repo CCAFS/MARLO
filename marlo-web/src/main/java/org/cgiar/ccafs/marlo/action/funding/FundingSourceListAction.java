@@ -346,22 +346,39 @@ public class FundingSourceListAction extends BaseAction {
         }
       }
     }
-
+    List<String> institutionsName = new ArrayList<String>();
     if (myProjects != null) {
       for (FundingSource fundingSource : myProjects) {
         if (fundingSource.getInstitutions() != null) {
           for (FundingSourceInstitution institution : fundingSource.getInstitutions()) {
-            if (fundingSourceInstitutions != null && !fundingSourceInstitutions.contains(institution)) {
-              fundingSourceInstitutions.add(institution);
+
+            // funding source institutions cycle
+            if (fundingSourceInstitutions != null) {
+              // if the list of funding source institutions has elements, check the acronym and/or the name of
+              // institution
+              if (institution.getInstitution().getAcronym() != null) {
+                if (!institutionsName.contains(institution.getInstitution().getAcronym())) {
+                  institutionsName.add(institution.getInstitution().getAcronym());
+                  fundingSourceInstitutions.add(institution);
+                  System.out.println(institution.getInstitution().getAcronym());
+                }
+              } else if (institution.getInstitution().getName() != null) {
+                if (!institutionsName.contains(institution.getInstitution().getName())) {
+                  institutionsName.add(institution.getInstitution().getName());
+                  fundingSourceInstitutions.add(institution);
+                  System.out.println(institution.getInstitution().getName());
+                }
+              }
             } else {
+              // if the list of the funding source institutions to send to front is empty
               fundingSourceInstitutions.add(institution);
             }
           }
         }
       }
     }
-  }
 
+  }
 
   public void setClosedProjects(List<FundingSource> closedProjects) {
     this.closedProjects = closedProjects;
