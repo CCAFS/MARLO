@@ -69,7 +69,7 @@ public class FundingSourceListAction extends BaseAction {
   private List<FundingSource> myProjects;
 
   private FundingSourceManager fundingSourceManager;
-  private Long cpRoleID;
+  private Long cpCrpID;
   private FundingSourceInfoManager fundingSourceInfoManager;
   private RoleManager roleManager;
   private FundingSourceInstitutionManager fundingSourceInstitutionManager;
@@ -214,8 +214,8 @@ public class FundingSourceListAction extends BaseAction {
     return closedProjects;
   }
 
-  public Long getCpRoleID() {
-    return cpRoleID;
+  public Long getCpCrpID() {
+    return cpCrpID;
   }
 
   public void getCrpContactPoint() {
@@ -232,9 +232,9 @@ public class FundingSourceListAction extends BaseAction {
     roles = this.getRolesList();
 
     if (roles.contains(cpRol)) {
-      cpRoleID = cpRol.getId();
+      cpCrpID = cpRol.getCrp().getId();
     } else {
-      cpRoleID = (long) 0;
+      cpCrpID = (long) 0;
     }
   }
 
@@ -414,8 +414,8 @@ public class FundingSourceListAction extends BaseAction {
   }
 
 
-  public void setCpRoleID(Long cpRoleID) {
-    this.cpRoleID = cpRoleID;
+  public void setCpCrpID(Long cpRoleID) {
+    this.cpCrpID = cpRoleID;
   }
 
   public void setFundingSourceID(long projectID) {
