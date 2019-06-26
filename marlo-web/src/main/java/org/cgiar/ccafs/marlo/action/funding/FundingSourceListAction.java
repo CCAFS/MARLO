@@ -414,8 +414,8 @@ public class FundingSourceListAction extends BaseAction {
   }
 
 
-  public void setCpCrpID(Long cpRoleID) {
-    this.cpCrpID = cpRoleID;
+  public void setCpCrpID(Long cpCrpID) {
+    this.cpCrpID = cpCrpID;
   }
 
   public void setFundingSourceID(long projectID) {
