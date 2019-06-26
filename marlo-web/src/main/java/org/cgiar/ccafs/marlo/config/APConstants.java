@@ -81,6 +81,7 @@ public final class APConstants {
 
 
   public static final String CRP_FS_W1W2_COFINANCING = "crp_fs_w1w2_cofinancing";
+  public static final String FINANCE_CODE = "finance_code";
 
   public static final String CRP_PL_ROLE = "crp_pl_rol";
   public static final String CRP_PLANNING_ACTIVE = "crp_planning_active";
