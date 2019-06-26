@@ -25,6 +25,8 @@ import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonUserManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
+import org.cgiar.ccafs.marlo.data.manager.RoleManager;
+import org.cgiar.ccafs.marlo.data.manager.UserRoleManager;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceBudget;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceInfo;
@@ -35,6 +37,7 @@ import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.Phase;
+import org.cgiar.ccafs.marlo.data.model.Role;
 import org.cgiar.ccafs.marlo.security.APCustomRealm;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -66,17 +69,16 @@ public class FundingSourceListAction extends BaseAction {
   private List<FundingSource> myProjects;
 
   private FundingSourceManager fundingSourceManager;
-
-
+  private Long cpRoleID;
   private FundingSourceInfoManager fundingSourceInfoManager;
-
+  private RoleManager roleManager;
   private FundingSourceInstitutionManager fundingSourceInstitutionManager;
   private GlobalUnitManager crpManager;
   private LiaisonUserManager liaisonUserManager;
   private InstitutionManager institutionManager;
   private List<FundingSource> closedProjects;
   private List<FundingSourceInstitution> fundingSourceInstitutions;
-
+  private UserRoleManager userRoleManager;
   private long fundingSourceID;
   private long fundingSourceInfoID;
   private String justification;
@@ -86,7 +88,7 @@ public class FundingSourceListAction extends BaseAction {
   public FundingSourceListAction(APConfig config, FundingSourceManager fundingSourceManager,
     GlobalUnitManager crpManager, ProjectManager projectManager, LiaisonUserManager liaisonUserManager,
     InstitutionManager institutionManager, FundingSourceInstitutionManager fundingSourceInstitutionManager,
-    FundingSourceInfoManager fundingSourceInfoManager) {
+    FundingSourceInfoManager fundingSourceInfoManager, RoleManager roleManager, UserRoleManager userRoleManager) {
     super(config);
     this.fundingSourceManager = fundingSourceManager;
     this.crpManager = crpManager;
@@ -94,6 +96,8 @@ public class FundingSourceListAction extends BaseAction {
     this.fundingSourceInstitutionManager = fundingSourceInstitutionManager;
     this.institutionManager = institutionManager;
     this.fundingSourceInfoManager = fundingSourceInfoManager;
+    this.roleManager = roleManager;
+    this.userRoleManager = userRoleManager;
   }
 
   @Override
@@ -183,7 +187,6 @@ public class FundingSourceListAction extends BaseAction {
     return permission && !this.isReportingActive();
   }
 
-
   @Override
   public String delete() {
     FundingSource fundingSource = fundingSourceManager.getFundingSourceById(fundingSourceID);
@@ -207,9 +210,32 @@ public class FundingSourceListAction extends BaseAction {
     return SUCCESS;
   }
 
-
   public List<FundingSource> getClosedProjects() {
     return closedProjects;
+  }
+
+  public Long getCpRoleID() {
+    return cpRoleID;
+  }
+
+  public void getCrpContactPoint() {
+
+    // Check if the CRP has Contact Point and ContactPointRole, if not cpRole will be null (it will be used as a flag)
+
+    Role cpRol = null;
+    if (this.hasSpecificities(APConstants.CRP_HAS_CP)
+      && roleManager.getRoleById(Long.parseLong((String) this.getSession().get(APConstants.CRP_CP_ROLE))) != null) {
+      cpRol = roleManager.getRoleById(Long.parseLong((String) this.getSession().get(APConstants.CRP_CP_ROLE)));
+    }
+
+    List<Role> roles = new ArrayList<>();
+    roles = this.getRolesList();
+
+    if (roles.contains(cpRol)) {
+      cpRoleID = cpRol.getId();
+    } else {
+      cpRoleID = (long) 0;
+    }
   }
 
   public Double getFundingSourceBudgetPerPhase(Long fundingSourceId) {
@@ -232,8 +258,53 @@ public class FundingSourceListAction extends BaseAction {
     return fundingSourceID;
   }
 
+
   public List<FundingSourceInstitution> getFundingSourceInstitutions() {
     return fundingSourceInstitutions;
+  }
+
+  // public void getBudgetAmount(long fundingsourceID){
+  //
+  // FundingSource fundingSource = fundingSourceManager.getFundingSourceById(fundingsourceID);
+  //
+  // List<FundingSourceBudget> fundingSourceBudgets = new
+  // ArrayList<>(fundingSource.getFundingSourceBudgets().stream().filter(fb -> fb.isActive() &&
+  // fb.getPhase().getId().equals(this)));
+  //
+  //
+  // }
+
+
+  public void getFundingSourceInstitutionsList() {
+    List<String> institutionsName = new ArrayList<String>();
+    if (myProjects != null) {
+      for (FundingSource fundingSource : myProjects) {
+        if (fundingSource.getInstitutions() != null) {
+          for (FundingSourceInstitution institution : fundingSource.getInstitutions()) {
+
+            // funding source institutions cycle
+            if (fundingSourceInstitutions != null) {
+              // if the list of funding source institutions has elements, check the acronym and/or the name of
+              // institution
+              if (institution.getInstitution().getAcronym() != null) {
+                if (!institutionsName.contains(institution.getInstitution().getAcronym())) {
+                  institutionsName.add(institution.getInstitution().getAcronym());
+                  fundingSourceInstitutions.add(institution);
+                }
+              } else if (institution.getInstitution().getName() != null) {
+                if (!institutionsName.contains(institution.getInstitution().getName())) {
+                  institutionsName.add(institution.getInstitution().getName());
+                  fundingSourceInstitutions.add(institution);
+                }
+              }
+            } else {
+              // if the list of the funding source institutions to send to front is empty
+              fundingSourceInstitutions.add(institution);
+            }
+          }
+        }
+      }
+    }
   }
 
 
@@ -277,27 +348,14 @@ public class FundingSourceListAction extends BaseAction {
     return justification;
   }
 
-  // public void getBudgetAmount(long fundingsourceID){
-  //
-  // FundingSource fundingSource = fundingSourceManager.getFundingSourceById(fundingsourceID);
-  //
-  // List<FundingSourceBudget> fundingSourceBudgets = new
-  // ArrayList<>(fundingSource.getFundingSourceBudgets().stream().filter(fb -> fb.isActive() &&
-  // fb.getPhase().getId().equals(this)));
-  //
-  //
-  // }
-
 
   public GlobalUnit getLoggedCrp() {
     return loggedCrp;
   }
 
-
   public List<FundingSource> getMyProjects() {
     return myProjects;
   }
-
 
   @Override
   public void prepare() throws Exception {
@@ -346,42 +404,18 @@ public class FundingSourceListAction extends BaseAction {
         }
       }
     }
-    List<String> institutionsName = new ArrayList<String>();
-    if (myProjects != null) {
-      for (FundingSource fundingSource : myProjects) {
-        if (fundingSource.getInstitutions() != null) {
-          for (FundingSourceInstitution institution : fundingSource.getInstitutions()) {
 
-            // funding source institutions cycle
-            if (fundingSourceInstitutions != null) {
-              // if the list of funding source institutions has elements, check the acronym and/or the name of
-              // institution
-              if (institution.getInstitution().getAcronym() != null) {
-                if (!institutionsName.contains(institution.getInstitution().getAcronym())) {
-                  institutionsName.add(institution.getInstitution().getAcronym());
-                  fundingSourceInstitutions.add(institution);
-                  System.out.println(institution.getInstitution().getAcronym());
-                }
-              } else if (institution.getInstitution().getName() != null) {
-                if (!institutionsName.contains(institution.getInstitution().getName())) {
-                  institutionsName.add(institution.getInstitution().getName());
-                  fundingSourceInstitutions.add(institution);
-                  System.out.println(institution.getInstitution().getName());
-                }
-              }
-            } else {
-              // if the list of the funding source institutions to send to front is empty
-              fundingSourceInstitutions.add(institution);
-            }
-          }
-        }
-      }
-    }
-
+    this.getCrpContactPoint();
+    this.getFundingSourceInstitutionsList();
   }
 
   public void setClosedProjects(List<FundingSource> closedProjects) {
     this.closedProjects = closedProjects;
+  }
+
+
+  public void setCpRoleID(Long cpRoleID) {
+    this.cpRoleID = cpRoleID;
   }
 
   public void setFundingSourceID(long projectID) {
