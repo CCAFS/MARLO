@@ -20,33 +20,59 @@ import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
 
-import java.util.ArrayList;
+import org.cgiar.ciat.auth.LDAPService;
+import org.cgiar.ciat.auth.LDAPUser;
+
 import java.util.HashMap;
-import java.util.List;
 
 import javax.inject.Named;
 
-/**
- * @author Andrés Valencia - CIAT/CCAFS
- */
 @Named
 public class GuestUsersValidator extends BaseValidator {
-
 
   public GuestUsersValidator() {
   }
 
+  public LDAPUser getOutlookUser(String email) {
+    LDAPService service = new LDAPService();
+    if (config.isProduction()) {
+      service.setInternalConnection(false);
+    } else {
+      service.setInternalConnection(true);
+    }
+    LDAPUser user = null;
+    try {
+      user = service.searchUserByEmail(email);
+    } catch (Exception e) {
+      user = null;
+    }
+    return user;
+  }
 
   public void validate(BaseAction action, User user, long selectedGlobalUnitID, boolean isCGIARUser, boolean saving) {
     action.setInvalidFields(new HashMap<>());
+    LDAPUser LDAPUser = this.getOutlookUser(user.getEmail());
+    if (LDAPUser != null) {
+      isCGIARUser = true;
+    } else {
+      isCGIARUser = false;
+    }
+    this.validateGuestUsers(action, user, selectedGlobalUnitID, isCGIARUser);
+    if (!action.getFieldErrors().isEmpty()) {
+      action.addActionError(action.getText("saving.fields.required"));
+    } else if (action.getValidationMessage().length() > 0) {
+      action.addActionMessage(
+        " " + action.getText("saving.missingFields", new String[] {action.getValidationMessage().toString()}));
+    }
+  }
 
-
-    if (user.getFirstName() == null || user.getFirstName().isEmpty()) {
+  public void validateGuestUsers(BaseAction action, User user, long selectedGlobalUnitID, boolean isCGIARUser) {
+    if ((user.getFirstName() == null || user.getFirstName().isEmpty()) && isCGIARUser == false) {
       action.addMessage(action.getText("guestUsers.firstName"));
       action.getInvalidFields().put("input-user.firstName", InvalidFieldsMessages.EMPTYFIELD);
     }
 
-    if (user.getLastName() == null || user.getLastName().isEmpty()) {
+    if ((user.getLastName() == null || user.getLastName().isEmpty()) && isCGIARUser == false) {
       action.addMessage(action.getText("guestUsers.lastName"));
       action.getInvalidFields().put("input-user.lastName", InvalidFieldsMessages.EMPTYFIELD);
     }
@@ -57,29 +83,12 @@ public class GuestUsersValidator extends BaseValidator {
     }
 
     // Validate email
-    if (!(this.isValidEmail(user.getEmail()) && this.wordCount(user.getEmail()) >= 5)) {
+    if (user.getEmail() == null) {
       action.addMessage(action.getText("guestUsers.email"));
       action.getInvalidFields().put("input-user.email", InvalidFieldsMessages.EMPTYFIELD);
     }
 
-    if (!action.getFieldErrors().isEmpty()) {
-      action.addActionError(action.getText("saving.fields.required"));
-      action.addActionMessage(
-        " " + action.getText("saving.missingFields", new String[] {action.getValidationMessage().toString()}));
-
-      if (!action.getInvalidFields().isEmpty()) {
-        List<String> keys = new ArrayList<String>(action.getInvalidFields().keySet());
-        for (String key : keys) {
-          action.addActionError(key + ": " + action.getInvalidFields().get(key));
-        }
-      }
-    }
-
-    if (!action.getFieldErrors().isEmpty()) {
-      action.addActionError(action.getText("saving.fields.required"));
-    } else if (action.getValidationMessage().length() > 0) {
-      action.addActionMessage(
-        " " + action.getText("saving.missingFields", new String[] {action.getValidationMessage().toString()}));
-    }
   }
+
+
 }
