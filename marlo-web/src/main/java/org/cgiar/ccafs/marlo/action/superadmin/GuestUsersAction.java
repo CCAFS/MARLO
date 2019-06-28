@@ -39,6 +39,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -214,8 +215,8 @@ public class GuestUsersAction extends BaseAction {
           if (selectedGlobalUnitID != -1) {
             globalUnit = globalUnitManager.getGlobalUnitById(selectedGlobalUnitID);
             User newUser = new User();
-            newUser.setFirstName(user.getFirstName());
-            newUser.setLastName(user.getLastName());
+            // newUser.setFirstName(user.getFirstName());
+            // newUser.setLastName(user.getLastName());
             newUser.setEmail(user.getEmail());
             newUser.setModificationJustification("User created in MARLO " + this.getActionName().replace("/", "-"));
             newUser.setAutoSave(true);
@@ -238,9 +239,12 @@ public class GuestUsersAction extends BaseAction {
             } else {
               // Non CGIAR user
               isCGIARUser = false;
-              if (newUser.getFirstName() != null && newUser.getLastName() != null
-                && newUser.getFirstName().trim().length() > 0 && newUser.getLastName().trim().length() > 0) {
+              if (user.getFirstName() != null && !user.getFirstName().isEmpty() && user.getLastName() != null
+                && !user.getLastName().isEmpty() && newUser.getFirstName().trim().length() > 0
+                && newUser.getLastName().trim().length() > 0) {
                 isCGIARUser = false;
+                newUser.setFirstName(user.getFirstName());
+                newUser.setLastName(user.getLastName());
                 newUser.setCgiarUser(false);
                 newUser.setModificationJustification("User created in MARLO " + this.getActionName().replace("/", "-"));
                 password = RandomStringUtils.randomNumeric(6);
@@ -274,7 +278,6 @@ public class GuestUsersAction extends BaseAction {
           } else {
             this.addActionMessage("message:" + "login.error.selectCrp");
             LOG.warn(this.getText("login.error.selectCrp"));
-            return SUCCESS;
           }
 
         } else {
@@ -355,11 +358,34 @@ public class GuestUsersAction extends BaseAction {
         LOG.warn(this.getText("manageUsers.email.notValid"));
         message = this.getText("manageUsers.email.notValid");
         this.addActionMessage("message:" + this.getText("manageUsers.email.notValid"));
+      }
+      // check if there is a url to redirect
+      if (this.getUrl() == null || this.getUrl().isEmpty()) {
+        // check if there are missing field
+        Collection<String> messages = this.getActionMessages();
+        if (!this.getInvalidFields().isEmpty()) {
+          this.setActionMessages(null);
+          // this.addActionMessage(Map.toString(this.getInvalidFields().toArray()));
+          List<String> keys = new ArrayList<String>(this.getInvalidFields().keySet());
+          for (String key : keys) {
+            this.addActionMessage(key + ": " + this.getInvalidFields().get(key));
+          }
+
+        } else {
+          this.addActionMessage("message:" + this.getText("saving.saved"));
+        }
         return SUCCESS;
+      } else {
+        // No messages to next page
+
+        this.addActionMessage("");
+        this.setActionMessages(null);
+        // redirect the url select by user
+        return REDIRECT;
       }
 
-      return SUCCESS;
     } else {
+      // no permissions to edit
       return NOT_AUTHORIZED;
     }
   }
