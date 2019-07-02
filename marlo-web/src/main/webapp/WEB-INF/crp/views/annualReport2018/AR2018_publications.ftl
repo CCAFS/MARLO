@@ -191,6 +191,7 @@
     <table class="table table-bordered">
       <thead>
         <tr>
+          <th class="text-center"> ID </th>
           <th class="text-center"> [@s.text name="${customLabel}.${name}.article" /] </th>
           [#if !allowPopups]
             <th class="text-center"> [@s.text name="${customLabel}.${name}.author" /](s) </th>
@@ -222,6 +223,7 @@
               [#local url][@s.url namespace="/publications" action="${(crpSession)!}/publication"][@s.param name='deliverableID']${item.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
             [/#if]
             <tr>
+              <td> <a href="${url}" target="_blank" >D${(item.id)!""}</a>  </td>
               [#-- Title --]
               <td>
                 [#local publicationTitle = (item.getMetadataValue(1))!""]
