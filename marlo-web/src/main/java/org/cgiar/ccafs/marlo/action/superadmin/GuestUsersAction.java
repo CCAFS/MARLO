@@ -239,9 +239,7 @@ public class GuestUsersAction extends BaseAction {
             } else {
               // Non CGIAR user
               isCGIARUser = false;
-              if (user.getFirstName() != null && !user.getFirstName().isEmpty() && user.getLastName() != null
-                && !user.getLastName().isEmpty() && newUser.getFirstName().trim().length() > 0
-                && newUser.getLastName().trim().length() > 0) {
+              if (user.getFirstName() != null && user.getLastName() != null) {
                 isCGIARUser = false;
                 newUser.setFirstName(user.getFirstName());
                 newUser.setLastName(user.getLastName());
