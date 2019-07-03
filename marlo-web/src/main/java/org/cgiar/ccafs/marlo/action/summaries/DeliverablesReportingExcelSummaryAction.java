@@ -1474,7 +1474,6 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
         }
 
         if (responsible != null) {
-
           if (responsible.getProjectPartner() != null) {
             institutionsResponsibleList.add(responsible.getProjectPartner().getInstitution());
           }
@@ -1511,6 +1510,7 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
 
           } else if (responsible.getProjectPartnerPerson() != null) {
             // individual += "<span style='font-family: Segoe UI;color:#ff0000;font-size: 10'>";
+            individual += "●  ";
             individual += "*";
             ProjectPartnerPerson responsibleppp = responsible.getProjectPartnerPerson();
             if (responsibleppp.getProjectPartner() != null) {
@@ -1526,6 +1526,7 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
                   responsibleAcronym = responsibleppp.getProjectPartner().getInstitution().getAcronym() + " ";
                 } else {
                   individual += responsibleppp.getProjectPartner().getInstitution().getName() + " - ";
+
                   /*
                    * ppaResponsible += "<span style='font-family: Segoe UI;color:#ff0000;font-size: 10'>"
                    * + responsibleppp.getProjectPartner().getInstitution().getName() + "</span>";
@@ -1559,7 +1560,8 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
         }
 
         if (othersPartnerships != null) {
-          individual += ", ";
+          individual += "\n ● ";
+
           for (DeliverablePartnership deliverablePartnership : othersPartnerships) {
             if (deliverablePartnership.getProjectPartner() != null) {
               institutionsResponsibleList.add(deliverablePartnership.getProjectPartner().getInstitution());
@@ -1590,12 +1592,15 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
               if (responsibleppp.getUser() != null) {
                 individual += responsibleppp.getUser().getComposedName();
               }
+
               if (deliverablePartnership.getPartnerDivision() != null
                 && deliverablePartnership.getPartnerDivision().getAcronym() != null
                 && !deliverablePartnership.getPartnerDivision().getAcronym().isEmpty()) {
                 individual += " (" + deliverablePartnership.getPartnerDivision().getAcronym() + ")";
               }
+              individual += "\n● ";
               // individual += "</span>";
+              // End of invidual cycle
             } else {
 
               // get deliverable information from deliverablePartnership
@@ -1629,6 +1634,11 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
 
         if (individual.isEmpty()) {
           individual = null;
+        } else {
+          if ((individual.length() > 4)
+            && (individual.substring(individual.length() - 3, individual.length()).contains("● "))) {
+            individual = individual.substring(0, individual.length() - 3);
+          }
         }
         LinkedHashSet<Institution> managingResponsibleList = new LinkedHashSet<>();
         for (String ppaOher : ppaResponsibleList) {

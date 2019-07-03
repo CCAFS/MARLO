@@ -46,12 +46,18 @@
             </div>
             <div class="form-group row">
               <div class="col-md-6 ">
-                [@customForm.input name="user.firstName" i18nkey="guestUsers.firstName" value="${(user.firstName)!}" className="userFirstName" type="text"  required=(isCgiarUser)!true editable=true /]
+                [@customForm.input name="user.firstName" help="Not required for CGIAR emails"  i18nkey="guestUsers.firstName" value="${(user.firstName)!}" className="userFirstName" type="text"  required=(isCgiarUser)!true editable=true /]
               </div>
               <div class="col-md-6">
-                [@customForm.input name="user.lastName" i18nkey="guestUsers.lastName" value="${(user.lastName)!}" className="userLastName" type="text"  required=(isCGIARUser)!true  editable=true /]
+                [@customForm.input name="user.lastName" help="Not required for CGIAR emails" i18nkey="guestUsers.lastName" value="${(user.lastName)!}" className="userLastName" type="text"  required=(isCGIARUser)!true  editable=true /]
               </div>
             </div>
+            </br>
+            [#-- SEND EMAIL --]         
+            <div class="form-group col-md-12">
+              [@customForm.checkmark  id="sendEmail"  i18nkey="guestUsers.sendEmail" name="isEmailSend" value="true" checked=true editable=true /]
+            </div>
+            <br />          
           </div>
           <br />
           
