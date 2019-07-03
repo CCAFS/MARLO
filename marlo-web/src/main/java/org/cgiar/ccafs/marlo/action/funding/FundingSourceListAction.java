@@ -419,7 +419,10 @@ public class FundingSourceListAction extends BaseAction {
 
     this.getCrpContactPoint();
     this.getFundingSourceInstitutionsList();
-    this.removeInstitutions();
+
+    if (institutionsIDs != null) {
+      this.removeInstitutions();
+    }
   }
 
   public void removeInstitutions() {
