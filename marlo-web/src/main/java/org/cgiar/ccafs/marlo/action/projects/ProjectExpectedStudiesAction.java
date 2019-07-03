@@ -781,7 +781,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       }
 
       // Getting The list
-      this.statuses = this.generalStatusManager.findAll();
+      this.statuses = this.generalStatusManager.findByTable(APConstants.PROJECT_EXPECTED_STUDIES_TABLE);
 
       this.countries = this.locElementManager.findAll().stream()
         .filter(c -> c.getLocElementType().getId().intValue() == 2 && c.isActive()).collect(Collectors.toList());
@@ -900,14 +900,15 @@ public class ProjectExpectedStudiesAction extends BaseAction {
         /*
          * Update 4/25/2019 Adding Shared Project Innovation in the lists.
          */
-        List<ProjectInnovationShared> innovationShareds = new ArrayList<>(project.getProjectInnovationShareds().stream()
-          .filter(px -> px.isActive() && px.getPhase().getId() == this.getActualPhase().getId()
-            && px.getProjectInnovation().isActive()
-            && px.getProjectInnovation().getProjectInnovationInfo(this.getActualPhase()) != null)
-          .collect(Collectors.toList()));
+        List<ProjectInnovationShared> innovationShareds =
+          new ArrayList<>(this.project.getProjectInnovationShareds().stream()
+            .filter(px -> px.isActive() && px.getPhase().getId() == this.getActualPhase().getId()
+              && px.getProjectInnovation().isActive()
+              && px.getProjectInnovation().getProjectInnovationInfo(this.getActualPhase()) != null)
+            .collect(Collectors.toList()));
         if (innovationShareds != null && innovationShareds.size() > 0) {
           for (ProjectInnovationShared innovationShared : innovationShareds) {
-            if (!innovationsList.contains(innovationShared.getProjectInnovation())) {
+            if (!this.innovationsList.contains(innovationShared.getProjectInnovation())) {
               this.innovationsList.add(innovationShared.getProjectInnovation());
             }
           }
@@ -1532,7 +1533,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
           this.expectedStudy.getProjectExpectedStudyLinks().add(studyLinkSave);
         } else {
           ProjectExpectedStudyLink studyLinkSave =
-            projectExpectedStudyLinkManager.getProjectExpectedStudyLinkById(studyLink.getId());
+            this.projectExpectedStudyLinkManager.getProjectExpectedStudyLinkById(studyLink.getId());
           studyLinkSave.setProjectExpectedStudy(projectExpectedStudy);
           studyLinkSave.setPhase(phase);
           studyLinkSave.setLink(studyLink.getLink());
@@ -1677,7 +1678,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
           // correct auditlog.
           this.expectedStudy.getProjectExpectedStudyQuantifications().add(studyQuantificationSave);
         } else {
-          ProjectExpectedStudyQuantification studyQuantificationSave = projectExpectedStudyQuantificationManager
+          ProjectExpectedStudyQuantification studyQuantificationSave = this.projectExpectedStudyQuantificationManager
             .getProjectExpectedStudyQuantificationById(studyQuantification.getId());
 
 

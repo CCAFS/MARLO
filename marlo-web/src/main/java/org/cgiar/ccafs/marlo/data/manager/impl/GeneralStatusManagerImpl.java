@@ -67,13 +67,10 @@ public class GeneralStatusManagerImpl implements GeneralStatusManager {
 
   }
 
-  // TODO: mralmanzar there are no retrieving the general status on generalStatusTable. CHECK IT
   @Override
   public List<GeneralStatus> findByTable(String tableName) {
-    List<GeneralStatusTable> statusTableList;
-    List<GeneralStatus> statusList = null;
-    statusTableList = this.generalStatusTableManager.findAll();
-    statusList = statusTableList.stream().filter(c -> c.getTableName() == tableName)
+    List<GeneralStatusTable> statusTableList = this.generalStatusTableManager.findAll();
+    List<GeneralStatus> statusList = statusTableList.stream().filter(c -> c.getTableName().equalsIgnoreCase(tableName))
       .map(result -> result.getGeneralStatus()).collect(Collectors.toList());
     return statusList;
   }
@@ -89,5 +86,6 @@ public class GeneralStatusManagerImpl implements GeneralStatusManager {
 
     return this.generalStatusDAO.save(generalStatus);
   }
+
 
 }

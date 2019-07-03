@@ -28,40 +28,47 @@ public class ErrorDTO implements Serializable {
 
   private final String message;
   private final String description;
+  private final String severity;
 
   private List<FieldErrorDTO> fieldErrors;
 
   public ErrorDTO(String message) {
-    this(message, null);
+    this(message, null, null);
   }
 
-  public ErrorDTO(String message, String description) {
+  public ErrorDTO(String message, String description, String severity) {
     this.message = message;
     this.description = description;
+    this.severity = severity;
   }
 
-  public ErrorDTO(String message, String description, List<FieldErrorDTO> fieldErrors) {
+  public ErrorDTO(String message, String description, String severity, List<FieldErrorDTO> fieldErrors) {
     this.message = message;
     this.description = description;
     this.fieldErrors = fieldErrors;
+    this.severity = severity;
   }
 
   public void add(String objectName, String field, String message) {
-    if (fieldErrors == null) {
-      fieldErrors = new ArrayList<>();
+    if (this.fieldErrors == null) {
+      this.fieldErrors = new ArrayList<>();
     }
-    fieldErrors.add(new FieldErrorDTO(objectName, field, message));
+    this.fieldErrors.add(new FieldErrorDTO(objectName, field, message));
   }
 
   public String getDescription() {
-    return description;
+    return this.description;
   }
 
   public List<FieldErrorDTO> getFieldErrors() {
-    return fieldErrors;
+    return this.fieldErrors;
   }
 
   public String getMessage() {
-    return message;
+    return this.message;
+  }
+
+  public String getSeverity() {
+    return this.severity;
   }
 }

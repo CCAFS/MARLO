@@ -51,6 +51,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -58,6 +59,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@Validated
 @Api(tags = "Institutions Lists")
 public class Institutions {
 
@@ -109,6 +111,7 @@ public class Institutions {
    * @param acronym of global unit
    * @param NewInstitutionDTO of institution to be created
    * @return a institution request created
+   * @throws Exception
    */
   @ApiOperation(value = "${Institutions.institution-requests.create.value}", response = InstitutionRequestDTO.class)
   @RequiresPermissions(Permission.FULL_CREATE_REST_API_PERMISSION)
@@ -118,7 +121,8 @@ public class Institutions {
     @ApiParam(value = "${Institutions.institution-requests.create.param.CGIAR}",
       required = true) @PathVariable("CGIAREntity") String CGIAREntity,
     @ApiParam(value = "${Institutions.institution-requests.create.param.institution}",
-      required = true) @Valid @RequestBody NewInstitutionDTO newInstitutionDTO) {
+      required = true) @Valid @RequestBody NewInstitutionDTO newInstitutionDTO)
+    throws Exception {
     return this.institutionItem.createPartnerRequest(newInstitutionDTO, CGIAREntity, this.getCurrentUser());
   }
 
