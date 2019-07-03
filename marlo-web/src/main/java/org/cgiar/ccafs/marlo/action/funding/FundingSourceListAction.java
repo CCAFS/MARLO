@@ -55,6 +55,7 @@ import javax.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.struts2.dispatcher.Parameter;
+import org.jfree.util.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -368,9 +369,12 @@ public class FundingSourceListAction extends BaseAction {
     loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
 
     institutionsIDsList = new ArrayList<String>();
-    Map<String, Parameter> parameters = this.getParameters();
-    institutionsIDs = StringUtils.trim(parameters.get(APConstants.INSTITUTIONS_ID).getMultipleValues()[0]);
-
+    try {
+      Map<String, Parameter> parameters = this.getParameters();
+      institutionsIDs = StringUtils.trim(parameters.get(APConstants.INSTITUTIONS_ID).getMultipleValues()[0]);
+    } catch (Exception e) {
+      Log.error(e + "error getting institutionsID parameter");
+    }
     Set<Integer> statusTypes = new HashSet<>();
     statusTypes.add(Integer.parseInt(FundingStatusEnum.Ongoing.getStatusId()));
     statusTypes.add(Integer.parseInt(FundingStatusEnum.Extended.getStatusId()));
@@ -415,41 +419,10 @@ public class FundingSourceListAction extends BaseAction {
 
     this.getCrpContactPoint();
     this.getFundingSourceInstitutionsList();
+    this.removeInstitutions();
   }
 
-  public void setClosedProjects(List<FundingSource> closedProjects) {
-    this.closedProjects = closedProjects;
-  }
-
-  public void setCpCrpID(Long cpCrpID) {
-    this.cpCrpID = cpCrpID;
-  }
-
-
-  public void setFundingSourceID(long projectID) {
-    this.fundingSourceID = projectID;
-  }
-
-  public void setFundingSourceInstitutions(List<FundingSourceInstitution> fundingSourceInstitutions) {
-    this.fundingSourceInstitutions = fundingSourceInstitutions;
-  }
-
-
-  @Override
-  public void setJustification(String justification) {
-    this.justification = justification;
-  }
-
-  public void setLoggedCrp(GlobalUnit loggedCrp) {
-    this.loggedCrp = loggedCrp;
-  }
-
-
-  public void setMyProjects(List<FundingSource> myProjects) {
-    this.myProjects = myProjects;
-  }
-
-  public void test() {
+  public void removeInstitutions() {
 
     if (myProjects != null) {
       for (FundingSource fundingSource : myProjects) {
@@ -458,8 +431,7 @@ public class FundingSourceListAction extends BaseAction {
 
             // funding source institutions cycle
             if (fundingSourceInstitutions != null) {
-              // if the list of funding source institutions has elements, check the acronym and/or the name of
-              // institution
+              // if the list of funding source institutions has elements, check the ID
               if (institution.getInstitution().getId() != null) {
                 if (!institutionsIDsList
                   .contains(String.valueOf((Integer.parseInt(institution.getInstitution().getId().toString()))))) {
@@ -471,5 +443,37 @@ public class FundingSourceListAction extends BaseAction {
         }
       }
     }
+  }
+
+  public void setClosedProjects(List<FundingSource> closedProjects) {
+    this.closedProjects = closedProjects;
+  }
+
+
+  public void setCpCrpID(Long cpCrpID) {
+    this.cpCrpID = cpCrpID;
+  }
+
+  public void setFundingSourceID(long projectID) {
+    this.fundingSourceID = projectID;
+  }
+
+
+  public void setFundingSourceInstitutions(List<FundingSourceInstitution> fundingSourceInstitutions) {
+    this.fundingSourceInstitutions = fundingSourceInstitutions;
+  }
+
+  @Override
+  public void setJustification(String justification) {
+    this.justification = justification;
+  }
+
+
+  public void setLoggedCrp(GlobalUnit loggedCrp) {
+    this.loggedCrp = loggedCrp;
+  }
+
+  public void setMyProjects(List<FundingSource> myProjects) {
+    this.myProjects = myProjects;
   }
 }
