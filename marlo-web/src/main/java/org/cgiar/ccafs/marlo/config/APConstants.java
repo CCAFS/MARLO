@@ -176,6 +176,7 @@ public final class APConstants {
   public static final String FUNDING_SOURCES_INSTITUTIONS_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.FundingSource.fundingSourceInstitutions)";
 
+  public static final String INSTITUTIONS_ID = "institutionsID";
 
   public static final String FUNDING_SOURCES_LOCATIONS_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.FundingSource.fundingSourceLocations)";

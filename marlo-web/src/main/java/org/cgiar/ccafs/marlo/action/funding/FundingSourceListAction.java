@@ -46,12 +46,15 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authz.AuthorizationInfo;
+import org.apache.struts2.dispatcher.Parameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,7 +70,8 @@ public class FundingSourceListAction extends BaseAction {
   private GlobalUnit loggedCrp;
 
   private List<FundingSource> myProjects;
-
+  private String institutionsIDs;
+  private List<String> institutionsIDsList;
   private FundingSourceManager fundingSourceManager;
   private Long cpCrpID;
   private FundingSourceInfoManager fundingSourceInfoManager;
@@ -114,7 +118,6 @@ public class FundingSourceListAction extends BaseAction {
     boolean hasNext = true;
     while (hasNext) {
 
-
       FundingSourceInfo fundingSourceInfo = new FundingSourceInfo();
       fundingSourceInfo.setModificationJustification("New expected project bilateral cofunded created");
       fundingSourceInfo.setPhase(phase);
@@ -122,16 +125,12 @@ public class FundingSourceListAction extends BaseAction {
       fundingSourceInfo.setFundingSource(fundingSourceManager.getFundingSourceById(fundingSourceID));
       fundingSourceInfoID = fundingSourceInfoManager.saveFundingSourceInfo(fundingSourceInfo).getId();
 
-
       if (phase.getNext() != null) {
         phase = phase.getNext();
       } else {
         hasNext = false;
       }
-
-
     }
-
 
     LiaisonUser user = liaisonUserManager.getLiaisonUserByUserId(this.getCurrentUser().getId(), loggedCrp.getId());
     if (user != null) {
@@ -154,15 +153,12 @@ public class FundingSourceListAction extends BaseAction {
          * but we need to revisit to see if we should continue processing or re-throw the exception.
          */
       }
-
-
     }
 
     // this.clearPermissionsCache();
     // HJ : add the permission String
     AuthorizationInfo info = ((APCustomRealm) this.securityContext.getRealm())
       .getAuthorizationInfo(this.securityContext.getSubject().getPrincipals());
-
 
     String params[] = {loggedCrp.getAcronym(), fundingSource.getId() + ""};
     info.getStringPermissions().add(this.generatePermission(Permission.PROJECT_FUNDING_SOURCE_BASE_PERMISSION, params));
@@ -308,6 +304,15 @@ public class FundingSourceListAction extends BaseAction {
   }
 
 
+  public void getInstitutionsIds() {
+    for (int i = 0; i < institutionsIDs.length(); i++) {
+      if (institutionsIDs.charAt(i) == ',') {
+        institutionsIDsList.add(institutionsIDs.substring(0, i).trim());
+      }
+    }
+  }
+
+
   /**
    * Migrated from the BaseAction. Leaving this in here as the call to the fundingSourceValidator
    * may be required in a situation that I am not aware of.
@@ -348,7 +353,6 @@ public class FundingSourceListAction extends BaseAction {
     return justification;
   }
 
-
   public GlobalUnit getLoggedCrp() {
     return loggedCrp;
   }
@@ -362,6 +366,10 @@ public class FundingSourceListAction extends BaseAction {
 
     loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
     loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
+
+    institutionsIDsList = new ArrayList<String>();
+    Map<String, Parameter> parameters = this.getParameters();
+    institutionsIDs = StringUtils.trim(parameters.get(APConstants.INSTITUTIONS_ID).getMultipleValues()[0]);
 
     Set<Integer> statusTypes = new HashSet<>();
     statusTypes.add(Integer.parseInt(FundingStatusEnum.Ongoing.getStatusId()));
@@ -413,33 +421,55 @@ public class FundingSourceListAction extends BaseAction {
     this.closedProjects = closedProjects;
   }
 
-
   public void setCpCrpID(Long cpCrpID) {
     this.cpCrpID = cpCrpID;
   }
+
 
   public void setFundingSourceID(long projectID) {
     this.fundingSourceID = projectID;
   }
 
-
   public void setFundingSourceInstitutions(List<FundingSourceInstitution> fundingSourceInstitutions) {
     this.fundingSourceInstitutions = fundingSourceInstitutions;
   }
+
 
   @Override
   public void setJustification(String justification) {
     this.justification = justification;
   }
 
-
   public void setLoggedCrp(GlobalUnit loggedCrp) {
     this.loggedCrp = loggedCrp;
   }
+
 
   public void setMyProjects(List<FundingSource> myProjects) {
     this.myProjects = myProjects;
   }
 
+  public void test() {
 
+    if (myProjects != null) {
+      for (FundingSource fundingSource : myProjects) {
+        if (fundingSource.getInstitutions() != null) {
+          for (FundingSourceInstitution institution : fundingSource.getInstitutions()) {
+
+            // funding source institutions cycle
+            if (fundingSourceInstitutions != null) {
+              // if the list of funding source institutions has elements, check the acronym and/or the name of
+              // institution
+              if (institution.getInstitution().getId() != null) {
+                if (!institutionsIDsList
+                  .contains(String.valueOf((Integer.parseInt(institution.getInstitution().getId().toString()))))) {
+                  myProjects.remove(fundingSource);
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
 }
