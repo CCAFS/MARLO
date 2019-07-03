@@ -90,7 +90,7 @@ public class GuestUsersAction extends BaseAction {
   private long selectedGlobalUnitID;
   private String message;
   private GuestUsersValidator validator;
-
+  private Boolean isEmailSend = true;
   private boolean isCGIARUser;
 
   @Inject
@@ -113,13 +113,17 @@ public class GuestUsersAction extends BaseAction {
   }
 
 
+  public Boolean getIsEmailSend() {
+    return isEmailSend;
+  }
+
+
   /**
    * @return the message
    */
   public String getMessage() {
     return message;
   }
-
 
   /**
    * @return the selectedGlobalUnitID
@@ -170,7 +174,6 @@ public class GuestUsersAction extends BaseAction {
         crpAdmins += ", " + userRole.getUser().getComposedCompleteName() + " (" + userRole.getUser().getEmail() + ")";
       }
     }
-
 
     // Subject
     String subject = this.getText("email.guest.assigned.subject", new String[] {globalUnit.getAcronym()});
@@ -253,7 +256,9 @@ public class GuestUsersAction extends BaseAction {
             }
 
             try {
-              this.sendMailNewUser(newUser, globalUnit, password);
+              if (isEmailSend == true) {
+                this.sendMailNewUser(newUser, globalUnit, password);
+              }
             } catch (NoSuchAlgorithmException e) {
               e.printStackTrace();
               LOG.error(e.getMessage());
@@ -336,7 +341,9 @@ public class GuestUsersAction extends BaseAction {
 
                 // Send email message for Guest rol assignation in selected CRP
                 try {
-                  this.notifyRoleAssigned(existingUser);
+                  if (isEmailSend == true) {
+                    this.notifyRoleAssigned(existingUser);
+                  }
                 } catch (Exception e) {
                   e.printStackTrace();
                   LOG.error(e.getMessage());
@@ -465,11 +472,13 @@ public class GuestUsersAction extends BaseAction {
     this.isCGIARUser = isCGIARUser;
   }
 
-
   public void setCrps(List<GlobalUnit> crps) {
     this.crps = crps;
   }
 
+  public void setIsEmailSend(Boolean isEmailSend) {
+    this.isEmailSend = isEmailSend;
+  }
 
   /**
    * @param selectedGlobalUnitID the selectedGlobalUnitID to set
