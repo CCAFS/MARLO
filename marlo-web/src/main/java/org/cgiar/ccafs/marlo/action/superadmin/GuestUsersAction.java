@@ -90,7 +90,7 @@ public class GuestUsersAction extends BaseAction {
   private long selectedGlobalUnitID;
   private String message;
   private GuestUsersValidator validator;
-  private Boolean isEmailSend = true;
+  private Boolean isEmailSend;
   private boolean isCGIARUser;
 
   @Inject
@@ -201,6 +201,9 @@ public class GuestUsersAction extends BaseAction {
 
   @Override
   public String save() {
+    if (isEmailSend == null) {
+      isEmailSend = false;
+    }
     GlobalUnit globalUnit = null;
 
     if (this.canAccessSuperAdmin()) {

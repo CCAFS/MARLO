@@ -57,7 +57,7 @@
              <hr />
             </div>
             <div class="form-group col-md-12">
-             [@customForm.yesNoInput  label="guestUsers.sendEmail" name="guestUsers.isEmailSend" value="guestUsers.isEmailSend" editable=editable &&  inverse=false  cssClass="" /] 
+              [@customForm.checkmark  id="sendEmail"  i18nkey="guestUsers.sendEmail" name="isEmailSend" value="true" checked=true editable=true /]
             </div>
             <br />          
           </div>
