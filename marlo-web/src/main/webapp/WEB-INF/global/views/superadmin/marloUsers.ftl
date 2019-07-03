@@ -52,6 +52,14 @@
                 [@customForm.input name="user.lastName" i18nkey="guestUsers.lastName" value="${(user.lastName)!}" className="userLastName" type="text"  required=(isCGIARUser)!true  editable=true /]
               </div>
             </div>
+            [#-- SEND EMAIL --]
+            <div class="form-group col-md-12 ">
+             <hr />
+            </div>
+            <div class="form-group col-md-12">
+             [@customForm.yesNoInput  label="guestUsers.sendEmail" name="guestUsers.isEmailSend" value="guestUsers.isEmailSend" editable=editable &&  inverse=false  cssClass="" /] 
+            </div>
+            <br />          
           </div>
           <br />
           
