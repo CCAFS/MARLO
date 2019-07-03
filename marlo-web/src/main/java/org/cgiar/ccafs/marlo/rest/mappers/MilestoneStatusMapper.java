@@ -15,9 +15,8 @@
 
 package org.cgiar.ccafs.marlo.rest.mappers;
 
-import org.cgiar.ccafs.marlo.data.model.ProjectInnovationGeographicScope;
-import org.cgiar.ccafs.marlo.data.model.RepIndGeographicScope;
-import org.cgiar.ccafs.marlo.rest.dto.GeographicScopeDTO;
+import org.cgiar.ccafs.marlo.data.model.GeneralStatus;
+import org.cgiar.ccafs.marlo.rest.dto.MilestoneStatusDTO;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -28,20 +27,12 @@ import org.mapstruct.Mappings;
  */
 
 @Mapper(componentModel = "jsr330")
-public interface GeographicScopeMapper {
-
-  @Mappings({@Mapping(source = "code", target = "id")})
-  public abstract RepIndGeographicScope
-    geographicScopeDTOToRepIndGeographicScope(GeographicScopeDTO geographicScopeDTO);
-
-  @Mappings({@Mapping(source = "repIndGeographicScope.id", target = "code"),
-    @Mapping(source = "repIndGeographicScope.name", target = "name"),
-    @Mapping(source = "repIndGeographicScope.definition", target = "definition")})
-  public abstract GeographicScopeDTO projectInnovationGeographicScopeToGeographicScopeDTO(
-    ProjectInnovationGeographicScope projectInnovationGeographicScope);
+public interface MilestoneStatusMapper {
 
   @Mappings({@Mapping(source = "id", target = "code")})
-  public abstract GeographicScopeDTO
-    repIndGeographicScopToGeographicScopeDTO(RepIndGeographicScope repIndGeographicScope);
+  public abstract MilestoneStatusDTO generalStatusToMilestoneStatusDTO(GeneralStatus generalStatus);
+
+  @Mappings({@Mapping(source = "code", target = "id")})
+  public abstract GeneralStatus milestoneStatusDTOToGeneralStatus(MilestoneStatusDTO milestoneStatusDTO);
 
 }

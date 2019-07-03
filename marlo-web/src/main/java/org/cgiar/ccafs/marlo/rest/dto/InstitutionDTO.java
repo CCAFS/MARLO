@@ -58,7 +58,7 @@ public class InstitutionDTO {
   }
 
 
-  public List<CountryOfficeDTO> getCountriesDTOs() {
+  public List<CountryOfficeDTO> getCountryOfficeDTO() {
     return this.countryOfficeDTO;
   }
 
@@ -88,7 +88,7 @@ public class InstitutionDTO {
     this.code = code;
   }
 
-  public void setCountriesDTOs(List<CountryOfficeDTO> countriesDTOs) {
+  public void setCountryOfficeDTO(List<CountryOfficeDTO> countriesDTOs) {
     this.countryOfficeDTO = countriesDTOs;
   }
 

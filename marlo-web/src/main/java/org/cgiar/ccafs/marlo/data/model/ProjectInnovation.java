@@ -73,9 +73,9 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
 
 
   public String getComposedName() {
-    if ((projectInnovationInfo != null) && (projectInnovationInfo.getTitle() != null)
-      && (projectInnovationInfo.getTitle().trim().length() > 0)) {
-      return this.getId() + " - " + projectInnovationInfo.getTitle();
+    if ((this.projectInnovationInfo != null) && (this.projectInnovationInfo.getTitle() != null)
+      && (this.projectInnovationInfo.getTitle().trim().length() > 0)) {
+      return this.getId() + " - " + this.projectInnovationInfo.getTitle();
     } else {
       return "" + this.getId() + " - Untitled";
     }
@@ -83,7 +83,7 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
 
 
   public List<ProjectInnovationContributingOrganization> getContributingOrganizations() {
-    return contributingOrganizations;
+    return this.contributingOrganizations;
   }
 
 
@@ -94,7 +94,7 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
 
 
   public List<ProjectInnovationCountry> getCountries() {
-    return countries;
+    return this.countries;
   }
 
 
@@ -105,27 +105,27 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
 
 
   public List<String> getCountriesIds() {
-    return countriesIds;
+    return this.countriesIds;
   }
 
 
   public String getCountriesIdsText() {
-    return countriesIdsText;
+    return this.countriesIdsText;
   }
 
 
   public List<ProjectInnovationCrp> getCrps() {
-    return crps;
+    return this.crps;
   }
 
 
   public List<ProjectInnovationDeliverable> getDeliverables() {
-    return deliverables;
+    return this.deliverables;
   }
 
 
   public List<ProjectInnovationGeographicScope> getGeographicScopes() {
-    return geographicScopes;
+    return this.geographicScopes;
   }
 
 
@@ -144,46 +144,50 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
 
 
   public List<ProjectInnovationOrganization> getOrganizations() {
-    return organizations;
+    return this.organizations;
   }
 
 
   public Project getProject() {
-    return project;
+    return this.project;
   }
 
   public Set<ProjectInnovationContributingOrganization> getProjectInnovationContributingOrganization() {
-    return projectInnovationContributingOrganization;
+    return this.projectInnovationContributingOrganization;
   }
 
   public Set<ProjectInnovationCountry> getProjectInnovationCountries() {
-    return projectInnovationCountries;
+    return this.projectInnovationCountries;
   }
 
   public Set<ProjectInnovationCrp> getProjectInnovationCrps() {
-    return projectInnovationCrps;
+    return this.projectInnovationCrps;
   }
 
+  public List<ProjectInnovationCrp> getProjectInnovationCrps(Phase phase) {
+    return new ArrayList<>(this.getProjectInnovationCrps().stream()
+      .filter(pc -> pc.isActive() && pc.getPhase().equals(phase)).collect(Collectors.toList()));
+  }
 
   public Set<ProjectInnovationDeliverable> getProjectInnovationDeliverables() {
-    return projectInnovationDeliverables;
+    return this.projectInnovationDeliverables;
   }
 
   public Set<ProjectInnovationGeographicScope> getProjectInnovationGeographicScopes() {
-    return projectInnovationGeographicScopes;
+    return this.projectInnovationGeographicScopes;
   }
 
   public ProjectInnovationInfo getProjectInnovationInfo() {
-    return projectInnovationInfo;
+    return this.projectInnovationInfo;
   }
 
   public ProjectInnovationInfo getProjectInnovationInfo(Phase phase) {
     if (this.getProjectInnovationInfo() != null) {
       return this.getProjectInnovationInfo();
     } else {
-      List<ProjectInnovationInfo> infos =
-        projectInnovationInfos.stream().filter(c -> c != null && c.getPhase() != null && c.getPhase().getId() != null
-          && c.getPhase().getId().longValue() == phase.getId()).collect(Collectors.toList());
+      List<ProjectInnovationInfo> infos = this.projectInnovationInfos.stream().filter(c -> c != null
+        && c.getPhase() != null && c.getPhase().getId() != null && c.getPhase().getId().longValue() == phase.getId())
+        .collect(Collectors.toList());
       if (!infos.isEmpty()) {
         this.setProjectInnovationInfo(infos.get(0));
         return this.getProjectInnovationInfo();
@@ -195,25 +199,29 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
 
 
   public Set<ProjectInnovationInfo> getProjectInnovationInfos() {
-    return projectInnovationInfos;
+    return this.projectInnovationInfos;
   }
 
   public Set<ProjectInnovationOrganization> getProjectInnovationOrganizations() {
-    return projectInnovationOrganizations;
+    return this.projectInnovationOrganizations;
   }
 
+  public List<ProjectInnovationOrganization> getProjectInnovationOrganizations(Phase phase) {
+    return new ArrayList<>(this.getProjectInnovationOrganizations().stream()
+      .filter(pc -> pc.isActive() && pc.getPhase().equals(phase)).collect(Collectors.toList()));
+  }
 
   public Set<ProjectInnovationRegion> getProjectInnovationRegions() {
-    return projectInnovationRegions;
+    return this.projectInnovationRegions;
   }
 
 
   public Set<ProjectInnovationShared> getProjectInnovationShareds() {
-    return projectInnovationShareds;
+    return this.projectInnovationShareds;
   }
 
   public List<ProjectInnovationRegion> getRegions() {
-    return regions;
+    return this.regions;
   }
 
   public List<ProjectInnovationRegion> getRegions(Phase phase) {
@@ -222,15 +230,29 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
   }
 
   public Set<SectionStatus> getSectionStatuses() {
-    return sectionStatuses;
+    return this.sectionStatuses;
   }
 
   public List<LiaisonInstitution> getSelectedFlahsgips() {
-    return selectedFlahsgips;
+    return this.selectedFlahsgips;
   }
 
   public List<ProjectInnovationShared> getSharedInnovations() {
-    return sharedInnovations;
+    return this.sharedInnovations;
+  }
+
+  public void setAllbyPhase(Phase phase) {
+    // TODO: Include all others many to many Relationships
+    if (this.getProjectInnovationInfo(phase) != null) {
+      this.setCountries(this.getCountries(phase));
+      this.setRegions(this.getRegions(phase));
+      this.setGeographicScopes(this.getGeographicScopes(phase));
+      this.setContributingOrganizations(this.getContributingOrganizations(phase));
+      this.setCrps(this.getProjectInnovationCrps(phase));
+      this.setOrganizations(this.getProjectInnovationOrganizations(phase));
+
+    }
+
   }
 
   public void setContributingOrganizations(List<ProjectInnovationContributingOrganization> contributingOrganizations) {
@@ -257,10 +279,10 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
     this.deliverables = deliverables;
   }
 
+
   public void setGeographicScopes(List<ProjectInnovationGeographicScope> geographicScopes) {
     this.geographicScopes = geographicScopes;
   }
-
 
   public void setOrganizations(List<ProjectInnovationOrganization> organizations) {
     this.organizations = organizations;
@@ -312,6 +334,7 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
     this.projectInnovationShareds = projectInnovationShareds;
   }
 
+
   public void setRegions(List<ProjectInnovationRegion> regions) {
     this.regions = regions;
   }
@@ -325,7 +348,6 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
   public void setSelectedFlahsgips(List<LiaisonInstitution> selectedFlahsgips) {
     this.selectedFlahsgips = selectedFlahsgips;
   }
-
 
   public void setSharedInnovations(List<ProjectInnovationShared> sharedInnovations) {
     this.sharedInnovations = sharedInnovations;

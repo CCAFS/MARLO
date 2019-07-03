@@ -46,6 +46,5 @@ public class GeneralStatusTable extends MarloAuditableEntity implements java.io.
     this.tableName = tableName;
   }
 
-
 }
 

@@ -21,6 +21,7 @@ import org.cgiar.ccafs.marlo.data.model.InstitutionLocation;
 import org.cgiar.ccafs.marlo.data.model.InstitutionType;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.PartnerRequest;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationContributingOrganization;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.rest.dto.CountryOfficeDTO;
 import org.cgiar.ccafs.marlo.rest.dto.CountryOfficeRequestDTO;
@@ -75,7 +76,7 @@ public abstract class InstitutionMapper {
     institutionLocationToInstitutionOfficeCountryDTO(InstitutionLocation institutionLocation);
 
   @Mappings({@Mapping(source = "id", target = "code"),
-    @Mapping(source = "institutionsLocations", target = "countriesDTOs")})
+    @Mapping(source = "institutionsLocations", target = "countryOfficeDTO")})
   public abstract InstitutionDTO institutionToInstitutionDTO(Institution institution);
 
 
@@ -115,5 +116,16 @@ public abstract class InstitutionMapper {
     @Mapping(source = "institution", target = "institutionDTO"),
     @Mapping(source = "institutionType", target = "institutionTypeDTO")})
   public abstract InstitutionRequestDTO partnerRequestToInstitutionRequestDTO(PartnerRequest PartnerRequest);
+
+  @Mappings({@Mapping(source = "institution.id", target = "code"),
+    @Mapping(source = "institution.name", target = "name"),
+    @Mapping(source = "institution.acronym", target = "acronym"),
+    @Mapping(source = "institution.websiteLink", target = "websiteLink"),
+    @Mapping(source = "institution.added", target = "added"),
+    @Mapping(source = "institution.institutionType", target = "institutionType"),
+    @Mapping(source = "institution.institutionsLocations", target = "countryOfficeDTO")})
+  public abstract InstitutionDTO projectInnovationContributingOrganizationToInstitutionDTO(
+    ProjectInnovationContributingOrganization projectInnovationContributingOrganization);
+
 
 }

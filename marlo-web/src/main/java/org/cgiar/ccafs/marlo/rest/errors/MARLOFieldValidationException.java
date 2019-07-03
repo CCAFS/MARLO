@@ -15,34 +15,33 @@
 
 package org.cgiar.ccafs.marlo.rest.errors;
 
-import java.io.Serializable;
+import java.util.List;
 
-public class FieldErrorDTO implements Serializable {
+/**
+ * A custom exception for when trying to update resources that don't exist.
+ * 
+ * @author GrantL
+ */
+public class MARLOFieldValidationException extends RuntimeException {
 
+  /**
+   * 
+   */
   private static final long serialVersionUID = 1L;
 
-  private final String objectName;
+  private final ErrorDTO errorDTO;
 
-  private final String field;
-
-  private final String message;
-
-  public FieldErrorDTO(String dto, String field, String message) {
-    this.objectName = dto;
-    this.field = field;
-    this.message = message;
+  public MARLOFieldValidationException(ErrorDTO errorDTO) {
+    this.errorDTO = errorDTO;
   }
 
-  public String getField() {
-    return this.field;
+  public MARLOFieldValidationException(String message, String description, List<FieldErrorDTO> fieldErrors) {
+    this.errorDTO = new ErrorDTO(message, description, ErrorConstants.SEVERITY_ERROR, fieldErrors);
   }
 
-  public String getMessage() {
-    return this.message;
+  public ErrorDTO getErrorDTO() {
+    return this.errorDTO;
   }
 
-  public String getObjectName() {
-    return this.objectName;
-  }
 
 }

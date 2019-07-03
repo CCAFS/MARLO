@@ -23,6 +23,7 @@ import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.arcontrollists
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.arcontrollists.DegreeOfInnovationItem;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.arcontrollists.InnovationTypeItem;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.arcontrollists.MaturityOfChangeItem;
+import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.arcontrollists.MilestoneStatusItem;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.arcontrollists.OrganizationTypeItem;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.arcontrollists.PartnershipMainAreaItem;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.arcontrollists.PolicyInvestmentTypeItem;
@@ -35,11 +36,11 @@ import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.arcontrollists
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.arcontrollists.TagItem;
 import org.cgiar.ccafs.marlo.rest.dto.BroadAreaDTO;
 import org.cgiar.ccafs.marlo.rest.dto.BudgetTypeDTO;
-import org.cgiar.ccafs.marlo.rest.dto.ContributionOfCrpDTO;
 import org.cgiar.ccafs.marlo.rest.dto.CrossCuttingMarkerDTO;
 import org.cgiar.ccafs.marlo.rest.dto.CrossCuttingMarkerScoreDTO;
 import org.cgiar.ccafs.marlo.rest.dto.InnovationTypeDTO;
 import org.cgiar.ccafs.marlo.rest.dto.MaturityOfChangeDTO;
+import org.cgiar.ccafs.marlo.rest.dto.MilestoneStatusDTO;
 import org.cgiar.ccafs.marlo.rest.dto.OrganizationTypeDTO;
 import org.cgiar.ccafs.marlo.rest.dto.PartnershipMainAreaDTO;
 import org.cgiar.ccafs.marlo.rest.dto.PolicyInvestmentTypeDTO;
@@ -104,6 +105,7 @@ public class ARControlLists {
   private BudgetTypeItem<ARControlLists> bugdetTypeItem;
   private BroadAreaItem<ARControlLists> broadAreaItem;
   private StatusOfResponseItem<ARControlLists> statusOfResponseItem;
+  private MilestoneStatusItem<ARControlLists> milestoneStatusItem;
 
   @Autowired
   private Environment env;
@@ -123,7 +125,8 @@ public class ARControlLists {
     OrganizationTypeItem<ARControlLists> organizationTypeItem, StudyTypeItem<ARControlLists> studyTypeItem,
     TagItem<ARControlLists> tagItem, PartnershipMainAreaItem<ARControlLists> partnershipMainAreaItem,
     BudgetTypeItem<ARControlLists> bugdetTypeItem, BroadAreaItem<ARControlLists> broadAreaItem,
-    StatusOfResponseItem<ARControlLists> statusOfResponseItem) {
+    StatusOfResponseItem<ARControlLists> statusOfResponseItem,
+    MilestoneStatusItem<ARControlLists> milestoneStatusItem) {
     this.crossCuttingMarkerScoreItem = crossCuttingMarkerScoreItem;
     this.innovationTypesItem = innovationTypesItem;
     this.researchPartnershipsItem = researchPartnershipsItem;
@@ -142,6 +145,7 @@ public class ARControlLists {
     this.bugdetTypeItem = bugdetTypeItem;
     this.broadAreaItem = broadAreaItem;
     this.statusOfResponseItem = statusOfResponseItem;
+    this.milestoneStatusItem = milestoneStatusItem;
   }
 
   /**
@@ -185,6 +189,7 @@ public class ARControlLists {
     }
     return response;
   }
+
 
   /**
    * Find a Cross Cutting Marker by id
@@ -272,6 +277,29 @@ public class ARControlLists {
     }
     return response;
 
+  }
+
+  /**
+   * Find a Milestone status by id
+   * 
+   * @param id
+   * @return a MilestoneStatusDTO with the Milestone Status data.
+   */
+  @ApiOperation(tags = {"Table 5 - Status of Planned Outcomes and Milestones"},
+    value = "${ARControlLists.milestone-statuses.code.value}", response = MilestoneStatusDTO.class)
+
+  @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
+  @RequestMapping(value = "/milestone-statuses/{code}", method = RequestMethod.GET,
+    produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<MilestoneStatusDTO>
+    findMilestoneStatusById(@ApiParam(value = "${ARControlLists.milestone-statuses.code.param.code}",
+      required = true) @PathVariable Long code) {
+
+    ResponseEntity<MilestoneStatusDTO> response = this.milestoneStatusItem.findMilestoneStatusById(code);
+    if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+      throw new NotFoundException("404", this.env.getProperty("ARControlLists.milestone-statuses.code.404"));
+    }
+    return response;
   }
 
   /**
@@ -505,7 +533,7 @@ public class ARControlLists {
    * @return a List of cross cutting markers
    */
   @ApiOperation(tags = {"Table 2 - CRP Policies", "Table 3 - Outcome/ Impact Case Reports"},
-    value = "${ARControlLists.cross-cutting-markers.all.value}", response = ContributionOfCrpDTO.class,
+    value = "${ARControlLists.cross-cutting-markers.all.value}", response = CrossCuttingMarkerDTO.class,
     responseContainer = "List")
   @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
   @RequestMapping(value = "/cross-cutting-markers", method = RequestMethod.GET,
@@ -558,6 +586,22 @@ public class ARControlLists {
     produces = MediaType.APPLICATION_JSON_VALUE)
   public List<MaturityOfChangeDTO> getAllMaturityOfChanges() {
     return this.maturityOfChangeItem.getAllMaturityOfChanges();
+  }
+
+  /**
+   * Get All the milestone Statuses items
+   * 
+   * @return a List of MilestoneStatusDTO with all Milestone Statuses Items.
+   */
+
+  @ApiOperation(tags = {"Table 5 - Status of Planned Outcomes and Milestones"},
+    value = "${ARControlLists.milestone-statuses.all.value}", response = MilestoneStatusDTO.class,
+    responseContainer = "List")
+  @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
+  @RequestMapping(value = "/milestone-statuses", method = RequestMethod.GET,
+    produces = MediaType.APPLICATION_JSON_VALUE)
+  public List<MilestoneStatusDTO> getAllMilestoneStatuses() {
+    return this.milestoneStatusItem.getAllMilestoneStatus();
   }
 
   /**

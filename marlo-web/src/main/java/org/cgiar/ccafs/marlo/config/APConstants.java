@@ -435,6 +435,11 @@ public final class APConstants {
   public static final String PROJECT_POLICY_EVIDENCE_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.ProjectPolicy.projectExpectedStudyPolicies)";
 
+  // Status control List of each table
+  public static final String PROJECT_EXPECTED_STUDIES_TABLE = "project_expected_study_info";
+  public static final String REPORT_SYNTHESYS_FLAGSHIPS_PROGRESS_MILESTONES_TABLE =
+    "report_synthesis_flagship_progress_milestones";
+
   // Project Contribution To LP6 Relations
   public static final String PROJECT_CONTRIBUTION_LP6_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.Project.projectLp6Contributions)";
@@ -675,6 +680,9 @@ public final class APConstants {
   public static final long GLOBAL_UNIT_CENTER_TYPE = 2;
   public static final long GLOBAL_UNIT_PLATFORM = 3;
   public static final long GLOBAL_UNIT_CGIAR_CENTER_TYPE = 4;
+
+  public static final long LOC_ELEMENT_TYPE_REGION = 1;
+  public static final long LOC_ELEMENT_TYPE_COUNTRY = 2;
 
   // Rep_ind constants
   public static final long REP_IND_STAGE_INNOVATION_STAGE4 = 4;
