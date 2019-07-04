@@ -662,15 +662,12 @@ public class FundingSourceAction extends BaseAction {
           case Informally:
             if (this.hasSpecificities(APConstants.CRP_STATUS_FUNDING_SOURCES)) {
               status.put(projectStatusEnum.getStatusId(), projectStatusEnum.getStatus());
-
             }
             break;
           default:
             status.put(projectStatusEnum.getStatusId(), projectStatusEnum.getStatus());
             break;
         }
-
-
       }
 
 

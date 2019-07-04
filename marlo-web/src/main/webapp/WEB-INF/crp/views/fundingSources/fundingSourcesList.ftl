@@ -1,7 +1,7 @@
 [#ftl]
 [#assign title = "MARLO Funding sources" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
-[#assign pageLibs = ["datatables.net", "datatables.net-bs", "malihu-custom-scrollbar-plugin"] /]
+[#assign pageLibs = ["datatables.net", "datatables.net-bs", "malihu-custom-scrollbar-plugin", "select2"] /]
 [#assign customJS = ["${baseUrlMedia}/js/fundingSources/fundingSourcesList.js" ] /]
 [#assign customCSS = [
   "${baseUrl}/global/css/customDataTable.css",
@@ -57,8 +57,53 @@
     [#-- Add --]
     <div class="buttons">
       <div class="buttons-content">
+        [#-- 
         [#if action.canAddFunding() && (!crpClosed) && action.getActualPhase().editable]<a class="addButton" href="[@s.url namespace="/fundingSources" action='${(crpSession)!}/addNewFundingSources' ][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]"><span class="saveText">Add Funding Source </span></a>[/#if]
+         --]
+        <button type="button" class="addButton" data-toggle="modal" data-target="#myModal">Add Funding Source</button>
         <div class="clearfix"></div>
+      </div>
+    </div>
+    
+    
+    [#-- Modal to add a Funding source --]
+    <!-- Modal -->
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          [@s.form namespace="/fundingSources" action='${(crpSession)!}/addNewFundingSources' method="GET" enctype="multipart/form-data" cssClass=""]
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+              <h4 class="modal-title" id="myModalLabel">Add Funding Source</h4>
+            </div>
+            <div class="modal-body">
+              [#-- Partner(s) managing the funding source --]
+              <div class="form-group">
+                [@customForm.elementsListComponent name="institutions" elementType="institution" elementList=[] label="fundingSourcesList.add.institutions" listName="managingInstitutionsList" keyFieldName="id" displayFieldName="composedName" forceEditable=true /]
+              </div>
+              [#-- Agreement status --]
+              <div class="form-group">
+                [@customForm.select name="agreementStatus" i18nkey="fundingSourcesList.add.status" className=""  listName="agreementStatus" keyFieldName=""  displayFieldName="" editable=true /]
+              </div>
+              <hr />
+              [#-- Center and Finance code --]
+              <div class="row form-group">
+                <div class="col-md-6">
+                  [@customForm.select name="institutionLead" i18nkey="fundingSourcesList.add.institutionLead" className=""  listName="" keyFieldName=""  displayFieldName="" editable=true /]
+                </div>
+                <div class="col-md-4">
+                  [@customForm.input name="financeCode" i18nkey="fundingSourcesList.add.financeCode" help="" className="e.g. OCS Code" editable=true /]
+                </div>
+              </div>
+              
+            </div>
+            <div class="modal-footer">
+              <input type="hidden" name="phaseID" value="${(actualPhase.id)!}" />
+              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+              <button type="submit" class="btn btn-primary">Create Funding Source</button>
+            </div>
+          [/@s.form]
+        </div>
       </div>
     </div>
     

@@ -657,8 +657,8 @@ function onSelectElement() {
   $element.find('.elementName').html(name);
 
   // Add Item
-  console.log("Add item: " + id);
-  console.log($element);
+  // console.log("Add item: " + id);
+  // console.log($element);
 
   // Show the element
   $element.appendTo($list).hide().show(350, function() {

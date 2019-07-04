@@ -179,6 +179,8 @@ input.disabled {
 /* MODAL */
 .modal {
   text-align: center;
+  /* background: #fff; */
+  /* opacity: 0.5; */
 }
 
 @media screen and (min-width: 768px) {
