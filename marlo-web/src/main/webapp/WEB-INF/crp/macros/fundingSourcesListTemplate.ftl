@@ -244,3 +244,29 @@
     </tbody>
   </table>
 [/#macro]
+
+
+[#macro institutionsFilter institutions={}]
+
+  <div class="institutions-filter">
+   <span class="filter-title portfolio">Filter by Institutions</span>
+   <div class="items-list">
+   [@customForm.input name="searchInstitutions" showTitle=false help="" placeholder="Search for institutions..." className="searchInstitutions" editable=true /]
+   [@s.form namespace="/fundingSources" action='${(crpSession)!}/fundingSourcesList' method="GET" enctype="multipart/form-data" cssClass=""]
+     <ul class="filter-items mCustomScrollbar" data-mcs-theme="dark">
+     <input type="hidden" name="phaseID" value="${(actualPhase.id)!}" />
+        <li>[@customForm.checkmark id="allInstitutions" label="All Institutions" name="institutions" value="0" cssClass="institutionsFilter" checked=false editable=true centered=true/]</li>
+     [#if institutions?has_content]
+      [#list institutions as institution]
+        [#local institutionName = (institution.institution.acronym)!institution.institution.name /]
+        <li>[@customForm.checkmark id="${institutionName}" label="${institutionName}" name="institutionsID" cssClass="institutionsFilter" value="${institution.institution.id}" checked=false editable=true centered=true /]</li>
+      [/#list]
+     [/#if]
+     </ul>
+     
+   <button type="submit" class="filter-btn">Filter</button>
+    [/@s.form]
+   </div>
+  </div>
+
+[/#macro]

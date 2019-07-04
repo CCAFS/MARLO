@@ -69,6 +69,14 @@ $(document).ready(function() {
     });
   })();
 
+  // Search input - Institutions filter
+  $(".searchInstitutions").on("keyup", function() {
+    var value = $(this).val().toLowerCase();
+    $(".filter-items li").filter(function() {
+      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+    });
+  });
+
 });
 
 // Justification popup global vars

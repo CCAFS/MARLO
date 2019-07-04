@@ -20,7 +20,7 @@
     
 <section class="container">
   <article class="fullBlock" id="mainInformation">
-    
+     [@fundingSourcesList.institutionsFilter institutions=fundingSourceInstitutions/]
     <div class="loadingBlock"></div>
     <div style="display:none">
       <!-- Nav tabs -->
