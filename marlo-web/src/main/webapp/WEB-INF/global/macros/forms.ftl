@@ -542,9 +542,9 @@
   [#return '']
 [/#function]
 
-[#macro elementsListComponent name elementType id="" elementList=[] label="" paramText="" help="" helpIcon=true listName="" keyFieldName="" displayFieldName="" maxLimit=0 indexLevel=1 required=true ]
+[#macro elementsListComponent name elementType id="" elementList=[] label="" paramText="" help="" helpIcon=true listName="" keyFieldName="" displayFieldName="" maxLimit=0 indexLevel=1 required=true forceEditable=false]
   [#attempt]
-    [#local list = ((listName?eval)?sort_by(displayFieldName))![] /] 
+    [#local list = ((listName?eval)?sort_by((displayFieldName?split("."))))![] /] 
   [#recover]
     [#local list = [] /] 
   [/#attempt]
@@ -555,9 +555,9 @@
   [/#if]
   <div class="panel tertiary elementsListComponent" listname="${name}" style="position:relative">
     <div class="panel-head">
-      <label for="">[@s.text name=label /]:[@req required=required && editable /]
+      <label for="">[@s.text name=label /]:[@req required=required && (editable || forceEditable) /]
         [#--  Help Text --]
-        [@helpLabel name="${help}" paramText="${paramText}" showIcon=helpIcon editable=editable/]
+        [@helpLabel name="${help}" paramText="${paramText}" showIcon=helpIcon editable=(editable || forceEditable)/]
       </label>
     </div>
     <div class="panel-body" style="min-height: 30px;">
@@ -567,7 +567,7 @@
           [#list elementList as item][@listElementMacro name=name element=item type=elementType id=id index=item_index keyFieldName=keyFieldName displayFieldName=displayFieldName indexLevel=indexLevel /][/#list]
         [/#if]
       </ul>
-      [#if editable]
+      [#if (editable || forceEditable)]
         <select name="" id="" class="setSelect2 maxLimit-${maxLimit} elementType-${composedID} indexLevel-${indexLevel}">
           <option value="-1">[@s.text name="form.select.placeholder" /]</option>
           [#list list as item]

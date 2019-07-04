@@ -18,6 +18,7 @@ package org.cgiar.ccafs.marlo.action.funding;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.CrpPpaPartnerManager;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceManager;
@@ -27,6 +28,7 @@ import org.cgiar.ccafs.marlo.data.manager.LiaisonUserManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.RoleManager;
 import org.cgiar.ccafs.marlo.data.manager.UserRoleManager;
+import org.cgiar.ccafs.marlo.data.model.CrpPpaPartner;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceBudget;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceInfo;
@@ -43,9 +45,12 @@ import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -76,8 +81,12 @@ public class FundingSourceListAction extends BaseAction {
   private GlobalUnitManager crpManager;
   private LiaisonUserManager liaisonUserManager;
   private InstitutionManager institutionManager;
+  private CrpPpaPartnerManager crpPpaPartnerManager;
+
   private List<FundingSource> closedProjects;
   private List<FundingSourceInstitution> fundingSourceInstitutions;
+  private List<Institution> managingInstitutionsList;
+  private Map<String, String> agreementStatus;
   private UserRoleManager userRoleManager;
   private long fundingSourceID;
   private long fundingSourceInfoID;
@@ -88,7 +97,8 @@ public class FundingSourceListAction extends BaseAction {
   public FundingSourceListAction(APConfig config, FundingSourceManager fundingSourceManager,
     GlobalUnitManager crpManager, ProjectManager projectManager, LiaisonUserManager liaisonUserManager,
     InstitutionManager institutionManager, FundingSourceInstitutionManager fundingSourceInstitutionManager,
-    FundingSourceInfoManager fundingSourceInfoManager, RoleManager roleManager, UserRoleManager userRoleManager) {
+    FundingSourceInfoManager fundingSourceInfoManager, RoleManager roleManager, UserRoleManager userRoleManager,
+    CrpPpaPartnerManager crpPpaPartnerManager) {
     super(config);
     this.fundingSourceManager = fundingSourceManager;
     this.crpManager = crpManager;
@@ -98,6 +108,7 @@ public class FundingSourceListAction extends BaseAction {
     this.fundingSourceInfoManager = fundingSourceInfoManager;
     this.roleManager = roleManager;
     this.userRoleManager = userRoleManager;
+    this.crpPpaPartnerManager = crpPpaPartnerManager;
   }
 
   @Override
@@ -208,6 +219,10 @@ public class FundingSourceListAction extends BaseAction {
     }
 
     return SUCCESS;
+  }
+
+  public Map<String, String> getAgreementStatus() {
+    return agreementStatus;
   }
 
   public List<FundingSource> getClosedProjects() {
@@ -353,6 +368,10 @@ public class FundingSourceListAction extends BaseAction {
     return loggedCrp;
   }
 
+  public List<Institution> getManagingInstitutionsList() {
+    return managingInstitutionsList;
+  }
+
   public List<FundingSource> getMyProjects() {
     return myProjects;
   }
@@ -404,6 +423,35 @@ public class FundingSourceListAction extends BaseAction {
         }
       }
     }
+
+
+    // Load Managing Institutions List
+    managingInstitutionsList = new ArrayList<>();
+    List<CrpPpaPartner> ppaPartners = crpPpaPartnerManager.findAll().stream()
+      .filter(c -> c.getCrp().getId().longValue() == loggedCrp.getId().longValue() && c.isActive()
+        && c.getPhase().equals(this.getActualPhase()))
+      .collect(Collectors.toList());
+    for (CrpPpaPartner crpPpaPartner : ppaPartners) {
+      managingInstitutionsList.add(crpPpaPartner.getInstitution());
+    }
+
+    // Load Agreement Status
+    agreementStatus = new HashMap<>();
+    List<FundingStatusEnum> list = Arrays.asList(FundingStatusEnum.values());
+    for (FundingStatusEnum projectStatusEnum : list) {
+      switch (FundingStatusEnum.getValue(Integer.parseInt(projectStatusEnum.getStatusId()))) {
+        case Pipeline:
+        case Informally:
+          if (this.hasSpecificities(APConstants.CRP_STATUS_FUNDING_SOURCES)) {
+            agreementStatus.put(projectStatusEnum.getStatusId(), projectStatusEnum.getStatus());
+          }
+          break;
+        default:
+          agreementStatus.put(projectStatusEnum.getStatusId(), projectStatusEnum.getStatus());
+          break;
+      }
+    }
+
 
     this.getCrpContactPoint();
     this.getFundingSourceInstitutionsList();

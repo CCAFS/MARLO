@@ -1,6 +1,10 @@
 var dialogOptions = {};
 $(document).ready(function() {
 
+  $('form select').select2({
+    width: "100%"
+  });
+
   var $projectList = $('table.projectsList');
 
   var table = $projectList.DataTable({
@@ -52,6 +56,19 @@ $(document).ready(function() {
   $('.loadingBlock').hide().next().fadeIn(1000);
 
   addJustificationPopUp();
+
+  /**
+   * Pop up to add a new Funding Source
+   */
+  (function() {
+    // Start Here coding
+    $('select[class*="elementType-institution"]').on("addElement removeElement", function(event,id,name) {
+
+      console.log(event.type, id, name);
+
+    });
+  })();
+
 });
 
 // Justification popup global vars
