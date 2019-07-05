@@ -95,7 +95,8 @@ public class FundingSourceListAction extends BaseAction {
   private long fundingSourceID;
   private long fundingSourceInfoID;
   private String justification;
-
+  private String financeCode;
+  private Long centerID;
 
   @Inject
   public FundingSourceListAction(APConfig config, FundingSourceManager fundingSourceManager,
@@ -118,65 +119,84 @@ public class FundingSourceListAction extends BaseAction {
   @Override
   public String add() {
     FundingSource fundingSource = new FundingSource();
+    Map<String, Parameter> parameters = this.getParameters();
+    financeCode = StringUtils.trim(parameters.get(APConstants.FINANCE_CODE).getMultipleValues()[0]);
+    // centerID = Long.parseLong(parameters.get(APConstants.CRP_ID).getMultipleValues()[0]);
 
-    fundingSource.setCrp(loggedCrp);
-    fundingSource.setCreateDate(new Date());
-    fundingSource = fundingSourceManager.saveFundingSource(fundingSource);
+    if (financeCode != null) {
+      FundingSource fundingSourceSearch = new FundingSource();
+      fundingSourceSearch = fundingSourceManager.findAll().stream()
+        .filter(f -> f.getFundingSourceInfo(this.getActualPhase()) != null
+          && f.getFundingSourceInfo(this.getActualPhase()).getFinanceCode() != null
+          && f.getFundingSourceInfo(this.getActualPhase()).getFinanceCode().equals(financeCode))
+        .collect(Collectors.toList()).get(0);
 
-    fundingSourceID = fundingSource.getId();
+      if (fundingSourceSearch == null) {
+        fundingSource.setCrp(loggedCrp);
+        fundingSource.setCreateDate(new Date());
+        fundingSource = fundingSourceManager.saveFundingSource(fundingSource);
 
-    Phase phase = this.getActualPhase();
-    boolean hasNext = true;
-    while (hasNext) {
+        fundingSourceID = fundingSource.getId();
 
-      FundingSourceInfo fundingSourceInfo = new FundingSourceInfo();
-      fundingSourceInfo.setModificationJustification("New expected project bilateral cofunded created");
-      fundingSourceInfo.setPhase(phase);
-      fundingSourceInfo.setStatus(Integer.parseInt(FundingStatusEnum.Ongoing.getStatusId()));
-      fundingSourceInfo.setFundingSource(fundingSourceManager.getFundingSourceById(fundingSourceID));
-      fundingSourceInfoID = fundingSourceInfoManager.saveFundingSourceInfo(fundingSourceInfo).getId();
+        Phase phase = this.getActualPhase();
+        boolean hasNext = true;
+        while (hasNext) {
 
-      if (phase.getNext() != null) {
-        phase = phase.getNext();
-      } else {
-        hasNext = false;
-      }
-    }
+          FundingSourceInfo fundingSourceInfo = new FundingSourceInfo();
+          fundingSourceInfo.setModificationJustification("New expected project bilateral cofunded created");
+          fundingSourceInfo.setPhase(phase);
+          fundingSourceInfo.setStatus(Integer.parseInt(FundingStatusEnum.Ongoing.getStatusId()));
+          fundingSourceInfo.setFundingSource(fundingSourceManager.getFundingSourceById(fundingSourceID));
+          fundingSourceInfoID = fundingSourceInfoManager.saveFundingSourceInfo(fundingSourceInfo).getId();
 
-    LiaisonUser user = liaisonUserManager.getLiaisonUserByUserId(this.getCurrentUser().getId(), loggedCrp.getId());
-    if (user != null) {
-      LiaisonInstitution liaisonInstitution = user.getLiaisonInstitution();
-      try {
-        if (liaisonInstitution != null && liaisonInstitution.getInstitution() != null) {
-          Institution institution = institutionManager.getInstitutionById(liaisonInstitution.getInstitution().getId());
-
-          FundingSourceInstitution fundingSourceInstitution = new FundingSourceInstitution();
-          fundingSourceInstitution.setFundingSource(fundingSource);
-          fundingSourceInstitution.setPhase(this.getActualPhase());
-          fundingSourceInstitution.setInstitution(institution);
-          fundingSourceInstitutionManager.saveFundingSourceInstitution(fundingSourceInstitution);
-
+          if (phase.getNext() != null) {
+            phase = phase.getNext();
+          } else {
+            hasNext = false;
+          }
         }
-      } catch (Exception e) {
-        logger.error("unable to save FundingSourceInstitution", e);
-        /**
-         * Original code swallows the exception and didn't even log it. Now we at least log it,
-         * but we need to revisit to see if we should continue processing or re-throw the exception.
-         */
+
+        LiaisonUser user = liaisonUserManager.getLiaisonUserByUserId(this.getCurrentUser().getId(), loggedCrp.getId());
+        if (user != null) {
+          LiaisonInstitution liaisonInstitution = user.getLiaisonInstitution();
+          try {
+            if (liaisonInstitution != null && liaisonInstitution.getInstitution() != null) {
+              Institution institution =
+                institutionManager.getInstitutionById(liaisonInstitution.getInstitution().getId());
+
+              FundingSourceInstitution fundingSourceInstitution = new FundingSourceInstitution();
+              fundingSourceInstitution.setFundingSource(fundingSource);
+              fundingSourceInstitution.setPhase(this.getActualPhase());
+              fundingSourceInstitution.setInstitution(institution);
+              fundingSourceInstitutionManager.saveFundingSourceInstitution(fundingSourceInstitution);
+
+            }
+          } catch (Exception e) {
+            logger.error("unable to save FundingSourceInstitution", e);
+            /**
+             * Original code swallows the exception and didn't even log it. Now we at least log it,
+             * but we need to revisit to see if we should continue processing or re-throw the exception.
+             */
+          }
+        }
+
+        // this.clearPermissionsCache();
+        // HJ : add the permission String
+        AuthorizationInfo info = ((APCustomRealm) this.securityContext.getRealm())
+          .getAuthorizationInfo(this.securityContext.getSubject().getPrincipals());
+
+        String params[] = {loggedCrp.getAcronym(), fundingSource.getId() + ""};
+        info.getStringPermissions()
+          .add(this.generatePermission(Permission.PROJECT_FUNDING_SOURCE_BASE_PERMISSION, params));
+
+        if (fundingSourceID > 0) {
+          return SUCCESS;
+        }
       }
+    } else {
+      return ERROR;
     }
 
-    // this.clearPermissionsCache();
-    // HJ : add the permission String
-    AuthorizationInfo info = ((APCustomRealm) this.securityContext.getRealm())
-      .getAuthorizationInfo(this.securityContext.getSubject().getPrincipals());
-
-    String params[] = {loggedCrp.getAcronym(), fundingSource.getId() + ""};
-    info.getStringPermissions().add(this.generatePermission(Permission.PROJECT_FUNDING_SOURCE_BASE_PERMISSION, params));
-
-    if (fundingSourceID > 0) {
-      return SUCCESS;
-    }
 
     return INPUT;
   }
@@ -320,10 +340,14 @@ public class FundingSourceListAction extends BaseAction {
 
 
   public void getInstitutionsIds() {
-    for (int i = 0; i < institutionsIDs.length(); i++) {
-      if (institutionsIDs.charAt(i) == ',') {
-        institutionsIDsList.add(institutionsIDs.substring(0, i).trim());
+    if (institutionsIDs.contains(",")) {
+      for (int i = 0; i < institutionsIDs.length(); i++) {
+        if (institutionsIDs.charAt(i) == ',') {
+          institutionsIDsList.add(institutionsIDs.substring(0, i).trim());
+        }
       }
+    } else {
+      institutionsIDsList.add(institutionsIDs);
     }
   }
 
@@ -466,33 +490,52 @@ public class FundingSourceListAction extends BaseAction {
 
     this.getCrpContactPoint();
     this.getFundingSourceInstitutionsList();
-
     if (institutionsIDs != null) {
+      this.getInstitutionsIds();
       this.removeInstitutions();
     }
   }
 
   public void removeInstitutions() {
+    List<FundingSource> tempList = new ArrayList<>();
+    int contains = 0;
+    tempList.addAll(myProjects);
 
     if (myProjects != null) {
       for (FundingSource fundingSource : myProjects) {
         if (fundingSource.getInstitutions() != null) {
+          contains = 0;
           for (FundingSourceInstitution institution : fundingSource.getInstitutions()) {
 
             // funding source institutions cycle
-            if (fundingSourceInstitutions != null) {
+            if (institutionsIDsList != null) {
               // if the list of funding source institutions has elements, check the ID
               if (institution.getInstitution().getId() != null) {
-                if (!institutionsIDsList
-                  .contains(String.valueOf((Integer.parseInt(institution.getInstitution().getId().toString()))))) {
-                  myProjects.remove(fundingSource);
+
+                if (!institutionsIDsList.contains(String.valueOf((institution.getInstitution().getId())))) {
+                  contains += 0;
+
+                } else {
+                  contains += 1;
                 }
               }
             }
+
+            if (contains == 0) {
+              try {
+
+                tempList.remove(fundingSource);
+              } catch (Exception e) {
+
+              }
+            }
+            // end institutions for
           }
         }
       }
     }
+    myProjects.removeAll(myProjects);
+    myProjects.addAll(tempList);
   }
 
   public void setClosedProjects(List<FundingSource> closedProjects) {
