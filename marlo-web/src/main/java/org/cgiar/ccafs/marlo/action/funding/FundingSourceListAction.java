@@ -512,7 +512,7 @@ public class FundingSourceListAction extends BaseAction {
 
     if (myProjects != null) {
       for (FundingSource fundingSource : myProjects) {
-        if (fundingSource.getInstitutions() != null) {
+        if (fundingSource.getInstitutions() != null || fundingSource.getInstitutions().isEmpty()) {
           contains = 0;
           for (FundingSourceInstitution institution : fundingSource.getInstitutions()) {
 
@@ -540,6 +540,8 @@ public class FundingSourceListAction extends BaseAction {
             }
             // end institutions for
           }
+        } else {
+          tempList.remove(fundingSource);
         }
       }
     }

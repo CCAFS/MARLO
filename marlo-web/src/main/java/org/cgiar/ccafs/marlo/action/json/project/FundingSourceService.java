@@ -74,6 +74,10 @@ public class FundingSourceService extends BaseAction {
      * Read only summary objects (not hibernate entities)
      */
     List<FundingSourceSearchSummary> summaries = null;
+    if (financeCode.isEmpty()) {
+      financeCode = "0";
+    }
+    
     if (financeCode != null) {
       summaries = fundingSourceManager
         .searchFundingSources("", this.getActualPhase().getYear(), this.getCrpID().longValue(),
