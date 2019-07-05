@@ -16,19 +16,19 @@
 package org.cgiar.ccafs.marlo.action.json.project;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
-import org.cgiar.ccafs.marlo.action.funding.dto.FundingSourceSearchSummary;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
+import org.cgiar.ccafs.marlo.data.manager.RoleManager;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
+import org.cgiar.ccafs.marlo.data.model.Role;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -36,7 +36,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.dispatcher.Parameter;
 
 
-public class FundingSourceService extends BaseAction {
+public class CrpContactPoint extends BaseAction {
 
 
   private static final long serialVersionUID = 6304226585314276677L;
@@ -52,15 +52,18 @@ public class FundingSourceService extends BaseAction {
   private String queryParameter;
   private FundingSourceManager fundingSourceManager;
   private PhaseManager phaseManager;
+  private Long cpCrpID;
+  private RoleManager roleManager;
 
 
   @Inject
-  public FundingSourceService(APConfig config, FundingSourceManager fundingSourceManager, GlobalUnitManager crpManager,
-    PhaseManager phaseManager) {
+  public CrpContactPoint(APConfig config, FundingSourceManager fundingSourceManager, GlobalUnitManager crpManager,
+    PhaseManager phaseManager, RoleManager roleManager) {
     super(config);
     this.fundingSourceManager = fundingSourceManager;
     this.crpManager = crpManager;
     this.phaseManager = phaseManager;
+    this.roleManager = roleManager;
   }
 
 
@@ -73,42 +76,53 @@ public class FundingSourceService extends BaseAction {
     /**
      * Read only summary objects (not hibernate entities)
      */
-    List<FundingSourceSearchSummary> summaries = null;
-    if (financeCode != null) {
-      summaries = fundingSourceManager
-        .searchFundingSources("", this.getActualPhase().getYear(), this.getCrpID().longValue(),
-          this.getActualPhase().getId())
-        .stream().filter(f -> f.getFinanceCode() != null && f.getFinanceCode().equals(financeCode))
-        .collect(Collectors.toList());
-    }
-    if (summaries != null) {
-      for (FundingSourceSearchSummary summary : summaries) {
+    List<String> summaries = null;
 
-        if (summary.getTypeId().intValue() == 1) {
+    this.getCrpContactPoint();
+    if (cpCrpID != null) {
+      summaries.add(cpCrpID.toString());
+      String permission =
+        this.generatePermission(Permission.PROJECT_FUNDING_W1_BASE_PERMISSION, loggedCrp.getAcronym());
 
-          String permission =
-            this.generatePermission(Permission.PROJECT_FUNDING_W1_BASE_PERMISSION, loggedCrp.getAcronym());
+      boolean hasPermission = this.hasPermissionNoBase(permission);
 
-          boolean hasPermission = this.hasPermissionNoBase(permission);
-          summary.setCanSelect(hasPermission);
-        }
-        sources.add(summary.convertToMap());
-      }
+      // sources.add(summaries.convertToMap());
+
     }
     return SUCCESS;
   }
 
 
+  public void getCrpContactPoint() {
+
+    // Check if the CRP has Contact Point and ContactPointRole, if not cpRole will be null (it will be used as a flag)
+
+    Role cpRol = null;
+    if (this.hasSpecificities(APConstants.CRP_HAS_CP)
+      && roleManager.getRoleById(Long.parseLong((String) this.getSession().get(APConstants.CRP_CP_ROLE))) != null) {
+      cpRol = roleManager.getRoleById(Long.parseLong((String) this.getSession().get(APConstants.CRP_CP_ROLE)));
+    }
+
+    List<Role> roles = new ArrayList<>();
+    roles = this.getRolesList();
+
+    if (roles.contains(cpRol)) {
+      cpCrpID = cpRol.getCrp().getId();
+    } else {
+      cpCrpID = (long) 0;
+    }
+  }
+
   public List<Map<String, Object>> getSources() {
     return sources;
   }
+
 
   @Override
   public void prepare() throws Exception {
     Map<String, Parameter> parameters = this.getParameters();
     financeCode = StringUtils.trim(parameters.get(APConstants.FINANCE_CODE).getMultipleValues()[0]);
   }
-
 
   public void setSources(List<Map<String, Object>> sources) {
     this.sources = sources;
