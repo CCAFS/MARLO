@@ -1001,6 +1001,10 @@ public class ProjectExpectedStudiesAction extends BaseAction {
         this.expectedStudy.getQuantifications().clear();
       }
 
+      if (this.expectedStudy.getGeographicScopes() != null) {
+        this.expectedStudy.getGeographicScopes().clear();
+      }
+
       // HTTP Post info Values
       this.expectedStudy.getProjectExpectedStudyInfo().setRepIndRegion(null);
       this.expectedStudy.getProjectExpectedStudyInfo().setRepIndOrganizationType(null);
@@ -1119,6 +1123,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       relationsName.add(APConstants.PROJECT_EXPECTED_STUDIES_INSTITUTION_RELATION);
       relationsName.add(APConstants.PROJECT_EXPECTED_STUDIES_COUNTRY_RELATION);
       relationsName.add(APConstants.PROJECT_EXPECTED_STUDIES_SRF_TARGET_RELATION);
+      relationsName.add(APConstants.PROJECT_EXPECTED_STUDIES_GEOGRAPHIC_SCOPE);
 
       this.expectedStudy.setModificationJustification(this.getJustification());
 

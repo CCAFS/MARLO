@@ -76,7 +76,7 @@
         [@s.text name=item.name ][@s.param]${(crpSession?upper_case)!'CRP'}[/@s.param] [/@s.text]
       </a>
       [#if item.subItems?has_content]
-        <ul class="subMenu">
+        <ul class="subMenuItems subMenu">
           [#list item.subItems as subItem]
             [#if subItem.visible]
             <li id="${subItem.slug}" class="[#if currentStage?? && currentStage == subItem.slug ]currentSection[/#if] ${(subItem.active)?string('enabled','disabled')}">

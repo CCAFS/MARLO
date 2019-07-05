@@ -320,7 +320,6 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
       // method to get all the subreports in the prpt and store in the HashMap
       this.getAllSubreports(hm, masteritemBand);
       // Uncomment to see which Subreports are detecting the method getAllSubreports
-      // System.out.println("Pentaho SubReports: " + hm);
 
       this.fillSubreport((SubReport) hm.get("deliverables_reporting_data"), "deliverables_reporting_data");
       this.fillSubreport((SubReport) hm.get("deliverables_reporting_publications"),
@@ -1475,7 +1474,6 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
         }
 
         if (responsible != null) {
-
           if (responsible.getProjectPartner() != null) {
             institutionsResponsibleList.add(responsible.getProjectPartner().getInstitution());
           }
@@ -1512,6 +1510,7 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
 
           } else if (responsible.getProjectPartnerPerson() != null) {
             // individual += "<span style='font-family: Segoe UI;color:#ff0000;font-size: 10'>";
+            individual += "●  ";
             individual += "*";
             ProjectPartnerPerson responsibleppp = responsible.getProjectPartnerPerson();
             if (responsibleppp.getProjectPartner() != null) {
@@ -1523,15 +1522,16 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
                    * ppaResponsible += "<span style='font-family: Segoe UI;color:#ff0000;font-size: 10'>"
                    * + responsibleppp.getProjectPartner().getInstitution().getAcronym() + "</span>";
                    */
-                  ppaResponsible += "*" + responsibleppp.getProjectPartner().getInstitution().getAcronym() + " ";
+                  ppaResponsible += "*" + responsibleppp.getProjectPartner().getInstitution().getAcronym() + ", ";
                   responsibleAcronym = responsibleppp.getProjectPartner().getInstitution().getAcronym() + " ";
                 } else {
                   individual += responsibleppp.getProjectPartner().getInstitution().getName() + " - ";
+
                   /*
                    * ppaResponsible += "<span style='font-family: Segoe UI;color:#ff0000;font-size: 10'>"
                    * + responsibleppp.getProjectPartner().getInstitution().getName() + "</span>";
                    */
-                  ppaResponsible += "*" + responsibleppp.getProjectPartner().getInstitution().getName() + " ";
+                  ppaResponsible += "*" + responsibleppp.getProjectPartner().getInstitution().getName() + ", ";
                   responsibleName = responsibleppp.getProjectPartner().getInstitution().getName() + " ";
                 }
               }
@@ -1560,7 +1560,8 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
         }
 
         if (othersPartnerships != null) {
-          individual += ", ";
+          individual += "\n ● ";
+
           for (DeliverablePartnership deliverablePartnership : othersPartnerships) {
             if (deliverablePartnership.getProjectPartner() != null) {
               institutionsResponsibleList.add(deliverablePartnership.getProjectPartner().getInstitution());
@@ -1591,12 +1592,15 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
               if (responsibleppp.getUser() != null) {
                 individual += responsibleppp.getUser().getComposedName();
               }
+
               if (deliverablePartnership.getPartnerDivision() != null
                 && deliverablePartnership.getPartnerDivision().getAcronym() != null
                 && !deliverablePartnership.getPartnerDivision().getAcronym().isEmpty()) {
                 individual += " (" + deliverablePartnership.getPartnerDivision().getAcronym() + ")";
               }
+              individual += "\n● ";
               // individual += "</span>";
+              // End of invidual cycle
             } else {
 
               // get deliverable information from deliverablePartnership
@@ -1630,6 +1634,11 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
 
         if (individual.isEmpty()) {
           individual = null;
+        } else {
+          if ((individual.length() > 4)
+            && (individual.substring(individual.length() - 3, individual.length()).contains("● "))) {
+            individual = individual.substring(0, individual.length() - 3);
+          }
         }
         LinkedHashSet<Institution> managingResponsibleList = new LinkedHashSet<>();
         for (String ppaOher : ppaResponsibleList) {
@@ -1640,6 +1649,7 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
             ppaResponsible += ppaOher + " ";
             // ppaResponsible += ", <span style='font-family: Segoe UI;font-size: 10'>" + ppaOher + "</span>";
           }
+          ppaResponsible += ", ";
         }
 
         for (Institution partnerResponsible : institutionsResponsibleList) {
@@ -1672,7 +1682,22 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
 
         if (ppaResponsible.isEmpty()) {
           ppaResponsible = null;
+        } else {
+          ppaResponsible = ppaResponsible.replaceAll("  ,", ",");
+          ppaResponsible = ppaResponsible.replaceAll(",  ", ",");
+          ppaResponsible = ppaResponsible.substring(0, ppaResponsible.length() - 2);
         }
+
+        if (individual != null) {
+
+          if (individual.charAt(0) == ',') {
+            individual = individual.substring(1);
+          }
+          if (individual.charAt(1) == ',') {
+            individual = individual.substring(2);
+          }
+        }
+
 
         String managingResponsible = "";
         CrpPpaPartner ppaFilter;

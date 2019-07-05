@@ -2,7 +2,8 @@
 [#assign title = "MARLO Users" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2", "datatables.net", "datatables.net-bs"] /]
-[#assign customJS = [ "${baseUrl}/global/js/superadmin/marloUsers.js" ] /]
+[#assign customJS = [ "${baseUrl}/global/js/superadmin/marloUsers.js", 
+  "${baseUrl}/global/js/fieldsValidation.js" ] /]
 [#assign customCSS = [ "${baseUrl}/global/css/superadmin/superadmin.css" ] /]
 [#assign currentSection = "superadmin" /]
 [#assign currentStage = "users" /]
@@ -27,7 +28,7 @@
         [#include "/WEB-INF/global/views/superadmin/menu-superadmin.ftl" /]
       </div>
       <div class="col-md-9">
-
+     
         [#-- Create User Guest --]
         <h4 class="sectionTitle">MARLO Create Guest User</h4>
         <div class="borderBox">        
@@ -40,21 +41,25 @@
                 [@customForm.input name="user.email" i18nkey="guestUsers.email" value="${(user.email)!}" className="userEmail" type="text"  required=true editable=true /]
               </div>
               <div class="col-md-4">
-                <label for="globalUnitID">Global Unit:</label>
-                <select name="selectedGlobalUnitID" id="globalUnitID" class="form-control">
-                  <option value="-1">Select an option...</option>
-                  [#list (crps)![] as globalUnit]<option value="${globalUnit.id}">${globalUnit.acronym}</option>[/#list]
-                </select>
+                 [@customForm.select name="selectedGlobalUnitID" className="" i18nkey="guestUsers.globalUnit" listName="crps" keyFieldName="id"  displayFieldName="acronym" required=true editable=true/]
               </div>
             </div>
             <div class="form-group row">
               <div class="col-md-6 ">
-                [@customForm.input name="user.firstName" i18nkey="guestUsers.firstName" value="${(user.firstName)!}" className="userFirstName" type="text"  required=true  editable=true /]
+                [@customForm.input name="user.firstName" i18nkey="guestUsers.firstName" value="${(user.firstName)!}" className="userFirstName" type="text"  required=(isCgiarUser)!true editable=true /]
               </div>
               <div class="col-md-6">
-                [@customForm.input name="user.lastName" i18nkey="guestUsers.lastName" value="${(user.lastName)!}" className="userLastName" type="text"  required=true  editable=true /]
+                [@customForm.input name="user.lastName" i18nkey="guestUsers.lastName" value="${(user.lastName)!}" className="userLastName" type="text"  required=(isCGIARUser)!true  editable=true /]
               </div>
             </div>
+            [#-- SEND EMAIL --]
+            <div class="form-group col-md-12 ">
+             <hr />
+            </div>
+            <div class="form-group col-md-12">
+              [@customForm.checkmark  id="sendEmail"  i18nkey="guestUsers.sendEmail" name="isEmailSend" value="true" checked=true editable=true /]
+            </div>
+            <br />          
           </div>
           <br />
           

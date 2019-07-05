@@ -436,12 +436,17 @@ public class CrpAdminManagmentAction extends BaseAction {
       .filter(cl -> cl.isActive() && cl.getPhase() != null && cl.getPhase().equals(this.getActualPhase()))
       .collect(Collectors.toList())) {
       for (CrpClusterActivityLeader crpClusterActivityLeader : crpClusterOfActivity.getCrpClusterActivityLeaders()
-        .stream().filter(cl -> cl.isActive()).collect(Collectors.toList())) {
+        .stream()
+        .filter(cl -> cl.isActive() && cl.getUser().isActive()
+          && cl.getCrpClusterOfActivity().getPhase().getId().equals(this.getActualPhase().getId()))
+        .collect(Collectors.toList())) {
+
         if (ccEmail.isEmpty()) {
           ccEmail += crpClusterActivityLeader.getUser().getEmail();
         } else {
           ccEmail += ", " + crpClusterActivityLeader.getUser().getEmail();
         }
+
       }
     }
 
@@ -515,6 +520,7 @@ public class CrpAdminManagmentAction extends BaseAction {
       } else {
         ccEmail += ", " + crpAdminsEmail;
       }
+
     }
 
     // CC will be also other Cluster Leaders
@@ -528,6 +534,7 @@ public class CrpAdminManagmentAction extends BaseAction {
         } else {
           ccEmail += ", " + crpClusterActivityLeader.getUser().getEmail();
         }
+
       }
     }
 
@@ -575,6 +582,7 @@ public class CrpAdminManagmentAction extends BaseAction {
       } else {
         ccEmail += ", " + crpProgramLeader.getUser().getEmail();
       }
+
     }
     // get CRPAdmin contacts
     String crpAdmins = "";
@@ -598,6 +606,7 @@ public class CrpAdminManagmentAction extends BaseAction {
       } else {
         ccEmail += ", " + crpAdminsEmail;
       }
+
     }
 
     // BBC will be our gmail notification email.
