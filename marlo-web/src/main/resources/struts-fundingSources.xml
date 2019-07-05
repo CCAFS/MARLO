@@ -4,45 +4,56 @@
   "http://struts.apache.org/dtds/struts-2.5.dtd">
 <struts>
 	<!-- Add addition packages and configuration here. -->
-	<package name="fundingSources" namespace="/fundingSources" extends="marlo-default">
-	
-    <action name="{crp}/fundingSourcesList" class="org.cgiar.ccafs.marlo.action.funding.FundingSourceListAction">
-      <interceptor-ref name="projectsStack" /> 
-      <result name="input">/WEB-INF/crp/views/fundingSources/fundingSourcesList.ftl</result>
-      <result name="success" type="redirectAction">
-        <param name="actionName">${crpSession}/fundingSourcesList</param>
-      </result>
-    </action>
-    
-    <action name="{crp}/fundingSource" class="org.cgiar.ccafs.marlo.action.funding.FundingSourceAction">
-	       <interceptor-ref name="editFSStack" />
-	      <result name="input">/WEB-INF/crp/views/fundingSources/fundingSource.ftl</result>
-        <result name="success" type="redirectAction">
-        <param name="actionName">${crpSession}/fundingSource</param>
-        <param name="fundingSourceID">${fundingSourceID}</param>
-        <param name="edit">true</param> <param name="phaseID">${phaseID}</param>
-      </result>
-    </action>
-    
-    <action name="{crp}/addNewFundingSources" method="add" class="org.cgiar.ccafs.marlo.action.funding.FundingSourceListAction">
-      <interceptor-ref name="projectsStack" />
-      <result name="input">/WEB-INF/crp/views/fundingSources/fundingSource.ftl</result>
-      <result name="success" type="redirectAction">
-        <param name="actionName">${crpSession}/fundingSource</param>
-        <param name="fundingSourceID">${fundingSourceID}</param>
-        <param name="edit">true</param> <param name="phaseID">${phaseID}</param>
-      </result>
-    </action>
+	<package name="fundingSources" namespace="/fundingSources"
+		extends="marlo-default">
 
-    <action name="{crp}/deleteFundingSource" method="delete"
-      class="org.cgiar.ccafs.marlo.action.funding.FundingSourceListAction">
-      <interceptor-ref name="projectsStack" />
-      <result name="success" type="redirectAction">
-        <param name="actionName">${crpSession}/fundingSourcesList</param>
-        <param name="fundingSourceID">${fundingSourceID}</param>
-      </result>
-    </action>
-    
+		<action name="{crp}/fundingSourcesList"
+			class="org.cgiar.ccafs.marlo.action.funding.FundingSourceListAction">
+			<interceptor-ref name="projectsStack" />
+			<result name="input">/WEB-INF/crp/views/fundingSources/fundingSourcesList.ftl
+			</result>
+			<result name="success" type="redirectAction">
+				<param name="actionName">${crpSession}/fundingSourcesList</param>
+			</result>
+		</action>
+
+		<action name="{crp}/fundingSource"
+			class="org.cgiar.ccafs.marlo.action.funding.FundingSourceAction">
+			<interceptor-ref name="editFSStack" />
+			<result name="input">/WEB-INF/crp/views/fundingSources/fundingSource.ftl
+			</result>
+			<result name="success" type="redirectAction">
+				<param name="actionName">${crpSession}/fundingSource</param>
+				<param name="fundingSourceID">${fundingSourceID}</param>
+				<param name="edit">true</param>
+				<param name="phaseID">${phaseID}</param>
+			</result>
+		</action>
+
+		<action name="{crp}/addNewFundingSources" method="add"
+			class="org.cgiar.ccafs.marlo.action.funding.FundingSourceListAction">
+			<interceptor-ref name="projectsStack" />
+			<result name="input">/WEB-INF/crp/views/fundingSources/fundingSource.ftl
+			</result>
+			<result name="success" type="redirectAction">
+				<param name="actionName">${crpSession}/fundingSource</param>
+				<param name="fundingSourceID">${fundingSourceID}</param>
+				<param name="edit">true</param>
+				<param name="phaseID">${phaseID}</param>
+			</result>
+			<result name="error">/WEB-INF/crp/views/fundingSources/fundingSource.ftl
+			</result>
+		</action>
+
+		<action name="{crp}/deleteFundingSource" method="delete"
+			class="org.cgiar.ccafs.marlo.action.funding.FundingSourceListAction">
+			<interceptor-ref name="projectsStack" />
+			<result name="success" type="redirectAction">
+				<param name="actionName">${crpSession}/fundingSourcesList</param>
+				<param name="fundingSourceID">${fundingSourceID}</param>
+			</result>
+		</action>
+
 
 	</package>
 </struts>

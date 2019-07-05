@@ -81,7 +81,7 @@ public final class APConstants {
 
 
   public static final String CRP_FS_W1W2_COFINANCING = "crp_fs_w1w2_cofinancing";
-  public static final String FINANCE_CODE = "finance_code";
+  public static final String FINANCE_CODE = "financeCode";
 
   public static final String CRP_PL_ROLE = "crp_pl_rol";
   public static final String CRP_PLANNING_ACTIVE = "crp_planning_active";
@@ -169,6 +169,8 @@ public final class APConstants {
   public static final String FUNDING_SOURCE_REQUEST_ID = "fundingSourceID";
   public static final String FUNDING_SOURCES_BUDGETS_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.FundingSource.fundingSourceBudgets)";
+  public static final String INSTITUTION_LEAD = "institutionLead";
+  public static final String AGREEMENT_STATUS = "agreementStatus";
 
   public static final String TEMP_CYCLE = "temp_cycle";
   public static final String TEMP_YEAR = "temp_year";
