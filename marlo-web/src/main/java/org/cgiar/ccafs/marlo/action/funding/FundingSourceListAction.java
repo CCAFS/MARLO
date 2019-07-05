@@ -340,10 +340,19 @@ public class FundingSourceListAction extends BaseAction {
 
 
   public void getInstitutionsIds() {
+    // Separate institutions ids from institutions apConstans filters into arrayList
+    int lastI = 0;
     if (institutionsIDs.contains(",")) {
       for (int i = 0; i < institutionsIDs.length(); i++) {
-        if (institutionsIDs.charAt(i) == ',') {
-          institutionsIDsList.add(institutionsIDs.substring(0, i).trim());
+        if ((institutionsIDs.charAt(i) == ',')) {
+          institutionsIDsList.add(institutionsIDs.substring(lastI, i).trim());
+          if ((i + 1) <= institutionsIDs.length()) {
+            lastI = i + 1;
+          }
+        }
+
+        if (i == institutionsIDs.length() - 1) {
+          institutionsIDsList.add(institutionsIDs.substring(lastI, i + 1).trim());
         }
       }
     } else {
@@ -490,7 +499,7 @@ public class FundingSourceListAction extends BaseAction {
 
     this.getCrpContactPoint();
     this.getFundingSourceInstitutionsList();
-    if (institutionsIDs != null) {
+    if (institutionsIDs != null && !institutionsIDs.equals("0")) {
       this.getInstitutionsIds();
       this.removeInstitutions();
     }
