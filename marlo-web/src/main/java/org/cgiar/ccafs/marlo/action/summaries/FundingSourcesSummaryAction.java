@@ -406,7 +406,8 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
       for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
         .sorted((o1, o2) -> o1.getCrpProgram().getAcronym().compareTo(o2.getCrpProgram().getAcronym()))
         .filter(c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()
-          && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase()))
+          && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase())
+          && c.getCrpProgram().getCrp().getId().equals(this.getCurrentCrp().getId()))
         .collect(Collectors.toList())) {
         flagshipsList.add(programManager.getCrpProgramById(projectFocuses.getCrpProgram().getId()).getAcronym());
       }
@@ -533,7 +534,8 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
             .sorted((o1, o2) -> o1.getCrpProgram().getAcronym().compareTo(o2.getCrpProgram().getAcronym()))
             .filter(
               c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()
-                && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase()))
+                && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase())
+                && c.getCrpProgram().getCrp().getId().equals(this.getCurrentCrp().getId()))
             .collect(Collectors.toList())) {
             if (flagships == null || flagships.isEmpty()) {
               flagships = programManager.getCrpProgramById(projectFocuses.getCrpProgram().getId()).getAcronym();
@@ -829,7 +831,8 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
           .sorted((o1, o2) -> o1.getCrpProgram().getAcronym().compareTo(o2.getCrpProgram().getAcronym()))
           .filter(
             c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()
-              && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase()))
+              && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase())
+              && c.getCrpProgram().getCrp().getId().equals(this.getCurrentCrp().getId()))
           .collect(Collectors.toList())) {
           flagshipsList.add(programManager.getCrpProgramById(projectFocuses.getCrpProgram().getId()).getAcronym());
         }
