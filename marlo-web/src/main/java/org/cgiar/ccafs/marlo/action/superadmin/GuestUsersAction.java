@@ -39,6 +39,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -82,12 +83,15 @@ public class GuestUsersAction extends BaseAction {
   private UserRoleManager userRoleManager;
   private RoleManager roleManager;
   private final SendMailS sendMailS;
+
   // Parameters
   private List<GlobalUnit> crps;
   private User user;
   private long selectedGlobalUnitID;
   private String message;
   private GuestUsersValidator validator;
+  private Boolean isEmailSend;
+  private boolean isCGIARUser;
 
   @Inject
   public GuestUsersAction(APConfig config, GlobalUnitManager globalUnitManager, UserManager userManager,
@@ -109,13 +113,17 @@ public class GuestUsersAction extends BaseAction {
   }
 
 
+  public Boolean getIsEmailSend() {
+    return isEmailSend;
+  }
+
+
   /**
    * @return the message
    */
   public String getMessage() {
     return message;
   }
-
 
   /**
    * @return the selectedGlobalUnitID
@@ -128,36 +136,98 @@ public class GuestUsersAction extends BaseAction {
     return user;
   }
 
-  @Override
-  public void prepare() throws Exception {
-    crps = new ArrayList<>(
-      globalUnitManager.findAll().stream().filter(c -> c.isActive() && c.isMarlo()).collect(Collectors.toList()));
+
+  public boolean isCGIARUser() {
+    return isCGIARUser;
+  }
+
+  /**
+   * @param userAssigned is the user been assigned
+   * @param role is the role(Guest)
+   */
+  private void notifyRoleAssigned(User userAssigned) {
+    // Send email to the new user and the P&R notification email.
+    // TO
+    String toEmail = userAssigned.getEmail();;
+    String ccEmail = null;
+    String bbcEmails = this.config.getEmailNotification();
+
+
+    // get CRPAdmin contacts
+    String crpAdmins = "";
+    GlobalUnit globalUnit = null;
+    if (selectedGlobalUnitID != -1) {
+      globalUnit = globalUnitManager.getGlobalUnitById(selectedGlobalUnitID);
+    }
+
+    long adminRol = globalUnit.getRoles().stream().filter(r -> r.getAcronym().equals("CRP-Admin"))
+      .collect(Collectors.toList()).get(0).getId();
+
+    Role roleAdmin = roleManager.getRoleById(adminRol);
+    List<UserRole> userRoles = roleAdmin.getUserRoles().stream()
+      .filter(ur -> ur.getUser() != null && ur.getUser().isActive()).collect(Collectors.toList());
+
+    for (UserRole userRole : userRoles) {
+      if (crpAdmins.isEmpty()) {
+        crpAdmins += userRole.getUser().getComposedCompleteName() + " (" + userRole.getUser().getEmail() + ")";
+      } else {
+        crpAdmins += ", " + userRole.getUser().getComposedCompleteName() + " (" + userRole.getUser().getEmail() + ")";
+      }
+    }
+
+    // Subject
+    String subject = this.getText("email.guest.assigned.subject", new String[] {globalUnit.getAcronym()});
+
+    // Message
+    userAssigned = userManager.getUser(userAssigned.getId());
+    StringBuilder message = new StringBuilder();
+    // Building the Email message:
+    message.append(this.getText("email.dear", new String[] {userAssigned.getFirstName()}));
+    message.append(this.getText("email.guest.assigned", new String[] {globalUnit.getAcronym()}));
+    message.append(this.getText("email.support", new String[] {crpAdmins}));
+    message.append(this.getText("email.getStarted"));
+    message.append(this.getText("email.bye"));
+
+    sendMailS.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
   }
 
 
   @Override
+  public void prepare() throws Exception {
+    // if (filter) {
+    crps = new ArrayList<>(
+      globalUnitManager.findAll().stream().filter(c -> c.isActive() && c.isMarlo()).collect(Collectors.toList()));
+  }
+
+  @Override
   public String save() {
+    if (isEmailSend == null) {
+      isEmailSend = false;
+    }
+    GlobalUnit globalUnit = null;
+
     if (this.canAccessSuperAdmin()) {
-      if (selectedGlobalUnitID != -1) {
-        GlobalUnit globalUnit = globalUnitManager.getGlobalUnitById(selectedGlobalUnitID);
 
-        User newUser = new User();
-        newUser.setFirstName(user.getFirstName());
-        newUser.setLastName(user.getLastName());
-        newUser.setEmail(user.getEmail());
-        newUser.setModificationJustification("User created in MARLO " + this.getActionName().replace("/", "-"));
-        newUser.setAutoSave(true);
-        newUser.setId(null);
-        newUser.setActive(true);
+      // Check if the email is valid
+      if (user.getEmail() != null && this.isValidEmail(user.getEmail()) && user.getEmail().length() > 0) {
 
-        // Check if the email is valid
-        if (newUser.getEmail() != null && this.isValidEmail(newUser.getEmail())) {
-          boolean emailExists = false;
-          // We need to validate that the email does not exist yet into our database.
-          emailExists = userManager.getUserByEmail(newUser.getEmail()) == null ? false : true;
+        boolean emailExists = false;
+        // We need to validate that the email does not exist yet into our database.
+        emailExists = userManager.getUserByEmail(user.getEmail()) == null ? false : true;
 
-          // If email already exists.
-          if (!emailExists) {
+        // If email doesn't exists.
+        if (!emailExists) {
+
+          if (selectedGlobalUnitID != -1) {
+            globalUnit = globalUnitManager.getGlobalUnitById(selectedGlobalUnitID);
+            User newUser = new User();
+            // newUser.setFirstName(user.getFirstName());
+            // newUser.setLastName(user.getLastName());
+            newUser.setEmail(user.getEmail());
+            newUser.setModificationJustification("User created in MARLO " + this.getActionName().replace("/", "-"));
+            newUser.setAutoSave(true);
+            newUser.setId(null);
+            newUser.setActive(true);
 
             // Get the user if it is a CGIAR email.
             LDAPUser LDAPUser = this.getOutlookUser(newUser.getEmail());
@@ -165,27 +235,33 @@ public class GuestUsersAction extends BaseAction {
             String password = this.getText("email.outlookPassword");
             if (LDAPUser != null) {
               // CGIAR user
+              isCGIARUser = true;
               newUser.setFirstName(LDAPUser.getFirstName());
               newUser.setLastName(LDAPUser.getLastName());
               newUser.setUsername(LDAPUser.getLogin().toLowerCase());
               newUser.setCgiarUser(true);
               newUser = userManager.saveUser(newUser);
-              message = this.getText("saving.saved");
+              this.addActionMessage("message:" + this.getText("saving.saved"));
             } else {
               // Non CGIAR user
-              if (newUser.getFirstName() != null && newUser.getLastName() != null
-                && newUser.getFirstName().trim().length() > 0 && newUser.getLastName().trim().length() > 0) {
+              isCGIARUser = false;
+              if (user.getFirstName() != null && user.getLastName() != null) {
+                isCGIARUser = false;
+                newUser.setFirstName(user.getFirstName());
+                newUser.setLastName(user.getLastName());
                 newUser.setCgiarUser(false);
                 newUser.setModificationJustification("User created in MARLO " + this.getActionName().replace("/", "-"));
                 password = RandomStringUtils.randomNumeric(6);
                 newUser.setPassword(password);
                 newUser = userManager.saveUser(newUser);
-                message = this.getText("saving.saved");
+                this.addActionMessage("message:" + this.getText("saving.saved"));
               }
             }
 
             try {
-              this.sendMailNewUser(newUser, globalUnit, password);
+              if (isEmailSend == true) {
+                this.sendMailNewUser(newUser, globalUnit, password);
+              }
             } catch (NoSuchAlgorithmException e) {
               e.printStackTrace();
               LOG.error(e.getMessage());
@@ -206,29 +282,121 @@ public class GuestUsersAction extends BaseAction {
             userRole = userRoleManager.saveUserRole(userRole);
 
           } else {
-            // If email already exists into our database.
-            LOG.warn(this.getText("manageUsers.email.existing"));
-            message = this.getText("manageUsers.email.existing");
-
+            this.addActionMessage("message:" + "login.error.selectCrp");
+            LOG.warn(this.getText("login.error.selectCrp"));
           }
+
         } else {
-          LOG.warn(this.getText("manageUsers.email.notValid"));
-          message = this.getText("manageUsers.email.notValid");
+          // if email exist
+          User existingUser = userManager.getUserByEmail(user.getEmail());
+          List<CrpUser> crpUserList = new ArrayList<CrpUser>();
+          List<UserRole> userRoleList = new ArrayList<UserRole>();
+          List<Role> roleListCRP = new ArrayList<Role>();
+          crpUserList = null;
+          userRoleList = null;
+          if (selectedGlobalUnitID != -1) {
+            final GlobalUnit globalUnitE = globalUnitManager.getGlobalUnitById(selectedGlobalUnitID);
+
+            // Get user permisions for selected CRP
+            crpUserList = crpUserManager.findAll().stream()
+              .filter(
+                u -> u.getUser().getId().equals(existingUser.getId()) && u.getCrp().getId().equals(globalUnitE.getId()))
+              .collect(Collectors.toList());
+
+            if (crpUserList == null || crpUserList.isEmpty()) {
+              // if the user doens't have permission for selected CRP
+
+              // Add Crp Users
+              CrpUser crpUser = new CrpUser();
+              crpUser.setUser(existingUser);
+              crpUser.setCrp(globalUnitE);
+              crpUser = crpUserManager.saveCrpUser(crpUser);
+            }
+
+            Role guestRole = globalUnitE.getRoles().stream().filter(r -> r.getAcronym().equals("G"))
+              .collect(Collectors.toList()).get(0);
+
+            // get user roles
+            userRoleList = userRoleManager.findAll().stream()
+              .filter(u -> u.getUser().getId().equals(existingUser.getId())).collect(Collectors.toList());
+
+            // get roles for selected CRP
+            roleListCRP = roleManager.findAll().stream().filter(r -> r.getCrp().getId().equals(globalUnitE.getId()))
+              .collect(Collectors.toList());
+            boolean containsRol = false;
+
+            if (userRoleList != null) {
+              // Search for Rol for the user in the selected CRP
+              for (UserRole userRol : userRoleList) {
+                if (roleListCRP.contains(userRol.getRole())) {
+                  containsRol = true;
+                }
+              }
+
+              if (containsRol == false) {
+                // If no exist any role for this user in the selected CRP
+
+                // Add guest user role
+                UserRole userRole = new UserRole();
+                userRole.setRole(guestRole);
+                userRole.setUser(existingUser);
+                userRole = userRoleManager.saveUserRole(userRole);
+
+                // Send email message for Guest rol assignation in selected CRP
+                try {
+                  if (isEmailSend == true) {
+                    this.notifyRoleAssigned(existingUser);
+                  }
+                } catch (Exception e) {
+                  e.printStackTrace();
+                  LOG.error(e.getMessage());
+                }
+
+              } else {
+                // If already exist a role for this user in the selected CRP
+                LOG.warn(this.getText("manageUsers.email.roleExisting"));
+                message = this.getText("manageUsers.email.roleExisting");
+                this.addActionMessage("message:" + this.getText("manageUsers.email.roleExisting"));
+              }
+            }
+          }
         }
 
       } else {
-        message = this.getText("login.error.selectCrp");
-        LOG.warn(this.getText("login.error.selectCrp"));
+        LOG.warn(this.getText("manageUsers.email.notValid"));
+        message = this.getText("manageUsers.email.notValid");
+        this.addActionMessage("message:" + this.getText("manageUsers.email.notValid"));
+      }
+      // check if there is a url to redirect
+      if (this.getUrl() == null || this.getUrl().isEmpty()) {
+        // check if there are missing field
+        Collection<String> messages = this.getActionMessages();
+        if (!this.getInvalidFields().isEmpty()) {
+          this.setActionMessages(null);
+          // this.addActionMessage(Map.toString(this.getInvalidFields().toArray()));
+          List<String> keys = new ArrayList<String>(this.getInvalidFields().keySet());
+          for (String key : keys) {
+            this.addActionMessage(key + ": " + this.getInvalidFields().get(key));
+          }
+
+        } else {
+          this.addActionMessage("message:" + this.getText("saving.saved"));
+        }
+        return SUCCESS;
+      } else {
+        // No messages to next page
+
+        this.addActionMessage("");
+        this.setActionMessages(null);
+        // redirect the url select by user
+        return REDIRECT;
       }
 
-      this.addActionMessage("message:" + this.getText("saving.saved"));
-      return SUCCESS;
-
     } else {
+      // no permissions to edit
       return NOT_AUTHORIZED;
     }
   }
-
 
   public void sendMailNewUser(User user, GlobalUnit loggedCrp, String password) throws NoSuchAlgorithmException {
     String toEmail = user.getEmail();
@@ -238,7 +406,15 @@ public class GuestUsersAction extends BaseAction {
 
     // get CRPAdmin contacts
     String crpAdmins = "";
-    long adminRol = Long.parseLong((String) this.getSession().get(APConstants.CRP_ADMIN_ROLE));
+    GlobalUnit globalUnit = null;
+    if (selectedGlobalUnitID != -1) {
+      globalUnit = globalUnitManager.getGlobalUnitById(selectedGlobalUnitID);
+    }
+
+    long adminRol = globalUnit.getRoles().stream().filter(r -> r.getAcronym().equals("CRP-Admin"))
+      .collect(Collectors.toList()).get(0).getId();
+
+    // long adminRol = Long.parseLong((String) this.getSession().get(APConstants.CRP_ADMIN_ROLE));
     Role roleAdmin = roleManager.getRoleById(adminRol);
     List<UserRole> userRoles = roleAdmin.getUserRoles().stream()
       .filter(ur -> ur.getUser() != null && ur.getUser().isActive()).collect(Collectors.toList());
@@ -295,10 +471,17 @@ public class GuestUsersAction extends BaseAction {
   }
 
 
+  public void setCGIARUser(boolean isCGIARUser) {
+    this.isCGIARUser = isCGIARUser;
+  }
+
   public void setCrps(List<GlobalUnit> crps) {
     this.crps = crps;
   }
 
+  public void setIsEmailSend(Boolean isEmailSend) {
+    this.isEmailSend = isEmailSend;
+  }
 
   /**
    * @param selectedGlobalUnitID the selectedGlobalUnitID to set
@@ -314,7 +497,7 @@ public class GuestUsersAction extends BaseAction {
   @Override
   public void validate() {
     if (save) {
-      validator.validate(this, user, selectedGlobalUnitID, true);
+      validator.validate(this, user, selectedGlobalUnitID, isCGIARUser, true);
     }
   }
 

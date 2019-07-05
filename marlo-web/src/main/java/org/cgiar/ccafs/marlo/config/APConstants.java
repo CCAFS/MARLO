@@ -276,6 +276,9 @@ public final class APConstants {
   public static final String PROJECT_EXPECTED_STUDIES_SRF_TARGET_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy.projectExpectedStudySrfTargets)";
 
+  public static final String PROJECT_EXPECTED_STUDIES_GEOGRAPHIC_SCOPE =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy.projectExpectedStudyGeographicScopes)";
+
   public static final String PROJECT_BILATERAL = "BILATERAL";
   // public static final String PROJECT_CORE_TYPE = "CORE";
   public static final String PROJECT_BUDGETS_ACTVITIES_RELATION =

@@ -24,6 +24,7 @@ public class EmailLog extends MarloBaseEntity implements java.io.Serializable {
   private String error;
   private Boolean succes;
   private String fileName;
+  private String messageID;
 
   private byte[] fileContent;
 
@@ -58,6 +59,10 @@ public class EmailLog extends MarloBaseEntity implements java.io.Serializable {
 
   public String getMessage() {
     return this.message;
+  }
+
+  public String getMessageID() {
+    return messageID;
   }
 
   public String getSubject() {
@@ -104,6 +109,10 @@ public class EmailLog extends MarloBaseEntity implements java.io.Serializable {
     this.message = message;
   }
 
+  public void setMessageID(String messageID) {
+    this.messageID = messageID;
+  }
+
   public void setSubject(String subject) {
     this.subject = subject;
   }
@@ -119,7 +128,6 @@ public class EmailLog extends MarloBaseEntity implements java.io.Serializable {
   public void setTried(Integer tried) {
     this.tried = tried;
   }
-
 
 }
 

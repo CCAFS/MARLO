@@ -398,7 +398,7 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
             && !responsible.getPartnerDivision().getAcronym().isEmpty()) {
           }
 
-        } else if (responsible.getProjectPartnerPerson() != null) {
+        } else if (responsible.getProjectPartnerPerson() != null && responsible.getProjectPartnerPerson().isActive()) {
           individual += "<span style='font-family: Segoe UI;color:#ff0000;font-size: 10'>";
           ProjectPartnerPerson responsibleppp = responsible.getProjectPartnerPerson();
           if (responsibleppp.getProjectPartner() != null) {
@@ -446,7 +446,8 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
           if (deliverablePartnership.getProjectPartner() != null) {
             institutionsResponsibleList.add(deliverablePartnership.getProjectPartner().getInstitution());
           }
-          if (deliverablePartnership.getProjectPartnerPerson() != null) {
+          if (deliverablePartnership.getProjectPartnerPerson() != null
+            && deliverablePartnership.getProjectPartnerPerson().isActive()) {
             if (individual.isEmpty()) {
               individual += "<span style='font-family: Segoe UI;font-size: 10'>";
             }
@@ -848,7 +849,8 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
         // get Flagships related to the project sorted by acronym
         for (ProjectFocus projectFocuses : deliverable.getProject().getProjectFocuses().stream()
           .filter(c -> c.isActive() && c.getPhase().equals(this.getSelectedPhase())
-            && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+            && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()
+            && c.getCrpProgram().getCrp().getId().equals(this.getCurrentCrp().getId()))
           .sorted((o1, o2) -> o1.getCrpProgram().getAcronym().compareTo(o2.getCrpProgram().getAcronym()))
           .collect(Collectors.toList())) {
           if (flagships == null || flagships.isEmpty()) {
