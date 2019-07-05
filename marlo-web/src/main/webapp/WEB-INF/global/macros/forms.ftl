@@ -564,7 +564,7 @@
       <div class="loading listComponentLoading" style="display:none"></div>
       <ul class="list">
         [#if elementList?has_content]
-          [#list elementList as item][@listElementMacro name=name element=item type=elementType id=id index=item_index keyFieldName=keyFieldName displayFieldName=displayFieldName indexLevel=indexLevel /][/#list]
+          [#list elementList as item][@listElementMacro name=name element=item type=elementType id=id index=item_index keyFieldName=keyFieldName displayFieldName=displayFieldName indexLevel=indexLevel isEditable=(editable || forceEditable)/][/#list]
         [/#if]
       </ul>
       [#if (editable || forceEditable)]
@@ -580,12 +580,12 @@
     </div>
     [#-- Element item Template --]
     <ul style="display:none">
-      [@listElementMacro name="${name}" element={} type=elementType id=id index=-1 indexLevel=indexLevel template=true /]
+      [@listElementMacro name="${name}" element={} type=elementType id=id index=-1 indexLevel=indexLevel template=true isEditable=(editable || forceEditable) /]
     </ul>
   </div>
 [/#macro]
 
-[#macro listElementMacro element name type id="" index=-1 keyFieldName="id" displayFieldName="composedName" indexLevel=1 template=false]
+[#macro listElementMacro element name type id="" index=-1 keyFieldName="id" displayFieldName="composedName" indexLevel=1 template=false isEditable=true]
   [#local customName = "${template?string('_TEMPLATE_', '')}${name}[${index}]"]
   [#local composedID = "${type}" /]
   [#if id?has_content]
@@ -596,7 +596,7 @@
     <input type="hidden" class="elementID" name="${customName}.id" value="${(element.id)!}" />
     <input type="hidden" class="elementRelationID" name="${customName}.${type}.id" value="${(element[type][keyFieldName])!}" />
     [#-- Remove button --]
-    [#if editable]<div class="removeElement sm removeIcon removeElementType-${composedID}" title="Remove"></div>[/#if] 
+    [#if isEditable]<div class="removeElement sm removeIcon removeElementType-${composedID}" title="Remove"></div>[/#if] 
     [#-- Title --]
     <span class="elementName">${(element[type][displayFieldName])!'{elementNameUndefined}'}</span>
   </li>

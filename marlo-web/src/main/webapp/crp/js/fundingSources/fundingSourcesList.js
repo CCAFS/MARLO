@@ -62,11 +62,71 @@ $(document).ready(function() {
    */
   (function() {
     // Start Here coding
-    $('select[class*="elementType-institution"]').on("addElement removeElement", function(event,id,name) {
+    var $instPartnersSelect = $('select[class*="elementType-institution"]');
+    var $institutionLeadSelect = $('select.institutionLead');
+    var $statusSelect = $('select.agreementStatus');
+    var $financeCode = $('input.financeCode');
+    var $submitButton = $('button.addFundingSourceFromPopup');
 
-      console.log(event.type, id, name);
-
+    $instPartnersSelect.on("addElement removeElement", function(event,id,name) {
+      if(event.type == "addElement") {
+        $('select.institutionLead').addOption(id, name);
+      } else if(event.type == "removeElement") {
+        $('select.institutionLead').removeOption(id);
+      }
+      validateForm();
     });
+
+    $institutionLeadSelect.on("change", function() {
+      validateForm();
+    });
+    $statusSelect.on("change", function() {
+      validateForm();
+    });
+
+    var keyupTimer = null;
+    $financeCode.on("keyup", function(e,v) {
+      if(keyupTimer) {
+        clearTimeout(keyupTimer);
+        keyupTimer = null;
+      }
+      keyupTimer = setTimeout(searchDuplicated, 1000);
+    });
+
+    function searchDuplicated() {
+      $.ajax({
+          'url': baseURL + '/FundingSourceService.do',
+          'data': {
+              financeCode: $financeCode.val(),
+              phaseID: phaseID
+          },
+          beforeSend: function() {
+            $financeCode.addClass('input-loading');
+          },
+          success: function(data) {
+            console.log(data);
+          },
+          complete: function() {
+            $financeCode.removeClass('input-loading');
+          },
+          error: function() {
+          }
+      });
+    }
+
+    function validateForm() {
+      var instPartners = $instPartnersSelect.parents('.panel-body').find('ul li').length;
+      var statusValue = $statusSelect.val();
+      var leadValue = $institutionLeadSelect.val();
+
+      if((instPartners > 0) && (statusValue > 0) && (leadValue > 0)) {
+        $submitButton.prop("disabled", false);
+        return true;
+      }
+      $submitButton.prop("disabled", true);
+      return false;
+    }
+
   })();
 
 });

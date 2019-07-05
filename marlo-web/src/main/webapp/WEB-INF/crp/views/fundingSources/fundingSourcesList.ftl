@@ -71,7 +71,7 @@
     <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
-          [@s.form namespace="/fundingSources" action='${(crpSession)!}/addNewFundingSources' method="GET" enctype="multipart/form-data" cssClass=""]
+          [@s.form namespace="/fundingSources" action='${(crpSession)!}/addNewFundingSources'  method="GET" enctype="multipart/form-data" cssClass="addNewFundingSource"]
             <div class="modal-header">
               <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
               <h4 class="modal-title" id="myModalLabel">Add Funding Source</h4>
@@ -82,17 +82,19 @@
                 [@customForm.elementsListComponent name="institutions" elementType="institution" elementList=[] label="fundingSourcesList.add.institutions" listName="managingInstitutionsList" keyFieldName="id" displayFieldName="composedName" forceEditable=true /]
               </div>
               [#-- Agreement status --]
-              <div class="form-group">
-                [@customForm.select name="agreementStatus" i18nkey="fundingSourcesList.add.status" className=""  listName="agreementStatus" keyFieldName=""  displayFieldName="" editable=true /]
+              <div class="row form-group">
+                <div class="col-md-6">
+                  [@customForm.select name="agreementStatus" i18nkey="fundingSourcesList.add.status" className="agreementStatus"  listName="agreementStatus" keyFieldName=""  displayFieldName="" required=true editable=true /]
+                </div>
               </div>
               <hr />
               [#-- Center and Finance code --]
               <div class="row form-group">
                 <div class="col-md-6">
-                  [@customForm.select name="institutionLead" i18nkey="fundingSourcesList.add.institutionLead" className=""  listName="" keyFieldName=""  displayFieldName="" editable=true /]
+                  [@customForm.select name="institutionLead" i18nkey="fundingSourcesList.add.institutionLead" className="institutionLead"  listName="" keyFieldName=""  displayFieldName="" required=true editable=true /]
                 </div>
-                <div class="col-md-4">
-                  [@customForm.input name="financeCode" i18nkey="fundingSourcesList.add.financeCode" help="" className="e.g. OCS Code" editable=true /]
+                <div class="col-md-6">
+                  [@customForm.input name="financeCode" i18nkey="fundingSourcesList.add.financeCode" help="" placeholder="e.g. OCS (Agresso) Code" className="financeCode" editable=true /]
                 </div>
               </div>
               
@@ -100,7 +102,7 @@
             <div class="modal-footer">
               <input type="hidden" name="phaseID" value="${(actualPhase.id)!}" />
               <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-              <button type="submit" class="btn btn-primary">Create Funding Source</button>
+              <button type="submit" class="btn btn-primary addFundingSourceFromPopup" disabled>Create Funding Source</button>
             </div>
           [/@s.form]
         </div>
