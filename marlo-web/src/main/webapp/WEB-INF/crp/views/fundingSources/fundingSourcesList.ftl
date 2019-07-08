@@ -82,7 +82,7 @@
             <div class="modal-body">
               [#-- Partner(s) managing the funding source --]
               <div class="form-group">
-                [@customForm.elementsListComponent name="institutions" elementType="institution" elementList=[] label="fundingSourcesList.add.institutions" listName="managingInstitutionsList" keyFieldName="id" displayFieldName="composedName" forceEditable=true /]
+                [@customForm.elementsListComponent name="institutions" elementType="institution" elementList=[] label="fundingSourcesList.add.institutions" listName="managingInstitutionsList" keyFieldName="id" displayFieldName="composedName" forceEditable=true onlyElementIDs=true /]
               </div>
               [#-- Agreement status --]
               <div class="row form-group">
