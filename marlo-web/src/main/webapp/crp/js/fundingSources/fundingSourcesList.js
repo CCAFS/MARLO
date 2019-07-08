@@ -61,12 +61,19 @@ $(document).ready(function() {
    * Pop up to add a new Funding Source
    */
   (function() {
-    // Start Here coding
+    // Testing VUE JS
+    var app = new Vue({
+        el: '#vueApp',
+        data: {
+            isValid: false,
+            fundingSources: []
+        }
+    })
+
     var $instPartnersSelect = $('select[class*="elementType-institution"]');
     var $institutionLeadSelect = $('select.institutionLead');
     var $statusSelect = $('select.agreementStatus');
     var $financeCode = $('input.financeCode');
-    var $submitButton = $('button.addFundingSourceFromPopup');
 
     $instPartnersSelect.on("addElement removeElement", function(event,id,name) {
       if(event.type == "addElement") {
@@ -85,46 +92,56 @@ $(document).ready(function() {
     });
 
     var keyupTimer = null;
-    $financeCode.on("keyup", function(e,v) {
+    $financeCode.on("keyup", function() {
+      $financeCode.addClass('input-loading');
       if(keyupTimer) {
         clearTimeout(keyupTimer);
         keyupTimer = null;
       }
-      keyupTimer = setTimeout(searchDuplicated, 1000);
+      keyupTimer = setTimeout(searchDuplicated, 2000);
     });
 
     function searchDuplicated() {
-      $.ajax({
-          'url': baseURL + '/FundingSourceService.do',
-          'data': {
-              financeCode: $financeCode.val(),
-              phaseID: phaseID
-          },
-          beforeSend: function() {
-            $financeCode.addClass('input-loading');
-          },
-          success: function(data) {
-            console.log(data);
-          },
-          complete: function() {
-            $financeCode.removeClass('input-loading');
-          },
-          error: function() {
-          }
-      });
+      var code = $.trim($financeCode.val());
+
+      if(code) {
+        $.ajax({
+            'url': baseURL + '/FundingSourceService.do',
+            'data': {
+                financeCode: code,
+                phaseID: phaseID
+            },
+            beforeSend: function() {
+              app.fundingSources = [];
+              $financeCode.addClass('input-loading');
+            },
+            success: function(data) {
+              if(data.sources.length) {
+                app.fundingSources = data.sources;
+              }
+            },
+            complete: function() {
+              validateForm();
+              $financeCode.removeClass('input-loading');
+            },
+            error: function() {
+            }
+        });
+      }
+
     }
 
     function validateForm() {
       var instPartners = $instPartnersSelect.parents('.panel-body').find('ul li').length;
       var statusValue = $statusSelect.val();
       var leadValue = $institutionLeadSelect.val();
+      app.isValid = false;
 
-      if((instPartners > 0) && (statusValue > 0) && (leadValue > 0)) {
-        $submitButton.prop("disabled", false);
-        return true;
+      if((instPartners > 0) && (statusValue > 0) && (leadValue > 0) && (app.fundingSources.length == 0)) {
+        app.isValid = true;
       }
-      $submitButton.prop("disabled", true);
-      return false;
+
+      return app.isValid;
     }
 
   })();

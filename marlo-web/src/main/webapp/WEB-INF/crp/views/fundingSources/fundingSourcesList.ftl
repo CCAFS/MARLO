@@ -2,7 +2,11 @@
 [#assign title = "MARLO Funding sources" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["datatables.net", "datatables.net-bs", "malihu-custom-scrollbar-plugin", "select2"] /]
-[#assign customJS = ["${baseUrlMedia}/js/fundingSources/fundingSourcesList.js" ] /]
+[#assign customJS = [
+  "https://cdn.jsdelivr.net/npm/vue/dist/vue.js"
+  "${baseUrlMedia}/js/fundingSources/fundingSourcesList.js" 
+  ] 
+/]
 [#assign customCSS = [
   "${baseUrl}/global/css/customDataTable.css",
   "${baseUrlMedia}/css/fundingSources/fundingSourcesList.css"
@@ -60,7 +64,7 @@
         [#-- 
         [#if action.canAddFunding() && (!crpClosed) && action.getActualPhase().editable]<a class="addButton" href="[@s.url namespace="/fundingSources" action='${(crpSession)!}/addNewFundingSources' ][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]"><span class="saveText">Add Funding Source </span></a>[/#if]
          --]
-        <button type="button" class="addButton" data-toggle="modal" data-target="#myModal">Add Funding Source</button>
+        <button type="button" class="addButton" data-toggle="modal" data-target="#fundingSourceAddPopup">Add Funding Source</button>
         <div class="clearfix"></div>
       </div>
     </div>
@@ -68,10 +72,10 @@
     
     [#-- Modal to add a Funding source --]
     <!-- Modal -->
-    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal fade" id="fundingSourceAddPopup" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
       <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          [@s.form namespace="/fundingSources" action='${(crpSession)!}/addNewFundingSources'  method="GET" enctype="multipart/form-data" cssClass="addNewFundingSource"]
+        [@s.form namespace="/fundingSources" action='${(crpSession)!}/addNewFundingSources'  method="GET" enctype="multipart/form-data" cssClass="addNewFundingSource"]
+        <div  class="modal-content">
             <div class="modal-header">
               <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
               <h4 class="modal-title" id="myModalLabel">Add Funding Source</h4>
@@ -88,6 +92,7 @@
                 </div>
               </div>
               <hr />
+              <br>
               [#-- Center and Finance code --]
               <div class="row form-group">
                 <div class="col-md-6">
@@ -98,14 +103,34 @@
                 </div>
               </div>
               
+              [#-- Vue JS App --]
+              <div id="vueApp" class="form-group">
+                <div v-if="fundingSources.length" class="messagesBlock">
+                  <hr />
+                  <p> <strong>This finance code is already used. Please click on the following one if you want to edit.</strong></p>
+                  <ul class="list-group">
+                    <li class="list-group-item" v-for="fs in fundingSources">
+                      <strong>{{ fs.financeCode }}</strong> <span class="label label-info">{{ fs.type }}</span>
+                      <a target="_blank" v-bind:href="'${baseUrl}/fundingSources/${crpSession}/fundingSource.do?fundingSourceID='+ fs.id +'&edit=true&phaseID=${(actualPhase.id)!}'">
+                        <p>FS{{ fs.id }} - {{ fs.name }}</p>
+                      </a>
+                    </li>
+                  </ul>
+                </div>
+              
+                <br>
+                <hr></hr>
+                <div class="text-right">
+                  <input type="hidden" name="phaseID" value="${(actualPhase.id)!}" />
+                  <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                  <button type="submit" class="btn btn-primary addFundingSourceFromPopup" v-if="!fundingSources.length">Create Funding Source</button>
+                </div>
+              
+              </div>
             </div>
-            <div class="modal-footer">
-              <input type="hidden" name="phaseID" value="${(actualPhase.id)!}" />
-              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-              <button type="submit" class="btn btn-primary addFundingSourceFromPopup" disabled>Create Funding Source</button>
-            </div>
-          [/@s.form]
+             
         </div>
+        [/@s.form]
       </div>
     </div>
     
