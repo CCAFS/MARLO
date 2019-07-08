@@ -288,6 +288,7 @@ public class GuestUsersAction extends BaseAction {
 
         } else {
           // if email exist
+          isCGIARUser = true;
           User existingUser = userManager.getUserByEmail(user.getEmail());
           List<CrpUser> crpUserList = new ArrayList<CrpUser>();
           List<UserRole> userRoleList = new ArrayList<UserRole>();
