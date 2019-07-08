@@ -542,7 +542,7 @@
   [#return '']
 [/#function]
 
-[#macro elementsListComponent name elementType id="" elementList=[] label="" paramText="" help="" helpIcon=true listName="" keyFieldName="" displayFieldName="" maxLimit=0 indexLevel=1 required=true forceEditable=false]
+[#macro elementsListComponent name elementType id="" elementList=[] label="" paramText="" help="" helpIcon=true listName="" keyFieldName="" displayFieldName="" maxLimit=0 indexLevel=1 required=true forceEditable=false onlyElementIDs=false]
   [#attempt]
     [#local list = ((listName?eval)?sort_by((displayFieldName?split("."))))![] /] 
   [#recover]
@@ -564,7 +564,7 @@
       <div class="loading listComponentLoading" style="display:none"></div>
       <ul class="list">
         [#if elementList?has_content]
-          [#list elementList as item][@listElementMacro name=name element=item type=elementType id=id index=item_index keyFieldName=keyFieldName displayFieldName=displayFieldName indexLevel=indexLevel isEditable=(editable || forceEditable)/][/#list]
+          [#list elementList as item][@listElementMacro name=name element=item type=elementType id=id index=item_index keyFieldName=keyFieldName displayFieldName=displayFieldName indexLevel=indexLevel onlyElementIDs=onlyElementIDs isEditable=(editable || forceEditable)/][/#list]
         [/#if]
       </ul>
       [#if (editable || forceEditable)]
@@ -580,21 +580,33 @@
     </div>
     [#-- Element item Template --]
     <ul style="display:none">
-      [@listElementMacro name="${name}" element={} type=elementType id=id index=-1 indexLevel=indexLevel template=true isEditable=(editable || forceEditable) /]
+      [@listElementMacro name="${name}" element={} type=elementType id=id index=-1 indexLevel=indexLevel template=true onlyElementIDs=onlyElementIDs isEditable=(editable || forceEditable) /]
     </ul>
   </div>
 [/#macro]
 
-[#macro listElementMacro element name type id="" index=-1 keyFieldName="id" displayFieldName="composedName" indexLevel=1 template=false isEditable=true]
-  [#local customName = "${template?string('_TEMPLATE_', '')}${name}[${index}]"]
+[#macro listElementMacro element name type id="" index=-1 keyFieldName="id" displayFieldName="composedName" indexLevel=1 template=false onlyElementIDs=false isEditable=true]
+  
+  [#if onlyElementIDs]
+    [#local customName = "${template?string('_TEMPLATE_', '')}${name}"]
+  [#else]
+    [#local customName = "${template?string('_TEMPLATE_', '')}${name}[${index}]"]
+  [/#if]
+
   [#local composedID = "${type}" /]
   [#if id?has_content]
     [#local composedID = "${type}-${id}" /]
   [/#if]
   <li class="[#if template]relationElement-template[/#if] relationElement indexLevel-${indexLevel}">
     [#-- Hidden Inputs --]
-    <input type="hidden" class="elementID" name="${customName}.id" value="${(element.id)!}" />
-    <input type="hidden" class="elementRelationID" name="${customName}.${type}.id" value="${(element[type][keyFieldName])!}" />
+    [#if onlyElementIDs]
+      <input type="hidden" class="elementRelationID" name="${customName}" value="${(element[type][keyFieldName])!}" />
+    [#else]
+      <input type="hidden" class="elementID" name="${customName}.id" value="${(element.id)!}" />
+      <input type="hidden" class="elementRelationID" name="${customName}.${type}.id" value="${(element[type][keyFieldName])!}" />
+    [/#if]
+    
+    
     [#-- Remove button --]
     [#if isEditable]<div class="removeElement sm removeIcon removeElementType-${composedID}" title="Remove"></div>[/#if] 
     [#-- Title --]

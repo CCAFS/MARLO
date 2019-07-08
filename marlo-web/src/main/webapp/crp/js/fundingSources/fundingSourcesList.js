@@ -90,6 +90,7 @@ $(document).ready(function() {
 
     $financeCode.on("keyup", function() {
       $financeCode.addClass('input-loading');
+      app.isValid = false;
       if(keyupTimer) {
         clearTimeout(keyupTimer);
         keyupTimer = null;
@@ -130,7 +131,6 @@ $(document).ready(function() {
       var leadValue = $institutionLeadSelect.val();
 
       console.log($('form.addNewFundingSource').serializeArray());
-      console.log("Test");
 
       if((instPartners > 0) && (statusValue > 0) && (leadValue > 0) && (app.fundingSources.length == 0)) {
         app.isValid = true;
@@ -148,7 +148,6 @@ $(document).ready(function() {
     });
   });
 
-
   // Filter multiple institution IDs
   $('input[type="checkbox"]').on('change', function() {
     var institutions = $('input[type="checkbox"]:checked').map(function() {
@@ -157,7 +156,6 @@ $(document).ready(function() {
     console.log(institutions);
     $('#institutionsID').val(institutions);
   }).change();
-
 
 });
 
