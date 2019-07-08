@@ -97,6 +97,8 @@ public class FundingSourceListAction extends BaseAction {
   private String justification;
   private String financeCode;
   private Long centerID;
+  private String agreementStatusValue;
+  private String institutionLead;
 
   @Inject
   public FundingSourceListAction(APConfig config, FundingSourceManager fundingSourceManager,
@@ -121,17 +123,23 @@ public class FundingSourceListAction extends BaseAction {
     FundingSource fundingSource = new FundingSource();
     Map<String, Parameter> parameters = this.getParameters();
     financeCode = StringUtils.trim(parameters.get(APConstants.FINANCE_CODE).getMultipleValues()[0]);
+    agreementStatusValue = StringUtils.trim(parameters.get(APConstants.AGREEMENT_STATUS).getMultipleValues()[0]);
+    institutionLead = StringUtils.trim(parameters.get(APConstants.INSTITUTION_LEAD).getMultipleValues()[0]);
     // centerID = Long.parseLong(parameters.get(APConstants.CRP_ID).getMultipleValues()[0]);
 
     if (financeCode != null) {
+
       FundingSource fundingSourceSearch = new FundingSource();
-      fundingSourceSearch = fundingSourceManager.findAll().stream()
+      List<FundingSource> fundingSourceSearchTemp = new ArrayList<FundingSource>();
+      fundingSourceSearchTemp = null;
+      fundingSourceSearchTemp = fundingSourceManager.findAll().stream()
         .filter(f -> f.getFundingSourceInfo(this.getActualPhase()) != null
           && f.getFundingSourceInfo(this.getActualPhase()).getFinanceCode() != null
           && f.getFundingSourceInfo(this.getActualPhase()).getFinanceCode().equals(financeCode))
-        .collect(Collectors.toList()).get(0);
+        .collect(Collectors.toList());
 
-      if (fundingSourceSearch == null) {
+      if (fundingSourceSearchTemp == null || fundingSourceSearchTemp.isEmpty()) {
+        // if finance code does not exist
         fundingSource.setCrp(loggedCrp);
         fundingSource.setCreateDate(new Date());
         fundingSource = fundingSourceManager.saveFundingSource(fundingSource);
@@ -145,7 +153,8 @@ public class FundingSourceListAction extends BaseAction {
           FundingSourceInfo fundingSourceInfo = new FundingSourceInfo();
           fundingSourceInfo.setModificationJustification("New expected project bilateral cofunded created");
           fundingSourceInfo.setPhase(phase);
-          fundingSourceInfo.setStatus(Integer.parseInt(FundingStatusEnum.Ongoing.getStatusId()));
+          fundingSourceInfo.setFinanceCode(financeCode);
+          fundingSourceInfo.setStatus(Integer.parseInt(agreementStatusValue));
           fundingSourceInfo.setFundingSource(fundingSourceManager.getFundingSourceById(fundingSourceID));
           fundingSourceInfoID = fundingSourceInfoManager.saveFundingSourceInfo(fundingSourceInfo).getId();
 
@@ -192,12 +201,22 @@ public class FundingSourceListAction extends BaseAction {
         if (fundingSourceID > 0) {
           return SUCCESS;
         }
+
+      } else {
+        // if finance code already exist
+        if (fundingSourceSearchTemp.get(0) != null) {
+          fundingSourceSearch = fundingSourceSearchTemp.get(0);
+        }
+
+        if (fundingSourceSearch == null) {
+
+        }
+
+
       }
     } else {
       return ERROR;
     }
-
-
     return INPUT;
   }
 
@@ -252,13 +271,11 @@ public class FundingSourceListAction extends BaseAction {
   public void getCrpContactPoint() {
 
     // Check if the CRP has Contact Point and ContactPointRole, if not cpRole will be null (it will be used as a flag)
-
     Role cpRol = null;
     if (this.hasSpecificities(APConstants.CRP_HAS_CP)
       && roleManager.getRoleById(Long.parseLong((String) this.getSession().get(APConstants.CRP_CP_ROLE))) != null) {
       cpRol = roleManager.getRoleById(Long.parseLong((String) this.getSession().get(APConstants.CRP_CP_ROLE)));
     }
-
     List<Role> roles = new ArrayList<>();
     roles = this.getRolesList();
 
@@ -340,10 +357,19 @@ public class FundingSourceListAction extends BaseAction {
 
 
   public void getInstitutionsIds() {
+    // Separate institutions ids from institutions apConstans filters into arrayList
+    int lastI = 0;
     if (institutionsIDs.contains(",")) {
       for (int i = 0; i < institutionsIDs.length(); i++) {
-        if (institutionsIDs.charAt(i) == ',') {
-          institutionsIDsList.add(institutionsIDs.substring(0, i).trim());
+        if ((institutionsIDs.charAt(i) == ',')) {
+          institutionsIDsList.add(institutionsIDs.substring(lastI, i).trim());
+          if ((i + 1) <= institutionsIDs.length()) {
+            lastI = i + 1;
+          }
+        }
+
+        if (i == institutionsIDs.length() - 1) {
+          institutionsIDsList.add(institutionsIDs.substring(lastI, i + 1).trim());
         }
       }
     } else {
@@ -414,6 +440,7 @@ public class FundingSourceListAction extends BaseAction {
     try {
       Map<String, Parameter> parameters = this.getParameters();
       institutionsIDs = StringUtils.trim(parameters.get(APConstants.INSTITUTIONS_ID).getMultipleValues()[0]);
+
     } catch (Exception e) {
       Log.error(e + "error getting institutionsID parameter");
     }
@@ -490,7 +517,7 @@ public class FundingSourceListAction extends BaseAction {
 
     this.getCrpContactPoint();
     this.getFundingSourceInstitutionsList();
-    if (institutionsIDs != null) {
+    if (institutionsIDs != null && !institutionsIDs.equals("0")) {
       this.getInstitutionsIds();
       this.removeInstitutions();
     }
@@ -503,7 +530,7 @@ public class FundingSourceListAction extends BaseAction {
 
     if (myProjects != null) {
       for (FundingSource fundingSource : myProjects) {
-        if (fundingSource.getInstitutions() != null) {
+        if (fundingSource.getInstitutions() != null || fundingSource.getInstitutions().isEmpty()) {
           contains = 0;
           for (FundingSourceInstitution institution : fundingSource.getInstitutions()) {
 
@@ -531,6 +558,8 @@ public class FundingSourceListAction extends BaseAction {
             }
             // end institutions for
           }
+        } else {
+          tempList.remove(fundingSource);
         }
       }
     }
