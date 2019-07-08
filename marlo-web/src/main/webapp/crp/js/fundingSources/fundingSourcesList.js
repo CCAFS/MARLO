@@ -74,6 +74,7 @@ $(document).ready(function() {
     var $institutionLeadSelect = $('select.institutionLead');
     var $statusSelect = $('select.agreementStatus');
     var $financeCode = $('input.financeCode');
+    var keyupTimer = null;
 
     $instPartnersSelect.on("addElement removeElement", function(event,id,name) {
       if(event.type == "addElement") {
@@ -84,14 +85,9 @@ $(document).ready(function() {
       validateForm();
     });
 
-    $institutionLeadSelect.on("change", function() {
-      validateForm();
-    });
-    $statusSelect.on("change", function() {
-      validateForm();
-    });
+    $institutionLeadSelect.on("change", validateForm);
+    $statusSelect.on("change", validateForm);
 
-    var keyupTimer = null;
     $financeCode.on("keyup", function() {
       $financeCode.addClass('input-loading');
       if(keyupTimer) {
@@ -103,44 +99,42 @@ $(document).ready(function() {
 
     function searchDuplicated() {
       var code = $.trim($financeCode.val());
-
-      if(code) {
-        $.ajax({
-            'url': baseURL + '/FundingSourceService.do',
-            'data': {
-                financeCode: code,
-                phaseID: phaseID
-            },
-            beforeSend: function() {
-              app.fundingSources = [];
-              $financeCode.addClass('input-loading');
-            },
-            success: function(data) {
-              if(data.sources.length) {
-                app.fundingSources = data.sources;
-              }
-            },
-            complete: function() {
-              validateForm();
-              $financeCode.removeClass('input-loading');
-            },
-            error: function() {
+      $.ajax({
+          'url': baseURL + '/FundingSourceService.do',
+          'data': {
+              financeCode: code,
+              phaseID: phaseID
+          },
+          beforeSend: function() {
+            app.fundingSources = [];
+            $financeCode.addClass('input-loading');
+          },
+          success: function(data) {
+            if(data.sources.length) {
+              app.fundingSources = data.sources;
             }
-        });
-      }
-
+          },
+          complete: function() {
+            validateForm();
+            $financeCode.removeClass('input-loading');
+          },
+          error: function() {
+          }
+      });
     }
 
     function validateForm() {
+      app.isValid = false;
       var instPartners = $instPartnersSelect.parents('.panel-body').find('ul li').length;
       var statusValue = $statusSelect.val();
       var leadValue = $institutionLeadSelect.val();
-      app.isValid = false;
+
+      console.log($('form.addNewFundingSource').serializeArray());
+      console.log("Test");
 
       if((instPartners > 0) && (statusValue > 0) && (leadValue > 0) && (app.fundingSources.length == 0)) {
         app.isValid = true;
       }
-
       return app.isValid;
     }
 

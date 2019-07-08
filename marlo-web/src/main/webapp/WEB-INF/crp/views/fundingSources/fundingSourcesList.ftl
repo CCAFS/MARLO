@@ -1,9 +1,8 @@
 [#ftl]
 [#assign title = "MARLO Funding sources" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
-[#assign pageLibs = ["datatables.net", "datatables.net-bs", "malihu-custom-scrollbar-plugin", "select2"] /]
+[#assign pageLibs = ["datatables.net", "datatables.net-bs", "malihu-custom-scrollbar-plugin", "select2", "vue"] /]
 [#assign customJS = [
-  "https://cdn.jsdelivr.net/npm/vue/dist/vue.js"
   "${baseUrlMedia}/js/fundingSources/fundingSourcesList.js" 
   ] 
 /]
@@ -103,7 +102,7 @@
                 </div>
               </div>
               
-              [#-- Vue JS App --]
+              [#-- VueJS App --]
               <div id="vueApp" class="form-group">
                 <div v-if="fundingSources.length" class="messagesBlock">
                   <hr />
@@ -123,7 +122,7 @@
                 <div class="text-right">
                   <input type="hidden" name="phaseID" value="${(actualPhase.id)!}" />
                   <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                  <button type="submit" class="btn btn-primary addFundingSourceFromPopup" v-if="!fundingSources.length">Create Funding Source</button>
+                  <button type="submit" class="btn btn-primary addFundingSourceFromPopup" v-bind:disabled="!isValid" v-if="!fundingSources.length">Create Funding Source</button>
                 </div>
               
               </div>
