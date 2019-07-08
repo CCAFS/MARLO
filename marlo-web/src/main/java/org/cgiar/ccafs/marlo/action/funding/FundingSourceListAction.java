@@ -277,7 +277,6 @@ public class FundingSourceListAction extends BaseAction {
       && roleManager.getRoleById(Long.parseLong((String) this.getSession().get(APConstants.CRP_CP_ROLE))) != null) {
       cpRol = roleManager.getRoleById(Long.parseLong((String) this.getSession().get(APConstants.CRP_CP_ROLE)));
     }
-
     List<Role> roles = new ArrayList<>();
     roles = this.getRolesList();
 
