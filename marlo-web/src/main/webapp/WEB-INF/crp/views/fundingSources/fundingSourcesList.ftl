@@ -82,7 +82,7 @@
             <div class="modal-body">
               [#-- Partner(s) managing the funding source --]
               <div class="form-group">
-                [@customForm.elementsListComponent name="institutions" elementType="institution" elementList=[] label="fundingSourcesList.add.institutions" listName="managingInstitutionsList" keyFieldName="id" displayFieldName="composedName" forceEditable=true onlyElementIDs=true /]
+                [@customForm.elementsListComponent name="ins" elementType="institution" elementList=[] label="fundingSourcesList.add.institutions" listName="managingInstitutionsList" keyFieldName="id" displayFieldName="composedName" forceEditable=true onlyElementIDs=true /]
               </div>
               [#-- Agreement status --]
               <div class="row form-group">
@@ -120,6 +120,7 @@
                 <br>
                 <hr></hr>
                 <div class="text-right">
+                  <input type="hidden" name="institutionIDs" value="" />
                   <input type="hidden" name="phaseID" value="${(actualPhase.id)!}" />
                   <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                   <button type="submit" class="btn btn-primary addFundingSourceFromPopup" v-bind:disabled="!isValid" v-if="!fundingSources.length">Create Funding Source</button>

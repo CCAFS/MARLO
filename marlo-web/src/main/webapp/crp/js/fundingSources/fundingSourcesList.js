@@ -74,6 +74,7 @@ $(document).ready(function() {
     var $institutionLeadSelect = $('select.institutionLead');
     var $statusSelect = $('select.agreementStatus');
     var $financeCode = $('input.financeCode');
+    var $institutionIDs = $('input[name="institutionIDs"]');
     var keyupTimer = null;
 
     $instPartnersSelect.on("addElement removeElement", function(event,id,name) {
@@ -82,6 +83,11 @@ $(document).ready(function() {
       } else if(event.type == "removeElement") {
         $('select.institutionLead').removeOption(id);
       }
+
+      var institutionsIDs = jQuery.map($('input[name="ins"]'), function(el) {
+        return $(el).val()
+      });
+      $institutionIDs.val(institutionsIDs.join(','));
       validateForm();
     });
 
@@ -129,8 +135,6 @@ $(document).ready(function() {
       var instPartners = $instPartnersSelect.parents('.panel-body').find('ul li').length;
       var statusValue = $statusSelect.val();
       var leadValue = $institutionLeadSelect.val();
-
-      console.log($('form.addNewFundingSource').serializeArray());
 
       if((instPartners > 0) && (statusValue > 0) && (leadValue > 0) && (app.fundingSources.length == 0)) {
         app.isValid = true;
