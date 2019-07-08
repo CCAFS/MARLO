@@ -77,13 +77,11 @@ public class FundingSourceService extends BaseAction {
     if (financeCode.isEmpty()) {
       financeCode = "0";
     }
-    
+
     if (financeCode != null) {
       summaries = fundingSourceManager
-        .searchFundingSources("", this.getActualPhase().getYear(), this.getCrpID().longValue(),
-          this.getActualPhase().getId())
-        .stream().filter(f -> f.getFinanceCode() != null && f.getFinanceCode().equals(financeCode))
-        .collect(Collectors.toList());
+        .searchFundingSources("", 0, this.getCrpID().longValue(), this.getActualPhase().getId()).stream()
+        .filter(f -> f.getFinanceCode() != null && f.getFinanceCode().equals(financeCode)).collect(Collectors.toList());
     }
     if (summaries != null) {
       for (FundingSourceSearchSummary summary : summaries) {
