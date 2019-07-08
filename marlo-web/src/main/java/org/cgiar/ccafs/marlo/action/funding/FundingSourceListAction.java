@@ -271,7 +271,6 @@ public class FundingSourceListAction extends BaseAction {
   public void getCrpContactPoint() {
 
     // Check if the CRP has Contact Point and ContactPointRole, if not cpRole will be null (it will be used as a flag)
-
     Role cpRol = null;
     if (this.hasSpecificities(APConstants.CRP_HAS_CP)
       && roleManager.getRoleById(Long.parseLong((String) this.getSession().get(APConstants.CRP_CP_ROLE))) != null) {
