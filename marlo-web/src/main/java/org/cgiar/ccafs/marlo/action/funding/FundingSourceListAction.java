@@ -97,6 +97,8 @@ public class FundingSourceListAction extends BaseAction {
   private String justification;
   private String financeCode;
   private Long centerID;
+  private String agreementStatusValue;
+  private String institutionLead;
 
   @Inject
   public FundingSourceListAction(APConfig config, FundingSourceManager fundingSourceManager,
@@ -121,17 +123,23 @@ public class FundingSourceListAction extends BaseAction {
     FundingSource fundingSource = new FundingSource();
     Map<String, Parameter> parameters = this.getParameters();
     financeCode = StringUtils.trim(parameters.get(APConstants.FINANCE_CODE).getMultipleValues()[0]);
+    agreementStatusValue = StringUtils.trim(parameters.get(APConstants.AGREEMENT_STATUS).getMultipleValues()[0]);
+    institutionLead = StringUtils.trim(parameters.get(APConstants.INSTITUTION_LEAD).getMultipleValues()[0]);
     // centerID = Long.parseLong(parameters.get(APConstants.CRP_ID).getMultipleValues()[0]);
 
     if (financeCode != null) {
+
       FundingSource fundingSourceSearch = new FundingSource();
-      fundingSourceSearch = fundingSourceManager.findAll().stream()
+      List<FundingSource> fundingSourceSearchTemp = new ArrayList<FundingSource>();
+      fundingSourceSearchTemp = null;
+      fundingSourceSearchTemp = fundingSourceManager.findAll().stream()
         .filter(f -> f.getFundingSourceInfo(this.getActualPhase()) != null
           && f.getFundingSourceInfo(this.getActualPhase()).getFinanceCode() != null
           && f.getFundingSourceInfo(this.getActualPhase()).getFinanceCode().equals(financeCode))
-        .collect(Collectors.toList()).get(0);
+        .collect(Collectors.toList());
 
-      if (fundingSourceSearch == null) {
+      if (fundingSourceSearchTemp == null || fundingSourceSearchTemp.isEmpty()) {
+        // if finance code does not exist
         fundingSource.setCrp(loggedCrp);
         fundingSource.setCreateDate(new Date());
         fundingSource = fundingSourceManager.saveFundingSource(fundingSource);
@@ -145,7 +153,8 @@ public class FundingSourceListAction extends BaseAction {
           FundingSourceInfo fundingSourceInfo = new FundingSourceInfo();
           fundingSourceInfo.setModificationJustification("New expected project bilateral cofunded created");
           fundingSourceInfo.setPhase(phase);
-          fundingSourceInfo.setStatus(Integer.parseInt(FundingStatusEnum.Ongoing.getStatusId()));
+          fundingSourceInfo.setFinanceCode(financeCode);
+          fundingSourceInfo.setStatus(Integer.parseInt(agreementStatusValue));
           fundingSourceInfo.setFundingSource(fundingSourceManager.getFundingSourceById(fundingSourceID));
           fundingSourceInfoID = fundingSourceInfoManager.saveFundingSourceInfo(fundingSourceInfo).getId();
 
@@ -192,12 +201,22 @@ public class FundingSourceListAction extends BaseAction {
         if (fundingSourceID > 0) {
           return SUCCESS;
         }
+
+      } else {
+        // if finance code already exist
+        if (fundingSourceSearchTemp.get(0) != null) {
+          fundingSourceSearch = fundingSourceSearchTemp.get(0);
+        }
+
+        if (fundingSourceSearch == null) {
+
+        }
+
+
       }
     } else {
       return ERROR;
     }
-
-
     return INPUT;
   }
 
@@ -423,6 +442,7 @@ public class FundingSourceListAction extends BaseAction {
     try {
       Map<String, Parameter> parameters = this.getParameters();
       institutionsIDs = StringUtils.trim(parameters.get(APConstants.INSTITUTIONS_ID).getMultipleValues()[0]);
+
     } catch (Exception e) {
       Log.error(e + "error getting institutionsID parameter");
     }
