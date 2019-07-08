@@ -517,7 +517,7 @@ public class FundingSourceListAction extends BaseAction {
 
     this.getCrpContactPoint();
     this.getFundingSourceInstitutionsList();
-    if (institutionsIDs != null && !institutionsIDs.equals("0")) {
+    if (institutionsIDs != null && !institutionsIDs.equals("0") && !institutionsIDs.isEmpty()) {
       this.getInstitutionsIds();
       this.removeInstitutions();
     }
@@ -526,31 +526,29 @@ public class FundingSourceListAction extends BaseAction {
   public void removeInstitutions() {
     List<FundingSource> tempList = new ArrayList<>();
     int contains = 0;
-    tempList.addAll(myProjects);
 
-    if (myProjects != null) {
+    if (myProjects != null && institutionsIDsList != null) {
+      tempList.addAll(myProjects);
+
       for (FundingSource fundingSource : myProjects) {
-        if (fundingSource.getInstitutions() != null || fundingSource.getInstitutions().isEmpty()) {
+
+        if (fundingSource.getInstitutions() != null && !fundingSource.getInstitutions().isEmpty()
+          && fundingSource.getInstitutions().size() != 0) {
+          // if the list of funding source institutions has elements, check the ID
+
           contains = 0;
+          int countInstitutions = 0;
           for (FundingSourceInstitution institution : fundingSource.getInstitutions()) {
+            countInstitutions++;
 
-            // funding source institutions cycle
-            if (institutionsIDsList != null) {
-              // if the list of funding source institutions has elements, check the ID
-              if (institution.getInstitution().getId() != null) {
-
-                if (!institutionsIDsList.contains(String.valueOf((institution.getInstitution().getId())))) {
-                  contains += 0;
-
-                } else {
-                  contains += 1;
-                }
-              }
+            if (institutionsIDsList.contains(String.valueOf((institution.getInstitution().getId())))) {
+              contains += 1;
             }
 
-            if (contains == 0) {
-              try {
+            if (contains == 0 && countInstitutions == fundingSource.getInstitutions().size()) {
+              // remove funding source without expected Id institution
 
+              try {
                 tempList.remove(fundingSource);
               } catch (Exception e) {
 
@@ -559,6 +557,7 @@ public class FundingSourceListAction extends BaseAction {
             // end institutions for
           }
         } else {
+          // remove funding source without institutions
           tempList.remove(fundingSource);
         }
       }
