@@ -221,50 +221,95 @@ public class FundingSourceMySQLDAO extends AbstractMarloDAO<FundingSource, Long>
   public List<FundingSourceSearchSummary> searchFundingSourcesByInstitution(String userInput, Long institutionID,
     int year, long crpID, long phaseID) {
     StringBuilder q = new StringBuilder();
-
-    q.append(
-      "SELECT sub.id AS id, sub.name AS name, sub.type AS type, sub.typeId AS typeId, sub.financeCode AS financeCode, sub.w1w2 AS w1w2, sub.budget AS budget, SUM(pb.amount) AS usedAmount ");
-    q.append("FROM ");
-
-    q.append(
-      "(SELECT DISTINCT fs.id AS `id`, fsi.title AS `name`, bt.name AS `type`, bt.id AS `typeId`, fsi.finance_code AS `financeCode`, fsi.w1w2 AS `w1w2`, fsb.budget AS `budget` ");
-
-    q.append("FROM funding_sources_info fsi ");
-    q.append("INNER JOIN funding_sources fs ON fs.id = fsi.funding_source_id AND fs.is_active AND fs.global_unit_id = "
-      + crpID + " ");
-
-    // Only add the INNER JOIN if an institutionId was provided.
-    if (institutionID != null) {
+    List<FundingSourceSearchSummary> result = null;
+    if (year == -1 || year == 0) {
+      result = new ArrayList<FundingSourceSearchSummary>();
       q.append(
-        "INNER JOIN funding_source_institutions fsin ON fs.id = fsin.funding_source_id AND fsin.institution_id = "
-          + institutionID + " AND fsin.id_phase = " + phaseID + " ");
+        "SELECT sub.id AS id, sub.name AS name, sub.type AS type, sub.typeId AS typeId, sub.financeCode AS financeCode, sub.w1w2 AS w1w2, sub.budget AS budget, SUM(pb.amount) AS usedAmount ");
+      q.append("FROM ");
+
+      q.append(
+        "(SELECT DISTINCT fs.id AS `id`, fsi.title AS `name`, bt.name AS `type`, bt.id AS `typeId`, fsi.finance_code AS `financeCode`, fsi.w1w2 AS `w1w2`, fsb.budget AS `budget` ");
+
+      q.append("FROM funding_sources_info fsi ");
+      q.append(
+        "INNER JOIN funding_sources fs ON fs.id = fsi.funding_source_id AND fs.is_active AND fs.global_unit_id = "
+          + crpID + " ");
+
+      // Only add the INNER JOIN if an institutionId was provided.
+      if (institutionID != null) {
+        q.append(
+          "INNER JOIN funding_source_institutions fsin ON fs.id = fsin.funding_source_id AND fsin.institution_id = "
+            + institutionID + " AND fsin.id_phase = " + phaseID + " ");
+      }
+      q.append("LEFT JOIN budget_types bt ON bt.id = fsi.type ");
+      q.append("LEFT JOIN funding_source_budgets fsb ON fs.id = fsb.funding_source_id ");
+      q.append("WHERE 1=1 ");
+      q.append("AND fsi.title IS NOT NULL ");
+      q.append("AND (fsi.status IS NULL OR fsi.status IN (1,2,4,7) ) ");
+      q.append("AND (fsi.title LIKE '%" + userInput + "%' ");
+      q.append("OR fsi.funding_source_id LIKE '%" + userInput + "%' ");
+      q.append("OR CONCAT('FS', fsi.funding_source_id) LIKE '%" + userInput + "%' ");
+      q.append("OR fsi.finance_code LIKE '%" + userInput + "%' ");
+      q.append("OR (SELECT NAME FROM budget_types bt WHERE bt.id = fsi.type) LIKE '%" + userInput + "%' ) ");
+      q.append("AND fsi.id_phase = " + phaseID);
+      q.append(" AND ( ( fsb.id IS NULL OR ( fsb.id_phase = " + phaseID + " ) ) ");
+      q.append("  ) ");
+      q.append(") AS sub ");
+      q.append("LEFT JOIN project_budgets pb ON pb.funding_source_id = sub.id AND pb.is_active=1 "
+        + " AND pb.id_phase =" + phaseID + " ");
+      q.append("GROUP BY sub.id, sub.name, sub.type, sub.typeId, sub.financeCode, sub.w1w2, sub.budget ");
+      q.append("ORDER BY sub.id, sub.name");
+
+      Query query = this.getSessionFactory().getCurrentSession().createSQLQuery(q.toString());
+      query.setResultTransformer(new AliasToBeanResultTransformer(FundingSourceSearchSummary.class));
+      result = query.list();
+
+    } else {
+      result = new ArrayList<FundingSourceSearchSummary>();
+      q.append(
+        "SELECT sub.id AS id, sub.name AS name, sub.type AS type, sub.typeId AS typeId, sub.financeCode AS financeCode, sub.w1w2 AS w1w2, sub.budget AS budget, SUM(pb.amount) AS usedAmount ");
+      q.append("FROM ");
+
+      q.append(
+        "(SELECT DISTINCT fs.id AS `id`, fsi.title AS `name`, bt.name AS `type`, bt.id AS `typeId`, fsi.finance_code AS `financeCode`, fsi.w1w2 AS `w1w2`, fsb.budget AS `budget` ");
+
+      q.append("FROM funding_sources_info fsi ");
+      q.append(
+        "INNER JOIN funding_sources fs ON fs.id = fsi.funding_source_id AND fs.is_active AND fs.global_unit_id = "
+          + crpID + " ");
+
+      // Only add the INNER JOIN if an institutionId was provided.
+      if (institutionID != null) {
+        q.append(
+          "INNER JOIN funding_source_institutions fsin ON fs.id = fsin.funding_source_id AND fsin.institution_id = "
+            + institutionID + " AND fsin.id_phase = " + phaseID + " ");
+      }
+      q.append("LEFT JOIN budget_types bt ON bt.id = fsi.type ");
+      q.append("LEFT JOIN funding_source_budgets fsb ON fs.id = fsb.funding_source_id ");
+      q.append("WHERE 1=1 ");
+      q.append("AND fsi.title IS NOT NULL ");
+      q.append("AND (fsi.status IS NULL OR fsi.status IN (1,2,4,7) ) ");
+      q.append("AND (fsi.title LIKE '%" + userInput + "%' ");
+      q.append("OR fsi.funding_source_id LIKE '%" + userInput + "%' ");
+      q.append("OR CONCAT('FS', fsi.funding_source_id) LIKE '%" + userInput + "%' ");
+      q.append("OR fsi.finance_code LIKE '%" + userInput + "%' ");
+      q.append("OR (SELECT NAME FROM budget_types bt WHERE bt.id = fsi.type) LIKE '%" + userInput + "%' ) ");
+      q.append("AND fsi.id_phase = " + phaseID);
+      q.append(" AND fsi.end_date IS NOT NULL ");
+      q.append("AND ( ( fsb.id IS NULL OR ( fsb.year = " + year + " AND fsb.id_phase = " + phaseID + " ) ) ");
+      // q.append("AND ( ( fsb.id IS NULL OR ( fsb.id_phase = " + phaseID + " ) ) ");
+      q.append(" AND (" + year + " <= YEAR(fsi.end_date) OR " + year + " <= YEAR(fsi.extended_date) ) ) ");
+      q.append(") AS sub ");
+      q.append("LEFT JOIN project_budgets pb ON pb.funding_source_id = sub.id AND pb.is_active=1 " + "AND pb.YEAR ="
+        + year + " AND pb.id_phase =" + phaseID + " ");
+      q.append("GROUP BY sub.id, sub.name, sub.type, sub.typeId, sub.financeCode, sub.w1w2, sub.budget ");
+      q.append("ORDER BY sub.id, sub.name");
+
+      Query query = this.getSessionFactory().getCurrentSession().createSQLQuery(q.toString());
+      query.setResultTransformer(new AliasToBeanResultTransformer(FundingSourceSearchSummary.class));
+      result = query.list();
     }
-    q.append("LEFT JOIN budget_types bt ON bt.id = fsi.type ");
-    q.append("LEFT JOIN funding_source_budgets fsb ON fs.id = fsb.funding_source_id ");
-    q.append("WHERE 1=1 ");
-    q.append("AND fsi.title IS NOT NULL ");
-    q.append("AND (fsi.status IS NULL OR fsi.status IN (1,2,4,7) ) ");
-    q.append("AND (fsi.title LIKE '%" + userInput + "%' ");
-    q.append("OR fsi.funding_source_id LIKE '%" + userInput + "%' ");
-    q.append("OR CONCAT('FS', fsi.funding_source_id) LIKE '%" + userInput + "%' ");
-    q.append("OR fsi.finance_code LIKE '%" + userInput + "%' ");
-    q.append("OR (SELECT NAME FROM budget_types bt WHERE bt.id = fsi.type) LIKE '%" + userInput + "%' ) ");
-    q.append("AND fsi.id_phase = " + phaseID);
-    q.append(" AND fsi.end_date IS NOT NULL ");
-    q.append("AND ( ( fsb.id IS NULL OR ( fsb.year = " + year + " AND fsb.id_phase = " + phaseID + " ) ) ");
-    // q.append("AND ( ( fsb.id IS NULL OR ( fsb.id_phase = " + phaseID + " ) ) ");
-    q.append(" AND (" + year + " <= YEAR(fsi.end_date) OR " + year + " <= YEAR(fsi.extended_date) ) ) ");
-    q.append(") AS sub ");
-    q.append("LEFT JOIN project_budgets pb ON pb.funding_source_id = sub.id AND pb.is_active=1 " + "AND pb.YEAR ="
-      + year + " AND pb.id_phase =" + phaseID + " ");
-    q.append("GROUP BY sub.id, sub.name, sub.type, sub.typeId, sub.financeCode, sub.w1w2, sub.budget ");
-    q.append("ORDER BY sub.id, sub.name");
-
-
-    Query query = this.getSessionFactory().getCurrentSession().createSQLQuery(q.toString());
-    query.setResultTransformer(new AliasToBeanResultTransformer(FundingSourceSearchSummary.class));
-    List<FundingSourceSearchSummary> result = query.list();
-
     return result;
 
   }
