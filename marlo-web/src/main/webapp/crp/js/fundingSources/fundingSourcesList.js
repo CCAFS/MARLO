@@ -148,6 +148,17 @@ $(document).ready(function() {
     });
   });
 
+
+  // Filter multiple institution IDs
+  $('input[type="checkbox"]').on('change', function() {
+    var institutions = $('input[type="checkbox"]:checked').map(function() {
+      return this.value;
+    }).get().join(',');
+    console.log(institutions);
+    $('#institutionsID').val(institutions);
+  }).change();
+
+
 });
 
 // Justification popup global vars
