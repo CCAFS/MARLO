@@ -171,6 +171,7 @@ public final class APConstants {
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.FundingSource.fundingSourceBudgets)";
   public static final String INSTITUTION_LEAD = "institutionLead";
   public static final String AGREEMENT_STATUS = "agreementStatus";
+  public static final String PARTNERS_ID = "partnerIDs";
 
   public static final String TEMP_CYCLE = "temp_cycle";
   public static final String TEMP_YEAR = "temp_year";
