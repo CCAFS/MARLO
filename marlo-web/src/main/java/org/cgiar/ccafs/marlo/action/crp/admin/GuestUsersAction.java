@@ -206,6 +206,7 @@ public class GuestUsersAction extends BaseAction {
 
   @Override
   public String save() {
+    int error = 0;
     if (isEmailSend == null) {
       isEmailSend = false;
     }
@@ -246,7 +247,7 @@ public class GuestUsersAction extends BaseAction {
               newUser.setUsername(LDAPUser.getLogin().toLowerCase());
               newUser.setCgiarUser(true);
               newUser = userManager.saveUser(newUser);
-              this.addActionMessage("message:" + this.getText("saving.saved.guestRole"));
+              // this.addActionMessage("message:" + this.getText("saving.saved.guestRole"));
             } else {
               // Non CGIAR user
               isCGIARUser = false;
@@ -259,7 +260,7 @@ public class GuestUsersAction extends BaseAction {
                 password = RandomStringUtils.randomNumeric(6);
                 newUser.setPassword(password);
                 newUser = userManager.saveUser(newUser);
-                this.addActionMessage("message:" + this.getText("saving.saved.guestRole"));
+                // this.addActionMessage("message:" + this.getText("saving.saved.guestRole"));
               }
             }
 
@@ -288,8 +289,9 @@ public class GuestUsersAction extends BaseAction {
             userRole = userRoleManager.saveUserRole(userRole);
 
           } else {
-            this.addActionWarning("message:" + "login.error.selectCrp");
+            this.addActionMessage("message:" + "login.error.selectCrp");
             LOG.warn(this.getText("login.error.selectCrp"));
+            error++;
           }
 
         } else {
@@ -363,7 +365,9 @@ public class GuestUsersAction extends BaseAction {
                 // If already exist a role for this user in the selected CRP
                 LOG.warn(this.getText("manageUsers.email.roleExisting"));
                 message = this.getText("manageUsers.email.roleExisting");
-                this.addActionWarning("message:" + this.getText("manageUsers.email.roleExisting"));
+                // this.addActionMessage("message:" + this.getText("manageUsers.email.roleExisting"));
+                this.getInvalidFields().put("input-user.email", this.getText("manageUsers.email.roleExisting"));
+                error++;
               }
             }
           }
@@ -372,7 +376,8 @@ public class GuestUsersAction extends BaseAction {
       } else {
         LOG.warn(this.getText("manageUsers.email.notValid"));
         message = this.getText("manageUsers.email.notValid");
-        this.addActionWarning("message:" + this.getText("manageUsers.email.notValid"));
+        this.addActionMessage("message:" + this.getText("manageUsers.email.notValid"));
+        error++;
       }
       // check if there is a url to redirect
       if (this.getUrl() == null || this.getUrl().isEmpty()) {
@@ -387,9 +392,13 @@ public class GuestUsersAction extends BaseAction {
           }
 
         } else {
-          this.addActionMessage("message:" + this.getText("saving.saved.guestRole"));
+          // this.addActionMessage("message:" + this.getText("saving.saved.guestRole"));
         }
-        return SUCCESS;
+        if (error != 0) {
+          return INPUT;
+        } else {
+          return SUCCESS;
+        }
       } else {
         // No messages to next page
 
