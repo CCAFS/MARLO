@@ -36,8 +36,6 @@ import org.cgiar.ccafs.marlo.data.model.FundingSourceInstitution;
 import org.cgiar.ccafs.marlo.data.model.FundingStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Institution;
-import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
-import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Role;
 import org.cgiar.ccafs.marlo.security.APCustomRealm;
@@ -77,6 +75,7 @@ public class FundingSourceListAction extends BaseAction {
   private List<FundingSource> myProjects;
   private String institutionsIDs;
   private List<String> institutionsIDsList;
+  private List<String> partnertsIDList;
   private FundingSourceManager fundingSourceManager;
   private Long cpCrpID;
   private FundingSourceInfoManager fundingSourceInfoManager;
@@ -99,6 +98,8 @@ public class FundingSourceListAction extends BaseAction {
   private Long centerID;
   private String agreementStatusValue;
   private String institutionLead;
+  private String partnerIDs;
+
 
   @Inject
   public FundingSourceListAction(APConfig config, FundingSourceManager fundingSourceManager,
@@ -122,10 +123,19 @@ public class FundingSourceListAction extends BaseAction {
   public String add() {
     FundingSource fundingSource = new FundingSource();
     Map<String, Parameter> parameters = this.getParameters();
-    financeCode = StringUtils.trim(parameters.get(APConstants.FINANCE_CODE).getMultipleValues()[0]);
-    agreementStatusValue = StringUtils.trim(parameters.get(APConstants.AGREEMENT_STATUS).getMultipleValues()[0]);
-    institutionLead = StringUtils.trim(parameters.get(APConstants.INSTITUTION_LEAD).getMultipleValues()[0]);
-    // centerID = Long.parseLong(parameters.get(APConstants.CRP_ID).getMultipleValues()[0]);
+    try {
+      financeCode = StringUtils.trim(parameters.get(APConstants.FINANCE_CODE).getMultipleValues()[0]);
+      agreementStatusValue = StringUtils.trim(parameters.get(APConstants.AGREEMENT_STATUS).getMultipleValues()[0]);
+      institutionLead = StringUtils.trim(parameters.get(APConstants.INSTITUTION_LEAD).getMultipleValues()[0]);
+      // centerID = Long.parseLong(parameters.get(APConstants.CRP_ID).getMultipleValues()[0]);
+      partnerIDs = StringUtils.trim(parameters.get(APConstants.PARTNERS_ID).getMultipleValues()[0]);
+    } catch (Exception e) {
+      Log.error(e);
+    }
+
+    if (partnerIDs != null) {
+      this.getPartnertsIDs();
+    }
 
     if (financeCode != null) {
 
@@ -158,6 +168,7 @@ public class FundingSourceListAction extends BaseAction {
           fundingSourceInfo.setFundingSource(fundingSourceManager.getFundingSourceById(fundingSourceID));
           fundingSourceInfoID = fundingSourceInfoManager.saveFundingSourceInfo(fundingSourceInfo).getId();
 
+
           if (phase.getNext() != null) {
             phase = phase.getNext();
           } else {
@@ -165,30 +176,35 @@ public class FundingSourceListAction extends BaseAction {
           }
         }
 
-        LiaisonUser user = liaisonUserManager.getLiaisonUserByUserId(this.getCurrentUser().getId(), loggedCrp.getId());
-        if (user != null) {
-          LiaisonInstitution liaisonInstitution = user.getLiaisonInstitution();
-          try {
-            if (liaisonInstitution != null && liaisonInstitution.getInstitution() != null) {
-              Institution institution =
-                institutionManager.getInstitutionById(liaisonInstitution.getInstitution().getId());
-
-              FundingSourceInstitution fundingSourceInstitution = new FundingSourceInstitution();
-              fundingSourceInstitution.setFundingSource(fundingSource);
-              fundingSourceInstitution.setPhase(this.getActualPhase());
-              fundingSourceInstitution.setInstitution(institution);
-              fundingSourceInstitutionManager.saveFundingSourceInstitution(fundingSourceInstitution);
-
-            }
-          } catch (Exception e) {
-            logger.error("unable to save FundingSourceInstitution", e);
-            /**
-             * Original code swallows the exception and didn't even log it. Now we at least log it,
-             * but we need to revisit to see if we should continue processing or re-throw the exception.
-             */
+        if (partnertsIDList != null) {
+          for (String partner : partnertsIDList) {
+            FundingSourceInstitution fundingSourceInstitution = new FundingSourceInstitution();;
+            fundingSourceInstitution.setInstitution(institutionManager.getInstitutionById(Integer.parseInt(partner)));
+            fundingSourceInstitution.setFundingSource(fundingSource);
+            fundingSourceInstitution.setPhase(this.getActualPhase());
+            fundingSourceInstitutionManager.saveFundingSourceInstitution(fundingSourceInstitution);
           }
         }
-
+        /*
+         * LiaisonUser user = liaisonUserManager.getLiaisonUserByUserId(this.getCurrentUser().getId(),
+         * loggedCrp.getId());
+         * if (user != null) {
+         * LiaisonInstitution liaisonInstitution = user.getLiaisonInstitution();
+         * try {
+         * if (liaisonInstitution != null && liaisonInstitution.getInstitution() != null) {
+         * Institution institution =
+         * institutionManager.getInstitutionById(liaisonInstitution.getInstitution().getId());
+         * FundingSourceInstitution fundingSourceInstitution = new FundingSourceInstitution();
+         * fundingSourceInstitution.setFundingSource(fundingSource);
+         * fundingSourceInstitution.setPhase(this.getActualPhase());
+         * fundingSourceInstitution.setInstitution(institution);
+         * fundingSourceInstitutionManager.saveFundingSourceInstitution(fundingSourceInstitution);
+         * }
+         * } catch (Exception e) {
+         * logger.error("unable to save FundingSourceInstitution", e);
+         * }
+         * }
+         */
         // this.clearPermissionsCache();
         // HJ : add the permission String
         AuthorizationInfo info = ((APCustomRealm) this.securityContext.getRealm())
@@ -377,7 +393,6 @@ public class FundingSourceListAction extends BaseAction {
     }
   }
 
-
   /**
    * Migrated from the BaseAction. Leaving this in here as the call to the fundingSourceValidator
    * may be required in a situation that I am not aware of.
@@ -418,6 +433,7 @@ public class FundingSourceListAction extends BaseAction {
     return justification;
   }
 
+
   public GlobalUnit getLoggedCrp() {
     return loggedCrp;
   }
@@ -430,6 +446,28 @@ public class FundingSourceListAction extends BaseAction {
     return myProjects;
   }
 
+  public void getPartnertsIDs() {
+    // Separate institutions partner Managing ids from institutions apConstans filters into arrayList
+    int lastI = 0;
+    if (partnerIDs.contains(",")) {
+      for (int i = 0; i < partnerIDs.length(); i++) {
+        if ((partnerIDs.charAt(i) == ',')) {
+          partnertsIDList.add(partnerIDs.substring(lastI, i).trim());
+          if ((i + 1) <= partnerIDs.length()) {
+            lastI = i + 1;
+          }
+        }
+
+        if (i == partnerIDs.length() - 1) {
+          partnertsIDList.add(partnerIDs.substring(lastI, i + 1).trim());
+        }
+      }
+    } else {
+      partnertsIDList.add(partnerIDs);
+
+    }
+  }
+
   @Override
   public void prepare() throws Exception {
 
@@ -437,6 +475,8 @@ public class FundingSourceListAction extends BaseAction {
     loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
 
     institutionsIDsList = new ArrayList<String>();
+    partnertsIDList = new ArrayList<String>();
+
     try {
       Map<String, Parameter> parameters = this.getParameters();
       institutionsIDs = StringUtils.trim(parameters.get(APConstants.INSTITUTIONS_ID).getMultipleValues()[0]);
