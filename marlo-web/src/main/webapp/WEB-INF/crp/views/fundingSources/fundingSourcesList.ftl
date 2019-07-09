@@ -60,10 +60,9 @@
     [#-- Add --]
     <div class="buttons">
       <div class="buttons-content">
-        [#-- 
-        [#if action.canAddFunding() && (!crpClosed) && action.getActualPhase().editable]<a class="addButton" href="[@s.url namespace="/fundingSources" action='${(crpSession)!}/addNewFundingSources' ][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]"><span class="saveText">Add Funding Source </span></a>[/#if]
-         --]
-        <button type="button" class="addButton" data-toggle="modal" data-target="#fundingSourceAddPopup">Add Funding Source</button>
+        [#if action.canAddFunding() && (!crpClosed) && action.getActualPhase().editable]
+          <button type="button" class="addButton" data-toggle="modal" data-target="#fundingSourceAddPopup">Add Funding Source</button>
+        [/#if]
         <div class="clearfix"></div>
       </div>
     </div>
@@ -71,69 +70,70 @@
     
     [#-- Modal to add a Funding source --]
     <!-- Modal -->
-    <div class="modal fade" id="fundingSourceAddPopup" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-      <div class="modal-dialog" role="document">
-        [@s.form namespace="/fundingSources" action='${(crpSession)!}/addNewFundingSources'  method="GET" enctype="multipart/form-data" cssClass="addNewFundingSource"]
-        <div  class="modal-content">
-            <div class="modal-header">
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-              <h4 class="modal-title" id="myModalLabel">Add Funding Source</h4>
-            </div>
-            <div class="modal-body">
-              [#-- Partner(s) managing the funding source --]
-              <div class="form-group">
-                [@customForm.elementsListComponent name="ins" elementType="institution" elementList=[] label="fundingSourcesList.add.institutions" listName="managingInstitutionsList" keyFieldName="id" displayFieldName="composedName" forceEditable=true onlyElementIDs=true /]
+    [#if action.canAddFunding() && (!crpClosed) && action.getActualPhase().editable]
+      <div class="modal fade" id="fundingSourceAddPopup" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+          [@s.form namespace="/fundingSources" action='${(crpSession)!}/addNewFundingSources'  method="GET" enctype="multipart/form-data" cssClass="addNewFundingSource"]
+          <div  class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">Add Funding Source</h4>
               </div>
-              [#-- Agreement status --]
-              <div class="row form-group">
-                <div class="col-md-6">
-                  [@customForm.select name="agreementStatus" i18nkey="fundingSourcesList.add.status" className="agreementStatus"  listName="agreementStatus" keyFieldName=""  displayFieldName="" required=true editable=true /]
+              <div class="modal-body">
+                [#-- Partner(s) managing the funding source --]
+                <div class="form-group">
+                  [@customForm.elementsListComponent name="ins" elementType="institution" elementList=[] label="fundingSourcesList.add.institutions" listName="managingInstitutionsList" keyFieldName="id" displayFieldName="composedName" forceEditable=true onlyElementIDs=true /]
                 </div>
-              </div>
-              <hr />
-              <br>
-              [#-- Center and Finance code --]
-              <div class="row form-group">
-                <div class="col-md-6">
-                  [@customForm.select name="institutionLead" i18nkey="fundingSourcesList.add.institutionLead" className="institutionLead"  listName="" keyFieldName=""  displayFieldName="" required=true editable=true /]
+                [#-- Agreement status --]
+                <div class="row form-group">
+                  <div class="col-md-6">
+                    [@customForm.select name="agreementStatus" i18nkey="fundingSourcesList.add.status" className="agreementStatus"  listName="agreementStatus" keyFieldName=""  displayFieldName="" required=true editable=true /]
+                  </div>
                 </div>
-                <div class="col-md-6">
-                  [@customForm.input name="financeCode" i18nkey="fundingSourcesList.add.financeCode" help="" placeholder="e.g. OCS (Agresso) Code" className="financeCode" editable=true /]
-                </div>
-              </div>
-              
-              [#-- VueJS App --]
-              <div id="vueApp" class="form-group">
-                <div v-if="fundingSources.length" class="messagesBlock">
-                  <hr />
-                  <p> <strong>This finance code is already used. Please click on the following one if you want to edit.</strong></p>
-                  <ul class="list-group">
-                    <li class="list-group-item" v-for="fs in fundingSources">
-                      <strong>{{ fs.financeCode }}</strong> <span class="label label-info">{{ fs.type }}</span>
-                      <a target="_blank" v-bind:href="'${baseUrl}/fundingSources/${crpSession}/fundingSource.do?fundingSourceID='+ fs.id +'&edit=true&phaseID=${(actualPhase.id)!}'">
-                        <p>FS{{ fs.id }} - {{ fs.name }}</p>
-                      </a>
-                    </li>
-                  </ul>
-                </div>
-              
+                <hr />
                 <br>
-                <hr></hr>
-                <div class="text-right">
-                  <input type="hidden" name="institutionIDs" value="" />
-                  <input type="hidden" name="phaseID" value="${(actualPhase.id)!}" />
-                  <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                  <button type="submit" class="btn btn-primary addFundingSourceFromPopup" v-bind:disabled="!isValid" v-if="!fundingSources.length">Create Funding Source</button>
+                [#-- Center and Finance code --]
+                <div class="row form-group">
+                  <div class="col-md-6">
+                    [@customForm.select name="institutionLead" i18nkey="fundingSourcesList.add.institutionLead" className="institutionLead"  listName="" keyFieldName=""  displayFieldName="" required=true editable=true /]
+                  </div>
+                  <div class="col-md-6">
+                    [@customForm.input name="financeCode" i18nkey="fundingSourcesList.add.financeCode" help="" placeholder="e.g. OCS (Agresso) Code" className="financeCode" editable=true /]
+                  </div>
                 </div>
-              
+                
+                [#-- VueJS App --]
+                <div id="vueApp" class="form-group">
+                  <div v-if="fundingSources.length" class="messagesBlock">
+                    <hr />
+                    <p> <strong>This finance code is already used. Please click on the following one if you want to edit.</strong></p>
+                    <ul class="list-group">
+                      <li class="list-group-item" v-for="fs in fundingSources">
+                        <strong>{{ fs.financeCode }}</strong> <span class="pull-right label label-info">{{ fs.type }}</span>
+                        <a target="_blank" v-bind:href="'${baseUrl}/fundingSources/${crpSession}/fundingSource.do?fundingSourceID='+ fs.id +'&edit=true&phaseID=${(actualPhase.id)!}'">
+                          <p>FS{{ fs.id }} - {{ fs.name }}</p>
+                        </a>
+                      </li>
+                    </ul>
+                  </div>
+                
+                  <br>
+                  <hr></hr>
+                  <div class="text-right">
+                    <input type="hidden" name="partnerIDs" value="" />
+                    <input type="hidden" name="phaseID" value="${(actualPhase.id)!}" />
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary addFundingSourceFromPopup" v-bind:disabled="!isValid" v-if="!fundingSources.length">Create Funding Source</button>
+                  </div>
+                
+                </div>
               </div>
-            </div>
-             
+               
+          </div>
+          [/@s.form]
         </div>
-        [/@s.form]
       </div>
-    </div>
-    
+    [/#if]
     
   </article>
 </section>

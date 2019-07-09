@@ -67,14 +67,17 @@ $(document).ready(function() {
         data: {
             isValid: false,
             fundingSources: []
+        },
+        methods: {
+
         }
-    })
+    });
 
     var $instPartnersSelect = $('select[class*="elementType-institution"]');
     var $institutionLeadSelect = $('select.institutionLead');
     var $statusSelect = $('select.agreementStatus');
     var $financeCode = $('input.financeCode');
-    var $institutionIDs = $('input[name="institutionIDs"]');
+    var $institutionIDs = $('input[name="partnerIDs"]');
     var keyupTimer = null;
 
     $instPartnersSelect.on("addElement removeElement", function(event,id,name) {
@@ -83,7 +86,6 @@ $(document).ready(function() {
       } else if(event.type == "removeElement") {
         $('select.institutionLead').removeOption(id);
       }
-
       var institutionsIDs = jQuery.map($('input[name="ins"]'), function(el) {
         return $(el).val()
       });
@@ -93,6 +95,15 @@ $(document).ready(function() {
 
     $institutionLeadSelect.on("change", validateForm);
     $statusSelect.on("change", validateForm);
+
+    $('#fundingSourceAddPopup').on('hidden.bs.modal', function(e) {
+      app.fundingSources = [];
+      $statusSelect.val("-1").trigger('change.select2');
+      $institutionLeadSelect.val("-1").trigger('change.select2');
+      $financeCode.val("");
+
+      validateForm();
+    })
 
     $financeCode.on("keyup", function() {
       $financeCode.addClass('input-loading');
@@ -135,7 +146,6 @@ $(document).ready(function() {
       var instPartners = $instPartnersSelect.parents('.panel-body').find('ul li').length;
       var statusValue = $statusSelect.val();
       var leadValue = $institutionLeadSelect.val();
-
       if((instPartners > 0) && (statusValue > 0) && (leadValue > 0) && (app.fundingSources.length == 0)) {
         app.isValid = true;
       }
