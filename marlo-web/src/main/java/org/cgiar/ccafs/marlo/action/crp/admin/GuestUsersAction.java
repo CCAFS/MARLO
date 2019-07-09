@@ -172,8 +172,8 @@ public class GuestUsersAction extends BaseAction {
       }
 
       if (userRole.getUser().getEmail() != null) {
-        if (ccEmail.isEmpty()) {
-          ccEmail += userRole.getUser().getEmail();
+        if (ccEmail == null || ccEmail.isEmpty()) {
+          ccEmail = userRole.getUser().getEmail();
         } else {
           ccEmail += "; " + userRole.getUser().getEmail();
         }
@@ -246,7 +246,7 @@ public class GuestUsersAction extends BaseAction {
               newUser.setUsername(LDAPUser.getLogin().toLowerCase());
               newUser.setCgiarUser(true);
               newUser = userManager.saveUser(newUser);
-              this.addActionMessage("message:" + this.getText("saving.saved"));
+              this.addActionMessage("message:" + this.getText("saving.saved.guestRole"));
             } else {
               // Non CGIAR user
               isCGIARUser = false;
@@ -259,7 +259,7 @@ public class GuestUsersAction extends BaseAction {
                 password = RandomStringUtils.randomNumeric(6);
                 newUser.setPassword(password);
                 newUser = userManager.saveUser(newUser);
-                this.addActionMessage("message:" + this.getText("saving.saved"));
+                this.addActionMessage("message:" + this.getText("saving.saved.guestRole"));
               }
             }
 
@@ -288,7 +288,7 @@ public class GuestUsersAction extends BaseAction {
             userRole = userRoleManager.saveUserRole(userRole);
 
           } else {
-            this.addActionMessage("message:" + "login.error.selectCrp");
+            this.addActionWarning("message:" + "login.error.selectCrp");
             LOG.warn(this.getText("login.error.selectCrp"));
           }
 
@@ -363,7 +363,7 @@ public class GuestUsersAction extends BaseAction {
                 // If already exist a role for this user in the selected CRP
                 LOG.warn(this.getText("manageUsers.email.roleExisting"));
                 message = this.getText("manageUsers.email.roleExisting");
-                this.addActionMessage("message:" + this.getText("manageUsers.email.roleExisting"));
+                this.addActionWarning("message:" + this.getText("manageUsers.email.roleExisting"));
               }
             }
           }
@@ -372,7 +372,7 @@ public class GuestUsersAction extends BaseAction {
       } else {
         LOG.warn(this.getText("manageUsers.email.notValid"));
         message = this.getText("manageUsers.email.notValid");
-        this.addActionMessage("message:" + this.getText("manageUsers.email.notValid"));
+        this.addActionWarning("message:" + this.getText("manageUsers.email.notValid"));
       }
       // check if there is a url to redirect
       if (this.getUrl() == null || this.getUrl().isEmpty()) {
@@ -387,7 +387,7 @@ public class GuestUsersAction extends BaseAction {
           }
 
         } else {
-          this.addActionMessage("message:" + this.getText("saving.saved"));
+          this.addActionMessage("message:" + this.getText("saving.saved.guestRole"));
         }
         return SUCCESS;
       } else {
@@ -433,8 +433,8 @@ public class GuestUsersAction extends BaseAction {
       }
 
       if (userRole.getUser().getEmail() != null) {
-        if (ccEmail.isEmpty()) {
-          ccEmail += userRole.getUser().getEmail();
+        if (ccEmail == null || ccEmail.isEmpty()) {
+          ccEmail = userRole.getUser().getEmail();
         } else {
           ccEmail += "; " + userRole.getUser().getEmail();
         }

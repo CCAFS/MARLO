@@ -21,6 +21,14 @@
 </div>
 [#include "/WEB-INF/global/pages/generalMessages.ftl" /]
 
+<div class="container helpText viewMore-block">
+  <div class="helpMessage infoText">
+    <img class="col-md-2" src="${baseUrl}/global/images/icon-help.jpg" />
+    <p class="col-md-10"> [@s.text name="crpGuestUsers.help" /] </p>
+  </div> 
+  <div style="display:none" class="viewMore closed"></div>
+</div>
+
 <section class="marlo-content">
   <div class="container"> 
     <div class="row">
