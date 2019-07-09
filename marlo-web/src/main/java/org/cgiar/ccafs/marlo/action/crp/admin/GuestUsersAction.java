@@ -13,7 +13,7 @@
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
 
-package org.cgiar.ccafs.marlo.action.superadmin;
+package org.cgiar.ccafs.marlo.action.crp.admin;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
@@ -49,10 +49,7 @@ import org.apache.commons.lang.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * @author Hermes Jiménez - CIAT/CCAFS
- * @author Andres Valencia - CIAT/CCAFS
- */
+
 public class GuestUsersAction extends BaseAction {
 
   private static final long serialVersionUID = 6860177996446505143L;
@@ -173,6 +170,14 @@ public class GuestUsersAction extends BaseAction {
       } else {
         crpAdmins += ", " + userRole.getUser().getComposedCompleteName() + " (" + userRole.getUser().getEmail() + ")";
       }
+
+      if (userRole.getUser().getEmail() != null) {
+        if (ccEmail.isEmpty()) {
+          ccEmail += userRole.getUser().getEmail();
+        } else {
+          ccEmail += "; " + userRole.getUser().getEmail();
+        }
+      }
     }
 
     // Subject
@@ -206,7 +211,7 @@ public class GuestUsersAction extends BaseAction {
     }
     GlobalUnit globalUnit = null;
 
-    if (this.canAccessSuperAdmin()) {
+    if (this.canAcessCrpAdmin()) {
 
       // Check if the email is valid
       if (user.getEmail() != null && this.isValidEmail(user.getEmail()) && user.getEmail().length() > 0) {
@@ -261,6 +266,7 @@ public class GuestUsersAction extends BaseAction {
             try {
               if (isEmailSend == true) {
                 this.sendMailNewUser(newUser, globalUnit, password);
+                this.notifyRoleAssigned(newUser);
               }
             } catch (NoSuchAlgorithmException e) {
               e.printStackTrace();
@@ -424,6 +430,14 @@ public class GuestUsersAction extends BaseAction {
         crpAdmins += userRole.getUser().getComposedCompleteName() + " (" + userRole.getUser().getEmail() + ")";
       } else {
         crpAdmins += ", " + userRole.getUser().getComposedCompleteName() + " (" + userRole.getUser().getEmail() + ")";
+      }
+
+      if (userRole.getUser().getEmail() != null) {
+        if (ccEmail.isEmpty()) {
+          ccEmail += userRole.getUser().getEmail();
+        } else {
+          ccEmail += "; " + userRole.getUser().getEmail();
+        }
       }
     }
 

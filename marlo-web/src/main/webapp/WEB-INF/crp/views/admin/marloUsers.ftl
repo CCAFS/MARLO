@@ -5,12 +5,12 @@
 [#assign customJS = [ "${baseUrl}/global/js/superadmin/marloUsers.js", 
   "${baseUrl}/global/js/fieldsValidation.js" ] /]
 [#assign customCSS = [ "${baseUrl}/global/css/superadmin/superadmin.css" ] /]
-[#assign currentSection = "superadmin" /]
-[#assign currentStage = "users" /]
+[#assign currentSection = "admin" /]
+[#assign currentStage = "guestUsers" /]
 
 [#assign breadCrumb = [
-  {"label":"superadmin", "nameSpace":"", "action":"marloBoard"},
-  {"label":"marloUsers", "nameSpace":"", "action":""}
+  {"label":"admin", "nameSpace":"", "action":"marloBoard"},
+  {"label":"guestUsers", "nameSpace":"", "action":""}
 ]/]
 
  
@@ -25,12 +25,12 @@
   <div class="container"> 
     <div class="row">
       <div class="col-md-3">
-        [#include "/WEB-INF/global/views/superadmin/menu-superadmin.ftl" /]
+        [#include "/WEB-INF/crp/views/admin/menu-admin.ftl" /]
       </div>
       <div class="col-md-9">
      
         [#-- Create User Guest --]
-        <h4 class="sectionTitle">MARLO Create Guest User</h4>
+        <h4 class="sectionTitle">Create Guest User</h4>
         <div class="borderBox">        
           [@s.form action=actionName enctype="multipart/form-data" ]
           
