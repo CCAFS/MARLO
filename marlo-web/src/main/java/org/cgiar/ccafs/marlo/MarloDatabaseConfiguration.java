@@ -68,7 +68,7 @@ public class MarloDatabaseConfiguration {
     HikariConfig config = new HikariConfig();
 
     // config.setDriverClassName("com.mysql.jdbc.jdbc2.optional.MysqlDataSource");
-    config.setDriverClassName("com.mysql.jdbc.Driver");
+    config.setDriverClassName("com.mysql.cj.jdbc.Driver");
     config.setJdbcUrl(databaseUrl);
     config.setUsername(databaseUser);
     config.setPassword(password);
@@ -77,8 +77,8 @@ public class MarloDatabaseConfiguration {
     config.setMaximumPoolSize(40);
     config.setMinimumIdle(20);
     config.setIdleTimeout(5000);
-    config.setConnectionTimeout(10000);
-    config.setConnectionTestQuery("SELECT 1");
+    config.setConnectionTimeout(900000);
+    // config.setConnectionTestQuery("SELECT 1");
     // hard code for now
     config.addDataSourceProperty("cachePrepStmts", true);
     config.addDataSourceProperty("prepStmtCacheSize", 250);
