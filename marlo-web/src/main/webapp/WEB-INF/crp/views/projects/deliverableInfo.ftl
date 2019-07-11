@@ -57,6 +57,7 @@
     <div class="form-group row">
       [#--  [#assign canViewNewExpectedYear = action.candEditExpectedYear(deliverable.id) /]  --]
       [#assign hasExpectedYear = ((deliverable.deliverableInfo.newExpectedYear != -1))!false /]
+      [#assign isStatusExtended = (deliverable.deliverableInfo.status == 4)!false]
       [#-- Deliverable Status --]
       <div class="col-md-4">
         [@customForm.select name="deliverable.deliverableInfo.status" label=""   i18nkey="project.deliverable.generalInformation.status" listName="status"  multiple=false required=true header=false className="status isNew-${isDeliverableNew?string}" editable=editable || editStatus/]
@@ -66,7 +67,7 @@
       <div id="deliverableYear" class="col-md-4 form-group">
         [#--  [#assign canNotEditYear = (deliverable.deliverableInfo.status == 4)!false || !action.candEditYear(deliverable.id)/]  --]
         [#if editable ]
-          <div class="overlay" style="display:${(hasExpectedYear || (reportingActive))?string('block', 'none')}"></div>
+          <div class="overlay" style="display:${((!isDeliverableNew || isStatusExtended || hasExpectedYear))?string('block', 'none')}"></div>
           [@customForm.select name="deliverable.deliverableInfo.year" label=""  i18nkey="project.deliverable.generalInformation.year" listName="project.projectInfo.AllYears" header=false required=true className="yearExpected"  /]
         [#else]
            <div class="select">
@@ -78,7 +79,7 @@
       </div>
       
       [#-- New Expected Year - Extended = 4 or exist--]
-      <div id="newExpectedYear" class="col-md-4" style="display:${hasExpectedYear?string('block','none')}">
+      <div id="newExpectedYear" class="col-md-4" style="display:${(hasExpectedYear || isStatusExtended)?string('block','none')}">
         [#assign startExpectedYear = ((deliverable.deliverableInfo.year)!currentCycleYear)  ]
         [#if editable || editStatus]
           [@customForm.select name="deliverable.deliverableInfo.newExpectedYear"  i18nkey="deliverable.newExpectedYear"  listName="project.projectInfo.getYears(${startExpectedYear})" header=true  multiple=false required=true  className="yearNewExpected" editable=editable || editStatus/]
@@ -111,9 +112,9 @@
     [/#if]
     
     <hr />
-    [#-- New deliverable at reporting 
-    [#if isDeliverableNew && editable && reportingActive]<i class="text-center">The status of this deliverable should be 'Complete' due is new</i> <br />[/#if]
-    --]
+    [#-- New deliverable at reporting --]
+    [#if isDeliverableNew && editable && (reportingActive)]<i class="text-center">The status of this deliverable should be 'Complete' due is new</i> <br />[/#if]
+    
     [#-- Deliverable field status --]
     [#if isDeliverableComplete]
       <span class="icon-20 icon-check" title="Complete"></span> Required fields Completed

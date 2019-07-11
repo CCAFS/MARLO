@@ -38,6 +38,7 @@
       <div class="col-md-9">
       
         [#-- Create User Guest --]
+        [#if !config.production]
         <h4 class="sectionTitle">Create Guest User</h4>
         <div class="borderBox">
           <p id="guestUserMessage" class="note" style="display:none"></p>
@@ -81,6 +82,7 @@
           </div>
           [/@s.form]
         </div>
+        [/#if]
         
         
         [#--Users tables --]

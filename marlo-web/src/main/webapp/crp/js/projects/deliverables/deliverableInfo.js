@@ -377,14 +377,17 @@ function updateGenderLevels($list) {
 }
 
 function validateCurrentDate() {
-  var $statusSelect = $("form select.status");
+  var $statuses = $("form select.status");
+  var statusValue = $("form select.status").val();
   var $yearSelect = $(".yearExpected");
   var status = function() {
-    return $statusSelect.val();
+    return $statuses.val();
   }
   var year = function() {
     return $yearSelect.val();
   };
+
+  console.log("changed year");
 
   // Ajax
   $.ajax({
@@ -395,25 +398,28 @@ function validateCurrentDate() {
           phaseID: phaseID
       },
       beforeSend: function() {
-        $statusSelect.empty();
+        statusValue = $("form select.status").val();
+        $statuses.empty();
       },
       success: function(data) {
         $.each(data.status, function(val,name) {
-          $statusSelect.addOption(val, name);
+          $statuses.addOption(val, name);
         });
-        $statusSelect.trigger("change.select2");
+        $statuses.val(statusValue);
+        $statuses.trigger("change.select2");
+        justificationByStatus(statusValue);
 
         // Check year and status
         if((year() < currentCycleYear) && (status() == 4)) {
-          $('#newExpectedYear').show();
+          // $('#newExpectedYear').show();
         } else {
-          $('#newExpectedYear').hide();
+          // $('#newExpectedYear').hide();
         }
 
       }
   });
 
-  $statusSelect.trigger("change.select2");
+  $statuses.trigger("change.select2");
 }
 
 function justificationByStatus(statusId) {
@@ -433,28 +439,38 @@ function justificationByStatus(statusId) {
     $statusDescription.slideUp(400);
   }
 
-  if(reportingActive) {
+  if(reportingActive || upKeepActive) {
     // Validate the new extended year
     if(isDeliverableNew) {
-
+      showNewExpectedComponent(isStatusExtended(statusId) && upKeepActive);
     } else {
+      console.log("hasExpectedYear", hasExpectedYear);
       if(isStatusOnGoing(statusId)) {
-        $newExpectedYearBlock.hide();
+        console.log("if");
+        showNewExpectedComponent(false);
       } else {
-        if(hasExpectedYear) {
-          $newExpectedYearBlock.show();
-          $yearOverlay.show();
-        } else {
-          $newExpectedYearBlock.hide();
-          $yearOverlay.hide();
-        }
+        console.log("else");
+        showNewExpectedComponent(isStatusExtended(statusId) || hasExpectedYear);
       }
     }
 
-    if(isStatusExtended(statusId)) {
-      $newExpectedYearBlock.show();
-    }
+  } else {
+
+  }
+
+}
+
+function showNewExpectedComponent(state) {
+  var $newExpectedYearBlock = $('#newExpectedYear');
+  var $yearOverlay = $('#deliverableYear .overlay');
+  if(state) {
+    $newExpectedYearBlock.show();
     $yearOverlay.show();
+  } else {
+    $newExpectedYearBlock.hide();
+    if(isDeliverableNew) {
+      $yearOverlay.hide();
+    }
   }
 
 }
