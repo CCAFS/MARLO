@@ -109,6 +109,8 @@ var guestUsersModule =
         var lastName = $.trim($lastName.val());
         var isValid = false;
 
+        $userEmail.removeClass('input-loading');
+
         if(!userHasAccess) {
           if(validateCGIAR()) {
             isValid = true;
@@ -118,6 +120,8 @@ var guestUsersModule =
             }
           }
         }
+
+        console.log("Validate Form", isValid);
 
         disabledSubmitButton(!isValid);
       }
@@ -133,7 +137,6 @@ var guestUsersModule =
 
       function validateCGIAR() {
         var email = getUserEmail();
-        $userEmail.removeClass('input-loading');
         if(validateEmail(email) && email.indexOf("@cgiar.org") !== -1) {
           $userNameBlock.slideUp();
           return true;
