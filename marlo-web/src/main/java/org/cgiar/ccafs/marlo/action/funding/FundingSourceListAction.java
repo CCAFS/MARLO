@@ -86,6 +86,7 @@ public class FundingSourceListAction extends BaseAction {
   private LiaisonUserManager liaisonUserManager;
   private InstitutionManager institutionManager;
   private CrpPpaPartnerManager crpPpaPartnerManager;
+  private GlobalUnitManager globalUnitManager;
 
   private List<FundingSource> closedProjects;
   private List<FundingSourceInstitution> fundingSourceInstitutions;
@@ -107,7 +108,7 @@ public class FundingSourceListAction extends BaseAction {
     GlobalUnitManager crpManager, ProjectManager projectManager, LiaisonUserManager liaisonUserManager,
     InstitutionManager institutionManager, FundingSourceInstitutionManager fundingSourceInstitutionManager,
     FundingSourceInfoManager fundingSourceInfoManager, RoleManager roleManager, UserRoleManager userRoleManager,
-    CrpPpaPartnerManager crpPpaPartnerManager) {
+    CrpPpaPartnerManager crpPpaPartnerManager, GlobalUnitManager globalUnitManager) {
     super(config);
     this.fundingSourceManager = fundingSourceManager;
     this.crpManager = crpManager;
@@ -118,6 +119,7 @@ public class FundingSourceListAction extends BaseAction {
     this.roleManager = roleManager;
     this.userRoleManager = userRoleManager;
     this.crpPpaPartnerManager = crpPpaPartnerManager;
+    this.globalUnitManager = globalUnitManager;
   }
 
   @Override
@@ -255,8 +257,6 @@ public class FundingSourceListAction extends BaseAction {
           institutionsIDsFilter += ", " + element;
         }
       }
-
-      System.out.println("instsdfsdf sd " + institutionsIDsFilter);
     }
   }
 
@@ -542,7 +542,6 @@ public class FundingSourceListAction extends BaseAction {
       }
     }
 
-
     // Load Managing Institutions List
     managingInstitutionsList = new ArrayList<>();
     List<CrpPpaPartner> ppaPartners = crpPpaPartnerManager.findAll().stream()
@@ -570,19 +569,20 @@ public class FundingSourceListAction extends BaseAction {
       }
     }
 
-
     this.getCrpContactPoint();
     this.getFundingSourceInstitutionsList();
     if (institutionsIDs != null && !institutionsIDs.equals("0") && !institutionsIDs.isEmpty()) {
       this.getInstitutionsIds();
       this.removeInstitutions();
-    }
-    if (cpCrpID != null && cpCrpID != -1 && cpCrpID != 0) {
-      this.removeInstitutionsContactPointRole();
+      // return string with the institutions in the apconstant variable separated with ','
+      this.convertListToString(institutionsIDsList);
+    } else {
+
+      if (cpCrpID != null && cpCrpID != -1 && cpCrpID != 0) {
+        this.removeInstitutionsContactPointRole();
+      }
     }
 
-    // return string with the institutions in the apconstant variable separated with ','
-    this.convertListToString(institutionsIDsList);
   }
 
   public void removeInstitutions() {
@@ -632,9 +632,18 @@ public class FundingSourceListAction extends BaseAction {
     // Get institution for contact point
     List<FundingSource> tempList = new ArrayList<>();
     int contains = 0;
-    List<String> roleIds = new ArrayList<>();
-    roleIds.add(String.valueOf(cpCrpID));
-    if (myProjects != null && roleIds != null) {
+    List<String> instIDs = new ArrayList<>();
+
+    GlobalUnit globalUnit = new GlobalUnit();
+    globalUnit =
+      globalUnitManager.findAll().stream().filter(f -> f.getId().equals(cpCrpID)).collect(Collectors.toList()).get(0);
+
+    if (globalUnit != null && globalUnit.getInstitution() != null) {
+      instIDs.add(String.valueOf(globalUnit.getInstitution().getId()));
+    }
+
+
+    if (myProjects != null && instIDs != null) {
       tempList.addAll(myProjects);
 
       for (FundingSource fundingSource : myProjects) {
@@ -648,7 +657,7 @@ public class FundingSourceListAction extends BaseAction {
           for (FundingSourceInstitution institution : fundingSource.getInstitutions()) {
             countInstitutions++;
 
-            if (roleIds.contains(String.valueOf((institution.getInstitution().getId())))) {
+            if (instIDs.contains(String.valueOf((institution.getInstitution().getId())))) {
               contains += 1;
             }
 
@@ -671,6 +680,7 @@ public class FundingSourceListAction extends BaseAction {
     }
     myProjects.removeAll(myProjects);
     myProjects.addAll(tempList);
+    institutionsIDsFilter = String.valueOf(globalUnit.getInstitution().getId());
   }
 
   public void setClosedProjects(List<FundingSource> closedProjects) {
