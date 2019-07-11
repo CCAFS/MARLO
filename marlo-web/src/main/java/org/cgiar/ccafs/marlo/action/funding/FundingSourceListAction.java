@@ -577,7 +577,6 @@ public class FundingSourceListAction extends BaseAction {
       // return string with the institutions in the apconstant variable separated with ','
       this.convertListToString(institutionsIDsList);
     } else {
-
       if (cpCrpID != null && cpCrpID != -1 && cpCrpID != 0) {
         this.removeInstitutionsContactPointRole();
       }
