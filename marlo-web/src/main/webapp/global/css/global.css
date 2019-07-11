@@ -5626,13 +5626,21 @@ h4.testEnvironment {
   border-bottom: 3px solid #7E9377;
 }
 
+.button-save:[disabled], 
+.button-save[disabled] {
+  color: #FFFFFF;
+  background: #c1c3c0 !important;
+  border-bottom: 3px solid #b0b3af;
+  cursor:not-allowed;
+}
+
 .button-save.disabled, .button-save.disabled:hover {
   color: #FFFFFF;
   background: #ffffff !important;
-  border: 1px solid #c5c5c5;
-  border-bottom: 3px solid #c5c5c5;
-  color: #848484;
-  cursor: auto;
+  border: 1px solid #e7e7e7;
+  border-bottom: 3px solid #dbdbdb;
+  color: #b9b9b9;
+  cursor: not-allowed;
 }
 
 .buttons-content.positionFixedBot {
@@ -6832,7 +6840,8 @@ div.radioFlat {
 
 /* Datatables button*/
 .dt-buttons{
-  height: 33px;
+  
+height: 33px;
 }
 
 a.dt-button {
