@@ -47,6 +47,7 @@
               <div class="col-md-10">
                 [@customForm.input name="user.email" i18nkey="guestUsers.email" value="${(user.email)!}" className="userEmail" type="text"  required=true editable=true /]
               </div>
+              [#--
               <div class="col-md-5">
                 [#if namespace?contains('superadmin')]
                   [@customForm.select name="selectedGlobalUnitID" className="selectedGlobalUnitID" i18nkey="guestUsers.globalUnit" listName="crps" keyFieldName="id"  displayFieldName="acronym" required=true editable=true/]
@@ -54,6 +55,7 @@
                   <input type="hidden" name="selectedGlobalUnitID" class="selectedGlobalUnitID" value="${(crpSession)!}" />
                 [/#if]
               </div>
+              --]
             </div>
             <div class="firstLastName form-group row">
               <div class="col-md-5 ">
@@ -66,7 +68,7 @@
             </br>
             [#-- SEND EMAIL --]
             <div class="pull-left">
-              [@customForm.checkmark  id="sendEmail"  i18nkey="guestUsers.sendEmail" name="isEmailSend" value="true" checked=true editable=true /]
+              [@customForm.checkmark  id="sendEmail"  i18nkey="guestUsers.sendEmail" name="emailSend" value="true" checked=true editable=true /]
             </div>
             <br />
           </div>
