@@ -95,7 +95,6 @@ public class SendMailS {
           ccEmail = ccEmail + ", " + string;
         }
       }
-      System.out.println("ccemail " + ccEmail);
     }
 
 
