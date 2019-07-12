@@ -21,6 +21,13 @@ public class ResearcherOCS {
 
   private String id;
   private String name;
+  private String email;
+
+
+  public String getEmail() {
+    return email;
+  }
+
 
   public String getId() {
     return id;
@@ -28,6 +35,10 @@ public class ResearcherOCS {
 
   public String getName() {
     return name;
+  }
+
+  public void setEmail(String email) {
+    this.email = email;
   }
 
   public void setId(String id) {
