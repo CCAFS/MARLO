@@ -1,3 +1,4 @@
+
 /*****************************************************************
  * This file is part of Managing Agricultural Research for Learning &
  * Outcomes Platform (MARLO).
@@ -51,6 +52,12 @@ public interface GeneralStatusManager {
    */
   public List<GeneralStatus> findAll();
 
+  /**
+   * This method gets a list of generalStatus related to a table
+   * 
+   * @return a list from GeneralStatus related to table or null if no exist records
+   */
+  List<GeneralStatus> findByTable(String tableName);
 
   /**
    * This method gets a generalStatus object by a given generalStatus identifier.
@@ -59,6 +66,7 @@ public interface GeneralStatusManager {
    * @return a GeneralStatus object.
    */
   public GeneralStatus getGeneralStatusById(long generalStatusID);
+
 
   /**
    * This method saves the information of the given generalStatus
