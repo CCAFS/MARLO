@@ -75,7 +75,8 @@ public class Innovations {
    * @param NewInnovationDTO with innvovation info
    * @return a InnovationDTO with the innovation created
    */
-  @ApiOperation(value = "${Innovation.innovation.POST.value}", response = InnovationDTO.class)
+  @ApiOperation(tags = {"Table 4 - CRP Innovations"}, value = "${Innovation.innovation.POST.value}",
+    response = InnovationDTO.class)
   @RequiresPermissions(Permission.FULL_CREATE_REST_API_PERMISSION)
   @RequestMapping(value = "/{CGIAREntity}/innovations", method = RequestMethod.POST,
     produces = MediaType.APPLICATION_JSON_VALUE)

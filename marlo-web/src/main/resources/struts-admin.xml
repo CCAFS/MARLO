@@ -4,7 +4,8 @@
   "http://struts.apache.org/dtds/struts-2.5.dtd">
 <struts>
 	<!-- Add addition packages and configuration here. -->
-	<package name="admin" namespace="/admin" extends="marlo-default">
+	<package name="admin" namespace="/admin"
+		extends="marlo-default">
 
 		<action name="{crp}/management"
 			class="org.cgiar.ccafs.marlo.action.crp.admin.CrpAdminManagmentAction">
@@ -13,7 +14,25 @@
 			<result name="input">/WEB-INF/crp/views/admin/management.ftl</result>
 			<result name="success" type="redirectAction">
 				<param name="actionName">${crpSession}/management</param>
-				<param name="edit">true</param> <param name="phaseID">${phaseID}</param>
+				<param name="edit">true</param>
+				<param name="phaseID">${phaseID}</param>
+			</result>
+		</action>
+
+		<action name="{crp}/guestUser"
+			class="org.cgiar.ccafs.marlo.action.crp.admin.GuestUsersAction">
+			<interceptor-ref name="crpAdminStack" />
+			<result name="input">/WEB-INF/crp/views/admin/marloUsers.ftl
+			</result>
+			<result name="success" type="redirectAction">
+				<param name="actionName">${crpSession}/guestUser</param>
+				<param name="edit">true</param>
+				<param name="phaseID">${phaseID}</param>
+			</result>
+			<result name="redirect" type="redirectAction">
+				<param name="actionName">${crpSession}/guestUser</param>
+				<param name="edit">true</param>
+				<param name="phaseID">${phaseID}</param>
 			</result>
 		</action>
 
@@ -22,10 +41,12 @@
 			class="org.cgiar.ccafs.marlo.action.crp.admin.CrpProgamRegionsAction">
 			<!-- interceptor-ref name="autoLogin" / -->
 			<interceptor-ref name="crpAdminStack" />
-			<result name="input">/WEB-INF/crp/views/admin/regionalMapping.ftl</result>
+			<result name="input">/WEB-INF/crp/views/admin/regionalMapping.ftl
+			</result>
 			<result name="success" type="redirectAction">
 				<param name="actionName">${crpSession}/regionalMapping</param>
-				<param name="edit">true</param> <param name="phaseID">${phaseID}</param>
+				<param name="edit">true</param>
+				<param name="phaseID">${phaseID}</param>
 			</result>
 		</action>
 
@@ -33,10 +54,12 @@
 			class="org.cgiar.ccafs.marlo.action.crp.admin.CrpSiteIntegrationAction">
 			<!-- interceptor-ref name="autoLogin" / -->
 			<interceptor-ref name="crpAdminStack" />
-			<result name="input">/WEB-INF/crp/views/admin/siteIntegration.ftl</result>
+			<result name="input">/WEB-INF/crp/views/admin/siteIntegration.ftl
+			</result>
 			<result name="success" type="redirectAction">
 				<param name="actionName">${crpSession}/siteIntegration</param>
-				<param name="edit">true</param> <param name="phaseID">${phaseID}</param>
+				<param name="edit">true</param>
+				<param name="phaseID">${phaseID}</param>
 			</result>
 		</action>
 
@@ -47,40 +70,46 @@
 			<result name="input">/WEB-INF/crp/views/admin/ppaPartners.ftl</result>
 			<result name="success" type="redirectAction">
 				<param name="actionName">${crpSession}/ppaPartners</param>
-				<param name="edit">true</param> <param name="phaseID">${phaseID}</param>
+				<param name="edit">true</param>
+				<param name="phaseID">${phaseID}</param>
 			</result>
 		</action>
-		
-		<action name="{crp}/crpPhases" class="org.cgiar.ccafs.marlo.action.crp.admin.CrpPhasesAction">
-      <interceptor-ref name="crpAdminStack" />
-      <result name="input">/WEB-INF/crp/views/admin/crpPhases.ftl</result>
-      <result name="success" type="redirectAction">
-        <param name="actionName">${crpSession}/crpPhases</param>
-        <param name="edit">true</param> <param name="phaseID">${phaseID}</param>
-      </result>
-    </action>
-    
-    <action name="{crp}/projectPhases"
-      class="org.cgiar.ccafs.marlo.action.crp.admin.CrpProjectPhases">
-      <!-- interceptor-ref name="autoLogin" / -->
-      <interceptor-ref name="crpAdminStack" />
-      <result name="input">/WEB-INF/crp/views/admin/projectPhases.ftl</result>
-      <result name="success" type="redirectAction">
-        <param name="actionName">${crpSession}/projectPhases</param>
-        <param name="edit">true</param> <param name="phaseID">${phaseID}</param>
-      </result>
-    </action>
-    
-    <action name="{crp}/crpUsers"
-      class="org.cgiar.ccafs.marlo.action.crp.admin.CrpUsersAction">
-      <!-- interceptor-ref name="autoLogin" / -->
-      <interceptor-ref name="crpAdminStack" />
-      <result name="input">/WEB-INF/crp/views/admin/crpUsers.ftl</result>
-      <result name="success" type="redirectAction">
-        <param name="actionName">${crpSession}/crpUsers</param>
-        <param name="edit">true</param> <param name="phaseID">${phaseID}</param>
-      </result>
-    </action>
+
+		<action name="{crp}/crpPhases"
+			class="org.cgiar.ccafs.marlo.action.crp.admin.CrpPhasesAction">
+			<interceptor-ref name="crpAdminStack" />
+			<result name="input">/WEB-INF/crp/views/admin/crpPhases.ftl</result>
+			<result name="success" type="redirectAction">
+				<param name="actionName">${crpSession}/crpPhases</param>
+				<param name="edit">true</param>
+				<param name="phaseID">${phaseID}</param>
+			</result>
+		</action>
+
+		<action name="{crp}/projectPhases"
+			class="org.cgiar.ccafs.marlo.action.crp.admin.CrpProjectPhases">
+			<!-- interceptor-ref name="autoLogin" / -->
+			<interceptor-ref name="crpAdminStack" />
+			<result name="input">/WEB-INF/crp/views/admin/projectPhases.ftl
+			</result>
+			<result name="success" type="redirectAction">
+				<param name="actionName">${crpSession}/projectPhases</param>
+				<param name="edit">true</param>
+				<param name="phaseID">${phaseID}</param>
+			</result>
+		</action>
+
+		<action name="{crp}/crpUsers"
+			class="org.cgiar.ccafs.marlo.action.crp.admin.CrpUsersAction">
+			<!-- interceptor-ref name="autoLogin" / -->
+			<interceptor-ref name="crpAdminStack" />
+			<result name="input">/WEB-INF/crp/views/admin/crpUsers.ftl</result>
+			<result name="success" type="redirectAction">
+				<param name="actionName">${crpSession}/crpUsers</param>
+				<param name="edit">true</param>
+				<param name="phaseID">${phaseID}</param>
+			</result>
+		</action>
 
 		<action name="{crp}/locations"
 			class="org.cgiar.ccafs.marlo.action.crp.admin.CrpLocationsAction">
@@ -89,30 +118,33 @@
 			<result name="input">/WEB-INF/crp/views/admin/locations.ftl</result>
 			<result name="success" type="redirectAction">
 				<param name="actionName">${crpSession}/locations</param>
-				<param name="edit">true</param> <param name="phaseID">${phaseID}</param>
+				<param name="edit">true</param>
+				<param name="phaseID">${phaseID}</param>
 			</result>
 		</action>
-		
+
 		<action name="{crp}/targetUnits"
-      class="org.cgiar.ccafs.marlo.action.crp.admin.CrpTargetUnitsAction">
-      <!-- interceptor-ref name="autoLogin" / -->
-      <interceptor-ref name="crpAdminStack" />
-      <result name="input">/WEB-INF/crp/views/admin/targetUnits.ftl</result>
-      <result name="success" type="redirectAction">
-        <param name="actionName">${crpSession}/targetUnits</param>
-        <param name="edit">true</param> <param name="phaseID">${phaseID}</param>
-      </result>
-    </action>
-    
-    <!-- Partners & Country offices requested -->
-    <action name="{crp}/marloInstitutions"
-      class="org.cgiar.ccafs.marlo.action.superadmin.PartnerRequestAction">
-      <!-- interceptor-ref name="autoLogin" / -->
-      <interceptor-ref name="crpAdminStack" />
-      <result name="input">/WEB-INF/crp/views/admin/marloInstitutions.ftl</result>
-    </action>
-        
-    <!-- End Partners & Country offices requested -->
+			class="org.cgiar.ccafs.marlo.action.crp.admin.CrpTargetUnitsAction">
+			<!-- interceptor-ref name="autoLogin" / -->
+			<interceptor-ref name="crpAdminStack" />
+			<result name="input">/WEB-INF/crp/views/admin/targetUnits.ftl</result>
+			<result name="success" type="redirectAction">
+				<param name="actionName">${crpSession}/targetUnits</param>
+				<param name="edit">true</param>
+				<param name="phaseID">${phaseID}</param>
+			</result>
+		</action>
+
+		<!-- Partners & Country offices requested -->
+		<action name="{crp}/marloInstitutions"
+			class="org.cgiar.ccafs.marlo.action.superadmin.PartnerRequestAction">
+			<!-- interceptor-ref name="autoLogin" / -->
+			<interceptor-ref name="crpAdminStack" />
+			<result name="input">/WEB-INF/crp/views/admin/marloInstitutions.ftl
+			</result>
+		</action>
+
+		<!-- End Partners & Country offices requested -->
 
 	</package>
 
