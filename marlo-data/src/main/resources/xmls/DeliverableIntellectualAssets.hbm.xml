@@ -1,0 +1,78 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated Jan 5, 2017 7:38:48 AM by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+	<class name="org.cgiar.ccafs.marlo.data.model.DeliverableIntellectualAsset"
+		table="deliverable_intellectual_assets" optimistic-lock="none">
+		<id name="id" type="java.lang.Long">
+			<column name="id" />
+			<generator class="identity" />
+		</id>
+		<many-to-one name="deliverable"
+			class="org.cgiar.ccafs.marlo.data.model.Deliverable" fetch="select">
+			<column name="deliverable" not-null="true" />
+		</many-to-one>
+		<many-to-one name="phase" class="org.cgiar.ccafs.marlo.data.model.Phase"
+			fetch="select">
+			<column name="phase" not-null="true" />
+		</many-to-one>
+		<property name="hasPatentPvp" type="java.lang.Boolean">
+			<column name="has_patent_pvp" />
+		</property>
+		<property name="applicant" type="string">
+			<column name="applicant" sql-type="TEXT" />
+		</property>
+		<property name="type" type="java.lang.Integer">
+			<column name="type" />
+		</property>
+		<property name="title" type="string">
+			<column name="title" sql-type="TEXT" />
+		</property>
+		<many-to-one name="fillingType"
+			class="org.cgiar.ccafs.marlo.data.model.RepIndFillingType" fetch="select">
+			<column name="rep_ind_filling_type_id" not-null="false" />
+		</many-to-one>
+		<many-to-one name="patentStatus"
+			class="org.cgiar.ccafs.marlo.data.model.RepIndPatentStatus" fetch="select">
+			<column name="rep_ind_patent_status_id" not-null="false" />
+		</many-to-one>
+		<property name="patentType" type="java.lang.Integer">
+			<column name="patent_type" />
+		</property>
+		<property name="varietyName" type="string">
+			<column name="variety_name" sql-type="TEXT" />
+		</property>
+		<property name="status" type="java.lang.Integer">
+			<column name="status" />
+		</property>
+		<many-to-one name="country"
+			class="org.cgiar.ccafs.marlo.data.model.LocElement" fetch="select">
+			<column name="loc_element_id" not-null="false" />
+		</many-to-one>
+		<property name="appRegNumber" type="java.lang.Double">
+			<column name="app_reg_number" precision="30" scale="0" />
+		</property>
+		<property name="breederCrop" type="string">
+			<column name="breeder_crop" sql-type="TEXT" />
+		</property>
+		<property name="dateFilling" type="date">
+			<column name="date_filling" length="10" />
+		</property>
+		<property name="dateRegistration" type="date">
+			<column name="date_registration" length="10" />
+		</property>
+		<property name="dateExpiry" type="date">
+			<column name="date_expiry" length="10" />
+		</property>
+		<property name="additionalInformation" type="string">
+			<column name="additional_information" sql-type="TEXT" />
+		</property>
+		<property name="link" type="string">
+			<column name="link" sql-type="TEXT" />
+		</property>
+		<property name="publicCommunication" type="string">
+			<column name="public_communication" sql-type="TEXT" />
+		</property>
+	</class>
+</hibernate-mapping>

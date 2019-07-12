@@ -137,6 +137,7 @@ public class OcsServiceAction extends BaseAction {
     agreement.setDonor(agreementOCS.getDirectDonor().getName());
     agreement.setResearchId(agreementOCS.getResearcher().getId());
     agreement.setReasearchName(agreementOCS.getResearcher().getName());
+    agreement.setResearchEmail(agreementOCS.getResearcher().getEmail());
 
     Set<CountryOCS> countries = agreementOCS.getCountries().stream().collect(Collectors.toSet());
     agreement.setCountriesAgreements(countries);
@@ -187,6 +188,7 @@ public class OcsServiceAction extends BaseAction {
     ResearcherOCS researcher = new ResearcherOCS();
     researcher.setId(agreement.getResearchId());
     researcher.setName(agreement.getReasearchName());
+    researcher.setEmail(agreement.getResearchEmail());
     agreementOCS.setResearcher(researcher);
 
 

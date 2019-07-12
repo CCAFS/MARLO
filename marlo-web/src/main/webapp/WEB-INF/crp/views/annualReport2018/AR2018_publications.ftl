@@ -114,13 +114,36 @@
               [@numberOfPublications name="peerReviewed" list=["", ""]/]
             </div>
             
-            [#-- Full list of publications published --]
-            <div class="form-group viewMoreSyntesisTable-block">
-              [#-- Modal Large --]
-              <button type="button" class="btn btn-default btn-xs pull-right" data-toggle="modal" data-target="#modal-publications">
-               <span class="glyphicon glyphicon-fullscreen"></span> See Full table 6
-              </button>
-              <h4 class="headTitle">[@s.text name="${customLabel}.fullList.title" /]</h4>
+            
+
+              <div class="form-group btn-group btn-group-sm pull-right" role="group" aria-label="...">
+                <button type="button" class="btn btn-default" data-toggle="modal" data-target="#modal-evidenceC"><span class="glyphicon glyphicon-fullscreen"></span> Table 6 to export</button>
+                <button type="button" class="btn btn-default btn-xs pull-right" data-toggle="modal" data-target="#modal-publications"><span class="glyphicon glyphicon-fullscreen"></span> See Full table 6</button>
+              </div>
+              
+              
+              [#-- Table 6 to export --]
+              <div class="modal fade" id="modal-evidenceC" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                <div class="modal-dialog modal-lg" role="document">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                      <h4 class="modal-title" id="myModalLabel"> Full Publications List to export</h4>
+                    </div>
+                    <div class="modal-body">
+                      [#-- Full table --]
+                      <div class="dataTableExport">
+                        [@listOfPublicationsToExport name="fullList" list=(deliverables)![] /]
+                      </div>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              [#-- See Full table 6 --]
               <div class="modal fade" id="modal-publications" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
                 <div class="modal-dialog modal-lg" role="document">
                   <div class="modal-content">
@@ -137,7 +160,13 @@
                   </div>
                 </div>
               </div>
+              
+              
+              
+            [#-- Full list of publications published --]
+            <div class="form-group viewMoreSyntesisTable-block"> 
               [#-- Table --]
+              <h4 class="headTitle">[@s.text name="${customLabel}.fullList.title" /]</h4>
               [@listOfPublications name="fullList" list=(deliverables)![]  allowPopups=true /]
             </div>
             
@@ -187,10 +216,10 @@
 [/#macro]
 
 [#macro listOfPublications name list=[] allowPopups=false]
-
     <table class="table table-bordered">
       <thead>
         <tr>
+          <th class="text-center"> ID </th>
           <th class="text-center"> [@s.text name="${customLabel}.${name}.article" /] </th>
           [#if !allowPopups]
             <th class="text-center"> [@s.text name="${customLabel}.${name}.author" /](s) </th>
@@ -222,6 +251,7 @@
               [#local url][@s.url namespace="/publications" action="${(crpSession)!}/publication"][@s.param name='deliverableID']${item.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
             [/#if]
             <tr>
+              <td> <a href="${url}" target="_blank" >D${(item.id)!""}</a>  </td>
               [#-- Title --]
               <td>
                 [#local publicationTitle = (item.getMetadataValue(1))!""]
@@ -298,4 +328,101 @@
         [/#if]
       </tbody>
     </table>
+[/#macro]
+
+[#macro listOfPublicationsToExport name list=[] ]
+  <div class="table-responsive">
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>MARLO ID</th>
+          <th>Flagship(s)</th>
+          <th>Project ID</th>
+          <th class="text-center"> [@s.text name="${customLabel}.${name}.article" /] </th>
+          <th class="text-center"> [@s.text name="${customLabel}.${name}.author" /](s) </th>
+          <th class="text-center"> [@s.text name="${customLabel}.${name}.date" /] </th>
+          <th class="text-center"> [@s.text name="${customLabel}.${name}.journal" /] </th>
+          <th class="text-center"> [@s.text name="${customLabel}.${name}.volume" /] </th>
+          <th class="text-center"> [@s.text name="${customLabel}.${name}.issue" /] </th>
+          <th class="text-center"> [@s.text name="${customLabel}.${name}.page" /] </th>
+          <th class="text-center"> [@s.text name="${customLabel}.${name}.openAccess" /] </th>
+          <th class="text-center"> [@s.text name="${customLabel}.${name}.isi" /] </th>
+          <th class="text-center col-md-1"> [@s.text name="${customLabel}.${name}.identifier" /] </th>
+          <th class="col-md-1 text-center"> Included in AR </th>
+          
+        </tr>
+      </thead>
+      <tbody>
+        [#if list?has_content]
+          [#list list as item]
+            [#local isFromProject = (item.project??)!false]
+            [#if isFromProject]
+              [#local url][@s.url namespace="/projects" action="${(crpSession)!}/deliverable"][@s.param name='deliverableID']${item.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
+            [#else]
+              [#local url][@s.url namespace="/publications" action="${(crpSession)!}/publication"][@s.param name='deliverableID']${item.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
+            [/#if]
+            <tr>
+              [#-- MARLO ID --]
+              <td>
+                D${item.id?c}
+              </td>
+              [#-- Flagship --]
+              <td>
+                [#compress]
+                [#list (item.selectedFlahsgips)![] as liason]
+                  ${(liason.acronym)!}[#sep], [/#sep]
+                [/#list]
+                [/#compress]
+              </td>
+              [#-- Project ID --]
+              <td>
+                [#if isFromProject]P${item.project.id}[/#if]
+              </td>
+              [#-- Title --]
+              <td>
+                [#local publicationTitle = (item.getMetadataValue(1))!""]
+                [#if !(publicationTitle?has_content) ]
+                  [#local publicationTitle = (item.deliverableInfo.title)!"" ]
+                [/#if]
+                [@utils.tableText value=publicationTitle /]
+              </td>
+              [#-- Authors --]
+              <td>
+                [#compress]
+                [#list (item.users)![] as user]
+                  ${(user.composedName)!}[#sep]; [/#sep]
+                [/#list]
+                [/#compress]
+              </td>
+              [#-- Date of Publication --]
+              <td>[@utils.tableText value=(item.getMetadataValue(17))!"" /]</td>
+              [#-- Journal Article --]
+              <td class="urlify">[@utils.tableText value=(item.publication.journal)!"" /]</td>
+              [#-- Volume --]
+              <td class="text-center urlify"  style="width: 50px !important;">[@utils.tableText value=(item.publication.volume)!"" /]</td>
+              [#-- Issue --]
+              <td class="text-center col-md-1" style="width: 50px !important;">[@utils.tableText value=(item.publication.issue)!"" /]</td>
+              [#-- Page --]
+              <td class="text-center col-md-1" style="width: 50px !important;">[@utils.tableText value=(item.publication.pages)!"" /]</td>
+              [#-- Is OpenAccess --]
+              <td class="text-center">${((item.dissemination.isOpenAccess)!false)?string('Yes', 'No')}</td>
+              [#-- Is ISI --]
+              <td class="text-center">${((item.publication.isiPublication)!false)?string('Yes', 'No')}</td>
+              [#-- DOI or Handle --]
+              <td class="text-center">
+                [#local doi = (item.getMetadataValue(36))!"" /]
+                ${doi}
+              </td> 
+              [#-- Check --]
+              <td class="text-center">
+                [#local isChecked = ((!reportSynthesis.reportSynthesisFlagshipProgress.deliverablesIds?seq_contains(item.id))!true) /]
+                ${isChecked?string('Yes', 'No')}
+              </td>
+               
+            </tr>
+          [/#list]
+        [/#if]
+      </tbody>
+    </table>
+  </div>
 [/#macro]

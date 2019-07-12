@@ -30,6 +30,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="originalDonor" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *         &lt;element name="originalDonorText" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *         &lt;element name="researcher" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
+ *         &lt;element name="researcherEmail" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *         &lt;element name="researcherText" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *         &lt;element name="shortName" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *         &lt;element name="startDate" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
@@ -43,8 +44,8 @@ import javax.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "tWsMarloAgree",
   propOrder = {"agreementId", "centerAmount", "description", "donor", "donorText", "endDate", "extentionDate",
-    "fundingType", "grantAmount", "objectives", "originalDonor", "originalDonorText", "researcher", "researcherText",
-    "shortName", "startDate", "status"})
+    "fundingType", "grantAmount", "objectives", "originalDonor", "originalDonorText", "researcher", "researcherEmail",
+    "researcherText", "shortName", "startDate", "status"})
 public class TWsMarloAgree {
 
   protected String agreementId;
@@ -60,6 +61,7 @@ public class TWsMarloAgree {
   protected String originalDonor;
   protected String originalDonorText;
   protected String researcher;
+  protected String researcherEmail;
   protected String researcherText;
   protected String shortName;
   protected String startDate;
@@ -206,6 +208,17 @@ public class TWsMarloAgree {
    */
   public String getResearcher() {
     return researcher;
+  }
+
+  /**
+   * Gets the value of the researcherEmail property.
+   * 
+   * @return
+   *         possible object is
+   *         {@link String }
+   */
+  public String getResearcherEmail() {
+    return researcherEmail;
   }
 
   /**
@@ -402,9 +415,22 @@ public class TWsMarloAgree {
    *        allowed object is
    *        {@link String }
    */
+  public void setResearcherEmail(String value) {
+    this.researcherEmail = value;
+  }
+
+
+  /**
+   * Sets the value of the researcherText property.
+   * 
+   * @param value
+   *        allowed object is
+   *        {@link String }
+   */
   public void setResearcherText(String value) {
     this.researcherText = value;
   }
+
 
   /**
    * Sets the value of the shortName property.

@@ -21,11 +21,13 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Profile;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import springfox.bean.validators.configuration.BeanValidatorPluginsConfiguration;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.service.ApiInfo;
@@ -39,7 +41,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @PropertySource("classpath:clarisa.properties")
 // Disable for production environment.
 @Profile("!" + ApplicationContextConfig.SPRING_PROFILE_PRODUCTION)
-
+@Import({BeanValidatorPluginsConfiguration.class})
 @Configuration
 @EnableSwagger2
 public class MarloSwaggerConfiguration extends WebMvcConfigurerAdapter {
@@ -75,63 +77,36 @@ public class MarloSwaggerConfiguration extends WebMvcConfigurerAdapter {
   }
 
   private Tag[] getTags() {
-    Tag[] tags = new Tag[16];
-    tags[0] = new Tag(this.env.getProperty("institution.tag"), this.env.getProperty("institution.description"),
+    Tag[] tags = new Tag[17];
+
+    // 13 tables of AR2017 template
+
+    for (int i = 0; i <= 12; i++) {
+      Tag tag = new Tag(this.env.getProperty("table" + (i + 1) + ".tag"),
+        this.env.getProperty("table" + (i + 1) + ".description"),
+        Integer.parseInt(this.env.getProperty("table" + (i + 1) + ".order")));
+      tags[i] = tag;
+    }
+
+    tags[13] = new Tag(this.env.getProperty("institution.tag"), this.env.getProperty("institution.description"),
       Integer.parseInt(this.env.getProperty("institution.order")));
 
-    tags[1] = new Tag(this.env.getProperty("generalcontrol.tag"), this.env.getProperty("generalcontrol.description"),
+    tags[14] = new Tag(this.env.getProperty("generalcontrol.tag"), this.env.getProperty("generalcontrol.description"),
       Integer.parseInt(this.env.getProperty("generalcontrol.order")));
 
-    tags[2] = new Tag(this.env.getProperty("impactpathwaycontrol.tag"),
+    tags[15] = new Tag(this.env.getProperty("impactpathwaycontrol.tag"),
       this.env.getProperty("impactpathwaycontrol.description"),
       Integer.parseInt(this.env.getProperty("impactpathwaycontrol.order")));
 
-    tags[2] = new Tag(this.env.getProperty("srfcontrol.tag"), this.env.getProperty("srfcontrol.description"),
+    tags[16] = new Tag(this.env.getProperty("srfcontrol.tag"), this.env.getProperty("srfcontrol.description"),
       Integer.parseInt(this.env.getProperty("srfcontrol.order")));
 
-    tags[3] = new Tag(this.env.getProperty("table1.tag"), this.env.getProperty("table1.description"),
-      Integer.parseInt(this.env.getProperty("table1.order")));
-
-    tags[4] = new Tag(this.env.getProperty("table2.tag"), this.env.getProperty("table2.description"),
-      Integer.parseInt(this.env.getProperty("table2.order")));
-
-    tags[5] = new Tag(this.env.getProperty("table3.tag"), this.env.getProperty("table3.description"),
-      Integer.parseInt(this.env.getProperty("table3.order")));
-
-    tags[6] = new Tag(this.env.getProperty("table4.tag"), this.env.getProperty("table4.description"),
-      Integer.parseInt(this.env.getProperty("table4.order")));
-
-    tags[7] = new Tag(this.env.getProperty("table5.tag"), this.env.getProperty("table5.description"),
-      Integer.parseInt(this.env.getProperty("table5.order")));
-
-    tags[8] = new Tag(this.env.getProperty("table6.tag"), this.env.getProperty("table6.description"),
-      Integer.parseInt(this.env.getProperty("table6.order")));
-
-    tags[9] = new Tag(this.env.getProperty("table7.tag"), this.env.getProperty("table7.description"),
-      Integer.parseInt(this.env.getProperty("table7.order")));
-
-    tags[10] = new Tag(this.env.getProperty("table8.tag"), this.env.getProperty("table8.description"),
-      Integer.parseInt(this.env.getProperty("table8.order")));
-
-    tags[11] = new Tag(this.env.getProperty("table9.tag"), this.env.getProperty("table9.description"),
-      Integer.parseInt(this.env.getProperty("table9.order")));
-
-    tags[12] = new Tag(this.env.getProperty("table10.tag"), this.env.getProperty("table10.description"),
-      Integer.parseInt(this.env.getProperty("table10.order")));
-
-    tags[13] = new Tag(this.env.getProperty("table11.tag"), this.env.getProperty("table11.description"),
-      Integer.parseInt(this.env.getProperty("table11.order")));
-
-    tags[14] = new Tag(this.env.getProperty("table12.tag"), this.env.getProperty("table12.description"),
-      Integer.parseInt(this.env.getProperty("table12.order")));
-
-    tags[15] = new Tag(this.env.getProperty("table13.tag"), this.env.getProperty("table13.description"),
-      Integer.parseInt(this.env.getProperty("table13.order")));
     return tags;
   }
 
   private SecurityScheme securityScheme() {
     return new BasicAuth("basicAuth");
   }
+
 
 }

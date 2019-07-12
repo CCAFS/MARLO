@@ -15,6 +15,7 @@
 
 package org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.generallists;
 
+import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.rest.dto.CGIAREntityDTO;
@@ -52,7 +53,11 @@ public class GlobalUnitItem<T> {
    */
   public ResponseEntity<CGIAREntityDTO> findGlobalUnitByAcronym(String acronym) {
     GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitByAcronym(acronym);
-    return Optional.ofNullable(globalUnitEntity).filter(c -> c.getGlobalUnitType().getId() <= 4)
+
+    return Optional.ofNullable(globalUnitEntity)
+      .filter(c -> c.getGlobalUnitType().getId() == APConstants.GLOBAL_UNIT_CRP
+        || c.getGlobalUnitType().getId() == APConstants.GLOBAL_UNIT_CGIAR_CENTER_TYPE
+        || c.getGlobalUnitType().getId() == APConstants.GLOBAL_UNIT_PLATFORM)
       .map(this.globalUnitMapper::globalUnitToGlobalUnitDTO).map(result -> new ResponseEntity<>(result, HttpStatus.OK))
       .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
   }
@@ -65,7 +70,10 @@ public class GlobalUnitItem<T> {
    */
   public ResponseEntity<CGIAREntityDTO> findGlobalUnitByCGIRARId(String smoCode) {
     GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitBySMOCode(smoCode);
-    return Optional.ofNullable(globalUnitEntity).filter(c -> c.getGlobalUnitType().getId() <= 4)
+    return Optional.ofNullable(globalUnitEntity)
+      .filter(c -> c.getGlobalUnitType().getId() == APConstants.GLOBAL_UNIT_CRP
+        || c.getGlobalUnitType().getId() == APConstants.GLOBAL_UNIT_CGIAR_CENTER_TYPE
+        || c.getGlobalUnitType().getId() == APConstants.GLOBAL_UNIT_PLATFORM)
       .map(this.globalUnitMapper::globalUnitToGlobalUnitDTO)
       // FIXME: Should change the way to compare which CRP/PTF/Center
       .map(result -> new ResponseEntity<>(result, HttpStatus.OK)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
@@ -81,15 +89,20 @@ public class GlobalUnitItem<T> {
     List<GlobalUnit> globalUnits;
     if (this.globalUnitManager.findAll() != null) {
       if (typeId != null) {
-        globalUnits = new ArrayList<>(this.globalUnitManager.findAll().stream()
-          .filter(c -> c.isActive() && c.getGlobalUnitType().getId() == typeId && typeId <= 4)
-          .sorted(Comparator.comparing(GlobalUnit::getSmoCode, Comparator.nullsLast(Comparator.naturalOrder())))
-          .collect(Collectors.toList()));
-      } else {
-        globalUnits =
-          this.globalUnitManager.findAll().stream().filter(c -> c.isActive() && c.getGlobalUnitType().getId() <= 4)
+        globalUnits = new ArrayList<>(
+          this.globalUnitManager.findAll().stream().filter(c -> c.isActive() && c.getGlobalUnitType().getId() == typeId)
+            .filter(c -> c.getGlobalUnitType().getId() == APConstants.GLOBAL_UNIT_CRP
+              || c.getGlobalUnitType().getId() == APConstants.GLOBAL_UNIT_CGIAR_CENTER_TYPE
+              || c.getGlobalUnitType().getId() == APConstants.GLOBAL_UNIT_PLATFORM)
             .sorted(Comparator.comparing(GlobalUnit::getSmoCode, Comparator.nullsLast(Comparator.naturalOrder())))
-            .collect(Collectors.toList());;
+            .collect(Collectors.toList()));
+      } else {
+        globalUnits = this.globalUnitManager.findAll().stream()
+          .filter(c -> c.getGlobalUnitType().getId() == APConstants.GLOBAL_UNIT_CRP
+            || c.getGlobalUnitType().getId() == APConstants.GLOBAL_UNIT_CGIAR_CENTER_TYPE
+            || c.getGlobalUnitType().getId() == APConstants.GLOBAL_UNIT_PLATFORM)
+          .sorted(Comparator.comparing(GlobalUnit::getSmoCode, Comparator.nullsLast(Comparator.naturalOrder())))
+          .collect(Collectors.toList());;
         // FIXME: Should change the way to compare which CRP/PTF/Center
         // will show on API
       }

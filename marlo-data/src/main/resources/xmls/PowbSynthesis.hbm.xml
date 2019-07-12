@@ -1,0 +1,127 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated Sep 18, 2017 3:03:15 PM by Hibernate Tools 5.2.3.Final -->
+<hibernate-mapping>
+	<class name="org.cgiar.ccafs.marlo.data.model.PowbSynthesis"
+		table="powb_synthesis" optimistic-lock="none">
+		<id name="id" type="java.lang.Long">
+			<column name="id" />
+			<generator class="identity" />
+		</id>
+		<property name="expectedProgressNarrative" type="string">
+      <column name="expected_progress_narrative" sql-type="TEXT" />
+    </property>
+		<many-to-one name="phase" class="org.cgiar.ccafs.marlo.data.model.Phase"
+			fetch="select">
+			<column name="id_phase" />
+		</many-to-one>
+		<property name="active" type="boolean">
+			<column name="is_active" not-null="true" />
+		</property>
+		<many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User"
+			fetch="select" update="false">
+			<column name="created_by" not-null="true" />
+		</many-to-one>
+		<property name="activeSince" type="timestamp" update="false">
+			<column name="active_since" length="19" not-null="true" />
+		</property>
+		<many-to-one name="liaisonInstitution"
+			class="org.cgiar.ccafs.marlo.data.model.LiaisonInstitution" fetch="select">
+			<column name="liaison_institution_id" />
+		</many-to-one>
+		<many-to-one name="modifiedBy" class="org.cgiar.ccafs.marlo.data.model.User"
+			fetch="select">
+			<column name="modified_by" />
+		</many-to-one>
+		<set name="sectionStatuses" table="section_statuses" inverse="true"
+			lazy="true" fetch="select">
+			<key>
+				<column name="powb_synthesis_id" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.SectionStatus" />
+		</set>
+		<one-to-one name="powbToc" class="org.cgiar.ccafs.marlo.data.model.PowbToc"
+			cascade="save-update"></one-to-one>
+			<one-to-one name="powbProgramChange" class="org.cgiar.ccafs.marlo.data.model.PowbProgramChange"
+      cascade="save-update"></one-to-one>			
+		<one-to-one name="powbFlagshipPlans"
+			class="org.cgiar.ccafs.marlo.data.model.PowbFlagshipPlans" cascade="save-update"></one-to-one>
+		<one-to-one name="powbEvidence"
+			class="org.cgiar.ccafs.marlo.data.model.PowbEvidence" cascade="save-update"></one-to-one>
+		<one-to-one name="powbCrossCuttingDimension"
+			class="org.cgiar.ccafs.marlo.data.model.PowbCrossCuttingDimension"
+			cascade="save-update"></one-to-one>
+		<set name="powbExpectedCrpProgresses" table="powb_expected_crp_progress"
+			inverse="true" lazy="true" fetch="select">
+			<key>
+				<column name="powb_synthesis" />
+			</key>
+			<one-to-many
+				class="org.cgiar.ccafs.marlo.data.model.PowbExpectedCrpProgress" />
+		</set>
+		<one-to-one name="crpStaffing"
+			class="org.cgiar.ccafs.marlo.data.model.PowbCrpStaffing" cascade="save-update"></one-to-one>
+		<one-to-one name="powbMonitoringEvaluationLearning"
+			class="org.cgiar.ccafs.marlo.data.model.PowbMonitoringEvaluationLearning"
+			cascade="save-update"></one-to-one>
+		<set name="powbSynthesisCrpStaffingCategory" table="powb_synthesis_crp_staffing_category"
+			inverse="true" lazy="true" fetch="select">
+			<key>
+				<column name="powb_synthesis_id" />
+			</key>
+			<one-to-many
+				class="org.cgiar.ccafs.marlo.data.model.PowbSynthesisCrpStaffingCategory" />
+		</set>
+		<one-to-one name="powbManagementRisk"
+			class="org.cgiar.ccafs.marlo.data.model.PowbManagementRisk" cascade="save-update"></one-to-one>
+		<one-to-one name="powbManagementGovernance"
+			class="org.cgiar.ccafs.marlo.data.model.PowbManagementGovernance"
+			cascade="save-update"></one-to-one>
+		<one-to-one name="financialPlan"
+			class="org.cgiar.ccafs.marlo.data.model.PowbFinancialPlan" cascade="save-update"></one-to-one>
+
+
+		<one-to-one name="collaboration"
+			class="org.cgiar.ccafs.marlo.data.model.PowbCollaboration" cascade="save-update"></one-to-one>
+
+
+		<set name="powbFinancialExpenditures" table="powb_financial_expenditure"
+			inverse="true" lazy="true" fetch="select">
+			<key>
+				<column name="powb_synthesis_id" />
+			</key>
+			<one-to-many
+				class="org.cgiar.ccafs.marlo.data.model.PowbFinancialExpenditure" />
+		</set>
+		<set name="powbFinancialPlannedBudget" table="powb_financial_planned_budget"
+			inverse="true" lazy="true" fetch="select">
+			<key>
+				<column name="powb_synthesis_id" />
+			</key>
+			<one-to-many
+				class="org.cgiar.ccafs.marlo.data.model.PowbFinancialPlannedBudget" />
+		</set>
+		<set name="powbCollaborationGlobalUnits" table="powb_collaboration_global_units"
+			inverse="true" lazy="true" fetch="select">
+			<key>
+				<column name="powb_synthesis" />
+			</key>
+			<one-to-many
+				class="org.cgiar.ccafs.marlo.data.model.PowbCollaborationGlobalUnit" />
+		</set>
+		<set name="submissions" table="submissions" inverse="true" lazy="true"
+			fetch="select">
+			<key>
+				<column name="powb_synthesis_id" not-null="true" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.Submission" />
+		</set>
+		 <set name="powbCollaborationRegions" table="powb_collaboration_regions" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="powb_synthesis" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.PowbCollaborationRegion" />
+        </set>
+	</class>
+</hibernate-mapping>

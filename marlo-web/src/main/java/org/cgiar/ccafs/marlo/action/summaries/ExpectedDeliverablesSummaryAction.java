@@ -20,6 +20,8 @@ import org.cgiar.ccafs.marlo.data.manager.CrossCuttingScoringManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpPpaPartnerManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableCrossCuttingMarkerManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableGeographicRegionManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableLocationManager;
 import org.cgiar.ccafs.marlo.data.manager.GenderTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
@@ -31,6 +33,7 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableCrossCuttingMarker;
 import org.cgiar.ccafs.marlo.data.model.DeliverableFundingSource;
 import org.cgiar.ccafs.marlo.data.model.DeliverableGenderLevel;
 import org.cgiar.ccafs.marlo.data.model.DeliverableGeographicRegion;
+import org.cgiar.ccafs.marlo.data.model.DeliverableGeographicScope;
 import org.cgiar.ccafs.marlo.data.model.DeliverableInfo;
 import org.cgiar.ccafs.marlo.data.model.DeliverableLocation;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePartnership;
@@ -54,6 +57,7 @@ import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -126,6 +130,8 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
   private final CrpPpaPartnerManager crpPpaPartnerManager;
   private final ResourceManager resourceManager;
   private final DeliverableCrossCuttingMarkerManager deliverableCrossCuttingMarkerManager;
+  private final DeliverableGeographicRegionManager deliverableGeographicRegionManager;
+  private DeliverableLocationManager deliverableLocationManager;
   // XLS bytes
   private byte[] bytesXLSX;
   // Streams
@@ -136,7 +142,9 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
     GenderTypeManager genderTypeManager, CrpProgramManager crpProgramManager,
     CrossCuttingScoringManager crossCuttingScoringManager, CrpPpaPartnerManager crpPpaPartnerManager,
     ResourceManager resourceManager, ProjectManager projectManager,
-    DeliverableCrossCuttingMarkerManager deliverableCrossCuttingMarkerManager) {
+    DeliverableCrossCuttingMarkerManager deliverableCrossCuttingMarkerManager,
+    DeliverableGeographicRegionManager deliverableGeographicRegionManager,
+    DeliverableLocationManager deliverableLocationManager) {
     super(config, crpManager, phaseManager, projectManager);
     this.genderTypeManager = genderTypeManager;
     this.crpProgramManager = crpProgramManager;
@@ -144,6 +152,8 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
     this.crpPpaPartnerManager = crpPpaPartnerManager;
     this.resourceManager = resourceManager;
     this.deliverableCrossCuttingMarkerManager = deliverableCrossCuttingMarkerManager;
+    this.deliverableGeographicRegionManager = deliverableGeographicRegionManager;
+    this.deliverableLocationManager = deliverableLocationManager;
   }
 
   /**
@@ -944,26 +954,65 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
           fsWindows = null;
         }
 
-
         /*
          * Geographic Scope
          */
         String geographicScope = "", region = "", country = "";
 
         // Geographic Scope
-        if (deliverableInfo.getGeographicScope() != null) {
-          geographicScope = deliverableInfo.getGeographicScope().getName();
-          if (deliverableInfo.getGeographicScope().getId().equals(this.getReportingIndGeographicScopeGlobal())) {
-            region = "&lt;Not Applicable&gt;";
-            country = "&lt;Not Applicable&gt;";
+        try {
+
+          // Setup Geographic Scope
+          if (deliverable.getDeliverableGeographicScopes() != null) {
+            deliverable.setGeographicScopes(new ArrayList<>(deliverable.getDeliverableGeographicScopes().stream()
+              .filter(o -> o.isActive() && o.getPhase().getId() == this.getActualPhase().getId())
+              .collect(Collectors.toList())));
           }
+
+          // Deliverable Countries List
+          if (deliverable.getDeliverableLocations() == null) {
+            deliverable.setCountries(new ArrayList<>());
+          } else {
+            List<DeliverableLocation> countries = deliverableLocationManager
+              .getDeliverableLocationbyPhase(deliverable.getId(), this.getActualPhase().getId());
+            deliverable.setCountries(countries);
+          }
+
+          // Expected Study Geographic Regions List
+          if (deliverable.getDeliverableGeographicRegions() != null
+            && !deliverable.getDeliverableGeographicRegions().isEmpty()) {
+            deliverable.setDeliverableRegions(new ArrayList<>(deliverableGeographicRegionManager
+              .getDeliverableGeographicRegionbyPhase(deliverable.getId(), this.getActualPhase().getId()).stream()
+              .filter(le -> le.isActive() && le.getLocElement().getLocElementType().getId() == 1)
+              .collect(Collectors.toList())));
+          }
+
+
+          for (DeliverableGeographicScope dgs : deliverable.getGeographicScopes().stream()
+            .filter(d -> d.getPhase() != null && d.getPhase().equals(this.getSelectedPhase())
+              && d.getDeliverable().getDeliverableInfo(this.getSelectedPhase()) != null)
+            .collect(Collectors.toList())) {
+            if (geographicScope == null || geographicScope.isEmpty()) {
+              geographicScope += dgs.getRepIndGeographicScope().getName();
+            } else {
+              geographicScope += ", " + dgs.getRepIndGeographicScope().getName();
+            }
+          }
+          if (geographicScope.isEmpty()) {
+            geographicScope = null;
+          }
+
+        } catch (Exception e) {
+
+        }
+
+        if (deliverable.getCountries() == null && deliverable.getDeliverableRegions() == null) {
+          region = "&lt;Not Applicable&gt;";;
+          country = "&lt;Not Applicable&gt;";;
+        } else {
           // Regional
-          if (deliverableInfo.getGeographicScope().getId().equals(this.getReportingIndGeographicScopeRegional())) {
-            country = "&lt;Not Applicable&gt;";
-            List<DeliverableGeographicRegion> deliverableRegions =
-              deliverable.getDeliverableGeographicRegions().stream()
-                .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase()))
-                .collect(Collectors.toList());
+          if (deliverable.getDeliverableRegions() != null) {
+            List<DeliverableGeographicRegion> deliverableRegions = deliverable.getDeliverableRegions();
             if (deliverableRegions != null && deliverableRegions.size() > 0) {
               Set<String> regionsSet = new HashSet<>();
               for (DeliverableGeographicRegion deliverableRegion : deliverableRegions) {
@@ -971,15 +1020,12 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
               }
               region = String.join(", ", regionsSet);
             }
-
+          } else {
+            region = "&lt;Not Defined&gt;";
           }
           // Country
-          if (!deliverableInfo.getGeographicScope().getId().equals(this.getReportingIndGeographicScopeGlobal())
-            && !deliverableInfo.getGeographicScope().getId().equals(this.getReportingIndGeographicScopeRegional())) {
-            region = "&lt;Not Applicable&gt;";
-            List<DeliverableLocation> deliverableCountries = deliverable.getDeliverableLocations().stream()
-              .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase()))
-              .collect(Collectors.toList());
+          if (deliverable.getCountries() != null && !deliverable.getCountries().isEmpty()) {
+            List<DeliverableLocation> deliverableCountries = deliverable.getCountries();
             if (deliverableCountries != null && deliverableCountries.size() > 0) {
               Set<String> countriesSet = new HashSet<>();
               for (DeliverableLocation deliverableCountry : deliverableCountries) {
@@ -987,18 +1033,13 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
               }
               country = String.join(", ", countriesSet);
             }
+          } else {
+            System.out.println("entro aqui " + country);
+
+            country = "&lt;Not Defined&gt;";
           }
         }
-        if (geographicScope.isEmpty()) {
-          geographicScope = null;
-        }
-        if (region.isEmpty()) {
-          region = null;
-        }
-        if (country.isEmpty()) {
-          country = null;
-        }
-
+        System.out.println("country " + country);
 
         model.addRow(new Object[] {deliverableId, deliverableTitle, completionYear, deliverableType, deliverableSubType,
           keyOutput, delivStatus, delivNewYear, projectID, projectTitle, projectClusterActivities, flagships, regions,

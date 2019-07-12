@@ -1,0 +1,60 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated Jan 10, 2017 9:14:53 AM by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+    <class name="org.cgiar.ccafs.marlo.data.model.DeliverableQualityCheck" table="deliverable_quality_checks" optimistic-lock="none">
+        <id name="id" type="java.lang.Long">
+            <column name="id" />
+            <generator class="identity" />
+        </id>
+        <many-to-one name="modifiedBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
+            <column name="modified_by" />
+        </many-to-one>
+        <many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select" update="false">
+            <column name="created_by" not-null="true" />
+        </many-to-one>
+        <many-to-one name="dataDictionary" class="org.cgiar.ccafs.marlo.data.model.DeliverableQualityAnswer" fetch="select">
+            <column name="data_dictionary" />
+        </many-to-one>
+        <many-to-one name="deliverable" class="org.cgiar.ccafs.marlo.data.model.Deliverable" fetch="select">
+            <column name="deliverable_id" />
+        </many-to-one>
+        <many-to-one name="dataTools" class="org.cgiar.ccafs.marlo.data.model.DeliverableQualityAnswer" fetch="select">
+            <column name="data_tools" />
+        </many-to-one>
+         <many-to-one name="phase" class="org.cgiar.ccafs.marlo.data.model.Phase" fetch="select">
+            <column name="id_phase" />
+        </many-to-one>
+        <many-to-one name="qualityAssurance" class="org.cgiar.ccafs.marlo.data.model.DeliverableQualityAnswer" fetch="select">
+            <column name="quality_assurance" />
+        </many-to-one>
+        <property name="active" type="boolean">
+            <column name="is_active" not-null="true" />
+        </property>
+        <property name="activeSince" type="timestamp" update="false">
+            <column name="active_since" length="19" not-null="true" />
+        </property>
+        <property name="modificationJustification" type="string">
+            <column name="modification_justification" sql-type="TEXT" />
+        </property>
+        <property name="linkAssurance" type="string">
+            <column name="link_assurance" sql-type="TEXT" />
+        </property>
+        <property name="linkDictionary" type="string">
+            <column name="link_dictionary" sql-type="TEXT" />
+        </property>
+        <property name="linkTools" type="string">
+            <column name="link_tools" sql-type="TEXT" />
+        </property>
+        <many-to-one name="fileTools" class="org.cgiar.ccafs.marlo.data.model.FileDB" fetch="select">
+            <column name="file_tools" />
+        </many-to-one>
+        <many-to-one name="fileDictionary" class="org.cgiar.ccafs.marlo.data.model.FileDB" fetch="select">
+            <column name="file_dictionary" />
+        </many-to-one>
+        <many-to-one name="fileAssurance" class="org.cgiar.ccafs.marlo.data.model.FileDB" fetch="select">
+            <column name="file_assurance" />
+        </many-to-one>
+    </class>
+</hibernate-mapping>
