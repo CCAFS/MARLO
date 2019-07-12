@@ -26,8 +26,13 @@ public class Agreement implements java.io.Serializable {
   private String originalDonor;
   private String researchId;
   private String reasearchName;
+  private String researchEmail;
+
   private String grantAmmount;
+
+
   private Date startDate;
+
   private Date endDate;
   private Date extensionDate;
   private String contractStatus;
@@ -40,7 +45,6 @@ public class Agreement implements java.io.Serializable {
 
   public Agreement() {
   }
-
 
   public Agreement(String id, String description) {
     this.id = id;
@@ -73,6 +77,7 @@ public class Agreement implements java.io.Serializable {
     this.fundingSourcesAgreementses = fundingSourcesAgreementses;
     this.crpsAgreements = crpsAgreements;
   }
+
 
   public String getContractStatus() {
     return this.contractStatus;
@@ -140,6 +145,10 @@ public class Agreement implements java.io.Serializable {
 
   public String getReasearchName() {
     return this.reasearchName;
+  }
+
+  public String getResearchEmail() {
+    return researchEmail;
   }
 
   public String getResearchId() {
@@ -224,6 +233,10 @@ public class Agreement implements java.io.Serializable {
 
   public void setReasearchName(String reasearchName) {
     this.reasearchName = reasearchName;
+  }
+
+  public void setResearchEmail(String researchEmail) {
+    this.researchEmail = researchEmail;
   }
 
   public void setResearchId(String researchId) {
