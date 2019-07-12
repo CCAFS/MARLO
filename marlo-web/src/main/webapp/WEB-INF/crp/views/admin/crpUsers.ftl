@@ -48,7 +48,6 @@
               <div class="col-md-10">
                 [@customForm.input name="user.email" i18nkey="guestUsers.email" value="${(user.email)!}" className="userEmail" type="text"  required=true editable=true /]
               </div>
-              [#--
               <div class="col-md-5">
                 [#if namespace?contains('superadmin')]
                   [@customForm.select name="selectedGlobalUnitID" className="selectedGlobalUnitID" i18nkey="guestUsers.globalUnit" listName="crps" keyFieldName="id"  displayFieldName="acronym" required=true editable=true/]
@@ -56,7 +55,6 @@
                   <input type="hidden" name="selectedGlobalUnitID" class="selectedGlobalUnitID" value="${(crpSession)!}" />
                 [/#if]
               </div>
-              --]
             </div>
             <div class="firstLastName form-group row">
               <div class="col-md-5 ">
