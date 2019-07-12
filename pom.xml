@@ -12,5 +12,6 @@
     <module>marlo-utils</module>	
    	<module>marlo-web</module>
     <module>marlo-core</module>
+    <module>marlo-data</module>
   </modules>
 </project>
