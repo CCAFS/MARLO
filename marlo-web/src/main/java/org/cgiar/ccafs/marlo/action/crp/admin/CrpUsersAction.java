@@ -103,7 +103,7 @@ public class CrpUsersAction extends BaseAction {
   private UserRoleManager userRoleManager;
   // Parameters
   private User user;
-  private long selectedGlobalUnitID;
+  private String selectedGlobalUnitAcronym;
   private String message;
   private GuestUsersValidator validator;
   private String emailSend;
@@ -274,10 +274,6 @@ public class CrpUsersAction extends BaseAction {
     return rolesCrp;
   }
 
-  public long getSelectedGlobalUnitID() {
-    return selectedGlobalUnitID;
-  }
-
   public User getUser() {
     return user;
   }
@@ -379,8 +375,8 @@ public class CrpUsersAction extends BaseAction {
     // get CRPAdmin contacts
     String crpAdmins = "";
     GlobalUnit globalUnit = null;
-    if (selectedGlobalUnitID != -1) {
-      globalUnit = globalUnitManager.getGlobalUnitById(selectedGlobalUnitID);
+    if (selectedGlobalUnitAcronym != null) {
+      globalUnit = globalUnitManager.findGlobalUnitByAcronym(selectedGlobalUnitAcronym);
     }
 
     long adminRol = globalUnit.getRoles().stream().filter(r -> r.getAcronym().equals("CRP-Admin"))
@@ -424,7 +420,7 @@ public class CrpUsersAction extends BaseAction {
 
   @Override
   public void prepare() throws Exception {
-    selectedGlobalUnitID = this.getCurrentCrp().getId();
+    selectedGlobalUnitAcronym = this.getCurrentCrp().getAcronym();
     phase = phaseManager.findCycle(this.getCurrentCycle(), this.getCurrentCycleYear(),
       this.getActualPhase().getUpkeep(), this.getCrpID());
     phasesProjects = new ArrayList<Project>();
@@ -525,8 +521,8 @@ public class CrpUsersAction extends BaseAction {
         // If email doesn't exists.
         if (!emailExists) {
 
-          if (selectedGlobalUnitID != -1) {
-            globalUnit = globalUnitManager.getGlobalUnitById(selectedGlobalUnitID);
+          if (selectedGlobalUnitAcronym != null) {
+            globalUnit = globalUnitManager.findGlobalUnitByAcronym(selectedGlobalUnitAcronym);
             User newUser = new User();
             // newUser.setFirstName(user.getFirstName());
             // newUser.setLastName(user.getLastName());
@@ -608,8 +604,8 @@ public class CrpUsersAction extends BaseAction {
           List<Role> roleListCRP = new ArrayList<Role>();
           crpUserList = null;
           userRoleList = null;
-          if (selectedGlobalUnitID != -1) {
-            final GlobalUnit globalUnitE = globalUnitManager.getGlobalUnitById(selectedGlobalUnitID);
+          if (selectedGlobalUnitAcronym != null) {
+            final GlobalUnit globalUnitE = globalUnitManager.findGlobalUnitByAcronym(selectedGlobalUnitAcronym);
 
             // Get user permisions for selected CRP
             crpUserList = crpUserManager.findAll().stream()
@@ -624,6 +620,14 @@ public class CrpUsersAction extends BaseAction {
               CrpUser crpUser = new CrpUser();
               crpUser.setUser(existingUser);
               crpUser.setCrp(globalUnitE);
+
+              User user = new User();
+              user = userManager.getUser(existingUser.getId());
+
+              if (user.isActive() == false) {
+                user.setActive(true);
+                userManager.saveUser(user);
+              }
               crpUser = crpUserManager.saveCrpUser(crpUser);
             }
 
@@ -731,8 +735,8 @@ public class CrpUsersAction extends BaseAction {
     // get CRPAdmin contacts
     String crpAdmins = "";
     GlobalUnit globalUnit = null;
-    if (selectedGlobalUnitID != -1) {
-      globalUnit = globalUnitManager.getGlobalUnitById(selectedGlobalUnitID);
+    if (selectedGlobalUnitAcronym != null) {
+      globalUnit = globalUnitManager.findGlobalUnitByAcronym(selectedGlobalUnitAcronym);
     }
 
     long adminRol = globalUnit.getRoles().stream().filter(r -> r.getAcronym().equals("CRP-Admin"))
@@ -809,11 +813,6 @@ public class CrpUsersAction extends BaseAction {
     this.rolesCrp = rolesCrp;
   }
 
-  public void setSelectedGlobalUnitID(long selectedGlobalUnitID) {
-    this.selectedGlobalUnitID = selectedGlobalUnitID;
-  }
-
-
   public void setUser(User user) {
     this.user = user;
   }
@@ -826,7 +825,7 @@ public class CrpUsersAction extends BaseAction {
   @Override
   public void validate() {
     if (save) {
-      validator.validate(this, user, selectedGlobalUnitID, isCGIARUser, true);
+      validator.validate(this, user, selectedGlobalUnitAcronym, isCGIARUser, true);
     }
   }
 

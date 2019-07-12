@@ -1,0 +1,62 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated May 5, 2017 11:44:22 AM by Hibernate Tools 4.3.1.Final -->
+<hibernate-mapping>
+	<class name="org.cgiar.ccafs.marlo.data.model.ProjectPartnerPartnership"
+		table="project_partner_partnerships" optimistic-lock="none">
+		<id name="id" type="java.lang.Long">
+			<column name="id" />
+			<generator class="identity" />
+		</id>
+		<many-to-one name="projectPartner"
+			class="org.cgiar.ccafs.marlo.data.model.ProjectPartner" fetch="select">
+			<column name="project_partner" not-null="true" />
+		</many-to-one>
+		<property name="mainArea" type="string">
+			<column name="main_area" sql-type="TEXT" />
+		</property>
+		<many-to-one name="geographicScope"
+			class="org.cgiar.ccafs.marlo.data.model.RepIndGeographicScope" fetch="select">
+			<column name="geographic_scope" />
+		</many-to-one>
+		<many-to-one name="region"
+			class="org.cgiar.ccafs.marlo.data.model.RepIndRegion" fetch="select">
+			<column name="region" />
+		</many-to-one>
+		<property name="active" type="boolean">
+			<column name="is_active" not-null="true" />
+		</property>
+		<property name="activeSince" type="timestamp" update="false">
+			<column name="active_since" length="19" not-null="true" />
+		</property>
+		<many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User"
+			fetch="select" update="false">
+			<column name="created_by" not-null="true" />
+		</many-to-one>
+		<many-to-one name="modifiedBy" class="org.cgiar.ccafs.marlo.data.model.User"
+			fetch="select">
+			<column name="modified_by" />
+		</many-to-one>
+		<property name="modificationJustification" type="string">
+			<column name="modification_justification" sql-type="TEXT"
+				not-null="true" />
+		</property>
+		<set name="projectPartnerPartnershipLocations" table="project_partner_partnership_locations"
+			inverse="true" lazy="true" fetch="select">
+			<key>
+				<column name="project_partner_partnership" not-null="true" />
+			</key>
+			<one-to-many
+				class="org.cgiar.ccafs.marlo.data.model.ProjectPartnerPartnershipLocation" />
+		</set>
+		<set name="projectPartnerPartnershipResearchPhases" table="project_partner_partnership_research_phases"
+      inverse="true" lazy="true" fetch="select">
+      <key>
+        <column name="project_partner_partnership_id" not-null="true" />
+      </key>
+      <one-to-many
+        class="org.cgiar.ccafs.marlo.data.model.ProjectPartnerPartnershipResearchPhase" />
+    </set>
+	</class>
+</hibernate-mapping>
