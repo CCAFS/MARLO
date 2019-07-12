@@ -6,7 +6,7 @@
   "https://cdn.datatables.net/buttons/1.3.1/js/dataTables.buttons.min.js",
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js",
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.print.min.js",
-  "${baseUrlMedia}/js/admin/crpUsers.js" 
+  "${baseUrlMedia}/js/admin/crpUsers.js?20190711" 
   ] 
 /]
 [#assign customCSS = [ "${baseUrlMedia}/css/admin/crpUsers.css" ] /]
@@ -36,6 +36,53 @@
         [#include "/WEB-INF/crp/views/admin/menu-admin.ftl" /]
       </div>
       <div class="col-md-9">
+      
+        [#-- Create User Guest --]
+        [#if !config.production]
+        <h4 class="sectionTitle">Create Guest User</h4>
+        <div class="borderBox">
+          <p id="guestUserMessage" class="note" style="display:none"></p>
+          [@s.form action=actionName enctype="multipart/form-data" ]
+          <div class="form-group">
+            <div class="form-group row">
+              <div class="col-md-10">
+                [@customForm.input name="user.email" i18nkey="guestUsers.email" value="${(user.email)!}" className="userEmail" type="text"  required=true editable=true /]
+              </div>
+              [#--
+              <div class="col-md-5">
+                [#if namespace?contains('superadmin')]
+                  [@customForm.select name="selectedGlobalUnitID" className="selectedGlobalUnitID" i18nkey="guestUsers.globalUnit" listName="crps" keyFieldName="id"  displayFieldName="acronym" required=true editable=true/]
+                [#else]
+                  <input type="hidden" name="selectedGlobalUnitID" class="selectedGlobalUnitID" value="${(crpSession)!}" />
+                [/#if]
+              </div>
+              --]
+            </div>
+            <div class="firstLastName form-group row">
+              <div class="col-md-5 ">
+                [@customForm.input name="user.firstName" help="Not required for CGIAR emails"  i18nkey="guestUsers.firstName" value="${(user.firstName)!}" className="userFirstName" type="text"  required=(isCgiarUser)!true editable=true /]
+              </div>
+              <div class="col-md-5">
+                [@customForm.input name="user.lastName" help="Not required for CGIAR emails" i18nkey="guestUsers.lastName" value="${(user.lastName)!}" className="userLastName" type="text"  required=(isCGIARUser)!true  editable=true /]
+              </div>
+            </div>
+            </br>
+            [#-- SEND EMAIL --]
+            <div class="pull-left">
+              [@customForm.checkmark  id="sendEmail"  i18nkey="guestUsers.sendEmail" name="emailSend" value="true" checked=true editable=true /]
+            </div>
+            <br />
+          </div>
+          <br />
+          
+          <div class="buttons">
+            <div class="buttons-content">
+              [@s.submit type="button" name="save" cssClass="button-save disabled"]<span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add User [/@s.submit]
+            </div>
+          </div>
+          [/@s.form]
+        </div>
+        [/#if]
         
         
         [#--Users tables --]

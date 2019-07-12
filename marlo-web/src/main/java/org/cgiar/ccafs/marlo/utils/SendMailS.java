@@ -89,7 +89,11 @@ public class SendMailS {
         noRepeatEmails.add(string.trim());
       }
       for (String string : noRepeatEmails) {
-        ccEmail = ccEmail + ", " + string;
+        if (ccEmail == null || ccEmail.isEmpty()) {
+          ccEmail = string;
+        } else {
+          ccEmail = ccEmail + ", " + string;
+        }
       }
     }
 

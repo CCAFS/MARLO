@@ -13,7 +13,7 @@
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
 
-package org.cgiar.ccafs.marlo.action.superadmin;
+package org.cgiar.ccafs.marlo.action.crp.admin;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
@@ -49,10 +49,7 @@ import org.apache.commons.lang.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * @author Hermes Jiménez - CIAT/CCAFS
- * @author Andres Valencia - CIAT/CCAFS
- */
+
 public class GuestUsersAction extends BaseAction {
 
   private static final long serialVersionUID = 6860177996446505143L;
@@ -173,6 +170,14 @@ public class GuestUsersAction extends BaseAction {
       } else {
         crpAdmins += ", " + userRole.getUser().getComposedCompleteName() + " (" + userRole.getUser().getEmail() + ")";
       }
+
+      if (userRole.getUser().getEmail() != null) {
+        if (ccEmail == null || ccEmail.isEmpty()) {
+          ccEmail = userRole.getUser().getEmail();
+        } else {
+          ccEmail += "; " + userRole.getUser().getEmail();
+        }
+      }
     }
 
     // Subject
@@ -201,12 +206,13 @@ public class GuestUsersAction extends BaseAction {
 
   @Override
   public String save() {
+    int error = 0;
     if (isEmailSend == null) {
       isEmailSend = false;
     }
     GlobalUnit globalUnit = null;
 
-    if (this.canAccessSuperAdmin()) {
+    if (this.canAcessCrpAdmin()) {
 
       // Check if the email is valid
       if (user.getEmail() != null && this.isValidEmail(user.getEmail()) && user.getEmail().length() > 0) {
@@ -241,7 +247,7 @@ public class GuestUsersAction extends BaseAction {
               newUser.setUsername(LDAPUser.getLogin().toLowerCase());
               newUser.setCgiarUser(true);
               newUser = userManager.saveUser(newUser);
-              this.addActionMessage("message:" + this.getText("saving.saved"));
+              // this.addActionMessage("message:" + this.getText("saving.saved.guestRole"));
             } else {
               // Non CGIAR user
               isCGIARUser = false;
@@ -254,13 +260,14 @@ public class GuestUsersAction extends BaseAction {
                 password = RandomStringUtils.randomNumeric(6);
                 newUser.setPassword(password);
                 newUser = userManager.saveUser(newUser);
-                this.addActionMessage("message:" + this.getText("saving.saved"));
+                // this.addActionMessage("message:" + this.getText("saving.saved.guestRole"));
               }
             }
 
             try {
               if (isEmailSend == true) {
                 this.sendMailNewUser(newUser, globalUnit, password);
+                this.notifyRoleAssigned(newUser);
               }
             } catch (NoSuchAlgorithmException e) {
               e.printStackTrace();
@@ -284,10 +291,12 @@ public class GuestUsersAction extends BaseAction {
           } else {
             this.addActionMessage("message:" + "login.error.selectCrp");
             LOG.warn(this.getText("login.error.selectCrp"));
+            error++;
           }
 
         } else {
           // if email exist
+          isCGIARUser = true;
           User existingUser = userManager.getUserByEmail(user.getEmail());
           List<CrpUser> crpUserList = new ArrayList<CrpUser>();
           List<UserRole> userRoleList = new ArrayList<UserRole>();
@@ -356,7 +365,9 @@ public class GuestUsersAction extends BaseAction {
                 // If already exist a role for this user in the selected CRP
                 LOG.warn(this.getText("manageUsers.email.roleExisting"));
                 message = this.getText("manageUsers.email.roleExisting");
-                this.addActionMessage("message:" + this.getText("manageUsers.email.roleExisting"));
+                // this.addActionMessage("message:" + this.getText("manageUsers.email.roleExisting"));
+                this.getInvalidFields().put("input-user.email", this.getText("manageUsers.email.roleExisting"));
+                error++;
               }
             }
           }
@@ -366,6 +377,7 @@ public class GuestUsersAction extends BaseAction {
         LOG.warn(this.getText("manageUsers.email.notValid"));
         message = this.getText("manageUsers.email.notValid");
         this.addActionMessage("message:" + this.getText("manageUsers.email.notValid"));
+        error++;
       }
       // check if there is a url to redirect
       if (this.getUrl() == null || this.getUrl().isEmpty()) {
@@ -380,9 +392,13 @@ public class GuestUsersAction extends BaseAction {
           }
 
         } else {
-          this.addActionMessage("message:" + this.getText("saving.saved"));
+          // this.addActionMessage("message:" + this.getText("saving.saved.guestRole"));
         }
-        return SUCCESS;
+        if (error != 0) {
+          return INPUT;
+        } else {
+          return SUCCESS;
+        }
       } else {
         // No messages to next page
 
@@ -423,6 +439,14 @@ public class GuestUsersAction extends BaseAction {
         crpAdmins += userRole.getUser().getComposedCompleteName() + " (" + userRole.getUser().getEmail() + ")";
       } else {
         crpAdmins += ", " + userRole.getUser().getComposedCompleteName() + " (" + userRole.getUser().getEmail() + ")";
+      }
+
+      if (userRole.getUser().getEmail() != null) {
+        if (ccEmail == null || ccEmail.isEmpty()) {
+          ccEmail = userRole.getUser().getEmail();
+        } else {
+          ccEmail += "; " + userRole.getUser().getEmail();
+        }
       }
     }
 

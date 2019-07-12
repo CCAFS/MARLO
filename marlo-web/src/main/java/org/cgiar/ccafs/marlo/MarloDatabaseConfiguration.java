@@ -77,8 +77,8 @@ public class MarloDatabaseConfiguration {
     config.setMaximumPoolSize(40);
     config.setMinimumIdle(20);
     config.setIdleTimeout(5000);
-    config.setConnectionTimeout(10000);
-    config.setConnectionTestQuery("SELECT 1");
+    config.setConnectionTimeout(900000);
+    // config.setConnectionTestQuery("SELECT 1");
     // hard code for now
     config.addDataSourceProperty("cachePrepStmts", true);
     config.addDataSourceProperty("prepStmtCacheSize", 250);
