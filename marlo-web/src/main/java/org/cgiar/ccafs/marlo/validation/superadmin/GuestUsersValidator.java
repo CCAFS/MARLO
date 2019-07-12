@@ -78,11 +78,6 @@ public class GuestUsersValidator extends BaseValidator {
       action.getInvalidFields().put("input-user.lastName", InvalidFieldsMessages.EMPTYFIELD);
     }
 
-    if (selectedGlobalUnitAcronym == null) {
-      action.addMessage(action.getText("login.error.selectCrp"));
-      action.getInvalidFields().put("input-selectedGlobalUnitID", InvalidFieldsMessages.EMPTYFIELD);
-    }
-
     // Validate email
     if (user.getEmail() == null) {
       action.addMessage(action.getText("guestUsers.email"));

@@ -620,6 +620,14 @@ public class CrpUsersAction extends BaseAction {
               CrpUser crpUser = new CrpUser();
               crpUser.setUser(existingUser);
               crpUser.setCrp(globalUnitE);
+
+              User user = new User();
+              user = userManager.getUser(existingUser.getId());
+
+              if (user.isActive() == false) {
+                user.setActive(true);
+                userManager.saveUser(user);
+              }
               crpUser = crpUserManager.saveCrpUser(crpUser);
             }
 
