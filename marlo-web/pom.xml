@@ -54,6 +54,11 @@
 	<dependencies>
 		<!-- MARLO sub-module dependecies -->
 		<dependency>
+      <groupId>org.cgiar.ccafs</groupId>
+      <artifactId>marlo-data</artifactId>
+      <version>4.3.1-SNAPSHOT</version>
+    </dependency>
+		<dependency>
 			<groupId>org.cgiar.ccafs</groupId>
 			<artifactId>marlo-utils</artifactId>
 		</dependency>
@@ -317,16 +322,7 @@
 		<dependency>
 			<groupId>com.google.code.gson</groupId>
 			<artifactId>gson</artifactId>
-		</dependency>
-		<!-- Apache shiro -->
-		<dependency>
-			<groupId>org.apache.shiro</groupId>
-			<artifactId>shiro-web</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.shiro</groupId>
-			<artifactId>shiro-spring</artifactId>
-		</dependency>
+		</dependency>	
 		<dependency>
 			<groupId>com.pusher</groupId>
 			<artifactId>pusher-http-java</artifactId>
