@@ -1,3 +1,4 @@
+
 /*****************************************************************
  * This file is part of Managing Agricultural Research for Learning &
  * Outcomes Platform (MARLO).
@@ -17,9 +18,12 @@ package org.cgiar.ccafs.marlo.data.manager.impl;
 
 import org.cgiar.ccafs.marlo.data.dao.GeneralStatusDAO;
 import org.cgiar.ccafs.marlo.data.manager.GeneralStatusManager;
+import org.cgiar.ccafs.marlo.data.manager.GeneralStatusTableManager;
 import org.cgiar.ccafs.marlo.data.model.GeneralStatus;
+import org.cgiar.ccafs.marlo.data.model.GeneralStatusTable;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -32,12 +36,15 @@ public class GeneralStatusManagerImpl implements GeneralStatusManager {
 
 
   private GeneralStatusDAO generalStatusDAO;
+  private GeneralStatusTableManager generalStatusTableManager;
   // Managers
 
 
   @Inject
-  public GeneralStatusManagerImpl(GeneralStatusDAO generalStatusDAO) {
+  public GeneralStatusManagerImpl(GeneralStatusDAO generalStatusDAO,
+    GeneralStatusTableManager generalStatusTableManager) {
     this.generalStatusDAO = generalStatusDAO;
+    this.generalStatusTableManager = generalStatusTableManager;
 
 
   }
@@ -45,32 +52,40 @@ public class GeneralStatusManagerImpl implements GeneralStatusManager {
   @Override
   public void deleteGeneralStatus(long generalStatusId) {
 
-    generalStatusDAO.deleteGeneralStatus(generalStatusId);
+    this.generalStatusDAO.deleteGeneralStatus(generalStatusId);
   }
 
   @Override
   public boolean existGeneralStatus(long generalStatusID) {
 
-    return generalStatusDAO.existGeneralStatus(generalStatusID);
+    return this.generalStatusDAO.existGeneralStatus(generalStatusID);
   }
 
   @Override
   public List<GeneralStatus> findAll() {
 
-    return generalStatusDAO.findAll();
+    return this.generalStatusDAO.findAll();
 
+  }
+
+  @Override
+  public List<GeneralStatus> findByTable(String tableName) {
+    List<GeneralStatusTable> statusTableList = this.generalStatusTableManager.findAll();
+    List<GeneralStatus> statusList = statusTableList.stream().filter(c -> c.getTableName().equalsIgnoreCase(tableName))
+      .map(result -> result.getGeneralStatus()).collect(Collectors.toList());
+    return statusList;
   }
 
   @Override
   public GeneralStatus getGeneralStatusById(long generalStatusID) {
 
-    return generalStatusDAO.find(generalStatusID);
+    return this.generalStatusDAO.find(generalStatusID);
   }
 
   @Override
   public GeneralStatus saveGeneralStatus(GeneralStatus generalStatus) {
 
-    return generalStatusDAO.save(generalStatus);
+    return this.generalStatusDAO.save(generalStatus);
   }
 
 

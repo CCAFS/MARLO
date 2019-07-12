@@ -376,43 +376,66 @@
     <mapping resource="xmls/ProjectExpectedStudyLinks.hbm.xml" />
     <mapping resource="xmls/ProjectExpectedStudyPolicies.hbm.xml" />
     <mapping resource="xmls/GeneralStatuses.hbm.xml" />
+    <mapping resource="xmls/GeneralStatusesTable.hbm.xml" />
     <mapping resource="xmls/EvidenceTags.hbm.xml" />
+
     <mapping
       resource="xmls/ProjectExpectedStudyQuantifications.hbm.xml" />
     <mapping resource="xmls/ProjectPolicyInnovations.hbm.xml" />
     <mapping resource="xmls/ProjectPolicyGeographicScopes.hbm.xml" />
     <mapping resource="xmls/ProjectPolicyRegions.hbm.xml" />
-    <mapping resource="xmls/ProjectExpectedStudyGeographicScopes.hbm.xml" />
-    <mapping resource="xmls/ProjectInnovationGeographicScopes.hbm.xml" />
-    <mapping resource="xmls/ProjectInnovationRegions.hbm.xml" />   
-    <mapping resource="xmls/RepIndTrainingTerms.hbm.xml" />  
+    <mapping
+      resource="xmls/ProjectExpectedStudyGeographicScopes.hbm.xml" />
+    <mapping
+      resource="xmls/ProjectInnovationGeographicScopes.hbm.xml" />
+    <mapping resource="xmls/ProjectInnovationRegions.hbm.xml" />
+    <mapping resource="xmls/RepIndTrainingTerms.hbm.xml" />
     <mapping resource="xmls/DeliverableGeographicScopes.hbm.xml" />
     <mapping resource="xmls/ReportSynthesisSrfProgress.hbm.xml" />
-    <mapping resource="xmls/ReportSynthesisSrfProgressTargets.hbm.xml" />   
-    <mapping resource="xmls/ReportSynthesisIntellectualAssets.hbm.xml" />
-    <mapping resource="xmls/MarloMessages.hbm.xml" />    
-    <mapping resource="xmls/ReportSynthesisExpenditureCategories.hbm.xml" />    
+    <mapping
+      resource="xmls/ReportSynthesisSrfProgressTargets.hbm.xml" />
+    <mapping
+      resource="xmls/ReportSynthesisIntellectualAssets.hbm.xml" />
+    <mapping resource="xmls/MarloMessages.hbm.xml" />
+    <mapping
+      resource="xmls/ReportSynthesisExpenditureCategories.hbm.xml" />
     <mapping resource="xmls/ProjectBudgetExecutions.hbm.xml" />
     <mapping resource="xmls/RepIndPartnershipMainArea.hbm.xml" />
-    <mapping resource="xmls/ReportSynthesisKeyPartnershipExternal.hbm.xml" />
-    <mapping resource="xmls/ReportSynthesisKeyPartnershipExternalInstitutions.hbm.xml" />
-    <mapping resource="xmls/ReportSynthesisKeyPartnershipExternalMainAreas.hbm.xml" />
-    <mapping resource="xmls/ReportSynthesisKeyPartnerships.hbm.xml" />    
-    <mapping resource="xmls/ReportSynthesisFlagshipProgressPolicies.hbm.xml" />
-    <mapping resource="xmls/ReportSynthesisKeyPartnershipCollaborationCrps.hbm.xml" />
-    <mapping resource="xmls/ReportSynthesisKeyPartnershipCollaborations.hbm.xml" />
-    <mapping resource="xmls/ReportSynthesisKeyPartnershipPmu.hbm.xml" />  
-    <mapping resource="xmls/ReportSynthesisFlagshipProgressStudies.hbm.xml" />  
-    <mapping resource="xmls/ReportSynthesisFlagshipProgressInnovations.hbm.xml" />  
-    <mapping resource="xmls/ReportSynthesisFlagshipProgressDeliverables.hbm.xml" />
-    <mapping resource="xmls/ReportSynthesisFlagshipProgressCross.hbm.xml" />
+    <mapping
+      resource="xmls/ReportSynthesisKeyPartnershipExternal.hbm.xml" />
+    <mapping
+      resource="xmls/ReportSynthesisKeyPartnershipExternalInstitutions.hbm.xml" />
+    <mapping
+      resource="xmls/ReportSynthesisKeyPartnershipExternalMainAreas.hbm.xml" />
+    <mapping
+      resource="xmls/ReportSynthesisKeyPartnerships.hbm.xml" />
+    <mapping
+      resource="xmls/ReportSynthesisFlagshipProgressPolicies.hbm.xml" />
+    <mapping
+      resource="xmls/ReportSynthesisKeyPartnershipCollaborationCrps.hbm.xml" />
+    <mapping
+      resource="xmls/ReportSynthesisKeyPartnershipCollaborations.hbm.xml" />
+    <mapping
+      resource="xmls/ReportSynthesisKeyPartnershipPmu.hbm.xml" />
+    <mapping
+      resource="xmls/ReportSynthesisFlagshipProgressStudies.hbm.xml" />
+    <mapping
+      resource="xmls/ReportSynthesisFlagshipProgressInnovations.hbm.xml" />
+    <mapping
+      resource="xmls/ReportSynthesisFlagshipProgressDeliverables.hbm.xml" />
+    <mapping
+      resource="xmls/ReportSynthesisFlagshipProgressCross.hbm.xml" />
     <mapping resource="xmls/RepIndMilestoneReasons.hbm.xml" />
-    <mapping resource="xmls/ReportSynthesisFlagshipProgressOutcomes.hbm.xml" /> 
-    <mapping resource="xmls/ReportSynthesisFlagshipProgressOutcomesMilestones.hbm.xml" />
+    <mapping
+      resource="xmls/ReportSynthesisFlagshipProgressOutcomes.hbm.xml" />
+    <mapping
+      resource="xmls/ReportSynthesisFlagshipProgressOutcomesMilestones.hbm.xml" />
     <mapping resource="xmls/ReportSynthesisNarratives.hbm.xml" />
-    <mapping resource="xmls/ReportSynthesisMeliaEvaluationActions.hbm.xml" />
-    <mapping resource="xmls/ClarisaMonitoring.hbm.xml" />   
-    <mapping resource="xmls/ReportSynthesisKeyPartnershipCollaborationPmu.hbm.xml" />
-    <mapping resource="xmls/ProjectInnovationShared.hbm.xml" />      
+    <mapping
+      resource="xmls/ReportSynthesisMeliaEvaluationActions.hbm.xml" />
+    <mapping resource="xmls/ClarisaMonitoring.hbm.xml" />
+    <mapping
+      resource="xmls/ReportSynthesisKeyPartnershipCollaborationPmu.hbm.xml" />
+    <mapping resource="xmls/ProjectInnovationShared.hbm.xml" />
   </session-factory>
 </hibernate-configuration>
