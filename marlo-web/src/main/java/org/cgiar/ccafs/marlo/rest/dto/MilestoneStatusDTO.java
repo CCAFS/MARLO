@@ -12,37 +12,38 @@
  * You should have received a copy of the GNU General Public License
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
-
-package org.cgiar.ccafs.marlo.rest.errors;
+package org.cgiar.ccafs.marlo.rest.dto;
 
 import java.io.Serializable;
 
-public class FieldErrorDTO implements Serializable {
+import io.swagger.annotations.ApiModelProperty;
+
+public class MilestoneStatusDTO implements Serializable {
 
   private static final long serialVersionUID = 1L;
 
-  private final String objectName;
+  @ApiModelProperty(notes = "Status code")
+  private Long code;
 
-  private final String field;
+  @ApiModelProperty(notes = "Status Name")
+  private String name;
 
-  private final String message;
 
-  public FieldErrorDTO(String dto, String field, String message) {
-    this.objectName = dto;
-    this.field = field;
-    this.message = message;
+  public Long getCode() {
+    return this.code;
   }
 
-  public String getField() {
-    return this.field;
+  public String getName() {
+    return this.name;
   }
 
-  public String getMessage() {
-    return this.message;
+  public void setCode(Long code) {
+    this.code = code;
   }
 
-  public String getObjectName() {
-    return this.objectName;
+  public void setName(String name) {
+    this.name = name;
   }
+
 
 }

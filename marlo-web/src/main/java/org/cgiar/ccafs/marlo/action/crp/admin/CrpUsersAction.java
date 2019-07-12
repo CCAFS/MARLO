@@ -106,7 +106,7 @@ public class CrpUsersAction extends BaseAction {
   private long selectedGlobalUnitID;
   private String message;
   private GuestUsersValidator validator;
-  private Boolean isEmailSend;
+  private String emailSend;
   private boolean isCGIARUser;
   private List<UserRole> users;
   private List<Role> rolesCrp;
@@ -129,6 +129,10 @@ public class CrpUsersAction extends BaseAction {
     this.sendMailS = sendMailS;
     this.globalUnitManager = globalUnitManager;
     this.crpUserManager = crpUserManager;
+  }
+
+  public String getEmailSend() {
+    return emailSend;
   }
 
   public String getRelations(long userID, long roleID) {
@@ -270,11 +274,17 @@ public class CrpUsersAction extends BaseAction {
     return rolesCrp;
   }
 
+  public long getSelectedGlobalUnitID() {
+    return selectedGlobalUnitID;
+  }
+
+  public User getUser() {
+    return user;
+  }
 
   public List<UserRole> getUsers() {
     return users;
   }
-
 
   public List<User> getUsersByRole(long roleID) {
     Set<User> usersRolesSet = new HashSet<>();
@@ -305,7 +315,6 @@ public class CrpUsersAction extends BaseAction {
     usersRoles.addAll(usersRolesSet);
     return usersRoles;
   }
-
 
   public String hasRelations(String acronym) {
     String ret = null;
@@ -351,6 +360,9 @@ public class CrpUsersAction extends BaseAction {
 
   }
 
+  public boolean isCGIARUser() {
+    return isCGIARUser;
+  }
 
   /**
    * @param userAssigned is the user been assigned
@@ -379,7 +391,7 @@ public class CrpUsersAction extends BaseAction {
       .filter(ur -> ur.getUser() != null && ur.getUser().isActive()).collect(Collectors.toList());
 
     for (UserRole userRole : userRoles) {
-      if (crpAdmins.isEmpty()) {
+      if (crpAdmins == null || crpAdmins.isEmpty()) {
         crpAdmins += userRole.getUser().getComposedCompleteName() + " (" + userRole.getUser().getEmail() + ")";
       } else {
         crpAdmins += ", " + userRole.getUser().getComposedCompleteName() + " (" + userRole.getUser().getEmail() + ")";
@@ -406,14 +418,13 @@ public class CrpUsersAction extends BaseAction {
     message.append(this.getText("email.support", new String[] {crpAdmins}));
     message.append(this.getText("email.getStarted"));
     message.append(this.getText("email.bye"));
-
     sendMailS.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
   }
 
 
   @Override
   public void prepare() throws Exception {
-
+    selectedGlobalUnitID = this.getCurrentCrp().getId();
     phase = phaseManager.findCycle(this.getCurrentCycle(), this.getCurrentCycleYear(),
       this.getActualPhase().getUpkeep(), this.getCrpID());
     phasesProjects = new ArrayList<Project>();
@@ -499,9 +510,7 @@ public class CrpUsersAction extends BaseAction {
   @Override
   public String save() {
     int error = 0;
-    if (isEmailSend == null) {
-      isEmailSend = false;
-    }
+
     GlobalUnit globalUnit = null;
 
     if (this.canAcessCrpAdmin()) {
@@ -539,7 +548,8 @@ public class CrpUsersAction extends BaseAction {
               newUser.setUsername(LDAPUser.getLogin().toLowerCase());
               newUser.setCgiarUser(true);
               newUser = userManager.saveUser(newUser);
-              // this.addActionMessage("message:" + this.getText("saving.saved.guestRole"));
+              message = this.getText("saving.saved.user");
+              this.addActionMessage("message:" + this.getText("saving.saved.user"));
             } else {
               // Non CGIAR user
               isCGIARUser = false;
@@ -552,12 +562,13 @@ public class CrpUsersAction extends BaseAction {
                 password = RandomStringUtils.randomNumeric(6);
                 newUser.setPassword(password);
                 newUser = userManager.saveUser(newUser);
-                // this.addActionMessage("message:" + this.getText("saving.saved.guestRole"));
+                message = this.getText("saving.saved.user");
+                this.addActionMessage("message:" + this.getText("saving.saved.user"));
               }
             }
 
             try {
-              if (isEmailSend == true) {
+              if (emailSend.equals("true")) {
                 this.sendMailNewUser(newUser, globalUnit, password);
                 this.notifyRoleAssigned(newUser);
               }
@@ -579,6 +590,8 @@ public class CrpUsersAction extends BaseAction {
             userRole.setRole(guestRole);
             userRole.setUser(newUser);
             userRole = userRoleManager.saveUserRole(userRole);
+            message = this.getText("saving.saved.guestRole");
+            this.addActionMessage("message:" + this.getText("saving.saved.guestRole"));
 
           } else {
             this.addActionMessage("message:" + "login.error.selectCrp");
@@ -642,10 +655,12 @@ public class CrpUsersAction extends BaseAction {
                 userRole.setRole(guestRole);
                 userRole.setUser(existingUser);
                 userRole = userRoleManager.saveUserRole(userRole);
+                message = this.getText("saving.saved.guestRole");
+                this.addActionMessage("message:" + this.getText("saving.saved.guestRole"));
 
                 // Send email message for Guest rol assignation in selected CRP
                 try {
-                  if (isEmailSend == true) {
+                  if (emailSend.equals("true")) {
                     this.notifyRoleAssigned(existingUser);
                   }
                 } catch (Exception e) {
@@ -706,9 +721,10 @@ public class CrpUsersAction extends BaseAction {
     }
   }
 
+
   public void sendMailNewUser(User user, GlobalUnit loggedCrp, String password) throws NoSuchAlgorithmException {
     String toEmail = user.getEmail();
-    String ccEmail = null;
+    String ccEmail = "";
     String bbcEmails = this.config.getEmailNotification();
     String subject = this.getText("email.newUser.subject", new String[] {user.getFirstName()});
 
@@ -731,14 +747,6 @@ public class CrpUsersAction extends BaseAction {
         crpAdmins += userRole.getUser().getComposedCompleteName() + " (" + userRole.getUser().getEmail() + ")";
       } else {
         crpAdmins += ", " + userRole.getUser().getComposedCompleteName() + " (" + userRole.getUser().getEmail() + ")";
-      }
-
-      if (userRole.getUser().getEmail() != null) {
-        if (ccEmail == null || ccEmail.isEmpty()) {
-          ccEmail = userRole.getUser().getEmail();
-        } else {
-          ccEmail += "; " + userRole.getUser().getEmail();
-        }
       }
     }
 
@@ -779,6 +787,7 @@ public class CrpUsersAction extends BaseAction {
     }
 
     if (buffer != null && fileName != null && contentType != null) {
+
       sendMailS.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), buffer, contentType, fileName, true);
     } else {
       sendMailS.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
@@ -786,8 +795,27 @@ public class CrpUsersAction extends BaseAction {
   }
 
 
+  public void setCGIARUser(boolean isCGIARUser) {
+    this.isCGIARUser = isCGIARUser;
+  }
+
+
+  public void setEmailSend(String emailSend) {
+    this.emailSend = emailSend;
+  }
+
+
   public void setRolesCrp(List<Role> rolesCrp) {
     this.rolesCrp = rolesCrp;
+  }
+
+  public void setSelectedGlobalUnitID(long selectedGlobalUnitID) {
+    this.selectedGlobalUnitID = selectedGlobalUnitID;
+  }
+
+
+  public void setUser(User user) {
+    this.user = user;
   }
 
 
