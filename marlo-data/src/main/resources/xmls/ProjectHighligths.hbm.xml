@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated Dec 5, 2016 8:43:31 AM by Hibernate Tools 4.3.1.Final -->
+<hibernate-mapping>
+    <class name="org.cgiar.ccafs.marlo.data.model.ProjectHighlight" table="project_highlights"  optimistic-lock="none">
+        <id name="id" type="java.lang.Long">
+            <column name="id" />
+            <generator class="identity" />
+        </id>
+        
+        <many-to-one name="project" class="org.cgiar.ccafs.marlo.data.model.Project" fetch="select">
+            <column name="project_id" not-null="true" />
+        </many-to-one>
+        <many-to-one name="modifiedBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
+            <column name="modified_by" />
+        </many-to-one>
+        <many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select" update="false">
+            <column name="created_by" not-null="true" />
+        </many-to-one>
+       
+        <property name="active" type="boolean">
+            <column name="is_active" not-null="true" />
+        </property>
+        
+        <property name="activeSince" type="timestamp" update="false">
+            <column name="active_since" length="19" not-null="true" />
+        </property>
+        <property name="modificationJustification" type="string">
+            <column name="modification_justification" sql-type="TEXT"  />
+        </property>
+        <set name="projectHighligthsTypes" table="project_highligths_types" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="project_highlights_id" not-null="true" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectHighlightType" />
+        </set>
+        <set name="projectHighlightCountries" table="project_highligths_country" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="project_highlights_id" not-null="true" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectHighlightCountry" />
+        </set>
+        <set name="sectionStatuses" table="section_statuses" inverse="true"
+      lazy="true" fetch="select">
+      <key>
+        <column name="highlight_id" />
+      </key>
+      <one-to-many class="org.cgiar.ccafs.marlo.data.model.SectionStatus" />
+    </set>
+     <set name="projectHighlightInfos" table="project_highlights_info" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="project_highlight_id" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectHighlightInfo" />
+        </set>
+    </class>
+</hibernate-mapping>

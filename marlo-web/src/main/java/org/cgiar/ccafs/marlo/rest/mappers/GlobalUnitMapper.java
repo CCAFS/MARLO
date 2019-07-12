@@ -16,6 +16,7 @@
 package org.cgiar.ccafs.marlo.rest.mappers;
 
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCrp;
 import org.cgiar.ccafs.marlo.rest.dto.CGIAREntityDTO;
 
 import org.mapstruct.Mapper;
@@ -34,17 +35,23 @@ import org.mapstruct.Mappings;
  * 
  * @author GrantL
  */
-@Mapper(componentModel = "jsr330")
+@Mapper(componentModel = "jsr330", uses = {GlobalUnitTypeMapper.class})
 public interface GlobalUnitMapper {
 
   public GlobalUnit globalUnitDTOToGlobalUnit(CGIAREntityDTO globalUnitDTO);
 
   @Mappings({@Mapping(source = "globalUnit.smoCode", target = "code"),
-    @Mapping(source = "globalUnitType.id", target = "cgiarEntityTypeDTO.code"),
-    @Mapping(source = "globalUnitType.name", target = "cgiarEntityTypeDTO.name")})
+    @Mapping(source = "globalUnitType", target = "cgiarEntityTypeDTO")})
   public CGIAREntityDTO globalUnitToGlobalUnitDTO(GlobalUnit globalUnit);
+
+  @Mappings({@Mapping(source = "globalUnit.smoCode", target = "code"),
+    @Mapping(source = "globalUnit.globalUnitType", target = "cgiarEntityTypeDTO"),
+    @Mapping(source = "globalUnit.acronym", target = "acronym"), @Mapping(source = "globalUnit.name", target = "name")})
+  public CGIAREntityDTO projectInnovationCrpToCGIAREntityDTO(ProjectInnovationCrp projectInnovationCrp);
+
 
   public GlobalUnit updateGlobalUnitFromGlobalUnitDto(CGIAREntityDTO globalUnitDTO,
     @MappingTarget GlobalUnit globalUnit);
+
 
 }

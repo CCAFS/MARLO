@@ -16,6 +16,8 @@
 package org.cgiar.ccafs.marlo.rest.mappers;
 
 import org.cgiar.ccafs.marlo.data.model.LocElement;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCountry;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationRegion;
 import org.cgiar.ccafs.marlo.rest.dto.CountryDTO;
 import org.cgiar.ccafs.marlo.rest.dto.ParentRegionDTO;
 import org.cgiar.ccafs.marlo.rest.dto.RegionDTO;
@@ -44,11 +46,16 @@ public interface LocationMapper {
     @Mapping(source = "locElement", target = "parentRegion")})
   public abstract RegionDTO locElementToRegionDTO(LocElement regElement);
 
+  @Mappings({@Mapping(source = "projectInnovationCountry.locElement.isoNumeric", target = "code"),
+    @Mapping(source = "projectInnovationCountry.locElement.isoAlpha2", target = "isoAlpha2"),
+    @Mapping(source = "projectInnovationCountry.locElement.name", target = "name"),
+    @Mapping(source = "projectInnovationCountry.locElement.locElement", target = "regionDTO")})
+  public abstract CountryDTO projectInnovationCountryToCountryDTO(ProjectInnovationCountry projectInnovationCountry);
 
-  /*
-   * public abstract LocElement updateLocElementFromLocElementDto(CountryDTO
-   * locElementDTO,
-   * @MappingTarget LocElement locElement);
-   */
+  @Mappings({@Mapping(source = "locElement.isoNumeric", target = "UM49Code"),
+    @Mapping(source = "locElement.name", target = "name"),
+    @Mapping(source = "locElement.locElement", target = "parentRegion")})
+  public abstract RegionDTO projectInnovationRegionToRegionDTO(ProjectInnovationRegion projectInnovationRegion);
+
 
 }

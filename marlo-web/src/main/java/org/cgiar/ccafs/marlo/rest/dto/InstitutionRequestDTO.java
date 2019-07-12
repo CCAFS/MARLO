@@ -34,10 +34,10 @@ public class InstitutionRequestDTO {
   private String webPage;
 
   @ApiModelProperty(notes = "Partner Request Status", position = 5)
-  private Boolean isAcepted;
+  private String requestStatus;
 
   @ApiModelProperty(notes = "Reject justification", position = 6)
-  private String rejectJustification;
+  private String requestJustification;
 
   @ApiModelProperty(notes = "Country of partner request headquarter", position = 7)
   private CountryDTO countryDTO;
@@ -89,17 +89,19 @@ public class InstitutionRequestDTO {
     return this.institutionTypeDTO;
   }
 
-  public Boolean getIsAcepted() {
-    return this.isAcepted;
-  }
-
 
   public String getPartnerName() {
     return this.partnerName;
   }
 
-  public String getRejectJustification() {
-    return this.rejectJustification;
+
+  public String getRequestJustification() {
+    return this.requestJustification;
+  }
+
+
+  public String getRequestStatus() {
+    return this.requestStatus;
   }
 
   public String getWebPage() {
@@ -113,6 +115,7 @@ public class InstitutionRequestDTO {
   public void setCountryDTO(CountryDTO countryDTO) {
     this.countryDTO = countryDTO;
   }
+
 
   public void setExternalUserComments(String externalUserComments) {
     this.externalUserComments = externalUserComments;
@@ -131,6 +134,7 @@ public class InstitutionRequestDTO {
     this.id = id;
   }
 
+
   public void setInstitutionDTO(InstitutionDTO institutionDTO) {
     this.institutionDTO = institutionDTO;
   }
@@ -139,16 +143,17 @@ public class InstitutionRequestDTO {
     this.institutionTypeDTO = institutionTypeDTO;
   }
 
-  public void setIsAcepted(Boolean isAcepted) {
-    this.isAcepted = isAcepted;
-  }
-
   public void setPartnerName(String partnerName) {
     this.partnerName = partnerName;
   }
 
-  public void setRejectJustification(String rejectJustification) {
-    this.rejectJustification = rejectJustification;
+
+  public void setRequestJustification(String requestJustification) {
+    this.requestJustification = requestJustification;
+  }
+
+  public void setRequestStatus(String requestStatus) {
+    this.requestStatus = requestStatus;
   }
 
   public void setWebPage(String webPage) {

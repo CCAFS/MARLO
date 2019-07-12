@@ -24,14 +24,8 @@ public class InstitutionTypeDTO {
 
   private String name;
 
-  private String description;
-
   public Long getCode() {
     return this.code;
-  }
-
-  public String getDescription() {
-    return this.description;
   }
 
   public String getName() {
@@ -40,10 +34,6 @@ public class InstitutionTypeDTO {
 
   public void setCode(Long code) {
     this.code = code;
-  }
-
-  public void setDescription(String description) {
-    this.description = description;
   }
 
   public void setName(String name) {

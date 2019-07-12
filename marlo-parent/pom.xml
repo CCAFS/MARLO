@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.cgiar.ccafs</groupId>
 	<artifactId>marlo-parent</artifactId>
-	<version>4.2.5-SNAPSHOT</version>
+	<version>4.3.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>marlo-parent</name>
 	<description>Parent</description>
@@ -20,7 +21,7 @@
 		<javax-mail.version>1.5.5</javax-mail.version>
 		<com.sun.mail.version>1.5.5</com.sun.mail.version>
 		<struts2.version>2.5.17</struts2.version>
-		<mysql.version>5.1.39</mysql.version>
+		<mysql.version>5.1.47</mysql.version>
 		<servlet-api.version>3.0.1</servlet-api.version>
 		<jsp-api.version>2.2.1</jsp-api.version>
 		<poi.version>3.13</poi.version>
@@ -84,6 +85,10 @@
 			<name>Sebastian Amariles</name>
 			<email>s.amariles@cgiar.org</email>
 		</developer>
+		<developer>
+			<name>Kenji Tanaka</name>
+			<email>k.tanaka@cgiar.org</email>
+		</developer>
 	</developers>
 	<issueManagement>
 		<system>Github issue tracker</system>
@@ -100,7 +105,7 @@
 			</snapshots>
 		</repository>
 	</repositories>
-	
+
 	<!-- Common dependencies go here. -->
 	<dependencyManagement>
 		<dependencies>
@@ -530,13 +535,9 @@
 				<artifactId>easyrules-core</artifactId>
 				<version>${easyrules-core.version}</version>
 			</dependency>
-			<!-- library to ws client
-			<dependency>
-				<groupId>org.apache.axis</groupId>
-				<artifactId>axis</artifactId>
-				<version>${org-apache-axis.version}</version>
-			</dependency>
-			 -->
+			<!-- library to ws client <dependency> <groupId>org.apache.axis</groupId> 
+				<artifactId>axis</artifactId> <version>${org-apache-axis.version}</version> 
+				</dependency> -->
 			<!-- library to cast xml to object -->
 			<dependency>
 				<groupId>javax.xml</groupId>
@@ -602,19 +603,30 @@
 				<artifactId>jsoup</artifactId>
 				<version>${jsoup.version}</version>
 			</dependency>
-			<!-- geoip2 library to know the country trough the remote IP-->
+			<!-- geoip2 library to know the country trough the remote IP -->
 			<dependency>
-        <groupId>com.maxmind.geoip2</groupId>
-        <artifactId>geoip2</artifactId>
-        <version>${geoip2.version}</version>
-    </dependency>
-    <!-- throttling library to REST API-->
-		<dependency>
-			<groupId>com.weddini.throttling</groupId>
-			<artifactId>spring-boot-throttling-starter</artifactId>
-			<version>0.0.9</version>
-		</dependency>
-		</dependencies>		
+				<groupId>com.maxmind.geoip2</groupId>
+				<artifactId>geoip2</artifactId>
+				<version>${geoip2.version}</version>
+			</dependency>
+			<!-- throttling library to REST API -->
+			<dependency>
+				<groupId>com.weddini.throttling</groupId>
+				<artifactId>spring-boot-throttling-starter</artifactId>
+				<version>0.0.9</version>
+			</dependency>
+			<!-- Apache Commons Library -->
+			<dependency>
+				<groupId>org.apache.commons</groupId>
+				<artifactId>commons-lang3</artifactId>
+				<version>3.9</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.commons</groupId>
+				<artifactId>commons-collections4</artifactId>
+				<version>4.0</version>
+			</dependency>
+		</dependencies>
 	</dependencyManagement>
 	<reporting>
 		<plugins>

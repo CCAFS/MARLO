@@ -49,7 +49,8 @@ public class GuestUsersValidator extends BaseValidator {
     return user;
   }
 
-  public void validate(BaseAction action, User user, long selectedGlobalUnitID, boolean isCGIARUser, boolean saving) {
+  public void validate(BaseAction action, User user, String selectedGlobalUnitAcronym, boolean isCGIARUser,
+    boolean saving) {
     action.setInvalidFields(new HashMap<>());
     LDAPUser LDAPUser = this.getOutlookUser(user.getEmail());
     if (LDAPUser != null) {
@@ -57,7 +58,7 @@ public class GuestUsersValidator extends BaseValidator {
     } else {
       isCGIARUser = false;
     }
-    this.validateGuestUsers(action, user, selectedGlobalUnitID, isCGIARUser);
+    this.validateGuestUsers(action, user, selectedGlobalUnitAcronym, isCGIARUser);
     if (!action.getFieldErrors().isEmpty()) {
       action.addActionError(action.getText("saving.fields.required"));
     } else if (action.getValidationMessage().length() > 0) {
@@ -66,7 +67,7 @@ public class GuestUsersValidator extends BaseValidator {
     }
   }
 
-  public void validateGuestUsers(BaseAction action, User user, long selectedGlobalUnitID, boolean isCGIARUser) {
+  public void validateGuestUsers(BaseAction action, User user, String selectedGlobalUnitAcronym, boolean isCGIARUser) {
     if ((user.getFirstName() == null || user.getFirstName().isEmpty()) && isCGIARUser == false) {
       action.addMessage(action.getText("guestUsers.firstName"));
       action.getInvalidFields().put("input-user.firstName", InvalidFieldsMessages.EMPTYFIELD);
@@ -77,18 +78,10 @@ public class GuestUsersValidator extends BaseValidator {
       action.getInvalidFields().put("input-user.lastName", InvalidFieldsMessages.EMPTYFIELD);
     }
 
-    if (selectedGlobalUnitID == -1) {
-      action.addMessage(action.getText("login.error.selectCrp"));
-      action.getInvalidFields().put("input-selectedGlobalUnitID", InvalidFieldsMessages.EMPTYFIELD);
-    }
-
     // Validate email
     if (user.getEmail() == null) {
       action.addMessage(action.getText("guestUsers.email"));
       action.getInvalidFields().put("input-user.email", InvalidFieldsMessages.EMPTYFIELD);
     }
-
   }
-
-
 }

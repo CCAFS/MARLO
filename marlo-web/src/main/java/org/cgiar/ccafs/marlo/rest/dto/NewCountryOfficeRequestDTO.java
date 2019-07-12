@@ -18,6 +18,8 @@ package org.cgiar.ccafs.marlo.rest.dto;
 import javax.validation.constraints.NotNull;
 
 import io.swagger.annotations.ApiModelProperty;
+import org.hibernate.validator.constraints.Email;
+import org.hibernate.validator.constraints.NotBlank;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
@@ -25,19 +27,26 @@ import io.swagger.annotations.ApiModelProperty;
 
 public class NewCountryOfficeRequestDTO {
 
-  @ApiModelProperty(notes = "Institution code")
+  @ApiModelProperty(notes = "Institution code", required = true)
   @NotNull
+  @NotBlank
   private Long institutionCode;
 
-  @ApiModelProperty(notes = "Country Alpha iso code of Office")
+  @ApiModelProperty(notes = "Country Alpha iso code of Office", required = true)
   @NotNull
+  @NotBlank
   private String countryIso;
 
-  @ApiModelProperty(notes = "Mail of the external user who is requesting the Office Location", position = 6)
+  @ApiModelProperty(notes = "Mail of the external user who is requesting the Office Location", required = true,
+    position = 6)
   @NotNull
+  @NotBlank
+  @Email
   private String externalUserMail;
+
   @ApiModelProperty(notes = "Name of the external user who is requesting the  Office Location", position = 7)
   private String externalUserName;
+
   @ApiModelProperty(notes = "Comments from the external user", position = 8)
   private String externalUserComments;
 
