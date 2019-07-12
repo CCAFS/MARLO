@@ -28,10 +28,13 @@ import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.Institutions;
 import org.cgiar.ccafs.marlo.rest.dto.CountryOfficeRequestDTO;
 import org.cgiar.ccafs.marlo.rest.dto.NewCountryOfficeRequestDTO;
 import org.cgiar.ccafs.marlo.rest.errors.FieldErrorDTO;
+import org.cgiar.ccafs.marlo.rest.errors.MARLOFieldValidationException;
 import org.cgiar.ccafs.marlo.rest.mappers.InstitutionMapper;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.SendMailS;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -65,6 +68,7 @@ public class CountryOfficeRequestItem<T> {
   private GlobalUnitManager globalUnitManager;
   protected APConfig config;
   private boolean messageSent;
+  List<FieldErrorDTO> fieldErrors;
 
 
   @Inject
@@ -78,6 +82,7 @@ public class CountryOfficeRequestItem<T> {
     this.globalUnitManager = globalUnitManager;
     this.sendMail = sendMail;
     this.config = config;
+    this.fieldErrors = new ArrayList<FieldErrorDTO>();
 
   }
 
@@ -95,30 +100,37 @@ public class CountryOfficeRequestItem<T> {
 
     String regex = "^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$";
     Pattern pattern = Pattern.compile(regex);
-
     GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitByAcronym(entityAcronym);
     if (globalUnitEntity == null) {
-      throw new FieldErrorDTO("createOfficeLocationRequest", "GlobalUnitEntity", "Invalid CGIAR entity acronym");
+      this.fieldErrors
+        .add(new FieldErrorDTO("createOfficeLocationRequest", "GlobalUnitEntity", "Invalid CGIAR entity acronym"));
     }
     LocElement locElement = this.locElementManager.getLocElementByISOCode(newCountryOfficeRequestDTO.getCountryIso());
     if (locElement == null) {
-      throw new FieldErrorDTO("createOfficeLocationRequest", "Country", "Invalid country iso Alpha code");
+      this.fieldErrors
+        .add(new FieldErrorDTO("createOfficeLocationRequest", "Country", "Invalid country iso Alpha code"));
     }
 
     Institution institution =
       this.institutionManager.getInstitutionById(newCountryOfficeRequestDTO.getInstitutionCode());
     if (institution == null) {
-      throw new FieldErrorDTO("createOfficeLocationRequest", "Institution", "Invalid institution code");
+      this.fieldErrors.add(new FieldErrorDTO("createOfficeLocationRequest", "Institution", "Invalid institution code"));
     }
 
     // externalUserMail is mandatory
     if (newCountryOfficeRequestDTO.getExternalUserMail() != null) {
       Matcher matcher = pattern.matcher(newCountryOfficeRequestDTO.getExternalUserMail());
       if (!matcher.matches()) {
-        throw new FieldErrorDTO("createOfficeLocationRequest", "getExternalUserMail", "Bad external email format");
+        this.fieldErrors
+          .add(new FieldErrorDTO("createOfficeLocationRequest", "getExternalUserMail", "Bad external email format"));
       }
     } else {
-      throw new FieldErrorDTO("createOfficeLocationRequest", "getExternalUserMail", "External email is empty");
+      this.fieldErrors
+        .add(new FieldErrorDTO("createOfficeLocationRequest", "getExternalUserMail", "External email is empty"));
+    }
+
+    if (!this.fieldErrors.isEmpty()) {
+      throw new MARLOFieldValidationException("Field Validation errors", "", this.fieldErrors);
     }
 
     PartnerRequest partnerRequest = this.institutionMapper.NewCountryOfficeRequestDTOToPartnerRequest(
@@ -133,6 +145,7 @@ public class CountryOfficeRequestItem<T> {
       this.institutionMapper.PartnerRequestToCountryOfficeRequestDTO(partnerRequest), HttpStatus.CREATED);
   }
 
+
   /**
    * Get a country office request by an id *
    * 
@@ -140,7 +153,7 @@ public class CountryOfficeRequestItem<T> {
    */
   public ResponseEntity<CountryOfficeRequestDTO> getCountryOfficeRequest(Long id, String entityAcronym) {
     PartnerRequest partnerRequest = this.partnerRequestManager.getPartnerRequestById(id);
-    if (partnerRequest == null) {
+    if (partnerRequest != null && !partnerRequest.isOffice()) {
       return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
     return Optional.ofNullable(partnerRequest).map(this.institutionMapper::PartnerRequestToCountryOfficeRequestDTO)
