@@ -16,11 +16,11 @@
 package org.cgiar.ccafs.marlo.rest.mappers;
 
 import org.cgiar.ccafs.marlo.data.model.InstitutionType;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationOrganization;
 import org.cgiar.ccafs.marlo.rest.dto.InstitutionTypeDTO;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
 import org.mapstruct.Mappings;
 
 @Mapper(componentModel = "jsr330")
@@ -32,6 +32,10 @@ public interface InstitutionTypeMapper {
   @Mappings({@Mapping(source = "id", target = "code")})
   public InstitutionTypeDTO institutionTypeToInstitutionTypeDTO(InstitutionType institutionType);
 
-  public InstitutionType updateInstitutionTypeFromInstitutionTypeDto(InstitutionTypeDTO institutionTypeDTO,
-    @MappingTarget InstitutionType institutionType);
+  @Mappings({@Mapping(source = "repIndOrganizationType.id", target = "code"),
+    @Mapping(source = "repIndOrganizationType.name", target = "name")})
+  public abstract InstitutionTypeDTO
+    projectInnovationOrganizationToInstitutionTypeDTO(ProjectInnovationOrganization projectInnovationOrganization);
+
+
 }

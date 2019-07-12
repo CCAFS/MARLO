@@ -28,6 +28,10 @@ public final class ErrorConstants {
 
   public static final String ERR_TOO_MANY_REQUEST = "error.TooManyRequest";
 
+  public static final String SEVERITY_ERROR = "Error";
+  public static final String SEVERITY_WARNING = "Warning";
+
+
   private ErrorConstants() {
   }
 

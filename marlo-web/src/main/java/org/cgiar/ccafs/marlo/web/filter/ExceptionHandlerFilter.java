@@ -65,8 +65,9 @@ public class ExceptionHandlerFilter extends OncePerRequestFilter {
     try {
       filterChain.doFilter(request, response);
     } catch (RuntimeException e) {
-      LOG.error(e.getMessage(), e);
-      ErrorDTO errorDto = new ErrorDTO(ErrorConstants.ERR_INTERNAL_SERVER, e.getMessage());
+      this.LOG.error(e.getMessage(), e);
+      ErrorDTO errorDto =
+        new ErrorDTO(ErrorConstants.ERR_INTERNAL_SERVER, ErrorConstants.SEVERITY_ERROR, e.getMessage());
 
       response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
       response.getWriter().write(this.convertObjectToJson(errorDto));

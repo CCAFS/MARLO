@@ -48,6 +48,13 @@ public class ExceptionTranslator {
   // (e.g. UnauthorizedException)
   private static final Logger LOG = LoggerFactory.getLogger(ExceptionTranslator.class);
 
+  @ExceptionHandler(MARLOFieldValidationException.class)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  @ResponseBody
+  public ErrorDTO MARLOFieldsValiadtion(MARLOFieldValidationException ex) {
+    return ex.getErrorDTO();
+  }
+
   @ExceptionHandler(AuthorizationException.class)
   @ResponseBody
   @ResponseStatus(HttpStatus.UNAUTHORIZED)
@@ -55,15 +62,15 @@ public class ExceptionTranslator {
     // This one doesn't get logged by our aspectj logger due to Shiro's
     // aspects being applied first.
     LOG.error("AuthorizationException - user does does not have correct permissions");
-    return new ErrorDTO(ErrorConstants.ERR_ACCESS_DENIED,
-      "Please contact the crp administrator to request permissions");
+    return new ErrorDTO(ErrorConstants.ERR_ACCESS_DENIED, ErrorConstants.SEVERITY_ERROR,
+      "Please contact to MARLOSupport@cgiar.org to request permissions");
   }
 
   @ExceptionHandler({IllegalArgumentException.class, DataIntegrityViolationException.class})
   @ResponseBody
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   public ErrorDTO processBadRequest(final RuntimeException ex) {
-    return new ErrorDTO(ErrorConstants.ERR_VALIDATION, ex.getMessage());
+    return new ErrorDTO(ErrorConstants.ERR_VALIDATION, ErrorConstants.SEVERITY_ERROR, ex.getMessage());
   }
 
   @ExceptionHandler(ConcurrencyFailureException.class)
@@ -87,7 +94,7 @@ public class ExceptionTranslator {
       errorMessageBuilder.append(violation.getInvalidValue()).append(": ").append(violation.getMessage());
     }
 
-    return new ErrorDTO(ErrorConstants.ERR_VALIDATION, errorMessageBuilder.toString());
+    return new ErrorDTO(ErrorConstants.ERR_VALIDATION, ErrorConstants.SEVERITY_ERROR, errorMessageBuilder.toString());
   }
 
   private ErrorDTO processFieldErrors(List<FieldError> fieldErrors) {
@@ -104,21 +111,21 @@ public class ExceptionTranslator {
   @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
   @ResponseBody
   public ErrorDTO processHttpMessageNotWritable(HttpMessageNotWritableException ex) {
-    return new ErrorDTO(ErrorConstants.ERR_INTERNAL_SERVER, ex.getMessage());
+    return new ErrorDTO(ErrorConstants.ERR_INTERNAL_SERVER, ErrorConstants.SEVERITY_ERROR, ex.getMessage());
   }
 
   @ExceptionHandler({NullPointerException.class, IllegalStateException.class})
   @ResponseBody
   @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
   public ErrorDTO processInternalServerError(final RuntimeException ex) {
-    return new ErrorDTO(ErrorConstants.ERR_INTERNAL_SERVER, ex.getMessage());
+    return new ErrorDTO(ErrorConstants.ERR_INTERNAL_SERVER, ErrorConstants.SEVERITY_ERROR, ex.getMessage());
   }
 
   @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
   @ResponseBody
   @ResponseStatus(HttpStatus.METHOD_NOT_ALLOWED)
   public ErrorDTO processMethodNotSupportedException(HttpRequestMethodNotSupportedException exception) {
-    return new ErrorDTO(ErrorConstants.ERR_METHOD_NOT_SUPPORTED, exception.getMessage());
+    return new ErrorDTO(ErrorConstants.ERR_METHOD_NOT_SUPPORTED, ErrorConstants.SEVERITY_ERROR, exception.getMessage());
   }
 
   @ExceptionHandler(NotFoundException.class)
@@ -132,35 +139,36 @@ public class ExceptionTranslator {
   @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
   @ResponseBody
   public ErrorDTO processRemainingExceptions(Exception ex) {
-    return new ErrorDTO(ErrorConstants.ERR_INTERNAL_SERVER, ex.getMessage());
+    return new ErrorDTO(ErrorConstants.ERR_INTERNAL_SERVER, ErrorConstants.SEVERITY_ERROR, ex.getMessage());
   }
 
   @ExceptionHandler({ResourceConflictException.class, ResourceAlreadyExistsException.class})
   @ResponseBody
   @ResponseStatus(HttpStatus.CONFLICT)
   protected ErrorDTO processResourceAlreadyExists(final RuntimeException ex) {
-    return new ErrorDTO(ErrorConstants.ERR_RESOURCE_ALREADY_EXISTS, ex.getMessage());
+    return new ErrorDTO(ErrorConstants.ERR_RESOURCE_ALREADY_EXISTS, ErrorConstants.SEVERITY_ERROR, ex.getMessage());
   }
 
   @ExceptionHandler(ResourceNotFoundException.class)
   @ResponseBody
   @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
   public ErrorDTO processResourceNotFoundException(final RuntimeException ex) {
-    return new ErrorDTO(ErrorConstants.ERR_TOO_MANY_REQUEST, ex.getMessage());
+    return new ErrorDTO(ErrorConstants.ERR_TOO_MANY_REQUEST, ErrorConstants.SEVERITY_ERROR, ex.getMessage());
   }
+
 
   @ExceptionHandler(ThrottlingException.class)
   @ResponseBody
   @ResponseStatus(HttpStatus.TOO_MANY_REQUESTS)
   protected ErrorDTO processThrottlingException(final RuntimeException ex) {
-    return new ErrorDTO(ErrorConstants.ERR_RESOURCE_ALREADY_EXISTS, ex.getMessage());
+    return new ErrorDTO(ErrorConstants.ERR_RESOURCE_ALREADY_EXISTS, ErrorConstants.SEVERITY_ERROR, ex.getMessage());
   }
-
 
   @ExceptionHandler(UnauthenticatedException.class)
   @ResponseStatus(HttpStatus.UNAUTHORIZED)
   public ErrorDTO processUnauthenticedException(UnauthenticatedException e) {
-    return new ErrorDTO(ErrorConstants.ERR_ACCESS_DENIED, "Please check your username and password");
+    return new ErrorDTO(ErrorConstants.ERR_ACCESS_DENIED, ErrorConstants.SEVERITY_ERROR,
+      "Please check your username and password");
   }
 
   @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -172,5 +180,6 @@ public class ExceptionTranslator {
 
     return this.processFieldErrors(fieldErrors);
   }
+
 
 }
