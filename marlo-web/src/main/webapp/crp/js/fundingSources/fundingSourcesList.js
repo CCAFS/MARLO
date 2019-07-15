@@ -162,6 +162,20 @@ $(document).ready(function() {
     });
   });
 
+  // Clear All Institutions
+  $('#clearAllInstitutions').on('click', function() {
+    console.log("test");
+    $('input[type="checkbox"]').prop("checked", false)
+    $('#institutionsID').val(0);
+  });
+
+//Select All Institutions
+  $('#selectAllInstitutions').on('click', function() {
+    console.log("test");
+    $('input[type="checkbox"]').prop("checked", true)
+    $('#institutionsID').val(0);
+  });
+
   // Filter multiple institution IDs
   $('input[type="checkbox"]').on('change', function() {
     var institutions = $('input[type="checkbox"]:checked').map(function() {
