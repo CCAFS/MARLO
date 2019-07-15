@@ -249,17 +249,24 @@
 [#macro institutionsFilter institutions={}]
 
   <div class="institutions-filter">
-   <span class="filter-title portfolio">Filter by Institutions</span>
+   <div class="filter-title portfolio">Filter by Institutions</div>
    <div class="items-list">
    [@customForm.input name="searchInstitutions" showTitle=false help="" placeholder="Search institution" className="searchInstitutions" editable=true /]
+   <div class="filter-list-buttons">
+    <button type="button" id="selectAllInstitutions" class="btn btn-link">Select all </button> -  <button type="button" id="clearAllInstitutions" class="btn btn-link">Clear all </button>
+   </div>
    [@s.form namespace="/fundingSources" action='${(crpSession)!}/fundingSourcesList' method="GET" enctype="multipart/form-data" cssClass=""]
      <ul class="filter-items mCustomScrollbar" data-mcs-theme="dark">
      <input type="hidden" name="phaseID" value="${(actualPhase.id)!}" />
-        <li>[@customForm.checkmark id="allInstitutions" label="All Institutions" name="" value="0" cssClass="institutionsFilter" checked=false editable=true centered=true/]</li>
      [#if institutions?has_content]
       [#list institutions as institution]
         [#local institutionName = (institution.institution.acronym)!institution.institution.name /]
-        <li>[@customForm.checkmark id="${institutionName}" label="${institutionName}" name="" cssClass="institutionsFilter" value="${institution.institution.id}" checked=false editable=true centered=true /]</li>
+        [#local institutionId = (institution.institution.id)!0 /]
+        [#if institutionsIDsFilter?has_content && institutionsIDsFilter?contains("${institutionId}") ]
+          [#local checkedInstitution = true /]
+          [#else][#local checkedInstitution = false /]
+        [/#if]
+        <li>[@customForm.checkmark id="${institutionName}" label="${institutionName}" name="" cssClass="institutionsFilter" value="${institutionId}" checked=checkedInstitution editable=true centered=true /]</li>
       [/#list]
      [/#if]
      </ul>
