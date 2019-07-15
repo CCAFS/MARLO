@@ -103,8 +103,6 @@ public class GlobalUnitItem<T> {
             || c.getGlobalUnitType().getId() == APConstants.GLOBAL_UNIT_PLATFORM)
           .sorted(Comparator.comparing(GlobalUnit::getSmoCode, Comparator.nullsLast(Comparator.naturalOrder())))
           .collect(Collectors.toList());;
-        // FIXME: Should change the way to compare which CRP/PTF/Center
-        // will show on API
       }
       List<CGIAREntityDTO> globalUnitDTOs =
         globalUnits.stream().map(globalUnitEntity -> this.globalUnitMapper.globalUnitToGlobalUnitDTO(globalUnitEntity))
