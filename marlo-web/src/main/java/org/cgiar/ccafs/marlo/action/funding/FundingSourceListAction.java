@@ -149,7 +149,7 @@ public class FundingSourceListAction extends BaseAction {
       this.getPartnertsIDs();
     }
 
-    if (financeCode != null) {
+    if (financeCode != null && institutionLead != null) {
 
       FundingSource fundingSourceSearch = new FundingSource();
       List<FundingSource> fundingSourceSearchTemp = new ArrayList<FundingSource>();
@@ -170,12 +170,15 @@ public class FundingSourceListAction extends BaseAction {
 
         Phase phase = this.getActualPhase();
         boolean hasNext = true;
+        Institution leadInstitution = new Institution();
+        leadInstitution = institutionManager.getInstitutionById(Integer.parseInt(institutionLead));
         while (hasNext) {
 
           FundingSourceInfo fundingSourceInfo = new FundingSourceInfo();
           fundingSourceInfo.setModificationJustification("New expected project bilateral cofunded created");
           fundingSourceInfo.setPhase(phase);
           fundingSourceInfo.setFinanceCode(financeCode);
+          fundingSourceInfo.setLeadCenter(leadInstitution);
           fundingSourceInfo.setStatus(Integer.parseInt(agreementStatusValue));
           fundingSourceInfo.setFundingSource(fundingSourceManager.getFundingSourceById(fundingSourceID));
           fundingSourceInfoID = fundingSourceInfoManager.saveFundingSourceInfo(fundingSourceInfo).getId();

@@ -169,6 +169,15 @@ public class FundingSourceValidator extends BaseValidator {
       action.getInvalidFields().put("input-fundingSource.fundingSourceInfo.directDonor.id",
         InvalidFieldsMessages.EMPTYFIELD);
     }
+    // Validate the lead center with id -1, because front end send this when there is not one selected
+    if (fundingSource.getFundingSourceInfo().getLeadCenter() == null
+      || fundingSource.getFundingSourceInfo().getLeadCenter().getId() == null
+      || fundingSource.getFundingSourceInfo().getLeadCenter().getId().longValue() == -1) {
+      action.addMessage(action.getText("fundingSource.institution.id"));
+      action.getInvalidFields().put("input-fundingSource.fundingSourceInfo.leadCenter.id",
+        InvalidFieldsMessages.EMPTYFIELD);
+    }
+
     if (!this.isValidString(fundingSource.getFundingSourceInfo().getContactPersonName())) {
       action.addMessage(action.getText("fundingSource.contactPersonName"));
       action.getInvalidFields().put("input-fundingSource.fundingSourceInfo.contactPersonName",
