@@ -79,7 +79,18 @@ public class FundingSourceMySQLDAO extends AbstractMarloDAO<FundingSource, Long>
       return list;
     }
     return null;
+  }
 
+  @Override
+  public List<FundingSource> findFundingSourcesWithNullLeadCenter() {
+    String queryString =
+      "select FundingSource from FundingSource, FundingSourceInfo, FundingSourceInstitution WHERE FundingSource.id = FundingSourceInfo.fundingSource and FundingSourceInfo.leadCenter IS NULL ";
+    // + "AND (SELECT COUNT(FundingSourceInstitution.id) from FundingSourceInstitution where FundingSource.id =
+    // FundingSourceInstitution.fundingSource) = 1";
+
+    @SuppressWarnings("unchecked")
+    List<FundingSource> fundingSources = this.getSessionFactory().getCurrentSession().createQuery(queryString).list();
+    return fundingSources;
   }
 
   @Override
@@ -260,6 +271,48 @@ public class FundingSourceMySQLDAO extends AbstractMarloDAO<FundingSource, Long>
     q.append("GROUP BY sub.id, sub.name, sub.type, sub.typeId, sub.financeCode, sub.w1w2, sub.budget ");
     q.append("ORDER BY sub.id, sub.name");
 
+
+    Query query = this.getSessionFactory().getCurrentSession().createSQLQuery(q.toString());
+    query.setResultTransformer(new AliasToBeanResultTransformer(FundingSourceSearchSummary.class));
+    List<FundingSourceSearchSummary> result = query.list();
+
+    return result;
+
+  }
+
+  @Override
+  public List<FundingSourceSearchSummary> searchFundingSourcesByInstitutionAndFinanceCode(Long institutionLeadID,
+    String financeCode) {
+    StringBuilder q = new StringBuilder();
+    System.out.println("institutionlead " + institutionLeadID);
+    q.append(
+      "SELECT sub.id AS id, sub.name AS name, sub.type AS type, sub.typeId AS typeId, sub.financeCode AS financeCode, sub.w1w2 AS w1w2, sub.budget AS budget, SUM(pb.amount) AS usedAmount ");
+    q.append("FROM ");
+
+    q.append(
+      "(SELECT DISTINCT fs.id AS `id`, fsi.title AS `name`, bt.name AS `type`, bt.id AS `typeId`, fsi.finance_code AS `financeCode`, fsi.w1w2 AS `w1w2`, fsb.budget AS `budget` ");
+
+    q.append("FROM funding_sources_info fsi ");
+    q.append("INNER JOIN funding_sources fs ON fs.id = fsi.funding_source_id AND fs.is_active ");
+
+
+    q.append("LEFT JOIN budget_types bt ON bt.id = fsi.type ");
+    q.append("LEFT JOIN funding_source_budgets fsb ON fs.id = fsb.funding_source_id ");
+    q.append("WHERE 1=1 ");
+    q.append("AND fsi.title IS NOT NULL ");
+    q.append("AND (fsi.status IS NULL OR fsi.status IN (1,2,4,7) ) ");
+    q.append("AND (fsi.finance_code LIKE '%" + financeCode + "%' ");
+    q.append(" ) ");
+    q.append("AND (fsi.lead_center_id = " + institutionLeadID + ") ");
+    q.append(" AND fsi.end_date IS NOT NULL ");
+
+    q.append(") AS sub ");
+    q.append("LEFT JOIN project_budgets pb ON pb.funding_source_id = sub.id AND pb.is_active=1 ");
+    q.append("GROUP BY sub.id, sub.name, sub.type, sub.typeId, sub.financeCode, sub.w1w2, sub.budget ");
+    q.append("ORDER BY sub.id, sub.name");
+
+
+    System.out.println(" " + q.toString());
 
     Query query = this.getSessionFactory().getCurrentSession().createSQLQuery(q.toString());
     query.setResultTransformer(new AliasToBeanResultTransformer(FundingSourceSearchSummary.class));

@@ -196,6 +196,16 @@ public class FundingSourceManagerImpl implements FundingSourceManager {
     long crpID) {
     return fundingSourceDAO.searchFundingSourcesByLocElementType(projectId, locElementTypeId, year, crpID);
   }
-
-
+  
+  @Override
+  public List<FundingSource> findFundingSourcesWithNullLeadCenter() {
+    return fundingSourceDAO.findFundingSourcesWithNullLeadCenter();
+  }
+  
+  @Override
+  public List<FundingSourceSearchSummary> searchFundingSourcesByInstitutionAndFinanceCode(Long institutionLeadID,
+    String financeCode) {
+    return fundingSourceDAO.searchFundingSourcesByInstitutionAndFinanceCode(institutionLeadID,
+      financeCode);
+  }
 }

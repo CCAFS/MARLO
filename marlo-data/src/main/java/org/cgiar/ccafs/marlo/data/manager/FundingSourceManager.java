@@ -140,4 +140,17 @@ public interface FundingSourceManager {
   public List<FundingSource> searchFundingSourcesByLocElementType(long projectId, long locElementTypeId, int year,
     long crpID);
 
+
+  public List<FundingSource> findFundingSourcesWithNullLeadCenter();
+
+  /**
+   * This method get the list of FundingSource that like a specifics parameters.
+   * 
+   * @param institutionLeadID
+   * @param financeCode
+   * @return the list of FundingSource
+   */
+  public List<FundingSourceSearchSummary> searchFundingSourcesByInstitutionAndFinanceCode(Long institutionLeadID,
+    String financeCode);
+
 }
