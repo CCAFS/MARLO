@@ -623,6 +623,7 @@ public class FundingSourceListAction extends BaseAction {
 
     this.getCrpContactPoint();
     this.getFundingSourceInstitutionsList();
+    this.assignLeadCenter();
     if (institutionsIDs != null && !institutionsIDs.equals("0") && !institutionsIDs.isEmpty()) {
       this.getInstitutionsIds();
       this.removeInstitutions();
@@ -631,6 +632,44 @@ public class FundingSourceListAction extends BaseAction {
     } else {
       if (contactsPoint != null && usersContactPoint != null) {
         this.removeInstitutionsContactPointRole();
+      }
+    }
+  }
+
+  public void assignLeadCenter() {
+    for (FundingSource fundingSource : myProjects) {
+      if (fundingSource.getInstitutions() != null && fundingSource.getFundingSourceInfo() != null
+        && fundingSource.getFundingSourceInfo().getLeadCenter() == null) {
+        FundingSourceInfo fundingSourceInfo = new FundingSourceInfo();
+        fundingSourceInfo =
+          fundingSourceInfoManager.getFundingSourceInfoById(fundingSource.getFundingSourceInfo().getId());
+        if (fundingSourceInfo != null) {
+
+          // add lead center when funding source has just one institution
+          if (fundingSource.getInstitutions().size() == 1 && fundingSource.getInstitutions().get(0) != null
+            && fundingSource.getInstitutions().get(0).getInstitution() != null) {
+
+            fundingSourceInfo.setLeadCenter(fundingSource.getInstitutions().get(0).getInstitution());
+            fundingSourceInfoManager.saveFundingSourceInfo(fundingSourceInfo);
+
+          } else {
+
+            // add lead center when the finance code is a ciat code
+            if (fundingSource.getFundingSourceInfo().getFinanceCode() != null
+              && fundingSource.getFundingSourceInfo().getFinanceCode().length() == 4) {
+              List<Institution> institutions = new ArrayList<>();
+              for(FundingSourceInstitution fundingSourceIntitution : fundingSource.getInstitutions()) {
+                institutions.add(fundingSourceIntitution.getInstitution());
+              }
+              Institution ciatInstitution = new Institution();
+              ciatInstitution = institutionManager.getInstitutionById(46);
+              if(institutions!= null && ciatInstitution!=null && institutions.contains(ciatInstitution)) {
+                fundingSourceInfo.setLeadCenter(ciatInstitution);
+                fundingSourceInfoManager.saveFundingSourceInfo(fundingSourceInfo);
+              }            
+            }
+          }
+        }
       }
     }
   }
