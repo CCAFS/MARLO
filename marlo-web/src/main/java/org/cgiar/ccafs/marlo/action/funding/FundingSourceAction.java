@@ -138,6 +138,7 @@ public class FundingSourceAction extends BaseAction {
   private FundingSourceInfoManager fundingSourceInfoManager;
   private InstitutionManager institutionManager;
   private List<Institution> institutions;
+  private List<Institution> fundingSourceInstitutions;
 
   private List<Institution> institutionsDonors;
 
@@ -344,10 +345,14 @@ public class FundingSourceAction extends BaseAction {
     return fundingSourceID;
   }
 
+  public List<Institution> getFundingSourceInstitutions() {
+    return fundingSourceInstitutions;
+  }
+
+
   public String getFundingSourceUrlPath() {
     return config.getProjectsBaseFolder(this.getCrpSession()) + File.separator + "fundingSourceFiles" + File.separator;
   }
-
 
   public int getIndexBugets(int year) {
     int i = 0;
@@ -370,10 +375,10 @@ public class FundingSourceAction extends BaseAction {
 
   }
 
+
   public List<Institution> getInstitutions() {
     return institutions;
   }
-
 
   public List<Institution> getInstitutionsDonors() {
     return institutionsDonors;
@@ -395,6 +400,7 @@ public class FundingSourceAction extends BaseAction {
   public List<LocElement> getRegionLists() {
     return regionLists;
   }
+
 
   public List<LocElementType> getScopeRegionLists() {
     return scopeRegionLists;
@@ -479,7 +485,6 @@ public class FundingSourceAction extends BaseAction {
     // System.out.println(fundingSource.getFundingSourceInfo().getId());
     if (fundingSource != null) {
 
-
       Path path = this.getAutoSaveFilePath();
 
       if (path.toFile().exists() && this.getCurrentUser().isAutoSave()) {
@@ -532,6 +537,7 @@ public class FundingSourceAction extends BaseAction {
 
 
         if (fundingSource.getInstitutions() != null) {
+          fundingSourceInstitutions = new ArrayList<>();
           for (FundingSourceInstitution fundingSourceInstitution : fundingSource.getInstitutions()) {
             if (fundingSourceInstitution != null) {
               fundingSourceInstitution.setInstitution(
@@ -539,6 +545,7 @@ public class FundingSourceAction extends BaseAction {
             }
           }
         }
+
 
         if (fundingSource.getFundingRegions() != null) {
           region = true;
@@ -582,6 +589,14 @@ public class FundingSourceAction extends BaseAction {
         fundingSource.setInstitutions(new ArrayList<>(fundingSource.getFundingSourceInstitutions().stream()
           .filter(pb -> pb.isActive() && pb.getPhase() != null && pb.getPhase().equals(this.getActualPhase()))
           .collect(Collectors.toList())));
+
+        fundingSourceInstitutions = new ArrayList<>();
+        if (fundingSource.getInstitutions() != null) {
+          for (FundingSourceInstitution fundingSourceInstitution : fundingSource.getInstitutions()) {
+            fundingSourceInstitutions
+              .add(institutionManager.getInstitutionById(fundingSourceInstitution.getInstitution().getId()));
+          }
+        }
 
         fundingSource.setProjectBudgetsList(fundingSource.getProjectBudgets().stream()
           .filter(pb -> pb.isActive() && pb.getProject().isActive() && pb.getPhase() != null
@@ -1190,10 +1205,10 @@ public class FundingSourceAction extends BaseAction {
 
   }
 
-
   public void setBudgetTypes(Map<String, String> budgetTypes) {
     this.budgetTypes = budgetTypes;
   }
+
 
   public void setBudgetTypesList(List<BudgetType> budgetTypesList) {
     this.budgetTypesList = budgetTypesList;
@@ -1229,6 +1244,10 @@ public class FundingSourceAction extends BaseAction {
 
   public void setFundingSourceID(long fundingSourceID) {
     this.fundingSourceID = fundingSourceID;
+  }
+
+  public void setFundingSourceInstitutions(List<Institution> fundingSourceInstitutions) {
+    this.fundingSourceInstitutions = fundingSourceInstitutions;
   }
 
 

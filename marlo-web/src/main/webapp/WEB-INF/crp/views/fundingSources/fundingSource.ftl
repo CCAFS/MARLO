@@ -300,6 +300,20 @@
           isEditable=editable
         /]
       </div>
+      
+      [#-- Lead Center --]
+        <div class="form-group row">
+          <div class="col-md-12 metadataElement-directDonorName">
+            <label for="">[@s.text name="projectCofunded.leadCenter" /]:[@customForm.req required=editable /] </label>
+              [#if editable]
+                [@customForm.select name="fundingSource.fundingSourceInfo.leadCenter.id" i18nkey="projectCofunded.leadCenter" className="leadCenter" showTitle=false listName="fundingSourceInstitutions" keyFieldName="id"  displayFieldName="composedNameLoc" editable=editable /]
+              [#else]
+                <p class="input">${(fundingSource.fundingSourceInfo.leadCenter.composedName)!}</p>
+                <input  type="hidden" name="fundingSource.fundingSourceInfo.leadCenter.id" value="${(fundingSource.fundingSourceInfo.leadCenter.id)!-1}" />
+              [/#if]
+            <span class="text-warning metadataSuggested"></span> 
+          </div>
+        </div>
       <hr />
       
       [#-- Contact person name and email --]

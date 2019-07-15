@@ -48,7 +48,9 @@ public class FundingSourceInfo extends MarloAuditableEntity implements java.io.S
 
   @Expose
   private Institution originalDonor;
-
+  
+  @Expose
+  private Institution leadCenter;
 
   @Expose
   private Integer status;
@@ -159,7 +161,16 @@ public class FundingSourceInfo extends MarloAuditableEntity implements java.io.S
   public FileDB getFile() {
     return file;
   }
+  
+   
+  public Institution getLeadCenter() {
+    return leadCenter;
+  }
 
+  
+  public void setLeadCenter(Institution leadCenter) {
+    this.leadCenter = leadCenter;
+  }
 
   public FileDB getFileResearch() {
     return fileResearch;
