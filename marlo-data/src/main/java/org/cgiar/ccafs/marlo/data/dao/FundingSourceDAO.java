@@ -61,8 +61,10 @@ public interface FundingSourceDAO {
   public List<FundingSource> findAll();
 
 
-  public List<Map<String, Object>> getFundingSource(long userId, String crp);
+  List<FundingSource> findFundingSourcesWithNullLeadCenter();
 
+
+  public List<Map<String, Object>> getFundingSource(long userId, String crp);
 
   public List<FundingSource> getFundingSourceSummaries(GlobalUnit globalUnit, Phase phaseId, Set<Integer> statusTypes);
 
@@ -130,4 +132,14 @@ public interface FundingSourceDAO {
    */
   public List<FundingSource> searchFundingSourcesByLocElementType(long projectId, long locElementTypeId, int year,
     long crpID);
+
+  /**
+   * This method get the list of FundingSource that like a specifics parameters.
+   * 
+   * @param institutionLeadID 
+   * @param financeCode
+   * @return the list of FundingSource
+   */
+  public List<FundingSourceSearchSummary> searchFundingSourcesByInstitutionAndFinanceCode(Long institutionLeadID,
+    String financeCode);
 }

@@ -249,6 +249,14 @@
 				<param name="excludeNullProperties">true</param>
 			</result>
 		</action>
+		
+		<action name="FundingSourceByCenterFinanceCode"
+			class="org.cgiar.ccafs.marlo.action.json.project.FundingSourceByInstitutionFinanceCodeAction">
+			<result type="json">
+				<param name="noCache">true</param>
+				<param name="excludeNullProperties">true</param>
+			</result>
+		</action>
 
 		<action name="CrpContactPoint"
 			class="org.cgiar.ccafs.marlo.action.json.project.CrpContactPoint">
