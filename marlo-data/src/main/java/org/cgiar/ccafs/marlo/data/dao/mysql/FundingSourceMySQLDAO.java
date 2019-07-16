@@ -262,15 +262,23 @@ public class FundingSourceMySQLDAO extends AbstractMarloDAO<FundingSource, Long>
     q.append("OR (SELECT NAME FROM budget_types bt WHERE bt.id = fsi.type) LIKE '%" + userInput + "%' ) ");
     q.append("AND fsi.id_phase = " + phaseID);
     q.append(" AND fsi.end_date IS NOT NULL ");
-    q.append("AND ( ( fsb.id IS NULL OR ( fsb.year = " + year + " AND fsb.id_phase = " + phaseID + " ) ) ");
-    // q.append("AND ( ( fsb.id IS NULL OR ( fsb.id_phase = " + phaseID + " ) ) ");
-    q.append(" AND (" + year + " <= YEAR(fsi.end_date) OR " + year + " <= YEAR(fsi.extended_date) ) ) ");
+    if (year == 0) {
+      q.append(" ");
+    } else {
+      q.append("AND ( ( fsb.id IS NULL OR ( fsb.year = " + year + " AND fsb.id_phase = " + phaseID + " ) ) ");
+      // q.append("AND ( ( fsb.id IS NULL OR ( fsb.id_phase = " + phaseID + " ) ) ");
+      q.append(" AND (" + year + " <= YEAR(fsi.end_date) OR " + year + " <= YEAR(fsi.extended_date) ) ) ");
+    }
     q.append(") AS sub ");
-    q.append("LEFT JOIN project_budgets pb ON pb.funding_source_id = sub.id AND pb.is_active=1 " + "AND pb.YEAR ="
-      + year + " AND pb.id_phase =" + phaseID + " ");
+    if (year == 0) {
+      q.append("LEFT JOIN project_budgets pb ON pb.funding_source_id = sub.id AND pb.is_active=1 "
+        + " AND pb.id_phase =" + phaseID + " ");
+    } else {
+      q.append("LEFT JOIN project_budgets pb ON pb.funding_source_id = sub.id AND pb.is_active=1 " + "AND pb.YEAR ="
+        + year + " AND pb.id_phase =" + phaseID + " ");
+    }
     q.append("GROUP BY sub.id, sub.name, sub.type, sub.typeId, sub.financeCode, sub.w1w2, sub.budget ");
     q.append("ORDER BY sub.id, sub.name");
-
 
     Query query = this.getSessionFactory().getCurrentSession().createSQLQuery(q.toString());
     query.setResultTransformer(new AliasToBeanResultTransformer(FundingSourceSearchSummary.class));
