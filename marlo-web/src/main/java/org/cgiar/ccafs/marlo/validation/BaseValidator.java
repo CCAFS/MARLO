@@ -54,8 +54,28 @@ public class BaseValidator {
   @Inject
   private ICenterSectionStatusManager centerSectionStatusManager;
 
+  // now the missingFileds is a variable because the validator will be called by Clarisa or other services
+  private StringBuilder missingFields = new StringBuilder();
+
 
   public BaseValidator() {
+  }
+
+
+  /**
+   * This method add a missing field separated by a semicolon (;).
+   * 
+   * @param field is the name of the field.
+   */
+  public void addMissingField(String field) {
+    if (this.missingFields.length() != 0) {
+      this.missingFields.append(";");
+    }
+    this.missingFields.append(field);
+  }
+
+  public StringBuilder getMissingFields() {
+    return missingFields;
   }
 
 
@@ -72,6 +92,7 @@ public class BaseValidator {
     }
     return false;
   }
+
 
   protected boolean isValidNumber(String number) {
     if (this.isValidString(number)) {
@@ -321,7 +342,6 @@ public class BaseValidator {
     centerSectionStatusManager.saveSectionStatus(status);
   }
 
-
   /**
    * ******************************************************************************************
    * ************************* CENTER METHOD **************************************************
@@ -352,6 +372,7 @@ public class BaseValidator {
 
     centerSectionStatusManager.saveSectionStatus(status);
   }
+
 
   /**
    * This method saves the missing fields into the database for a section at deliverable level.
@@ -385,7 +406,6 @@ public class BaseValidator {
 
 
   }
-
 
   /**
    * This method saves the missing fields into the database for a section at project Outcome level.
@@ -451,6 +471,7 @@ public class BaseValidator {
 
 
   }
+
 
   /**
    * This method saves the missing fields into the database for a section at deliverable level.
@@ -522,7 +543,6 @@ public class BaseValidator {
 
   }
 
-
   /**
    * This method saves the missing fields into the database for a section at project Case Study level.
    * 
@@ -553,6 +573,7 @@ public class BaseValidator {
     action.getMissingFields().setLength(0);
   }
 
+
   /**
    * This method saves the missing fields into the database for a section at project expected study.
    * 
@@ -582,7 +603,6 @@ public class BaseValidator {
     // Not sure if this is still required to set the missingFields to length zero???
     action.getMissingFields().setLength(0);
   }
-
 
   /**
    * This method saves the missing fields into the database for a section at project Case Study level.
@@ -624,7 +644,7 @@ public class BaseValidator {
    * @param sectionName is the name of the section.
    */
   protected void saveMissingFields(Project project, ProjectInnovation innovation, String cycle, int year,
-    Boolean upkeep, String sectionName, BaseAction action) {
+    Boolean upkeep, String sectionName, String missiginFields) {
     // Reporting missing fields into the database.
     SectionStatus status =
       sectionStatusManager.getSectionStatusByProjectInnovation(innovation.getId(), cycle, year, upkeep, sectionName);
@@ -639,10 +659,10 @@ public class BaseValidator {
       status.setProject(project);
 
     }
-    status.setMissingFields(action.getMissingFields().toString());
+    status.setMissingFields(missiginFields);
     sectionStatusManager.saveSectionStatus(status);
     // Not sure if this is still required to set the missingFields to length zero???
-    action.getMissingFields().setLength(0);
+    // action.getMissingFields().setLength(0);
   }
 
 
@@ -675,6 +695,7 @@ public class BaseValidator {
     // Not sure if this is still required to set the missingFields to length zero???
     action.getMissingFields().setLength(0);
   }
+
 
   /**
    * This method saves the missing fields into the database for a section at project Policy.
@@ -750,7 +771,6 @@ public class BaseValidator {
     sectionStatusManager.saveSectionStatus(status);
   }
 
-
   /**
    * This method saves the missing fields into the database for a section at project Outcome level.
    * 
@@ -815,6 +835,7 @@ public class BaseValidator {
     sectionStatusManager.saveSectionStatus(status);
   }
 
+
   /**
    * This method saves the missing fields into the database for a section at ImpactPathway.
    * 
@@ -873,6 +894,10 @@ public class BaseValidator {
     }
 
     sectionStatusManager.saveSectionStatus(status);
+  }
+
+  public void setMissingFields(StringBuilder missingFields) {
+    this.missingFields = missingFields;
   }
 
   protected void validateLessonsLearn(BaseAction action, IpProgram program) {
