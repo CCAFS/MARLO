@@ -715,7 +715,9 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
         }
       }
 
-      projectInnovationValidator.validate(action, project, innovation, clearLead, false);
+      // Change the parameters for the new way to validate the data
+      projectInnovationValidator.validate(action, project, innovation, clearLead, false, true, phase.getYear(),
+        phase.getUpkeep());
     }
 
   }
