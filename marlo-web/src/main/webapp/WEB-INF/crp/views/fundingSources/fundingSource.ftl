@@ -22,7 +22,6 @@
 [#assign startYear = ((fundingSource.fundingSourceInfo.startDate?string.yyyy)?number)!currentCycleYear /]
 [#assign endYear = ((fundingSource.fundingSourceInfo.endDate?string.yyyy)?number)!startYear /]
 [#assign extensionYear = ((fundingSource.fundingSourceInfo.extensionDate?string.yyyy)?number)!endYear /]
-[#assign hasInstitutions = fundingSource.institutions?has_content /]
 
 [#if showEXtDate]
   [#assign fundingSourceYears = startYear .. extensionYear/]
@@ -54,43 +53,16 @@
       
       <div class="form-group row">
         <div class="col-md-7 managingPartners">
-          [#-- CGIAR lead center --]
-          [#assign ifpriDivision = false /]
-          [#assign hasCIAT = false /]
           <div class="form-group">
-            <div class="panel tertiary">
-             <div class="panel-head"><label for=""> [@customForm.text name="fundingSource.leadPartner" readText=!editable /]:[@customForm.req required=editable /]</label></div>
-              <div id="leadPartnerList" class="panel-body" listname="deliverable.fundingSources"> 
-                <ul class="list">
-                [#if hasInstitutions]
-                  [#list fundingSource.institutions as institutionLead]
-                    [#-- Show if is a headquarter institution --]
-                    [#if !(institutionLead.headquarter??)]
-                      <li id="" class="leadPartners clearfix">
-                      [#if editable  && action.canBeDeleted((institutionLead.id)!-1,(institutionLead.class.name)!)]
-                        <div class="removeLeadPartner removeIcon" title="Remove Lead partner"></div>
-                      [/#if]
-                        <input class="id" type="hidden" name="fundingSource.institutions[${institutionLead_index}].id" value="${institutionLead.id}" />
-                        <input class="fId" type="hidden" name="fundingSource.institutions[${institutionLead_index}].institution.id" value="${institutionLead.institution.id}" />
-                        <span class="name">${(institutionLead.institution.composedName)!}</span>
-                        <div class="clearfix"></div>
-                        
-                        [#-- Check IFPRI Division --]
-                        [#if institutionLead.institution.id == action.getIFPRIId() ] [#assign ifpriDivision = true /] [/#if]
-                        [#-- Check CIAT Institution --]
-                        [#if (institutionLead.institution.acronymName == "CIAT")!false ] [#assign hasCIAT = true /] [/#if]
-                      </li>
-                    [/#if]
-                  [/#list]
-                  [#else]
-                  <p class="emptyText"> [@s.text name="No lead partner added yet." /]</p> 
-                [/#if]
-                </ul>
-                [#if editable ]
-                  [@customForm.select name="fundingSource.leader.id" label=""  showTitle=false  i18nkey="" listName="institutions" keyFieldName="id"  displayFieldName="composedName"  multiple=false required=true  className="institution" editable=editable /]
-                [/#if] 
-              </div>
-            </div>
+            [@customForm.elementsListComponent name="fundingSource.institutions" elementType="institution" elementList=(fundingSource.institutions)![] label="fundingSource.leadPartner"  listName="institutions" keyFieldName="id" displayFieldName="composedName"/]
+            [#assign hasCIAT = false /]
+            [#list (fundingSource.institutions)![] as item]
+              [#if (item.institution.acronymName == "CIAT")!false][#assign hasCIAT = true /][#break][/#if]
+            [/#list]
+            [#assign ifpriDivision = false /]
+            [#list (fundingSource.institutions)![] as item]
+              [#if (item.institution.id == action.getIFPRIId())!false][#assign ifpriDivision = true /][#break][/#if]
+            [/#list]
           </div>
           
           [#-- Division --]
@@ -114,26 +86,24 @@
           [#assign financeChannelInstitution = (fundingSource.institutions)?first /]
         [/#if]
         <div class="col-md-5 form-group">
+        
+        
+          [#-- Finance code --]
           <div class="url-field">
             <label for="fundingSource.financeCode" class="editable">[@s.text name="projectCofunded.financeCode"/]:<span class="red requiredTag" style="display:none;">*</span></label>
             <div class="input-group">
               [#if editable]
                 [#-- Finance Channel --]
-                <div class="input-group-btn financeChannel" style="display:${hasCIAT?string('', 'none')}">
-                  <button type="button" class="btn btn-default btn-sm disabled dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <small>CIAT-OCS</small>  [#--<span class="caret"></span>--]
+                <div class="input-group-btn financeChannel">
+                  <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <span class="partnerLeadSelectedName"> ${(fundingSource.fundingSourceInfo.leadCenter.acronym)!"Select..."} </span>  <span class="caret"></span>
+                    <input type="hidden" class="partnerLeadInput" name="fundingSource.fundingSourceInfo.leadCenter.id" value="${(fundingSource.fundingSourceInfo.leadCenter.id)!}" />
                   </button>
-                  [#-- 
                   <ul class="dropdown-menu">
-                    [#if hasInstitutions]
-                      [#list fundingSource.institutions as institutionLead]
-                        [#if institutionLead.institution.id != financeChannelInstitution.institution.id]
-                          <li><a href="#"><small>${(institutionLead.institution.acronym)!}</small></a></li>
-                        [/#if]
-                      [/#list]
-                    [/#if]
+                    [#list (fundingSource.institutions)![] as partnerInstitution]
+                      <li><a href="#" class="setPartnerLead value-${(partnerInstitution.institution.id)!}"><small>${(partnerInstitution.institution.acronym)!}</small></a></li>
+                    [/#list]
                   </ul>
-                   --]
                 </div><!-- /btn-group -->
                 [#-- Finance Input --]
                 <input type="text" name="fundingSource.fundingSourceInfo.financeCode" value="${(fundingSource.fundingSourceInfo.financeCode)!}" class="form-control input-sm financeCode optional" [#if isSynced]readonly="readonly"[/#if] placeholder="e.g. OCS Code">
@@ -300,22 +270,7 @@
           isEditable=editable
         /]
       </div>
-      
-      [#-- Lead Center --]
-        <div class="form-group row">
-          <div class="col-md-12 metadataElement-directDonorName">
-            <label for="">[@s.text name="projectCofunded.leadCenter" /]:[@customForm.req required=editable /] </label>
-              [#if editable]
-                [@customForm.select name="fundingSource.fundingSourceInfo.leadCenter.id" i18nkey="projectCofunded.leadCenter" className="leadCenter" showTitle=false listName="fundingSourceInstitutions" keyFieldName="id"  displayFieldName="composedNameLoc" editable=editable /]
-              [#else]
-                <p class="input">${(fundingSource.fundingSourceInfo.leadCenter.composedName)!}</p>
-                <input  type="hidden" name="fundingSource.fundingSourceInfo.leadCenter.id" value="${(fundingSource.fundingSourceInfo.leadCenter.id)!-1}" />
-              [/#if]
-            <span class="text-warning metadataSuggested"></span> 
-          </div>
-        </div>
-      <hr />
-      
+     
       [#-- Contact person name and email --]
       [#assign canSeePIEmail = action.hasSpecificities('crp_email_funding_source')]
       <div class="form-group row">

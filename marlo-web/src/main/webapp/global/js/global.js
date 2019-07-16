@@ -696,7 +696,7 @@ function onClickRemoveElement() {
   var id = $parent.find(".elementRelationID").val();
   var name = $parent.find(".elementName").text();
 
-  $parent.slideUp(100, function() {
+  $parent.slideUp(300, function() {
     $parent.remove();
 
     // Enabled option in select component
