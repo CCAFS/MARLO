@@ -83,8 +83,5 @@ public class GuestUsersValidator extends BaseValidator {
       action.addMessage(action.getText("guestUsers.email"));
       action.getInvalidFields().put("input-user.email", InvalidFieldsMessages.EMPTYFIELD);
     }
-
   }
-
-
 }

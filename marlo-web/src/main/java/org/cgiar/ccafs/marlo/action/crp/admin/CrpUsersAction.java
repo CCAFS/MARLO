@@ -89,7 +89,7 @@ public class CrpUsersAction extends BaseAction {
 
   private Phase phase;
 
-  private final Logger LOG = LoggerFactory.getLogger(GuestUsersAction.class);
+  private final Logger LOG = LoggerFactory.getLogger(CrpUsersAction.class);
   // Managers
   private GlobalUnitManager globalUnitManager;
   private CrpUserManager crpUserManager;
