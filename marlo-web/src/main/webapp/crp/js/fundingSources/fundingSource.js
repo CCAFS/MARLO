@@ -82,11 +82,43 @@ function init() {
     $(this).trigger("change.select2");
   });
 
+  $('select.elementType-institution').on("addElement removeElement", function(event,id,name) {
+    var $syncComponents = $('.buttons-field, .financeChannel, .extensionDateBlock');
+    var $divisionBlock = $('.division-' + id);
+    var $elementListComponent = $(this).parents('.elementsListComponent');
+    var CIAT_ID = 46;
+    var hasCIATSelected = ($elementListComponent.find('input.elementRelationID[value="' + CIAT_ID + '"]').length > 0)
+
+    // Show CIAT OCS buttons
+    if(hasCIATSelected) {
+      $syncComponents.slideDown(200);
+    } else {
+      $syncComponents.slideUp(200);
+      if(isSynced) {
+        unSyncFundingSource();
+      }
+    }
+    refreshYears();
+
+    // Show IFPRI divisions options
+    if(event.type == "addElement") {
+      $divisionBlock.slideDown();
+    }
+    if(event.type == "removeElement") {
+      $divisionBlock.slideUp();
+    }
+  });
+
+  $('.setPartnerLead').on("click", function(e) {
+    e.preventDefault();
+    var institutionID = $(this).classParam("value");
+    console.log(institutionID);
+    $('input.partnerLeadInput').val(institutionID);
+    $('.partnerLeadSelectedName').text($(this).text());
+  });
+
   // On Change agreementStatus
   $('.agreementStatus').on('change', onChangeStatus);
-
-  // Remove partner
-  $(".removeLeadPartner").on("click", removeLeadPartner);
 
   // Country item
   $(".countriesSelect").on("change", function() {
@@ -334,120 +366,6 @@ function addContactAutoComplete() {
 
   $("input.contactName").autocomplete(autocompleteOptions).autocomplete("instance")._renderItem = renderItem;
   $("input.contactEmail").autocomplete(autocompleteOptions).autocomplete("instance")._renderItem = renderItem;
-}
-
-/**
- * Add a new lead partner element function
- * 
- * @param option means an option tag from the select
- * @returns
- */
-function addLeadPartner(option) {
-  var canAdd = true;
-  console.log(option.val());
-  if(option.val() == "-1") {
-    canAdd = false;
-  }
-
-  var $list = $(option).parents(".select").parents("#leadPartnerList").find(".list");
-  var $item = $("#leadPartnerTemplate").clone(true).removeAttr("id");
-  var v = $(option).text().length > 80 ? $(option).text().substr(0, 80) + ' ... ' : $(option).text();
-
-  // Check if is already selected
-  $list.find('.leadPartners').each(function(i,e) {
-    if($(e).find('input.fId').val() == option.val()) {
-      canAdd = false;
-      return;
-    }
-  });
-  if(!canAdd) {
-    return;
-  }
-
-  // Set funding source parameters
-  $item.find(".name").attr("title", $(option).text());
-  $item.find(".name").html(v);
-  $item.find(".fId").val(option.val());
-  $item.find(".id").val(-1);
-  $list.append($item);
-  $item.show('slow');
-  updateLeadPartner($list);
-  checkLeadPartnerItems($list);
-
-  // Reset select
-  $(option).val("-1");
-  $(option).trigger('change.select2');
-
-}
-
-/**
- * Remove lead partner function
- * 
- * @returns
- */
-function removeLeadPartner() {
-  var $list = $(this).parents('.list');
-  var $item = $(this).parents('.leadPartners');
-  var value = $item.find(".fId").val();
-  var name = $item.find(".name").attr("title");
-
-  var $select = $(".institution");
-  $item.hide(200, function() {
-    $item.remove();
-    checkLeadPartnerItems($list);
-    updateLeadPartner($list);
-  });
-  // Add funding source option again
-  $select.addOption(value, name);
-  $select.trigger("change.select2");
-}
-
-/**
- * Update indexes for "Managing partners" of funding source
- * 
- * @param $list List of lead partners
- * @returns
- */
-function updateLeadPartner($list) {
-  // Hide All divisions block
-  $('.divisionBlock').hide();
-
-  $($list).find('.leadPartners').each(function(i,e) {
-    // Show division block
-    var institutionID = $(e).find('.fId').val();
-    $('.division-' + institutionID).show();
-    // Set funding sources indexes
-    $(e).setNameIndexes(1, i);
-  });
-}
-
-/**
- * Check if there is any lead partners and show a text message
- * 
- * @param block Container with lead partners elements
- * @returns
- */
-function checkLeadPartnerItems(block) {
-
-  // Check if CIAT is in the partners list
-  var CIAT_ID = 46;
-  if($('input.fId[value="' + CIAT_ID + '"]').exists()) {
-    $('.buttons-field, .financeChannel, .extensionDateBlock').show();
-  } else {
-    $('.buttons-field, .financeChannel, .extensionDateBlock').hide();
-    if(isSynced) {
-      unSyncFundingSource();
-    }
-  }
-
-  refreshYears();
-
-  var items = $(block).find('.leadPartners').length;
-  if(items == 0) {
-    $(block).parent().find('p.emptyText').fadeIn();
-  } else {
-    $(block).parent().find('p.emptyText').fadeOut();
-  }
 }
 
 /**
@@ -795,7 +713,6 @@ function budgetsConflicts(lowEnd,highEnd) {
 function refreshYears() {
   var startYear, endYear, years;
 
-  console.log(from.val());
   startYear = (from.val().split('-')[0]) || currentCycleYear;
 
   if($('.agreementStatus').val() == EXTENDED_STATUS) {
