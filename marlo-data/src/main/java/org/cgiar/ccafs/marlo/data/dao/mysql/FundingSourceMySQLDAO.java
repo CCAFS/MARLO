@@ -284,7 +284,6 @@ public class FundingSourceMySQLDAO extends AbstractMarloDAO<FundingSource, Long>
   public List<FundingSourceSearchSummary> searchFundingSourcesByInstitutionAndFinanceCode(Long institutionLeadID,
     String financeCode) {
     StringBuilder q = new StringBuilder();
-    System.out.println("institutionlead " + institutionLeadID);
     q.append(
       "SELECT sub.id AS id, sub.name AS name, sub.type AS type, sub.typeId AS typeId, sub.financeCode AS financeCode, sub.w1w2 AS w1w2, sub.budget AS budget, SUM(pb.amount) AS usedAmount ");
     q.append("FROM ");
@@ -301,9 +300,10 @@ public class FundingSourceMySQLDAO extends AbstractMarloDAO<FundingSource, Long>
     q.append("WHERE 1=1 ");
     q.append("AND fsi.title IS NOT NULL ");
     q.append("AND (fsi.status IS NULL OR fsi.status IN (1,2,4,7) ) ");
-    q.append("AND (fsi.finance_code LIKE '%" + financeCode + "%' ");
+    q.append("AND (fsi.finance_code = '" + financeCode + "' ");
     q.append(" ) ");
     q.append("AND (fsi.lead_center_id = " + institutionLeadID + ") ");
+    q.append("AND (fsi.lead_center_id IS NOT NULL) ");
     q.append(" AND fsi.end_date IS NOT NULL ");
 
     q.append(") AS sub ");
