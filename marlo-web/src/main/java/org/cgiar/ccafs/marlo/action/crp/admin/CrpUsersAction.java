@@ -564,7 +564,7 @@ public class CrpUsersAction extends BaseAction {
             }
 
             try {
-              if (emailSend.equals("true")) {
+              if (emailSend != null && emailSend.equals("true")) {
                 this.sendMailNewUser(newUser, globalUnit, password);
                 this.notifyRoleAssigned(newUser);
               }
@@ -664,7 +664,7 @@ public class CrpUsersAction extends BaseAction {
 
                 // Send email message for Guest rol assignation in selected CRP
                 try {
-                  if (emailSend.equals("true")) {
+                  if (emailSend != null && emailSend.equals("true")) {
                     this.notifyRoleAssigned(existingUser);
                   }
                 } catch (Exception e) {
