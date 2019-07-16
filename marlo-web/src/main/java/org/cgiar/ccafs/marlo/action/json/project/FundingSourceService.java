@@ -25,6 +25,7 @@ import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -82,6 +83,27 @@ public class FundingSourceService extends BaseAction {
       summaries = fundingSourceManager
         .searchFundingSources("", 0, this.getCrpID().longValue(), this.getActualPhase().getId()).stream()
         .filter(f -> f.getFinanceCode() != null && f.getFinanceCode().equals(financeCode)).collect(Collectors.toList());
+
+      if (summaries != null) {
+        List<FundingSourceSearchSummary> summariesTemp = null;
+        List<BigInteger> ids = null;
+        for (FundingSourceSearchSummary summary : summaries) {
+          if (ids == null) {
+            ids = new ArrayList<>();
+            summariesTemp = new ArrayList<>();
+            ids.add(summary.getId());
+            summariesTemp.add(summary);
+          } else {
+            if (!ids.contains(summary.getId())) {
+              ids.add(summary.getId());
+              summariesTemp.add(summary);
+            }
+          }
+        }
+        summaries = new ArrayList<>();
+        summaries.addAll(summariesTemp);
+      }
+
     }
     if (summaries != null) {
       for (FundingSourceSearchSummary summary : summaries) {
