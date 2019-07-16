@@ -39,6 +39,8 @@ public class FundingSourceSearchSummary {
 
   private Boolean w1w2;
 
+  private BigInteger leadCenter;
+
   /**
    * This needs to be determined by the securityContext in some cases where the specificity applies
    */
@@ -79,6 +81,10 @@ public class FundingSourceSearchSummary {
 
   public BigInteger getId() {
     return id;
+  }
+
+  public BigInteger getLeadCenter() {
+    return leadCenter;
   }
 
 
@@ -131,9 +137,12 @@ public class FundingSourceSearchSummary {
     this.financeCode = financeCode;
   }
 
-
   public void setId(BigInteger id) {
     this.id = id;
+  }
+
+  public void setLeadCenter(BigInteger leadCenter) {
+    this.leadCenter = leadCenter;
   }
 
 
