@@ -49,6 +49,7 @@ import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.LocElementType;
 import org.cgiar.ccafs.marlo.data.model.PartnerDivision;
+import org.cgiar.ccafs.marlo.data.model.ProjectBudget;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -125,6 +126,7 @@ public class FundingSourceAction extends BaseAction {
 
 
   private FundingSource fundingSource;
+  private FundingSource fundingSourceShow;
 
 
   private FundingSourceBudgetManager fundingSourceBudgetManager;
@@ -148,6 +150,7 @@ public class FundingSourceAction extends BaseAction {
   private List<LiaisonInstitution> liaisonInstitutions;
   private HistoryComparator historyComparator;
   private PartnerDivisionManager partnerDivisionManager;
+  private List<ProjectBudget> projectBudgetsListOtherCRP;
 
   private List<PartnerDivision> divisions;
 
@@ -350,9 +353,14 @@ public class FundingSourceAction extends BaseAction {
   }
 
 
+  public FundingSource getFundingSourceShow() {
+    return fundingSourceShow;
+  }
+
   public String getFundingSourceUrlPath() {
     return config.getProjectsBaseFolder(this.getCrpSession()) + File.separator + "fundingSourceFiles" + File.separator;
   }
+
 
   public int getIndexBugets(int year) {
     int i = 0;
@@ -375,7 +383,6 @@ public class FundingSourceAction extends BaseAction {
 
   }
 
-
   public List<Institution> getInstitutions() {
     return institutions;
   }
@@ -396,6 +403,7 @@ public class FundingSourceAction extends BaseAction {
   public String getPath(String fsId) {
     return config.getDownloadURL() + "/" + this.getStudyFileUrlPath(fsId).replace('\\', '/');
   }
+
 
   public List<LocElement> getRegionLists() {
     return regionLists;
@@ -427,7 +435,6 @@ public class FundingSourceAction extends BaseAction {
     return region;
   }
 
-
   @Override
   public void prepare() throws Exception {
     loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
@@ -438,6 +445,7 @@ public class FundingSourceAction extends BaseAction {
 
     // Budget Types list
     budgetTypesList = budgetTypeManager.findAll();
+    projectBudgetsListOtherCRP = new ArrayList<>();
 
     region = false;
 
@@ -482,7 +490,6 @@ public class FundingSourceAction extends BaseAction {
     }
 
     fundingSource.setFundingSourceInfo(fundingSource.getFundingSourceInfo(this.getActualPhase()));
-    // System.out.println(fundingSource.getFundingSourceInfo().getId());
     if (fundingSource != null) {
 
       Path path = this.getAutoSaveFilePath();
@@ -603,6 +610,35 @@ public class FundingSourceAction extends BaseAction {
             && pb.getPhase().equals(this.getActualPhase())
             && pb.getProject().getProjecInfoPhase(this.getActualPhase()) != null)
           .collect(Collectors.toList()));
+
+        List<FundingSourceInfo> fundingSourceInfos = new ArrayList<>();
+        List<FundingSource> fundingSources = new ArrayList<>();
+        fundingSourceShow = new FundingSource();
+        if (fundingSource != null && fundingSource.getFundingSourceInfo() != null
+          && fundingSource.getFundingSourceInfo().getFinanceCode() != null
+          && fundingSource.getFundingSourceInfo().getLeadCenter() != null) {
+          fundingSourceInfos = fundingSourceInfoManager.findAll().stream()
+            .filter(fsi -> fsi != null && fsi.isActive() && fsi.getFinanceCode() != null
+              && fsi.getFinanceCode().equals(fundingSource.getFundingSourceInfo().getFinanceCode())
+              && fsi.getLeadCenter() != null
+              && fsi.getLeadCenter() == fundingSource.getFundingSourceInfo().getLeadCenter())
+            .collect(Collectors.toList());
+        }
+        if (fundingSourceInfos != null) {
+          for (FundingSourceInfo fundingSourceInfo : fundingSourceInfos) {
+            if (fundingSourceInfo.getFundingSource() != null) {
+              fundingSources.add(fundingSourceInfo.getFundingSource());
+            }
+          }
+        }
+        if (fundingSources != null) {
+          for (FundingSource fundingSource : fundingSources) {
+            if (fundingSource != null && fundingSource.getProjectBudgets() != null) {
+              fundingSourceShow.setProjectBudgetsList(
+                fundingSource.getProjectBudgets().stream().filter(pb -> pb.isActive()).collect(Collectors.toList()));
+            }
+          }
+        }
 
         if (this.hasSpecificities(APConstants.CRP_HAS_RESEARCH_HUMAN)) {
           if (fundingSource.getFundingSourceInfo().getFileResearch() != null) {
@@ -838,6 +874,7 @@ public class FundingSourceAction extends BaseAction {
     }
   }
 
+
   @Override
   public String save() {
     FundingSource fundingSourceDB = fundingSourceManager.getFundingSourceById(fundingSource.getId());
@@ -1060,6 +1097,7 @@ public class FundingSourceAction extends BaseAction {
     }
   }
 
+
   /**
    * Funding Source Locations
    * 
@@ -1209,10 +1247,10 @@ public class FundingSourceAction extends BaseAction {
     this.budgetTypes = budgetTypes;
   }
 
-
   public void setBudgetTypesList(List<BudgetType> budgetTypesList) {
     this.budgetTypesList = budgetTypesList;
   }
+
 
   public void setCountryLists(List<LocElement> countryLists) {
     this.countryLists = countryLists;
@@ -1248,6 +1286,10 @@ public class FundingSourceAction extends BaseAction {
 
   public void setFundingSourceInstitutions(List<Institution> fundingSourceInstitutions) {
     this.fundingSourceInstitutions = fundingSourceInstitutions;
+  }
+
+  public void setFundingSourceShow(FundingSource fundingSourceShow) {
+    this.fundingSourceShow = fundingSourceShow;
   }
 
 
