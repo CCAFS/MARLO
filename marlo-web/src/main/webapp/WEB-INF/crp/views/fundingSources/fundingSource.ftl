@@ -532,6 +532,43 @@
           </table>
           
           
+          <h5 class="sectionSubTitle">[@s.text name="fundingSource.projectsAssignedCRP" /]:</h5>
+          <table class="table">
+            <thead>
+             <tr>
+              <th>[@s.text name="fundingSource.projectsAssigned.projectID" /]</th>
+              <th>CRP</th>
+              <th>[@s.text name="fundingSource.projectsAssigned.projectTitle" /]</th>
+              <th>Justification</th>
+              <th>Lead partner</th>
+              <th>Budget amount</th>
+             </tr>
+            </thead>
+            <tbody>
+            [#assign counter = 0 /]
+            [#list fundingSourceShow.projectBudgetsList as projectBudget]
+              [#if projectBudget.year == year]
+               <tr class="projectBudgetItem">
+                <td>
+                  <a href="[@s.url action="${crpSession}/budgetByPartners" namespace="/projects"] [@s.param name="projectID" value="${(projectBudget.project.id)!}"/] [#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
+                    P${(projectBudget.project.id)!}              
+                  </a>
+                </td>
+                <td></td>
+                <td class="col-md-5">
+                  <a href="[@s.url action="${crpSession}/budgetByPartners" namespace="/projects"] [@s.param name="projectID" value="${(projectBudget.project.id)!}"/] [#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
+                    ${(projectBudget.project.projectInfo.title)!}
+                  </a>
+                </td>
+                <td></td>
+                <td> ${(projectBudget.institution.acronymName)!(projectBudget.institution.name)} </td>
+                <td>US$ <span>${((projectBudget.amount)!0)?number?string(",##0.00")}</td>
+               </tr>
+              [#assign counter = counter + 1 /]
+              [/#if]
+            [/#list]
+            </tbody>
+          </table>
           
           
           </div>
