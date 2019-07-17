@@ -618,22 +618,32 @@ public class FundingSourceAction extends BaseAction {
           && fundingSource.getFundingSourceInfo().getFinanceCode() != null
           && fundingSource.getFundingSourceInfo().getLeadCenter() != null) {
           fundingSourceInfos = fundingSourceInfoManager.findAll().stream()
-            .filter(fsi -> fsi != null && fsi.isActive() && fsi.getFinanceCode() != null
+            .filter(fsi -> fsi != null && fsi.isActive() && fsi.getFundingSource() != null
+              && fsi.getFundingSource().getCrp() != null
+              && !(fsi.getFundingSource().getCrp().getId().equals(this.getCurrentCrp().getId()))
+              && fsi.getFinanceCode() != null
               && fsi.getFinanceCode().equals(fundingSource.getFundingSourceInfo().getFinanceCode())
               && fsi.getLeadCenter() != null
-              && fsi.getLeadCenter() == fundingSource.getFundingSourceInfo().getLeadCenter())
-            .collect(Collectors.toList());
+              && fsi.getLeadCenter().getId().equals(fundingSource.getFundingSourceInfo().getLeadCenter().getId()))
+            .distinct().collect(Collectors.toList());
         }
+        System.out.println("holi " + fundingSourceInfos.size());
         if (fundingSourceInfos != null) {
           for (FundingSourceInfo fundingSourceInfo : fundingSourceInfos) {
             if (fundingSourceInfo.getFundingSource() != null) {
+              System.out
+                .println("fundingSourceInfo.getFundingSource() " + fundingSourceInfo.getFundingSource().getId());
               fundingSources.add(fundingSourceInfo.getFundingSource());
             }
           }
         }
         if (fundingSources != null) {
+          System.out.println("fundingSources " + fundingSources.size());
+
           for (FundingSource fundingSource : fundingSources) {
             if (fundingSource != null && fundingSource.getProjectBudgets() != null) {
+              System.out.println("projectbudgets ");
+
               fundingSourceShow.setProjectBudgetsList(
                 fundingSource.getProjectBudgets().stream().filter(pb -> pb.isActive()).collect(Collectors.toList()));
             }
