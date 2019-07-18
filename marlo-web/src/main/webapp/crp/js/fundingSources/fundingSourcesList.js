@@ -66,7 +66,8 @@ $(document).ready(function() {
         el: '#vueApp',
         data: {
             isValid: false,
-            fundingSources: []
+            fundingSources: [],
+            messages: []
         },
         methods: {
 
@@ -98,6 +99,7 @@ $(document).ready(function() {
 
     $('#fundingSourceAddPopup').on('hidden.bs.modal', function(e) {
       app.fundingSources = [];
+      app.messages = [];
       $statusSelect.val("-1").trigger('change.select2');
       $institutionLeadSelect.val("-1").trigger('change.select2');
       $financeCode.val("");
@@ -105,9 +107,10 @@ $(document).ready(function() {
       validateForm();
     })
 
-    $financeCode.on("keyup", function() {
+    $financeCode.on("keyup change", function() {
       $financeCode.addClass('input-loading');
       app.isValid = false;
+      app.messages = [];
       if(keyupTimer) {
         clearTimeout(keyupTimer);
         keyupTimer = null;
@@ -125,6 +128,7 @@ $(document).ready(function() {
           },
           beforeSend: function() {
             app.fundingSources = [];
+            app.messages = [];
             $financeCode.addClass('input-loading');
           },
           success: function(data) {
@@ -136,7 +140,11 @@ $(document).ready(function() {
             validateForm();
             $financeCode.removeClass('input-loading');
           },
-          error: function() {
+          error: function(error) {
+            app.messages.push({
+                type: "danger",
+                title: error.status + " - " + error.statusText
+            });
           }
       });
     }
@@ -169,7 +177,7 @@ $(document).ready(function() {
     $('#institutionsID').val(0);
   });
 
-//Select All Institutions
+  // Select All Institutions
   $('#selectAllInstitutions').on('click', function() {
     console.log("test");
     $('input[type="checkbox"]').prop("checked", true)
@@ -181,7 +189,6 @@ $(document).ready(function() {
     var institutions = $('input[type="checkbox"]:checked').map(function() {
       return this.value;
     }).get().join(',');
-    console.log(institutions);
     $('#institutionsID').val(institutions);
   }).change();
 

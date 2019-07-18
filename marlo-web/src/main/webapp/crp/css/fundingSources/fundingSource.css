@@ -52,8 +52,8 @@ table {
 
 /* Metadata */
 .url-field{
-  width: 59%;
-  float:left;
+  /* width: 59%; */
+  /* float:left; */
 }
 
 .url-field button{
@@ -62,8 +62,8 @@ table {
 }
 
 .buttons-field{
-  width: 40%;
-  float:right;
+  /* width: 40%; */
+  /* float:right; */
   margin-top: 22px;
   text-align: center;
 }
