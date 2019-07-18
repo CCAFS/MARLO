@@ -104,6 +104,10 @@
                 
                 [#-- VueJS App --]
                 <div id="vueApp" class="form-group">
+                  <span v-for="message in messages">
+                    <span v-bind:class="'label label-' + message.type">{{ message.title }}</span>
+                  </span>
+                  
                   <div v-if="fundingSources.length" class="messagesBlock">
                     <hr />
                     <p> <strong>This finance code is already used. Please click on the following one if you want to edit.</strong></p>

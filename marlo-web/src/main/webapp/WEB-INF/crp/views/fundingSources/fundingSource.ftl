@@ -55,10 +55,7 @@
         <div class="col-md-7 managingPartners">
           <div class="form-group">
             [@customForm.elementsListComponent name="fundingSource.institutions" elementType="institution" elementList=(fundingSource.institutions)![] label="fundingSource.leadPartner"  listName="institutions" keyFieldName="id" displayFieldName="composedName"/]
-            [#assign hasCIAT = false /]
-            [#list (fundingSource.institutions)![] as item]
-              [#if (item.institution.acronymName == "CIAT")!false][#assign hasCIAT = true /][#break][/#if]
-            [/#list]
+             
             [#assign ifpriDivision = false /]
             [#list (fundingSource.institutions)![] as item]
               [#if (item.institution.id == action.getIFPRIId())!false][#assign ifpriDivision = true /][#break][/#if]
@@ -81,6 +78,12 @@
         [/#if]
        
         <div class="col-md-5 form-group">
+          [#-- Agreement status --]
+          <div class="form-group metadataElement-agreementStatus">
+            [@customForm.select name="fundingSource.fundingSourceInfo.status" i18nkey="projectCofunded.agreementStatus" className="agreementStatus metadataValue"  listName="status" keyFieldName=""  displayFieldName="" disabled=isSynced header=false editable=(editable || editStatus) /] 
+            [#if isSynced && (editable || editStatus)]<input type="hidden" class="selectHiddenInput" name="fundingSource.fundingSourceInfo.status" value="${(fundingSource.fundingSourceInfo.status)!}" />[/#if]
+          </div>
+        
           [#-- Finance code --]
           <div class="url-field">
             <label for="fundingSource.financeCode" class="editable">[@s.text name="projectCofunded.financeCode"/]:<span class="red requiredTag" style="display:none;">*</span></label>
@@ -107,6 +110,7 @@
             </div>
             <span class="financeCode-message"></span>
           </div>
+          [#assign hasCIAT = (fundingSource.fundingSourceInfo.leadCenter.id == 46)!false /]
           <div class="buttons-field" style="display:${hasCIAT?string('block', 'none')}">
             <input type="hidden" id="isSynced" name="fundingSource.fundingSourceInfo.synced" value="${isSynced?string}" />
             [#if editable]
@@ -244,23 +248,17 @@
               </div>
             [/#if]
           </div>
-          [#-- Agreement status --]
-          <div class="col-md-6 metadataElement-agreementStatus">
-            [@customForm.select name="fundingSource.fundingSourceInfo.status" i18nkey="projectCofunded.agreementStatus" className="agreementStatus metadataValue"  listName="status" keyFieldName=""  displayFieldName="" disabled=isSynced header=false editable=(editable || editStatus) /] 
-            [#if isSynced && (editable || editStatus)]<input type="hidden" class="selectHiddenInput" name="fundingSource.fundingSourceInfo.status" value="${(fundingSource.fundingSourceInfo.status)!}" />[/#if]
+          [#-- Upload bilateral contract --]
+          <div class="col-md-6">
+            [@customForm.fileUploadAjax 
+              fileDB=(fundingSource.fundingSourceInfo.file)!{}
+              name="fundingSource.fundingSourceInfo.file.id" 
+              label="fundingSource.uploadContract" 
+              dataUrl="${baseUrl}/uploadFundingSource.do" 
+              isEditable=editable
+            /]
           </div>
         </div>
-      </div>
-      
-      [#-- Upload bilateral contract --]
-      <div class="form-group">
-        [@customForm.fileUploadAjax 
-          fileDB=(fundingSource.fundingSourceInfo.file)!{}
-          name="fundingSource.fundingSourceInfo.file.id" 
-          label="fundingSource.uploadContract" 
-          dataUrl="${baseUrl}/uploadFundingSource.do" 
-          isEditable=editable
-        /]
       </div>
      
       [#-- Contact person name and email --]
@@ -537,9 +535,8 @@
              </tr>
             </thead>
             <tbody>
-            [#assign counter = 0 /]
-            [#if fundingSourceShow.projectBudgetsList?has_content]
-            [#list fundingSourceShow.projectBudgetsList as projectBudget]
+            [#assign counter = 0 /] 
+            [#list (fundingSourceShow.projectBudgetsList)![] as projectBudget]
               [#if projectBudget.year == year]
                <tr class="projectBudgetItem">
                 <td>
@@ -568,7 +565,6 @@
               [#assign counter = counter + 1 /]
               [/#if]
             [/#list]
-            [/#if]
             </tbody>
           </table>
           
