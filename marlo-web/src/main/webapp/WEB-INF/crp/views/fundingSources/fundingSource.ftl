@@ -538,6 +538,7 @@
             </thead>
             <tbody>
             [#assign counter = 0 /]
+            [#if fundingSourceShow.projectBudgetsList?has_content]
             [#list fundingSourceShow.projectBudgetsList as projectBudget]
               [#if projectBudget.year == year]
                <tr class="projectBudgetItem">
@@ -567,6 +568,7 @@
               [#assign counter = counter + 1 /]
               [/#if]
             [/#list]
+            [/#if]
             </tbody>
           </table>
           
