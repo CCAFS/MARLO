@@ -91,8 +91,8 @@
               [#if editable]
                 [#-- Finance Channel --]
                 <div class="input-group-btn financeChannel">
-                  <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <span class="partnerLeadSelectedName"> ${(fundingSource.fundingSourceInfo.leadCenter.acronym)!"Select..."} </span>  <span class="caret"></span>
+                  <button type="button" class="btn btn-default btn-sm dropdown-toggle ${isSynced?string('disabled', '')}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <span class="partnerLeadSelectedName"> ${(fundingSource.fundingSourceInfo.leadCenter.acronym)!"Select a Partner..."} </span>  <span class="caret"></span>
                     <input type="hidden" class="partnerLeadInput" name="fundingSource.fundingSourceInfo.leadCenter.id" value="${(fundingSource.fundingSourceInfo.leadCenter.id)!}" />
                   </button>
                   <ul class="dropdown-menu">
@@ -104,7 +104,7 @@
                 [#-- Finance Input --]
                 <input type="text" name="fundingSource.fundingSourceInfo.financeCode" value="${(fundingSource.fundingSourceInfo.financeCode)!}" class="form-control input-sm financeCode optional" [#if isSynced]readonly="readonly"[/#if] placeholder="e.g. OCS Code">
               [#else]
-                <small>${(fundingSource.fundingSourceInfo.leadCenter.acronym)!} :</small> ${(fundingSource.fundingSourceInfo.financeCode)!}
+                <small>${(fundingSource.fundingSourceInfo.leadCenter.acronym)!}: </small> ${(fundingSource.fundingSourceInfo.financeCode)!}
                 <input type="hidden" class="financeCode" name="fundingSource.fundingSourceInfo.financeCode" value="${(fundingSource.fundingSourceInfo.financeCode)!}"/>
               [/#if]
             </div>
@@ -125,21 +125,23 @@
                 </div>
               </div>
             [/#if]
-          </div> 
-        </div>
-        <div class="col-md-5">
+          </div>
+          
+          [#-- Sync Message --]
           <div id="metadata-output row">
             <p class="lastDaySync" style="display:${(!isSynced)?string('none', 'block')}">Last sync was made on <span>${(fundingSource.fundingSourceInfo.syncedDate?date)!}</span></p>
+            <input type="hidden" class="fundingSourceSyncedDate" name="fundingSource.fundingSourceInfo.syncedDate" value="${(fundingSource.syncedDate?string["yyyy-MM-dd"])!'2017-06-30'}" />
           </div>
-          <input type="hidden" class="fundingSourceSyncedDate" name="fundingSource.fundingSourceInfo.syncedDate" value="${(fundingSource.syncedDate?string["yyyy-MM-dd"])!'2017-06-30'}" />
+      
         </div>
+        
 
       </div>
       
     </div>
     <div class="borderBox">
       [#-- Loading --]
-      <div class="loading" style="display:none"></div>
+      <div class="loading contentBlok" style="display:none"></div>
 
       [#-- Project title --]
       <div class="form-group metadataElement-description">

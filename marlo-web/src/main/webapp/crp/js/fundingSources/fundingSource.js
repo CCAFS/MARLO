@@ -82,13 +82,22 @@ function init() {
     $(this).trigger("change.select2");
   });
 
-  $('select.elementType-institution').on("addElement removeElement", function(event,id,name) {
-    // Show IFPRI divisions options
+  $('select.elementType-institution').on("addElement removeElement beforeRemoveElement", function(e,id,name) {
     var $divisionBlock = $('.division-' + id);
-    if(event.type == "addElement") {
+
+    if(e.type == "addElement") {
       $divisionBlock.slideDown();
     }
-    if(event.type == "removeElement") {
+
+    if(e.type == "beforeRemoveElement") {
+      var partnerLeadID = $('input.partnerLeadInput').val();
+      if(partnerLeadID == id) {
+        e.preventDefault();
+        $('.url-field').animateCss('shake');
+      }
+    }
+
+    if(e.type == "removeElement") {
       $divisionBlock.slideUp();
     }
   });
@@ -861,7 +870,7 @@ function getInstitutionsBudgetByType(budgetTypeID) {
         budgetTypeID: budgetTypeID
       },
       beforeSend: function() {
-        $('.loading').show();
+        $('.loading.contentBlok').show();
       },
       success: function(m) {
         $donorSelectLists.empty();
@@ -878,7 +887,7 @@ function getInstitutionsBudgetByType(budgetTypeID) {
         console.log(e);
       },
       complete: function() {
-        $('.loading').hide();
+        $('.loading.contentBlok').hide();
         $donorSelectLists.trigger("change.select2");
       }
   });
