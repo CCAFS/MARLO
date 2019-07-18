@@ -1443,7 +1443,9 @@ public class ProjectInnovationAction extends BaseAction {
   @Override
   public void validate() {
     if (save) {
-      validator.validate(this, project, innovation, clearLead, true);
+      // Change the parameters for the new way to validate the data
+      validator.validate(this, project, innovation, clearLead, true, true, this.getActualPhase().getYear(),
+        this.getActualPhase().getUpkeep());
     }
   }
 

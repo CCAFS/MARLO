@@ -524,19 +524,29 @@ public class ProjectListAction extends BaseAction {
   public void loadFlagshipgsAndRegions(List<Project> list) {
     for (Project project : list) {
 
-      List<CrpProgram> programs = projectManager.getPrograms(project.getId(),
-        ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue(), this.getActualPhase().getId());
-      List<CrpProgram> regions = projectManager.getPrograms(project.getId(),
-        ProgramType.REGIONAL_PROGRAM_TYPE.getValue(), this.getActualPhase().getId());
+      try {
 
-      project.setFlagships(programs);
-      project.setRegions(regions);
+        List<CrpProgram> programs = projectManager.getPrograms(project.getId(),
+          ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue(), this.getActualPhase().getId());
+        List<CrpProgram> regions = projectManager.getPrograms(project.getId(),
+          ProgramType.REGIONAL_PROGRAM_TYPE.getValue(), this.getActualPhase().getId());
+
+        project.setFlagships(programs);
+        project.setRegions(regions);
+
+
+      } catch (Exception e) {
+        project.setFlagships(new ArrayList<>());
+        project.setRegions(new ArrayList<>());
+      }
+
       project.setCoreBudget(projectBudgetManager.getTotalBudget(project.getId(), this.getActualPhase().getId(), 1,
         this.getActualPhase().getYear()));
       project.setBilateralBudget(projectBudgetManager.getTotalBudget(project.getId(), this.getActualPhase().getId(), 3,
         this.getActualPhase().getYear()));
       project.setW3Budget(projectBudgetManager.getTotalBudget(project.getId(), this.getActualPhase().getId(), 2,
         this.getActualPhase().getYear()));
+
 
     }
   }
