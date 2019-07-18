@@ -695,6 +695,15 @@ function onClickRemoveElement() {
   var maxLimit = $select.classParam('maxLimit');
   var id = $parent.find(".elementRelationID").val();
   var name = $parent.find(".elementName").text();
+  var eventData = [
+      id, name
+  ];
+
+  var eventRemove = jQuery.Event("beforeRemoveElement");
+  $select.trigger(eventRemove, eventData);
+  if(eventRemove.isDefaultPrevented()) {
+    return;
+  }
 
   $parent.slideUp(300, function() {
     $parent.remove();
@@ -704,9 +713,7 @@ function onClickRemoveElement() {
     $select.select2();
 
     // Create event removeElement
-    $select.trigger("removeElement", [
-        id, name
-    ]);
+    $select.trigger("removeElement", eventData);
 
     // Update indexes
     $list.find('li.relationElement').each(function(i,element) {

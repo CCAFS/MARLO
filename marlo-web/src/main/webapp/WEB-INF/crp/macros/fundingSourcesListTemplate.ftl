@@ -66,6 +66,11 @@
               [#if isSynced]<span title="Synced on ${(project.fundingSourceInfo.syncedDate)!''}" class="glyphicon glyphicon-retweet" style="color: #2aa4c9;"></span>[/#if]
               [#-- Code --]
               <span [#if isSynced]style="color: #2aa4c9;"[/#if]>${project.fundingSourceInfo.financeCode}</span>
+              
+              [#if (project.fundingSourceInfo.leadCenter.acronym?has_content)!false ]
+                <br /><small>(${project.fundingSourceInfo.leadCenter.acronym})</small>
+              [/#if]
+              
             [#else]
               <p class="text-muted" style="opacity:0.5">Not defined</p>
             [/#if]
@@ -83,7 +88,7 @@
                 [#list project.institutions as institutionLead]
                   [#if institutionLead_index!=0]<hr />
                   [/#if]
-                  ${(institutionLead.institution.acronym)!institutionLead.institution.name}                  
+                  ${(institutionLead.institution.acronym)!institutionLead.institution.name}
                 [/#list]
               </div>
             [#else]
