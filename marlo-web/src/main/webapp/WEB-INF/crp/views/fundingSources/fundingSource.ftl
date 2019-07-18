@@ -275,7 +275,7 @@
       [#assign canSeePIEmail = action.hasSpecificities('crp_email_funding_source')]
       <div class="form-group row">
           <div class="col-md-6 metadataElement-pInvestigator">[@customForm.input name="fundingSource.fundingSourceInfo.contactPersonName" help="projectCofunded.contactName.help" i18nkey="projectCofunded.contactName" className="contactName metadataValue" required=true readOnly=isSynced editable=editable /]</div>
-          <div class="col-md-6" style="display:${canSeePIEmail?string('block','none')}">[@customForm.input name="fundingSource.fundingSourceInfo.contactPersonEmail" i18nkey="projectCofunded.contactEmail" className="contactEmail" required=true editable=editable /]</div>
+          <div class="col-md-6 metadataElement-pInvestigatorEmail" style="display:${canSeePIEmail?string('block','none')}">[@customForm.input name="fundingSource.fundingSourceInfo.contactPersonEmail" i18nkey="projectCofunded.contactEmail" className="contactEmail metadataValue" required=true readOnly=isSynced editable=editable /]</div>
       </div>
       <hr />
         
