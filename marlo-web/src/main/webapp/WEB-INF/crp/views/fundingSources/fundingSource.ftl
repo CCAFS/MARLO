@@ -75,19 +75,12 @@
         </div>
         
         [#-- Finance code module --]
+        [#assign isSynced =false ]
         [#if fundingSource.fundingSourceInfo?has_content]
           [#assign isSynced = (fundingSource.fundingSourceInfo.synced)!false ]
-        [#else]
-          [#assign isSynced =false ]
         [/#if]
        
-        [#assign financeChannelInstitution = {} /]
-        [#if fundingSource.institutions?has_content]
-          [#assign financeChannelInstitution = (fundingSource.institutions)?first /]
-        [/#if]
         <div class="col-md-5 form-group">
-        
-        
           [#-- Finance code --]
           <div class="url-field">
             <label for="fundingSource.financeCode" class="editable">[@s.text name="projectCofunded.financeCode"/]:<span class="red requiredTag" style="display:none;">*</span></label>
@@ -108,10 +101,10 @@
                 [#-- Finance Input --]
                 <input type="text" name="fundingSource.fundingSourceInfo.financeCode" value="${(fundingSource.fundingSourceInfo.financeCode)!}" class="form-control input-sm financeCode optional" [#if isSynced]readonly="readonly"[/#if] placeholder="e.g. OCS Code">
               [#else]
+                <small>${(fundingSource.fundingSourceInfo.leadCenter.acronym)!} :</small> ${(fundingSource.fundingSourceInfo.financeCode)!}
                 <input type="hidden" class="financeCode" name="fundingSource.fundingSourceInfo.financeCode" value="${(fundingSource.fundingSourceInfo.financeCode)!}"/>
-                <small style="display:${hasCIAT?string('block', 'none')}">CIAT-OCS:</small> ${(fundingSource.fundingSourceInfo.financeCode)!}
               [/#if]
-            </div><!-- /input-group -->
+            </div>
             <span class="financeCode-message"></span>
           </div>
           <div class="buttons-field" style="display:${hasCIAT?string('block', 'none')}">
@@ -143,7 +136,6 @@
     <div class="borderBox">
       [#-- Loading --]
       <div class="loading" style="display:none"></div>
-         <input class="" type="hidden" name="fundingSource.fundingSourceInfo.id" value="${fundingSource.fundingSourceInfo.id}" />
 
       [#-- Project title --]
       <div class="form-group metadataElement-description">
@@ -537,6 +529,7 @@
     </div>
       
     [#-- Section Buttons & hidden inputs--]
+    <input class="" type="hidden" name="fundingSource.fundingSourceInfo.id" value="${fundingSource.fundingSourceInfo.id}" />
     [#include "/WEB-INF/crp/views/fundingSources/buttons-fundingSources.ftl" /]
   </div>
   
