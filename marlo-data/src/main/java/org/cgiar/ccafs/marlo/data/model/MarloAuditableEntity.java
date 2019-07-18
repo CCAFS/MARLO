@@ -15,6 +15,7 @@
 
 package org.cgiar.ccafs.marlo.data.model;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import javax.persistence.MappedSuperclass;
@@ -27,8 +28,9 @@ import com.google.gson.annotations.Expose;
  * @author GrantL
  */
 @MappedSuperclass
-public abstract class MarloAuditableEntity extends MarloSoftDeleteableEntity {
+public abstract class MarloAuditableEntity extends MarloSoftDeleteableEntity implements Serializable {
 
+  private static final long serialVersionUID = 9094997494834647630L;
 
   @Expose
   private User createdBy;
