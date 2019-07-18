@@ -464,7 +464,7 @@ public class FundingSourceAction extends BaseAction {
 
                 tempBudgets = tempBudgets.stream()
                   .filter(b -> b.getProject().getProjecInfoPhase(crpPhase) != null
-                    && b.getProject().getProjecInfoPhase().getPhase().equals(crpPhase)
+                    && b.getProject().getProjecInfoPhase(crpPhase).getPhase().equals(crpPhase)
                     || (b.getFundingSource().getFundingSourceInfo(crpPhase) != null
                       && b.getFundingSource().getFundingSourceInfo().getPhase().equals(crpPhase)))
                   .collect(Collectors.toList());
