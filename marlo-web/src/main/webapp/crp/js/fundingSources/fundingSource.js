@@ -83,24 +83,8 @@ function init() {
   });
 
   $('select.elementType-institution').on("addElement removeElement", function(event,id,name) {
-    var $syncComponents = $('.buttons-field, .financeChannel, .extensionDateBlock');
-    var $divisionBlock = $('.division-' + id);
-    var $elementListComponent = $(this).parents('.elementsListComponent');
-    var CIAT_ID = 46;
-    var hasCIATSelected = ($elementListComponent.find('input.elementRelationID[value="' + CIAT_ID + '"]').length > 0)
-
-    // Show CIAT OCS buttons
-    if(hasCIATSelected) {
-      $syncComponents.slideDown(200);
-    } else {
-      $syncComponents.slideUp(200);
-      if(isSynced) {
-        unSyncFundingSource();
-      }
-    }
-    refreshYears();
-
     // Show IFPRI divisions options
+    var $divisionBlock = $('.division-' + id);
     if(event.type == "addElement") {
       $divisionBlock.slideDown();
     }
@@ -112,7 +96,21 @@ function init() {
   $('.setPartnerLead').on("click", function(e) {
     e.preventDefault();
     var institutionID = $(this).classParam("value");
-    console.log(institutionID);
+    var CIAT_ID = 46;
+    var hasCIATSelected = (institutionID == CIAT_ID);
+    var $syncComponents = $('.buttons-field, .extensionDateBlock');
+
+    // Show CIAT OCS Sync buttons
+    if(hasCIATSelected) {
+      $syncComponents.slideDown(200);
+    } else {
+      $syncComponents.slideUp(200);
+      if(isSynced) {
+        unSyncFundingSource();
+      }
+    }
+    refreshYears();
+
     $('input.partnerLeadInput').val(institutionID);
     $('.partnerLeadSelectedName').text($(this).text());
   });
