@@ -74,10 +74,12 @@ public class FundingSourceService extends BaseAction {
     /**
      * Read only summary objects (not hibernate entities)
      */
-    List<FundingSourceSearchSummary> summaries = null;
+    List<FundingSourceSearchSummary> summaries = new ArrayList<>();
+    summaries = null;
     if (financeCode.isEmpty()) {
       financeCode = "0";
     }
+
 
     if (financeCode != null) {
       summaries = fundingSourceManager
@@ -100,8 +102,10 @@ public class FundingSourceService extends BaseAction {
             }
           }
         }
-        summaries = new ArrayList<>();
-        summaries.addAll(summariesTemp);
+        summaries = null;
+        if (summariesTemp != null) {
+          summaries.addAll(summariesTemp);
+        }
       }
 
     }
