@@ -49,6 +49,7 @@ import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.LocElementType;
 import org.cgiar.ccafs.marlo.data.model.PartnerDivision;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectBudget;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
@@ -162,6 +163,8 @@ public class FundingSourceAction extends BaseAction {
   private String transaction;
   private UserManager userManager;
   private FundingSourceValidator validator;
+  private Phase crpPhase;
+
 
   /*
    * Funding Source Locations
@@ -399,6 +402,84 @@ public class FundingSourceAction extends BaseAction {
     return loggedCrp;
   }
 
+  public void getOtherBudgetContribution() {
+    // Get info of projects that this funding source is contributing in others crps
+
+    List<FundingSourceInfo> fundingSourceInfos = new ArrayList<>();
+    List<FundingSource> fundingSources = new ArrayList<>();
+    List<ProjectBudget> projectBudgets = new ArrayList<>();
+    fundingSourceShow = new FundingSource();
+    if (fundingSource != null && fundingSource.getFundingSourceInfo() != null
+      && fundingSource.getFundingSourceInfo().getFinanceCode() != null
+      && fundingSource.getFundingSourceInfo().getLeadCenter() != null) {
+      fundingSourceInfos = fundingSourceInfoManager.findAll().stream()
+        .filter(fsi -> fsi != null && fsi.isActive() && fsi.getFundingSource() != null
+          && fsi.getFundingSource().getCrp() != null
+          && !(fsi.getFundingSource().getCrp().getId().equals(this.getCurrentCrp().getId()))
+          && fsi.getFinanceCode() != null
+          && fsi.getFinanceCode().equals(fundingSource.getFundingSourceInfo().getFinanceCode())
+          && fsi.getLeadCenter() != null
+          && fsi.getLeadCenter().getId().equals(fundingSource.getFundingSourceInfo().getLeadCenter().getId()))
+        .distinct().collect(Collectors.toList());
+    }
+    if (fundingSourceInfos != null) {
+      Long lastID = null;
+      for (FundingSourceInfo fundingSourceInfo : fundingSourceInfos) {
+        if (fundingSourceInfo.getFundingSource() != null) {
+          if (lastID != null) {
+            if (lastID != fundingSourceInfo.getFundingSource().getId()) {
+              fundingSources.add(fundingSourceInfo.getFundingSource());
+            }
+          } else {
+            fundingSources.add(fundingSourceInfo.getFundingSource());
+            lastID = fundingSourceInfo.getFundingSource().getId();
+          }
+        }
+      }
+    }
+    if (fundingSources != null) {
+      for (FundingSource fundingSource : fundingSources) {
+        if (fundingSource != null && fundingSource.getProjectBudgets() != null) {
+          List<ProjectBudget> tempBudgets = fundingSource.getProjectBudgets().stream()
+            .filter(pb -> pb.isActive() && pb.getProject() != null && pb.getProject().isActive())
+            .collect(Collectors.toList());
+          if (tempBudgets != null) {
+            List<Long> ids = new ArrayList<>();
+            for (ProjectBudget budget : tempBudgets) {
+              if (budget != null && budget.getProject() != null && budget.getProject().getId() != null) {
+                if (ids != null) {
+                  if (!ids.contains(budget.getProject().getId())) {
+                    ids.add(budget.getProject().getId());
+                    projectBudgets.add(budget);
+                  }
+                } else {
+                  ids.add(budget.getProject().getId());
+                  projectBudgets.add(budget);
+                }
+              }
+              crpPhase = this.getCRPPhase(budget.getFundingSource().getCrp().getId(), this.getActualPhase().getYear(),
+                this.getActualPhase().getDescription());
+
+              if (crpPhase != null) {
+
+                tempBudgets = tempBudgets.stream()
+                  .filter(b -> b.getProject().getProjecInfoPhase(crpPhase) != null
+                    && b.getProject().getProjecInfoPhase().getPhase().equals(crpPhase)
+                    || (b.getFundingSource().getFundingSourceInfo(crpPhase) != null
+                      && b.getFundingSource().getFundingSourceInfo().getPhase().equals(crpPhase)))
+                  .collect(Collectors.toList());
+              }
+
+            }
+            fundingSourceShow.setProjectBudgetsList(tempBudgets);
+          }
+        }
+      }
+
+    }
+  }
+
+
   // methos to download link file
   public String getPath(String fsId) {
     return config.getDownloadURL() + "/" + this.getStudyFileUrlPath(fsId).replace('\\', '/');
@@ -429,7 +510,6 @@ public class FundingSourceAction extends BaseAction {
   public String getTransaction() {
     return transaction;
   }
-
 
   public boolean isRegion() {
     return region;
@@ -611,44 +691,73 @@ public class FundingSourceAction extends BaseAction {
             && pb.getProject().getProjecInfoPhase(this.getActualPhase()) != null)
           .collect(Collectors.toList()));
 
-        List<FundingSourceInfo> fundingSourceInfos = new ArrayList<>();
-        List<FundingSource> fundingSources = new ArrayList<>();
-        fundingSourceShow = new FundingSource();
-        if (fundingSource != null && fundingSource.getFundingSourceInfo() != null
-          && fundingSource.getFundingSourceInfo().getFinanceCode() != null
-          && fundingSource.getFundingSourceInfo().getLeadCenter() != null) {
-          fundingSourceInfos = fundingSourceInfoManager.findAll().stream()
-            .filter(fsi -> fsi != null && fsi.isActive() && fsi.getFundingSource() != null
-              && fsi.getFundingSource().getCrp() != null
-              && !(fsi.getFundingSource().getCrp().getId().equals(this.getCurrentCrp().getId()))
-              && fsi.getFinanceCode() != null
-              && fsi.getFinanceCode().equals(fundingSource.getFundingSourceInfo().getFinanceCode())
-              && fsi.getLeadCenter() != null
-              && fsi.getLeadCenter().getId().equals(fundingSource.getFundingSourceInfo().getLeadCenter().getId()))
-            .distinct().collect(Collectors.toList());
-        }
-        System.out.println("holi " + fundingSourceInfos.size());
-        if (fundingSourceInfos != null) {
-          for (FundingSourceInfo fundingSourceInfo : fundingSourceInfos) {
-            if (fundingSourceInfo.getFundingSource() != null) {
-              System.out
-                .println("fundingSourceInfo.getFundingSource() " + fundingSourceInfo.getFundingSource().getId());
-              fundingSources.add(fundingSourceInfo.getFundingSource());
-            }
-          }
-        }
-        if (fundingSources != null) {
-          System.out.println("fundingSources " + fundingSources.size());
-
-          for (FundingSource fundingSource : fundingSources) {
-            if (fundingSource != null && fundingSource.getProjectBudgets() != null) {
-              System.out.println("projectbudgets ");
-
-              fundingSourceShow.setProjectBudgetsList(
-                fundingSource.getProjectBudgets().stream().filter(pb -> pb.isActive()).collect(Collectors.toList()));
-            }
-          }
-        }
+        this.getOtherBudgetContribution();
+        // Get info of projects that this funding source is contributing in others crps
+        /*
+         * List<FundingSourceInfo> fundingSourceInfos = new ArrayList<>();
+         * List<FundingSource> fundingSources = new ArrayList<>();
+         * List<ProjectBudget> projectBudgets = new ArrayList<>();
+         * fundingSourceShow = new FundingSource();
+         * if (fundingSource != null && fundingSource.getFundingSourceInfo() != null
+         * && fundingSource.getFundingSourceInfo().getFinanceCode() != null
+         * && fundingSource.getFundingSourceInfo().getLeadCenter() != null) {
+         * fundingSourceInfos = fundingSourceInfoManager.findAll().stream()
+         * .filter(fsi -> fsi != null && fsi.isActive() && fsi.getFundingSource() != null
+         * && fsi.getFundingSource().getCrp() != null
+         * && !(fsi.getFundingSource().getCrp().getId().equals(this.getCurrentCrp().getId()))
+         * && fsi.getFinanceCode() != null
+         * && fsi.getFinanceCode().equals(fundingSource.getFundingSourceInfo().getFinanceCode())
+         * && fsi.getLeadCenter() != null
+         * && fsi.getLeadCenter().getId().equals(fundingSource.getFundingSourceInfo().getLeadCenter().getId()))
+         * .distinct().collect(Collectors.toList());
+         * }
+         * if (fundingSourceInfos != null) {
+         * Long lastID = null;
+         * for (FundingSourceInfo fundingSourceInfo : fundingSourceInfos) {
+         * if (fundingSourceInfo.getFundingSource() != null) {
+         * if (lastID != null) {
+         * if (lastID != fundingSourceInfo.getFundingSource().getId()) {
+         * fundingSources.add(fundingSourceInfo.getFundingSource());
+         * }
+         * } else {
+         * fundingSources.add(fundingSourceInfo.getFundingSource());
+         * lastID = fundingSourceInfo.getFundingSource().getId();
+         * }
+         * }
+         * }
+         * }
+         * if (fundingSources != null) {
+         * for (FundingSource fundingSource : fundingSources) {
+         * if (fundingSource != null && fundingSource.getProjectBudgets() != null) {
+         * List<ProjectBudget> tempBudgets = fundingSource.getProjectBudgets().stream()
+         * .filter(pb -> pb.isActive() && pb.getProject() != null && pb.getProject().isActive())
+         * .collect(Collectors.toList());
+         * if (tempBudgets != null) {
+         * List<Long> ids = new ArrayList<>();
+         * for (ProjectBudget budget : tempBudgets) {
+         * if (budget != null && budget.getProject() != null && budget.getProject().getId() != null) {
+         * if (ids != null) {
+         * if (!ids.contains(budget.getProject().getId())) {
+         * ids.add(budget.getProject().getId());
+         * projectBudgets.add(budget);
+         * System.out
+         * .println("entro aqui xx " + this.getCRPPhase(budget.getFundingSource().getCrp().getId(),
+         * this.getActualPhase().getYear(), this.getActualPhase().getDescription()));
+         * }
+         * } else {
+         * ids.add(budget.getProject().getId());
+         * projectBudgets.add(budget);
+         * System.out.println("entro aqui");
+         * }
+         * }
+         * }
+         * fundingSourceShow.setProjectBudgetsList(tempBudgets);
+         * System.out.println("test " + fundingSourceShow.getProjectBudgetsList().get(0).getProject());
+         * }
+         * }
+         * }
+         * }
+         */
 
         if (this.hasSpecificities(APConstants.CRP_HAS_RESEARCH_HUMAN)) {
           if (fundingSource.getFundingSourceInfo().getFileResearch() != null) {
@@ -803,7 +912,9 @@ public class FundingSourceAction extends BaseAction {
       }
 
 
-    } else {
+    } else
+
+    {
       LOG.debug("No FundingSource found for ID : " + fundingSourceID);
     }
 

@@ -1924,7 +1924,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return null;
   }
 
-
   /**
    * ***********************CENTER METHOD******************** This method gets
    * the specific section status from the sectionStatuses array for a Output.
@@ -1951,6 +1950,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
     return null;
   }
+
 
   /**
    * ************************ CENTER METHOD ********************* Validate the
@@ -2753,6 +2753,30 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   public String getJustification() {
     return this.justification;
+  }
+
+  public Phase getLastCRPPhase(long crpID) {
+    Phase phase = null;
+    List<Phase> phases = new ArrayList<>();
+    phases = phaseManager.findAll().stream().filter(p -> p != null && p.getCrp() != null && p.getCrp().getId() == crpID)
+      .collect(Collectors.toList());
+    if (phases != null && phases.size() > 0) {
+      phase = phases.get(phases.size() - 1);
+    }
+
+    return phase;
+  }
+
+  public Phase getCRPPhase(long crpID, int year, String description) {
+    Phase phase = null;
+    List<Phase> phases = new ArrayList<>();
+    phases = phaseManager.findAll().stream().filter(p -> p != null && p.getCrp() != null && p.getCrp().getId() == crpID  && p.getYear()!= 0 && p.getYear() == year && p.getDescription() != null && p.getDescription().equals(description))
+      .collect(Collectors.toList());
+    if (phases != null && phases.size() > 0) {
+      phase = phases.get(0);
+    }
+
+    return phase;
   }
 
   public String getLiasons() {

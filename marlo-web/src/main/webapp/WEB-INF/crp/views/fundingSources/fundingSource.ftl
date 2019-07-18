@@ -554,14 +554,22 @@
                     P${(projectBudget.project.id)!}              
                   </a>
                 </td>
-                <td></td>
+                <td>
+                  <a href="[@s.url action="${crpSession}/budgetByPartners" namespace="/projects"] [@s.param name="projectID" value="${(projectBudget.project.id)!}"/] [#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
+                    ${(projectBudget.fundingSource.crp.acronym)!}              
+                  </a>
+                </td>
                 <td class="col-md-5">
                   <a href="[@s.url action="${crpSession}/budgetByPartners" namespace="/projects"] [@s.param name="projectID" value="${(projectBudget.project.id)!}"/] [#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
                     ${(projectBudget.project.projectInfo.title)!}
                   </a>
                 </td>
-                <td></td>
-                <td> ${(projectBudget.institution.acronymName)!(projectBudget.institution.name)} </td>
+                <td class="col-md-5">
+                  <a href="[@s.url action="${crpSession}/budgetByPartners" namespace="/projects"] [@s.param name="projectID" value="${(projectBudget.project.id)!}"/] [#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
+                    ${(projectBudget.project.projectInfo.statusJustification)!}
+                  </a>
+                </td>
+                <td> ${(projectBudget.fundingSource.fundingSourceInfo.leadCenter.acronymName)!(projectBudget.fundingSource.fundingSourceInfo.leadCenter.name)!} </td>
                 <td>US$ <span>${((projectBudget.amount)!0)?number?string(",##0.00")}</td>
                </tr>
               [#assign counter = counter + 1 /]
