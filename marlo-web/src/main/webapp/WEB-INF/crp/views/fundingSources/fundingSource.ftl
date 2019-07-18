@@ -267,7 +267,7 @@
       [#assign canSeePIEmail = action.hasSpecificities('crp_email_funding_source')]
       <div class="form-group row">
           <div class="col-md-6 metadataElement-pInvestigator">[@customForm.input name="fundingSource.fundingSourceInfo.contactPersonName" help="projectCofunded.contactName.help" i18nkey="projectCofunded.contactName" className="contactName metadataValue" required=true readOnly=isSynced editable=editable /]</div>
-          <div class="col-md-6" style="display:${canSeePIEmail?string('block','none')}">[@customForm.input name="fundingSource.fundingSourceInfo.contactPersonEmail" i18nkey="projectCofunded.contactEmail" className="contactEmail" required=true editable=editable /]</div>
+          <div class="col-md-6 metadataElement-pInvestigatorEmail" style="display:${canSeePIEmail?string('block','none')}">[@customForm.input name="fundingSource.fundingSourceInfo.contactPersonEmail" i18nkey="projectCofunded.contactEmail" className="contactEmail metadataValue" required=true readOnly=isSynced editable=editable /]</div>
       </div>
       <hr />
         
@@ -522,6 +522,54 @@
             [/#list]
             </tbody>
           </table>
+          
+          
+          <h5 class="sectionSubTitle">[@s.text name="fundingSource.projectsAssignedCRP" /]:</h5>
+          <table class="table">
+            <thead>
+             <tr>
+              <th>[@s.text name="fundingSource.projectsAssigned.projectID" /]</th>
+              <th>CRP</th>
+              <th>[@s.text name="fundingSource.projectsAssigned.projectTitle" /]</th>
+              <th>Justification</th>
+              <th>Lead partner</th>
+              <th>Budget amount</th>
+             </tr>
+            </thead>
+            <tbody>
+            [#assign counter = 0 /]
+            [#list fundingSourceShow.projectBudgetsList as projectBudget]
+              [#if projectBudget.year == year]
+               <tr class="projectBudgetItem">
+                <td>
+                  <a href="[@s.url action="${crpSession}/budgetByPartners" namespace="/projects"] [@s.param name="projectID" value="${(projectBudget.project.id)!}"/] [#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
+                    P${(projectBudget.project.id)!}              
+                  </a>
+                </td>
+                <td>
+                  <a href="[@s.url action="${crpSession}/budgetByPartners" namespace="/projects"] [@s.param name="projectID" value="${(projectBudget.project.id)!}"/] [#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
+                    ${(projectBudget.fundingSource.crp.acronym)!}              
+                  </a>
+                </td>
+                <td class="col-md-5">
+                  <a href="[@s.url action="${crpSession}/budgetByPartners" namespace="/projects"] [@s.param name="projectID" value="${(projectBudget.project.id)!}"/] [#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
+                    ${(projectBudget.project.projectInfo.title)!}
+                  </a>
+                </td>
+                <td class="col-md-5">
+                  <a href="[@s.url action="${crpSession}/budgetByPartners" namespace="/projects"] [@s.param name="projectID" value="${(projectBudget.project.id)!}"/] [#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
+                    ${(projectBudget.project.projectInfo.statusJustification)!}
+                  </a>
+                </td>
+                <td> ${(projectBudget.fundingSource.fundingSourceInfo.leadCenter.acronymName)!(projectBudget.fundingSource.fundingSourceInfo.leadCenter.name)!} </td>
+                <td>US$ <span>${((projectBudget.amount)!0)?number?string(",##0.00")}</td>
+               </tr>
+              [#assign counter = counter + 1 /]
+              [/#if]
+            [/#list]
+            </tbody>
+          </table>
+          
           
           </div>
         [/#list] 

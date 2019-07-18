@@ -199,6 +199,7 @@ function getOCSMetadata() {
           console.log(agreement);
           // Principal Investigator
           agreement.pInvestigator = agreement.researcher.name;
+          agreement.pInvestigatorEmail = agreement.researcher.email;
           // Donors
           if(agreement.originalDonor){
             agreement.originalDonorName = agreement.originalDonor.name;

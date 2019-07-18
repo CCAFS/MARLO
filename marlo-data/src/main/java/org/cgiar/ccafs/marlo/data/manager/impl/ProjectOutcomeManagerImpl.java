@@ -516,6 +516,7 @@ public class ProjectOutcomeManagerImpl implements ProjectOutcomeManager {
             projectMilestoneAdd.setNarrativeTarget(projectMilestone.getNarrativeTarget());
             projectMilestoneAdd.setProjectOutcome(projectOutcomePrev);
             projectMilestoneAdd.setYear(projectMilestone.getYear());
+            projectMilestoneAdd.setActive(projectMilestone.isActive());
             projectMilestoneDAO.save(projectMilestoneAdd);
 
           } else {
