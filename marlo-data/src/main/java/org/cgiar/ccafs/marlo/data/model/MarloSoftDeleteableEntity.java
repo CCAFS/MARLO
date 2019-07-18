@@ -15,6 +15,8 @@
 
 package org.cgiar.ccafs.marlo.data.model;
 
+import java.io.Serializable;
+
 import javax.persistence.MappedSuperclass;
 
 import com.google.gson.annotations.Expose;
@@ -28,7 +30,9 @@ import com.google.gson.annotations.Expose;
  * @author GrantL
  */
 @MappedSuperclass
-public class MarloSoftDeleteableEntity extends MarloBaseEntity {
+public class MarloSoftDeleteableEntity extends MarloBaseEntity implements Serializable {
+
+  private static final long serialVersionUID = 407298647276207880L;
 
   // Default to true for all new entities. This gets overriden by hibernate which will call the setActive method.
   @Expose
