@@ -154,92 +154,86 @@ public class FundingSourceListAction extends BaseAction {
       FundingSource fundingSourceSearch = new FundingSource();
       List<FundingSource> fundingSourceSearchTemp = new ArrayList<FundingSource>();
       fundingSourceSearchTemp = null;
-      fundingSourceSearchTemp = fundingSourceManager.findAll().stream()
-        .filter(f -> f.getFundingSourceInfo(this.getActualPhase()) != null
-          && f.getFundingSourceInfo(this.getActualPhase()).getFinanceCode() != null
-          && f.getFundingSourceInfo(this.getActualPhase()).getFinanceCode().equals(financeCode))
-        .collect(Collectors.toList());
+      /*
+       * fundingSourceSearchTemp = fundingSourceManager.findAll().stream()
+       * .filter(f -> f.getFundingSourceInfo(this.getActualPhase()) != null
+       * && f.getFundingSourceInfo(this.getActualPhase()).getFinanceCode() != null
+       * && f.getFundingSourceInfo(this.getActualPhase()).getFinanceCode().equals(financeCode))
+       * .collect(Collectors.toList());
+       */
+      // if finance code does not exist
+      fundingSource.setCrp(loggedCrp);
+      fundingSource.setCreateDate(new Date());
+      fundingSource = fundingSourceManager.saveFundingSource(fundingSource);
 
-      if (fundingSourceSearchTemp == null || fundingSourceSearchTemp.isEmpty()) {
-        // if finance code does not exist
-        fundingSource.setCrp(loggedCrp);
-        fundingSource.setCreateDate(new Date());
-        fundingSource = fundingSourceManager.saveFundingSource(fundingSource);
+      fundingSourceID = fundingSource.getId();
 
-        fundingSourceID = fundingSource.getId();
+      Phase phase = this.getActualPhase();
+      boolean hasNext = true;
+      Institution leadInstitution = new Institution();
+      leadInstitution = institutionManager.getInstitutionById(Integer.parseInt(institutionLead));
+      while (hasNext) {
 
-        Phase phase = this.getActualPhase();
-        boolean hasNext = true;
-        Institution leadInstitution = new Institution();
-        leadInstitution = institutionManager.getInstitutionById(Integer.parseInt(institutionLead));
-        while (hasNext) {
-
-          FundingSourceInfo fundingSourceInfo = new FundingSourceInfo();
-          fundingSourceInfo.setModificationJustification("New expected project bilateral cofunded created");
-          fundingSourceInfo.setPhase(phase);
-          fundingSourceInfo.setFinanceCode(financeCode);
-          fundingSourceInfo.setLeadCenter(leadInstitution);
-          fundingSourceInfo.setStatus(Integer.parseInt(agreementStatusValue));
-          fundingSourceInfo.setFundingSource(fundingSourceManager.getFundingSourceById(fundingSourceID));
-          fundingSourceInfoID = fundingSourceInfoManager.saveFundingSourceInfo(fundingSourceInfo).getId();
+        FundingSourceInfo fundingSourceInfo = new FundingSourceInfo();
+        fundingSourceInfo.setModificationJustification("New expected project bilateral cofunded created");
+        fundingSourceInfo.setPhase(phase);
+        fundingSourceInfo.setFinanceCode(financeCode);
+        fundingSourceInfo.setLeadCenter(leadInstitution);
+        fundingSourceInfo.setStatus(Integer.parseInt(agreementStatusValue));
+        fundingSourceInfo.setFundingSource(fundingSourceManager.getFundingSourceById(fundingSourceID));
+        fundingSourceInfoID = fundingSourceInfoManager.saveFundingSourceInfo(fundingSourceInfo).getId();
 
 
-          if (phase.getNext() != null) {
-            phase = phase.getNext();
-          } else {
-            hasNext = false;
-          }
+        if (phase.getNext() != null) {
+          phase = phase.getNext();
+        } else {
+          hasNext = false;
         }
-
-        if (partnertsIDList != null) {
-          for (String partner : partnertsIDList) {
-            FundingSourceInstitution fundingSourceInstitution = new FundingSourceInstitution();;
-            fundingSourceInstitution.setInstitution(institutionManager.getInstitutionById(Integer.parseInt(partner)));
-            fundingSourceInstitution.setFundingSource(fundingSource);
-            fundingSourceInstitution.setPhase(this.getActualPhase());
-            fundingSourceInstitutionManager.saveFundingSourceInstitution(fundingSourceInstitution);
-          }
-        }
-        /*
-         * LiaisonUser user = liaisonUserManager.getLiaisonUserByUserId(this.getCurrentUser().getId(),
-         * loggedCrp.getId());
-         * if (user != null) {
-         * LiaisonInstitution liaisonInstitution = user.getLiaisonInstitution();
-         * try {
-         * if (liaisonInstitution != null && liaisonInstitution.getInstitution() != null) {
-         * Institution institution =
-         * institutionManager.getInstitutionById(liaisonInstitution.getInstitution().getId());
-         * FundingSourceInstitution fundingSourceInstitution = new FundingSourceInstitution();
-         * fundingSourceInstitution.setFundingSource(fundingSource);
-         * fundingSourceInstitution.setPhase(this.getActualPhase());
-         * fundingSourceInstitution.setInstitution(institution);
-         * fundingSourceInstitutionManager.saveFundingSourceInstitution(fundingSourceInstitution);
-         * }
-         * } catch (Exception e) {
-         * logger.error("unable to save FundingSourceInstitution", e);
-         * }
-         * }
-         */
-        // this.clearPermissionsCache();
-        // HJ : add the permission String
-        AuthorizationInfo info = ((APCustomRealm) this.securityContext.getRealm())
-          .getAuthorizationInfo(this.securityContext.getSubject().getPrincipals());
-
-        String params[] = {loggedCrp.getAcronym(), fundingSource.getId() + ""};
-        info.getStringPermissions()
-          .add(this.generatePermission(Permission.PROJECT_FUNDING_SOURCE_BASE_PERMISSION, params));
-
-        if (fundingSourceID > 0) {
-          return SUCCESS;
-        }
-
-      } else {
-        // if finance code already exist
-        if (fundingSourceSearchTemp.get(0) != null) {
-          fundingSourceSearch = fundingSourceSearchTemp.get(0);
-        }
-
       }
+
+      if (partnertsIDList != null) {
+        for (String partner : partnertsIDList) {
+          FundingSourceInstitution fundingSourceInstitution = new FundingSourceInstitution();;
+          fundingSourceInstitution.setInstitution(institutionManager.getInstitutionById(Integer.parseInt(partner)));
+          fundingSourceInstitution.setFundingSource(fundingSource);
+          fundingSourceInstitution.setPhase(this.getActualPhase());
+          fundingSourceInstitutionManager.saveFundingSourceInstitution(fundingSourceInstitution);
+        }
+      }
+      /*
+       * LiaisonUser user = liaisonUserManager.getLiaisonUserByUserId(this.getCurrentUser().getId(),
+       * loggedCrp.getId());
+       * if (user != null) {
+       * LiaisonInstitution liaisonInstitution = user.getLiaisonInstitution();
+       * try {
+       * if (liaisonInstitution != null && liaisonInstitution.getInstitution() != null) {
+       * Institution institution =
+       * institutionManager.getInstitutionById(liaisonInstitution.getInstitution().getId());
+       * FundingSourceInstitution fundingSourceInstitution = new FundingSourceInstitution();
+       * fundingSourceInstitution.setFundingSource(fundingSource);
+       * fundingSourceInstitution.setPhase(this.getActualPhase());
+       * fundingSourceInstitution.setInstitution(institution);
+       * fundingSourceInstitutionManager.saveFundingSourceInstitution(fundingSourceInstitution);
+       * }
+       * } catch (Exception e) {
+       * logger.error("unable to save FundingSourceInstitution", e);
+       * }
+       * }
+       */
+      // this.clearPermissionsCache();
+      // HJ : add the permission String
+      AuthorizationInfo info = ((APCustomRealm) this.securityContext.getRealm())
+        .getAuthorizationInfo(this.securityContext.getSubject().getPrincipals());
+
+      String params[] = {loggedCrp.getAcronym(), fundingSource.getId() + ""};
+      info.getStringPermissions()
+        .add(this.generatePermission(Permission.PROJECT_FUNDING_SOURCE_BASE_PERMISSION, params));
+
+      if (fundingSourceID > 0) {
+        return SUCCESS;
+      }
+
+
     } else {
       return ERROR;
     }

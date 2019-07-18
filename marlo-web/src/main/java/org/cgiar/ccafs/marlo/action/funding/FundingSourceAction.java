@@ -941,6 +941,7 @@ public class FundingSourceAction extends BaseAction {
       fundingSource.getFundingSourceInfo().setFile(null);
       fundingSource.getFundingSourceInfo().setFileResearch(null);
       fundingSource.getFundingSourceInfo().setHasFileResearch(null);
+      fundingSource.getFundingSourceInfo().setLeadCenter(null);
       if (fundingSource.getInstitutions() != null) {
         for (FundingSourceInstitution fundingSourceInstitution : fundingSource.getInstitutions()) {
           fundingSourceInstitution
