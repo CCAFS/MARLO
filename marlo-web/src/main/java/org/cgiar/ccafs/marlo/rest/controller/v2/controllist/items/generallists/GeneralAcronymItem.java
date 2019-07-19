@@ -53,16 +53,16 @@ public class GeneralAcronymItem<T> {
    * 
    * @return a List of GeneralAcronymDTO with the General Acronyms Items founded
    */
-  public List<GeneralAcronymDTO> findGeneralAcronymByAcronym(String acronym) {
+  public ResponseEntity<List<GeneralAcronymDTO>> findGeneralAcronymByAcronym(String acronym) {
     if (this.generalAcronymManager.getGeneralAcronymByAcronym(acronym) != null) {
       List<GeneralAcronym> generalAcronyms = new ArrayList<>(
         this.generalAcronymManager.getGeneralAcronymByAcronym(acronym).stream().collect(Collectors.toList()));
       List<GeneralAcronymDTO> generalAcronymDTOList = generalAcronyms.stream()
         .map(generalAcronymEntity -> this.generalAcronymMapper.generalAcronymToGeneralAcronymDTO(generalAcronymEntity))
         .collect(Collectors.toList());
-      return generalAcronymDTOList;
+      return new ResponseEntity<List<GeneralAcronymDTO>>(generalAcronymDTOList, HttpStatus.OK);
     } else {
-      return null;
+      return new ResponseEntity<List<GeneralAcronymDTO>>(HttpStatus.NOT_FOUND);
     }
   }
 
