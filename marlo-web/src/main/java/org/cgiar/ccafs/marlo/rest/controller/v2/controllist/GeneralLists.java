@@ -89,23 +89,25 @@ public class GeneralLists {
 
 
   /**
-   * Find an acronym requesting id
+   * find Acronyms by acronym *
    * 
-   * @param Acronym id
-   * @return a generalAcronymItem with the Acronym info.
+   * @return a List of GeneralAcronymDTO with General Acronym Items founded.
    */
 
-  @ApiOperation(value = "${GeneralLists.acronyms.code.value}", response = GeneralAcronymDTO.class)
+  @ApiOperation(value = "${GeneralLists.acronyms.acronym.value}", response = GeneralAcronymDTO.class,
+    responseContainer = "List")
   @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
-  @RequestMapping(value = "/acronyms/{code}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<GeneralAcronymDTO> findAcronymByCode(
-    @ApiParam(value = "${GeneralLists.acronyms.code.param.code}", required = true) @PathVariable Long code) {
-    ResponseEntity<GeneralAcronymDTO> response = this.generalAcronymItem.findGeneralAcronymById(code);
+  @RequestMapping(value = "/acronyms/{acronym}", method = RequestMethod.GET,
+    produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<List<GeneralAcronymDTO>> findAcronymByAcronym(
+    @ApiParam(value = "${GeneralLists.acronyms.acronym.param.acronym}", required = true) @PathVariable String acronym) {
+    ResponseEntity<List<GeneralAcronymDTO>> response = this.generalAcronymItem.findGeneralAcronymByAcronym(acronym);
     if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
-      throw new NotFoundException("404", this.env.getProperty("GeneralLists.acronyms.code.404"));
+      throw new NotFoundException("404", this.env.getProperty("GeneralLists.acronyms.acronym.404"));
     }
     return response;
   }
+
 
   /**
    * Find a country requesting numeric ISO Codeby id
@@ -241,6 +243,7 @@ public class GeneralLists {
     }
     return response;
   }
+
 
   /**
    * Get All the Acronym items *

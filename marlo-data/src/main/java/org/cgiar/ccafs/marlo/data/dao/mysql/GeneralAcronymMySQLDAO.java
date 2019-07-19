@@ -58,6 +58,7 @@ public class GeneralAcronymMySQLDAO extends AbstractMarloDAO<GeneralAcronym, Lon
 
   }
 
+
   @Override
   public List<GeneralAcronym> findAll() {
     String query = "from " + GeneralAcronym.class.getName() + " where is_active=1";
@@ -69,9 +70,10 @@ public class GeneralAcronymMySQLDAO extends AbstractMarloDAO<GeneralAcronym, Lon
 
   }
 
+
   @Override
   public List<GeneralAcronym> findByAcronym(String acronym) {
-    String query = "from " + GeneralAcronym.class.getName() + " where is_active=1 and acronym=" + acronym;
+    String query = "from " + GeneralAcronym.class.getName() + " where is_active=1 and acronym='" + acronym + "'";
     List<GeneralAcronym> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
