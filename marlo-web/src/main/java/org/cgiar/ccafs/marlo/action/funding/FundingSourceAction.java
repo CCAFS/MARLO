@@ -515,6 +515,18 @@ public class FundingSourceAction extends BaseAction {
     return region;
   }
 
+  public void mapFundingSource() {
+
+
+    FundingSourceInstitution fundingSourceInstitution = new FundingSourceInstitution();;
+    // fundingSourceInstitution.setInstitution(institutionManager.getInstitutionById(Integer.parseInt(partner)));
+    fundingSourceInstitution.setFundingSource(fundingSource);
+    fundingSourceInstitution.setPhase(this.getActualPhase());
+    fundingSourceInstitutionManager.saveFundingSourceInstitution(fundingSourceInstitution);
+
+  }
+
+
   @Override
   public void prepare() throws Exception {
     loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
@@ -995,7 +1007,6 @@ public class FundingSourceAction extends BaseAction {
       return;
     }
   }
-
 
   @Override
   public String save() {

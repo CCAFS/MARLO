@@ -2246,6 +2246,20 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
   }
 
+  public Phase getCRPPhase(long crpID, int year, String description) {
+    Phase phase = null;
+    List<Phase> phases = new ArrayList<>();
+    phases = phaseManager.findAll().stream()
+      .filter(p -> p != null && p.getCrp() != null && p.getCrp().getId() == crpID && p.getYear() != 0
+        && p.getYear() == year && p.getDescription() != null && p.getDescription().equals(description))
+      .collect(Collectors.toList());
+    if (phases != null && phases.size() > 0) {
+      phase = phases.get(0);
+    }
+
+    return phase;
+  }
+
   /**
    * Get the crp that is currently save in the session, if the user access to
    * the platform whit a diferent url, get the current action to catch the crp
@@ -2762,18 +2776,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       .collect(Collectors.toList());
     if (phases != null && phases.size() > 0) {
       phase = phases.get(phases.size() - 1);
-    }
-
-    return phase;
-  }
-
-  public Phase getCRPPhase(long crpID, int year, String description) {
-    Phase phase = null;
-    List<Phase> phases = new ArrayList<>();
-    phases = phaseManager.findAll().stream().filter(p -> p != null && p.getCrp() != null && p.getCrp().getId() == crpID  && p.getYear()!= 0 && p.getYear() == year && p.getDescription() != null && p.getDescription().equals(description))
-      .collect(Collectors.toList());
-    if (phases != null && phases.size() > 0) {
-      phase = phases.get(0);
     }
 
     return phase;
@@ -5852,8 +5854,12 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     if (this.isReportingActive()) {
 
       try {
-        Date reportingDate = this.getActualPhase().getStartDate();
-        if (project.getCreateDate().compareTo(reportingDate) >= 0) {
+        Date reportingDate = null;
+        if (this.getActualPhase() != null && this.getActualPhase().getStartDate() != null) {
+          reportingDate = this.getActualPhase().getStartDate();
+        }
+        if (reportingDate != null && project.getCreateDate() != null && project != null
+          && project.getCreateDate().compareTo(reportingDate) >= 0) {
           return true;
         } else {
           return false;
@@ -5866,8 +5872,12 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
     } else {
       try {
-        Date reportingDate = this.getActualPhase().getStartDate();
-        if (project.getCreateDate().compareTo(reportingDate) >= 0) {
+        Date reportingDate = null;
+        if (this.getActualPhase() != null && this.getActualPhase().getStartDate() != null) {
+          reportingDate = this.getActualPhase().getStartDate();
+        }
+        if (reportingDate != null && project.getCreateDate() != null && project != null
+          && project.getCreateDate().compareTo(reportingDate) >= 0) {
           return true;
         } else {
           return false;
