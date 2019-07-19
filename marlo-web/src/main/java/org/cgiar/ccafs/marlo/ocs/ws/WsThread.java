@@ -176,6 +176,7 @@ public class WsThread implements Runnable {
         ResearcherOCS researcherOCS = new ResearcherOCS();
         researcherOCS.setId(myAgree.getResearcher());
         researcherOCS.setName(myAgree.getResearcherText());
+        researcherOCS.setEmail(myAgree.getResearcherEmail());
         agreementOCS.setResearcher(researcherOCS);
         agreementOCS.setContractStatus(myAgree.getStatus());
       }
