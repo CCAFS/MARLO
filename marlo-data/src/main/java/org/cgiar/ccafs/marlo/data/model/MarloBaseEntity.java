@@ -15,6 +15,8 @@
 
 package org.cgiar.ccafs.marlo.data.model;
 
+import java.io.Serializable;
+
 import javax.persistence.MappedSuperclass;
 
 import com.google.gson.annotations.Expose;
@@ -26,7 +28,9 @@ import com.google.gson.annotations.Expose;
  * @author GrantL
  */
 @MappedSuperclass
-public abstract class MarloBaseEntity {
+public abstract class MarloBaseEntity implements Serializable {
+
+  private static final long serialVersionUID = -1946448897338806276L;
 
   @Expose
   private Long id;
