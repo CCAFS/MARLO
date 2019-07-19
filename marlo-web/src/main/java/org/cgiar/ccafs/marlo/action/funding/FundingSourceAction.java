@@ -941,7 +941,6 @@ public class FundingSourceAction extends BaseAction {
       fundingSource.getFundingSourceInfo().setFile(null);
       fundingSource.getFundingSourceInfo().setFileResearch(null);
       fundingSource.getFundingSourceInfo().setHasFileResearch(null);
-      fundingSource.getFundingSourceInfo().setLeadCenter(null);
       if (fundingSource.getInstitutions() != null) {
         for (FundingSourceInstitution fundingSourceInstitution : fundingSource.getInstitutions()) {
           fundingSourceInstitution
@@ -982,6 +981,7 @@ public class FundingSourceAction extends BaseAction {
 
       fundingSource.getFundingSourceInfo(this.getActualPhase()).setW1w2(null);
       fundingSource.getFundingSourceInfo(this.getActualPhase()).setFile(null);
+      fundingSource.getFundingSourceInfo(this.getActualPhase()).setLeadCenter(null);
 
       fundingSource.getFundingSourceInfo(this.getActualPhase()).setDirectDonor(null);
       fundingSource.getFundingSourceInfo(this.getActualPhase()).setOriginalDonor(null);
@@ -1020,6 +1020,15 @@ public class FundingSourceAction extends BaseAction {
       } else {
         fundingSourceInfoDB.setOriginalDonor(null);
       }
+
+      if (fundingSource.getFundingSourceInfo().getLeadCenter() != null
+        && fundingSource.getFundingSourceInfo().getLeadCenter().getId() != null
+        && fundingSource.getFundingSourceInfo().getLeadCenter().getId().longValue() != -1) {
+        fundingSourceInfoDB.setOriginalDonor(fundingSource.getFundingSourceInfo().getLeadCenter());
+      } else {
+        fundingSourceInfoDB.setLeadCenter(null);
+      }
+
 
       fundingSourceInfoDB.setTitle(fundingSource.getFundingSourceInfo().getTitle());
       fundingSourceInfoDB.setStatus(fundingSource.getFundingSourceInfo().getStatus());
