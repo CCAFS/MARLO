@@ -99,8 +99,11 @@ public class FundingSourceByInstitutionFinanceCodeAction extends BaseAction {
           }
         }
       }
-      summaries = new ArrayList<>();
-      summaries.addAll(summariesTemp);
+
+      if (summariesTemp != null) {
+        summaries = new ArrayList<>();
+        summaries.addAll(summariesTemp);
+      }
     }
     if (summaries != null) {
       for (FundingSourceSearchSummary summary : summaries) {
