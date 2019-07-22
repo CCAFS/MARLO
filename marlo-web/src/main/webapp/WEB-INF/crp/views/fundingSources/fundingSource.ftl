@@ -92,12 +92,12 @@
                 [#-- Finance Channel --]
                 <div class="input-group-btn financeChannel">
                   <button type="button" class="btn btn-default btn-sm dropdown-toggle ${isSynced?string('disabled', '')}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <span class="partnerLeadSelectedName"> ${(fundingSource.fundingSourceInfo.leadCenter.acronym)!"Select a Partner..."} </span>  <span class="caret"></span>
+                    <span class="partnerLeadSelectedName"> ${(fundingSource.fundingSourceInfo.leadCenter.acronym)!"Select a partner lead..."} </span>  <span class="caret"></span>
                     <input type="hidden" class="partnerLeadInput" name="fundingSource.fundingSourceInfo.leadCenter.id" value="${(fundingSource.fundingSourceInfo.leadCenter.id)!}" />
                   </button>
                   <ul class="dropdown-menu">
                     [#list (fundingSource.institutions)![] as partnerInstitution]
-                      <li><a href="#" class="setPartnerLead value-${(partnerInstitution.institution.id)!}"><small>${(partnerInstitution.institution.acronym)!}</small></a></li>
+                      <li class="setPartnerLead value-${(partnerInstitution.institution.id)!}"><a href="">${(partnerInstitution.institution.acronym)!}</a></li>
                     [/#list]
                   </ul>
                 </div><!-- /btn-group -->
@@ -105,8 +105,10 @@
                 <input type="text" name="fundingSource.fundingSourceInfo.financeCode" value="${(fundingSource.fundingSourceInfo.financeCode)!}" class="form-control input-sm financeCode optional" [#if isSynced]readonly="readonly"[/#if] placeholder="e.g. OCS Code">
               [#else]
                 <small>${(fundingSource.fundingSourceInfo.leadCenter.acronym)!}: </small> ${(fundingSource.fundingSourceInfo.financeCode)!}
-                <input type="hidden" class="financeCode" name="fundingSource.fundingSourceInfo.financeCode" value="${(fundingSource.fundingSourceInfo.financeCode)!}"/>
+                <input type="hidden" name="fundingSource.fundingSourceInfo.leadCenter.id" value="${(fundingSource.fundingSourceInfo.leadCenter.id )!}"/>
+                <input type="hidden" name="fundingSource.fundingSourceInfo.financeCode" class="financeCode"  value="${(fundingSource.fundingSourceInfo.financeCode)!}"/>
               [/#if]
+              <input type="hidden" name="fundingSource.fundingSourceInfo.leadCenter.acronym" value="${(fundingSource.fundingSourceInfo.leadCenter.acronym)!}"/>
             </div>
             <span class="financeCode-message"></span>
           </div>

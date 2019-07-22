@@ -1,6 +1,6 @@
 var dateFormat, from, to, extension;
 var W1W2, ON_GOING, EXTENDED_STATUS;
-var $fundingType;
+var $fundingType, $financeCode, $leadPartner;
 $(document).ready(init);
 
 function init() {
@@ -9,7 +9,8 @@ function init() {
   W1W2 = 1;
   ON_GOING = 2;
   EXTENDED_STATUS = 4;
-
+  $financeCode = $('input.financeCode');
+  $leadPartner = $('input.partnerLeadInput');
   $fundingType = $(".fundingType");
 
   // Set Dateformat
@@ -72,21 +73,16 @@ function init() {
   addDataTable();
 
   // Partner(s) managing the funding source
-  $(".institution").on("change", function() {
-    var option = $(this).find("option:selected");
-    if(option.val() != "-1") {
-      addLeadPartner(option);
-    }
-    // Remove option from select
-    option.remove();
-    $(this).trigger("change.select2");
-  });
-
   $('select.elementType-institution').on("addElement removeElement beforeRemoveElement", function(e,id,name) {
     var $divisionBlock = $('.division-' + id);
 
     if(e.type == "addElement") {
       $divisionBlock.slideDown();
+
+      // Add finance channel
+      var $item = $('<li class="setPartnerLead value-' + id + '"><a href="">' + (name.split('-'))[0] + '</a></li>');
+      $('.financeChannel ul.dropdown-menu').append($item);
+      $item.on("click", setPartnerLead);
     }
 
     if(e.type == "beforeRemoveElement") {
@@ -99,30 +95,14 @@ function init() {
 
     if(e.type == "removeElement") {
       $divisionBlock.slideUp();
+
+      // Remove finance channel
+      var $item = $('li.setPartnerLead.value-' + id);
+      $item.remove();
     }
   });
 
-  $('.setPartnerLead').on("click", function(e) {
-    e.preventDefault();
-    var institutionID = $(this).classParam("value");
-    var CIAT_ID = 46;
-    var hasCIATSelected = (institutionID == CIAT_ID);
-    var $syncComponents = $('.buttons-field, .extensionDateBlock');
-
-    // Show CIAT OCS Sync buttons
-    if(hasCIATSelected) {
-      $syncComponents.slideDown(200);
-    } else {
-      $syncComponents.slideUp(200);
-      if(isSynced) {
-        unSyncFundingSource();
-      }
-    }
-    refreshYears();
-
-    $('input.partnerLeadInput').val(institutionID);
-    $('.partnerLeadSelectedName').text($(this).text());
-  });
+  $('.setPartnerLead').on("click", setPartnerLead);
 
   // On Change agreementStatus
   $('.agreementStatus').on('change', onChangeStatus);
@@ -288,6 +268,60 @@ function init() {
 
   // Check total grant amount
   $('.currencyInput').on('keyup', keyupBudgetYear).trigger('keyup');
+}
+
+function setPartnerLead(e) {
+  e.preventDefault();
+  var institutionID = $(this).classParam("value");
+  var CIAT_ID = 46;
+  var hasCIATSelected = (institutionID == CIAT_ID);
+  var $syncComponents = $('.buttons-field'); // .extensionDateBlock
+
+  // Show CIAT OCS Sync buttons
+  if(hasCIATSelected) {
+    $syncComponents.slideDown(200);
+  } else {
+    $syncComponents.slideUp(200);
+    if(isSynced) {
+      unSyncFundingSource();
+    }
+  }
+  refreshYears();
+
+  $('input.partnerLeadInput').val(institutionID);
+  $('.partnerLeadSelectedName').text($(this).text());
+
+  // Find Funding Sources
+  findDuplicatedFinanceSource();
+}
+
+function findDuplicatedFinanceSource() {
+  var financeCode = $.trim($financeCode.val());
+  var leadPartnerID = $.trim($leadPartner.val());
+
+  if(!financeCode || !leadPartnerID) {
+    return;
+  }
+
+  $.ajax({
+      url: baseURL + '/FundingSourceByCenterFinanceCode.do',
+      data: {
+          phaseID: phaseID,
+          financeCode: financeCode,
+          institutionLead: leadPartnerID
+      },
+      beforeSend: function() {
+        $financeCode.addClass('input-loading')
+      },
+      success: function(result) {
+        console.log(result);
+      },
+      error: function(e) {
+      },
+      complete: function() {
+        $financeCode.removeClass('input-loading')
+      }
+  });
 }
 
 /**
