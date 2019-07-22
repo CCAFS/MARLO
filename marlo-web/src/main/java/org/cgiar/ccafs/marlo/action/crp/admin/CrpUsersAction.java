@@ -544,8 +544,8 @@ public class CrpUsersAction extends BaseAction {
               newUser.setUsername(LDAPUser.getLogin().toLowerCase());
               newUser.setCgiarUser(true);
               newUser = userManager.saveUser(newUser);
-              message = this.getText("saving.saved.user");
-              this.addActionMessage("message:" + this.getText("saving.saved.user"));
+              message = this.getText("saving.saved.guestRole");
+              this.addActionMessage("message:" + this.getText("saving.saved.guestRole"));
             } else {
               // Non CGIAR user
               isCGIARUser = false;
@@ -558,8 +558,8 @@ public class CrpUsersAction extends BaseAction {
                 password = RandomStringUtils.randomNumeric(6);
                 newUser.setPassword(password);
                 newUser = userManager.saveUser(newUser);
-                message = this.getText("saving.saved.user");
-                this.addActionMessage("message:" + this.getText("saving.saved.user"));
+                message = this.getText("saving.saved.guestRole");
+                this.addActionMessage("message:" + this.getText("saving.saved.guestRole"));
               }
             }
 
