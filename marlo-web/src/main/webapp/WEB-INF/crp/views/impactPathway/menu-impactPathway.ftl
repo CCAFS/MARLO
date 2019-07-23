@@ -207,8 +207,5 @@
 [#-- Discard Changes Popup --]
 [#include "/WEB-INF/global/macros/discardChangesPopup.ftl"]
 
-[#-- program Submit JS --]
-[#if !centerGlobalUnit]
-  [#assign customJS = [ "${baseUrl}/js/impactPathway/impactGraphic.js" ] + customJS  /]
-[/#if]
+[#-- Program Submit JS --]
 [#assign customJS = [ "${baseUrlMedia}/js/impactPathway/programSubmit.js" ] + customJS  /]
