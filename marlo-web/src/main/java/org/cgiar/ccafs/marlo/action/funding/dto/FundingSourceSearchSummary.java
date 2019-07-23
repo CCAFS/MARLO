@@ -39,12 +39,17 @@ public class FundingSourceSearchSummary {
 
   private Boolean w1w2;
 
+  private String crpName;
+
+
   /**
    * This needs to be determined by the securityContext in some cases where the specificity applies
    */
   private boolean canSelect = true;
 
+
   private Double budget = new Double(0);
+
 
   private Double usedAmount = new Double(0);
 
@@ -52,25 +57,27 @@ public class FundingSourceSearchSummary {
 
   }
 
-
   public Map<String, Object> convertToMap() {
     ObjectMapper oMapper = new ObjectMapper();
 
     Map<String, Object> map = oMapper.convertValue(this, Map.class);
 
     return map;
-
   }
-
 
   public Double getAmount() {
     return budget - usedAmount;
   }
 
+
   public Double getBudget() {
     return budget;
   }
 
+
+  public String getCrpName() {
+    return crpName;
+  }
 
   public String getFinanceCode() {
     return financeCode;
@@ -124,6 +131,11 @@ public class FundingSourceSearchSummary {
 
   public void setCanSelect(boolean canSelect) {
     this.canSelect = canSelect;
+  }
+
+
+  public void setCrpName(String crpName) {
+    this.crpName = crpName;
   }
 
 

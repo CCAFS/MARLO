@@ -102,8 +102,8 @@ public class FundingSourceService extends BaseAction {
             }
           }
         }
-        summaries = null;
-        if (summariesTemp != null) {
+        summaries = new ArrayList<>();
+        if (summariesTemp != null && !summariesTemp.isEmpty()) {
           summaries.addAll(summariesTemp);
         }
       }

@@ -34,6 +34,7 @@ import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.dispatcher.Parameter;
+import org.jfree.util.Log;
 
 
 public class FundingSourceByInstitutionFinanceCodeAction extends BaseAction {
@@ -67,7 +68,6 @@ public class FundingSourceByInstitutionFinanceCodeAction extends BaseAction {
   @Override
   public String execute() throws Exception {
     sources = new ArrayList<>();
-
     GlobalUnit loggedCrp = crpManager.getGlobalUnitById(this.getCrpID());
 
     /**
@@ -106,10 +106,25 @@ public class FundingSourceByInstitutionFinanceCodeAction extends BaseAction {
       }
     }
     if (summaries != null) {
+      String crpName = null;
       for (FundingSourceSearchSummary summary : summaries) {
+        if (summary.getId() != null) {
+          Long crpID = fundingSourceManager
+            .getFundingSourceById(Long.parseLong(String.valueOf(summary.getId().intValue()))).getCrp().getId();
+          if (crpID != null) {
+            if (crpManager.getGlobalUnitById(crpID).getAcronym() != null) {
+              crpName = crpManager.getGlobalUnitById(crpID).getAcronym();
+            } else {
+              crpName = crpManager.getGlobalUnitById(crpID).getName();
+            }
+
+            if (crpName != null) {
+              summary.setCrpName(crpName);
+            }
+          }
+        }
 
         if (summary.getTypeId().intValue() == 1) {
-
           String permission =
             this.generatePermission(Permission.PROJECT_FUNDING_W1_BASE_PERMISSION, loggedCrp.getAcronym());
 
@@ -130,8 +145,12 @@ public class FundingSourceByInstitutionFinanceCodeAction extends BaseAction {
   @Override
   public void prepare() throws Exception {
     Map<String, Parameter> parameters = this.getParameters();
-    financeCode = StringUtils.trim(parameters.get(APConstants.FINANCE_CODE).getMultipleValues()[0]);
-    leadCenter = StringUtils.trim(parameters.get(APConstants.INSTITUTION_LEAD).getMultipleValues()[0]);
+    try {
+      financeCode = StringUtils.trim(parameters.get(APConstants.FINANCE_CODE).getMultipleValues()[0]);
+      leadCenter = StringUtils.trim(parameters.get(APConstants.INSTITUTION_LEAD).getMultipleValues()[0]);
+    } catch (Exception e) {
+      Log.info(e);
+    }
   }
 
   public void setSources(List<Map<String, Object>> sources) {
