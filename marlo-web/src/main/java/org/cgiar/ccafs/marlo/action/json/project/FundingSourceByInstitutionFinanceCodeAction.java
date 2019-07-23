@@ -27,6 +27,7 @@ import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -53,7 +54,7 @@ public class FundingSourceByInstitutionFinanceCodeAction extends BaseAction {
   private String queryParameter;
   private FundingSourceManager fundingSourceManager;
   private PhaseManager phaseManager;
-
+  private HashMap<String, FundingSourceSearchSummary> crpMap;
 
   @Inject
   public FundingSourceByInstitutionFinanceCodeAction(APConfig config, FundingSourceManager fundingSourceManager,
@@ -120,6 +121,7 @@ public class FundingSourceByInstitutionFinanceCodeAction extends BaseAction {
 
             if (crpName != null) {
               summary.setCrpName(crpName);
+
             }
           }
         }
@@ -130,7 +132,9 @@ public class FundingSourceByInstitutionFinanceCodeAction extends BaseAction {
 
           boolean hasPermission = this.hasPermissionNoBase(permission);
           summary.setCanSelect(hasPermission);
+
         }
+        //crpMap.put(crpName, summary);
         sources.add(summary.convertToMap());
       }
     }
