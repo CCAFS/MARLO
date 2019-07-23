@@ -337,6 +337,34 @@ $(document).ready(function() {
 
 });
 
+$(document).ajaxError(function(event,jqxhr,settings,exception) {
+  if(production) {
+    var slackMessage = {
+        "text": "MARLO Ajax Exception",
+        "attachments": [
+          {
+              "color": "#e74c3c",
+              "author_name": $('.login-input-container.username span').text(),
+              "text": jqxhr.status + " - " + jqxhr.statusText,
+              "fields": [
+                  {
+                      "title": "CGIAR Entity",
+                      "value": $('input#crp-input').val(),
+                      "short": true
+                  }, {
+                      "title": "Username/Email",
+                      "value": $('input.user-email').val(),
+                      "short": true
+                  }
+              ],
+              "footer": settings.url,
+          }
+        ]
+    };
+    postMessageToSlack(JSON.stringify(slackMessage));
+  }
+});
+
 jQuery.fn.setTrumbowyg = function() {
   var $editor = $(this);
   if($.fn.trumbowyg) {
