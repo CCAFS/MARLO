@@ -53,36 +53,6 @@ $(document).ready(function() {
     });
   });
 
-  // Tawkto Widget
-  var $dragButton = $("#draggable-button");
-  $dragButton.hide();
-
-  Tawk_API.onLoad = function() {
-    $dragButton.show();
-    $dragButton.animateCss('flipInY');
-    $dragButton.draggable();
-    $dragButton.find('p').on('click', function() {
-      Tawk_API.toggle();
-    });
-  };
-
-  Tawk_API.onChatStarted = function() {
-    setCustomEvent('Tawto_CGIAR_Entity', 'onChatStarted', currentCrpSession);
-  };
-
-  Tawk_API.onChatEnded = function() {
-    setCustomEvent('Tawto_CGIAR_Entity', 'onChatEnded', currentCrpSession);
-  };
-
-  function hideDragButton() {
-    if(Tawk_API.isVisitorEngaged()) {
-      $dragButton.find('.status').text('On-Going Chat');
-    } else {
-      $dragButton.find('.status').text('');
-    }
-    $dragButton.fadeIn();
-  }
-
   // Save Button click (Loading state)
   $('button[name=save]').on('click', function(e) {
     if($(this).hasClass('disabled')) {
