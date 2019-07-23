@@ -40,7 +40,6 @@ public class MyIntegrator implements Integrator {
   @Override
   public void integrate(Configuration configuration, SessionFactoryImplementor sessionFactory,
     SessionFactoryServiceRegistry serviceRegistry) {
-
     final EventListenerRegistry eventListenerRegistry = serviceRegistry.getService(EventListenerRegistry.class);
 
     HibernateAuditLogListener hibernateAuditLogListener = new HibernateAuditLogListener();

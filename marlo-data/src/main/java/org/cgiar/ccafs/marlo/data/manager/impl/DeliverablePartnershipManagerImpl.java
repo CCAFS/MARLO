@@ -274,15 +274,16 @@ public class DeliverablePartnershipManagerImpl implements DeliverablePartnership
           deliverablePartnership.getDeliverable().getId(), deliverablePartnership);
       }
     }
-    if (currentPhase.getDescription().equals(APConstants.REPORTING)) {
-      if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {
-        Phase upkeepPhase = currentPhase.getNext().getNext();
-        if (upkeepPhase != null) {
-          this.addDeliverablePartnershipPhase(upkeepPhase, deliverablePartnership.getDeliverable().getId(),
-            deliverablePartnership);
-        }
-      }
-    }
+
+    // if (currentPhase.getDescription().equals(APConstants.REPORTING)) {
+    // if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {
+    // Phase upkeepPhase = currentPhase.getNext().getNext();
+    // if (upkeepPhase != null) {
+    // this.addDeliverablePartnershipPhase(upkeepPhase, deliverablePartnership.getDeliverable().getId(),
+    // deliverablePartnership);
+    // }
+    // }
+    // }
     return dePartnership;
   }
 
@@ -291,21 +292,23 @@ public class DeliverablePartnershipManagerImpl implements DeliverablePartnership
     DeliverablePartnership partnershipDBpreview) {
     DeliverablePartnership dePartnership = deliverablePartnershipDAO.save(partnershipDBUpdated);
     Phase currentPhase = phaseDAO.find(partnershipDBUpdated.getPhase().getId());
+
     if (currentPhase.getDescription().equals(APConstants.PLANNING)) {
       if (partnershipDBUpdated.getPhase().getNext() != null) {
         this.updateDeliverablePartnershipPhase(partnershipDBUpdated.getPhase().getNext(),
           partnershipDBUpdated.getDeliverable().getId(), partnershipDBUpdated, partnershipDBpreview);
       }
     }
-    if (currentPhase.getDescription().equals(APConstants.REPORTING)) {
-      if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {
-        Phase upkeepPhase = currentPhase.getNext().getNext();
-        if (upkeepPhase != null) {
-          this.updateDeliverablePartnershipPhase(upkeepPhase, partnershipDBUpdated.getDeliverable().getId(),
-            partnershipDBUpdated, partnershipDBpreview);
-        }
-      }
-    }
+
+    // if (currentPhase.getDescription().equals(APConstants.REPORTING)) {
+    // if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {
+    // Phase upkeepPhase = currentPhase.getNext().getNext();
+    // if (upkeepPhase != null) {
+    // this.updateDeliverablePartnershipPhase(upkeepPhase, partnershipDBUpdated.getDeliverable().getId(),
+    // partnershipDBUpdated, partnershipDBpreview);
+    // }
+    // }
+    // }
     return dePartnership;
   }
 

@@ -261,14 +261,6 @@ public class ProjectPartnerManagerImpl implements ProjectPartnerManager {
     }
     Phase currentPhase = phaseDAO.find(projectPartner.getPhase().getId());
 
-    if (currentPhase.getDescription().equals(APConstants.PLANNING)) {
-
-      if (projectPartner.getPhase().getNext() != null) {
-        this.deletProjectPartnerPhase(projectPartner.getPhase().getNext(), projectPartner.getProject().getId(),
-          projectPartner);
-      }
-    }
-    // Uncomment this line to allow reporting replication to upkeep
     // if (currentPhase.getDescription().equals(APConstants.REPORTING)) {
     // if (projectPartner.getPhase().getNext() != null && projectPartner.getPhase().getNext().getNext() != null) {
     // Phase upkeepPhase = projectPartner.getPhase().getNext().getNext();
@@ -278,6 +270,13 @@ public class ProjectPartnerManagerImpl implements ProjectPartnerManager {
     // }
     // }
 
+    if (currentPhase.getDescription().equals(APConstants.PLANNING)) {
+
+      if (projectPartner.getPhase().getNext() != null) {
+        this.deletProjectPartnerPhase(projectPartner.getPhase().getNext(), projectPartner.getProject().getId(),
+          projectPartner);
+      }
+    }
 
   }
 
@@ -348,12 +347,6 @@ public class ProjectPartnerManagerImpl implements ProjectPartnerManager {
 
     ProjectPartner resultPartner = projectPartnerDAO.save(projectPartner);
     Phase currentPhase = phaseDAO.find(projectPartner.getPhase().getId());
-    if (currentPhase.getDescription().equals(APConstants.PLANNING)) {
-      if (projectPartner.getPhase().getNext() != null) {
-        this.addProjectPartnerDAO(projectPartner.getPhase().getNext(), projectPartner.getProject().getId(),
-          projectPartner);
-      }
-    }
 
     // if (currentPhase.getDescription().equals(APConstants.REPORTING)) {
     // if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {
@@ -363,6 +356,13 @@ public class ProjectPartnerManagerImpl implements ProjectPartnerManager {
     // }
     // }
     // }
+
+    if (currentPhase.getDescription().equals(APConstants.PLANNING)) {
+      if (projectPartner.getPhase().getNext() != null) {
+        this.addProjectPartnerDAO(projectPartner.getPhase().getNext(), projectPartner.getProject().getId(),
+          projectPartner);
+      }
+    }
 
 
     return resultPartner;
