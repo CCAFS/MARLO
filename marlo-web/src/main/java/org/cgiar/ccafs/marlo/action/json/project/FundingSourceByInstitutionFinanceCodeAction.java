@@ -54,7 +54,7 @@ public class FundingSourceByInstitutionFinanceCodeAction extends BaseAction {
   private String queryParameter;
   private FundingSourceManager fundingSourceManager;
   private PhaseManager phaseManager;
-  private HashMap<String, FundingSourceSearchSummary> crpMap;
+  private Map<String, Object> crpMap;
 
   @Inject
   public FundingSourceByInstitutionFinanceCodeAction(APConfig config, FundingSourceManager fundingSourceManager,
@@ -69,6 +69,7 @@ public class FundingSourceByInstitutionFinanceCodeAction extends BaseAction {
   @Override
   public String execute() throws Exception {
     sources = new ArrayList<>();
+    crpMap = new HashMap<String, Object>();
     GlobalUnit loggedCrp = crpManager.getGlobalUnitById(this.getCrpID());
 
     /**
@@ -134,9 +135,10 @@ public class FundingSourceByInstitutionFinanceCodeAction extends BaseAction {
           summary.setCanSelect(hasPermission);
 
         }
-        //crpMap.put(crpName, summary);
-        sources.add(summary.convertToMap());
+        crpMap.put(crpName, summary);
+
       }
+      sources.add(crpMap);
     }
     return SUCCESS;
   }
