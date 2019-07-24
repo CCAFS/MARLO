@@ -14,6 +14,7 @@
 	<name>marlo-web</name>
 	<description>Marlo-Web</description>
 
+
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<!-- The jdt_apt value is so that target classes can be generated from 
@@ -54,20 +55,16 @@
 	<dependencies>
 		<!-- MARLO sub-module dependecies -->
 		<dependency>
-      <groupId>org.cgiar.ccafs</groupId>
-      <artifactId>marlo-data</artifactId>
-      <version>4.3.1-SNAPSHOT</version>
-    </dependency>
+			<groupId>org.cgiar.ccafs</groupId>
+			<artifactId>marlo-data</artifactId>
+			<version>4.3.1-SNAPSHOT</version>
+		</dependency>
 		<dependency>
 			<groupId>org.cgiar.ccafs</groupId>
 			<artifactId>marlo-utils</artifactId>
 		</dependency>
 		<!-- End of project dependecies -->
 		<!-- STRUTS 2 - Framework Core -->
-		<dependency>
-			<groupId>org.apache.struts</groupId>
-			<artifactId>struts2-core</artifactId>
-		</dependency>
 		<dependency>
 			<groupId>org.apache.struts</groupId>
 			<artifactId>struts2-config-browser-plugin</artifactId>
@@ -194,7 +191,6 @@
 		<dependency>
 			<groupId>io.springfox</groupId>
 			<artifactId>springfox-swagger2</artifactId>
-			<version>2.9.2</version>
 			<exclusions>
 				<exclusion>
 					<groupId>io.swagger</groupId>
@@ -219,13 +215,12 @@
 		<dependency>
 			<groupId>io.springfox</groupId>
 			<artifactId>springfox-swagger-ui</artifactId>
-			<version>2.9.2</version>
 		</dependency>
 		<dependency>
-      <groupId>io.springfox</groupId>
-      <artifactId>springfox-bean-validators</artifactId>
-      <version>2.9.2</version>
-    </dependency>
+			<groupId>io.springfox</groupId>
+			<artifactId>springfox-bean-validators</artifactId>
+			<version>2.9.2</version>
+		</dependency>
 		<dependency>
 			<groupId>org.aspectj</groupId>
 			<artifactId>aspectjrt</artifactId>
@@ -327,7 +322,7 @@
 		<dependency>
 			<groupId>com.google.code.gson</groupId>
 			<artifactId>gson</artifactId>
-		</dependency>	
+		</dependency>
 		<dependency>
 			<groupId>com.pusher</groupId>
 			<artifactId>pusher-http-java</artifactId>
@@ -396,7 +391,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.apache.tomcat</groupId>
-			<artifactId>catalina</artifactId>
+			<artifactId>tomcat-catalina</artifactId>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
@@ -444,35 +439,35 @@
 			<groupId>com.weddini.throttling</groupId>
 			<artifactId>spring-boot-throttling-starter</artifactId>
 		</dependency>
-    <!-- Java bean validation API - Spec -->
+		<!-- Java bean validation API - Spec -->
 		<dependency>
-		    <groupId>javax.validation</groupId>
-		    <artifactId>validation-api</artifactId>
-		    <version>2.0.1.Final</version>
+			<groupId>javax.validation</groupId>
+			<artifactId>validation-api</artifactId>
+			<version>2.0.1.Final</version>
 		</dependency>
-	
+
 		<!-- Verify validation annotations usage at compile time -->
 		<dependency>
-		  <groupId>org.hibernate</groupId>
-		  <artifactId>hibernate-validator-annotation-processor</artifactId>
-		  <version>6.0.11.Final</version>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-validator-annotation-processor</artifactId>
+			<version>6.0.11.Final</version>
 		</dependency>
-		 
+
 		<!-- Unified Expression Language - Spec -->
 		<dependency>
-		    <groupId>javax.el</groupId>
-		    <artifactId>javax.el-api</artifactId>
-		    <version>3.0.1-b06</version>
+			<groupId>javax.el</groupId>
+			<artifactId>javax.el-api</artifactId>
+			<version>3.0.1-b06</version>
 		</dependency>
-		 
+
 		<!-- Unified Expression Language - Implementation -->
 		<dependency>
-		    <groupId>org.glassfish.web</groupId>
-		    <artifactId>javax.el</artifactId>
-		    <version>2.2.6</version>
+			<groupId>org.glassfish.web</groupId>
+			<artifactId>javax.el</artifactId>
+			<version>2.2.6</version>
 		</dependency>
 	</dependencies>
-	
+
 
 	<build>
 		<finalName>${project.artifactId}</finalName>
@@ -499,6 +494,7 @@
 					<systemProperties>
 						<spring.profiles.active>dev</spring.profiles.active>
 					</systemProperties>
+					<update>true</update>
 				</configuration>
 			</plugin>
 			<plugin>
