@@ -137,7 +137,7 @@ public class FundingSourceByInstitutionFinanceCodeAction extends BaseAction {
         }
         sources.add(summary.convertToMap());
       }
-      sources.add(crpMap);
+      // sources.add(crpMap);
     }
     return SUCCESS;
   }
