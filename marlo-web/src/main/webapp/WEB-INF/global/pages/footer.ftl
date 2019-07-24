@@ -40,8 +40,8 @@
     [/#if]
     
     [#-- Global Javascript --]
-    <script type="text/javascript" src="${baseUrl}/global/js/utils.js?20190410" ></script>
-    <script type="text/javascript" src="${baseUrl}/global/js/global.js?20190410" ></script>
+    <script type="text/javascript" src="${baseUrl}/global/js/utils.js?20190724" ></script>
+    <script type="text/javascript" src="${baseUrl}/global/js/global.js?20190724" ></script>
     [#if logged]
       [#-- Pusher app --]
       <script type="text/javascript" src="${baseUrl}/global/js/pusher-app.js" ></script>
@@ -51,12 +51,10 @@
     
     [#-- Changes on Save --]
     <script type="text/javascript" src="${baseUrl}/global/js/changes.js" ></script>
-    
+
     [/#compress]
     
-    <div id="draggable-button" class="hidden-print">
-      <p><span class="glyphicon glyphicon-comment"></span> Chat </p> <span class="status"></span>
-    </div>
+    
     
     [#if !config.production && config.debug]
       <div id="debugPanel" class="ui-widget-content hidden-print">

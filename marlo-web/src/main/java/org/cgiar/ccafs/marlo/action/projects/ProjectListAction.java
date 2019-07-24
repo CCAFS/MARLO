@@ -612,6 +612,7 @@ public class ProjectListAction extends BaseAction {
         project.setProjectInfo(project.getProjecInfoPhase(this.getActualPhase()));
 
       }
+
       for (Project project : myProjects) {
         project.setProjectInfo(project.getProjecInfoPhase(this.getActualPhase()));
 

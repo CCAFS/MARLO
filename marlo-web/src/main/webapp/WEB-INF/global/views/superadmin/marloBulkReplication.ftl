@@ -52,6 +52,10 @@
                   { "actionName": "activitiesReplication",
                     "i18nkey": "marloBulkReplication.activitiesReplication",
                     "service": "getActivitiesByPhase"
+                  },
+                  { "actionName": "projectsPartnersReplication",
+                    "i18nkey": "marloBulkReplication.projectsPartner",
+                    "service": "getProjectsByPhase"
                   }
                 ] /]
                 <label for="entityID">Entity:</label>

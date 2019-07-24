@@ -1,4 +1,8 @@
 [#ftl]
+<div id="draggable-button" class="hidden-print" style="display:none">
+  <p><span class="glyphicon glyphicon-comment"></span> Chat </p> <span class="status"></span>
+</div>
+
 <script type="text/javascript">
   [#-- MARLO Develop ID as default --]
   [#assign tawktoSiteId = "57864c4b7e9d57372d381198"]
@@ -13,12 +17,21 @@
   [#-- User tag --]
   [#assign userTag][#if !config.production]([#if config.debug]Develop[#else]Testing[/#if])[/#if][/#assign]
   [#-- Tawk.to Widget --]
+  var $dragButton = $("#draggable-button");
+  
   var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
   Tawk_LoadStart = new Date();
   Tawk_API.visitor = {
     'name': '${(userTag)!} ${(currentUser.composedCompleteName)!}',
   };
   Tawk_API.onLoad = function() {
+    $dragButton.show();
+    $dragButton.animateCss('flipInY');
+    $dragButton.draggable();
+    $dragButton.find('p').on('click', function() {
+      Tawk_API.toggle();
+    });
+    
     Tawk_API.setAttributes({
         'fullName': '${(userTag)!} ${(currentUser.composedCompleteName)!"No Name"}',
         'userName' : '${(currentUser.username)!"No User name"}',
@@ -26,9 +39,16 @@
         'composedId': '${(currentUser.composedID)!"No Composed ID"}',
         'userTags': '[${(roles)!}${(roles?has_content && liasons?has_content)?string(',','')}${(liasons)!}]'
         
-    }, function(error) {
+        }, function(error) {
     });
-    [#--  Tawk_API.addTags(['MARLO', '${config.production?string('Production','Development')}', '${(crpSession)!}'], function(error){});--]
+  };
+  
+  Tawk_API.onChatStarted = function() {
+    setCustomEvent('Tawto_CGIAR_Entity', 'onChatStarted', currentCrpSession);
+  };
+
+  Tawk_API.onChatEnded = function() {
+    setCustomEvent('Tawto_CGIAR_Entity', 'onChatEnded', currentCrpSession);
   };
   
   (function() {
@@ -39,4 +59,5 @@
     s1.setAttribute('crossorigin', '*');
     s0.parentNode.insertBefore(s1, s0);
   })();
+ 
 </script>
