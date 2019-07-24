@@ -755,7 +755,50 @@ public class DeliverableAction extends BaseAction {
   public List<ProjectPartnerPerson> getPersons(long projectPartnerId) {
     if (deliverable.getDeliverableInfo(this.getActualPhase()) != null
       && deliverable.getDeliverableInfo(this.getActualPhase()).isPrevious()) {
-      return projectPartnerPersonManager.findAllForProjectPartner(projectPartnerId);
+
+      List<ProjectPartnerPerson> personsQuery = projectPartnerPersonManager.findAllForProjectPartner(projectPartnerId);
+
+      List<ProjectPartnerPerson> persons = new ArrayList<>();
+      // Checking If the Previous Partner person was the same but with different position (i.e PC, PL, CP)
+      int i = 0;
+      Long userId = new Long(0L);
+      for (ProjectPartnerPerson projectPartnerPerson : personsQuery) {
+
+
+        if (i == 0) {
+
+          userId = projectPartnerPerson.getUser().getId();
+
+          if (deliverable.getResponsiblePartner() != null) {
+            if (deliverable.getResponsiblePartner().getProjectPartnerPerson() != null) {
+              if (deliverable.getResponsiblePartner().getProjectPartnerPerson().getId() != null) {
+                ProjectPartnerPerson ppPerson = projectPartnerPersonManager
+                  .getProjectPartnerPersonById(deliverable.getResponsiblePartner().getProjectPartnerPerson().getId());
+
+                userId = ppPerson.getUser().getId();
+                persons.add(ppPerson);
+
+              } else {
+                persons.add(projectPartnerPerson);
+              }
+
+            } else {
+              persons.add(projectPartnerPerson);
+            }
+          } else {
+            persons.add(projectPartnerPerson);
+          }
+
+
+        } else {
+          if (!userId.equals(projectPartnerPerson.getUser().getId())) {
+            userId = projectPartnerPerson.getUser().getId();
+            persons.add(projectPartnerPerson);
+          }
+        }
+        i++;
+      }
+      return persons;
     } else {
       return projectPartnerPersonManager.findAllActiveForProjectPartner(projectPartnerId);
     }
