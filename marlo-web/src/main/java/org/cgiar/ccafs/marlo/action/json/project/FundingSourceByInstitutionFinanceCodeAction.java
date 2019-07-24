@@ -135,8 +135,7 @@ public class FundingSourceByInstitutionFinanceCodeAction extends BaseAction {
           summary.setCanSelect(hasPermission);
 
         }
-        crpMap.put(crpName, summary);
-
+        sources.add(summary.convertToMap());
       }
       sources.add(crpMap);
     }
