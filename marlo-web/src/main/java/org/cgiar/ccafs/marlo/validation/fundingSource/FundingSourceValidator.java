@@ -178,6 +178,13 @@ public class FundingSourceValidator extends BaseValidator {
         InvalidFieldsMessages.EMPTYFIELD);
     }
 
+    // Validate the finance code, is required
+    if (!this.isValidString(fundingSource.getFundingSourceInfo().getFinanceCode())) {
+      action.addMessage(action.getText("projectCofunded.financeCode"));
+      action.getInvalidFields().put("input-fundingSource.fundingSourceInfo.financeCode",
+        InvalidFieldsMessages.EMPTYFIELD);
+    }
+
     if (!this.isValidString(fundingSource.getFundingSourceInfo().getContactPersonName())) {
       action.addMessage(action.getText("fundingSource.contactPersonName"));
       action.getInvalidFields().put("input-fundingSource.fundingSourceInfo.contactPersonName",
