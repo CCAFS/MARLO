@@ -98,7 +98,7 @@
                     [@customForm.select name="institutionLead" i18nkey="fundingSourcesList.add.institutionLead" className="institutionLead"  listName="" keyFieldName=""  displayFieldName="" required=true editable=true /]
                   </div>
                   <div class="col-md-6">
-                    [@customForm.input name="financeCode" i18nkey="fundingSourcesList.add.financeCode" help="" placeholder="e.g. OCS (Agresso) Code" className="financeCode" editable=true /]
+                    [@customForm.input name="financeCode" i18nkey="fundingSourcesList.add.financeCode" help="" placeholder="e.g. OCS (Agresso) Code" className="financeCode" editable=true required=true /]
                   </div>
                 </div>
                 

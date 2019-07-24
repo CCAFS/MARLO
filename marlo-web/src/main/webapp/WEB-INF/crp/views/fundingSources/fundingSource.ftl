@@ -19,6 +19,7 @@
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
 [#assign showEXtDate = ((fundingSource.fundingSourceInfo.status == 4)!false) || (((fundingSource.fundingSourceInfo.extensionDate?has_content)!false) && !editable)/]
+[#assign requiredCode = ((fundingSource.fundingSourceInfo.status != 1) && (fundingSource.fundingSourceInfo.status != 7))!true /]
 [#assign startYear = ((fundingSource.fundingSourceInfo.startDate?string.yyyy)?number)!currentCycleYear /]
 [#assign endYear = ((fundingSource.fundingSourceInfo.endDate?string.yyyy)?number)!startYear /]
 [#assign extensionYear = ((fundingSource.fundingSourceInfo.extensionDate?string.yyyy)?number)!endYear /]
@@ -86,7 +87,7 @@
         
           [#-- Finance code --]
           <div class="url-field">
-            <label for="fundingSource.financeCode" class="editable">[@s.text name="projectCofunded.financeCode"/]:<span class="red requiredTag" style="display:none;">*</span></label>
+            <label for="fundingSource.financeCode" class="editable">[@s.text name="projectCofunded.financeCode"/]:<span class="red requiredTag" style="display:${requiredCode?string('inline', 'none')};">*</span></label>
             <div class="input-group">
               [#if editable]
                 [#-- Finance Channel --]
