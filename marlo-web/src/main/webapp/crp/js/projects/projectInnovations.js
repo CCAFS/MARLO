@@ -30,6 +30,16 @@ function attachEvents() {
       $('.stageFourBlock-false').slideDown();
     }
   });
+  
+  // Check the stage of innovation
+  $('select.innovationTypeSelect').on('change', function() {
+    var isTypeSix = this.value == 6;
+    if(isTypeSix) {
+      $('.typeSixBlock').slideDown();  
+    } else {
+      $('.typeSixBlock').slideUp();
+    }
+  });
 
   $('input.isClearLead').on('change', function() {
     var selected = $('input.isClearLead').is(":checked");
