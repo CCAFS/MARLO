@@ -153,6 +153,12 @@ function getInputElement(fieldName,message) {
     $trumbowygBox.addClass('fieldError');
   }
 
+  // Find Bootstrap input-group-btn
+  var $inputGroupBtn = $(elementQuery).parents('.input-group-btn');
+  if($inputGroupBtn) {
+    $inputGroupBtn.addClass('fieldError');
+  }
+
   $(elementQuery).addClass("fieldError");
   $(elementQuery).attr("title", message);
 
