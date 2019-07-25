@@ -308,7 +308,7 @@ $(document).ready(function() {
 });
 
 $(document).ajaxError(function(event,jqxhr,settings,exception) {
-  if(production) {
+  if(production && (jqxhr.status !== '0')) {
     var slackMessage = {
         "text": "MARLO Ajax Exception",
         "attachments": [
@@ -318,12 +318,12 @@ $(document).ajaxError(function(event,jqxhr,settings,exception) {
               "text": jqxhr.status + " - " + jqxhr.statusText,
               "fields": [
                   {
-                      "title": "CGIAR Entity",
-                      "value": $('input#crp-input').val(),
+                      "title": "Section URL",
+                      "value": window.location.href,
                       "short": true
                   }, {
                       "title": "Username/Email",
-                      "value": $('input.user-email').val(),
+                      "value": $('#userInfo .institution').val(),
                       "short": true
                   }
               ],
