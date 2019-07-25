@@ -521,6 +521,10 @@ public final class APConstants {
 
   public static final String YEAR_REQUEST = "year";
 
+  public static final String AMOUNT_REQUEST = "amount";
+
+  public static final String GENDER_PERCENTAGE_REQUEST = "gender";
+
 
   /** cross cutting scores ****/
   public static final long CROSS_CUTTING_NOT_TARGETED = 0;

@@ -284,20 +284,22 @@ public class FundingSourceAction extends BaseAction {
    */
   public boolean canMapProjects(int year) {
 
-    if (this.fundingSource != null) {
+    if (!this.isReportingActive()) {
+      if (this.fundingSource != null) {
 
-      if (this.fundingSource.getFundingSourceInstitutions() != null) {
-        if (this.fundingSource.getFundingSourceInfo().getBudgetType() != null) {
-          if (this.fundingSource.getFundingSourceBudgets() != null) {
-            List<FundingSourceBudget> fsBudgets = new ArrayList<>(
-              this.fundingSource.getFundingSourceBudgets().stream().filter(fb -> fb.isActive() && fb.getYear() == year
-                && fb.getPhase().getId().equals(this.getActualPhase().getId())).collect(Collectors.toList()));
+        if (this.fundingSource.getFundingSourceInstitutions() != null) {
+          if (this.fundingSource.getFundingSourceInfo().getBudgetType() != null) {
+            if (this.fundingSource.getFundingSourceBudgets() != null) {
+              List<FundingSourceBudget> fsBudgets = new ArrayList<>(
+                this.fundingSource.getFundingSourceBudgets().stream().filter(fb -> fb.isActive() && fb.getYear() == year
+                  && fb.getPhase().getId().equals(this.getActualPhase().getId())).collect(Collectors.toList()));
 
-            if (fsBudgets != null && fsBudgets.size() == 1) {
-              FundingSourceBudget fsBudget = fsBudgets.get(0);
+              if (fsBudgets != null && fsBudgets.size() == 1) {
+                FundingSourceBudget fsBudget = fsBudgets.get(0);
 
-              if (fsBudget.getBudget() > 0) {
-                return true;
+                if (fsBudget.getBudget() > 0) {
+                  return true;
+                }
               }
             }
           }

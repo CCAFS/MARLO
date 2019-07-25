@@ -66,10 +66,12 @@ public class MapProjectListAction extends BaseAction {
 
   @Inject
   public MapProjectListAction(APConfig config, InstitutionManager institutionManager, ProjectManager projectManager,
-    GlobalUnitManager globalUnitManager) {
+    GlobalUnitManager globalUnitManager, FundingSourceManager fundingSourceManager) {
     super(config);
     this.institutionManager = institutionManager;
     this.projectManager = projectManager;
+    this.globalUnitManager = globalUnitManager;
+    this.fundingSourceManager = fundingSourceManager;
   }
 
   @Override
@@ -149,10 +151,8 @@ public class MapProjectListAction extends BaseAction {
                 }
               }
             }
-
           }
         }
-
       }
     }
 
