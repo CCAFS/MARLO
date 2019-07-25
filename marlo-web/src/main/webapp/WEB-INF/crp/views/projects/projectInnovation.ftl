@@ -78,8 +78,15 @@
           <div class="form-group row">
             <div class="col-md-6 ">
               [@customForm.select name="innovation.projectInnovationInfo.repIndContributionOfCrp.id" label=""  i18nkey="projectInnovations.contributionOfCrp" listName="contributionCrpList" keyFieldName="id"  displayFieldName="name" required=false  className="" editable=editable/]
+            </div>       
+            [#-- Other Innovation Type --]
+            <div class="col-md-6 ">
+              [#if (innovation.projectInnovationInfo.repIndInnovationType.id == 6)]
+                [@customForm.input name="innovation.projectInnovationInfo.otherInnovationType"  type="text" i18nkey="projectInnovations.otherInnovation"  placeholder="" className="limitWords-30"  helpIcon=false required=(innovation.projectInnovationInfo.repIndInnovationType.id == 6) editable=editable  /]
+              [/#if]
             </div>
           </div> 
+          
           
           [#-- Degree of Innovation --] 
           [#--  <div class="form-group row">
