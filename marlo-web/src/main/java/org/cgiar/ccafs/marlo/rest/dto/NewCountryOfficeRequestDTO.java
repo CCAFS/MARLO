@@ -29,7 +29,6 @@ public class NewCountryOfficeRequestDTO {
 
   @ApiModelProperty(notes = "Institution code", required = true)
   @NotNull
-  @NotBlank
   private Long institutionCode;
 
   @ApiModelProperty(notes = "Country Alpha iso code of Office", required = true)
