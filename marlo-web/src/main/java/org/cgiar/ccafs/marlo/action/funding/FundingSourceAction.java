@@ -276,6 +276,38 @@ public class FundingSourceAction extends BaseAction {
       .collect(Collectors.toList()).isEmpty();
   }
 
+  /**
+   * This method valid if the Funding Source have the information for Map budgets in the projects
+   * 
+   * @param year
+   * @return true is the Funding Source is able to Map Projects
+   */
+  public boolean canMapProjects(int year) {
+
+    if (this.fundingSource != null) {
+
+      if (this.fundingSource.getFundingSourceInstitutions() != null) {
+        if (this.fundingSource.getFundingSourceInfo().getBudgetType() != null) {
+          if (this.fundingSource.getFundingSourceBudgets() != null) {
+            List<FundingSourceBudget> fsBudgets = new ArrayList<>(
+              this.fundingSource.getFundingSourceBudgets().stream().filter(fb -> fb.isActive() && fb.getYear() == year
+                && fb.getPhase().getId().equals(this.getActualPhase().getId())).collect(Collectors.toList()));
+
+            if (fsBudgets != null && fsBudgets.size() == 1) {
+              FundingSourceBudget fsBudget = fsBudgets.get(0);
+
+              if (fsBudget.getBudget() > 0) {
+                return true;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    return false;
+  }
+
   private Path getAutoSaveFilePath() {
 
     String composedClassName = fundingSource.getClass().getSimpleName();
@@ -288,6 +320,7 @@ public class FundingSourceAction extends BaseAction {
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
 
   }
+
 
   public FundingSourceBudget getBudget(int year) {
 
@@ -312,7 +345,6 @@ public class FundingSourceAction extends BaseAction {
     return this.getBudget(year);
 
   }
-
 
   public Map<String, String> getBudgetTypes() {
     return budgetTypes;
@@ -342,37 +374,37 @@ public class FundingSourceAction extends BaseAction {
     return fileFileName;
   }
 
+
   public Integer getFileID() {
     return fileID;
   }
-
 
   public FundingSource getFundingSource() {
     return fundingSource;
   }
 
+
   public String getFundingSourceFileURL() {
     return config.getDownloadURL() + "/" + this.getFundingSourceUrlPath().replace('\\', '/');
   }
-
 
   public long getFundingSourceID() {
     return fundingSourceID;
   }
 
+
   public List<Institution> getFundingSourceInstitutions() {
     return fundingSourceInstitutions;
   }
-
 
   public FundingSource getFundingSourceShow() {
     return fundingSourceShow;
   }
 
+
   public String getFundingSourceUrlPath() {
     return config.getProjectsBaseFolder(this.getCrpSession()) + File.separator + "fundingSourceFiles" + File.separator;
   }
-
 
   public int getIndexBugets(int year) {
     int i = 0;
@@ -395,10 +427,10 @@ public class FundingSourceAction extends BaseAction {
 
   }
 
+
   public List<Institution> getInstitutions() {
     return institutions;
   }
-
 
   public List<Institution> getInstitutionsDonors() {
     return institutionsDonors;
@@ -494,6 +526,7 @@ public class FundingSourceAction extends BaseAction {
     return config.getDownloadURL() + "/" + this.getStudyFileUrlPath(fsId).replace('\\', '/');
   }
 
+
   public List<LocElement> getRegionLists() {
     return regionLists;
   }
@@ -524,7 +557,6 @@ public class FundingSourceAction extends BaseAction {
     return userProjects;
   }
 
-
   public boolean isRegion() {
     return region;
   }
@@ -539,6 +571,7 @@ public class FundingSourceAction extends BaseAction {
     fundingSourceInstitutionManager.saveFundingSourceInstitution(fundingSourceInstitution);
 
   }
+
 
   @Override
   public void prepare() throws Exception {
@@ -962,17 +995,6 @@ public class FundingSourceAction extends BaseAction {
     String params[] = {loggedCrp.getAcronym(), fundingSource.getId() + ""};
     this.setBasePermission(this.getText(Permission.PROJECT_FUNDING_SOURCE_BASE_PERMISSION, params));
 
-    // HJ 7/24/2019 Setting The projects that the user can Map in the funding Source
-    userProjects = projectManager.getUserProjects(this.getCurrentUser().getId(), loggedCrp.getAcronym()).stream()
-      .filter(p -> p.isActive()).collect(Collectors.toList());
-
-    for (Project project : userProjects) {
-      if (project.getProjecInfoPhase(this.getActualPhase()) == null) {
-        userProjects.remove(project);
-      }
-    }
-
-    //
     if (this.isHttpPost()) {
       fundingSource.getFundingSourceInfo().setFile(null);
       fundingSource.getFundingSourceInfo().setFileResearch(null);
@@ -1031,7 +1053,6 @@ public class FundingSourceAction extends BaseAction {
       return;
     }
   }
-
 
   @Override
   public String save() {
@@ -1264,6 +1285,7 @@ public class FundingSourceAction extends BaseAction {
     }
   }
 
+
   /**
    * Funding Source Locations
    * 
@@ -1409,7 +1431,6 @@ public class FundingSourceAction extends BaseAction {
 
   }
 
-
   public void setBudgetTypes(Map<String, String> budgetTypes) {
     this.budgetTypes = budgetTypes;
   }
@@ -1418,10 +1439,10 @@ public class FundingSourceAction extends BaseAction {
     this.budgetTypesList = budgetTypesList;
   }
 
+
   public void setCountryLists(List<LocElement> countryLists) {
     this.countryLists = countryLists;
   }
-
 
   public void setDivisions(List<PartnerDivision> divisions) {
     this.divisions = divisions;
@@ -1459,6 +1480,7 @@ public class FundingSourceAction extends BaseAction {
     this.fundingSourceShow = fundingSourceShow;
   }
 
+
   public void setInstitutions(List<Institution> institutions) {
     this.institutions = institutions;
   }
@@ -1468,15 +1490,14 @@ public class FundingSourceAction extends BaseAction {
     this.institutionsDonors = institutionsDonors;
   }
 
-
   public void setLiaisonInstitutions(List<LiaisonInstitution> liaisonInstitutions) {
     this.liaisonInstitutions = liaisonInstitutions;
   }
 
+
   public void setLoggedCrp(GlobalUnit loggedCrp) {
     this.loggedCrp = loggedCrp;
   }
-
 
   public void setRegion(boolean region) {
     this.region = region;
@@ -1490,10 +1511,10 @@ public class FundingSourceAction extends BaseAction {
     this.scopeRegionLists = scopeRegionLists;
   }
 
+
   public void setStatus(Map<String, String> status) {
     this.status = status;
   }
-
 
   public void setTransaction(String transaction) {
     this.transaction = transaction;

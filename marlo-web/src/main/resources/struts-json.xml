@@ -249,7 +249,7 @@
 				<param name="excludeNullProperties">true</param>
 			</result>
 		</action>
-		
+
 		<action name="FundingSourceByCenterFinanceCode"
 			class="org.cgiar.ccafs.marlo.action.json.project.FundingSourceByInstitutionFinanceCodeAction">
 			<result type="json">
@@ -358,7 +358,13 @@
 		</action>
 
 
-
+		<action name="FundingMapProjectList"
+			class="org.cgiar.ccafs.marlo.action.json.project.MapProjectListAction">
+			<result type="json">
+				<param name="noCache">true</param>
+				<param name="excludeNullProperties">true</param>
+			</result>
+		</action>
 
 
 		<action name="programOutcomeList"
