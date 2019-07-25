@@ -313,8 +313,12 @@ function findDuplicatedFinanceSource() {
       beforeSend: function() {
         $financeCode.addClass('input-loading')
       },
-      success: function(result) {
-        console.log(result);
+      success: function(r) {
+        var crpList = r.sources[0];
+        $.each(crpList, function(key,value) {
+          console.log(key, value);
+        });
+
       },
       error: function(e) {
       },
