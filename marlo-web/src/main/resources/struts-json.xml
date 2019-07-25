@@ -365,6 +365,14 @@
 				<param name="excludeNullProperties">true</param>
 			</result>
 		</action>
+		
+		<action name="SaveFundingMapProject"
+      class="org.cgiar.ccafs.marlo.action.json.project.MapProjectSaveAction">
+      <result type="json">
+        <param name="noCache">true</param>
+        <param name="excludeNullProperties">true</param>
+      </result>
+    </action>
 
 
 		<action name="programOutcomeList"
