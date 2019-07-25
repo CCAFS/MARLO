@@ -83,7 +83,7 @@
             [#assign isTypeSix = (innovation.projectInnovationInfo.repIndInnovationType.id == 6)!false]
             <div class="col-md-6 ">
               <div class="form-group typeSixBlock" style="display:${isTypeSix?string('block','none')}">              
-                [@customForm.input name="innovation.projectInnovationInfo.otherInnovationType"  type="text" i18nkey="projectInnovations.otherInnovation"  placeholder="" className="limitWords-30"  helpIcon=false required=true editable=editable  /]
+                [@customForm.input name="innovation.projectInnovationInfo.otherInnovationType"  type="text" i18nkey="projectInnovations.otherInnovation" helpIcon=false required=true editable=editable  /]
               </div>
             </div>
           </div> 
