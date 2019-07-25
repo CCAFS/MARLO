@@ -113,7 +113,7 @@
     [#if list?has_content]
         [#list list as item]
           [#-- URL --]
-          [#local dlurl][@s.url namespace=namespace action='${crpSession}/study' ][@s.param name='expectedID']${item.id}[/@s.param][@s.param name='projectID']${(item.project.id)!}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
+          [#local dlurl][@s.url namespace=namespace action='${crpSession}/study' ][@s.param name='expectedID']${item.id}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
           [#-- Is this complete --]
           [#local isThisComplete = (action.hasStudiesMissingFields(item.class.name,item.id))!false]
           [#-- Previous year --]
