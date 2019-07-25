@@ -261,6 +261,24 @@ public class ProjectInnovationValidator extends BaseValidator {
       this.addMissingField("projectInnovations.innovationType");
     }
 
+    // Other Innovation Type Field
+    if (projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getRepIndInnovationType() != null) {
+      if (projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getRepIndInnovationType()
+        .getId() != null
+        && projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getRepIndInnovationType()
+          .getId() == 6
+        && (projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getOtherInnovationType() == null
+          || projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getOtherInnovationType()
+            .isEmpty())) {
+        if (struts) {
+          action.addMessage(action.getText("projectInnovations.otherInnovation"));
+          action.getInvalidFields().put("input-innovation.projectInnovationInfo.otherInnovationType",
+            InvalidFieldsMessages.EMPTYFIELD);
+        }
+        this.addMissingField("projectInnovations.otherInnovation");
+      }
+    }
+
     // Validate Description Stage
     if (!(this
       .isValidString(projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getDescriptionStage())

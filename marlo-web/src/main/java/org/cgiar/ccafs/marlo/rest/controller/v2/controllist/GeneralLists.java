@@ -16,6 +16,7 @@
 package org.cgiar.ccafs.marlo.rest.controller.v2.controllist;
 
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.generallists.FlagshipProgramItem;
+import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.generallists.GeneralAcronymItem;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.generallists.GeographicScopeItem;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.generallists.GlobalUnitItem;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.generallists.GlobalUnitTypeItem;
@@ -25,6 +26,7 @@ import org.cgiar.ccafs.marlo.rest.dto.CGIAREntityTypeDTO;
 import org.cgiar.ccafs.marlo.rest.dto.ContributionOfCrpDTO;
 import org.cgiar.ccafs.marlo.rest.dto.CountryDTO;
 import org.cgiar.ccafs.marlo.rest.dto.FlagshipProgramDTO;
+import org.cgiar.ccafs.marlo.rest.dto.GeneralAcronymDTO;
 import org.cgiar.ccafs.marlo.rest.dto.GeographicScopeDTO;
 import org.cgiar.ccafs.marlo.rest.dto.RegionDTO;
 import org.cgiar.ccafs.marlo.rest.errors.NotFoundException;
@@ -68,6 +70,7 @@ public class GeneralLists {
   private GlobalUnitItem<GeneralLists> globalUnitItem;
   private GlobalUnitTypeItem<GeneralLists> globalUnitTypeItem;
   private FlagshipProgramItem<GeneralLists> flagshipProgramItem;
+  private GeneralAcronymItem<GeneralLists> generalAcronymItem;
 
   @Autowired
   private Environment env;
@@ -75,13 +78,36 @@ public class GeneralLists {
   @Inject
   public GeneralLists(LocationItem<GeneralLists> countryItem, GeographicScopeItem<GeneralLists> geographicScopeItem,
     GlobalUnitItem<GeneralLists> globalUnitItem, GlobalUnitTypeItem<GeneralLists> globalUnitTypeItem,
-    FlagshipProgramItem<GeneralLists> flagshipProgramItem) {
+    FlagshipProgramItem<GeneralLists> flagshipProgramItem, GeneralAcronymItem<GeneralLists> generalAcronymItem) {
     this.locationItem = countryItem;
     this.geographicScopeItem = geographicScopeItem;
     this.globalUnitItem = globalUnitItem;
     this.globalUnitTypeItem = globalUnitTypeItem;
     this.flagshipProgramItem = flagshipProgramItem;
+    this.generalAcronymItem = generalAcronymItem;
   }
+
+
+  /**
+   * find Acronyms by acronym *
+   * 
+   * @return a List of GeneralAcronymDTO with General Acronym Items founded.
+   */
+
+  @ApiOperation(value = "${GeneralLists.acronyms.acronym.value}", response = GeneralAcronymDTO.class,
+    responseContainer = "List")
+  @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
+  @RequestMapping(value = "/acronyms/{acronym}", method = RequestMethod.GET,
+    produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<List<GeneralAcronymDTO>> findAcronymByAcronym(
+    @ApiParam(value = "${GeneralLists.acronyms.acronym.param.acronym}", required = true) @PathVariable String acronym) {
+    ResponseEntity<List<GeneralAcronymDTO>> response = this.generalAcronymItem.findGeneralAcronymByAcronym(acronym);
+    if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+      throw new NotFoundException("404", this.env.getProperty("GeneralLists.acronyms.acronym.404"));
+    }
+    return response;
+  }
+
 
   /**
    * Find a country requesting numeric ISO Codeby id
@@ -218,6 +244,21 @@ public class GeneralLists {
     return response;
   }
 
+
+  /**
+   * Get All the Acronym items *
+   * 
+   * @return a List of GeneralAcronymDTO with all General Acronym Items.
+   */
+
+  @ApiOperation(value = "${GeneralLists.acronyms.all.value}", response = GeneralAcronymDTO.class,
+    responseContainer = "List")
+  @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
+  @RequestMapping(value = "/acronyms", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+  public List<GeneralAcronymDTO> getAllAcronyms() {
+    return this.generalAcronymItem.getAllGeneralAcronyms();
+  }
+
   /**
    * Get All the Country items *
    * 
@@ -232,6 +273,7 @@ public class GeneralLists {
   public List<CountryDTO> getAllContries() {
     return this.locationItem.getAllCountries();
   }
+
 
   /**
    * Get All the Flagship or Program items *
