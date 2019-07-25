@@ -81,6 +81,9 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
   @Expose
   private Boolean clearLead;
 
+  @Expose
+  private String otherInnovationType;
+
   public ProjectInnovationInfo() {
   }
 
@@ -141,7 +144,6 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     return evidenceLink;
   }
 
-
   public String getGenderExplaniation() {
     return genderExplaniation;
   }
@@ -166,7 +168,6 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     return "";
   }
 
-
   @Override
   public User getModifiedBy() {
     User u = new User();
@@ -178,6 +179,10 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     return narrative;
   }
 
+
+  public String getOtherInnovationType() {
+    return otherInnovationType;
+  }
 
   public Phase getPhase() {
     return phase;
@@ -264,6 +269,7 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     this.clearLead = clearLead;
   }
 
+
   public void setDescriptionStage(String descriptionStage) {
     this.descriptionStage = descriptionStage;
   }
@@ -291,6 +297,10 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
 
   public void setNarrative(String narrative) {
     this.narrative = narrative;
+  }
+
+  public void setOtherInnovationType(String otherInnovationType) {
+    this.otherInnovationType = otherInnovationType;
   }
 
 
