@@ -34,6 +34,7 @@ import org.cgiar.ccafs.marlo.data.manager.RepIndGeographicScopeManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndInnovationTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndOrganizationTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndStageInnovationManager;
+import org.cgiar.ccafs.marlo.data.model.CrpUser;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
@@ -61,6 +62,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -215,7 +217,6 @@ public class InnovationItem<T> {
     this.projectInnovationInfoManager.saveProjectInnovationInfo(projectInnovationInfo);
 
     this.innovationID = this.projectInnovation.getId();
-    System.out.println("Innovation ID  " + this.innovationID);
     // SAVE innovation CRP
     if (this.innovationID > 0) {
       ProjectInnovationCrp projectInnovationCrp = new ProjectInnovationCrp();
@@ -374,18 +375,45 @@ public class InnovationItem<T> {
    * @return a InnovationDTO with the innovation Item
    */
   // public ResponseEntity<InnovationDTO> findBudgetTypeById(Long id,String CGIARentityAcronym, Integer repoYear) {
-  public ResponseEntity<InnovationDTO> findInnovationById(Long id, String CGIARentityAcronym, Integer repoYear) {
+  public ResponseEntity<InnovationDTO> findInnovationById(Long id, String CGIARentityAcronym, Integer repoYear,
+    User user) {
+    // TODO: Include all security validations
+
+    this.fieldErrors = new ArrayList<FieldErrorDTO>();
+    GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitByAcronym(CGIARentityAcronym);
     ProjectInnovation innovation = this.projectInnovationManager.getProjectInnovationById(id);
     Phase phase =
       this.phaseManager.findAll().stream().filter(c -> c.getCrp().getAcronym().equalsIgnoreCase(CGIARentityAcronym)
         && c.getYear() == repoYear && c.getName().equalsIgnoreCase("AR")).findFirst().get();
 
-    if (innovation.getProjectInnovationInfo(phase) == null) {
-      return null;
+    Set<CrpUser> lstUser = user.getCrpUsers();
+
+    if (!lstUser.stream().anyMatch(crp -> crp.getCrp().getAcronym().equalsIgnoreCase(CGIARentityAcronym))) {
+      this.fieldErrors.add(new FieldErrorDTO("findInnovation", "GlobalUnitEntity", "CGIAR entity not autorized"));
+    }
+
+    if (globalUnitEntity == null) {
+      this.fieldErrors.add(new FieldErrorDTO("findInnovation", "GlobalUnitEntity",
+        CGIARentityAcronym + " is not an invalid CGIAR entity acronym"));
+    }
+    if (phase == null) {
+      this.fieldErrors.add(new FieldErrorDTO("findInnovation", "phase", repoYear + " is an invalid year"));
+    }
+
+    if (innovation == null || innovation.getProjectInnovationInfo(phase) == null) {
+      this.fieldErrors
+        .add(new FieldErrorDTO("findInnovation", "InnovationId", id + " is an invalid id of an innovation"));
     }
 
     innovation.setAllbyPhase(phase);
 
+    // Validate all fields
+    if (!this.fieldErrors.isEmpty()) {
+      throw new MARLOFieldValidationException("Field Validation errors", "",
+        this.fieldErrors.stream()
+          .sorted(Comparator.comparing(FieldErrorDTO::getField, Comparator.nullsLast(Comparator.naturalOrder())))
+          .collect(Collectors.toList()));
+    }
     return Optional.ofNullable(innovation).map(this.innovationMapper::projectInnovationToInnovationDTO)
       .map(result -> new ResponseEntity<>(result, HttpStatus.OK)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
   }

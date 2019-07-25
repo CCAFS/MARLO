@@ -103,9 +103,11 @@ public class Innovations {
     @ApiParam(value = "${Innovation.innovation.GET.id.param.CGIAR}", required = true) @PathVariable String CGIAREntity,
     @ApiParam(value = "${Innovation.innovation.GET.id.param.id}", required = true) @PathVariable Long id,
     @ApiParam(value = "${Innovation.innovation.GET.id.param.year}", required = true) @RequestParam Integer year) {
-    ResponseEntity<InnovationDTO> response = this.innovationItem.findInnovationById(id, CGIAREntity, year);
+
+    ResponseEntity<InnovationDTO> response =
+      this.innovationItem.findInnovationById(id, CGIAREntity, year, this.getCurrentUser());
     if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
-      throw new NotFoundException("404", this.env.getProperty("ImpactPathway.milestones.id.404"));
+      throw new NotFoundException("404", this.env.getProperty("Innovation.innovation.GET.id.404"));
     }
     return response;
   }
