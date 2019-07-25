@@ -266,7 +266,10 @@ public class ProjectInnovationValidator extends BaseValidator {
       if (projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getRepIndInnovationType()
         .getId() != null
         && projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getRepIndInnovationType()
-          .getId() == 6) {
+          .getId() == 6
+        && (projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getOtherInnovationType() == null
+          || projectInnovation.getProjectInnovationInfo(baseAction.getActualPhase()).getOtherInnovationType()
+            .isEmpty())) {
         if (struts) {
           action.addMessage(action.getText("projectInnovations.otherInnovation"));
           action.getInvalidFields().put("input-innovation.projectInnovationInfo.otherInnovationType",

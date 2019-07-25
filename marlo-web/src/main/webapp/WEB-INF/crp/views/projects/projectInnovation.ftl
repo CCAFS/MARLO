@@ -70,7 +70,7 @@
               [#assign isStageFour = (innovation.projectInnovationInfo.repIndStageInnovation.id == 4)!false]
             </div>
             <div class="col-md-6 ">
-              [@customForm.select name="innovation.projectInnovationInfo.repIndInnovationType.id" label=""  i18nkey="projectInnovations.innovationType" listName="innovationTypeList" keyFieldName="id"  displayFieldName="name" required=true  className="" editable=editable/]
+              [@customForm.select name="innovation.projectInnovationInfo.repIndInnovationType.id" label=""  i18nkey="projectInnovations.innovationType" listName="innovationTypeList" keyFieldName="id"  displayFieldName="name" required=true  className="innovationTypeSelect" editable=editable/]
             </div>
           </div>
         
@@ -80,10 +80,11 @@
               [@customForm.select name="innovation.projectInnovationInfo.repIndContributionOfCrp.id" label=""  i18nkey="projectInnovations.contributionOfCrp" listName="contributionCrpList" keyFieldName="id"  displayFieldName="name" required=false  className="" editable=editable/]
             </div>       
             [#-- Other Innovation Type --]
+            [#assign isTypeSix = (innovation.projectInnovationInfo.repIndInnovationType.id == 6)!false]
             <div class="col-md-6 ">
-              [#if (innovation.projectInnovationInfo.repIndInnovationType.id == 6)!false]
-                [@customForm.input name="innovation.projectInnovationInfo.otherInnovationType"  type="text" i18nkey="projectInnovations.otherInnovation"  placeholder="" className=""  helpIcon=false required=true editable=editable  /]
-              [/#if]
+              <div class="form-group typeSixBlock" style="display:${isTypeSix?string('block','none')}">              
+                [@customForm.input name="innovation.projectInnovationInfo.otherInnovationType"  type="text" i18nkey="projectInnovations.otherInnovation"  placeholder="" className="limitWords-30"  helpIcon=false required=true editable=editable  /]
+              </div>
             </div>
           </div> 
           
