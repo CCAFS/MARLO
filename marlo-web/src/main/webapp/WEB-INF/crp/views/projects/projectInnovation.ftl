@@ -81,8 +81,8 @@
             </div>       
             [#-- Other Innovation Type --]
             <div class="col-md-6 ">
-              [#if (innovation.projectInnovationInfo.repIndInnovationType.id == 6)]
-                [@customForm.input name="innovation.projectInnovationInfo.otherInnovationType"  type="text" i18nkey="projectInnovations.otherInnovation"  placeholder="" className="limitWords-30"  helpIcon=false required=(innovation.projectInnovationInfo.repIndInnovationType.id == 6) editable=editable  /]
+              [#if (innovation.projectInnovationInfo.repIndInnovationType.id == 6)!false]
+                [@customForm.input name="innovation.projectInnovationInfo.otherInnovationType"  type="text" i18nkey="projectInnovations.otherInnovation"  placeholder="" className=""  helpIcon=false required=true editable=editable  /]
               [/#if]
             </div>
           </div> 
