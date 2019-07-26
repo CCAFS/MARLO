@@ -3,6 +3,17 @@ var W1W2, ON_GOING, EXTENDED_STATUS;
 var $fundingType, $financeCode, $leadPartner;
 $(document).ready(init);
 
+var app = new Vue({
+    el: '#vueApp',
+    data: {
+        crpList: [],
+        allFundingSources: []
+    },
+    methods: {
+
+    }
+});
+
 function init() {
 
   // Setting constants
@@ -103,6 +114,8 @@ function init() {
   });
 
   $('.setPartnerLead').on("click", setPartnerLead);
+
+  $financeCode.on("keyup change", findDuplicatedFinanceSource);
 
   // On Change agreementStatus
   $('.agreementStatus').on('change', onChangeStatus);
@@ -268,6 +281,9 @@ function init() {
 
   // Check total grant amount
   $('.currencyInput').on('keyup', keyupBudgetYear).trigger('keyup');
+
+  // Check duplicated Funding sources along CRPs
+  findDuplicatedFinanceSource();
 }
 
 function setPartnerLead(e) {
@@ -298,6 +314,8 @@ function setPartnerLead(e) {
 function findDuplicatedFinanceSource() {
   var financeCode = $.trim($financeCode.val());
   var leadPartnerID = $.trim($leadPartner.val());
+  var $resultList = $('ul.resultList');
+  var fundingSourceID = $('input[name="fundingSourceID"]').val();
 
   if(!financeCode || !leadPartnerID) {
     return;
@@ -311,13 +329,42 @@ function findDuplicatedFinanceSource() {
           institutionLead: leadPartnerID
       },
       beforeSend: function() {
+        app.crpList = [];
+        app.allFundingSources = [];
         $financeCode.addClass('input-loading')
       },
       success: function(r) {
-        var crpList = r.sources[0];
-        $.each(crpList, function(key,value) {
-          console.log(key, value);
+        // Get funding sources by Global Unit
+        var crpList = [];
+        var allFundingSources = [];
+        $.each(r.sources, function(i,fs) {
+          var includeFs = fs.id != fundingSourceID;
+          var obj = $.grep(crpList, function(obj) {
+            return obj.name === fs.crpName;
+          })[0];
+          if(obj == null) {
+            obj = {
+                name: fs.crpName,
+                fundingSources: []
+            };
+            if(includeFs) {
+              obj.fundingSources.push(fs);
+            }
+            crpList.push(obj);
+          } else {
+            var fsList = obj.fundingSources;
+            if(includeFs) {
+              fsList.push(fs);
+            }
+            obj.fundingSources = fsList;
+          }
+          if(includeFs) {
+            allFundingSources.push(fs);
+          }
         });
+
+        app.allFundingSources = allFundingSources;
+        app.crpList = crpList;
 
       },
       error: function(e) {

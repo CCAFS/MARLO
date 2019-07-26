@@ -208,7 +208,14 @@
           </td>
           [#-- Finance Code --]
           <td>
-            [#if project.fundingSourceInfo.financeCode?has_content]${project.fundingSourceInfo.financeCode}[#else] <p class="text-muted">Not defined</p>  [/#if]
+            [#if project.fundingSourceInfo.financeCode?has_content]
+              ${project.fundingSourceInfo.financeCode}
+              [#if (project.fundingSourceInfo.leadCenter.acronym?has_content)!false ]
+                <br /><small>(${project.fundingSourceInfo.leadCenter.acronym})</small>
+              [/#if]
+            [#else] 
+              <p class="text-muted">Not defined</p>
+            [/#if]
           </td>
           [#-- Project Status
           <td>
