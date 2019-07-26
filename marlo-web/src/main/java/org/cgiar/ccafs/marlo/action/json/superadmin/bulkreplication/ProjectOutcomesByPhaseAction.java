@@ -3,6 +3,7 @@ package org.cgiar.ccafs.marlo.action.json.superadmin.bulkreplication;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectOutcomeManager;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -11,7 +12,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -31,15 +31,16 @@ public class ProjectOutcomesByPhaseAction extends BaseAction {
 
   private long selectedPhaseID;
 
-
   // Managers
   private PhaseManager phaseManager;
-
+  private ProjectOutcomeManager projectOutcomeManager;
 
   @Inject
-  public ProjectOutcomesByPhaseAction(APConfig config, PhaseManager phaseManager) {
+  public ProjectOutcomesByPhaseAction(APConfig config, PhaseManager phaseManager,
+    ProjectOutcomeManager projectOutcomeManager) {
     super(config);
     this.phaseManager = phaseManager;
+    this.projectOutcomeManager = projectOutcomeManager;
   }
 
   @Override
@@ -50,9 +51,7 @@ public class ProjectOutcomesByPhaseAction extends BaseAction {
       Phase phase = phaseManager.getPhaseById(selectedPhaseID);
       // Get deliverables by Phase
 
-      List<ProjectOutcome> projectOutcomesbyPhaseList = phase.getProjectOutcomes().stream()
-        .filter(po -> po.isActive() && po.getProject() != null && po.getProject().isActive())
-        .collect(Collectors.toList());
+      List<ProjectOutcome> projectOutcomesbyPhaseList = projectOutcomeManager.getProjectOutcomeByPhase(phase);
 
 
       if (projectOutcomesbyPhaseList != null && !projectOutcomesbyPhaseList.isEmpty()) {
