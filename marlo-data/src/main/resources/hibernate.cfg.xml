@@ -377,6 +377,8 @@
     <mapping resource="xmls/ProjectExpectedStudyPolicies.hbm.xml" />
     <mapping resource="xmls/GeneralStatuses.hbm.xml" />
     <mapping resource="xmls/GeneralStatusesTable.hbm.xml" />
+    <mapping resource="xmls/GeneralAcronyms.hbm.xml" />
+    
     <mapping resource="xmls/EvidenceTags.hbm.xml" />
 
     <mapping
