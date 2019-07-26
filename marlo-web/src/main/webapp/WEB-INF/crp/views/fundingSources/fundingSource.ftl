@@ -1,7 +1,7 @@
 [#ftl]
 [#assign title = "MARLO Funding Sources" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}-${fundingSource.id}-phase-${(actualPhase.id)!}" /]
-[#assign pageLibs = ["select2", "blueimp-file-upload", "datatables.net", "datatables.net-bs","flat-flags"] /]
+[#assign pageLibs = ["select2", "blueimp-file-upload", "datatables.net", "datatables.net-bs","flat-flags", "vue"] /]
 [#assign customJS = [
   "${baseUrl}/global/js/fieldsValidation.js",
   "${baseUrlMedia}/js/fundingSources/fundingSource.js?20181210",
@@ -106,8 +106,8 @@
                 <input type="text" name="fundingSource.fundingSourceInfo.financeCode" value="${(fundingSource.fundingSourceInfo.financeCode)!}" class="form-control input-sm financeCode optional" [#if isSynced]readonly="readonly"[/#if] placeholder="e.g. OCS Code">
               [#else]
                 <small>${(fundingSource.fundingSourceInfo.leadCenter.acronym)!}: </small> ${(fundingSource.fundingSourceInfo.financeCode)!}
-                <input type="hidden" name="fundingSource.fundingSourceInfo.leadCenter.id" value="${(fundingSource.fundingSourceInfo.leadCenter.id )!}"/>
-                <input type="hidden" name="fundingSource.fundingSourceInfo.financeCode" class="financeCode"  value="${(fundingSource.fundingSourceInfo.financeCode)!}"/>
+                <input type="hidden" name="fundingSource.fundingSourceInfo.leadCenter.id" class="partnerLeadInput"  value="${(fundingSource.fundingSourceInfo.leadCenter.id )!}"/>
+                <input type="hidden" name="fundingSource.fundingSourceInfo.financeCode"   class="financeCode"       value="${(fundingSource.fundingSourceInfo.financeCode)!}"/>
               [/#if]
               <input type="hidden" name="fundingSource.fundingSourceInfo.leadCenter.acronym" value="${(fundingSource.fundingSourceInfo.leadCenter.acronym)!}"/>
             </div>
@@ -134,6 +134,20 @@
           <div id="metadata-output row">
             <p class="lastDaySync" style="display:${(!isSynced)?string('none', 'block')}">Last sync was made on <span>${(fundingSource.fundingSourceInfo.syncedDate?date)!}</span></p>
             <input type="hidden" class="fundingSourceSyncedDate" name="fundingSource.fundingSourceInfo.syncedDate" value="${(fundingSource.syncedDate?string["yyyy-MM-dd"])!'2017-06-30'}" />
+          </div>
+          
+          [#--  Funding Sources found List --]
+          <div id="vueApp" class="resultList simpleBox" v-if="allFundingSources.length" >
+            <p>This finance code is also used by:</p>
+            <div v-for="item in crpList" v-if="item.fundingSources.length">
+              <strong>{{ item.name }}</strong> 
+              <p v-for="fs in item.fundingSources">
+                <span class="pull-right label label-info">{{ fs.type }}</span>
+                <a target="_blank" v-bind:href="'${baseUrl}/fundingSources/'+ fs.crpName +'/fundingSource.do?fundingSourceID='+ fs.id +'&edit=true&phaseID=${(actualPhase.id)!}'">
+                  <small><strong> FS{{ fs.id }}</strong> - {{ fs.financeCode }} | {{ fs.name }} </small>
+                </a>
+              </p>
+            </div>
           </div>
       
         </div>
@@ -587,16 +601,6 @@
   [/@s.form] 
   </article>
 </section>
-[#-- Funding Source list template --]
-<ul style="display:none">
-  <li id="leadPartnerTemplate" class="leadPartners clearfix" style="display:none;">
-    <div class="removeLeadPartner removeIcon" title="Remove Lead partner"></div>
-    <input class="id" type="hidden" name="fundingSource.institutions[-1].id" value="" />
-    <input class="fId" type="hidden" name="fundingSource.institutions[-1].institution.id" value="" />
-    <span class="name"></span>
-    <div class="clearfix"></div>
-  </li>
-</ul>
 
 [#-- Region element template --]
 <ul style="display:none">
