@@ -667,6 +667,9 @@ public class FundingSourceListAction extends BaseAction {
     List<FundingSource> tempList = new ArrayList<>();
     int contains = 0;
 
+    /*
+     * On-Going funding sources
+     */
     if (myProjects != null && institutionsIDsList != null) {
       tempList.addAll(myProjects);
 
@@ -702,14 +705,66 @@ public class FundingSourceListAction extends BaseAction {
         }
       }
     }
-    myProjects.removeAll(myProjects);
-    myProjects.addAll(tempList);
+    if (myProjects != null) {
+      myProjects.removeAll(myProjects);
+    }
+    if (tempList != null) {
+      myProjects.addAll(tempList);
+    }
+
+    /*
+     * Archieved funding sources
+     */
+    if (closedProjects != null && institutionsIDsList != null) {
+      tempList.addAll(closedProjects);
+
+      for (FundingSource fundingSource : closedProjects) {
+
+        if (fundingSource.getInstitutions() != null && !fundingSource.getInstitutions().isEmpty()
+          && fundingSource.getInstitutions().size() != 0) {
+          // if the list of funding source institutions has elements, check the ID
+
+          contains = 0;
+          int countInstitutions = 0;
+          for (FundingSourceInstitution institution : fundingSource.getInstitutions()) {
+            countInstitutions++;
+
+            if (institutionsIDsList.contains(String.valueOf((institution.getInstitution().getId())))) {
+              contains += 1;
+            }
+
+            if (contains == 0 && countInstitutions == fundingSource.getInstitutions().size()) {
+              // remove funding source without expected Id institution
+
+              try {
+                tempList.remove(fundingSource);
+              } catch (Exception e) {
+
+              }
+            }
+            // end institutions for
+          }
+        } else {
+          // remove funding source without institutions
+          tempList.remove(fundingSource);
+        }
+      }
+    }
+    if (closedProjects != null) {
+      closedProjects.removeAll(closedProjects);
+    }
+    if (tempList != null) {
+      closedProjects.addAll(tempList);
+    }
   }
 
   public void removeInstitutionsContactPointRole() {
     // Get institution for contact point
     List<FundingSource> tempList = new ArrayList<>();
 
+    /*
+     * On-Going funding sources
+     */
     if (myProjects != null) {
       tempList.addAll(myProjects);
 
@@ -749,8 +804,66 @@ public class FundingSourceListAction extends BaseAction {
         }
       }
     }
-    myProjects.removeAll(myProjects);
-    myProjects.addAll(tempList);
+
+    if (myProjects != null) {
+      myProjects.removeAll(myProjects);
+    }
+
+    if (tempList != null) {
+      myProjects.addAll(tempList);
+    }
+
+    /*
+     * Archieved funding sources
+     */
+    if (closedProjects != null) {
+      tempList.addAll(closedProjects);
+
+      for (FundingSource fundingSource : closedProjects) {
+
+        if (fundingSource.getInstitutions() != null && !fundingSource.getInstitutions().isEmpty()
+          && fundingSource.getInstitutions().size() != 0) {
+          // if the list of funding source institutions has elements, check the ID
+          if (usersContactPoint.contains(this.getCurrentUser().getId())) {
+
+            for (CrpPpaPartner partner : loggedCrp.getCrpInstitutionsPartners()) {
+              if (partner.getContactPoints() != null) {
+                for (LiaisonUser lsUser : partner.getContactPoints()) {
+                  if (lsUser.getUser().getId().equals(this.getCurrentUser().getId())) {
+                    if (fundingSource.getInstitutions() != null) {
+                      int contains = 0;
+                      for (FundingSourceInstitution institutionFS : fundingSource.getInstitutions()) {
+                        if (institutionFS.getInstitution().getId().equals(partner.getInstitution().getId())) {
+                          contains++;
+                        }
+                      }
+                      if (contains == 0) {
+                        tempList.remove(fundingSource);
+                        institutionsIDsFilter = String.valueOf(partner.getInstitution().getId());
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+          // end institutions for
+
+        } else {
+          // remove funding source without institutions
+          tempList.remove(fundingSource);
+        }
+      }
+    }
+
+    if (closedProjects != null) {
+      closedProjects.removeAll(closedProjects);
+    }
+
+    if (tempList != null) {
+      closedProjects.addAll(tempList);
+    }
+
     if (institutionsIDsFilter != null) {
       institutionsIDsFilter = "";
     }
