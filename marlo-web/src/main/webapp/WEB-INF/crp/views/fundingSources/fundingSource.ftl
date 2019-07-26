@@ -5,11 +5,11 @@
 [#assign customJS = [
   "${baseUrl}/global/js/fieldsValidation.js",
   "${baseUrlMedia}/js/fundingSources/fundingSource.js?20190726",
-  "${baseUrlMedia}/js/fundingSources/syncFundingSource.js",
+  "${baseUrlMedia}/js/fundingSources/syncFundingSource.js?20190706",
   "${baseUrl}/global/js/autoSave.js" 
   ]
 /]
-[#assign customCSS = ["${baseUrlMedia}/css/fundingSources/fundingSource.css"] /]
+[#assign customCSS = ["${baseUrlMedia}/css/fundingSources/fundingSource.css?20190706"] /]
 [#assign currentSection = "fundingSources" /]
 [#assign breadCrumb = [
   {"label":"fundingSourcesList", "nameSpace":"/fundingSources", "action":""}
