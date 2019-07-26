@@ -45,15 +45,11 @@ public class FundingSourceService extends BaseAction {
 
   List<Map<String, Object>> sources;
 
-  private long phaseID;
   private String financeCode;
 
   // GlobalUnit Manager
   private GlobalUnitManager crpManager;
-  private String queryParameter;
   private FundingSourceManager fundingSourceManager;
-  private PhaseManager phaseManager;
-
 
   @Inject
   public FundingSourceService(APConfig config, FundingSourceManager fundingSourceManager, GlobalUnitManager crpManager,
@@ -61,7 +57,6 @@ public class FundingSourceService extends BaseAction {
     super(config);
     this.fundingSourceManager = fundingSourceManager;
     this.crpManager = crpManager;
-    this.phaseManager = phaseManager;
   }
 
 

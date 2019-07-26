@@ -41,7 +41,7 @@ public class FundingSourceSearchSummary {
 
   private String crpName;
 
-  private BigInteger phaseID;
+  private Long phaseID;
 
 
   /**
@@ -96,7 +96,7 @@ public class FundingSourceSearchSummary {
   }
 
 
-  public BigInteger getPhaseID() {
+  public Long getPhaseID() {
     return phaseID;
   }
 
@@ -159,7 +159,7 @@ public class FundingSourceSearchSummary {
   }
 
 
-  public void setPhaseID(BigInteger phaseID) {
+  public void setPhaseID(Long phaseID) {
     this.phaseID = phaseID;
   }
 
@@ -168,11 +168,9 @@ public class FundingSourceSearchSummary {
     this.type = type;
   }
 
-
   public void setTypeId(BigInteger typeId) {
     this.typeId = typeId;
   }
-
 
   public void setUsedAmount(Double usedAmount) {
     if (usedAmount == null) {

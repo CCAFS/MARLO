@@ -109,7 +109,7 @@ public class FundingSourceByInstitutionFinanceCodeAction extends BaseAction {
     }
     if (summaries != null) {
       String crpName = null;
-      BigInteger phaseID;
+      Long phaseID;
       for (FundingSourceSearchSummary summary : summaries) {
         if (summary.getId() != null) {
           Long crpID = fundingSourceManager
@@ -123,6 +123,13 @@ public class FundingSourceByInstitutionFinanceCodeAction extends BaseAction {
 
             if (crpName != null) {
               summary.setCrpName(crpName);
+            }
+
+            phaseID =
+              this.getCRPPhase(crpID, this.getActualPhase().getYear(), this.getActualPhase().getDescription()).getId();
+
+            if (crpID != null) {
+              summary.setPhaseID(phaseID);
             }
           }
         }
