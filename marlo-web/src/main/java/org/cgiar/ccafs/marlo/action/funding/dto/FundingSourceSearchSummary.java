@@ -41,6 +41,8 @@ public class FundingSourceSearchSummary {
 
   private String crpName;
 
+  private BigInteger phaseID;
+
 
   /**
    * This needs to be determined by the securityContext in some cases where the specificity applies
@@ -94,6 +96,11 @@ public class FundingSourceSearchSummary {
   }
 
 
+  public BigInteger getPhaseID() {
+    return phaseID;
+  }
+
+
   public String getType() {
     return type;
   }
@@ -113,7 +120,6 @@ public class FundingSourceSearchSummary {
     return w1w2;
   }
 
-
   public boolean isCanSelect() {
     return canSelect;
   }
@@ -127,7 +133,6 @@ public class FundingSourceSearchSummary {
     }
     this.budget = budget;
   }
-
 
   public void setCanSelect(boolean canSelect) {
     this.canSelect = canSelect;
@@ -151,6 +156,11 @@ public class FundingSourceSearchSummary {
 
   public void setName(String name) {
     this.name = name;
+  }
+
+
+  public void setPhaseID(BigInteger phaseID) {
+    this.phaseID = phaseID;
   }
 
 
