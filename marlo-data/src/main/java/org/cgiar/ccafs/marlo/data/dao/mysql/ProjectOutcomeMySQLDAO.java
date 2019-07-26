@@ -20,10 +20,14 @@ import org.cgiar.ccafs.marlo.data.dao.ProjectOutcomeDAO;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
-import javax.inject.Named;
 import javax.inject.Inject;
+import javax.inject.Named;
+
 import org.hibernate.SessionFactory;
 
 @Named
@@ -40,7 +44,7 @@ public class ProjectOutcomeMySQLDAO extends AbstractMarloDAO<ProjectOutcome, Lon
   public void deleteProjectOutcome(long projectOutcomeId) {
     ProjectOutcome projectOutcome = this.find(projectOutcomeId);
     projectOutcome.setActive(false);
-   	super.update(projectOutcome);
+    super.update(projectOutcome);
   }
 
 
@@ -53,6 +57,7 @@ public class ProjectOutcomeMySQLDAO extends AbstractMarloDAO<ProjectOutcome, Lon
     return true;
 
   }
+
 
   @Override
   public ProjectOutcome find(long id) {
@@ -72,6 +77,32 @@ public class ProjectOutcomeMySQLDAO extends AbstractMarloDAO<ProjectOutcome, Lon
   }
 
   @Override
+  public List<ProjectOutcome> getProjectOutcomeByPhase(Phase phase) {
+    StringBuilder query = new StringBuilder();
+    query.append("SELECT ");
+    query.append("project_outcomes.id ");
+    query.append("FROM ");
+    query.append("project_outcomes ");
+    query.append("INNER JOIN projects ON project_outcomes.project_id = projects.id ");
+    query.append("WHERE projects.is_active = 1 AND ");
+    query.append("project_outcomes.id_phase=" + phase.getId());
+    query.append(" AND project_outcomes.is_active = 1");
+
+
+    List<Map<String, Object>> rList = super.findCustomQuery(query.toString());
+    List<ProjectOutcome> projectOutcomes = new ArrayList<>();
+
+    if (rList != null) {
+      for (Map<String, Object> map : rList) {
+        ProjectOutcome projectOutcome = this.find(Long.parseLong(map.get("id").toString()));
+        projectOutcomes.add(projectOutcome);
+      }
+    }
+
+    return projectOutcomes.stream().collect(Collectors.toList());
+  }
+
+  @Override
   public ProjectOutcome save(ProjectOutcome projectOutcome) {
     if (projectOutcome.getId() == null) {
       super.saveEntity(projectOutcome);
@@ -87,7 +118,7 @@ public class ProjectOutcomeMySQLDAO extends AbstractMarloDAO<ProjectOutcome, Lon
     if (projectOutcome.getId() == null) {
       super.saveEntity(projectOutcome, section, relationsName, phase);
     } else {
-    projectOutcome =   super.update(projectOutcome, section, relationsName, phase);
+      projectOutcome = super.update(projectOutcome, section, relationsName, phase);
     }
 
 
