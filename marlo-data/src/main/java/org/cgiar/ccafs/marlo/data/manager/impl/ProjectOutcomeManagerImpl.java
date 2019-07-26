@@ -360,6 +360,11 @@ public class ProjectOutcomeManagerImpl implements ProjectOutcomeManager {
   }
 
   @Override
+  public List<ProjectOutcome> getProjectOutcomeByPhase(Phase phase) {
+    return projectOutcomeDAO.getProjectOutcomeByPhase(phase);
+  }
+
+  @Override
   public ProjectOutcome saveProjectOutcome(ProjectOutcome projectOutcome) {
 
     ProjectOutcome resultProjectOutcome = projectOutcomeDAO.save(projectOutcome);
