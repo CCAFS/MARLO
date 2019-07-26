@@ -276,30 +276,6 @@
 			<groupId>org.flywaydb</groupId>
 			<artifactId>flyway-core</artifactId>
 		</dependency>
-		<!-- START Hibernate -->
-		<!-- Hibernate Core -->
-		<dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-core</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-ehcache</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.zaxxer</groupId>
-			<artifactId>HikariCP</artifactId>
-		</dependency>
-		<!-- Dependency needed for Hibernate -->
-		<dependency>
-			<groupId>javax.transaction</groupId>
-			<artifactId>jta</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>ch.qos.logback</groupId>
-			<artifactId>logback-classic</artifactId>
-		</dependency>
-		<!-- END Hibernate -->
 		<!-- jasper -->
 		<dependency>
 			<groupId>net.sf.jasperreports</groupId>
@@ -438,33 +414,6 @@
 		<dependency>
 			<groupId>com.weddini.throttling</groupId>
 			<artifactId>spring-boot-throttling-starter</artifactId>
-		</dependency>
-		<!-- Java bean validation API - Spec -->
-		<dependency>
-			<groupId>javax.validation</groupId>
-			<artifactId>validation-api</artifactId>
-			<version>2.0.1.Final</version>
-		</dependency>
-
-		<!-- Verify validation annotations usage at compile time -->
-		<dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-validator-annotation-processor</artifactId>
-			<version>6.0.11.Final</version>
-		</dependency>
-
-		<!-- Unified Expression Language - Spec -->
-		<dependency>
-			<groupId>javax.el</groupId>
-			<artifactId>javax.el-api</artifactId>
-			<version>3.0.1-b06</version>
-		</dependency>
-
-		<!-- Unified Expression Language - Implementation -->
-		<dependency>
-			<groupId>org.glassfish.web</groupId>
-			<artifactId>javax.el</artifactId>
-			<version>2.2.6</version>
 		</dependency>
 	</dependencies>
 
