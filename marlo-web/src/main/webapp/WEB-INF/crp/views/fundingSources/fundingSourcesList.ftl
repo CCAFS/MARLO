@@ -3,7 +3,7 @@
 [#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["datatables.net", "datatables.net-bs", "malihu-custom-scrollbar-plugin", "select2", "vue"] /]
 [#assign customJS = [
-  "${baseUrlMedia}/js/fundingSources/fundingSourcesList.js" 
+  "${baseUrlMedia}/js/fundingSources/fundingSourcesList.js?20190706" 
   ] 
 /]
 [#assign customCSS = [
