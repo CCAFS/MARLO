@@ -20,12 +20,15 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
+import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Institution;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
+import org.cgiar.ccafs.marlo.data.model.ProjectPhase;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
@@ -53,6 +56,7 @@ public class MapProjectListAction extends BaseAction {
   private ProjectManager projectManager;
   private GlobalUnitManager globalUnitManager;
   private FundingSourceManager fundingSourceManager;
+  private PhaseManager phaseManager;
 
   private List<Map<String, Object>> projects;
 
@@ -61,17 +65,19 @@ public class MapProjectListAction extends BaseAction {
   private Long institutionId;
   private GlobalUnit loggedCrp;
   private Long fundingId;
+  private Long phaseId;
   private boolean permission;
   private boolean genderPermission;
 
   @Inject
   public MapProjectListAction(APConfig config, InstitutionManager institutionManager, ProjectManager projectManager,
-    GlobalUnitManager globalUnitManager, FundingSourceManager fundingSourceManager) {
+    GlobalUnitManager globalUnitManager, FundingSourceManager fundingSourceManager, PhaseManager phaseManager) {
     super(config);
     this.institutionManager = institutionManager;
     this.projectManager = projectManager;
     this.globalUnitManager = globalUnitManager;
     this.fundingSourceManager = fundingSourceManager;
+    this.phaseManager = phaseManager;
   }
 
   @Override
@@ -87,55 +93,73 @@ public class MapProjectListAction extends BaseAction {
 
     Map<String, Object> userProject;
 
-    // Load the Institution and the funding source
+    // Load the Institution, phase and the funding source
     Institution institution = institutionManager.getInstitutionById(institutionId);
     FundingSource fundingSource = fundingSourceManager.getFundingSourceById(fundingId);
+    Phase phase = phaseManager.getPhaseById(phaseId);
 
+    // indicator if the user is Admin or superAdmin
+    boolean admin = false;
 
     if (institution != null) {
       // Ask if the institution is a PPA
-      if (institution.isPPA(loggedCrp.getId(), this.getActualPhase())) {
+      if (institution.isPPA(loggedCrp.getId(), phase)) {
         // Load the projects that the user can edit
-        userProjects = projectManager.getUserProjects(this.getCurrentUser().getId(), loggedCrp.getAcronym()).stream()
-          .filter(p -> p.isActive()).collect(Collectors.toList());
+        if (this.canAccessSuperAdmin() || this.isAdmin()) {
+          admin = true;
+          userProjects = new ArrayList<>();
+          for (ProjectPhase projectPhase : phase.getProjectPhases()) {
+            if (projectPhase.getProject().getProjecInfoPhase(phase) != null) {
+              userProjects.add(projectPhase.getProject());
+            }
+          }
+        } else {
+          userProjects = projectManager.getUserProjects(this.getCurrentUser().getId(), loggedCrp.getAcronym()).stream()
+            .filter(p -> p.isActive()).collect(Collectors.toList());
+        }
 
 
         for (Project project : userProjects) {
           // Ask if the project contains information in this phase
-          if (project.getProjecInfoPhase(this.getActualPhase()) != null) {
+          if (project.getProjecInfoPhase(phase) != null) {
 
 
             if (fundingSource != null) {
-              // Ask if the user have permissions to edit the budget into the projects
-              permission = false;
-              genderPermission = false;
-              if (fundingSource.getFundingSourceInfo(this.getActualPhase()) != null) {
+              if (!admin) {
+                // Ask if the user have permissions to edit the budget into the projects
+                permission = false;
+                genderPermission = false;
+                if (fundingSource.getFundingSourceInfo(phase) != null) {
 
-                if (fundingSource.getFundingSourceInfo().getBudgetType() != null) {
+                  if (fundingSource.getFundingSourceInfo().getBudgetType() != null) {
 
-                  switch (fundingSource.getFundingSourceInfo().getBudgetType().getName()) {
-                    case "W1/W2":
-                      permission = this.hasPermissionNoBase(
-                        this.generatePermission(Permission.PROJECT_FUNDING_W1_BASE_PERMISSION, loggedCrp.getAcronym()));
-                      break;
-                    default:
-                      permission = this.hasPermissionNoBase(
-                        this.generatePermission(Permission.PROJECT_FUNDING_W3_PROJECT_BASE_PERMISSION,
-                          loggedCrp.getAcronym(), project.getId() + ""))
-                        || this.hasPermissionNoBase(
-                          this.generatePermission(Permission.PROJECT_FUNDING_W3_PROJECT_INSTITUTION_BASE_PERMISSION,
-                            loggedCrp.getAcronym(), project.getId() + "", institution.getId() + ""));
-                      break;
+                    switch (fundingSource.getFundingSourceInfo().getBudgetType().getName()) {
+                      case "W1/W2":
+                        permission = this.hasPermissionNoBase(this
+                          .generatePermission(Permission.PROJECT_FUNDING_W1_BASE_PERMISSION, loggedCrp.getAcronym()));
+                        break;
+                      default:
+                        permission = this.hasPermissionNoBase(
+                          this.generatePermission(Permission.PROJECT_FUNDING_W3_PROJECT_BASE_PERMISSION,
+                            loggedCrp.getAcronym(), project.getId() + ""))
+                          || this.hasPermissionNoBase(
+                            this.generatePermission(Permission.PROJECT_FUNDING_W3_PROJECT_INSTITUTION_BASE_PERMISSION,
+                              loggedCrp.getAcronym(), project.getId() + "", institution.getId() + ""));
+                        break;
+                    }
                   }
+                  // Ask if the user have permissions to edit the gender %
+                  genderPermission =
+                    this.hasPermissionNoBase(this.generatePermission(Permission.PROJECT_GENDER_PROJECT_BASE_PERMISSION,
+                      loggedCrp.getAcronym(), project.getId() + ""));
+                } else {
+                  permission = true;
+                  genderPermission = true;
                 }
-                // Ask if the user have permissions to edit the gender %
-                genderPermission =
-                  this.hasPermissionNoBase(this.generatePermission(Permission.PROJECT_GENDER_PROJECT_BASE_PERMISSION,
-                    loggedCrp.getAcronym(), project.getId() + ""));
 
 
                 List<ProjectPartner> projectPartners = new ArrayList<>(project.getProjectPartners().stream()
-                  .filter(pp -> pp.isActive() && pp.getPhase().getId().equals(this.getActualPhase().getId()))
+                  .filter(pp -> pp.isActive() && pp.getPhase().getId().equals(phase.getId()))
                   .collect(Collectors.toList()));
                 // Check who projects contains the PPA institution as partner
                 for (ProjectPartner projectPartner : projectPartners) {
@@ -173,6 +197,7 @@ public class MapProjectListAction extends BaseAction {
       Long.parseLong(StringUtils.trim(parameters.get(APConstants.INSTITUTION_REQUEST_ID).getMultipleValues()[0]));
     fundingId =
       Long.parseLong(StringUtils.trim(parameters.get(APConstants.FUNDING_SOURCE_REQUEST_ID).getMultipleValues()[0]));
+    phaseId = Long.parseLong(StringUtils.trim(parameters.get(APConstants.PHASE_ID).getMultipleValues()[0]));
   }
 
 
