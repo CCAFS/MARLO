@@ -152,25 +152,24 @@ public class MapProjectListAction extends BaseAction {
                   genderPermission =
                     this.hasPermissionNoBase(this.generatePermission(Permission.PROJECT_GENDER_PROJECT_BASE_PERMISSION,
                       loggedCrp.getAcronym(), project.getId() + ""));
-                } else {
-                  permission = true;
-                  genderPermission = true;
                 }
+              } else {
+                permission = true;
+                genderPermission = true;
+              }
 
-
-                List<ProjectPartner> projectPartners = new ArrayList<>(project.getProjectPartners().stream()
-                  .filter(pp -> pp.isActive() && pp.getPhase().getId().equals(phase.getId()))
-                  .collect(Collectors.toList()));
-                // Check who projects contains the PPA institution as partner
-                for (ProjectPartner projectPartner : projectPartners) {
-                  if (projectPartner.getInstitution().getId().equals(institution.getId())) {
-                    if (permission) {
-                      userProject = new HashMap<String, Object>();
-                      userProject.put("id", project.getId());
-                      userProject.put("description", project.getComposedName());
-                      userProject.put("gender", genderPermission);
-                      projects.add(userProject);
-                    }
+              List<ProjectPartner> projectPartners = new ArrayList<>(project.getProjectPartners().stream()
+                .filter(pp -> pp.isActive() && pp.getPhase().getId().equals(phase.getId()))
+                .collect(Collectors.toList()));
+              // Check who projects contains the PPA institution as partner
+              for (ProjectPartner projectPartner : projectPartners) {
+                if (projectPartner.getInstitution().getId().equals(institution.getId())) {
+                  if (permission) {
+                    userProject = new HashMap<String, Object>();
+                    userProject.put("id", project.getId());
+                    userProject.put("description", project.getComposedName());
+                    userProject.put("gender", genderPermission);
+                    projects.add(userProject);
                   }
                 }
               }
