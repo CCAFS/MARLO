@@ -121,7 +121,7 @@ public class FundingSourceByInstitutionFinanceCodeAction extends BaseAction {
               crpName = crpManager.getGlobalUnitById(crpID).getName();
             }
 
-            if (crpName != null) {
+            if (crpName != null && !crpName.isEmpty()) {
               summary.setCrpName(crpName);
             }
 
