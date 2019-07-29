@@ -530,35 +530,11 @@
             </tbody>
           </table>
           
-          <!-- Button trigger modal -->
-          <button type="button" class="btn btn-primary pull-right" data-toggle="modal" data-target="#mapFundingToProject-${year}">Map Funding Source to a Project</button>
-          <div class="clearfix"></div>
-          
-          <!-- Modal -->
-          <div class="modal fade" id="mapFundingToProject-${year}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-            <div class="modal-dialog" role="document">
-              <div class="modal-content">
-                <div class="modal-header">
-                  <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                  <h4 class="modal-title" id="myModalLabel">Map Funding Source to a Project</h4>
-                </div>
-                <div class="modal-body">
-                  [#-- Institution --]
-                  <div class="form-group">
-                    [@customForm.select name="institutionID" i18nkey="" className="institutionLead"  listName="fundingSource.institutions" keyFieldName=""  displayFieldName="" required=true editable=true /]
-                  </div>
-                
-                
-                 mapFundingToProject ${year} year
-                </div>
-                <div class="modal-footer">
-                  <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                  <button type="button" class="btn btn-primary">Map to Project</button>
-                </div>
-              </div>
-            </div>
-          </div>
-          
+          [#-- Button to map Funding Source to a project --]
+          [#if editable]
+            <button type="button" class="btn btn-primary pull-right year-${year}" data-toggle="modal" data-target="#mapFundingToProject">Map Funding Source to a Project</button>
+            <div class="clearfix"></div>
+          [/#if]
           
           [#if (fundingSourceShow.projectBudgetsList?has_content)!false]
           <hr />
@@ -605,6 +581,45 @@
   [/@s.form] 
   </article>
 </section>
+
+[#-- Modal to map Funding Source to a project --]
+[#if editable]
+<div class="modal fade" id="mapFundingToProject" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">Map Funding Source to a Project</h4>
+      </div>
+      <div class="modal-body">
+        [#-- Institution --]
+        <div class="form-group">
+          [@customForm.select name="institutionID" i18nkey="" className=""  listName="fundingSource.institutions" keyFieldName="institution.id"  displayFieldName="institution.composedName" required=true editable=true /]
+        </div>
+        
+        [#-- Project --]
+        <div class="form-group">
+          [@customForm.select name="projectID" i18nkey="" className=""  listName="fundingSource.project" keyFieldName=""  displayFieldName="" required=true editable=true /]
+        </div>
+        
+        <div class="form-group row">
+          <div class="col-md-6">Amount</div>
+          <div class="col-md-6">Gender %</div>
+        </div>
+        
+        <div class="form-group">
+          Justifications
+        </div>
+      
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Map to Project</button>
+      </div>
+    </div>
+  </div>
+</div>
+[/#if]
 
 [#-- Region element template --]
 <ul style="display:none">
