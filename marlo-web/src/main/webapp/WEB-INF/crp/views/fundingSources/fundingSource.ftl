@@ -137,13 +137,13 @@
           </div>
           
           [#--  Funding Sources found List --]
-          <div id="vueApp" class="resultList simpleBox" v-if="allFundingSources.length" >
+          <div id="vueApp" class="resultList simpleBox" v-if="allFundingSources.length" style="display:none">
             <p>This finance code is also used by:</p>
             <div v-for="item in crpList" v-if="item.fundingSources.length">
               <strong>{{ item.name }}</strong> 
               <p v-for="fs in item.fundingSources">
                 <span class="pull-right label label-info">{{ fs.type }}</span>
-                <a target="_blank" v-bind:href="'${baseUrl}/fundingSources/'+ fs.crpName +'/fundingSource.do?fundingSourceID='+ fs.id +'&edit=true&phaseID=${(actualPhase.id)!}'">
+                <a target="_blank" v-bind:href="'${baseUrl}/fundingSources/'+ fs.crpName +'/fundingSource.do?fundingSourceID='+ fs.id +'&edit=true'">[#-- &phaseID=${(actualPhase.id)!} --]
                   <small><strong> FS{{ fs.id }}</strong> - {{ fs.financeCode }} | {{ fs.name }} </small>
                 </a>
               </p>
@@ -513,34 +513,55 @@
              </tr>
             </thead>
             <tbody>
-            [#assign counter = 0 /]
             [#list fundingSource.projectBudgetsList as projectBudget]
+              [#assign projectBudgetURL][@s.url action="${crpSession}/budgetByPartners" namespace="/projects"] [@s.param name="projectID" value="${(projectBudget.project.id)!}"/] [#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#assign]
               [#if projectBudget.year == year]
                <tr class="projectBudgetItem">
-                <td>
-                  <a href="[@s.url action="${crpSession}/budgetByPartners" namespace="/projects"] [@s.param name="projectID" value="${(projectBudget.project.id)!}"/] [#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
-                    P${(projectBudget.project.id)!}              
-                  </a>
-                </td>
-                <td class="col-md-5">
-                  <a href="[@s.url action="${crpSession}/budgetByPartners" namespace="/projects"] [@s.param name="projectID" value="${(projectBudget.project.id)!}"/] [#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
-                    ${(projectBudget.project.projectInfo.title)!}
-                  </a>
-                </td>
-                <td> ${(projectBudget.institution.acronymName)!(projectBudget.institution.name)} </td>
+                <td><a href="${projectBudgetURL}">P${(projectBudget.project.id)!}</a></td>
+                <td class="col-md-5"><a href="projectBudgetURL">${(projectBudget.project.projectInfo.title)!}</a></td>
+                <td> ${(projectBudget.institution.acronymName)!(projectBudget.institution.name)}</td>
                 <td>${(projectBudget.budgetType.name)!}
                    [#if action.hasSpecificities('crp_fs_w1w2_cofinancing')] ${(fundingSource.fundingSourceInfo.w1w2?string('<small class="text-primary">(Co-Financing)</small>',''))!} [/#if]
-         
                 </td>
                 <td>US$ <span>${((projectBudget.amount)!0)?number?string(",##0.00")}</td>
                </tr>
-              [#assign counter = counter + 1 /]
               [/#if]
             [/#list]
             </tbody>
           </table>
           
+          <!-- Button trigger modal -->
+          <button type="button" class="btn btn-primary pull-right" data-toggle="modal" data-target="#mapFundingToProject-${year}">Map Funding Source to a Project</button>
+          <div class="clearfix"></div>
           
+          <!-- Modal -->
+          <div class="modal fade" id="mapFundingToProject-${year}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                  <h4 class="modal-title" id="myModalLabel">Map Funding Source to a Project</h4>
+                </div>
+                <div class="modal-body">
+                  [#-- Institution --]
+                  <div class="form-group">
+                    [@customForm.select name="institutionID" i18nkey="" className="institutionLead"  listName="fundingSource.institutions" keyFieldName=""  displayFieldName="" required=true editable=true /]
+                  </div>
+                
+                
+                 mapFundingToProject ${year} year
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                  <button type="button" class="btn btn-primary">Map to Project</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          
+          [#if (fundingSourceShow.projectBudgetsList?has_content)!false]
+          <hr />
           <h5 class="sectionSubTitle">[@s.text name="fundingSource.projectsAssignedCRP" /]:</h5>
           <table class="table">
             <thead>
@@ -554,39 +575,22 @@
              </tr>
             </thead>
             <tbody>
-            [#assign counter = 0 /] 
-            [#list (fundingSourceShow.projectBudgetsList)![] as projectBudget]
+            [#list fundingSourceShow.projectBudgetsList as projectBudget]
+              [#assign projectBudgetURL][@s.url action="${crpSession}/budgetByPartners" namespace="/projects"] [@s.param name="projectID" value="${(projectBudget.project.id)!}"/] [#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#assign]
               [#if projectBudget.year == year]
                <tr class="projectBudgetItem">
-                <td>
-                  <a href="[@s.url action="${crpSession}/budgetByPartners" namespace="/projects"] [@s.param name="projectID" value="${(projectBudget.project.id)!}"/] [#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
-                    P${(projectBudget.project.id)!}              
-                  </a>
-                </td>
-                <td>
-                  <a href="[@s.url action="${crpSession}/budgetByPartners" namespace="/projects"] [@s.param name="projectID" value="${(projectBudget.project.id)!}"/] [#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
-                    ${(projectBudget.fundingSource.crp.acronym)!}              
-                  </a>
-                </td>
-                <td class="col-md-5">
-                  <a href="[@s.url action="${crpSession}/budgetByPartners" namespace="/projects"] [@s.param name="projectID" value="${(projectBudget.project.id)!}"/] [#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
-                    ${(projectBudget.project.projectInfo.title)!}
-                  </a>
-                </td>
-                <td class="col-md-5">
-                  <a href="[@s.url action="${crpSession}/budgetByPartners" namespace="/projects"] [@s.param name="projectID" value="${(projectBudget.project.id)!}"/] [#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
-                    ${(projectBudget.project.projectInfo.statusJustification)!}
-                  </a>
-                </td>
+                <td><a href="${projectBudgetURL}">P${(projectBudget.project.id)!}</a></td>
+                <td><a href="${projectBudgetURL}">${(projectBudget.fundingSource.crp.acronym)!}</a></td>
+                <td class="col-md-5"><a href="${projectBudgetURL}">${(projectBudget.project.projectInfo.title)!}</a></td>
+                <td class="col-md-5"><a href="${projectBudgetURL}">${(projectBudget.project.projectInfo.statusJustification)!}</a></td>
                 <td> ${(projectBudget.fundingSource.fundingSourceInfo.leadCenter.acronymName)!(projectBudget.fundingSource.fundingSourceInfo.leadCenter.name)!} </td>
                 <td>US$ <span>${((projectBudget.amount)!0)?number?string(",##0.00")}</td>
                </tr>
-              [#assign counter = counter + 1 /]
               [/#if]
             [/#list]
             </tbody>
           </table>
-          
+          [/#if]
           
           </div>
         [/#list] 

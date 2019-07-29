@@ -3,6 +3,7 @@ var W1W2, ON_GOING, EXTENDED_STATUS;
 var $fundingType, $financeCode, $leadPartner;
 $(document).ready(init);
 
+$('#vueApp').show();
 var app = new Vue({
     el: '#vueApp',
     data: {

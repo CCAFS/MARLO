@@ -684,7 +684,7 @@ ul#noty_bottomRight_layout_container {
 
 input:-webkit-autofill, textarea:-webkit-autofill, select:-webkit-autofill {
   background-color: #fff !important;
-  background-image: none !important;
+  /* background-image: none !important; */
   color: #ccc !important;
 }
 
@@ -915,7 +915,9 @@ img.icon {
 }
 
 input.input-loading {
-  background: url(../../global/images/loading_3.gif) #FFF no-repeat right;
+  background-image: url(../../global/images/loading_3.gif);
+  background-position: right;
+  background-repeat: no-repeat !important;
 }
 
 /* Horizontal sub menu */
@@ -6935,4 +6937,12 @@ i.authorVisibles {}
 
 #helpViewMoreLink {
   cursor: pointer;
+}
+
+button.btn.btn-primary {
+  border-radius: 2px;
+  background-color: #298bb1;
+  border: 0;
+  border-bottom: 3px solid;
+  border-color: #267d9e;
 }

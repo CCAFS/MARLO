@@ -113,9 +113,9 @@
                     <p> <strong>This finance code is already used. Please click on the following one if you want to edit.</strong></p>
                     <ul class="list-group">
                       <li class="list-group-item" v-for="fs in fundingSources">
-                        <strong>{{ fs.financeCode }}</strong> <span class="pull-right label label-info">{{ fs.type }}</span>
+                        <span class="pull-right label label-info">{{ fs.type }}</span>
                         <a target="_blank" v-bind:href="'${baseUrl}/fundingSources/${crpSession}/fundingSource.do?fundingSourceID='+ fs.id +'&edit=true&phaseID=${(actualPhase.id)!}'">
-                          <p>FS{{ fs.id }} - {{ fs.name }}</p>
+                          <small><strong> FS{{ fs.id }}</strong> - {{ fs.financeCode }} | {{ fs.name }} </small>
                         </a>
                       </li>
                     </ul>
