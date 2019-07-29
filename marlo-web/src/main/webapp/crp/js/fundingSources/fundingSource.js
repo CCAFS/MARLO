@@ -285,6 +285,9 @@ function init() {
 
   // Check duplicated Funding sources along CRPs
   findDuplicatedFinanceSource();
+
+  // Add functionality of mapping funding source to a project
+  mappingFundingToProjectModule.init();
 }
 
 function setPartnerLead(e) {
@@ -1019,3 +1022,44 @@ function budgetTypeTemplate(state) {
   var $state = $("<span><b>" + name + "</b><br><small class='selectDesc'>" + desc + "</small></span>");
   return $state;
 }
+
+var mappingFundingToProjectModule = (function() {
+  var $modal = $('#mapFundingToProject');
+  var $institutionSelect = $modal.find('select[name="institutionID"]');
+
+  function init() {
+    addEvents();
+  }
+
+  function addEvents() {
+    $institutionSelect.on("change", findProjects);
+  }
+
+  function findProjects() {
+    var institutionID = $institutionSelect.val();
+    var fundingSourceID = $('input[name="fundingSourceID"]').val();
+
+    $.ajax({
+        url: baseUrl + "/FundingMapProjectList.do",
+        data: {
+            institutionID: institutionID,
+            fundingSourceID: fundingSourceID,
+            phaseID: phaseID
+        },
+        beforeSend: function() {
+        },
+        success: function(data) {
+          console.log(data);
+        },
+        complete: function(data) {
+        },
+        error: function(data) {
+        }
+    });
+
+  }
+
+  return {
+    init: init
+  }
+})();

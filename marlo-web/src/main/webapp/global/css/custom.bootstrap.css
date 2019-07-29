@@ -10,3 +10,8 @@ span.badge.globalUnitTag {
   border-radius: 5px;
   font-size: 0.95em;
 }
+
+.modal-content {
+  border-radius: 2px;
+  box-shadow: 0px 0px 6px rgba(0,0,0,.5);
+}
