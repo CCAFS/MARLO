@@ -55,9 +55,11 @@ public class FundingSourceSearchSummary {
 
   private Double usedAmount = new Double(0);
 
+
   public FundingSourceSearchSummary() {
 
   }
+
 
   public Map<String, Object> convertToMap() {
     ObjectMapper oMapper = new ObjectMapper();
@@ -71,15 +73,14 @@ public class FundingSourceSearchSummary {
     return budget - usedAmount;
   }
 
-
   public Double getBudget() {
     return budget;
   }
 
-
   public String getCrpName() {
     return crpName;
   }
+
 
   public String getFinanceCode() {
     return financeCode;
@@ -120,10 +121,10 @@ public class FundingSourceSearchSummary {
     return w1w2;
   }
 
+
   public boolean isCanSelect() {
     return canSelect;
   }
-
 
   public void setBudget(Double budget) {
 
@@ -137,7 +138,6 @@ public class FundingSourceSearchSummary {
   public void setCanSelect(boolean canSelect) {
     this.canSelect = canSelect;
   }
-
 
   public void setCrpName(String crpName) {
     this.crpName = crpName;
@@ -184,6 +184,4 @@ public class FundingSourceSearchSummary {
   public void setW1w2(Boolean w1w2) {
     this.w1w2 = w1w2;
   }
-
-
 }
