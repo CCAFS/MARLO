@@ -1024,8 +1024,22 @@ function budgetTypeTemplate(state) {
 }
 
 var mappingFundingToProjectModule = (function() {
+
+  var vueApp = new Vue({
+      el: '#mapFundingToProject',
+      data: {
+          institutionID: -1,
+          institutions: [],
+          projects: [],
+          projectID: -1,
+          modalLoading: false,
+          message: ""
+      }
+  })
+
   var $modal = $('#mapFundingToProject');
   var $institutionSelect = $modal.find('select[name="institutionID"]');
+  var $projectSelect = $modal.find('select[name="projectID"]');
 
   function init() {
     addEvents();
@@ -1047,11 +1061,17 @@ var mappingFundingToProjectModule = (function() {
             phaseID: phaseID
         },
         beforeSend: function() {
+          vueApp.message = "";
+          vueApp.modalLoading = true;
         },
         success: function(data) {
-          console.log(data);
+          if(!data.projects.length) {
+            vueApp.message = "No project(s) to map found";
+          }
+          vueApp.projects = data.projects;
         },
         complete: function(data) {
+          vueApp.modalLoading = false;
         },
         error: function(data) {
         }
