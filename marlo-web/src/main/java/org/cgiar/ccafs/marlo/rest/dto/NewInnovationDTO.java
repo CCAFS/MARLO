@@ -21,43 +21,49 @@ import io.swagger.annotations.ApiModelProperty;
 
 public class NewInnovationDTO {
 
-  @ApiModelProperty(notes = "Name of innovation", position = 1)
+  @ApiModelProperty(notes = "Name of innovation", position = 10)
   private String title;
 
-  @ApiModelProperty(notes = "Description of the Innovation", position = 2)
+  @ApiModelProperty(notes = "Description of the Innovation", position = 20)
   private String narrative;
 
-  @ApiModelProperty(notes = "Stage of innovation code", position = 3)
+  @ApiModelProperty(notes = "Project code", position = 25)
+  private Long projectId;
+
+  @ApiModelProperty(notes = "Stage of innovation code", position = 30)
   private Long stageOfInnovation;
 
-  @ApiModelProperty(notes = "Description of stage reached", position = 4)
+  @ApiModelProperty(notes = "Description of stage reached", position = 40)
   private String descriptionStage;
 
-  @ApiModelProperty(notes = "Next users organization types codes", position = 5)
+  @ApiModelProperty(notes = "Next users organization types codes", position = 50)
   private List<Long> nextUserOrganizationTypes;
 
-  @ApiModelProperty(notes = "Innovation Type code", position = 6)
+  @ApiModelProperty(notes = "Innovation Type code", position = 60)
   private Long innovationType;
 
-  @ApiModelProperty(notes = "Geographic Scopes code", position = 7)
+  @ApiModelProperty(notes = "Other Innovation Type description", position = 65)
+  private String otherInnovationType;
+
+  @ApiModelProperty(notes = "Geographic Scopes code", position = 70)
   private List<Long> geographicScopes;
 
-  @ApiModelProperty(notes = "Regions codes", position = 8)
+  @ApiModelProperty(notes = "Regions codes", position = 80)
   private List<Long> regions;
 
-  @ApiModelProperty(notes = "Countries Alpha 2 codes", position = 9)
+  @ApiModelProperty(notes = "Countries Alpha 2 codes", position = 90)
   private List<String> countries;
 
-  @ApiModelProperty(notes = "id of Lead organization/entity to take innovation to this stage", position = 10)
+  @ApiModelProperty(notes = "id of Lead organization/entity to take innovation to this stage", position = 100)
   private Long leadOrganization;
 
-  @ApiModelProperty(notes = "List of top five contributing organizations/entities codes to this stage", position = 11)
+  @ApiModelProperty(notes = "List of top five contributing organizations/entities codes to this stage", position = 110)
   private List<Long> contributingInstitutions;
 
-  @ApiModelProperty(notes = "Evidence Link", position = 12)
+  @ApiModelProperty(notes = "Evidence Link", position = 120)
   private String evidenceLink;
 
-  @ApiModelProperty(notes = "Contributing CRPs/Platforms codes", position = 13)
+  @ApiModelProperty(notes = "Contributing CRPs/Platforms codes", position = 130)
   private List<String> contributingCGIAREntities;
 
 
@@ -108,6 +114,16 @@ public class NewInnovationDTO {
 
   public List<Long> getNextUserOrganizationTypes() {
     return this.nextUserOrganizationTypes;
+  }
+
+
+  public String getOtherInnovationType() {
+    return this.otherInnovationType;
+  }
+
+
+  public Long getProjectId() {
+    return this.projectId;
   }
 
 
@@ -173,6 +189,16 @@ public class NewInnovationDTO {
 
   public void setNextUserOrganizationTypes(List<Long> nextUserOrganizationTypes) {
     this.nextUserOrganizationTypes = nextUserOrganizationTypes;
+  }
+
+
+  public void setOtherInnovationType(String otherInnovationType) {
+    this.otherInnovationType = otherInnovationType;
+  }
+
+
+  public void setProjectId(Long projectId) {
+    this.projectId = projectId;
   }
 
 
