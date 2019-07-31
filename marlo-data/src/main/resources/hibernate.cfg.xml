@@ -439,5 +439,7 @@
     <mapping
       resource="xmls/ReportSynthesisKeyPartnershipCollaborationPmu.hbm.xml" />
     <mapping resource="xmls/ProjectInnovationShared.hbm.xml" />
+    <mapping resource="xmls/DeliverablePartnerTypes.hbm.xml" />
+    <mapping resource="xmls/DeliverableUserPartnerships.hbm.hbm.xml" />    
   </session-factory>
 </hibernate-configuration>
