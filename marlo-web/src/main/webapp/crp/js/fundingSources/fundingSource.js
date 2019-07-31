@@ -1038,31 +1038,114 @@ var mappingFundingToProjectModule = (function() {
           projects: [],
           projectID: -1,
           modalLoading: false,
-          message: ""
+          message: "",
+          year: undefined,
+          fundingSourceID: $('input[name="fundingSourceID"]').val(),
+          budgetTypeID: $('.fundingType').val(),
+          isValidForm: false
       }
-  })
+  });
 
   var $modal = $('#mapFundingToProject');
   var $institutionSelect = $modal.find('select[name="institutionID"]');
   var $projectSelect = $modal.find('select[name="projectID"]');
+  var $amountInput = $modal.find('input.currencyInput');
+  var $genderInput = $modal.find('input.percentageInput');
+  var $justificationInput = $modal.find('textarea[name="justification"]');
+  var $saveButton = $modal.find('button.saveBudgetMapping');
+  var $step2Block = $modal.find('.step2');
 
   function init() {
+    $institutionSelect.select2({
+      width: '100%'
+    });
+    $projectSelect.select2({
+      width: '100%'
+    });
+
+    // Setting Numeric Inputs
+    $modal.find('input.currencyInput, input.percentageInput').numericInput();
+
+    // Setting Currency Inputs
+    $amountInput.currencyInput();
+
+    // Setting Percentage Inputs
+    $genderInput.percentageInput();
+
     addEvents();
   }
 
   function addEvents() {
+    // On change institution Partner
     $institutionSelect.on("change", findProjects);
+
+    // On change project
+    $projectSelect.on("change", validateForm);
+
+    // On change amount
+    $amountInput.on("change keyup", validateForm);
+
+    // On change percentage
+    $genderInput.on("change  keyup", validateForm);
+
+    // On change justification
+    $justificationInput.on("change  keyup", validateForm);
+
+    // On click
+    $saveButton.on('click', saveBudgetMapping);
+
+    // On open the modal
+    $modal.on('shown.bs.modal', openModal);
+  }
+
+  function validateForm() {
+    var institutionID = $institutionSelect.val();
+    var projectID = $projectSelect.val();
+    var amount = removeCurrencyFormat($amountInput.val());
+    var justificationText = $justificationInput.val();
+    var isValid = true;
+
+    // Validate institution
+    if((!institutionID) || (institutionID == '-1')) {
+      isValid = false;
+    }
+    // Validate project
+    if((!projectID) || (projectID == '-1')) {
+      isValid = false;
+    }
+    // Validate Amount
+    if(amount <= 0) {
+      isValid = false;
+    }
+    // Valida justification
+    if(!justificationText) {
+      isValid = false;
+    }
+
+    vueApp.isValidForm = isValid;
+  }
+
+  function saveBudgetMapping() {
+    /**
+     * SaveFundingMapProject.do Params: institutionID fundingSourceID projectID budgetTypeID year amount gender
+     */
+    console.log("saveBudgetMapping");
+  }
+
+  function openModal(event) {
+    var $button = $(event.relatedTarget);
+    vueApp.year = $button.data('year');
   }
 
   function findProjects() {
     var institutionID = $institutionSelect.val();
-    var fundingSourceID = $('input[name="fundingSourceID"]').val();
 
     $.ajax({
         url: baseUrl + "/FundingMapProjectList.do",
         data: {
             institutionID: institutionID,
-            fundingSourceID: fundingSourceID,
+            fundingSourceID: vueApp.fundingSourceID,
+            year: vueApp.year,
             phaseID: phaseID
         },
         beforeSend: function() {
@@ -1071,19 +1154,22 @@ var mappingFundingToProjectModule = (function() {
           vueApp.modalLoading = true;
         },
         success: function(data) {
-          $projectSelect.addOption(-1, "Select an option...");
-          $.each(data.projects, function(p) {
-            $projectSelect.addOption(p.id, p.description);
-          });
-
           if(!data.projects.length) {
             vueApp.message = "No project(s) to map found";
+            $step2Block.slideUp()
+          } else {
+            $step2Block.slideDown()
           }
-          vueApp.projects = data.projects;
+
+          $projectSelect.addOption(-1, "Select an option...");
+          $.each(data.projects, function(i,p) {
+            $projectSelect.addOption(p.id, p.description);
+          });
 
         },
         complete: function(data) {
           vueApp.modalLoading = false;
+          validateForm();
         },
         error: function(data) {
         }
