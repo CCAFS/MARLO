@@ -46,358 +46,370 @@ import org.slf4j.LoggerFactory;
 @Named
 public class SendMailS {
 
-  // LOG
-  private static final Logger LOG = LoggerFactory.getLogger(SendMailS.class);
+	// LOG
+	private static final Logger LOG = LoggerFactory.getLogger(SendMailS.class);
 
-  // Managers
-  private APConfig config;
-  private EmailLogManager emailLogManager;
-  private final SessionFactory sessionFactory;
+	// Managers
+	private APConfig config;
+	private EmailLogManager emailLogManager;
+	private final SessionFactory sessionFactory;
 
-  @Inject
-  public SendMailS(APConfig config, EmailLogManager emailLogManager, SessionFactory sessionFactory) {
-    this.config = config;
-    this.emailLogManager = emailLogManager;
-    this.sessionFactory = sessionFactory;
-  }
+	@Inject
+	public SendMailS(APConfig config, EmailLogManager emailLogManager, SessionFactory sessionFactory) {
+		this.config = config;
+		this.emailLogManager = emailLogManager;
+		this.sessionFactory = sessionFactory;
+	}
 
-  /**
-   * This method send an email from the main email system.
-   * 
-   * @param toEmail is the email or the list of emails separated by a single space. This parameter can be null.
-   * @param ccEmail is the email or the list of emails separated by a single space that will be as CC. This parameter
-   *        can be null.
-   * @param bbcEmail is the email or the list of emails separated by a single space that will be in BBC. This parameter
-   *        can be null.
-   * @param subject is the email title.
-   * @param messageContent the content of the email
-   * @param attachement is a byte array with the file to be attached.
-   * @param attachmentMimeType is the MIME Type
-   * @param is the name of the file
-   */
-  public void send(String toEmail, String ccEmail, String bbcEmail, String subject, String messageContent,
-    byte[] attachment, String attachmentMimeType, String fileName, boolean isHtml) {
+	/**
+	 * This method send an email from the main email system.
+	 * 
+	 * @param toEmail is the email or the list of emails separated by a single
+	 * space. This parameter can be null.
+	 * @param ccEmail is the email or the list of emails separated by a single
+	 * space that will be as CC. This parameter can be null.
+	 * @param bbcEmail is the email or the list of emails separated by a single
+	 * space that will be in BBC. This parameter can be null.
+	 * @param subject is the email title.
+	 * @param messageContent the content of the email
+	 * @param attachement is a byte array with the file to be attached.
+	 * @param attachmentMimeType is the MIME Type
+	 * @param is the name of the file
+	 */
+	public void send(String toEmail, String ccEmail, String bbcEmail, String subject, String messageContent,
+			byte[] attachment, String attachmentMimeType, String fileName, boolean isHtml) {
 
-    // Get a Properties object
-    Properties properties = System.getProperties();
-    if (ccEmail != null) {
-      Set<String> noRepeatEmails = new HashSet<>();
-      ccEmail = ccEmail.replaceAll(", " + toEmail, "");
-      String[] ccEmails = ccEmail.split(", ");
-      ccEmail = new String();
-      for (String string : ccEmails) {
-        noRepeatEmails.add(string.trim());
-      }
-      for (String string : noRepeatEmails) {
-        if (ccEmail == null || ccEmail.isEmpty()) {
-          ccEmail = string;
-        } else {
-          ccEmail = ccEmail + ", " + string;
-        }
-      }
-    }
+		// Get a Properties object
+		Properties properties = System.getProperties();
 
+		if (ccEmail != null) {
+			Set<String> noRepeatEmails = new HashSet<>();
+			ccEmail = ccEmail.replaceAll(", " + toEmail, "");
+			String[] ccEmails = ccEmail.split(", ");
+			ccEmail = new String();
+			for (String string : ccEmails) {
+				noRepeatEmails.add(string.trim());
+			}
+			for (String string : noRepeatEmails) {
+				if (ccEmail == null || ccEmail.isEmpty()) {
+					ccEmail = string;
+				} else {
+					ccEmail = ccEmail + ", " + string;
+				}
+			}
+		}
 
-    // properties.put("mail.smtp.auth", "true");
-    // properties.put("mail.smtp.starttls.enable", "true");
-    // properties.put("mail.smtp.ssl.trust", config.getEmailHost());
-    properties.put("mail.smtp.host", config.getEmailHost());
-    properties.put("mail.smtp.port", config.getEmailPort());
+		// Properties for backup dperez
 
+		properties.put("mail.smtp.host", config.getEmailHost());
+		properties.put("mail.smtp.port", config.getEmailPort());
+		// changes for smtp secure dperez
+		properties.put("mail.smtp.auth", config.getEmail_auth());
+		properties.put("mail.smtp.starttls.enable", config.getEmail_starttls());
 
-    // Un-comment this line to watch javaMail debug
-    // properties.put("mail.debug", "true");
+		// Un-comment this line to watch javaMail debug
+		properties.put("mail.debug", "true");
 
+		Session session = Session.getInstance(properties, new Authenticator() {
 
-    Session session = Session.getInstance(properties, new Authenticator() {
+			@Override
+			protected PasswordAuthentication getPasswordAuthentication() {
+				return new PasswordAuthentication(config.getEmailUsername(), config.getEmailPassword());
+			}
+		});
 
-      @Override
-      protected PasswordAuthentication getPasswordAuthentication() {
-        return new PasswordAuthentication(config.getEmailUsername(), config.getEmailPassword());
-      }
-    });
+		// Create a new message
+		MimeMessage msg = new MimeMessage(session) {
 
-    // Create a new message
-    MimeMessage msg = new MimeMessage(session) {
+			@Override
+			protected void updateMessageID() throws MessagingException {
+				if (this.getHeader("Message-ID") == null) {
+					super.updateMessageID();
+				}
+			}
+		};
 
-      @Override
-      protected void updateMessageID() throws MessagingException {
-        if (this.getHeader("Message-ID") == null) {
-          super.updateMessageID();
-        }
-      }
-    };
+		try {
 
-    try {
-      msg.saveChanges();
-    } catch (MessagingException e1) {
-      // TODO Auto-generated catch block
-      e1.printStackTrace();
-    }
+			msg.saveChanges();
+		} catch (MessagingException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 
-    EmailLog emailLog = new EmailLog();
-    emailLog.setBbc(bbcEmail);
-    emailLog.setCc(ccEmail);
-    emailLog.setTo(toEmail);
-    emailLog.setDate(new Date());
-    try {
-      emailLog.setMessageID(msg.getMessageID());
-    } catch (MessagingException e1) {
-      // TODO Auto-generated catch block
-      e1.printStackTrace();
-    }
-    String header = "<div style=\"font-family:Segoe UI, Roboto, Helvetica Neue, Arial, sans-serif; \">";
-    String footer = "</div>";
-    messageContent = header + messageContent + footer;
-    emailLog.setMessage(messageContent);
-    emailLog.setSubject(subject);
-    try {
-      emailLog.setMessageID(msg.getMessageID());
-    } catch (MessagingException e1) {
-      // TODO Auto-generated catch block
-      e1.printStackTrace();
-    }
+		EmailLog emailLog = new EmailLog();
+		emailLog.setBbc(bbcEmail);
+		emailLog.setCc(ccEmail);
+		emailLog.setTo(toEmail);
+		emailLog.setDate(new Date());
+		try {
+			emailLog.setMessageID(msg.getMessageID());
+		} catch (MessagingException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		String header = "<div style=\"font-family:Segoe UI, Roboto, Helvetica Neue, Arial, sans-serif; \">";
+		String footer = "</div>";
+		messageContent = header + messageContent + footer;
+		emailLog.setMessage(messageContent);
+		emailLog.setSubject(subject);
+		try {
+			emailLog.setMessageID(msg.getMessageID());
+		} catch (MessagingException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 
+		// Set the FROM and TO fields
+		try {
+			if (!config.isProduction()) {
 
-    // Set the FROM and TO fields
-    try {
-      if (!config.isProduction()) {
+				// Adding TEST words.
+				// Set the Test Header to list the emails that will send in
+				// production
+				StringBuilder testingHeader = new StringBuilder();
+				testingHeader.append("To: " + toEmail + "<br>");
+				testingHeader.append("CC: " + ccEmail + "<br>");
+				testingHeader.append("BBC: " + bbcEmail + "<br>");
+				testingHeader.append("----------------------------------------------------<br><br>");
+				subject = "TEST " + subject;
+				messageContent = testingHeader.toString() + messageContent;
+				// if (toEmail != null) {
+				msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(bbcEmail, false));
+				// msgbackup.setRecipients(Message.RecipientType.TO,
+				// InternetAddress.parse(bbcEmail, false));
+				LOG.info("   - TO: " + bbcEmail);
+				// }
+			} else {
+				if (toEmail != null) {
+					msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmail, false));
+					// msgbackup.setRecipients(Message.RecipientType.TO,
+					// InternetAddress.parse(toEmail, false));
+					LOG.info("   - TO: " + toEmail);
+				}
+				if (ccEmail != null) {
+					msg.setRecipients(Message.RecipientType.CC, InternetAddress.parse(ccEmail, false));
+					// msgbackup.setRecipients(Message.RecipientType.CC,
+					// InternetAddress.parse(ccEmail, false));
+					LOG.info("   - CC: " + ccEmail);
+				}
+			}
 
-        // Adding TEST words.
-        // Set the Test Header to list the emails that will send in production
-        StringBuilder testingHeader = new StringBuilder();
-        testingHeader.append("To: " + toEmail + "<br>");
-        testingHeader.append("CC: " + ccEmail + "<br>");
-        testingHeader.append("BBC: " + bbcEmail + "<br>");
-        testingHeader.append("----------------------------------------------------<br><br>");
-        subject = "TEST " + subject;
-        messageContent = testingHeader.toString() + messageContent;
-        // if (toEmail != null) {
-        msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(bbcEmail, false));
-        LOG.info("   - TO: " + bbcEmail);
-        // }
-      } else {
-        if (toEmail != null) {
-          msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmail, false));
-          LOG.info("   - TO: " + toEmail);
-        }
-        if (ccEmail != null) {
-          msg.setRecipients(Message.RecipientType.CC, InternetAddress.parse(ccEmail, false));
-          LOG.info("   - CC: " + ccEmail);
-        }
-      }
+			try {
+				msg.setFrom(new InternetAddress(config.getEmailNotification()));
+				// msgbackup.setFrom(new
+				// InternetAddress(config.getEmail_notificaction_backup()));
+			} catch (AddressException e) {
+				msg.setFrom((InternetAddress) null);
+				// msgbackup.setFrom((InternetAddress) null);
+				LOG.error("There was an error setting up the FROM Email when trying to send a message", e.getMessage());
+			}
 
-      try {
-        msg.setFrom(new InternetAddress(config.getEmailNotification()));
-      } catch (AddressException e) {
-        msg.setFrom((InternetAddress) null);
-        LOG.error("There was an error setting up the FROM Email when trying to send a message", e.getMessage());
-      }
+			if (bbcEmail != null) {
+				msg.setRecipients(Message.RecipientType.BCC, InternetAddress.parse(bbcEmail, false));
+				// msgbackup.setRecipients(Message.RecipientType.BCC,
+				// InternetAddress.parse(bbcEmail, false));
+				LOG.info("   - BBC: " + bbcEmail);
+			}
 
-      if (bbcEmail != null) {
-        msg.setRecipients(Message.RecipientType.BCC, InternetAddress.parse(bbcEmail, false));
-        LOG.info("   - BBC: " + bbcEmail);
-      }
+			msg.setSubject(subject);
+			msg.setSentDate(new Date());
+			// msgbackup.setSubject(subject + "Backup");
+			// msgbackup.setSentDate(new Date());
 
+			MimeMultipart mimeMultipart = new MimeMultipart("alternative");
 
-      msg.setSubject(subject);
-      msg.setSentDate(new Date());
+			// Body content: TEXT
+			MimeBodyPart mimeBodyPart = new MimeBodyPart();
+			if (isHtml) {
+				mimeBodyPart.setContent(messageContent, "text/html; charset=utf-8");
+			} else {
+				mimeBodyPart.setContent(messageContent, "text; charset=utf-8");
+			}
 
-      MimeMultipart mimeMultipart = new MimeMultipart("alternative");
+			mimeMultipart.addBodyPart(mimeBodyPart);
 
-      // Body content: TEXT
-      MimeBodyPart mimeBodyPart = new MimeBodyPart();
-      if (isHtml) {
-        mimeBodyPart.setContent(messageContent, "text/html; charset=utf-8");
-      } else {
-        mimeBodyPart.setContent(messageContent, "text; charset=utf-8");
-      }
+			if (attachment != null && attachmentMimeType != null && fileName != null) {
+				// Body content: ATTACHMENT
+				DataSource dataSource = new ByteArrayDataSource(attachment, attachmentMimeType);
+				MimeBodyPart attachmentBodyPart = new MimeBodyPart();
+				attachmentBodyPart.setDataHandler(new DataHandler(dataSource));
+				attachmentBodyPart.setFileName(fileName);
+				mimeMultipart.addBodyPart(attachmentBodyPart);
+				emailLog.setFileName(fileName);
+				emailLog.setFileContent(attachment);
+				try {
+					emailLog.setMessageID(msg.getMessageID());
+				} catch (MessagingException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
 
-      mimeMultipart.addBodyPart(mimeBodyPart);
+			LOG.info("Message ID: \n" + msg.getMessageID());
+			msg.setContent(mimeMultipart);
+			// msgbackup.setContent(mimeMultipart);
+			ThreadSendMail thread = new ThreadSendMail(msg, subject, emailLogManager, emailLog, sessionFactory, config);
+			thread.start();
 
-      if (attachment != null && attachmentMimeType != null && fileName != null) {
-        // Body content: ATTACHMENT
-        DataSource dataSource = new ByteArrayDataSource(attachment, attachmentMimeType);
-        MimeBodyPart attachmentBodyPart = new MimeBodyPart();
-        attachmentBodyPart.setDataHandler(new DataHandler(dataSource));
-        attachmentBodyPart.setFileName(fileName);
-        mimeMultipart.addBodyPart(attachmentBodyPart);
-        emailLog.setFileName(fileName);
-        emailLog.setFileContent(attachment);
-        try {
-          emailLog.setMessageID(msg.getMessageID());
-        } catch (MessagingException e1) {
-          // TODO Auto-generated catch block
-          e1.printStackTrace();
-        }
-      }
+		} catch (MessagingException e) {
+			e.printStackTrace();
+			LOG.error("There was an error sending a message", e.getMessage());
 
-      LOG.info("Message ID: \n" + msg.getMessageID());
-      msg.setContent(mimeMultipart);
-      ThreadSendMail thread = new ThreadSendMail(msg, subject, emailLogManager, emailLog, sessionFactory);
-      thread.start();
+		}
+	}
 
+	public boolean sendRetry(String toEmail, String ccEmail, String bbcEmail, String subject, String messageContent,
+			byte[] attachment, String attachmentMimeType, String fileName, boolean isHtml) {
 
-    } catch (MessagingException e) {
-      e.printStackTrace();
-      LOG.error("There was an error sending a message", e.getMessage());
+		// Get a Properties object
+		Properties properties = System.getProperties();
+		String[] ccEmails = null;
+		if (ccEmail != null) {
+			ccEmail = ccEmail.replaceAll(", " + toEmail, "");
+			ccEmails = ccEmail.split(", ");
+		}
 
-    }
-  }
+		ccEmail = new String();
+		Set<String> noRepeatEmails = new HashSet<>();
+		if (ccEmails != null) {
+			for (String string : ccEmails) {
+				noRepeatEmails.add(string.trim());
+			}
+		}
+		for (String string : noRepeatEmails) {
+			ccEmail = ccEmail + ", " + string;
+		}
 
+		// properties.put("mail.smtp.auth", "true");
+		// properties.put("mail.smtp.starttls.enable", "true");
+		// properties.put("mail.smtp.ssl.trust", config.getEmailHost());
+		properties.put("mail.smtp.host", config.getEmailHost());
+		properties.put("mail.smtp.port", config.getEmailPort());
+		// changes for smtp secure dperez
+		properties.put("mail.smtp.auth", config.getEmail_auth());
+		properties.put("mail.smtp.starttls.enable", config.getEmail_starttls());
 
-  public boolean sendRetry(String toEmail, String ccEmail, String bbcEmail, String subject, String messageContent,
-    byte[] attachment, String attachmentMimeType, String fileName, boolean isHtml) {
+		// Un-comment this line to watch javaMail debug
+		// properties.put("mail.debug", "true");
 
-    // Get a Properties object
-    Properties properties = System.getProperties();
-    String[] ccEmails = null;
-    if (ccEmail != null) {
-      ccEmail = ccEmail.replaceAll(", " + toEmail, "");
-      ccEmails = ccEmail.split(", ");
-    }
+		Session session = Session.getInstance(properties, new Authenticator() {
 
+			@Override
+			protected PasswordAuthentication getPasswordAuthentication() {
+				return new PasswordAuthentication(config.getEmailUsername(), config.getEmailPassword());
+			}
+		});
 
-    ccEmail = new String();
-    Set<String> noRepeatEmails = new HashSet<>();
-    if (ccEmails != null) {
-      for (String string : ccEmails) {
-        noRepeatEmails.add(string.trim());
-      }
-    }
-    for (String string : noRepeatEmails) {
-      ccEmail = ccEmail + ", " + string;
-    }
+		// Create a new message
+		MimeMessage msg = new MimeMessage(session) {
 
+			@Override
+			protected void updateMessageID() throws MessagingException {
+				if (this.getHeader("Message-ID") == null) {
+					super.updateMessageID();
+				}
+			}
+		};
 
-    // properties.put("mail.smtp.auth", "true");
-    // properties.put("mail.smtp.starttls.enable", "true");
-    // properties.put("mail.smtp.ssl.trust", config.getEmailHost());
-    properties.put("mail.smtp.host", config.getEmailHost());
-    properties.put("mail.smtp.port", config.getEmailPort());
+		try {
+			msg.saveChanges();
+		} catch (MessagingException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 
+		EmailLog emailLog = new EmailLog();
+		emailLog.setBbc(bbcEmail);
+		emailLog.setCc(ccEmail);
+		emailLog.setTo(bbcEmail);
+		emailLog.setDate(new Date());
+		emailLog.setMessage(messageContent);
+		emailLog.setSubject(subject);
+		try {
+			emailLog.setMessageID(msg.getMessageID());
+		} catch (MessagingException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 
-    // Un-comment this line to watch javaMail debug
-    // properties.put("mail.debug", "true");
+		// Set the FROM and TO fields
+		try {
+			if (!config.isProduction()) {
 
+				// Adding TEST words.
+				// Set the Test Header to list the emails that will send in
+				// production
+				StringBuilder testingHeader = new StringBuilder();
+				testingHeader.append("To: " + toEmail + "<br>");
+				testingHeader.append("CC: " + ccEmail + "<br>");
+				testingHeader.append("BBC: " + bbcEmail + "<br>");
+				testingHeader.append("----------------------------------------------------<br><br>");
+				subject = "TEST " + subject;
+				messageContent = testingHeader.toString() + messageContent;
+				// if (toEmail != null) {
+				msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(bbcEmail, false));
+				LOG.info("   - TO: " + bbcEmail);
+				// }
+			} else {
+				if (toEmail != null) {
+					msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmail, false));
+					LOG.info("   - TO: " + toEmail);
+				}
+				if (ccEmail != null) {
+					msg.setRecipients(Message.RecipientType.CC, InternetAddress.parse(ccEmail, false));
+					LOG.info("   - CC: " + ccEmail);
+				}
+			}
 
-    Session session = Session.getInstance(properties, new Authenticator() {
+			try {
+				msg.setFrom(new InternetAddress(config.getEmailNotification()));
+			} catch (AddressException e) {
+				msg.setFrom((InternetAddress) null);
+				LOG.error("There was an error setting up the FROM Email when trying to send a message", e.getMessage());
+			}
 
-      @Override
-      protected PasswordAuthentication getPasswordAuthentication() {
-        return new PasswordAuthentication(config.getEmailUsername(), config.getEmailPassword());
-      }
-    });
+			if (bbcEmail != null) {
+				msg.setRecipients(Message.RecipientType.BCC, InternetAddress.parse(bbcEmail, false));
+				LOG.info("   - BBC: " + bbcEmail);
+			}
 
-    // Create a new message
-    MimeMessage msg = new MimeMessage(session) {
+			msg.setSubject(subject);
+			msg.setSentDate(new Date());
 
-      @Override
-      protected void updateMessageID() throws MessagingException {
-        if (this.getHeader("Message-ID") == null) {
-          super.updateMessageID();
-        }
-      }
-    };
+			MimeMultipart mimeMultipart = new MimeMultipart("alternative");
 
-    try {
-      msg.saveChanges();
-    } catch (MessagingException e1) {
-      // TODO Auto-generated catch block
-      e1.printStackTrace();
-    }
+			// Body content: TEXT
+			MimeBodyPart mimeBodyPart = new MimeBodyPart();
+			if (isHtml) {
+				mimeBodyPart.setContent(messageContent, "text/html; charset=utf-8");
+			} else {
+				mimeBodyPart.setContent(messageContent, "text; charset=utf-8");
+			}
 
-    EmailLog emailLog = new EmailLog();
-    emailLog.setBbc(bbcEmail);
-    emailLog.setCc(ccEmail);
-    emailLog.setTo(bbcEmail);
-    emailLog.setDate(new Date());
-    emailLog.setMessage(messageContent);
-    emailLog.setSubject(subject);
-    try {
-      emailLog.setMessageID(msg.getMessageID());
-    } catch (MessagingException e1) {
-      // TODO Auto-generated catch block
-      e1.printStackTrace();
-    }
+			mimeMultipart.addBodyPart(mimeBodyPart);
 
-    // Set the FROM and TO fields
-    try {
-      if (!config.isProduction()) {
+			if (attachment != null && attachmentMimeType != null && fileName != null) {
+				// Body content: ATTACHMENT
+				DataSource dataSource = new ByteArrayDataSource(attachment, attachmentMimeType);
+				MimeBodyPart attachmentBodyPart = new MimeBodyPart();
+				attachmentBodyPart.setDataHandler(new DataHandler(dataSource));
+				attachmentBodyPart.setFileName(fileName);
+				mimeMultipart.addBodyPart(attachmentBodyPart);
+				emailLog.setFileName(fileName);
+				emailLog.setFileContent(attachment);
+			}
 
-        // Adding TEST words.
-        // Set the Test Header to list the emails that will send in production
-        StringBuilder testingHeader = new StringBuilder();
-        testingHeader.append("To: " + toEmail + "<br>");
-        testingHeader.append("CC: " + ccEmail + "<br>");
-        testingHeader.append("BBC: " + bbcEmail + "<br>");
-        testingHeader.append("----------------------------------------------------<br><br>");
-        subject = "TEST " + subject;
-        messageContent = testingHeader.toString() + messageContent;
-        // if (toEmail != null) {
-        msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(bbcEmail, false));
-        LOG.info("   - TO: " + bbcEmail);
-        // }
-      } else {
-        if (toEmail != null) {
-          msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmail, false));
-          LOG.info("   - TO: " + toEmail);
-        }
-        if (ccEmail != null) {
-          msg.setRecipients(Message.RecipientType.CC, InternetAddress.parse(ccEmail, false));
-          LOG.info("   - CC: " + ccEmail);
-        }
-      }
+			LOG.info("Message ID: \n" + msg.getMessageID());
+			msg.setContent(mimeMultipart);
+			Transport.send(msg);
+			return true;
 
-      try {
-        msg.setFrom(new InternetAddress(config.getEmailNotification()));
-      } catch (AddressException e) {
-        msg.setFrom((InternetAddress) null);
-        LOG.error("There was an error setting up the FROM Email when trying to send a message", e.getMessage());
-      }
-
-      if (bbcEmail != null) {
-        msg.setRecipients(Message.RecipientType.BCC, InternetAddress.parse(bbcEmail, false));
-        LOG.info("   - BBC: " + bbcEmail);
-      }
-
-
-      msg.setSubject(subject);
-      msg.setSentDate(new Date());
-
-      MimeMultipart mimeMultipart = new MimeMultipart("alternative");
-
-      // Body content: TEXT
-      MimeBodyPart mimeBodyPart = new MimeBodyPart();
-      if (isHtml) {
-        mimeBodyPart.setContent(messageContent, "text/html; charset=utf-8");
-      } else {
-        mimeBodyPart.setContent(messageContent, "text; charset=utf-8");
-      }
-
-      mimeMultipart.addBodyPart(mimeBodyPart);
-
-      if (attachment != null && attachmentMimeType != null && fileName != null) {
-        // Body content: ATTACHMENT
-        DataSource dataSource = new ByteArrayDataSource(attachment, attachmentMimeType);
-        MimeBodyPart attachmentBodyPart = new MimeBodyPart();
-        attachmentBodyPart.setDataHandler(new DataHandler(dataSource));
-        attachmentBodyPart.setFileName(fileName);
-        mimeMultipart.addBodyPart(attachmentBodyPart);
-        emailLog.setFileName(fileName);
-        emailLog.setFileContent(attachment);
-      }
-
-      LOG.info("Message ID: \n" + msg.getMessageID());
-      msg.setContent(mimeMultipart);
-      Transport.send(msg);
-      return true;
-
-    } catch (Exception e) {
-      e.printStackTrace();
-      LOG.error("There was an error sending a message", e.getMessage());
-      return false;
-    }
-  }
+		} catch (Exception e) {
+			e.printStackTrace();
+			LOG.error("There was an error sending a message", e.getMessage());
+			return false;
+		}
+	}
 
 }
