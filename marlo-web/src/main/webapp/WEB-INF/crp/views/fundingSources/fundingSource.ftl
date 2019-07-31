@@ -42,7 +42,9 @@
   
   [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
   
-  <div class="col-md-offset-1 col-md-10">
+  
+  <div class="loading-neutral hideOnLoading"></div>
+  <div class="col-md-offset-1 col-md-10 showOnLoading" style="display:none">
   
   [#-- Messages --]
   [#include "/WEB-INF/crp/views/fundingSources/messages-fundingSource.ftl" /]
@@ -154,8 +156,8 @@
         
 
       </div>
-      
     </div>
+    
     <div class="borderBox">
       [#-- Loading --]
       <div class="loading contentBlok" style="display:none"></div>
@@ -332,8 +334,11 @@
     </div>
     <h4 class="headTitle">Location information</h4>
     <div class="borderBox informationWrapper">
-    [#-- GLOBAL DIMENSION --]
-    [#if editable]
+      [#-- Loading --]
+      <div class="loading locationBlock" style="display:none"></div>
+    
+      [#-- GLOBAL DIMENSION --]
+      [#if editable]
       <div class="form-group row ">
         <div class="col-md-6">[@customForm.yesNoInput  label="projectCofunded.globalDimensionQuestion" name="fundingSource.fundingSourceInfo.global"  editable=editable inverse=false  cssClass="" /] </div>
       </div>
@@ -597,35 +602,26 @@
       
         [#-- Institution --]
         <div class="form-group">
-          <label for="institutionID" class="">Institution:*</label>
-          <select v-model="institutionID" class="form-control input-sm">
-            <option value="-1">Select an option...</option>
-            <option v-for="institution in institutions" v-bind:value="institution.id"> {{ institution.description }} </option>
-          </select>
-          [#--[@customForm.select name="institutionID" i18nkey="" className=""  listName="fundingSource.institutions" keyFieldName="institution.id"  displayFieldName="institution.composedName" required=true editable=true /]--]
+          [@customForm.select name="institutionID" i18nkey="" className=""  listName="fundingSource.institutions" keyFieldName="institution.id"  displayFieldName="institution.composedName" required=true editable=editable /]
         </div>
         
         <div class="step2" v-if="projects.length">
           [#-- Project --]
           <div class="form-group">
-            <label for="projectID" class="">Project to map:*</label>
-            <select v-model="projectID" class="form-control input-sm">
-              <option value="-1">Select an option...</option>
-              <option v-for="project in projects" v-bind:value="project.id"> {{ project.description }} </option>
-            </select>
+            [@customForm.select name="projectID" i18nkey="" className=""  listName="" keyFieldName=""  displayFieldName="" required=true editable=editable /]
           </div>
         
           <div class="form-group row">
             <div class="col-md-6">
-              Amount
+              [@customForm.input name="amount" i18nkey="" className="" required=true editable=editable /]
             </div>
             <div class="col-md-6">
-              Gender %
+              [@customForm.input name="genderPercentage" i18nkey="" className="" required=true editable=editable /]
             </div>
           </div>
           
           <div class="form-group">
-            Justification
+            [@customForm.textArea name="justifications" i18nkey="" className="" required=true editable=editable /]
           </div>
         </div>
         

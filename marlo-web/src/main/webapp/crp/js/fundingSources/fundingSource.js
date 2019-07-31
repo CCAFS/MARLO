@@ -288,6 +288,11 @@ function init() {
 
   // Add functionality of mapping funding source to a project
   mappingFundingToProjectModule.init();
+
+  // showOnLoading
+  $('.showOnLoading').fadeIn();
+  $('.hideOnLoading').fadeOut();
+
 }
 
 function setPartnerLead(e) {
@@ -1061,14 +1066,21 @@ var mappingFundingToProjectModule = (function() {
             phaseID: phaseID
         },
         beforeSend: function() {
+          $projectSelect.empty();
           vueApp.message = "";
           vueApp.modalLoading = true;
         },
         success: function(data) {
+          $projectSelect.addOption(-1, "Select an option...");
+          $.each(data.projects, function(p) {
+            $projectSelect.addOption(p.id, p.description);
+          });
+
           if(!data.projects.length) {
             vueApp.message = "No project(s) to map found";
           }
           vueApp.projects = data.projects;
+
         },
         complete: function(data) {
           vueApp.modalLoading = false;
