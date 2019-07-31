@@ -537,7 +537,7 @@
           
           [#-- Button to map Funding Source to a project --  && action.canMapProjects(year) --]
           [#if editable ]
-            <button type="button" class="btn btn-primary pull-right year-${year}" data-toggle="modal" data-target="#mapFundingToProject">Map Funding Source to a Project</button>
+            <button type="button" class="btn btn-primary pull-right year-" data-year="${year}" data-toggle="modal" data-target="#mapFundingToProject">Map Funding Source to a Project</button>
             <div class="clearfix"></div>
           [/#if]
           
@@ -594,7 +594,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="myModalLabel">Map Funding Source to a Project</h4>
+        <h4 class="modal-title" id="myModalLabel"> [@s.text name="mapFunding.title" /] in {{ year }}</h4>
       </div>
       <div class="modal-body">
         <div class="loading popup" v-if="modalLoading"></div>
@@ -602,26 +602,26 @@
       
         [#-- Institution --]
         <div class="form-group">
-          [@customForm.select name="institutionID" i18nkey="" className=""  listName="fundingSource.institutions" keyFieldName="institution.id"  displayFieldName="institution.composedName" required=true editable=editable /]
+          [@customForm.select name="institutionID" i18nkey="mapFunding.institution" className=""  listName="fundingSource.institutions" keyFieldName="institution.id"  displayFieldName="institution.composedName" required=true editable=editable /]
         </div>
         
-        <div class="step2" v-if="projects.length">
+        <div class="step2" style="display:none">
           [#-- Project --]
           <div class="form-group">
-            [@customForm.select name="projectID" i18nkey="" className=""  listName="" keyFieldName=""  displayFieldName="" required=true editable=editable /]
+            [@customForm.select name="projectID" i18nkey="mapFunding.project" className=""  listName="" keyFieldName=""  displayFieldName="" required=true editable=editable /]
           </div>
         
           <div class="form-group row">
             <div class="col-md-6">
-              [@customForm.input name="amount" i18nkey="" className="" required=true editable=editable /]
+              [@customForm.input name="amount" i18nkey="mapFunding.amount" className="currencyInput" required=true editable=editable /]
             </div>
             <div class="col-md-6">
-              [@customForm.input name="genderPercentage" i18nkey="" className="" required=true editable=editable /]
+              [@customForm.input name="genderPercentage" i18nkey="mapFunding.genderPercentage" className="percentageInput" required=false editable=editable /]
             </div>
           </div>
           
           <div class="form-group">
-            [@customForm.textArea name="justifications" i18nkey="" className="" required=true editable=editable /]
+            [@customForm.textArea name="justification" i18nkey="mapFunding.justification" className="" required=true editable=editable /]
           </div>
         </div>
         
@@ -629,7 +629,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary">Map to Project</button>
+        <button type="button" class="btn btn-primary saveBudgetMapping" v-bind:disabled="!isValidForm" >[@s.text name="mapFunding.mapButton" /]</button>
       </div>
     </div>
   </div>
