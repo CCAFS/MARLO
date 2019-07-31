@@ -65,12 +65,13 @@
             </div>
             </br>
             [#-- SEND EMAIL --]
+            [#-- 
             <div class="pull-left">
               [@customForm.checkmark  id="sendEmail"  i18nkey="guestUsers.sendEmail" name="emailSend" value="true" checked=true editable=true /]
             </div>
-            <br />
+             --]
           </div>
-          <br />
+
           
           <div class="buttons">
             <div class="buttons-content">
