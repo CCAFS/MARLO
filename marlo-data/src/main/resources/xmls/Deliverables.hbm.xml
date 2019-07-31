@@ -232,6 +232,14 @@
       </key>
       <one-to-many class="org.cgiar.ccafs.marlo.data.model.DeliverableGeographicScope" />
     </set>
+    
+    <set name="deliverableUserPartnerships" table="deliverable_user_partnerships" inverse="true"
+      order-by="id" lazy="true" fetch="select">
+      <key>
+        <column name="deliverable_id" not-null="true" />
+      </key>
+      <one-to-many class="org.cgiar.ccafs.marlo.data.model.DeliverableUserPartnership" />
+    </set>
  
 	</class>
 </hibernate-mapping>
