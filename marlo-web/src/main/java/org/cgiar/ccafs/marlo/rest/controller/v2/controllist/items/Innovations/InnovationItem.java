@@ -39,6 +39,7 @@ import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.Phase;
+import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationContributingOrganization;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCountry;
@@ -192,16 +193,15 @@ public class InnovationItem<T> {
         newInnovationDTO.getInnovationType() + " is an invalid innovation type code"));
     }
 
-    // RepIndContributionOfCrp repIndContributionOfCrp =
-    // this.repIndContributionOfCrpManager.getRepIndContributionOfCrpById(newInnovationDTO.getContributionOfCrp());
-    // if (repIndContributionOfCrp == null) {
-    // this.fieldErrors.add(new FieldErrorDTO("createInnovation", "Contribution Of Crp",
-    // newInnovationDTO.getContributionOfCrp() + " is an invalid Contribution of CRP code"));
-    // }
+    Project project = this.projectManager.getProjectById(newInnovationDTO.getProjectId());
 
+    // TODO: Include the validation that the project should be on same CRP/PTF
+    if (project == null) {
+      this.fieldErrors.add(new FieldErrorDTO("createInnovation", "Project id",
+        newInnovationDTO.getProjectId() + " is an invalid project id"));
+    }
 
-    this.projectInnovation.setProject(this.projectManager.getProjectById(57));
-
+    this.projectInnovation.setProject(project);
     // SAVE innovation info
     this.projectInnovation = this.projectInnovationManager.saveProjectInnovation(this.projectInnovation);
     projectInnovationInfo.setProjectInnovation(this.projectInnovation);
@@ -212,9 +212,11 @@ public class InnovationItem<T> {
     projectInnovationInfo.setDescriptionStage(newInnovationDTO.getDescriptionStage());
     projectInnovationInfo.setRepIndStageInnovation(RepIndStageInnovation);
     projectInnovationInfo.setLeadOrganization(leadInstitution);
+    projectInnovationInfo.setOtherInnovationType(newInnovationDTO.getOtherInnovationType());
     projectInnovationInfo.setRepIndInnovationType(repIndInnovationType);
-    // projectInnovationInfo.setRepIndContributionOfCrp(repIndContributionOfCrp);
+    projectInnovationInfo.setEvidenceLink(newInnovationDTO.getEvidenceLink());
     this.projectInnovationInfoManager.saveProjectInnovationInfo(projectInnovationInfo);
+
 
     this.innovationID = this.projectInnovation.getId();
     // SAVE innovation CRP
