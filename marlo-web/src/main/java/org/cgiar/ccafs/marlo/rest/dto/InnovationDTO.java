@@ -21,46 +21,52 @@ import io.swagger.annotations.ApiModelProperty;
 
 public class InnovationDTO {
 
-  @ApiModelProperty(notes = "Innovation ID", position = 1)
+  @ApiModelProperty(notes = "Innovation ID", position = 10)
   private Long id;
 
-  @ApiModelProperty(notes = "Name of innovation", position = 2)
+  @ApiModelProperty(notes = "Name of innovation", position = 20)
   private String title;
 
-  @ApiModelProperty(notes = "Description of the Innovation", position = 3)
+  @ApiModelProperty(notes = "Description of the Innovation", position = 30)
   private String narrative;
 
-  @ApiModelProperty(notes = "Stage of innovation", position = 4)
+  @ApiModelProperty(notes = "Stage of innovation", position = 40)
   private StageOfInnovationDTO stageOfInnovation;
 
-  @ApiModelProperty(notes = "Next user organization type", position = 5)
+  @ApiModelProperty(notes = "Next user organization type", position = 50)
   private List<InstitutionTypeDTO> nextUserOrganizationTypes;
 
-  @ApiModelProperty(notes = "Description of stage reached", position = 6)
+  @ApiModelProperty(notes = "Description of stage reached", position = 60)
   private String descriptionStage;
 
-  @ApiModelProperty(notes = "Innovation Type", position = 7)
+  @ApiModelProperty(notes = "Innovation Type", position = 70)
   private InnovationTypeDTO innovationType;
 
-  @ApiModelProperty(notes = "Geographic Scope", position = 8)
+  @ApiModelProperty(notes = "Other Innovation Type description", position = 75)
+  private String otherInnovationType;
+
+  @ApiModelProperty(notes = "Geographic Scope", position = 80)
   private List<GeographicScopeDTO> geographicScopes;
 
-  @ApiModelProperty(notes = "Regions", position = 9)
+  @ApiModelProperty(notes = "Regions", position = 90)
   private List<RegionDTO> regions;
 
-  @ApiModelProperty(notes = "Countries", position = 10)
+  @ApiModelProperty(notes = "Countries", position = 100)
   private List<CountryDTO> countries;
 
-  @ApiModelProperty(notes = "Lead organization/entity to take innovation to this stage", position = 11)
+  @ApiModelProperty(notes = "Is an equitatable effort of the partners", position = 110)
+  private Boolean equitativeEffort;
+
+  @ApiModelProperty(notes = "Lead organization/entity to take innovation to this stage", position = 110)
   private InstitutionDTO leadOrganization;
 
-  @ApiModelProperty(notes = "List of top five contributing organizations/entities to this stage", position = 12)
+  @ApiModelProperty(notes = "List of top five contributing organizations/entities to this stage", position = 120)
   private List<InstitutionDTO> contributingInstitutions;
 
-  @ApiModelProperty(notes = "Evidence Link", position = 13)
+  @ApiModelProperty(notes = "Evidence Link", position = 130)
   private String evidenceLink;
 
-  @ApiModelProperty(notes = "Contributing CRPs/Platforms", position = 14)
+  @ApiModelProperty(notes = "Contributing CRPs/Platforms", position = 140)
   private List<CGIAREntityDTO> contributingCGIAREntities;
 
 
@@ -116,6 +122,11 @@ public class InnovationDTO {
 
   public List<InstitutionTypeDTO> getNextUserOrganizationTypes() {
     return this.nextUserOrganizationTypes;
+  }
+
+
+  public String getOtherInnovationType() {
+    return this.otherInnovationType;
   }
 
 
@@ -189,6 +200,11 @@ public class InnovationDTO {
   }
 
 
+  public void setOtherInnovationType(String otherInnovationType) {
+    this.otherInnovationType = otherInnovationType;
+  }
+
+
   public void setRegions(List<RegionDTO> regions) {
     this.regions = regions;
   }
@@ -201,6 +217,16 @@ public class InnovationDTO {
 
   public void setTitle(String title) {
     this.title = title;
+  }
+
+
+  public Boolean getEquitativeEffort() {
+    return equitativeEffort;
+  }
+
+
+  public void setEquitativeEffort(Boolean equitativeEffort) {
+    this.equitativeEffort = equitativeEffort;
   }
 
   // TODO: Deliverables

@@ -54,6 +54,9 @@ public class NewInnovationDTO {
   @ApiModelProperty(notes = "Countries Alpha 2 codes", position = 90)
   private List<String> countries;
 
+  @ApiModelProperty(notes = "Is a leadership equitatable effort of the partners", position = 95)
+  private Boolean equitativeEffort;
+
   @ApiModelProperty(notes = "id of Lead organization/entity to take innovation to this stage", position = 100)
   private Long leadOrganization;
 
@@ -84,6 +87,11 @@ public class NewInnovationDTO {
 
   public String getDescriptionStage() {
     return this.descriptionStage;
+  }
+
+
+  public Boolean getEquitativeEffort() {
+    return this.equitativeEffort;
   }
 
 
@@ -159,6 +167,11 @@ public class NewInnovationDTO {
 
   public void setDescriptionStage(String descriptionStage) {
     this.descriptionStage = descriptionStage;
+  }
+
+
+  public void setEquitativeEffort(Boolean equitativeEffort) {
+    this.equitativeEffort = equitativeEffort;
   }
 
 
