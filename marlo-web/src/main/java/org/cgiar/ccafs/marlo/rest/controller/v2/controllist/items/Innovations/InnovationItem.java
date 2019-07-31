@@ -215,6 +215,7 @@ public class InnovationItem<T> {
     projectInnovationInfo.setOtherInnovationType(newInnovationDTO.getOtherInnovationType());
     projectInnovationInfo.setRepIndInnovationType(repIndInnovationType);
     projectInnovationInfo.setEvidenceLink(newInnovationDTO.getEvidenceLink());
+    projectInnovationInfo.setClearLead(newInnovationDTO.getEquitativeEffort());
     this.projectInnovationInfoManager.saveProjectInnovationInfo(projectInnovationInfo);
 
 
