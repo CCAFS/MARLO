@@ -485,12 +485,15 @@ public class FundingSourceAction extends BaseAction {
       for (FundingSource fundingSource : fundingSources) {
         if (fundingSource != null && fundingSource.getProjectBudgets() != null) {
           List<ProjectBudget> tempBudgets = fundingSource.getProjectBudgets().stream()
-            .filter(pb -> pb.isActive() && pb.getProject() != null && pb.getProject().isActive())
+            .filter(pb -> pb.isActive() && pb.getProject() != null && pb.getProject().isActive()
+              && pb.getFundingSource() != null && pb.getFundingSource().getId().equals(this.fundingSource.getId()))
             .collect(Collectors.toList());
           if (tempBudgets != null) {
             List<Long> ids = new ArrayList<>();
             for (ProjectBudget budget : tempBudgets) {
-              if (budget != null && budget.getProject() != null && budget.getProject().getId() != null) {
+              if (budget != null && budget.getProject() != null && budget.getProject().getId() != null
+                && budget.getFundingSource() != null
+                && budget.getFundingSource().getId().equals(this.fundingSource.getId())) {
                 if (ids != null) {
                   if (!ids.contains(budget.getProject().getId())) {
                     ids.add(budget.getProject().getId());
@@ -510,10 +513,11 @@ public class FundingSourceAction extends BaseAction {
                   .filter(b -> b.getProject().getProjecInfoPhase(crpPhase) != null
                     && b.getProject().getProjecInfoPhase(crpPhase).getPhase().equals(crpPhase)
                     || (b.getFundingSource().getFundingSourceInfo(crpPhase) != null
-                      && b.getFundingSource().getFundingSourceInfo().getPhase().equals(crpPhase)))
+                      && b.getFundingSource().getFundingSourceInfo().getPhase().equals(crpPhase))
+                      && b.getFundingSource().getId().equals(this.fundingSource.getId()) && b.getPhase() != null
+                      && b.getPhase().equals(crpPhase))
                   .collect(Collectors.toList());
               }
-
             }
             fundingSourceShow.setProjectBudgetsList(tempBudgets);
           }
