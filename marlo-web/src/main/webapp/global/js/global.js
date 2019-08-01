@@ -308,7 +308,7 @@ $(document).ready(function() {
 });
 
 $(document).ajaxError(function(event,jqxhr,settings,exception) {
-  if(production && (jqxhr.status !== '0')) {
+  if(production && (jqxhr.status == 500)) {
     var slackMessage = {
         "text": "MARLO Ajax Exception",
         "attachments": [

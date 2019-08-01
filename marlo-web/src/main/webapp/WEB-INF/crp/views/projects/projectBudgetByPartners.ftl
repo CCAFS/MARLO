@@ -101,8 +101,8 @@
                           [/#list]
                           <td class="text-right"><strong><small>US$ <span class="overallAmount cycle-planning year-${year}">0.00</span></small></strong></td>
                         </tr>
-                        [#-- Reporting--]
-                        [#if (reportingActive || upKeepActive)  && action.hasSpecificities(crpEnableBudgetExecution)]
+                        [#-- Reporting --]
+                        [#if (reportingActive)  && action.hasSpecificities(crpEnableBudgetExecution)]
                           <tr>
                             <td class="amountType"> <small>Actual Expenditure</small> </td>
                             [#list budgetTypesList as budgetType]
@@ -218,7 +218,7 @@
             [/#list]
           </tr>
           [#-- Actual Expenditure--]
-          [#if (reportingActive || upKeepActive)  && action.hasSpecificities(crpEnableBudgetExecution)]
+          [#if (reportingActive)  && action.hasSpecificities(crpEnableBudgetExecution)]
             <tr>
               <td class="amountType"> Actual expenditure:</td>
               [#list budgetTypesList as budgetType]
@@ -232,7 +232,7 @@
                     <input type="hidden" name="${budgetExecutionName}.budgetType.id" value="${(budgetType.id)!}" />
                     <input type="hidden" name="${budgetExecutionName}.phase.id" value="${(actualPhase.id)!}" />
                     <input type="hidden" name="${budgetExecutionName}.year" value="${(selectedYear)!}" />
-                    [@customForm.input name="${budgetExecutionName}.actualExpenditure" value="${(budgetExecution.actualExpenditure)!0}" i18nkey="budget.amount" showTitle=false className="currencyInput cycle-reporting year-${selectedYear} type-${budgetType.id}" required=true editable=editable && action.canEditProjectExecution(budgetType.id,project.id,element.institution.id) && isYearEditable(selectedYear) && !(transaction??) && !(submission) /]
+                    [@customForm.input name="${budgetExecutionName}.actualExpenditure" value="${(budgetExecution.actualExpenditure)!0}" i18nkey="budget.amount" showTitle=false className="currencyInput cycle-reporting year-${selectedYear} type-${budgetType.id}" required=true editable=editable && action.canEditProjectExecution(budgetType.id,project.id,element.institution.id) && isYearEditable(selectedYear) && !(transaction??) /]
                     [#-- Index --]
                     [#assign budgetExpenditureIndex = budgetExpenditureIndex + 1 /]
                   </div>
