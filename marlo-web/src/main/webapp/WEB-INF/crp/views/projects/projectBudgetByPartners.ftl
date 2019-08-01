@@ -101,8 +101,8 @@
                           [/#list]
                           <td class="text-right"><strong><small>US$ <span class="overallAmount cycle-planning year-${year}">0.00</span></small></strong></td>
                         </tr>
-                        [#-- Reporting--]
-                        [#if (reportingActive || upKeepActive)  && action.hasSpecificities(crpEnableBudgetExecution)]
+                        [#-- Reporting --]
+                        [#if (reportingActive)  && action.hasSpecificities(crpEnableBudgetExecution)]
                           <tr>
                             <td class="amountType"> <small>Actual Expenditure</small> </td>
                             [#list budgetTypesList as budgetType]
