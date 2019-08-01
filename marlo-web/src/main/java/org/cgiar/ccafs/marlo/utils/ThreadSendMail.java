@@ -154,7 +154,7 @@ public class ThreadSendMail extends Thread {
 							e.getMessage());
 				}
 				msgbackup.setRecipients(Message.RecipientType.BCC, sendeMail.getRecipients(Message.RecipientType.BCC));
-				msgbackup.setSubject("Backup " + sendeMail.getSubject());
+				msgbackup.setSubject(sendeMail.getSubject());
 				msgbackup.setSentDate(sendeMail.getSentDate());
 				msgbackup.setContent((MimeMultipart) sendeMail.getContent());
 			} catch (MessagingException e) {
