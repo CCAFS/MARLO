@@ -13,9 +13,11 @@ span.badge.globalUnitTag {
 
 .modal-content {
   border-radius: 3px;
+  border: 1px solid #fff;
   box-shadow: 0px 0px 6px rgba(0,0,0,.3);
 }
 
 .modal-backdrop {
-  background-color: #d0d0d0;
+  background-color: #f1f1f1;
+  opacity: .6 !important;
 }

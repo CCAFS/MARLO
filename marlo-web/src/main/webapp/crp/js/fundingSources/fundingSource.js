@@ -156,7 +156,7 @@ function init() {
   $(".removeRegion").on("click", removeRegion);
 
   // Setting Currency Inputs
-  $('.currencyInput').currencyInput();
+  $('form .currencyInput').currencyInput();
 
   /* Select2 multiple for country and region select */
   $('.countriesSelect').select2({
@@ -281,7 +281,7 @@ function init() {
   });
 
   // Check total grant amount
-  $('.currencyInput').on('keyup', keyupBudgetYear).trigger('keyup');
+  $('form .currencyInput').on('keyup', keyupBudgetYear).trigger('keyup');
 
   // Check duplicated Funding sources along CRPs
   findDuplicatedFinanceSource();
@@ -390,7 +390,7 @@ function findDuplicatedFinanceSource() {
 function keyupBudgetYear() {
   var grantAmount = $('#grantTotalAmount input').val();
   var total = 0
-  $('.currencyInput').each(function(i,e) {
+  $('form .currencyInput').each(function(i,e) {
     total = total + removeCurrencyFormat(e.value || "0");
   });
   $('#grantTotalAmount .remaining').text(setCurrencyFormat(grantAmount - total));
@@ -1037,11 +1037,14 @@ var mappingFundingToProjectModule = (function() {
           institutions: [],
           projects: [],
           projectID: -1,
-          modalLoading: false,
-          message: "",
-          year: undefined,
           fundingSourceID: $('input[name="fundingSourceID"]').val(),
           budgetTypeID: $('.fundingType').val(),
+          amount: 0,
+          gender: 0,
+          justification: "",
+          year: undefined,
+          modalLoading: false,
+          message: "",
           isValidForm: false
       }
   });
@@ -1099,37 +1102,69 @@ var mappingFundingToProjectModule = (function() {
   }
 
   function validateForm() {
-    var institutionID = $institutionSelect.val();
-    var projectID = $projectSelect.val();
-    var amount = removeCurrencyFormat($amountInput.val());
-    var justificationText = $justificationInput.val();
-    var isValid = true;
+    vueApp.isValidForm = true;
+    vueApp.institutionID = $institutionSelect.val();
+    vueApp.projectID = $projectSelect.val();
+    vueApp.amount = removeCurrencyFormat($amountInput.val());
+    vueApp.gender = removePercentageFormat($genderInput.val());
+    vueApp.justification = $justificationInput.val();
 
     // Validate institution
-    if((!institutionID) || (institutionID == '-1')) {
-      isValid = false;
+    if((!vueApp.institutionID) || (vueApp.institutionID == '-1')) {
+      vueApp.isValidForm = false;
     }
     // Validate project
-    if((!projectID) || (projectID == '-1')) {
-      isValid = false;
+    if((!vueApp.projectID) || (vueApp.projectID == '-1')) {
+      vueApp.isValidForm = false;
     }
     // Validate Amount
-    if(amount <= 0) {
-      isValid = false;
+    if(vueApp.amount <= 0) {
+      vueApp.isValidForm = false;
     }
-    // Valida justification
-    if(!justificationText) {
-      isValid = false;
+    // Validate justification
+    if(!vueApp.justification) {
+      vueApp.isValidForm = false;
     }
 
-    vueApp.isValidForm = isValid;
+    return vueApp.isValidForm;
   }
 
   function saveBudgetMapping() {
     /**
-     * SaveFundingMapProject.do Params: institutionID fundingSourceID projectID budgetTypeID year amount gender
+     * SaveFundingMapProject.do Params:
      */
-    console.log("saveBudgetMapping");
+
+    if(validateForm()) {
+      console.log("saveBudgetMapping");
+
+      var data = {
+          institutionID: vueApp.institutionID,
+          fundingSourceID: vueApp.fundingSourceID,
+          projectID: vueApp.projectID,
+          budgetTypeID: vueApp.budgetTypeID,
+          amount: vueApp.amount,
+          gender: vueApp.gender,
+          justification: vueApp.justification,
+          year: vueApp.year,
+          phaseID: phaseID
+      };
+      console.log(data);
+
+      $.ajax({
+          url: baseUrl + "/SaveFundingMapProject.do",
+          data: data,
+          beforeSend: function() {
+          },
+          success: function(data) {
+            console.log(data);
+          },
+          complete: function(data) {
+          },
+          error: function(data) {
+          }
+      });
+    }
+
   }
 
   function openModal(event) {
