@@ -83,8 +83,13 @@ public class User extends MarloAuditableEntity implements java.io.Serializable, 
   // MARLO CIAT relations
   private Set<CrpProgramLeader> crpProgramLeaders = new HashSet<CrpProgramLeader>(0);
 
+  // This variable is use for get information in Deliverable user Partnerships
+  private boolean pdSelected;
+
+
   public User() {
   }
+
 
   @Override
   public boolean equals(Object obj) {
@@ -125,7 +130,6 @@ public class User extends MarloAuditableEntity implements java.io.Serializable, 
     return this.firstName + " " + this.lastName;
   }
 
-
   public String getComposedID() {
     String composedId = this.email.split("@")[0] + "-" + this.getId();
     return composedId;
@@ -143,6 +147,7 @@ public class User extends MarloAuditableEntity implements java.io.Serializable, 
     }
     return this.getLastName() + ", " + this.getFirstName() + " <" + this.getEmail() + ">";
   }
+
 
   public String getComposedNameWithoutEmail() {
     if (this.getId() == null || this.getId() == -1) {
@@ -163,19 +168,19 @@ public class User extends MarloAuditableEntity implements java.io.Serializable, 
     return crpSitesLeaders;
   }
 
-
   public List<CrpUser> getCrpUser() {
     return crpUser;
   }
-
 
   public Set<CrpUser> getCrpUsers() {
     return this.crpUsers;
   }
 
+
   public String getEmail() {
     return this.email;
   }
+
 
   public String getFirstName() {
     return this.firstName;
@@ -185,11 +190,9 @@ public class User extends MarloAuditableEntity implements java.io.Serializable, 
     return ipLiaisonUsers;
   }
 
-
   public Date getLastLogin() {
     return this.lastLogin;
   }
-
 
   public String getLastName() {
     return this.lastName;
@@ -200,12 +203,14 @@ public class User extends MarloAuditableEntity implements java.io.Serializable, 
     return liasonsUsers;
   }
 
+
   @Override
   public String getLogDeatil() {
     StringBuilder sb = new StringBuilder();
     sb.append("Id : ").append(this.getId());
     return sb.toString();
   }
+
 
   public String getPassword() {
     return this.password;
@@ -231,7 +236,6 @@ public class User extends MarloAuditableEntity implements java.io.Serializable, 
     return this.userRoles;
   }
 
-
   @Override
   public int hashCode() {
     final int prime = 31;
@@ -240,28 +244,33 @@ public class User extends MarloAuditableEntity implements java.io.Serializable, 
     return result;
   }
 
-
   public boolean isAutoSave() {
     return autoSave;
   }
+
 
   public boolean isCgiarUser() {
     return cgiarUser;
   }
 
 
+  public boolean isPdSelected() {
+    return pdSelected;
+  }
+
   public void setAgreeTerms(Boolean agreeTerms) {
     this.agreeTerms = agreeTerms;
   }
+
 
   public void setAutoSave(boolean autoSave) {
     this.autoSave = autoSave;
   }
 
-
   public void setCgiarUser(boolean cgiarUser) {
     this.cgiarUser = cgiarUser;
   }
+
 
   public void setCrpClusterActivityLeaders(Set<CrpClusterActivityLeader> crpClusterActivityLeaders) {
     this.crpClusterActivityLeaders = crpClusterActivityLeaders;
@@ -283,10 +292,10 @@ public class User extends MarloAuditableEntity implements java.io.Serializable, 
     this.crpUsers = crpUsers;
   }
 
-
   public void setEmail(String email) {
     this.email = email;
   }
+
 
   public void setFirstName(String firstName) {
     this.firstName = firstName;
@@ -300,7 +309,6 @@ public class User extends MarloAuditableEntity implements java.io.Serializable, 
     this.lastLogin = lastLogin;
   }
 
-
   public void setLastName(String lastName) {
     this.lastName = lastName;
   }
@@ -313,6 +321,11 @@ public class User extends MarloAuditableEntity implements java.io.Serializable, 
 
   public void setPassword(String password) {
     this.password = password;
+  }
+
+
+  public void setPdSelected(boolean pdSelected) {
+    this.pdSelected = pdSelected;
   }
 
 
