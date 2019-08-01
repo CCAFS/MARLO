@@ -218,7 +218,7 @@
             [/#list]
           </tr>
           [#-- Actual Expenditure--]
-          [#if (reportingActive || upKeepActive)  && action.hasSpecificities(crpEnableBudgetExecution)]
+          [#if (reportingActive)  && action.hasSpecificities(crpEnableBudgetExecution)]
             <tr>
               <td class="amountType"> Actual expenditure:</td>
               [#list budgetTypesList as budgetType]
