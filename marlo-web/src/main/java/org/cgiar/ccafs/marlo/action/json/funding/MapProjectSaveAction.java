@@ -31,6 +31,7 @@ import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectBudget;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -86,6 +87,8 @@ public class MapProjectSaveAction extends BaseAction {
     // Load the CRP
     loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
     loggedCrp = globalUnitManager.getGlobalUnitById(loggedCrp.getId());
+
+    status = new HashMap<String, Object>();
 
     Project project = projectManager.getProjectById(projectId);
     FundingSource fundingSource = fundingSourceManager.getFundingSourceById(fundingId);
