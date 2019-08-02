@@ -37,6 +37,7 @@ public class EmailsOnTrackAction extends BaseAction {
   private EmailLogManager emailLogManager;
   // Front-end
   private ArrayList<EmailLog> emails;
+  private ArrayList<EmailLog> emailsSent;
 
   @Inject
   public EmailsOnTrackAction(APConfig config, EmailLogManager emailLogManager) {
@@ -50,10 +51,15 @@ public class EmailsOnTrackAction extends BaseAction {
 
   @Override
   public void prepare() throws Exception {
-    List<EmailLog> emailLogs = emailLogManager.findAll().stream().filter(c -> c.getSucces().booleanValue() == false)
-      .collect(Collectors.toList());
+    List<EmailLog> emailLogs = emailLogManager.findAll();
     emails = new ArrayList<>();
-    emails.addAll(emailLogs);
+    emails.addAll(emailLogs.stream().filter(c -> c.getSucces().booleanValue() == false).collect(Collectors.toList()));
+
+    /*
+     * Emails sent list
+     */
+    emailsSent = new ArrayList<>();
+    emailsSent.addAll(emailLogs.stream().filter(c -> c.getSucces().booleanValue() == true).collect(Collectors.toList()));
   }
 
   @Override
@@ -67,6 +73,14 @@ public class EmailsOnTrackAction extends BaseAction {
 
   public void setEmails(ArrayList<EmailLog> emails) {
     this.emails = emails;
+  }
+ 
+  public ArrayList<EmailLog> getEmailsSent() {
+    return emailsSent;
+  }
+ 
+  public void setEmailsSent(ArrayList<EmailLog> emailsSent) {
+    this.emailsSent = emailsSent;
   }
 
   @Override
