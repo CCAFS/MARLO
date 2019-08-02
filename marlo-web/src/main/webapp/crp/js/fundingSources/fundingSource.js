@@ -1030,22 +1030,43 @@ function budgetTypeTemplate(state) {
 
 var mappingFundingToProjectModule = (function() {
 
+  function vueAppinitialState() {
+    return {
+        institutionID: -1,
+        institutions: [],
+        projects: [],
+        projectID: -1,
+        fundingSourceID: $('input[name="fundingSourceID"]').val(),
+        budgetTypeID: $('.fundingType').val(),
+        amount: 0,
+        gender: 0,
+        justification: "",
+        remainingBudget: "0",
+        year: undefined,
+        modalLoading: false,
+        message: "",
+        isValidForm: false
+    }
+  }
+
   var vueApp = new Vue({
       el: '#mapFundingToProject',
-      data: {
-          institutionID: -1,
-          institutions: [],
-          projects: [],
-          projectID: -1,
-          fundingSourceID: $('input[name="fundingSourceID"]').val(),
-          budgetTypeID: $('.fundingType').val(),
-          amount: 0,
-          gender: 0,
-          justification: "",
-          year: undefined,
-          modalLoading: false,
-          message: "",
-          isValidForm: false
+      data: function() {
+        return vueAppinitialState();
+      },
+      methods: {
+          projectTitle: function() {
+            return ($projectSelect.find('option[value="' + this.projectID + '"]').text()).split('-')[1];
+          },
+          projectComposedID: function() {
+            return "P" + this.projectID;
+          },
+          institutionAcronym: function() {
+            return ($institutionSelect.find('option[value="' + this.institutionID + '"]').text()).split('-')[0];
+          },
+          reset: function() {
+            Object.assign(this.$data, vueAppinitialState());
+          }
       }
   });
 
@@ -1098,16 +1119,43 @@ var mappingFundingToProjectModule = (function() {
     $saveButton.on('click', saveBudgetMapping);
 
     // On open the modal
-    $modal.on('shown.bs.modal', openModal);
+    $modal.on('show.bs.modal', openModal);
+
+    // On open the modal
+    $modal.on('hide.bs.modal', closeModal);
   }
 
-  function validateForm() {
-    vueApp.isValidForm = true;
+  function retrivePopupValues() {
     vueApp.institutionID = $institutionSelect.val();
     vueApp.projectID = $projectSelect.val();
     vueApp.amount = removeCurrencyFormat($amountInput.val());
     vueApp.gender = removePercentageFormat($genderInput.val());
     vueApp.justification = $justificationInput.val();
+    vueApp.remainingBudget = removeCurrencyFormat($('#fundingYear-' + vueApp.year + ' span.projectAmount').text());
+  }
+
+  function openModal(event) {
+    var $button = $(event.relatedTarget);
+    vueApp.year = $button.data('year');
+
+    retrivePopupValues();
+  }
+
+  function closeModal(event) {
+    vueApp.reset();
+    $institutionSelect.val(vueApp.institutionID);
+    $institutionSelect.select2({
+      width: '100%'
+    });
+    $amountInput.val(vueApp.amount);
+    $genderInput.val(vueApp.gender);
+    $justificationInput.val(vueApp.justification);
+    $step2Block.slideUp();
+  }
+
+  function validateForm() {
+    vueApp.isValidForm = true;
+    retrivePopupValues();
 
     // Validate institution
     if((!vueApp.institutionID) || (vueApp.institutionID == '-1')) {
@@ -1130,14 +1178,11 @@ var mappingFundingToProjectModule = (function() {
   }
 
   function saveBudgetMapping() {
-    /**
-     * SaveFundingMapProject.do Params:
-     */
+    var $table = $('table.tableProjectBudgets-' + vueApp.year);
 
     if(validateForm()) {
-      console.log("saveBudgetMapping");
 
-      var data = {
+      var dataBudget = {
           institutionID: vueApp.institutionID,
           fundingSourceID: vueApp.fundingSourceID,
           projectID: vueApp.projectID,
@@ -1148,28 +1193,36 @@ var mappingFundingToProjectModule = (function() {
           year: vueApp.year,
           phaseID: phaseID
       };
-      console.log(data);
 
       $.ajax({
           url: baseUrl + "/SaveFundingMapProject.do",
-          data: data,
+          data: dataBudget,
           beforeSend: function() {
+            vueApp.modalLoading = true;
           },
           success: function(data) {
-            console.log(data);
+            if(data.status.save) {
+              var row = '<tr>';
+              row += '<td>' + vueApp.projectComposedID() + '</td>';
+              row += '<td> ' + vueApp.projectTitle() + ' </td>';
+              row += '<td>' + vueApp.justification + ' </td>';
+              row += '<td> ' + vueApp.institutionAcronym() + ' </td>';
+              row += '<td>US$ ' + setCurrencyFormat(vueApp.amount) + ' </td>';
+              row += '</tr>';
+              $table.find('tbody').append(row);
+              $table.find('tbody tr:last-child').animateCss('flipInX');
+
+              $modal.modal('hide'); // Hide and clean data
+            }
           },
           complete: function(data) {
+            vueApp.modalLoading = false;
           },
           error: function(data) {
           }
       });
     }
 
-  }
-
-  function openModal(event) {
-    var $button = $(event.relatedTarget);
-    vueApp.year = $button.data('year');
   }
 
   function findProjects() {
@@ -1191,11 +1244,10 @@ var mappingFundingToProjectModule = (function() {
         success: function(data) {
           if(!data.projects.length) {
             vueApp.message = "No project(s) to map found";
-            $step2Block.slideUp()
+            $step2Block.slideUp();
           } else {
-            $step2Block.slideDown()
+            $step2Block.slideDown();
           }
-
           $projectSelect.addOption(-1, "Select an option...");
           $.each(data.projects, function(i,p) {
             $projectSelect.addOption(p.id, p.description);

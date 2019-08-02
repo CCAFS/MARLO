@@ -507,13 +507,13 @@
 
           [#-- Projects that this funding source is assigned to --]
           <h5 class="sectionSubTitle">[@s.text name="fundingSource.projectsAssigned" /]:</h5>
-          <table class="table">
+          <table class="table tableProjectBudgets-${year}">
             <thead>
              <tr>
               <th>[@s.text name="fundingSource.projectsAssigned.projectID" /]</th>
               <th>[@s.text name="fundingSource.projectsAssigned.projectTitle" /]</th>
+              <th>Justification</th>
               <th>Lead partner</th>
-              <th>Budget type</th>
               <th>Budget amount</th>
              </tr>
             </thead>
@@ -523,11 +523,9 @@
               [#if projectBudget.year == year]
                <tr class="projectBudgetItem">
                 <td><a href="${projectBudgetURL}">P${(projectBudget.project.id)!}</a></td>
-                <td class="col-md-5"><a href="projectBudgetURL">${(projectBudget.project.projectInfo.title)!}</a></td>
+                <td class="col-md-5"><a href="${projectBudgetURL}">${(projectBudget.project.projectInfo.title)!}</a></td>
+                <td> ${(projectBudget.justification)!} </td>
                 <td> ${(projectBudget.institution.acronymName)!(projectBudget.institution.name)}</td>
-                <td>${(projectBudget.budgetType.name)!}
-                   [#if action.hasSpecificities('crp_fs_w1w2_cofinancing')] ${(fundingSource.fundingSourceInfo.w1w2?string('<small class="text-primary">(Co-Financing)</small>',''))!} [/#if]
-                </td>
                 <td>US$ <span>${((projectBudget.amount)!0)?number?string(",##0.00")}</td>
                </tr>
               [/#if]
@@ -544,7 +542,7 @@
           [#if (fundingSourceShow.projectBudgetsList?has_content)!false]
           <hr />
           <h5 class="sectionSubTitle">[@s.text name="fundingSource.projectsAssignedCRP" /]:</h5>
-          <table class="table">
+          <table id="" class="table">
             <thead>
              <tr>
               <th>[@s.text name="fundingSource.projectsAssigned.projectID" /]</th>
@@ -563,7 +561,7 @@
                 <td><a href="${projectBudgetURL}">P${(projectBudget.project.id)!}</a></td>
                 <td><a href="${projectBudgetURL}">${(projectBudget.fundingSource.crp.acronym)!}</a></td>
                 <td class="col-md-5"><a href="${projectBudgetURL}">${(projectBudget.project.projectInfo.title)!}</a></td>
-                <td class="col-md-5"><a href="${projectBudgetURL}">${(projectBudget.project.projectInfo.statusJustification)!}</a></td>
+                <td class="col-md-5"><a href="${projectBudgetURL}">${(projectBudget.justification)!}</a></td>
                 <td> ${(projectBudget.fundingSource.fundingSourceInfo.leadCenter.acronymName)!(projectBudget.fundingSource.fundingSourceInfo.leadCenter.name)!} </td>
                 <td>US$ <span>${((projectBudget.amount)!0)?number?string(",##0.00")}</td>
                </tr>
@@ -614,6 +612,7 @@
           <div class="form-group row">
             <div class="col-md-6">
               [@customForm.input name="amount" i18nkey="mapFunding.amount" className="currencyInput" required=true editable=editable /]
+              <small>Remaining budget: US$ {{ setCurrencyFormat(remainingBudget) }} </small>
             </div>
             <div class="col-md-6">
               [@customForm.input name="genderPercentage" i18nkey="mapFunding.genderPercentage" className="percentageInput" required=false editable=editable /]
