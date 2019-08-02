@@ -91,6 +91,9 @@ function init() {
     if(e.type == "addElement") {
       $divisionBlock.slideDown();
 
+      // Add institution for project mapping
+      mappingFundingToProjectModule.addInstitution(id, name);
+
       // Add finance channel
       var $item = $('<li class="setPartnerLead value-' + id + '"><a href="">' + (name.split('-'))[0] + '</a></li>');
       $('.financeChannel ul.dropdown-menu').append($item);
@@ -107,6 +110,9 @@ function init() {
 
     if(e.type == "removeElement") {
       $divisionBlock.slideUp();
+
+      // Remove institution for project mapping
+      mappingFundingToProjectModule.removeInstitution(id);
 
       // Remove finance channel
       var $item = $('li.setPartnerLead.value-' + id);
@@ -1143,14 +1149,23 @@ var mappingFundingToProjectModule = (function() {
 
   function closeModal(event) {
     vueApp.reset();
-    $institutionSelect.val(vueApp.institutionID);
-    $institutionSelect.select2({
+    $institutionSelect.val(vueApp.institutionID).select2({
       width: '100%'
     });
     $amountInput.val(vueApp.amount);
     $genderInput.val(vueApp.gender);
     $justificationInput.val(vueApp.justification);
     $step2Block.slideUp();
+  }
+
+  function addInstitution(value,text) {
+    console.log("add");
+    $institutionSelect.addOption(value, text);
+  }
+
+  function removeInstitution(value) {
+    console.log("remove");
+    $institutionSelect.removeOption(value);
   }
 
   function validateForm() {
@@ -1265,6 +1280,8 @@ var mappingFundingToProjectModule = (function() {
   }
 
   return {
-    init: init
+      init: init,
+      addInstitution: addInstitution,
+      removeInstitution: removeInstitution
   }
 })();
