@@ -328,10 +328,9 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
       for (DeliverableInfo deliverableInfo : infos) {
         Deliverable deliverable = deliverableInfo.getDeliverable();
         deliverable.setDeliverableInfo(deliverableInfo);
-        if (!showAllYears.equals("true")) {
+        if (showAllYears.equals("true")) {
           phaseDeliverables.add(deliverable);
         } else {
-
           if (((deliverableInfo.getStatus() == null && deliverableInfo.getYear() == this.getSelectedYear())
             || (deliverableInfo.getStatus() != null
               && deliverableInfo.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
