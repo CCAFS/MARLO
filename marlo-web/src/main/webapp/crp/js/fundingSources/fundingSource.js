@@ -976,9 +976,15 @@ function getInstitutionsBudgetByType(budgetTypeID) {
         $donorSelectLists.empty();
         $donorSelectLists.addOption("-1", "Select an option...");
 
+        var arrayKeyValues = [];
+        console.log(arrayKeyValues.length);
         $.each(m.institutions, function(i,e) {
-          $donorSelectLists.addOptionFast(e.id, e.name);
+          arrayKeyValues.push([
+              e.id, e.name
+          ]);
         });
+        console.log(arrayKeyValues.length);
+        $donorSelectLists.addArrayOptions(arrayKeyValues);
 
         // Set CGIAR Consortium Office if applicable to the direct donor
         changeDonorByFundingType(budgetTypeID, $(".donor:eq(0)"));

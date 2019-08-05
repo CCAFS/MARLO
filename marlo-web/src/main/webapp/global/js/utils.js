@@ -428,6 +428,14 @@ jQuery.fn.addOptionFast = function(val,name) {
   $(this).append("<option value='" + val + "'>" + name + "</option>");
 };
 
+jQuery.fn.addArrayOptions = function(array) {
+  var optionsText = "";
+  for(var i = 0, len = array.length; i < len; i++) {
+    optionsText += "<option value='" + array[i][0] + "'>" + array[i][1] + "</option>";
+  }
+  $(this).append(optionsText);
+};
+
 function removeOption(select,val) {
   $(select).find('option[value=' + val + ']').remove();
 }
