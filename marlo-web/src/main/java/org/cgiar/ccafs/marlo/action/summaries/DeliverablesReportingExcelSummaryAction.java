@@ -534,8 +534,8 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
 
         if (deliverable.getProject() != null) {
           projectID = deliverable.getProject().getId().toString();
-          if (deliverable.getProject().getProjectInfo().getTitle() != null) {
-            projectTitle = deliverable.getProject().getProjectInfo().getTitle();
+          if (deliverable.getProject().getProjecInfoPhase(this.getSelectedPhase()).getTitle() != null) {
+            projectTitle = deliverable.getProject().getProjecInfoPhase(this.getSelectedPhase()).getTitle();
           }
         }
 
@@ -561,9 +561,10 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
           description = "<Not applicable>";
         }
 
-        if (deliverable.getProject() != null && deliverable.getProject().getProjectInfo() != null
-          && deliverable.getProject().getProjectInfo().getStatusName() != null) {
-          status = deliverable.getProject().getProjectInfo().getStatusName();
+        if (deliverable.getProject() != null
+          && deliverable.getProject().getProjecInfoPhase(this.getSelectedPhase()) != null
+          && deliverable.getProject().getProjecInfoPhase(this.getSelectedPhase()).getStatusName() != null) {
+          status = deliverable.getProject().getProjecInfoPhase(this.getSelectedPhase()).getStatusName();
         }
 
         Long phaseID = deliverable.getDeliverableInfo().getPhase().getId();
@@ -1259,8 +1260,8 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
               regions += ", " + programManager.getCrpProgramById(projectFocuses.getCrpProgram().getId()).getAcronym();
             }
           }
-          if (deliverable.getProject().getProjectInfo().getNoRegional() != null
-            && deliverable.getProject().getProjectInfo().getNoRegional()) {
+          if (deliverable.getProject().getProjecInfoPhase(this.getSelectedPhase()).getNoRegional() != null
+            && deliverable.getProject().getProjecInfoPhase(this.getSelectedPhase()).getNoRegional()) {
             if (regions != null && !regions.isEmpty()) {
               LOG.warn("Project is global and has regions selected");
             }
