@@ -21,6 +21,7 @@ import org.cgiar.ccafs.marlo.data.manager.CrpPpaPartnerManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableCrossCuttingMarkerManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableGeographicRegionManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableLocationManager;
 import org.cgiar.ccafs.marlo.data.manager.GenderTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
@@ -39,7 +40,6 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableLocation;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePartnership;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePartnershipTypeEnum;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceInfo;
-import org.cgiar.ccafs.marlo.data.model.GlobalUnitProject;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.ProjectClusterActivity;
@@ -132,6 +132,7 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
   private final DeliverableCrossCuttingMarkerManager deliverableCrossCuttingMarkerManager;
   private final DeliverableGeographicRegionManager deliverableGeographicRegionManager;
   private DeliverableLocationManager deliverableLocationManager;
+  private DeliverableInfoManager deliverableInfoManager;
   // XLS bytes
   private byte[] bytesXLSX;
   // Streams
@@ -144,7 +145,7 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
     ResourceManager resourceManager, ProjectManager projectManager,
     DeliverableCrossCuttingMarkerManager deliverableCrossCuttingMarkerManager,
     DeliverableGeographicRegionManager deliverableGeographicRegionManager,
-    DeliverableLocationManager deliverableLocationManager) {
+    DeliverableLocationManager deliverableLocationManager, DeliverableInfoManager deliverableInfoManager) {
     super(config, crpManager, phaseManager, projectManager);
     this.genderTypeManager = genderTypeManager;
     this.crpProgramManager = crpProgramManager;
@@ -154,6 +155,7 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
     this.deliverableCrossCuttingMarkerManager = deliverableCrossCuttingMarkerManager;
     this.deliverableGeographicRegionManager = deliverableGeographicRegionManager;
     this.deliverableLocationManager = deliverableLocationManager;
+    this.deliverableInfoManager = deliverableInfoManager;
   }
 
   /**
@@ -316,40 +318,84 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
     Boolean addDeliverableRow = true;
     Set<Deliverable> phaseDeliverables = new HashSet<>();
 
-    for (GlobalUnitProject globalUnitProject : this.getLoggedCrp().getGlobalUnitProjects().stream()
-      .filter(p -> p.isActive() && p.getProject() != null && p.getProject().isActive()
-        && (p.getProject().getProjecInfoPhase(this.getSelectedPhase()) != null
-          && p.getProject().getProjectInfo().getStatus().intValue() == Integer
-            .parseInt(ProjectStatusEnum.Ongoing.getStatusId())
-          || p.getProject().getProjecInfoPhase(this.getSelectedPhase()) != null && p.getProject().getProjectInfo()
-            .getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())))
-      .collect(Collectors.toList())) {
+    /**
+     * 08/05 HJ - Fixing this report trying to not use Lambda expression in more of 3 or 4 list because the Hibernate
+     * Lazy Java Assist will occupy all the Memory causing JAVA head space Error and crash the App server (Tomcat)
+     */
 
-      if (showAllYears.equals("true")) {
-        for (Deliverable deliverable : globalUnitProject
-          .getProject().getDeliverables().stream().filter(d -> d.isActive()
-            && d.getDeliverableInfo(this.getSelectedPhase()) != null && d.getDeliverableInfo().isActive())
-          .collect(Collectors.toList())) {
+    List<DeliverableInfo> infos = deliverableInfoManager.getDeliverablesInfoByPhase(this.getSelectedPhase());
+    if (infos != null && !infos.isEmpty()) {
+      for (DeliverableInfo deliverableInfo : infos) {
+        Deliverable deliverable = deliverableInfo.getDeliverable();
+        deliverable.setDeliverableInfo(deliverableInfo);
+        if (!showAllYears.equals("true")) {
           phaseDeliverables.add(deliverable);
+        } else {
+
+          if (((deliverableInfo.getStatus() == null && deliverableInfo.getYear() == this.getSelectedYear())
+            || (deliverableInfo.getStatus() != null
+              && deliverableInfo.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
+              && deliverableInfo.getNewExpectedYear() != null
+              && deliverableInfo.getNewExpectedYear() == this.getSelectedYear())
+            || (deliverableInfo.getStatus() != null && deliverableInfo.getYear() == this.getSelectedYear()
+              && deliverableInfo.getStatus().intValue() == Integer
+                .parseInt(ProjectStatusEnum.Ongoing.getStatusId())))) {
+            phaseDeliverables.add(deliverable);
+
+          }
+
         }
-      } else {
-        for (Deliverable deliverable : globalUnitProject.getProject().getDeliverables().stream().filter(d -> d
-          .isActive()
-          && d.getDeliverableInfo(this.getSelectedPhase()) != null && d.getDeliverableInfo().isActive()
-          && ((d.getDeliverableInfo().getStatus() == null && d.getDeliverableInfo().getYear() == this.getSelectedYear())
-            || (d.getDeliverableInfo().getStatus() != null
-              && d.getDeliverableInfo().getStatus().intValue() == Integer
-                .parseInt(ProjectStatusEnum.Extended.getStatusId())
-              && d.getDeliverableInfo().getNewExpectedYear() != null
-              && d.getDeliverableInfo().getNewExpectedYear() == this.getSelectedYear())
-            || (d.getDeliverableInfo().getStatus() != null && d.getDeliverableInfo().getYear() == this.getSelectedYear()
-              && d.getDeliverableInfo().getStatus().intValue() == Integer
-                .parseInt(ProjectStatusEnum.Ongoing.getStatusId()))))
-          .collect(Collectors.toList())) {
-          phaseDeliverables.add(deliverable);
-        }
+
       }
     }
+
+
+    // List<GlobalUnitProject> globalUnitProjects = new ArrayList<>(this.getLoggedCrp().getGlobalUnitProjects().stream()
+    // .filter(p -> p.isActive() && p.getProject() != null && p.getProject().isActive()
+    // && (p.getProject().getProjecInfoPhase(this.getSelectedPhase()) != null
+    // && p.getProject().getProjectInfo().getStatus().intValue() == Integer
+    // .parseInt(ProjectStatusEnum.Ongoing.getStatusId())
+    // || p.getProject().getProjecInfoPhase(this.getSelectedPhase()) != null && p.getProject().getProjectInfo()
+    // .getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())))
+    // .collect(Collectors.toList()));
+    //
+    // for (GlobalUnitProject globalUnitProject : globalUnitProjects) {
+    //
+    //
+    // }
+
+    // for (GlobalUnitProject globalUnitProject : this.getLoggedCrp().getGlobalUnitProjects().stream()
+    // .filter(p -> p.isActive() && p.getProject() != null && p.getProject().isActive()
+    // && (p.getProject().getProjecInfoPhase(this.getSelectedPhase()) != null
+    // && p.getProject().getProjectInfo().getStatus().intValue() == Integer
+    // .parseInt(ProjectStatusEnum.Ongoing.getStatusId())
+    // || p.getProject().getProjecInfoPhase(this.getSelectedPhase()) != null && p.getProject().getProjectInfo()
+    // .getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())))
+    // .collect(Collectors.toList())) {
+
+    // if (showAllYears.equals("true")) {
+    // for (Deliverable deliverable : globalUnitProject.getProject().getDeliverables().stream().filter(
+    // d -> d.isActive() && d.getDeliverableInfo(this.getSelectedPhase()) != null && d.getDeliverableInfo().isActive())
+    // .collect(Collectors.toList())) {
+    // phaseDeliverables.add(deliverable);
+    // }
+    // } else {
+    // for (Deliverable deliverable : globalUnitProject.getProject().getDeliverables().stream().filter(d -> d.isActive()
+    // && d.getDeliverableInfo(this.getSelectedPhase()) != null && d.getDeliverableInfo().isActive()
+    // && ((d.getDeliverableInfo().getStatus() == null && d.getDeliverableInfo().getYear() == this.getSelectedYear())
+    // || (d.getDeliverableInfo().getStatus() != null
+    // && d.getDeliverableInfo().getStatus().intValue() == Integer
+    // .parseInt(ProjectStatusEnum.Extended.getStatusId())
+    // && d.getDeliverableInfo().getNewExpectedYear() != null
+    // && d.getDeliverableInfo().getNewExpectedYear() == this.getSelectedYear())
+    // || (d.getDeliverableInfo().getStatus() != null && d.getDeliverableInfo().getYear() == this.getSelectedYear()
+    // && d.getDeliverableInfo().getStatus().intValue() == Integer
+    // .parseInt(ProjectStatusEnum.Ongoing.getStatusId()))))
+    // .collect(Collectors.toList())) {
+    // phaseDeliverables.add(deliverable);
+    // }
+    // }
+    // }
 
 
     for (Deliverable deliverable : phaseDeliverables.stream().sorted((d1, d2) -> d1.getId().compareTo(d2.getId()))
