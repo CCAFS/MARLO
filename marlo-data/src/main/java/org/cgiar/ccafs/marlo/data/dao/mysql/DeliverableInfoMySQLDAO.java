@@ -83,6 +83,7 @@ public class DeliverableInfoMySQLDAO extends AbstractMarloDAO<DeliverableInfo, L
     query.append("deliverables_info AS di ");
     query.append("INNER JOIN deliverables AS d ON d.id = di.deliverable_id ");
     query.append("WHERE d.is_active = 1 AND ");
+    query.append("d.project_id IS NOT NULL AND ");
     query.append("di.is_active = 1 AND ");
     query.append("di.`id_phase` =" + phase.getId());
 
