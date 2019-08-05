@@ -163,8 +163,9 @@
           "label":  "Type of report",
           "name":   "showAllYears",
           "data" : [ 
-            { "label": "Only the specific cycle year",  "value": "false"},
+            { "label": "Only the specific cycle year",  "value": "false"}[#--,
             { "label": "All Years",                     "value": "true"}
+             --]
           ] 
         }
       ]

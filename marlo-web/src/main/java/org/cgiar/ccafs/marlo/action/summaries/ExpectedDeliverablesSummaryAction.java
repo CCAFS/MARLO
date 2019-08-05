@@ -1034,13 +1034,10 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
               country = String.join(", ", countriesSet);
             }
           } else {
-            System.out.println("entro aqui " + country);
 
             country = "&lt;Not Defined&gt;";
           }
         }
-        System.out.println("country " + country);
-
         model.addRow(new Object[] {deliverableId, deliverableTitle, completionYear, deliverableType, deliverableSubType,
           keyOutput, delivStatus, delivNewYear, projectID, projectTitle, projectClusterActivities, flagships, regions,
           individual, ppaRespondible, shared, openFS, fsWindows, outcomes, projectLeadPartner, managingResponsible,
