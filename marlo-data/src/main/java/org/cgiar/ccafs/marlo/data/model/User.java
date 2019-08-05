@@ -85,6 +85,7 @@ public class User extends MarloAuditableEntity implements java.io.Serializable, 
 
   // This variable is use for get information in Deliverable user Partnerships
   private boolean pdSelected;
+  private boolean pdCanSelect;
 
 
   public User() {
@@ -113,12 +114,14 @@ public class User extends MarloAuditableEntity implements java.io.Serializable, 
     return true;
   }
 
+
   public Boolean getAgreeTerms() {
     if (agreeTerms == null) {
       return false;
     }
     return agreeTerms;
   }
+
 
   /**
    * This method returns the user's full name.
@@ -148,7 +151,6 @@ public class User extends MarloAuditableEntity implements java.io.Serializable, 
     return this.getLastName() + ", " + this.getFirstName() + " <" + this.getEmail() + ">";
   }
 
-
   public String getComposedNameWithoutEmail() {
     if (this.getId() == null || this.getId() == -1) {
       return "";
@@ -159,6 +161,7 @@ public class User extends MarloAuditableEntity implements java.io.Serializable, 
   public Set<CrpClusterActivityLeader> getCrpClusterActivityLeaders() {
     return crpClusterActivityLeaders;
   }
+
 
   public Set<CrpProgramLeader> getCrpProgramLeaders() {
     return crpProgramLeaders;
@@ -176,19 +179,19 @@ public class User extends MarloAuditableEntity implements java.io.Serializable, 
     return this.crpUsers;
   }
 
-
   public String getEmail() {
     return this.email;
   }
-
 
   public String getFirstName() {
     return this.firstName;
   }
 
+
   public Set<IpLiaisonUser> getIpLiaisonUsers() {
     return ipLiaisonUsers;
   }
+
 
   public Date getLastLogin() {
     return this.lastLogin;
@@ -198,11 +201,9 @@ public class User extends MarloAuditableEntity implements java.io.Serializable, 
     return this.lastName;
   }
 
-
   public Set<LiaisonUser> getLiasonsUsers() {
     return liasonsUsers;
   }
-
 
   @Override
   public String getLogDeatil() {
@@ -216,9 +217,11 @@ public class User extends MarloAuditableEntity implements java.io.Serializable, 
     return this.password;
   }
 
+
   public Set<ProjectPartnerPerson> getProjectPartnerPersons() {
     return projectPartnerPersons;
   }
+
 
   public Set<CenterLeader> getResearchLeaders() {
     return researchLeaders;
@@ -248,9 +251,12 @@ public class User extends MarloAuditableEntity implements java.io.Serializable, 
     return autoSave;
   }
 
-
   public boolean isCgiarUser() {
     return cgiarUser;
+  }
+
+  public boolean isPdCanSelect() {
+    return pdCanSelect;
   }
 
 
@@ -258,23 +264,24 @@ public class User extends MarloAuditableEntity implements java.io.Serializable, 
     return pdSelected;
   }
 
+
   public void setAgreeTerms(Boolean agreeTerms) {
     this.agreeTerms = agreeTerms;
   }
-
 
   public void setAutoSave(boolean autoSave) {
     this.autoSave = autoSave;
   }
 
+
   public void setCgiarUser(boolean cgiarUser) {
     this.cgiarUser = cgiarUser;
   }
 
-
   public void setCrpClusterActivityLeaders(Set<CrpClusterActivityLeader> crpClusterActivityLeaders) {
     this.crpClusterActivityLeaders = crpClusterActivityLeaders;
   }
+
 
   public void setCrpProgramLeaders(Set<CrpProgramLeader> crpProgramLeaders) {
     this.crpProgramLeaders = crpProgramLeaders;
@@ -296,10 +303,10 @@ public class User extends MarloAuditableEntity implements java.io.Serializable, 
     this.email = email;
   }
 
-
   public void setFirstName(String firstName) {
     this.firstName = firstName;
   }
+
 
   public void setIpLiaisonUsers(Set<IpLiaisonUser> ipLiaisonUsers) {
     this.ipLiaisonUsers = ipLiaisonUsers;
@@ -313,7 +320,6 @@ public class User extends MarloAuditableEntity implements java.io.Serializable, 
     this.lastName = lastName;
   }
 
-
   public void setLiasonsUsers(Set<LiaisonUser> liasonsUsers) {
     this.liasonsUsers = liasonsUsers;
   }
@@ -321,6 +327,11 @@ public class User extends MarloAuditableEntity implements java.io.Serializable, 
 
   public void setPassword(String password) {
     this.password = password;
+  }
+
+
+  public void setPdCanSelect(boolean pdCanSelect) {
+    this.pdCanSelect = pdCanSelect;
   }
 
 

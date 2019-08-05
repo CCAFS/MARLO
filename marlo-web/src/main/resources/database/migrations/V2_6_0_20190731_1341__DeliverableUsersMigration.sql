@@ -1,4 +1,4 @@
-INSERT INTO deliverable_user_parnetships (
+INSERT INTO deliverable_user_partnerships (
   deliverable_id,
   id_phase,
   institution_id,
