@@ -17,6 +17,10 @@ package org.cgiar.ccafs.marlo.data.model;
 
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import com.google.gson.annotations.Expose;
 
 /**
@@ -26,8 +30,7 @@ public class DeliverableUserPartnership extends MarloAuditableEntity implements 
 
   private static final long serialVersionUID = 317194942715084413L;
 
-  @Expose
-  private User user;
+
   @Expose
   private Deliverable deliverable;
   @Expose
@@ -35,13 +38,17 @@ public class DeliverableUserPartnership extends MarloAuditableEntity implements 
   @Expose
   private DeliverablePartnerType deliverablePartnerType;
   @Expose
-  private PartnerDivision partnerDivision;
-  @Expose
   private Institution institution;
+
+  private Set<DeliverableUserPartnershipPerson> deliverableUserPartnershipPersons =
+    new HashSet<DeliverableUserPartnershipPerson>(0);
+
+  private List<DeliverableUserPartnershipPerson> partnershipPersons;
 
 
   public DeliverableUserPartnership() {
   }
+
 
   @Override
   public boolean equals(Object obj) {
@@ -66,21 +73,18 @@ public class DeliverableUserPartnership extends MarloAuditableEntity implements 
   }
 
 
-  public String getComposedName() {
-    if (this.getUser() != null) {
-      return this.getUser().getComposedCompleteName();
-    } else {
-      return "";
-    }
-  }
-
-
   public Deliverable getDeliverable() {
     return deliverable;
   }
 
+
   public DeliverablePartnerType getDeliverablePartnerType() {
     return deliverablePartnerType;
+  }
+
+
+  public Set<DeliverableUserPartnershipPerson> getDeliverableUserPartnershipPersons() {
+    return deliverableUserPartnershipPersons;
   }
 
   public Institution getInstitution() {
@@ -94,18 +98,15 @@ public class DeliverableUserPartnership extends MarloAuditableEntity implements 
     return sb.toString();
   }
 
-  public PartnerDivision getPartnerDivision() {
-    return partnerDivision;
+
+  public List<DeliverableUserPartnershipPerson> getPartnershipPersons() {
+    return partnershipPersons;
   }
 
   public Phase getPhase() {
     return phase;
   }
 
-
-  public User getUser() {
-    return user;
-  }
 
   @Override
   public int hashCode() {
@@ -125,13 +126,19 @@ public class DeliverableUserPartnership extends MarloAuditableEntity implements 
   }
 
 
+  public void
+    setDeliverableUserPartnershipPersons(Set<DeliverableUserPartnershipPerson> deliverableUserPartnershipPersons) {
+    this.deliverableUserPartnershipPersons = deliverableUserPartnershipPersons;
+  }
+
+
   public void setInstitution(Institution institution) {
     this.institution = institution;
   }
 
 
-  public void setPartnerDivision(PartnerDivision partnerDivision) {
-    this.partnerDivision = partnerDivision;
+  public void setPartnershipPersons(List<DeliverableUserPartnershipPerson> partnershipPersons) {
+    this.partnershipPersons = partnershipPersons;
   }
 
 
@@ -140,15 +147,9 @@ public class DeliverableUserPartnership extends MarloAuditableEntity implements 
   }
 
 
-  public void setUser(User user) {
-    this.user = user;
-  }
-
-
   @Override
   public String toString() {
-    return "DeliverableUserPartnership [id=" + this.getId() + ", deliverable=" + deliverable + ", partnerDivision="
-      + partnerDivision + "]";
+    return "DeliverableUserPartnership [id=" + this.getId() + ", deliverable=" + deliverable + "]";
   }
 
 }
