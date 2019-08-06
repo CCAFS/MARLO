@@ -204,7 +204,7 @@
 </div>
 
 [#-- Partners --] 
-<h3 class="headTitle">[@s.text name="Partners contributing to this deliverable" /]</h3>  
+<h3 class="headTitle">[OLD] [@s.text name="Partners contributing to this deliverable" /]</h3>  
 <div id="deliverable-partnership" class="form-group simpleBox">
 
   <div class="partnerWrapper">
@@ -213,9 +213,7 @@
     <div class="form-group responsibleWrapper simpleBox">
       [@deliverableList.deliverablePartner dp=deliverable.responsiblePartner dp_name="deliverable.responsiblePartner" dp_index=0 isResponsable=true  editable=editable /]
     </div>
-    
     <br />
-    
     [#-- Other contact person that will contribute --]
     [#assign displayOtherPerson = (!deliverable.otherPartners?has_content && !editable)?string('none','block') /]
     <label for="" style="display:${displayOtherPerson}">[@customForm.text name="projectDeliverable.otherContactContributing" readText=!editable/]</label>
@@ -242,3 +240,37 @@
     </div>
   [/#if]
 </div>
+
+
+[#-- Partners --] 
+<h3 class="headTitle">[NEW] [@s.text name="Partners contributing to this deliverable" /]</h3>  
+<div id="deliverable-partnerships-new" class="form-group simpleBox">
+  [#-- Partner who is responsible --]
+  <label for="">[@customForm.text name="project.deliverable.indicateResponsablePartner" readText=!editable/]:[@customForm.req required=editable /]</label>
+  <div>
+    [@deliverableUserPartnership element=(deliverable.responsiblePartnership)!{}  /]
+  </div>
+  <hr />
+  [#-- Other contact person that will contribute --]
+  [#assign displayOtherPerson = (!deliverable.otherPartners?has_content && !editable)?string('none','block') /]
+  <label for="" style="display:${displayOtherPerson}">[@customForm.text name="projectDeliverable.otherContactContributing" readText=!editable/]</label>
+  <div>
+    [#list (deliverable.otherPartnerships)![] as otherPartnership]
+      [@deliverableUserPartnership element=(otherPartnership)!{} /]
+    [/#list]
+  </div>
+</div>
+
+[#macro deliverableUserPartnership element]
+  <div class="simpleBox">
+    [#-- Partner Institution --]
+    <div class="form-group"> 
+      [@customForm.select name="" value="${(element.institution.id)!'-1'}"  i18nkey="" showTitle=false listName="partners" keyFieldName="institution.id"  displayFieldName="composedName" className="" editable=editable required=true /]
+    </div>
+    
+    
+    <p>${(element.id)!'ID null'}</p>
+    <p>(${(element.institution.id)!}) ${(element.institution.acronymName)!'null'}</p>
+    <p>(${(element.user.id)!}) ${(element.user.composedCompleteName)!'null'}</p>
+  </div>
+[/#macro]
