@@ -564,10 +564,10 @@ public class CrpUsersAction extends BaseAction {
             }
 
             try {
-              if (emailSend != null && emailSend.equals("true")) {
-                this.sendMailNewUser(newUser, globalUnit, password);
-                this.notifyRoleAssigned(newUser);
-              }
+
+              this.sendMailNewUser(newUser, globalUnit, password);
+              this.notifyRoleAssigned(newUser);
+
             } catch (NoSuchAlgorithmException e) {
               e.printStackTrace();
               LOG.error(e.getMessage());
@@ -664,9 +664,7 @@ public class CrpUsersAction extends BaseAction {
 
                 // Send email message for Guest rol assignation in selected CRP
                 try {
-                  if (emailSend != null && emailSend.equals("true")) {
-                    this.notifyRoleAssigned(existingUser);
-                  }
+                  this.notifyRoleAssigned(existingUser);
                 } catch (Exception e) {
                   e.printStackTrace();
                   LOG.error(e.getMessage());
