@@ -73,11 +73,6 @@ function init() {
     }
   });
 
-  // Agreement status & Donor
-  $('form select').select2({
-    width: "100%"
-  });
-
   // Activate Popup
   popups();
 
@@ -176,11 +171,6 @@ function init() {
 
   // Check Funding type
   onChangeFundingType($fundingType.val());
-
-  // Funding Window / Budget type
-  $("select.type").select2({
-    templateResult: budgetTypeTemplate
-  });
 
   // When select center as Funding Window
   var lastDonor = -1;
@@ -294,6 +284,16 @@ function init() {
 
   // Add functionality of mapping funding source to a project
   mappingFundingToProjectModule.init();
+
+  // Agreement status & Donor
+  $('form select').select2({
+    width: "100%"
+  });
+  // Funding Window / Budget type
+  $("select.type").select2({
+      templateResult: budgetTypeTemplate,
+      width: "100%"
+  });
 
   // showOnLoading
   $('.showOnLoading').fadeIn();
@@ -1141,7 +1141,7 @@ var mappingFundingToProjectModule = (function() {
     vueApp.institutionID = $institutionSelect.val();
     vueApp.projectID = $projectSelect.val();
     vueApp.amount = removeCurrencyFormat($amountInput.val());
-    vueApp.gender = removePercentageFormat($genderInput.val());
+    // vueApp.gender = removePercentageFormat($genderInput.val());
     vueApp.justification = $justificationInput.val();
     vueApp.remainingBudget = removeCurrencyFormat($('#fundingYear-' + vueApp.year + ' span.projectAmount').text());
   }

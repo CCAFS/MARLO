@@ -37,11 +37,16 @@
 [#if (!availabePhase)!false]
   [#include "/WEB-INF/crp/views/projects/availability-projects.ftl" /]
 [#else]
+
+[#-- Finance code module --]
+[#assign isSynced =false ]
+[#if fundingSource.fundingSourceInfo?has_content]
+  [#assign isSynced = (fundingSource.fundingSourceInfo.synced)!false ]
+[/#if]
+
 <section class="container">
   <article class="" id="mainInformation">
-  
   [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
-  
   
   <div class="loading-neutral hideOnLoading"></div>
   <div class="col-md-offset-1 col-md-10 showOnLoading" style="display:none">
@@ -54,8 +59,8 @@
       [#-- Loading --]
       <div class="loading syncBlock" style="display:none"></div>
       
-      <div class="form-group row">
-        <div class="col-md-7 managingPartners">
+      <div class="row">
+        <div class="col-md-6 managingPartners">
           <div class="form-group">
             [@customForm.elementsListComponent name="fundingSource.institutions" elementType="institution" elementList=(fundingSource.institutions)![] label="fundingSource.leadPartner"  listName="institutions" keyFieldName="id" displayFieldName="composedName"/]
              
@@ -71,20 +76,36 @@
               [@customForm.select name="fundingSource.fundingSourceInfo.partnerDivision.id" i18nkey="projectCofunded.division" listName="divisions" keyFieldName="id" displayFieldName="composedName" required=true editable=editable /]
             </div>
           [/#if]
-        
         </div>
         
-        [#-- Finance code module --]
-        [#assign isSynced =false ]
-        [#if fundingSource.fundingSourceInfo?has_content]
-          [#assign isSynced = (fundingSource.fundingSourceInfo.synced)!false ]
-        [/#if]
-       
-        <div class="col-md-5 form-group">
-          [#-- Agreement status --]
-          <div class="form-group metadataElement-agreementStatus">
-            [@customForm.select name="fundingSource.fundingSourceInfo.status" i18nkey="projectCofunded.agreementStatus" className="agreementStatus metadataValue"  listName="status" keyFieldName=""  displayFieldName="" disabled=isSynced header=false editable=(editable || editStatus) /] 
-            [#if isSynced && (editable || editStatus)]<input type="hidden" class="selectHiddenInput" name="fundingSource.fundingSourceInfo.status" value="${(fundingSource.fundingSourceInfo.status)!}" />[/#if]
+        <div class="col-md-6 form-group">
+          
+          <div class="form-group row">
+            [#-- Funding Window --]
+            <div class="col-md-6 metadataElement-fundingTypeId">
+              [@customForm.select name="fundingSource.fundingSourceInfo.budgetType.id" i18nkey="projectCofunded.type" className="type fundingType metadataValue" listName="budgetTypes" header=false required=true disabled=isSynced editable=editable && action.canEditType() /]
+              [#if isSynced && editable && action.canEditType()]<input type="hidden" class="selectHiddenInput" name="fundingSource.fundingSourceInfo.budgetType.id" value="${(fundingSource.fundingSourceInfo.budgetType.id)!}" />[/#if]
+              [#-- W1W2 Tag --]
+              [#if action.hasSpecificities('crp_fs_w1w2_cofinancing')]
+                <div class="w1w2-tag" style="display:${isW1W2?string('block','none')};">
+                  <div class="checkbox dottedBox">
+                    <label for="w1w2-tag-input">
+                      [#if editable]
+                      <input type="checkbox" name="fundingSource.fundingSourceInfo.w1w2" value="true" id="w1w2-tag-input" [#if w1w2TagValue]checked[/#if]/>
+                      [#else]
+                         <img src="${baseUrl}/global/images/checked-${w1w2TagValue?string}.png" /> 
+                      [/#if]
+                      <small>[@customForm.text name="fundingSource.w1w2Tag" readText=!editable /]</small></label>
+                  </div>
+                </div>
+              [/#if]
+            </div>
+            
+            [#-- Agreement status --]
+            <div class="col-md-6 metadataElement-agreementStatus">
+              [@customForm.select name="fundingSource.fundingSourceInfo.status" i18nkey="projectCofunded.agreementStatus" className="agreementStatus metadataValue"  listName="status" keyFieldName=""  displayFieldName="" disabled=isSynced header=false editable=(editable || editStatus) /] 
+              [#if isSynced && (editable || editStatus)]<input type="hidden" class="selectHiddenInput" name="fundingSource.fundingSourceInfo.status" value="${(fundingSource.fundingSourceInfo.status)!}" />[/#if]
+            </div>
           </div>
         
           [#-- Finance code --]
@@ -250,25 +271,6 @@
       
       <div class="form-group">
         <div class="row">
-          [#-- Funding Window --]
-          <div class="col-md-6 metadataElement-fundingTypeId">
-            [@customForm.select name="fundingSource.fundingSourceInfo.budgetType.id" i18nkey="projectCofunded.type" className="type fundingType metadataValue" listName="budgetTypes" header=false required=true disabled=isSynced editable=editable && action.canEditType() /]
-            [#if isSynced && editable && action.canEditType()]<input type="hidden" class="selectHiddenInput" name="fundingSource.fundingSourceInfo.budgetType.id" value="${(fundingSource.fundingSourceInfo.budgetType.id)!}" />[/#if]
-            [#-- W1W2 Tag --]
-            [#if action.hasSpecificities('crp_fs_w1w2_cofinancing')]
-              <div class="w1w2-tag" style="display:${isW1W2?string('block','none')};">
-                <div class="checkbox dottedBox">
-                  <label for="w1w2-tag-input">
-                    [#if editable]
-                    <input type="checkbox" name="fundingSource.fundingSourceInfo.w1w2" value="true" id="w1w2-tag-input" [#if w1w2TagValue]checked[/#if]/>
-                    [#else]
-                       <img src="${baseUrl}/global/images/checked-${w1w2TagValue?string}.png" /> 
-                    [/#if]
-                    <small>[@customForm.text name="fundingSource.w1w2Tag" readText=!editable /]</small></label>
-                </div>
-              </div>
-            [/#if]
-          </div>
           [#-- Upload bilateral contract --]
           <div class="col-md-6">
             [@customForm.fileUploadAjax 
@@ -464,6 +466,9 @@
     </div>
     
     <div class="contributionWrapper budgetByYears">
+      [#assign projectBudgetsList = (fundingSource.projectBudgetsList)![] /]
+      [#assign projectBudgetsListOtherCrps = (fundingSourceShow.projectBudgetsList)![] /]
+      
       [#-- Year Tabs --]
       <ul class="nav nav-tabs budget-tabs" role="tablist">
         [#list fundingSourceYears as year]
@@ -518,7 +523,7 @@
              </tr>
             </thead>
             <tbody>
-            [#list fundingSource.projectBudgetsList as projectBudget]
+            [#list projectBudgetsList as projectBudget]
               [#assign projectBudgetURL][@s.url action="${crpSession}/budgetByPartners" namespace="/projects"] [@s.param name="projectID" value="${(projectBudget.project.id)!}"/] [#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#assign]
               [#if projectBudget.year == year]
                <tr class="projectBudgetItem">
@@ -539,7 +544,7 @@
             <div class="clearfix"></div>
           [/#if]
           
-          [#if (fundingSourceShow.projectBudgetsList?has_content)!false]
+          [#if (projectBudgetsListOtherCrps?has_content)!false]
           <hr />
           <h5 class="sectionSubTitle">[@s.text name="fundingSource.projectsAssignedCRP" /]:</h5>
           <table id="" class="table">
@@ -554,7 +559,7 @@
              </tr>
             </thead>
             <tbody>
-            [#list fundingSourceShow.projectBudgetsList as projectBudget]
+            [#list projectBudgetsListOtherCrps as projectBudget]
               [#assign projectBudgetURL][@s.url action="${crpSession}/budgetByPartners" namespace="/projects"] [@s.param name="projectID" value="${(projectBudget.project.id)!}"/] [#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#assign]
               [#if projectBudget.year == year]
                <tr class="projectBudgetItem">
@@ -614,13 +619,15 @@
               [@customForm.input name="amount" i18nkey="mapFunding.amount" className="currencyInput" required=true editable=editable /]
               <small>Remaining budget: US$ {{ setCurrencyFormat(remainingBudget) }} </small>
             </div>
+            [#-- 
             <div class="col-md-6">
               [@customForm.input name="genderPercentage" i18nkey="mapFunding.genderPercentage" className="percentageInput" required=false editable=editable /]
             </div>
+             --]
           </div>
           
           <div class="form-group">
-            [@customForm.textArea name="justification" i18nkey="mapFunding.justification" className="" required=true editable=editable /]
+            [@customForm.textArea name="justification" i18nkey="mapFunding.justification" help="mapFunding.justification.help" helpIcon=false className="" required=true editable=editable /]
           </div>
         </div>
         
