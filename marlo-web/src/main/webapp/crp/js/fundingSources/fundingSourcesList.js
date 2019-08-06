@@ -149,6 +149,7 @@ var fundingSourcePopupModule =
 
       var $instPartnersSelect = $('select[class*="elementType-institution"]');
       var $institutionLeadSelect = $('select.institutionLead');
+      var $budgetTypeSelect = $('select.budgetType');
       var $statusSelect = $('select.agreementStatus');
       var $financeCode = $('input.financeCode');
       var $institutionIDs = $('input[name="partnerIDs"]');
@@ -169,6 +170,7 @@ var fundingSourcePopupModule =
 
       $institutionLeadSelect.on("change", validateForm);
       $statusSelect.on("change", validateForm);
+      $budgetTypeSelect.on("change", validateForm);
 
       $('#fundingSourceAddPopup').on('hidden.bs.modal', function(e) {
         app.fundingSources = [];
@@ -180,7 +182,7 @@ var fundingSourcePopupModule =
         validateForm();
       })
 
-      $financeCode.on("keyup change", function() {
+      $financeCode.on("keyup", function() {
         $financeCode.addClass('input-loading');
         app.isValid = false;
         app.messages = [];
@@ -188,7 +190,7 @@ var fundingSourcePopupModule =
           clearTimeout(keyupTimer);
           keyupTimer = null;
         }
-        keyupTimer = setTimeout(searchDuplicated, 2000);
+        keyupTimer = setTimeout(searchDuplicated, 800);
       });
 
       function searchDuplicated() {
@@ -225,10 +227,11 @@ var fundingSourcePopupModule =
       function validateForm() {
         app.isValid = false;
         var instPartners = $instPartnersSelect.parents('.panel-body').find('ul li').length;
+        var budgetType = $budgetTypeSelect.val();
         var statusValue = $statusSelect.val();
         var leadValue = $institutionLeadSelect.val();
         var financeCode = $financeCode.val();
-        if((financeCode) && (instPartners > 0) && (statusValue > 0) && (leadValue > 0)
+        if((financeCode) && (instPartners > 0) && (statusValue > 0) && (budgetType > 0) && (leadValue > 0)
             && (app.fundingSources.length == 0)) {
           app.isValid = true;
         }

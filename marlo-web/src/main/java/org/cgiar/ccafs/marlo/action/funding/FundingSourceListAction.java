@@ -18,6 +18,7 @@ package org.cgiar.ccafs.marlo.action.funding;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.BudgetTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpPpaPartnerManager;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceInstitutionManager;
@@ -29,6 +30,7 @@ import org.cgiar.ccafs.marlo.data.manager.LiaisonUserManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.RoleManager;
 import org.cgiar.ccafs.marlo.data.manager.UserRoleManager;
+import org.cgiar.ccafs.marlo.data.model.BudgetType;
 import org.cgiar.ccafs.marlo.data.model.CrpPpaPartner;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceBudget;
@@ -92,7 +94,9 @@ public class FundingSourceListAction extends BaseAction {
   private CrpPpaPartnerManager crpPpaPartnerManager;
   private GlobalUnitManager globalUnitManager;
   private LiaisonInstitutionManager liaisonInstitutionManager;
+  private BudgetTypeManager budgetTypeManager;
 
+  private Map<String, String> budgetTypes;
   private List<FundingSource> closedProjects;
   private List<FundingSourceInstitution> fundingSourceInstitutions;
   private List<Institution> managingInstitutionsList;
@@ -109,14 +113,13 @@ public class FundingSourceListAction extends BaseAction {
   private String institutionLead;
   private String partnerIDs;
 
-
   @Inject
   public FundingSourceListAction(APConfig config, FundingSourceManager fundingSourceManager,
     GlobalUnitManager crpManager, ProjectManager projectManager, LiaisonUserManager liaisonUserManager,
     InstitutionManager institutionManager, LiaisonInstitutionManager liaisonInstitutionManager,
     FundingSourceInstitutionManager fundingSourceInstitutionManager, FundingSourceInfoManager fundingSourceInfoManager,
     RoleManager roleManager, UserRoleManager userRoleManager, CrpPpaPartnerManager crpPpaPartnerManager,
-    GlobalUnitManager globalUnitManager) {
+    GlobalUnitManager globalUnitManager, BudgetTypeManager budgetTypeManager) {
     super(config);
     this.fundingSourceManager = fundingSourceManager;
     this.crpManager = crpManager;
@@ -129,7 +132,9 @@ public class FundingSourceListAction extends BaseAction {
     this.crpPpaPartnerManager = crpPpaPartnerManager;
     this.globalUnitManager = globalUnitManager;
     this.liaisonInstitutionManager = liaisonInstitutionManager;
+    this.budgetTypeManager = budgetTypeManager;
   }
+
 
   @Override
   public String add() {
@@ -273,7 +278,6 @@ public class FundingSourceListAction extends BaseAction {
     }
   }
 
-
   public boolean canAddFunding() {
     boolean permission = this.hasPermissionNoBase(
       this.generatePermission(Permission.PROJECT_FUNDING_W1_BASE_PERMISSION, loggedCrp.getAcronym()))
@@ -299,6 +303,7 @@ public class FundingSourceListAction extends BaseAction {
       }
     }
   }
+
 
   @Override
   public String delete() {
@@ -345,6 +350,10 @@ public class FundingSourceListAction extends BaseAction {
 
   public Map<String, String> getAgreementStatus() {
     return agreementStatus;
+  }
+
+  public Map<String, String> getBudgetTypes() {
+    return budgetTypes;
   }
 
   public List<FundingSource> getClosedProjects() {
@@ -579,6 +588,8 @@ public class FundingSourceListAction extends BaseAction {
     } catch (Exception e) {
       Log.error(e + "error getting institutionsID parameter");
     }
+
+    // Status list
     Set<Integer> statusTypes = new HashSet<>();
     statusTypes.add(Integer.parseInt(FundingStatusEnum.Ongoing.getStatusId()));
     statusTypes.add(Integer.parseInt(FundingStatusEnum.Extended.getStatusId()));
@@ -586,6 +597,19 @@ public class FundingSourceListAction extends BaseAction {
     statusTypes.add(Integer.parseInt(FundingStatusEnum.Informally.getStatusId()));
     statusTypes.add(Integer.parseInt(FundingStatusEnum.Complete.getStatusId()));
     statusTypes.add(Integer.parseInt(FundingStatusEnum.Cancelled.getStatusId()));
+
+    // Budget Types list
+    budgetTypes = new HashMap<>();
+    for (BudgetType budgetType : budgetTypeManager.findAll()) {
+      if (budgetType.getId().intValue() == 1) {
+        if (this.hasPermissionNoBase(
+          this.generatePermission(Permission.PROJECT_FUNDING_W1_BASE_PERMISSION, loggedCrp.getAcronym()))) {
+          budgetTypes.put(budgetType.getId().toString(), budgetType.getName());
+        }
+      } else {
+        budgetTypes.put(budgetType.getId().toString(), budgetType.getName());
+      }
+    }
 
     List<FundingSource> allFundingSources =
       fundingSourceManager.getGlobalUnitFundingSourcesByPhaseAndTypes(loggedCrp, this.getActualPhase(), statusTypes);
