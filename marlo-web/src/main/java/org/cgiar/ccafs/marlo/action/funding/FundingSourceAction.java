@@ -983,8 +983,6 @@ public class FundingSourceAction extends BaseAction {
     }
 
     budgetTypes = new HashMap<>();
-
-
     for (BudgetType budgetType : budgetTypeManager.findAll()) {
       if (budgetType.getId().intValue() == 1) {
         if (this.hasPermissionNoBase(
@@ -994,8 +992,8 @@ public class FundingSourceAction extends BaseAction {
       } else {
         budgetTypes.put(budgetType.getId().toString(), budgetType.getName());
       }
-
     }
+
     divisions = new ArrayList<>(
       partnerDivisionManager.findAll().stream().filter(pd -> pd.isActive()).collect(Collectors.toList()));
     String params[] = {loggedCrp.getAcronym(), fundingSource.getId() + ""};
