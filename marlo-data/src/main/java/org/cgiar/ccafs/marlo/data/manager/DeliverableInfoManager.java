@@ -62,6 +62,8 @@ public interface DeliverableInfoManager {
    */
   public DeliverableInfo getDeliverableInfoById(long deliverableInfoID);
 
+  public List<DeliverableInfo> getDeliverablesInfoByPhase(Phase phase);
+
   /**
    * This method gets a list of DeliverableInfo that are active by a given phase and type
    * 
@@ -85,6 +87,5 @@ public interface DeliverableInfoManager {
    *         or -1 is some error occurred.
    */
   public DeliverableInfo saveDeliverableInfo(DeliverableInfo deliverableInfo);
-
 
 }
