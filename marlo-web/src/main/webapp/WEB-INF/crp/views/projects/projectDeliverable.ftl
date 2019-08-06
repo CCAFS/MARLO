@@ -24,7 +24,7 @@
 
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
-[#import "/WEB-INF/crp/macros/deliverableListTemplate.ftl" as deliverableList /]
+[#import "/WEB-INF/global/macros/deliverableListTemplate.ftl" as deliverableList /]
 [#import "/WEB-INF/global/macros/deliverableMacros.ftl" as deliverableMacros /]
 
 [#import "/WEB-INF/global/macros/utils.ftl" as utils /]
