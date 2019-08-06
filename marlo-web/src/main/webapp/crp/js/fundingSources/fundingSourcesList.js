@@ -132,110 +132,137 @@ function removeProject(e) {
 /**
  * Pop up to add a new Funding Source
  */
-var fundingSourcePopupModule =
-    (function() {
-      // Testing VUE JS
-      var app = new Vue({
-          el: '#vueApp',
-          data: {
-              isValid: false,
-              fundingSources: [],
-              messages: []
-          },
-          methods: {
+var fundingSourcePopupModule = (function() {
+  // Testing VUE JS
+  var app = new Vue({
+      el: '#vueApp',
+      data: {
+          isValid: false,
+          fundingSources: [],
+          messages: []
+      },
+      methods: {
 
+      }
+  });
+
+  var $instPartnersSelect = $('select[class*="elementType-institution"]');
+  var $institutionLeadSelect = $('select.institutionLead');
+  var $budgetTypeSelect = $('select.budgetType');
+  var $statusSelect = $('select.agreementStatus');
+  var $financeCode = $('input.financeCode');
+  var $institutionIDs = $('input[name="partnerIDs"]');
+  var keyupTimer = null;
+
+  $instPartnersSelect.on("addElement removeElement", function(event,id,name) {
+    if(event.type == "addElement") {
+      $('select.institutionLead').addOption(id, name);
+    } else if(event.type == "removeElement") {
+      $('select.institutionLead').removeOption(id);
+    }
+    var institutionsIDs = jQuery.map($('input[name="ins"]'), function(el) {
+      return $(el).val()
+    });
+    $institutionIDs.val(institutionsIDs.join(','));
+    validateForm();
+  });
+
+  $institutionLeadSelect.on("change", validateForm);
+  $statusSelect.on("change", validateForm);
+  $budgetTypeSelect.on("change", validateForm);
+
+  $('#fundingSourceAddPopup').on('hidden.bs.modal', function(e) {
+    app.fundingSources = [];
+    app.messages = [];
+    $statusSelect.val("-1").trigger('change.select2');
+    $institutionLeadSelect.val("-1").trigger('change.select2');
+    $financeCode.val("");
+
+    validateForm();
+  })
+
+  $financeCode.on("keyup", function() {
+    $financeCode.addClass('input-loading');
+    app.isValid = false;
+    app.messages = [];
+    if(keyupTimer) {
+      clearTimeout(keyupTimer);
+      keyupTimer = null;
+    }
+    keyupTimer = setTimeout(searchDuplicated, 800);
+  });
+
+  function searchDuplicated() {
+    var code = $.trim($financeCode.val());
+    $.ajax({
+        'url': baseURL + '/FundingSourceService.do',
+        'data': {
+            financeCode: code,
+            phaseID: phaseID
+        },
+        beforeSend: function() {
+          app.fundingSources = [];
+          app.messages = [];
+          $financeCode.addClass('input-loading');
+        },
+        success: function(data) {
+          if(data.sources.length) {
+            app.fundingSources = data.sources;
           }
-      });
-
-      var $instPartnersSelect = $('select[class*="elementType-institution"]');
-      var $institutionLeadSelect = $('select.institutionLead');
-      var $budgetTypeSelect = $('select.budgetType');
-      var $statusSelect = $('select.agreementStatus');
-      var $financeCode = $('input.financeCode');
-      var $institutionIDs = $('input[name="partnerIDs"]');
-      var keyupTimer = null;
-
-      $instPartnersSelect.on("addElement removeElement", function(event,id,name) {
-        if(event.type == "addElement") {
-          $('select.institutionLead').addOption(id, name);
-        } else if(event.type == "removeElement") {
-          $('select.institutionLead').removeOption(id);
+        },
+        complete: function() {
+          validateForm();
+          $financeCode.removeClass('input-loading');
+        },
+        error: function(error) {
+          app.messages.push({
+              type: "danger",
+              title: error.status + " - " + error.statusText
+          });
         }
-        var institutionsIDs = jQuery.map($('input[name="ins"]'), function(el) {
-          return $(el).val()
-        });
-        $institutionIDs.val(institutionsIDs.join(','));
-        validateForm();
-      });
+    });
+  }
 
-      $institutionLeadSelect.on("change", validateForm);
-      $statusSelect.on("change", validateForm);
-      $budgetTypeSelect.on("change", validateForm);
+  function validateForm() {
+    var isValid = false;
+    var instPartners = $instPartnersSelect.parents('.panel-body').find('ul li').length;
+    var budgetType = $budgetTypeSelect.val();
+    var statusValue = $statusSelect.val();
+    var leadValue = $institutionLeadSelect.val();
+    var financeCode = $financeCode.val();
 
-      $('#fundingSourceAddPopup').on('hidden.bs.modal', function(e) {
-        app.fundingSources = [];
-        app.messages = [];
-        $statusSelect.val("-1").trigger('change.select2');
-        $institutionLeadSelect.val("-1").trigger('change.select2');
-        $financeCode.val("");
+    // Finance code
+    if(financeCode) {
+      isValid = true;
+    }
 
-        validateForm();
-      })
+    // Institution Partners, at least one
+    if(instPartners > 0) {
+      isValid = true;
+    }
 
-      $financeCode.on("keyup", function() {
-        $financeCode.addClass('input-loading');
-        app.isValid = false;
-        app.messages = [];
-        if(keyupTimer) {
-          clearTimeout(keyupTimer);
-          keyupTimer = null;
-        }
-        keyupTimer = setTimeout(searchDuplicated, 800);
-      });
+    // Institution lead selected
+    if(leadValue > 0) {
+      isValid = true;
+    }
 
-      function searchDuplicated() {
-        var code = $.trim($financeCode.val());
-        $.ajax({
-            'url': baseURL + '/FundingSourceService.do',
-            'data': {
-                financeCode: code,
-                phaseID: phaseID
-            },
-            beforeSend: function() {
-              app.fundingSources = [];
-              app.messages = [];
-              $financeCode.addClass('input-loading');
-            },
-            success: function(data) {
-              if(data.sources.length) {
-                app.fundingSources = data.sources;
-              }
-            },
-            complete: function() {
-              validateForm();
-              $financeCode.removeClass('input-loading');
-            },
-            error: function(error) {
-              app.messages.push({
-                  type: "danger",
-                  title: error.status + " - " + error.statusText
-              });
-            }
-        });
-      }
+    // Status
+    if(statusValue > 0) {
+      isValid = true;
+    }
 
-      function validateForm() {
-        app.isValid = false;
-        var instPartners = $instPartnersSelect.parents('.panel-body').find('ul li').length;
-        var budgetType = $budgetTypeSelect.val();
-        var statusValue = $statusSelect.val();
-        var leadValue = $institutionLeadSelect.val();
-        var financeCode = $financeCode.val();
-        if((financeCode) && (instPartners > 0) && (statusValue > 0) && (budgetType > 0) && (leadValue > 0)
-            && (app.fundingSources.length == 0)) {
-          app.isValid = true;
-        }
-        return app.isValid;
-      }
+    // Validate selection of budget type (Funding Window)
+    if(budgetType > 0) {
+      isValid = true;
+    }
 
-    })();
+    // Duplicates funding sources with the same code
+    if(app.fundingSources.length == 0) {
+      isValid = true;
+    }
+
+    app.isValid = isValid;
+    return app.isValid;
+  }
+
+})();
