@@ -19,10 +19,6 @@
 			update="false">
 			<column name="created_by" />
 		</many-to-one>
-		<many-to-one name="user"
-			class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
-			<column name="user_id" />
-		</many-to-one>
 		<many-to-one name="deliverable"
 			class="org.cgiar.ccafs.marlo.data.model.Deliverable" fetch="select">
 			<column name="deliverable_id" not-null="true" />
