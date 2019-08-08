@@ -74,9 +74,11 @@ public final class APConstants {
   public static final String CRP_PARAMETERS = "crp_parameters";
   public static final String CRP_PARTNER_CONTRIBUTIONS = "crp_nonPPAPartner_resp_required";
 
+
   public static final String CRP_PC_ROLE = "crp_pc_rol";
   public static final String CRP_CP_ROLE = "crp_cp_role";
   public static final String CRP_HAS_CP = "crp_has_contact_point";
+
 
   public static final String CRP_FS_W1W2_COFINANCING = "crp_fs_w1w2_cofinancing";
 
@@ -119,10 +121,10 @@ public final class APConstants {
   public static final String CRP_HAS_DISEMINATION = "crp_has_disemination";
   public static final String CRP_ENABLE_BUDGET_EXECUTION = "crp_enable_budget_execution";
 
+
   // Email parameters to copy to FL FM CL
   public static final String CRP_EMAIL_CC_FL_FM_CL = "crp_email_cc_fl_fm_cl";
-  // public static final String CRP_EMAIL_PL_CRPADMIN_FL =
-  // "crp_email_pl_crpAdmin_fl";
+  // public static final String CRP_EMAIL_PL_CRPADMIN_FL = "crp_email_pl_crpAdmin_fl";
   public static final String GENDER_KEYWORDS = "show_gender_keywords_summaries";
 
   public static final String CYCLE = "cycle";
@@ -172,6 +174,7 @@ public final class APConstants {
 
   public static final String FUNDING_SOURCES_INSTITUTIONS_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.FundingSource.fundingSourceInstitutions)";
+
 
   public static final String FUNDING_SOURCES_LOCATIONS_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.FundingSource.fundingSourceLocations)";
@@ -241,6 +244,7 @@ public final class APConstants {
   public static final String PPA_PARAMETER = "isPPA";
   public static final String PROGRAM_ACTIVITIES_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.CrpProgram.crpClusterOfActivities)";
+
 
   // Relations Name
   public static final String PROGRAM_OUTCOMES_RELATION =
@@ -329,6 +333,7 @@ public final class APConstants {
   public static final String PROJECT_DELIVERABLE_PROGRAMS =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.Deliverable.deliverablePrograms)";
 
+
   public static final String PROJECT_DELIVERABLE_PUBLICATION_METADATA =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.Deliverable.deliverablePublicationMetadatas)";
   public static final String PROJECT_DELIVERABLES_PARTICIPANT_RELATION =
@@ -376,6 +381,7 @@ public final class APConstants {
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.ProjectOutcome.projectOutcomeIndicators)";
   public static final String PROJECT_OUTCOMES_PANDR_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.Project.projectOutcomesPandr)";
+
 
   public static final String PROJECT_OVERVIEWS_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.Project.ipProjectContributionOverviews)";
@@ -477,6 +483,7 @@ public final class APConstants {
   public static final String QUERY_PARAMETER = "q";
   public static final String REPORTING = "Reporting";
 
+
   public static final String SCOPE_TYPE = "Region";
 
   public static final String SECTION_NAME = "sectionName";
@@ -509,6 +516,7 @@ public final class APConstants {
 
   public static final String YEAR_REQUEST = "year";
 
+
   /** cross cutting scores ****/
   public static final long CROSS_CUTTING_NOT_TARGETED = 0;
 
@@ -522,6 +530,7 @@ public final class APConstants {
 
   // end year
   public static Integer CENTER_END_YEAR = 2022;
+
 
   public static final String SESSION_RESEARCH_AREA = "current_research_area";
   public static final String SESSION_RESEARCH_PROGRAM = "current_research_program";
@@ -574,6 +583,7 @@ public final class APConstants {
   public static final String PROJECTS_LOCATIONS_ACTIVITIES_CSV_FOLDER = "projectLocationCSV";
   // Partnership
   public static final String PARTNERSHIP_FOLDER = "partnerships";
+
 
   // Relations Name
   public static final String RESEARCH_PROGRAM_IMPACT_RELATION =
@@ -691,7 +701,7 @@ public final class APConstants {
   public static final String CRP_CAP_DEV_ACTIVE = "crp_capdev_active";
 
   // Marlo PDF Manual Name
-  public static final String MARLO_PDF_MANUAL_NAME = "Introduction_To_MARLO_v2.5.pdf";
+  public static final String MARLO_PDF_MANUAL_NAME = "Introduction_To_MARLO_v2.6.pdf";
 
   // GeoiIp maps database
   public static final String DATABASE_COUNTRY_FILENAME = "GeoLite2-Country.mmdb";
@@ -717,3 +727,4 @@ public final class APConstants {
   }
 
 }
+

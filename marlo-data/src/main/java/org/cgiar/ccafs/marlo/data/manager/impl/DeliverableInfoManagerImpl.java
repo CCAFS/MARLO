@@ -71,6 +71,11 @@ public class DeliverableInfoManagerImpl implements DeliverableInfoManager {
   }
 
   @Override
+  public List<DeliverableInfo> getDeliverablesInfoByPhase(Phase phase) {
+    return deliverableInfoDAO.getDeliverablesInfoByPhase(phase);
+  }
+
+  @Override
   public List<DeliverableInfo> getDeliverablesInfoByProjectAndPhase(Phase phase, Project project) {
     return deliverableInfoDAO.getDeliverablesInfoByProjectAndPhase(phase, project);
   }

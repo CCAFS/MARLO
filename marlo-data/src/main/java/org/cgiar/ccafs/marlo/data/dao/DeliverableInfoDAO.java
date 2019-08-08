@@ -57,6 +57,8 @@ public interface DeliverableInfoDAO {
   public List<DeliverableInfo> findAll();
 
 
+  public List<DeliverableInfo> getDeliverablesInfoByPhase(Phase phase);
+
   /**
    * This method gets a list of DeliverableInfo that are active by a given phase and project
    * 
@@ -64,13 +66,13 @@ public interface DeliverableInfoDAO {
    */
   public List<DeliverableInfo> getDeliverablesInfoByProjectAndPhase(Phase phase, Project project);
 
+
   /**
    * This method gets a list of DeliverableInfo that are active by a given phase and type
    * 
    * @return a list from DeliverableInfo null if no exist records
    */
   public List<DeliverableInfo> getDeliverablesInfoByType(Phase phase, DeliverableType deliverableType);
-
 
   /**
    * This method saves the information of the given deliverableInfo

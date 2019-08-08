@@ -118,7 +118,8 @@ public class ProjectsSummaryAction extends BaseSummariesAction implements Summar
       this.getText("summaries.oaprojects.deliverablesAmount"));
     masterReport.getParameterValues().put("i8nOutcomesAmount", this.getText("summaries.oaprojects.outcomesAmount"));
     masterReport.getParameterValues().put("i8nStudiesAmount", this.getText("summaries.oaprojects.studiesAmount"));
-
+    masterReport.getParameterValues().put("i8nStudiesCrossCutting",
+      this.getText("summaries.oaprojects.crossCuttingDimensions"));
     return masterReport;
   }
 
@@ -251,9 +252,10 @@ public class ProjectsSummaryAction extends BaseSummariesAction implements Summar
     TypedTableModel model = new TypedTableModel(
       new String[] {"projectId", "projectTitle", "projectSummary", "status", "managementLiaison", "flagships",
         "regions", "institutionLeader", "projectLeader", "activitiesOnGoing", "expectedDeliverables", "outcomes",
-        "expectedStudies", "phaseID"},
+        "expectedStudies", "phaseID", "crossCutting"},
       new Class[] {Long.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        String.class, String.class, Integer.class, Integer.class, Integer.class, Integer.class, Long.class},
+        String.class, String.class, Integer.class, Integer.class, Integer.class, Integer.class, Long.class,
+        String.class},
       0);
     // Status of projects
     String[] statuses = null;
@@ -264,7 +266,7 @@ public class ProjectsSummaryAction extends BaseSummariesAction implements Summar
       Long projectId = project.getId();
       String projectTitle = project.getProjectInfo().getTitle();
       String managementLiaison = null;
-
+      String crossCutting = "";
       String projectSummary = "";
 
       if (project.getProjectInfo().getSummary() != null && !project.getProjectInfo().getSummary().isEmpty()) {
@@ -402,9 +404,52 @@ public class ProjectsSummaryAction extends BaseSummariesAction implements Summar
         }
       }
 
+      // Cross cutting Dimensions
+
+      if (project.getProjectInfo().getCrossCuttingCapacity() != null
+        && project.getProjectInfo().getCrossCuttingCapacity() == true) {
+        if (crossCutting.length() > 0) {
+          crossCutting += ", Capacity Development";
+        } else {
+          crossCutting += " Capacity Development";
+        }
+      }
+      if (project.getProjectInfo().getCrossCuttingClimate() != null
+        && project.getProjectInfo().getCrossCuttingClimate() == true) {
+        if (crossCutting.length() > 0) {
+          crossCutting += ", Climate Change";
+        } else {
+          crossCutting += " Climate Change";
+        }
+      }
+      if (project.getProjectInfo().getCrossCuttingNa() != null
+        && project.getProjectInfo().getCrossCuttingNa() == true) {
+        if (crossCutting.length() > 0) {
+          crossCutting += ", N/A";
+        } else {
+          crossCutting += " N/A";
+        }
+      }
+      if (project.getProjectInfo().getCrossCuttingGender() != null
+        && project.getProjectInfo().getCrossCuttingGender() == true) {
+        if (crossCutting.length() > 0) {
+          crossCutting += ", Gender";
+        } else {
+          crossCutting += "Gender";
+        }
+      }
+      if (project.getProjectInfo().getCrossCuttingYouth() != null
+        && project.getProjectInfo().getCrossCuttingYouth() == true) {
+        if (crossCutting.length() > 0) {
+          crossCutting += ", Youth";
+        } else {
+          crossCutting += "Youth";
+        }
+      }
+
       model.addRow(new Object[] {projectId, projectTitle, projectSummary, status, managementLiaison, flagships, regions,
         institutionLeader, projectLeaderName, activitiesOnGoing, expectedDeliverables, outcomes, expectedStudies,
-        this.getSelectedPhase().getId()});
+        this.getSelectedPhase().getId(), crossCutting});
     }
     return model;
   }
