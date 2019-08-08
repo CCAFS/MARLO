@@ -27,11 +27,6 @@
 			class="org.cgiar.ccafs.marlo.data.model.DeliverableUserPartnership" fetch="select">
 			<column name="user_partnership_id" not-null="true" />
 		</many-to-one>
-		<many-to-one name="deliverablePartnerType"
-			class="org.cgiar.ccafs.marlo.data.model.DeliverablePartnerType"
-			fetch="select">
-			<column name="deliverable_partner_type_id" not-null="true" />
-		</many-to-one>
 		<property name="active" type="boolean">
 			<column name="is_active" not-null="true" />
 		</property>
