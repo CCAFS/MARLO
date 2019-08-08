@@ -75,11 +75,9 @@ public class DeliverableUserPartnershipManagerImpl implements DeliverableUserPar
             deliverableUserPartnershipPersonSave.setPartnerDivision(
               this.partnerDivisionDAO.find(deliverableUserPartnershipPerson.getPartnerDivision().getId()));
           }
+          deliverableUserPartnershipPersonDAO.save(deliverableUserPartnershipPersonSave);
         }
-
-
       }
-
     }
 
   }

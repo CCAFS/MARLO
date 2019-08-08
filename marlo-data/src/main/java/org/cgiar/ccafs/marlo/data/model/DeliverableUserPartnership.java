@@ -49,7 +49,6 @@ public class DeliverableUserPartnership extends MarloAuditableEntity implements 
   public DeliverableUserPartnership() {
   }
 
-
   @Override
   public boolean equals(Object obj) {
     if (this == obj) {
@@ -87,6 +86,7 @@ public class DeliverableUserPartnership extends MarloAuditableEntity implements 
     return deliverableUserPartnershipPersons;
   }
 
+
   public Institution getInstitution() {
     return institution;
   }
@@ -98,9 +98,25 @@ public class DeliverableUserPartnership extends MarloAuditableEntity implements 
     return sb.toString();
   }
 
-
   public List<DeliverableUserPartnershipPerson> getPartnershipPersons() {
     return partnershipPersons;
+  }
+
+
+  /**
+   * @return an array of integers.
+   */
+  public long[] getPersonsIds() {
+
+    List<DeliverableUserPartnershipPerson> pPersons = this.getPartnershipPersons();
+    if (pPersons != null) {
+      long[] ids = new long[pPersons.size()];
+      for (int i = 0; i < ids.length; i++) {
+        ids[i] = pPersons.get(i).getUser().getId();
+      }
+      return ids;
+    }
+    return null;
   }
 
   public Phase getPhase() {
