@@ -108,7 +108,7 @@ public class SendMailS {
 		properties.put("mail.smtp.starttls.enable", config.getEmail_starttls());
 
 		// Un-comment this line to watch javaMail debug
-		properties.put("mail.debug", "true");
+		//properties.put("mail.debug", "true");
 
 		Session session = Session.getInstance(properties, new Authenticator() {
 
