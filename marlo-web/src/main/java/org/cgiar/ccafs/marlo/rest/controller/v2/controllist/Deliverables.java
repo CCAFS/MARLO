@@ -1,5 +1,5 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
+ * This file is part of Managing Agricultural Research for Learning &
  * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,6 +39,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -47,48 +48,50 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @Api(tags = "Deliverables")
+@CrossOrigin(origins = "*", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE})
 public class Deliverables {
-	private static final Logger LOG = LoggerFactory.getLogger(Deliverable.class);
-	@Autowired
-	private Environment env;
 
-	private DeliverablesItem<DeliverableDTO> deliverableItem;
-	private final UserManager userManager;
+  private static final Logger LOG = LoggerFactory.getLogger(Deliverable.class);
+  @Autowired
+  private Environment env;
 
-	/**
-	 * Create a new Deliverables *
-	 * 
-	 * @param acronym of global unit
-	 * 
-	 * @param DeliverablenDTO with basic deliverable info
-	 * @return a DeliverablenDTO with the deliverable created
-	 */
-	@Inject
-	public Deliverables(DeliverablesItem<DeliverableDTO> deliverableItem, UserManager userManager) {
-		super();
-		this.deliverableItem = deliverableItem;
-		this.userManager = userManager;
-	}
+  private DeliverablesItem<DeliverableDTO> deliverableItem;
+  private final UserManager userManager;
 
-	@ApiOperation(tags = {
-			"Table 6 - Peer-reviewed publications" }, value = "${Deliverables.deliverable.POST.value}", response = DeliverableDTO.class)
-	@RequiresPermissions(Permission.FULL_CREATE_REST_API_PERMISSION)
-	@RequestMapping(value = "/{CGIAREntity}/deliverables", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<Long> createDeliverable(
-			@ApiParam(value = "${Deliverables.deliverable.POST.param.CGIAR}", required = true) @PathVariable String CGIAREntity,
-			@ApiParam(value = "${Deliverables.deliverable.POST.param.deliverable}", required = true) @Valid @RequestBody NewDeliverableDTO newDeliverableDTO) {
-		Long innovationId = this.deliverableItem.createDeliverable(newDeliverableDTO, CGIAREntity,
-				this.getCurrentUser());
-		ResponseEntity<Long> response = new ResponseEntity<Long>(innovationId, HttpStatus.OK);
-		return response;
+  /**
+   * Create a new Deliverables *
+   * 
+   * @param acronym of global unit
+   * @param DeliverablenDTO with basic deliverable info
+   * @return a DeliverablenDTO with the deliverable created
+   */
+  @Inject
+  public Deliverables(DeliverablesItem<DeliverableDTO> deliverableItem, UserManager userManager) {
+    super();
+    this.deliverableItem = deliverableItem;
+    this.userManager = userManager;
+  }
 
-	}
+  @ApiOperation(tags = {"Table 6 - Peer-reviewed publications"}, value = "${Deliverables.deliverable.POST.value}",
+    response = DeliverableDTO.class)
+  @RequiresPermissions(Permission.FULL_CREATE_REST_API_PERMISSION)
+  @RequestMapping(value = "/{CGIAREntity}/deliverables", method = RequestMethod.POST,
+    produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<Long> createDeliverable(
+    @ApiParam(value = "${Deliverables.deliverable.POST.param.CGIAR}", required = true) @PathVariable String CGIAREntity,
+    @ApiParam(value = "${Deliverables.deliverable.POST.param.deliverable}",
+      required = true) @Valid @RequestBody NewDeliverableDTO newDeliverableDTO) {
+    Long innovationId = this.deliverableItem.createDeliverable(newDeliverableDTO, CGIAREntity, this.getCurrentUser());
+    ResponseEntity<Long> response = new ResponseEntity<Long>(innovationId, HttpStatus.OK);
+    return response;
 
-	private User getCurrentUser() {
-		Subject subject = SecurityUtils.getSubject();
-		Long principal = (Long) subject.getPrincipal();
-		User user = this.userManager.getUser(principal);
-		return user;
-	}
+  }
+
+  private User getCurrentUser() {
+    Subject subject = SecurityUtils.getSubject();
+    Long principal = (Long) subject.getPrincipal();
+    User user = this.userManager.getUser(principal);
+    return user;
+  }
 
 }
