@@ -263,14 +263,30 @@
 
 [#macro deliverableUserPartnership element]
   <div class="simpleBox">
+    <code>${(element.id)!'ID null'}</code>
     [#-- Partner Institution --]
     <div class="form-group"> 
       [@customForm.select name="" value="${(element.institution.id)!'-1'}"  i18nkey="" showTitle=false listName="partners" keyFieldName="institution.id"  displayFieldName="composedName" className="" editable=editable required=true /]
     </div>
     
+    [#-- Type --] 
+    <p>Type: ${(element.deliverablePartnerType.id)!'null'}</p>
     
-    <p>${(element.id)!'ID null'}</p>
-    <p>(${(element.institution.id)!}) ${(element.institution.acronymName)!'null'}</p>
-    <p>(${(element.user.id)!}) ${(element.user.composedCompleteName)!'null'}</p>
+    [#-- Users --]
+    <strong>selectedDeliverablePartnerUsers IDs</strong>
+    [#local selectedUsersID = ""]
+    [#list (element.partnershipPersons)![] as deliverablePartnerUser]
+      [#local selectedUsersID]${selectedUsersID}[#sep],[/#sep]${deliverablePartnerUser.user.id}[/#local]
+    [/#list]
+    <p>${selectedUsersID}</p>
+    
+    <strong>institutionUsers</strong>
+    [#list (action.getUserList(element.institution.id))![] as user]
+      [#local isUserChecked =  false ]
+      <p>[${isUserChecked?string('X', ' ')}] - (${user.id}) ${user.composedCompleteName}</p>
+    [/#list]
+    
+    
+
   </div>
 [/#macro]
