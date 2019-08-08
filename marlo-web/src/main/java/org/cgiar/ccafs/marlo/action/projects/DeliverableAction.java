@@ -1681,21 +1681,21 @@ public class DeliverableAction extends BaseAction {
               deliverable.getResponsiblePartnership().setPartnershipPersons(partnershipPersons);
             }
 
-            responsibleUsers = new ArrayList<>();
-            List<ProjectPartner> partnersTmp = projectPartnerManager.findAll().stream()
-              .filter(pp -> pp.isActive() && pp.getProject().getId().equals(projectID)
-                && pp.getPhase().getId().equals(this.getActualPhase().getId())
-                && pp.getInstitution().getId().equals(actualPartner.getInstitution().getId()))
-              .collect(Collectors.toList());
-
-            if (partnersTmp != null && !partnersTmp.isEmpty()) {
-              ProjectPartner projectPartner = partnersTmp.get(0);
-              List<ProjectPartnerPerson> partnerPersons = new ArrayList<>(projectPartner.getProjectPartnerPersons()
-                .stream().filter(pp -> pp.isActive()).collect(Collectors.toList()));
-              for (ProjectPartnerPerson projectPartnerPerson : partnerPersons) {
-                responsibleUsers.add(projectPartnerPerson.getUser());
-              }
-            }
+            // responsibleUsers = new ArrayList<>();
+            // List<ProjectPartner> partnersTmp = projectPartnerManager.findAll().stream()
+            // .filter(pp -> pp.isActive() && pp.getProject().getId().equals(projectID)
+            // && pp.getPhase().getId().equals(this.getActualPhase().getId())
+            // && pp.getInstitution().getId().equals(actualPartner.getInstitution().getId()))
+            // .collect(Collectors.toList());
+            //
+            // if (partnersTmp != null && !partnersTmp.isEmpty()) {
+            // ProjectPartner projectPartner = partnersTmp.get(0);
+            // List<ProjectPartnerPerson> partnerPersons = new ArrayList<>(projectPartner.getProjectPartnerPersons()
+            // .stream().filter(pp -> pp.isActive()).collect(Collectors.toList()));
+            // for (ProjectPartnerPerson projectPartnerPerson : partnerPersons) {
+            // responsibleUsers.add(projectPartnerPerson.getUser());
+            // }
+            // }
           }
         }
 
