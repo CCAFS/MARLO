@@ -45,11 +45,6 @@
 		<property name="modificationJustification" type="string">
 			<column name="modification_justification" sql-type="TEXT" />
 		</property>
-		<many-to-one name="partnerDivision"
-			class="org.cgiar.ccafs.marlo.data.model.PartnerDivision"
-			fetch="select">
-			<column name="division_id" />
-		</many-to-one>
 		<many-to-one name="institution"
 			class="org.cgiar.ccafs.marlo.data.model.Institution" fetch="select">
 			<column name="institution_id" not-null="false" />
