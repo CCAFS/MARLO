@@ -5,7 +5,7 @@
 <hibernate-mapping>
 	<class
 		name="org.cgiar.ccafs.marlo.data.model.DeliverableUserPartnershipPerson"
-		table="deliverable_user_partnership_person" optimistic-lock="none">
+		table="deliverable_user_partnership_persons" optimistic-lock="none">
 		<id name="id" type="java.lang.Long">
 			<column name="id" />
 			<generator class="identity" />
