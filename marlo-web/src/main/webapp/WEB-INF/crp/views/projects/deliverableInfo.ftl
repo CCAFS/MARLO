@@ -274,15 +274,11 @@
     
     [#-- Users --]
     <strong>selectedDeliverablePartnerUsers IDs</strong>
-    [#local selectedUsersID = ""]
-    [#list (element.partnershipPersons)![] as deliverablePartnerUser]
-      [#local selectedUsersID]${selectedUsersID}[#sep],[/#sep]${deliverablePartnerUser.user.id}[/#local]
-    [/#list]
-    <p>${selectedUsersID}</p>
+    [#local selectedUsersID = (element.personsIds)![]]
     
     <strong>institutionUsers</strong>
     [#list (action.getUserList(element.institution.id))![] as user]
-      [#local isUserChecked =  false ]
+      [#local isUserChecked =  selectedUsersID?seq_contains(user.id) ]
       <p>[${isUserChecked?string('X', ' ')}] - (${user.id}) ${user.composedCompleteName}</p>
     [/#list]
     
