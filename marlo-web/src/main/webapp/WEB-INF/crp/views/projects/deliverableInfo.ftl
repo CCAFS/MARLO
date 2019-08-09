@@ -203,33 +203,33 @@
   [@deliverableMacros.deliverableCrossCuttingMacro /]
 </div>
 
-[#-- Partners --] 
-<h3 class="headTitle">[OLD] [@s.text name="Partners contributing to this deliverable" /]</h3>  
-<div id="deliverable-partnership" class="form-group simpleBox">
 
-  <div class="partnerWrapper">
-    [#-- Partner who is responsible --]
-    <label for="">[@customForm.text name="project.deliverable.indicateResponsablePartner" readText=!editable/]:[@customForm.req required=editable /]</label>
-    <div class="form-group responsibleWrapper simpleBox">
-      [@deliverableList.deliverablePartner dp=deliverable.responsiblePartner dp_name="deliverable.responsiblePartner" dp_index=0 isResponsable=true  editable=editable /]
-    </div>
-    <br />
-    [#-- Other contact person that will contribute --]
-    [#assign displayOtherPerson = (!deliverable.otherPartners?has_content && !editable)?string('none','block') /]
-    <label for="" style="display:${displayOtherPerson}">[@customForm.text name="projectDeliverable.otherContactContributing" readText=!editable/]</label>
-    <div class="partnersList listname="deliverable.otherPartners" style="display:${displayOtherPerson}">
-      [#if action.getSelectedPartners()?has_content]
-        [@deliverableList.deliverablePartnerOther dp=action.getSelectedPartners() dp_name="deliverable.otherPartners" editable=editable /]
-      [#else]
-        <p class="simpleBox emptyText center"> [@s.text name="project.deliverable.partnership.emptyText" /] </p>
-      [/#if]
-    </div>
-    [#if editable && canEdit]
-      <div id="addPartnerBlock" class="addPerson text-right">
-        <div class="button-blue  addPartner"><span class="glyphicon glyphicon-plus-sign"></span> [@s.text name="form.buttons.addPartner" /]</div>
-      </div>
-    [/#if]
+
+[#-- Partners --] 
+<h3 class="headTitle">[NEW] [@s.text name="Partners contributing to this deliverable" /]</h3>  
+<div id="deliverable-partnerships-new" class="form-group simpleBox">
+  [#-- Partner who is responsible --]
+  <label for="">[@customForm.text name="project.deliverable.indicateResponsablePartner" readText=!editable/]:[@customForm.req required=editable /]</label>
+  <div>
+    [@deliverableUserPartnership element=(deliverable.responsiblePartnership)!{} defaultType=1 /]
   </div>
+  <hr />
+  [#-- Other contact person that will contribute --]
+  [#assign displayOtherPerson = (!deliverable.otherPartners?has_content && !editable)?string('none','block') /]
+  <label for="" style="display:${displayOtherPerson}">[@customForm.text name="projectDeliverable.otherContactContributing" readText=!editable/]</label>
+  <div>
+    [#list (deliverable.otherPartnerships)![] as otherPartnership]
+      [@deliverableUserPartnership element=(otherPartnership)!{} defaultType=2 index=otherPartnership_index/]
+    [#else]
+      [@deliverableUserPartnership element={} defaultType=2 index=0/]
+    [/#list]
+  </div>
+  
+  [#if editable && canEdit]
+    <div id="addPartnerBlock" class="addPerson text-right">
+      <div class="button-blue  addPartner"><span class="glyphicon glyphicon-plus-sign"></span> [@s.text name="form.buttons.addPartner" /]</div>
+    </div>
+  [/#if]
   
   [#if editable]
     <div class="partnerListMsj note">
@@ -241,48 +241,80 @@
   [/#if]
 </div>
 
-
-[#-- Partners --] 
-<h3 class="headTitle">[NEW] [@s.text name="Partners contributing to this deliverable" /]</h3>  
-<div id="deliverable-partnerships-new" class="form-group simpleBox">
-  [#-- Partner who is responsible --]
-  <label for="">[@customForm.text name="project.deliverable.indicateResponsablePartner" readText=!editable/]:[@customForm.req required=editable /]</label>
-  <div>
-    [@deliverableUserPartnership element=(deliverable.responsiblePartnership)!{}  /]
-  </div>
-  <hr />
-  [#-- Other contact person that will contribute --]
-  [#assign displayOtherPerson = (!deliverable.otherPartners?has_content && !editable)?string('none','block') /]
-  <label for="" style="display:${displayOtherPerson}">[@customForm.text name="projectDeliverable.otherContactContributing" readText=!editable/]</label>
-  <div>
-    [#list (deliverable.otherPartnerships)![] as otherPartnership]
-      [@deliverableUserPartnership element=(otherPartnership)!{} /]
-    [/#list]
-  </div>
-</div>
-
-[#macro deliverableUserPartnership element]
+[#macro deliverableUserPartnership element defaultType index=-1 ]
+  [#local typeID = (element.deliverablePartnerType.id)!defaultType ]
+  [#local isResponsable = (typeID == 1) ]
+  [#if isResponsable]
+    [#local customName = "deliverable.responsiblePartnership" ]
+  [#else]
+    [#local customName = "deliverable.otherPartners[${index}]" ]
+  [/#if]
   <div class="simpleBox">
-    <code>${(element.id)!'ID null'}</code>
+    [#-- Deliverable Partner ID --]
+    <input type="hidden" name="${customName}.id" value="${(element.id)!}"/>
+    
     [#-- Partner Institution --]
     <div class="form-group"> 
-      [@customForm.select name="" value="${(element.institution.id)!'-1'}"  i18nkey="" showTitle=false listName="partners" keyFieldName="institution.id"  displayFieldName="composedName" className="" editable=editable required=true /]
+      [@customForm.select name="${customName}.institution.id" value="${(element.institution.id)!'-1'}"  i18nkey="" showTitle=false listName="partners" keyFieldName="institution.id"  displayFieldName="composedName" className="" editable=editable required=true /]
     </div>
     
     [#-- Type --] 
-    <p>Type: ${(element.deliverablePartnerType.id)!'null'}</p>
+    <input type="hidden" name="${customName}.deliverablePartnerType.id" value="${typeID}"/>
     
     [#-- Users --]
-    <strong>selectedDeliverablePartnerUsers IDs</strong>
-    [#local selectedUsersID = (action.getPersonsIds(element))![]]
+    <div class="row form-group">
+      [#local selectedUsersID = []]
+      [#if (element.id??)!false]
+        [#local selectedUsersID = (action.getPersonsIds(element))![]]
+      [/#if]
+      
+      [#list (action.getUserList(element.institution.id))![] as user]
+        [#local isUserChecked =  selectedUsersID?seq_contains(user.id) ]
+        [@deliverableUserPartner element=element user=user index=user_index name="${customName}.partnershipPersons" isUserChecked=isUserChecked isResponsable=isResponsable /]
+      [/#list]
+    </div>
     
-    <strong>institutionUsers</strong>
-    [#list (action.getUserList(element.institution.id))![] as user]
-      [#local isUserChecked =  selectedUsersID?seq_contains(user.id) ]
-      <p>[${isUserChecked?string('X', ' ')}] - (${user.id}) ${user.composedCompleteName}</p>
+  </div>
+[/#macro]
+
+[#macro deliverableUserPartner element user index name isUserChecked=false isResponsable=false]
+  <div class="deliverableUserPartner col-md-6">
+    [#if isResponsable]
+      [#local customName = "${name}[0]"]
+    [#else]
+      [#local customName = "${name}[${index}]"]
+    [/#if]
+    [#local customID = "${index}-${user.id}-${isResponsable?string('1', '2')}"]
+    [#-- Get Deliverable User --]
+    [#local deliverableUser = {} ]
+    [#list (element.partnershipPersons)![] as dpp]
+      [#if dpp.user.id == user.id]
+        [#local deliverableUser = dpp ][#break]
+      [/#if]
     [/#list]
     
+    [#if (!isResponsable) || (index == 0)]
+      <input type="hidden" name="${customName}.id" value="${(deliverableUser.id)!}" />
+    [/#if]
     
-
+    [#-- Radio/Check --]
+    [#if isResponsable]
+      [@customForm.radioFlat id="${customID}" name="${customName}.user.id" label="${user.composedCompleteName}" disabled=false editable=editable value="${user.id}" checked=isUserChecked cssClass="" cssClassLabel="radio-label-yes" inline=false /]
+    [#else]
+      [@customForm.checkBoxFlat id="${customID}" name="${customName}.user.id" label="${user.composedCompleteName}" help="" paramText="" helpIcon=true disabled=false editable=editable value="${user.id}" checked=isUserChecked cssClass="" cssClassLabel="" /]
+    [/#if]
+  
+    [#-- IFPRI Partner Division partnerDivision 
+    [#if (!isResponsable) || (index == 0)]
+      [#local showIfpriDivision = ((element.institution.acronym == "IFPRI")!false) && (isUserChecked || isResponsable) /]
+      [#if action.hasSpecificities('crp_division_fs')]
+        <div class="form-group row divisionBlock division-IFPRI"  style="display:${showIfpriDivision?string('block','none')}">
+          <div class="col-md-6">
+            [@customForm.select name="${customName}.partnerDivision.id" value="${(deliverableUser.partnerDivision.id)!-1}" i18nkey="projectCofunded.division" className="divisionField" listName="divisions" keyFieldName="id" displayFieldName="composedName" required=true editable=editable /]
+          </div>
+        </div>
+      [/#if]
+    [/#if]
+    --]
   </div>
 [/#macro]
