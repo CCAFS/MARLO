@@ -274,7 +274,7 @@
     
     [#-- Users --]
     <strong>selectedDeliverablePartnerUsers IDs</strong>
-    [#local selectedUsersID = (element.personsIds)![]]
+    [#local selectedUsersID = (action.getPersonsIds(element))![]]
     
     <strong>institutionUsers</strong>
     [#list (action.getUserList(element.institution.id))![] as user]
