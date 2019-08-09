@@ -114,19 +114,21 @@ public class DeliverablesItem<T> {
     if (globalUnitEntity == null) {
       this.fieldErrors.add(new FieldErrorDTO("createDeliverable", "GlobalUnitEntity",
         entityAcronym + " is an invalid CGIAR entity acronym"));
+    } else {
+      System.out.println("Encontro CRP");
     }
-
-    Phase phase =
-      this.phaseManager.findAll().stream()
-        .filter(c -> c.getCrp().getAcronym().equalsIgnoreCase(entityAcronym)
-          && c.getYear() == deliverable.getPhase().getYear()
+    Phase phase = this.phaseManager.findAll().stream()
+      // .filter(c -> c.getCrp().getAcronym().equalsIgnoreCase(entityAcronym)
+      .filter(
+        c -> c.getCrp().getAcronym().equalsIgnoreCase(entityAcronym) && c.getYear() == deliverable.getPhase().getYear()
           && c.getName().equalsIgnoreCase(deliverable.getPhase().getName()))
-        .findFirst().get();
+      .findFirst().get();
 
     if (phase == null) {
       this.fieldErrors
         .add(new FieldErrorDTO("createDeliverable", "phase", deliverable.getPhase().getYear() + " is an invalid year"));
     }
+    System.out.println("SMO code " + phase.getCrp().getSmoCode());
 
     if (fieldErrors.size() == 0 || fieldErrors.isEmpty()) {
       // create deliverable

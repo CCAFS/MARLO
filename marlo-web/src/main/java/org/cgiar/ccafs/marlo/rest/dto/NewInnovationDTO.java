@@ -51,8 +51,8 @@ public class NewInnovationDTO {
   @ApiModelProperty(notes = "Regions codes", position = 80)
   private List<Long> regions;
 
-  @ApiModelProperty(notes = "Countries Alpha 2 codes", position = 90)
-  private List<String> countries;
+  @ApiModelProperty(notes = "Countries codes", position = 90)
+  private List<Long> countries;
 
   @ApiModelProperty(notes = "Is a leadership equitatable effort of the partners", position = 95)
   private Boolean equitativeEffort;
@@ -69,6 +69,8 @@ public class NewInnovationDTO {
   @ApiModelProperty(notes = "Contributing CRPs/Platforms codes", position = 130)
   private List<String> contributingCGIAREntities;
 
+  @ApiModelProperty(notes = "Phase year/section", position = 140)
+  private PhaseDTO phase;
 
   public List<String> getContributingCGIAREntities() {
     return this.contributingCGIAREntities;
@@ -80,7 +82,7 @@ public class NewInnovationDTO {
   }
 
 
-  public List<String> getCountries() {
+  public List<Long> getCountries() {
     return this.countries;
   }
 
@@ -130,6 +132,11 @@ public class NewInnovationDTO {
   }
 
 
+  public PhaseDTO getPhase() {
+    return phase;
+  }
+
+
   public Long getProjectId() {
     return this.projectId;
   }
@@ -160,7 +167,7 @@ public class NewInnovationDTO {
   }
 
 
-  public void setCountries(List<String> countries) {
+  public void setCountries(List<Long> countries) {
     this.countries = countries;
   }
 
@@ -207,6 +214,11 @@ public class NewInnovationDTO {
 
   public void setOtherInnovationType(String otherInnovationType) {
     this.otherInnovationType = otherInnovationType;
+  }
+
+
+  public void setPhase(PhaseDTO phase) {
+    this.phase = phase;
   }
 
 
