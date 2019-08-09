@@ -242,6 +242,8 @@ function init() {
     setGeographicScope(this);
   });
   setGeographicScope($('form select.elementType-repIndGeographicScope')[0]);
+
+  deliverablePartnersModule.init();
 }
 
 function openDialog() {
@@ -642,5 +644,33 @@ function selectKeyOutput() {
     $keyOutputList.val(optionValue);
     $keyOutputList.trigger('change');
   }
-
 }
+
+var deliverablePartnersModule = (function() {
+
+  function init() {
+    console.log('Starting deliverablePartnersModule');
+
+    attachEvents();
+  }
+
+  function attachEvents() {
+    $('select.partnerInstitutionID').on('change', changePartnerInstitution);
+  }
+
+  function changePartnerInstitution() {
+    var $deliverablePartner = $(this).parents('.projectPartnerPerson');
+    var $usersBlock = $deliverablePartner.find('.usersBlock');
+    var typeID = $deliverablePartner.find('input.partnerTypeID').val();
+
+    $usersBlock.empty();
+
+    var $newUsersBlock = $('#partnerUsers .institution-' + this.value + ' .users-' + typeID).clone(true);
+
+    $usersBlock.append($newUsersBlock.html());
+  }
+
+  return {
+    init: init
+  }
+})();

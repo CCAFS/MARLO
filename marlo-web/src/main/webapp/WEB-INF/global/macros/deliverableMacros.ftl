@@ -979,6 +979,72 @@
   </div>
 [/#macro]
 
+[#macro deliverablePartnerMacro element name index=-1 defaultType=2]
+  [#local typeID = (element.deliverablePartnerType.id)!defaultType ]
+  [#local isResponsable = (typeID == 1) ]
+  [#local customName = "${name}[${index}]" ]
+  [#if isResponsable][#local customName = "${name}" ][/#if]
+  
+  <div class="simpleBox projectPartnerPerson">
+    [#-- Deliverable Partner ID --]
+    <input type="hidden" name="${customName}.id" value="${(element.id)!}"/>
+    [#-- Type --] 
+    <input type="hidden" name="${customName}.deliverablePartnerType.id" class="partnerTypeID" value="${typeID}"/>
+    [#-- Partner Institution --]
+    <div class="form-group"> 
+      [@customForm.select name="${customName}.institution.id" value="${(element.institution.id)!'-1'}"  i18nkey="" showTitle=false listName="partners" keyFieldName="institution.id"  displayFieldName="composedName" className="partnerInstitutionID" editable=editable required=true /]
+    </div>
+    [#-- Users Selected--]
+    [#local selectedUsersID = []]
+    [#if (element.id??)!false][#local selectedUsersID = (action.getPersonsIds(element))![]][/#if]
+    [#-- List of users--]
+    <div class="row form-group usersBlock">
+      [#list (action.getUserList(element.institution.id))![] as user]
+        [#local isUserChecked =  selectedUsersID?seq_contains(user.id) ]
+        [@deliverableUserMacro element=element user=user index=user_index name="${customName}.partnershipPersons" isUserChecked=isUserChecked isResponsable=isResponsable /]
+      [/#list]
+    </div>
+    
+  </div>
+[/#macro]
+
+[#macro deliverableUserMacro element user index name isUserChecked=false isResponsable=false]
+  [#local customName = "${name}[${index}]"]
+  [#if isResponsable][#local customName = "${name}[0]"][/#if]
+  [#local customID = "${index}-${isResponsable?string('1', '2')}-${user.id}"]
+  [#-- Get Deliverable User --]
+  [#local deliverableUser = {} ]
+  [#list (element.partnershipPersons)![] as dpp]
+    [#if dpp.user.id == user.id][#local deliverableUser = dpp ][#break][/#if]
+  [/#list]
+  
+  <div class="col-md-6">
+    [#-- Deliverable User ID --]
+    [#if (!isResponsable) || (index == 0)]
+      <input type="hidden" name="${customName}.id" value="${(deliverableUser.id)!}" />
+    [/#if]
+    [#-- User ID Radio/Check --]
+    [#if isResponsable]
+      [@customForm.radioFlat id="${customID}" name="${customName}.user.id" label="${user.composedCompleteName}" disabled=false editable=editable value="${user.id}" checked=isUserChecked cssClass="" cssClassLabel="radio-label-yes" inline=false /]
+    [#else]
+      [@customForm.checkBoxFlat id="${customID}" name="${customName}.user.id" label="${user.composedCompleteName}" help="" paramText="" helpIcon=true disabled=false editable=editable value="${user.id}" checked=isUserChecked cssClass="" cssClassLabel="" /]
+    [/#if]
+  
+    [#-- IFPRI Partner Division partnerDivision 
+    [#if (!isResponsable) || (index == 0)]
+      [#local showIfpriDivision = ((element.institution.acronym == "IFPRI")!false) && (isUserChecked || isResponsable) /]
+      [#if action.hasSpecificities('crp_division_fs')]
+        <div class="form-group row divisionBlock division-IFPRI"  style="display:${showIfpriDivision?string('block','none')}">
+          <div class="col-md-6">
+            [@customForm.select name="${customName}.partnerDivision.id" value="${(deliverableUser.partnerDivision.id)!-1}" i18nkey="projectCofunded.division" className="divisionField" listName="divisions" keyFieldName="id" displayFieldName="composedName" required=true editable=editable /]
+          </div>
+        </div>
+      [/#if]
+    [/#if]
+    --]
+  </div>
+[/#macro]
+
 [#function displayDeliverableRule element ruleName]
   [#if (action.hasDeliverableRule(element.deliverableInfo, ruleName))!false ]
     [#return "block"]

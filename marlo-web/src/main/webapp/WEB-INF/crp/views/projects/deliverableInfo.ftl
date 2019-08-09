@@ -211,7 +211,7 @@
   [#-- Partner who is responsible --]
   <label for="">[@customForm.text name="project.deliverable.indicateResponsablePartner" readText=!editable/]:[@customForm.req required=editable /]</label>
   <div>
-    [@deliverableUserPartnership element=(deliverable.responsiblePartnership)!{} defaultType=1 /]
+    [@deliverableMacros.deliverablePartnerMacro element=(deliverable.responsiblePartnership)!{} name="deliverable.responsiblePartnership" defaultType=1 /]
   </div>
   <hr />
   [#-- Other contact person that will contribute --]
@@ -219,15 +219,15 @@
   <label for="" style="display:${displayOtherPerson}">[@customForm.text name="projectDeliverable.otherContactContributing" readText=!editable/]</label>
   <div>
     [#list (deliverable.otherPartnerships)![] as otherPartnership]
-      [@deliverableUserPartnership element=(otherPartnership)!{} defaultType=2 index=otherPartnership_index/]
+      [@deliverableMacros.deliverablePartnerMacro element=(otherPartnership)!{} name="deliverable.otherPartners" index=otherPartnership_index defaultType=2/]
     [#else]
-      [@deliverableUserPartnership element={} defaultType=2 index=0/]
+      <p class="simpleBox emptyText center"> [@s.text name="project.deliverable.partnership.emptyText" /] </p>
     [/#list]
   </div>
   
   [#if editable && canEdit]
-    <div id="addPartnerBlock" class="addPerson text-right">
-      <div class="button-blue  addPartner"><span class="glyphicon glyphicon-plus-sign"></span> [@s.text name="form.buttons.addPartner" /]</div>
+    <div class="text-right">
+      <div class="button-blue addDeliverablePartner"><span class="glyphicon glyphicon-plus-sign"></span> [@s.text name="form.buttons.addPartner" /]</div>
     </div>
   [/#if]
   
@@ -239,82 +239,25 @@
       </a>
     </div>
   [/#if]
-</div>
-
-[#macro deliverableUserPartnership element defaultType index=-1 ]
-  [#local typeID = (element.deliverablePartnerType.id)!defaultType ]
-  [#local isResponsable = (typeID == 1) ]
-  [#if isResponsable]
-    [#local customName = "deliverable.responsiblePartnership" ]
-  [#else]
-    [#local customName = "deliverable.otherPartners[${index}]" ]
-  [/#if]
-  <div class="simpleBox">
-    [#-- Deliverable Partner ID --]
-    <input type="hidden" name="${customName}.id" value="${(element.id)!}"/>
-    
-    [#-- Partner Institution --]
-    <div class="form-group"> 
-      [@customForm.select name="${customName}.institution.id" value="${(element.institution.id)!'-1'}"  i18nkey="" showTitle=false listName="partners" keyFieldName="institution.id"  displayFieldName="composedName" className="" editable=editable required=true /]
-    </div>
-    
-    [#-- Type --] 
-    <input type="hidden" name="${customName}.deliverablePartnerType.id" value="${typeID}"/>
-    
-    [#-- Users --]
-    <div class="row form-group">
-      [#local selectedUsersID = []]
-      [#if (element.id??)!false]
-        [#local selectedUsersID = (action.getPersonsIds(element))![]]
-      [/#if]
-      
-      [#list (action.getUserList(element.institution.id))![] as user]
-        [#local isUserChecked =  selectedUsersID?seq_contains(user.id) ]
-        [@deliverableUserPartner element=element user=user index=user_index name="${customName}.partnershipPersons" isUserChecked=isUserChecked isResponsable=isResponsable /]
-      [/#list]
-    </div>
-    
-  </div>
-[/#macro]
-
-[#macro deliverableUserPartner element user index name isUserChecked=false isResponsable=false]
-  <div class="deliverableUserPartner col-md-6">
-    [#if isResponsable]
-      [#local customName = "${name}[0]"]
-    [#else]
-      [#local customName = "${name}[${index}]"]
-    [/#if]
-    [#local customID = "${index}-${user.id}-${isResponsable?string('1', '2')}"]
-    [#-- Get Deliverable User --]
-    [#local deliverableUser = {} ]
-    [#list (element.partnershipPersons)![] as dpp]
-      [#if dpp.user.id == user.id]
-        [#local deliverableUser = dpp ][#break]
-      [/#if]
-    [/#list]
-    
-    [#if (!isResponsable) || (index == 0)]
-      <input type="hidden" name="${customName}.id" value="${(deliverableUser.id)!}" />
-    [/#if]
-    
-    [#-- Radio/Check --]
-    [#if isResponsable]
-      [@customForm.radioFlat id="${customID}" name="${customName}.user.id" label="${user.composedCompleteName}" disabled=false editable=editable value="${user.id}" checked=isUserChecked cssClass="" cssClassLabel="radio-label-yes" inline=false /]
-    [#else]
-      [@customForm.checkBoxFlat id="${customID}" name="${customName}.user.id" label="${user.composedCompleteName}" help="" paramText="" helpIcon=true disabled=false editable=editable value="${user.id}" checked=isUserChecked cssClass="" cssClassLabel="" /]
-    [/#if]
   
-    [#-- IFPRI Partner Division partnerDivision 
-    [#if (!isResponsable) || (index == 0)]
-      [#local showIfpriDivision = ((element.institution.acronym == "IFPRI")!false) && (isUserChecked || isResponsable) /]
-      [#if action.hasSpecificities('crp_division_fs')]
-        <div class="form-group row divisionBlock division-IFPRI"  style="display:${showIfpriDivision?string('block','none')}">
-          <div class="col-md-6">
-            [@customForm.select name="${customName}.partnerDivision.id" value="${(deliverableUser.partnerDivision.id)!-1}" i18nkey="projectCofunded.division" className="divisionField" listName="divisions" keyFieldName="id" displayFieldName="composedName" required=true editable=editable /]
-          </div>
+  
+  [#-- Partner users TEMPLATE --]
+  <div id="partnerUsers" style="display:none">
+    [#list partners as partner]
+      <div class="institution-${partner.institution.id}">
+        [#assign usersList = (action.getUserList(partner.institution.id))![]]
+        <div class="users-1">
+          [#list usersList as user] 
+            [@deliverableMacros.deliverableUserMacro element={} user=user index=user_index name="deliverable.responsiblePartnership.partnershipPersons" isUserChecked=false isResponsable=true /]
+          [/#list]
         </div>
-      [/#if]
-    [/#if]
-    --]
+        <div class="users-2">
+          [#list usersList as user] 
+            [@deliverableMacros.deliverableUserMacro element={} user=user index=user_index name="deliverable.otherPartners[-1].partnershipPersons" isUserChecked=false isResponsable=false /]
+          [/#list]
+        </div>
+      </div>
+    [/#list]
   </div>
-[/#macro]
+  
+</div>
