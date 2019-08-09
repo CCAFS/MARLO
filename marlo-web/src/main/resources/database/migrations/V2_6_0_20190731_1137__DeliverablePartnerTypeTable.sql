@@ -13,6 +13,6 @@ CREATE TABLE `deliverable_partner_type` (
 -- ----------------------------
 -- Records of deliverable_partner_type
 -- ----------------------------
-INSERT INTO `deliverable_partner_type` VALUES ('1', 'Responsible');
+INSERT INTO `deliverable_partner_type` VALUES ('1', 'Resp');
 INSERT INTO `deliverable_partner_type` VALUES ('2', 'Other');
 SET FOREIGN_KEY_CHECKS=1;
