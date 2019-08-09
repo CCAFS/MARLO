@@ -830,10 +830,26 @@ public class DeliverableAction extends BaseAction {
   }
 
 
+  /**
+   * @return an array of integers.
+   */
+  public long[] getPersonsIds(DeliverableUserPartnership deliverableUserPartnership) {
+
+    List<DeliverableUserPartnershipPerson> pPersons = deliverableUserPartnership.getPartnershipPersons();
+    if (pPersons != null) {
+      long[] ids = new long[pPersons.size()];
+      for (int i = 0; i < ids.length; i++) {
+        ids[i] = pPersons.get(i).getUser().getId();
+      }
+      return ids;
+    }
+    return null;
+  }
+
+
   public ArrayList<CrpProgram> getPrograms() {
     return programs;
   }
-
 
   public Project getProject() {
     return project;
@@ -843,19 +859,19 @@ public class DeliverableAction extends BaseAction {
     return projectID;
   }
 
+
   public List<ProjectOutcome> getProjectOutcome() {
     return projectOutcome;
   }
-
 
   public List<ProjectFocus> getProjectPrograms() {
     return projectPrograms;
   }
 
+
   public List<RepIndFillingType> getRepIndFillingTypes() {
     return repIndFillingTypes;
   }
-
 
   public List<RepIndGeographicScope> getRepIndGeographicScopes() {
     return repIndGeographicScopes;
@@ -865,23 +881,24 @@ public class DeliverableAction extends BaseAction {
     return repIndPatentStatuses;
   }
 
+
   public List<LocElement> getRepIndRegions() {
     return repIndRegions;
   }
-
 
   public List<RepIndTrainingTerm> getRepIndTrainingTerms() {
     return repIndTrainingTerms;
   }
 
+
   public List<RepIndTypeActivity> getRepIndTypeActivities() {
     return repIndTypeActivities;
   }
 
-
   public List<RepIndTypeParticipant> getRepIndTypeParticipants() {
     return repIndTypeParticipants;
   }
+
 
   public List<RepositoryChannel> getRepositoryChannels() {
     return repositoryChannels;
@@ -891,7 +908,6 @@ public class DeliverableAction extends BaseAction {
   public List<User> getResponsibleUsers() {
     return responsibleUsers;
   }
-
 
   public List<ProjectPartner> getSelectedPartners() {
 
@@ -913,6 +929,7 @@ public class DeliverableAction extends BaseAction {
     return deliverablePartnerPersons;
 
   }
+
 
   public List<Long> getSelectedPersons(long partnerID) {
 
@@ -952,7 +969,6 @@ public class DeliverableAction extends BaseAction {
     return transaction;
   }
 
-
   /**
    * HJ 08/01/2019
    * 
@@ -981,6 +997,7 @@ public class DeliverableAction extends BaseAction {
 
     return users;
   }
+
 
   @Override
   public boolean isPPA(Institution institution) {
@@ -1042,7 +1059,6 @@ public class DeliverableAction extends BaseAction {
     }
 
   }
-
 
   public void parnershipNewData() {
     if (deliverable.getOtherPartners() != null) {
@@ -1146,6 +1162,7 @@ public class DeliverableAction extends BaseAction {
     }
   }
 
+
   public void partnershipPreviousData(Deliverable deliverablePrew) {
     if (deliverablePrew.getDeliverablePartnerships() != null
       && deliverablePrew.getDeliverablePartnerships().size() > 0) {
@@ -1174,7 +1191,6 @@ public class DeliverableAction extends BaseAction {
       }
     }
   }
-
 
   @Override
   public void prepare() throws Exception {
@@ -1671,8 +1687,8 @@ public class DeliverableAction extends BaseAction {
               }
             }
 
-            deliverable.setResponsiblePartnership(new DeliverableUserPartnership());
-            deliverable.getResponsiblePartnership().setInstitution(actualPartner.getInstitution());
+            deliverable.setResponsiblePartnership(actualPartner);
+
 
             if (actualPartner.getDeliverableUserPartnershipPersons() != null) {
               List<DeliverableUserPartnershipPerson> partnershipPersons =
@@ -1681,21 +1697,9 @@ public class DeliverableAction extends BaseAction {
               deliverable.getResponsiblePartnership().setPartnershipPersons(partnershipPersons);
             }
 
-            // responsibleUsers = new ArrayList<>();
-            // List<ProjectPartner> partnersTmp = projectPartnerManager.findAll().stream()
-            // .filter(pp -> pp.isActive() && pp.getProject().getId().equals(projectID)
-            // && pp.getPhase().getId().equals(this.getActualPhase().getId())
-            // && pp.getInstitution().getId().equals(actualPartner.getInstitution().getId()))
-            // .collect(Collectors.toList());
-            //
-            // if (partnersTmp != null && !partnersTmp.isEmpty()) {
-            // ProjectPartner projectPartner = partnersTmp.get(0);
-            // List<ProjectPartnerPerson> partnerPersons = new ArrayList<>(projectPartner.getProjectPartnerPersons()
-            // .stream().filter(pp -> pp.isActive()).collect(Collectors.toList()));
-            // for (ProjectPartnerPerson projectPartnerPerson : partnerPersons) {
-            // responsibleUsers.add(projectPartnerPerson.getUser());
-            // }
-            // }
+            long[] testRes = this.getPersonsIds(deliverable.getResponsiblePartnership());
+
+
           }
         }
 
@@ -1715,12 +1719,16 @@ public class DeliverableAction extends BaseAction {
             Collections.sort(deList, (p1, p2) -> p1.getInstitution().getId().compareTo(p2.getInstitution().getId()));
             deliverable.setOtherPartnerships(new ArrayList<>());
             for (DeliverableUserPartnership deliverableUserPartnership : deList) {
+
               if (deliverableUserPartnership.getDeliverableUserPartnershipPersons() != null) {
                 List<DeliverableUserPartnershipPerson> partnershipPersons =
                   new ArrayList<>(deliverableUserPartnership.getDeliverableUserPartnershipPersons().stream()
                     .filter(d -> d.isActive()).collect(Collectors.toList()));
-                deliverable.getResponsiblePartnership().setPartnershipPersons(partnershipPersons);
+                deliverableUserPartnership.setPartnershipPersons(partnershipPersons);
               }
+
+              long[] testOthers = this.getPersonsIds(deliverableUserPartnership);
+
               deliverable.getOtherPartnerships().add(deliverableUserPartnership);
             }
 
@@ -2520,6 +2528,7 @@ public class DeliverableAction extends BaseAction {
 
   }
 
+
   /**
    * 08/01 save Deliverable Partnership Other
    * 
@@ -2662,7 +2671,6 @@ public class DeliverableAction extends BaseAction {
       }
     }
   }
-
 
   public void saveDeliverableRegions(Deliverable deliverable, Phase phase, Deliverable deliverableManagedState) {
 
@@ -2885,6 +2893,7 @@ public class DeliverableAction extends BaseAction {
       }
     }
   }
+
 
   private void saveIntellectualAsset() {
     if (deliverable.getIntellectualAsset() != null && deliverable.getIntellectualAsset().getHasPatentPvp() != null) {
@@ -3115,7 +3124,6 @@ public class DeliverableAction extends BaseAction {
     // No need to call save as hibernate will detect the changes and auto flush.
   }
 
-
   public void savePublicationMetadata() {
     if (deliverable.getPublication() != null) {
       deliverable.getPublication().setDeliverable(deliverable);
@@ -3268,6 +3276,7 @@ public class DeliverableAction extends BaseAction {
     return partnership;
   }
 
+
   /**
    * Save, update or delete partnership's responsible
    * 
@@ -3311,7 +3320,6 @@ public class DeliverableAction extends BaseAction {
       }
     }
   }
-
 
   public void saveUsers() {
     if (deliverable.getUsers() == null) {
@@ -3360,6 +3368,7 @@ public class DeliverableAction extends BaseAction {
     this.cgiarCrossCuttingMarkers = cgiarCrossCuttingMarkers;
   }
 
+
   public void setCountries(List<LocElement> countries) {
     this.countries = countries;
   }
@@ -3374,24 +3383,23 @@ public class DeliverableAction extends BaseAction {
     this.deliverable = deliverable;
   }
 
-
   public void setDeliverableID(long deliverableID) {
     this.deliverableID = deliverableID;
   }
+
 
   public void setDeliverableSubTypes(List<DeliverableType> deliverableSubTypes) {
     this.deliverableSubTypes = deliverableSubTypes;
   }
 
-
   public void setDeliverableTypeParent(List<DeliverableType> deliverableTypeParent) {
     this.deliverableTypeParent = deliverableTypeParent;
   }
 
+
   public void setDivisions(List<PartnerDivision> divisions) {
     this.divisions = divisions;
   }
-
 
   public void setFocusLevels(List<RepIndGenderYouthFocusLevel> focusLevels) {
     this.focusLevels = focusLevels;
@@ -3405,6 +3413,7 @@ public class DeliverableAction extends BaseAction {
     this.genderLevels = genderLevels;
   }
 
+
   public void setIndexTab(int indexTab) {
     this.indexTab = indexTab;
   }
@@ -3413,7 +3422,6 @@ public class DeliverableAction extends BaseAction {
   public void setKeyOutputs(List<CrpClusterKeyOutput> keyOutputs) {
     this.keyOutputs = keyOutputs;
   }
-
 
   public void setLoggedCrp(GlobalUnit loggedCrp) {
     this.loggedCrp = loggedCrp;
@@ -3443,14 +3451,15 @@ public class DeliverableAction extends BaseAction {
     this.projectID = projectID;
   }
 
+
   public void setProjectOutcome(List<ProjectOutcome> projectOutcome) {
     this.projectOutcome = projectOutcome;
   }
 
-
   public void setProjectPrograms(List<ProjectFocus> projectPrograms) {
     this.projectPrograms = projectPrograms;
   }
+
 
   public void setRepIndFillingTypes(List<RepIndFillingType> repIndFillingTypes) {
     this.repIndFillingTypes = repIndFillingTypes;
@@ -3461,10 +3470,10 @@ public class DeliverableAction extends BaseAction {
     this.repIndGeographicScopes = repIndGeographicScopes;
   }
 
-
   public void setRepIndPatentStatuses(List<RepIndPatentStatus> repIndPatentStatuses) {
     this.repIndPatentStatuses = repIndPatentStatuses;
   }
+
 
   public void setRepIndRegions(List<LocElement> repIndRegions) {
     this.repIndRegions = repIndRegions;
@@ -3475,24 +3484,23 @@ public class DeliverableAction extends BaseAction {
     this.repIndTrainingTerms = repIndTrainingTerms;
   }
 
-
   public void setRepIndTypeActivities(List<RepIndTypeActivity> repIndTypeActivities) {
     this.repIndTypeActivities = repIndTypeActivities;
   }
+
 
   public void setRepIndTypeParticipants(List<RepIndTypeParticipant> repIndTypeParticipants) {
     this.repIndTypeParticipants = repIndTypeParticipants;
   }
 
-
   public void setRepositoryChannels(List<RepositoryChannel> repositoryChannels) {
     this.repositoryChannels = repositoryChannels;
   }
 
+
   public void setResponsibleUsers(List<User> responsibleUsers) {
     this.responsibleUsers = responsibleUsers;
   }
-
 
   public void setStatus(Map<String, String> status) {
     this.status = status;
@@ -3501,6 +3509,7 @@ public class DeliverableAction extends BaseAction {
   public void setStatuses(Map<String, String> statuses) {
     this.statuses = statuses;
   }
+
 
   public void setTransaction(String transaction) {
     this.transaction = transaction;
@@ -3689,7 +3698,6 @@ public class DeliverableAction extends BaseAction {
       }
     }
   }
-
 
   private void updateProjectLp6ContributionDeliverable() {
 
