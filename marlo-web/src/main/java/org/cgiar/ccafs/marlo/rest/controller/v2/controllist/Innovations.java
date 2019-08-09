@@ -84,12 +84,9 @@ public class Innovations {
     produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<Long> createInnovation(
     @ApiParam(value = "${Innovation.innovation.POST.param.CGIAR}", required = true) @PathVariable String CGIAREntity,
-    @ApiParam(value = "${Innovation.innovation.POST.param.year}", required = true) @RequestParam Integer year,
     @ApiParam(value = "${Innovation.innovation.POST.param.innovation}",
       required = true) @Valid @RequestBody NewInnovationDTO newInnovationDTO) {
-    Long innovationId =
-      this.innovationItem.createInnovation(newInnovationDTO, CGIAREntity, year, this.getCurrentUser());
-    // ResponseEntity<InnovationDTO> response = this.innovationItem.findInnovationById(innovationId, CGIAREntity, year);
+    Long innovationId = this.innovationItem.createInnovation(newInnovationDTO, CGIAREntity, this.getCurrentUser());
     ResponseEntity<Long> response = new ResponseEntity<Long>(innovationId, HttpStatus.OK);
     return response;
 
@@ -104,10 +101,11 @@ public class Innovations {
   public ResponseEntity<InnovationDTO> findInnovationById(
     @ApiParam(value = "${Innovation.innovation.GET.id.param.CGIAR}", required = true) @PathVariable String CGIAREntity,
     @ApiParam(value = "${Innovation.innovation.GET.id.param.id}", required = true) @PathVariable Long id,
-    @ApiParam(value = "${Innovation.innovation.GET.id.param.year}", required = true) @RequestParam Integer year) {
+    @ApiParam(value = "${Innovation.innovation.GET.id.param.year}", required = true) @RequestParam Integer year,
+    @ApiParam(value = "${Innovation.innovation.GET.id.param.phase}", required = true) @RequestParam String phase) {
 
     ResponseEntity<InnovationDTO> response =
-      this.innovationItem.findInnovationById(id, CGIAREntity, year, this.getCurrentUser());
+      this.innovationItem.findInnovationById(id, CGIAREntity, year, phase, this.getCurrentUser());
     if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
       throw new NotFoundException("404", this.env.getProperty("Innovation.innovation.GET.id.404"));
     }
