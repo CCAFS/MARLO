@@ -217,7 +217,7 @@
   [#-- Other contact person that will contribute --]
   [#assign displayOtherPerson = (!deliverable.otherPartners?has_content && !editable)?string('none','block') /]
   <label for="" style="display:${displayOtherPerson}">[@customForm.text name="projectDeliverable.otherContactContributing" readText=!editable/]</label>
-  <div>
+  <div class="otherDeliverablePartners">
     [#list (deliverable.otherPartnerships)![] as otherPartnership]
       [@deliverableMacros.deliverablePartnerMacro element=(otherPartnership)!{} name="deliverable.otherPartners" index=otherPartnership_index defaultType=2/]
     [#else]
@@ -227,7 +227,7 @@
   
   [#if editable && canEdit]
     <div class="text-right">
-      <div class="button-blue addDeliverablePartner"><span class="glyphicon glyphicon-plus-sign"></span> [@s.text name="form.buttons.addPartner" /]</div>
+      <div class="button-blue addPartnerItem"><span class="glyphicon glyphicon-plus-sign"></span> [@s.text name="form.buttons.addPartner" /]</div>
     </div>
   [/#if]
   
@@ -239,25 +239,4 @@
       </a>
     </div>
   [/#if]
-  
-  
-  [#-- Partner users TEMPLATE --]
-  <div id="partnerUsers" style="display:none">
-    [#list partners as partner]
-      <div class="institution-${partner.institution.id}">
-        [#assign usersList = (action.getUserList(partner.institution.id))![]]
-        <div class="users-1">
-          [#list usersList as user] 
-            [@deliverableMacros.deliverableUserMacro element={} user=user index=user_index name="deliverable.responsiblePartnership.partnershipPersons" isUserChecked=false isResponsable=true /]
-          [/#list]
-        </div>
-        <div class="users-2">
-          [#list usersList as user] 
-            [@deliverableMacros.deliverableUserMacro element={} user=user index=user_index name="deliverable.otherPartners[-1].partnershipPersons" isUserChecked=false isResponsable=false /]
-          [/#list]
-        </div>
-      </div>
-    [/#list]
-  </div>
-  
 </div>

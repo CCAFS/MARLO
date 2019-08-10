@@ -655,19 +655,63 @@ var deliverablePartnersModule = (function() {
   }
 
   function attachEvents() {
+    // On change institution
     $('select.partnerInstitutionID').on('change', changePartnerInstitution);
+    // On remove a deliverable partner item
+    $('.removePartnerItem').on('click', removePartnerItem);
+    // On add a new deliverable partner Item
+    $('.addPartnerItem').on('click', addPartnerItem);
+  }
+
+  function addPartnerItem() {
+    console.log('addPartnerItem');
+    var $listBlock = $('.otherDeliverablePartners');
+    var $newItem = $('#deliverablePartnerItem-template').clone(true).removeAttr('id');
+    $listBlock.append($newItem);
+    $newItem.show();
+    updateIndexes();
+  }
+
+  function removePartnerItem() {
+    var $item = $(this).parents('.deliverablePartnerItem');
+    $item.hide(500, function() {
+      $item.remove();
+      updateIndexes();
+    });
   }
 
   function changePartnerInstitution() {
-    var $deliverablePartner = $(this).parents('.projectPartnerPerson');
+    var $deliverablePartner = $(this).parents('.deliverablePartnerItem');
     var $usersBlock = $deliverablePartner.find('.usersBlock');
     var typeID = $deliverablePartner.find('input.partnerTypeID').val();
-
+    var isResponsible = (typeID == 1);
+    // Clean users list
     $usersBlock.empty();
-
+    // Get new users list
     var $newUsersBlock = $('#partnerUsers .institution-' + this.value + ' .users-' + typeID).clone(true);
-
+    // Show them
     $usersBlock.append($newUsersBlock.html());
+    // Update indexes
+    if(!isResponsible) {
+      updateIndexes();
+    }
+  }
+
+  function updateIndexes() {
+    $('.otherDeliverablePartners .deliverablePartnerItem').each(function(i,item) {
+
+      $(item).setNameIndexes(1, i);
+
+      $(item).find('.deliverableUserItem').each(function(j,user) {
+        var personID = $(user).find('input[type="checkbox"]').val();
+        var customID = "jsGenerated-" + i + "-" + j + "-" + personID;
+        $(user).setNameIndexes(2, j);
+
+        $(user).find('input[type="checkbox"]').attr('id', customID);
+        $(user).find('label.checkbox-label').attr('for', customID);
+      });
+
+    });
   }
 
   return {
