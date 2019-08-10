@@ -235,13 +235,29 @@
 <div id="removeDeliverableFiles" style="display:none" title="Modal title"></div> 
 
 [#-- Deliverable Partner Template --]
-[@deliverableList.deliverablePartnerOther dp=[{}] dp_name="" template=true dp_index=0 editable=editable /]
+[@deliverableMacros.deliverablePartnerMacro element={} name="deliverable.otherPartners" index=-1 defaultType=2 isTemplate=true /]
 
-[#-- Deliverable person template --]
-[@deliverableList.deliverablePerson element={} projectPartner={} name="deliverable.otherPartners" index=-1 checked=false isTemplate=true/]
+[#-- Partner users TEMPLATE --]
+<div id="partnerUsers" style="display:none">
+  [#list partners as partner]
+    <div class="institution-${partner.institution.id}">
+      [#assign usersList = (action.getUserList(partner.institution.id))![]]
+      <div class="users-1">
+        [#list usersList as user] 
+          [@deliverableMacros.deliverableUserMacro element={} user=user index=user_index name="deliverable.responsiblePartnership.partnershipPersons" isUserChecked=false isResponsable=true /]
+        [/#list]
+      </div>
+      <div class="users-2">
+        [#list usersList as user] 
+          [@deliverableMacros.deliverableUserMacro element={} user=user index=user_index name="deliverable.otherPartners[-1].partnershipPersons" isUserChecked=false isResponsable=false /]
+        [/#list]
+      </div>
+    </div>
+  [/#list]
+</div>
 
-[#-- Deliverable person template --]
-[@deliverableList.deliverablePerson element={} projectPartner={} name="deliverable.responsiblePartner" index=-1 isResponsable=true checked=false isTemplate=true/]
+
+
 
 [#if reportingActive || upKeepActive]
   [@deliverableMacros.authorMacro element={} index=-1 name="deliverable.users"  isTemplate=true /]

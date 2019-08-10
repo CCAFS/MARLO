@@ -979,13 +979,15 @@
   </div>
 [/#macro]
 
-[#macro deliverablePartnerMacro element name index=-1 defaultType=2]
+[#macro deliverablePartnerMacro element name index=-1 defaultType=2 isTemplate=false]
   [#local typeID = (element.deliverablePartnerType.id)!defaultType ]
   [#local isResponsable = (typeID == 1) ]
   [#local customName = "${name}[${index}]" ]
   [#if isResponsable][#local customName = "${name}" ][/#if]
   
-  <div class="simpleBox projectPartnerPerson">
+  <div id="deliverablePartnerItem-${isTemplate?string('template', (element.id)! )}" class="simpleBox deliverablePartnerItem" style="display:${isTemplate?string('none', 'block')}">
+    [#-- Remove --]
+    [#if editable && !isResponsable]<div class="removePartnerItem removeElement removeLink sm" title="[@s.text name="project.deliverable.removePartnerContribution" /]"></div> [/#if]
     [#-- Deliverable Partner ID --]
     <input type="hidden" name="${customName}.id" value="${(element.id)!}"/>
     [#-- Type --] 
@@ -1018,7 +1020,7 @@
     [#if dpp.user.id == user.id][#local deliverableUser = dpp ][#break][/#if]
   [/#list]
   
-  <div class="col-md-6">
+  <div class="deliverableUserItem col-md-6">
     [#-- Deliverable User ID --]
     [#if (!isResponsable) || (index == 0)]
       <input type="hidden" name="${customName}.id" value="${(deliverableUser.id)!}" />
