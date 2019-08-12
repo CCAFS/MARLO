@@ -15,10 +15,6 @@ function init() {
 
   $('.helpMessage3').on("click", openDialog);
 
-  $(".addPartner").on("click", addPartnerEvent);
-
-  $(".removeElement").on("click", removePartnerEvent);
-
   // Event to validate the expected date
   $(".yearExpected").on("change", validateCurrentDate);
 
@@ -149,9 +145,6 @@ function init() {
   $('form select').select2({
     width: '100%'
   });
-
-  // Update Parters selected lists
-  updateProjectPartnersSelects();
 
   $(".fundingSource").select2({
       templateResult: formatState,
