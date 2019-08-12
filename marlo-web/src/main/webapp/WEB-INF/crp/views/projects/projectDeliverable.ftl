@@ -257,8 +257,6 @@
 </div>
 
 
-
-
 [#if reportingActive || upKeepActive]
   [@deliverableMacros.authorMacro element={} index=-1 name="deliverable.users"  isTemplate=true /]
   [@deliverableMacros.flagshipMacro element={} index=-1 name="deliverable.crps"  isTemplate=true /]

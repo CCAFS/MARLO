@@ -206,7 +206,7 @@
 
 
 [#-- Partners --] 
-<h3 class="headTitle">[NEW] [@s.text name="Partners contributing to this deliverable" /]</h3>  
+<h3 class="headTitle">[@s.text name="Partners contributing to this deliverable" /]</h3>  
 <div id="deliverable-partnerships-new" class="form-group simpleBox">
   [#-- Partner who is responsible --]
   <label for="">[@customForm.text name="project.deliverable.indicateResponsablePartner" readText=!editable/]:[@customForm.req required=editable /]</label>
