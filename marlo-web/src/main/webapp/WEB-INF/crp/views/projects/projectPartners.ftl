@@ -419,11 +419,11 @@
         <div class="fullPartBlock" listname="${name}.partnerPersons">
         [#if element.partnerPersons?has_content]
           [#list element.partnerPersons as partnerPerson]
-            [@contactPersonMacro element=partnerPerson name="${name}.partnerPersons[${partnerPerson_index}]" index=partnerPerson_index partnerIndex=index /]
+            [@contactPersonMacro element=partnerPerson name="${name}.partnerPersons[${partnerPerson_index}]" index=partnerPerson_index partnerIndex=index institutionID=(element.institution.id)! /]
           [/#list]
         [#else]
           [#if isPPA || defaultPerson]
-            [@contactPersonMacro element={} name="${name}.partnerPersons[0]" index=0 partnerIndex=index /]
+            [@contactPersonMacro element={} name="${name}.partnerPersons[0]" index=0 partnerIndex=index institutionID=(element.institution.id)!/]
           [#else]
             <p class="noContactMessage">[@s.text name="projectPartners.contactEmpty" /]</p>
           [/#if]
@@ -446,7 +446,7 @@
   </div>
 [/#macro]
 
-[#macro contactPersonMacro element name index=-1 partnerIndex=-1 isTemplate=false]
+[#macro contactPersonMacro element name index=-1 partnerIndex=-1 isTemplate=false institutionID=-1]
   <div id="contactPerson-${isTemplate?string('template',(element.id)!)}" class="contactPerson simpleBox ${(element.contactType)!}" style="display:${isTemplate?string('none','block')}" listname="partner-${partnerIndex}-person-${index}">
     [#-- Remove link for all partners --]
     [#if editable && action.canBeDeleted((element.id)!-1,(element.class.name)!)]
@@ -501,7 +501,7 @@
       </div>
       
       [#-- IFPRI Partner Division partnerDivision  --]
-      [#local showIfpriDivision = (element.projectPartner.institution.acronym == "IFPRI")!false /]
+      [#local showIfpriDivision = (institutionID == 89)!false /]
       [#if action.hasSpecificities('crp_division_fs')]
       <div class="form-group row divisionBlock division-IFPRI" style="display:${showIfpriDivision?string('block','none')}">
         <div class="col-md-8">
