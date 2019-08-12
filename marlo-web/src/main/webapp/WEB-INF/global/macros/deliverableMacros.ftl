@@ -1022,7 +1022,7 @@
   
   <div class="deliverableUserItem col-md-6">
     [#-- Deliverable User ID --]
-    [#if (!isResponsable) || (index == 0)]
+    [#if (!isResponsable) || (deliverableUser.id??)!false]
       <input type="hidden" name="${customName}.id" value="${(deliverableUser.id)!}" />
     [/#if]
     [#-- User ID Radio/Check --]

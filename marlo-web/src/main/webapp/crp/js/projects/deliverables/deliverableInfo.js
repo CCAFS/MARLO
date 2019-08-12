@@ -664,7 +664,6 @@ var deliverablePartnersModule = (function() {
   }
 
   function addPartnerItem() {
-    console.log('addPartnerItem');
     var $listBlock = $('.otherDeliverablePartners');
     var $newItem = $('#deliverablePartnerItem-template').clone(true).removeAttr('id');
     $listBlock.append($newItem);
@@ -698,20 +697,30 @@ var deliverablePartnersModule = (function() {
   }
 
   function updateIndexes() {
-    $('.otherDeliverablePartners .deliverablePartnerItem').each(function(i,item) {
+    $('.otherDeliverablePartners .deliverablePartnerItem').each(function(i,partner) {
 
-      $(item).setNameIndexes(1, i);
+      // Update deliverable partner index
+      $(partner).setNameIndexes(1, i);
 
-      $(item).find('.deliverableUserItem').each(function(j,user) {
+      $(partner).find('.deliverableUserItem').each(function(j,user) {
         var personID = $(user).find('input[type="checkbox"]').val();
         var customID = "jsGenerated-" + i + "-" + j + "-" + personID;
+        // Update user index
         $(user).setNameIndexes(2, j);
-
+        // Update user checks/radios labels and inputs ids
         $(user).find('input[type="checkbox"]').attr('id', customID);
         $(user).find('label.checkbox-label').attr('for', customID);
       });
 
     });
+
+    updateInstitutionSelects()
+  }
+
+  function updateInstitutionSelects() {
+    var $listBlock = $('.otherDeliverablePartners');
+    var $institutionsSelects = $listBlock.find('select.partnerInstitutionID');
+    console.log($institutionsSelects);
   }
 
   return {
