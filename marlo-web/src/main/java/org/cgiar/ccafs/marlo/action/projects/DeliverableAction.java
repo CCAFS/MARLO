@@ -1697,9 +1697,6 @@ public class DeliverableAction extends BaseAction {
               deliverable.getResponsiblePartnership().setPartnershipPersons(partnershipPersons);
             }
 
-            long[] testRes = this.getPersonsIds(deliverable.getResponsiblePartnership());
-
-
           }
         }
 
@@ -1726,9 +1723,6 @@ public class DeliverableAction extends BaseAction {
                     .filter(d -> d.isActive()).collect(Collectors.toList()));
                 deliverableUserPartnership.setPartnershipPersons(partnershipPersons);
               }
-
-              long[] testOthers = this.getPersonsIds(deliverableUserPartnership);
-
               deliverable.getOtherPartnerships().add(deliverableUserPartnership);
             }
 
@@ -2203,7 +2197,7 @@ public class DeliverableAction extends BaseAction {
 
 
       /*
-       * 08/01 Save the Deliverables Part Responsible
+       * 08/01 - HJ - Save the Deliverables Part Responsible
        */
       this.saveDeliverablePartnershipResponsible(deliverableDB);
       this.saveDeliverablePartnershipOther(deliverableDB);

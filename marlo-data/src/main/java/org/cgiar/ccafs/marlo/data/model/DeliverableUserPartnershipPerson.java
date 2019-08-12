@@ -113,7 +113,7 @@ public class DeliverableUserPartnershipPerson extends MarloAuditableEntity imple
 
   @Override
   public String toString() {
-    return "DeliverableUserPartnership [id=" + this.getId() + ", deliverableUserPartnership="
+    return "DeliverableUserPartnershipPerson [id=" + this.getId() + ", deliverableUserPartnership="
       + deliverableUserPartnership + ", partnerDivision=" + partnerDivision + "]";
   }
 
