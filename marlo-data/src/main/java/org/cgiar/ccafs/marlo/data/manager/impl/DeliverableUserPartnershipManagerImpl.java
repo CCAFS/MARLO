@@ -18,7 +18,6 @@ package org.cgiar.ccafs.marlo.data.manager.impl;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.dao.DeliverableUserPartnershipDAO;
 import org.cgiar.ccafs.marlo.data.dao.DeliverableUserPartnershipPersonDAO;
-import org.cgiar.ccafs.marlo.data.dao.PartnerDivisionDAO;
 import org.cgiar.ccafs.marlo.data.dao.PhaseDAO;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableUserPartnershipManager;
 import org.cgiar.ccafs.marlo.data.model.DeliverableUserPartnership;
@@ -42,19 +41,16 @@ public class DeliverableUserPartnershipManagerImpl implements DeliverableUserPar
   private PhaseDAO phaseDAO;
   private DeliverableUserPartnershipDAO deliverableUserPartnershipDAO;
   private DeliverableUserPartnershipPersonDAO deliverableUserPartnershipPersonDAO;
-  private PartnerDivisionDAO partnerDivisionDAO;
 
   // Managers
 
 
   @Inject
   public DeliverableUserPartnershipManagerImpl(DeliverableUserPartnershipDAO deliverableUserPartnershipDAO,
-    PhaseDAO phaseDAO, DeliverableUserPartnershipPersonDAO deliverableUserPartnershipPersonDAO,
-    PartnerDivisionDAO partnerDivisionDAO) {
+    PhaseDAO phaseDAO, DeliverableUserPartnershipPersonDAO deliverableUserPartnershipPersonDAO) {
     this.deliverableUserPartnershipDAO = deliverableUserPartnershipDAO;
     this.phaseDAO = phaseDAO;
     this.deliverableUserPartnershipPersonDAO = deliverableUserPartnershipPersonDAO;
-    this.partnerDivisionDAO = partnerDivisionDAO;
   }
 
   public void addPersons(DeliverableUserPartnership deliverableUserPartnership, Long newDeliverableUserPartnershipId) {
@@ -70,11 +66,7 @@ public class DeliverableUserPartnershipManagerImpl implements DeliverableUserPar
           deliverableUserPartnershipPersonSave
             .setDeliverableUserPartnership(this.getDeliverableUserPartnershipById(newDeliverableUserPartnershipId));
           deliverableUserPartnershipPersonSave.setUser(deliverableUserPartnershipPerson.getUser());
-          if (deliverableUserPartnershipPerson.getPartnerDivision() != null
-            && deliverableUserPartnershipPerson.getPartnerDivision().getId() != null) {
-            deliverableUserPartnershipPersonSave.setPartnerDivision(
-              this.partnerDivisionDAO.find(deliverableUserPartnershipPerson.getPartnerDivision().getId()));
-          }
+
           deliverableUserPartnershipPersonDAO.save(deliverableUserPartnershipPersonSave);
         }
       }
