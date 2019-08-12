@@ -27,8 +27,10 @@ import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
+import org.cgiar.ccafs.marlo.data.model.ProjectPolicy;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
@@ -120,6 +122,14 @@ public class ProjectsDeleteFieldsSummaryAction extends BaseSummariesAction imple
     masterReport.getParameterValues().put("i8nStudiesAmount", this.getText("summaries.oaprojects.studiesAmount"));
     masterReport.getParameterValues().put("i8nStudiesCrossCutting",
       this.getText("summaries.oaprojects.crossCuttingDimensions"));
+    masterReport.getParameterValues().put("i8nContactPerson", "Management Liaison Contact Person");
+    masterReport.getParameterValues().put("i8nGenderAnalysis", "Gender Analysis");
+    masterReport.getParameterValues().put("i8nNewPartnershipsPlanned", "New Partnerships Planned");
+    masterReport.getParameterValues().put("i8nGenderDimenssion", "GenderDimenssion");
+    masterReport.getParameterValues().put("i8nYouthComponent", "Youth Component");
+    masterReport.getParameterValues().put("i8nProjectComponentLesson", "Lesson");
+    masterReport.getParameterValues().put("i8nRepIndOrganization", "Implementing Organization Type");
+    masterReport.getParameterValues().put("i8nRepIndOrganizationType", "Contribution of CRP");
     return masterReport;
   }
 
@@ -252,9 +262,11 @@ public class ProjectsDeleteFieldsSummaryAction extends BaseSummariesAction imple
     TypedTableModel model = new TypedTableModel(
       new String[] {"projectId", "projectTitle", "projectSummary", "status", "managementLiaison", "flagships",
         "regions", "institutionLeader", "projectLeader", "activitiesOnGoing", "expectedDeliverables", "outcomes",
-        "expectedStudies", "phaseID", "crossCutting"},
+        "expectedStudies", "phaseID", "crossCutting", "contactPerson", "genderAnalysis", "newPartnershipsPlanned",
+        "projectComponentLesson", "genderDimenssion", "youthComponent", "repIndOrganization", "repIndOrganizationType"},
       new Class[] {Long.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, Integer.class, Integer.class, Integer.class, Integer.class, Long.class,
+        String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class},
       0);
     // Status of projects
@@ -269,7 +281,13 @@ public class ProjectsDeleteFieldsSummaryAction extends BaseSummariesAction imple
       String crossCutting = "";
       String projectSummary = "";
       String managementLiaisonContactPerson = "";
-
+      String genderAnalysis = "";
+      String newPartnershipsPlanned = "";
+      String projectComponentLesson = "";
+      String genderDimenssions = "";
+      String youthComponent = "";
+      String repIndOrganization = "";
+      String repIndOrganizationType = "";
 
       if (project.getProjectInfo().getSummary() != null && !project.getProjectInfo().getSummary().isEmpty()) {
         projectSummary = project.getProjectInfo().getSummary();
@@ -460,9 +478,79 @@ public class ProjectsDeleteFieldsSummaryAction extends BaseSummariesAction imple
         }
       }
 
+      if (project.getProjectInfo().getGenderAnalysis() != null) {
+        genderAnalysis = project.getProjectInfo().getGenderAnalysis();
+      }
+
+      if (project.getProjectInfo().getNewPartnershipsPlanned() != null) {
+        genderAnalysis = project.getProjectInfo().getNewPartnershipsPlanned();
+      }
+
+      projectComponentLesson = project.getProjectComponentLessons().stream()
+        .filter(c -> c.isActive() && c.getComponentName().equals("partners")
+          && c.getCycle().equals(this.getSelectedCycle()) && c.getYear() == this.getSelectedYear()
+          && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase()))
+        .collect(Collectors.toList()).get(0).getLessons();
+
+
+      if (project.getOutcomes() != null) {
+
+        genderDimenssions = project.getProjectOutcomes().stream()
+          .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase()))
+          .collect(Collectors.toList()).get(0).getGenderDimenssion();
+
+        youthComponent = project.getProjectOutcomes().stream()
+          .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase()))
+          .collect(Collectors.toList()).get(0).getYouthComponent();
+      }
+
+
+      ProjectPolicy projectPolicy;
+      /*
+       * projectPolicy = project.getProjectPolicies().stream()
+       * .filter(pl -> pl.getProject() != null && pl.getProject().getId().equals(projectID)
+       * && pl.getProjectPolicyInfo(this.getSelectedPhase()) != null && pl
+       * .getProjectPolicyInfo((this.getSelectedPhase())).getPhase().getId().equals(this.getSelectedPhase().getId()))
+       * .collect(Collectors.toList());
+       */
+      /*
+       * if (projectPolicy.getProjectPolicyInfo() != null
+       * && projectPolicy.getProjectPolicyInfo().getRepIndOrganizationType() != null
+       * && projectPolicy.getProjectPolicyInfo().getRepIndOrganizationType().getName() != null) {
+       * organizationType = projectPolicy.getProjectPolicyInfo().getRepIndOrganizationType().getName();
+       * }
+       */
+      if (project.getPolicies() != null) {
+        repIndOrganization = (project.getPolicies().stream()
+          .filter(p -> p.isActive() && p.getProject().getId().equals(project.getId())
+            && p.getProjectPolicyInfo() != null && p.getProjectPolicyInfo().getRepIndOrganizationType() != null
+            && p.getProjectPolicyInfo().getRepIndOrganizationType().getName() != null
+            && p.getProjectPolicyInfo().getPhase() != null && this.getActualPhase() != null
+            && p.getProjectPolicyInfo().getPhase() == this.getActualPhase())
+          .collect(Collectors.toList()).get(0).getProjectPolicyInfo().getRepIndOrganizationType().getName());
+      }
+
+      ProjectInnovation projectInnovation = null;
+      if (project.getInnovations() != null) {
+        projectInnovation =
+          project.getInnovations().stream()
+            .filter(i -> i.isActive() && i.getProjectInnovationInfo() != null
+              && i.getProjectInnovationInfo().getPhase() != null
+              && i.getProjectInnovationInfo().getPhase() == this.getActualPhase())
+            .collect(Collectors.toList()).get(0);
+        if (projectInnovation != null) {
+          repIndOrganizationType = projectInnovation.getProjectInnovationOrganizations().stream()
+            .filter(o -> o.isActive() && o.getPhase() != null && o.getPhase().equals(this.getSelectedPhase())
+              && o.getRepIndOrganizationType() != null && o.getRepIndOrganizationType().getName() != null)
+            .collect(Collectors.toList()).get(0).getRepIndOrganizationType().getName();
+        }
+      }
+
       model.addRow(new Object[] {projectId, projectTitle, projectSummary, status, managementLiaison, flagships, regions,
         institutionLeader, projectLeaderName, activitiesOnGoing, expectedDeliverables, outcomes, expectedStudies,
-        this.getSelectedPhase().getId(), crossCutting});
+        this.getSelectedPhase().getId(), crossCutting, managementLiaisonContactPerson, genderAnalysis,
+        newPartnershipsPlanned, projectComponentLesson, genderDimenssions, youthComponent, repIndOrganization,
+        repIndOrganizationType});
     }
     return model;
   }
