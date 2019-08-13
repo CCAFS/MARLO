@@ -27,10 +27,10 @@ import org.cgiar.ccafs.marlo.data.manager.DeliverableLocationManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableMetadataElementManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableParticipantManager;
-import org.cgiar.ccafs.marlo.data.manager.DeliverablePartnershipManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverablePublicationMetadataManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableQualityCheckManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableUserManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableUserPartnershipManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
@@ -42,11 +42,10 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableIntellectualAsset;
 import org.cgiar.ccafs.marlo.data.model.DeliverableLocation;
 import org.cgiar.ccafs.marlo.data.model.DeliverableMetadataElement;
 import org.cgiar.ccafs.marlo.data.model.DeliverableParticipant;
-import org.cgiar.ccafs.marlo.data.model.DeliverablePartnership;
-import org.cgiar.ccafs.marlo.data.model.DeliverablePartnershipTypeEnum;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePublicationMetadata;
 import org.cgiar.ccafs.marlo.data.model.DeliverableQualityCheck;
 import org.cgiar.ccafs.marlo.data.model.DeliverableUser;
+import org.cgiar.ccafs.marlo.data.model.DeliverableUserPartnership;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -79,7 +78,7 @@ public class DeliverablesReplicationAction extends BaseAction {
   private DeliverableManager deliverableManager;
   private PhaseManager phaseManager;
   private DeliverableFundingSourceManager deliverableFundingSourceManager;
-  private DeliverablePartnershipManager deliverablePartnershipManager;
+  private DeliverableUserPartnershipManager deliverableUserPartnershipManager;
   private DeliverableQualityCheckManager deliverableQualityCheckManager;
   private DeliverableDisseminationManager deliverableDisseminationManager;
   private DeliverableMetadataElementManager deliverableMetadataElementManager;
@@ -103,7 +102,7 @@ public class DeliverablesReplicationAction extends BaseAction {
   @Inject
   public DeliverablesReplicationAction(APConfig config, PhaseManager phaseManager, GlobalUnitManager globalUnitManager,
     DeliverableFundingSourceManager deliverableFundingSourceManager, DeliverableManager deliverableManager,
-    DeliverablePartnershipManager deliverablePartnershipManager,
+    DeliverableUserPartnershipManager deliverableUserPartnershipManager,
     DeliverableQualityCheckManager deliverableQualityCheckManager,
     DeliverableDisseminationManager deliverableDisseminationManager,
     DeliverableMetadataElementManager deliverableMetadataElementManager, DeliverableCrpManager deliverableCrpManager,
@@ -118,7 +117,7 @@ public class DeliverablesReplicationAction extends BaseAction {
     this.deliverableFundingSourceManager = deliverableFundingSourceManager;
     this.globalUnitManager = globalUnitManager;
     this.deliverableManager = deliverableManager;
-    this.deliverablePartnershipManager = deliverablePartnershipManager;
+    this.deliverableUserPartnershipManager = deliverableUserPartnershipManager;
     this.deliverableQualityCheckManager = deliverableQualityCheckManager;
     this.deliverableDisseminationManager = deliverableDisseminationManager;
     this.deliverableMetadataElementManager = deliverableMetadataElementManager;
@@ -151,13 +150,11 @@ public class DeliverablesReplicationAction extends BaseAction {
     return crps;
   }
 
-  private DeliverablePartnership getDeliverablePartnershipResponsibleDB(Deliverable deliverableDB) {
-    DeliverablePartnership partnershipResponsible = null;
-    List<DeliverablePartnership> deliverablePartnerships = deliverableDB.getDeliverablePartnerships().stream()
+  private DeliverableUserPartnership getDeliverablePartnershipResponsibleDB(Deliverable deliverableDB) {
+    DeliverableUserPartnership partnershipResponsible = null;
+    List<DeliverableUserPartnership> deliverablePartnerships = deliverableDB.getDeliverableUserPartnerships().stream()
       .filter(dp -> dp.isActive() && dp.getPhase() != null && dp.getPhase().equals(phase)
-        && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.RESPONSIBLE.getValue())
-        && dp.getProjectPartner() != null
-        && (dp.getProjectPartnerPerson() == null || dp.getProjectPartnerPerson().isActive()))
+        && dp.getDeliverablePartnerType().getId().equals(APConstants.DELIVERABLE_PARTNERSHIP_TYPE_RESPONSIBLE))
       .collect(Collectors.toList());
     if (deliverablePartnerships != null && deliverablePartnerships.size() > 0) {
       try {
@@ -237,18 +234,21 @@ public class DeliverablesReplicationAction extends BaseAction {
 
             // Save DelivetablePartnerships
             // Responsible
-            DeliverablePartnership partnershipResponsibleDB = this.getDeliverablePartnershipResponsibleDB(deliverable);
+            DeliverableUserPartnership partnershipResponsibleDB =
+              this.getDeliverablePartnershipResponsibleDB(deliverable);
             if (partnershipResponsibleDB != null) {
-              deliverablePartnershipManager.saveDeliverablePartnership(partnershipResponsibleDB);
+              deliverableUserPartnershipManager.saveDeliverableUserPartnership(partnershipResponsibleDB);
             }
             // Others
-            List<DeliverablePartnership> deliverablePartnershipOthers =
-              deliverablePartnershipManager.findByDeliverablePhaseAndType(deliverable.getId(), phase.getId(),
-                DeliverablePartnershipTypeEnum.OTHER.getValue());
+            List<DeliverableUserPartnership> deliverablePartnershipOthers =
+              deliverable.getDeliverableUserPartnerships().stream()
+                .filter(dp -> dp.isActive() && dp.getPhase().getId().equals(this.getActualPhase().getId())
+                  && dp.getDeliverablePartnerType().getId().equals(APConstants.DELIVERABLE_PARTNERSHIP_TYPE_OTHER))
+                .collect(Collectors.toList());
             if (deliverablePartnershipOthers != null && deliverablePartnershipOthers.size() > 0) {
-              for (DeliverablePartnership deliverablePartnershipOther : deliverablePartnershipOthers) {
-                if (deliverablePartnershipOther.getProjectPartner() != null) {
-                  deliverablePartnershipManager.saveDeliverablePartnership(deliverablePartnershipOther);
+              for (DeliverableUserPartnership deliverablePartnershipOther : deliverablePartnershipOthers) {
+                if (deliverablePartnershipOther.getDeliverableUserPartnershipPersons() != null) {
+                  deliverableUserPartnershipManager.saveDeliverableUserPartnership(deliverablePartnershipOther);
                 }
               }
             }

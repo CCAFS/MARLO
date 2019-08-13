@@ -64,7 +64,6 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
   private Set<ProjectLocation> projectLocations = new HashSet<ProjectLocation>(0);
   private Set<DeliverableInfo> deliverableInfos = new HashSet<DeliverableInfo>(0);
   private Set<DeliverableFundingSource> deliverableFundingSources = new HashSet<DeliverableFundingSource>(0);
-  private Set<DeliverablePartnership> deliverablePartnerships = new HashSet<DeliverablePartnership>(0);
   private Set<ProjectBudget> projectBudgets = new HashSet<ProjectBudget>(0);
   private Set<FundingSourceInfo> fundingSourceInfo = new HashSet<FundingSourceInfo>(0);
   private Set<FundingSourceInstitution> fundingSourceInstitutions = new HashSet<FundingSourceInstitution>(0);
@@ -226,11 +225,6 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
 
   public Set<DeliverableLocation> getDeliverableLocations() {
     return deliverableLocations;
-  }
-
-
-  public Set<DeliverablePartnership> getDeliverablePartnerships() {
-    return deliverablePartnerships;
   }
 
 
@@ -603,9 +597,6 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
     this.deliverableLocations = deliverableLocations;
   }
 
-  public void setDeliverablePartnerships(Set<DeliverablePartnership> deliverablePartnerships) {
-    this.deliverablePartnerships = deliverablePartnerships;
-  }
 
   public void setDeliverableUserPartnerships(Set<DeliverableUserPartnership> deliverableUserPartnerships) {
     this.deliverableUserPartnerships = deliverableUserPartnerships;

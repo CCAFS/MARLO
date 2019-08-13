@@ -1108,7 +1108,7 @@ public class PublicationAction extends BaseAction {
         deliverable.getDeliverableInfo(deliverable.getPhase()).setCrpClusterKeyOutput(null);
         deliverable.getDeliverableInfo(deliverable.getPhase()).setRegion(null);
         deliverable.getDeliverableInfo(deliverable.getPhase()).setGeographicScope(null);
-        deliverable.setResponsiblePartner(null);
+        deliverable.setResponsiblePartnership(null);
 
         if (deliverable.getCrps() != null) {
           deliverable.getCrps().clear();

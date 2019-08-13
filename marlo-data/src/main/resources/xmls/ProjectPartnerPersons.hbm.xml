@@ -33,14 +33,7 @@
         </property>
         <property name="modificationJustification" type="string">
             <column name="modification_justification" sql-type="TEXT"  />
-        </property>
-        <set name="deliverablePartnerships" table="deliverable_partnerships" inverse="true" lazy="true" fetch="select">
-            <key>
-                <column name="partner_person_id" not-null="true" />
-            </key>
-            <one-to-many class="org.cgiar.ccafs.marlo.data.model.DeliverablePartnership" />
-        </set>
-        
+        </property>        
          <set name="activities" order-by="id" table="activities" inverse="true" lazy="true" fetch="select">
             <key>
                 <column name="leader_id" not-null="true" />

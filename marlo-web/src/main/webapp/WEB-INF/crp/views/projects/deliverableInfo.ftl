@@ -215,11 +215,11 @@
   </div>
   <hr />
   [#-- Other contact person that will contribute --]
-  [#assign displayOtherPerson = (!deliverable.otherPartners?has_content && !editable)?string('none','block') /]
+  [#assign displayOtherPerson = (!deliverable.otherPartnerships?has_content && !editable)?string('none','block') /]
   <label for="" style="display:${displayOtherPerson}">[@customForm.text name="projectDeliverable.otherContactContributing" readText=!editable/]</label>
   <div class="otherDeliverablePartners">
     [#list (deliverable.otherPartnerships)![] as otherPartnership]
-      [@deliverableMacros.deliverablePartnerMacro element=(otherPartnership)!{} name="deliverable.otherPartners" index=otherPartnership_index defaultType=2/]
+      [@deliverableMacros.deliverablePartnerMacro element=(otherPartnership)!{} name="deliverable.otherPartnerships" index=otherPartnership_index defaultType=2/]
     [#else]
       <p class="simpleBox emptyText center"> [@s.text name="project.deliverable.partnership.emptyText" /] </p>
     [/#list]

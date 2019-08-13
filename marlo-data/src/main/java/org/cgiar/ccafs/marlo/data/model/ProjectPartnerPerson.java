@@ -26,7 +26,6 @@ public class ProjectPartnerPerson extends MarloAuditableEntity implements java.i
   @Expose
   private String contactType;
 
-  private Set<DeliverablePartnership> deliverablePartnerships = new HashSet<DeliverablePartnership>(0);
   private Set<Activity> activities = new HashSet<Activity>(0);
 
   public ProjectPartnerPerson() {
@@ -77,11 +76,6 @@ public class ProjectPartnerPerson extends MarloAuditableEntity implements java.i
     return this.contactType;
   }
 
-  public Set<DeliverablePartnership> getDeliverablePartnerships() {
-    return deliverablePartnerships;
-  }
-
-
   @Override
   public String getLogDeatil() {
     StringBuilder sb = new StringBuilder();
@@ -119,10 +113,6 @@ public class ProjectPartnerPerson extends MarloAuditableEntity implements java.i
 
   public void setContactType(String contactType) {
     this.contactType = contactType;
-  }
-
-  public void setDeliverablePartnerships(Set<DeliverablePartnership> deliverablePartnerships) {
-    this.deliverablePartnerships = deliverablePartnerships;
   }
 
   public void setProjectPartner(ProjectPartner projectPartner) {

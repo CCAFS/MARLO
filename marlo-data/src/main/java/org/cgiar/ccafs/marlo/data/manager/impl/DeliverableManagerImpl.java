@@ -147,6 +147,16 @@ public class DeliverableManagerImpl implements DeliverableManager {
     return deliverableDAO.getDeliverablesByPhase(phase);
   }
 
+  @Override
+  public List<Deliverable> getDeliverablesLeadByInstitution(long institutionId, long phaseId) {
+    return deliverableDAO.getDeliverablesLeadByInstitution(institutionId, phaseId);
+  }
+
+  @Override
+  public List<Deliverable> getDeliverablesLeadByUser(long userId, long phaseId) {
+    return deliverableDAO.getDeliverablesLeadByUser(userId, phaseId);
+  }
+
   /**
    * Method to fill the list of deliverables selected by flagships
    * 

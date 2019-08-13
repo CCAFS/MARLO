@@ -21,7 +21,7 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpPpaPartnerManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpUserManager;
-import org.cgiar.ccafs.marlo.data.manager.DeliverablePartnershipManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionLocationManager;
@@ -52,7 +52,6 @@ import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramLeader;
 import org.cgiar.ccafs.marlo.data.model.CrpUser;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
-import org.cgiar.ccafs.marlo.data.model.DeliverablePartnership;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnitProject;
 import org.cgiar.ccafs.marlo.data.model.Institution;
@@ -144,7 +143,6 @@ public class ProjectPartnerAction extends BaseAction {
   // Managers
   private final ProjectPartnerManager projectPartnerManager;
   private final ProjectPartnerPersonManager projectPartnerPersonManager;
-  private DeliverablePartnershipManager deliverablePartnershipManager;
   private final ProjectPartnerContributionManager projectPartnerContributionManager;
   private final ProjectPartnerPartnershipManager projectPartnerPartnershipManager;
   private final ProjectPartnerPartnershipLocationManager projectPartnerPartnershipLocationManager;
@@ -167,6 +165,7 @@ public class ProjectPartnerAction extends BaseAction {
   private final RepIndRegionManager repIndRegionManager;
   private final ProjectPartnerPartnershipResearchPhaseManager projectPartnerPartnershipResearchPhaseManager;
   private final AuditLogManager auditLogManager;
+  private final DeliverableManager deliverableManager;
 
 
   // Variables
@@ -201,20 +200,19 @@ public class ProjectPartnerAction extends BaseAction {
     ProjectPartnerPersonManager projectPartnerPersonManager, AuditLogManager auditLogManager,
     ProjectPartnersValidator projectPartnersValidator, HistoryComparator historyComparator,
     ProjectComponentLessonManager projectComponentLessonManager, CrpUserManager crpUserManager,
-    ProjectPartnerLocationManager projectPartnerLocationManager,
-    DeliverablePartnershipManager deliverablePartnershipManager, InstitutionLocationManager institutionLocationManager,
+    ProjectPartnerLocationManager projectPartnerLocationManager, InstitutionLocationManager institutionLocationManager,
     ProjectInfoManager projectInfoManager, GlobalUnitProjectManager globalUnitProjectManager,
     RepIndPhaseResearchPartnershipManager repIndPhaseResearchPartnershipManager,
     RepIndGeographicScopeManager repIndGeographicScopeManager, RepIndRegionManager repIndRegionManager,
     ProjectPartnerPartnershipManager projectPartnerPartnershipManager,
     ProjectPartnerPartnershipLocationManager projectPartnerPartnershipLocationManager,
-    ProjectPartnerPartnershipResearchPhaseManager projectPartnerPartnershipResearchPhaseManager) {
+    ProjectPartnerPartnershipResearchPhaseManager projectPartnerPartnershipResearchPhaseManager,
+    DeliverableManager deliverableManager) {
     super(config);
     this.projectPartnersValidator = projectPartnersValidator;
     this.auditLogManager = auditLogManager;
     this.projectPartnerManager = projectPartnerManager;
     this.institutionManager = institutionManager;
-    this.deliverablePartnershipManager = deliverablePartnershipManager;
     this.institutionTypeManager = institutionTypeManager;
     this.projectPartnerLocationManager = projectPartnerLocationManager;
     this.locationManager = locationManager;
@@ -238,6 +236,7 @@ public class ProjectPartnerAction extends BaseAction {
     this.projectPartnerPartnershipManager = projectPartnerPartnershipManager;
     this.projectPartnerPartnershipLocationManager = projectPartnerPartnershipLocationManager;
     this.projectPartnerPartnershipResearchPhaseManager = projectPartnerPartnershipResearchPhaseManager;
+    this.deliverableManager = deliverableManager;
   }
 
   public void addCrpUser(User user) {
@@ -367,31 +366,32 @@ public class ProjectPartnerAction extends BaseAction {
     if (projectPartnerID != null && projectPartnerID != 0) {
       ProjectPartner projectPartner = projectPartnerManager.getProjectPartnerById(projectPartnerID);
       if (projectPartner != null) {
-        List<DeliverablePartnership> deliverablePartnerships = projectPartner.getDeliverablePartnerships().stream()
-          .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase()))
-          .collect(Collectors.toList());
-        for (DeliverablePartnership deliverablePartnership : deliverablePartnerships) {
-          Deliverable deliverable = deliverablePartnership.getDeliverable();
-          deliverable.setDeliverableInfo(deliverable.getDeliverableInfo(this.getActualPhase()));
-          if (!deliverablesLeads.contains(deliverable)) {
-            if (deliverable.getDeliverableInfo() != null
-              && deliverable.getDeliverableInfo().getYear() >= this.getActualPhase().getYear()) {
-              if (deliverable.isActive()) {
-                deliverablesLeads.add(deliverable);
-              }
-            } else {
-              if (deliverable.getDeliverableInfo() != null && deliverable.getDeliverableInfo().getStatus()
-                .intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())) {
-                if (deliverable.getDeliverableInfo().getNewExpectedYear() != null
-                  && deliverable.getDeliverableInfo().getNewExpectedYear() >= this.getActualPhase().getYear()) {
+        List<Deliverable> deliverables = deliverableManager
+          .getDeliverablesLeadByInstitution(projectPartner.getInstitution().getId(), this.getActualPhase().getId());
+        for (Deliverable deliverable : deliverables) {
+          if (deliverable.getProject() != null && deliverable.getProject().getId().equals(projectID)) {
+            deliverable.setDeliverableInfo(deliverable.getDeliverableInfo(this.getActualPhase()));
+            if (!deliverablesLeads.contains(deliverable)) {
+              if (deliverable.getDeliverableInfo() != null
+                && deliverable.getDeliverableInfo().getYear() >= this.getActualPhase().getYear()) {
+                if (deliverable.isActive()) {
+                  deliverablesLeads.add(deliverable);
+                }
+              } else {
+                if (deliverable.getDeliverableInfo() != null && deliverable.getDeliverableInfo().getStatus()
+                  .intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())) {
+                  if (deliverable.getDeliverableInfo().getNewExpectedYear() != null
+                    && deliverable.getDeliverableInfo().getNewExpectedYear() >= this.getActualPhase().getYear()) {
 
-                  if (deliverable.isActive()) {
-                    deliverablesLeads.add(deliverable);
+                    if (deliverable.isActive()) {
+                      deliverablesLeads.add(deliverable);
+                    }
                   }
                 }
               }
             }
           }
+
         }
       }
 
@@ -401,39 +401,38 @@ public class ProjectPartnerAction extends BaseAction {
 
   public List<Deliverable> getDeliverablesLedByUser(long userID) {
     List<Deliverable> deliverablesLeads = new ArrayList<>();
-    ProjectPartnerPerson partnerPerson = projectPartnerPersonManager.getProjectPartnerPersonById(userID);
-    if (partnerPerson != null) {
-      List<DeliverablePartnership> deliverablePartnerships = partnerPerson.getDeliverablePartnerships().stream()
-        .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase()))
-        .collect(Collectors.toList());
-      for (DeliverablePartnership deliverablePartnership : deliverablePartnerships) {
-        Deliverable deliverable = deliverablePartnership.getDeliverable();
-        deliverable.setDeliverableInfo(deliverable.getDeliverableInfo(this.getActualPhase()));
-        if (deliverable.getDeliverableInfo() != null && deliverable.getDeliverableInfo().getStatus() != null
-          && (deliverable.getDeliverableInfo().getStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
-            || deliverable.getDeliverableInfo().getStatus() == Integer
-              .parseInt(ProjectStatusEnum.Ongoing.getStatusId()))) {
-          if (!deliverablesLeads.contains(deliverable)) {
-            if (deliverable.getDeliverableInfo().getYear() >= this.getActualPhase().getYear()) {
+    List<Deliverable> deliverables =
+      deliverableManager.getDeliverablesLeadByUser(userID, this.getActualPhase().getId());
+    if (deliverables != null) {
+      for (Deliverable deliverable : deliverables) {
+        if (deliverable.getProject() != null && deliverable.getProject().getId().equals(projectID)) {
+          deliverable.setDeliverableInfo(deliverable.getDeliverableInfo(this.getActualPhase()));
+          if (deliverable.getDeliverableInfo() != null && deliverable.getDeliverableInfo().getStatus() != null
+            && (deliverable.getDeliverableInfo().getStatus() == Integer
+              .parseInt(ProjectStatusEnum.Extended.getStatusId())
+              || deliverable.getDeliverableInfo().getStatus() == Integer
+                .parseInt(ProjectStatusEnum.Ongoing.getStatusId()))) {
+            if (!deliverablesLeads.contains(deliverable)) {
+              if (deliverable.getDeliverableInfo().getYear() >= this.getActualPhase().getYear()) {
 
-              if (deliverable.isActive()) {
-                deliverablesLeads.add(deliverable);
-              }
+                if (deliverable.isActive()) {
+                  deliverablesLeads.add(deliverable);
+                }
 
-            } else {
-              if (deliverable.getDeliverableInfo().getStatus().intValue() == Integer
-                .parseInt(ProjectStatusEnum.Extended.getStatusId())) {
-                if (deliverable.getDeliverableInfo().getNewExpectedYear() != null
-                  && deliverable.getDeliverableInfo().getNewExpectedYear() >= this.getActualPhase().getYear()) {
-                  if (deliverable.isActive()) {
-                    deliverablesLeads.add(deliverable);
+              } else {
+                if (deliverable.getDeliverableInfo().getStatus().intValue() == Integer
+                  .parseInt(ProjectStatusEnum.Extended.getStatusId())) {
+                  if (deliverable.getDeliverableInfo().getNewExpectedYear() != null
+                    && deliverable.getDeliverableInfo().getNewExpectedYear() >= this.getActualPhase().getYear()) {
+                    if (deliverable.isActive()) {
+                      deliverablesLeads.add(deliverable);
+                    }
                   }
                 }
               }
             }
           }
         }
-
 
       }
     }
@@ -1685,8 +1684,6 @@ public class ProjectPartnerAction extends BaseAction {
 
           }
         }
-
-
       }
     }
   }

@@ -78,7 +78,6 @@
     <mapping resource="xmls/Deliverables.hbm.xml" />
     <mapping resource="xmls/DeliverableTypes.hbm.xml" />
     <mapping resource="xmls/ProjectNextusers.hbm.xml" />
-    <mapping resource="xmls/DeliverablePartnerships.hbm.xml" />
     <mapping resource="xmls/Activities.hbm.xml" />
     <mapping resource="xmls/ProjectCrpContributions.hbm.xml" />
     <mapping resource="xmls/ProjectBudgets.hbm.xml" />

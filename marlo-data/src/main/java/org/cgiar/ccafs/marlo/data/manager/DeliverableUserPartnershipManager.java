@@ -15,6 +15,7 @@
 package org.cgiar.ccafs.marlo.data.manager;
 
 import org.cgiar.ccafs.marlo.data.model.DeliverableUserPartnership;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 
 import java.util.List;
 
@@ -24,6 +25,10 @@ import java.util.List;
  */
 
 public interface DeliverableUserPartnershipManager {
+
+
+  public DeliverableUserPartnership copyDeliverableUserPartnership(DeliverableUserPartnership deliverablePartnership,
+    Phase phase);
 
 
   /**
@@ -51,7 +56,6 @@ public interface DeliverableUserPartnershipManager {
    */
   public List<DeliverableUserPartnership> findAll();
 
-
   /**
    * This method gets a deliverableUserPartnership object by a given deliverableUserPartnership identifier.
    * 
@@ -63,12 +67,15 @@ public interface DeliverableUserPartnershipManager {
   /**
    * This method saves the information of the given deliverableUserPartnership
    * 
-   * @param deliverableUserPartnership - is the deliverableUserPartnership object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the deliverableUserPartnership was
+   * @param deliverableUserPartnership - is the deliverableUserPartnership object with the new information to be
+   *        added/updated.
+   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the
+   *         deliverableUserPartnership was
    *         updated
    *         or -1 is some error occurred.
    */
-  public DeliverableUserPartnership saveDeliverableUserPartnership(DeliverableUserPartnership deliverableUserPartnership);
+  public DeliverableUserPartnership
+    saveDeliverableUserPartnership(DeliverableUserPartnership deliverableUserPartnership);
 
 
 }

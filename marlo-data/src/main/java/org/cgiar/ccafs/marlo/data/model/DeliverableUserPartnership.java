@@ -165,7 +165,7 @@ public class DeliverableUserPartnership extends MarloAuditableEntity implements 
 
   @Override
   public String toString() {
-    return "DeliverableUserPartnership [id=" + this.getId() + ", deliverable=" + deliverable + "]";
+    return "DeliverableUserPartnership [id=" + this.getId() + "]";
   }
 
 }
