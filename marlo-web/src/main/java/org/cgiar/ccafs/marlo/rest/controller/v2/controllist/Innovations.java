@@ -39,7 +39,6 @@ import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -49,7 +48,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @Api(tags = "Innovations")
-@CrossOrigin(origins = "*", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE})
 public class Innovations {
 
   private static final Logger LOG = LoggerFactory.getLogger(Innovations.class);
@@ -59,9 +57,7 @@ public class Innovations {
   private InnovationItem<InnovationDTO> innovationItem;
   private final UserManager userManager;
 
-  // private InstitutionItem<InstitutionDTO> institutionItem;
-  // private final UserManager userManager;
-  //
+
   @Inject
   public Innovations(InnovationItem<InnovationDTO> innovationItem, UserManager userManager) {
     this.innovationItem = innovationItem;
@@ -93,6 +89,26 @@ public class Innovations {
   }
 
 
+  @ApiOperation(tags = {"Table 4 - CRP Innovations"}, value = "${Innovation.innovation.DELETE.id.value}",
+    response = InnovationDTO.class)
+  @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
+  @RequestMapping(value = "/{CGIAREntity}/innovations/{id}", method = RequestMethod.DELETE,
+    produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<InnovationDTO> deleteInnovationById(
+    @ApiParam(value = "${Innovation.innovation.DELETE.id.param.CGIAR}",
+      required = true) @PathVariable String CGIAREntity,
+    @ApiParam(value = "${Innovation.innovation.DELETE.id.param.id}", required = true) @PathVariable Long id,
+    @ApiParam(value = "${Innovation.innovation.DELETE.id.param.year}", required = true) @RequestParam Integer year,
+    @ApiParam(value = "${Innovation.innovation.DELETE.id.param.phase}", required = true) @RequestParam String phase) {
+
+    ResponseEntity<InnovationDTO> response =
+      this.innovationItem.deleteInnovationById(id, CGIAREntity, year, phase, this.getCurrentUser());
+    if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+      throw new NotFoundException("404", this.env.getProperty("Innovation.innovation.DELETE.id.404"));
+    }
+    return response;
+  }
+
   @ApiOperation(tags = {"Table 4 - CRP Innovations"}, value = "${Innovation.innovation.GET.id.value}",
     response = InnovationDTO.class)
   @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
@@ -117,6 +133,22 @@ public class Innovations {
     Long principal = (Long) subject.getPrincipal();
     User user = this.userManager.getUser(principal);
     return user;
+  }
+
+  @ApiOperation(tags = {"Table 4 - CRP Innovations"}, value = "${Innovation.innovation.PUT.value}",
+    response = InnovationDTO.class)
+  @RequiresPermissions(Permission.FULL_CREATE_REST_API_PERMISSION)
+  @RequestMapping(value = "/{CGIAREntity}/innovations", method = RequestMethod.PUT,
+    produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<Long> putInnovation(
+    @ApiParam(value = "${Innovation.innovation.PUT.param.id}", required = true) @RequestParam Long id,
+    @ApiParam(value = "${Innovation.innovation.PUT.param.CGIAR}", required = true) @PathVariable String CGIAREntity,
+    @ApiParam(value = "${Innovation.innovation.PUT.param.innovation}",
+      required = true) @Valid @RequestBody NewInnovationDTO newInnovationDTO) {
+    Long innovationId = this.innovationItem.putInnovationById(id, newInnovationDTO, CGIAREntity, this.getCurrentUser());
+    ResponseEntity<Long> response = new ResponseEntity<Long>(innovationId, HttpStatus.OK);
+    return response;
+
   }
 }
 
