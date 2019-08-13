@@ -1031,7 +1031,6 @@
     [#else]
       [@customForm.checkBoxFlat id="${customID}" name="${customName}.user.id" label="${user.composedCompleteName}" help="" paramText="" helpIcon=true disabled=false editable=editable value="${user.id}" checked=isUserChecked cssClass="" cssClassLabel="" /]
     [/#if]
-
   </div>
 [/#macro]
 
