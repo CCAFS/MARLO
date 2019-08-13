@@ -332,7 +332,7 @@ public final class APConstants {
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.Deliverable.deliverableMetadataElements)";
 
   public static final String PROJECT_DELIVERABLE_PARTNERSHIPS_RELATION =
-    "java.util.Set(org.cgiar.ccafs.marlo.data.model.Deliverable.deliverablePartnerships)";
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.Deliverable.deliverableUserPartnerships)";
 
   public static final String PROJECT_DELIVERABLE_PROGRAMS =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.Deliverable.deliverablePrograms)";

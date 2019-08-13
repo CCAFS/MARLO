@@ -51,9 +51,6 @@ public class ProjectPartner extends MarloAuditableEntity implements java.io.Seri
 
   private Set<ProjectPartnerLocation> projectPartnerLocations = new HashSet<ProjectPartnerLocation>(0);
 
-
-  private Set<DeliverablePartnership> deliverablePartnerships = new HashSet<DeliverablePartnership>(0);
-
   private Set<ProjectPartnerPartnership> projectPartnerPartnerships = new HashSet<ProjectPartnerPartnership>(0);
 
   private List<InstitutionLocation> selectedLocations = new ArrayList<>();
@@ -110,10 +107,6 @@ public class ProjectPartner extends MarloAuditableEntity implements java.io.Seri
     }
 
 
-  }
-
-  public Set<DeliverablePartnership> getDeliverablePartnerships() {
-    return deliverablePartnerships;
   }
 
 
@@ -267,11 +260,6 @@ public class ProjectPartner extends MarloAuditableEntity implements java.io.Seri
     } catch (Exception e) {
       return false;
     }
-  }
-
-
-  public void setDeliverablePartnerships(Set<DeliverablePartnership> deliverablePartnerships) {
-    this.deliverablePartnerships = deliverablePartnerships;
   }
 
   public void setHasPartnerships(Boolean hasPartnerships) {

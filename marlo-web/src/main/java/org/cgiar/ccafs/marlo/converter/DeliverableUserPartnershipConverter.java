@@ -15,9 +15,8 @@
 
 package org.cgiar.ccafs.marlo.converter;
 
-import org.cgiar.ccafs.marlo.data.manager.UserManager;
-import org.cgiar.ccafs.marlo.data.model.Institution;
-import org.cgiar.ccafs.marlo.data.model.User;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableUserPartnershipManager;
+import org.cgiar.ccafs.marlo.data.model.DeliverableUserPartnership;
 
 import java.util.Map;
 
@@ -30,29 +29,32 @@ import org.slf4j.LoggerFactory;
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  */
-public class UserConverter extends StrutsTypeConverter {
 
-  private static final Logger LOG = LoggerFactory.getLogger(UserConverter.class);
-  private final UserManager userManager;
+
+public class DeliverableUserPartnershipConverter extends StrutsTypeConverter {
+
+  private static final Logger LOG = LoggerFactory.getLogger(ProjectPartnerPersonConverter.class);
+  private final DeliverableUserPartnershipManager deliverableUserPartnershipManager;
 
   @Inject
-  public UserConverter(UserManager userManager) {
-    this.userManager = userManager;
+  public DeliverableUserPartnershipConverter(DeliverableUserPartnershipManager deliverableUserPartnershipManager) {
+    this.deliverableUserPartnershipManager = deliverableUserPartnershipManager;
   }
 
   @SuppressWarnings("rawtypes")
   @Override
   public Object convertFromString(Map context, String[] values, Class toClass) {
-    // Is this a bug, should it not be User.class?
-    if (toClass == User.class) {
+    if (toClass == DeliverableUserPartnership.class) {
       String id = values[0];
       try {
-        User user = userManager.getUser(Long.parseLong(id));
+        DeliverableUserPartnership deliverableUserPartnership =
+          deliverableUserPartnershipManager.getDeliverableUserPartnershipById(Long.parseLong(id));
         LOG.debug(">> convertFromString > id = {} ", id);
-        return user;
+        return deliverableUserPartnership;
       } catch (NumberFormatException e) {
         // Do Nothing
-        LOG.error("Problem to convert User from String (convertFromString) for user_id = {} ", id, e.getMessage());
+        LOG.error("Problem to convert User from String (convertFromString) for projectPartnerPerson_id = {} ", id,
+          e.getMessage());
       }
     }
     return null;
@@ -62,9 +64,9 @@ public class UserConverter extends StrutsTypeConverter {
   @Override
   public String convertToString(Map context, Object o) {
     if (o != null) {
-      User user = (User) o;
-      LOG.debug(">> convertToString > id = {} ", user.getId());
-      return user.getId() + "";
+      DeliverableUserPartnership deliverableUserPartnership = (DeliverableUserPartnership) o;
+      LOG.debug(">> convertToString > id = {} ", deliverableUserPartnership.getId());
+      return deliverableUserPartnership.getId() + "";
     }
     return null;
   }

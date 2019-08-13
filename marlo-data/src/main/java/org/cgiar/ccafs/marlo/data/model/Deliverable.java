@@ -50,13 +50,10 @@ public class Deliverable extends MarloAuditableEntity implements java.io.Seriali
   private DeliverableQualityCheck qualityCheck;
   private Set<DeliverableGenderLevel> deliverableGenderLevels = new HashSet<DeliverableGenderLevel>(0);
   private List<DeliverableGenderLevel> genderLevels;
-  private Set<DeliverablePartnership> deliverablePartnerships = new HashSet<DeliverablePartnership>(0);
   private Set<DeliverableActivity> deliverableActivities = new HashSet<DeliverableActivity>(0);
   private Set<SectionStatus> sectionStatuses = new HashSet<SectionStatus>(0);
-  private DeliverablePartnership responsiblePartner;
   private Set<DeliverableFundingSource> deliverableFundingSources = new HashSet<DeliverableFundingSource>(0);
   private List<DeliverableFundingSource> fundingSources;
-  private List<DeliverablePartnership> otherPartners;
   private Set<DeliverableQualityCheck> deliverableQualityChecks = new HashSet<DeliverableQualityCheck>(0);
   private Set<DeliverableMetadataElement> deliverableMetadataElements = new HashSet<DeliverableMetadataElement>(0);
   private Set<DeliverableDissemination> deliverableDisseminations = new HashSet<DeliverableDissemination>(0);
@@ -299,11 +296,6 @@ public class Deliverable extends MarloAuditableEntity implements java.io.Seriali
   }
 
 
-  public Set<DeliverablePartnership> getDeliverablePartnerships() {
-    return deliverablePartnerships;
-  }
-
-
   public Set<DeliverableProgram> getDeliverablePrograms() {
     return deliverablePrograms;
   }
@@ -538,11 +530,6 @@ public class Deliverable extends MarloAuditableEntity implements java.io.Seriali
   }
 
 
-  public List<DeliverablePartnership> getOtherPartners() {
-    return otherPartners;
-  }
-
-
   public List<DeliverableUserPartnership> getOtherPartnerships() {
     return otherPartnerships;
   }
@@ -594,11 +581,6 @@ public class Deliverable extends MarloAuditableEntity implements java.io.Seriali
 
   public String getRegionsValue() {
     return regionsValue;
-  }
-
-
-  public DeliverablePartnership getResponsiblePartner() {
-    return responsiblePartner;
   }
 
 
@@ -766,10 +748,6 @@ public class Deliverable extends MarloAuditableEntity implements java.io.Seriali
     this.deliverableParticipants = deliverableParticipants;
   }
 
-  public void setDeliverablePartnerships(Set<DeliverablePartnership> deliverablePartnerships) {
-    this.deliverablePartnerships = deliverablePartnerships;
-  }
-
 
   public void setDeliverablePrograms(Set<DeliverableProgram> deliverablePrograms) {
     this.deliverablePrograms = deliverablePrograms;
@@ -852,11 +830,6 @@ public class Deliverable extends MarloAuditableEntity implements java.io.Seriali
   }
 
 
-  public void setOtherPartners(List<DeliverablePartnership> otherPartners) {
-    this.otherPartners = otherPartners;
-  }
-
-
   public void setOtherPartnerships(List<DeliverableUserPartnership> otherPartnerships) {
     this.otherPartnerships = otherPartnerships;
   }
@@ -899,12 +872,6 @@ public class Deliverable extends MarloAuditableEntity implements java.io.Seriali
   public void setRegionsValue(String regionsValue) {
     this.regionsValue = regionsValue;
   }
-
-
-  public void setResponsiblePartner(DeliverablePartnership responsiblePartner) {
-    this.responsiblePartner = responsiblePartner;
-  }
-
 
   public void setResponsiblePartnership(DeliverableUserPartnership responsiblePartnership) {
     this.responsiblePartnership = responsiblePartnership;

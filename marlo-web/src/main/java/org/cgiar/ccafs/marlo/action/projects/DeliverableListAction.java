@@ -27,9 +27,8 @@ import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableFundingSource;
 import org.cgiar.ccafs.marlo.data.model.DeliverableInfo;
-import org.cgiar.ccafs.marlo.data.model.DeliverablePartnership;
-import org.cgiar.ccafs.marlo.data.model.DeliverablePartnershipTypeEnum;
 import org.cgiar.ccafs.marlo.data.model.DeliverableType;
+import org.cgiar.ccafs.marlo.data.model.DeliverableUserPartnership;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
@@ -39,7 +38,6 @@ import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -399,7 +397,7 @@ public class DeliverableListAction extends BaseAction {
 
 
           for (Deliverable deliverable : deliverables) {
-            deliverable.setResponsiblePartner(this.responsiblePartner(deliverable));
+            deliverable.setResponsiblePartnership(this.responsiblePartner(deliverable));
 
             // Gets the Deliverable Funding Source Data without the full information.
             List<DeliverableFundingSource> fundingSources =
@@ -430,28 +428,12 @@ public class DeliverableListAction extends BaseAction {
 
   }
 
-  private DeliverablePartnership responsiblePartner(Deliverable deliverable) {
+  private DeliverableUserPartnership responsiblePartner(Deliverable deliverable) {
     try {
-      List<DeliverablePartnership> partnerships = deliverable.getDeliverablePartnerships().stream()
-        .filter(
-          dp -> dp.isActive() && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.RESPONSIBLE.getValue()))
+      List<DeliverableUserPartnership> partnerships = deliverable.getDeliverableUserPartnerships().stream()
+        .filter(dp -> dp.isActive()
+          && dp.getDeliverablePartnerType().getId().equals(APConstants.DELIVERABLE_PARTNERSHIP_TYPE_RESPONSIBLE))
         .collect(Collectors.toList());
-
-      partnerships.sort(new Comparator<DeliverablePartnership>() {
-
-        @Override
-        public int compare(final DeliverablePartnership dp1, DeliverablePartnership dp2) {
-
-          if (dp1.getProjectPartnerPerson() == null) {
-            return (dp2.getProjectPartnerPerson() == null) ? 0 : 1;
-          }
-
-          if (dp2.getProjectPartnerPerson() == null) {
-            return -1;
-          }
-          return dp1.getId().compareTo(dp2.getId());
-        }
-      });
 
       return partnerships.get(0);
     } catch (Exception e) {

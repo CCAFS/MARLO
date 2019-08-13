@@ -1031,19 +1031,7 @@
     [#else]
       [@customForm.checkBoxFlat id="${customID}" name="${customName}.user.id" label="${user.composedCompleteName}" help="" paramText="" helpIcon=true disabled=false editable=editable value="${user.id}" checked=isUserChecked cssClass="" cssClassLabel="" /]
     [/#if]
-  
-    [#-- IFPRI Partner Division partnerDivision 
-    [#if (!isResponsable) || (index == 0)]
-      [#local showIfpriDivision = ((element.institution.acronym == "IFPRI")!false) && (isUserChecked || isResponsable) /]
-      [#if action.hasSpecificities('crp_division_fs')]
-        <div class="form-group row divisionBlock division-IFPRI"  style="display:${showIfpriDivision?string('block','none')}">
-          <div class="col-md-6">
-            [@customForm.select name="${customName}.partnerDivision.id" value="${(deliverableUser.partnerDivision.id)!-1}" i18nkey="projectCofunded.division" className="divisionField" listName="divisions" keyFieldName="id" displayFieldName="composedName" required=true editable=editable /]
-          </div>
-        </div>
-      [/#if]
-    [/#if]
-    --]
+
   </div>
 [/#macro]
 
