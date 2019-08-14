@@ -427,17 +427,21 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
           if (showAllYears.equals("true")) {
             deliverables.add(deliverable);
           } else {
-            if (((deliverableInfo.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())
-              && (deliverableInfo.getYear() == this.getSelectedYear() || (deliverableInfo.getNewExpectedYear() != null
-                && deliverableInfo.getNewExpectedYear().intValue() >= this.getSelectedYear())))
-              || (deliverableInfo.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
+            if (deliverableInfo != null && deliverable.getDeliverableInfo().getStatus() != null
+              && ((deliverableInfo.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())
                 && (deliverableInfo.getYear() == this.getSelectedYear() || (deliverableInfo.getNewExpectedYear() != null
-                  && deliverableInfo.getNewExpectedYear().intValue() == this.getSelectedYear())))
-              || (deliverableInfo.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId())
-                && (deliverableInfo.getYear() == this.getSelectedYear() || (deliverableInfo.getNewExpectedYear() != null
-                  && deliverableInfo.getNewExpectedYear().intValue() == this.getSelectedYear())))
-              || (deliverableInfo.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
-                && (deliverableInfo.getYear() == this.getSelectedYear())))
+                  && deliverableInfo.getNewExpectedYear().intValue() >= this.getSelectedYear())))
+                || (deliverableInfo.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
+                  && (deliverableInfo.getYear() == this.getSelectedYear()
+                    || (deliverableInfo.getNewExpectedYear() != null
+                      && deliverableInfo.getNewExpectedYear().intValue() == this.getSelectedYear())))
+                || (deliverableInfo.getStatus().intValue() == Integer
+                  .parseInt(ProjectStatusEnum.Cancelled.getStatusId())
+                  && (deliverableInfo.getYear() == this.getSelectedYear()
+                    || (deliverableInfo.getNewExpectedYear() != null
+                      && deliverableInfo.getNewExpectedYear().intValue() == this.getSelectedYear())))
+                || (deliverableInfo.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
+                  && (deliverableInfo.getYear() == this.getSelectedYear())))
               && (deliverableInfo.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
                 || deliverableInfo.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())
                 || deliverableInfo.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId())
@@ -534,7 +538,8 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
 
         if (deliverable.getProject() != null) {
           projectID = deliverable.getProject().getId().toString();
-          if (deliverable.getProject().getProjecInfoPhase(this.getSelectedPhase()).getTitle() != null) {
+          if (deliverable.getProject().getProjecInfoPhase(this.getSelectedPhase()) != null
+            && deliverable.getProject().getProjecInfoPhase(this.getSelectedPhase()).getTitle() != null) {
             projectTitle = deliverable.getProject().getProjecInfoPhase(this.getSelectedPhase()).getTitle();
           }
         }
