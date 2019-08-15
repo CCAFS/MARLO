@@ -115,6 +115,14 @@ public class DeliverableUserPartnershipManagerImpl implements DeliverableUserPar
           deliverableUserPartnership.getDeliverable().getId(), deliverableUserPartnership);
       }
     }
+
+    if (deliverableUserPartnership.getDeliverableUserPartnershipPersons() != null) {
+      for (DeliverableUserPartnershipPerson person : deliverableUserPartnership.getDeliverableUserPartnershipPersons()
+        .stream().filter(d -> d.getId() != null).collect(Collectors.toList())) {
+        deliverableUserPartnershipPersonDAO.deleteDeliverableUserPartnershipPerson(person.getId());
+      }
+    }
+
     deliverableUserPartnershipDAO.deleteDeliverableUserPartnership(deliverableUserPartnershipId);
   }
 
@@ -206,6 +214,8 @@ public class DeliverableUserPartnershipManagerImpl implements DeliverableUserPar
       deliverableUserPartnershipAdd.setDeliverablePartnerType(deliverableUserPartnership.getDeliverablePartnerType());
       deliverableUserPartnershipAdd.setActive(true);
       deliverableUserPartnershipAdd.setActiveSince(new Date());
+      deliverableUserPartnershipAdd.setPhase(phase);
+
 
       deliverableUserPartnershipAdd = deliverableUserPartnershipDAO.save(deliverableUserPartnershipAdd);
 

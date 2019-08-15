@@ -2035,7 +2035,9 @@ public class DeliverableAction extends BaseAction {
 
       for (DeliverableUserPartnership deliverableUserPartnership : deliverableUserPartnershipPrev) {
         if (this.deliverable.getOtherPartnerships() == null
-          && !this.deliverable.getOtherPartnerships().contains(deliverableUserPartnership)) {
+          || !this.deliverable.getOtherPartnerships().contains(deliverableUserPartnership)) {
+
+
           deliverableUserPartnershipManager.deleteDeliverableUserPartnership(deliverableUserPartnership.getId());
         }
       }
@@ -2076,7 +2078,8 @@ public class DeliverableAction extends BaseAction {
           deliverableUserPartnershipSave.setCreatedBy(this.getCurrentUser());
           deliverableUserPartnershipSave.setDeliverablePartnerType(deliverablePartnerType);
 
-          if (deliverableUserPartnership.getInstitution().getId() != null) {
+          if (deliverableUserPartnership.getInstitution() != null
+            && deliverableUserPartnership.getInstitution().getId() != null) {
             Institution institution =
               institutionManager.getInstitutionById(deliverableUserPartnership.getInstitution().getId());
             deliverableUserPartnershipSave.setInstitution(institution);

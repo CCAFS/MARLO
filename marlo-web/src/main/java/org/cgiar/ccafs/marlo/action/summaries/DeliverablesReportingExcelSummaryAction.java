@@ -1578,18 +1578,19 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
             if (deliverablePartnership.getDeliverableUserPartnershipPersons() != null) {
 
 
-              List<DeliverableUserPartnershipPerson> responsibleppp = responsible.getDeliverableUserPartnershipPersons()
-                .stream().filter(dp -> dp.isActive()).collect(Collectors.toList());
+              List<DeliverableUserPartnershipPerson> responsibleppp =
+                deliverablePartnership.getDeliverableUserPartnershipPersons().stream().filter(dp -> dp.isActive())
+                  .collect(Collectors.toList());
 
-              if (responsible.getInstitution() != null) {
-                if (responsible.getInstitution().getAcronym() != null
-                  && !responsible.getInstitution().getAcronym().isEmpty()) {
-                  ppaResponsibleList.add("*" + responsible.getInstitution().getAcronym() + " ");
-                  responsibleAcronym = responsible.getInstitution().getAcronym() + " ";
+              if (deliverablePartnership.getInstitution() != null) {
+                if (deliverablePartnership.getInstitution().getAcronym() != null
+                  && !deliverablePartnership.getInstitution().getAcronym().isEmpty()) {
+                  ppaResponsibleList.add("*" + deliverablePartnership.getInstitution().getAcronym() + " ");
+                  responsibleAcronym = deliverablePartnership.getInstitution().getAcronym() + " ";
 
                 } else {
-                  ppaResponsibleList.add("*" + responsible.getInstitution().getName() + " ");
-                  responsibleName = responsible.getInstitution().getName() + " ";
+                  ppaResponsibleList.add("*" + deliverablePartnership.getInstitution().getName() + " ");
+                  responsibleName = deliverablePartnership.getInstitution().getName() + " ";
                 }
               }
 
@@ -1603,15 +1604,15 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
 
             } else {
 
-              if (responsible.getInstitution() != null) {
-                if (responsible.getInstitution().getAcronym() != null
-                  && !responsible.getInstitution().getAcronym().isEmpty()) {
-                  ppaResponsibleList.add("*" + responsible.getInstitution().getAcronym() + " ");
-                  responsibleAcronym = responsible.getInstitution().getAcronym() + " ";
+              if (deliverablePartnership.getInstitution() != null) {
+                if (deliverablePartnership.getInstitution().getAcronym() != null
+                  && !deliverablePartnership.getInstitution().getAcronym().isEmpty()) {
+                  ppaResponsibleList.add("*" + deliverablePartnership.getInstitution().getAcronym() + " ");
+                  responsibleAcronym = deliverablePartnership.getInstitution().getAcronym() + " ";
 
                 } else {
-                  ppaResponsibleList.add("*" + responsible.getInstitution().getName() + " ");
-                  responsibleName = responsible.getInstitution().getName() + " ";
+                  ppaResponsibleList.add("*" + deliverablePartnership.getInstitution().getName() + " ");
+                  responsibleName = deliverablePartnership.getInstitution().getName() + " ";
                 }
               }
 
@@ -1709,7 +1710,8 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
           }
           String color = ";color:#000000";
 
-          if (responsible.getInstitution().equals(managingInstitution)) {
+          if (responsible != null && responsible.getInstitution() != null
+            && responsible.getInstitution().getId().equals(managingInstitution.getId())) {
             color = ";color:#ff0000";
           } else {
             color = ";color:#ff0000";

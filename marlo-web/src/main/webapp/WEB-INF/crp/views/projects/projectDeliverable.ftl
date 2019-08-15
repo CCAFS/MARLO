@@ -235,7 +235,7 @@
 <div id="removeDeliverableFiles" style="display:none" title="Modal title"></div> 
 
 [#-- Deliverable Partner Template --]
-[@deliverableMacros.deliverablePartnerMacro element={} name="deliverable.otherPartners" index=-1 defaultType=2 isTemplate=true /]
+[@deliverableMacros.deliverablePartnerMacro element={} name="deliverable.otherPartnerships" index=-1 defaultType=2 isTemplate=true /]
 
 [#-- Partner users TEMPLATE --]
 <div id="partnerUsers" style="display:none">
@@ -249,7 +249,7 @@
       </div>
       <div class="users-2">
         [#list usersList as user] 
-          [@deliverableMacros.deliverableUserMacro element={} user=user index=user_index name="deliverable.otherPartners[-1].partnershipPersons" isUserChecked=false isResponsable=false /]
+          [@deliverableMacros.deliverableUserMacro element={} user=user index=user_index name="deliverable.otherPartnerships[-1].partnershipPersons" isUserChecked=false isResponsable=false /]
         [/#list]
       </div>
     </div>

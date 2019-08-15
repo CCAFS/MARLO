@@ -171,7 +171,7 @@ public class DeliverableMySQLDAO extends AbstractMarloDAO<Deliverable, Long> imp
     query.append("dup.is_active = 1 AND ");
     query.append("dupp.is_active = 1 AND ");
     query.append("dup.institution_id =" + institutionId + " AND ");
-    query.append("di.`id_phase` =" + phaseId);
+    query.append("dup.id_phase = " + phaseId);
 
     List<Map<String, Object>> rList = super.findCustomQuery(query.toString());
     List<Deliverable> deliverables = new ArrayList<>();
@@ -198,7 +198,7 @@ public class DeliverableMySQLDAO extends AbstractMarloDAO<Deliverable, Long> imp
     query.append("dup.is_active = 1 AND ");
     query.append("dupp.is_active = 1 AND ");
     query.append("dupp.user_id =" + userId + " AND ");
-    query.append("di.`id_phase` =" + phaseId);
+    query.append("dup.id_phase =" + phaseId);
 
     List<Map<String, Object>> rList = super.findCustomQuery(query.toString());
     List<Deliverable> deliverables = new ArrayList<>();
