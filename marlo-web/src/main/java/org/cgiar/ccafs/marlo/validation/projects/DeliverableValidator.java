@@ -97,12 +97,6 @@ public class DeliverableValidator extends BaseValidator {
 
     boolean validate = false;
 
-    // Deliverable Others
-    if (deliverable.getOtherPartnerships() == null) {
-      action.addMessage(action.getText("deliverable others"));
-      action.getInvalidFields().put("list-deliverable.otherPartnerships",
-        action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"deliverable others"}));
-    }
 
     if (action.isPlanningActive()) {
       if (deliverable.getDeliverableInfo().getStatus() != null
@@ -143,14 +137,74 @@ public class DeliverableValidator extends BaseValidator {
           action.hasSpecificities(APConstants.CRP_MANAGING_PARTNERS_CONTACT_PERSONS);
 
 
-        // TODO ask Hector o Sebastian (HJ)
-        // if (isManagingPartnerPersonRequerid) {
-        // this.validatePartnershipResponsiblePersonRequired(deliverable, action);
-        // this.validatePartnershipOthersPersonRequired(deliverable, action);
-        // } else {
-        // this.validatePartnershipResponsibleNoPersonRequired(deliverable, action);
-        // this.validatePartnershipOthersNoPersonRequired(deliverable, action);
-        // }
+        // Deliverable Others
+        if (deliverable.getOtherPartnerships() == null) {
+          action.addMessage(action.getText("deliverable others"));
+          action.getInvalidFields().put("list-deliverable.otherPartnerships",
+            action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"deliverable others"}));
+        } else {
+
+          for (int i = 0; i < deliverable.getOtherPartnerships().size(); i++) {
+            if (deliverable.getOtherPartnerships().get(i).getInstitution() == null
+              || deliverable.getOtherPartnerships().get(i).getInstitution().getId() == null) {
+
+              action.addMessage("Other Partnership Institution");
+              action.getInvalidFields().put("input-deliverable.otherPartnerships[" + i + "].institution.id",
+                InvalidFieldsMessages.EMPTYFIELD);
+
+            } else {
+              if (isManagingPartnerPersonRequerid) {
+                if (deliverable.getOtherPartnerships().get(i).getPartnershipPersons() == null) {
+                  action.addMessage("Other Partnership Persons");
+                  action.getInvalidFields().put("input-deliverable.otherPartnerships[" + i + "].partnershipPersons",
+                    InvalidFieldsMessages.EMPTYFIELD);
+                } else {
+                  for (int j = 0; j < deliverable.getOtherPartnerships().get(i).getPartnershipPersons().size(); j++) {
+                    if (deliverable.getOtherPartnerships().get(i).getPartnershipPersons().get(j).getUser() == null
+                      || deliverable.getOtherPartnerships().get(i).getPartnershipPersons().get(j).getUser()
+                        .getId() == null) {
+                      action.addMessage("Other Partnership Persons");
+                      action.getInvalidFields().put(
+                        "input-deliverable.otherPartnerships[" + i + "].partnershipPersons[" + j + "].user.id",
+                        InvalidFieldsMessages.EMPTYFIELD);
+                    }
+                  }
+                }
+              }
+            }
+          }
+
+        }
+
+        // Deliverable responsible
+        if (deliverable.getResponsiblePartnership() == null) {
+
+        } else {
+          if (deliverable.getResponsiblePartnership().getInstitution() == null
+            || deliverable.getResponsiblePartnership().getInstitution().getId() == null) {
+
+            action.addMessage("Responsible Partnership Institution");
+            action.getInvalidFields().put("input-deliverable.responsiblePartnership.institution.id",
+              InvalidFieldsMessages.EMPTYFIELD);
+
+          } else {
+            if (isManagingPartnerPersonRequerid) {
+              for (int j = 0; j < deliverable.getResponsiblePartnership().getPartnershipPersons().size(); j++) {
+                if (deliverable.getResponsiblePartnership().getPartnershipPersons().get(j).getUser() == null
+                  || deliverable.getResponsiblePartnership().getPartnershipPersons().get(j).getUser().getId() == null) {
+                  action.addMessage("Responsible Partnership Persons");
+                  action.getInvalidFields().put(
+                    "input-deliverable.responsiblePartnership.partnershipPersons[" + j + "].user.id",
+                    InvalidFieldsMessages.EMPTYFIELD);
+                }
+              }
+            }
+          }
+
+
+        }
+
+
         if (deliverable.getFundingSources() == null || deliverable.getFundingSources().isEmpty()) {
           action.addMessage(action.getText("project.deliverable.fundingSource.readText"));
           action.getInvalidFields().put("list-deliverable.fundingSources",
