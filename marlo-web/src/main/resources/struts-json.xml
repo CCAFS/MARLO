@@ -20,7 +20,6 @@
     <default-interceptor-ref name="jsonStack"></default-interceptor-ref>
 
 
-
     <action name="deliverableStatus"
       class="org.cgiar.ccafs.marlo.action.json.global.DeliverableStatusAction">
       <result type="json">
@@ -931,6 +930,15 @@
         <param name="excludeNullProperties">true</param>
       </result>
     </action>
+    
+    <action name="deliverableUserList"
+      class="org.cgiar.ccafs.marlo.action.json.project.DeliverableUserPartnershipListAction">
+      <result type="json">
+        <param name="noCache">true</param>
+        <param name="excludeNullProperties">true</param>
+      </result>
+    </action>
+    
 
   </package>
 

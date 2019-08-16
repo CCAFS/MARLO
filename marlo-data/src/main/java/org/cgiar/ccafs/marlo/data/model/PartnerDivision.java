@@ -4,9 +4,6 @@ package org.cgiar.ccafs.marlo.data.model;
 
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import com.google.gson.annotations.Expose;
 
 /**
@@ -22,8 +19,6 @@ public class PartnerDivision extends MarloAuditableEntity implements java.io.Ser
 
   @Expose
   private String name;
-
-  private Set<DeliverablePartnership> deliverablePartnerships = new HashSet<DeliverablePartnership>(0);
 
   public PartnerDivision() {
   }
@@ -46,9 +41,6 @@ public class PartnerDivision extends MarloAuditableEntity implements java.io.Ser
     return this.getName();
   }
 
-  public Set<DeliverablePartnership> getDeliverablePartnerships() {
-    return deliverablePartnerships;
-  }
 
   @Override
   public String getLogDeatil() {
@@ -65,10 +57,6 @@ public class PartnerDivision extends MarloAuditableEntity implements java.io.Ser
 
   public void setAcronym(String acronym) {
     this.acronym = acronym;
-  }
-
-  public void setDeliverablePartnerships(Set<DeliverablePartnership> deliverablePartnerships) {
-    this.deliverablePartnerships = deliverablePartnerships;
   }
 
   public void setName(String name) {

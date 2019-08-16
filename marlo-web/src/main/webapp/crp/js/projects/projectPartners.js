@@ -54,14 +54,10 @@ function init() {
   attachEvents();
 
   // Set the unique person as leader
- /* if(editable){
-    var contactPeople = $partnersBlock.find('.projectPartner');
-    if ((contactPeople.length == 1)){
-      var person = new PartnerPersonObject(contactPeople);
-      person.setPartnerType(leaderType);
-      person.changeType();
-    }
-  }*/
+ /*
+   * if(editable){ var contactPeople = $partnersBlock.find('.projectPartner'); if ((contactPeople.length == 1)){ var
+   * person = new PartnerPersonObject(contactPeople); person.setPartnerType(leaderType); person.changeType(); } }
+   */
 
   console.log($partnersBlock.find('.projectPartner').length);
   $('.loadingBlock').hide().next().fadeIn(500, function() {
@@ -706,6 +702,11 @@ function addContactEvent(e) {
       templateResult: formatState,
       width: '100%'
   });
+  
+  // IFPRI Division
+  if(partner.institutionId == 89){
+    $newElement.find('.divisionBlock.division-IFPRI').show();
+  }
 
   // Remove "No contact person added" message
   $(e.target).parents('.contactsPerson').find('.noContactMessage').hide();
@@ -856,7 +857,7 @@ function addSelect2() {
 
 /**
  * PartnerObject
- *
+ * 
  * @param {DOM} Project partner
  */
 
@@ -1074,7 +1075,7 @@ function PartnerObject(partner) {
 
 /**
  * PartnerPersonObject
- *
+ * 
  * @param {DOM} Partner person
  */
 function PartnerPersonObject(partnerPerson) {

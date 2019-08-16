@@ -419,11 +419,11 @@
         <div class="fullPartBlock" listname="${name}.partnerPersons">
         [#if element.partnerPersons?has_content]
           [#list element.partnerPersons as partnerPerson]
-            [@contactPersonMacro element=partnerPerson name="${name}.partnerPersons[${partnerPerson_index}]" index=partnerPerson_index partnerIndex=index /]
+            [@contactPersonMacro element=partnerPerson name="${name}.partnerPersons[${partnerPerson_index}]" index=partnerPerson_index partnerIndex=index institutionID=(element.institution.id)! /]
           [/#list]
         [#else]
           [#if isPPA || defaultPerson]
-            [@contactPersonMacro element={} name="${name}.partnerPersons[0]" index=0 partnerIndex=index /]
+            [@contactPersonMacro element={} name="${name}.partnerPersons[0]" index=0 partnerIndex=index institutionID=(element.institution.id)!/]
           [#else]
             <p class="noContactMessage">[@s.text name="projectPartners.contactEmpty" /]</p>
           [/#if]
@@ -446,7 +446,7 @@
   </div>
 [/#macro]
 
-[#macro contactPersonMacro element name index=-1 partnerIndex=-1 isTemplate=false]
+[#macro contactPersonMacro element name index=-1 partnerIndex=-1 isTemplate=false institutionID=-1]
   <div id="contactPerson-${isTemplate?string('template',(element.id)!)}" class="contactPerson simpleBox ${(element.contactType)!}" style="display:${isTemplate?string('none','block')}" listname="partner-${partnerIndex}-person-${index}">
     [#-- Remove link for all partners --]
     [#if editable && action.canBeDeleted((element.id)!-1,(element.class.name)!)]
@@ -471,34 +471,47 @@
     [#if customForm.changedField('${name}.id') != '']
       <span class="label label-info pull-right">Added/Updated</span> 
     [/#if]
-    <div class="form-group">
-    	<div class="row">
-          [#-- Contact type --]
-          <div class="col-md-4 partnerPerson-type ${customForm.changedField('${name}.contactType')}">
-            [#if canEditContactType]
-              [@customForm.select name="${name}.contactType" className="partnerPersonType" disabled=!canEdit i18nkey="projectPartners.personType" stringKey=true header=false listName="partnerPersonTypes" value="'${(element.contactType)!'CP'}'" required=isPPA /]
-            [#else]
-              <label class="readOnly">[@s.text name="projectPartners.personType" /]:</label>
-              <div class="select"><p>[@s.text name="projectPartners.types.${(element.contactType)!'none'}"/]</p></div>
-              <input type="hidden" name="${name}.contactType" class="partnerPersonType" value="${(element.contactType)!}" />
-            [/#if]
-          </div>
-    	    [#-- Contact Email --]
-          <div class="col-md-8 partnerPerson-email userField" >
-            [#attempt]
-              [#assign canEditEmail=!((action.getActivitiesLedByUser((element.id)!-1)!false)?has_content) && canEditContactType/]
-            [#recover]
-              [#assign canEditEmail=true /]
-            [/#attempt]
-            <input type="hidden" class="canEditEmail" value="${canEditEmail?string}" />
-            [#-- Contact Person information is going to come from the users table, not from project_partner table (refer to the table project_partners in the database) --] 
-            [#assign partnerClass = "${name}.user.id"?string?replace("\\W+", "", "r") /]
-            [#assign changeFieldEmail = customForm.changedField('${name}.user.id') /]
-            [@customForm.input name="partner-${partnerIndex}-person-${index}" value="${(element.user.composedName?html)!}" className='userName ${partnerClass} ${changeFieldEmail}' type="text" disabled=!canEdit i18nkey="projectPartners.contactPersonEmail" required=isPPA readOnly=true editable=editable && canEditEmail /]
-            <input class="userId" type="hidden" name="${name}.user.id" value="${(element.user.id)!}" />   
-            [#if editable && canEditEmail]<div class="searchUser button-blue button-float">[@s.text name="form.buttons.searchUser" /]</div>[/#if]
-          </div>
-    	</div>
+    <div class="">
+    	<div class="form-group row">
+        [#-- Contact type --]
+        <div class="col-md-4 partnerPerson-type ${customForm.changedField('${name}.contactType')}">
+          [#if canEditContactType]
+            [@customForm.select name="${name}.contactType" className="partnerPersonType" disabled=!canEdit i18nkey="projectPartners.personType" stringKey=true header=false listName="partnerPersonTypes" value="'${(element.contactType)!'CP'}'" required=isPPA /]
+          [#else]
+            <label class="readOnly">[@s.text name="projectPartners.personType" /]:</label>
+            <div class="select"><p>[@s.text name="projectPartners.types.${(element.contactType)!'none'}"/]</p></div>
+            <input type="hidden" name="${name}.contactType" class="partnerPersonType" value="${(element.contactType)!}" />
+          [/#if]
+        </div>
+  	    [#-- Contact Email --]
+        <div class="col-md-8 partnerPerson-email userField" >
+          [#attempt]
+            [#assign canEditEmail=!((action.getActivitiesLedByUser((element.id)!-1)!false)?has_content) && canEditContactType/]
+          [#recover]
+            [#assign canEditEmail=true /]
+          [/#attempt]
+          <input type="hidden" class="canEditEmail" value="${canEditEmail?string}" />
+          [#-- Contact Person information is going to come from the users table, not from project_partner table (refer to the table project_partners in the database) --] 
+          [#assign partnerClass = "${name}.user.id"?string?replace("\\W+", "", "r") /]
+          [#assign changeFieldEmail = customForm.changedField('${name}.user.id') /]
+          [@customForm.input name="partner-${partnerIndex}-person-${index}" value="${(element.user.composedName?html)!}" className='userName ${partnerClass} ${changeFieldEmail}' type="text" disabled=!canEdit i18nkey="projectPartners.contactPersonEmail" required=isPPA readOnly=true editable=editable && canEditEmail /]
+          <input class="userId" type="hidden" name="${name}.user.id" value="${(element.user.id)!}" />   
+          [#if editable && canEditEmail]<div class="searchUser button-blue button-float">[@s.text name="form.buttons.searchUser" /]</div>[/#if]
+        </div>
+      </div>
+      
+      [#-- IFPRI Partner Division partnerDivision  --]
+      [#local showIfpriDivision = (institutionID == 89)!false /]
+      [#if action.hasSpecificities('crp_division_fs')]
+      <div class="form-group row divisionBlock division-IFPRI" style="display:${showIfpriDivision?string('block','none')}">
+        <div class="col-md-8">
+          [@customForm.select name="${name}.partnerDivision.id" value="${(element.partnerDivision.id)!-1}" i18nkey="projectPartners.division" className="divisionField setSelect2" listName="divisions" keyFieldName="id" displayFieldName="composedName" required=true editable=editable /]
+        </div>
+      </div>
+      [/#if]
+
+   
+      
     </div> 
     
     [#if !isTemplate]

@@ -39,7 +39,6 @@ public class CapacityDevelopmentTypeDAO extends AbstractMarloDAO<CapacityDevelop
   @Override
   public void deleteCapacityDevelopmentType(long capacityDevelopmentTypeId) {
     final CapacityDevelopmentType capacityDevelopmentType = this.find(capacityDevelopmentTypeId);
-    // capacityDevelopmentType.setActive(false);
     this.save(capacityDevelopmentType);
   }
 

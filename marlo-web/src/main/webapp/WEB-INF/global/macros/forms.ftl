@@ -446,9 +446,9 @@
 
 
 
-[#macro radioFlat id name i18nkey="" label="" disabled=false editable=true value="" checked=true cssClass="" cssClassLabel=""]
+[#macro radioFlat id name i18nkey="" label="" disabled=false editable=true value="" checked=true cssClass="" cssClassLabel="" inline=true columns=0]
   [#if editable]
-  <div class="radioFlat radio-inline">
+  <div class="radioFlat [#if columns > 1]col-md-${columns}[/#if] ${inline?string('radio-inline', '')}">
     <input id="${id}" class="radio-input ${cssClass}" type="radio" name="${name}" value="${value}" [#if checked]checked[/#if] />
     <label for="${id}" class="radio-label ${cssClassLabel}">[#if i18nkey?has_content][@s.text name=i18nkey /][#else]${label}[/#if]</label>
   </div>
@@ -457,8 +457,8 @@
   [/#if]
 [/#macro]
 
-[#macro checkBoxFlat id name label="" help="" paramText="" helpIcon=true disabled=false editable=true value="" checked=true cssClass="" cssClassLabel=""]
-  <div class="inputsFlat">
+[#macro checkBoxFlat id name label="" help="" paramText="" helpIcon=true disabled=false editable=true value="" checked=true cssClass="" cssClassLabel="" columns=0 ]
+  <div class="inputsFlat [#if columns > 0]col-md-${columns}[/#if]">
     [#if editable]
     <input id="${id}" class="checkbox-input ${cssClass}" type="checkbox" name="${name}" value="${value}" [#if checked]checked=true[/#if] />
     <label for="${id}" class="checkbox-label ${cssClassLabel}"> [@s.text name=label /] 

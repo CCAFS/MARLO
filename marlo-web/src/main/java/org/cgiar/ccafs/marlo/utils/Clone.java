@@ -26,15 +26,13 @@ import org.apache.commons.io.IOUtils;
 
 public class Clone {
 
-  public static String pathdao = "D:\\Github\\MARLO\\marlo-data\\src\\main\\java\\org\\cgiar\\ccafs\\marlo\\data\\dao";
+  public static String pathdao = "D:\\MARLO\\marlo-data\\src\\main\\java\\org\\cgiar\\ccafs\\marlo\\data\\dao";
   public static String pathmysqldao =
-    "D:\\Github\\MARLO\\marlo-data\\src\\main\\java\\org\\cgiar\\ccafs\\marlo\\data\\dao\\mysql";
-  public static String pathmanager =
-    "D:\\Github\\MARLO\\marlo-data\\src\\main\\java\\org\\cgiar\\ccafs\\marlo\\data\\manager";
-  public static String pathmodel =
-    "D:\\Github\\MARLO\\marlo-data\\src\\main\\java\\org\\cgiar\\ccafs\\marlo\\data\\model";
+    "D:\\MARLO\\marlo-data\\src\\main\\java\\org\\cgiar\\ccafs\\marlo\\data\\dao\\mysql";
+  public static String pathmanager = "D:\\MARLO\\marlo-data\\src\\main\\java\\org\\cgiar\\ccafs\\marlo\\data\\manager";
+  public static String pathmodel = "D:\\MARLO\\marlo-data\\src\\main\\java\\org\\cgiar\\ccafs\\marlo\\data\\model";
   public static String pathmanagerimpl =
-    "D:\\Github\\MARLO\\marlo-data\\src\\main\\java\\org\\cgiar\\ccafs\\marlo\\data\\manager\\impl";
+    "D:\\MARLO\\marlo-data\\src\\main\\java\\org\\cgiar\\ccafs\\marlo\\data\\manager\\impl";
 
   // Copy the source file to target file.
   // In case the dst file does not exist, it is created
@@ -139,7 +137,7 @@ public class Clone {
      * String[] model = {"EvidenceTag", "ProjectExpectedStudyInnovation", "ProjectExpectedStudyPolicy",
      * "ProjectExpectedStudyLink", "ProjectExpectedStudyQuantification"};
      */
-    String[] model = {"GeneralAcronym"};
+    String[] model = {"DeliverableUserPartnershipPerson"};
 
     for (int i = 0; i < model.length; i++) {
       generateDao(model[i]);
