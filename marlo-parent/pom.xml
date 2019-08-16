@@ -5,7 +5,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.cgiar.ccafs</groupId>
 	<artifactId>marlo-parent</artifactId>
-	<version>4.3.2-SNAPSHOT</version>
+	<version>4.3.3-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>marlo-parent</name>
 	<description>Parent</description>
@@ -119,10 +119,10 @@
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>
-        <groupId>${project.groupId}</groupId>
-        <artifactId>marlo-data</artifactId>
-        <version>${project.version}</version>
-      </dependency>
+				<groupId>${project.groupId}</groupId>
+				<artifactId>marlo-data</artifactId>
+				<version>${project.version}</version>
+			</dependency>
 			<dependency>
 				<groupId>${project.groupId}</groupId>
 				<artifactId>marlo-web</artifactId>
@@ -636,7 +636,7 @@
 				<groupId>org.apache.commons</groupId>
 				<artifactId>commons-collections4</artifactId>
 				<version>4.0</version>
-			</dependency>		
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 	<reporting>
@@ -710,7 +710,7 @@
 				<plugin>
 					<groupId>org.apache.tomcat.maven</groupId>
 					<artifactId>tomcat7-maven-plugin</artifactId>
-					<version>2.2</version>					
+					<version>2.2</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>

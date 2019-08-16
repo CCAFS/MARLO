@@ -19,7 +19,9 @@ package org.cgiar.ccafs.marlo.data.dao.mysql;
 import org.cgiar.ccafs.marlo.data.dao.PhaseDAO;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -88,6 +90,26 @@ public class PhaseMySQLDAO extends AbstractMarloDAO<Phase, Long> implements Phas
       return list.get(0);
     }
     return null;
+  }
+
+
+  @Override
+  public Phase getActivePhase(long globalUnitId) {
+    StringBuilder query = new StringBuilder();
+    query.append("SELECT MAX(id) id FROM phases ");
+    query.append("WHERE editable = 1 AND visible = 1 AND ");
+    query.append(" AND global_unit_id = ");
+    query.append(globalUnitId);
+    List<Map<String, Object>> list = super.findCustomQuery(query.toString());
+
+    List<Phase> phases = new ArrayList<Phase>();
+    for (Map<String, Object> map : list) {
+      String id = map.get("id").toString();
+      long phaseId = Long.parseLong(id);
+      Phase phase = this.find(phaseId);
+      phases.add(phase);
+    }
+    return phases.get(0);
   }
 
 
