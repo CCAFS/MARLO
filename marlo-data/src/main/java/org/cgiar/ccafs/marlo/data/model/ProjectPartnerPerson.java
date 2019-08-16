@@ -26,6 +26,9 @@ public class ProjectPartnerPerson extends MarloAuditableEntity implements java.i
   @Expose
   private String contactType;
 
+  @Expose
+  private PartnerDivision partnerDivision;
+
   private Set<Activity> activities = new HashSet<Activity>(0);
 
   public ProjectPartnerPerson() {
@@ -86,14 +89,18 @@ public class ProjectPartnerPerson extends MarloAuditableEntity implements java.i
     return sb.toString();
   }
 
+  public PartnerDivision getPartnerDivision() {
+    return partnerDivision;
+  }
+
   public ProjectPartner getProjectPartner() {
     return projectPartner;
   }
 
+
   public ProjectPartner getProjectPartners() {
     return this.projectPartner;
   }
-
 
   public User getUser() {
     return this.user;
@@ -115,6 +122,11 @@ public class ProjectPartnerPerson extends MarloAuditableEntity implements java.i
     this.contactType = contactType;
   }
 
+  public void setPartnerDivision(PartnerDivision partnerDivision) {
+    this.partnerDivision = partnerDivision;
+  }
+
+
   public void setProjectPartner(ProjectPartner projectPartner) {
     this.projectPartner = projectPartner;
   }
@@ -127,6 +139,7 @@ public class ProjectPartnerPerson extends MarloAuditableEntity implements java.i
   public void setUser(User usersByUserId) {
     this.user = usersByUserId;
   }
+
 
   @Override
   public String toString() {
