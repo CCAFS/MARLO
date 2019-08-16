@@ -30,8 +30,7 @@ public class DeliverableUserPartnershipPerson extends MarloAuditableEntity imple
   private User user;
   @Expose
   private DeliverableUserPartnership deliverableUserPartnership;
-  @Expose
-  private PartnerDivision partnerDivision;
+
 
   public DeliverableUserPartnershipPerson() {
   }
@@ -79,10 +78,6 @@ public class DeliverableUserPartnershipPerson extends MarloAuditableEntity imple
   }
 
 
-  public PartnerDivision getPartnerDivision() {
-    return partnerDivision;
-  }
-
   public User getUser() {
     return user;
   }
@@ -98,11 +93,6 @@ public class DeliverableUserPartnershipPerson extends MarloAuditableEntity imple
 
   public void setDeliverableUserPartnership(DeliverableUserPartnership deliverableUserPartnership) {
     this.deliverableUserPartnership = deliverableUserPartnership;
-  }
-
-
-  public void setPartnerDivision(PartnerDivision partnerDivision) {
-    this.partnerDivision = partnerDivision;
   }
 
 
