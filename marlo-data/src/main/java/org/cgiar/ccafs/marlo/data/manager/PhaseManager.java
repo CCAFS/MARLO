@@ -61,6 +61,8 @@ public interface PhaseManager {
    */
   public Phase findPreviousPhase(long phaseId);
 
+  public Phase getActivePhase(long globalUnitId);
+
   /**
    * This method gets a phase object by a given phase identifier.
    * 
@@ -78,6 +80,5 @@ public interface PhaseManager {
    *         or -1 is some error occurred.
    */
   public Phase savePhase(Phase phase);
-
 
 }
