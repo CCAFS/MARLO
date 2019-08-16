@@ -64,6 +64,8 @@ public interface ProjectInnovationCountryDAO {
    */
   public List<ProjectInnovationCountry> getInnovationCountrybyPhase(long innovationID, long phaseID);
 
+  public ProjectInnovationCountry getInnovationCountrybyPhase(long projectinnovationID, long countryID, long phaseID);
+
   /**
    * This method saves the information of the given projectInnovationCountry
    * 

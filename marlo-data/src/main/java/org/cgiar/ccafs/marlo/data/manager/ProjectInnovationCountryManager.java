@@ -62,12 +62,25 @@ public interface ProjectInnovationCountryManager {
   public List<ProjectInnovationCountry> getInnovationCountrybyPhase(long innovationID, long phaseID);
 
   /**
+   * This method gets a projectInnovationCountry object list by a given innovation , phase identifier and country
+   * identifier.
+   * 
+   * @param projectinnovationID is the innovation identifier.
+   * @param countryID is the country identifier.
+   * @param phaseID is the phase identifier.
+   * @return a projectInnovationCountry object list.
+   */
+
+  ProjectInnovationCountry getInnovationCountrybyPhase(long projectinnovationID, long countryID, long phaseID);
+
+  /**
    * This method gets a projectInnovationCountry object by a given projectInnovationCountry identifier.
    * 
    * @param projectInnovationCountryID is the projectInnovationCountry identifier.
    * @return a ProjectInnovationCountry object.
    */
   public ProjectInnovationCountry getProjectInnovationCountryById(long projectInnovationCountryID);
+
 
   /**
    * This method saves the information of the given projectInnovationCountry

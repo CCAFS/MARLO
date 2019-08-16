@@ -53,22 +53,37 @@ public interface ProjectInnovationGeographicScopeManager {
 
 
   /**
+   * This method get the information of the given projectInnovationGeographicScope
+   * 
+   * @param project_innovation_id identifier
+   * @param rep_ind_geographic_scope_id identifier
+   * @param id_phase id phase
+   * @return a Object that contains information about innovation Geographic scope
+   */
+  public ProjectInnovationGeographicScope getProjectInnovationGeographicScope(long project_innovation_id,
+    long rep_ind_geographic_scope_id, long id_phase);
+
+  /**
    * This method gets a projectInnovationGeographicScope object by a given projectInnovationGeographicScope identifier.
    * 
    * @param projectInnovationGeographicScopeID is the projectInnovationGeographicScope identifier.
    * @return a ProjectInnovationGeographicScope object.
    */
-  public ProjectInnovationGeographicScope getProjectInnovationGeographicScopeById(long projectInnovationGeographicScopeID);
+  public ProjectInnovationGeographicScope
+    getProjectInnovationGeographicScopeById(long projectInnovationGeographicScopeID);
 
   /**
    * This method saves the information of the given projectInnovationGeographicScope
    * 
-   * @param projectInnovationGeographicScope - is the projectInnovationGeographicScope object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the projectInnovationGeographicScope was
+   * @param projectInnovationGeographicScope - is the projectInnovationGeographicScope object with the new information
+   *        to be added/updated.
+   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the
+   *         projectInnovationGeographicScope was
    *         updated
    *         or -1 is some error occurred.
    */
-  public ProjectInnovationGeographicScope saveProjectInnovationGeographicScope(ProjectInnovationGeographicScope projectInnovationGeographicScope);
+  public ProjectInnovationGeographicScope
+    saveProjectInnovationGeographicScope(ProjectInnovationGeographicScope projectInnovationGeographicScope);
 
 
 }

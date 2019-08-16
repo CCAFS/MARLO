@@ -113,7 +113,5 @@ public class ProjectInnovationGeographicScope extends MarloBaseEntity implements
   public void setRepIndGeographicScope(RepIndGeographicScope repIndGeographicScope) {
     this.repIndGeographicScope = repIndGeographicScope;
   }
-
-
 }
 

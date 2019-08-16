@@ -101,6 +101,13 @@ public class ProjectInnovationOrganizationManagerImpl implements ProjectInnovati
     return projectInnovationOrganizationDAO.find(projectInnovationOrganizationID);
   }
 
+  @Override
+  public ProjectInnovationOrganization getProjectInnovationOrganizationById(long innovationID,
+    long repIndOrganizationID, long phaseID) {
+    return projectInnovationOrganizationDAO.projectInnovationOrganization(innovationID, repIndOrganizationID, phaseID);
+
+  }
+
   public void saveInnovationOrganizationPhase(Phase next, long innovationid,
     ProjectInnovationOrganization projectInnovationOrganization) {
     Phase phase = phaseDAO.find(next.getId());

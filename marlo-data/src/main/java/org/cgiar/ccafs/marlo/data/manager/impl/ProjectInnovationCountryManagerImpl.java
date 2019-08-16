@@ -100,6 +100,11 @@ public class ProjectInnovationCountryManagerImpl implements ProjectInnovationCou
   }
 
   @Override
+  public ProjectInnovationCountry getInnovationCountrybyPhase(long projectinnovationID, long countryID, long phaseID) {
+    return projectInnovationCountryDAO.getInnovationCountrybyPhase(projectinnovationID, countryID, phaseID);
+  }
+
+  @Override
   public ProjectInnovationCountry getProjectInnovationCountryById(long projectInnovationCountryID) {
 
     return projectInnovationCountryDAO.find(projectInnovationCountryID);
@@ -142,6 +147,4 @@ public class ProjectInnovationCountryManagerImpl implements ProjectInnovationCou
     }
     return country;
   }
-
-
 }
