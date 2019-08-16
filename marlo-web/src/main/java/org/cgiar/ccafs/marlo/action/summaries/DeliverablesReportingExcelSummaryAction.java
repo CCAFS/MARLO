@@ -22,6 +22,7 @@ import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableCrossCuttingMarkerManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableGeographicRegionManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableGeographicScopeManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableLocationManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.GenderTypeManager;
@@ -40,6 +41,7 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableFundingSource;
 import org.cgiar.ccafs.marlo.data.model.DeliverableGenderLevel;
 import org.cgiar.ccafs.marlo.data.model.DeliverableGeographicRegion;
 import org.cgiar.ccafs.marlo.data.model.DeliverableGeographicScope;
+import org.cgiar.ccafs.marlo.data.model.DeliverableInfo;
 import org.cgiar.ccafs.marlo.data.model.DeliverableLeader;
 import org.cgiar.ccafs.marlo.data.model.DeliverableLocation;
 import org.cgiar.ccafs.marlo.data.model.DeliverableMetadataElement;
@@ -116,6 +118,7 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
   private final DeliverableGeographicRegionManager deliverableGeographicRegionManager;
   private DeliverableLocationManager deliverableLocationManager;
   private final CrpPpaPartnerManager crpPpaPartnerManager;
+  private final DeliverableInfoManager deliverableInfoManager;
   private String showAllYears;
   private String ppa;
 
@@ -138,7 +141,8 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
     DeliverableCrossCuttingMarkerManager deliverableCrossCuttingMarkerManager,
     DeliverableGeographicScopeManager deliverableGeographicScopeManager,
     DeliverableGeographicRegionManager deliverableGeographicRegionManager,
-    DeliverableLocationManager deliverableLocationManager, CrpPpaPartnerManager crpPpaPartnerManager) {
+    DeliverableLocationManager deliverableLocationManager, CrpPpaPartnerManager crpPpaPartnerManager,
+    DeliverableInfoManager deliverableInfoManager) {
     super(config, crpManager, phaseManager, projectManager);
     this.genderTypeManager = genderTypeManager;
     this.crpPpaPartnerManager = crpPpaPartnerManager;
@@ -151,6 +155,7 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
     this.deliverableGeographicScopeManager = deliverableGeographicScopeManager;
     this.deliverableGeographicRegionManager = deliverableGeographicRegionManager;
     this.deliverableLocationManager = deliverableLocationManager;
+    this.deliverableInfoManager = deliverableInfoManager;
   }
 
   /**
@@ -408,50 +413,93 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
     if (!deliverableManager.findAll().isEmpty()) {
       List<Deliverable> deliverables = new ArrayList<>();
 
-      if (showAllYears.equals("true")) {
-        deliverables = new ArrayList<>(deliverableManager.findAll().stream().filter(d -> d.isActive()
-          && d.getProject() != null && d.getProject().isActive()
-          && d.getProject().getProjecInfoPhase(this.getSelectedPhase()) != null
-          && d.getProject().getGlobalUnitProjects().stream().filter(
-            gup -> gup.isActive() && gup.isOrigin() && gup.getGlobalUnit().getId().equals(this.getLoggedCrp().getId()))
-            .collect(Collectors.toList()).size() > 0
-          && d.getDeliverableInfo(this.getSelectedPhase()) != null).collect(Collectors.toList()));
-      } else {
-        deliverables = new ArrayList<>(deliverableManager.findAll().stream().filter(d -> d.isActive()
-          && d.getProject() != null && d.getProject().isActive()
-          && d.getProject().getProjecInfoPhase(this.getSelectedPhase()) != null
-          && d.getProject().getGlobalUnitProjects().stream().filter(
-            gup -> gup.isActive() && gup.isOrigin() && gup.getGlobalUnit().getId().equals(this.getLoggedCrp().getId()))
-            .collect(Collectors.toList()).size() > 0
-          && d.getDeliverableInfo(this.getSelectedPhase()) != null && d.getDeliverableInfo().getStatus() != null
-          && ((d.getDeliverableInfo().getStatus().intValue() == Integer
-            .parseInt(ProjectStatusEnum.Complete.getStatusId())
-            && (d.getDeliverableInfo().getYear() == this.getSelectedYear()
-              || (d.getDeliverableInfo().getNewExpectedYear() != null
-                && d.getDeliverableInfo().getNewExpectedYear().intValue() >= this.getSelectedYear())))
-            || (d.getDeliverableInfo().getStatus().intValue() == Integer
-              .parseInt(ProjectStatusEnum.Extended.getStatusId())
-              && (d.getDeliverableInfo().getYear() == this.getSelectedYear()
-                || (d.getDeliverableInfo().getNewExpectedYear() != null
-                  && d.getDeliverableInfo().getNewExpectedYear().intValue() == this.getSelectedYear())))
-            || (d.getDeliverableInfo().getStatus().intValue() == Integer
-              .parseInt(ProjectStatusEnum.Cancelled.getStatusId())
-              && (d.getDeliverableInfo().getYear() == this.getSelectedYear()
-                || (d.getDeliverableInfo().getNewExpectedYear() != null
-                  && d.getDeliverableInfo().getNewExpectedYear().intValue() == this.getSelectedYear())))
-            || (d.getDeliverableInfo().getStatus().intValue() == Integer
-              .parseInt(ProjectStatusEnum.Ongoing.getStatusId())
-              && (d.getDeliverableInfo().getYear() == this.getSelectedYear())))
-          && (d.getDeliverableInfo().getStatus().intValue() == Integer
-            .parseInt(ProjectStatusEnum.Extended.getStatusId())
-            || d.getDeliverableInfo().getStatus().intValue() == Integer
-              .parseInt(ProjectStatusEnum.Complete.getStatusId())
-            || d.getDeliverableInfo().getStatus().intValue() == Integer
-              .parseInt(ProjectStatusEnum.Cancelled.getStatusId())
-            || d.getDeliverableInfo().getStatus().intValue() == Integer
-              .parseInt(ProjectStatusEnum.Ongoing.getStatusId())))
-          .collect(Collectors.toList()));
+
+      /**
+       * 08/05 HJ - Fixing this report trying to not use Lambda expression in more of 3 or 4 list because the Hibernate
+       * Lazy Java Assist will occupy all the Memory causing JAVA head space Error and crash the App server (Tomcat)
+       */
+
+      List<DeliverableInfo> infos = deliverableInfoManager.getDeliverablesInfoByPhase(this.getSelectedPhase());
+      if (infos != null && !infos.isEmpty()) {
+        for (DeliverableInfo deliverableInfo : infos) {
+          Deliverable deliverable = deliverableInfo.getDeliverable();
+          deliverable.setDeliverableInfo(deliverableInfo);
+          if (showAllYears.equals("true")) {
+            deliverables.add(deliverable);
+          } else {
+            if (deliverableInfo != null && deliverable.getDeliverableInfo().getStatus() != null
+              && ((deliverableInfo.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())
+                && (deliverableInfo.getYear() == this.getSelectedYear() || (deliverableInfo.getNewExpectedYear() != null
+                  && deliverableInfo.getNewExpectedYear().intValue() >= this.getSelectedYear())))
+                || (deliverableInfo.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
+                  && (deliverableInfo.getYear() == this.getSelectedYear()
+                    || (deliverableInfo.getNewExpectedYear() != null
+                      && deliverableInfo.getNewExpectedYear().intValue() == this.getSelectedYear())))
+                || (deliverableInfo.getStatus().intValue() == Integer
+                  .parseInt(ProjectStatusEnum.Cancelled.getStatusId())
+                  && (deliverableInfo.getYear() == this.getSelectedYear()
+                    || (deliverableInfo.getNewExpectedYear() != null
+                      && deliverableInfo.getNewExpectedYear().intValue() == this.getSelectedYear())))
+                || (deliverableInfo.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
+                  && (deliverableInfo.getYear() == this.getSelectedYear())))
+              && (deliverableInfo.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
+                || deliverableInfo.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())
+                || deliverableInfo.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId())
+                || deliverableInfo.getStatus().intValue() == Integer
+                  .parseInt(ProjectStatusEnum.Ongoing.getStatusId()))) {
+              deliverables.add(deliverable);
+
+            }
+
+          }
+
+        }
       }
+
+      // if (showAllYears.equals("true")) {
+      // deliverables = new ArrayList<>(deliverableManager.findAll().stream().filter(d -> d.isActive()
+      // && d.getProject() != null && d.getProject().isActive()
+      // && d.getProject().getProjecInfoPhase(this.getSelectedPhase()) != null
+      // && d.getProject().getGlobalUnitProjects().stream().filter(
+      // gup -> gup.isActive() && gup.isOrigin() && gup.getGlobalUnit().getId().equals(this.getLoggedCrp().getId()))
+      // .collect(Collectors.toList()).size() > 0
+      // && d.getDeliverableInfo(this.getSelectedPhase()) != null).collect(Collectors.toList()));
+      // } else {
+      // deliverables = new ArrayList<>(deliverableManager.findAll().stream().filter(d -> d.isActive()
+      // && d.getProject() != null && d.getProject().isActive()
+      // && d.getProject().getProjecInfoPhase(this.getSelectedPhase()) != null
+      // && d.getProject().getGlobalUnitProjects().stream().filter(
+      // gup -> gup.isActive() && gup.isOrigin() && gup.getGlobalUnit().getId().equals(this.getLoggedCrp().getId()))
+      // .collect(Collectors.toList()).size() > 0
+      // && d.getDeliverableInfo(this.getSelectedPhase()) != null && d.getDeliverableInfo().getStatus() != null
+      // && ((d.getDeliverableInfo().getStatus().intValue() == Integer
+      // .parseInt(ProjectStatusEnum.Complete.getStatusId())
+      // && (d.getDeliverableInfo().getYear() == this.getSelectedYear()
+      // || (d.getDeliverableInfo().getNewExpectedYear() != null
+      // && d.getDeliverableInfo().getNewExpectedYear().intValue() >= this.getSelectedYear())))
+      // || (d.getDeliverableInfo().getStatus().intValue() == Integer
+      // .parseInt(ProjectStatusEnum.Extended.getStatusId())
+      // && (d.getDeliverableInfo().getYear() == this.getSelectedYear()
+      // || (d.getDeliverableInfo().getNewExpectedYear() != null
+      // && d.getDeliverableInfo().getNewExpectedYear().intValue() == this.getSelectedYear())))
+      // || (d.getDeliverableInfo().getStatus().intValue() == Integer
+      // .parseInt(ProjectStatusEnum.Cancelled.getStatusId())
+      // && (d.getDeliverableInfo().getYear() == this.getSelectedYear()
+      // || (d.getDeliverableInfo().getNewExpectedYear() != null
+      // && d.getDeliverableInfo().getNewExpectedYear().intValue() == this.getSelectedYear())))
+      // || (d.getDeliverableInfo().getStatus().intValue() == Integer
+      // .parseInt(ProjectStatusEnum.Ongoing.getStatusId())
+      // && (d.getDeliverableInfo().getYear() == this.getSelectedYear())))
+      // && (d.getDeliverableInfo().getStatus().intValue() == Integer
+      // .parseInt(ProjectStatusEnum.Extended.getStatusId())
+      // || d.getDeliverableInfo().getStatus().intValue() == Integer
+      // .parseInt(ProjectStatusEnum.Complete.getStatusId())
+      // || d.getDeliverableInfo().getStatus().intValue() == Integer
+      // .parseInt(ProjectStatusEnum.Cancelled.getStatusId())
+      // || d.getDeliverableInfo().getStatus().intValue() == Integer
+      // .parseInt(ProjectStatusEnum.Ongoing.getStatusId())))
+      // .collect(Collectors.toList()));
+      // }
 
       // get Reporting deliverables: added on-going as request of Amanda
 
@@ -490,8 +538,9 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
 
         if (deliverable.getProject() != null) {
           projectID = deliverable.getProject().getId().toString();
-          if (deliverable.getProject().getProjectInfo().getTitle() != null) {
-            projectTitle = deliverable.getProject().getProjectInfo().getTitle();
+          if (deliverable.getProject().getProjecInfoPhase(this.getSelectedPhase()) != null
+            && deliverable.getProject().getProjecInfoPhase(this.getSelectedPhase()).getTitle() != null) {
+            projectTitle = deliverable.getProject().getProjecInfoPhase(this.getSelectedPhase()).getTitle();
           }
         }
 
@@ -517,9 +566,10 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
           description = "<Not applicable>";
         }
 
-        if (deliverable.getProject() != null && deliverable.getProject().getProjectInfo() != null
-          && deliverable.getProject().getProjectInfo().getStatusName() != null) {
-          status = deliverable.getProject().getProjectInfo().getStatusName();
+        if (deliverable.getProject() != null
+          && deliverable.getProject().getProjecInfoPhase(this.getSelectedPhase()) != null
+          && deliverable.getProject().getProjecInfoPhase(this.getSelectedPhase()).getStatusName() != null) {
+          status = deliverable.getProject().getProjecInfoPhase(this.getSelectedPhase()).getStatusName();
         }
 
         Long phaseID = deliverable.getDeliverableInfo().getPhase().getId();
@@ -1193,7 +1243,8 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
         for (ProjectFocus projectFocuses : deliverable.getProject().getProjectFocuses().stream()
           .sorted((o1, o2) -> o1.getCrpProgram().getAcronym().compareTo(o2.getCrpProgram().getAcronym()))
           .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase())
-            && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+            && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()
+            && c.getCrpProgram().getCrp().getId().equals(this.getCurrentCrp().getId()))
           .collect(Collectors.toList())) {
           if (flagships == null || flagships.isEmpty()) {
             flagships = programManager.getCrpProgramById(projectFocuses.getCrpProgram().getId()).getAcronym();
@@ -1215,8 +1266,8 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
               regions += ", " + programManager.getCrpProgramById(projectFocuses.getCrpProgram().getId()).getAcronym();
             }
           }
-          if (deliverable.getProject().getProjectInfo().getNoRegional() != null
-            && deliverable.getProject().getProjectInfo().getNoRegional()) {
+          if (deliverable.getProject().getProjecInfoPhase(this.getSelectedPhase()).getNoRegional() != null
+            && deliverable.getProject().getProjecInfoPhase(this.getSelectedPhase()).getNoRegional()) {
             if (regions != null && !regions.isEmpty()) {
               LOG.warn("Project is global and has regions selected");
             }
