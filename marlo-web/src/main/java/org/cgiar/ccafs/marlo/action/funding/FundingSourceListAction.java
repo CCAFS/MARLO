@@ -84,6 +84,7 @@ public class FundingSourceListAction extends BaseAction {
   private List<String> partnertsIDList;
   private FundingSourceManager fundingSourceManager;
 
+  private List<Institution> institutions;
   private Role cpRole;
   private FundingSourceInfoManager fundingSourceInfoManager;
   private RoleManager roleManager;
@@ -112,6 +113,7 @@ public class FundingSourceListAction extends BaseAction {
   private String agreementStatusValue;
   private String institutionLead;
   private String partnerIDs;
+
 
   @Inject
   public FundingSourceListAction(APConfig config, FundingSourceManager fundingSourceManager,
@@ -196,6 +198,7 @@ public class FundingSourceListAction extends BaseAction {
         }
       }
 
+
       if (partnertsIDList != null) {
         for (String partner : partnertsIDList) {
           FundingSourceInstitution fundingSourceInstitution = new FundingSourceInstitution();;
@@ -245,6 +248,7 @@ public class FundingSourceListAction extends BaseAction {
     return INPUT;
   }
 
+
   public void assignLeadCenter() {
     for (FundingSource fundingSource : fundingSourceManager.findAll().stream().filter(fs -> fs.isActive())
       .collect(Collectors.toList())) {
@@ -278,6 +282,7 @@ public class FundingSourceListAction extends BaseAction {
     }
   }
 
+
   public boolean canAddFunding() {
     boolean permission = this.hasPermissionNoBase(
       this.generatePermission(Permission.PROJECT_FUNDING_W1_BASE_PERMISSION, loggedCrp.getAcronym()))
@@ -291,7 +296,6 @@ public class FundingSourceListAction extends BaseAction {
     return permission && !this.isReportingActive();
   }
 
-
   public void convertListToString(List<String> list) {
     if (list != null && !list.isEmpty()) {
       for (String element : list) {
@@ -303,7 +307,6 @@ public class FundingSourceListAction extends BaseAction {
       }
     }
   }
-
 
   @Override
   public String delete() {
@@ -328,6 +331,7 @@ public class FundingSourceListAction extends BaseAction {
     return SUCCESS;
   }
 
+
   /**
    * Add cpRole as a flag to avoid contact points
    * 
@@ -345,6 +349,24 @@ public class FundingSourceListAction extends BaseAction {
         .collect(Collectors.toList()));
     } else {
       crpPpaPartner.setContactPoints(new ArrayList<LiaisonUser>());
+    }
+  }
+
+
+  public void fillInstitutionsList() {
+    institutions = new ArrayList<>();
+
+    if (institutionsIDsList != null) {
+      for (String institution : institutionsIDsList) {
+
+        Long id = null;
+        if (institution != null && !institution.equals("0")) {
+          id = Long.parseLong(institution);
+        }
+        if (id != 0) {
+          institutions.add(institutionManager.getInstitutionById(id));
+        }
+      }
     }
   }
 
@@ -422,21 +444,9 @@ public class FundingSourceListAction extends BaseAction {
     return fundingSourceID;
   }
 
-
   public List<FundingSourceInstitution> getFundingSourceInstitutions() {
     return fundingSourceInstitutions;
   }
-
-  // public void getBudgetAmount(long fundingsourceID){
-  //
-  // FundingSource fundingSource = fundingSourceManager.getFundingSourceById(fundingsourceID);
-  //
-  // List<FundingSourceBudget> fundingSourceBudgets = new
-  // ArrayList<>(fundingSource.getFundingSourceBudgets().stream().filter(fb -> fb.isActive() &&
-  // fb.getPhase().getId().equals(this)));
-  //
-  //
-  // }
 
 
   public void getFundingSourceInstitutionsList() {
@@ -469,6 +479,22 @@ public class FundingSourceListAction extends BaseAction {
         }
       }
     }
+  }
+
+  // public void getBudgetAmount(long fundingsourceID){
+  //
+  // FundingSource fundingSource = fundingSourceManager.getFundingSourceById(fundingsourceID);
+  //
+  // List<FundingSourceBudget> fundingSourceBudgets = new
+  // ArrayList<>(fundingSource.getFundingSourceBudgets().stream().filter(fb -> fb.isActive() &&
+  // fb.getPhase().getId().equals(this)));
+  //
+  //
+  // }
+
+
+  public List<Institution> getInstitutions() {
+    return institutions;
   }
 
 
@@ -678,6 +704,7 @@ public class FundingSourceListAction extends BaseAction {
     if (institutionsIDs != null && !institutionsIDs.equals("0") && !institutionsIDs.isEmpty()) {
       this.getInstitutionsIds();
       this.removeInstitutions();
+      this.fillInstitutionsList();
       // return string with the institutions in the apconstant variable separated with ','
       this.convertListToString(institutionsIDsList);
     } else {
@@ -781,6 +808,7 @@ public class FundingSourceListAction extends BaseAction {
       closedProjects.addAll(tempList);
     }
   }
+
 
   public void removeInstitutionsContactPointRole() {
     // Get institution for contact point
@@ -903,6 +931,10 @@ public class FundingSourceListAction extends BaseAction {
 
   public void setFundingSourceInstitutions(List<FundingSourceInstitution> fundingSourceInstitutions) {
     this.fundingSourceInstitutions = fundingSourceInstitutions;
+  }
+
+  public void setInstitutions(List<Institution> institutions) {
+    this.institutions = institutions;
   }
 
 
