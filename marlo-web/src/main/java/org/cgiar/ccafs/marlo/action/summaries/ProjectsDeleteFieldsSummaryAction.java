@@ -19,16 +19,20 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectComponentLessonManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.Activity;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.ExpectedStudyProject;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
+import org.cgiar.ccafs.marlo.data.model.ProjectComponentLesson;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
+import org.cgiar.ccafs.marlo.data.model.ProjectPolicy;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
@@ -39,6 +43,7 @@ import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -70,17 +75,18 @@ import org.slf4j.LoggerFactory;
  * 
  * @author avalencia - CCAFS
  */
-public class ProjectsSummaryAction extends BaseSummariesAction implements Summary {
+public class ProjectsDeleteFieldsSummaryAction extends BaseSummariesAction implements Summary {
 
   private static final long serialVersionUID = 1L;
 
-  private static Logger LOG = LoggerFactory.getLogger(ProjectsSummaryAction.class);
+  private static Logger LOG = LoggerFactory.getLogger(ProjectsDeleteFieldsSummaryAction.class);
   // Parameters
   private long startTime;
 
   // Managers
   private final CrpProgramManager crpProgramManager;
   private final ResourceManager resourceManager;
+  private final ProjectComponentLessonManager projectComponentLessonManager;
   // XLS bytes
   private byte[] bytesXLSX;
   // Streams
@@ -89,11 +95,13 @@ public class ProjectsSummaryAction extends BaseSummariesAction implements Summar
 
 
   @Inject
-  public ProjectsSummaryAction(APConfig config, GlobalUnitManager crpManager, PhaseManager phaseManager,
-    CrpProgramManager crpProgramManager, ResourceManager resourceManager, ProjectManager projectManager) {
+  public ProjectsDeleteFieldsSummaryAction(APConfig config, GlobalUnitManager crpManager, PhaseManager phaseManager,
+    CrpProgramManager crpProgramManager, ResourceManager resourceManager, ProjectManager projectManager,
+    ProjectComponentLessonManager projectComponentLessonManager) {
     super(config, crpManager, phaseManager, projectManager);
     this.crpProgramManager = crpProgramManager;
     this.resourceManager = resourceManager;
+    this.projectComponentLessonManager = projectComponentLessonManager;
   }
 
 
@@ -120,6 +128,14 @@ public class ProjectsSummaryAction extends BaseSummariesAction implements Summar
     masterReport.getParameterValues().put("i8nStudiesAmount", this.getText("summaries.oaprojects.studiesAmount"));
     masterReport.getParameterValues().put("i8nStudiesCrossCutting",
       this.getText("summaries.oaprojects.crossCuttingDimensions"));
+    masterReport.getParameterValues().put("i8nContactPerson", "Management Liaison Contact Person");
+    masterReport.getParameterValues().put("i8nGenderAnalysis", "Gender Analysis");
+    masterReport.getParameterValues().put("i8nNewPartnershipsPlanned", "New Partnerships Planned");
+    masterReport.getParameterValues().put("i8nGenderDimenssion", "GenderDimenssion");
+    masterReport.getParameterValues().put("i8nYouthComponent", "Youth Component");
+    masterReport.getParameterValues().put("i8nProjectComponentLesson", "Lesson");
+    masterReport.getParameterValues().put("i8nRepIndOrganization", "Implementing Organization Type");
+    masterReport.getParameterValues().put("i8nRepIndOrganizationType", "Contribution of CRP");
     return masterReport;
   }
 
@@ -132,8 +148,8 @@ public class ProjectsSummaryAction extends BaseSummariesAction implements Summar
 
     ByteArrayOutputStream os = new ByteArrayOutputStream();
     try {
-      Resource reportResource =
-        resourceManager.createDirectly(this.getClass().getResource("/pentaho/crp/Projects.prpt"), MasterReport.class);
+      Resource reportResource = resourceManager
+        .createDirectly(this.getClass().getResource("/pentaho/crp/ProjectsDeleteFields.prpt"), MasterReport.class);
 
       MasterReport masterReport = (MasterReport) reportResource.getResource();
       // Set Main_Query
@@ -208,7 +224,7 @@ public class ProjectsSummaryAction extends BaseSummariesAction implements Summar
   @Override
   public String getFileName() {
     StringBuffer fileName = new StringBuffer();
-    fileName.append("ProjectsSummary-");
+    fileName.append("ProjectsDeleteFieldsSummary-");
     fileName.append(this.getLoggedCrp().getAcronym() + "-");
     fileName.append(this.getSelectedCycle() + "-");
     fileName.append(this.getSelectedYear() + "_");
@@ -252,9 +268,11 @@ public class ProjectsSummaryAction extends BaseSummariesAction implements Summar
     TypedTableModel model = new TypedTableModel(
       new String[] {"projectId", "projectTitle", "projectSummary", "status", "managementLiaison", "flagships",
         "regions", "institutionLeader", "projectLeader", "activitiesOnGoing", "expectedDeliverables", "outcomes",
-        "expectedStudies", "phaseID", "crossCutting"},
+        "expectedStudies", "phaseID", "crossCutting", "contactPerson", "genderAnalysis", "newPartnershipsPlanned",
+        "projectComponentLesson", "genderDimenssion", "youthComponent", "repIndOrganization", "repIndOrganizationType"},
       new Class[] {Long.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, Integer.class, Integer.class, Integer.class, Integer.class, Long.class,
+        String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class},
       0);
     // Status of projects
@@ -268,6 +286,14 @@ public class ProjectsSummaryAction extends BaseSummariesAction implements Summar
       String managementLiaison = null;
       String crossCutting = "";
       String projectSummary = "";
+      String managementLiaisonContactPerson = "";
+      String genderAnalysis = "";
+      String newPartnershipsPlanned = "";
+      String projectComponentLesson = "";
+      String genderDimenssions = "";
+      String youthComponent = "";
+      String repIndOrganization = "";
+      String repIndOrganizationType = "";
 
       if (project.getProjectInfo().getSummary() != null && !project.getProjectInfo().getSummary().isEmpty()) {
         projectSummary = project.getProjectInfo().getSummary();
@@ -279,6 +305,17 @@ public class ProjectsSummaryAction extends BaseSummariesAction implements Summar
         }
         managementLiaison = managementLiaison.replaceAll("<", "&lt;");
         managementLiaison = managementLiaison.replaceAll(">", "&gt;");
+      }
+
+      if (project.getProjectInfo().getLiaisonUser() != null
+        && project.getProjectInfo().getLiaisonUser().getUser() != null) {
+        if (project.getProjectInfo().getLiaisonUser().getUser().getComposedName() != null) {
+          managementLiaisonContactPerson = project.getProjectInfo().getLiaisonUser().getUser().getComposedName();
+        } else if (project.getProjectInfo().getLiaisonUser().getUser().getFirstName() != null
+          && project.getProjectInfo().getLiaisonUser().getUser().getLastName() != null) {
+          managementLiaisonContactPerson = project.getProjectInfo().getLiaisonUser().getUser().getFirstName() + " "
+            + project.getProjectInfo().getLiaisonUser().getUser().getLastName();
+        }
       }
 
       String flagships = null;
@@ -447,9 +484,77 @@ public class ProjectsSummaryAction extends BaseSummariesAction implements Summar
         }
       }
 
+      if (project.getProjectInfo().getGenderAnalysis() != null) {
+        genderAnalysis = project.getProjectInfo().getGenderAnalysis();
+      }
+
+      if (project.getProjectInfo().getNewPartnershipsPlanned() != null) {
+        genderAnalysis = project.getProjectInfo().getNewPartnershipsPlanned();
+      }
+
+      List<ProjectComponentLesson> pcList = new ArrayList<>();
+
+      pcList = project.getProjectComponentLessons().stream()
+        .filter(p -> p.isActive() && p.getProject().getId() == project.getId() && p.getPhase() == this.getActualPhase())
+        .collect(Collectors.toList());
+
+
+      if (pcList != null && pcList.get(0) != null) {
+        projectComponentLesson = pcList.get(0).getLessons();
+      }
+
+      List<ProjectOutcome> projectOutcomes = new ArrayList<>();
+
+      projectOutcomes = project.getProjectOutcomes().stream()
+        .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase()))
+        .collect(Collectors.toList());
+
+      if (projectOutcomes != null && projectOutcomes.size() > 0) {
+        if (projectOutcomes.get(0).getGenderDimenssion() != null) {
+          genderDimenssions = projectOutcomes.get(0).getGenderDimenssion();
+        }
+
+        if (projectOutcomes.get(0).getYouthComponent() != null) {
+          youthComponent = projectOutcomes.get(0).getYouthComponent();
+        }
+      }
+      List<ProjectPolicy> projectPolicies = new ArrayList<>();
+
+      projectPolicies = project.getProjectPolicies().stream()
+        .filter(p -> p.isActive() && p.getProject().getId().equals(project.getId()) && p.getProjectPolicyInfo() != null
+          && p.getProjectPolicyInfo().getRepIndOrganizationType() != null
+          && p.getProjectPolicyInfo().getRepIndOrganizationType().getName() != null
+          && p.getProjectPolicyInfo().getPhase() != null && this.getActualPhase() != null
+          && p.getProjectPolicyInfo().getPhase() == this.getActualPhase())
+        .collect(Collectors.toList());
+
+      if (projectPolicies != null && projectPolicies.size() > 0) {
+        if (projectPolicies.get(0).getProjectPolicyInfo(this.getActualPhase()) != null) {
+          repIndOrganization =
+            projectPolicies.get(0).getProjectPolicyInfo(this.getActualPhase()).getRepIndOrganizationType().getName();
+        }
+      }
+
+      List<ProjectInnovation> projectInnovations = new ArrayList<>();
+      projectInnovations = project.getProjectInnovations().stream()
+        .filter(
+          i -> i.isActive() && i.getProjectInnovationInfo() != null && i.getProjectInnovationInfo().getPhase() != null
+            && i.getProjectInnovationInfo().getPhase() == this.getActualPhase()
+            && i.getProjectInnovationOrganizations() != null)
+        .collect(Collectors.toList());
+      if (projectInnovations != null && projectInnovations.size() > 0) {
+        repIndOrganizationType = projectInnovations.get(0).getProjectInnovationOrganizations().stream()
+          .filter(o -> o.isActive() && o.getPhase() != null && o.getPhase().equals(this.getSelectedPhase())
+            && o.getRepIndOrganizationType() != null && o.getRepIndOrganizationType().getName() != null)
+          .collect(Collectors.toList()).get(0).getRepIndOrganizationType().getName();
+      }
+
+
       model.addRow(new Object[] {projectId, projectTitle, projectSummary, status, managementLiaison, flagships, regions,
         institutionLeader, projectLeaderName, activitiesOnGoing, expectedDeliverables, outcomes, expectedStudies,
-        this.getSelectedPhase().getId(), crossCutting});
+        this.getSelectedPhase().getId(), crossCutting, managementLiaisonContactPerson, genderAnalysis,
+        newPartnershipsPlanned, projectComponentLesson, genderDimenssions, youthComponent, repIndOrganization,
+        repIndOrganizationType});
     }
     return model;
   }
