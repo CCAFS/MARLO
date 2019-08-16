@@ -63,6 +63,17 @@ public interface ProjectInnovationRegionManager {
   public ProjectInnovationRegion getProjectInnovationRegionById(long projectInnovationRegionID);
 
   /**
+   * This method gets a projectInnovationRegion object by a given projectInnovationRegion identifier.
+   * 
+   * @param innovationID is the innovation identifier.
+   * @param RegionID is the region identifier.
+   * @param phaseID is the phase identifier.
+   * @return a ProjectInnovationRegion object.
+   */
+  public ProjectInnovationRegion getProjectInnovationRegionById(long innovationID, long RegionID, long phaseID);
+
+
+  /**
    * This method saves the information of the given projectInnovationRegion
    * 
    * @param projectInnovationRegion - is the projectInnovationRegion object with the new information to be
@@ -73,6 +84,5 @@ public interface ProjectInnovationRegionManager {
    *         or -1 is some error occurred.
    */
   public ProjectInnovationRegion saveProjectInnovationRegion(ProjectInnovationRegion projectInnovationRegion);
-
 
 }

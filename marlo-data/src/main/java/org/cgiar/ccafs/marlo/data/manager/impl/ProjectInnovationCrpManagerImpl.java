@@ -98,6 +98,12 @@ public class ProjectInnovationCrpManagerImpl implements ProjectInnovationCrpMana
     return projectInnovationCrpDAO.find(projectInnovationCrpID);
   }
 
+  @Override
+  public ProjectInnovationCrp getProjectInnovationCrpById(long innovationid, long globalUnitID, long phaseID) {
+
+    return projectInnovationCrpDAO.getProjectInnovationCrpById(innovationid, globalUnitID, phaseID);
+  }
+
   public void saveInnovationCrpPhase(Phase next, long innovationid, ProjectInnovationCrp projectInnovationCrp) {
 
     Phase phase = phaseDAO.find(next.getId());
@@ -134,6 +140,5 @@ public class ProjectInnovationCrpManagerImpl implements ProjectInnovationCrpMana
     }
     return crp;
   }
-
 
 }

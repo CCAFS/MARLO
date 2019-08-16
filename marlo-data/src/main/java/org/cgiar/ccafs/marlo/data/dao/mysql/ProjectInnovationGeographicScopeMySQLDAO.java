@@ -70,6 +70,19 @@ public class ProjectInnovationGeographicScopeMySQLDAO extends AbstractMarloDAO<P
   }
 
   @Override
+  public ProjectInnovationGeographicScope getProjectInnovationGeographicScope(long project_innovation_id,
+    long rep_ind_geographic_scope_id, long id_phase) {
+    String query = "from " + ProjectInnovationGeographicScope.class.getName() + " where project_innovation_id ='"
+      + project_innovation_id + "' AND rep_ind_geographic_scope_id='" + rep_ind_geographic_scope_id + "' AND id_phase='"
+      + id_phase + "'";
+    List<ProjectInnovationGeographicScope> list = super.findAll(query);
+    if (list.size() > 0) {
+      return list.get(0);
+    }
+    return null;
+  }
+
+  @Override
   public ProjectInnovationGeographicScope save(ProjectInnovationGeographicScope projectInnovationGeographicScope) {
     if (projectInnovationGeographicScope.getId() == null) {
       super.saveEntity(projectInnovationGeographicScope);
@@ -80,6 +93,5 @@ public class ProjectInnovationGeographicScopeMySQLDAO extends AbstractMarloDAO<P
 
     return projectInnovationGeographicScope;
   }
-
 
 }
