@@ -20,7 +20,6 @@ import org.cgiar.ccafs.marlo.config.MarloLocalizedTextProvider;
 import org.cgiar.ccafs.marlo.data.manager.CrossCuttingScoringManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableCrossCuttingMarkerManager;
-import org.cgiar.ccafs.marlo.data.manager.DeliverablePartnershipManager;
 import org.cgiar.ccafs.marlo.data.manager.GenderTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
@@ -163,7 +162,6 @@ public class ProjectContributionLP6PDFSummaryAction extends BaseSummariesAction 
   private final IpElementManager ipElementManager;
   private final RepositoryChannelManager repositoryChannelManager;
   private final SrfTargetUnitManager srfTargetUnitManager;
-  private final DeliverablePartnershipManager deliverablePartnershipManager;
   private final ResourceManager resourceManager;
 
   private final ProjectLp6ContributionDeliverableManager projectLp6ContributionDeliverableManager;
@@ -176,8 +174,7 @@ public class ProjectContributionLP6PDFSummaryAction extends BaseSummariesAction 
     LocElementManager locElementManager, IpElementManager ipElementManager, SrfTargetUnitManager srfTargetUnitManager,
     PhaseManager phaseManager, RepositoryChannelManager repositoryChannelManager,
     LocalizedTextProvider localizedTextProvider, CrossCuttingScoringManager crossCuttingScoringManager,
-    DeliverablePartnershipManager deliverablePartnershipManager, ResourceManager resourceManager,
-    ProjectExpectedStudyCountryManager projectExpectedStudyCountryManager,
+    ResourceManager resourceManager, ProjectExpectedStudyCountryManager projectExpectedStudyCountryManager,
     DeliverableCrossCuttingMarkerManager deliverableCrossCuttingMarkerManager,
     ProjectExpectedStudyLinkManager projectExpectedStudyLinkManager, ProjectPolicyManager projectPolicyManager,
     ProjectInnovationManager projectInnovationManager,
@@ -203,7 +200,6 @@ public class ProjectContributionLP6PDFSummaryAction extends BaseSummariesAction 
     this.srfTargetUnitManager = srfTargetUnitManager;
     this.repositoryChannelManager = repositoryChannelManager;
     this.crossCuttingScoringManager = crossCuttingScoringManager;
-    this.deliverablePartnershipManager = deliverablePartnershipManager;
     this.resourceManager = resourceManager;
 
     this.projectLp6ContributionDeliverableManager = projectLp6ContributionDeliverableManager;

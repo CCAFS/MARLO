@@ -20,7 +20,6 @@ import org.cgiar.ccafs.marlo.config.MarloLocalizedTextProvider;
 import org.cgiar.ccafs.marlo.data.manager.CrossCuttingScoringManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableCrossCuttingMarkerManager;
-import org.cgiar.ccafs.marlo.data.manager.DeliverablePartnershipManager;
 import org.cgiar.ccafs.marlo.data.manager.GenderTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
@@ -62,12 +61,12 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableIntellectualAssetPantentTypeE
 import org.cgiar.ccafs.marlo.data.model.DeliverableIntellectualAssetTypeEnum;
 import org.cgiar.ccafs.marlo.data.model.DeliverableMetadataElement;
 import org.cgiar.ccafs.marlo.data.model.DeliverableParticipant;
-import org.cgiar.ccafs.marlo.data.model.DeliverablePartnership;
-import org.cgiar.ccafs.marlo.data.model.DeliverablePartnershipTypeEnum;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePublicationMetadata;
 import org.cgiar.ccafs.marlo.data.model.DeliverableQualityCheck;
 import org.cgiar.ccafs.marlo.data.model.DeliverableType;
 import org.cgiar.ccafs.marlo.data.model.DeliverableUser;
+import org.cgiar.ccafs.marlo.data.model.DeliverableUserPartnership;
+import org.cgiar.ccafs.marlo.data.model.DeliverableUserPartnershipPerson;
 import org.cgiar.ccafs.marlo.data.model.ExpectedStudyProject;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnitProject;
 import org.cgiar.ccafs.marlo.data.model.Institution;
@@ -122,7 +121,6 @@ import org.cgiar.ccafs.marlo.data.model.ProjectPartnerLocation;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPartnership;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPartnershipLocation;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPartnershipResearchPhase;
-import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicy;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicyCrossCuttingMarker;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicyCrp;
@@ -236,7 +234,6 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
   private final IpElementManager ipElementManager;
   private final RepositoryChannelManager repositoryChannelManager;
   private final SrfTargetUnitManager srfTargetUnitManager;
-  private final DeliverablePartnershipManager deliverablePartnershipManager;
   private final ResourceManager resourceManager;
   private final ProjectExpectedStudyCountryManager projectExpectedStudyCountryManager;
   private final DeliverableCrossCuttingMarkerManager deliverableCrossCuttingMarkerManager;
@@ -261,8 +258,8 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     ProjectBudgetManager projectBudgetManager, LocElementManager locElementManager, IpElementManager ipElementManager,
     SrfTargetUnitManager srfTargetUnitManager, PhaseManager phaseManager,
     RepositoryChannelManager repositoryChannelManager, LocalizedTextProvider localizedTextProvider,
-    CrossCuttingScoringManager crossCuttingScoringManager, DeliverablePartnershipManager deliverablePartnershipManager,
-    ResourceManager resourceManager, ProjectExpectedStudyCountryManager projectExpectedStudyCountryManager,
+    CrossCuttingScoringManager crossCuttingScoringManager, ResourceManager resourceManager,
+    ProjectExpectedStudyCountryManager projectExpectedStudyCountryManager,
     DeliverableCrossCuttingMarkerManager deliverableCrossCuttingMarkerManager,
     ProjectExpectedStudyLinkManager projectExpectedStudyLinkManager, ProjectPolicyManager projectPolicyManager,
     ProjectInnovationManager projectInnovationManager,
@@ -288,7 +285,6 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     this.srfTargetUnitManager = srfTargetUnitManager;
     this.repositoryChannelManager = repositoryChannelManager;
     this.crossCuttingScoringManager = crossCuttingScoringManager;
-    this.deliverablePartnershipManager = deliverablePartnershipManager;
     this.resourceManager = resourceManager;
     this.projectExpectedStudyCountryManager = projectExpectedStudyCountryManager;
     this.deliverableCrossCuttingMarkerManager = deliverableCrossCuttingMarkerManager;
@@ -2029,26 +2025,29 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           keyOutput += deliverable.getDeliverableInfo().getCrpClusterKeyOutput().getKeyOutput();
         }
         // Get partner responsible and institution
-        List<DeliverablePartnership> deliverablePartnershipResponsibles =
-          deliverablePartnershipManager.findByDeliverablePhaseAndType(deliverable.getId(),
-            this.getSelectedPhase().getId(), DeliverablePartnershipTypeEnum.RESPONSIBLE.getValue());
+        List<DeliverableUserPartnership> deliverablePartnershipResponsibles =
+          deliverable.getDeliverableUserPartnerships().stream()
+            .filter(dp -> dp.isActive() && dp.getPhase().getId().equals(this.getActualPhase().getId())
+              && dp.getDeliverablePartnerType().getId().equals(APConstants.DELIVERABLE_PARTNERSHIP_TYPE_RESPONSIBLE))
+            .collect(Collectors.toList());
         if (deliverablePartnershipResponsibles != null && deliverablePartnershipResponsibles.size() > 0) {
           if (deliverablePartnershipResponsibles.size() > 1) {
             LOG.warn("There are more than 1 deliverable responsibles for D" + deliverable.getId() + " "
               + this.getSelectedPhase().toString());
           }
-          DeliverablePartnership responisble = deliverablePartnershipResponsibles.get(0);
+          DeliverableUserPartnership responisble = deliverablePartnershipResponsibles.get(0);
 
           if (responisble != null) {
-            if (responisble.getProjectPartnerPerson() != null) {
-              ProjectPartnerPerson responsibleppp = responisble.getProjectPartnerPerson();
+            if (responisble.getDeliverableUserPartnershipPersons() != null) {
+              DeliverableUserPartnershipPerson responsibleppp = responisble.getDeliverableUserPartnershipPersons()
+                .stream().filter(dp -> dp.isActive()).collect(Collectors.toList()).get(0);
               leader =
                 responsibleppp.getUser().getComposedName() + "<br>&lt;" + responsibleppp.getUser().getEmail() + "&gt;";
-              if (responsibleppp.getProjectPartner() != null) {
-                if (responsibleppp.getProjectPartner().getInstitution() != null) {
-                  institution = responsibleppp.getProjectPartner().getInstitution().getComposedName();
-                }
+
+              if (responisble.getInstitution() != null) {
+                institution = responisble.getInstitution().getComposedName();
               }
+
             }
           }
         }
@@ -2661,16 +2660,15 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           }
 
           // Other partnert
-          List<DeliverablePartnership> otherPartners = deliverablePartnershipManager.findAll().stream()
-            .filter(p -> p.isActive() && p.getPhase().getId().equals(this.getSelectedPhase().getId())
-              && p.getDeliverable().getId().equals(deliverable.getId()))
+          List<DeliverableUserPartnership> otherPartners = deliverable.getDeliverableUserPartnerships().stream()
+            .filter(dp -> dp.isActive() && dp.getPhase().getId().equals(this.getActualPhase().getId())
+              && dp.getDeliverablePartnerType().getId().equals(APConstants.DELIVERABLE_PARTNERSHIP_TYPE_OTHER))
             .collect(Collectors.toList());
 
           if (otherPartners != null) {
-            for (DeliverablePartnership partner : otherPartners) {
-              if (partner.getProjectPartnerPerson() != null
-                && partner.getProjectPartnerPerson().getComposedInstitutionName() != null) {
-                otherPartner += partner.getProjectPartnerPerson().getComposedInstitutionName();
+            for (DeliverableUserPartnership partner : otherPartners) {
+              if (partner.getInstitution() != null) {
+                otherPartner += partner.getInstitution().getComposedName();
               }
             }
           }
@@ -2766,26 +2764,29 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           keyOutput += deliverable.getDeliverableInfo(this.getSelectedPhase()).getCrpClusterKeyOutput().getKeyOutput();
         }
         // Get partner responsible and institution
-        List<DeliverablePartnership> deliverablePartnershipResponsibles =
-          deliverablePartnershipManager.findByDeliverablePhaseAndType(deliverable.getId(),
-            this.getSelectedPhase().getId(), DeliverablePartnershipTypeEnum.RESPONSIBLE.getValue());
+        List<DeliverableUserPartnership> deliverablePartnershipResponsibles =
+          deliverable.getDeliverableUserPartnerships().stream()
+            .filter(dp -> dp.isActive() && dp.getPhase().getId().equals(this.getActualPhase().getId())
+              && dp.getDeliverablePartnerType().getId().equals(APConstants.DELIVERABLE_PARTNERSHIP_TYPE_RESPONSIBLE))
+            .collect(Collectors.toList());
+
         if (deliverablePartnershipResponsibles != null && deliverablePartnershipResponsibles.size() > 0) {
           if (deliverablePartnershipResponsibles.size() > 1) {
-            LOG.warn("There are more than 1 deliverable responsibles for D" + deliverable.getId() + ". Phase: "
+            LOG.warn("There are more than 1 deliverable responsibles for D" + deliverable.getId() + " "
               + this.getSelectedPhase().toString());
           }
-          DeliverablePartnership responisble = deliverablePartnershipResponsibles.get(0);
+          DeliverableUserPartnership responisble = deliverablePartnershipResponsibles.get(0);
 
           if (responisble != null) {
-            if (responisble.getProjectPartner() != null) {
-              if (responisble.getProjectPartner().getInstitution() != null) {
-                institution = responisble.getProjectPartner().getInstitution().getComposedName();
-              }
-            }
-            if (responisble.getProjectPartnerPerson() != null) {
-              ProjectPartnerPerson responsibleppp = responisble.getProjectPartnerPerson();
+            if (responisble.getDeliverableUserPartnershipPersons() != null) {
+              DeliverableUserPartnershipPerson responsibleppp = responisble.getDeliverableUserPartnershipPersons()
+                .stream().filter(dp -> dp.isActive()).collect(Collectors.toList()).get(0);
               leader =
                 responsibleppp.getUser().getComposedName() + "<br>&lt;" + responsibleppp.getUser().getEmail() + "&gt;";
+
+              if (responisble.getInstitution() != null) {
+                institution = responisble.getInstitution().getComposedName();
+              }
 
             }
           }
