@@ -75,6 +75,15 @@ public class ProjectInnovationContributingOrganizationManagerImpl
   }
 
   @Override
+  public ProjectInnovationContributingOrganization
+    getProjectInnovationContributingOrganizationById(long projectInnovationId, long institutionId, long phaseId) {
+
+    return projectInnovationContributingOrganizationDAO
+      .getProjectInnovationContributingOrganization(projectInnovationId, institutionId, phaseId);
+  }
+
+
+  @Override
   public ProjectInnovationContributingOrganization saveProjectInnovationContributingOrganization(
     ProjectInnovationContributingOrganization projectInnovationContributingOrganization) {
 
@@ -88,7 +97,6 @@ public class ProjectInnovationContributingOrganizationManagerImpl
 
     return projectInnovationContributing;
   }
-
 
   public void saveProjectInnovationContributingPhase(Phase next, long innovationid,
     ProjectInnovationContributingOrganization projectInnovationContributing) {

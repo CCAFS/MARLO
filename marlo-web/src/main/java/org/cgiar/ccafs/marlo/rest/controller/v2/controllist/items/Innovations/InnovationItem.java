@@ -454,7 +454,21 @@ public class InnovationItem<T> {
     }
 
 
-    innovation.setAllbyPhase(phase);
+    // innovation.setAllbyPhase(phase);
+    if (innovation.getProjectInnovationInfo(phase) != null) {
+      innovation.setCountries(
+        this.projectInnovationCountryManager.getInnovationCountrybyPhase(innovation.getId(), phase.getId()));
+      innovation.setRegions(innovation.getProjectInnovationRegions().stream()
+        .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
+      innovation.setGeographicScopes(innovation.getProjectInnovationGeographicScopes().stream()
+        .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
+      innovation.setContributingOrganizations(innovation.getProjectInnovationContributingOrganization().stream()
+        .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
+      innovation.setCrps(innovation.getProjectInnovationCrps().stream()
+        .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
+      innovation.setOrganizations(innovation.getProjectInnovationOrganizations().stream()
+        .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
+    }
 
     // Validate all fields
     if (!this.fieldErrors.isEmpty()) {
@@ -620,6 +634,45 @@ public class InnovationItem<T> {
           for (ProjectInnovationCrp obj : projectInnovationCrpList) {
             if (!existingProjectInnovationCrpList.contains(obj)) {
               this.projectInnovationCrpManager.deleteProjectInnovationCrp(obj.getId());
+            }
+          }
+        }
+
+        // contributing organizations
+        if (newInnovationDTO.getContributingInstitutions() != null
+          && newInnovationDTO.getContributingInstitutions().size() > 0) {
+          List<ProjectInnovationContributingOrganization> projectInnovationContributingOrganizationList =
+            innovation.getProjectInnovationContributingOrganization().stream()
+              .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList());
+          List<ProjectInnovationContributingOrganization> existingProjectInnovationContributingOrganizationList =
+            new ArrayList<ProjectInnovationContributingOrganization>();
+          for (Long id : newInnovationDTO.getContributingInstitutions()) {
+            Institution addinstitution = this.institutionManager.getInstitutionById(id);
+            if (addinstitution == null) {
+              this.fieldErrors.add(
+                new FieldErrorDTO("createInnovation", "ContributingInstitution", id + " is an invalid institution id"));
+            } else {
+              ProjectInnovationContributingOrganization contributingOrganization =
+                projectInnovationContributingOrganizationManager.getProjectInnovationContributingOrganizationById(
+                  innovation.getId(), addinstitution.getId(), phase.getId());
+
+              if (contributingOrganization != null) {
+                existingProjectInnovationContributingOrganizationList.add(contributingOrganization);
+              } else {
+                contributingOrganization = new ProjectInnovationContributingOrganization();
+                contributingOrganization.setProjectInnovation(this.projectInnovation);
+                contributingOrganization.setPhase(phase);
+                contributingOrganization.setInstitution(addinstitution);
+                this.projectInnovationContributingOrganizationManager
+                  .saveProjectInnovationContributingOrganization(contributingOrganization);
+              }
+            }
+          }
+          // verify existing ProjectInnovationContributingOrganization
+          for (ProjectInnovationContributingOrganization obj : projectInnovationContributingOrganizationList) {
+            if (!existingProjectInnovationContributingOrganizationList.contains(obj)) {
+              this.projectInnovationContributingOrganizationManager
+                .deleteProjectInnovationContributingOrganization(obj.getId());
             }
           }
         }
