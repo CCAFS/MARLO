@@ -478,6 +478,7 @@ public class InnovationItem<T> {
 
   public Long putInnovationById(Long idInnovation, NewInnovationDTO newInnovationDTO, String CGIARentityAcronym,
     User user) {
+    this.innovationID = 0;
     this.fieldErrors = new ArrayList<FieldErrorDTO>();
     GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitByAcronym(CGIARentityAcronym);
     if (globalUnitEntity == null) {
@@ -566,6 +567,7 @@ public class InnovationItem<T> {
                   repIndOrganizationType.getId(), phase.getId());
 
               if (projectInnovationOrganization != null) {
+
                 existingProjectInnovationOrganizationList.add(projectInnovationOrganization);
               } else {
                 projectInnovationOrganization = new ProjectInnovationOrganization();
@@ -622,7 +624,6 @@ public class InnovationItem<T> {
           }
         }
 
-
         // check innovation Geographic scope
         if (newInnovationDTO.getGeographicScopes() != null && newInnovationDTO.getGeographicScopes().size() > 0) {
           List<ProjectInnovationGeographicScope> projectInnovationGeographicScopeList =
@@ -656,11 +657,10 @@ public class InnovationItem<T> {
           // verify existing ProjectInnovationGeographicScope
           for (ProjectInnovationGeographicScope obj : projectInnovationGeographicScopeList) {
             if (!existingProjectInnovationGeographicScopeList.contains(obj)) {
-              projectInnovationGeographicScopeManager.deleteProjectInnovationGeographicScope(obj.getId());
+              this.projectInnovationGeographicScopeManager.deleteProjectInnovationGeographicScope(obj.getId());
             }
           }
         }
-
 
         // check innovation regions
         if (newInnovationDTO.getRegions() != null && newInnovationDTO.getRegions().size() > 0) {
@@ -675,9 +675,11 @@ public class InnovationItem<T> {
             } else if (region.getLocElementType().getId() != APConstants.LOC_ELEMENT_TYPE_REGION) {
               this.fieldErrors.add(new FieldErrorDTO("createInnovation", "Regions", id + " is not a Region code"));
             } else {
+
               ProjectInnovationRegion projectInnovationRegion = projectInnovationRegionManager
                 .getProjectInnovationRegionById(innovation.getId(), region.getId(), phase.getId());
               if (projectInnovationRegion != null) {
+
                 existingProjectInnovationRegionList.add(projectInnovationRegion);
               } else {
                 projectInnovationRegion = new ProjectInnovationRegion();
@@ -692,15 +694,16 @@ public class InnovationItem<T> {
           }
           // verify regions
           for (ProjectInnovationRegion obj : projectInnovationRegionList) {
+
             if (!existingProjectInnovationRegionList.contains(obj)) {
-              projectInnovationCountryManager.deleteProjectInnovationCountry(obj.getId());
+              this.projectInnovationRegionManager.deleteProjectInnovationRegion(obj.getId());
             }
           }
         }
         // check innovations countries
         if (newInnovationDTO.getCountries() != null && newInnovationDTO.getCountries().size() > 0) {
           List<ProjectInnovationCountry> projectInnovationCountryList =
-            projectInnovationCountryManager.getInnovationCountrybyPhase(innovation.getId(), phase.getId());
+            this.projectInnovationCountryManager.getInnovationCountrybyPhase(innovation.getId(), phase.getId());
           List<ProjectInnovationCountry> existingprojectInnovationCountryList =
             new ArrayList<ProjectInnovationCountry>();
           // search for new Countries
@@ -735,6 +738,9 @@ public class InnovationItem<T> {
             }
           }
         }
+      } else {
+        this.fieldErrors
+          .add(new FieldErrorDTO("UpdateInnovation", "Innovation", +idInnovation + " is an invalid innovation Code"));
       }
     }
     if (!this.fieldErrors.isEmpty()) {
