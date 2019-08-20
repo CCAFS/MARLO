@@ -127,3 +127,12 @@ td.institutionLead hr {
   margin-bottom: 0;
   font-weight: normal;
 }
+
+.listOfFilters {
+  float: right;
+  font-size: 11px;
+  font-style: italic;
+  color: #908f8f;
+  width: 165px;
+  text-align: right;
+}

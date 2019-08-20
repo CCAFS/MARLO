@@ -84,7 +84,7 @@ public class FundingSourceListAction extends BaseAction {
   private List<String> partnertsIDList;
   private FundingSourceManager fundingSourceManager;
 
-  private List<Institution> institutions;
+  private List<Institution> filteredInstitutions;
   private Role cpRole;
   private FundingSourceInfoManager fundingSourceInfoManager;
   private RoleManager roleManager;
@@ -354,7 +354,7 @@ public class FundingSourceListAction extends BaseAction {
 
 
   public void fillInstitutionsList() {
-    institutions = new ArrayList<>();
+    filteredInstitutions = new ArrayList<>();
 
     if (institutionsIDsList != null) {
       for (String institution : institutionsIDsList) {
@@ -364,7 +364,7 @@ public class FundingSourceListAction extends BaseAction {
           id = Long.parseLong(institution);
         }
         if (id != 0) {
-          institutions.add(institutionManager.getInstitutionById(id));
+          filteredInstitutions.add(institutionManager.getInstitutionById(id));
         }
       }
     }
@@ -424,6 +424,10 @@ public class FundingSourceListAction extends BaseAction {
 
   }
 
+  public List<Institution> getFilteredInstitutions() {
+    return filteredInstitutions;
+  }
+
   public Double getFundingSourceBudgetPerPhase(Long fundingSourceId) {
     FundingSource fundingSource = fundingSourceManager.getFundingSourceById(fundingSourceId);
     List<FundingSourceBudget> fundingSourceBudgets =
@@ -444,9 +448,21 @@ public class FundingSourceListAction extends BaseAction {
     return fundingSourceID;
   }
 
+
   public List<FundingSourceInstitution> getFundingSourceInstitutions() {
     return fundingSourceInstitutions;
   }
+
+  // public void getBudgetAmount(long fundingsourceID){
+  //
+  // FundingSource fundingSource = fundingSourceManager.getFundingSourceById(fundingsourceID);
+  //
+  // List<FundingSourceBudget> fundingSourceBudgets = new
+  // ArrayList<>(fundingSource.getFundingSourceBudgets().stream().filter(fb -> fb.isActive() &&
+  // fb.getPhase().getId().equals(this)));
+  //
+  //
+  // }
 
 
   public void getFundingSourceInstitutionsList() {
@@ -481,23 +497,6 @@ public class FundingSourceListAction extends BaseAction {
     }
   }
 
-  // public void getBudgetAmount(long fundingsourceID){
-  //
-  // FundingSource fundingSource = fundingSourceManager.getFundingSourceById(fundingsourceID);
-  //
-  // List<FundingSourceBudget> fundingSourceBudgets = new
-  // ArrayList<>(fundingSource.getFundingSourceBudgets().stream().filter(fb -> fb.isActive() &&
-  // fb.getPhase().getId().equals(this)));
-  //
-  //
-  // }
-
-
-  public List<Institution> getInstitutions() {
-    return institutions;
-  }
-
-
   public void getInstitutionsIds() {
     // Separate institutions ids from institutions apConstans filters into arrayList
     int lastI = 0;
@@ -522,6 +521,7 @@ public class FundingSourceListAction extends BaseAction {
   public String getInstitutionsIDsFilter() {
     return institutionsIDsFilter;
   }
+
 
   /**
    * Migrated from the BaseAction. Leaving this in here as the call to the fundingSourceValidator
@@ -562,7 +562,6 @@ public class FundingSourceListAction extends BaseAction {
   public String getJustification() {
     return justification;
   }
-
 
   public GlobalUnit getLoggedCrp() {
     return loggedCrp;
@@ -714,6 +713,7 @@ public class FundingSourceListAction extends BaseAction {
     }
   }
 
+
   public void removeInstitutions() {
     List<FundingSource> tempList = new ArrayList<>();
     int contains = 0;
@@ -808,7 +808,6 @@ public class FundingSourceListAction extends BaseAction {
       closedProjects.addAll(tempList);
     }
   }
-
 
   public void removeInstitutionsContactPointRole() {
     // Get institution for contact point
@@ -925,16 +924,16 @@ public class FundingSourceListAction extends BaseAction {
     this.closedProjects = closedProjects;
   }
 
+  public void setFilteredInstitutions(List<Institution> filteredInstitutions) {
+    this.filteredInstitutions = filteredInstitutions;
+  }
+
   public void setFundingSourceID(long projectID) {
     this.fundingSourceID = projectID;
   }
 
   public void setFundingSourceInstitutions(List<FundingSourceInstitution> fundingSourceInstitutions) {
     this.fundingSourceInstitutions = fundingSourceInstitutions;
-  }
-
-  public void setInstitutions(List<Institution> institutions) {
-    this.institutions = institutions;
   }
 
 

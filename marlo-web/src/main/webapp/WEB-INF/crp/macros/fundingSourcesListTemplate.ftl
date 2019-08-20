@@ -223,8 +223,9 @@
           </td>
            --]
           [#-- Center Lead --]
-          <td class=""> 
+          <td class="institutionLead"> 
             [#if project.institutions?has_content]
+              <div class="institutions-list mCustomScrollbar" data-mcs-theme="dark">
               [#list project.institutions as institutionLead]
                 [#if institutionLead_index!=0]
                   <hr />
@@ -232,6 +233,7 @@
                   <span class="name col-md-11">${(institutionLead.institution.acronym)!institutionLead.institution.name}</span>
                   <div class="clearfix"></div>
               [/#list]
+              </div>
               [#else]
               <p class="emptyText"> [@s.text name="No lead partner added yet." /]</p> 
             [/#if]
@@ -259,7 +261,6 @@
 
 
 [#macro institutionsFilter institutions={}]
-
   <div class="institutions-filter">
    <div class="filter-title portfolio">Filter by Institutions</div>
    <div class="items-list">
@@ -268,7 +269,7 @@
     <button type="button" id="selectAllInstitutions" class="btn btn-link">Select all </button> -  <button type="button" id="clearAllInstitutions" class="btn btn-link">Clear all </button>
    </div>
    [@s.form namespace="/fundingSources" action='${(crpSession)!}/fundingSourcesList' method="GET" enctype="multipart/form-data" cssClass=""]
-     <ul class="filter-items mCustomScrollbar" data-mcs-theme="dark">
+     <ul class="filter-items">
      <input type="hidden" name="phaseID" value="${(actualPhase.id)!}" />
      [#if institutions?has_content]
       [#list institutions as institution]
@@ -287,5 +288,19 @@
     [/@s.form]
    </div>
   </div>
+
+[/#macro]
+
+[#macro selectedInstitutions institutions = {}]
+
+    [#if institutions?has_content]
+     <div class="listOfFilters">
+      Filtered by: 
+      [#list institutions as institution]
+       [#local selectedInstitutionName = (institution.acronym)!institution.name /]
+       ${selectedInstitutionName}[#if institution?has_next],[/#if]
+      [/#list]
+     </div>
+    [/#if]
 
 [/#macro]

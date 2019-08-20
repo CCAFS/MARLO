@@ -23,9 +23,10 @@
     
 <section class="container">
   <article class="fullBlock" id="mainInformation">
-     [@fundingSourcesList.institutionsFilter institutions=fundingSourceInstitutions/]
     <div class="loadingBlock"></div>
     <div style="display:none">
+    
+      [@fundingSourcesList.institutionsFilter institutions=fundingSourceInstitutions/]
       <!-- Nav tabs -->
       <ul class="nav nav-tabs" role="tablist">
         <li role="presentation" class="active">
@@ -44,12 +45,14 @@
       <div class="tab-content">
         <div role="tabpanel" class="tab-pane active" id="active-tab">
           [#-- On Going -  Funding Sources --]
+          [@fundingSourcesList.selectedInstitutions institutions=filteredInstitutions/]
           <h3 class="headTitle text-center">[@s.text name="fundingSourcesList.active"/] [@s.text name="fundingSourcesList.title"/]</h3>
           [@fundingSourcesList.list projects=myProjects canValidate=true canEdit=true namespace="/fundingSources" defaultAction="${(crpSession)!}/fundingSource" /]
           <hr/>
         </div>
         <div role="tabpanel" class="tab-pane" id="archived-tab">
           [#-- Finished/Archived  -  Funding Sources  --]
+          [@fundingSourcesList.selectedInstitutions institutions=filteredInstitutions/]
           <h3 class="headTitle text-center">[@s.text name="fundingSourcesList.archived"/] [@s.text name="fundingSourcesList.title"/]</h3>
           [@fundingSourcesList.archivedList projects=closedProjects canValidate=true canEdit=true namespace="/fundingSources" defaultAction="${(crpSession)!}/fundingSource" /]
         </div>
