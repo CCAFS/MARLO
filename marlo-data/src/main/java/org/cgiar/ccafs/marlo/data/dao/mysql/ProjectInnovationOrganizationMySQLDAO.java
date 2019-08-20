@@ -73,7 +73,7 @@ public class ProjectInnovationOrganizationMySQLDAO extends AbstractMarloDAO<Proj
   public ProjectInnovationOrganization projectInnovationOrganization(long innovationID, long organizationID,
     long phaseID) {
     String query = "from " + ProjectInnovationOrganization.class.getName() + " where project_innovation_id='"
-      + innovationID + "' AND institution_id='" + organizationID + "' AND id_phase='" + phaseID + "'";
+      + innovationID + "' AND rep_ind_organization_type_id='" + organizationID + "' AND id_phase='" + phaseID + "'";
     List<ProjectInnovationOrganization> list = super.findAll(query);
     if (list.size() > 0) {
       return list.get(0);
