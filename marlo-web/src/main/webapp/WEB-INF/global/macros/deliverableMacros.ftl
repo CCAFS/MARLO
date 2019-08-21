@@ -136,7 +136,7 @@
 [#macro deliverableLicenseMacro ]
 <div class="simpleBox">
   <div class="form-group row yesNoInputDeliverable">
-    <label class="col-md-9 yesNoLabel" for="">[@s.text name="project.deliverable.dissemination.adoptedLicenseQuestion" /] [@customForm.req required=editable /]</label>
+    <label class="col-md-9 yesNoLabel" for="">[@s.text name="project.deliverable.dissemination.adoptedLicenseQuestion" /] [@customForm.req required=reportingActive /]</label>
     <div class="col-md-3">[@customForm.yesNoInputDeliverable name="deliverable.deliverableInfo.adoptedLicense"  editable=editable inverse=false  cssClass="type-license text-center" /] </div>  
   </div>
   [#-- Deliverable type computer software --]
@@ -215,7 +215,7 @@
   <div class="simpleBox form-group">
     <input type="hidden"  name="${customName}.id" value="${(deliverable.dissemination.id)!}" />
     <div class="row yesNoInputDeliverable">
-      <label class="col-md-9 yesNoLabel" for="">Is this deliverable Open Access? [@customForm.req required=editable /]</label>
+      <label class="col-md-9 yesNoLabel" for="">Is this deliverable Open Access? [@customForm.req required=reportingActive /]</label>
       <div class="col-md-3">[@customForm.yesNoInputDeliverable name="${customName}.isOpenAccess"  editable=editable inverse=false cssClass="type-accessible inverted-true text-center" /]  </div>
     </div> 
     <div class="block-accessible" style="display: ${((!deliverable.dissemination.isOpenAccess)!false)?string("block","none")};">
@@ -248,7 +248,7 @@
   <div class="simpleBox form-group">
     <input type="hidden"  name="${customName}.id" value="${(deliverable.intellectualAsset.id)!}" />
     <div class="row yesNoInputDeliverable">
-      <label class="col-md-9 yesNoLabel" for="">[@s.text name="deliverable.hasIntellectualAsset.title" /] [@customForm.req required=editable /]</label>
+      <label class="col-md-9 yesNoLabel" for="">[@s.text name="deliverable.hasIntellectualAsset.title" /] [@customForm.req required=reportingActive /]</label>
       <div class="col-md-3">[@customForm.yesNoInputDeliverable name="${customName}.hasPatentPvp"  editable=editable cssClass="type-intellectualAsset text-center" neutral=true /]  </div>
     </div> 
     <div class="block-intellectualAsset" style="display:${((deliverable.intellectualAsset.hasPatentPvp)!false)?string("block","none")};">
@@ -351,7 +351,7 @@
 [#local customName = "deliverable.deliverableParticipant" /]
 <div class="simpleBox">
   <div class="form-group row yesNoInputDeliverable">
-    <label class="col-md-9 yesNoLabel" for="">[@s.text name="deliverable.involveParticipants.title" /] [@customForm.req required=editable /]</label>
+    <label class="col-md-9 yesNoLabel" for="">[@s.text name="deliverable.involveParticipants.title" /] [@customForm.req required=reportingActive /]</label>
     <div class="col-md-3">[@customForm.yesNoInputDeliverable name="${customName}.hasParticipants"  editable=editable inverse=false  cssClass="type-involveParticipants text-center" neutral=true  /] </div>  
   </div>
   
@@ -421,7 +421,7 @@
   <div class="simpleBox form-group">
     <div class=" row yesNoInputDeliverable">
       <span class="col-md-9">
-        <label class="yesNoLabel" for="">[@s.text name="project.deliverable.dissemination.alreadyDisseminatedQuestion" /] [@customForm.req /]</label>
+        <label class="yesNoLabel" for="">[@s.text name="project.deliverable.dissemination.alreadyDisseminatedQuestion" /] [@customForm.req required=reportingActive /]</label>
         <p><small>[@s.text name="project.deliverable.dissemination.alreadyDisseminatedSubQ" /] </small></p>
       </span>
       <div class="col-md-3">
@@ -976,6 +976,61 @@
       [#if (element.crpProgram.id??)!false]${(element.crpProgram.composedName)!}[/#if]
     </span>
     <div class="clearfix"></div>
+  </div>
+[/#macro]
+
+[#macro deliverablePartnerMacro element name index=-1 defaultType=2 isTemplate=false]
+  [#local typeID = (element.deliverablePartnerType.id)!defaultType ]
+  [#local isResponsable = (typeID == 1) ]
+  [#local customName = "${name}[${index}]" ]
+  [#if isResponsable][#local customName = "${name}[0]" ][/#if]
+  
+  <div id="deliverablePartnerItem-${isTemplate?string('template', (element.id)! )}" class="simpleBox deliverablePartnerItem" style="display:${isTemplate?string('none', 'block')}">
+    [#-- Remove --]
+    [#if editable && !isResponsable]<div class="removePartnerItem removeElement removeLink sm" title="[@s.text name="project.deliverable.removePartnerContribution" /]"></div> [/#if]
+    [#-- Deliverable Partner ID --]
+    <input type="hidden" name="${customName}.id" value="${(element.id)!}"/>
+    [#-- Type --] 
+    <input type="hidden" name="${customName}.deliverablePartnerType.id" class="partnerTypeID" value="${typeID}"/>
+    [#-- Partner Institution --]
+    <div class="form-group"> 
+      [@customForm.select name="${customName}.institution.id" value="${(element.institution.id)!'-1'}"  i18nkey="" showTitle=false listName="partners" keyFieldName="institution.id"  displayFieldName="composedName" className="partnerInstitutionID" editable=editable required=true /]
+    </div>
+    [#-- Users Selected--]
+    [#local selectedUsersID = []]
+    [#if (element.partnershipPersons?has_content)!false][#local selectedUsersID = (action.getPersonsIds(element))![]][/#if]
+    [#-- List of users--]
+    <div class="row form-group usersBlock"> 
+      [#list (action.getUserList(element.institution.id))![] as user]
+        [#local isUserChecked =  selectedUsersID?seq_contains(user.id) ]
+        [@deliverableUserMacro element=element user=user index=user_index name="${customName}.partnershipPersons" isUserChecked=isUserChecked isResponsable=isResponsable /]
+      [/#list]
+    </div>
+    
+  </div>
+[/#macro]
+
+[#macro deliverableUserMacro element user index name isUserChecked=false isResponsable=false]
+  [#local customName = "${name}[${index}]"]
+  [#local customID = "${index}-${isResponsable?string('1', '2')}-${user.id}"]
+  [#if isResponsable][#local customName = "${name}[0]" ][/#if]
+  [#-- Get Deliverable User --]
+  [#local deliverableUser = {} ]
+  [#list (element.partnershipPersons)![] as dpp]
+    [#if (dpp.user.id == user.id)!false][#local deliverableUser = dpp ][#break][/#if]
+  [/#list]
+  
+  <div class="deliverableUserItem col-md-6">
+    [#-- Deliverable User ID --]
+    [#if (!isResponsable) || (deliverableUser.id??)!false]
+      <input type="hidden" name="${customName}.id" value="${(deliverableUser.id)!}" />
+    [/#if]
+    [#-- User ID Radio/Check --]
+    [#if isResponsable]
+      [@customForm.radioFlat id="${customID}" name="${customName}.user.id" label="${user.composedCompleteName}" disabled=false editable=editable value="${user.id}" checked=isUserChecked cssClass="" cssClassLabel="radio-label-yes" inline=false /]
+    [#else]
+      [@customForm.checkBoxFlat id="${customID}" name="${customName}.user.id" label="${user.composedCompleteName}" help="" paramText="" helpIcon=true disabled=false editable=editable value="${user.id}" checked=isUserChecked cssClass="" cssClassLabel="" /]
+    [/#if]
   </div>
 [/#macro]
 

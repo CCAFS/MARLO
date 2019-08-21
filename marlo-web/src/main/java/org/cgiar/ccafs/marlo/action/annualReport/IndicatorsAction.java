@@ -39,10 +39,9 @@ import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.DeliverableDissemination;
 import org.cgiar.ccafs.marlo.data.model.DeliverableInfo;
 import org.cgiar.ccafs.marlo.data.model.DeliverableParticipant;
-import org.cgiar.ccafs.marlo.data.model.DeliverablePartnership;
-import org.cgiar.ccafs.marlo.data.model.DeliverablePartnershipTypeEnum;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePublicationMetadata;
 import org.cgiar.ccafs.marlo.data.model.DeliverableType;
+import org.cgiar.ccafs.marlo.data.model.DeliverableUserPartnership;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
@@ -690,13 +689,13 @@ public class IndicatorsAction extends BaseAction {
           }
 
           // Load Partnerships
-          List<DeliverablePartnership> deliverablePartnerships =
-            deliverableInfo.getDeliverable().getDeliverablePartnerships().stream()
+          List<DeliverableUserPartnership> deliverablePartnerships =
+            deliverableInfo.getDeliverable().getDeliverableUserPartnerships().stream()
               .filter(dp -> dp.isActive() && dp.getPhase() != null && dp.getPhase().equals(phase)
-                && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.RESPONSIBLE.getValue()))
+                && dp.getDeliverablePartnerType().getId().equals(APConstants.DELIVERABLE_PARTNERSHIP_TYPE_RESPONSIBLE))
               .collect(Collectors.toList());
           if (deliverablePartnerships != null && !deliverablePartnerships.isEmpty()) {
-            deliverableInfo.getDeliverable().setResponsiblePartner(deliverablePartnerships.get(0));
+            deliverableInfo.getDeliverable().setResponsiblePartnership(deliverablePartnerships);
           }
         }
       }

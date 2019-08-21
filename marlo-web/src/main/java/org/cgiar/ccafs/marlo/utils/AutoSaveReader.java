@@ -43,6 +43,7 @@ public class AutoSaveReader {
   public AutoSaveReader() {
   }
 
+
   private HashMap<String, Object> convertJSONFormat(String json) {
 
     HashMap<String, Object> jsonNew = new HashMap<>();
@@ -77,12 +78,13 @@ public class AutoSaveReader {
       }
     }
 
-    if (!oneToOne.isEmpty()) {
-      jsonNew.putAll(this.getOneToOneList(gson.toJson(oneToOne)));
-    }
 
     if (!onetoMany.isEmpty()) {
       jsonNew.putAll(this.getOneToMany(gson.toJson(onetoMany)));
+    }
+
+    if (!oneToOne.isEmpty()) {
+      jsonNew.putAll(this.getOneToOneList(gson.toJson(oneToOne)));
     }
 
 
@@ -105,6 +107,7 @@ public class AutoSaveReader {
 
     return jsonNew;
   }
+
 
   private HashMap<String, Object> getListJson(String keyParent, JsonObject jobj, int i) {
     HashMap<String, Object> jsonNew = new HashMap<>();
@@ -191,25 +194,24 @@ public class AutoSaveReader {
       listNames.add(keyList);
     }
     for (String name : listNames) {
-      if (name.contains("flagshipValue")) {
-        System.out.println("a");
-      }
       HashMap<String, Object> relation = new HashMap<>();
       for (Map.Entry<String, Object> entry : result.entrySet()) {
         String key = entry.getKey();
         String keys[] = key.split("\\.");
         String keyList = keys[0];
-        if (keys.length >= 3) {
-          onetoMany = new HashMap<>();
-          onetoMany.put(key.replaceAll(keyList + "\\." + keys[1] + "\\.", ""), entry.getValue());
-          relation.put(keys[1], this.convertJSONFormat(gson.toJson(onetoMany)));
-        } else {
-          if (keyList.equals(name)) {
+        if (keyList.equals(name)) {
+          if (keys.length >= 3) {
+            onetoMany = new HashMap<>();
+            onetoMany.put(key.replaceAll(keyList + "\\." + keys[1] + "\\.", ""), entry.getValue());
+            relation.put(keys[1], this.convertJSONFormat(gson.toJson(onetoMany)));
+          } else {
+            if (keyList.equals(name)) {
 
-            relation.put(keys[1], entry.getValue());
-            jobj.remove(key);
+              relation.put(keys[1], entry.getValue());
+              jobj.remove(key);
 
 
+            }
           }
         }
       }
