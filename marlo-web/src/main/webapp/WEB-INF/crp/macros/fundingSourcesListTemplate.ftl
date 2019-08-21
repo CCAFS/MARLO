@@ -275,7 +275,7 @@
       [#list institutions as institution]
         [#local institutionName = (institution.institution.acronym)!institution.institution.name /]
         [#local institutionId = (institution.institution.id)!0 /]
-        <li>[@customForm.checkmark id="${institutionName}" label="${institutionName}" name="" cssClass="institutionsFilter" value="${institutionId}" checked=isChecked editable=true centered=true /]</li>
+        <li>[@customForm.checkmark id="${institutionName}" label="${institutionName}" name="" cssClass="institutionsFilter" value="${institutionId}" checked=institution.isChecked editable=true centered=true /]</li>
       [/#list]
      [/#if]
      </ul>

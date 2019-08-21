@@ -472,10 +472,6 @@ public class FundingSourceListAction extends BaseAction {
         if (fundingSource.getInstitutions() != null) {
           for (FundingSourceInstitution institution : fundingSource.getInstitutions()) {
 
-            if (filteredInstitutions.contains(institution.getInstitution())) {
-              institution.setIsChecked(true);
-            }
-
             // funding source institutions cycle
             if (fundingSourceInstitutions != null) {
               // if the list of funding source institutions has elements, check the acronym and/or the name of
@@ -495,8 +491,6 @@ public class FundingSourceListAction extends BaseAction {
               // if the list of the funding source institutions to send to front is empty
               fundingSourceInstitutions.add(institution);
             }
-
-
           }
         }
       }
@@ -710,11 +704,26 @@ public class FundingSourceListAction extends BaseAction {
       this.getInstitutionsIds();
       this.removeInstitutions();
       this.fillInstitutionsList();
+      this.setChecksToList();
       // return string with the institutions in the apconstant variable separated with ','
       this.convertListToString(institutionsIDsList);
     } else {
       if (contactsPoint != null && usersContactPoint != null) {
         this.removeInstitutionsContactPointRole();
+      }
+    }
+  }
+
+
+  private void setChecksToList() {
+    // check if the institution is selected in the front component, if yes, then set as 'yes' boolean property value of funding institution  
+    if(fundingSourceInstitutions!= null) {
+      for(FundingSourceInstitution fundingInstitution: fundingSourceInstitutions) {
+        if (filteredInstitutions != null && filteredInstitutions.contains(fundingInstitution.getInstitution())) {
+          fundingInstitution.setIsChecked(true);
+        }else {
+          fundingInstitution.setIsChecked(false);
+        }
       }
     }
   }
