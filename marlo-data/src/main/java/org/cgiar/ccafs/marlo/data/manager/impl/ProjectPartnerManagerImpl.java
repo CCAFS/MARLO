@@ -145,9 +145,11 @@ public class ProjectPartnerManagerImpl implements ProjectPartnerManager {
         projectPartnerPersonAdd.setProjectPartner(projectPartnerDAO.find(newPartern));
         projectPartnerPersonAdd.setContactType(projectPartnerPerson.getContactType());
         projectPartnerPersonAdd.setUser(projectPartnerPerson.getUser());
+        projectPartnerPersonAdd.setPartnerDivision(projectPartnerPerson.getPartnerDivision());
         if (projectPartnerPersonAdd.getUser() != null && projectPartnerPersonAdd.getUser().getId() != null) {
           projectPartnerPersonAdd = projectPartnerPersonDAO.save(projectPartnerPersonAdd);
         }
+
         int a = 0;
       }
     }
@@ -479,9 +481,8 @@ public class ProjectPartnerManagerImpl implements ProjectPartnerManager {
           partner.setId(projectPartnerPrev.getId());
           partnerPersonAdd.setProjectPartner(partner);
           partnerPersonAdd.setContactType(partnerPerson.getContactType());
-
-
           partnerPersonAdd.setUser(partnerPerson.getUser());
+          partnerPersonAdd.setPartnerDivision(partnerPerson.getPartnerDivision());
           if (partnerPersonAdd.getUser() != null && partnerPersonAdd.getUser().getId() != null) {
             projectPartnerPersonDAO.save(partnerPersonAdd);
           }

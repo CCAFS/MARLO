@@ -44,7 +44,7 @@ public class UserConverter extends StrutsTypeConverter {
   @Override
   public Object convertFromString(Map context, String[] values, Class toClass) {
     // Is this a bug, should it not be User.class?
-    if (toClass == Institution.class) {
+    if (toClass == User.class) {
       String id = values[0];
       try {
         User user = userManager.getUser(Long.parseLong(id));

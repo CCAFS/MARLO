@@ -22,33 +22,18 @@ import com.google.gson.annotations.Expose;
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  */
-public class DeliverablePartnership extends MarloAuditableEntity implements java.io.Serializable, IAuditLog {
+public class DeliverableUserPartnershipPerson extends MarloAuditableEntity implements java.io.Serializable, IAuditLog {
 
-
-  private static final long serialVersionUID = -9215235396324769222L;
-
-  @Expose
-  private ProjectPartnerPerson projectPartnerPerson;
+  private static final long serialVersionUID = 2310406167789566770L;
 
   @Expose
-  private Deliverable deliverable;
-
-
+  private User user;
   @Expose
-  private Phase phase;
-  @Expose
-  private String partnerType;
-
-  @Expose
-  private PartnerDivision partnerDivision;
-
-  @Expose
-  private ProjectPartner projectPartner;
+  private DeliverableUserPartnership deliverableUserPartnership;
 
 
-  public DeliverablePartnership() {
+  public DeliverableUserPartnershipPerson() {
   }
-
 
   @Override
   public boolean equals(Object obj) {
@@ -61,7 +46,7 @@ public class DeliverablePartnership extends MarloAuditableEntity implements java
     if (this.getClass() != obj.getClass()) {
       return false;
     }
-    DeliverablePartnership other = (DeliverablePartnership) obj;
+    DeliverableUserPartnershipPerson other = (DeliverableUserPartnershipPerson) obj;
     if (this.getId() == null) {
       if (other.getId() != null) {
         return false;
@@ -73,15 +58,16 @@ public class DeliverablePartnership extends MarloAuditableEntity implements java
   }
 
   public String getComposedName() {
-	  if(this.getProjectPartnerPerson()!=null) {
-		  return this.getProjectPartnerPerson().getComposedCompleteName();
-	  }else {
-		  return "";
-	  }
+    if (this.getUser() != null) {
+      return this.getUser().getComposedCompleteName();
+    } else {
+      return "";
+    }
   }
 
-  public Deliverable getDeliverable() {
-    return deliverable;
+
+  public DeliverableUserPartnership getDeliverableUserPartnership() {
+    return deliverableUserPartnership;
   }
 
   @Override
@@ -91,27 +77,9 @@ public class DeliverablePartnership extends MarloAuditableEntity implements java
     return sb.toString();
   }
 
-  public PartnerDivision getPartnerDivision() {
-    return partnerDivision;
-  }
 
-  public String getPartnerType() {
-    return partnerType;
-  }
-
-
-  public Phase getPhase() {
-    return phase;
-  }
-
-
-  public ProjectPartner getProjectPartner() {
-    return projectPartner;
-  }
-
-
-  public ProjectPartnerPerson getProjectPartnerPerson() {
-    return projectPartnerPerson;
+  public User getUser() {
+    return user;
   }
 
 
@@ -123,39 +91,21 @@ public class DeliverablePartnership extends MarloAuditableEntity implements java
     return result;
   }
 
-  public void setDeliverable(Deliverable deliverable) {
-    this.deliverable = deliverable;
+  public void setDeliverableUserPartnership(DeliverableUserPartnership deliverableUserPartnership) {
+    this.deliverableUserPartnership = deliverableUserPartnership;
   }
 
 
-  public void setPartnerDivision(PartnerDivision partnerDivision) {
-    this.partnerDivision = partnerDivision;
-  }
-
-  public void setPartnerType(String partnerType) {
-    this.partnerType = partnerType;
-  }
-
-
-  public void setPhase(Phase phase) {
-    this.phase = phase;
-  }
-
-
-  public void setProjectPartner(ProjectPartner projectPartner) {
-    this.projectPartner = projectPartner;
-  }
-
-
-  public void setProjectPartnerPerson(ProjectPartnerPerson projectPartnerPerson) {
-    this.projectPartnerPerson = projectPartnerPerson;
+  public void setUser(User user) {
+    this.user = user;
   }
 
 
   @Override
   public String toString() {
-    return "DeliverablePartnership [id=" + this.getId() + ", deliverable=" + deliverable + ", partnerType="
-      + partnerType + ", partnerDivision=" + partnerDivision + "]";
+    return "DeliverableUserPartnershipPerson [id=" + this.getId() + ", deliverableUserPartnership="
+      + this.getDeliverableUserPartnership() + ", userId=" + this.getUser().getId() + "]";
   }
+
 
 }
