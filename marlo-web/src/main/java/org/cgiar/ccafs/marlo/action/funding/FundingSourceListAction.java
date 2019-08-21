@@ -472,6 +472,10 @@ public class FundingSourceListAction extends BaseAction {
         if (fundingSource.getInstitutions() != null) {
           for (FundingSourceInstitution institution : fundingSource.getInstitutions()) {
 
+            if (filteredInstitutions.contains(institution.getInstitution())) {
+              institution.setIsChecked(true);
+            }
+
             // funding source institutions cycle
             if (fundingSourceInstitutions != null) {
               // if the list of funding source institutions has elements, check the acronym and/or the name of
@@ -491,6 +495,8 @@ public class FundingSourceListAction extends BaseAction {
               // if the list of the funding source institutions to send to front is empty
               fundingSourceInstitutions.add(institution);
             }
+
+
           }
         }
       }

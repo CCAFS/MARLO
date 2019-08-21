@@ -27,10 +27,11 @@ public class FundingSourceInstitution extends MarloBaseEntity implements java.io
   @Expose
   private Phase phase;
 
+  private Boolean isChecked;
+
 
   public FundingSourceInstitution() {
   }
-
 
   @Override
   public boolean equals(Object obj) {
@@ -54,15 +55,19 @@ public class FundingSourceInstitution extends MarloBaseEntity implements java.io
     return true;
   }
 
-
   public FundingSource getFundingSource() {
     return this.fundingSource;
   }
 
-
   public Institution getInstitution() {
     return this.institution;
   }
+
+
+  public Boolean getIsChecked() {
+    return isChecked;
+  }
+
 
   @Override
   public String getLogDeatil() {
@@ -108,6 +113,10 @@ public class FundingSourceInstitution extends MarloBaseEntity implements java.io
 
   public void setInstitution(Institution institution) {
     this.institution = institution;
+  }
+
+  public void setIsChecked(Boolean isChecked) {
+    this.isChecked = isChecked;
   }
 
   @Override
