@@ -211,7 +211,7 @@
   [#-- Partner who is responsible --]
   <label for="">[@customForm.text name="project.deliverable.indicateResponsablePartner" readText=!editable/]:[@customForm.req required=editable /]</label>
   <div>
-    [@deliverableMacros.deliverablePartnerMacro element=(deliverable.responsiblePartnership)!{} name="deliverable.responsiblePartnership" defaultType=1 /]
+    [@deliverableMacros.deliverablePartnerMacro element=(deliverable.responsiblePartnership[0])!{} name="deliverable.responsiblePartnership" index=0 defaultType=1 /]
   </div>
   <hr />
   [#-- Other contact person that will contribute --]

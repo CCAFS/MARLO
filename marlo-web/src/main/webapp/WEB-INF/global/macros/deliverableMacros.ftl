@@ -983,7 +983,7 @@
   [#local typeID = (element.deliverablePartnerType.id)!defaultType ]
   [#local isResponsable = (typeID == 1) ]
   [#local customName = "${name}[${index}]" ]
-  [#if isResponsable][#local customName = "${name}" ][/#if]
+  [#if isResponsable][#local customName = "${name}[0]" ][/#if]
   
   <div id="deliverablePartnerItem-${isTemplate?string('template', (element.id)! )}" class="simpleBox deliverablePartnerItem" style="display:${isTemplate?string('none', 'block')}">
     [#-- Remove --]
@@ -998,9 +998,9 @@
     </div>
     [#-- Users Selected--]
     [#local selectedUsersID = []]
-    [#if (element.id??)!false][#local selectedUsersID = (action.getPersonsIds(element))![]][/#if]
+    [#if (element.partnershipPersons?has_content)!false][#local selectedUsersID = (action.getPersonsIds(element))![]][/#if]
     [#-- List of users--]
-    <div class="row form-group usersBlock">
+    <div class="row form-group usersBlock"> 
       [#list (action.getUserList(element.institution.id))![] as user]
         [#local isUserChecked =  selectedUsersID?seq_contains(user.id) ]
         [@deliverableUserMacro element=element user=user index=user_index name="${customName}.partnershipPersons" isUserChecked=isUserChecked isResponsable=isResponsable /]
@@ -1012,12 +1012,12 @@
 
 [#macro deliverableUserMacro element user index name isUserChecked=false isResponsable=false]
   [#local customName = "${name}[${index}]"]
-  [#if isResponsable][#local customName = "${name}[0]"][/#if]
   [#local customID = "${index}-${isResponsable?string('1', '2')}-${user.id}"]
+  [#if isResponsable][#local customName = "${name}[0]" ][/#if]
   [#-- Get Deliverable User --]
   [#local deliverableUser = {} ]
   [#list (element.partnershipPersons)![] as dpp]
-    [#if dpp.user.id == user.id][#local deliverableUser = dpp ][#break][/#if]
+    [#if (dpp.user.id == user.id)!false][#local deliverableUser = dpp ][#break][/#if]
   [/#list]
   
   <div class="deliverableUserItem col-md-6">

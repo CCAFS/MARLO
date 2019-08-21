@@ -142,7 +142,7 @@ public class ProjectInfoManagerImpl implements ProjectInfoManager {
     try {
       List<DeliverableUserPartnership> list = deliverable.getDeliverableUserPartnerships().stream()
         .filter(dp -> dp.isActive() && dp.getPhase().getId().equals(phase.getId())
-          && dp.getDeliverablePartnerType().getId().equals(APConstants.DELIVERABLE_PARTNERSHIP_TYPE_RESPONSIBLE))
+          && dp.getDeliverablePartnerType().getId().equals(APConstants.DELIVERABLE_PARTNERSHIP_TYPE_OTHER))
         .collect(Collectors.toList());
 
 
@@ -154,12 +154,12 @@ public class ProjectInfoManagerImpl implements ProjectInfoManager {
 
   }
 
-  private DeliverableUserPartnership responsiblePartner(Deliverable deliverable, Phase phase) {
+  private List<DeliverableUserPartnership> responsiblePartner(Deliverable deliverable, Phase phase) {
     try {
-      DeliverableUserPartnership partnership = deliverable.getDeliverableUserPartnerships().stream()
+      List<DeliverableUserPartnership> partnership = deliverable.getDeliverableUserPartnerships().stream()
         .filter(dp -> dp.isActive() && dp.getPhase().getId().equals(phase.getId())
           && dp.getDeliverablePartnerType().getId().equals(APConstants.DELIVERABLE_PARTNERSHIP_TYPE_RESPONSIBLE))
-        .collect(Collectors.toList()).get(0);
+        .collect(Collectors.toList());
       return partnership;
     } catch (Exception e) {
       return null;
@@ -275,8 +275,8 @@ public class ProjectInfoManagerImpl implements ProjectInfoManager {
             deliverableManager.copyDeliverable(deliverableInfo.getDeliverable(), phase);
 
             if (deliverable.getResponsiblePartnership() != null) {
-              deliverableUserPartnershipManager.copyDeliverableUserPartnership(deliverable.getResponsiblePartnership(),
-                phase);
+              deliverableUserPartnershipManager
+                .copyDeliverableUserPartnership(deliverable.getResponsiblePartnership().get(0), phase);
             }
 
 

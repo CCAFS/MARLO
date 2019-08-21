@@ -989,28 +989,25 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
         /*
          * -- Deliverable responsible
          */
-        deliverable.setResponsiblePartnership(new DeliverableUserPartnership());
         if (deliverable.getDeliverableUserPartnerships() != null) {
+
           List<DeliverableUserPartnership> deList = deliverable.getDeliverableUserPartnerships().stream()
             .filter(dp -> dp.isActive() && dp.getPhase().getId().equals(phase.getId())
               && dp.getDeliverablePartnerType().getId().equals(APConstants.DELIVERABLE_PARTNERSHIP_TYPE_RESPONSIBLE))
             .collect(Collectors.toList());
 
           if (deList != null && !deList.isEmpty()) {
+            Collections.sort(deList, (p1, p2) -> p1.getInstitution().getId().compareTo(p2.getInstitution().getId()));
+            deliverable.setResponsiblePartnership(new ArrayList<>());
+            for (DeliverableUserPartnership deliverableUserPartnership : deList) {
 
-            Collections.sort(deList,
-              Collections.reverseOrder((p1, p2) -> p1.getActiveSince().compareTo(p2.getActiveSince())));
-            DeliverableUserPartnership actualPartner = deList.get(0);
-
-
-            deliverable.setResponsiblePartnership(actualPartner);
-
-
-            if (actualPartner.getDeliverableUserPartnershipPersons() != null) {
-              List<DeliverableUserPartnershipPerson> partnershipPersons =
-                new ArrayList<>(actualPartner.getDeliverableUserPartnershipPersons().stream().filter(d -> d.isActive())
-                  .collect(Collectors.toList()));
-              deliverable.getResponsiblePartnership().setPartnershipPersons(partnershipPersons);
+              if (deliverableUserPartnership.getDeliverableUserPartnershipPersons() != null) {
+                List<DeliverableUserPartnershipPerson> partnershipPersons =
+                  new ArrayList<>(deliverableUserPartnership.getDeliverableUserPartnershipPersons().stream()
+                    .filter(d -> d.isActive()).collect(Collectors.toList()));
+                deliverableUserPartnership.setPartnershipPersons(partnershipPersons);
+              }
+              deliverable.getResponsiblePartnership().add(deliverableUserPartnership);
             }
 
           }

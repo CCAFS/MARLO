@@ -244,7 +244,7 @@
       [#assign usersList = (action.getUserList(partner.institution.id))![]]
       <div class="users-1">
         [#list usersList as user] 
-          [@deliverableMacros.deliverableUserMacro element={} user=user index=user_index name="deliverable.responsiblePartnership.partnershipPersons" isUserChecked=false isResponsable=true /]
+          [@deliverableMacros.deliverableUserMacro element={} user=user index=user_index name="deliverable.responsiblePartnership[0].partnershipPersons" isUserChecked=false isResponsable=true /]
         [/#list]
       </div>
       <div class="users-2">
