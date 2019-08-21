@@ -1091,9 +1091,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     String params[] = {this.crpManager.getGlobalUnitById(this.getCrpID()).getAcronym(), projectID + "",
       budgetTypeID + "", institutionID + ""};
     Boolean canEditBudget =
-      this.hasPermissionNoBase(this.generatePermission(Permission.PROJECT_BUDGET_EXECUTION_BASE_PERMISSION, params));
+      this.hasPermission(this.generatePermission(Permission.PROJECT_BUDGET_EXECUTION_BASE_PERMISSION, params));
     Boolean canEditBudgetLiaison =
-      this.hasPermissionNoBase(this.generatePermission(Permission.PROJECT_BUDGET_EXECUTION_LIAISON_PERMISSION, params));
+      this.hasPermission(this.generatePermission(Permission.PROJECT_BUDGET_EXECUTION_LIAISON_PERMISSION, params));
 
     if (canEditBudget || canEditBudgetLiaison) {
       return true;

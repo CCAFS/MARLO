@@ -127,6 +127,9 @@
 				
 				<interceptor name="canEditProjectLp6Contribution"
 				class="org.cgiar.ccafs.marlo.interceptor.project.EditProjectLp6ContributionInterceptor" />
+				
+				<interceptor name="canEditProjectBudgetExpenditure"
+        class="org.cgiar.ccafs.marlo.interceptor.project.EditProjectExpenditureInterceptor" />
 
 			<!-- SuperAdmin interceptors -->
 			<interceptor name="superAdminValidation"
@@ -259,6 +262,19 @@
 				<interceptor-ref name="trimInputs" />
 				<interceptor-ref name="defaultStack" />
 			</interceptor-stack>
+			
+			<interceptor-stack name="editProjectsBudgetStack">
+        <interceptor-ref name="i18nFile" />
+        <interceptor-ref name="validCrp" />
+        <interceptor-ref name="requireUser" />
+        <interceptor-ref name="validSessionCrp" />
+        <interceptor-ref name="canEditProject" />
+        <interceptor-ref name="canEditProjectBudgetExpenditure" />
+        <interceptor-ref name="keepRedirectMessages" />
+        <interceptor-ref name="accessibleStage" />
+        <interceptor-ref name="trimInputs" />
+        <interceptor-ref name="defaultStack" />
+      </interceptor-stack>
 			
 			<interceptor-stack name="editProjectLp6ContributionStack">
         <interceptor-ref name="i18nFile" />

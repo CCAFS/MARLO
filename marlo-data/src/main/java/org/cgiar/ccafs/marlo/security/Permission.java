@@ -47,6 +47,8 @@ public class Permission {
     "crp:{0}:project:{1}:budgetByPartners:execution:{2}";
   public static final String PROJECT_BUDGET_EXECUTION_LIAISON_PERMISSION =
     "crp:{0}:project:{1}:budgetByPartners:execution:{2}:liaison:{3}";
+  public static final String PROJECT_BUDGET_EXECUTION_CAN_EDIT_PERMISSION =
+    "crp:{0}:project:{1}:budgetByPartners:execution:canEdit";
   public static final String PROJECT_BUDGET_CLUSTER_BASE_PERMISSION = "crp:{0}:project:{1}:budgetByCoAs";
   public static final String PROJECT_MANAGE_BASE_PERMISSION = "crp:{0}:project:{1}:manage";
   public static final String PROJECT_SUBMISSION_PERMISSION = "crp:{0}:project:{1}:manage:submitProject";
@@ -193,6 +195,7 @@ public class Permission {
   // Create Projects Permissions
   public static final String PROJECT_CORE_ADD = "crp:{0}:project:projectsList:addCoreProject";
   public static final String PROJECT_BILATERAL_ADD = "crp:{0}:project:projectsList:addBilateralProject";
+
 
   /**
    * ---------------------------------------------------------------------------------------------------------
