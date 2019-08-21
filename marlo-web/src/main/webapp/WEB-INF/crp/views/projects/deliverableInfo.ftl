@@ -203,35 +203,33 @@
   [@deliverableMacros.deliverableCrossCuttingMacro /]
 </div>
 
+
+
 [#-- Partners --] 
 <h3 class="headTitle">[@s.text name="Partners contributing to this deliverable" /]</h3>  
-<div id="deliverable-partnership" class="form-group simpleBox">
-
-  <div class="partnerWrapper">
-    [#-- Partner who is responsible --]
-    <label for="">[@customForm.text name="project.deliverable.indicateResponsablePartner" readText=!editable/]:[@customForm.req required=editable /]</label>
-    <div class="form-group responsibleWrapper simpleBox">
-      [@deliverableList.deliverablePartner dp=deliverable.responsiblePartner dp_name="deliverable.responsiblePartner" dp_index=0 isResponsable=true  editable=editable /]
-    </div>
-    
-    <br />
-    
-    [#-- Other contact person that will contribute --]
-    [#assign displayOtherPerson = (!deliverable.otherPartners?has_content && !editable)?string('none','block') /]
-    <label for="" style="display:${displayOtherPerson}">[@customForm.text name="projectDeliverable.otherContactContributing" readText=!editable/]</label>
-    <div class="partnersList listname="deliverable.otherPartners" style="display:${displayOtherPerson}">
-      [#if action.getSelectedPartners()?has_content]
-        [@deliverableList.deliverablePartnerOther dp=action.getSelectedPartners() dp_name="deliverable.otherPartners" editable=editable /]
-      [#else]
-        <p class="simpleBox emptyText center"> [@s.text name="project.deliverable.partnership.emptyText" /] </p>
-      [/#if]
-    </div>
-    [#if editable && canEdit]
-      <div id="addPartnerBlock" class="addPerson text-right">
-        <div class="button-blue  addPartner"><span class="glyphicon glyphicon-plus-sign"></span> [@s.text name="form.buttons.addPartner" /]</div>
-      </div>
-    [/#if]
+<div id="deliverable-partnerships-new" class="form-group simpleBox">
+  [#-- Partner who is responsible --]
+  <label for="">[@customForm.text name="project.deliverable.indicateResponsablePartner" readText=!editable/]:[@customForm.req required=editable /]</label>
+  <div>
+    [@deliverableMacros.deliverablePartnerMacro element=(deliverable.responsiblePartnership[0])!{} name="deliverable.responsiblePartnership" index=0 defaultType=1 /]
   </div>
+  <hr />
+  [#-- Other contact person that will contribute --]
+  [#assign displayOtherPerson = (!deliverable.otherPartnerships?has_content && !editable)?string('none','block') /]
+  <label for="" style="display:${displayOtherPerson}">[@customForm.text name="projectDeliverable.otherContactContributing" readText=!editable/]</label>
+  <div class="otherDeliverablePartners">
+    [#list (deliverable.otherPartnerships)![] as otherPartnership]
+      [@deliverableMacros.deliverablePartnerMacro element=(otherPartnership)!{} name="deliverable.otherPartnerships" index=otherPartnership_index defaultType=2/]
+    [#else]
+      <p class="simpleBox emptyText center"> [@s.text name="project.deliverable.partnership.emptyText" /] </p>
+    [/#list]
+  </div>
+  
+  [#if editable && canEdit]
+    <div class="text-right">
+      <div class="button-blue addPartnerItem"><span class="glyphicon glyphicon-plus-sign"></span> [@s.text name="form.buttons.addPartner" /]</div>
+    </div>
+  [/#if]
   
   [#if editable]
     <div class="partnerListMsj note">

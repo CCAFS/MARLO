@@ -179,6 +179,7 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     return SUCCESS;
   }
 
+
   public boolean canEditFunding(long type, long institutionID) {
     if (this.isReportingActive()) {
       return false;

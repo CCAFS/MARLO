@@ -73,6 +73,10 @@ public interface DeliverableDAO {
    */
   public List<Deliverable> getDeliverablesByPhase(long phase);
 
+  public List<Deliverable> getDeliverablesLeadByInstitution(long institutionId, long phaseId);
+
+  public List<Deliverable> getDeliverablesLeadByUser(long userId, long phaseId);
+
   /**
    * This method saves the information of the given deliverable
    * 
