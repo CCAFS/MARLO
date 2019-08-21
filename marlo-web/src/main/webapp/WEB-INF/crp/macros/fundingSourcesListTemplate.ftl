@@ -275,11 +275,7 @@
       [#list institutions as institution]
         [#local institutionName = (institution.institution.acronym)!institution.institution.name /]
         [#local institutionId = (institution.institution.id)!0 /]
-        [#if institutionsIDsFilter?has_content && institutionsIDsFilter?contains("${institutionId}") ]
-          [#local checkedInstitution = true /]
-          [#else][#local checkedInstitution = false /]
-        [/#if]
-        <li>[@customForm.checkmark id="${institutionName}" label="${institutionName}" name="" cssClass="institutionsFilter" value="${institutionId}" checked=checkedInstitution editable=true centered=true /]</li>
+        <li>[@customForm.checkmark id="${institutionName}" label="${institutionName}" name="" cssClass="institutionsFilter" value="${institutionId}" checked=isChecked editable=true centered=true /]</li>
       [/#list]
      [/#if]
      </ul>
