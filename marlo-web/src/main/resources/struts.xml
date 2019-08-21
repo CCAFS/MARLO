@@ -268,11 +268,11 @@
         <interceptor-ref name="validCrp" />
         <interceptor-ref name="requireUser" />
         <interceptor-ref name="validSessionCrp" />
-        <interceptor-ref name="canEditProject" />
-        <interceptor-ref name="canEditProjectBudgetExpenditure" />
+        <interceptor-ref name="canEditProject" />        
         <interceptor-ref name="keepRedirectMessages" />
         <interceptor-ref name="accessibleStage" />
         <interceptor-ref name="trimInputs" />
+        <interceptor-ref name="canEditProjectBudgetExpenditure" />
         <interceptor-ref name="defaultStack" />
       </interceptor-stack>
 			
