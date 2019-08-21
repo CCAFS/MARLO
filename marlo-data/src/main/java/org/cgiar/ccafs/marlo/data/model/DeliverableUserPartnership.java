@@ -43,6 +43,7 @@ public class DeliverableUserPartnership extends MarloAuditableEntity implements 
   private Set<DeliverableUserPartnershipPerson> deliverableUserPartnershipPersons =
     new HashSet<DeliverableUserPartnershipPerson>(0);
 
+
   private List<DeliverableUserPartnershipPerson> partnershipPersons;
 
 
@@ -76,7 +77,6 @@ public class DeliverableUserPartnership extends MarloAuditableEntity implements 
     return deliverable;
   }
 
-
   public DeliverablePartnerType getDeliverablePartnerType() {
     return deliverablePartnerType;
   }
@@ -91,6 +91,7 @@ public class DeliverableUserPartnership extends MarloAuditableEntity implements 
     return institution;
   }
 
+
   @Override
   public String getLogDeatil() {
     StringBuilder sb = new StringBuilder();
@@ -98,10 +99,10 @@ public class DeliverableUserPartnership extends MarloAuditableEntity implements 
     return sb.toString();
   }
 
+
   public List<DeliverableUserPartnershipPerson> getPartnershipPersons() {
     return partnershipPersons;
   }
-
 
   /**
    * @return an array of integers.
@@ -119,10 +120,10 @@ public class DeliverableUserPartnership extends MarloAuditableEntity implements 
     return null;
   }
 
+
   public Phase getPhase() {
     return phase;
   }
-
 
   @Override
   public int hashCode() {
@@ -137,10 +138,10 @@ public class DeliverableUserPartnership extends MarloAuditableEntity implements 
     this.deliverable = deliverable;
   }
 
+
   public void setDeliverablePartnerType(DeliverablePartnerType deliverablePartnerType) {
     this.deliverablePartnerType = deliverablePartnerType;
   }
-
 
   public void
     setDeliverableUserPartnershipPersons(Set<DeliverableUserPartnershipPerson> deliverableUserPartnershipPersons) {

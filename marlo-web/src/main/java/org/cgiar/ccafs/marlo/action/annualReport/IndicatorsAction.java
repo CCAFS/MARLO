@@ -695,7 +695,7 @@ public class IndicatorsAction extends BaseAction {
                 && dp.getDeliverablePartnerType().getId().equals(APConstants.DELIVERABLE_PARTNERSHIP_TYPE_RESPONSIBLE))
               .collect(Collectors.toList());
           if (deliverablePartnerships != null && !deliverablePartnerships.isEmpty()) {
-            deliverableInfo.getDeliverable().setResponsiblePartnership(deliverablePartnerships.get(0));
+            deliverableInfo.getDeliverable().setResponsiblePartnership(deliverablePartnerships);
           }
         }
       }

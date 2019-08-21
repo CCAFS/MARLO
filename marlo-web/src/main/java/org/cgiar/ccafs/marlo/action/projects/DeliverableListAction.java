@@ -428,14 +428,14 @@ public class DeliverableListAction extends BaseAction {
 
   }
 
-  private DeliverableUserPartnership responsiblePartner(Deliverable deliverable) {
+  private List<DeliverableUserPartnership> responsiblePartner(Deliverable deliverable) {
     try {
       List<DeliverableUserPartnership> partnerships = deliverable.getDeliverableUserPartnerships().stream()
         .filter(dp -> dp.isActive()
           && dp.getDeliverablePartnerType().getId().equals(APConstants.DELIVERABLE_PARTNERSHIP_TYPE_RESPONSIBLE))
         .collect(Collectors.toList());
 
-      return partnerships.get(0);
+      return partnerships;
     } catch (Exception e) {
       return null;
     }

@@ -159,15 +159,19 @@ public class DeliverableValidator extends BaseValidator {
                   action.getInvalidFields().put("input-deliverable.otherPartnerships[" + i + "].partnershipPersons",
                     InvalidFieldsMessages.EMPTYFIELD);
                 } else {
+                  boolean haveUser = false;
                   for (int j = 0; j < deliverable.getOtherPartnerships().get(i).getPartnershipPersons().size(); j++) {
-                    if (deliverable.getOtherPartnerships().get(i).getPartnershipPersons().get(j).getUser() == null
-                      || deliverable.getOtherPartnerships().get(i).getPartnershipPersons().get(j).getUser()
-                        .getId() == null) {
-                      action.addMessage("Other Partnership Persons");
-                      action.getInvalidFields().put(
-                        "input-deliverable.otherPartnerships[" + i + "].partnershipPersons[" + j + "].user.id",
-                        InvalidFieldsMessages.EMPTYFIELD);
+                    if (deliverable.getOtherPartnerships().get(i).getPartnershipPersons().get(j).getUser() != null
+                      && deliverable.getOtherPartnerships().get(i).getPartnershipPersons().get(j).getUser()
+                        .getId() != null) {
+                      haveUser = true;
+                      break;
                     }
+                  }
+                  if (!haveUser) {
+                    action.addMessage("Other Partnership Persons");
+                    action.getInvalidFields().put("input-deliverable.otherPartnerships[" + i + "].partnershipPersons",
+                      InvalidFieldsMessages.EMPTYFIELD);
                   }
                 }
               }
@@ -178,29 +182,45 @@ public class DeliverableValidator extends BaseValidator {
 
         // Deliverable responsible
         if (deliverable.getResponsiblePartnership() == null) {
-
+          action.addMessage(action.getText("deliverable others"));
+          action.getInvalidFields().put("list-deliverable.otherPartnerships",
+            action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"deliverable others"}));
         } else {
-          if (deliverable.getResponsiblePartnership().getInstitution() == null
-            || deliverable.getResponsiblePartnership().getInstitution().getId() == null) {
 
-            action.addMessage("Responsible Partnership Institution");
-            action.getInvalidFields().put("input-deliverable.responsiblePartnership.institution.id",
-              InvalidFieldsMessages.EMPTYFIELD);
+          for (int i = 0; i < deliverable.getResponsiblePartnership().size(); i++) {
+            if (deliverable.getResponsiblePartnership().get(i).getInstitution() == null
+              || deliverable.getResponsiblePartnership().get(i).getInstitution().getId() == null) {
 
-          } else {
-            if (isManagingPartnerPersonRequerid) {
-              for (int j = 0; j < deliverable.getResponsiblePartnership().getPartnershipPersons().size(); j++) {
-                if (deliverable.getResponsiblePartnership().getPartnershipPersons().get(j).getUser() == null
-                  || deliverable.getResponsiblePartnership().getPartnershipPersons().get(j).getUser().getId() == null) {
-                  action.addMessage("Responsible Partnership Persons");
-                  action.getInvalidFields().put(
-                    "input-deliverable.responsiblePartnership.partnershipPersons[" + j + "].user.id",
+              action.addMessage("Other Partnership Institution");
+              action.getInvalidFields().put("input-deliverable.otherPartnerships[" + i + "].institution.id",
+                InvalidFieldsMessages.EMPTYFIELD);
+
+            } else {
+              if (isManagingPartnerPersonRequerid) {
+                if (deliverable.getResponsiblePartnership().get(i).getPartnershipPersons() == null) {
+                  action.addMessage("Other Partnership Persons");
+                  action.getInvalidFields().put("input-deliverable.otherPartnerships[" + i + "].partnershipPersons",
                     InvalidFieldsMessages.EMPTYFIELD);
+                } else {
+                  boolean haveUser = false;
+                  for (int j = 0; j < deliverable.getResponsiblePartnership().get(i).getPartnershipPersons()
+                    .size(); j++) {
+                    if (deliverable.getResponsiblePartnership().get(i).getPartnershipPersons().get(j).getUser() != null
+                      && deliverable.getResponsiblePartnership().get(i).getPartnershipPersons().get(j).getUser()
+                        .getId() != null) {
+                      haveUser = true;
+                      break;
+                    }
+                  }
+                  if (!haveUser) {
+                    action.addMessage("Other Partnership Persons");
+                    action.getInvalidFields().put("input-deliverable.otherPartnerships[" + i + "].partnershipPersons",
+                      InvalidFieldsMessages.EMPTYFIELD);
+                  }
                 }
               }
             }
           }
-
 
         }
 
