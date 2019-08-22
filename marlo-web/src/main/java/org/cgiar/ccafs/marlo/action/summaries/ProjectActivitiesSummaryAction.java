@@ -598,7 +598,7 @@ public class ProjectActivitiesSummaryAction extends BaseSummariesAction implemen
         // Subreport Description
         args.add(projectLeader);
         args.add(this.hasProgramnsRegions());
-        this.fillSubreport((SubReport) hm.get("description"), "description", args);
+        // this.fillSubreport((SubReport) hm.get("description"), "description", args);
         // Description Flagships
         args.clear();
 
@@ -1310,7 +1310,7 @@ public class ProjectActivitiesSummaryAction extends BaseSummariesAction implemen
         projectInfo.setAdministrative(false);
       }
     } catch (Exception e) {
-      projectInfo.setAdministrative(false);
+      // projectInfo.setAdministrative(false);
     }
 
     if (projectInfo.getAdministrative() == false) {
