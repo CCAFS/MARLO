@@ -200,7 +200,7 @@ public class DeliverableUserPartnershipManagerImpl implements DeliverableUserPar
 
     List<DeliverableUserPartnership> deliverableUserPartnerships =
       phase.getDeliverableUserPartnerships().stream()
-        .filter(c -> c.isActive() && c.getDeliverable().getId().longValue() == deliverableID
+        .filter(c -> c.isActive() && c.getDeliverable().getId().equals(deliverableID)
           && c.getInstitution().getId().equals(deliverableUserPartnership.getInstitution().getId()) && c
             .getDeliverablePartnerType().getId().equals(deliverableUserPartnership.getDeliverablePartnerType().getId()))
         .collect(Collectors.toList());
@@ -223,6 +223,9 @@ public class DeliverableUserPartnershipManagerImpl implements DeliverableUserPar
         this.addPersons(deliverableUserPartnership, deliverableUserPartnershipAdd.getId());
       }
     } else {
+
+      deliverableUserPartnershipDAO.save(deliverableUserPartnerships.get(0));
+
       this.updatePersons(deliverableUserPartnerships.get(0), deliverableUserPartnership,
         deliverableUserPartnerships.get(0).getDeliverablePartnerType().getId());
     }
