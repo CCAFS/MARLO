@@ -38,7 +38,6 @@ import javax.inject.Named;
 public class DeliverableInfoManagerImpl implements DeliverableInfoManager {
 
   private PhaseDAO phaseDAO;
-
   private DeliverableInfoDAO deliverableInfoDAO;
   // Managers
 
@@ -98,26 +97,27 @@ public class DeliverableInfoManagerImpl implements DeliverableInfoManager {
       && deliverableInfo.getDeliverable().getIsPublication();
     if (deliverableInfo.getPhase().getDescription().equals(APConstants.PLANNING)
       && deliverableInfo.getPhase().getNext() != null && !isPublication) {
-      this.saveInfoPhase(deliverableInfo.getPhase().getNext(), deliverableInfo.getId(), deliverableInfo);
+      this.saveInfoPhase(deliverableInfo.getPhase().getNext(), deliverableInfo.getDeliverable().getId(),
+        deliverableInfo);
     }
     if (deliverableInfo.getPhase().getDescription().equals(APConstants.REPORTING)) {
       if (deliverableInfo.getPhase().getNext() != null && deliverableInfo.getPhase().getNext().getNext() != null
         && !isPublication) {
         Phase upkeepPhase = deliverableInfo.getPhase().getNext().getNext();
         if (upkeepPhase != null) {
-          this.saveInfoPhase(upkeepPhase, deliverableInfo.getId(), deliverableInfo);
+          this.saveInfoPhase(upkeepPhase, deliverableInfo.getDeliverable().getId(), deliverableInfo);
         }
       }
     }
     return resultDeliverableInfo;
-    // END chenges dperez
+    // END changes dperez
     // return deliverableInfoDAO.save(deliverableInfo);
   }
 
-  public void saveInfoPhase(Phase next, Long deliverableInfoid, DeliverableInfo deliverableInfo) {
+  public void saveInfoPhase(Phase next, Long deliverableId, DeliverableInfo deliverableInfo) {
     Phase phase = phaseDAO.find(next.getId());
     List<DeliverableInfo> deliverableInfos = phase.getDeliverableInfos().stream()
-      .filter(c -> c.getDeliverable().getId().equals(deliverableInfoid)).collect(Collectors.toList());
+      .filter(c -> c.getDeliverable().getId().equals(deliverableId)).collect(Collectors.toList());
     if (!deliverableInfos.isEmpty()) {
       for (DeliverableInfo deliverableInfoPhase : deliverableInfos) {
         deliverableInfoPhase.updateDeliverableInfo(deliverableInfo);
@@ -132,7 +132,7 @@ public class DeliverableInfoManagerImpl implements DeliverableInfoManager {
       deliverableInfoDAO.save(deliverableInfoAdd);
     }
     if (phase.getNext() != null) {
-      this.saveInfoPhase(phase.getNext(), deliverableInfoid, deliverableInfo);
+      this.saveInfoPhase(phase.getNext(), deliverableId, deliverableInfo);
     }
   }
 
