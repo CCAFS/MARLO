@@ -45,18 +45,17 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableInfo;
 import org.cgiar.ccafs.marlo.data.model.DeliverableLeader;
 import org.cgiar.ccafs.marlo.data.model.DeliverableLocation;
 import org.cgiar.ccafs.marlo.data.model.DeliverableMetadataElement;
-import org.cgiar.ccafs.marlo.data.model.DeliverablePartnership;
-import org.cgiar.ccafs.marlo.data.model.DeliverablePartnershipTypeEnum;
 import org.cgiar.ccafs.marlo.data.model.DeliverableProgram;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePublicationMetadata;
 import org.cgiar.ccafs.marlo.data.model.DeliverableQualityCheck;
 import org.cgiar.ccafs.marlo.data.model.DeliverableUser;
+import org.cgiar.ccafs.marlo.data.model.DeliverableUserPartnership;
+import org.cgiar.ccafs.marlo.data.model.DeliverableUserPartnershipPerson;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerContribution;
-import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.RepositoryChannel;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -656,11 +655,12 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
 
         // Get partner responsible and institution
         // Set responible;
-        DeliverablePartnership responisble = this.responsiblePartner(deliverable);
+        DeliverableUserPartnership responisble = this.responsiblePartner(deliverable);
 
         if (responisble != null) {
-          if (responisble.getProjectPartnerPerson() != null) {
-            ProjectPartnerPerson responsibleppp = responisble.getProjectPartnerPerson();
+          if (responisble.getDeliverableUserPartnershipPersons() != null) {
+            DeliverableUserPartnershipPerson responsibleppp = responisble.getDeliverableUserPartnershipPersons()
+              .stream().filter(dp -> dp.isActive()).collect(Collectors.toList()).get(0);
 
             // Get project leader
 
@@ -1511,174 +1511,117 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
         LinkedHashSet<Institution> institutionsResponsibleList = new LinkedHashSet<>();
 
         // Get partner responsible
+        List<DeliverableUserPartnership> partnershipsList = deliverable.getDeliverableUserPartnerships().stream()
+          .filter(dp -> dp.isActive() && dp.getPhase().getId().equals(this.getActualPhase().getId())
+            && dp.getDeliverablePartnerType().getId().equals(APConstants.DELIVERABLE_PARTNERSHIP_TYPE_RESPONSIBLE))
+          .collect(Collectors.toList());
 
-        List<DeliverablePartnership> partnershipsList = deliverable.getDeliverablePartnerships().stream()
-          .filter(dp -> dp.isActive() && dp.getPhase().equals(this.getSelectedPhase())).collect(Collectors.toList());
+
+        DeliverableUserPartnership responsible = null;
+
         // Set responible;
-        DeliverablePartnership responsible = null;
-        if (partnershipsList.stream()
-          .filter(dp -> dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.RESPONSIBLE.getValue()))
-          .collect(Collectors.toList()).size() > 0) {
-          responsible = partnershipsList.stream()
-            .filter(dp -> dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.RESPONSIBLE.getValue()))
-            .collect(Collectors.toList()).get(0);
-        }
-
-        if (responsible != null) {
-          if (responsible.getProjectPartner() != null) {
-            institutionsResponsibleList.add(responsible.getProjectPartner().getInstitution());
+        if (partnershipsList != null && !partnershipsList.isEmpty()) {
+          responsible = partnershipsList.get(0);
+          if (responsible.getInstitution() != null) {
+            institutionsResponsibleList.add(responsible.getInstitution());
           }
-          if (responsible.getProjectPartnerPerson() == null) {
+          if (responsible.getDeliverableUserPartnershipPersons() == null) {
 
             // get deliverable information when partner responsible does not have a person
+            if (responsible.getInstitution() != null) {
+              if (responsible.getInstitution().getAcronym() != null
+                && !responsible.getInstitution().getAcronym().isEmpty()) {
+                ppaResponsibleList.add("*" + responsible.getInstitution().getAcronym() + " ");
+                responsibleAcronym = responsible.getInstitution().getAcronym() + " ";
 
-            if (responsible.getProjectPartner() != null) {
-              if (responsible.getProjectPartner().getInstitution() != null) {
-                if (responsible.getProjectPartner().getInstitution().getAcronym() != null
-                  && !responsible.getProjectPartner().getInstitution().getAcronym().isEmpty()) {
-                  ppaResponsibleList.add("*" + responsible.getProjectPartner().getInstitution().getAcronym() + " ");
-                  responsibleAcronym = responsible.getProjectPartner().getInstitution().getAcronym() + " ";
-
-                  /*
-                   * ppaResponsibleList.add("<span style='font-family: Segoe UI;color:#ff0000;font-size: 10'>"
-                   * + responsible.getProjectPartner().getInstitution().getAcronym() + "</span>");
-                   * responsibleAcronym = responsible.getProjectPartner().getInstitution().getAcronym();
-                   */
-                } else {
-                  /*
-                   * ppaResponsibleList.add("<span style='font-family: Segoe UI;color:#ff0000;font-size: 10'>"
-                   * + responsible.getProjectPartner().getInstitution().getName() + "</span>");
-                   */
-                  ppaResponsibleList.add("*" + responsible.getProjectPartner().getInstitution().getName() + " ");
-                  responsibleName = responsible.getProjectPartner().getInstitution().getName() + " ";
-                }
+              } else {
+                ppaResponsibleList.add("*" + responsible.getInstitution().getName() + " ");
+                responsibleName = responsible.getInstitution().getName() + " ";
               }
             }
 
-            if (responsible.getPartnerDivision() != null && responsible.getPartnerDivision().getAcronym() != null
-              && !responsible.getPartnerDivision().getAcronym().isEmpty()) {
-            }
-
-          } else if (responsible.getProjectPartnerPerson() != null) {
+          } else if (responsible.getDeliverableUserPartnershipPersons() != null) {
             // individual += "<span style='font-family: Segoe UI;color:#ff0000;font-size: 10'>";
             individual += "●  ";
             individual += "*";
-            ProjectPartnerPerson responsibleppp = responsible.getProjectPartnerPerson();
-            if (responsibleppp.getProjectPartner() != null) {
-              if (responsibleppp.getProjectPartner().getInstitution() != null) {
-                if (responsibleppp.getProjectPartner().getInstitution().getAcronym() != null
-                  && !responsibleppp.getProjectPartner().getInstitution().getAcronym().isEmpty()) {
-                  individual += responsibleppp.getProjectPartner().getInstitution().getAcronym() + " - ";
-                  /*
-                   * ppaResponsible += "<span style='font-family: Segoe UI;color:#ff0000;font-size: 10'>"
-                   * + responsibleppp.getProjectPartner().getInstitution().getAcronym() + "</span>";
-                   */
-                  ppaResponsible += "*" + responsibleppp.getProjectPartner().getInstitution().getAcronym() + ", ";
-                  responsibleAcronym = responsibleppp.getProjectPartner().getInstitution().getAcronym() + " ";
-                } else {
-                  individual += responsibleppp.getProjectPartner().getInstitution().getName() + " - ";
+            DeliverableUserPartnershipPerson responsibleppp = responsible.getDeliverableUserPartnershipPersons()
+              .stream().filter(dp -> dp.isActive()).collect(Collectors.toList()).get(0);
 
-                  /*
-                   * ppaResponsible += "<span style='font-family: Segoe UI;color:#ff0000;font-size: 10'>"
-                   * + responsibleppp.getProjectPartner().getInstitution().getName() + "</span>";
-                   */
-                  ppaResponsible += "*" + responsibleppp.getProjectPartner().getInstitution().getName() + ", ";
-                  responsibleName = responsibleppp.getProjectPartner().getInstitution().getName() + " ";
-                }
+            // get deliverable information when partner responsible does not have a person
+            if (responsible.getInstitution() != null) {
+              if (responsible.getInstitution().getAcronym() != null
+                && !responsible.getInstitution().getAcronym().isEmpty()) {
+                ppaResponsibleList.add("*" + responsible.getInstitution().getAcronym() + " ");
+                responsibleAcronym = responsible.getInstitution().getAcronym() + " ";
+
+              } else {
+                ppaResponsibleList.add("*" + responsible.getInstitution().getName() + " ");
+                responsibleName = responsible.getInstitution().getName() + " ";
               }
             }
+
             if (responsibleppp.getUser() != null) {
               individual += responsibleppp.getUser().getComposedNameWithoutEmail();
             }
-
-            if (responsible.getPartnerDivision() != null && responsible.getPartnerDivision().getAcronym() != null
-              && !responsible.getPartnerDivision().getAcronym().isEmpty()) {
-              individual += " (" + responsible.getPartnerDivision().getAcronym() + ") ";// All individual resposible
-            }
-
-            // individual += "</span>";
           }
+
         }
+
 
         // Get partner others
-        List<DeliverablePartnership> othersPartnerships = null;
-        if (partnershipsList.stream()
-          .filter(dp -> dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.OTHER.getValue()))
-          .collect(Collectors.toList()).size() > 0) {
-          othersPartnerships = partnershipsList.stream()
-            .filter(dp -> dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.OTHER.getValue()))
-            .collect(Collectors.toList());
-        }
+        List<DeliverableUserPartnership> othersPartnerships = deliverable.getDeliverableUserPartnerships().stream()
+          .filter(dp -> dp.isActive() && dp.getPhase().getId().equals(this.getActualPhase().getId())
+            && dp.getDeliverablePartnerType().getId().equals(APConstants.DELIVERABLE_PARTNERSHIP_TYPE_OTHER))
+          .collect(Collectors.toList());
 
         if (othersPartnerships != null) {
           individual += "\n ● ";
 
-          for (DeliverablePartnership deliverablePartnership : othersPartnerships) {
-            if (deliverablePartnership.getProjectPartner() != null) {
-              institutionsResponsibleList.add(deliverablePartnership.getProjectPartner().getInstitution());
+          for (DeliverableUserPartnership deliverablePartnership : othersPartnerships) {
+            if (deliverablePartnership.getInstitution() != null) {
+              institutionsResponsibleList.add(deliverablePartnership.getInstitution());
             }
-            if (deliverablePartnership.getProjectPartnerPerson() != null) {
-              if (individual.isEmpty()) {
-                // individual += "<span style='font-family: Segoe UI;font-size: 10'>";
-              }
+            if (deliverablePartnership.getDeliverableUserPartnershipPersons() != null) {
 
-              ProjectPartnerPerson responsibleppp = deliverablePartnership.getProjectPartnerPerson();
-              if (responsibleppp.getProjectPartner() != null) {
-                if (responsibleppp.getProjectPartner().getInstitution() != null) {
-                  if (responsibleppp.getProjectPartner().getInstitution().getAcronym() != null
-                    && !responsibleppp.getProjectPartner().getInstitution().getAcronym().isEmpty()) {
-                    individual += responsibleppp.getProjectPartner().getInstitution().getAcronym() + " - ";
-                    if (!responsibleAcronym.equals(responsibleppp.getProjectPartner().getInstitution().getAcronym())) {
-                      ppaResponsibleList.add(responsibleppp.getProjectPartner().getInstitution().getAcronym() + " ");
-                    }
-                  } else {
-                    individual += responsibleppp.getProjectPartner().getInstitution().getName() + " - ";
-                    if (!responsibleAcronym.equals(responsibleppp.getProjectPartner().getInstitution().getName())) {
-                      ppaResponsibleList.add(responsibleppp.getProjectPartner().getInstitution().getName() + " ");
-                    }
-                  }
+
+              List<DeliverableUserPartnershipPerson> responsibleppp =
+                deliverablePartnership.getDeliverableUserPartnershipPersons().stream().filter(dp -> dp.isActive())
+                  .collect(Collectors.toList());
+
+              if (deliverablePartnership.getInstitution() != null) {
+                if (deliverablePartnership.getInstitution().getAcronym() != null
+                  && !deliverablePartnership.getInstitution().getAcronym().isEmpty()) {
+                  ppaResponsibleList.add("*" + deliverablePartnership.getInstitution().getAcronym() + " ");
+                  responsibleAcronym = deliverablePartnership.getInstitution().getAcronym() + " ";
+
+                } else {
+                  ppaResponsibleList.add("*" + deliverablePartnership.getInstitution().getName() + " ");
+                  responsibleName = deliverablePartnership.getInstitution().getName() + " ";
                 }
               }
 
-              if (responsibleppp.getUser() != null) {
-                individual += responsibleppp.getUser().getComposedName();
+              for (DeliverableUserPartnershipPerson person : responsibleppp) {
+                if (person.getUser() != null) {
+                  individual += person.getUser().getComposedName();
+                }
               }
 
-              if (deliverablePartnership.getPartnerDivision() != null
-                && deliverablePartnership.getPartnerDivision().getAcronym() != null
-                && !deliverablePartnership.getPartnerDivision().getAcronym().isEmpty()) {
-                individual += " (" + deliverablePartnership.getPartnerDivision().getAcronym() + ")";
-              }
               individual += "\n● ";
-              // individual += "</span>";
-              // End of invidual cycle
+
             } else {
 
-              // get deliverable information from deliverablePartnership
+              if (deliverablePartnership.getInstitution() != null) {
+                if (deliverablePartnership.getInstitution().getAcronym() != null
+                  && !deliverablePartnership.getInstitution().getAcronym().isEmpty()) {
+                  ppaResponsibleList.add("*" + deliverablePartnership.getInstitution().getAcronym() + " ");
+                  responsibleAcronym = deliverablePartnership.getInstitution().getAcronym() + " ";
 
-              if (deliverablePartnership.getProjectPartner() != null) {
-
-                if (deliverablePartnership.getProjectPartner().getInstitution() != null) {
-                  if (deliverablePartnership.getProjectPartner().getInstitution().getAcronym() != null
-                    && !deliverablePartnership.getProjectPartner().getInstitution().getAcronym().isEmpty()) {
-                    if (!responsibleAcronym
-                      .equals(deliverablePartnership.getProjectPartner().getInstitution().getAcronym())) {
-                      ppaResponsibleList.add(deliverablePartnership.getProjectPartner().getInstitution().getAcronym());
-                    }
-                  } else {
-                    if (!responsibleAcronym
-                      .equals(deliverablePartnership.getProjectPartner().getInstitution().getName())) {
-                      ppaResponsibleList.add(deliverablePartnership.getProjectPartner().getInstitution().getName());
-                    }
-                  }
+                } else {
+                  ppaResponsibleList.add("*" + deliverablePartnership.getInstitution().getName() + " ");
+                  responsibleName = deliverablePartnership.getInstitution().getName() + " ";
                 }
-
               }
 
-              if (deliverablePartnership.getPartnerDivision() != null
-                && deliverablePartnership.getPartnerDivision().getAcronym() != null
-                && !deliverablePartnership.getPartnerDivision().getAcronym().isEmpty()) {
-              }
             }
           }
         }
@@ -1772,21 +1715,24 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
             institution = managingInstitution.getName();
           }
           String color = ";color:#000000";
-          if (responsible != null && responsible.getProjectPartner() != null) {
-            if (responsible.getProjectPartner().getInstitution().equals(managingInstitution)) {
-              color = ";color:#ff0000";
-            } else {
-              List<ProjectPartnerContribution> projectPartnerContributions = responsible.getProjectPartner()
-                .getProjectPartnerContributions().stream().filter(pc -> pc.isActive()).collect(Collectors.toList());
-              if (projectPartnerContributions != null && !projectPartnerContributions.isEmpty()) {
-                for (ProjectPartnerContribution projectPartnerContribution : projectPartnerContributions) {
-                  if (projectPartnerContribution.getProjectPartner().equals(responsible.getProjectPartner())) {
-                    color = ";color:#ff0000";
-                  }
-                }
-              }
-            }
+
+          if (responsible != null && responsible.getInstitution() != null
+            && responsible.getInstitution().getId().equals(managingInstitution.getId())) {
+            color = ";color:#ff0000";
+          } else {
+            color = ";color:#ff0000";
+            // TODO view in Summary
+            // List<ProjectPartnerContribution> projectPartnerContributions = responsible.getProjectPartner()
+            // .getProjectPartnerContributions().stream().filter(pc -> pc.isActive()).collect(Collectors.toList());
+            // if (projectPartnerContributions != null && !projectPartnerContributions.isEmpty()) {
+            // for (ProjectPartnerContribution projectPartnerContribution : projectPartnerContributions) {
+            // if (projectPartnerContribution.getProjectPartner().equals(responsible.getProjectPartner())) {
+            // color = ";color:#ff0000";
+            // }
+            // }
+            // }
           }
+
 
           if (managingResponsible.isEmpty()) {
             /*
@@ -2638,11 +2584,11 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
       + this.getCurrentUser().getComposedCompleteName() + ". CRP: " + this.getLoggedCrp().getAcronym());
   }
 
-  private DeliverablePartnership responsiblePartner(Deliverable deliverable) {
+  private DeliverableUserPartnership responsiblePartner(Deliverable deliverable) {
     try {
-      DeliverablePartnership partnership = deliverable.getDeliverablePartnerships().stream()
-        .filter(dp -> dp.isActive() && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.RESPONSIBLE.getValue())
-          && dp.getPhase() != null && dp.getPhase().equals(this.getSelectedPhase()))
+      DeliverableUserPartnership partnership = deliverable.getDeliverableUserPartnerships().stream()
+        .filter(dp -> dp.isActive() && dp.getPhase().getId().equals(this.getActualPhase().getId())
+          && dp.getDeliverablePartnerType().getId().equals(APConstants.DELIVERABLE_PARTNERSHIP_TYPE_RESPONSIBLE))
         .collect(Collectors.toList()).get(0);
       return partnership;
     } catch (Exception e) {

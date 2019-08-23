@@ -25,8 +25,8 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.Activity;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableCrossCuttingMarker;
-import org.cgiar.ccafs.marlo.data.model.DeliverablePartnership;
-import org.cgiar.ccafs.marlo.data.model.DeliverablePartnershipTypeEnum;
+import org.cgiar.ccafs.marlo.data.model.DeliverableUserPartnership;
+import org.cgiar.ccafs.marlo.data.model.DeliverableUserPartnershipPerson;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectBudget;
@@ -513,18 +513,19 @@ public class SearchTermsSummaryAction extends BaseSummariesAction implements Sum
               }
               // Get partner responsible and institution
               // Set responible;
-              DeliverablePartnership responisble = this.responsiblePartner(deliverable);
+              DeliverableUserPartnership responisble = this.responsiblePartner(deliverable);
               if (responisble != null) {
-                if (responisble.getProjectPartnerPerson() != null) {
-                  ProjectPartnerPerson responsibleppp = responisble.getProjectPartnerPerson();
+                if (responisble.getDeliverableUserPartnershipPersons() != null) {
+                  DeliverableUserPartnershipPerson responsibleppp = responisble.getDeliverableUserPartnershipPersons()
+                    .stream().filter(dp -> dp.isActive()).collect(Collectors.toList()).get(0);
                   leader = "<font size=2 face='Segoe UI' color='#000000'>" + responsibleppp.getUser().getComposedName()
                     + "\n&lt;" + responsibleppp.getUser().getEmail() + "&gt;</font>";
-                  if (responsibleppp.getProjectPartner() != null) {
-                    if (responsibleppp.getProjectPartner().getInstitution() != null) {
-                      leadIns = "<font size=2 face='Segoe UI' color='#000000'>"
-                        + responsibleppp.getProjectPartner().getInstitution().getComposedName() + "</font>";
-                    }
+
+                  if (responisble.getInstitution() != null) {
+                    leadIns = "<font size=2 face='Segoe UI' color='#000000'>"
+                      + responisble.getInstitution().getComposedName() + "</font>";
                   }
+
                 }
               }
 
@@ -909,11 +910,11 @@ public class SearchTermsSummaryAction extends BaseSummariesAction implements Sum
     startTime = System.currentTimeMillis();
   }
 
-  private DeliverablePartnership responsiblePartner(Deliverable deliverable) {
+  private DeliverableUserPartnership responsiblePartner(Deliverable deliverable) {
     try {
-      DeliverablePartnership partnership = deliverable.getDeliverablePartnerships().stream()
-        .filter(
-          dp -> dp.isActive() && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.RESPONSIBLE.getValue()))
+      DeliverableUserPartnership partnership = deliverable.getDeliverableUserPartnerships().stream()
+        .filter(dp -> dp.isActive() && dp.getPhase().getId().equals(this.getActualPhase().getId())
+          && dp.getDeliverablePartnerType().getId().equals(APConstants.DELIVERABLE_PARTNERSHIP_TYPE_RESPONSIBLE))
         .collect(Collectors.toList()).get(0);
       return partnership;
     } catch (Exception e) {

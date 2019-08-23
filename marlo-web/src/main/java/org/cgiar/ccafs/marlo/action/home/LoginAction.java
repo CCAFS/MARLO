@@ -29,7 +29,6 @@ import org.cgiar.ccafs.marlo.security.APCustomRealm;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.awt.Color;
-import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
@@ -48,8 +47,8 @@ import org.slf4j.LoggerFactory;
  */
 public class LoginAction extends BaseAction {
 
-  //Test Cambios Jenkins
-  
+  // Test Cambios Jenkins
+
   private static final long serialVersionUID = 8819133560997109925L;
 
 
@@ -262,7 +261,9 @@ public class LoginAction extends BaseAction {
     }
 
     LOG.info("User " + user.getEmail() + " logged in successfully.");
-    loggedUser.setLastLogin(new Date());
+
+
+    loggedUser = userManager.getUser(loggedUser.getId());
     userManager.saveLastLogin(loggedUser);
     /*
      * Save the user url with trying to enter the system to redirect after

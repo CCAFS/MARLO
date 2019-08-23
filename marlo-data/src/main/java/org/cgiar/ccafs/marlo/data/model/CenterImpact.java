@@ -75,8 +75,6 @@ public class CenterImpact extends MarloAuditableEntity implements Serializable, 
   private List<CenterImpactBeneficiary> beneficiaries;
 
   private String objectiveValue;
-
-
   private List<String> objectiveValueText;
 
   /**

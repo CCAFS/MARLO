@@ -106,7 +106,6 @@ import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableDissemination;
 import org.cgiar.ccafs.marlo.data.model.DeliverableFundingSource;
 import org.cgiar.ccafs.marlo.data.model.DeliverableInfo;
-import org.cgiar.ccafs.marlo.data.model.DeliverablePartnership;
 import org.cgiar.ccafs.marlo.data.model.DeliverableQualityCheck;
 import org.cgiar.ccafs.marlo.data.model.DeliverableType;
 import org.cgiar.ccafs.marlo.data.model.DeliverableTypeRule;
@@ -809,49 +808,51 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       }
 
       if (clazz == ProjectPartnerPerson.class) {
+
         ProjectPartnerPerson partnerPerson = this.partnerPersonManager.getProjectPartnerPersonById(id);
-        /*
-         * if (partnerPerson != null) { if
-         * (partnerPerson.getDeliverablePartnerships().stream()
-         * .filter(o -> o.isActive() && o.getPhase() != null &&
-         * o.getPhase().equals(this.getActualPhase()))
-         * .collect(Collectors.toList()).size() > 0) { return false; } }
-         */
+
         List<Deliverable> deliverablesLeads = new ArrayList<>();
+
+
         if (partnerPerson != null) {
-          List<DeliverablePartnership> deliverablePartnerships = partnerPerson.getDeliverablePartnerships().stream()
-            .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase()))
-            .collect(Collectors.toList());
-          for (DeliverablePartnership deliverablePartnership : deliverablePartnerships) {
-            Deliverable deliverable = deliverablePartnership.getDeliverable();
 
-            deliverable.setDeliverableInfo(deliverable.getDeliverableInfo(this.getActualPhase()));
-            if (deliverable.getDeliverableInfo().getStatus() != null
-              && deliverable.getDeliverableInfo().getStatus() == Integer
-                .parseInt(ProjectStatusEnum.Extended.getStatusId())
-              || deliverable.getDeliverableInfo().getStatus() == Integer
-                .parseInt(ProjectStatusEnum.Ongoing.getStatusId())) {
-              if (!deliverablesLeads.contains(deliverable)) {
-                if (deliverable.getDeliverableInfo().getYear() >= this.getActualPhase().getYear()) {
-                  if (deliverable.isActive()) {
-                    deliverablesLeads.add(deliverable);
-                  }
+          long projectId = partnerPerson.getProjectPartner().getProject().getId();
+          long userId = partnerPerson.getUser().getId();
 
-                } else {
-                  if (deliverable.getDeliverableInfo().getStatus() != null && deliverable.getDeliverableInfo()
-                    .getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())) {
-                    if (deliverable.getDeliverableInfo().getNewExpectedYear() != null
-                      && deliverable.getDeliverableInfo().getNewExpectedYear() >= this.getActualPhase().getYear()) {
+
+          List<Deliverable> deliverables =
+            deliverableManager.getDeliverablesLeadByUser(userId, this.getActualPhase().getId());
+          if (deliverables != null) {
+            for (Deliverable deliverable : deliverables) {
+              if (deliverable.getProject() != null && deliverable.getProject().getId().equals(projectId)) {
+                deliverable.setDeliverableInfo(deliverable.getDeliverableInfo(this.getActualPhase()));
+                if (deliverable.getDeliverableInfo() != null && deliverable.getDeliverableInfo().getStatus() != null
+                  && (deliverable.getDeliverableInfo().getStatus() == Integer
+                    .parseInt(ProjectStatusEnum.Extended.getStatusId())
+                    || deliverable.getDeliverableInfo().getStatus() == Integer
+                      .parseInt(ProjectStatusEnum.Ongoing.getStatusId()))) {
+                  if (!deliverablesLeads.contains(deliverable)) {
+                    if (deliverable.getDeliverableInfo().getYear() >= this.getActualPhase().getYear()) {
 
                       if (deliverable.isActive()) {
                         deliverablesLeads.add(deliverable);
+                      }
+
+                    } else {
+                      if (deliverable.getDeliverableInfo().getStatus().intValue() == Integer
+                        .parseInt(ProjectStatusEnum.Extended.getStatusId())) {
+                        if (deliverable.getDeliverableInfo().getNewExpectedYear() != null
+                          && deliverable.getDeliverableInfo().getNewExpectedYear() >= this.getActualPhase().getYear()) {
+                          if (deliverable.isActive()) {
+                            deliverablesLeads.add(deliverable);
+                          }
+                        }
                       }
                     }
                   }
                 }
               }
             }
-
           }
         }
         if (!deliverablesLeads.isEmpty()) {
@@ -1091,9 +1092,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     String params[] = {this.crpManager.getGlobalUnitById(this.getCrpID()).getAcronym(), projectID + "",
       budgetTypeID + "", institutionID + ""};
     Boolean canEditBudget =
-      this.hasPermissionNoBase(this.generatePermission(Permission.PROJECT_BUDGET_EXECUTION_BASE_PERMISSION, params));
+      this.hasPermission(this.generatePermission(Permission.PROJECT_BUDGET_EXECUTION_BASE_PERMISSION, params));
     Boolean canEditBudgetLiaison =
-      this.hasPermissionNoBase(this.generatePermission(Permission.PROJECT_BUDGET_EXECUTION_LIAISON_PERMISSION, params));
+      this.hasPermission(this.generatePermission(Permission.PROJECT_BUDGET_EXECUTION_LIAISON_PERMISSION, params));
 
     if (canEditBudget || canEditBudgetLiaison) {
       return true;

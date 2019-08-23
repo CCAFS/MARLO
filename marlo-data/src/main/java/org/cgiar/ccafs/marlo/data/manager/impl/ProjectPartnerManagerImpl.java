@@ -18,6 +18,7 @@ package org.cgiar.ccafs.marlo.data.manager.impl;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.dao.InstitutionLocationDAO;
 import org.cgiar.ccafs.marlo.data.dao.LocElementDAO;
+import org.cgiar.ccafs.marlo.data.dao.PartnerDivisionDAO;
 import org.cgiar.ccafs.marlo.data.dao.PhaseDAO;
 import org.cgiar.ccafs.marlo.data.dao.ProjectPartnerContributionDAO;
 import org.cgiar.ccafs.marlo.data.dao.ProjectPartnerDAO;
@@ -54,6 +55,7 @@ public class ProjectPartnerManagerImpl implements ProjectPartnerManager {
   private ProjectPartnerPersonDAO projectPartnerPersonDAO;
   private ProjectPartnerLocationDAO projectPartnerLocationDAO;
   private ProjectPartnerContributionDAO projectPartnerContributionDAO;
+  private PartnerDivisionDAO partnerDivisionDAO;
 
   private LocElementDAO locElementDAO;
   private LocElementManager locElementManager;
@@ -70,8 +72,8 @@ public class ProjectPartnerManagerImpl implements ProjectPartnerManager {
   public ProjectPartnerManagerImpl(ProjectPartnerDAO projectPartnerDAO, PhaseDAO phaseDAO,
     ProjectPartnerPersonDAO projectPartnerPersonDAO, ProjectPartnerLocationDAO projectPartnerLocationDAO,
     LocElementDAO locElementDAO, InstitutionLocationDAO institutionDAO, LocElementManager locElementManager,
-    ProjectPartnerContributionDAO projectPartnerContributionDAO,
-    InstitutionLocationManager institutionLocationManager) {
+    ProjectPartnerContributionDAO projectPartnerContributionDAO, InstitutionLocationManager institutionLocationManager,
+    PartnerDivisionDAO partnerDivisionDAO) {
     this.projectPartnerDAO = projectPartnerDAO;
     this.phaseDAO = phaseDAO;
     this.projectPartnerPersonDAO = projectPartnerPersonDAO;
@@ -81,6 +83,7 @@ public class ProjectPartnerManagerImpl implements ProjectPartnerManager {
     this.locElementManager = locElementManager;
     this.projectPartnerContributionDAO = projectPartnerContributionDAO;
     this.institutionLocationManager = institutionLocationManager;
+    this.partnerDivisionDAO = partnerDivisionDAO;
   }
 
   /**
@@ -145,9 +148,17 @@ public class ProjectPartnerManagerImpl implements ProjectPartnerManager {
         projectPartnerPersonAdd.setProjectPartner(projectPartnerDAO.find(newPartern));
         projectPartnerPersonAdd.setContactType(projectPartnerPerson.getContactType());
         projectPartnerPersonAdd.setUser(projectPartnerPerson.getUser());
+
+        if (projectPartnerPerson.getPartnerDivision() != null
+          && projectPartnerPerson.getPartnerDivision().getId() != null) {
+          projectPartnerPersonAdd
+            .setPartnerDivision(partnerDivisionDAO.find(projectPartnerPerson.getPartnerDivision().getId()));
+        }
+
         if (projectPartnerPersonAdd.getUser() != null && projectPartnerPersonAdd.getUser().getId() != null) {
           projectPartnerPersonAdd = projectPartnerPersonDAO.save(projectPartnerPersonAdd);
         }
+
         int a = 0;
       }
     }
@@ -479,9 +490,10 @@ public class ProjectPartnerManagerImpl implements ProjectPartnerManager {
           partner.setId(projectPartnerPrev.getId());
           partnerPersonAdd.setProjectPartner(partner);
           partnerPersonAdd.setContactType(partnerPerson.getContactType());
-
-
           partnerPersonAdd.setUser(partnerPerson.getUser());
+          if (partnerPerson.getPartnerDivision() != null && partnerPerson.getPartnerDivision().getId() != null) {
+            partnerPersonAdd.setPartnerDivision(partnerDivisionDAO.find(partnerPerson.getPartnerDivision().getId()));
+          }
           if (partnerPersonAdd.getUser() != null && partnerPersonAdd.getUser().getId() != null) {
             projectPartnerPersonDAO.save(partnerPersonAdd);
           }

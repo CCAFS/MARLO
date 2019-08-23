@@ -15,83 +15,6 @@ function init() {
 
   $('.helpMessage3').on("click", openDialog);
 
-  $(".addPartner").on("click", addPartnerEvent);
-
-  $(".removeElement").on("click", removePartnerEvent);
-
-  // On change any partner person
-  $('.projectPartnerPerson select.id').on("change", function() {
-    var $select = $(this);
-    var isResp = $select.hasClass('responsible');
-    if(isResp) {
-      var $list = $select.parents(".responsiblePartner").find(".partnerPersons");
-    } else {
-      var $list = $select.parents(".deliverablePartner").find(".partnerPersons");
-    }
-
-    var $list = $select.parents(".deliverablePartner, .responsiblePartner").find(".partnerPersons");
-    var option = $select.find("option:selected");
-    var projectPartnerID = option.val();
-
-    $.ajax({
-        url: baseURL + '/personByParnters.do',
-        data: {
-            partnerId: projectPartnerID,
-            phaseID: phaseID
-        },
-        beforeSend: function() {
-          $list.empty();
-        },
-        success: function(data) {
-
-          if(data.persons.length) {
-            $.each(data.persons, function(i,person) {
-              if(isResp) {
-                var $item = $('#deliverablePerson-template.resp').clone(true);
-              } else {
-                var $item = $('#deliverablePerson-template.other').clone(true);
-                $item.find('input.projectPartnerID').val(projectPartnerID);
-              }
-              $item.removeAttr('id');
-              $item.find('input[type="checkbox"], input[type="radio"]').val(person.id);
-              $item.find('label.checkbox-label, label.radio-label').text(person.user);
-              $list.append($item);
-              $item.show();
-            });
-          } else {
-            if(isResp) {
-              var $item = $('#deliverablePerson-template.resp').clone(true);
-            } else {
-              var $item = $('#deliverablePerson-template.other').clone(true);
-              $item.find('input.projectPartnerID').val(projectPartnerID);
-            }
-            $item.removeAttr('id');
-            $list.append($item);
-          }
-
-        },
-        complete: function() {
-          if(isResp) {
-            updatePartnersResp();
-          } else {
-            updatePartners();
-          }
-
-          var $division = $select.parents('.projectPartnerPerson').find('.division-IFPRI');
-
-          // Show IFPRI Division
-          if((option.text()).indexOf("IFPRI") > -1) {
-            $division.show();
-          } else {
-            $division.find('.divisionField').val("-1")
-            $division.hide();
-          }
-
-        }
-    });
-
-  });
-
   // Event to validate the expected date
   $(".yearExpected").on("change", validateCurrentDate);
 
@@ -223,9 +146,6 @@ function init() {
     width: '100%'
   });
 
-  // Update Parters selected lists
-  updateProjectPartnersSelects();
-
   $(".fundingSource").select2({
       templateResult: formatState,
       templateSelection: formatState,
@@ -242,6 +162,8 @@ function init() {
     setGeographicScope(this);
   });
   setGeographicScope($('form select.elementType-repIndGeographicScope')[0]);
+
+  deliverablePartnersModule.init();
 }
 
 function openDialog() {
@@ -492,85 +414,6 @@ function validateDeliverableStatus() {
   }
 }
 
-// Add a new person element
-function addPartnerEvent() {
-  var $list = $(".partnersList");
-  var $item = $("#deliverablePartner-template").clone(true).removeAttr("id");
-  $list.append($item);
-  $item.find('select').select2({
-    width: "100%"
-  });
-  $item.show('slow');
-  checkItems($list);
-  updatePartners();
-}
-
-// Remove person element
-function removePartnerEvent() {
-  var $list = $(this).parents('.partnersList');
-  var $item = $(this).parents('.deliverablePartner');
-  $item.hide(500, function() {
-    $item.remove();
-    checkItems($list);
-    updatePartners();
-  });
-
-}
-
-function updatePartners() {
-  $(".partnersList").find('.deliverablePerson.checkbox').each(function(i,item) {
-    var personID = $(item).find('input[type="checkbox"]').val();
-    var customID = "checkbox-" + i + "-" + personID;
-    $(item).setNameIndexes(1, i);
-
-    $(item).find('input[type="checkbox"]').attr('id', customID);
-    $(item).find('label.checkbox-label').attr('for', customID);
-  });
-
-  updateProjectPartnersSelects();
-}
-
-function updatePartnersResp() {
-  $(".responsibleWrapper ").find('.deliverablePerson.radio').each(function(i,item) {
-    var personID = $(item).find('input[type="radio"]').val();
-    var customID = "radio-" + i + "-" + personID;
-
-    $(item).find('input[type="radio"]').attr('id', customID);
-    $(item).find('label.radio-label').attr('for', customID);
-  });
-
-  updateProjectPartnersSelects();
-
-}
-
-function updateProjectPartnersSelects() {
-  // Update selects
-  var selectedValues = []
-  $("select.partner.id").each(function(i,select) {
-    selectedValues.push($(select).find("option:selected").val());
-  });
-
-  $("select.partner.id").each(function(i,select) {
-    $(select).find('option').attr('disabled', false).prop('disabled', false);
-    $.each(selectedValues, function(i,optionValue) {
-      if(optionValue != -1) {
-        $(select).find('option[value="' + optionValue + '"]').attr('disabled', true).prop('disabled', true);
-      }
-    });
-    $(select).trigger("select2.change");
-  });
-}
-
-function checkItems(block) {
-  console.log(block);
-  var items = $(block).find('.deliverablePartner').length;
-  if(items == 0) {
-    $(block).parent().find('p.emptyText').fadeIn();
-  } else {
-    $(block).parent().find('p.emptyText').fadeOut();
-  }
-}
-
 function checkFundingItems(block) {
   console.log(block);
   var items = $(block).find('.fundingSources').length;
@@ -642,5 +485,112 @@ function selectKeyOutput() {
     $keyOutputList.val(optionValue);
     $keyOutputList.trigger('change');
   }
-
 }
+
+var deliverablePartnersModule = (function() {
+
+  function init() {
+    console.log('Starting deliverablePartnersModule');
+
+    updateInstitutionSelects();
+
+    attachEvents();
+  }
+
+  function attachEvents() {
+    // On change institution
+    $('select.partnerInstitutionID').on('change', changePartnerInstitution);
+    // On remove a deliverable partner item
+    $('.removePartnerItem').on('click', removePartnerItem);
+    // On add a new deliverable partner Item
+    $('.addPartnerItem').on('click', addPartnerItem);
+  }
+
+  function addPartnerItem() {
+    var $listBlock = $('.otherDeliverablePartners');
+    var $newItem = $('#deliverablePartnerItem-template').clone(true).removeAttr('id');
+    $listBlock.append($newItem);
+    $newItem.show();
+    updateIndexes();
+  }
+
+  function removePartnerItem() {
+    var $item = $(this).parents('.deliverablePartnerItem');
+    $item.hide(500, function() {
+      $item.remove();
+      updateIndexes();
+    });
+  }
+
+  function changePartnerInstitution() {
+    var $deliverablePartner = $(this).parents('.deliverablePartnerItem');
+    var $usersBlock = $deliverablePartner.find('.usersBlock');
+    var typeID = $deliverablePartner.find('input.partnerTypeID').val();
+    var isResponsible = (typeID == 1);
+    // Clean users list
+    $usersBlock.empty();
+    // Get new users list
+    var $newUsersBlock = $('#partnerUsers .institution-' + this.value + ' .users-' + typeID).clone(true);
+    // Show them
+    $usersBlock.append($newUsersBlock.html());
+    // Update indexes
+    if(!isResponsible) {
+      updateIndexes();
+    }
+  }
+
+  function updateIndexes() {
+    $('.otherDeliverablePartners .deliverablePartnerItem').each(function(i,partner) {
+
+      // Update deliverable partner index
+      $(partner).setNameIndexes(1, i);
+
+      $(partner).find('.deliverableUserItem').each(function(j,user) {
+        var personID = $(user).find('input[type="checkbox"]').val();
+        var customID = "jsGenerated-" + i + "-" + j + "-" + personID;
+        // Update user index
+        $(user).setNameIndexes(2, j);
+        // Update user checks/radios labels and inputs ids
+        $(user).find('input[type="checkbox"]').attr('id', customID);
+        $(user).find('label.checkbox-label').attr('for', customID);
+      });
+
+    });
+
+    updateInstitutionSelects()
+  }
+
+  function updateInstitutionSelects() {
+    var $listBlock = $('.otherDeliverablePartners');
+    var $institutionsSelects = $listBlock.find('select.partnerInstitutionID');
+
+    // Get selected values
+    selectedValues = $institutionsSelects.map(function(i,select) {
+      return select.value;
+    });
+
+    $institutionsSelects.each(function(i,select) {
+      // Enable options
+      $(select).find('option').prop('disabled', false);
+
+      // Disable only the selected values
+      $.each(selectedValues, function(key,val) {
+        if(select.value != val) {
+          $(select).find('option[value="' + val + '"]').prop('disabled', true);
+        }
+      });
+    });
+
+    // Reset Select2
+    setTimeout(function() {
+      $institutionsSelects.select2({
+        width: '98%'
+      });
+    });
+
+  }
+
+  return {
+    init: init
+  }
+})();

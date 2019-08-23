@@ -81,6 +81,10 @@ public interface DeliverableManager {
    */
   public List<Deliverable> getDeliverablesByPhase(long phase);
 
+  public List<Deliverable> getDeliverablesLeadByInstitution(long institutionId, long phaseId);
+
+  public List<Deliverable> getDeliverablesLeadByUser(long userId, long phaseId);
+
   /**
    * This method gets a list of publications that are active for an specific liaisonInstitution
    * Flagship: Get the list of projects that have project_focus equal to the liaisonInstitution

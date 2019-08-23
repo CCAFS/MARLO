@@ -245,6 +245,10 @@ public final class APConstants {
   public static final String PROGRAM_ACTIVITIES_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.CrpProgram.crpClusterOfActivities)";
 
+  // HJ 08/01/2019 Deliverable Partnerships Types
+  public static final Long DELIVERABLE_PARTNERSHIP_TYPE_RESPONSIBLE = new Long(1L);
+  public static final Long DELIVERABLE_PARTNERSHIP_TYPE_OTHER = new Long(2L);
+
 
   // Relations Name
   public static final String PROGRAM_OUTCOMES_RELATION =
@@ -328,7 +332,7 @@ public final class APConstants {
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.Deliverable.deliverableMetadataElements)";
 
   public static final String PROJECT_DELIVERABLE_PARTNERSHIPS_RELATION =
-    "java.util.Set(org.cgiar.ccafs.marlo.data.model.Deliverable.deliverablePartnerships)";
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.Deliverable.deliverableUserPartnerships)";
 
   public static final String PROJECT_DELIVERABLE_PROGRAMS =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.Deliverable.deliverablePrograms)";
