@@ -38,7 +38,6 @@ import javax.inject.Named;
 public class DeliverableInfoManagerImpl implements DeliverableInfoManager {
 
   private PhaseDAO phaseDAO;
-
   private DeliverableInfoDAO deliverableInfoDAO;
   // Managers
 
