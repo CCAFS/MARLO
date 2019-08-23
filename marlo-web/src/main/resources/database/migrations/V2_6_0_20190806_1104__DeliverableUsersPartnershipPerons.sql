@@ -25,7 +25,7 @@ CREATE TABLE `deliverable_user_partnership_persons` (
   CONSTRAINT `deliverable_user_partnership_persons_ibfk_5` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`),
   CONSTRAINT `deliverable_user_partnership_persons_ibfk_3` FOREIGN KEY (`division_id`) REFERENCES `partner_divisions` (`id`),
   CONSTRAINT `deliverable_user_partnership_persons_ibfk_6` FOREIGN KEY (`user_partnership_id`) REFERENCES `deliverable_user_partnerships` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT;
 
 -- ----------------------------
 -- Records of deliverable_user_partnership_persons
