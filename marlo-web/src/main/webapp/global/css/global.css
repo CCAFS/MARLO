@@ -5407,6 +5407,7 @@ table.evaluationRank thead th {
   overflow: hidden;
   cursor: pointer;
   /* margin: 0 10px !important; */
+  font-weight: 400;
 }
 
 .radio-label.fieldError {
@@ -6583,7 +6584,8 @@ p.checkDisable:before {
 
 .inputsFlat input[type="checkbox"] + .checkbox-label {
   margin: 0 !important;
-  padding: 0px 10px !important;
+  /* padding: 0px 10px !important; */
+  font-weight: 400;
 }
 
 .inputsFlat input[type="checkbox"] + .checkbox-label:before {
@@ -6722,7 +6724,7 @@ p.dateLabel.fieldError {
 
 /* Radio Flat*/
 div.radioFlat {
-  padding-left: 5px;
+  /* padding-left: 5px; */
 }
 
 .radioFlat input[type="radio"], .button-wrap input[type="radio"] {
