@@ -33,5 +33,5 @@ CREATE TABLE `deliverable_user_partnerships` (
   CONSTRAINT `deliverable_user_partnerships_ibfk_6` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`),
   CONSTRAINT `deliverable_user_partnerships_ibfk_7` FOREIGN KEY (`modified_by`) REFERENCES `users` (`id`),
   CONSTRAINT `deliverable_user_partnerships_ibfk_8` FOREIGN KEY (`division_id`) REFERENCES `partner_divisions` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=196606 DEFAULT;
+) ENGINE=InnoDB AUTO_INCREMENT=196606;
 SET FOREIGN_KEY_CHECKS=1;

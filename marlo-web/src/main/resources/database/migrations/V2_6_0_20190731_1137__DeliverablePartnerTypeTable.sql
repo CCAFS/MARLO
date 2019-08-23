@@ -8,7 +8,7 @@ CREATE TABLE `deliverable_partner_type` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `name` text,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT;
+) ENGINE=InnoDB AUTO_INCREMENT=3;
 
 -- ----------------------------
 -- Records of deliverable_partner_type
