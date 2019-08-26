@@ -25,39 +25,55 @@ public class DeliverableInfoDTO {
   @ApiModelProperty(notes = "Global Unit Program Outcome", position = 2)
   private CrpProgramOutcomeDTO crpProgramOutcome;
 
-  @ApiModelProperty(notes = "Deliverable type", position = 2)
+  @ApiModelProperty(notes = "Deliverable type", position = 3)
   private DeliverableTypeDTO deliverableType;
 
+  @ApiModelProperty(notes = "Deliverable ", position = 4)
   private DeliverableDTO deliverable;
 
+  @ApiModelProperty(notes = "Phase (AR, POWB, UK)", position = 5)
   private PhaseDTO phase;
 
+  @ApiModelProperty(notes = "Publication Title", position = 6)
   private String title;
 
+  @ApiModelProperty(notes = "Publication Description", position = 7)
   private String description;
 
+  @ApiModelProperty(notes = "Type Other", position = 8)
   private String typeOther;
 
+  @ApiModelProperty(notes = "Publication Expected Year", position = 9)
   private Integer newExpectedYear;
 
+  @ApiModelProperty(notes = "Publication Year", position = 10)
   private int year;
 
+  @ApiModelProperty(notes = "Status Code", position = 11)
   private Integer status;
 
+  @ApiModelProperty(notes = "Status Description", position = 12)
   private String statusDescription;
 
+  @ApiModelProperty(notes = "is adopted License", position = 13)
   private Boolean adoptedLicense;
 
+  @ApiModelProperty(notes = "License", position = 14)
   private String license;
 
+  @ApiModelProperty(notes = "OtherLicense", position = 15)
   private String otherLicense;
 
+  @ApiModelProperty(notes = "Allow modifications", position = 16)
   private Boolean allowModifications;
 
+  @ApiModelProperty(notes = "Is Global Location", position = 17)
   private Boolean isLocationGlobal;
 
+  @ApiModelProperty(notes = "Geographic Scope", position = 16)
   private GeographicScopeDTO geographicScope;
 
+  @ApiModelProperty(notes = "Region", position = 16)
   private RegionDTO region;
 
 
