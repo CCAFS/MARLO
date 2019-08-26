@@ -1,5 +1,5 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning &
+ * This file is part of Managing Agricultural Research for Learning & 
  * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -13,24 +13,34 @@
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
 
-package org.cgiar.ccafs.marlo.rest.mappers;
+package org.cgiar.ccafs.marlo.rest.dto;
 
-import org.cgiar.ccafs.marlo.data.model.Deliverable;
-import org.cgiar.ccafs.marlo.rest.dto.DeliverableDTO;
+import io.swagger.annotations.ApiModelProperty;
 
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.Mappings;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+public class NewDeliverableInfoDTO {
+	@ApiModelProperty(notes = "Deliverable")
+	private DeliverableDTO deliverable;
+	@ApiModelProperty(notes = "Deliverable title")
+	private String title;
+	@ApiModelProperty(notes = "Deliverable description")
+	private String description;
+	@ApiModelProperty(notes = "Deliverable year")
+	private int year;
 
+	public DeliverableDTO getDeliverable() {
+		return deliverable;
+	}
 
-@Mapper(componentModel = "jsr330")
-public abstract class DeliverablesMapper {
+	public String getTitle() {
+		return title;
+	}
 
-  private static final Logger LOG = LoggerFactory.getLogger(DeliverablesMapper.class);
+	public void setDeliverable(DeliverableDTO deliverable) {
+		this.deliverable = deliverable;
+	}
 
-  @Mappings({@Mapping(source = "crp.smoCode", target = "cgiarEntity.code"),
-    @Mapping(source = "crp", target = "cgiarEntity")})
-  public abstract DeliverableDTO deliverableToDeliverableDTO(Deliverable deliverable);
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
 }

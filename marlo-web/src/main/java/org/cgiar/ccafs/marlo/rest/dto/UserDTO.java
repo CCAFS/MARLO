@@ -1,5 +1,5 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning &
+ * This file is part of Managing Agricultural Research for Learning & 
  * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -13,24 +13,9 @@
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
 
-package org.cgiar.ccafs.marlo.rest.mappers;
-
-import org.cgiar.ccafs.marlo.data.model.Deliverable;
-import org.cgiar.ccafs.marlo.rest.dto.DeliverableDTO;
-
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.Mappings;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+package org.cgiar.ccafs.marlo.rest.dto;
 
 
-@Mapper(componentModel = "jsr330")
-public abstract class DeliverablesMapper {
+public class UserDTO {
 
-  private static final Logger LOG = LoggerFactory.getLogger(DeliverablesMapper.class);
-
-  @Mappings({@Mapping(source = "crp.smoCode", target = "cgiarEntity.code"),
-    @Mapping(source = "crp", target = "cgiarEntity")})
-  public abstract DeliverableDTO deliverableToDeliverableDTO(Deliverable deliverable);
 }

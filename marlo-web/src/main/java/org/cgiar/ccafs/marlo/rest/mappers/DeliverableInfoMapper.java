@@ -15,22 +15,17 @@
 
 package org.cgiar.ccafs.marlo.rest.mappers;
 
-import org.cgiar.ccafs.marlo.data.model.Deliverable;
-import org.cgiar.ccafs.marlo.rest.dto.DeliverableDTO;
+import org.cgiar.ccafs.marlo.data.model.DeliverableInfo;
+import org.cgiar.ccafs.marlo.rest.dto.NewDeliverableInfoDTO;
 
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.Mappings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 @Mapper(componentModel = "jsr330")
-public abstract class DeliverablesMapper {
+public abstract class DeliverableInfoMapper {
 
-  private static final Logger LOG = LoggerFactory.getLogger(DeliverablesMapper.class);
+  private static final Logger LOG = LoggerFactory.getLogger(DeliverableInfoMapper.class);
 
-  @Mappings({@Mapping(source = "crp.smoCode", target = "cgiarEntity.code"),
-    @Mapping(source = "crp", target = "cgiarEntity")})
-  public abstract DeliverableDTO deliverableToDeliverableDTO(Deliverable deliverable);
+  public abstract NewDeliverableInfoDTO deliverableInfoToDeliverableInfoDTO(DeliverableInfo deliverableInfo);
 }

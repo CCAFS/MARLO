@@ -13,24 +13,27 @@
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
 
-package org.cgiar.ccafs.marlo.rest.mappers;
+package org.cgiar.ccafs.marlo.rest.dto;
 
-import org.cgiar.ccafs.marlo.data.model.Deliverable;
-import org.cgiar.ccafs.marlo.rest.dto.DeliverableDTO;
+public class CrpClusterActivityLeaderDTO {
 
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.Mappings;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+  private CrpClusterOfActivityDTO crpClusterOfActivity;
+  private UserDTO user;
 
+  public CrpClusterOfActivityDTO getCrpClusterOfActivity() {
+    return crpClusterOfActivity;
+  }
 
-@Mapper(componentModel = "jsr330")
-public abstract class DeliverablesMapper {
+  public UserDTO getUser() {
+    return user;
+  }
 
-  private static final Logger LOG = LoggerFactory.getLogger(DeliverablesMapper.class);
+  public void setCrpClusterOfActivity(CrpClusterOfActivityDTO crpClusterOfActivity) {
+    this.crpClusterOfActivity = crpClusterOfActivity;
+  }
 
-  @Mappings({@Mapping(source = "crp.smoCode", target = "cgiarEntity.code"),
-    @Mapping(source = "crp", target = "cgiarEntity")})
-  public abstract DeliverableDTO deliverableToDeliverableDTO(Deliverable deliverable);
+  public void setUser(UserDTO user) {
+    this.user = user;
+  }
+
 }
