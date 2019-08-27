@@ -445,8 +445,10 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
 
         } else if (responsible.getDeliverableUserPartnershipPersons() != null) {
           // individual += "<span style='font-family: Segoe UI;color:#ff0000;font-size: 10'>";
-          individual += "●  ";
-          individual += "*";
+          if (responsible.getDeliverableUserPartnershipPersons().stream().filter(dp -> dp.isActive())
+            .collect(Collectors.toList()).get(0) != null) {
+
+          }
           DeliverableUserPartnershipPerson responsibleppp = responsible.getDeliverableUserPartnershipPersons().stream()
             .filter(dp -> dp.isActive()).collect(Collectors.toList()).get(0);
 
@@ -464,6 +466,8 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
           }
 
           if (responsibleppp.getUser() != null) {
+            individual += "\n ●  ";
+            individual += "*";
             individual += responsibleppp.getUser().getComposedNameWithoutEmail();
           }
         }
@@ -478,7 +482,6 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
         .collect(Collectors.toList());
 
       if (othersPartnerships != null) {
-        individual += "\n ● ";
 
         for (DeliverableUserPartnership deliverablePartnership : othersPartnerships) {
           if (deliverablePartnership.getInstitution() != null) {
@@ -503,12 +506,13 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
             }
 
             for (DeliverableUserPartnershipPerson person : responsibleppp) {
-              if (person.getUser() != null) {
+              if (person.getUser() != null && person.getUser().getComposedName() != null) {
+                individual += "\n ● ";
                 individual += person.getUser().getComposedName();
               }
             }
 
-            individual += "\n● ";
+            // individual += "\n● ";
 
           } else {
 
