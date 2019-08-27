@@ -460,11 +460,11 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
           if (responsible.getInstitution() != null) {
             if (responsible.getInstitution().getAcronym() != null
               && !responsible.getInstitution().getAcronym().isEmpty()) {
-              ppaResponsibleList.add("*" + responsible.getInstitution().getAcronym() + " ");
+              ppaResponsibleList.add("*" + responsible.getInstitution().getAcronym() + "");
               responsibleAcronym = responsible.getInstitution().getAcronym() + " ";
 
             } else {
-              ppaResponsibleList.add("*" + responsible.getInstitution().getName() + " ");
+              ppaResponsibleList.add("*" + responsible.getInstitution().getName() + "");
               responsibleName = responsible.getInstitution().getName() + " ";
             }
           }
@@ -473,9 +473,13 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
             individual += "\n ●  ";
             individual += "*";
             individual += responsibleppp.getUser().getComposedNameWithoutEmail();
+            if (responsibleAcronym != null) {
+              individual += " (" + responsibleAcronym + ")";
+            } else if (responsibleName != null) {
+              individual += " (" + responsibleName + ")";
+            }
           }
         }
-
       }
 
 
@@ -513,6 +517,12 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
               if (person.getUser() != null && person.getUser().getComposedName() != null) {
                 individual += "\n ● ";
                 individual += person.getUser().getComposedName();
+
+                if (responsibleAcronym != null) {
+                  individual += "(" + responsibleAcronym + ")";
+                } else if (responsibleName != null) {
+                  individual += "(" + responsibleName + ")";
+                }
               }
             }
 
