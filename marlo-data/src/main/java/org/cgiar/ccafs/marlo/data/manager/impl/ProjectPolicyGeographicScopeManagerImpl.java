@@ -55,9 +55,22 @@ public class ProjectPolicyGeographicScopeManagerImpl implements ProjectPolicyGeo
     ProjectPolicyGeographicScope projectPolicyGeographicScope =
       this.getProjectPolicyGeographicScopeById(projectPolicyGeographicScopeId);
 
-    if (projectPolicyGeographicScope.getPhase().getNext() != null) {
+    // Conditions to Project Policy Works In AR phase and Upkeep Phase
+    if (projectPolicyGeographicScope.getPhase().getDescription().equals(APConstants.PLANNING)
+      && projectPolicyGeographicScope.getPhase().getNext() != null) {
       this.deleteProjectPolicyGeographicScopePhase(projectPolicyGeographicScope.getPhase().getNext(),
         projectPolicyGeographicScope.getProjectPolicy().getId(), projectPolicyGeographicScope);
+    }
+
+    if (projectPolicyGeographicScope.getPhase().getDescription().equals(APConstants.REPORTING)) {
+      if (projectPolicyGeographicScope.getPhase().getNext() != null
+        && projectPolicyGeographicScope.getPhase().getNext().getNext() != null) {
+        Phase upkeepPhase = projectPolicyGeographicScope.getPhase().getNext().getNext();
+        if (upkeepPhase != null) {
+          this.deleteProjectPolicyGeographicScopePhase(upkeepPhase,
+            projectPolicyGeographicScope.getProjectPolicy().getId(), projectPolicyGeographicScope);
+        }
+      }
     }
 
     projectPolicyGeographicScopeDAO.deleteProjectPolicyGeographicScope(projectPolicyGeographicScopeId);
@@ -105,14 +118,24 @@ public class ProjectPolicyGeographicScopeManagerImpl implements ProjectPolicyGeo
     saveProjectPolicyGeographicScope(ProjectPolicyGeographicScope projectPolicyGeographicScope) {
 
     ProjectPolicyGeographicScope geographicScope = projectPolicyGeographicScopeDAO.save(projectPolicyGeographicScope);
-
     Phase phase = phaseDAO.find(geographicScope.getPhase().getId());
+
+    // Conditions to Project Policy Works In AR phase and Upkeep Phase
+    if (phase.getDescription().equals(APConstants.PLANNING) && phase.getNext() != null) {
+      this.saveProjectPolicyGeographicScopePhase(projectPolicyGeographicScope.getPhase().getNext(),
+        projectPolicyGeographicScope.getProjectPolicy().getId(), projectPolicyGeographicScope);
+    }
+
     if (phase.getDescription().equals(APConstants.REPORTING)) {
-      if (geographicScope.getPhase().getNext() != null) {
-        this.saveProjectPolicyGeographicScopePhase(projectPolicyGeographicScope.getPhase().getNext(),
-          projectPolicyGeographicScope.getProjectPolicy().getId(), projectPolicyGeographicScope);
+      if (phase.getNext() != null && phase.getNext().getNext() != null) {
+        Phase upkeepPhase = phase.getNext().getNext();
+        if (upkeepPhase != null) {
+          this.saveProjectPolicyGeographicScopePhase(upkeepPhase,
+            projectPolicyGeographicScope.getProjectPolicy().getId(), projectPolicyGeographicScope);
+        }
       }
     }
+
     return geographicScope;
   }
 

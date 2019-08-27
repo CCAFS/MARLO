@@ -109,17 +109,24 @@ public class DeliverableUserPartnershipManagerImpl implements DeliverableUserPar
   public void deleteDeliverableUserPartnership(long deliverableUserPartnershipId) {
     DeliverableUserPartnership deliverableUserPartnership =
       this.getDeliverableUserPartnershipById(deliverableUserPartnershipId);
-    if (!deliverableUserPartnership.getPhase().getDescription().equals(APConstants.REPORTING)) {
-      if (deliverableUserPartnership.getPhase().getNext() != null) {
-        this.deleteDeliverableUserPartnershipPhase(deliverableUserPartnership.getPhase().getNext(),
-          deliverableUserPartnership.getDeliverable().getId(), deliverableUserPartnership);
-      }
+
+
+    boolean isPublication = deliverableUserPartnership.getDeliverable().getIsPublication() != null
+      && deliverableUserPartnership.getDeliverable().getIsPublication();
+    if (deliverableUserPartnership.getPhase().getDescription().equals(APConstants.PLANNING)
+      && deliverableUserPartnership.getPhase().getNext() != null && !isPublication) {
+      this.deleteDeliverableUserPartnershipPhase(deliverableUserPartnership.getPhase().getNext(),
+        deliverableUserPartnership.getDeliverable().getId(), deliverableUserPartnership);
     }
 
-    if (deliverableUserPartnership.getDeliverableUserPartnershipPersons() != null) {
-      for (DeliverableUserPartnershipPerson person : deliverableUserPartnership.getDeliverableUserPartnershipPersons()
-        .stream().filter(d -> d.getId() != null).collect(Collectors.toList())) {
-        deliverableUserPartnershipPersonDAO.deleteDeliverableUserPartnershipPerson(person.getId());
+    if (deliverableUserPartnership.getPhase().getDescription().equals(APConstants.REPORTING)) {
+      if (deliverableUserPartnership.getPhase().getNext() != null
+        && deliverableUserPartnership.getPhase().getNext().getNext() != null && !isPublication) {
+        Phase upkeepPhase = deliverableUserPartnership.getPhase().getNext().getNext();
+        if (upkeepPhase != null) {
+          this.deleteDeliverableUserPartnershipPhase(upkeepPhase, deliverableUserPartnership.getDeliverable().getId(),
+            deliverableUserPartnership);
+        }
       }
     }
 
@@ -179,16 +186,27 @@ public class DeliverableUserPartnershipManagerImpl implements DeliverableUserPar
   public DeliverableUserPartnership
     saveDeliverableUserPartnership(DeliverableUserPartnership deliverableUserPartnership) {
 
-
     DeliverableUserPartnership userPartnership = deliverableUserPartnershipDAO.save(deliverableUserPartnership);
 
-    Phase phase = phaseDAO.find(userPartnership.getPhase().getId());
-    if (!phase.getDescription().equals(APConstants.REPORTING)) {
-      if (userPartnership.getPhase().getNext() != null) {
-        this.saveDeliverableUserPartnershipPhase(deliverableUserPartnership.getPhase().getNext(),
-          deliverableUserPartnership.getDeliverable().getId(), deliverableUserPartnership);
+    boolean isPublication = userPartnership.getDeliverable().getIsPublication() != null
+      && userPartnership.getDeliverable().getIsPublication();
+    if (userPartnership.getPhase().getDescription().equals(APConstants.PLANNING)
+      && userPartnership.getPhase().getNext() != null && !isPublication) {
+      this.saveDeliverableUserPartnershipPhase(userPartnership.getPhase().getNext(),
+        userPartnership.getDeliverable().getId(), deliverableUserPartnership);
+    }
+
+    if (userPartnership.getPhase().getDescription().equals(APConstants.REPORTING)) {
+      if (userPartnership.getPhase().getNext() != null && userPartnership.getPhase().getNext().getNext() != null
+        && !isPublication) {
+        Phase upkeepPhase = userPartnership.getPhase().getNext().getNext();
+        if (upkeepPhase != null) {
+          this.saveDeliverableUserPartnershipPhase(upkeepPhase, userPartnership.getDeliverable().getId(),
+            userPartnership);
+        }
       }
     }
+
     return userPartnership;
 
   }

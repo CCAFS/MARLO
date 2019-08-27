@@ -52,9 +52,22 @@ public class ProjectPolicyInnovationManagerImpl implements ProjectPolicyInnovati
 
     ProjectPolicyInnovation projectPolicyInnovation = this.getProjectPolicyInnovationById(projectPolicyInnovationId);
 
-    if (projectPolicyInnovation.getPhase().getNext() != null) {
+    // Conditions to Project Policy Works In AR phase and Upkeep Phase
+    if (projectPolicyInnovation.getPhase().getDescription().equals(APConstants.PLANNING)
+      && projectPolicyInnovation.getPhase().getNext() != null) {
       this.deleteProjectPolicyInnovationPhase(projectPolicyInnovation.getPhase().getNext(),
         projectPolicyInnovation.getProjectPolicy().getId(), projectPolicyInnovation);
+    }
+
+    if (projectPolicyInnovation.getPhase().getDescription().equals(APConstants.REPORTING)) {
+      if (projectPolicyInnovation.getPhase().getNext() != null
+        && projectPolicyInnovation.getPhase().getNext().getNext() != null) {
+        Phase upkeepPhase = projectPolicyInnovation.getPhase().getNext().getNext();
+        if (upkeepPhase != null) {
+          this.deleteProjectPolicyInnovationPhase(projectPolicyInnovation.getPhase().getNext(),
+            projectPolicyInnovation.getProjectPolicy().getId(), projectPolicyInnovation);
+        }
+      }
     }
 
     projectPolicyInnovationDAO.deleteProjectPolicyInnovation(projectPolicyInnovationId);
@@ -124,14 +137,25 @@ public class ProjectPolicyInnovationManagerImpl implements ProjectPolicyInnovati
   public ProjectPolicyInnovation saveProjectPolicyInnovation(ProjectPolicyInnovation projectPolicyInnovation) {
 
     ProjectPolicyInnovation innovation = projectPolicyInnovationDAO.save(projectPolicyInnovation);
-
     Phase phase = phaseDAO.find(innovation.getPhase().getId());
+
+
+    // Conditions to Project Policy Works In AR phase and Upkeep Phase
+    if (phase.getDescription().equals(APConstants.PLANNING) && phase.getNext() != null) {
+      this.savePolicyInnovationPhase(projectPolicyInnovation.getPhase().getNext(),
+        projectPolicyInnovation.getProjectPolicy().getId(), projectPolicyInnovation);
+    }
+
     if (phase.getDescription().equals(APConstants.REPORTING)) {
-      if (innovation.getPhase().getNext() != null) {
-        this.savePolicyInnovationPhase(projectPolicyInnovation.getPhase().getNext(),
-          projectPolicyInnovation.getProjectPolicy().getId(), projectPolicyInnovation);
+      if (phase.getNext() != null && phase.getNext().getNext() != null) {
+        Phase upkeepPhase = phase.getNext().getNext();
+        if (upkeepPhase != null) {
+          this.savePolicyInnovationPhase(upkeepPhase, projectPolicyInnovation.getProjectPolicy().getId(),
+            projectPolicyInnovation);
+        }
       }
     }
+
     return innovation;
   }
 

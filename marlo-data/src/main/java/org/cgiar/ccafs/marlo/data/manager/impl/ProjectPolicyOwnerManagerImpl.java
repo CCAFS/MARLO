@@ -51,9 +51,22 @@ public class ProjectPolicyOwnerManagerImpl implements ProjectPolicyOwnerManager 
 
     ProjectPolicyOwner projectPolicyOwner = this.getProjectPolicyOwnerById(projectPolicyOwnerId);
 
-    if (projectPolicyOwner.getPhase().getNext() != null) {
+    // Conditions to Project Policy Works In AR phase and Upkeep Phase
+    if (projectPolicyOwner.getPhase().getDescription().equals(APConstants.PLANNING)
+      && projectPolicyOwner.getPhase().getNext() != null) {
       this.deleteProjectPolicyOwnerPhase(projectPolicyOwner.getPhase().getNext(),
         projectPolicyOwner.getProjectPolicy().getId(), projectPolicyOwner);
+    }
+
+    if (projectPolicyOwner.getPhase().getDescription().equals(APConstants.REPORTING)) {
+      if (projectPolicyOwner.getPhase().getNext() != null
+        && projectPolicyOwner.getPhase().getNext().getNext() != null) {
+        Phase upkeepPhase = projectPolicyOwner.getPhase().getNext().getNext();
+        if (upkeepPhase != null) {
+          this.deleteProjectPolicyOwnerPhase(upkeepPhase, projectPolicyOwner.getProjectPolicy().getId(),
+            projectPolicyOwner);
+        }
+      }
     }
 
     projectPolicyOwnerDAO.deleteProjectPolicyOwner(projectPolicyOwnerId);
@@ -123,13 +136,24 @@ public class ProjectPolicyOwnerManagerImpl implements ProjectPolicyOwnerManager 
   public ProjectPolicyOwner saveProjectPolicyOwner(ProjectPolicyOwner projectPolicyOwner) {
 
     ProjectPolicyOwner owner = projectPolicyOwnerDAO.save(projectPolicyOwner);
-
     Phase phase = phaseDAO.find(owner.getPhase().getId());
+
+
+    // Conditions to Project Policy Works In AR phase and Upkeep Phase
+    if (phase.getDescription().equals(APConstants.PLANNING) && phase.getNext() != null) {
+      this.savePolicyOwnerPhase(owner.getPhase().getNext(), owner.getProjectPolicy().getId(), projectPolicyOwner);
+    }
+
     if (phase.getDescription().equals(APConstants.REPORTING)) {
-      if (owner.getPhase().getNext() != null) {
-        this.savePolicyOwnerPhase(owner.getPhase().getNext(), owner.getProjectPolicy().getId(), projectPolicyOwner);
+      if (phase.getNext() != null && phase.getNext().getNext() != null) {
+        Phase upkeepPhase = phase.getNext().getNext();
+        if (upkeepPhase != null) {
+          this.savePolicyOwnerPhase(upkeepPhase, owner.getProjectPolicy().getId(), projectPolicyOwner);
+        }
       }
     }
+
+
     return owner;
   }
 
