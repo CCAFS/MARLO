@@ -1088,17 +1088,22 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     if (this.isRole("PMU") && !this.isRole("FM")) {
       return false;
     }
-
-    String params[] = {this.crpManager.getGlobalUnitById(this.getCrpID()).getAcronym(), projectID + "",
-      budgetTypeID + "", institutionID + ""};
-    Boolean canEditBudget =
-      this.hasPermission(this.generatePermission(Permission.PROJECT_BUDGET_EXECUTION_BASE_PERMISSION, params));
-    Boolean canEditBudgetLiaison =
-      this.hasPermission(this.generatePermission(Permission.PROJECT_BUDGET_EXECUTION_LIAISON_PERMISSION, params));
-
-    if (canEditBudget || canEditBudgetLiaison) {
+    if (this.getActualPhase().getVisible() && !this.getActualPhase().getEditable() && this.isRole("FM")) {
       return true;
+    } else {
+      String params[] = {this.crpManager.getGlobalUnitById(this.getCrpID()).getAcronym(), projectID + "",
+        budgetTypeID + "", institutionID + ""};
+      Boolean canEditBudget =
+        this.hasPermission(this.generatePermission(Permission.PROJECT_BUDGET_EXECUTION_BASE_PERMISSION, params));
+      Boolean canEditBudgetLiaison =
+        this.hasPermission(this.generatePermission(Permission.PROJECT_BUDGET_EXECUTION_LIAISON_PERMISSION, params));
+
+      if (canEditBudget || canEditBudgetLiaison) {
+        return true;
+      }
     }
+
+
     return false;
   }
 

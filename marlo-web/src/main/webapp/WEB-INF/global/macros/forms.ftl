@@ -465,8 +465,8 @@
       [#--  Help Text --]
       [@helpLabel name="${help}" paramText="${paramText}" showIcon=helpIcon editable=editable/]
     </label>
-    [#else]
-      ${checked?string('Yes', 'No')}
+    [#elseif checked]
+      <p>${label}</p>
     [/#if]
   </div>
 [/#macro]

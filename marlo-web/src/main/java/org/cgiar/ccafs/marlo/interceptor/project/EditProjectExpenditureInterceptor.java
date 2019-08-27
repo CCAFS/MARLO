@@ -147,6 +147,11 @@ public class EditProjectExpenditureInterceptor extends AbstractInterceptor imple
             .equals(APConstants.REPORTING)) {
             canEdit = false;
           }
+          if (baseAction.getActualPhase().getVisible() && !baseAction.getActualPhase().getEditable()
+            && baseAction.isRole("FM")) {
+            canEdit = true;
+            editParameter = true;
+          }
 
 
         }
