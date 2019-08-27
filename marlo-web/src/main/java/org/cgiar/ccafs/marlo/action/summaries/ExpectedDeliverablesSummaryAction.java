@@ -445,12 +445,16 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
 
         } else if (responsible.getDeliverableUserPartnershipPersons() != null) {
           // individual += "<span style='font-family: Segoe UI;color:#ff0000;font-size: 10'>";
+          DeliverableUserPartnershipPerson responsibleppp = null;
           if (responsible.getDeliverableUserPartnershipPersons().size() != 0
             && responsible.getDeliverableUserPartnershipPersons().stream().filter(dp -> dp.isActive())
+              .collect(Collectors.toList()) != null
+            && responsible.getDeliverableUserPartnershipPersons().stream().filter(dp -> dp.isActive())
               .collect(Collectors.toList()).get(0) != null) {
+            responsibleppp = responsible.getDeliverableUserPartnershipPersons().stream().filter(dp -> dp.isActive())
+              .collect(Collectors.toList()).get(0);
           }
-          DeliverableUserPartnershipPerson responsibleppp = responsible.getDeliverableUserPartnershipPersons().stream()
-            .filter(dp -> dp.isActive()).collect(Collectors.toList()).get(0);
+
 
           // get deliverable information when partner responsible does not have a person
           if (responsible.getInstitution() != null) {
