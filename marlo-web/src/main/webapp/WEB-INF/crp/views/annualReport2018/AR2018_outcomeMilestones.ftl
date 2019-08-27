@@ -362,7 +362,7 @@
     
     [#-- Evidence for completed milestones or explanation for extended or cancelled --]
     <div class="form-group">
-      [@customForm.textArea name="${customName}.evidence" i18nkey="${customLabel}.milestoneEvidence" help="${customLabel}.milestoneEvidence.help" helpIcon=false display=true required=false className="limitWords-50" editable=editable allowTextEditor=true /]
+      [@customForm.textArea name="${customName}.evidence" value="${(annualReportElement.evidence)!}" i18nkey="${customLabel}.milestoneEvidence" help="${customLabel}.milestoneEvidence.help" helpIcon=false display=true required=false className="limitWords-50" editable=editable allowTextEditor=true /]
     </div>
       
     <div class="form-group milestonesEvidence" style="width: 100%; display:${((milestoneStatus == 2) || (milestoneStatus == 3) || (milestoneStatus == 4))?string('block', 'none')}">
