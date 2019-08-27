@@ -91,7 +91,6 @@ public class DeliverableInfoManagerImpl implements DeliverableInfoManager {
 
   @Override
   public DeliverableInfo saveDeliverableInfo(DeliverableInfo deliverableInfo) {
-    // changes dperez
     DeliverableInfo resultDeliverableInfo = deliverableInfoDAO.save(deliverableInfo);
     boolean isPublication = deliverableInfo.getDeliverable().getIsPublication() != null
       && deliverableInfo.getDeliverable().getIsPublication();
@@ -110,8 +109,6 @@ public class DeliverableInfoManagerImpl implements DeliverableInfoManager {
       }
     }
     return resultDeliverableInfo;
-    // END changes dperez
-    // return deliverableInfoDAO.save(deliverableInfo);
   }
 
   public void saveInfoPhase(Phase next, Long deliverableId, DeliverableInfo deliverableInfo) {

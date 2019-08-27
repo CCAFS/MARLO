@@ -21,8 +21,8 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableActivity;
 
 import java.util.List;
 
-import javax.inject.Named;
 import javax.inject.Inject;
+import javax.inject.Named;
 
 /**
  * @author Christian Garcia
@@ -38,8 +38,6 @@ public class DeliverableActivityManagerImpl implements DeliverableActivityManage
   @Inject
   public DeliverableActivityManagerImpl(DeliverableActivityDAO deliverableActivityDAO) {
     this.deliverableActivityDAO = deliverableActivityDAO;
-
-
   }
 
   @Override
