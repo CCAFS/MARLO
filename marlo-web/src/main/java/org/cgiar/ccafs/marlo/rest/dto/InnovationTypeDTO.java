@@ -26,7 +26,6 @@ public class InnovationTypeDTO {
   private Long code;
 
   @ApiModelProperty(notes = "Innovation Type name")
-  @NotNull
   private String name;
 
   @ApiModelProperty(notes = "Innovation Type definition")

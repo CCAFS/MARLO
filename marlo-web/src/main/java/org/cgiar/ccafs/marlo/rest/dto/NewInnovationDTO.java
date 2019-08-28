@@ -31,58 +31,58 @@ public class NewInnovationDTO {
   private Long projectId;
 
   @ApiModelProperty(notes = "Stage of innovation code", position = 30)
-  private Long stageOfInnovation;
+  private StageOfInnovationDTO stageOfInnovation;
 
   @ApiModelProperty(notes = "Description of stage reached", position = 40)
   private String descriptionStage;
 
-  @ApiModelProperty(notes = "Next users organization types codes", position = 50)
-  private List<Long> nextUserOrganizationTypes;
+  @ApiModelProperty(notes = "Next users organization types identifier", position = 50)
+  private List<OrganizationTypeDTO> nextUserOrganizationTypes;
 
-  @ApiModelProperty(notes = "Innovation Type code", position = 60)
-  private Long innovationType;
+  @ApiModelProperty(notes = "Innovation Type identifier", position = 60)
+  private InnovationTypeDTO innovationType;
 
   @ApiModelProperty(notes = "Other Innovation Type description", position = 65)
   private String otherInnovationType;
 
-  @ApiModelProperty(notes = "Geographic Scopes code", position = 70)
-  private List<Long> geographicScopes;
+  @ApiModelProperty(notes = "Geographic Scopes identifier", position = 70)
+  private List<GeographicScopeDTO> geographicScopes;
 
   @ApiModelProperty(notes = "Regions codes", position = 80)
-  private List<Long> regions;
+  private List<RegionDTO> regions;
 
   @ApiModelProperty(notes = "Countries codes", position = 90)
-  private List<Long> countries;
+  private List<CountryDTO> countries;
 
   @ApiModelProperty(notes = "Is a leadership equitatable effort of the partners", position = 95)
   private Boolean equitativeEffort;
 
   @ApiModelProperty(notes = "id of Lead organization/entity to take innovation to this stage", position = 100)
-  private Long leadOrganization;
+  private InstitutionDTO leadOrganization;
 
   @ApiModelProperty(notes = "List of top five contributing organizations/entities codes to this stage", position = 110)
-  private List<Long> contributingInstitutions;
+  private List<InstitutionDTO> contributingInstitutions;
 
   @ApiModelProperty(notes = "Evidence Link", position = 120)
   private String evidenceLink;
 
   @ApiModelProperty(notes = "Contributing CRPs/Platforms codes", position = 130)
-  private List<String> contributingCGIAREntities;
+  private List<CGIAREntityDTO> contributingCGIAREntities;
 
   @ApiModelProperty(notes = "Phase year/section", position = 140)
   private PhaseDTO phase;
 
-  public List<String> getContributingCGIAREntities() {
+  public List<CGIAREntityDTO> getContributingCGIAREntities() {
     return this.contributingCGIAREntities;
   }
 
 
-  public List<Long> getContributingInstitutions() {
+  public List<InstitutionDTO> getContributingInstitutions() {
     return this.contributingInstitutions;
   }
 
 
-  public List<Long> getCountries() {
+  public List<CountryDTO> getCountries() {
     return this.countries;
   }
 
@@ -102,17 +102,17 @@ public class NewInnovationDTO {
   }
 
 
-  public List<Long> getGeographicScopes() {
+  public List<GeographicScopeDTO> getGeographicScopes() {
     return this.geographicScopes;
   }
 
 
-  public Long getInnovationType() {
+  public InnovationTypeDTO getInnovationType() {
     return this.innovationType;
   }
 
 
-  public Long getLeadOrganization() {
+  public InstitutionDTO getLeadOrganization() {
     return this.leadOrganization;
   }
 
@@ -122,7 +122,7 @@ public class NewInnovationDTO {
   }
 
 
-  public List<Long> getNextUserOrganizationTypes() {
+  public List<OrganizationTypeDTO> getNextUserOrganizationTypes() {
     return this.nextUserOrganizationTypes;
   }
 
@@ -142,12 +142,12 @@ public class NewInnovationDTO {
   }
 
 
-  public List<Long> getRegions() {
+  public List<RegionDTO> getRegions() {
     return this.regions;
   }
 
 
-  public Long getStageOfInnovation() {
+  public StageOfInnovationDTO getStageOfInnovation() {
     return this.stageOfInnovation;
   }
 
@@ -157,17 +157,17 @@ public class NewInnovationDTO {
   }
 
 
-  public void setContributingCGIAREntities(List<String> contributingCGIAREntities) {
+  public void setContributingCGIAREntities(List<CGIAREntityDTO> contributingCGIAREntities) {
     this.contributingCGIAREntities = contributingCGIAREntities;
   }
 
 
-  public void setContributingInstitutions(List<Long> contributingInstitutions) {
+  public void setContributingInstitutions(List<InstitutionDTO> contributingInstitutions) {
     this.contributingInstitutions = contributingInstitutions;
   }
 
 
-  public void setCountries(List<Long> countries) {
+  public void setCountries(List<CountryDTO> countries) {
     this.countries = countries;
   }
 
@@ -187,17 +187,17 @@ public class NewInnovationDTO {
   }
 
 
-  public void setGeographicScopes(List<Long> geographicScopes) {
+  public void setGeographicScopes(List<GeographicScopeDTO> geographicScopes) {
     this.geographicScopes = geographicScopes;
   }
 
 
-  public void setInnovationType(Long innovationType) {
+  public void setInnovationType(InnovationTypeDTO innovationType) {
     this.innovationType = innovationType;
   }
 
 
-  public void setLeadOrganization(Long leadOrganization) {
+  public void setLeadOrganization(InstitutionDTO leadOrganization) {
     this.leadOrganization = leadOrganization;
   }
 
@@ -207,7 +207,7 @@ public class NewInnovationDTO {
   }
 
 
-  public void setNextUserOrganizationTypes(List<Long> nextUserOrganizationTypes) {
+  public void setNextUserOrganizationTypes(List<OrganizationTypeDTO> nextUserOrganizationTypes) {
     this.nextUserOrganizationTypes = nextUserOrganizationTypes;
   }
 
@@ -227,12 +227,12 @@ public class NewInnovationDTO {
   }
 
 
-  public void setRegions(List<Long> regions) {
+  public void setRegions(List<RegionDTO> regions) {
     this.regions = regions;
   }
 
 
-  public void setStageOfInnovation(Long stageOfInnovation) {
+  public void setStageOfInnovation(StageOfInnovationDTO stageOfInnovation) {
     this.stageOfInnovation = stageOfInnovation;
   }
 

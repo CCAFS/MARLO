@@ -17,8 +17,6 @@ package org.cgiar.ccafs.marlo.rest.dto;
 
 import java.io.Serializable;
 
-import javax.validation.constraints.NotNull;
-
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -31,11 +29,9 @@ public class OrganizationTypeDTO implements Serializable {
   private Long code;
 
   @ApiModelProperty(notes = "Organization type name")
-  @NotNull
   private String name;
 
   @ApiModelProperty(notes = "Organization type definition")
-  @NotNull
   private String definition;
 
   public Long getCode() {
