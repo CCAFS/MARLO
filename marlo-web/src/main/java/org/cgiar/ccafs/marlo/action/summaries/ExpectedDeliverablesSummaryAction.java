@@ -435,11 +435,11 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
             if (responsible.getInstitution().getAcronym() != null
               && !responsible.getInstitution().getAcronym().isEmpty()) {
               ppaResponsibleList.add("*" + responsible.getInstitution().getAcronym() + " ");
-              responsibleAcronym = responsible.getInstitution().getAcronym() + " ";
+              responsibleAcronym = responsible.getInstitution().getAcronym();
 
             } else {
               ppaResponsibleList.add("*" + responsible.getInstitution().getName() + " ");
-              responsibleName = responsible.getInstitution().getName() + " ";
+              responsibleName = responsible.getInstitution().getName();
             }
           }
 
@@ -461,16 +461,16 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
             if (responsible.getInstitution().getAcronym() != null
               && !responsible.getInstitution().getAcronym().isEmpty()) {
               ppaResponsibleList.add("*" + responsible.getInstitution().getAcronym() + "");
-              responsibleAcronym = responsible.getInstitution().getAcronym() + " ";
+              responsibleAcronym = responsible.getInstitution().getAcronym() + "";
 
             } else {
               ppaResponsibleList.add("*" + responsible.getInstitution().getName() + "");
-              responsibleName = responsible.getInstitution().getName() + " ";
+              responsibleName = responsible.getInstitution().getName() + "";
             }
           }
 
           if (responsibleppp != null && responsibleppp.getUser() != null) {
-            individual += "\n ●  ";
+            individual += " ● ";
             individual += "*";
             individual += responsibleppp.getUser().getComposedNameWithoutEmail();
             if (responsibleAcronym != null) {
@@ -505,17 +505,17 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
               if (deliverablePartnership.getInstitution().getAcronym() != null
                 && !deliverablePartnership.getInstitution().getAcronym().isEmpty()) {
                 ppaResponsibleList.add("*" + deliverablePartnership.getInstitution().getAcronym() + " ");
-                responsibleAcronym = deliverablePartnership.getInstitution().getAcronym() + " ";
+                responsibleAcronym = deliverablePartnership.getInstitution().getAcronym() + "";
 
               } else {
                 ppaResponsibleList.add("*" + deliverablePartnership.getInstitution().getName() + " ");
-                responsibleName = deliverablePartnership.getInstitution().getName() + " ";
+                responsibleName = deliverablePartnership.getInstitution().getName() + "";
               }
             }
 
             for (DeliverableUserPartnershipPerson person : responsibleppp) {
               if (person.getUser() != null && person.getUser().getComposedName() != null) {
-                individual += "\n ● ";
+                individual += " ●";
                 individual += person.getUser().getComposedName();
 
                 if (responsibleAcronym != null) {
