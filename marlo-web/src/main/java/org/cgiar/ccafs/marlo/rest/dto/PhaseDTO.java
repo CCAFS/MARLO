@@ -27,6 +27,7 @@ public class PhaseDTO {
   @NotBlank
   private String name;
   @ApiModelProperty(notes = "Phase year", position = 2)
+  @NotNull
   private int year;
 
 

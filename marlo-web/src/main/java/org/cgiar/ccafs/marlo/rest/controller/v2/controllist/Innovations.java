@@ -89,7 +89,6 @@ public class Innovations {
       throw new NotFoundException("404", this.env.getProperty("Innovation.innovation.GET.id.404"));
     }
     return response;
-
   }
 
 
