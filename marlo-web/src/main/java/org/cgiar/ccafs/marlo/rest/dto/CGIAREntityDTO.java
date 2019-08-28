@@ -31,7 +31,6 @@ public class CGIAREntityDTO implements Serializable {
   private String code;
 
   @ApiModelProperty(notes = "CGIAR entity name")
-  @NotNull
   private String name;
 
   @ApiModelProperty(notes = "Acronym of CGIAR entity")
@@ -39,7 +38,6 @@ public class CGIAREntityDTO implements Serializable {
   private String acronym;
 
   @ApiModelProperty(notes = "CGIAR entity type")
-  @NotNull
   private CGIAREntityTypeDTO cgiarEntityTypeDTO;
 
   public String getAcronym() {
