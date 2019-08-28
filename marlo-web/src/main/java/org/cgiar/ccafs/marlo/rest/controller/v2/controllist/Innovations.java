@@ -82,8 +82,12 @@ public class Innovations {
     @ApiParam(value = "${Innovation.innovation.POST.param.CGIAR}", required = true) @PathVariable String CGIAREntity,
     @ApiParam(value = "${Innovation.innovation.POST.param.innovation}",
       required = true) @Valid @RequestBody NewInnovationDTO newInnovationDTO) {
+
     Long innovationId = this.innovationItem.createInnovation(newInnovationDTO, CGIAREntity, this.getCurrentUser());
     ResponseEntity<Long> response = new ResponseEntity<Long>(innovationId, HttpStatus.OK);
+    if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+      throw new NotFoundException("404", this.env.getProperty("Innovation.innovation.GET.id.404"));
+    }
     return response;
 
   }

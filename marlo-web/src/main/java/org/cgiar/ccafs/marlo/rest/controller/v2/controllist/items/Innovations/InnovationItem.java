@@ -53,8 +53,14 @@ import org.cgiar.ccafs.marlo.data.model.RepIndInnovationType;
 import org.cgiar.ccafs.marlo.data.model.RepIndOrganizationType;
 import org.cgiar.ccafs.marlo.data.model.RepIndStageInnovation;
 import org.cgiar.ccafs.marlo.data.model.User;
+import org.cgiar.ccafs.marlo.rest.dto.CGIAREntityDTO;
+import org.cgiar.ccafs.marlo.rest.dto.CountryDTO;
+import org.cgiar.ccafs.marlo.rest.dto.GeographicScopeDTO;
 import org.cgiar.ccafs.marlo.rest.dto.InnovationDTO;
+import org.cgiar.ccafs.marlo.rest.dto.InstitutionDTO;
 import org.cgiar.ccafs.marlo.rest.dto.NewInnovationDTO;
+import org.cgiar.ccafs.marlo.rest.dto.OrganizationTypeDTO;
+import org.cgiar.ccafs.marlo.rest.dto.RegionDTO;
 import org.cgiar.ccafs.marlo.rest.errors.FieldErrorDTO;
 import org.cgiar.ccafs.marlo.rest.errors.MARLOFieldValidationException;
 import org.cgiar.ccafs.marlo.rest.mappers.InnovationMapper;
@@ -174,196 +180,204 @@ public class InnovationItem<T> {
     }
 
     RepIndStageInnovation RepIndStageInnovation =
-      this.repIndStageInnovationManager.getRepIndStageInnovationById(newInnovationDTO.getStageOfInnovation());
+      this.repIndStageInnovationManager.getRepIndStageInnovationById(newInnovationDTO.getStageOfInnovation().getCode());
     if (RepIndStageInnovation == null) {
       this.fieldErrors.add(new FieldErrorDTO("createInnovation", "Stage of Innovation",
         newInnovationDTO.getStageOfInnovation() + " is an invalid stage of innovation code"));
     }
 
-    Institution leadInstitution = this.institutionManager.getInstitutionById(newInnovationDTO.getLeadOrganization());
+    Institution leadInstitution =
+      this.institutionManager.getInstitutionById(newInnovationDTO.getLeadOrganization().getCode());
     if (leadInstitution == null) {
       this.fieldErrors.add(new FieldErrorDTO("createInnovation", "Lead institution",
         newInnovationDTO.getLeadOrganization() + " is an invalid institution id"));
     }
 
     RepIndInnovationType repIndInnovationType =
-      this.repIndInnovationTypeManager.getRepIndInnovationTypeById(newInnovationDTO.getInnovationType());
+      this.repIndInnovationTypeManager.getRepIndInnovationTypeById(newInnovationDTO.getInnovationType().getCode());
     if (repIndInnovationType == null) {
       this.fieldErrors.add(new FieldErrorDTO("createInnovation", "Innovation Type",
         newInnovationDTO.getInnovationType() + " is an invalid innovation type code"));
     }
+    if (newInnovationDTO.getProjectId() == null) {
+      this.fieldErrors
+        .add(new FieldErrorDTO("createInnovation", "Project ID", "Innovation need an invalid project id"));
+    } else {
+      Project project = this.projectManager.getProjectById(newInnovationDTO.getProjectId());
 
-    Project project = this.projectManager.getProjectById(newInnovationDTO.getProjectId());
+      // TODO: Include the validation that the project should be on same
+      // CRP/PTF
+      if (project == null) {
+        this.fieldErrors.add(new FieldErrorDTO("createInnovation", "Project id",
+          newInnovationDTO.getProjectId() + " is an invalid project id"));
+      }
 
-    // TODO: Include the validation that the project should be on same
-    // CRP/PTF
-    if (project == null) {
-      this.fieldErrors.add(new FieldErrorDTO("createInnovation", "Project id",
-        newInnovationDTO.getProjectId() + " is an invalid project id"));
-    }
+      this.projectInnovation.setProject(project);
+      // SAVE innovation info
+      this.projectInnovation = this.projectInnovationManager.saveProjectInnovation(this.projectInnovation);
+      projectInnovationInfo.setProjectInnovation(this.projectInnovation);
+      projectInnovationInfo.setPhase(phase);
+      projectInnovationInfo.setYear((long) newInnovationDTO.getPhase().getYear());
+      projectInnovationInfo.setTitle(newInnovationDTO.getTitle());
+      projectInnovationInfo.setNarrative(newInnovationDTO.getNarrative());
+      projectInnovationInfo.setDescriptionStage(newInnovationDTO.getDescriptionStage());
+      projectInnovationInfo.setRepIndStageInnovation(RepIndStageInnovation);
+      projectInnovationInfo.setLeadOrganization(leadInstitution);
+      projectInnovationInfo.setOtherInnovationType(newInnovationDTO.getOtherInnovationType());
+      projectInnovationInfo.setRepIndInnovationType(repIndInnovationType);
+      projectInnovationInfo.setEvidenceLink(newInnovationDTO.getEvidenceLink());
+      projectInnovationInfo.setClearLead(newInnovationDTO.getEquitativeEffort());
+      this.projectInnovationInfoManager.saveProjectInnovationInfo(projectInnovationInfo);
 
-    this.projectInnovation.setProject(project);
-    // SAVE innovation info
-    this.projectInnovation = this.projectInnovationManager.saveProjectInnovation(this.projectInnovation);
-    projectInnovationInfo.setProjectInnovation(this.projectInnovation);
-    projectInnovationInfo.setPhase(phase);
-    projectInnovationInfo.setYear((long) newInnovationDTO.getPhase().getYear());
-    projectInnovationInfo.setTitle(newInnovationDTO.getTitle());
-    projectInnovationInfo.setNarrative(newInnovationDTO.getNarrative());
-    projectInnovationInfo.setDescriptionStage(newInnovationDTO.getDescriptionStage());
-    projectInnovationInfo.setRepIndStageInnovation(RepIndStageInnovation);
-    projectInnovationInfo.setLeadOrganization(leadInstitution);
-    projectInnovationInfo.setOtherInnovationType(newInnovationDTO.getOtherInnovationType());
-    projectInnovationInfo.setRepIndInnovationType(repIndInnovationType);
-    projectInnovationInfo.setEvidenceLink(newInnovationDTO.getEvidenceLink());
-    projectInnovationInfo.setClearLead(newInnovationDTO.getEquitativeEffort());
-    this.projectInnovationInfoManager.saveProjectInnovationInfo(projectInnovationInfo);
+      this.innovationID = this.projectInnovation.getId();
+      // SAVE innovation CRP
+      if (this.innovationID > 0) {
+        ProjectInnovationCrp projectInnovationCrp = new ProjectInnovationCrp();
+        projectInnovationCrp.setGlobalUnit(globalUnitEntity);
+        projectInnovationCrp.setPhase(phase);
+        projectInnovationCrp.setProjectInnovation(this.projectInnovation);
+        this.projectInnovationCrpManager.saveProjectInnovationCrp(projectInnovationCrp);
+      }
 
-    this.innovationID = this.projectInnovation.getId();
-    // SAVE innovation CRP
-    if (this.innovationID > 0) {
-      ProjectInnovationCrp projectInnovationCrp = new ProjectInnovationCrp();
-      projectInnovationCrp.setGlobalUnit(globalUnitEntity);
-      projectInnovationCrp.setPhase(phase);
-      projectInnovationCrp.setProjectInnovation(this.projectInnovation);
-      this.projectInnovationCrpManager.saveProjectInnovationCrp(projectInnovationCrp);
-    }
+      // save all organization types
+      if (newInnovationDTO.getNextUserOrganizationTypes() != null
+        && newInnovationDTO.getNextUserOrganizationTypes().size() > 0) {
+        for (OrganizationTypeDTO id : newInnovationDTO.getNextUserOrganizationTypes()) {
+          ProjectInnovationOrganization projectInnovationOrganization = new ProjectInnovationOrganization();
+          RepIndOrganizationType repIndOrganizationType =
+            this.repIndOrganizationTypeManager.getRepIndOrganizationTypeById(id.getCode());
+          if (repIndOrganizationType == null) {
+            this.fieldErrors.add(new FieldErrorDTO("createInnovation", "NextUserOrganizationType",
+              id + " is an invalid institution Next User Organization Type"));
+          } else {
+            projectInnovationOrganization.setProjectInnovation(this.projectInnovation);
+            projectInnovationOrganization.setRepIndOrganizationType(repIndOrganizationType);
+            projectInnovationOrganization.setPhase(phase);
+            this.projectInnovationOrganizationManager.saveProjectInnovationOrganization(projectInnovationOrganization);
+            // This is to add innovationOrganizationSave to generate
+            // correct auditlog.
+            this.projectInnovation.getProjectInnovationOrganizations().add(projectInnovationOrganization);
+          }
+        }
+      }
 
-    // save all organization types
-    if (newInnovationDTO.getNextUserOrganizationTypes() != null
-      && newInnovationDTO.getNextUserOrganizationTypes().size() > 0) {
-      for (Long id : newInnovationDTO.getNextUserOrganizationTypes()) {
-        ProjectInnovationOrganization projectInnovationOrganization = new ProjectInnovationOrganization();
-        RepIndOrganizationType repIndOrganizationType =
-          this.repIndOrganizationTypeManager.getRepIndOrganizationTypeById(id);
-        if (repIndOrganizationType == null) {
-          this.fieldErrors.add(new FieldErrorDTO("createInnovation", "NextUserOrganizationType",
-            id + " is an invalid institution Next User Organization Type"));
-        } else {
-          projectInnovationOrganization.setProjectInnovation(this.projectInnovation);
-          projectInnovationOrganization.setRepIndOrganizationType(repIndOrganizationType);
-          projectInnovationOrganization.setPhase(phase);
-          this.projectInnovationOrganizationManager.saveProjectInnovationOrganization(projectInnovationOrganization);
-          // This is to add innovationOrganizationSave to generate
-          // correct auditlog.
-          this.projectInnovation.getProjectInnovationOrganizations().add(projectInnovationOrganization);
+      // save all Next user institutions
+      if (newInnovationDTO.getContributingInstitutions() != null
+        && newInnovationDTO.getContributingInstitutions().size() > 0) {
+        for (InstitutionDTO id : newInnovationDTO.getContributingInstitutions()) {
+          Institution addinstitution = this.institutionManager.getInstitutionById(id.getCode());
+          if (addinstitution == null) {
+            this.fieldErrors.add(
+              new FieldErrorDTO("createInnovation", "ContributingInstitution", id + " is an invalid institution id"));
+          } else {
+            ProjectInnovationContributingOrganization newContributingOrganization =
+              new ProjectInnovationContributingOrganization();
+            newContributingOrganization.setProjectInnovation(this.projectInnovation);
+            newContributingOrganization.setPhase(phase);
+            newContributingOrganization.setInstitution(addinstitution);
+            this.projectInnovationContributingOrganizationManager
+              .saveProjectInnovationContributingOrganization(newContributingOrganization);
+            // This is to add innovationOrganizationSave to generate
+            // correct auditlog.
+            this.projectInnovation.getProjectInnovationContributingOrganization().add(newContributingOrganization);
+          }
+        }
+      }
+
+      // save CRPs
+      if (newInnovationDTO.getContributingCGIAREntities() != null
+        && newInnovationDTO.getContributingCGIAREntities().size() > 0) {
+        for (CGIAREntityDTO globalUnitCode : newInnovationDTO.getContributingCGIAREntities()) {
+          GlobalUnit crp = this.globalUnitManager.findGlobalUnitBySMOCode(globalUnitCode.getCode());
+
+          if (crp == null) {
+            this.fieldErrors.add(new FieldErrorDTO("createInnovation", "ContributingCGIAREntities",
+              globalUnitCode + " is an invalid CGIAR entity acronym"));
+          } else {
+            ProjectInnovationCrp projectInnovationCrp = new ProjectInnovationCrp();
+            projectInnovationCrp.setProjectInnovation(this.projectInnovation);
+            projectInnovationCrp.setPhase(phase);
+            projectInnovationCrp.setGlobalUnit(crp);
+            this.projectInnovationCrpManager.saveProjectInnovationCrp(projectInnovationCrp);
+
+            // This is to add innovationOrganizationSave to generate
+            // correct auditlog.
+            this.projectInnovation.getProjectInnovationCrps().add(projectInnovationCrp);
+          }
+        }
+      }
+
+      // save Geographical Scopes
+      if (newInnovationDTO.getGeographicScopes() != null && newInnovationDTO.getGeographicScopes().size() > 0) {
+        for (GeographicScopeDTO id : newInnovationDTO.getGeographicScopes()) {
+          RepIndGeographicScope geoScope = this.repIndGeographicScopeManager.getRepIndGeographicScopeById(id.getCode());
+          if (geoScope == null) {
+            this.fieldErrors.add(
+              new FieldErrorDTO("createInnovation", "GeographicScopes", id + " is an invalid Geographic Scope code"));
+          } else {
+            ProjectInnovationGeographicScope geographicScope = new ProjectInnovationGeographicScope();
+            geographicScope.setProjectInnovation(this.projectInnovation);
+            geographicScope.setPhase(phase);
+            geographicScope.setRepIndGeographicScope(geoScope);
+            this.projectInnovationGeographicScopeManager.saveProjectInnovationGeographicScope(geographicScope);
+
+            // This is to add innovationOrganizationSave to generate
+            // correct auditlog.
+            this.projectInnovation.getProjectInnovationGeographicScopes().add(geographicScope);
+          }
+        }
+      }
+
+      // save Regions
+      if (newInnovationDTO.getRegions() != null && newInnovationDTO.getRegions().size() > 0) {
+        for (RegionDTO id : newInnovationDTO.getRegions()) {
+          LocElement region = this.locElementManager.getLocElementByNumericISOCode(id.getUM49Code());
+          if (region == null) {
+            this.fieldErrors
+              .add(new FieldErrorDTO("createInnovation", "Regions", id.getUM49Code() + " is an invalid Region Code"));
+
+          } else if (region.getLocElementType().getId() != APConstants.LOC_ELEMENT_TYPE_REGION) {
+            this.fieldErrors.add(new FieldErrorDTO("createInnovation", "Regions", id + " is not a Region code"));
+          } else {
+            ProjectInnovationRegion projectInnovationRegion = new ProjectInnovationRegion();
+            projectInnovationRegion.setProjectInnovation(this.projectInnovation);
+            projectInnovationRegion.setPhase(phase);
+            projectInnovationRegion.setLocElement(region);
+            this.projectInnovationRegionManager.saveProjectInnovationRegion(projectInnovationRegion);
+
+            // This is to add innovationOrganizationSave to generate
+            // correct auditlog.
+            this.projectInnovation.getProjectInnovationRegions().add(projectInnovationRegion);
+          }
+        }
+      }
+
+      // save Countries
+      if (newInnovationDTO.getCountries() != null && newInnovationDTO.getCountries().size() > 0) {
+        for (CountryDTO iso : newInnovationDTO.getCountries()) {
+          LocElement country = this.locElementManager.getLocElementByNumericISOCode(iso.getCode());
+          if (country == null) {
+            this.fieldErrors
+              .add(new FieldErrorDTO("createInnovation", "Countries", iso + " is an invalid country ISO Code"));
+
+          } else if (country.getLocElementType().getId() != APConstants.LOC_ELEMENT_TYPE_COUNTRY) {
+            this.fieldErrors
+              .add(new FieldErrorDTO("createInnovation", "Countries", iso + " is not a Country ISO code"));
+          } else {
+            ProjectInnovationCountry projectInnovationCountry = new ProjectInnovationCountry();
+            projectInnovationCountry.setProjectInnovation(this.projectInnovation);
+            projectInnovationCountry.setPhase(phase);
+            projectInnovationCountry.setLocElement(country);
+            this.projectInnovationCountryManager.saveProjectInnovationCountry(projectInnovationCountry);
+
+            // This is to add innovationOrganizationSave to generate
+            // correct auditlog.
+            this.projectInnovation.getProjectInnovationCountries().add(projectInnovationCountry);
+          }
         }
       }
     }
 
-    // save all Next user institutions
-    if (newInnovationDTO.getContributingInstitutions() != null
-      && newInnovationDTO.getContributingInstitutions().size() > 0) {
-      for (Long id : newInnovationDTO.getContributingInstitutions()) {
-        Institution addinstitution = this.institutionManager.getInstitutionById(id);
-        if (addinstitution == null) {
-          this.fieldErrors.add(
-            new FieldErrorDTO("createInnovation", "ContributingInstitution", id + " is an invalid institution id"));
-        } else {
-          ProjectInnovationContributingOrganization newContributingOrganization =
-            new ProjectInnovationContributingOrganization();
-          newContributingOrganization.setProjectInnovation(this.projectInnovation);
-          newContributingOrganization.setPhase(phase);
-          newContributingOrganization.setInstitution(addinstitution);
-          this.projectInnovationContributingOrganizationManager
-            .saveProjectInnovationContributingOrganization(newContributingOrganization);
-          // This is to add innovationOrganizationSave to generate
-          // correct auditlog.
-          this.projectInnovation.getProjectInnovationContributingOrganization().add(newContributingOrganization);
-        }
-      }
-    }
-
-    // save CRPs
-    if (newInnovationDTO.getContributingCGIAREntities() != null
-      && newInnovationDTO.getContributingCGIAREntities().size() > 0) {
-      for (String globalUnitCode : newInnovationDTO.getContributingCGIAREntities()) {
-        GlobalUnit crp = this.globalUnitManager.findGlobalUnitBySMOCode(globalUnitCode);
-
-        if (crp == null) {
-          this.fieldErrors.add(new FieldErrorDTO("createInnovation", "ContributingCGIAREntities",
-            globalUnitCode + " is an invalid CGIAR entity acronym"));
-        } else {
-          ProjectInnovationCrp projectInnovationCrp = new ProjectInnovationCrp();
-          projectInnovationCrp.setProjectInnovation(this.projectInnovation);
-          projectInnovationCrp.setPhase(phase);
-          projectInnovationCrp.setGlobalUnit(crp);
-          this.projectInnovationCrpManager.saveProjectInnovationCrp(projectInnovationCrp);
-
-          // This is to add innovationOrganizationSave to generate
-          // correct auditlog.
-          this.projectInnovation.getProjectInnovationCrps().add(projectInnovationCrp);
-        }
-      }
-    }
-
-    // save Geographical Scopes
-    if (newInnovationDTO.getGeographicScopes() != null && newInnovationDTO.getGeographicScopes().size() > 0) {
-      for (Long id : newInnovationDTO.getGeographicScopes()) {
-        RepIndGeographicScope geoScope = this.repIndGeographicScopeManager.getRepIndGeographicScopeById(id);
-        if (geoScope == null) {
-          this.fieldErrors.add(
-            new FieldErrorDTO("createInnovation", "GeographicScopes", id + " is an invalid Geographic Scope code"));
-        } else {
-          ProjectInnovationGeographicScope geographicScope = new ProjectInnovationGeographicScope();
-          geographicScope.setProjectInnovation(this.projectInnovation);
-          geographicScope.setPhase(phase);
-          geographicScope.setRepIndGeographicScope(geoScope);
-          this.projectInnovationGeographicScopeManager.saveProjectInnovationGeographicScope(geographicScope);
-
-          // This is to add innovationOrganizationSave to generate
-          // correct auditlog.
-          this.projectInnovation.getProjectInnovationGeographicScopes().add(geographicScope);
-        }
-      }
-    }
-
-    // save Regions
-    if (newInnovationDTO.getRegions() != null && newInnovationDTO.getRegions().size() > 0) {
-      for (Long id : newInnovationDTO.getRegions()) {
-        LocElement region = this.locElementManager.getLocElementByNumericISOCode(id);
-        if (region == null) {
-          this.fieldErrors.add(new FieldErrorDTO("createInnovation", "Regions", id + " is an invalid Region Code"));
-
-        } else if (region.getLocElementType().getId() != APConstants.LOC_ELEMENT_TYPE_REGION) {
-          this.fieldErrors.add(new FieldErrorDTO("createInnovation", "Regions", id + " is not a Region code"));
-        } else {
-          ProjectInnovationRegion projectInnovationRegion = new ProjectInnovationRegion();
-          projectInnovationRegion.setProjectInnovation(this.projectInnovation);
-          projectInnovationRegion.setPhase(phase);
-          projectInnovationRegion.setLocElement(region);
-          this.projectInnovationRegionManager.saveProjectInnovationRegion(projectInnovationRegion);
-
-          // This is to add innovationOrganizationSave to generate
-          // correct auditlog.
-          this.projectInnovation.getProjectInnovationRegions().add(projectInnovationRegion);
-        }
-      }
-    }
-
-    // save Countries
-    if (newInnovationDTO.getCountries() != null && newInnovationDTO.getCountries().size() > 0) {
-      for (Long iso : newInnovationDTO.getCountries()) {
-        LocElement country = this.locElementManager.getLocElementByNumericISOCode(iso);
-        if (country == null) {
-          this.fieldErrors
-            .add(new FieldErrorDTO("createInnovation", "Countries", iso + " is an invalid country ISO Code"));
-
-        } else if (country.getLocElementType().getId() != APConstants.LOC_ELEMENT_TYPE_COUNTRY) {
-          this.fieldErrors.add(new FieldErrorDTO("createInnovation", "Countries", iso + " is not a Country ISO code"));
-        } else {
-          ProjectInnovationCountry projectInnovationCountry = new ProjectInnovationCountry();
-          projectInnovationCountry.setProjectInnovation(this.projectInnovation);
-          projectInnovationCountry.setPhase(phase);
-          projectInnovationCountry.setLocElement(country);
-          this.projectInnovationCountryManager.saveProjectInnovationCountry(projectInnovationCountry);
-
-          // This is to add innovationOrganizationSave to generate
-          // correct auditlog.
-          this.projectInnovation.getProjectInnovationCountries().add(projectInnovationCountry);
-        }
-      }
-    }
 
     // Validate all fields
     if (!this.fieldErrors.isEmpty()) {
@@ -511,22 +525,22 @@ public class InnovationItem<T> {
         this.innovationID = innovation.getId();
 
         // update basic data
-        RepIndStageInnovation RepIndStageInnovation =
-          this.repIndStageInnovationManager.getRepIndStageInnovationById(newInnovationDTO.getStageOfInnovation());
+        RepIndStageInnovation RepIndStageInnovation = this.repIndStageInnovationManager
+          .getRepIndStageInnovationById(newInnovationDTO.getStageOfInnovation().getCode());
         if (RepIndStageInnovation == null) {
           this.fieldErrors.add(new FieldErrorDTO("createInnovation", "Stage of Innovation",
             newInnovationDTO.getStageOfInnovation() + " is an invalid stage of innovation code"));
         }
 
         Institution leadInstitution =
-          this.institutionManager.getInstitutionById(newInnovationDTO.getLeadOrganization());
+          this.institutionManager.getInstitutionById(newInnovationDTO.getLeadOrganization().getCode());
         if (leadInstitution == null) {
           this.fieldErrors.add(new FieldErrorDTO("createInnovation", "Lead institution",
             newInnovationDTO.getLeadOrganization() + " is an invalid institution id"));
         }
 
         RepIndInnovationType repIndInnovationType =
-          this.repIndInnovationTypeManager.getRepIndInnovationTypeById(newInnovationDTO.getInnovationType());
+          this.repIndInnovationTypeManager.getRepIndInnovationTypeById(newInnovationDTO.getInnovationType().getCode());
         if (repIndInnovationType == null) {
           this.fieldErrors.add(new FieldErrorDTO("createInnovation", "Innovation Type",
             newInnovationDTO.getInnovationType() + " is an invalid innovation type code"));
@@ -569,9 +583,9 @@ public class InnovationItem<T> {
 
           List<ProjectInnovationOrganization> existingProjectInnovationOrganizationList =
             new ArrayList<ProjectInnovationOrganization>();
-          for (Long id : newInnovationDTO.getNextUserOrganizationTypes()) {
+          for (OrganizationTypeDTO id : newInnovationDTO.getNextUserOrganizationTypes()) {
             RepIndOrganizationType repIndOrganizationType =
-              this.repIndOrganizationTypeManager.getRepIndOrganizationTypeById(id);
+              this.repIndOrganizationTypeManager.getRepIndOrganizationTypeById(id.getCode());
             if (repIndOrganizationType == null) {
               this.fieldErrors.add(new FieldErrorDTO("createInnovation", "NextUserOrganizationType",
                 id + " is an invalid institution Next User Organization Type"));
@@ -610,8 +624,8 @@ public class InnovationItem<T> {
 
           List<ProjectInnovationCrp> existingProjectInnovationCrpList = new ArrayList<ProjectInnovationCrp>();
           // search innovationCRPs
-          for (String globalUnitCode : newInnovationDTO.getContributingCGIAREntities()) {
-            GlobalUnit crp = this.globalUnitManager.findGlobalUnitBySMOCode(globalUnitCode);
+          for (CGIAREntityDTO globalUnitCode : newInnovationDTO.getContributingCGIAREntities()) {
+            GlobalUnit crp = this.globalUnitManager.findGlobalUnitBySMOCode(globalUnitCode.getCode());
             if (crp == null) {
               this.fieldErrors.add(new FieldErrorDTO("createInnovation", "ContributingCGIAREntities",
                 globalUnitCode + " is an invalid CGIAR entity acronym"));
@@ -646,8 +660,8 @@ public class InnovationItem<T> {
               .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList());
           List<ProjectInnovationContributingOrganization> existingProjectInnovationContributingOrganizationList =
             new ArrayList<ProjectInnovationContributingOrganization>();
-          for (Long id : newInnovationDTO.getContributingInstitutions()) {
-            Institution addinstitution = this.institutionManager.getInstitutionById(id);
+          for (InstitutionDTO id : newInnovationDTO.getContributingInstitutions()) {
+            Institution addinstitution = this.institutionManager.getInstitutionById(id.getCode());
             if (addinstitution == null) {
               this.fieldErrors.add(
                 new FieldErrorDTO("createInnovation", "ContributingInstitution", id + " is an invalid institution id"));
@@ -686,8 +700,9 @@ public class InnovationItem<T> {
           List<ProjectInnovationGeographicScope> existingProjectInnovationGeographicScopeList =
             new ArrayList<ProjectInnovationGeographicScope>();
           // search for new GeographicScopes
-          for (Long id : newInnovationDTO.getGeographicScopes()) {
-            RepIndGeographicScope geoScope = this.repIndGeographicScopeManager.getRepIndGeographicScopeById(id);
+          for (GeographicScopeDTO id : newInnovationDTO.getGeographicScopes()) {
+            RepIndGeographicScope geoScope =
+              this.repIndGeographicScopeManager.getRepIndGeographicScopeById(id.getCode());
             if (geoScope == null) {
               this.fieldErrors.add(
                 new FieldErrorDTO("createInnovation", "GeographicScopes", id + " is an invalid Geographic Scope code"));
@@ -720,8 +735,8 @@ public class InnovationItem<T> {
           List<ProjectInnovationRegion> projectInnovationRegionList = innovation.getProjectInnovationRegions().stream()
             .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList());
           List<ProjectInnovationRegion> existingProjectInnovationRegionList = new ArrayList<ProjectInnovationRegion>();
-          for (Long id : newInnovationDTO.getRegions()) {
-            LocElement region = this.locElementManager.getLocElementByNumericISOCode(id);
+          for (RegionDTO id : newInnovationDTO.getRegions()) {
+            LocElement region = this.locElementManager.getLocElementByNumericISOCode(id.getUM49Code());
             if (region == null) {
               this.fieldErrors.add(new FieldErrorDTO("createInnovation", "Regions", id + " is an invalid Region Code"));
 
@@ -760,8 +775,8 @@ public class InnovationItem<T> {
           List<ProjectInnovationCountry> existingprojectInnovationCountryList =
             new ArrayList<ProjectInnovationCountry>();
           // search for new Countries
-          for (Long iso : newInnovationDTO.getCountries()) {
-            LocElement country = this.locElementManager.getLocElementByNumericISOCode(iso);
+          for (CountryDTO iso : newInnovationDTO.getCountries()) {
+            LocElement country = this.locElementManager.getLocElementByNumericISOCode(iso.getCode());
             if (country == null) {
               this.fieldErrors
                 .add(new FieldErrorDTO("createInnovation", "Countries", iso + " is an invalid country ISO Code"));
