@@ -110,12 +110,22 @@ public class ProjectPolicyInfoManagerImpl implements ProjectPolicyInfoManager {
 
     ProjectPolicyInfo sourceInfo = projectPolicyInfoDAO.save(projectPolicyInfo);
     Phase phase = phaseDAO.find(sourceInfo.getPhase().getId());
+
+    // Conditions to Project Policy Works In AR phase and Upkeep Phase
+    if (phase.getDescription().equals(APConstants.PLANNING) && phase.getNext() != null) {
+      this.saveInfoPhase(projectPolicyInfo.getPhase().getNext(), projectPolicyInfo.getProjectPolicy().getId(),
+        projectPolicyInfo);
+    }
+
     if (phase.getDescription().equals(APConstants.REPORTING)) {
-      if (projectPolicyInfo.getPhase().getNext() != null) {
-        this.saveInfoPhase(projectPolicyInfo.getPhase().getNext(), projectPolicyInfo.getProjectPolicy().getId(),
-          projectPolicyInfo);
+      if (phase.getNext() != null && phase.getNext().getNext() != null) {
+        Phase upkeepPhase = phase.getNext().getNext();
+        if (upkeepPhase != null) {
+          this.saveInfoPhase(upkeepPhase, projectPolicyInfo.getProjectPolicy().getId(), projectPolicyInfo);
+        }
       }
     }
+
     return sourceInfo;
   }
 
