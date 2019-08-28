@@ -815,7 +815,22 @@ public class DeliverableAction extends BaseAction {
       Deliverable history = (Deliverable) auditLogManager.getHistory(transaction);
 
       if (history != null) {
+
         deliverable = history;
+
+
+        if (deliverable.getDeliverableUserPartnerships() != null) {
+          List<DeliverableUserPartnership> userPartnerships = new ArrayList<>(deliverable
+            .getDeliverableUserPartnerships().stream().filter(dup -> dup.isActive()).collect(Collectors.toList()));
+          for (DeliverableUserPartnership deliverableUserPartnership : userPartnerships) {
+            if (deliverableUserPartnership.getId() != null) {
+              DeliverableUserPartnership userPartnership =
+                deliverableUserPartnershipManager.getDeliverableUserPartnershipById(deliverableUserPartnership.getId());
+              deliverableUserPartnership.setDeliverablePartnerType(userPartnership.getDeliverablePartnerType());
+            }
+          }
+        }
+
       } else {
         this.transaction = null;
         this.setTransaction("-1");
@@ -2238,7 +2253,8 @@ public class DeliverableAction extends BaseAction {
         .getDeliverableUserPartnershipPersons().stream().filter(dp -> dp.isActive()).collect(Collectors.toList());
 
       for (DeliverableUserPartnershipPerson deliverableUserPartnershipPerson : deliverableUserPartnershipPersonsPrev) {
-        if (!deliverableUserPartnership.getPartnershipPersons().contains(deliverableUserPartnershipPerson)) {
+        if (deliverableUserPartnership.getPartnershipPersons() == null
+          || !deliverableUserPartnership.getPartnershipPersons().contains(deliverableUserPartnershipPerson)) {
           deliverableUserPartnershipPersonManager
             .deleteDeliverableUserPartnershipPerson(deliverableUserPartnershipPerson.getId());
         }

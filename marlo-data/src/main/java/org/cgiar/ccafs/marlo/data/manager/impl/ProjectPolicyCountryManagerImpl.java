@@ -53,10 +53,24 @@ public class ProjectPolicyCountryManagerImpl implements ProjectPolicyCountryMana
 
     ProjectPolicyCountry projectPolicyCountry = this.getProjectPolicyCountryById(projectPolicyCountryId);
 
-    if (projectPolicyCountry.getPhase().getNext() != null) {
+    // Conditions to Project Policy Works In AR phase and Upkeep Phase
+    if (projectPolicyCountry.getPhase().getDescription().equals(APConstants.PLANNING)
+      && projectPolicyCountry.getPhase().getNext() != null) {
       this.deleteProjectPolicyCountryPhase(projectPolicyCountry.getPhase().getNext(),
         projectPolicyCountry.getProjectPolicy().getId(), projectPolicyCountry);
     }
+
+    if (projectPolicyCountry.getPhase().getDescription().equals(APConstants.REPORTING)) {
+      if (projectPolicyCountry.getPhase().getNext() != null
+        && projectPolicyCountry.getPhase().getNext().getNext() != null) {
+        Phase upkeepPhase = projectPolicyCountry.getPhase().getNext().getNext();
+        if (upkeepPhase != null) {
+          this.deleteProjectPolicyCountryPhase(upkeepPhase, projectPolicyCountry.getProjectPolicy().getId(),
+            projectPolicyCountry);
+        }
+      }
+    }
+
 
     projectPolicyCountryDAO.deleteProjectPolicyCountry(projectPolicyCountryId);
   }
@@ -109,12 +123,22 @@ public class ProjectPolicyCountryManagerImpl implements ProjectPolicyCountryMana
     ProjectPolicyCountry country = projectPolicyCountryDAO.save(projectPolicyCountry);
 
     Phase phase = phaseDAO.find(country.getPhase().getId());
+
+    // Conditions to Project Policy Works In AR phase and Upkeep Phase
+    if (phase.getDescription().equals(APConstants.PLANNING) && phase.getNext() != null) {
+      this.saveProjectPolicyCountryPhase(country.getPhase().getNext(), country.getProjectPolicy().getId(),
+        projectPolicyCountry);
+    }
+
     if (phase.getDescription().equals(APConstants.REPORTING)) {
-      if (country.getPhase().getNext() != null) {
-        this.saveProjectPolicyCountryPhase(country.getPhase().getNext(), country.getProjectPolicy().getId(),
-          projectPolicyCountry);
+      if (phase.getNext() != null && phase.getNext().getNext() != null) {
+        Phase upkeepPhase = phase.getNext().getNext();
+        if (upkeepPhase != null) {
+          this.saveProjectPolicyCountryPhase(upkeepPhase, country.getProjectPolicy().getId(), projectPolicyCountry);
+        }
       }
     }
+
     return country;
   }
 
