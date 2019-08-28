@@ -61,6 +61,12 @@ public interface PhaseManager {
    */
   public Phase findPreviousPhase(long phaseId);
 
+  /**
+   * This method get a last active phase in the quering global unit
+   * 
+   * @param globalUnitId
+   * @return
+   */
   public Phase getActivePhase(long globalUnitId);
 
   /**

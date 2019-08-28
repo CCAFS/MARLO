@@ -15,15 +15,25 @@
 
 package org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.projects;
 
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
+import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
+import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
+import org.cgiar.ccafs.marlo.data.model.Phase;
+import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
+import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
 import org.cgiar.ccafs.marlo.rest.dto.ProjectDTO;
 import org.cgiar.ccafs.marlo.rest.mappers.ProjectMapper;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,16 +42,21 @@ import org.springframework.http.ResponseEntity;
  * @author Hermes Jiménez - CIAT/CCAFS
  */
 
-
+@Named
 public class ProjectItem<T> {
 
   private ProjectManager projectManager;
   private ProjectMapper projectMapper;
+  private PhaseManager phaseManager;
+  private GlobalUnitManager globalUnitManager;
 
   @Inject
-  public ProjectItem(ProjectManager projectManager, ProjectMapper projectMapper) {
+  public ProjectItem(ProjectManager projectManager, ProjectMapper projectMapper, PhaseManager phaseManager,
+    GlobalUnitManager globalUnitManager) {
     this.projectManager = projectManager;
     this.projectMapper = projectMapper;
+    this.phaseManager = phaseManager;
+    this.globalUnitManager = globalUnitManager;
   }
 
   /**
@@ -50,12 +65,13 @@ public class ProjectItem<T> {
    * @param id
    * @return
    */
-  public ResponseEntity<ProjectDTO> findProjectById(Long id, GlobalUnit globalUnit) {
+  public ResponseEntity<ProjectDTO> findProjectById(Long id, String globalUnitAcronym) {
 
     Project project = projectManager.getProjectById(id);
+    GlobalUnit globalUnit = globalUnitManager.findGlobalUnitByAcronym(globalUnitAcronym);
 
     if (project != null) {
-      // TODO
+      project = this.getProjectInformation(project, globalUnit);
     }
 
     return Optional.ofNullable(project).map(this.projectMapper::projectToProjectDTO)
@@ -68,7 +84,37 @@ public class ProjectItem<T> {
    * @param project
    * @return
    */
-  public Project getProjectInformation(Project project) {
+  public Project getProjectInformation(Project project, GlobalUnit globalUnit) {
+
+    Phase phase = phaseManager.getActivePhase(globalUnit.getId());
+
+    // Get the Project Info
+    project.getProjecInfoPhase(phase);
+
+
+    // Get the Flagship and Programs Regions that belongs in the Project
+    List<CrpProgram> programs = new ArrayList<>();
+    for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
+      .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().getId().equals(phase.getId())
+        && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()
+        && c.getCrpProgram().getCrp().getId().equals(globalUnit.getId()))
+      .collect(Collectors.toList())) {
+      programs.add(projectFocuses.getCrpProgram());
+    }
+
+    List<CrpProgram> regions = new ArrayList<>();
+
+    for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
+      .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().getId().equals(phase.getId())
+        && c.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue()
+        && c.getCrpProgram().getCrp().getId().equals(globalUnit.getId()))
+      .collect(Collectors.toList())) {
+      regions.add(projectFocuses.getCrpProgram());
+
+    }
+
+    project.setRegions(regions);
+    project.setFlagships(programs);
 
 
     return project;

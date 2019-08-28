@@ -97,8 +97,8 @@ public class PhaseMySQLDAO extends AbstractMarloDAO<Phase, Long> implements Phas
   public Phase getActivePhase(long globalUnitId) {
     StringBuilder query = new StringBuilder();
     query.append("SELECT MAX(id) id FROM phases ");
-    query.append("WHERE editable = 1 AND visible = 1 AND ");
-    query.append(" AND global_unit_id = ");
+    query.append("WHERE editable = 1 AND visible = 1 ");
+    query.append("AND global_unit_id = ");
     query.append(globalUnitId);
     List<Map<String, Object>> list = super.findCustomQuery(query.toString());
 
