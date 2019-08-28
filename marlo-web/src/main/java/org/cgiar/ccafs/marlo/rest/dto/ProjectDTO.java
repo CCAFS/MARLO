@@ -18,6 +18,8 @@ package org.cgiar.ccafs.marlo.rest.dto;
 import java.util.Date;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  */
@@ -26,6 +28,7 @@ import java.util.List;
 public class ProjectDTO {
 
   private Long id;
+  @JsonFormat(pattern = "yyyy-MM-dd")
   private Date createDate;
 
   private ProjectInfoDTO projectInfo;

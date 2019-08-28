@@ -15,6 +15,9 @@
 
 package org.cgiar.ccafs.marlo.rest.dto;
 
+import java.util.Date;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
@@ -24,6 +27,51 @@ package org.cgiar.ccafs.marlo.rest.dto;
 public class ProjectInfoDTO {
 
   private Long id;
+  private String title;
+  private String summary;
+  @JsonFormat(pattern = "yyyy-MM-dd")
+  private Date startDate;
+  @JsonFormat(pattern = "yyyy-MM-dd")
+  private Date endDate;
+  private String genderAnalysis;
+  private Boolean crossCuttingGender;
+  private Boolean crossCuttingYouth;
+  private Boolean crossCuttingCapacity;
+  private Boolean crossCuttingClimate;
+  private Boolean crossCuttingNa;
+
+  public Boolean getCrossCuttingCapacity() {
+    return crossCuttingCapacity;
+  }
+
+  public Boolean getCrossCuttingClimate() {
+    return crossCuttingClimate;
+  }
+
+
+  public Boolean getCrossCuttingGender() {
+    return crossCuttingGender;
+  }
+
+
+  public Boolean getCrossCuttingNa() {
+    return crossCuttingNa;
+  }
+
+
+  public Boolean getCrossCuttingYouth() {
+    return crossCuttingYouth;
+  }
+
+
+  public Date getEndDate() {
+    return endDate;
+  }
+
+
+  public String getGenderAnalysis() {
+    return genderAnalysis;
+  }
 
 
   public Long getId() {
@@ -31,8 +79,73 @@ public class ProjectInfoDTO {
   }
 
 
+  public Date getStartDate() {
+    return startDate;
+  }
+
+
+  public String getSummary() {
+    return summary;
+  }
+
+
+  public String getTitle() {
+    return title;
+  }
+
+
+  public void setCrossCuttingCapacity(Boolean crossCuttingCapacity) {
+    this.crossCuttingCapacity = crossCuttingCapacity;
+  }
+
+
+  public void setCrossCuttingClimate(Boolean crossCuttingClimate) {
+    this.crossCuttingClimate = crossCuttingClimate;
+  }
+
+
+  public void setCrossCuttingGender(Boolean crossCuttingGender) {
+    this.crossCuttingGender = crossCuttingGender;
+  }
+
+
+  public void setCrossCuttingNa(Boolean crossCuttingNa) {
+    this.crossCuttingNa = crossCuttingNa;
+  }
+
+
+  public void setCrossCuttingYouth(Boolean crossCuttingYouth) {
+    this.crossCuttingYouth = crossCuttingYouth;
+  }
+
+
+  public void setEndDate(Date endDate) {
+    this.endDate = endDate;
+  }
+
+
+  public void setGenderAnalysis(String genderAnalysis) {
+    this.genderAnalysis = genderAnalysis;
+  }
+
+
   public void setId(Long id) {
     this.id = id;
+  }
+
+
+  public void setStartDate(Date startDate) {
+    this.startDate = startDate;
+  }
+
+
+  public void setSummary(String summary) {
+    this.summary = summary;
+  }
+
+
+  public void setTitle(String title) {
+    this.title = title;
   }
 
 }
