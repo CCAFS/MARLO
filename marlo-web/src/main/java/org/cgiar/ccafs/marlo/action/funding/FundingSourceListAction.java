@@ -149,8 +149,8 @@ public class FundingSourceListAction extends BaseAction {
       institutionLead = StringUtils.trim(parameters.get(APConstants.INSTITUTION_LEAD).getMultipleValues()[0]);
       // centerID = Long.parseLong(parameters.get(APConstants.CRP_ID).getMultipleValues()[0]);
       partnerIDs = StringUtils.trim(parameters.get(APConstants.PARTNERS_ID).getMultipleValues()[0]);
-      budgetTypeID = null;
-      // StringUtils.trim(parameters.get(APConstants.BUDGET_TYPE_REQUEST_ID).getMultipleValues()[0]);
+      budgetTypeID =
+        Long.parseLong(StringUtils.trim(parameters.get(APConstants.BUDGET_TYPE_REQUEST_ID).getMultipleValues()[0]));
 
     } catch (Exception e) {
       Log.error(e);
@@ -201,14 +201,12 @@ public class FundingSourceListAction extends BaseAction {
           }
         }
 
-
         if (phase.getNext() != null) {
           phase = phase.getNext();
         } else {
           hasNext = false;
         }
       }
-
 
       if (partnertsIDList != null) {
         for (String partner : partnertsIDList) {
