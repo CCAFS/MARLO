@@ -113,6 +113,7 @@ public class FundingSourceListAction extends BaseAction {
   private String agreementStatusValue;
   private String institutionLead;
   private String partnerIDs;
+  private Long budgetTypeID;
 
 
   @Inject
@@ -148,6 +149,9 @@ public class FundingSourceListAction extends BaseAction {
       institutionLead = StringUtils.trim(parameters.get(APConstants.INSTITUTION_LEAD).getMultipleValues()[0]);
       // centerID = Long.parseLong(parameters.get(APConstants.CRP_ID).getMultipleValues()[0]);
       partnerIDs = StringUtils.trim(parameters.get(APConstants.PARTNERS_ID).getMultipleValues()[0]);
+      budgetTypeID = null;
+      // StringUtils.trim(parameters.get(APConstants.BUDGET_TYPE_ID).getMultipleValues()[0]);
+
     } catch (Exception e) {
       Log.error(e);
     }
@@ -189,6 +193,13 @@ public class FundingSourceListAction extends BaseAction {
         fundingSourceInfo.setStatus(Integer.parseInt(agreementStatusValue));
         fundingSourceInfo.setFundingSource(fundingSourceManager.getFundingSourceById(fundingSourceID));
         fundingSourceInfoID = fundingSourceInfoManager.saveFundingSourceInfo(fundingSourceInfo).getId();
+        if (budgetTypeID != null) {
+          BudgetType budgetType;
+          budgetType = budgetTypeManager.getBudgetTypeById(budgetTypeID);
+          if (budgetType != null) {
+            fundingSourceInfo.setBudgetType(budgetType);
+          }
+        }
 
 
         if (phase.getNext() != null) {
@@ -715,20 +726,6 @@ public class FundingSourceListAction extends BaseAction {
   }
 
 
-  private void setChecksToList() {
-    // check if the institution is selected in the front component, if yes, then set as 'yes' boolean property value of funding institution  
-    if(fundingSourceInstitutions!= null) {
-      for(FundingSourceInstitution fundingInstitution: fundingSourceInstitutions) {
-        if (filteredInstitutions != null && filteredInstitutions.contains(fundingInstitution.getInstitution())) {
-          fundingInstitution.setIsChecked(true);
-        }else {
-          fundingInstitution.setIsChecked(false);
-        }
-      }
-    }
-  }
-
-
   public void removeInstitutions() {
     List<FundingSource> tempList = new ArrayList<>();
     int contains = 0;
@@ -823,6 +820,7 @@ public class FundingSourceListAction extends BaseAction {
       closedProjects.addAll(tempList);
     }
   }
+
 
   public void removeInstitutionsContactPointRole() {
     // Get institution for contact point
@@ -932,6 +930,20 @@ public class FundingSourceListAction extends BaseAction {
 
     if (institutionsIDsFilter != null) {
       institutionsIDsFilter = "";
+    }
+  }
+
+  private void setChecksToList() {
+    // check if the institution is selected in the front component, if yes, then set as 'yes' boolean property value of
+    // funding institution
+    if (fundingSourceInstitutions != null) {
+      for (FundingSourceInstitution fundingInstitution : fundingSourceInstitutions) {
+        if (filteredInstitutions != null && filteredInstitutions.contains(fundingInstitution.getInstitution())) {
+          fundingInstitution.setIsChecked(true);
+        } else {
+          fundingInstitution.setIsChecked(false);
+        }
+      }
     }
   }
 
