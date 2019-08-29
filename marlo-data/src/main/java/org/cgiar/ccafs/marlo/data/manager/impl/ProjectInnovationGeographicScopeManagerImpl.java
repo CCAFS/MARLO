@@ -54,9 +54,27 @@ public class ProjectInnovationGeographicScopeManagerImpl implements ProjectInnov
     ProjectInnovationGeographicScope projectInnovationGeographicScope =
       this.getProjectInnovationGeographicScopeById(projectInnovationGeographicScopeId);
 
-    if (projectInnovationGeographicScope.getPhase().getNext() != null) {
+
+    // Conditions to Project Innovation Works In AR phase and Upkeep Phase
+    if (projectInnovationGeographicScope.getPhase().getDescription().equals(APConstants.PLANNING)
+      && projectInnovationGeographicScope.getPhase().getNext() != null) {
       this.deleteProjectInnovationGeographicScopePhase(projectInnovationGeographicScope.getPhase().getNext(),
         projectInnovationGeographicScope.getProjectInnovation().getId(), projectInnovationGeographicScope);
+    }
+
+    if (projectInnovationGeographicScope.getPhase().getDescription().equals(APConstants.REPORTING)) {
+      if (projectInnovationGeographicScope.getPhase().getNext() != null
+        && projectInnovationGeographicScope.getPhase().getNext().getNext() != null) {
+        Phase upkeepPhase = projectInnovationGeographicScope.getPhase().getNext().getNext();
+        if (upkeepPhase != null) {
+          this.deleteProjectInnovationGeographicScopePhase(upkeepPhase,
+            projectInnovationGeographicScope.getProjectInnovation().getId(), projectInnovationGeographicScope);
+        }
+      }
+    }
+
+    if (projectInnovationGeographicScope.getPhase().getNext() != null) {
+
     }
 
     projectInnovationGeographicScopeDAO.deleteProjectInnovationGeographicScope(projectInnovationGeographicScopeId);
@@ -139,14 +157,25 @@ public class ProjectInnovationGeographicScopeManagerImpl implements ProjectInnov
     saveProjectInnovationGeographicScope(ProjectInnovationGeographicScope projectInnovationGeographicScope) {
 
     ProjectInnovationGeographicScope scope = projectInnovationGeographicScopeDAO.save(projectInnovationGeographicScope);
-
     Phase phase = phaseDAO.find(scope.getPhase().getId());
+
+
+    // Conditions to Project Innovation Works In AR phase and Upkeep Phase
+    if (phase.getDescription().equals(APConstants.PLANNING) && phase.getNext() != null) {
+      this.saveInnovationGeographicScopePhase(scope.getPhase().getNext(), scope.getProjectInnovation().getId(),
+        projectInnovationGeographicScope);
+    }
+
     if (phase.getDescription().equals(APConstants.REPORTING)) {
-      if (scope.getPhase().getNext() != null) {
-        this.saveInnovationGeographicScopePhase(scope.getPhase().getNext(), scope.getProjectInnovation().getId(),
-          projectInnovationGeographicScope);
+      if (phase.getNext() != null && phase.getNext().getNext() != null) {
+        Phase upkeepPhase = phase.getNext().getNext();
+        if (upkeepPhase != null) {
+          this.saveInnovationGeographicScopePhase(upkeepPhase, scope.getProjectInnovation().getId(),
+            projectInnovationGeographicScope);
+        }
       }
     }
+
     return scope;
   }
 

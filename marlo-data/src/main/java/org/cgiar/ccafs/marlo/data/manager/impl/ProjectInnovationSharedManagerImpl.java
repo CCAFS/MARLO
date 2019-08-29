@@ -15,6 +15,7 @@
 package org.cgiar.ccafs.marlo.data.manager.impl;
 
 
+import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.dao.PhaseDAO;
 import org.cgiar.ccafs.marlo.data.dao.ProjectInnovationSharedDAO;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationSharedManager;
@@ -48,14 +49,24 @@ public class ProjectInnovationSharedManagerImpl implements ProjectInnovationShar
   public void deleteProjectInnovationShared(long projectInnovationSharedId) {
 
     ProjectInnovationShared projectInnovationShared = this.getProjectInnovationSharedById(projectInnovationSharedId);
-    Phase currentPhase = projectInnovationShared.getPhase();
 
-
-    if (currentPhase.getNext() != null) {
-      this.deleteProjectInnovationSharedPhase(currentPhase.getNext(),
+    // Conditions to Project Innovation Works In AR phase and Upkeep Phase
+    if (projectInnovationShared.getPhase().getDescription().equals(APConstants.PLANNING)
+      && projectInnovationShared.getPhase().getNext() != null) {
+      this.deleteProjectInnovationSharedPhase(projectInnovationShared.getPhase().getNext(),
         projectInnovationShared.getProjectInnovation().getId(), projectInnovationShared);
     }
 
+    if (projectInnovationShared.getPhase().getDescription().equals(APConstants.REPORTING)) {
+      if (projectInnovationShared.getPhase().getNext() != null
+        && projectInnovationShared.getPhase().getNext().getNext() != null) {
+        Phase upkeepPhase = projectInnovationShared.getPhase().getNext().getNext();
+        if (upkeepPhase != null) {
+          this.deleteProjectInnovationSharedPhase(upkeepPhase, projectInnovationShared.getProjectInnovation().getId(),
+            projectInnovationShared);
+        }
+      }
+    }
 
     projectInnovationSharedDAO.deleteProjectInnovationShared(projectInnovationSharedId);
   }
@@ -102,11 +113,22 @@ public class ProjectInnovationSharedManagerImpl implements ProjectInnovationShar
     ProjectInnovationShared shared = projectInnovationSharedDAO.save(projectInnovationShared);
     Phase currentPhase = shared.getPhase();
 
-
-    if (currentPhase.getNext() != null) {
+    // Conditions to Project Innovation Works In AR phase and Upkeep Phase
+    if (currentPhase.getDescription().equals(APConstants.PLANNING) && currentPhase.getNext() != null) {
       this.saveProjectInnovationSharedPhase(currentPhase.getNext(), shared.getProjectInnovation().getId(),
         projectInnovationShared);
     }
+
+    if (currentPhase.getDescription().equals(APConstants.REPORTING)) {
+      if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {
+        Phase upkeepPhase = currentPhase.getNext().getNext();
+        if (upkeepPhase != null) {
+          this.saveProjectInnovationSharedPhase(upkeepPhase, shared.getProjectInnovation().getId(),
+            projectInnovationShared);
+        }
+      }
+    }
+
 
     return shared;
   }

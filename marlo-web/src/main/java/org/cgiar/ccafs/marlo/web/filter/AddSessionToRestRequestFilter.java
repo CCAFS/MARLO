@@ -152,7 +152,7 @@ public class AddSessionToRestRequestFilter extends OncePerRequestFilter {
 
     String arg1 = split[0];
 
-    // If arg1 contains Crp Acronym the arg2 is the ServiceName, on the contrary the arg1 is the service name (Public
+    // If arg1 contains Crp Acronym the arg2 is the ServiceName, else the arg1 is the service name (Public
     // Service)
     GlobalUnit globalUnit = globalUnitManager.findGlobalUnitByAcronym(arg1);
 

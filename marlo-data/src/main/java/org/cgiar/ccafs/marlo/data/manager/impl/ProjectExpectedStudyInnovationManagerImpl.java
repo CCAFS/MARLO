@@ -15,6 +15,7 @@
 package org.cgiar.ccafs.marlo.data.manager.impl;
 
 
+import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.dao.PhaseDAO;
 import org.cgiar.ccafs.marlo.data.dao.ProjectExpectedStudyInnovationDAO;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyInnovationManager;
@@ -52,10 +53,21 @@ public class ProjectExpectedStudyInnovationManagerImpl implements ProjectExpecte
       this.getProjectExpectedStudyInnovationById(projectExpectedStudyInnovationId);
     Phase currentPhase = projectExpectedStudyInnovation.getPhase();
 
+    if (currentPhase.getDescription().equals(APConstants.PLANNING)) {
+      if (currentPhase.getNext() != null) {
+        this.deleteProjectExpectedStudyInnovationPhase(currentPhase.getNext(),
+          projectExpectedStudyInnovation.getProjectExpectedStudy().getId(), projectExpectedStudyInnovation);
+      }
+    }
 
-    if (currentPhase.getNext() != null) {
-      this.deleteProjectExpectedStudyInnovationPhase(currentPhase.getNext(),
-        projectExpectedStudyInnovation.getProjectExpectedStudy().getId(), projectExpectedStudyInnovation);
+    if (currentPhase.getDescription().equals(APConstants.REPORTING)) {
+      if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {
+        Phase upkeepPhase = currentPhase.getNext().getNext();
+        if (upkeepPhase != null) {
+          this.deleteProjectExpectedStudyInnovationPhase(upkeepPhase,
+            projectExpectedStudyInnovation.getProjectExpectedStudy().getId(), projectExpectedStudyInnovation);
+        }
+      }
     }
 
 
@@ -133,9 +145,21 @@ public class ProjectExpectedStudyInnovationManagerImpl implements ProjectExpecte
     Phase currentPhase = projectExpectedStudyInnovationResult.getPhase();
 
 
-    if (currentPhase.getNext() != null) {
-      this.saveExpectedStudyInnovationPhase(currentPhase.getNext(),
-        projectExpectedStudyInnovation.getProjectExpectedStudy().getId(), projectExpectedStudyInnovation);
+    if (currentPhase.getDescription().equals(APConstants.PLANNING)) {
+      if (currentPhase.getNext() != null) {
+        this.saveExpectedStudyInnovationPhase(currentPhase.getNext(),
+          projectExpectedStudyInnovation.getProjectExpectedStudy().getId(), projectExpectedStudyInnovation);
+      }
+    }
+
+    if (currentPhase.getDescription().equals(APConstants.REPORTING)) {
+      if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {
+        Phase upkeepPhase = currentPhase.getNext().getNext();
+        if (upkeepPhase != null) {
+          this.saveExpectedStudyInnovationPhase(upkeepPhase,
+            projectExpectedStudyInnovation.getProjectExpectedStudy().getId(), projectExpectedStudyInnovation);
+        }
+      }
     }
 
 

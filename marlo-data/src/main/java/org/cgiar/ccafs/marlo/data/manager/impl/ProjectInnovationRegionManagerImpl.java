@@ -53,9 +53,23 @@ public class ProjectInnovationRegionManagerImpl implements ProjectInnovationRegi
 
     ProjectInnovationRegion projectInnovationRegion = this.getProjectInnovationRegionById(projectInnovationRegionId);
 
-    if (projectInnovationRegion.getPhase().getNext() != null) {
+
+    // Conditions to Project Innovation Works In AR phase and Upkeep Phase
+    if (projectInnovationRegion.getPhase().getDescription().equals(APConstants.PLANNING)
+      && projectInnovationRegion.getPhase().getNext() != null) {
       this.deleteProjectInnovationRegionPhase(projectInnovationRegion.getPhase().getNext(),
         projectInnovationRegion.getProjectInnovation().getId(), projectInnovationRegion);
+    }
+
+    if (projectInnovationRegion.getPhase().getDescription().equals(APConstants.REPORTING)) {
+      if (projectInnovationRegion.getPhase().getNext() != null
+        && projectInnovationRegion.getPhase().getNext().getNext() != null) {
+        Phase upkeepPhase = projectInnovationRegion.getPhase().getNext().getNext();
+        if (upkeepPhase != null) {
+          this.deleteProjectInnovationRegionPhase(upkeepPhase, projectInnovationRegion.getProjectInnovation().getId(),
+            projectInnovationRegion);
+        }
+      }
     }
 
     projectInnovationRegionDAO.deleteProjectInnovationRegion(projectInnovationRegionId);
@@ -135,14 +149,23 @@ public class ProjectInnovationRegionManagerImpl implements ProjectInnovationRegi
   public ProjectInnovationRegion saveProjectInnovationRegion(ProjectInnovationRegion projectInnovationRegion) {
 
     ProjectInnovationRegion region = projectInnovationRegionDAO.save(projectInnovationRegion);
-
     Phase phase = phaseDAO.find(region.getPhase().getId());
+
+    // Conditions to Project Innovation Works In AR phase and Upkeep Phase
+    if (phase.getDescription().equals(APConstants.PLANNING) && phase.getNext() != null) {
+      this.saveInnovationRegionPhase(region.getPhase().getNext(), region.getProjectInnovation().getId(),
+        projectInnovationRegion);
+    }
+
     if (phase.getDescription().equals(APConstants.REPORTING)) {
-      if (region.getPhase().getNext() != null) {
-        this.saveInnovationRegionPhase(region.getPhase().getNext(), region.getProjectInnovation().getId(),
-          projectInnovationRegion);
+      if (phase.getNext() != null && phase.getNext().getNext() != null) {
+        Phase upkeepPhase = phase.getNext().getNext();
+        if (upkeepPhase != null) {
+          this.saveInnovationRegionPhase(upkeepPhase, region.getProjectInnovation().getId(), projectInnovationRegion);
+        }
       }
     }
+
     return region;
   }
 }
