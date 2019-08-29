@@ -86,6 +86,16 @@
       "formats": [ "Excel" ],
       "cycles": [ "Reporting" ]
     },
+    { "active": !centerGlobalUnit,
+      "available": true,
+      "title": "summaries.board.report.projectActivities", 
+      "description": "summaries.board.report.projectActivities.description",
+      "namespace": "/projects",
+      "action": "${crpSession}/activitiesSummary",
+      "formats": [ "PDF" ],
+      "cycles": [ "Planning", "Reporting" ],
+      "allowProjectID": true
+    },
     { "active": !centerGlobalUnit && action.hasSpecificities("crp_view_highlights"),
       "available": true,
       "title": "summaries.board.report.projectHighlights", 

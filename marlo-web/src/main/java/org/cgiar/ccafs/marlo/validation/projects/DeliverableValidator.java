@@ -138,11 +138,7 @@ public class DeliverableValidator extends BaseValidator {
 
 
         // Deliverable Others
-        if (deliverable.getOtherPartnerships() == null) {
-          action.addMessage(action.getText("deliverable others"));
-          action.getInvalidFields().put("list-deliverable.otherPartnerships",
-            action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"deliverable others"}));
-        } else {
+        if (deliverable.getOtherPartnerships() != null) {
 
           for (int i = 0; i < deliverable.getOtherPartnerships().size(); i++) {
             if (deliverable.getOtherPartnerships().get(i).getInstitution() == null
