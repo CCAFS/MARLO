@@ -3524,30 +3524,35 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
         for (Deliverable deliverable : deliverables) {
 
-          sectionStatus = this.sectionStatusManager.getSectionStatusByDeliverable(deliverable.getId(),
-            this.getCurrentCycle(), this.getCurrentCycleYear(), this.isUpKeepActive(), section);
-          if (sectionStatus == null) {
 
-            return false;
-          } else {
-            if (deliverable.getDeliverableInfo(phase).getStatus() != null && deliverable.getDeliverableInfo(phase)
-              .getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())) {
-              if (deliverable.getDeliverableInfo(phase).getYear() > this.getActualPhase().getYear()) {
-                sectionStatus.setMissingFields("");
-              }
-            }
-
-            if (this.isPlanningActive() && !this.isUpKeepActive()) {
-              if (deliverable.getDeliverableInfo(phase).getStatus() != null && deliverable.getDeliverableInfo(phase)
-                .getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())) {
-                sectionStatus.setMissingFields("");
-              }
-            }
-          }
-
-          if (sectionStatus.getMissingFields().length() != 0) {
+          if (!this.isDeliverableComplete(deliverable.getId(), this.getActualPhase().getId())) {
             return false;
           }
+
+          // sectionStatus = this.sectionStatusManager.getSectionStatusByDeliverable(deliverable.getId(),
+          // this.getCurrentCycle(), this.getCurrentCycleYear(), this.isUpKeepActive(), section);
+          // if (sectionStatus == null) {
+          //
+          // return false;
+          // } else {
+          // if (deliverable.getDeliverableInfo(phase).getStatus() != null && deliverable.getDeliverableInfo(phase)
+          // .getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())) {
+          // if (deliverable.getDeliverableInfo(phase).getYear() > this.getActualPhase().getYear()) {
+          // sectionStatus.setMissingFields("");
+          // }
+          // }
+          //
+          // if (this.isPlanningActive() && !this.isUpKeepActive()) {
+          // if (deliverable.getDeliverableInfo(phase).getStatus() != null && deliverable.getDeliverableInfo(phase)
+          // .getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())) {
+          // sectionStatus.setMissingFields("");
+          // }
+          // }
+          // }
+          //
+          // if (sectionStatus.getMissingFields().length() != 0) {
+          // return false;
+          // }
 
         }
 
