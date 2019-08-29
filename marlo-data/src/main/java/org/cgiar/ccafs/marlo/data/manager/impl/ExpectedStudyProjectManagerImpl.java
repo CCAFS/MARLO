@@ -61,16 +61,15 @@ public class ExpectedStudyProjectManagerImpl implements ExpectedStudyProjectMana
       }
     }
 
-    // Uncomment this line to allow reporting replication to upkeep
-    // if (currentPhase.getDescription().equals(APConstants.REPORTING)) {
-    // if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {
-    // Phase upkeepPhase = currentPhase.getNext().getNext();
-    // if (upkeepPhase != null) {
-    // this.deleteExpectedStudyProjectPhase(upkeepPhase, expectedStudyProject.getProjectExpectedStudy().getId(),
-    // expectedStudyProject);
-    // }
-    // }
-    // }
+    if (currentPhase.getDescription().equals(APConstants.REPORTING)) {
+      if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {
+        Phase upkeepPhase = currentPhase.getNext().getNext();
+        if (upkeepPhase != null) {
+          this.deleteExpectedStudyProjectPhase(upkeepPhase, expectedStudyProject.getProjectExpectedStudy().getId(),
+            expectedStudyProject);
+        }
+      }
+    }
 
     expectedStudyProjectDAO.deleteExpectedStudyProject(expectedStudyProjectId);
   }
@@ -124,16 +123,15 @@ public class ExpectedStudyProjectManagerImpl implements ExpectedStudyProjectMana
       }
     }
 
-    // Uncomment this line to allow reporting replication to upkeep
-    // if (currentPhase.getDescription().equals(APConstants.REPORTING)) {
-    // if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {
-    // Phase upkeepPhase = currentPhase.getNext().getNext();
-    // if (upkeepPhase != null) {
-    // this.saveExpectedStudyProjectPhase(upkeepPhase, expectedStudy.getProjectExpectedStudy().getId(),
-    // expectedStudyProject);
-    // }
-    // }
-    // }
+    if (currentPhase.getDescription().equals(APConstants.REPORTING)) {
+      if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {
+        Phase upkeepPhase = currentPhase.getNext().getNext();
+        if (upkeepPhase != null) {
+          this.saveExpectedStudyProjectPhase(upkeepPhase, expectedStudy.getProjectExpectedStudy().getId(),
+            expectedStudyProject);
+        }
+      }
+    }
 
 
     return expectedStudy;

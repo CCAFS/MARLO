@@ -15,6 +15,7 @@
 package org.cgiar.ccafs.marlo.data.manager.impl;
 
 
+import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.dao.PhaseDAO;
 import org.cgiar.ccafs.marlo.data.dao.ProjectExpectedStudyFlagshipDAO;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyFlagshipManager;
@@ -54,21 +55,23 @@ public class ProjectExpectedStudyFlagshipManagerImpl implements ProjectExpectedS
       this.getProjectExpectedStudyFlagshipById(projectExpectedStudyFlagshipId);
     Phase currentPhase = projectExpectedStudyFlagship.getPhase();
 
-    if (currentPhase.getNext() != null) {
-      this.deleteProjectExpectedStudyFlagshipPhase(currentPhase.getNext(),
-        projectExpectedStudyFlagship.getProjectExpectedStudy().getId(), projectExpectedStudyFlagship);
+
+    if (currentPhase.getDescription().equals(APConstants.PLANNING)) {
+      if (currentPhase.getNext() != null) {
+        this.deleteProjectExpectedStudyFlagshipPhase(currentPhase.getNext(),
+          projectExpectedStudyFlagship.getProjectExpectedStudy().getId(), projectExpectedStudyFlagship);
+      }
     }
 
-    // Uncomment this line to allow reporting replication to upkeep
-    // if (currentPhase.getDescription().equals(APConstants.REPORTING)) {
-    // if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {
-    // Phase upkeepPhase = currentPhase.getNext().getNext();
-    // if (upkeepPhase != null) {
-    // this.deleteProjectExpectedStudyFlagshipPhase(upkeepPhase,
-    // projectExpectedStudyFlagship.getProjectExpectedStudy().getId(), projectExpectedStudyFlagship);
-    // }
-    // }
-    // }
+    if (currentPhase.getDescription().equals(APConstants.REPORTING)) {
+      if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {
+        Phase upkeepPhase = currentPhase.getNext().getNext();
+        if (upkeepPhase != null) {
+          this.deleteProjectExpectedStudyFlagshipPhase(upkeepPhase,
+            projectExpectedStudyFlagship.getProjectExpectedStudy().getId(), projectExpectedStudyFlagship);
+        }
+      }
+    }
 
     projectExpectedStudyFlagshipDAO.deleteProjectExpectedStudyFlagship(projectExpectedStudyFlagshipId);
   }
@@ -140,21 +143,22 @@ public class ProjectExpectedStudyFlagshipManagerImpl implements ProjectExpectedS
     Phase currentPhase = flagship.getPhase();
 
 
-    if (currentPhase.getNext() != null) {
-      this.saveExpectedStudyFlagshipPhase(currentPhase.getNext(), flagship.getProjectExpectedStudy().getId(),
-        projectExpectedStudyFlagship);
+    if (currentPhase.getDescription().equals(APConstants.PLANNING)) {
+      if (currentPhase.getNext() != null) {
+        this.saveExpectedStudyFlagshipPhase(currentPhase.getNext(), flagship.getProjectExpectedStudy().getId(),
+          projectExpectedStudyFlagship);
+      }
     }
 
-    // Uncomment this line to allow reporting replication to upkeep
-    // if (currentPhase.getDescription().equals(APConstants.REPORTING)) {
-    // if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {
-    // Phase upkeepPhase = currentPhase.getNext().getNext();
-    // if (upkeepPhase != null) {
-    // this.saveExpectedStudyFlagshipPhase(upkeepPhase, flagship.getProjectExpectedStudy().getId(),
-    // projectExpectedStudyFlagship);
-    // }
-    // }
-    // }
+    if (currentPhase.getDescription().equals(APConstants.REPORTING)) {
+      if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {
+        Phase upkeepPhase = currentPhase.getNext().getNext();
+        if (upkeepPhase != null) {
+          this.saveExpectedStudyFlagshipPhase(upkeepPhase, flagship.getProjectExpectedStudy().getId(),
+            projectExpectedStudyFlagship);
+        }
+      }
+    }
 
     return flagship;
   }

@@ -15,6 +15,7 @@
 package org.cgiar.ccafs.marlo.data.manager.impl;
 
 
+import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.dao.PhaseDAO;
 import org.cgiar.ccafs.marlo.data.dao.ProjectExpectedStudyPolicyDAO;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyPolicyManager;
@@ -55,12 +56,22 @@ public class ProjectExpectedStudyPolicyManagerImpl implements ProjectExpectedStu
       this.getProjectExpectedStudyPolicyById(projectExpectedStudyPolicyId);
     Phase currentPhase = projectExpectedStudyPolicy.getPhase();
 
-
-    if (currentPhase.getNext() != null) {
-      this.deleteProjectExpectedStudyPolicyPhase(currentPhase.getNext(),
-        projectExpectedStudyPolicy.getProjectExpectedStudy().getId(), projectExpectedStudyPolicy);
+    if (currentPhase.getDescription().equals(APConstants.PLANNING)) {
+      if (currentPhase.getNext() != null) {
+        this.deleteProjectExpectedStudyPolicyPhase(currentPhase.getNext(),
+          projectExpectedStudyPolicy.getProjectExpectedStudy().getId(), projectExpectedStudyPolicy);
+      }
     }
 
+    if (currentPhase.getDescription().equals(APConstants.REPORTING)) {
+      if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {
+        Phase upkeepPhase = currentPhase.getNext().getNext();
+        if (upkeepPhase != null) {
+          this.deleteProjectExpectedStudyPolicyPhase(upkeepPhase,
+            projectExpectedStudyPolicy.getProjectExpectedStudy().getId(), projectExpectedStudyPolicy);
+        }
+      }
+    }
 
     projectExpectedStudyPolicyDAO.deleteProjectExpectedStudyPolicy(projectExpectedStudyPolicyId);
   }
@@ -132,10 +143,21 @@ public class ProjectExpectedStudyPolicyManagerImpl implements ProjectExpectedStu
       projectExpectedStudyPolicyDAO.save(projectExpectedStudyPolicy);
     Phase currentPhase = projectExpectedStudyPolicyResult.getPhase();
 
+    if (currentPhase.getDescription().equals(APConstants.PLANNING)) {
+      if (currentPhase.getNext() != null) {
+        this.saveExpectedStudyPolicyPhase(currentPhase.getNext(),
+          projectExpectedStudyPolicy.getProjectExpectedStudy().getId(), projectExpectedStudyPolicy);
+      }
+    }
 
-    if (currentPhase.getNext() != null) {
-      this.saveExpectedStudyPolicyPhase(currentPhase.getNext(),
-        projectExpectedStudyPolicy.getProjectExpectedStudy().getId(), projectExpectedStudyPolicy);
+    if (currentPhase.getDescription().equals(APConstants.REPORTING)) {
+      if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {
+        Phase upkeepPhase = currentPhase.getNext().getNext();
+        if (upkeepPhase != null) {
+          this.saveExpectedStudyPolicyPhase(upkeepPhase, projectExpectedStudyPolicy.getProjectExpectedStudy().getId(),
+            projectExpectedStudyPolicy);
+        }
+      }
     }
 
 
