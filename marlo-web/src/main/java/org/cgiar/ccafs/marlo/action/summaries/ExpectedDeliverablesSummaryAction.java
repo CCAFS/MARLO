@@ -337,7 +337,8 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
               && deliverableInfo.getNewExpectedYear() == this.getSelectedYear())
             || (deliverableInfo.getStatus() != null && deliverableInfo.getYear() == this.getSelectedYear()
               && deliverableInfo.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
-              || (deliverableInfo.getYear() == this.getSelectedYear() && this.getSelectedPhase() != null
+              || ((deliverableInfo.getYear() == this.getSelectedYear() || deliverableInfo.getNewExpectedYear() != null
+                && deliverableInfo.getNewExpectedYear() == this.getSelectedYear()) && this.getSelectedPhase() != null
                 && this.getSelectedPhase().getName() != null && this.getSelectedPhase().getName().equals("UpKeep")
                 && deliverableInfo.getStatus().intValue() != Integer
                   .parseInt(ProjectStatusEnum.Cancelled.getStatusId()))))) {
