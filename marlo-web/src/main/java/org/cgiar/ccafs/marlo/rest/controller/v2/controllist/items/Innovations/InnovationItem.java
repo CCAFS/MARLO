@@ -417,6 +417,20 @@ public class InnovationItem<T> {
 
     if (innovation != null) {
       // delete
+      if (innovation.getProjectInnovationInfo(phase) != null) {
+        innovation.setCountries(
+          this.projectInnovationCountryManager.getInnovationCountrybyPhase(innovation.getId(), phase.getId()));
+        innovation.setRegions(innovation.getProjectInnovationRegions().stream()
+          .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
+        innovation.setGeographicScopes(innovation.getProjectInnovationGeographicScopes().stream()
+          .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
+        innovation.setContributingOrganizations(innovation.getProjectInnovationContributingOrganization().stream()
+          .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
+        innovation.setCrps(innovation.getProjectInnovationCrps().stream()
+          .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
+        innovation.setOrganizations(innovation.getProjectInnovationOrganizations().stream()
+          .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
+      }
       projectInnovationManager.deleteProjectInnovation(id);
 
     } else {
