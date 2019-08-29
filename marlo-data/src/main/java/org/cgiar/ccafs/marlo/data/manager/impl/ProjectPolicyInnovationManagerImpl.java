@@ -64,8 +64,8 @@ public class ProjectPolicyInnovationManagerImpl implements ProjectPolicyInnovati
         && projectPolicyInnovation.getPhase().getNext().getNext() != null) {
         Phase upkeepPhase = projectPolicyInnovation.getPhase().getNext().getNext();
         if (upkeepPhase != null) {
-          this.deleteProjectPolicyInnovationPhase(projectPolicyInnovation.getPhase().getNext(),
-            projectPolicyInnovation.getProjectPolicy().getId(), projectPolicyInnovation);
+          this.deleteProjectPolicyInnovationPhase(upkeepPhase, projectPolicyInnovation.getProjectPolicy().getId(),
+            projectPolicyInnovation);
         }
       }
     }

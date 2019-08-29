@@ -15,6 +15,7 @@
 package org.cgiar.ccafs.marlo.data.manager.impl;
 
 
+import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.dao.PhaseDAO;
 import org.cgiar.ccafs.marlo.data.dao.ProjectExpectedStudyGeographicScopeDAO;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyGeographicScopeManager;
@@ -55,9 +56,21 @@ public class ProjectExpectedStudyGeographicScopeManagerImpl implements ProjectEx
     Phase currentPhase = projectExpectedStudyGeographicScope.getPhase();
 
 
-    if (currentPhase.getNext() != null) {
-      this.deleteProjectExpectedStudyGeographicScopePhase(currentPhase.getNext(),
-        projectExpectedStudyGeographicScope.getProjectExpectedStudy().getId(), projectExpectedStudyGeographicScope);
+    if (currentPhase.getDescription().equals(APConstants.PLANNING)) {
+      if (currentPhase.getNext() != null) {
+        this.deleteProjectExpectedStudyGeographicScopePhase(currentPhase.getNext(),
+          projectExpectedStudyGeographicScope.getProjectExpectedStudy().getId(), projectExpectedStudyGeographicScope);
+      }
+    }
+
+    if (currentPhase.getDescription().equals(APConstants.REPORTING)) {
+      if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {
+        Phase upkeepPhase = currentPhase.getNext().getNext();
+        if (upkeepPhase != null) {
+          this.deleteProjectExpectedStudyGeographicScopePhase(upkeepPhase,
+            projectExpectedStudyGeographicScope.getProjectExpectedStudy().getId(), projectExpectedStudyGeographicScope);
+        }
+      }
     }
 
 
@@ -143,12 +156,22 @@ public class ProjectExpectedStudyGeographicScopeManagerImpl implements ProjectEx
       projectExpectedStudyGeographicScopeDAO.save(projectExpectedStudyGeographicScope);
     Phase currentPhase = scope.getPhase();
 
-
-    if (currentPhase.getNext() != null) {
-      this.saveExpectedStudyGeographicScopePhase(currentPhase.getNext(),
-        projectExpectedStudyGeographicScope.getProjectExpectedStudy().getId(), projectExpectedStudyGeographicScope);
+    if (currentPhase.getDescription().equals(APConstants.PLANNING)) {
+      if (currentPhase.getNext() != null) {
+        this.saveExpectedStudyGeographicScopePhase(currentPhase.getNext(),
+          projectExpectedStudyGeographicScope.getProjectExpectedStudy().getId(), projectExpectedStudyGeographicScope);
+      }
     }
 
+    if (currentPhase.getDescription().equals(APConstants.REPORTING)) {
+      if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {
+        Phase upkeepPhase = currentPhase.getNext().getNext();
+        if (upkeepPhase != null) {
+          this.saveExpectedStudyGeographicScopePhase(upkeepPhase,
+            projectExpectedStudyGeographicScope.getProjectExpectedStudy().getId(), projectExpectedStudyGeographicScope);
+        }
+      }
+    }
 
     return scope;
   }

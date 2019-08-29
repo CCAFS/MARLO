@@ -55,10 +55,25 @@ public class ProjectInnovationCountryManagerImpl implements ProjectInnovationCou
     ProjectInnovationCountry projectInnovationCountry =
       this.getProjectInnovationCountryById(projectInnovationCountryId);
 
-    if (projectInnovationCountry.getPhase().getNext() != null) {
+
+    // Conditions to Project Innovation Works In AR phase and Upkeep Phase
+    if (projectInnovationCountry.getPhase().getDescription().equals(APConstants.PLANNING)
+      && projectInnovationCountry.getPhase().getNext() != null) {
       this.deleteProjectInnovationCountryPhase(projectInnovationCountry.getPhase().getNext(),
         projectInnovationCountry.getProjectInnovation().getId(), projectInnovationCountry);
     }
+
+    if (projectInnovationCountry.getPhase().getDescription().equals(APConstants.REPORTING)) {
+      if (projectInnovationCountry.getPhase().getNext() != null
+        && projectInnovationCountry.getPhase().getNext().getNext() != null) {
+        Phase upkeepPhase = projectInnovationCountry.getPhase().getNext().getNext();
+        if (upkeepPhase != null) {
+          this.deleteProjectInnovationCountryPhase(upkeepPhase, projectInnovationCountry.getProjectInnovation().getId(),
+            projectInnovationCountry);
+        }
+      }
+    }
+
 
     projectInnovationCountryDAO.deleteProjectInnovationCountry(projectInnovationCountryId);
   }
@@ -132,14 +147,25 @@ public class ProjectInnovationCountryManagerImpl implements ProjectInnovationCou
   public ProjectInnovationCountry saveProjectInnovationCountry(ProjectInnovationCountry projectInnovationCountry) {
 
     ProjectInnovationCountry country = projectInnovationCountryDAO.save(projectInnovationCountry);
-
     Phase phase = phaseDAO.find(country.getPhase().getId());
+
+
+    // Conditions to Project Innovation Works In AR phase and Upkeep Phase
+    if (phase.getDescription().equals(APConstants.PLANNING) && phase.getNext() != null) {
+      this.saveInnovationCountryPhase(country.getPhase().getNext(), country.getProjectInnovation().getId(),
+        projectInnovationCountry);
+    }
+
     if (phase.getDescription().equals(APConstants.REPORTING)) {
-      if (country.getPhase().getNext() != null) {
-        this.saveInnovationCountryPhase(country.getPhase().getNext(), country.getProjectInnovation().getId(),
-          projectInnovationCountry);
+      if (phase.getNext() != null && phase.getNext().getNext() != null) {
+        Phase upkeepPhase = phase.getNext().getNext();
+        if (upkeepPhase != null) {
+          this.saveInnovationCountryPhase(country.getPhase().getNext(), country.getProjectInnovation().getId(),
+            projectInnovationCountry);
+        }
       }
     }
+
     return country;
   }
 
