@@ -373,7 +373,7 @@
 			</result>
 		</action>
 
-		<action name="SaveFundingUnmapProject"
+		<action name="removeFundingProjectBudget"
 			class="org.cgiar.ccafs.marlo.action.json.funding.UnmapProjectAction">
 			<result type="json">
 				<param name="noCache">true</param>

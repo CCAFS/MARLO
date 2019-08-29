@@ -4,7 +4,7 @@
 [#assign pageLibs = ["select2", "blueimp-file-upload", "datatables.net", "datatables.net-bs","flat-flags", "vue"] /]
 [#assign customJS = [
   "${baseUrl}/global/js/fieldsValidation.js",
-  "${baseUrlMedia}/js/fundingSources/fundingSource.js?20190726",
+  "${baseUrlMedia}/js/fundingSources/fundingSource.js?20190829",
   "${baseUrlMedia}/js/fundingSources/syncFundingSource.js?20190706",
   "${baseUrl}/global/js/autoSave.js" 
   ]
@@ -517,21 +517,27 @@
              <tr>
               <th>[@s.text name="fundingSource.projectsAssigned.projectID" /]</th>
               <th>[@s.text name="fundingSource.projectsAssigned.projectTitle" /]</th>
-              <th>Justification</th>
+              <th>Rationale</th>
               <th>Lead partner</th>
               <th>Budget amount</th>
+              [#if editable]
+                <th></th>
+              [/#if]
              </tr>
             </thead>
             <tbody>
             [#list projectBudgetsList as projectBudget]
               [#assign projectBudgetURL][@s.url action="${crpSession}/budgetByPartners" namespace="/projects"] [@s.param name="projectID" value="${(projectBudget.project.id)!}"/] [#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#assign]
               [#if projectBudget.year == year]
-               <tr class="projectBudgetItem">
+               <tr class="projectBudgetItem projectBudget-${projectBudget.id}">
                 <td><a href="${projectBudgetURL}">P${(projectBudget.project.id)!}</a></td>
                 <td class="col-md-5"><a href="${projectBudgetURL}">${(projectBudget.project.projectInfo.title)!}</a></td>
                 <td> ${(projectBudget.justification)!} </td>
                 <td> ${(projectBudget.institution.acronymName)!(projectBudget.institution.name)}</td>
                 <td>US$ <span>${((projectBudget.amount)!0)?number?string(",##0.00")}</td>
+                [#if editable]
+                  <td><a href="#" class="removeProjectBudget trashIcon"></a></td>
+                [/#if]
                </tr>
               [/#if]
             [/#list]

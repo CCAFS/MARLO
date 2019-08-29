@@ -1135,6 +1135,42 @@ var mappingFundingToProjectModule = (function() {
 
     // On open the modal
     $modal.on('hide.bs.modal', closeModal);
+
+    // On remove a project budget
+    $('.removeProjectBudget').on('click', removeProjectBudget);
+  }
+
+  function removeProjectBudget(e) {
+    e.preventDefault();
+    var $button = $(this);
+    var $tr = $(this).parents('tr');
+    var $table = $(this).parents('table');
+    var projectBudgetID = $tr.classParam('projectBudget');
+    var year = $table.classParam('tableProjectBudgets');
+    console.log(projectBudgetID, year);
+
+    $.ajax({
+        url: baseUrl + "/removeFundingProjectBudget.do",
+        data: {
+            "project_budget_id": projectBudgetID,
+            "year": year,
+            phaseID: phaseID
+        },
+        beforeSend: function() {
+          $button.addClass('icon-loading');
+        },
+        success: function(data) {
+          console.log(data);
+          if(data.status.save) {
+            $tr.hide();
+          }
+        },
+        complete: function(data) {
+          $button.removeClass('icon-loading');
+        },
+        error: function(data) {
+        }
+    });
   }
 
   function retrivePopupValues() {
@@ -1223,14 +1259,18 @@ var mappingFundingToProjectModule = (function() {
           },
           success: function(data) {
             if(data.status.save) {
-              var row = '<tr>';
+              var projectBudgetID = data.status.id;
+              var row = '<tr class="projectBudget-' + projectBudgetID + '">';
               row += '<td>' + vueApp.projectComposedID() + '</td>';
               row += '<td> ' + vueApp.projectTitle() + ' </td>';
               row += '<td>' + vueApp.justification + ' </td>';
               row += '<td> ' + vueApp.institutionAcronym() + ' </td>';
               row += '<td>US$ ' + setCurrencyFormat(vueApp.amount) + ' </td>';
+              row += '<td><a href="#" class="removeProjectBudget trashIcon"></a></td>';
               row += '</tr>';
+
               $table.find('tbody').append(row);
+              $table.find('.removeProjectBudget').on('click', removeProjectBudget);
               $table.find('tbody tr:last-child').animateCss('flipInX');
 
               $modal.modal('hide'); // Hide and clean data

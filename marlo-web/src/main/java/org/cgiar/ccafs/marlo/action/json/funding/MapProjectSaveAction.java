@@ -113,6 +113,7 @@ public class MapProjectSaveAction extends BaseAction {
 
       if (projectBudget.getId() != null) {
         status.put("save", true);
+        status.put("id", projectBudget.getId());
       } else {
         status.put("save", false);
       }
