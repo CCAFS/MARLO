@@ -2507,7 +2507,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
           Deliverable deliverable = deliverableInfo.getDeliverable();
           long projectDB = deliverable.getProject().getId().longValue();
           if (deliverable.getProject() != null && projectDB == projectID) {
-            if (deliverable.getDeliverableInfo() != null) {
+            if (deliverable.getDeliverableInfo(this.getActualPhase()) != null) {
               if (this.isReportingActive() || this.isUpKeepActive()) {
                 if (deliverable.getDeliverableInfo().isRequiredToComplete()
                   || deliverable.getDeliverableInfo().isStatusCompleteInNextPhases()) {

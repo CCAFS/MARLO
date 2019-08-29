@@ -512,6 +512,7 @@
 
           [#-- Projects that this funding source is assigned to --]
           <h5 class="sectionSubTitle">[@s.text name="fundingSource.projectsAssigned" /]:</h5>
+          
           <table class="table tableProjectBudgets-${year}">
             <thead>
              <tr>
@@ -528,15 +529,18 @@
             <tbody>
             [#list projectBudgetsList as projectBudget]
               [#assign projectBudgetURL][@s.url action="${crpSession}/budgetByPartners" namespace="/projects"] [@s.param name="projectID" value="${(projectBudget.project.id)!}"/] [#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#assign]
+              [#assign projectBudgetDeliverables = (action.getDeliverableRelationsProject(projectBudget.id, projectBudget.class.name, projectBudget.project.id))! /]
+              [#assign hasDeliverables = (projectBudgetDeliverables?size > 0) ]
               [#if projectBudget.year == year]
                <tr class="projectBudgetItem projectBudget-${projectBudget.id}">
                 <td><a href="${projectBudgetURL}">P${(projectBudget.project.id)!}</a></td>
-                <td class="col-md-5"><a href="${projectBudgetURL}">${(projectBudget.project.projectInfo.title)!}</a></td>
+                <td class="col-md-5"><a href="${projectBudgetURL}">${(projectBudget.project.projectInfo.title)!}</a> 
+                </td>
                 <td> ${(projectBudget.justification)!} </td>
                 <td> ${(projectBudget.institution.acronymName)!(projectBudget.institution.name)}</td>
                 <td>US$ <span>${((projectBudget.amount)!0)?number?string(",##0.00")}</td>
                 [#if editable]
-                  <td><a href="#" class="removeProjectBudget trashIcon"></a></td>
+                  <td><span class="trashIcon ${hasDeliverables?string('icon-disabled','removeProjectBudget') }" [#if hasDeliverables]title="Can not be removed due the P${(projectBudget.project.id)!} has deliverables(${projectBudgetDeliverables?size}) attached to this funding source"[/#if]></span> </td>
                 [/#if]
                </tr>
               [/#if]
@@ -559,7 +563,7 @@
               <th>[@s.text name="fundingSource.projectsAssigned.projectID" /]</th>
               <th>CRP</th>
               <th>[@s.text name="fundingSource.projectsAssigned.projectTitle" /]</th>
-              <th>Justification</th>
+              <th>Rationale</th>
               <th>Lead partner</th>
               <th>Budget amount</th>
              </tr>

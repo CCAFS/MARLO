@@ -6964,12 +6964,17 @@ article#mainInformation {
   min-height: 100px;
 }
 
-a.trashIcon {
+.trashIcon {
   cursor: pointer;
   display: inline-block;
   height: 21px;
   width: 21px;
   background-image: url(../../global/images/trash.png);
+}
+
+.trashIcon.icon-disabled {
+  cursor:  auto;
+  opacity: 0.5 !important;
 }
 
 .icon-loading {

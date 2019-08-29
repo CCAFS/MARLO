@@ -1068,7 +1068,9 @@ var mappingFundingToProjectModule = (function() {
       },
       methods: {
           projectTitle: function() {
-            return ($projectSelect.find('option[value="' + this.projectID + '"]').text()).split('-')[1];
+            var titleArr = ($projectSelect.find('option[value="' + this.projectID + '"]').text()).split('-');
+            titleArr.shift();
+            return titleArr.join('-');
           },
           projectComposedID: function() {
             return "P" + this.projectID;
@@ -1266,7 +1268,7 @@ var mappingFundingToProjectModule = (function() {
               row += '<td>' + vueApp.justification + ' </td>';
               row += '<td> ' + vueApp.institutionAcronym() + ' </td>';
               row += '<td>US$ ' + setCurrencyFormat(vueApp.amount) + ' </td>';
-              row += '<td><a href="#" class="removeProjectBudget trashIcon"></a></td>';
+              row += '<td><span class="removeProjectBudget trashIcon"></span></td>';
               row += '</tr>';
 
               $table.find('tbody').append(row);
