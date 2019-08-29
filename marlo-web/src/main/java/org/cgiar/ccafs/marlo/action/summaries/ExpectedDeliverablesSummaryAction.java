@@ -551,11 +551,16 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
         individual = null;
       }
       LinkedHashSet<Institution> managingResponsibleList = new LinkedHashSet<>();
+      List<String> listPpa = new ArrayList<>();
       for (String ppaOher : ppaResponsibleList) {
-        if (ppaRespondible.isEmpty()) {
-          ppaRespondible += "<span style='font-family: Segoe UI;font-size: 10'>" + ppaOher + "</span>";
-        } else {
-          ppaRespondible += ", <span style='font-family: Segoe UI;font-size: 10'>" + ppaOher + "</span>";
+        if (listPpa == null || (!listPpa.contains(ppaOher.trim()))) {
+          if (ppaRespondible.isEmpty()) {
+            listPpa.add(ppaOher.trim());
+            ppaRespondible += "<span style='font-family: Segoe UI;font-size: 10'>" + ppaOher.trim() + "</span>";
+          } else {
+            listPpa.add(ppaOher);
+            ppaRespondible += ", <span style='font-family: Segoe UI;font-size: 10'>" + ppaOher.trim() + "</span>";
+          }
         }
       }
 
