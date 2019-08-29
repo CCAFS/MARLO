@@ -336,8 +336,11 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
               && deliverableInfo.getNewExpectedYear() != null
               && deliverableInfo.getNewExpectedYear() == this.getSelectedYear())
             || (deliverableInfo.getStatus() != null && deliverableInfo.getYear() == this.getSelectedYear()
-              && deliverableInfo.getStatus().intValue() == Integer
-                .parseInt(ProjectStatusEnum.Ongoing.getStatusId())))) {
+              && deliverableInfo.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
+              || (deliverableInfo.getYear() == this.getSelectedYear() && this.getSelectedPhase() != null
+                && this.getSelectedPhase().getName() != null && this.getSelectedPhase().getName().equals("UpKeep")
+                && deliverableInfo.getStatus().intValue() != Integer
+                  .parseInt(ProjectStatusEnum.Cancelled.getStatusId()))))) {
             phaseDeliverables.add(deliverable);
 
           }
@@ -432,39 +435,51 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
             if (responsible.getInstitution().getAcronym() != null
               && !responsible.getInstitution().getAcronym().isEmpty()) {
               ppaResponsibleList.add("*" + responsible.getInstitution().getAcronym() + " ");
-              responsibleAcronym = responsible.getInstitution().getAcronym() + " ";
+              responsibleAcronym = responsible.getInstitution().getAcronym();
 
             } else {
               ppaResponsibleList.add("*" + responsible.getInstitution().getName() + " ");
-              responsibleName = responsible.getInstitution().getName() + " ";
+              responsibleName = responsible.getInstitution().getName();
             }
           }
 
         } else if (responsible.getDeliverableUserPartnershipPersons() != null) {
           // individual += "<span style='font-family: Segoe UI;color:#ff0000;font-size: 10'>";
-          individual += "●  ";
-          individual += "*";
-          DeliverableUserPartnershipPerson responsibleppp = responsible.getDeliverableUserPartnershipPersons().stream()
-            .filter(dp -> dp.isActive()).collect(Collectors.toList()).get(0);
+          DeliverableUserPartnershipPerson responsibleppp = null;
+          if (responsible.getDeliverableUserPartnershipPersons().size() != 0
+            && responsible.getDeliverableUserPartnershipPersons().stream().filter(dp -> dp.isActive())
+              .collect(Collectors.toList()) != null
+            && responsible.getDeliverableUserPartnershipPersons().stream().filter(dp -> dp.isActive())
+              .collect(Collectors.toList()).get(0) != null) {
+            responsibleppp = responsible.getDeliverableUserPartnershipPersons().stream().filter(dp -> dp.isActive())
+              .collect(Collectors.toList()).get(0);
+          }
+
 
           // get deliverable information when partner responsible does not have a person
           if (responsible.getInstitution() != null) {
             if (responsible.getInstitution().getAcronym() != null
               && !responsible.getInstitution().getAcronym().isEmpty()) {
-              ppaResponsibleList.add("*" + responsible.getInstitution().getAcronym() + " ");
-              responsibleAcronym = responsible.getInstitution().getAcronym() + " ";
+              ppaResponsibleList.add("*" + responsible.getInstitution().getAcronym() + "");
+              responsibleAcronym = responsible.getInstitution().getAcronym() + "";
 
             } else {
-              ppaResponsibleList.add("*" + responsible.getInstitution().getName() + " ");
-              responsibleName = responsible.getInstitution().getName() + " ";
+              ppaResponsibleList.add("*" + responsible.getInstitution().getName() + "");
+              responsibleName = responsible.getInstitution().getName() + "";
             }
           }
 
-          if (responsibleppp.getUser() != null) {
+          if (responsibleppp != null && responsibleppp.getUser() != null) {
+            individual += " ● ";
+            individual += "*";
             individual += responsibleppp.getUser().getComposedNameWithoutEmail();
+            if (responsibleAcronym != null) {
+              individual += " (" + responsibleAcronym + ")";
+            } else if (responsibleName != null) {
+              individual += " (" + responsibleName + ")";
+            }
           }
         }
-
       }
 
 
@@ -475,7 +490,6 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
         .collect(Collectors.toList());
 
       if (othersPartnerships != null) {
-        individual += "\n ● ";
 
         for (DeliverableUserPartnership deliverablePartnership : othersPartnerships) {
           if (deliverablePartnership.getInstitution() != null) {
@@ -491,21 +505,28 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
               if (deliverablePartnership.getInstitution().getAcronym() != null
                 && !deliverablePartnership.getInstitution().getAcronym().isEmpty()) {
                 ppaResponsibleList.add("*" + deliverablePartnership.getInstitution().getAcronym() + " ");
-                responsibleAcronym = deliverablePartnership.getInstitution().getAcronym() + " ";
+                responsibleAcronym = deliverablePartnership.getInstitution().getAcronym() + "";
 
               } else {
                 ppaResponsibleList.add("*" + deliverablePartnership.getInstitution().getName() + " ");
-                responsibleName = deliverablePartnership.getInstitution().getName() + " ";
+                responsibleName = deliverablePartnership.getInstitution().getName() + "";
               }
             }
 
             for (DeliverableUserPartnershipPerson person : responsibleppp) {
-              if (person.getUser() != null) {
+              if (person.getUser() != null && person.getUser().getComposedName() != null) {
+                individual += " ●";
                 individual += person.getUser().getComposedName();
+
+                if (responsibleAcronym != null) {
+                  individual += "(" + responsibleAcronym + ")";
+                } else if (responsibleName != null) {
+                  individual += "(" + responsibleName + ")";
+                }
               }
             }
 
-            individual += "\n● ";
+            // individual += "\n● ";
 
           } else {
 

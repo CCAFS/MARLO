@@ -659,7 +659,7 @@ public class ProjectPolicyAction extends BaseAction {
 
       // Level of Maturity List
       stageProcesses = new ArrayList<>(repIndStageProcessManager.findAll().stream()
-        .filter(p -> p.getYear() == this.getCurrentCycleYear()).collect(Collectors.toList()));
+        .filter(p -> p.getYear() >= this.getCurrentCycleYear()).collect(Collectors.toList()));
 
       // Policy/Investment Type List
       policyInvestimentTypes = repIndPolicyInvestimentTypeManager.findAll();

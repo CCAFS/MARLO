@@ -68,6 +68,8 @@ public class ProjectPolicyCrossCuttingMarkerManagerImpl implements ProjectPolicy
     if (phase.getNext() != null) {
       this.deleteProjectCrossCuttingMarkerPhase(phase.getNext(), policyID, projectPolicyCrossCuttingMarker);
     }
+
+
   }
 
 
@@ -77,9 +79,22 @@ public class ProjectPolicyCrossCuttingMarkerManagerImpl implements ProjectPolicy
     ProjectPolicyCrossCuttingMarker projectPolicyCrossCuttingMarker =
       this.getProjectPolicyCrossCuttingMarkerById(projectPolicyCrossCuttingMarkerId);
 
-    if (projectPolicyCrossCuttingMarker.getPhase().getNext() != null) {
+    // Conditions to Project Policy Works In AR phase and Upkeep Phase
+    if (projectPolicyCrossCuttingMarker.getPhase().getDescription().equals(APConstants.PLANNING)
+      && projectPolicyCrossCuttingMarker.getPhase().getNext() != null) {
       this.deleteProjectCrossCuttingMarkerPhase(projectPolicyCrossCuttingMarker.getPhase().getNext(),
         projectPolicyCrossCuttingMarker.getProjectPolicy().getId(), projectPolicyCrossCuttingMarker);
+    }
+
+    if (projectPolicyCrossCuttingMarker.getPhase().getDescription().equals(APConstants.REPORTING)) {
+      if (projectPolicyCrossCuttingMarker.getPhase().getNext() != null
+        && projectPolicyCrossCuttingMarker.getPhase().getNext().getNext() != null) {
+        Phase upkeepPhase = projectPolicyCrossCuttingMarker.getPhase().getNext().getNext();
+        if (upkeepPhase != null) {
+          this.deleteProjectCrossCuttingMarkerPhase(upkeepPhase,
+            projectPolicyCrossCuttingMarker.getProjectPolicy().getId(), projectPolicyCrossCuttingMarker);
+        }
+      }
     }
 
     projectPolicyCrossCuttingMarkerDAO.deleteProjectPolicyCrossCuttingMarker(projectPolicyCrossCuttingMarkerId);
@@ -147,14 +162,24 @@ public class ProjectPolicyCrossCuttingMarkerManagerImpl implements ProjectPolicy
     saveProjectPolicyCrossCuttingMarker(ProjectPolicyCrossCuttingMarker projectPolicyCrossCuttingMarker) {
 
     ProjectPolicyCrossCuttingMarker marker = projectPolicyCrossCuttingMarkerDAO.save(projectPolicyCrossCuttingMarker);
-
     Phase phase = phaseDAO.find(marker.getPhase().getId());
+
+    // Conditions to Project Policy Works In AR phase and Upkeep Phase
+    if (phase.getDescription().equals(APConstants.PLANNING) && phase.getNext() != null) {
+      this.savePolicyCrossCuttingMarkerAddPhase(marker.getPhase().getNext(), marker.getProjectPolicy().getId(),
+        projectPolicyCrossCuttingMarker);
+    }
+
     if (phase.getDescription().equals(APConstants.REPORTING)) {
-      if (marker.getPhase().getNext() != null) {
-        this.savePolicyCrossCuttingMarkerAddPhase(marker.getPhase().getNext(), marker.getProjectPolicy().getId(),
-          projectPolicyCrossCuttingMarker);
+      if (phase.getNext() != null && phase.getNext().getNext() != null) {
+        Phase upkeepPhase = phase.getNext().getNext();
+        if (upkeepPhase != null) {
+          this.savePolicyCrossCuttingMarkerAddPhase(upkeepPhase, marker.getProjectPolicy().getId(),
+            projectPolicyCrossCuttingMarker);
+        }
       }
     }
+
     return marker;
 
   }

@@ -62,7 +62,7 @@ public class MarloDatabaseConfiguration {
     HikariConfig config = new HikariConfig();
 
     // config.setDriverClassName("com.mysql.jdbc.jdbc2.optional.MysqlDataSource");
-    config.setDriverClassName("com.mysql.jdbc.Driver");
+    config.setDriverClassName("com.mysql.cj.jdbc.Driver");
     config.setJdbcUrl(databaseUrl);
     config.setUsername(databaseUser);
     config.setPassword(password);
