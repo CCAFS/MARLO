@@ -6963,3 +6963,15 @@ button.btn.btn-primary {
 article#mainInformation {
   min-height: 100px;
 }
+
+a.trashIcon {
+  cursor: pointer;
+  display: inline-block;
+  height: 21px;
+  width: 21px;
+  background-image: url(../../global/images/trash.png);
+}
+
+.icon-loading {
+  background-image: url(../../global/images/loading_3.gif) !important;
+}
