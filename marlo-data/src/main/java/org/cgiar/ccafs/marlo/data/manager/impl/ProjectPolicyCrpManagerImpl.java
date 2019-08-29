@@ -56,7 +56,26 @@ public class ProjectPolicyCrpManagerImpl implements ProjectPolicyCrpManager {
         projectPolicyCrp.getProjectPolicy().getId(), projectPolicyCrp);
     }
 
+    // Conditions to Project Policy Works In AR phase and Upkeep Phase
+    if (projectPolicyCrp.getPhase().getDescription().equals(APConstants.PLANNING)
+      && projectPolicyCrp.getPhase().getNext() != null) {
+      this.deleteProjectPolicyCrpPhase(projectPolicyCrp.getPhase().getNext(),
+        projectPolicyCrp.getProjectPolicy().getId(), projectPolicyCrp);
+    }
+
+    if (projectPolicyCrp.getPhase().getDescription().equals(APConstants.REPORTING)) {
+      if (projectPolicyCrp.getPhase().getNext() != null && projectPolicyCrp.getPhase().getNext().getNext() != null) {
+        Phase upkeepPhase = projectPolicyCrp.getPhase().getNext().getNext();
+        if (upkeepPhase != null) {
+          this.deleteProjectPolicyCrpPhase(upkeepPhase, projectPolicyCrp.getProjectPolicy().getId(), projectPolicyCrp);
+        }
+      }
+    }
+
+
     projectPolicyCrpDAO.deleteProjectPolicyCrp(projectPolicyCrpId);
+
+
   }
 
   public void deleteProjectPolicyCrpPhase(Phase next, long policyID, ProjectPolicyCrp projectPolicyCrp) {
@@ -70,6 +89,7 @@ public class ProjectPolicyCrpManagerImpl implements ProjectPolicyCrpManager {
     for (ProjectPolicyCrp projectPolicyCrpDB : projectPolicyCrps) {
       projectPolicyCrpDAO.deleteProjectPolicyCrp(projectPolicyCrpDB.getId());
     }
+
 
     if (phase.getNext() != null) {
       this.deleteProjectPolicyCrpPhase(phase.getNext(), policyID, projectPolicyCrp);
@@ -124,11 +144,22 @@ public class ProjectPolicyCrpManagerImpl implements ProjectPolicyCrpManager {
     ProjectPolicyCrp crp = projectPolicyCrpDAO.save(projectPolicyCrp);
 
     Phase phase = phaseDAO.find(crp.getPhase().getId());
+
+
+    // Conditions to Project Policy Works In AR phase and Upkeep Phase
+    if (phase.getDescription().equals(APConstants.PLANNING) && phase.getNext() != null) {
+      this.savePolicyCrpPhase(crp.getPhase().getNext(), crp.getProjectPolicy().getId(), projectPolicyCrp);
+    }
+
     if (phase.getDescription().equals(APConstants.REPORTING)) {
-      if (crp.getPhase().getNext() != null) {
-        this.savePolicyCrpPhase(crp.getPhase().getNext(), crp.getProjectPolicy().getId(), projectPolicyCrp);
+      if (phase.getNext() != null && phase.getNext().getNext() != null) {
+        Phase upkeepPhase = phase.getNext().getNext();
+        if (upkeepPhase != null) {
+          this.savePolicyCrpPhase(upkeepPhase, crp.getProjectPolicy().getId(), projectPolicyCrp);
+        }
       }
     }
+
     return crp;
   }
 

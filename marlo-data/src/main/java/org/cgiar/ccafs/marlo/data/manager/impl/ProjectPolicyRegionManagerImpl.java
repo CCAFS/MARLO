@@ -54,6 +54,25 @@ public class ProjectPolicyRegionManagerImpl implements ProjectPolicyRegionManage
 
     ProjectPolicyRegion projectPolicyRegion = this.getProjectPolicyRegionById(projectPolicyRegionId);
 
+
+    // Conditions to Project Policy Works In AR phase and Upkeep Phase
+    if (projectPolicyRegion.getPhase().getDescription().equals(APConstants.PLANNING)
+      && projectPolicyRegion.getPhase().getNext() != null) {
+      this.deleteProjectPolicyRegionPhase(projectPolicyRegion.getPhase().getNext(),
+        projectPolicyRegion.getProjectPolicy().getId(), projectPolicyRegion);
+    }
+
+    if (projectPolicyRegion.getPhase().getDescription().equals(APConstants.REPORTING)) {
+      if (projectPolicyRegion.getPhase().getNext() != null
+        && projectPolicyRegion.getPhase().getNext().getNext() != null) {
+        Phase upkeepPhase = projectPolicyRegion.getPhase().getNext().getNext();
+        if (upkeepPhase != null) {
+          this.deleteProjectPolicyRegionPhase(upkeepPhase, projectPolicyRegion.getProjectPolicy().getId(),
+            projectPolicyRegion);
+        }
+      }
+    }
+
     if (projectPolicyRegion.getPhase().getNext() != null) {
       this.deleteProjectPolicyRegionPhase(projectPolicyRegion.getPhase().getNext(),
         projectPolicyRegion.getProjectPolicy().getId(), projectPolicyRegion);
@@ -107,14 +126,24 @@ public class ProjectPolicyRegionManagerImpl implements ProjectPolicyRegionManage
   public ProjectPolicyRegion saveProjectPolicyRegion(ProjectPolicyRegion projectPolicyRegion) {
 
     ProjectPolicyRegion region = projectPolicyRegionDAO.save(projectPolicyRegion);
-
     Phase phase = phaseDAO.find(region.getPhase().getId());
+
+
+    // Conditions to Project Policy Works In AR phase and Upkeep Phase
+    if (phase.getDescription().equals(APConstants.PLANNING) && phase.getNext() != null) {
+      this.saveProjectPolicyRegionPhase(region.getPhase().getNext(), region.getProjectPolicy().getId(),
+        projectPolicyRegion);
+    }
+
     if (phase.getDescription().equals(APConstants.REPORTING)) {
-      if (region.getPhase().getNext() != null) {
-        this.saveProjectPolicyRegionPhase(region.getPhase().getNext(), region.getProjectPolicy().getId(),
-          projectPolicyRegion);
+      if (phase.getNext() != null && phase.getNext().getNext() != null) {
+        Phase upkeepPhase = phase.getNext().getNext();
+        if (upkeepPhase != null) {
+          this.saveProjectPolicyRegionPhase(upkeepPhase, region.getProjectPolicy().getId(), projectPolicyRegion);
+        }
       }
     }
+
     return region;
   }
 

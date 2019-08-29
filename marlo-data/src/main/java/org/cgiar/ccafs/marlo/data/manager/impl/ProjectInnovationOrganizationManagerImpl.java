@@ -54,9 +54,22 @@ public class ProjectInnovationOrganizationManagerImpl implements ProjectInnovati
     ProjectInnovationOrganization projectInnovationOrganization =
       this.getProjectInnovationOrganizationById(projectInnovationOrganizationId);
 
-    if (projectInnovationOrganization.getPhase().getNext() != null) {
+    // Conditions to Project Innovation Works In AR phase and Upkeep Phase
+    if (projectInnovationOrganization.getPhase().getDescription().equals(APConstants.PLANNING)
+      && projectInnovationOrganization.getPhase().getNext() != null) {
       this.deleteProjectInnovationOrganizationPhase(projectInnovationOrganization.getPhase().getNext(),
         projectInnovationOrganization.getProjectInnovation().getId(), projectInnovationOrganization);
+    }
+
+    if (projectInnovationOrganization.getPhase().getDescription().equals(APConstants.REPORTING)) {
+      if (projectInnovationOrganization.getPhase().getNext() != null
+        && projectInnovationOrganization.getPhase().getNext().getNext() != null) {
+        Phase upkeepPhase = projectInnovationOrganization.getPhase().getNext().getNext();
+        if (upkeepPhase != null) {
+          this.deleteProjectInnovationOrganizationPhase(upkeepPhase,
+            projectInnovationOrganization.getProjectInnovation().getId(), projectInnovationOrganization);
+        }
+      }
     }
 
     projectInnovationOrganizationDAO.deleteProjectInnovationOrganization(projectInnovationOrganizationId);
@@ -137,14 +150,25 @@ public class ProjectInnovationOrganizationManagerImpl implements ProjectInnovati
     saveProjectInnovationOrganization(ProjectInnovationOrganization projectInnovationOrganization) {
 
     ProjectInnovationOrganization organization = projectInnovationOrganizationDAO.save(projectInnovationOrganization);
-
     Phase phase = phaseDAO.find(organization.getPhase().getId());
+
+
+    // Conditions to Project Innovation Works In AR phase and Upkeep Phase
+    if (phase.getDescription().equals(APConstants.PLANNING) && phase.getNext() != null) {
+      this.saveInnovationOrganizationPhase(organization.getPhase().getNext(),
+        organization.getProjectInnovation().getId(), projectInnovationOrganization);
+    }
+
     if (phase.getDescription().equals(APConstants.REPORTING)) {
-      if (organization.getPhase().getNext() != null) {
-        this.saveInnovationOrganizationPhase(organization.getPhase().getNext(),
-          organization.getProjectInnovation().getId(), projectInnovationOrganization);
+      if (phase.getNext() != null && phase.getNext().getNext() != null) {
+        Phase upkeepPhase = phase.getNext().getNext();
+        if (upkeepPhase != null) {
+          this.saveInnovationOrganizationPhase(upkeepPhase, organization.getProjectInnovation().getId(),
+            projectInnovationOrganization);
+        }
       }
     }
+
     return organization;
   }
 

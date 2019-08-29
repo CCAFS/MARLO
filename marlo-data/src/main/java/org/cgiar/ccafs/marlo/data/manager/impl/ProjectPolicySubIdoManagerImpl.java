@@ -53,9 +53,22 @@ public class ProjectPolicySubIdoManagerImpl implements ProjectPolicySubIdoManage
 
     ProjectPolicySubIdo projectPolicySubIdo = this.getProjectPolicySubIdoById(projectPolicySubIdoId);
 
-    if (projectPolicySubIdo.getPhase().getNext() != null) {
+    // Conditions to Project Policy Works In AR phase and Upkeep Phase
+    if (projectPolicySubIdo.getPhase().getDescription().equals(APConstants.PLANNING)
+      && projectPolicySubIdo.getPhase().getNext() != null) {
       this.deleteProjectPolicySubIdoPhase(projectPolicySubIdo.getPhase().getNext(),
         projectPolicySubIdo.getProjectPolicy().getId(), projectPolicySubIdo);
+    }
+
+    if (projectPolicySubIdo.getPhase().getDescription().equals(APConstants.REPORTING)) {
+      if (projectPolicySubIdo.getPhase().getNext() != null
+        && projectPolicySubIdo.getPhase().getNext().getNext() != null) {
+        Phase upkeepPhase = projectPolicySubIdo.getPhase().getNext().getNext();
+        if (upkeepPhase != null) {
+          this.deleteProjectPolicySubIdoPhase(upkeepPhase, projectPolicySubIdo.getProjectPolicy().getId(),
+            projectPolicySubIdo);
+        }
+      }
     }
 
     projectPolicySubIdoDAO.deleteProjectPolicySubIdo(projectPolicySubIdoId);
@@ -124,14 +137,24 @@ public class ProjectPolicySubIdoManagerImpl implements ProjectPolicySubIdoManage
   public ProjectPolicySubIdo saveProjectPolicySubIdo(ProjectPolicySubIdo projectPolicySubIdo) {
 
     ProjectPolicySubIdo subIdo = projectPolicySubIdoDAO.save(projectPolicySubIdo);
-
     Phase phase = phaseDAO.find(subIdo.getPhase().getId());
+
+
+    // Conditions to Project Policy Works In AR phase and Upkeep Phase
+    if (phase.getDescription().equals(APConstants.PLANNING) && phase.getNext() != null) {
+      this.savePolicySubIdoPhase(projectPolicySubIdo.getPhase().getNext(),
+        projectPolicySubIdo.getProjectPolicy().getId(), projectPolicySubIdo);
+    }
+
     if (phase.getDescription().equals(APConstants.REPORTING)) {
-      if (subIdo.getPhase().getNext() != null) {
-        this.savePolicySubIdoPhase(projectPolicySubIdo.getPhase().getNext(),
-          projectPolicySubIdo.getProjectPolicy().getId(), projectPolicySubIdo);
+      if (phase.getNext() != null && phase.getNext().getNext() != null) {
+        Phase upkeepPhase = phase.getNext().getNext();
+        if (upkeepPhase != null) {
+          this.savePolicySubIdoPhase(upkeepPhase, projectPolicySubIdo.getProjectPolicy().getId(), projectPolicySubIdo);
+        }
       }
     }
+
     return subIdo;
   }
 

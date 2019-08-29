@@ -55,9 +55,23 @@ public class ProjectInnovationDeliverableManagerImpl implements ProjectInnovatio
     ProjectInnovationDeliverable projectInnovationDeliverable =
       this.getProjectInnovationDeliverableById(projectInnovationDeliverableId);
 
-    if (projectInnovationDeliverable.getPhase().getNext() != null) {
+
+    // Conditions to Project Innovation Works In AR phase and Upkeep Phase
+    if (projectInnovationDeliverable.getPhase().getDescription().equals(APConstants.PLANNING)
+      && projectInnovationDeliverable.getPhase().getNext() != null) {
       this.deleteProjectInnovationDeliverablePhase(projectInnovationDeliverable.getPhase().getNext(),
         projectInnovationDeliverable.getProjectInnovation().getId(), projectInnovationDeliverable);
+    }
+
+    if (projectInnovationDeliverable.getPhase().getDescription().equals(APConstants.REPORTING)) {
+      if (projectInnovationDeliverable.getPhase().getNext() != null
+        && projectInnovationDeliverable.getPhase().getNext().getNext() != null) {
+        Phase upkeepPhase = projectInnovationDeliverable.getPhase().getNext().getNext();
+        if (upkeepPhase != null) {
+          this.deleteProjectInnovationDeliverablePhase(upkeepPhase,
+            projectInnovationDeliverable.getProjectInnovation().getId(), projectInnovationDeliverable);
+        }
+      }
     }
 
     projectInnovationDeliverableDAO.deleteProjectInnovationDeliverable(projectInnovationDeliverableId);
@@ -129,14 +143,25 @@ public class ProjectInnovationDeliverableManagerImpl implements ProjectInnovatio
     saveProjectInnovationDeliverable(ProjectInnovationDeliverable projectInnovationDeliverable) {
 
     ProjectInnovationDeliverable deliverable = projectInnovationDeliverableDAO.save(projectInnovationDeliverable);
-
     Phase phase = phaseDAO.find(deliverable.getPhase().getId());
+
+
+    // Conditions to Project Innovation Works In AR phase and Upkeep Phase
+    if (phase.getDescription().equals(APConstants.PLANNING) && phase.getNext() != null) {
+      this.saveInnovationDeliverablePhase(deliverable.getPhase().getNext(), deliverable.getProjectInnovation().getId(),
+        projectInnovationDeliverable);
+    }
+
     if (phase.getDescription().equals(APConstants.REPORTING)) {
-      if (deliverable.getPhase().getNext() != null) {
-        this.saveInnovationDeliverablePhase(deliverable.getPhase().getNext(),
-          deliverable.getProjectInnovation().getId(), projectInnovationDeliverable);
+      if (phase.getNext() != null && phase.getNext().getNext() != null) {
+        Phase upkeepPhase = phase.getNext().getNext();
+        if (upkeepPhase != null) {
+          this.saveInnovationDeliverablePhase(upkeepPhase, deliverable.getProjectInnovation().getId(),
+            projectInnovationDeliverable);
+        }
       }
     }
+
     return deliverable;
   }
 

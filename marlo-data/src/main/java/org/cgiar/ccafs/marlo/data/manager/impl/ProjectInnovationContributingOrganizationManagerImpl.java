@@ -14,7 +14,7 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.manager.impl;
 
-
+import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.dao.PhaseDAO;
 import org.cgiar.ccafs.marlo.data.dao.ProjectInnovationContributingOrganizationDAO;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationContributingOrganizationManager;
@@ -46,11 +46,58 @@ public class ProjectInnovationContributingOrganizationManagerImpl
     this.phaseDAO = phaseDAO;
   }
 
+
   @Override
   public void deleteProjectInnovationContributingOrganization(long projectInnovationContributingOrganizationId) {
 
+    ProjectInnovationContributingOrganization projectInnovationContributingOrganization =
+      this.getProjectInnovationContributingOrganizationById(projectInnovationContributingOrganizationId);
+
+
+    // Conditions to Project Innovation Works In AR phase and Upkeep Phase
+    if (projectInnovationContributingOrganization.getPhase().getDescription().equals(APConstants.PLANNING)
+      && projectInnovationContributingOrganization.getPhase().getNext() != null) {
+      this.deleteProjectInnovationContributingOrganizationPhase(
+        projectInnovationContributingOrganization.getPhase().getNext(),
+        projectInnovationContributingOrganization.getProjectInnovation().getId(),
+        projectInnovationContributingOrganization);
+    }
+
+    if (projectInnovationContributingOrganization.getPhase().getDescription().equals(APConstants.REPORTING)) {
+      if (projectInnovationContributingOrganization.getPhase().getNext() != null
+        && projectInnovationContributingOrganization.getPhase().getNext().getNext() != null) {
+        Phase upkeepPhase = projectInnovationContributingOrganization.getPhase().getNext().getNext();
+        if (upkeepPhase != null) {
+          this.deleteProjectInnovationContributingOrganizationPhase(upkeepPhase,
+            projectInnovationContributingOrganization.getProjectInnovation().getId(),
+            projectInnovationContributingOrganization);
+        }
+      }
+    }
+
     projectInnovationContributingOrganizationDAO
       .deleteProjectInnovationContributingOrganization(projectInnovationContributingOrganizationId);
+  }
+  
+   public void deleteProjectInnovationContributingOrganizationPhase(Phase next, long innovationID,
+    ProjectInnovationContributingOrganization projectInnovationContributingOrganization) {
+    Phase phase = phaseDAO.find(next.getId());
+
+    List<ProjectInnovationContributingOrganization> projectInnovationContributingOrganizations =
+      phase.getProjectInnovationContribution().stream()
+        .filter(c -> c.getProjectInnovation().getId().longValue() == innovationID
+          && c.getInstitution().getId().equals(projectInnovationContributingOrganization.getInstitution().getId()))
+        .collect(Collectors.toList());
+
+    for (ProjectInnovationContributingOrganization projectInnovationContributingOrganizationDB : projectInnovationContributingOrganizations) {
+      projectInnovationContributingOrganizationDAO
+        .deleteProjectInnovationContributingOrganization(projectInnovationContributingOrganizationDB.getId());
+    }
+
+    if (phase.getNext() != null) {
+      this.deleteProjectInnovationContributingOrganizationPhase(phase.getNext(), innovationID,
+        projectInnovationContributingOrganization);
+    }
   }
 
   @Override
@@ -83,16 +130,28 @@ public class ProjectInnovationContributingOrganizationManagerImpl
   }
 
 
-  @Override
+   @Override
   public ProjectInnovationContributingOrganization saveProjectInnovationContributingOrganization(
     ProjectInnovationContributingOrganization projectInnovationContributingOrganization) {
 
     ProjectInnovationContributingOrganization projectInnovationContributing =
       projectInnovationContributingOrganizationDAO.save(projectInnovationContributingOrganization);
+    Phase phase = phaseDAO.find(projectInnovationContributing.getPhase().getId());
 
-    if (projectInnovationContributing.getPhase().getNext() != null) {
+    // Conditions to Project Innovation Works In AR phase and Upkeep Phase
+    if (phase.getDescription().equals(APConstants.PLANNING) && phase.getNext() != null) {
       this.saveProjectInnovationContributingPhase(projectInnovationContributing.getPhase().getNext(),
         projectInnovationContributing.getProjectInnovation().getId(), projectInnovationContributing);
+    }
+
+    if (phase.getDescription().equals(APConstants.REPORTING)) {
+      if (phase.getNext() != null && phase.getNext().getNext() != null) {
+        Phase upkeepPhase = phase.getNext().getNext();
+        if (upkeepPhase != null) {
+          this.saveProjectInnovationContributingPhase(upkeepPhase,
+            projectInnovationContributing.getProjectInnovation().getId(), projectInnovationContributing);
+        }
+      }
     }
 
     return projectInnovationContributing;
