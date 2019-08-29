@@ -2,7 +2,7 @@
 [#macro studyMacro element name index=-1 template=false fromProject=true ]
   [#local customName = "${name}"/]
   [#local customId = "study-${template?string('template',index)}" /]
-  [#local isOutcomeCaseStudy = ((element.projectExpectedStudyInfo.studyType.id == 1)!false) && reportingActive/]
+  [#local isOutcomeCaseStudy = ((element.projectExpectedStudyInfo.studyType.id == 1)!false) && (reportingActive || upKeepActive)/]
   [#local isNew = (action.isEvidenceNew(element.id))!false /]
   
   [#local isPolicy = ((element.projectExpectedStudyInfo.isContribution)!false) ]
