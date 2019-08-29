@@ -150,7 +150,7 @@ public class FundingSourceListAction extends BaseAction {
       // centerID = Long.parseLong(parameters.get(APConstants.CRP_ID).getMultipleValues()[0]);
       partnerIDs = StringUtils.trim(parameters.get(APConstants.PARTNERS_ID).getMultipleValues()[0]);
       budgetTypeID = null;
-      // StringUtils.trim(parameters.get(APConstants.BUDGET_TYPE_ID).getMultipleValues()[0]);
+      // StringUtils.trim(parameters.get(APConstants.BUDGET_TYPE_REQUEST_ID).getMultipleValues()[0]);
 
     } catch (Exception e) {
       Log.error(e);
