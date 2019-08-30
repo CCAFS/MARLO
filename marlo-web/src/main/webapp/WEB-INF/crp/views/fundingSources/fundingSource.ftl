@@ -536,7 +536,7 @@
                 <td><a href="${projectBudgetURL}">P${(projectBudget.project.id)!}</a></td>
                 <td class="col-md-5"><a href="${projectBudgetURL}">${(projectBudget.project.projectInfo.title)!}</a> 
                 </td>
-                <td> ${(projectBudget.justification)!} </td>
+                <td> ${(projectBudget.modificationJustification)!} </td>
                 <td> ${(projectBudget.institution.acronymName)!(projectBudget.institution.name)}</td>
                 <td>US$ <span>${((projectBudget.amount)!0)?number?string(",##0.00")}</td>
                 [#if editable]

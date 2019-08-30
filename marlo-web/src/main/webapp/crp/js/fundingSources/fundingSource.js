@@ -1052,7 +1052,7 @@ var mappingFundingToProjectModule = (function() {
         budgetTypeID: $('.fundingType').val(),
         amount: 0,
         gender: 0,
-        justification: "",
+        modificationJustification: "",
         remainingBudget: "0",
         year: undefined,
         modalLoading: false,
@@ -1089,7 +1089,7 @@ var mappingFundingToProjectModule = (function() {
   var $projectSelect = $modal.find('select[name="projectID"]');
   var $amountInput = $modal.find('input.currencyInput');
   var $genderInput = $modal.find('input.percentageInput');
-  var $justificationInput = $modal.find('textarea[name="justification"]');
+  var $justificationInput = $modal.find('textarea[name="modificationJustification"]');
   var $saveButton = $modal.find('button.saveBudgetMapping');
   var $step2Block = $modal.find('.step2');
 
@@ -1149,7 +1149,6 @@ var mappingFundingToProjectModule = (function() {
     var $table = $(this).parents('table');
     var projectBudgetID = $tr.classParam('projectBudget');
     var year = $table.classParam('tableProjectBudgets');
-    console.log(projectBudgetID, year);
 
     $.ajax({
         url: baseUrl + "/removeFundingProjectBudget.do",
@@ -1180,7 +1179,7 @@ var mappingFundingToProjectModule = (function() {
     vueApp.projectID = $projectSelect.val();
     vueApp.amount = removeCurrencyFormat($amountInput.val());
     // vueApp.gender = removePercentageFormat($genderInput.val());
-    vueApp.justification = $justificationInput.val();
+    vueApp.modificationJustification = $justificationInput.val();
     vueApp.remainingBudget = removeCurrencyFormat($('#fundingYear-' + vueApp.year + ' span.projectAmount').text());
   }
 
@@ -1248,7 +1247,7 @@ var mappingFundingToProjectModule = (function() {
           budgetTypeID: vueApp.budgetTypeID,
           amount: vueApp.amount,
           gender: vueApp.gender,
-          justification: vueApp.justification,
+          modificationJustification: vueApp.modificationJustification,
           year: vueApp.year,
           phaseID: phaseID
       };
