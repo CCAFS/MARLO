@@ -2069,18 +2069,21 @@ public class DeliverableAction extends BaseAction {
             deliverableUserPartnershipManager.getDeliverableUserPartnershipById(deliverableUserPartnership.getId());
 
           if (deliverableUserPartnership.getInstitution().getId() != null) {
-            Institution institution =
-              institutionManager.getInstitutionById(deliverableUserPartnership.getInstitution().getId());
-            deliverableUserPartnershipSave.setInstitution(institution);
+            if (deliverableUserPartnership.getInstitution().getId() != -1) {
+              Institution institution =
+                institutionManager.getInstitutionById(deliverableUserPartnership.getInstitution().getId());
+              deliverableUserPartnershipSave.setInstitution(institution);
 
-            if (deliverableUserPartnership.getPartnershipPersons() != null) {
-              deliverableUserPartnershipSave.setPartnershipPersons(deliverableUserPartnership.getPartnershipPersons());
+              if (deliverableUserPartnership.getPartnershipPersons() != null) {
+                deliverableUserPartnershipSave
+                  .setPartnershipPersons(deliverableUserPartnership.getPartnershipPersons());
+              }
+
+              deliverableUserPartnershipSave =
+                deliverableUserPartnershipManager.saveDeliverableUserPartnership(deliverableUserPartnershipSave);
+
+              this.saveDeliverableUserPartnershipsPersons(deliverableUserPartnership, deliverableUserPartnershipSave);
             }
-
-            deliverableUserPartnershipSave =
-              deliverableUserPartnershipManager.saveDeliverableUserPartnership(deliverableUserPartnershipSave);
-
-            this.saveDeliverableUserPartnershipsPersons(deliverableUserPartnership, deliverableUserPartnershipSave);
           }
 
         } else {
@@ -2093,18 +2096,21 @@ public class DeliverableAction extends BaseAction {
 
           if (deliverableUserPartnership.getInstitution() != null
             && deliverableUserPartnership.getInstitution().getId() != null) {
-            Institution institution =
-              institutionManager.getInstitutionById(deliverableUserPartnership.getInstitution().getId());
-            deliverableUserPartnershipSave.setInstitution(institution);
+            if (deliverableUserPartnership.getInstitution().getId() != -1) {
+              Institution institution =
+                institutionManager.getInstitutionById(deliverableUserPartnership.getInstitution().getId());
+              deliverableUserPartnershipSave.setInstitution(institution);
 
-            if (deliverableUserPartnership.getPartnershipPersons() != null) {
-              deliverableUserPartnershipSave.setPartnershipPersons(deliverableUserPartnership.getPartnershipPersons());
+              if (deliverableUserPartnership.getPartnershipPersons() != null) {
+                deliverableUserPartnershipSave
+                  .setPartnershipPersons(deliverableUserPartnership.getPartnershipPersons());
+              }
+
+              deliverableUserPartnershipSave =
+                deliverableUserPartnershipManager.saveDeliverableUserPartnership(deliverableUserPartnershipSave);
+
+              this.saveDeliverableUserPartnershipsPersons(deliverableUserPartnership, deliverableUserPartnershipSave);
             }
-
-            deliverableUserPartnershipSave =
-              deliverableUserPartnershipManager.saveDeliverableUserPartnership(deliverableUserPartnershipSave);
-
-            this.saveDeliverableUserPartnershipsPersons(deliverableUserPartnership, deliverableUserPartnershipSave);
           }
 
         }
@@ -2154,18 +2160,21 @@ public class DeliverableAction extends BaseAction {
             deliverableUserPartnershipManager.getDeliverableUserPartnershipById(deliverableUserPartnership.getId());
 
           if (deliverableUserPartnership.getInstitution().getId() != null) {
-            Institution institution =
-              institutionManager.getInstitutionById(deliverableUserPartnership.getInstitution().getId());
-            deliverableUserPartnershipSave.setInstitution(institution);
+            if (deliverableUserPartnership.getInstitution().getId() != -1) {
+              Institution institution =
+                institutionManager.getInstitutionById(deliverableUserPartnership.getInstitution().getId());
+              deliverableUserPartnershipSave.setInstitution(institution);
 
-            if (deliverableUserPartnership.getPartnershipPersons() != null) {
-              deliverableUserPartnershipSave.setPartnershipPersons(deliverableUserPartnership.getPartnershipPersons());
+              if (deliverableUserPartnership.getPartnershipPersons() != null) {
+                deliverableUserPartnershipSave
+                  .setPartnershipPersons(deliverableUserPartnership.getPartnershipPersons());
+              }
+
+              deliverableUserPartnershipSave =
+                deliverableUserPartnershipManager.saveDeliverableUserPartnership(deliverableUserPartnershipSave);
+
+              this.saveDeliverableUserPartnershipsPersons(deliverableUserPartnership, deliverableUserPartnershipSave);
             }
-
-            deliverableUserPartnershipSave =
-              deliverableUserPartnershipManager.saveDeliverableUserPartnership(deliverableUserPartnershipSave);
-
-            this.saveDeliverableUserPartnershipsPersons(deliverableUserPartnership, deliverableUserPartnershipSave);
           }
 
         } else {
@@ -2178,18 +2187,21 @@ public class DeliverableAction extends BaseAction {
 
           if (deliverableUserPartnership.getInstitution() != null
             && deliverableUserPartnership.getInstitution().getId() != null) {
-            Institution institution =
-              institutionManager.getInstitutionById(deliverableUserPartnership.getInstitution().getId());
-            deliverableUserPartnershipSave.setInstitution(institution);
+            if (deliverableUserPartnership.getInstitution().getId() != -1) {
+              Institution institution =
+                institutionManager.getInstitutionById(deliverableUserPartnership.getInstitution().getId());
+              deliverableUserPartnershipSave.setInstitution(institution);
 
-            if (deliverableUserPartnership.getPartnershipPersons() != null) {
-              deliverableUserPartnershipSave.setPartnershipPersons(deliverableUserPartnership.getPartnershipPersons());
+              if (deliverableUserPartnership.getPartnershipPersons() != null) {
+                deliverableUserPartnershipSave
+                  .setPartnershipPersons(deliverableUserPartnership.getPartnershipPersons());
+              }
+
+              deliverableUserPartnershipSave =
+                deliverableUserPartnershipManager.saveDeliverableUserPartnership(deliverableUserPartnershipSave);
+
+              this.saveDeliverableUserPartnershipsPersons(deliverableUserPartnership, deliverableUserPartnershipSave);
             }
-
-            deliverableUserPartnershipSave =
-              deliverableUserPartnershipManager.saveDeliverableUserPartnership(deliverableUserPartnershipSave);
-
-            this.saveDeliverableUserPartnershipsPersons(deliverableUserPartnership, deliverableUserPartnershipSave);
           }
 
         }
