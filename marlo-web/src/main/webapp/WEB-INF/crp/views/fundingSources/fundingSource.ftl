@@ -576,7 +576,7 @@
                 <td><a href="${projectBudgetURL}">P${(projectBudget.project.id)!}</a></td>
                 <td><a href="${projectBudgetURL}">${(projectBudget.fundingSource.crp.acronym)!}</a></td>
                 <td class="col-md-5"><a href="${projectBudgetURL}">${(projectBudget.project.projectInfo.title)!}</a></td>
-                <td class="col-md-5"><a href="${projectBudgetURL}">${(projectBudget.justification)!}</a></td>
+                <td class="col-md-5"><a href="${projectBudgetURL}">${(projectBudget.modificationJustification)!}</a></td>
                 <td> ${(projectBudget.fundingSource.fundingSourceInfo.leadCenter.acronymName)!(projectBudget.fundingSource.fundingSourceInfo.leadCenter.name)!} </td>
                 <td>US$ <span>${((projectBudget.amount)!0)?number?string(",##0.00")}</td>
                </tr>
