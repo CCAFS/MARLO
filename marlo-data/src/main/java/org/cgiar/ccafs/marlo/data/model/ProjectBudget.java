@@ -50,6 +50,8 @@ public class ProjectBudget extends MarloAuditableEntity implements java.io.Seria
   private FundingSource fundingSource;
   @Expose
   private Phase phase;
+  @Expose
+  private String modificationJustification;
 
 
   @Override
@@ -105,9 +107,16 @@ public class ProjectBudget extends MarloAuditableEntity implements java.io.Seria
     return sb.toString();
   }
 
+
+  @Override
+  public String getModificationJustification() {
+    return modificationJustification;
+  }
+
   public Phase getPhase() {
     return phase;
   }
+
 
   public Project getProject() {
     return project;
@@ -149,6 +158,12 @@ public class ProjectBudget extends MarloAuditableEntity implements java.io.Seria
 
   public void setInstitution(Institution institution) {
     this.institution = institution;
+  }
+
+
+  @Override
+  public void setModificationJustification(String modificationJustification) {
+    this.modificationJustification = modificationJustification;
   }
 
   public void setPhase(Phase phase) {
