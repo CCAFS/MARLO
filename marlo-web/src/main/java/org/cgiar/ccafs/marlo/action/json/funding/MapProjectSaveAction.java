@@ -66,7 +66,7 @@ public class MapProjectSaveAction extends BaseAction {
   private int year;
   private Double genderPercentage;
   private Long projectId;
-
+  private String justification;
 
   @Inject
   public MapProjectSaveAction(APConfig config, InstitutionManager institutionManager, ProjectManager projectManager,
@@ -104,6 +104,7 @@ public class MapProjectSaveAction extends BaseAction {
       projectBudget.setBudgetType(budgetType);
       projectBudget.setInstitution(institution);
       projectBudget.setYear(year);
+      projectBudget.setModificationJustification(justification);
       projectBudget.setGenderPercentage(genderPercentage);
       projectBudget.setAmount(amount);
       projectBudget.setPhase(this.getActualPhase());
@@ -144,6 +145,7 @@ public class MapProjectSaveAction extends BaseAction {
     amount = Double.parseDouble(StringUtils.trim(parameters.get(APConstants.AMOUNT_REQUEST).getMultipleValues()[0]));
     genderPercentage = Double
       .parseDouble(StringUtils.trim(parameters.get(APConstants.GENDER_PERCENTAGE_REQUEST).getMultipleValues()[0]));
+    justification = StringUtils.trim(parameters.get(APConstants.JUSTIFICATION_REQUEST).getMultipleValues()[0]);
 
   }
 
