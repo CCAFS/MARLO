@@ -55,11 +55,22 @@ public class ProjectExpectedStudyQuantificationManagerImpl implements ProjectExp
     Phase currentPhase = projectExpectedStudyQuantification.getPhase();
 
 
-    if (currentPhase.getNext() != null) {
-      this.deleteProjectExpectedStudyQuiantificationPhase(currentPhase.getNext(),
-        projectExpectedStudyQuantification.getProjectExpectedStudy().getId(), projectExpectedStudyQuantification);
+    if (currentPhase.getDescription().equals(APConstants.PLANNING)) {
+      if (currentPhase.getNext() != null) {
+        this.deleteProjectExpectedStudyQuiantificationPhase(currentPhase.getNext(),
+          projectExpectedStudyQuantification.getProjectExpectedStudy().getId(), projectExpectedStudyQuantification);
+      }
     }
 
+    if (currentPhase.getDescription().equals(APConstants.REPORTING)) {
+      if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {
+        Phase upkeepPhase = currentPhase.getNext().getNext();
+        if (upkeepPhase != null) {
+          this.deleteProjectExpectedStudyQuiantificationPhase(upkeepPhase,
+            projectExpectedStudyQuantification.getProjectExpectedStudy().getId(), projectExpectedStudyQuantification);
+        }
+      }
+    }
 
     projectExpectedStudyQuantificationDAO
       .deleteProjectExpectedStudyQuantification(projectExpectedStudyQuantificationId);
@@ -175,6 +186,16 @@ public class ProjectExpectedStudyQuantificationManagerImpl implements ProjectExp
       if (currentPhase.getNext() != null) {
         this.saveExpectedStudyQuantificationPhase(currentPhase.getNext(),
           projectExpectedStudyQuantification.getProjectExpectedStudy().getId(), projectExpectedStudyQuantification);
+      }
+    }
+
+    if (currentPhase.getDescription().equals(APConstants.REPORTING)) {
+      if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {
+        Phase upkeepPhase = currentPhase.getNext().getNext();
+        if (upkeepPhase != null) {
+          this.saveExpectedStudyQuantificationPhase(upkeepPhase,
+            projectExpectedStudyQuantification.getProjectExpectedStudy().getId(), projectExpectedStudyQuantification);
+        }
       }
     }
 

@@ -116,12 +116,22 @@ public class ProjectInnovationInfoManagerImpl implements ProjectInnovationInfoMa
 
     ProjectInnovationInfo sourceInfo = projectInnovationInfoDAO.save(projectInnovationInfo);
     Phase phase = phaseDAO.find(sourceInfo.getPhase().getId());
+
+    // Conditions to Project Innovation Works In AR phase and Upkeep Phase
+    if (phase.getDescription().equals(APConstants.PLANNING) && phase.getNext() != null) {
+      this.saveInfoPhase(projectInnovationInfo.getPhase().getNext(),
+        projectInnovationInfo.getProjectInnovation().getId(), projectInnovationInfo);
+    }
+
     if (phase.getDescription().equals(APConstants.REPORTING)) {
-      if (projectInnovationInfo.getPhase().getNext() != null) {
-        this.saveInfoPhase(projectInnovationInfo.getPhase().getNext(),
-          projectInnovationInfo.getProjectInnovation().getId(), projectInnovationInfo);
+      if (phase.getNext() != null && phase.getNext().getNext() != null) {
+        Phase upkeepPhase = phase.getNext().getNext();
+        if (upkeepPhase != null) {
+          this.saveInfoPhase(upkeepPhase, projectInnovationInfo.getProjectInnovation().getId(), projectInnovationInfo);
+        }
       }
     }
+
     return sourceInfo;
   }
 

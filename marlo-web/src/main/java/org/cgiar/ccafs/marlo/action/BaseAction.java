@@ -1707,6 +1707,32 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return this.years;
   }
 
+
+  /**
+   * Years for all phases, but show the year greater or equal to current phase year.
+   * 
+   * @return String of years for a CRP/Platform/Center for all created phases
+   */
+  public ArrayList<String> getAllPhaseYearsGreater() {
+    this.years = new ArrayList<>();
+    Set<Integer> yearsSet = new HashSet<>();
+    List<Phase> phases = this.getAllCreatedPhases();
+    if (phases != null && !phases.isEmpty()) {
+      for (Phase phase : phases) {
+        yearsSet.add(phase.getYear());
+      }
+      if (yearsSet != null && !yearsSet.isEmpty()) {
+        for (Integer yearInt : yearsSet) {
+          if (yearInt >= this.getCurrentCycleYear()) {
+            this.years.add(yearInt.toString());
+          }
+        }
+        java.util.Collections.sort(this.years);
+      }
+    }
+    return this.years;
+  }
+
   /**
    * ************************ CENTER METHOD ******************************
    * This method calculates all the years between the start date and the end
@@ -3550,30 +3576,35 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
         for (Deliverable deliverable : deliverables) {
 
-          sectionStatus = this.sectionStatusManager.getSectionStatusByDeliverable(deliverable.getId(),
-            this.getCurrentCycle(), this.getCurrentCycleYear(), this.isUpKeepActive(), section);
-          if (sectionStatus == null) {
 
-            return false;
-          } else {
-            if (deliverable.getDeliverableInfo(phase).getStatus() != null && deliverable.getDeliverableInfo(phase)
-              .getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())) {
-              if (deliverable.getDeliverableInfo(phase).getYear() > this.getActualPhase().getYear()) {
-                sectionStatus.setMissingFields("");
-              }
-            }
-
-            if (this.isPlanningActive() && !this.isUpKeepActive()) {
-              if (deliverable.getDeliverableInfo(phase).getStatus() != null && deliverable.getDeliverableInfo(phase)
-                .getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())) {
-                sectionStatus.setMissingFields("");
-              }
-            }
-          }
-
-          if (sectionStatus.getMissingFields().length() != 0) {
+          if (!this.isDeliverableComplete(deliverable.getId(), this.getActualPhase().getId())) {
             return false;
           }
+
+          // sectionStatus = this.sectionStatusManager.getSectionStatusByDeliverable(deliverable.getId(),
+          // this.getCurrentCycle(), this.getCurrentCycleYear(), this.isUpKeepActive(), section);
+          // if (sectionStatus == null) {
+          //
+          // return false;
+          // } else {
+          // if (deliverable.getDeliverableInfo(phase).getStatus() != null && deliverable.getDeliverableInfo(phase)
+          // .getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())) {
+          // if (deliverable.getDeliverableInfo(phase).getYear() > this.getActualPhase().getYear()) {
+          // sectionStatus.setMissingFields("");
+          // }
+          // }
+          //
+          // if (this.isPlanningActive() && !this.isUpKeepActive()) {
+          // if (deliverable.getDeliverableInfo(phase).getStatus() != null && deliverable.getDeliverableInfo(phase)
+          // .getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())) {
+          // sectionStatus.setMissingFields("");
+          // }
+          // }
+          // }
+          //
+          // if (sectionStatus.getMissingFields().length() != 0) {
+          // return false;
+          // }
 
         }
 

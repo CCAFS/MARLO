@@ -273,6 +273,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
   }
 
+
   /**
    * Delete all LocElements Records when Geographic Scope is Global or NULL
    * 

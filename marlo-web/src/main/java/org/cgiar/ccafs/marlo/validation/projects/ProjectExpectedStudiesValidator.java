@@ -181,7 +181,7 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
     }
 
 
-    if (baseAction.isPlanningActive()) {
+    if (!(baseAction.isReportingActive() || baseAction.isUpKeepActive())) {
       // Validate Srf Targets Selection
       if (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getIsSrfTarget() == null) {
         action.addMessage(action.getText("targets"));

@@ -172,14 +172,16 @@ public class DeliverableListAction extends BaseAction {
 
 
     Deliverable deliverable = deliverableManager.getDeliverableById(deliverableID);
-
-    for (SectionStatus sectionStatus : deliverable.getSectionStatuses()) {
-      sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
-    }
-
-    projectID = deliverable.getProject().getId();
-
     if (deliverable != null) {
+      if (deliverable.getSectionStatuses() != null) {
+        for (SectionStatus sectionStatus : deliverable.getSectionStatuses()) {
+          sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
+        }
+      }
+
+      projectID = deliverable.getProject().getId();
+
+
       deliverableManager.saveDeliverable(deliverable);
       deliverableManager.deleteDeliverable(deliverableID);
       this.addActionMessage("message:" + this.getText("deleting.success"));
