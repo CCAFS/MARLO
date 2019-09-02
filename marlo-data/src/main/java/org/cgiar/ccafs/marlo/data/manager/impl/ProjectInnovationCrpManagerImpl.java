@@ -51,9 +51,22 @@ public class ProjectInnovationCrpManagerImpl implements ProjectInnovationCrpMana
 
     ProjectInnovationCrp projectInnovationCrp = this.getProjectInnovationCrpById(projectInnovationCrpId);
 
-    if (projectInnovationCrp.getPhase().getNext() != null) {
+    // Conditions to Project Innovation Works In AR phase and Upkeep Phase
+    if (projectInnovationCrp.getPhase().getDescription().equals(APConstants.PLANNING)
+      && projectInnovationCrp.getPhase().getNext() != null) {
       this.deleteProjectInnovationCrpPhase(projectInnovationCrp.getPhase().getNext(),
         projectInnovationCrp.getProjectInnovation().getId(), projectInnovationCrp);
+    }
+
+    if (projectInnovationCrp.getPhase().getDescription().equals(APConstants.REPORTING)) {
+      if (projectInnovationCrp.getPhase().getNext() != null
+        && projectInnovationCrp.getPhase().getNext().getNext() != null) {
+        Phase upkeepPhase = projectInnovationCrp.getPhase().getNext().getNext();
+        if (upkeepPhase != null) {
+          this.deleteProjectInnovationCrpPhase(upkeepPhase, projectInnovationCrp.getProjectInnovation().getId(),
+            projectInnovationCrp);
+        }
+      }
     }
 
     projectInnovationCrpDAO.deleteProjectInnovationCrp(projectInnovationCrpId);
@@ -125,13 +138,24 @@ public class ProjectInnovationCrpManagerImpl implements ProjectInnovationCrpMana
   public ProjectInnovationCrp saveProjectInnovationCrp(ProjectInnovationCrp projectInnovationCrp) {
 
     ProjectInnovationCrp crp = projectInnovationCrpDAO.save(projectInnovationCrp);
-
     Phase phase = phaseDAO.find(crp.getPhase().getId());
+
+
+    // Conditions to Project Innovation Works In AR phase and Upkeep Phase
+    if (phase.getDescription().equals(APConstants.PLANNING) && phase.getNext() != null) {
+      this.saveInnovationCrpPhase(crp.getPhase().getNext(), crp.getProjectInnovation().getId(), projectInnovationCrp);
+    }
+
     if (phase.getDescription().equals(APConstants.REPORTING)) {
-      if (crp.getPhase().getNext() != null) {
-        this.saveInnovationCrpPhase(crp.getPhase().getNext(), crp.getProjectInnovation().getId(), projectInnovationCrp);
+      if (phase.getNext() != null && phase.getNext().getNext() != null) {
+        Phase upkeepPhase = phase.getNext().getNext();
+        if (upkeepPhase != null) {
+          this.saveInnovationCrpPhase(upkeepPhase, crp.getProjectInnovation().getId(), projectInnovationCrp);
+        }
       }
     }
+
+
     return crp;
   }
 

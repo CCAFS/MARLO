@@ -121,7 +121,6 @@ public class ProjectPolicyCountryManagerImpl implements ProjectPolicyCountryMana
 
 
     ProjectPolicyCountry country = projectPolicyCountryDAO.save(projectPolicyCountry);
-
     Phase phase = phaseDAO.find(country.getPhase().getId());
 
     // Conditions to Project Policy Works In AR phase and Upkeep Phase

@@ -15,6 +15,7 @@
 package org.cgiar.ccafs.marlo.data.manager.impl;
 
 
+import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.dao.PhaseDAO;
 import org.cgiar.ccafs.marlo.data.dao.ProjectExpectedStudyRegionDAO;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyRegionManager;
@@ -56,12 +57,22 @@ public class ProjectExpectedStudyRegionManagerImpl implements ProjectExpectedStu
       this.getProjectExpectedStudyRegionById(projectExpectedStudyRegionId);
     Phase currentPhase = projectExpectedStudyRegion.getPhase();
 
-
-    if (currentPhase.getNext() != null) {
-      this.deleteProjectExpectedStudyRegionPhase(currentPhase.getNext(),
-        projectExpectedStudyRegion.getProjectExpectedStudy().getId(), projectExpectedStudyRegion);
+    if (currentPhase.getDescription().equals(APConstants.PLANNING)) {
+      if (currentPhase.getNext() != null) {
+        this.deleteProjectExpectedStudyRegionPhase(currentPhase.getNext(),
+          projectExpectedStudyRegion.getProjectExpectedStudy().getId(), projectExpectedStudyRegion);
+      }
     }
 
+    if (currentPhase.getDescription().equals(APConstants.REPORTING)) {
+      if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {
+        Phase upkeepPhase = currentPhase.getNext().getNext();
+        if (upkeepPhase != null) {
+          this.deleteProjectExpectedStudyRegionPhase(upkeepPhase,
+            projectExpectedStudyRegion.getProjectExpectedStudy().getId(), projectExpectedStudyRegion);
+        }
+      }
+    }
 
     projectExpectedStudyRegionDAO.deleteProjectExpectedStudyRegion(projectExpectedStudyRegionId);
   }
@@ -139,11 +150,22 @@ public class ProjectExpectedStudyRegionManagerImpl implements ProjectExpectedStu
     Phase currentPhase = region.getPhase();
 
 
-    if (currentPhase.getNext() != null) {
-      this.saveExpectedStudyRegionPhase(currentPhase.getNext(), region.getProjectExpectedStudy().getId(),
-        projectExpectedStudyRegion);
+    if (currentPhase.getDescription().equals(APConstants.PLANNING)) {
+      if (currentPhase.getNext() != null) {
+        this.saveExpectedStudyRegionPhase(currentPhase.getNext(), region.getProjectExpectedStudy().getId(),
+          projectExpectedStudyRegion);
+      }
     }
 
+    if (currentPhase.getDescription().equals(APConstants.REPORTING)) {
+      if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {
+        Phase upkeepPhase = currentPhase.getNext().getNext();
+        if (upkeepPhase != null) {
+          this.saveExpectedStudyRegionPhase(upkeepPhase, region.getProjectExpectedStudy().getId(),
+            projectExpectedStudyRegion);
+        }
+      }
+    }
 
     return region;
   }
