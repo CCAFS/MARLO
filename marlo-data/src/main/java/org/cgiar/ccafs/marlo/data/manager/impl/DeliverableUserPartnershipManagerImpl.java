@@ -193,7 +193,7 @@ public class DeliverableUserPartnershipManagerImpl implements DeliverableUserPar
     if (userPartnership.getPhase().getDescription().equals(APConstants.PLANNING)
       && userPartnership.getPhase().getNext() != null && !isPublication) {
       this.saveDeliverableUserPartnershipPhase(userPartnership.getPhase().getNext(),
-        userPartnership.getDeliverable().getId(), deliverableUserPartnership);
+        userPartnership.getDeliverable().getId(), userPartnership);
     }
 
     if (userPartnership.getPhase().getDescription().equals(APConstants.REPORTING)) {
