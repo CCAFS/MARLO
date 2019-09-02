@@ -21,16 +21,13 @@ import org.cgiar.ccafs.marlo.rest.dto.DeliverableDTO;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 
 @Mapper(componentModel = "jsr330")
-public abstract class DeliverablesMapper {
+public abstract interface DeliverablesMapper {
 
-  private static final Logger LOG = LoggerFactory.getLogger(DeliverablesMapper.class);
 
-  @Mappings({@Mapping(source = "crp.smoCode", target = "cgiarEntity.code"),
-    @Mapping(source = "crp", target = "cgiarEntity")})
+  @Mappings({@Mapping(source = "deliverable.crp", target = "cgiarEntity"),
+    @Mapping(source = "deliverable.crp.globalUnitType", target = "cgiarEntity.cgiarEntityTypeDTO")})
   public abstract DeliverableDTO deliverableToDeliverableDTO(Deliverable deliverable);
 }

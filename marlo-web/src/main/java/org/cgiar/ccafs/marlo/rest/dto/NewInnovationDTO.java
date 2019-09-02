@@ -27,8 +27,8 @@ public class NewInnovationDTO {
   @ApiModelProperty(notes = "Description of the Innovation", position = 20)
   private String narrative;
 
-  @ApiModelProperty(notes = "Project code", position = 25)
-  private Long projectId;
+  @ApiModelProperty(notes = "Project identifier", position = 25)
+  private ProjectDTO project;
 
   @ApiModelProperty(notes = "Stage of innovation code", position = 30)
   private StageOfInnovationDTO stageOfInnovation;
@@ -137,8 +137,8 @@ public class NewInnovationDTO {
   }
 
 
-  public Long getProjectId() {
-    return this.projectId;
+  public ProjectDTO getProject() {
+    return this.project;
   }
 
 
@@ -222,8 +222,8 @@ public class NewInnovationDTO {
   }
 
 
-  public void setProjectId(Long projectId) {
-    this.projectId = projectId;
+  public void setProject(ProjectDTO project) {
+    this.project = project;
   }
 
 

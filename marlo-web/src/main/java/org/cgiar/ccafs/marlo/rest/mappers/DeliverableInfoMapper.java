@@ -16,16 +16,12 @@
 package org.cgiar.ccafs.marlo.rest.mappers;
 
 import org.cgiar.ccafs.marlo.data.model.DeliverableInfo;
-import org.cgiar.ccafs.marlo.rest.dto.NewDeliverableInfoDTO;
+import org.cgiar.ccafs.marlo.rest.dto.DeliverableInfoDTO;
 
 import org.mapstruct.Mapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @Mapper(componentModel = "jsr330")
-public abstract class DeliverableInfoMapper {
+public abstract interface DeliverableInfoMapper {
 
-  private static final Logger LOG = LoggerFactory.getLogger(DeliverableInfoMapper.class);
-
-  public abstract NewDeliverableInfoDTO deliverableInfoToDeliverableInfoDTO(DeliverableInfo deliverableInfo);
+  public abstract DeliverableInfoDTO deliverableInfoToDeliverableInfoDTO(DeliverableInfo deliverableInfo);
 }

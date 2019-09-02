@@ -199,17 +199,17 @@ public class InnovationItem<T> {
       this.fieldErrors.add(new FieldErrorDTO("createInnovation", "Innovation Type",
         newInnovationDTO.getInnovationType() + " is an invalid innovation type code"));
     }
-    if (newInnovationDTO.getProjectId() == null) {
+    if (newInnovationDTO.getProject() == null) {
       this.fieldErrors
         .add(new FieldErrorDTO("createInnovation", "Project ID", "Innovation need an invalid project id"));
     } else {
-      Project project = this.projectManager.getProjectById(newInnovationDTO.getProjectId());
+      Project project = this.projectManager.getProjectById(newInnovationDTO.getProject().getId());
 
       // TODO: Include the validation that the project should be on same
       // CRP/PTF
       if (project == null) {
         this.fieldErrors.add(new FieldErrorDTO("createInnovation", "Project id",
-          newInnovationDTO.getProjectId() + " is an invalid project id"));
+          newInnovationDTO.getProject() + " is an invalid project id"));
       }
 
       this.projectInnovation.setProject(project);
@@ -566,12 +566,12 @@ public class InnovationItem<T> {
             newInnovationDTO.getInnovationType() + " is an invalid innovation type code"));
         }
 
-        Project project = this.projectManager.getProjectById(newInnovationDTO.getProjectId());
+        Project project = this.projectManager.getProjectById(newInnovationDTO.getProject().getId());
 
         // CRP/PTF
         if (project == null) {
           this.fieldErrors.add(new FieldErrorDTO("createInnovation", "Project id",
-            newInnovationDTO.getProjectId() + " is an invalid project id"));
+            newInnovationDTO.getProject() + " is an invalid project id"));
         }
         innovation.setProject(project);
         // SAVE innovation info

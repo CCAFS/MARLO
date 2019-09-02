@@ -1,5 +1,5 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
+ * This file is part of Managing Agricultural Research for Learning &
  * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,15 +19,15 @@ import io.swagger.annotations.ApiModelProperty;
 
 public class DeliverableDisseminationDTO {
 
-	@ApiModelProperty(notes = "Is this deliverable Open Access?")
-	private boolean isOpenAceess;
+  @ApiModelProperty(notes = "Is this deliverable Open Access?")
+  private Boolean isOpenAceess;
 
-	public boolean isOpenAceess() {
-		return isOpenAceess;
-	}
+  public Boolean isOpenAceess() {
+    return isOpenAceess;
+  }
 
-	public void setOpenAceess(boolean isOpenAceess) {
-		this.isOpenAceess = isOpenAceess;
-	}
+  public void setOpenAceess(Boolean isOpenAceess) {
+    this.isOpenAceess = isOpenAceess;
+  }
 
 }

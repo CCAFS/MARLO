@@ -27,7 +27,7 @@ public class DeliverableDTO {
   @ApiModelProperty(notes = "CRP information")
   private CGIAREntityDTO cgiarEntity;
   @ApiModelProperty(notes = "deliverable info")
-  private NewDeliverableInfoDTO deliverableinfo;
+  private DeliverableInfoDTO deliverableInfo;
   @ApiModelProperty(notes = "deliverable dissemination")
   private DeliverableDisseminationDTO dissemination;
   @ApiModelProperty(notes = "deliverable metadata")
@@ -38,8 +38,8 @@ public class DeliverableDTO {
   }
 
 
-  public NewDeliverableInfoDTO getDeliverableinfo() {
-    return deliverableinfo;
+  public DeliverableInfoDTO getDeliverableInfo() {
+    return deliverableInfo;
   }
 
   public DeliverableDisseminationDTO getDissemination() {
@@ -60,8 +60,8 @@ public class DeliverableDTO {
   }
 
 
-  public void setDeliverableinfo(NewDeliverableInfoDTO deliverableinfo) {
-    this.deliverableinfo = deliverableinfo;
+  public void setDeliverableInfo(DeliverableInfoDTO deliverableInfo) {
+    this.deliverableInfo = deliverableInfo;
   }
 
 

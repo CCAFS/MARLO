@@ -45,6 +45,7 @@ public class Deliverable extends MarloAuditableEntity implements java.io.Seriali
   private Phase phase;
   @Expose
   private Boolean isPublication;
+
   private DeliverableInfo deliverableInfo;
   private DeliverableDissemination dissemination;
   private DeliverableQualityCheck qualityCheck;

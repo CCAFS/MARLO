@@ -23,6 +23,8 @@ import org.cgiar.ccafs.marlo.rest.dto.DeliverableDTO;
 import org.cgiar.ccafs.marlo.rest.dto.NewDeliverableDTO;
 import org.cgiar.ccafs.marlo.security.Permission;
 
+import java.util.List;
+
 import javax.validation.Valid;
 
 import com.opensymphony.xwork2.inject.Inject;
@@ -43,6 +45,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -83,6 +86,23 @@ public class Deliverables {
     ResponseEntity<Long> response = new ResponseEntity<Long>(innovationId, HttpStatus.OK);
     return response;
 
+  }
+
+  /**
+   * Get all deliverables by phase and CRP *
+   * 
+   * @return a DeliverablesDTO with deliverables item
+   */
+  @ApiOperation(tags = {"Table 6 - Peer-reviewed publications"}, value = "${Deliverables.deliverable.all.value}",
+    response = DeliverableDTO.class, responseContainer = "List")
+  @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
+  @RequestMapping(value = "/{CGIAREntity}/deliverables", method = RequestMethod.GET,
+    produces = MediaType.APPLICATION_JSON_VALUE)
+  public List<DeliverableDTO> getAllDeliverables(
+    @ApiParam(value = "${Deliverables.deliverable.GET.param.CGIAR}", required = true) @PathVariable String CGIAREntity,
+    @ApiParam(value = "${Deliverables.deliverable.GET.id.param.year}", required = true) @RequestParam Integer year,
+    @ApiParam(value = "${Deliverables.deliverable.GET.id.param.phase}", required = true) @RequestParam String phase) {
+    return this.deliverableItem.getAllDeliverables(CGIAREntity, year, phase, this.getCurrentUser());
   }
 
   private User getCurrentUser() {

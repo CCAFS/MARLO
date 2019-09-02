@@ -16,9 +16,7 @@
 package org.cgiar.ccafs.marlo.rest.dto;
 
 import java.io.Serializable;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 public class CrpClusterKeyOutputDTO implements Serializable {
 
@@ -30,7 +28,7 @@ public class CrpClusterKeyOutputDTO implements Serializable {
   private CrpClusterOfActivityDTO crpClusterOfActivity;
   private String keyOutput;
   private List<CrpClusterKeyOutputOutcomeDTO> keyOutputOutcomes;
-  private Set<DeliverableInfoDTO> deliverables = new HashSet<DeliverableInfoDTO>(0);
+
 
   public Double getContribution() {
     return contribution;
@@ -40,9 +38,6 @@ public class CrpClusterKeyOutputDTO implements Serializable {
     return crpClusterOfActivity;
   }
 
-  public Set<DeliverableInfoDTO> getDeliverables() {
-    return deliverables;
-  }
 
   public String getKeyOutput() {
     return keyOutput;
@@ -60,9 +55,6 @@ public class CrpClusterKeyOutputDTO implements Serializable {
     this.crpClusterOfActivity = crpClusterOfActivity;
   }
 
-  public void setDeliverables(Set<DeliverableInfoDTO> deliverables) {
-    this.deliverables = deliverables;
-  }
 
   public void setKeyOutput(String keyOutput) {
     this.keyOutput = keyOutput;

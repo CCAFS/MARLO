@@ -27,6 +27,9 @@ public class InnovationDTO {
   @ApiModelProperty(notes = "Name of innovation", position = 20)
   private String title;
 
+  @ApiModelProperty(notes = "Project identifier", position = 25)
+  private ProjectDTO project;
+
   @ApiModelProperty(notes = "Description of the Innovation", position = 30)
   private String narrative;
 
@@ -87,6 +90,11 @@ public class InnovationDTO {
 
   public String getDescriptionStage() {
     return this.descriptionStage;
+  }
+
+
+  public Boolean getEquitativeEffort() {
+    return equitativeEffort;
   }
 
 
@@ -165,6 +173,11 @@ public class InnovationDTO {
   }
 
 
+  public void setEquitativeEffort(Boolean equitativeEffort) {
+    this.equitativeEffort = equitativeEffort;
+  }
+
+
   public void setEvidenceLink(String evidenceLink) {
     this.evidenceLink = evidenceLink;
   }
@@ -217,16 +230,6 @@ public class InnovationDTO {
 
   public void setTitle(String title) {
     this.title = title;
-  }
-
-
-  public Boolean getEquitativeEffort() {
-    return equitativeEffort;
-  }
-
-
-  public void setEquitativeEffort(Boolean equitativeEffort) {
-    this.equitativeEffort = equitativeEffort;
   }
 
   // TODO: Deliverables

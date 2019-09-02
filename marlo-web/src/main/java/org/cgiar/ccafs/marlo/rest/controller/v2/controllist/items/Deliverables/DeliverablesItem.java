@@ -37,10 +37,12 @@ import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.MetadataElement;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.User;
+import org.cgiar.ccafs.marlo.rest.dto.DeliverableDTO;
 import org.cgiar.ccafs.marlo.rest.dto.DeliverableUserDTO;
 import org.cgiar.ccafs.marlo.rest.dto.NewDeliverableDTO;
 import org.cgiar.ccafs.marlo.rest.errors.FieldErrorDTO;
 import org.cgiar.ccafs.marlo.rest.errors.MARLOFieldValidationException;
+import org.cgiar.ccafs.marlo.rest.mappers.DeliverablesMapper;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -84,6 +86,7 @@ public class DeliverablesItem<T> {
   private MetadataElement metadataElementTitle;
   private MetadataElement metadataElementCitation;
   private MetadataElement metadataElementPublication;
+  private DeliverablesMapper deliverablesMapper;
 
 
   @Inject
@@ -92,7 +95,7 @@ public class DeliverablesItem<T> {
     DeliverableTypeManager deliverableTypeManager, DeliverableInfoManager deliverableInfoManager,
     DeliverablePublicationMetadataManager deliverablePubMetadataManager,
     DeliverableMetadataElementManager deliverableMetadataElementManager, DeliverableUserManager deliverableUserManager,
-    DeliverableDisseminationManager deliverableDisseminationManager) {
+    DeliverableDisseminationManager deliverableDisseminationManager, DeliverablesMapper deliverablesMapper) {
     this.phaseManager = phaseManager;
     this.globalUnitManager = globalUnitManager;
     this.metadataElementManager = metadataElementManager;
@@ -103,7 +106,7 @@ public class DeliverablesItem<T> {
     this.deliverableMetadataElementManager = deliverableMetadataElementManager;
     this.deliverableUserManager = deliverableUserManager;
     this.deliverableDisseminationManager = deliverableDisseminationManager;
-
+    this.deliverablesMapper = deliverablesMapper;
   }
 
   public long createDeliverable(NewDeliverableDTO deliverable, String entityAcronym, User user) {
@@ -266,6 +269,58 @@ public class DeliverablesItem<T> {
     }
 
     return deliverablesID;
+  }
+
+  public List<DeliverableDTO> getAllDeliverables(String entityAcronym, int repoyear, String repoPhase, User user) {
+    List<DeliverableDTO> deliverablesListDTO = new ArrayList<DeliverableDTO>();
+    this.fieldErrors = new ArrayList<FieldErrorDTO>();
+    GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitByAcronym(entityAcronym);
+    if (globalUnitEntity == null) {
+      this.fieldErrors.add(new FieldErrorDTO("createDeliverable", "GlobalUnitEntity",
+        entityAcronym + " is an invalid CGIAR entity acronym"));
+    }
+    Phase phase =
+      this.phaseManager.findAll().stream().filter(c -> c.getCrp().getAcronym().equalsIgnoreCase(entityAcronym)
+        && c.getYear() == repoyear && c.getName().equalsIgnoreCase(repoPhase)).findFirst().get();
+
+    if (phase == null) {
+      this.fieldErrors
+        .add(new FieldErrorDTO("createDeliverable", "phase", deliverable.getPhase().getYear() + " is an invalid year"));
+    }
+    if (fieldErrors.size() == 0 || fieldErrors.isEmpty()) {
+      try {
+        List<DeliverableInfo> deliverablesList = new ArrayList<DeliverableInfo>();
+        List<Deliverable> fullDeliverableList = new ArrayList<Deliverable>();
+        Deliverable newDeliverable = null;
+        deliverablesList = deliverableInfoManager.getDeliverablesInfoByPhase(phase);
+        for (DeliverableInfo deliverableinfo : deliverablesList) {
+          newDeliverable = deliverableinfo.getDeliverable();
+          // System.out.println(deliverableinfo.getTitle());
+          newDeliverable.setDeliverableInfo(deliverableinfo);
+          if (newDeliverable.getDeliverableInfo() != null) {
+            if (newDeliverable.getPhase().getName().equals(repoPhase)
+              && newDeliverable.getPhase().getYear() == repoyear) {
+              fullDeliverableList.add(newDeliverable);
+            }
+          }
+        }
+
+        deliverablesListDTO = fullDeliverableList.stream()
+          .map(deliverables -> this.deliverablesMapper.deliverableToDeliverableDTO(deliverables))
+          .collect(Collectors.toList());
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+
+    } else {
+      if (!this.fieldErrors.isEmpty()) {
+        throw new MARLOFieldValidationException("Field Validation errors", "",
+          this.fieldErrors.stream()
+            .sorted(Comparator.comparing(FieldErrorDTO::getField, Comparator.nullsLast(Comparator.naturalOrder())))
+            .collect(Collectors.toList()));
+      }
+    }
+    return deliverablesListDTO;
   }
 
 }

@@ -1,5 +1,5 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
+ * This file is part of Managing Agricultural Research for Learning &
  * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,60 +15,51 @@
 
 package org.cgiar.ccafs.marlo.rest.dto;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import io.swagger.annotations.ApiModelProperty;
 
 public class MetadataElementDTO {
-	@ApiModelProperty(notes = "Id Metadata")
-	private String id;
-	@ApiModelProperty(notes = "Metadata Schema")
-	private String schema;
-	@ApiModelProperty(notes = "Element")
-	private String element;
-	@ApiModelProperty(notes = "Encode Name Metadata")
-	private String econdedName;
-	private List<DeliverableMetadataElementDTO> deliverableMetadataElements = new ArrayList<>();
 
-	public List<DeliverableMetadataElementDTO> getDeliverableMetadataElements() {
-		return deliverableMetadataElements;
-	}
+  @ApiModelProperty(notes = "Id Metadata")
+  private String id;
+  @ApiModelProperty(notes = "Metadata Schema")
+  private String schema;
+  @ApiModelProperty(notes = "Element")
+  private String element;
+  @ApiModelProperty(notes = "Encode Name Metadata")
+  private String econdedName;
 
-	public String getEcondedName() {
-		return econdedName;
-	}
 
-	public String getElement() {
-		return element;
-	}
+  public String getEcondedName() {
+    return econdedName;
+  }
 
-	public String getId() {
-		return id;
-	}
+  public String getElement() {
+    return element;
+  }
 
-	public String getSchema() {
-		return schema;
-	}
+  public String getId() {
+    return id;
+  }
 
-	public void setDeliverableMetadataElements(List<DeliverableMetadataElementDTO> deliverableMetadataElements) {
-		this.deliverableMetadataElements = deliverableMetadataElements;
-	}
+  public String getSchema() {
+    return schema;
+  }
 
-	public void setEcondedName(String econdedName) {
-		this.econdedName = econdedName;
-	}
 
-	public void setElement(String element) {
-		this.element = element;
-	}
+  public void setEcondedName(String econdedName) {
+    this.econdedName = econdedName;
+  }
 
-	public void setId(String id) {
-		this.id = id;
-	}
+  public void setElement(String element) {
+    this.element = element;
+  }
 
-	public void setSchema(String schema) {
-		this.schema = schema;
-	}
+  public void setId(String id) {
+    this.id = id;
+  }
+
+  public void setSchema(String schema) {
+    this.schema = schema;
+  }
 
 }
