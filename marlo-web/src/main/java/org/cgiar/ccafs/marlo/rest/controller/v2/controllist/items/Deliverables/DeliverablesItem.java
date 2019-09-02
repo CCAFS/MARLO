@@ -289,19 +289,16 @@ public class DeliverablesItem<T> {
     }
     if (fieldErrors.size() == 0 || fieldErrors.isEmpty()) {
       try {
-        List<DeliverableInfo> deliverablesList = new ArrayList<DeliverableInfo>();
+        List<DeliverableInfo> deliverablesInfoList = new ArrayList<DeliverableInfo>();
         List<Deliverable> fullDeliverableList = new ArrayList<Deliverable>();
-        Deliverable newDeliverable = null;
-        deliverablesList = deliverableInfoManager.getDeliverablesInfoByPhase(phase);
-        for (DeliverableInfo deliverableinfo : deliverablesList) {
-          newDeliverable = deliverableinfo.getDeliverable();
-          // System.out.println(deliverableinfo.getTitle());
-          newDeliverable.setDeliverableInfo(deliverableinfo);
-          if (newDeliverable.getDeliverableInfo() != null) {
-            if (newDeliverable.getPhase().getName().equals(repoPhase)
-              && newDeliverable.getPhase().getYear() == repoyear) {
-              fullDeliverableList.add(newDeliverable);
-            }
+
+
+        for (Deliverable deliverable : deliverableManager.getDeliverablesByPhase(phase.getId())) {
+          DeliverableInfo deliverableInfo = deliverable.getDeliverableInfo(phase);
+          if (deliverableInfo != null) {
+            Deliverable newDeliverable = deliverable;
+            newDeliverable.setDeliverableInfo(deliverableInfo);
+            fullDeliverableList.add(newDeliverable);
           }
         }
 
