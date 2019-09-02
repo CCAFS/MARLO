@@ -271,7 +271,7 @@ var fundingSourcePopupModule = (function() {
     var statusValue = $statusSelect.val();
     var leadValue = $institutionLeadSelect.val();
     var financeCode = $financeCode.val();
-    app.fields = 6;
+    app.fields = 5;
     app.missingFields = 0;
 
     // Institution Partners, at least one

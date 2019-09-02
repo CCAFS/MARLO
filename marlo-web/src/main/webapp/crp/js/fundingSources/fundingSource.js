@@ -1197,7 +1197,7 @@ var mappingFundingToProjectModule = (function() {
     });
     $amountInput.val(vueApp.amount);
     $genderInput.val(vueApp.gender);
-    $justificationInput.val(vueApp.justification);
+    $justificationInput.val(vueApp.modificationJustification);
     $step2Block.slideUp();
   }
 
@@ -1212,26 +1212,30 @@ var mappingFundingToProjectModule = (function() {
   }
 
   function validateForm() {
-    vueApp.isValidForm = true;
+    vueApp.isValidForm = false;
+    var missingFields = 0;
     retrivePopupValues();
 
     // Validate institution
     if((!vueApp.institutionID) || (vueApp.institutionID == '-1')) {
-      vueApp.isValidForm = false;
+      missingFields += 1;
     }
     // Validate project
     if((!vueApp.projectID) || (vueApp.projectID == '-1')) {
-      vueApp.isValidForm = false;
+      missingFields += 1;
     }
     // Validate Amount
     if(vueApp.amount <= 0) {
-      vueApp.isValidForm = false;
+      missingFields += 1;
     }
     // Validate justification
-    if(!vueApp.justification) {
-      vueApp.isValidForm = false;
+    if(!vueApp.modificationJustification) {
+      missingFields += 1;
     }
 
+    console.log(missingFields);
+
+    vueApp.isValidForm = (missingFields == 0);
     return vueApp.isValidForm;
   }
 
@@ -1247,7 +1251,7 @@ var mappingFundingToProjectModule = (function() {
           budgetTypeID: vueApp.budgetTypeID,
           amount: vueApp.amount,
           gender: vueApp.gender,
-          modificationJustification: vueApp.modificationJustification,
+          justification: vueApp.modificationJustification,
           year: vueApp.year,
           phaseID: phaseID
       };
@@ -1264,7 +1268,7 @@ var mappingFundingToProjectModule = (function() {
               var row = '<tr class="projectBudget-' + projectBudgetID + '">';
               row += '<td>' + vueApp.projectComposedID() + '</td>';
               row += '<td> ' + vueApp.projectTitle() + ' </td>';
-              row += '<td>' + vueApp.justification + ' </td>';
+              row += '<td>' + vueApp.modificationJustification + ' </td>';
               row += '<td> ' + vueApp.institutionAcronym() + ' </td>';
               row += '<td>US$ ' + setCurrencyFormat(vueApp.amount) + ' </td>';
               row += '<td><span class="removeProjectBudget trashIcon"></span></td>';
