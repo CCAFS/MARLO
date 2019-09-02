@@ -85,6 +85,7 @@ public class FundingSourceListAction extends BaseAction {
   private FundingSourceManager fundingSourceManager;
 
   private List<Institution> filteredInstitutions;
+  private List<FundingSourceInstitution> institutionFSFiltered;
   private Role cpRole;
   private FundingSourceInfoManager fundingSourceInfoManager;
   private RoleManager roleManager;
@@ -506,6 +507,10 @@ public class FundingSourceListAction extends BaseAction {
     }
   }
 
+  public List<FundingSourceInstitution> getInstitutionFSFiltered() {
+    return institutionFSFiltered;
+  }
+
   public void getInstitutionsIds() {
     // Separate institutions ids from institutions apConstans filters into arrayList
     int lastI = 0;
@@ -527,10 +532,10 @@ public class FundingSourceListAction extends BaseAction {
     }
   }
 
+
   public String getInstitutionsIDsFilter() {
     return institutionsIDsFilter;
   }
-
 
   /**
    * Migrated from the BaseAction. Leaving this in here as the call to the fundingSourceValidator
@@ -605,6 +610,7 @@ public class FundingSourceListAction extends BaseAction {
 
     }
   }
+
 
   @Override
   public void prepare() throws Exception {
@@ -713,14 +719,16 @@ public class FundingSourceListAction extends BaseAction {
       this.getInstitutionsIds();
       this.removeInstitutions();
       this.fillInstitutionsList();
-      this.setChecksToList();
+
       // return string with the institutions in the apconstant variable separated with ','
       this.convertListToString(institutionsIDsList);
     } else {
       if (contactsPoint != null && usersContactPoint != null) {
+        institutionFSFiltered = new ArrayList<>();
         this.removeInstitutionsContactPointRole();
       }
     }
+    this.setChecksToList();
   }
 
 
@@ -846,6 +854,7 @@ public class FundingSourceListAction extends BaseAction {
                       for (FundingSourceInstitution institutionFS : fundingSource.getInstitutions()) {
                         if (institutionFS.getInstitution().getId().equals(partner.getInstitution().getId())) {
                           contains++;
+                          institutionFSFiltered.add(institutionFS);
                         }
                       }
                       if (contains == 0) {
@@ -931,23 +940,39 @@ public class FundingSourceListAction extends BaseAction {
     }
   }
 
+
   private void setChecksToList() {
     // check if the institution is selected in the front component, if yes, then set as 'yes' boolean property value of
     // funding institution
     if (fundingSourceInstitutions != null) {
-      for (FundingSourceInstitution fundingInstitution : fundingSourceInstitutions) {
-        if (filteredInstitutions != null && filteredInstitutions.contains(fundingInstitution.getInstitution())) {
-          fundingInstitution.setIsChecked(true);
-        } else {
-          fundingInstitution.setIsChecked(false);
+      if (institutionFSFiltered != null) {
+        System.out.println("entro aqui");
+        for (FundingSourceInstitution fundingInstitution : institutionFSFiltered) {
+          if (filteredInstitutions != null && filteredInstitutions.contains(fundingInstitution.getInstitution())) {
+            fundingInstitution.setIsChecked(true);
+          } else {
+            // fundingInstitution.setIsChecked(false);
+          }
+        }
+      } else {
+        System.out.println("entro aca");
+
+        for (FundingSourceInstitution fundingInstitution : fundingSourceInstitutions) {
+          if (filteredInstitutions != null && filteredInstitutions.contains(fundingInstitution.getInstitution())) {
+            fundingInstitution.setIsChecked(true);
+          } else {
+            fundingInstitution.setIsChecked(false);
+          }
         }
       }
     }
   }
 
+
   public void setClosedProjects(List<FundingSource> closedProjects) {
     this.closedProjects = closedProjects;
   }
+
 
   public void setFilteredInstitutions(List<Institution> filteredInstitutions) {
     this.filteredInstitutions = filteredInstitutions;
@@ -959,6 +984,10 @@ public class FundingSourceListAction extends BaseAction {
 
   public void setFundingSourceInstitutions(List<FundingSourceInstitution> fundingSourceInstitutions) {
     this.fundingSourceInstitutions = fundingSourceInstitutions;
+  }
+
+  public void setInstitutionFSFiltered(List<FundingSourceInstitution> institutionFSFiltered) {
+    this.institutionFSFiltered = institutionFSFiltered;
   }
 
 
