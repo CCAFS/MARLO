@@ -19,11 +19,6 @@ import io.swagger.annotations.ApiModelProperty;
 
 public class DeliverableInfoDTO {
 
-  @ApiModelProperty(notes = "Global Unit Cluster KeyOutput", position = 1)
-  private CrpClusterKeyOutputDTO crpClusterKeyOutput;
-
-  @ApiModelProperty(notes = "Global Unit Program Outcome", position = 2)
-  private CrpProgramOutcomeDTO crpProgramOutcome;
 
   @ApiModelProperty(notes = "Deliverable type", position = 3)
   private DeliverableTypeDTO deliverableType;
@@ -70,12 +65,6 @@ public class DeliverableInfoDTO {
   @ApiModelProperty(notes = "Is Global Location", position = 17)
   private Boolean isLocationGlobal;
 
-  @ApiModelProperty(notes = "Geographic Scope", position = 16)
-  private GeographicScopeDTO geographicScope;
-
-  @ApiModelProperty(notes = "Region", position = 16)
-  private RegionDTO region;
-
 
   public Boolean getAdoptedLicense() {
     return adoptedLicense;
@@ -84,16 +73,6 @@ public class DeliverableInfoDTO {
 
   public Boolean getAllowModifications() {
     return allowModifications;
-  }
-
-
-  public CrpClusterKeyOutputDTO getCrpClusterKeyOutput() {
-    return crpClusterKeyOutput;
-  }
-
-
-  public CrpProgramOutcomeDTO getCrpProgramOutcome() {
-    return crpProgramOutcome;
   }
 
 
@@ -109,11 +88,6 @@ public class DeliverableInfoDTO {
 
   public String getDescription() {
     return description;
-  }
-
-
-  public GeographicScopeDTO getGeographicScope() {
-    return geographicScope;
   }
 
 
@@ -139,11 +113,6 @@ public class DeliverableInfoDTO {
 
   public PhaseDTO getPhase() {
     return phase;
-  }
-
-
-  public RegionDTO getRegion() {
-    return region;
   }
 
 
@@ -182,16 +151,6 @@ public class DeliverableInfoDTO {
   }
 
 
-  public void setCrpClusterKeyOutput(CrpClusterKeyOutputDTO crpClusterKeyOutput) {
-    this.crpClusterKeyOutput = crpClusterKeyOutput;
-  }
-
-
-  public void setCrpProgramOutcome(CrpProgramOutcomeDTO crpProgramOutcome) {
-    this.crpProgramOutcome = crpProgramOutcome;
-  }
-
-
   public void setDeliverable(DeliverableDTO deliverable) {
     this.deliverable = deliverable;
   }
@@ -204,11 +163,6 @@ public class DeliverableInfoDTO {
 
   public void setDescription(String description) {
     this.description = description;
-  }
-
-
-  public void setGeographicScope(GeographicScopeDTO geographicScope) {
-    this.geographicScope = geographicScope;
   }
 
 
@@ -234,11 +188,6 @@ public class DeliverableInfoDTO {
 
   public void setPhase(PhaseDTO phase) {
     this.phase = phase;
-  }
-
-
-  public void setRegion(RegionDTO region) {
-    this.region = region;
   }
 
 

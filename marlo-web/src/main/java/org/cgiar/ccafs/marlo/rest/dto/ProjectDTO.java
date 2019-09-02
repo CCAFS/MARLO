@@ -19,6 +19,7 @@ import java.util.Date;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import io.swagger.annotations.ApiModelProperty;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
@@ -27,6 +28,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 
 public class ProjectDTO {
 
+  @ApiModelProperty(notes = "Project id", position = 1)
   private Long id;
   @JsonFormat(pattern = "yyyy-MM-dd")
   private Date createDate;
