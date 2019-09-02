@@ -3,12 +3,12 @@
 [#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["datatables.net", "datatables.net-bs", "malihu-custom-scrollbar-plugin", "select2", "vue"] /]
 [#assign customJS = [
-  "${baseUrlMedia}/js/fundingSources/fundingSourcesList.js?20190706" 
+  "${baseUrlMedia}/js/fundingSources/fundingSourcesList.js?20190902" 
   ] 
 /]
 [#assign customCSS = [
   "${baseUrl}/global/css/customDataTable.css",
-  "${baseUrlMedia}/css/fundingSources/fundingSourcesList.css?20190706"
+  "${baseUrlMedia}/css/fundingSources/fundingSourcesList.css?20190902"
   ] 
 /]
 [#assign currentSection = "fundingSources" /] 
@@ -93,7 +93,7 @@
                     [@customForm.select name="budgetTypeID" i18nkey="fundingSourcesList.add.budgetType" className="budgetType"  listName="budgetTypes" keyFieldName=""  displayFieldName="" required=true editable=true /]
                   </div>
                   <div class="col-md-6">
-                    [@customForm.select name="agreementStatus" i18nkey="fundingSourcesList.add.status" className="agreementStatus"  listName="agreementStatus" keyFieldName=""  displayFieldName="" required=true editable=true /]
+                    [@customForm.select name="agreementStatus" i18nkey="fundingSourcesList.add.status" className="agreementStatus"  listName="agreementStatus" keyFieldName=""  displayFieldName="" required=false editable=true /]
                   </div>
                 </div>
                 <hr />
@@ -127,15 +127,22 @@
                     </ul>
                   </div>
                 
-                  <br>
-                  <hr></hr>
+                  <br> 
+                  [#-- Progress Bar --]
+                  <div class="progress" style="height: 4px;">
+                    <div class="progress-bar progress-bar-info" role="progressbar" v-bind:aria-valuenow="progress()" aria-valuemin="0" aria-valuemax="100" :style="{width: progress() + '%'}">
+                      <span class="sr-only">{{ progress() }}% Complete</span>
+                    </div>
+                  </div>
+                  
                   <div class="text-right">
                     <input type="hidden" name="partnerIDs" value="" />
                     <input type="hidden" name="phaseID" value="${(actualPhase.id)!}" />
                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                     <button type="submit" class="btn btn-primary addFundingSourceFromPopup" v-bind:disabled="!isValid" v-if="!fundingSources.length">Create Funding Source</button>
                   </div>
-                
+                  
+                  
                 </div>
               </div>
                
