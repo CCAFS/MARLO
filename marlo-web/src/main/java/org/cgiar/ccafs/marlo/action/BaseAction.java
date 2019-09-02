@@ -1707,6 +1707,32 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return this.years;
   }
 
+
+  /**
+   * Years for all phases, but show the year greater or equal to current phase year.
+   * 
+   * @return String of years for a CRP/Platform/Center for all created phases
+   */
+  public ArrayList<String> getAllPhaseYearsGreater() {
+    this.years = new ArrayList<>();
+    Set<Integer> yearsSet = new HashSet<>();
+    List<Phase> phases = this.getAllCreatedPhases();
+    if (phases != null && !phases.isEmpty()) {
+      for (Phase phase : phases) {
+        yearsSet.add(phase.getYear());
+      }
+      if (yearsSet != null && !yearsSet.isEmpty()) {
+        for (Integer yearInt : yearsSet) {
+          if (yearInt >= this.getCurrentCycleYear()) {
+            this.years.add(yearInt.toString());
+          }
+        }
+        java.util.Collections.sort(this.years);
+      }
+    }
+    return this.years;
+  }
+
   /**
    * ************************ CENTER METHOD ******************************
    * This method calculates all the years between the start date and the end
