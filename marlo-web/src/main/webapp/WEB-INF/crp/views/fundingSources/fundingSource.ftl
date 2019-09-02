@@ -637,7 +637,7 @@
           </div>
           
           <div class="form-group">
-            [@customForm.textArea name="justification" i18nkey="mapFunding.justification" help="mapFunding.justification.help" helpIcon=false className="" required=true editable=editable /]
+            [@customForm.textArea name="modificationJustification" i18nkey="mapFunding.justification" help="mapFunding.justification.help" helpIcon=false className="" required=true editable=editable /]
           </div>
         </div>
         
