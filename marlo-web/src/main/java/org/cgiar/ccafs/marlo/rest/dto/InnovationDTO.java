@@ -72,6 +72,8 @@ public class InnovationDTO {
   @ApiModelProperty(notes = "Contributing CRPs/Platforms", position = 140)
   private List<CGIAREntityDTO> contributingCGIAREntities;
 
+  @ApiModelProperty(notes = "Phase year/section", position = 160)
+  private PhaseDTO phase;
 
   public List<CGIAREntityDTO> getContributingCGIAREntities() {
     return this.contributingCGIAREntities;
@@ -135,6 +137,16 @@ public class InnovationDTO {
 
   public String getOtherInnovationType() {
     return this.otherInnovationType;
+  }
+
+
+  public PhaseDTO getPhase() {
+    return phase;
+  }
+
+
+  public ProjectDTO getProject() {
+    return project;
   }
 
 
@@ -218,6 +230,16 @@ public class InnovationDTO {
   }
 
 
+  public void setPhase(PhaseDTO phase) {
+    this.phase = phase;
+  }
+
+
+  public void setProject(ProjectDTO project) {
+    this.project = project;
+  }
+
+
   public void setRegions(List<RegionDTO> regions) {
     this.regions = regions;
   }
@@ -231,6 +253,7 @@ public class InnovationDTO {
   public void setTitle(String title) {
     this.title = title;
   }
+
 
   // TODO: Deliverables
   // TODO: Shared projects
