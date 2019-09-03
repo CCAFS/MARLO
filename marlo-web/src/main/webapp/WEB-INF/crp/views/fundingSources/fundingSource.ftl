@@ -500,7 +500,6 @@
                 <p>US$ <span>${((budget.budget)!0)?number?string(",##0.00")}</span></p>
                  <input type="hidden" name="fundingSource.budgets[${budgetIndex}].budget" value="${(budget.budget)!0}"/>
               </div>
-                
               [/#if]
             </div>
             <div class="clearfix"></div>
@@ -512,7 +511,6 @@
 
           [#-- Projects that this funding source is assigned to --]
           <h5 class="sectionSubTitle">[@s.text name="fundingSource.projectsAssigned" /]:</h5>
-          
           <table class="table tableProjectBudgets-${year}">
             <thead>
              <tr>
@@ -534,8 +532,7 @@
               [#if projectBudget.year == year]
                <tr class="projectBudgetItem projectBudget-${projectBudget.id}">
                 <td><a href="${projectBudgetURL}">P${(projectBudget.project.id)!}</a></td>
-                <td class="col-md-5"><a href="${projectBudgetURL}">${(projectBudget.project.projectInfo.title)!}</a> 
-                </td>
+                <td class="col-md-5"><a href="${projectBudgetURL}">${(projectBudget.project.projectInfo.title)!}</a> </td>
                 <td> ${(projectBudget.modificationJustification)!} </td>
                 <td> ${(projectBudget.institution.acronymName)!(projectBudget.institution.name)}</td>
                 <td>US$ <span>${((projectBudget.amount)!0)?number?string(",##0.00")}</td>
@@ -549,7 +546,7 @@
           </table>
           
           [#-- Button to map Funding Source to a project --  && action.canMapProjects(year) --]
-          [#if editable ]
+          [#if editable && (year == currentCycleYear)]
             <button type="button" class="btn btn-primary pull-right year-" data-year="${year}" data-toggle="modal" data-target="#mapFundingToProject">Map Funding Source to a Project</button>
             <div class="clearfix"></div>
           [/#if]
@@ -629,15 +626,10 @@
               [@customForm.input name="amount" i18nkey="mapFunding.amount" className="currencyInput" required=true editable=editable /]
               <small>Remaining budget: US$ {{ setCurrencyFormat(remainingBudget) }} </small>
             </div>
-            [#-- 
-            <div class="col-md-6">
-              [@customForm.input name="genderPercentage" i18nkey="mapFunding.genderPercentage" className="percentageInput" required=false editable=editable /]
-            </div>
-             --]
           </div>
           
           <div class="form-group">
-            [@customForm.textArea name="modificationJustification" i18nkey="mapFunding.justification" help="mapFunding.justification.help" helpIcon=false className="" required=true editable=editable /]
+            [@customForm.textArea name="rationale" i18nkey="mapFunding.justification" help="mapFunding.justification.help" helpIcon=false className="" required=true editable=editable /]
           </div>
         </div>
         
