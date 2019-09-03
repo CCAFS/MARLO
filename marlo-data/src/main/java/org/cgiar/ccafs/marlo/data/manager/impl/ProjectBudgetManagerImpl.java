@@ -91,9 +91,6 @@ public class ProjectBudgetManagerImpl implements ProjectBudgetManager {
     projectBudgetAdd.setGenderValue(0.0);
     projectBudgetAdd.setInstitution(budget.getInstitution());
     projectBudgetAdd.setYear(budget.getYear() + 1);
-    if (budget.getModificationJustification() != null) {
-      projectBudgetAdd.setModificationJustification(budget.getModificationJustification());
-    }
   }
 
   @Override
