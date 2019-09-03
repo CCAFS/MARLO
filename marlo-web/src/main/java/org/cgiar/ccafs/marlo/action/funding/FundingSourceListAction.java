@@ -946,11 +946,8 @@ public class FundingSourceListAction extends BaseAction {
     // funding institution
     if (fundingSourceInstitutions != null) {
       if (institutionFSFiltered != null) {
-        System.out.println("entro aqui");
         for (FundingSourceInstitution fundingInstitution : fundingSourceInstitutions) {
           if (institutionFSFiltered.contains(fundingInstitution)) {
-            System.out.println("entro aqui 1 " + fundingInstitution.getInstitution().getAcronym());
-
             fundingInstitution.setIsChecked(true);
           } else {
             fundingInstitution.setIsChecked(false);
