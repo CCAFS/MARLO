@@ -1314,7 +1314,7 @@ public class ProjectActivitiesSummaryAction extends BaseSummariesAction implemen
     if (projectLeader != null) {
       if (projectLeader.getInstitution() != null && projectLeader.getInstitution().getAcronym() != ""
         && projectLeader.getInstitution().getAcronym() != null) {
-        title += projectLeader.getInstitution().getAcronym() + "-";
+        title = this.getText("project.activities.title");
       }
     }
 
@@ -1331,25 +1331,6 @@ public class ProjectActivitiesSummaryAction extends BaseSummariesAction implemen
       // projectInfo.setAdministrative(false);
     }
 
-    if (projectInfo.getAdministrative() == false) {
-      if (flagships != null) {
-        if (!flagships.isEmpty()) {
-          for (CrpProgram crpProgram : flagships) {
-            title += crpProgram.getAcronym() + "-";
-          }
-        }
-      }
-      if (projectInfo.getNoRegional() != null && projectInfo.getNoRegional()) {
-        title += "Global" + "-";
-      } else {
-        if (regions != null && !regions.isEmpty()) {
-          for (CrpProgram crpProgram : regions) {
-            title += crpProgram.getAcronym() + "-";
-          }
-        }
-      }
-    }
-    title += "P" + Long.toString(projectID);
     // Get datetime
     ZonedDateTime timezone = ZonedDateTime.now();
     DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-d 'at' HH:mm ");
