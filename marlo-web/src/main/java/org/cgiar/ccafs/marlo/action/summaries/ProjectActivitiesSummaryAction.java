@@ -296,41 +296,13 @@ public class ProjectActivitiesSummaryAction extends BaseSummariesAction implemen
     if (this.getProject().getProjectInfo().getAdministrative() != null
       && this.getProject().getProjectInfo().getAdministrative() == true) {
 
-      if (hasActivities) {
-        masterReport.getParameterValues().put("i8nActivitiesPlanningMenu",
-          "6. " + this.getText("projects.menu.activities"));
-        masterReport.getParameterValues().put("i8nBudgetPlanningMenu",
-          "" + "Project " + this.getText("projects.menu.budget") + " (USD)");
-        masterReport.getParameterValues().put("i8nBudgetPartnerPlanningMenu",
-          "7.1 " + this.getText("projects.menu.budgetByPartners") + " (USD)");
-        masterReport.getParameterValues().put("i8nBudgetCoAsPlanningMenu",
-          "7.2 " + this.getText("planning.cluster") + " (USD)");
-      } else {
-        masterReport.getParameterValues().put("i8nBudgetPlanningMenu",
-          "6. " + "Project " + this.getText("projects.menu.budget") + " (USD)");
-        masterReport.getParameterValues().put("i8nBudgetPartnerPlanningMenu",
-          "6.1 " + this.getText("projects.menu.budgetByPartners") + " (USD)");
-        masterReport.getParameterValues().put("i8nBudgetCoAsPlanningMenu",
-          "6.2 " + this.getText("planning.cluster") + " (USD)");
-      }
     } else {
 
       if (hasActivities) {
         masterReport.getParameterValues().put("i8nActivitiesPlanningMenu",
-          "" + this.getText("projects.menu.activities"));
-        masterReport.getParameterValues().put("i8nBudgetPlanningMenu",
-          "8. " + "Project " + this.getText("projects.menu.budget") + " (USD)");
-        masterReport.getParameterValues().put("i8nBudgetPartnerPlanningMenu",
-          "8.1 " + this.getText("projects.menu.budgetByPartners") + " (USD)");
-        masterReport.getParameterValues().put("i8nBudgetCoAsPlanningMenu",
-          "8.2 " + this.getText("planning.cluster") + " (USD)");
-      } else {
-        masterReport.getParameterValues().put("i8nBudgetPlanningMenu",
-          "" + "Project " + this.getText("projects.menu.budget") + " (USD)");
-        masterReport.getParameterValues().put("i8nBudgetPartnerPlanningMenu",
-          "7.1 " + this.getText("projects.menu.budgetByPartners") + " (USD)");
-        masterReport.getParameterValues().put("i8nBudgetCoAsPlanningMenu",
-          "7.2 " + this.getText("planning.cluster") + " (USD)");
+          "On going " + this.getText("projects.menu.activities"));
+        masterReport.getParameterValues().put("i8nClosedActivitiesPlanningMenu",
+          "Completed/Cancelled " + this.getText("projects.menu.activities"));
       }
     }
     /**
@@ -342,22 +314,6 @@ public class ProjectActivitiesSummaryAction extends BaseSummariesAction implemen
      * Menu Reporting
      */
     masterReport.getParameterValues().put("i8nProjectReportingMenu", "1. " + this.getText("projects.menu.description"));
-
-
-    if (hasActivities) {
-      masterReport.getParameterValues().put("i8nActivitiesReportingMenu",
-        "8. " + this.getText("projects.menu.activities"));
-      masterReport.getParameterValues().put("i8nLeveragesReportingMenu",
-        "9. " + this.getText("breadCrumb.menu.leverage"));
-      masterReport.getParameterValues().put("i8nProjectPolicyMenu", "10. " + this.getText("breadCrumb.menu.policy"));
-      masterReport.getParameterValues().put("i8nProjectContributionMenu",
-        "11. " + this.getText("breadCrumb.menu.contribution"));
-
-    } else {
-      masterReport.getParameterValues().put("i8nLeveragesReportingMenu",
-        "8. " + this.getText("breadCrumb.menu.leverage"));
-    }
-
 
     /**
      * End Menu Reporting
@@ -605,7 +561,7 @@ public class ProjectActivitiesSummaryAction extends BaseSummariesAction implemen
         // if (this.getSelectedCycle().equals("Planning")) {
         this.fillSubreport((SubReport) hm.get("activities"), "activities_list", args);
         // } else {
-        // this.fillSubreport((SubReport) hm.get("activities_reporting_list"), "activities_reporting_list", args);
+        this.fillSubreport((SubReport) hm.get("closed_activities"), "closed_activities", args);
         // }
 
 
@@ -643,8 +599,8 @@ public class ProjectActivitiesSummaryAction extends BaseSummariesAction implemen
       case "activities_list":
         model = this.getActivitiesTableModel();
         break;
-      case "activities_reporting_list":
-        model = this.getActivitiesReportingTableModel();
+      case "closed_activities":
+        model = this.getClosedActivitiesTableModel();
         break;
 
     }
@@ -782,6 +738,63 @@ public class ProjectActivitiesSummaryAction extends BaseSummariesAction implemen
   public String getCaseStudyUrlPath(String project) {
     return config.getProjectsBaseFolder(this.getCrpSession()) + File.separator + project + File.separator + "caseStudy"
       + File.separator;
+  }
+
+  private TypedTableModel getClosedActivitiesTableModel() {
+    TypedTableModel model = new TypedTableModel(
+      new String[] {"activity_id", "title", "description", "start_date", "end_date", "institution", "activity_leader",
+        "status", "deliverables"},
+      new Class[] {Long.class, String.class, String.class, String.class, String.class, String.class, String.class,
+        String.class, String.class},
+      0);
+    SimpleDateFormat formatter = new SimpleDateFormat("MMM yyyy");
+    if (!project.getActivities().isEmpty()) {
+      for (Activity activity : project.getActivities().stream().sorted((d1, d2) -> Long.compare(d1.getId(), d2.getId()))
+        .filter(a -> a.isActive() && (a.getActivityStatus() != 2 && a.getActivityStatus() != 4) && a.getPhase() != null
+          && a.getPhase().equals(this.getSelectedPhase()))
+        .collect(Collectors.toList())) {
+        String institution = null;
+        String activityLeader = null;
+        String status = null;
+        String startDate = null;
+        String endDate = null;
+        String deliverables = "";
+        if (activity.getStartDate() != null) {
+          startDate = formatter.format(activity.getStartDate());
+        }
+        if (activity.getEndDate() != null) {
+          endDate = formatter.format(activity.getEndDate());
+        }
+        if (activity.getProjectPartnerPerson() != null) {
+          institution = activity.getProjectPartnerPerson().getProjectPartner().getInstitution().getComposedName();
+          activityLeader = activity.getProjectPartnerPerson().getUser().getComposedName() + "\n&lt;"
+            + activity.getProjectPartnerPerson().getUser().getEmail() + "&gt;";
+        }
+        List<DeliverableActivity> deliverableActivityList = activity.getDeliverableActivities().stream()
+          .filter(da -> da.isActive() && da.getPhase() != null && da.getPhase().equals(this.getSelectedPhase()))
+          .collect(Collectors.toList());
+        if (deliverableActivityList != null && !deliverableActivityList.isEmpty()) {
+          for (DeliverableActivity deliverableActivity : deliverableActivityList) {
+            String deliverableTitle = "";
+            if (deliverableActivity.getDeliverable().getDeliverableInfo(this.getSelectedPhase()).getTitle() != null) {
+              deliverableTitle =
+                deliverableActivity.getDeliverable().getDeliverableInfo(this.getSelectedPhase()).getTitle();
+            } else {
+              deliverableTitle = "&lt;Not Defined&gt;";
+            }
+            if (deliverables.isEmpty()) {
+              deliverables = "● D" + deliverableActivity.getDeliverable().getId() + ": " + deliverableTitle;
+            } else {
+              deliverables += "<br>● D" + deliverableActivity.getDeliverable().getId() + ": " + deliverableTitle;
+            }
+          }
+        }
+        status = ProjectStatusEnum.getValue(activity.getActivityStatus().intValue()).getStatus();
+        model.addRow(new Object[] {activity.getId(), activity.getTitle(), activity.getDescription(), startDate, endDate,
+          institution, activityLeader, status, deliverables});
+      }
+    }
+    return model;
   }
 
   @Override
@@ -1130,7 +1143,7 @@ public class ProjectActivitiesSummaryAction extends BaseSummariesAction implemen
       .filter(gu -> gu.isActive() && gu.isOrigin()).collect(Collectors.toList()).get(0);
 
     StringBuffer fileName = new StringBuffer();
-    fileName.append("FullProjectReportSummary-");
+    fileName.append("ProjectActivitiesSummary-");
     fileName.append(globalUnitProject.getGlobalUnit().getAcronym() + "-");
     fileName.append("P" + projectID + "-");
     fileName.append(this.getSelectedCycle() + "-");
@@ -1290,20 +1303,25 @@ public class ProjectActivitiesSummaryAction extends BaseSummariesAction implemen
     ProjectPartner projectLeader) {
     // Initialization of Model
     TypedTableModel model = new TypedTableModel(
-      new String[] {"title", "center", "current_date", "project_submission", "cycle", "isNew", "isAdministrative",
-        "type", "isGlobal", "isPhaseOne", "budget_gender", "hasTargetUnit", "hasW1W2Co", "hasActivities", "phaseID",
-        "hasSpecificitiesDeliverableIntellectualAsset", "hasLP6"},
-      new Class[] {String.class, String.class, String.class, String.class, String.class, Boolean.class, Boolean.class,
-        String.class, Boolean.class, Boolean.class, Boolean.class, Boolean.class, Boolean.class, Boolean.class,
-        Long.class, Boolean.class, Boolean.class});
+      new String[] {"title", "projectTitle", "center", "current_date", "project_submission", "cycle", "isNew",
+        "isAdministrative", "type", "isGlobal", "isPhaseOne", "budget_gender", "hasTargetUnit", "hasW1W2Co",
+        "hasActivities", "phaseID", "hasSpecificitiesDeliverableIntellectualAsset", "hasLP6"},
+      new Class[] {String.class, String.class, String.class, String.class, String.class, String.class, Boolean.class,
+        Boolean.class, String.class, Boolean.class, Boolean.class, Boolean.class, Boolean.class, Boolean.class,
+        Boolean.class, Long.class, Boolean.class, Boolean.class});
     // Filling title
-    String title = "";
+    String title = "", projectTitle = "";
     if (projectLeader != null) {
       if (projectLeader.getInstitution() != null && projectLeader.getInstitution().getAcronym() != ""
         && projectLeader.getInstitution().getAcronym() != null) {
-        title += projectLeader.getInstitution().getAcronym() + "-";
+        title = this.getText("project.activities.title");
       }
     }
+
+    if (projectInfo.getTitle() != null) {
+      projectTitle = projectInfo.getTitle();
+    }
+
     try {
 
       if (projectInfo.getAdministrative() == null) {
@@ -1313,25 +1331,6 @@ public class ProjectActivitiesSummaryAction extends BaseSummariesAction implemen
       // projectInfo.setAdministrative(false);
     }
 
-    if (projectInfo.getAdministrative() == false) {
-      if (flagships != null) {
-        if (!flagships.isEmpty()) {
-          for (CrpProgram crpProgram : flagships) {
-            title += crpProgram.getAcronym() + "-";
-          }
-        }
-      }
-      if (projectInfo.getNoRegional() != null && projectInfo.getNoRegional()) {
-        title += "Global" + "-";
-      } else {
-        if (regions != null && !regions.isEmpty()) {
-          for (CrpProgram crpProgram : regions) {
-            title += crpProgram.getAcronym() + "-";
-          }
-        }
-      }
-    }
-    title += "P" + Long.toString(projectID);
     // Get datetime
     ZonedDateTime timezone = ZonedDateTime.now();
     DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-d 'at' HH:mm ");
@@ -1425,7 +1424,7 @@ public class ProjectActivitiesSummaryAction extends BaseSummariesAction implemen
       hasLP6 = true;
     }
 
-    model.addRow(new Object[] {title, centerURL, currentDate, submission, this.getSelectedCycle(), isNew,
+    model.addRow(new Object[] {title, projectTitle, centerURL, currentDate, submission, this.getSelectedCycle(), isNew,
       isAdministrative, type, projectInfo.getLocationGlobal(), this.isPhaseOne(), hasGender, hasTargetUnit, hasW1W2Co,
       hasActivities, phaseID, hasSpecificitiesDeliverableIntellectualAsset, hasLP6});
     return model;
