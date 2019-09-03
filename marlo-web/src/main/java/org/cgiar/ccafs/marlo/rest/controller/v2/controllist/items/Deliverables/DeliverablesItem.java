@@ -223,7 +223,7 @@ public class DeliverablesItem<T> {
             .collect(Collectors.toList()).get(0);
         this.deliverableMetadataElementCitation.setMetadataElement(metadataElementCitation);
         String authors = "";
-        for (DeliverableUserDTO author : deliverable.getListauthor()) {
+        for (DeliverableUserDTO author : deliverable.getAuthorList()) {
           if (authors.isEmpty()) {
             authors = authors + "" + author.getLastName() + " " + author.getName();
           } else {
@@ -262,7 +262,7 @@ public class DeliverablesItem<T> {
         deliverableMetadataElementManager.saveDeliverableMetadataElement(deliverableMetadataElementAuthors);
       }
 
-      for (DeliverableUserDTO deliverableUserDTO : deliverable.getListauthor()) {
+      for (DeliverableUserDTO deliverableUserDTO : deliverable.getAuthorList()) {
         deliverableUser = new DeliverableUser();
         deliverableUser.setFirstName(deliverableUserDTO.getName());
         deliverableUser.setLastName(deliverableUserDTO.getLastName());
