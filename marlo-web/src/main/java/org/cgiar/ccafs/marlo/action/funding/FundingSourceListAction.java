@@ -115,6 +115,7 @@ public class FundingSourceListAction extends BaseAction {
   private String institutionLead;
   private String partnerIDs;
   private Long budgetTypeID;
+  private boolean checkAllInstitutions;
 
 
   @Inject
@@ -364,18 +365,24 @@ public class FundingSourceListAction extends BaseAction {
 
 
   public void fillInstitutionsList() {
+    // Fill the institutions list search each institution with the institutions id list
     filteredInstitutions = new ArrayList<>();
 
     if (institutionsIDsList != null) {
-      for (String institution : institutionsIDsList) {
+      if (institutionsIDsList.size() == 1 && institutionsIDsList.get(0).equals("0")) {
+        for (String institution : institutionsIDsList) {
 
-        Long id = null;
-        if (institution != null && !institution.equals("0")) {
-          id = Long.parseLong(institution);
+          Long id = null;
+          if (institution != null && !institution.equals("0")) {
+            id = Long.parseLong(institution);
+          }
+          if (id != 0) {
+            filteredInstitutions.add(institutionManager.getInstitutionById(id));
+          }
         }
-        if (id != 0) {
-          filteredInstitutions.add(institutionManager.getInstitutionById(id));
-        }
+      } else {
+        // If the institution id received is equals to "0", its mean that all the institutions have to be check
+        checkAllInstitutions = true;
       }
     }
   }
@@ -476,6 +483,7 @@ public class FundingSourceListAction extends BaseAction {
 
 
   public void getFundingSourceInstitutionsList() {
+    // Get all the institutions for each funding source
     List<String> institutionsName = new ArrayList<String>();
     if (myProjects != null) {
       for (FundingSource fundingSource : myProjects) {
@@ -512,7 +520,7 @@ public class FundingSourceListAction extends BaseAction {
   }
 
   public void getInstitutionsIds() {
-    // Separate institutions ids from institutions apConstans filters into arrayList
+    // Separate institutions ids from institutions apConstans filters into arrayList received from front end
     int lastI = 0;
     if (institutionsIDs.contains(",")) {
       for (int i = 0; i < institutionsIDs.length(); i++) {
@@ -617,7 +625,7 @@ public class FundingSourceListAction extends BaseAction {
 
     loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
     loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
-
+    checkAllInstitutions = false;
     institutionsIDsList = new ArrayList<String>();
     partnertsIDList = new ArrayList<String>();
 
@@ -715,15 +723,18 @@ public class FundingSourceListAction extends BaseAction {
     this.getCrpContactPoint();
     this.getFundingSourceInstitutionsList();
     // this.assignLeadCenter();
-    if (institutionsIDs != null && !institutionsIDs.equals("0") && !institutionsIDs.isEmpty()) {
-      this.getInstitutionsIds();
-      this.removeInstitutions();
+    if (institutionsIDs != null && !institutionsIDs.isEmpty()) {
+      if (!institutionsIDs.equals("0")) {
+        this.getInstitutionsIds();
+        this.removeInstitutions();
+      }
       this.fillInstitutionsList();
 
       // return string with the institutions in the apconstant variable separated with ','
       this.convertListToString(institutionsIDsList);
     } else {
       if (contactsPoint != null && usersContactPoint != null) {
+        // If the logged user is a contact point, its definen the default checked institutions
         institutionFSFiltered = new ArrayList<>();
         this.removeInstitutionsContactPointRole();
       }
@@ -955,10 +966,16 @@ public class FundingSourceListAction extends BaseAction {
         }
       } else {
         for (FundingSourceInstitution fundingInstitution : fundingSourceInstitutions) {
-          if (filteredInstitutions != null && filteredInstitutions.contains(fundingInstitution.getInstitution())) {
+          // If all institutions is selected in front end
+          if (checkAllInstitutions == true) {
             fundingInstitution.setIsChecked(true);
           } else {
-            fundingInstitution.setIsChecked(false);
+            // Check institutions with check mark for add to the list
+            if (filteredInstitutions != null && filteredInstitutions.contains(fundingInstitution.getInstitution())) {
+              fundingInstitution.setIsChecked(true);
+            } else {
+              fundingInstitution.setIsChecked(false);
+            }
           }
         }
       }
