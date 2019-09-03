@@ -1052,7 +1052,7 @@ var mappingFundingToProjectModule = (function() {
         budgetTypeID: $('.fundingType').val(),
         amount: 0,
         gender: 0,
-        modificationJustification: "",
+        rationale: "",
         remainingBudget: "0",
         year: undefined,
         modalLoading: false,
@@ -1089,7 +1089,7 @@ var mappingFundingToProjectModule = (function() {
   var $projectSelect = $modal.find('select[name="projectID"]');
   var $amountInput = $modal.find('input.currencyInput');
   var $genderInput = $modal.find('input.percentageInput');
-  var $justificationInput = $modal.find('textarea[name="modificationJustification"]');
+  var $justificationInput = $modal.find('textarea[name="rationale"]');
   var $saveButton = $modal.find('button.saveBudgetMapping');
   var $step2Block = $modal.find('.step2');
 
@@ -1179,7 +1179,7 @@ var mappingFundingToProjectModule = (function() {
     vueApp.projectID = $projectSelect.val();
     vueApp.amount = removeCurrencyFormat($amountInput.val());
     // vueApp.gender = removePercentageFormat($genderInput.val());
-    vueApp.modificationJustification = $justificationInput.val();
+    vueApp.rationale = $justificationInput.val();
     vueApp.remainingBudget = removeCurrencyFormat($('#fundingYear-' + vueApp.year + ' span.projectAmount').text());
   }
 
@@ -1197,7 +1197,7 @@ var mappingFundingToProjectModule = (function() {
     });
     $amountInput.val(vueApp.amount);
     $genderInput.val(vueApp.gender);
-    $justificationInput.val(vueApp.modificationJustification);
+    $justificationInput.val(vueApp.rationale);
     $step2Block.slideUp();
   }
 
@@ -1229,7 +1229,7 @@ var mappingFundingToProjectModule = (function() {
       missingFields += 1;
     }
     // Validate justification
-    if(!vueApp.modificationJustification) {
+    if(!vueApp.rationale) {
       missingFields += 1;
     }
 
@@ -1251,7 +1251,7 @@ var mappingFundingToProjectModule = (function() {
           budgetTypeID: vueApp.budgetTypeID,
           amount: vueApp.amount,
           gender: vueApp.gender,
-          justification: vueApp.modificationJustification,
+          justification: vueApp.rationale,
           year: vueApp.year,
           phaseID: phaseID
       };
@@ -1268,7 +1268,7 @@ var mappingFundingToProjectModule = (function() {
               var row = '<tr class="projectBudget-' + projectBudgetID + '">';
               row += '<td>' + vueApp.projectComposedID() + '</td>';
               row += '<td> ' + vueApp.projectTitle() + ' </td>';
-              row += '<td>' + vueApp.modificationJustification + ' </td>';
+              row += '<td>' + vueApp.rationale + ' </td>';
               row += '<td> ' + vueApp.institutionAcronym() + ' </td>';
               row += '<td>US$ ' + setCurrencyFormat(vueApp.amount) + ' </td>';
               row += '<td><span class="removeProjectBudget trashIcon"></span></td>';

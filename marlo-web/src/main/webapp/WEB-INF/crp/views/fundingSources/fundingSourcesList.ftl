@@ -85,7 +85,7 @@
               <div class="modal-body">
                 [#-- Partner(s) managing the funding source --]
                 <div class="form-group">
-                  [@customForm.elementsListComponent name="ins" elementType="institution" elementList=[] label="fundingSourcesList.add.institutions" listName="managingInstitutionsList" keyFieldName="id" displayFieldName="composedName" forceEditable=true onlyElementIDs=true /]
+                  [@customForm.elementsListComponent name="ins" elementType="institution" elementList=(userLiaisonInstitutions)![] label="fundingSourcesList.add.institutions" listName="managingInstitutionsList" keyFieldName="id" displayFieldName="composedName" forceEditable=true onlyElementIDs=true /]
                 </div>
                 [#-- Agreement status --]
                 <div class="row form-group">
@@ -93,7 +93,7 @@
                     [@customForm.select name="budgetTypeID" i18nkey="fundingSourcesList.add.budgetType" className="budgetType"  listName="budgetTypes" keyFieldName=""  displayFieldName="" required=true editable=true /]
                   </div>
                   <div class="col-md-6">
-                    [@customForm.select name="agreementStatus" i18nkey="fundingSourcesList.add.status" className="agreementStatus"  listName="agreementStatus" keyFieldName=""  displayFieldName="" required=false editable=true /]
+                    [@customForm.select name="agreementStatus" i18nkey="fundingSourcesList.add.status" className="agreementStatus"  listName="agreementStatus" keyFieldName=""  displayFieldName="" required=true editable=true /]
                   </div>
                 </div>
                 <hr />
@@ -101,10 +101,10 @@
                 [#-- Center and Finance code --]
                 <div class="row form-group">
                   <div class="col-md-6">
-                    [@customForm.select name="institutionLead" i18nkey="fundingSourcesList.add.institutionLead" className="institutionLead"  listName="" keyFieldName=""  displayFieldName="" required=true editable=true /]
+                    [@customForm.select name="institutionLead" i18nkey="fundingSourcesList.add.institutionLead" value="${(userLiaisonInstitutions[0].institution.id)!}" className="institutionLead"  listName="userLiaisonInstitutions" keyFieldName="institution.id"  displayFieldName="institution.composedName" required=true editable=true /]
                   </div>
                   <div class="col-md-6">
-                    [@customForm.input name="financeCode" i18nkey="fundingSourcesList.add.financeCode" help="" placeholder="e.g. OCS (Agresso) Code" className="financeCode" editable=true required=true /]
+                    [@customForm.input name="financeCode" i18nkey="fundingSourcesList.add.financeCode" help="" placeholder="e.g. OCS (Agresso) Code" className="financeCode" required=false editable=true /]
                   </div>
                 </div>
                 
@@ -136,7 +136,7 @@
                   </div>
                   
                   <div class="text-right">
-                    <input type="hidden" name="partnerIDs" value="" />
+                    <input type="hidden" name="partnerIDs" value="${(userLiaisonInstitutions[0].institution.id)!}" />
                     <input type="hidden" name="phaseID" value="${(actualPhase.id)!}" />
                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                     <button type="submit" class="btn btn-primary addFundingSourceFromPopup" v-bind:disabled="!isValid" v-if="!fundingSources.length">Create Funding Source</button>

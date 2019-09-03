@@ -3870,7 +3870,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return Integer.parseInt(this.getSession().get(APConstants.CRP_REPORTING_YEAR).toString());
   }
 
-
   /**
    * Check the annual report 2018 Section Status
    * 
@@ -3946,6 +3945,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
     return returnValue;
   }
+
 
   /**
    * Check the annual report Section Status
@@ -4074,6 +4074,17 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   public String getUrl() {
     return this.url;
+  }
+
+  public List<LiaisonInstitution> getUserLiaisonInstitutions() {
+    User u = this.userManager.getUser(this.getCurrentUser().getId());
+    List<LiaisonInstitution> liaisonInstitutions = new ArrayList();
+    for (LiaisonUser liaisonUser : u.getLiasonsUsers().stream()
+      .filter(c -> c.isActive() && c.getCrp().getId().intValue() == this.getCrpID().intValue())
+      .collect(Collectors.toList())) {
+      liaisonInstitutions.add(liaisonUser.getLiaisonInstitution());
+    }
+    return liaisonInstitutions;
   }
 
   public List<UserToken> getUsersOnline() {
