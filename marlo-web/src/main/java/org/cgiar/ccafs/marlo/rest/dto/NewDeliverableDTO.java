@@ -22,7 +22,7 @@ import io.swagger.annotations.ApiModelProperty;
 public class NewDeliverableDTO {
 
   @ApiModelProperty(notes = "Deliverable Author List")
-  private List<DeliverableUserDTO> listauthor;
+  private List<DeliverableUserDTO> authorlist;
   @ApiModelProperty(notes = "Deliverable title")
   private String title;
   @ApiModelProperty(notes = "Jorunal/Publish Name")
@@ -48,6 +48,10 @@ public class NewDeliverableDTO {
   @ApiModelProperty(notes = "Publication Authors Field")
   private String authors;
 
+  public List<DeliverableUserDTO> getAuthorList() {
+    return authorlist;
+  }
+
   public String getAuthors() {
     return authors;
   }
@@ -70,10 +74,6 @@ public class NewDeliverableDTO {
 
   public String getJournal() {
     return journal;
-  }
-
-  public List<DeliverableUserDTO> getListauthor() {
-    return listauthor;
   }
 
 
@@ -102,6 +102,10 @@ public class NewDeliverableDTO {
     return isISIJournal;
   }
 
+  public void setAuthorList(List<DeliverableUserDTO> authorlist) {
+    this.authorlist = authorlist;
+  }
+
   public void setAuthors(String authors) {
     this.authors = authors;
   }
@@ -118,22 +122,18 @@ public class NewDeliverableDTO {
     this.isISIJournal = isISIJournal;
   }
 
+
   public void setIsOpenAccess(Boolean isOpenAccess) {
     this.isOpenAccess = isOpenAccess;
   }
-
 
   public void setIssue(String issue) {
     this.issue = issue;
   }
 
+
   public void setJournal(String journal) {
     this.journal = journal;
-  }
-
-
-  public void setListauthor(List<DeliverableUserDTO> listauthor) {
-    this.listauthor = listauthor;
   }
 
 
