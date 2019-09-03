@@ -49,6 +49,8 @@ public class ProjectBudget extends MarloAuditableEntity implements java.io.Seria
   @Expose
   private FundingSource fundingSource;
   @Expose
+  private String rationale;
+  @Expose
   private Phase phase;
   @Expose
   private String modificationJustification;
@@ -94,11 +96,9 @@ public class ProjectBudget extends MarloAuditableEntity implements java.io.Seria
     return genderValue;
   }
 
-
   public Institution getInstitution() {
     return institution;
   }
-
 
   @Override
   public String getLogDeatil() {
@@ -107,25 +107,28 @@ public class ProjectBudget extends MarloAuditableEntity implements java.io.Seria
     return sb.toString();
   }
 
-
   @Override
   public String getModificationJustification() {
     return modificationJustification;
   }
 
+
   public Phase getPhase() {
     return phase;
   }
-
 
   public Project getProject() {
     return project;
   }
 
+  public String getRationale() {
+    return rationale;
+  }
+
+
   public int getYear() {
     return year;
   }
-
 
   @Override
   public int hashCode() {
@@ -134,6 +137,7 @@ public class ProjectBudget extends MarloAuditableEntity implements java.io.Seria
     result = prime * result + ((this.getId() == null) ? 0 : this.getId().hashCode());
     return result;
   }
+
 
   public void setAmount(Double amount) {
     this.amount = amount;
@@ -147,10 +151,10 @@ public class ProjectBudget extends MarloAuditableEntity implements java.io.Seria
     this.fundingSource = fundingSource;
   }
 
-
   public void setGenderPercentage(Double genderPercentage) {
     this.genderPercentage = genderPercentage;
   }
+
 
   public void setGenderValue(Double genderValue) {
     this.genderValue = genderValue;
@@ -160,11 +164,11 @@ public class ProjectBudget extends MarloAuditableEntity implements java.io.Seria
     this.institution = institution;
   }
 
-
   @Override
   public void setModificationJustification(String modificationJustification) {
     this.modificationJustification = modificationJustification;
   }
+
 
   public void setPhase(Phase phase) {
     this.phase = phase;
@@ -172,6 +176,10 @@ public class ProjectBudget extends MarloAuditableEntity implements java.io.Seria
 
   public void setProject(Project project) {
     this.project = project;
+  }
+
+  public void setRationale(String rationale) {
+    this.rationale = rationale;
   }
 
 
