@@ -85,7 +85,6 @@ public class Deliverables {
     Long innovationId = this.deliverableItem.createDeliverable(newDeliverableDTO, CGIAREntity, this.getCurrentUser());
     ResponseEntity<Long> response = new ResponseEntity<Long>(innovationId, HttpStatus.OK);
     return response;
-
   }
 
   /**

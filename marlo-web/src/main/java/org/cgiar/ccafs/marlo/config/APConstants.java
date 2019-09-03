@@ -722,6 +722,7 @@ public final class APConstants {
   public static final String METADATAELEMENTTITLE = "dc.title";
   public static final String METADATAELEMENTPUBLICATION = "dc.date";
   public static final String METADATAELEMENTCITATION = "dc.identifier.citation";
+  public static final String METADATAELEMENTAUTHORS = "marlo.authors";
 
   // deliverables import clarisa value
   public static final long IMPORT_DELIVERABLE_VALUE = 63;
