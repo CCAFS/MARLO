@@ -947,16 +947,16 @@ public class FundingSourceListAction extends BaseAction {
     if (fundingSourceInstitutions != null) {
       if (institutionFSFiltered != null) {
         System.out.println("entro aqui");
-        for (FundingSourceInstitution fundingInstitution : institutionFSFiltered) {
-          if (filteredInstitutions != null && filteredInstitutions.contains(fundingInstitution.getInstitution())) {
+        for (FundingSourceInstitution fundingInstitution : fundingSourceInstitutions) {
+          if (institutionFSFiltered.contains(fundingInstitution)) {
+            System.out.println("entro aqui 1 " + fundingInstitution.getInstitution().getAcronym());
+
             fundingInstitution.setIsChecked(true);
           } else {
-            // fundingInstitution.setIsChecked(false);
+            fundingInstitution.setIsChecked(false);
           }
         }
       } else {
-        System.out.println("entro aca");
-
         for (FundingSourceInstitution fundingInstitution : fundingSourceInstitutions) {
           if (filteredInstitutions != null && filteredInstitutions.contains(fundingInstitution.getInstitution())) {
             fundingInstitution.setIsChecked(true);
