@@ -988,7 +988,8 @@ public class ProjectInnovationAction extends BaseAction {
         }
       }
 
-      if (innovation.getProjectInnovationInfo().getRepIndInnovationType().getId() != null
+      if (innovation.getProjectInnovationInfo().getRepIndInnovationType() != null
+        && innovation.getProjectInnovationInfo().getRepIndInnovationType().getId() != null
         && innovation.getProjectInnovationInfo().getRepIndInnovationType().getId() != 6) {
         innovation.getProjectInnovationInfo().setOtherInnovationType("");
       }
