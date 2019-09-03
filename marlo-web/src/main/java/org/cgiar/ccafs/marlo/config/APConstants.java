@@ -445,7 +445,7 @@ public final class APConstants {
   // Status control List of each table
   public static final String PROJECT_EXPECTED_STUDIES_TABLE = "project_expected_study_info";
   public static final String REPORT_SYNTHESYS_FLAGSHIPS_PROGRESS_MILESTONES_TABLE =
-    "report_synthesis_flagship_progress_milestones";
+    "report_synthesis_flagship_progress_outcome_milestones";
 
   // Project Contribution To LP6 Relations
   public static final String PROJECT_CONTRIBUTION_LP6_RELATION =
