@@ -396,7 +396,7 @@
     </div>
     
     <div class="form-group">
-      [@customForm.textArea name="${customName}.modificationJustification"  value="${(element.modificationJustification)!}" i18nkey="mapFunding.justification" help="mapFunding.justification.help" helpIcon=true className="" required=true editable=editable /]
+      [@customForm.textArea name="${customName}.rationale"  value="${(element.rationale)!}" i18nkey="mapFunding.justification" help="mapFunding.justification.help" helpIcon=true className="" required=true editable=editable /]
     </div>
     
     <div class="">

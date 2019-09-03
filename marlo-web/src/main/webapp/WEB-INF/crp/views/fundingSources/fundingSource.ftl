@@ -531,7 +531,7 @@
                <tr class="projectBudgetItem projectBudget-${projectBudget.id}">
                 <td><a href="${projectBudgetURL}">P${(projectBudget.project.id)!}</a></td>
                 <td class="col-md-5"><a href="${projectBudgetURL}">${(projectBudget.project.projectInfo.title)!}</a> </td>
-                <td> ${(projectBudget.modificationJustification)!} </td>
+                <td> ${(projectBudget.rationale)!} </td>
                 <td> ${(projectBudget.institution.acronymName)!(projectBudget.institution.name)}</td>
                 <td>US$ <span>${((projectBudget.amount)!0)?number?string(",##0.00")}</td>
                 [#if editable]
@@ -571,7 +571,7 @@
                 <td><a href="${projectBudgetURL}">P${(projectBudget.project.id)!}</a></td>
                 <td><a href="${projectBudgetURL}">${(projectBudget.fundingSource.crp.acronym)!}</a></td>
                 <td class="col-md-5"><a href="${projectBudgetURL}">${(projectBudget.project.projectInfo.title)!}</a></td>
-                <td class="col-md-5"><a href="${projectBudgetURL}">${(projectBudget.modificationJustification)!}</a></td>
+                <td class="col-md-5"><a href="${projectBudgetURL}">${(projectBudget.rationale)!}</a></td>
                 <td> ${(projectBudget.fundingSource.fundingSourceInfo.leadCenter.acronymName)!(projectBudget.fundingSource.fundingSourceInfo.leadCenter.name)!} </td>
                 <td>US$ <span>${((projectBudget.amount)!0)?number?string(",##0.00")}</td>
                </tr>
