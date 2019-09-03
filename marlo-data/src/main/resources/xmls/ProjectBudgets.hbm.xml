@@ -61,7 +61,7 @@
 			<column name="active_since" length="19" not-null="true" />
 		</property>
 		<property name="modificationJustification" type="string">
-			<column name="modification_justification" />
+			<column name="modification_justification" length="16777215"/>
 		</property>
 	</class>
 </hibernate-mapping>
