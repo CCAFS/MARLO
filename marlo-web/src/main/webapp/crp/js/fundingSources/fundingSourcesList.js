@@ -138,7 +138,7 @@ var fundingSourcePopupModule = (function() {
       el: '#vueApp',
       data: {
           isValid: false,
-          fields: -1,
+          fields: 5,
           missingFields: -1,
           fundingSources: [],
           messages: []
@@ -147,6 +147,8 @@ var fundingSourcePopupModule = (function() {
         progress: function() {
           if(this.missingFields == 0) {
             return 100;
+          } else if(this.missingFields == -1) {
+            return 0;
           } else {
             return Math.abs(((this.missingFields / this.fields) - 1) * 100);
           }
@@ -159,7 +161,7 @@ var fundingSourcePopupModule = (function() {
   var $budgetTypeSelect = $('select.budgetType');
   var $statusSelect = $('select.agreementStatus');
   var $financeCode = $('input.financeCode');
-  var $institutionIDs = $('input[name="partnerIDs"]');
+
   var keyupTimer = null;
 
   $instPartnersSelect.on("addElement removeElement", function(event,id,name) {
@@ -176,10 +178,11 @@ var fundingSourcePopupModule = (function() {
     }
 
     // Set hidden input of institutions
-    var institutionsIDs = jQuery.map($('input[name="ins"]'), function(el) {
+    var $institutionIDs = $('input[name="partnerIDs"]');
+    var insIDs = jQuery.map($('input[name="ins"]'), function(el) {
       return $(el).val()
     });
-    $institutionIDs.val(institutionsIDs.join(','));
+    $institutionIDs.val(insIDs.join(','));
 
     // Search if institutions are removed
     searchDuplicated();
@@ -258,7 +261,7 @@ var fundingSourcePopupModule = (function() {
     // 5 -> Cancelled
     // 7 -> Informally Confirmed
     console.log(id);
-    if((id == 1) || (id == 7) || (id == 5)) {
+    if((id == 1) || (id == 7)) {
       return false;
     }
     return true;
@@ -271,7 +274,6 @@ var fundingSourcePopupModule = (function() {
     var statusValue = $statusSelect.val();
     var leadValue = $institutionLeadSelect.val();
     var financeCode = $financeCode.val();
-    app.fields = 5;
     app.missingFields = 0;
 
     // Institution Partners, at least one
@@ -285,6 +287,7 @@ var fundingSourcePopupModule = (function() {
     }
 
     // Status
+    $financeCode.parent().find('span.requiredTag').hide();
     if(statusValue <= 0) {
       app.missingFields += 1;
     } else {
@@ -294,8 +297,6 @@ var fundingSourcePopupModule = (function() {
         if(!financeCode) {
           app.missingFields += 1;
         }
-      } else {
-        $financeCode.parent().find('span.requiredTag').hide();
       }
     }
 

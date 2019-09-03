@@ -288,15 +288,13 @@
 [/#macro]
 
 [#macro selectedInstitutions institutions = {}]
-
-    [#if institutions?has_content]
-     <div class="listOfFilters">
-      Filtered by: 
-      [#list institutions as institution]
-       [#local selectedInstitutionName = (institution.acronym)!institution.name /]
-       ${selectedInstitutionName}[#if institution?has_next],[/#if]
-      [/#list]
-     </div>
-    [/#if]
-
+  [#if institutions?has_content]
+   <div class="listOfFilters">
+    Filtered by: 
+    [#list institutions as institution]
+     [#local selectedInstitutionName = (institution.acronym)!institution.name /]
+     ${selectedInstitutionName}[#if institution?has_next],[/#if]
+    [/#list]
+   </div>
+  [/#if]
 [/#macro]
