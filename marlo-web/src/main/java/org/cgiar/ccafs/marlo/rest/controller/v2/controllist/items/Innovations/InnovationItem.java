@@ -448,6 +448,54 @@ public class InnovationItem<T> {
 
   }
 
+  public List<InnovationDTO> findAllInnovationsByGlobalUnit(String CGIARentityAcronym, Integer repoYear,
+    String repoPhase, User user) {
+    ArrayList<InnovationDTO> innovationList = new ArrayList<InnovationDTO>();
+    this.fieldErrors = new ArrayList<FieldErrorDTO>();
+    GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitByAcronym(CGIARentityAcronym);
+    if (globalUnitEntity == null) {
+      this.fieldErrors.add(new FieldErrorDTO("createInnovation", "GlobalUnitEntity",
+        CGIARentityAcronym + " is an invalid CGIAR entity acronym"));
+    }
+    Phase phase =
+      this.phaseManager.findAll().stream().filter(c -> c.getCrp().getAcronym().equalsIgnoreCase(CGIARentityAcronym)
+        && c.getYear() == repoYear && c.getName().equalsIgnoreCase(repoPhase)).findFirst().get();
+
+    if (phase == null) {
+      this.fieldErrors.add(new FieldErrorDTO("createInnovation", "phase",
+        new NewInnovationDTO().getPhase().getYear() + " is an invalid year"));
+    }
+
+
+    if (!this.fieldErrors.isEmpty()) {
+      throw new MARLOFieldValidationException("Field Validation errors", "",
+        this.fieldErrors.stream()
+          .sorted(Comparator.comparing(FieldErrorDTO::getField, Comparator.nullsLast(Comparator.naturalOrder())))
+          .collect(Collectors.toList()));
+    } else {
+      List<ProjectInnovation> projectInnovationList = projectInnovationManager.findAll();
+      List<ProjectInnovation> fullProjectInnovationList = new ArrayList<ProjectInnovation>();
+      for (ProjectInnovation projectInnovation : projectInnovationList) {
+        ProjectInnovationInfo projectInnovationInfo = projectInnovation.getProjectInnovationInfo(phase);
+        if (projectInnovationInfo != null) {
+          projectInnovation.setProjectInnovationInfo(projectInnovationInfo);
+          fullProjectInnovationList.add(projectInnovation);
+        }
+
+      }
+
+      projectInnovationList = projectInnovationList.stream()
+        .filter(innovations -> innovations.getProjectInnovationInfo().getPhase().getName().equals(repoPhase)
+          & innovations.getProjectInnovationInfo().getPhase().getYear() == repoYear)
+        .collect(Collectors.toList());
+      System.out.println("tam " + projectInnovationList.size());
+      projectInnovationList.stream()
+        .map(innovations -> this.innovationMapper.projectInnovationToInnovationDTO(innovations))
+        .collect(Collectors.toList());
+    }
+    return innovationList;
+  }
+
   /**
    * Find an Innovation by Id and year
    * 

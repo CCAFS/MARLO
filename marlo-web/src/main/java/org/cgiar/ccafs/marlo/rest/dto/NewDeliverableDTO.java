@@ -21,7 +21,7 @@ import io.swagger.annotations.ApiModelProperty;
 
 public class NewDeliverableDTO {
 
-  @ApiModelProperty(notes = "Deliverable Author")
+  @ApiModelProperty(notes = "Deliverable Author List")
   private List<DeliverableUserDTO> listauthor;
   @ApiModelProperty(notes = "Deliverable title")
   private String title;
@@ -45,6 +45,12 @@ public class NewDeliverableDTO {
   private PhaseDTO phase;
   @ApiModelProperty(notes = "Year Of publication")
   private int year;
+  @ApiModelProperty(notes = "Publication Authors Field")
+  private String authors;
+
+  public String getAuthors() {
+    return authors;
+  }
 
   public String getDoi() {
     return doi;
@@ -70,19 +76,19 @@ public class NewDeliverableDTO {
     return listauthor;
   }
 
+
   public String getNpages() {
     return npages;
   }
-
 
   public PhaseDTO getPhase() {
     return phase;
   }
 
+
   public String getTitle() {
     return title;
   }
-
 
   public String getVolume() {
     return volume;
@@ -94,6 +100,10 @@ public class NewDeliverableDTO {
 
   public boolean isISIJournal() {
     return isISIJournal;
+  }
+
+  public void setAuthors(String authors) {
+    this.authors = authors;
   }
 
   public void setDoi(String doi) {
@@ -112,6 +122,7 @@ public class NewDeliverableDTO {
     this.isOpenAccess = isOpenAccess;
   }
 
+
   public void setIssue(String issue) {
     this.issue = issue;
   }
@@ -124,6 +135,7 @@ public class NewDeliverableDTO {
   public void setListauthor(List<DeliverableUserDTO> listauthor) {
     this.listauthor = listauthor;
   }
+
 
   public void setNpages(String npages) {
     this.npages = npages;

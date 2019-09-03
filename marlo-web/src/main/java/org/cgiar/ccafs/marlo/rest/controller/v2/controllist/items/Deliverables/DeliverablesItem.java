@@ -81,11 +81,13 @@ public class DeliverablesItem<T> {
   private DeliverableMetadataElement deliverableMetadataElementTitle;
   private DeliverableMetadataElement deliverableMetadataElementCitation;
   private DeliverableMetadataElement deliverableMetadataElementPublication;
+  private DeliverableMetadataElement deliverableMetadataElementAuthors;
   private MetadataElement metadataElementHandle;
   private MetadataElement metadataElementDoi;
   private MetadataElement metadataElementTitle;
   private MetadataElement metadataElementCitation;
   private MetadataElement metadataElementPublication;
+  private MetadataElement metadataElementAuthors;
   private DeliverablesMapper deliverablesMapper;
 
 
@@ -246,10 +248,20 @@ public class DeliverablesItem<T> {
         this.deliverableMetadataElementPublication.setElementValue(String.valueOf(deliverable.getYear()));
         deliverableMetadataElementManager.saveDeliverableMetadataElement(deliverableMetadataElementPublication);
 
+
+        // changes for authors 2019-09-03 apply to a field to include all authors in a single row
+        // setdeliverables author
+        this.deliverableMetadataElementAuthors = new DeliverableMetadataElement();
+        this.deliverableMetadataElementAuthors.setDeliverable(this.deliverable);
+        this.deliverableMetadataElementAuthors.setPhase(phase);
+        metadataElementAuthors =
+          metadataElements.stream().filter(me -> me.getEcondedName().equals(APConstants.METADATAELEMENTAUTHORS))
+            .collect(Collectors.toList()).get(0);
+        this.deliverableMetadataElementAuthors.setMetadataElement(metadataElementAuthors);
+        this.deliverableMetadataElementAuthors.setElementValue(String.valueOf(deliverable.getAuthors()));
+        deliverableMetadataElementManager.saveDeliverableMetadataElement(deliverableMetadataElementAuthors);
       }
 
-
-      // setdeliverables author
       for (DeliverableUserDTO deliverableUserDTO : deliverable.getListauthor()) {
         deliverableUser = new DeliverableUser();
         deliverableUser.setFirstName(deliverableUserDTO.getName());
