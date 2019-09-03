@@ -104,7 +104,7 @@ public class MapProjectSaveAction extends BaseAction {
       projectBudget.setBudgetType(budgetType);
       projectBudget.setInstitution(institution);
       projectBudget.setYear(year);
-      projectBudget.setModificationJustification(justification);
+      projectBudget.setRationale(justification);
       projectBudget.setGenderPercentage(genderPercentage);
       projectBudget.setAmount(amount);
       projectBudget.setPhase(this.getActualPhase());
