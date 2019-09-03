@@ -381,7 +381,6 @@ public class FundingSourceListAction extends BaseAction {
           }
         }
       } else {
-        System.out.println("holi");
         // If the institution id received is equals to "0", its mean that all the institutions have to be check
         checkAllInstitutions = true;
       }
@@ -725,7 +724,6 @@ public class FundingSourceListAction extends BaseAction {
     this.getFundingSourceInstitutionsList();
     // this.assignLeadCenter();
     if (institutionsIDs != null && !institutionsIDs.isEmpty()) {
-      System.out.println("institutionsIDs " + institutionsIDs);
       if (!institutionsIDs.equals("0")) {
         this.getInstitutionsIds();
         this.removeInstitutions();
@@ -970,7 +968,6 @@ public class FundingSourceListAction extends BaseAction {
         for (FundingSourceInstitution fundingInstitution : fundingSourceInstitutions) {
           // If all institutions is selected in front end
           if (checkAllInstitutions == true) {
-            System.out.println("entro aqui");
             fundingInstitution.setIsChecked(true);
           } else {
             // Check institutions with check mark for add to the list
