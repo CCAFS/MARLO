@@ -121,7 +121,7 @@
                   </button>
                   <ul class="dropdown-menu">
                     [#list (fundingSource.institutions)![] as partnerInstitution]
-                      <li class="setPartnerLead value-${(partnerInstitution.institution.id)!}"><a href="">${(partnerInstitution.institution.acronym)!}</a></li>
+                      <li class="setPartnerLead value-${(partnerInstitution.institution.id)!}"><a href="">${(partnerInstitution.institution.acronym)!partnerInstitution.institution.name}</a></li>
                     [/#list]
                   </ul>
                 </div><!-- /btn-group -->
@@ -166,9 +166,7 @@
               <strong>{{ item.name }}</strong> 
               <p v-for="fs in item.fundingSources">
                 <span class="pull-right label label-info">{{ fs.type }}</span>
-                <a target="_blank" v-bind:href="'${baseUrl}/fundingSources/'+ fs.crpName +'/fundingSource.do?fundingSourceID='+ fs.id +'&edit=true'">[#-- &phaseID=${(actualPhase.id)!} --]
-                  <small><strong> FS{{ fs.id }}</strong> - {{ fs.financeCode }} | {{ fs.name }} </small>
-                </a>
+                <small><strong> FS{{ fs.id }}</strong> - {{ fs.financeCode }} | {{ fs.name }}</small>
               </p>
             </div>
           </div>
