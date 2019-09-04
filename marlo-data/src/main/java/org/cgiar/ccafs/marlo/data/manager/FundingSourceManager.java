@@ -57,6 +57,8 @@ public interface FundingSourceManager {
   public List<FundingSource> findAll();
 
 
+  public List<FundingSource> findFundingSourcesWithNullLeadCenter();
+
   public List<FundingSourceSummary> getClosedFundingSourceSummaries(GlobalUnit globalUnit, Phase phase);
 
   public List<FundingSource> getFundingSource(long userId, String crp);
@@ -115,6 +117,18 @@ public interface FundingSourceManager {
   public List<FundingSourceSearchSummary> searchFundingSourcesByInstitution(String userInput, Long institutionID,
     int year, long crpID, long phaseID);
 
+
+  /**
+   * This method get the list of FundingSource that like a specifics parameters.
+   * 
+   * @param institutionLeadID
+   * @param financeCode
+   * @return the list of FundingSource for all crp with this institutionLead and financeCode
+   */
+  public List<FundingSourceSearchSummary> searchFundingSourcesByInstitutionAndFinanceCode(Long institutionLeadID,
+    String financeCode);
+
+
   /**
    * This method get the list of FundingSource that like a specifics parameters.
    * 
@@ -126,7 +140,6 @@ public interface FundingSourceManager {
 
   public List<FundingSource> searchFundingSourcesByLocElement(long projectId, long locElementId, int year, long crpID,
     long phaseID);
-
 
   /**
    * This method get the list of FundingSource that like a specifics parameters.
@@ -141,16 +154,15 @@ public interface FundingSourceManager {
     long crpID);
 
 
-  public List<FundingSource> findFundingSourcesWithNullLeadCenter();
-
   /**
    * This method get the list of FundingSource that like a specifics parameters.
    * 
-   * @param institutionLeadID
-   * @param financeCode
+   * @param projectId - project id
+   * @param year - the year
    * @return the list of FundingSource
    */
-  public List<FundingSourceSearchSummary> searchFundingSourcesByInstitutionAndFinanceCode(Long institutionLeadID,
-    String financeCode);
+
+  public List<FundingSourceSearchSummary> searchFundingSourcesInSpecificCRPByfinancecode(String userInput, int year,
+    long crpID, long phaseID, String financeCode, Long institutionLeadID);
 
 }

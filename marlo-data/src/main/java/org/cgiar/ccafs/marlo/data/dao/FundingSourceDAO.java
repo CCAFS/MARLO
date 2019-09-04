@@ -112,6 +112,16 @@ public interface FundingSourceDAO {
     int year, long crpID, long phaseID);
 
   /**
+   * This method get the list of FundingSource that like a specifics parameters for all CRPs.
+   * 
+   * @param institutionLeadID
+   * @param financeCode
+   * @return the list of FundingSource
+   */
+  public List<FundingSourceSearchSummary> searchFundingSourcesByInstitutionAndFinanceCode(Long institutionLeadID,
+    String financeCode);
+
+  /**
    * This method get the list of FundingSource that like a specifics parameters.
    * 
    * @param projectId - project id
@@ -134,12 +144,12 @@ public interface FundingSourceDAO {
     long crpID);
 
   /**
-   * This method get the list of FundingSource that like a specifics parameters.
+   * This method get the list of FundingSource that like a specifics parameters for crp parameter.
    * 
-   * @param institutionLeadID 
+   * @param institutionLeadID
    * @param financeCode
    * @return the list of FundingSource
    */
-  public List<FundingSourceSearchSummary> searchFundingSourcesByInstitutionAndFinanceCode(Long institutionLeadID,
-    String financeCode);
+  public List<FundingSourceSearchSummary> searchFundingSourcesInSpecificCRPByfinancecode(String userInput, int year,
+    long crpID, long phaseID, String financeCode, Long institutionLeadID);
 }

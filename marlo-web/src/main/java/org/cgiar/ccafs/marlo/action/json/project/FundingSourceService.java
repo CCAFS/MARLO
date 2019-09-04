@@ -46,6 +46,8 @@ public class FundingSourceService extends BaseAction {
   List<Map<String, Object>> sources;
 
   private String financeCode;
+  private String leadCenter;
+
 
   // GlobalUnit Manager
   private GlobalUnitManager crpManager;
@@ -75,11 +77,12 @@ public class FundingSourceService extends BaseAction {
       financeCode = "0";
     }
 
-
-    if (financeCode != null) {
+    if (financeCode != null && leadCenter != null) {
       summaries = fundingSourceManager
-        .searchFundingSources("", 0, this.getCrpID().longValue(), this.getActualPhase().getId()).stream()
-        .filter(f -> f.getFinanceCode() != null && f.getFinanceCode().equals(financeCode)).collect(Collectors.toList());
+        .searchFundingSourcesInSpecificCRPByfinancecode("", 0, this.getCrpID().longValue(),
+          this.getActualPhase().getId(), financeCode, Long.parseLong(leadCenter))
+        .stream().filter(f -> f.getFinanceCode() != null && f.getFinanceCode().equals(financeCode))
+        .collect(Collectors.toList());
 
       if (summaries != null) {
         List<FundingSourceSearchSummary> summariesTemp = null;
@@ -130,6 +133,7 @@ public class FundingSourceService extends BaseAction {
   public void prepare() throws Exception {
     Map<String, Parameter> parameters = this.getParameters();
     financeCode = StringUtils.trim(parameters.get(APConstants.FINANCE_CODE).getMultipleValues()[0]);
+    leadCenter = StringUtils.trim(parameters.get(APConstants.INSTITUTION_REQUEST_ID).getMultipleValues()[0]);
   }
 
 
