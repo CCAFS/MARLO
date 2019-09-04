@@ -33,6 +33,7 @@ import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -57,7 +58,7 @@ public class MapProjectListAction extends BaseAction {
   private GlobalUnitManager globalUnitManager;
   private FundingSourceManager fundingSourceManager;
   private PhaseManager phaseManager;
-
+  private int year;
   private List<Map<String, Object>> projects;
 
   private List<Project> userProjects;
@@ -115,13 +116,13 @@ public class MapProjectListAction extends BaseAction {
           }
         } else {
           userProjects = projectManager.getUserProjects(this.getCurrentUser().getId(), loggedCrp.getAcronym()).stream()
-            .filter(p -> p.isActive()).collect(Collectors.toList());
+            .filter(p -> p.isActive() && p.getProjecInfoPhase(phase).isActive()).collect(Collectors.toList());
         }
 
 
         for (Project project : userProjects) {
           // Ask if the project contains information in this phase
-          if (project.getProjecInfoPhase(phase) != null) {
+          if (project.getProjecInfoPhase(phase) != null && project.getProjecInfoPhase(phase).isActive() == true) {
 
 
             if (fundingSource != null) {
@@ -159,17 +160,28 @@ public class MapProjectListAction extends BaseAction {
               }
 
               List<ProjectPartner> projectPartners = new ArrayList<>(project.getProjectPartners().stream()
-                .filter(pp -> pp.isActive() && pp.getPhase().getId().equals(phase.getId()))
+                .filter(pp -> pp.isActive() && pp.getProject() != null && pp.getProject().isActive() == true
+                  && pp.getProject().getProjectInfo() != null && pp.getProject().getProjectInfo().isActive()
+                  && pp.getPhase().getId().equals(phase.getId()))
                 .collect(Collectors.toList()));
               // Check who projects contains the PPA institution as partner
               for (ProjectPartner projectPartner : projectPartners) {
-                if (projectPartner.getInstitution().getId().equals(institution.getId())) {
-                  if (permission) {
-                    userProject = new HashMap<String, Object>();
-                    userProject.put("id", project.getId());
-                    userProject.put("description", project.getComposedName());
-                    userProject.put("gender", genderPermission);
-                    projects.add(userProject);
+                if (projectPartner.getProject() != null && projectPartner.getProject().getProjecInfoPhase(phase) != null
+                  && projectPartner.getProject().getProjecInfoPhase(phase).getEndDate() != null) {
+
+                  Calendar calendar = Calendar.getInstance();
+                  calendar.setTime(projectPartner.getProject().getProjecInfoPhase(phase).getEndDate());
+                  int endDateYear = calendar.get(Calendar.YEAR);
+                  if (endDateYear >= year) {
+                    if (projectPartner.getInstitution().getId().equals(institution.getId())) {
+                      if (permission) {
+                        userProject = new HashMap<String, Object>();
+                        userProject.put("id", project.getId());
+                        userProject.put("description", project.getComposedName());
+                        userProject.put("gender", genderPermission);
+                        projects.add(userProject);
+                      }
+                    }
                   }
                 }
               }
@@ -197,6 +209,7 @@ public class MapProjectListAction extends BaseAction {
     fundingId =
       Long.parseLong(StringUtils.trim(parameters.get(APConstants.FUNDING_SOURCE_REQUEST_ID).getMultipleValues()[0]));
     phaseId = Long.parseLong(StringUtils.trim(parameters.get(APConstants.PHASE_ID).getMultipleValues()[0]));
+    year = Integer.parseInt(StringUtils.trim(parameters.get(APConstants.YEAR_REQUEST).getMultipleValues()[0]));
   }
 
 
