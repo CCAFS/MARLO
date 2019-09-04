@@ -455,7 +455,9 @@ public class FundingSourceAction extends BaseAction {
     fundingSourceShow = new FundingSource();
     if (fundingSource != null && fundingSource.getFundingSourceInfo() != null
       && fundingSource.getFundingSourceInfo().getFinanceCode() != null
-      && fundingSource.getFundingSourceInfo().getLeadCenter() != null) {
+      && fundingSource.getFundingSourceInfo().getLeadCenter() != null
+      && fundingSource.getFundingSourceInfo().getLeadCenter().getInstitutionType() != null
+      && fundingSource.getFundingSourceInfo().getLeadCenter().getInstitutionType().getId() != 3) {
       fundingSourceInfos = fundingSourceInfoManager.findAll().stream()
         .filter(fsi -> fsi != null && fsi.isActive() && fsi.getFundingSource() != null
           && fsi.getFundingSource().getCrp() != null
@@ -466,6 +468,7 @@ public class FundingSourceAction extends BaseAction {
           && fsi.getLeadCenter().getId().equals(fundingSource.getFundingSourceInfo().getLeadCenter().getId()))
         .distinct().collect(Collectors.toList());
     }
+
     if (fundingSourceInfos != null) {
       Long lastID = null;
       for (FundingSourceInfo fundingSourceInfo : fundingSourceInfos) {
@@ -481,6 +484,7 @@ public class FundingSourceAction extends BaseAction {
         }
       }
     }
+
     if (fundingSources != null) {
       for (FundingSource fundingSource : fundingSources) {
         if (fundingSource != null && fundingSource.getProjectBudgets() != null) {
@@ -508,7 +512,6 @@ public class FundingSourceAction extends BaseAction {
                 this.getActualPhase().getDescription());
 
               if (crpPhase != null) {
-
                 tempBudgets = tempBudgets.stream()
                   .filter(b -> b.getProject().getProjecInfoPhase(crpPhase) != null
                     && b.getProject().getProjecInfoPhase(crpPhase).getPhase().equals(crpPhase)
