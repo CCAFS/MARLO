@@ -130,10 +130,10 @@ public class CrpProgramOutcomeManagerImpl implements CrpProgramOutcomeManager {
         crpMilestoneAdd.setValue(crpMilestone.getValue());
         crpMilestoneAdd.setYear(crpMilestone.getYear());
         crpMilestoneAdd.setComposeID(crpMilestone.getComposeID());
-        crpMilestoneDAO.save(crpMilestoneAdd);
-        if (crpMilestone.getComposeID() == null) {
-          crpMilestone.setComposeID(crpProgramOutcomeAdd.getComposeID() + "-" + crpMilestoneAdd.getId());
-          crpMilestoneAdd.setComposeID(crpProgramOutcomeAdd.getComposeID() + "-" + crpMilestoneAdd.getId());
+        crpMilestoneAdd = crpMilestoneDAO.save(crpMilestoneAdd);
+        if (crpMilestone.getComposeID() == null || crpMilestone.getComposeID().trim().length() == 0) {
+          crpMilestone.setComposeID(crpProgramOutcome.getComposeID() + "-" + crpMilestoneAdd.getId());
+          crpMilestoneAdd.setComposeID(crpProgramOutcome.getComposeID() + "-" + crpMilestoneAdd.getId());
           crpMilestoneDAO.save(crpMilestoneAdd);
         }
       }
@@ -374,7 +374,6 @@ public class CrpProgramOutcomeManagerImpl implements CrpProgramOutcomeManager {
           CrpMilestone crpMilestoneAdd = new CrpMilestone();
 
           crpMilestoneAdd.setCrpProgramOutcome(programOutcomePrev);
-          crpMilestoneAdd.setComposeID(crpMilestone.getComposeID());
           crpMilestoneAdd.setSrfTargetUnit(crpMilestone.getSrfTargetUnit());
           crpMilestoneAdd.setTitle(crpMilestone.getTitle());
           crpMilestoneAdd.setValue(crpMilestone.getValue());
@@ -448,16 +447,33 @@ public class CrpProgramOutcomeManagerImpl implements CrpProgramOutcomeManager {
 
           crpMilestoneAdd.setComposeID(crpMilestone.getComposeID());
           crpMilestoneAdd = crpMilestoneDAO.save(crpMilestoneAdd);
-          if (crpMilestone.getComposeID() == null || crpMilestone.getComposeID().length() == 0) {
-            crpMilestone.setComposeID(programOutcomePrev.getComposeID() + "-" + crpMilestoneAdd.getId());
-            crpMilestoneAdd.setComposeID(programOutcomePrev.getComposeID() + "-" + crpMilestoneAdd.getId());
+          if (crpMilestone.getComposeID() == null || crpMilestone.getComposeID().trim().length() == 0) {
+            crpMilestone.setComposeID(programOutcome.getComposeID() + "-" + crpMilestoneAdd.getId());
+            crpMilestoneAdd.setComposeID(programOutcome.getComposeID() + "-" + crpMilestoneAdd.getId());
+            crpMilestoneDAO.save(crpMilestoneAdd);
+          } else {
+            crpMilestoneAdd.setComposeID(crpMilestone.getComposeID());
             crpMilestoneDAO.save(crpMilestoneAdd);
           }
 
         } else {
-          CrpMilestone milestonetoUpdate = programOutcomePrev.getCrpMilestones().stream()
-            .filter(c -> c.isActive() && c.getComposeID().equals(crpMilestone.getComposeID()))
-            .collect(Collectors.toList()).get(0);
+          CrpMilestone milestonetoUpdate = null;
+
+          if (crpMilestone.getId() != null) {
+            milestonetoUpdate = crpMilestoneDAO.find(crpMilestone.getId());
+          }
+
+          if (milestonetoUpdate == null) {
+            milestonetoUpdate = programOutcomePrev.getCrpMilestones().stream()
+              .filter(c -> c.isActive() && c.getComposeID().equals(crpMilestone.getComposeID()))
+              .collect(Collectors.toList()).get(0);
+          }
+
+          if (milestonetoUpdate.getComposeID() == null || milestonetoUpdate.getComposeID().trim().length() == 0) {
+            crpMilestone.setComposeID(programOutcome.getComposeID() + "-" + milestonetoUpdate.getId());
+            milestonetoUpdate.setComposeID(programOutcome.getComposeID() + "-" + milestonetoUpdate.getId());
+          }
+
           milestonetoUpdate.setTitle(crpMilestone.getTitle());
           milestonetoUpdate.setSrfTargetUnit(crpMilestone.getSrfTargetUnit());
           milestonetoUpdate.setYear(crpMilestone.getYear());
@@ -523,7 +539,7 @@ public class CrpProgramOutcomeManagerImpl implements CrpProgramOutcomeManager {
             }
           }
 
-          /*  */
+
           crpMilestoneDAO.save(milestonetoUpdate);
         }
       }
