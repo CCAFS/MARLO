@@ -310,6 +310,14 @@ public class DeliverablesItem<T> {
           if (deliverableInfo != null) {
             Deliverable newDeliverable = deliverable;
             newDeliverable.setDeliverableInfo(deliverableInfo);
+            List<DeliverableDissemination> deliverableDisseminationList = deliverable.getDisseminations();
+            for (DeliverableDissemination deliverableDissemination : deliverableDisseminationList) {
+              if (deliverableDissemination.getPhase().getName().equals(repoPhase)
+                && deliverableDissemination.getPhase().getYear() == repoyear) {
+                newDeliverable.setDissemination(deliverableDissemination);
+                break;
+              }
+            }
             fullDeliverableList.add(newDeliverable);
           }
         }

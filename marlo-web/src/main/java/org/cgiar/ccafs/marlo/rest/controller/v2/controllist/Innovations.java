@@ -158,8 +158,8 @@ public class Innovations {
   @RequestMapping(value = "/{CGIAREntity}/innovations/{id}", method = RequestMethod.PUT,
     produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<Long> putInnovation(
-    @ApiParam(value = "${Innovation.innovation.PUT.param.id}", required = true) @PathVariable Long id,
     @ApiParam(value = "${Innovation.innovation.PUT.param.CGIAR}", required = true) @PathVariable String CGIAREntity,
+    @ApiParam(value = "${Innovation.innovation.PUT.param.id}", required = true) @PathVariable Long id,
     @ApiParam(value = "${Innovation.innovation.PUT.param.innovation}",
       required = true) @Valid @RequestBody NewInnovationDTO newInnovationDTO) {
     Long innovationId = this.innovationItem.putInnovationById(id, newInnovationDTO, CGIAREntity, this.getCurrentUser());

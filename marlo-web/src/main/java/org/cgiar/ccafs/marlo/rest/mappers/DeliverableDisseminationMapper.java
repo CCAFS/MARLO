@@ -13,24 +13,20 @@
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
 
-package org.cgiar.ccafs.marlo.rest.dto;
+package org.cgiar.ccafs.marlo.rest.mappers;
 
-import io.swagger.annotations.ApiModelProperty;
+import org.cgiar.ccafs.marlo.data.model.DeliverableDissemination;
+import org.cgiar.ccafs.marlo.rest.dto.DeliverableDisseminationDTO;
 
-public class DeliverableDisseminationDTO {
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.Mappings;
 
-  @ApiModelProperty(notes = "Is this deliverable Open Access?")
-  private Boolean isOpenAccess;
+@Mapper(componentModel = "jsr330")
+public abstract interface DeliverableDisseminationMapper {
 
-
-  public Boolean getIsOpenAccess() {
-    return isOpenAccess;
-  }
-
-
-  public void setIsOpenAccess(Boolean isOpenAccess) {
-    this.isOpenAccess = isOpenAccess;
-  }
-
+  @Mappings({@Mapping(source = "isOpenAccess", target = "isOpenAccess")})
+  public abstract DeliverableDisseminationDTO
+    deliverableDisseminationtoDeliverableDisseminationDTO(DeliverableDissemination deliverableDissemination);
 
 }
