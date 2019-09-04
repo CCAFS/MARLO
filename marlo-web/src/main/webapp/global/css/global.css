@@ -292,7 +292,7 @@ textarea.fieldError, input.fieldError, textarea.fieldError:focus, input.fieldErr
   color: #EE1D1D !important;
 }
  
-div.fieldError, label.fieldError {
+div.fieldError, label.fieldError, small.fieldError {
   border-color: #F44 !important;
   color: #EE1D1D !important;
   font-weight: 600 !important;
@@ -364,7 +364,7 @@ label.readOnly {
   cursor: initial;
 }
 
-p.fieldError {
+p.fieldError, span.remainingAmount.fieldError  {
   color: #F52626 !important;
   font-weight: bold;
   margin-right: 4px;

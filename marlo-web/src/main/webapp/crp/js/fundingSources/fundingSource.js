@@ -394,6 +394,7 @@ function findDuplicatedFinanceSource() {
  * Validate the grand total amount doesn't exceed
  */
 function keyupBudgetYear() {
+
   var grantAmount = $('#grantTotalAmount input').val();
   var total = 0
   $('form .currencyInput').each(function(i,e) {
@@ -407,6 +408,23 @@ function keyupBudgetYear() {
   } else {
     $('#grantTotalAmount').removeClass('fieldError');
   }
+
+  // Calculate Year Remaining
+  var yearAmount = removeCurrencyFormat(this.value || "0");
+  var year = $(this).classParam('year');
+  var $fundingTab = $('#fundingYear-' + year);
+  var remainingAmount = yearAmount;
+  $fundingTab.find('span.pbAmount').each(function(i,span) {
+    remainingAmount -= removeCurrencyFormat($(span).text() || "0");
+  });
+  var $remainingAmount = $fundingTab.find('span.remainingAmount');
+  $remainingAmount.text(setCurrencyFormat(remainingAmount));
+  if(remainingAmount < 0) {
+    $remainingAmount.parent().addClass('fieldError');
+  } else {
+    $remainingAmount.parent().removeClass('fieldError');
+  }
+
 }
 
 /**
@@ -471,8 +489,10 @@ function addContactAutoComplete() {
     return $("<li>").append("<div>" + escapeHtml(item.composedName) + "</div>").appendTo(ul);
   }
 
-  $("input.contactName").autocomplete(autocompleteOptions).autocomplete("instance")._renderItem = renderItem;
-  $("input.contactEmail").autocomplete(autocompleteOptions).autocomplete("instance")._renderItem = renderItem;
+  if($("input.contactName").exists()) {
+    $("input.contactName").autocomplete(autocompleteOptions).autocomplete("instance")._renderItem = renderItem;
+    $("input.contactEmail").autocomplete(autocompleteOptions).autocomplete("instance")._renderItem = renderItem;
+  }
 }
 
 /**
@@ -960,41 +980,38 @@ function addDataTable() {
  * @returns
  */
 function getInstitutionsBudgetByType(budgetTypeID) {
-  // var $select = $(".donor");
   var $donorSelectLists = $(".donor");
-  var url = baseURL + "/institutionsByBudgetType.do";
+  var arrayKeyValues = [];
+  $('.loading.contentBlok').fadeIn(800);
+  $donorSelectLists.empty();
+  $donorSelectLists.addOption("-1", "Select an option...");
   $.ajax({
-      url: url,
-      type: 'GET',
+      url: baseURL + "/institutionsByBudgetType.do",
       data: {
         budgetTypeID: budgetTypeID
       },
       beforeSend: function() {
-        $('.loading.contentBlok').show();
       },
       success: function(m) {
-        $donorSelectLists.empty();
-        $donorSelectLists.addOption("-1", "Select an option...");
-
-        var arrayKeyValues = [];
-        console.log(arrayKeyValues.length);
+        // Loading list of institutions
         $.each(m.institutions, function(i,e) {
           arrayKeyValues.push([
               e.id, e.name
           ]);
         });
-        console.log(arrayKeyValues.length);
-        $donorSelectLists.addArrayOptions(arrayKeyValues);
-
-        // Set CGIAR Consortium Office if applicable to the direct donor
-        changeDonorByFundingType(budgetTypeID, $(".donor:eq(0)"));
       },
       error: function(e) {
         console.log(e);
       },
       complete: function() {
-        $('.loading.contentBlok').hide();
+        // Append new list of institutions
+        $donorSelectLists.addArrayOptions(arrayKeyValues);
+        // Set CGIAR Consortium Office if applicable to the direct donor
+        changeDonorByFundingType(budgetTypeID, $(".donor:eq(0)"));
+        // Trigger donors selects
         $donorSelectLists.trigger("change.select2");
+        // Stop Loader
+        $('.loading.contentBlok').fadeOut(800);
       }
   });
 }
@@ -1003,15 +1020,15 @@ function changeDonorByFundingType(budgetType,$donorSelect) {
   var currentDonorId = $donorSelect.find("option:selected").val();
   var currentDonorName = $donorSelect.attr('name');
   var cgConsortiumId = $(".cgiarConsortium").text();
+  var $donorParent = $donorSelect.parents('.select').parent();
 
   // If budget type is W1W2 and the donor is not selected
   if(!centerGlobalUnit) {
     if(((currentDonorId == "-1") || (currentDonorId == cgConsortiumId)) && (budgetType == W1W2)) {
       // Set CGIAR System Organization
       $donorSelect.val(cgConsortiumId).attr("disabled", true).trigger("change");
-      $donorSelect.parents('.select').parent().append(
-          '<input type="hidden" id="donorHiddenInput" name="' + currentDonorName + '" value="' + cgConsortiumId
-              + '" />');
+      $donorParent.append('<input type="hidden" id="donorHiddenInput" name="' + currentDonorName + '" value="'
+          + cgConsortiumId + '" />');
     } else if(budgetType != W1W2) {
       $donorSelect.attr("disabled", false).trigger("change");
       $('#donorHiddenInput').remove();
@@ -1180,7 +1197,7 @@ var mappingFundingToProjectModule = (function() {
     vueApp.amount = removeCurrencyFormat($amountInput.val());
     // vueApp.gender = removePercentageFormat($genderInput.val());
     vueApp.rationale = $justificationInput.val();
-    vueApp.remainingBudget = removeCurrencyFormat($('#fundingYear-' + vueApp.year + ' span.projectAmount').text());
+    vueApp.remainingBudget = removeCurrencyFormat($('#fundingYear-' + vueApp.year + ' span.remainingAmount').text());
   }
 
   function openModal(event) {
@@ -1233,7 +1250,7 @@ var mappingFundingToProjectModule = (function() {
       missingFields += 1;
     }
 
-    console.log(missingFields);
+    vueApp.remainingBudget -= vueApp.amount;
 
     vueApp.isValidForm = (missingFields == 0);
     return vueApp.isValidForm;
@@ -1264,21 +1281,27 @@ var mappingFundingToProjectModule = (function() {
           },
           success: function(data) {
             if(data.status.save) {
-              var projectBudgetID = data.status.id;
-              var row = '<tr class="projectBudget-' + projectBudgetID + '">';
-              row += '<td>' + vueApp.projectComposedID() + '</td>';
-              row += '<td> ' + vueApp.projectTitle() + ' </td>';
-              row += '<td>' + vueApp.rationale + ' </td>';
-              row += '<td> ' + vueApp.institutionAcronym() + ' </td>';
-              row += '<td>US$ ' + setCurrencyFormat(vueApp.amount) + ' </td>';
-              row += '<td><span class="removeProjectBudget trashIcon"></span></td>';
-              row += '</tr>';
 
-              $table.find('tbody').append(row);
-              $table.find('.removeProjectBudget').on('click', removeProjectBudget);
-              $table.find('tbody tr:last-child').animateCss('flipInX');
+              var projectBudgetID = data.status.id;
+              var tr = '<tr class="projectBudget-' + projectBudgetID + '">';
+              tr += '<td>' + vueApp.projectComposedID() + '</td>';
+              tr += '<td> ' + vueApp.projectTitle() + ' </td>';
+              tr += '<td>' + vueApp.rationale + ' </td>';
+              tr += '<td> ' + vueApp.institutionAcronym() + ' </td>';
+              tr += '<td>US$ <span class="pbAmount">' + setCurrencyFormat(vueApp.amount) + '</span> </td>';
+              tr += '<td><span class="removeProjectBudget trashIcon"></span></td>';
+              tr += '</tr>';
+
+              $table.DataTable().row.add($(tr)).draw(false);
 
               $modal.modal('hide'); // Hide and clean data
+
+              $table.find('.removeProjectBudget').on('click', removeProjectBudget);
+              $table.find('tbody tr:first-child').animateCss('flipInX');
+
+              var $inputAmount = $('#fundingYear-' + dataBudget.year).find('.currencyInput')
+              console.log($inputAmount);
+              $inputAmount.trigger('keyup');
             }
           },
           complete: function(data) {
