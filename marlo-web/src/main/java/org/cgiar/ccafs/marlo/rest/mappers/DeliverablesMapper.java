@@ -23,11 +23,12 @@ import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
 
 
-@Mapper(componentModel = "jsr330")
+@Mapper(componentModel = "jsr330",
+  uses = {DeliverableInfoMapper.class, DeliverableDisseminationMapper.class, GlobalUnitMapper.class})
 public abstract interface DeliverablesMapper {
 
 
-  @Mappings({@Mapping(source = "deliverable.crp", target = "cgiarEntity"),
+  @Mappings({@Mapping(source = "crp", target = "cgiarEntity"),
     @Mapping(source = "deliverable.crp.globalUnitType", target = "cgiarEntity.cgiarEntityTypeDTO")})
   public abstract DeliverableDTO deliverableToDeliverableDTO(Deliverable deliverable);
 }
