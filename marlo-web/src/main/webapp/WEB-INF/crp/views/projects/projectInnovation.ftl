@@ -50,7 +50,7 @@
         <h3 class="headTitle">[@s.text name="projectInnovations" /]</h3> 
         <div id="innovations" class="borderBox clearfix">
         
-        <span class="pull-right">${(item.projectExpectedStudyInfo.year)!'No Year'}</span>
+        <span class="pull-right">${(item.projectInnovationInfo.year)!'No Year'}</span>
 
         <div class="">
           [#-- Title --]
