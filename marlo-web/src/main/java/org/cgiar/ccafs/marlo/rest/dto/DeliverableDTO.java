@@ -31,7 +31,7 @@ public class DeliverableDTO {
   @ApiModelProperty(notes = "deliverable dissemination")
   private DeliverableDisseminationDTO dissemination;
   @ApiModelProperty(notes = "deliverable metadata")
-  private List<MetadataElementDTO> metadata = new ArrayList<>();
+  private List<DeliverableMetadataElementDTO> metadataElements = new ArrayList<>();
 
   public CGIAREntityDTO getCgiarEntity() {
     return cgiarEntity;
@@ -50,8 +50,9 @@ public class DeliverableDTO {
     return id;
   }
 
-  public List<MetadataElementDTO> getMetadata() {
-    return metadata;
+
+  public List<DeliverableMetadataElementDTO> getMetadataElements() {
+    return metadataElements;
   }
 
 
@@ -64,17 +65,18 @@ public class DeliverableDTO {
     this.deliverableInfo = deliverableInfo;
   }
 
-
   public void setDissemination(DeliverableDisseminationDTO dissemination) {
     this.dissemination = dissemination;
   }
+
 
   public void setId(Long id) {
     this.id = id;
   }
 
-  public void setMetadata(List<MetadataElementDTO> metadata) {
-    this.metadata = metadata;
+
+  public void setMetadataElements(List<DeliverableMetadataElementDTO> metadataElements) {
+    this.metadataElements = metadataElements;
   }
 
 

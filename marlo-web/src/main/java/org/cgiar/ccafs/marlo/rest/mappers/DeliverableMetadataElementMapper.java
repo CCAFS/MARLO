@@ -16,18 +16,13 @@
 package org.cgiar.ccafs.marlo.rest.mappers;
 
 import org.cgiar.ccafs.marlo.data.model.DeliverableMetadataElement;
-import org.cgiar.ccafs.marlo.data.model.MetadataElement;
 import org.cgiar.ccafs.marlo.rest.dto.DeliverableMetadataElementDTO;
-
-import java.util.List;
 
 import org.mapstruct.Mapper;
 
-@Mapper(componentModel = "jsr330")
+@Mapper(componentModel = "jsr330", uses = {MetadataElementMapper.class, PhaseMapper.class})
 public abstract interface DeliverableMetadataElementMapper {
 
-  public abstract List<DeliverableMetadataElementDTO>
-    deliverableMetadataElementListToMetadataElementDTOList(List<MetadataElement> metadataElementlist);
 
   public abstract DeliverableMetadataElementDTO
     deliverableMetadataElementToMetadataElementDTO(DeliverableMetadataElement deliverableMetadataElement);
