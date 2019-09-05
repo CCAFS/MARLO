@@ -1058,333 +1058,338 @@ function budgetTypeTemplate(state) {
   return $state;
 }
 
-var mappingFundingToProjectModule = (function() {
+var mappingFundingToProjectModule =
+    (function() {
 
-  function vueAppinitialState() {
-    return {
-        institutionID: -1,
-        institutions: [],
-        projects: [],
-        projectID: -1,
-        fundingSourceID: $('input[name="fundingSourceID"]').val(),
-        budgetTypeID: $('.fundingType').val(),
-        amount: 0,
-        gender: 0,
-        rationale: "",
-        remainingBudget: "0",
-        year: undefined,
-        modalLoading: false,
-        message: "",
-        isValidForm: false
-    }
-  }
-
-  var vueApp = new Vue({
-      el: '#mapFundingToProject',
-      data: function() {
-        return vueAppinitialState();
-      },
-      methods: {
-          projectTitle: function() {
-            var titleArr = ($projectSelect.find('option[value="' + this.projectID + '"]').text()).split('-');
-            titleArr.shift();
-            return titleArr.join('-');
-          },
-          projectComposedID: function() {
-            return "P" + this.projectID;
-          },
-          institutionAcronym: function() {
-            return ($institutionSelect.find('option[value="' + this.institutionID + '"]').text()).split('-')[0];
-          },
-          reset: function() {
-            Object.assign(this.$data, vueAppinitialState());
-          }
+      function vueAppinitialState() {
+        return {
+            institutionID: -1,
+            institutions: [],
+            projects: [],
+            projectID: -1,
+            fundingSourceID: $('input[name="fundingSourceID"]').val(),
+            budgetTypeID: $('.fundingType').val(),
+            amount: 0,
+            gender: 0,
+            rationale: "",
+            remainingBudget: "0",
+            year: undefined,
+            modalLoading: false,
+            message: "",
+            isValidForm: false
+        }
       }
-  });
 
-  var $modal = $('#mapFundingToProject');
-  var $institutionSelect = $modal.find('select[name="institutionID"]');
-  var $projectSelect = $modal.find('select[name="projectID"]');
-  var $amountInput = $modal.find('input.currencyInput');
-  var $genderInput = $modal.find('input.percentageInput');
-  var $justificationInput = $modal.find('textarea[name="rationale"]');
-  var $saveButton = $modal.find('button.saveBudgetMapping');
-  var $step2Block = $modal.find('.step2');
+      var vueApp = new Vue({
+          el: '#mapFundingToProject',
+          data: function() {
+            return vueAppinitialState();
+          },
+          methods: {
+              projectTitle: function() {
+                var titleArr = ($projectSelect.find('option[value="' + this.projectID + '"]').text()).split('-');
+                titleArr.shift();
+                return titleArr.join('-');
+              },
+              projectComposedID: function() {
+                return "P" + this.projectID;
+              },
+              institutionAcronym: function() {
+                return ($institutionSelect.find('option[value="' + this.institutionID + '"]').text()).split('-')[0];
+              },
+              reset: function() {
+                Object.assign(this.$data, vueAppinitialState());
+              }
+          }
+      });
 
-  function init() {
-    $institutionSelect.select2({
-      width: '100%'
-    });
-    $projectSelect.select2({
-      width: '100%'
-    });
+      var $modal = $('#mapFundingToProject');
+      var $institutionSelect = $modal.find('select[name="institutionID"]');
+      var $projectSelect = $modal.find('select[name="projectID"]');
+      var $amountInput = $modal.find('input.currencyInput');
+      var $genderInput = $modal.find('input.percentageInput');
+      var $justificationInput = $modal.find('textarea[name="rationale"]');
+      var $saveButton = $modal.find('button.saveBudgetMapping');
+      var $step2Block = $modal.find('.step2');
 
-    // Setting Numeric Inputs
-    $modal.find('input.currencyInput, input.percentageInput').numericInput();
+      function init() {
+        $institutionSelect.select2({
+          width: '100%'
+        });
+        $projectSelect.select2({
+          width: '100%'
+        });
 
-    // Setting Currency Inputs
-    $amountInput.currencyInput();
+        // Setting Numeric Inputs
+        $modal.find('input.currencyInput, input.percentageInput').numericInput();
 
-    // Setting Percentage Inputs
-    $genderInput.percentageInput();
+        // Setting Currency Inputs
+        $amountInput.currencyInput();
 
-    addEvents();
-  }
+        // Setting Percentage Inputs
+        $genderInput.percentageInput();
 
-  function addEvents() {
-    // On change institution Partner
-    $institutionSelect.on("change", findProjects);
+        addEvents();
+      }
 
-    // On change project
-    $projectSelect.on("change", validateForm);
+      function addEvents() {
+        // On change institution Partner
+        $institutionSelect.on("change", findProjects);
 
-    // On change amount
-    $amountInput.on("change keyup", validateForm);
+        // On change project
+        $projectSelect.on("change", validateForm);
 
-    // On change percentage
-    $genderInput.on("change  keyup", validateForm);
+        // On change amount
+        $amountInput.on("change keyup", validateForm);
 
-    // On change justification
-    $justificationInput.on("change  keyup", validateForm);
+        // On change percentage
+        $genderInput.on("change  keyup", validateForm);
 
-    // On click
-    $saveButton.on('click', saveBudgetMapping);
+        // On change justification
+        $justificationInput.on("change  keyup", validateForm);
 
-    // On open the modal
-    $modal.on('show.bs.modal', openModal);
+        // On click
+        $saveButton.on('click', saveBudgetMapping);
 
-    // On open the modal
-    $modal.on('hide.bs.modal', closeModal);
+        // On open the modal
+        $modal.on('show.bs.modal', openModal);
 
-    // On remove a project budget
-    $('.removeProjectBudget').on('click', removeProjectBudgetEvent);
-  }
+        // On open the modal
+        $modal.on('hide.bs.modal', closeModal);
 
-  function removeProjectBudgetEvent(e) {
-    e.preventDefault();
-    var $button = $(this);
-    var $tr = $(this).parents('tr');
-    var $table = $(this).parents('table');
-    var projectID = $($tr.find('td')[0]).text();
-    var projectBudgetID = $tr.classParam('projectBudget');
-    var amount = $tr.find('span.pbAmount').text();
-    var year = $table.classParam('tableProjectBudgets');
+        // On remove a project budget
+        $('.removeProjectBudget').on('click', removeProjectBudgetEvent);
+      }
 
-    var removeNotification = noty({
-        layout: 'center',
-        text: 'Do you want to remove this mapping of <small>US$ ' + amount + '</small> with ' + projectID + '?',
-        buttons: [
-            {
-                addClass: 'btn btn-primary',
-                text: 'Yes',
-                onClick: function($noty) {
-                  $noty.close();
-                  removeProjectBudget({
-                      "project_budget_id": projectBudgetID,
-                      "year": year,
-                      phaseID: phaseID
+      function removeProjectBudgetEvent(e) {
+        e.preventDefault();
+        var $button = $(this);
+        var $tr = $(this).parents('tr');
+        var $table = $(this).parents('table');
+        var projectID = $($tr.find('td')[0]).text();
+        var projectBudgetID = $tr.classParam('projectBudget');
+        var amount = $tr.find('span.pbAmount').text();
+        var year = $table.classParam('tableProjectBudgets');
+
+        var removeNotification = noty({
+            layout: 'center',
+            text: 'Do you want to remove this mapping of <small>US$ ' + amount + '</small> with ' + projectID + '?',
+            buttons: [
+                {
+                    addClass: 'btn btn-primary',
+                    text: 'Yes',
+                    onClick: function($noty) {
+                      $noty.close();
+                      removeProjectBudget({
+                          "project_budget_id": projectBudgetID,
+                          "year": year,
+                          phaseID: phaseID
+                      });
+                    }
+                }, {
+                    addClass: 'btn btn-danger',
+                    text: 'Cancel',
+                    onClick: function($noty) {
+                      $noty.close();
+                    }
+                }
+            ]
+        });
+
+        function removeProjectBudget(data) {
+          $.ajax({
+              url: baseUrl + "/removeFundingProjectBudget.do",
+              data: data,
+              beforeSend: function() {
+                $button.addClass('icon-loading');
+              },
+              success: function(data) {
+                if(data.status.save) {
+
+                  $tr.hide(600, function() {
+                    $tr.remove();
+                    var $inputAmount = $('#fundingYear-' + year).find('.currencyInput')
+                    $inputAmount.trigger('keyup');
                   });
                 }
-            }, {
-                addClass: 'btn btn-danger',
-                text: 'Cancel',
-                onClick: function($noty) {
-                  $noty.close();
-                }
-            }
-        ]
-    });
-
-    function removeProjectBudget(data) {
-      $.ajax({
-          url: baseUrl + "/removeFundingProjectBudget.do",
-          data: data,
-          beforeSend: function() {
-            $button.addClass('icon-loading');
-          },
-          success: function(data) {
-            if(data.status.save) {
-
-              $tr.hide(600, function() {
-                $tr.remove();
-                var $inputAmount = $('#fundingYear-' + year).find('.currencyInput')
-                $inputAmount.trigger('keyup');
-              });
-            }
-          },
-          complete: function(data) {
-            $button.removeClass('icon-loading');
-          },
-          error: function(data) {
-          }
-      });
-    }
-
-  }
-
-  function retrivePopupValues() {
-    vueApp.institutionID = $institutionSelect.val();
-    vueApp.projectID = $projectSelect.val();
-    vueApp.amount = removeCurrencyFormat($amountInput.val());
-    // vueApp.gender = removePercentageFormat($genderInput.val());
-    vueApp.rationale = $justificationInput.val();
-    vueApp.remainingBudget = removeCurrencyFormat($('#fundingYear-' + vueApp.year + ' span.remainingAmount').text());
-  }
-
-  function openModal(event) {
-    var $button = $(event.relatedTarget);
-    vueApp.year = $button.data('year');
-
-    retrivePopupValues();
-  }
-
-  function closeModal(event) {
-    vueApp.reset();
-    $institutionSelect.val(vueApp.institutionID).select2({
-      width: '100%'
-    });
-    $amountInput.val(vueApp.amount);
-    $genderInput.val(vueApp.gender);
-    $justificationInput.val(vueApp.rationale);
-    $step2Block.slideUp();
-  }
-
-  function addInstitution(value,text) {
-    console.log("add");
-    $institutionSelect.addOption(value, text);
-  }
-
-  function removeInstitution(value) {
-    console.log("remove");
-    $institutionSelect.removeOption(value);
-  }
-
-  function validateForm() {
-    vueApp.isValidForm = false;
-    var missingFields = 0;
-    retrivePopupValues();
-
-    // Validate institution
-    if((!vueApp.institutionID) || (vueApp.institutionID == '-1')) {
-      missingFields += 1;
-    }
-    // Validate project
-    if((!vueApp.projectID) || (vueApp.projectID == '-1')) {
-      missingFields += 1;
-    }
-    // Validate Amount
-    if(vueApp.amount <= 0) {
-      missingFields += 1;
-    }
-    // Validate justification
-    if(!vueApp.rationale) {
-      missingFields += 1;
-    }
-
-    vueApp.remainingBudget -= vueApp.amount;
-
-    vueApp.isValidForm = (missingFields == 0);
-    return vueApp.isValidForm;
-  }
-
-  function saveBudgetMapping() {
-    var $table = $('table.tableProjectBudgets-' + vueApp.year);
-
-    if(validateForm()) {
-
-      var dataBudget = {
-          institutionID: vueApp.institutionID,
-          fundingSourceID: vueApp.fundingSourceID,
-          projectID: vueApp.projectID,
-          budgetTypeID: vueApp.budgetTypeID,
-          amount: vueApp.amount,
-          gender: vueApp.gender,
-          justification: vueApp.rationale,
-          year: vueApp.year,
-          phaseID: phaseID
-      };
-
-      $.ajax({
-          url: baseUrl + "/SaveFundingMapProject.do",
-          data: dataBudget,
-          beforeSend: function() {
-            vueApp.modalLoading = true;
-          },
-          success: function(data) {
-            if(data.status.save) {
-
-              var projectBudgetID = data.status.id;
-              var tr = '<tr class="projectBudget-' + projectBudgetID + '">';
-              tr += '<td>' + vueApp.projectComposedID() + '</td>';
-              tr += '<td> ' + vueApp.projectTitle() + ' </td>';
-              tr += '<td>' + vueApp.rationale + ' </td>';
-              tr += '<td> ' + vueApp.institutionAcronym() + ' </td>';
-              tr += '<td>US$ <span class="pbAmount">' + setCurrencyFormat(vueApp.amount) + '</span> </td>';
-              tr += '<td><span class="removeProjectBudget trashIcon"></span></td>';
-              tr += '</tr>';
-
-              var addedRow = $table.DataTable().row.add($(tr)).draw(false);
-
-              $modal.modal('hide'); // Hide and clean data
-              console.log(addedRow.node());
-              $(addedRow.node()).find('.removeProjectBudget').on('click', removeProjectBudgetEvent);
-
-              var $inputAmount = $('#fundingYear-' + dataBudget.year).find('.currencyInput')
-              $inputAmount.trigger('keyup');
-            }
-          },
-          complete: function(data) {
-            vueApp.modalLoading = false;
-          },
-          error: function(data) {
-          }
-      });
-    }
-
-  }
-
-  function findProjects() {
-    var institutionID = $institutionSelect.val();
-
-    $.ajax({
-        url: baseUrl + "/FundingMapProjectList.do",
-        data: {
-            institutionID: institutionID,
-            fundingSourceID: vueApp.fundingSourceID,
-            year: vueApp.year,
-            phaseID: phaseID
-        },
-        beforeSend: function() {
-          $projectSelect.empty();
-          vueApp.message = "";
-          vueApp.modalLoading = true;
-        },
-        success: function(data) {
-          if(!data.projects.length) {
-            vueApp.message = "No project(s) to map found";
-            $step2Block.slideUp();
-          } else {
-            $step2Block.slideDown();
-          }
-          $projectSelect.addOption(-1, "Select an option...");
-          $.each(data.projects, function(i,p) {
-            $projectSelect.addOption(p.id, p.description);
+              },
+              complete: function(data) {
+                $button.removeClass('icon-loading');
+              },
+              error: function(data) {
+              }
           });
-
-        },
-        complete: function(data) {
-          vueApp.modalLoading = false;
-          validateForm();
-        },
-        error: function(data) {
         }
-    });
 
-  }
+      }
 
-  return {
-      init: init,
-      addInstitution: addInstitution,
-      removeInstitution: removeInstitution
-  }
-})();
+      function retrivePopupValues() {
+        vueApp.institutionID = $institutionSelect.val();
+        vueApp.projectID = $projectSelect.val();
+        vueApp.amount = removeCurrencyFormat($amountInput.val());
+        // vueApp.gender = removePercentageFormat($genderInput.val());
+        vueApp.rationale = $justificationInput.val();
+        vueApp.remainingBudget =
+            removeCurrencyFormat($('#fundingYear-' + vueApp.year + ' span.remainingAmount').text());
+      }
+
+      function openModal(event) {
+        var $button = $(event.relatedTarget);
+        vueApp.year = $button.data('year');
+
+        retrivePopupValues();
+      }
+
+      function closeModal(event) {
+        vueApp.reset();
+        $institutionSelect.val(vueApp.institutionID).select2({
+          width: '100%'
+        });
+        $amountInput.val(vueApp.amount);
+        $genderInput.val(vueApp.gender);
+        $justificationInput.val(vueApp.rationale);
+        $step2Block.slideUp();
+      }
+
+      function addInstitution(value,text) {
+        console.log("add");
+        $institutionSelect.addOption(value, text);
+      }
+
+      function removeInstitution(value) {
+        console.log("remove");
+        $institutionSelect.removeOption(value);
+      }
+
+      function validateForm() {
+        vueApp.isValidForm = false;
+        var missingFields = 0;
+        retrivePopupValues();
+
+        // Validate institution
+        if((!vueApp.institutionID) || (vueApp.institutionID == '-1')) {
+          missingFields += 1;
+        }
+        // Validate project
+        if((!vueApp.projectID) || (vueApp.projectID == '-1')) {
+          missingFields += 1;
+        }
+        // Validate Amount
+        if(vueApp.amount <= 0) {
+          missingFields += 1;
+        }
+        // Validate justification
+        if(!vueApp.rationale) {
+          missingFields += 1;
+        }
+
+        vueApp.remainingBudget -= vueApp.amount;
+
+        vueApp.isValidForm = (missingFields == 0);
+        return vueApp.isValidForm;
+      }
+
+      function saveBudgetMapping() {
+        var $table = $('table.tableProjectBudgets-' + vueApp.year);
+
+        if(validateForm()) {
+
+          var dataBudget = {
+              institutionID: vueApp.institutionID,
+              fundingSourceID: vueApp.fundingSourceID,
+              projectID: vueApp.projectID,
+              budgetTypeID: vueApp.budgetTypeID,
+              amount: vueApp.amount,
+              gender: vueApp.gender,
+              justification: vueApp.rationale,
+              year: vueApp.year,
+              phaseID: phaseID
+          };
+
+          $.ajax({
+              url: baseUrl + "/SaveFundingMapProject.do",
+              data: dataBudget,
+              beforeSend: function() {
+                vueApp.modalLoading = true;
+              },
+              success: function(data) {
+                if(data.status.save) {
+
+                  var projectBudgetID = data.status.id;
+                  var url =
+                      baseUrl + '/projects/' + currentCrpSession + '/budgetByPartners.do?projectID=' + vueApp.projectID
+                          + '&edit=true&phaseID=' + phaseID;
+                  var tr = '<tr class="projectBudget-' + projectBudgetID + '">';
+                  tr += '<td><a href="' + url + '">' + vueApp.projectComposedID() + '</a></td>';
+                  tr += '<td><a href="' + url + '">' + vueApp.projectTitle() + '</a></td>';
+                  tr += '<td>' + vueApp.rationale + ' </td>';
+                  tr += '<td> ' + vueApp.institutionAcronym() + ' </td>';
+                  tr += '<td>US$ <span class="pbAmount">' + setCurrencyFormat(vueApp.amount) + '</span> </td>';
+                  tr += '<td><span class="removeProjectBudget trashIcon"></span></td>';
+                  tr += '</tr>';
+
+                  var addedRow = $table.DataTable().row.add($(tr)).draw(false);
+
+                  $modal.modal('hide'); // Hide and clean data
+                  console.log(addedRow.node());
+                  $(addedRow.node()).find('.removeProjectBudget').on('click', removeProjectBudgetEvent);
+
+                  var $inputAmount = $('#fundingYear-' + dataBudget.year).find('.currencyInput')
+                  $inputAmount.trigger('keyup');
+                }
+              },
+              complete: function(data) {
+                vueApp.modalLoading = false;
+              },
+              error: function(data) {
+              }
+          });
+        }
+
+      }
+
+      function findProjects() {
+        var institutionID = $institutionSelect.val();
+
+        $.ajax({
+            url: baseUrl + "/FundingMapProjectList.do",
+            data: {
+                institutionID: institutionID,
+                fundingSourceID: vueApp.fundingSourceID,
+                year: vueApp.year,
+                phaseID: phaseID
+            },
+            beforeSend: function() {
+              $projectSelect.empty();
+              vueApp.message = "";
+              vueApp.modalLoading = true;
+            },
+            success: function(data) {
+              if(!data.projects.length) {
+                vueApp.message = "No project(s) to map found";
+                $step2Block.slideUp();
+              } else {
+                $step2Block.slideDown();
+              }
+              $projectSelect.addOption(-1, "Select an option...");
+              $.each(data.projects, function(i,p) {
+                $projectSelect.addOption(p.id, p.description);
+              });
+
+            },
+            complete: function(data) {
+              vueApp.modalLoading = false;
+              validateForm();
+            },
+            error: function(data) {
+            }
+        });
+
+      }
+
+      return {
+          init: init,
+          addInstitution: addInstitution,
+          removeInstitution: removeInstitution
+      }
+    })();
