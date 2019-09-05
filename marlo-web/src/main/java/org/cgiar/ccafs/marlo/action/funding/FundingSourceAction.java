@@ -454,17 +454,25 @@ public class FundingSourceAction extends BaseAction {
     List<ProjectBudget> projectBudgets = new ArrayList<>();
     fundingSourceShow = new FundingSource();
     if (fundingSource != null && fundingSource.getFundingSourceInfo() != null
-      && fundingSource.getFundingSourceInfo().getFinanceCode() != null
-      && fundingSource.getFundingSourceInfo().getLeadCenter() != null
-      && fundingSource.getFundingSourceInfo().getLeadCenter().getInstitutionType() != null
-      && fundingSource.getFundingSourceInfo().getLeadCenter().getInstitutionType().getId() != 3) {
-      fundingSourceInfos = fundingSourceInfoManager.findAll().stream()
+      && fundingSource.getFundingSourceInfo().getFinanceCode() != null) {
+      /*
+       * fundingSourceInfos = fundingSourceInfoManager.findAll().stream()
+       * .filter(fsi -> fsi != null && fsi.isActive() && fsi.getFundingSource() != null
+       * && fsi.getFundingSource().getCrp() != null
+       * && !(fsi.getFundingSource().getCrp().getId().equals(this.getCurrentCrp().getId()))
+       * && fsi.getFinanceCode() != null
+       * && fsi.getFinanceCode().equals(fundingSource.getFundingSourceInfo().getFinanceCode())
+       * && fsi.getLeadCenter() != null
+       * && fsi.getLeadCenter().getId().equals(fundingSource.getFundingSourceInfo().getLeadCenter().getId()))
+       * .distinct().collect(Collectors.toList());
+       */
+      fundingSourceInfos = fundingSourceInfoManager
+        .getFundingSourceInfoByFinanceCode(fundingSource.getFundingSourceInfo().getFinanceCode()).stream()
         .filter(fsi -> fsi != null && fsi.isActive() && fsi.getFundingSource() != null
           && fsi.getFundingSource().getCrp() != null
           && !(fsi.getFundingSource().getCrp().getId().equals(this.getCurrentCrp().getId()))
-          && fsi.getFinanceCode() != null
-          && fsi.getFinanceCode().equals(fundingSource.getFundingSourceInfo().getFinanceCode())
-          && fsi.getLeadCenter() != null
+          && fsi.getLeadCenter() != null && fsi.getLeadCenter().getId() != null
+          && fundingSource.getFundingSourceInfo().getLeadCenter() != null
           && fsi.getLeadCenter().getId().equals(fundingSource.getFundingSourceInfo().getLeadCenter().getId()))
         .distinct().collect(Collectors.toList());
     }
