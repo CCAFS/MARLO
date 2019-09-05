@@ -424,6 +424,7 @@ function keyupBudgetYear() {
   } else {
     $remainingAmount.parent().removeClass('fieldError');
   }
+  $remainingAmount.animateCss('flipInX');
 
 }
 
@@ -1156,39 +1157,69 @@ var mappingFundingToProjectModule = (function() {
     $modal.on('hide.bs.modal', closeModal);
 
     // On remove a project budget
-    $('.removeProjectBudget').on('click', removeProjectBudget);
+    $('.removeProjectBudget').on('click', removeProjectBudgetEvent);
   }
 
-  function removeProjectBudget(e) {
+  function removeProjectBudgetEvent(e) {
     e.preventDefault();
     var $button = $(this);
     var $tr = $(this).parents('tr');
     var $table = $(this).parents('table');
+    var projectID = $($tr.find('td')[0]).text();
     var projectBudgetID = $tr.classParam('projectBudget');
+    var amount = $tr.find('span.pbAmount').text();
     var year = $table.classParam('tableProjectBudgets');
 
-    $.ajax({
-        url: baseUrl + "/removeFundingProjectBudget.do",
-        data: {
-            "project_budget_id": projectBudgetID,
-            "year": year,
-            phaseID: phaseID
-        },
-        beforeSend: function() {
-          $button.addClass('icon-loading');
-        },
-        success: function(data) {
-          console.log(data);
-          if(data.status.save) {
-            $tr.hide();
-          }
-        },
-        complete: function(data) {
-          $button.removeClass('icon-loading');
-        },
-        error: function(data) {
-        }
+    var removeNotification = noty({
+        layout: 'center',
+        text: 'Do you want to remove this mapping of <small>US$ ' + amount + '</small> with ' + projectID + '?',
+        buttons: [
+            {
+                addClass: 'btn btn-primary',
+                text: 'Yes',
+                onClick: function($noty) {
+                  $noty.close();
+                  removeProjectBudget({
+                      "project_budget_id": projectBudgetID,
+                      "year": year,
+                      phaseID: phaseID
+                  });
+                }
+            }, {
+                addClass: 'btn btn-danger',
+                text: 'Cancel',
+                onClick: function($noty) {
+                  $noty.close();
+                }
+            }
+        ]
     });
+
+    function removeProjectBudget(data) {
+      $.ajax({
+          url: baseUrl + "/removeFundingProjectBudget.do",
+          data: data,
+          beforeSend: function() {
+            $button.addClass('icon-loading');
+          },
+          success: function(data) {
+            if(data.status.save) {
+
+              $tr.hide(600, function() {
+                $tr.remove();
+                var $inputAmount = $('#fundingYear-' + year).find('.currencyInput')
+                $inputAmount.trigger('keyup');
+              });
+            }
+          },
+          complete: function(data) {
+            $button.removeClass('icon-loading');
+          },
+          error: function(data) {
+          }
+      });
+    }
+
   }
 
   function retrivePopupValues() {
@@ -1292,15 +1323,13 @@ var mappingFundingToProjectModule = (function() {
               tr += '<td><span class="removeProjectBudget trashIcon"></span></td>';
               tr += '</tr>';
 
-              $table.DataTable().row.add($(tr)).draw(false);
+              var addedRow = $table.DataTable().row.add($(tr)).draw(false);
 
               $modal.modal('hide'); // Hide and clean data
-
-              $table.find('.removeProjectBudget').on('click', removeProjectBudget);
-              $table.find('tbody tr:first-child').animateCss('flipInX');
+              console.log(addedRow.node());
+              $(addedRow.node()).find('.removeProjectBudget').on('click', removeProjectBudgetEvent);
 
               var $inputAmount = $('#fundingYear-' + dataBudget.year).find('.currencyInput')
-              console.log($inputAmount);
               $inputAmount.trigger('keyup');
             }
           },
