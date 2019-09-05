@@ -308,7 +308,7 @@ public class FundingSourceMySQLDAO extends AbstractMarloDAO<FundingSource, Long>
     q.append("LEFT JOIN funding_source_budgets fsb ON fs.id = fsb.funding_source_id ");
     q.append("WHERE 1=1 ");
     q.append("AND fsi.title IS NOT NULL ");
-    q.append("AND (fsi.status IS NULL OR fsi.status IN (1,2,4,7) ) ");
+    q.append("AND (fsi.status IS NULL OR fsi.status IN (1,2,3,4,7) ) ");
     q.append("AND (fsi.title LIKE '%" + userInput + "%' ");
     q.append("OR fsi.funding_source_id LIKE '%" + userInput + "%' ");
     q.append("OR CONCAT('FS', fsi.funding_source_id) LIKE '%" + userInput + "%' ");
