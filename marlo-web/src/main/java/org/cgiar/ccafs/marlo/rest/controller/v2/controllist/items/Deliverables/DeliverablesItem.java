@@ -301,30 +301,81 @@ public class DeliverablesItem<T> {
     }
     if (fieldErrors.size() == 0 || fieldErrors.isEmpty()) {
       try {
-        List<DeliverableInfo> deliverablesInfoList = new ArrayList<DeliverableInfo>();
+
         List<Deliverable> fullDeliverableList = new ArrayList<Deliverable>();
 
 
-        for (Deliverable deliverable : deliverableManager.getDeliverablesByPhase(phase.getId())) {
-          DeliverableInfo deliverableInfo = deliverable.getDeliverableInfo(phase);
-          if (deliverableInfo != null) {
-            Deliverable newDeliverable = deliverable;
-            newDeliverable.setDeliverableInfo(deliverableInfo);
-            List<DeliverableDissemination> deliverableDisseminationList = deliverable.getDisseminations();
-            for (DeliverableDissemination deliverableDissemination : deliverableDisseminationList) {
-              if (deliverableDissemination.getPhase().getName().equals(repoPhase)
-                && deliverableDissemination.getPhase().getYear() == repoyear) {
-                newDeliverable.setDissemination(deliverableDissemination);
-                break;
+        for (Deliverable deliverable : deliverableManager.getPublicationsByPhase(phase.getId())) {
+          if (deliverable.getProject() == null) {
+            DeliverableInfo deliverableInfo = deliverable.getDeliverableInfo(phase);
+            if (deliverableInfo != null) {
+
+              Deliverable newDeliverable = deliverable;
+              newDeliverable.setCrp(phase.getCrp());
+              newDeliverable.setDeliverableInfo(deliverableInfo);
+              List<DeliverableDissemination> deliverableDisseminationList =
+                deliverable.getDeliverableDisseminations().stream()
+                  .filter(deliverabledisemination -> deliverabledisemination.getPhase().getId().equals(phase.getId()))
+                  .collect(Collectors.toList());
+              for (DeliverableDissemination deliverableDissemination : deliverableDisseminationList) {
+                if (deliverableDissemination.getPhase().getId().equals(phase.getId())) {
+                  newDeliverable.setDissemination(deliverableDissemination);
+                  break;
+                }
               }
+              List<DeliverableMetadataElement> deliverableMetadataElementList =
+                deliverable.getDeliverableMetadataElements().stream()
+                  .filter(
+                    deliverableMetadataElement -> deliverableMetadataElement.getPhase().getId().equals(phase.getId()))
+                  .collect(Collectors.toList());
+              List<DeliverableMetadataElement> newDeliverableMetadataElement =
+                new ArrayList<DeliverableMetadataElement>();
+              for (DeliverableMetadataElement deliverableMetadataElement : deliverableMetadataElementList) {
+                if (!deliverableMetadataElement.getElementValue().trim().isEmpty()) {
+                  if (deliverableMetadataElement.getMetadataElement().getEcondedName()
+                    .equals(APConstants.METADATAELEMENTTITLE)) {
+                    newDeliverableMetadataElement.add(deliverableMetadataElement);
+                  }
+                  if (deliverableMetadataElement.getMetadataElement().getEcondedName()
+                    .equals(APConstants.METADATAELEMENTCITATION)) {
+                    newDeliverableMetadataElement.add(deliverableMetadataElement);
+                  }
+                  if (deliverableMetadataElement.getMetadataElement().getEcondedName()
+                    .equals(APConstants.METADATAELEMENTDOI)) {
+                    newDeliverableMetadataElement.add(deliverableMetadataElement);
+                  }
+                  if (deliverableMetadataElement.getMetadataElement().getEcondedName()
+                    .equals(APConstants.METADATAELEMENTHANDLE)) {
+                    newDeliverableMetadataElement.add(deliverableMetadataElement);
+                  }
+                  if (deliverableMetadataElement.getMetadataElement().getEcondedName()
+                    .equals(APConstants.METADATAELEMENTPUBLICATION)) {
+                    newDeliverableMetadataElement.add(deliverableMetadataElement);
+                  }
+                  if (deliverableMetadataElement.getMetadataElement().getEcondedName()
+                    .equals(APConstants.METADATAELEMENTAUTHORS)) {
+                    newDeliverableMetadataElement.add(deliverableMetadataElement);
+                  }
+                }
+              }
+              newDeliverable.setMetadataElements(newDeliverableMetadataElement);
+              fullDeliverableList.add(newDeliverable);
             }
-            fullDeliverableList.add(newDeliverable);
           }
         }
+        if (fullDeliverableList.size() > 0) {
+          deliverablesListDTO = fullDeliverableList.stream()
+            .map(deliverables -> this.deliverablesMapper.deliverableToDeliverableDTO(deliverables))
+            .collect(Collectors.toList());
+        } else {
+          this.fieldErrors.add(new FieldErrorDTO("createDeliverable", "Deliverable", "No data found"));
+          throw new MARLOFieldValidationException("Field Validation errors", "",
+            this.fieldErrors.stream()
+              .sorted(Comparator.comparing(FieldErrorDTO::getField, Comparator.nullsLast(Comparator.naturalOrder())))
+              .collect(Collectors.toList()));
+        }
 
-        deliverablesListDTO = fullDeliverableList.stream()
-          .map(deliverables -> this.deliverablesMapper.deliverableToDeliverableDTO(deliverables))
-          .collect(Collectors.toList());
+
       } catch (Exception e) {
         e.printStackTrace();
       }

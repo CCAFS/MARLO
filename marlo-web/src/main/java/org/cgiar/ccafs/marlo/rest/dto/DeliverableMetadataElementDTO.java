@@ -1,5 +1,5 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
+ * This file is part of Managing Agricultural Research for Learning &
  * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,45 +18,41 @@ package org.cgiar.ccafs.marlo.rest.dto;
 import io.swagger.annotations.ApiModelProperty;
 
 public class DeliverableMetadataElementDTO {
-	@ApiModelProperty(notes = "Deliverable ", position = 1)
-	private DeliverableDTO deliverable;
-	@ApiModelProperty(notes = "Phase ", position = 2)
-	private PhaseDTO phase;
-	@ApiModelProperty(notes = "Element Id ", position = 3)
-	private String elementId;
-	@ApiModelProperty(notes = "Element Value ", position = 4)
-	private String elementValue;
 
-	public DeliverableDTO getDeliverable() {
-		return deliverable;
-	}
 
-	public String getElementId() {
-		return elementId;
-	}
+  @ApiModelProperty(notes = "Phase ", position = 2)
+  private PhaseDTO phase;
+  @ApiModelProperty(notes = "Element Identifier ", position = 3)
+  private MetadataElementDTO metadataElement;
+  @ApiModelProperty(notes = "Element Value ", position = 4)
+  private String elementValue;
 
-	public String getElementValue() {
-		return elementValue;
-	}
 
-	public PhaseDTO getPhase() {
-		return phase;
-	}
+  public String getElementValue() {
+    return elementValue;
+  }
 
-	public void setDeliverable(DeliverableDTO deliverable) {
-		this.deliverable = deliverable;
-	}
+  public MetadataElementDTO getMetadataElement() {
+    return metadataElement;
+  }
 
-	public void setElementId(String elementId) {
-		this.elementId = elementId;
-	}
 
-	public void setElementValue(String elementValue) {
-		this.elementValue = elementValue;
-	}
+  public PhaseDTO getPhase() {
+    return phase;
+  }
 
-	public void setPhase(PhaseDTO phase) {
-		this.phase = phase;
-	}
+
+  public void setElementValue(String elementValue) {
+    this.elementValue = elementValue;
+  }
+
+
+  public void setMetadataElement(MetadataElementDTO metadataElement) {
+    this.metadataElement = metadataElement;
+  }
+
+  public void setPhase(PhaseDTO phase) {
+    this.phase = phase;
+  }
 
 }
