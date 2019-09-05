@@ -18,57 +18,65 @@ import org.cgiar.ccafs.marlo.data.model.MetadataElement;
 
 import java.util.List;
 
-
 /**
  * @author Christian Garcia
  */
 
 public interface MetadataElementManager {
 
+	/**
+	 * This method removes a specific metadataElement value from the database.
+	 * 
+	 * @param metadataElementId is the metadataElement identifier.
+	 * @return true if the metadataElement was successfully deleted, false
+	 * otherwise.
+	 */
+	public void deleteMetadataElement(long metadataElementId);
 
-  /**
-   * This method removes a specific metadataElement value from the database.
-   * 
-   * @param metadataElementId is the metadataElement identifier.
-   * @return true if the metadataElement was successfully deleted, false otherwise.
-   */
-  public void deleteMetadataElement(long metadataElementId);
+	/**
+	 * This method validate if the metadataElement identify with the given id
+	 * exists in the system.
+	 * 
+	 * @param metadataElementID is a metadataElement identifier.
+	 * @return true if the metadataElement exists, false otherwise.
+	 */
+	public boolean existMetadataElement(long metadataElementID);
 
+	/**
+	 * This method gets a list of metadataElement that are active
+	 * 
+	 * @return a list from MetadataElement null if no exist records
+	 */
+	public List<MetadataElement> findAll();
 
-  /**
-   * This method validate if the metadataElement identify with the given id exists in the system.
-   * 
-   * @param metadataElementID is a metadataElement identifier.
-   * @return true if the metadataElement exists, false otherwise.
-   */
-  public boolean existMetadataElement(long metadataElementID);
+	/**
+	 * This method gets a metadataElement object by a given encondeName
+	 * identifier.
+	 * 
+	 * @param encondeName is the metadataElement identifier.
+	 * @return a MetadataElement object.
+	 */
 
+	public MetadataElement findByEncondeName(String encondeName);
 
-  /**
-   * This method gets a list of metadataElement that are active
-   * 
-   * @return a list from MetadataElement null if no exist records
-   */
-  public List<MetadataElement> findAll();
+	/**
+	 * This method gets a metadataElement object by a given metadataElement
+	 * identifier.
+	 * 
+	 * @param metadataElementID is the metadataElement identifier.
+	 * @return a MetadataElement object.
+	 */
+	public MetadataElement getMetadataElementById(long metadataElementID);
 
-
-  /**
-   * This method gets a metadataElement object by a given metadataElement identifier.
-   * 
-   * @param metadataElementID is the metadataElement identifier.
-   * @return a MetadataElement object.
-   */
-  public MetadataElement getMetadataElementById(long metadataElementID);
-
-  /**
-   * This method saves the information of the given metadataElement
-   * 
-   * @param metadataElement - is the metadataElement object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the metadataElement was
-   *         updated
-   *         or -1 is some error occurred.
-   */
-  public MetadataElement saveMetadataElement(MetadataElement metadataElement);
-
+	/**
+	 * This method saves the information of the given metadataElement
+	 * 
+	 * @param metadataElement - is the metadataElement object with the new
+	 * information to be added/updated.
+	 * @return a number greater than 0 representing the new ID assigned by the
+	 * database, 0 if the metadataElement was updated or -1 is some error
+	 * occurred.
+	 */
+	public MetadataElement saveMetadataElement(MetadataElement metadataElement);
 
 }

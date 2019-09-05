@@ -14,11 +14,14 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.rest.dto;
 
+import javax.validation.constraints.NotNull;
+
 import io.swagger.annotations.ApiModelProperty;
 
 public class RegionDTO {
 
   @ApiModelProperty(notes = "The ISO Region code", position = 1)
+  @NotNull
   private Long UM49Code;
 
   @ApiModelProperty(notes = "Region Name", position = 2)

@@ -57,6 +57,8 @@ public interface ProjectInnovationRegionDAO {
 
   List<ProjectInnovationRegion> getInnovationRegionbyPhase(long innovationID, long phaseID);
 
+  public ProjectInnovationRegion getProjectInnovationRegionById(long innovationID, long RegionID, long phaseID);
+
   /**
    * This method saves the information of the given projectInnovationRegion
    * 

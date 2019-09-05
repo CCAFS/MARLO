@@ -570,6 +570,7 @@
 				<artifactId>quartz</artifactId>
 				<version>${quartz.version}</version>
 			</dependency>
+			
 			<dependency>
 				<groupId>com.fasterxml.jackson.core</groupId>
 				<artifactId>jackson-core</artifactId>

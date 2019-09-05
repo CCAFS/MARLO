@@ -116,6 +116,12 @@ public class ProjectInnovationRegionManagerImpl implements ProjectInnovationRegi
     return projectInnovationRegionDAO.find(projectInnovationRegionID);
   }
 
+  @Override
+  public ProjectInnovationRegion getProjectInnovationRegionById(long innovationID, long RegionID, long phaseID) {
+
+    return projectInnovationRegionDAO.getProjectInnovationRegionById(innovationID, RegionID, phaseID);
+  }
+
   public void saveInnovationRegionPhase(Phase next, long innovationid,
     ProjectInnovationRegion projectInnovationRegion) {
     Phase phase = phaseDAO.find(next.getId());
@@ -162,6 +168,4 @@ public class ProjectInnovationRegionManagerImpl implements ProjectInnovationRegi
 
     return region;
   }
-
-
 }

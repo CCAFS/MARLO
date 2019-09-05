@@ -78,7 +78,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Configuration
 @PropertySource("classpath:clarisa.properties")
-
 @RestController
 @Api(tags = "All AR 2018 Control Lists")
 

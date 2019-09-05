@@ -28,12 +28,13 @@ import org.mapstruct.Mappings;
 
 @Mapper(componentModel = "jsr330",
   uses = {StageOfInnovationMapper.class, InstitutionMapper.class, InnovationTypeMapper.class, LocationMapper.class,
-    InstitutionTypeMapper.class, ContributionOfCrpMapper.class, GlobalUnitMapper.class, GeographicScopeMapper.class})
+    InstitutionTypeMapper.class, ContributionOfCrpMapper.class, GlobalUnitMapper.class, GeographicScopeMapper.class,
+    PhaseMapper.class})
 public interface InnovationMapper {
-
 
   @Mappings({@Mapping(source = "projectInnovation.projectInnovationInfo.title", target = "title"),
     @Mapping(source = "projectInnovation.projectInnovationInfo.narrative", target = "narrative"),
+    @Mapping(source = "projectInnovation.projectInnovationInfo.clearLead", target = "equitativeEffort"),
     @Mapping(source = "projectInnovation.projectInnovationInfo.repIndStageInnovation", target = "stageOfInnovation"),
     @Mapping(source = "organizations", target = "nextUserOrganizationTypes"),
     @Mapping(source = "projectInnovation.projectInnovationInfo.descriptionStage", target = "descriptionStage"),
@@ -43,7 +44,8 @@ public interface InnovationMapper {
     @Mapping(source = "regions", target = "regions"), @Mapping(source = "countries", target = "countries"),
     @Mapping(source = "geographicScopes", target = "geographicScopes"),
     @Mapping(source = "projectInnovation.projectInnovationInfo.evidenceLink", target = "evidenceLink"),
-    @Mapping(source = "projectInnovation.crps", target = "contributingCGIAREntities")})
+    @Mapping(source = "projectInnovation.crps", target = "contributingCGIAREntities"),
+    @Mapping(source = "projectInnovation.projectInnovationInfo.phase", target = "phase")})
   public abstract InnovationDTO projectInnovationToInnovationDTO(ProjectInnovation projectInnovation);
 
 }
