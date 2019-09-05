@@ -14,15 +14,14 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.manager.impl;
 
-
 import org.cgiar.ccafs.marlo.data.dao.MetadataElementDAO;
 import org.cgiar.ccafs.marlo.data.manager.MetadataElementManager;
 import org.cgiar.ccafs.marlo.data.model.MetadataElement;
 
 import java.util.List;
 
-import javax.inject.Named;
 import javax.inject.Inject;
+import javax.inject.Named;
 
 /**
  * @author Christian Garcia
@@ -30,48 +29,50 @@ import javax.inject.Inject;
 @Named
 public class MetadataElementManagerImpl implements MetadataElementManager {
 
+	private MetadataElementDAO metadataElementDAO;
+	// Managers
 
-  private MetadataElementDAO metadataElementDAO;
-  // Managers
+	@Inject
+	public MetadataElementManagerImpl(MetadataElementDAO metadataElementDAO) {
+		this.metadataElementDAO = metadataElementDAO;
 
+	}
 
-  @Inject
-  public MetadataElementManagerImpl(MetadataElementDAO metadataElementDAO) {
-    this.metadataElementDAO = metadataElementDAO;
+	@Override
+	public void deleteMetadataElement(long metadataElementId) {
 
+		metadataElementDAO.deleteMetadataElement(metadataElementId);
+	}
 
-  }
+	@Override
+	public boolean existMetadataElement(long metadataElementID) {
 
-  @Override
-  public void deleteMetadataElement(long metadataElementId) {
+		return metadataElementDAO.existMetadataElement(metadataElementID);
+	}
 
-    metadataElementDAO.deleteMetadataElement(metadataElementId);
-  }
+	@Override
+	public List<MetadataElement> findAll() {
 
-  @Override
-  public boolean existMetadataElement(long metadataElementID) {
+		return metadataElementDAO.findAll();
 
-    return metadataElementDAO.existMetadataElement(metadataElementID);
-  }
+	}
 
-  @Override
-  public List<MetadataElement> findAll() {
+	@Override
+	public MetadataElement findByEncondeName(String encondeName) {
 
-    return metadataElementDAO.findAll();
+		return metadataElementDAO.findByEncondeName(encondeName);
+	}
 
-  }
+	@Override
+	public MetadataElement getMetadataElementById(long metadataElementID) {
 
-  @Override
-  public MetadataElement getMetadataElementById(long metadataElementID) {
+		return metadataElementDAO.find(metadataElementID);
+	}
 
-    return metadataElementDAO.find(metadataElementID);
-  }
+	@Override
+	public MetadataElement saveMetadataElement(MetadataElement metadataElement) {
 
-  @Override
-  public MetadataElement saveMetadataElement(MetadataElement metadataElement) {
-
-    return metadataElementDAO.save(metadataElement);
-  }
-
+		return metadataElementDAO.save(metadataElement);
+	}
 
 }

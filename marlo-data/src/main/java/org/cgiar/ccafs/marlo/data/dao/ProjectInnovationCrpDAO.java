@@ -55,6 +55,8 @@ public interface ProjectInnovationCrpDAO {
   public List<ProjectInnovationCrp> findAll();
 
 
+  public ProjectInnovationCrp getProjectInnovationCrpById(long innovationid, long globalUnitID, long phaseID);
+
   /**
    * This method saves the information of the given projectInnovationCrp
    * 

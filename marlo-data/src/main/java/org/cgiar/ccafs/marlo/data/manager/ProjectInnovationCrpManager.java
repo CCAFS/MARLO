@@ -60,6 +60,9 @@ public interface ProjectInnovationCrpManager {
    */
   public ProjectInnovationCrp getProjectInnovationCrpById(long projectInnovationCrpID);
 
+  public ProjectInnovationCrp getProjectInnovationCrpById(long innovationid, long globalUnitID, long phaseID);
+
+
   /**
    * This method saves the information of the given projectInnovationCrp
    * 

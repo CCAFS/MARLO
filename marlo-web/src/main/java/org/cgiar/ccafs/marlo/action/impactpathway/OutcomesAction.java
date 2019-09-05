@@ -855,8 +855,6 @@ public class OutcomesAction extends BaseAction {
         CrpMilestone crpMilestoneDB = null;
         if (crpMilestoneDetached.getId() == null) {
           crpMilestoneDB = new CrpMilestone();
-          crpMilestoneDB.setComposeID(crpMilestoneDetached.getComposeID());
-
         } else {
           crpMilestoneDB = crpMilestoneManager.getCrpMilestoneById(crpMilestoneDetached.getId());
         }
@@ -930,6 +928,12 @@ public class OutcomesAction extends BaseAction {
         }
 
         crpMilestoneDB = crpMilestoneManager.saveCrpMilestone(crpMilestoneDB);
+
+
+        if (crpMilestoneDB.getComposeID() == null || crpMilestoneDB.getComposeID().trim().length() == 0) {
+          crpMilestoneDB.setComposeID(crpProgramOutcomeDB.getComposeID() + "-" + crpMilestoneDB.getId());
+          crpMilestoneDB = crpMilestoneManager.saveCrpMilestone(crpMilestoneDB);
+        }
       }
     }
 

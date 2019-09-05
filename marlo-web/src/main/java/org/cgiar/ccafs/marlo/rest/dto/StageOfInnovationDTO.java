@@ -30,7 +30,6 @@ public class StageOfInnovationDTO {
   private Long code;
 
   @ApiModelProperty(notes = "Stage of Innovation name")
-  @NotNull
   private String name;
 
   @ApiModelProperty(notes = "Stage of Innovation definition")

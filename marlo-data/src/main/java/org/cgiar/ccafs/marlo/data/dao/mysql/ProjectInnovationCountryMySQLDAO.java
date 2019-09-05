@@ -95,6 +95,17 @@ public class ProjectInnovationCountryMySQLDAO extends AbstractMarloDAO<ProjectIn
   }
 
   @Override
+  public ProjectInnovationCountry getInnovationCountrybyPhase(long projectinnovationID, long countryID, long phaseID) {
+    String query = "from " + ProjectInnovationCountry.class.getName() + " WHERE project_innovation_id='"
+      + projectinnovationID + "' AND id_country='" + countryID + "' AND id_phase='" + phaseID + "'";
+    List<ProjectInnovationCountry> list = super.findAll(query);
+    if (list.size() > 0) {
+      return list.get(0);
+    }
+    return null;
+  }
+
+  @Override
   public ProjectInnovationCountry save(ProjectInnovationCountry projectInnovationCountry) {
     if (projectInnovationCountry.getId() == null) {
       super.saveEntity(projectInnovationCountry);

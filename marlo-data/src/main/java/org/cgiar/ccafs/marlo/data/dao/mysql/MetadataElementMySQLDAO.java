@@ -13,7 +13,6 @@
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
 
-
 package org.cgiar.ccafs.marlo.data.dao.mysql;
 
 import org.cgiar.ccafs.marlo.data.dao.MetadataElementDAO;
@@ -21,13 +20,13 @@ import org.cgiar.ccafs.marlo.data.model.MetadataElement;
 
 import java.util.List;
 
-import javax.inject.Named;
 import javax.inject.Inject;
+import javax.inject.Named;
+
 import org.hibernate.SessionFactory;
 
 @Named
 public class MetadataElementMySQLDAO extends AbstractMarloDAO<MetadataElement, Long> implements MetadataElementDAO {
-
 
   @Inject
   public MetadataElementMySQLDAO(SessionFactory sessionFactory) {
@@ -68,6 +67,16 @@ public class MetadataElementMySQLDAO extends AbstractMarloDAO<MetadataElement, L
   }
 
   @Override
+  public MetadataElement findByEncondeName(String encondeName) {
+    String query = "from " + MetadataElement.class.getName() + " where enconde_name=" + encondeName + "";
+    List<MetadataElement> list = super.findAll(query);
+    if (list.size() > 0) {
+      return list.get(0);
+    }
+    return null;
+  }
+
+  @Override
   public MetadataElement save(MetadataElement metadataElement) {
     if (metadataElement.getId() == null) {
       super.saveEntity(metadataElement);
@@ -75,9 +84,7 @@ public class MetadataElementMySQLDAO extends AbstractMarloDAO<MetadataElement, L
       metadataElement = super.update(metadataElement);
     }
 
-
     return metadataElement;
   }
-
 
 }
