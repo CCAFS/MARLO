@@ -68,6 +68,12 @@ public class FundingSourceInfoManagerImpl implements FundingSourceInfoManager {
   }
 
   @Override
+  public List<FundingSourceInfo> getFundingSourceInfoByFinanceCode(String financeCode) {
+
+    return fundingSourceInfoDAO.findByFinanceCode(financeCode);
+  }
+
+  @Override
   public FundingSourceInfo getFundingSourceInfoById(long fundingSourceInfoID) {
 
     return fundingSourceInfoDAO.find(fundingSourceInfoID);
