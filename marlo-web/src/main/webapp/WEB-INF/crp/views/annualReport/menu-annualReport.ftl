@@ -122,7 +122,7 @@
 <div class="text-center">
   [#assign documentLink][@s.url namespace="/summaries" action="${crpSession}/AnnualReportSummary"][@s.param name='phaseID']${actualPhase.id}[/@s.param][/@s.url][/#assign]
   <a class="btn btn-default" href="${documentLink}" target="_blank">
-   <img  src="${baseUrl}/global/images/icons/file-doc.png" alt="" /> Generate DOC file
+   <img  src="${baseUrlCdn}/global/images/icons/file-doc.png" alt="" /> Generate DOC file
   </a>
 </div>
 
@@ -137,7 +137,7 @@
 [#include "/WEB-INF/global/macros/discardChangesPopup.ftl"]
 
 [#-- Project Submit JS --]
-[#--  HERMES TO ENABLE THE AUTOSAVE FUNCTION PLASE ADD THIS: "${baseUrl}/global/js/autoSave.js" --]
-[#assign customJS = customJS  + [  "${baseUrlMedia}/js/annualReport/annualReportSubmit.js", "${baseUrl}/global/js/fieldsValidation.js"]
+[#--  HERMES TO ENABLE THE AUTOSAVE FUNCTION PLASE ADD THIS: "${baseUrlCdn}/global/js/autoSave.js" --]
+[#assign customJS = customJS  + [  "${baseUrlMedia}/js/annualReport/annualReportSubmit.js", "${baseUrlCdn}/global/js/fieldsValidation.js"]
 /]
 

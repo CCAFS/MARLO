@@ -54,7 +54,7 @@
           <h3 class="headTitle">[@s.text name="${customLabel}.title" /]</h3>
           <div class="borderBox">
             [#assign guideSheetURL = "https://drive.google.com/file/d/1jwFtj2wSM1ZN6dS_EnITcFgm9E-WC1KH/view" /]
-            <small class="pull-right"><a href="${guideSheetURL}" target="_blank"> <img src="${baseUrl}/global/images/icon-file.png" alt="" /> #I3 Policies - Guideline </a> </small>
+            <small class="pull-right"><a href="${guideSheetURL}" target="_blank"> <img src="${baseUrlCdn}/global/images/icon-file.png" alt="" /> #I3 Policies - Guideline </a> </small>
             <h4 class="sectionSubTitle">[@s.text name="${customLabel}.indicatorI3.title" /]</h4>
             
             <div class="form-group row">

@@ -7,7 +7,7 @@
   ] 
 /]
 [#assign customCSS = [
-  "${baseUrl}/global/css/customDataTable.css",
+  "${baseUrlCdn}/global/css/customDataTable.css",
   "${baseUrlMedia}/css/deliverable/projectDeliverable.css"
   ] 
   /]
@@ -25,7 +25,7 @@
 [#-- Help text --]
 <div class="container helpText viewMore-block">
   <div class="helpMessage infoText">
-    <img class="col-md-2" src="${baseUrl}/global/images/icon-help.png" />
+    <img class="col-md-2" src="${baseUrlCdn}/global/images/icon-help.png" />
     <p class="col-md-10"> [@s.text name="deliverableList.help"][/@s.text] </p>
   </div> 
   <div style="display:none" class="viewMore closed"></div>

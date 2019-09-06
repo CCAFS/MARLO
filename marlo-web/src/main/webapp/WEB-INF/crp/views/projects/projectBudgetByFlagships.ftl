@@ -4,8 +4,8 @@
 [#assign pageLibs = ["select2"] /]
 [#assign customJS = [
   "${baseUrlMedia}/js/projects/projectBudgetByFlagships.js", 
-  "${baseUrl}/global/js/autoSave.js",
-  "${baseUrl}/global/js/fieldsValidation.js"
+  "${baseUrlCdn}/global/js/autoSave.js",
+  "${baseUrlCdn}/global/js/fieldsValidation.js"
   ]
 /]
 [#assign customCSS = ["${baseUrlMedia}/css/projects/projectBudgetByFlagships.css"] /]
@@ -24,7 +24,7 @@
 
 <div class="container helpText viewMore-block">
   <div class="helpMessage infoText">
-    <img class="col-md-2" src="${baseUrl}/global/images/icon-help.jpg" />
+    <img class="col-md-2" src="${baseUrlCdn}/global/images/icon-help.jpg" />
     <p class="col-md-10"> [@s.text name="projectBudgetByFlagships.help" /] </p>
   </div> 
   <div style="display:none" class="viewMore closed"></div>
@@ -84,7 +84,7 @@
                         <td class="">
                           [#-- 
                           <h5 class="subTitle"> 
-                            ${budgetType.name} <img title="${budgetType.description}" src="${baseUrl}/global/images/icon-help2.png" alt="" /> <br /> 
+                            ${budgetType.name} <img title="${budgetType.description}" src="${baseUrlCdn}/global/images/icon-help2.png" alt="" /> <br /> 
                             <small>US$ <span class="totalByYear year-${year} totalByYear-${budgetType.id}">${((action.getTotalAmount(budgetType.id, year))!0)?number?string(",##0.00")}</span></small>
                           </h5>
                           --]

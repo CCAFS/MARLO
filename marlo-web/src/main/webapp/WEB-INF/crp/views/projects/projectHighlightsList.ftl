@@ -4,7 +4,7 @@
 [#assign pageLibs = [ "datatables.net", "datatables.net-bs"] /]
 [#assign customJS = [
   "${baseUrlMedia}/js/projects/projectHighlightsList.js",
-  "${baseUrl}/global/js/fieldsValidation.js"
+  "${baseUrlCdn}/global/js/fieldsValidation.js"
   ] 
 /]
 [#assign customCSS = ["${baseUrlMedia}/css/projects/projectHighlights.css"] /]
@@ -24,7 +24,7 @@
 
 <div class="container helpText viewMore-block">
   <div class="helpMessage infoText">
-    <img class="col-md-2" src="${baseUrl}/global/images/icon-help.jpg" />
+    <img class="col-md-2" src="${baseUrlCdn}/global/images/icon-help.jpg" />
     <p class="col-md-10"> [@s.text name="projectHighlights.help" /] </p>
   </div> 
   <div style="display:none" class="viewMore closed"></div>
@@ -106,16 +106,16 @@
             [#-- Summary PDF download --]
           <td>
             <a href="[@s.url namespace="/summaries" action='${(crpSession)!}/projectHighlightSummary'][@s.param name='highlightID']${hl.id?c}[/@s.param][@s.param name='cycle']${action.getCurrentCycle()}[/@s.param][@s.param name='year']${action.getCurrentCycleYear()}[/@s.param][/@s.url]" target="__BLANK">
-              <img src="${baseUrl}/global/images/pdf.png" height="25" title="[@s.text name="projectsList.downloadPDF" /]" />
+              <img src="${baseUrlCdn}/global/images/pdf.png" height="25" title="[@s.text name="projectsList.downloadPDF" /]" />
             </a>            
           </td>
             <td class="removeHighlight-row text-center">
               [#if canEdit  && (hl.projectHighlightInfo.year gte  currentCycleYear) ]
                 <a id="removeHighlight-${hl.id}" class="removeHighlight" href="#" title="" >
-                  <img src="${baseUrl}/global/images/trash.png" title="[@s.text name="projectHighlights.removeHighlight" /]" /> 
+                  <img src="${baseUrlCdn}/global/images/trash.png" title="[@s.text name="projectHighlights.removeHighlight" /]" /> 
                 </a>
               [#else]
-                <img src="${baseUrl}/global/images/trash_disable.png" title="[@s.text name="projectHighlights.cantDeleteHighlight" /]" />
+                <img src="${baseUrlCdn}/global/images/trash_disable.png" title="[@s.text name="projectHighlights.cantDeleteHighlight" /]" />
               [/#if]
             </td> 
           </tr> 

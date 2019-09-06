@@ -2,8 +2,8 @@
 [#assign title = "MARLO IDOs" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = [] /]
-[#assign customJS = [ "${baseUrl}/global/js/superadmin/marloIDOs.js" ] /]
-[#assign customCSS = [ "${baseUrl}/global/css/superadmin/superadmin.css" ] /]
+[#assign customJS = [ "${baseUrlCdn}/global/js/superadmin/marloIDOs.js" ] /]
+[#assign customCSS = [ "${baseUrlCdn}/global/css/superadmin/superadmin.css" ] /]
 [#assign currentSection = "superadmin" /]
 [#assign currentStage = "idos" /]
 

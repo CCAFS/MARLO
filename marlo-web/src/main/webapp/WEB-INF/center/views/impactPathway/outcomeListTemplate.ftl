@@ -52,10 +52,10 @@
             [#--  ${action.outcomeCanBeDeleted(outcome.id)?string} --]
             [#if canEdit && action.outcomeCanBeDeleted(outcome.id)!false]
               <a id="removeOutcome-${outcome.id}" class="removeOutcome" href="#" title="">
-                <img src="${baseUrl}/global/images/trash.png" title="[@s.text name="programImpact.outcomeList.removeOutcome" /]" /> 
+                <img src="${baseUrlCdn}/global/images/trash.png" title="[@s.text name="programImpact.outcomeList.removeOutcome" /]" /> 
               </a>
             [#else]
-              <img src="${baseUrl}/global/images/trash_disable.png" title="[@s.text name="programImpact.outcomeList.cannotDelete" /]" />
+              <img src="${baseUrlCdn}/global/images/trash_disable.png" title="[@s.text name="programImpact.outcomeList.cannotDelete" /]" />
             [/#if]
           </td>          
         </tr>  

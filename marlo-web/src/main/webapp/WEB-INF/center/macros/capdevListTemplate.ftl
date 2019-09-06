@@ -84,7 +84,7 @@
               <td class="removeCol">
                 [#if action.centerCanBeDeleted(i.id, i.class.name)!false]
                   <a id="removeCapdev-${i.id}" class="removeCapdev" href="#"  data-toggle="modal" data-target="#confirm-delete-capdev-${i.id}">
-                    <img src="${baseUrl}/global/images/trash.png" title="[@s.text name="capdev.removeCapdev" /]" /> 
+                    <img src="${baseUrlCdn}/global/images/trash.png" title="[@s.text name="capdev.removeCapdev" /]" /> 
                   </a>
                   <div class="modal fade" id="confirm-delete-capdev-${i.id}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
                     <div class="modal-dialog">
@@ -105,7 +105,7 @@
                     </div>
                   </div>
                 [#else]
-                  <img src="${baseUrl}/global/images/trash_disable.png" title="[@s.text name="capdev.removeCapdev" /]" /> 
+                  <img src="${baseUrlCdn}/global/images/trash_disable.png" title="[@s.text name="capdev.removeCapdev" /]" /> 
                 [/#if]
               </td>
             </tr>

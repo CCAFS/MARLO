@@ -3,10 +3,10 @@
 [#assign currentSectionString = "program-${actionName?replace('/','-')}-${(crpProgramID)!}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["cytoscape","cytoscape-panzoom","select2", "vanilla-color-picker"] /]
 [#assign customJS = [
-  "${baseUrl}/global/js/usersManagement.js", 
+  "${baseUrlCdn}/global/js/usersManagement.js", 
   "${baseUrlMedia}/js/impactPathway/researchTopics.js", 
-  "${baseUrl}/global/js/fieldsValidation.js", 
-  "${baseUrl}/global/js/autoSave.js"
+  "${baseUrlCdn}/global/js/fieldsValidation.js", 
+  "${baseUrlCdn}/global/js/autoSave.js"
   ] 
 /]
 [#assign customCSS = [ 
