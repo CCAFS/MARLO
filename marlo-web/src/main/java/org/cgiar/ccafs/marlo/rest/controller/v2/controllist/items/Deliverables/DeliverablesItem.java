@@ -36,13 +36,15 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableUser;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.MetadataElement;
 import org.cgiar.ccafs.marlo.data.model.Phase;
+import org.cgiar.ccafs.marlo.data.model.Publication;
 import org.cgiar.ccafs.marlo.data.model.User;
-import org.cgiar.ccafs.marlo.rest.dto.DeliverableDTO;
 import org.cgiar.ccafs.marlo.rest.dto.DeliverableUserDTO;
-import org.cgiar.ccafs.marlo.rest.dto.NewDeliverableDTO;
+import org.cgiar.ccafs.marlo.rest.dto.NewPublicationDTO;
+import org.cgiar.ccafs.marlo.rest.dto.PublicationDTO;
 import org.cgiar.ccafs.marlo.rest.errors.FieldErrorDTO;
 import org.cgiar.ccafs.marlo.rest.errors.MARLOFieldValidationException;
 import org.cgiar.ccafs.marlo.rest.mappers.DeliverablesMapper;
+import org.cgiar.ccafs.marlo.rest.mappers.PublicationsMapper;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -89,6 +91,7 @@ public class DeliverablesItem<T> {
   private MetadataElement metadataElementPublication;
   private MetadataElement metadataElementAuthors;
   private DeliverablesMapper deliverablesMapper;
+  private PublicationsMapper publicationsMapper;
 
 
   @Inject
@@ -97,7 +100,8 @@ public class DeliverablesItem<T> {
     DeliverableTypeManager deliverableTypeManager, DeliverableInfoManager deliverableInfoManager,
     DeliverablePublicationMetadataManager deliverablePubMetadataManager,
     DeliverableMetadataElementManager deliverableMetadataElementManager, DeliverableUserManager deliverableUserManager,
-    DeliverableDisseminationManager deliverableDisseminationManager, DeliverablesMapper deliverablesMapper) {
+    DeliverableDisseminationManager deliverableDisseminationManager, DeliverablesMapper deliverablesMapper,
+    PublicationsMapper publicationsMapper) {
     this.phaseManager = phaseManager;
     this.globalUnitManager = globalUnitManager;
     this.metadataElementManager = metadataElementManager;
@@ -109,9 +113,10 @@ public class DeliverablesItem<T> {
     this.deliverableUserManager = deliverableUserManager;
     this.deliverableDisseminationManager = deliverableDisseminationManager;
     this.deliverablesMapper = deliverablesMapper;
+    this.publicationsMapper = publicationsMapper;
   }
 
-  public long createDeliverable(NewDeliverableDTO deliverable, String entityAcronym, User user) {
+  public long createDeliverable(NewPublicationDTO deliverable, String entityAcronym, User user) {
 
     this.deliverable = new Deliverable();
     this.fieldErrors = new ArrayList<FieldErrorDTO>();
@@ -225,9 +230,9 @@ public class DeliverablesItem<T> {
         String authors = "";
         for (DeliverableUserDTO author : deliverable.getAuthorList()) {
           if (authors.isEmpty()) {
-            authors = authors + "" + author.getLastName() + " " + author.getName();
+            authors = authors + "" + author.getLastName() + " " + author.getFirstName();
           } else {
-            authors = authors + "," + author.getLastName() + " " + author.getName();
+            authors = authors + "," + author.getLastName() + " " + author.getFirstName();
           }
         }
 
@@ -264,7 +269,7 @@ public class DeliverablesItem<T> {
 
       for (DeliverableUserDTO deliverableUserDTO : deliverable.getAuthorList()) {
         deliverableUser = new DeliverableUser();
-        deliverableUser.setFirstName(deliverableUserDTO.getName());
+        deliverableUser.setFirstName(deliverableUserDTO.getFirstName());
         deliverableUser.setLastName(deliverableUserDTO.getLastName());
         deliverableUser.setDeliverable(this.deliverable);
         deliverableUser.setPhase(phase);
@@ -283,8 +288,8 @@ public class DeliverablesItem<T> {
     return deliverablesID;
   }
 
-  public List<DeliverableDTO> getAllDeliverables(String entityAcronym, int repoyear, String repoPhase, User user) {
-    List<DeliverableDTO> deliverablesListDTO = new ArrayList<DeliverableDTO>();
+  public List<PublicationDTO> getAllDeliverables(String entityAcronym, int repoyear, String repoPhase, User user) {
+    List<PublicationDTO> deliverablesListDTO = new ArrayList<PublicationDTO>();
     this.fieldErrors = new ArrayList<FieldErrorDTO>();
     GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitByAcronym(entityAcronym);
     if (globalUnitEntity == null) {
@@ -302,71 +307,96 @@ public class DeliverablesItem<T> {
     if (fieldErrors.size() == 0 || fieldErrors.isEmpty()) {
       try {
 
-        List<Deliverable> fullDeliverableList = new ArrayList<Deliverable>();
+        List<Publication> fullPublicationsList = new ArrayList<Publication>();
 
-
-        for (Deliverable deliverable : deliverableManager.getPublicationsByPhase(phase.getId())) {
+        List<Deliverable> deliverableList = deliverableManager.getPublicationsByPhase(phase.getId());
+        for (Deliverable deliverable : deliverableList) {
           if (deliverable.getProject() == null) {
+            Publication publication = new Publication();
+            publication.setId(deliverable.getId());
             DeliverableInfo deliverableInfo = deliverable.getDeliverableInfo(phase);
+            // getting deliverable Info
             if (deliverableInfo != null) {
-
-              Deliverable newDeliverable = deliverable;
-              newDeliverable.setCrp(phase.getCrp());
-              newDeliverable.setDeliverableInfo(deliverableInfo);
+              publication.setVolume(deliverableInfo.getTitle());
+              publication.setYear(deliverableInfo.getYear());
+              publication.setPhase(phase);
+              deliverable.setCrp(phase.getCrp());
+              deliverable.setDeliverableInfo(deliverableInfo);
+              // getting deliverableDissemination
               List<DeliverableDissemination> deliverableDisseminationList =
                 deliverable.getDeliverableDisseminations().stream()
                   .filter(deliverabledisemination -> deliverabledisemination.getPhase().getId().equals(phase.getId()))
                   .collect(Collectors.toList());
               for (DeliverableDissemination deliverableDissemination : deliverableDisseminationList) {
                 if (deliverableDissemination.getPhase().getId().equals(phase.getId())) {
-                  newDeliverable.setDissemination(deliverableDissemination);
+                  deliverable.setDissemination(deliverableDissemination);
                   break;
                 }
               }
+              publication.setIsOpenAccess(
+                deliverable.getDissemination() != null ? (deliverable.getDissemination().getIsOpenAccess()) : false);
+              // getting deliverablepublicationMetadata
+              Deliverable d = deliverableManager.getDeliverableById(deliverable.getId());
+
+              DeliverablePublicationMetadata deliverablePublicationMetadata = d.getPublication(phase);
+              if (deliverablePublicationMetadata.getId() != null) {
+                publication.setISIJournal(deliverablePublicationMetadata.getIsiPublication() != null
+                  ? deliverablePublicationMetadata.getIsiPublication() : false);
+                publication.setJournal(deliverablePublicationMetadata.getJournal());
+                publication.setIssue(deliverablePublicationMetadata.getIssue());
+                publication.setNpages(deliverablePublicationMetadata.getPages());
+                publication.setVolume(deliverablePublicationMetadata.getVolume());
+              }
+              // Getting deliverablemetadataelement
               List<DeliverableMetadataElement> deliverableMetadataElementList =
                 deliverable.getDeliverableMetadataElements().stream()
                   .filter(
                     deliverableMetadataElement -> deliverableMetadataElement.getPhase().getId().equals(phase.getId()))
                   .collect(Collectors.toList());
-              List<DeliverableMetadataElement> newDeliverableMetadataElement =
-                new ArrayList<DeliverableMetadataElement>();
               for (DeliverableMetadataElement deliverableMetadataElement : deliverableMetadataElementList) {
                 if (!deliverableMetadataElement.getElementValue().trim().isEmpty()) {
-                  if (deliverableMetadataElement.getMetadataElement().getEcondedName()
-                    .equals(APConstants.METADATAELEMENTTITLE)) {
-                    newDeliverableMetadataElement.add(deliverableMetadataElement);
-                  }
-                  if (deliverableMetadataElement.getMetadataElement().getEcondedName()
-                    .equals(APConstants.METADATAELEMENTCITATION)) {
-                    newDeliverableMetadataElement.add(deliverableMetadataElement);
+                  if (publication.getTitle() == null) {
+                    if (deliverableMetadataElement.getMetadataElement().getEcondedName()
+                      .equals(APConstants.METADATAELEMENTTITLE)) {
+                      publication.setTitle(deliverableMetadataElement.getElementValue());
+                    }
                   }
                   if (deliverableMetadataElement.getMetadataElement().getEcondedName()
                     .equals(APConstants.METADATAELEMENTDOI)) {
-                    newDeliverableMetadataElement.add(deliverableMetadataElement);
+                    publication.setDoi(deliverableMetadataElement.getElementValue());
+
                   }
                   if (deliverableMetadataElement.getMetadataElement().getEcondedName()
                     .equals(APConstants.METADATAELEMENTHANDLE)) {
-                    newDeliverableMetadataElement.add(deliverableMetadataElement);
+                    publication.setHandle(deliverableMetadataElement.getElementValue());
                   }
-                  if (deliverableMetadataElement.getMetadataElement().getEcondedName()
-                    .equals(APConstants.METADATAELEMENTPUBLICATION)) {
-                    newDeliverableMetadataElement.add(deliverableMetadataElement);
-                  }
+
                   if (deliverableMetadataElement.getMetadataElement().getEcondedName()
                     .equals(APConstants.METADATAELEMENTAUTHORS)) {
-                    newDeliverableMetadataElement.add(deliverableMetadataElement);
+                    if (!deliverableMetadataElement.getElementValue().contains("[object Object]")) {
+                      publication.setAuthors(deliverableMetadataElement.getElementValue());
+                    }
+
                   }
                 }
               }
-              newDeliverable.setMetadataElements(newDeliverableMetadataElement);
-              fullDeliverableList.add(newDeliverable);
+              List<DeliverableUser> deliverableUserList = deliverable.getDeliverableUsers().stream()
+                .filter(c -> c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList());
+              List<DeliverableUser> newdeliverableUserList = new ArrayList<DeliverableUser>();
+              for (DeliverableUser deliverableUser : deliverableUserList) {
+                newdeliverableUserList.add(deliverableUser);
+              }
+              publication.setAuthorlist(newdeliverableUserList);
+              fullPublicationsList.add(publication);
             }
           }
         }
-        if (fullDeliverableList.size() > 0) {
-          deliverablesListDTO = fullDeliverableList.stream()
-            .map(deliverables -> this.deliverablesMapper.deliverableToDeliverableDTO(deliverables))
+        if (fullPublicationsList.size() > 0) {
+
+          deliverablesListDTO = fullPublicationsList.stream()
+            .map(publication -> this.publicationsMapper.publicationToPublicationDTO(publication))
             .collect(Collectors.toList());
+
         } else {
           this.fieldErrors.add(new FieldErrorDTO("createDeliverable", "Deliverable", "No data found"));
           throw new MARLOFieldValidationException("Field Validation errors", "",
@@ -377,7 +407,11 @@ public class DeliverablesItem<T> {
 
 
       } catch (Exception e) {
-        e.printStackTrace();
+        this.fieldErrors.add(new FieldErrorDTO("createDeliverable", "Deliverable", "ERROR Creating info"));
+        throw new MARLOFieldValidationException("Field Validation errors", "",
+          this.fieldErrors.stream()
+            .sorted(Comparator.comparing(FieldErrorDTO::getField, Comparator.nullsLast(Comparator.naturalOrder())))
+            .collect(Collectors.toList()));
       }
 
     } else {

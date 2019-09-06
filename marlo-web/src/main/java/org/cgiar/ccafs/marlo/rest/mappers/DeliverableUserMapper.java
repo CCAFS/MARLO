@@ -15,12 +15,13 @@
 
 package org.cgiar.ccafs.marlo.rest.mappers;
 
+import org.cgiar.ccafs.marlo.data.model.DeliverableUser;
+import org.cgiar.ccafs.marlo.rest.dto.DeliverableUserDTO;
+
 import org.mapstruct.Mapper;
 
+@Mapper(componentModel = "jsr330")
+public abstract interface DeliverableUserMapper {
 
-@Mapper(componentModel = "jsr330",
-  uses = {DeliverableInfoMapper.class, DeliverableDisseminationMapper.class, GlobalUnitMapper.class})
-public abstract interface DeliverablesMapper {
-
-
+  public abstract DeliverableUserDTO deliverableUserToDeliverableUser(DeliverableUser deliverableUser);
 }

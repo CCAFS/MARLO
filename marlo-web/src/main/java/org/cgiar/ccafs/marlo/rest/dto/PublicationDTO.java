@@ -19,8 +19,10 @@ import java.util.List;
 
 import io.swagger.annotations.ApiModelProperty;
 
-public class NewDeliverableDTO {
+public class PublicationDTO {
 
+  @ApiModelProperty(notes = "Deliverable ID")
+  private Long id;
   @ApiModelProperty(notes = "Deliverable Author List")
   private List<DeliverableUserDTO> authorlist;
   @ApiModelProperty(notes = "Deliverable title")
@@ -48,7 +50,7 @@ public class NewDeliverableDTO {
   @ApiModelProperty(notes = "Publication Authors Field")
   private String authors;
 
-  public List<DeliverableUserDTO> getAuthorList() {
+  public List<DeliverableUserDTO> getAuthorlist() {
     return authorlist;
   }
 
@@ -64,6 +66,10 @@ public class NewDeliverableDTO {
     return handle;
   }
 
+  public Long getId() {
+    return id;
+  }
+
   public Boolean getIsOpenAccess() {
     return isOpenAccess;
   }
@@ -76,7 +82,6 @@ public class NewDeliverableDTO {
     return journal;
   }
 
-
   public String getNpages() {
     return npages;
   }
@@ -84,7 +89,6 @@ public class NewDeliverableDTO {
   public PhaseDTO getPhase() {
     return phase;
   }
-
 
   public String getTitle() {
     return title;
@@ -102,7 +106,7 @@ public class NewDeliverableDTO {
     return isISIJournal;
   }
 
-  public void setAuthorList(List<DeliverableUserDTO> authorlist) {
+  public void setAuthorlist(List<DeliverableUserDTO> authorlist) {
     this.authorlist = authorlist;
   }
 
@@ -118,10 +122,13 @@ public class NewDeliverableDTO {
     this.handle = handle;
   }
 
+  public void setId(Long id) {
+    this.id = id;
+  }
+
   public void setISIJournal(boolean isISIJournal) {
     this.isISIJournal = isISIJournal;
   }
-
 
   public void setIsOpenAccess(Boolean isOpenAccess) {
     this.isOpenAccess = isOpenAccess;
@@ -131,35 +138,28 @@ public class NewDeliverableDTO {
     this.issue = issue;
   }
 
-
   public void setJournal(String journal) {
     this.journal = journal;
   }
-
 
   public void setNpages(String npages) {
     this.npages = npages;
   }
 
-
   public void setPhase(PhaseDTO phase) {
     this.phase = phase;
   }
-
 
   public void setTitle(String title) {
     this.title = title;
   }
 
-
   public void setVolume(String volume) {
     this.volume = volume;
   }
 
-
   public void setYear(int year) {
     this.year = year;
   }
-
 
 }

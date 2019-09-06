@@ -15,12 +15,14 @@
 
 package org.cgiar.ccafs.marlo.rest.mappers;
 
+import org.cgiar.ccafs.marlo.data.model.Publication;
+import org.cgiar.ccafs.marlo.rest.dto.PublicationDTO;
+
 import org.mapstruct.Mapper;
 
+@Mapper(componentModel = "jsr330", uses = {PhaseMapper.class, DeliverableUserMapper.class})
+public abstract interface PublicationsMapper {
 
-@Mapper(componentModel = "jsr330",
-  uses = {DeliverableInfoMapper.class, DeliverableDisseminationMapper.class, GlobalUnitMapper.class})
-public abstract interface DeliverablesMapper {
-
+  public abstract PublicationDTO publicationToPublicationDTO(Publication publication);
 
 }
