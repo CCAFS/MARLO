@@ -20,7 +20,8 @@ import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.Deliverables.DeliverablesItem;
 import org.cgiar.ccafs.marlo.rest.dto.DeliverableDTO;
-import org.cgiar.ccafs.marlo.rest.dto.NewDeliverableDTO;
+import org.cgiar.ccafs.marlo.rest.dto.NewPublicationDTO;
+import org.cgiar.ccafs.marlo.rest.dto.PublicationDTO;
 import org.cgiar.ccafs.marlo.security.Permission;
 
 import java.util.List;
@@ -71,6 +72,7 @@ public class Deliverables {
     super();
     this.deliverableItem = deliverableItem;
     this.userManager = userManager;
+
   }
 
   @ApiOperation(tags = {"Table 6 - Peer-reviewed publications"}, value = "${Deliverables.deliverable.POST.value}",
@@ -81,7 +83,7 @@ public class Deliverables {
   public ResponseEntity<Long> createDeliverable(
     @ApiParam(value = "${Deliverables.deliverable.POST.param.CGIAR}", required = true) @PathVariable String CGIAREntity,
     @ApiParam(value = "${Deliverables.deliverable.POST.param.deliverable}",
-      required = true) @Valid @RequestBody NewDeliverableDTO newDeliverableDTO) {
+      required = true) @Valid @RequestBody NewPublicationDTO newDeliverableDTO) {
     Long innovationId = this.deliverableItem.createDeliverable(newDeliverableDTO, CGIAREntity, this.getCurrentUser());
     ResponseEntity<Long> response = new ResponseEntity<Long>(innovationId, HttpStatus.OK);
     return response;
@@ -93,11 +95,11 @@ public class Deliverables {
    * @return a DeliverablesDTO with deliverables item
    */
   @ApiOperation(tags = {"Table 6 - Peer-reviewed publications"}, value = "${Deliverables.deliverable.all.value}",
-    response = DeliverableDTO.class, responseContainer = "List")
+    response = PublicationDTO.class, responseContainer = "List")
   @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
   @RequestMapping(value = "/{CGIAREntity}/deliverables", method = RequestMethod.GET,
     produces = MediaType.APPLICATION_JSON_VALUE)
-  public List<DeliverableDTO> getAllDeliverables(
+  public List<PublicationDTO> getAllDeliverables(
     @ApiParam(value = "${Deliverables.deliverable.GET.param.CGIAR}", required = true) @PathVariable String CGIAREntity,
     @ApiParam(value = "${Deliverables.deliverable.GET.id.param.year}", required = true) @RequestParam Integer year,
     @ApiParam(value = "${Deliverables.deliverable.GET.id.param.phase}", required = true) @RequestParam String phase) {

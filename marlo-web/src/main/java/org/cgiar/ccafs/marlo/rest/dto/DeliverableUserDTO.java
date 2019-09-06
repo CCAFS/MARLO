@@ -1,5 +1,5 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
+ * This file is part of Managing Agricultural Research for Learning &
  * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,25 +18,30 @@ package org.cgiar.ccafs.marlo.rest.dto;
 import io.swagger.annotations.ApiModelProperty;
 
 public class DeliverableUserDTO {
-	@ApiModelProperty(notes = "Deliverable user name")
-	private String name;
-	@ApiModelProperty(notes = "Deliverable user last name")
-	private String lastName;
 
-	public String getLastName() {
-		return lastName;
-	}
+  @ApiModelProperty(notes = "Deliverable user name")
+  private String firstName;
+  @ApiModelProperty(notes = "Deliverable user last name")
+  private String lastName;
 
-	public String getName() {
-		return name;
-	}
+  public String getFirstName() {
+    return firstName;
+  }
 
-	public void setLastName(String lastName) {
-		this.lastName = lastName;
-	}
 
-	public void setName(String name) {
-		this.name = name;
-	}
+  public String getLastName() {
+    return lastName;
+  }
+
+
+  public void setFirstName(String firstName) {
+    this.firstName = firstName;
+  }
+
+
+  public void setLastName(String lastName) {
+    this.lastName = lastName;
+  }
+
 
 }
