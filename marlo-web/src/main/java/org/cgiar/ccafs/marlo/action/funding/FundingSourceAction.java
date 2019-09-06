@@ -100,75 +100,46 @@ public class FundingSourceAction extends BaseAction {
   private static Logger LOG = LoggerFactory.getLogger(FundingSourceAction.class);
 
   private AuditLogManager auditLogManager;
-
   private BudgetTypeManager budgetTypeManager;
-
-
   private Map<String, String> budgetTypes;
-
   private List<BudgetType> budgetTypesList;
 
-
   private GlobalUnitManager crpManager;
-
   private CrpPpaPartnerManager crpPpaPartnerManager;
-
-
   private File file;
-
-
   private String fileContentType;
-
-
   private FileDBManager fileDBManager;
-
   private String fileFileName;
-
-
   private Integer fileID;
-
-
   private FundingSource fundingSource;
   private FundingSource fundingSourceShow;
-
-
   private FundingSourceBudgetManager fundingSourceBudgetManager;
 
   private long fundingSourceID;
 
-
   private FundingSourceInstitutionManager fundingSourceInstitutionManager;
 
   private ProjectManager projectManager;
-
   private FundingSourceManager fundingSourceManager;
   private FundingSourceInfoManager fundingSourceInfoManager;
   private InstitutionManager institutionManager;
   private List<Institution> institutions;
   private List<Institution> fundingSourceInstitutions;
-
+  private List<String> projectsMappedIDs;
   private List<Institution> institutionsDonors;
-
-
   private LiaisonInstitutionManager liaisonInstitutionManager;
-
   private List<LiaisonInstitution> liaisonInstitutions;
   private HistoryComparator historyComparator;
   private PartnerDivisionManager partnerDivisionManager;
   private List<ProjectBudget> projectBudgetsListOtherCRP;
-
   private List<PartnerDivision> divisions;
-
   private GlobalUnit loggedCrp;
-
-
   private Map<String, String> status;
 
   private String transaction;
   private UserManager userManager;
   private FundingSourceValidator validator;
   private Phase crpPhase;
-
 
   /*
    * Funding Source Locations
@@ -534,13 +505,22 @@ public class FundingSourceAction extends BaseAction {
           }
         }
       }
-
     }
   }
 
   // methos to download link file
   public String getPath(String fsId) {
     return config.getDownloadURL() + "/" + this.getStudyFileUrlPath(fsId).replace('\\', '/');
+  }
+
+  public void getProjectsMappedIds() {
+    projectsMappedIDs = new ArrayList<>();
+    for (ProjectBudget projectBudget : fundingSourceShow.getProjectBudgets()) {
+      if (projectBudget.getProject() != null
+        && !projectsMappedIDs.contains(projectBudget.getProject().getId().toString())) {
+        projectsMappedIDs.add(projectBudget.getProject().getId().toString());
+      }
+    }
   }
 
 
