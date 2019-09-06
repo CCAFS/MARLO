@@ -4,8 +4,8 @@
 [#assign pageLibs = [ "datatables.net", "datatables.net-bs" ] /]
 [#assign customJS = [
   "${baseUrlMedia}/js/synthesis/outcomeSynthesis.js",
-  "${baseUrl}/global/js/autoSave.js",
-  "${baseUrl}/global/js/fieldsValidation.js"
+  "${baseUrlCdn}/global/js/autoSave.js",
+  "${baseUrlCdn}/global/js/fieldsValidation.js"
 ] /]
 [#assign customCSS = ["${baseUrlMedia}/css/synthesis/synthesisGlobal.css"] /]
 [#assign currentSection = "synthesis" /]
@@ -33,7 +33,7 @@
             [#assign hasPermission = (action.hasPermissionSynthesis(institution.ipProgram))!false /]
             <li class="${isActive?string('active','')} ${hasPermission?string('canEdit','')}">
               <a href="[@s.url][@s.param name ="liaisonInstitutionID"]${institution.id}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">${institution.name}</a>
-              [#if isCompleted] <p class="synthesisCompleted"> <img src="${baseUrl}/global/images/icon-check-tiny${isActive?string('-white','')}.png" /> </p> [/#if]
+              [#if isCompleted] <p class="synthesisCompleted"> <img src="${baseUrlCdn}/global/images/icon-check-tiny${isActive?string('-white','')}.png" /> </p> [/#if]
             </li>
           [/#list]
         </ul>

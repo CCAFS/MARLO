@@ -227,7 +227,7 @@ import org.slf4j.LoggerFactory;
 /**
  * This action aims to define general functionalities that are going to be used
  * by all other Actions.
- * 
+ *
  * @author Hernán David Carvajal
  * @author Héctor Fabio Tobón R.
  * @author Christian Garcia
@@ -522,7 +522,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * This function add a flag (--warn--) to the message in order to give a
    * different style to the success message using javascript once the html is
    * ready.
-   * 
+   *
    * @param message
    */
   public void addActionWarning(String message) {
@@ -539,7 +539,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   /**
    * This method add a missing field separated by a semicolon (;).
-   * 
+   *
    * @param field is the name of the field.
    */
   public void addMissingField(String field) {
@@ -577,7 +577,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * ***********************CENTER METHOD********************* return true if
    * the user can view the impactPathway
    * *********************************************************
-   * 
+   *
    * @return true if the user is super admin.
    */
   public boolean canAcessCenterImpactPathway() {
@@ -623,7 +623,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   public boolean canAcessPublications() {
     String params[] = {this.getCrpSession()};
-    return (this.hasPermission(this.generatePermission(Permission.PUBLICATION_ADD, params)));
+    return this.hasPermission(this.generatePermission(Permission.PUBLICATION_ADD, params));
   }
 
   public boolean canAcessSumaries() {
@@ -1036,7 +1036,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   /**
    * Verify if the project have Cluster of Activity to activate Budget by CoA
-   * 
+   *
    * @return true if the project have CoA or false otherwise.
    */
   public Boolean canEditBudgetByCoAs(long projectID) {
@@ -1126,7 +1126,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * impactPathway *********************************************************
    * Verify if the class model name have not relations for enable the delete
    * button.
-   * 
+   *
    * @param id - the id of the model
    * @param className - the model class name
    * @return true for enabling the delete button or false to disable the
@@ -1250,7 +1250,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * ***********************CENTER METHOD******************** Check if the
    * capDev section is Active
    * ************************************************************
-   * 
+   *
    * @return true if the section is Active.
    */
   public boolean centerCapDevActive() {
@@ -1268,7 +1268,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * ***********************CENTER METHOD******************** Check if the
    * Impact Pathway section is Active
    * ************************************************************
-   * 
+   *
    * @return true if the section is Active.
    */
   public boolean centerImpactPathwayActive() {
@@ -1286,7 +1286,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * ***********************CENTER METHOD******************** Check if the
    * Monitoring section is Active
    * ************************************************************
-   * 
+   *
    * @return true if the section is Active.
    */
   public boolean centerMonitoringActive() {
@@ -1304,7 +1304,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * ***********************CENTER METHOD******************** Check if the
    * Monitoring Outcomes section is Active
    * ************************************************************
-   * 
+   *
    * @return true if the section is Active.
    */
   public boolean centerMonitoringOutcomeActive() {
@@ -1322,7 +1322,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * ***********************CENTER METHOD******************** Check if the
    * Summaries section is Active
    * ************************************************************
-   * 
+   *
    * @return true if the section is Active.
    */
   public boolean centerSummariesActive() {
@@ -1361,7 +1361,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   /**
    * Create a liaison institution POWB Synthesis in this phase
-   * 
+   *
    * @param phase
    * @return PowbSynthesis object
    */
@@ -1384,7 +1384,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   /**
    * Create a liaison institution Annual Report Synthesis in this phase
-   * 
+   *
    * @param phase
    * @return ReportSynthesis object
    */
@@ -1452,7 +1452,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * ***********************CENTER METHOD******************** This method
    * calculates all the years between the start date and the end date.
    * ************************************************************
-   * 
+   *
    * @return a List of numbers representing all the years, or an empty list if
    *         nothing found.
    */
@@ -1503,7 +1503,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * ************************ CENTER METHOD ******************************
    * Generate permissions String to Centers
    * ********************************************************************
-   * 
+   *
    * @return a permission String
    */
   public String generatePermissionCenter(String permission, String... params) {
@@ -1522,7 +1522,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   /**
    * get the actual
-   * 
+   *
    * @return the actual phase of the crp
    */
   public Phase getActualPhase() {
@@ -1649,7 +1649,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   /**
    * Get the phases created for the crp
-   * 
+   *
    * @return the list of all the phases for the crp
    */
   public List<Phase> getAllCreatedPhases() {
@@ -1664,7 +1664,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   /**
    * get all phases per CRP
-   * 
+   *
    * @return the list of the phases for the crp
    */
   public Map<Long, Phase> getAllPhases() {
@@ -1686,7 +1686,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   /**
    * Years for all phases
-   * 
+   *
    * @return String of years for a CRP/Platform/Center for all created phases
    */
   public ArrayList<String> getAllPhaseYears() {
@@ -1712,7 +1712,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * This method calculates all the years between the start date and the end
    * date.
    * ********************************************************************
-   * 
+   *
    * @return a List of numbers representing all the years, or an empty list if
    *         nothing found.
    */
@@ -1736,8 +1736,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   public List<Submission> getAR2018Submissions(long synthesisID) {
     ReportSynthesis reportSynthesis = this.reportSynthesisManager.getReportSynthesisById(synthesisID);
-    List<Submission> submissions = reportSynthesis
-      .getSubmissions().stream().filter(c -> c.getCycle().equals(this.getCurrentCycle())
+    List<Submission> submissions = reportSynthesis.getSubmissions()
+      .stream().filter(c -> c.getCycle().equals(this.getCurrentCycle())
         && c.getYear().intValue() == this.getCurrentCycleYear() && (c.isUnSubmit() == null || !c.isUnSubmit()))
       .collect(Collectors.toList());
     if (submissions.isEmpty()) {
@@ -1772,26 +1772,46 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   /**
-   * Get the front end libraries acording to Center o CRP access
-   * 
+   * Get the static content and libraries in general
+   *
+   * @return
+   */
+  public String getBaseUrlCdn() {
+    String mediaURL = this.config.getBaseUrlCdn();
+    if (mediaURL == null) {
+      mediaURL = this.config.getBaseUrl();
+    }
+
+    return mediaURL;
+
+  }
+
+  /**
+   * Get the front end libraries according to Center o CRP access
+   *
    * @return
    */
   public String getBaseUrlMedia() {
+    String mediaURL = this.config.getBaseUrlCdn();
+    if (mediaURL == null) {
+      mediaURL = this.config.getBaseUrl();
+    }
+
     if (this.getCurrentCrp() != null) {
       switch (this.getCurrentCrp().getGlobalUnitType().getId().intValue()) {
         case 1:
-          return this.config.getBaseUrl() + "/crp";
+          return mediaURL + "/crp";
         case 2:
-          return this.config.getBaseUrl() + "/center";
+          return mediaURL + "/center";
         case 3:
-          return this.config.getBaseUrl() + "/crp";
+          return mediaURL + "/crp";
         case 4:
-          return this.config.getBaseUrl() + "/crp";
+          return mediaURL + "/crp";
         default:
-          return this.config.getBaseUrl() + "/crp";
+          return mediaURL + "/crp";
       }
     } else {
-      return this.config.getBaseUrl() + "/crp";
+      return mediaURL + "/crp";
     }
   }
 
@@ -1816,7 +1836,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * CENTER METHOD ****************************** Get The phase that extract
    * the crp information.
    * ********************************************************************
-   * 
+   *
    * @return a Crp Phase Object
    */
   public Phase getCenterCrpPhase(GlobalUnit crp) {
@@ -1846,7 +1866,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * This method gets the specific section status from the sectionStatuses
    * array for a CenterDeliverable.
    * ***************************************************************************************************
-   * 
+   *
    * @param deliverableID is the deliverable ID to be identified.
    * @param section is the name of some section.
    * @return a CenterSectionStatus object with the information requested.
@@ -1873,7 +1893,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * ************************ CENTER METHOD ********************* Get the
    * center that is currently save in the session, if the user access to the
    * platform whit a diferent url, get the current action to catch the center
-   * 
+   *
    * @return the center session
    */
   public Long getCenterID() {
@@ -1897,7 +1917,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * ***********************CENTER METHOD******************** This method gets
    * the specific section status from the sectionStatuses array for a Outcome.
    * ********************************************************
-   * 
+   *
    * @param deliverableID is the deliverable ID to be identified.
    * @param section is the name of some section.
    * @return a CenterSectionStatus object with the information requested.
@@ -1935,7 +1955,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * ***********************CENTER METHOD******************** This method gets
    * the specific section status from the sectionStatuses array for a Output.
    * ************************************************************
-   * 
+   *
    * @param deliverableID is the deliverable ID to be identified.
    * @param section is the name of some section.
    * @return a CenterSectionStatus object with the information requested.
@@ -1962,7 +1982,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * ************************ CENTER METHOD ********************* Validate the
    * sections of CapDev *
    * ***************************************************************
-   * 
+   *
    * @return true if the CapDev is complete
    */
   public boolean getCenterSectionStatusCapDev(String section, long capDevID) {
@@ -1989,7 +2009,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * ************************ CENTER METHOD ********************* Validate the
    * sections of the Impact Pathway *
    * ***************************************************************
-   * 
+   *
    * @return true if the IP is complete
    */
   public boolean getCenterSectionStatusIP(String section, long programID) {
@@ -2017,7 +2037,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * ************************ CENTER METHOD ********************* validate the
    * sections of the project
    * ***************************************************************
-   * 
+   *
    * @return true if the Project is complete
    */
   public boolean getCenterSectionStatusProject(String section, long projectID) {
@@ -2045,7 +2065,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * center that is currently save in the session, if the user access to the
    * platform whit a diferent url, get the current action to catch the center
    * ***************************************************************
-   * 
+   *
    * @return the center that the user has log in
    */
   public String getCenterSession() {
@@ -2097,7 +2117,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * ************************ CENTER METHOD ********************* return the
    * actual center year
    * ***************************************************************
-   * 
+   *
    * @return the actual year
    */
   public int getCenterYear() {
@@ -2150,7 +2170,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   /**
    * Check if the project contributes two or more flagships
-   * 
+   *
    * @param projectID - the project ID
    * @return true if the project contribute two or more flagships
    */
@@ -2194,7 +2214,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   /**
    * Get the crp that is currently save in the session, if the user access to
    * the platform whit a diferent url, get the current action to catch the crp
-   * 
+   *
    * @return the crp that the user has log in
    */
   public Long getCrpID() {
@@ -2227,7 +2247,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   /**
    * Get the Crp List
-   * 
+   *
    * @return List<Crp> object
    */
   public List<GlobalUnit> getCrpList() {
@@ -2255,7 +2275,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   /**
    * Get the crp that is currently save in the session, if the user access to
    * the platform whit a diferent url, get the current action to catch the crp
-   * 
+   *
    * @return the crp that the user has log in
    */
   public String getCrpSession() {
@@ -2280,7 +2300,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * ************************ CENTER METHOD ******************************
    * Gets the current center phase
    * ********************************************************************
-   * 
+   *
    * @return a Current Phase Object
    */
   public Phase getCurrentCenterPhase() {
@@ -2379,7 +2399,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   /**
    * Get the user that is currently saved in the session.
-   * 
+   *
    * @return a user object or null if no user was found.
    */
   public User getCurrentUser() {
@@ -2397,7 +2417,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   /**
    * This method return the Date Format from APConstants class
-   * 
+   *
    * @return A dateformat (yyyy-MM-dd)
    */
   public String getDateFormat() {
@@ -2674,7 +2694,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   /**
    * Get the Global Unit Type
-   * 
+   *
    * @return the global unit type ID.
    */
   public int getGlobalUnitType() {
@@ -2700,7 +2720,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   /**
    * Get the folder path according if the user navigate in center,crp or
    * platform sections.
-   * 
+   *
    * @return the String folder path.
    */
   public String getHeaderPath() {
@@ -2845,7 +2865,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   /**
    * get all active messages of MARLO messages table
-   * 
+   *
    * @return List of MarloMessages
    */
   public List<MarloMessage> getMarloMessages() {
@@ -2862,7 +2882,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   /**
    * get the number of users log in in the application
-   * 
+   *
    * @return the number of users online
    */
   public int getOnline() {
@@ -2895,12 +2915,12 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
     for (Deliverable a : deliverables) {
 
-      if (a.isActive() && ((a.getDeliverableInfo(this.getActualPhase()).getStatus() == null
+      if (a.isActive() && (a.getDeliverableInfo(this.getActualPhase()).getStatus() == null
         || a.getDeliverableInfo(this.getActualPhase()).getStatus() == Integer
           .parseInt(ProjectStatusEnum.Ongoing.getStatusId())
-        || (a.getDeliverableInfo(this.getActualPhase()).getStatus() == Integer
+        || a.getDeliverableInfo(this.getActualPhase()).getStatus() == Integer
           .parseInt(ProjectStatusEnum.Extended.getStatusId())
-          || a.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == 0)))) {
+        || a.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == 0)) {
 
         if (a.getDeliverableInfo(this.getActualPhase()).getNewExpectedYear() != null) {
           if (a.getDeliverableInfo(this.getActualPhase()).getStatus() == Integer
@@ -2927,7 +2947,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   /**
    * Validate if a given user exists in the Outlook Active Directory .
-   * 
+   *
    * @param email is the CGIAR email.
    * @return a populated user with all the information that is coming from the OAD, or null if the email does not exist.
    */
@@ -2966,7 +2986,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   /**
    * validate if the list of phases are on session if not, will be find on bd
-   * 
+   *
    * @return the list of the phases for the crp
    */
   public List<Phase> getPhases() {
@@ -3037,7 +3057,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   /**
    * validate if the list of phases are on session if not, will be find on bd
    * on json format
-   * 
+   *
    * @return the jsons of the phases for the crp
    */
   public String getPhasesJson() {
@@ -3084,7 +3104,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   /**
    * Check the powb Synthesis Section Status
-   * 
+   *
    * @param section
    * @return
    */
@@ -3196,8 +3216,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   public List<Submission> getPowbSynthesisSubmissions(long powbSynthesisID) {
     PowbSynthesis powbSynthesis = this.powbSynthesisManager.getPowbSynthesisById(powbSynthesisID);
-    List<Submission> submissions = powbSynthesis
-      .getSubmissions().stream().filter(c -> c.getCycle().equals(this.getCurrentCycle())
+    List<Submission> submissions = powbSynthesis.getSubmissions()
+      .stream().filter(c -> c.getCycle().equals(this.getCurrentCycle())
         && c.getYear().intValue() == this.getCurrentCycleYear() && (c.isUnSubmit() == null || !c.isUnSubmit()))
       .collect(Collectors.toList());
     if (submissions.isEmpty()) {
@@ -3319,8 +3339,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       }
       if (clazz == CrpMilestone.class) {
         CrpMilestone crpMilestone = this.crpMilestoneManager.getCrpMilestoneById(id);
-        List<ProjectMilestone> projectMilestones = crpMilestone
-          .getProjectMilestones().stream().filter(c -> c.isActive() && c.getProjectOutcome().getPhase() != null
+        List<ProjectMilestone> projectMilestones = crpMilestone.getProjectMilestones()
+          .stream().filter(c -> c.isActive() && c.getProjectOutcome().getPhase() != null
             && c.getProjectOutcome().isActive() && c.getProjectOutcome().getPhase().equals(this.getActualPhase()))
           .collect(Collectors.toList());
         Set<Project> projectsSet = new HashSet<>();
@@ -3749,8 +3769,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   public List<Submission> getProjectSubmissions(long projectID) {
     Project project = this.projectManager.getProjectById(projectID);
-    List<Submission> submissions = project
-      .getSubmissions().stream().filter(c -> c.getCycle().equals(this.getCurrentCycle())
+    List<Submission> submissions = project.getSubmissions()
+      .stream().filter(c -> c.getCycle().equals(this.getCurrentCycle())
         && c.getYear().intValue() == this.getCurrentCycleYear() && (c.isUnSubmit() == null || !c.isUnSubmit()))
       .collect(Collectors.toList());
     if (submissions.isEmpty()) {
@@ -3764,7 +3784,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * impactPathway *********************************************************
    * Return the sync code if the center project has synchronized by another
    * project
-   * 
+   *
    * @param centerProjectID
    * @return the Sync Code
    */
@@ -3821,7 +3841,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   /**
    * Check the annual report 2018 Section Status
-   * 
+   *
    * @param section
    * @return
    */
@@ -3897,7 +3917,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   /**
    * Check the annual report Section Status
-   * 
+   *
    * @param section
    * @return
    */
@@ -4038,7 +4058,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   /**
    * Return the artifact version of the Marlo project pom.xml
-   * 
+   *
    * @return the actual Marlo version
    */
   public String getVersion() {
@@ -4057,7 +4077,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   /**
    * Years available per CRPs (used in Summaries)
-   * 
+   *
    * @return String of years for a CRP/Platform/Center
    */
   public ArrayList<String> getYears() {
@@ -4146,7 +4166,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     Project projectBD = this.projectManager.getProjectById(projectID);
     List<ProjectBudget> budgets = projectBD.getProjectBudgets().stream()
       .filter(c -> c.isActive() && c.getYear() == year && c.getPhase().equals(this.getActualPhase())
-        && c.getBudgetType().getId().longValue() == type.longValue() && (c.getAmount() != null && c.getAmount() >= 0))
+        && c.getBudgetType().getId().longValue() == type.longValue() && c.getAmount() != null && c.getAmount() >= 0)
       .collect(Collectors.toList());
 
     boolean haveBudget = false;
@@ -4185,7 +4205,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   /**
    * Validate Missing fields in Funding Sources
-   * 
+   *
    * @return
    */
   public boolean hasFundingSourcesMissingFields(long id) {
@@ -4213,7 +4233,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   /**
    * Validate Missing fields in Innovations
-   * 
+   *
    * @return
    */
   public boolean hasInnovationMissingFields(long id) {
@@ -4261,7 +4281,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * ************************ CENTER METHOD ********************* validation
    * base method to check the permission in MARLO centers.
    * ***************************************************************
-   * 
+   *
    * @return true if the user have the permission
    */
   public boolean hasPermissionCenter(String fieldName) {
@@ -4319,7 +4339,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * TODO ************************ CENTER METHOD *********************
    * validate if the user can submit the capdev
    * ***************************************************************
-   * 
+   *
    * @return true if the user have the permission
    */
   public boolean hasPersmissionSubmitCapDev(long capDevID) {
@@ -4336,7 +4356,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * ************************ CENTER METHOD ********************* validate if
    * the user can submit the impact pathway
    * ***************************************************************
-   * 
+   *
    * @return true if the user have the permission
    */
   public boolean hasPersmissionSubmitIP(long programID) {
@@ -4358,7 +4378,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * ************************ CENTER METHOD ********************* validate if
    * the user can submit the project
    * ***************************************************************
-   * 
+   *
    * @return true if the user have the permission
    */
   public boolean hasPersmissionSubmitProject(long projectID) {
@@ -4410,7 +4430,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   /**
    * Validate Missing fields in Project Expected Studies
-   * 
+   *
    * @return
    */
   public boolean hasStudiesMissingFields(String className, long id) {
@@ -4473,7 +4493,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   /**
    * Function to validate the annual report version the front will show
-   * 
+   *
    * @return
    */
   public boolean isAnnualReport2018() {
@@ -4492,8 +4512,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
       ReportSynthesis reportSynthesis = this.reportSynthesisManager.getReportSynthesisById(synthesisID);
 
-      List<Submission> submissions = reportSynthesis
-        .getSubmissions().stream().filter(c -> c.getCycle().equals(this.getCurrentCycle())
+      List<Submission> submissions = reportSynthesis.getSubmissions()
+        .stream().filter(c -> c.getCycle().equals(this.getCurrentCycle())
           && c.getYear().intValue() == this.getCurrentCycleYear() && (c.isUnSubmit() == null || !c.isUnSubmit()))
         .collect(Collectors.toList());
       if (submissions.isEmpty()) {
@@ -4523,7 +4543,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   public boolean isCapDevManager() {
     String params[] = {this.getCrpSession()};
-    return (this.hasPermission(this.generatePermission(Permission.CAP_DEV_FULL_PERMISSION, params)));
+    return this.hasPermission(this.generatePermission(Permission.CAP_DEV_FULL_PERMISSION, params));
   }
 
   public boolean isCenterGlobalUnit() {
@@ -4539,7 +4559,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * ************************ CENTER METHOD ********************* verify if
    * the cap-dev is complete
    * ***************************************************************
-   * 
+   *
    * @return true if the cap dev is complete
    */
   public boolean isCompleteCapDev(long capDevID) {
@@ -4564,7 +4584,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     final List<CenterSectionStatus> sectionStatuses = new ArrayList<>(capacityDevelopment.getSectionStatuses().stream()
       .filter(ss -> ss.getYear() == (short) this.getActualPhase().getYear()).collect(Collectors.toList()));
 
-    if ((sectionStatuses != null) && (sectionStatuses.size() > 0)) {
+    if (sectionStatuses != null && sectionStatuses.size() > 0) {
       for (final CenterSectionStatus sectionStatus : sectionStatuses) {
         if (sectionStatus.getMissingFields().length() > 0) {
           return false;
@@ -4580,7 +4600,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * ************************ CENTER METHOD ********************* verify if
    * the project is complete
    * ***************************************************************
-   * 
+   *
    * @return true if the project is complete
    */
   public boolean isCompleteCenterProject(long projectID) {
@@ -4667,7 +4687,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * ************************ CENTER METHOD ********************* verify if
    * the impact pathway is complete
    * ***************************************************************
-   * 
+   *
    * @return true if the IP is complete
    */
   public boolean isCompleteIP(long programID) {
@@ -4710,7 +4730,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   /**
    * Check if all the powb Synthesis Sections by Liaison Institution is
    * completed
-   * 
+   *
    * @param sectionName
    * @param liaisonInstitutionID
    * @return
@@ -4731,7 +4751,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   /**
    * Check if all the powb Synthesis Sections by Liaison Institution is
    * completed
-   * 
+   *
    * @param sectionName
    * @param liaisonInstitutionID
    * @return
@@ -4752,7 +4772,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   /**
    * Check if all the annual Synthesis Sections by Liaison Institution is
    * completed
-   * 
+   *
    * @param liaisonInstitutionID
    * @return
    */
@@ -4772,7 +4792,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   /**
    * Check if all the annual Synthesis Sections by Liaison Institution is
    * completed
-   * 
+   *
    * @param liaisonInstitutionID
    * @return
    */
@@ -4791,7 +4811,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   /**
    * Check if the powb synthesis is complete by the flagships or the PMU.
-   * 
+   *
    * @param phaseID
    * @return
    */
@@ -4900,7 +4920,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   /**
    * Check if the powb synthesis is complete by the flagships or the PMU.
-   * 
+   *
    * @param phaseID
    * @return
    */
@@ -5038,7 +5058,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   /**
    * Check if the annual Report is complete by the flagships or the PMU.
-   * 
+   *
    * @param phaseID
    * @return
    */
@@ -5169,7 +5189,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   /**
    * Check if the annual Report 2018 is complete by the flagships or the PMU.
-   * 
+   *
    * @param phaseID
    * @return
    */
@@ -5392,7 +5412,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * This method get the status of an specific deliverable depending of the
    * sectionStatuses and the year Previous deliverable will be marked as
    * completed
-   * 
+   *
    * @param deliverableID is the deliverable ID to be identified.
    * @return Boolean object with the status of the deliverable
    */
@@ -5474,7 +5494,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   /**
    * Get if the Evidence is new
-   * 
+   *
    * @param id
    * @return
    */
@@ -5501,7 +5521,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   /**
    * Findable
-   * 
+   *
    * @param deliverableID
    * @return
    */
@@ -5601,8 +5621,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         }
 
         // If the deliverable is synced
-        if ((deliverableBD.getDissemination().getSynced() != null)
-          && (deliverableBD.getDissemination().getSynced().booleanValue())) {
+        if (deliverableBD.getDissemination().getSynced() != null
+          && deliverableBD.getDissemination().getSynced().booleanValue()) {
           return true;
         }
 
@@ -5620,7 +5640,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   /**
    * Get if the Innovation is new
-   * 
+   *
    * @param id
    * @return
    */
@@ -5651,7 +5671,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   /**
    * Validate if the user is already logged in or not.
-   * 
+   *
    * @return true if the user is logged in, false otherwise.
    */
   public boolean isLogged() {
@@ -5667,7 +5687,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   public boolean isPhaseOne() {
     try {
-      if (this.isReportingActive() && this.getCrpSession().equals("ccafs") && (this.getCurrentCycleYear() <= 2016)) {
+      if (this.isReportingActive() && this.getCrpSession().equals("ccafs") && this.getCurrentCycleYear() <= 2016) {
         return true;
       } else {
         return false;
@@ -5695,7 +5715,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   /**
    * Get if the Policy is new
-   * 
+   *
    * @param id
    * @return
    */
@@ -5758,8 +5778,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   public boolean isPowbSynthesisSubmitted(long powbSynthesisID) {
     PowbSynthesis powbSynthesis = this.powbSynthesisManager.getPowbSynthesisById(powbSynthesisID);
-    List<Submission> submissions = powbSynthesis
-      .getSubmissions().stream().filter(c -> c.getCycle().equals(this.getCurrentCycle())
+    List<Submission> submissions = powbSynthesis.getSubmissions()
+      .stream().filter(c -> c.getCycle().equals(this.getCurrentCycle())
         && c.getYear().intValue() == this.getCurrentCycleYear() && (c.isUnSubmit() == null || !c.isUnSubmit()))
       .collect(Collectors.toList());
     if (submissions.isEmpty()) {
@@ -5789,7 +5809,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   /**
    * Check if the project was created in a Center
-   * 
+   *
    * @param projectID
    * @return
    */
@@ -5807,7 +5827,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   /**
    * Check if the project was created in a Crp or Platform
-   * 
+   *
    * @param projectID
    * @return
    */
@@ -5888,7 +5908,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   /**
    * Reusable
-   * 
+   *
    * @param deliverableID
    * @return
    */
@@ -5902,8 +5922,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         if (deliverableBD.getDeliverableInfo(this.getActualPhase()).getLicense() == null) {
           return false;
         } else {
-          if (!(deliverableBD.getDeliverableInfo(this.getActualPhase()).getLicense()
-            .equals(LicensesTypeEnum.OTHER.getValue()))) {
+          if (!deliverableBD.getDeliverableInfo(this.getActualPhase()).getLicense()
+            .equals(LicensesTypeEnum.OTHER.getValue())) {
             return true;
           } else {
             if (deliverableBD.getDeliverableInfo(this.getActualPhase()).getOtherLicense() == null
@@ -5967,7 +5987,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * ************************ CENTER METHOD ********************* Check if the
    * impact pathway is submitted
    * ***************************************************************
-   * 
+   *
    * @return true if the impact pathway is submitted
    */
   public boolean isSubmitCapDev(long capDevID) {
@@ -5978,7 +5998,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       List<CenterSubmission> submissions = new ArrayList<>(capacityDevelopment.getSubmissions().stream()
         .filter(s -> (s.getYear().intValue() == this.getActualPhase().getYear())).collect(Collectors.toList()));
 
-      if ((submissions != null) && (submissions.size() > 0)) {
+      if (submissions != null && submissions.size() > 0) {
         this.setCenterSubmission(submissions.get(0));
         return true;
       }
@@ -5990,7 +6010,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * ************************ CENTER METHOD ********************* Check if the
    * project is submitted
    * ***************************************************************
-   * 
+   *
    * @return true if the project is submitted
    */
   public boolean isSubmitCenterProject(long projectID) {
@@ -6017,7 +6037,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * ************************ CENTER METHOD ********************* Check if the
    * impact pathway is submitted
    * ***************************************************************
-   * 
+   *
    * @return true if the impact pathway is submitted
    */
   public boolean isSubmitIP(long programID) {
@@ -6061,7 +6081,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   /**
    * Show the superAdmin Menu.
-   * 
+   *
    * @return
    */
   public boolean isVisibleTop() {
@@ -6087,7 +6107,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   /**
    * Boolean to validate if show the crp top list.
-   * 
+   *
    * @return
    */
   public boolean isVisibleTopGUList() {
@@ -6202,10 +6222,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       project.setPercentageBilateral(percentageB);
       project.setPercentageFundsBudget(percentageCenterFunds);
 
-      w1 = w1 * (percentageW1) / 100;
-      w3 = w3 * (percentageW3) / 100;
-      bilateral = bilateral * (percentageB) / 100;
-      centerFunds = centerFunds * (percentageCenterFunds) / 100;
+      w1 = w1 * percentageW1 / 100;
+      w3 = w3 * percentageW3 / 100;
+      bilateral = bilateral * percentageB / 100;
+      centerFunds = centerFunds * percentageCenterFunds / 100;
 
       project.setTotalW3(w3);
       project.setTotalW1(w1);
@@ -6405,7 +6425,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   /**
    * Remove HTML tags
-   * 
+   *
    * @param html
    * @return
    */
@@ -6623,7 +6643,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   /**
    * Common logic for setting the Modification Justification
-   * 
+   *
    * @param entity
    */
   protected void setModificationJustification(MarloAuditableEntity entity) {
@@ -6726,7 +6746,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   public String specificityValue(String specificity) {
     try {
-      String value = (this.getSession().get(specificity).toString());
+      String value = this.getSession().get(specificity).toString();
       return value;
     } catch (Exception e) {
       return null;
@@ -6742,7 +6762,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * ************************ CENTER METHOD ********************* Validate the
    * missing fields in the program impacts section
    * ***************************************************************
-   * 
+   *
    * @return false if has missing fields.
    */
   public boolean validateCapDevSection(CapacityDevelopment capacityDevelopment, String sectionName) {
@@ -6764,14 +6784,14 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * ************************ CENTER METHOD ********************* Validate the
    * missing fields in the Cap-Dev Supporting Documents section
    * ***************************************************************
-   * 
+   *
    * @return false if has missing fields.
    */
   public boolean validateCapDevSupDocs(CapacityDevelopment capacityDevelopment) {
     if (capacityDevelopment != null) {
       List<CenterDeliverable> centerDeliverables = new ArrayList<>(
         capacityDevelopment.getDeliverables().stream().filter(cd -> cd.isActive()).collect(Collectors.toList()));
-      if ((centerDeliverables != null) && !centerDeliverables.isEmpty()) {
+      if (centerDeliverables != null && !centerDeliverables.isEmpty()) {
         for (CenterDeliverable centerDeliverable : centerDeliverables) {
           final CenterSectionStatus sectionStatus = this.getCenterDeliverableStatus(centerDeliverable.getId());
           if (sectionStatus == null) {
@@ -6794,7 +6814,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * ************************ CENTER METHOD ********************* Validate the
    * missing fields in the deliverables section
    * ***************************************************************
-   * 
+   *
    * @return false if has missing fields.
    */
   public boolean validateCenterDeliverable(CenterProject project) {
@@ -6825,7 +6845,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * ************************ CENTER METHOD ********************* Validate the
    * missing fields in the program impacts section
    * ***************************************************************
-   * 
+   *
    * @return false if has missing fields.
    */
 
@@ -6848,7 +6868,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * ************************ CENTER METHOD ********************* Validate the
    * missing fields in the outcome section
    * ***************************************************************
-   * 
+   *
    * @return false if has missing fields.
    */
   public boolean validateCenterOutcome(CrpProgram program) {
@@ -6891,7 +6911,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * ************************ CENTER METHOD ********************* Validate the
    * missing fields in the output section
    * ***************************************************************
-   * 
+   *
    * @return false if has missing fields.
    */
   public boolean validateCenterOutput(CrpProgram program) {
@@ -6924,7 +6944,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * ************************ CENTER METHOD ********************* Validate the
    * missing fields in the project section
    * ***************************************************************
-   * 
+   *
    * @return false if has missing fields.
    */
   public boolean validateCenterProject(CenterProject project, String sectionName) {
@@ -6945,7 +6965,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * ************************ CENTER METHOD ********************* Validate the
    * missing fields in the research topic section
    * ***************************************************************
-   * 
+   *
    * @return false if has missing fields.
    */
   public boolean validateCenterTopic(CrpProgram program, String sectionName) {

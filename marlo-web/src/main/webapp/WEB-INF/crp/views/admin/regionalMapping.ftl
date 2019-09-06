@@ -3,9 +3,9 @@
 [#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2", "flat-flags", "vanilla-color-picker"] /]
 [#assign customJS = [
-  "${baseUrl}/global/js/usersManagement.js", 
+  "${baseUrlCdn}/global/js/usersManagement.js", 
   "${baseUrlMedia}/js/admin/regionalMapping.js",
-  "${baseUrl}/global/js/fieldsValidation.js" 
+  "${baseUrlCdn}/global/js/fieldsValidation.js" 
   ] 
 /]
 [#assign currentSection = "admin" /]
@@ -21,7 +21,7 @@
 
 <div class="container helpText viewMore-block">
   <div class="helpMessage infoText">
-    <img class="col-md-2" src="${baseUrl}/global/images/icon-help.jpg" />
+    <img class="col-md-2" src="${baseUrlCdn}/global/images/icon-help.jpg" />
     <p class="col-md-10"> [@s.text name="regionalMapping.help" /] </p>
   </div> 
   <div style="display:none" class="viewMore closed"></div>

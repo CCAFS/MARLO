@@ -3,12 +3,12 @@
 [#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = [ "flat-flags", "google-diff-match-patch", "jquery-pretty-text-diff", "datatables.net", "datatables.net-bs"] /]
 [#assign customJS = [ 
-  "${baseUrl}/global/js/superadmin/marloInstitutions.js?20181122" 
+  "${baseUrlCdn}/global/js/superadmin/marloInstitutions.js?20181122" 
   ] 
 /]
 [#assign customCSS = [ 
-  "${baseUrl}/global/css/superadmin/superadmin.css",
-  "${baseUrl}/global/css/superadmin/marloInstitutions.css"
+  "${baseUrlCdn}/global/css/superadmin/superadmin.css",
+  "${baseUrlCdn}/global/css/superadmin/marloInstitutions.css"
   ] 
 /]
 [#assign currentSection = "superadmin" /]

@@ -2,15 +2,15 @@
 [#assign currentSectionString = "capdev-${actionName?replace('/','-')}-${capdevID}-phase-${(actualPhase.id)!}" /]
 [#assign customCSS = [
   "${baseUrlMedia}/css/capDev/capacityDevelopment.css",
-  "${baseUrl}/global/css/customDataTable.css"
+  "${baseUrlCdn}/global/css/customDataTable.css"
   ] 
 /]
 [#assign pageLibs = ["select2","flat-flags"] /]
 [#assign customJS = [
   "${baseUrlMedia}/js/capDev/capacityDevelopment.js",
   "${baseUrlMedia}/js/capDev/capdevDescription.js",
-  "${baseUrl}/global/js/fieldsValidation.js",
-  "${baseUrl}/global/js/autoSave.js"
+  "${baseUrlCdn}/global/js/fieldsValidation.js",
+  "${baseUrlCdn}/global/js/autoSave.js"
   ]
 /]
 
@@ -28,7 +28,7 @@
 <div class="container"> 
 
   <div class="helpMessage infoText capdevinfo">
-    <img class="col-md-2" src="${baseUrl}/global/images/icon-help.png" />
+    <img class="col-md-2" src="${baseUrlCdn}/global/images/icon-help.png" />
     <p class="col-md-10"> [@s.text name="capdev.help.description"][/@s.text] </p>
   </div>
 

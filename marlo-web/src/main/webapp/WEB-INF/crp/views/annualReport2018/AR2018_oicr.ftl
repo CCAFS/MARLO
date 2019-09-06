@@ -154,7 +154,7 @@
              [#if expanded]
               <td>[@utils.tableList list=(item.srfTargets)![] displayFieldName="srfSloIndicator.title" /]</td>
               <td>[@utils.tableList list=(item.subIdos)![] displayFieldName="srfSubIdo.description" /]</td>
-              <td> <a href="${summaryPDF}" target="_blank"><img src="${baseUrl}/global/images/pdf.png" height="25" title="[@s.text name="projectsList.downloadPDF" /]" /></a>  </td>
+              <td> <a href="${summaryPDF}" target="_blank"><img src="${baseUrlCdn}/global/images/pdf.png" height="25" title="[@s.text name="projectsList.downloadPDF" /]" /></a>  </td>
              [/#if]
              [#if !expanded]
               <td class="text-center">

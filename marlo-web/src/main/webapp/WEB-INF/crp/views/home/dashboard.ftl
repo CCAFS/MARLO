@@ -4,13 +4,13 @@
 [#assign pageLibs = ["jQuery-Timelinr","cytoscape","cytoscape-panzoom","cytoscape-qtip","qtip2","datatables.net", "datatables.net-bs"] /]
 [#assign customJS = [
   "${baseUrlMedia}/js/home/dashboard.js",
-  "${baseUrl}/global/js/impactGraphic.js"
+  "${baseUrlCdn}/global/js/impactGraphic.js"
   ] 
 /]
 [#assign customCSS = [
   "${baseUrlMedia}/css/home/dashboard.css",
-  "${baseUrl}/global/css/customDataTable.css",
-  "${baseUrl}/global/css/impactGraphic.css"
+  "${baseUrlCdn}/global/css/customDataTable.css",
+  "${baseUrlCdn}/global/css/impactGraphic.css"
   ] 
 /]
 [#assign currentSection = "home" /]

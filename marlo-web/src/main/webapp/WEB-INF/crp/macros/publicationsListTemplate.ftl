@@ -106,10 +106,10 @@
           <td class="">
             [#if canEdit]
               <a id="removeRow-${deliverable.id}" class="removeRow" href="${baseUrl}/publications/${crpSession}/deleteDeliverable.do?deliverableID=${deliverable.id}" title="">
-                <img src="${baseUrl}/global/images/trash.png" title="[@s.text name="project.deliverable.removeDeliverable" /]" /> 
+                <img src="${baseUrlCdn}/global/images/trash.png" title="[@s.text name="project.deliverable.removeDeliverable" /]" /> 
               </a>
             [#else]
-              <img src="${baseUrl}/global/images/trash_disable.png" title="[@s.text name="project.deliverable.cannotDelete" /]" />
+              <img src="${baseUrlCdn}/global/images/trash_disable.png" title="[@s.text name="project.deliverable.cannotDelete" /]" />
             [/#if]
           </td>
         </tr>  

@@ -53,7 +53,7 @@
            [#-- Table 4: Condensed list of innovations --]
             <div class="form-group">
               [#assign guideSheetURL = "https://drive.google.com/file/d/1JvceA0bdvqS5Een056ctL7zJr3hidToe/view" /]
-              <small class="pull-right"><a href="${guideSheetURL}" target="_blank"> <img src="${baseUrl}/global/images/icon-file.png" alt="" /> #C1 Innovations -  Guideline </a> </small>
+              <small class="pull-right"><a href="${guideSheetURL}" target="_blank"> <img src="${baseUrlCdn}/global/images/icon-file.png" alt="" /> #C1 Innovations -  Guideline </a> </small>
             </div>
             
             <div class="form-group row">
@@ -239,7 +239,7 @@
                   [#local summaryPDF = "${baseUrl}/projects/${crpSession}/studySummary.do?studyID=${(item.projectInnovationInfo.projectExpectedStudy.id)!}&cycle=Reporting&year=${(actualPhase.year)!}"]
                   <p>
                     <a href="${summaryPDF}" class="btn btn-default btn-xs" target="_blank" style="text-decoration: none;" title="${(item.projectInnovationInfo.projectExpectedStudy.composedName)!''}">
-                      <img src="${baseUrl}/global/images/pdf.png" height="20"  /> ${(item.projectInnovationInfo.projectExpectedStudy.composedIdentifier)!''}
+                      <img src="${baseUrlCdn}/global/images/pdf.png" height="20"  /> ${(item.projectInnovationInfo.projectExpectedStudy.composedIdentifier)!''}
                     </a>
                   </p>
                 [#else]                
@@ -253,7 +253,7 @@
               </td>
               <td class="text-center">
                 <a href="[@s.url namespace="/summaries" action='${(crpSession)!}/projectInnovationSummary'][@s.param name='innovationID']${item.id?c}[/@s.param][@s.param name='phaseID']${(item.projectInnovationInfo.phase.id)!''}[/@s.param][/@s.url]" target="__BLANK">
-                  <img src="${baseUrl}/global/images/pdf.png" height="25" title="[@s.text name="projectsList.downloadPDF" /]" />
+                  <img src="${baseUrlCdn}/global/images/pdf.png" height="25" title="[@s.text name="projectsList.downloadPDF" /]" />
                 </a>
               </td>
             [/#if]
