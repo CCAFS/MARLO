@@ -481,6 +481,15 @@ function setMetadata(data) {
         $input.attr('readOnly', true);
       }
       $hide.val("true");
+
+      if(key == 'authors') {
+        var authorsNameArray = jQuery.map(value, function(a,i) {
+          console.log(a, i);
+          return a.lastName + ", " + a.firstName;
+        });
+        console.log(authorsNameArray);
+        $input.val(authorsNameArray.join('; '));
+      }
     } else {
       $input.attr('readOnly', false);
       $hide.val("false");
