@@ -531,9 +531,9 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
                   && person.getDeliverableUserPartnership().getInstitution() != null
                   && person.getDeliverableUserPartnership().getInstitution() != null
                   && person.getDeliverableUserPartnership().getInstitution().getAcronym() != null) {
-                  individual += " (" + person.getDeliverableUserPartnership().getInstitution().getAcronym() + ")";
+                  individual += "(" + person.getDeliverableUserPartnership().getInstitution().getAcronym() + ")";
                 } else if (person.getDeliverableUserPartnership().getInstitution().getName() != null) {
-                  individual += " (" + person.getDeliverableUserPartnership().getInstitution().getName() + ")";
+                  individual += "(" + person.getDeliverableUserPartnership().getInstitution().getName() + ")";
                 }
               }
             }
