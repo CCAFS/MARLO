@@ -86,23 +86,23 @@ public class DeliverableCrossCuttingMarkerManagerImpl implements DeliverableCros
     saveDeliverableCrossCuttingMarker(DeliverableCrossCuttingMarker deliverableCrossCuttingMarker) {
 
     DeliverableCrossCuttingMarker marker = deliverableCrossCuttingMarkerDAO.save(deliverableCrossCuttingMarker);
+    Phase currentPhase = phaseDAO.find(marker.getPhase().getId());
 
-    Phase currentPhase = phaseDAO.find(deliverableCrossCuttingMarker.getPhase().getId());
-    boolean isPublication = deliverableCrossCuttingMarker.getDeliverable().getIsPublication() != null
-      && deliverableCrossCuttingMarker.getDeliverable().getIsPublication();
+    boolean isPublication =
+      marker.getDeliverable().getIsPublication() != null && marker.getDeliverable().getIsPublication();
     if (currentPhase.getDescription().equals(APConstants.PLANNING) && currentPhase.getNext() != null
       && !isPublication) {
-      if (deliverableCrossCuttingMarker.getPhase().getNext() != null) {
-        this.saveDeliverableCrossCuttingMarkerAddPhase(deliverableCrossCuttingMarker.getPhase().getNext(),
-          deliverableCrossCuttingMarker.getDeliverable().getId(), deliverableCrossCuttingMarker);
+      if (marker.getPhase().getNext() != null) {
+        this.saveDeliverableCrossCuttingMarkerAddPhase(marker.getPhase().getNext(), marker.getDeliverable().getId(),
+          deliverableCrossCuttingMarker);
       }
     }
     if (currentPhase.getDescription().equals(APConstants.REPORTING) && !isPublication) {
       if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {
         Phase upkeepPhase = currentPhase.getNext().getNext();
         if (upkeepPhase != null) {
-          this.saveDeliverableCrossCuttingMarkerAddPhase(upkeepPhase,
-            deliverableCrossCuttingMarker.getDeliverable().getId(), deliverableCrossCuttingMarker);
+          this.saveDeliverableCrossCuttingMarkerAddPhase(upkeepPhase, marker.getDeliverable().getId(),
+            deliverableCrossCuttingMarker);
         }
       }
     }
@@ -110,16 +110,15 @@ public class DeliverableCrossCuttingMarkerManagerImpl implements DeliverableCros
     return marker;
   }
 
-  public void saveDeliverableCrossCuttingMarkerAddPhase(Phase next, long deliverableID,
+  public void saveDeliverableCrossCuttingMarkerAddPhase(Phase next, Long deliverableID,
     DeliverableCrossCuttingMarker deliverableCrossCuttingMarker) {
 
     Phase phase = phaseDAO.find(next.getId());
 
     List<DeliverableCrossCuttingMarker> deliverableCrossCuttingMarkers =
       phase.getDeliverableCrossCuttingMarkers().stream()
-        .filter(
-          c -> c.isActive() && c.getDeliverable().getId().longValue() == deliverableID && c.getCgiarCrossCuttingMarker()
-            .getId().equals(deliverableCrossCuttingMarker.getCgiarCrossCuttingMarker().getId()))
+        .filter(c -> c.isActive() && c.getDeliverable().getId().equals(deliverableID) && c.getCgiarCrossCuttingMarker()
+          .getId().equals(deliverableCrossCuttingMarker.getCgiarCrossCuttingMarker().getId()))
         .collect(Collectors.toList());
 
     if (deliverableCrossCuttingMarkers.isEmpty()) {
@@ -130,6 +129,12 @@ public class DeliverableCrossCuttingMarkerManagerImpl implements DeliverableCros
         .setRepIndGenderYouthFocusLevel(deliverableCrossCuttingMarker.getRepIndGenderYouthFocusLevel());
       deliverableCrossCuttingMarkerAdd
         .setCgiarCrossCuttingMarker(deliverableCrossCuttingMarker.getCgiarCrossCuttingMarker());
+      deliverableCrossCuttingMarkerDAO.save(deliverableCrossCuttingMarkerAdd);
+    } else {
+      DeliverableCrossCuttingMarker deliverableCrossCuttingMarkerAdd =
+        this.getDeliverableCrossCuttingMarkerById(deliverableCrossCuttingMarkers.get(0).getId());
+      deliverableCrossCuttingMarkerAdd
+        .setRepIndGenderYouthFocusLevel(deliverableCrossCuttingMarker.getRepIndGenderYouthFocusLevel());
       deliverableCrossCuttingMarkerDAO.save(deliverableCrossCuttingMarkerAdd);
     }
 

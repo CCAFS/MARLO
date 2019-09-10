@@ -165,7 +165,7 @@ public class DeliverableFundingSourceManagerImpl implements DeliverableFundingSo
   public DeliverableFundingSource saveDeliverableFundingSource(DeliverableFundingSource deliverableFundingSource) {
 
     DeliverableFundingSource deliverableFundingSourceDB = deliverableFundingSourceDAO.save(deliverableFundingSource);
-    Phase currentPhase = phaseDao.find(deliverableFundingSource.getPhase().getId());
+    Phase currentPhase = phaseDao.find(deliverableFundingSourceDB.getPhase().getId());
     boolean isPublication = deliverableFundingSourceDB.getDeliverable().getIsPublication() != null
       && deliverableFundingSourceDB.getDeliverable().getIsPublication();
     if (currentPhase.getDescription().equals(APConstants.PLANNING) && currentPhase.getNext() != null

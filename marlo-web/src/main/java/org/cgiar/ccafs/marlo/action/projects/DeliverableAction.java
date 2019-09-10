@@ -1765,9 +1765,8 @@ public class DeliverableAction extends BaseAction {
         this.saveParticipant();
       }
 
-      deliverableManagedState.getDeliverableInfo(this.getActualPhase())
-        .setModificationJustification(this.getJustification());
-      deliverableInfoManager.saveDeliverableInfo(deliverableManagedState.getDeliverableInfo(this.getActualPhase()));
+
+      deliverableInfoManager.saveDeliverableInfo(deliverableManagedState.getDeliverableInfo());
 
       if (this.hasSpecificities(APConstants.CRP_LP6_ACTIVE)
         && this.getProjectLp6ContributionValue(project.getId(), this.getActualPhase().getId())) {
@@ -3180,6 +3179,7 @@ public class DeliverableAction extends BaseAction {
     deliverableInfoDb.setModificationJustification(this.getJustification());
 
     deliverableBase.setDeliverableInfo(deliverableInfoDb);
+
     return deliverableBase;
   }
 
