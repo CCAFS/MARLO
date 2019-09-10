@@ -180,6 +180,8 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
     masterReport.getParameterValues().put("i8nGender", this.getText("summaries.gender"));
     masterReport.getParameterValues().put("i8nYouth", this.getText("summaries.youth"));
     masterReport.getParameterValues().put("i8nCap", this.getText("summaries.capacityDevelopment"));
+    masterReport.getParameterValues().put("i8nClimate", this.getText("outcome.milestone.climateFocusLevel"));
+
     masterReport.getParameterValues().put("i8nStatus", this.getText("project.deliverable.generalInformation.status"));
     masterReport.getParameterValues().put("i8nProjectID", this.getText("searchTerms.projectId"));
     masterReport.getParameterValues().put("i8nProjectTitle", this.getText("project.title.readText"));
@@ -306,12 +308,12 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
       new String[] {"deliverableId", "deliverableTitle", "completionYear", "deliverableType", "deliverableSubType",
         "keyOutput", "delivStatus", "delivNewYear", "projectID", "projectTitle", "projectClusterActivities",
         "flagships", "regions", "individual", "partnersResponsible", "shared", "openFS", "fsWindows", "outcomes",
-        "projectLeadPartner", "managingResponsible", "phaseID", "finishedFS", "gender", "youth", "cap",
+        "projectLeadPartner", "managingResponsible", "phaseID", "finishedFS", "gender", "youth", "cap", "climate",
         "deliverableDescription", "geographicScope", "region", "country"},
       new Class[] {Long.class, String.class, Integer.class, String.class, String.class, String.class, String.class,
         String.class, Long.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, Long.class, String.class,
-        String.class, String.class, String.class, String.class, String.class, String.class, String.class},
+        String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class},
       0);
     Boolean activePPAFilter = ppa != null && !ppa.isEmpty() && !ppa.equals("All") && !ppa.equals("-1");
     Boolean addDeliverableRow = true;
@@ -404,6 +406,8 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
       .collect(Collectors.toList())) {
       String responsibleName = "";
       String responsibleAcronym = "";
+      String ppaInstitutionName = "";
+      String ppaInstitutionAcronym = "";
       if (activePPAFilter) {
         addDeliverableRow = false;
       }
@@ -444,6 +448,7 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
             }
           }
 
+
         } else if (responsible.getDeliverableUserPartnershipPersons() != null) {
           // individual += "<span style='font-family: Segoe UI;color:#ff0000;font-size: 10'>";
           DeliverableUserPartnershipPerson responsibleppp = null;
@@ -458,15 +463,15 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
 
 
           // get deliverable information when partner responsible does not have a person
-          if (responsible.getInstitution() != null) {
-            if (responsible.getInstitution().getAcronym() != null
-              && !responsible.getInstitution().getAcronym().isEmpty()) {
+          if (responsible != null) {
+            if (responsible.getInstitution() != null && responsible.getInstitution().getAcronym() != null) {
               ppaResponsibleList.add("*" + responsible.getInstitution().getAcronym() + "");
               responsibleAcronym = responsible.getInstitution().getAcronym() + "";
-
             } else {
-              ppaResponsibleList.add("*" + responsible.getInstitution().getName() + "");
-              responsibleName = responsible.getInstitution().getName() + "";
+              if (responsible.getInstitution().getName() != null) {
+                ppaResponsibleList.add("*" + responsible.getInstitution().getName() + "");
+                responsibleName = responsible.getInstitution().getName() + "";
+              }
             }
           }
 
@@ -474,10 +479,13 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
             individual += " ● ";
             individual += "*";
             individual += responsibleppp.getUser().getComposedNameWithoutEmail();
-            if (responsibleAcronym != null) {
-              individual += " (" + responsibleAcronym + ")";
-            } else if (responsibleName != null) {
-              individual += " (" + responsibleName + ")";
+            if (responsibleppp.getDeliverableUserPartnership() != null
+              && responsibleppp.getDeliverableUserPartnership().getInstitution() != null
+              && responsibleppp.getDeliverableUserPartnership().getInstitution() != null
+              && responsibleppp.getDeliverableUserPartnership().getInstitution().getAcronym() != null) {
+              individual += " (" + responsibleppp.getDeliverableUserPartnership().getInstitution().getAcronym() + ")";
+            } else if (responsibleppp.getDeliverableUserPartnership().getInstitution().getName() != null) {
+              individual += " (" + responsibleppp.getDeliverableUserPartnership().getInstitution().getName() + ")";
             }
           }
         }
@@ -519,10 +527,13 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
                 individual += " ●";
                 individual += person.getUser().getComposedName();
 
-                if (responsibleAcronym != null) {
-                  individual += "(" + responsibleAcronym + ")";
-                } else if (responsibleName != null) {
-                  individual += "(" + responsibleName + ")";
+                if (person.getDeliverableUserPartnership() != null
+                  && person.getDeliverableUserPartnership().getInstitution() != null
+                  && person.getDeliverableUserPartnership().getInstitution() != null
+                  && person.getDeliverableUserPartnership().getInstitution().getAcronym() != null) {
+                  individual += "(" + person.getDeliverableUserPartnership().getInstitution().getAcronym() + ")";
+                } else if (person.getDeliverableUserPartnership().getInstitution().getName() != null) {
+                  individual += "(" + person.getDeliverableUserPartnership().getInstitution().getName() + ")";
                 }
               }
             }
@@ -686,7 +697,7 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
 
         // Get cross_cutting dimension
         String crossCutting = "";
-        String gender = "", youth = "", cap = "";
+        String gender = "", youth = "", cap = "", climate = "";
         Boolean isOldCrossCutting = this.getSelectedYear() < 2018;
         DeliverableCrossCuttingMarker deliverableCrossCuttingMarkerGender = deliverableCrossCuttingMarkerManager
           .getDeliverableCrossCuttingMarkerId(deliverable.getId(), 1, this.getSelectedPhase().getId());
@@ -771,6 +782,22 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
             cap = "No";
           }
 
+          // Climate
+          if (deliverableCrossCuttingMarkerClimateChange != null
+            && deliverableCrossCuttingMarkerClimateChange.getRepIndGenderYouthFocusLevel() != null) {
+            if (deliverableCrossCuttingMarkerClimateChange.getRepIndGenderYouthFocusLevel().getId() != 0
+              && deliverableCrossCuttingMarkerClimateChange.getRepIndGenderYouthFocusLevel().getId() != 4) {
+              climate = deliverableCrossCuttingMarkerClimateChange.getRepIndGenderYouthFocusLevel().getPowbName();
+              if (climate.isEmpty()) {
+                climate = "Yes";
+              }
+            }
+          }
+          if (cap.isEmpty()) {
+            climate = "No";
+          }
+
+
         } else {
           // Gender
           if (deliverableCrossCuttingMarkerGender != null) {
@@ -798,6 +825,15 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
           }
           if (cap.isEmpty()) {
             cap = "0-Not Targeted";
+          }
+
+          // climate
+          if (deliverableCrossCuttingMarkerClimateChange != null
+            && deliverableCrossCuttingMarkerClimateChange.getRepIndGenderYouthFocusLevel() != null) {
+            climate = deliverableCrossCuttingMarkerClimateChange.getRepIndGenderYouthFocusLevel().getPowbName();
+          }
+          if (climate.isEmpty()) {
+            climate = "0-Not Targeted";
           }
         }
 
@@ -1076,7 +1112,7 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
         model.addRow(new Object[] {deliverableId, deliverableTitle, completionYear, deliverableType, deliverableSubType,
           keyOutput, delivStatus, delivNewYear, projectID, projectTitle, projectClusterActivities, flagships, regions,
           individual, ppaRespondible, shared, openFS, fsWindows, outcomes, projectLeadPartner, managingResponsible,
-          phaseID, finishedFS, gender, youth, cap, deliverableDescription, geographicScope, region, country});
+          phaseID, finishedFS, gender, youth, cap, climate, deliverableDescription, geographicScope, region, country});
 
         if (deliverablePerYearList.containsKey(completionYear)) {
           Set<Deliverable> deliverableSet = deliverablePerYearList.get(completionYear);
