@@ -149,6 +149,12 @@ public class ProjectPolicyCrossCuttingMarkerManagerImpl implements ProjectPolicy
       projectPolicyCrossCuttingMarkerAdd
         .setCgiarCrossCuttingMarker(projectPolicyCrossCuttingMarker.getCgiarCrossCuttingMarker());
       projectPolicyCrossCuttingMarkerDAO.save(projectPolicyCrossCuttingMarkerAdd);
+    } else {
+      ProjectPolicyCrossCuttingMarker projectPolicyCrossCuttingMarkerAdd =
+        this.getProjectPolicyCrossCuttingMarkerById(projectPolicyCrossCuttingMarkers.get(0).getId());
+      projectPolicyCrossCuttingMarkerAdd
+        .setRepIndGenderYouthFocusLevel(projectPolicyCrossCuttingMarker.getRepIndGenderYouthFocusLevel());
+      projectPolicyCrossCuttingMarkerDAO.save(projectPolicyCrossCuttingMarkerAdd);
     }
 
     if (phase.getNext() != null) {
