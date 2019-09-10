@@ -36,7 +36,7 @@ public class NewPublicationDTO {
   @ApiModelProperty(notes = "Is open access")
   private Boolean isOpenAccess;
   @ApiModelProperty(notes = "Is this journal article an ISI publication?")
-  private boolean isISIJournal;
+  private Boolean isISIJournal;
   @ApiModelProperty(notes = "Digital object identifier")
   private String doi;
   @ApiModelProperty(notes = "Handle URL")
@@ -44,7 +44,7 @@ public class NewPublicationDTO {
   @ApiModelProperty(notes = "Phase")
   private PhaseDTO phase;
   @ApiModelProperty(notes = "Year Of publication")
-  private int year;
+  private Integer year;
   @ApiModelProperty(notes = "Publication Authors Field")
   private String authors;
 
@@ -94,11 +94,11 @@ public class NewPublicationDTO {
     return volume;
   }
 
-  public int getYear() {
+  public Integer getYear() {
     return year;
   }
 
-  public boolean isISIJournal() {
+  public Boolean isISIJournal() {
     return isISIJournal;
   }
 
@@ -118,7 +118,7 @@ public class NewPublicationDTO {
     this.handle = handle;
   }
 
-  public void setISIJournal(boolean isISIJournal) {
+  public void setISIJournal(Boolean isISIJournal) {
     this.isISIJournal = isISIJournal;
   }
 
@@ -157,7 +157,7 @@ public class NewPublicationDTO {
   }
 
 
-  public void setYear(int year) {
+  public void setYear(Integer year) {
     this.year = year;
   }
 

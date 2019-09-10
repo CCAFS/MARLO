@@ -28,14 +28,14 @@ public class PhaseDTO {
   private String name;
   @ApiModelProperty(notes = "Phase year", position = 2)
   @NotNull
-  private int year;
+  private Integer year;
 
 
   public String getName() {
     return name;
   }
 
-  public int getYear() {
+  public Integer getYear() {
     return year;
   }
 
