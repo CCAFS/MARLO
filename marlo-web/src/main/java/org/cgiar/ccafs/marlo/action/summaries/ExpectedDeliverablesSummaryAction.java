@@ -449,14 +449,14 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
           }
 
 
-        } else if (responsible.getDeliverableUserPartnershipPersons() != null) {
+        } else if (responsible != null) {
           // individual += "<span style='font-family: Segoe UI;color:#ff0000;font-size: 10'>";
           DeliverableUserPartnershipPerson responsibleppp = null;
-          if (responsible.getDeliverableUserPartnershipPersons().size() != 0
+          if (responsible.getDeliverableUserPartnershipPersons() != null
             && responsible.getDeliverableUserPartnershipPersons().stream().filter(dp -> dp.isActive())
               .collect(Collectors.toList()) != null
             && responsible.getDeliverableUserPartnershipPersons().stream().filter(dp -> dp.isActive())
-              .collect(Collectors.toList()).get(0) != null) {
+              .collect(Collectors.toList()).size() > 0) {
             responsibleppp = responsible.getDeliverableUserPartnershipPersons().stream().filter(dp -> dp.isActive())
               .collect(Collectors.toList()).get(0);
           }
