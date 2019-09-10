@@ -46,13 +46,17 @@ import org.cgiar.ccafs.marlo.rest.errors.MARLOFieldValidationException;
 import org.cgiar.ccafs.marlo.rest.mappers.DeliverablesMapper;
 import org.cgiar.ccafs.marlo.rest.mappers.PublicationsMapper;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+
+import com.ibm.icu.util.Calendar;
 
 @Named
 public class DeliverablesItem<T> {
@@ -117,7 +121,7 @@ public class DeliverablesItem<T> {
   }
 
   public long createDeliverable(NewPublicationDTO deliverable, String entityAcronym, User user) {
-
+    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     this.deliverable = new Deliverable();
     this.fieldErrors = new ArrayList<FieldErrorDTO>();
     GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitByAcronym(entityAcronym);
@@ -155,6 +159,8 @@ public class DeliverablesItem<T> {
       this.deliverableInfo.setYear(deliverable.getPhase().getYear());
       this.deliverableInfo.setDeliverableType(deliverableType);
       this.deliverableInfo.setPhase(phase);
+      this.deliverableInfo.setModificationJustification(APConstants.MESSAGE_MODIFICATION_JUSTIFICATION
+        + sdf.format(new Date(Calendar.getInstance().getTimeInMillis())));
 
       // save deliverableinfo
 
