@@ -77,7 +77,7 @@ public class Deliverables {
   @ApiOperation(tags = {"Table 6 - Peer-reviewed publications"}, value = "${Deliverables.deliverable.POST.value}",
     response = PublicationDTO.class)
   @RequiresPermissions(Permission.FULL_CREATE_REST_API_PERMISSION)
-  @RequestMapping(value = "/{CGIAREntity}/deliverables", method = RequestMethod.POST,
+  @RequestMapping(value = "/{CGIAREntity}/publications", method = RequestMethod.POST,
     produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<Long> createDeliverable(
     @ApiParam(value = "${Deliverables.deliverable.POST.param.CGIAR}", required = true) @PathVariable String CGIAREntity,
@@ -96,7 +96,7 @@ public class Deliverables {
   @ApiOperation(tags = {"Table 6 - Peer-reviewed publications"}, value = "${Deliverables.deliverable.all.value}",
     response = PublicationDTO.class, responseContainer = "List")
   @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
-  @RequestMapping(value = "/{CGIAREntity}/deliverables", method = RequestMethod.GET,
+  @RequestMapping(value = "/{CGIAREntity}/publications", method = RequestMethod.GET,
     produces = MediaType.APPLICATION_JSON_VALUE)
   public List<PublicationDTO> getAllDeliverables(
     @ApiParam(value = "${Deliverables.deliverable.GET.param.CGIAR}", required = true) @PathVariable String CGIAREntity,
