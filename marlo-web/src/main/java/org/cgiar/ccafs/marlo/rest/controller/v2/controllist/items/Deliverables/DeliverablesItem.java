@@ -74,7 +74,7 @@ public class DeliverablesItem<T> {
 
   // Variables
   private List<FieldErrorDTO> fieldErrors;
-  private long deliverablesID;
+  private Long deliverablesID;
 
   private Deliverable deliverable;
   private DeliverableType deliverableType;
@@ -120,7 +120,7 @@ public class DeliverablesItem<T> {
     this.publicationsMapper = publicationsMapper;
   }
 
-  public long createDeliverable(NewPublicationDTO deliverable, String entityAcronym, User user) {
+  public Long createDeliverable(NewPublicationDTO deliverable, String entityAcronym, User user) {
     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     this.deliverable = new Deliverable();
     this.fieldErrors = new ArrayList<FieldErrorDTO>();
