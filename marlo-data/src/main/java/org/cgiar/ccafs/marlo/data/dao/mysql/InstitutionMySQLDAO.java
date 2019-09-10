@@ -110,7 +110,7 @@ public class InstitutionMySQLDAO extends AbstractMarloDAO<Institution, Long> imp
     query.append("OR website_link like '%" + searchValue + "%' ");
 
 
-    query.append("GROUP BY name ");
+    query.append("GROUP BY name, acronym, website_link ");
     query.append("ORDER BY CASE ");
     query.append("WHEN name like '" + searchValue + "%' THEN 0 ");
     query.append("WHEN name like '% %" + searchValue + "% %' THEN 3 ");
