@@ -193,7 +193,7 @@ public class DeliverableUserPartnershipManagerImpl implements DeliverableUserPar
     if (userPartnership.getPhase().getDescription().equals(APConstants.PLANNING)
       && userPartnership.getPhase().getNext() != null && !isPublication) {
       this.saveDeliverableUserPartnershipPhase(userPartnership.getPhase().getNext(),
-        userPartnership.getDeliverable().getId(), userPartnership);
+        userPartnership.getDeliverable().getId(), deliverableUserPartnership);
     }
 
     if (userPartnership.getPhase().getDescription().equals(APConstants.REPORTING)) {
@@ -202,7 +202,7 @@ public class DeliverableUserPartnershipManagerImpl implements DeliverableUserPar
         Phase upkeepPhase = userPartnership.getPhase().getNext().getNext();
         if (upkeepPhase != null) {
           this.saveDeliverableUserPartnershipPhase(upkeepPhase, userPartnership.getDeliverable().getId(),
-            userPartnership);
+            deliverableUserPartnership);
         }
       }
     }
@@ -269,6 +269,21 @@ public class DeliverableUserPartnershipManagerImpl implements DeliverableUserPar
             this.addPersons(deliverableUserPartnership, deliverableUserPartnershipAdd.getId());
           }
         }
+      } else {
+
+        DeliverableUserPartnership deliverableUserPartnershipAdd = new DeliverableUserPartnership();
+
+        deliverableUserPartnershipAdd.setDeliverable(deliverableUserPartnership.getDeliverable());
+        deliverableUserPartnershipAdd.setInstitution(deliverableUserPartnership.getInstitution());
+        deliverableUserPartnershipAdd.setDeliverablePartnerType(deliverableUserPartnership.getDeliverablePartnerType());
+        deliverableUserPartnershipAdd.setActive(true);
+        deliverableUserPartnershipAdd.setActiveSince(new Date());
+        deliverableUserPartnershipAdd.setPhase(phase);
+        deliverableUserPartnershipAdd = deliverableUserPartnershipDAO.save(deliverableUserPartnershipAdd);
+        if (deliverableUserPartnershipAdd.getId() != null) {
+          this.addPersons(deliverableUserPartnership, deliverableUserPartnershipAdd.getId());
+        }
+
       }
 
     } else {
