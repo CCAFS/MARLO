@@ -335,55 +335,35 @@ public class DeliverableUserPartnershipManagerImpl implements DeliverableUserPar
     }
 
     if (deliverableUserPartnership.getPartnershipPersons() != null) {
-      if (deliverablePartnerType.equals(APConstants.DELIVERABLE_PARTNERSHIP_TYPE_RESPONSIBLE)) {
-        for (DeliverableUserPartnershipPerson deliverableUserPartnershipPerson : deliverableUserPartnership
-          .getPartnershipPersons()) {
 
-          List<DeliverableUserPartnershipPerson> deliverableUserPartnershipPersons =
-            deliverableUserPartnershipPersonsPrev.stream()
-              .filter(dup -> deliverableUserPartnershipPerson.getUser() != null
-                && deliverableUserPartnershipPerson.getUser().getId() != null && dup.getUser() != null
-                && dup.getUser().getId() != null
-                && dup.getUser().getId().equals(deliverableUserPartnershipPerson.getUser().getId()))
-              .collect(Collectors.toList());
+      for (DeliverableUserPartnershipPerson deliverableUserPartnershipPerson : deliverableUserPartnership
+        .getPartnershipPersons()) {
 
-          if (deliverableUserPartnershipPersons == null || deliverableUserPartnershipPersons.isEmpty()) {
+        List<DeliverableUserPartnershipPerson> deliverableUserPartnershipPersons =
+          deliverableUserPartnershipPersonsPrev.stream()
+            .filter(dup -> deliverableUserPartnershipPerson.getUser() != null
+              && deliverableUserPartnershipPerson.getUser().getId() != null && dup.getUser() != null
+              && dup.getUser().getId() != null
+              && dup.getUser().getId().equals(deliverableUserPartnershipPerson.getUser().getId()))
+            .collect(Collectors.toList());
 
-            if (deliverableUserPartnershipPerson.getUser() != null
-              && deliverableUserPartnershipPerson.getUser().getId() != null) {
-              DeliverableUserPartnershipPerson deliverableUserPartnershipPersonSave =
-                new DeliverableUserPartnershipPerson();
+        if (deliverableUserPartnershipPersons == null || deliverableUserPartnershipPersons.isEmpty()) {
 
-              deliverableUserPartnershipPersonSave.setUser(deliverableUserPartnershipPerson.getUser());
-              deliverableUserPartnershipPersonSave.setDeliverableUserPartnership(deliverableUserPartnershipUp);
+          if (deliverableUserPartnershipPerson.getUser() != null
+            && deliverableUserPartnershipPerson.getUser().getId() != null) {
+            DeliverableUserPartnershipPerson deliverableUserPartnershipPersonSave =
+              new DeliverableUserPartnershipPerson();
 
-              deliverableUserPartnershipPersonDAO.save(deliverableUserPartnershipPersonSave);
-            }
+            deliverableUserPartnershipPersonSave.setUser(deliverableUserPartnershipPerson.getUser());
+            deliverableUserPartnershipPersonSave.setDeliverableUserPartnership(deliverableUserPartnershipUp);
 
+            deliverableUserPartnershipPersonDAO.save(deliverableUserPartnershipPersonSave);
           }
 
         }
-      } else {
 
-        // This process is for Other Partnership Delete function
-        for (DeliverableUserPartnershipPerson deliverableUserPartnershipPerson : deliverableUserPartnership
-          .getPartnershipPersons()) {
-
-          if (deliverableUserPartnershipPerson.getId() == null) {
-            if (deliverableUserPartnershipPerson.getUser() != null
-              && deliverableUserPartnershipPerson.getUser().getId() != null) {
-              DeliverableUserPartnershipPerson deliverableUserPartnershipPersonSave =
-                new DeliverableUserPartnershipPerson();
-
-              deliverableUserPartnershipPersonSave.setUser(deliverableUserPartnershipPerson.getUser());
-              deliverableUserPartnershipPersonSave.setDeliverableUserPartnership(deliverableUserPartnershipUp);
-
-              deliverableUserPartnershipPersonDAO.save(deliverableUserPartnershipPersonSave);
-            }
-          }
-
-        }
       }
+
     }
 
   }
