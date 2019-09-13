@@ -112,7 +112,6 @@ public class DeliverableDisseminationManagerImpl implements DeliverableDissemina
         }
       }
     } else {
-      // UpKeep
       if (currentPhase.getDescription().equals(APConstants.PLANNING) && currentPhase.getUpkeep() && !isPublication) {
         if (currentPhase.getNext() != null) {
           this.saveDeliverableDisseminationPhase(deliverableDisseminationResult,

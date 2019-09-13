@@ -197,12 +197,26 @@
 			</interceptor-stack>
 			
 			<interceptor-stack name="privateStudyStack">
-        <interceptor-ref name="i18nFile" />
-        <interceptor-ref name="validCrp" />
-        <interceptor-ref name="validSessionCrp" />
-        <interceptor-ref name="privateStudy" />        
-        <interceptor-ref name="defaultStack" />
-      </interceptor-stack>
+        		<interceptor-ref name="i18nFile" />
+        		<interceptor-ref name="validCrp" />
+        		<interceptor-ref name="validSessionCrp" />
+        		<interceptor-ref name="privateStudy" />        
+        		<interceptor-ref name="defaultStack" />
+            </interceptor-stack>
+      
+      		<interceptor-stack name="publicStudyStack">
+				<interceptor-ref name="i18nFile" />
+				<interceptor-ref name="validCrp" />
+				<interceptor-ref name="privateStudy" />
+				<interceptor-ref name="defaultStack" />
+			</interceptor-stack>
+
+			<interceptor-stack name="publicSummaryStack">
+				<interceptor-ref name="i18nFile" />
+				<interceptor-ref name="validCrp" />
+				<interceptor-ref name="defaultStack" />
+			</interceptor-stack>
+      
 
 			<interceptor-stack name="crpAdminStack">
 				<interceptor-ref name="i18nFile" />

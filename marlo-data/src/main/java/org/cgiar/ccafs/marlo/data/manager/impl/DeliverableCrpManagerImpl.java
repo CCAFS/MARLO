@@ -141,9 +141,8 @@ public class DeliverableCrpManagerImpl implements DeliverableCrpManager {
 
   private void saveDeliverableCrpPhase(DeliverableCrp deliverableCrpResult, Deliverable deliverable, Long phaseID) {
     Phase phase = phaseDAO.find(phaseID);
-    DeliverableCrp deliverableCrpPhase =
-      deliverableCrpDAO.findDeliverableCrpByPhaseAndDeliverable(phase, deliverableCrpResult.getDeliverable(),
-        deliverableCrpResult.getGlobalUnit(), deliverableCrpResult.getCrpProgram());
+    DeliverableCrp deliverableCrpPhase = deliverableCrpDAO.findDeliverableCrpByPhaseAndDeliverable(phase, deliverable,
+      deliverableCrpResult.getGlobalUnit(), deliverableCrpResult.getCrpProgram());
 
     if (deliverableCrpPhase != null) {
       this.cloneDeliverableCrp(deliverableCrpResult, deliverableCrpPhase, phase);
