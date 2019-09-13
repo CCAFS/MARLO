@@ -111,17 +111,17 @@ public class InstitutionMySQLDAO extends AbstractMarloDAO<Institution, Long> imp
     query.append("OR website_link like '%" + searchValue + "%' ");
 
 
-    query.append("GROUP BY name ");
+    query.append("GROUP BY name, acronym, website_link ");
     query.append("ORDER BY CASE ");
     query.append("WHEN name like '" + searchValue + "%' THEN 0 ");
-    query.append("WHEN name like '% %" + searchValue + "% %' THEN 1 ");
-    query.append("WHEN name like '%" + searchValue + "' THEN 2 ");
-    query.append("WHEN acronym like '" + searchValue + "%' THEN 3 ");
+    query.append("WHEN name like '% %" + searchValue + "% %' THEN 3 ");
+    query.append("WHEN name like '%" + searchValue + "' THEN 6 ");
+    query.append("WHEN acronym like '" + searchValue + "%' THEN 1 ");
     query.append("WHEN acronym like '% %" + searchValue + "% %' THEN 4 ");
-    query.append("WHEN acronym like '%" + searchValue + "' THEN 5 ");
+    query.append("WHEN acronym like '%" + searchValue + "' THEN 7 ");
 
-    query.append("WHEN website_link like '%" + searchValue + "' THEN 6 ");
-    query.append("WHEN website_link like '%" + searchValue + "' THEN 7 ");
+    query.append("WHEN website_link like '%" + searchValue + "%' THEN 2 ");
+    query.append("WHEN website_link like '" + searchValue + "%' THEN 5 ");
     query.append("WHEN website_link like '%" + searchValue + "' THEN 8 ");
     query.append("ELSE 12 ");
     query.append("END, name, acronym,website_link ");
