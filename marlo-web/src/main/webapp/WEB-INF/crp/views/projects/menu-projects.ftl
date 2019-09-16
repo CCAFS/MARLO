@@ -42,7 +42,7 @@
     { 'title': 'Outputs', 'show': true,
       'items': [
       { 'slug': 'overviewByMogs',  'name': 'projects.menu.overviewByMogs',  'action': 'outputs',  'active': true, 'show' : phaseOne && isCrpProject , "showCheck": isGlobalUnitProject},
-      { 'slug': 'deliverableList',  'name': 'projects.menu.deliverables',  'action': 'deliverableList',  'active': true , "showCheck": isGlobalUnitProject, "development": true },
+      { 'slug': 'deliverableList',  'name': 'projects.menu.deliverables',  'action': 'deliverableList',  'active': true , "showCheck": isGlobalUnitProject, "development": false },
       { 'slug': 'innovations',  'name': 'projects.menu.innovations',  'action': 'innovationsList',  'active': true,'show': ((reportingActive || upKeepActive) && isCrpProject) , "showCheck": isGlobalUnitProject, "development": false },
       { 'slug': 'highlights',  'name': 'Project Highlights',  'action': 'highlights',  'active': true ,'show': reportingActive && isCrpProject && action.hasSpecificities("crp_view_highlights"), "showCheck": isGlobalUnitProject }
       ]
