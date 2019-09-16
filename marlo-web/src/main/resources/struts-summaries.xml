@@ -99,12 +99,10 @@
 
 		<action name="{crp}/projectInnovationSummary"
 			class="org.cgiar.ccafs.marlo.action.summaries.ProjectInnovationSummaryAction">
-			<interceptor-ref name="unloggedStack" />
+			<interceptor-ref name="publicSummaryStack" />
 			<result name="success" type="stream">
-				<param name="inputName">inputStream</param>
-				     
-				<param name="contentType">${contentType}</param>
-				       
+				<param name="inputName">inputStream</param>			     
+				<param name="contentType">${contentType}</param>				       
 				<param name="contentDisposition">filename="${fileName}"</param>
 			</result>
 		</action>
