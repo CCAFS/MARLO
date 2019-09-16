@@ -193,7 +193,7 @@ public class DeliverableUserPartnershipManagerImpl implements DeliverableUserPar
     if (userPartnership.getPhase().getDescription().equals(APConstants.PLANNING)
       && userPartnership.getPhase().getNext() != null && !isPublication) {
       this.saveDeliverableUserPartnershipPhase(userPartnership.getPhase().getNext(),
-        userPartnership.getDeliverable().getId(), userPartnership);
+        userPartnership.getDeliverable().getId(), deliverableUserPartnership);
     }
 
     if (userPartnership.getPhase().getDescription().equals(APConstants.REPORTING)) {
@@ -202,7 +202,7 @@ public class DeliverableUserPartnershipManagerImpl implements DeliverableUserPar
         Phase upkeepPhase = userPartnership.getPhase().getNext().getNext();
         if (upkeepPhase != null) {
           this.saveDeliverableUserPartnershipPhase(upkeepPhase, userPartnership.getDeliverable().getId(),
-            userPartnership);
+            deliverableUserPartnership);
         }
       }
     }
@@ -226,34 +226,51 @@ public class DeliverableUserPartnershipManagerImpl implements DeliverableUserPar
 
     if (deliverableUserPartnerships.isEmpty()) {
 
-
-      List<DeliverableUserPartnership> checkInstitutiondeliverableUserPartnerships =
-        phase.getDeliverableUserPartnerships().stream()
+      if (deliverableUserPartnership.getDeliverablePartnerType().getId()
+        .equals(APConstants.DELIVERABLE_PARTNERSHIP_TYPE_RESPONSIBLE)) {
+        List<DeliverableUserPartnership> checkInstitutiondeliverableUserPartnerships = phase
+          .getDeliverableUserPartnerships().stream()
           .filter(c -> c.isActive() && c.getDeliverable().getId().equals(deliverableID) && c.getDeliverablePartnerType()
             .getId().equals(deliverableUserPartnership.getDeliverablePartnerType().getId()))
           .collect(Collectors.toList());
 
-      if (!checkInstitutiondeliverableUserPartnerships.isEmpty()) {
-        if (checkInstitutiondeliverableUserPartnerships.get(0).getInstitution() != null
-          && checkInstitutiondeliverableUserPartnerships.get(0).getInstitution().getId() != null) {
+        if (!checkInstitutiondeliverableUserPartnerships.isEmpty()) {
+          if (checkInstitutiondeliverableUserPartnerships.get(0).getInstitution() != null
+            && checkInstitutiondeliverableUserPartnerships.get(0).getInstitution().getId() != null) {
 
-          if (!checkInstitutiondeliverableUserPartnerships.get(0).getInstitution().getId()
-            .equals(deliverableUserPartnership.getInstitution().getId())) {
+            if (!checkInstitutiondeliverableUserPartnerships.get(0).getInstitution().getId()
+              .equals(deliverableUserPartnership.getInstitution().getId())) {
 
-            checkInstitutiondeliverableUserPartnerships.get(0)
-              .setInstitution(deliverableUserPartnership.getInstitution());
+              checkInstitutiondeliverableUserPartnerships.get(0)
+                .setInstitution(deliverableUserPartnership.getInstitution());
 
-            DeliverableUserPartnership deliverableUserPartnershipUp =
-              deliverableUserPartnershipDAO.save(checkInstitutiondeliverableUserPartnerships.get(0));
+              DeliverableUserPartnership deliverableUserPartnershipUp =
+                deliverableUserPartnershipDAO.save(checkInstitutiondeliverableUserPartnerships.get(0));
 
-            this.updatePersons(deliverableUserPartnershipUp, deliverableUserPartnership,
-              deliverableUserPartnershipUp.getDeliverablePartnerType().getId());
+              this.updatePersons(deliverableUserPartnershipUp, deliverableUserPartnership,
+                deliverableUserPartnershipUp.getDeliverablePartnerType().getId());
+
+            }
 
           }
 
-        }
+        } else {
+          DeliverableUserPartnership deliverableUserPartnershipAdd = new DeliverableUserPartnership();
 
+          deliverableUserPartnershipAdd.setDeliverable(deliverableUserPartnership.getDeliverable());
+          deliverableUserPartnershipAdd.setInstitution(deliverableUserPartnership.getInstitution());
+          deliverableUserPartnershipAdd
+            .setDeliverablePartnerType(deliverableUserPartnership.getDeliverablePartnerType());
+          deliverableUserPartnershipAdd.setActive(true);
+          deliverableUserPartnershipAdd.setActiveSince(new Date());
+          deliverableUserPartnershipAdd.setPhase(phase);
+          deliverableUserPartnershipAdd = deliverableUserPartnershipDAO.save(deliverableUserPartnershipAdd);
+          if (deliverableUserPartnershipAdd.getId() != null) {
+            this.addPersons(deliverableUserPartnership, deliverableUserPartnershipAdd.getId());
+          }
+        }
       } else {
+
         DeliverableUserPartnership deliverableUserPartnershipAdd = new DeliverableUserPartnership();
 
         deliverableUserPartnershipAdd.setDeliverable(deliverableUserPartnership.getDeliverable());
@@ -266,7 +283,9 @@ public class DeliverableUserPartnershipManagerImpl implements DeliverableUserPar
         if (deliverableUserPartnershipAdd.getId() != null) {
           this.addPersons(deliverableUserPartnership, deliverableUserPartnershipAdd.getId());
         }
+
       }
+
     } else {
 
       this.updatePersons(deliverableUserPartnerships.get(0), deliverableUserPartnership,
@@ -316,55 +335,35 @@ public class DeliverableUserPartnershipManagerImpl implements DeliverableUserPar
     }
 
     if (deliverableUserPartnership.getPartnershipPersons() != null) {
-      if (deliverablePartnerType.equals(APConstants.DELIVERABLE_PARTNERSHIP_TYPE_RESPONSIBLE)) {
-        for (DeliverableUserPartnershipPerson deliverableUserPartnershipPerson : deliverableUserPartnership
-          .getPartnershipPersons()) {
 
-          List<DeliverableUserPartnershipPerson> deliverableUserPartnershipPersons =
-            deliverableUserPartnershipPersonsPrev.stream()
-              .filter(dup -> deliverableUserPartnershipPerson.getUser() != null
-                && deliverableUserPartnershipPerson.getUser().getId() != null && dup.getUser() != null
-                && dup.getUser().getId() != null
-                && dup.getUser().getId().equals(deliverableUserPartnershipPerson.getUser().getId()))
-              .collect(Collectors.toList());
+      for (DeliverableUserPartnershipPerson deliverableUserPartnershipPerson : deliverableUserPartnership
+        .getPartnershipPersons()) {
 
-          if (deliverableUserPartnershipPersons == null || deliverableUserPartnershipPersons.isEmpty()) {
+        List<DeliverableUserPartnershipPerson> deliverableUserPartnershipPersons =
+          deliverableUserPartnershipPersonsPrev.stream()
+            .filter(dup -> deliverableUserPartnershipPerson.getUser() != null
+              && deliverableUserPartnershipPerson.getUser().getId() != null && dup.getUser() != null
+              && dup.getUser().getId() != null
+              && dup.getUser().getId().equals(deliverableUserPartnershipPerson.getUser().getId()))
+            .collect(Collectors.toList());
 
-            if (deliverableUserPartnershipPerson.getUser() != null
-              && deliverableUserPartnershipPerson.getUser().getId() != null) {
-              DeliverableUserPartnershipPerson deliverableUserPartnershipPersonSave =
-                new DeliverableUserPartnershipPerson();
+        if (deliverableUserPartnershipPersons == null || deliverableUserPartnershipPersons.isEmpty()) {
 
-              deliverableUserPartnershipPersonSave.setUser(deliverableUserPartnershipPerson.getUser());
-              deliverableUserPartnershipPersonSave.setDeliverableUserPartnership(deliverableUserPartnershipUp);
+          if (deliverableUserPartnershipPerson.getUser() != null
+            && deliverableUserPartnershipPerson.getUser().getId() != null) {
+            DeliverableUserPartnershipPerson deliverableUserPartnershipPersonSave =
+              new DeliverableUserPartnershipPerson();
 
-              deliverableUserPartnershipPersonDAO.save(deliverableUserPartnershipPersonSave);
-            }
+            deliverableUserPartnershipPersonSave.setUser(deliverableUserPartnershipPerson.getUser());
+            deliverableUserPartnershipPersonSave.setDeliverableUserPartnership(deliverableUserPartnershipUp);
 
+            deliverableUserPartnershipPersonDAO.save(deliverableUserPartnershipPersonSave);
           }
 
         }
-      } else {
 
-        // This process is for Other Partnership Delete function
-        for (DeliverableUserPartnershipPerson deliverableUserPartnershipPerson : deliverableUserPartnership
-          .getPartnershipPersons()) {
-
-          if (deliverableUserPartnershipPerson.getId() == null) {
-            if (deliverableUserPartnershipPerson.getUser() != null
-              && deliverableUserPartnershipPerson.getUser().getId() != null) {
-              DeliverableUserPartnershipPerson deliverableUserPartnershipPersonSave =
-                new DeliverableUserPartnershipPerson();
-
-              deliverableUserPartnershipPersonSave.setUser(deliverableUserPartnershipPerson.getUser());
-              deliverableUserPartnershipPersonSave.setDeliverableUserPartnership(deliverableUserPartnershipUp);
-
-              deliverableUserPartnershipPersonDAO.save(deliverableUserPartnershipPersonSave);
-            }
-          }
-
-        }
       }
+
     }
 
   }

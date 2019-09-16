@@ -411,7 +411,7 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
           }
 
           if (responsibleppp != null && responsibleppp.getUser() != null) {
-            individual += " ● ";
+            individual += " ●";
             individual += "*";
             individual += responsibleppp.getUser().getComposedNameWithoutEmail();
             if (responsibleppp.getDeliverableUserPartnership() != null
