@@ -494,13 +494,17 @@ public class ProjectsDeleteFieldsSummaryAction extends BaseSummariesAction imple
 
       List<ProjectComponentLesson> pcList = new ArrayList<>();
 
-      pcList = project.getProjectComponentLessons().stream()
-        .filter(p -> p.isActive() && p.getProject().getId() == project.getId() && p.getPhase() == this.getActualPhase())
-        .collect(Collectors.toList());
+      if (project.getProjectComponentLessons() != null) {
+        pcList = project.getProjectComponentLessons().stream()
+          .filter(
+            p -> p.isActive() && p.getProject().getId() == project.getId() && p.getPhase() == this.getActualPhase())
+          .collect(Collectors.toList());
+      }
 
-
-      if (pcList != null && pcList.get(0) != null) {
-        projectComponentLesson = pcList.get(0).getLessons();
+      if (pcList != null && pcList.size() > 0) {
+        if (pcList.get(0) != null && pcList.get(0).getLessons() != null) {
+          projectComponentLesson = pcList.get(0).getLessons();
+        }
       }
 
       List<ProjectOutcome> projectOutcomes = new ArrayList<>();
