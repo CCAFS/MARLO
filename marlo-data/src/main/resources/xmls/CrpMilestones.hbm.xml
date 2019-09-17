@@ -54,7 +54,7 @@
 		</property>
 		<many-to-one name="milestonesStatus"
 			class="org.cgiar.ccafs.marlo.data.model.GeneralStatus" fetch="select">
-			<column name="milestones_status" />
+			<column name="milestone_status" />
 		</many-to-one>
 		<many-to-one name="powbIndAssesmentRisk"
 			class="org.cgiar.ccafs.marlo.data.model.PowbIndAssesmentRisk"
