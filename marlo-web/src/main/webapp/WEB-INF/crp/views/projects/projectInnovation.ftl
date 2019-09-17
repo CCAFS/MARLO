@@ -44,15 +44,23 @@
         </a>
       </small>
         
-      [@s.form action=actionName cssClass="pure-form" method="POST" enctype="multipart/form-data" ]
+      [@s.form action=actionName cssClass="pure-form" enctype="multipart/form-data" ]
         
         [#--  Innovation Title --]
         <h3 class="headTitle">[@s.text name="projectInnovations" /]</h3> 
-        <div id="innovations" class="borderBox clearfix">
-        
-        <span class="pull-right">${(item.projectInnovationInfo.year)!'No Year'}</span>
+        <div id="innovations" class="borderBox clearfix">   
 
-        <div class="">
+        <div class="">        
+          <div class="form-group">
+          <div class="col-md-3"></div>
+          <div class="col-md-3"></div>
+          <div class="col-md-3"></div>
+            <div class="col-md-3">
+              [@customForm.select name="innovation.projectInnovationInfo.year" className="setSelect2" i18nkey="study.year" listName="years" header=false required=true editable=editable /]
+            </div>
+          </div>
+          <hr />
+        
           [#-- Title --]
           <div class="form-group">
             [@customForm.input name="innovation.projectInnovationInfo.title" type="text" i18nkey="projectInnovations.title"  placeholder="" className="limitWords-30" help="projectInnovations.title.helpText" helpIcon=false required=true editable=editable /]

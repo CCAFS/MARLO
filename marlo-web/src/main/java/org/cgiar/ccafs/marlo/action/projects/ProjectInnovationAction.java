@@ -511,6 +511,7 @@ public class ProjectInnovationAction extends BaseAction {
       project = projectManager.getProjectById(projectID);
 
       Phase phase = phaseManager.getPhaseById(this.getActualPhase().getId());
+
       project.getProjecInfoPhase(phase);
 
       Path path = this.getAutoSaveFilePath();
