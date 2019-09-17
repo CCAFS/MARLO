@@ -233,7 +233,14 @@ public class POISummary {
             if (expressionListActual.equals("<a")) {
 
               hrefTagsCount++;
-              textIndicatorLink = text.substring(text.indexOf(">", j) + 1, posFinal);
+              try {
+                textIndicatorLink = text.substring(text.indexOf(">", j) + 1, posFinal);
+                if (textIndicatorLink == null || textIndicatorLink.isEmpty()) {
+                  textIndicatorLink = "link";
+                }
+              } catch (Exception e) {
+                textIndicatorLink = "link";
+              }
 
               url = text.substring(text.indexOf("=", j) + 2, text.indexOf(">", j) - 1);
 
