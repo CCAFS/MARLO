@@ -501,7 +501,7 @@
       </div>
       
       [#-- IFPRI Partner Division partnerDivision  --]
-      [#local showIfpriDivision = (institutionID == 89)!false /]
+      [#local showIfpriDivision = ((institutionID)!0 == 89)!false /]
       [#if action.hasSpecificities('crp_division_fs')]
       <div class="form-group row divisionBlock division-IFPRI" style="display:${showIfpriDivision?string('block','none')}">
         <div class="col-md-8">
