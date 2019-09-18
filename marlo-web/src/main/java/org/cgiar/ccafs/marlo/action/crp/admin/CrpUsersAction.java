@@ -553,13 +553,9 @@ public class CrpUsersAction extends BaseAction {
                 isCGIARUser = false;
                 newUser.setFirstName(user.getFirstName());
                 newUser.setLastName(user.getLastName());
-                if (user.getEmail().contains("irri.org")) {
-                  newUser.setCgiarUser(true);
-                } else {
-                  newUser.setCgiarUser(false);
-                  password = RandomStringUtils.randomNumeric(6);
-                  newUser.setPassword(password);
-                }
+                newUser.setCgiarUser(false);
+                password = RandomStringUtils.randomNumeric(6);
+                newUser.setPassword(password);
                 newUser.setModificationJustification("User created in MARLO " + this.getActionName().replace("/", "-"));
                 newUser = userManager.saveUser(newUser);
                 message = this.getText("saving.saved.guestRole");
