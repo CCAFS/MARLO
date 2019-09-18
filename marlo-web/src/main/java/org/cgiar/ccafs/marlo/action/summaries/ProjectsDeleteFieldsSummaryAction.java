@@ -24,6 +24,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.Activity;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.ExpectedStudyProject;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectComponentLesson;
@@ -48,6 +49,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -66,15 +68,6 @@ import org.pentaho.reporting.libraries.resourceloader.ResourceManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * @author Andrés Felipe Valencia Rivera. CCAFS
- */
-
-/**
- * ProjectsSummaryAction:
- * 
- * @author avalencia - CCAFS
- */
 public class ProjectsDeleteFieldsSummaryAction extends BaseSummariesAction implements Summary {
 
   private static final long serialVersionUID = 1L;
@@ -87,6 +80,7 @@ public class ProjectsDeleteFieldsSummaryAction extends BaseSummariesAction imple
   private final CrpProgramManager crpProgramManager;
   private final ResourceManager resourceManager;
   private final ProjectComponentLessonManager projectComponentLessonManager;
+  private final PhaseManager phaseManager;
   // XLS bytes
   private byte[] bytesXLSX;
   // Streams
@@ -102,6 +96,7 @@ public class ProjectsDeleteFieldsSummaryAction extends BaseSummariesAction imple
     this.crpProgramManager = crpProgramManager;
     this.resourceManager = resourceManager;
     this.projectComponentLessonManager = projectComponentLessonManager;
+    this.phaseManager = phaseManager;
   }
 
 
@@ -262,6 +257,38 @@ public class ProjectsDeleteFieldsSummaryAction extends BaseSummariesAction imple
     model.addRow(new Object[] {center, date, year, this.hasProgramnsRegions(),
       this.hasSpecificities(APConstants.CRP_REPORTS_DESCRIPTION), this.getSelectedCycle()});
     return model;
+  }
+
+  public void getPhasesByGlobalUnit() {
+    // Move to global variables
+    long selectedGlobalUnitID = 0l;
+    List<Map<String, Object>> phasesbyGlobalUnit;
+    phasesbyGlobalUnit = new ArrayList<Map<String, Object>>();
+
+    if (selectedGlobalUnitID != -1) {
+
+      // Get phases by Global Unit
+      List<Phase> phasesbyGlobalUnitList = phaseManager.findAll().stream()
+        .filter(p -> p.getCrp().getId().longValue() == selectedGlobalUnitID && p.isActive())
+        .collect(Collectors.toList());
+
+      if (phasesbyGlobalUnitList != null && !phasesbyGlobalUnitList.isEmpty()) {
+        phasesbyGlobalUnitList.sort((p1, p2) -> p1.getStartDate().compareTo(p2.getStartDate()));
+        // Build the list into a Map
+        for (Phase phase : phasesbyGlobalUnitList) {
+          try {
+            Map<String, Object> phasestMap = new HashMap<String, Object>();
+            phasestMap.put("id", phase.getId());
+            phasestMap.put("name", phase.getName());
+            phasestMap.put("description", phase.getDescription());
+            phasestMap.put("year", phase.getYear());
+            phasesbyGlobalUnit.add(phasestMap);
+          } catch (Exception e) {
+            // logger.error("Unable to add Phase to Phase list", e);
+          }
+        }
+      }
+    }
   }
 
   private TypedTableModel getProjecsDetailsTableModel() {
