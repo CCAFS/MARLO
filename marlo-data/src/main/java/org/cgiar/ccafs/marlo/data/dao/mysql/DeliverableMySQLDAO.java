@@ -214,6 +214,31 @@ public class DeliverableMySQLDAO extends AbstractMarloDAO<Deliverable, Long> imp
   }
 
   @Override
+  public List<Deliverable> getPublicationsByPhase(long phase) {
+    StringBuilder query = new StringBuilder();
+    query.append("SELECT DISTINCT  ");
+    query.append("d.id as id ");
+    query.append("FROM ");
+    query.append("deliverables AS d ");
+    query.append("INNER JOIN deliverables_info AS di ON d.id = di.deliverable_id ");
+    query.append("WHERE d.is_active = 1 AND d.project_id IS NULL AND (d.is_publication = 1) AND ");
+    query.append("di.is_active = 1 AND ");
+    query.append("di.`id_phase` =" + phase);
+
+    List<Map<String, Object>> rList = super.findCustomQuery(query.toString());
+    List<Deliverable> deliverables = new ArrayList<>();
+
+    if (rList != null) {
+      for (Map<String, Object> map : rList) {
+        Deliverable deliverable = this.find(Long.parseLong(map.get("id").toString()));
+        deliverables.add(deliverable);
+      }
+    }
+
+    return deliverables;
+  }
+
+  @Override
   public Deliverable save(Deliverable deliverable) {
     if (deliverable.getId() == null) {
       super.saveEntity(deliverable);

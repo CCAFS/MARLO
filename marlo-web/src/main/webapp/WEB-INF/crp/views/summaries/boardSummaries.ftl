@@ -336,8 +336,37 @@
         [/#list] 
       </div>
     </div>
+    
+    
+    [#-- Reports table --]
+    <table class="table table-bordered" style="display:none">
+      <thead>
+        <tr>
+          <th>Category</th>
+          <th>Title</th>
+          <th>Description</th>
+          <th>Formats</th>
+        </tr>
+      </thead>
+      <tbody>
+      [#list (reportsTypes)![] as reportType ]
+        [#list (reportType.reportsList)![] as report ]
+          [#if reportType.active && report.active ]
+          <tr>
+            <td> [@s.text name=reportType.title /] </td>
+            <td> [@s.text name=report.title /] </td>
+            <td> [@s.text name=report.description /] </td>
+            <td> ${(report.formats?join(", "))!} </td>
+          </tr>
+          [/#if]
+        [/#list]
+      [/#list]
+      </tbody>
+    </table>
+    
       
   </article>
+  
 </section>
 
 [#include "/WEB-INF/global/pages/footer.ftl"]

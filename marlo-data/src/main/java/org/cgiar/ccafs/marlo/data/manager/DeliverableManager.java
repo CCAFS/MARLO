@@ -86,6 +86,14 @@ public interface DeliverableManager {
   public List<Deliverable> getDeliverablesLeadByUser(long userId, long phaseId);
 
   /**
+   * This method gets a list of publications that are active by a given phase
+   * 
+   * @return a list from Deliverable null if no exist records
+   */
+
+  public List<Deliverable> getPublicationsByPhase(long phase);
+
+  /**
    * This method gets a list of publications that are active for an specific liaisonInstitution
    * Flagship: Get the list of projects that have project_focus equal to the liaisonInstitution
    * PMU: Get the list of liaison according to what was selected by the flagships
