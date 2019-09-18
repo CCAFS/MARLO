@@ -226,6 +226,9 @@ function addMilestone() {
   // $item.find('select').select2({
   // width: '100%'
   // });
+
+  // $item.
+
   $list.append($item);
   updateAllIndexes();
   $item.show('slow');
