@@ -15,13 +15,18 @@
 
 package org.cgiar.ccafs.marlo.rest.mappers;
 
-import org.cgiar.ccafs.marlo.data.model.DeliverableInfo;
-import org.cgiar.ccafs.marlo.rest.dto.DeliverableInfoDTO;
+import org.cgiar.ccafs.marlo.data.model.MetadataElement;
+import org.cgiar.ccafs.marlo.rest.dto.MetadataElementDTO;
+
+import java.util.List;
 
 import org.mapstruct.Mapper;
 
-@Mapper(componentModel = "jsr330", uses = {PhaseMapper.class})
-public abstract interface DeliverableInfoMapper {
+@Mapper(componentModel = "jsr330")
+public abstract interface MetadataElementMapper {
 
-  public abstract DeliverableInfoDTO deliverableInfoToDeliverableInfoDTO(DeliverableInfo deliverableInfo);
+  public abstract List<MetadataElementDTO>
+    metadataElementListToMetadataElementDTOList(List<MetadataElement> metadataElementlist);
+
+  public abstract MetadataElementDTO metadataElementToMetadataElementDTO(MetadataElement metadataElement);
 }

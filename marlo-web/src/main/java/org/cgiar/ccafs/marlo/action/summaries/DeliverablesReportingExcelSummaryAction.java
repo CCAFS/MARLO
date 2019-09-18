@@ -659,8 +659,8 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
 
         if (responisble != null) {
           if (responisble.getDeliverableUserPartnershipPersons() != null) {
-            DeliverableUserPartnershipPerson responsibleppp = responisble.getDeliverableUserPartnershipPersons()
-              .stream().filter(dp -> dp.isActive()).collect(Collectors.toList()).get(0);
+            // DeliverableUserPartnershipPerson responsibleppp = responisble.getDeliverableUserPartnershipPersons()
+            // .stream().filter(dp -> dp.isActive()).collect(Collectors.toList()).get(0);
 
             // Get project leader
 
@@ -1544,8 +1544,14 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
             // individual += "<span style='font-family: Segoe UI;color:#ff0000;font-size: 10'>";
             individual += "●  ";
             individual += "*";
-            DeliverableUserPartnershipPerson responsibleppp = responsible.getDeliverableUserPartnershipPersons()
-              .stream().filter(dp -> dp.isActive()).collect(Collectors.toList()).get(0);
+
+            DeliverableUserPartnershipPerson responsibleppp = new DeliverableUserPartnershipPerson();
+            List<DeliverableUserPartnershipPerson> persons = responsible.getDeliverableUserPartnershipPersons().stream()
+              .filter(dp -> dp.isActive()).collect(Collectors.toList());
+            if (persons.size() > 0) {
+              responsibleppp = persons.get(0);
+            }
+
 
             // get deliverable information when partner responsible does not have a person
             if (responsible.getInstitution() != null) {

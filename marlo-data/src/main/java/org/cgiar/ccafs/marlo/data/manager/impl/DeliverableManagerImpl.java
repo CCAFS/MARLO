@@ -291,6 +291,12 @@ public class DeliverableManagerImpl implements DeliverableManager {
   }
 
   @Override
+  public List<Deliverable> getPublicationsByPhase(long phase) {
+
+    return deliverableDAO.getPublicationsByPhase(phase);
+  }
+
+  @Override
   public List<Deliverable> getPublicationsList(LiaisonInstitution liaisonInstitution, Phase phase) {
     Phase phaseDB = phaseManager.getPhaseById(phase.getId());
     List<Deliverable> deliverables = new ArrayList<>();

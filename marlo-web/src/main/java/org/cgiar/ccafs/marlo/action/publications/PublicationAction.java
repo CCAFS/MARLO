@@ -2204,7 +2204,6 @@ public class PublicationAction extends BaseAction {
     } else {
       deliverableInfoDb.setCrpClusterKeyOutput(deliverable.getDeliverableInfo().getCrpClusterKeyOutput());
     }
-
     deliverableInfoDb.setStatusDescription(deliverable.getDeliverableInfo().getStatusDescription());
     deliverableInfoDb.setModificationJustification(this.getJustification());
     deliverableBase.setDeliverableInfo(deliverableInfoDb);

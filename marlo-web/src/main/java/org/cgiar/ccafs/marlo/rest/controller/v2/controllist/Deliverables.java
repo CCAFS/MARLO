@@ -19,8 +19,8 @@ import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.Deliverables.DeliverablesItem;
-import org.cgiar.ccafs.marlo.rest.dto.DeliverableDTO;
-import org.cgiar.ccafs.marlo.rest.dto.NewDeliverableDTO;
+import org.cgiar.ccafs.marlo.rest.dto.NewPublicationDTO;
+import org.cgiar.ccafs.marlo.rest.dto.PublicationDTO;
 import org.cgiar.ccafs.marlo.security.Permission;
 
 import java.util.List;
@@ -56,7 +56,7 @@ public class Deliverables {
   @Autowired
   private Environment env;
 
-  private DeliverablesItem<DeliverableDTO> deliverableItem;
+  private DeliverablesItem<PublicationDTO> publicationItem;
   private final UserManager userManager;
 
   /**
@@ -67,22 +67,23 @@ public class Deliverables {
    * @return a DeliverablenDTO with the deliverable created
    */
   @Inject
-  public Deliverables(DeliverablesItem<DeliverableDTO> deliverableItem, UserManager userManager) {
+  public Deliverables(DeliverablesItem<PublicationDTO> publicationItem, UserManager userManager) {
     super();
-    this.deliverableItem = deliverableItem;
+    this.publicationItem = publicationItem;
     this.userManager = userManager;
+
   }
 
   @ApiOperation(tags = {"Table 6 - Peer-reviewed publications"}, value = "${Deliverables.deliverable.POST.value}",
-    response = DeliverableDTO.class)
+    response = PublicationDTO.class)
   @RequiresPermissions(Permission.FULL_CREATE_REST_API_PERMISSION)
-  @RequestMapping(value = "/{CGIAREntity}/deliverables", method = RequestMethod.POST,
+  @RequestMapping(value = "/{CGIAREntity}/publications", method = RequestMethod.POST,
     produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<Long> createDeliverable(
     @ApiParam(value = "${Deliverables.deliverable.POST.param.CGIAR}", required = true) @PathVariable String CGIAREntity,
     @ApiParam(value = "${Deliverables.deliverable.POST.param.deliverable}",
-      required = true) @Valid @RequestBody NewDeliverableDTO newDeliverableDTO) {
-    Long innovationId = this.deliverableItem.createDeliverable(newDeliverableDTO, CGIAREntity, this.getCurrentUser());
+      required = true) @Valid @RequestBody NewPublicationDTO newPublicationDTO) {
+    Long innovationId = this.publicationItem.createDeliverable(newPublicationDTO, CGIAREntity, this.getCurrentUser());
     ResponseEntity<Long> response = new ResponseEntity<Long>(innovationId, HttpStatus.OK);
     return response;
   }
@@ -93,15 +94,15 @@ public class Deliverables {
    * @return a DeliverablesDTO with deliverables item
    */
   @ApiOperation(tags = {"Table 6 - Peer-reviewed publications"}, value = "${Deliverables.deliverable.all.value}",
-    response = DeliverableDTO.class, responseContainer = "List")
+    response = PublicationDTO.class, responseContainer = "List")
   @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
-  @RequestMapping(value = "/{CGIAREntity}/deliverables", method = RequestMethod.GET,
+  @RequestMapping(value = "/{CGIAREntity}/publications", method = RequestMethod.GET,
     produces = MediaType.APPLICATION_JSON_VALUE)
-  public List<DeliverableDTO> getAllDeliverables(
+  public List<PublicationDTO> getAllDeliverables(
     @ApiParam(value = "${Deliverables.deliverable.GET.param.CGIAR}", required = true) @PathVariable String CGIAREntity,
     @ApiParam(value = "${Deliverables.deliverable.GET.id.param.year}", required = true) @RequestParam Integer year,
     @ApiParam(value = "${Deliverables.deliverable.GET.id.param.phase}", required = true) @RequestParam String phase) {
-    return this.deliverableItem.getAllDeliverables(CGIAREntity, year, phase, this.getCurrentUser());
+    return this.publicationItem.getAllDeliverables(CGIAREntity, year, phase, this.getCurrentUser());
   }
 
   private User getCurrentUser() {
