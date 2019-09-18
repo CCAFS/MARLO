@@ -554,9 +554,9 @@ public class CrpUsersAction extends BaseAction {
                 newUser.setFirstName(user.getFirstName());
                 newUser.setLastName(user.getLastName());
                 newUser.setCgiarUser(false);
-                newUser.setModificationJustification("User created in MARLO " + this.getActionName().replace("/", "-"));
                 password = RandomStringUtils.randomNumeric(6);
                 newUser.setPassword(password);
+                newUser.setModificationJustification("User created in MARLO " + this.getActionName().replace("/", "-"));
                 newUser = userManager.saveUser(newUser);
                 message = this.getText("saving.saved.guestRole");
                 this.addActionMessage("message:" + this.getText("saving.saved.guestRole"));
