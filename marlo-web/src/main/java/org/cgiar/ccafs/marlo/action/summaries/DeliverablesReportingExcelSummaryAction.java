@@ -1546,9 +1546,10 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
             individual += "*";
 
             DeliverableUserPartnershipPerson responsibleppp = new DeliverableUserPartnershipPerson();
-            if (responsible.getDeliverableUserPartnershipPersons().size() > 0) {
-              responsibleppp = responsible.getDeliverableUserPartnershipPersons().stream().filter(dp -> dp.isActive())
-                .collect(Collectors.toList()).get(0);
+            List<DeliverableUserPartnershipPerson> persons = responsible.getDeliverableUserPartnershipPersons().stream()
+              .filter(dp -> dp.isActive()).collect(Collectors.toList());
+            if (persons.size() > 0) {
+              responsibleppp = persons.get(0);
             }
 
 
