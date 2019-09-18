@@ -558,7 +558,7 @@ public class Deliverable extends MarloAuditableEntity implements java.io.Seriali
 
   public DeliverablePublicationMetadata getPublication(Phase phase) {
     List<DeliverablePublicationMetadata> deliverablePublications = this.getDeliverablePublicationMetadatas().stream()
-      .filter(dp -> dp.isActive() && dp.getPhase().equals(phase)).collect(Collectors.toList());
+      .filter(dp -> dp.isActive() && dp.getPhase().getId().equals(phase.getId())).collect(Collectors.toList());
     if (deliverablePublications != null && !deliverablePublications.isEmpty()) {
       return deliverablePublications.get(0);
     }
