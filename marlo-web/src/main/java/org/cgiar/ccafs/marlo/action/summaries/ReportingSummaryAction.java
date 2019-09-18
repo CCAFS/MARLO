@@ -2039,8 +2039,14 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
 
           if (responisble != null) {
             if (responisble.getDeliverableUserPartnershipPersons() != null) {
-              DeliverableUserPartnershipPerson responsibleppp = responisble.getDeliverableUserPartnershipPersons()
-                .stream().filter(dp -> dp.isActive()).collect(Collectors.toList()).get(0);
+
+              DeliverableUserPartnershipPerson responsibleppp = new DeliverableUserPartnershipPerson();
+              List<DeliverableUserPartnershipPerson> persons = responisble.getDeliverableUserPartnershipPersons()
+                .stream().filter(dp -> dp.isActive()).collect(Collectors.toList());
+              if (persons.size() > 0) {
+                responsibleppp = persons.get(0);
+              }
+
               leader =
                 responsibleppp.getUser().getComposedName() + "<br>&lt;" + responsibleppp.getUser().getEmail() + "&gt;";
 
@@ -2779,8 +2785,14 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
 
           if (responisble != null) {
             if (responisble.getDeliverableUserPartnershipPersons() != null) {
-              DeliverableUserPartnershipPerson responsibleppp = responisble.getDeliverableUserPartnershipPersons()
-                .stream().filter(dp -> dp.isActive()).collect(Collectors.toList()).get(0);
+
+              DeliverableUserPartnershipPerson responsibleppp = new DeliverableUserPartnershipPerson();
+              List<DeliverableUserPartnershipPerson> persons = responisble.getDeliverableUserPartnershipPersons()
+                .stream().filter(dp -> dp.isActive()).collect(Collectors.toList());
+              if (persons.size() > 0) {
+                responsibleppp = persons.get(0);
+              }
+
               leader =
                 responsibleppp.getUser().getComposedName() + "<br>&lt;" + responsibleppp.getUser().getEmail() + "&gt;";
 
