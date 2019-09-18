@@ -15,12 +15,7 @@
 
 package org.cgiar.ccafs.marlo.rest.mappers;
 
-import org.cgiar.ccafs.marlo.data.model.Deliverable;
-import org.cgiar.ccafs.marlo.rest.dto.DeliverableDTO;
-
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.Mappings;
 
 
 @Mapper(componentModel = "jsr330",
@@ -28,7 +23,4 @@ import org.mapstruct.Mappings;
 public abstract interface DeliverablesMapper {
 
 
-  @Mappings({@Mapping(source = "crp", target = "cgiarEntity"),
-    @Mapping(source = "deliverable.crp.globalUnitType", target = "cgiarEntity.cgiarEntityTypeDTO")})
-  public abstract DeliverableDTO deliverableToDeliverableDTO(Deliverable deliverable);
 }

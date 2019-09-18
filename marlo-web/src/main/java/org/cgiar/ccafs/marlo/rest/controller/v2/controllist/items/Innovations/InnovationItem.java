@@ -450,7 +450,8 @@ public class InnovationItem<T> {
 
   public List<InnovationDTO> findAllInnovationsByGlobalUnit(String CGIARentityAcronym, Integer repoYear,
     String repoPhase, User user) {
-    ArrayList<InnovationDTO> innovationList = new ArrayList<InnovationDTO>();
+    List<InnovationDTO> innovationList = new ArrayList<InnovationDTO>();
+    List<ProjectInnovation> projectInnovationList = new ArrayList<ProjectInnovation>();
     this.fieldErrors = new ArrayList<FieldErrorDTO>();
     GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitByAcronym(CGIARentityAcronym);
     if (globalUnitEntity == null) {
@@ -473,27 +474,36 @@ public class InnovationItem<T> {
           .sorted(Comparator.comparing(FieldErrorDTO::getField, Comparator.nullsLast(Comparator.naturalOrder())))
           .collect(Collectors.toList()));
     } else {
-      List<ProjectInnovation> projectInnovationList = projectInnovationManager.findAll();
-      List<ProjectInnovation> fullProjectInnovationList = new ArrayList<ProjectInnovation>();
-      for (ProjectInnovation projectInnovation : projectInnovationList) {
-        ProjectInnovationInfo projectInnovationInfo = projectInnovation.getProjectInnovationInfo(phase);
-        if (projectInnovationInfo != null) {
-          projectInnovation.setProjectInnovationInfo(projectInnovationInfo);
-          fullProjectInnovationList.add(projectInnovation);
-        }
 
+      List<ProjectInnovationInfo> projectInnovationInfoList = phase.getProjectInnovationInfos().stream()
+        .filter(c -> c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList());
+      for (ProjectInnovationInfo projectInnovationInfo : projectInnovationInfoList) {
+        ProjectInnovation innovation =
+          this.projectInnovationManager.getProjectInnovationById(projectInnovationInfo.getProjectInnovation().getId());
+        innovation.setProjectInnovationInfo(projectInnovationInfo);
+        innovation.setCountries(
+          this.projectInnovationCountryManager.getInnovationCountrybyPhase(innovation.getId(), phase.getId()));
+        innovation.setRegions(innovation.getProjectInnovationRegions().stream()
+          .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
+        innovation.setGeographicScopes(innovation.getProjectInnovationGeographicScopes().stream()
+          .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
+        innovation.setContributingOrganizations(innovation.getProjectInnovationContributingOrganization().stream()
+          .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
+        innovation.setCrps(innovation.getProjectInnovationCrps().stream()
+          .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
+        innovation.setOrganizations(innovation.getProjectInnovationOrganizations().stream()
+          .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
+        projectInnovationList.add(innovation);
       }
 
-      projectInnovationList = projectInnovationList.stream()
-        .filter(innovations -> innovations.getProjectInnovationInfo().getPhase().getName().equals(repoPhase)
-          & innovations.getProjectInnovationInfo().getPhase().getYear() == repoYear)
-        .collect(Collectors.toList());
-      System.out.println("tam " + projectInnovationList.size());
-      projectInnovationList.stream()
-        .map(innovations -> this.innovationMapper.projectInnovationToInnovationDTO(innovations))
-        .collect(Collectors.toList());
     }
+
+
+    innovationList = projectInnovationList.stream()
+      .map(innovations -> this.innovationMapper.projectInnovationToInnovationDTO(innovations))
+      .collect(Collectors.toList());
     return innovationList;
+
   }
 
   /**
