@@ -72,28 +72,7 @@ public class DeliverablesItem<T> {
   private DeliverableMetadataElementManager deliverableMetadataElementManager;
   private DeliverableUserManager deliverableUserManager;
 
-  // Variables
-  // private List<FieldErrorDTO> fieldErrors;
-  // private Long deliverablesID;
 
-  // private Deliverable deliverable;
-  // private DeliverableType deliverableType;
-  // private DeliverableInfo deliverableInfo;
-  // private DeliverableUser deliverableUser;
-  // private DeliverablePublicationMetadata deliverablePublicationMetadata;
-  // private DeliverableDissemination deliverableDissemination;
-  // private DeliverableMetadataElement deliverableMetadataElementHandle;
-  // private DeliverableMetadataElement deliverableMetadataElementDoi;
-  // private DeliverableMetadataElement deliverableMetadataElementTitle;
-  // private DeliverableMetadataElement deliverableMetadataElementCitation;
-  // private DeliverableMetadataElement deliverableMetadataElementPublication;
-  // private DeliverableMetadataElement deliverableMetadataElementAuthors;
-  // private MetadataElement metadataElementHandle;
-  // private MetadataElement metadataElementDoi;
-  // private MetadataElement metadataElementTitle;
-  // private MetadataElement metadataElementCitation;
-  // private MetadataElement metadataElementPublication;
-  // private MetadataElement metadataElementAuthors;
   private DeliverablesMapper deliverablesMapper;
   private PublicationsMapper publicationsMapper;
 
@@ -160,6 +139,7 @@ public class DeliverablesItem<T> {
         deliverableInfo.setYear(deliverable.getPhase().getYear());
         deliverableInfo.setDeliverableType(deliverableType);
         deliverableInfo.setPhase(phase);
+        deliverableInfo.setStatus(APConstants.CLARISA_PUBLICATIONS_STATUS);
         deliverableInfo.setModificationJustification(APConstants.MESSAGE_MODIFICATION_JUSTIFICATION
           + sdf.format(new Date(Calendar.getInstance().getTimeInMillis())));
 
