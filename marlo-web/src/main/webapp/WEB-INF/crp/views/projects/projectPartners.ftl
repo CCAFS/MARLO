@@ -423,7 +423,7 @@
           [/#list]
         [#else]
           [#if isPPA || defaultPerson]
-            [@contactPersonMacro element={} name="${name}.partnerPersons[0]" index=0 partnerIndex=index institutionID=(element.institution.id)!/]
+            [@contactPersonMacro element={} name="${name}.partnerPersons[0]" index=0 partnerIndex=index institutionID=(element.institution.id)!-1 /]
           [#else]
             <p class="noContactMessage">[@s.text name="projectPartners.contactEmpty" /]</p>
           [/#if]
@@ -501,7 +501,7 @@
       </div>
       
       [#-- IFPRI Partner Division partnerDivision  --]
-      [#local showIfpriDivision = ((institutionID)!0 == 89)!false /]
+      [#local showIfpriDivision = (institutionID == 89)!false /]
       [#if action.hasSpecificities('crp_division_fs')]
       <div class="form-group row divisionBlock division-IFPRI" style="display:${showIfpriDivision?string('block','none')}">
         <div class="col-md-8">
