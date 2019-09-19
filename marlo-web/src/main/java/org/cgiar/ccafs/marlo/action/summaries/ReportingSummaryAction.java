@@ -2791,12 +2791,15 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
               DeliverableUserPartnershipPerson responsibleppp = new DeliverableUserPartnershipPerson();
               List<DeliverableUserPartnershipPerson> persons = responisble.getDeliverableUserPartnershipPersons()
                 .stream().filter(dp -> dp.isActive()).collect(Collectors.toList());
-              if (persons.size() > 0) {
+              if (persons != null && persons.size() > 0) {
                 responsibleppp = persons.get(0);
               }
 
-              leader =
-                responsibleppp.getUser().getComposedName() + "<br>&lt;" + responsibleppp.getUser().getEmail() + "&gt;";
+              if (responsibleppp != null && responsibleppp.getUser() != null
+                && responsibleppp.getUser().getComposedName() != null) {
+                leader = responsibleppp.getUser().getComposedName() + "<br>&lt;" + responsibleppp.getUser().getEmail()
+                  + "&gt;";
+              }
 
               if (responisble.getInstitution() != null) {
                 institution = responisble.getInstitution().getComposedName();
