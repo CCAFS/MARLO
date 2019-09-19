@@ -1190,7 +1190,8 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           .sorted((o1, o2) -> o1.getCrpProgram().getAcronym().compareTo(o2.getCrpProgram().getAcronym()))
           .filter(
             c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()
-              && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase()))
+              && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase())
+              && c.getCrpProgram().getResearchArea() == null && c.getCrpProgram().getCrp().isCenterType() == false)
           .collect(Collectors.toList())) {
           flagships.add(programManager.getCrpProgramById(projectFocuses.getCrpProgram().getId()));
         }
@@ -1202,7 +1203,8 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
             .sorted((c1, c2) -> c1.getCrpProgram().getAcronym().compareTo(c2.getCrpProgram().getAcronym()))
             .filter(
               c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue()
-                && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase()))
+                && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase())
+                && c.getCrpProgram().getResearchArea() == null && c.getCrpProgram().getCrp().isCenterType() == false)
             .collect(Collectors.toList())) {
             regions.add(programManager.getCrpProgramById(projectFocuses.getCrpProgram().getId()));
           }
@@ -5137,7 +5139,9 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           .collect(Collectors.toList());
         // Flagships
         List<ProjectExpectedStudyFlagship> studyFlagshipList = studyProgramsList.stream()
-          .filter(f -> f.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+          .filter(f -> f.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()
+            && f.getCrpProgram().getResearchArea() == null && f.getCrpProgram().getResearchArea() == null
+            && f.getCrpProgram().getCrp() != null && f.getCrpProgram().getCrp().isCenterType() == false)
           .collect(Collectors.toList());
         Set<String> flaghipsSet = new HashSet<>();
         if (studyFlagshipList != null && studyFlagshipList.size() > 0) {
@@ -5148,7 +5152,8 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         }
         // Regional Programs
         List<ProjectExpectedStudyFlagship> studyRegionsList = studyProgramsList.stream()
-          .filter(f -> f.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue())
+          .filter(f -> f.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue()
+            && f.getCrpProgram().getResearchArea() == null && f.getCrpProgram().getCrp().isCenterType() == false)
           .collect(Collectors.toList());
         Set<String> regionSet = new HashSet<>();
         if (studyRegionsList != null && studyRegionsList.size() > 0) {
