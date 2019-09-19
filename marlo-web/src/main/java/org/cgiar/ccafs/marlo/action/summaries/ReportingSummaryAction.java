@@ -2049,8 +2049,11 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
                 responsibleppp = persons.get(0);
               }
 
-              leader =
-                responsibleppp.getUser().getComposedName() + "<br>&lt;" + responsibleppp.getUser().getEmail() + "&gt;";
+              if (responsibleppp != null && responsibleppp.getUser() != null
+                && responsibleppp.getUser().getComposedName() != null) {
+                leader = responsibleppp.getUser().getComposedName() + "<br>&lt;" + responsibleppp.getUser().getEmail()
+                  + "&gt;";
+              }
 
               if (responisble.getInstitution() != null) {
                 institution = responisble.getInstitution().getComposedName();
