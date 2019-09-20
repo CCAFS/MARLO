@@ -131,7 +131,7 @@ public class APConfig {
   /**
    * Get the folder where the bilateral project contract proposal should be
    * loaded
-   * 
+   *
    * @return a string with the path
    */
   public String getAnualReportFolder() {
@@ -145,7 +145,7 @@ public class APConfig {
 
   /**
    * Get the folder destination to save the autosave temporal files
-   * 
+   *
    * @return a string with the auto save folder destination.
    */
   public String getAutoSaveFolder() {
@@ -160,7 +160,7 @@ public class APConfig {
 
   /**
    * Return the base url previously added in the configuration file.
-   * 
+   *
    * @return The Base Url in the following format: http://baseurl or
    *         https://baseurl.
    */
@@ -182,14 +182,14 @@ public class APConfig {
 
   /**
    * Get the base url where media is hosted in cdn
-   * 
+   *
    * @return a string with the url
    */
   public String getBaseUrlCdn() {
 
     if (CDN_URL == null || CDN_URL.equals("")) {
 
-      LOG.warn("there is not a base url where the media hosted in CDN, using localhost instead");
+      LOG.warn("there is not a base url where the media hosted in CDN, using current URL instead");
       return null;
     }
 
@@ -199,7 +199,7 @@ public class APConfig {
   /**
    * Get the folder where the bilateral project contract proposal should be
    * loaded
-   * 
+   *
    * @return a string with the path
    */
   public String getBilateralProjectContractProposalFolder() {
@@ -245,7 +245,7 @@ public class APConfig {
 
   /**
    * Get the URL where the users can download the uploaded files
-   * 
+   *
    * @return a string with the path
    */
   public String getDownloadURL() {
@@ -282,7 +282,7 @@ public class APConfig {
 
   /**
    * get the email.configuration tag in the configuration file
-   * 
+   *
    * @return string whit the email that is in the configuration file.
    */
 
@@ -362,7 +362,7 @@ public class APConfig {
 
   /**
    * get the email.configuration tag in the configuration file
-   * 
+   *
    * @return string whit the email that is in the configuration file.
    */
   public String getEmailNotification() {
@@ -439,7 +439,7 @@ public class APConfig {
   /**
    * Get the folder where the bilateral project contract proposal should be
    * loaded
-   * 
+   *
    * @return a string with the path
    */
   public String getMysqlDatabase() {
@@ -453,7 +453,7 @@ public class APConfig {
 
   /**
    * Get the OCS ws link
-   * 
+   *
    * @return a string with the ocs link
    */
   public String getOcsLink() {
@@ -466,7 +466,7 @@ public class APConfig {
 
   /**
    * Get the OCS ws password
-   * 
+   *
    * @return a string with the ocs password
    */
   public String getOcsPassword() {
@@ -479,7 +479,7 @@ public class APConfig {
 
   /**
    * Get the OCS ws user
-   * 
+   *
    * @return a string with the ocs user
    */
   public String getOcsUser() {
@@ -492,7 +492,7 @@ public class APConfig {
 
   /**
    * Get the folder that contains all the files related to a project
-   * 
+   *
    * @return a string with the path
    */
   public String getProjectsBaseFolder(String crp) {
@@ -508,7 +508,7 @@ public class APConfig {
 
   /**
    * Get the folder where the project work plan should be uploaded
-   * 
+   *
    * @return a string with the path
    */
   public String getProjectWorkplanFolder() {
@@ -557,7 +557,7 @@ public class APConfig {
 
   /**
    * Get the base folder where the uploaded files should be saved
-   * 
+   *
    * @return a string with the path
    */
   public String getUploadsBaseFolder() {
@@ -574,7 +574,7 @@ public class APConfig {
   /**
    * Get the flag that indicate if the admin section is active according to
    * the variable in the configuration file.
-   * 
+   *
    * @return a boolean indicating if it is active.
    */
   public boolean isAdminActive() {
@@ -596,7 +596,7 @@ public class APConfig {
 
   /**
    * If we are activate the Marlo debug mode.
-   * 
+   *
    * @return true if debug mode in marlo is active, false otherwise.
    */
   public boolean isDebug() {
@@ -610,7 +610,7 @@ public class APConfig {
   /**
    * Get the flag that indicate if the Impact Pathway section is active
    * according to the variable in the configuration file.
-   * 
+   *
    * @return a boolean indicating if it is active.
    */
   public boolean isImpactPathwayActive() {
@@ -623,7 +623,7 @@ public class APConfig {
 
   /**
    * If we are running Marlo in production or testing mode.
-   * 
+   *
    * @return true if Marlo is running in production mode, false if is run in
    *         testing mode.
    */
