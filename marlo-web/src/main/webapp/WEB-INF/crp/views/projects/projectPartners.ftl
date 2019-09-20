@@ -423,7 +423,7 @@
           [/#list]
         [#else]
           [#if isPPA || defaultPerson]
-            [@contactPersonMacro element={} name="${name}.partnerPersons[0]" index=0 partnerIndex=index institutionID=(element.institution.id)!/]
+            [@contactPersonMacro element={} name="${name}.partnerPersons[0]" index=0 partnerIndex=index institutionID=(element.institution.id)!-1 /]
           [#else]
             <p class="noContactMessage">[@s.text name="projectPartners.contactEmpty" /]</p>
           [/#if]

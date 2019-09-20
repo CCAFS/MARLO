@@ -30,7 +30,6 @@ public class GeographicScopeDTO {
   private Long code;
 
   @ApiModelProperty(notes = "Geographic Scope name")
-  @NotNull
   private String name;
 
   @ApiModelProperty(notes = "Geographic Scope definition")

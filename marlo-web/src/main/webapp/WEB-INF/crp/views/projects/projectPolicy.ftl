@@ -79,7 +79,6 @@
       <div class="col-md-3"></div>
       <div class="col-md-3"></div>
       <div class="col-md-3">
-        <div class="overlay" style="display:${isNew?string('block', 'none')}"></div>
         [@customForm.select name="${customName}.projectPolicyInfo.year" className="setSelect2" i18nkey="policy.year" listName="years" required=true editable=editable/]
       </div>
     </div>

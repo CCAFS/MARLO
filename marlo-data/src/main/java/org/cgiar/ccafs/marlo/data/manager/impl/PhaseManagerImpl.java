@@ -73,6 +73,11 @@ public class PhaseManagerImpl implements PhaseManager {
   }
 
   @Override
+  public Phase getActivePhase(long globalUnitId) {
+    return phaseDAO.getActivePhase(globalUnitId);
+  }
+
+  @Override
   public Phase getPhaseById(long phaseID) {
 
     return phaseDAO.find(phaseID);

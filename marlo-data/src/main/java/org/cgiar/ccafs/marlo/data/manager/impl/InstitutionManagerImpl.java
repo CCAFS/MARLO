@@ -21,8 +21,8 @@ import org.cgiar.ccafs.marlo.data.model.Institution;
 
 import java.util.List;
 
-import javax.inject.Named;
 import javax.inject.Inject;
+import javax.inject.Named;
 
 
 /**
