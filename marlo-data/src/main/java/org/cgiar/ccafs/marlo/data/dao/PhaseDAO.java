@@ -64,6 +64,13 @@ public interface PhaseDAO {
    */
   public Phase findPreviousPhase(long phaseId);
 
+  /**
+   * return the last active phase by globalUnit id
+   * 
+   * @param globalUnitId
+   * @return
+   */
+  public Phase getActivePhase(long globalUnitId);
 
   /**
    * This method saves the information of the given phase

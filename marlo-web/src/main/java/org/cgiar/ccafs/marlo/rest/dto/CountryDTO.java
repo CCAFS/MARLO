@@ -15,6 +15,8 @@
 
 package org.cgiar.ccafs.marlo.rest.dto;
 
+import javax.validation.constraints.NotNull;
+
 import io.swagger.annotations.ApiModelProperty;
 
 /**
@@ -23,6 +25,7 @@ import io.swagger.annotations.ApiModelProperty;
 public class CountryDTO {
 
   @ApiModelProperty(notes = "The ISO country code")
+  @NotNull
   private Long code;
 
   @ApiModelProperty(notes = "The ISO Alpha 2 letters code")

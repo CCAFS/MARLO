@@ -55,11 +55,16 @@ public interface ProjectInnovationGeographicScopeDAO {
   public List<ProjectInnovationGeographicScope> findAll();
 
 
+  public ProjectInnovationGeographicScope getProjectInnovationGeographicScope(long project_innovation_id,
+    long rep_ind_geographic_scope_id, long id_phase);
+
   /**
    * This method saves the information of the given projectInnovationGeographicScope
    * 
-   * @param projectInnovationGeographicScope - is the projectInnovationGeographicScope object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the projectInnovationGeographicScope was
+   * @param projectInnovationGeographicScope - is the projectInnovationGeographicScope object with the new information
+   *        to be added/updated.
+   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the
+   *         projectInnovationGeographicScope was
    *         updated
    *         or -1 is some error occurred.
    */

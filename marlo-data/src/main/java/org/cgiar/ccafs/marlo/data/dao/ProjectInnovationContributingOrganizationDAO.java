@@ -32,7 +32,8 @@ public interface ProjectInnovationContributingOrganizationDAO {
   public void deleteProjectInnovationContributingOrganization(long projectInnovationContributingOrganizationId);
 
   /**
-   * This method validate if the projectInnovationContributingOrganization identify with the given id exists in the system.
+   * This method validate if the projectInnovationContributingOrganization identify with the given id exists in the
+   * system.
    * 
    * @param projectInnovationContributingOrganizationID is a projectInnovationContributingOrganization identifier.
    * @return true if the projectInnovationContributingOrganization exists, false otherwise.
@@ -40,7 +41,8 @@ public interface ProjectInnovationContributingOrganizationDAO {
   public boolean existProjectInnovationContributingOrganization(long projectInnovationContributingOrganizationID);
 
   /**
-   * This method gets a projectInnovationContributingOrganization object by a given projectInnovationContributingOrganization identifier.
+   * This method gets a projectInnovationContributingOrganization object by a given
+   * projectInnovationContributingOrganization identifier.
    * 
    * @param projectInnovationContributingOrganizationID is the projectInnovationContributingOrganization identifier.
    * @return a ProjectInnovationContributingOrganization object.
@@ -55,13 +57,19 @@ public interface ProjectInnovationContributingOrganizationDAO {
   public List<ProjectInnovationContributingOrganization> findAll();
 
 
+  public ProjectInnovationContributingOrganization
+    getProjectInnovationContributingOrganization(long projectInnovationId, long institutionId, long phaseId);
+
   /**
    * This method saves the information of the given projectInnovationContributingOrganization
    * 
-   * @param projectInnovationContributingOrganization - is the projectInnovationContributingOrganization object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the projectInnovationContributingOrganization was
+   * @param projectInnovationContributingOrganization - is the projectInnovationContributingOrganization object with the
+   *        new information to be added/updated.
+   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the
+   *         projectInnovationContributingOrganization was
    *         updated
    *         or -1 is some error occurred.
    */
-  public ProjectInnovationContributingOrganization save(ProjectInnovationContributingOrganization projectInnovationContributingOrganization);
+  public ProjectInnovationContributingOrganization
+    save(ProjectInnovationContributingOrganization projectInnovationContributingOrganization);
 }

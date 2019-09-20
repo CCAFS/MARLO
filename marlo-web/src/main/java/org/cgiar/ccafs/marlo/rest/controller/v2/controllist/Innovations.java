@@ -23,6 +23,8 @@ import org.cgiar.ccafs.marlo.rest.dto.NewInnovationDTO;
 import org.cgiar.ccafs.marlo.rest.errors.NotFoundException;
 import org.cgiar.ccafs.marlo.security.Permission;
 
+import java.util.List;
+
 import javax.validation.Valid;
 
 import com.opensymphony.xwork2.inject.Inject;
@@ -57,9 +59,7 @@ public class Innovations {
   private InnovationItem<InnovationDTO> innovationItem;
   private final UserManager userManager;
 
-  // private InstitutionItem<InstitutionDTO> institutionItem;
-  // private final UserManager userManager;
-  //
+
   @Inject
   public Innovations(InnovationItem<InnovationDTO> innovationItem, UserManager userManager) {
     this.innovationItem = innovationItem;
@@ -82,17 +82,49 @@ public class Innovations {
     produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<Long> createInnovation(
     @ApiParam(value = "${Innovation.innovation.POST.param.CGIAR}", required = true) @PathVariable String CGIAREntity,
-    @ApiParam(value = "${Innovation.innovation.POST.param.year}", required = true) @RequestParam Integer year,
     @ApiParam(value = "${Innovation.innovation.POST.param.innovation}",
       required = true) @Valid @RequestBody NewInnovationDTO newInnovationDTO) {
-    Long innovationId =
-      this.innovationItem.createInnovation(newInnovationDTO, CGIAREntity, year, this.getCurrentUser());
-    // ResponseEntity<InnovationDTO> response = this.innovationItem.findInnovationById(innovationId, CGIAREntity, year);
-    ResponseEntity<Long> response = new ResponseEntity<Long>(innovationId, HttpStatus.OK);
-    return response;
 
+    Long innovationId = this.innovationItem.createInnovation(newInnovationDTO, CGIAREntity, this.getCurrentUser());
+    ResponseEntity<Long> response = new ResponseEntity<Long>(innovationId, HttpStatus.OK);
+    if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+      throw new NotFoundException("404", this.env.getProperty("Innovation.innovation.GET.id.404"));
+    }
+    return response;
   }
 
+
+  @ApiOperation(tags = {"Table 4 - CRP Innovations"}, value = "${Innovation.innovation.DELETE.id.value}",
+    response = InnovationDTO.class)
+  @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
+  @RequestMapping(value = "/{CGIAREntity}/innovations/{id}", method = RequestMethod.DELETE,
+    produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<InnovationDTO> deleteInnovationById(
+    @ApiParam(value = "${Innovation.innovation.DELETE.id.param.CGIAR}",
+      required = true) @PathVariable String CGIAREntity,
+    @ApiParam(value = "${Innovation.innovation.DELETE.id.param.id}", required = true) @PathVariable Long id,
+    @ApiParam(value = "${Innovation.innovation.DELETE.id.param.year}", required = true) @RequestParam Integer year,
+    @ApiParam(value = "${Innovation.innovation.DELETE.id.param.phase}", required = true) @RequestParam String phase) {
+
+    ResponseEntity<InnovationDTO> response =
+      this.innovationItem.deleteInnovationById(id, CGIAREntity, year, phase, this.getCurrentUser());
+    if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+      throw new NotFoundException("404", this.env.getProperty("Innovation.innovation.DELETE.id.404"));
+    }
+    return response;
+  }
+
+  @ApiOperation(tags = {"Table 4 - CRP Innovations"}, value = "${Innovation.innovation.GET.all.value}",
+    response = InnovationDTO.class)
+  @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
+  @RequestMapping(value = "/{CGIAREntity}/innovations", method = RequestMethod.GET,
+    produces = MediaType.APPLICATION_JSON_VALUE)
+  public List<InnovationDTO> findAllInnovationsByGlobalUnit(
+    @ApiParam(value = "${Innovation.innovation.GET.all.param.CGIAR}", required = true) @PathVariable String CGIAREntity,
+    @ApiParam(value = "${Innovation.innovation.GET.all.param.year}", required = true) @RequestParam Integer year,
+    @ApiParam(value = "${Innovation.innovation.GET.all.param.phase}", required = true) @RequestParam String phase) {
+    return this.innovationItem.findAllInnovationsByGlobalUnit(CGIAREntity, year, phase, this.getCurrentUser());
+  }
 
   @ApiOperation(tags = {"Table 4 - CRP Innovations"}, value = "${Innovation.innovation.GET.id.value}",
     response = InnovationDTO.class)
@@ -102,10 +134,11 @@ public class Innovations {
   public ResponseEntity<InnovationDTO> findInnovationById(
     @ApiParam(value = "${Innovation.innovation.GET.id.param.CGIAR}", required = true) @PathVariable String CGIAREntity,
     @ApiParam(value = "${Innovation.innovation.GET.id.param.id}", required = true) @PathVariable Long id,
-    @ApiParam(value = "${Innovation.innovation.GET.id.param.year}", required = true) @RequestParam Integer year) {
+    @ApiParam(value = "${Innovation.innovation.GET.id.param.year}", required = true) @RequestParam Integer year,
+    @ApiParam(value = "${Innovation.innovation.GET.id.param.phase}", required = true) @RequestParam String phase) {
 
     ResponseEntity<InnovationDTO> response =
-      this.innovationItem.findInnovationById(id, CGIAREntity, year, this.getCurrentUser());
+      this.innovationItem.findInnovationById(id, CGIAREntity, year, phase, this.getCurrentUser());
     if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
       throw new NotFoundException("404", this.env.getProperty("Innovation.innovation.GET.id.404"));
     }
@@ -117,6 +150,24 @@ public class Innovations {
     Long principal = (Long) subject.getPrincipal();
     User user = this.userManager.getUser(principal);
     return user;
+  }
+
+  @ApiOperation(tags = {"Table 4 - CRP Innovations"}, value = "${Innovation.innovation.PUT.value}",
+    response = InnovationDTO.class)
+  @RequiresPermissions(Permission.FULL_CREATE_REST_API_PERMISSION)
+  @RequestMapping(value = "/{CGIAREntity}/innovations/{id}", method = RequestMethod.PUT,
+    produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<Long> putInnovation(
+    @ApiParam(value = "${Innovation.innovation.PUT.param.CGIAR}", required = true) @PathVariable String CGIAREntity,
+    @ApiParam(value = "${Innovation.innovation.PUT.param.id}", required = true) @PathVariable Long id,
+    @ApiParam(value = "${Innovation.innovation.PUT.param.innovation}",
+      required = true) @Valid @RequestBody NewInnovationDTO newInnovationDTO) {
+    Long innovationId = this.innovationItem.putInnovationById(id, newInnovationDTO, CGIAREntity, this.getCurrentUser());
+    ResponseEntity<Long> response = new ResponseEntity<Long>(innovationId, HttpStatus.OK);
+    if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+      throw new NotFoundException("404", this.env.getProperty("Innovation.innovation.GET.id.404"));
+    }
+    return response;
   }
 }
 

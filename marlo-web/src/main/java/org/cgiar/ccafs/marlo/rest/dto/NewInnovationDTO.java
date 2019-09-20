@@ -21,57 +21,68 @@ import io.swagger.annotations.ApiModelProperty;
 
 public class NewInnovationDTO {
 
-  @ApiModelProperty(notes = "Name of innovation", position = 1)
+  @ApiModelProperty(notes = "Name of innovation", position = 10)
   private String title;
 
-  @ApiModelProperty(notes = "Description of the Innovation", position = 2)
+  @ApiModelProperty(notes = "Description of the Innovation", position = 20)
   private String narrative;
 
-  @ApiModelProperty(notes = "Stage of innovation code", position = 3)
-  private Long stageOfInnovation;
+  @ApiModelProperty(notes = "Project identifier", position = 25)
+  private ProjectDTO project;
 
-  @ApiModelProperty(notes = "Description of stage reached", position = 4)
+  @ApiModelProperty(notes = "Stage of innovation code", position = 30)
+  private StageOfInnovationDTO stageOfInnovation;
+
+  @ApiModelProperty(notes = "Description of stage reached", position = 40)
   private String descriptionStage;
 
-  @ApiModelProperty(notes = "Next users organization types codes", position = 5)
-  private List<Long> nextUserOrganizationTypes;
+  @ApiModelProperty(notes = "Next users organization types identifier", position = 50)
+  private List<OrganizationTypeDTO> nextUserOrganizationTypes;
 
-  @ApiModelProperty(notes = "Innovation Type code", position = 6)
-  private Long innovationType;
+  @ApiModelProperty(notes = "Innovation Type identifier", position = 60)
+  private InnovationTypeDTO innovationType;
 
-  @ApiModelProperty(notes = "Geographic Scopes code", position = 7)
-  private List<Long> geographicScopes;
+  @ApiModelProperty(notes = "Other Innovation Type description", position = 65)
+  private String otherInnovationType;
 
-  @ApiModelProperty(notes = "Regions codes", position = 8)
-  private List<Long> regions;
+  @ApiModelProperty(notes = "Geographic Scopes identifier", position = 70)
+  private List<GeographicScopeDTO> geographicScopes;
 
-  @ApiModelProperty(notes = "Countries Alpha 2 codes", position = 9)
-  private List<String> countries;
+  @ApiModelProperty(notes = "Regions codes", position = 80)
+  private List<RegionDTO> regions;
 
-  @ApiModelProperty(notes = "id of Lead organization/entity to take innovation to this stage", position = 10)
-  private Long leadOrganization;
+  @ApiModelProperty(notes = "Countries codes", position = 90)
+  private List<CountryDTO> countries;
 
-  @ApiModelProperty(notes = "List of top five contributing organizations/entities codes to this stage", position = 11)
-  private List<Long> contributingInstitutions;
+  @ApiModelProperty(notes = "Is a leadership equitatable effort of the partners", position = 95)
+  private Boolean equitativeEffort;
 
-  @ApiModelProperty(notes = "Evidence Link", position = 12)
+  @ApiModelProperty(notes = "id of Lead organization/entity to take innovation to this stage", position = 100)
+  private InstitutionDTO leadOrganization;
+
+  @ApiModelProperty(notes = "List of top five contributing organizations/entities codes to this stage", position = 110)
+  private List<InstitutionDTO> contributingInstitutions;
+
+  @ApiModelProperty(notes = "Evidence Link", position = 120)
   private String evidenceLink;
 
-  @ApiModelProperty(notes = "Contributing CRPs/Platforms codes", position = 13)
-  private List<String> contributingCGIAREntities;
+  @ApiModelProperty(notes = "Contributing CRPs/Platforms codes", position = 130)
+  private List<CGIAREntityDTO> contributingCGIAREntities;
 
+  @ApiModelProperty(notes = "Phase year/section", position = 140)
+  private PhaseDTO phase;
 
-  public List<String> getContributingCGIAREntities() {
+  public List<CGIAREntityDTO> getContributingCGIAREntities() {
     return this.contributingCGIAREntities;
   }
 
 
-  public List<Long> getContributingInstitutions() {
+  public List<InstitutionDTO> getContributingInstitutions() {
     return this.contributingInstitutions;
   }
 
 
-  public List<String> getCountries() {
+  public List<CountryDTO> getCountries() {
     return this.countries;
   }
 
@@ -81,22 +92,27 @@ public class NewInnovationDTO {
   }
 
 
+  public Boolean getEquitativeEffort() {
+    return this.equitativeEffort;
+  }
+
+
   public String getEvidenceLink() {
     return this.evidenceLink;
   }
 
 
-  public List<Long> getGeographicScopes() {
+  public List<GeographicScopeDTO> getGeographicScopes() {
     return this.geographicScopes;
   }
 
 
-  public Long getInnovationType() {
+  public InnovationTypeDTO getInnovationType() {
     return this.innovationType;
   }
 
 
-  public Long getLeadOrganization() {
+  public InstitutionDTO getLeadOrganization() {
     return this.leadOrganization;
   }
 
@@ -106,17 +122,32 @@ public class NewInnovationDTO {
   }
 
 
-  public List<Long> getNextUserOrganizationTypes() {
+  public List<OrganizationTypeDTO> getNextUserOrganizationTypes() {
     return this.nextUserOrganizationTypes;
   }
 
 
-  public List<Long> getRegions() {
+  public String getOtherInnovationType() {
+    return this.otherInnovationType;
+  }
+
+
+  public PhaseDTO getPhase() {
+    return phase;
+  }
+
+
+  public ProjectDTO getProject() {
+    return this.project;
+  }
+
+
+  public List<RegionDTO> getRegions() {
     return this.regions;
   }
 
 
-  public Long getStageOfInnovation() {
+  public StageOfInnovationDTO getStageOfInnovation() {
     return this.stageOfInnovation;
   }
 
@@ -126,17 +157,17 @@ public class NewInnovationDTO {
   }
 
 
-  public void setContributingCGIAREntities(List<String> contributingCGIAREntities) {
+  public void setContributingCGIAREntities(List<CGIAREntityDTO> contributingCGIAREntities) {
     this.contributingCGIAREntities = contributingCGIAREntities;
   }
 
 
-  public void setContributingInstitutions(List<Long> contributingInstitutions) {
+  public void setContributingInstitutions(List<InstitutionDTO> contributingInstitutions) {
     this.contributingInstitutions = contributingInstitutions;
   }
 
 
-  public void setCountries(List<String> countries) {
+  public void setCountries(List<CountryDTO> countries) {
     this.countries = countries;
   }
 
@@ -146,22 +177,27 @@ public class NewInnovationDTO {
   }
 
 
+  public void setEquitativeEffort(Boolean equitativeEffort) {
+    this.equitativeEffort = equitativeEffort;
+  }
+
+
   public void setEvidenceLink(String evidenceLink) {
     this.evidenceLink = evidenceLink;
   }
 
 
-  public void setGeographicScopes(List<Long> geographicScopes) {
+  public void setGeographicScopes(List<GeographicScopeDTO> geographicScopes) {
     this.geographicScopes = geographicScopes;
   }
 
 
-  public void setInnovationType(Long innovationType) {
+  public void setInnovationType(InnovationTypeDTO innovationType) {
     this.innovationType = innovationType;
   }
 
 
-  public void setLeadOrganization(Long leadOrganization) {
+  public void setLeadOrganization(InstitutionDTO leadOrganization) {
     this.leadOrganization = leadOrganization;
   }
 
@@ -171,17 +207,32 @@ public class NewInnovationDTO {
   }
 
 
-  public void setNextUserOrganizationTypes(List<Long> nextUserOrganizationTypes) {
+  public void setNextUserOrganizationTypes(List<OrganizationTypeDTO> nextUserOrganizationTypes) {
     this.nextUserOrganizationTypes = nextUserOrganizationTypes;
   }
 
 
-  public void setRegions(List<Long> regions) {
+  public void setOtherInnovationType(String otherInnovationType) {
+    this.otherInnovationType = otherInnovationType;
+  }
+
+
+  public void setPhase(PhaseDTO phase) {
+    this.phase = phase;
+  }
+
+
+  public void setProject(ProjectDTO project) {
+    this.project = project;
+  }
+
+
+  public void setRegions(List<RegionDTO> regions) {
     this.regions = regions;
   }
 
 
-  public void setStageOfInnovation(Long stageOfInnovation) {
+  public void setStageOfInnovation(StageOfInnovationDTO stageOfInnovation) {
     this.stageOfInnovation = stageOfInnovation;
   }
 

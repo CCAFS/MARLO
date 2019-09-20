@@ -14,7 +14,6 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.manager.impl;
 
-
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.dao.PhaseDAO;
 import org.cgiar.ccafs.marlo.data.dao.ProjectInnovationContributingOrganizationDAO;
@@ -47,6 +46,7 @@ public class ProjectInnovationContributingOrganizationManagerImpl
     this.phaseDAO = phaseDAO;
   }
 
+
   @Override
   public void deleteProjectInnovationContributingOrganization(long projectInnovationContributingOrganizationId) {
 
@@ -78,8 +78,8 @@ public class ProjectInnovationContributingOrganizationManagerImpl
     projectInnovationContributingOrganizationDAO
       .deleteProjectInnovationContributingOrganization(projectInnovationContributingOrganizationId);
   }
-
-  public void deleteProjectInnovationContributingOrganizationPhase(Phase next, long innovationID,
+  
+   public void deleteProjectInnovationContributingOrganizationPhase(Phase next, long innovationID,
     ProjectInnovationContributingOrganization projectInnovationContributingOrganization) {
     Phase phase = phaseDAO.find(next.getId());
 
@@ -122,6 +122,15 @@ public class ProjectInnovationContributingOrganizationManagerImpl
   }
 
   @Override
+  public ProjectInnovationContributingOrganization
+    getProjectInnovationContributingOrganizationById(long projectInnovationId, long institutionId, long phaseId) {
+
+    return projectInnovationContributingOrganizationDAO
+      .getProjectInnovationContributingOrganization(projectInnovationId, institutionId, phaseId);
+  }
+
+
+   @Override
   public ProjectInnovationContributingOrganization saveProjectInnovationContributingOrganization(
     ProjectInnovationContributingOrganization projectInnovationContributingOrganization) {
 
@@ -147,7 +156,6 @@ public class ProjectInnovationContributingOrganizationManagerImpl
 
     return projectInnovationContributing;
   }
-
 
   public void saveProjectInnovationContributingPhase(Phase next, long innovationid,
     ProjectInnovationContributingOrganization projectInnovationContributing) {

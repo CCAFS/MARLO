@@ -70,6 +70,18 @@ public class ProjectInnovationCrpMySQLDAO extends AbstractMarloDAO<ProjectInnova
   }
 
   @Override
+  public ProjectInnovationCrp getProjectInnovationCrpById(long innovationID, long globalUnitID, long phaseID) {
+    String query = "from " + ProjectInnovationCrp.class.getName() + " where project_innovation_id='" + innovationID
+      + "' AND global_unit_id='" + globalUnitID + "' AND id_phase='" + phaseID + "'";
+    List<ProjectInnovationCrp> list = super.findAll(query);
+    if (list.size() > 0) {
+      return list.get(0);
+    }
+    return null;
+
+  }
+
+  @Override
   public ProjectInnovationCrp save(ProjectInnovationCrp projectInnovationCrp) {
     if (projectInnovationCrp.getId() == null) {
       super.saveEntity(projectInnovationCrp);

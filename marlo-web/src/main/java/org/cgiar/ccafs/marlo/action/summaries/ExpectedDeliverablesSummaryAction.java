@@ -125,7 +125,6 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
   private final CrpProgramManager crpProgramManager;
 
 
-  private final CrossCuttingScoringManager crossCuttingScoringManager;
   private final CrpPpaPartnerManager crpPpaPartnerManager;
   private final ResourceManager resourceManager;
   private final DeliverableCrossCuttingMarkerManager deliverableCrossCuttingMarkerManager;
@@ -148,7 +147,6 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
     super(config, crpManager, phaseManager, projectManager);
     this.genderTypeManager = genderTypeManager;
     this.crpProgramManager = crpProgramManager;
-    this.crossCuttingScoringManager = crossCuttingScoringManager;
     this.crpPpaPartnerManager = crpPpaPartnerManager;
     this.resourceManager = resourceManager;
     this.deliverableCrossCuttingMarkerManager = deliverableCrossCuttingMarkerManager;
@@ -180,6 +178,8 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
     masterReport.getParameterValues().put("i8nGender", this.getText("summaries.gender"));
     masterReport.getParameterValues().put("i8nYouth", this.getText("summaries.youth"));
     masterReport.getParameterValues().put("i8nCap", this.getText("summaries.capacityDevelopment"));
+    masterReport.getParameterValues().put("i8nClimate", this.getText("outcome.milestone.climateFocusLevel"));
+
     masterReport.getParameterValues().put("i8nStatus", this.getText("project.deliverable.generalInformation.status"));
     masterReport.getParameterValues().put("i8nProjectID", this.getText("searchTerms.projectId"));
     masterReport.getParameterValues().put("i8nProjectTitle", this.getText("project.title.readText"));
@@ -306,12 +306,12 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
       new String[] {"deliverableId", "deliverableTitle", "completionYear", "deliverableType", "deliverableSubType",
         "keyOutput", "delivStatus", "delivNewYear", "projectID", "projectTitle", "projectClusterActivities",
         "flagships", "regions", "individual", "partnersResponsible", "shared", "openFS", "fsWindows", "outcomes",
-        "projectLeadPartner", "managingResponsible", "phaseID", "finishedFS", "gender", "youth", "cap",
+        "projectLeadPartner", "managingResponsible", "phaseID", "finishedFS", "gender", "youth", "cap", "climate",
         "deliverableDescription", "geographicScope", "region", "country"},
       new Class[] {Long.class, String.class, Integer.class, String.class, String.class, String.class, String.class,
         String.class, Long.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, Long.class, String.class,
-        String.class, String.class, String.class, String.class, String.class, String.class, String.class},
+        String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class},
       0);
     Boolean activePPAFilter = ppa != null && !ppa.isEmpty() && !ppa.equals("All") && !ppa.equals("-1");
     Boolean addDeliverableRow = true;
@@ -351,66 +351,15 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
       }
     }
 
-
-    // List<GlobalUnitProject> globalUnitProjects = new ArrayList<>(this.getLoggedCrp().getGlobalUnitProjects().stream()
-    // .filter(p -> p.isActive() && p.getProject() != null && p.getProject().isActive()
-    // && (p.getProject().getProjecInfoPhase(this.getSelectedPhase()) != null
-    // && p.getProject().getProjectInfo().getStatus().intValue() == Integer
-    // .parseInt(ProjectStatusEnum.Ongoing.getStatusId())
-    // || p.getProject().getProjecInfoPhase(this.getSelectedPhase()) != null && p.getProject().getProjectInfo()
-    // .getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())))
-    // .collect(Collectors.toList()));
-    //
-    // for (GlobalUnitProject globalUnitProject : globalUnitProjects) {
-    //
-    //
-    // }
-
-    // for (GlobalUnitProject globalUnitProject : this.getLoggedCrp().getGlobalUnitProjects().stream()
-    // .filter(p -> p.isActive() && p.getProject() != null && p.getProject().isActive()
-    // && (p.getProject().getProjecInfoPhase(this.getSelectedPhase()) != null
-    // && p.getProject().getProjectInfo().getStatus().intValue() == Integer
-    // .parseInt(ProjectStatusEnum.Ongoing.getStatusId())
-    // || p.getProject().getProjecInfoPhase(this.getSelectedPhase()) != null && p.getProject().getProjectInfo()
-    // .getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())))
-    // .collect(Collectors.toList())) {
-
-    // if (showAllYears.equals("true")) {
-    // for (Deliverable deliverable : globalUnitProject.getProject().getDeliverables().stream().filter(
-    // d -> d.isActive() && d.getDeliverableInfo(this.getSelectedPhase()) != null && d.getDeliverableInfo().isActive())
-    // .collect(Collectors.toList())) {
-    // phaseDeliverables.add(deliverable);
-    // }
-    // } else {
-    // for (Deliverable deliverable : globalUnitProject.getProject().getDeliverables().stream().filter(d -> d.isActive()
-    // && d.getDeliverableInfo(this.getSelectedPhase()) != null && d.getDeliverableInfo().isActive()
-    // && ((d.getDeliverableInfo().getStatus() == null && d.getDeliverableInfo().getYear() == this.getSelectedYear())
-    // || (d.getDeliverableInfo().getStatus() != null
-    // && d.getDeliverableInfo().getStatus().intValue() == Integer
-    // .parseInt(ProjectStatusEnum.Extended.getStatusId())
-    // && d.getDeliverableInfo().getNewExpectedYear() != null
-    // && d.getDeliverableInfo().getNewExpectedYear() == this.getSelectedYear())
-    // || (d.getDeliverableInfo().getStatus() != null && d.getDeliverableInfo().getYear() == this.getSelectedYear()
-    // && d.getDeliverableInfo().getStatus().intValue() == Integer
-    // .parseInt(ProjectStatusEnum.Ongoing.getStatusId()))))
-    // .collect(Collectors.toList())) {
-    // phaseDeliverables.add(deliverable);
-    // }
-    // }
-    // }
-
-
     for (Deliverable deliverable : phaseDeliverables.stream().sorted((d1, d2) -> d1.getId().compareTo(d2.getId()))
       .collect(Collectors.toList())) {
-      String responsibleName = "";
-      String responsibleAcronym = "";
       if (activePPAFilter) {
         addDeliverableRow = false;
       }
       // Store Institution and PartnerPerson
       String individual = "";
       // Store Institution
-      String ppaRespondible = "";
+      String ppaResponsible = "";
       Set<String> ppaResponsibleList = new HashSet<>();
       LinkedHashSet<Institution> institutionsResponsibleList = new LinkedHashSet<>();
 
@@ -419,7 +368,6 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
         .filter(dp -> dp.isActive() && dp.getPhase().getId().equals(this.getActualPhase().getId())
           && dp.getDeliverablePartnerType().getId().equals(APConstants.DELIVERABLE_PARTNERSHIP_TYPE_RESPONSIBLE))
         .collect(Collectors.toList());
-
 
       DeliverableUserPartnership responsible = null;
 
@@ -436,53 +384,47 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
             if (responsible.getInstitution().getAcronym() != null
               && !responsible.getInstitution().getAcronym().isEmpty()) {
               ppaResponsibleList.add("*" + responsible.getInstitution().getAcronym() + " ");
-              responsibleAcronym = responsible.getInstitution().getAcronym();
-
             } else {
               ppaResponsibleList.add("*" + responsible.getInstitution().getName() + " ");
-              responsibleName = responsible.getInstitution().getName();
             }
           }
-
-        } else if (responsible.getDeliverableUserPartnershipPersons() != null) {
-          // individual += "<span style='font-family: Segoe UI;color:#ff0000;font-size: 10'>";
+        } else if (responsible != null) {
           DeliverableUserPartnershipPerson responsibleppp = null;
-          if (responsible.getDeliverableUserPartnershipPersons().size() != 0
+          if (responsible.getDeliverableUserPartnershipPersons() != null
             && responsible.getDeliverableUserPartnershipPersons().stream().filter(dp -> dp.isActive())
               .collect(Collectors.toList()) != null
             && responsible.getDeliverableUserPartnershipPersons().stream().filter(dp -> dp.isActive())
-              .collect(Collectors.toList()).get(0) != null) {
+              .collect(Collectors.toList()).size() > 0) {
             responsibleppp = responsible.getDeliverableUserPartnershipPersons().stream().filter(dp -> dp.isActive())
               .collect(Collectors.toList()).get(0);
           }
 
-
           // get deliverable information when partner responsible does not have a person
-          if (responsible.getInstitution() != null) {
-            if (responsible.getInstitution().getAcronym() != null
-              && !responsible.getInstitution().getAcronym().isEmpty()) {
+          if (responsible != null) {
+            if (responsible.getInstitution() != null && responsible.getInstitution().getAcronym() != null) {
               ppaResponsibleList.add("*" + responsible.getInstitution().getAcronym() + "");
-              responsibleAcronym = responsible.getInstitution().getAcronym() + "";
-
             } else {
-              ppaResponsibleList.add("*" + responsible.getInstitution().getName() + "");
-              responsibleName = responsible.getInstitution().getName() + "";
+              if (responsible.getInstitution().getName() != null) {
+                ppaResponsibleList.add("*" + responsible.getInstitution().getName() + "");
+              }
             }
           }
 
           if (responsibleppp != null && responsibleppp.getUser() != null) {
-            individual += " ● ";
+            individual += " ●";
             individual += "*";
             individual += responsibleppp.getUser().getComposedNameWithoutEmail();
-            if (responsibleAcronym != null) {
-              individual += " (" + responsibleAcronym + ")";
-            } else if (responsibleName != null) {
-              individual += " (" + responsibleName + ")";
+            if (responsibleppp.getDeliverableUserPartnership() != null
+              && responsibleppp.getDeliverableUserPartnership().getInstitution() != null
+              && responsibleppp.getDeliverableUserPartnership().getInstitution() != null
+              && responsibleppp.getDeliverableUserPartnership().getInstitution().getAcronym() != null) {
+              individual += " (" + responsibleppp.getDeliverableUserPartnership().getInstitution().getAcronym() + ")";
+            } else if (responsibleppp.getDeliverableUserPartnership().getInstitution().getName() != null) {
+              individual += " (" + responsibleppp.getDeliverableUserPartnership().getInstitution().getName() + ")";
             }
           }
         }
       }
-
 
       // Get partner others
       List<DeliverableUserPartnership> othersPartnerships = deliverable.getDeliverableUserPartnerships().stream()
@@ -505,12 +447,19 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
             if (deliverablePartnership.getInstitution() != null) {
               if (deliverablePartnership.getInstitution().getAcronym() != null
                 && !deliverablePartnership.getInstitution().getAcronym().isEmpty()) {
-                ppaResponsibleList.add("*" + deliverablePartnership.getInstitution().getAcronym() + " ");
-                responsibleAcronym = deliverablePartnership.getInstitution().getAcronym() + "";
-
+                if (!ppaResponsibleList.contains(deliverablePartnership.getInstitution().getAcronym() + " ")
+                  && !ppaResponsibleList.contains("*" + deliverablePartnership.getInstitution().getAcronym() + " ")
+                  && !ppaResponsibleList.contains(deliverablePartnership.getInstitution().getAcronym() + "")
+                  && !ppaResponsibleList.contains("*" + deliverablePartnership.getInstitution().getAcronym() + "")) {
+                  ppaResponsibleList.add(deliverablePartnership.getInstitution().getAcronym() + " ");
+                }
               } else {
-                ppaResponsibleList.add("*" + deliverablePartnership.getInstitution().getName() + " ");
-                responsibleName = deliverablePartnership.getInstitution().getName() + "";
+                if (!ppaResponsibleList.contains(deliverablePartnership.getInstitution().getName() + " ")
+                  && !ppaResponsibleList.contains("*" + deliverablePartnership.getInstitution().getName() + " ")
+                  && !ppaResponsibleList.contains(deliverablePartnership.getInstitution().getName() + "")
+                  && !ppaResponsibleList.contains("*" + deliverablePartnership.getInstitution().getName() + "")) {
+                  ppaResponsibleList.add(deliverablePartnership.getInstitution().getName() + " ");
+                }
               }
             }
 
@@ -519,10 +468,13 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
                 individual += " ●";
                 individual += person.getUser().getComposedName();
 
-                if (responsibleAcronym != null) {
-                  individual += "(" + responsibleAcronym + ")";
-                } else if (responsibleName != null) {
-                  individual += "(" + responsibleName + ")";
+                if (person.getDeliverableUserPartnership() != null
+                  && person.getDeliverableUserPartnership().getInstitution() != null
+                  && person.getDeliverableUserPartnership().getInstitution() != null
+                  && person.getDeliverableUserPartnership().getInstitution().getAcronym() != null) {
+                  individual += "(" + person.getDeliverableUserPartnership().getInstitution().getAcronym() + ")";
+                } else if (person.getDeliverableUserPartnership().getInstitution().getName() != null) {
+                  individual += "(" + person.getDeliverableUserPartnership().getInstitution().getName() + ")";
                 }
               }
             }
@@ -530,19 +482,24 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
             // individual += "\n● ";
 
           } else {
-
             if (deliverablePartnership.getInstitution() != null) {
               if (deliverablePartnership.getInstitution().getAcronym() != null
                 && !deliverablePartnership.getInstitution().getAcronym().isEmpty()) {
-                ppaResponsibleList.add("*" + deliverablePartnership.getInstitution().getAcronym() + " ");
-                responsibleAcronym = deliverablePartnership.getInstitution().getAcronym() + " ";
-
+                if (!ppaResponsibleList.contains(deliverablePartnership.getInstitution().getAcronym() + " ")
+                  && !ppaResponsibleList.contains("*" + deliverablePartnership.getInstitution().getAcronym() + " ")
+                  && !ppaResponsibleList.contains(deliverablePartnership.getInstitution().getAcronym() + "")
+                  && !ppaResponsibleList.contains("*" + deliverablePartnership.getInstitution().getAcronym() + "")) {
+                  ppaResponsibleList.add(deliverablePartnership.getInstitution().getAcronym() + " ");
+                }
               } else {
-                ppaResponsibleList.add("*" + deliverablePartnership.getInstitution().getName() + " ");
-                responsibleName = deliverablePartnership.getInstitution().getName() + " ";
+                if (!ppaResponsibleList.contains(deliverablePartnership.getInstitution().getName() + " ")
+                  && !ppaResponsibleList.contains("*" + deliverablePartnership.getInstitution().getName() + " ")
+                  && !ppaResponsibleList.contains(deliverablePartnership.getInstitution().getName() + "")
+                  && !ppaResponsibleList.contains("*" + deliverablePartnership.getInstitution().getName() + "")) {
+                  ppaResponsibleList.add(deliverablePartnership.getInstitution().getName() + " ");
+                }
               }
             }
-
           }
         }
       }
@@ -550,16 +507,26 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
       if (individual.isEmpty()) {
         individual = null;
       }
+      String managingResponsible = "";
+
       LinkedHashSet<Institution> managingResponsibleList = new LinkedHashSet<>();
       List<String> listPpa = new ArrayList<>();
-      for (String ppaOher : ppaResponsibleList) {
-        if (listPpa == null || (!listPpa.contains(ppaOher.trim()))) {
-          if (ppaRespondible.isEmpty()) {
-            listPpa.add(ppaOher.trim());
-            ppaRespondible += "<span style='font-family: Segoe UI;font-size: 10'>" + ppaOher.trim() + "</span>";
+      for (String ppaOther : ppaResponsibleList) {
+        if (listPpa == null || (!listPpa.contains(ppaOther.trim()))) {
+          if (ppaResponsible.isEmpty()) {
+            listPpa.add(ppaOther.trim());
+            if (ppaOther.contains("*")) {
+              managingResponsible = ppaOther.replace("*", "");
+            }
+            ppaResponsible += "<span style='font-family: Segoe UI;font-size: 10'>" + ppaOther.trim() + "</span>";
           } else {
-            listPpa.add(ppaOher);
-            ppaRespondible += ", <span style='font-family: Segoe UI;font-size: 10'>" + ppaOher.trim() + "</span>";
+            if (!listPpa.contains(ppaOther)) {
+              listPpa.add(ppaOther);
+              if (ppaOther.contains("*")) {
+                managingResponsible = ppaOther.replace("*", "");
+              }
+              ppaResponsible += ", <span style='font-family: Segoe UI;font-size: 10'>" + ppaOther.trim() + "</span>";
+            }
           }
         }
       }
@@ -591,12 +558,11 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
         }
       }
 
-      if (ppaRespondible.isEmpty()) {
-        ppaRespondible = null;
+      if (ppaResponsible.isEmpty()) {
+        ppaResponsible = null;
       }
 
 
-      String managingResponsible = "";
       CrpPpaPartner ppaFilter;
       if (activePPAFilter) {
         ppaFilter = crpPpaPartnerManager.getCrpPpaPartnerById(Long.parseLong(ppa));
@@ -625,25 +591,17 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
           color = ";color:#ff0000";
         } else {
           color = ";color:#ff0000";
-          // TODO view in Summary
-          // List<ProjectPartnerContribution> projectPartnerContributions = responsible.getProjectPartner()
-          // .getProjectPartnerContributions().stream().filter(pc -> pc.isActive()).collect(Collectors.toList());
-          // if (projectPartnerContributions != null && !projectPartnerContributions.isEmpty()) {
-          // for (ProjectPartnerContribution projectPartnerContribution : projectPartnerContributions) {
-          // if (projectPartnerContribution.getProjectPartner().equals(responsible.getProjectPartner())) {
-          // color = ";color:#ff0000";
-          // }
-          // }
-          // }
-        }
 
-        if (managingResponsible.isEmpty()) {
-          managingResponsible +=
-            "<span style='font-family: Segoe UI;font-size: 10" + color + "'>" + institution + "</span>";
-        } else {
-          managingResponsible +=
-            ", <span style='font-family: Segoe UI;font-size: 10" + color + "'>" + institution + "</span>";
         }
+        /*
+         * if (managingResponsible.isEmpty()) {
+         * managingResponsible +=
+         * "<span style='font-family: Segoe UI;font-size: 10" + color + "'>" + institution + "</span>";
+         * } else {
+         * managingResponsible +=
+         * ", <span style='font-family: Segoe UI;font-size: 10" + color + "'>" + institution + "</span>";
+         * }
+         */
       }
       if (managingResponsible.isEmpty()) {
         managingResponsible = null;
@@ -685,8 +643,7 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
             ? deliverableInfo.getDeliverableType().getDeliverableCategory().getName() : null;
 
         // Get cross_cutting dimension
-        String crossCutting = "";
-        String gender = "", youth = "", cap = "";
+        String gender = "", youth = "", cap = "", climate = "";
         Boolean isOldCrossCutting = this.getSelectedYear() < 2018;
         DeliverableCrossCuttingMarker deliverableCrossCuttingMarkerGender = deliverableCrossCuttingMarkerManager
           .getDeliverableCrossCuttingMarkerId(deliverable.getId(), 1, this.getSelectedPhase().getId());
@@ -771,6 +728,22 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
             cap = "No";
           }
 
+          // Climate
+          if (deliverableCrossCuttingMarkerClimateChange != null
+            && deliverableCrossCuttingMarkerClimateChange.getRepIndGenderYouthFocusLevel() != null) {
+            if (deliverableCrossCuttingMarkerClimateChange.getRepIndGenderYouthFocusLevel().getId() != 0
+              && deliverableCrossCuttingMarkerClimateChange.getRepIndGenderYouthFocusLevel().getId() != 4) {
+              climate = deliverableCrossCuttingMarkerClimateChange.getRepIndGenderYouthFocusLevel().getPowbName();
+              if (climate.isEmpty()) {
+                climate = "Yes";
+              }
+            }
+          }
+          if (cap.isEmpty()) {
+            climate = "No";
+          }
+
+
         } else {
           // Gender
           if (deliverableCrossCuttingMarkerGender != null) {
@@ -798,6 +771,15 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
           }
           if (cap.isEmpty()) {
             cap = "0-Not Targeted";
+          }
+
+          // climate
+          if (deliverableCrossCuttingMarkerClimateChange != null
+            && deliverableCrossCuttingMarkerClimateChange.getRepIndGenderYouthFocusLevel() != null) {
+            climate = deliverableCrossCuttingMarkerClimateChange.getRepIndGenderYouthFocusLevel().getPowbName();
+          }
+          if (climate.isEmpty()) {
+            climate = "0-Not Targeted";
           }
         }
 
@@ -1075,8 +1057,8 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
         }
         model.addRow(new Object[] {deliverableId, deliverableTitle, completionYear, deliverableType, deliverableSubType,
           keyOutput, delivStatus, delivNewYear, projectID, projectTitle, projectClusterActivities, flagships, regions,
-          individual, ppaRespondible, shared, openFS, fsWindows, outcomes, projectLeadPartner, managingResponsible,
-          phaseID, finishedFS, gender, youth, cap, deliverableDescription, geographicScope, region, country});
+          individual, ppaResponsible, shared, openFS, fsWindows, outcomes, projectLeadPartner, managingResponsible,
+          phaseID, finishedFS, gender, youth, cap, climate, deliverableDescription, geographicScope, region, country});
 
         if (deliverablePerYearList.containsKey(completionYear)) {
           Set<Deliverable> deliverableSet = deliverablePerYearList.get(completionYear);

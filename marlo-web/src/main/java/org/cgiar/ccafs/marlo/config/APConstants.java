@@ -120,6 +120,7 @@ public final class APConstants {
   public static final String CRP_VIEW_HIGHLIGTHS = "crp_view_highlights";
   public static final String CRP_HAS_DISEMINATION = "crp_has_disemination";
   public static final String CRP_ENABLE_BUDGET_EXECUTION = "crp_enable_budget_execution";
+  public static final Long CRP_DASHBOARD_CENTER_IDENTIFICATION = new Long(4);
 
 
   // Email parameters to copy to FL FM CL
@@ -445,7 +446,7 @@ public final class APConstants {
   // Status control List of each table
   public static final String PROJECT_EXPECTED_STUDIES_TABLE = "project_expected_study_info";
   public static final String REPORT_SYNTHESYS_FLAGSHIPS_PROGRESS_MILESTONES_TABLE =
-    "report_synthesis_flagship_progress_milestones";
+    "report_synthesis_flagship_progress_outcome_milestones";
 
   // Project Contribution To LP6 Relations
   public static final String PROJECT_CONTRIBUTION_LP6_RELATION =
@@ -713,6 +714,21 @@ public final class APConstants {
 
   // Clarisa public
   public static final String CLARISA_PUBLIC = "clarisa_public";
+  public static final int CLARISA_PUBLICATIONS_STATUS = 3;
+
+  // publish handle for clarisa
+  public static final String METADATAELEMENTHANDLE = "marlo.handle";
+  // publish doi for clarisa
+  public static final String METADATAELEMENTDOI = "marlo.doi";
+  // publish title for disemination data in clarisa
+  public static final String METADATAELEMENTTITLE = "dc.title";
+  public static final String METADATAELEMENTPUBLICATION = "dc.date";
+  public static final String METADATAELEMENTCITATION = "dc.identifier.citation";
+  public static final String METADATAELEMENTAUTHORS = "marlo.authors";
+  public static final String MESSAGE_MODIFICATION_JUSTIFICATION = "Created by CLARISA ";
+
+  // deliverables import clarisa value
+  public static final long IMPORT_DELIVERABLE_VALUE = 63;
 
   public static String getFilterBy() {
     return FILTER_BY;

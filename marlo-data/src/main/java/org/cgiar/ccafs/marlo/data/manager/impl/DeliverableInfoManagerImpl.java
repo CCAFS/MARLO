@@ -18,7 +18,10 @@ package org.cgiar.ccafs.marlo.data.manager.impl;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.dao.DeliverableInfoDAO;
 import org.cgiar.ccafs.marlo.data.dao.PhaseDAO;
+import org.cgiar.ccafs.marlo.data.manager.CrpClusterKeyOutputManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableInfoManager;
+import org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutput;
+import org.cgiar.ccafs.marlo.data.model.CrpClusterOfActivity;
 import org.cgiar.ccafs.marlo.data.model.DeliverableInfo;
 import org.cgiar.ccafs.marlo.data.model.DeliverableType;
 import org.cgiar.ccafs.marlo.data.model.Phase;
@@ -39,14 +42,16 @@ public class DeliverableInfoManagerImpl implements DeliverableInfoManager {
 
   private PhaseDAO phaseDAO;
   private DeliverableInfoDAO deliverableInfoDAO;
+  private CrpClusterKeyOutputManager crpClusterKeyOutputManager;
   // Managers
 
 
   @Inject
-  public DeliverableInfoManagerImpl(DeliverableInfoDAO deliverableInfoDAO, PhaseDAO phaseDAO) {
+  public DeliverableInfoManagerImpl(DeliverableInfoDAO deliverableInfoDAO, PhaseDAO phaseDAO,
+    CrpClusterKeyOutputManager crpClusterKeyOutputManager) {
     this.deliverableInfoDAO = deliverableInfoDAO;
     this.phaseDAO = phaseDAO;
-
+    this.crpClusterKeyOutputManager = crpClusterKeyOutputManager;
   }
 
   @Override
@@ -115,15 +120,47 @@ public class DeliverableInfoManagerImpl implements DeliverableInfoManager {
     Phase phase = phaseDAO.find(next.getId());
     List<DeliverableInfo> deliverableInfos = phase.getDeliverableInfos().stream()
       .filter(c -> c.getDeliverable().getId().equals(deliverableId)).collect(Collectors.toList());
+
+    CrpClusterKeyOutput keyOutputPhase = null;
+
+    if (deliverableInfo.getCrpClusterKeyOutput() != null && deliverableInfo.getCrpClusterKeyOutput().getId() != -1) {
+
+      CrpClusterKeyOutput keyOutput =
+        crpClusterKeyOutputManager.getCrpClusterKeyOutputById(deliverableInfo.getCrpClusterKeyOutput().getId());
+
+      CrpClusterOfActivity crpCluster = keyOutput.getCrpClusterOfActivity();
+
+      List<CrpClusterOfActivity> clusters = phase.getClusters().stream()
+        .filter(c -> c.isActive() && c.getCrpProgram().getId().equals(crpCluster.getCrpProgram().getId())
+          && c.getIdentifier().equals(crpCluster.getIdentifier()))
+        .collect(Collectors.toList());
+
+      if (!clusters.isEmpty()) {
+
+        CrpClusterOfActivity crpClusterPhase = clusters.get(0);
+
+        List<CrpClusterKeyOutput> keyOutputsPhases = crpClusterPhase.getCrpClusterKeyOutputs().stream()
+          .filter(k -> k.isActive() && k.getComposeID().equals(keyOutput.getComposeID())).collect(Collectors.toList());
+
+        if (!keyOutputsPhases.isEmpty()) {
+          keyOutputPhase = keyOutputsPhases.get(0);
+        }
+
+      }
+    }
+
+
     if (!deliverableInfos.isEmpty()) {
       for (DeliverableInfo deliverableInfoPhase : deliverableInfos) {
         deliverableInfoPhase.updateDeliverableInfo(deliverableInfo);
+        deliverableInfoPhase.setCrpClusterKeyOutput(keyOutputPhase);
         deliverableInfoDAO.save(deliverableInfoPhase);
       }
     } else {
       DeliverableInfo deliverableInfoAdd = new DeliverableInfo();
       deliverableInfoAdd.setDeliverable(deliverableInfo.getDeliverable());
       deliverableInfoAdd.updateDeliverableInfo(deliverableInfo);
+      deliverableInfoAdd.setCrpClusterKeyOutput(keyOutputPhase);
       deliverableInfoAdd.setDeliverableType(deliverableInfo.getDeliverableType());
       deliverableInfoAdd.setPhase(phase);
       deliverableInfoDAO.save(deliverableInfoAdd);

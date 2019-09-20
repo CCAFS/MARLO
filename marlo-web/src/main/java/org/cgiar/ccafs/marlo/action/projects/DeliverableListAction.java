@@ -112,19 +112,20 @@ public class DeliverableListAction extends BaseAction {
     deliverableInfo.setStatus(Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId()));
     deliverableInfo.setModificationJustification("New expected deliverable created");
     deliverableInfoManager.saveDeliverableInfo(deliverableInfo);
+
     // Replicate only for Planning
-    if (phase.getDescription().equals(APConstants.REPORTING)) {
-      if (phase.getNext() != null && phase.getNext().getNext() != null) {
-        Phase upkeepPhase = phase.getNext().getNext();
-        if (upkeepPhase != null) {
-          this.addDeliverablePhase(upkeepPhase, deliverable);
-        }
-      }
-    } else {
-      if (phase.getDescription().equals(APConstants.PLANNING) && phase.getNext() != null) {
-        this.addDeliverablePhase(phase.getNext(), deliverable);
-      }
-    }
+    // if (phase.getDescription().equals(APConstants.REPORTING)) {
+    // if (phase.getNext() != null && phase.getNext().getNext() != null) {
+    // Phase upkeepPhase = phase.getNext().getNext();
+    // if (upkeepPhase != null) {
+    // this.addDeliverablePhase(upkeepPhase, deliverable);
+    // }
+    // }
+    // } else {
+    // if (phase.getDescription().equals(APConstants.PLANNING) && phase.getNext() != null) {
+    // this.addDeliverablePhase(phase.getNext(), deliverable);
+    // }
+    // }
 
     if (deliverableID > 0) {
       return SUCCESS;
@@ -172,14 +173,16 @@ public class DeliverableListAction extends BaseAction {
 
 
     Deliverable deliverable = deliverableManager.getDeliverableById(deliverableID);
-
-    for (SectionStatus sectionStatus : deliverable.getSectionStatuses()) {
-      sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
-    }
-
-    projectID = deliverable.getProject().getId();
-
     if (deliverable != null) {
+      if (deliverable.getSectionStatuses() != null) {
+        for (SectionStatus sectionStatus : deliverable.getSectionStatuses()) {
+          sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
+        }
+      }
+
+      projectID = deliverable.getProject().getId();
+
+
       deliverableManager.saveDeliverable(deliverable);
       deliverableManager.deleteDeliverable(deliverableID);
       this.addActionMessage("message:" + this.getText("deleting.success"));

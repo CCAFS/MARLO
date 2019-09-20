@@ -511,6 +511,7 @@ public class ProjectInnovationAction extends BaseAction {
       project = projectManager.getProjectById(projectID);
 
       Phase phase = phaseManager.getPhaseById(this.getActualPhase().getId());
+
       project.getProjecInfoPhase(phase);
 
       Path path = this.getAutoSaveFilePath();
@@ -749,17 +750,19 @@ public class ProjectInnovationAction extends BaseAction {
       }
 
 
-      List<DeliverableInfo> infos = phase
-        .getDeliverableInfos().stream().filter(c -> c.getDeliverable().getProject() != null
-          && c.getDeliverable().getProject().equals(project) && c.getDeliverable().isActive())
-        .collect(Collectors.toList());
-      deliverableList = new ArrayList<>();
-      for (DeliverableInfo deliverableInfo : infos) {
-        Deliverable deliverable = deliverableInfo.getDeliverable();
-        deliverable.setDeliverableInfo(deliverableInfo);
-        deliverableList.add(deliverable);
+      if (phase != null && phase.getDeliverableInfos() != null && project != null
+        && phase.getDeliverableInfos().size() > 0) {
+        List<DeliverableInfo> infos = phase.getDeliverableInfos().stream()
+          .filter(c -> c != null && c.getDeliverable() != null && c.getDeliverable().getProject() != null
+            && c.getDeliverable().getProject().equals(project) && c.getDeliverable().isActive())
+          .collect(Collectors.toList());
+        deliverableList = new ArrayList<>();
+        for (DeliverableInfo deliverableInfo : infos) {
+          Deliverable deliverable = deliverableInfo.getDeliverable();
+          deliverable.setDeliverableInfo(deliverableInfo);
+          deliverableList.add(deliverable);
+        }
       }
-
 
       // Shows the projects to create a shared link with their
       this.myProjects = new ArrayList<>();
@@ -988,7 +991,8 @@ public class ProjectInnovationAction extends BaseAction {
         }
       }
 
-      if (innovation.getProjectInnovationInfo().getRepIndInnovationType().getId() != null
+      if (innovation.getProjectInnovationInfo().getRepIndInnovationType() != null
+        && innovation.getProjectInnovationInfo().getRepIndInnovationType().getId() != null
         && innovation.getProjectInnovationInfo().getRepIndInnovationType().getId() != 6) {
         innovation.getProjectInnovationInfo().setOtherInnovationType("");
       }

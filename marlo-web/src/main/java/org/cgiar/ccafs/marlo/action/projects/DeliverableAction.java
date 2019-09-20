@@ -1765,9 +1765,8 @@ public class DeliverableAction extends BaseAction {
         this.saveParticipant();
       }
 
-      deliverableManagedState.getDeliverableInfo(this.getActualPhase())
-        .setModificationJustification(this.getJustification());
-      deliverableInfoManager.saveDeliverableInfo(deliverableManagedState.getDeliverableInfo(this.getActualPhase()));
+
+      deliverableInfoManager.saveDeliverableInfo(deliverableManagedState.getDeliverableInfo());
 
       if (this.hasSpecificities(APConstants.CRP_LP6_ACTIVE)
         && this.getProjectLp6ContributionValue(project.getId(), this.getActualPhase().getId())) {
@@ -2069,18 +2068,21 @@ public class DeliverableAction extends BaseAction {
             deliverableUserPartnershipManager.getDeliverableUserPartnershipById(deliverableUserPartnership.getId());
 
           if (deliverableUserPartnership.getInstitution().getId() != null) {
-            Institution institution =
-              institutionManager.getInstitutionById(deliverableUserPartnership.getInstitution().getId());
-            deliverableUserPartnershipSave.setInstitution(institution);
+            if (deliverableUserPartnership.getInstitution().getId() != -1) {
+              Institution institution =
+                institutionManager.getInstitutionById(deliverableUserPartnership.getInstitution().getId());
+              deliverableUserPartnershipSave.setInstitution(institution);
 
-            if (deliverableUserPartnership.getPartnershipPersons() != null) {
-              deliverableUserPartnershipSave.setPartnershipPersons(deliverableUserPartnership.getPartnershipPersons());
+              if (deliverableUserPartnership.getPartnershipPersons() != null) {
+                deliverableUserPartnershipSave
+                  .setPartnershipPersons(deliverableUserPartnership.getPartnershipPersons());
+              }
+
+              deliverableUserPartnershipSave =
+                deliverableUserPartnershipManager.saveDeliverableUserPartnership(deliverableUserPartnershipSave);
+
+              this.saveDeliverableUserPartnershipsPersons(deliverableUserPartnership, deliverableUserPartnershipSave);
             }
-
-            deliverableUserPartnershipSave =
-              deliverableUserPartnershipManager.saveDeliverableUserPartnership(deliverableUserPartnershipSave);
-
-            this.saveDeliverableUserPartnershipsPersons(deliverableUserPartnership, deliverableUserPartnershipSave);
           }
 
         } else {
@@ -2093,18 +2095,21 @@ public class DeliverableAction extends BaseAction {
 
           if (deliverableUserPartnership.getInstitution() != null
             && deliverableUserPartnership.getInstitution().getId() != null) {
-            Institution institution =
-              institutionManager.getInstitutionById(deliverableUserPartnership.getInstitution().getId());
-            deliverableUserPartnershipSave.setInstitution(institution);
+            if (deliverableUserPartnership.getInstitution().getId() != -1) {
+              Institution institution =
+                institutionManager.getInstitutionById(deliverableUserPartnership.getInstitution().getId());
+              deliverableUserPartnershipSave.setInstitution(institution);
 
-            if (deliverableUserPartnership.getPartnershipPersons() != null) {
-              deliverableUserPartnershipSave.setPartnershipPersons(deliverableUserPartnership.getPartnershipPersons());
+              if (deliverableUserPartnership.getPartnershipPersons() != null) {
+                deliverableUserPartnershipSave
+                  .setPartnershipPersons(deliverableUserPartnership.getPartnershipPersons());
+              }
+
+              deliverableUserPartnershipSave =
+                deliverableUserPartnershipManager.saveDeliverableUserPartnership(deliverableUserPartnershipSave);
+
+              this.saveDeliverableUserPartnershipsPersons(deliverableUserPartnership, deliverableUserPartnershipSave);
             }
-
-            deliverableUserPartnershipSave =
-              deliverableUserPartnershipManager.saveDeliverableUserPartnership(deliverableUserPartnershipSave);
-
-            this.saveDeliverableUserPartnershipsPersons(deliverableUserPartnership, deliverableUserPartnershipSave);
           }
 
         }
@@ -2154,18 +2159,21 @@ public class DeliverableAction extends BaseAction {
             deliverableUserPartnershipManager.getDeliverableUserPartnershipById(deliverableUserPartnership.getId());
 
           if (deliverableUserPartnership.getInstitution().getId() != null) {
-            Institution institution =
-              institutionManager.getInstitutionById(deliverableUserPartnership.getInstitution().getId());
-            deliverableUserPartnershipSave.setInstitution(institution);
+            if (deliverableUserPartnership.getInstitution().getId() != -1) {
+              Institution institution =
+                institutionManager.getInstitutionById(deliverableUserPartnership.getInstitution().getId());
+              deliverableUserPartnershipSave.setInstitution(institution);
 
-            if (deliverableUserPartnership.getPartnershipPersons() != null) {
-              deliverableUserPartnershipSave.setPartnershipPersons(deliverableUserPartnership.getPartnershipPersons());
+              if (deliverableUserPartnership.getPartnershipPersons() != null) {
+                deliverableUserPartnershipSave
+                  .setPartnershipPersons(deliverableUserPartnership.getPartnershipPersons());
+              }
+
+              deliverableUserPartnershipSave =
+                deliverableUserPartnershipManager.saveDeliverableUserPartnership(deliverableUserPartnershipSave);
+
+              this.saveDeliverableUserPartnershipsPersons(deliverableUserPartnership, deliverableUserPartnershipSave);
             }
-
-            deliverableUserPartnershipSave =
-              deliverableUserPartnershipManager.saveDeliverableUserPartnership(deliverableUserPartnershipSave);
-
-            this.saveDeliverableUserPartnershipsPersons(deliverableUserPartnership, deliverableUserPartnershipSave);
           }
 
         } else {
@@ -2178,18 +2186,21 @@ public class DeliverableAction extends BaseAction {
 
           if (deliverableUserPartnership.getInstitution() != null
             && deliverableUserPartnership.getInstitution().getId() != null) {
-            Institution institution =
-              institutionManager.getInstitutionById(deliverableUserPartnership.getInstitution().getId());
-            deliverableUserPartnershipSave.setInstitution(institution);
+            if (deliverableUserPartnership.getInstitution().getId() != -1) {
+              Institution institution =
+                institutionManager.getInstitutionById(deliverableUserPartnership.getInstitution().getId());
+              deliverableUserPartnershipSave.setInstitution(institution);
 
-            if (deliverableUserPartnership.getPartnershipPersons() != null) {
-              deliverableUserPartnershipSave.setPartnershipPersons(deliverableUserPartnership.getPartnershipPersons());
+              if (deliverableUserPartnership.getPartnershipPersons() != null) {
+                deliverableUserPartnershipSave
+                  .setPartnershipPersons(deliverableUserPartnership.getPartnershipPersons());
+              }
+
+              deliverableUserPartnershipSave =
+                deliverableUserPartnershipManager.saveDeliverableUserPartnership(deliverableUserPartnershipSave);
+
+              this.saveDeliverableUserPartnershipsPersons(deliverableUserPartnership, deliverableUserPartnershipSave);
             }
-
-            deliverableUserPartnershipSave =
-              deliverableUserPartnershipManager.saveDeliverableUserPartnership(deliverableUserPartnershipSave);
-
-            this.saveDeliverableUserPartnershipsPersons(deliverableUserPartnership, deliverableUserPartnershipSave);
           }
 
         }
@@ -3168,6 +3179,7 @@ public class DeliverableAction extends BaseAction {
     deliverableInfoDb.setModificationJustification(this.getJustification());
 
     deliverableBase.setDeliverableInfo(deliverableInfoDb);
+
     return deliverableBase;
   }
 

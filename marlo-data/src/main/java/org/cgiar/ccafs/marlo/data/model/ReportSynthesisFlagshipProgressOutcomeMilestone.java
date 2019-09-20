@@ -47,12 +47,12 @@ public class ReportSynthesisFlagshipProgressOutcomeMilestone extends MarloAudita
 
 
   public CrpMilestone getCrpMilestone() {
-    return crpMilestone;
+    return this.crpMilestone;
   }
 
 
   public String getEvidence() {
-    return evidence;
+    return this.evidence;
   }
 
 
@@ -65,50 +65,50 @@ public class ReportSynthesisFlagshipProgressOutcomeMilestone extends MarloAudita
 
 
   public List<ReportSynthesisFlagshipProgressCrossCuttingMarker> getMarkers() {
-    return markers;
+    return this.markers;
   }
 
 
   public Long getMilestonesStatus() {
-    return milestonesStatus;
+    return this.milestonesStatus;
   }
 
 
   public String getOtherReason() {
-    return otherReason;
+    return this.otherReason;
   }
 
   public RepIndMilestoneReason getReason() {
-    return reason;
+    return this.reason;
   }
 
 
   public Set<ReportSynthesisFlagshipProgressCrossCuttingMarker>
     getReportSynthesisFlagshipProgressCrossCuttingMarkers() {
-    return reportSynthesisFlagshipProgressCrossCuttingMarkers;
+    return this.reportSynthesisFlagshipProgressCrossCuttingMarkers;
   }
 
   public ReportSynthesisFlagshipProgressOutcome getReportSynthesisFlagshipProgressOutcome() {
-    return reportSynthesisFlagshipProgressOutcome;
+    return this.reportSynthesisFlagshipProgressOutcome;
   }
 
 
   public String getStatusName() {
 
-    if (milestonesStatus == null) {
+    if (this.milestonesStatus == null) {
       return "";
     } else {
-      switch (milestonesStatus.intValue()) {
-        case 1:
+      switch (this.milestonesStatus.intValue()) {
+        case 3:
           return "Complete";
 
-        case 2:
+        case 4:
           return "Extended";
 
-        case 3:
+        case 5:
           return "Cancelled";
 
-        case 4:
+        case 6:
           return "Changed";
       }
     }

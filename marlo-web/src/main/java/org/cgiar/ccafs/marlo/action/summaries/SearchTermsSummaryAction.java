@@ -516,10 +516,21 @@ public class SearchTermsSummaryAction extends BaseSummariesAction implements Sum
               DeliverableUserPartnership responisble = this.responsiblePartner(deliverable);
               if (responisble != null) {
                 if (responisble.getDeliverableUserPartnershipPersons() != null) {
-                  DeliverableUserPartnershipPerson responsibleppp = responisble.getDeliverableUserPartnershipPersons()
-                    .stream().filter(dp -> dp.isActive()).collect(Collectors.toList()).get(0);
-                  leader = "<font size=2 face='Segoe UI' color='#000000'>" + responsibleppp.getUser().getComposedName()
-                    + "\n&lt;" + responsibleppp.getUser().getEmail() + "&gt;</font>";
+
+                  DeliverableUserPartnershipPerson responsibleppp = new DeliverableUserPartnershipPerson();
+                  List<DeliverableUserPartnershipPerson> persons = responisble.getDeliverableUserPartnershipPersons()
+                    .stream().filter(dp -> dp.isActive()).collect(Collectors.toList());
+                  if (persons.size() > 0) {
+                    responsibleppp = persons.get(0);
+                  }
+
+                  if (responsibleppp != null && responsibleppp.getUser() != null
+                    && responsibleppp.getUser().getComposedName() != null
+                    && responsibleppp.getUser().getEmail() != null) {
+                    leader =
+                      "<font size=2 face='Segoe UI' color='#000000'>" + responsibleppp.getUser().getComposedName()
+                        + "\n&lt;" + responsibleppp.getUser().getEmail() + "&gt;</font>";
+                  }
 
                   if (responisble.getInstitution() != null) {
                     leadIns = "<font size=2 face='Segoe UI' color='#000000'>"

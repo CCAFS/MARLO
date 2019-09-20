@@ -291,6 +291,12 @@ public class DeliverableManagerImpl implements DeliverableManager {
   }
 
   @Override
+  public List<Deliverable> getPublicationsByPhase(long phase) {
+
+    return deliverableDAO.getPublicationsByPhase(phase);
+  }
+
+  @Override
   public List<Deliverable> getPublicationsList(LiaisonInstitution liaisonInstitution, Phase phase) {
     Phase phaseDB = phaseManager.getPhaseById(phase.getId());
     List<Deliverable> deliverables = new ArrayList<>();
@@ -387,25 +393,6 @@ public class DeliverableManagerImpl implements DeliverableManager {
   @Override
   public Deliverable saveDeliverable(Deliverable deliverable, String section, List<String> relationsName, Phase phase) {
     Deliverable resultDeliverable = deliverableDAO.save(deliverable, section, relationsName, phase);
-
-    /*
-     * boolean isPublication = resultDeliverable.getIsPublication() != null && resultDeliverable.getIsPublication();
-     * if (deliverable.getDeliverableInfo().getPhase().getDescription().equals(APConstants.PLANNING)
-     * && deliverable.getDeliverableInfo().getPhase().getNext() != null && !isPublication) {
-     * this.saveDeliverablePhase(deliverable.getDeliverableInfo().getPhase().getNext(), deliverable.getId(),
-     * deliverable);
-     * }
-     * if (deliverable.getDeliverableInfo().getPhase().getDescription().equals(APConstants.REPORTING)) {
-     * if (deliverable.getDeliverableInfo().getPhase().getNext() != null
-     * && deliverable.getDeliverableInfo().getPhase().getNext().getNext() != null && !isPublication) {
-     * Phase upkeepPhase = deliverable.getDeliverableInfo().getPhase().getNext().getNext();
-     * if (upkeepPhase != null) {
-     * this.saveDeliverablePhase(upkeepPhase, deliverable.getId(), deliverable);
-     * }
-     * }
-     * }
-     */
-
     return resultDeliverable;
   }
 
