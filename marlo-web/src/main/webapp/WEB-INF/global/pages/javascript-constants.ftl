@@ -18,7 +18,7 @@
   var baseURL = "${baseUrl}";
   var baseUrl = "${baseUrl}";
   var baseUrlMedia = "${baseUrlMedia}";
-  var baseCdnUrl = "${baseCdnUrl}";
+  var baseCdnUrl = "${baseUrlCdn}";
   var debugMode = ${config.debug?string};
   var editable = ${editable?string};
   var canEdit = ${canEdit?string};
