@@ -80,7 +80,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @author avalencia - CCAFS
  */
-public class ProjectsSummaryAction extends BaseSummariesAction implements Summary {
+public class ProjectsSummaryCompleteInfoAction extends BaseSummariesAction implements Summary {
 
   private static final long serialVersionUID = 1L;
 
@@ -103,9 +103,9 @@ public class ProjectsSummaryAction extends BaseSummariesAction implements Summar
 
 
   @Inject
-  public ProjectsSummaryAction(APConfig config, GlobalUnitManager crpManager, ProjectBudgetManager projectBudgetManager,
-    PhaseManager phaseManager, CrpProgramManager crpProgramManager, ResourceManager resourceManager,
-    ProjectManager projectManager, LocElementManager locElementManager) {
+  public ProjectsSummaryCompleteInfoAction(APConfig config, GlobalUnitManager crpManager,
+    ProjectBudgetManager projectBudgetManager, PhaseManager phaseManager, CrpProgramManager crpProgramManager,
+    ResourceManager resourceManager, ProjectManager projectManager, LocElementManager locElementManager) {
     super(config, crpManager, phaseManager, projectManager);
     this.crpProgramManager = crpProgramManager;
     this.resourceManager = resourceManager;
@@ -154,8 +154,8 @@ public class ProjectsSummaryAction extends BaseSummariesAction implements Summar
 
     ByteArrayOutputStream os = new ByteArrayOutputStream();
     try {
-      Resource reportResource =
-        resourceManager.createDirectly(this.getClass().getResource("/pentaho/crp/Projects.prpt"), MasterReport.class);
+      Resource reportResource = resourceManager
+        .createDirectly(this.getClass().getResource("/pentaho/crp/ProjectsCompleteInfo.prpt"), MasterReport.class);
 
       MasterReport masterReport = (MasterReport) reportResource.getResource();
       // Set Main_Query
@@ -671,13 +671,7 @@ public class ProjectsSummaryAction extends BaseSummariesAction implements Summar
 
         check = false;
       }
-      if (locations.isEmpty() || locations == null || locations.length() == 0) {
-        locations = "<Not defined>";
-      }
 
-      if (type.isEmpty() || type == null || type.length() == 0) {
-        type = "<Not defined>";
-      }
       model.addRow(new Object[] {projectId, projectTitle, projectSummary, status, managementLiaison, flagships, regions,
         institutionLeader, projectLeaderName, activitiesOnGoing, expectedDeliverables, outcomes, expectedStudies,
         this.getSelectedPhase().getId(), crossCutting, type, locations, startDate, endDate, w1w2Budget,

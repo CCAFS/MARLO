@@ -524,9 +524,13 @@ public class SearchTermsSummaryAction extends BaseSummariesAction implements Sum
                     responsibleppp = persons.get(0);
                   }
 
-
-                  leader = "<font size=2 face='Segoe UI' color='#000000'>" + responsibleppp.getUser().getComposedName()
-                    + "\n&lt;" + responsibleppp.getUser().getEmail() + "&gt;</font>";
+                  if (responsibleppp != null && responsibleppp.getUser() != null
+                    && responsibleppp.getUser().getComposedName() != null
+                    && responsibleppp.getUser().getEmail() != null) {
+                    leader =
+                      "<font size=2 face='Segoe UI' color='#000000'>" + responsibleppp.getUser().getComposedName()
+                        + "\n&lt;" + responsibleppp.getUser().getEmail() + "&gt;</font>";
+                  }
 
                   if (responisble.getInstitution() != null) {
                     leadIns = "<font size=2 face='Segoe UI' color='#000000'>"

@@ -31,8 +31,10 @@ import org.cgiar.ccafs.marlo.data.manager.DeliverablePublicationMetadataManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableQualityCheckManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableUserManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableUserPartnershipManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableUserPartnershipPersonManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerManager;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableCrp;
 import org.cgiar.ccafs.marlo.data.model.DeliverableDissemination;
@@ -46,8 +48,12 @@ import org.cgiar.ccafs.marlo.data.model.DeliverablePublicationMetadata;
 import org.cgiar.ccafs.marlo.data.model.DeliverableQualityCheck;
 import org.cgiar.ccafs.marlo.data.model.DeliverableUser;
 import org.cgiar.ccafs.marlo.data.model.DeliverableUserPartnership;
+import org.cgiar.ccafs.marlo.data.model.DeliverableUserPartnershipPerson;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Phase;
+import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
+import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
+import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.nio.file.Path;
@@ -90,6 +96,8 @@ public class DeliverablesReplicationAction extends BaseAction {
   private DeliverableInfoManager deliverableInfoManager;
   private DeliverableLocationManager deliverableLocationManager;
   private DeliverableGeographicRegionManager deliverableGeographicRegionManager;
+  private DeliverableUserPartnershipPersonManager deliverableUserPartnershipPersonManager;
+  private ProjectPartnerManager projectPartnerManager;
 
   // Variables
   private String entityByPhaseList;
@@ -111,7 +119,9 @@ public class DeliverablesReplicationAction extends BaseAction {
     DeliverableIntellectualAssetManager deliverableIntellectualAssetManager,
     DeliverableParticipantManager deliverableParticipantManager, DeliverableInfoManager deliverableInfoManager,
     DeliverableLocationManager deliverableLocationManager,
-    DeliverableGeographicRegionManager deliverableGeographicRegionManager) {
+    DeliverableGeographicRegionManager deliverableGeographicRegionManager,
+    DeliverableUserPartnershipPersonManager deliverableUserPartnershipPersonManager,
+    ProjectPartnerManager projectPartnerManager) {
     super(config);
     this.phaseManager = phaseManager;
     this.deliverableFundingSourceManager = deliverableFundingSourceManager;
@@ -129,6 +139,8 @@ public class DeliverablesReplicationAction extends BaseAction {
     this.deliverableInfoManager = deliverableInfoManager;
     this.deliverableLocationManager = deliverableLocationManager;
     this.deliverableGeographicRegionManager = deliverableGeographicRegionManager;
+    this.deliverableUserPartnershipPersonManager = deliverableUserPartnershipPersonManager;
+    this.projectPartnerManager = projectPartnerManager;
   }
 
 
@@ -180,6 +192,34 @@ public class DeliverablesReplicationAction extends BaseAction {
     return selectedPhaseID;
   }
 
+
+  /**
+   * HJ 08/01/2019
+   * 
+   * @param institutionId
+   * @return
+   */
+  public List<User> getUserList(Long institutionId, Long projectID) {
+
+    List<User> users = new ArrayList<>();
+
+    List<ProjectPartner> partnersTmp = projectPartnerManager.findAll().stream()
+      .filter(pp -> pp.isActive() && pp.getProject().getId().equals(projectID)
+        && pp.getPhase().getId().equals(this.getSelectedPhaseID()) && pp.getInstitution().getId().equals(institutionId))
+      .collect(Collectors.toList());
+
+    if (partnersTmp != null && !partnersTmp.isEmpty()) {
+      ProjectPartner projectPartner = partnersTmp.get(0);
+      List<ProjectPartnerPerson> partnerPersons = new ArrayList<>(
+        projectPartner.getProjectPartnerPersons().stream().filter(pp -> pp.isActive()).collect(Collectors.toList()));
+      for (ProjectPartnerPerson projectPartnerPerson : partnerPersons) {
+
+        users.add(projectPartnerPerson.getUser());
+      }
+    }
+
+    return users;
+  }
 
   @Override
   public void prepare() throws Exception {
@@ -237,6 +277,69 @@ public class DeliverablesReplicationAction extends BaseAction {
             DeliverableUserPartnership partnershipResponsibleDB =
               this.getDeliverablePartnershipResponsibleDB(deliverable);
             if (partnershipResponsibleDB != null) {
+
+              if (partnershipResponsibleDB.getDeliverableUserPartnershipPersons() != null) {
+
+
+                List<DeliverableUserPartnershipPerson> trueList = new ArrayList<>();
+
+                List<DeliverableUserPartnershipPerson> list =
+                  new ArrayList<>(partnershipResponsibleDB.getDeliverableUserPartnershipPersons().stream()
+                    .filter(p -> p.isActive()).collect(Collectors.toList()));
+
+                for (DeliverableUserPartnershipPerson deliverableUserPartnershipPerson : list) {
+
+                  if (trueList.isEmpty()) {
+                    trueList.add(deliverableUserPartnershipPerson);
+                  } else {
+                    boolean addUser = true;
+                    for (DeliverableUserPartnershipPerson deliverableUserPartnershipPerson2 : trueList) {
+
+
+                      if (deliverableUserPartnershipPerson2.getUser().getId()
+                        .equals(deliverableUserPartnershipPerson.getUser().getId())) {
+                        addUser = false;
+                        deliverableUserPartnershipPersonManager
+                          .deleteDeliverableUserPartnershipPerson(deliverableUserPartnershipPerson.getId());
+                        break;
+                      }
+                    }
+                    if (addUser) {
+                      trueList.add(deliverableUserPartnershipPerson);
+                    }
+                  }
+                }
+
+                List<DeliverableUserPartnershipPerson> personList = new ArrayList<>();
+                if (partnershipResponsibleDB.getInstitution() != null
+                  && partnershipResponsibleDB.getDeliverable().getProject() != null) {
+                  List<User> dUsers = this.getUserList(partnershipResponsibleDB.getInstitution().getId(),
+                    partnershipResponsibleDB.getDeliverable().getProject().getId());
+
+                  for (DeliverableUserPartnershipPerson deliverableUserPartnershipPerson2 : trueList) {
+                    boolean addUser = false;
+                    for (User user : dUsers) {
+
+                      if (user.getId().equals(deliverableUserPartnershipPerson2.getUser().getId())) {
+                        addUser = true;
+                        break;
+                      }
+
+                    }
+
+                    if (addUser) {
+                      personList.add(deliverableUserPartnershipPerson2);
+                    } else {
+                      deliverableUserPartnershipPersonManager
+                        .deleteDeliverableUserPartnershipPerson(deliverableUserPartnershipPerson2.getId());
+                    }
+
+                  }
+                }
+
+                partnershipResponsibleDB.setPartnershipPersons(trueList);
+              }
+
               deliverableUserPartnershipManager.saveDeliverableUserPartnership(partnershipResponsibleDB);
             }
             // Others
@@ -248,6 +351,68 @@ public class DeliverablesReplicationAction extends BaseAction {
             if (deliverablePartnershipOthers != null && deliverablePartnershipOthers.size() > 0) {
               for (DeliverableUserPartnership deliverablePartnershipOther : deliverablePartnershipOthers) {
                 if (deliverablePartnershipOther.getDeliverableUserPartnershipPersons() != null) {
+
+                  if (deliverablePartnershipOther.getDeliverableUserPartnershipPersons() != null) {
+
+                    List<DeliverableUserPartnershipPerson> trueList = new ArrayList<>();
+
+                    List<DeliverableUserPartnershipPerson> list =
+                      new ArrayList<>(deliverablePartnershipOther.getDeliverableUserPartnershipPersons().stream()
+                        .filter(p -> p.isActive()).collect(Collectors.toList()));
+
+                    for (DeliverableUserPartnershipPerson deliverableUserPartnershipPerson : list) {
+
+                      if (trueList.isEmpty()) {
+                        trueList.add(deliverableUserPartnershipPerson);
+                      } else {
+                        boolean addUser = true;
+                        for (DeliverableUserPartnershipPerson deliverableUserPartnershipPerson2 : trueList) {
+
+                          if (deliverableUserPartnershipPerson2.getUser().getId()
+                            .equals(deliverableUserPartnershipPerson.getUser().getId())) {
+                            addUser = false;
+                            deliverableUserPartnershipPersonManager
+                              .deleteDeliverableUserPartnershipPerson(deliverableUserPartnershipPerson.getId());
+                            break;
+                          }
+                        }
+                        if (addUser) {
+                          trueList.add(deliverableUserPartnershipPerson);
+                        }
+                      }
+                    }
+
+                    List<DeliverableUserPartnershipPerson> personList = new ArrayList<>();
+                    if (deliverablePartnershipOther.getInstitution() != null
+                      && deliverablePartnershipOther.getDeliverable().getProject() != null) {
+                      List<User> dUsers = this.getUserList(deliverablePartnershipOther.getInstitution().getId(),
+                        deliverablePartnershipOther.getDeliverable().getProject().getId());
+
+                      for (DeliverableUserPartnershipPerson deliverableUserPartnershipPerson2 : trueList) {
+                        boolean addUser = false;
+                        for (User user : dUsers) {
+
+                          if (user.getId().equals(deliverableUserPartnershipPerson2.getUser().getId())) {
+                            addUser = true;
+                            break;
+                          }
+
+                        }
+
+                        if (addUser) {
+                          personList.add(deliverableUserPartnershipPerson2);
+                        } else {
+                          deliverableUserPartnershipPersonManager
+                            .deleteDeliverableUserPartnershipPerson(deliverableUserPartnershipPerson2.getId());
+                        }
+
+                      }
+                    }
+
+
+                    deliverablePartnershipOther.setPartnershipPersons(trueList);
+                  }
+
                   deliverableUserPartnershipManager.saveDeliverableUserPartnership(deliverablePartnershipOther);
                 }
               }

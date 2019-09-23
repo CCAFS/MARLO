@@ -723,6 +723,7 @@ public final class APConstants {
 
   // Clarisa public
   public static final String CLARISA_PUBLIC = "clarisa_public";
+  public static final int CLARISA_PUBLICATIONS_STATUS = 3;
 
   // publish handle for clarisa
   public static final String METADATAELEMENTHANDLE = "marlo.handle";
