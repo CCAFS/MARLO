@@ -227,40 +227,38 @@ public class AutoSaveWriterAction extends BaseAction {
         jSon = jSon.replaceAll("capdev\\.", "");
       }
 
+      Phase phase = null;
+      phase = this.getActualPhase();
 
+      String fileName = "";
+      if (phase != null) {
+        fileName =
+          fileId + "_" + fileClass + "_" + phase.getName() + "_" + phase.getYear() + "_" + fileAction + ".json";
+      } else {
+        fileName = fileId + "_" + fileClass + "_" + fileAction + ".json";
+      }
+      File file;
+      String pathFile = config.getAutoSaveFolder();
+      LOG.debug("PathFile: " + pathFile);
+      Path path = Paths.get(pathFile);
+
+      if (Files.exists(path, LinkOption.NOFOLLOW_LINKS)) {
+        file = new File(config.getAutoSaveFolder() + fileName);
+
+      } else {
+        Files.createDirectories(path);
+        file = new File(config.getAutoSaveFolder() + fileName);
+      }
       try {
 
-        Phase phase = null;
-        phase = this.getActualPhase();
 
-        String fileName = "";
-        if (phase != null) {
-          fileName =
-            fileId + "_" + fileClass + "_" + phase.getName() + "_" + phase.getYear() + "_" + fileAction + ".json";
-        } else {
-          fileName = fileId + "_" + fileClass + "_" + fileAction + ".json";
-        }
+        Writer out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), "UTF8"));
+        out.append(jSon).append("\r\n");;
 
-        String pathFile = config.getAutoSaveFolder();
-        LOG.debug("PathFile: " + pathFile);
-        Path path = Paths.get(pathFile);
 
-        if (Files.exists(path, LinkOption.NOFOLLOW_LINKS)) {
-          File file = new File(config.getAutoSaveFolder() + fileName);
-          Writer out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), "UTF8"));
-          out.append(jSon).append("\r\n");;
+        out.flush();
+        out.close();
 
-          out.flush();
-          out.close();
-        } else {
-          Files.createDirectories(path);
-          File file = new File(config.getAutoSaveFolder() + fileName);
-          Writer out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), "UTF8"));
-          out.append(jSon).append("\r\n");;
-
-          out.flush();
-          out.close();
-        }
         status.put("status", true);
         SimpleDateFormat dt = new SimpleDateFormat("yyyyy-mm-dd hh:mm:ss");
         try {
@@ -272,14 +270,17 @@ public class AutoSaveWriterAction extends BaseAction {
       } catch (IOException e) {
         status.put("status", false);
         e.printStackTrace();
+        file.delete();
       } catch (Exception e) {
         status.put("status", false);
         e.printStackTrace();
+        file.delete();
       }
 
     }
 
     return Action.SUCCESS;
+
   }
 
   public Map<String, Object> getStatus() {
