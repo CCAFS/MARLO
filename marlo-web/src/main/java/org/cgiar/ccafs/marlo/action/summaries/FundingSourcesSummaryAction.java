@@ -945,10 +945,9 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
           (df.getDeliverable().getDeliverableInfo().getStatus() != null
             && df.getDeliverable().getDeliverableInfo().getYear() == this.getSelectedYear()
             && this.getSelectedPhase().getName().equals("UpKeep")
-            && ((df.getDeliverable().getDeliverableInfo().getYear() == this.getSelectedYear() || (df.getDeliverable()
-              .getDeliverableInfo().getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
-              && df.getDeliverable().getDeliverableInfo().getNewExpectedYear() != null
-              && df.getDeliverable().getDeliverableInfo().getNewExpectedYear() == this.getSelectedYear()))
+            && ((df.getDeliverable().getDeliverableInfo().getYear() == this.getSelectedYear()
+              || (df.getDeliverable().getDeliverableInfo().getNewExpectedYear() != null
+                && df.getDeliverable().getDeliverableInfo().getNewExpectedYear() == this.getSelectedYear()))
               && df.getDeliverable().getDeliverableInfo().getStatus().intValue() == Integer
                 .parseInt(ProjectStatusEnum.Ongoing.getStatusId())
               || df.getDeliverable().getDeliverableInfo().getYear() == this.getSelectedYear()
