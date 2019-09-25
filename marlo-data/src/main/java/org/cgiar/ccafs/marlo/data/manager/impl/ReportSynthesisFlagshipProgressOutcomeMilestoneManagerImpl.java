@@ -108,7 +108,11 @@ public class ReportSynthesisFlagshipProgressOutcomeMilestoneManagerImpl
     return reportSynthesisFlagshipProgressOutcomeMilestone;
   }
 
-
+  /**
+   * @param crpProgramOutcome
+   * @param crpMilestone
+   * @param next
+   */
   private void updateMilestonePhase(CrpProgramOutcome crpProgramOutcome, CrpMilestone crpMilestone, Phase next) {
     Phase phase = phaseManager.getPhaseById(next.getId());
     List<CrpProgramOutcome> outcomes = phase.getOutcomes().stream()
@@ -145,6 +149,10 @@ public class ReportSynthesisFlagshipProgressOutcomeMilestoneManagerImpl
 
   }
 
+  /**
+   * @param crpMilestone
+   * @param status
+   */
   private void updateMilestoneStatus(CrpMilestone crpMilestone, GeneralStatus status) {
 
     crpMilestone = crpMilestoneManager.getCrpMilestoneById(crpMilestone.getId());

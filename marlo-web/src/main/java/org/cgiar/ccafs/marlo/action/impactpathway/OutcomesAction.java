@@ -989,6 +989,12 @@ public class OutcomesAction extends BaseAction {
           crpOutcomeSubIdoDB.setSrfSubIdo(crpOutcomeSubIdoDetached.getSrfSubIdo());
         }
 
+        if (crpOutcomeSubIdoDetached.getPrimary() != null) {
+          crpOutcomeSubIdoDB.setPrimary(crpOutcomeSubIdoDetached.getPrimary());
+        } else {
+          crpOutcomeSubIdoDB.setPrimary(false);
+        }
+
         boolean save = true;
         /**
          * We need a comment here to understand what the original author is trying to achieve here

@@ -45,5 +45,8 @@
 		<property name="active" type="boolean">
 			<column name="is_active" not-null="true" />
 		</property>
+		<property name="primary" type="boolean">
+      <column name="is_primary" not-null="true" />
+    </property>
 	</class>
 </hibernate-mapping>
