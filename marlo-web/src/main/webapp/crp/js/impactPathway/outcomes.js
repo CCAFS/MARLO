@@ -157,6 +157,14 @@ function attachEvents() {
     $(document).trigger('updateComponent');
   });
 
+  // Set Primary Sub-IDO
+  $('.setPrimaryRadio').on('click', function() {
+    var $parent = $(this).parents('.subIdo');
+    var $siblings = $parent.siblings()
+    console.log(this.value);
+    $siblings.find('.setPrimaryRadio').prop('checked', false);
+  });
+
   // Event when the assessment of risk to achievement is changed
   $('input.assesmentLevels').on('change', function() {
     var $milestoneRiskBlocks = $(this).parents('.milestone').find('.milestoneRisk');
@@ -251,6 +259,12 @@ function removeMilestone() {
 
 function addSubIdo() {
   var $list = $(this).parents('.outcome').find('.subIdos-list');
+
+  if($list.find('.subIdo').length >= 3) {
+    $('div.addSubIdo').animateCss('shake');
+    return;
+  }
+
   var $item = $('#subIdo-template').clone(true).removeAttr("id");
   // $item.find('select').select2({
   // width: '100%'
@@ -443,6 +457,10 @@ function updateAllIndexes() {
     $(outcome).find('.subIdo').each(function(i,subIdo) {
       $(subIdo).find('span.index').text(i + 1);
       $(subIdo).setNameIndexes(2, i);
+
+      // Update radios for
+      var radioFlatID = $(subIdo).find('.radioFlat input').attr('id');
+      $(subIdo).find('.radioFlat label').attr('for', radioFlatID);
 
       // Update Assumptions
       $(subIdo).find('.assumption').each(function(i,assumption) {
