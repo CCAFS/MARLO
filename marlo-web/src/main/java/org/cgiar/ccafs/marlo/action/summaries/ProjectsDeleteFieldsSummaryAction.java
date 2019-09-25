@@ -20,7 +20,9 @@ import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectComponentLessonManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyManager;
 import org.cgiar.ccafs.marlo.data.model.Activity;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.ExpectedStudyProject;
@@ -80,6 +82,8 @@ public class ProjectsDeleteFieldsSummaryAction extends BaseSummariesAction imple
   private final ResourceManager resourceManager;
   private final ProjectComponentLessonManager projectComponentLessonManager;
   private final PhaseManager phaseManager;
+  private final ProjectPolicyManager policyManager;
+  private final ProjectInnovationManager projectInnovationManager;
 
   private List<Phase> phasesbyGlobalUnitList;
   // XLS bytes
@@ -92,12 +96,15 @@ public class ProjectsDeleteFieldsSummaryAction extends BaseSummariesAction imple
   @Inject
   public ProjectsDeleteFieldsSummaryAction(APConfig config, GlobalUnitManager crpManager, PhaseManager phaseManager,
     CrpProgramManager crpProgramManager, ResourceManager resourceManager, ProjectManager projectManager,
-    ProjectComponentLessonManager projectComponentLessonManager) {
+    ProjectComponentLessonManager projectComponentLessonManager, ProjectPolicyManager policyManager,
+    ProjectInnovationManager projectInnovationManager) {
     super(config, crpManager, phaseManager, projectManager);
     this.crpProgramManager = crpProgramManager;
     this.resourceManager = resourceManager;
     this.projectComponentLessonManager = projectComponentLessonManager;
     this.phaseManager = phaseManager;
+    this.policyManager = policyManager;
+    this.projectInnovationManager = projectInnovationManager;
   }
 
 
@@ -311,7 +318,7 @@ public class ProjectsDeleteFieldsSummaryAction extends BaseSummariesAction imple
         String genderDimenssions = "";
         String youthComponent = "";
         String repIndOrganization = "";
-        String repIndOrganizationType = "";
+        String contributionCRP = "";
 
 
         if (project.getProjectInfo().getSummary() != null && !project.getProjectInfo().getSummary().isEmpty()) {
@@ -509,7 +516,7 @@ public class ProjectsDeleteFieldsSummaryAction extends BaseSummariesAction imple
         }
 
         if (project.getProjectInfo().getNewPartnershipsPlanned() != null) {
-          genderAnalysis = project.getProjectInfo().getNewPartnershipsPlanned();
+          newPartnershipsPlanned = project.getProjectInfo().getNewPartnershipsPlanned();
         }
 
         List<ProjectComponentLesson> pcList = new ArrayList<>();
@@ -537,35 +544,28 @@ public class ProjectsDeleteFieldsSummaryAction extends BaseSummariesAction imple
             youthComponent = projectOutcomes.get(0).getYouthComponent();
           }
         }
-        List<ProjectPolicy> projectPolicies = new ArrayList<>();
+        ProjectPolicy projectPolicy = new ProjectPolicy();
+        projectPolicy = policyManager.getProjectPolicyByPhase(phase).stream()
+          .filter(po -> po.isActive() && po.getProjectPolicyInfo(phase) != null && po.getProject() == project)
+          .collect(Collectors.toList()).get(0);
 
-        projectPolicies = project.getProjectPolicies().stream()
-          .filter(p -> p.isActive() && p.getProject().getId().equals(project.getId())
-            && p.getProjectPolicyInfo() != null && p.getProjectPolicyInfo().getRepIndOrganizationType() != null
-            && p.getProjectPolicyInfo().getRepIndOrganizationType().getName() != null
-            && p.getProjectPolicyInfo().getPhase() != null && phase != null
-            && p.getProjectPolicyInfo().getPhase() == phase)
-          .collect(Collectors.toList());
 
-        if (projectPolicies != null && projectPolicies.size() > 0) {
-          if (projectPolicies.get(0).getProjectPolicyInfo(phase) != null) {
-            repIndOrganization =
-              projectPolicies.get(0).getProjectPolicyInfo(phase).getRepIndOrganizationType().getName();
-          }
+        if (projectPolicy != null && projectPolicy.getProjectPolicyInfo(phase) != null
+          && projectPolicy.getProjectPolicyInfo().getRepIndOrganizationType() != null
+          && projectPolicy.getProjectPolicyInfo().getRepIndOrganizationType().getName() != null) {
+          repIndOrganization = projectPolicy.getProjectPolicyInfo(phase).getRepIndOrganizationType().getName();
         }
 
-        List<ProjectInnovation> projectInnovations = new ArrayList<>();
-        projectInnovations =
-          project.getProjectInnovations().stream()
-            .filter(i -> i.isActive() && i.getProjectInnovationInfo() != null
-              && i.getProjectInnovationInfo().getPhase() != null && i.getProjectInnovationInfo().getPhase() == phase
-              && i.getProjectInnovationOrganizations() != null)
-            .collect(Collectors.toList());
-        if (projectInnovations != null && projectInnovations.size() > 0) {
-          repIndOrganizationType = projectInnovations.get(0).getProjectInnovationOrganizations().stream()
-            .filter(o -> o.isActive() && o.getPhase() != null && o.getPhase().equals(phase)
-              && o.getRepIndOrganizationType() != null && o.getRepIndOrganizationType().getName() != null)
-            .collect(Collectors.toList()).get(0).getRepIndOrganizationType().getName();
+
+        ProjectInnovation projectInnovation = new ProjectInnovation();
+        projectInnovation = projectInnovationManager.findAll().stream()
+          .filter(i -> i.isActive() && i.getProject() == project && i.getProjectInnovationInfo(phase) != null)
+          .collect(Collectors.toList()).get(0);
+
+        if (projectInnovation != null && projectInnovation.getProjectInnovationInfo(phase) != null
+          && projectInnovation.getProjectInnovationInfo().getRepIndContributionOfCrp() != null
+          && projectInnovation.getProjectInnovationInfo().getRepIndContributionOfCrp().getName() != null) {
+          contributionCRP = projectInnovation.getProjectInnovationInfo(phase).getRepIndContributionOfCrp().getName();
         }
 
 
@@ -573,7 +573,7 @@ public class ProjectsDeleteFieldsSummaryAction extends BaseSummariesAction imple
           regions, institutionLeader, projectLeaderName, activitiesOnGoing, expectedDeliverables, outcomes,
           expectedStudies, this.getSelectedPhase().getId(), crossCutting, managementLiaisonContactPerson,
           genderAnalysis, newPartnershipsPlanned, projectComponentLesson, genderDimenssions, youthComponent,
-          repIndOrganization, repIndOrganizationType, phase.getComposedName()});
+          repIndOrganization, contributionCRP, phase.getComposedName()});
       }
     }
     return model;
