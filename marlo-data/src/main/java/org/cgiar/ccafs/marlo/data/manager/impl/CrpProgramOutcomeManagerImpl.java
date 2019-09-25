@@ -218,6 +218,7 @@ public class CrpProgramOutcomeManagerImpl implements CrpProgramOutcomeManager {
         crpOutcomeSubIdoAdd.setContribution(crpOutcomeSubIdo.getContribution());
         crpOutcomeSubIdoAdd.setSrfSubIdo(crpOutcomeSubIdo.getSrfSubIdo());
         crpOutcomeSubIdoAdd.setCrpProgramOutcome(crpProgramOutcomeAdd);
+        crpOutcomeSubIdoAdd.setPrimary(crpOutcomeSubIdo.getPrimary());
         crpOutcomeSubIdoDAO.save(crpOutcomeSubIdoAdd);
         for (CrpAssumption crpAssumption : crpOutcomeSubIdo.getCrpAssumptions().stream().filter(c -> c.isActive())
           .collect(Collectors.toList())) {
@@ -294,6 +295,7 @@ public class CrpProgramOutcomeManagerImpl implements CrpProgramOutcomeManager {
           outcomeSubIdoAdd.setCrpProgramOutcome(programOutcomePrev);
           outcomeSubIdoAdd.setContribution(outcomeSubIdo.getContribution());
           outcomeSubIdoAdd.setSrfSubIdo(outcomeSubIdo.getSrfSubIdo());
+          outcomeSubIdo.setPrimary(outcomeSubIdo.getPrimary());
           crpOutcomeSubIdoDAO.save(outcomeSubIdoAdd);
 
         }

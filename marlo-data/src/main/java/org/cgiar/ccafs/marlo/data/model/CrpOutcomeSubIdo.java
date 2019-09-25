@@ -44,6 +44,9 @@ public class CrpOutcomeSubIdo extends MarloAuditableEntity implements java.io.Se
   @Expose
   private BigDecimal contribution;
 
+  @Expose
+  private Boolean primary;
+
   private Set<CrpAssumption> crpAssumptions = new HashSet<CrpAssumption>(0);
   private List<CrpAssumption> assumptions;
 
@@ -99,6 +102,10 @@ public class CrpOutcomeSubIdo extends MarloAuditableEntity implements java.io.Se
     return sb.toString();
   }
 
+  public Boolean getPrimary() {
+    return primary;
+  }
+
   public SrfSubIdo getSrfSubIdo() {
     return this.srfSubIdo;
   }
@@ -131,13 +138,19 @@ public class CrpOutcomeSubIdo extends MarloAuditableEntity implements java.io.Se
     this.crpProgramOutcome = crpProgramOutcome;
   }
 
+  public void setPrimary(Boolean primary) {
+    this.primary = primary;
+  }
+
   public void setSrfSubIdo(SrfSubIdo srfSubIdo) {
     this.srfSubIdo = srfSubIdo;
   }
 
+
   public void setSubIdoList(HashMap<Long, String> subIdoList) {
     this.subIdoList = subIdoList;
   }
+
 
   @Override
   public String toString() {
