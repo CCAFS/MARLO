@@ -353,10 +353,10 @@
     
       <label>[@s.text name="${customLabel}.milestoneStatus" /]:[@customForm.req required=editable  /]</label><br />
       [#local milestoneStatus = (annualReportElement.milestonesStatus.id)!-1 /]
-      [@customForm.radioFlat id="${customName}-status-1" name="${customName}.milestonesStatus" label="Complete"   value="3" checked=(milestoneStatus == 3)!false editable=editable cssClass="milestoneStatus" cssClassLabel="font-normal"/]
-      [@customForm.radioFlat id="${customName}-status-2" name="${customName}.milestonesStatus" label="Extended"   value="4" checked=(milestoneStatus == 4)!false editable=editable cssClass="milestoneStatus" cssClassLabel="font-normal"/]
-      [@customForm.radioFlat id="${customName}-status-3" name="${customName}.milestonesStatus" label="Cancelled"  value="5" checked=(milestoneStatus == 5)!false editable=editable cssClass="milestoneStatus" cssClassLabel="font-normal"/]
-      [@customForm.radioFlat id="${customName}-status-4" name="${customName}.milestonesStatus" label="Changed"    value="6" checked=(milestoneStatus == 6)!false editable=editable cssClass="milestoneStatus" cssClassLabel="font-normal"/]
+      [@customForm.radioFlat id="${customName}-status-1" name="${customName}.milestonesStatus.id" label="Complete"   value="3" checked=(milestoneStatus == 3)!false editable=editable cssClass="milestoneStatus" cssClassLabel="font-normal"/]
+      [@customForm.radioFlat id="${customName}-status-2" name="${customName}.milestonesStatus.id" label="Extended"   value="4" checked=(milestoneStatus == 4)!false editable=editable cssClass="milestoneStatus" cssClassLabel="font-normal"/]
+      [@customForm.radioFlat id="${customName}-status-3" name="${customName}.milestonesStatus.id" label="Cancelled"  value="5" checked=(milestoneStatus == 5)!false editable=editable cssClass="milestoneStatus" cssClassLabel="font-normal"/]
+      [@customForm.radioFlat id="${customName}-status-4" name="${customName}.milestonesStatus.id" label="Changed"    value="6" checked=(milestoneStatus == 6)!false editable=editable cssClass="milestoneStatus" cssClassLabel="font-normal"/]
       [#if !editable && (milestoneStatus == -1)][@s.text name="form.values.fieldEmpty"/][/#if]
     </div>
     
