@@ -352,12 +352,24 @@
       [@utilities.tag label="annualReport.docBadge" tooltip="annualReport.docBadge.tooltip"/]
     
       <label>[@s.text name="${customLabel}.milestoneStatus" /]:[@customForm.req required=editable  /]</label><br />
-      [#local milestoneStatus = (annualReportElement.milestonesStatus)!-1 /]
-      [@customForm.radioFlat id="${customName}-status-1" name="${customName}.milestonesStatus" label="Complete"   value="3" checked=(milestoneStatus == 3)!false editable=editable cssClass="milestoneStatus" cssClassLabel="font-normal"/]
-      [@customForm.radioFlat id="${customName}-status-2" name="${customName}.milestonesStatus" label="Extended"   value="4" checked=(milestoneStatus == 4)!false editable=editable cssClass="milestoneStatus" cssClassLabel="font-normal"/]
-      [@customForm.radioFlat id="${customName}-status-3" name="${customName}.milestonesStatus" label="Cancelled"  value="5" checked=(milestoneStatus == 5)!false editable=editable cssClass="milestoneStatus" cssClassLabel="font-normal"/]
-      [@customForm.radioFlat id="${customName}-status-4" name="${customName}.milestonesStatus" label="Changed"    value="6" checked=(milestoneStatus == 6)!false editable=editable cssClass="milestoneStatus" cssClassLabel="font-normal"/]
+      [#local milestoneStatus = (annualReportElement.milestonesStatus.id)!-1 /]
+      [#local statusesList = [
+        { "id": 3, "name": "Complete" },
+        { "id": 4, "name": "Extended" },
+        { "id": 5, "name": "Cancelled" },
+        { "id": 6, "name": "Changed" }
+      ] /]
+      [#list statusesList as s]
+        [@customForm.radioFlat id="${customName}-status-${s.id}" name="${customName}.milestonesStatus.id" label="${s.name}"   value="${s.id}" checked=(milestoneStatus == s.id)!false editable=editable cssClass="milestoneStatus" cssClassLabel="font-normal"/]
+      [/#list]
       [#if !editable && (milestoneStatus == -1)][@s.text name="form.values.fieldEmpty"/][/#if]
+    </div>
+    
+    [#-- New year if extended --]
+    <div class="row form-group extendedYearBlock" style="display:${(milestoneStatus == 4)?string('block', 'none')}">
+      <div class="col-md-3">
+        [@customForm.select name="${customName}.year" label=""  i18nkey="${customLabel}.year" listName="allPhaseYearsGreater"  required=true  className="" editable=editable/]
+      </div>
     </div>
     
     [#-- Evidence for completed milestones or explanation for extended or cancelled --]
