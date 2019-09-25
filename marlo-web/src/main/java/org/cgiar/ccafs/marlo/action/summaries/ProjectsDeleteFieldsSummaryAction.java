@@ -20,7 +20,9 @@ import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectComponentLessonManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyManager;
 import org.cgiar.ccafs.marlo.data.model.Activity;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.ExpectedStudyProject;
@@ -49,7 +51,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -81,6 +82,10 @@ public class ProjectsDeleteFieldsSummaryAction extends BaseSummariesAction imple
   private final ResourceManager resourceManager;
   private final ProjectComponentLessonManager projectComponentLessonManager;
   private final PhaseManager phaseManager;
+  private final ProjectPolicyManager policyManager;
+  private final ProjectInnovationManager projectInnovationManager;
+
+  private List<Phase> phasesbyGlobalUnitList;
   // XLS bytes
   private byte[] bytesXLSX;
   // Streams
@@ -91,12 +96,15 @@ public class ProjectsDeleteFieldsSummaryAction extends BaseSummariesAction imple
   @Inject
   public ProjectsDeleteFieldsSummaryAction(APConfig config, GlobalUnitManager crpManager, PhaseManager phaseManager,
     CrpProgramManager crpProgramManager, ResourceManager resourceManager, ProjectManager projectManager,
-    ProjectComponentLessonManager projectComponentLessonManager) {
+    ProjectComponentLessonManager projectComponentLessonManager, ProjectPolicyManager policyManager,
+    ProjectInnovationManager projectInnovationManager) {
     super(config, crpManager, phaseManager, projectManager);
     this.crpProgramManager = crpProgramManager;
     this.resourceManager = resourceManager;
     this.projectComponentLessonManager = projectComponentLessonManager;
     this.phaseManager = phaseManager;
+    this.policyManager = policyManager;
+    this.projectInnovationManager = projectInnovationManager;
   }
 
 
@@ -140,6 +148,7 @@ public class ProjectsDeleteFieldsSummaryAction extends BaseSummariesAction imple
     if (this.getSelectedPhase() == null) {
       return NOT_FOUND;
     }
+    this.getPhasesByGlobalUnit();
 
     ByteArrayOutputStream os = new ByteArrayOutputStream();
     try {
@@ -261,32 +270,18 @@ public class ProjectsDeleteFieldsSummaryAction extends BaseSummariesAction imple
 
   public void getPhasesByGlobalUnit() {
     // Move to global variables
-    long selectedGlobalUnitID = 0l;
-    List<Map<String, Object>> phasesbyGlobalUnit;
-    phasesbyGlobalUnit = new ArrayList<Map<String, Object>>();
-
+    long selectedGlobalUnitID = this.getCurrentGlobalUnit().getId();
+    phasesbyGlobalUnitList = null;
     if (selectedGlobalUnitID != -1) {
 
       // Get phases by Global Unit
-      List<Phase> phasesbyGlobalUnitList = phaseManager.findAll().stream()
-        .filter(p -> p.getCrp().getId().longValue() == selectedGlobalUnitID && p.isActive())
-        .collect(Collectors.toList());
+      phasesbyGlobalUnitList =
+        phaseManager.findAll().stream().filter(p -> p.getCrp().getId().longValue() == selectedGlobalUnitID
+          && p.isActive() && p.getYear() > 2017 && p.getYear() < 2020).collect(Collectors.toList());
 
       if (phasesbyGlobalUnitList != null && !phasesbyGlobalUnitList.isEmpty()) {
         phasesbyGlobalUnitList.sort((p1, p2) -> p1.getStartDate().compareTo(p2.getStartDate()));
         // Build the list into a Map
-        for (Phase phase : phasesbyGlobalUnitList) {
-          try {
-            Map<String, Object> phasestMap = new HashMap<String, Object>();
-            phasestMap.put("id", phase.getId());
-            phasestMap.put("name", phase.getName());
-            phasestMap.put("description", phase.getDescription());
-            phasestMap.put("year", phase.getYear());
-            phasesbyGlobalUnit.add(phasestMap);
-          } catch (Exception e) {
-            // logger.error("Unable to add Phase to Phase list", e);
-          }
-        }
       }
     }
   }
@@ -296,118 +291,123 @@ public class ProjectsDeleteFieldsSummaryAction extends BaseSummariesAction imple
       new String[] {"projectId", "projectTitle", "projectSummary", "status", "managementLiaison", "flagships",
         "regions", "institutionLeader", "projectLeader", "activitiesOnGoing", "expectedDeliverables", "outcomes",
         "expectedStudies", "phaseID", "crossCutting", "contactPerson", "genderAnalysis", "newPartnershipsPlanned",
-        "projectComponentLesson", "genderDimenssion", "youthComponent", "repIndOrganization", "repIndOrganizationType"},
+        "projectComponentLesson", "genderDimenssion", "youthComponent", "repIndOrganization", "repIndOrganizationType",
+        "phase"},
       new Class[] {Long.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, Integer.class, Integer.class, Integer.class, Integer.class, Long.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        String.class},
+        String.class, String.class},
       0);
     // Status of projects
     String[] statuses = null;
 
     // Get projects with the status defined
-    List<Project> activeProjects = this.getActiveProjectsByPhase(this.getSelectedPhase(), 0, statuses);
-    for (Project project : activeProjects) {
-      Long projectId = project.getId();
-      String projectTitle = project.getProjectInfo().getTitle();
-      String managementLiaison = null;
-      String crossCutting = "";
-      String projectSummary = "";
-      String managementLiaisonContactPerson = "";
-      String genderAnalysis = "";
-      String newPartnershipsPlanned = "";
-      String projectComponentLesson = "";
-      String genderDimenssions = "";
-      String youthComponent = "";
-      String repIndOrganization = "";
-      String repIndOrganizationType = "";
 
-      if (project.getProjectInfo().getSummary() != null && !project.getProjectInfo().getSummary().isEmpty()) {
-        projectSummary = project.getProjectInfo().getSummary();
-      }
-      if (project.getProjectInfo().getLiaisonInstitution() != null) {
-        managementLiaison = project.getProjectInfo().getLiaisonInstitution().getComposedName();
-        if (project.getProjectInfo().getLiaisonUser() != null) {
-          managementLiaison += " - " + project.getProjectInfo().getLiaisonUser().getComposedName();
-        }
-        managementLiaison = managementLiaison.replaceAll("<", "&lt;");
-        managementLiaison = managementLiaison.replaceAll(">", "&gt;");
-      }
+    for (Phase phase : phasesbyGlobalUnitList) {
+      List<Project> activeProjects = this.getActiveProjectsByPhase(phase, 0, statuses);
+      for (Project project : activeProjects) {
+        Long projectId = project.getId();
+        String projectTitle = project.getProjectInfo().getTitle();
+        String managementLiaison = null;
+        String crossCutting = "";
+        String projectSummary = "";
+        String managementLiaisonContactPerson = "";
+        String genderAnalysis = "";
+        String newPartnershipsPlanned = "";
+        String projectComponentLesson = "";
+        String genderDimenssions = "";
+        String youthComponent = "";
+        String repIndOrganization = "";
+        String contributionCRP = "";
 
-      if (project.getProjectInfo().getLiaisonUser() != null
-        && project.getProjectInfo().getLiaisonUser().getUser() != null) {
-        if (project.getProjectInfo().getLiaisonUser().getUser().getComposedName() != null) {
-          managementLiaisonContactPerson = project.getProjectInfo().getLiaisonUser().getUser().getComposedName();
-        } else if (project.getProjectInfo().getLiaisonUser().getUser().getFirstName() != null
-          && project.getProjectInfo().getLiaisonUser().getUser().getLastName() != null) {
-          managementLiaisonContactPerson = project.getProjectInfo().getLiaisonUser().getUser().getFirstName() + " "
-            + project.getProjectInfo().getLiaisonUser().getUser().getLastName();
-        }
-      }
 
-      String flagships = null;
-      // get Flagships related to the project sorted by acronym
-      for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
-        .filter(c -> c.isActive() && c.getPhase().equals(this.getSelectedPhase())
-          && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
-        .sorted((o1, o2) -> o1.getCrpProgram().getAcronym().compareTo(o2.getCrpProgram().getAcronym()))
-        .collect(Collectors.toList())) {
-        if (flagships == null || flagships.isEmpty()) {
-          flagships = crpProgramManager.getCrpProgramById(projectFocuses.getCrpProgram().getId()).getAcronym();
-        } else {
-          flagships += ", " + crpProgramManager.getCrpProgramById(projectFocuses.getCrpProgram().getId()).getAcronym();
+        if (project.getProjectInfo().getSummary() != null && !project.getProjectInfo().getSummary().isEmpty()) {
+          projectSummary = project.getProjectInfo().getSummary();
         }
-      }
-      String regions = null;
-      // If has regions, add the regions to regionsArrayList
-      // Get Regions related to the project sorted by acronym
-      if (this.hasProgramnsRegions()) {
+        if (project.getProjectInfo().getLiaisonInstitution() != null) {
+          managementLiaison = project.getProjectInfo().getLiaisonInstitution().getComposedName();
+          if (project.getProjectInfo().getLiaisonUser() != null) {
+            managementLiaison += " - " + project.getProjectInfo().getLiaisonUser().getComposedName();
+          }
+          managementLiaison = managementLiaison.replaceAll("<", "&lt;");
+          managementLiaison = managementLiaison.replaceAll(">", "&gt;");
+        }
+
+        if (project.getProjectInfo().getLiaisonUser() != null
+          && project.getProjectInfo().getLiaisonUser().getUser() != null) {
+          if (project.getProjectInfo().getLiaisonUser().getUser().getComposedName() != null) {
+            managementLiaisonContactPerson = project.getProjectInfo().getLiaisonUser().getUser().getComposedName();
+          } else if (project.getProjectInfo().getLiaisonUser().getUser().getFirstName() != null
+            && project.getProjectInfo().getLiaisonUser().getUser().getLastName() != null) {
+            managementLiaisonContactPerson = project.getProjectInfo().getLiaisonUser().getUser().getFirstName() + " "
+              + project.getProjectInfo().getLiaisonUser().getUser().getLastName();
+          }
+        }
+
+        String flagships = null;
+        // get Flagships related to the project sorted by acronym
         for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
-          .filter(c -> c.isActive() && c.getPhase().equals(this.getSelectedPhase())
-            && c.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue())
-          .sorted((c1, c2) -> c1.getCrpProgram().getAcronym().compareTo(c2.getCrpProgram().getAcronym()))
+          .filter(c -> c.isActive() && c.getPhase().equals(phase)
+            && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+          .sorted((o1, o2) -> o1.getCrpProgram().getAcronym().compareTo(o2.getCrpProgram().getAcronym()))
           .collect(Collectors.toList())) {
-          if (regions == null || regions.isEmpty()) {
-            regions = crpProgramManager.getCrpProgramById(projectFocuses.getCrpProgram().getId()).getAcronym();
+          if (flagships == null || flagships.isEmpty()) {
+            flagships = crpProgramManager.getCrpProgramById(projectFocuses.getCrpProgram().getId()).getAcronym();
           } else {
-            regions += ", " + crpProgramManager.getCrpProgramById(projectFocuses.getCrpProgram().getId()).getAcronym();
+            flagships +=
+              ", " + crpProgramManager.getCrpProgramById(projectFocuses.getCrpProgram().getId()).getAcronym();
           }
         }
-        if (project.getProjecInfoPhase(this.getSelectedPhase()).getNoRegional() != null
-          && project.getProjectInfo().getNoRegional()) {
-          if (regions != null && !regions.isEmpty()) {
-            LOG.warn("Project is global and has regions selected");
+        String regions = null;
+        // If has regions, add the regions to regionsArrayList
+        // Get Regions related to the project sorted by acronym
+        if (this.hasProgramnsRegions()) {
+          for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
+            .filter(c -> c.isActive() && c.getPhase().equals(phase)
+              && c.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue())
+            .sorted((c1, c2) -> c1.getCrpProgram().getAcronym().compareTo(c2.getCrpProgram().getAcronym()))
+            .collect(Collectors.toList())) {
+            if (regions == null || regions.isEmpty()) {
+              regions = crpProgramManager.getCrpProgramById(projectFocuses.getCrpProgram().getId()).getAcronym();
+            } else {
+              regions +=
+                ", " + crpProgramManager.getCrpProgramById(projectFocuses.getCrpProgram().getId()).getAcronym();
+            }
           }
-          regions = "Global";
+          if (project.getProjecInfoPhase(phase).getNoRegional() != null && project.getProjectInfo().getNoRegional()) {
+            if (regions != null && !regions.isEmpty()) {
+              LOG.warn("Project is global and has regions selected");
+            }
+            regions = "Global";
+          }
+        } else {
+          regions = null;
         }
-      } else {
-        regions = null;
-      }
 
-      String institutionLeader = null;
-      String projectLeaderName = null;
+        String institutionLeader = null;
+        String projectLeaderName = null;
 
-      ProjectPartnerPerson projectLeader = project.getLeaderPersonDB(this.getSelectedPhase());
-      if (projectLeader != null) {
-        institutionLeader = projectLeader.getProjectPartner().getInstitution().getComposedName();
-        projectLeaderName = projectLeader.getComposedName();
-        projectLeaderName = projectLeaderName.replaceAll("<", "&lt;");
-        projectLeaderName = projectLeaderName.replaceAll(">", "&gt;");
-      }
+        ProjectPartnerPerson projectLeader = project.getLeaderPersonDB(phase);
+        if (projectLeader != null) {
+          institutionLeader = projectLeader.getProjectPartner().getInstitution().getComposedName();
+          projectLeaderName = projectLeader.getComposedName();
+          projectLeaderName = projectLeaderName.replaceAll("<", "&lt;");
+          projectLeaderName = projectLeaderName.replaceAll(">", "&gt;");
+        }
 
-      Set<Activity> activitiesSet = new HashSet();
-      for (Activity activity : project
-        .getActivities().stream().sorted((d1, d2) -> Long.compare(d1.getId(), d2.getId())).filter(a -> a.isActive()
-          && (a.getActivityStatus() == 2) && a.getPhase() != null && a.getPhase().equals(this.getSelectedPhase()))
-        .collect(Collectors.toList())) {
-        activitiesSet.add(activity);
-      }
-      Integer activitiesOnGoing = activitiesSet.size();
-      Set<Deliverable> deliverablesSet = new HashSet();
-      for (Deliverable deliverable : project.getDeliverables().stream()
-        .sorted((d1, d2) -> Long.compare(d1.getId(), d2.getId()))
-        .filter(
-          d -> d.isActive() && d.getDeliverableInfo(this.getActualPhase()) != null && d.getDeliverableInfo().isActive()
+        Set<Activity> activitiesSet = new HashSet();
+        for (Activity activity : project.getActivities().stream()
+          .sorted((d1, d2) -> Long.compare(d1.getId(), d2.getId()))
+          .filter(
+            a -> a.isActive() && (a.getActivityStatus() == 2) && a.getPhase() != null && a.getPhase().equals(phase))
+          .collect(Collectors.toList())) {
+          activitiesSet.add(activity);
+        }
+        Integer activitiesOnGoing = activitiesSet.size();
+        Set<Deliverable> deliverablesSet = new HashSet();
+        for (Deliverable deliverable : project.getDeliverables().stream()
+          .sorted((d1, d2) -> Long.compare(d1.getId(), d2.getId()))
+          .filter(d -> d.isActive() && d.getDeliverableInfo(phase) != null && d.getDeliverableInfo().isActive()
             && ((d.getDeliverableInfo().getStatus() == null && d.getDeliverableInfo().getYear() == 2017)
               || (d.getDeliverableInfo().getStatus() != null
                 && d.getDeliverableInfo().getStatus().intValue() == Integer
@@ -417,175 +417,164 @@ public class ProjectsDeleteFieldsSummaryAction extends BaseSummariesAction imple
               || (d.getDeliverableInfo().getStatus() != null && d.getDeliverableInfo().getYear() == 2017
                 && d.getDeliverableInfo().getStatus().intValue() == Integer
                   .parseInt(ProjectStatusEnum.Ongoing.getStatusId()))))
-        .collect(Collectors.toList())) {
-        deliverablesSet.add(deliverable);
-      }
-      Integer expectedDeliverables = deliverablesSet.size();
+          .collect(Collectors.toList())) {
+          deliverablesSet.add(deliverable);
+        }
+        Integer expectedDeliverables = deliverablesSet.size();
 
-      Set<ProjectOutcome> projectOutcomeSet = new HashSet();
-      for (ProjectOutcome projectOutcome : project.getProjectOutcomes().stream()
-        .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase()))
-        .collect(Collectors.toList())) {
-        projectOutcomeSet.add(projectOutcome);
-      }
-      Integer outcomes = projectOutcomeSet.size();
+        Set<ProjectOutcome> projectOutcomeSet = new HashSet();
+        for (ProjectOutcome projectOutcome : project.getProjectOutcomes().stream()
+          .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(phase))
+          .collect(Collectors.toList())) {
+          projectOutcomeSet.add(projectOutcome);
+        }
+        Integer outcomes = projectOutcomeSet.size();
 
-      Set<ProjectExpectedStudy> projectExpectedStudySet = new HashSet();
-      for (ProjectExpectedStudy projectExpectedStudy : project.getProjectExpectedStudies().stream()
-        .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase() == this.getActualPhase().getId())
-        .collect(Collectors.toList())) {
-        projectExpectedStudySet.add(projectExpectedStudy);
-      }
-      for (ExpectedStudyProject expectedStudyProject : project.getExpectedStudyProjects().stream()
-        .filter(c -> c.isActive() && c.getProjectExpectedStudy().getPhase() == this.getActualPhase().getId())
-        .collect(Collectors.toList())) {
-        projectExpectedStudySet.add(expectedStudyProject.getProjectExpectedStudy());
-      }
-      Integer expectedStudies = projectExpectedStudySet.size();
+        Set<ProjectExpectedStudy> projectExpectedStudySet = new HashSet();
+        for (ProjectExpectedStudy projectExpectedStudy : project.getProjectExpectedStudies().stream()
+          .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase() == phase.getId())
+          .collect(Collectors.toList())) {
+          projectExpectedStudySet.add(projectExpectedStudy);
+        }
+        for (ExpectedStudyProject expectedStudyProject : project.getExpectedStudyProjects().stream()
+          .filter(c -> c.isActive() && c.getProjectExpectedStudy().getPhase() == phase.getId())
+          .collect(Collectors.toList())) {
+          projectExpectedStudySet.add(expectedStudyProject.getProjectExpectedStudy());
+        }
+        Integer expectedStudies = projectExpectedStudySet.size();
 
-      String status = "";
-      project.setProjectInfo(project.getProjecInfoPhase(this.getSelectedPhase()));
-      if (project.getProjectInfo() != null && project.getProjectInfo().getStatus() != null) {
+        String status = "";
+        project.setProjectInfo(project.getProjecInfoPhase(phase));
+        if (project.getProjectInfo() != null && project.getProjectInfo().getStatus() != null) {
 
-        if (project.getProjectInfo().getStatus().intValue() == Integer
-          .parseInt(ProjectStatusEnum.Ongoing.getStatusId())) {
-          status = ProjectStatusEnum.Ongoing.getStatus();
+          if (project.getProjectInfo().getStatus().intValue() == Integer
+            .parseInt(ProjectStatusEnum.Ongoing.getStatusId())) {
+            status = ProjectStatusEnum.Ongoing.getStatus();
+          }
+
+          if (project.getProjectInfo().getStatus().intValue() == Integer
+            .parseInt(ProjectStatusEnum.Complete.getStatusId())) {
+            status = ProjectStatusEnum.Complete.getStatus();
+          }
+
+          if (project.getProjectInfo().getStatus().intValue() == Integer
+            .parseInt(ProjectStatusEnum.Cancelled.getStatusId())) {
+            status = ProjectStatusEnum.Cancelled.getStatus();
+          }
+
+          if (project.getProjectInfo().getStatus().intValue() == Integer
+            .parseInt(ProjectStatusEnum.Extended.getStatusId())) {
+            status = ProjectStatusEnum.Extended.getStatus();
+          }
         }
 
-        if (project.getProjectInfo().getStatus().intValue() == Integer
-          .parseInt(ProjectStatusEnum.Complete.getStatusId())) {
-          status = ProjectStatusEnum.Complete.getStatus();
+        // Cross cutting Dimensions
+
+        if (project.getProjectInfo().getCrossCuttingCapacity() != null
+          && project.getProjectInfo().getCrossCuttingCapacity() == true) {
+          if (crossCutting.length() > 0) {
+            crossCutting += ", Capacity Development";
+          } else {
+            crossCutting += " Capacity Development";
+          }
+        }
+        if (project.getProjectInfo().getCrossCuttingClimate() != null
+          && project.getProjectInfo().getCrossCuttingClimate() == true) {
+          if (crossCutting.length() > 0) {
+            crossCutting += ", Climate Change";
+          } else {
+            crossCutting += " Climate Change";
+          }
+        }
+        if (project.getProjectInfo().getCrossCuttingNa() != null
+          && project.getProjectInfo().getCrossCuttingNa() == true) {
+          if (crossCutting.length() > 0) {
+            crossCutting += ", N/A";
+          } else {
+            crossCutting += " N/A";
+          }
+        }
+        if (project.getProjectInfo().getCrossCuttingGender() != null
+          && project.getProjectInfo().getCrossCuttingGender() == true) {
+          if (crossCutting.length() > 0) {
+            crossCutting += ", Gender";
+          } else {
+            crossCutting += "Gender";
+          }
+        }
+        if (project.getProjectInfo().getCrossCuttingYouth() != null
+          && project.getProjectInfo().getCrossCuttingYouth() == true) {
+          if (crossCutting.length() > 0) {
+            crossCutting += ", Youth";
+          } else {
+            crossCutting += "Youth";
+          }
         }
 
-        if (project.getProjectInfo().getStatus().intValue() == Integer
-          .parseInt(ProjectStatusEnum.Cancelled.getStatusId())) {
-          status = ProjectStatusEnum.Cancelled.getStatus();
+        if (project.getProjectInfo().getGenderAnalysis() != null) {
+          genderAnalysis = project.getProjectInfo().getGenderAnalysis();
         }
 
-        if (project.getProjectInfo().getStatus().intValue() == Integer
-          .parseInt(ProjectStatusEnum.Extended.getStatusId())) {
-          status = ProjectStatusEnum.Extended.getStatus();
-        }
-      }
-
-      // Cross cutting Dimensions
-
-      if (project.getProjectInfo().getCrossCuttingCapacity() != null
-        && project.getProjectInfo().getCrossCuttingCapacity() == true) {
-        if (crossCutting.length() > 0) {
-          crossCutting += ", Capacity Development";
-        } else {
-          crossCutting += " Capacity Development";
-        }
-      }
-      if (project.getProjectInfo().getCrossCuttingClimate() != null
-        && project.getProjectInfo().getCrossCuttingClimate() == true) {
-        if (crossCutting.length() > 0) {
-          crossCutting += ", Climate Change";
-        } else {
-          crossCutting += " Climate Change";
-        }
-      }
-      if (project.getProjectInfo().getCrossCuttingNa() != null
-        && project.getProjectInfo().getCrossCuttingNa() == true) {
-        if (crossCutting.length() > 0) {
-          crossCutting += ", N/A";
-        } else {
-          crossCutting += " N/A";
-        }
-      }
-      if (project.getProjectInfo().getCrossCuttingGender() != null
-        && project.getProjectInfo().getCrossCuttingGender() == true) {
-        if (crossCutting.length() > 0) {
-          crossCutting += ", Gender";
-        } else {
-          crossCutting += "Gender";
-        }
-      }
-      if (project.getProjectInfo().getCrossCuttingYouth() != null
-        && project.getProjectInfo().getCrossCuttingYouth() == true) {
-        if (crossCutting.length() > 0) {
-          crossCutting += ", Youth";
-        } else {
-          crossCutting += "Youth";
-        }
-      }
-
-      if (project.getProjectInfo().getGenderAnalysis() != null) {
-        genderAnalysis = project.getProjectInfo().getGenderAnalysis();
-      }
-
-      if (project.getProjectInfo().getNewPartnershipsPlanned() != null) {
-        genderAnalysis = project.getProjectInfo().getNewPartnershipsPlanned();
-      }
-
-      List<ProjectComponentLesson> pcList = new ArrayList<>();
-
-      if (project.getProjectComponentLessons() != null) {
-        pcList = project.getProjectComponentLessons().stream()
-          .filter(
-            p -> p.isActive() && p.getProject().getId() == project.getId() && p.getPhase() == this.getActualPhase())
-          .collect(Collectors.toList());
-      }
-
-      if (pcList != null && pcList.size() > 0) {
-        if (pcList.get(0) != null && pcList.get(0).getLessons() != null) {
-          projectComponentLesson = pcList.get(0).getLessons();
-        }
-      }
-
-      List<ProjectOutcome> projectOutcomes = new ArrayList<>();
-
-      projectOutcomes = project.getProjectOutcomes().stream()
-        .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase()))
-        .collect(Collectors.toList());
-
-      if (projectOutcomes != null && projectOutcomes.size() > 0) {
-        if (projectOutcomes.get(0).getGenderDimenssion() != null) {
-          genderDimenssions = projectOutcomes.get(0).getGenderDimenssion();
+        if (project.getProjectInfo().getNewPartnershipsPlanned() != null) {
+          newPartnershipsPlanned = project.getProjectInfo().getNewPartnershipsPlanned();
         }
 
-        if (projectOutcomes.get(0).getYouthComponent() != null) {
-          youthComponent = projectOutcomes.get(0).getYouthComponent();
+        List<ProjectComponentLesson> pcList = new ArrayList<>();
+        pcList = (projectComponentLessonManager.findAll().stream()
+          .filter(p -> p.isActive() && p.getProject() == project && p.getPhase() == phase)
+          .collect(Collectors.toList()));
+
+        if (pcList != null && pcList.size() > 0) {
+          if (pcList.get(0) != null && pcList.get(0).getLessons() != null) {
+            projectComponentLesson = pcList.get(0).getLessons();
+          }
         }
-      }
-      List<ProjectPolicy> projectPolicies = new ArrayList<>();
 
-      projectPolicies = project.getProjectPolicies().stream()
-        .filter(p -> p.isActive() && p.getProject().getId().equals(project.getId()) && p.getProjectPolicyInfo() != null
-          && p.getProjectPolicyInfo().getRepIndOrganizationType() != null
-          && p.getProjectPolicyInfo().getRepIndOrganizationType().getName() != null
-          && p.getProjectPolicyInfo().getPhase() != null && this.getActualPhase() != null
-          && p.getProjectPolicyInfo().getPhase() == this.getActualPhase())
-        .collect(Collectors.toList());
+        List<ProjectOutcome> projectOutcomes = new ArrayList<>();
 
-      if (projectPolicies != null && projectPolicies.size() > 0) {
-        if (projectPolicies.get(0).getProjectPolicyInfo(this.getActualPhase()) != null) {
-          repIndOrganization =
-            projectPolicies.get(0).getProjectPolicyInfo(this.getActualPhase()).getRepIndOrganizationType().getName();
+        projectOutcomes = project.getProjectOutcomes().stream()
+          .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(phase)).collect(Collectors.toList());
+
+        if (projectOutcomes != null && projectOutcomes.size() > 0) {
+          if (projectOutcomes.get(0).getGenderDimenssion() != null) {
+            genderDimenssions = projectOutcomes.get(0).getGenderDimenssion();
+          }
+
+          if (projectOutcomes.get(0).getYouthComponent() != null) {
+            youthComponent = projectOutcomes.get(0).getYouthComponent();
+          }
         }
+        ProjectPolicy projectPolicy = new ProjectPolicy();
+        projectPolicy = policyManager.getProjectPolicyByPhase(phase).stream()
+          .filter(po -> po.isActive() && po.getProjectPolicyInfo(phase) != null && po.getProject() == project)
+          .collect(Collectors.toList()).get(0);
+
+
+        if (projectPolicy != null && projectPolicy.getProjectPolicyInfo(phase) != null
+          && projectPolicy.getProjectPolicyInfo().getRepIndOrganizationType() != null
+          && projectPolicy.getProjectPolicyInfo().getRepIndOrganizationType().getName() != null) {
+          repIndOrganization = projectPolicy.getProjectPolicyInfo(phase).getRepIndOrganizationType().getName();
+        }
+
+
+        ProjectInnovation projectInnovation = new ProjectInnovation();
+        projectInnovation = projectInnovationManager.findAll().stream()
+          .filter(i -> i.isActive() && i.getProject() == project && i.getProjectInnovationInfo(phase) != null)
+          .collect(Collectors.toList()).get(0);
+
+        if (projectInnovation != null && projectInnovation.getProjectInnovationInfo(phase) != null
+          && projectInnovation.getProjectInnovationInfo().getRepIndContributionOfCrp() != null
+          && projectInnovation.getProjectInnovationInfo().getRepIndContributionOfCrp().getName() != null) {
+          contributionCRP = projectInnovation.getProjectInnovationInfo(phase).getRepIndContributionOfCrp().getName();
+        }
+
+
+        model.addRow(new Object[] {projectId, projectTitle, projectSummary, status, managementLiaison, flagships,
+          regions, institutionLeader, projectLeaderName, activitiesOnGoing, expectedDeliverables, outcomes,
+          expectedStudies, this.getSelectedPhase().getId(), crossCutting, managementLiaisonContactPerson,
+          genderAnalysis, newPartnershipsPlanned, projectComponentLesson, genderDimenssions, youthComponent,
+          repIndOrganization, contributionCRP, phase.getComposedName()});
       }
-
-      List<ProjectInnovation> projectInnovations = new ArrayList<>();
-      projectInnovations = project.getProjectInnovations().stream()
-        .filter(
-          i -> i.isActive() && i.getProjectInnovationInfo() != null && i.getProjectInnovationInfo().getPhase() != null
-            && i.getProjectInnovationInfo().getPhase() == this.getActualPhase()
-            && i.getProjectInnovationOrganizations() != null)
-        .collect(Collectors.toList());
-      if (projectInnovations != null && projectInnovations.size() > 0) {
-        repIndOrganizationType = projectInnovations.get(0).getProjectInnovationOrganizations().stream()
-          .filter(o -> o.isActive() && o.getPhase() != null && o.getPhase().equals(this.getSelectedPhase())
-            && o.getRepIndOrganizationType() != null && o.getRepIndOrganizationType().getName() != null)
-          .collect(Collectors.toList()).get(0).getRepIndOrganizationType().getName();
-      }
-
-
-      model.addRow(new Object[] {projectId, projectTitle, projectSummary, status, managementLiaison, flagships, regions,
-        institutionLeader, projectLeaderName, activitiesOnGoing, expectedDeliverables, outcomes, expectedStudies,
-        this.getSelectedPhase().getId(), crossCutting, managementLiaisonContactPerson, genderAnalysis,
-        newPartnershipsPlanned, projectComponentLesson, genderDimenssions, youthComponent, repIndOrganization,
-        repIndOrganizationType});
     }
     return model;
   }
