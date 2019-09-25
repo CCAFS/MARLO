@@ -336,9 +336,11 @@
       [@customForm.textArea name="${milestoneCustomName}.title" i18nkey="outcome.milestone.statement" required=true className="milestone-statement limitWords-100" editable=editableMilestone /]
     </div>
     
+    [#-- Milestone Status --]
     <div class="form-group">
       <div class="select">
-        <label for="">Status:</label><div class="selectList"><p>${(milestone.milestonesStatus.name)!'No Status defined'}</p></div> 
+        <label for="">Status:</label><div class="selectList"><p>${(milestone.milestonesStatus.name)!'No Status defined'}</p></div>
+        <input type="hidden" name="${milestoneCustomName}.milestonesStatus.id" value="${(milestone.milestonesStatus.id)!}" />
       </div>
     </div>
     
