@@ -466,6 +466,7 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
       Long phaseID = fundingSource.getFundingSourceInfo().getPhase().getId();
       String financeCode = fundingSource.getFundingSourceInfo().getFinanceCode();
       String originalDonor = null;
+      String projectStatus = null;
       if (fundingSource.getFundingSourceInfo().getOriginalDonor() != null) {
         originalDonor = fundingSource.getFundingSourceInfo().getOriginalDonor().getComposedName();
       }
@@ -489,10 +490,20 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
           && pb.getYear() == this.getSelectedYear() && pb.getProject() != null && pb.getProject().isActive()
           && pb.getProject().getProjecInfoPhase(this.getSelectedPhase()) != null
           && pb.getProject().getProjectInfo().getStatus() != null && pb.getProject().getProjectInfo().isActive()
-          && (pb.getProject().getProjectInfo().getStatus().intValue() == Integer
+          && ((pb.getProject().getProjectInfo().getStatus().intValue() == Integer
             .parseInt(ProjectStatusEnum.Ongoing.getStatusId())
             || pb.getProject().getProjectInfo().getStatus().intValue() == Integer
-              .parseInt(ProjectStatusEnum.Extended.getStatusId())))
+              .parseInt(ProjectStatusEnum.Extended.getStatusId()))
+
+            || (this.getSelectedPhase().getName().equals("UpKeep")
+              && pb.getProject().getProjectInfo().getStatus().intValue() == Integer
+                .parseInt(ProjectStatusEnum.Ongoing.getStatusId())
+              || pb.getProject().getProjectInfo().getStatus().intValue() == Integer
+                .parseInt(ProjectStatusEnum.Extended.getStatusId())
+              || pb.getProject().getProjectInfo().getStatus().intValue() == Integer
+                .parseInt(ProjectStatusEnum.Complete.getStatusId())
+              || pb.getProject().getProjectInfo().getStatus().intValue() == Integer
+                .parseInt(ProjectStatusEnum.Cancelled.getStatusId()))))
         .collect(Collectors.toList())) {
         String leadPartner = "";
         String projectId = "";
@@ -501,6 +512,15 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
         String coas = null;
 
         projectId = projectBudget.getProject().getId().toString();
+
+        if (projectStatus == null && projectBudget.getProject().getProjecInfoPhase(this.getSelectedPhase()) != null
+          && projectBudget.getProject().getProjectInfo().getStatusName() != null) {
+          projectStatus = projectBudget.getProject().getProjectInfo().getStatusName() + "("
+            + projectBudget.getProject().getId() + ")";
+        } else {
+          projectStatus += ", " + projectBudget.getProject().getProjectInfo().getStatusName() + "("
+            + projectBudget.getProject().getId() + ")";
+        }
         // add to list of projects
         fundingSourceProjectsWithBudgets.add(projectBudget.getProject());
         if (projectId != null && !projectId.isEmpty()) {
@@ -625,6 +645,11 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
             .filter(d -> d.isActive() && d.getDeliverableInfo(this.getSelectedPhase()) != null
               && ((d.getDeliverableInfo().getStatus() == null
                 && d.getDeliverableInfo().getYear() == this.getSelectedYear()) && d.getDeliverableInfo().isActive()
+                // If upkeep phase is selected
+                || (d.getDeliverableInfo().getStatus() != null && this.getSelectedPhase().getName().equals("UpKeep")
+                  && (((d.getDeliverableInfo().getYear() == this.getSelectedYear())
+                    || (d.getDeliverableInfo().getNewExpectedYear() != null
+                      && d.getDeliverableInfo().getNewExpectedYear() == this.getSelectedYear()))))
                 || (d.getDeliverableInfo().getStatus() != null
                   && d.getDeliverableInfo().getStatus().intValue() == Integer
                     .parseInt(ProjectStatusEnum.Extended.getStatusId())
@@ -902,9 +927,17 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
         .filter(df -> df.isActive() && df.getPhase() != null && df.getPhase().equals(this.getSelectedPhase())
           && df.getDeliverable() != null && df.getDeliverable().isActive() && df.getDeliverable().getProject() != null
           && df.getDeliverable().getProject().isActive()
-          && df.getDeliverable().getDeliverableInfo(this.getSelectedPhase()) != null
-          && ((df.getDeliverable().getDeliverableInfo().getStatus() == null
-            && df.getDeliverable().getDeliverableInfo().getYear() == this.getSelectedYear())
+          && df.getDeliverable().getDeliverableInfo(this.getSelectedPhase()) != null && (
+          // If upkeep phase is selected
+          (df.getDeliverable().getDeliverableInfo().getStatus() != null
+            && this.getSelectedPhase().getName().equals("UpKeep")
+            && ((df.getDeliverable().getDeliverableInfo().getYear() == this.getSelectedYear())
+              || (df.getDeliverable().getDeliverableInfo().getNewExpectedYear() != null
+                && df.getDeliverable().getDeliverableInfo().getNewExpectedYear() == this.getSelectedYear())))
+            ||
+
+            (df.getDeliverable().getDeliverableInfo().getStatus() == null
+              && df.getDeliverable().getDeliverableInfo().getYear() == this.getSelectedYear())
             || (df.getDeliverable().getDeliverableInfo().getStatus() != null
               && df.getDeliverable().getDeliverableInfo().getStatus().intValue() == Integer
                 .parseInt(ProjectStatusEnum.Extended.getStatusId())

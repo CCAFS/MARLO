@@ -470,7 +470,9 @@ public class BudgetPerPartnersSummaryAction extends BaseSummariesAction implemen
             .sorted((o1, o2) -> o1.getCrpProgram().getAcronym().compareTo(o2.getCrpProgram().getAcronym()))
             .filter(
               c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()
-                && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase()))
+                && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase())
+                && c.getCrpProgram().getResearchArea() == null && c.getCrpProgram().getResearchArea() == null
+                && c.getCrpProgram().getCrp() != null && c.getCrpProgram().getCrp().isCenterType() == false)
             .collect(Collectors.toList())) {
             if (flagships == null || flagships.isEmpty()) {
               flagships = programManager.getCrpProgramById(projectFocuses.getCrpProgram().getId()).getAcronym();
