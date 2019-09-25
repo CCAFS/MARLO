@@ -343,7 +343,8 @@ public class ProjectsSummaryAction extends BaseSummariesAction implements Summar
       // get Flagships related to the project sorted by acronym
       for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
         .filter(c -> c.isActive() && c.getPhase().equals(this.getSelectedPhase())
-          && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+          && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()
+          && c.getCrpProgram().getCrp().isCenterType() == false)
         .sorted((o1, o2) -> o1.getCrpProgram().getAcronym().compareTo(o2.getCrpProgram().getAcronym()))
         .collect(Collectors.toList())) {
         if (flagships == null || flagships.isEmpty()) {
