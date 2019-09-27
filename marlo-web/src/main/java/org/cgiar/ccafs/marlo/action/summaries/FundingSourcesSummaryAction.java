@@ -533,19 +533,6 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
             } else {
               isAdministrative = false;
             }
-            if (isAdministrative) {
-              countAdministrative++;
-              if (flagships == null || flagships.isEmpty()) {
-                flagships = "Cross cutting";
-              } else {
-                flagships += "\n Cross cutting";
-              }
-              if (coas == null || coas.isEmpty()) {
-                coas = "Cross cutting";
-              } else {
-                coas += "\n Cross cutting";
-              }
-            }
           }
 
 
@@ -843,11 +830,7 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
           } else {
             isAdministrative = false;
           }
-          if (isAdministrative) {
-            countAdministrative++;
-            flagshipsList.add("Cross cutting");
-            coasList.add("Cross cutting");
-          }
+
         }
 
 
