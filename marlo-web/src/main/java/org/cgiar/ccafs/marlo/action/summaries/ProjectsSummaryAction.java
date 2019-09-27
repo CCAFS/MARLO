@@ -571,7 +571,7 @@ public class ProjectsSummaryAction extends BaseSummariesAction implements Summar
         if (project.getProjectInfo().getLocationGlobal() == true) {
           global = "Yes";
         }
-        if (project.getProjectInfo().getLocationGlobal() == true) {
+        if (project.getProjectInfo().getLocationGlobal() == false) {
           global = "No";
         }
       } else {
