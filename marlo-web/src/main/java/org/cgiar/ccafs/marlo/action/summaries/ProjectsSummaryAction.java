@@ -559,18 +559,25 @@ public class ProjectsSummaryAction extends BaseSummariesAction implements Summar
       if (project.getProjectInfo().getNoRegional() != null) {
         if (project.getProjectInfo().getNoRegional() == true) {
           regional = "Yes";
-        } else {
+        }
+        if (project.getProjectInfo().getNoRegional() == false) {
           regional = "No";
         }
+      } else {
+        regional = "<Not defined>";
       }
 
       if (project.getProjectInfo().getLocationGlobal() != null) {
         if (project.getProjectInfo().getLocationGlobal() == true) {
           global = "Yes";
-        } else {
+        }
+        if (project.getProjectInfo().getLocationGlobal() == true) {
           global = "No";
         }
+      } else {
+        global = "<Not defined>";
       }
+
       if (!project.getProjectLocations().isEmpty()) {
         // Get all selected and show it
         List<LocElement> locElementsAll = locElementManager.findAll();
@@ -603,9 +610,9 @@ public class ProjectsSummaryAction extends BaseSummariesAction implements Summar
                 if (temp1 != null) {
                   if (!temp1.contains(locName)) {
                     if (regionLoc.isEmpty()) {
-                      regionLoc = "Region: " + locName;
-                    } else {
                       regionLoc = locName;
+                    } else {
+                      regionLoc += ", " + locName;
                     }
                     temp1.add(locName);
                   }
@@ -615,9 +622,9 @@ public class ProjectsSummaryAction extends BaseSummariesAction implements Summar
                 if (temp2 != null) {
                   if (!temp2.contains(locName)) {
                     if (countryLoc.isEmpty()) {
-                      countryLoc = "Country: " + locName;
-                    } else {
                       countryLoc = locName;
+                    } else {
+                      countryLoc += ", " + locName;
                     }
                     temp2.add(locName);
                   }
@@ -627,9 +634,9 @@ public class ProjectsSummaryAction extends BaseSummariesAction implements Summar
                 if (temp3 != null) {
                   if (!temp3.contains(locName)) {
                     if (provinceLoc.isEmpty()) {
-                      provinceLoc = "Province: " + locName;
-                    } else {
                       provinceLoc = locName;
+                    } else {
+                      provinceLoc += ", " + locName;
                     }
                     temp3.add(locName);
                   }
@@ -638,10 +645,10 @@ public class ProjectsSummaryAction extends BaseSummariesAction implements Summar
               case "4":
                 if (temp4 != null) {
                   if (!temp4.contains(locName)) {
-                    if (regionLoc.isEmpty()) {
-                      regionLoc = "District: " + locName;
+                    if (districtLoc.isEmpty()) {
+                      districtLoc = locName;
                     } else {
-                      regionLoc = locName;
+                      districtLoc = ", " + locName;
                     }
                     temp4.add(locName);
                   }
@@ -672,7 +679,7 @@ public class ProjectsSummaryAction extends BaseSummariesAction implements Summar
           if (le != null) {
             if (le.getLocElementType() != null) {
               locTypeName = le.getLocElementType().getName();
-              locElementID = le.getLocElementType().getLocElementType().getId().toString();
+              locElementID = le.getLocElementType().getId().toString();
             }
             locName = le.getName();
           }
@@ -682,9 +689,9 @@ public class ProjectsSummaryAction extends BaseSummariesAction implements Summar
               if (temp1 != null) {
                 if (!temp1.contains(locName)) {
                   if (regionLoc.isEmpty()) {
-                    regionLoc = "Region: " + locName;
-                  } else {
                     regionLoc = locName;
+                  } else {
+                    regionLoc += ", " + locName;
                   }
                   temp1.add(locName);
                 }
@@ -694,9 +701,9 @@ public class ProjectsSummaryAction extends BaseSummariesAction implements Summar
               if (temp2 != null) {
                 if (!temp2.contains(locName)) {
                   if (countryLoc.isEmpty()) {
-                    countryLoc = "Country: " + locName;
-                  } else {
                     countryLoc = locName;
+                  } else {
+                    countryLoc += ", " + locName;
                   }
                   temp2.add(locName);
                 }
@@ -706,9 +713,9 @@ public class ProjectsSummaryAction extends BaseSummariesAction implements Summar
               if (temp3 != null) {
                 if (!temp3.contains(locName)) {
                   if (provinceLoc.isEmpty()) {
-                    provinceLoc = "Province: " + locName;
-                  } else {
                     provinceLoc = locName;
+                  } else {
+                    provinceLoc += ", " + locName;
                   }
                   temp3.add(locName);
                 }
@@ -718,9 +725,9 @@ public class ProjectsSummaryAction extends BaseSummariesAction implements Summar
               if (temp4 != null) {
                 if (!temp4.contains(locName)) {
                   if (regionLoc.isEmpty()) {
-                    regionLoc = "District: " + locName;
+                    districtLoc = locName;
                   } else {
-                    regionLoc = locName;
+                    districtLoc += ", " + locName;
                   }
                   temp4.add(locName);
                 }
