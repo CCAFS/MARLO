@@ -368,7 +368,7 @@
     [#-- New year if extended --]
     <div class="row form-group extendedYearBlock" style="display:${(milestoneStatus == 4)?string('block', 'none')}">
       <div class="col-md-3">
-        [@customForm.select name="${customName}.year" label=""  i18nkey="${customLabel}.year" listName="allPhaseYearsGreater"  required=true  className="" editable=editable/]
+        [@customForm.select name="${customName}.extendedYear" label=""  i18nkey="${customLabel}.year" listName="allPhaseYearsGreater"  required=true  className="" editable=editable/]
       </div>
     </div>
     
