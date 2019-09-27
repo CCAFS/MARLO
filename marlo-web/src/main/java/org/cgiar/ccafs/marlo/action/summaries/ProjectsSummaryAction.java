@@ -22,6 +22,7 @@ import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectBudgetManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerManager;
 import org.cgiar.ccafs.marlo.data.model.Activity;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.ExpectedStudyProject;
@@ -93,6 +94,7 @@ public class ProjectsSummaryAction extends BaseSummariesAction implements Summar
   private final ResourceManager resourceManager;
   private final LocElementManager locElementManager;
   private final ProjectBudgetManager projectBudgetManager;
+  private final ProjectPartnerManager projectPartnerManager;
 
 
   // XLS bytes
@@ -105,12 +107,13 @@ public class ProjectsSummaryAction extends BaseSummariesAction implements Summar
   @Inject
   public ProjectsSummaryAction(APConfig config, GlobalUnitManager crpManager, ProjectBudgetManager projectBudgetManager,
     PhaseManager phaseManager, CrpProgramManager crpProgramManager, ResourceManager resourceManager,
-    ProjectManager projectManager, LocElementManager locElementManager) {
+    ProjectManager projectManager, LocElementManager locElementManager, ProjectPartnerManager projectPartnerManager) {
     super(config, crpManager, phaseManager, projectManager);
     this.crpProgramManager = crpProgramManager;
     this.resourceManager = resourceManager;
     this.locElementManager = locElementManager;
     this.projectBudgetManager = projectBudgetManager;
+    this.projectPartnerManager = projectPartnerManager;
 
   }
 
@@ -274,10 +277,10 @@ public class ProjectsSummaryAction extends BaseSummariesAction implements Summar
       new String[] {"projectId", "projectTitle", "projectSummary", "status", "managementLiaison", "flagships",
         "regions", "institutionLeader", "projectLeader", "activitiesOnGoing", "expectedDeliverables", "outcomes",
         "expectedStudies", "phaseID", "crossCutting", "type", "locations", "start_date", "end_date", "budgetw1w2",
-        "totalw3bilateralcenter"},
+        "totalw3bilateralcenter", "ppa"},
       new Class[] {Long.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, Integer.class, Integer.class, Integer.class, Integer.class, Long.class,
-        String.class, String.class, String.class, String.class, String.class, String.class, String.class},
+        String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class},
       0);
     // Status of projects
     String[] statuses = null;
@@ -294,6 +297,7 @@ public class ProjectsSummaryAction extends BaseSummariesAction implements Summar
       String startDate = "";
       String endDate = "";
       SimpleDateFormat formatter = new SimpleDateFormat("MMM yyyy");
+      String ppa = "";
 
       if (project.getProjectInfo().getSummary() != null && !project.getProjectInfo().getSummary().isEmpty()) {
         projectSummary = project.getProjectInfo().getSummary();
@@ -312,6 +316,41 @@ public class ProjectsSummaryAction extends BaseSummariesAction implements Summar
         }
         managementLiaison = managementLiaison.replaceAll("<", "&lt;");
         managementLiaison = managementLiaison.replaceAll(">", "&gt;");
+      }
+
+      List<ProjectPartner> listPPA = new ArrayList<>();
+      List<ProjectPartner> tempPartners = new ArrayList<>();
+      tempPartners = new ArrayList<>(project.getProjectPartners().stream()
+        .filter(c -> c.isActive() && c.getPhase().getId().equals(this.getSelectedPhase().getId()))
+        .collect(Collectors.toList()));
+
+      for (ProjectPartner partner : tempPartners) {
+
+        if (partner.getInstitution().isPPA(this.getLoggedCrp().getId(), this.getSelectedPhase())) {
+          listPPA.add(partner);
+        }
+
+
+      }
+
+
+      List<String> temp = new ArrayList<>();
+
+      HashMap<Integer, String> map = new HashMap<Integer, String>();
+      String t = "";
+      for (ProjectPartner projectPartner : listPPA) {
+        // map.put(Integer.parseInt(projectPartner.getId().toString()), projectPartner.getComposedName());
+        if (!t.equals(projectPartner.getComposedName())) {
+          t = projectPartner.getComposedName();
+          if (ppa.isEmpty()) {
+            ppa += projectPartner.getComposedName();
+          } else {
+            ppa += ", " + projectPartner.getComposedName();
+          }
+
+        } else {
+          t = projectPartner.getComposedName();
+        }
       }
 
       // Get type from funding sources
@@ -389,6 +428,7 @@ public class ProjectsSummaryAction extends BaseSummariesAction implements Summar
         projectLeaderName = projectLeaderName.replaceAll("<", "&lt;");
         projectLeaderName = projectLeaderName.replaceAll(">", "&gt;");
       }
+
 
       Set<Activity> activitiesSet = new HashSet();
       for (Activity activity : project
@@ -681,8 +721,8 @@ public class ProjectsSummaryAction extends BaseSummariesAction implements Summar
       }
       model.addRow(new Object[] {projectId, projectTitle, projectSummary, status, managementLiaison, flagships, regions,
         institutionLeader, projectLeaderName, activitiesOnGoing, expectedDeliverables, outcomes, expectedStudies,
-        this.getSelectedPhase().getId(), crossCutting, type, locations, startDate, endDate, w1w2Budget,
-        bilateralBudget});
+        this.getSelectedPhase().getId(), crossCutting, type, locations, startDate, endDate, w1w2Budget, bilateralBudget,
+        ppa});
     }
     return model;
   }
