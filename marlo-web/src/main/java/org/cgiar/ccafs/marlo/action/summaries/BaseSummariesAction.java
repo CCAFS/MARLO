@@ -320,9 +320,59 @@ public class BaseSummariesAction extends BaseAction {
     }
   }
 
-
   public void setLoggedCrp(GlobalUnit loggedCrp) {
     this.loggedCrp = loggedCrp;
+  }
+
+
+  public void setPublicAccessParameters() {
+    Map<String, Parameter> parameters = this.getParameters();
+
+    // Get logged crp
+    try {
+      // Get CRP by action name
+      String[] actionParts = this.getActionName().split("/");
+      if (actionParts.length > 0) {
+        String crpAcronym = actionParts[0];
+        this.setLoggedCrp(crpManager.findGlobalUnitByAcronym(crpAcronym));
+      }
+    } catch (Exception e) {
+      LOG.error("Failed to get " + APConstants.SESSION_CRP + " parameter. Exception: " + e.getMessage());
+
+    }
+
+    // Get Phase
+    if (parameters.get(APConstants.PHASE_ID).isDefined()) {
+      try {
+        this.setSelectedPhase(phaseManager.getPhaseById(
+          Long.parseLong((StringUtils.trim(parameters.get(APConstants.PHASE_ID).getMultipleValues()[0])))));
+        this.setSelectedYear(selectedPhase.getYear());
+        this.setSelectedCycle(this.selectedPhase.getDescription());
+      } catch (Exception e) {
+        LOG.error("Failed to get " + APConstants.PHASE_ID + " parameter. Exception: " + e.getMessage());
+      }
+
+    } else {
+      // Get Phase from year and cycle parameters
+      if (parameters.get(APConstants.YEAR_REQUEST).isDefined() && parameters.get(APConstants.CYCLE).isDefined()) {
+        try {
+          this.setSelectedYear(
+            Integer.parseInt((StringUtils.trim(parameters.get(APConstants.YEAR_REQUEST).getMultipleValues()[0]))));
+          this.setSelectedCycle((StringUtils.trim(parameters.get(APConstants.CYCLE).getMultipleValues()[0])));
+          this.setSelectedPhase(phaseManager.findCycle(this.getSelectedCycle(), this.getSelectedYear(), false,
+            loggedCrp.getId().longValue()));
+        } catch (Exception e) {
+          LOG.error("Failed to get " + APConstants.PHASE_ID + " parameter. Exception: " + e.getMessage());
+        }
+      }
+    }
+
+    // Get current user
+    if (this.getCurrentUser() != null) {
+      this.setDownloadByUser(this.getCurrentUser().getComposedCompleteName());
+    } else {
+      this.setDownloadByUser("unLoggedUser");
+    }
   }
 
 

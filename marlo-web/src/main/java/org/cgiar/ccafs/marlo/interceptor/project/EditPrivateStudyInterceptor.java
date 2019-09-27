@@ -23,10 +23,12 @@ import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyManager;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Phase;
+import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 
 import java.io.Serializable;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -104,7 +106,16 @@ public class EditPrivateStudyInterceptor extends AbstractInterceptor implements 
 
     ProjectExpectedStudy projectExpectedStudy = projectExpectedStudyManager.getProjectExpectedStudyById(expectedId);
 
+    Project project = projectExpectedStudy.getProject();
+
+    GlobalUnit unit = project.getGlobalUnitProjects().stream().filter(gu -> gu.isActive() && gu.isOrigin())
+      .collect(Collectors.toList()).get(0).getGlobalUnit();
+
     Long crpID = baseAction.getCrpID();
+    if (unit != null) {
+      crpID = unit.getId();
+    }
+
     // Crp session is empty
     if (crpID == null) {
       String[] actionMap = ActionContext.getContext().getName().split("/");
