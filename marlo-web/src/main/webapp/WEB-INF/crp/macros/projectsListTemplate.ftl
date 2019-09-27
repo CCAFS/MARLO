@@ -171,7 +171,7 @@
           <td>        
             [#if action.getActualPhase().crp.id != 29]
               <a href="[@s.url namespace="/projects" action='${(crpSession)!}/reportingSummary'][@s.param name='projectID']${project.id?c}[/@s.param][@s.param name='cycle']${action.getCurrentCycle()}[/@s.param][@s.param name='year']${action.getCurrentCycleYear()}[/@s.param][/@s.url]" target="__BLANK">
-                <img src="${baseUrl}/global/images/pdf.png" height="25" title="[@s.text name="projectsList.downloadPDF" /]" />
+                <img src="${baseUrlCdn}/global/images/pdf.png" height="25" title="[@s.text name="projectsList.downloadPDF" /]" />
               </a>          
             [/#if]
           </td>
@@ -179,10 +179,10 @@
           <td>
             [#if canEdit && isProjectNew && action.deletePermission(project.id) && action.getActualPhase().editable && project.projectInfo.phase.id=action.getActualPhase().id]
               <a id="removeProject-${project.id}" class="removeProject" href="#" title="">
-                <img src="${baseUrl}/global/images/trash.png" title="[@s.text name="projectsList.deleteProject" /]" /> 
+                <img src="${baseUrlCdn}/global/images/trash.png" title="[@s.text name="projectsList.deleteProject" /]" /> 
               </a>
             [#else]
-              <img src="${baseUrl}/global/images/trash_disable.png" title="[@s.text name="projectsList.cantDeleteProject" /]" />
+              <img src="${baseUrlCdn}/global/images/trash_disable.png" title="[@s.text name="projectsList.cantDeleteProject" /]" />
             [/#if]
           </td>
         </tr>  
@@ -273,7 +273,7 @@
           <td>
             [#if action.getActualPhase().crp.id != 29]
               <a href="[@s.url namespace="/projects" action='${(crpSession)!}/reportingSummary'][@s.param name='projectID']${project.id?c}[/@s.param][@s.param name='cycle']${action.getCurrentCycle()}[/@s.param][@s.param name='year']${action.getCurrentCycleYear()}[/@s.param][/@s.url]" target="__BLANK">
-                <img src="${baseUrl}/global/images/pdf.png" height="25" title="[@s.text name="projectsList.downloadPDF" /]" />
+                <img src="${baseUrlCdn}/global/images/pdf.png" height="25" title="[@s.text name="projectsList.downloadPDF" /]" />
               </a>
             [/#if]
           </td>
@@ -281,10 +281,10 @@
           <td>
             [#if canEdit && isProjectNew && action.deletePermission(project.id) ]
               <a id="removeProject-${project.id}" class="removeProject" href="#" title="">
-                <img src="${baseUrl}/global/images/trash.png" title="[@s.text name="projectsList.deleteProject" /]" /> 
+                <img src="${baseUrlCdn}/global/images/trash.png" title="[@s.text name="projectsList.deleteProject" /]" /> 
               </a>
             [#else]
-              <img src="${baseUrl}/global/images/trash_disable.png" title="[@s.text name="projectsList.cantDeleteProject" /]" />
+              <img src="${baseUrlCdn}/global/images/trash_disable.png" title="[@s.text name="projectsList.cantDeleteProject" /]" />
             [/#if]
           </td>
         </tr>  

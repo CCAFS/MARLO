@@ -4,8 +4,8 @@
 [#assign pageLibs = ["select2"] /]
 [#assign customJS = [ 
   "${baseUrlMedia}/js/projects/projectContributionCrp.js", 
-  "${baseUrl}/global/js/autoSave.js", 
-  "${baseUrl}/global/js/fieldsValidation.js"
+  "${baseUrlCdn}/global/js/autoSave.js", 
+  "${baseUrlCdn}/global/js/fieldsValidation.js"
   ] 
 /] 
 [#assign customCSS = [ 
@@ -165,7 +165,7 @@
                 <div class="" id="baseline">
                   <div class="form-group text-right">
                     [#if (projectOutcome.crpProgramOutcome.file.fileName??)!false]
-                      <a href="${action.getBaseLineFileURL((projectOutcome.crpProgramOutcome.id.toString())!)}${ (projectOutcome.crpProgramOutcome.file.fileName)!}" target="_blank" class="downloadBaseline"><img src="${baseUrl}/global/images/pdf.png" width="20px" alt="" /> ${ (projectOutcome.crpProgramOutcome.file.fileName)!}</a> 
+                      <a href="${action.getBaseLineFileURL((projectOutcome.crpProgramOutcome.id.toString())!)}${ (projectOutcome.crpProgramOutcome.file.fileName)!}" target="_blank" class="downloadBaseline"><img src="${baseUrlCdn}/global/images/pdf.png" width="20px" alt="" /> ${ (projectOutcome.crpProgramOutcome.file.fileName)!}</a> 
                     [#else]
                       <p class="note"><i>[@s.text name="projectOutcome.askForBaselineInstructions" /]</i></p>
                     [/#if]

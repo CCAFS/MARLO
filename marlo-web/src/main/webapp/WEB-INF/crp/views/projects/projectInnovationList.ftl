@@ -4,8 +4,8 @@
 [#assign pageLibs = [ "datatables.net", "datatables.net-bs"] /]
 [#assign customJS = [
   "${baseUrlMedia}/js/projects/projectInnovationsList.js",
-  "${baseUrl}/global/js/autoSave.js",
-  "${baseUrl}/global/js/fieldsValidation.js"
+  "${baseUrlCdn}/global/js/autoSave.js",
+  "${baseUrlCdn}/global/js/fieldsValidation.js"
 ] /]
 [#assign customCSS = ["${baseUrlMedia}/css/projects/projectInnovations.css"] /]
 [#assign currentSection = "projects" /]
@@ -137,7 +137,7 @@
           [#-- Summary PDF download --]
           <td class="text-center">
             <a href="[@s.url namespace="/summaries" action='${(crpSession)!}/projectInnovationSummary'][@s.param name='innovationID']${innovation.id?c}[/@s.param][@s.param name='phaseID']${(innovation.projectInnovationInfo.phase.id)!''}[/@s.param][/@s.url]" target="__BLANK">
-              <img src="${baseUrl}/global/images/pdf.png" height="25" title="[@s.text name="projectsList.downloadPDF" /]" />
+              <img src="${baseUrlCdn}/global/images/pdf.png" height="25" title="[@s.text name="projectsList.downloadPDF" /]" />
             </a>            
           </td>
           [#-- Remove --]
@@ -146,7 +146,7 @@
             [#if canEdit && isOwner ]
               <a id="removeElement-${(innovation.id)!}" class="removeElementList" href="#" title="" data-toggle="modal" data-target="#removeItem-${innovation_index}" >
                [#--<a id="remove-innovation" class="remove-innovation" href="[@s.url namespace="/projects" action="${(crpSession)!}/deleteInnovation"][@s.param name='innovationID']${(innovation.id)!''}[/@s.param][@s.param name='projectID']${(innovation.project.id)!''}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" title="" > --]
-                <img src="${baseUrl}/global/images/trash.png" title="[@s.text name="projectInnovations.table.remove" /]" /> 
+                <img src="${baseUrlCdn}/global/images/trash.png" title="[@s.text name="projectInnovations.table.remove" /]" /> 
               </a>
               <div id="removeItem-${innovation_index}" class="modal fade" tabindex="-1" role="dialog">
                 <div class="modal-dialog" role="document">
@@ -171,7 +171,7 @@
                   </div>
               </div>
             [#else]
-              <img src="${baseUrl}/global/images/trash_disable.png" title="[@s.text name="projectInnovations.table.cantDelete" /]" />
+              <img src="${baseUrlCdn}/global/images/trash_disable.png" title="[@s.text name="projectInnovations.table.cantDelete" /]" />
             [/#if]
           </td>
           [/#if]

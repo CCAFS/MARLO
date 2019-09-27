@@ -56,7 +56,7 @@
           [#-- CGIAR Indicator #C1: Number of Innovations   --]
           <div class="borderBox">
             [#assign guideSheetURL = "https://drive.google.com/file/d/1LsVAVX60ALyr95BG0SKlK8J8_wibYz_c/view" /]
-            <small class="pull-right"><a href="${guideSheetURL}" target="_blank"> <img src="${baseUrl}/global/images/icon-file.png" alt="" /> #C1 Innovations -  Guideline </a> </small>
+            <small class="pull-right"><a href="${guideSheetURL}" target="_blank"> <img src="${baseUrlCdn}/global/images/icon-file.png" alt="" /> #C1 Innovations -  Guideline </a> </small>
             <h4 class="sectionSubTitle">[@s.text name="${customLabel}.indicatorC1.title" /] 
             </h4>
             <div class="form-group row">
@@ -110,7 +110,7 @@
           [#--  CGIAR Indicator #C2: Partnerships --]
           <div class="borderBox">
             [#assign guideSheetURL = "https://drive.google.com/file/d/1rmVYYuo8yi4P0mq9zC9s_xeqoSurH4vd/view" /]
-            <small class="pull-right"><a href="${guideSheetURL}" target="_blank"> <img src="${baseUrl}/global/images/icon-file.png" alt="" /> #C2 Partnerships - Guideline </a> </small>
+            <small class="pull-right"><a href="${guideSheetURL}" target="_blank"> <img src="${baseUrlCdn}/global/images/icon-file.png" alt="" /> #C2 Partnerships - Guideline </a> </small>
             <h4 class="sectionSubTitle">[@s.text name="${customLabel}.indicatorC2.title" /]
             </h4>
             <div class="form-group row">
@@ -209,7 +209,7 @@
           [#--  CGIAR Indicator #C3. Number of Direct Participants in CGIAR Activities (Incorporating CGIAR Indicator #C4. Number of People Trained) --]
           <div class="borderBox">
             [#assign guideSheetURL = "https://drive.google.com/file/d/1ZuZ-Ka4Bf9Bab42CCGeJvGkzWUYV4ytA/view" /]
-            <small class="pull-right"><a href="${guideSheetURL}" target="_blank"> <img src="${baseUrl}/global/images/icon-file.png" alt="" /> #C3 Participants + #C4 Trainees - Guideline </a> </small>
+            <small class="pull-right"><a href="${guideSheetURL}" target="_blank"> <img src="${baseUrlCdn}/global/images/icon-file.png" alt="" /> #C3 Participants + #C4 Trainees - Guideline </a> </small>
             <h4 class="sectionSubTitle">[@s.text name="${customLabel}.indicatorC3C4.title" /]
             </h4>
             <div class="form-group row">
@@ -256,7 +256,7 @@
           [#--  CGIAR Indicator #C5: Number of CGIAR research papers published in peer reviewed journals  --]
           <div class="borderBox">
             [#assign guideSheetURL = "https://drive.google.com/file/d/1CZU7MLmXIVCBFFtlmB19eHFrldTI-dG4/view" /]
-            <small class="pull-right"><a href="${guideSheetURL}" target="_blank"> <img src="${baseUrl}/global/images/icon-file.png" alt="" /> #C5 Peer review papers - Guideline </a> </small>
+            <small class="pull-right"><a href="${guideSheetURL}" target="_blank"> <img src="${baseUrlCdn}/global/images/icon-file.png" alt="" /> #C5 Peer review papers - Guideline </a> </small>
             <h4 class="sectionSubTitle">[@s.text name="${customLabel}.indicatorC5.title" /]
             </h4>
             <div class="form-group row">
@@ -610,12 +610,12 @@
           [#-- Open Access --]
           <td class="text-center">
             <span style="display:none">${(item.deliverable.dissemination.isOpenAccess?string)!'false'}</span>
-            <img src="${baseUrl}/global/images/openAccess-${(item.deliverable.dissemination.isOpenAccess?string)!'false'}.png" alt="" />
+            <img src="${baseUrlCdn}/global/images/openAccess-${(item.deliverable.dissemination.isOpenAccess?string)!'false'}.png" alt="" />
           </td>
           [#-- Journal ISI --]
           <td class="text-center">
             <span style="display:none">${(item.deliverable.publication.isiPublication?string)!'false'}</span>
-            <img src="${baseUrl}/global/images/checked-${(item.deliverable.publication.isiPublication?string)!'false'}.png" alt="" />
+            <img src="${baseUrlCdn}/global/images/checked-${(item.deliverable.publication.isiPublication?string)!'false'}.png" alt="" />
           </td>
         </tr>
       [/#list]

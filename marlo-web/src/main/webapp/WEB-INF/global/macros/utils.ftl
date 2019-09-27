@@ -28,7 +28,7 @@
   [#if text?has_content]
   <div class="container helpText viewMore-block">
     <div class="helpMessage infoText">
-      <img class="col-md-2" src="${baseUrl}/global/images/icon-help.jpg" />
+      <img class="col-md-2" src="${baseUrlCdn}/global/images/icon-help.jpg" />
         <p class="col-md-10"> ${text} </p>
     </div> 
     <div style="display:none" class="viewMore closed"></div>
@@ -50,7 +50,7 @@
   Specify the appropriate value for hlpInfo parameter in the corresponding ftl file. --] 
 <div class="container helpText viewMore-block">
   <div style="display:none;" class="helpMessage infoText">
-    <img class="col-md-2" src="${baseUrl}/global/images/icon-help.png" />
+    <img class="col-md-2" src="${baseUrlCdn}/global/images/icon-help.png" />
     <p class="col-md-10"> [@s.text name="${hlpInfo}" /] </p>
   </div> 
   <div style="display:none" class="viewMore closed"></div>
@@ -60,13 +60,13 @@
 
 [#macro underConstruction title="" show=true width="" height="" ]
   <span class="under-construction-icon" style="display:${show?string('inline','none')};" title="[@s.text name="${title}" /]">
-    <img src="${baseUrl}/global/images/under-construction.png" width="${width!'10px'}" height="${height!'10px'}" />
+    <img src="${baseUrlCdn}/global/images/under-construction.png" width="${width!'10px'}" height="${height!'10px'}" />
   </span>
 [/#macro]
 
 [#macro tag label="" tooltip=""]
   <span class="doc-badge pull-right" title="[@s.text name="${tooltip}" /]">
-    <img src="${baseUrl}/global/images/icons/file-doc.png" style="width:18px;" alt=""> [@s.text name="${label}" /] 
+    <img src="${baseUrlCdn}/global/images/icons/file-doc.png" style="width:18px;" alt=""> [@s.text name="${label}" /] 
   </span>
 [/#macro]
 

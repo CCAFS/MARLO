@@ -46,10 +46,10 @@
           <td class="text-center">
             [#if editable]
               <a  class="deleteDoc" href="#" data-href="[@s.url action='${centerSession}/deleteSupportingDoc'][@s.param name='capdevID']${capdev.id}[/@s.param] [@s.param name='projectID']${projectID}[/@s.param][@s.param name='deliverableID']${deliverable.id?c}[/@s.param] [@s.param name='edit' value="true" /][/@s.url]" data-toggle="modal" data-target="#confirm-delete">
-                 <img src="${baseUrl}/global/images/trash.png" title="[@s.text name="capdev.removeCapdev" /]" /> 
+                 <img src="${baseUrlCdn}/global/images/trash.png" title="[@s.text name="capdev.removeCapdev" /]" /> 
               </a>
             [#else]
-              <img src="${baseUrl}/global/images/trash_disable.png" title="[@s.text name="capdev.removeCapdev" /]" /> 
+              <img src="${baseUrlCdn}/global/images/trash_disable.png" title="[@s.text name="capdev.removeCapdev" /]" /> 
             [/#if]
           </td>
         </tr>  
