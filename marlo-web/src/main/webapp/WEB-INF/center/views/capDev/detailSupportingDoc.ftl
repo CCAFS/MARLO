@@ -2,15 +2,15 @@
 [#assign currentSectionString = "capdev-${actionName?replace('/','-')}-${capdevID}-deliverable-${deliverableID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["datatables.net", "datatables.net-bs", "select2", "flat-flags", "pickadate"] /]
 [#assign customCSS = [
-  "${baseUrl}/global/css/customDataTable.css", 
+  "${baseUrlCdn}/global/css/customDataTable.css", 
   "${baseUrlMedia}/css/capDev/capacityDevelopment.css"
   ] 
 /]
 [#assign customJS = [
   "${baseUrlMedia}/js/capDev/supportingDocuments.js",
-  "${baseUrl}/global/js/fieldsValidation.js", 
+  "${baseUrlCdn}/global/js/fieldsValidation.js", 
   "${baseUrlMedia}/js/capDev/capacityDevelopment.js", 
-  "${baseUrl}/global/js/autoSave.js"
+  "${baseUrlCdn}/global/js/autoSave.js"
   ] 
 /]
 
@@ -28,7 +28,7 @@
 <div class="container"> 
   <div class="row">
     <div class="helpMessage infoText col-md-12 capdevinfo">
-      <img class="col-md-2" src="${baseUrl}/global/images/icon-help.png" />
+      <img class="col-md-2" src="${baseUrlCdn}/global/images/icon-help.png" />
       [@s.text name="capdev.help.supportingDocs"][/@s.text]
     </div>
   </div>

@@ -217,7 +217,7 @@
           <th>[@s.text name="financialPlan.tableF.expenditureArea" /]</th>
           <th>
             [@s.text name="financialPlan.tableF.estimatedPercentage"][@s.param]${(actualPhase.year)!}[/@s.param][/@s.text]**
-            <img title="[@s.text name="financialPlan.tableF.estimatedPercentage.help" /]" src="${baseUrl}/global/images/icon-help2.png" alt="" />
+            <img title="[@s.text name="financialPlan.tableF.estimatedPercentage.help" /]" src="${baseUrlCdn}/global/images/icon-help2.png" alt="" />
           </th>
           <th>
             [@s.text name="financialPlan.tableF.comments" /][@customForm.req required=editable && PMU /] <br />
@@ -235,7 +235,7 @@
               <span>${expenditureArea.expenditureArea} </span>
               
               [#local expenditureHelp][@s.text name="financialPlan.tableF.expenditureHelp.${expenditureArea.id}" /][/#local]
-              [#if expenditureHelp?has_content]<img title="${expenditureHelp}" src="${baseUrl}/global/images/icon-help2.png" alt="" />[/#if]
+              [#if expenditureHelp?has_content]<img title="${expenditureHelp}" src="${baseUrlCdn}/global/images/icon-help2.png" alt="" />[/#if]
               
               <input type="hidden" name="${customName}.id" value="${(element.id)!}" />
               <input type="hidden" name="${customName}.powbExpenditureArea.id" value="${(expenditureArea.id)!}" />

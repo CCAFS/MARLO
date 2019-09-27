@@ -3,11 +3,11 @@
 [#assign currentSectionString = "program-${actionName?replace('/','-')}-${crpProgramID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["cytoscape","cytoscape-panzoom","select2"] /]
 [#assign customJS = [
-  "${baseUrl}/global/js/usersManagement.js", 
+  "${baseUrlCdn}/global/js/usersManagement.js", 
   "${baseUrlMedia}/js/impactPathway/programSubmit.js", 
-  "${baseUrl}/global/js/autoSave.js", 
-  "${baseUrl}/global/js/impactGraphic.js",
-  "${baseUrl}/global/js/fieldsValidation.js", 
+  "${baseUrlCdn}/global/js/autoSave.js", 
+  "${baseUrlCdn}/global/js/impactGraphic.js",
+  "${baseUrlCdn}/global/js/fieldsValidation.js", 
   "${baseUrlMedia}/js/impactPathway/clusterActivities.js"
   ] 
 /]
@@ -35,7 +35,7 @@
 
 <div class="container helpText viewMore-block">
   <div style="display:none;" class="helpMessage infoText">
-    <img class="col-md-2" src="${baseUrl}/global/images/icon-help.jpg" />
+    <img class="col-md-2" src="${baseUrlCdn}/global/images/icon-help.jpg" />
     <p class="col-md-10">[@s.text name="cluster.help"][@s.param][@s.text name="global.sClusterOfActivities" /][/@s.param] [/@s.text] </p>
   </div> 
   <div style="display:none" class="viewMore closed"></div>

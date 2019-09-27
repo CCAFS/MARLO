@@ -40,17 +40,17 @@
     [/#if]
     
     [#-- Global Javascript --]
-    <script type="text/javascript" src="${baseUrl}/global/js/utils.js?20190801" ></script>
-    <script type="text/javascript" src="${baseUrl}/global/js/global.js?20190801" ></script>
+    <script type="text/javascript" src="${baseUrlCdn}/global/js/utils.js?20190801" ></script>
+    <script type="text/javascript" src="${baseUrlCdn}/global/js/global.js?20190801" ></script>
     [#if logged]
       [#-- Pusher app --]
-      <script type="text/javascript" src="${baseUrl}/global/js/pusher-app.js" ></script>
+      <script type="text/javascript" src="${baseUrlCdn}/global/js/pusher-app.js" ></script>
     [/#if]
     [#-- import the custom JS and CSS --]
     [#if customJS??][#list customJS as js]<script src="${js}"></script>[/#list][/#if]
     
     [#-- Changes on Save --]
-    <script type="text/javascript" src="${baseUrl}/global/js/changes.js" ></script>
+    <script type="text/javascript" src="${baseUrlCdn}/global/js/changes.js" ></script>
 
     [/#compress]
     

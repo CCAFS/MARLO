@@ -23,7 +23,7 @@
 
 <div class="container helpText viewMore-block">
   <div class="helpMessage infoText">
-    <img class="col-md-2" src="${baseUrl}/global/images/icon-help.jpg" />
+    <img class="col-md-2" src="${baseUrlCdn}/global/images/icon-help.jpg" />
     <p class="col-md-10"> [@s.text name="crpUsers.help" /] </p>
   </div> 
   <div style="display:none" class="viewMore closed"></div>

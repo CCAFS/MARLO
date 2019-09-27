@@ -1,7 +1,7 @@
 [#ftl]
 [#assign currentSectionString = "capdev-${actionName?replace('/','-')}-${capdevID}-phase-${(actualPhase.id)!}" /]
 [#assign customCSS = [
-  "${baseUrl}/global/css/customDataTable.css",
+  "${baseUrlCdn}/global/css/customDataTable.css",
   "${baseUrlMedia}/css/capDev/capacityDevelopment.css"
   ] 
 /]
@@ -23,7 +23,7 @@
 
   <div class="row">
     <div class="helpMessage infoText col-md-12 capdevinfo">
-      <img class="col-md-2" src="${baseUrl}/global/images/icon-help.png" />
+      <img class="col-md-2" src="${baseUrlCdn}/global/images/icon-help.png" />
       [@s.text name="capdev.help.supportingDocs"][/@s.text]
     </div>
   </div>

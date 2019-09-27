@@ -4,7 +4,7 @@
 [#assign pageLibs = ["select2","font-awesome","jsUri"] /]
 
 
-[#assign customJS = ["${baseUrl}/global/js/utils.js", 
+[#assign customJS = ["${baseUrlCdn}/global/js/utils.js", 
                     "${baseUrlMedia}/js/summaries/boardSummaries.js", 
                     "${baseUrlMedia}/js/capDev/capdevSummaries.js", 
                     "${baseUrlMedia}/js/capDev/year-select.js"] /]
