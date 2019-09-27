@@ -73,6 +73,8 @@ public interface DeliverableDAO {
    */
   public List<Deliverable> getDeliverablesByPhase(long phase);
 
+  public List<Deliverable> getDeliverablesByProjectAndPhase(long phase, long project);
+
   public List<Deliverable> getDeliverablesLeadByInstitution(long institutionId, long phaseId);
 
   public List<Deliverable> getDeliverablesLeadByUser(long userId, long phaseId);
@@ -98,4 +100,5 @@ public interface DeliverableDAO {
    * @return
    */
   public Deliverable save(Deliverable deliverable, String section, List<String> relationsName, Phase phase);
+
 }
