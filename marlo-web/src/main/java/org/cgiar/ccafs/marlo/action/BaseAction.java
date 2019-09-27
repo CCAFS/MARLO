@@ -5704,7 +5704,11 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   public boolean isPlanningActive() {
-    return this.getActualPhase().getDescription().equals(APConstants.PLANNING);
+    if (this.getActualPhase() != null && this.getActualPhase().getDescription() != null) {
+      return this.getActualPhase().getDescription().equals(APConstants.PLANNING);
+    } else {
+      return false;
+    }
   }
 
   public boolean isPlanningActiveParam() {
