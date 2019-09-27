@@ -51,6 +51,9 @@ public class CrpMilestone extends MarloAuditableEntity implements java.io.Serial
   @Expose
   private Integer year;
 
+  @Expose
+  private Integer extendedYear;
+
 
   @Expose
   private BigDecimal value;
@@ -114,9 +117,6 @@ public class CrpMilestone extends MarloAuditableEntity implements java.io.Serial
   private Boolean isPowb;
 
 
-  /** **/
-
-
   private Set<ProjectMilestone> projectMilestones = new HashSet<ProjectMilestone>(0);
 
 
@@ -132,6 +132,7 @@ public class CrpMilestone extends MarloAuditableEntity implements java.io.Serial
     this.year = year;
     this.value = value;
   }
+
 
   @Override
   public boolean equals(Object obj) {
@@ -159,7 +160,6 @@ public class CrpMilestone extends MarloAuditableEntity implements java.io.Serial
     return capdevFocusLevel;
   }
 
-
   public RepIndGenderYouthFocusLevel getClimateFocusLevel() {
     return climateFocusLevel;
   }
@@ -174,8 +174,13 @@ public class CrpMilestone extends MarloAuditableEntity implements java.io.Serial
     return composeID;
   }
 
+
   public CrpProgramOutcome getCrpProgramOutcome() {
     return this.crpProgramOutcome;
+  }
+
+  public Integer getExtendedYear() {
+    return extendedYear;
   }
 
   public RepIndGenderYouthFocusLevel getGenderFocusLevel() {
@@ -231,14 +236,41 @@ public class CrpMilestone extends MarloAuditableEntity implements java.io.Serial
     return this.srfTargetUnit;
   }
 
+  /** **/
+  public String getStatusName() {
+
+    if (this.getMilestonesStatus() == null) {
+      return "";
+    } else {
+      switch (this.getMilestonesStatus().getId().intValue()) {
+        case 1:
+          return "New";
+        case 2:
+          return "On Going";
+        case 3:
+          return "Complete";
+
+        case 4:
+          return "Extended";
+
+        case 5:
+          return "Cancelled";
+
+        case 6:
+          return "Changed";
+      }
+    }
+    return "";
+  }
+
   public String getTitle() {
     return this.title;
   }
 
+
   public BigDecimal getValue() {
     return this.value;
   }
-
 
   public Integer getYear() {
     return this.year;
@@ -272,6 +304,12 @@ public class CrpMilestone extends MarloAuditableEntity implements java.io.Serial
     this.crpProgramOutcome = crpProgramOutcome;
   }
 
+
+  public void setExtendedYear(Integer extendedYear) {
+    this.extendedYear = extendedYear;
+  }
+
+
   public void setGenderFocusLevel(RepIndGenderYouthFocusLevel genderFocusLevel) {
     this.genderFocusLevel = genderFocusLevel;
   }
@@ -285,7 +323,6 @@ public class CrpMilestone extends MarloAuditableEntity implements java.io.Serial
   public void setIsPowb(Boolean isPowb) {
     this.isPowb = isPowb;
   }
-
 
   public void setMilestonesStatus(GeneralStatus milestonesStatus) {
     this.milestonesStatus = milestonesStatus;
@@ -305,6 +342,7 @@ public class CrpMilestone extends MarloAuditableEntity implements java.io.Serial
     this.powbIndMilestoneRisk = powbIndMilestoneRisk;
   }
 
+
   public void setPowbMilestoneOtherRisk(String powbMilestoneOtherRisk) {
     this.powbMilestoneOtherRisk = powbMilestoneOtherRisk;
   }
@@ -314,11 +352,9 @@ public class CrpMilestone extends MarloAuditableEntity implements java.io.Serial
     this.powbMilestoneVerification = powbMilestoneVerification;
   }
 
-
   public void setProjectMilestones(Set<ProjectMilestone> projectMilestones) {
     this.projectMilestones = projectMilestones;
   }
-
 
   public void setSrfTargetUnit(SrfTargetUnit srfTargetUnit) {
     this.srfTargetUnit = srfTargetUnit;
@@ -332,9 +368,11 @@ public class CrpMilestone extends MarloAuditableEntity implements java.io.Serial
     this.value = value;
   }
 
+
   public void setYear(Integer year) {
     this.year = year;
   }
+
 
   public void setYouthFocusLevel(RepIndGenderYouthFocusLevel youthFocusLevel) {
     this.youthFocusLevel = youthFocusLevel;
