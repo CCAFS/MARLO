@@ -190,7 +190,7 @@ public class ProjectsDeleteFieldsSummaryAction extends BaseSummariesAction imple
       bytesXLSX = os.toByteArray();
       os.close();
     } catch (Exception e) {
-      LOG.error("Error generating ProjectsSummaryAction " + e.getMessage());
+      LOG.error("Error generating ProjectsFieldsToRemoveAction " + e.getMessage());
       throw e;
     }
     // Calculate time of generation
@@ -251,13 +251,17 @@ public class ProjectsDeleteFieldsSummaryAction extends BaseSummariesAction imple
       totalW1w2CoGender = 0.0;
 
     // get total budget per year
-    if (coAs.size() == 1 && this.hasW1W2Co) {
-      hasW1W2CoTemp = true;
-      // W1W2 no including co
-      totalW1w2 = this.getTotalYear(this.getSelectedYear(), 1, project, 3);
-      // W1W2 including co
-      totalW1w2Co = this.getTotalYear(this.getSelectedYear(), 1, project, 2);
+    if (coAs != null && coAs.size() > 0) {
+      if (coAs.size() == 1 && this.hasW1W2Co) {
+        hasW1W2CoTemp = true;
+        // W1W2 no including co
+        totalW1w2 = this.getTotalYear(this.getSelectedYear(), 1, project, 3);
+        // W1W2 including co
+        totalW1w2Co = this.getTotalYear(this.getSelectedYear(), 1, project, 2);
 
+      } else {
+        totalW1w2 = this.getTotalYear(this.getSelectedYear(), 1, project, 1);
+      }
     } else {
       totalW1w2 = this.getTotalYear(this.getSelectedYear(), 1, project, 1);
     }
