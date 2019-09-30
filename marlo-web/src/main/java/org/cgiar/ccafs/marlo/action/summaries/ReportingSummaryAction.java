@@ -1559,10 +1559,35 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class},
       0);
     Boolean hasW1W2CoTemp = false;
+
+    // TODO change when the ProjectCoas Duplication will has been fix it
+    List<ProjectClusterActivity> coAsPrev = new ArrayList<>();
+
     List<ProjectClusterActivity> coAs = new ArrayList<>();
-    coAs = project.getProjectClusterActivities().stream()
+    coAsPrev = project.getProjectClusterActivities().stream()
       .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase()))
       .collect(Collectors.toList());
+
+    for (ProjectClusterActivity projectClusterActivity : coAsPrev) {
+      if (coAs.isEmpty()) {
+        coAs.add(projectClusterActivity);
+      } else {
+        boolean duplicated = false;
+        for (ProjectClusterActivity projectCoas : coAs) {
+          if (projectCoas.getCrpClusterOfActivity().getId()
+            .equals(projectClusterActivity.getCrpClusterOfActivity().getId())) {
+            duplicated = true;
+            break;
+          }
+        }
+
+        if (!duplicated) {
+          coAs.add(projectClusterActivity);
+        }
+      }
+
+
+    }
     /*     */
     Double totalW1w2 = 0.0, totalW3 = 0.0, totalBilateral = 0.0, totalCenter = 0.0, totalW1w2Gender = 0.0,
       totalW3Gender = 0.0, totalBilateralGender = 0.0, totalCenterGender = 0.0, totalW1w2Co = 0.0,
