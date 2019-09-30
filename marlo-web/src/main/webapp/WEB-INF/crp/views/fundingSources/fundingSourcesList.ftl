@@ -4,7 +4,7 @@
 [#assign pageLibs = ["datatables.net", "datatables.net-bs", "malihu-custom-scrollbar-plugin"] /]
 [#assign customJS = ["${baseUrlMedia}/js/fundingSources/fundingSourcesList.js" ] /]
 [#assign customCSS = [
-  "${baseUrl}/global/css/customDataTable.css",
+  "${baseUrlCdn}/global/css/customDataTable.css",
   "${baseUrlMedia}/css/fundingSources/fundingSourcesList.css"
   ] 
 /]

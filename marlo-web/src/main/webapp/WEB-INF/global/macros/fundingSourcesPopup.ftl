@@ -19,7 +19,7 @@
         <div class="search-content clearfix">
           <div class="search-input">
             [@customForm.input name="" showTitle=false type="text" i18nkey="form.buttons.searchUser" placeholder="Search by funding source name, ID or finance code"/]
-            <div class="search-loader" style="display:none"><img src="${baseUrl}/global/images/loading_2.gif"></div>
+            <div class="search-loader" style="display:none"><img src="${baseUrlCdn}/global/images/loading_2.gif"></div>
           </div>  
           <div class="search-button">[@s.text name="form.buttons.search" /]</div>
         </div> 
@@ -180,5 +180,5 @@
 <span class="hidden cgiarConsortium">${action.getCGIARInstitution()}</span>
 </div>
 [#--  Funding Source Popup JS --]
-[#assign customJS =  [ "${baseUrl}/global/js/fundingSourcesPopup.js" ]  + customJS/]
+[#assign customJS =  [ "${baseUrlCdn}/global/js/fundingSourcesPopup.js" ]  + customJS/]
   

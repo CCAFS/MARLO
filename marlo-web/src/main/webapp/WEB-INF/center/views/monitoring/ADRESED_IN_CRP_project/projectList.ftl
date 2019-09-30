@@ -3,7 +3,7 @@
 [#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["datatables.net", "datatables.net-bs"] /]
 [#assign customJS = ["${baseUrlMedia}/js/monitoring/projects/projectsList.js" ] /]
-[#assign customCSS = ["${baseUrl}/global/css/customDataTable.css"] /]
+[#assign customCSS = ["${baseUrlCdn}/global/css/customDataTable.css"] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = (filterBy)!"all" /]
 
@@ -18,7 +18,7 @@
 [#-- Help text --]
 <div class="container helpText viewMore-block">
   <div class="helpMessage infoText">
-    <img class="col-md-2" src="${baseUrl}/global/images/icon-help.png" />
+    <img class="col-md-2" src="${baseUrlCdn}/global/images/icon-help.png" />
     <p class="col-md-10"> [@s.text name="projectList.help"][/@s.text] </p>
   </div> 
   <div style="display:none" class="viewMore closed"></div>

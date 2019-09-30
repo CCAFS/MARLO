@@ -3,17 +3,17 @@
 [#assign currentSectionString = "capdev-${actionName?replace('/','-')}-${capdevID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2","flat-flags", "pickadate"] /]
 [#assign customCSS = [
-  "${baseUrl}/global/css/customDataTable.css",
+  "${baseUrlCdn}/global/css/customDataTable.css",
   "${baseUrlMedia}/css/capDev/capacityDevelopment.css"
   ] 
 /]
 [#assign customJS = [
-  "${baseUrl}/global/js/usersManagement.js", 
+  "${baseUrlCdn}/global/js/usersManagement.js", 
   "${baseUrlMedia}/js/capDev/capacityDevelopment.js",
   "${baseUrlMedia}/js/capDev/syncParticipants.js",
   "${baseUrlMedia}/js/capDev/capdevDescription.js?20181211",
-  "${baseUrl}/global/js/fieldsValidation.js",
-  "${baseUrl}/global/js/autoSave.js"
+  "${baseUrlCdn}/global/js/fieldsValidation.js",
+  "${baseUrlCdn}/global/js/autoSave.js"
   ] 
 /]
 
@@ -31,7 +31,7 @@
 <div class="container"> 
 	<div class="row">
 		<div class="helpMessage infoText col-md-12 capdevinfo">
-			<img class="col-md-2" src="${baseUrl}/global/images/icon-help.png" />
+			<img class="col-md-2" src="${baseUrlCdn}/global/images/icon-help.png" />
    			[@s.text name="capdev.help.detail"][/@s.text] 
 		</div>
 	</div> 
@@ -259,7 +259,7 @@
           </div>
           <div id="filewarning" class="warning" style="display: none; margin-top: 10px;">
           </div>
-          <div class="loader" style="display:none;"><img src="${baseUrl}/global/images/loading_2.gif" width="80" height="30"></div>
+          <div class="loader" style="display:none;"><img src="${baseUrlCdn}/global/images/loading_2.gif" width="80" height="30"></div>
 
           <div class="modal fade bd-example-modal-lg" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-lg" role="document">
