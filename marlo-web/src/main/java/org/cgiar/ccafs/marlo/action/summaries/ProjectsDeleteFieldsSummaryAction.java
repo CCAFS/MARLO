@@ -804,7 +804,7 @@ public class ProjectsDeleteFieldsSummaryAction extends BaseSummariesAction imple
           }
         }
         // BudgetsbyCoasTableModel
-        this.getBudgetsbyCoasTableModel(project);
+        // this.getBudgetsbyCoasTableModel(project);
 
         // ***************//
 
