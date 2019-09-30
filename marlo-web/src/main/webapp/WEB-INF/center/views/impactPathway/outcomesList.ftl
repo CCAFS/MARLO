@@ -3,13 +3,13 @@
 [#assign currentSectionString = "program-${actionName?replace('/','-')}-${crpProgramID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["datatables.net", "datatables.net-bs","select2"] /]
 [#assign customJS = [
-  "${baseUrl}/global/js/usersManagement.js", 
-  "${baseUrl}/global/js/fieldsValidation.js",
+  "${baseUrlCdn}/global/js/usersManagement.js", 
+  "${baseUrlCdn}/global/js/fieldsValidation.js",
   "${baseUrlMedia}/js/impactPathway/centerOutcomeList.js?20181203"
   ] 
 /]
 [#assign customCSS = [
-  "${baseUrl}/global/css/customDataTable.css"
+  "${baseUrlCdn}/global/css/customDataTable.css"
   ]
 /]
 [#assign currentSection = "impactPathway" /]

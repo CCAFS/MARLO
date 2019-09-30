@@ -48,7 +48,7 @@
           <div class="borderBox">
           
             [#assign guideSheetURL = "https://drive.google.com/file/d/1GYLsseeZOOXF9zXNtpUtE1xeh2gx3Vw2/view" /]
-            <small class="pull-right"><a href="${guideSheetURL}" target="_blank"> <img src="${baseUrl}/global/images/icon-file.png" alt="" /> #I1 Policies - Guideline </a> </small>
+            <small class="pull-right"><a href="${guideSheetURL}" target="_blank"> <img src="${baseUrlCdn}/global/images/icon-file.png" alt="" /> #I1 Policies - Guideline </a> </small>
             <h4 class="sectionSubTitle">[@s.text name="${customLabel}.indicatorI1.title" /]</h4>
             
             <div class="form-group row">

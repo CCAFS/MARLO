@@ -3100,8 +3100,6 @@ public class DeliverableAction extends BaseAction {
         && deliverable.getDeliverableInfo(this.getActualPhase()).getNewExpectedYear() != null) {
         deliverableInfoDb
           .setNewExpectedYear(deliverable.getDeliverableInfo(this.getActualPhase()).getNewExpectedYear());
-      } else {
-        deliverableInfoDb.setNewExpectedYear(null);
       }
     } else {
       if ((deliverable.getDeliverableInfo(this.getActualPhase()).getStatus() == Integer
@@ -3111,8 +3109,6 @@ public class DeliverableAction extends BaseAction {
         && deliverable.getDeliverableInfo(this.getActualPhase()).getNewExpectedYear() != null) {
         deliverableInfoDb
           .setNewExpectedYear(deliverable.getDeliverableInfo(this.getActualPhase()).getNewExpectedYear());
-      } else {
-        deliverableInfoDb.setNewExpectedYear(null);
       }
     }
 

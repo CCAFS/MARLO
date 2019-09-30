@@ -1,6 +1,6 @@
 [#ftl]
 
-<link rel="stylesheet" href="${baseUrl}/global/css/outcomeProjectsPopup.css">
+<link rel="stylesheet" href="${baseUrlCdn}/global/css/outcomeProjectsPopup.css">
 
 <!-- Modal -->
 <div class="modal fade" id="outcomeProjectsModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
@@ -25,5 +25,5 @@
 </div>
 
 [#--  Outcome Projects Popup JS --]
-[#assign customJS =  [ "${baseUrl}/global/js/outcomeProjectsPopup.js" ]  + customJS/]
+[#assign customJS =  [ "${baseUrlCdn}/global/js/outcomeProjectsPopup.js" ]  + customJS/]
   

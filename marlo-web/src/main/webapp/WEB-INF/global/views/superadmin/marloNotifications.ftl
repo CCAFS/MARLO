@@ -2,7 +2,7 @@
 [#assign title = "MARLO Admin" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = [] /]
-[#assign customJS = [ "${baseUrl}/global/js/superadmin/notifications.js" ] /]
+[#assign customJS = [ "${baseUrlCdn}/global/js/superadmin/notifications.js" ] /]
 [#assign currentSection = "superadmin" /]
 [#assign currentStage = "notifications" /]
 

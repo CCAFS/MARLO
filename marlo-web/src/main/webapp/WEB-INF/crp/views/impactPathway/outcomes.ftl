@@ -5,14 +5,14 @@
 [#assign customJS = [ 
   "${baseUrlMedia}/js/impactPathway/programSubmit.js", 
   "${baseUrlMedia}/js/impactPathway/outcomes.js?20190927", 
-  "${baseUrl}/global/js/autoSave.js", 
-  "${baseUrl}/global/js/impactGraphic.js",
-  "${baseUrl}/global/js/fieldsValidation.js" 
+  "${baseUrlCdn}/global/js/autoSave.js", 
+  "${baseUrlCdn}/global/js/impactGraphic.js",
+  "${baseUrlCdn}/global/js/fieldsValidation.js" 
   ] 
 /]
 [#assign customCSS = [ 
   "${baseUrlMedia}/css/impactPathway/outcomes.css",
-  "${baseUrl}/global/css/impactGraphic.css" 
+  "${baseUrlCdn}/global/css/impactGraphic.css" 
   ] 
 /]
 [#assign currentSection = "impactPathway" /]
@@ -33,7 +33,7 @@
 
 <div class="container helpText viewMore-block">
   <div style="display:none;" class="helpMessage infoText">
-    <img class="col-md-2" src="${baseUrl}/global/images/icon-help.jpg" />
+    <img class="col-md-2" src="${baseUrlCdn}/global/images/icon-help.jpg" />
     <p class="col-md-10"> [@s.text name="outcomes.help" /] </p>
   </div> 
   <div style="display:none" class="viewMore closed"></div>

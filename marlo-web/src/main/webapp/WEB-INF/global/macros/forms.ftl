@@ -492,7 +492,7 @@
     <input class="fileID" type="hidden" name="${name}" value="${(fileDB.id)!}" />
     [#if image]
     <div class="form-group">
-      <img src="${baseUrl}/global/images/${imgUrl}" class="${imgClass}" />
+      <img src="${baseUrlCdn}/global/images/${imgUrl}" class="${imgClass}" />
     </div>
     [/#if]
     [#-- Input File --]
@@ -523,7 +523,7 @@
   [#--  Help Text --]
   [#if nameValue?has_content && editable]
     [#if showIcon]
-      <img src="${baseUrl}/global/images/icon-help2.png" title="${nameValue}" />
+      <img src="${baseUrlCdn}/global/images/icon-help2.png" title="${nameValue}" />
       <span class="hint" style="display:none" title="${nameValue}"> [HINT] </span>
     [#else]
       <br /><i class="helpLabel">${nameValue}</i>
