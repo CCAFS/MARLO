@@ -766,18 +766,24 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
         directDonor = fundingSource.getFundingSourceInfo().getDirectDonor().getComposedName();
       }
 
+      List<String> temp = new ArrayList<>();
       for (FundingSourceInstitution fsIns : fundingSource.getFundingSourceInstitutions().stream()
         .filter(fsi -> fsi.isActive() && fsi.getPhase() != null && fsi.getPhase().equals(this.getSelectedPhase()))
         .collect(Collectors.toList())) {
         if (leadPartner.isEmpty()) {
           leadPartner = fsIns.getInstitution().getComposedName();
           // Check IFPRI Division
+
           if (this.showIfpriDivision) {
             if (fsIns.getInstitution().getAcronym() != null && fsIns.getInstitution().getAcronym().equals("IFPRI")
               && fundingSource.getFundingSourceInfo().getPartnerDivision() != null
               && fundingSource.getFundingSourceInfo().getPartnerDivision().getName() != null
               && !fundingSource.getFundingSourceInfo().getPartnerDivision().getName().trim().isEmpty()) {
-              leadPartner += " (" + fundingSource.getFundingSourceInfo().getPartnerDivision().getName() + ")";
+              if (temp == null || temp.isEmpty() || temp.size() == 0
+                || !temp.contains(fundingSource.getFundingSourceInfo().getPartnerDivision().getName())) {
+                leadPartner += " (" + fundingSource.getFundingSourceInfo().getPartnerDivision().getName() + ")";
+                temp.add(fundingSource.getFundingSourceInfo().getPartnerDivision().getName());
+              }
             }
           }
         } else {
@@ -787,7 +793,11 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
             if (fsIns.getInstitution().getAcronym() != null && fsIns.getInstitution().getAcronym().equals("IFPRI")
               && fundingSource.getFundingSourceInfo().getPartnerDivision().getName() != null
               && !fundingSource.getFundingSourceInfo().getPartnerDivision().getName().trim().isEmpty()) {
-              leadPartner += " (" + fundingSource.getFundingSourceInfo().getPartnerDivision().getName() + ")";
+              if (temp == null || temp.isEmpty() || temp.size() == 0
+                || !temp.contains(fundingSource.getFundingSourceInfo().getPartnerDivision().getName())) {
+                leadPartner += " (" + fundingSource.getFundingSourceInfo().getPartnerDivision().getName() + ")";
+                temp.add(fundingSource.getFundingSourceInfo().getPartnerDivision().getName());
+              }
             }
           }
         }
