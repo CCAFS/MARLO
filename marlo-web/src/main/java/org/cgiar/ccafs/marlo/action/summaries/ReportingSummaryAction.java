@@ -2916,9 +2916,38 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
   private TypedTableModel getDescCoAsTableModel() {
     TypedTableModel model = new TypedTableModel(new String[] {"description"}, new Class[] {String.class}, 0);
     if (project.getProjectClusterActivities() != null) {
-      for (ProjectClusterActivity projectClusterActivity : project.getProjectClusterActivities().stream()
+
+
+      // TODO change when the ProjectCoas Duplication will has been fix it
+      List<ProjectClusterActivity> coAsPrev = new ArrayList<>();
+
+      List<ProjectClusterActivity> coAs = new ArrayList<>();
+      coAsPrev = project.getProjectClusterActivities().stream()
         .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase()))
-        .collect(Collectors.toList())) {
+        .collect(Collectors.toList());
+
+      for (ProjectClusterActivity projectClusterActivity : coAsPrev) {
+        if (coAs.isEmpty()) {
+          coAs.add(projectClusterActivity);
+        } else {
+          boolean duplicated = false;
+          for (ProjectClusterActivity projectCoas : coAs) {
+            if (projectCoas.getCrpClusterOfActivity().getId()
+              .equals(projectClusterActivity.getCrpClusterOfActivity().getId())) {
+              duplicated = true;
+              break;
+            }
+          }
+
+          if (!duplicated) {
+            coAs.add(projectClusterActivity);
+          }
+        }
+
+
+      }
+
+      for (ProjectClusterActivity projectClusterActivity : coAs) {
         model.addRow(new Object[] {projectClusterActivity.getCrpClusterOfActivity().getComposedName()});
       }
     }
