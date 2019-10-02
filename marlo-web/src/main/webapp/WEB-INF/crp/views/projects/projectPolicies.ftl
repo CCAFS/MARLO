@@ -4,7 +4,7 @@
 [#assign pageLibs = [ "datatables.net", "datatables.net-bs" ] /]
 [#assign customJS = [
   "${baseUrlMedia}/js/projects/projectPoliciesList.js",
-  "${baseUrl}/global/js/fieldsValidation.js"] 
+  "${baseUrlCdn}/global/js/fieldsValidation.js"] 
 /]
 [#assign customCSS = [
   "${baseUrlMedia}/css/projects/projectPolicies.css" ] 
@@ -27,7 +27,7 @@
 
 <div class="container helpText viewMore-block">
   <div class="helpMessage infoText">
-    <img class="col-md-2" src="${baseUrl}/global/images/icon-help.jpg" />
+    <img class="col-md-2" src="${baseUrlCdn}/global/images/icon-help.jpg" />
     <p class="col-md-10"> [@s.text name="projectPolicies.help" /] </p>
   </div> 
   <div style="display:none" class="viewMore closed"></div>
@@ -127,7 +127,7 @@
             <td class="removeHighlight-row text-center">
               [#if canEdit && ((item.year gte  currentCycleYear)!true) ]
                 <a id="removeElement-${(item.id)!}" class="removeElementList" href="#" title="" data-toggle="modal" data-target="#removeItem-${item_index}" >
-                  <img src="${baseUrl}/global/images/trash.png" title="[@s.text name="projectPolicies.removeItem" /]" /> 
+                  <img src="${baseUrlCdn}/global/images/trash.png" title="[@s.text name="projectPolicies.removeItem" /]" /> 
                 </a>
                 <div id="removeItem-${item_index}" class="modal fade" tabindex="-1" role="dialog">
                   <div class="modal-dialog" role="document">
@@ -152,7 +152,7 @@
                   </div>
                 </div>
               [#else]
-                <img src="${baseUrl}/global/images/trash_disable.png" title="[@s.text name="projectPolicies.cantDeleteItem" /]" />
+                <img src="${baseUrlCdn}/global/images/trash_disable.png" title="[@s.text name="projectPolicies.cantDeleteItem" /]" />
               [/#if]
             </td>
             [/#if]

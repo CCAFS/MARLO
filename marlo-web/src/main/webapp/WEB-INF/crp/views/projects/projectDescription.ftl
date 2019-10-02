@@ -4,8 +4,8 @@
 [#assign pageLibs = ["select2"] /]
 [#assign customJS = [
   "${baseUrlMedia}/js/projects/projectDescription.js", 
-  "${baseUrl}/global/js/autoSave.js",
-  "${baseUrl}/global/js/fieldsValidation.js"
+  "${baseUrlCdn}/global/js/autoSave.js",
+  "${baseUrlCdn}/global/js/fieldsValidation.js"
   ] 
 /]
 [#assign customCSS = [
@@ -30,7 +30,7 @@
 <div class="container helpText viewMore-block">
   <div class="helpMessage infoText">
     [#-- <div  class="removeHelp"><span class="glyphicon glyphicon-remove"></span></div> --]
-    <img class="col-md-2" src="${baseUrl}/global/images/icon-help.jpg" />
+    <img class="col-md-2" src="${baseUrlCdn}/global/images/icon-help.jpg" />
     <p class="col-md-10"> 
       [#if (project.projectInfo.isProjectEditLeader())!false]
         [#if (reportingActive)!false] 

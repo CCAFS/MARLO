@@ -2,7 +2,7 @@
 [#assign currentSectionString = "capdev-${actionName?replace('/','-')}-${capdevID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["datatables.net", "datatables.net-bs"] /]
 [#assign customCSS = [
-    "${baseUrl}/global/css/customDataTable.css", 
+    "${baseUrlCdn}/global/css/customDataTable.css", 
     "${baseUrlMedia}/css/capDev/capacityDevelopment.css"
   ] 
 /]
@@ -25,7 +25,7 @@
 <div class="container">
   [#-- Help Text --]
   <div class="helpMessage infoText capdevinfo">
-    <img class="col-md-2" src="${baseUrl}/global/images/icon-help.png" />[@s.text name="capdev.help.list"][/@s.text] 
+    <img class="col-md-2" src="${baseUrlCdn}/global/images/icon-help.png" />[@s.text name="capdev.help.list"][/@s.text] 
   </div>
   <br />
   

@@ -7,7 +7,7 @@
   "${baseUrlMedia}/js/impactPathway/impactGraphic.js"
   ] 
 /]
-[#assign customCSS = ["${baseUrlMedia}/css/home/dashboard.css","${baseUrl}/global/css/customDataTable.css"] /]
+[#assign customCSS = ["${baseUrlMedia}/css/home/dashboard.css","${baseUrlCdn}/global/css/customDataTable.css"] /]
 [#assign currentSection = "home" /]
 [#assign breadCrumb = [
   {"label":"home", "nameSpace":"", "action":""}

@@ -3,9 +3,9 @@
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2"] /]
 [#assign customJS = [
-  "${baseUrl}/global/js/fieldsValidation.js",
+  "${baseUrlCdn}/global/js/fieldsValidation.js",
   "${baseUrlMedia}/js/projects/projectLeverages.js", 
-  "${baseUrl}/global/js/autoSave.js"
+  "${baseUrlCdn}/global/js/autoSave.js"
   ] 
 /]
 [#assign customCSS = ["${baseUrlMedia}/css/projects/projectLeverages.css"] /]
@@ -25,7 +25,7 @@
 
 <div class="container helpText viewMore-block">
   <div class="helpMessage infoText">
-    <img class="col-md-2" src="${baseUrl}/global/images/icon-help.jpg" />
+    <img class="col-md-2" src="${baseUrlCdn}/global/images/icon-help.jpg" />
     <p class="col-md-10"> [@s.text name="projectLeverages.help" /] </p>
   </div> 
   <div style="display:none" class="viewMore closed"></div>

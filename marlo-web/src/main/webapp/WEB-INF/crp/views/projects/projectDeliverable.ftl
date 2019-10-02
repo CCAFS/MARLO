@@ -7,8 +7,8 @@
   "${baseUrlMedia}/js/projects/deliverables/deliverableDissemination.js?20190229", 
   "${baseUrlMedia}/js/projects/deliverables/deliverableQualityCheck.js?20190228",
   [#--  "${baseUrlMedia}/js/projects/deliverables/deliverableDataSharing.js?20180523",--]
-  "${baseUrl}/global/js/autoSave.js",
-  "${baseUrl}/global/js/fieldsValidation.js?20180529"
+  "${baseUrlCdn}/global/js/autoSave.js",
+  "${baseUrlCdn}/global/js/fieldsValidation.js?20180529"
 ] /]
 [#assign customCSS = ["${baseUrl}/crp/css/projects/projectDeliverable.css"] /]
 [#assign currentSection = "projects" /]
@@ -31,7 +31,7 @@
 
 <div class="container helpText viewMore-block">
   <div class="helpMessage infoText">
-    <img class="col-md-2" src="${baseUrl}/global/images/icon-help.jpg" />
+    <img class="col-md-2" src="${baseUrlCdn}/global/images/icon-help.jpg" />
     <p class="col-md-10">[#if reportingActive] [@s.text name="project.deliverable.help2" /] [#else] [@s.text name="project.deliverable.help1" /] [/#if] </p>
   </div> 
   <div style="display:none" class="viewMore closed"></div>
@@ -203,7 +203,7 @@
 
 [#-- File Input template --]
 <div id="fileInputTemplate" class="fileInput" style="display:none">
-  <img class="removeInput" src="${baseUrl}/global/images/icon-remove.png" alt="Remove"> 
+  <img class="removeInput" src="${baseUrlCdn}/global/images/icon-remove.png" alt="Remove"> 
   <input name="filesUploaded" type="file" />
 </div>
  
@@ -216,7 +216,7 @@
     <div class="fileName">filename</div>
     <div class="fileFormat">- -</div>
     <div class="fileSize">- -</div>
-    <img class="removeInput" src="${baseUrl}/global/images/icon-remove.png" alt="Remove"/>
+    <img class="removeInput" src="${baseUrlCdn}/global/images/icon-remove.png" alt="Remove"/>
   </li>
 </ul>
 

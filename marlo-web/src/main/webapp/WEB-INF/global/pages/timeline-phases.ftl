@@ -2,7 +2,7 @@
 [#if phases??]
   [#if phases?size > 1]
     <div class="container hidden-print"> 
-      <link rel="stylesheet" type="text/css" href="${baseUrl}/global/css/timeline-phases.css" />
+      <link rel="stylesheet" type="text/css" href="${baseUrlCdn}/global/css/timeline-phases.css" />
         
         [#-- Timeline Scroll --]
         <div id="timelineScroll" class="example pagespan">
@@ -41,9 +41,9 @@
         [#assign pageLibs = ["sly", "jsUri"] /]
       [/#if]
       [#if customJS??]
-        [#assign customJS = [ "${baseUrl}/global/js/timeline-phases.js"  ] + customJS  /]
+        [#assign customJS = [ "${baseUrlCdn}/global/js/timeline-phases.js"  ] + customJS  /]
       [#else]
-        [#assign customJS = [ "${baseUrl}/global/js/timeline-phases.js"  ] /]
+        [#assign customJS = [ "${baseUrlCdn}/global/js/timeline-phases.js"  ] /]
       [/#if]
     
     </div>

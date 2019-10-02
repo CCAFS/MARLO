@@ -4,7 +4,7 @@
 [#assign pageLibs = ["datatables.net", "datatables.net-bs"] /]
 [#assign customJS = ["${baseUrlMedia}/js/publications/publicationsList.js" ] /]
 [#assign customCSS = [
-  "${baseUrl}/global/css/customDataTable.css", 
+  "${baseUrlCdn}/global/css/customDataTable.css", 
   "${baseUrlMedia}/css/projects/projectDeliverable.css"
   ] 
 /]

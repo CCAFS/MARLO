@@ -4,8 +4,8 @@
 [#assign pageLibs = ["select2", "jsUri"] /]
 [#assign customJS = [ 
   "${baseUrlMedia}/js/projects/projectCcafsOutcomes.js", 
-  "${baseUrl}/global/js/autoSave.js", 
-  "${baseUrl}/global/js/fieldsValidation.js"
+  "${baseUrlCdn}/global/js/autoSave.js", 
+  "${baseUrlCdn}/global/js/fieldsValidation.js"
   ] 
 /]
 [#assign customCSS = [ ] /]
@@ -31,7 +31,7 @@
 
 <div class="container helpText viewMore-block">
   <div class="helpMessage infoText">
-    <img class="col-md-2" src="${baseUrl}/global/images/icon-help.jpg" />
+    <img class="col-md-2" src="${baseUrlCdn}/global/images/icon-help.jpg" />
     <p class="col-md-10"> [@s.text name="projectCcafsOutcomes.help" /] </p>
   </div> 
   <div style="display:none" class="viewMore closed"></div>
