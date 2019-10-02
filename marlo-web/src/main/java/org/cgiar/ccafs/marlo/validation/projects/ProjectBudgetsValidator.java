@@ -129,9 +129,18 @@ public class ProjectBudgetsValidator extends BaseValidator {
                 }
 
                 total = total + projectBudget.getAmount().longValue();
-              }
-            }
 
+                // Rationale
+
+                if (!(this.isValidString(projectBudget.getRationale())
+                  && this.wordCount(projectBudget.getRationale()) <= 100)) {
+                  action.addMessage(action.getText("projectBudgets.rationale"));
+                  action.getInvalidFields().put("input-project.budgets[" + i + "].rationale",
+                    InvalidFieldsMessages.EMPTYFIELD);
+                }
+              }
+
+            }
           }
           i++;
         }
