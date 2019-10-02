@@ -3098,8 +3098,11 @@ public class DeliverableAction extends BaseAction {
       if (deliverable.getDeliverableInfo(this.getActualPhase()).getStatus() == Integer
         .parseInt(ProjectStatusEnum.Extended.getStatusId())
         && deliverable.getDeliverableInfo(this.getActualPhase()).getNewExpectedYear() != null) {
-        deliverableInfoDb
-          .setNewExpectedYear(deliverable.getDeliverableInfo(this.getActualPhase()).getNewExpectedYear());
+
+        if (deliverable.getDeliverableInfo(this.getActualPhase()).getNewExpectedYear() != -1) {
+          deliverableInfoDb
+            .setNewExpectedYear(deliverable.getDeliverableInfo(this.getActualPhase()).getNewExpectedYear());
+        }
       }
     } else {
       if ((deliverable.getDeliverableInfo(this.getActualPhase()).getStatus() == Integer
@@ -3107,8 +3110,12 @@ public class DeliverableAction extends BaseAction {
         || deliverable.getDeliverableInfo(this.getActualPhase()).getStatus() == Integer
           .parseInt(ProjectStatusEnum.Complete.getStatusId()))
         && deliverable.getDeliverableInfo(this.getActualPhase()).getNewExpectedYear() != null) {
-        deliverableInfoDb
-          .setNewExpectedYear(deliverable.getDeliverableInfo(this.getActualPhase()).getNewExpectedYear());
+
+        if (deliverable.getDeliverableInfo(this.getActualPhase()).getNewExpectedYear() != -1) {
+          deliverableInfoDb
+            .setNewExpectedYear(deliverable.getDeliverableInfo(this.getActualPhase()).getNewExpectedYear());
+        }
+
       }
     }
 
