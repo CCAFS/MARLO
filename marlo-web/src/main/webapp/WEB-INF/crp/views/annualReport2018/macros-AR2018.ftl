@@ -139,7 +139,7 @@
                       <td class="col-md-4"> [@utils.tableList list=(item.srfTargets)![] displayFieldName="srfSloIndicator.title" /] </td>
                       <td> [@utils.tableText value=(item.projectExpectedStudyInfo.studyType.name)!"" /] </td>
                       <td> [@utils.tableText value=(item.projectExpectedStudyInfo.year)!"" /] </td>
-                      <td> <a href="${summaryPDF}" target="_blank"><img src="${baseUrl}/global/images/pdf.png" height="25" title="[@s.text name="projectsList.downloadPDF" /]" /></a>  </td>
+                      <td> <a href="${summaryPDF}" target="_blank"><img src="${baseUrlCdn}/global/images/pdf.png" height="25" title="[@s.text name="projectsList.downloadPDF" /]" /></a>  </td>
                       <td> <a href="${url}" target="_blank"><span class="glyphicon glyphicon-new-window"></span></a>  </td>
                     </tr>
                   [/#list]

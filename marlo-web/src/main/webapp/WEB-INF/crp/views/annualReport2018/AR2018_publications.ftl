@@ -52,7 +52,7 @@
             
             <div class="form-group">
               [#assign guideSheetURL = "https://drive.google.com/file/d/1apWx9qJk5NXlZQTzZzhGqRNSx934Bp5H/view" /]
-                <small class="pull-right"><a href="${guideSheetURL}" target="_blank"> <img src="${baseUrl}/global/images/icon-file.png" alt="" /> #C4 Peer review papers  -  Guideline </a> </small>
+                <small class="pull-right"><a href="${guideSheetURL}" target="_blank"> <img src="${baseUrlCdn}/global/images/icon-file.png" alt="" /> #C4 Peer review papers  -  Guideline </a> </small>
             </div>
             <br />
             
@@ -293,11 +293,11 @@
               [/#if]
               [#-- Is OpenAccess --]
               <td class="text-center">
-                <img src="${baseUrl}/global/images/openAccess-${(item.dissemination.isOpenAccess?string)!'false'}.png" alt="" />
+                <img src="${baseUrlCdn}/global/images/openAccess-${(item.dissemination.isOpenAccess?string)!'false'}.png" alt="" />
               </td>
               [#-- Is ISI --]
               <td class="text-center">
-                <img src="${baseUrl}/global/images/checked-${(item.publication.isiPublication?string)!'false'}.png" alt="" />
+                <img src="${baseUrlCdn}/global/images/checked-${(item.publication.isiPublication?string)!'false'}.png" alt="" />
               </td>
               [#if !allowPopups]
                 [#-- DOI or Handle --]

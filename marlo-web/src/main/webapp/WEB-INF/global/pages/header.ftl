@@ -9,7 +9,7 @@
   	<meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
   	[#-- Favicon --]
-    <link rel="shortcut icon" href="${baseUrl}/global/images/MARLO_favicon.png" />
+    <link rel="shortcut icon" href="${baseUrlCdn}/global/images/MARLO_favicon.png" />
     [#-- Keywords --]
     [#if pageKeywords??]<meta name="keywords" content="${pageKeywords}" />[/#if]
     [#-- Description --]
@@ -36,10 +36,10 @@
     <![endif]-->
     
     [#-- Second, import global javascripts and templates. --]
-    <link rel="stylesheet" type="text/css" href="${baseUrl}/global/css/global.css?20190905" />
-    <link rel="stylesheet" type="text/css" href="${baseUrl}/global/css/jquery-ui.custom.css" />
+    <link rel="stylesheet" type="text/css" href="${baseUrlCdn}/global/css/global.css?20190723" />
+    <link rel="stylesheet" type="text/css" href="${baseUrlCdn}/global/css/jquery-ui.custom.css" />
     [#if centerGlobalUnit]
-      <link rel="stylesheet" type="text/css" href="${baseUrl}/global/css/global-center.css" />
+      <link rel="stylesheet" type="text/css" href="${baseUrlCdn}/global/css/global-center.css" />
     [/#if]
     
     [#-- Import the custom CSS --]
@@ -114,9 +114,9 @@
             </div>
             [#-- GlobalUnit Image/Logo--]
             [#if namespace?contains('superadmin')]
-              <img id="crp-image" src="${baseUrl}/global/images/cgiar.png" alt="" />
+              <img id="crp-image" src="${baseUrlCdn}/global/images/cgiar.png" alt="" />
             [#else]
-              [#if crpSession??]<img id="crp-image" src="${baseUrl}/global/images/crps/${crpSession}.png" alt="${crpSession}" />[/#if]
+              [#if crpSession??]<img id="crp-image" src="${baseUrlCdn}/global/images/crps/${crpSession}.png" alt="${crpSession}" />[/#if]
             [/#if]
             <div class="clearfix"></div>
             [#-- Testing Environment --]

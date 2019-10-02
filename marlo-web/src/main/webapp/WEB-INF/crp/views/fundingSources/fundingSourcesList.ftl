@@ -7,7 +7,7 @@
   ] 
 /]
 [#assign customCSS = [
-  "${baseUrl}/global/css/customDataTable.css",
+  "${baseUrlCdn}/global/css/customDataTable.css",
   "${baseUrlMedia}/css/fundingSources/fundingSourcesList.css?20190905"
   ] 
 /]

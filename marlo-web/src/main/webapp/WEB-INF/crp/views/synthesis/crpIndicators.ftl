@@ -4,8 +4,8 @@
 [#assign pageLibs = [ "datatables.net", "datatables.net-bs" ] /]
 [#assign customJS = [
   "${baseUrlMedia}/js/synthesis/crpIndicators.js",
-  "${baseUrl}/global/js/autoSave.js",
-  "${baseUrl}/global/js/fieldsValidation.js"
+  "${baseUrlCdn}/global/js/autoSave.js",
+  "${baseUrlCdn}/global/js/fieldsValidation.js"
 ] /]
 [#assign customCSS = ["${baseUrlMedia}/css/synthesis/synthesisGlobal.css"] /]
 [#assign currentSection = "synthesis" /]
@@ -27,7 +27,7 @@
         [#-- Help Message --]
         <div class="container helpText viewMore-block">
           <div class="helpMessage infoText">
-            <img class="col-md-2" src="${baseUrl}/global/images/icon-help.jpg" />
+            <img class="col-md-2" src="${baseUrlCdn}/global/images/icon-help.jpg" />
             <p class="col-md-10"> [@s.text name="synthesis.crpIndicators.help" /]</p>
           </div> 
           <div style="display:none" class="viewMore closed"></div>
@@ -43,7 +43,7 @@
               [#assign hasPermission = (action.hasPermissionCrpIndicators(institution.id))!false /]
               <li class="${isActive?string('active','')} ${hasPermission?string('canEdit','')}">
                 <a href="[@s.url][@s.param name ="liaisonInstitutionID"]${institution.id}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">${institution.acronym}</a>
-                [#if isCompleted] <p class="synthesisCompleted"> <img src="${baseUrl}/global/images/icon-check-tiny${isActive?string('-white','')}.png"/> </p> [/#if]
+                [#if isCompleted] <p class="synthesisCompleted"> <img src="${baseUrlCdn}/global/images/icon-check-tiny${isActive?string('-white','')}.png"/> </p> [/#if]
               </li>
             [/#list]
           </ul>
@@ -75,7 +75,7 @@
                   [#-- title --]
                   <h6 class="title" style="font-size: 1.2em;margin-bottom: 5px;">${indicatorReport.crpIndicator.id}.  ${indicatorReport.crpIndicator.name}
                     [#if indicatorReport.crpIndicator.description?has_content]
-                      <a id="showIndicatorDesc-${indicatorReport.crpIndicator.id}" class="showIndicatorDesc" href="#"><img src="${baseUrl}/global/images/icon-info.png" title="Show indicator description" alt="" /></a>
+                      <a id="showIndicatorDesc-${indicatorReport.crpIndicator.id}" class="showIndicatorDesc" href="#"><img src="${baseUrlCdn}/global/images/icon-info.png" title="Show indicator description" alt="" /></a>
                     [/#if]
                   </h6>
                   [#if indicatorReport.crpIndicator.description?has_content]

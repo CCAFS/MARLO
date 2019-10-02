@@ -57,5 +57,5 @@
   </div>  
 </div>
 [#--  Funding Source Popup JS --]
-[#assign customJS =  [ "${baseUrl}/global/js/milestonePopup.js" ]  + customJS/]
+[#assign customJS =  [ "${baseUrlCdn}/global/js/milestonePopup.js" ]  + customJS/]
   

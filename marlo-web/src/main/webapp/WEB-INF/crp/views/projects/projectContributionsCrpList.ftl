@@ -4,7 +4,7 @@
 [#assign pageLibs = ["select2", "jsUri"] /]
 [#assign customJS = [
   "${baseUrlMedia}/js/projects/projectContributionsCrpList.js?20180131_2",
-  "${baseUrl}/global/js/fieldsValidation.js"
+  "${baseUrlCdn}/global/js/fieldsValidation.js"
   ] 
 /]
 [#assign customCSS = [
@@ -31,7 +31,7 @@
 
 <div class="container helpText viewMore-block">
   <div class="helpMessage infoText">
-    <img class="col-md-2" src="${baseUrl}/global/images/icon-help.jpg" />
+    <img class="col-md-2" src="${baseUrlCdn}/global/images/icon-help.jpg" />
     <p class="col-md-10"> [@s.text name="projectContributionsCrpList.help" /] </p>
   </div> 
   <div style="display:none" class="viewMore closed"></div>
@@ -173,10 +173,10 @@
       <td class="text-center">
         [#if ((action.hasPermission("delete"))!true) && action.canBeDeleted((projectOutcome.id)!-1,(projectOutcome.class.name)!"" ) && !action.isCenterGlobalUnit() ]
           <a id="removeOutcome-${projectOutcomeID}" class="removeOutcome" href="${baseUrl}/projects/${crpSession}/removeProjectOuctome.do?projectID=${projectID}&outcomeId=${projectOutcomeID}&phaseID=${(actualPhase.id)!}" title="">
-            <img src="${baseUrl}/global/images/trash.png" />
+            <img src="${baseUrlCdn}/global/images/trash.png" />
           </a>
         [#else]
-          <img src="${baseUrl}/global/images/trash_disable.png" title="" />
+          <img src="${baseUrlCdn}/global/images/trash_disable.png" title="" />
         [/#if]
       </td>
   </tr>
@@ -225,7 +225,7 @@
 [#if action.hasSpecificities('crp_lp6_active') && reportingActive]
   <div id="projectContributionToLP6" class="borderBox project-${project.id} phase-${actualPhase.id}">
   
-   [#-- <a class="btn lp6-pdf btn-link" role="button" data-toggle="popover" data-trigger="focus" title="[@s.text name="projects.LP6Contribution.disabledPDF"/]"><img src="${baseUrl}/global/images/pdf.png" height="25"/>[[@s.text name="projects.LP6Contribution.explanatoryPDF" /]]</a>--]
+   [#-- <a class="btn lp6-pdf btn-link" role="button" data-toggle="popover" data-trigger="focus" title="[@s.text name="projects.LP6Contribution.disabledPDF"/]"><img src="${baseUrlCdn}/global/images/pdf.png" height="25"/>[[@s.text name="projects.LP6Contribution.explanatoryPDF" /]]</a>--]
    <h4>[@s.text name="projects.LP6Contribution.title" /]</h4>
    <p class="note lp6-contribution-note"><small>[@s.text name="projects.LP6Contribution.infoText"/] (<span class="lp6-view-more" data-toggle="modal" data-target=".lp6info-modal">view more</span>)</small></p>
    <div class="form-group">

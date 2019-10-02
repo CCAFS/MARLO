@@ -3,7 +3,7 @@
 [#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2","font-awesome","jsUri", "caret", "jquery-tag-editor"] /]
 [#assign customJS = [
-  "${baseUrl}/global/js/utils.js", 
+  "${baseUrlCdn}/global/js/utils.js", 
   "${baseUrlMedia}/js/summaries/boardSummaries_v2.js"
   ] 
 /]
