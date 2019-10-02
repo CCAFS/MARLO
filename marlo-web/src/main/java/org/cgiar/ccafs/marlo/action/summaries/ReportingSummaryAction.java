@@ -5672,7 +5672,9 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     } catch (Exception e) {
       LOG.error("Failed to get project. Exception: " + e.getMessage());
     }
-    this.setProjectInfo(project.getProjecInfoPhase(this.getSelectedPhase()));
+    if (this.getSelectedPhase() != null && project.getProjecInfoPhase(this.getSelectedPhase()) != null) {
+      this.setProjectInfo(project.getProjecInfoPhase(this.getSelectedPhase()));
+    }
   }
 
 
