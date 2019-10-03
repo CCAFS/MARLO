@@ -3795,11 +3795,16 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     }
     try {
 
-      if (projectInfo.getAdministrative() == null) {
+      if (projectInfo != null && projectInfo.getAdministrative() == null) {
         projectInfo.setAdministrative(false);
       }
     } catch (Exception e) {
-      projectInfo.setAdministrative(false);
+      try {
+        projectInfo.setAdministrative(false);
+      } catch (Exception i) {
+
+      }
+
     }
 
     if (projectInfo.getAdministrative() == false) {
