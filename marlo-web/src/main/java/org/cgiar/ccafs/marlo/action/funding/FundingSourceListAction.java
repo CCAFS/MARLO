@@ -370,6 +370,9 @@ public class FundingSourceListAction extends BaseAction {
 
     if (institutionsIDsList != null) {
       if (institutionsIDsList.size() == 1 && institutionsIDsList.get(0).equals("0")) {
+        // If the institution id received is equals to "0", its mean that all the institutions have to be check mark
+        checkAllInstitutions = true;
+      } else {
         for (String institution : institutionsIDsList) {
 
           Long id = null;
@@ -380,9 +383,6 @@ public class FundingSourceListAction extends BaseAction {
             filteredInstitutions.add(institutionManager.getInstitutionById(id));
           }
         }
-      } else {
-        // If the institution id received is equals to "0", its mean that all the institutions have to be check
-        checkAllInstitutions = true;
       }
     }
   }
@@ -725,7 +725,11 @@ public class FundingSourceListAction extends BaseAction {
     // this.assignLeadCenter();
     if (institutionsIDs != null && !institutionsIDs.isEmpty()) {
       if (!institutionsIDs.equals("0")) {
+
+        // Get each institution id captured from url string into an ArrayList
         this.getInstitutionsIds();
+
+        // Remove institutions not checked in frontend of 'myProjects' list, using ids in institutionsIDsList.
         this.removeInstitutions();
       }
       this.fillInstitutionsList();
