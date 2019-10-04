@@ -632,9 +632,13 @@ public class FundingSourceListAction extends BaseAction {
     try {
       Map<String, Parameter> parameters = this.getParameters();
       institutionsIDs = StringUtils.trim(parameters.get(APConstants.INSTITUTIONS_ID).getMultipleValues()[0]);
-
     } catch (Exception e) {
-      Log.error(e + "error getting institutionsID parameter");
+      institutionsIDs = "0";
+      checkAllInstitutions = true;
+    }
+
+    if (institutionsIDs.equals("0")) {
+      checkAllInstitutions = true;
     }
 
     // Status list
