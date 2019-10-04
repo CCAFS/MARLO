@@ -215,6 +215,7 @@
                     <li class="clusterActivity clearfix [#if !element_has_next]last[/#if]">
                       <input class="id" type="hidden" name="project.clusterActivities[${element_index}].crpClusterOfActivity.id" value="${element.crpClusterOfActivity.id}" />
                       <input class="cid" type="hidden" name="project.clusterActivities[${element_index}].id" value="${(element.id)!}" />
+                      <input class="identifier" type="hidden" name="project.clusterActivities[${element_index}].crpClusterOfActivity.identifier" value="${(element.crpClusterOfActivity.identifier)!}" />
                       [#if editable && !reportingActive && action.hasPermission("activities") ]<span class="listButton remove popUpValidation pull-right">[@s.text name="form.buttons.remove" /]</span>[/#if] 
                       <span class="name">${(element.crpClusterOfActivity.composedName)!'null'}</span>
                       <div class="clearfix"></div>
