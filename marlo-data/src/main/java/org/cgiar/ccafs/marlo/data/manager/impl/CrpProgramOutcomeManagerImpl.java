@@ -129,6 +129,13 @@ public class CrpProgramOutcomeManagerImpl implements CrpProgramOutcomeManager {
         crpMilestoneAdd.setTitle(crpMilestone.getTitle());
         crpMilestoneAdd.setValue(crpMilestone.getValue());
         crpMilestoneAdd.setYear(crpMilestone.getYear());
+
+        if (crpMilestone.getExtendedYear() != null) {
+          if (crpMilestone.getExtendedYear() != -1) {
+            crpMilestoneAdd.setExtendedYear(crpMilestone.getExtendedYear());
+          }
+        }
+
         crpMilestoneAdd.setComposeID(crpMilestone.getComposeID());
         crpMilestoneAdd = crpMilestoneDAO.save(crpMilestoneAdd);
         if (crpMilestone.getComposeID() == null || crpMilestone.getComposeID().trim().length() == 0) {
@@ -381,6 +388,12 @@ public class CrpProgramOutcomeManagerImpl implements CrpProgramOutcomeManager {
           crpMilestoneAdd.setValue(crpMilestone.getValue());
           crpMilestoneAdd.setYear(crpMilestone.getYear());
 
+          if (crpMilestone.getExtendedYear() != null) {
+            if (crpMilestone.getExtendedYear() != -1) {
+              crpMilestoneAdd.setExtendedYear(crpMilestone.getExtendedYear());
+            }
+          }
+
 
           /* POWB 2019 */
 
@@ -479,6 +492,13 @@ public class CrpProgramOutcomeManagerImpl implements CrpProgramOutcomeManager {
           milestonetoUpdate.setTitle(crpMilestone.getTitle());
           milestonetoUpdate.setSrfTargetUnit(crpMilestone.getSrfTargetUnit());
           milestonetoUpdate.setYear(crpMilestone.getYear());
+
+          if (crpMilestone.getExtendedYear() != null) {
+            if (crpMilestone.getExtendedYear() != -1) {
+              milestonetoUpdate.setExtendedYear(crpMilestone.getExtendedYear());
+            }
+          }
+
           milestonetoUpdate.setValue(crpMilestone.getValue());
           /* POWB 2019 */
 
