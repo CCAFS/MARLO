@@ -25,6 +25,7 @@ import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramOutcomeIndicatorManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.FileDBManager;
+import org.cgiar.ccafs.marlo.data.manager.GeneralStatusManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PowbIndAssesmentRiskManager;
 import org.cgiar.ccafs.marlo.data.manager.PowbIndFollowingMilestoneManager;
@@ -42,6 +43,7 @@ import org.cgiar.ccafs.marlo.data.model.CrpProgramLeader;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcomeIndicator;
 import org.cgiar.ccafs.marlo.data.model.CrpTargetUnit;
+import org.cgiar.ccafs.marlo.data.model.GeneralStatus;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.PowbIndAssesmentRisk;
 import org.cgiar.ccafs.marlo.data.model.PowbIndFollowingMilestone;
@@ -127,6 +129,8 @@ public class OutcomesAction extends BaseAction {
 
   private CrpProgramOutcomeManager crpProgramOutcomeManager;
 
+  private GeneralStatusManager generalStatusManager;
+
 
   private HashMap<Long, String> idoList;
 
@@ -158,6 +162,8 @@ public class OutcomesAction extends BaseAction {
   private PowbIndMilestoneRiskManager powbIndMilestoneRiskManager;
   private List<PowbIndFollowingMilestone> followingMilestones;
   private PowbIndFollowingMilestoneManager powbIndFollowingMilestoneManager;
+  private List<GeneralStatus> generalStatuses;
+
 
   @Inject
   public OutcomesAction(APConfig config, SrfTargetUnitManager srfTargetUnitManager, SrfIdoManager srfIdoManager,
@@ -169,7 +175,7 @@ public class OutcomesAction extends BaseAction {
     PowbIndAssesmentRiskManager powbIndAssesmentRiskManager,
     RepIndGenderYouthFocusLevelManager repIndGenderYouthFocusLevelManager,
     PowbIndMilestoneRiskManager powbIndMilestoneRiskManager,
-    PowbIndFollowingMilestoneManager powbIndFollowingMilestoneManager) {
+    PowbIndFollowingMilestoneManager powbIndFollowingMilestoneManager, GeneralStatusManager generalStatusManager) {
     super(config);
     this.srfTargetUnitManager = srfTargetUnitManager;
     this.srfIdoManager = srfIdoManager;
@@ -190,7 +196,9 @@ public class OutcomesAction extends BaseAction {
     this.repIndGenderYouthFocusLevelManager = repIndGenderYouthFocusLevelManager;
     this.powbIndMilestoneRiskManager = powbIndMilestoneRiskManager;
     this.powbIndFollowingMilestoneManager = powbIndFollowingMilestoneManager;
+    this.generalStatusManager = generalStatusManager;
   }
+
 
   @Override
   public String cancel() {
@@ -263,6 +271,10 @@ public class OutcomesAction extends BaseAction {
     return followingMilestones;
   }
 
+  public List<GeneralStatus> getGeneralStatuses() {
+    return generalStatuses;
+  }
+
   public HashMap<Long, String> getIdoList() {
     return idoList;
   }
@@ -279,10 +291,10 @@ public class OutcomesAction extends BaseAction {
     return milestoneYears;
   }
 
-
   public List<CrpProgramOutcome> getOutcomes() {
     return outcomes;
   }
+
 
   public PowbIndAssesmentRiskManager getPowbIndAssesmentRiskManager() {
     return powbIndAssesmentRiskManager;
@@ -300,7 +312,6 @@ public class OutcomesAction extends BaseAction {
     return repIndGenderYouthFocusLevelManager;
   }
 
-
   public CrpProgram getSelectedProgram() {
     return selectedProgram;
   }
@@ -309,6 +320,7 @@ public class OutcomesAction extends BaseAction {
   public List<SrfIdo> getSrfIdos() {
     return srfIdos;
   }
+
 
   public HashMap<Long, String> getTargetUnitList() {
     return targetUnitList;
@@ -341,7 +353,6 @@ public class OutcomesAction extends BaseAction {
   public String getTransaction() {
     return transaction;
   }
-
 
   public void loadInfo() {
     for (CrpProgramOutcome crpProgramOutcome : outcomes) {
@@ -603,6 +614,10 @@ public class OutcomesAction extends BaseAction {
       }
     }
 
+    // General Status List
+    generalStatuses = new ArrayList<>();
+    generalStatuses = generalStatusManager.findAll();
+
     /** POWB 2019 List */
     assessmentRisks = new ArrayList<>();
     assessmentRisks = powbIndAssesmentRiskManager.findAll();
@@ -629,6 +644,7 @@ public class OutcomesAction extends BaseAction {
 
 
   }
+
 
   @Override
   public String save() {
@@ -726,7 +742,6 @@ public class OutcomesAction extends BaseAction {
     }
   }
 
-
   public void saveCrpProgramOutcome() {
 
     /**
@@ -790,6 +805,7 @@ public class OutcomesAction extends BaseAction {
 
   }
 
+
   public void saveIndicators(CrpProgramOutcome crpProgramOutcomeDB, CrpProgramOutcome crpProgramOutcomeDetached) {
 
     /*
@@ -829,7 +845,6 @@ public class OutcomesAction extends BaseAction {
     }
 
   }
-
 
   public void saveMilestones(CrpProgramOutcome crpProgramOutcomeDB, CrpProgramOutcome crpProgramOutcomeDetached) {
 
@@ -871,6 +886,8 @@ public class OutcomesAction extends BaseAction {
             crpMilestoneDB.setExtendedYear(crpMilestoneDetached.getExtendedYear());
           }
         }
+
+        crpMilestoneDB.setMilestonesStatus(crpMilestoneDetached.getMilestonesStatus());
 
 
         /* POWB 2019 New Milestones Fileds */
@@ -945,6 +962,7 @@ public class OutcomesAction extends BaseAction {
     }
 
   }
+
 
   public void saveSubIdo(CrpProgramOutcome crpProgramOutcomeDB, CrpProgramOutcome crpProgramOutcomeDetached) {
 
@@ -1036,9 +1054,13 @@ public class OutcomesAction extends BaseAction {
     this.focusLevels = focusLevels;
   }
 
-
   public void setFollowingMilestones(List<PowbIndFollowingMilestone> followingMilestones) {
     this.followingMilestones = followingMilestones;
+  }
+
+
+  public void setGeneralStatuses(List<GeneralStatus> generalStatuses) {
+    this.generalStatuses = generalStatuses;
   }
 
 
