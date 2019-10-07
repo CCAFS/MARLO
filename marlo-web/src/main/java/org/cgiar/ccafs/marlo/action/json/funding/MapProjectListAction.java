@@ -27,6 +27,7 @@ import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
+import org.cgiar.ccafs.marlo.data.model.ProjectBudget;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
 import org.cgiar.ccafs.marlo.data.model.ProjectPhase;
 import org.cgiar.ccafs.marlo.security.Permission;
@@ -119,6 +120,19 @@ public class MapProjectListAction extends BaseAction {
             .filter(p -> p.isActive() && p.getProjecInfoPhase(phase).isActive()).collect(Collectors.toList());
         }
 
+        // setProjectBudgets
+        List<ProjectBudget> projectBudgetList = new ArrayList<>();
+        projectBudgetList = fundingSource.getProjectBudgets().stream()
+          .filter(pb -> pb.isActive() && pb.getInstitution().getId().equals(institutionId)
+            && pb.getPhase().getId().equals(this.getActualPhase().getId()))
+          .collect(Collectors.toList());
+
+        List<Project> projectList = new ArrayList<>();
+
+        for (ProjectBudget projectBudget : projectBudgetList) {
+          projectList.add(projectBudget.getProject());
+        }
+
 
         for (Project project : userProjects) {
           // Ask if the project contains information in this phase
@@ -175,11 +189,14 @@ public class MapProjectListAction extends BaseAction {
                   if (endDateYear >= year) {
                     if (projectPartner.getInstitution().getId().equals(institution.getId())) {
                       if (permission) {
-                        userProject = new HashMap<String, Object>();
-                        userProject.put("id", project.getId());
-                        userProject.put("description", project.getComposedName());
-                        userProject.put("gender", genderPermission);
-                        projects.add(userProject);
+                        if (projectList != null && !projectList.contains(project)) {
+
+                          userProject = new HashMap<String, Object>();
+                          userProject.put("id", project.getId());
+                          userProject.put("description", project.getComposedName());
+                          userProject.put("gender", genderPermission);
+                          projects.add(userProject);
+                        }
                       }
                     }
                   }
