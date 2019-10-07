@@ -336,8 +336,8 @@
       [@customForm.textArea name="${milestoneCustomName}.title" i18nkey="outcome.milestone.statement" required=true className="milestone-statement limitWords-100" editable=editableMilestone /]
     </div>
     
-    [#-- Milestone Status --]
     <div class="form-group row">
+      [#local milestoneYear = (milestone.year)!currentCycleYear ]
       [#-- Year --]
       <div class="col-md-4">
         [@customForm.select name="${milestoneCustomName}.year" value="${(milestone.year)!-1}"  i18nkey="outcome.milestone.inputTargetYear" listName="milestoneYears"  required=true  className=" targetYear milestoneYear" editable=editableMilestone /]
@@ -352,9 +352,8 @@
       </div>
       [#-- Extended Year --]
       <div class="col-md-4">
-         [@customForm.select name="${milestoneCustomName}.extendedYear" value="${(milestone.extendedYear)!-1}"  i18nkey="Extended Year" listName="milestoneExtendedYears"  required=true  className=" targetYear milestoneYear" editable=editable /]
+         [@customForm.select name="${milestoneCustomName}.extendedYear" value="${(milestone.extendedYear)!(milestoneYear+1)}"  i18nkey="Extended Year" listName="milestoneYears"  required=true  className=" targetYear milestoneYear" editable=editable /]
       </div>
-      
     </div>
     
     <div class="row form-group target-block">
