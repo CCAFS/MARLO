@@ -231,9 +231,10 @@ function removeOutcome() {
 function addMilestone() {
   var $list = $(this).parents('.outcome').find('.milestones-list');
   var $item = $('#milestone-template').clone(true).removeAttr("id");
-  // $item.find('select').select2({
-  // width: '100%'
-  // });
+
+  $item.find('select').select2({
+    width: '100%'
+  });
 
   // $item.
 

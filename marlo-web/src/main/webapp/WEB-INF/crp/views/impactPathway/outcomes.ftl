@@ -345,10 +345,13 @@
       </div>
       [#--  Status  --]
       <div class="col-md-4">
+        [#-- 
         <div class="select">
           <label for="">Status:</label><div class="selectList"><p>${(milestone.milestonesStatus.name)!'No Status defined'}</p></div>
           <input type="hidden" name="${milestoneCustomName}.milestonesStatus.id" value="${(milestone.milestonesStatus.id)!}" />
         </div>
+         --]
+        [@customForm.select name="${milestoneCustomName}.milestonesStatus.id" i18nkey="Status" listName="generalStatuses"  required=true  className=" targetYear milestoneYear" editable=editable /]
       </div>
       [#-- Extended Year --]
       <div class="col-md-4">
@@ -371,7 +374,6 @@
     </div>
     
     [#-- POWB 2019 REQUIREMENTS --]
-    [#if true]
     [#local reqMilestonesFields = (milestone.year == actualPhase.year)!false /]
     <hr />
     <div class="form-group">
@@ -431,8 +433,6 @@
         <br />
       </div>
     </div>
-    [/#if]
-            
     
   </div>
 [/#macro]
