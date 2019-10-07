@@ -40,6 +40,9 @@
 		<property name="year" type="java.lang.Integer">
 			<column name="`year`" not-null="false" />
 		</property>
+		<property name="extendedYear" type="java.lang.Integer">
+      <column name="`extended_year`" not-null="false" />
+    </property>
 		<property name="isPowb" type="java.lang.Boolean">
 			<column name="`is_powb`" not-null="false" />
 		</property>

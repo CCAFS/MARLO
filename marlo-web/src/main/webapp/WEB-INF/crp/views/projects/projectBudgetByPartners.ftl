@@ -4,8 +4,8 @@
 [#assign pageLibs = ["select2", "dropzone", "blueimp-file-upload"] /]
 [#assign customJS = [
   "${baseUrlMedia}/js/projects/projectBudgetByPartners.js?20190403",
-  "${baseUrl}/global/js/autoSave.js",
-  "${baseUrl}/global/js/fieldsValidation.js"
+  "${baseUrlCdn}/global/js/autoSave.js",
+  "${baseUrlCdn}/global/js/fieldsValidation.js"
   ] 
 /]
 [#assign customCSS = ["${baseUrlMedia}/css/projects/projectBudgetByPartners.css"] /]
@@ -32,7 +32,7 @@
 [#if !reportingActive]
 <div class="container helpText viewMore-block">
   <div style="display:none" class="helpMessage infoText">
-    <img class="col-md-2" src="${baseUrl}/global/images/icon-help.jpg" />
+    <img class="col-md-2" src="${baseUrlCdn}/global/images/icon-help.jpg" />
     <p class="col-md-10">
       [#if project.projectInfo.projectEditLeader] [@s.text name="projectBudgets.help2" /] [#else] [@s.text name="projectBudgets.help1" /] [/#if]
     </p>
@@ -89,7 +89,7 @@
                         <tr>
                           <td></td>
                           [#list budgetTypesList as budgetType]
-                            <td class="text-right"><h5 class="subTitle"> ${budgetType.name} <img title="${budgetType.description}" src="${baseUrl}/global/images/icon-help2.png" alt="" /></h5></td>
+                            <td class="text-right"><h5 class="subTitle"> ${budgetType.name} <img title="${budgetType.description}" src="${baseUrlCdn}/global/images/icon-help2.png" alt="" /></h5></td>
                           [/#list]
                           <td class="text-right"><h5 class="title">Overall ${year}</h5></td>
                         </tr>
@@ -383,7 +383,7 @@
     <td>
       [#if (editable && isYearEditable(selectedYear) && action.canEditFunding(((element.fundingSource.fundingSourceInfo.budgetType.id)!-1),(element.institution.id)!-1) ) || isTemplate]
         [#if action.canBeDeleted((element.id)!-1,(element.class.name)!"")]
-          <div class="removeW3bilateralFund" title="Remove"> <img src="${baseUrl}/global/images/icon-remove.png" alt="" /> </div>
+          <div class="removeW3bilateralFund" title="Remove"> <img src="${baseUrlCdn}/global/images/icon-remove.png" alt="" /> </div>
         [#else]
           <div class="disable text-right" title="Project Budget cannot be deleted"></div>
         [/#if]

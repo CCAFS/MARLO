@@ -35,7 +35,7 @@
           [#assign hasPermission = (action.hasSynthesisPermission('update', institution.id))!false/]
           <li class="${isActive?string('active','')} ${hasPermission?string('canEdit','')}">
             <a href="[@s.url][@s.param name ="liaisonInstitutionID"]${institution.id}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">${institution.acronym}: ${institution.name}</a>
-            [#if isCompleted] <p class="synthesisCompleted"> <img src="${baseUrl}/global/images/icon-check-tiny${isActive?string('-white','')}.png" /> </p> [/#if]
+            [#if isCompleted] <p class="synthesisCompleted"> <img src="${baseUrlCdn}/global/images/icon-check-tiny${isActive?string('-white','')}.png" /> </p> [/#if]
           </li>
         [/#list]
       </ul>

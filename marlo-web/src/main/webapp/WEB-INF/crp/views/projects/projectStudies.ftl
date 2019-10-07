@@ -4,7 +4,7 @@
 [#assign pageLibs = [ "datatables.net", "datatables.net-bs" ] /]
 [#assign customJS = [
   "${baseUrlMedia}/js/projects/projectCaseStudiesList.js",
-  "${baseUrl}/global/js/fieldsValidation.js"] /]
+  "${baseUrlCdn}/global/js/fieldsValidation.js"] /]
 [#assign customCSS = ["${baseUrlMedia}/css/projects/projectCaseStudies.css"] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "projectStudies" /]
@@ -28,7 +28,7 @@
 
 <div class="container helpText viewMore-block">
   <div class="helpMessage infoText">
-    <img class="col-md-2" src="${baseUrl}/global/images/icon-help.jpg" />
+    <img class="col-md-2" src="${baseUrlCdn}/global/images/icon-help.jpg" />
     <p class="col-md-10"> [@s.text name="projectStudies.help" /] </p>
   </div> 
   <div style="display:none" class="viewMore closed"></div>
@@ -154,10 +154,10 @@
             <td class="text-center">
               [#if (item.projectExpectedStudyInfo.isPublic)!true ]
               <a href="[@s.url namespace="/projects" action='${(crpSession)!}/studySummary'][@s.param name='studyID']${item.id?c}[/@s.param][@s.param name='cycle']Reporting[/@s.param][@s.param name='year']${(actualPhase.year)!}[/@s.param][/@s.url]" target="__BLANK">
-                <img src="${baseUrl}/global/images/pdf.png" height="25" title="[@s.text name="projectsList.downloadPDF" /]" />
+                <img src="${baseUrlCdn}/global/images/pdf.png" height="25" title="[@s.text name="projectsList.downloadPDF" /]" />
               </a>
               [#else]
-                <img src="${baseUrl}/global/images/private-page-icon.png" alt="Private" />
+                <img src="${baseUrlCdn}/global/images/private-page-icon.png" alt="Private" />
               [/#if]
             </td>
             [/#if]
@@ -172,10 +172,10 @@
             <td class="removeHighlight-row text-center">
               [#if canEdit && isOwner && ((item.projectExpectedStudyInfo.year gte  currentCycleYear)!true) ]
                 <a id="removeElement-${item.id}" class="removeElementList" href="#" title="" >
-                  <img src="${baseUrl}/global/images/trash.png" title="[@s.text name="projectStudies.removeCaseStudy" /]" /> 
+                  <img src="${baseUrlCdn}/global/images/trash.png" title="[@s.text name="projectStudies.removeCaseStudy" /]" /> 
                 </a>
               [#else]
-                <img src="${baseUrl}/global/images/trash_disable.png" title="[@s.text name="projectStudies.cantDeleteCaseStudy" /]" />
+                <img src="${baseUrlCdn}/global/images/trash_disable.png" title="[@s.text name="projectStudies.cantDeleteCaseStudy" /]" />
               [/#if]
             </td>
             [/#if] 

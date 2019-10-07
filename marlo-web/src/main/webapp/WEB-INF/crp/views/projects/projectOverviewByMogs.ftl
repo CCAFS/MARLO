@@ -4,8 +4,8 @@
 [#assign pageLibs = ["datatables.net", "datatables.net-bs"] /]
 [#assign customJS = [
   "${baseUrlMedia}/js/projects/projectOverviewByMogs.js",
-  "${baseUrl}/global/js/fieldsValidation.js",
-  "${baseUrl}/global/js/autoSave.js"
+  "${baseUrlCdn}/global/js/fieldsValidation.js",
+  "${baseUrlCdn}/global/js/autoSave.js"
   ] 
 /]
 [#assign customCSS = ["${baseUrlMedia}/css/projects/projectBudgetByPartners.css"] /]

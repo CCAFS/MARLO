@@ -866,6 +866,13 @@ public class OutcomesAction extends BaseAction {
         crpMilestoneDB.setValue(crpMilestoneDetached.getValue());
         crpMilestoneDB.setYear(crpMilestoneDetached.getYear());
 
+        if (crpMilestoneDetached.getExtendedYear() != null) {
+          if (crpMilestoneDetached.getExtendedYear() != -1) {
+            crpMilestoneDB.setExtendedYear(crpMilestoneDetached.getExtendedYear());
+          }
+        }
+
+
         /* POWB 2019 New Milestones Fileds */
 
         crpMilestoneDB.setPowbMilestoneOtherRisk(crpMilestoneDetached.getPowbMilestoneOtherRisk());

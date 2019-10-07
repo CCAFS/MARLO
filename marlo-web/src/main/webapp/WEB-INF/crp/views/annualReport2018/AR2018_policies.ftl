@@ -52,7 +52,7 @@
             [#-- Table 2: Condensed list of policy contributions --]
             <div class="form-group">
               [#assign guideSheetURL = "https://drive.google.com/file/d/1GYLsseeZOOXF9zXNtpUtE1xeh2gx3Vw2/view" /]
-              <small class="pull-right"><a href="${guideSheetURL}" target="_blank"> <img src="${baseUrl}/global/images/icon-file.png" alt="" /> #I1 Policies  -  Guideline </a> </small>
+              <small class="pull-right"><a href="${guideSheetURL}" target="_blank"> <img src="${baseUrlCdn}/global/images/icon-file.png" alt="" /> #I1 Policies  -  Guideline </a> </small>
             </div>
             <br />
             <div class="form-group row">
@@ -250,7 +250,7 @@
                 [#local summaryPDF = "${baseUrl}/projects/${crpSession}/studySummary.do?studyID=${(item.projectExpectedStudy.id)!}&cycle=Reporting&year=${(actualPhase.year)!}"]
                 <p>
                   <a href="${summaryPDF}" class="btn btn-default btn-xs" target="_blank" style="text-decoration: none;" title="${item.projectExpectedStudy.composedName}">
-                    <img src="${baseUrl}/global/images/pdf.png" height="20"  /> ${item.projectExpectedStudy.composedIdentifier}
+                    <img src="${baseUrlCdn}/global/images/pdf.png" height="20"  /> ${item.projectExpectedStudy.composedIdentifier}
                   </a>
                 </p>
               [#else]

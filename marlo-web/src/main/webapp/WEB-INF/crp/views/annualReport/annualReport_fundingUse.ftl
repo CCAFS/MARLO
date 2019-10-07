@@ -105,7 +105,7 @@
             <td>
               <span> ${(synthesisExpArea.expenditureArea.expenditureArea)!''} </span>
               [#local expenditureHelp][@s.text name="${customLabel}.expenditureHelp.${(synthesisExpArea.expenditureArea.id)!''}" /][/#local]
-              [#if expenditureHelp?has_content]<img title="${expenditureHelp}" src="${baseUrl}/global/images/icon-help2.png" alt="" />[/#if]
+              [#if expenditureHelp?has_content]<img title="${expenditureHelp}" src="${baseUrlCdn}/global/images/icon-help2.png" alt="" />[/#if]
               <input type="hidden" name="${customName}.id" value="${(synthesisExpArea.id)!}" />
               <input type="hidden" name="${customName}.expenditureArea.id" value="${(synthesisExpArea.expenditureArea.id)!}" />
             </td>

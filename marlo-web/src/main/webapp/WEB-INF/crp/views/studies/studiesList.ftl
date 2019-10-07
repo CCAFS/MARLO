@@ -4,7 +4,7 @@
 [#assign pageLibs = ["datatables.net", "datatables.net-bs"] /]
 [#assign customJS = ["${baseUrlMedia}/js/studies/studiesList.js?20180725" ] /]
 [#assign customCSS = [
-  "${baseUrl}/global/css/customDataTable.css"
+  "${baseUrlCdn}/global/css/customDataTable.css"
   ] 
 /]
 [#assign currentSection = "additionalReporting" /]
@@ -141,10 +141,10 @@
             <td class="">
               [#if canEdit]
                 <a id="removeRow-${element.id}" class="removeRow" href="${baseUrl}/studies/${crpSession}/deleteStudy.do?expectedID=${element.id}" title="">
-                  <img src="${baseUrl}/global/images/trash.png" title="Remove" /> 
+                  <img src="${baseUrlCdn}/global/images/trash.png" title="Remove" /> 
                 </a>
               [#else]
-                <img src="${baseUrl}/global/images/trash_disable.png" title="" />
+                <img src="${baseUrlCdn}/global/images/trash_disable.png" title="" />
               [/#if]
           </td>
           [/#if]
