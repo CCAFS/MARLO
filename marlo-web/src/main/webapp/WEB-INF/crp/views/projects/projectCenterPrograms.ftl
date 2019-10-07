@@ -4,8 +4,8 @@
 [#assign pageLibs = ["select2"] /]
 [#assign customJS = [
   "${baseUrlMedia}/js/projects/projectDescription.js",  
-  "${baseUrl}/global/js/fieldsValidation.js",
-  "${baseUrl}/global/js/autoSave.js"
+  "${baseUrlCdn}/global/js/fieldsValidation.js",
+  "${baseUrlCdn}/global/js/autoSave.js"
   ] 
 /]
 [#assign currentSection = "projects" /]

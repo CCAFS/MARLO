@@ -4,8 +4,8 @@
 [#assign pageLibs = ["select2", "blueimp-file-upload"] /]
 [#assign customJS = [
   "${baseUrlMedia}/js/projects/projectLocations.js?20181029", 
-  "${baseUrl}/global/js/autoSave.js",
-  "${baseUrl}/global/js/fieldsValidation.js"
+  "${baseUrlCdn}/global/js/autoSave.js",
+  "${baseUrlCdn}/global/js/fieldsValidation.js"
   ] 
 /] 
 [#assign customCSS = ["${baseUrlMedia}/css/projects/projectLocations.css?20181029" ] /]
@@ -29,7 +29,7 @@
 
 <div class="container helpText viewMore-block">
   <div  class="helpMessage infoText">
-    <img class="col-md-2" src="${baseUrl}/global/images/icon-help.jpg" />
+    <img class="col-md-2" src="${baseUrlCdn}/global/images/icon-help.jpg" />
     <p class="col-md-10">[#if reportingActive] [@s.text name="projectLocations.help2" /] [#else] [@s.text name="projectLocations.help1" /] [/#if] </p>
   </div> 
   <div style="display:none" class="viewMore closed"></div>
@@ -147,8 +147,8 @@
                       <label for="">[@s.text name="projectLocations.activitiesCSV.instructions" /]:</label>
                     </div>
                     <div class="col-md-3 right">
-                      <a href="${baseUrl}/global/documents/Guidelines_CSA_evlautions_template _Reporting_2018.pdf" target="__BLANK">
-                        <img src="${baseUrl}/global/images/pdf.png" height="20" />
+                      <a href="${baseUrlCdn}/global/documents/Guidelines_CSA_evlautions_template _Reporting_2018.pdf" target="__BLANK">
+                        <img src="${baseUrlCdn}/global/images/pdf.png" height="20" />
                         [[@s.text name="projectLocations.activitiesCSV.guideline" /]]
                       </a>
                     </div>
@@ -161,7 +161,7 @@
                     <div class="col-md-4">
                        <label for="">[@s.text name="projectLocations.activitiesCSV.download" /]:</label>
                        <div class="form-group">
-                         <a href="${baseUrl}/global/documents/CSA_Evaluation_template.xlsm" download><img src="${baseUrl}/global/images/download-excel.png" height="70" /></a>
+                         <a href="${baseUrlCdn}/global/documents/CSA_Evaluation_template.xlsm" download><img src="${baseUrlCdn}/global/images/download-excel.png" height="70" /></a>
                        </div>
                     </div>
                     
@@ -231,7 +231,7 @@
               [#-- OTHER LOCATIONS (MAP) --]   
               <div class="borderBox" style="display:${action.hasSpecificities('crp_other_locations')?string('block', 'none')}">
                 <div class="allLocationsButton btn btn-default pull-right" data-toggle="modal" data-target=".allLocationsModal">
-                  <img src="${baseUrl}/global/images/map.png" alt="" /> <span>[@s.text name="projectLocations.allLocationsMap" /]</span>
+                  <img src="${baseUrlCdn}/global/images/map.png" alt="" /> <span>[@s.text name="projectLocations.allLocationsMap" /]</span>
                 </div>
                 <h5 id="locations-list-title" class="sectionSubTitle">[@s.text name="projectLocations.locationsList" /]:</h5>
                 [#-- LOCATION LIST --]

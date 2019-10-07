@@ -3,10 +3,10 @@
 [#assign currentSectionString = "${actionName?replace('/','-')}-${fundingSource.id}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2", "blueimp-file-upload", "datatables.net", "datatables.net-bs","flat-flags"] /]
 [#assign customJS = [
-  "${baseUrl}/global/js/fieldsValidation.js",
+  "${baseUrlCdn}/global/js/fieldsValidation.js",
   "${baseUrlMedia}/js/fundingSources/fundingSource.js?20181210",
   "${baseUrlMedia}/js/fundingSources/syncFundingSource.js",
-  "${baseUrl}/global/js/autoSave.js" 
+  "${baseUrlCdn}/global/js/autoSave.js" 
   ]
 /]
 [#assign customCSS = ["${baseUrlMedia}/css/fundingSources/fundingSource.css"] /]
@@ -275,7 +275,7 @@
                     [#if editable]
                     <input type="checkbox" name="fundingSource.fundingSourceInfo.w1w2" value="true" id="w1w2-tag-input" [#if w1w2TagValue]checked[/#if]/>
                     [#else]
-                       <img src="${baseUrl}/global/images/checked-${w1w2TagValue?string}.png" /> 
+                       <img src="${baseUrlCdn}/global/images/checked-${w1w2TagValue?string}.png" /> 
                     [/#if]
                     <small>[@customForm.text name="fundingSource.w1w2Tag" readText=!editable /]</small></label>
                 </div>

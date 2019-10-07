@@ -44,7 +44,7 @@
             
             [#-- CRP Image --]
             <div class="form-group text-center hidden" >
-              <img id="crpSelectedImage" width="300px" src="${baseUrl}/global/images/crps/${(element.acronym)!'default'}.png" alt="${(element.name)!}" />
+              <img id="crpSelectedImage" width="300px" src="${baseUrlCdn}/global/images/crps/${(element.acronym)!'default'}.png" alt="${(element.name)!}" />
             </div>
             [#-- Welcome info --]
             <div class="row">
@@ -108,7 +108,7 @@
 
 [#macro availableItems element]
   <li id="crp-${element.acronym}" class="option ${element.login?string('enabled', 'disabled')}" title="" tabindex="">
-    <img class="selection-bar-image animated bounceIn hidden" src="${baseUrl}/global/images/crps/${element.acronym}.png" alt="${element.name}"/>
+    <img class="selection-bar-image animated bounceIn hidden" src="${baseUrlCdn}/global/images/crps/${element.acronym}.png" alt="${element.name}"/>
     <div class="selection-bar-acronym hidden">${element.acronym}</div>
   </li>
 [/#macro]

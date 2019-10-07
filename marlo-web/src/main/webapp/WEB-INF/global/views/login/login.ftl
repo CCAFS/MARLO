@@ -1,7 +1,7 @@
 [#ftl]
 [#assign title = "Welcome to MARLO" /]
 [#assign pageLibs = ["select2"] /]
-[#assign customJS = ["${baseUrl}/global/js/login/login.js?20180705"] /]
+[#assign customJS = ["${baseUrlCdn}/global/js/login/login.js?20180705"] /]
 [#assign currentSection = "home" /]
 
 [#include "/WEB-INF/global/pages/header.ftl" /]
@@ -101,7 +101,7 @@
 [#macro crpItem element] 
   [#if element.marlo && element.login]
     <li id="crp-${element.acronym}" title="${element.login?string('', 'Coming soon...')}">
-      <img class="${element.login?string('animated bounceIn', '')}" src="${baseUrl}/global/images/crps/${element.acronym}.png" alt="${element.name}" />
+      <img class="${element.login?string('animated bounceIn', '')}" src="${baseUrlCdn}/global/images/crps/${element.acronym}.png" alt="${element.name}" />
     </li>
   [/#if]
 [/#macro]

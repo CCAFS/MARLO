@@ -447,7 +447,7 @@ public class OutcomesMilestonesEvidenceSummaryAction extends BaseSummariesAction
                 milestoneEvidence.setCrpProgramOutcome(progressOutcome.getCrpProgramOutcome());
                 milestoneEvidence.setOutcomeProgress(progressOutcome.getSummary());
                 milestoneEvidence.setCrpMilestone(outcomeMilestone.getCrpMilestone());
-                milestoneEvidence.setMilestonesStatus(outcomeMilestone.getMilestonesStatus().getId());
+                milestoneEvidence.setMilestonesStatus(outcomeMilestone.getCrpMilestone().getMilestonesStatus().getId());
                 milestoneEvidence.setRepIndMilestoneReason(outcomeMilestone.getReason());
                 milestoneEvidence.setOtherReason(outcomeMilestone.getOtherReason());
                 milestoneEvidence.setEvidence(outcomeMilestone.getEvidence());
