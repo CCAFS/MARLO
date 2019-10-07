@@ -42,6 +42,7 @@ function attachEvents() {
   // Remove a Milestone
   $('.removeMilestone').on('click', removeMilestone);
 
+  // Change Outcomes/Milestones Year
   $('input.outcomeYear, input.milestoneYear').on('keyup', function() {
     var $target = $(this);
     var targetVal = parseInt($target.val());
@@ -63,6 +64,20 @@ function attachEvents() {
       });
     }
   }).trigger('keyup');
+
+  // Change Milestone Status
+  $('select.milestoneStatus').on('change', function() {
+    var $parent = $(this).parents('div.milestone');
+    // var extendedYear = $parent.find('.milestoneExtendedYear').val();
+    // var hasExtendedYear = (extendedYear && (extendedYear != -1));
+    var showExtendedYear = (this.value == 4)
+    if(showExtendedYear) {
+      $parent.find('.extendedYearBlock').slideDown();
+    } else {
+      $parent.find('.extendedYearBlock').slideUp();
+    }
+    console.log(this.value);
+  });
 
   // Add a Sub IDO
   $('.addSubIdo').on('click', addSubIdo);

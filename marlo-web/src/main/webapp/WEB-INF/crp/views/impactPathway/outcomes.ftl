@@ -338,6 +338,8 @@
     
     <div class="form-group row">
       [#local milestoneYear = (milestone.year)!currentCycleYear ]
+      [#local hasExtendedYear = (milestone.extendedYear??) && (milestone.extendedYear != -1)]
+      [#local showExtendedYear =  hasExtendedYear || ((milestone.milestonesStatus.id == 4)!false) ]
       [#-- Year --]
       <div class="col-md-4">
         [@customForm.select name="${milestoneCustomName}.year" value="${(milestone.year)!-1}"  i18nkey="outcome.milestone.inputTargetYear" listName="milestoneYears"  required=true  className=" targetYear milestoneYear" editable=editableMilestone /]
@@ -345,17 +347,11 @@
       </div>
       [#--  Status  --]
       <div class="col-md-4">
-        [#-- 
-        <div class="select">
-          <label for="">Status:</label><div class="selectList"><p>${(milestone.milestonesStatus.name)!'No Status defined'}</p></div>
-          <input type="hidden" name="${milestoneCustomName}.milestonesStatus.id" value="${(milestone.milestonesStatus.id)!}" />
-        </div>
-         --]
-        [@customForm.select name="${milestoneCustomName}.milestonesStatus.id" i18nkey="Status" listName="generalStatuses"  required=true  className=" targetYear milestoneYear" editable=editable /]
+        [@customForm.select name="${milestoneCustomName}.milestonesStatus.id" i18nkey="Status" listName="generalStatuses" keyFieldName="id" displayFieldName="name" required=true  className="milestoneStatus" editable=editable /]
       </div>
       [#-- Extended Year --]
-      <div class="col-md-4">
-       [@customForm.select name="${milestoneCustomName}.extendedYear" value="${(milestone.extendedYear)!(milestoneYear+1)}"  i18nkey="Extended Year" listName="milestoneYears"  required=true  className=" targetYear milestoneYear" editable=editable /]
+      <div class="col-md-4 extendedYearBlock" style="display:${showExtendedYear?string('block', 'none')}">
+       [@customForm.select name="${milestoneCustomName}.extendedYear" value="${(milestone.extendedYear)!-1}"  i18nkey="Extended Year" listName="milestoneYears"  required=true  className=" targetYear milestoneExtendedYear" editable=editable /]
       </div>
     </div>
     
