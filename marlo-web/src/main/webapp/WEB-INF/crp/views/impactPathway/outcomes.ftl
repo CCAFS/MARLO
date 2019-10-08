@@ -56,20 +56,35 @@
         [@s.form action=actionName enctype="multipart/form-data" ]  
         [#-- Outcomes List --]
         <h4 class="sectionTitle">[@s.text name="outcomes.title"][@s.param]${(selectedProgram.acronym)!}[/@s.param] [/@s.text]</h4>
-        
-          <div class="outcomes-list" listname="outcomes">
-          [#if outcomes?has_content]
-            [#list outcomes as outcome]
-              [@outcomeMacro outcome=outcome name="outcomes" index=outcome_index /]
-            [/#list]
+          
+          [#-- Check if the programID is Valid --]
+          [#assign hasAvailableProgramID = false ]
+          [#list programs as program]
+            [#if (crpProgramID == program.id)!false]
+              [#assign hasAvailableProgramID = true ]
+              [#break]
+            [/#if]
+          [/#list]
+          
+          [#if hasAvailableProgramID]
+            <div class="outcomes-list" listname="outcomes">
+            [#if outcomes?has_content]
+              [#list outcomes as outcome]
+                [@outcomeMacro outcome=outcome name="outcomes" index=outcome_index /]
+              [/#list]
+            [#else]
+              [@outcomeMacro outcome={} name="outcomes" index=0 /]
+            [/#if]
+            </div>
+            [#-- Add Outcome Button --]
+            [#if editable]
+              <div class="addOutcome bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>[@s.text name="form.buttons.addOutcome"/]</div>
+            [/#if]
           [#else]
-            [@outcomeMacro outcome={} name="outcomes" index=0 /]
+            <p>Please select a [@s.text name="global.flagship" /]</p>
           [/#if]
-          </div>
-          [#-- Add Outcome Button --]
-          [#if editable]
-            <div class="addOutcome bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>[@s.text name="form.buttons.addOutcome"/]</div>
-          [/#if]
+          
+          
             
           [#-- Section Buttons--]
           [#include "/WEB-INF/crp/views/impactPathway/buttons-impactPathway.ftl" /]
@@ -311,10 +326,18 @@
 [#macro milestoneMacro milestone name index isTemplate=false editable=true canEditMilestone=true]
   [#local milestoneCustomName = "${name}[${index}]" /]
   [#local editableMilestone = editable && canEditMilestone]
+  [#local hasExtendedYear = (milestone.extendedYear?has_content) && (milestone.extendedYear != -1)]
+  [#local showExtendedYear =  hasExtendedYear || ((milestone.milestonesStatus.id == 4)!false) ]
+  [#local milestoneYear =  (milestone.year)! ]
+  [#if hasExtendedYear]
+    [#local milestoneYear =  milestone.extendedYear ]
+  [/#if]
+  
+  
   <div id="milestone-${isTemplate?string('template', index)}" class="milestone simpleBox" style="display:${isTemplate?string('none','block')}">
     <div class="leftHead green sm">
       <span class="index">${index+1}</span>
-      <span class="elementId">${(milestone.year)!} [@s.text name="outcome.milestone.index.title"/]</span>
+      <span class="elementId">${(milestoneYear)!} [@s.text name="outcome.milestone.index.title"/]</span>
     </div>
     
     [#-- Remove Button --]
@@ -336,22 +359,19 @@
       [@customForm.textArea name="${milestoneCustomName}.title" i18nkey="outcome.milestone.statement" required=true className="milestone-statement limitWords-100" editable=editableMilestone /]
     </div>
     
-    <div class="form-group row">
-      [#local milestoneYear = (milestone.year)!currentCycleYear ]
-      [#local hasExtendedYear = (milestone.extendedYear??) && (milestone.extendedYear != -1)]
-      [#local showExtendedYear =  hasExtendedYear || ((milestone.milestonesStatus.id == 4)!false) ]
+    <div class="form-group row"> 
       [#-- Year --]
       <div class="col-md-4">
         [@customForm.select name="${milestoneCustomName}.year" value="${(milestone.year)!-1}"  i18nkey="outcome.milestone.inputTargetYear" listName="milestoneYears"  required=true  className=" targetYear milestoneYear" editable=editableMilestone /]
         [#if !editableMilestone][#if (milestone.year != -1)!false ]${(milestone.year)!}[/#if][/#if]
       </div>
       [#--  Status  --]
-      <div class="col-md-4">
-        [@customForm.select name="${milestoneCustomName}.milestonesStatus.id" forcedValue="${(milestone.milestonesStatus.name)!}" i18nkey="Status" listName="generalStatuses" keyFieldName="id" displayFieldName="name" required=true  className="milestoneStatus" editable=editable /]
+      <div class="col-md-4"> 
+        [@customForm.select name="${milestoneCustomName}.milestonesStatus.id" forcedValue="${(milestone.milestonesStatus.name)!}" i18nkey="outcome.milestone.inputStatus" listName="generalStatuses" keyFieldName="id" displayFieldName="name" required=true  className="milestoneStatus" editable=editable /]
       </div>
       [#-- Extended Year --]
       <div class="col-md-4 extendedYearBlock" style="display:${showExtendedYear?string('block', 'none')}">
-       [@customForm.select name="${milestoneCustomName}.extendedYear" value="${(milestone.extendedYear)!-1}"  i18nkey="Extended Year" listName="milestoneYears"  required=true  className=" targetYear milestoneExtendedYear" editable=editable /]
+       [@customForm.select name="${milestoneCustomName}.extendedYear" value="${(milestone.extendedYear)!-1}"  i18nkey="outcome.milestone.inputNewTargetYear" listName="milestoneYears"  required=true  className=" targetYear milestoneExtendedYear" editable=editable /]
       </div>
     </div>
     
