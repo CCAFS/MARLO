@@ -127,7 +127,7 @@
   </div>
 [/#macro]
 
-[#macro select name listName label="" keyFieldName="" displayFieldName="" paramText="" value="-NULL" valueName="" i18nkey="" disabled=false required=false errorField="" selected=false className="" multiple=false help="" helpIcon=true header=true display=true showTitle=true stringKey=false placeholder="" editable=true]
+[#macro select name listName label="" keyFieldName="" displayFieldName="" paramText="" value="-NULL" forcedValue="" valueName="" i18nkey="" disabled=false required=false errorField="" selected=false className="" multiple=false help="" helpIcon=true header=true display=true showTitle=true stringKey=false placeholder="" editable=true]
   <div class="select ${changedField(name)}" [#if !display]style="display: none;"[/#if]>
     [#assign labelTitle][#if i18nkey==""][@s.text name="${name}"][@s.param]${paramText}[/@s.param][/@s.text][#else][@s.text name="${i18nkey}"][@s.param]${paramText}[/@s.param][/@s.text][/#if][/#assign]
     [#assign placeholderText][@s.text name="${(placeholder?has_content)?string(placeholder,'form.select.placeholder')}" /][/#assign]
@@ -174,6 +174,7 @@
         [#assign requiredText][#if required && editable]<span class="fieldError">[@s.text name="form.values.required" /]</span>[/#if][/#assign]  
         <p>  
           [#if displayFieldName == "" ]
+            
             [#assign key][@s.property value="${name}"/][/#assign]
             [#assign customValue][#if !stringKey][@s.property value="${listName}[${key}]"/][#else][@s.property value="${listName}['${key}']"/][/#if][/#assign]
             [#if (key == "-1") || (customValue == "-1")]${requiredText}   [@s.text name="form.values.fieldEmpty" /][/#if] 
@@ -192,8 +193,12 @@
             [/#if]
             [#assign customValue][@s.property value="${customName}.${displayFieldName}"/][/#assign]
             [#if value=="-NULL"] 
-              [#if !(customValue)?has_content] ${requiredText}   [@s.text name="form.values.fieldEmpty" /]
-              [#else]${customValue}
+              [#if customValue?has_content] 
+                ${customValue}  
+              [#elseif forcedValue?has_content]
+                ${forcedValue}
+              [#else]
+                ${requiredText} [@s.text name="form.values.fieldEmpty" /]  
               [/#if]
             [#else]
               [#if customValue?has_content]
@@ -201,7 +206,7 @@
               [#elseif value=="-1"]
                 ${requiredText} [@s.text name="form.values.fieldEmpty" /]
               [#else]
-                ${valueName}
+                ${valueName} 
               [/#if] 
             [/#if]
             </p>
