@@ -138,6 +138,8 @@ public class OutcomesContributionsSummaryAction extends BaseSummariesAction impl
       this.getText("projectOutcomeMilestone.expectedNarrative.readText"));
     masterReport.getParameterValues().put("i8nComunications",
       this.getText("summaries.flagshipOutcomes.communications"));
+    masterReport.getParameterValues().put("i8nInstitutionLeader", this.getText("summaries.oaprojects.leadInstitution"));
+    masterReport.getParameterValues().put("i8nPPAPartners", this.getText("summaries.oaprojects.ppaPartners"));
 
 
     return masterReport;
