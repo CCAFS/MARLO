@@ -326,6 +326,8 @@ public class ProjectsSummaryAction extends BaseSummariesAction implements Summar
         managementLiaison = managementLiaison.replaceAll(">", "&gt;");
       }
 
+
+      // Get PPA Partners
       List<ProjectPartner> listPPA = new ArrayList<>();
       List<ProjectPartner> tempPartners = new ArrayList<>();
       tempPartners = new ArrayList<>(project.getProjectPartners().stream()
@@ -333,21 +335,13 @@ public class ProjectsSummaryAction extends BaseSummariesAction implements Summar
         .collect(Collectors.toList()));
 
       for (ProjectPartner partner : tempPartners) {
-
         if (partner.getInstitution().isPPA(this.getLoggedCrp().getId(), this.getSelectedPhase())) {
           listPPA.add(partner);
         }
-
-
       }
 
-
-      List<String> temp = new ArrayList<>();
-
-      HashMap<Integer, String> map = new HashMap<Integer, String>();
       String t = "";
       for (ProjectPartner projectPartner : listPPA) {
-        // map.put(Integer.parseInt(projectPartner.getId().toString()), projectPartner.getComposedName());
         if (!t.equals(projectPartner.getComposedName())) {
           t = projectPartner.getComposedName();
           if (ppa.isEmpty()) {
