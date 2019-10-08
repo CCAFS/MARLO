@@ -496,7 +496,8 @@ public class OutcomesAction extends BaseAction {
     } else {
 
       List<CrpProgram> allPrograms = loggedCrp.getCrpPrograms().stream()
-        .filter(c -> c.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue() && c.isActive())
+        .filter(c -> c.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue() && c.isActive()
+          && c.getResearchArea() == null)
         .collect(Collectors.toList());
       allPrograms.sort((p1, p2) -> p1.getAcronym().compareTo(p2.getAcronym()));
       crpProgramID = -1;
@@ -511,7 +512,8 @@ public class OutcomesAction extends BaseAction {
           List<CrpProgramLeader> userLeads = user.getCrpProgramLeaders().stream()
             .filter(c -> c.isActive() && c.getCrpProgram().isActive() && c.getCrpProgram() != null
 
-              && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+              && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()
+              && c.getCrpProgram().getResearchArea() == null)
             .collect(Collectors.toList());
           if (!userLeads.isEmpty()) {
             crpProgramID = userLeads.get(0).getCrpProgram().getId();
@@ -579,6 +581,18 @@ public class OutcomesAction extends BaseAction {
                 outcome.setFile(null);
               }
             }
+
+            if (outcome.getMilestones() != null) {
+              for (CrpMilestone milestones : outcome.getMilestones()) {
+                if (milestones.getMilestonesStatus() != null) {
+                  if (milestones.getMilestonesStatus().getId() != -1) {
+                    milestones.setMilestonesStatus(
+                      generalStatusManager.getGeneralStatusById(milestones.getMilestonesStatus().getId()));
+                  }
+                }
+              }
+            }
+
           }
 
 
@@ -870,6 +884,7 @@ public class OutcomesAction extends BaseAction {
         CrpMilestone crpMilestoneDB = null;
         if (crpMilestoneDetached.getId() == null) {
           crpMilestoneDB = new CrpMilestone();
+          crpMilestoneDB.setPhaseCreated(this.getActualPhase());
         } else {
           crpMilestoneDB = crpMilestoneManager.getCrpMilestoneById(crpMilestoneDetached.getId());
         }
@@ -887,7 +902,11 @@ public class OutcomesAction extends BaseAction {
           }
         }
 
-        crpMilestoneDB.setMilestonesStatus(crpMilestoneDetached.getMilestonesStatus());
+        if (crpMilestoneDetached.getMilestonesStatus() != null) {
+          GeneralStatus gs =
+            generalStatusManager.getGeneralStatusById(crpMilestoneDetached.getMilestonesStatus().getId());
+          crpMilestoneDB.setMilestonesStatus(gs);
+        }
 
 
         /* POWB 2019 New Milestones Fileds */

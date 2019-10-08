@@ -16,6 +16,10 @@
 		<property name="activeSince" type="timestamp" update="false">
 			<column name="active_since" length="19" not-null="true" />
 		</property>
+    <many-to-one name="phaseCreated"
+      class="org.cgiar.ccafs.marlo.data.model.Phase" fetch="select">
+      <column name="phase_created" />
+    </many-to-one>
 		<many-to-one name="createdBy"
 			class="org.cgiar.ccafs.marlo.data.model.User" fetch="select"
 			update="false">
