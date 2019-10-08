@@ -76,7 +76,21 @@ function attachEvents() {
     } else {
       $parent.find('.extendedYearBlock').slideUp();
     }
-    console.log(this.value);
+  });
+
+  $('select.milestoneStatus').each(function(i,statusSelect) {
+    var $parent = $(this).parents('div.milestone');
+    var extendedYear = $parent.find('.milestoneExtendedYear').val();
+    var year = $parent.find('.milestoneYear').val() || extendedYear;
+    // Planning/POWB
+    if(!reportingActive) {
+      if(year >= currentCycleYear) {
+        $(statusSelect).find('option[value="3"]').prop('disabled', true); // Complete
+        $(statusSelect).find('option[value="4"]').prop('disabled', true); // Extended
+        $(statusSelect).find('option[value="5"]').prop('disabled', true); // Cancelled
+      }
+
+    }
   });
 
   // Add a Sub IDO
