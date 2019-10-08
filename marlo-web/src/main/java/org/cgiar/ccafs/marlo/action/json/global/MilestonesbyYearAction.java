@@ -61,7 +61,9 @@ public class MilestonesbyYearAction extends BaseAction {
     crpMilestones = new ArrayList<Map<String, Object>>();
     CrpProgramOutcome crpProgramOutcome = crpProgramManager.getCrpProgramOutcomeById(crpProgamID);
     List<CrpMilestone> milestones = crpProgramOutcome.getCrpMilestones().stream()
-      .filter(c -> c.isActive() & c.getYear() >= year).collect(Collectors.toList());
+      .filter(c -> c.isActive()
+        && (c.getYear().intValue() >= year || (c.getExtendedYear() != null && c.getExtendedYear().intValue() >= year)))
+      .collect(Collectors.toList());
     milestones.sort(Comparator.comparing(CrpMilestone::getYear));
 
     for (CrpMilestone crpMilestoneInfo : milestones) {

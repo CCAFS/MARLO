@@ -761,7 +761,8 @@ public class OutcomesMilestonesAction extends BaseAction {
     }
     for (CrpProgramOutcome outcome : outcomesList) {
       outcome.setMilestones(outcome.getCrpMilestones().stream()
-        .filter(c -> c.isActive() && c.getYear().intValue() == this.getActualPhase().getYear())
+        .filter(c -> c.isActive() && (c.getYear().intValue() == this.getActualPhase().getYear()
+          || (c.getExtendedYear() != null && c.getExtendedYear().intValue() == this.getActualPhase().getYear())))
         .collect(Collectors.toList()));
       if (!outcome.getMilestones().isEmpty()) {
         outcomesSet.add(outcome);

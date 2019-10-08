@@ -65,6 +65,9 @@ public class CrpMilestone extends MarloAuditableEntity implements java.io.Serial
   @Expose
   private GeneralStatus milestonesStatus;
 
+  @Expose
+  private Phase phaseCreated;
+
 
   /** POWB 2019 New Milestones Fields **/
 
@@ -156,19 +159,19 @@ public class CrpMilestone extends MarloAuditableEntity implements java.io.Serial
     return true;
   }
 
+
   public RepIndGenderYouthFocusLevel getCapdevFocusLevel() {
     return capdevFocusLevel;
   }
+
 
   public RepIndGenderYouthFocusLevel getClimateFocusLevel() {
     return climateFocusLevel;
   }
 
-
   public String getComposedName() {
     return this.year + " - " + this.title;
   }
-
 
   public String getComposeID() {
     return composeID;
@@ -178,6 +181,7 @@ public class CrpMilestone extends MarloAuditableEntity implements java.io.Serial
   public CrpProgramOutcome getCrpProgramOutcome() {
     return this.crpProgramOutcome;
   }
+
 
   public Integer getExtendedYear() {
     return extendedYear;
@@ -204,6 +208,10 @@ public class CrpMilestone extends MarloAuditableEntity implements java.io.Serial
 
   public GeneralStatus getMilestonesStatus() {
     return milestonesStatus;
+  }
+
+  public Phase getPhaseCreated() {
+    return phaseCreated;
   }
 
   public PowbIndAssesmentRisk getPowbIndAssesmentRisk() {
@@ -288,6 +296,15 @@ public class CrpMilestone extends MarloAuditableEntity implements java.io.Serial
     return result;
   }
 
+  public boolean isNew(Long phaseId) {
+    if (this.getPhaseCreated() != null) {
+      if (this.getPhaseCreated().getId().equals(phaseId)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   public void setCapdevFocusLevel(RepIndGenderYouthFocusLevel capdevFocusLevel) {
     this.capdevFocusLevel = capdevFocusLevel;
   }
@@ -296,9 +313,11 @@ public class CrpMilestone extends MarloAuditableEntity implements java.io.Serial
     this.climateFocusLevel = climateFocusLevel;
   }
 
+
   public void setComposeID(String composeID) {
     this.composeID = composeID;
   }
+
 
   public void setCrpProgramOutcome(CrpProgramOutcome crpProgramOutcome) {
     this.crpProgramOutcome = crpProgramOutcome;
@@ -326,6 +345,10 @@ public class CrpMilestone extends MarloAuditableEntity implements java.io.Serial
 
   public void setMilestonesStatus(GeneralStatus milestonesStatus) {
     this.milestonesStatus = milestonesStatus;
+  }
+
+  public void setPhaseCreated(Phase phaseCreated) {
+    this.phaseCreated = phaseCreated;
   }
 
 

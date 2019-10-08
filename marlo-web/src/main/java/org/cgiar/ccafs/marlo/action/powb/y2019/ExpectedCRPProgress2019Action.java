@@ -656,11 +656,15 @@ public class ExpectedCRPProgress2019Action extends BaseAction {
       List<CrpMilestone> milestones = new ArrayList<>();
       if (!this.isPMU()) {
         milestones = new ArrayList<>(outcome.getCrpMilestones().stream()
-          .filter(c -> c.isActive() && c.getYear().intValue() == this.getActualPhase().getYear())
+          .filter(c -> c.isActive() && (c.getYear().intValue() >= this.getActualPhase().getYear()
+            || (c.getExtendedYear() != null && c.getExtendedYear().intValue() >= this.getActualPhase().getYear())))
           .collect(Collectors.toList()));
       } else {
         milestones = new ArrayList<>(outcome.getCrpMilestones().stream()
-          .filter(c -> c.isActive() && c.getYear().intValue() == this.getActualPhase().getYear() && c.getIsPowb())
+          .filter(c -> c.isActive()
+            && (c.getYear().intValue() >= this.getActualPhase().getYear()
+              || (c.getExtendedYear() != null && c.getExtendedYear().intValue() >= this.getActualPhase().getYear()))
+            && c.getIsPowb())
           .collect(Collectors.toList()));
       }
 
