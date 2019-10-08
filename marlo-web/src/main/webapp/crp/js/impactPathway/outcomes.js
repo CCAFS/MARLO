@@ -87,9 +87,7 @@ function attachEvents() {
       if(year >= currentCycleYear) {
         $(statusSelect).find('option[value="3"]').prop('disabled', true); // Complete
         $(statusSelect).find('option[value="4"]').prop('disabled', true); // Extended
-        $(statusSelect).find('option[value="5"]').prop('disabled', true); // Cancelled
       }
-
     }
   });
 
@@ -261,11 +259,15 @@ function addMilestone() {
   var $list = $(this).parents('.outcome').find('.milestones-list');
   var $item = $('#milestone-template').clone(true).removeAttr("id");
 
+  // Set Status as new
+  $item.find('.milestoneStatus').val(1); // New
+
+  // Set Milestone year as the currentCycleYear
+  $item.find('.milestoneYear').val(currentCycleYear);
+
   $item.find('select').select2({
     width: '100%'
   });
-
-  // $item.
 
   $list.append($item);
   updateAllIndexes();
