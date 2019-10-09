@@ -24,6 +24,7 @@
           <li><b>Not legal: </b>This is a program/project, not an institution. We suggest to use <i>"MARLOInstitution"</i> instead.</li>
           <li><b>Sub-department: </b>The <i>"InstitutionRequested"</i> is a part of the <i>"MARLOInstitution"</i>. Therefore, we kindly suggest you to include <i>"MARLOInstitution"</i> as sub-department of <i>"MARLOInstitution"</i>.</li>
           <li><b>Person - Not institution: </b><i>"PersonRequested"</i> is a person, not an institution. We suggest you to include this person under the institution that hired him.</li>
+          <li><b>Country - Office: </b>The <i>"InstitutionRequested"</i> is a part of the <i>"MARLOInstitution"</i> in <i>"CountryInstitution"</i>. Therefore, we kindly suggest you to include the <i>"Country"</i> country office for <i>"MARLOInstitution"</i>.</li>
         </ul> 
       </div>
       <div class="modal-footer">
