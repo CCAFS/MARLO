@@ -82,7 +82,7 @@ function attachEvents() {
     var $parent = $(this).parents('div.milestone');
     var extendedYear = $parent.find('.milestoneExtendedYear').val();
     var year = $parent.find('.milestoneYear').val() || extendedYear;
-    var isNew = $parent.classParam('isNew');
+    var isNew = ($parent.classParam('isNew') == "true");
     // Planning/POWB
     if(!reportingActive) {
       if(year >= currentCycleYear) {

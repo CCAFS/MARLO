@@ -346,7 +346,7 @@
       <span class="elementId">${(milestoneYear)!} [@s.text name="outcome.milestone.index.title"/]</span>
     </div>
     
-    [#if config.debug]<strong>IsNew: ${isMilestoneNew?string}</strong>[/#if]
+     
     
     [#-- Remove Button --]
     [#if editableMilestone && action.canBeDeleted((milestone.id)!-1,(milestone.class.name)!"" )]
