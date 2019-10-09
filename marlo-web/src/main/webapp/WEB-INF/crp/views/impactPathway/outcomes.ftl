@@ -4,7 +4,7 @@
 [#assign pageLibs = ["select2", "blueimp-file-upload", "cytoscape","cytoscape-panzoom"] /]
 [#assign customJS = [ 
   "${baseUrlMedia}/js/impactPathway/programSubmit.js", 
-  "${baseUrlMedia}/js/impactPathway/outcomes.js?20190927", 
+  "${baseUrlMedia}/js/impactPathway/outcomes.js?20191008", 
   "${baseUrlCdn}/global/js/autoSave.js", 
   "${baseUrlCdn}/global/js/impactGraphic.js",
   "${baseUrlCdn}/global/js/fieldsValidation.js" 
@@ -328,17 +328,25 @@
   [#local editableMilestone = editable && canEditMilestone]
   [#local hasExtendedYear = (milestone.extendedYear?has_content) && (milestone.extendedYear != -1)]
   [#local showExtendedYear =  hasExtendedYear || ((milestone.milestonesStatus.id == 4)!false) ]
-  [#local milestoneYear =  (milestone.year)! ]
+  [#local milestoneYear =  (milestone.year)!currentCycleYear ]
   [#if hasExtendedYear]
     [#local milestoneYear =  milestone.extendedYear ]
   [/#if]
+  [#local reqMilestonesFields = (milestoneYear == actualPhase.year)!false /]
+  
+  [#local isMilestoneNew =  true ]
+  [#if !isTemplate]
+    [#local isMilestoneNew =  milestone.isNew(actualPhase.id) ]
+  [/#if]
   
   
-  <div id="milestone-${isTemplate?string('template', index)}" class="milestone simpleBox" style="display:${isTemplate?string('none','block')}">
-    <div class="leftHead green sm">
+  <div id="milestone-${isTemplate?string('template', index)}" class="milestone simpleBox isNew-${isMilestoneNew?string}" style="display:${isTemplate?string('none','block')}">
+    <div class="leftHead ${reqMilestonesFields?string('green', '')} sm">
       <span class="index">${index+1}</span>
       <span class="elementId">${(milestoneYear)!} [@s.text name="outcome.milestone.index.title"/]</span>
     </div>
+    
+    [#if config.debug]<strong>IsNew: ${isMilestoneNew?string}</strong>[/#if]
     
     [#-- Remove Button --]
     [#if editableMilestone && action.canBeDeleted((milestone.id)!-1,(milestone.class.name)!"" )]
@@ -390,8 +398,6 @@
     </div>
     
     [#-- POWB 2019 REQUIREMENTS --]
-    [#local reqMilestonesFields = (milestone.year == actualPhase.year)!false /]
-    <hr />
     <div class="form-group">
       <div class="row">
         [#-- Indicate of the following --]
