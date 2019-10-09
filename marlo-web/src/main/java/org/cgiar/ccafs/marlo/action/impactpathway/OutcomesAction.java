@@ -906,6 +906,8 @@ public class OutcomesAction extends BaseAction {
           GeneralStatus gs =
             generalStatusManager.getGeneralStatusById(crpMilestoneDetached.getMilestonesStatus().getId());
           crpMilestoneDB.setMilestonesStatus(gs);
+        } else {
+          crpMilestoneDB.setMilestonesStatus(null);
         }
 
 
