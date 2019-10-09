@@ -82,11 +82,16 @@ function attachEvents() {
     var $parent = $(this).parents('div.milestone');
     var extendedYear = $parent.find('.milestoneExtendedYear').val();
     var year = $parent.find('.milestoneYear').val() || extendedYear;
+    var isNew = $parent.classParam('isNew');
     // Planning/POWB
     if(!reportingActive) {
       if(year >= currentCycleYear) {
         $(statusSelect).find('option[value="3"]').prop('disabled', true); // Complete
         $(statusSelect).find('option[value="4"]').prop('disabled', true); // Extended
+      } else {
+        if(!isNew) {
+          $(statusSelect).find('option[value="1"]').prop('disabled', true); // New
+        }
       }
     }
   });

@@ -297,6 +297,13 @@
       [#local projectMilestoneIndex = action.getIndexMilestone(element.id, year) /]
     [/#if]
     
+    [#-- Getting the milestone year --]
+    [#local hasExtendedYear = (element.extendedYear?has_content) && (element.extendedYear != -1)]
+    [#local milestoneYear =  (element.year)! ]
+    [#if hasExtendedYear]
+      [#local milestoneYear =  element.extendedYear ]
+    [/#if]
+    
     [#local isNewAtReporting =  reportingActive && (!(projectMilestone.narrativeTarget?has_content))!true]
 
     [#-- Remove Button --]
@@ -319,7 +326,7 @@
       [#-- Milestone Year --]
       <div class="row">
         <div class="col-md-6">
-          <strong>Milestone for <span class="crpMilestoneYear">${(element.year)!}</span> </strong> 
+          <strong>Milestone for <span class="crpMilestoneYear">${(milestoneYear)!}</span> </strong> 
         </div>
       </div>
       [#--  Title --]
