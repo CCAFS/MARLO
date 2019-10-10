@@ -97,9 +97,9 @@ public class EditProjectExpenditureInterceptor extends AbstractInterceptor imple
     phase = baseAction.getActualPhase();
     phase = phaseManager.getPhaseById(phase.getId());
 
-    boolean canEdit = false;
+    boolean canEdit = baseAction != null ? baseAction.isCanEdit() : false;
     boolean hasPermissionToEdit = false;
-    boolean editParameter = false;
+    boolean editParameter = baseAction != null ? baseAction.isEditable() : false;
     boolean canSwitchProject = false;
     boolean isAdmin = false;
 
@@ -134,9 +134,13 @@ public class EditProjectExpenditureInterceptor extends AbstractInterceptor imple
           if (!baseAction.hasSpecificities(APConstants.CRP_ENABLE_BUDGET_EXECUTION)) {
             canEdit = false;
           }
-          if (!baseAction.isRole("FM")) {
-            canEdit = false;
+
+          if (baseAction.getActualPhase().getDescription().equals(APConstants.REPORTING)) {
+            if (!baseAction.isRole("FM")) {
+              canEdit = false;
+            }
           }
+
           if (baseAction.hasPermission(
             baseAction.generatePermission(Permission.PROJECT_BUDGET_EXECUTION_CAN_EDIT_PERMISSION, params))) {
             canEdit = true;
@@ -147,14 +151,15 @@ public class EditProjectExpenditureInterceptor extends AbstractInterceptor imple
             .equals(APConstants.REPORTING)) {
             canEdit = false;
           }
-          if (baseAction.getActualPhase().getVisible() && !baseAction.getActualPhase().getEditable()
-            && baseAction.isRole("FM")) {
+          if (baseAction.getActualPhase().getVisible() && baseAction.isRole("FM")
+            && baseAction.getActualPhase().getDescription().equals(APConstants.REPORTING)) {
             canEdit = true;
             editParameter = true;
           }
 
 
         }
+
         // Set the variable that indicates if the user can edit the section
         baseAction.setEditableParameter(editParameter && canEdit);
         baseAction.setCanSwitchProject(false);
