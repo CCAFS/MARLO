@@ -17,7 +17,7 @@
       <a class="powb-submenuItem  ${isActive?string('active','')} ${isCompleted?string('completed','')}" style="width:${(itemSizePercentage)}%;" href="${itemURL}">
         [#assign itemName="${(institution.crpProgram.acronym)!institution.acronym}: ${(institution.crpProgram.name)!institution.name}" /]
         <p title="${itemName}">[@utilities.letterCutter string=itemName maxPos=(140)/liaisonInstitutions?size /]</p>
-        [#if isCompleted]<img class="check" src="${baseUrl}/global/images/icon-check-tiny${isActive?string('-white','')}.png" />[/#if]
+        [#if isCompleted]<img class="check" src="${baseUrlCdn}/global/images/icon-check-tiny${isActive?string('-white','')}.png" />[/#if]
       </a>
     [/#list]
     </div>

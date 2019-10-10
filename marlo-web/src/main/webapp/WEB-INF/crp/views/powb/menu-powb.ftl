@@ -126,7 +126,7 @@
 <div class="text-center">
   [#assign documentLink][@s.url namespace="/summaries" action="${crpSession}/POWBSummary"][@s.param name='phaseID']${actualPhase.id}[/@s.param][/@s.url][/#assign]
   <a class="btn btn-default" href="${documentLink}" target="_blank">
-   <img  src="${baseUrl}/global/images/icons/file-doc.png" alt="" /> Generate DOC file
+   <img  src="${baseUrlCdn}/global/images/icons/file-doc.png" alt="" /> Generate DOC file
   </a>
 </div>
 [/#if]
@@ -142,6 +142,6 @@
 [#include "/WEB-INF/global/macros/discardChangesPopup.ftl"]
 
 [#-- Project Submit JS --]
-[#assign customJS = customJS  + [  "${baseUrlMedia}/js/powb/powbSubmit.js?20180307", "${baseUrl}/global/js/autoSave.js", "${baseUrl}/global/js/fieldsValidation.js" ]
+[#assign customJS = customJS  + [  "${baseUrlMedia}/js/powb/powbSubmit.js?20180307", "${baseUrlCdn}/global/js/autoSave.js", "${baseUrlCdn}/global/js/fieldsValidation.js" ]
 /]
 

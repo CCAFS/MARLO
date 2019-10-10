@@ -576,7 +576,7 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
   @Override
   public void prepare() throws Exception {
     Map<String, Parameter> parameters = this.getParameters();
-    this.setGeneralParameters();
+    this.setPublicAccessParameters();
     projectInnovationID =
       Long.parseLong(StringUtils.trim(parameters.get(APConstants.INNOVATION_REQUEST_ID).getMultipleValues()[0]));
     // Calculate time to generate report
