@@ -4,8 +4,8 @@
 [#assign pageLibs = ["select2", "vanilla-color-picker"] /]
 [#assign customJS = [ 
   "${baseUrlMedia}/js/impactPathway/programImpact.js", 
-  "${baseUrl}/global/js/autoSave.js", 
-  "${baseUrl}/global/js/fieldsValidation.js"
+  "${baseUrlCdn}/global/js/autoSave.js", 
+  "${baseUrlCdn}/global/js/fieldsValidation.js"
   ] 
 /]
 [#assign currentSection = "impactPathway" /]

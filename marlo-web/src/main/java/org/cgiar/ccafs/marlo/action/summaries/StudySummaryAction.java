@@ -294,7 +294,7 @@ public class StudySummaryAction extends BaseStudySummaryData implements Summary 
   @Override
   public void prepare() throws Exception {
     Map<String, Parameter> parameters = this.getParameters();
-    this.setGeneralParameters();
+    this.setPublicAccessParameters();
     try {
       projectExpectedStudyID =
         Long.parseLong(StringUtils.trim(parameters.get(APConstants.STUDY_REQUEST_ID).getMultipleValues()[0]));

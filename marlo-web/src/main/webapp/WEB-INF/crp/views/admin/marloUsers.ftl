@@ -2,9 +2,9 @@
 [#assign title = "MARLO Users" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2", "datatables.net", "datatables.net-bs"] /]
-[#assign customJS = [ "${baseUrl}/global/js/superadmin/marloUsers.js", 
-  "${baseUrl}/global/js/fieldsValidation.js" ] /]
-[#assign customCSS = [ "${baseUrl}/global/css/superadmin/superadmin.css" ] /]
+[#assign customJS = [ "${baseUrlCdn}/global/js/superadmin/marloUsers.js", 
+  "${baseUrlCdn}/global/js/fieldsValidation.js" ] /]
+[#assign customCSS = [ "${baseUrlCdn}/global/css/superadmin/superadmin.css" ] /]
 [#assign currentSection = "admin" /]
 [#assign currentStage = "guestUsers" /]
 
@@ -19,7 +19,7 @@
 
 <div class="container helpText viewMore-block">
   <div class="helpMessage infoText">
-    <img class="col-md-2" src="${baseUrl}/global/images/icon-help.jpg" />
+    <img class="col-md-2" src="${baseUrlCdn}/global/images/icon-help.jpg" />
     <p class="col-md-10"> [@s.text name="crpGuestUsers.help" /] </p>
   </div> 
   <div style="display:none" class="viewMore closed"></div>

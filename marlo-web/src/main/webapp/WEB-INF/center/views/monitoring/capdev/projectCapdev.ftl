@@ -3,15 +3,15 @@
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}" /]
 [#assign pageLibs = ["datatables.net", "datatables.net-bs"] /]
 [#assign customJS = [
-  "${baseUrl}/global/js/usersManagement.js", 
+  "${baseUrlCdn}/global/js/usersManagement.js", 
   "${baseUrlMedia}/js/impactPathway/output.js", 
-  "${baseUrl}/global/js/fieldsValidation.js",
+  "${baseUrlCdn}/global/js/fieldsValidation.js",
   "${baseUrlMedia}/js/capDev/capdevList.js"
   ] 
 /]
 [#assign customCSS = [
   "${baseUrlMedia}/css/impactPathway/outputList.css",
-  "${baseUrl}/global/css/customDataTable.css", 
+  "${baseUrlCdn}/global/css/customDataTable.css", 
   "${baseUrlMedia}/css/capDev/capacityDevelopment.css"
   ] 
 /]
@@ -30,7 +30,7 @@
 [#-- Help text --]
 <div class="container helpText viewMore-block">
   <div class="helpMessage infoText">
-    <img class="col-md-2" src="${baseUrl}/global/images/icon-help.png" />
+    <img class="col-md-2" src="${baseUrlCdn}/global/images/icon-help.png" />
     <p class="col-md-10">  [@s.text name="capdev.help.list"][/@s.text]  </p>
   </div> 
   <div style="display:none" class="viewMore closed"></div>

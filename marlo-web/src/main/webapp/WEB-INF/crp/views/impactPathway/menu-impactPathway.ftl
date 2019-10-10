@@ -153,7 +153,7 @@
     <br />
     <a class="btn btn-default" href="${baseUrl}/summaries/impactPathwaySubmissions.do?crpProgramID=${crpProgramID}" target="_BLANK" style="text-align:center;">
       <p class="title ">Download Impact Pathway</p>
-      <img src="${baseUrl}/global/images/download-summary.png" width="40" height="50" title="Download" />
+      <img src="${baseUrlCdn}/global/images/download-summary.png" width="40" height="50" title="Download" />
     </a>
   </div>
   --]

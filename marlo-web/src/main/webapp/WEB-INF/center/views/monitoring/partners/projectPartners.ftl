@@ -3,10 +3,10 @@
 [#assign currentSectionString = "program-${actionName?replace('/','-')}-${programID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2"] /]
 [#assign customJS = [
-  "${baseUrl}/global/js/usersManagement.js", 
+  "${baseUrlCdn}/global/js/usersManagement.js", 
   "${baseUrlMedia}/js/impactPathway/output.js", 
-  "${baseUrl}/global/js/fieldsValidation.js", 
-  "${baseUrl}/global/js/autoSave.js"
+  "${baseUrlCdn}/global/js/fieldsValidation.js", 
+  "${baseUrlCdn}/global/js/autoSave.js"
   ] 
 /]
 [#assign customCSS = [
@@ -27,7 +27,7 @@
 [#-- Help text --]
 <div class="container helpText viewMore-block">
   <div class="helpMessage infoText">
-    <img class="col-md-2" src="${baseUrl}/global/images/icon-help.png" />
+    <img class="col-md-2" src="${baseUrlCdn}/global/images/icon-help.png" />
     <p class="col-md-10"> [@s.text name="projectPartner.help"][/@s.text] </p>
   </div> 
   <div style="display:none" class="viewMore closed"></div>

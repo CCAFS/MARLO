@@ -15,5 +15,5 @@
   
   [#-- Inject Javascript dependences --]
   [#assign globalLibs = globalLibs + [  "google-diff-match-patch", "jquery-pretty-text-diff" ]   /]
-  [#assign customJS = customJS +  [ "${baseUrl}/global/js/historyDiff.js" ]   /]
+  [#assign customJS = customJS +  [ "${baseUrlCdn}/global/js/historyDiff.js" ]   /]
 [/#if]

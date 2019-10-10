@@ -4,8 +4,8 @@
 [#assign pageLibs = ["select2","jsUri"] /]
 [#assign customJS = [
   "${baseUrlMedia}/js/monitoring/outcomes/outcomeInfo.js",
-  "${baseUrl}/global/js/autoSave.js",
-  "${baseUrl}/global/js/fieldsValidation.js"
+  "${baseUrlCdn}/global/js/autoSave.js",
+  "${baseUrlCdn}/global/js/fieldsValidation.js"
   ] 
 /]
 [#assign customCSS = ["${baseUrl}/center/css/monitoring/outcomes/outcomeInfo.css"] /]
@@ -24,7 +24,7 @@
 [#-- Help text --]
 <div class="container helpText viewMore-block">
   <div class="helpMessage infoText">
-    <img class="col-md-2" src="${baseUrl}/global/images/icon-help.png" />
+    <img class="col-md-2" src="${baseUrlCdn}/global/images/icon-help.png" />
     <p class="col-md-10"> [@s.text name="monitoring.outcome.help"][/@s.text] </p>
   </div> 
   <div style="display:none" class="viewMore closed"></div>

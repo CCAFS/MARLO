@@ -1190,7 +1190,8 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           .sorted((o1, o2) -> o1.getCrpProgram().getAcronym().compareTo(o2.getCrpProgram().getAcronym()))
           .filter(
             c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()
-              && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase()))
+              && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase())
+              && c.getCrpProgram().getResearchArea() == null && c.getCrpProgram().getCrp().isCenterType() == false)
           .collect(Collectors.toList())) {
           flagships.add(programManager.getCrpProgramById(projectFocuses.getCrpProgram().getId()));
         }
@@ -1202,7 +1203,8 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
             .sorted((c1, c2) -> c1.getCrpProgram().getAcronym().compareTo(c2.getCrpProgram().getAcronym()))
             .filter(
               c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue()
-                && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase()))
+                && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase())
+                && c.getCrpProgram().getResearchArea() == null && c.getCrpProgram().getCrp().isCenterType() == false)
             .collect(Collectors.toList())) {
             regions.add(programManager.getCrpProgramById(projectFocuses.getCrpProgram().getId()));
           }
@@ -1557,10 +1559,35 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class},
       0);
     Boolean hasW1W2CoTemp = false;
+
+    // TODO change when the ProjectCoas Duplication will has been fix it
+    List<ProjectClusterActivity> coAsPrev = new ArrayList<>();
+
     List<ProjectClusterActivity> coAs = new ArrayList<>();
-    coAs = project.getProjectClusterActivities().stream()
+    coAsPrev = project.getProjectClusterActivities().stream()
       .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase()))
       .collect(Collectors.toList());
+
+    for (ProjectClusterActivity projectClusterActivity : coAsPrev) {
+      if (coAs.isEmpty()) {
+        coAs.add(projectClusterActivity);
+      } else {
+        boolean duplicated = false;
+        for (ProjectClusterActivity projectCoas : coAs) {
+          if (projectCoas.getCrpClusterOfActivity().getId()
+            .equals(projectClusterActivity.getCrpClusterOfActivity().getId())) {
+            duplicated = true;
+            break;
+          }
+        }
+
+        if (!duplicated) {
+          coAs.add(projectClusterActivity);
+        }
+      }
+
+
+    }
     /*     */
     Double totalW1w2 = 0.0, totalW3 = 0.0, totalBilateral = 0.0, totalCenter = 0.0, totalW1w2Gender = 0.0,
       totalW3Gender = 0.0, totalBilateralGender = 0.0, totalCenterGender = 0.0, totalW1w2Co = 0.0,
@@ -2047,8 +2074,11 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
                 responsibleppp = persons.get(0);
               }
 
-              leader =
-                responsibleppp.getUser().getComposedName() + "<br>&lt;" + responsibleppp.getUser().getEmail() + "&gt;";
+              if (responsibleppp != null && responsibleppp.getUser() != null
+                && responsibleppp.getUser().getComposedName() != null) {
+                leader = responsibleppp.getUser().getComposedName() + "<br>&lt;" + responsibleppp.getUser().getEmail()
+                  + "&gt;";
+              }
 
               if (responisble.getInstitution() != null) {
                 institution = responisble.getInstitution().getComposedName();
@@ -2789,12 +2819,15 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
               DeliverableUserPartnershipPerson responsibleppp = new DeliverableUserPartnershipPerson();
               List<DeliverableUserPartnershipPerson> persons = responisble.getDeliverableUserPartnershipPersons()
                 .stream().filter(dp -> dp.isActive()).collect(Collectors.toList());
-              if (persons.size() > 0) {
+              if (persons != null && persons.size() > 0) {
                 responsibleppp = persons.get(0);
               }
 
-              leader =
-                responsibleppp.getUser().getComposedName() + "<br>&lt;" + responsibleppp.getUser().getEmail() + "&gt;";
+              if (responsibleppp != null && responsibleppp.getUser() != null
+                && responsibleppp.getUser().getComposedName() != null) {
+                leader = responsibleppp.getUser().getComposedName() + "<br>&lt;" + responsibleppp.getUser().getEmail()
+                  + "&gt;";
+              }
 
               if (responisble.getInstitution() != null) {
                 institution = responisble.getInstitution().getComposedName();
@@ -2883,9 +2916,38 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
   private TypedTableModel getDescCoAsTableModel() {
     TypedTableModel model = new TypedTableModel(new String[] {"description"}, new Class[] {String.class}, 0);
     if (project.getProjectClusterActivities() != null) {
-      for (ProjectClusterActivity projectClusterActivity : project.getProjectClusterActivities().stream()
+
+
+      // TODO change when the ProjectCoas Duplication will has been fix it
+      List<ProjectClusterActivity> coAsPrev = new ArrayList<>();
+
+      List<ProjectClusterActivity> coAs = new ArrayList<>();
+      coAsPrev = project.getProjectClusterActivities().stream()
         .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase()))
-        .collect(Collectors.toList())) {
+        .collect(Collectors.toList());
+
+      for (ProjectClusterActivity projectClusterActivity : coAsPrev) {
+        if (coAs.isEmpty()) {
+          coAs.add(projectClusterActivity);
+        } else {
+          boolean duplicated = false;
+          for (ProjectClusterActivity projectCoas : coAs) {
+            if (projectCoas.getCrpClusterOfActivity().getId()
+              .equals(projectClusterActivity.getCrpClusterOfActivity().getId())) {
+              duplicated = true;
+              break;
+            }
+          }
+
+          if (!duplicated) {
+            coAs.add(projectClusterActivity);
+          }
+        }
+
+
+      }
+
+      for (ProjectClusterActivity projectClusterActivity : coAs) {
         model.addRow(new Object[] {projectClusterActivity.getCrpClusterOfActivity().getComposedName()});
       }
     }
@@ -3733,11 +3795,16 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     }
     try {
 
-      if (projectInfo.getAdministrative() == null) {
+      if (projectInfo != null && projectInfo.getAdministrative() == null) {
         projectInfo.setAdministrative(false);
       }
     } catch (Exception e) {
-      projectInfo.setAdministrative(false);
+      try {
+        projectInfo.setAdministrative(false);
+      } catch (Exception i) {
+
+      }
+
     }
 
     if (projectInfo.getAdministrative() == false) {
@@ -5137,7 +5204,9 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           .collect(Collectors.toList());
         // Flagships
         List<ProjectExpectedStudyFlagship> studyFlagshipList = studyProgramsList.stream()
-          .filter(f -> f.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+          .filter(f -> f.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()
+            && f.getCrpProgram().getResearchArea() == null && f.getCrpProgram().getResearchArea() == null
+            && f.getCrpProgram().getCrp() != null && f.getCrpProgram().getCrp().isCenterType() == false)
           .collect(Collectors.toList());
         Set<String> flaghipsSet = new HashSet<>();
         if (studyFlagshipList != null && studyFlagshipList.size() > 0) {
@@ -5148,7 +5217,8 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         }
         // Regional Programs
         List<ProjectExpectedStudyFlagship> studyRegionsList = studyProgramsList.stream()
-          .filter(f -> f.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue())
+          .filter(f -> f.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue()
+            && f.getCrpProgram().getResearchArea() == null && f.getCrpProgram().getCrp().isCenterType() == false)
           .collect(Collectors.toList());
         Set<String> regionSet = new HashSet<>();
         if (studyRegionsList != null && studyRegionsList.size() > 0) {
@@ -5607,7 +5677,9 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     } catch (Exception e) {
       LOG.error("Failed to get project. Exception: " + e.getMessage());
     }
-    this.setProjectInfo(project.getProjecInfoPhase(this.getSelectedPhase()));
+    if (this.getSelectedPhase() != null && project.getProjecInfoPhase(this.getSelectedPhase()) != null) {
+      this.setProjectInfo(project.getProjecInfoPhase(this.getSelectedPhase()));
+    }
   }
 
 
