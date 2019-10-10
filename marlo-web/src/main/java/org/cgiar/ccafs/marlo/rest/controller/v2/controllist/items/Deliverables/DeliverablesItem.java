@@ -263,6 +263,12 @@ public class DeliverablesItem<T> {
           deliverableUser.setPhase(phase);
           deliverableUserManager.saveDeliverableUser(deliverableUser);
         }
+      } else {
+        fieldErrors.add(new FieldErrorDTO("createDeliverable", "phase", "Error while creating a publication "));
+        throw new MARLOFieldValidationException("Field Validation errors", "",
+          fieldErrors.stream()
+            .sorted(Comparator.comparing(FieldErrorDTO::getField, Comparator.nullsLast(Comparator.naturalOrder())))
+            .collect(Collectors.toList()));
       }
 
 
