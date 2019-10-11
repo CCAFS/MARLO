@@ -343,10 +343,8 @@
   <div id="milestone-${isTemplate?string('template', index)}" class="milestone simpleBox isNew-${isMilestoneNew?string}" style="display:${isTemplate?string('none','block')}">
     <div class="leftHead ${reqMilestonesFields?string('green', '')} sm">
       <span class="index">${index+1}</span>
-      <span class="elementId">${(milestoneYear)!} [@s.text name="outcome.milestone.index.title"/]</span>
+      <span class="elementId">${(milestoneYear)!} [@s.text name="outcome.milestone.index.title"/]  [#if isMilestoneNew][New][/#if]</span>
     </div>
-    
-     
     
     [#-- Remove Button --]
     [#if editableMilestone && action.canBeDeleted((milestone.id)!-1,(milestone.class.name)!"" )]
