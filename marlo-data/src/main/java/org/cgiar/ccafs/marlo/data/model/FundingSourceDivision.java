@@ -54,13 +54,16 @@ public class FundingSourceDivision extends MarloBaseEntity implements java.io.Se
     return true;
   }
 
+
   public PartnerDivision getDivision() {
     return division;
   }
 
+
   public FundingSource getFundingSource() {
     return this.fundingSource;
   }
+
 
   @Override
   public String getLogDeatil() {
@@ -82,10 +85,10 @@ public class FundingSourceDivision extends MarloBaseEntity implements java.io.Se
     return u;
   }
 
-
   public Phase getPhase() {
     return phase;
   }
+
 
   @Override
   public int hashCode() {
@@ -101,7 +104,7 @@ public class FundingSourceDivision extends MarloBaseEntity implements java.io.Se
     return true;
   }
 
-  public void setDivision(PartnerDivision partnerDivision) {
+  public void setDivision(PartnerDivision division) {
     this.division = division;
   }
 

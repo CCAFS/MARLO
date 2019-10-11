@@ -597,8 +597,7 @@ public class FundingSourceAction extends BaseAction {
           .collect(Collectors.toList())));
 
         fundingSource.setDivisions(new ArrayList<>(fundingSource.getFundingSourceDivisions().stream()
-          .filter(pb -> pb.isActive() && pb.getPhase() != null && pb.getPhase().equals(this.getActualPhase()))
-          .collect(Collectors.toList())));
+          .filter(pb -> pb.getPhase().getId().equals(this.getActualPhase().getId())).collect(Collectors.toList())));
 
         fundingSource.setProjectBudgetsList(fundingSource.getProjectBudgets().stream()
           .filter(pb -> pb.isActive() && pb.getProject().isActive() && pb.getPhase() != null
@@ -903,15 +902,15 @@ public class FundingSourceAction extends BaseAction {
       fundingSourceInfoDB.setExtensionDate(fundingSource.getFundingSourceInfo().getExtensionDate());
 
       fundingSourceDB.setBudgets(fundingSource.getBudgets());
-
-      if (fundingSource.getFundingSourceInfo().getPartnerDivision() == null
-        || fundingSource.getFundingSourceInfo().getPartnerDivision().getId() == null
-        || fundingSource.getFundingSourceInfo().getPartnerDivision().getId().longValue() == -1) {
-        fundingSourceInfoDB.setPartnerDivision(null);
-      } else {
-        fundingSourceInfoDB.setPartnerDivision(fundingSource.getFundingSourceInfo().getPartnerDivision());
-      }
-
+      /*
+       * if (fundingSource.getFundingSourceInfo().getPartnerDivision() == null
+       * || fundingSource.getFundingSourceInfo().getPartnerDivision().getId() == null
+       * || fundingSource.getFundingSourceInfo().getPartnerDivision().getId().longValue() == -1) {
+       * fundingSourceInfoDB.setPartnerDivision(null);
+       * } else {
+       * fundingSourceInfoDB.setPartnerDivision(fundingSource.getFundingSourceInfo().getPartnerDivision());
+       * }
+       */
       if (fundingSource.getFundingSourceInfo().getW1w2() == null) {
         fundingSourceInfoDB.setW1w2(false);
       } else {
@@ -979,8 +978,6 @@ public class FundingSourceAction extends BaseAction {
             fundingSourceBudgetDB.setPhase(this.getActualPhase());
             fundingSourceBudgetDB = fundingSourceBudgetManager.saveFundingSourceBudget(fundingSourceBudgetDB);
           }
-
-
         }
       }
 
@@ -1021,7 +1018,7 @@ public class FundingSourceAction extends BaseAction {
 
       boolean divisionsEdited = false;
 
-      if (fundingSource.getDivisions() != null) {
+      if (fundingSource.getFundingSourceDivisions() != null) {
         for (FundingSourceDivision fundingSourceDivision : fundingSourceDB.getFundingSourceDivisions().stream()
           .filter(c -> c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())) {
           if (!fundingSource.getDivisions().contains(fundingSourceDivision)) {
@@ -1029,25 +1026,25 @@ public class FundingSourceAction extends BaseAction {
             divisionsEdited = true;
           }
         }
-        for (FundingSourceDivision fundingSourceDivision : fundingSource.getDivisions()) {
-          if (fundingSourceDivision.getId() == null || fundingSourceDivision.getId().longValue() == -1) {
+        if (fundingSource.getDivisions() != null) {
+          System.out.println("test " + fundingSource.getDivisions().get(0).getDivision().getId());
+          for (FundingSourceDivision fundingSourceDivision : fundingSource.getDivisions()) {
+            if (fundingSourceDivision.getId() == null || fundingSourceDivision.getId().longValue() == -1) {
+              FundingSourceDivision fundingSourceDivisionSave = new FundingSourceDivision();
+              fundingSourceDivisionSave.setFundingSource(fundingSourceDB);
+              fundingSourceDivisionSave.setPhase(this.getActualPhase());
 
-            fundingSourceDivision.setId(null);
-            fundingSourceDivision.setFundingSource(fundingSourceDB);
-            fundingSourceDivision.setPhase(this.getActualPhase());
-            fundingSourceDivision = fundingSourceDivisionManager.saveFundingSourceDivision(fundingSourceDivision);
-            divisionsEdited = true;
-          } else {
-            /**
-             * Looks like there are no fields to update.
-             */
-            // FundingSourceInstitution fundingSourceInstitutionDB =
-            // fundingSourceInstitutionManager.getFundingSourceInstitutionById(fundingSourceInstitution.getId());
-            // fundingSourceInstitutionDB.setFundingSource(fundingSourceDB);
-            // fundingSourceInstitutionManager.saveFundingSourceInstitution(fundingSourceInstitutionDB);
+              PartnerDivision partnerDivision =
+                partnerDivisionManager.getPartnerDivisionById(fundingSourceDivision.getDivision().getId());
 
+              fundingSourceDivisionSave.setDivision(partnerDivision);
+
+              fundingSourceDivisionManager.saveFundingSourceDivision(fundingSourceDivisionSave);
+              // This is to add innovationCrpSave to generate correct auditlog.
+              fundingSource.getFundingSourceDivisions().add(fundingSourceDivisionSave);
+              divisionsEdited = true;
+            }
           }
-
         }
       }
 
