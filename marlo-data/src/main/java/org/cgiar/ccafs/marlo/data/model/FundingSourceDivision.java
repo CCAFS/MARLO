@@ -22,7 +22,7 @@ public class FundingSourceDivision extends MarloBaseEntity implements java.io.Se
   private FundingSource fundingSource;
 
   @Expose
-  private FundingSourceDivision division;
+  private PartnerDivision division;
 
   @Expose
   private Phase phase;
@@ -54,11 +54,9 @@ public class FundingSourceDivision extends MarloBaseEntity implements java.io.Se
     return true;
   }
 
-
-  public FundingSourceDivision getDivision() {
-    return this.division;
+  public PartnerDivision getDivision() {
+    return division;
   }
-
 
   public FundingSource getFundingSource() {
     return this.fundingSource;
@@ -84,6 +82,7 @@ public class FundingSourceDivision extends MarloBaseEntity implements java.io.Se
     return u;
   }
 
+
   public Phase getPhase() {
     return phase;
   }
@@ -102,7 +101,7 @@ public class FundingSourceDivision extends MarloBaseEntity implements java.io.Se
     return true;
   }
 
-  public void setDivision(FundingSourceDivision division) {
+  public void setDivision(PartnerDivision partnerDivision) {
     this.division = division;
   }
 
