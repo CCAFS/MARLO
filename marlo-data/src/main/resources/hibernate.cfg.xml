@@ -122,6 +122,7 @@
     <mapping resource="xmls/DeliverableDissemination.hbm.xml" />
     <mapping resource="xmls/IpRelationships.hbm.xml" />
     <mapping resource="xmls/FundingSourceInstitutions.hbm.xml" />
+    <mapping resource="xmls/FundingSourceDivisions.hbm.xml" />
     <mapping resource="xmls/DeliverableQualityAnswers.hbm.xml" />
     <mapping resource="xmls/DeliverableQualityChecks.hbm.xml" />
     <mapping resource="xmls/ProjectOutcomesPandr.hbm.xml" />
