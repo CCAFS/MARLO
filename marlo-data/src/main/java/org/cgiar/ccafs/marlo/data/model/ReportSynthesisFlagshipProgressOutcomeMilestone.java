@@ -25,7 +25,7 @@ public class ReportSynthesisFlagshipProgressOutcomeMilestone extends MarloAudita
   private ReportSynthesisFlagshipProgressOutcome reportSynthesisFlagshipProgressOutcome;
 
   @Expose
-  private Long milestonesStatus;
+  private GeneralStatus milestonesStatus;
 
   @Expose
   private String evidence;
@@ -69,24 +69,24 @@ public class ReportSynthesisFlagshipProgressOutcomeMilestone extends MarloAudita
   }
 
 
-  public Long getMilestonesStatus() {
-    return this.milestonesStatus;
+  public GeneralStatus getMilestonesStatus() {
+    return milestonesStatus;
   }
-
 
   public String getOtherReason() {
     return this.otherReason;
   }
 
+
   public RepIndMilestoneReason getReason() {
     return this.reason;
   }
-
 
   public Set<ReportSynthesisFlagshipProgressCrossCuttingMarker>
     getReportSynthesisFlagshipProgressCrossCuttingMarkers() {
     return this.reportSynthesisFlagshipProgressCrossCuttingMarkers;
   }
+
 
   public ReportSynthesisFlagshipProgressOutcome getReportSynthesisFlagshipProgressOutcome() {
     return this.reportSynthesisFlagshipProgressOutcome;
@@ -95,10 +95,10 @@ public class ReportSynthesisFlagshipProgressOutcomeMilestone extends MarloAudita
 
   public String getStatusName() {
 
-    if (this.milestonesStatus == null) {
+    if (this.getMilestonesStatus() == null) {
       return "";
     } else {
-      switch (this.milestonesStatus.intValue()) {
+      switch (this.getMilestonesStatus().getId().intValue()) {
         case 3:
           return "Complete";
 
@@ -130,7 +130,8 @@ public class ReportSynthesisFlagshipProgressOutcomeMilestone extends MarloAudita
     this.markers = markers;
   }
 
-  public void setMilestonesStatus(Long milestonesStatus) {
+
+  public void setMilestonesStatus(GeneralStatus milestonesStatus) {
     this.milestonesStatus = milestonesStatus;
   }
 

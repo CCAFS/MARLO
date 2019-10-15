@@ -16,16 +16,22 @@
 		<property name="activeSince" type="timestamp" update="false">
 			<column name="active_since" length="19" not-null="true" />
 		</property>
-		<many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User"
-			fetch="select" update="false">
+    <many-to-one name="phaseCreated"
+      class="org.cgiar.ccafs.marlo.data.model.Phase" fetch="select">
+      <column name="phase_created" />
+    </many-to-one>
+		<many-to-one name="createdBy"
+			class="org.cgiar.ccafs.marlo.data.model.User" fetch="select"
+			update="false">
 			<column name="created_by" not-null="true" />
 		</many-to-one>
-		<many-to-one name="modifiedBy" class="org.cgiar.ccafs.marlo.data.model.User"
-			fetch="select">
+		<many-to-one name="modifiedBy"
+			class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
 			<column name="modified_by" />
 		</many-to-one>
 		<many-to-one name="crpProgramOutcome"
-			class="org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome" fetch="select">
+			class="org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome"
+			fetch="select">
 			<column name="crp_program_outcome_id" not-null="true" />
 		</many-to-one>
 		<many-to-one name="srfTargetUnit"
@@ -38,9 +44,12 @@
 		<property name="year" type="java.lang.Integer">
 			<column name="`year`" not-null="false" />
 		</property>
-		<property name="isPowb" type="java.lang.Boolean">
-      <column name="`is_powb`" not-null="false" />
+		<property name="extendedYear" type="java.lang.Integer">
+      <column name="`extended_year`" not-null="false" />
     </property>
+		<property name="isPowb" type="java.lang.Boolean">
+			<column name="`is_powb`" not-null="false" />
+		</property>
 		<property name="composeID" type="string">
 			<column name="composed_id" length="20" />
 		</property>
@@ -50,8 +59,13 @@
 		<property name="active" type="boolean">
 			<column name="is_active" not-null="true" />
 		</property>
+		<many-to-one name="milestonesStatus"
+			class="org.cgiar.ccafs.marlo.data.model.GeneralStatus" fetch="select">
+			<column name="milestone_status" />
+		</many-to-one>
 		<many-to-one name="powbIndAssesmentRisk"
-			class="org.cgiar.ccafs.marlo.data.model.PowbIndAssesmentRisk" fetch="select">
+			class="org.cgiar.ccafs.marlo.data.model.PowbIndAssesmentRisk"
+			fetch="select">
 			<column name="powb_ind_assesment_risk_id" not-null="false" />
 		</many-to-one>
 		<many-to-one name="youthFocusLevel"
@@ -60,7 +74,8 @@
 			<column name="rep_ind_youth_focus_level_id" not-null="false" />
 		</many-to-one>
 		<many-to-one name="powbIndMilestoneRisk"
-			class="org.cgiar.ccafs.marlo.data.model.PowbIndMilestoneRisk" fetch="select">
+			class="org.cgiar.ccafs.marlo.data.model.PowbIndMilestoneRisk"
+			fetch="select">
 			<column name="powb_ind_milestone_risk_id" not-null="false" />
 		</many-to-one>
 		<many-to-one name="climateFocusLevel"
@@ -81,20 +96,24 @@
 		<many-to-one name="powbIndFollowingMilestone"
 			class="org.cgiar.ccafs.marlo.data.model.PowbIndFollowingMilestone"
 			fetch="select">
-			<column name="powb_ind_following_milestone_id" not-null="false" />
+			<column name="powb_ind_following_milestone_id"
+				not-null="false" />
 		</many-to-one>
 		<property name="powbMilestoneOtherRisk" type="string">
-			<column name="powb_milestone_other_risk" sql-type="TEXT" not-null="false" />
+			<column name="powb_milestone_other_risk" sql-type="TEXT"
+				not-null="false" />
 		</property>
 		<property name="powbMilestoneVerification" type="string">
-			<column name="powb_milestone_verification" sql-type="TEXT" not-null="false" />
+			<column name="powb_milestone_verification" sql-type="TEXT"
+				not-null="false" />
 		</property>
-		<set name="projectMilestones" order-by="id" table="project_milestones"
-			inverse="true" lazy="true" fetch="select">
+		<set name="projectMilestones" order-by="id"
+			table="project_milestones" inverse="true" lazy="true" fetch="select">
 			<key>
 				<column name="crp_milestone_id" not-null="true" />
 			</key>
-			<one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectMilestone" />
+			<one-to-many
+				class="org.cgiar.ccafs.marlo.data.model.ProjectMilestone" />
 		</set>
 	</class>
 </hibernate-mapping>

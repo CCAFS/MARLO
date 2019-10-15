@@ -708,6 +708,20 @@ public class OutcomesMilestonesAction extends BaseAction {
                 reportSynthesisFlagshipProgressOutcome.getReportSynthesisFlagshipProgressOutcomeMilestones().stream()
                   .filter(c -> c.isActive()).collect(Collectors.toList()));
 
+              // Setting the Milestone Status Changed in POWB
+              for (ReportSynthesisFlagshipProgressOutcomeMilestone milestone : milestones) {
+                if (milestone.getCrpMilestone().getId() != null) {
+                  CrpMilestone crpMilestone =
+                    crpMilestoneManager.getCrpMilestoneById(milestone.getCrpMilestone().getId());
+                  if (crpMilestone.getMilestonesStatus() != null && crpMilestone.getMilestonesStatus().getId() != -1) {
+                    if (crpMilestone.getMilestonesStatus().getId() != 1
+                      || crpMilestone.getMilestonesStatus().getId() != 2) {
+                      milestone.setMilestonesStatus(crpMilestone.getMilestonesStatus());
+                    }
+                  }
+                }
+              }
+
               reportSynthesisFlagshipProgressOutcome.setMilestones(milestones);
 
               reportSynthesisFlagshipProgressOutcome.getMilestones()
@@ -747,7 +761,8 @@ public class OutcomesMilestonesAction extends BaseAction {
     }
     for (CrpProgramOutcome outcome : outcomesList) {
       outcome.setMilestones(outcome.getCrpMilestones().stream()
-        .filter(c -> c.isActive() && c.getYear().intValue() == this.getActualPhase().getYear())
+        .filter(c -> c.isActive() && (c.getYear().intValue() == this.getActualPhase().getYear()
+          || (c.getExtendedYear() != null && c.getExtendedYear().intValue() == this.getActualPhase().getYear())))
         .collect(Collectors.toList()));
       if (!outcome.getMilestones().isEmpty()) {
         outcomesSet.add(outcome);
@@ -1003,6 +1018,7 @@ public class OutcomesMilestonesAction extends BaseAction {
             crpMilestoneManager.getCrpMilestoneById(flagshipProgressMilestone.getCrpMilestone().getId()));
         }
 
+
         if (flagshipProgressMilestone.getId() == null) {
           flagshipProgressMilestoneNew = new ReportSynthesisFlagshipProgressOutcomeMilestone();
           flagshipProgressMilestoneNew.setReportSynthesisFlagshipProgressOutcome(OutcomeDB);
@@ -1026,7 +1042,6 @@ public class OutcomesMilestonesAction extends BaseAction {
         flagshipProgressMilestoneNew.setEvidence(flagshipProgressMilestone.getEvidence());
         flagshipProgressMilestoneNew.setMilestonesStatus(flagshipProgressMilestone.getMilestonesStatus());
         flagshipProgressMilestoneNew.setCrpMilestone(flagshipProgressMilestone.getCrpMilestone());
-
         flagshipProgressMilestoneNew = reportSynthesisFlagshipProgressOutcomeMilestoneManager
           .saveReportSynthesisFlagshipProgressOutcomeMilestone(flagshipProgressMilestoneNew);
 

@@ -129,6 +129,15 @@ public class CrpProgramOutcomeManagerImpl implements CrpProgramOutcomeManager {
         crpMilestoneAdd.setTitle(crpMilestone.getTitle());
         crpMilestoneAdd.setValue(crpMilestone.getValue());
         crpMilestoneAdd.setYear(crpMilestone.getYear());
+
+        if (crpMilestone.getExtendedYear() != null) {
+          if (crpMilestone.getExtendedYear() != -1) {
+            crpMilestoneAdd.setExtendedYear(crpMilestone.getExtendedYear());
+          }
+        }
+
+        crpMilestoneAdd.setMilestonesStatus(crpMilestone.getMilestonesStatus());
+
         crpMilestoneAdd.setComposeID(crpMilestone.getComposeID());
         crpMilestoneAdd = crpMilestoneDAO.save(crpMilestoneAdd);
         if (crpMilestone.getComposeID() == null || crpMilestone.getComposeID().trim().length() == 0) {
@@ -218,6 +227,7 @@ public class CrpProgramOutcomeManagerImpl implements CrpProgramOutcomeManager {
         crpOutcomeSubIdoAdd.setContribution(crpOutcomeSubIdo.getContribution());
         crpOutcomeSubIdoAdd.setSrfSubIdo(crpOutcomeSubIdo.getSrfSubIdo());
         crpOutcomeSubIdoAdd.setCrpProgramOutcome(crpProgramOutcomeAdd);
+        crpOutcomeSubIdoAdd.setPrimary(crpOutcomeSubIdo.getPrimary());
         crpOutcomeSubIdoDAO.save(crpOutcomeSubIdoAdd);
         for (CrpAssumption crpAssumption : crpOutcomeSubIdo.getCrpAssumptions().stream().filter(c -> c.isActive())
           .collect(Collectors.toList())) {
@@ -294,6 +304,7 @@ public class CrpProgramOutcomeManagerImpl implements CrpProgramOutcomeManager {
           outcomeSubIdoAdd.setCrpProgramOutcome(programOutcomePrev);
           outcomeSubIdoAdd.setContribution(outcomeSubIdo.getContribution());
           outcomeSubIdoAdd.setSrfSubIdo(outcomeSubIdo.getSrfSubIdo());
+          outcomeSubIdo.setPrimary(outcomeSubIdo.getPrimary());
           crpOutcomeSubIdoDAO.save(outcomeSubIdoAdd);
 
         }
@@ -378,6 +389,14 @@ public class CrpProgramOutcomeManagerImpl implements CrpProgramOutcomeManager {
           crpMilestoneAdd.setTitle(crpMilestone.getTitle());
           crpMilestoneAdd.setValue(crpMilestone.getValue());
           crpMilestoneAdd.setYear(crpMilestone.getYear());
+
+          if (crpMilestone.getExtendedYear() != null) {
+            if (crpMilestone.getExtendedYear() != -1) {
+              crpMilestoneAdd.setExtendedYear(crpMilestone.getExtendedYear());
+            }
+          }
+
+          crpMilestoneAdd.setMilestonesStatus(crpMilestone.getMilestonesStatus());
 
 
           /* POWB 2019 */
@@ -477,6 +496,15 @@ public class CrpProgramOutcomeManagerImpl implements CrpProgramOutcomeManager {
           milestonetoUpdate.setTitle(crpMilestone.getTitle());
           milestonetoUpdate.setSrfTargetUnit(crpMilestone.getSrfTargetUnit());
           milestonetoUpdate.setYear(crpMilestone.getYear());
+
+          if (crpMilestone.getExtendedYear() != null) {
+            if (crpMilestone.getExtendedYear() != -1) {
+              milestonetoUpdate.setExtendedYear(crpMilestone.getExtendedYear());
+            }
+          }
+
+          milestonetoUpdate.setMilestonesStatus(crpMilestone.getMilestonesStatus());
+
           milestonetoUpdate.setValue(crpMilestone.getValue());
           /* POWB 2019 */
 
