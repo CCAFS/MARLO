@@ -23,9 +23,6 @@
         <many-to-one name="reason" class="org.cgiar.ccafs.marlo.data.model.RepIndMilestoneReason" fetch="select">
             <column name="rep_ind_milestone_reason_id" />
         </many-to-one>
-        <property name="milestonesStatus" type="java.lang.Long">
-            <column name="milestones_status" precision="10" scale="0" />
-        </property>
         <property name="evidence" type="string">
             <column name="evidence" sql-type="TEXT" />
         </property>

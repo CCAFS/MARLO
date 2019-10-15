@@ -3807,7 +3807,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
 
     }
 
-    if (projectInfo.getAdministrative() == false) {
+    if (projectInfo.getAdministrative() != null && projectInfo.getAdministrative() == false) {
       if (flagships != null) {
         if (!flagships.isEmpty()) {
           for (CrpProgram crpProgram : flagships) {

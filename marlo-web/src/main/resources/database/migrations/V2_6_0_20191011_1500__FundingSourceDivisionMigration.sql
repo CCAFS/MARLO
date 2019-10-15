@@ -1,0 +1,1 @@
+INSERT INTO funding_source_divisions (`funding_source_id`,`division_id`,`id_phase`) SELECT `funding_source_id`, `division_id`, `id_phase` FROM funding_sources_info fsi where fsi.division_id is not null;

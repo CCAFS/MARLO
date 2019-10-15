@@ -42,6 +42,7 @@ function attachEvents() {
   // Remove a Milestone
   $('.removeMilestone').on('click', removeMilestone);
 
+  // Change Outcomes/Milestones Year
   $('input.outcomeYear, input.milestoneYear').on('keyup', function() {
     var $target = $(this);
     var targetVal = parseInt($target.val());
@@ -63,6 +64,37 @@ function attachEvents() {
       });
     }
   }).trigger('keyup');
+
+  // Change Milestone Status
+  $('select.milestoneStatus').on('change', function() {
+    var $parent = $(this).parents('div.milestone');
+    // var extendedYear = $parent.find('.milestoneExtendedYear').val();
+    // var hasExtendedYear = (extendedYear && (extendedYear != -1));
+    var showExtendedYear = (this.value == 4)
+    if(showExtendedYear) {
+      $parent.find('.extendedYearBlock').slideDown();
+    } else {
+      $parent.find('.extendedYearBlock').slideUp();
+    }
+  });
+
+  $('select.milestoneStatus').each(function(i,statusSelect) {
+    var $parent = $(this).parents('div.milestone');
+    var extendedYear = $parent.find('.milestoneExtendedYear').val();
+    var year = $parent.find('.milestoneYear').val() || extendedYear;
+    var isNew = ($parent.classParam('isNew') == "true");
+    // Planning/POWB
+    if(!reportingActive) {
+      if(year >= currentCycleYear) {
+        $(statusSelect).find('option[value="3"]').prop('disabled', true); // Complete
+        $(statusSelect).find('option[value="4"]').prop('disabled', true); // Extended
+      } else {
+        if(!isNew) {
+          $(statusSelect).find('option[value="1"]').prop('disabled', true); // New
+        }
+      }
+    }
+  });
 
   // Add a Sub IDO
   $('.addSubIdo').on('click', addSubIdo);
@@ -157,6 +189,14 @@ function attachEvents() {
     $(document).trigger('updateComponent');
   });
 
+  // Set Primary Sub-IDO
+  $('.setPrimaryRadio').on('click', function() {
+    var $parent = $(this).parents('.subIdo');
+    var $siblings = $parent.siblings()
+    console.log(this.value);
+    $siblings.find('.setPrimaryRadio').prop('checked', false);
+  });
+
   // Event when the assessment of risk to achievement is changed
   $('input.assesmentLevels').on('change', function() {
     var $milestoneRiskBlocks = $(this).parents('.milestone').find('.milestoneRisk');
@@ -223,9 +263,17 @@ function removeOutcome() {
 function addMilestone() {
   var $list = $(this).parents('.outcome').find('.milestones-list');
   var $item = $('#milestone-template').clone(true).removeAttr("id");
-  // $item.find('select').select2({
-  // width: '100%'
-  // });
+
+  // Set Status as new
+  $item.find('.milestoneStatus').val(1); // New
+
+  // Set Milestone year as the currentCycleYear
+  $item.find('.milestoneYear').val(currentCycleYear);
+
+  $item.find('select').select2({
+    width: '100%'
+  });
+
   $list.append($item);
   updateAllIndexes();
   $item.show('slow');
@@ -248,6 +296,12 @@ function removeMilestone() {
 
 function addSubIdo() {
   var $list = $(this).parents('.outcome').find('.subIdos-list');
+
+  if($list.find('.subIdo').length >= 3) {
+    $('div.addSubIdo').animateCss('shake');
+    return;
+  }
+
   var $item = $('#subIdo-template').clone(true).removeAttr("id");
   // $item.find('select').select2({
   // width: '100%'
@@ -440,6 +494,10 @@ function updateAllIndexes() {
     $(outcome).find('.subIdo').each(function(i,subIdo) {
       $(subIdo).find('span.index').text(i + 1);
       $(subIdo).setNameIndexes(2, i);
+
+      // Update radios for
+      var radioFlatID = $(subIdo).find('.radioFlat input').attr('id');
+      $(subIdo).find('.radioFlat label').attr('for', radioFlatID);
 
       // Update Assumptions
       $(subIdo).find('.assumption').each(function(i,assumption) {

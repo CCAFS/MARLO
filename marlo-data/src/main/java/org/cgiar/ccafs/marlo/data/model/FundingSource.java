@@ -28,12 +28,16 @@ public class FundingSource extends MarloAuditableEntity implements java.io.Seria
 
   private List<FundingSourceInstitution> institutions;
 
+  private List<FundingSourceDivision> divisions;
 
   private Set<FundingSourceBudget> fundingSourceBudgets = new HashSet<FundingSourceBudget>(0);
 
   private Set<FundingSource> fundingSources = new HashSet<FundingSource>(0);
 
   private Set<FundingSourceInstitution> fundingSourceInstitutions = new HashSet<FundingSourceInstitution>(0);
+
+  private Set<FundingSourceDivision> fundingSourceDivisions = new HashSet<FundingSourceDivision>(0);
+
 
   /*
    * Funding Source Locations
@@ -114,6 +118,10 @@ public class FundingSource extends MarloAuditableEntity implements java.io.Seria
   }
 
 
+  public List<FundingSourceDivision> getDivisions() {
+    return divisions;
+  }
+
   public Date getEndDatePhase() {
     if (this.getFundingSourceInfo() != null) {
       return this.getFundingSourceInfo().getEndDate();
@@ -121,10 +129,10 @@ public class FundingSource extends MarloAuditableEntity implements java.io.Seria
     return null;
   }
 
+
   public List<FundingSourceLocation> getFundingCountry() {
     return fundingCountry;
   }
-
 
   public List<FundingSourceLocation> getFundingRegions() {
     return fundingRegions;
@@ -132,6 +140,10 @@ public class FundingSource extends MarloAuditableEntity implements java.io.Seria
 
   public Set<FundingSourceBudget> getFundingSourceBudgets() {
     return fundingSourceBudgets;
+  }
+
+  public Set<FundingSourceDivision> getFundingSourceDivisions() {
+    return fundingSourceDivisions;
   }
 
   public FundingSourceInfo getFundingSourceInfo() {
@@ -156,6 +168,7 @@ public class FundingSource extends MarloAuditableEntity implements java.io.Seria
 
 
   }
+
 
   public FundingSourceInfo getFundingSourceInfoLast(Phase phase) {
     if (this.getFundingSourceInfo() != null) {
@@ -190,7 +203,6 @@ public class FundingSource extends MarloAuditableEntity implements java.io.Seria
     return fundingSourceLocations;
   }
 
-
   public Set<FundingSource> getFundingSources() {
     return fundingSources;
   }
@@ -199,7 +211,6 @@ public class FundingSource extends MarloAuditableEntity implements java.io.Seria
     return institutions;
   }
 
-
   @Override
   public String getLogDeatil() {
     StringBuilder sb = new StringBuilder();
@@ -207,14 +218,15 @@ public class FundingSource extends MarloAuditableEntity implements java.io.Seria
     return sb.toString();
   }
 
-
   public Set<ProjectBudget> getProjectBudgets() {
     return projectBudgets;
   }
 
+
   public List<ProjectBudget> getProjectBudgetsList() {
     return projectBudgetsList;
   }
+
 
   public double getRemaining(int year, Phase phase) {
     double used = 0;
@@ -278,6 +290,17 @@ public class FundingSource extends MarloAuditableEntity implements java.io.Seria
     return "";
   }
 
+  public boolean hasDivision(long divisionID, long idPhase) {
+
+    for (FundingSourceDivision fundingSourceDivision : fundingSourceDivisions) {
+      if (fundingSourceDivision.getDivision().getId().longValue() == divisionID
+        && fundingSourceDivision.getPhase().getId().longValue() == idPhase) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   @Override
   public int hashCode() {
     final int prime = 31;
@@ -285,7 +308,6 @@ public class FundingSource extends MarloAuditableEntity implements java.io.Seria
     result = prime * result + ((this.getId() == null) ? 0 : this.getId().hashCode());
     return result;
   }
-
 
   public boolean hasInstitution(long institutionID, long idPhase) {
 
@@ -298,14 +320,15 @@ public class FundingSource extends MarloAuditableEntity implements java.io.Seria
     return false;
   }
 
+
   public void setBudgets(List<FundingSourceBudget> budgets) {
     this.budgets = budgets;
   }
 
-
   public void setCreateDate(Date createDate) {
     this.createDate = createDate;
   }
+
 
   public void setCrp(GlobalUnit crp) {
     this.crp = crp;
@@ -316,18 +339,27 @@ public class FundingSource extends MarloAuditableEntity implements java.io.Seria
     this.deliverableFundingSources = deliverableFundingSources;
   }
 
+  public void setDivisions(List<FundingSourceDivision> divisions) {
+    this.divisions = divisions;
+  }
+
 
   public void setFundingCountry(List<FundingSourceLocation> fundingCountry) {
     this.fundingCountry = fundingCountry;
   }
 
+
   public void setFundingRegions(List<FundingSourceLocation> fundingRegions) {
     this.fundingRegions = fundingRegions;
   }
 
-
   public void setFundingSourceBudgets(Set<FundingSourceBudget> fundingSourceBudgets) {
     this.fundingSourceBudgets = fundingSourceBudgets;
+  }
+
+
+  public void setFundingSourceDivisions(Set<FundingSourceDivision> fundingSourceDivisions) {
+    this.fundingSourceDivisions = fundingSourceDivisions;
   }
 
 

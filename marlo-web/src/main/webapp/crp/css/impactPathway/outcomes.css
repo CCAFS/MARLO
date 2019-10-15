@@ -30,7 +30,7 @@ p.contributioRem {
     float: left;
     display: inline-block;
     margin-right: 4%;
-    margin-left: 2%;
+    /* margin-left: 2%; */
 }
 
 .contribution {}
@@ -100,8 +100,11 @@ p.contributioRem {
 
 .subIdoSelected {
     border: 1.5px solid #f1f1f1;
-    line-height: 26px;
+    line-height: 23px;
+    height: 28px;
     border-radius: 3px;
+    font-size: 0.9em;
+    color: #4a4a4a;
     width: auto;
     padding-left: 0.8em;
 }
@@ -157,7 +160,7 @@ p.contributioRem {
 
 .tab-content.impactpathwayTabContent{
     border: 1px solid #d1d1d1;
-    padding: 25px 1.5em 25px 1.5em;
+    padding: 20px 1em 25px 1em;
     border-radius: 0px 4px 4px 4px;
     margin-bottom: 25px;
     border-top: none;
@@ -172,4 +175,13 @@ p.contributioRem {
 
 .baselineIndicator {
   padding: 20px 10px 5px 23px;
+}
+
+.subIdo {
+  padding-top: 29px;
+}
+
+.addAssumption {
+  position: absolute;
+  bottom: 23px;
 }
