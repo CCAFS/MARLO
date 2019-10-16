@@ -110,9 +110,11 @@ public class EditImpactPathwayInterceptor extends AbstractInterceptor implements
     crp = (GlobalUnit) session.get(APConstants.SESSION_CRP);
     crpProgramID = this.getCrpProgramId();
 
-    if (!baseAction
-      .hasPermission(baseAction.generatePermission(Permission.IMPACT_PATHWAY_VISIBLE_PRIVILEGES, crp.getAcronym()))) {
-      return BaseAction.NOT_AUTHORIZED;
+    if (!baseAction.isRole("PMU") && !baseAction.isRole("FPL")) {
+      if (!baseAction
+        .hasPermission(baseAction.generatePermission(Permission.IMPACT_PATHWAY_VISIBLE_PRIVILEGES, crp.getAcronym()))) {
+        return BaseAction.NOT_AUTHORIZED;
+      }
     }
 
 

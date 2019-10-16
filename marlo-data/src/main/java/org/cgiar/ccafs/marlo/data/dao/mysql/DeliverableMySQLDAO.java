@@ -220,9 +220,9 @@ public class DeliverableMySQLDAO extends AbstractMarloDAO<Deliverable, Long> imp
     query.append("deliverable_user_partnerships AS dup ");
     query.append("INNER JOIN deliverable_user_partnership_persons AS dupp ON dupp.user_partnership_id = dup.id ");
     query.append("WHERE ");
+    query.append("dupp.user_id =" + userId + " AND ");
     query.append("dup.is_active = 1 AND ");
     query.append("dupp.is_active = 1 AND ");
-    query.append("dupp.user_id =" + userId + " AND ");
     query.append("dup.id_phase =" + phaseId);
 
     List<Map<String, Object>> rList = super.findCustomQuery(query.toString());
