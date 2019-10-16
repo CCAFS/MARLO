@@ -423,12 +423,13 @@ public class ProjectPartnerAction extends BaseAction {
                 if (deliverable.isActive()) {
                   deliverablesLeads.add(deliverable);
                 }
-
               } else {
+
                 if (deliverable.getDeliverableInfo().getStatus().intValue() == Integer
                   .parseInt(ProjectStatusEnum.Extended.getStatusId())) {
                   if (deliverable.getDeliverableInfo().getNewExpectedYear() != null
                     && deliverable.getDeliverableInfo().getNewExpectedYear() >= this.getActualPhase().getYear()) {
+
                     if (deliverable.isActive()) {
                       deliverablesLeads.add(deliverable);
                     }
