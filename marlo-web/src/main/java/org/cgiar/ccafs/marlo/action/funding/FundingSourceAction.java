@@ -171,7 +171,7 @@ public class FundingSourceAction extends BaseAction {
     PartnerDivisionManager partnerDivisionManager, FundingSourceInstitutionManager fundingSourceInstitutionManager,
     FundingSourceDivisionManager fundingSourceDivisionManager, LocElementManager locElementManager,
     FundingSourceLocationsManager fundingSourceLocationsManager, LocElementTypeManager locElementTypeManager,
-    FundingSourceInfoManager fundingSourceInfoManager, FundingSourceDivisionManager fundingSourceDivisionManager,
+    FundingSourceInfoManager fundingSourceInfoManager,
     /* TODO delete when fix the budget permissions */ RoleManager userRoleManager, ProjectManager projectManager) {
     super(config);
     this.crpManager = crpManager;
@@ -753,7 +753,7 @@ public class FundingSourceAction extends BaseAction {
               .add(institutionManager.getInstitutionById(fundingSourceInstitution.getInstitution().getId()));
           }
         }
-        
+
         fundingSource.setDivisions(new ArrayList<>(fundingSource.getFundingSourceDivisions().stream()
           .filter(pb -> pb.getPhase().getId().equals(this.getActualPhase().getId())).collect(Collectors.toList())));
 
