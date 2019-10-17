@@ -82,7 +82,6 @@ public class CrpPhasesAction extends BaseAction {
       if (customParameter.getParameter().getKey().equals(APConstants.CURRENT_PHASE_PARAM)) {
         CustomParameter customParameterDb = crpParameterManager.getCustomParameterById(customParameter.getId());
         defaultPhaseID = customParameterDb.getValue() != null ? Long.parseLong(customParameterDb.getValue()) : null;
-        System.out.println(" phase ID " + defaultPhaseID);
       }
     }
     if (this.isHttpPost()) {
@@ -119,7 +118,6 @@ public class CrpPhasesAction extends BaseAction {
       this.getSession().remove(APConstants.PHASES_IMPACT);
       this.getSession().remove(APConstants.ALL_PHASES);
       this.getSession().remove(APConstants.CURRENT_PHASE);
-      this.getSession().put(APConstants.CURRENT_PHASE, defaultPhaseID);
 
       Collection<String> messages = this.getActionMessages();
       if (!messages.isEmpty()) {
