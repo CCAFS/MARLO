@@ -837,7 +837,8 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
 
     this.getFpPlannedList(this.getFlagships(), this.getSelectedPhase().getId());
 
-    if (powbSynthesis.getPowbEvidence() != null && powbSynthesis.getPowbEvidence().getPlannedStudies() != null) {
+    if (powbSynthesis != null && powbSynthesis.getPowbEvidence() != null
+      && powbSynthesis.getPowbEvidence().getPlannedStudies() != null) {
 
       for (PowbEvidencePlannedStudy powbEvidencePlannedStudy : powbSynthesis.getPowbEvidence().getPlannedStudies()) {
         String studyInfo = " ", geographicScope = " ", commissionStudy = " ";
