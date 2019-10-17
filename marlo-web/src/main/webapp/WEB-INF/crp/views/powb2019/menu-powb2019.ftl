@@ -129,7 +129,7 @@
 
 
 [#-- Generate RTF --]
-[#if true]
+[#if false]
 <br />
 <div class="text-center">
   [#assign documentLink][@s.url namespace="/summaries" action="${crpSession}/POWBSummaryPLT2019"][@s.param name='phaseID']${actualPhase.id}[/@s.param][/@s.url][/#assign]
