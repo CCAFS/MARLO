@@ -56,6 +56,11 @@
                 <input type="hidden" name="${customName}.crp.id" value="${phase.crp.id}" />
                 [#-- Title --]
                 <h4> ${(phase.name)!} ${(phase.year)!}</h4><hr />
+                
+                <div class="form-group">
+                  [@customForm.radioFlat id="defaultPhaseID-${phase.id}" name="defaultPhaseID" label="Set as default" disabled=false editable=editable value="${phase.id}" checked=(actualPhase.id == phase.id)!false cssClass="" cssClassLabel="radio-label-yes" inline=false /]
+                </div>
+                
                 <div class="form-group row"> 
                   [#-- Visible Phase --]
                   <div class="col-md-6">
