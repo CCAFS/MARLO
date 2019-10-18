@@ -1240,7 +1240,7 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
         CTDocument1 doc = document.getDocument();
         CTBody body = doc.getBody();
 
-        poiSummary.pageRightHeader(document, this.getText("summaries.powb2019.hppaderCRP"));
+        poiSummary.pageRightHeader(document, this.getText("summaries.powb2019.headerCRP"));
 
         // Get datetime
         ZonedDateTime timezone = ZonedDateTime.now();
