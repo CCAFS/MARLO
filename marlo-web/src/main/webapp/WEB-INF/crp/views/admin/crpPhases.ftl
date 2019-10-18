@@ -54,12 +54,15 @@
                 <input type="hidden" name="${customName}.year" value="${phase.year}" />
                 <input type="hidden" name="${customName}.next.id" value="${(phase.next.id)!}" />
                 <input type="hidden" name="${customName}.crp.id" value="${phase.crp.id}" />
-                [#-- Title --]
-                <h4> ${(phase.name)!} ${(phase.year)!}</h4><hr />
                 
-                <div class="form-group">
-                  [@customForm.radioFlat id="defaultPhaseID-${phase.id}" name="defaultPhaseID" label="Set as default" disabled=false editable=editable value="${phase.id}" checked=(defaultPhaseID == phase.id)!false cssClass="" cssClassLabel="radio-label-yes" inline=false /]
+                <div class="pull-right">
+                  [@customForm.radioFlat id="defaultPhaseID-${phase.id}" name="defaultPhaseID" label="Set as default landing" disabled=false editable=editable value="${phase.id}" checked=(defaultPhaseID == phase.id)!false cssClass="" cssClassLabel="text-bold" inline=false /]
                 </div>
+                
+                [#-- Title --]
+                <h4> ${(phase.name)!} ${(phase.year)!}</h4>
+                
+                <hr />
                 
                 <div class="form-group row"> 
                   [#-- Visible Phase --]
@@ -75,7 +78,7 @@
                     [@customForm.radioFlat id="editable-no-${phase_index}" name="${customName}.editable" label="Close" value="false" checked=!phase.editable cssClass="editable-no" cssClassLabel="radio-label-no"/]
                   </div>
                 </div>
-                <div class="form-group row">
+                <div class="form-group row" style="display:none">
                   [#-- From Date  --]
                   <div class="col-md-6">
                     [@customForm.input name="${customName}.startDate" value="${(phase.startDate?string.medium)!}" i18nkey="From" placeholder="" editable=editable  className="startDate datePicker"/]
