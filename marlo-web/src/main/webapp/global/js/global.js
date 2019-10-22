@@ -305,6 +305,12 @@ $(document).ready(function() {
     }
   });
 
+  // Remove concurrency block
+  $('.removeConcurrenceBlock').on('click', function(e) {
+    e.preventDefault();
+    $('#concurrenceBlock').fadeOut();
+  });
+
 });
 
 $(document).ajaxError(function(event,jqxhr,settings,exception) {
