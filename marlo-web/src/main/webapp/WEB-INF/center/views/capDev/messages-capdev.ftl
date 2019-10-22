@@ -83,6 +83,8 @@
             [@s.param name="phaseID" value="${(actualPhase.id)!}" /][/@s.url]">click here</a> [/@s.param]
           [/@s.text]
         </p>
+        
+        [#if action.canAccessSuperAdmin()]<i><small> Only for superadmins: <a href="#" class="removeConcurrenceBlock">[CLOSE]</a></small></i>[/#if]
       </div> 
     </div>
   [/#if]

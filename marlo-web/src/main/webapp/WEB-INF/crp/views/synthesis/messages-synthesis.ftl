@@ -51,6 +51,8 @@
     <div class="content">
       <span class="glyphicon glyphicon-lock"></span>
       <p>[@s.text name="synthesis.message.concurrence" /] [@s.text name="synthesis.message.concurrenceNotEditing"][@s.param] <a href="[@s.url][@s.param name="liaisonInstitutionID" value=liaisonInstitutionID /][/@s.url]">click here</a> [/@s.param][/@s.text]</p>
+      
+      [#if action.canAccessSuperAdmin()]<i><small> Only for superadmins: <a href="#" class="removeConcurrenceBlock">[CLOSE]</a></small></i>[/#if]
     </div>
   </div>
   
