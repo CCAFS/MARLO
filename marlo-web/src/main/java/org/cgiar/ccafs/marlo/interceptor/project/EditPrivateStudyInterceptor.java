@@ -76,6 +76,7 @@ public class EditPrivateStudyInterceptor extends AbstractInterceptor implements 
 
     try {
       this.setPermissionParameters(invocation);
+
       if (!isPrivate) {
         return invocation.invoke();
       } else {
@@ -105,11 +106,13 @@ public class EditPrivateStudyInterceptor extends AbstractInterceptor implements 
     expectedId = Long.parseLong(projectParameter);
 
     ProjectExpectedStudy projectExpectedStudy = projectExpectedStudyManager.getProjectExpectedStudyById(expectedId);
+    GlobalUnit unit = null;
+    if (projectExpectedStudy.getProject() != null) {
+      Project project = projectExpectedStudy.getProject();
 
-    Project project = projectExpectedStudy.getProject();
-
-    GlobalUnit unit = project.getGlobalUnitProjects().stream().filter(gu -> gu.isActive() && gu.isOrigin())
-      .collect(Collectors.toList()).get(0).getGlobalUnit();
+      unit = project.getGlobalUnitProjects().stream().filter(gu -> gu.isActive() && gu.isOrigin())
+        .collect(Collectors.toList()).get(0).getGlobalUnit();
+    }
 
     Long crpID = baseAction.getCrpID();
     if (unit != null) {
