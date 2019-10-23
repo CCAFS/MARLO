@@ -116,6 +116,7 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
   HashMap<String, Set<Deliverable>> deliverablePerTypeList = new HashMap<String, Set<Deliverable>>();
   Set<Long> projectsList = new HashSet<Long>();
   private String showAllYears;
+  private int selectedPhaseYear;
 
 
   // Managers
@@ -330,15 +331,15 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
         if (showAllYears.equals("true")) {
           phaseDeliverables.add(deliverable);
         } else {
-          if (((deliverableInfo.getStatus() == null && deliverableInfo.getYear() == this.getSelectedYear())
+          if (((deliverableInfo.getStatus() == null && deliverableInfo.getYear() == selectedPhaseYear)
             || (deliverableInfo.getStatus() != null
 
               && deliverableInfo.getNewExpectedYear() != null
-              && deliverableInfo.getNewExpectedYear() == this.getSelectedYear())
-            || (deliverableInfo.getStatus() != null && deliverableInfo.getYear() == this.getSelectedYear()
+              && deliverableInfo.getNewExpectedYear() == selectedPhaseYear)
+            || (deliverableInfo.getStatus() != null && deliverableInfo.getYear() == selectedPhaseYear
 
-              || ((deliverableInfo.getYear() == this.getSelectedYear() || deliverableInfo.getNewExpectedYear() != null
-                && deliverableInfo.getNewExpectedYear() == this.getSelectedYear()) && this.getSelectedPhase() != null
+              || ((deliverableInfo.getYear() == selectedPhaseYear || deliverableInfo.getNewExpectedYear() != null
+                && deliverableInfo.getNewExpectedYear() == selectedPhaseYear) && this.getSelectedPhase() != null
                 && this.getSelectedPhase().getName() != null && this.getSelectedPhase().getName().equals("UpKeep"))))) {
             phaseDeliverables.add(deliverable);
 
@@ -642,7 +643,7 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
 
         // Get cross_cutting dimension
         String gender = "", youth = "", cap = "", climate = "";
-        Boolean isOldCrossCutting = this.getSelectedYear() < 2018;
+        Boolean isOldCrossCutting = selectedPhaseYear < 2018;
         DeliverableCrossCuttingMarker deliverableCrossCuttingMarkerGender = deliverableCrossCuttingMarkerManager
           .getDeliverableCrossCuttingMarkerId(deliverable.getId(), 1, this.getSelectedPhase().getId());
         DeliverableCrossCuttingMarker deliverableCrossCuttingMarkerYouth = deliverableCrossCuttingMarkerManager
@@ -925,9 +926,9 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
             Date extentionDate = fundingSourceInfo.getExtensionDate();
             int endYear = this.getCalendarFromDate(endDate);
             int extentionYear = this.getCalendarFromDate(extentionDate);
-            if ((endYear >= this.getSelectedYear()
+            if ((endYear >= selectedPhaseYear
               && fundingSourceInfo.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId()))
-              || (extentionYear >= this.getSelectedYear() && fundingSourceInfo.getStatus().intValue() == Integer
+              || (extentionYear >= selectedPhaseYear && fundingSourceInfo.getStatus().intValue() == Integer
                 .parseInt(ProjectStatusEnum.Extended.getStatusId()))) {
               if (openFS.isEmpty()) {
                 openFS += "FS" + deliverableFundingSource.getFundingSource().getId();
@@ -1134,7 +1135,7 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
       fileName.append("_AllYears");
     }
     fileName.append("-" + this.getLoggedCrp().getAcronym() + "-");
-    fileName.append(this.getSelectedYear() + "_");
+    fileName.append(selectedPhaseYear + "_");
     fileName.append(new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date()));
     fileName.append(".xlsx");
 
@@ -1165,7 +1166,7 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
       zone = "+0";
     }
     String date = timezone.format(format) + "(GMT" + zone + ")";
-    String year = this.getSelectedYear() + "";
+    String year = selectedPhaseYear + "";
     model.addRow(new Object[] {center, date, year, this.hasProgramnsRegions(),
       this.hasSpecificities(APConstants.CRP_REPORTS_DESCRIPTION), this.getSelectedCycle()});
     return model;
@@ -1199,6 +1200,8 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
     startTime = System.currentTimeMillis();
     LOG.info("Start report download: " + this.getFileName() + ". User: "
       + this.getCurrentUser().getComposedCompleteName() + ". CRP: " + this.getLoggedCrp().getAcronym());
+
+    selectedPhaseYear = this.getSelectedYear();
   }
 
 
