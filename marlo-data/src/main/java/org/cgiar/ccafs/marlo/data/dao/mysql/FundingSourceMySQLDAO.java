@@ -150,7 +150,7 @@ public class FundingSourceMySQLDAO extends AbstractMarloDAO<FundingSource, Long>
       + "left join fetch fsint.institution " + "left join fetch fsi.directDonor " + "left join fetch fsi.originalDonor "
       + "left join fetch f.sectionStatuses ss " + "left join fetch f.fundingSourceBudgets fsb "
       + "WHERE f.active = TRUE " + "AND f.crp = :globalUnit " + "AND fsi.phase = :phase "
-      + "AND ( fsint IS NULL OR fsint.phase = :phase ) " /** I think SectionStatus should be updated to use a phase **/
+      /** I think SectionStatus should be updated to use a phase **/
       // + "AND ( ss IS NULL OR (ss.cycle = :phaseDescription AND ss.year = :phaseYear ) ) "
       // Above: I don't know why this piece of code is here
       // + "AND ( fsb IS NULL OR (fsb.year = :phaseYear AND fsb.phase = :phase ) ) "
