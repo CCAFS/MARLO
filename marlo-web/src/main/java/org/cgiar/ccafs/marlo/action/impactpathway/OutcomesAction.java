@@ -339,9 +339,9 @@ public class OutcomesAction extends BaseAction {
     while (calendarStart.get(Calendar.YEAR) <= calendarEnd.get(Calendar.YEAR)) {
 
       // Adding the year to the list.
-      if (calendarStart.get(Calendar.YEAR) >= this.getActualPhase().getYear()) {
-        targetYears.add(calendarStart.get(Calendar.YEAR));
-      }
+      // if (calendarStart.get(Calendar.YEAR) >= this.getActualPhase().getYear()) {
+      targetYears.add(calendarStart.get(Calendar.YEAR));
+      // }
 
       // Adding a year (365 days) to the start date.
       calendarStart.add(Calendar.YEAR, 1);
