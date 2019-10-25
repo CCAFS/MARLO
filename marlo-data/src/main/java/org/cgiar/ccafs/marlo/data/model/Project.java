@@ -101,7 +101,6 @@ public class Project extends MarloAuditableEntity implements java.io.Serializabl
   private Set<ProjectPhase> projectPhases = new HashSet<ProjectPhase>(0);
   private Set<ProjectBudget> projectBudgets = new HashSet<ProjectBudget>(0);
 
-  private Set<ProjectBudgetsCluserActvity> projectBudgetsCluserActvities = new HashSet<ProjectBudgetsCluserActvity>(0);
 
   private Set<ProjectClusterActivity> projectClusterActivities = new HashSet<ProjectClusterActivity>(0);
   private Set<ProjectHighlight> projectHighlights = new HashSet<ProjectHighlight>(0);
@@ -118,7 +117,7 @@ public class Project extends MarloAuditableEntity implements java.io.Serializabl
 
   private List<ProjectBudget> budgets;
 
-  private List<ProjectBudgetsCluserActvity> budgetsCluserActvities;
+
   private List<Activity> closedProjectActivities;
 
   private List<ProjectClusterActivity> clusterActivities;
@@ -355,9 +354,6 @@ public class Project extends MarloAuditableEntity implements java.io.Serializabl
     return budgets;
   }
 
-  public List<ProjectBudgetsCluserActvity> getBudgetsCluserActvities() {
-    return budgetsCluserActvities;
-  }
 
   public List<ProjectBudgetsFlagship> getBudgetsFlagship() {
     return budgetsFlagship;
@@ -916,10 +912,6 @@ public class Project extends MarloAuditableEntity implements java.io.Serializabl
     return projectBudgets;
   }
 
-  public Set<ProjectBudgetsCluserActvity> getProjectBudgetsCluserActvities() {
-    return projectBudgetsCluserActvities;
-  }
-
 
   public Set<ProjectBudgetsFlagship> getProjectBudgetsFlagships() {
     return projectBudgetsFlagships;
@@ -1238,10 +1230,6 @@ public class Project extends MarloAuditableEntity implements java.io.Serializabl
   }
 
 
-  public void setBudgetsCluserActvities(List<ProjectBudgetsCluserActvity> budgetsCluserActvities) {
-    this.budgetsCluserActvities = budgetsCluserActvities;
-  }
-
   public void setBudgetsFlagship(List<ProjectBudgetsFlagship> budgetsFlagship) {
     this.budgetsFlagship = budgetsFlagship;
   }
@@ -1466,9 +1454,6 @@ public class Project extends MarloAuditableEntity implements java.io.Serializabl
     this.projectBudgets = projectBudgets;
   }
 
-  public void setProjectBudgetsCluserActvities(Set<ProjectBudgetsCluserActvity> projectBudgetsCluserActvities) {
-    this.projectBudgetsCluserActvities = projectBudgetsCluserActvities;
-  }
 
   public void setProjectBudgetsFlagships(Set<ProjectBudgetsFlagship> projectBudgetsFlagships) {
     this.projectBudgetsFlagships = projectBudgetsFlagships;

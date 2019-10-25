@@ -26,7 +26,6 @@ import org.cgiar.ccafs.marlo.data.manager.GlobalUnitProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonUserManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementTypeManager;
-import org.cgiar.ccafs.marlo.data.manager.ProjectBudgetsCluserActvityManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectCenterOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectClusterActivityManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectFocusManager;
@@ -46,15 +45,12 @@ import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
-import org.cgiar.ccafs.marlo.data.model.ProjectBudgetsCluserActvity;
 import org.cgiar.ccafs.marlo.data.model.ProjectCenterOutcome;
 import org.cgiar.ccafs.marlo.data.model.ProjectClusterActivity;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
 import org.cgiar.ccafs.marlo.data.model.ProjectInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectScope;
-import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
-import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
@@ -115,7 +111,6 @@ public class ProjectDescriptionAction extends BaseAction {
   private CrpProgramManager programManager;
   private ProjectClusterActivityManager projectClusterActivityManager;
 
-  private ProjectBudgetsCluserActvityManager projectBudgetsCluserActvityManager;
   private CrpClusterOfActivityManager crpClusterOfActivityManager;
 
   private GlobalUnitProjectManager globalUnitProjectManager;
@@ -175,9 +170,8 @@ public class ProjectDescriptionAction extends BaseAction {
     ProjectClusterActivityManager projectClusterActivityManager,
     CrpClusterOfActivityManager crpClusterOfActivityManager, LocElementTypeManager locationManager,
     ProjectScopeManager projectLocationManager, HistoryComparator historyComparator,
-    ProjectInfoManager projectInfoManagerManager, ProjectBudgetsCluserActvityManager projectBudgetsCluserActvityManager,
-    GlobalUnitProjectManager globalUnitProjectManager, CenterOutcomeManager centerOutcomeManager,
-    ProjectCenterOutcomeManager projectCenterOutcomeManager) {
+    ProjectInfoManager projectInfoManagerManager, GlobalUnitProjectManager globalUnitProjectManager,
+    CenterOutcomeManager centerOutcomeManager, ProjectCenterOutcomeManager projectCenterOutcomeManager) {
     super(config);
     this.projectManager = projectManager;
     this.projectInfoManagerManager = projectInfoManagerManager;
@@ -198,7 +192,6 @@ public class ProjectDescriptionAction extends BaseAction {
     this.liaisonUserManager = liaisonUserManager;
     this.projectScopeManager = projectLocationManager;
     this.locationTypeManager = locationManager;
-    this.projectBudgetsCluserActvityManager = projectBudgetsCluserActvityManager;
     this.globalUnitProjectManager = globalUnitProjectManager;
     this.projectCenterOutcomeManager = projectCenterOutcomeManager;
     this.centerOutcomeManager = centerOutcomeManager;
@@ -996,11 +989,6 @@ public class ProjectDescriptionAction extends BaseAction {
         if (!project.getClusterActivities().contains(projectClusterActivity)) {
           projectClusterActivityManager.deleteProjectClusterActivity(projectClusterActivity.getId());
 
-          for (ProjectBudgetsCluserActvity projectBudgetsCluserActvity : projectClusterActivity
-            .getCrpClusterOfActivity().getProjectBudgetsCluserActvities().stream().filter(c -> c.isActive())
-            .collect(Collectors.toList())) {
-            projectBudgetsCluserActvityManager.deleteProjectBudgetsCluserActvity(projectBudgetsCluserActvity.getId());
-          }
         }
       }
       // Add Project Cluster Activities
@@ -1128,16 +1116,18 @@ public class ProjectDescriptionAction extends BaseAction {
       projectDB = projectManager.saveProject(project, this.getActionName(), relationsName, this.getActualPhase());
 
       // delete the section stust for budgets by coA when there is one Coa selectd to the project
-      List<ProjectClusterActivity> currentClusters =
-        projectDB.getProjectClusterActivities().stream().filter(c -> c.isActive()).collect(Collectors.toList());
-      if (currentClusters.isEmpty() || currentClusters.size() == 1) {
-        SectionStatus sectionStatus =
-          sectionStatusManager.getSectionStatusByProject(projectID, this.getCurrentCycle(), this.getCurrentCycleYear(),
-            this.getActualPhase().getUpkeep(), ProjectSectionStatusEnum.BUDGETBYCOA.getStatus());
-        if (sectionStatus != null) {
-          sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
-        }
-      }
+      /*
+       * List<ProjectClusterActivity> currentClusters =
+       * projectDB.getProjectClusterActivities().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+       * if (currentClusters.isEmpty() || currentClusters.size() == 1) {
+       * SectionStatus sectionStatus =
+       * sectionStatusManager.getSectionStatusByProject(projectID, this.getCurrentCycle(), this.getCurrentCycleYear(),
+       * this.getActualPhase().getUpkeep(), ProjectSectionStatusEnum.BUDGETBYCOA.getStatus());
+       * if (sectionStatus != null) {
+       * sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
+       * }
+       * }
+       */
 
       // delete the draft file if exists
       if (path.toFile().exists()) {

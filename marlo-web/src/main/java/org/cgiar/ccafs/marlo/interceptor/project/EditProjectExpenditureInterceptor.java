@@ -100,7 +100,7 @@ public class EditProjectExpenditureInterceptor extends AbstractInterceptor imple
     boolean canEdit = baseAction != null ? baseAction.isCanEdit() : false;
     boolean hasPermissionToEdit = false;
     boolean editParameter = baseAction != null ? baseAction.isEditable() : false;
-    boolean canSwitchProject = false;
+    boolean canSwitchProject = baseAction != null ? baseAction.isCanSwitchProject() : false;;
     boolean isAdmin = false;
 
     String projectParameter = parameters.get(APConstants.PROJECT_REQUEST_ID).getMultipleValues()[0];
@@ -162,7 +162,7 @@ public class EditProjectExpenditureInterceptor extends AbstractInterceptor imple
 
         // Set the variable that indicates if the user can edit the section
         baseAction.setEditableParameter(editParameter && canEdit);
-        baseAction.setCanSwitchProject(false);
+        baseAction.setCanSwitchProject(canSwitchProject);
         baseAction.setCanEdit(canEdit);
         baseAction.setEditStatus(baseAction.isEditStatus() && globalUnitProject.isOrigin());
       } else {

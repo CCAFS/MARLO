@@ -108,10 +108,6 @@ public class ProjectLeaderEditAction extends BaseAction {
           case BUDGET:
             validateProject.validateProjectBudgets(this, this.projectId);
             break;
-          case BUDGETBYCOA:
-            validateProject.validateProjectBudgetsCoAs(this, this.projectId, true);
-            break;
-
           case DELIVERABLES:
             validateProject.validateProjectDeliverables(this, this.projectId);
             break;

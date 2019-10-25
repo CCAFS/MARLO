@@ -78,7 +78,6 @@ import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectBudget;
-import org.cgiar.ccafs.marlo.data.model.ProjectBudgetsCluserActvity;
 import org.cgiar.ccafs.marlo.data.model.ProjectClusterActivity;
 import org.cgiar.ccafs.marlo.data.model.ProjectCommunication;
 import org.cgiar.ccafs.marlo.data.model.ProjectComponentLesson;
@@ -1536,16 +1535,18 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     return model;
   }
 
-  public ProjectBudgetsCluserActvity getBudgetbyCoa(Long activitiyId, int year, long type) {
-    for (ProjectBudgetsCluserActvity pb : project.getProjectBudgetsCluserActvities().stream()
-      .filter(pb -> pb.isActive() && pb.getYear() == year && pb.getCrpClusterOfActivity() != null
-        && pb.getCrpClusterOfActivity().getId() == activitiyId && type == pb.getBudgetType().getId()
-        && pb.getPhase() != null && pb.getPhase().equals(this.getSelectedPhase()))
-      .collect(Collectors.toList())) {
-      return pb;
-    }
-    return null;
-  }
+  /*
+   * public ProjectBudgetsCluserActvity getBudgetbyCoa(Long activitiyId, int year, long type) {
+   * for (ProjectBudgetsCluserActvity pb : project.getProjectBudgetsCluserActvities().stream()
+   * .filter(pb -> pb.isActive() && pb.getYear() == year && pb.getCrpClusterOfActivity() != null
+   * && pb.getCrpClusterOfActivity().getId() == activitiyId && type == pb.getBudgetType().getId()
+   * && pb.getPhase() != null && pb.getPhase().equals(this.getSelectedPhase()))
+   * .collect(Collectors.toList())) {
+   * return pb;
+   * }
+   * return null;
+   * }
+   */
 
   private TypedTableModel getBudgetsbyCoasTableModel() {
     DecimalFormat df = new DecimalFormat("###,###.00");
@@ -1699,48 +1700,48 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         Double centerGender = 0.0;
 
 
-        ProjectBudgetsCluserActvity w1w2pb =
-          this.getBudgetbyCoa(clusterActivity.getCrpClusterOfActivity().getId(), this.getSelectedYear(), 1);
-        if (w1w2pb != null) {
-          w1w2Percentage = df.format(w1w2pb.getAmount());
-          if (w1w2pb.getGenderPercentage() != null) {
-            w1w2GenderPer = df.format(w1w2pb.getGenderPercentage());
-            w1w2Gender = (w1w2pb.getGenderPercentage() * totalW1w2Gender) / 100;
-          }
-          w1w2 = (w1w2pb.getAmount() * totalW1w2) / 100;
-        }
-
-        ProjectBudgetsCluserActvity w3pb =
-          this.getBudgetbyCoa(clusterActivity.getCrpClusterOfActivity().getId(), this.getSelectedYear(), 2);
-        ProjectBudgetsCluserActvity bilateralpb =
-          this.getBudgetbyCoa(clusterActivity.getCrpClusterOfActivity().getId(), this.getSelectedYear(), 3);
-        ProjectBudgetsCluserActvity centerpb =
-          this.getBudgetbyCoa(clusterActivity.getCrpClusterOfActivity().getId(), this.getSelectedYear(), 4);
-
-        if (w3pb != null) {
-          w3Percentage = df.format(w3pb.getAmount());
-          if (w3pb.getGenderPercentage() != null) {
-            w3GenderPer = df.format(w3pb.getGenderPercentage());
-            w3Gender = (w3pb.getGenderPercentage() * totalW3Gender) / 100;
-          }
-          w3 = (w3pb.getAmount() * totalW3) / 100;
-        }
-        if (bilateralpb != null) {
-          bilateralPercentage = df.format(bilateralpb.getAmount());
-          if (bilateralpb.getGenderPercentage() != null) {
-            bilateralGenderPer = df.format(bilateralpb.getGenderPercentage());
-            bilateralGender = (bilateralpb.getGenderPercentage() * totalBilateralGender) / 100;
-          }
-          bilateral = (bilateralpb.getAmount() * totalBilateral) / 100;
-        }
-        if (centerpb != null) {
-          centerPercentage = df.format(centerpb.getAmount());
-          if (centerpb.getGenderPercentage() != null) {
-            centerGenderPer = df.format(centerpb.getGenderPercentage());
-            centerGender = (centerpb.getGenderPercentage() * totalCenterGender) / 100;
-          }
-          center = (centerpb.getAmount() * totalCenter) / 100;
-        }
+        /*
+         * ProjectBudgetsCluserActvity w1w2pb =
+         * this.getBudgetbyCoa(clusterActivity.getCrpClusterOfActivity().getId(), this.getSelectedYear(), 1);
+         * if (w1w2pb != null) {
+         * w1w2Percentage = df.format(w1w2pb.getAmount());
+         * if (w1w2pb.getGenderPercentage() != null) {
+         * w1w2GenderPer = df.format(w1w2pb.getGenderPercentage());
+         * w1w2Gender = (w1w2pb.getGenderPercentage() * totalW1w2Gender) / 100;
+         * }
+         * w1w2 = (w1w2pb.getAmount() * totalW1w2) / 100;
+         * }
+         * ProjectBudgetsCluserActvity w3pb =
+         * this.getBudgetbyCoa(clusterActivity.getCrpClusterOfActivity().getId(), this.getSelectedYear(), 2);
+         * ProjectBudgetsCluserActvity bilateralpb =
+         * this.getBudgetbyCoa(clusterActivity.getCrpClusterOfActivity().getId(), this.getSelectedYear(), 3);
+         * ProjectBudgetsCluserActvity centerpb =
+         * this.getBudgetbyCoa(clusterActivity.getCrpClusterOfActivity().getId(), this.getSelectedYear(), 4);
+         * if (w3pb != null) {
+         * w3Percentage = df.format(w3pb.getAmount());
+         * if (w3pb.getGenderPercentage() != null) {
+         * w3GenderPer = df.format(w3pb.getGenderPercentage());
+         * w3Gender = (w3pb.getGenderPercentage() * totalW3Gender) / 100;
+         * }
+         * w3 = (w3pb.getAmount() * totalW3) / 100;
+         * }
+         * if (bilateralpb != null) {
+         * bilateralPercentage = df.format(bilateralpb.getAmount());
+         * if (bilateralpb.getGenderPercentage() != null) {
+         * bilateralGenderPer = df.format(bilateralpb.getGenderPercentage());
+         * bilateralGender = (bilateralpb.getGenderPercentage() * totalBilateralGender) / 100;
+         * }
+         * bilateral = (bilateralpb.getAmount() * totalBilateral) / 100;
+         * }
+         * if (centerpb != null) {
+         * centerPercentage = df.format(centerpb.getAmount());
+         * if (centerpb.getGenderPercentage() != null) {
+         * centerGenderPer = df.format(centerpb.getGenderPercentage());
+         * centerGender = (centerpb.getGenderPercentage() * totalCenterGender) / 100;
+         * }
+         * center = (centerpb.getAmount() * totalCenter) / 100;
+         * }
+         */
         model.addRow(new Object[] {description, this.getSelectedYear(), w1w2Percentage, w3Percentage,
           bilateralPercentage, centerPercentage, w1w2GenderPer, w3GenderPer, bilateralGenderPer, centerGenderPer,
           w1w2CoFinancingPercentage, w1w2CoFinancingGenderPer, hasW1W2CoTemp, df.format(w1w2), df.format(w3),

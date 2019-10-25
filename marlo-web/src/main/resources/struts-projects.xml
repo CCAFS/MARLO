@@ -879,31 +879,7 @@
 			</result>
 		</action>
 
-		<action name="{crp}/budgetByCoAs"
-			class="org.cgiar.ccafs.marlo.action.projects.ProjectBudgetByClusterOfActivitiesAction">
-			<interceptor-ref name="editProjectsStack" />
-			<result name="input">/WEB-INF/crp/views/projects/projectBudgetByCoAs.ftl
-			</result>
-			<result name="success" type="redirectAction">
-				<param name="actionName">${crpSession}/budgetByCoAs</param>
-				<param name="edit">true</param>
-				<param name="phaseID">${phaseID}</param>
-				<param name="projectID">${projectID}</param>
-			</result>
-			<result name="cancel" type="redirectAction">
-				<param name="actionName">${crpSession}/budgetByCoAs</param>
-				<param name="edit">true</param>
-				<param name="phaseID">${phaseID}</param>
-				<param name="cancel">true</param>
-				<param name="projectID">${projectID}</param>
-			</result>
-			<result name="redirect" type="redirectAction">
-				<param name="actionName">${url}</param>
-				<param name="edit">true</param>
-				<param name="phaseID">${phaseID}</param>
-				<param name="projectID">${projectID}</param>
-			</result>
-		</action>
+		
 
 		<action name="{crp}/activities"
 			class="org.cgiar.ccafs.marlo.action.projects.ProjectActivitiesAction">
