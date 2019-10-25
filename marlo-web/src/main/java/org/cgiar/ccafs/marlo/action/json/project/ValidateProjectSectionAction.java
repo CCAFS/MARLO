@@ -144,9 +144,6 @@ public class ValidateProjectSectionAction extends BaseAction {
             this.projectSectionValidator.validateProjectBudgets(this, this.getProjectID());
           }
           break;
-        case BUDGETBYCOA:
-          this.projectSectionValidator.validateProjectBudgetsCoAs(this, this.getProjectID(), true);
-          break;
         case BUDGETBYFLAGSHIP:
           this.projectSectionValidator.validateProjectBudgetsFlagship(this, this.getProjectID(), true);
           break;

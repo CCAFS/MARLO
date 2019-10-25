@@ -124,7 +124,7 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
 
   private final ProjectOutcomeValidator projectOutcomeValidator;
 
-  private final ProjectBudgetsCoAValidator projectBudgetsCoAValidator;
+  // private final ProjectBudgetsCoAValidator projectBudgetsCoAValidator;
 
   private final ProjectBudgetsFlagshipValidator projectBudgetsFlagshipValidator;
 
@@ -199,8 +199,8 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
   @Inject
   public ProjectSectionValidator(ProjectManager projectManager, ProjectLocationValidator locationValidator,
     ProjectBudgetsValidator projectBudgetsValidator, DeliverableValidator deliverableValidator,
-    ProjectOutcomeValidator projectOutcomeValidator, ProjectBudgetsCoAValidator projectBudgetsCoAValidator,
-    LocElementTypeManager locElementTypeManager, ProjectLocationElementTypeManager projectLocationElementTypeManager,
+    ProjectOutcomeValidator projectOutcomeValidator, LocElementTypeManager locElementTypeManager,
+    ProjectLocationElementTypeManager projectLocationElementTypeManager,
     DeliverableQualityCheckManager deliverableQualityCheckManager, ProjectDescriptionValidator descriptionValidator,
     ProjectPartnersValidator projectPartnerValidator, ProjectActivitiesValidator projectActivitiesValidator,
     ProjectLeverageValidator projectLeverageValidator, ProjectHighLightValidator projectHighLightValidator,
@@ -227,7 +227,7 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
     this.projectBudgetsValidator = projectBudgetsValidator;
     this.deliverableValidator = deliverableValidator;
     this.projectOutcomeValidator = projectOutcomeValidator;
-    this.projectBudgetsCoAValidator = projectBudgetsCoAValidator;
+    // this.projectBudgetsCoAValidator = projectBudgetsCoAValidator;
     this.locElementTypeManager = locElementTypeManager;
     this.projectLocationElementTypeManager = projectLocationElementTypeManager;
     this.projectPartnerValidator = projectPartnerValidator;
@@ -861,17 +861,18 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
   }
 
 
-  public void validateProjectBudgetsCoAs(BaseAction action, Long projectID, boolean sMessage) {
-    // Getting the project information.
-    Project project = projectManager.getProjectById(projectID);
-    project.setBudgetsCluserActvities(project.getProjectBudgetsCluserActvities().stream()
-      .filter(c -> c.isActive() && c.getPhase().equals(action.getActualPhase())).collect(Collectors.toList()));
-    if (!(project.getProjectBudgetsCluserActvities().isEmpty()
-      || project.getProjectBudgetsCluserActvities().size() == 1)) {
-      projectBudgetsCoAValidator.validate(action, project, false, sMessage);
-    }
-
-  }
+  /*
+   * public void validateProjectBudgetsCoAs(BaseAction action, Long projectID, boolean sMessage) {
+   * // Getting the project information.
+   * Project project = projectManager.getProjectById(projectID);
+   * project.setBudgetsCluserActvities(project.getProjectBudgetsCluserActvities().stream()
+   * .filter(c -> c.isActive() && c.getPhase().equals(action.getActualPhase())).collect(Collectors.toList()));
+   * if (!(project.getProjectBudgetsCluserActvities().isEmpty()
+   * || project.getProjectBudgetsCluserActvities().size() == 1)) {
+   * projectBudgetsCoAValidator.validate(action, project, false, sMessage);
+   * }
+   * }
+   */
 
   public void validateProjectBudgetsFlagship(BaseAction action, Long projectID, boolean sMessage) {
     // Getting the project information.

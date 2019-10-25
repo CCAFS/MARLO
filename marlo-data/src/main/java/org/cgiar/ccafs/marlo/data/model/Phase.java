@@ -69,7 +69,7 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
   private Set<FundingSourceDivision> fundingSourceDivisions = new HashSet<FundingSourceDivision>(0);
   private Set<FundingSourceLocation> fundingSourceLocations = new HashSet<FundingSourceLocation>(0);
   private Set<FundingSourceBudget> fundingSourceBudgets = new HashSet<FundingSourceBudget>(0);
-  private Set<ProjectBudgetsCluserActvity> projectBudgetsActivities = new HashSet<ProjectBudgetsCluserActvity>(0);
+
   private Set<ProjectExpectedStudy> projectExpectedStudies = new HashSet<ProjectExpectedStudy>(0);
   private Set<ProjectBudgetsFlagship> projectBudgetsFlagships = new HashSet<ProjectBudgetsFlagship>(0);
   private Set<PowbSynthesis> powbSynthesis = new HashSet<PowbSynthesis>(0);
@@ -329,10 +329,6 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
 
   public Set<ProjectBudget> getProjectBudgets() {
     return projectBudgets;
-  }
-
-  public Set<ProjectBudgetsCluserActvity> getProjectBudgetsActivities() {
-    return projectBudgetsActivities;
   }
 
 
@@ -684,10 +680,6 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
     this.projectBudgets = projectBudgets;
   }
 
-
-  public void setProjectBudgetsActivities(Set<ProjectBudgetsCluserActvity> projectBudgetsActivities) {
-    this.projectBudgetsActivities = projectBudgetsActivities;
-  }
 
   public void setProjectBudgetsFlagships(Set<ProjectBudgetsFlagship> projectBudgetsFlagships) {
     this.projectBudgetsFlagships = projectBudgetsFlagships;
