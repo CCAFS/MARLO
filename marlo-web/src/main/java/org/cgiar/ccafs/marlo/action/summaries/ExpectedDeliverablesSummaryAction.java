@@ -364,7 +364,7 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
 
       // Get partner responsible
       List<DeliverableUserPartnership> partnershipsList = deliverable.getDeliverableUserPartnerships().stream()
-        .filter(dp -> dp.isActive() && dp.getPhase().getId().equals(this.getActualPhase().getId())
+        .filter(dp -> dp.isActive() && dp.getPhase().getId().equals(this.getSelectedPhase().getId())
           && dp.getDeliverablePartnerType().getId().equals(APConstants.DELIVERABLE_PARTNERSHIP_TYPE_RESPONSIBLE))
         .collect(Collectors.toList());
 
@@ -414,6 +414,7 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
             individual += "*";
             individual += responsibleppp.getUser().getComposedNameWithoutEmail();
             if (responsibleppp.getDeliverableUserPartnership() != null
+              && responsibleppp.getDeliverableUserPartnership().isActive()
               && responsibleppp.getDeliverableUserPartnership().getInstitution() != null
               && responsibleppp.getDeliverableUserPartnership().getInstitution() != null
               && responsibleppp.getDeliverableUserPartnership().getInstitution().getAcronym() != null) {
@@ -427,7 +428,7 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
 
       // Get partner others
       List<DeliverableUserPartnership> othersPartnerships = deliverable.getDeliverableUserPartnerships().stream()
-        .filter(dp -> dp.isActive() && dp.getPhase().getId().equals(this.getActualPhase().getId())
+        .filter(dp -> dp.isActive() && dp.getPhase().getId().equals(this.getSelectedPhase().getId())
           && dp.getDeliverablePartnerType().getId().equals(APConstants.DELIVERABLE_PARTNERSHIP_TYPE_OTHER))
         .collect(Collectors.toList());
 
@@ -532,7 +533,7 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
 
       for (Institution partnerResponsible : institutionsResponsibleList) {
         // Check if is ppa
-        if (partnerResponsible.isPPA(this.getLoggedCrp().getId(), this.getActualPhase())) {
+        if (partnerResponsible.isPPA(this.getLoggedCrp().getId(), this.getSelectedPhase())) {
           managingResponsibleList.add(partnerResponsible);
         } else {
           // If is not a ppa, get the crp linked to the partner
@@ -788,7 +789,9 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
         if (deliverableInfo.getCrpClusterKeyOutput() != null) {
           keyOutput += "• ";
 
-          if (deliverableInfo.getCrpClusterKeyOutput().getCrpClusterOfActivity() != null
+          if (deliverableInfo.getCrpClusterKeyOutput() != null && deliverableInfo.getCrpClusterKeyOutput().isActive()
+            && deliverableInfo.getCrpClusterKeyOutput().getCrpClusterOfActivity() != null
+            && deliverableInfo.getCrpClusterKeyOutput().getCrpClusterOfActivity().isActive()
             && deliverableInfo.getCrpClusterKeyOutput().getCrpClusterOfActivity().getCrpProgram() != null) {
             keyOutput +=
               deliverableInfo.getCrpClusterKeyOutput().getCrpClusterOfActivity().getCrpProgram().getAcronym() + " - ";
@@ -816,9 +819,9 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
           outcomes = null;
         }
 
-        String delivStatus = (deliverableInfo.getStatusName(this.getActualPhase()) != null
-          && !deliverableInfo.getStatusName(this.getActualPhase()).isEmpty())
-            ? deliverableInfo.getStatusName(this.getActualPhase()) : null;
+        String delivStatus = (deliverableInfo.getStatusName(this.getSelectedPhase()) != null
+          && !deliverableInfo.getStatusName(this.getSelectedPhase()).isEmpty())
+            ? deliverableInfo.getStatusName(this.getSelectedPhase()) : null;
         String delivNewYear = null;
         if (deliverableInfo.getStatus() != null
           && (deliverableInfo.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
@@ -854,22 +857,65 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
             }
           }
         }
-        String projectClusterActivities = "";
-        if (deliverable.getProject() != null && deliverable.getProject().getProjectClusterActivities() != null) {
-          for (ProjectClusterActivity projectClusterActivity : deliverable.getProject().getProjectClusterActivities()
-            .stream().filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase()))
-            .collect(Collectors.toList())) {
-            if (projectClusterActivities.isEmpty()) {
-              projectClusterActivities += projectClusterActivity.getCrpClusterOfActivity().getIdentifier();
-            } else {
-              projectClusterActivities += ", " + projectClusterActivity.getCrpClusterOfActivity().getIdentifier();
+
+        // TODO change when the ProjectCoas Duplication will has been fix it
+        List<ProjectClusterActivity> coAsPrev = new ArrayList<>();
+
+        List<ProjectClusterActivity> coAs = new ArrayList<>();
+        coAsPrev = deliverable.getProject().getProjectClusterActivities().stream()
+          .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase()))
+          .collect(Collectors.toList());
+
+        for (ProjectClusterActivity projectClusterActivity : coAsPrev) {
+          if (coAs.isEmpty()) {
+            coAs.add(projectClusterActivity);
+          } else {
+            boolean duplicated = false;
+            for (ProjectClusterActivity projectCoas : coAs) {
+              if (projectCoas.getCrpClusterOfActivity().getId()
+                .equals(projectClusterActivity.getCrpClusterOfActivity().getId())) {
+                duplicated = true;
+                break;
+              }
+            }
+
+            if (!duplicated) {
+              coAs.add(projectClusterActivity);
             }
           }
         }
+
+        // fill String with coAs
+        String projectClusterActivities = "";
+        for (ProjectClusterActivity projectClusterActivity : coAs) {
+          if (projectClusterActivities.isEmpty()) {
+            projectClusterActivities += projectClusterActivity.getCrpClusterOfActivity().getIdentifier();
+          } else {
+            projectClusterActivities += ", " + projectClusterActivity.getCrpClusterOfActivity().getIdentifier();
+          }
+        }
+
         if (projectClusterActivities.isEmpty()) {
           projectClusterActivities = null;
         }
 
+        /*
+         * String projectClusterActivities = "";
+         * if (deliverable.getProject() != null && deliverable.getProject().getProjectClusterActivities() != null) {
+         * for (ProjectClusterActivity projectClusterActivity : deliverable.getProject().getProjectClusterActivities()
+         * .stream().filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase()))
+         * .collect(Collectors.toList())) {
+         * if (projectClusterActivities.isEmpty()) {
+         * projectClusterActivities += projectClusterActivity.getCrpClusterOfActivity().getIdentifier();
+         * } else {
+         * projectClusterActivities += ", " + projectClusterActivity.getCrpClusterOfActivity().getIdentifier();
+         * }
+         * }
+         * }
+         * if (projectClusterActivities.isEmpty()) {
+         * projectClusterActivities = null;
+         * }
+         */
 
         String flagships = null;
         // get Flagships related to the project sorted by acronym
@@ -981,7 +1027,7 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
           // Setup Geographic Scope
           if (deliverable.getDeliverableGeographicScopes() != null) {
             deliverable.setGeographicScopes(new ArrayList<>(deliverable.getDeliverableGeographicScopes().stream()
-              .filter(o -> o.isActive() && o.getPhase().getId() == this.getActualPhase().getId())
+              .filter(o -> o.isActive() && o.getPhase().getId() == this.getSelectedPhase().getId())
               .collect(Collectors.toList())));
           }
 
@@ -990,7 +1036,7 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
             deliverable.setCountries(new ArrayList<>());
           } else {
             List<DeliverableLocation> countries = deliverableLocationManager
-              .getDeliverableLocationbyPhase(deliverable.getId(), this.getActualPhase().getId());
+              .getDeliverableLocationbyPhase(deliverable.getId(), this.getSelectedPhase().getId());
             deliverable.setCountries(countries);
           }
 
@@ -998,7 +1044,7 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
           if (deliverable.getDeliverableGeographicRegions() != null
             && !deliverable.getDeliverableGeographicRegions().isEmpty()) {
             deliverable.setDeliverableRegions(new ArrayList<>(deliverableGeographicRegionManager
-              .getDeliverableGeographicRegionbyPhase(deliverable.getId(), this.getActualPhase().getId()).stream()
+              .getDeliverableGeographicRegionbyPhase(deliverable.getId(), this.getSelectedPhase().getId()).stream()
               .filter(le -> le.isActive() && le.getLocElement().getLocElementType().getId() == 1)
               .collect(Collectors.toList())));
           }

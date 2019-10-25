@@ -1585,8 +1585,6 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           coAs.add(projectClusterActivity);
         }
       }
-
-
     }
     /*     */
     Double totalW1w2 = 0.0, totalW3 = 0.0, totalBilateral = 0.0, totalCenter = 0.0, totalW1w2Gender = 0.0,

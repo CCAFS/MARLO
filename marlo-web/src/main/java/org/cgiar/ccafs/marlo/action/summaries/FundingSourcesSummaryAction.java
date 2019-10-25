@@ -24,6 +24,7 @@ import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableFundingSource;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceBudget;
+import org.cgiar.ccafs.marlo.data.model.FundingSourceDivision;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceInstitution;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceLocation;
 import org.cgiar.ccafs.marlo.data.model.FundingStatusEnum;
@@ -569,8 +570,65 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
         }
 
         if (projectBudget.getInstitution() != null) {
-          leadPartner = projectBudget.getInstitution().getComposedName();
+          // leadPartner = projectBudget.getInstitution().getComposedName();
+
+
+          List<String> temp = new ArrayList<>();
+          for (FundingSourceInstitution fsIns : fundingSource.getFundingSourceInstitutions().stream()
+            .filter(fsi -> fsi.isActive() && fsi.getPhase() != null && fsi.getPhase().equals(this.getSelectedPhase()))
+            .collect(Collectors.toList())) {
+            if (leadPartner.isEmpty()) {
+              leadPartner = fsIns.getInstitution().getComposedName();
+              // Check IFPRI Division
+
+              if (this.showIfpriDivision) {
+                if (projectBudget.getInstitution().getAcronym() != null
+                  && projectBudget.getInstitution().getAcronym().equals("IFPRI")) {
+
+                  for (FundingSourceDivision fsDiv : fundingSource.getFundingSourceDivisions().stream()
+                    .filter(fsd -> fsd.getPhase() != null && fsd.getPhase().equals(this.getSelectedPhase()))
+                    .collect(Collectors.toList())) {
+
+                    if (temp == null || temp.isEmpty() || temp.size() == 0
+                      || !temp.contains(fsDiv.getDivision().getName())) {
+                      leadPartner += " (" + fsDiv.getDivision().getName();
+                      temp.add(fsDiv.getDivision().getName());
+                    } else {
+                      leadPartner += " " + fsDiv.getDivision().getName();
+                      temp.add(fsDiv.getDivision().getName());
+                    }
+                  }
+                  leadPartner += ")";
+                }
+              }
+            } else {
+              leadPartner += ", \n" + fsIns.getInstitution().getComposedName();
+              // Check IFPRI Division
+              if (this.showIfpriDivision) {
+                if (fsIns.getInstitution().getAcronym() != null
+                  && fsIns.getInstitution().getAcronym().equals("IFPRI")) {
+
+                  for (FundingSourceDivision fsDiv : fundingSource.getFundingSourceDivisions().stream()
+                    .filter(fsd -> fsd.getPhase() != null && fsd.getPhase().equals(this.getSelectedPhase()))
+                    .collect(Collectors.toList())) {
+
+                    if (temp == null || temp.isEmpty() || temp.size() == 0
+                      || !temp.contains(fundingSource.getFundingSourceInfo().getPartnerDivision().getName())) {
+                      leadPartner += " (" + fsDiv.getDivision().getName();
+                      temp.add(fsDiv.getDivision().getName());
+                    } else {
+                      leadPartner += " " + fsDiv.getDivision().getName();
+                      temp.add(fsDiv.getDivision().getName());
+                    }
+                  }
+                  leadPartner += ")";
+                }
+              }
+            }
+          }
+
         }
+
 
         totalBudget = projectBudget.getAmount();
 
@@ -775,29 +833,44 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
           // Check IFPRI Division
 
           if (this.showIfpriDivision) {
-            if (fsIns.getInstitution().getAcronym() != null && fsIns.getInstitution().getAcronym().equals("IFPRI")
-              && fundingSource.getFundingSourceInfo().getPartnerDivision() != null
-              && fundingSource.getFundingSourceInfo().getPartnerDivision().getName() != null
-              && !fundingSource.getFundingSourceInfo().getPartnerDivision().getName().trim().isEmpty()) {
-              if (temp == null || temp.isEmpty() || temp.size() == 0
-                || !temp.contains(fundingSource.getFundingSourceInfo().getPartnerDivision().getName())) {
-                leadPartner += " (" + fundingSource.getFundingSourceInfo().getPartnerDivision().getName() + ")";
-                temp.add(fundingSource.getFundingSourceInfo().getPartnerDivision().getName());
+            if (fsIns.getInstitution().getAcronym() != null && fsIns.getInstitution().getAcronym().equals("IFPRI")) {
+
+              for (FundingSourceDivision fsDiv : fundingSource.getFundingSourceDivisions().stream()
+                .filter(fsd -> fsd.getPhase() != null && fsd.getPhase().equals(this.getSelectedPhase()))
+                .collect(Collectors.toList())) {
+
+                if (temp == null || temp.isEmpty() || temp.size() == 0
+                  || !temp.contains(fsDiv.getDivision().getName())) {
+                  leadPartner += " (" + fsDiv.getDivision().getName();
+                  temp.add(fsDiv.getDivision().getName());
+                } else {
+                  leadPartner += " " + fsDiv.getDivision().getName();
+                  temp.add(fsDiv.getDivision().getName());
+                }
               }
+              leadPartner += ")";
             }
           }
         } else {
           leadPartner += ", \n" + fsIns.getInstitution().getComposedName();
           // Check IFPRI Division
           if (this.showIfpriDivision) {
-            if (fsIns.getInstitution().getAcronym() != null && fsIns.getInstitution().getAcronym().equals("IFPRI")
-              && fundingSource.getFundingSourceInfo().getPartnerDivision().getName() != null
-              && !fundingSource.getFundingSourceInfo().getPartnerDivision().getName().trim().isEmpty()) {
-              if (temp == null || temp.isEmpty() || temp.size() == 0
-                || !temp.contains(fundingSource.getFundingSourceInfo().getPartnerDivision().getName())) {
-                leadPartner += " (" + fundingSource.getFundingSourceInfo().getPartnerDivision().getName() + ")";
-                temp.add(fundingSource.getFundingSourceInfo().getPartnerDivision().getName());
+            if (fsIns.getInstitution().getAcronym() != null && fsIns.getInstitution().getAcronym().equals("IFPRI")) {
+
+              for (FundingSourceDivision fsDiv : fundingSource.getFundingSourceDivisions().stream()
+                .filter(fsd -> fsd.getPhase() != null && fsd.getPhase().equals(this.getSelectedPhase()))
+                .collect(Collectors.toList())) {
+
+                if (temp == null || temp.isEmpty() || temp.size() == 0
+                  || !temp.contains(fundingSource.getFundingSourceInfo().getPartnerDivision().getName())) {
+                  leadPartner += " (" + fsDiv.getDivision().getName();
+                  temp.add(fsDiv.getDivision().getName());
+                } else {
+                  leadPartner += " " + fsDiv.getDivision().getName();
+                  temp.add(fsDiv.getDivision().getName());
+                }
               }
+              leadPartner += ")";
             }
           }
         }
