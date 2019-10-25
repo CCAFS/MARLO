@@ -124,7 +124,7 @@
 <span id="sectionsForChecking" style="display:none">[#list sectionsForChecking as item]${item}[#if item_has_next],[/#if][/#list]</span>
 
 [#-- Open for Project Leaders --]
-<strong>${canSwitchProject?string}</strong>
+
 [#if !reportingActive && canSwitchProject && ( completedPreProject || projectEditLeader) && !crpClosed && !centerGlobalUnit]
 
   [#if !submission]
