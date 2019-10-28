@@ -131,9 +131,6 @@ public class EditProjectExpenditureInterceptor extends AbstractInterceptor imple
           canEdit = true;
           editParameter = true;
         } else {
-          if (!baseAction.hasSpecificities(APConstants.CRP_ENABLE_BUDGET_EXECUTION)) {
-            canEdit = false;
-          }
 
           if (baseAction.getActualPhase().getDescription().equals(APConstants.REPORTING)) {
             if (!baseAction.isRole("FM")) {
