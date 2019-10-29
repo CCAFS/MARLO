@@ -37,7 +37,7 @@
   <div style="display:none" class="viewMore closed"></div>
 </div>
     
-[#if (!availabePhase)!false]
+[#if !((deliverable.deliverableInfo.id??)!false)]
   [#include "/WEB-INF/crp/views/projects/availability-projects.ftl" /]
 [#else]
 <section class="container">
