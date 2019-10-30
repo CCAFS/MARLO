@@ -240,10 +240,6 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
       this.getAllSubreports(hm, masteritemBand);
       // Uncomment to see which Subreports are detecting the method getAllSubreports
       this.fillSubreport((SubReport) hm.get("details"), "details");
-      masterReport.getParameterValues().put("total_deliv", currentPhaseDeliverables.size());
-      masterReport.getParameterValues().put("total_projects", projectsList.size());
-      this.fillSubreport((SubReport) hm.get("summary"), "summary");
-      this.fillSubreport((SubReport) hm.get("summaryPerType"), "summaryPerType");
       ExcelReportUtil.createXLSX(masterReport, os);
       bytesXLSX = os.toByteArray();
       os.close();
@@ -267,12 +263,6 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
     switch (query) {
       case "details":
         model = this.getDeliverablesDetailsTableModel();
-        break;
-      case "summary":
-        model = this.getDeliverablesPerYearTableModel();
-        break;
-      case "summaryPerType":
-        model = this.getDeliverablesPerTypeTableModel();
         break;
 
     }
