@@ -87,7 +87,9 @@
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
       
-      gtag('set', {'user_id': '${(currentUser.composedID)!"Unknown"}'});
+      [#if (currentUser??)!false]
+        gtag('set', {'user_id': '${(currentUser.composedID)!"Unknown"}'});
+      [/#if]
       gtag('config', '${googleAnalyticsID}');
     </script>
     
