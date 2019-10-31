@@ -910,6 +910,8 @@ public class DeliverableAction extends BaseAction {
         }
 
         Deliverable deliverableDb = deliverableManager.getDeliverableById(deliverable.getId());
+
+        deliverable.getDeliverableInfo().setId(deliverableDb.getDeliverableInfo(this.getActualPhase()).getId());
         deliverable.setProject(deliverableDb.getProject());
         project.setProjectInfo(deliverableDb.getProject().getProjecInfoPhase(this.getActualPhase()));
         project.setProjectLocations(deliverableDb.getProject().getProjectLocations());
