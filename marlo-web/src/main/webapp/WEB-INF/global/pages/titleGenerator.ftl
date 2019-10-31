@@ -3,6 +3,8 @@
 [#if currentCrp??]${(currentCrp.acronym)!} |  [/#if]
 [#-- CRP Program --]
 [#if (selectedProgram??)!false]${(selectedProgram.acronym)!} - [/#if]
+[#-- Draft --]
+[#if (draft)!false] [Draft] [/#if]
 [#-- Project > Deliverable --]
 [#if (project??)!false]P${(project.id)!} - 
   [#if (deliverable?? && deliverable.id != 0)!false]D${(deliverable.id)!} - [/#if]
