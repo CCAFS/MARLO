@@ -187,8 +187,15 @@
 
 
 [#macro setDeliverableRule element ruleName]
-  <input type="hidden" id="hasDeliverableRule-${ruleName}" value="${((action.hasDeliverableRule(element.deliverableInfo, ruleName))!false)?string}" />
-  <input type="hidden" id="getDeliverableTypesByRule-${ruleName}" value="${(action.getDeliverableTypesByRule(ruleName)?replace("[", "")?replace("]", "") )!}" />
+  [#attempt]
+    [#local deliverableRuleValue = ((action.hasDeliverableRule(element.deliverableInfo, ruleName))!false)?string ]
+    [#local deliverableTypesValues = (action.getDeliverableTypesByRule(ruleName)?replace("[", "")?replace("]", "") )! ]
+  [#recover]
+    [#local deliverableRuleValue = "false" ]
+    [#local deliverableTypesValues = "[ ]" ]
+  [/#attempt]
+  <input type="hidden" id="hasDeliverableRule-${ruleName}" value="${deliverableRuleValue}" />
+  <input type="hidden" id="getDeliverableTypesByRule-${ruleName}" value="${deliverableTypesValues}" />
 [/#macro]
 [#-- Funding Source list template --]
 <ul style="display:none">
