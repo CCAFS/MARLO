@@ -1255,13 +1255,13 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
         this.createPageFooter();
 
         // first page
-        poiSummary.textLineBreak(document, 10);
+        // poiSummary.textLineBreak(document, 10);
         poiSummary.textHeadPrincipalTitlefirtsPageCRP(document.createParagraph(),
           this.getText("summaries.powb2019.mainTitle"));
         poiSummary.textHeadPrincipalTitlefirtsPageCRP(document.createParagraph(),
           this.getText("summaries.powb2019.subTitle"));
         poiSummary.textLineBreak(document, 11);
-        poiSummary.addLineSeparator(document.createParagraph());
+        // poiSummary.addLineSeparator(document.createParagraph());
         document.createParagraph().setPageBreak(true);
 
         // Second page - table of contents
