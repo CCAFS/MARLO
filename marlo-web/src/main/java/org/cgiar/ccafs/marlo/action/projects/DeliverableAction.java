@@ -1776,12 +1776,9 @@ public class DeliverableAction extends BaseAction {
 
       deliverableInfoManager.saveDeliverableInfo(deliverableManagedState.getDeliverableInfo());
 
-      if (this.hasSpecificities(APConstants.CRP_LP6_ACTIVE)
+      if (this.hasSpecificities(APConstants.CRP_LP6_ACTIVE) && this.isReportingActive()
         && this.getProjectLp6ContributionValue(project.getId(), this.getActualPhase().getId())) {
-
         this.updateProjectLp6ContributionDeliverable();
-
-
       }
 
 
