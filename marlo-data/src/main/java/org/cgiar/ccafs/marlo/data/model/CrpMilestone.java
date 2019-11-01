@@ -170,7 +170,11 @@ public class CrpMilestone extends MarloAuditableEntity implements java.io.Serial
   }
 
   public String getComposedName() {
-    return this.year + " - " + this.title;
+    if ((this.extendedYear != null) && (!this.extendedYear.equals(-1))) {
+      return this.year + " extended to " + this.extendedYear + " - " + this.title;
+    } else {
+      return this.year + " - " + this.title;
+    }
   }
 
   public String getComposeID() {
