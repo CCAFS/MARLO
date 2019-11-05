@@ -145,6 +145,10 @@ ul.horizontalSubMenu li.active {
   background-color: #35ad75 !important;
 }
 
+.example .frame ul li {
+  width: 120px !important;
+}
+
 .phaseTag span.planning {
   background-color: #35ad75 !important;
 }

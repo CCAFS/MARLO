@@ -374,6 +374,10 @@ public class FundingSourceListAction extends BaseAction {
     List<FundingSource> allFundingSources =
       fundingSourceManager.getGlobalUnitFundingSourcesByPhaseAndTypes(loggedCrp, this.getActualPhase(), statusTypes);
 
+    /*
+     * List<FundingSource> allFundingSources = fundingSourceManager
+     * .getGlobalUnitFundingSourcesByPhaseAndTypesWithoutInstitutions(loggedCrp, this.getActualPhase(), statusTypes);
+     */
     this.myProjects = new ArrayList<>();
     this.closedProjects = new ArrayList<>();
     this.fundingSourceInstitutions = new ArrayList<>();

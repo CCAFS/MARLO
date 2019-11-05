@@ -8,14 +8,14 @@
   },
   { 'title': '2.  Expected Key Results',  'show': true,
     'items': [
-    { 'slug': 'expectedProgress',       'name': 'powb.menu.expectedOutcomes',       'action': 'progressOutcomes',       'active': true },
-    { 'slug': 'plannedStudies',         'name': 'powb.menu.plannedStudies',         'action': 'plannedStudies',         'active': true }
-    { 'slug': 'plannedCollaborations',  'name': 'powb.menu.plannedCollaborations',  'action': 'plannedCollaborations',  'active': true }
+    { 'slug': 'expectedProgress',       'name': 'powb.menu.expectedOutcomes',       'action': 'progressOutcomes',       'active': true, 'subName': '(Table 2A)' },
+    { 'slug': 'plannedStudies',         'name': 'powb.menu.plannedStudies',         'action': 'plannedStudies',         'active': true, 'subName': '(Table 2B)' }
+    { 'slug': 'plannedCollaborations',  'name': 'powb.menu.plannedCollaborations',  'action': 'plannedCollaborations',  'active': true, 'subName': '(Table 2C)' }
     ]
   },
   { 'title': '3.  Financial Plan',        'show': true,
     'items': [
-    { 'slug': 'plannedBudget',          'name': 'powb.menu.plannedBudget',          'action': 'plannedBudget',          'active': true }
+    { 'slug': 'plannedBudget',          'name': 'powb.menu.plannedBudget',          'action': 'plannedBudget',          'active': true, 'subName': '(Table 3)' }
     ]
   },
   { 'title': '4. CCAFS Specific',        'show':  action.hasSpecificities(action.powbProgramChangeModule()),
@@ -66,6 +66,8 @@
                 <a href="[@s.url action="${crpSession}/${item.action}"][@s.param name="liaisonInstitutionID" value=liaisonInstitutionID /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" onclick="return ${item.active?string}" class="action-${crpSession}/${item.action}">
                   [#-- Name --]
                   [@s.text name=item.name/]
+                  [#-- Sub Name --]
+                  [#if item.subName?has_content]<br /><small>[@s.text name=item.subName/]</small>[/#if]
                   [#if (item.development)!false][@utils.underConstruction title="global.underConstruction" width="20px" height="20px" /][/#if]
                 </a>
               </li>

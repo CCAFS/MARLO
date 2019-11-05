@@ -174,9 +174,9 @@
           "name":   "showAllYears",
           "data" : [ 
             { "label": "Only the specific cycle year",  "value": "false"}
-            [#--,
+           ,
             { "label": "All Years",                     "value": "true"}
-            --]
+            
           ] 
         }
       ]

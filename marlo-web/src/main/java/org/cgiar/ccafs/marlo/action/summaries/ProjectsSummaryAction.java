@@ -99,6 +99,8 @@ public class ProjectsSummaryAction extends BaseSummariesAction implements Summar
 
   // XLS bytes
   private byte[] bytesXLSX;
+
+  private int yearSearched;
   // Streams
   InputStream inputStream;
   Set<Long> projectsList = new HashSet<Long>();
@@ -277,11 +279,13 @@ public class ProjectsSummaryAction extends BaseSummariesAction implements Summar
       new String[] {"projectId", "projectTitle", "projectSummary", "status", "managementLiaison", "flagships",
         "regions", "institutionLeader", "projectLeader", "activitiesOnGoing", "expectedDeliverables", "outcomes",
         "expectedStudies", "phaseID", "crossCutting", "type", "locations", "start_date", "end_date", "budgetw1w2",
-        "totalw3bilateralcenter", "ppa", "global", "regional", "regionLoc", "countryLoc"},
+        "totalw3bilateralcenter", "ppa", "global", "regional", "regionLoc", "countryLoc", "deliverables2017",
+        "deliverables2018", "deliverables2019", "deliverables2020", "deliverables2021", "deliverables2022"},
       new Class[] {Long.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, Integer.class, Integer.class, Integer.class, Integer.class, Long.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        String.class, String.class, String.class, String.class},
+        String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
+        String.class, String.class},
       0);
     // Status of projects
     String[] statuses = null;
@@ -305,6 +309,12 @@ public class ProjectsSummaryAction extends BaseSummariesAction implements Summar
       String countryLoc = "";
       String provinceLoc = "";
       String districtLoc = "";
+      String deliverables2017 = "";
+      String deliverables2018 = "";
+      String deliverables2019 = "";
+      String deliverables2020 = "";
+      String deliverables2021 = "";
+      String deliverables2022 = "";
 
 
       if (project.getProjectInfo().getSummary() != null && !project.getProjectInfo().getSummary().isEmpty()) {
@@ -443,21 +453,77 @@ public class ProjectsSummaryAction extends BaseSummariesAction implements Summar
       Set<Deliverable> deliverablesSet = new HashSet();
       for (Deliverable deliverable : project.getDeliverables().stream()
         .sorted((d1, d2) -> Long.compare(d1.getId(), d2.getId()))
-        .filter(
-          d -> d.isActive() && d.getDeliverableInfo(this.getActualPhase()) != null && d.getDeliverableInfo().isActive()
-            && ((d.getDeliverableInfo().getStatus() == null && d.getDeliverableInfo().getYear() == 2017)
-              || (d.getDeliverableInfo().getStatus() != null
-                && d.getDeliverableInfo().getStatus().intValue() == Integer
-                  .parseInt(ProjectStatusEnum.Extended.getStatusId())
-                && d.getDeliverableInfo().getNewExpectedYear() != null
-                && d.getDeliverableInfo().getNewExpectedYear() == 2017)
-              || (d.getDeliverableInfo().getStatus() != null && d.getDeliverableInfo().getYear() == 2017
-                && d.getDeliverableInfo().getStatus().intValue() == Integer
-                  .parseInt(ProjectStatusEnum.Ongoing.getStatusId()))))
+        .filter(d -> d.isActive() && d.getDeliverableInfo(this.getActualPhase()) != null
+          && d.getDeliverableInfo().isActive()
+          && ((d.getDeliverableInfo().getStatus() == null && d.getDeliverableInfo().getYear() == this.getSelectedYear())
+            || (d.getDeliverableInfo().getStatus() != null
+              && d.getDeliverableInfo().getStatus().intValue() == Integer
+                .parseInt(ProjectStatusEnum.Extended.getStatusId())
+              && d.getDeliverableInfo().getNewExpectedYear() != null
+              && d.getDeliverableInfo().getNewExpectedYear() == this.getSelectedYear())
+            || (d.getDeliverableInfo().getStatus() != null && d.getDeliverableInfo().getYear() == this.getSelectedYear()
+              && d.getDeliverableInfo().getStatus().intValue() == Integer
+                .parseInt(ProjectStatusEnum.Ongoing.getStatusId()))))
         .collect(Collectors.toList())) {
         deliverablesSet.add(deliverable);
       }
       Integer expectedDeliverables = deliverablesSet.size();
+      Set<Deliverable> deliverablesSet2020 = new HashSet();
+      Set<Deliverable> deliverablesSet2021 = new HashSet();
+      Set<Deliverable> deliverablesSet2022 = new HashSet();
+
+      // Deliverables for years 2017, 2018, 2019, 2020 for actual phase
+      for (yearSearched = 2017; yearSearched <= 2022; yearSearched++) {
+        for (Deliverable deliverable : project.getDeliverables().stream()
+          .sorted((d1, d2) -> Long.compare(d1.getId(), d2.getId()))
+          .filter(d -> d.isActive() && d.getDeliverableInfo(this.getActualPhase()) != null
+            && d.getDeliverableInfo().isActive()
+            && ((d.getDeliverableInfo().getStatus() == null && d.getDeliverableInfo().getYear() == yearSearched)
+              || (d.getDeliverableInfo().getStatus() != null
+                && d.getDeliverableInfo().getStatus().intValue() == Integer
+                  .parseInt(ProjectStatusEnum.Extended.getStatusId())
+                && d.getDeliverableInfo().getNewExpectedYear() != null
+                && d.getDeliverableInfo().getNewExpectedYear() == yearSearched)
+              || (d.getDeliverableInfo().getStatus() != null && d.getDeliverableInfo().getYear() == yearSearched
+                && d.getDeliverableInfo().getStatus().intValue() == Integer
+                  .parseInt(ProjectStatusEnum.Ongoing.getStatusId()))))
+          .collect(Collectors.toList())) {
+
+          if (!deliverables2017.isEmpty() && yearSearched == 2017) {
+            deliverables2017 += deliverable.getId() + ", ";
+          } else {
+            deliverables2017 += deliverable.getId() + ", ";
+          }
+
+          if (!deliverables2018.isEmpty() && yearSearched == 2018) {
+            deliverables2018 += deliverable.getId() + ", ";
+          } else {
+            deliverables2018 += deliverable.getId() + ", ";
+          }
+
+          if (!deliverables2019.isEmpty() && yearSearched == 2019) {
+            deliverables2019 += ", " + deliverable.getId() + ", ";
+          } else {
+            deliverables2019 += " " + deliverable.getId() + ", ";
+          }
+
+          if (yearSearched == 2020) {
+            deliverablesSet2020.add(deliverable);
+          }
+
+          if (yearSearched == 2021) {
+            deliverablesSet2021.add(deliverable);
+
+          }
+
+          if (yearSearched == 2021) {
+            deliverablesSet2022.add(deliverable);
+          }
+        }
+      }
+      deliverables2020 = "" + deliverablesSet2020.size();
+      deliverables2021 = "" + deliverablesSet2021.size();
+      deliverables2022 = "" + deliverablesSet2022.size();
 
       Set<ProjectOutcome> projectOutcomeSet = new HashSet();
       for (ProjectOutcome projectOutcome : project.getProjectOutcomes().stream()
@@ -796,7 +862,8 @@ public class ProjectsSummaryAction extends BaseSummariesAction implements Summar
       model.addRow(new Object[] {projectId, projectTitle, projectSummary, status, managementLiaison, flagships, regions,
         institutionLeader, projectLeaderName, activitiesOnGoing, expectedDeliverables, outcomes, expectedStudies,
         this.getSelectedPhase().getId(), crossCutting, type, locations, startDate, endDate, w1w2, bilateral, ppa,
-        global, regional, regionLoc, countryLoc});
+        global, regional, regionLoc, countryLoc, deliverables2017, deliverables2018, deliverables2019, deliverables2020,
+        deliverables2021, deliverables2022});
     }
     return model;
   }

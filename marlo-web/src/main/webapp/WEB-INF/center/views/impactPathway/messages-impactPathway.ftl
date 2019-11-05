@@ -75,6 +75,8 @@
     <div class="content">
       <span class="glyphicon glyphicon-lock"></span>
       <p>[@s.text name="message.concurrence" /] [@s.text name="message.concurrenceNotEditing"][@s.param] <a href="[@s.url][@s.param name=nameParameter value=parameterID /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">click here</a> [/@s.param][/@s.text]</p>
+    
+      [#if action.canAccessSuperAdmin()]<i><small> Only for superadmins: <a href="#" class="removeConcurrenceBlock">[CLOSE]</a></small></i>[/#if]
     </div> 
   </div>
   

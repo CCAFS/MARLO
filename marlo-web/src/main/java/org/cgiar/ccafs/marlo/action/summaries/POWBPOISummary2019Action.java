@@ -1255,13 +1255,13 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
         this.createPageFooter();
 
         // first page
-        poiSummary.textLineBreak(document, 10);
+        // poiSummary.textLineBreak(document, 10);
         poiSummary.textHeadPrincipalTitlefirtsPageCRP(document.createParagraph(),
           this.getText("summaries.powb2019.mainTitle"));
         poiSummary.textHeadPrincipalTitlefirtsPageCRP(document.createParagraph(),
           this.getText("summaries.powb2019.subTitle"));
         poiSummary.textLineBreak(document, 11);
-        poiSummary.addLineSeparator(document.createParagraph());
+        // poiSummary.addLineSeparator(document.createParagraph());
         document.createParagraph().setPageBreak(true);
 
         // Second page - table of contents
@@ -1938,7 +1938,8 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
       for (CrpProgramOutcome crpProgramOutcome : crpProgram.getOutcomes()) {
 
         crpProgramOutcome.setMilestones(crpProgramOutcome.getCrpMilestones().stream()
-          .filter(c -> c.isActive() && c.getYear().intValue() == this.getSelectedPhase().getYear())
+          .filter(c -> c.isActive() && ((c.getYear().intValue() == this.getActualPhase().getYear())
+            || (c.getExtendedYear() != null && c.getExtendedYear().equals(this.getActualPhase().getYear()))))
           .collect(Collectors.toList()));
         crpProgramOutcome.setSubIdos(
           crpProgramOutcome.getCrpOutcomeSubIdos().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
