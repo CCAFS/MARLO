@@ -488,6 +488,14 @@ function updateAllIndexes() {
     $(outcome).find('.milestone').each(function(i,milestone) {
       $(milestone).find('span.index').text(i + 1);
       $(milestone).setNameIndexes(2, i);
+
+      // Update radios for Assesment Risk
+      $(milestone).find('.radioFlat').each(function(i,radioBlock) {
+        var radioFlatID = ($(radioBlock).find('input').attr('id') + i).replace(/\W/g, '');
+        $(radioBlock).find('input').attr('id', radioFlatID);
+        $(radioBlock).find('label').attr('for', radioFlatID);
+      });
+
     });
 
     // Update SubIdos
@@ -495,7 +503,7 @@ function updateAllIndexes() {
       $(subIdo).find('span.index').text(i + 1);
       $(subIdo).setNameIndexes(2, i);
 
-      // Update radios for
+      // Update radios for primary option
       var radioFlatID = $(subIdo).find('.radioFlat input').attr('id');
       $(subIdo).find('.radioFlat label').attr('for', radioFlatID);
 

@@ -305,6 +305,12 @@ $(document).ready(function() {
     }
   });
 
+  // Remove concurrency block
+  $('.removeConcurrenceBlock').on('click', function(e) {
+    e.preventDefault();
+    $('#concurrenceBlock').fadeOut();
+  });
+
 });
 
 $(document).ajaxError(function(event,jqxhr,settings,exception) {
@@ -322,8 +328,8 @@ $(document).ajaxError(function(event,jqxhr,settings,exception) {
                       "value": window.location.href,
                       "short": true
                   }, {
-                      "title": "Username/Email",
-                      "value": $('#userInfo .institution').val(),
+                      "title": "User Name",
+                      "value": currentUserName,
                       "short": true
                   }
               ],

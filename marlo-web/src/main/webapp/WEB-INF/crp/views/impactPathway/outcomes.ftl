@@ -4,7 +4,7 @@
 [#assign pageLibs = ["select2", "blueimp-file-upload", "cytoscape","cytoscape-panzoom"] /]
 [#assign customJS = [ 
   "${baseUrlMedia}/js/impactPathway/programSubmit.js", 
-  "${baseUrlMedia}/js/impactPathway/outcomes.js?20191008", 
+  "${baseUrlMedia}/js/impactPathway/outcomes.js?20191022", 
   "${baseUrlCdn}/global/js/autoSave.js", 
   "${baseUrlCdn}/global/js/impactGraphic.js",
   "${baseUrlCdn}/global/js/fieldsValidation.js" 
@@ -309,8 +309,8 @@
         </div>
         [#-- Add Milestone Button --]
         [#if editable]
-        <div class="text-right">
-          <div class="addMilestone button-blue"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> [@s.text name="form.buttons.addMilestone"/]</div>
+        <div class="">
+          <div class="addMilestone bigAddButton text-center form-group"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> [@s.text name="form.buttons.addMilestone"/]</div>
         </div>
         [/#if]
         [#if editable]<div class="form-group note"><small>[@s.text name = "outcomes.addNewTargetUnit" /]</small></div>[/#if]

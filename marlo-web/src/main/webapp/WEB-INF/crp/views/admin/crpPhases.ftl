@@ -63,8 +63,9 @@
                 <h4> ${(phase.name)!} ${(phase.year)!}</h4>
                 
                 <hr />
-                
-                <div class="form-group row"> 
+                [#assign yearLimit = 2018 /]
+                [#assign canOpenClose = ((phase.year > yearLimit) && !((phase.year = (yearLimit + 1)) && (phase.name == "POWB")))  || phase.editable /]
+                <div class="form-group row">
                   [#-- Visible Phase --]
                   <div class="col-md-6">
                     <label>[@s.text name="projectPhases.visible" /]:</label>
@@ -72,7 +73,7 @@
                     [@customForm.radioFlat id="visible-no-${phase_index}" name="${customName}.visible" label="No" value="false" checked=!phase.visible cssClass="visible-no" cssClassLabel="radio-label-no"/]
                   </div>
                   [#-- Editable Phase --]
-                  <div class="col-md-6">
+                  <div class="col-md-6" style="display: ${canOpenClose?string('block','none')}">
                     <label>[@s.text name="projectPhases.editable" /]:</label>
                     [@customForm.radioFlat id="editable-yes-${phase_index}" name="${customName}.editable" label="Open" value="true" checked=phase.editable cssClass="editable-yes" cssClassLabel="radio-label-yes"/]
                     [@customForm.radioFlat id="editable-no-${phase_index}" name="${customName}.editable" label="Close" value="false" checked=!phase.editable cssClass="editable-no" cssClassLabel="radio-label-no"/]
