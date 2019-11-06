@@ -202,6 +202,8 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
     masterReport.getParameterValues().put("i8nGeographicScope", this.getText("deliverable.geographicScope"));
     masterReport.getParameterValues().put("i8nCountry", this.getText("deliverable.countries"));
     masterReport.getParameterValues().put("i8nRegion", this.getText("deliverable.region"));
+    masterReport.getParameterValues().put("i8nNewDeliverable",
+      this.getText("summaries.board.report.expectedDeliverables.isNewDeliverable"));
 
 
     return masterReport;
@@ -298,11 +300,12 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
         "keyOutput", "delivStatus", "delivNewYear", "projectID", "projectTitle", "projectClusterActivities",
         "flagships", "regions", "individual", "partnersResponsible", "shared", "openFS", "fsWindows", "outcomes",
         "projectLeadPartner", "managingResponsible", "phaseID", "finishedFS", "gender", "youth", "cap", "climate",
-        "deliverableDescription", "geographicScope", "region", "country"},
+        "deliverableDescription", "geographicScope", "region", "country", "newDeliverable"},
       new Class[] {Long.class, String.class, Integer.class, String.class, String.class, String.class, String.class,
         String.class, Long.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, Long.class, String.class,
-        String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class},
+        String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
+        String.class},
       0);
     Boolean activePPAFilter = ppa != null && !ppa.isEmpty() && !ppa.equals("All") && !ppa.equals("-1");
     Boolean addDeliverableRow = true;
@@ -614,7 +617,7 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
         currentPhaseDeliverables.add(deliverable);
         DeliverableInfo deliverableInfo = deliverable.getDeliverableInfo(this.getSelectedPhase());
         Long phaseID = deliverableInfo.getPhase().getId();
-
+        String newDeliverable = "";
         Long deliverableId = deliverable.getId();
         String deliverableTitle = (deliverableInfo.getTitle() != null && !deliverableInfo.getTitle().isEmpty())
           ? deliverableInfo.getTitle() : null;
@@ -631,6 +634,13 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
           && deliverableInfo.getDeliverableType().getDeliverableCategory().getName() != null
           && !deliverableInfo.getDeliverableType().getDeliverableCategory().getName().isEmpty())
             ? deliverableInfo.getDeliverableType().getDeliverableCategory().getName() : null;
+
+        // New deliverable
+        if (this.isDeliverableNew(deliverableId)) {
+          newDeliverable = "Yes";
+        } else {
+          newDeliverable = "No";
+        }
 
         // Get cross_cutting dimension
         String gender = "", youth = "", cap = "", climate = "";
@@ -1093,7 +1103,8 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
         model.addRow(new Object[] {deliverableId, deliverableTitle, completionYear, deliverableType, deliverableSubType,
           keyOutput, delivStatus, delivNewYear, projectID, projectTitle, projectClusterActivities, flagships, regions,
           individual, ppaResponsible, shared, openFS, fsWindows, outcomes, projectLeadPartner, managingResponsible,
-          phaseID, finishedFS, gender, youth, cap, climate, deliverableDescription, geographicScope, region, country});
+          phaseID, finishedFS, gender, youth, cap, climate, deliverableDescription, geographicScope, region, country,
+          newDeliverable});
 
         if (deliverablePerYearList.containsKey(completionYear)) {
           Set<Deliverable> deliverableSet = deliverablePerYearList.get(completionYear);
