@@ -896,7 +896,8 @@ public class ProjectDescriptionAction extends BaseAction {
       if (project.getFlagshipValue() != null && project.getFlagshipValue().length() > 0) {
 
         List<ProjectFocus> fpsPreview = projectDB.getProjectFocuses().stream()
-          .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase())
+          .filter(c -> c.isActive() && c.getPhase() != null
+            && c.getPhase().getId().longValue() == this.getActualPhase().getId().longValue()
             && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()
             && c.getCrpProgram().getCrp().getId().equals(loggedCrp.getId()))
           .collect(Collectors.toList());
@@ -917,7 +918,7 @@ public class ProjectDescriptionAction extends BaseAction {
             projectFocus.setPhase(this.getActualPhase());
             if (projectDB.getProjectFocuses().stream()
               .filter(c -> c.isActive() && c.getCrpProgram().getId().longValue() == program.getId().longValue()
-                && c.getPhase().equals(this.getActualPhase()))
+                && c.getPhase().getId().longValue() == this.getActualPhase().getId().longValue())
               .collect(Collectors.toList()).isEmpty()) {
               projectFocus.setPhase(this.getActualPhase());
               projectFocusManager.saveProjectFocus(projectFocus);
@@ -930,7 +931,8 @@ public class ProjectDescriptionAction extends BaseAction {
       } else {
         // Delete All flagships
         for (ProjectFocus projectFocus : projectDB.getProjectFocuses().stream()
-          .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase())
+          .filter(c -> c.isActive() && c.getPhase() != null
+            && c.getPhase().getId().longValue() == this.getActualPhase().getId().longValue()
             && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()
             && c.getCrpProgram().getCrp().getId().equals(loggedCrp.getId()))
           .collect(Collectors.toList())) {
