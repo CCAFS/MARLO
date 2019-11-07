@@ -199,14 +199,15 @@ public class PlannedBudgetAction extends BaseAction {
     if (this.isDraft()) {
       if (powbSynthesis.getPowbFinancialPlannedBudgetList() != null
         && !powbSynthesis.getPowbFinancialPlannedBudgetList().isEmpty()) {
-
         powbFinancialPlannedBudgets = powbSynthesis.getPowbFinancialPlannedBudgetList().stream()
-          .filter(p -> p.getPowbExpenditureArea() == null && p.getLiaisonInstitution() == null)
+          .filter(p -> p.getPowbExpenditureArea() == null && p.getLiaisonInstitution() == null
+            && p.getPowbSynthesis().getId().longValue() == powbSynthesisID.longValue())
           .collect(Collectors.toList());
       }
     } else {
-      powbFinancialPlannedBudgets = powbFinancialPlannedBudgetManager.findAll().stream()
-        .filter(e -> e.isActive() && e.getTitle() != null).collect(Collectors.toList());
+      powbFinancialPlannedBudgets =
+        powbFinancialPlannedBudgetManager.findAll().stream().filter(e -> e.isActive() && e.getTitle() != null
+          && e.getPowbSynthesis().getId().longValue() == powbSynthesisID.longValue()).collect(Collectors.toList());
     }
 
     if (powbFinancialPlannedBudgets != null) {
