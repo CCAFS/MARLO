@@ -102,7 +102,7 @@
           <div class="form-group">
             <br />
             <hr />
-            <h4 class="simpleTitle headTitle">[@customForm.text name="powbSynthesis.externalPartnerships.projectsPartnerships.keyCgiarPartners" param="${currentCycleYear}" /] </h4>
+            <h4 class="simpleTitle headTitle">[@customForm.text name="powbSynthesis.programCollaboration.partners" param="${currentCycleYear}" /] </h4>
             <div class="viewMoreSyntesis-block">
               [@projectsKeyPartnershipsTable name="" list=action.projectPartnerships(true) /]
             </div>

@@ -1058,18 +1058,21 @@ public class PlannedColaborationAction extends BaseAction {
               .filter(co -> co.isActive() && co.getPhase().getId().equals(phase.getId())).collect(Collectors.toList());
 
             if (projectPartnersList != null && !projectPartnersList.isEmpty()) {
-              if (isCgiar) {
-                partnershipsSynt.getPartners().addAll(
-                  projectPartnersList.stream().filter(c -> c.getInstitution().getInstitutionType().getId().equals(3L))
-                    .collect(Collectors.toList()));
-              } else {
-                partnershipsSynt.getPartners()
-                  .addAll(projectPartnersList.stream()
-                    .filter(c -> !c.getInstitution().getInstitutionType().getId().equals(3L))
-                    .collect(Collectors.toList()));
-              }
+              /*
+               * if (isCgiar) {
+               * partnershipsSynt.getPartners().addAll(
+               * projectPartnersList.stream().filter(c -> c.getInstitution().getInstitutionType().getId().equals(3L))
+               * .collect(Collectors.toList()));
+               * } else {
+               * partnershipsSynt.getPartners()
+               * .addAll(projectPartnersList.stream()
+               * .filter(c -> !c.getInstitution().getInstitutionType().getId().equals(3L))
+               * .collect(Collectors.toList()));
+               * }
+               */
 
-
+              // Get all partners
+              partnershipsSynt.getPartners().addAll(projectPartnersList);
             }
             partnershipsSynthesis.add(partnershipsSynt);
 
