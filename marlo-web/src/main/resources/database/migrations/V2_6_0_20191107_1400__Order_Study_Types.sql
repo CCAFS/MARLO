@@ -1,0 +1,1 @@
+ALTER TABLE study_types ADD COLUMN norder int(2) DEFAULT '0' AFTER name;
