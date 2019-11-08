@@ -278,11 +278,20 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
 
   private void addFinancialPlan() {
     String financialPlanDescription = "";
+    String additionalExplanationT3 = "";
     if (powbSynthesis != null) {
+      if (powbSynthesis.getFinancialPlan() != null) {
+        if (powbSynthesis.getFinancialPlan().getFinancialPlanIssues() != null) {
+          financialPlanDescription = powbSynthesis.getFinancialPlan().getFinancialPlanIssues();
+          poiSummary.convertHTMLTags(document, financialPlanDescription, null);
+        }
+      }
+
       if (powbSynthesis.getFinancialPlan() != null
-        && powbSynthesis.getFinancialPlan().getFinancialPlanIssues() != null) {
-        financialPlanDescription = powbSynthesis.getFinancialPlan().getFinancialPlanIssues();
-        poiSummary.convertHTMLTags(document, financialPlanDescription, null);
+        && powbSynthesis.getFinancialPlan().getAdditionalExplanationT3() != null) {
+        additionalExplanationT3 = powbSynthesis.getFinancialPlan().getAdditionalExplanationT3();
+        poiSummary.convertHTMLTags(document,
+          this.getText("powbSynthesis.plannedBudget.explanation") + ": " + additionalExplanationT3, null);
       }
     }
   }
@@ -1164,11 +1173,14 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
         paragraph.setStyle("heading 2");
 
         this.createTable3();
-        if (powbSynthesisPMU.getFinancialPlan() != null
-          && powbSynthesisPMU.getFinancialPlan().getAdditionalExplanationT3() != null) {
+
+        String additionalExplanationT3 = "";
+        if (powbSynthesis.getFinancialPlan() != null
+          && powbSynthesis.getFinancialPlan().getAdditionalExplanationT3() != null) {
+          additionalExplanationT3 = powbSynthesis.getFinancialPlan().getAdditionalExplanationT3();
+          poiSummary.convertHTMLTags(document,
+            this.getText("powbSynthesis.plannedBudget.explanation") + ": " + additionalExplanationT3, null);
         }
-        run.setText("powbSynthesis.plannedBudget.explanation" + ": "
-          + powbSynthesisPMU.getFinancialPlan().getAdditionalExplanationT3());
 
         poiSummary.textLineBreak(document, 1);
 
