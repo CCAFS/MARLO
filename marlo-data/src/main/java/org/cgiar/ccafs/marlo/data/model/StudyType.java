@@ -13,6 +13,7 @@ public class StudyType extends MarloBaseEntity implements java.io.Serializable {
 
   @Expose
   private String name;
+  private int order;
 
 
   public StudyType() {
@@ -44,6 +45,10 @@ public class StudyType extends MarloBaseEntity implements java.io.Serializable {
     return name;
   }
 
+  public int getOrder() {
+    return order;
+  }
+
   @Override
   public int hashCode() {
     final int prime = 31;
@@ -52,8 +57,14 @@ public class StudyType extends MarloBaseEntity implements java.io.Serializable {
     return result;
   }
 
+
   public void setName(String name) {
     this.name = name;
+  }
+
+
+  public void setOrder(int order) {
+    this.order = order;
   }
 
 
