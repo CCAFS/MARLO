@@ -25,11 +25,14 @@ import org.cgiar.ccafs.marlo.data.manager.GlobalUnitProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
+import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.PowbCollaborationGlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PowbCollaborationGlobalUnitPmuManager;
 import org.cgiar.ccafs.marlo.data.manager.PowbCollaborationManager;
 import org.cgiar.ccafs.marlo.data.manager.PowbCollaborationRegionManager;
 import org.cgiar.ccafs.marlo.data.manager.PowbSynthesisManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectFocusManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
@@ -41,6 +44,7 @@ import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
+import org.cgiar.ccafs.marlo.data.model.PartnershipsSynthesis;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.PowbCollaboration;
 import org.cgiar.ccafs.marlo.data.model.PowbCollaborationGlobalUnit;
@@ -54,6 +58,7 @@ import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectBudget;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
 import org.cgiar.ccafs.marlo.data.model.ProjectLocation;
+import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
@@ -80,14 +85,15 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-/**
- * @author Christian Garcia - CIAT/CCAFS
- */
+
 public class PlannedColaborationAction extends BaseAction {
 
 
   private static final long serialVersionUID = 5112563288393590088L;
+  private static Logger LOG = LoggerFactory.getLogger(PlannedColaborationAction.class);
 
 
   // Managers
@@ -104,6 +110,10 @@ public class PlannedColaborationAction extends BaseAction {
   private LocElementManager locElementManager;
   private FundingSourceManager fundingSourceManager;
   private PowbCollaborationGlobalUnitPmuManager powbCollaborationGlobalUnitPmuManager;
+  private PhaseManager phaseManager;
+  private ProjectFocusManager projectFocusManager;
+  private ProjectManager projectManager;
+
 
   // Variables
   private String transaction;
@@ -133,8 +143,8 @@ public class PlannedColaborationAction extends BaseAction {
     GlobalUnitProjectManager globalUnitProjectManager,
     PowbCollaborationGlobalUnitManager powbCollaborationGlobalUnitManager, LocElementManager locElementManager,
     PowbCollaborationRegionManager powbCollaborationRegionManager, FundingSourceManager fundingSourceManager,
-    PowbCollaborationGlobalUnitPmuManager powbCollaborationGlobalUnitPmuManager,
-    InstitutionManager institutionManager) {
+    PowbCollaborationGlobalUnitPmuManager powbCollaborationGlobalUnitPmuManager, InstitutionManager institutionManager,
+    PhaseManager phaseManager, ProjectFocusManager projectFocusManager, ProjectManager projectManager) {
     super(config);
     this.crpManager = crpManager;
     this.powbSynthesisManager = powbSynthesisManager;
@@ -151,6 +161,9 @@ public class PlannedColaborationAction extends BaseAction {
     this.fundingSourceManager = fundingSourceManager;
     this.powbCollaborationGlobalUnitPmuManager = powbCollaborationGlobalUnitPmuManager;
     this.institutionManager = institutionManager;
+    this.phaseManager = phaseManager;
+    this.projectFocusManager = projectFocusManager;
+    this.projectManager = projectManager;
   }
 
   @Override
@@ -341,7 +354,6 @@ public class PlannedColaborationAction extends BaseAction {
     return liaisonInstitution;
   }
 
-
   public Long getLiaisonInstitutionID() {
     return liaisonInstitutionID;
   }
@@ -350,6 +362,7 @@ public class PlannedColaborationAction extends BaseAction {
   public List<LiaisonInstitution> getLiaisonInstitutions() {
     return liaisonInstitutions;
   }
+
 
   public List<LocElement> getLocElements() {
     return locElements;
@@ -362,7 +375,6 @@ public class PlannedColaborationAction extends BaseAction {
     return locElements;
 
   }
-
 
   public List<LocElement> getLocElementsByRegion(long regionId) {
     LiaisonInstitution liaisonInstitution = liaisonInstitutionManager.getLiaisonInstitutionById(regionId);
@@ -377,6 +389,7 @@ public class PlannedColaborationAction extends BaseAction {
   public GlobalUnit getLoggedCrp() {
     return loggedCrp;
   }
+
 
   public PowbSynthesis getPowbSynthesis() {
     return powbSynthesis;
@@ -454,7 +467,6 @@ public class PlannedColaborationAction extends BaseAction {
     }
   }
 
-
   public void globaUnitsPreviousData(List<PowbCollaborationGlobalUnit> powbCollaborationGlobalUnits) {
 
     List<PowbCollaborationGlobalUnit> globlalUnitsPrev;
@@ -497,6 +509,7 @@ public class PlannedColaborationAction extends BaseAction {
     return isFP;
 
   }
+
 
   public List<LocElement> loadLocations() {
     List<LocElement> locElements = locElementManager.findAll().stream()
@@ -683,7 +696,6 @@ public class PlannedColaborationAction extends BaseAction {
 
   }
 
-
   public List<Project> loadProjectsPMU() {
     List<Project> projectsToRet = new ArrayList<>();
     GlobalUnit globalUnit = crpManager.getGlobalUnitById(loggedCrp.getId());
@@ -722,6 +734,7 @@ public class PlannedColaborationAction extends BaseAction {
     return projectsToRet;
 
   }
+
 
   @Override
   public String next() {
@@ -1000,6 +1013,85 @@ public class PlannedColaborationAction extends BaseAction {
         powbSynthesis.getRegions().clear();
       }
     }
+  }
+
+  /*
+   * Load The Project Key Partnership of each Flagship/Module
+   */
+  public List<PartnershipsSynthesis> projectPartnerships(boolean isCgiar) {
+
+    List<PartnershipsSynthesis> partnershipsSynthesis = new ArrayList<>();
+
+    Phase phase = phaseManager.getPhaseById(this.getActualPhase().getId());
+
+    if (projectFocusManager.findAll() != null) {
+
+      try {
+
+        List<ProjectFocus> projectFocus = new ArrayList<>();
+        if (this.isPMU()) {
+          // All project focus for PMU
+          projectFocus = new ArrayList<>(projectFocusManager.findAll().stream()
+            .filter(pf -> pf.isActive() && pf.getPhase() != null && pf.getPhase().getId().equals(phase.getId()))
+            .collect(Collectors.toList()));
+        } else {
+          projectFocus = new ArrayList<>(projectFocusManager.findAll().stream()
+            .filter(pf -> pf.isActive() && pf.getCrpProgram().getId().equals(liaisonInstitution.getCrpProgram().getId())
+              && pf.getPhase() != null && pf.getPhase().getId().equals(phase.getId()))
+            .collect(Collectors.toList()));
+        }
+
+        // Get project list (removing repeated records)
+        Set<Project> projects = new HashSet<Project>();
+
+        for (ProjectFocus focus : projectFocus) {
+          Project project = projectManager.getProjectById(focus.getProject().getId());
+          projects.add(project);
+        }
+
+        for (Project project : projects) {
+          if (project.getProjectPartners() != null) {
+            PartnershipsSynthesis partnershipsSynt = new PartnershipsSynthesis();
+            partnershipsSynt.setProject(project);
+            partnershipsSynt.setPartners(new ArrayList<>());
+            List<ProjectPartner> projectPartnersList = project.getProjectPartners().stream()
+              .filter(co -> co.isActive() && co.getPhase().getId().equals(phase.getId())).collect(Collectors.toList());
+
+            if (projectPartnersList != null && !projectPartnersList.isEmpty()) {
+              /*
+               * if (isCgiar) {
+               * partnershipsSynt.getPartners().addAll(
+               * projectPartnersList.stream().filter(c -> c.getInstitution().getInstitutionType().getId().equals(3L))
+               * .collect(Collectors.toList()));
+               * } else {
+               * partnershipsSynt.getPartners()
+               * .addAll(projectPartnersList.stream()
+               * .filter(c -> !c.getInstitution().getInstitutionType().getId().equals(3L))
+               * .collect(Collectors.toList()));
+               * }
+               */
+
+              // Get all partners
+              partnershipsSynt.getPartners().addAll(projectPartnersList);
+            }
+            partnershipsSynthesis.add(partnershipsSynt);
+
+          }
+        }
+
+      } catch (Exception e) {
+        e.printStackTrace();
+        LOG.error("Error getting partnerships list: " + e.getMessage());
+      }
+
+
+    }
+    if (partnershipsSynthesis != null && !partnershipsSynthesis.isEmpty()) {
+      partnershipsSynthesis = partnershipsSynthesis.stream()
+        .sorted((p1, p2) -> p1.getProject().getId().compareTo(p2.getProject().getId())).collect(Collectors.toList());
+    }
+    System.out.println("partnershipsSynthesis " + partnershipsSynthesis.size());
+    return partnershipsSynthesis;
   }
 
 

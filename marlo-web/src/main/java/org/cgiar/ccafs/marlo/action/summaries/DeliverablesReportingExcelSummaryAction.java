@@ -282,6 +282,8 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
       this.getText("project.deliverable.publication.v.allowPublication"));
     masterReport.getParameterValues().put("i8nPublicationQualityCheck",
       this.getText("project.deliverable.v.qualityCheck"));
+    masterReport.getParameterValues().put("i8nNewDeliverable",
+      this.getText("summaries.board.report.expectedDeliverables.isNewDeliverable"));
 
     return masterReport;
   }
@@ -534,6 +536,7 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
         String projectID = null;
         String projectTitle = null;
         String flagships = null, regions = null, status = null, isComplete = "", justification = "", description = "";
+        String deliverableNew = "";
 
         if (deliverable.getProject() != null) {
           projectID = deliverable.getProject().getId().toString();
@@ -569,6 +572,13 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
           && deliverable.getProject().getProjecInfoPhase(this.getSelectedPhase()) != null
           && deliverable.getProject().getProjecInfoPhase(this.getSelectedPhase()).getStatusName() != null) {
           status = deliverable.getProject().getProjecInfoPhase(this.getSelectedPhase()).getStatusName();
+        }
+
+        // New deliverable
+        if (this.isDeliverableNew(deliverable.getId())) {
+          deliverableNew = "Yes";
+        } else {
+          deliverableNew = "No";
         }
 
         Long phaseID = deliverable.getDeliverableInfo().getPhase().getId();
