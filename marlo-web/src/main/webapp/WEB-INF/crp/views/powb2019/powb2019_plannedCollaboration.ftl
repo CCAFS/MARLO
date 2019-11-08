@@ -98,7 +98,7 @@
             </div>
           [/#if]          
           
-          [#-- Projects Key Partner (Only CGIAR Institutions) --]
+          [#-- Projects Key Partner --]
           <div class="form-group">
             <br />
             <hr />
@@ -215,7 +215,6 @@
       <tr class="subHeader">
         <th class="col-md-1"> Project</th>
         <th class="col-md-3"> Partner </th>
-        <th class="col-md-1"> Formal</th>
         <th class="col-md-7"> Responsibilities </th>
       </tr>
     </thead>
@@ -234,9 +233,6 @@
               </td>
               <td class="">
                 [@utils.tableText value=(partner.institution.composedName)!"" /] 
-              </td>
-              <td class="text-center">
-                [@utils.tableText value=(partner.hasPartnerships?string('Yes', 'No'))!"" /]
               </td>
                <td class="text-justify">
                 [@utils.tableText value=(partner.responsibilities)!"" /] 
