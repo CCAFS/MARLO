@@ -11,18 +11,24 @@
 				<param name="property">powbSynthesis</param>
 			</generator>
 		</id>
-		<many-to-one name="modifiedBy" class="org.cgiar.ccafs.marlo.data.model.User"
-			fetch="select">
+		<many-to-one name="modifiedBy"
+			class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
 			<column name="modified_by" />
 		</many-to-one>
 		<one-to-one name="powbSynthesis"
-			class="org.cgiar.ccafs.marlo.data.model.PowbSynthesis" constrained="true"></one-to-one>
-		<many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User"
-			fetch="select" update="false">
+			class="org.cgiar.ccafs.marlo.data.model.PowbSynthesis"
+			constrained="true"></one-to-one>
+		<many-to-one name="createdBy"
+			class="org.cgiar.ccafs.marlo.data.model.User" fetch="select"
+			update="false">
 			<column name="created_by" not-null="true" />
 		</many-to-one>
 		<property name="financialPlanIssues" type="string">
-			<column name="financial_plan_issues" sql-type="TEXT" not-null="true" />
+			<column name="financial_plan_issues" sql-type="TEXT"
+				not-null="true" />
+		</property>
+		<property name="additionalExplanationT3" type="string">
+			<column name="additional_explanation_t3" sql-type="TEXT" />
 		</property>
 		<property name="active" type="boolean">
 			<column name="is_active" not-null="true" />

@@ -19,13 +19,20 @@ public class PowbFinancialPlan extends MarloAuditableEntity implements java.io.S
   @Expose
   private String financialPlanIssues;
 
+  @Expose
+  private String additionalExplanationT3;
+
   public PowbFinancialPlan() {
   }
 
+  public String getAdditionalExplanationT3() {
+    return additionalExplanationT3;
+  }
 
   public String getFinancialPlanIssues() {
     return financialPlanIssues;
   }
+
 
   @Override
   public String getLogDeatil() {
@@ -36,6 +43,10 @@ public class PowbFinancialPlan extends MarloAuditableEntity implements java.io.S
 
   public PowbSynthesis getPowbSynthesis() {
     return powbSynthesis;
+  }
+
+  public void setAdditionalExplanationT3(String additionalExplanationT3) {
+    this.additionalExplanationT3 = additionalExplanationT3;
   }
 
   public void setFinancialPlanIssues(String financialPlanIssues) {

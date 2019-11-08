@@ -147,7 +147,6 @@ public class PowbSynthesis extends MarloAuditableEntity implements java.io.Seria
     return collaboration;
   }
 
-
   public PowbCrpStaffing getCrpStaffing() {
     return crpStaffing;
   }
@@ -155,6 +154,7 @@ public class PowbSynthesis extends MarloAuditableEntity implements java.io.Seria
   public List<PowbExpectedCrpProgress> getExpectedCrpProgresses() {
     return expectedCrpProgresses;
   }
+
 
   public String getExpectedProgressNarrative() {
     return expectedProgressNarrative;
@@ -165,7 +165,6 @@ public class PowbSynthesis extends MarloAuditableEntity implements java.io.Seria
     return financialPlan;
   }
 
-
   public String getFlagshipAssets() {
     return flagshipAssets;
   }
@@ -174,6 +173,7 @@ public class PowbSynthesis extends MarloAuditableEntity implements java.io.Seria
   public String getFlagshipSummarize() {
     return flagshipSummarize;
   }
+
 
   public LiaisonInstitution getLiaisonInstitution() {
     return liaisonInstitution;
@@ -198,7 +198,6 @@ public class PowbSynthesis extends MarloAuditableEntity implements java.io.Seria
     return powbCollaborationGlobalUnits;
   }
 
-
   public List<PowbCollaborationGlobalUnit> getPowbCollaborationGlobalUnitsList() {
     return powbCollaborationGlobalUnitsList;
   }
@@ -207,6 +206,7 @@ public class PowbSynthesis extends MarloAuditableEntity implements java.io.Seria
   public Set<PowbCollaborationRegion> getPowbCollaborationRegions() {
     return powbCollaborationRegions;
   }
+
 
   public PowbCrossCuttingDimension getPowbCrossCuttingDimension() {
     return powbCrossCuttingDimension;
@@ -219,7 +219,6 @@ public class PowbSynthesis extends MarloAuditableEntity implements java.io.Seria
   public Set<PowbExpectedCrpProgress> getPowbExpectedCrpProgresses() {
     return powbExpectedCrpProgresses;
   }
-
 
   public Set<PowbFinancialExpenditure> getPowbFinancialExpenditures() {
     return powbFinancialExpenditures;
@@ -275,6 +274,7 @@ public class PowbSynthesis extends MarloAuditableEntity implements java.io.Seria
     return powbSynthesisCrpStaffingCategoryList;
   }
 
+
   public PowbToc getPowbToc() {
     return powbToc;
   }
@@ -286,7 +286,6 @@ public class PowbSynthesis extends MarloAuditableEntity implements java.io.Seria
   public Set<SectionStatus> getSectionStatuses() {
     return sectionStatuses;
   }
-
 
   public Set<Submission> getSubmissions() {
     return submissions;

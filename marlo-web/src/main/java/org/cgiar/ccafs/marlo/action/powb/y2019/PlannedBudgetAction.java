@@ -199,14 +199,15 @@ public class PlannedBudgetAction extends BaseAction {
     if (this.isDraft()) {
       if (powbSynthesis.getPowbFinancialPlannedBudgetList() != null
         && !powbSynthesis.getPowbFinancialPlannedBudgetList().isEmpty()) {
-
         powbFinancialPlannedBudgets = powbSynthesis.getPowbFinancialPlannedBudgetList().stream()
-          .filter(p -> p.getPowbExpenditureArea() == null && p.getLiaisonInstitution() == null)
+          .filter(p -> p.getPowbExpenditureArea() == null && p.getLiaisonInstitution() == null
+            && p.getPowbSynthesis().getId().longValue() == powbSynthesisID.longValue())
           .collect(Collectors.toList());
       }
     } else {
-      powbFinancialPlannedBudgets = powbFinancialPlannedBudgetManager.findAll().stream()
-        .filter(e -> e.isActive() && e.getTitle() != null).collect(Collectors.toList());
+      powbFinancialPlannedBudgets =
+        powbFinancialPlannedBudgetManager.findAll().stream().filter(e -> e.isActive() && e.getTitle() != null
+          && e.getPowbSynthesis().getId().longValue() == powbSynthesisID.longValue()).collect(Collectors.toList());
     }
 
     if (powbFinancialPlannedBudgets != null) {
@@ -694,6 +695,11 @@ public class PlannedBudgetAction extends BaseAction {
             }
           }
         }
+
+        // Save addiotional explanations for table 3
+        if (powbSynthesis != null) {
+          powbSynthesisManager.savePowbSynthesis(powbSynthesis);
+        }
       }
 
       // FinancialPlan:
@@ -806,6 +812,7 @@ public class PlannedBudgetAction extends BaseAction {
       powbFinancialPlan.setId(powbSynthesisID);
     }
     powbFinancialPlan.setFinancialPlanIssues(powbSynthesis.getFinancialPlan().getFinancialPlanIssues());
+    powbFinancialPlan.setAdditionalExplanationT3(powbSynthesis.getFinancialPlan().getAdditionalExplanationT3());
     powbFinancialPlan = powbFinancialPlanManager.savePowbFinancialPlan(powbFinancialPlan);
   }
 
@@ -949,9 +956,10 @@ public class PlannedBudgetAction extends BaseAction {
       if (powbSynthesis != null) {
         if (powbSynthesis.getFinancialPlan() != null) {
           if (powbSynthesis.getFinancialPlan().getFinancialPlanIssues() != null) {
-            if (powbSynthesis.getFinancialPlan().getFinancialPlanIssues() != null) {
-              powbTocList.setOverall(powbSynthesis.getFinancialPlan().getFinancialPlanIssues());
-            }
+            powbTocList.setOverall(powbSynthesis.getFinancialPlan().getFinancialPlanIssues());
+          }
+          if (powbSynthesis.getFinancialPlan().getAdditionalExplanationT3() != null) {
+            powbTocList.setOverall(powbSynthesis.getFinancialPlan().getAdditionalExplanationT3());
           }
         }
       }

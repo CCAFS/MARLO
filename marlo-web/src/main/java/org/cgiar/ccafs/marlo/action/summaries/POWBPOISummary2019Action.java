@@ -1164,6 +1164,12 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
         paragraph.setStyle("heading 2");
 
         this.createTable3();
+        if (powbSynthesisPMU.getFinancialPlan() != null
+          && powbSynthesisPMU.getFinancialPlan().getAdditionalExplanationT3() != null) {
+        }
+        run.setText("powbSynthesis.plannedBudget.explanation" + ": "
+          + powbSynthesisPMU.getFinancialPlan().getAdditionalExplanationT3());
+
         poiSummary.textLineBreak(document, 1);
 
         ByteArrayOutputStream os = new ByteArrayOutputStream();

@@ -82,6 +82,8 @@
               </p> 
               [/#if]
               
+            
+              
               [#-- Hidden: Global Unit list for Select2 widget --]
               <ul style="display:none">
                 [#list globalUnits as globalUnit]
@@ -95,6 +97,17 @@
               
             </div>
           [/#if]          
+          
+          [#-- Projects Key Partner (Only CGIAR Institutions) --]
+          <div class="form-group">
+            <br />
+            <hr />
+            <h4 class="simpleTitle headTitle">[@customForm.text name="powbSynthesis.programCollaboration.partners" param="${currentCycleYear}" /] </h4>
+            <div class="viewMoreSyntesis-block">
+              [@projectsKeyPartnershipsTable name="" list=action.projectPartnerships(true) /]
+            </div>
+         </div>      
+              
         </div>        
         [#-- Section Buttons & hidden inputs--]
         [#include "/WEB-INF/crp/views/powb/buttons-powb.ftl" /]
@@ -194,4 +207,46 @@
     </tbody>
   </table>
 </div>
+[/#macro]
+
+[#macro projectsKeyPartnershipsTable name="" list=["",""]]
+  <table class="annual-report-table table-border">
+    <thead>
+      <tr class="subHeader">
+        <th class="col-md-1"> Project</th>
+        <th class="col-md-3"> Partner </th>
+        <th class="col-md-1"> Formal</th>
+        <th class="col-md-7"> Responsibilities </th>
+      </tr>
+    </thead>
+    <tbody>
+      [#if list?has_content]
+        [#list list as item]
+          [#list item.partners as partner]
+            [#local url][@s.url namespace="/projects" action="${(crpSession)!}/partners"][@s.param name='projectID']${(item.project.id)!}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
+            <tr>
+              <td class="text-center">
+                [#if (item.project.id?has_content)!false]
+                  <a href="${url}" target="_blank"> P${item.project.id} </a>
+                [#else]
+                  <i style="opacity:0.5">PID</i>
+                [/#if]
+              </td>
+              <td class="">
+                [@utils.tableText value=(partner.institution.composedName)!"" /] 
+              </td>
+              <td class="text-center">
+                [@utils.tableText value=(partner.hasPartnerships?string('Yes', 'No'))!"" /]
+              </td>
+               <td class="text-justify">
+                [@utils.tableText value=(partner.responsibilities)!"" /] 
+              </td>
+            </tr>
+          [/#list]
+        [/#list]
+      [#else]
+        
+      [/#if]
+    </tbody>
+  </table>
 [/#macro]
