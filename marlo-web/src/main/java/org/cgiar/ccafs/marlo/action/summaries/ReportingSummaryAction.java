@@ -1295,7 +1295,6 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           // Subreport BudgetsbyPartners
           this.fillSubreport((SubReport) hm.get("budgets_by_partners"), "budgets_by_partners_list", args);
           // Subreport BudgetsbyCoas
-          this.fillSubreport((SubReport) hm.get("budgets_by_coas"), "budgets_by_coas_list", args);
         } else {
           // Subreport Leverages for reporting
           this.fillSubreport((SubReport) hm.get("leverages"), "leverages", args);
