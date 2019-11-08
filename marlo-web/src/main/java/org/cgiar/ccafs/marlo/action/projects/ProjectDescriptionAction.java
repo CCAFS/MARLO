@@ -26,7 +26,6 @@ import org.cgiar.ccafs.marlo.data.manager.GlobalUnitProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonUserManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementTypeManager;
-import org.cgiar.ccafs.marlo.data.manager.ProjectBudgetsCluserActvityManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectCenterOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectClusterActivityManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectFocusManager;
@@ -46,15 +45,12 @@ import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
-import org.cgiar.ccafs.marlo.data.model.ProjectBudgetsCluserActvity;
 import org.cgiar.ccafs.marlo.data.model.ProjectCenterOutcome;
 import org.cgiar.ccafs.marlo.data.model.ProjectClusterActivity;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
 import org.cgiar.ccafs.marlo.data.model.ProjectInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectScope;
-import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
-import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
@@ -116,7 +112,6 @@ public class ProjectDescriptionAction extends BaseAction {
   private CrpProgramManager programManager;
   private ProjectClusterActivityManager projectClusterActivityManager;
 
-  private ProjectBudgetsCluserActvityManager projectBudgetsCluserActvityManager;
   private CrpClusterOfActivityManager crpClusterOfActivityManager;
 
   private GlobalUnitProjectManager globalUnitProjectManager;
@@ -176,9 +171,8 @@ public class ProjectDescriptionAction extends BaseAction {
     ProjectClusterActivityManager projectClusterActivityManager,
     CrpClusterOfActivityManager crpClusterOfActivityManager, LocElementTypeManager locationManager,
     ProjectScopeManager projectLocationManager, HistoryComparator historyComparator,
-    ProjectInfoManager projectInfoManagerManager, ProjectBudgetsCluserActvityManager projectBudgetsCluserActvityManager,
-    GlobalUnitProjectManager globalUnitProjectManager, CenterOutcomeManager centerOutcomeManager,
-    ProjectCenterOutcomeManager projectCenterOutcomeManager) {
+    ProjectInfoManager projectInfoManagerManager, GlobalUnitProjectManager globalUnitProjectManager,
+    CenterOutcomeManager centerOutcomeManager, ProjectCenterOutcomeManager projectCenterOutcomeManager) {
     super(config);
     this.projectManager = projectManager;
     this.projectInfoManagerManager = projectInfoManagerManager;
@@ -199,7 +193,6 @@ public class ProjectDescriptionAction extends BaseAction {
     this.liaisonUserManager = liaisonUserManager;
     this.projectScopeManager = projectLocationManager;
     this.locationTypeManager = locationManager;
-    this.projectBudgetsCluserActvityManager = projectBudgetsCluserActvityManager;
     this.globalUnitProjectManager = globalUnitProjectManager;
     this.projectCenterOutcomeManager = projectCenterOutcomeManager;
     this.centerOutcomeManager = centerOutcomeManager;
