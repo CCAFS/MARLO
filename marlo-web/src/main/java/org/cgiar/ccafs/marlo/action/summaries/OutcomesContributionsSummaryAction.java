@@ -291,8 +291,10 @@ public class OutcomesContributionsSummaryAction extends BaseSummariesAction impl
       0);
     SimpleDateFormat formatter = new SimpleDateFormat("MMM yyyy");
 
-    for (ProjectMilestone projectMilestone : projectMilestones.stream().sorted((po1, po2) -> Long
-      .compare(po1.getProjectOutcome().getProject().getId(), po2.getProjectOutcome().getProject().getId()))
+    for (ProjectMilestone projectMilestone : projectMilestones.stream()
+      .filter(pm -> pm.isActive() && pm.getCrpMilestone() != null && pm.getCrpMilestone().isActive())
+      .sorted((po1, po2) -> Long.compare(po1.getProjectOutcome().getProject().getId(),
+        po2.getProjectOutcome().getProject().getId()))
       .collect(Collectors.toList())) {
 
       String projectId = "", title = "", flagship = "", outcome = "", projectUrl = "", milestone = "",
@@ -304,8 +306,9 @@ public class OutcomesContributionsSummaryAction extends BaseSummariesAction impl
       projectId = projectMilestone.getProjectOutcome().getProject().getId().toString();
       BigDecimal outcomeExpectedValue = new BigDecimal(0);
       Long achievedValue = new Long(0);
-      if (projectMilestone.getProjectOutcome().getProject().getProjecInfoPhase(this.getSelectedPhase())
-        .getSummary() != null
+      if (projectMilestone.isActive()
+        && projectMilestone.getProjectOutcome().getProject().getProjecInfoPhase(this.getSelectedPhase())
+          .getSummary() != null
         && !projectMilestone.getProjectOutcome().getProject().getProjecInfoPhase(this.getSelectedPhase()).getSummary()
           .isEmpty()) {
         projectSummary =
@@ -313,7 +316,8 @@ public class OutcomesContributionsSummaryAction extends BaseSummariesAction impl
       } else {
         projectSummary = "";
       }
-      if (projectMilestone.getProjectOutcome().getProject().getProjecInfoPhase(this.getSelectedPhase()) != null) {
+      if (projectMilestone.isActive()
+        && projectMilestone.getProjectOutcome().getProject().getProjecInfoPhase(this.getSelectedPhase()) != null) {
         title =
           projectMilestone.getProjectOutcome().getProject().getProjecInfoPhase(this.getSelectedPhase()).getTitle();
         phaseID = projectMilestone.getProjectOutcome().getProject().getProjectInfo().getPhase().getId();
@@ -347,7 +351,7 @@ public class OutcomesContributionsSummaryAction extends BaseSummariesAction impl
       // Get PPA Partners
       List<ProjectPartner> listPPA = new ArrayList<>();
       List<ProjectPartner> tempPartners = new ArrayList<>();
-      if (projectMilestone.getProjectOutcome().getProject() != null
+      if (projectMilestone.isActive() && projectMilestone.getProjectOutcome().getProject() != null
         && projectMilestone.getProjectOutcome().getProject() != null) {
         tempPartners = new ArrayList<>(projectMilestone.getProjectOutcome().getProject().getProjectPartners().stream()
           .filter(c -> c.isActive() && c.getPhase().getId().equals(this.getSelectedPhase().getId()))
@@ -375,7 +379,8 @@ public class OutcomesContributionsSummaryAction extends BaseSummariesAction impl
         }
       }
 
-      if (projectMilestone.getCrpMilestone() != null && projectMilestone.getCrpMilestone().getSrfTargetUnit() != null) {
+      if (projectMilestone.isActive() && projectMilestone.getCrpMilestone() != null
+        && projectMilestone.getCrpMilestone().getSrfTargetUnit() != null) {
         expectedUnit = projectMilestone.getCrpMilestone().getSrfTargetUnit().getName();
         if (projectMilestone.getCrpMilestone().getSrfTargetUnit().getId() == -1) {
           expectedValue = -1.0;
@@ -482,6 +487,7 @@ public class OutcomesContributionsSummaryAction extends BaseSummariesAction impl
     if (activeProjects != null && !activeProjects.isEmpty()) {
       for (Project project : activeProjects) {
         for (ProjectOutcome projectOutcome : project.getProjectOutcomes().stream()
+          .filter(po -> po.isActive() && po.getPhase().getId().equals(this.getSelectedPhase().getId()))
           .sorted((po1, po2) -> Long.compare(po1.getId(), po2.getId()))
           .filter(po -> po.isActive() && po.getPhase() != null && po.getPhase().equals(this.getSelectedPhase()))
           .collect(Collectors.toList())) {
@@ -641,6 +647,7 @@ public class OutcomesContributionsSummaryAction extends BaseSummariesAction impl
             achievedNarrative, startDate, endDate, communications, outcomeTargetValue, expectedValueS,
             achievedValueString, ppa, institutionLeader});
           if (projectOutcome.getProjectMilestones() != null && projectOutcome.getProjectMilestones().size() > 0) {
+
             for (ProjectMilestone projectMilestone : projectOutcome.getProjectMilestones().stream()
               .filter(pm -> pm.isActive()).collect(Collectors.toList())) {
               projectMilestones.add(projectMilestone);
