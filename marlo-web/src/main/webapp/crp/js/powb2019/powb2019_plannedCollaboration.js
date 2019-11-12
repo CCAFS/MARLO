@@ -46,7 +46,7 @@ $(document).ready(function() {
 
 function attachEvents() {
 
-  setViewMores();
+  // setViewMores();
 
   // addFlagshipAutoComplete();
 
