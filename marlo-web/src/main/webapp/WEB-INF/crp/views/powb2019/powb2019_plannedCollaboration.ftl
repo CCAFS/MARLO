@@ -2,7 +2,11 @@
 [#assign title = "POWB Synthesis" /]
 [#assign currentSectionString = "powb-${actionName?replace('/','-')}-${liaisonInstitutionID}" /]
 [#assign pageLibs = [ "select2", "flat-flags", "datatables.net", "datatables.net-bs" ] /]
-[#assign customJS = [ "${baseUrlMedia}/js/powb2019/powb2019_plannedCollaboration.js?20181119" ] /]
+[#assign customJS = [ 
+  "${baseUrlMedia}/js/powb2019/powb2019_global.js?20181119",
+  "${baseUrlMedia}/js/powb2019/powb2019_plannedCollaboration.js?20181119"
+  ] 
+/]
 [#assign customCSS = [ "${baseUrlMedia}/css/powb/powbGlobal.css" ] /]
 [#assign currentSection = "synthesis" /]
 [#assign currentStage = "plannedCollaborations" /]
@@ -40,64 +44,66 @@
         <h3 class="headTitle">[@s.text name="collaborationIntegration.titlepowb2019"][@s.param]${(actualPhase.year)!}[/@s.param][/@s.text]</h3>
        
         <div class="borderBox"> 
-          [#if PMU]            
+          [#-- 
+          [#if PMU]
             <div class="form-group">
               [#if PMU][@utilities.tag label="powb.docBadge" tooltip="powb.docBadge.tooltip"/][/#if]
               <h4 class="subTitle headTitle">[@s.text name="collaborationIntegration.listCollaborations.titlepowb2019"][@s.param]${(actualPhase.year)!}[/@s.param][/@s.text]</h4>
               <div class="form-group">
                 [@tableOverallCRPCollaborationsMacro name="powbSynthesis.collaboration" crpPrograms=crpPrograms /]
-              </div>
-                 
+              </div> 
             </div>
           [/#if]
+           --]
           
           [#-- Table 2C: Major planned new collaborations --]
-          [#if flagship]
-            <div class="form-group">
-              <h4 class="subTitle headTitle powb-table">[@s.text name="collaborationIntegration.listCollaborations.titlepowb2019"][@s.param]${(actualPhase.year)!}[/@s.param][/@s.text]</h4>
-              [@customForm.helpLabel name="collaborationIntegration.listCollaborations.titlepowb2019.help" paramText="" showIcon=false editable=editable/]
-              <div class="listProgramCollaborations">
-               [#if powbSynthesis.powbCollaborationGlobalUnitsList?has_content]
-                [#list powbSynthesis.powbCollaborationGlobalUnitsList as collaboration]
-                  [@flagshipCollaborationMacro element=collaboration name="powbSynthesis.powbCollaborationGlobalUnitsList" index=collaboration_index  isEditable=editable/]
-                [/#list]
+          <div class="form-group">
+            [#if PMU][@utilities.tag label="powb.docBadge" tooltip="powb.docBadge.tooltip"/][/#if]
+            <h4 class="subTitle headTitle powb-table">[@s.text name="collaborationIntegration.listCollaborations.titlepowb2019"][@s.param]${(actualPhase.year)!}[/@s.param][/@s.text]</h4>
+            [@customForm.helpLabel name="collaborationIntegration.listCollaborations.titlepowb2019.help" paramText="" showIcon=false editable=editable/]
+            <div class="listProgramCollaborations">
+              [#assign collaboratorsList = (powbSynthesis.powbCollaborationGlobalUnitsList)![]]
+              [#if PMU]
+                [#assign collaboratorsList = ((globalUnitCollaborations)![]) + collaboratorsList]
+              [/#if]
+              [#list collaboratorsList as collaboration]
+                [@flagshipCollaborationMacro element=collaboration name="powbSynthesis.powbCollaborationGlobalUnitsList" index=collaboration_index  isEditable=editable/]
               [#else]
-                [#if !editable] <i>No Collaborations added</i> [/#if]
-               [/#if]
-              </div>
-              [#if canEdit && editable]
-              <div class="text-right">
-                <div class="addProgramCollaboration bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> [@s.text name="form.buttons.addProgramCollaborationOrNonCgiar"/]</div>
-              </div> 
-              [/#if]
-              
-              [#-- Request institution adition --]
-              [#if editable]
-              <br />
-              <p id="addPartnerText" class="helpMessage">
-                [@s.text name="global.addInstitutionMessage" /]
-                <a class="popup" href="[@s.url namespace="/projects" action='${crpSession}/partnerSave' ][@s.param name='powbSynthesisID']${(powbSynthesis.id)!}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
-                  [@s.text name="projectPartners.addPartnerMessage.second" /]
-                </a>
-              </p> 
-              [/#if]
-              
-            
-              
-              [#-- Hidden: Global Unit list for Select2 widget --]
-              <ul style="display:none">
-                [#list globalUnits as globalUnit]
-                  <li id="globalUnit-${globalUnit.id}">
-                    <strong>${(globalUnit.acronym)!}</strong>
-                    <span class="pull-right"><i>(${globalUnit.globalUnitType.name})</i> </span>
-                    <p>${(globalUnit.name)!}</p>
-                  </li>
-                [/#list]
-              </ul>
-              
+                [#if !editable]<i>No Collaborations added</i>[/#if]
+              [/#list]
             </div>
-          [/#if]          
+            [#if canEdit && editable]
+            <div class="text-right">
+              <div class="addProgramCollaboration bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> [@s.text name="form.buttons.addProgramCollaborationOrNonCgiar"/]</div>
+            </div> 
+            [/#if]
+            
+            [#-- Request institution adition --]
+            [#if editable]
+            <br />
+            <p id="addPartnerText" class="helpMessage">
+              [@s.text name="global.addInstitutionMessage" /]
+              <a class="popup" href="[@s.url namespace="/projects" action='${crpSession}/partnerSave' ][@s.param name='powbSynthesisID']${(powbSynthesis.id)!}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
+                [@s.text name="projectPartners.addPartnerMessage.second" /]
+              </a>
+            </p> 
+            [/#if]
+            
           
+            
+            [#-- Hidden: Global Unit list for Select2 widget --]
+            <ul style="display:none">
+              [#list globalUnits as globalUnit]
+                <li id="globalUnit-${globalUnit.id}">
+                  <strong>${(globalUnit.acronym)!}</strong>
+                  <span class="pull-right"><i>(${globalUnit.globalUnitType.name})</i> </span>
+                  <p>${(globalUnit.name)!}</p>
+                </li>
+              [/#list]
+            </ul>
+            
+          </div> 
+            
           [#-- Projects Key Partner --]
           <div class="form-group">
             <br />
@@ -127,14 +133,17 @@
 [#macro flagshipCollaborationMacro element name index template=false isEditable=true]
   [#local customName = "${name}[${index}]" /]
   <div id="flagshipCollaboration-${template?string('template', index)}" class="flagshipCollaboration borderBox form-group" style="position:relative; display:${template?string('none','block')}">
-
+    
     [#-- Index --]
     <div class="leftHead blue sm"><span class="index">${index+1}</span></div>
     [#-- Remove Button --]
     [#if isEditable]<div class="removeProgramCollaboration removeElement sm" title="Remove"></div>[/#if]
     [#-- Hidden inputs --]
     <input type="hidden" name="${customName}.id" value="${(element.id)!}"/> 
+    
     <br />
+    [#local addedBy = (element.powbSynthesis.liaisonInstitution.crpProgram.acronym)!"" ]
+    [#if addedBy?has_content && PMU]<i class="pull-right">Added by ${addedBy}</i>[/#if]
     
     <div class="form-group">
       <label>[@s.text name="powbSynthesis.programCollaboration.collaboratorType" /]:[@customForm.req required=editable  /]</label><br />
@@ -148,16 +157,16 @@
     
     [#-- CRP/Platform --] 
     <div class="form-group collaboratorType collaboratorType-1" style="display:${((element.collaboratorType == 1)!false)?string("block", "none")}"> 
-      [@customForm.select name="${customName}.globalUnit.id" label="" keyFieldName="id"  displayFieldName="acronymValid" i18nkey="powbSynthesis.programCollaboration.globalUnit" listName="globalUnits"  required=true  className="globalUnitSelect" editable=isEditable/]
+      [@customForm.select name="${customName}.globalUnit.id" value="${(element.globalUnit.id)!-1}" label="" keyFieldName="id"  displayFieldName="acronymValid" i18nkey="powbSynthesis.programCollaboration.globalUnit" listName="globalUnits"  required=true  className="globalUnitSelect" editable=isEditable/]
     </div>
     [#-- Institution --]
     <div class="form-group collaboratorType collaboratorType-2" style="display:${((element.collaboratorType == 2)!false)?string("block", "none")}">
-      [@customForm.select name="${customName}.institution.id" label="" keyFieldName="id"  displayFieldName="composedName" i18nkey="powbSynthesis.programCollaboration.institution" listName="institutions"  required=true  className="institutionsSelect" editable=isEditable/]
+      [@customForm.select name="${customName}.institution.id" value="${(element.institution.id)!-1}" label="" keyFieldName="id"  displayFieldName="composedName" i18nkey="powbSynthesis.programCollaboration.institution" listName="institutions"  required=true  className="institutionsSelect" editable=isEditable/]
     </div>
     
     [#-- Brief Description --] 
     <div class="form-group"> 
-      [@customForm.textArea name="${customName}.brief" i18nkey="powbSynthesis.programCollaboration.brief" help="powbSynthesis.programCollaboration.brief.help" placeholder="" className="" required=true editable=isEditable /]
+      [@customForm.textArea name="${customName}.brief" value="${(element.brief)!}" i18nkey="powbSynthesis.programCollaboration.brief" help="powbSynthesis.programCollaboration.brief.help" placeholder="" className="" required=true editable=isEditable /]
     </div>
     
   </div>
@@ -210,7 +219,7 @@
 [/#macro]
 
 [#macro projectsKeyPartnershipsTable name="" list=["",""]]
-  <table class="annual-report-table table-border">
+  <table class="table annual-report-table table-border">
     <thead>
       <tr class="subHeader">
         <th class="col-md-1"> Project</th>
