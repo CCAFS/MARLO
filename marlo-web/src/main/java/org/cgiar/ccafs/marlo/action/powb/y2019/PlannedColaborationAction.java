@@ -1058,24 +1058,10 @@ public class PlannedColaborationAction extends BaseAction {
               .filter(co -> co.isActive() && co.getPhase().getId().equals(phase.getId())).collect(Collectors.toList());
 
             if (projectPartnersList != null && !projectPartnersList.isEmpty()) {
-              /*
-               * if (isCgiar) {
-               * partnershipsSynt.getPartners().addAll(
-               * projectPartnersList.stream().filter(c -> c.getInstitution().getInstitutionType().getId().equals(3L))
-               * .collect(Collectors.toList()));
-               * } else {
-               * partnershipsSynt.getPartners()
-               * .addAll(projectPartnersList.stream()
-               * .filter(c -> !c.getInstitution().getInstitutionType().getId().equals(3L))
-               * .collect(Collectors.toList()));
-               * }
-               */
-
               // Get all partners
               partnershipsSynt.getPartners().addAll(projectPartnersList);
             }
             partnershipsSynthesis.add(partnershipsSynt);
-
           }
         }
 
@@ -1084,13 +1070,11 @@ public class PlannedColaborationAction extends BaseAction {
         LOG.error("Error getting partnerships list: " + e.getMessage());
       }
 
-
     }
     if (partnershipsSynthesis != null && !partnershipsSynthesis.isEmpty()) {
       partnershipsSynthesis = partnershipsSynthesis.stream()
         .sorted((p1, p2) -> p1.getProject().getId().compareTo(p2.getProject().getId())).collect(Collectors.toList());
     }
-    System.out.println("partnershipsSynthesis " + partnershipsSynthesis.size());
     return partnershipsSynthesis;
   }
 
@@ -1214,10 +1198,8 @@ public class PlannedColaborationAction extends BaseAction {
       }
 
       Collection<String> messages = this.getActionMessages();
-      // this.setInvalidFields(new HashMap<>());
       if (!this.getInvalidFields().isEmpty()) {
         this.setActionMessages(null);
-        // this.addActionMessage(Map.toString(this.getInvalidFields().toArray()));
         List<String> keys = new ArrayList<String>(this.getInvalidFields().keySet());
         for (String key : keys) {
           this.addActionMessage(key + ": " + this.getInvalidFields().get(key));
