@@ -143,7 +143,7 @@
     
     <br />
     [#local addedBy = (element.powbSynthesis.liaisonInstitution.crpProgram.acronym)!"" ]
-    [#if addedBy?has_content && PMU]<i class="pull-right">Added by ${addedBy}</i>[/#if]
+    [#if addedBy?has_content && PMU] <small></small>  <i class="pull-right">Added by ${addedBy}</i>[/#if]
     
     <div class="form-group">
       <label>[@s.text name="powbSynthesis.programCollaboration.collaboratorType" /]:[@customForm.req required=editable  /]</label><br />
