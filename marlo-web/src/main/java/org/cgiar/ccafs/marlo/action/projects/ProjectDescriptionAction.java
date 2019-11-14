@@ -1056,6 +1056,11 @@ public class ProjectDescriptionAction extends BaseAction {
               projectCenterOutcome = projectCenterOutcomeManager.saveProjectCenterOutcome(projectCenterOutcome);
               // This add centerOutcome to generate correct auditlog.
               project.getProjectCenterOutcomes().add(projectCenterOutcome);
+            } else {
+              // update or reply info
+              ProjectCenterOutcome ProjectCenterOutcomeDB =
+                projectCenterOutcomeManager.getProjectCenterOutcomeById(projectCenterOutcome.getId());
+              projectCenterOutcome = projectCenterOutcomeManager.saveProjectCenterOutcome(ProjectCenterOutcomeDB);
             }
           }
 

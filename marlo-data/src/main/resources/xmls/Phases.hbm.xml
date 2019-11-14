@@ -623,5 +623,12 @@
       </key>
       <one-to-many class="org.cgiar.ccafs.marlo.data.model.DeliverableUserPartnership" />
     </set>
+    <set name="projectCenterOutcomes" table="project_center_outcomes" inverse="true"
+      order-by="id" lazy="true" fetch="select">
+      <key>
+        <column name="id_phase" not-null="true" />
+      </key>
+      <one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectCenterOutcome" />
+    </set>
   </class>
 </hibernate-mapping>
