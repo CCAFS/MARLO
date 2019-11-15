@@ -62,10 +62,14 @@ public class ProjectCenterOutcomeManagerImpl implements ProjectCenterOutcomeMana
   public void deleteProjectCenterOutcomePhase(Phase next, long projectCenterOutcomeID,
     ProjectCenterOutcome projectCenterOutcome) {
     Phase phase = phaseDAO.find(next.getId());
-    List<ProjectCenterOutcome> projectCenterOutcomeList = phase.getProjectCenterOutcomes().stream()
-      .filter(c -> c.isActive() && c.getProject().getId() == projectCenterOutcome.getProject().getId()
-        && c.getCenterOutcome().getId() == projectCenterOutcome.getCenterOutcome().getId())
-      .collect(Collectors.toList());
+    List<ProjectCenterOutcome> projectCenterOutcomeList = projectCenterOutcomeDAO.getProjectCenterOutcomeByPhase(
+      next.getId(), projectCenterOutcome.getProject().getId(), projectCenterOutcome.getCenterOutcome().getId());
+    projectCenterOutcomeList =
+      projectCenterOutcomeList.stream()
+        .filter(c -> c.isActive()
+          && c.getProject().getId().longValue() == projectCenterOutcome.getProject().getId().longValue()
+          && c.getCenterOutcome().getId().longValue() == projectCenterOutcome.getCenterOutcome().getId().longValue())
+        .collect(Collectors.toList());
     for (ProjectCenterOutcome projectCenterOutcomeDB : projectCenterOutcomeList) {
       projectCenterOutcomeDAO.deleteProjectCenterOutcome(projectCenterOutcomeDB.getId());
     }
@@ -93,10 +97,21 @@ public class ProjectCenterOutcomeManagerImpl implements ProjectCenterOutcomeMana
     return projectCenterOutcomeDAO.find(projectCenterOutcomeID);
   }
 
+  @Override
+  public List<ProjectCenterOutcome> getProjectCenterOutcomeByPhase(Long phaseID, Long ProjectID, Long centerOutcomeID) {
+    return projectCenterOutcomeDAO.getProjectCenterOutcomeByPhase(phaseID, ProjectID, centerOutcomeID);
+  }
+
   public void saveInfoPhase(Phase next, long projectCenterOutcomeID, ProjectCenterOutcome projectCenterOutcome) {
     Phase phase = phaseDAO.find(next.getId());
-    List<ProjectCenterOutcome> projectCenterOutcomeList = phase.getProjectCenterOutcomes().stream()
-      .filter(c -> c.isActive() && c.getId().longValue() == projectCenterOutcomeID).collect(Collectors.toList());
+    List<ProjectCenterOutcome> projectCenterOutcomeList = projectCenterOutcomeDAO.getProjectCenterOutcomeByPhase(
+      next.getId(), projectCenterOutcome.getProject().getId(), projectCenterOutcome.getCenterOutcome().getId());
+    projectCenterOutcomeList =
+      projectCenterOutcomeList.stream()
+        .filter(c -> c.isActive()
+          && c.getProject().getId().longValue() == projectCenterOutcome.getProject().getId().longValue()
+          && c.getCenterOutcome().getId().longValue() == projectCenterOutcome.getCenterOutcome().getId().longValue())
+        .collect(Collectors.toList());
     if (projectCenterOutcomeList.isEmpty()) {
       ProjectCenterOutcome projectCenterOutcomeAdd = new ProjectCenterOutcome();
       projectCenterOutcomeAdd.setProject(projectCenterOutcome.getProject());
