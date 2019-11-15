@@ -19,7 +19,9 @@ package org.cgiar.ccafs.marlo.data.dao.mysql;
 import org.cgiar.ccafs.marlo.data.dao.ProjectCenterOutcomeDAO;
 import org.cgiar.ccafs.marlo.data.model.ProjectCenterOutcome;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -27,7 +29,8 @@ import javax.inject.Named;
 import org.hibernate.SessionFactory;
 
 @Named
-public class ProjectCenterOutcomeMySQLDAO extends AbstractMarloDAO<ProjectCenterOutcome, Long> implements ProjectCenterOutcomeDAO {
+public class ProjectCenterOutcomeMySQLDAO extends AbstractMarloDAO<ProjectCenterOutcome, Long>
+  implements ProjectCenterOutcomeDAO {
 
 
   @Inject
@@ -67,6 +70,28 @@ public class ProjectCenterOutcomeMySQLDAO extends AbstractMarloDAO<ProjectCenter
     }
     return null;
 
+  }
+
+  @Override
+  public List<ProjectCenterOutcome> getProjectCenterOutcomeByPhase(Long phaseID, Long projectID, Long centerOutcome) {
+    StringBuilder query = new StringBuilder();
+    query.append("SELECT project_center_outcomes.id as projectCenterOutcomeId FROM project_center_outcomes ");
+    query.append("INNER JOIN phases ON project_center_outcomes.id_phase = phases.id ");
+    query.append("WHERE project_id = ");
+    query.append(projectID);
+    query.append(" AND center_outcome_id = ");
+    query.append(centerOutcome);
+    query.append(" AND phases.id = ");
+    query.append(phaseID);
+    List<Map<String, Object>> list = super.findCustomQuery(query.toString());
+    List<ProjectCenterOutcome> ProjectCenterOutcomes = new ArrayList<ProjectCenterOutcome>();
+    for (Map<String, Object> map : list) {
+      String projectCenterOutcomeId = map.get("projectCenterOutcomeId").toString();
+      long longProjectCenterOutcomeId = Long.parseLong(projectCenterOutcomeId);
+      ProjectCenterOutcome projectCenterOutcome = this.find(longProjectCenterOutcomeId);
+      ProjectCenterOutcomes.add(projectCenterOutcome);
+    }
+    return ProjectCenterOutcomes;
   }
 
   @Override
