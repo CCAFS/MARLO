@@ -470,14 +470,16 @@ public class PlannedColaborationAction extends BaseAction {
   public void globaUnitsPreviousData(List<PowbCollaborationGlobalUnit> powbCollaborationGlobalUnits) {
 
     List<PowbCollaborationGlobalUnit> globlalUnitsPrev;
-    List<PowbCollaborationGlobalUnit> globlalUnitsPrevAll;
 
     globlalUnitsPrev =
       powbSynthesisBD.getPowbCollaborationGlobalUnits().stream().filter(a -> a.isActive()).collect(Collectors.toList());
 
     // Get prev list of FP collaborations global unit
-    globlalUnitsPrev.addAll(globalUnitCollaborations);
-
+    if (this.isPMU()) {
+      if (globalUnitCollaborations != null) {
+        globlalUnitsPrev.addAll(globalUnitCollaborations);
+      }
+    }
     for (PowbCollaborationGlobalUnit powbCollaborationGlobalUnit : globlalUnitsPrev) {
       if (!powbCollaborationGlobalUnits.contains(powbCollaborationGlobalUnit)) {
         powbCollaborationGlobalUnitManager.deletePowbCollaborationGlobalUnit(powbCollaborationGlobalUnit.getId());
