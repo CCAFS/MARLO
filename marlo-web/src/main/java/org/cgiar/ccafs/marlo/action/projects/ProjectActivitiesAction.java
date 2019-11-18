@@ -57,6 +57,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
@@ -65,7 +67,7 @@ public class ProjectActivitiesAction extends BaseAction {
 
 
   private static final long serialVersionUID = 2146101620783927003L;
-
+  private final Logger logger = LoggerFactory.getLogger(ProjectActivitiesAction.class);
   // Variables
   private ProjectActivitiesValidator activitiesValidator;
   private HistoryComparator historyComparator;
@@ -231,12 +233,15 @@ public class ProjectActivitiesAction extends BaseAction {
           project.getActivities().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
         for (Activity activity : project.getProjectActivities()) {
           int[] index = new int[1];
-          index[0] = i;
-          differences.addAll(historyComparator.getDifferencesList(activity, transaction, specialList,
-            "project.projectActivities[" + i + "]", "project", 1));
-          i++;
-
-
+          // fix dperez 2019-11-18
+          try {
+            index[0] = i;
+            differences.addAll(historyComparator.getDifferencesList(activity, transaction, specialList,
+              "project.projectActivities[" + i + "]", "project", 1));
+            i++;
+          } catch (Exception e) {
+            logger.error("Error getting differences between audilog ");
+          }
           if (activity.getDeliverableActivities() != null && !activity.getDeliverableActivities().isEmpty()) {
             for (DeliverableActivity deliverableActivity : activity.getDeliverableActivities()) {
               if (deliverableActivity.getDeliverable() != null
