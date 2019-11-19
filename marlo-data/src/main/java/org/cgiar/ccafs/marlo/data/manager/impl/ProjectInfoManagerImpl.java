@@ -267,8 +267,12 @@ public class ProjectInfoManagerImpl implements ProjectInfoManager {
             deliverableManager.copyDeliverable(deliverableInfo.getDeliverable(), phase);
 
             if (deliverable.getResponsiblePartnership() != null) {
-              deliverableUserPartnershipManager
-                .copyDeliverableUserPartnership(deliverable.getResponsiblePartnership().get(0), phase);
+              // dperez validate list if has data. 2019-11-19
+              if (deliverable.getResponsiblePartnership().size() > 0) {
+                deliverableUserPartnershipManager
+                  .copyDeliverableUserPartnership(deliverable.getResponsiblePartnership().get(0), phase);
+              }
+
             }
 
 
