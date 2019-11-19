@@ -955,11 +955,10 @@ public class PlannedBudgetAction extends BaseAction {
       PowbSynthesis powbSynthesis = powbSynthesisManager.findSynthesis(phaseID, liaisonInstitution.getId());
       if (powbSynthesis != null) {
         if (powbSynthesis.getFinancialPlan() != null) {
-          if (powbSynthesis.getFinancialPlan().getFinancialPlanIssues() != null) {
+          if (powbSynthesis.getFinancialPlan().getFinancialPlanIssues() != null
+            || !powbSynthesis.getFinancialPlan().getFinancialPlanIssues().isEmpty()
+            || !powbSynthesis.getFinancialPlan().getFinancialPlanIssues().equals("")) {
             powbTocList.setOverall(powbSynthesis.getFinancialPlan().getFinancialPlanIssues());
-          }
-          if (powbSynthesis.getFinancialPlan().getAdditionalExplanationT3() != null) {
-            powbTocList.setOverall(powbSynthesis.getFinancialPlan().getAdditionalExplanationT3());
           }
         }
       }
