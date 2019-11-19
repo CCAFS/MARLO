@@ -126,7 +126,9 @@
         <span class="elementId">${(selectedProgram.acronym)!} - [@s.text name="global.sClusterOfActivities"/]</span>
       </div>
       [#-- Remove Button --]
-      [#if editable && action.canBeDeleted((cluster.id)!-1,(cluster.class.name)!"" )]
+      [#local canDeleteCluster = action.canBeDeleted((cluster.id)!-1, (cluster.class.name)!"" ) /]
+      [#if editable && canDeleteCluster]
+       
         <div class="removeElement removeCluster" title="Remove [@s.text name="global.sClusterOfActivities"/]"></div>
       [#elseif editable]
         <div class="removeElement disable" title="[@s.text name="global.sClusterOfActivities"/] can not be deleted "></div>
@@ -213,7 +215,8 @@
 [#macro keyOutputItem element index name  isTemplate=false]
   [#local customName = "${name}[${index}]" /]
   <div id="keyOutput-${isTemplate?string('template',(element.id)!)}" class="keyOutputItem expandableBlock borderBox"  style="display:${isTemplate?string('none','block')}">
-    [#if editable && action.canBeDeleted((element.id)!-1,(element.class.name)!"" )] [#--&& (isTemplate) --]
+    [#local canDeleteClusterActivity = action.canBeDeleted((element.id)!-1,(element.class.name)!"" ) /]
+    [#if editable && canDeleteClusterActivity] [#--&& (isTemplate) --]
       <div class="removeLink">
         <div id="removeActivity" class="removeKeyOutput removeElement removeLink" title="[@s.text name='cluster.removeKeyOutput' /]"></div>
       </div>
