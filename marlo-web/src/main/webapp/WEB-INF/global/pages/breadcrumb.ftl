@@ -16,7 +16,7 @@
       </li> 
     [/#list]
   [/#if]
-  [#if action.getUsersOnline()??]
+  
   <div class="usersInfo">
     [#-- 
       [#assign users = action.getUsersOnline()]
@@ -38,6 +38,5 @@
     <span id="user-badge-template" class="user-badge" style="display:none">{}</span>
     
   </div>
-  [/#if]
 </ol>
 [/#if]
