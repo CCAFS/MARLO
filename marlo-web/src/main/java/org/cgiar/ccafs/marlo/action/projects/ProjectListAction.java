@@ -99,6 +99,7 @@ public class ProjectListAction extends BaseAction {
   private List<Project> allProjects;
   private List<Project> centerProjects;
   private List<Project> closedProjects;
+  private List<Project> allCenterProjects;
   private String filterBy;
 
   @Inject
@@ -455,6 +456,10 @@ public class ProjectListAction extends BaseAction {
   }
 
 
+  public List<Project> getAllCenterProjects() {
+    return allCenterProjects;
+  }
+
   public List<Project> getAllProjects() {
     return allProjects;
   }
@@ -467,19 +472,19 @@ public class ProjectListAction extends BaseAction {
     return closedProjects;
   }
 
+
   public String getFilterBy() {
     return filterBy;
   }
-
 
   public List<Project> getMyProjects() {
     return myProjects;
   }
 
+
   public long getProjectID() {
     return projectID;
   }
-
 
   public void leadCenterProjects() {
 
@@ -516,6 +521,7 @@ public class ProjectListAction extends BaseAction {
     }
   }
 
+
   /**
    * load the flagships and regions for each project on list
    * 
@@ -551,7 +557,6 @@ public class ProjectListAction extends BaseAction {
     }
   }
 
-
   public void loadFlagshipgsAndRegionsCurrentPhase(List<Project> list) {
     for (Project project : list) {
 
@@ -565,6 +570,7 @@ public class ProjectListAction extends BaseAction {
 
     }
   }
+
 
   @Override
   public void prepare() throws Exception {
@@ -649,6 +655,7 @@ public class ProjectListAction extends BaseAction {
     }
 
     if (this.isCenterGlobalUnit()) {
+      allCenterProjects = new ArrayList<Project>();
       this.leadCenterProjects();
       this.loadFlagshipgsAndRegionsCurrentPhase(centerProjects);
 
@@ -672,6 +679,9 @@ public class ProjectListAction extends BaseAction {
       } else {
         allProjects.addAll(centerProjects);
       }
+      allCenterProjects.addAll(myProjects);
+      allCenterProjects.addAll(allProjects);
+
 
       // myProjects.addAll(centerProjects);
     }
@@ -682,28 +692,39 @@ public class ProjectListAction extends BaseAction {
 
       SimpleDateFormat dateFormat = new SimpleDateFormat("y");
 
-      myProjects = myProjects.stream()
-        .filter(mp -> mp.isActive() && mp.getProjecInfoPhase(this.getActualPhase()) != null
-          && (mp.getProjecInfoPhase(this.getActualPhase()).getEndDate() == null
-            || Integer.parseInt(dateFormat.format(mp.getProjecInfoPhase(this.getActualPhase()).getEndDate())) >= this
-              .getCurrentCycleYear()))
-        .collect(Collectors.toList());
+      myProjects =
+        myProjects.stream()
+          .filter(
+            mp -> mp.isActive() && mp.getProjecInfoPhase(this.getActualPhase()) != null
+              && (mp.getProjecInfoPhase(this.getActualPhase()).getEndDate() == null || Integer.parseInt(dateFormat
+                .format(mp.getProjecInfoPhase(this.getActualPhase()).getEndDate())) >= this.getCurrentCycleYear()))
+          .collect(Collectors.toList());
 
 
-      allProjects = allProjects.stream()
-        .filter(mp -> mp.isActive() && mp.getProjecInfoPhase(this.getActualPhase()) != null
-          && (mp.getProjecInfoPhase(this.getActualPhase()).getEndDate() == null
-            || Integer.parseInt(dateFormat.format(mp.getProjecInfoPhase(this.getActualPhase()).getEndDate())) >= this
-              .getCurrentCycleYear()))
-        .collect(Collectors.toList());
+      allProjects =
+        allProjects.stream()
+          .filter(
+            mp -> mp.isActive() && mp.getProjecInfoPhase(this.getActualPhase()) != null
+              && (mp.getProjecInfoPhase(this.getActualPhase()).getEndDate() == null || Integer.parseInt(dateFormat
+                .format(mp.getProjecInfoPhase(this.getActualPhase()).getEndDate())) >= this.getCurrentCycleYear()))
+          .collect(Collectors.toList());
 
 
-      closedProjects = closedProjects.stream()
-        .filter(mp -> mp.isActive() && mp.getProjecInfoPhase(this.getActualPhase()) != null
-          && (mp.getProjecInfoPhase(this.getActualPhase()).getEndDate() == null
-            || Integer.parseInt(dateFormat.format(mp.getProjecInfoPhase(this.getActualPhase()).getEndDate())) >= this
-              .getCurrentCycleYear()))
-        .collect(Collectors.toList());
+      closedProjects =
+        closedProjects.stream()
+          .filter(
+            mp -> mp.isActive() && mp.getProjecInfoPhase(this.getActualPhase()) != null
+              && (mp.getProjecInfoPhase(this.getActualPhase()).getEndDate() == null || Integer.parseInt(dateFormat
+                .format(mp.getProjecInfoPhase(this.getActualPhase()).getEndDate())) >= this.getCurrentCycleYear()))
+          .collect(Collectors.toList());
+
+      allCenterProjects =
+        allCenterProjects.stream()
+          .filter(
+            mp -> mp.isActive() && mp.getProjecInfoPhase(this.getActualPhase()) != null
+              && (mp.getProjecInfoPhase(this.getActualPhase()).getEndDate() == null || Integer.parseInt(dateFormat
+                .format(mp.getProjecInfoPhase(this.getActualPhase()).getEndDate())) >= this.getCurrentCycleYear()))
+          .collect(Collectors.toList());
     }
 
     // closedProjects.sort((p1, p2) -> p1.getStatus().compareTo(p2.getStatus()));
@@ -717,6 +738,10 @@ public class ProjectListAction extends BaseAction {
     return SUCCESS;
   }
 
+  public void setAllCenterProjects(List<Project> allCenterProjects) {
+    this.allCenterProjects = allCenterProjects;
+  }
+
 
   public void setAllProjects(List<Project> allProjects) {
     this.allProjects = allProjects;
@@ -726,10 +751,10 @@ public class ProjectListAction extends BaseAction {
     this.centerProjects = centerProjects;
   }
 
-
   public void setClosedProjects(List<Project> closedProjects) {
     this.closedProjects = closedProjects;
   }
+
 
   public void setFilterBy(String filterBy) {
     this.filterBy = filterBy;
@@ -744,11 +769,13 @@ public class ProjectListAction extends BaseAction {
     this.projectID = projectID;
   }
 
+
   @Override
   public void validate() {
     if (save) {
 
     }
   }
+
 
 }

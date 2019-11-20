@@ -50,9 +50,10 @@
         [#-- ID --]
         <td class="text-center">
           <a href="${projectUrl}"> P${project.id}</a>
-          [#if centerGlobalUnit && isCrpProject ]
+          [#if centerGlobalUnit]
             <span class="badge globalUnitTag"> ${(project.projectInfo.phase.crp.acronym)!} </span>
           [/#if]
+          
         </td>
           [#-- Project Title --]
           <td class="left">
