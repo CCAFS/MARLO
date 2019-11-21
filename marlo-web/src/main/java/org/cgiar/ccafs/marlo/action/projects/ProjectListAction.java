@@ -17,6 +17,7 @@ package org.cgiar.ccafs.marlo.action.projects;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.CrpProgramLeaderManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
@@ -29,6 +30,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
+import org.cgiar.ccafs.marlo.data.model.CrpProgramLeader;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnitProject;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
@@ -36,6 +38,7 @@ import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
+import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
 import org.cgiar.ccafs.marlo.data.model.ProjectInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
 import org.cgiar.ccafs.marlo.data.model.ProjectPhase;
@@ -94,12 +97,15 @@ public class ProjectListAction extends BaseAction {
 
   private ProjectPartnerManager projectPartnerManager;
 
+  private CrpProgramLeaderManager crpProgramLeaderManager;
+
   // Front-end
   private List<Project> myProjects;
   private List<Project> allProjects;
   private List<Project> centerProjects;
   private List<Project> closedProjects;
   private List<Project> allCenterProjects;
+  private List<Project> allNotCenterProjects;
   private String filterBy;
 
   @Inject
@@ -107,7 +113,8 @@ public class ProjectListAction extends BaseAction {
     LiaisonUserManager liaisonUserManager, LiaisonInstitutionManager liaisonInstitutionManager,
     ProjectPhaseManager projectPhaseManager, PhaseManager phaseManager, ProjectInfoManager projectInfoManager,
     ProjectBudgetManager projectBudgetManager, GlobalUnitProjectManager globalUnitProjectManager,
-    SectionStatusManager sectionStatusManager, ProjectPartnerManager projectPartnerManager) {
+    SectionStatusManager sectionStatusManager, ProjectPartnerManager projectPartnerManager,
+    CrpProgramLeaderManager crpProgramLeaderManager) {
     super(config);
     this.projectManager = projectManager;
     this.crpManager = crpManager;
@@ -120,6 +127,7 @@ public class ProjectListAction extends BaseAction {
     this.projectBudgetManager = projectBudgetManager;
     this.globalUnitProjectManager = globalUnitProjectManager;
     this.projectPartnerManager = projectPartnerManager;
+    this.crpProgramLeaderManager = crpProgramLeaderManager;
   }
 
   public String addAdminProject() {
@@ -460,6 +468,10 @@ public class ProjectListAction extends BaseAction {
     return allCenterProjects;
   }
 
+  public List<Project> getAllNotCenterProjects() {
+    return allNotCenterProjects;
+  }
+
   public List<Project> getAllProjects() {
     return allProjects;
   }
@@ -468,23 +480,24 @@ public class ProjectListAction extends BaseAction {
     return centerProjects;
   }
 
+
   public List<Project> getClosedProjects() {
     return closedProjects;
   }
-
 
   public String getFilterBy() {
     return filterBy;
   }
 
+
   public List<Project> getMyProjects() {
     return myProjects;
   }
 
-
   public long getProjectID() {
     return projectID;
   }
+
 
   public void leadCenterProjects() {
 
@@ -521,7 +534,6 @@ public class ProjectListAction extends BaseAction {
     }
   }
 
-
   /**
    * load the flagships and regions for each project on list
    * 
@@ -556,6 +568,7 @@ public class ProjectListAction extends BaseAction {
 
     }
   }
+
 
   public void loadFlagshipgsAndRegionsCurrentPhase(List<Project> list) {
     for (Project project : list) {
@@ -656,6 +669,7 @@ public class ProjectListAction extends BaseAction {
 
     if (this.isCenterGlobalUnit()) {
       allCenterProjects = new ArrayList<Project>();
+      allNotCenterProjects = new ArrayList<Project>();
       this.leadCenterProjects();
       this.loadFlagshipgsAndRegionsCurrentPhase(centerProjects);
 
@@ -681,6 +695,28 @@ public class ProjectListAction extends BaseAction {
       }
       allCenterProjects.addAll(myProjects);
       allCenterProjects.addAll(allProjects);
+      // separate information by user
+      if (!this.isRole("CRP-Admin") && !this.isRole("SuperAdmin")) {
+        // to-do separate if programs are mapped to Centers or not , program Leaders can view with privilegies
+        for (Project projects : allCenterProjects) {
+          boolean isValidate = false;
+          for (ProjectFocus projectFocus : projects.getProjectFocuses().stream()
+            .filter(c -> c.isActive() && c.getPhase().getDescription().equals(this.getActualPhase().getDescription())
+              && c.getPhase().getYear() == this.getActualPhase().getYear())
+            .collect(Collectors.toList())) {
+            CrpProgramLeader crpProgramLeader =
+              crpProgramLeaderManager.getCrpProgramLeaderByProgram(projectFocus.getCrpProgram().getId().longValue(),
+                loggedCrp.getId().longValue(), this.getCurrentUser().getId().longValue());
+            if (crpProgramLeader != null) {
+              isValidate = true;
+            }
+          }
+          if (!isValidate) {
+            allNotCenterProjects.add(projects);
+          }
+        }
+        allCenterProjects.removeAll(allNotCenterProjects);
+      }
 
 
       // myProjects.addAll(centerProjects);
@@ -732,20 +768,24 @@ public class ProjectListAction extends BaseAction {
     this.setBasePermission(this.getText(Permission.PROJECT_LIST_BASE_PERMISSION, params));
   }
 
-
   @Override
   public String save() {
     return SUCCESS;
   }
 
+
   public void setAllCenterProjects(List<Project> allCenterProjects) {
     this.allCenterProjects = allCenterProjects;
   }
 
+  public void setAllNotCenterProjects(List<Project> allNotCenterProjects) {
+    this.allNotCenterProjects = allNotCenterProjects;
+  }
 
   public void setAllProjects(List<Project> allProjects) {
     this.allProjects = allProjects;
   }
+
 
   public void setCenterProjects(List<Project> centerProjects) {
     this.centerProjects = centerProjects;
@@ -759,6 +799,7 @@ public class ProjectListAction extends BaseAction {
   public void setFilterBy(String filterBy) {
     this.filterBy = filterBy;
   }
+
 
   public void setMyProjects(List<Project> myProjects) {
     this.myProjects = myProjects;
