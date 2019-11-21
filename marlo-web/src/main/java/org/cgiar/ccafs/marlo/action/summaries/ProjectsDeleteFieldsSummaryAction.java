@@ -692,14 +692,6 @@ public class ProjectsDeleteFieldsSummaryAction extends BaseSummariesAction imple
           }
         }
 
-        if (project.getProjectInfo().getGenderAnalysis() != null) {
-          genderAnalysis = project.getProjectInfo().getGenderAnalysis();
-        }
-
-        if (project.getProjectInfo().getNewPartnershipsPlanned() != null) {
-          newPartnershipsPlanned = project.getProjectInfo().getNewPartnershipsPlanned();
-        }
-
         List<ProjectComponentLesson> pcList = new ArrayList<>();
         pcList = (projectComponentLessonManager.findAll().stream()
           .filter(p -> p.isActive() && p.getProject() == project && p.getPhase() == phase)

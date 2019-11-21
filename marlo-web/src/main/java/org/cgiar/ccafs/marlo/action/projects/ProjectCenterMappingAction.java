@@ -598,7 +598,6 @@ public class ProjectCenterMappingAction extends BaseAction {
       project.getProjectInfo().setProject(project);
       project.getProjectInfo().setReporting(projectDB.getProjectInfo().getReporting());
       project.getProjectInfo().setAdministrative(projectDB.getProjectInfo().getAdministrative());
-      project.getProjectInfo().setNewPartnershipsPlanned(projectDB.getProjectInfo().getNewPartnershipsPlanned());
       project.getProjectInfo().setLocationRegional(projectDB.getProjectInfo().getLocationRegional());
       project.getProjectInfo().setLocationGlobal(projectDB.getProjectInfo().getLocationGlobal());
       project.getProjectInfo().setLocationRegional(projectDB.getProjectInfo().getLocationRegional());

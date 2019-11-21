@@ -400,15 +400,9 @@ public class SendEmails {
       Long crpPmuRole = Long.parseLong((String) action.getSession().get(APConstants.CRP_PMU_ROLE));
       Role roleCrpPmu = roleDAO.find(crpPmuRole);
       // If Managment liason is PMU
-      if (project.getProjecInfoPhase(action.getActualPhase()).getLiaisonInstitution() != null
-        && project.getProjecInfoPhase(action.getActualPhase()).getLiaisonUser() != null) {
+      if (project.getProjecInfoPhase(action.getActualPhase()).getLiaisonInstitution() != null) {
         if (project.getProjecInfoPhase(action.getActualPhase()).getLiaisonInstitution().getAcronym()
           .equals(roleCrpPmu.getAcronym())) {
-          if (ccEmail.isEmpty()) {
-            ccEmail += project.getProjecInfoPhase(action.getActualPhase()).getLiaisonUser().getUser().getEmail();
-          } else {
-            ccEmail += ", " + project.getProjecInfoPhase(action.getActualPhase()).getLiaisonUser().getUser().getEmail();
-          }
         } else if (project.getProjecInfoPhase(action.getActualPhase()).getLiaisonInstitution() != null
           && project.getProjecInfoPhase(action.getActualPhase()).getLiaisonInstitution().getCrpProgram() != null
           && project.getProjecInfoPhase(action.getActualPhase()).getLiaisonInstitution().getCrpProgram()

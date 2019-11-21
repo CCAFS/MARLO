@@ -1462,10 +1462,6 @@ public class ProjectPartnerAction extends BaseAction {
         projectDB.getProjectInfo().setPartnerOverall(project.getProjectInfo().getPartnerOverall());
       }
 
-      if (project.getProjectInfo() != null && project.getProjectInfo().getNewPartnershipsPlanned() != null) {
-        projectDB.getProjectInfo().setNewPartnershipsPlanned(project.getProjectInfo().getNewPartnershipsPlanned());
-      }
-
       /**
        * The following is required because we need to update something on the @Project if we want a row
        * created in the auditlog table.
