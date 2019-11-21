@@ -71,6 +71,9 @@
               <h3 class="headTitle text-center">[@s.text name="projectsList.yourProjects"/]</h3>
               [@projectList.projectsList projects=allCenterProjects canValidate=true canEdit=true namespace="/projects" defaultAction="${(crpSession)!}/description" /]
               <hr/>
+              [#-- Projects List (Other Projects) --]
+              <h3 class="headTitle text-center">[@s.text name="projectsList.otherProjects" /] <br /> <small>[@s.text name="projectsList.otherProjects.help" /]</small></h3>
+              [@projectList.projectsList projects=allNotCenterProjects canValidate=true namespace="/projects" defaultAction="${(crpSession)!}/description"/]
             [/#if]
            </div>
            [#if !reportingActive]
