@@ -160,11 +160,6 @@ public class ProjectDescriptionValidator extends BaseValidator {
 
     // Validation when project is no ready for project leader
     if (project.getProjecInfoPhase(action.getActualPhase()).isProjectEditLeader()) {
-      if (!(this.isValidString(project.getProjecInfoPhase(action.getActualPhase()).getGenderAnalysis())
-        && this.wordCount(project.getProjecInfoPhase(action.getActualPhase()).getGenderAnalysis()) <= 100)) {
-        action.addMessage(action.getText("project.genderAnalysis"));
-        action.getInvalidFields().put("input-project.projectInfo.genderAnalysis", InvalidFieldsMessages.EMPTYFIELD);
-      }
 
       if (project.getProjecInfoPhase(action.getActualPhase()).getCrossCuttingGender() == null
         || project.getProjecInfoPhase(action.getActualPhase()).getCrossCuttingGender().booleanValue() == false) {

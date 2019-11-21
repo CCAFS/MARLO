@@ -57,8 +57,6 @@ public class ProjectInfo extends MarloAuditableEntity implements java.io.Seriali
   @Expose
   private String statusJustification;
   @Expose
-  private String genderAnalysis;
-  @Expose
   private Boolean crossCuttingGender;
   @Expose
   private Boolean crossCuttingYouth;
@@ -185,11 +183,6 @@ public class ProjectInfo extends MarloAuditableEntity implements java.io.Seriali
   public Date getEndDate() {
     return endDate;
   }
-
-  public String getGenderAnalysis() {
-    return genderAnalysis;
-  }
-
 
   public String getLeaderResponsabilities() {
     return leaderResponsabilities;
@@ -406,12 +399,6 @@ public class ProjectInfo extends MarloAuditableEntity implements java.io.Seriali
     this.endDate = endDate;
   }
 
-
-  public void setGenderAnalysis(String genderAnalysis) {
-    this.genderAnalysis = genderAnalysis;
-  }
-
-
   public void setLeaderResponsabilities(String leaderResponsabilities) {
     this.leaderResponsabilities = leaderResponsabilities;
   }
@@ -526,7 +513,6 @@ public class ProjectInfo extends MarloAuditableEntity implements java.io.Seriali
     this.setCrossCuttingYouth(update.getCrossCuttingYouth());
     this.setDimension(update.getDimension());
     this.setEndDate(update.getEndDate());
-    this.setGenderAnalysis(update.getGenderAnalysis());
     this.setLeaderResponsabilities(update.getLeaderResponsabilities());
     this.setLiaisonInstitution(update.getLiaisonInstitution());
     this.setLocationGlobal(update.getLocationGlobal());
