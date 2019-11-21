@@ -519,23 +519,11 @@ public class ProjectsDeleteFieldsSummaryAction extends BaseSummariesAction imple
         }
         if (project.getProjectInfo().getLiaisonInstitution() != null) {
           managementLiaison = project.getProjectInfo().getLiaisonInstitution().getComposedName();
-          if (project.getProjectInfo().getLiaisonUser() != null) {
-            managementLiaison += " - " + project.getProjectInfo().getLiaisonUser().getComposedName();
-          }
+
           managementLiaison = managementLiaison.replaceAll("<", "&lt;");
           managementLiaison = managementLiaison.replaceAll(">", "&gt;");
         }
 
-        if (project.getProjectInfo().getLiaisonUser() != null
-          && project.getProjectInfo().getLiaisonUser().getUser() != null) {
-          if (project.getProjectInfo().getLiaisonUser().getUser().getComposedName() != null) {
-            managementLiaisonContactPerson = project.getProjectInfo().getLiaisonUser().getUser().getComposedName();
-          } else if (project.getProjectInfo().getLiaisonUser().getUser().getFirstName() != null
-            && project.getProjectInfo().getLiaisonUser().getUser().getLastName() != null) {
-            managementLiaisonContactPerson = project.getProjectInfo().getLiaisonUser().getUser().getFirstName() + " "
-              + project.getProjectInfo().getLiaisonUser().getUser().getLastName();
-          }
-        }
 
         String flagships = null;
         // get Flagships related to the project sorted by acronym

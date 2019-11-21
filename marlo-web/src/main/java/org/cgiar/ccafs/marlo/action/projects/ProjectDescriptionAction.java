@@ -538,14 +538,6 @@ public class ProjectDescriptionAction extends BaseAction {
         }
 
         // load LiaisonUser info
-        if (project.getProjectInfo().getLiaisonUser() != null
-          && project.getProjectInfo().getLiaisonUser().getId() != null) {
-          project.getProjectInfo()
-            .setLiaisonUser(liaisonUserManager.getLiaisonUserById(project.getProjectInfo().getLiaisonUser().getId()));
-        } else {
-          project.getProjecInfoPhase(this.getActualPhase()).setLiaisonUser(null);
-        }
-        // load LiaisonUser info
         if (project.getProjectInfo().getLiaisonInstitution() != null) {
           project.getProjectInfo().setLiaisonInstitution(liaisonInstitutionManager
             .getLiaisonInstitutionById(project.getProjectInfo().getLiaisonInstitution().getId()));
@@ -614,13 +606,7 @@ public class ProjectDescriptionAction extends BaseAction {
         if (project.getProjectInfo() == null) {
           project.setProjectInfo(new ProjectInfo());
         }
-        if (project.getProjectInfo().getLiaisonUser() != null
-          && project.getProjectInfo().getLiaisonUser().getId() != null) {
-          project.getProjectInfo()
-            .setLiaisonUser(liaisonUserManager.getLiaisonUserById(project.getProjectInfo().getLiaisonUser().getId()));
-        } else {
-          project.getProjecInfoPhase(this.getActualPhase()).setLiaisonUser(null);
-        }
+
         // load LiaisonUser info
         if (project.getProjectInfo().getLiaisonInstitution() != null) {
           project.getProjectInfo().setLiaisonInstitution(liaisonInstitutionManager
@@ -805,7 +791,6 @@ public class ProjectDescriptionAction extends BaseAction {
       }
 
       project.getProjecInfoPhase(this.getActualPhase()).setLiaisonInstitution(null);
-      project.getProjecInfoPhase(this.getActualPhase()).setLiaisonUser(null);
 
       project.getProjectInfo().setNoRegional(null);
       project.getProjectInfo().setCrossCuttingGender(null);
@@ -877,12 +862,6 @@ public class ProjectDescriptionAction extends BaseAction {
       if (project.getProjectInfo().getLiaisonInstitution() != null) {
         if (project.getProjectInfo().getLiaisonInstitution().getId() == -1) {
           project.getProjectInfo().setLiaisonInstitution(null);
-        }
-      }
-      // no liaison user selected
-      if (project.getProjectInfo().getLiaisonUser() != null) {
-        if (project.getProjectInfo().getLiaisonUser().getId() == -1) {
-          project.getProjectInfo().setLiaisonUser(null);
         }
       }
 

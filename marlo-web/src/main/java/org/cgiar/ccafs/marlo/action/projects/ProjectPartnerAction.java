@@ -625,16 +625,8 @@ public class ProjectPartnerAction extends BaseAction {
       Long crpPmuRole = Long.parseLong((String) this.getSession().get(APConstants.CRP_PMU_ROLE));
       Role roleCrpPmu = roleManager.getRoleById(crpPmuRole);
       // If Managment liason is PMU
-      if (project.getProjecInfoPhase(this.getActualPhase()).getLiaisonInstitution() != null
-        && project.getProjecInfoPhase(this.getActualPhase()).getLiaisonUser() != null) {
-        if (project.getProjecInfoPhase(this.getActualPhase()).getLiaisonInstitution().getAcronym()
-          .equals(roleCrpPmu.getAcronym())) {
-          if (ccEmail.isEmpty()) {
-            ccEmail += project.getProjecInfoPhase(this.getActualPhase()).getLiaisonUser().getUser().getEmail();
-          } else {
-            ccEmail += ", " + project.getProjecInfoPhase(this.getActualPhase()).getLiaisonUser().getUser().getEmail();
-          }
-        } else if (project.getProjecInfoPhase(this.getActualPhase()).getLiaisonInstitution() != null
+      if (project.getProjecInfoPhase(this.getActualPhase()).getLiaisonInstitution() != null) {
+        if (project.getProjecInfoPhase(this.getActualPhase()).getLiaisonInstitution() != null
           && project.getProjecInfoPhase(this.getActualPhase()).getLiaisonInstitution().getCrpProgram() != null
           && project.getProjecInfoPhase(this.getActualPhase()).getLiaisonInstitution().getCrpProgram()
             .getProgramType() == 1) {
@@ -761,16 +753,8 @@ public class ProjectPartnerAction extends BaseAction {
       Long crpPmuRole = Long.parseLong((String) this.getSession().get(APConstants.CRP_PMU_ROLE));
       Role roleCrpPmu = roleManager.getRoleById(crpPmuRole);
       // If Managment liason is PMU
-      if (project.getProjecInfoPhase(this.getActualPhase()).getLiaisonInstitution() != null
-        && project.getProjecInfoPhase(this.getActualPhase()).getLiaisonUser() != null) {
-        if (project.getProjecInfoPhase(this.getActualPhase()).getLiaisonInstitution().getAcronym()
-          .equals(roleCrpPmu.getAcronym())) {
-          if (ccEmail.isEmpty()) {
-            ccEmail += project.getProjecInfoPhase(this.getActualPhase()).getLiaisonUser().getUser().getEmail();
-          } else {
-            ccEmail += ", " + project.getProjecInfoPhase(this.getActualPhase()).getLiaisonUser().getUser().getEmail();
-          }
-        } else if (project.getProjecInfoPhase(this.getActualPhase()).getLiaisonInstitution() != null
+      if (project.getProjecInfoPhase(this.getActualPhase()).getLiaisonInstitution() != null) {
+        if (project.getProjecInfoPhase(this.getActualPhase()).getLiaisonInstitution() != null
           && project.getProjecInfoPhase(this.getActualPhase()).getLiaisonInstitution().getCrpProgram() != null
           && project.getProjecInfoPhase(this.getActualPhase()).getLiaisonInstitution().getCrpProgram()
             .getProgramType() == 1) {

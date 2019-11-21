@@ -2975,15 +2975,8 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     }
     if (projectInfo.getLiaisonInstitution() != null) {
       ml = projectInfo.getLiaisonInstitution().getAcronym();
-    }
-    if (projectInfo.getLiaisonUser() != null) {
-      ml = projectInfo.getLiaisonUser().getLiaisonInstitution().getAcronym();
-      mlContact = projectInfo.getLiaisonUser().getComposedName() + "\n&lt;"
-        + projectInfo.getLiaisonUser().getUser().getEmail() + "&gt;";
-      if (projectInfo.getLiaisonUser() != null) {
-        mlContact = projectInfo.getLiaisonUser().getComposedName() + "\n&lt;"
-          + projectInfo.getLiaisonUser().getUser().getEmail() + "&gt;";
-      }
+
+
       // Get type from funding sources
       String type = "";
       List<String> typeList = new ArrayList<String>();
