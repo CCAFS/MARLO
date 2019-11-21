@@ -926,10 +926,6 @@ public class ProjectPartnerAction extends BaseAction {
         if (this.isLessonsActive()) {
           this.loadLessons(loggedCrp, project);
         }
-        if (project.getProjectComponentLesson() != null) {
-          differences.addAll(historyComparator.getDifferencesList(project.getProjectComponentLesson(), transaction,
-            specialList, "project.projectComponentLesson", "project", 1));
-        }
         if ((project.getProjecInfoPhase(this.getActualPhase())) != null) {
           project.setProjectInfo(project.getProjecInfoPhase(this.getActualPhase()));
         }

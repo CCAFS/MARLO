@@ -6284,9 +6284,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())
         && c.getComponentName().equals(this.getActionName().replaceAll(crp.getAcronym() + "/", "")))
       .collect(Collectors.toList());
-    if (!lessons.isEmpty()) {
-      project.setProjectComponentLesson(lessons.get(0));
-    }
+
     if (this.isReportingActive()) {
       List<ProjectComponentLesson> lessonsPreview = projectDB.getProjectComponentLessons().stream()
         .filter(c -> c.isActive() && c.getYear() == this.getActualPhase().getYear()
@@ -6308,9 +6306,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         .filter(c -> c.isActive() && c.getYear() == this.getActualPhase().getYear()
           && c.getCycle().equals(APConstants.REPORTING) && c.getComponentName().equals(actionName))
         .collect(Collectors.toList());
-      if (!lessons.isEmpty()) {
-        project.setProjectComponentLesson(lessons.get(0));
-      }
+
       List<ProjectComponentLesson> lessonsPreview = projectDB.getProjectComponentLessons().stream()
         .filter(c -> c.isActive() && c.getYear() == this.getActualPhase().getYear()
           && c.getCycle().equals(APConstants.PLANNING) && c.getComponentName().equals(actionName))
@@ -6324,9 +6320,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         .filter(c -> c.isActive() && c.getYear() == this.getActualPhase().getYear()
           && c.getCycle().equals(APConstants.PLANNING) && c.getComponentName().equals(actionName))
         .collect(Collectors.toList());
-      if (!lessons.isEmpty()) {
-        project.setProjectComponentLesson(lessons.get(0));
-      }
     }
   }
 
@@ -6489,19 +6482,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   public void saveLessons(GlobalUnit crp, Project project) {
-
-    if (project.getProjecInfoPhase(this.getActualPhase()).isProjectEditLeader()) {
-
-      String actionName = this.getActionName().replaceAll(crp.getAcronym() + "/", "");
-
-      project.getProjectComponentLesson().setComponentName(actionName);
-      project.getProjectComponentLesson().setProject(project);
-
-      project.getProjectComponentLesson().setCycle(this.getActualPhase().getDescription());
-      project.getProjectComponentLesson().setYear(this.getActualPhase().getYear());
-      project.getProjectComponentLesson().setPhase(this.getActualPhase());
-      this.projectComponentLessonManager.saveProjectComponentLesson(project.getProjectComponentLesson());
-    }
 
   }
 
