@@ -80,15 +80,6 @@
                     <div class="textArea limitWords-100"><p>${project.projectComponentLessonPreview.lessons}</p></div>
                   </div>
                   [/#if]
-                  [#-- Planning/Reporting lessons --]
-                  [#if reportingActive]
-                  <div class="fullBlock">
-                    <input type="hidden" name="project.projectComponentLesson.id" value=${(project.projectComponentLesson.id)!"-1"} />
-                    <input type="hidden" name="project.projectComponentLesson.year" value=${actualPhase.year} />
-                    <input type="hidden" name="project.projectComponentLesson.componentName" value="${actionName}">
-                    [@customForm.textArea name="project.projectComponentLesson.lessons" i18nkey="projectPartners.lessons.${reportingActive?string('reporting','planning')}" className="limitWords-100" editable=editable required=true /]
-                  </div>
-                  [/#if]
                 </div>
               [/#if]
               <div class="clearfix"></div>
