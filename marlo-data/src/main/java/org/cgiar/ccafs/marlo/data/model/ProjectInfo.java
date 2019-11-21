@@ -75,8 +75,6 @@ public class ProjectInfo extends MarloAuditableEntity implements java.io.Seriali
   @Expose
   private Boolean locationRegional;
   @Expose
-  private String newPartnershipsPlanned;
-  @Expose
   private String partnerOverall;
   @Expose
   private Boolean activitiesCSV;
@@ -211,12 +209,6 @@ public class ProjectInfo extends MarloAuditableEntity implements java.io.Seriali
     sb.append("Id : ").append(this.getId());
     return sb.toString();
   }
-
-
-  public String getNewPartnershipsPlanned() {
-    return newPartnershipsPlanned;
-  }
-
 
   public Boolean getNoRegional() {
     return noRegional;
@@ -422,11 +414,6 @@ public class ProjectInfo extends MarloAuditableEntity implements java.io.Seriali
     this.locationRegional = locationRegional;
   }
 
-  public void setNewPartnershipsPlanned(String newPartnershipsPlanned) {
-    this.newPartnershipsPlanned = newPartnershipsPlanned;
-  }
-
-
   public void setNoRegional(Boolean noRegional) {
     this.noRegional = noRegional;
   }
@@ -527,7 +514,6 @@ public class ProjectInfo extends MarloAuditableEntity implements java.io.Seriali
     this.setSummary(update.getSummary());
     this.setTitle(update.getTitle());
     this.setType(update.getType());
-    this.setNewPartnershipsPlanned(update.getNewPartnershipsPlanned());
     this.setLiaisonInstitutionCenter(update.getLiaisonInstitutionCenter());
     this.setProjectEditLeader(update.getProjectEditLeader());
     this.setActiveSince(update.getActiveSince());

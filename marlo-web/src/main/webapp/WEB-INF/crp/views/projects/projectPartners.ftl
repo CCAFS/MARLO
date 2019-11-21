@@ -60,12 +60,7 @@
             [#if project.projectInfo.isProjectEditLeader()]
             <div class="${(!action.isProjectNew(project.id) || reportingActive)?string('simpleBox','')} ${reportingActive?string('fieldFocus','')}">
               
-              [#if !reportingActive]
-              <div class="form-group">
-                [@customForm.textArea name="project.projectInfo.newPartnershipsPlanned" i18nkey="projectPartners.partnershipsPlanned" paramText="${currentCycleYear}" className="limitWords-100" required=true editable=editable /]
-              </div>
-              [/#if]
-              
+             
               [#-- -- -- REPORTING BLOCK -- -- --]
               [#if reportingActive]
               [#-- AR 2018 Changes

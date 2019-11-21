@@ -114,7 +114,6 @@ public class ProjectPartnersValidator extends BaseValidator {
       this.validateEmptyPartners(action, project);
       // this.validateReportingOverall(action, project);
       this.validateReportingLessons(action, project);
-      this.validatePlanningNewPartnershipsPlanned(action, project);
       this.validateProjectLeader(action, project);
       this.validateProjectPartners(action, project);
 
@@ -321,19 +320,6 @@ public class ProjectPartnersValidator extends BaseValidator {
       // No need to add missing fields because field error doesn't allow to save into the database.
     }
   }
-
-  private void validatePlanningNewPartnershipsPlanned(BaseAction action, Project project) {
-    if (project.getProjecInfoPhase(action.getActualPhase()).isProjectEditLeader() && !action.isReportingActive()) {
-
-      if (project.getProjectInfo().getNewPartnershipsPlanned() == null
-        || project.getProjectInfo().getNewPartnershipsPlanned().trim().isEmpty()) {
-        action.addMissingField("project.projectInfo.newPartnershipsPlanned");
-        action.getInvalidFields().put("input-project.projectInfo.newPartnershipsPlanned",
-          action.getText("Please provide new partnerships  planned for " + action.getActualPhase().getYear()));
-      }
-    }
-  }
-
 
   private void validateProjectLeader(BaseAction action, Project project) {
     // All projects must specify the project leader
