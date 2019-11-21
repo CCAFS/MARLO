@@ -895,12 +895,6 @@ public class ProjectActivitiesSummaryAction extends BaseSummariesAction implemen
           summary = null;
         }
       }
-      String analysis = projectInfo.getGenderAnalysis();
-      if (analysis != null) {
-        if (analysis.equals("")) {
-          analysis = null;
-        }
-      }
       String crossCutting = "";
       if (projectInfo.getCrossCuttingNa() != null) {
         if (projectInfo.getCrossCuttingNa() == true) {
@@ -939,7 +933,7 @@ public class ProjectActivitiesSummaryAction extends BaseSummariesAction implemen
       mlText = this.getText("project.liaisonInstitution");
       mlContactText = this.getText("project.liaisonUser");
       model.addRow(new Object[] {title, startDate, endDate, ml, mlContact, type, status, orgLeader, leader, summary,
-        this.getSelectedCycle(), analysis, crossCutting, hasRegions, mlText, mlContactText});
+        this.getSelectedCycle(), "", crossCutting, hasRegions, mlText, mlContactText});
     }
     return model;
   }

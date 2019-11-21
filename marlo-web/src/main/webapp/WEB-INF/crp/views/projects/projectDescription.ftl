@@ -242,11 +242,7 @@
             [/#if]
             
             [#if (project.projectInfo.isProjectEditLeader() && !phaseOne)!false]
-              [#--  What type of gender analysis informed the design of this project and how? --]
-              <div class="form-group">
-                [@customForm.textArea name="project.projectInfo.genderAnalysis" i18nkey="project.genderAnalysis" required=true className=" limitWords-100" editable=editable /]
-              </div>
-              
+                     
               [#-- Select the cross-cutting dimension(s) to this project? --]
               <div class="form-group">
                 <label for="">[@customForm.text name="project.crossCuttingDimensions"  readText=!editable/] [@customForm.req required=editable/]</label>
