@@ -25,8 +25,6 @@ public class ProjectInfo extends MarloAuditableEntity implements java.io.Seriali
   @Expose
   private LiaisonInstitution liaisonInstitutionCenter;
   @Expose
-  private LiaisonUser liaisonUser;
-  @Expose
   private Phase phase;
   private Project project;
   @Expose
@@ -203,11 +201,6 @@ public class ProjectInfo extends MarloAuditableEntity implements java.io.Seriali
 
   public LiaisonInstitution getLiaisonInstitutionCenter() {
     return liaisonInstitutionCenter;
-  }
-
-
-  public LiaisonUser getLiaisonUser() {
-    return liaisonUser;
   }
 
   public Boolean getLocationGlobal() {
@@ -433,12 +426,6 @@ public class ProjectInfo extends MarloAuditableEntity implements java.io.Seriali
     this.liaisonInstitutionCenter = liaisonInstitutionCenter;
   }
 
-
-  public void setLiaisonUser(LiaisonUser liaisonUser) {
-    this.liaisonUser = liaisonUser;
-  }
-
-
   public void setLocationGlobal(Boolean locationGlobal) {
     this.locationGlobal = locationGlobal;
   }
@@ -542,7 +529,6 @@ public class ProjectInfo extends MarloAuditableEntity implements java.io.Seriali
     this.setGenderAnalysis(update.getGenderAnalysis());
     this.setLeaderResponsabilities(update.getLeaderResponsabilities());
     this.setLiaisonInstitution(update.getLiaisonInstitution());
-    this.setLiaisonUser(update.getLiaisonUser());
     this.setLocationGlobal(update.getLocationGlobal());
     this.setLocationRegional(update.getLocationRegional());
     this.setNoRegional(update.getNoRegional());

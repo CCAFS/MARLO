@@ -95,17 +95,6 @@ public class ProjectDescriptionValidator extends BaseValidator {
       action.getInvalidFields().put("input-project.projectInfo.summary", InvalidFieldsMessages.EMPTYFIELD);
     }
 
-    if (!action.isCenterGlobalUnit()) {
-      if (project.getProjecInfoPhase(action.getActualPhase()).getLiaisonUser() != null) {
-        if (project.getProjecInfoPhase(action.getActualPhase()).getLiaisonUser().getId() == -1) {
-          action.addMessage(action.getText("project.liaisonUser"));
-          action.getInvalidFields().put("input-project.projectInfo.liaisonUser.id", InvalidFieldsMessages.EMPTYFIELD);
-        }
-      } else {
-        action.addMessage(action.getText("project.liaisonUser"));
-        action.getInvalidFields().put("input-project.projectInfo.liaisonUser.id", InvalidFieldsMessages.EMPTYFIELD);
-      }
-    }
     if (project.getProjecInfoPhase(action.getActualPhase()).getLiaisonInstitution() != null) {
       if (project.getProjecInfoPhase(action.getActualPhase()).getLiaisonInstitution().getId() == -1) {
         action.addMessage(action.getText("project.liaisonInstitution"));

@@ -75,14 +75,7 @@
               [#-- Project Program Creator --]
               <div class="col-md-6">
                 [@customForm.select name="project.projectInfo.liaisonInstitution.id" className="liaisonInstitutionSelect" i18nkey="project.liaisonInstitution"  disabled=!editable  listName="liaisonInstitutions" keyFieldName="id"  displayFieldName="composedName" required=true editable=editable && action.hasPermission("managementLiaison") /]
-              </div>
-              [#--  Project Owner Contact Person --]
-              <div class="col-md-6"> 
-                [#-- Loading --]
-                <div class="loading liaisonUsersBlock" style="display:none"></div>
-                [@customForm.select name="project.projectInfo.liaisonUser.id" className="liaisonUserSelect" i18nkey="project.liaisonUser"  listName="allOwners" keyFieldName="id"  displayFieldName="composedName" required=true editable=editable && action.hasPermission("managementLiaison")/]
-                <span id="liaisonUserSelected" style="display:none">${(project.projectInfo.liaisonUser.id)!-1}</span>
-              </div> 
+              </div>             
             </div>
             [/#if]
             [#if isCenterProject ]

@@ -227,7 +227,6 @@ public class ProjectListAction extends BaseAction {
     ProjectInfo projectInfo = new ProjectInfo();
     projectInfo.setModificationJustification("New expected Project created");
     projectInfo.setType(type);
-    projectInfo.setLiaisonUser(liaisonUser);
     projectInfo.setLiaisonInstitution(liaisonInstitution);
     projectInfo.setScale(0);
     projectInfo.setCofinancing(false);
@@ -241,8 +240,6 @@ public class ProjectListAction extends BaseAction {
       projectPartner.setInstitution(loggedCrp.getInstitution());
       projectPartner.setPhase(this.getActualPhase());
       projectPartnerManager.saveProjectPartner(projectPartner);
-
-      projectInfo.setLiaisonUser(null);
 
     } else {
       projectInfo.setProjectEditLeader(false);
@@ -355,7 +352,6 @@ public class ProjectListAction extends BaseAction {
       ProjectInfo projectInfo = new ProjectInfo();
       projectInfo.setModificationJustification("New expected Project created");
       projectInfo.setType(type);
-      projectInfo.setLiaisonUser(liaisonUser);
       projectInfo.setLiaisonInstitution(liaisonInstitution);
       projectInfo.setScale(0);
       projectInfo.setCofinancing(false);
@@ -369,8 +365,6 @@ public class ProjectListAction extends BaseAction {
         projectPartner.setInstitution(loggedCrp.getInstitution());
         projectPartner.setPhase(this.getActualPhase());
         projectPartnerManager.saveProjectPartner(projectPartner);
-
-        projectInfo.setLiaisonUser(null);
 
       } else {
         projectInfo.setProjectEditLeader(false);
@@ -682,28 +676,31 @@ public class ProjectListAction extends BaseAction {
 
       SimpleDateFormat dateFormat = new SimpleDateFormat("y");
 
-      myProjects = myProjects.stream()
-        .filter(mp -> mp.isActive() && mp.getProjecInfoPhase(this.getActualPhase()) != null
-          && (mp.getProjecInfoPhase(this.getActualPhase()).getEndDate() == null
-            || Integer.parseInt(dateFormat.format(mp.getProjecInfoPhase(this.getActualPhase()).getEndDate())) >= this
-              .getCurrentCycleYear()))
-        .collect(Collectors.toList());
+      myProjects =
+        myProjects.stream()
+          .filter(
+            mp -> mp.isActive() && mp.getProjecInfoPhase(this.getActualPhase()) != null
+              && (mp.getProjecInfoPhase(this.getActualPhase()).getEndDate() == null || Integer.parseInt(dateFormat
+                .format(mp.getProjecInfoPhase(this.getActualPhase()).getEndDate())) >= this.getCurrentCycleYear()))
+          .collect(Collectors.toList());
 
 
-      allProjects = allProjects.stream()
-        .filter(mp -> mp.isActive() && mp.getProjecInfoPhase(this.getActualPhase()) != null
-          && (mp.getProjecInfoPhase(this.getActualPhase()).getEndDate() == null
-            || Integer.parseInt(dateFormat.format(mp.getProjecInfoPhase(this.getActualPhase()).getEndDate())) >= this
-              .getCurrentCycleYear()))
-        .collect(Collectors.toList());
+      allProjects =
+        allProjects.stream()
+          .filter(
+            mp -> mp.isActive() && mp.getProjecInfoPhase(this.getActualPhase()) != null
+              && (mp.getProjecInfoPhase(this.getActualPhase()).getEndDate() == null || Integer.parseInt(dateFormat
+                .format(mp.getProjecInfoPhase(this.getActualPhase()).getEndDate())) >= this.getCurrentCycleYear()))
+          .collect(Collectors.toList());
 
 
-      closedProjects = closedProjects.stream()
-        .filter(mp -> mp.isActive() && mp.getProjecInfoPhase(this.getActualPhase()) != null
-          && (mp.getProjecInfoPhase(this.getActualPhase()).getEndDate() == null
-            || Integer.parseInt(dateFormat.format(mp.getProjecInfoPhase(this.getActualPhase()).getEndDate())) >= this
-              .getCurrentCycleYear()))
-        .collect(Collectors.toList());
+      closedProjects =
+        closedProjects.stream()
+          .filter(
+            mp -> mp.isActive() && mp.getProjecInfoPhase(this.getActualPhase()) != null
+              && (mp.getProjecInfoPhase(this.getActualPhase()).getEndDate() == null || Integer.parseInt(dateFormat
+                .format(mp.getProjecInfoPhase(this.getActualPhase()).getEndDate())) >= this.getCurrentCycleYear()))
+          .collect(Collectors.toList());
     }
 
     // closedProjects.sort((p1, p2) -> p1.getStatus().compareTo(p2.getStatus()));

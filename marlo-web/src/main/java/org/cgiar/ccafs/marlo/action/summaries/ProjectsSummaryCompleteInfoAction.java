@@ -307,9 +307,7 @@ public class ProjectsSummaryCompleteInfoAction extends BaseSummariesAction imple
       }
       if (project.getProjectInfo().getLiaisonInstitution() != null) {
         managementLiaison = project.getProjectInfo().getLiaisonInstitution().getComposedName();
-        if (project.getProjectInfo().getLiaisonUser() != null) {
-          managementLiaison += " - " + project.getProjectInfo().getLiaisonUser().getComposedName();
-        }
+
         managementLiaison = managementLiaison.replaceAll("<", "&lt;");
         managementLiaison = managementLiaison.replaceAll(">", "&gt;");
       }
