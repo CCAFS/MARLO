@@ -155,7 +155,7 @@ public class FundingSourceMySQLDAO extends AbstractMarloDAO<FundingSource, Long>
       // + "AND ( fsb IS NULL OR (fsb.year = :phaseYear AND fsb.phase = :phase ) ) "
       // The above line should be what we use, but it appears we have some data corruption, excluding the year works for
       // now, so using the below statement.
-      + "AND ( fsb IS NULL OR fsb.phase = :phase ) " + "AND ( fsi.status IS NULL OR ( fsi.status IN ( "
+      + "AND ( fsi.status IS NULL OR ( fsi.status IN ( "
       + statusTypes.stream().map(i -> i.toString()).collect(Collectors.joining(",")) + " ) ) ) "
       + "ORDER BY fsi.endDate NULLS FIRST";
 
