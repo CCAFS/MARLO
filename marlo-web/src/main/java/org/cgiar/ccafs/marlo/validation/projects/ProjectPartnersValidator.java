@@ -231,7 +231,7 @@ public class ProjectPartnersValidator extends BaseValidator {
       try {
         ProjectPartnerPartnership projectPartnerPartnership = partner.getProjectPartnerPartnership();
 
-        if (projectPartnerPartnership == null || partner.getHasPartnerships() == null) {
+        if (projectPartnerPartnership == null) {
           action.addMessage("Please provide partnership formal partner");
           action.addMissingField("project.partners[" + c + "].hasPartnerships");
           action.getInvalidFields().put("input-project.partners[" + c + "].hasPartnerships",

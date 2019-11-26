@@ -1393,7 +1393,6 @@ public class ProjectPartnerAction extends BaseAction {
             projectPartnerDB.setSelectedLocations(projectPartnerClient.getSelectedLocations());
             projectPartnerDB.setSubDepartment(projectPartnerClient.getSubDepartment());
             projectPartnerDB.setPartnerContributors(projectPartnerDB.getPartnerContributors());
-            projectPartnerDB.setHasPartnerships(projectPartnerClient.getHasPartnerships());
             projectPartnerDB = projectPartnerManager.saveProjectPartner(projectPartnerDB);
 
             if (!this.isCenterGlobalUnit()) {
