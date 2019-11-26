@@ -371,6 +371,7 @@ public class FundingSourceListAction extends BaseAction {
     statusTypes.add(Integer.parseInt(FundingStatusEnum.Complete.getStatusId()));
     statusTypes.add(Integer.parseInt(FundingStatusEnum.Cancelled.getStatusId()));
 
+
     List<FundingSource> allFundingSources =
       fundingSourceManager.getGlobalUnitFundingSourcesByPhaseAndTypes(loggedCrp, this.getActualPhase(), statusTypes);
 
@@ -378,6 +379,7 @@ public class FundingSourceListAction extends BaseAction {
      * List<FundingSource> allFundingSources = fundingSourceManager
      * .getGlobalUnitFundingSourcesByPhaseAndTypesWithoutInstitutions(loggedCrp, this.getActualPhase(), statusTypes);
      */
+
     this.myProjects = new ArrayList<>();
     this.closedProjects = new ArrayList<>();
     this.fundingSourceInstitutions = new ArrayList<>();
