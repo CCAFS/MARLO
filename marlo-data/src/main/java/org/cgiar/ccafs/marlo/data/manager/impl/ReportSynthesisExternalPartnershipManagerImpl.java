@@ -124,8 +124,7 @@ public class ReportSynthesisExternalPartnershipManagerImpl implements ReportSynt
         new ArrayList<>(projectPartnerPartnershipManager.findAll().stream()
           .filter(ps -> ps.isActive() && ps.getProjectPartner().getPhase() != null
             && ps.getProjectPartner().getPhase().getId() == phaseID
-            && ps.getProjectPartner().getPhase().getYear() == phase.getYear()
-            && ps.getProjectPartner().getHasPartnerships() != null && ps.getProjectPartner().getHasPartnerships())
+            && ps.getProjectPartner().getPhase().getYear() == phase.getYear())
           .collect(Collectors.toList()));
 
       Collections.sort(projectPartnerPartnerships, (p1, p2) -> p1.getProjectPartner().getInstitution().getId()
