@@ -901,31 +901,12 @@ public class ProjectActivitiesSummaryAction extends BaseSummariesAction implemen
           crossCutting += "● N/A <br>";
         }
       }
-      if (projectInfo.getCrossCuttingGender() != null) {
-        if (projectInfo.getCrossCuttingGender() == true) {
-          crossCutting += "● Gender <br>";
-        }
-      }
-      if (projectInfo.getCrossCuttingYouth() != null) {
-        if (projectInfo.getCrossCuttingYouth() == true) {
-          crossCutting += "● Youth <br>";
-        }
-      }
       if (projectInfo.getCrossCuttingCapacity() != null) {
         if (projectInfo.getCrossCuttingCapacity() == true) {
           crossCutting += "● Capacity Development <br>";
         }
       }
-      if (projectInfo.getCrossCuttingGender() != null) {
-        if (projectInfo.getCrossCuttingGender() == false) {
-          if (projectInfo.getDimension() == null || projectInfo.getDimension().isEmpty()) {
-            crossCutting += "<br><br>" + "<b>Reason for not addressing gender dimension: </b> &lt;Not Defined&gt;";
-          } else {
-            crossCutting +=
-              "<br><br>" + "<b>Reason for not addressing gender dimension: </b>" + projectInfo.getDimension();
-          }
-        }
-      }
+
       if (crossCutting.isEmpty()) {
         crossCutting = null;
       }
@@ -1211,18 +1192,6 @@ public class ProjectActivitiesSummaryAction extends BaseSummariesAction implemen
         }
         ach_narrative = projectOutcome.getNarrativeAchieved();
 
-        if (projectOutcome.getGenderDimenssion() != null && !projectOutcome.getGenderDimenssion().isEmpty()) {
-          crossCutting +=
-            "<b>Narrative for your expected project contribution to the gender dimensions of this outcome: </b>"
-              + projectOutcome.getGenderDimenssion();
-        }
-        if (projectOutcome.getYouthComponent() != null && !projectOutcome.getYouthComponent().isEmpty()) {
-          if (crossCutting.isEmpty()) {
-            crossCutting +=
-              "<br><br><b>Narrative for your expected project contribution to the youth component of this outcome: </b>"
-                + projectOutcome.getYouthComponent();
-          }
-        }
         if (crossCutting.isEmpty()) {
           crossCutting = null;
         }

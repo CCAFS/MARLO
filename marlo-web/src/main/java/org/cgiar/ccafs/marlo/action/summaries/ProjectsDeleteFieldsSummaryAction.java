@@ -675,22 +675,6 @@ public class ProjectsDeleteFieldsSummaryAction extends BaseSummariesAction imple
             crossCutting += " N/A";
           }
         }
-        if (project.getProjectInfo().getCrossCuttingGender() != null
-          && project.getProjectInfo().getCrossCuttingGender() == true) {
-          if (crossCutting.length() > 0) {
-            crossCutting += ", Gender";
-          } else {
-            crossCutting += "Gender";
-          }
-        }
-        if (project.getProjectInfo().getCrossCuttingYouth() != null
-          && project.getProjectInfo().getCrossCuttingYouth() == true) {
-          if (crossCutting.length() > 0) {
-            crossCutting += ", Youth";
-          } else {
-            crossCutting += "Youth";
-          }
-        }
 
         List<ProjectComponentLesson> pcList = new ArrayList<>();
         pcList = (projectComponentLessonManager.findAll().stream()
@@ -708,15 +692,6 @@ public class ProjectsDeleteFieldsSummaryAction extends BaseSummariesAction imple
         projectOutcomes = project.getProjectOutcomes().stream()
           .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(phase)).collect(Collectors.toList());
 
-        if (projectOutcomes != null && projectOutcomes.size() > 0) {
-          if (projectOutcomes.get(0).getGenderDimenssion() != null) {
-            genderDimenssions = projectOutcomes.get(0).getGenderDimenssion();
-          }
-
-          if (projectOutcomes.get(0).getYouthComponent() != null) {
-            youthComponent = projectOutcomes.get(0).getYouthComponent();
-          }
-        }
         ProjectPolicy projectPolicy = new ProjectPolicy();
         List<ProjectPolicy> projectPolicyList = new ArrayList<>();
         projectPolicyList = policyManager.getProjectPolicyByPhase(phase).stream()
