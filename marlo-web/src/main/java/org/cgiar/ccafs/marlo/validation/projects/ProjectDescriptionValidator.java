@@ -158,27 +158,6 @@ public class ProjectDescriptionValidator extends BaseValidator {
       }
     }
 
-    // Validation when project is no ready for project leader
-    if (project.getProjecInfoPhase(action.getActualPhase()).isProjectEditLeader()) {
-
-      if (project.getProjecInfoPhase(action.getActualPhase()).getCrossCuttingGender() == null
-        || project.getProjecInfoPhase(action.getActualPhase()).getCrossCuttingGender().booleanValue() == false) {
-        if (!(this.isValidString(project.getProjecInfoPhase(action.getActualPhase()).getDimension())
-          && this.wordCount(project.getProjecInfoPhase(action.getActualPhase()).getDimension()) <= 50)) {
-          action.addMessage(action.getText("project.dimension"));
-          action.getInvalidFields().put("input-project.projectInfo.dimension", InvalidFieldsMessages.EMPTYFIELD);
-        }
-      }
-      if (project.getProjecInfoPhase(action.getActualPhase()).getCrossCuttingGender() == null
-        && project.getProjecInfoPhase(action.getActualPhase()).getCrossCuttingYouth() == null
-        && project.getProjecInfoPhase(action.getActualPhase()).getCrossCuttingCapacity() == null
-        && project.getProjecInfoPhase(action.getActualPhase()).getCrossCuttingNa() == null) {
-        action.addMessage(action.getText("project.crossCuttingDimensions.readText"));
-        action.getInvalidFields().put("input-project.projectInfo.crossCuttingNa",
-          action.getText(InvalidFieldsMessages.EMPTYLIST));
-      }
-    }
-
     // Validate Status Justification when is not on-going
     if (project.getProjecInfoPhase(action.getActualPhase()).getStatus() != null
       && project.getProjecInfoPhase(action.getActualPhase()).getStatusJustificationRequired()) {

@@ -793,11 +793,9 @@ public class ProjectDescriptionAction extends BaseAction {
       project.getProjecInfoPhase(this.getActualPhase()).setLiaisonInstitution(null);
 
       project.getProjectInfo().setNoRegional(null);
-      project.getProjectInfo().setCrossCuttingGender(null);
       project.getProjectInfo().setCrossCuttingCapacity(null);
       project.getProjectInfo().setCrossCuttingClimate(null);
       project.getProjectInfo().setCrossCuttingNa(null);
-      project.getProjectInfo().setCrossCuttingYouth(null);
     }
 
   }
@@ -829,12 +827,6 @@ public class ProjectDescriptionAction extends BaseAction {
       if (project.getProjectInfo().getCrossCuttingNa() == null) {
         project.getProjectInfo().setCrossCuttingNa(false);
       }
-      if (project.getProjectInfo().getCrossCuttingGender() == null) {
-        project.getProjectInfo().setCrossCuttingGender(false);
-      }
-      if (project.getProjectInfo().getCrossCuttingYouth() == null) {
-        project.getProjectInfo().setCrossCuttingYouth(false);
-      }
 
       if (this.isReportingActive()) {
 
@@ -847,14 +839,6 @@ public class ProjectDescriptionAction extends BaseAction {
         // N/A
         project.getProjectInfo()
           .setCrossCuttingNa(projectDB.getProjecInfoPhase(this.getActualPhase()).getCrossCuttingNa());
-        // Gender
-        project.getProjectInfo()
-          .setCrossCuttingGender(projectDB.getProjecInfoPhase(this.getActualPhase()).getCrossCuttingGender());
-        // Youth
-        project.getProjectInfo()
-          .setCrossCuttingYouth(projectDB.getProjecInfoPhase(this.getActualPhase()).getCrossCuttingYouth());
-
-
       }
 
 

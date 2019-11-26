@@ -57,10 +57,6 @@ public class ProjectInfo extends MarloAuditableEntity implements java.io.Seriali
   @Expose
   private String statusJustification;
   @Expose
-  private Boolean crossCuttingGender;
-  @Expose
-  private Boolean crossCuttingYouth;
-  @Expose
   private Boolean crossCuttingCapacity;
   @Expose
   private Boolean crossCuttingClimate;
@@ -160,19 +156,9 @@ public class ProjectInfo extends MarloAuditableEntity implements java.io.Seriali
   }
 
 
-  public Boolean getCrossCuttingGender() {
-    return crossCuttingGender;
-  }
-
-
   public Boolean getCrossCuttingNa() {
     return crossCuttingNa;
   }
-
-  public Boolean getCrossCuttingYouth() {
-    return crossCuttingYouth;
-  }
-
 
   public String getDimension() {
     return dimension;
@@ -366,21 +352,9 @@ public class ProjectInfo extends MarloAuditableEntity implements java.io.Seriali
     this.crossCuttingClimate = crossCuttingClimate;
   }
 
-
-  public void setCrossCuttingGender(Boolean crossCuttingGender) {
-    this.crossCuttingGender = crossCuttingGender;
-  }
-
-
   public void setCrossCuttingNa(Boolean crossCuttingNa) {
     this.crossCuttingNa = crossCuttingNa;
   }
-
-
-  public void setCrossCuttingYouth(Boolean crossCuttingYouth) {
-    this.crossCuttingYouth = crossCuttingYouth;
-  }
-
 
   public void setDimension(String dimension) {
     this.dimension = dimension;
@@ -495,9 +469,7 @@ public class ProjectInfo extends MarloAuditableEntity implements java.io.Seriali
     this.setCofinancing(update.isCofinancing());
     this.setCrossCuttingCapacity(update.getCrossCuttingCapacity());
     this.setCrossCuttingClimate(update.getCrossCuttingClimate());
-    this.setCrossCuttingGender(update.getCrossCuttingGender());
     this.setCrossCuttingNa(update.getCrossCuttingNa());
-    this.setCrossCuttingYouth(update.getCrossCuttingYouth());
     this.setDimension(update.getDimension());
     this.setEndDate(update.getEndDate());
     this.setLeaderResponsabilities(update.getLeaderResponsabilities());

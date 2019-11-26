@@ -720,31 +720,13 @@ public class ProjectContributionLP6PDFSummaryAction extends BaseSummariesAction 
           crossCutting += "● N/A <br>";
         }
       }
-      if (projectInfo.getCrossCuttingGender() != null) {
-        if (projectInfo.getCrossCuttingGender() == true) {
-          crossCutting += "● Gender <br>";
-        }
-      }
-      if (projectInfo.getCrossCuttingYouth() != null) {
-        if (projectInfo.getCrossCuttingYouth() == true) {
-          crossCutting += "● Youth <br>";
-        }
-      }
+
       if (projectInfo.getCrossCuttingCapacity() != null) {
         if (projectInfo.getCrossCuttingCapacity() == true) {
           crossCutting += "● Capacity Development <br>";
         }
       }
-      if (projectInfo.getCrossCuttingGender() != null) {
-        if (projectInfo.getCrossCuttingGender() == false) {
-          if (projectInfo.getDimension() == null || projectInfo.getDimension().isEmpty()) {
-            crossCutting += "<br><br>" + "<b>Reason for not addressing gender dimension: </b> &lt;Not Defined&gt;";
-          } else {
-            crossCutting +=
-              "<br><br>" + "<b>Reason for not addressing gender dimension: </b>" + projectInfo.getDimension();
-          }
-        }
-      }
+
       if (crossCutting.isEmpty()) {
         crossCutting = null;
       }
