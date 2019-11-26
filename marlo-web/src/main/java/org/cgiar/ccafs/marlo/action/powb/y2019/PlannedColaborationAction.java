@@ -474,12 +474,17 @@ public class PlannedColaborationAction extends BaseAction {
     globlalUnitsPrev =
       powbSynthesisBD.getPowbCollaborationGlobalUnits().stream().filter(a -> a.isActive()).collect(Collectors.toList());
 
+    // Get prev list of FP collaborations global unit
+    if (this.isPMU()) {
+      if (globalUnitCollaborations != null) {
+        globlalUnitsPrev.addAll(globalUnitCollaborations);
+      }
+    }
     for (PowbCollaborationGlobalUnit powbCollaborationGlobalUnit : globlalUnitsPrev) {
       if (!powbCollaborationGlobalUnits.contains(powbCollaborationGlobalUnit)) {
         powbCollaborationGlobalUnitManager.deletePowbCollaborationGlobalUnit(powbCollaborationGlobalUnit.getId());
       }
     }
-
   }
 
 
@@ -627,7 +632,6 @@ public class PlannedColaborationAction extends BaseAction {
 
           }
         }
-
       }
     }
 
@@ -1178,6 +1182,7 @@ public class PlannedColaborationAction extends BaseAction {
       this.globalUnitNewData();
 
       List<String> relationsName = new ArrayList<>();
+
       relationsName.add(APConstants.SYNTHESIS_GLOBAL_UNTIS_RELATION);
       relationsName.add(APConstants.SYNTHESIS_REGIONS_RELATION);
 

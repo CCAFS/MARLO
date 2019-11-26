@@ -348,6 +348,63 @@ public class POWB2019Data<T> {
   }
 
   /**
+   * Table 2C Collaborations
+   * POWB 2020
+   * 
+   * @return
+   */
+  public List<PowbCollaborationGlobalUnit> getTable2C2020(Phase phase, GlobalUnit loggedCrp,
+    PowbSynthesis powbSynthesisPMU) {
+    List<PowbCollaborationGlobalUnit> globalUnitCollaborations = new ArrayList<>();
+
+    List<CrpProgram> crpPrograms = loggedCrp.getCrpPrograms().stream()
+      .filter(c -> c.isActive() && c.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+      .collect(Collectors.toList());
+    crpPrograms.sort((p1, p2) -> p1.getAcronym().compareTo(p2.getAcronym()));
+    for (CrpProgram crpProgram : crpPrograms) {
+      List<LiaisonInstitution> liaisonInstitutions =
+        crpProgram.getLiaisonInstitutions().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+      if (!liaisonInstitutions.isEmpty()) {
+        PowbSynthesis powbSynthesisProgram =
+          powbSynthesisManager.findSynthesis(phase.getId(), liaisonInstitutions.get(0).getId());
+        if (powbSynthesisProgram != null) {
+          powbSynthesisProgram.setPowbCollaborationGlobalUnitsList(powbSynthesisProgram
+            .getPowbCollaborationGlobalUnits().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+
+          crpProgram.setCollaboration(powbSynthesisProgram.getCollaboration());
+          crpProgram.setSynthesis(powbSynthesisProgram);
+
+          globalUnitCollaborations.addAll(powbSynthesisProgram.getPowbCollaborationGlobalUnitsList());
+        }
+      }
+      if (crpProgram.getSynthesis() == null) {
+        crpProgram.setSynthesis(new PowbSynthesis());
+      }
+      if (crpProgram.getCollaboration() == null) {
+        crpProgram.setCollaboration(new PowbCollaboration());
+      }
+
+    }
+
+
+    List<PowbCollaborationGlobalUnit> removeList = new ArrayList<>();
+    if (powbSynthesisPMU != null && powbSynthesisPMU.getCollaboration() != null) {
+      if (powbSynthesisPMU.getCollaboration().getPowbCollaborationGlobalUnitPmu() != null) {
+
+        for (PowbCollaborationGlobalUnit powbCollaborationGlobalUnitPmu : powbSynthesisPMU
+          .getPowbCollaborationGlobalUnits().stream().filter(ro -> ro.isActive()).collect(Collectors.toList())) {
+          globalUnitCollaborations.add(powbCollaborationGlobalUnitPmu);
+          // removeList.add(powbCollaborationGlobalUnitPmu.getPowbCollaborationGlobalUnits());
+        }
+      }
+    }
+    // globalUnitCollaborations.removeAll(removeList);
+
+
+    return globalUnitCollaborations;
+  }
+
+  /**
    * Table 3 Planned Budget
    * 
    * @param powbSynthesisPMU
