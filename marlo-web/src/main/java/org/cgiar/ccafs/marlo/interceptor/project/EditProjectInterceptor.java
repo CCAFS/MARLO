@@ -17,11 +17,13 @@ package org.cgiar.ccafs.marlo.interceptor.project;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.CrpProgramLeaderManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonUserManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
+import org.cgiar.ccafs.marlo.data.model.CrpProgramLeader;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnitProject;
 import org.cgiar.ccafs.marlo.data.model.Institution;
@@ -29,6 +31,7 @@ import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
+import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
@@ -68,15 +71,18 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
   private final PhaseManager phaseManager;
   private final GlobalUnitProjectManager globalUnitProjectManager;
   private final LiaisonUserManager liaisonUserManager;
+  private final CrpProgramLeaderManager crpProgramLeaderManager;
 
   @Inject
   public EditProjectInterceptor(ProjectManager projectManager, GlobalUnitManager crpManager, PhaseManager phaseManager,
-    GlobalUnitProjectManager globalUnitProjectManager, LiaisonUserManager liaisonUserManager) {
+    GlobalUnitProjectManager globalUnitProjectManager, LiaisonUserManager liaisonUserManager,
+    CrpProgramLeaderManager crpProgramLeaderManager) {
     this.projectManager = projectManager;
     this.crpManager = crpManager;
     this.phaseManager = phaseManager;
     this.globalUnitProjectManager = globalUnitProjectManager;
     this.liaisonUserManager = liaisonUserManager;
+    this.crpProgramLeaderManager = crpProgramLeaderManager;
   }
 
   @Override
@@ -307,16 +313,63 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
         }
 
         // Check if is a Shared project (Crp to Center)
-        if (!globalUnitProject.isOrigin()) {
-          canEdit = false;
-          if (actionName.equals(SharedProjectSectionStatusEnum.CENTER_MAPPING.getStatus())) {
-            if (baseAction.hasPermission(baseAction.generatePermission(Permission.SHARED_PROJECT_PERMISSION, params))) {
+        // to-do Change Logic to only has to edit program Leaders to modifiy this section.
+        /*
+         * if (!globalUnitProject.isOrigin()) {
+         * canEdit = false;
+         * if (actionName.equals(SharedProjectSectionStatusEnum.CENTER_MAPPING.getStatus())) {
+         * if (baseAction.hasPermission(baseAction.generatePermission(Permission.SHARED_PROJECT_PERMISSION, params))) {
+         * canEdit = true;
+         * }
+         * }
+         * }
+         */
+        // Center
+        boolean isCenterProject = false;
+        if (loggedCrp.isCenterType()) {
+          isCenterProject = true;
+          if (!baseAction.isRole("CRP-Admin") && !baseAction.isRole("SuperAdmin")) {
+            if (actionName.equals(SharedProjectSectionStatusEnum.CENTER_MAPPING.getStatus())) {
+              boolean isValidate = false;
+              for (ProjectFocus projectFocus : project.getProjectFocuses().stream()
+                .filter(c -> c.isActive()
+                  && c.getPhase().getDescription().equals(baseAction.getActualPhase().getDescription())
+                  && c.getPhase().getYear() == baseAction.getActualPhase().getYear())
+                .collect(Collectors.toList())) {
+                CrpProgramLeader crpProgramLeader =
+                  crpProgramLeaderManager.getCrpProgramLeaderByProgram(projectFocus.getCrpProgram().getId().longValue(),
+                    loggedCrp.getId().longValue(), baseAction.getCurrentUser().getId().longValue());
+                if (crpProgramLeader != null) {
+                  isValidate = true;
+                }
+              }
+              if (isValidate) {
+                canEdit = true;
+                editParameter = true;
+              } else {
+                canEdit = false;
+              }
+            }
+          } else {
+            if (actionName.equals(SharedProjectSectionStatusEnum.CENTER_MAPPING.getStatus())) {
               canEdit = true;
+              editParameter = true;
+              baseAction.setEditable(true);
+              baseAction.setEditStatus(true);
+            } else {
+              // check if project is from CRP shared or Center owner
+              if (baseAction.getActualPhase().getCrp().isCenterType()) {
+                canEdit = true;
+                editParameter = true;
+                baseAction.setEditable(true);
+                baseAction.setEditStatus(true);
+              } else {
+                canEdit = false;
+                editParameter = false;
+              }
             }
           }
-
         }
-
         if (!editParameter) {
           baseAction.setEditStatus(false);
         }
@@ -327,13 +380,18 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
         baseAction.setEditStatus(baseAction.isEditStatus() && globalUnitProject.isOrigin());
 
         // Allow Superadmin edit
-        if (baseAction.canAccessSuperAdmin() && editParameter) {
+        if (baseAction.canAccessSuperAdmin() && editParameter && !isCenterProject) {
           baseAction.setEditableParameter(true);
           baseAction.setCanEdit(true);
           baseAction.setEditStatus(true);
         }
-
-
+        // logic for superadmins in centers to allow only programs leaders AND CRP-Admin to modify
+        if (isCenterProject) {
+          if (canEdit && editParameter) {
+            baseAction.setEditableParameter(editParameter && canEdit && phase.getEditable());
+            baseAction.setEditStatus(true);
+          }
+        }
       } else {
         throw new NullPointerException();
       }

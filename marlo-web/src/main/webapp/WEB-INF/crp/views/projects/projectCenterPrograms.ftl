@@ -55,7 +55,7 @@
             <div class="form-group row">
               [#-- CENTER Research program --]
               <div class="col-md-6 researchProgram ">
-                [@customForm.select name="project.projectInfo.liaisonInstitutionCenter.id" listName="liaisonInstitutions" paramText="${currentCrp.acronym}" keyFieldName="id" displayFieldName="composedName" i18nkey="CIAT Program" className="liaisonInstitutionSelect" help="project.researchProgram.help" required=true editable=editable /]
+                [@customForm.select name="project.projectInfo.liaisonInstitutionCenter.id" listName="liaisonInstitutions" paramText="${currentCrp.acronym}" keyFieldName="id" displayFieldName="composedName" i18nkey="CIAT Program" className="liaisonInstitutionSelect" help="project.researchProgram.help" required=true editable=(editable && canMapPrograms)  /]
               </div>
             </div>
 
@@ -64,7 +64,7 @@
                 <h4> ${crpSession} Program(s)</h4>
                 <div id="projectFlagshipsBlock" class="${customForm.changedField('project.flagshipValue')}">
                 [#list (programFlagships)![] as element]                                  
-                  [@customForm.checkmark id="program-${element.id}" name="project.flagshipValue" label="${element.centerComposedName}" value="${element.id}" editable=editable checked=(flagshipIds?seq_contains(element.id))!false cssClass="fpInput getCenterOutcomes" cssClassLabel="font-normal" /]
+                  [@customForm.checkmark id="program-${element.id}" name="project.flagshipValue" label="${element.centerComposedName}" value="${element.id}" editable=(editable && canMapPrograms) checked=(flagshipIds?seq_contains(element.id))!false cssClass="fpInput getCenterOutcomes" cssClassLabel="font-normal" /]
                   <br />
                 [/#list]
                 </div>
@@ -72,7 +72,7 @@
               <div class="col-md-6" listname="additionalOffices">
                 <h4> Regional Office(s)</h4>
                 [#list (regionFlagships)![] as element]
-                  [@customForm.checkmark id="region-${element.id}" name="project.regionsValue" label="${element.name}" value="${element.id}" editable=editable  checked=((regionsIds?seq_contains(element.id))!false) cssClass="rpInput" cssClassLabel="font-normal" /]
+                  [@customForm.checkmark id="region-${element.id}" name="project.regionsValue" label="${element.name}" value="${element.id}" editable=(editable && canMapPrograms)  checked=((regionsIds?seq_contains(element.id))!false) cssClass="rpInput" cssClassLabel="font-normal" /]
                   <br />
                 [/#list]
               </div>
