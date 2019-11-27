@@ -20,8 +20,6 @@ public class ProjectPolicyInfo extends MarloBaseEntity implements java.io.Serial
   @Expose
   private RepIndGeographicScope repIndGeographicScope;
   @Expose
-  private RepIndOrganizationType repIndOrganizationType;
-  @Expose
   private RepIndPolicyInvestimentType repIndPolicyInvestimentType;
   @Expose
   private RepIndStageProcess repIndStageProcess;
@@ -50,7 +48,6 @@ public class ProjectPolicyInfo extends MarloBaseEntity implements java.io.Serial
     this.projectExpectedStudy = projectExpectedStudy;
     this.projectPolicy = projectPolicy;
     this.repIndGeographicScope = repIndGeographicScope;
-    this.repIndOrganizationType = repIndOrganizationType;
     this.repIndPolicyInvestimentType = repIndPolicyInvestimentType;
     this.repIndStageProcess = repIndStageProcess;
     this.year = year;
@@ -115,10 +112,6 @@ public class ProjectPolicyInfo extends MarloBaseEntity implements java.io.Serial
 
   public RepIndGeographicScope getRepIndGeographicScope() {
     return repIndGeographicScope;
-  }
-
-  public RepIndOrganizationType getRepIndOrganizationType() {
-    return repIndOrganizationType;
   }
 
 
@@ -210,11 +203,6 @@ public class ProjectPolicyInfo extends MarloBaseEntity implements java.io.Serial
     this.repIndGeographicScope = repIndGeographicScope;
   }
 
-  public void setRepIndOrganizationType(RepIndOrganizationType repIndOrganizationType) {
-    this.repIndOrganizationType = repIndOrganizationType;
-  }
-
-
   public void setRepIndPolicyInvestimentType(RepIndPolicyInvestimentType repIndPolicyInvestimentType) {
     this.repIndPolicyInvestimentType = repIndPolicyInvestimentType;
   }
@@ -256,7 +244,6 @@ public class ProjectPolicyInfo extends MarloBaseEntity implements java.io.Serial
     this.setYear(projectPolicyInfoUpdate.getYear());
     this.setRepIndStageProcess(projectPolicyInfoUpdate.getRepIndStageProcess());
     this.setRepIndPolicyInvestimentType(projectPolicyInfoUpdate.getRepIndPolicyInvestimentType());
-    this.setRepIndOrganizationType(projectPolicyInfoUpdate.getRepIndOrganizationType());
     this.setRepIndGeographicScope(projectPolicyInfoUpdate.getRepIndGeographicScope());
     this.setProjectPolicy(projectPolicyInfoUpdate.getProjectPolicy());
     this.setProjectExpectedStudy(projectPolicyInfoUpdate.getProjectExpectedStudy());

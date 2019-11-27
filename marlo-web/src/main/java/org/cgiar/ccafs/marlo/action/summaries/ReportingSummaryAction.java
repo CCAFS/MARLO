@@ -4599,11 +4599,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       }
 
       // Organizational Type
-      if (projectPolicy.getProjectPolicyInfo() != null
-        && projectPolicy.getProjectPolicyInfo().getRepIndOrganizationType() != null
-        && projectPolicy.getProjectPolicyInfo().getRepIndOrganizationType().getName() != null) {
-        organizationType = projectPolicy.getProjectPolicyInfo().getRepIndOrganizationType().getName();
-      }
+      // delete fields in prpt
 
       // Level Maturity
       if (projectPolicy.getProjectPolicyInfo() != null
