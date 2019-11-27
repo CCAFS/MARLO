@@ -702,12 +702,6 @@ public class ProjectsDeleteFieldsSummaryAction extends BaseSummariesAction imple
           projectPolicy = projectPolicyList.get(0);
         }
 
-        if (projectPolicy != null && projectPolicy.getProjectPolicyInfo(phase) != null
-          && projectPolicy.getProjectPolicyInfo().getRepIndOrganizationType() != null
-          && projectPolicy.getProjectPolicyInfo().getRepIndOrganizationType().getName() != null) {
-          repIndOrganization = projectPolicy.getProjectPolicyInfo(phase).getRepIndOrganizationType().getName();
-        }
-
         ProjectInnovation projectInnovation = new ProjectInnovation();
         List<ProjectInnovation> projectInnovationList = new ArrayList<>();
         projectInnovationList = projectInnovationManager.findAll().stream()

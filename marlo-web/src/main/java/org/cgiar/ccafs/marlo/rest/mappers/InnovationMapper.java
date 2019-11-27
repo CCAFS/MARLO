@@ -48,4 +48,5 @@ public interface InnovationMapper {
     @Mapping(source = "projectInnovation.projectInnovationInfo.phase", target = "phase")})
   public abstract InnovationDTO projectInnovationToInnovationDTO(ProjectInnovation projectInnovation);
 
+
 }
