@@ -88,7 +88,6 @@ public class Deliverable extends MarloAuditableEntity implements java.io.Seriali
   private List<DeliverableUser> users;
   private Set<DeliverableIntellectualAsset> deliverableIntellectualAssets =
     new HashSet<DeliverableIntellectualAsset>(0);
-  private DeliverableIntellectualAsset intellectualAsset;
   private Set<DeliverableParticipant> deliverableParticipants = new HashSet<DeliverableParticipant>(0);
   private DeliverableParticipant deliverableParticipant;
   private Set<DeliverableGeographicRegion> deliverableGeographicRegions = new HashSet<DeliverableGeographicRegion>(0);
@@ -380,10 +379,6 @@ public class Deliverable extends MarloAuditableEntity implements java.io.Seriali
     }
 
     return -1;
-  }
-
-  public DeliverableIntellectualAsset getIntellectualAsset() {
-    return intellectualAsset;
   }
 
   public Boolean getIsPublication() {
@@ -806,11 +801,6 @@ public class Deliverable extends MarloAuditableEntity implements java.io.Seriali
   public void setGeographicScopes(List<DeliverableGeographicScope> geographicScopes) {
     this.geographicScopes = geographicScopes;
   }
-
-  public void setIntellectualAsset(DeliverableIntellectualAsset intellectualAsset) {
-    this.intellectualAsset = intellectualAsset;
-  }
-
 
   public void setIsPublication(Boolean isPublication) {
     this.isPublication = isPublication;
