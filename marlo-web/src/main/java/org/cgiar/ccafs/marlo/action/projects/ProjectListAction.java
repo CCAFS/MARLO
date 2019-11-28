@@ -523,10 +523,14 @@ public class ProjectListAction extends BaseAction {
             ProjectInfo info = project.getProjectInfo();
             if ((info.getStatus() == Long.parseLong(ProjectStatusEnum.Ongoing.getStatusId())
               || info.getStatus() == Long.parseLong(ProjectStatusEnum.Extended.getStatusId()))) {
-              if (this.isSubmit(project.getId())) {
+              // if (this.isSubmit(project.getId())) {
+              if (this.isSubmit(project.getId(), (this.getActualPhase().getYear() - 1), "Reporting")) {
+                System.out.println("project submited in " + (this.getActualPhase().getYear() - 1));
                 project.setCurrentPhase(phase);
                 centerProjects.add(project);
               }
+
+              // }
             }
           }
         }

@@ -5946,6 +5946,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
   }
 
+
   /**
    * Reusable
    *
@@ -6017,6 +6018,18 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         .getSubmissions().stream().filter(c -> c.getCycle().equals(this.getCurrentCycle())
           && c.getYear().intValue() == year && (c.isUnSubmit() == null || !c.isUnSubmit()))
         .collect(Collectors.toList());
+    if (submissions.isEmpty()) {
+      return false;
+    }
+    return true;
+  }
+
+  public boolean isSubmit(long projectID, int year, String cyle) {
+    Project project = this.projectManager.getProjectById(projectID);
+    List<Submission> submissions = project.getSubmissions().stream()
+      .filter(
+        c -> c.getCycle().equals(cyle) && c.getYear().intValue() == year && (c.isUnSubmit() == null || !c.isUnSubmit()))
+      .collect(Collectors.toList());
     if (submissions.isEmpty()) {
       return false;
     }
