@@ -613,7 +613,9 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
                     .collect(Collectors.toList())) {
 
                     if (temp == null || temp.isEmpty() || temp.size() == 0
-                      || !temp.contains(fundingSource.getFundingSourceInfo().getPartnerDivision().getName())) {
+                      || (fundingSource.getFundingSourceInfo().getPartnerDivision() != null
+                        && fundingSource.getFundingSourceInfo().getPartnerDivision().getName() != null
+                        && !temp.contains(fundingSource.getFundingSourceInfo().getPartnerDivision().getName()))) {
                       leadPartner += " (" + fsDiv.getDivision().getName();
                       temp.add(fsDiv.getDivision().getName());
                     } else {

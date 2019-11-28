@@ -151,15 +151,17 @@ public class ProjectBudgetsValidator extends BaseValidator {
           }
         }
       } else {
-        action.addMessage(action.getText("projectBudgets"));
-        action.getInvalidFields().put("list-project.budgets",
-          action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Budgets"}));
+        // These lines were comment due a choice with Hector to not require at least one budget anymore (2019-11-27)
+        // action.addMessage(action.getText("projectBudgets"));
+        // action.getInvalidFields().put("list-project.budgets",
+        // action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Budgets"}));
       }
 
       if (totalPartnerBudgetsCurrentYear <= 0) {
-        action.addMessage(action.getText("projectBudgets"));
-        action.getInvalidFields().put("list-project.budgets",
-          action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Budgets"}));
+        // These lines were comment due a choice with Hector to not require at least one budget anymore (2019-11-27)
+        // action.addMessage(action.getText("projectBudgets"));
+        // action.getInvalidFields().put("list-project.budgets",
+        // action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Budgets"}));
       }
 
       if ((action.isReportingActive() || action.isUpKeepActive())
