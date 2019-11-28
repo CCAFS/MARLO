@@ -52,7 +52,13 @@ public class MilestoneInformationAction extends BaseAction {
     CrpMilestone crpMilestone = crpMilestoneManager.getCrpMilestoneById(milestoneID);
     this.crpMilestone = new HashMap<String, Object>();
     this.crpMilestone.put("title", crpMilestone.getTitle());
-    this.crpMilestone.put("year", crpMilestone.getYear());
+    if ((crpMilestone.getExtendedYear() != null) && (!crpMilestone.getExtendedYear().equals(-1))) {
+      this.crpMilestone.put("year", crpMilestone.getExtendedYear());
+    } else {
+      this.crpMilestone.put("year", crpMilestone.getYear());
+    }
+    this.crpMilestone.put("initialYear", crpMilestone.getYear());
+    this.crpMilestone.put("extendedYear", crpMilestone.getExtendedYear());
     this.crpMilestone.put("value", crpMilestone.getValue());
 
     if (crpMilestone.getSrfTargetUnit() == null) {

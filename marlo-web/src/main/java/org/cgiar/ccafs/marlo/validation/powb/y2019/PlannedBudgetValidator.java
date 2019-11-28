@@ -134,6 +134,12 @@ public class PlannedBudgetValidator extends BaseValidator {
         }
       }
 
+      if (this.wordCount(powbSynthesis.getFinancialPlan().getAdditionalExplanationT3()) > 500) {
+        action.addMessage(action.getText("powbSynthesis.financialPlan.highlight.readText"));
+        action.getInvalidFields().put("input-powbSynthesis.financialPlan.additionalExplanationT3",
+          InvalidFieldsMessages.EMPTYFIELD);
+      }
+
 
       if (this.isPMU(powbSynthesis.getLiaisonInstitution())) {
         int i = 0;

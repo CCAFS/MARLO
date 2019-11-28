@@ -71,6 +71,9 @@ public interface FundingSourceDAO {
   public List<FundingSource> getGlobalUnitFundingSourcesByPhaseAndTypes(GlobalUnit globalUnit, Phase phase,
     Set<Integer> statusTypes);
 
+  public List<FundingSource> getGlobalUnitFundingSourcesByPhaseAndTypesWithoutInstitutions(GlobalUnit globalUnit,
+    Phase phase, Set<Integer> statusTypes);
+
   /**
    * This method saves the information of the given fundingSource
    * 

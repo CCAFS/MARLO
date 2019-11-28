@@ -650,6 +650,7 @@ public class FundingSourceListAction extends BaseAction {
     statusTypes.add(Integer.parseInt(FundingStatusEnum.Complete.getStatusId()));
     statusTypes.add(Integer.parseInt(FundingStatusEnum.Cancelled.getStatusId()));
 
+
     // Budget Types list
     budgetTypes = new HashMap<>();
     for (BudgetType budgetType : budgetTypeManager.findAll()) {
@@ -663,8 +664,14 @@ public class FundingSourceListAction extends BaseAction {
       }
     }
 
+
     List<FundingSource> allFundingSources =
       fundingSourceManager.getGlobalUnitFundingSourcesByPhaseAndTypes(loggedCrp, this.getActualPhase(), statusTypes);
+
+    /*
+     * List<FundingSource> allFundingSources = fundingSourceManager
+     * .getGlobalUnitFundingSourcesByPhaseAndTypesWithoutInstitutions(loggedCrp, this.getActualPhase(), statusTypes);
+     */
 
     this.myProjects = new ArrayList<>();
     this.closedProjects = new ArrayList<>();

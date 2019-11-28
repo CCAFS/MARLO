@@ -61,7 +61,6 @@ import org.cgiar.ccafs.marlo.data.model.IpProjectIndicator;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectBudget;
-import org.cgiar.ccafs.marlo.data.model.ProjectBudgetsCluserActvity;
 import org.cgiar.ccafs.marlo.data.model.ProjectCommunication;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyCountry;
@@ -716,16 +715,18 @@ public class ProjectActivitiesSummaryAction extends BaseSummariesAction implemen
     return model;
   }
 
-  public ProjectBudgetsCluserActvity getBudgetbyCoa(Long activitiyId, int year, long type) {
-    for (ProjectBudgetsCluserActvity pb : project.getProjectBudgetsCluserActvities().stream()
-      .filter(pb -> pb.isActive() && pb.getYear() == year && pb.getCrpClusterOfActivity() != null
-        && pb.getCrpClusterOfActivity().getId() == activitiyId && type == pb.getBudgetType().getId()
-        && pb.getPhase() != null && pb.getPhase().equals(this.getSelectedPhase()))
-      .collect(Collectors.toList())) {
-      return pb;
-    }
-    return null;
-  }
+  /*
+   * public ProjectBudgetsCluserActvity getBudgetbyCoa(Long activitiyId, int year, long type) {
+   * for (ProjectBudgetsCluserActvity pb : project.getProjectBudgetsCluserActvities().stream()
+   * .filter(pb -> pb.isActive() && pb.getYear() == year && pb.getCrpClusterOfActivity() != null
+   * && pb.getCrpClusterOfActivity().getId() == activitiyId && type == pb.getBudgetType().getId()
+   * && pb.getPhase() != null && pb.getPhase().equals(this.getSelectedPhase()))
+   * .collect(Collectors.toList())) {
+   * return pb;
+   * }
+   * return null;
+   * }
+   */
 
   public byte[] getBytesPDF() {
     return bytesPDF;

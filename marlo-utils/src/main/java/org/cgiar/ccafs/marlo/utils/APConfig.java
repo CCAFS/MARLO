@@ -189,7 +189,7 @@ public class APConfig {
 
     if (CDN_URL == null || CDN_URL.equals("")) {
 
-      LOG.warn("there is not a base url where the media hosted in CDN, using current URL instead");
+      // LOG.warn("there is not a base url where the media hosted in CDN, using current URL instead");
       return null;
     }
 

@@ -74,6 +74,9 @@ public interface FundingSourceManager {
   public List<FundingSource> getGlobalUnitFundingSourcesByPhaseAndTypes(GlobalUnit globalUnit, Phase phase,
     Set<Integer> statusTypes);
 
+  public List<FundingSource> getGlobalUnitFundingSourcesByPhaseAndTypesWithoutInstitutions(GlobalUnit globalUnit,
+    Phase phase, Set<Integer> statusTypes);
+
   public List<FundingSourceSummary> getOngoingFundingSourceSummaries(GlobalUnit globalUnit, Phase phase);
 
   /**

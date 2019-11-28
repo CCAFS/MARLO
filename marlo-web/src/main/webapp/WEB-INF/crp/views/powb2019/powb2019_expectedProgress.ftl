@@ -179,7 +179,7 @@
                   <td rowspan="${outcomesSize}" class="milestonesSize-${outcomesSize}"> ${(outcome.composedName)!}</td>
                 [/#if]
                 [#-- Milestone --]
-                <td> ${(m.composedName)!}   [#if allowPopups]<div class="pull-right">[@milestoneContributions element=m tiny=true /][/#if]  </div></td>
+                <td>  ${(m.composedName)!}   [#if allowPopups]<div class="pull-right">[@milestoneContributions element=m tiny=true /][/#if]  </div></td>
                 [#-- Indicate of the following --]
                 [#if includeAllColumns]
                   <td> [#if (m.powbIndFollowingMilestone.name?has_content)!false]${m.powbIndFollowingMilestone.name}[#else] [@utils.prefilledTag /] [/#if] </td>

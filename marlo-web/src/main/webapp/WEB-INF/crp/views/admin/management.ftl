@@ -19,7 +19,7 @@
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
 
-[#assign isCenter = (actualPhase.crp.centerType)!false /]
+[#assign isCenter = (isCenterGlobalUnit)!false /]
 
 <div class="container helpText viewMore-block">
   <div class="helpMessage infoText">

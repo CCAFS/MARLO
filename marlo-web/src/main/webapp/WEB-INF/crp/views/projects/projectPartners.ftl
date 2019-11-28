@@ -485,11 +485,12 @@
         </div>
   	    [#-- Contact Email --]
         <div class="col-md-8 partnerPerson-email userField" >
-          [#attempt]
+           [#--[#attempt]
             [#assign canEditEmail=!((action.getActivitiesLedByUser((element.id)!-1)!false)?has_content) && canEditContactType/]
           [#recover]
             [#assign canEditEmail=true /]
-          [/#attempt]
+          [/#attempt] --]
+          [#assign canEditEmail = editable && isTemplate]
           <input type="hidden" class="canEditEmail" value="${canEditEmail?string}" />
           [#-- Contact Person information is going to come from the users table, not from project_partner table (refer to the table project_partners in the database) --] 
           [#assign partnerClass = "${name}.user.id"?string?replace("\\W+", "", "r") /]

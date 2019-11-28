@@ -140,7 +140,7 @@ public class OutcomeValidator extends BaseValidator
     }
 
     if (milestone.getMilestonesStatus() != null) {
-      if (milestone.getMilestonesStatus().getId() == 3) {
+      if (milestone.getMilestonesStatus().getId() == 4) {
         if (!this.isValidNumber(String.valueOf(milestone.getExtendedYear())) || milestone.getExtendedYear() <= 0) {
           action.addMessage(action.getText("outcome.action.milestone.extendedYear.required", params));
           action.getInvalidFields().put("input-" + customName + ".extendedYear", InvalidFieldsMessages.EMPTYFIELD);

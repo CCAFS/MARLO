@@ -36,7 +36,7 @@
     <![endif]-->
     
     [#-- Second, import global javascripts and templates. --]
-    <link rel="stylesheet" type="text/css" href="${baseUrlCdn}/global/css/global.css?20190723" />
+    <link rel="stylesheet" type="text/css" href="${baseUrlCdn}/global/css/global.css?20191018" />
     <link rel="stylesheet" type="text/css" href="${baseUrlCdn}/global/css/jquery-ui.custom.css" />
     [#if centerGlobalUnit]
       <link rel="stylesheet" type="text/css" href="${baseUrlCdn}/global/css/global-center.css" />
@@ -87,7 +87,9 @@
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
       
-      gtag('set', {'user_id': '${(currentUser.composedID)!"Unknown"}'});
+      [#if (currentUser??)!false]
+        gtag('set', {'user_id': '${(currentUser.composedID)!"Unknown"}'});
+      [/#if]
       gtag('config', '${googleAnalyticsID}');
     </script>
     

@@ -11,5 +11,8 @@
         <property name="name" type="string">
             <column name="name" sql-type="TEXT" />
         </property>
+        <property name="order" type="java.lang.Integer">
+            <column name="norder" />
+        </property>
     </class>
 </hibernate-mapping>

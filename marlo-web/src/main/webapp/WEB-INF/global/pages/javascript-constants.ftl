@@ -30,7 +30,7 @@
   var reportingActive= ${((reportingActive)!false)?string};
   var upKeepActive= ${((upKeepActive)!false)?string};
   var projectPreSetting= ${((project.projectInfo.projectEditLeader)!false)?string('0','1')};
-  
+  var currentUserName = "${(currentUser.composedCompleteName)!}";
   var phaseID = ${(actualPhase.id)!'""'};
 
   

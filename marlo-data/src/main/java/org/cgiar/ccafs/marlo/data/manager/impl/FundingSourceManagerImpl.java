@@ -144,6 +144,13 @@ public class FundingSourceManagerImpl implements FundingSourceManager {
   }
 
   @Override
+  public List<FundingSource> getGlobalUnitFundingSourcesByPhaseAndTypesWithoutInstitutions(GlobalUnit globalUnit,
+    Phase phase, Set<Integer> statusTypes) {
+    return fundingSourceDAO.getGlobalUnitFundingSourcesByPhaseAndTypesWithoutInstitutions(globalUnit, phase,
+      statusTypes);
+  }
+
+  @Override
   public List<FundingSourceSummary> getOngoingFundingSourceSummaries(GlobalUnit globalUnit, Phase phase) {
 
     Set<Integer> statusTypes = new HashSet<>();

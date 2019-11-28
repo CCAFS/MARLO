@@ -167,15 +167,17 @@ public class ProjectBudgetByPartnersReplicationAction extends BaseAction {
             relationsName.add(APConstants.PROJECT_BUDGETS_RELATION);
             relationsName.add(APConstants.PROJECT_INFO_RELATION);
 
-            for (ProjectBudget projectBudget : project.getProjectBudgets().stream()
-              .filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList())) {
-              if (projectBudget != null) {
-                if (projectBudget.getYear() == phase.getYear() && !this.hasProjectBudgetNextPhase(projectBudget)) {
-                  projectBudgetManager.saveProjectBudget(projectBudget);
-                  this.projectSectionValidator.validateProjectBudgetsCoAs(this, project.getId(), false);
-                }
-              }
-            }
+            /*
+             * for (ProjectBudget projectBudget : project.getProjectBudgets().stream()
+             * .filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList())) {
+             * if (projectBudget != null) {
+             * if (projectBudget.getYear() == phase.getYear() && !this.hasProjectBudgetNextPhase(projectBudget)) {
+             * projectBudgetManager.saveProjectBudget(projectBudget);
+             * this.projectSectionValidator.validateProjectBudgetsCoAs(this, project.getId(), false);
+             * }
+             * }
+             * }
+             */
 
             // Project info
             project.getProjecInfoPhase(phase).setModificationJustification(this.getJustification());
