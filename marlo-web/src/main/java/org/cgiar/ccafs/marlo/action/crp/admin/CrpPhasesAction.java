@@ -17,7 +17,9 @@ package org.cgiar.ccafs.marlo.action.crp.admin;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.CustomParameterManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
+import org.cgiar.ccafs.marlo.data.model.CustomParameter;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.security.Permission;
@@ -39,13 +41,21 @@ public class CrpPhasesAction extends BaseAction {
   private List<Phase> phasesAction;
 
   private PhaseManager phaseManager;
+  private CustomParameterManager crpParameterManager;
   private GlobalUnit loggedCrp;
+  private Long defaultPhaseID;
 
 
   @Inject
-  public CrpPhasesAction(APConfig config, PhaseManager phaseManager) {
+  public CrpPhasesAction(APConfig config, PhaseManager phaseManager, CustomParameterManager crpParameterManager) {
     super(config);
     this.phaseManager = phaseManager;
+    this.crpParameterManager = crpParameterManager;
+  }
+
+
+  public Long getDefaultPhaseID() {
+    return defaultPhaseID;
   }
 
 
@@ -58,7 +68,6 @@ public class CrpPhasesAction extends BaseAction {
     return phasesAction;
   }
 
-
   @Override
   public void prepare() throws Exception {
     loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
@@ -68,6 +77,13 @@ public class CrpPhasesAction extends BaseAction {
     phasesAction.sort((p1, p2) -> p1.getStartDate().compareTo(p2.getStartDate()));
     String params[] = {loggedCrp.getAcronym()};
     this.setBasePermission(this.getText(Permission.CRP_ADMIN_BASE_PERMISSION, params));
+    for (CustomParameter customParameter : loggedCrp.getCustomParameters().stream().filter(c -> c.isActive())
+      .collect(Collectors.toList())) {
+      if (customParameter.getParameter().getKey().equals(APConstants.CURRENT_PHASE_PARAM)) {
+        CustomParameter customParameterDb = crpParameterManager.getCustomParameterById(customParameter.getId());
+        defaultPhaseID = customParameterDb.getValue() != null ? Long.parseLong(customParameterDb.getValue()) : null;
+      }
+    }
     if (this.isHttpPost()) {
       phasesAction.clear();
     }
@@ -81,6 +97,21 @@ public class CrpPhasesAction extends BaseAction {
           phase.setNext(null);
         }
         phaseManager.savePhase(phase);
+        if (phase.getId().equals(defaultPhaseID)) {
+          System.out.println(" phase ID " + defaultPhaseID);
+          for (CustomParameter customParameter : loggedCrp.getCustomParameters().stream().filter(c -> c.isActive())
+            .collect(Collectors.toList())) {
+            if (customParameter.getParameter().getKey().equals(APConstants.CURRENT_PHASE_PARAM)) {
+              if (!customParameter.getValue().equals(defaultPhaseID)) {
+                CustomParameter customParameterDb = crpParameterManager.getCustomParameterById(customParameter.getId());
+                customParameterDb.setValue(defaultPhaseID != null ? String.valueOf(defaultPhaseID) : null);
+                customParameterDb = crpParameterManager.saveCustomParameter(customParameterDb);
+              }
+            }
+          }
+        }
+
+
       }
 
       this.getSession().remove(APConstants.PHASES);
@@ -105,11 +136,19 @@ public class CrpPhasesAction extends BaseAction {
 
   }
 
+  public void setDefaultPhaseID(Long defaultPhaseID) {
+    this.defaultPhaseID = defaultPhaseID;
+  }
+
+
   public void setPhaseManager(PhaseManager phaseManager) {
     this.phaseManager = phaseManager;
   }
 
+
   public void setPhasesAction(List<Phase> phases) {
     this.phasesAction = phases;
   }
+
+
 }

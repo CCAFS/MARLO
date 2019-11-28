@@ -116,6 +116,7 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
   HashMap<String, Set<Deliverable>> deliverablePerTypeList = new HashMap<String, Set<Deliverable>>();
   Set<Long> projectsList = new HashSet<Long>();
   private String showAllYears;
+  private int selectedPhaseYear;
 
 
   // Managers
@@ -201,6 +202,8 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
     masterReport.getParameterValues().put("i8nGeographicScope", this.getText("deliverable.geographicScope"));
     masterReport.getParameterValues().put("i8nCountry", this.getText("deliverable.countries"));
     masterReport.getParameterValues().put("i8nRegion", this.getText("deliverable.region"));
+    masterReport.getParameterValues().put("i8nNewDeliverable",
+      this.getText("summaries.board.report.expectedDeliverables.isNewDeliverable"));
 
 
     return masterReport;
@@ -239,10 +242,6 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
       this.getAllSubreports(hm, masteritemBand);
       // Uncomment to see which Subreports are detecting the method getAllSubreports
       this.fillSubreport((SubReport) hm.get("details"), "details");
-      masterReport.getParameterValues().put("total_deliv", currentPhaseDeliverables.size());
-      masterReport.getParameterValues().put("total_projects", projectsList.size());
-      this.fillSubreport((SubReport) hm.get("summary"), "summary");
-      this.fillSubreport((SubReport) hm.get("summaryPerType"), "summaryPerType");
       ExcelReportUtil.createXLSX(masterReport, os);
       bytesXLSX = os.toByteArray();
       os.close();
@@ -266,12 +265,6 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
     switch (query) {
       case "details":
         model = this.getDeliverablesDetailsTableModel();
-        break;
-      case "summary":
-        model = this.getDeliverablesPerYearTableModel();
-        break;
-      case "summaryPerType":
-        model = this.getDeliverablesPerTypeTableModel();
         break;
 
     }
@@ -307,11 +300,12 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
         "keyOutput", "delivStatus", "delivNewYear", "projectID", "projectTitle", "projectClusterActivities",
         "flagships", "regions", "individual", "partnersResponsible", "shared", "openFS", "fsWindows", "outcomes",
         "projectLeadPartner", "managingResponsible", "phaseID", "finishedFS", "gender", "youth", "cap", "climate",
-        "deliverableDescription", "geographicScope", "region", "country"},
+        "deliverableDescription", "geographicScope", "region", "country", "newDeliverable"},
       new Class[] {Long.class, String.class, Integer.class, String.class, String.class, String.class, String.class,
         String.class, Long.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, Long.class, String.class,
-        String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class},
+        String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
+        String.class},
       0);
     Boolean activePPAFilter = ppa != null && !ppa.isEmpty() && !ppa.equals("All") && !ppa.equals("-1");
     Boolean addDeliverableRow = true;
@@ -330,15 +324,15 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
         if (showAllYears.equals("true")) {
           phaseDeliverables.add(deliverable);
         } else {
-          if (((deliverableInfo.getStatus() == null && deliverableInfo.getYear() == this.getSelectedYear())
+          if (((deliverableInfo.getStatus() == null && deliverableInfo.getYear() == selectedPhaseYear)
             || (deliverableInfo.getStatus() != null
 
               && deliverableInfo.getNewExpectedYear() != null
-              && deliverableInfo.getNewExpectedYear() == this.getSelectedYear())
-            || (deliverableInfo.getStatus() != null && deliverableInfo.getYear() == this.getSelectedYear()
+              && deliverableInfo.getNewExpectedYear() == selectedPhaseYear)
+            || (deliverableInfo.getStatus() != null && deliverableInfo.getYear() == selectedPhaseYear
 
-              || ((deliverableInfo.getYear() == this.getSelectedYear() || deliverableInfo.getNewExpectedYear() != null
-                && deliverableInfo.getNewExpectedYear() == this.getSelectedYear()) && this.getSelectedPhase() != null
+              || ((deliverableInfo.getYear() == selectedPhaseYear || deliverableInfo.getNewExpectedYear() != null
+                && deliverableInfo.getNewExpectedYear() == selectedPhaseYear) && this.getSelectedPhase() != null
                 && this.getSelectedPhase().getName() != null && this.getSelectedPhase().getName().equals("UpKeep"))))) {
             phaseDeliverables.add(deliverable);
 
@@ -363,7 +357,7 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
 
       // Get partner responsible
       List<DeliverableUserPartnership> partnershipsList = deliverable.getDeliverableUserPartnerships().stream()
-        .filter(dp -> dp.isActive() && dp.getPhase().getId().equals(this.getActualPhase().getId())
+        .filter(dp -> dp.isActive() && dp.getPhase().getId().equals(this.getSelectedPhase().getId())
           && dp.getDeliverablePartnerType().getId().equals(APConstants.DELIVERABLE_PARTNERSHIP_TYPE_RESPONSIBLE))
         .collect(Collectors.toList());
 
@@ -413,6 +407,7 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
             individual += "*";
             individual += responsibleppp.getUser().getComposedNameWithoutEmail();
             if (responsibleppp.getDeliverableUserPartnership() != null
+              && responsibleppp.getDeliverableUserPartnership().isActive()
               && responsibleppp.getDeliverableUserPartnership().getInstitution() != null
               && responsibleppp.getDeliverableUserPartnership().getInstitution() != null
               && responsibleppp.getDeliverableUserPartnership().getInstitution().getAcronym() != null) {
@@ -426,7 +421,7 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
 
       // Get partner others
       List<DeliverableUserPartnership> othersPartnerships = deliverable.getDeliverableUserPartnerships().stream()
-        .filter(dp -> dp.isActive() && dp.getPhase().getId().equals(this.getActualPhase().getId())
+        .filter(dp -> dp.isActive() && dp.getPhase().getId().equals(this.getSelectedPhase().getId())
           && dp.getDeliverablePartnerType().getId().equals(APConstants.DELIVERABLE_PARTNERSHIP_TYPE_OTHER))
         .collect(Collectors.toList());
 
@@ -531,7 +526,7 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
 
       for (Institution partnerResponsible : institutionsResponsibleList) {
         // Check if is ppa
-        if (partnerResponsible.isPPA(this.getLoggedCrp().getId(), this.getActualPhase())) {
+        if (partnerResponsible.isPPA(this.getLoggedCrp().getId(), this.getSelectedPhase())) {
           managingResponsibleList.add(partnerResponsible);
         } else {
           // If is not a ppa, get the crp linked to the partner
@@ -622,7 +617,7 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
         currentPhaseDeliverables.add(deliverable);
         DeliverableInfo deliverableInfo = deliverable.getDeliverableInfo(this.getSelectedPhase());
         Long phaseID = deliverableInfo.getPhase().getId();
-
+        String newDeliverable = "";
         Long deliverableId = deliverable.getId();
         String deliverableTitle = (deliverableInfo.getTitle() != null && !deliverableInfo.getTitle().isEmpty())
           ? deliverableInfo.getTitle() : null;
@@ -640,9 +635,16 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
           && !deliverableInfo.getDeliverableType().getDeliverableCategory().getName().isEmpty())
             ? deliverableInfo.getDeliverableType().getDeliverableCategory().getName() : null;
 
+        // New deliverable
+        if (this.isDeliverableNew(deliverableId)) {
+          newDeliverable = "Yes";
+        } else {
+          newDeliverable = "No";
+        }
+
         // Get cross_cutting dimension
         String gender = "", youth = "", cap = "", climate = "";
-        Boolean isOldCrossCutting = this.getSelectedYear() < 2018;
+        Boolean isOldCrossCutting = selectedPhaseYear < 2018;
         DeliverableCrossCuttingMarker deliverableCrossCuttingMarkerGender = deliverableCrossCuttingMarkerManager
           .getDeliverableCrossCuttingMarkerId(deliverable.getId(), 1, this.getSelectedPhase().getId());
         DeliverableCrossCuttingMarker deliverableCrossCuttingMarkerYouth = deliverableCrossCuttingMarkerManager
@@ -787,7 +789,9 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
         if (deliverableInfo.getCrpClusterKeyOutput() != null) {
           keyOutput += "• ";
 
-          if (deliverableInfo.getCrpClusterKeyOutput().getCrpClusterOfActivity() != null
+          if (deliverableInfo.getCrpClusterKeyOutput() != null && deliverableInfo.getCrpClusterKeyOutput().isActive()
+            && deliverableInfo.getCrpClusterKeyOutput().getCrpClusterOfActivity() != null
+            && deliverableInfo.getCrpClusterKeyOutput().getCrpClusterOfActivity().isActive()
             && deliverableInfo.getCrpClusterKeyOutput().getCrpClusterOfActivity().getCrpProgram() != null) {
             keyOutput +=
               deliverableInfo.getCrpClusterKeyOutput().getCrpClusterOfActivity().getCrpProgram().getAcronym() + " - ";
@@ -815,9 +819,9 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
           outcomes = null;
         }
 
-        String delivStatus = (deliverableInfo.getStatusName(this.getActualPhase()) != null
-          && !deliverableInfo.getStatusName(this.getActualPhase()).isEmpty())
-            ? deliverableInfo.getStatusName(this.getActualPhase()) : null;
+        String delivStatus = (deliverableInfo.getStatusName(this.getSelectedPhase()) != null
+          && !deliverableInfo.getStatusName(this.getSelectedPhase()).isEmpty())
+            ? deliverableInfo.getStatusName(this.getSelectedPhase()) : null;
         String delivNewYear = null;
         if (deliverableInfo.getStatus() != null
           && (deliverableInfo.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
@@ -853,22 +857,65 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
             }
           }
         }
-        String projectClusterActivities = "";
-        if (deliverable.getProject() != null && deliverable.getProject().getProjectClusterActivities() != null) {
-          for (ProjectClusterActivity projectClusterActivity : deliverable.getProject().getProjectClusterActivities()
-            .stream().filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase()))
-            .collect(Collectors.toList())) {
-            if (projectClusterActivities.isEmpty()) {
-              projectClusterActivities += projectClusterActivity.getCrpClusterOfActivity().getIdentifier();
-            } else {
-              projectClusterActivities += ", " + projectClusterActivity.getCrpClusterOfActivity().getIdentifier();
+
+        // TODO change when the ProjectCoas Duplication will has been fix it
+        List<ProjectClusterActivity> coAsPrev = new ArrayList<>();
+
+        List<ProjectClusterActivity> coAs = new ArrayList<>();
+        coAsPrev = deliverable.getProject().getProjectClusterActivities().stream()
+          .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase()))
+          .collect(Collectors.toList());
+
+        for (ProjectClusterActivity projectClusterActivity : coAsPrev) {
+          if (coAs.isEmpty()) {
+            coAs.add(projectClusterActivity);
+          } else {
+            boolean duplicated = false;
+            for (ProjectClusterActivity projectCoas : coAs) {
+              if (projectCoas.getCrpClusterOfActivity().getId()
+                .equals(projectClusterActivity.getCrpClusterOfActivity().getId())) {
+                duplicated = true;
+                break;
+              }
+            }
+
+            if (!duplicated) {
+              coAs.add(projectClusterActivity);
             }
           }
         }
+
+        // fill String with coAs
+        String projectClusterActivities = "";
+        for (ProjectClusterActivity projectClusterActivity : coAs) {
+          if (projectClusterActivities.isEmpty()) {
+            projectClusterActivities += projectClusterActivity.getCrpClusterOfActivity().getIdentifier();
+          } else {
+            projectClusterActivities += ", " + projectClusterActivity.getCrpClusterOfActivity().getIdentifier();
+          }
+        }
+
         if (projectClusterActivities.isEmpty()) {
           projectClusterActivities = null;
         }
 
+        /*
+         * String projectClusterActivities = "";
+         * if (deliverable.getProject() != null && deliverable.getProject().getProjectClusterActivities() != null) {
+         * for (ProjectClusterActivity projectClusterActivity : deliverable.getProject().getProjectClusterActivities()
+         * .stream().filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase()))
+         * .collect(Collectors.toList())) {
+         * if (projectClusterActivities.isEmpty()) {
+         * projectClusterActivities += projectClusterActivity.getCrpClusterOfActivity().getIdentifier();
+         * } else {
+         * projectClusterActivities += ", " + projectClusterActivity.getCrpClusterOfActivity().getIdentifier();
+         * }
+         * }
+         * }
+         * if (projectClusterActivities.isEmpty()) {
+         * projectClusterActivities = null;
+         * }
+         */
 
         String flagships = null;
         // get Flagships related to the project sorted by acronym
@@ -925,9 +972,9 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
             Date extentionDate = fundingSourceInfo.getExtensionDate();
             int endYear = this.getCalendarFromDate(endDate);
             int extentionYear = this.getCalendarFromDate(extentionDate);
-            if ((endYear >= this.getSelectedYear()
+            if ((endYear >= selectedPhaseYear
               && fundingSourceInfo.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId()))
-              || (extentionYear >= this.getSelectedYear() && fundingSourceInfo.getStatus().intValue() == Integer
+              || (extentionYear >= selectedPhaseYear && fundingSourceInfo.getStatus().intValue() == Integer
                 .parseInt(ProjectStatusEnum.Extended.getStatusId()))) {
               if (openFS.isEmpty()) {
                 openFS += "FS" + deliverableFundingSource.getFundingSource().getId();
@@ -980,7 +1027,7 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
           // Setup Geographic Scope
           if (deliverable.getDeliverableGeographicScopes() != null) {
             deliverable.setGeographicScopes(new ArrayList<>(deliverable.getDeliverableGeographicScopes().stream()
-              .filter(o -> o.isActive() && o.getPhase().getId() == this.getActualPhase().getId())
+              .filter(o -> o.isActive() && o.getPhase().getId() == this.getSelectedPhase().getId())
               .collect(Collectors.toList())));
           }
 
@@ -989,7 +1036,7 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
             deliverable.setCountries(new ArrayList<>());
           } else {
             List<DeliverableLocation> countries = deliverableLocationManager
-              .getDeliverableLocationbyPhase(deliverable.getId(), this.getActualPhase().getId());
+              .getDeliverableLocationbyPhase(deliverable.getId(), this.getSelectedPhase().getId());
             deliverable.setCountries(countries);
           }
 
@@ -997,7 +1044,7 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
           if (deliverable.getDeliverableGeographicRegions() != null
             && !deliverable.getDeliverableGeographicRegions().isEmpty()) {
             deliverable.setDeliverableRegions(new ArrayList<>(deliverableGeographicRegionManager
-              .getDeliverableGeographicRegionbyPhase(deliverable.getId(), this.getActualPhase().getId()).stream()
+              .getDeliverableGeographicRegionbyPhase(deliverable.getId(), this.getSelectedPhase().getId()).stream()
               .filter(le -> le.isActive() && le.getLocElement().getLocElementType().getId() == 1)
               .collect(Collectors.toList())));
           }
@@ -1056,7 +1103,8 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
         model.addRow(new Object[] {deliverableId, deliverableTitle, completionYear, deliverableType, deliverableSubType,
           keyOutput, delivStatus, delivNewYear, projectID, projectTitle, projectClusterActivities, flagships, regions,
           individual, ppaResponsible, shared, openFS, fsWindows, outcomes, projectLeadPartner, managingResponsible,
-          phaseID, finishedFS, gender, youth, cap, climate, deliverableDescription, geographicScope, region, country});
+          phaseID, finishedFS, gender, youth, cap, climate, deliverableDescription, geographicScope, region, country,
+          newDeliverable});
 
         if (deliverablePerYearList.containsKey(completionYear)) {
           Set<Deliverable> deliverableSet = deliverablePerYearList.get(completionYear);
@@ -1134,7 +1182,7 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
       fileName.append("_AllYears");
     }
     fileName.append("-" + this.getLoggedCrp().getAcronym() + "-");
-    fileName.append(this.getSelectedYear() + "_");
+    fileName.append(selectedPhaseYear + "_");
     fileName.append(new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date()));
     fileName.append(".xlsx");
 
@@ -1165,7 +1213,7 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
       zone = "+0";
     }
     String date = timezone.format(format) + "(GMT" + zone + ")";
-    String year = this.getSelectedYear() + "";
+    String year = selectedPhaseYear + "";
     model.addRow(new Object[] {center, date, year, this.hasProgramnsRegions(),
       this.hasSpecificities(APConstants.CRP_REPORTS_DESCRIPTION), this.getSelectedCycle()});
     return model;
@@ -1199,6 +1247,8 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
     startTime = System.currentTimeMillis();
     LOG.info("Start report download: " + this.getFileName() + ". User: "
       + this.getCurrentUser().getComposedCompleteName() + ". CRP: " + this.getLoggedCrp().getAcronym());
+
+    selectedPhaseYear = this.getSelectedYear();
   }
 
 

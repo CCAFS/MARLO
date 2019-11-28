@@ -205,7 +205,7 @@ public class ProjectBudgetByFlagshipAction extends BaseAction {
       }
 
     } else {
-      project.setBudgetsCluserActvities(new ArrayList<>());
+      // project.setBudgetsCluserActvities(new ArrayList<>());
     }
 
     ProjectBudgetsFlagship projectBudget = new ProjectBudgetsFlagship();

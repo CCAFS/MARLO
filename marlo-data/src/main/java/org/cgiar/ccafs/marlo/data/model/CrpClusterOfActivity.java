@@ -37,8 +37,6 @@ public class CrpClusterOfActivity extends MarloAuditableEntity implements java.i
 
   private Set<CrpClusterKeyOutput> crpClusterKeyOutputs = new HashSet<CrpClusterKeyOutput>(0);
 
-  private Set<ProjectBudgetsCluserActvity> projectBudgetsCluserActvities = new HashSet<ProjectBudgetsCluserActvity>(0);
-
 
   @Expose
   private CrpProgram crpProgram;
@@ -143,10 +141,6 @@ public class CrpClusterOfActivity extends MarloAuditableEntity implements java.i
     return phase;
   }
 
-  public Set<ProjectBudgetsCluserActvity> getProjectBudgetsCluserActvities() {
-    return projectBudgetsCluserActvities;
-  }
-
 
   public Set<ProjectClusterActivity> getProjectClusterActivities() {
     return projectClusterActivities;
@@ -197,9 +191,6 @@ public class CrpClusterOfActivity extends MarloAuditableEntity implements java.i
     this.phase = phase;
   }
 
-  public void setProjectBudgetsCluserActvities(Set<ProjectBudgetsCluserActvity> projectBudgetsCluserActvities) {
-    this.projectBudgetsCluserActvities = projectBudgetsCluserActvities;
-  }
 
   public void setProjectClusterActivities(Set<ProjectClusterActivity> projectClusterActivities) {
     this.projectClusterActivities = projectClusterActivities;

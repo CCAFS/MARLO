@@ -82,8 +82,7 @@
     <mapping resource="xmls/ProjectCrpContributions.hbm.xml" />
     <mapping resource="xmls/ProjectBudgets.hbm.xml" />
     <mapping resource="xmls/BudgetTypes.hbm.xml" />
-    <mapping resource="xmls/DeliverableActivities.hbm.xml" />
-    <mapping resource="xmls/ProjectBudgetsCluserActvities.hbm.xml" />
+    <mapping resource="xmls/DeliverableActivities.hbm.xml" />    
     <mapping resource="xmls/CrpClusterKeyOutputsOutcome.hbm.xml" />
     <mapping resource="xmls/ProjectLocationElementTypes.hbm.xml" />
     <mapping resource="xmls/FundingSources.hbm.xml" />

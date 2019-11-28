@@ -910,6 +910,8 @@ public class DeliverableAction extends BaseAction {
         }
 
         Deliverable deliverableDb = deliverableManager.getDeliverableById(deliverable.getId());
+
+        deliverable.getDeliverableInfo().setId(deliverableDb.getDeliverableInfo(this.getActualPhase()).getId());
         deliverable.setProject(deliverableDb.getProject());
         project.setProjectInfo(deliverableDb.getProject().getProjecInfoPhase(this.getActualPhase()));
         project.setProjectLocations(deliverableDb.getProject().getProjectLocations());
@@ -1058,6 +1060,9 @@ public class DeliverableAction extends BaseAction {
         this.setDraft(true);
       } else {
         deliverable.getDeliverableInfo(this.getActualPhase());
+        if (deliverable.getDeliverableInfo(this.getActualPhase()) == null) {
+          deliverable.setDeliverableInfo(new DeliverableInfo());
+        }
 
         // Setup Geographic Scope
         if (deliverable.getDeliverableGeographicScopes() != null) {
@@ -1434,6 +1439,8 @@ public class DeliverableAction extends BaseAction {
             && dt.getCrp().getId().longValue() == loggedCrp.getId().longValue() && dt.getAdminType().booleanValue())
           .collect(Collectors.toList())));
       }
+
+
       if (deliverable.getDeliverableInfo(this.getActualPhase()).getDeliverableType() != null
         && deliverable.getDeliverableInfo(this.getActualPhase()).getDeliverableType().getId() != null
         && deliverable.getDeliverableInfo(this.getActualPhase()).getDeliverableType().getId().longValue() != -1) {
@@ -1447,6 +1454,7 @@ public class DeliverableAction extends BaseAction {
           deliverableTypeManager.findAll().stream().filter(dt -> dt.isActive() && dt.getDeliverableCategory() != null
             && dt.getDeliverableCategory().getId() == deliverableTypeParentId).collect(Collectors.toList()));
       }
+
 
       if (project.getProjectOutcomes() != null) {
         keyOutputs = new ArrayList<>();
@@ -1768,7 +1776,7 @@ public class DeliverableAction extends BaseAction {
 
       deliverableInfoManager.saveDeliverableInfo(deliverableManagedState.getDeliverableInfo());
 
-      if (this.hasSpecificities(APConstants.CRP_LP6_ACTIVE)
+      if (this.hasSpecificities(APConstants.CRP_LP6_ACTIVE) && this.isReportingActive()
         && this.getProjectLp6ContributionValue(project.getId(), this.getActualPhase().getId())) {
         this.updateProjectLp6ContributionDeliverable();
       }
@@ -3187,9 +3195,13 @@ public class DeliverableAction extends BaseAction {
   }
 
   private void updateProjectLp6ContributionDeliverable() {
+    List<ProjectLp6ContributionDeliverable> projectLp6ContributionDeliverables =
+      new ArrayList<ProjectLp6ContributionDeliverable>();
+    if (deliverable.getDeliverableLp6s() != null) {
+      deliverable.getDeliverableLp6s().stream()
+        .filter(dl -> dl.isActive() && dl.getPhase().equals(this.getActualPhase())).collect(Collectors.toList());
+    }
 
-    List<ProjectLp6ContributionDeliverable> projectLp6ContributionDeliverables = deliverable.getDeliverableLp6s()
-      .stream().filter(dl -> dl.isActive() && dl.getPhase().equals(this.getActualPhase())).collect(Collectors.toList());
 
     boolean haslp6Dleiverables =
       projectLp6ContributionDeliverables != null && !projectLp6ContributionDeliverables.isEmpty();

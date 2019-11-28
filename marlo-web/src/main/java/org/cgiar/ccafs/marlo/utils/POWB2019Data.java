@@ -103,16 +103,13 @@ public class POWB2019Data<T> {
     List<PowbEvidencePlannedStudyDTO> flagshipPlannedList = new ArrayList<>();
 
     if (projectExpectedStudyManager.findAll() != null) {
-      List<ProjectExpectedStudy> expectedStudies =
-        new ArrayList<>(
-          projectExpectedStudyManager.findAll().stream()
-            .filter(ps -> ps.isActive() && ps.getProjectExpectedStudyInfo(phase) != null
-              && ps.getProjectExpectedStudyInfo(phase).getYear() == year && ps.getProject() != null
-              && ps.getProject().getGlobalUnitProjects().stream()
-                .filter(
-                  gup -> gup.isActive() && gup.isOrigin() && gup.getGlobalUnit().getId().equals(loggedCrp.getId()))
-                .collect(Collectors.toList()).size() > 0)
-            .collect(Collectors.toList()));
+      List<ProjectExpectedStudy> expectedStudies = new ArrayList<>(projectExpectedStudyManager.findAll().stream()
+        .filter(ps -> ps.isActive() && ps.getProjectExpectedStudyInfo(phase) != null
+          && ps.getProjectExpectedStudyInfo(phase).getYear() == year && ps.getProject() != null
+          && ps.getProject().getGlobalUnitProjects().stream()
+            .filter(gup -> gup.isActive() && gup.isOrigin() && gup.getGlobalUnit().getId().equals(loggedCrp.getId()))
+            .collect(Collectors.toList()).size() > 0)
+        .collect(Collectors.toList()));
 
       for (ProjectExpectedStudy projectExpectedStudy : expectedStudies) {
         PowbEvidencePlannedStudyDTO dto = new PowbEvidencePlannedStudyDTO();
@@ -276,7 +273,7 @@ public class POWB2019Data<T> {
 
     List<ProjectExpectedStudy> removeStudies = new ArrayList<>();
 
-    if (powbSynthesis.getPowbEvidence() != null) {
+    if (powbSynthesis != null && powbSynthesis.getPowbEvidence() != null) {
       if (powbSynthesis.getPowbEvidence().getPowbEvidencePlannedStudies() != null
         && !powbSynthesis.getPowbEvidence().getPowbEvidencePlannedStudies().isEmpty()) {
 
@@ -335,7 +332,7 @@ public class POWB2019Data<T> {
 
     List<PowbCollaborationGlobalUnit> removeList = new ArrayList<>();
 
-    if (powbSynthesisPMU.getCollaboration() != null) {
+    if (powbSynthesisPMU != null && powbSynthesisPMU.getCollaboration() != null) {
       if (powbSynthesisPMU.getCollaboration().getPowbCollaborationGlobalUnitPmu() != null) {
 
         for (PowbCollaborationGlobalUnitPmu powbCollaborationGlobalUnitPmu : powbSynthesisPMU.getCollaboration()
@@ -351,6 +348,63 @@ public class POWB2019Data<T> {
   }
 
   /**
+   * Table 2C Collaborations
+   * POWB 2020
+   * 
+   * @return
+   */
+  public List<PowbCollaborationGlobalUnit> getTable2C2020(Phase phase, GlobalUnit loggedCrp,
+    PowbSynthesis powbSynthesisPMU) {
+    List<PowbCollaborationGlobalUnit> globalUnitCollaborations = new ArrayList<>();
+
+    List<CrpProgram> crpPrograms = loggedCrp.getCrpPrograms().stream()
+      .filter(c -> c.isActive() && c.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+      .collect(Collectors.toList());
+    crpPrograms.sort((p1, p2) -> p1.getAcronym().compareTo(p2.getAcronym()));
+    for (CrpProgram crpProgram : crpPrograms) {
+      List<LiaisonInstitution> liaisonInstitutions =
+        crpProgram.getLiaisonInstitutions().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+      if (!liaisonInstitutions.isEmpty()) {
+        PowbSynthesis powbSynthesisProgram =
+          powbSynthesisManager.findSynthesis(phase.getId(), liaisonInstitutions.get(0).getId());
+        if (powbSynthesisProgram != null) {
+          powbSynthesisProgram.setPowbCollaborationGlobalUnitsList(powbSynthesisProgram
+            .getPowbCollaborationGlobalUnits().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+
+          crpProgram.setCollaboration(powbSynthesisProgram.getCollaboration());
+          crpProgram.setSynthesis(powbSynthesisProgram);
+
+          globalUnitCollaborations.addAll(powbSynthesisProgram.getPowbCollaborationGlobalUnitsList());
+        }
+      }
+      if (crpProgram.getSynthesis() == null) {
+        crpProgram.setSynthesis(new PowbSynthesis());
+      }
+      if (crpProgram.getCollaboration() == null) {
+        crpProgram.setCollaboration(new PowbCollaboration());
+      }
+
+    }
+
+
+    List<PowbCollaborationGlobalUnit> removeList = new ArrayList<>();
+    if (powbSynthesisPMU != null && powbSynthesisPMU.getCollaboration() != null) {
+      if (powbSynthesisPMU.getCollaboration().getPowbCollaborationGlobalUnitPmu() != null) {
+
+        for (PowbCollaborationGlobalUnit powbCollaborationGlobalUnitPmu : powbSynthesisPMU
+          .getPowbCollaborationGlobalUnits().stream().filter(ro -> ro.isActive()).collect(Collectors.toList())) {
+          globalUnitCollaborations.add(powbCollaborationGlobalUnitPmu);
+          // removeList.add(powbCollaborationGlobalUnitPmu.getPowbCollaborationGlobalUnits());
+        }
+      }
+    }
+    // globalUnitCollaborations.removeAll(removeList);
+
+
+    return globalUnitCollaborations;
+  }
+
+  /**
    * Table 3 Planned Budget
    * 
    * @param powbSynthesisPMU
@@ -359,33 +413,47 @@ public class POWB2019Data<T> {
   public List<PowbFinancialPlannedBudget> getTable3(PowbSynthesis powbSynthesisPMU) {
 
     List<PowbFinancialPlannedBudget> plannedBudgetOder = new ArrayList<>();
-    List<PowbFinancialPlannedBudget> plannedBudget = new ArrayList<>(powbSynthesisPMU.getPowbFinancialPlannedBudget()
-      .stream().filter(fp -> fp.isActive()).collect(Collectors.toList()));
+    List<PowbFinancialPlannedBudget> plannedBudget = null;
+    if (powbSynthesisPMU != null) {
+      plannedBudget = new ArrayList<>(powbSynthesisPMU.getPowbFinancialPlannedBudget().stream()
+        .filter(fp -> fp.isActive()).collect(Collectors.toList()));
+    }
 
     List<PowbFinancialPlannedBudget> plannedBudgetFlagship = new ArrayList<>();
-    for (PowbFinancialPlannedBudget powbFinancialPlannedBudget : plannedBudget) {
-      if (powbFinancialPlannedBudget.getLiaisonInstitution() != null) {
-        plannedBudgetFlagship.add(powbFinancialPlannedBudget);
+    if (plannedBudget != null) {
+      for (PowbFinancialPlannedBudget powbFinancialPlannedBudget : plannedBudget) {
+        if (powbFinancialPlannedBudget.getLiaisonInstitution() != null) {
+          plannedBudgetFlagship.add(powbFinancialPlannedBudget);
+        }
       }
     }
 
-    plannedBudgetOder.addAll(plannedBudgetFlagship.stream()
-      .sorted((g1, g2) -> g1.getLiaisonInstitution().getAcronym().compareTo(g2.getLiaisonInstitution().getAcronym()))
-      .collect(Collectors.toList()));
+    if (plannedBudgetFlagship != null) {
+      plannedBudgetOder.addAll(plannedBudgetFlagship.stream()
+        .sorted((g1, g2) -> g1.getLiaisonInstitution().getAcronym().compareTo(g2.getLiaisonInstitution().getAcronym()))
+        .collect(Collectors.toList()));
+    }
 
-    List<PowbFinancialPlannedBudget> plannedBudgetExp = new ArrayList<>();
-    for (PowbFinancialPlannedBudget powbFinancialPlannedBudget : plannedBudget) {
-      if (powbFinancialPlannedBudget.getPowbExpenditureArea() != null) {
-        plannedBudgetExp.add(powbFinancialPlannedBudget);
+    List<PowbFinancialPlannedBudget> plannedBudgetExp = null;
+    if (plannedBudget != null) {
+      plannedBudgetExp = new ArrayList<>();
+      for (PowbFinancialPlannedBudget powbFinancialPlannedBudget : plannedBudget) {
+        if (powbFinancialPlannedBudget.getPowbExpenditureArea() != null) {
+          plannedBudgetExp.add(powbFinancialPlannedBudget);
+        }
       }
     }
 
-    plannedBudgetOder.addAll(plannedBudgetExp);
+    if (plannedBudgetExp != null) {
+      plannedBudgetOder.addAll(plannedBudgetExp);
+    }
 
     List<PowbFinancialPlannedBudget> plannedBudgetTitle = new ArrayList<>();
-    for (PowbFinancialPlannedBudget powbFinancialPlannedBudget : plannedBudget) {
-      if (powbFinancialPlannedBudget.getTitle() != null) {
-        plannedBudgetTitle.add(powbFinancialPlannedBudget);
+    if (plannedBudget != null) {
+      for (PowbFinancialPlannedBudget powbFinancialPlannedBudget : plannedBudget) {
+        if (powbFinancialPlannedBudget.getTitle() != null) {
+          plannedBudgetTitle.add(powbFinancialPlannedBudget);
+        }
       }
     }
 

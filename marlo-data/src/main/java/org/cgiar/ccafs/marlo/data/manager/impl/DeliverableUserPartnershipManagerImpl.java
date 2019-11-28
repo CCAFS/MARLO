@@ -250,14 +250,18 @@ public class DeliverableUserPartnershipManagerImpl implements DeliverableUserPar
     DeliverableUserPartnership deliverableUserPartnership) {
 
     Phase phase = phaseDAO.find(next.getId());
+    List<DeliverableUserPartnership> deliverableUserPartnerships = null;
 
-    List<DeliverableUserPartnership> deliverableUserPartnerships =
-      phase.getDeliverableUserPartnerships().stream()
-        .filter(c -> c.isActive() && c.getDeliverable().getId().equals(deliverableID)
-          && c.getInstitution().getId().equals(deliverableUserPartnership.getInstitution().getId()) && c
-            .getDeliverablePartnerType().getId().equals(deliverableUserPartnership.getDeliverablePartnerType().getId()))
+    if (deliverableID != 0 && deliverableUserPartnership != null && deliverableUserPartnership.getInstitution() != null
+      && deliverableUserPartnership.getInstitution().getId() != null
+      && deliverableUserPartnership.getDeliverablePartnerType() != null) {
+      deliverableUserPartnerships = phase.getDeliverableUserPartnerships().stream().filter(c -> c.isActive()
+        && c.getDeliverable() != null && c.getDeliverable().getId().equals(deliverableID) && c.getInstitution() != null
+        && c.getInstitution().getId().equals(deliverableUserPartnership.getInstitution().getId())
+        && c.getDeliverablePartnerType() != null
+        && c.getDeliverablePartnerType().getId().equals(deliverableUserPartnership.getDeliverablePartnerType().getId()))
         .collect(Collectors.toList());
-
+    }
 
     if (deliverableUserPartnerships.isEmpty()) {
 

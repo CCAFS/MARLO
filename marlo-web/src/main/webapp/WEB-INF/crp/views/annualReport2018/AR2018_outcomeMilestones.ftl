@@ -185,7 +185,7 @@
                 [#-- Milestone Status --]
                 <td class="text-center"> 
                   [#local reportedMilestone= (action.getMilestone((reportedOutcome.id)!-1 , milestone.id))! ]
-                  [@utils.tableText value=(reportedMilestone.statusName)!"" emptyText="global.prefilledByFlagship" /]
+                  [@utils.tableText value=(reportedMilestone.crpMilestone.milestonesStatus.name)!"" emptyText="global.prefilledByFlagship" /]
                 </td>
                 [#if !allowPopups]
                   [#-- Milestone Evidence --]
@@ -244,7 +244,7 @@
                 [#-- Milestone Status --]
                 <td class="text-center"> 
                   [#local reportedMilestone= (action.getMilestone((reportedOutcome.id)!-1 , milestone.id))! ]
-                  [@utils.tableText value=(reportedMilestone.statusName)!"" emptyText="global.prefilledByFlagship" /]
+                  [@utils.tableText value=(reportedMilestone.crpMilestone.milestonesStatus.name)!"" emptyText="global.prefilledByFlagship" /]
                 </td>
                 [#-- Status predominant reason --]
                 <td>

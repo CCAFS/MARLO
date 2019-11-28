@@ -77,7 +77,10 @@
               <div class="addExpenditureArea bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>[@s.text name="form.buttons.addExpenditureArea"/]</div>
             [/#if]
           </div>
-          
+             [#if PMU][@utilities.tag label="powb.docBadge" tooltip="powb.docBadge.tooltip"/]
+              [@customForm.textArea name="${customName}.additionalExplanationT3" i18nkey="${customLabel}.explanation" helpIcon=false required=false className="limitWords-${calculateLimitWords(500)}" editable=editable allowTextEditor=true   /]
+             [/#if]
+            </div>
         </div>
         
         [#-- Section Buttons & hidden inputs--]

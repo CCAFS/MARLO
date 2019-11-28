@@ -468,7 +468,8 @@ public class ExpectedCRPProgress2019Action extends BaseAction {
 
 
         crpProgramOutcome.setMilestones(crpProgramOutcome.getCrpMilestones().stream()
-          .filter(c -> c.isActive() && c.getYear().intValue() == this.getActualPhase().getYear())
+          .filter(c -> c.isActive() && ((c.getYear().intValue() == this.getActualPhase().getYear())
+            || (c.getExtendedYear() != null && c.getExtendedYear().equals(this.getActualPhase().getYear()))))
           .collect(Collectors.toList()));
 
 

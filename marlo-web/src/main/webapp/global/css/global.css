@@ -6980,3 +6980,7 @@ article#mainInformation {
 .icon-loading {
   background-image: url(../../global/images/loading_3.gif) !important;
 }
+
+.text-bold {
+  font-weight: 500 !important;
+}

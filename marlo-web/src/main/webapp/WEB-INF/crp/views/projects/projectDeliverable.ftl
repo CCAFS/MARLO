@@ -7,7 +7,7 @@
   "${baseUrlMedia}/js/projects/deliverables/deliverableDissemination.js?20190229", 
   "${baseUrlMedia}/js/projects/deliverables/deliverableQualityCheck.js?20190228",
   [#--  "${baseUrlMedia}/js/projects/deliverables/deliverableDataSharing.js?20180523",--]
-  "${baseUrlCdn}/global/js/autoSave.js",
+  [#--  "${baseUrlCdn}/global/js/autoSave.js",--]
   "${baseUrlCdn}/global/js/fieldsValidation.js?20180529"
 ] /]
 [#assign customCSS = ["${baseUrl}/crp/css/projects/projectDeliverable.css"] /]
@@ -37,7 +37,7 @@
   <div style="display:none" class="viewMore closed"></div>
 </div>
     
-[#if (!availabePhase)!false]
+[#if !((deliverable.deliverableInfo.id??)!false)]
   [#include "/WEB-INF/crp/views/projects/availability-projects.ftl" /]
 [#else]
 <section class="container">
@@ -187,8 +187,15 @@
 
 
 [#macro setDeliverableRule element ruleName]
-  <input type="hidden" id="hasDeliverableRule-${ruleName}" value="${((action.hasDeliverableRule(element.deliverableInfo, ruleName))!false)?string}" />
-  <input type="hidden" id="getDeliverableTypesByRule-${ruleName}" value="${(action.getDeliverableTypesByRule(ruleName)?replace("[", "")?replace("]", "") )!}" />
+  [#attempt]
+    [#local deliverableRuleValue = ((action.hasDeliverableRule(element.deliverableInfo, ruleName))!false)?string ]
+    [#local deliverableTypesValues = (action.getDeliverableTypesByRule(ruleName)?replace("[", "")?replace("]", "") )! ]
+  [#recover]
+    [#local deliverableRuleValue = "false" ]
+    [#local deliverableTypesValues = "[ ]" ]
+  [/#attempt]
+  <input type="hidden" id="hasDeliverableRule-${ruleName}" value="${deliverableRuleValue}" />
+  <input type="hidden" id="getDeliverableTypesByRule-${ruleName}" value="${deliverableTypesValues}" />
 [/#macro]
 [#-- Funding Source list template --]
 <ul style="display:none">
