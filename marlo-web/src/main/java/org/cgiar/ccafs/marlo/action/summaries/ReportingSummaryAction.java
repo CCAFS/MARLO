@@ -3464,10 +3464,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         if (innovationInfo.getRepIndInnovationType() != null) {
           innovationType = innovationInfo.getRepIndInnovationType().getName();
         }
-        // ContributionCrp
-        if (innovationInfo.getRepIndContributionOfCrp() != null) {
-          contributionOfCrp = innovationInfo.getRepIndContributionOfCrp().getName();
-        }
+
         // Degree
         if (innovationInfo.getRepIndDegreeInnovation() != null) {
           degreeInnovation = innovationInfo.getRepIndDegreeInnovation().getName();
