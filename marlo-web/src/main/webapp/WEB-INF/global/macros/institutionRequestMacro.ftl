@@ -30,6 +30,12 @@
               <p><strong>[@s.text name="Requested By" /]:</strong> <i>${(partner.createdBy.composedName?html)!'none'}</i></p>
               [#-- Active since --]
               <p><strong>[@s.text name="Active since" /]:</strong> <i>${(partner.activeSince?html)!'none'}</i></p>
+              
+              [#if partner.externalUserMail??]
+                <hr />
+                <p><strong>API Requester:</strong> <i>${(partner.externalUserName?html)!'none'} (${(partner.externalUserMail?html)!'none'})</i></p>
+                <p><strong>API Comments:</strong> <i>${(partner.externalUserComments?html)!'none'}</i></p>
+              [/#if]
             </div>
             
           </div>
