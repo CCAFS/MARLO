@@ -712,12 +712,6 @@ public class ProjectsDeleteFieldsSummaryAction extends BaseSummariesAction imple
           projectInnovation = projectInnovationList.get(0);
         }
 
-        if (projectInnovation != null && projectInnovation.getProjectInnovationInfo(phase) != null
-          && projectInnovation.getProjectInnovationInfo().getRepIndContributionOfCrp() != null
-          && projectInnovation.getProjectInnovationInfo().getRepIndContributionOfCrp().getName() != null) {
-          contributionCRP = projectInnovation.getProjectInnovationInfo(phase).getRepIndContributionOfCrp().getName();
-        }
-
         List<Deliverable> deliverableList = new ArrayList<>();
         deliverableList = deliverableManager.getDeliverablesByProjectAndPhase(phase.getId(), project.getId()).stream()
           .filter(d -> d.isActive() && d.getProject() == project).collect(Collectors.toList());

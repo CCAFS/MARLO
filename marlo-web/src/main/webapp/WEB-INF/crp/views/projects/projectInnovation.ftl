@@ -84,9 +84,7 @@
         
           [#-- Contribution of CRP --] 
           <div class="form-group row">
-            <div class="col-md-6 ">
-              [@customForm.select name="innovation.projectInnovationInfo.repIndContributionOfCrp.id" label=""  i18nkey="projectInnovations.contributionOfCrp" listName="contributionCrpList" keyFieldName="id"  displayFieldName="name" required=false  className="" editable=editable/]
-            </div>       
+          
             [#-- Other Innovation Type --]
             [#assign isTypeSix = (innovation.projectInnovationInfo.repIndInnovationType.id == 6)!false]
             <div class="col-md-6 ">
