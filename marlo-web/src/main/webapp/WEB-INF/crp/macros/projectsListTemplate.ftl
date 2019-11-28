@@ -146,8 +146,11 @@
           [#-- Project Action Status --]
           <td>
             [#assign currentCycleYear= currentCycleYear /]
-            [#assign submission = action.isProjectSubmitted(project.id) /]
-            
+            [#if centerGlobalUnit]
+              [#assign submission = action.isSubmit(project.id,(currentCycleYear-1),"Reporting") /]
+            [#else]
+              [#assign submission = action.isProjectSubmitted(project.id) /]
+            [/#if]
             [#-- CRP Project --]
             [#if isCrpProject]
               [#if !project.projectInfo.isProjectEditLeader()]
@@ -157,8 +160,7 @@
                   [#if !reportingActive]<p title="Ready for project leader completion">Ready for PL</p>[/#if]
                 [#else]
                   <strong title="Submitted">Submitted</strong>
-                [/#if]
-                
+                [/#if]                
                 [#-- Status --]
                 [#if reportingActive]
                   <p>${(project.projectInfo.statusName)!}</p>
