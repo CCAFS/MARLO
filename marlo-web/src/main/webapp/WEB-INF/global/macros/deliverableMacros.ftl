@@ -138,74 +138,7 @@
   <div class="form-group row yesNoInputDeliverable">
     <label class="col-md-9 yesNoLabel" for="">[@s.text name="project.deliverable.dissemination.adoptedLicenseQuestion" /] [@customForm.req required=reportingActive /]</label>
     <div class="col-md-3">[@customForm.yesNoInputDeliverable name="deliverable.deliverableInfo.adoptedLicense"  editable=editable inverse=false  cssClass="type-license text-center" /] </div>  
-  </div>
-  [#-- Deliverable type computer software --]
-  [#local licenceOptions = [
-    { "name": "computerLicense",
-      "display": displayDeliverableRule(deliverable, deliverableComputerLicense)!,
-      "options": [
-        {"name": "MIT"},
-        {"name": "GNU"}
-      ]
-    },
-    { "name": "dataLicense",
-      "display": displayDeliverableRule(deliverable, deliverableDataLicense),
-      "options": [
-        {"name": "CC_LICENSES"},
-        {"name": "CC_PUBLIC"},
-        {"name": "OPEN_DATA"}
-      ]
-    },
-    { "name": "otherLicenses",
-      "display": "block",
-      "options": [
-        {"name": "CC_BY"},
-        {"name": "CC_BY_SA"},
-        {"name": "CC_BY_ND"},
-        {"name": "CC_BY_NC"},
-        {"name": "CC_BY_NC_SA"},
-        {"name": "CC_BY_NC_ND"},
-        {"name": "OTHER"}
-      ]
-    }
-  
-  ] /]
-  
-  <div class="block-license" style="display:${((deliverable.deliverableInfo.adoptedLicense)!false)?string('block','none')}">
-    <hr />
-    
-    [@metadataField title="rights" encodedName="dc.rights" type="text" require=false cssLabelName="note"/]
-    [#-- ${getMetadataValueByCode("dc.rights")} --] 
-    
-    
-    <div class="licenseOptions-block">
-      [#list licenceOptions as licenseType]
-        <div class="licenseOptions ${licenseType.name}" style="display:${licenseType.display};">
-          [#list licenseType.options as option]
-            [#assign licenseDescription][@s.text name="license.${option.name}.description" /][/#assign]
-            [#assign licenseLabel][@s.text name="license.${option.name}" /][#if licenseDescription?has_content] <small>(${licenseDescription})</small>[/#if][/#assign]
-            <p>[@customForm.radioFlat id="license-${licenseType_index}-${option_index}" name="deliverable.deliverableInfo.license" label="${licenseLabel}" disabled=false editable=editable value="${option.name}" checked=((deliverable.deliverableInfo.licenseType) == (option.name))!false cssClass="licenceOption" cssClassLabel="font-normal" /]</p>
-          [/#list]
-        </div>
-      [/#list]
-      
-      [#-- Other (Please specify)--]
-      <div class="licenseOptions">
-        <div class="form-group row">
-          <div class="col-md-6 licence-modifications" style="display:[#if (deliverable.deliverableInfo.licenseType=="OTHER")!false]block[#else]none [/#if];" >
-            [@customForm.input name="deliverable.deliverableInfo.otherLicense" showTitle=false className="" type="text" placeholder="Please specify" disabled=!editable className="otherLicense"  required=true editable=editable /]
-          </div>
-          <div class="col-md-6 licence-modifications yesNoInputDeliverable" style="display:[#if (deliverable.deliverableInfo.licenseType=="OTHER")!false]block[#else]none [/#if];" >
-            <label class="col-md-6 yesNoLabel" for="">[@s.text name="project.deliverable.dissemination.licenseModifications" /]</label>
-            <div class="col-md-6">
-              [@customForm.yesNoInputDeliverable name="deliverable.deliverableInfo.allowModifications"  editable=editable inverse=false cssClass="licenceModifications text-center" /] 
-            </div>  
-          </div>
-        </div>
-      </div>
-    </div>
-    
-  </div>
+  </div>  
 </div>
 [/#macro]
 

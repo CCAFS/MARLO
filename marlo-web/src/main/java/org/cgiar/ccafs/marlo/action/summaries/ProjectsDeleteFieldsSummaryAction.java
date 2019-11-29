@@ -716,24 +716,6 @@ public class ProjectsDeleteFieldsSummaryAction extends BaseSummariesAction imple
         deliverableList = deliverableManager.getDeliverablesByProjectAndPhase(phase.getId(), project.getId()).stream()
           .filter(d -> d.isActive() && d.getProject() == project).collect(Collectors.toList());
 
-
-        for (Deliverable deliverable : deliverableList) {
-          if (deliverable.getDeliverableInfo(phase).getLicense() != null) {
-            if (license == null || license.length() == 0) {
-              license = "D" + deliverable.getId() + ": " + deliverable.getDeliverableInfo(phase).getLicense();
-            } else {
-              license = ", D" + deliverable.getId() + ": " + deliverable.getDeliverableInfo(phase).getLicense();
-            }
-          }
-          if (deliverable.getDeliverableInfo(phase).getOtherLicense() != null) {
-            if (otherLicense == null || otherLicense.length() == 0) {
-              otherLicense = "D" + deliverable.getId() + ": " + deliverable.getDeliverableInfo(phase).getOtherLicense();
-            } else {
-              otherLicense =
-                ", D" + deliverable.getId() + ": " + deliverable.getDeliverableInfo(phase).getOtherLicense();
-            }
-          }
-        }
         // BudgetsbyCoasTableModel
         // this.getBudgetsbyCoasTableModel(project);
 

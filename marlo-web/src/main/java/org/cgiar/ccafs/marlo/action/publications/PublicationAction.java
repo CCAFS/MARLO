@@ -80,7 +80,6 @@ import org.cgiar.ccafs.marlo.data.model.FundingSource;
 import org.cgiar.ccafs.marlo.data.model.GenderType;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Institution;
-import org.cgiar.ccafs.marlo.data.model.LicensesTypeEnum;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
@@ -1080,7 +1079,6 @@ public class PublicationAction extends BaseAction {
 
         deliverable.getDeliverableInfo(deliverable.getPhase()).setDeliverableType(null);
         deliverable.getDeliverableInfo(deliverable.getPhase()).setIsLocationGlobal(null);
-        deliverable.getDeliverableInfo(deliverable.getPhase()).setLicense(null);
         deliverable.getDeliverableInfo(deliverable.getPhase()).setCrpClusterKeyOutput(null);
         deliverable.getDeliverableInfo(deliverable.getPhase()).setRegion(null);
         deliverable.getDeliverableInfo(deliverable.getPhase()).setGeographicScope(null);
@@ -2026,30 +2024,9 @@ public class PublicationAction extends BaseAction {
     if (deliverable.getDeliverableInfo().getAdoptedLicense() != null) {
       deliverableInfoDb.setAdoptedLicense(deliverable.getDeliverableInfo().getAdoptedLicense());
       if (deliverable.getDeliverableInfo().getAdoptedLicense().booleanValue()) {
-        deliverableInfoDb.setLicense(deliverable.getDeliverableInfo().getLicense());
-        if (deliverable.getDeliverableInfo().getLicense() != null) {
-          if (deliverable.getDeliverableInfo().getLicense().equals(LicensesTypeEnum.OTHER.getValue())) {
-            deliverableInfoDb.setOtherLicense(deliverable.getDeliverableInfo().getOtherLicense());
-            deliverableInfoDb.setAllowModifications(deliverable.getDeliverableInfo().getAllowModifications());
-          } else {
-            deliverableInfoDb.setOtherLicense(null);
-            deliverableInfoDb.setAllowModifications(null);
-          }
-        }
-
         deliverableInfoDb.setAdoptedLicense(deliverable.getDeliverableInfo().getAdoptedLicense());
-      } else {
-
-        deliverableInfoDb.setLicense(null);
-        deliverableInfoDb.setOtherLicense(null);
-        deliverableInfoDb.setAllowModifications(null);
       }
-    } else {
-      deliverableInfoDb.setLicense(null);
-      deliverableInfoDb.setOtherLicense(null);
-      deliverableInfoDb.setAllowModifications(null);
     }
-
 
     deliverableInfoDb.setIsLocationGlobal(deliverable.getDeliverableInfo().getIsLocationGlobal() != null
       ? deliverable.getDeliverableInfo().getIsLocationGlobal() : false);

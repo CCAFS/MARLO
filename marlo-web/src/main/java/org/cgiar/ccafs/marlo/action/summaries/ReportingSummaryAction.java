@@ -2249,30 +2249,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
               }
             }
           }
-          if (deliverable.getDeliverableInfo().getAdoptedLicense() != null) {
-            if (deliverable.getDeliverableInfo().getAdoptedLicense() == true) {
-              delivLicense = deliverable.getDeliverableInfo().getLicense();
-              if (delivLicense != null) {
-                if (delivLicense.equals("OTHER")) {
-                  delivLicense = deliverable.getDeliverableInfo().getOtherLicense();
-                  showDelivLicenseModifications = true;
-                  if (deliverable.getDeliverableInfo().getAllowModifications() != null
-                    && deliverable.getDeliverableInfo().getAllowModifications() == true) {
-                    delivLicenseModifications = "Yes";
-                  } else {
-                    delivLicenseModifications = "No";
-                  }
-                }
-              }
-            } else {
-              delivLicense = "No";
-            }
-          }
         }
-        if (delivLicense != null && delivLicense.isEmpty()) {
-          delivLicense = null;
-        }
-
         // Intellectual Assets
         Boolean hasIntellectualAsset = false, isPantent = false, isPvp = false;
         String hasIntellectualAssetText = null, intellectualAssetApplicants = null, intellectualAssetType = null,

@@ -94,7 +94,6 @@ import org.cgiar.ccafs.marlo.data.model.FundingSource;
 import org.cgiar.ccafs.marlo.data.model.GenderType;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Institution;
-import org.cgiar.ccafs.marlo.data.model.LicensesTypeEnum;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.PartnerDivision;
 import org.cgiar.ccafs.marlo.data.model.Phase;
@@ -1572,7 +1571,6 @@ public class DeliverableAction extends BaseAction {
         }
 
         deliverable.getDeliverableInfo(this.getActualPhase()).setDeliverableType(null);
-        deliverable.getDeliverableInfo(this.getActualPhase()).setLicense(null);
         deliverable.getDeliverableInfo(this.getActualPhase()).setRegion(null);
         deliverable.getDeliverableInfo(this.getActualPhase()).setGeographicScope(null);
 
@@ -3004,31 +3002,9 @@ public class DeliverableAction extends BaseAction {
       if (deliverable.getDeliverableInfo(this.getActualPhase()).getAdoptedLicense() != null) {
         deliverableInfoDb.setAdoptedLicense(deliverable.getDeliverableInfo(this.getActualPhase()).getAdoptedLicense());
         if (deliverable.getDeliverableInfo(this.getActualPhase()).getAdoptedLicense().booleanValue()) {
-          deliverableInfoDb.setLicense(deliverable.getDeliverableInfo(this.getActualPhase()).getLicense());
-          if (deliverable.getDeliverableInfo(this.getActualPhase()).getLicense() != null) {
-            if (deliverable.getDeliverableInfo(this.getActualPhase()).getLicense()
-              .equals(LicensesTypeEnum.OTHER.getValue())) {
-              deliverableInfoDb
-                .setOtherLicense(deliverable.getDeliverableInfo(this.getActualPhase()).getOtherLicense());
-              deliverableInfoDb
-                .setAllowModifications(deliverable.getDeliverableInfo(this.getActualPhase()).getAllowModifications());
-            } else {
-              deliverableInfoDb.setOtherLicense(null);
-              deliverableInfoDb.setAllowModifications(null);
-            }
-          }
           deliverableInfoDb
             .setAdoptedLicense(deliverable.getDeliverableInfo(this.getActualPhase()).getAdoptedLicense());
-        } else {
-
-          deliverableInfoDb.setLicense(null);
-          deliverableInfoDb.setOtherLicense(null);
-          deliverableInfoDb.setAllowModifications(null);
         }
-      } else {
-        deliverableInfoDb.setLicense(null);
-        deliverableInfoDb.setOtherLicense(null);
-        deliverableInfoDb.setAllowModifications(null);
       }
     }
 
