@@ -635,15 +635,12 @@ public class Project extends MarloAuditableEntity implements java.io.Serializabl
     } else {
       for (ProjectPartner partner : projectPartners.stream().filter(c -> c.isActive()).collect(Collectors.toList())) {
         if (partner.isActive()) {
-
-
           for (ProjectPartnerPerson person : partner.getProjectPartnerPersons()) {
             if (person.isActive()) {
               if (person.getContactType().equals("PL") && person.isActive()) {
                 return partner;
               }
             }
-
           }
         }
       }
@@ -652,7 +649,6 @@ public class Project extends MarloAuditableEntity implements java.io.Serializabl
     }
     return null;
   }
-
 
   public ProjectPartner getLeader(Phase phase) {
     try {
@@ -776,6 +772,36 @@ public class Project extends MarloAuditableEntity implements java.io.Serializabl
     return null;
   }
 
+
+  public List<ProjectPartner> getLeadersCenter(Phase phase, Long institutionID) {
+    List<ProjectPartner> projectPartnerList = new ArrayList<ProjectPartner>();
+    if (partners != null) {
+      for (ProjectPartner partner : partners) {
+        if (partner.getInstitution().getId().longValue() == institutionID) {
+          if (partner.getPartnerPersons() != null) {
+            for (ProjectPartnerPerson person : partner.getPartnerPersons()) {
+              projectPartnerList.add(partner);
+            }
+          }
+        }
+
+      }
+    } else {
+      for (ProjectPartner partner : projectPartners.stream()
+        .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())) {
+        if (partner.isActive()) {
+          if (partner.getInstitution().getId().longValue() == institutionID) {
+            for (ProjectPartnerPerson person : partner.getProjectPartnerPersons()) {
+              if (person.isActive()) {
+                projectPartnerList.add(partner);
+              }
+            }
+          }
+        }
+      }
+    }
+    return projectPartnerList;
+  }
 
   public List<ProjectLeverage> getLeverages() {
     return leverages;

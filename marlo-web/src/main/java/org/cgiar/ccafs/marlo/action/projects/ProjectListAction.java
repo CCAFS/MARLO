@@ -701,13 +701,14 @@ public class ProjectListAction extends BaseAction {
       allCenterProjects.addAll(allProjects);
       // separate information by user
       if (!this.isRole("CRP-Admin") && !this.isRole("SuperAdmin")) {
-        // to-do separate if programs are mapped to Centers or not , program Leaders can view with privilegies
+        // separate if programs are mapped to Centers or not , program Leaders can view with privilegies
         for (Project projects : allCenterProjects) {
           boolean isValidate = false;
           for (ProjectFocus projectFocus : projects.getProjectFocuses().stream()
             .filter(c -> c.isActive() && c.getPhase().getDescription().equals(this.getActualPhase().getDescription())
               && c.getPhase().getYear() == this.getActualPhase().getYear())
             .collect(Collectors.toList())) {
+            // looking for leader of program mapped if is an user logged in MARLO
             CrpProgramLeader crpProgramLeader =
               crpProgramLeaderManager.getCrpProgramLeaderByProgram(projectFocus.getCrpProgram().getId().longValue(),
                 loggedCrp.getId().longValue(), this.getCurrentUser().getId().longValue());

@@ -159,6 +159,7 @@ import org.cgiar.ccafs.marlo.data.model.ReportSynthesis2018SectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.Role;
 import org.cgiar.ccafs.marlo.data.model.SectionStatus;
+import org.cgiar.ccafs.marlo.data.model.SharedProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.SrfTargetUnit;
 import org.cgiar.ccafs.marlo.data.model.Submission;
 import org.cgiar.ccafs.marlo.data.model.User;
@@ -4217,6 +4218,31 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return haveBudget;
   }
 
+  // permision based in centers Logic
+  public boolean hasCenterPermissions(long projectID) {
+    GlobalUnit crpLog = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
+    crpLog = crpManager.getGlobalUnitById(crpLog.getId());
+    if (crpLog.isCenterType()) {
+      if (!this.isRole(APConstants.CENTER_ADMIN) && !this.isRole(APConstants.CENTER_SUPER_ADMIN)) {
+        Project project = projectManager.getProjectById(projectID);
+        for (ProjectFocus projectFocus : project.getProjectFocuses().stream()
+          .filter(c -> c.isActive() && c.getPhase().getDescription().equals(this.getActualPhase().getDescription())
+            && c.getPhase().getYear() == this.getActualPhase().getYear())
+          .collect(Collectors.toList())) {
+          CrpProgramLeader crpProgramLeader =
+            crpProgramLeaderManager.getCrpProgramLeaderByProgram(projectFocus.getCrpProgram().getId().longValue(),
+              crpLog.getId().longValue(), this.getCurrentUser().getId().longValue());
+          if (crpProgramLeader != null) {
+            return true;
+          }
+        }
+      } else {
+        return true;
+      }
+    }
+    return false;
+  }
+
   public Boolean hasDeliverableRule(DeliverableInfo deliverableInfo, String rule) {
     if (deliverableInfo != null && deliverableInfo.getDeliverableType() != null
       && deliverableInfo.getDeliverableType().getId() != null && deliverableInfo.getDeliverableType().getId() != -1) {
@@ -4358,6 +4384,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
   }
 
+
   public boolean hasPersmissionSubmitAR2018(long synthesisId) {
     if (!this.getActualPhase().getUpkeep()) {
       String permission = this.generatePermission(Permission.REPORT_SYNTHESIS_SUBMIT_PERMISSION,
@@ -4368,7 +4395,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       return false;
     }
   }
-
 
   /**
    * TODO ************************ CENTER METHOD *********************
@@ -4586,6 +4612,14 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       if (this.getCurrentCrp().getGlobalUnitType().getId().intValue() == 4) {
         return true;
       }
+    }
+    return false;
+  }
+
+  public boolean isCenterProgramMapping(String acronym) {
+    String OptionalActionName = this.getActionName().replaceAll(acronym + "/", "");
+    if (OptionalActionName.equals(SharedProjectSectionStatusEnum.CENTER_MAPPING.getStatus())) {
+      return true;
     }
     return false;
   }
@@ -5891,6 +5925,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return false;
   }
 
+
   public Boolean isProjectNew(long projectID) {
 
     Project project = this.projectManager.getProjectById(projectID);
@@ -5928,6 +5963,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
   }
 
+
   public boolean isProjectSubmitted(long projectID) {
     if (this.getActualPhase() != null && this.getActualPhase().getUpkeep() != null
       && !this.getActualPhase().getUpkeep()) {
@@ -5945,7 +5981,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       return false;
     }
   }
-
 
   /**
    * Reusable
@@ -5981,7 +6016,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       return false;
     }
   }
-
 
   public boolean isReportingActive() {
 
