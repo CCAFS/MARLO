@@ -328,7 +328,7 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
         boolean isCenterProject = false;
         if (loggedCrp.isCenterType()) {
           isCenterProject = true;
-          if (!baseAction.isRole("CRP-Admin") && !baseAction.isRole("SuperAdmin")) {
+          if (!baseAction.isRole(APConstants.CENTER_ADMIN) && !baseAction.isRole(APConstants.CENTER_SUPER_ADMIN)) {
             if (actionName.equals(SharedProjectSectionStatusEnum.CENTER_MAPPING.getStatus())) {
               boolean isValidate = false;
               for (ProjectFocus projectFocus : project.getProjectFocuses().stream()
@@ -383,6 +383,7 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
         if (baseAction.canAccessSuperAdmin() && editParameter && !isCenterProject) {
           baseAction.setEditableParameter(true);
           baseAction.setCanEdit(true);
+          baseAction.setEditable(true);
           baseAction.setEditStatus(true);
         }
         // logic for superadmins in centers to allow only programs leaders AND CRP-Admin to modify
@@ -390,6 +391,8 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
           if (canEdit && editParameter) {
             baseAction.setEditableParameter(editParameter && canEdit && phase.getEditable());
             baseAction.setEditStatus(true);
+          } else {
+            baseAction.setEditableParameter(false);
           }
         }
       } else {

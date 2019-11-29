@@ -560,6 +560,8 @@ public final class APConstants {
   public static final String CENTER_CRP_PHASE_YEAR = "center_crp_phase_year";
   public static final String CENTER_CRP_PHASE_CYCLE = "center_crp_phase_cycle";
   public static final String CENTER_CRP_PHASE = "center_crp_phase";
+  public static final String CENTER_ADMIN = "CRP-Admin";
+  public static final String CENTER_SUPER_ADMIN = "SuperAdmin";
 
   public static final String CENTER_DELIVERABLE_ID = "deliverableID";
   public static final String CENTER_PROGRAM_ID = "programID";
