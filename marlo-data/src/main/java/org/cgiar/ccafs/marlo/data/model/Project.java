@@ -773,14 +773,14 @@ public class Project extends MarloAuditableEntity implements java.io.Serializabl
   }
 
 
-  public List<ProjectPartner> getLeadersCenter(Phase phase, Long institutionID) {
-    List<ProjectPartner> projectPartnerList = new ArrayList<ProjectPartner>();
+  public List<ProjectPartnerPerson> getLeadersCenter(Phase phase, Long institutionID) {
+    List<ProjectPartnerPerson> projectPartnerPersonList = new ArrayList<ProjectPartnerPerson>();
     if (partners != null) {
       for (ProjectPartner partner : partners) {
         if (partner.getInstitution().getId().longValue() == institutionID) {
           if (partner.getPartnerPersons() != null) {
             for (ProjectPartnerPerson person : partner.getPartnerPersons()) {
-              projectPartnerList.add(partner);
+              projectPartnerPersonList.add(person);
             }
           }
         }
@@ -793,14 +793,14 @@ public class Project extends MarloAuditableEntity implements java.io.Serializabl
           if (partner.getInstitution().getId().longValue() == institutionID) {
             for (ProjectPartnerPerson person : partner.getProjectPartnerPersons()) {
               if (person.isActive()) {
-                projectPartnerList.add(partner);
+                projectPartnerPersonList.add(person);
               }
             }
           }
         }
       }
     }
-    return projectPartnerList;
+    return projectPartnerPersonList;
   }
 
   public List<ProjectLeverage> getLeverages() {

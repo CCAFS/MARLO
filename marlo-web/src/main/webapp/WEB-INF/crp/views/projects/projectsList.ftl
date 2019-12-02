@@ -1,7 +1,7 @@
 [#ftl]
 [#assign title = "MARLO Projects" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
-[#assign pageLibs = ["datatables.net", "datatables.net-bs","font-awesome"] /]
+[#assign pageLibs = ["datatables.net", "datatables.net-bs","font-awesome","malihu-custom-scrollbar-plugin"] /]
 [#assign customJS = [
   "https://cdn.datatables.net/buttons/1.3.1/js/dataTables.buttons.min.js",
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js",
