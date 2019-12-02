@@ -13,8 +13,11 @@
       <tr class="subHeader">
         <th id="ids">[@s.text name="projectsList.projectids" /]</th>
         <th id="projectTitles" >[@s.text name="projectsList.projectTitles" /]</th>
-        <th id="projectLeader" >[@s.text name="projectsList.projectLeader" /]</th>
-        <th id="projectType">[@s.text name="projectsList.projectLeaderPerson" /]
+        <th id="projectLeader" >[@s.text name="projectsList.projectLeader" /]</th>        
+        <th id="projectType">[@s.text name="projectsList.projectLeaderPerson" /]</th>  
+         [#if centerGlobalUnit]
+        <th id="centerStaff" >[@s.text name="projectsList.centerSatff" /]</th>
+        [/#if]
         <th id="projectFlagships">
           [#if centerGlobalUnit]
             [@s.text name="projectsList.projectPrograms" /]
@@ -81,18 +84,29 @@
           [#else]
             [#assign pLeader =  (project.getLeader(action.getActualPhase()))! ]
             [#assign pLeaderPerson =  (project.getLeaderPersonDB(action.getActualPhase()))! ]
-          [/#if]
+          [/#if]         
           <td class=""> 
             [#if pLeader?has_content]${(pLeader.institution.acronym)!pLeader.institution.name}[#else][@s.text name="projectsList.title.none" /][/#if]
           </td>
           <td class=""> 
             [#if pLeaderPerson?has_content] ${(pLeaderPerson.user.composedName)!}[#else][@s.text name="projectsList.title.none" /][/#if]
           </td>
+            [#-- Center Staf --]
+              [#if centerGlobalUnit]
+          <td class=""> 
+            <div class="mCustomScrollbar staff-list" data-mcs-theme="dark">
+           [#assign centerStaffList =  (project.getLeadersCenter(project.projectInfo.phase,actualPhase.crp.institution.id))! ]
+           [#list (centerStaffList)![] as centerstaff]
+            ${(centerstaff.user.composedName)!}
+           [/#list]
+           </div>
+          </td>
+           [/#if]    
           [#-- Flagship / Regions / Programs --]
           <td>
             [#assign tagsNumber = 0 /]
             [#if project.projectInfo.administrative]
-              [#local li = (project.projectInfo.liaisonInstitution)!{} ]
+              [#local li = (project.projectInfo.liaisonInstitution)!{}]
               <span class="programTag" style="border-color:#444">
                 [#if ((li.crpProgram??)!false) && (li.crpProgram.crp.id == actualPhase.crp.id )]
                   ${(li.crpProgram.acronym)!(li.crpProgram.name)}
