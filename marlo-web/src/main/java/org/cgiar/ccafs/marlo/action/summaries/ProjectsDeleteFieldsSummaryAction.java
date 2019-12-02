@@ -33,7 +33,6 @@ import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectBudget;
 import org.cgiar.ccafs.marlo.data.model.ProjectClusterActivity;
-import org.cgiar.ccafs.marlo.data.model.ProjectComponentLesson;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
@@ -673,43 +672,6 @@ public class ProjectsDeleteFieldsSummaryAction extends BaseSummariesAction imple
             crossCutting += ", N/A";
           } else {
             crossCutting += " N/A";
-          }
-        }
-
-        if (project.getProjectInfo().getCrossCuttingGender() != null
-          && project.getProjectInfo().getCrossCuttingGender() == true) {
-          if (crossCutting != null && crossCutting.length() > 0) {
-            crossCutting += ", Gender";
-          } else {
-            crossCutting += "Gender";
-          }
-        }
-        if (project.getProjectInfo().getCrossCuttingYouth() != null
-          && project.getProjectInfo().getCrossCuttingYouth() == true) {
-          if (crossCutting != null && crossCutting.length() > 0) {
-            crossCutting += ", Youth";
-          } else {
-            crossCutting += "Youth";
-          }
-        }
-
-        if (project.getProjectInfo().getGenderAnalysis() != null) {
-          genderAnalysis = project.getProjectInfo().getGenderAnalysis();
-        }
-
-        if (project.getProjectInfo().getNewPartnershipsPlanned() != null) {
-          newPartnershipsPlanned = project.getProjectInfo().getNewPartnershipsPlanned();
-        }
-
-
-        List<ProjectComponentLesson> pcList = new ArrayList<>();
-        pcList = (projectComponentLessonManager.findAll().stream()
-          .filter(p -> p.isActive() && p.getProject() == project && p.getPhase() == phase)
-          .collect(Collectors.toList()));
-
-        if (pcList != null && pcList.size() > 0) {
-          if (pcList.get(0) != null && pcList.get(0).getLessons() != null) {
-            projectComponentLesson = pcList.get(0).getLessons();
           }
         }
 
