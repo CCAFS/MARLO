@@ -500,16 +500,16 @@ public class ProjectsDeleteFieldsSummaryAction extends BaseSummariesAction imple
         Long projectId = project.getId();
         String projectTitle = project.getProjectInfo().getTitle();
         String managementLiaison = null;
-        String crossCutting = "";
-        String projectSummary = "";
-        String managementLiaisonContactPerson = "";
-        String genderAnalysis = "";
-        String newPartnershipsPlanned = "";
-        String projectComponentLesson = "";
-        String genderDimenssions = "";
-        String youthComponent = "";
-        String repIndOrganization = "";
-        String contributionCRP = "";
+        String crossCutting = null;
+        String projectSummary = null;
+        String managementLiaisonContactPerson = null;
+        String genderAnalysis = null;
+        String newPartnershipsPlanned = null;
+        String projectComponentLesson = null;
+        String genderDimenssions = null;
+        String youthComponent = null;
+        String repIndOrganization = null;
+        String contributionCRP = null;
         String license = null;
         String otherLicense = null;
 
@@ -653,7 +653,7 @@ public class ProjectsDeleteFieldsSummaryAction extends BaseSummariesAction imple
 
         if (project.getProjectInfo().getCrossCuttingCapacity() != null
           && project.getProjectInfo().getCrossCuttingCapacity() == true) {
-          if (crossCutting.length() > 0) {
+          if (crossCutting != null && crossCutting.length() > 0) {
             crossCutting += ", Capacity Development";
           } else {
             crossCutting += " Capacity Development";
@@ -661,7 +661,7 @@ public class ProjectsDeleteFieldsSummaryAction extends BaseSummariesAction imple
         }
         if (project.getProjectInfo().getCrossCuttingClimate() != null
           && project.getProjectInfo().getCrossCuttingClimate() == true) {
-          if (crossCutting.length() > 0) {
+          if (crossCutting != null && crossCutting.length() > 0) {
             crossCutting += ", Climate Change";
           } else {
             crossCutting += " Climate Change";
@@ -669,12 +669,38 @@ public class ProjectsDeleteFieldsSummaryAction extends BaseSummariesAction imple
         }
         if (project.getProjectInfo().getCrossCuttingNa() != null
           && project.getProjectInfo().getCrossCuttingNa() == true) {
-          if (crossCutting.length() > 0) {
+          if (crossCutting != null && crossCutting.length() > 0) {
             crossCutting += ", N/A";
           } else {
             crossCutting += " N/A";
           }
         }
+
+        if (project.getProjectInfo().getCrossCuttingGender() != null
+          && project.getProjectInfo().getCrossCuttingGender() == true) {
+          if (crossCutting != null && crossCutting.length() > 0) {
+            crossCutting += ", Gender";
+          } else {
+            crossCutting += "Gender";
+          }
+        }
+        if (project.getProjectInfo().getCrossCuttingYouth() != null
+          && project.getProjectInfo().getCrossCuttingYouth() == true) {
+          if (crossCutting != null && crossCutting.length() > 0) {
+            crossCutting += ", Youth";
+          } else {
+            crossCutting += "Youth";
+          }
+        }
+
+        if (project.getProjectInfo().getGenderAnalysis() != null) {
+          genderAnalysis = project.getProjectInfo().getGenderAnalysis();
+        }
+
+        if (project.getProjectInfo().getNewPartnershipsPlanned() != null) {
+          newPartnershipsPlanned = project.getProjectInfo().getNewPartnershipsPlanned();
+        }
+
 
         List<ProjectComponentLesson> pcList = new ArrayList<>();
         pcList = (projectComponentLessonManager.findAll().stream()
@@ -720,6 +746,22 @@ public class ProjectsDeleteFieldsSummaryAction extends BaseSummariesAction imple
         // this.getBudgetsbyCoasTableModel(project);
 
         // ***************//
+
+        if (projectComponentLesson == null || projectComponentLesson.isEmpty()) {
+          projectComponentLesson = "<Not Defined>";
+        }
+        if (repIndOrganization == null || repIndOrganization.isEmpty()) {
+          repIndOrganization = "<Not Defined>";
+        }
+        if (contributionCRP == null || contributionCRP.isEmpty()) {
+          contributionCRP = "<Not Defined>";
+        }
+        if (genderAnalysis == null || genderAnalysis.isEmpty()) {
+          genderAnalysis = "<Not Defined>";
+        }
+        if (newPartnershipsPlanned == null || newPartnershipsPlanned.isEmpty()) {
+          newPartnershipsPlanned = "<Not Defined>";
+        }
 
 
         model.addRow(new Object[] {projectId, projectTitle, projectSummary, status, managementLiaison, flagships,

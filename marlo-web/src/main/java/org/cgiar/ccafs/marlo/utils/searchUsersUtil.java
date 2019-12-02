@@ -23,6 +23,7 @@ public class searchUsersUtil {
       System.out.println("User Login : " + user.getLogin().toLowerCase());
       System.out.println("User Email : " + user.getEmail().toLowerCase());
       System.out.println("User Status : " + user.getAttributes().get("userAccountControl"));
+
       // Microsoft statuses in:
       // https://support.microsoft.com/en-us/help/305144/how-to-use-useraccountcontrol-to-manipulate-user-account-properties
     } else {
