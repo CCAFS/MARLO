@@ -646,8 +646,10 @@ public class ProjectListAction extends BaseAction {
       this.loadFlagshipgsAndRegions(allProjects);
     }
     closedProjects = new ArrayList<>();
-    List<Project> completedProjects =
-      projectManager.getCompletedProjects(this.getCrpID(), this.getActualPhase().getId());
+    List<Project> completedProjects = null;
+    if (projectManager.getCompletedProjects(this.getCrpID(), this.getActualPhase().getId()) != null) {
+      completedProjects = projectManager.getCompletedProjects(this.getCrpID(), this.getActualPhase().getId());
+    }
 
     // Skip closed projects for Reporting
     if (this.isPlanningActive()) {

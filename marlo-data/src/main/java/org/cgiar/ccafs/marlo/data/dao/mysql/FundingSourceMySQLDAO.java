@@ -148,7 +148,6 @@ public class FundingSourceMySQLDAO extends AbstractMarloDAO<FundingSource, Long>
     String queryString = "SELECT DISTINCT f FROM FundingSource f " + "inner join fetch f.fundingSourceInfos fsi "
       + "left join fetch fsi.budgetType " + "left join fetch f.fundingSourceInstitutions fsint "
       + "left join fetch fsint.institution " + "left join fetch fsi.directDonor " + "left join fetch fsi.originalDonor "
-      + "left join fetch f.sectionStatuses ss " + "left join fetch f.fundingSourceBudgets fsb "
       + "WHERE f.active = TRUE " + "AND f.crp = :globalUnit " + "AND fsi.phase = :phase "
       /** I think SectionStatus should be updated to use a phase **/
       // + "AND ( ss IS NULL OR (ss.cycle = :phaseDescription AND ss.year = :phaseYear ) ) "
@@ -156,7 +155,7 @@ public class FundingSourceMySQLDAO extends AbstractMarloDAO<FundingSource, Long>
       // + "AND ( fsb IS NULL OR (fsb.year = :phaseYear AND fsb.phase = :phase ) ) "
       // The above line should be what we use, but it appears we have some data corruption, excluding the year works for
       // now, so using the below statement.
-      + "AND ( fsb IS NULL OR fsb.phase = :phase ) " + "AND ( fsi.status IS NULL OR ( fsi.status IN ( "
+      + "AND ( fsi.status IS NULL OR ( fsi.status IN ( "
       + statusTypes.stream().map(i -> i.toString()).collect(Collectors.joining(",")) + " ) ) ) "
       + "ORDER BY fsi.endDate NULLS FIRST";
 
