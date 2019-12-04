@@ -4,7 +4,7 @@
   <table class="projectsList" id="projects">
     <thead>
       <tr class="header">
-        <th colspan="5">General Information</th>
+        <th colspan="7">General Information</th>
         [#if !reportingActive && !centerGlobalUnit]
           <th colspan="3">[@s.text name="projectsList.projectBudget"] [@s.param]${(crpSession?upper_case)!}[/@s.param] [/@s.text] ${currentCycleYear}</th> 
         [/#if]
@@ -16,8 +16,9 @@
         <th id="projectLeader" >[@s.text name="projectsList.projectLeader" /]</th>        
         <th id="projectType">[@s.text name="projectsList.projectLeaderPerson" /]</th>  
          [#if centerGlobalUnit]
-        <th id="centerStaff" >[@s.text name="projectsList.centerSatff" /]</th>
+        <th id="centerStaff" >[@s.text name="projectsList.centerStaff" /]</th>
         [/#if]
+        
         <th id="projectFlagships">
           [#if centerGlobalUnit]
             [@s.text name="projectsList.projectPrograms" /]
@@ -29,12 +30,16 @@
             [/#if]
           [/#if]
         </th>
+       
         [#if !reportingActive && !centerGlobalUnit]
           <th id="projectBudget">[@s.text name="projectsList.W1W2projectBudget" /]</th>
           <th id="projectBudget">[@s.text name="projectsList.W3projectBudget" /]</th>
           <th id="projectBudget">[@s.text name="projectsList.BILATERALprojectBudget" /]</th>
         [/#if]
         <th id="projectActionStatus">[@s.text name="projectsList.projectActionStatus" /]</th>
+          [#if centerGlobalUnit]
+            <th id="centermapping" >[@s.text name="projectsList.centerMapping" /]</th>
+          [/#if]
         <th id="projectDownload">[@s.text name="projectsList.download" /]</th>
         <th id="projectDelete">[@s.text name="projectsList.delete" /]</th>
         [#if isPlanning]
@@ -92,16 +97,16 @@
             [#if pLeaderPerson?has_content] ${(pLeaderPerson.user.composedName)!}[#else][@s.text name="projectsList.title.none" /][/#if]
           </td>
             [#-- Center Staf --]
-              [#if centerGlobalUnit]
+          [#if centerGlobalUnit]
           <td class=""> 
             <div class="mCustomScrollbar staff-list" data-mcs-theme="dark">
-           [#assign centerStaffList =  (project.getLeadersCenter(project.projectInfo.phase,actualPhase.crp.institution.id))! ]
-           [#list (centerStaffList)![] as centerstaff]
-            ${(centerstaff.user.composedName)!}
-           [/#list]
+            [#assign centerStaffList =  (project.getLeadersCenter(project.projectInfo.phase,actualPhase.crp.institution.id))! ]
+            [#list (centerStaffList)![] as centerstaff]
+              ${(centerstaff.user.composedName)!}
+            [/#list]
            </div>
           </td>
-           [/#if]    
+          [/#if]    
           [#-- Flagship / Regions / Programs --]
           <td>
             [#assign tagsNumber = 0 /]
@@ -183,7 +188,18 @@
             [/#if]
             
           </td>
-          
+          [#if centerGlobalUnit]
+            <td>  
+              [#assign centerMappingComplete = action.isCenterMappingComplete(project.id,project.projectInfo.phase) /]
+              [#if centerMappingComplete]
+              <span class="icon-20 icon-check" title="Complete"></span>            
+              [#else]
+              
+              <span class="icon-20 icon-uncheck" title="Not Completed" ></span>
+             
+              [/#if]
+            </td> 
+          [/#if]
           [#-- Summary PDF download --]
           <td>        
             [#if action.getActualPhase().crp.id != 29]
