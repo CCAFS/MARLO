@@ -4,7 +4,12 @@
   <table class="projectsList" id="projects">
     <thead>
       <tr class="header">
+        [#if !centerGlobalUnit]
+        <th colspan="5">General Information</th>
+        [#else]
         <th colspan="7">General Information</th>
+        [/#if]
+        
         [#if !reportingActive && !centerGlobalUnit]
           <th colspan="3">[@s.text name="projectsList.projectBudget"] [@s.param]${(crpSession?upper_case)!}[/@s.param] [/@s.text] ${currentCycleYear}</th> 
         [/#if]
