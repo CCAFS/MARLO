@@ -134,6 +134,7 @@ import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectBudget;
 import org.cgiar.ccafs.marlo.data.model.ProjectBudgetsFlagship;
+import org.cgiar.ccafs.marlo.data.model.ProjectCenterOutcome;
 import org.cgiar.ccafs.marlo.data.model.ProjectClusterActivity;
 import org.cgiar.ccafs.marlo.data.model.ProjectComponentLesson;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
@@ -4616,6 +4617,34 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return false;
   }
 
+  public boolean isCenterMappingComplete(long projectID, Phase phase) {
+    Project project = projectManager.getProjectById(projectID);
+    List<ProjectFocus> projectFocusFlagship = project.getProjectFocuses().stream()
+      .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(phase)
+        && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()
+        && c.getCrpProgram().getCrp().getId().equals(phase.getCrp().getId()))
+      .collect(Collectors.toList());
+    if (projectFocusFlagship.isEmpty()) {
+      return false;
+    }
+
+    List<ProjectFocus> projectFocusRegional = project.getProjectFocuses().stream()
+      .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(phase)
+        && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()
+        && c.getCrpProgram().getCrp().getId().equals(phase.getCrp().getId()))
+      .collect(Collectors.toList());
+    if (projectFocusRegional.isEmpty()) {
+      return false;
+    }
+
+    List<ProjectCenterOutcome> projectCenterOutcomes = project.getProjectCenterOutcomes().stream()
+      .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(phase)).collect(Collectors.toList());
+    if (projectCenterOutcomes.isEmpty()) {
+      return false;
+    }
+    return true;
+  }
+
   public boolean isCenterProgramMapping(String acronym) {
     String OptionalActionName = this.getActionName().replaceAll(acronym + "/", "");
     if (OptionalActionName.equals(SharedProjectSectionStatusEnum.CENTER_MAPPING.getStatus())) {
@@ -5917,6 +5946,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
+
   public boolean isProjectDescription() {
     String name = this.getActionName();
     if (name.contains(ProjectSectionStatusEnum.DESCRIPTION.getStatus())) {
@@ -5962,7 +5992,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
     }
   }
-
 
   public boolean isProjectSubmitted(long projectID) {
     if (this.getActualPhase() != null && this.getActualPhase().getUpkeep() != null
