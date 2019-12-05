@@ -13,7 +13,11 @@
         [#if !reportingActive && !centerGlobalUnit]
           <th colspan="3">[@s.text name="projectsList.projectBudget"] [@s.param]${(crpSession?upper_case)!}[/@s.param] [/@s.text] ${currentCycleYear}</th> 
         [/#if]
+        [#if !centerGlobalUnit]         
         <th colspan="3">Actions</th> 
+        [#else]
+        <th colspan="2">Actions</th> 
+        [/#if]
       </tr>
       <tr class="subHeader">
         <th id="ids">[@s.text name="projectsList.projectids" /]</th>
@@ -45,7 +49,9 @@
           [#if centerGlobalUnit]
             <th id="centermapping" >[@s.text name="projectsList.centerMapping" /]</th>
           [/#if]
+        [#if !centerGlobalUnit]
         <th id="projectDownload">[@s.text name="projectsList.download" /]</th>
+        [/#if]
         <th id="projectDelete">[@s.text name="projectsList.delete" /]</th>
         [#if isPlanning]
           <th id="projectBudget">[@s.text name="planning.projects.completion" /]</th>
@@ -99,7 +105,12 @@
             [#if pLeader?has_content]${(pLeader.institution.acronym)!pLeader.institution.name}[#else][@s.text name="projectsList.title.none" /][/#if]
           </td>
           <td class=""> 
+          [#if centerGlobalUnit]
+            [#if pLeaderPerson?has_content] ${(pLeaderPerson.user.composedCompleteName)!}[#else][@s.text name="projectsList.title.none" /][/#if]
+          [#else]
             [#if pLeaderPerson?has_content] ${(pLeaderPerson.user.composedName)!}[#else][@s.text name="projectsList.title.none" /][/#if]
+          [/#if]   
+                        
           </td>
             [#-- Center Staf --]
           [#if centerGlobalUnit]
@@ -107,7 +118,7 @@
             <div class="mCustomScrollbar staff-list" data-mcs-theme="dark">
             [#assign centerStaffList =  (project.getLeadersCenter(project.projectInfo.phase,actualPhase.crp.institution.id))! ]
             [#list (centerStaffList)![] as centerstaff]
-              ${(centerstaff.user.composedName)!}
+              ${(centerstaff.user.composedCompleteName)!}
             [/#list]
            </div>
           </td>
@@ -206,6 +217,7 @@
             </td> 
           [/#if]
           [#-- Summary PDF download --]
+          [#if !centerGlobalUnit]
           <td>        
             [#if action.getActualPhase().crp.id != 29]
               <a href="[@s.url namespace="/projects" action='${(crpSession)!}/reportingSummary'][@s.param name='projectID']${project.id?c}[/@s.param][@s.param name='cycle']${action.getCurrentCycle()}[/@s.param][@s.param name='year']${action.getCurrentCycleYear()}[/@s.param][/@s.url]" target="__BLANK">
@@ -213,6 +225,7 @@
               </a>          
             [/#if]
           </td>
+          [/#if]
           [#-- Delete Project--]
           <td>
             [#if canEdit && isProjectNew && action.deletePermission(project.id) && action.getActualPhase().editable && project.projectInfo.phase.id=action.getActualPhase().id]
