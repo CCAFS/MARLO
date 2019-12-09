@@ -686,6 +686,7 @@ public class DeliverableValidator extends BaseValidator {
   }
 
   public void validateLicense(Deliverable deliverable, BaseAction action) {
+	  /*
     if (deliverable.getDeliverableInfo(action.getActualPhase()).getAdoptedLicense().booleanValue()) {
       if (deliverable.getDeliverableInfo(action.getActualPhase()).getLicense() != null) {
         if (deliverable.getDeliverableInfo(action.getActualPhase()).getLicense()
@@ -710,6 +711,7 @@ public class DeliverableValidator extends BaseValidator {
         action.getInvalidFields().put("input-deliverable.deliverableInfo.license", InvalidFieldsMessages.EMPTYFIELD);
       }
     }
+    */
   }
 
   public void validateMetadata(List<DeliverableMetadataElement> elements, BaseAction action) {
