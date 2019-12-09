@@ -516,6 +516,7 @@ public class PublicationValidator extends BaseValidator {
   }
 
   public void validateLicense(DeliverableInfo deliverableInfo, BaseAction action) {
+	  /*
     if (deliverableInfo.getAdoptedLicense().booleanValue()) {
       if (deliverableInfo.getLicense() != null) {
         if (this.isValidString(deliverableInfo.getLicense())) {
@@ -543,6 +544,7 @@ public class PublicationValidator extends BaseValidator {
         action.getInvalidFields().put("input-deliverable.deliverableInfo.license", InvalidFieldsMessages.EMPTYFIELD);
       }
     }
+  */
   }
 
   public void validateMetadata(List<DeliverableMetadataElement> elements, BaseAction action) {
