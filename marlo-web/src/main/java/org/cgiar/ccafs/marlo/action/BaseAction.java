@@ -3275,6 +3275,20 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
   }
 
+  public boolean getProjectCenterSectionStatus(String section, long projectID, Phase phase) {
+    boolean returnValue = false;
+
+    if (SharedProjectSectionStatusEnum.value(section.toUpperCase()) == null) {
+      return false;
+    }
+    switch (SharedProjectSectionStatusEnum.value(section.toUpperCase())) {
+      case CENTER_MAPPING:
+        returnValue = this.isCenterMappingComplete(projectID, phase);
+        break;
+    }
+    return returnValue;
+  }
+
   public Boolean getProjectLp6ContributionValue(long projectID, long phaseID) {
     try {
       ProjectLp6Contribution projectLp6Contribution = new ProjectLp6Contribution();

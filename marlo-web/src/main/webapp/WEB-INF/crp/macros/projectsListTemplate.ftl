@@ -206,8 +206,12 @@
           </td>
           [#if centerGlobalUnit]
             <td>  
-              [#assign centerMappingComplete = action.isCenterMappingComplete(project.id,project.projectInfo.phase) /]
-              [#if centerMappingComplete]
+              [#if isCrpProject]
+                [#assign centerMappingComplete = action.isCenterMappingComplete(project.id,project.projectInfo.phase) /]
+              [#else]
+                [#assign centerMappingComplete = action.isCompleteCenterProject(project.id) /]                
+              [/#if]
+              [#if centerMappingComplete!]
               <span class="icon-20 icon-check" title="Complete"></span>            
               [#else]
               
