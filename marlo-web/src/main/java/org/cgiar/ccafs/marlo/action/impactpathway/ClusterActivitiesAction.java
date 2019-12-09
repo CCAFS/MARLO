@@ -751,7 +751,7 @@ public class ClusterActivitiesAction extends BaseAction {
       }
       selectedProgram = crpProgramManager.getCrpProgramById(crpProgramID);
       for (CrpClusterOfActivity crpClusterOfActivity : selectedProgram.getCrpClusterOfActivities().stream()
-        .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())) {
+        .filter(c -> c.isActive() && c.getPhase().getId().equals(this.getActualPhase().getId())).collect(Collectors.toList())) {
         if (!clusterofActivities.contains(crpClusterOfActivity)) {
           crpClusterOfActivityManager.deleteCrpClusterOfActivity(crpClusterOfActivity.getId());
         }
