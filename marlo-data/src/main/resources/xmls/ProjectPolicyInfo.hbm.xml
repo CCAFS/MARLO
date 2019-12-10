@@ -30,11 +30,6 @@
 			<column name="rep_ind_geographic_scope_id" />
 		</many-to-one>
 		<many-to-one
-			class="org.cgiar.ccafs.marlo.data.model.RepIndOrganizationType"
-			fetch="select" name="repIndOrganizationType">
-			<column name="rep_ind_organization_type_id" />
-		</many-to-one>
-		<many-to-one
 			class="org.cgiar.ccafs.marlo.data.model.RepIndPolicyInvestimentType"
 			fetch="select" name="repIndPolicyInvestimentType">
 			<column name="rep_ind_policy_investment_type_id" />
