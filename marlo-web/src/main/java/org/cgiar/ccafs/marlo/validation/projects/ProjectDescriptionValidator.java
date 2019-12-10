@@ -95,17 +95,6 @@ public class ProjectDescriptionValidator extends BaseValidator {
       action.getInvalidFields().put("input-project.projectInfo.summary", InvalidFieldsMessages.EMPTYFIELD);
     }
 
-    if (!action.isCenterGlobalUnit()) {
-      if (project.getProjecInfoPhase(action.getActualPhase()).getLiaisonUser() != null) {
-        if (project.getProjecInfoPhase(action.getActualPhase()).getLiaisonUser().getId() == -1) {
-          action.addMessage(action.getText("project.liaisonUser"));
-          action.getInvalidFields().put("input-project.projectInfo.liaisonUser.id", InvalidFieldsMessages.EMPTYFIELD);
-        }
-      } else {
-        action.addMessage(action.getText("project.liaisonUser"));
-        action.getInvalidFields().put("input-project.projectInfo.liaisonUser.id", InvalidFieldsMessages.EMPTYFIELD);
-      }
-    }
     if (project.getProjecInfoPhase(action.getActualPhase()).getLiaisonInstitution() != null) {
       if (project.getProjecInfoPhase(action.getActualPhase()).getLiaisonInstitution().getId() == -1) {
         action.addMessage(action.getText("project.liaisonInstitution"));
@@ -166,32 +155,6 @@ public class ProjectDescriptionValidator extends BaseValidator {
           action.addMessage(action.getText("projectDescription.regions"));
           action.getInvalidFields().put("input-project.regionsValue", InvalidFieldsMessages.EMPTYFIELD);
         }
-      }
-    }
-
-    // Validation when project is no ready for project leader
-    if (project.getProjecInfoPhase(action.getActualPhase()).isProjectEditLeader()) {
-      if (!(this.isValidString(project.getProjecInfoPhase(action.getActualPhase()).getGenderAnalysis())
-        && this.wordCount(project.getProjecInfoPhase(action.getActualPhase()).getGenderAnalysis()) <= 100)) {
-        action.addMessage(action.getText("project.genderAnalysis"));
-        action.getInvalidFields().put("input-project.projectInfo.genderAnalysis", InvalidFieldsMessages.EMPTYFIELD);
-      }
-
-      if (project.getProjecInfoPhase(action.getActualPhase()).getCrossCuttingGender() == null
-        || project.getProjecInfoPhase(action.getActualPhase()).getCrossCuttingGender().booleanValue() == false) {
-        if (!(this.isValidString(project.getProjecInfoPhase(action.getActualPhase()).getDimension())
-          && this.wordCount(project.getProjecInfoPhase(action.getActualPhase()).getDimension()) <= 50)) {
-          action.addMessage(action.getText("project.dimension"));
-          action.getInvalidFields().put("input-project.projectInfo.dimension", InvalidFieldsMessages.EMPTYFIELD);
-        }
-      }
-      if (project.getProjecInfoPhase(action.getActualPhase()).getCrossCuttingGender() == null
-        && project.getProjecInfoPhase(action.getActualPhase()).getCrossCuttingYouth() == null
-        && project.getProjecInfoPhase(action.getActualPhase()).getCrossCuttingCapacity() == null
-        && project.getProjecInfoPhase(action.getActualPhase()).getCrossCuttingNa() == null) {
-        action.addMessage(action.getText("project.crossCuttingDimensions.readText"));
-        action.getInvalidFields().put("input-project.projectInfo.crossCuttingNa",
-          action.getText(InvalidFieldsMessages.EMPTYLIST));
       }
     }
 

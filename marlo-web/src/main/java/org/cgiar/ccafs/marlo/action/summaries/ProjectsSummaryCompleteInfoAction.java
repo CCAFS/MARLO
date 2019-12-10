@@ -307,9 +307,7 @@ public class ProjectsSummaryCompleteInfoAction extends BaseSummariesAction imple
       }
       if (project.getProjectInfo().getLiaisonInstitution() != null) {
         managementLiaison = project.getProjectInfo().getLiaisonInstitution().getComposedName();
-        if (project.getProjectInfo().getLiaisonUser() != null) {
-          managementLiaison += " - " + project.getProjectInfo().getLiaisonUser().getComposedName();
-        }
+
         managementLiaison = managementLiaison.replaceAll("<", "&lt;");
         managementLiaison = managementLiaison.replaceAll(">", "&gt;");
       }
@@ -488,22 +486,7 @@ public class ProjectsSummaryCompleteInfoAction extends BaseSummariesAction imple
           crossCutting += " N/A";
         }
       }
-      if (project.getProjectInfo().getCrossCuttingGender() != null
-        && project.getProjectInfo().getCrossCuttingGender() == true) {
-        if (crossCutting.length() > 0) {
-          crossCutting += ", Gender";
-        } else {
-          crossCutting += "Gender";
-        }
-      }
-      if (project.getProjectInfo().getCrossCuttingYouth() != null
-        && project.getProjectInfo().getCrossCuttingYouth() == true) {
-        if (crossCutting.length() > 0) {
-          crossCutting += ", Youth";
-        } else {
-          crossCutting += "Youth";
-        }
-      }
+
 
       // Project Location:
       if (!project.getProjectLocations().isEmpty()) {

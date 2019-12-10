@@ -433,16 +433,7 @@ public class ProjectInnovationAction extends BaseAction {
             .getRepIndInnovationTypeById(innovation.getProjectInnovationInfo().getRepIndInnovationType().getId()));
         }
 
-        // load ContributionOfCrp
-        if (innovation.getProjectInnovationInfo().getRepIndContributionOfCrp() != null
-          && innovation.getProjectInnovationInfo().getRepIndContributionOfCrp().getId() != null) {
-          innovation.getProjectInnovationInfo()
-            .setRepIndContributionOfCrp(repIndContributionOfCrpManager.getRepIndContributionOfCrpById(
-              innovation.getProjectInnovationInfo().getRepIndContributionOfCrp().getId()));
-        }
-
         // load DegreeInnovation
-
         if (innovation.getProjectInnovationInfo().getRepIndDegreeInnovation() != null
           && innovation.getProjectInnovationInfo().getRepIndDegreeInnovation().getId() != null) {
           innovation.getProjectInnovationInfo().setRepIndDegreeInnovation(repIndDegreeInnovationManager
@@ -832,7 +823,6 @@ public class ProjectInnovationAction extends BaseAction {
       innovation.getProjectInnovationInfo().setRepIndStageInnovation(null);
       innovation.getProjectInnovationInfo().setRepIndInnovationType(null);
       innovation.getProjectInnovationInfo().setRepIndRegion(null);
-      innovation.getProjectInnovationInfo().setRepIndContributionOfCrp(null);
       innovation.getProjectInnovationInfo().setRepIndDegreeInnovation(null);
       innovation.getProjectInnovationInfo().setLeadOrganization(null);
     }
@@ -971,13 +961,6 @@ public class ProjectInnovationAction extends BaseAction {
           innovation.getProjectInnovationInfo().setRepIndRegion(null);
         }
       }
-
-      if (innovation.getProjectInnovationInfo().getRepIndContributionOfCrp() != null) {
-        if (innovation.getProjectInnovationInfo().getRepIndContributionOfCrp().getId() == -1) {
-          innovation.getProjectInnovationInfo().setRepIndContributionOfCrp(null);
-        }
-      }
-
 
       if (innovation.getProjectInnovationInfo().getRepIndDegreeInnovation() != null) {
         if (innovation.getProjectInnovationInfo().getRepIndDegreeInnovation().getId() == -1) {

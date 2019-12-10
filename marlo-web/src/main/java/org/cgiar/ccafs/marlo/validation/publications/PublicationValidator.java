@@ -134,18 +134,6 @@ public class PublicationValidator extends BaseValidator {
             InvalidFieldsMessages.EMPTYFIELD);
         }
 
-        // Validate Intellectual Asset
-        if (action.hasSpecificities(action.crpDeliverableIntellectualAsset())) {
-          if (deliverable.getIntellectualAsset() != null
-            && deliverable.getIntellectualAsset().getHasPatentPvp() != null) {
-            this.validateIntellectualAsset(deliverable.getIntellectualAsset(), action);
-          } else {
-            action.addMessage(action.getText("deliverable.intellectualAsset.hasPatentPvp"));
-            action.getInvalidFields().put("input-deliverable.intellectualAsset.hasPatentPvp",
-              InvalidFieldsMessages.EMPTYFIELD);
-          }
-        }
-
         // Validate Deliverable Participant
         if (deliverable.getDeliverableParticipant() != null
           && deliverable.getDeliverableParticipant().getHasParticipants() != null) {
@@ -528,6 +516,7 @@ public class PublicationValidator extends BaseValidator {
   }
 
   public void validateLicense(DeliverableInfo deliverableInfo, BaseAction action) {
+	  /*
     if (deliverableInfo.getAdoptedLicense().booleanValue()) {
       if (deliverableInfo.getLicense() != null) {
         if (this.isValidString(deliverableInfo.getLicense())) {
@@ -555,6 +544,7 @@ public class PublicationValidator extends BaseValidator {
         action.getInvalidFields().put("input-deliverable.deliverableInfo.license", InvalidFieldsMessages.EMPTYFIELD);
       }
     }
+  */
   }
 
   public void validateMetadata(List<DeliverableMetadataElement> elements, BaseAction action) {

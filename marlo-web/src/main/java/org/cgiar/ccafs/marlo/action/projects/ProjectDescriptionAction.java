@@ -541,14 +541,6 @@ public class ProjectDescriptionAction extends BaseAction {
         }
 
         // load LiaisonUser info
-        if (project.getProjectInfo().getLiaisonUser() != null
-          && project.getProjectInfo().getLiaisonUser().getId() != null) {
-          project.getProjectInfo()
-            .setLiaisonUser(liaisonUserManager.getLiaisonUserById(project.getProjectInfo().getLiaisonUser().getId()));
-        } else {
-          project.getProjecInfoPhase(this.getActualPhase()).setLiaisonUser(null);
-        }
-        // load LiaisonUser info
         if (project.getProjectInfo().getLiaisonInstitution() != null) {
           project.getProjectInfo().setLiaisonInstitution(liaisonInstitutionManager
             .getLiaisonInstitutionById(project.getProjectInfo().getLiaisonInstitution().getId()));
@@ -617,13 +609,7 @@ public class ProjectDescriptionAction extends BaseAction {
         if (project.getProjectInfo() == null) {
           project.setProjectInfo(new ProjectInfo());
         }
-        if (project.getProjectInfo().getLiaisonUser() != null
-          && project.getProjectInfo().getLiaisonUser().getId() != null) {
-          project.getProjectInfo()
-            .setLiaisonUser(liaisonUserManager.getLiaisonUserById(project.getProjectInfo().getLiaisonUser().getId()));
-        } else {
-          project.getProjecInfoPhase(this.getActualPhase()).setLiaisonUser(null);
-        }
+
         // load LiaisonUser info
         if (project.getProjectInfo().getLiaisonInstitution() != null) {
           project.getProjectInfo().setLiaisonInstitution(liaisonInstitutionManager
@@ -860,14 +846,11 @@ public class ProjectDescriptionAction extends BaseAction {
       }
 
       project.getProjecInfoPhase(this.getActualPhase()).setLiaisonInstitution(null);
-      project.getProjecInfoPhase(this.getActualPhase()).setLiaisonUser(null);
 
       project.getProjectInfo().setNoRegional(null);
-      project.getProjectInfo().setCrossCuttingGender(null);
       project.getProjectInfo().setCrossCuttingCapacity(null);
       project.getProjectInfo().setCrossCuttingClimate(null);
       project.getProjectInfo().setCrossCuttingNa(null);
-      project.getProjectInfo().setCrossCuttingYouth(null);
     }
 
   }
@@ -899,12 +882,6 @@ public class ProjectDescriptionAction extends BaseAction {
       if (project.getProjectInfo().getCrossCuttingNa() == null) {
         project.getProjectInfo().setCrossCuttingNa(false);
       }
-      if (project.getProjectInfo().getCrossCuttingGender() == null) {
-        project.getProjectInfo().setCrossCuttingGender(false);
-      }
-      if (project.getProjectInfo().getCrossCuttingYouth() == null) {
-        project.getProjectInfo().setCrossCuttingYouth(false);
-      }
 
       if (this.isReportingActive()) {
 
@@ -917,14 +894,6 @@ public class ProjectDescriptionAction extends BaseAction {
         // N/A
         project.getProjectInfo()
           .setCrossCuttingNa(projectDB.getProjecInfoPhase(this.getActualPhase()).getCrossCuttingNa());
-        // Gender
-        project.getProjectInfo()
-          .setCrossCuttingGender(projectDB.getProjecInfoPhase(this.getActualPhase()).getCrossCuttingGender());
-        // Youth
-        project.getProjectInfo()
-          .setCrossCuttingYouth(projectDB.getProjecInfoPhase(this.getActualPhase()).getCrossCuttingYouth());
-
-
       }
 
 
@@ -932,12 +901,6 @@ public class ProjectDescriptionAction extends BaseAction {
       if (project.getProjectInfo().getLiaisonInstitution() != null) {
         if (project.getProjectInfo().getLiaisonInstitution().getId() == -1) {
           project.getProjectInfo().setLiaisonInstitution(null);
-        }
-      }
-      // no liaison user selected
-      if (project.getProjectInfo().getLiaisonUser() != null) {
-        if (project.getProjectInfo().getLiaisonUser().getId() == -1) {
-          project.getProjectInfo().setLiaisonUser(null);
         }
       }
 
@@ -1146,7 +1109,6 @@ public class ProjectDescriptionAction extends BaseAction {
       project.getProjectInfo().setProject(project);
       project.getProjectInfo().setReporting(projectDB.getProjectInfo().getReporting());
       project.getProjectInfo().setAdministrative(projectDB.getProjectInfo().getAdministrative());
-      project.getProjectInfo().setNewPartnershipsPlanned(projectDB.getProjectInfo().getNewPartnershipsPlanned());
       project.getProjectInfo().setLocationRegional(projectDB.getProjectInfo().getLocationRegional());
       project.getProjectInfo().setLocationGlobal(projectDB.getProjectInfo().getLocationGlobal());
 

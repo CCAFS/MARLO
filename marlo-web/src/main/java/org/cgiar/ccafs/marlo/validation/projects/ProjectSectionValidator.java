@@ -1146,16 +1146,6 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
             if (deliverable.getDeliverableIntellectualAssets() != null) {
               List<DeliverableIntellectualAsset> intellectualAssets = deliverable.getDeliverableIntellectualAssets()
                 .stream().filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList());
-
-              if (intellectualAssets.size() > 0) {
-                DeliverableIntellectualAsset asset = deliverableIntellectualAssetManager
-                  .getDeliverableIntellectualAssetById(intellectualAssets.get(0).getId());
-                deliverable.setIntellectualAsset(deliverableIntellectualAssetManager
-                  .getDeliverableIntellectualAssetById(intellectualAssets.get(0).getId()));
-
-              } else {
-                deliverable.setIntellectualAsset(new DeliverableIntellectualAsset());
-              }
             }
           }
 

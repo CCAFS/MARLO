@@ -625,16 +625,8 @@ public class ProjectPartnerAction extends BaseAction {
       Long crpPmuRole = Long.parseLong((String) this.getSession().get(APConstants.CRP_PMU_ROLE));
       Role roleCrpPmu = roleManager.getRoleById(crpPmuRole);
       // If Managment liason is PMU
-      if (project.getProjecInfoPhase(this.getActualPhase()).getLiaisonInstitution() != null
-        && project.getProjecInfoPhase(this.getActualPhase()).getLiaisonUser() != null) {
-        if (project.getProjecInfoPhase(this.getActualPhase()).getLiaisonInstitution().getAcronym()
-          .equals(roleCrpPmu.getAcronym())) {
-          if (ccEmail.isEmpty()) {
-            ccEmail += project.getProjecInfoPhase(this.getActualPhase()).getLiaisonUser().getUser().getEmail();
-          } else {
-            ccEmail += ", " + project.getProjecInfoPhase(this.getActualPhase()).getLiaisonUser().getUser().getEmail();
-          }
-        } else if (project.getProjecInfoPhase(this.getActualPhase()).getLiaisonInstitution() != null
+      if (project.getProjecInfoPhase(this.getActualPhase()).getLiaisonInstitution() != null) {
+        if (project.getProjecInfoPhase(this.getActualPhase()).getLiaisonInstitution() != null
           && project.getProjecInfoPhase(this.getActualPhase()).getLiaisonInstitution().getCrpProgram() != null
           && project.getProjecInfoPhase(this.getActualPhase()).getLiaisonInstitution().getCrpProgram()
             .getProgramType() == 1) {
@@ -761,16 +753,8 @@ public class ProjectPartnerAction extends BaseAction {
       Long crpPmuRole = Long.parseLong((String) this.getSession().get(APConstants.CRP_PMU_ROLE));
       Role roleCrpPmu = roleManager.getRoleById(crpPmuRole);
       // If Managment liason is PMU
-      if (project.getProjecInfoPhase(this.getActualPhase()).getLiaisonInstitution() != null
-        && project.getProjecInfoPhase(this.getActualPhase()).getLiaisonUser() != null) {
-        if (project.getProjecInfoPhase(this.getActualPhase()).getLiaisonInstitution().getAcronym()
-          .equals(roleCrpPmu.getAcronym())) {
-          if (ccEmail.isEmpty()) {
-            ccEmail += project.getProjecInfoPhase(this.getActualPhase()).getLiaisonUser().getUser().getEmail();
-          } else {
-            ccEmail += ", " + project.getProjecInfoPhase(this.getActualPhase()).getLiaisonUser().getUser().getEmail();
-          }
-        } else if (project.getProjecInfoPhase(this.getActualPhase()).getLiaisonInstitution() != null
+      if (project.getProjecInfoPhase(this.getActualPhase()).getLiaisonInstitution() != null) {
+        if (project.getProjecInfoPhase(this.getActualPhase()).getLiaisonInstitution() != null
           && project.getProjecInfoPhase(this.getActualPhase()).getLiaisonInstitution().getCrpProgram() != null
           && project.getProjecInfoPhase(this.getActualPhase()).getLiaisonInstitution().getCrpProgram()
             .getProgramType() == 1) {
@@ -941,10 +925,6 @@ public class ProjectPartnerAction extends BaseAction {
 
         if (this.isLessonsActive()) {
           this.loadLessons(loggedCrp, project);
-        }
-        if (project.getProjectComponentLesson() != null) {
-          differences.addAll(historyComparator.getDifferencesList(project.getProjectComponentLesson(), transaction,
-            specialList, "project.projectComponentLesson", "project", 1));
         }
         if ((project.getProjecInfoPhase(this.getActualPhase())) != null) {
           project.setProjectInfo(project.getProjecInfoPhase(this.getActualPhase()));
@@ -1413,7 +1393,6 @@ public class ProjectPartnerAction extends BaseAction {
             projectPartnerDB.setSelectedLocations(projectPartnerClient.getSelectedLocations());
             projectPartnerDB.setSubDepartment(projectPartnerClient.getSubDepartment());
             projectPartnerDB.setPartnerContributors(projectPartnerDB.getPartnerContributors());
-            projectPartnerDB.setHasPartnerships(projectPartnerClient.getHasPartnerships());
             projectPartnerDB = projectPartnerManager.saveProjectPartner(projectPartnerDB);
 
             if (!this.isCenterGlobalUnit()) {
@@ -1476,10 +1455,6 @@ public class ProjectPartnerAction extends BaseAction {
       if (this.isReportingActive() && projectDB.getProjectInfo() != null && project.getProjectInfo() != null
         && project.getProjectInfo().getPartnerOverall() != null) {
         projectDB.getProjectInfo().setPartnerOverall(project.getProjectInfo().getPartnerOverall());
-      }
-
-      if (project.getProjectInfo() != null && project.getProjectInfo().getNewPartnershipsPlanned() != null) {
-        projectDB.getProjectInfo().setNewPartnershipsPlanned(project.getProjectInfo().getNewPartnershipsPlanned());
       }
 
       /**

@@ -164,8 +164,7 @@ public class UnsubmitProjectAction extends BaseAction {
     Role roleCrpPmu = roleManager.getRoleById(crpPmuRole);
     // If Managment liason is PMU
     if (projectInfo.getLiaisonInstitution().getAcronym().equals(roleCrpPmu.getAcronym())) {
-      ccEmails.append(projectInfo.getLiaisonUser().getUser().getEmail());
-      ccEmails.append(", ");
+      // Deleted managment liason contact person
     } else if (projectInfo.getLiaisonInstitution().getCrpProgram() != null
       && projectInfo.getLiaisonInstitution().getCrpProgram().getProgramType() == 1) {
       // If Managment liason is FL

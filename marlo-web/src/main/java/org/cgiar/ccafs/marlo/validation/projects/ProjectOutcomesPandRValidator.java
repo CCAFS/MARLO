@@ -103,7 +103,6 @@ public class ProjectOutcomesPandRValidator extends BaseValidator {
       }
 
       if (!action.isProjectNew(project.getId())) {
-        this.validateLessonsLearn(action, project);
         if (action.getValidationMessage().toString().contains("Lessons")) {
           this.replaceAll(action.getValidationMessage(), "Lessons",
             "Lessons regarding partnerships and possible implications for the coming planning cycle");
