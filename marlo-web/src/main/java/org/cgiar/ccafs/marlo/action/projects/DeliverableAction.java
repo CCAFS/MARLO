@@ -79,8 +79,6 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableGenderLevel;
 import org.cgiar.ccafs.marlo.data.model.DeliverableGeographicRegion;
 import org.cgiar.ccafs.marlo.data.model.DeliverableGeographicScope;
 import org.cgiar.ccafs.marlo.data.model.DeliverableInfo;
-import org.cgiar.ccafs.marlo.data.model.DeliverableIntellectualAsset;
-import org.cgiar.ccafs.marlo.data.model.DeliverableIntellectualAssetTypeEnum;
 import org.cgiar.ccafs.marlo.data.model.DeliverableLocation;
 import org.cgiar.ccafs.marlo.data.model.DeliverableMetadataElement;
 import org.cgiar.ccafs.marlo.data.model.DeliverableParticipant;
@@ -96,7 +94,6 @@ import org.cgiar.ccafs.marlo.data.model.FundingSource;
 import org.cgiar.ccafs.marlo.data.model.GenderType;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Institution;
-import org.cgiar.ccafs.marlo.data.model.LicensesTypeEnum;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.PartnerDivision;
 import org.cgiar.ccafs.marlo.data.model.Phase;
@@ -1180,40 +1177,6 @@ public class DeliverableAction extends BaseAction {
             deliverable.getFiles().add(deFile);
           }
 
-          if (this.hasSpecificities(this.crpDeliverableIntellectualAsset())) {
-
-            if (deliverable.getDeliverableIntellectualAssets() != null) {
-              List<DeliverableIntellectualAsset> intellectualAssets =
-                deliverable.getDeliverableIntellectualAssets().stream()
-                  .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList());
-
-              if (intellectualAssets.size() > 0) {
-                deliverable.setIntellectualAsset(deliverableIntellectualAssetManager
-                  .getDeliverableIntellectualAssetById(intellectualAssets.get(0).getId()));
-                if (this.transaction != null && !this.transaction.equals("-1")) {
-                  if (deliverable.getIntellectualAsset().getFillingType() != null
-                    && deliverable.getIntellectualAsset().getFillingType().getId() != null) {
-                    deliverable.getIntellectualAsset().setFillingType(repIndFillingTypeManager
-                      .getRepIndFillingTypeById(deliverable.getIntellectualAsset().getFillingType().getId()));
-                  }
-                  if (deliverable.getIntellectualAsset().getPatentStatus() != null
-                    && deliverable.getIntellectualAsset().getPatentStatus().getId() != null) {
-                    deliverable.getIntellectualAsset().setPatentStatus(repIndPatentStatusManager
-                      .getRepIndPatentStatusById(deliverable.getIntellectualAsset().getPatentStatus().getId()));
-                  }
-                  if (deliverable.getIntellectualAsset().getCountry() != null
-                    && deliverable.getIntellectualAsset().getCountry().getId() != null) {
-                    deliverable.getIntellectualAsset().setCountry(
-                      locElementManager.getLocElementById(deliverable.getIntellectualAsset().getCountry().getId()));
-                  }
-                }
-              } else {
-                deliverable.setIntellectualAsset(new DeliverableIntellectualAsset());
-              }
-            }
-
-          }
-
           if (deliverable.getDeliverableParticipants() != null) {
             List<DeliverableParticipant> deliverableParticipants = deliverable.getDeliverableParticipants().stream()
               .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList());
@@ -1608,7 +1571,6 @@ public class DeliverableAction extends BaseAction {
         }
 
         deliverable.getDeliverableInfo(this.getActualPhase()).setDeliverableType(null);
-        deliverable.getDeliverableInfo(this.getActualPhase()).setLicense(null);
         deliverable.getDeliverableInfo(this.getActualPhase()).setRegion(null);
         deliverable.getDeliverableInfo(this.getActualPhase()).setGeographicScope(null);
 
@@ -1659,12 +1621,6 @@ public class DeliverableAction extends BaseAction {
           deliverable.getDeliverableParticipant().setRepIndTypeActivity(null);
           deliverable.getDeliverableParticipant().setRepIndTypeParticipant(null);
           deliverable.getDeliverableParticipant().setRepIndTrainingTerm(null);
-        }
-        if (this.hasSpecificities(this.crpDeliverableIntellectualAsset())) {
-          if (deliverable.getIntellectualAsset() != null) {
-            deliverable.getIntellectualAsset().setFillingType(null);
-            deliverable.getIntellectualAsset().setPatentStatus(null);
-          }
         }
 
         if (deliverable.getCountries() != null) {
@@ -1767,9 +1723,7 @@ public class DeliverableAction extends BaseAction {
         // Data Sharing is not longer used.
         this.saveDataSharing();
         this.saveUsers();
-        if (this.hasSpecificities(this.crpDeliverableIntellectualAsset())) {
-          this.saveIntellectualAsset();
-        }
+
         this.saveParticipant();
       }
 
@@ -2494,117 +2448,6 @@ public class DeliverableAction extends BaseAction {
     }
   }
 
-
-  private void saveIntellectualAsset() {
-    if (deliverable.getIntellectualAsset() != null && deliverable.getIntellectualAsset().getHasPatentPvp() != null) {
-      DeliverableIntellectualAsset intellectualAsset = new DeliverableIntellectualAsset();
-
-      if (deliverable.getIntellectualAsset().getId() != null && deliverable.getIntellectualAsset().getId() != -1) {
-        intellectualAsset = deliverableIntellectualAssetManager
-          .getDeliverableIntellectualAssetById(deliverable.getIntellectualAsset().getId());
-
-      } else {
-        intellectualAsset = new DeliverableIntellectualAsset();
-        intellectualAsset.setDeliverable(deliverableManager.getDeliverableById(deliverableID));
-        intellectualAsset.setPhase(this.getActualPhase());
-      }
-
-      intellectualAsset.setHasPatentPvp(deliverable.getIntellectualAsset().getHasPatentPvp());
-
-      if (intellectualAsset.getHasPatentPvp()) {
-        intellectualAsset.setAdditionalInformation(deliverable.getIntellectualAsset().getAdditionalInformation());
-        intellectualAsset.setApplicant(deliverable.getIntellectualAsset().getApplicant());
-        intellectualAsset.setLink(deliverable.getIntellectualAsset().getLink());
-        intellectualAsset.setPublicCommunication(deliverable.getIntellectualAsset().getPublicCommunication());
-        intellectualAsset.setTitle(deliverable.getIntellectualAsset().getTitle());
-        intellectualAsset.setDateFilling(deliverable.getIntellectualAsset().getDateFilling());
-        intellectualAsset.setDateRegistration(deliverable.getIntellectualAsset().getDateRegistration());
-        intellectualAsset.setDateExpiry(deliverable.getIntellectualAsset().getDateExpiry());
-        intellectualAsset.setType(deliverable.getIntellectualAsset().getType());
-
-        if (intellectualAsset.getType() != null) {
-          if (DeliverableIntellectualAssetTypeEnum.getValue(intellectualAsset.getType())
-            .equals(DeliverableIntellectualAssetTypeEnum.Patent)) {
-            if (deliverable.getIntellectualAsset().getFillingType() != null
-              && deliverable.getIntellectualAsset().getFillingType().getId() != -1) {
-              intellectualAsset.setFillingType(deliverable.getIntellectualAsset().getFillingType());
-            } else {
-              intellectualAsset.setFillingType(null);
-            }
-            if (deliverable.getIntellectualAsset().getPatentStatus() != null
-              && deliverable.getIntellectualAsset().getPatentStatus().getId() != -1) {
-              intellectualAsset.setPatentStatus(deliverable.getIntellectualAsset().getPatentStatus());
-            } else {
-              intellectualAsset.setPatentStatus(null);
-            }
-            intellectualAsset.setPatentType(deliverable.getIntellectualAsset().getPatentType());
-            intellectualAsset.setVarietyName(null);
-            intellectualAsset.setStatus(null);
-            intellectualAsset.setCountry(null);
-            intellectualAsset.setAppRegNumber(null);
-            intellectualAsset.setBreederCrop(null);
-          } else if (DeliverableIntellectualAssetTypeEnum.getValue(intellectualAsset.getType())
-            .equals(DeliverableIntellectualAssetTypeEnum.PVP)) {
-            intellectualAsset.setVarietyName(deliverable.getIntellectualAsset().getVarietyName());
-            if (deliverable.getIntellectualAsset().getStatus() != null
-              && deliverable.getIntellectualAsset().getStatus() != -1) {
-              intellectualAsset.setStatus(deliverable.getIntellectualAsset().getStatus());
-            } else {
-              intellectualAsset.setStatus(null);
-            }
-            if (deliverable.getIntellectualAsset().getCountry() != null
-              && !deliverable.getIntellectualAsset().getCountry().getIsoAlpha2().equals("-1")) {
-              LocElement locElement = locElementManager
-                .getLocElementByISOCode(deliverable.getIntellectualAsset().getCountry().getIsoAlpha2());
-              if (locElement != null) {
-                intellectualAsset.setCountry(locElement);
-              } else {
-                intellectualAsset.setCountry(null);
-              }
-            } else {
-              intellectualAsset.setCountry(null);
-            }
-            intellectualAsset.setAppRegNumber(deliverable.getIntellectualAsset().getAppRegNumber());
-            intellectualAsset.setBreederCrop(deliverable.getIntellectualAsset().getBreederCrop());
-            intellectualAsset.setFillingType(null);
-            intellectualAsset.setPatentStatus(null);
-            intellectualAsset.setPatentType(null);
-          }
-        } else {
-          intellectualAsset.setFillingType(null);
-          intellectualAsset.setPatentStatus(null);
-          intellectualAsset.setPatentType(null);
-          intellectualAsset.setVarietyName(null);
-          intellectualAsset.setStatus(null);
-          intellectualAsset.setCountry(null);
-          intellectualAsset.setAppRegNumber(null);
-          intellectualAsset.setBreederCrop(null);
-        }
-      } else {
-        intellectualAsset.setAdditionalInformation(null);
-        intellectualAsset.setApplicant(null);
-        intellectualAsset.setLink(null);
-        intellectualAsset.setPublicCommunication(null);
-        intellectualAsset.setTitle(null);
-        intellectualAsset.setType(null);
-        intellectualAsset.setFillingType(null);
-        intellectualAsset.setPatentStatus(null);
-        intellectualAsset.setPatentType(null);
-        intellectualAsset.setVarietyName(null);
-        intellectualAsset.setStatus(null);
-        intellectualAsset.setCountry(null);
-        intellectualAsset.setAppRegNumber(null);
-        intellectualAsset.setBreederCrop(null);
-        intellectualAsset.setDateFilling(null);
-        intellectualAsset.setDateRegistration(null);
-        intellectualAsset.setDateExpiry(null);
-      }
-
-      deliverableIntellectualAssetManager.saveDeliverableIntellectualAsset(intellectualAsset);
-    }
-  }
-
-
   public void saveMetadata() {
     if (deliverable.getMetadataElements() != null) {
       for (DeliverableMetadataElement deliverableMetadataElement : deliverable.getMetadataElements()) {
@@ -3159,31 +3002,9 @@ public class DeliverableAction extends BaseAction {
       if (deliverable.getDeliverableInfo(this.getActualPhase()).getAdoptedLicense() != null) {
         deliverableInfoDb.setAdoptedLicense(deliverable.getDeliverableInfo(this.getActualPhase()).getAdoptedLicense());
         if (deliverable.getDeliverableInfo(this.getActualPhase()).getAdoptedLicense().booleanValue()) {
-          deliverableInfoDb.setLicense(deliverable.getDeliverableInfo(this.getActualPhase()).getLicense());
-          if (deliverable.getDeliverableInfo(this.getActualPhase()).getLicense() != null) {
-            if (deliverable.getDeliverableInfo(this.getActualPhase()).getLicense()
-              .equals(LicensesTypeEnum.OTHER.getValue())) {
-              deliverableInfoDb
-                .setOtherLicense(deliverable.getDeliverableInfo(this.getActualPhase()).getOtherLicense());
-              deliverableInfoDb
-                .setAllowModifications(deliverable.getDeliverableInfo(this.getActualPhase()).getAllowModifications());
-            } else {
-              deliverableInfoDb.setOtherLicense(null);
-              deliverableInfoDb.setAllowModifications(null);
-            }
-          }
           deliverableInfoDb
             .setAdoptedLicense(deliverable.getDeliverableInfo(this.getActualPhase()).getAdoptedLicense());
-        } else {
-
-          deliverableInfoDb.setLicense(null);
-          deliverableInfoDb.setOtherLicense(null);
-          deliverableInfoDb.setAllowModifications(null);
         }
-      } else {
-        deliverableInfoDb.setLicense(null);
-        deliverableInfoDb.setOtherLicense(null);
-        deliverableInfoDb.setAllowModifications(null);
       }
     }
 

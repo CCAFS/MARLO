@@ -475,18 +475,6 @@ public class ProjectListAction extends BaseAction {
 
     CenterProjectCrosscutingTheme crosscutingThemeSave = centerProject.getProjectCrosscutingTheme();
 
-    if (project.getProjecInfoPhase(phase).getCrossCuttingGender() != null
-      && project.getProjecInfoPhase(phase).getCrossCuttingGender()) {
-      hasChanges = true;
-      crosscutingThemeSave.setGender(true);
-    }
-
-    if (project.getProjecInfoPhase(phase).getCrossCuttingYouth() != null
-      && project.getProjecInfoPhase(phase).getCrossCuttingYouth()) {
-      hasChanges = true;
-      crosscutingThemeSave.setYouth(true);
-    }
-
     if (project.getProjecInfoPhase(phase).getCrossCuttingCapacity() != null
       && project.getProjecInfoPhase(phase).getCrossCuttingCapacity()) {
       hasChanges = true;

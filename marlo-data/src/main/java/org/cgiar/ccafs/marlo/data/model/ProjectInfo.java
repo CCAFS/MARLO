@@ -25,8 +25,6 @@ public class ProjectInfo extends MarloAuditableEntity implements java.io.Seriali
   @Expose
   private LiaisonInstitution liaisonInstitutionCenter;
   @Expose
-  private LiaisonUser liaisonUser;
-  @Expose
   private Phase phase;
   private Project project;
   @Expose
@@ -59,12 +57,6 @@ public class ProjectInfo extends MarloAuditableEntity implements java.io.Seriali
   @Expose
   private String statusJustification;
   @Expose
-  private String genderAnalysis;
-  @Expose
-  private Boolean crossCuttingGender;
-  @Expose
-  private Boolean crossCuttingYouth;
-  @Expose
   private Boolean crossCuttingCapacity;
   @Expose
   private Boolean crossCuttingClimate;
@@ -78,8 +70,6 @@ public class ProjectInfo extends MarloAuditableEntity implements java.io.Seriali
   private Boolean reporting;
   @Expose
   private Boolean locationRegional;
-  @Expose
-  private String newPartnershipsPlanned;
   @Expose
   private String partnerOverall;
   @Expose
@@ -166,19 +156,9 @@ public class ProjectInfo extends MarloAuditableEntity implements java.io.Seriali
   }
 
 
-  public Boolean getCrossCuttingGender() {
-    return crossCuttingGender;
-  }
-
-
   public Boolean getCrossCuttingNa() {
     return crossCuttingNa;
   }
-
-  public Boolean getCrossCuttingYouth() {
-    return crossCuttingYouth;
-  }
-
 
   public String getDimension() {
     return dimension;
@@ -187,11 +167,6 @@ public class ProjectInfo extends MarloAuditableEntity implements java.io.Seriali
   public Date getEndDate() {
     return endDate;
   }
-
-  public String getGenderAnalysis() {
-    return genderAnalysis;
-  }
-
 
   public String getLeaderResponsabilities() {
     return leaderResponsabilities;
@@ -203,11 +178,6 @@ public class ProjectInfo extends MarloAuditableEntity implements java.io.Seriali
 
   public LiaisonInstitution getLiaisonInstitutionCenter() {
     return liaisonInstitutionCenter;
-  }
-
-
-  public LiaisonUser getLiaisonUser() {
-    return liaisonUser;
   }
 
   public Boolean getLocationGlobal() {
@@ -225,12 +195,6 @@ public class ProjectInfo extends MarloAuditableEntity implements java.io.Seriali
     sb.append("Id : ").append(this.getId());
     return sb.toString();
   }
-
-
-  public String getNewPartnershipsPlanned() {
-    return newPartnershipsPlanned;
-  }
-
 
   public Boolean getNoRegional() {
     return noRegional;
@@ -388,21 +352,9 @@ public class ProjectInfo extends MarloAuditableEntity implements java.io.Seriali
     this.crossCuttingClimate = crossCuttingClimate;
   }
 
-
-  public void setCrossCuttingGender(Boolean crossCuttingGender) {
-    this.crossCuttingGender = crossCuttingGender;
-  }
-
-
   public void setCrossCuttingNa(Boolean crossCuttingNa) {
     this.crossCuttingNa = crossCuttingNa;
   }
-
-
-  public void setCrossCuttingYouth(Boolean crossCuttingYouth) {
-    this.crossCuttingYouth = crossCuttingYouth;
-  }
-
 
   public void setDimension(String dimension) {
     this.dimension = dimension;
@@ -412,12 +364,6 @@ public class ProjectInfo extends MarloAuditableEntity implements java.io.Seriali
   public void setEndDate(Date endDate) {
     this.endDate = endDate;
   }
-
-
-  public void setGenderAnalysis(String genderAnalysis) {
-    this.genderAnalysis = genderAnalysis;
-  }
-
 
   public void setLeaderResponsabilities(String leaderResponsabilities) {
     this.leaderResponsabilities = leaderResponsabilities;
@@ -433,12 +379,6 @@ public class ProjectInfo extends MarloAuditableEntity implements java.io.Seriali
     this.liaisonInstitutionCenter = liaisonInstitutionCenter;
   }
 
-
-  public void setLiaisonUser(LiaisonUser liaisonUser) {
-    this.liaisonUser = liaisonUser;
-  }
-
-
   public void setLocationGlobal(Boolean locationGlobal) {
     this.locationGlobal = locationGlobal;
   }
@@ -447,11 +387,6 @@ public class ProjectInfo extends MarloAuditableEntity implements java.io.Seriali
   public void setLocationRegional(Boolean locationRegional) {
     this.locationRegional = locationRegional;
   }
-
-  public void setNewPartnershipsPlanned(String newPartnershipsPlanned) {
-    this.newPartnershipsPlanned = newPartnershipsPlanned;
-  }
-
 
   public void setNoRegional(Boolean noRegional) {
     this.noRegional = noRegional;
@@ -534,15 +469,11 @@ public class ProjectInfo extends MarloAuditableEntity implements java.io.Seriali
     this.setCofinancing(update.isCofinancing());
     this.setCrossCuttingCapacity(update.getCrossCuttingCapacity());
     this.setCrossCuttingClimate(update.getCrossCuttingClimate());
-    this.setCrossCuttingGender(update.getCrossCuttingGender());
     this.setCrossCuttingNa(update.getCrossCuttingNa());
-    this.setCrossCuttingYouth(update.getCrossCuttingYouth());
     this.setDimension(update.getDimension());
     this.setEndDate(update.getEndDate());
-    this.setGenderAnalysis(update.getGenderAnalysis());
     this.setLeaderResponsabilities(update.getLeaderResponsabilities());
     this.setLiaisonInstitution(update.getLiaisonInstitution());
-    this.setLiaisonUser(update.getLiaisonUser());
     this.setLocationGlobal(update.getLocationGlobal());
     this.setLocationRegional(update.getLocationRegional());
     this.setNoRegional(update.getNoRegional());
@@ -555,7 +486,6 @@ public class ProjectInfo extends MarloAuditableEntity implements java.io.Seriali
     this.setSummary(update.getSummary());
     this.setTitle(update.getTitle());
     this.setType(update.getType());
-    this.setNewPartnershipsPlanned(update.getNewPartnershipsPlanned());
     this.setLiaisonInstitutionCenter(update.getLiaisonInstitutionCenter());
     this.setProjectEditLeader(update.getProjectEditLeader());
     this.setActiveSince(update.getActiveSince());

@@ -204,11 +204,9 @@ public class ProjectOutcomeManagerImpl implements ProjectOutcomeManager {
       }
       projectOutcomeAdd.setExpectedUnit(projectOutcome.getExpectedUnit());
       projectOutcomeAdd.setExpectedValue(projectOutcome.getExpectedValue());
-      projectOutcomeAdd.setGenderDimenssion(projectOutcome.getGenderDimenssion());
       projectOutcomeAdd.setNarrativeAchieved(projectOutcome.getNarrativeAchieved());
       projectOutcomeAdd.setNarrativeTarget(projectOutcome.getNarrativeTarget());
       projectOutcomeAdd.setProject(projectOutcome.getProject());
-      projectOutcomeAdd.setYouthComponent(projectOutcome.getYouthComponent());
       if (projectOutcomeAdd.getCrpProgramOutcome() != null) {
         projectOutcomeDAO.save(projectOutcomeAdd);
         this.addMilestones(projectOutcome, projectOutcomeAdd);
@@ -230,10 +228,8 @@ public class ProjectOutcomeManagerImpl implements ProjectOutcomeManager {
         }
         projectOutcomeAdd.setExpectedUnit(projectOutcome.getExpectedUnit());
         projectOutcomeAdd.setExpectedValue(projectOutcome.getExpectedValue());
-        projectOutcomeAdd.setGenderDimenssion(projectOutcome.getGenderDimenssion());
         projectOutcomeAdd.setNarrativeAchieved(projectOutcome.getNarrativeAchieved());
         projectOutcomeAdd.setNarrativeTarget(projectOutcome.getNarrativeTarget());
-        projectOutcomeAdd.setYouthComponent(projectOutcome.getYouthComponent());
         projectOutcomeAdd.setActive(projectOutcome.isActive());
 
         projectOutcome.setCrpProgramOutcome(crpProgramOutcomeDAO.find(projectOutcome.getCrpProgramOutcome().getId()));
@@ -278,11 +274,9 @@ public class ProjectOutcomeManagerImpl implements ProjectOutcomeManager {
         crpProgramOutcomeDAO.getCrpProgramOutcome(projectOutcome.getCrpProgramOutcome().getComposeID(), next));
       projectOutcomeAdd.setExpectedUnit(projectOutcome.getExpectedUnit());
       projectOutcomeAdd.setExpectedValue(projectOutcome.getExpectedValue());
-      projectOutcomeAdd.setGenderDimenssion(projectOutcome.getGenderDimenssion());
       projectOutcomeAdd.setNarrativeAchieved(projectOutcome.getNarrativeAchieved());
       projectOutcomeAdd.setNarrativeTarget(projectOutcome.getNarrativeTarget());
       projectOutcomeAdd.setProject(projectOutcome.getProject());
-      projectOutcomeAdd.setYouthComponent(projectOutcome.getYouthComponent());
       if (projectOutcomeAdd.getCrpProgramOutcome() != null) {
         projectOutcomeDAO.save(projectOutcomeAdd);
         this.addMilestones(projectOutcome, projectOutcomeAdd);

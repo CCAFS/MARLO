@@ -236,7 +236,6 @@ public class ProjectListAction extends BaseAction {
     ProjectInfo projectInfo = new ProjectInfo();
     projectInfo.setModificationJustification("New expected Project created");
     projectInfo.setType(type);
-    projectInfo.setLiaisonUser(liaisonUser);
     projectInfo.setLiaisonInstitution(liaisonInstitution);
     projectInfo.setScale(0);
     projectInfo.setCofinancing(false);
@@ -250,8 +249,6 @@ public class ProjectListAction extends BaseAction {
       projectPartner.setInstitution(loggedCrp.getInstitution());
       projectPartner.setPhase(this.getActualPhase());
       projectPartnerManager.saveProjectPartner(projectPartner);
-
-      projectInfo.setLiaisonUser(null);
 
     } else {
       projectInfo.setProjectEditLeader(false);
@@ -364,7 +361,6 @@ public class ProjectListAction extends BaseAction {
       ProjectInfo projectInfo = new ProjectInfo();
       projectInfo.setModificationJustification("New expected Project created");
       projectInfo.setType(type);
-      projectInfo.setLiaisonUser(liaisonUser);
       projectInfo.setLiaisonInstitution(liaisonInstitution);
       projectInfo.setScale(0);
       projectInfo.setCofinancing(false);
@@ -378,8 +374,6 @@ public class ProjectListAction extends BaseAction {
         projectPartner.setInstitution(loggedCrp.getInstitution());
         projectPartner.setPhase(this.getActualPhase());
         projectPartnerManager.saveProjectPartner(projectPartner);
-
-        projectInfo.setLiaisonUser(null);
 
       } else {
         projectInfo.setProjectEditLeader(false);

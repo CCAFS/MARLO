@@ -310,10 +310,6 @@ public class ProjectOutcomesPandRAction extends BaseAction {
         if (this.isLessonsActive()) {
           this.loadLessons(loggedCrp, project);
         }
-        if (project.getProjectComponentLesson() != null) {
-          differences.addAll(historyComparator.getDifferencesList(project.getProjectComponentLesson(), transaction,
-            specialList, "project.projectComponentLesson", "project", 1));
-        }
         this.setDifferences(differences);
 
       } else {

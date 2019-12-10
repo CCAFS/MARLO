@@ -886,8 +886,6 @@ public class ProjectOutcomeAction extends BaseAction {
         }
       }
 
-      projectOutcomeDB.setGenderDimenssion(projectOutcome.getGenderDimenssion());
-      projectOutcomeDB.setYouthComponent(projectOutcome.getYouthComponent());
       projectOutcomeDB.setNarrativeTarget(projectOutcome.getNarrativeTarget());
 
       // Reporting phase
