@@ -56,9 +56,6 @@
             <column name="narrative_achieved" sql-type="TEXT" />
         </property>
 
-      <property name="youthComponent" type="string">
-     <column name="youth_component" sql-type="TEXT" />
-     </property>
         <property name="active" type="boolean">
             <column name="is_active" not-null="true" />
         </property>
