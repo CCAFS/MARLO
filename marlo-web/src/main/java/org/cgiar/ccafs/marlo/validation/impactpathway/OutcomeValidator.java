@@ -296,16 +296,26 @@ public class OutcomeValidator extends BaseValidator
           action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Sub Idos"}));
       }
       double contributions = 0;
+      boolean hasPrimarySubIDO = false;
       for (int j = 0; j < outcome.getSubIdos().size(); j++) {
         outcome.getSubIdos().get(j).setCrpProgramOutcome(outcome);
         this.validateSubIDO(action, outcome.getSubIdos().get(j), i, j);
         if (outcome.getSubIdos().get(j).getContribution() != null) {
           contributions = contributions + outcome.getSubIdos().get(j).getContribution().doubleValue();
         }
-
+        if(outcome.getSubIdos().get(j).getPrimary()!= null && outcome.getSubIdos().get(j).getPrimary()==true) {
+        	hasPrimarySubIDO=true;
+        }
       }
+      if(hasPrimarySubIDO==false) {
+          action.addMessage(action.getText("outcome.action.primary.required"));
+          action.getInvalidFields().put("list-outcomes[" + i + "].subIdos",
+                  action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Primary sub IDO"}));
+      }
+      
       if (contributions != 100) {
         action.addMessage(action.getText("outcome.action.subido.contribution.required", params));
+        
 
         for (int j = 0; j < outcome.getSubIdos().size(); j++) {
           action.getInvalidFields().put("input-outcomes[" + i + "].subIdos[" + j + "].contribution",
