@@ -11,6 +11,7 @@
 [#assign customCSS = ["${baseUrlMedia}/css/projects/projectBudgetByPartners.css"] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "budgetByPartners" /]
+[#assign isCrpProject = (action.isProjectCrpOrPlatform(project.id))!false ]
 
 [#assign breadCrumb = [
   {"label":"projectsList", "nameSpace":"/projects", "action":"${(crpSession)!}/projectsList"},
@@ -430,12 +431,24 @@
       [/#if]
     </p> 
     
-    [#if !isTemplate]
-    <a href="[@s.url namespace="/fundingSources" action="${crpSession}/fundingSource"][@s.param name="fundingSourceID" value="${(element.fundingSource.id)!}" /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" class="" target="_BLANK"> 
+    [#if !isTemplate]       
+      [#if centerGlobalUnit]
+        [#if !isCrpProject]
+          <a href="[@s.url namespace="/fundingSources" action="${crpSession}/fundingSource"][@s.param name="fundingSourceID" value="${(element.fundingSource.id)!}" /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" class="" target="_BLANK">
+        [/#if]
+      [#else]
+        <a href="[@s.url namespace="/fundingSources" action="${crpSession}/fundingSource"][@s.param name="fundingSourceID" value="${(element.fundingSource.id)!}" /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" class="" target="_BLANK">
+      [/#if]      
     [/#if]
       <p class=""> <span class="title">${(element.fundingSource.fundingSourceInfo.title)!}</span> </p>
     [#if !isTemplate]
-    </a>
+      [#if centerGlobalUnit]
+        [#if !isCrpProject]
+         </a>
+        [/#if]     
+      [#else]
+        </a>
+      [/#if]     
     [/#if]
 
     <input type="hidden" class="id " name="${customName}.id" value="${(element.id)!}"/>

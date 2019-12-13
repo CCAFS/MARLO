@@ -758,7 +758,7 @@ public class ProjectListAction extends BaseAction {
       allCenterProjects =
         allCenterProjects.stream()
           .filter(
-            mp -> mp.isActive() && mp.getProjecInfoPhase(this.getActualPhase()) != null
+            mp -> mp!= null && mp.isActive() && mp.getProjecInfoPhase(this.getActualPhase()) != null
               && (mp.getProjecInfoPhase(this.getActualPhase()).getEndDate() == null || Integer.parseInt(dateFormat
                 .format(mp.getProjecInfoPhase(this.getActualPhase()).getEndDate())) >= this.getCurrentCycleYear()))
           .collect(Collectors.toList());
