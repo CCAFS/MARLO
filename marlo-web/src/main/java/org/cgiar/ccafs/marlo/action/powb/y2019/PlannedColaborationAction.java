@@ -858,7 +858,7 @@ public class PlannedColaborationAction extends BaseAction {
 
         // POWB 2019 Select Collaborations
         if (this.isPMU()) {
-          if (powbSynthesis.getCollaboration().getCollaborationsValue() != null) {
+          if (powbSynthesis.getCollaboration() != null && powbSynthesis.getCollaboration().getCollaborationsValue() != null) {
             String[] studyValues = powbSynthesis.getCollaboration().getCollaborationsValue().split(",");
             powbSynthesis.getCollaboration().setCollaborations(new ArrayList<>());
 
