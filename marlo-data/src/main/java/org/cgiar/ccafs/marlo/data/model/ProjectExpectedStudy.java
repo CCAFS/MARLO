@@ -151,6 +151,8 @@ public class ProjectExpectedStudy extends MarloAuditableEntity implements java.i
     new HashSet<ProjectExpectedStudyGeographicScope>(0);
 
   private List<ProjectExpectedStudyGeographicScope> geographicScopes;
+  
+  private String geographicScopeString;
 
 
   public ProjectExpectedStudy() {
@@ -220,9 +222,22 @@ public class ProjectExpectedStudy extends MarloAuditableEntity implements java.i
   }
 
 
-  public List<String> getCountriesIds() {
+  public String getGeographicScopeString() {
+	return geographicScopeString;
+}
+
+
+public void setGeographicScopeString(String geographicScopeString) {
+	this.geographicScopeString = geographicScopeString;
+}
+
+
+public List<String> getCountriesIds() {
     return countriesIds;
   }
+  
+  
+  
 
 
   public String getCountriesIdsText() {
