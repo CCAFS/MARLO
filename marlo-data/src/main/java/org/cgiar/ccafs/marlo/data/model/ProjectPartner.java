@@ -34,7 +34,6 @@ public class ProjectPartner extends MarloAuditableEntity implements java.io.Seri
   @Expose
   private String subDepartment;
   @Expose
-  private Boolean hasPartnerships;
 
   private ProjectPartnerPartnership projectPartnerPartnership;
 
@@ -107,11 +106,6 @@ public class ProjectPartner extends MarloAuditableEntity implements java.io.Seri
     }
 
 
-  }
-
-
-  public Boolean getHasPartnerships() {
-    return hasPartnerships;
   }
 
   public Institution getInstitution() {
@@ -260,10 +254,6 @@ public class ProjectPartner extends MarloAuditableEntity implements java.io.Seri
     } catch (Exception e) {
       return false;
     }
-  }
-
-  public void setHasPartnerships(Boolean hasPartnerships) {
-    this.hasPartnerships = hasPartnerships;
   }
 
   public void setInstitution(Institution institution) {

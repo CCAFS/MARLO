@@ -43,11 +43,6 @@
 			fetch="select">
 			<column name="geographic_scope_id" />
 		</many-to-one>
-		<many-to-one name="repIndContributionOfCrp"
-			class="org.cgiar.ccafs.marlo.data.model.RepIndContributionOfCrp"
-			fetch="select">
-			<column name="rep_ind_contribution_crp_id" />
-		</many-to-one>
 		<many-to-one name="repIndDegreeInnovation"
 			class="org.cgiar.ccafs.marlo.data.model.RepIndDegreeInnovation"
 			fetch="select">

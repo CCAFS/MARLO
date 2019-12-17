@@ -666,10 +666,7 @@ public class SearchTermsSummaryAction extends BaseSummariesAction implements Sum
           summary = this.getFieldMatches(projectInfo.getSummary(), pattern, "", null, false);
 
           String gender = "", youth = "", capacityDevelopment = "";
-          gender = this.getFieldMatches(projectInfo.getCrossCuttingGender(), pattern, this.getText("summaries.gender"),
-            null, false);
-          youth = this.getFieldMatches(projectInfo.getCrossCuttingYouth(), pattern, this.getText("summaries.youth"),
-            null, false);
+
           capacityDevelopment = this.getFieldMatches(projectInfo.getCrossCuttingCapacity(), pattern,
             this.getText("summaries.capacityDevelopment"), null, false);
 

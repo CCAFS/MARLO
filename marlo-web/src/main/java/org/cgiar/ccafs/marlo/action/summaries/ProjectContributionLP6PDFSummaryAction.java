@@ -676,15 +676,8 @@ public class ProjectContributionLP6PDFSummaryAction extends BaseSummariesAction 
     }
     if (projectInfo.getLiaisonInstitution() != null) {
       ml = projectInfo.getLiaisonInstitution().getAcronym();
-    }
-    if (projectInfo.getLiaisonUser() != null) {
-      ml = projectInfo.getLiaisonUser().getLiaisonInstitution().getAcronym();
-      mlContact = projectInfo.getLiaisonUser().getComposedName() + "\n&lt;"
-        + projectInfo.getLiaisonUser().getUser().getEmail() + "&gt;";
-      if (projectInfo.getLiaisonUser() != null) {
-        mlContact = projectInfo.getLiaisonUser().getComposedName() + "\n&lt;"
-          + projectInfo.getLiaisonUser().getUser().getEmail() + "&gt;";
-      }
+
+
       // Get type from funding sources
       String type = "";
       List<String> typeList = new ArrayList<String>();
@@ -721,43 +714,19 @@ public class ProjectContributionLP6PDFSummaryAction extends BaseSummariesAction 
           summary = null;
         }
       }
-      String analysis = projectInfo.getGenderAnalysis();
-      if (analysis != null) {
-        if (analysis.equals("")) {
-          analysis = null;
-        }
-      }
       String crossCutting = "";
       if (projectInfo.getCrossCuttingNa() != null) {
         if (projectInfo.getCrossCuttingNa() == true) {
           crossCutting += "● N/A <br>";
         }
       }
-      if (projectInfo.getCrossCuttingGender() != null) {
-        if (projectInfo.getCrossCuttingGender() == true) {
-          crossCutting += "● Gender <br>";
-        }
-      }
-      if (projectInfo.getCrossCuttingYouth() != null) {
-        if (projectInfo.getCrossCuttingYouth() == true) {
-          crossCutting += "● Youth <br>";
-        }
-      }
+
       if (projectInfo.getCrossCuttingCapacity() != null) {
         if (projectInfo.getCrossCuttingCapacity() == true) {
           crossCutting += "● Capacity Development <br>";
         }
       }
-      if (projectInfo.getCrossCuttingGender() != null) {
-        if (projectInfo.getCrossCuttingGender() == false) {
-          if (projectInfo.getDimension() == null || projectInfo.getDimension().isEmpty()) {
-            crossCutting += "<br><br>" + "<b>Reason for not addressing gender dimension: </b> &lt;Not Defined&gt;";
-          } else {
-            crossCutting +=
-              "<br><br>" + "<b>Reason for not addressing gender dimension: </b>" + projectInfo.getDimension();
-          }
-        }
-      }
+
       if (crossCutting.isEmpty()) {
         crossCutting = null;
       }
@@ -765,7 +734,7 @@ public class ProjectContributionLP6PDFSummaryAction extends BaseSummariesAction 
       mlText = this.getText("project.liaisonInstitution");
       mlContactText = this.getText("project.liaisonUser");
       model.addRow(new Object[] {title, startDate, endDate, ml, mlContact, type, status, orgLeader, leader, summary,
-        this.getSelectedCycle(), analysis, crossCutting, hasRegions, mlText, mlContactText});
+        this.getSelectedCycle(), "", crossCutting, hasRegions, mlText, mlContactText});
     }
     return model;
   }
