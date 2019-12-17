@@ -2249,30 +2249,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
               }
             }
           }
-          if (deliverable.getDeliverableInfo().getAdoptedLicense() != null) {
-            if (deliverable.getDeliverableInfo().getAdoptedLicense() == true) {
-              delivLicense = deliverable.getDeliverableInfo().getLicense();
-              if (delivLicense != null) {
-                if (delivLicense.equals("OTHER")) {
-                  delivLicense = deliverable.getDeliverableInfo().getOtherLicense();
-                  showDelivLicenseModifications = true;
-                  if (deliverable.getDeliverableInfo().getAllowModifications() != null
-                    && deliverable.getDeliverableInfo().getAllowModifications() == true) {
-                    delivLicenseModifications = "Yes";
-                  } else {
-                    delivLicenseModifications = "No";
-                  }
-                }
-              }
-            } else {
-              delivLicense = "No";
-            }
-          }
         }
-        if (delivLicense != null && delivLicense.isEmpty()) {
-          delivLicense = null;
-        }
-
         // Intellectual Assets
         Boolean hasIntellectualAsset = false, isPantent = false, isPvp = false;
         String hasIntellectualAssetText = null, intellectualAssetApplicants = null, intellectualAssetType = null,
@@ -2975,15 +2952,8 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     }
     if (projectInfo.getLiaisonInstitution() != null) {
       ml = projectInfo.getLiaisonInstitution().getAcronym();
-    }
-    if (projectInfo.getLiaisonUser() != null) {
-      ml = projectInfo.getLiaisonUser().getLiaisonInstitution().getAcronym();
-      mlContact = projectInfo.getLiaisonUser().getComposedName() + "\n&lt;"
-        + projectInfo.getLiaisonUser().getUser().getEmail() + "&gt;";
-      if (projectInfo.getLiaisonUser() != null) {
-        mlContact = projectInfo.getLiaisonUser().getComposedName() + "\n&lt;"
-          + projectInfo.getLiaisonUser().getUser().getEmail() + "&gt;";
-      }
+
+
       // Get type from funding sources
       String type = "";
       List<String> typeList = new ArrayList<String>();
@@ -3025,43 +2995,19 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           summary = null;
         }
       }
-      String analysis = projectInfo.getGenderAnalysis();
-      if (analysis != null) {
-        if (analysis.equals("")) {
-          analysis = null;
-        }
-      }
       String crossCutting = "";
       if (projectInfo.getCrossCuttingNa() != null) {
         if (projectInfo.getCrossCuttingNa() == true) {
           crossCutting += "● N/A <br>";
         }
       }
-      if (projectInfo.getCrossCuttingGender() != null) {
-        if (projectInfo.getCrossCuttingGender() == true) {
-          crossCutting += "● Gender <br>";
-        }
-      }
-      if (projectInfo.getCrossCuttingYouth() != null) {
-        if (projectInfo.getCrossCuttingYouth() == true) {
-          crossCutting += "● Youth <br>";
-        }
-      }
+
       if (projectInfo.getCrossCuttingCapacity() != null) {
         if (projectInfo.getCrossCuttingCapacity() == true) {
           crossCutting += "● Capacity Development <br>";
         }
       }
-      if (projectInfo.getCrossCuttingGender() != null) {
-        if (projectInfo.getCrossCuttingGender() == false) {
-          if (projectInfo.getDimension() == null || projectInfo.getDimension().isEmpty()) {
-            crossCutting += "<br><br>" + "<b>Reason for not addressing gender dimension: </b> &lt;Not Defined&gt;";
-          } else {
-            crossCutting +=
-              "<br><br>" + "<b>Reason for not addressing gender dimension: </b>" + projectInfo.getDimension();
-          }
-        }
-      }
+
       if (crossCutting.isEmpty()) {
         crossCutting = null;
       }
@@ -3069,7 +3015,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       mlText = this.getText("project.liaisonInstitution");
       mlContactText = this.getText("project.liaisonUser");
       model.addRow(new Object[] {title, startDate, endDate, ml, mlContact, type, status, orgLeader, leader, summary,
-        this.getSelectedCycle(), analysis, crossCutting, hasRegions, mlText, mlContactText});
+        this.getSelectedCycle(), "", crossCutting, hasRegions, mlText, mlContactText});
     }
     return model;
   }
@@ -3347,18 +3293,6 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         }
         ach_narrative = projectOutcome.getNarrativeAchieved();
 
-        if (projectOutcome.getGenderDimenssion() != null && !projectOutcome.getGenderDimenssion().isEmpty()) {
-          crossCutting +=
-            "<b>Narrative for your expected project contribution to the gender dimensions of this outcome: </b>"
-              + projectOutcome.getGenderDimenssion();
-        }
-        if (projectOutcome.getYouthComponent() != null && !projectOutcome.getYouthComponent().isEmpty()) {
-          if (crossCutting.isEmpty()) {
-            crossCutting +=
-              "<br><br><b>Narrative for your expected project contribution to the youth component of this outcome: </b>"
-                + projectOutcome.getYouthComponent();
-          }
-        }
         if (crossCutting.isEmpty()) {
           crossCutting = null;
         }
@@ -3507,10 +3441,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         if (innovationInfo.getRepIndInnovationType() != null) {
           innovationType = innovationInfo.getRepIndInnovationType().getName();
         }
-        // ContributionCrp
-        if (innovationInfo.getRepIndContributionOfCrp() != null) {
-          contributionOfCrp = innovationInfo.getRepIndContributionOfCrp().getName();
-        }
+
         // Degree
         if (innovationInfo.getRepIndDegreeInnovation() != null) {
           degreeInnovation = innovationInfo.getRepIndDegreeInnovation().getName();
@@ -4005,16 +3936,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         } else {
           expUnit = outUnit;
         }
-        if (projectOutcome.getGenderDimenssion() != null && !projectOutcome.getGenderDimenssion().isEmpty()) {
-          crossCutting +=
-            "<b>Narrative for your expected project contribution to the gender dimensions of this outcome: </b>"
-              + projectOutcome.getGenderDimenssion() + "<br><br>";
-        }
-        if (projectOutcome.getYouthComponent() != null && !projectOutcome.getYouthComponent().isEmpty()) {
-          crossCutting +=
-            "<b>Narrative for your expected project contribution to the youth component of this outcome: </b>"
-              + projectOutcome.getYouthComponent();
-        }
+
         if (crossCutting.isEmpty()) {
           crossCutting = null;
         }
@@ -4041,10 +3963,6 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       partnerPartnershipGeographicScope = null, partnerPartnershipRegion = null, partnerPartnershipCountries = null,
       partnerPartnershipMainArea = null;
     Boolean showRegion = false, showCountry = false;
-
-    if (projectLeader.getHasPartnerships() != null) {
-      partnerPartnershipFormal = projectLeader.getHasPartnerships() ? "Yes" : "No";
-    }
 
     // Partnerships
     List<ProjectPartnerPartnership> projectPartnerPartnerships =
@@ -4180,10 +4098,6 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           partnerPartnershipMainArea = null;
         Boolean showRegion = false, showCountry = false;
 
-        if (projectPartner.getHasPartnerships() != null) {
-          partnerPartnershipFormal = projectPartner.getHasPartnerships() ? "Yes" : "No";
-        }
-
         // Partnerships
         List<ProjectPartnerPartnership> projectPartnerPartnerships = projectPartner.getProjectPartnerPartnerships()
           .stream().filter(p -> p.isActive()).collect(Collectors.toList());
@@ -4260,10 +4174,6 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           partnerPartnershipGeographicScope = null, partnerPartnershipRegion = null, partnerPartnershipCountries = null,
           partnerPartnershipMainArea = null;
         Boolean showRegion = false, showCountry = false;
-
-        if (projectPartner.getHasPartnerships() != null) {
-          partnerPartnershipFormal = projectPartner.getHasPartnerships() ? "Yes" : "No";
-        }
 
         // Partnerships
         List<ProjectPartnerPartnership> projectPartnerPartnerships = projectPartner.getProjectPartnerPartnerships()
@@ -4663,11 +4573,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       }
 
       // Organizational Type
-      if (projectPolicy.getProjectPolicyInfo() != null
-        && projectPolicy.getProjectPolicyInfo().getRepIndOrganizationType() != null
-        && projectPolicy.getProjectPolicyInfo().getRepIndOrganizationType().getName() != null) {
-        organizationType = projectPolicy.getProjectPolicyInfo().getRepIndOrganizationType().getName();
-      }
+      // delete fields in prpt
 
       // Level Maturity
       if (projectPolicy.getProjectPolicyInfo() != null

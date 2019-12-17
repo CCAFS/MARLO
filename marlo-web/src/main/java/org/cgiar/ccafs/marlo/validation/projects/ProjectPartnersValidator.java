@@ -113,8 +113,6 @@ public class ProjectPartnersValidator extends BaseValidator {
       }
       this.validateEmptyPartners(action, project);
       // this.validateReportingOverall(action, project);
-      this.validateReportingLessons(action, project);
-      this.validatePlanningNewPartnershipsPlanned(action, project);
       this.validateProjectLeader(action, project);
       this.validateProjectPartners(action, project);
 
@@ -233,7 +231,7 @@ public class ProjectPartnersValidator extends BaseValidator {
       try {
         ProjectPartnerPartnership projectPartnerPartnership = partner.getProjectPartnerPartnership();
 
-        if (projectPartnerPartnership == null || partner.getHasPartnerships() == null) {
+        if (projectPartnerPartnership == null) {
           action.addMessage("Please provide partnership formal partner");
           action.addMissingField("project.partners[" + c + "].hasPartnerships");
           action.getInvalidFields().put("input-project.partners[" + c + "].hasPartnerships",
@@ -322,19 +320,6 @@ public class ProjectPartnersValidator extends BaseValidator {
     }
   }
 
-  private void validatePlanningNewPartnershipsPlanned(BaseAction action, Project project) {
-    if (project.getProjecInfoPhase(action.getActualPhase()).isProjectEditLeader() && !action.isReportingActive()) {
-
-      if (project.getProjectInfo().getNewPartnershipsPlanned() == null
-        || project.getProjectInfo().getNewPartnershipsPlanned().trim().isEmpty()) {
-        action.addMissingField("project.projectInfo.newPartnershipsPlanned");
-        action.getInvalidFields().put("input-project.projectInfo.newPartnershipsPlanned",
-          action.getText("Please provide new partnerships  planned for " + action.getActualPhase().getYear()));
-      }
-    }
-  }
-
-
   private void validateProjectLeader(BaseAction action, Project project) {
     // All projects must specify the project leader
     if (!projectValidator.isValidLeader(project.getLeader())) {
@@ -358,27 +343,6 @@ public class ProjectPartnersValidator extends BaseValidator {
     }
 
 
-  }
-
-  private void validateReportingLessons(BaseAction action, Project project) {
-    if (project.getPartners() != null && !project.getPartners().isEmpty()) {
-      if (action.isReportingActive() && project.getProjecInfoPhase(action.getActualPhase()).isProjectEditLeader()) {
-        if (project.getProjectComponentLesson() != null) {
-          if (!this.isValidString(project.getProjectComponentLesson().getLessons())) {
-            action.addMessage(action.getText("projectPartners.lessons.reporting"));
-            action.addMissingField("projectPartners.lessons.reporting");
-            action.getInvalidFields().put("input-project.projectComponentLesson.lessons",
-              InvalidFieldsMessages.EMPTYFIELD);
-          }
-        } else {
-          action.addMessage(action.getText("projectPartners.lessons.reporting"));
-          action.addMissingField("projectPartners.lessons.reporting");
-          action.getInvalidFields().put("input-project.projectComponentLesson.lessons",
-            InvalidFieldsMessages.EMPTYFIELD);
-        }
-
-      }
-    }
   }
 
   private void validateReportingOverall(BaseAction action, Project project) {

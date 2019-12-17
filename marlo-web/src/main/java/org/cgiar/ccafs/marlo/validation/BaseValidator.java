@@ -911,21 +911,6 @@ public class BaseValidator {
 
       }
     }
-
-  }
-
-  protected void validateLessonsLearn(BaseAction action, Project project) {
-    if (project.getProjectComponentLesson() != null) {
-      ProjectComponentLesson lesson = project.getProjectComponentLesson();
-      if (!(this.isValidString(lesson.getLessons()) && (this.wordCount(lesson.getLessons()) <= 100))) {
-        // Let them save.
-        action.addMessage("Lessons");
-
-        action.addMissingField("projectLessons.lessons");
-
-      }
-    }
-
   }
 
 

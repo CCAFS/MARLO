@@ -32,6 +32,7 @@ import org.mapstruct.Mappings;
     PhaseMapper.class})
 public interface InnovationMapper {
 
+
   @Mappings({@Mapping(source = "projectInnovation.projectInnovationInfo.title", target = "title"),
     @Mapping(source = "projectInnovation.projectInnovationInfo.narrative", target = "narrative"),
     @Mapping(source = "projectInnovation.projectInnovationInfo.clearLead", target = "equitativeEffort"),
@@ -47,5 +48,6 @@ public interface InnovationMapper {
     @Mapping(source = "projectInnovation.crps", target = "contributingCGIAREntities"),
     @Mapping(source = "projectInnovation.projectInnovationInfo.phase", target = "phase")})
   public abstract InnovationDTO projectInnovationToInnovationDTO(ProjectInnovation projectInnovation);
+
 
 }

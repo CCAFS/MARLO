@@ -378,10 +378,6 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
     if (projectInnovationInfo.getRepIndInnovationType() != null) {
       innovationType = projectInnovationInfo.getRepIndInnovationType().getName();
     }
-    // ContributionCrp
-    if (projectInnovationInfo.getRepIndContributionOfCrp() != null) {
-      contributionOfCrp = projectInnovationInfo.getRepIndContributionOfCrp().getName();
-    }
     // Degree
     if (projectInnovationInfo.getRepIndDegreeInnovation() != null) {
       degreeInnovation = projectInnovationInfo.getRepIndDegreeInnovation().getName();
