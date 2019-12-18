@@ -386,8 +386,7 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
 								&& !responsible.getInstitution().getAcronym().isEmpty()) {
 							if (responsible.getInstitution().getAcronym().contains("IFPRI")
 									&& (divisions != null || !divisions.isEmpty())) {
-								ppaResponsibleList
-										.add("*" + responsible.getInstitution().getAcronym());
+								ppaResponsibleList.add("*" + responsible.getInstitution().getAcronym());
 							} else {
 								ppaResponsibleList.add("*" + responsible.getInstitution().getAcronym() + " ");
 							}
@@ -474,12 +473,10 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
 												divisionList.add(partnerPerson.getPartnerDivision().getAcronym());
 												divisions = partnerPerson.getPartnerDivision().getAcronym();
 											} else {
-												if (!divisionList.contains(
-														partnerPerson.getPartnerDivision().getAcronym())) {
-													divisions += ", "
-															+ partnerPerson.getPartnerDivision().getAcronym();
-													divisionList
-															.add(partnerPerson.getPartnerDivision().getAcronym());
+												if (!divisionList
+														.contains(partnerPerson.getPartnerDivision().getAcronym())) {
+													divisions += ", " + partnerPerson.getPartnerDivision().getAcronym();
+													divisionList.add(partnerPerson.getPartnerDivision().getAcronym());
 												}
 											}
 										}
@@ -533,8 +530,8 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
 									if (deliverablePartnership.getInstitution().getAcronym() != null
 											&& deliverablePartnership.getInstitution().getAcronym().contains("IFPRI")
 											&& divisions != null && !divisions.isEmpty()) {
-										ppaResponsibleList.add(
-												deliverablePartnership.getInstitution().getAcronym() + "" );
+										ppaResponsibleList
+												.add(deliverablePartnership.getInstitution().getAcronym() + "");
 									} else {
 										ppaResponsibleList
 												.add(deliverablePartnership.getInstitution().getAcronym() + " ");
@@ -583,24 +580,24 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
 											if (partnerPersonList != null && !partnerPersonList.isEmpty()
 													&& partnerPersonList.get(0) != null) {
 												partnerPerson = partnerPersonList.get(0);
-												if (partnerPerson.getPartnerDivision() != null && partnerPerson
-														.getPartnerDivision().getAcronym() != null) {
-													individual += partnerPerson
-															.getComposedName() + "("+ person.getDeliverableUserPartnership().getInstitution().getComposedName() + "/"
-															+ partnerPerson.getPartnerDivision().getAcronym();
-													
+												if (partnerPerson.getPartnerDivision() != null
+														&& partnerPerson.getPartnerDivision().getAcronym() != null) {
+													individual += partnerPerson.getComposedName() + "("
+															+ person.getDeliverableUserPartnership().getInstitution()
+																	.getComposedName()
+															+ "/" + partnerPerson.getPartnerDivision().getAcronym();
+
 													if (divisions == null || divisions.isEmpty()) {
-														divisionList.add(
-																partnerPerson.getPartnerDivision().getAcronym());
-														divisions = partnerPerson.getPartnerDivision()
-																.getAcronym();
+														divisionList
+																.add(partnerPerson.getPartnerDivision().getAcronym());
+														divisions = partnerPerson.getPartnerDivision().getAcronym();
 													} else {
 														if (!divisionList.contains(
 																partnerPerson.getPartnerDivision().getAcronym())) {
-															divisions += ", " + partnerPerson.getPartnerDivision()
-																	.getAcronym();
-															divisionList.add(partnerPerson.getPartnerDivision()
-																	.getAcronym());
+															divisions += ", "
+																	+ partnerPerson.getPartnerDivision().getAcronym();
+															divisionList.add(
+																	partnerPerson.getPartnerDivision().getAcronym());
 														}
 													}
 												}
@@ -1411,10 +1408,16 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
 	private TypedTableModel getMasterTableModel() {
 		// Initialization of Model
 		TypedTableModel model = new TypedTableModel(
-				new String[] { "center", "date", "year", "regionalAvalaible", "showDescription", "cycle" },
-				new Class[] { String.class, String.class, String.class, Boolean.class, Boolean.class, String.class });
+				new String[] { "center", "date", "year", "regionalAvalaible", "showDescription", "cycle",
+						"hasDivisions" },
+				new Class[] { String.class, String.class, String.class, Boolean.class, Boolean.class, String.class,
+						Boolean.class });
 		String center = this.getLoggedCrp().getAcronym();
+		Boolean hasDivisions = false;
 
+		if (this.getCrpID() != null && (this.getCrpID().equals(3) || this.getCrpID().equals(5))) {
+			hasDivisions = true;
+		}
 		ZonedDateTime timezone = ZonedDateTime.now();
 		DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-d 'at' HH:mm ");
 		String zone = timezone.getOffset() + "";
@@ -1424,7 +1427,7 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
 		String date = timezone.format(format) + "(GMT" + zone + ")";
 		String year = selectedPhaseYear + "";
 		model.addRow(new Object[] { center, date, year, this.hasProgramnsRegions(),
-				this.hasSpecificities(APConstants.CRP_REPORTS_DESCRIPTION), this.getSelectedCycle() });
+				this.hasSpecificities(APConstants.CRP_REPORTS_DESCRIPTION), this.getSelectedCycle(), hasDivisions});
 		return model;
 	}
 
