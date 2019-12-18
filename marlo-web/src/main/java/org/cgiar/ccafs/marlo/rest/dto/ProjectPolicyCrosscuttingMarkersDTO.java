@@ -13,28 +13,42 @@
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
 
-package org.cgiar.ccafs.marlo.rest.mappers;
+/**************
+ * @author Diego Perez - CIAT/CCAFS
+ **************/
 
-import org.cgiar.ccafs.marlo.data.model.RepIndContributionOfCrp;
-import org.cgiar.ccafs.marlo.rest.dto.ContributionOfCrpDTO;
+package org.cgiar.ccafs.marlo.rest.dto;
 
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.Mappings;
+import io.swagger.annotations.ApiModelProperty;
 
-/**
- * @author Hermes Jiménez - CIAT/CCAFS
- */
+public class ProjectPolicyCrosscuttingMarkersDTO {
 
-@Mapper(componentModel = "jsr330")
-public interface ContributionOfCrpMapper {
 
-  @Mappings({@Mapping(source = "code", target = "id")})
-  public abstract RepIndContributionOfCrp
-    contributionOfCrpDTOToRepIndContributionOfCrp(ContributionOfCrpDTO contributionOfCrpDTO);
+  @ApiModelProperty(notes = "Phase (AR, POWB, UpKeep)", position = 5)
+  private PhaseDTO phase;
 
-  @Mappings({@Mapping(source = "id", target = "code")})
-  public abstract ContributionOfCrpDTO
-    repIndContributionOfCrpToContributionOfCrpDTO(RepIndContributionOfCrp repIndContributionOfCrp);
+  @ApiModelProperty(notes = "Phase (AR, POWB, UpKeep)", position = 6)
+  private CrossCuttingMarkerDTO crossCuttingmarker;
+
+
+  public CrossCuttingMarkerDTO getCrossCuttingmarker() {
+    return crossCuttingmarker;
+  }
+
+
+  public PhaseDTO getPhase() {
+    return phase;
+  }
+
+
+  public void setCrossCuttingmarker(CrossCuttingMarkerDTO crossCuttingmarker) {
+    this.crossCuttingmarker = crossCuttingmarker;
+  }
+
+
+  public void setPhase(PhaseDTO phase) {
+    this.phase = phase;
+  }
+
 
 }
