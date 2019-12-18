@@ -13,28 +13,34 @@
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
 
-package org.cgiar.ccafs.marlo.rest.mappers;
+package org.cgiar.ccafs.marlo.rest.dto;
 
-import org.cgiar.ccafs.marlo.data.model.RepIndContributionOfCrp;
-import org.cgiar.ccafs.marlo.rest.dto.ContributionOfCrpDTO;
+import io.swagger.annotations.ApiModelProperty;
 
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.Mappings;
+public class ProjectPolicyCrpDTO {
 
-/**
- * @author Hermes Jiménez - CIAT/CCAFS
- */
 
-@Mapper(componentModel = "jsr330")
-public interface ContributionOfCrpMapper {
+  @ApiModelProperty(notes = "CRPs/Platforms identifier", position = 140)
+  private CGIAREntityDTO globalUnit;
 
-  @Mappings({@Mapping(source = "code", target = "id")})
-  public abstract RepIndContributionOfCrp
-    contributionOfCrpDTOToRepIndContributionOfCrp(ContributionOfCrpDTO contributionOfCrpDTO);
+  @ApiModelProperty(notes = "Phase (AR, POWB, UpKeep)", position = 5)
+  private PhaseDTO phase;
 
-  @Mappings({@Mapping(source = "id", target = "code")})
-  public abstract ContributionOfCrpDTO
-    repIndContributionOfCrpToContributionOfCrpDTO(RepIndContributionOfCrp repIndContributionOfCrp);
+  public CGIAREntityDTO getGlobalUnit() {
+    return globalUnit;
+  }
+
+  public PhaseDTO getPhase() {
+    return phase;
+  }
+
+  public void setGlobalUnit(CGIAREntityDTO globalUnit) {
+    this.globalUnit = globalUnit;
+  }
+
+  public void setPhase(PhaseDTO phase) {
+    this.phase = phase;
+  }
+
 
 }

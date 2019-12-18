@@ -186,12 +186,15 @@ public class InnovationItem<T> {
         newInnovationDTO.getStageOfInnovation() + " is an invalid stage of innovation code"));
     }
 
-    Institution leadInstitution =
-      this.institutionManager.getInstitutionById(newInnovationDTO.getLeadOrganization().getCode());
-    if (leadInstitution == null) {
-      fieldErrors.add(new FieldErrorDTO("createInnovation", "Lead institution",
-        newInnovationDTO.getLeadOrganization() + " is an invalid institution id"));
+    Institution leadInstitution = null;
+    if (newInnovationDTO.getLeadOrganization() != null) {
+      leadInstitution = this.institutionManager.getInstitutionById(newInnovationDTO.getLeadOrganization().getCode());
+      if (leadInstitution == null) {
+        fieldErrors.add(new FieldErrorDTO("createInnovation", "Lead institution",
+          newInnovationDTO.getLeadOrganization() + " is an invalid institution id"));
+      }
     }
+
 
     RepIndInnovationType repIndInnovationType =
       this.repIndInnovationTypeManager.getRepIndInnovationTypeById(newInnovationDTO.getInnovationType().getCode());

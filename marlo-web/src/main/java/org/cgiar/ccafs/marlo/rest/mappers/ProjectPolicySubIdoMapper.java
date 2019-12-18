@@ -13,28 +13,27 @@
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
 
+/**************
+ * @author Diego Perez - CIAT/CCAFS
+ **************/
+
 package org.cgiar.ccafs.marlo.rest.mappers;
 
-import org.cgiar.ccafs.marlo.data.model.RepIndContributionOfCrp;
-import org.cgiar.ccafs.marlo.rest.dto.ContributionOfCrpDTO;
+import org.cgiar.ccafs.marlo.data.model.ProjectPolicySubIdo;
+import org.cgiar.ccafs.marlo.rest.dto.ProjectPolicySubIdoDTO;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
 
-/**
- * @author Hermes Jiménez - CIAT/CCAFS
- */
 
-@Mapper(componentModel = "jsr330")
-public interface ContributionOfCrpMapper {
+@Mapper(componentModel = "jsr330", uses = {SrfIdoMapper.class})
+public interface ProjectPolicySubIdoMapper {
 
-  @Mappings({@Mapping(source = "code", target = "id")})
-  public abstract RepIndContributionOfCrp
-    contributionOfCrpDTOToRepIndContributionOfCrp(ContributionOfCrpDTO contributionOfCrpDTO);
-
-  @Mappings({@Mapping(source = "id", target = "code")})
-  public abstract ContributionOfCrpDTO
-    repIndContributionOfCrpToContributionOfCrpDTO(RepIndContributionOfCrp repIndContributionOfCrp);
+  @Mappings({@Mapping(source = "projectPolicySubIdo.srfSubIdo", target = "srfSubIdoDTO"),
+    @Mapping(source = "projectPolicySubIdo.srfSubIdo.smoCode", target = "srfSubIdoDTO.code"),
+    @Mapping(source = "projectPolicySubIdo.srfSubIdo.srfIdo", target = "srfSubIdoDTO.srfIdoDTO")})
+  public abstract ProjectPolicySubIdoDTO
+    projectPolicySubIdoToProjectPolicySubIdoDTO(ProjectPolicySubIdo projectPolicySubIdo);
 
 }

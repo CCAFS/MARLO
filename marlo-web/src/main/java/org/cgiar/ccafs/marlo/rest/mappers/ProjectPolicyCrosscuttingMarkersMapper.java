@@ -13,28 +13,25 @@
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
 
+/**************
+ * @author Diego Perez - CIAT/CCAFS
+ **************/
+
 package org.cgiar.ccafs.marlo.rest.mappers;
 
-import org.cgiar.ccafs.marlo.data.model.RepIndContributionOfCrp;
-import org.cgiar.ccafs.marlo.rest.dto.ContributionOfCrpDTO;
+import org.cgiar.ccafs.marlo.data.model.ProjectPolicyCrossCuttingMarker;
+import org.cgiar.ccafs.marlo.rest.dto.ProjectPolicyCrosscuttingMarkersDTO;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
 
-/**
- * @author Hermes Jiménez - CIAT/CCAFS
- */
+@Mapper(componentModel = "jsr330", uses = {PhaseMapper.class, GlobalUnitMapper.class, CrossCuttingMarkerMapper.class})
+public interface ProjectPolicyCrosscuttingMarkersMapper {
 
-@Mapper(componentModel = "jsr330")
-public interface ContributionOfCrpMapper {
-
-  @Mappings({@Mapping(source = "code", target = "id")})
-  public abstract RepIndContributionOfCrp
-    contributionOfCrpDTOToRepIndContributionOfCrp(ContributionOfCrpDTO contributionOfCrpDTO);
-
-  @Mappings({@Mapping(source = "id", target = "code")})
-  public abstract ContributionOfCrpDTO
-    repIndContributionOfCrpToContributionOfCrpDTO(RepIndContributionOfCrp repIndContributionOfCrp);
-
+  @Mappings({
+    @Mapping(source = "projectPolicyCrossCuttingMarker.cgiarCrossCuttingMarker", target = "crossCuttingmarker"),})
+  public abstract ProjectPolicyCrosscuttingMarkersDTO
+    projectPolicyCrossCuttingMarkersToProjectPolicyCrosscuttingMarkersDTO(
+      ProjectPolicyCrossCuttingMarker projectPolicyCrossCuttingMarker);
 }
