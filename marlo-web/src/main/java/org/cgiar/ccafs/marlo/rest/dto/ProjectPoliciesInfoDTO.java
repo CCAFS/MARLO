@@ -37,7 +37,7 @@ public class ProjectPoliciesInfoDTO {
   private PolicyInvestmentTypeDTO repIndPolicyInvestimentType;
 
   @ApiModelProperty(notes = "Maturity level", position = 5)
-  private PolicyMaturityLevelDTO policyMaturityLevel;
+  private PolicyMaturityLevelDTO repIndStageProcess;
 
   @ApiModelProperty(notes = "Implementing Organization Type", position = 10)
   private OrganizationTypeDTO repIndOrganizationType;
@@ -56,11 +56,6 @@ public class ProjectPoliciesInfoDTO {
   }
 
 
-  public PolicyMaturityLevelDTO getPolicyMaturityLevel() {
-    return policyMaturityLevel;
-  }
-
-
   public OrganizationTypeDTO getRepIndOrganizationType() {
     return repIndOrganizationType;
   }
@@ -68,6 +63,11 @@ public class ProjectPoliciesInfoDTO {
 
   public PolicyInvestmentTypeDTO getRepIndPolicyInvestimentType() {
     return repIndPolicyInvestimentType;
+  }
+
+
+  public PolicyMaturityLevelDTO getRepIndStageProcess() {
+    return repIndStageProcess;
   }
 
 
@@ -91,11 +91,6 @@ public class ProjectPoliciesInfoDTO {
   }
 
 
-  public void setPolicyMaturityLevel(PolicyMaturityLevelDTO policyMaturityLevel) {
-    policyMaturityLevel = policyMaturityLevel;
-  }
-
-
   public void setRepIndOrganizationType(OrganizationTypeDTO repIndOrganizationType) {
     this.repIndOrganizationType = repIndOrganizationType;
   }
@@ -103,6 +98,11 @@ public class ProjectPoliciesInfoDTO {
 
   public void setRepIndPolicyInvestimentType(PolicyInvestmentTypeDTO repIndPolicyInvestimentType) {
     this.repIndPolicyInvestimentType = repIndPolicyInvestimentType;
+  }
+
+
+  public void setRepIndStageProcess(PolicyMaturityLevelDTO repIndStageProcess) {
+    this.repIndStageProcess = repIndStageProcess;
   }
 
 

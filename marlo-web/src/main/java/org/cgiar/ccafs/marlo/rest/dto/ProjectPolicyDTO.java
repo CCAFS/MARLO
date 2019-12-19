@@ -52,9 +52,6 @@ public class ProjectPolicyDTO {
   @ApiModelProperty(notes = "Countries", position = 100)
   private List<CountryDTO> countries;
 
-  @ApiModelProperty(notes = "Evidence Link", position = 6)
-  private String evidenceLink;
-
 
   public List<CountryDTO> getCountries() {
     return countries;
@@ -63,11 +60,6 @@ public class ProjectPolicyDTO {
 
   public List<ProjectPolicyCrosscuttingMarkersDTO> getCrossCuttingMarkers() {
     return crossCuttingMarkers;
-  }
-
-
-  public String getEvidenceLink() {
-    return evidenceLink;
   }
 
 
@@ -113,11 +105,6 @@ public class ProjectPolicyDTO {
 
   public void setCrossCuttingMarkers(List<ProjectPolicyCrosscuttingMarkersDTO> crossCuttingMarkers) {
     this.crossCuttingMarkers = crossCuttingMarkers;
-  }
-
-
-  public void setEvidenceLink(String evidenceLink) {
-    this.evidenceLink = evidenceLink;
   }
 
 
