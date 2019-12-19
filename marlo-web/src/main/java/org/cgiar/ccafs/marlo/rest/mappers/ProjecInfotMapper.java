@@ -27,5 +27,6 @@ import org.mapstruct.Mapper;
 @Mapper(componentModel = "jsr330")
 public interface ProjecInfotMapper {
 
+
   public abstract ProjectInfoDTO projectInfoToProjectInfoDTO(ProjectInfo projectInfo);
 }

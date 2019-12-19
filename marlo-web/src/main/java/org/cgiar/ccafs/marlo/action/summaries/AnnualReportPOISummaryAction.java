@@ -988,9 +988,6 @@ public class AnnualReportPOISummaryAction extends BaseSummariesAction implements
           if (projectInnovationInfo.getRepIndDegreeInnovation() != null) {
             degree = projectInnovationInfo.getRepIndDegreeInnovation().getName();
           }
-          if (projectInnovationInfo.getRepIndContributionOfCrp() != null) {
-            contribution = projectInnovationInfo.getRepIndContributionOfCrp().getName();
-          }
           if (projectInnovationInfo.getRepIndGeographicScope() != null) {
             geographicScope = projectInnovationInfo.getRepIndGeographicScope().getName();
           }

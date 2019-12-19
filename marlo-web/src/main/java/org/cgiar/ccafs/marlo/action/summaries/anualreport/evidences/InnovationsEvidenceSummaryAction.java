@@ -342,16 +342,6 @@ public class InnovationsEvidenceSummaryAction extends BaseSummariesAction implem
           paramF = "<Not Defined>";
         }
 
-        // Crp contribution
-        if (innovationEvidences.getProjectInnovation().getProjectInnovationInfo(this.getSelectedPhase())
-          .getRepIndContributionOfCrp() != null) {
-          paramG = innovationEvidences.getProjectInnovation().getProjectInnovationInfo(this.getSelectedPhase())
-            .getRepIndContributionOfCrp().getName();
-        } else {
-          paramG = "<Not Defined>";
-        }
-
-
         // Next Users
         if (innovationEvidences.getProjectInnovation().getProjectInnovationOrganizations() != null) {
           List<ProjectInnovationOrganization> organizations =

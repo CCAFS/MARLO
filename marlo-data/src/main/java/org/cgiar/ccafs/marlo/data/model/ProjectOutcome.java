@@ -36,11 +36,7 @@ public class ProjectOutcome extends MarloAuditableEntity implements java.io.Seri
 
   @Expose
   private String narrativeTarget;
-  @Expose
-  private String genderDimenssion;
 
-  @Expose
-  private String youthComponent;
   @Expose
   private Phase phase;
 
@@ -98,12 +94,6 @@ public class ProjectOutcome extends MarloAuditableEntity implements java.io.Seri
   public Double getExpectedValue() {
     return expectedValue;
   }
-
-
-  public String getGenderDimenssion() {
-    return genderDimenssion;
-  }
-
 
   public List<ProjectOutcomeIndicator> getIndicators() {
     return indicators;
@@ -189,11 +179,6 @@ public class ProjectOutcome extends MarloAuditableEntity implements java.io.Seri
   }
 
 
-  public String getYouthComponent() {
-    return youthComponent;
-  }
-
-
   public void setAchievedUnit(SrfTargetUnit achievedUnit) {
     this.achievedUnit = achievedUnit;
   }
@@ -221,12 +206,6 @@ public class ProjectOutcome extends MarloAuditableEntity implements java.io.Seri
   public void setExpectedValue(Double expectedValue) {
     this.expectedValue = expectedValue;
   }
-
-
-  public void setGenderDimenssion(String genderDimenssion) {
-    this.genderDimenssion = genderDimenssion;
-  }
-
 
   public void setIndicators(List<ProjectOutcomeIndicator> indicators) {
     this.indicators = indicators;
@@ -300,11 +279,6 @@ public class ProjectOutcome extends MarloAuditableEntity implements java.io.Seri
 
   public void setSectionStatuses(Set<SectionStatus> sectionStatuses) {
     this.sectionStatuses = sectionStatuses;
-  }
-
-
-  public void setYouthComponent(String youthComponent) {
-    this.youthComponent = youthComponent;
   }
 
 

@@ -852,15 +852,8 @@ public class ProjectActivitiesSummaryAction extends BaseSummariesAction implemen
     }
     if (projectInfo.getLiaisonInstitution() != null) {
       ml = projectInfo.getLiaisonInstitution().getAcronym();
-    }
-    if (projectInfo.getLiaisonUser() != null) {
-      ml = projectInfo.getLiaisonUser().getLiaisonInstitution().getAcronym();
-      mlContact = projectInfo.getLiaisonUser().getComposedName() + "\n&lt;"
-        + projectInfo.getLiaisonUser().getUser().getEmail() + "&gt;";
-      if (projectInfo.getLiaisonUser() != null) {
-        mlContact = projectInfo.getLiaisonUser().getComposedName() + "\n&lt;"
-          + projectInfo.getLiaisonUser().getUser().getEmail() + "&gt;";
-      }
+
+
       // Get type from funding sources
       String type = "";
       List<String> typeList = new ArrayList<String>();
@@ -902,26 +895,10 @@ public class ProjectActivitiesSummaryAction extends BaseSummariesAction implemen
           summary = null;
         }
       }
-      String analysis = projectInfo.getGenderAnalysis();
-      if (analysis != null) {
-        if (analysis.equals("")) {
-          analysis = null;
-        }
-      }
       String crossCutting = "";
       if (projectInfo.getCrossCuttingNa() != null) {
         if (projectInfo.getCrossCuttingNa() == true) {
           crossCutting += "● N/A <br>";
-        }
-      }
-      if (projectInfo.getCrossCuttingGender() != null) {
-        if (projectInfo.getCrossCuttingGender() == true) {
-          crossCutting += "● Gender <br>";
-        }
-      }
-      if (projectInfo.getCrossCuttingYouth() != null) {
-        if (projectInfo.getCrossCuttingYouth() == true) {
-          crossCutting += "● Youth <br>";
         }
       }
       if (projectInfo.getCrossCuttingCapacity() != null) {
@@ -929,16 +906,7 @@ public class ProjectActivitiesSummaryAction extends BaseSummariesAction implemen
           crossCutting += "● Capacity Development <br>";
         }
       }
-      if (projectInfo.getCrossCuttingGender() != null) {
-        if (projectInfo.getCrossCuttingGender() == false) {
-          if (projectInfo.getDimension() == null || projectInfo.getDimension().isEmpty()) {
-            crossCutting += "<br><br>" + "<b>Reason for not addressing gender dimension: </b> &lt;Not Defined&gt;";
-          } else {
-            crossCutting +=
-              "<br><br>" + "<b>Reason for not addressing gender dimension: </b>" + projectInfo.getDimension();
-          }
-        }
-      }
+
       if (crossCutting.isEmpty()) {
         crossCutting = null;
       }
@@ -946,7 +914,7 @@ public class ProjectActivitiesSummaryAction extends BaseSummariesAction implemen
       mlText = this.getText("project.liaisonInstitution");
       mlContactText = this.getText("project.liaisonUser");
       model.addRow(new Object[] {title, startDate, endDate, ml, mlContact, type, status, orgLeader, leader, summary,
-        this.getSelectedCycle(), analysis, crossCutting, hasRegions, mlText, mlContactText});
+        this.getSelectedCycle(), "", crossCutting, hasRegions, mlText, mlContactText});
     }
     return model;
   }
@@ -1224,18 +1192,6 @@ public class ProjectActivitiesSummaryAction extends BaseSummariesAction implemen
         }
         ach_narrative = projectOutcome.getNarrativeAchieved();
 
-        if (projectOutcome.getGenderDimenssion() != null && !projectOutcome.getGenderDimenssion().isEmpty()) {
-          crossCutting +=
-            "<b>Narrative for your expected project contribution to the gender dimensions of this outcome: </b>"
-              + projectOutcome.getGenderDimenssion();
-        }
-        if (projectOutcome.getYouthComponent() != null && !projectOutcome.getYouthComponent().isEmpty()) {
-          if (crossCutting.isEmpty()) {
-            crossCutting +=
-              "<br><br><b>Narrative for your expected project contribution to the youth component of this outcome: </b>"
-                + projectOutcome.getYouthComponent();
-          }
-        }
         if (crossCutting.isEmpty()) {
           crossCutting = null;
         }
