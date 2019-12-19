@@ -313,7 +313,7 @@ public class ProjectsSummaryAction extends BaseSummariesAction implements Summar
 			String deliverables2020 = "";
 			String deliverables2021 = "";
 			String deliverables2022 = "";
-			String projectCollaborators = "";
+			String collaborators = "";
 
 			if (project.getProjectInfo().getSummary() != null && !project.getProjectInfo().getSummary().isEmpty()) {
 				projectSummary = project.getProjectInfo().getSummary();
@@ -327,9 +327,7 @@ public class ProjectsSummaryAction extends BaseSummariesAction implements Summar
 			}
 			if (project.getProjectInfo().getLiaisonInstitution() != null) {
 				managementLiaison = project.getProjectInfo().getLiaisonInstitution().getComposedName();
-				if (project.getProjectInfo().getLiaisonUser() != null) {
-					managementLiaison += " - " + project.getProjectInfo().getLiaisonUser().getComposedName();
-				}
+
 				managementLiaison = managementLiaison.replaceAll("<", "&lt;");
 				managementLiaison = managementLiaison.replaceAll(">", "&gt;");
 			}
@@ -362,6 +360,17 @@ public class ProjectsSummaryAction extends BaseSummariesAction implements Summar
 				}
 			}
 
+			List<ProjectPartnerPerson> projectCollaborators = new ArrayList<>();
+			projectCollaborators = project.getCollaboratorsPersonsDB(this.getSelectedPhase());
+
+			for (ProjectPartnerPerson collaborator : projectCollaborators) {
+				if (collaborators == null || collaborators.isEmpty()) {
+					collaborators = collaborator.getComposedName();
+				} else {
+					collaborators += ", " + collaborator.getComposedName();
+				}
+			}
+
 			// Get type from funding sources
 			String type = "";
 			List<String> typeList = new ArrayList<String>();
@@ -386,29 +395,6 @@ public class ProjectsSummaryAction extends BaseSummariesAction implements Summar
 					type = typeString;
 				} else {
 					type += ", " + typeString;
-				}
-			}
-
-			// project coordinators
-			List<String> prev = new ArrayList<>();
-
-			if (project.getCoordinatorPersons(getSelectedPhase()) != null) {
-				for (ProjectPartnerPerson collaborator : project.getCollaboratorsPersonsDB(getSelectedPhase())) {
-					if (projectCollaborators == null || projectCollaborators.isEmpty()) {
-						if (prev != null && !prev.contains(collaborator.getComposedInstitutionName())) {
-							projectCollaborators = collaborator.getComposedInstitutionName();
-
-						}else {
-							prev.add(collaborator.getComposedInstitutionName());
-						}
-					} else {
-						if (prev != null && !prev.contains(collaborator.getComposedInstitutionName())) {
-							projectCollaborators += "; " + collaborator.getComposedInstitutionName();
-																
-						}else {
-							prev.add(collaborator.getComposedInstitutionName());
-						}
-					}
 				}
 			}
 
@@ -625,22 +611,6 @@ public class ProjectsSummaryAction extends BaseSummariesAction implements Summar
 					crossCutting += ", N/A";
 				} else {
 					crossCutting += " N/A";
-				}
-			}
-			if (project.getProjectInfo().getCrossCuttingGender() != null
-					&& project.getProjectInfo().getCrossCuttingGender() == true) {
-				if (crossCutting.length() > 0) {
-					crossCutting += ", Gender";
-				} else {
-					crossCutting += "Gender";
-				}
-			}
-			if (project.getProjectInfo().getCrossCuttingYouth() != null
-					&& project.getProjectInfo().getCrossCuttingYouth() == true) {
-				if (crossCutting.length() > 0) {
-					crossCutting += ", Youth";
-				} else {
-					crossCutting += "Youth";
 				}
 			}
 
@@ -889,15 +859,11 @@ public class ProjectsSummaryAction extends BaseSummariesAction implements Summar
 			if (type.isEmpty() || type == null || type.length() == 0) {
 				type = "<Not defined>";
 			}
-
-			if (projectCollaborators.isEmpty() || projectCollaborators == null) {
-				projectCollaborators = "<Not Defined>";
-			}
 			model.addRow(new Object[] { projectId, projectTitle, projectSummary, status, managementLiaison, flagships,
 					regions, institutionLeader, projectLeaderName, activitiesOnGoing, expectedDeliverables, outcomes,
 					expectedStudies, this.getSelectedPhase().getId(), crossCutting, type, locations, startDate, endDate,
 					w1w2, bilateral, ppa, global, regional, regionLoc, countryLoc, deliverables2017, deliverables2018,
-					deliverables2019, deliverables2020, deliverables2021, deliverables2022, projectCollaborators });
+					deliverables2019, deliverables2020, deliverables2021, deliverables2022, collaborators });
 		}
 		return model;
 	}

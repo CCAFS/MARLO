@@ -849,28 +849,6 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
               }
             }
           }
-
-          if (deliverable.getDeliverableInfo().getAdoptedLicense() != null) {
-            if (deliverable.getDeliverableInfo().getAdoptedLicense() == true) {
-              delivLicense = deliverable.getDeliverableInfo().getLicense();
-              if (delivLicense != null && delivLicense.equals("OTHER")) {
-                delivLicense = deliverable.getDeliverableInfo().getOtherLicense();
-                showDelivLicenseModifications = true;
-                if (deliverable.getDeliverableInfo().getAllowModifications() != null
-                  && deliverable.getDeliverableInfo().getAllowModifications() == true) {
-                  delivLicenseModifications = "Yes";
-                } else {
-                  delivLicenseModifications = "No";
-                }
-              } else {
-                if (!showDelivLicenseModifications) {
-                  delivLicenseModifications = "<Not applicable>";
-                }
-              }
-            } else {
-              delivLicense = "No";
-            }
-          }
         }
 
         if (delivLicense != null && delivLicense.isEmpty()) {
@@ -2001,37 +1979,6 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
               }
             }
           }
-
-          if (deliverable.getDeliverableInfo().getAdoptedLicense() != null) {
-            if (deliverable.getDeliverableInfo().getAdoptedLicense() == true) {
-              if (deliverable.getDeliverableInfo().getLicense() != null
-                && !deliverable.getDeliverableInfo().getLicense().isEmpty()) {
-                delivLicense = deliverable.getDeliverableInfo().getLicense();
-              } else {
-                delivLicense = "No";
-              }
-              if (delivLicense.equals("OTHER")) {
-                delivLicense = deliverable.getDeliverableInfo().getOtherLicense();
-                showDelivLicenseModifications = true;
-                if (deliverable.getDeliverableInfo().getAllowModifications() != null
-                  && deliverable.getDeliverableInfo().getAllowModifications() == true) {
-                  delivLicenseModifications = "Yes";
-                } else {
-                  delivLicenseModifications = "No";
-                }
-              } else {
-                if (!showDelivLicenseModifications) {
-                  delivLicenseModifications = "<Not applicable>";
-                }
-              }
-            } else {
-              delivLicense = "No";
-            }
-          }
-        }
-
-        if (delivLicense != null && delivLicense.isEmpty()) {
-          delivLicense = null;
         }
 
         for (DeliverableMetadataElement deliverableMetadataElement : deliverable.getDeliverableMetadataElements()

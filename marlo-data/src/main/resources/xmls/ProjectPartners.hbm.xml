@@ -87,9 +87,6 @@
 		<property name="subDepartment" type="string">
 			<column name="sub_department" sql-type="TEXT" not-null="false" />
 		</property>
-		<property name="hasPartnerships" type="boolean">
-			<column name="has_partnerships" not-null="true" />
-		</property>
 		<set name="projectPartnerPartnerships" table="project_partner_partnerships"
       inverse="true" lazy="true" fetch="select">
       <key>

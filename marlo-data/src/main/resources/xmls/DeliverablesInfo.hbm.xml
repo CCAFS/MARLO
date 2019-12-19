@@ -62,15 +62,6 @@
 		<property name="adoptedLicense" type="java.lang.Boolean">
 			<column name="adopted_license" />
 		</property>
-		<property name="license" type="string">
-			<column name="license" sql-type="TEXT" />
-		</property>
-		<property name="otherLicense" type="string">
-			<column name="other_license" sql-type="TEXT" />
-		</property>
-		<property name="allowModifications" type="java.lang.Boolean">
-			<column name="allow_modifications" />
-		</property>		
 		<many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User"
 			fetch="select" update="false">
 			<column name="created_by" not-null="true" />

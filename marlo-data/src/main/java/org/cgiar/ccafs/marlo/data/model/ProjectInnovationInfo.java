@@ -37,9 +37,6 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
   private RepIndGeographicScope repIndGeographicScope;
 
   @Expose
-  private RepIndContributionOfCrp repIndContributionOfCrp;
-
-  @Expose
   private RepIndDegreeInnovation repIndDegreeInnovation;
 
   @Expose
@@ -199,11 +196,6 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
   }
 
 
-  public RepIndContributionOfCrp getRepIndContributionOfCrp() {
-    return repIndContributionOfCrp;
-  }
-
-
   public RepIndDegreeInnovation getRepIndDegreeInnovation() {
     return repIndDegreeInnovation;
   }
@@ -316,10 +308,6 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     this.projectInnovation = projectInnovation;
   }
 
-  public void setRepIndContributionOfCrp(RepIndContributionOfCrp repIndContributionOfCrp) {
-    this.repIndContributionOfCrp = repIndContributionOfCrp;
-  }
-
   public void setRepIndDegreeInnovation(RepIndDegreeInnovation repIndDegreeInnovation) {
     this.repIndDegreeInnovation = repIndDegreeInnovation;
   }
@@ -388,7 +376,6 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     this.setRepIndRegion(projectInnovationInfoUpdate.getRepIndRegion());
     this.setRepIndInnovationType(projectInnovationInfoUpdate.getRepIndInnovationType());
     this.setRepIndGeographicScope(projectInnovationInfoUpdate.getRepIndGeographicScope());
-    this.setRepIndContributionOfCrp(projectInnovationInfoUpdate.getRepIndContributionOfCrp());
     this.setRepIndDegreeInnovation(projectInnovationInfoUpdate.getRepIndDegreeInnovation());
     this.setGenderFocusLevel(projectInnovationInfoUpdate.getGenderFocusLevel());
     this.setYouthFocusLevel(projectInnovationInfoUpdate.getYouthFocusLevel());
@@ -399,9 +386,6 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     this.setYear(projectInnovationInfoUpdate.getYear());
     this.setAdaptativeResearchNarrative(projectInnovationInfoUpdate.getAdaptativeResearchNarrative());
     this.setProjectExpectedStudy(projectInnovationInfoUpdate.getProjectExpectedStudy());
-
   }
-
-
 }
 

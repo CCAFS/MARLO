@@ -60,12 +60,7 @@
             [#if project.projectInfo.isProjectEditLeader()]
             <div class="${(!action.isProjectNew(project.id) || reportingActive)?string('simpleBox','')} ${reportingActive?string('fieldFocus','')}">
               
-              [#if !reportingActive]
-              <div class="form-group">
-                [@customForm.textArea name="project.projectInfo.newPartnershipsPlanned" i18nkey="projectPartners.partnershipsPlanned" paramText="${currentCycleYear}" className="limitWords-100" required=true editable=editable /]
-              </div>
-              [/#if]
-              
+             
               [#-- -- -- REPORTING BLOCK -- -- --]
               [#if reportingActive]
               [#-- AR 2018 Changes
@@ -83,15 +78,6 @@
                   <div class="fullBlock">
                     <label>[@customForm.text name="projectPartners.previousLessons.${reportingActive?string('reporting','planning')}" param="${reportingActive?string(reportingYear,planningYear-1)}" /]:[@customForm.req required=false /]</label>
                     <div class="textArea limitWords-100"><p>${project.projectComponentLessonPreview.lessons}</p></div>
-                  </div>
-                  [/#if]
-                  [#-- Planning/Reporting lessons --]
-                  [#if reportingActive]
-                  <div class="fullBlock">
-                    <input type="hidden" name="project.projectComponentLesson.id" value=${(project.projectComponentLesson.id)!"-1"} />
-                    <input type="hidden" name="project.projectComponentLesson.year" value=${actualPhase.year} />
-                    <input type="hidden" name="project.projectComponentLesson.componentName" value="${actionName}">
-                    [@customForm.textArea name="project.projectComponentLesson.lessons" i18nkey="projectPartners.lessons.${reportingActive?string('reporting','planning')}" className="limitWords-100" editable=editable required=true /]
                   </div>
                   [/#if]
                 </div>
@@ -341,21 +327,7 @@
         [@customForm.textArea name="${name}.responsibilities" className="resp limitWords-100" i18nkey="projectPartners.responsabilities" required=partnerRespRequired editable=editable /]
         <div class="clearfix"></div>
       </div>
-      [/#if]
-      
-      [#--  AR 2018 Changes  --] 
-      [#-- Reporting Partnerships --]
-      [#if reportingActive]      
-        <h5 class="sectionSubTitle">Partnership</h5>        
-        [#-- Is This partner a formal partner --]
-        <label for="">[@s.text name="projectPartners.hasPartnerships" /][@customForm.req required=editable /]
-          [@customForm.helpLabel name="projectPartners.hasPartnerships.help" showIcon=false editable=editable/]
-        </label>
-        <div class="form-group">            
-          [@customForm.radioFlat id="hasPartnerships-yes-${index}" name="${name}.hasPartnerships" label="Yes" value="true" checked=(element.hasPartnerships)!false cssClass="hasPartnerships-yes" cssClassLabel="radio-label-yes" editable=editable /]
-          [@customForm.radioFlat id="hasPartnerships-no-${index}" name="${name}.hasPartnerships" label="No" value="false" checked=!((element.hasPartnerships)!true) cssClass="hasPartnerships-no" cssClassLabel="radio-label-no" editable=editable /]
-        </div>
-      [/#if]    
+      [/#if] 
       
       [#--Select country office  (if applicable)  --] 
       <h5 class="sectionSubTitle">[@s.text name="projectPartners.countryOffices${action.hasSpecificities('crp_partners_office')?string('.required','')}" /] <small>[@customForm.req required=action.hasSpecificities('crp_partners_office') /]</small></h5>

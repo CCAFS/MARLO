@@ -403,13 +403,6 @@ public class ProjectPolicyAction extends BaseAction {
               policy.getProjectPolicyInfo().getRepIndPolicyInvestimentType().getId()));
         }
 
-        // load Organization Type
-        if (policy.getProjectPolicyInfo().getRepIndOrganizationType() != null
-          && policy.getProjectPolicyInfo().getRepIndOrganizationType().getId() != null) {
-          policy.getProjectPolicyInfo().setRepIndOrganizationType(repIndOrganizationTypeManager
-            .getRepIndOrganizationTypeById(policy.getProjectPolicyInfo().getRepIndOrganizationType().getId()));
-        }
-
         // load Level Of Maturity Type
         if (policy.getProjectPolicyInfo().getRepIndStageProcess() != null
           && policy.getProjectPolicyInfo().getRepIndStageProcess().getId() != null) {
@@ -791,7 +784,6 @@ public class ProjectPolicyAction extends BaseAction {
 
       // HTTP Post info Values
       policy.getProjectPolicyInfo().setRepIndPolicyInvestimentType(null);
-      policy.getProjectPolicyInfo().setRepIndOrganizationType(null);
       policy.getProjectPolicyInfo().setRepIndStageProcess(null);
 
     }
@@ -894,14 +886,6 @@ public class ProjectPolicyAction extends BaseAction {
       // Save Project Policy Info
       policy.getProjectPolicyInfo().setPhase(this.getActualPhase());
       policy.getProjectPolicyInfo().setProjectPolicy(policy);
-
-
-      // Validate negative Values
-      if (policy.getProjectPolicyInfo().getRepIndOrganizationType() != null) {
-        if (policy.getProjectPolicyInfo().getRepIndOrganizationType().getId() == -1) {
-          policy.getProjectPolicyInfo().setRepIndOrganizationType(null);
-        }
-      }
 
       if (policy.getProjectPolicyInfo().getRepIndPolicyInvestimentType() != null) {
         if (policy.getProjectPolicyInfo().getRepIndPolicyInvestimentType().getId() == -1) {

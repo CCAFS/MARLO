@@ -262,29 +262,6 @@ public class ProjectOutcomeValidator extends BaseValidator {
       action.getInvalidFields().put("input-projectOutcome.narrativeTarget", InvalidFieldsMessages.EMPTYFIELD);
     }
 
-
-    if (project.getProjecInfoPhase(action.getActualPhase()).getCrossCuttingGender() != null
-      && project.getProjecInfoPhase(action.getActualPhase()).getCrossCuttingGender().booleanValue() == true) {
-
-      if (!(this.isValidString(projectOutcome.getGenderDimenssion())
-        && this.wordCount(projectOutcome.getGenderDimenssion()) <= 100)) {
-        action.addMessage(action.getText("projectOutcome.genderDimenssion"));
-        action.getInvalidFields().put("input-projectOutcome.genderDimenssion", InvalidFieldsMessages.EMPTYFIELD);
-      }
-    }
-
-
-    if (project.getProjecInfoPhase(action.getActualPhase()).getCrossCuttingYouth() != null
-      && project.getProjecInfoPhase(action.getActualPhase()).getCrossCuttingYouth().booleanValue() == true) {
-
-      if (!(this.isValidString(projectOutcome.getYouthComponent())
-        && this.wordCount(projectOutcome.getYouthComponent()) <= 100)) {
-        action.addMessage(action.getText("projectOutcome.youthComponent"));
-        action.getInvalidFields().put("input-projectOutcome.youthComponent", InvalidFieldsMessages.EMPTYFIELD);
-      }
-    }
-
-
     if (projectOutcome.getMilestones() != null && projectOutcome.getMilestones().size() > 0) {
       if (action.isPlanningActive()) {
         List<ProjectMilestone> milestones = projectOutcome.getMilestones().stream()
