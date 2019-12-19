@@ -103,6 +103,7 @@ public class PolicyItem<T> {
 
     if (projectPolicy.getProjectPolicyInfo() != null) {
       projectPolicy.getProjectPolicyInfo(phase);
+      System.out.println("" + projectPolicy.getProjectPolicyInfo().getRepIndStageProcess().getId());
       // Setting Geographic Scope
       projectPolicy.setGeographicScopes(projectPolicy.getProjectPolicyGeographicScopes().stream()
         .filter(c -> c.getProjectPolicy().getId().longValue() == projectPolicy.getId().longValue()
@@ -121,6 +122,14 @@ public class PolicyItem<T> {
         .filter(c -> c.getProjectPolicy().getId().longValue() == projectPolicy.getId().longValue()
           && c.getPhase().getId().longValue() == phase.getId().longValue())
         .collect(Collectors.toList()));
+      // setting countries
+      projectPolicy.setCountries(projectPolicy.getProjectPolicyCountries().stream()
+        .filter(c -> c.getPhase().getId().longValue() == phase.getId().longValue()).collect(Collectors.toList()));
+      // setting regions
+      projectPolicy.setRegions(projectPolicy.getProjectPolicyRegions().stream()
+        .filter(c -> c.getPhase().getId().longValue() == phase.getId().longValue()).collect(Collectors.toList()));
+
+
     }
 
     if (!fieldErrors.isEmpty()) {

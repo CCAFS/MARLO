@@ -36,7 +36,10 @@ public interface ProjectPolicyMapper {
     @Mapping(source = "projectPolicy.subIdos", target = "srfSubIdoList"),
     @Mapping(source = "projectPolicy.geographicScopes", target = "geographicScopes"),
     @Mapping(source = "projectPolicy.crossCuttingMarkers", target = "crossCuttingMarkers"),
-    @Mapping(source = "projectPolicy.projectPolicyInfo", target = "projectPoliciesInfo")})
+    @Mapping(source = "projectPolicy.projectPolicyInfo", target = "projectPoliciesInfo"),
+    @Mapping(source = "projectPolicy.regions", target = "regions"),
+    @Mapping(source = "projectPolicy.countries", target = "countries")})
+
   public abstract ProjectPolicyDTO projectPolicyToProjectPolicyDTO(ProjectPolicy projectPolicy);
 
 }
