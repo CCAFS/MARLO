@@ -21,11 +21,14 @@ package org.cgiar.ccafs.marlo.rest.controller.v2.controllist;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.policies.PolicyItem;
+import org.cgiar.ccafs.marlo.rest.dto.NewProjectPolicyDTO;
 import org.cgiar.ccafs.marlo.rest.dto.ProjectPolicyDTO;
 import org.cgiar.ccafs.marlo.rest.errors.NotFoundException;
 import org.cgiar.ccafs.marlo.security.Permission;
 
 import java.util.List;
+
+import javax.validation.Valid;
 
 import com.opensymphony.xwork2.inject.Inject;
 import io.swagger.annotations.Api;
@@ -42,6 +45,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -62,6 +66,24 @@ public class Policies {
   public Policies(PolicyItem<ProjectPolicyDTO> policyItem, UserManager userManager) {
     this.userManager = userManager;
     this.policyItem = policyItem;
+  }
+
+  @ApiOperation(tags = {"Table 2 - CRP Policies"}, value = "${Policy.policies.POST.value}",
+    response = ProjectPolicyDTO.class)
+  @RequiresPermissions(Permission.FULL_CREATE_REST_API_PERMISSION)
+  @RequestMapping(value = "/{CGIAREntity}/policies", method = RequestMethod.POST,
+    produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<Long> createPolicy(
+    @ApiParam(value = "${Policy.policies.POST.param.CGIAR}", required = true) @PathVariable String CGIAREntity,
+    @ApiParam(value = "${Policy.policies.POST.param.policy}",
+      required = true) @Valid @RequestBody NewProjectPolicyDTO newProjectPolicyDTO) {
+
+    Long policyId = this.policyItem.createPolicy(newProjectPolicyDTO, CGIAREntity, this.getCurrentUser());
+    ResponseEntity<Long> response = new ResponseEntity<Long>(policyId, HttpStatus.OK);
+    if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+      throw new NotFoundException("404", this.env.getProperty("Policy.policies.GET.id.404"));
+    }
+    return response;
   }
 
   @ApiOperation(tags = {"Table 2 - CRP Policies"}, value = "${Policy.policies.GET.all.value}",

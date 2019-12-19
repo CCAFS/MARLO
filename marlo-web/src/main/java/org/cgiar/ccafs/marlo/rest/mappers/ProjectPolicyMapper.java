@@ -32,6 +32,8 @@ import org.mapstruct.Mappings;
     LocationMapper.class})
 public interface ProjectPolicyMapper {
 
+  public abstract ProjectPolicy projectPolicyDTOToProjectPolicy(ProjectPolicyDTO projectPolicyDTO);
+
   @Mappings({@Mapping(source = "projectPolicy.crps", target = "projectPolicyCrpDTO"),
     @Mapping(source = "projectPolicy.subIdos", target = "srfSubIdoList"),
     @Mapping(source = "projectPolicy.geographicScopes", target = "geographicScopes"),

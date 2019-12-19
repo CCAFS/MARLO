@@ -22,11 +22,17 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyGeographicScopeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicySubIdoManager;
+import org.cgiar.ccafs.marlo.data.manager.RepIndOrganizationTypeManager;
+import org.cgiar.ccafs.marlo.data.manager.RepIndPolicyInvestimentTypeManager;
+import org.cgiar.ccafs.marlo.data.manager.RepIndStageProcessManager;
 import org.cgiar.ccafs.marlo.data.model.CrpUser;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicy;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicyInfo;
+import org.cgiar.ccafs.marlo.data.model.RepIndOrganizationType;
+import org.cgiar.ccafs.marlo.data.model.RepIndPolicyInvestimentType;
+import org.cgiar.ccafs.marlo.data.model.RepIndStageProcess;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.rest.dto.NewProjectPolicyDTO;
 import org.cgiar.ccafs.marlo.rest.dto.ProjectPolicyDTO;
@@ -58,6 +64,9 @@ public class PolicyItem<T> {
   private ProjectPolicyInfoManager projectPolicyInfoManager;
   private ProjectPolicyGeographicScopeManager projectPolicyGeographicScopeManager;
   private ProjectPolicySubIdoManager projectPolicySubIdoManager;
+  private RepIndPolicyInvestimentTypeManager repIndPolicyInvestimentTypeManager;
+  private RepIndStageProcessManager repIndStageProcessManager;
+  private RepIndOrganizationTypeManager repIndOrganizationTypeManager;
 
   private ProjectPolicyMapper projectPolicyMapper;
 
@@ -65,7 +74,9 @@ public class PolicyItem<T> {
   public PolicyItem(GlobalUnitManager globalUnitManager, PhaseManager phaseManager,
     ProjectPolicyManager projectPolicyManager, ProjectPolicyGeographicScopeManager projectPolicyGeographicScopeManager,
     ProjectPolicyCrpManager projectPolicyCrpManager, ProjectPolicyInfoManager projectPolicyInfoManager,
-    ProjectPolicySubIdoManager projectPolicySubIdoManager, ProjectPolicyMapper projectPolicyMapper) {
+    ProjectPolicySubIdoManager projectPolicySubIdoManager, ProjectPolicyMapper projectPolicyMapper,
+    RepIndPolicyInvestimentTypeManager repIndPolicyInvestimentTypeManager,
+    RepIndStageProcessManager repIndStageProcessManager, RepIndOrganizationTypeManager repIndOrganizationTypeManager) {
     this.phaseManager = phaseManager;
     this.globalUnitManager = globalUnitManager;
     this.projectPolicyManager = projectPolicyManager;
@@ -74,6 +85,85 @@ public class PolicyItem<T> {
     this.projectPolicyInfoManager = projectPolicyInfoManager;
     this.projectPolicyGeographicScopeManager = projectPolicyGeographicScopeManager;
     this.projectPolicySubIdoManager = projectPolicySubIdoManager;
+    this.repIndPolicyInvestimentTypeManager = repIndPolicyInvestimentTypeManager;
+    this.repIndStageProcessManager = repIndStageProcessManager;
+    this.repIndOrganizationTypeManager = repIndOrganizationTypeManager;
+  }
+
+  public Long createPolicy(NewProjectPolicyDTO newPolicyDTO, String entityAcronym, User user) {
+    Long policyID = null;
+    ProjectPolicy projectPolicy = new ProjectPolicy();
+    ProjectPolicyInfo projectPolicyInfo = new ProjectPolicyInfo();
+    List<FieldErrorDTO> fieldErrors = new ArrayList<FieldErrorDTO>();
+    GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitByAcronym(entityAcronym);
+    if (globalUnitEntity == null) {
+      fieldErrors.add(new FieldErrorDTO("createInnovation", "GlobalUnitEntity",
+        entityAcronym + " is an invalid CGIAR entity acronym"));
+    }
+    Phase phase =
+      this.phaseManager.findAll().stream()
+        .filter(c -> c.getCrp().getAcronym().equalsIgnoreCase(entityAcronym)
+          && c.getYear() == newPolicyDTO.getPhase().getYear()
+          && c.getName().equalsIgnoreCase(newPolicyDTO.getPhase().getName()))
+        .findFirst().get();
+
+    if (phase == null) {
+      fieldErrors.add(new FieldErrorDTO("createPolicy", "phase",
+        new NewProjectPolicyDTO().getPhase().getYear() + " is an invalid year"));
+    }
+    if (newPolicyDTO.getProjectPoliciesInfo() != null) {
+      // policy investiment type
+      if (newPolicyDTO.getProjectPoliciesInfo().getRepIndPolicyInvestimentType() != null) {
+        RepIndPolicyInvestimentType repIndPolicyInvestimentType =
+          this.repIndPolicyInvestimentTypeManager.getRepIndPolicyInvestimentTypeById(
+            newPolicyDTO.getProjectPoliciesInfo().getRepIndPolicyInvestimentType().getCode().longValue());
+        if (repIndPolicyInvestimentType == null) {
+          fieldErrors.add(new FieldErrorDTO("createPolicy", "repIndPolicyInvestimentType",
+            new NewProjectPolicyDTO().getProjectPoliciesInfo().getRepIndPolicyInvestimentType().getCode()
+              + " is an invalid investiment type code"));
+        }
+      } else {
+        fieldErrors
+          .add(new FieldErrorDTO("createPolicy", "repIndPolicyInvestimentType", "policy investiment type is need it"));
+      }
+      // policy maturity level
+      if (newPolicyDTO.getProjectPoliciesInfo().getRepIndStageProcess() != null) {
+        RepIndStageProcess repIndStageProcess = repIndStageProcessManager.getRepIndStageProcessById(
+          newPolicyDTO.getProjectPoliciesInfo().getRepIndStageProcess().getCode().longValue());
+        if (repIndStageProcess == null) {
+          fieldErrors.add(new FieldErrorDTO("createPolicy", "repIndStageProcess",
+            new NewProjectPolicyDTO().getProjectPoliciesInfo().getRepIndStageProcess().getCode()
+              + " is an invalid maturity level code"));
+        }
+      } else {
+        fieldErrors.add(new FieldErrorDTO("createPolicy", "repIndStageProcess", "policy maturity level is need it"));
+      }
+      // policy organization type
+      if (newPolicyDTO.getProjectPoliciesInfo().getRepIndOrganizationType() != null) {
+        RepIndOrganizationType repIndOrganizationType = repIndOrganizationTypeManager.getRepIndOrganizationTypeById(
+          newPolicyDTO.getProjectPoliciesInfo().getRepIndOrganizationType().getCode().longValue());
+        if (repIndOrganizationType == null) {
+          fieldErrors.add(new FieldErrorDTO("createPolicy", "repIndOrganizationType",
+            new NewProjectPolicyDTO().getProjectPoliciesInfo().getRepIndOrganizationType().getCode()
+              + " is an invalid organization type code"));
+        }
+      }
+      // validate policy info
+      if (!fieldErrors.isEmpty()) {
+
+      }
+    } else {
+      fieldErrors.add(new FieldErrorDTO("createPolicy", "projectPolicyInfo", "policy info is need it"));
+    }
+
+    // Validate all fields
+    if (!fieldErrors.isEmpty()) {
+      throw new MARLOFieldValidationException("Field Validation errors", "",
+        fieldErrors.stream()
+          .sorted(Comparator.comparing(FieldErrorDTO::getField, Comparator.nullsLast(Comparator.naturalOrder())))
+          .collect(Collectors.toList()));
+    }
+    return policyID;
   }
 
   public List<ProjectPolicyDTO> findAllPoliciesByGlobalUnit(String CGIARentityAcronym, Integer repoYear,
@@ -202,4 +292,5 @@ public class PolicyItem<T> {
     return Optional.ofNullable(projectPolicy).map(this.projectPolicyMapper::projectPolicyToProjectPolicyDTO)
       .map(result -> new ResponseEntity<>(result, HttpStatus.OK)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
   }
+
 }
