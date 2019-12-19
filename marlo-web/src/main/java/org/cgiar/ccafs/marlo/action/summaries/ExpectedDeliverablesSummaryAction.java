@@ -360,6 +360,8 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
 			List<String> divisionList = new ArrayList<>();
 			Set<String> ppaResponsibleList = new HashSet<>();
 			LinkedHashSet<Institution> institutionsResponsibleList = new LinkedHashSet<>();
+			List<String> allResponsibleList = new ArrayList<>();
+			String managingPartner = "";
 
 			// Get partner responsible
 			List<DeliverableUserPartnership> partnershipsList = deliverable.getDeliverableUserPartnerships().stream()
@@ -442,6 +444,7 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
 					if (responsibleppp != null && responsibleppp.getUser() != null) {
 						// individual += " ●";
 						individual += "*";
+						allResponsibleList.add("*");
 						individual += responsibleppp.getUser().getComposedNameWithoutEmail();
 						String person = "";
 						if (responsibleppp.getDeliverableUserPartnership() != null
@@ -452,6 +455,8 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
 										.getAcronym() != null) {
 							individual += " ("
 									+ responsibleppp.getDeliverableUserPartnership().getInstitution().getAcronym();
+							managingPartner = responsibleppp.getDeliverableUserPartnership().getInstitution().getAcronym();
+							allResponsibleList.add(responsibleppp.getDeliverableUserPartnership().getInstitution().getAcronym());
 							if (responsibleppp.getDeliverableUserPartnership().getInstitution().getAcronym()
 									.equals("IFPRI") && projectPartnersList != null) {
 								Long tempID = responsibleppp.getUser().getId();
@@ -469,6 +474,8 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
 										if (partnerPerson.getPartnerDivision() != null
 												&& partnerPerson.getPartnerDivision().getAcronym() != null) {
 											individual += "/" + partnerPerson.getPartnerDivision().getAcronym();
+											allResponsibleList.add("/"+partnerPerson.getPartnerDivision().getAcronym());
+											managingPartner+=  "/" + partnerPerson.getPartnerDivision().getAcronym();
 											if (divisions == null || divisions.isEmpty()) {
 												divisionList.add(partnerPerson.getPartnerDivision().getAcronym());
 												divisions = partnerPerson.getPartnerDivision().getAcronym();
@@ -485,13 +492,16 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
 
 								}
 								individual += "); ";
+								allResponsibleList.add(", ");
 							} else {
 								individual += "); ";
+								allResponsibleList.add(", ");
 							}
 
 						} else if (responsibleppp.getDeliverableUserPartnership().getInstitution().getName() != null) {
 							individual += " ("
 									+ responsibleppp.getDeliverableUserPartnership().getInstitution().getName() + "); ";
+							allResponsibleList.add(responsibleppp.getDeliverableUserPartnership().getInstitution().getName()+", ");
 						}
 					}
 				}
@@ -584,8 +594,10 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
 														&& partnerPerson.getPartnerDivision().getAcronym() != null) {
 													individual += partnerPerson.getComposedName() + "("
 															+ person.getDeliverableUserPartnership().getInstitution()
-																	.getComposedName()
+																	.getName()
 															+ "/" + partnerPerson.getPartnerDivision().getAcronym();
+													allResponsibleList.add(person.getDeliverableUserPartnership().getInstitution().getAcronym()
+															);
 
 													if (divisions == null || divisions.isEmpty()) {
 														divisionList
@@ -612,14 +624,17 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
 										 * ")";
 										 */
 										individual += ") ";
+										allResponsibleList.add(", ");
 									} else {
 										individual += person.getComposedName() + " ("
 												+ person.getDeliverableUserPartnership().getInstitution().getAcronym()
 												+ "); ";
+										allResponsibleList.add(person.getDeliverableUserPartnership().getInstitution().getAcronym()+ ", ");
 									}
 								} else if (person.getDeliverableUserPartnership().getInstitution().getName() != null) {
 									individual += "("
 											+ person.getDeliverableUserPartnership().getInstitution().getName() + "); ";
+									allResponsibleList.add(person.getDeliverableUserPartnership().getInstitution().getName() + ", ");
 								}
 							}
 						}
@@ -1308,6 +1323,33 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
 				} catch (Exception e) {
 
 				}
+				
+				// New list for ppaResponsibles
+				ppaResponsible="";
+				for(String division: allResponsibleList) {
+					ppaResponsible += division;
+				}
+				try {
+					ppaResponsible = ppaResponsible.trim();
+					ppaResponsible.substring(0, ppaResponsible.length()-2);
+					int lastComma = ppaResponsible.lastIndexOf(",");
+					//ppaResponsible.substring(0, lastComma-1);
+
+				}catch(Exception e) {
+					
+				}
+				
+				
+				// New Managing partner
+				managingResponsible = "";
+				managingResponsible = managingPartner;
+				try {
+					managingResponsible.substring(0, managingResponsible.length()-1);
+				}catch(Exception e) {
+					
+				}
+				
+				
 				model.addRow(new Object[] { deliverableId, deliverableTitle, completionYear, deliverableType,
 						deliverableSubType, keyOutput, delivStatus, delivNewYear, projectID, projectTitle,
 						projectClusterActivities, flagships, regions, individual, ppaResponsible, shared, openFS,
@@ -1344,7 +1386,6 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
 
 		}
 		return model;
-
 	}
 
 	private TypedTableModel getDeliverablesPerTypeTableModel() {
