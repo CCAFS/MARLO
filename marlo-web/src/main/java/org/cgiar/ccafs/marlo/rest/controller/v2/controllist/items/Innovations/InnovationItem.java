@@ -498,8 +498,6 @@ public class InnovationItem<T> {
       }
 
     }
-
-
     innovationList = projectInnovationList.stream()
       .map(innovations -> this.innovationMapper.projectInnovationToInnovationDTO(innovations))
       .collect(Collectors.toList());
