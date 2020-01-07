@@ -796,6 +796,8 @@ public class ProjectDescriptionAction extends BaseAction {
       project.getProjectInfo().setCrossCuttingCapacity(null);
       project.getProjectInfo().setCrossCuttingClimate(null);
       project.getProjectInfo().setCrossCuttingNa(null);
+      project.getProjectInfo().setCrossCuttingGender(null);
+      project.getProjectInfo().setCrossCuttingYouth(null);
     }
 
   }
@@ -827,12 +829,24 @@ public class ProjectDescriptionAction extends BaseAction {
       if (project.getProjectInfo().getCrossCuttingNa() == null) {
         project.getProjectInfo().setCrossCuttingNa(false);
       }
+      if (project.getProjectInfo().getCrossCuttingGender() == null) {
+          project.getProjectInfo().setCrossCuttingGender(false);
+      }
+      if (project.getProjectInfo().getCrossCuttingYouth() == null) {
+          project.getProjectInfo().setCrossCuttingYouth(false);
+      }
 
       if (this.isReportingActive()) {
 
         // Capacity Development
         project.getProjectInfo()
           .setCrossCuttingCapacity(projectDB.getProjecInfoPhase(this.getActualPhase()).getCrossCuttingCapacity());
+        // Capacity Gender
+        project.getProjectInfo()
+          .setCrossCuttingGender(projectDB.getProjecInfoPhase(this.getActualPhase()).getCrossCuttingGender());
+        // Capacity Youth
+        project.getProjectInfo()
+          .setCrossCuttingYouth(projectDB.getProjecInfoPhase(this.getActualPhase()).getCrossCuttingYouth());
         // Climate Change
         project.getProjectInfo()
           .setCrossCuttingClimate(projectDB.getProjecInfoPhase(this.getActualPhase()).getCrossCuttingClimate());
