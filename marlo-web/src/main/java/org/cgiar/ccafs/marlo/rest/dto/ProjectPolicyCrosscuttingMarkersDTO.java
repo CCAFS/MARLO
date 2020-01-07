@@ -24,11 +24,11 @@ import io.swagger.annotations.ApiModelProperty;
 public class ProjectPolicyCrosscuttingMarkersDTO {
 
 
-  @ApiModelProperty(notes = "Phase (AR, POWB, UpKeep)", position = 5)
-  private PhaseDTO phase;
-
-  @ApiModelProperty(notes = "Phase (AR, POWB, UpKeep)", position = 6)
+  @ApiModelProperty(notes = "CrossCutting marker identifier", position = 6)
   private CrossCuttingMarkerDTO crossCuttingmarker;
+
+  @ApiModelProperty(notes = "CrossCutting marker score", position = 7)
+  private CrossCuttingMarkerScoreDTO crossCuttingmarkerScore;
 
 
   public CrossCuttingMarkerDTO getCrossCuttingmarker() {
@@ -36,8 +36,8 @@ public class ProjectPolicyCrosscuttingMarkersDTO {
   }
 
 
-  public PhaseDTO getPhase() {
-    return phase;
+  public CrossCuttingMarkerScoreDTO getCrossCuttingmarkerScore() {
+    return crossCuttingmarkerScore;
   }
 
 
@@ -46,8 +46,8 @@ public class ProjectPolicyCrosscuttingMarkersDTO {
   }
 
 
-  public void setPhase(PhaseDTO phase) {
-    this.phase = phase;
+  public void setCrossCuttingmarkerScore(CrossCuttingMarkerScoreDTO crossCuttingmarkerScore) {
+    this.crossCuttingmarkerScore = crossCuttingmarkerScore;
   }
 
 
