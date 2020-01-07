@@ -26,11 +26,14 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
 
-@Mapper(componentModel = "jsr330", uses = {PhaseMapper.class, GlobalUnitMapper.class, CrossCuttingMarkerMapper.class})
+@Mapper(componentModel = "jsr330",
+  uses = {GlobalUnitMapper.class, CrossCuttingMarkerMapper.class, CrossCuttingMarkerScoreMapper.class})
 public interface ProjectPolicyCrosscuttingMarkersMapper {
 
   @Mappings({
-    @Mapping(source = "projectPolicyCrossCuttingMarker.cgiarCrossCuttingMarker", target = "crossCuttingmarker"),})
+    @Mapping(source = "projectPolicyCrossCuttingMarker.cgiarCrossCuttingMarker", target = "crossCuttingmarker"),
+    @Mapping(source = "projectPolicyCrossCuttingMarker.repIndGenderYouthFocusLevel",
+      target = "crossCuttingmarkerScore")})
   public abstract ProjectPolicyCrosscuttingMarkersDTO
     projectPolicyCrossCuttingMarkersToProjectPolicyCrosscuttingMarkersDTO(
       ProjectPolicyCrossCuttingMarker projectPolicyCrossCuttingMarker);

@@ -15,27 +15,52 @@
 
 package org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.policies;
 
+import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.CgiarCrossCuttingMarkerManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
+import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyCrpManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyGeographicScopeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicySubIdoManager;
+import org.cgiar.ccafs.marlo.data.manager.RepIndGenderYouthFocusLevelManager;
+import org.cgiar.ccafs.marlo.data.manager.RepIndGeographicScopeManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndOrganizationTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndPolicyInvestimentTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndStageProcessManager;
+import org.cgiar.ccafs.marlo.data.manager.SrfSubIdoManager;
+import org.cgiar.ccafs.marlo.data.model.CgiarCrossCuttingMarker;
 import org.cgiar.ccafs.marlo.data.model.CrpUser;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
+import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.Phase;
+import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicy;
+import org.cgiar.ccafs.marlo.data.model.ProjectPolicyCountry;
+import org.cgiar.ccafs.marlo.data.model.ProjectPolicyCrossCuttingMarker;
+import org.cgiar.ccafs.marlo.data.model.ProjectPolicyCrp;
+import org.cgiar.ccafs.marlo.data.model.ProjectPolicyGeographicScope;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicyInfo;
+import org.cgiar.ccafs.marlo.data.model.ProjectPolicyRegion;
+import org.cgiar.ccafs.marlo.data.model.ProjectPolicySubIdo;
+import org.cgiar.ccafs.marlo.data.model.RepIndGenderYouthFocusLevel;
+import org.cgiar.ccafs.marlo.data.model.RepIndGeographicScope;
 import org.cgiar.ccafs.marlo.data.model.RepIndOrganizationType;
 import org.cgiar.ccafs.marlo.data.model.RepIndPolicyInvestimentType;
 import org.cgiar.ccafs.marlo.data.model.RepIndStageProcess;
+import org.cgiar.ccafs.marlo.data.model.SrfSubIdo;
 import org.cgiar.ccafs.marlo.data.model.User;
+import org.cgiar.ccafs.marlo.rest.dto.CGIAREntityDTO;
+import org.cgiar.ccafs.marlo.rest.dto.CountryDTO;
+import org.cgiar.ccafs.marlo.rest.dto.GeographicScopeDTO;
 import org.cgiar.ccafs.marlo.rest.dto.NewProjectPolicyDTO;
+import org.cgiar.ccafs.marlo.rest.dto.ProjectPolicyCrosscuttingMarkersDTO;
 import org.cgiar.ccafs.marlo.rest.dto.ProjectPolicyDTO;
+import org.cgiar.ccafs.marlo.rest.dto.RegionDTO;
+import org.cgiar.ccafs.marlo.rest.dto.SrfSubIdoDTO;
 import org.cgiar.ccafs.marlo.rest.errors.FieldErrorDTO;
 import org.cgiar.ccafs.marlo.rest.errors.MARLOFieldValidationException;
 import org.cgiar.ccafs.marlo.rest.mappers.ProjectPolicyMapper;
@@ -67,8 +92,13 @@ public class PolicyItem<T> {
   private RepIndPolicyInvestimentTypeManager repIndPolicyInvestimentTypeManager;
   private RepIndStageProcessManager repIndStageProcessManager;
   private RepIndOrganizationTypeManager repIndOrganizationTypeManager;
-
+  private ProjectManager projectManager;
+  private SrfSubIdoManager SrfSubIdoManager;
+  private RepIndGeographicScopeManager repIndGeographicScopeManager;
+  private LocElementManager locElementManager;
   private ProjectPolicyMapper projectPolicyMapper;
+  private CgiarCrossCuttingMarkerManager cgiarCrossCuttingMarkerManager;
+  private RepIndGenderYouthFocusLevelManager repIndGenderYouthFocusLevelManager;
 
   @Inject
   public PolicyItem(GlobalUnitManager globalUnitManager, PhaseManager phaseManager,
@@ -76,7 +106,11 @@ public class PolicyItem<T> {
     ProjectPolicyCrpManager projectPolicyCrpManager, ProjectPolicyInfoManager projectPolicyInfoManager,
     ProjectPolicySubIdoManager projectPolicySubIdoManager, ProjectPolicyMapper projectPolicyMapper,
     RepIndPolicyInvestimentTypeManager repIndPolicyInvestimentTypeManager,
-    RepIndStageProcessManager repIndStageProcessManager, RepIndOrganizationTypeManager repIndOrganizationTypeManager) {
+    RepIndStageProcessManager repIndStageProcessManager, RepIndOrganizationTypeManager repIndOrganizationTypeManager,
+    ProjectManager projectManager, SrfSubIdoManager srfSubIdoManager,
+    RepIndGeographicScopeManager repIndGeographicScopeManager, LocElementManager locElementManager,
+    CgiarCrossCuttingMarkerManager cgiarCrossCuttingMarkerManager,
+    RepIndGenderYouthFocusLevelManager repIndGenderYouthFocusLevelManager) {
     this.phaseManager = phaseManager;
     this.globalUnitManager = globalUnitManager;
     this.projectPolicyManager = projectPolicyManager;
@@ -88,12 +122,25 @@ public class PolicyItem<T> {
     this.repIndPolicyInvestimentTypeManager = repIndPolicyInvestimentTypeManager;
     this.repIndStageProcessManager = repIndStageProcessManager;
     this.repIndOrganizationTypeManager = repIndOrganizationTypeManager;
+    this.projectManager = projectManager;
+    this.SrfSubIdoManager = srfSubIdoManager;
+    this.repIndGeographicScopeManager = repIndGeographicScopeManager;
+    this.locElementManager = locElementManager;
+    this.cgiarCrossCuttingMarkerManager = cgiarCrossCuttingMarkerManager;
+    this.repIndGenderYouthFocusLevelManager = repIndGenderYouthFocusLevelManager;
   }
 
   public Long createPolicy(NewProjectPolicyDTO newPolicyDTO, String entityAcronym, User user) {
     Long policyID = null;
     ProjectPolicy projectPolicy = new ProjectPolicy();
     ProjectPolicyInfo projectPolicyInfo = new ProjectPolicyInfo();
+    List<ProjectPolicyCrp> projectPolicyList = new ArrayList<ProjectPolicyCrp>();
+    List<ProjectPolicySubIdo> projectPolicySubIdoList = new ArrayList<ProjectPolicySubIdo>();
+    List<ProjectPolicyGeographicScope> projectPolicyGeographicScopeList = new ArrayList<ProjectPolicyGeographicScope>();
+    List<ProjectPolicyCountry> projectPolicyCountryList = new ArrayList<ProjectPolicyCountry>();
+    List<ProjectPolicyRegion> projectPolicyRegionList = new ArrayList<ProjectPolicyRegion>();
+    List<ProjectPolicyCrossCuttingMarker> ProjectPolicyCrossCuttingMarkerList =
+      new ArrayList<ProjectPolicyCrossCuttingMarker>();
     List<FieldErrorDTO> fieldErrors = new ArrayList<FieldErrorDTO>();
     GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitByAcronym(entityAcronym);
     if (globalUnitEntity == null) {
@@ -121,12 +168,14 @@ public class PolicyItem<T> {
           fieldErrors.add(new FieldErrorDTO("createPolicy", "repIndPolicyInvestimentType",
             new NewProjectPolicyDTO().getProjectPoliciesInfo().getRepIndPolicyInvestimentType().getCode()
               + " is an invalid investiment type code"));
+        } else {
+          projectPolicyInfo.setRepIndPolicyInvestimentType(repIndPolicyInvestimentType);
         }
       } else {
         fieldErrors
           .add(new FieldErrorDTO("createPolicy", "repIndPolicyInvestimentType", "policy investiment type is need it"));
       }
-      // policy maturity level
+      // policy info maturity level
       if (newPolicyDTO.getProjectPoliciesInfo().getRepIndStageProcess() != null) {
         RepIndStageProcess repIndStageProcess = repIndStageProcessManager.getRepIndStageProcessById(
           newPolicyDTO.getProjectPoliciesInfo().getRepIndStageProcess().getCode().longValue());
@@ -134,11 +183,13 @@ public class PolicyItem<T> {
           fieldErrors.add(new FieldErrorDTO("createPolicy", "repIndStageProcess",
             new NewProjectPolicyDTO().getProjectPoliciesInfo().getRepIndStageProcess().getCode()
               + " is an invalid maturity level code"));
+        } else {
+          projectPolicyInfo.setRepIndStageProcess(repIndStageProcess);
         }
       } else {
         fieldErrors.add(new FieldErrorDTO("createPolicy", "repIndStageProcess", "policy maturity level is need it"));
       }
-      // policy organization type
+      // policy info organization type
       if (newPolicyDTO.getProjectPoliciesInfo().getRepIndOrganizationType() != null) {
         RepIndOrganizationType repIndOrganizationType = repIndOrganizationTypeManager.getRepIndOrganizationTypeById(
           newPolicyDTO.getProjectPoliciesInfo().getRepIndOrganizationType().getCode().longValue());
@@ -146,11 +197,139 @@ public class PolicyItem<T> {
           fieldErrors.add(new FieldErrorDTO("createPolicy", "repIndOrganizationType",
             new NewProjectPolicyDTO().getProjectPoliciesInfo().getRepIndOrganizationType().getCode()
               + " is an invalid organization type code"));
+        } else {
+
         }
       }
+      // validate generic project id
+      Project project = this.projectManager.getProjectById(newPolicyDTO.getProject().getId());
+      if (project == null) {
+        fieldErrors.add(new FieldErrorDTO("createPolicy", "Project id",
+          newPolicyDTO.getProject().getId() + " is an invalid project id"));
+      }
       // validate policy info
-      if (!fieldErrors.isEmpty()) {
+      if (fieldErrors.isEmpty()) {
+        // validate crp contributing
+        if (newPolicyDTO.getProjectPolicyCrpDTO() != null && newPolicyDTO.getProjectPolicyCrpDTO().size() > 0) {
+          for (CGIAREntityDTO contributingCRP : newPolicyDTO.getProjectPolicyCrpDTO()) {
+            GlobalUnit crp = this.globalUnitManager.findGlobalUnitBySMOCode(contributingCRP.getCode());
+            if (crp == null) {
+              fieldErrors.add(new FieldErrorDTO("createPolicy", "ContributingCGIAREntities",
+                contributingCRP.getCode() + " is an invalid CGIAR entity code"));
+            } else {
+              ProjectPolicyCrp projectPolicyCrp = new ProjectPolicyCrp();
+              projectPolicyCrp.setGlobalUnit(crp);
+              projectPolicyCrp.setPhase(phase);
+              projectPolicyCrp.setProjectPolicy(projectPolicy);
+              projectPolicyList.add(projectPolicyCrp);
+            }
+          }
+        }
+        // validate sub-IDO
+        if (newPolicyDTO.getSrfSubIdoList() != null && newPolicyDTO.getSrfSubIdoList().size() > 0) {
+          for (SrfSubIdoDTO subIdos : newPolicyDTO.getSrfSubIdoList()) {
+            SrfSubIdo srfSubIdo = SrfSubIdoManager.getSrfSubIdoByCode(subIdos.getCode());
+            if (srfSubIdo == null) {
+              fieldErrors
+                .add(new FieldErrorDTO("createPolicy", "SrfSubIdo", subIdos.getCode() + " is an invalid Sub-IDO code"));
+            } else {
+              ProjectPolicySubIdo projectPolicySubIdo = new ProjectPolicySubIdo();
+              projectPolicySubIdo.setProjectPolicy(projectPolicy);
+              projectPolicySubIdo.setPhase(phase);
+              projectPolicySubIdo.setSrfSubIdo(srfSubIdo);
+              projectPolicySubIdoList.add(projectPolicySubIdo);
+            }
+          }
+        }
+        // validate geographic scope
+        if (newPolicyDTO.getGeographicScopes() != null && newPolicyDTO.getGeographicScopes().size() > 0) {
+          for (GeographicScopeDTO geographicScope : newPolicyDTO.getGeographicScopes()) {
+            RepIndGeographicScope geoScope =
+              this.repIndGeographicScopeManager.getRepIndGeographicScopeById(geographicScope.getCode());
+            if (geoScope == null) {
+              fieldErrors.add(new FieldErrorDTO("createPolicy", "geographicScope",
+                geographicScope.getCode() + " is an invalid geographic Scope code"));
+            } else {
+              ProjectPolicyGeographicScope projectPolicyGeographicScope = new ProjectPolicyGeographicScope();
+              projectPolicyGeographicScope.setPhase(phase);
+              projectPolicyGeographicScope.setProjectPolicy(projectPolicy);
+              projectPolicyGeographicScope.setRepIndGeographicScope(geoScope);
+              projectPolicyGeographicScopeList.add(projectPolicyGeographicScope);
+            }
+          }
+        }
+        // validate countries
+        if (newPolicyDTO.getCountries() != null && newPolicyDTO.getCountries().size() > 0) {
+          for (CountryDTO iso : newPolicyDTO.getCountries()) {
+            LocElement country = this.locElementManager.getLocElementByNumericISOCode(iso.getCode());
+            if (country == null) {
+              fieldErrors.add(new FieldErrorDTO("createPolicy", "Countries", iso + " is an invalid country ISO Code"));
 
+            } else if (country.getLocElementType().getId() != APConstants.LOC_ELEMENT_TYPE_COUNTRY) {
+              fieldErrors.add(new FieldErrorDTO("createPolicy", "Countries", iso + " is not a Country ISO code"));
+            } else {
+              ProjectPolicyCountry projectPolicyCountry = new ProjectPolicyCountry();
+              projectPolicyCountry.setLocElement(country);
+              projectPolicyCountry.setPhase(phase);
+              projectPolicyCountry.setProjectPolicy(projectPolicy);
+              projectPolicyCountryList.add(projectPolicyCountry);
+            }
+          }
+        }
+        // validate regions
+        if (newPolicyDTO.getRegions() != null && newPolicyDTO.getRegions().size() > 0) {
+          for (RegionDTO iso : newPolicyDTO.getRegions()) {
+            LocElement region = this.locElementManager.getLocElementByNumericISOCode(iso.getUM49Code());
+            if (region == null) {
+              fieldErrors.add(new FieldErrorDTO("createPolicy", "Regions", iso + " is an invalid region ISO Code"));
+
+            } else if (region.getLocElementType().getId() != APConstants.LOC_ELEMENT_TYPE_REGION) {
+              fieldErrors.add(new FieldErrorDTO("createPolicy", "Regions", iso + " is not a region ISO code"));
+            } else {
+              ProjectPolicyRegion projectPolicyRegion = new ProjectPolicyRegion();
+              projectPolicyRegion.setLocElement(region);
+              projectPolicyRegion.setPhase(phase);
+              projectPolicyRegion.setProjectPolicy(projectPolicy);
+              projectPolicyRegionList.add(projectPolicyRegion);
+            }
+          }
+        }
+        // validate crosscutting markers
+        if (newPolicyDTO.getCrossCuttingMarkers() != null && newPolicyDTO.getCrossCuttingMarkers().size() > 0) {
+          for (ProjectPolicyCrosscuttingMarkersDTO crosscuttingmarker : newPolicyDTO.getCrossCuttingMarkers()) {
+            CgiarCrossCuttingMarker cgiarCrossCuttingMarker = cgiarCrossCuttingMarkerManager
+              .getCgiarCrossCuttingMarkerById(crosscuttingmarker.getCrossCuttingmarker().getCode());
+            if (cgiarCrossCuttingMarker == null) {
+              fieldErrors.add(new FieldErrorDTO("createPolicy", "Crosscuttingmarker",
+                cgiarCrossCuttingMarker + " is an invalid Crosscuttingmarker Code"));
+
+            } else {
+              RepIndGenderYouthFocusLevel repIndGenderYouthFocusLevel = repIndGenderYouthFocusLevelManager
+                .getRepIndGenderYouthFocusLevelById(crosscuttingmarker.getCrossCuttingmarkerScore().getCode());
+              if (repIndGenderYouthFocusLevel == null) {
+                fieldErrors.add(new FieldErrorDTO("createPolicy", "CrosscuttingmarkerScore",
+                  cgiarCrossCuttingMarker + " is an invalid GenderYouthFocusLevel ISO Code"));
+              } else {
+                ProjectPolicyCrossCuttingMarker projectPolicyCrossCuttingMarker = new ProjectPolicyCrossCuttingMarker();
+                projectPolicyCrossCuttingMarker.setCgiarCrossCuttingMarker(cgiarCrossCuttingMarker);
+                projectPolicyCrossCuttingMarker.setRepIndGenderYouthFocusLevel(repIndGenderYouthFocusLevel);
+                projectPolicyCrossCuttingMarker.setPhase(phase);
+                projectPolicyCrossCuttingMarker.setProjectPolicy(projectPolicy);
+                ProjectPolicyCrossCuttingMarkerList.add(projectPolicyCrossCuttingMarker);
+              }
+            }
+          }
+
+        }
+        // can save
+        if (fieldErrors.isEmpty()) {
+          projectPolicy.setProject(project);
+          projectPolicy = projectPolicyManager.saveProjectPolicy(projectPolicy);
+
+          if (projectPolicy != null) {
+            policyID = projectPolicy.getId();
+          }
+        }
       }
     } else {
       fieldErrors.add(new FieldErrorDTO("createPolicy", "projectPolicyInfo", "policy info is need it"));
