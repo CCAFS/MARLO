@@ -21,10 +21,13 @@ import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyCountryManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyCrossCuttingMarkerManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyCrpManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyGeographicScopeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyRegionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicySubIdoManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndGenderYouthFocusLevelManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndGeographicScopeManager;
@@ -89,6 +92,9 @@ public class PolicyItem<T> {
   private ProjectPolicyInfoManager projectPolicyInfoManager;
   private ProjectPolicyGeographicScopeManager projectPolicyGeographicScopeManager;
   private ProjectPolicySubIdoManager projectPolicySubIdoManager;
+  private ProjectPolicyCountryManager projectPolicyCountryManager;
+  private ProjectPolicyRegionManager ProjectPolicyRegionManager;
+  private ProjectPolicyCrossCuttingMarkerManager projectPolicyCrossCuttingMarkerManager;
   private RepIndPolicyInvestimentTypeManager repIndPolicyInvestimentTypeManager;
   private RepIndStageProcessManager repIndStageProcessManager;
   private RepIndOrganizationTypeManager repIndOrganizationTypeManager;
@@ -110,7 +116,9 @@ public class PolicyItem<T> {
     ProjectManager projectManager, SrfSubIdoManager srfSubIdoManager,
     RepIndGeographicScopeManager repIndGeographicScopeManager, LocElementManager locElementManager,
     CgiarCrossCuttingMarkerManager cgiarCrossCuttingMarkerManager,
-    RepIndGenderYouthFocusLevelManager repIndGenderYouthFocusLevelManager) {
+    RepIndGenderYouthFocusLevelManager repIndGenderYouthFocusLevelManager,
+    ProjectPolicyCountryManager projectPolicyCountryManager, ProjectPolicyRegionManager projectPolicyRegionManager,
+    ProjectPolicyCrossCuttingMarkerManager projectPolicyCrossCuttingMarkerManager) {
     this.phaseManager = phaseManager;
     this.globalUnitManager = globalUnitManager;
     this.projectPolicyManager = projectPolicyManager;
@@ -128,6 +136,9 @@ public class PolicyItem<T> {
     this.locElementManager = locElementManager;
     this.cgiarCrossCuttingMarkerManager = cgiarCrossCuttingMarkerManager;
     this.repIndGenderYouthFocusLevelManager = repIndGenderYouthFocusLevelManager;
+    this.projectPolicyCountryManager = projectPolicyCountryManager;
+    this.ProjectPolicyRegionManager = projectPolicyRegionManager;
+    this.projectPolicyCrossCuttingMarkerManager = projectPolicyCrossCuttingMarkerManager;
   }
 
   public Long createPolicy(NewProjectPolicyDTO newPolicyDTO, String entityAcronym, User user) {
@@ -325,9 +336,42 @@ public class PolicyItem<T> {
         if (fieldErrors.isEmpty()) {
           projectPolicy.setProject(project);
           projectPolicy = projectPolicyManager.saveProjectPolicy(projectPolicy);
-
           if (projectPolicy != null) {
             policyID = projectPolicy.getId();
+            projectPolicyInfo.setProjectPolicy(projectPolicy);
+            projectPolicyInfoManager.saveProjectPolicyInfo(projectPolicyInfo);
+
+            for (ProjectPolicyCrp projectPolicyCrp : projectPolicyList) {
+              projectPolicyCrp.setProjectPolicy(projectPolicy);
+              projectPolicyCrpManager.saveProjectPolicyCrp(projectPolicyCrp);
+            }
+
+            for (ProjectPolicySubIdo projectPolicySubIdo : projectPolicySubIdoList) {
+              projectPolicySubIdo.setProjectPolicy(projectPolicy);
+              projectPolicySubIdoManager.saveProjectPolicySubIdo(projectPolicySubIdo);
+            }
+
+            for (ProjectPolicyGeographicScope projectPolicyGeographicScope : projectPolicyGeographicScopeList) {
+              projectPolicyGeographicScope.setProjectPolicy(projectPolicy);
+              projectPolicyGeographicScopeManager.saveProjectPolicyGeographicScope(projectPolicyGeographicScope);
+            }
+
+            for (ProjectPolicyCountry projectPolicyCountry : projectPolicyCountryList) {
+              projectPolicyCountry.setProjectPolicy(projectPolicy);
+              projectPolicyCountryManager.saveProjectPolicyCountry(projectPolicyCountry);
+            }
+
+            for (ProjectPolicyRegion projectPolicyRegion : projectPolicyRegionList) {
+              projectPolicyRegion.setProjectPolicy(projectPolicy);
+              ProjectPolicyRegionManager.saveProjectPolicyRegion(projectPolicyRegion);
+            }
+
+            for (ProjectPolicyCrossCuttingMarker projectPolicyCrossCuttingMarker : ProjectPolicyCrossCuttingMarkerList) {
+              projectPolicyCrossCuttingMarker.setProjectPolicy(projectPolicy);
+              projectPolicyCrossCuttingMarkerManager
+                .saveProjectPolicyCrossCuttingMarker(projectPolicyCrossCuttingMarker);
+            }
+
           }
         }
       }
