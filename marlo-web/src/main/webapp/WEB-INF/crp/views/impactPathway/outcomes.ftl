@@ -123,7 +123,7 @@
       <div class="subIdoWrapper">
         [#list ido.subIdos as subIdo]
           <div class="line"></div>
-          <div id="subIdo-${subIdo.id}" class="subIDO subIDO${ido.isCrossCutting?string("-CrossCutting","")}">${subIdo.description}</div>
+          <div id="subIdo-${subIdo.id}" class="subIDO subIDO${ido.isCrossCutting?string("-CrossCutting","")}">${subIdo.smoCode} ${subIdo.description}</div>
         [/#list]
       </div>
     </div>
