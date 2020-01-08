@@ -122,6 +122,7 @@ public final class APConstants {
   public static final String CRP_ENABLE_BUDGET_EXECUTION = "crp_enable_budget_execution";
   public static final Long CRP_DASHBOARD_CENTER_IDENTIFICATION = new Long(4);
   public static final String CRP_ENABLE_BUDGETBYCOAS = "crp_budgetbycoas";
+  public static final String CRP_PPA_ENABLE_PROJECT_DESCRIPTION = "crp_ppa_enable_project_description";
 
 
   // Email parameters to copy to FL FM CL
