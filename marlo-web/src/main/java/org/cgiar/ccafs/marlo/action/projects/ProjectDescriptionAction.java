@@ -704,10 +704,18 @@ public class ProjectDescriptionAction extends BaseAction {
           && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
         .collect(Collectors.toList()));
     } else {
+    	
       liaisonInstitutions
-        .addAll(loggedCrp.getLiaisonInstitutions().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
-      liaisonInstitutions.addAll(
-        liaisonInstitutionManager.findAll().stream().filter(c -> c.getCrp() == null).collect(Collectors.toList()));
+        .addAll(loggedCrp.getLiaisonInstitutions().stream().filter(c -> c.isActive() && c.getInstitution()== null).collect(Collectors.toList()));
+  	  if(project.getProjectInfo() != null && 
+  			  project.getProjectInfo().getLiaisonInstitution()!= null && 
+  			  project.getProjectInfo().getLiaisonInstitution().getInstitution()!= null && 
+  			  loggedCrp.getLiaisonInstitutions() != null &&
+  			  loggedCrp.getLiaisonInstitutions().stream().filter(c -> c.isActive() && c.getInstitution() != null && c.getInstitution().getId().equals(project.getProjectInfo().getLiaisonInstitution().getInstitution().getId())).collect(Collectors.toList()) != null) {
+		liaisonInstitutions.add(loggedCrp.getLiaisonInstitutions().stream().filter(c -> c.isActive() && c.getInstitution() != null && c.getInstitution().getId().equals(project.getProjectInfo().getLiaisonInstitution().getInstitution().getId())).collect(Collectors.toList()).get(0));
+	  }
+      //liaisonInstitutions.addAll(
+      //  liaisonInstitutionManager.findAll().stream().filter(c -> c.getCrp() == null).collect(Collectors.toList()));
     }
     // load the liasons intitutions for the crp
 
