@@ -111,7 +111,7 @@ public class ProjectPolicyValidator extends BaseValidator {
 
     // Validate Title
     if (!(this.isValidString(projectPolicy.getProjectPolicyInfo(baseAction.getActualPhase()).getTitle())
-      && this.wordCount(projectPolicy.getProjectPolicyInfo(baseAction.getActualPhase()).getTitle()) <= 50)) {
+      && this.wordCount(projectPolicy.getProjectPolicyInfo(baseAction.getActualPhase()).getTitle()) <= 30)) {
       action.addMessage(action.getText("Title"));
       action.addMissingField("projectPolicy.title");
       action.getInvalidFields().put("input-policy.projectPolicyInfo.title", InvalidFieldsMessages.EMPTYFIELD);
