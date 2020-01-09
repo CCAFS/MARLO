@@ -111,6 +111,12 @@ public class ProjectPolicySubIdoManagerImpl implements ProjectPolicySubIdoManage
     return projectPolicySubIdoDAO.find(projectPolicySubIdoID);
   }
 
+  @Override
+  public ProjectPolicySubIdo getProjectPolicySubIdoByPhase(long projectPolicyID, long SubIdoID, long phaseID) {
+
+    return projectPolicySubIdoDAO.getProjectPolicySubIdoByPhase(projectPolicyID, SubIdoID, phaseID);
+  }
+
   public void savePolicySubIdoPhase(Phase next, long policyID, ProjectPolicySubIdo projectPolicySubIdo) {
 
     Phase phase = phaseDAO.find(next.getId());

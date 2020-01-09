@@ -27,12 +27,14 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyCrpManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyGeographicScopeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyOwnerManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyRegionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicySubIdoManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndGenderYouthFocusLevelManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndGeographicScopeManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndOrganizationTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndPolicyInvestimentTypeManager;
+import org.cgiar.ccafs.marlo.data.manager.RepIndPolicyTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndStageProcessManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfSubIdoManager;
 import org.cgiar.ccafs.marlo.data.model.CgiarCrossCuttingMarker;
@@ -47,12 +49,13 @@ import org.cgiar.ccafs.marlo.data.model.ProjectPolicyCrossCuttingMarker;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicyCrp;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicyGeographicScope;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicyInfo;
+import org.cgiar.ccafs.marlo.data.model.ProjectPolicyOwner;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicyRegion;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicySubIdo;
 import org.cgiar.ccafs.marlo.data.model.RepIndGenderYouthFocusLevel;
 import org.cgiar.ccafs.marlo.data.model.RepIndGeographicScope;
-import org.cgiar.ccafs.marlo.data.model.RepIndOrganizationType;
 import org.cgiar.ccafs.marlo.data.model.RepIndPolicyInvestimentType;
+import org.cgiar.ccafs.marlo.data.model.RepIndPolicyType;
 import org.cgiar.ccafs.marlo.data.model.RepIndStageProcess;
 import org.cgiar.ccafs.marlo.data.model.SrfSubIdo;
 import org.cgiar.ccafs.marlo.data.model.User;
@@ -60,6 +63,7 @@ import org.cgiar.ccafs.marlo.rest.dto.CGIAREntityDTO;
 import org.cgiar.ccafs.marlo.rest.dto.CountryDTO;
 import org.cgiar.ccafs.marlo.rest.dto.GeographicScopeDTO;
 import org.cgiar.ccafs.marlo.rest.dto.NewProjectPolicyDTO;
+import org.cgiar.ccafs.marlo.rest.dto.PolicyOwnerTypeDTO;
 import org.cgiar.ccafs.marlo.rest.dto.ProjectPolicyCrosscuttingMarkersDTO;
 import org.cgiar.ccafs.marlo.rest.dto.ProjectPolicyDTO;
 import org.cgiar.ccafs.marlo.rest.dto.RegionDTO;
@@ -95,9 +99,11 @@ public class PolicyItem<T> {
   private ProjectPolicyCountryManager projectPolicyCountryManager;
   private ProjectPolicyRegionManager ProjectPolicyRegionManager;
   private ProjectPolicyCrossCuttingMarkerManager projectPolicyCrossCuttingMarkerManager;
+  private ProjectPolicyOwnerManager projectPolicyOwnerManager;
   private RepIndPolicyInvestimentTypeManager repIndPolicyInvestimentTypeManager;
   private RepIndStageProcessManager repIndStageProcessManager;
   private RepIndOrganizationTypeManager repIndOrganizationTypeManager;
+  private RepIndPolicyTypeManager repIndPolicyTypeManager;
   private ProjectManager projectManager;
   private SrfSubIdoManager SrfSubIdoManager;
   private RepIndGeographicScopeManager repIndGeographicScopeManager;
@@ -118,7 +124,8 @@ public class PolicyItem<T> {
     CgiarCrossCuttingMarkerManager cgiarCrossCuttingMarkerManager,
     RepIndGenderYouthFocusLevelManager repIndGenderYouthFocusLevelManager,
     ProjectPolicyCountryManager projectPolicyCountryManager, ProjectPolicyRegionManager projectPolicyRegionManager,
-    ProjectPolicyCrossCuttingMarkerManager projectPolicyCrossCuttingMarkerManager) {
+    ProjectPolicyCrossCuttingMarkerManager projectPolicyCrossCuttingMarkerManager,
+    ProjectPolicyOwnerManager projectPolicyOwnerManager, RepIndPolicyTypeManager repIndPolicyTypeManager) {
     this.phaseManager = phaseManager;
     this.globalUnitManager = globalUnitManager;
     this.projectPolicyManager = projectPolicyManager;
@@ -139,19 +146,22 @@ public class PolicyItem<T> {
     this.projectPolicyCountryManager = projectPolicyCountryManager;
     this.ProjectPolicyRegionManager = projectPolicyRegionManager;
     this.projectPolicyCrossCuttingMarkerManager = projectPolicyCrossCuttingMarkerManager;
+    this.projectPolicyOwnerManager = projectPolicyOwnerManager;
+    this.repIndPolicyTypeManager = repIndPolicyTypeManager;
   }
 
   public Long createPolicy(NewProjectPolicyDTO newPolicyDTO, String entityAcronym, User user) {
     Long policyID = null;
     ProjectPolicy projectPolicy = new ProjectPolicy();
     ProjectPolicyInfo projectPolicyInfo = new ProjectPolicyInfo();
-    List<ProjectPolicyCrp> projectPolicyList = new ArrayList<ProjectPolicyCrp>();
+    List<ProjectPolicyCrp> projectPolicyCrpList = new ArrayList<ProjectPolicyCrp>();
     List<ProjectPolicySubIdo> projectPolicySubIdoList = new ArrayList<ProjectPolicySubIdo>();
     List<ProjectPolicyGeographicScope> projectPolicyGeographicScopeList = new ArrayList<ProjectPolicyGeographicScope>();
     List<ProjectPolicyCountry> projectPolicyCountryList = new ArrayList<ProjectPolicyCountry>();
     List<ProjectPolicyRegion> projectPolicyRegionList = new ArrayList<ProjectPolicyRegion>();
     List<ProjectPolicyCrossCuttingMarker> ProjectPolicyCrossCuttingMarkerList =
       new ArrayList<ProjectPolicyCrossCuttingMarker>();
+    List<ProjectPolicyOwner> projectPolicyOwnerList = new ArrayList<ProjectPolicyOwner>();
     List<FieldErrorDTO> fieldErrors = new ArrayList<FieldErrorDTO>();
     GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitByAcronym(entityAcronym);
     if (globalUnitEntity == null) {
@@ -200,23 +210,12 @@ public class PolicyItem<T> {
       } else {
         fieldErrors.add(new FieldErrorDTO("createPolicy", "repIndStageProcess", "policy maturity level is need it"));
       }
-      // policy info organization type
-      if (newPolicyDTO.getProjectPoliciesInfo().getRepIndOrganizationType() != null) {
-        RepIndOrganizationType repIndOrganizationType = repIndOrganizationTypeManager.getRepIndOrganizationTypeById(
-          newPolicyDTO.getProjectPoliciesInfo().getRepIndOrganizationType().getCode().longValue());
-        if (repIndOrganizationType == null) {
-          fieldErrors.add(new FieldErrorDTO("createPolicy", "repIndOrganizationType",
-            new NewProjectPolicyDTO().getProjectPoliciesInfo().getRepIndOrganizationType().getCode()
-              + " is an invalid organization type code"));
-        } else {
 
-        }
-      }
       // validate generic project id
-      Project project = this.projectManager.getProjectById(newPolicyDTO.getProject().getId());
+      Project project = this.projectManager.getProjectById(newPolicyDTO.getProject());
       if (project == null) {
-        fieldErrors.add(new FieldErrorDTO("createPolicy", "Project id",
-          newPolicyDTO.getProject().getId() + " is an invalid project id"));
+        fieldErrors.add(
+          new FieldErrorDTO("createPolicy", "Project id", newPolicyDTO.getProject() + " is an invalid project id"));
       }
       // validate policy info
       if (fieldErrors.isEmpty()) {
@@ -232,7 +231,7 @@ public class PolicyItem<T> {
               projectPolicyCrp.setGlobalUnit(crp);
               projectPolicyCrp.setPhase(phase);
               projectPolicyCrp.setProjectPolicy(projectPolicy);
-              projectPolicyList.add(projectPolicyCrp);
+              projectPolicyCrpList.add(projectPolicyCrp);
             }
           }
         }
@@ -330,7 +329,23 @@ public class PolicyItem<T> {
               }
             }
           }
+        }
 
+        if (newPolicyDTO.getOwners() != null && newPolicyDTO.getOwners().size() > 0) {
+          for (PolicyOwnerTypeDTO policyOwnerTypeDTO : newPolicyDTO.getOwners()) {
+            RepIndPolicyType repIndPolicyType =
+              repIndPolicyTypeManager.getRepIndPolicyTypeById(policyOwnerTypeDTO.getCode());
+            if (repIndPolicyType == null) {
+              fieldErrors.add(new FieldErrorDTO("createPolicy", "PolicyOwnerType",
+                repIndPolicyType + " is an invalid PolicyOwnerType Code"));
+            } else {
+              ProjectPolicyOwner projectPolicyOwner = new ProjectPolicyOwner();
+              projectPolicyOwner.setPhase(phase);
+              projectPolicyOwner.setProjectPolicy(projectPolicy);
+              projectPolicyOwner.setRepIndPolicyType(repIndPolicyType);
+              projectPolicyOwnerList.add(projectPolicyOwner);
+            }
+          }
         }
         // can save
         if (fieldErrors.isEmpty()) {
@@ -339,9 +354,13 @@ public class PolicyItem<T> {
           if (projectPolicy != null) {
             policyID = projectPolicy.getId();
             projectPolicyInfo.setProjectPolicy(projectPolicy);
+            projectPolicyInfo.setPhase(phase);
+            projectPolicyInfo.setYear(newPolicyDTO.getProjectPoliciesInfo().getYear());
+            projectPolicyInfo.setTitle(newPolicyDTO.getProjectPoliciesInfo().getTitle());
+            projectPolicyInfo.setNarrativeEvidence(newPolicyDTO.getProjectPoliciesInfo().getNarrativeEvidence());
             projectPolicyInfoManager.saveProjectPolicyInfo(projectPolicyInfo);
 
-            for (ProjectPolicyCrp projectPolicyCrp : projectPolicyList) {
+            for (ProjectPolicyCrp projectPolicyCrp : projectPolicyCrpList) {
               projectPolicyCrp.setProjectPolicy(projectPolicy);
               projectPolicyCrpManager.saveProjectPolicyCrp(projectPolicyCrp);
             }
@@ -372,6 +391,11 @@ public class PolicyItem<T> {
                 .saveProjectPolicyCrossCuttingMarker(projectPolicyCrossCuttingMarker);
             }
 
+            for (ProjectPolicyOwner projectPolicyOwner : projectPolicyOwnerList) {
+              projectPolicyOwner.setProjectPolicy(projectPolicy);
+              projectPolicyOwnerManager.saveProjectPolicyOwner(projectPolicyOwner);
+            }
+
           }
         }
       }
@@ -387,6 +411,72 @@ public class PolicyItem<T> {
           .collect(Collectors.toList()));
     }
     return policyID;
+  }
+
+  /**
+   * Delete an Policy by Id,Phase and year
+   * 
+   * @param id
+   * @param year
+   * @param phase
+   * @return a ProjectPolicyDTO with the policy Item
+   */
+  public ResponseEntity<ProjectPolicyDTO> deletePolicyById(Long id, String CGIARentityAcronym, Integer repoYear,
+    String repoPhase, User user) {
+    List<FieldErrorDTO> fieldErrors = new ArrayList<FieldErrorDTO>();
+    Phase phase =
+      this.phaseManager.findAll().stream().filter(c -> c.getCrp().getAcronym().equalsIgnoreCase(CGIARentityAcronym)
+        && c.getYear() == repoYear && c.getName().equalsIgnoreCase(repoPhase)).findFirst().get();
+    if (phase == null) {
+      fieldErrors.add(new FieldErrorDTO("createPolicy", "phase",
+        new NewProjectPolicyDTO().getPhase().getYear() + " is an invalid year"));
+    }
+    ProjectPolicy projectPolicy = projectPolicyManager.getProjectPolicyById(id.longValue());
+    if (projectPolicy != null) {
+      if (projectPolicy.getProjectPolicyInfo() != null) {
+        projectPolicy.getProjectPolicyInfo(phase);
+
+        // Setting Geographic Scope
+        projectPolicy.setGeographicScopes(projectPolicy.getProjectPolicyGeographicScopes().stream()
+          .filter(c -> c.getProjectPolicy().getId().longValue() == projectPolicy.getId().longValue()
+            && c.getPhase().getId().longValue() == phase.getId().longValue())
+          .collect(Collectors.toList()));
+        // Setting CRP contributing
+        projectPolicy.setCrps(projectPolicyCrpManager.findAll().stream()
+          .filter(c -> c.getProjectPolicy().getId().longValue() == projectPolicy.getId().longValue()
+            && c.getPhase().getId() == phase.getId())
+          .collect(Collectors.toList()));
+        // Setting CrossCuttingMarker
+        projectPolicy.setCrossCuttingMarkers(projectPolicy.getProjectPolicyCrossCuttingMarkers().stream()
+          .filter(c -> c.getPhase().getId().longValue() == phase.getId().longValue()).collect(Collectors.toList()));
+        // Setting SubIdos
+        projectPolicy.setSubIdos(projectPolicySubIdoManager.findAll().stream()
+          .filter(c -> c.getProjectPolicy().getId().longValue() == projectPolicy.getId().longValue()
+            && c.getPhase().getId().longValue() == phase.getId().longValue())
+          .collect(Collectors.toList()));
+        // setting countries
+        projectPolicy.setCountries(projectPolicy.getProjectPolicyCountries().stream()
+          .filter(c -> c.getPhase().getId().longValue() == phase.getId().longValue()).collect(Collectors.toList()));
+        // setting regions
+        projectPolicy.setRegions(projectPolicy.getProjectPolicyRegions().stream()
+          .filter(c -> c.getPhase().getId().longValue() == phase.getId().longValue()).collect(Collectors.toList()));
+
+        projectPolicy.setOwners(projectPolicy.getProjectPolicyOwners().stream()
+          .filter(c -> c.getPhase().getId().longValue() == phase.getId().longValue()).collect(Collectors.toList()));
+      }
+      projectPolicyManager.deleteProjectPolicy(id);
+    } else {
+      fieldErrors.add(new FieldErrorDTO("deletePolicy", "Policies", id + " is an invalid policy Code"));
+    }
+    if (!fieldErrors.isEmpty()) {
+      throw new MARLOFieldValidationException("Field Validation errors", "",
+        fieldErrors.stream()
+          .sorted(Comparator.comparing(FieldErrorDTO::getField, Comparator.nullsLast(Comparator.naturalOrder())))
+          .collect(Collectors.toList()));
+    }
+    return Optional.ofNullable(projectPolicy).map(this.projectPolicyMapper::projectPolicyToProjectPolicyDTO)
+      .map(result -> new ResponseEntity<>(result, HttpStatus.OK)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+
   }
 
   public List<ProjectPolicyDTO> findAllPoliciesByGlobalUnit(String CGIARentityAcronym, Integer repoYear,
@@ -413,7 +503,7 @@ public class PolicyItem<T> {
           .collect(Collectors.toList()));
     } else {
       List<ProjectPolicyInfo> projectPolicyInfoList = phase.getProjectPolicyInfos().stream()
-        .filter(c -> c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList());
+        .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList());
       for (ProjectPolicyInfo projectPolicyInfo : projectPolicyInfoList) {
         ProjectPolicy projectPolicy =
           projectPolicyManager.getProjectPolicyById(projectPolicyInfo.getProjectPolicy().getId());
@@ -441,7 +531,15 @@ public class PolicyItem<T> {
         // setting regions
         projectPolicy.setRegions(projectPolicy.getProjectPolicyRegions().stream()
           .filter(c -> c.getPhase().getId().longValue() == phase.getId().longValue()).collect(Collectors.toList()));
+        // setting owners
+        projectPolicy.setOwners(projectPolicyOwnerManager.findAll().stream()
+          .filter(c -> c.getProjectPolicy().getId().longValue() == projectPolicy.getId().longValue()
+            && c.getPhase().getId().longValue() == phase.getId().longValue())
+          .collect(Collectors.toList()));
+
         projectPolicyList.add(projectPolicy);
+
+
       }
     }
     policyList = projectPolicyList.stream()
@@ -478,7 +576,7 @@ public class PolicyItem<T> {
 
     if (projectPolicy.getProjectPolicyInfo() != null) {
       projectPolicy.getProjectPolicyInfo(phase);
-      System.out.println("" + projectPolicy.getProjectPolicyInfo().getRepIndStageProcess().getId());
+
       // Setting Geographic Scope
       projectPolicy.setGeographicScopes(projectPolicy.getProjectPolicyGeographicScopes().stream()
         .filter(c -> c.getProjectPolicy().getId().longValue() == projectPolicy.getId().longValue()
@@ -503,6 +601,11 @@ public class PolicyItem<T> {
       // setting regions
       projectPolicy.setRegions(projectPolicy.getProjectPolicyRegions().stream()
         .filter(c -> c.getPhase().getId().longValue() == phase.getId().longValue()).collect(Collectors.toList()));
+      // setting owners
+      projectPolicy.setOwners(projectPolicyOwnerManager.findAll().stream()
+        .filter(c -> c.getProjectPolicy().getId().longValue() == projectPolicy.getId().longValue()
+          && c.getPhase().getId().longValue() == phase.getId().longValue())
+        .collect(Collectors.toList()));
     }
 
     if (!fieldErrors.isEmpty()) {
@@ -512,6 +615,283 @@ public class PolicyItem<T> {
           .collect(Collectors.toList()));
     }
 
+    return Optional.ofNullable(projectPolicy).map(this.projectPolicyMapper::projectPolicyToProjectPolicyDTO)
+      .map(result -> new ResponseEntity<>(result, HttpStatus.OK)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+  }
+
+  /**
+   * Update an Policy by Id and year
+   * 
+   * @param id
+   * @param year
+   * @param phase
+   * @return a NewProjectPolicyDTO with the policy Item
+   */
+
+  public ResponseEntity<ProjectPolicyDTO> putPolicyById(Long id, NewProjectPolicyDTO newPolicyDTO, String entityAcronym,
+    User user) {
+    List<FieldErrorDTO> fieldErrors = new ArrayList<FieldErrorDTO>();
+    List<ProjectPolicyCrp> projectPolicyCrpList = new ArrayList<ProjectPolicyCrp>();
+    List<ProjectPolicySubIdo> projectPolicySubIdoList = new ArrayList<ProjectPolicySubIdo>();
+    List<ProjectPolicyGeographicScope> projectPolicyGeographicScopeList = new ArrayList<ProjectPolicyGeographicScope>();
+    List<ProjectPolicyCountry> projectPolicyCountryList = new ArrayList<ProjectPolicyCountry>();
+    List<ProjectPolicyRegion> projectPolicyRegionList = new ArrayList<ProjectPolicyRegion>();
+    List<ProjectPolicyCrossCuttingMarker> ProjectPolicyCrossCuttingMarkerList =
+      new ArrayList<ProjectPolicyCrossCuttingMarker>();
+    List<ProjectPolicyOwner> projectPolicyOwnerList = new ArrayList<ProjectPolicyOwner>();
+
+    GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitByAcronym(entityAcronym);
+    if (globalUnitEntity == null) {
+      fieldErrors.add(new FieldErrorDTO("createInnovation", "GlobalUnitEntity",
+        entityAcronym + " is an invalid CGIAR entity acronym"));
+    }
+    Phase phase =
+      this.phaseManager.findAll().stream()
+        .filter(c -> c.getCrp().getAcronym().equalsIgnoreCase(entityAcronym)
+          && c.getYear() == newPolicyDTO.getPhase().getYear()
+          && c.getName().equalsIgnoreCase(newPolicyDTO.getPhase().getName()))
+        .findFirst().get();
+
+    if (phase == null) {
+      fieldErrors.add(new FieldErrorDTO("createPolicy", "phase",
+        new NewProjectPolicyDTO().getPhase().getYear() + " is an invalid year"));
+    }
+    ProjectPolicy projectPolicy = null;
+    if (fieldErrors.size() > 0) {
+      projectPolicy = projectPolicyManager.getProjectPolicyById(id.longValue());
+      ProjectPolicyInfo projectPolicyInfo = null;
+      if (projectPolicy.getProjectPolicyInfo() != null) {
+        projectPolicyInfo =
+          projectPolicyInfoManager.getProjectPolicyInfoById(projectPolicy.getProjectPolicyInfo().getId());
+        projectPolicyInfo.setProjectPolicy(projectPolicy);
+        projectPolicyInfo.setPhase(phase);
+        projectPolicyInfo.setYear(newPolicyDTO.getProjectPoliciesInfo().getYear());
+        projectPolicyInfo.setTitle(newPolicyDTO.getProjectPoliciesInfo().getTitle());
+        projectPolicyInfo.setNarrativeEvidence(newPolicyDTO.getProjectPoliciesInfo().getNarrativeEvidence());
+        projectPolicy.setProjectPolicyInfo(projectPolicyInfo);
+
+        // validate crp contributing
+        if (newPolicyDTO.getProjectPolicyCrpDTO() != null && newPolicyDTO.getProjectPolicyCrpDTO().size() > 0) {
+          for (CGIAREntityDTO contributingCRP : newPolicyDTO.getProjectPolicyCrpDTO()) {
+            GlobalUnit crp = this.globalUnitManager.findGlobalUnitBySMOCode(contributingCRP.getCode());
+            if (crp == null) {
+              fieldErrors.add(new FieldErrorDTO("createPolicy", "ContributingCGIAREntities",
+                contributingCRP.getCode() + " is an invalid CGIAR entity code"));
+            } else {
+              ProjectPolicyCrp projectPolicyCrp = new ProjectPolicyCrp();
+              projectPolicyCrp.setGlobalUnit(crp);
+              projectPolicyCrp.setPhase(phase);
+              projectPolicyCrp.setProjectPolicy(projectPolicy);
+              projectPolicyCrpList.add(projectPolicyCrp);
+            }
+          }
+        }
+        // validate sub-IDO
+        if (newPolicyDTO.getSrfSubIdoList() != null && newPolicyDTO.getSrfSubIdoList().size() > 0) {
+          for (SrfSubIdoDTO subIdos : newPolicyDTO.getSrfSubIdoList()) {
+            SrfSubIdo srfSubIdo = SrfSubIdoManager.getSrfSubIdoByCode(subIdos.getCode());
+            if (srfSubIdo == null) {
+              fieldErrors
+                .add(new FieldErrorDTO("createPolicy", "SrfSubIdo", subIdos.getCode() + " is an invalid Sub-IDO code"));
+            } else {
+              ProjectPolicySubIdo projectPolicySubIdo = new ProjectPolicySubIdo();
+              projectPolicySubIdo.setProjectPolicy(projectPolicy);
+              projectPolicySubIdo.setPhase(phase);
+              projectPolicySubIdo.setSrfSubIdo(srfSubIdo);
+              projectPolicySubIdoList.add(projectPolicySubIdo);
+            }
+          }
+        }
+        // validate geographic scope
+        if (newPolicyDTO.getGeographicScopes() != null && newPolicyDTO.getGeographicScopes().size() > 0) {
+          for (GeographicScopeDTO geographicScope : newPolicyDTO.getGeographicScopes()) {
+            RepIndGeographicScope geoScope =
+              this.repIndGeographicScopeManager.getRepIndGeographicScopeById(geographicScope.getCode());
+            if (geoScope == null) {
+              fieldErrors.add(new FieldErrorDTO("createPolicy", "geographicScope",
+                geographicScope.getCode() + " is an invalid geographic Scope code"));
+            } else {
+              ProjectPolicyGeographicScope projectPolicyGeographicScope = new ProjectPolicyGeographicScope();
+              projectPolicyGeographicScope.setPhase(phase);
+              projectPolicyGeographicScope.setProjectPolicy(projectPolicy);
+              projectPolicyGeographicScope.setRepIndGeographicScope(geoScope);
+              projectPolicyGeographicScopeList.add(projectPolicyGeographicScope);
+            }
+          }
+        }
+        // validate countries
+        if (newPolicyDTO.getCountries() != null && newPolicyDTO.getCountries().size() > 0) {
+          for (CountryDTO iso : newPolicyDTO.getCountries()) {
+            LocElement country = this.locElementManager.getLocElementByNumericISOCode(iso.getCode());
+            if (country == null) {
+              fieldErrors.add(new FieldErrorDTO("createPolicy", "Countries", iso + " is an invalid country ISO Code"));
+
+            } else if (country.getLocElementType().getId() != APConstants.LOC_ELEMENT_TYPE_COUNTRY) {
+              fieldErrors.add(new FieldErrorDTO("createPolicy", "Countries", iso + " is not a Country ISO code"));
+            } else {
+              ProjectPolicyCountry projectPolicyCountry = new ProjectPolicyCountry();
+              projectPolicyCountry.setLocElement(country);
+              projectPolicyCountry.setPhase(phase);
+              projectPolicyCountry.setProjectPolicy(projectPolicy);
+              projectPolicyCountryList.add(projectPolicyCountry);
+            }
+          }
+        }
+        // validate regions
+        if (newPolicyDTO.getRegions() != null && newPolicyDTO.getRegions().size() > 0) {
+          for (RegionDTO iso : newPolicyDTO.getRegions()) {
+            LocElement region = this.locElementManager.getLocElementByNumericISOCode(iso.getUM49Code());
+            if (region == null) {
+              fieldErrors.add(new FieldErrorDTO("createPolicy", "Regions", iso + " is an invalid region ISO Code"));
+
+            } else if (region.getLocElementType().getId() != APConstants.LOC_ELEMENT_TYPE_REGION) {
+              fieldErrors.add(new FieldErrorDTO("createPolicy", "Regions", iso + " is not a region ISO code"));
+            } else {
+              ProjectPolicyRegion projectPolicyRegion = new ProjectPolicyRegion();
+              projectPolicyRegion.setLocElement(region);
+              projectPolicyRegion.setPhase(phase);
+              projectPolicyRegion.setProjectPolicy(projectPolicy);
+              projectPolicyRegionList.add(projectPolicyRegion);
+            }
+          }
+        }
+        // validate crosscutting markers
+        if (newPolicyDTO.getCrossCuttingMarkers() != null && newPolicyDTO.getCrossCuttingMarkers().size() > 0) {
+          for (ProjectPolicyCrosscuttingMarkersDTO crosscuttingmarker : newPolicyDTO.getCrossCuttingMarkers()) {
+            CgiarCrossCuttingMarker cgiarCrossCuttingMarker = cgiarCrossCuttingMarkerManager
+              .getCgiarCrossCuttingMarkerById(crosscuttingmarker.getCrossCuttingmarker().getCode());
+            if (cgiarCrossCuttingMarker == null) {
+              fieldErrors.add(new FieldErrorDTO("createPolicy", "Crosscuttingmarker",
+                cgiarCrossCuttingMarker + " is an invalid Crosscuttingmarker Code"));
+
+            } else {
+              RepIndGenderYouthFocusLevel repIndGenderYouthFocusLevel = repIndGenderYouthFocusLevelManager
+                .getRepIndGenderYouthFocusLevelById(crosscuttingmarker.getCrossCuttingmarkerScore().getCode());
+              if (repIndGenderYouthFocusLevel == null) {
+                fieldErrors.add(new FieldErrorDTO("createPolicy", "CrosscuttingmarkerScore",
+                  cgiarCrossCuttingMarker + " is an invalid GenderYouthFocusLevel ISO Code"));
+              } else {
+                ProjectPolicyCrossCuttingMarker projectPolicyCrossCuttingMarker = new ProjectPolicyCrossCuttingMarker();
+                projectPolicyCrossCuttingMarker.setCgiarCrossCuttingMarker(cgiarCrossCuttingMarker);
+                projectPolicyCrossCuttingMarker.setRepIndGenderYouthFocusLevel(repIndGenderYouthFocusLevel);
+                projectPolicyCrossCuttingMarker.setPhase(phase);
+                projectPolicyCrossCuttingMarker.setProjectPolicy(projectPolicy);
+                ProjectPolicyCrossCuttingMarkerList.add(projectPolicyCrossCuttingMarker);
+              }
+            }
+          }
+        }
+
+        if (newPolicyDTO.getOwners() != null && newPolicyDTO.getOwners().size() > 0) {
+          for (PolicyOwnerTypeDTO policyOwnerTypeDTO : newPolicyDTO.getOwners()) {
+            RepIndPolicyType repIndPolicyType =
+              repIndPolicyTypeManager.getRepIndPolicyTypeById(policyOwnerTypeDTO.getCode());
+            if (repIndPolicyType == null) {
+              fieldErrors.add(new FieldErrorDTO("createPolicy", "PolicyOwnerType",
+                repIndPolicyType + " is an invalid PolicyOwnerType Code"));
+            } else {
+              ProjectPolicyOwner projectPolicyOwner = new ProjectPolicyOwner();
+              projectPolicyOwner.setPhase(phase);
+              projectPolicyOwner.setProjectPolicy(projectPolicy);
+              projectPolicyOwner.setRepIndPolicyType(repIndPolicyType);
+              projectPolicyOwnerList.add(projectPolicyOwner);
+            }
+          }
+        }
+      }
+      // can update
+      if (fieldErrors.isEmpty()) {
+        final long projectPolicyID = projectPolicy.getId().longValue();
+        // *************Policy CRP*****************/
+        // getting saved projectPolicyCRPList
+        List<ProjectPolicyCrp> projectPolicyCrpListDB = projectPolicyCrpManager.findAll().stream()
+          .filter(
+            c -> c.getProjectPolicy().getId().longValue() == projectPolicyID && c.getPhase().getId() == phase.getId())
+          .collect(Collectors.toList());
+        // create an array to save existing data
+        List<ProjectPolicyCrp> existingProjectPolicyList = new ArrayList<ProjectPolicyCrp>();
+        // search if a policycrp was created
+        for (ProjectPolicyCrp projectPolicyCrp : projectPolicyCrpList) {
+          projectPolicyCrp.setProjectPolicy(projectPolicy);
+          if (projectPolicyCrpManager.getProjectPolicyCrpByPhase(
+            projectPolicyCrp.getProjectPolicy().getId().longValue(),
+            projectPolicyCrp.getGlobalUnit().getId().longValue(),
+            projectPolicyCrp.getPhase().getId().longValue()) != null) {
+            existingProjectPolicyList.add(projectPolicyCrp);
+          } else {
+            projectPolicyCrpManager.saveProjectPolicyCrp(projectPolicyCrp);
+          }
+        }
+        // verify deleted policycrps
+        for (ProjectPolicyCrp obj : projectPolicyCrpListDB) {
+          if (!existingProjectPolicyList.contains(obj)) {
+            projectPolicyCrpManager.deleteProjectPolicyCrp(obj.getId());
+          }
+        }
+
+        // *************Policy SubIdo*****************/
+        List<ProjectPolicySubIdo> projectPolicySubIdoListDB = projectPolicySubIdoManager.findAll().stream()
+          .filter(c -> c.getProjectPolicy().getId().longValue() == projectPolicyID
+            && c.getPhase().getId().longValue() == phase.getId().longValue())
+          .collect(Collectors.toList());
+        List<ProjectPolicySubIdo> existingProjectPolicySubIdoList = new ArrayList<ProjectPolicySubIdo>();
+        for (ProjectPolicySubIdo projectPolicySubIdo : projectPolicySubIdoList) {
+          projectPolicySubIdo.setProjectPolicy(projectPolicy);
+          if (projectPolicySubIdoManager.getProjectPolicySubIdoByPhase(
+            projectPolicySubIdo.getProjectPolicy().getId().longValue(),
+            projectPolicySubIdo.getSrfSubIdo().getId().longValue(),
+            projectPolicySubIdo.getPhase().getId().longValue()) != null) {
+            existingProjectPolicySubIdoList.add(projectPolicySubIdo);
+          } else {
+            projectPolicySubIdoManager.saveProjectPolicySubIdo(projectPolicySubIdo);
+          }
+        }
+        // verify deleted policy_subIdos
+        for (ProjectPolicySubIdo obj : projectPolicySubIdoListDB) {
+          if (!existingProjectPolicySubIdoList.contains(obj)) {
+            projectPolicySubIdoManager.deleteProjectPolicySubIdo(obj.getId());
+          }
+        }
+
+        // *************Policy GeographicScope*****************/
+        for (ProjectPolicyGeographicScope projectPolicyGeographicScope : projectPolicyGeographicScopeList) {
+          projectPolicyGeographicScope.setProjectPolicy(projectPolicy);
+          projectPolicyGeographicScopeManager.saveProjectPolicyGeographicScope(projectPolicyGeographicScope);
+        }
+
+        // *************Policy Countries*****************/
+        for (ProjectPolicyCountry projectPolicyCountry : projectPolicyCountryList) {
+          projectPolicyCountry.setProjectPolicy(projectPolicy);
+          projectPolicyCountryManager.saveProjectPolicyCountry(projectPolicyCountry);
+        }
+
+        // *************Policy Regions*****************/
+        for (ProjectPolicyRegion projectPolicyRegion : projectPolicyRegionList) {
+          projectPolicyRegion.setProjectPolicy(projectPolicy);
+          ProjectPolicyRegionManager.saveProjectPolicyRegion(projectPolicyRegion);
+        }
+
+        // *************Policy Crosscutingmarkers*****************/
+        for (ProjectPolicyCrossCuttingMarker projectPolicyCrossCuttingMarker : ProjectPolicyCrossCuttingMarkerList) {
+          projectPolicyCrossCuttingMarker.setProjectPolicy(projectPolicy);
+          projectPolicyCrossCuttingMarkerManager.saveProjectPolicyCrossCuttingMarker(projectPolicyCrossCuttingMarker);
+        }
+
+        // *************Policy owners*****************/
+        for (ProjectPolicyOwner projectPolicyOwner : projectPolicyOwnerList) {
+          projectPolicyOwner.setProjectPolicy(projectPolicy);
+          projectPolicyOwnerManager.saveProjectPolicyOwner(projectPolicyOwner);
+        }
+      }
+    }
+
+
+    if (!fieldErrors.isEmpty()) {
+      throw new MARLOFieldValidationException("Field Validation errors", "",
+        fieldErrors.stream()
+          .sorted(Comparator.comparing(FieldErrorDTO::getField, Comparator.nullsLast(Comparator.naturalOrder())))
+          .collect(Collectors.toList()));
+    }
     return Optional.ofNullable(projectPolicy).map(this.projectPolicyMapper::projectPolicyToProjectPolicyDTO)
       .map(result -> new ResponseEntity<>(result, HttpStatus.OK)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
   }

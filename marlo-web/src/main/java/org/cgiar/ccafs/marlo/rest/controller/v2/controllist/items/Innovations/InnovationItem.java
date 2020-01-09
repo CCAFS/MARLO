@@ -435,7 +435,7 @@ public class InnovationItem<T> {
       projectInnovationManager.deleteProjectInnovation(id);
 
     } else {
-      fieldErrors.add(new FieldErrorDTO("createInnovation", "Innovation", id + " is an invalid innovation Code"));
+      fieldErrors.add(new FieldErrorDTO("deleteInnovation", "Innovation", id + " is an invalid innovation Code"));
 
     }
     if (!fieldErrors.isEmpty()) {

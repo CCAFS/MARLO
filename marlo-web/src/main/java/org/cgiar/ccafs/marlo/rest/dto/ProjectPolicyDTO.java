@@ -32,7 +32,7 @@ public class ProjectPolicyDTO {
   private ProjectPoliciesInfoDTO projectPoliciesInfo;
 
   @ApiModelProperty(notes = "Project identifier", position = 2)
-  private ProjectDTO project;
+  private Long project;
 
   @ApiModelProperty(notes = "Contributing CRP/Plataform List", position = 3)
   private List<ProjectPolicyCrpDTO> projectPolicyCrpDTO;
@@ -45,6 +45,9 @@ public class ProjectPolicyDTO {
 
   @ApiModelProperty(notes = "Crosscutting Markers List", position = 5)
   private List<ProjectPolicyCrosscuttingMarkersDTO> crossCuttingMarkers;
+
+  @ApiModelProperty(notes = "Policy Owners List", position = 6)
+  private List<PolicyOwnerTypeDTO> owners;
 
   @ApiModelProperty(notes = "Regions", position = 90)
   private List<RegionDTO> regions;
@@ -73,7 +76,12 @@ public class ProjectPolicyDTO {
   }
 
 
-  public ProjectDTO getProject() {
+  public List<PolicyOwnerTypeDTO> getOwners() {
+    return owners;
+  }
+
+
+  public Long getProject() {
     return project;
   }
 
@@ -118,7 +126,12 @@ public class ProjectPolicyDTO {
   }
 
 
-  public void setProject(ProjectDTO project) {
+  public void setOwners(List<PolicyOwnerTypeDTO> owners) {
+    this.owners = owners;
+  }
+
+
+  public void setProject(Long project) {
     this.project = project;
   }
 
