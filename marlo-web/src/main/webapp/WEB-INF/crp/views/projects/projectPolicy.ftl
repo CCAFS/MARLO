@@ -148,9 +148,9 @@
       [@customForm.elementsListComponent name="${customName}.crps" elementType="globalUnit" elementList=element.crps label="policy.contributingCrpsPtfs"  listName="crps" keyFieldName="id" displayFieldName="composedName" /]
     </div>
     
-    [#-- Sub IDOs (maxLimit=2) --]
+    [#-- Sub IDOs (maxLimit=3 -Requested for AR2019) --]
     <div class="form-group">
-      [@customForm.elementsListComponent name="${customName}.subIdos" elementType="srfSubIdo" elementList=element.subIdos label="policy.subIDOs" listName="subIdos" maxLimit=2 keyFieldName="id" displayFieldName="description"/]
+      [@customForm.elementsListComponent name="${customName}.subIdos" elementType="srfSubIdo" elementList=element.subIdos label="policy.subIDOs" listName="subIdos" maxLimit=3 keyFieldName="id" displayFieldName="description"/]
     </div>
     
     [#-- CGIAR Cross-cutting Markers  --]
