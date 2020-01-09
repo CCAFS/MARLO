@@ -84,9 +84,9 @@
     </div>
     <hr />
     
-    [#-- Title (up to 50 words) --]
+    [#-- Title (up to 30 words - Requested for AR2019) --]
     <div class="form-group">
-      [@customForm.input name="${customName}.projectPolicyInfo.title" i18nkey="policy.title" className="limitWords-50"required=true editable=editable /]
+      [@customForm.input name="${customName}.projectPolicyInfo.title" i18nkey="policy.title" className="limitWords-30"required=true editable=editable /]
     </div>
     
     <div class="form-group row ">
