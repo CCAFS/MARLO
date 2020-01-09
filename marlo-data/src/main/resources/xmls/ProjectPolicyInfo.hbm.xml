@@ -45,6 +45,9 @@
 		<property name="title" type="string">
 			<column length="65535" name="title" />
 		</property>
+		<property name="description" type="string">
+			<column length="65535" name="description" />
+		</property>
 		<property name="other" type="string">
 			<column length="65535" name="other" />
 		</property>

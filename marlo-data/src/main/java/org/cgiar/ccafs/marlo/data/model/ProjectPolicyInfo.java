@@ -28,6 +28,8 @@ public class ProjectPolicyInfo extends MarloBaseEntity implements java.io.Serial
   @Expose
   private String title;
   @Expose
+  private String description;
+  @Expose
   private Double amount;
   @Expose
   private String other;
@@ -221,9 +223,16 @@ public class ProjectPolicyInfo extends MarloBaseEntity implements java.io.Serial
   public void setYear(Long year) {
     this.year = year;
   }
+  
+  public String getDescription() {
+	return description;
+  }
 
+  public void setDescription(String description) {
+	this.description = description;
+  }
 
-  @Override
+@Override
   public String toString() {
     return "ProjectPolicyInfo [id=" + this.getId() + "projectPolicy=" + projectPolicy + ", phase=" + phase + ", title="
       + title + ", year=" + year + "]";
@@ -240,6 +249,7 @@ public class ProjectPolicyInfo extends MarloBaseEntity implements java.io.Serial
     this.setPhase(phase);
 
     this.setTitle(projectPolicyInfoUpdate.getTitle());
+    this.setTitle(projectPolicyInfoUpdate.getDescription());
     this.setAmount(projectPolicyInfoUpdate.getAmount());
     this.setYear(projectPolicyInfoUpdate.getYear());
     this.setRepIndStageProcess(projectPolicyInfoUpdate.getRepIndStageProcess());
