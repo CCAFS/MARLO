@@ -77,11 +77,35 @@ public class Policies {
     @ApiParam(value = "${Policy.policies.POST.param.CGIAR}", required = true) @PathVariable String CGIAREntity,
     @ApiParam(value = "${Policy.policies.POST.param.policy}",
       required = true) @Valid @RequestBody NewProjectPolicyDTO newProjectPolicyDTO) {
+    Long policyId = new Long(0);
+    try {
+      policyId = this.policyItem.createPolicy(newProjectPolicyDTO, CGIAREntity, this.getCurrentUser());
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
 
-    Long policyId = this.policyItem.createPolicy(newProjectPolicyDTO, CGIAREntity, this.getCurrentUser());
     ResponseEntity<Long> response = new ResponseEntity<Long>(policyId, HttpStatus.OK);
     if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
       throw new NotFoundException("404", this.env.getProperty("Policy.policies.GET.id.404"));
+    }
+    return response;
+  }
+
+  @ApiOperation(tags = {"Table 2 - CRP Policies"}, value = "${Policy.policies.DELETE.id.value}",
+    response = ProjectPolicyDTO.class)
+  @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
+  @RequestMapping(value = "/{CGIAREntity}/policies/{id}", method = RequestMethod.DELETE,
+    produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<ProjectPolicyDTO> deletePolicyById(
+    @ApiParam(value = "${Policy.policies.DELETE.id.param.CGIAR}", required = true) @PathVariable String CGIAREntity,
+    @ApiParam(value = "${Policy.policies.DELETE.id.param.id}", required = true) @PathVariable Long id,
+    @ApiParam(value = "${Policy.policies.DELETE.id.param.year}", required = true) @RequestParam Integer year,
+    @ApiParam(value = "${Policy.policies.DELETE.id.param.phase}", required = true) @RequestParam String phase) {
+
+    ResponseEntity<ProjectPolicyDTO> response =
+      this.policyItem.deletePolicyById(id, CGIAREntity, year, phase, this.getCurrentUser());
+    if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+      throw new NotFoundException("404", this.env.getProperty("Policy.policies.DELETE.id.404"));
     }
     return response;
   }

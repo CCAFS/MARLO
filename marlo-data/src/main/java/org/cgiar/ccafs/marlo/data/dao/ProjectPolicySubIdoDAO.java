@@ -56,6 +56,13 @@ public interface ProjectPolicySubIdoDAO {
 
 
   /**
+   * This method gets a projectPolicySubIdo that are active
+   * 
+   * @return a ProjectPolicySubIdo object, null if no exist records
+   */
+  public ProjectPolicySubIdo getProjectPolicySubIdoByPhase(long projectPolicyID, long SubIdoID, long phaseID);
+
+  /**
    * This method saves the information of the given projectPolicySubIdo
    * 
    * @param projectPolicySubIdo - is the projectPolicySubIdo object with the new information to be added/updated.

@@ -27,20 +27,18 @@ public class ProjectPoliciesInfoDTO {
   @ApiModelProperty(notes = "Phase (AR, POWB, UpKeep)", position = 1)
   private PhaseDTO phase;
 
-  @ApiModelProperty(notes = "policy Title", position = 3)
+  @ApiModelProperty(notes = "policy Title", position = 1)
   private String title;
 
   @ApiModelProperty(notes = "Policy Year", position = 2)
-  private int year;
+  private long year;
 
-  @ApiModelProperty(notes = "Policy Investment Type", position = 4)
+  @ApiModelProperty(notes = "Policy Investment Type", position = 3)
   private PolicyInvestmentTypeDTO repIndPolicyInvestimentType;
 
-  @ApiModelProperty(notes = "Maturity level", position = 5)
+  @ApiModelProperty(notes = "Maturity level", position = 8)
   private PolicyMaturityLevelDTO repIndStageProcess;
 
-  @ApiModelProperty(notes = "Implementing Organization Type", position = 10)
-  private OrganizationTypeDTO repIndOrganizationType;
 
   @ApiModelProperty(notes = "Narrative Evidence", position = 1)
   private String narrativeEvidence;
@@ -53,11 +51,6 @@ public class ProjectPoliciesInfoDTO {
 
   public PhaseDTO getPhase() {
     return phase;
-  }
-
-
-  public OrganizationTypeDTO getRepIndOrganizationType() {
-    return repIndOrganizationType;
   }
 
 
@@ -76,7 +69,7 @@ public class ProjectPoliciesInfoDTO {
   }
 
 
-  public int getYear() {
+  public long getYear() {
     return year;
   }
 
@@ -88,11 +81,6 @@ public class ProjectPoliciesInfoDTO {
 
   public void setPhase(PhaseDTO phase) {
     this.phase = phase;
-  }
-
-
-  public void setRepIndOrganizationType(OrganizationTypeDTO repIndOrganizationType) {
-    this.repIndOrganizationType = repIndOrganizationType;
   }
 
 
@@ -111,7 +99,7 @@ public class ProjectPoliciesInfoDTO {
   }
 
 
-  public void setYear(int year) {
+  public void setYear(long year) {
     this.year = year;
   }
 

@@ -28,10 +28,10 @@ public class NewProjectPolicyDTO {
   @ApiModelProperty(notes = "Phase year/section", position = 140)
   private PhaseDTO phase;
 
-  @ApiModelProperty(notes = "Project Identifier", position = 140)
-  private ProjectDTO project;
+  @ApiModelProperty(notes = "Project Identifier", position = 1)
+  private Long project;
 
-  @ApiModelProperty(notes = "Project Policy info")
+  @ApiModelProperty(notes = "Project Policy info", position = 2)
   private ProjectPoliciesInfoDTO projectPoliciesInfo;
 
 
@@ -39,23 +39,27 @@ public class NewProjectPolicyDTO {
   private List<CGIAREntityDTO> projectPolicyCrpDTO;
 
 
-  @ApiModelProperty(notes = "CGIAR Sub-IDOs List", position = 1)
+  @ApiModelProperty(notes = "CGIAR Sub-IDOs List", position = 4)
   private List<SrfSubIdoDTO> srfSubIdoList;
 
 
-  @ApiModelProperty(notes = "Geographic Scope List", position = 4)
+  @ApiModelProperty(notes = "Geographic Scope List", position = 10)
   private List<GeographicScopeDTO> geographicScopes;
+
+
+  @ApiModelProperty(notes = "Policy Owners List", position = 6)
+  private List<PolicyOwnerTypeDTO> owners;
 
 
   @ApiModelProperty(notes = "Crosscutting Markers List", position = 5)
   private List<ProjectPolicyCrosscuttingMarkersDTO> crossCuttingMarkers;
 
 
-  @ApiModelProperty(notes = "Regions ", position = 90)
+  @ApiModelProperty(notes = "Regions ", position = 12)
   private List<RegionDTO> regions;
 
 
-  @ApiModelProperty(notes = "Countries", position = 100)
+  @ApiModelProperty(notes = "Countries", position = 11)
   private List<CountryDTO> countries;
 
 
@@ -74,12 +78,17 @@ public class NewProjectPolicyDTO {
   }
 
 
+  public List<PolicyOwnerTypeDTO> getOwners() {
+    return owners;
+  }
+
+
   public PhaseDTO getPhase() {
     return phase;
   }
 
 
-  public ProjectDTO getProject() {
+  public Long getProject() {
     return project;
   }
 
@@ -113,15 +122,20 @@ public class NewProjectPolicyDTO {
     this.crossCuttingMarkers = crossCuttingMarkers;
   }
 
+
   public void setGeographicScopes(List<GeographicScopeDTO> geographicScopes) {
     this.geographicScopes = geographicScopes;
+  }
+
+  public void setOwners(List<PolicyOwnerTypeDTO> owners) {
+    this.owners = owners;
   }
 
   public void setPhase(PhaseDTO phase) {
     this.phase = phase;
   }
 
-  public void setProject(ProjectDTO project) {
+  public void setProject(Long project) {
     this.project = project;
   }
 
