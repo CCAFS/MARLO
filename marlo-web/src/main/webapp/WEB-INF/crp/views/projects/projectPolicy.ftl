@@ -89,6 +89,11 @@
       [@customForm.input name="${customName}.projectPolicyInfo.title" i18nkey="policy.title" className="limitWords-30"required=true editable=editable /]
     </div>
     
+    [#-- Description --]
+    <div class="form-group">
+  	  [@customForm.textArea name="${customName}.projectPolicyInfo.description" i18nkey="policy.description" className="limitWords-30" editable=editable /]
+    </div>
+    
     <div class="form-group row ">
       [#local isBudgetInvestment = ((element.projectPolicyInfo.repIndPolicyInvestimentType.id == 3))!false]
       [#-- Policy/Investment Type --]
