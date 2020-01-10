@@ -13,6 +13,8 @@ public class ProjectPolicySubIdo extends MarloBaseEntity implements java.io.Seri
   private ProjectPolicy projectPolicy;
   @Expose
   private SrfSubIdo srfSubIdo;
+  @Expose
+  private Boolean primary;
 
   public ProjectPolicySubIdo() {
   }
@@ -85,13 +87,21 @@ public class ProjectPolicySubIdo extends MarloBaseEntity implements java.io.Seri
     result = prime * result + ((this.getId() == null) ? 0 : this.getId().hashCode());
     return result;
   }
+  
+  
+  public Boolean getPrimary() {
+	return primary;
+  }
 
+
+  public void setPrimary(Boolean primary) {
+	this.primary = primary;
+  }
 
   @Override
   public boolean isActive() {
     return true;
   }
-
 
   @Override
   public void setModifiedBy(User modifiedBy) {
