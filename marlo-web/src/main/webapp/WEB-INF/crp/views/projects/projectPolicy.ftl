@@ -158,6 +158,11 @@
       [@customForm.elementsListComponent name="${customName}.subIdos" elementType="srfSubIdo" elementList=element.subIdos label="policy.subIDOs" listName="subIdos" maxLimit=3 keyFieldName="id" displayFieldName="description"/]
     </div>
     
+    [#-- Primary Sub IDOs --]
+    <div class="form-group">
+      [@customForm.elementsListComponent name="${customName}.principalSubIdos" elementType="srfSubIdo" elementList=policy.subIdos label="policy.subIDO.primary" listName="principalSubIdo" maxLimit=1 keyFieldName="id" displayFieldName="description"/]
+    </div>
+        
     [#-- CGIAR Cross-cutting Markers  --]
     <div class="form-group">
       <h5 class="labelheader">[@s.text name="policy.crossCuttingMarkers" /]</h5>

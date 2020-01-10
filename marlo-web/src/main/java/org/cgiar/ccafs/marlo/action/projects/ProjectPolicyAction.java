@@ -145,6 +145,7 @@ public class ProjectPolicyAction extends BaseAction {
   private List<RepIndPolicyType> policyTypes;
   private List<LocElement> countries;
   private List<SrfSubIdo> subIdos;
+  private List<SrfSubIdo> principalSubIdo;
   private List<GlobalUnit> crps;
   private List<ProjectExpectedStudy> expectedStudyList;
   private List<CgiarCrossCuttingMarker> cgiarCrossCuttingMarkers;
@@ -266,6 +267,13 @@ public class ProjectPolicyAction extends BaseAction {
     return crps;
   }
 
+  public List<SrfSubIdo> getPrincipalSubIdo() {
+	return principalSubIdo;
+  }
+
+  public void setPrincipalSubIdo(List<SrfSubIdo> principalSubIdo) {
+    this.principalSubIdo = principalSubIdo;
+  }
 
   public List<ProjectExpectedStudy> getExpectedStudyList() {
     return expectedStudyList;
