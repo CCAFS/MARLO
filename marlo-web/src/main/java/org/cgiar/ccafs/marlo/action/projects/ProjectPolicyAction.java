@@ -1332,6 +1332,14 @@ public class ProjectPolicyAction extends BaseAction {
       for (ProjectPolicySubIdo policySubIdo : policy.getSubIdos()) {
         if (policySubIdo.getId() == null) {
           ProjectPolicySubIdo policySubIdoSave = new ProjectPolicySubIdo();
+          
+        	if(principalSubIdo!= null && principalSubIdo.size()!= 0 && principalSubIdo.get(0)!= null) {
+        		if(policySubIdo.getSrfSubIdo().getId().intValue() == principalSubIdo.get(0).getId().intValue()) {
+        			policySubIdoSave.setPrimary(true); 
+        		}
+        	}
+        	
+              
           policySubIdoSave.setProjectPolicy(projectPolicy);
           policySubIdoSave.setPhase(phase);
 
