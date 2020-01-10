@@ -97,7 +97,7 @@ public class PolicyItem<T> {
   private ProjectPolicyGeographicScopeManager projectPolicyGeographicScopeManager;
   private ProjectPolicySubIdoManager projectPolicySubIdoManager;
   private ProjectPolicyCountryManager projectPolicyCountryManager;
-  private ProjectPolicyRegionManager ProjectPolicyRegionManager;
+  private ProjectPolicyRegionManager projectPolicyRegionManager;
   private ProjectPolicyCrossCuttingMarkerManager projectPolicyCrossCuttingMarkerManager;
   private ProjectPolicyOwnerManager projectPolicyOwnerManager;
   private RepIndPolicyInvestimentTypeManager repIndPolicyInvestimentTypeManager;
@@ -144,7 +144,7 @@ public class PolicyItem<T> {
     this.cgiarCrossCuttingMarkerManager = cgiarCrossCuttingMarkerManager;
     this.repIndGenderYouthFocusLevelManager = repIndGenderYouthFocusLevelManager;
     this.projectPolicyCountryManager = projectPolicyCountryManager;
-    this.ProjectPolicyRegionManager = projectPolicyRegionManager;
+    this.projectPolicyRegionManager = projectPolicyRegionManager;
     this.projectPolicyCrossCuttingMarkerManager = projectPolicyCrossCuttingMarkerManager;
     this.projectPolicyOwnerManager = projectPolicyOwnerManager;
     this.repIndPolicyTypeManager = repIndPolicyTypeManager;
@@ -382,7 +382,7 @@ public class PolicyItem<T> {
 
             for (ProjectPolicyRegion projectPolicyRegion : projectPolicyRegionList) {
               projectPolicyRegion.setProjectPolicy(projectPolicy);
-              ProjectPolicyRegionManager.saveProjectPolicyRegion(projectPolicyRegion);
+              projectPolicyRegionManager.saveProjectPolicyRegion(projectPolicyRegion);
             }
 
             for (ProjectPolicyCrossCuttingMarker projectPolicyCrossCuttingMarker : ProjectPolicyCrossCuttingMarkerList) {
@@ -854,33 +854,129 @@ public class PolicyItem<T> {
         }
 
         // *************Policy GeographicScope*****************/
+        List<ProjectPolicyGeographicScope> projectPolicyGeographicScopeListDB =
+          projectPolicy.getProjectPolicyGeographicScopes().stream()
+            .filter(c -> c.getProjectPolicy().getId().longValue() == projectPolicyID
+              && c.getPhase().getId().longValue() == phase.getId().longValue())
+            .collect(Collectors.toList());
+        List<ProjectPolicyGeographicScope> existingProjectPolicyGeographicScopeList =
+          new ArrayList<ProjectPolicyGeographicScope>();
         for (ProjectPolicyGeographicScope projectPolicyGeographicScope : projectPolicyGeographicScopeList) {
           projectPolicyGeographicScope.setProjectPolicy(projectPolicy);
-          projectPolicyGeographicScopeManager.saveProjectPolicyGeographicScope(projectPolicyGeographicScope);
+          if (projectPolicyGeographicScopeManager.getProjectPolicyGeographicScopeByPhase(
+            projectPolicyGeographicScope.getId().longValue(),
+            projectPolicyGeographicScope.getRepIndGeographicScope().getId().longValue(),
+            projectPolicyGeographicScope.getPhase().getId().longValue()) != null) {
+            existingProjectPolicyGeographicScopeList.add(projectPolicyGeographicScope);
+          } else {
+            projectPolicyGeographicScopeManager.saveProjectPolicyGeographicScope(projectPolicyGeographicScope);
+          }
         }
-
+        // verify deleted geographicscope
+        for (ProjectPolicyGeographicScope obj : projectPolicyGeographicScopeListDB) {
+          if (!existingProjectPolicyGeographicScopeList.contains(obj)) {
+            projectPolicyGeographicScopeManager.deleteProjectPolicyGeographicScope(obj.getId());
+          }
+        }
         // *************Policy Countries*****************/
+        List<ProjectPolicyCountry> projectPolicyCountryListDB = projectPolicy.getProjectPolicyCountries().stream()
+          .filter(c -> c.getProjectPolicy().getId().longValue() == projectPolicyID
+            && c.getPhase().getId().longValue() == phase.getId().longValue())
+          .collect(Collectors.toList());
+        List<ProjectPolicyCountry> existingProjectPolicyCountryList = new ArrayList<ProjectPolicyCountry>();
         for (ProjectPolicyCountry projectPolicyCountry : projectPolicyCountryList) {
           projectPolicyCountry.setProjectPolicy(projectPolicy);
-          projectPolicyCountryManager.saveProjectPolicyCountry(projectPolicyCountry);
+          if (projectPolicyCountryManager.getProjectPolicyCountryByPhase(
+            projectPolicyCountry.getProjectPolicy().getId().longValue(),
+            projectPolicyCountry.getLocElement().getId().longValue(),
+            projectPolicyCountry.getPhase().getId().longValue()) != null) {
+            existingProjectPolicyCountryList.add(projectPolicyCountry);
+          } else {
+            projectPolicyCountryManager.saveProjectPolicyCountry(projectPolicyCountry);
+          }
+        }
+        // verify deleted ProjectPolicyCountry
+        for (ProjectPolicyCountry obj : projectPolicyCountryListDB) {
+          if (!existingProjectPolicyCountryList.contains(obj)) {
+            projectPolicyCountryManager.deleteProjectPolicyCountry(obj.getId());
+          }
         }
 
         // *************Policy Regions*****************/
+        List<ProjectPolicyRegion> projectPolicyRegionListDB = projectPolicy.getProjectPolicyRegions().stream()
+          .filter(c -> c.getProjectPolicy().getId().longValue() == projectPolicyID
+            && c.getPhase().getId().longValue() == phase.getId().longValue())
+          .collect(Collectors.toList());
+        List<ProjectPolicyRegion> existingProjectPolicyRegionList = new ArrayList<ProjectPolicyRegion>();
         for (ProjectPolicyRegion projectPolicyRegion : projectPolicyRegionList) {
           projectPolicyRegion.setProjectPolicy(projectPolicy);
-          ProjectPolicyRegionManager.saveProjectPolicyRegion(projectPolicyRegion);
+          if (projectPolicyRegionManager.getProjectPolicyRegionByPhase(
+            projectPolicyRegion.getProjectPolicy().getId().longValue(),
+            projectPolicyRegion.getLocElement().getId().longValue(),
+            projectPolicyRegion.getPhase().getId().longValue()) != null) {
+            existingProjectPolicyRegionList.add(projectPolicyRegion);
+          } else {
+            projectPolicyRegionManager.saveProjectPolicyRegion(projectPolicyRegion);
+          }
+        }
+        // verify deleted ProjectPolicyregion
+        for (ProjectPolicyRegion obj : projectPolicyRegionListDB) {
+          if (!existingProjectPolicyRegionList.contains(obj)) {
+            projectPolicyRegionManager.deleteProjectPolicyRegion(obj.getId());
+          }
         }
 
         // *************Policy Crosscutingmarkers*****************/
+        List<ProjectPolicyCrossCuttingMarker> projectPolicyCrossCuttingMarkerListDB =
+          projectPolicy.getProjectPolicyCrossCuttingMarkers().stream()
+            .filter(c -> c.getProjectPolicy().getId().longValue() == projectPolicyID
+              && c.getPhase().getId().longValue() == phase.getId().longValue())
+            .collect(Collectors.toList());
+        List<ProjectPolicyCrossCuttingMarker> existingProjectPolicyCrossCuttingMarkerList =
+          new ArrayList<ProjectPolicyCrossCuttingMarker>();
         for (ProjectPolicyCrossCuttingMarker projectPolicyCrossCuttingMarker : ProjectPolicyCrossCuttingMarkerList) {
           projectPolicyCrossCuttingMarker.setProjectPolicy(projectPolicy);
-          projectPolicyCrossCuttingMarkerManager.saveProjectPolicyCrossCuttingMarker(projectPolicyCrossCuttingMarker);
+          ProjectPolicyCrossCuttingMarker temp = projectPolicyCrossCuttingMarkerManager.getPolicyCrossCountryMarkerId(
+            projectPolicyCrossCuttingMarker.getProjectPolicy().getId().longValue(),
+            projectPolicyCrossCuttingMarker.getCgiarCrossCuttingMarker().getId().longValue(),
+            projectPolicyCrossCuttingMarker.getPhase().getId().longValue());
+          if (temp != null) {
+            temp.setRepIndGenderYouthFocusLevel(projectPolicyCrossCuttingMarker.getRepIndGenderYouthFocusLevel());
+            projectPolicyCrossCuttingMarkerManager.saveProjectPolicyCrossCuttingMarker(temp);
+            existingProjectPolicyCrossCuttingMarkerList.add(projectPolicyCrossCuttingMarker);
+          } else {
+            projectPolicyCrossCuttingMarkerManager.saveProjectPolicyCrossCuttingMarker(projectPolicyCrossCuttingMarker);
+          }
+        }
+        // verify deleted ProjectPolicyCrossCuttingMarker
+        for (ProjectPolicyCrossCuttingMarker obj : projectPolicyCrossCuttingMarkerListDB) {
+          if (!existingProjectPolicyRegionList.contains(obj)) {
+            projectPolicyCrossCuttingMarkerManager.deleteProjectPolicyCrossCuttingMarker(obj.getId());
+          }
         }
 
         // *************Policy owners*****************/
+        List<ProjectPolicyOwner> projectProjectPolicyOwnerListDB = projectPolicyOwnerManager.findAll().stream()
+          .filter(c -> c.getProjectPolicy().getId().longValue() == projectPolicyID
+            && c.getPhase().getId().longValue() == phase.getId().longValue())
+          .collect(Collectors.toList());
+        List<ProjectPolicyOwner> existingProjectPolicyOwnerList = new ArrayList<ProjectPolicyOwner>();
         for (ProjectPolicyOwner projectPolicyOwner : projectPolicyOwnerList) {
           projectPolicyOwner.setProjectPolicy(projectPolicy);
-          projectPolicyOwnerManager.saveProjectPolicyOwner(projectPolicyOwner);
+          if (projectPolicyOwnerManager.getProjectPolicyOwnerById(
+            projectPolicyOwner.getProjectPolicy().getId().longValue(),
+            projectPolicyOwner.getRepIndPolicyType().getId().longValue(),
+            projectPolicyOwner.getPhase().getId().longValue()) != null) {
+            existingProjectPolicyOwnerList.add(projectPolicyOwner);
+          } else {
+            projectPolicyOwnerManager.saveProjectPolicyOwner(projectPolicyOwner);
+          }
+        }
+        // verify deleted ProjectPolicyCrossCuttingMarker
+        for (ProjectPolicyOwner obj : projectProjectPolicyOwnerListDB) {
+          if (!existingProjectPolicyOwnerList.contains(obj)) {
+            projectPolicyOwnerManager.deleteProjectPolicyOwner(obj.getId());
+          }
         }
       }
     }

@@ -117,6 +117,12 @@ public class ProjectPolicyCountryManagerImpl implements ProjectPolicyCountryMana
   }
 
   @Override
+  public ProjectPolicyCountry getProjectPolicyCountryByPhase(long projectPolicyID, long countryID, long phaseID) {
+
+    return projectPolicyCountryDAO.getProjectPolicyCountryByPhase(projectPolicyID, countryID, phaseID);
+  }
+
+  @Override
   public ProjectPolicyCountry saveProjectPolicyCountry(ProjectPolicyCountry projectPolicyCountry) {
 
 
@@ -140,6 +146,7 @@ public class ProjectPolicyCountryManagerImpl implements ProjectPolicyCountryMana
 
     return country;
   }
+
 
   public void saveProjectPolicyCountryPhase(Phase next, long policyID, ProjectPolicyCountry projectPolicyCountry) {
     Phase phase = phaseDAO.find(next.getId());

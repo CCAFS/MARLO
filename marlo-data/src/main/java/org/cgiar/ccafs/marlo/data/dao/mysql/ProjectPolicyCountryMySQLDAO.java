@@ -95,6 +95,17 @@ public class ProjectPolicyCountryMySQLDAO extends AbstractMarloDAO<ProjectPolicy
   }
 
   @Override
+  public ProjectPolicyCountry getProjectPolicyCountryByPhase(long projectPolicyID, long countryID, long phaseID) {
+    String query = "from " + ProjectPolicyCountry.class.getName() + " WHERE project_policy_id=" + projectPolicyID
+      + " AND id_country=" + countryID + " AND id_phase=" + phaseID;
+    List<ProjectPolicyCountry> list = super.findAll(query);
+    if (list.size() > 0) {
+      return list.get(0);
+    }
+    return null;
+  }
+
+  @Override
   public ProjectPolicyCountry save(ProjectPolicyCountry projectPolicyCountry) {
     if (projectPolicyCountry.getId() == null) {
       super.saveEntity(projectPolicyCountry);

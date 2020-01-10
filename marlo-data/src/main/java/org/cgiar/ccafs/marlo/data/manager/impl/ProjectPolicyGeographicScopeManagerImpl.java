@@ -114,6 +114,14 @@ public class ProjectPolicyGeographicScopeManagerImpl implements ProjectPolicyGeo
   }
 
   @Override
+  public ProjectPolicyGeographicScope getProjectPolicyGeographicScopeByPhase(long projectPolicyID,
+    long geographicScopeID, long phaseID) {
+
+    return projectPolicyGeographicScopeDAO.getProjectPolicyGeographicScopeByPhase(projectPolicyID, geographicScopeID,
+      phaseID);
+  }
+
+  @Override
   public ProjectPolicyGeographicScope
     saveProjectPolicyGeographicScope(ProjectPolicyGeographicScope projectPolicyGeographicScope) {
 
