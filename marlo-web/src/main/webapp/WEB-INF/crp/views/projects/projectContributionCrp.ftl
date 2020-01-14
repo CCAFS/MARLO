@@ -140,24 +140,7 @@
               </div>
             </div>
             [/#if]
-            
-            [#-- Cross-cutting contributions --]
-            [#if ((project.projectInfo.crossCuttingGender)!false) || ((project.projectInfo.crossCuttingYouth)!false)]
-            <h5 class="sectionSubTitle">Cross-cutting contributions</h5>
-            <div class="form-group">
-              [#if (project.projectInfo.crossCuttingGender)!false]
-                <div class="form-group">
-                  [@customForm.textArea name="projectOutcome.genderDimenssion" required=true className="limitWords-100" editable=editable && (!reportingActive || (!(projectOutcome.genderDimenssion?has_content)!false)) /]
-                </div>
-              [/#if]
-              [#if (project.projectInfo.crossCuttingYouth)!false]
-                <div class="form-group">
-                  [@customForm.textArea name="projectOutcome.youthComponent" required=true className="limitWords-100" editable=editable && (!reportingActive || (!(projectOutcome.youthComponent?has_content)!false)) /]
-                </div> 
-              [/#if]
-            </div>
-            [/#if]
-            
+                        
             [#-- Baseline Indicators --]
             [#if action.hasSpecificities('crp_baseline_indicators') && ((projectOutcome.crpProgramOutcome.crpProgram.baseLine)!false) && ((projectOutcome.crpProgramOutcome.indicators?has_content)!false)]
               <h5 class="sectionSubTitle">Baseline Indicators</h5>

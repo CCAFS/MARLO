@@ -38,12 +38,6 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
   @Expose
   private Boolean adoptedLicense;
   @Expose
-  private String license;
-  @Expose
-  private String otherLicense;
-  @Expose
-  private Boolean allowModifications;
-  @Expose
   private Boolean isLocationGlobal;
   @Expose
   private RepIndGeographicScope geographicScope;
@@ -56,11 +50,6 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
   public Boolean getAdoptedLicense() {
     return adoptedLicense;
   }
-
-  public Boolean getAllowModifications() {
-    return allowModifications;
-  }
-
 
   public CrpClusterKeyOutput getCrpClusterKeyOutput() {
     return crpClusterKeyOutput;
@@ -94,24 +83,6 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
     return isLocationGlobal;
   }
 
-
-  public String getLicense() {
-    return license;
-  }
-
-
-  public String getLicenseType() {
-    if (license != null) {
-      try {
-        return LicensesTypeEnum.license(license).getValue();
-      } catch (Exception e) {
-        return null;
-      }
-    }
-    return null;
-  }
-
-
   @Override
   public String getLogDeatil() {
     StringBuilder sb = new StringBuilder();
@@ -124,10 +95,6 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
     return newExpectedYear;
   }
 
-
-  public String getOtherLicense() {
-    return otherLicense;
-  }
 
   public Phase getPhase() {
     return phase;
@@ -347,11 +314,6 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
   }
 
 
-  public void setAllowModifications(Boolean allowModifications) {
-    this.allowModifications = allowModifications;
-  }
-
-
   public void setCrpClusterKeyOutput(CrpClusterKeyOutput crpClusterKeyOutput) {
     this.crpClusterKeyOutput = crpClusterKeyOutput;
   }
@@ -386,17 +348,9 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
     this.isLocationGlobal = isLocationGlobal;
   }
 
-  public void setLicense(String license) {
-    this.license = license;
-  }
 
   public void setNewExpectedYear(Integer newExpectedYear) {
     this.newExpectedYear = newExpectedYear;
-  }
-
-
-  public void setOtherLicense(String otherLicense) {
-    this.otherLicense = otherLicense;
   }
 
 
@@ -434,14 +388,11 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
 
   public void updateDeliverableInfo(DeliverableInfo update) {
     this.setAdoptedLicense(update.getAdoptedLicense());
-    this.setAllowModifications(update.getAllowModifications());
     this.setCrpClusterKeyOutput(update.getCrpClusterKeyOutput());
     this.setCrpProgramOutcome(update.getCrpProgramOutcome());
     this.setDeliverable(update.getDeliverable());
     this.setDescription(update.getDescription());
-    this.setLicense(update.getLicense());
     this.setNewExpectedYear(update.getNewExpectedYear());
-    this.setOtherLicense(update.getOtherLicense());
     this.setStatus(update.getStatus());
     this.setTitle(update.getTitle());
     this.setTypeOther(update.getTypeOther());

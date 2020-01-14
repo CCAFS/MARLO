@@ -33,7 +33,6 @@ import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectBudget;
 import org.cgiar.ccafs.marlo.data.model.ProjectClusterActivity;
-import org.cgiar.ccafs.marlo.data.model.ProjectComponentLesson;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
@@ -519,23 +518,11 @@ public class ProjectsDeleteFieldsSummaryAction extends BaseSummariesAction imple
         }
         if (project.getProjectInfo().getLiaisonInstitution() != null) {
           managementLiaison = project.getProjectInfo().getLiaisonInstitution().getComposedName();
-          if (project.getProjectInfo().getLiaisonUser() != null) {
-            managementLiaison += " - " + project.getProjectInfo().getLiaisonUser().getComposedName();
-          }
+
           managementLiaison = managementLiaison.replaceAll("<", "&lt;");
           managementLiaison = managementLiaison.replaceAll(">", "&gt;");
         }
 
-        if (project.getProjectInfo().getLiaisonUser() != null
-          && project.getProjectInfo().getLiaisonUser().getUser() != null) {
-          if (project.getProjectInfo().getLiaisonUser().getUser().getComposedName() != null) {
-            managementLiaisonContactPerson = project.getProjectInfo().getLiaisonUser().getUser().getComposedName();
-          } else if (project.getProjectInfo().getLiaisonUser().getUser().getFirstName() != null
-            && project.getProjectInfo().getLiaisonUser().getUser().getLastName() != null) {
-            managementLiaisonContactPerson = project.getProjectInfo().getLiaisonUser().getUser().getFirstName() + " "
-              + project.getProjectInfo().getLiaisonUser().getUser().getLastName();
-          }
-        }
 
         String flagships = null;
         // get Flagships related to the project sorted by acronym
@@ -687,56 +674,12 @@ public class ProjectsDeleteFieldsSummaryAction extends BaseSummariesAction imple
             crossCutting += " N/A";
           }
         }
-        if (project.getProjectInfo().getCrossCuttingGender() != null
-          && project.getProjectInfo().getCrossCuttingGender() == true) {
-          if (crossCutting != null && crossCutting.length() > 0) {
-            crossCutting += ", Gender";
-          } else {
-            crossCutting += "Gender";
-          }
-        }
-        if (project.getProjectInfo().getCrossCuttingYouth() != null
-          && project.getProjectInfo().getCrossCuttingYouth() == true) {
-          if (crossCutting != null && crossCutting.length() > 0) {
-            crossCutting += ", Youth";
-          } else {
-            crossCutting += "Youth";
-          }
-        }
-
-        if (project.getProjectInfo().getGenderAnalysis() != null) {
-          genderAnalysis = project.getProjectInfo().getGenderAnalysis();
-        }
-
-        if (project.getProjectInfo().getNewPartnershipsPlanned() != null) {
-          newPartnershipsPlanned = project.getProjectInfo().getNewPartnershipsPlanned();
-        }
-
-        List<ProjectComponentLesson> pcList = new ArrayList<>();
-        pcList = (projectComponentLessonManager.findAll().stream()
-          .filter(p -> p.isActive() && p.getProject() == project && p.getPhase() == phase)
-          .collect(Collectors.toList()));
-
-        if (pcList != null && pcList.size() > 0) {
-          if (pcList.get(0) != null && pcList.get(0).getLessons() != null) {
-            projectComponentLesson = pcList.get(0).getLessons();
-          }
-        }
 
         List<ProjectOutcome> projectOutcomes = new ArrayList<>();
 
         projectOutcomes = project.getProjectOutcomes().stream()
           .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(phase)).collect(Collectors.toList());
 
-        if (projectOutcomes != null && projectOutcomes.size() > 0) {
-          if (projectOutcomes.get(0).getGenderDimenssion() != null) {
-            genderDimenssions = projectOutcomes.get(0).getGenderDimenssion();
-          }
-
-          if (projectOutcomes.get(0).getYouthComponent() != null) {
-            youthComponent = projectOutcomes.get(0).getYouthComponent();
-          }
-        }
         ProjectPolicy projectPolicy = new ProjectPolicy();
         List<ProjectPolicy> projectPolicyList = new ArrayList<>();
         projectPolicyList = policyManager.getProjectPolicyByPhase(phase).stream()
@@ -745,12 +688,6 @@ public class ProjectsDeleteFieldsSummaryAction extends BaseSummariesAction imple
 
         if (projectPolicyList != null && !projectPolicyList.isEmpty() && projectPolicyList.size() > 0) {
           projectPolicy = projectPolicyList.get(0);
-        }
-
-        if (projectPolicy != null && projectPolicy.getProjectPolicyInfo(phase) != null
-          && projectPolicy.getProjectPolicyInfo().getRepIndOrganizationType() != null
-          && projectPolicy.getProjectPolicyInfo().getRepIndOrganizationType().getName() != null) {
-          repIndOrganization = projectPolicy.getProjectPolicyInfo(phase).getRepIndOrganizationType().getName();
         }
 
         ProjectInnovation projectInnovation = new ProjectInnovation();
@@ -763,34 +700,10 @@ public class ProjectsDeleteFieldsSummaryAction extends BaseSummariesAction imple
           projectInnovation = projectInnovationList.get(0);
         }
 
-        if (projectInnovation != null && projectInnovation.getProjectInnovationInfo(phase) != null
-          && projectInnovation.getProjectInnovationInfo().getRepIndContributionOfCrp() != null
-          && projectInnovation.getProjectInnovationInfo().getRepIndContributionOfCrp().getName() != null) {
-          contributionCRP = projectInnovation.getProjectInnovationInfo(phase).getRepIndContributionOfCrp().getName();
-        }
-
         List<Deliverable> deliverableList = new ArrayList<>();
         deliverableList = deliverableManager.getDeliverablesByProjectAndPhase(phase.getId(), project.getId()).stream()
           .filter(d -> d.isActive() && d.getProject() == project).collect(Collectors.toList());
 
-
-        for (Deliverable deliverable : deliverableList) {
-          if (deliverable.getDeliverableInfo(phase).getLicense() != null) {
-            if (license == null || license.length() == 0) {
-              license = "D" + deliverable.getId() + ": " + deliverable.getDeliverableInfo(phase).getLicense();
-            } else {
-              license = ", D" + deliverable.getId() + ": " + deliverable.getDeliverableInfo(phase).getLicense();
-            }
-          }
-          if (deliverable.getDeliverableInfo(phase).getOtherLicense() != null) {
-            if (otherLicense == null || otherLicense.length() == 0) {
-              otherLicense = "D" + deliverable.getId() + ": " + deliverable.getDeliverableInfo(phase).getOtherLicense();
-            } else {
-              otherLicense =
-                ", D" + deliverable.getId() + ": " + deliverable.getDeliverableInfo(phase).getOtherLicense();
-            }
-          }
-        }
         // BudgetsbyCoasTableModel
         // this.getBudgetsbyCoasTableModel(project);
 
