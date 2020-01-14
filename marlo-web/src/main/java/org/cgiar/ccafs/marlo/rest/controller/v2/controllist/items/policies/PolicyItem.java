@@ -435,34 +435,7 @@ public class PolicyItem<T> {
     if (projectPolicy != null) {
       if (projectPolicy.getProjectPolicyInfo() != null) {
         projectPolicy.getProjectPolicyInfo(phase);
-
-        // Setting Geographic Scope
-        projectPolicy.setGeographicScopes(projectPolicy.getProjectPolicyGeographicScopes().stream()
-          .filter(c -> c.getProjectPolicy().getId().longValue() == projectPolicy.getId().longValue()
-            && c.getPhase().getId().longValue() == phase.getId().longValue())
-          .collect(Collectors.toList()));
-        // Setting CRP contributing
-        projectPolicy.setCrps(projectPolicyCrpManager.findAll().stream()
-          .filter(c -> c.getProjectPolicy().getId().longValue() == projectPolicy.getId().longValue()
-            && c.getPhase().getId() == phase.getId())
-          .collect(Collectors.toList()));
-        // Setting CrossCuttingMarker
-        projectPolicy.setCrossCuttingMarkers(projectPolicy.getProjectPolicyCrossCuttingMarkers().stream()
-          .filter(c -> c.getPhase().getId().longValue() == phase.getId().longValue()).collect(Collectors.toList()));
-        // Setting SubIdos
-        projectPolicy.setSubIdos(projectPolicySubIdoManager.findAll().stream()
-          .filter(c -> c.getProjectPolicy().getId().longValue() == projectPolicy.getId().longValue()
-            && c.getPhase().getId().longValue() == phase.getId().longValue())
-          .collect(Collectors.toList()));
-        // setting countries
-        projectPolicy.setCountries(projectPolicy.getProjectPolicyCountries().stream()
-          .filter(c -> c.getPhase().getId().longValue() == phase.getId().longValue()).collect(Collectors.toList()));
-        // setting regions
-        projectPolicy.setRegions(projectPolicy.getProjectPolicyRegions().stream()
-          .filter(c -> c.getPhase().getId().longValue() == phase.getId().longValue()).collect(Collectors.toList()));
-
-        projectPolicy.setOwners(projectPolicy.getProjectPolicyOwners().stream()
-          .filter(c -> c.getPhase().getId().longValue() == phase.getId().longValue()).collect(Collectors.toList()));
+        projectPolicy = this.getPolicyInfoPhase(projectPolicy, phase);
       }
       projectPolicyManager.deleteProjectPolicy(id);
     } else {
@@ -508,38 +481,8 @@ public class PolicyItem<T> {
         ProjectPolicy projectPolicy =
           projectPolicyManager.getProjectPolicyById(projectPolicyInfo.getProjectPolicy().getId());
         projectPolicy.setProjectPolicyInfo(projectPolicyInfo);
-        projectPolicy.setGeographicScopes(projectPolicy.getProjectPolicyGeographicScopes().stream()
-          .filter(c -> c.getProjectPolicy().getId().longValue() == projectPolicy.getId().longValue()
-            && c.getPhase().getId().longValue() == phase.getId().longValue())
-          .collect(Collectors.toList()));
-        // Setting CRP contributing
-        projectPolicy.setCrps(projectPolicyCrpManager.findAll().stream()
-          .filter(c -> c.getProjectPolicy().getId().longValue() == projectPolicy.getId().longValue()
-            && c.getPhase().getId() == phase.getId())
-          .collect(Collectors.toList()));
-        // Setting CrossCuttingMarker
-        projectPolicy.setCrossCuttingMarkers(projectPolicy.getProjectPolicyCrossCuttingMarkers().stream()
-          .filter(c -> c.getPhase().getId().longValue() == phase.getId().longValue()).collect(Collectors.toList()));
-        // Setting SubIdos
-        projectPolicy.setSubIdos(projectPolicySubIdoManager.findAll().stream()
-          .filter(c -> c.getProjectPolicy().getId().longValue() == projectPolicy.getId().longValue()
-            && c.getPhase().getId().longValue() == phase.getId().longValue())
-          .collect(Collectors.toList()));
-        // setting countries
-        projectPolicy.setCountries(projectPolicy.getProjectPolicyCountries().stream()
-          .filter(c -> c.getPhase().getId().longValue() == phase.getId().longValue()).collect(Collectors.toList()));
-        // setting regions
-        projectPolicy.setRegions(projectPolicy.getProjectPolicyRegions().stream()
-          .filter(c -> c.getPhase().getId().longValue() == phase.getId().longValue()).collect(Collectors.toList()));
-        // setting owners
-        projectPolicy.setOwners(projectPolicyOwnerManager.findAll().stream()
-          .filter(c -> c.getProjectPolicy().getId().longValue() == projectPolicy.getId().longValue()
-            && c.getPhase().getId().longValue() == phase.getId().longValue())
-          .collect(Collectors.toList()));
-
+        projectPolicy = this.getPolicyInfoPhase(projectPolicy, phase);
         projectPolicyList.add(projectPolicy);
-
-
       }
     }
     policyList = projectPolicyList.stream()
@@ -576,36 +519,7 @@ public class PolicyItem<T> {
 
     if (projectPolicy.getProjectPolicyInfo() != null) {
       projectPolicy.getProjectPolicyInfo(phase);
-
-      // Setting Geographic Scope
-      projectPolicy.setGeographicScopes(projectPolicy.getProjectPolicyGeographicScopes().stream()
-        .filter(c -> c.getProjectPolicy().getId().longValue() == projectPolicy.getId().longValue()
-          && c.getPhase().getId().longValue() == phase.getId().longValue())
-        .collect(Collectors.toList()));
-      // Setting CRP contributing
-      projectPolicy.setCrps(projectPolicyCrpManager.findAll().stream()
-        .filter(c -> c.getProjectPolicy().getId().longValue() == projectPolicy.getId().longValue()
-          && c.getPhase().getId() == phase.getId())
-        .collect(Collectors.toList()));
-      // Setting CrossCuttingMarker
-      projectPolicy.setCrossCuttingMarkers(projectPolicy.getProjectPolicyCrossCuttingMarkers().stream()
-        .filter(c -> c.getPhase().getId().longValue() == phase.getId().longValue()).collect(Collectors.toList()));
-      // Setting SubIdos
-      projectPolicy.setSubIdos(projectPolicySubIdoManager.findAll().stream()
-        .filter(c -> c.getProjectPolicy().getId().longValue() == projectPolicy.getId().longValue()
-          && c.getPhase().getId().longValue() == phase.getId().longValue())
-        .collect(Collectors.toList()));
-      // setting countries
-      projectPolicy.setCountries(projectPolicy.getProjectPolicyCountries().stream()
-        .filter(c -> c.getPhase().getId().longValue() == phase.getId().longValue()).collect(Collectors.toList()));
-      // setting regions
-      projectPolicy.setRegions(projectPolicy.getProjectPolicyRegions().stream()
-        .filter(c -> c.getPhase().getId().longValue() == phase.getId().longValue()).collect(Collectors.toList()));
-      // setting owners
-      projectPolicy.setOwners(projectPolicyOwnerManager.findAll().stream()
-        .filter(c -> c.getProjectPolicy().getId().longValue() == projectPolicy.getId().longValue()
-          && c.getPhase().getId().longValue() == phase.getId().longValue())
-        .collect(Collectors.toList()));
+      projectPolicy = this.getPolicyInfoPhase(projectPolicy, phase);
     }
 
     if (!fieldErrors.isEmpty()) {
@@ -617,6 +531,50 @@ public class PolicyItem<T> {
 
     return Optional.ofNullable(projectPolicy).map(this.projectPolicyMapper::projectPolicyToProjectPolicyDTO)
       .map(result -> new ResponseEntity<>(result, HttpStatus.OK)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+  }
+
+  public ProjectPolicy getPolicyInfoPhase(ProjectPolicy projectPolicy, Phase phase) {
+    final long projectPolicyID = projectPolicy.getId().longValue();
+    if (projectPolicy != null) {
+      projectPolicy.getProjectPolicyInfo(phase);
+
+      // Setting Geographic Scope
+      projectPolicy.setGeographicScopes(projectPolicyGeographicScopeManager.findAll().stream()
+        .filter(
+          c -> c.getProjectPolicy().getId().longValue() == projectPolicyID && c.getPhase().getId() == phase.getId())
+        .collect(Collectors.toList()));
+      // Setting CRP contributing
+      projectPolicy.setCrps(projectPolicyCrpManager.findAll().stream()
+        .filter(
+          c -> c.getProjectPolicy().getId().longValue() == projectPolicyID && c.getPhase().getId() == phase.getId())
+        .collect(Collectors.toList()));
+      // Setting CrossCuttingMarker
+      projectPolicy.setCrossCuttingMarkers(projectPolicyCrossCuttingMarkerManager.findAll().stream()
+        .filter(c -> c.getProjectPolicy().getId().longValue() == projectPolicyID
+          && c.getPhase().getId().longValue() == phase.getId().longValue())
+        .collect(Collectors.toList()));
+      // Setting SubIdos
+      projectPolicy.setSubIdos(projectPolicySubIdoManager.findAll().stream()
+        .filter(c -> c.getProjectPolicy().getId().longValue() == projectPolicyID
+          && c.getPhase().getId().longValue() == phase.getId().longValue())
+        .collect(Collectors.toList()));
+      // setting countries
+      projectPolicy.setCountries(projectPolicyCountryManager.findAll().stream()
+        .filter(c -> c.getProjectPolicy().getId().longValue() == projectPolicyID
+          && c.getPhase().getId().longValue() == phase.getId().longValue())
+        .collect(Collectors.toList()));
+      // setting regions
+      projectPolicy.setRegions(projectPolicyRegionManager.findAll().stream()
+        .filter(c -> c.getProjectPolicy().getId().longValue() == projectPolicyID
+          && c.getPhase().getId().longValue() == phase.getId().longValue())
+        .collect(Collectors.toList()));
+      // setting owners
+      projectPolicy.setOwners(projectPolicyOwnerManager.findAll().stream()
+        .filter(c -> c.getProjectPolicy().getId().longValue() == projectPolicyID
+          && c.getPhase().getId().longValue() == phase.getId().longValue())
+        .collect(Collectors.toList()));
+    }
+    return projectPolicy;
   }
 
   /**
@@ -657,12 +615,12 @@ public class PolicyItem<T> {
         new NewProjectPolicyDTO().getPhase().getYear() + " is an invalid year"));
     }
     ProjectPolicy projectPolicy = null;
-    if (fieldErrors.size() > 0) {
+    if (fieldErrors.size() == 0) {
       projectPolicy = projectPolicyManager.getProjectPolicyById(id.longValue());
       ProjectPolicyInfo projectPolicyInfo = null;
-      if (projectPolicy.getProjectPolicyInfo() != null) {
+      if (projectPolicy.getProjectPolicyInfo(phase) != null) {
         projectPolicyInfo =
-          projectPolicyInfoManager.getProjectPolicyInfoById(projectPolicy.getProjectPolicyInfo().getId());
+          projectPolicyInfoManager.getProjectPolicyInfoById(projectPolicy.getProjectPolicyInfo(phase).getId());
         projectPolicyInfo.setProjectPolicy(projectPolicy);
         projectPolicyInfo.setPhase(phase);
         projectPolicyInfo.setYear(newPolicyDTO.getProjectPoliciesInfo().getYear());
@@ -743,7 +701,6 @@ public class PolicyItem<T> {
             LocElement region = this.locElementManager.getLocElementByNumericISOCode(iso.getUM49Code());
             if (region == null) {
               fieldErrors.add(new FieldErrorDTO("createPolicy", "Regions", iso + " is an invalid region ISO Code"));
-
             } else if (region.getLocElementType().getId() != APConstants.LOC_ELEMENT_TYPE_REGION) {
               fieldErrors.add(new FieldErrorDTO("createPolicy", "Regions", iso + " is not a region ISO code"));
             } else {
@@ -801,7 +758,8 @@ public class PolicyItem<T> {
       }
       // can update
       if (fieldErrors.isEmpty()) {
-        final long projectPolicyID = projectPolicy.getId().longValue();
+        final long projectPolicyID = id;
+        projectPolicyInfoManager.saveProjectPolicyInfo(projectPolicyInfo);
         // *************Policy CRP*****************/
         // getting saved projectPolicyCRPList
         List<ProjectPolicyCrp> projectPolicyCrpListDB = projectPolicyCrpManager.findAll().stream()
@@ -813,11 +771,11 @@ public class PolicyItem<T> {
         // search if a policycrp was created
         for (ProjectPolicyCrp projectPolicyCrp : projectPolicyCrpList) {
           projectPolicyCrp.setProjectPolicy(projectPolicy);
-          if (projectPolicyCrpManager.getProjectPolicyCrpByPhase(
-            projectPolicyCrp.getProjectPolicy().getId().longValue(),
-            projectPolicyCrp.getGlobalUnit().getId().longValue(),
-            projectPolicyCrp.getPhase().getId().longValue()) != null) {
-            existingProjectPolicyList.add(projectPolicyCrp);
+          ProjectPolicyCrp temp =
+            projectPolicyCrpManager.getProjectPolicyCrpByPhase(projectPolicyCrp.getProjectPolicy().getId().longValue(),
+              projectPolicyCrp.getGlobalUnit().getId().longValue(), projectPolicyCrp.getPhase().getId().longValue());
+          if (temp != null) {
+            existingProjectPolicyList.add(temp);
           } else {
             projectPolicyCrpManager.saveProjectPolicyCrp(projectPolicyCrp);
           }
@@ -837,11 +795,11 @@ public class PolicyItem<T> {
         List<ProjectPolicySubIdo> existingProjectPolicySubIdoList = new ArrayList<ProjectPolicySubIdo>();
         for (ProjectPolicySubIdo projectPolicySubIdo : projectPolicySubIdoList) {
           projectPolicySubIdo.setProjectPolicy(projectPolicy);
-          if (projectPolicySubIdoManager.getProjectPolicySubIdoByPhase(
+          ProjectPolicySubIdo temp = projectPolicySubIdoManager.getProjectPolicySubIdoByPhase(
             projectPolicySubIdo.getProjectPolicy().getId().longValue(),
-            projectPolicySubIdo.getSrfSubIdo().getId().longValue(),
-            projectPolicySubIdo.getPhase().getId().longValue()) != null) {
-            existingProjectPolicySubIdoList.add(projectPolicySubIdo);
+            projectPolicySubIdo.getSrfSubIdo().getId().longValue(), projectPolicySubIdo.getPhase().getId().longValue());
+          if (temp != null) {
+            existingProjectPolicySubIdoList.add(temp);
           } else {
             projectPolicySubIdoManager.saveProjectPolicySubIdo(projectPolicySubIdo);
           }
@@ -854,20 +812,20 @@ public class PolicyItem<T> {
         }
 
         // *************Policy GeographicScope*****************/
-        List<ProjectPolicyGeographicScope> projectPolicyGeographicScopeListDB =
-          projectPolicy.getProjectPolicyGeographicScopes().stream()
-            .filter(c -> c.getProjectPolicy().getId().longValue() == projectPolicyID
-              && c.getPhase().getId().longValue() == phase.getId().longValue())
-            .collect(Collectors.toList());
+        List<ProjectPolicyGeographicScope> projectPolicyGeographicScopeListDB = projectPolicyGeographicScopeManager
+          .findAll().stream().filter(c -> c.getProjectPolicy().getId().longValue() == projectPolicyID
+            && c.getPhase().getId().longValue() == phase.getId().longValue())
+          .collect(Collectors.toList());
         List<ProjectPolicyGeographicScope> existingProjectPolicyGeographicScopeList =
           new ArrayList<ProjectPolicyGeographicScope>();
         for (ProjectPolicyGeographicScope projectPolicyGeographicScope : projectPolicyGeographicScopeList) {
           projectPolicyGeographicScope.setProjectPolicy(projectPolicy);
-          if (projectPolicyGeographicScopeManager.getProjectPolicyGeographicScopeByPhase(
-            projectPolicyGeographicScope.getId().longValue(),
-            projectPolicyGeographicScope.getRepIndGeographicScope().getId().longValue(),
-            projectPolicyGeographicScope.getPhase().getId().longValue()) != null) {
-            existingProjectPolicyGeographicScopeList.add(projectPolicyGeographicScope);
+          ProjectPolicyGeographicScope temp = projectPolicyGeographicScopeManager
+            .getProjectPolicyGeographicScopeByPhase(projectPolicyGeographicScope.getProjectPolicy().getId().longValue(),
+              projectPolicyGeographicScope.getRepIndGeographicScope().getId().longValue(),
+              projectPolicyGeographicScope.getPhase().getId().longValue());
+          if (temp != null) {
+            existingProjectPolicyGeographicScopeList.add(temp);
           } else {
             projectPolicyGeographicScopeManager.saveProjectPolicyGeographicScope(projectPolicyGeographicScope);
           }
@@ -879,18 +837,19 @@ public class PolicyItem<T> {
           }
         }
         // *************Policy Countries*****************/
-        List<ProjectPolicyCountry> projectPolicyCountryListDB = projectPolicy.getProjectPolicyCountries().stream()
+        List<ProjectPolicyCountry> projectPolicyCountryListDB = projectPolicyCountryManager.findAll().stream()
           .filter(c -> c.getProjectPolicy().getId().longValue() == projectPolicyID
             && c.getPhase().getId().longValue() == phase.getId().longValue())
           .collect(Collectors.toList());
         List<ProjectPolicyCountry> existingProjectPolicyCountryList = new ArrayList<ProjectPolicyCountry>();
         for (ProjectPolicyCountry projectPolicyCountry : projectPolicyCountryList) {
           projectPolicyCountry.setProjectPolicy(projectPolicy);
-          if (projectPolicyCountryManager.getProjectPolicyCountryByPhase(
+          ProjectPolicyCountry temp = projectPolicyCountryManager.getProjectPolicyCountryByPhase(
             projectPolicyCountry.getProjectPolicy().getId().longValue(),
             projectPolicyCountry.getLocElement().getId().longValue(),
-            projectPolicyCountry.getPhase().getId().longValue()) != null) {
-            existingProjectPolicyCountryList.add(projectPolicyCountry);
+            projectPolicyCountry.getPhase().getId().longValue());
+          if (temp != null) {
+            existingProjectPolicyCountryList.add(temp);
           } else {
             projectPolicyCountryManager.saveProjectPolicyCountry(projectPolicyCountry);
           }
@@ -910,11 +869,12 @@ public class PolicyItem<T> {
         List<ProjectPolicyRegion> existingProjectPolicyRegionList = new ArrayList<ProjectPolicyRegion>();
         for (ProjectPolicyRegion projectPolicyRegion : projectPolicyRegionList) {
           projectPolicyRegion.setProjectPolicy(projectPolicy);
-          if (projectPolicyRegionManager.getProjectPolicyRegionByPhase(
+          ProjectPolicyRegion temp = projectPolicyRegionManager.getProjectPolicyRegionByPhase(
             projectPolicyRegion.getProjectPolicy().getId().longValue(),
             projectPolicyRegion.getLocElement().getId().longValue(),
-            projectPolicyRegion.getPhase().getId().longValue()) != null) {
-            existingProjectPolicyRegionList.add(projectPolicyRegion);
+            projectPolicyRegion.getPhase().getId().longValue());
+          if (temp != null) {
+            existingProjectPolicyRegionList.add(temp);
           } else {
             projectPolicyRegionManager.saveProjectPolicyRegion(projectPolicyRegion);
           }
@@ -943,14 +903,14 @@ public class PolicyItem<T> {
           if (temp != null) {
             temp.setRepIndGenderYouthFocusLevel(projectPolicyCrossCuttingMarker.getRepIndGenderYouthFocusLevel());
             projectPolicyCrossCuttingMarkerManager.saveProjectPolicyCrossCuttingMarker(temp);
-            existingProjectPolicyCrossCuttingMarkerList.add(projectPolicyCrossCuttingMarker);
+            existingProjectPolicyCrossCuttingMarkerList.add(temp);
           } else {
             projectPolicyCrossCuttingMarkerManager.saveProjectPolicyCrossCuttingMarker(projectPolicyCrossCuttingMarker);
           }
         }
         // verify deleted ProjectPolicyCrossCuttingMarker
         for (ProjectPolicyCrossCuttingMarker obj : projectPolicyCrossCuttingMarkerListDB) {
-          if (!existingProjectPolicyRegionList.contains(obj)) {
+          if (!existingProjectPolicyCrossCuttingMarkerList.contains(obj)) {
             projectPolicyCrossCuttingMarkerManager.deleteProjectPolicyCrossCuttingMarker(obj.getId());
           }
         }
@@ -963,11 +923,12 @@ public class PolicyItem<T> {
         List<ProjectPolicyOwner> existingProjectPolicyOwnerList = new ArrayList<ProjectPolicyOwner>();
         for (ProjectPolicyOwner projectPolicyOwner : projectPolicyOwnerList) {
           projectPolicyOwner.setProjectPolicy(projectPolicy);
-          if (projectPolicyOwnerManager.getProjectPolicyOwnerById(
+          ProjectPolicyOwner temp = projectPolicyOwnerManager.getProjectPolicyOwnerById(
             projectPolicyOwner.getProjectPolicy().getId().longValue(),
             projectPolicyOwner.getRepIndPolicyType().getId().longValue(),
-            projectPolicyOwner.getPhase().getId().longValue()) != null) {
-            existingProjectPolicyOwnerList.add(projectPolicyOwner);
+            projectPolicyOwner.getPhase().getId().longValue());
+          if (temp != null) {
+            existingProjectPolicyOwnerList.add(temp);
           } else {
             projectPolicyOwnerManager.saveProjectPolicyOwner(projectPolicyOwner);
           }
@@ -978,6 +939,9 @@ public class PolicyItem<T> {
             projectPolicyOwnerManager.deleteProjectPolicyOwner(obj.getId());
           }
         }
+        projectPolicy = null;
+        projectPolicy = projectPolicyManager.getProjectPolicyById(id.longValue());
+        projectPolicy = this.getPolicyInfoPhase(projectPolicy, phase);
       }
     }
 
