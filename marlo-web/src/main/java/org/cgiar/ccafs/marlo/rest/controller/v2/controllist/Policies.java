@@ -102,8 +102,13 @@ public class Policies {
     @ApiParam(value = "${Policy.policies.DELETE.id.param.year}", required = true) @RequestParam Integer year,
     @ApiParam(value = "${Policy.policies.DELETE.id.param.phase}", required = true) @RequestParam String phase) {
 
-    ResponseEntity<ProjectPolicyDTO> response =
-      this.policyItem.deletePolicyById(id, CGIAREntity, year, phase, this.getCurrentUser());
+    ResponseEntity<ProjectPolicyDTO> response = null;
+    try {
+      response = this.policyItem.deletePolicyById(id, CGIAREntity, year, phase, this.getCurrentUser());
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+
     if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
       throw new NotFoundException("404", this.env.getProperty("Policy.policies.DELETE.id.404"));
     }
@@ -152,6 +157,30 @@ public class Policies {
     Long principal = (Long) subject.getPrincipal();
     User user = this.userManager.getUser(principal);
     return user;
+  }
+
+  @ApiOperation(tags = {"Table 2 - CRP Policies"}, value = "${Policy.policies.PUT.value}",
+    response = ProjectPolicyDTO.class)
+  @RequiresPermissions(Permission.FULL_CREATE_REST_API_PERMISSION)
+  @RequestMapping(value = "/{CGIAREntity}/policies/{id}", method = RequestMethod.PUT,
+    produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<ProjectPolicyDTO> putPolicy(
+    @ApiParam(value = "${Policy.policies.PUT.param.CGIAR}", required = true) @PathVariable String CGIAREntity,
+    @ApiParam(value = "${Policy.policies.PUT.param.id}", required = true) @PathVariable Long id,
+    @ApiParam(value = "${Policy.policies.PUT.param.policy}",
+      required = true) @Valid @RequestBody NewProjectPolicyDTO newPolicyDTO) {
+
+    ResponseEntity<ProjectPolicyDTO> response = null;
+    try {
+      response = this.policyItem.putPolicyById(id, newPolicyDTO, CGIAREntity, this.getCurrentUser());
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+
+    if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+      throw new NotFoundException("404", this.env.getProperty("Policy.policies.PUT.id.404"));
+    }
+    return response;
   }
 
 }
