@@ -243,9 +243,8 @@ public class ExternalPartnershipsAction extends BaseAction {
       for (ProjectFocus focus : projectFocus) {
         Project project = projectManager.getProjectById(focus.getProject().getId());
 
-        List<ProjectPartner> projectPartners = new ArrayList<>(project
-          .getProjectPartners().stream().filter(pp -> pp.isActive() && pp.getPhase() != null
-            && pp.getPhase().getId() == phaseID && pp.getHasPartnerships() != null && pp.getHasPartnerships())
+        List<ProjectPartner> projectPartners = new ArrayList<>(project.getProjectPartners().stream()
+          .filter(pp -> pp.isActive() && pp.getPhase() != null && pp.getPhase().getId() == phaseID)
           .collect(Collectors.toList()));
         Collections.sort(projectPartners,
           (p1, p2) -> p1.getInstitution().getId().compareTo(p2.getInstitution().getId()));

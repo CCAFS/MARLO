@@ -140,10 +140,7 @@ public class RepIndOrganizationTypeManagerImpl implements RepIndOrganizationType
           new ReportSynthesisPoliciesByOrganizationTypeDTO();
         reportSynthesisStudiesByOrganizationTypeDTO.setRepIndOrganizationType(organizationType);
         List<ProjectPolicy> projectPoliciesByOrganizationType = selectedProjectPolicies.stream()
-          .filter(pp -> pp.isActive() && pp.getProjectPolicyInfo(phase) != null
-            && pp.getProjectPolicyInfo().getRepIndOrganizationType() != null
-            && pp.getProjectPolicyInfo().getRepIndOrganizationType().equals(organizationType))
-          .collect(Collectors.toList());
+          .filter(pp -> pp.isActive() && pp.getProjectPolicyInfo(phase) != null).collect(Collectors.toList());
         if (projectPoliciesByOrganizationType != null && !projectPoliciesByOrganizationType.isEmpty()) {
           reportSynthesisStudiesByOrganizationTypeDTO.setProjectPolicies(projectPoliciesByOrganizationType);
         } else {

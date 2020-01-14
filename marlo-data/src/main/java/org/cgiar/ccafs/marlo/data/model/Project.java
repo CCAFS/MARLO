@@ -109,9 +109,6 @@ public class Project extends MarloAuditableEntity implements java.io.Serializabl
   private List<ProjectHighlight> highligths;
 
 
-  private ProjectComponentLesson projectComponentLesson;
-
-
   private Set<Activity> activities = new HashSet<Activity>(0);
 
 
@@ -408,6 +405,31 @@ public class Project extends MarloAuditableEntity implements java.io.Serializabl
   }
 
 
+  /**
+   * This method gets all the collaborators working for this project.
+   * 
+   * @return a list of PartnerPerson with the information requested.
+   */
+  public List<ProjectPartnerPerson> getCollaboratorsPersonsDB(Phase phase) {
+    List<ProjectPartnerPerson> projectCollaborators = new ArrayList<>();
+
+    for (ProjectPartner partner : projectPartners.stream().filter(c -> c.isActive() && c.getPhase().equals(phase))
+      .collect(Collectors.toList())) {
+      if (partner.getProjectPartnerPersons() != null) {
+        for (ProjectPartnerPerson person : partner.getProjectPartnerPersons()) {
+
+          if (person.getContactType().equals("CP") && person.isActive()) {
+            projectCollaborators.add(person);
+          }
+        }
+      }
+
+
+    }
+    return projectCollaborators;
+  }
+
+
   public String getComposedName() {
 
 
@@ -474,7 +496,6 @@ public class Project extends MarloAuditableEntity implements java.io.Serializabl
     return projectCoordinators;
   }
 
-
   /**
    * This method gets all the coordinators working for this project.
    * 
@@ -488,7 +509,7 @@ public class Project extends MarloAuditableEntity implements java.io.Serializabl
       if (partner.getProjectPartnerPersons() != null) {
         for (ProjectPartnerPerson person : partner.getProjectPartnerPersons()) {
 
-          if (person.getContactType().equals("CP") && person.isActive()) {
+          if (person.getContactType().equals("PC") && person.isActive()) {
             projectCoordinators.add(person);
           }
         }
@@ -497,30 +518,6 @@ public class Project extends MarloAuditableEntity implements java.io.Serializabl
 
     }
     return projectCoordinators;
-  }
-  
-  /**
-   * This method gets all the collaborators working for this project.
-   * 
-   * @return a list of PartnerPerson with the information requested.
-   */
-  public List<ProjectPartnerPerson> getCollaboratorsPersonsDB(Phase phase) {
-    List<ProjectPartnerPerson> projectCollaborators = new ArrayList<>();
-
-    for (ProjectPartner partner : projectPartners.stream().filter(c -> c.isActive() && c.getPhase().equals(phase))
-      .collect(Collectors.toList())) {
-      if (partner.getProjectPartnerPersons() != null) {
-        for (ProjectPartnerPerson person : partner.getProjectPartnerPersons()) {
-
-          if (person.getContactType().equals("CP") && person.isActive()) {
-        	  projectCollaborators.add(person);
-          }
-        }
-      }
-
-
-    }
-    return projectCollaborators;
   }
 
 
@@ -951,12 +948,6 @@ public class Project extends MarloAuditableEntity implements java.io.Serializabl
   public Set<ProjectClusterActivity> getProjectClusterActivities() {
     return projectClusterActivities;
   }
-
-
-  public ProjectComponentLesson getProjectComponentLesson() {
-    return projectComponentLesson;
-  }
-
 
   public ProjectComponentLesson getProjectComponentLessonPreview() {
     return projectComponentLessonPreview;
@@ -1490,10 +1481,6 @@ public class Project extends MarloAuditableEntity implements java.io.Serializabl
 
   public void setProjectClusterActivities(Set<ProjectClusterActivity> projectClusterActivities) {
     this.projectClusterActivities = projectClusterActivities;
-  }
-
-  public void setProjectComponentLesson(ProjectComponentLesson projectComponentLesson) {
-    this.projectComponentLesson = projectComponentLesson;
   }
 
   public void setProjectComponentLessonPreview(ProjectComponentLesson projectComponentLessonPreview) {

@@ -1954,7 +1954,8 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
       for (CrpProgramOutcome crpProgramOutcome : crpProgram.getOutcomes()) {
 
         crpProgramOutcome.setMilestones(crpProgramOutcome.getCrpMilestones().stream()
-          .filter(c -> c.isActive() && c.getYear().intValue() == this.getSelectedPhase().getYear())
+          .filter(c -> c.isActive() && ((c.getYear().intValue() == this.getSelectedPhase().getYear())
+                  || (c.getExtendedYear() != null && c.getExtendedYear().equals(this.getSelectedPhase().getYear()))) && c.getIsPowb()!= null && c.getIsPowb())
           .collect(Collectors.toList()));
         crpProgramOutcome.setSubIdos(
           crpProgramOutcome.getCrpOutcomeSubIdos().stream().filter(c -> c.isActive()).collect(Collectors.toList()));

@@ -196,11 +196,7 @@ public class ProjectSubmissionAction extends BaseAction {
     Long crpPmuRole = Long.parseLong((String) this.getSession().get(APConstants.CRP_PMU_ROLE));
     Role roleCrpPmu = roleManager.getRoleById(crpPmuRole);
     // If Managment liason is PMU
-    if (project.getProjecInfoPhase(this.getActualPhase()).getLiaisonInstitution().getAcronym()
-      .equals(roleCrpPmu.getAcronym())) {
-      ccEmails.append(project.getProjecInfoPhase(this.getActualPhase()).getLiaisonUser().getUser().getEmail());
-      ccEmails.append(", ");
-    } else if (project.getProjecInfoPhase(this.getActualPhase()).getLiaisonInstitution().getCrpProgram() != null) {
+    if (project.getProjecInfoPhase(this.getActualPhase()).getLiaisonInstitution().getCrpProgram() != null) {
       // If Managment liason is FL
       List<CrpProgram> crpPrograms = globalUnitProject
         .getGlobalUnit().getCrpPrograms().stream().filter(cp -> cp.getId() == project

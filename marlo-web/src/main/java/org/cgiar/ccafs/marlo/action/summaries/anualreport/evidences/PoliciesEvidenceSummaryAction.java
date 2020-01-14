@@ -442,13 +442,7 @@ public class PoliciesEvidenceSummaryAction extends BaseSummariesAction implement
         }
 
         // Organization type
-        if (policyEvidence.getProjectPolicy().getProjectPolicyInfo(this.getSelectedPhase())
-          .getRepIndOrganizationType() != null) {
-          paramF = policyEvidence.getProjectPolicy().getProjectPolicyInfo(this.getSelectedPhase())
-            .getRepIndOrganizationType().getName();
-        } else {
-          paramF = "<Not Defined>";
-        }
+
 
         // Level of Maturity
         if (policyEvidence.getProjectPolicy().getProjectPolicyInfo(this.getSelectedPhase())
