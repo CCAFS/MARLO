@@ -19,6 +19,7 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CgiarCrossCuttingMarkerManager;
+import org.cgiar.ccafs.marlo.data.manager.CrpMilestoneManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
@@ -45,6 +46,7 @@ import org.cgiar.ccafs.marlo.data.manager.RepIndPolicyTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndStageProcessManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfSubIdoManager;
 import org.cgiar.ccafs.marlo.data.model.CgiarCrossCuttingMarker;
+import org.cgiar.ccafs.marlo.data.model.CrpMilestone;
 import org.cgiar.ccafs.marlo.data.model.ExpectedStudyProject;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
@@ -128,6 +130,7 @@ public class ProjectPolicyAction extends BaseAction {
   private ProjectPolicyGeographicScopeManager projectPolicyGeographicScopeManager;
   private ProjectPolicyRegionManager projectPolicyRegionManager;
   private PolicyMilestoneManager policyMilestoneManager;
+  private CrpMilestoneManager crpMilestoneManager;
   private ProjectPolicyValidator validator;
 
 
@@ -175,7 +178,7 @@ public class ProjectPolicyAction extends BaseAction {
     ProjectExpectedStudyPolicyManager projectExpectedStudyPolicyManager,
     ProjectInnovationManager projectInnovationManager, ProjectPolicyInnovationManager projectPolicyInnovationManager,
     ProjectPolicyGeographicScopeManager projectPolicyGeographicScopeManager,
-    ProjectPolicyRegionManager projectPolicyRegionManager, PolicyMilestoneManager policyMilestoneManager) {
+    ProjectPolicyRegionManager projectPolicyRegionManager, PolicyMilestoneManager policyMilestoneManager, CrpMilestoneManager crpMilestoneManager) {
     super(config);
     this.globalUnitManager = globalUnitManager;
     this.projectPolicyManager = projectPolicyManager;
@@ -205,6 +208,7 @@ public class ProjectPolicyAction extends BaseAction {
     this.projectPolicyGeographicScopeManager = projectPolicyGeographicScopeManager;
     this.projectPolicyRegionManager = projectPolicyRegionManager;
     this.policyMilestoneManager = policyMilestoneManager;
+    this.crpMilestoneManager = crpMilestoneManager;
   }
 
   /**
@@ -540,7 +544,7 @@ public class ProjectPolicyAction extends BaseAction {
         // Milestones List Autosave
         if (policy.getMilestones() != null) {
         	for (PolicyMilestone policyMilestone : policy.getMilestones()) {
-        		//policyMilestone.setCrpMilestone(policyMilestoneManager.get (policyMilestone.getCrpMilestone().getId())); 
+        		policyMilestone.setCrpMilestone(crpMilestoneManager.getCrpMilestoneById(policyMilestone.getCrpMilestone().getId())); 
         	}
         }
 
@@ -1240,7 +1244,6 @@ public class ProjectPolicyAction extends BaseAction {
           ProjectInnovation innovation =
             projectInnovationManager.getProjectInnovationById(policyInnovation.getProjectInnovation().getId());
 
-
           policyInnovationSave.setProjectInnovation(innovation);
 
           projectPolicyInnovationManager.saveProjectPolicyInnovation(policyInnovationSave);
@@ -1248,6 +1251,25 @@ public class ProjectPolicyAction extends BaseAction {
           policy.getProjectPolicyInnovations().add(policyInnovationSave);
         }
       }
+    }
+    
+    //Policy Milestones
+    if (policy.getMilestones() != null) {
+    	for (PolicyMilestone policyMilestone : policy.getPolicyMilestones()) {
+    		if (policyMilestone.getId() == null) {
+    			PolicyMilestone policyMilestoneSave = new PolicyMilestone();
+    			policyMilestoneSave.setPolicy(projectPolicy);
+    			policyMilestoneSave.setPhase(phase);
+    			
+    			CrpMilestone milestone = crpMilestoneManager.getCrpMilestoneById(policyMilestone.getCrpMilestone().getId());
+    			
+    			policyMilestoneSave.setCrpMilestone(milestone);
+    			
+    			policyMilestoneManager.savePolicyMilestone(policyMilestoneSave);
+    			// This is to add milestoneCrpSave to generate correct auditlog.
+    			policy.getPolicyMilestones().add(policyMilestoneSave);
+    		}
+    	}
     }
   }
 
