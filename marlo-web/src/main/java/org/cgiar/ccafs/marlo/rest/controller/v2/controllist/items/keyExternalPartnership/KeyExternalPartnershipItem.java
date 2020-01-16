@@ -17,7 +17,7 @@
  * @author Diego Perez - CIAT/CCAFS
  **************/
 
-package org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.KeyExternalPartnership;
+package org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.keyExternalPartnership;
 
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.model.User;
