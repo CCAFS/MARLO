@@ -25,10 +25,7 @@ import java.util.List;
 
 import io.swagger.annotations.ApiModelProperty;
 
-public class ProjectExpectedEstudyDTO {
-
-  @ApiModelProperty(notes = "The Generated Project expected study id", position = 1)
-  private Long id;
+public class NewProjectExpectedStudyDTO {
 
   @ApiModelProperty(notes = "Project expected study info", position = 2)
   private ProjectExpectedEstudyInfoDTO projectExpectedEstudyInfo;
@@ -75,7 +72,6 @@ public class ProjectExpectedEstudyDTO {
   @ApiModelProperty(notes = "phase (POWB, AR, UpKeep", position = 4)
   private PhaseDTO phase;
 
-
   public List<CountryDTO> getCountries() {
     return countries;
   }
@@ -93,11 +89,6 @@ public class ProjectExpectedEstudyDTO {
 
   public List<GeographicScopeDTO> getGeographicScopes() {
     return geographicScopes;
-  }
-
-
-  public Long getId() {
-    return id;
   }
 
 
@@ -176,11 +167,6 @@ public class ProjectExpectedEstudyDTO {
   }
 
 
-  public void setId(Long id) {
-    this.id = id;
-  }
-
-
   public void setInnovationCodeList(List<String> innovationCodeList) {
     this.innovationCodeList = innovationCodeList;
   }
@@ -234,6 +220,5 @@ public class ProjectExpectedEstudyDTO {
   public void setSrfSubIdoList(List<SrfSubIdoDTO> srfSubIdoList) {
     this.srfSubIdoList = srfSubIdoList;
   }
-
 
 }
