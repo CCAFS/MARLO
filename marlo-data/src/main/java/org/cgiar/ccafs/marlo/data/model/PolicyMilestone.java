@@ -19,6 +19,8 @@ public class PolicyMilestone extends MarloAuditableEntity implements java.io.Ser
 	private CrpMilestone crpMilestone;
 	@Expose
 	private ProjectPolicy policy;
+	@Expose
+	private Phase phase;
 
 	public ProjectPolicy getPolicy() {
 		return policy;
@@ -81,4 +83,12 @@ public class PolicyMilestone extends MarloAuditableEntity implements java.io.Ser
 		return "ProjectMilestone [id=" + this.getId() + ", crpMilestone=" + crpMilestone + ", policy=" + policy + "]";
 	}
 
+	public Phase getPhase() {
+		return phase;
+	}
+
+	public void setPhase(Phase phase) {
+		this.phase = phase;
+	}
+	
 }
