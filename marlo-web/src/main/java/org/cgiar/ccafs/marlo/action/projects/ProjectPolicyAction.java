@@ -22,6 +22,7 @@ import org.cgiar.ccafs.marlo.data.manager.CgiarCrossCuttingMarkerManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
+import org.cgiar.ccafs.marlo.data.manager.PolicyMilestoneManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyPolicyManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationManager;
@@ -48,6 +49,7 @@ import org.cgiar.ccafs.marlo.data.model.ExpectedStudyProject;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.Phase;
+import org.cgiar.ccafs.marlo.data.model.PolicyMilestone;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyPolicy;
@@ -125,6 +127,7 @@ public class ProjectPolicyAction extends BaseAction {
   private ProjectInnovationManager projectInnovationManager;
   private ProjectPolicyGeographicScopeManager projectPolicyGeographicScopeManager;
   private ProjectPolicyRegionManager projectPolicyRegionManager;
+  private PolicyMilestoneManager policyMilestoneManager;
   private ProjectPolicyValidator validator;
 
 
@@ -150,6 +153,7 @@ public class ProjectPolicyAction extends BaseAction {
   private List<ProjectExpectedStudy> expectedStudyList;
   private List<CgiarCrossCuttingMarker> cgiarCrossCuttingMarkers;
   private List<ProjectInnovation> innovationList;
+  private List<PolicyMilestone> milestoneList;
 
   private String transaction;
 
@@ -171,7 +175,7 @@ public class ProjectPolicyAction extends BaseAction {
     ProjectExpectedStudyPolicyManager projectExpectedStudyPolicyManager,
     ProjectInnovationManager projectInnovationManager, ProjectPolicyInnovationManager projectPolicyInnovationManager,
     ProjectPolicyGeographicScopeManager projectPolicyGeographicScopeManager,
-    ProjectPolicyRegionManager projectPolicyRegionManager) {
+    ProjectPolicyRegionManager projectPolicyRegionManager, PolicyMilestoneManager policyMilestoneManager) {
     super(config);
     this.globalUnitManager = globalUnitManager;
     this.projectPolicyManager = projectPolicyManager;
@@ -200,6 +204,7 @@ public class ProjectPolicyAction extends BaseAction {
     this.projectPolicyInnovationManager = projectPolicyInnovationManager;
     this.projectPolicyGeographicScopeManager = projectPolicyGeographicScopeManager;
     this.projectPolicyRegionManager = projectPolicyRegionManager;
+    this.policyMilestoneManager = policyMilestoneManager;
   }
 
   /**
@@ -307,9 +312,16 @@ public class ProjectPolicyAction extends BaseAction {
   public ProjectPolicy getPolicy() {
     return policy;
   }
+  
+  public List<PolicyMilestone> getMilestoneList() {
+	return milestoneList;
+  }
 
+  public void setMilestoneList(List<PolicyMilestone> milestoneList) {
+	this.milestoneList = milestoneList;
+  }
 
-  /**
+/**
    * Get the information for the Cross Cutting marker in the form
    * 
    * @param markerID
@@ -524,6 +536,13 @@ public class ProjectPolicyAction extends BaseAction {
               .getProjectInnovationById(projectPolicyInnovation.getProjectInnovation().getId()));
           }
         }
+        
+        // Milestones List Autosave
+        if (policy.getMilestones() != null) {
+        	for (PolicyMilestone policyMilestone : policy.getMilestones()) {
+        		//policyMilestone.setCrpMilestone(policyMilestoneManager.get (policyMilestone.getCrpMilestone().getId())); 
+        	}
+        }
 
         // Evidences List Autosave
         if (policy.getEvidences() != null) {
@@ -689,6 +708,16 @@ public class ProjectPolicyAction extends BaseAction {
         if (projectInnovation.getProjectInnovationInfo(this.getActualPhase()) != null) {
           innovationList.add(projectInnovation);
         }
+      }
+      // Get the milestone List
+      milestoneList = new ArrayList<>();
+      
+      List<PolicyMilestone> milestones =
+    		  policy.getPolicyMilestones().stream().filter(c -> c.isActive() && c.getPhase()!= null && c.getPhase().getId().intValue() == this.getActualPhase().getId().intValue()).collect(Collectors.toList());
+      for (PolicyMilestone policyMilestone : milestones) {
+    	  if (policyMilestone != null && policyMilestone.getCrpMilestone()!= null) {
+    		  milestoneList.add(policyMilestone);
+    	  }
       }
 
       /*

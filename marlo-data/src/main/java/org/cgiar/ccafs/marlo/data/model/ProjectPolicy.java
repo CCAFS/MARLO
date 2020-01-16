@@ -52,6 +52,9 @@ public class ProjectPolicy extends MarloAuditableEntity implements java.io.Seria
   private Set<ProjectPolicyInnovation> projectPolicyInnovations = new HashSet<ProjectPolicyInnovation>(0);
 
   private List<ProjectPolicyInnovation> innovations;
+  
+  private Set<PolicyMilestone> policyMilestones = new HashSet<PolicyMilestone>(0);
+  private List<PolicyMilestone> milestones;
 
   private Set<ProjectPolicyGeographicScope> projectPolicyGeographicScopes =
     new HashSet<ProjectPolicyGeographicScope>(0);
@@ -85,21 +88,33 @@ public class ProjectPolicy extends MarloAuditableEntity implements java.io.Seria
       .filter(pc -> pc.isActive() && pc.getPhase().equals(phase)).collect(Collectors.toList()));
   }
 
-
   public List<String> getCountriesIds() {
     return countriesIds;
   }
 
+  public Set<PolicyMilestone> getPolicyMilestones() {
+	return policyMilestones;
+  }
+
+  public void setPolicyMilestones(Set<PolicyMilestone> policyMilestones) {
+	this.policyMilestones = policyMilestones;
+  }
+
+  public List<PolicyMilestone> getMilestones() {
+	return milestones;
+  }
+
+  public void setMilestones(List<PolicyMilestone> milestones) {
+	this.milestones = milestones;
+  }
 
   public String getCountriesIdsText() {
     return countriesIdsText;
   }
 
-
   public List<ProjectPolicyCrossCuttingMarker> getCrossCuttingMarkers() {
     return crossCuttingMarkers;
   }
-
 
   public List<ProjectPolicyCrossCuttingMarker> getCrossCuttingMarkers(Phase phase) {
     return new ArrayList<>(this.getProjectPolicyCrossCuttingMarkers().stream()
