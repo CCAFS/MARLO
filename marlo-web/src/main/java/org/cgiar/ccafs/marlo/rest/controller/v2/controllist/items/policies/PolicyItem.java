@@ -64,7 +64,7 @@ import org.cgiar.ccafs.marlo.rest.dto.CountryDTO;
 import org.cgiar.ccafs.marlo.rest.dto.GeographicScopeDTO;
 import org.cgiar.ccafs.marlo.rest.dto.NewProjectPolicyDTO;
 import org.cgiar.ccafs.marlo.rest.dto.PolicyOwnerTypeDTO;
-import org.cgiar.ccafs.marlo.rest.dto.ProjectPolicyCrosscuttingMarkersDTO;
+import org.cgiar.ccafs.marlo.rest.dto.CrosscuttingMarkersDTO;
 import org.cgiar.ccafs.marlo.rest.dto.ProjectPolicyDTO;
 import org.cgiar.ccafs.marlo.rest.dto.RegionDTO;
 import org.cgiar.ccafs.marlo.rest.dto.SrfSubIdoDTO;
@@ -306,7 +306,7 @@ public class PolicyItem<T> {
         }
         // validate crosscutting markers
         if (newPolicyDTO.getCrossCuttingMarkers() != null && newPolicyDTO.getCrossCuttingMarkers().size() > 0) {
-          for (ProjectPolicyCrosscuttingMarkersDTO crosscuttingmarker : newPolicyDTO.getCrossCuttingMarkers()) {
+          for (CrosscuttingMarkersDTO crosscuttingmarker : newPolicyDTO.getCrossCuttingMarkers()) {
             CgiarCrossCuttingMarker cgiarCrossCuttingMarker = cgiarCrossCuttingMarkerManager
               .getCgiarCrossCuttingMarkerById(crosscuttingmarker.getCrossCuttingmarker().getCode());
             if (cgiarCrossCuttingMarker == null) {
@@ -714,7 +714,7 @@ public class PolicyItem<T> {
         }
         // validate crosscutting markers
         if (newPolicyDTO.getCrossCuttingMarkers() != null && newPolicyDTO.getCrossCuttingMarkers().size() > 0) {
-          for (ProjectPolicyCrosscuttingMarkersDTO crosscuttingmarker : newPolicyDTO.getCrossCuttingMarkers()) {
+          for (CrosscuttingMarkersDTO crosscuttingmarker : newPolicyDTO.getCrossCuttingMarkers()) {
             CgiarCrossCuttingMarker cgiarCrossCuttingMarker = cgiarCrossCuttingMarkerManager
               .getCgiarCrossCuttingMarkerById(crosscuttingmarker.getCrossCuttingmarker().getCode());
             if (cgiarCrossCuttingMarker == null) {

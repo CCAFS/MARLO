@@ -17,24 +17,38 @@
  * @author Diego Perez - CIAT/CCAFS
  **************/
 
-package org.cgiar.ccafs.marlo.rest.mappers;
+package org.cgiar.ccafs.marlo.rest.dto;
 
-import org.cgiar.ccafs.marlo.data.model.ProjectPolicyCrossCuttingMarker;
-import org.cgiar.ccafs.marlo.rest.dto.CrosscuttingMarkersDTO;
+import io.swagger.annotations.ApiModelProperty;
 
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.Mappings;
+public class CrosscuttingMarkersDTO {
 
-@Mapper(componentModel = "jsr330",
-  uses = {GlobalUnitMapper.class, CrossCuttingMarkerMapper.class, CrossCuttingMarkerScoreMapper.class})
-public interface ProjectPolicyCrosscuttingMarkersMapper {
 
-  @Mappings({
-    @Mapping(source = "projectPolicyCrossCuttingMarker.cgiarCrossCuttingMarker", target = "crossCuttingmarker"),
-    @Mapping(source = "projectPolicyCrossCuttingMarker.repIndGenderYouthFocusLevel",
-      target = "crossCuttingmarkerScore")})
-  public abstract CrosscuttingMarkersDTO
-    projectPolicyCrossCuttingMarkersToProjectPolicyCrosscuttingMarkersDTO(
-      ProjectPolicyCrossCuttingMarker projectPolicyCrossCuttingMarker);
+  @ApiModelProperty(notes = "CrossCutting marker identifier", position = 6)
+  private CrossCuttingMarkerDTO crossCuttingmarker;
+
+  @ApiModelProperty(notes = "CrossCutting marker score", position = 7)
+  private CrossCuttingMarkerScoreDTO crossCuttingmarkerScore;
+
+
+  public CrossCuttingMarkerDTO getCrossCuttingmarker() {
+    return crossCuttingmarker;
+  }
+
+
+  public CrossCuttingMarkerScoreDTO getCrossCuttingmarkerScore() {
+    return crossCuttingmarkerScore;
+  }
+
+
+  public void setCrossCuttingmarker(CrossCuttingMarkerDTO crossCuttingmarker) {
+    this.crossCuttingmarker = crossCuttingmarker;
+  }
+
+
+  public void setCrossCuttingmarkerScore(CrossCuttingMarkerScoreDTO crossCuttingmarkerScore) {
+    this.crossCuttingmarkerScore = crossCuttingmarkerScore;
+  }
+
+
 }

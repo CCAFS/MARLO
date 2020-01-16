@@ -55,7 +55,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Api(tags = "Policies")
 public class Policies {
 
-  private static final Logger LOG = LoggerFactory.getLogger(Innovations.class);
+  private static final Logger LOG = LoggerFactory.getLogger(Policies.class);
   @Autowired
   private Environment env;
   private final UserManager userManager;
