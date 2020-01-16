@@ -17,38 +17,27 @@
  * @author Diego Perez - CIAT/CCAFS
  **************/
 
-package org.cgiar.ccafs.marlo.rest.dto;
+package org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.KeyExternalPartnership;
 
-import io.swagger.annotations.ApiModelProperty;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
+import org.cgiar.ccafs.marlo.data.model.User;
+import org.cgiar.ccafs.marlo.rest.dto.NewKeyExternalPartnershipDTO;
 
-public class ProjectPolicyCrosscuttingMarkersDTO {
+import javax.inject.Named;
 
+@Named
+public class KeyExternalPartnershipItem<T> {
 
-  @ApiModelProperty(notes = "CrossCutting marker identifier", position = 6)
-  private CrossCuttingMarkerDTO crossCuttingmarker;
+  GlobalUnitManager globalUnitManager;
 
-  @ApiModelProperty(notes = "CrossCutting marker score", position = 7)
-  private CrossCuttingMarkerScoreDTO crossCuttingmarkerScore;
-
-
-  public CrossCuttingMarkerDTO getCrossCuttingmarker() {
-    return crossCuttingmarker;
+  public KeyExternalPartnershipItem(GlobalUnitManager globalUnitManager) {
+    this.globalUnitManager = globalUnitManager;
   }
 
+  public Long createKeyExternalPartnership(NewKeyExternalPartnershipDTO newKeyExternalPartnershipDTO,
+    String entityAcronym, User user) {
+    Long keyExternalPartnershipID = null;
 
-  public CrossCuttingMarkerScoreDTO getCrossCuttingmarkerScore() {
-    return crossCuttingmarkerScore;
+    return keyExternalPartnershipID;
   }
-
-
-  public void setCrossCuttingmarker(CrossCuttingMarkerDTO crossCuttingmarker) {
-    this.crossCuttingmarker = crossCuttingmarker;
-  }
-
-
-  public void setCrossCuttingmarkerScore(CrossCuttingMarkerScoreDTO crossCuttingmarkerScore) {
-    this.crossCuttingmarkerScore = crossCuttingmarkerScore;
-  }
-
-
 }

@@ -25,7 +25,7 @@ import io.swagger.annotations.ApiModelProperty;
 
 public class ProjectPolicyDTO {
 
-  @ApiModelProperty(notes = "The Generated deliverable id")
+  @ApiModelProperty(notes = "The Generated policy id")
   private Long id;
 
   @ApiModelProperty(notes = "Project Policy info")
@@ -44,7 +44,7 @@ public class ProjectPolicyDTO {
   private List<ProjectPolicyGeographicScopeDTO> geographicScopes;
 
   @ApiModelProperty(notes = "Crosscutting Markers List", position = 5)
-  private List<ProjectPolicyCrosscuttingMarkersDTO> crossCuttingMarkers;
+  private List<CrosscuttingMarkersDTO> crossCuttingMarkers;
 
   @ApiModelProperty(notes = "Policy Owners List", position = 6)
   private List<PolicyOwnerTypeDTO> owners;
@@ -61,7 +61,7 @@ public class ProjectPolicyDTO {
   }
 
 
-  public List<ProjectPolicyCrosscuttingMarkersDTO> getCrossCuttingMarkers() {
+  public List<CrosscuttingMarkersDTO> getCrossCuttingMarkers() {
     return crossCuttingMarkers;
   }
 
@@ -111,7 +111,7 @@ public class ProjectPolicyDTO {
   }
 
 
-  public void setCrossCuttingMarkers(List<ProjectPolicyCrosscuttingMarkersDTO> crossCuttingMarkers) {
+  public void setCrossCuttingMarkers(List<CrosscuttingMarkersDTO> crossCuttingMarkers) {
     this.crossCuttingMarkers = crossCuttingMarkers;
   }
 

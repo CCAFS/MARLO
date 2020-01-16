@@ -52,7 +52,7 @@ public class NewProjectPolicyDTO {
 
 
   @ApiModelProperty(notes = "Crosscutting Markers List", position = 5)
-  private List<ProjectPolicyCrosscuttingMarkersDTO> crossCuttingMarkers;
+  private List<CrosscuttingMarkersDTO> crossCuttingMarkers;
 
 
   @ApiModelProperty(notes = "Regions ", position = 12)
@@ -68,7 +68,7 @@ public class NewProjectPolicyDTO {
   }
 
 
-  public List<ProjectPolicyCrosscuttingMarkersDTO> getCrossCuttingMarkers() {
+  public List<CrosscuttingMarkersDTO> getCrossCuttingMarkers() {
     return crossCuttingMarkers;
   }
 
@@ -118,7 +118,7 @@ public class NewProjectPolicyDTO {
   }
 
 
-  public void setCrossCuttingMarkers(List<ProjectPolicyCrosscuttingMarkersDTO> crossCuttingMarkers) {
+  public void setCrossCuttingMarkers(List<CrosscuttingMarkersDTO> crossCuttingMarkers) {
     this.crossCuttingMarkers = crossCuttingMarkers;
   }
 

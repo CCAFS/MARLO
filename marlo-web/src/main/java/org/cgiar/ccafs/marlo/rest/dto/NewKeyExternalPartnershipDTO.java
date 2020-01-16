@@ -17,24 +17,38 @@
  * @author Diego Perez - CIAT/CCAFS
  **************/
 
-package org.cgiar.ccafs.marlo.rest.mappers;
+package org.cgiar.ccafs.marlo.rest.dto;
 
-import org.cgiar.ccafs.marlo.data.model.ProjectPolicyCrossCuttingMarker;
-import org.cgiar.ccafs.marlo.rest.dto.CrosscuttingMarkersDTO;
+import io.swagger.annotations.ApiModelProperty;
 
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.Mappings;
+public class NewKeyExternalPartnershipDTO {
 
-@Mapper(componentModel = "jsr330",
-  uses = {GlobalUnitMapper.class, CrossCuttingMarkerMapper.class, CrossCuttingMarkerScoreMapper.class})
-public interface ProjectPolicyCrosscuttingMarkersMapper {
 
-  @Mappings({
-    @Mapping(source = "projectPolicyCrossCuttingMarker.cgiarCrossCuttingMarker", target = "crossCuttingmarker"),
-    @Mapping(source = "projectPolicyCrossCuttingMarker.repIndGenderYouthFocusLevel",
-      target = "crossCuttingmarkerScore")})
-  public abstract CrosscuttingMarkersDTO
-    projectPolicyCrossCuttingMarkersToProjectPolicyCrosscuttingMarkersDTO(
-      ProjectPolicyCrossCuttingMarker projectPolicyCrossCuttingMarker);
+  @ApiModelProperty(notes = "Partnership / Main area", position = 3)
+  private PartnershipMainAreaDTO partnershipMainArea;
+
+  @ApiModelProperty(notes = "Flagship / Module", position = 2)
+  private FlagshipProgramDTO flagshipProgram;
+
+
+  public FlagshipProgramDTO getFlagshipProgram() {
+    return flagshipProgram;
+  }
+
+
+  public PartnershipMainAreaDTO getPartnershipMainArea() {
+    return partnershipMainArea;
+  }
+
+
+  public void setFlagshipProgram(FlagshipProgramDTO flagshipProgram) {
+    this.flagshipProgram = flagshipProgram;
+  }
+
+
+  public void setPartnershipMainArea(PartnershipMainAreaDTO partnershipMainArea) {
+    this.partnershipMainArea = partnershipMainArea;
+  }
+
+
 }
