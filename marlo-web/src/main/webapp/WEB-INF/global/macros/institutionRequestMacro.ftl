@@ -166,6 +166,11 @@
                       <br><strong>[@s.text name="CRP" /]:</strong> <i>${(officeRequest.crp.acronym?html)!''}</i>
                       <br><strong>[@s.text name="Requested By" /]:</strong> <i>${(officeRequest.createdBy.composedName?html)!'none'}</i>                      
                       <br><strong>[@s.text name="Active since" /]:</strong> <i>${(officeRequest.activeSince?html)!'none'}</i>                      
+                      [#if officeRequest.externalUserMail??]
+                        <hr />
+                        <p><strong>API Requester:</strong> <i>${(officeRequest.externalUserName?html)!'none'} (${(officeRequest.externalUserMail?html)!'none'})</i></p>
+                        <p><strong>API Comments:</strong> <i>${(officeRequest.externalUserComments?html)!'none'}</i></p>
+                      [/#if]  
                     </li>
                   [/#list]
                 </ul>
