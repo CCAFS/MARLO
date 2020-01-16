@@ -59,6 +59,7 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
   private Set<CrpClusterOfActivity> clusters = new HashSet<CrpClusterOfActivity>(0);
 
   private Set<ProjectOutcome> projectOutcomes = new HashSet<ProjectOutcome>(0);
+  private Set<PolicyMilestone> policyMilestones = new HashSet<PolicyMilestone>(0);
   private Set<Activity> projectActivites = new HashSet<Activity>(0);
   private Set<ProjectLocation> projectLocations = new HashSet<ProjectLocation>(0);
   private Set<DeliverableInfo> deliverableInfos = new HashSet<DeliverableInfo>(0);
@@ -475,6 +476,14 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
 
   public Set<ProjectOutcome> getProjectOutcomes() {
     return projectOutcomes;
+  }
+  
+  public Set<PolicyMilestone> getPolicyMilestones() {
+	return policyMilestones;
+  }
+
+  public void setPolicyMilestones(Set<PolicyMilestone> policyMilestones) {
+	this.policyMilestones = policyMilestones;
   }
 
   public Set<ProjectPhase> getProjectPhases() {
