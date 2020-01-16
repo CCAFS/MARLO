@@ -148,6 +148,15 @@
     <hr />
     <br />
     
+    [#-- Milestones  --]
+    <div class="form-group">
+      [@customForm.elementsListComponent name="${customName}.milestones" elementType="crpMilestone" elementList=element.milestones label="policy.milestones" helpIcon=false listName="milestonesList" keyFieldName="id" displayFieldName="composedName" required=false /]
+      <div class="note">[@s.text name="policy.milestones.note"][@s.param] <a href="[@s.url namespace="/projects" action='${crpSession}/contributionsCrpList'][@s.param name='projectID']${(projectID)!}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" target="__BLANK">clicking here</a>[/@][/@]</div>
+    </div>
+
+    <hr />
+    <br />
+    
     [#-- Contributing CRPs/PTFs  --]
     <div class="form-group">
       [@customForm.elementsListComponent name="${customName}.crps" elementType="globalUnit" elementList=element.crps label="policy.contributingCrpsPtfs"  listName="crps" keyFieldName="id" displayFieldName="composedName" /]
