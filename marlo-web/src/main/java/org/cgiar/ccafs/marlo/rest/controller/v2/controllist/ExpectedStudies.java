@@ -24,7 +24,6 @@ import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.expectedStudies.ExpectedStudiesItem;
 import org.cgiar.ccafs.marlo.rest.dto.NewProjectExpectedStudyDTO;
 import org.cgiar.ccafs.marlo.rest.dto.ProjectExpectedEstudyDTO;
-import org.cgiar.ccafs.marlo.rest.dto.ProjectPolicyDTO;
 import org.cgiar.ccafs.marlo.rest.errors.NotFoundException;
 import org.cgiar.ccafs.marlo.security.Permission;
 
@@ -51,7 +50,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@Api(tags = "OICR")
+@Api(tags = "ExpectedStudies")
 public class ExpectedStudies {
 
   private static final Logger LOG = LoggerFactory.getLogger(ExpectedStudies.class);
@@ -67,23 +66,23 @@ public class ExpectedStudies {
   }
 
   @ApiOperation(tags = {"Table 3 - Outcome/ Impact Case Reports"}, value = "${ExpectedStudies.OICR.POST.value}",
-    response = ProjectPolicyDTO.class)
+    response = ProjectExpectedEstudyDTO.class)
   @RequiresPermissions(Permission.FULL_CREATE_REST_API_PERMISSION)
   @RequestMapping(value = "/{CGIAREntity}/OICR", method = RequestMethod.POST,
     produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<Long> createPolicy(
+  public ResponseEntity<Long> createExpectedStudy(
     @ApiParam(value = "${ExpectedStudies.OICR.POST.param.CGIAR}", required = true) @PathVariable String CGIAREntity,
-    @ApiParam(value = "${ExpectedStudies.OICR.POST.param.policy}",
+    @ApiParam(value = "${ExpectedStudies.OICR.POST.param.OICR}",
       required = true) @Valid @RequestBody NewProjectExpectedStudyDTO newProjectExpectedStudyDTO) {
-    Long projectExpectedStudyID = new Long(0);
+    Long policyId = new Long(0);
     try {
-      projectExpectedStudyID = this.expectedStudiesItem.createProjectExpectedStudyID(newProjectExpectedStudyDTO,
-        CGIAREntity, this.getCurrentUser());
+      policyId =
+        this.expectedStudiesItem.createExpectedStudy(newProjectExpectedStudyDTO, CGIAREntity, this.getCurrentUser());
     } catch (Exception e) {
       e.printStackTrace();
     }
 
-    ResponseEntity<Long> response = new ResponseEntity<Long>(projectExpectedStudyID, HttpStatus.OK);
+    ResponseEntity<Long> response = new ResponseEntity<Long>(policyId, HttpStatus.OK);
     if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
       throw new NotFoundException("404", this.env.getProperty("ExpectedStudies.OICR.GET.id.404"));
     }

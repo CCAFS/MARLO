@@ -28,11 +28,17 @@ public class KeyExternalPartnershipDTO {
   @ApiModelProperty(notes = "CRP information", position = 2)
   private CGIAREntityDTO cgiarEntity;
 
-  @ApiModelProperty(notes = "Partnership / Main area", position = 4)
+  @ApiModelProperty(notes = "Partnership / Main area", position = 5)
   private PartnershipMainAreaDTO partnershipMainArea;
 
-  @ApiModelProperty(notes = "Flagship / Module", position = 3)
+  @ApiModelProperty(notes = "Description of partnership aim", position = 3)
+  private String description;
+
+  @ApiModelProperty(notes = "Flagship / Module", position = 4)
   private FlagshipProgramDTO flagshipProgram;
+
+  @ApiModelProperty(notes = "Phase (AR, POWB) - Year", position = 6)
+  private PhaseDTO phase;
 
 
   public CGIAREntityDTO getCgiarEntity() {
@@ -55,6 +61,11 @@ public class KeyExternalPartnershipDTO {
   }
 
 
+  public PhaseDTO getPhase() {
+    return phase;
+  }
+
+
   public void setCgiarEntity(CGIAREntityDTO cgiarEntity) {
     this.cgiarEntity = cgiarEntity;
   }
@@ -72,6 +83,11 @@ public class KeyExternalPartnershipDTO {
 
   public void setPartnershipMainArea(PartnershipMainAreaDTO partnershipMainArea) {
     this.partnershipMainArea = partnershipMainArea;
+  }
+
+
+  public void setPhase(PhaseDTO phase) {
+    this.phase = phase;
   }
 
 
