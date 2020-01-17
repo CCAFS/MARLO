@@ -47,6 +47,7 @@ import org.cgiar.ccafs.marlo.data.manager.RepIndStageProcessManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfSubIdoManager;
 import org.cgiar.ccafs.marlo.data.model.CgiarCrossCuttingMarker;
 import org.cgiar.ccafs.marlo.data.model.CrpMilestone;
+import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
 import org.cgiar.ccafs.marlo.data.model.ExpectedStudyProject;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
@@ -57,6 +58,8 @@ import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyPolicy;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationShared;
+import org.cgiar.ccafs.marlo.data.model.ProjectMilestone;
+import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicy;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicyCountry;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicyCrossCuttingMarker;
@@ -155,7 +158,7 @@ public class ProjectPolicyAction extends BaseAction {
 	private List<ProjectExpectedStudy> expectedStudyList;
 	private List<CgiarCrossCuttingMarker> cgiarCrossCuttingMarkers;
 	private List<ProjectInnovation> innovationList;
-	private List<PolicyMilestone> milestoneList;
+	private List<CrpMilestone> milestoneList;
 
 	private String transaction;
 
@@ -314,11 +317,11 @@ public class ProjectPolicyAction extends BaseAction {
 		return policy;
 	}
 
-	public List<PolicyMilestone> getMilestoneList() {
+	public List<CrpMilestone> getMilestoneList() {
 		return milestoneList;
 	}
 
-	public void setMilestoneList(List<PolicyMilestone> milestoneList) {
+	public void setMilestoneList(List<CrpMilestone> milestoneList) {
 		this.milestoneList = milestoneList;
 	}
 
@@ -638,6 +641,13 @@ public class ProjectPolicyAction extends BaseAction {
 							.collect(Collectors.toList())));
 				}
 
+				// Milestones List
+				if (policy.getPolicyMilestones() != null) {
+					policy.setMilestones(new ArrayList<>(policy.getPolicyMilestones().stream()
+							.filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId()))
+							.collect(Collectors.toList())));
+				}
+
 				// Evidence List
 				if (policy.getProjectExpectedStudyPolicies() != null) {
 					policy.setEvidences(new ArrayList<>(policy.getProjectExpectedStudyPolicies().stream()
@@ -711,16 +721,33 @@ public class ProjectPolicyAction extends BaseAction {
 					innovationList.add(projectInnovation);
 				}
 			}
-			// Get the milestone List
+
+			/*
+			 * Get the milestone List
+			 */
 			milestoneList = new ArrayList<>();
 
-			List<PolicyMilestone> milestones = policy.getPolicyMilestones().stream()
-					.filter(c -> c.isActive() && c.getPhase() != null
-							&& c.getPhase().getId().intValue() == this.getActualPhase().getId().intValue())
+			// Get outcomes list
+			List<ProjectOutcome> projectOutcomesList = new ArrayList<>();
+			projectOutcomesList = projectL.getProjectOutcomes().stream()
+					.filter(po -> po.isActive() && po.getPhase() != null
+							&& po.getPhase().getId().equals(this.getActualPhase().getId()))
 					.collect(Collectors.toList());
-			for (PolicyMilestone policyMilestone : milestones) {
-				if (policyMilestone != null && policyMilestone.getCrpMilestone() != null) {
-					milestoneList.add(policyMilestone);
+
+			
+			if (projectOutcomesList != null) {
+
+				for (ProjectOutcome projectOutcome : projectOutcomesList) {
+					projectOutcome.setMilestones(projectOutcome.getProjectMilestones().stream()
+							.filter(m -> m != null && m.isActive()).collect(Collectors.toList()));
+					
+					if(projectOutcome.getMilestones()!= null) {
+						for(ProjectMilestone projectMilestone:projectOutcome.getMilestones()) {
+							if(projectMilestone.getCrpMilestone()!= null && projectMilestone.getCrpMilestone().isActive()) {
+								milestoneList.add(projectMilestone.getCrpMilestone());
+							}
+						}
+					}
 				}
 			}
 
@@ -838,156 +865,150 @@ public class ProjectPolicyAction extends BaseAction {
 	}
 
 	@Override
-  public String save() {
-    System.out.println("narrative " + policy.getProjectPolicyInfo().getNarrativeEvidence());
+	public String save() {
 
-    if (this.hasPermission("canEdit")) {
+		if (this.hasPermission("canEdit")) {
 
-      Phase phase = this.getActualPhase();
+			Phase phase = this.getActualPhase();
 
-      Path path = this.getAutoSaveFilePath();
+			Path path = this.getAutoSaveFilePath();
 
-      policy.setProject(project);
+			policy.setProject(project);
 
-      this.saveCrps(policyDB, phase);
-      this.saveOwners(policyDB, phase);
-      this.saveSubIdos(policyDB, phase);
-      this.saveCrossCutting(policyDB, phase);
-      this.saveInnovations(policyDB, phase);
-      this.saveMilestones(policyDB, phase);
-      this.saveEvidence(policyDB, phase);
+			this.saveCrps(policyDB, phase);
+			this.saveOwners(policyDB, phase);
+			this.saveSubIdos(policyDB, phase);
+			this.saveCrossCutting(policyDB, phase);
+			this.saveInnovations(policyDB, phase);
+			//this.saveMilestones(policyDB, phase);
+			this.saveEvidence(policyDB, phase);
 
-      // Save Geographic Scope Data
-      this.saveGeographicScopes(policyDB, phase);
+			// Save Geographic Scope Data
+			this.saveGeographicScopes(policyDB, phase);
 
-      boolean haveRegions = false;
-      boolean haveCountries = false;
+			boolean haveRegions = false;
+			boolean haveCountries = false;
 
-      if (policy.getGeographicScopes() != null) {
-        for (ProjectPolicyGeographicScope projectPolicyGeographicScope : policy.getGeographicScopes()) {
+			if (policy.getGeographicScopes() != null) {
+				for (ProjectPolicyGeographicScope projectPolicyGeographicScope : policy.getGeographicScopes()) {
 
-          if (projectPolicyGeographicScope.getRepIndGeographicScope().getId() == 2) {
-            haveRegions = true;
-          }
+					if (projectPolicyGeographicScope.getRepIndGeographicScope().getId() == 2) {
+						haveRegions = true;
+					}
 
-          if (projectPolicyGeographicScope.getRepIndGeographicScope().getId() != 1
-            && projectPolicyGeographicScope.getRepIndGeographicScope().getId() != 2) {
-            haveCountries = true;
-          }
-        }
-      }
+					if (projectPolicyGeographicScope.getRepIndGeographicScope().getId() != 1
+							&& projectPolicyGeographicScope.getRepIndGeographicScope().getId() != 2) {
+						haveCountries = true;
+					}
+				}
+			}
 
+			if (haveRegions) {
+				// Save the Regions List
+				this.saveRegions(policyDB, phase);
+			} else {
+				this.deleteLocElements(policyDB, phase, false);
+			}
 
-      if (haveRegions) {
-        // Save the Regions List
-        this.saveRegions(policyDB, phase);
-      } else {
-        this.deleteLocElements(policyDB, phase, false);
-      }
+			if (haveCountries) {
 
-      if (haveCountries) {
+				// Save the Countries List (ProjectPolicyCountry)
+				if (policy.getCountriesIds() != null || !policy.getCountriesIds().isEmpty()) {
 
-        // Save the Countries List (ProjectPolicyCountry)
-        if (policy.getCountriesIds() != null || !policy.getCountriesIds().isEmpty()) {
+					List<ProjectPolicyCountry> countries = projectPolicyCountryManager
+							.getPolicyCountrybyPhase(policy.getId(), this.getActualPhase().getId());
+					List<ProjectPolicyCountry> countriesSave = new ArrayList<>();
+					for (String countryIds : policy.getCountriesIds()) {
+						ProjectPolicyCountry countryInn = new ProjectPolicyCountry();
+						countryInn.setLocElement(locElementManager.getLocElementByISOCode(countryIds));
+						countryInn.setProjectPolicy(policy);
+						countryInn.setPhase(this.getActualPhase());
+						countriesSave.add(countryInn);
+						if (!countries.contains(countryInn)) {
+							projectPolicyCountryManager.saveProjectPolicyCountry(countryInn);
+						}
+					}
 
-          List<ProjectPolicyCountry> countries =
-            projectPolicyCountryManager.getPolicyCountrybyPhase(policy.getId(), this.getActualPhase().getId());
-          List<ProjectPolicyCountry> countriesSave = new ArrayList<>();
-          for (String countryIds : policy.getCountriesIds()) {
-            ProjectPolicyCountry countryInn = new ProjectPolicyCountry();
-            countryInn.setLocElement(locElementManager.getLocElementByISOCode(countryIds));
-            countryInn.setProjectPolicy(policy);
-            countryInn.setPhase(this.getActualPhase());
-            countriesSave.add(countryInn);
-            if (!countries.contains(countryInn)) {
-              projectPolicyCountryManager.saveProjectPolicyCountry(countryInn);
-            }
-          }
+					for (ProjectPolicyCountry projectPolicyCountry : countries) {
+						if (!countriesSave.contains(projectPolicyCountry)) {
+							projectPolicyCountryManager.deleteProjectPolicyCountry(projectPolicyCountry.getId());
+						}
+					}
+				}
+			} else {
+				this.deleteLocElements(policyDB, phase, true);
+			}
 
-          for (ProjectPolicyCountry projectPolicyCountry : countries) {
-            if (!countriesSave.contains(projectPolicyCountry)) {
-              projectPolicyCountryManager.deleteProjectPolicyCountry(projectPolicyCountry.getId());
-            }
-          }
-        }
-      } else {
-        this.deleteLocElements(policyDB, phase, true);
-      }
+			List<String> relationsName = new ArrayList<>();
+			relationsName.add(APConstants.PROJECT_POLICY_INFOS_RELATION);
+			relationsName.add(APConstants.PROJECT_POLICY_COUNTRY_RELATION);
+			relationsName.add(APConstants.PROJECT_POLICY_CRP_RELATION);
+			relationsName.add(APConstants.PROJECT_POLICY_OWNER_RELATION);
+			relationsName.add(APConstants.PROJECT_POLICY_SUB_IDO_RELATION);
+			relationsName.add(APConstants.PROJECT_POLICY_REGION_RELATION);
+			relationsName.add(APConstants.PROJECT_POLICY_INNOVATION_RELATION);
+			relationsName.add(APConstants.PROJECT_POLICY_MILESTONE_RELATION);
+			relationsName.add(APConstants.PROJECT_POLICY_CROSS_CUTTING_RELATION);
+			relationsName.add(APConstants.PROJECT_POLICY_EVIDENCE_RELATION);
 
+			policy.setModificationJustification(this.getJustification());
 
-      List<String> relationsName = new ArrayList<>();
-      relationsName.add(APConstants.PROJECT_POLICY_INFOS_RELATION);
-      relationsName.add(APConstants.PROJECT_POLICY_COUNTRY_RELATION);
-      relationsName.add(APConstants.PROJECT_POLICY_CRP_RELATION);
-      relationsName.add(APConstants.PROJECT_POLICY_OWNER_RELATION);
-      relationsName.add(APConstants.PROJECT_POLICY_SUB_IDO_RELATION);
-      relationsName.add(APConstants.PROJECT_POLICY_REGION_RELATION);
-      relationsName.add(APConstants.PROJECT_POLICY_INNOVATION_RELATION);
-      relationsName.add(APConstants.PROJECT_POLICY_CROSS_CUTTING_RELATION);
-      relationsName.add(APConstants.PROJECT_POLICY_EVIDENCE_RELATION);
+			// Save Project Policy Info
+			policy.getProjectPolicyInfo().setPhase(this.getActualPhase());
+			policy.getProjectPolicyInfo().setProjectPolicy(policy);
 
+			if (policy.getProjectPolicyInfo().getRepIndPolicyInvestimentType() != null) {
+				if (policy.getProjectPolicyInfo().getRepIndPolicyInvestimentType().getId() == -1) {
+					policy.getProjectPolicyInfo().setRepIndPolicyInvestimentType(null);
+				}
+			}
 
-      policy.setModificationJustification(this.getJustification());
+			if (policy.getProjectPolicyInfo().getRepIndStageProcess() != null) {
+				if (policy.getProjectPolicyInfo().getRepIndStageProcess().getId() == -1) {
+					policy.getProjectPolicyInfo().setRepIndStageProcess(null);
+				}
+			}
 
+			projectPolicyInfoManager.saveProjectPolicyInfo(policy.getProjectPolicyInfo());
+			/**
+			 * The following is required because we need to update something on
+			 * the @ProjectInnovation if we want a row created in the auditlog table.
+			 */
+			this.setModificationJustification(policy);
 
-      // Save Project Policy Info
-      policy.getProjectPolicyInfo().setPhase(this.getActualPhase());
-      policy.getProjectPolicyInfo().setProjectPolicy(policy);
+			projectPolicyManager.saveProjectPolicy(policy, this.getActionName(), relationsName, this.getActualPhase());
 
-      if (policy.getProjectPolicyInfo().getRepIndPolicyInvestimentType() != null) {
-        if (policy.getProjectPolicyInfo().getRepIndPolicyInvestimentType().getId() == -1) {
-          policy.getProjectPolicyInfo().setRepIndPolicyInvestimentType(null);
-        }
-      }
+			if (path.toFile().exists()) {
+				path.toFile().delete();
+			}
 
-      if (policy.getProjectPolicyInfo().getRepIndStageProcess() != null) {
-        if (policy.getProjectPolicyInfo().getRepIndStageProcess().getId() == -1) {
-          policy.getProjectPolicyInfo().setRepIndStageProcess(null);
-        }
-      }
+			if (this.getUrl() == null || this.getUrl().isEmpty()) {
+				Collection<String> messages = this.getActionMessages();
+				if (!this.getInvalidFields().isEmpty()) {
+					this.setActionMessages(null);
+					// this.addActionMessage(Map.toString(this.getInvalidFields().toArray()));
+					List<String> keys = new ArrayList<String>(this.getInvalidFields().keySet());
+					for (String key : keys) {
+						this.addActionMessage(key + ": " + this.getInvalidFields().get(key));
+					}
 
-      projectPolicyInfoManager.saveProjectPolicyInfo(policy.getProjectPolicyInfo());
-      /**
-       * The following is required because we need to update something on the @ProjectInnovation if we want a row
-       * created in the auditlog table.
-       */
-      this.setModificationJustification(policy);
+				} else {
+					this.addActionMessage("message:" + this.getText("saving.saved"));
+				}
+				return SUCCESS;
+			} else {
+				this.addActionMessage("");
+				this.setActionMessages(null);
+				return REDIRECT;
+			}
+		} else
 
-      projectPolicyManager.saveProjectPolicy(policy, this.getActionName(), relationsName, this.getActualPhase());
+		{
 
-      if (path.toFile().exists()) {
-        path.toFile().delete();
-      }
+			return NOT_AUTHORIZED;
+		}
 
-      if (this.getUrl() == null || this.getUrl().isEmpty()) {
-        Collection<String> messages = this.getActionMessages();
-        if (!this.getInvalidFields().isEmpty()) {
-          this.setActionMessages(null);
-          // this.addActionMessage(Map.toString(this.getInvalidFields().toArray()));
-          List<String> keys = new ArrayList<String>(this.getInvalidFields().keySet());
-          for (String key : keys) {
-            this.addActionMessage(key + ": " + this.getInvalidFields().get(key));
-          }
-
-        } else {
-          this.addActionMessage("message:" + this.getText("saving.saved"));
-        }
-        return SUCCESS;
-      } else {
-        this.addActionMessage("");
-        this.setActionMessages(null);
-        return REDIRECT;
-      }
-    } else
-
-    {
-
-
-      return NOT_AUTHORIZED;
-    }
-
-
-  }
+	}
 
 	/**
 	 * Save Project Policy CrossCutting Information
@@ -1267,13 +1288,12 @@ public class ProjectPolicyAction extends BaseAction {
 	}
 
 	public void saveMilestones(ProjectPolicy projectPolicy, Phase phase) {
-		
-		// Search and deleted form Information
-		if (projectPolicy.getPolicyMilestones() != null
-				&& projectPolicy.getPolicyMilestones().size() > 0) {
 
-			List<PolicyMilestone> milestonePrev = new ArrayList<>(projectPolicy.getPolicyMilestones()
-					.stream().filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId()))
+		// Search and deleted form Information
+		if (projectPolicy.getPolicyMilestones() != null && projectPolicy.getPolicyMilestones().size() > 0) {
+
+			List<PolicyMilestone> milestonePrev = new ArrayList<>(projectPolicy.getPolicyMilestones().stream()
+					.filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId()))
 					.collect(Collectors.toList()));
 
 			for (PolicyMilestone policyMilestone : milestonePrev) {
@@ -1282,10 +1302,11 @@ public class ProjectPolicyAction extends BaseAction {
 				}
 			}
 		}
-		
+
 		// Policy Milestones
 		if (policy.getMilestones() != null) {
-			for (PolicyMilestone policyMilestone : policy.getPolicyMilestones()) {
+			System.out.println("Hola " + policy.getMilestones().size() );
+			for (PolicyMilestone policyMilestone : policy.getMilestones()) {
 				if (policyMilestone.getId() == null) {
 					PolicyMilestone policyMilestoneSave = new PolicyMilestone();
 					policyMilestoneSave.setPolicy(projectPolicy);
@@ -1293,7 +1314,6 @@ public class ProjectPolicyAction extends BaseAction {
 
 					CrpMilestone milestone = crpMilestoneManager
 							.getCrpMilestoneById(policyMilestone.getCrpMilestone().getId());
-
 					policyMilestoneSave.setCrpMilestone(milestone);
 
 					policyMilestoneManager.savePolicyMilestone(policyMilestoneSave);

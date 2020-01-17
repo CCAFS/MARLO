@@ -12,7 +12,7 @@
             <column name="crp_milestone_id" not-null="true" />
         </many-to-one>
         <many-to-one name="policy" class="org.cgiar.ccafs.marlo.data.model.ProjectPolicy" fetch="select">
-            <column name="policye_id" not-null="true" />
+            <column name="policy_id" not-null="true" />
         </many-to-one>
          <many-to-one name="phase" class="org.cgiar.ccafs.marlo.data.model.Phase" fetch="select">
             <column name="id_phase" />
