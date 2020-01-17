@@ -19,15 +19,13 @@
 
 package org.cgiar.ccafs.marlo.rest.dto;
 
-import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyCrp;
-
 import java.util.List;
 
 import io.swagger.annotations.ApiModelProperty;
 
 public class ProjectExpectedEstudyDTO {
 
-  @ApiModelProperty(notes = "The Generated Project expected study id", position = 1)
+  @ApiModelProperty(notes = "The Generated expected study id", position = 1)
   private Long id;
 
   @ApiModelProperty(notes = "Project expected study info", position = 2)
@@ -49,7 +47,7 @@ public class ProjectExpectedEstudyDTO {
   private List<InstitutionDTO> institutionsList;
 
   @ApiModelProperty(notes = "Contributing CRP/Plataform List", position = 7)
-  private List<ProjectExpectedStudyCrp> projectExpectedStudiesCrpDTO;
+  private List<CGIAREntityDTO> projectExpectedStudiesCrpDTO;
 
   @ApiModelProperty(notes = "Regions", position = 6)
   private List<RegionDTO> regions;
@@ -63,16 +61,16 @@ public class ProjectExpectedEstudyDTO {
   @ApiModelProperty(notes = "Quantification List List", position = 11)
   private List<QuantificationDTO> quantificationList;
 
-  @ApiModelProperty(notes = "Contributing innovations code list", position = 10)
+  @ApiModelProperty(notes = "Contributing innovations list", position = 10)
   private List<String> innovationCodeList;
 
-  @ApiModelProperty(notes = "Contributing policies code list", position = 3)
+  @ApiModelProperty(notes = "Contributing policies list", position = 3)
   private List<String> policiesCodeList;
 
   @ApiModelProperty(notes = "Aditional link list", position = 4)
   private List<String> links;
 
-  @ApiModelProperty(notes = "phase (POWB, AR, UpKeep", position = 4)
+  @ApiModelProperty(notes = "phase (POWB, AR, UpKeep)", position = 13)
   private PhaseDTO phase;
 
 
@@ -131,7 +129,7 @@ public class ProjectExpectedEstudyDTO {
   }
 
 
-  public List<ProjectExpectedStudyCrp> getProjectExpectedStudiesCrpDTO() {
+  public List<CGIAREntityDTO> getProjectExpectedStudiesCrpDTO() {
     return projectExpectedStudiesCrpDTO;
   }
 
@@ -211,7 +209,7 @@ public class ProjectExpectedEstudyDTO {
   }
 
 
-  public void setProjectExpectedStudiesCrpDTO(List<ProjectExpectedStudyCrp> projectExpectedStudiesCrpDTO) {
+  public void setProjectExpectedStudiesCrpDTO(List<CGIAREntityDTO> projectExpectedStudiesCrpDTO) {
     this.projectExpectedStudiesCrpDTO = projectExpectedStudiesCrpDTO;
   }
 

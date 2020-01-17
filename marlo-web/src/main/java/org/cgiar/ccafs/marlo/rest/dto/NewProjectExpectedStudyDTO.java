@@ -19,8 +19,6 @@
 
 package org.cgiar.ccafs.marlo.rest.dto;
 
-import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyCrp;
-
 import java.util.List;
 
 import io.swagger.annotations.ApiModelProperty;
@@ -46,7 +44,7 @@ public class NewProjectExpectedStudyDTO {
   private List<InstitutionDTO> institutionsList;
 
   @ApiModelProperty(notes = "Contributing CRP/Plataform List", position = 7)
-  private List<ProjectExpectedStudyCrp> projectExpectedStudiesCrpDTO;
+  private List<CGIAREntityDTO> projectExpectedStudiesCrpDTO;
 
   @ApiModelProperty(notes = "Regions", position = 6)
   private List<RegionDTO> regions;
@@ -69,7 +67,7 @@ public class NewProjectExpectedStudyDTO {
   @ApiModelProperty(notes = "Aditional link list", position = 4)
   private List<String> links;
 
-  @ApiModelProperty(notes = "phase (POWB, AR, UpKeep", position = 4)
+  @ApiModelProperty(notes = "phase (POWB, AR, UpKeep)", position = 4)
   private PhaseDTO phase;
 
   public List<CountryDTO> getCountries() {
@@ -122,7 +120,7 @@ public class NewProjectExpectedStudyDTO {
   }
 
 
-  public List<ProjectExpectedStudyCrp> getProjectExpectedStudiesCrpDTO() {
+  public List<CGIAREntityDTO> getProjectExpectedStudiesCrpDTO() {
     return projectExpectedStudiesCrpDTO;
   }
 
@@ -197,7 +195,7 @@ public class NewProjectExpectedStudyDTO {
   }
 
 
-  public void setProjectExpectedStudiesCrpDTO(List<ProjectExpectedStudyCrp> projectExpectedStudiesCrpDTO) {
+  public void setProjectExpectedStudiesCrpDTO(List<CGIAREntityDTO> projectExpectedStudiesCrpDTO) {
     this.projectExpectedStudiesCrpDTO = projectExpectedStudiesCrpDTO;
   }
 
@@ -220,5 +218,6 @@ public class NewProjectExpectedStudyDTO {
   public void setSrfSubIdoList(List<SrfSubIdoDTO> srfSubIdoList) {
     this.srfSubIdoList = srfSubIdoList;
   }
+
 
 }

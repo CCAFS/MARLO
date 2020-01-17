@@ -24,25 +24,25 @@ import io.swagger.annotations.ApiModelProperty;
 public class ProjectExpectedEstudyInfoDTO {
 
 
-  @ApiModelProperty(notes = "Project expected study title", position = 2)
+  @ApiModelProperty(notes = "Expected study title", position = 2)
   private long year;
 
-  @ApiModelProperty(notes = "Project expected study title", position = 1)
+  @ApiModelProperty(notes = "Expected study title", position = 1)
   private String title;
 
-  @ApiModelProperty(notes = "Project expected study type", position = 3)
+  @ApiModelProperty(notes = "Expected study type", position = 3)
   private StudyTypeDTO studyType;
 
-  @ApiModelProperty(notes = "Project expected study status ", position = 4)
+  @ApiModelProperty(notes = "Expected study status", position = 4)
   private long status;
 
-  @ApiModelProperty(notes = "Project expected study tag ", position = 5)
+  @ApiModelProperty(notes = "Expected study tag", position = 5)
   private TagDTO tag;
 
-  @ApiModelProperty(notes = "Maturity of change reported ", position = 6)
+  @ApiModelProperty(notes = "Maturity of change reported", position = 6)
   private MaturityOfChangeDTO maturityOfChange;
 
-  @ApiModelProperty(notes = "Contact person ", position = 7)
+  @ApiModelProperty(notes = "Contact person", position = 7)
   private String contacts;
 
 

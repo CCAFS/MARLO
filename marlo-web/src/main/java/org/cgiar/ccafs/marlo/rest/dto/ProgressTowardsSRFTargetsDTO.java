@@ -21,49 +21,37 @@ package org.cgiar.ccafs.marlo.rest.dto;
 
 import io.swagger.annotations.ApiModelProperty;
 
-public class NewKeyExternalPartnershipDTO {
+public class ProgressTowardsSRFTargetsDTO {
 
+  @ApiModelProperty(notes = "ID ", position = 1)
+  private Long id;
+  @ApiModelProperty(notes = "SLO target", position = 2)
+  private SrfSloTargetDTO srfSloTarget;
+  @ApiModelProperty(notes = "Progress Towards narrative narrative", position = 3)
+  private String narrative;
 
-  @ApiModelProperty(notes = "Partnership / Main area", position = 3)
-  private PartnershipMainAreaDTO partnershipMainArea;
-
-  @ApiModelProperty(notes = "Description of partnership aim", position = 2)
-  private String description;
-
-  @ApiModelProperty(notes = "Flagship / Module", position = 1)
-  private FlagshipProgramDTO flagshipProgram;
-
-  @ApiModelProperty(notes = "Phase (AR, POWB) - Year", position = 4)
-  private PhaseDTO phase;
-
-
-  public FlagshipProgramDTO getFlagshipProgram() {
-    return flagshipProgram;
+  public Long getId() {
+    return id;
   }
 
-
-  public PartnershipMainAreaDTO getPartnershipMainArea() {
-    return partnershipMainArea;
+  public String getNarrative() {
+    return narrative;
   }
 
-
-  public PhaseDTO getPhase() {
-    return phase;
+  public SrfSloTargetDTO getSrfSloTarget() {
+    return srfSloTarget;
   }
 
-
-  public void setFlagshipProgram(FlagshipProgramDTO flagshipProgram) {
-    this.flagshipProgram = flagshipProgram;
+  public void setId(Long id) {
+    this.id = id;
   }
 
-
-  public void setPartnershipMainArea(PartnershipMainAreaDTO partnershipMainArea) {
-    this.partnershipMainArea = partnershipMainArea;
+  public void setNarrative(String narrative) {
+    this.narrative = narrative;
   }
 
-
-  public void setPhase(PhaseDTO phase) {
-    this.phase = phase;
+  public void setSrfSloTarget(SrfSloTargetDTO srfSloTarget) {
+    this.srfSloTarget = srfSloTarget;
   }
 
 

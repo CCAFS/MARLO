@@ -47,8 +47,7 @@ public class ExpectedStudiesItem<T> {
     this.globalUnitManager = globalUnitManager;
   }
 
-  public Long createProjectExpectedStudyID(NewProjectExpectedStudyDTO newProjectExpectedStudy, String entityAcronym,
-    User user) {
+  public Long createExpectedStudy(NewProjectExpectedStudyDTO newProjectExpectedStudy, String entityAcronym, User user) {
     Long projectExpectedStudyID = null;
     List<FieldErrorDTO> fieldErrors = new ArrayList<FieldErrorDTO>();
     GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitByAcronym(entityAcronym);
