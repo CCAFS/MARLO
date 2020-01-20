@@ -27,9 +27,17 @@ public class NewProgressTowardsSRFTargetDTO {
   private SrfSloTargetDTO srfSloTarget;
   @ApiModelProperty(notes = "Progress Towards narrative narrative", position = 3)
   private String narrative;
+  @ApiModelProperty(notes = "Phase - Year ", position = 4)
+  private PhaseDTO phase;
+
 
   public String getNarrative() {
     return narrative;
+  }
+
+
+  public PhaseDTO getPhase() {
+    return phase;
   }
 
   public SrfSloTargetDTO getSrfSloTarget() {
@@ -38,6 +46,10 @@ public class NewProgressTowardsSRFTargetDTO {
 
   public void setNarrative(String narrative) {
     this.narrative = narrative;
+  }
+
+  public void setPhase(PhaseDTO phase) {
+    this.phase = phase;
   }
 
   public void setSrfSloTarget(SrfSloTargetDTO srfSloTarget) {
