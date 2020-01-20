@@ -30,6 +30,9 @@ public class ProgressTowardsSRFTargetsDTO {
   @ApiModelProperty(notes = "Progress Towards narrative narrative", position = 3)
   private String narrative;
 
+  @ApiModelProperty(notes = "Phase - Year ", position = 4)
+  private PhaseDTO phase;
+
   public Long getId() {
     return id;
   }
@@ -38,9 +41,15 @@ public class ProgressTowardsSRFTargetsDTO {
     return narrative;
   }
 
+  public PhaseDTO getPhase() {
+    return phase;
+  }
+
+
   public SrfSloTargetDTO getSrfSloTarget() {
     return srfSloTarget;
   }
+
 
   public void setId(Long id) {
     this.id = id;
@@ -48,6 +57,10 @@ public class ProgressTowardsSRFTargetsDTO {
 
   public void setNarrative(String narrative) {
     this.narrative = narrative;
+  }
+
+  public void setPhase(PhaseDTO phase) {
+    this.phase = phase;
   }
 
   public void setSrfSloTarget(SrfSloTargetDTO srfSloTarget) {
