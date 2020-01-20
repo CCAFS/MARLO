@@ -880,7 +880,7 @@ public class ProjectPolicyAction extends BaseAction {
 			this.saveSubIdos(policyDB, phase);
 			this.saveCrossCutting(policyDB, phase);
 			this.saveInnovations(policyDB, phase);
-			//this.saveMilestones(policyDB, phase);
+			this.saveMilestones(policyDB, phase);
 			this.saveEvidence(policyDB, phase);
 
 			// Save Geographic Scope Data
