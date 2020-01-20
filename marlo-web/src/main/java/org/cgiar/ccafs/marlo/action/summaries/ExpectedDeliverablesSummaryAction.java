@@ -573,25 +573,20 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
 						for (DeliverableUserPartnershipPerson person : responsibleppp) {
 							if (person.getUser() != null && person.getUser().getComposedName() != null) {
 								// individual += " ●";
-								System.out.println(" pre 4 - deliverable " + deliverable.getId());
 
 								if (person.getDeliverableUserPartnership() != null
 										&& person.getDeliverableUserPartnership().getInstitution() != null
 										&& person.getDeliverableUserPartnership().getInstitution() != null
 										&& person.getDeliverableUserPartnership().getInstitution()
 												.getAcronym() != null) {
-									System.out.println("pre 5 - deliverable " + deliverable.getId());
-
 
 									if (deliverablePartnership.getInstitution().getAcronym() != null
 											&& deliverablePartnership.getInstitution().getAcronym().contains("IFPRI")
 											&& divisions != null) {
-										System.out.println("pre 6-- - deliverable " + deliverable.getId());
 
 										Long tempID = person.getUser().getId();
 
 										for (ProjectPartner pp : projectPartnersListTemp) {
-											System.out.println("pre 6 - deliverable " + deliverable.getId());
 
 											List<ProjectPartnerPerson> partnerPersonList = pp.getProjectPartnerPersons()
 													.stream()
@@ -599,21 +594,15 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
 															&& ppp.getUser().getId().equals(tempID))
 													.collect(Collectors.toList());
 
-											// ProjectPartnerPerson partnerPerson = null;
-											System.out.println("pre 7 - deliverable " + deliverable.getId());
-
+											// ProjectPartnerPerson partnerPerson = null
 											if (partnerPersonList != null && partnerPersonList.get(0) != null) {
-												System.out.println("pre 8 - deliverable " + deliverable.getId());
 
 												/*
 												 * Create for method
 												 */
 												/***************** Start to for *************************/
 												for (ProjectPartnerPerson ppPerson : partnerPersonList) {
-													System.out.println("holi " + "deliverable " + deliverable.getId()
-															+ ppPerson.getComposedName() + " divi / "
-															+ ppPerson.getPartnerDivision());
-
+													
 													if (ppPerson.getUser() != null
 															&& ppPerson.getUser().getId().equals(tempID)) {
 
