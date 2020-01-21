@@ -735,7 +735,7 @@ public class ProjectPolicyAction extends BaseAction {
 
 				for (ProjectOutcome projectOutcome : projectOutcomesList) {
 					projectOutcome.setMilestones(projectOutcome.getProjectMilestones().stream()
-							.filter(m -> m != null && m.isActive()).collect(Collectors.toList()));
+							.filter(m -> m != null && m.isActive() && m.getYear() != 0 && m.getYear() <= this.getActualPhase().getYear()).collect(Collectors.toList()));
 
 					if (projectOutcome.getMilestones() != null) {
 						for (ProjectMilestone projectMilestone : projectOutcome.getMilestones()) {
@@ -1299,7 +1299,7 @@ public class ProjectPolicyAction extends BaseAction {
 			List<PolicyMilestone> milestonePrev = new ArrayList<>(projectPolicy.getPolicyMilestones().stream()
 					.filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId()))
 					.collect(Collectors.toList()));
-
+			System.out.println(milestonePrev.size());
 			for (PolicyMilestone policyMilestone : milestonePrev) {
 				if (policy.getMilestones() == null || !policy.getMilestones().contains(policyMilestone)) {
 					policyMilestoneManager.deletePolicyMilestone(policyMilestone.getId());
@@ -1307,9 +1307,7 @@ public class ProjectPolicyAction extends BaseAction {
 			}
 		}
 
-		// Save policy milestones only if boolean 'has milestones'selection is true
-		System.out.println("holi " + policy.getProjectPolicyInfo().getHasMilestones());
-		System.out.println("holi2 " + projectPolicy.getProjectPolicyInfo().getHasMilestones());
+		// Save policy milestones only if boolean 'has milestones' selection is true
 		if (policy.getProjectPolicyInfo().getHasMilestones() != null
 				&& policy.getProjectPolicyInfo().getHasMilestones() == true) {
 
