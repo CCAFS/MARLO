@@ -47,7 +47,6 @@ import org.cgiar.ccafs.marlo.data.manager.RepIndStageProcessManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfSubIdoManager;
 import org.cgiar.ccafs.marlo.data.model.CgiarCrossCuttingMarker;
 import org.cgiar.ccafs.marlo.data.model.CrpMilestone;
-import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
 import org.cgiar.ccafs.marlo.data.model.ExpectedStudyProject;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
@@ -141,7 +140,6 @@ public class ProjectPolicyAction extends BaseAction {
 	private Project project;
 	private long projectID;
 	private long policyID;
-	private long year;
 	private ProjectPolicy policy;
 	private ProjectPolicy policyDB;
 	private List<RepIndGeographicScope> geographicScopes;
@@ -641,7 +639,6 @@ public class ProjectPolicyAction extends BaseAction {
 							.collect(Collectors.toList())));
 				}
 
-				// Milestones List
 				if (policy.getPolicyMilestones() != null) {
 					policy.setMilestones(new ArrayList<>(policy.getPolicyMilestones().stream()
 							.filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId()))
@@ -748,6 +745,15 @@ public class ProjectPolicyAction extends BaseAction {
 							}
 						}
 					}
+					
+					// Add 'N/A' to milestone list dropdown if there is not selected any milestone
+					/*
+					CrpMilestone milestoneTemp = new CrpMilestone();
+					milestoneTemp.setTitle("Not Applicable");
+					if(policy.getMilestones()== null) {
+						milestoneList.add(milestoneTemp);
+					}
+					*/
 				}
 			}
 
@@ -1305,7 +1311,6 @@ public class ProjectPolicyAction extends BaseAction {
 
 		// Policy Milestones
 		if (policy.getMilestones() != null) {
-			System.out.println("Hola " + policy.getMilestones().size() );
 			for (PolicyMilestone policyMilestone : policy.getMilestones()) {
 				if (policyMilestone.getId() == null) {
 					PolicyMilestone policyMilestoneSave = new PolicyMilestone();
