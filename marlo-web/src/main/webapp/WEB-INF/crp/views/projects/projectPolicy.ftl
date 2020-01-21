@@ -148,13 +148,21 @@
     <hr />
     <br />
     
-    [#-- Milestones  --]
-    <div class="form-group">
-      [@customForm.elementsListComponent name="${customName}.milestones" elementType="crpMilestone" elementList=element.milestones label="policy.milestones" helpIcon=false listName="milestoneList" keyFieldName="id" displayFieldName="composedName" required=false /]
-      <div class="note">[@s.text name="policy.milestones.note"][@s.param] <a href="[@s.url namespace="/projects" action='${crpSession}/contributionsCrpList'][@s.param name='projectID']${(projectID)!}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" target="__BLANK">clicking here</a>[/@][/@]</div>
+    [#-- Milestones Contribution --]
+    <div class="form-group">          
+      <label for="">[@s.text name="policy.milestones" /]:[@customForm.req required=editable /][@customForm.helpLabel name="policy.milestones.help" showIcon=false editable=editable/]</label>
+      [#assign policyMilestoneLink = "policyMilestoneLink"]
+      [#assign showMilestoneIndicator = (policy.projectPolicyInfo.hasMilestone?string)!"" /]
+      [@customForm.radioFlat id="${policyMilestoneLink}-yes" name="${customName}.projectPolicyInfo.hasMilestone" label="Yes" value="true" checked=(showMilestoneIndicator == "true") cssClass="radioType-${policyMilestoneLink}" cssClassLabel="radio-label-yes" editable=editable /]
+      [@customForm.radioFlat id="${policyMilestoneLink}-no" name="${customName}.projectPolicyInfo.hasMilestone" label="No" value="false" checked=(showMilestoneIndicator == "false") cssClass="radioType-${policyMilestoneLink}" cssClassLabel="radio-label-no" editable=editable /]
     </div>
+        
+     <div class="form-group simpleBox block-${policyMilestoneLink}" style="display:${(showMilestoneIndicator == "true")?string('block','none')}">
+       [@customForm.elementsListComponent name="${customName}.milestones" elementType="crpMilestone" elementList=element.milestones label="policy.milestones" helpIcon=false listName="milestoneList" keyFieldName="id" displayFieldName="composedName" required=false /]
+       <div class="note">[@s.text name="policy.milestones.note"][@s.param] <a href="[@s.url namespace="/projects" action='${crpSession}/contributionsCrpList'][@s.param name='projectID']${(projectID)!}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" target="__BLANK">clicking here</a>[/@][/@]</div>
+       <br>
+     </div> 
 
-    <hr />
     <br />
     
     [#-- Contributing CRPs/PTFs  --]
@@ -169,7 +177,7 @@
     
     [#-- Primary Sub IDOs --]
     <div class="form-group">
-      [@customForm.elementsListComponent name="${customName}.principalSubIdos" elementType="srfSubIdo" elementList=policy.subIdos label="policy.subIDO.primary" listName="principalSubIdo" maxLimit=1 keyFieldName="id" displayFieldName="description"/]
+       [@customForm.select name="${customName}.principalSubIdo" className="setSelect2 principalSubIdo" i18nkey="policy.subIDO.primary" listName="" keyFieldName="id"  displayFieldName="description" required=true editable=editable/]
     </div>
         
     [#-- CGIAR Cross-cutting Markers  --]
