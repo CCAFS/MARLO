@@ -19,24 +19,67 @@
 
 package org.cgiar.ccafs.marlo.rest.controller.v2.controllist.items.keyExternalPartnership;
 
+import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
+import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
+import org.cgiar.ccafs.marlo.data.model.CrpProgram;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.rest.dto.NewKeyExternalPartnershipDTO;
+import org.cgiar.ccafs.marlo.rest.errors.FieldErrorDTO;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.inject.Named;
 
 @Named
 public class KeyExternalPartnershipItem<T> {
 
-  GlobalUnitManager globalUnitManager;
+  private GlobalUnitManager globalUnitManager;
+  private PhaseManager phaseManager;
+  private CrpProgramManager crpProgramManager;
 
-  public KeyExternalPartnershipItem(GlobalUnitManager globalUnitManager) {
+  public KeyExternalPartnershipItem(GlobalUnitManager globalUnitManager, PhaseManager phaseManager,
+    CrpProgramManager crpProgramManager) {
     this.globalUnitManager = globalUnitManager;
+    this.phaseManager = phaseManager;
+    this.crpProgramManager = crpProgramManager;
   }
 
   public Long createKeyExternalPartnership(NewKeyExternalPartnershipDTO newKeyExternalPartnershipDTO,
     String entityAcronym, User user) {
     Long keyExternalPartnershipID = null;
+    List<FieldErrorDTO> fieldErrors = new ArrayList<FieldErrorDTO>();
+    GlobalUnit globalUnitEntity = this.globalUnitManager.findGlobalUnitByAcronym(entityAcronym);
+    if (globalUnitEntity == null) {
+      fieldErrors.add(new FieldErrorDTO("createInnovation", "GlobalUnitEntity",
+        entityAcronym + " is an invalid CGIAR entity acronym"));
+    }
+    Phase phase = this.phaseManager.findAll().stream()
+      .filter(c -> c.getCrp().getAcronym().equalsIgnoreCase(entityAcronym)
+        && c.getYear() == newKeyExternalPartnershipDTO.getPhase().getYear()
+        && c.getName().equalsIgnoreCase(newKeyExternalPartnershipDTO.getPhase().getName()))
+      .findFirst().get();
+
+    if (phase == null) {
+      fieldErrors.add(new FieldErrorDTO("createPolicy", "phase",
+        newKeyExternalPartnershipDTO.getPhase().getYear() + " is an invalid year"));
+    }
+    if (fieldErrors.size() == 0) {
+      if (newKeyExternalPartnershipDTO.getFlagshipProgram() != null) {
+        CrpProgram crpProgram = crpProgramManager
+          .getCrpProgramById(Long.valueOf(newKeyExternalPartnershipDTO.getFlagshipProgram().getCode()));
+        if (crpProgram == null) {
+          fieldErrors.add(new FieldErrorDTO("KeyExternalPartnership", "crpProgram",
+            newKeyExternalPartnershipDTO.getFlagshipProgram().getCode() + " is an invalid flagship code"));
+        }
+      } else {
+
+      }
+
+    }
 
     return keyExternalPartnershipID;
   }
