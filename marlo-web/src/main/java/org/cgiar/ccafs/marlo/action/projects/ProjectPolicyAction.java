@@ -731,29 +731,27 @@ public class ProjectPolicyAction extends BaseAction {
 							&& po.getPhase().getId().equals(this.getActualPhase().getId()))
 					.collect(Collectors.toList());
 
-			
 			if (projectOutcomesList != null) {
 
 				for (ProjectOutcome projectOutcome : projectOutcomesList) {
 					projectOutcome.setMilestones(projectOutcome.getProjectMilestones().stream()
 							.filter(m -> m != null && m.isActive()).collect(Collectors.toList()));
-					
-					if(projectOutcome.getMilestones()!= null) {
-						for(ProjectMilestone projectMilestone:projectOutcome.getMilestones()) {
-							if(projectMilestone.getCrpMilestone()!= null && projectMilestone.getCrpMilestone().isActive()) {
+
+					if (projectOutcome.getMilestones() != null) {
+						for (ProjectMilestone projectMilestone : projectOutcome.getMilestones()) {
+							if (projectMilestone.getCrpMilestone() != null
+									&& projectMilestone.getCrpMilestone().isActive()) {
 								milestoneList.add(projectMilestone.getCrpMilestone());
 							}
 						}
 					}
-					
+
 					// Add 'N/A' to milestone list dropdown if there is not selected any milestone
 					/*
-					CrpMilestone milestoneTemp = new CrpMilestone();
-					milestoneTemp.setTitle("Not Applicable");
-					if(policy.getMilestones()== null) {
-						milestoneList.add(milestoneTemp);
-					}
-					*/
+					 * CrpMilestone milestoneTemp = new CrpMilestone();
+					 * milestoneTemp.setTitle("Not Applicable"); if(policy.getMilestones()== null) {
+					 * milestoneList.add(milestoneTemp); }
+					 */
 				}
 			}
 
@@ -1307,23 +1305,34 @@ public class ProjectPolicyAction extends BaseAction {
 					policyMilestoneManager.deletePolicyMilestone(policyMilestone.getId());
 				}
 			}
+
 		}
 
-		// Policy Milestones
-		if (policy.getMilestones() != null) {
-			for (PolicyMilestone policyMilestone : policy.getMilestones()) {
-				if (policyMilestone.getId() == null) {
-					PolicyMilestone policyMilestoneSave = new PolicyMilestone();
-					policyMilestoneSave.setPolicy(projectPolicy);
-					policyMilestoneSave.setPhase(phase);
+		// Delete policy milestones if 'has milestones' boolean selection is false
+		if (policy.getProjectPolicyInfo() == null) {
+			policy.getProjectPolicyInfo(this.getActualPhase());
+		}
 
-					CrpMilestone milestone = crpMilestoneManager
-							.getCrpMilestoneById(policyMilestone.getCrpMilestone().getId());
-					policyMilestoneSave.setCrpMilestone(milestone);
+		// Save policy milestones only if boolean 'has milestones'selection is true
+		if (policy.getProjectPolicyInfo().getHasMilestones() != null
+				&& policy.getProjectPolicyInfo().getHasMilestones() == true) {
 
-					policyMilestoneManager.savePolicyMilestone(policyMilestoneSave);
-					// This is to add milestoneCrpSave to generate correct auditlog.
-					policy.getPolicyMilestones().add(policyMilestoneSave);
+			// Policy Milestones
+			if (policy.getMilestones() != null) {
+				for (PolicyMilestone policyMilestone : policy.getMilestones()) {
+					if (policyMilestone.getId() == null) {
+						PolicyMilestone policyMilestoneSave = new PolicyMilestone();
+						policyMilestoneSave.setPolicy(projectPolicy);
+						policyMilestoneSave.setPhase(phase);
+
+						CrpMilestone milestone = crpMilestoneManager
+								.getCrpMilestoneById(policyMilestone.getCrpMilestone().getId());
+						policyMilestoneSave.setCrpMilestone(milestone);
+
+						policyMilestoneManager.savePolicyMilestone(policyMilestoneSave);
+						// This is to add milestoneCrpSave to generate correct auditlog.
+						policy.getPolicyMilestones().add(policyMilestoneSave);
+					}
 				}
 			}
 		}
