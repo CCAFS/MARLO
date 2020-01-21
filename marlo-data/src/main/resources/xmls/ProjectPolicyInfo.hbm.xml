@@ -57,5 +57,8 @@
 		<property name="amount" type="java.lang.Double">
 			<column name="amount" precision="30" />
 		</property>
+		 <property name="hasMilestones" type="boolean">
+            <column name="has_milestones" not-null="true" />
+        </property>
 	</class>
 </hibernate-mapping>
