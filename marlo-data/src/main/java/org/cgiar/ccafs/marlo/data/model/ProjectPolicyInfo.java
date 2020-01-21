@@ -247,7 +247,7 @@ public class ProjectPolicyInfo extends MarloBaseEntity implements java.io.Serial
 		this.setProjectPolicy(projectPolicyInfoUpdate.getProjectPolicy());
 		this.setProjectExpectedStudy(projectPolicyInfoUpdate.getProjectExpectedStudy());
 		this.setOther(projectPolicyInfoUpdate.getOther());
-
+		this.setHasMilestones(projectPolicyInfoUpdate.getHasMilestones());
 	}
 
 }

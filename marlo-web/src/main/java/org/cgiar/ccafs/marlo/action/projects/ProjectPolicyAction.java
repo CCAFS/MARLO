@@ -878,7 +878,7 @@ public class ProjectPolicyAction extends BaseAction {
 			Path path = this.getAutoSaveFilePath();
 
 			policy.setProject(project);
-
+			System.out.println("ff " + policy.getProjectPolicyInfo());
 			this.saveCrps(policyDB, phase);
 			this.saveOwners(policyDB, phase);
 			this.saveSubIdos(policyDB, phase);
@@ -1305,15 +1305,11 @@ public class ProjectPolicyAction extends BaseAction {
 					policyMilestoneManager.deletePolicyMilestone(policyMilestone.getId());
 				}
 			}
-
-		}
-
-		// Delete policy milestones if 'has milestones' boolean selection is false
-		if (policy.getProjectPolicyInfo() == null) {
-			policy.getProjectPolicyInfo(this.getActualPhase());
 		}
 
 		// Save policy milestones only if boolean 'has milestones'selection is true
+		System.out.println("holi " + policy.getProjectPolicyInfo().getHasMilestones());
+		System.out.println("holi2 " + projectPolicy.getProjectPolicyInfo().getHasMilestones());
 		if (policy.getProjectPolicyInfo().getHasMilestones() != null
 				&& policy.getProjectPolicyInfo().getHasMilestones() == true) {
 
