@@ -152,9 +152,9 @@
     <div class="form-group">          
       <label for="">[@s.text name="policy.milestones" /]:[@customForm.req required=editable /][@customForm.helpLabel name="policy.milestones.help" showIcon=false editable=editable/]</label>
       [#assign policyMilestoneLink = "policyMilestoneLink"]
-      [#assign showMilestoneIndicator = (policy.projectPolicyInfo.hasMilestone?string)!"" /]
-      [@customForm.radioFlat id="${policyMilestoneLink}-yes" name="${customName}.projectPolicyInfo.hasMilestone" label="Yes" value="true" checked=(showMilestoneIndicator == "true") cssClass="radioType-${policyMilestoneLink}" cssClassLabel="radio-label-yes" editable=editable /]
-      [@customForm.radioFlat id="${policyMilestoneLink}-no" name="${customName}.projectPolicyInfo.hasMilestone" label="No" value="false" checked=(showMilestoneIndicator == "false") cssClass="radioType-${policyMilestoneLink}" cssClassLabel="radio-label-no" editable=editable /]
+      [#assign showMilestoneIndicator = (policy.projectPolicyInfo.hasMilestones?string)!"" /]
+      [@customForm.radioFlat id="${policyMilestoneLink}-yes" name="${customName}.projectPolicyInfo.hasMilestones" label="Yes" value="true" checked=(showMilestoneIndicator == "true") cssClass="radioType-${policyMilestoneLink}" cssClassLabel="radio-label-yes" editable=editable /]
+      [@customForm.radioFlat id="${policyMilestoneLink}-no" name="${customName}.projectPolicyInfo.hasMilestones" label="No" value="false" checked=(showMilestoneIndicator == "false") cssClass="radioType-${policyMilestoneLink}" cssClassLabel="radio-label-no" editable=editable /]
     </div>
         
      <div class="form-group simpleBox block-${policyMilestoneLink}" style="display:${(showMilestoneIndicator == "true")?string('block','none')}">
