@@ -175,9 +175,8 @@
           "data" : [ 
             { "label": "Only the specific cycle year",  "value": "false"}
            ,
-            { "label": "All Years",                     "value": "true"}
-            
-          ] 
+            { "label": "All Years",                     "value": "true"}            
+          ]
         }
       ]
     },
@@ -447,8 +446,23 @@
       </div>
       [/#if]
       
+
+      
       [#-- Components --]
-      [#list (report.components)![] as component]
+      [#if crpCCAFS]
+       [#list (report.components)![] as component]
+        <div class="form-group">
+          [#local customID = "${index}-${component.name}"]
+          <label for="${customID}">${component.label}:</label>
+          [#if component.type == "radio"]
+            [#list (component.data)![] as data]
+              <br />[@customForm.radioFlat id="${customID}-${data.value}" name="${component.name}" label="${data.label}" value="${data.value}" checked=(data_index == 0) cssClass="" cssClassLabel="font-normal" editable=false /]
+            [/#list]
+          [/#if]
+        </div>
+       [/#list]
+      [#else]
+        [#list (report.components)![] as component]
         <div class="form-group">
           [#local customID = "${index}-${component.name}"]
           <label for="${customID}">${component.label}:</label>
@@ -458,7 +472,8 @@
             [/#list]
           [/#if]
         </div>
-      [/#list]
+       [/#list]
+      [/#if]
       
       [#--  Partner Type --]
       [#if report.partnerType??]
