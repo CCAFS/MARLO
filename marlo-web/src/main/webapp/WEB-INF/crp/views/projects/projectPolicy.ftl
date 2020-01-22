@@ -148,7 +148,7 @@
       [@customForm.elementsListComponent name="${customName}.crps" elementType="globalUnit" elementList=element.crps label="policy.contributingCrpsPtfs"  listName="crps" keyFieldName="id" displayFieldName="composedName" /]
     </div>
     
-     [#-- Contributing Centers  --]
+    [#-- Contributing Centers/ PPA partners  --]
     <div class="form-group">
       [@customForm.elementsListComponent name="${customName}.centers" elementType="institution" elementList=element.centers label="policy.contributingCenters"  listName="centers" keyFieldName="id" displayFieldName="composedName" /]
     </div>
