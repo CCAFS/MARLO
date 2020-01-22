@@ -39,7 +39,8 @@ public class PolicyMilestoneMySQLDAO extends AbstractMarloDAO<PolicyMilestone, L
   public void deletePolicyMilestone(long policyMilestoneId) {
     PolicyMilestone policyMilestone = this.find(policyMilestoneId);
     policyMilestone.setActive(false);
-    this.update(policyMilestone);
+    //this.update(policyMilestone);
+    this.delete(policyMilestone);
   }
 
   @Override
