@@ -150,7 +150,7 @@
     
      [#-- Contributing Centers  --]
     <div class="form-group">
-      [@customForm.elementsListComponent name="${customName}.c" elementType="globalUnit" elementList=element.institutionList label="policy.contributingCenters"  listName="centers" keyFieldName="id" displayFieldName="composedName" /]
+      [@customForm.elementsListComponent name="${customName}.centers" elementType="institution" elementList=element.centers label="policy.contributingCenters"  listName="centers" keyFieldName="id" displayFieldName="composedName" /]
     </div>
     
     [#-- Sub IDOs (maxLimit=2) --]

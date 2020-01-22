@@ -154,7 +154,7 @@ public class ProjectPolicyAction extends BaseAction {
   private List<ProjectExpectedStudy> expectedStudyList;
   private List<CgiarCrossCuttingMarker> cgiarCrossCuttingMarkers;
   private List<ProjectInnovation> innovationList;
-  private List<Institution> institutionList;
+  private List<Institution> centers;
 
   private String transaction;
 
@@ -262,14 +262,19 @@ public class ProjectPolicyAction extends BaseAction {
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
+  public List<Institution> getCenters() {
+    return centers;
+  }
+
+
   public List<CgiarCrossCuttingMarker> getCgiarCrossCuttingMarkers() {
     return cgiarCrossCuttingMarkers;
   }
 
-
   public List<LocElement> getCountries() {
     return countries;
   }
+
 
   public List<GlobalUnit> getCrps() {
     return crps;
@@ -295,15 +300,10 @@ public class ProjectPolicyAction extends BaseAction {
     return innovationList;
   }
 
-  public List<Institution> getInstitutionList() {
-    return institutionList;
-  }
-
 
   public GlobalUnit getLoggedCrp() {
     return loggedCrp;
   }
-
 
   public List<RepIndOrganizationType> getOrganizationTypes() {
     return organizationTypes;
@@ -313,6 +313,7 @@ public class ProjectPolicyAction extends BaseAction {
   public ProjectPolicy getPolicy() {
     return policy;
   }
+
 
   /**
    * Get the information for the Cross Cutting marker in the form
@@ -350,7 +351,6 @@ public class ProjectPolicyAction extends BaseAction {
     return policyInvestimentTypes;
   }
 
-
   public List<RepIndPolicyType> getPolicyTypes() {
     return policyTypes;
   }
@@ -360,10 +360,10 @@ public class ProjectPolicyAction extends BaseAction {
     return project;
   }
 
+
   public long getProjectID() {
     return projectID;
   }
-
 
   public List<LocElement> getRegions() {
     return regions;
@@ -373,6 +373,7 @@ public class ProjectPolicyAction extends BaseAction {
   public List<RepIndStageProcess> getStageProcesses() {
     return stageProcesses;
   }
+
 
   public List<SrfSubIdo> getSubIdos() {
     return subIdos;
@@ -689,7 +690,7 @@ public class ProjectPolicyAction extends BaseAction {
       cgiarCrossCuttingMarkers = cgiarCrossCuttingMarkerManager.findAll();
 
       // institutions
-      institutionList = institutionManager.findAll().stream()
+      centers = institutionManager.findAll().stream()
         .filter(c -> c.isPPA(this.getActualPhase().getCrp().getId(), this.getActualPhase())
           || c.getInstitutionType().getId().longValue() == APConstants.INSTITUTION_CGIAR_CENTER_TYPE)
         .collect(Collectors.toList());
@@ -1284,7 +1285,6 @@ public class ProjectPolicyAction extends BaseAction {
     }
   }
 
-
   /**
    * Save Project Policy Geographic Scope When Regions is Selected Information
    * 
@@ -1325,6 +1325,7 @@ public class ProjectPolicyAction extends BaseAction {
       }
     }
   }
+
 
   /**
    * Save Project Policy SubIdos Information
@@ -1368,6 +1369,10 @@ public class ProjectPolicyAction extends BaseAction {
     }
   }
 
+  public void setCenters(List<Institution> centers) {
+    this.centers = centers;
+  }
+
 
   public void setCgiarCrossCuttingMarkers(List<CgiarCrossCuttingMarker> cgiarCrossCuttingMarkers) {
     this.cgiarCrossCuttingMarkers = cgiarCrossCuttingMarkers;
@@ -1400,9 +1405,6 @@ public class ProjectPolicyAction extends BaseAction {
     this.innovationList = innovationList;
   }
 
-  public void setInstitutionList(List<Institution> institutionList) {
-    this.institutionList = institutionList;
-  }
 
   public void setLoggedCrp(GlobalUnit loggedCrp) {
     this.loggedCrp = loggedCrp;
