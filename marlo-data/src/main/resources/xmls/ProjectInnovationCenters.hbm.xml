@@ -8,10 +8,8 @@
       <column name="id" />
       <generator class="identity" />
     </id>
-    <many-to-one
-      class="org.cgiar.ccafs.marlo.data.model.GlobalUnit" fetch="select"
-      name="globalUnit">
-      <column name="global_unit_id" />
+    <many-to-one name="institution" class="org.cgiar.ccafs.marlo.data.model.Institution" fetch="select">
+            <column name="institution_id" />
     </many-to-one>
     <many-to-one
       class="org.cgiar.ccafs.marlo.data.model.Phase" fetch="select"
