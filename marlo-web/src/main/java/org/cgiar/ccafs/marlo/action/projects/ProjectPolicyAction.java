@@ -690,7 +690,8 @@ public class ProjectPolicyAction extends BaseAction {
 
       // institutions
       institutionList = institutionManager.findAll().stream()
-        .filter(c -> c.isPPA(this.getActualPhase().getCrp().getId(), this.getActualPhase()))
+        .filter(c -> c.isPPA(this.getActualPhase().getCrp().getId(), this.getActualPhase())
+          || c.getInstitutionType().getId().longValue() == APConstants.INSTITUTION_CGIAR_CENTER_TYPE)
         .collect(Collectors.toList());
 
 
@@ -804,6 +805,9 @@ public class ProjectPolicyAction extends BaseAction {
 
       if (policy.getGeographicScopes() != null) {
         policy.getGeographicScopes().clear();
+      }
+      if (policy.getCenters() != null) {
+        policy.getCenters().clear();
       }
 
       // HTTP Post info Values
