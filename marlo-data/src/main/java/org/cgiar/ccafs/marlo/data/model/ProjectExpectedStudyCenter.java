@@ -39,7 +39,7 @@ public class ProjectExpectedStudyCenter extends MarloBaseEntity implements java.
 
 
   @Expose
-  private GlobalUnit globalUnit;
+  private Institution institution;
 
   public ProjectExpectedStudyCenter() {
   }
@@ -66,8 +66,9 @@ public class ProjectExpectedStudyCenter extends MarloBaseEntity implements java.
     return true;
   }
 
-  public GlobalUnit getGlobalUnit() {
-    return globalUnit;
+
+  public Institution getInstitution() {
+    return institution;
   }
 
 
@@ -92,7 +93,6 @@ public class ProjectExpectedStudyCenter extends MarloBaseEntity implements java.
     return u;
   }
 
-
   public Phase getPhase() {
     return phase;
   }
@@ -100,6 +100,7 @@ public class ProjectExpectedStudyCenter extends MarloBaseEntity implements java.
   public ProjectExpectedStudy getProjectExpectedStudy() {
     return projectExpectedStudy;
   }
+
 
   @Override
   public int hashCode() {
@@ -115,10 +116,10 @@ public class ProjectExpectedStudyCenter extends MarloBaseEntity implements java.
     return true;
   }
 
-  public void setGlobalUnit(GlobalUnit globalUnit) {
-    this.globalUnit = globalUnit;
-  }
 
+  public void setInstitution(Institution institution) {
+    this.institution = institution;
+  }
 
   @Override
   public void setModifiedBy(User modifiedBy) {

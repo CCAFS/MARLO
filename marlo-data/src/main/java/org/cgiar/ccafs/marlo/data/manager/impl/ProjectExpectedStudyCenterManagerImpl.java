@@ -77,7 +77,7 @@ public class ProjectExpectedStudyCenterManagerImpl implements ProjectExpectedStu
     List<ProjectExpectedStudyCenter> projectExpectedStudyCenters = projectExpectedStudyCenterDAO.findAll().stream()
       .filter(c -> c.isActive() && c.getPhase().getId().longValue() == phase.getId().longValue()
         && c.getProjectExpectedStudy().getId().longValue() == expectedID
-        && c.getGlobalUnit().getId().equals(projectExpectedStudyCenter.getGlobalUnit().getId()))
+        && c.getInstitution().getId().equals(projectExpectedStudyCenter.getInstitution().getId()))
       .collect(Collectors.toList());
     for (ProjectExpectedStudyCenter projectExpectedStudyCenterDB : projectExpectedStudyCenters) {
       projectExpectedStudyCenterDAO.deleteProjectExpectedStudyCenter(projectExpectedStudyCenterDB.getId());
@@ -110,14 +110,14 @@ public class ProjectExpectedStudyCenterManagerImpl implements ProjectExpectedStu
     List<ProjectExpectedStudyCenter> projectExpectedStudyCenters = projectExpectedStudyCenterDAO.findAll().stream()
       .filter(c -> c.getPhase().getId().longValue() == phase.getId().longValue()
         && c.getProjectExpectedStudy().getId().longValue() == expectedID
-        && c.getGlobalUnit().getId().equals(projectExpectedStudyCenter.getGlobalUnit().getId()))
+        && c.getInstitution().getId().equals(projectExpectedStudyCenter.getInstitution().getId()))
       .collect(Collectors.toList());
 
     if (projectExpectedStudyCenters.isEmpty()) {
       ProjectExpectedStudyCenter projectExpectedStudyCenterAdd = new ProjectExpectedStudyCenter();
       projectExpectedStudyCenterAdd.setProjectExpectedStudy(projectExpectedStudyCenter.getProjectExpectedStudy());
       projectExpectedStudyCenterAdd.setPhase(phase);
-      projectExpectedStudyCenterAdd.setGlobalUnit(projectExpectedStudyCenter.getGlobalUnit());
+      projectExpectedStudyCenterAdd.setInstitution(projectExpectedStudyCenter.getInstitution());
       projectExpectedStudyCenterDAO.save(projectExpectedStudyCenterAdd);
     }
     if (phase.getNext() != null) {

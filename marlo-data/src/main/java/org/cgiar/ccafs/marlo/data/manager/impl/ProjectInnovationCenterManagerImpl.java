@@ -78,7 +78,7 @@ public class ProjectInnovationCenterManagerImpl implements ProjectInnovationCent
     List<ProjectInnovationCenter> projectInnovationCrps = projectInnovationCenterDAO.findAll().stream()
       .filter(c -> c.isActive() && c.getPhase().getId().longValue() == phase.getId().longValue()
         && c.getProjectInnovation().getId().longValue() == innovationID
-        && c.getGlobalUnit().getId().equals(projectInnovationCenter.getGlobalUnit().getId()))
+        && c.getInstitution().getId().equals(projectInnovationCenter.getInstitution().getId()))
       .collect(Collectors.toList());
 
     for (ProjectInnovationCenter projectInnovationCenterDB : projectInnovationCrps) {
@@ -117,14 +117,14 @@ public class ProjectInnovationCenterManagerImpl implements ProjectInnovationCent
 
     List<ProjectInnovationCenter> projectInnovatioCenters = projectInnovationCenterDAO.findAll().stream()
       .filter(c -> c.getProjectInnovation().getId().longValue() == innovationid
-        && c.getGlobalUnit().getId().equals(projectInnovationCenter.getGlobalUnit().getId()))
+        && c.getInstitution().getId().equals(projectInnovationCenter.getInstitution().getId()))
       .collect(Collectors.toList());
 
     if (projectInnovatioCenters.isEmpty()) {
       ProjectInnovationCenter projectInnovationCenterAdd = new ProjectInnovationCenter();
       projectInnovationCenterAdd.setProjectInnovation(projectInnovationCenter.getProjectInnovation());
       projectInnovationCenterAdd.setPhase(phase);
-      projectInnovationCenterAdd.setGlobalUnit(projectInnovationCenter.getGlobalUnit());
+      projectInnovationCenterAdd.setInstitution(projectInnovationCenter.getInstitution());
       projectInnovationCenterDAO.save(projectInnovationCenterAdd);
     }
     if (phase.getNext() != null) {

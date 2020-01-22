@@ -82,7 +82,7 @@ public class ProjectPolicyCenterManagerImpl implements ProjectPolicyCenterManage
     List<ProjectPolicyCenter> projectPolicyCenters = projectPolicyCenterDAO.findAll().stream()
       .filter(c -> c.isActive() && c.getPhase().getId().longValue() == phase.getId().longValue()
         && c.getProjectPolicy().getId().longValue() == policyID
-        && c.getGlobalUnit().getId().equals(projectPolicyCenter.getGlobalUnit().getId()))
+        && c.getInstitution().getId().equals(projectPolicyCenter.getInstitution().getId()))
       .collect(Collectors.toList());
 
     for (ProjectPolicyCenter projectPolicyCenterDB : projectPolicyCenters) {
@@ -119,14 +119,14 @@ public class ProjectPolicyCenterManagerImpl implements ProjectPolicyCenterManage
     List<ProjectPolicyCenter> projectPolicyCenters = projectPolicyCenterDAO.findAll().stream()
       .filter(c -> c.getProjectPolicy().getId().longValue() == policyID
         && c.getPhase().getId().longValue() == phase.getId().longValue()
-        && c.getGlobalUnit().getId().equals(projectPolicyCenter.getGlobalUnit().getId()))
+        && c.getInstitution().getId().equals(projectPolicyCenter.getInstitution().getId()))
       .collect(Collectors.toList());
 
     if (projectPolicyCenters.isEmpty()) {
       ProjectPolicyCenter projectPolicyCenterAdd = new ProjectPolicyCenter();
       projectPolicyCenterAdd.setProjectPolicy(projectPolicyCenter.getProjectPolicy());
       projectPolicyCenterAdd.setPhase(phase);
-      projectPolicyCenterAdd.setGlobalUnit(projectPolicyCenter.getGlobalUnit());
+      projectPolicyCenterAdd.setInstitution(projectPolicyCenter.getInstitution());
       projectPolicyCenterDAO.save(projectPolicyCenterAdd);
     }
 
