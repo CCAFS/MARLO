@@ -9,7 +9,7 @@
       <generator class="identity" />
     </id>
     <many-to-one
-      class="org.cgiar.ccafs.marlo.data.model.GlobalUnit" fetch="select"
+      class="org.cgiar.ccafs.marlo.data.model.Institutions" fetch="select"
       name="globalUnit">
       <column name="global_unit_id" />
     </many-to-one>
@@ -18,10 +18,8 @@
       name="phase">
       <column name="id_phase" />
     </many-to-one>
-    <many-to-one
-      class="org.cgiar.ccafs.marlo.data.model.ProjectPolicy" fetch="select"
-      name="projectPolicy">
-      <column name="project_policy_id" />
+    <many-to-one name="institution" class="org.cgiar.ccafs.marlo.data.model.Institution" fetch="select">
+            <column name="institution_id" />
     </many-to-one>
   </class>
 </hibernate-mapping>

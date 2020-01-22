@@ -31,7 +31,7 @@ public class ProjectPolicyCenter extends MarloBaseEntity implements java.io.Seri
   private static final long serialVersionUID = -1315352201148806722L;
 
   @Expose
-  private GlobalUnit globalUnit;
+  private Institution institution;
 
   @Expose
   private Phase phase;
@@ -67,8 +67,8 @@ public class ProjectPolicyCenter extends MarloBaseEntity implements java.io.Seri
   }
 
 
-  public GlobalUnit getGlobalUnit() {
-    return globalUnit;
+  public Institution getInstitution() {
+    return institution;
   }
 
 
@@ -78,7 +78,6 @@ public class ProjectPolicyCenter extends MarloBaseEntity implements java.io.Seri
     sb.append("Id : ").append(this.getId());
     return sb.toString();
   }
-
 
   @Override
   public String getModificationJustification() {
@@ -100,6 +99,7 @@ public class ProjectPolicyCenter extends MarloBaseEntity implements java.io.Seri
     return projectPolicy;
   }
 
+
   @Override
   public int hashCode() {
     final int prime = 31;
@@ -115,8 +115,8 @@ public class ProjectPolicyCenter extends MarloBaseEntity implements java.io.Seri
   }
 
 
-  public void setGlobalUnit(GlobalUnit globalUnit) {
-    this.globalUnit = globalUnit;
+  public void setInstitution(Institution institution) {
+    this.institution = institution;
   }
 
 

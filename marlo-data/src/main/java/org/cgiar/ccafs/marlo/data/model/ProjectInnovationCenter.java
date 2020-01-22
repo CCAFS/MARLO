@@ -37,7 +37,7 @@ public class ProjectInnovationCenter extends MarloBaseEntity implements java.io.
   private Phase phase;
 
   @Expose
-  private GlobalUnit globalUnit;
+  private Institution institution;
 
   public ProjectInnovationCenter() {
   }
@@ -65,13 +65,8 @@ public class ProjectInnovationCenter extends MarloBaseEntity implements java.io.
   }
 
 
-  public String getComposedName() {
-    return this.getGlobalUnit().getComposedName();
-  }
-
-
-  public GlobalUnit getGlobalUnit() {
-    return globalUnit;
+  public Institution getInstitution() {
+    return institution;
   }
 
   @Override
@@ -97,12 +92,9 @@ public class ProjectInnovationCenter extends MarloBaseEntity implements java.io.
     return phase;
   }
 
+
   public ProjectInnovation getProjectInnovation() {
     return projectInnovation;
-  }
-
-  public GlobalUnit getRelationship() {
-    return globalUnit;
   }
 
   @Override
@@ -113,16 +105,16 @@ public class ProjectInnovationCenter extends MarloBaseEntity implements java.io.
     return result;
   }
 
+
   @Override
   public boolean isActive() {
     return true;
   }
 
 
-  public void setGlobalUnit(GlobalUnit globalUnit) {
-    this.globalUnit = globalUnit;
+  public void setInstitution(Institution institution) {
+    this.institution = institution;
   }
-
 
   @Override
   public void setModifiedBy(User modifiedBy) {
