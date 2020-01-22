@@ -641,7 +641,7 @@ public class ProjectPolicyAction extends BaseAction {
 
 				if (policy.getPolicyMilestones() != null) {
 					policy.setMilestones(new ArrayList<>(policy.getPolicyMilestones().stream()
-							.filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId()))
+							.filter(o -> o.getPhase().getId().equals(phase.getId()))
 							.collect(Collectors.toList())));
 				}
 
@@ -734,8 +734,11 @@ public class ProjectPolicyAction extends BaseAction {
 			if (projectOutcomesList != null) {
 
 				for (ProjectOutcome projectOutcome : projectOutcomesList) {
-					projectOutcome.setMilestones(projectOutcome.getProjectMilestones().stream()
-							.filter(m -> m != null && m.isActive() && m.getYear() != 0 && m.getYear() <= this.getActualPhase().getYear()).collect(Collectors.toList()));
+					projectOutcome
+							.setMilestones(projectOutcome.getProjectMilestones().stream()
+									.filter(m -> m != null && m.isActive() && m.getYear() != 0
+											&& m.getYear() <= this.getActualPhase().getYear())
+									.collect(Collectors.toList()));
 
 					if (projectOutcome.getMilestones() != null) {
 						for (ProjectMilestone projectMilestone : projectOutcome.getMilestones()) {
@@ -1297,9 +1300,8 @@ public class ProjectPolicyAction extends BaseAction {
 		if (projectPolicy.getPolicyMilestones() != null && projectPolicy.getPolicyMilestones().size() > 0) {
 
 			List<PolicyMilestone> milestonePrev = new ArrayList<>(projectPolicy.getPolicyMilestones().stream()
-					.filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId()))
+					.filter(nu -> nu.getPhase().getId().equals(phase.getId()))
 					.collect(Collectors.toList()));
-			System.out.println(milestonePrev.size());
 			for (PolicyMilestone policyMilestone : milestonePrev) {
 				if (policy.getMilestones() == null || !policy.getMilestones().contains(policyMilestone)) {
 					policyMilestoneManager.deletePolicyMilestone(policyMilestone.getId());
@@ -1327,6 +1329,13 @@ public class ProjectPolicyAction extends BaseAction {
 						// This is to add milestoneCrpSave to generate correct auditlog.
 						policy.getPolicyMilestones().add(policyMilestoneSave);
 					}
+				}
+			}
+		} else {
+			// Delete all milestones for this policy
+			if (policy.getMilestones() != null && policy.getMilestones().size() > 0) {
+				for (PolicyMilestone policyMilestone : policy.getMilestones()) {
+					policyMilestoneManager.deletePolicyMilestone(policyMilestone.getId());
 				}
 			}
 		}
