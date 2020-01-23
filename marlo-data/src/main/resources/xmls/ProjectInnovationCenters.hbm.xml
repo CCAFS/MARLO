@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping auto-import="true" 
+  default-access="property" default-cascade="none" default-lazy="true">
+  <class name="org.cgiar.ccafs.marlo.data.model.ProjectInnovationCenter"
+  optimistic-lock="none" table="project_innovation_centers">
+    <id name="id" type="java.lang.Long">
+      <column name="id" />
+      <generator class="identity" />
+    </id>
+    <many-to-one name="institution" class="org.cgiar.ccafs.marlo.data.model.Institution" fetch="select">
+            <column name="institution_id" />
+    </many-to-one>
+    <many-to-one
+      class="org.cgiar.ccafs.marlo.data.model.Phase" fetch="select"
+      name="phase">
+      <column name="id_phase" />
+    </many-to-one>
+     <many-to-one name="projectInnovation" class="org.cgiar.ccafs.marlo.data.model.ProjectInnovation" fetch="select">
+            <column name="project_innovation_id" />
+        </many-to-one>
+  </class>
+</hibernate-mapping>
