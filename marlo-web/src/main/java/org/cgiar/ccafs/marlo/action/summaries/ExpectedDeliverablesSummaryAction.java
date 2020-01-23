@@ -635,36 +635,10 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
 														}
 													}
 												}
-
-												/****************** end of for ***************************/
-												// partnerPerson = partnerPersonList.get(0);
-												/*
-												 * if (partnerPerson.getPartnerDivision() != null &&
-												 * partnerPerson.getPartnerDivision().getAcronym() != null) { individual
-												 * += partnerPerson.getComposedName() + "(" +
-												 * person.getDeliverableUserPartnership().getInstitution() .getAcronym()
-												 * + "/" + partnerPerson.getPartnerDivision().getAcronym();
-												 * allResponsibleList.add(person.getDeliverableUserPartnership()
-												 * .getInstitution().getAcronym());
-												 * 
-												 * if (divisions == null) { divisionList
-												 * .add(partnerPerson.getPartnerDivision().getAcronym()); divisions =
-												 * partnerPerson.getPartnerDivision().getAcronym(); } else { if
-												 * (!divisionList.contains(
-												 * partnerPerson.getPartnerDivision().getAcronym())) { divisions += ", "
-												 * + partnerPerson.getPartnerDivision().getAcronym(); divisionList.add(
-												 * partnerPerson.getPartnerDivision().getAcronym()); } } }
-												 */
-
 											}
 
 										}
 
-										/*
-										 * individual += "(" +
-										 * person.getDeliverableUserPartnership().getInstitution().getAcronym() + "" +
-										 * ")";
-										 */
 										individual += ") ";
 										allResponsibleList.add(", ");
 									} else {
@@ -683,8 +657,6 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
 								}
 							}
 						}
-
-						// individual += "\n● ";
 
 					} else {
 						if (deliverablePartnership.getInstitution() != null) {
@@ -1340,7 +1312,6 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
 				}
 
 				if (ppaResponsible != null && !ppaResponsible.isEmpty() && divisions != null && !divisions.isEmpty()) {
-					// ppaResponsible+= ", (IFPRI divisions: " + divisions+")";
 				}
 
 				if (divisions != null && !divisions.isEmpty()) {
@@ -1398,6 +1369,19 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
 				} catch (Exception e) {
 
 				}
+				
+				if(ppaResponsible == null || ppaResponsible.isEmpty()) {
+					ppaResponsible = null;
+				}
+				
+				if(managingResponsible == null || managingResponsible.isEmpty()) {
+					managingResponsible = null;
+				}
+				
+				if(divisions == null || divisions.isEmpty()) {
+					divisions = null;
+				}
+					
 
 				model.addRow(new Object[] { deliverableId, deliverableTitle, completionYear, deliverableType,
 						deliverableSubType, keyOutput, delivStatus, delivNewYear, projectID, projectTitle,
