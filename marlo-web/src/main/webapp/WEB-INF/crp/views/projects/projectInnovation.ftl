@@ -189,6 +189,11 @@
           <div class="form-group">
             [@customForm.elementsListComponent name="innovation.crps" elementType="globalUnit" elementList=innovation.crps label="projectInnovations.contributing"  listName="crpList" keyFieldName="id" displayFieldName="composedName"/]
           </div>
+          
+          [#-- Contributing Centers/ PPA partners  --]
+          <div class="form-group">
+            [@customForm.elementsListComponent name="innovation.centers" elementType="institution" elementList=innovation.centers label="projectInnovations.contributingCenters"  listName="centers" keyFieldName="id" displayFieldName="composedName" /]
+          </div>
         
         </div>
         

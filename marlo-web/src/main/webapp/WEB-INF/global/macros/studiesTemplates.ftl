@@ -201,6 +201,12 @@
           [@customForm.elementsListComponent name="${customName}.crps" elementType="globalUnit" elementList=element.crps label="study.keyContributors.crps"  listName="crps" keyFieldName="id" displayFieldName="composedName" required=false /]
         </div>
         [/#if]
+        [#-- Centers --]
+        [#if isOutcomeCaseStudy]
+        <div class="form-group simpleBox">
+          [@customForm.elementsListComponent name="${customName}.centers" elementType="institution" elementList=element.centers label="study.keyContributors.centers"  listName="centers" keyFieldName="id" displayFieldName="composedName" /]
+        </div>
+        [/#if]
         [#-- Flagships --]
         [#if isOutcomeCaseStudy || !fromProject]
         <div class="form-group simpleBox stageProcessOne">

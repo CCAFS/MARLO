@@ -142,7 +142,7 @@
       
       [#-- Cluster Activity identifier --]
       <div class=" form-group cluster-identifier ">
-        [@customForm.input name="${clusterCustomName}.identifier" i18nkey="cluster.identifier" required=true placeholder="e.g. Cluster 1.1"   className="clusterIdentifier" editable=editable /]
+        [@customForm.input name="${clusterCustomName}.identifier" i18nkey="cluster.identifier" required=true placeholder="e.g. Cluster 1.1"   className="clusterIdentifier" editable=editable maxlength="20" /]
       </div>
       [#-- Cluster Activity Name --]
       <div class=" form-group cluster-title">

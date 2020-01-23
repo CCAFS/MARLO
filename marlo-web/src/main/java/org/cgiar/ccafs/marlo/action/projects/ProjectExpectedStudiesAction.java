@@ -201,6 +201,8 @@ public class ProjectExpectedStudiesAction extends BaseAction {
   private List<EvidenceTag> tags;
   private List<ProjectPolicy> policyList;
   private List<ProjectInnovation> innovationsList;
+  // AR 2019 Sel-List
+  private List<Institution> centers;
 
   @Inject
   public ProjectExpectedStudiesAction(APConfig config, ProjectManager projectManager, GlobalUnitManager crpManager,
@@ -311,6 +313,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     }
   }
 
+
   private Path getAutoSaveFilePath() {
     String composedClassName = this.expectedStudy.getClass().getSimpleName();
     // get the action name and replace / for _
@@ -319,6 +322,11 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     String autoSaveFile = this.expectedStudy.getId() + "_" + composedClassName + "_" + this.getActualPhase().getName()
       + "_" + this.getActualPhase().getYear() + "_" + actionFile + ".json";
     return Paths.get(this.config.getAutoSaveFolder() + autoSaveFile);
+  }
+
+
+  public List<Institution> getCenters() {
+    return centers;
   }
 
   public List<LocElement> getCountries() {
@@ -1894,6 +1902,10 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       }
     }
 
+  }
+
+  public void setCenters(List<Institution> centers) {
+    this.centers = centers;
   }
 
   public void setCountries(List<LocElement> countries) {
