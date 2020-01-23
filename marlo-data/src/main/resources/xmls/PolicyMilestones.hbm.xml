@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated Aug 22, 2016 10:31:14 AM by Hibernate Tools 4.3.1.Final -->
+<hibernate-mapping>
+    <class name="org.cgiar.ccafs.marlo.data.model.PolicyMilestone" table="policy_milestones" optimistic-lock="none">
+        <id name="id" type="java.lang.Long">
+            <column name="id" />
+            <generator class="identity" />
+        </id>
+        <many-to-one name="crpMilestone" class="org.cgiar.ccafs.marlo.data.model.CrpMilestone" fetch="select">
+            <column name="crp_milestone_id" not-null="true" />
+        </many-to-one>
+        <many-to-one name="policy" class="org.cgiar.ccafs.marlo.data.model.ProjectPolicy" fetch="select">
+            <column name="policy_id" not-null="true" />
+        </many-to-one>
+         <many-to-one name="phase" class="org.cgiar.ccafs.marlo.data.model.Phase" fetch="select">
+            <column name="id_phase" />
+        </many-to-one>
+    </class>
+</hibernate-mapping>

@@ -77,6 +77,12 @@
         <property name="crossCuttingClimate" type="java.lang.Boolean">
             <column name="cross_cutting_climate" />
         </property>
+        <property name="crossCuttingGender" type="java.lang.Boolean">
+            <column name="cross_cutting_gender" />
+        </property>
+        <property name="crossCuttingYouth" type="java.lang.Boolean">
+            <column name="cross_cutting_youth" />
+        </property>
         <property name="crossCuttingNa" type="java.lang.Boolean">
             <column name="cross_cutting_na" />
         </property>

@@ -724,10 +724,25 @@ public class ProjectDescriptionAction extends BaseAction {
       }
 
     } else {
-      liaisonInstitutions
-        .addAll(loggedCrp.getLiaisonInstitutions().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
-      liaisonInstitutions.addAll(
-        liaisonInstitutionManager.findAll().stream().filter(c -> c.getCrp() == null).collect(Collectors.toList()));
+    	if (this.hasSpecificities(APConstants.CRP_PPA_ENABLE_PROJECT_DESCRIPTION)) {
+    		 liaisonInstitutions
+    	        .addAll(loggedCrp.getLiaisonInstitutions().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+    	      liaisonInstitutions.addAll(
+    	        liaisonInstitutionManager.findAll().stream().filter(c -> c.getCrp() == null).collect(Collectors.toList()));
+    	}else {
+    		 liaisonInstitutions
+    	        .addAll(loggedCrp.getLiaisonInstitutions().stream().filter(c -> c.isActive() && c.getInstitution()== null).collect(Collectors.toList()));
+    	  	  if(project.getProjectInfo() != null && 
+    	  			  project.getProjectInfo().getLiaisonInstitution()!= null && 
+    	  			  project.getProjectInfo().getLiaisonInstitution().getInstitution()!= null && 
+    	  			  loggedCrp.getLiaisonInstitutions() != null &&
+    	  			  loggedCrp.getLiaisonInstitutions().stream().filter(c -> c.isActive() && c.getInstitution() != null && c.getInstitution().getId().equals(project.getProjectInfo().getLiaisonInstitution().getInstitution().getId())).collect(Collectors.toList()) != null) {
+    			liaisonInstitutions.add(loggedCrp.getLiaisonInstitutions().stream().filter(c -> c.isActive() && c.getInstitution() != null && c.getInstitution().getId().equals(project.getProjectInfo().getLiaisonInstitution().getInstitution().getId())).collect(Collectors.toList()).get(0));
+    	}
+     
+	  }
+      //liaisonInstitutions.addAll(
+      //  liaisonInstitutionManager.findAll().stream().filter(c -> c.getCrp() == null).collect(Collectors.toList()));
     }
     // load the liasons intitutions for the crp
 
@@ -851,6 +866,8 @@ public class ProjectDescriptionAction extends BaseAction {
       project.getProjectInfo().setCrossCuttingCapacity(null);
       project.getProjectInfo().setCrossCuttingClimate(null);
       project.getProjectInfo().setCrossCuttingNa(null);
+      project.getProjectInfo().setCrossCuttingGender(null);
+      project.getProjectInfo().setCrossCuttingYouth(null);
     }
 
   }
@@ -882,12 +899,24 @@ public class ProjectDescriptionAction extends BaseAction {
       if (project.getProjectInfo().getCrossCuttingNa() == null) {
         project.getProjectInfo().setCrossCuttingNa(false);
       }
+      if (project.getProjectInfo().getCrossCuttingGender() == null) {
+          project.getProjectInfo().setCrossCuttingGender(false);
+      }
+      if (project.getProjectInfo().getCrossCuttingYouth() == null) {
+          project.getProjectInfo().setCrossCuttingYouth(false);
+      }
 
       if (this.isReportingActive()) {
 
         // Capacity Development
         project.getProjectInfo()
           .setCrossCuttingCapacity(projectDB.getProjecInfoPhase(this.getActualPhase()).getCrossCuttingCapacity());
+        // Capacity Gender
+        project.getProjectInfo()
+          .setCrossCuttingGender(projectDB.getProjecInfoPhase(this.getActualPhase()).getCrossCuttingGender());
+        // Capacity Youth
+        project.getProjectInfo()
+          .setCrossCuttingYouth(projectDB.getProjecInfoPhase(this.getActualPhase()).getCrossCuttingYouth());
         // Climate Change
         project.getProjectInfo()
           .setCrossCuttingClimate(projectDB.getProjecInfoPhase(this.getActualPhase()).getCrossCuttingClimate());

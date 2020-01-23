@@ -151,8 +151,12 @@ public class ProjectExpectedStudy extends MarloAuditableEntity implements java.i
     new HashSet<ProjectExpectedStudyGeographicScope>(0);
 
   private List<ProjectExpectedStudyGeographicScope> geographicScopes;
-  
+
   private String geographicScopeString;
+
+  // reporting 2019 field
+  private List<ProjectExpectedStudyCenter> centers;
+  private Set<ProjectExpectedStudyCenter> projectExpectedStudyCenters = new HashSet<ProjectExpectedStudyCenter>(0);
 
 
   public ProjectExpectedStudy() {
@@ -186,10 +190,14 @@ public class ProjectExpectedStudy extends MarloAuditableEntity implements java.i
     return casesStudy;
   }
 
+  public List<ProjectExpectedStudyCenter> getCenters() {
+    return centers;
+  }
+
+
   public String getComments() {
     return comments;
   }
-
 
   public String getComposedId() {
     return composedId;
@@ -203,6 +211,7 @@ public class ProjectExpectedStudy extends MarloAuditableEntity implements java.i
     }
     return name;
   }
+
 
   public String getComposedName() {
     String composedName = this.getComposedIdentifier();
@@ -222,22 +231,9 @@ public class ProjectExpectedStudy extends MarloAuditableEntity implements java.i
   }
 
 
-  public String getGeographicScopeString() {
-	return geographicScopeString;
-}
-
-
-public void setGeographicScopeString(String geographicScopeString) {
-	this.geographicScopeString = geographicScopeString;
-}
-
-
-public List<String> getCountriesIds() {
+  public List<String> getCountriesIds() {
     return countriesIds;
   }
-  
-  
-  
 
 
   public String getCountriesIdsText() {
@@ -262,6 +258,11 @@ public List<String> getCountriesIds() {
 
   public List<ProjectExpectedStudyGeographicScope> getGeographicScopes() {
     return geographicScopes;
+  }
+
+
+  public String getGeographicScopeString() {
+    return geographicScopeString;
   }
 
 
@@ -308,6 +309,11 @@ public List<String> getCountriesIds() {
   }
 
 
+  public Set<ProjectExpectedStudyCenter> getProjectExpectedStudyCenters() {
+    return projectExpectedStudyCenters;
+  }
+
+
   public Set<ProjectExpectedStudyCountry> getProjectExpectedStudyCountries() {
     return projectExpectedStudyCountries;
   }
@@ -321,7 +327,6 @@ public List<String> getCountriesIds() {
   public Set<ProjectExpectedStudyFlagship> getProjectExpectedStudyFlagships() {
     return projectExpectedStudyFlagships;
   }
-
 
   public Set<ProjectExpectedStudyGeographicScope> getProjectExpectedStudyGeographicScopes() {
     return projectExpectedStudyGeographicScopes;
@@ -375,10 +380,10 @@ public List<String> getCountriesIds() {
     return projectExpectedStudyRegions;
   }
 
+
   public Set<ProjectExpectedStudySrfTarget> getProjectExpectedStudySrfTargets() {
     return projectExpectedStudySrfTargets;
   }
-
 
   public Set<ProjectExpectedStudySubIdo> getProjectExpectedStudySubIdos() {
     return projectExpectedStudySubIdos;
@@ -388,10 +393,10 @@ public List<String> getCountriesIds() {
     return projects;
   }
 
+
   public List<ProjectExpectedStudyQuantification> getQuantifications() {
     return quantifications;
   }
-
 
   public List<ProjectExpectedStudyFlagship> getRegions() {
     return regions;
@@ -401,6 +406,7 @@ public List<String> getCountriesIds() {
     return scope;
   }
 
+
   public String getScopeName() {
     if (scope == null || scope.intValue() == -1) {
       return "";
@@ -408,7 +414,6 @@ public List<String> getCountriesIds() {
     return GlobalScopeEnum.getValue(scope.intValue()).getType();
 
   }
-
 
   public Set<SectionStatus> getSectionStatuses() {
     return sectionStatuses;
@@ -435,6 +440,7 @@ public List<String> getCountriesIds() {
       .filter(ps -> ps.isActive() && ps.getPhase().equals(phase)).collect(Collectors.toList()));
   }
 
+
   public List<ProjectExpectedStudyRegion> getStudyRegions() {
     return studyRegions;
   }
@@ -450,10 +456,10 @@ public List<String> getCountriesIds() {
       .filter(ps -> ps.isActive() && ps.getPhase().equals(phase)).collect(Collectors.toList()));
   }
 
-
   public String getTopicStudy() {
     return topicStudy;
   }
+
 
   public Integer getType() {
     return type;
@@ -473,7 +479,6 @@ public List<String> getCountriesIds() {
     return year;
   }
 
-
   @Override
   public int hashCode() {
     final int prime = 31;
@@ -486,9 +491,14 @@ public List<String> getCountriesIds() {
     this.casesStudy = casesStudy;
   }
 
+  public void setCenters(List<ProjectExpectedStudyCenter> centers) {
+    this.centers = centers;
+  }
+
   public void setComments(String comments) {
     this.comments = comments;
   }
+
 
   public void setComposedId(String composedId) {
     this.composedId = composedId;
@@ -498,7 +508,6 @@ public List<String> getCountriesIds() {
     this.countries = countries;
   }
 
-
   public void setCountriesIds(List<String> countriesIds) {
     this.countriesIds = countriesIds;
   }
@@ -507,9 +516,11 @@ public List<String> getCountriesIds() {
     this.countriesIdsText = countriesIdsText;
   }
 
+
   public void setCrps(List<ProjectExpectedStudyCrp> crps) {
     this.crps = crps;
   }
+
 
   public void setExpectedStudyProjects(Set<ExpectedStudyProject> expectedStudyProjects) {
     this.expectedStudyProjects = expectedStudyProjects;
@@ -523,6 +534,11 @@ public List<String> getCountriesIds() {
 
   public void setGeographicScopes(List<ProjectExpectedStudyGeographicScope> geographicScopes) {
     this.geographicScopes = geographicScopes;
+  }
+
+
+  public void setGeographicScopeString(String geographicScopeString) {
+    this.geographicScopeString = geographicScopeString;
   }
 
 
@@ -550,7 +566,6 @@ public List<String> getCountriesIds() {
     this.phase = phase;
   }
 
-
   public void setPolicies(List<ProjectExpectedStudyPolicy> policies) {
     this.policies = policies;
   }
@@ -561,9 +576,15 @@ public List<String> getCountriesIds() {
   }
 
 
+  public void setProjectExpectedStudyCenters(Set<ProjectExpectedStudyCenter> projectExpectedStudyCenters) {
+    this.projectExpectedStudyCenters = projectExpectedStudyCenters;
+  }
+
+
   public void setProjectExpectedStudyCountries(Set<ProjectExpectedStudyCountry> projectExpectedStudyCountries) {
     this.projectExpectedStudyCountries = projectExpectedStudyCountries;
   }
+
 
   public void setProjectExpectedStudyCrps(Set<ProjectExpectedStudyCrp> projectExpectedStudyCrps) {
     this.projectExpectedStudyCrps = projectExpectedStudyCrps;
@@ -595,12 +616,10 @@ public List<String> getCountriesIds() {
     this.projectExpectedStudyInnovations = projectExpectedStudyInnovations;
   }
 
-
   public void
     setProjectExpectedStudyInstitutions(Set<ProjectExpectedStudyInstitution> projectExpectedStudyInstitutions) {
     this.projectExpectedStudyInstitutions = projectExpectedStudyInstitutions;
   }
-
 
   public void setProjectExpectedStudyLinks(Set<ProjectExpectedStudyLink> projectExpectedStudyLinks) {
     this.projectExpectedStudyLinks = projectExpectedStudyLinks;
@@ -617,9 +636,11 @@ public List<String> getCountriesIds() {
     this.projectExpectedStudyQuantifications = projectExpectedStudyQuantifications;
   }
 
+
   public void setProjectExpectedStudyRegions(Set<ProjectExpectedStudyRegion> projectExpectedStudyRegions) {
     this.projectExpectedStudyRegions = projectExpectedStudyRegions;
   }
+
 
   public void setProjectExpectedStudySrfTargets(Set<ProjectExpectedStudySrfTarget> projectExpectedStudySrfTargets) {
     this.projectExpectedStudySrfTargets = projectExpectedStudySrfTargets;
@@ -665,11 +686,9 @@ public List<String> getCountriesIds() {
     this.srfSloIndicator = srfSloIndicator;
   }
 
-
   public void setSrfSubIdo(SrfSubIdo srfSubIdo) {
     this.srfSubIdo = srfSubIdo;
   }
-
 
   public void setSrfTargets(List<ProjectExpectedStudySrfTarget> srfTargets) {
     this.srfTargets = srfTargets;
@@ -685,9 +704,11 @@ public List<String> getCountriesIds() {
     this.subIdos = subIdos;
   }
 
+
   public void setTopicStudy(String topicStudy) {
     this.topicStudy = topicStudy;
   }
+
 
   public void setType(Integer type) {
     this.type = type;

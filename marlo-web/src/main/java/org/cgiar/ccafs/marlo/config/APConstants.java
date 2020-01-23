@@ -122,6 +122,10 @@ public final class APConstants {
   public static final String CRP_ENABLE_BUDGET_EXECUTION = "crp_enable_budget_execution";
   public static final Long CRP_DASHBOARD_CENTER_IDENTIFICATION = new Long(4);
   public static final String CRP_ENABLE_BUDGETBYCOAS = "crp_budgetbycoas";
+  public static final String CRP_PPA_ENABLE_PROJECT_DESCRIPTION = "crp_ppa_enable_project_description";
+  
+  public static final String IS_EXPECTED_DELIVERABLE_REPORT_All_YEARS_VISIBLE = "is_expected_deliverable_report_all_years_visible";
+
 
 
   // Email parameters to copy to FL FM CL
@@ -196,6 +200,7 @@ public final class APConstants {
   public static final String INDICATOR_TYPE_REQUEST_ID = "indicatorTypeID";
   public static final long INSTITUTION_CGIAR = 221;
   // Institutions Types
+  public static final long INSTITUTION_CGIAR_CENTER_TYPE = 3;
   public static final long INSTITUTION_DONOR_TYPE = 5;
   public static final String INSTITUTION_REQUEST_ID = "institutionID";
   public static final String INSTITUTION_TYPE_REQUEST_ID = "institutionTypeID";
@@ -443,8 +448,13 @@ public final class APConstants {
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.ProjectPolicy.projectPolicyCrossCuttingMarkers)";
   public static final String PROJECT_POLICY_INNOVATION_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.ProjectPolicy.projectPolicyInnovations)";
+  public static final String PROJECT_POLICY_MILESTONE_RELATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.ProjectPolicy.policyMilestones)";
   public static final String PROJECT_POLICY_EVIDENCE_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.ProjectPolicy.projectExpectedStudyPolicies)";
+  public static final String PROJECT_POLICY_CENTER_RELATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.ProjectPolicy.projectPolicyCenters)";
+
 
   // Status control List of each table
   public static final String PROJECT_EXPECTED_STUDIES_TABLE = "project_expected_study_info";

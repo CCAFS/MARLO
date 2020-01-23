@@ -75,18 +75,22 @@
     
     [#-- Year --]
     <div class="form-group row">
-      <div class="col-md-3"></div>
-      <div class="col-md-3"></div>
-      <div class="col-md-3"></div>
-      <div class="col-md-3">
-        [@customForm.select name="${customName}.projectPolicyInfo.year" className="setSelect2" i18nkey="policy.year" listName="years" required=true editable=editable/]
+      <div class="col-md-4">
+          [@customForm.select name="${customName}.projectPolicyInfo.year" className="setSelect2" i18nkey="policy.year" listName="years" required=true editable=editable/]
+      </div>      
+      <div class="col-md-8">
       </div>
     </div>
     <hr />
     
-    [#-- Title (up to 50 words) --]
+    [#-- Title (up to 30 words - Requested for AR2019) --]
     <div class="form-group">
-      [@customForm.input name="${customName}.projectPolicyInfo.title" i18nkey="policy.title" className="limitWords-50"required=true editable=editable /]
+      [@customForm.input name="${customName}.projectPolicyInfo.title" i18nkey="policy.title" className="limitWords-30"required=true editable=editable /]
+    </div>
+    
+    [#-- Description --]
+    <div class="form-group">
+  	  [@customForm.textArea name="${customName}.projectPolicyInfo.description" i18nkey="policy.description" className="limitWords-30" editable=editable /]
     </div>
     
     <div class="form-group row ">
@@ -101,15 +105,9 @@
       </div>
     </div>
     
-    <div class="form-group row">
-      [#-- Implementing Organization Type --]
-      <div class="col-md-6">
-        [@customForm.select name="${customName}.projectPolicyInfo.repIndOrganizationType.id" className="setSelect2 policyOrganizationType" i18nkey="policy.organizationType" help="policy.organizationType.help" listName="organizationTypes" keyFieldName="id"  displayFieldName="name" required=false editable=editable/]
-      </div>
+    <div class="form-group">
       [#-- Level of Maturity of the Process: (Before Stage in Process) --]
-      <div class="col-md-6">
         [@customForm.select name="${customName}.projectPolicyInfo.repIndStageProcess.id" className="setSelect2 maturityLevel" i18nkey="policy.maturityLevel" help="policy.maturityLevel.help" help="policy.maturityLevel.help" listName="stageProcesses" keyFieldName="id"  displayFieldName="description" required=true editable=editable/]
-      </div>
     </div>
     
     <div class="row">
@@ -149,16 +147,43 @@
     <hr />
     <br />
     
+    [#-- Milestones Contribution --]
+    <div class="form-group">          
+      <label for="">[@s.text name="policy.milestones" /]:[@customForm.req required=editable /][@customForm.helpLabel name="policy.milestones.help" showIcon=false editable=editable/]</label>
+      [#assign policyMilestoneLink = "policyMilestoneLink"]
+      [#assign showMilestoneIndicator = (policy.projectPolicyInfo.hasMilestones?string)!"" /]
+      [@customForm.radioFlat id="${policyMilestoneLink}-yes" name="${customName}.projectPolicyInfo.hasMilestones" label="Yes" value="true" checked=(showMilestoneIndicator == "true") cssClass="radioType-${policyMilestoneLink}" cssClassLabel="radio-label-yes" editable=editable /]
+      [@customForm.radioFlat id="${policyMilestoneLink}-no" name="${customName}.projectPolicyInfo.hasMilestones" label="No" value="false" checked=(showMilestoneIndicator == "false") cssClass="radioType-${policyMilestoneLink}" cssClassLabel="radio-label-no" editable=editable /]
+    </div>
+        
+     <div class="form-group simpleBox block-${policyMilestoneLink}" style="display:${(showMilestoneIndicator == "true")?string('block','none')}">
+       [@customForm.elementsListComponent name="${customName}.milestones" elementType="crpMilestone" elementList=element.milestones label="policy.milestones" helpIcon=false listName="milestoneList" keyFieldName="id" displayFieldName="composedName" required=false /]
+       <div class="note">[@s.text name="policy.milestones.note"][@s.param] <a href="[@s.url namespace="/projects" action='${crpSession}/contributionsCrpList'][@s.param name='projectID']${(projectID)!}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" target="__BLANK">clicking here</a>[/@][/@]</div>
+       <br>
+     </div> 
+
+    <br />
+    
+    [#-- Contributing Centers/ PPA partners  --]
+    <div class="form-group">
+      [@customForm.elementsListComponent name="${customName}.centers" elementType="institution" elementList=element.centers label="policy.contributingCenters"  listName="centers" keyFieldName="id" displayFieldName="composedName" /]
+    </div>
+    
     [#-- Contributing CRPs/PTFs  --]
     <div class="form-group">
       [@customForm.elementsListComponent name="${customName}.crps" elementType="globalUnit" elementList=element.crps label="policy.contributingCrpsPtfs"  listName="crps" keyFieldName="id" displayFieldName="composedName" /]
     </div>
     
-    [#-- Sub IDOs (maxLimit=2) --]
+    [#-- Sub IDOs (maxLimit=3 -Requested for AR2019) --]
     <div class="form-group">
-      [@customForm.elementsListComponent name="${customName}.subIdos" elementType="srfSubIdo" elementList=element.subIdos label="policy.subIDOs" listName="subIdos" maxLimit=2 keyFieldName="id" displayFieldName="description"/]
+      [@customForm.elementsListComponent name="${customName}.subIdos" elementType="srfSubIdo" elementList=element.subIdos label="policy.subIDOs" listName="subIdos" maxLimit=3 keyFieldName="id" displayFieldName="description"/]
     </div>
     
+    [#-- Primary Sub IDOs --]
+    <div class="form-group">
+       [@customForm.select name="${customName}.principalSubIdo" className="setSelect2 principalSubIdo" i18nkey="policy.subIDO.primary" listName="" keyFieldName="id"  displayFieldName="description" required=true editable=editable/]
+    </div>
+        
     [#-- CGIAR Cross-cutting Markers  --]
     <div class="form-group">
       <h5 class="labelheader">[@s.text name="policy.crossCuttingMarkers" /]</h5>

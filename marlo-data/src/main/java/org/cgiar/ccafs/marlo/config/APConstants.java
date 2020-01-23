@@ -120,6 +120,9 @@ public final class APConstants {
   public static final String CRP_VIEW_HIGHLIGTHS = "crp_view_highlights";
   public static final String CRP_HAS_DISEMINATION = "crp_has_disemination";
   public static final String CRP_ENABLE_BUDGET_EXECUTION = "crp_enable_budget_execution";
+  public static final String CRP_PPA_ENABLE_PROJECT_DESCRIPTION = "crp_ppa_enable_project_description";
+
+  public static final String IS_EXPECTED_DELIVERABLE_REPORT_All_YEARS_VISIBLE = "is_expected_deliverable_report_all_years_visible";
 
 
   // Email parameters to copy to FL FM CL
@@ -439,6 +442,8 @@ public final class APConstants {
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.ProjectPolicy.projectPolicyCrossCuttingMarkers)";
   public static final String PROJECT_POLICY_INNOVATION_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.ProjectPolicy.projectPolicyInnovations)";
+  public static final String PROJECT_POLICY_MILESTONE_RELATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.ProjectPolicy.policyMilestones)";
   public static final String PROJECT_POLICY_EVIDENCE_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.ProjectPolicy.projectExpectedStudyPolicies)";
 
