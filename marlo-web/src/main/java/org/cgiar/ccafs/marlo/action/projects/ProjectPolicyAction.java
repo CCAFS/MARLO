@@ -57,6 +57,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyPolicy;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationShared;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicy;
+import org.cgiar.ccafs.marlo.data.model.ProjectPolicyCenter;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicyCountry;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicyCrossCuttingMarker;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicyCrp;
@@ -514,6 +515,13 @@ public class ProjectPolicyAction extends BaseAction {
               .setGlobalUnit(globalUnitManager.getGlobalUnitById(projectPolicyCrp.getGlobalUnit().getId()));
           }
         }
+        // Insitutions List Autosave
+        if (policy.getCenters() != null) {
+          for (ProjectPolicyCenter projectPolicyCenter : policy.getCenters()) {
+            projectPolicyCenter
+              .setInstitution(institutionManager.getInstitutionById(projectPolicyCenter.getInstitution().getId()));
+          }
+        }
 
         // SubIdos List Autosave
         if (policy.getSubIdos() != null) {
@@ -822,7 +830,6 @@ public class ProjectPolicyAction extends BaseAction {
 
   @Override
   public String save() {
-    System.out.println("narrative " + policy.getProjectPolicyInfo().getNarrativeEvidence());
 
     if (this.hasPermission("canEdit")) {
 
@@ -838,6 +845,7 @@ public class ProjectPolicyAction extends BaseAction {
       this.saveCrossCutting(policyDB, phase);
       this.saveInnovations(policyDB, phase);
       this.saveEvidence(policyDB, phase);
+      this.saveCenters(policyDB, phase);
 
       // Save Geographic Scope Data
       this.saveGeographicScopes(policyDB, phase);
@@ -907,7 +915,7 @@ public class ProjectPolicyAction extends BaseAction {
       relationsName.add(APConstants.PROJECT_POLICY_INNOVATION_RELATION);
       relationsName.add(APConstants.PROJECT_POLICY_CROSS_CUTTING_RELATION);
       relationsName.add(APConstants.PROJECT_POLICY_EVIDENCE_RELATION);
-
+      relationsName.add(APConstants.PROJECT_POLICY_CENTER_RELATION);
 
       policy.setModificationJustification(this.getJustification());
 
@@ -969,6 +977,47 @@ public class ProjectPolicyAction extends BaseAction {
     }
 
 
+  }
+
+  /**
+   * Save Project Policy Center Information
+   * 
+   * @param projectPolicy
+   * @param phase
+   */
+  public void saveCenters(ProjectPolicy projectPolicy, Phase phase) {
+
+    // Search and deleted form Information
+    if (projectPolicy.getProjectPolicyCenters() != null && projectPolicy.getProjectPolicyCenters().size() > 0) {
+
+      List<ProjectPolicyCenter> centerPrev = new ArrayList<>(projectPolicy.getProjectPolicyCenters().stream()
+        .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
+
+      for (ProjectPolicyCenter policyCenter : centerPrev) {
+        if (policy.getCenters() == null || !policy.getCenters().contains(policyCenter)) {
+          projectPolicyCenterManager.deleteProjectPolicyCenter(policyCenter.getId());
+        }
+      }
+    }
+
+    // Save form Information
+    if (policy.getCenters() != null) {
+      for (ProjectPolicyCenter policyCenter : policy.getCenters()) {
+        if (policyCenter.getId() == null) {
+          ProjectPolicyCenter policyCenterSave = new ProjectPolicyCenter();
+          policyCenterSave.setProjectPolicy(projectPolicy);
+          policyCenterSave.setPhase(phase);
+
+          Institution institution = institutionManager.getInstitutionById(policyCenter.getInstitution().getId());
+
+          policyCenterSave.setInstitution(institution);
+
+          projectPolicyCenterManager.saveProjectPolicyCenter(policyCenterSave);
+          // This is to add innovationCrpSave to generate correct auditlog.
+          policy.getProjectPolicyCenters().add(policyCenterSave);
+        }
+      }
+    }
   }
 
   /**

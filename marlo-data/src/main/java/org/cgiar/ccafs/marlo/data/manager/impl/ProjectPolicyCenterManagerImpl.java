@@ -49,12 +49,8 @@ public class ProjectPolicyCenterManagerImpl implements ProjectPolicyCenterManage
 
   @Override
   public void deleteProjectPolicyCenter(long projectPolicyCenterId) {
-    ProjectPolicyCenter projectPolicyCenter = this.getProjectPolicyCenterById(projectPolicyCenterId);
 
-    if (projectPolicyCenter.getPhase().getNext() != null) {
-      this.deleteProjectPolicyCenterPhase(projectPolicyCenter.getPhase().getNext(),
-        projectPolicyCenter.getProjectPolicy().getId(), projectPolicyCenter);
-    }
+    ProjectPolicyCenter projectPolicyCenter = this.getProjectPolicyCenterById(projectPolicyCenterId);
 
     // Conditions to Project Policy Works In AR phase and Upkeep Phase
     if (projectPolicyCenter.getPhase().getDescription().equals(APConstants.PLANNING)
@@ -79,7 +75,7 @@ public class ProjectPolicyCenterManagerImpl implements ProjectPolicyCenterManage
   public void deleteProjectPolicyCenterPhase(Phase next, long policyID, ProjectPolicyCenter projectPolicyCenter) {
     Phase phase = phaseDAO.find(next.getId());
 
-    List<ProjectPolicyCenter> projectPolicyCenters = projectPolicyCenterDAO.findAll().stream()
+    List<ProjectPolicyCenter> projectPolicyCenters = phase.getProjectPolicyCenters().stream()
       .filter(c -> c.isActive() && c.getPhase().getId().longValue() == phase.getId().longValue()
         && c.getProjectPolicy().getId().longValue() == policyID
         && c.getInstitution().getId().equals(projectPolicyCenter.getInstitution().getId()))
@@ -116,7 +112,7 @@ public class ProjectPolicyCenterManagerImpl implements ProjectPolicyCenterManage
 
     Phase phase = phaseDAO.find(next.getId());
 
-    List<ProjectPolicyCenter> projectPolicyCenters = projectPolicyCenterDAO.findAll().stream()
+    List<ProjectPolicyCenter> projectPolicyCenters = phase.getProjectPolicyCenters().stream()
       .filter(c -> c.getProjectPolicy().getId().longValue() == policyID
         && c.getPhase().getId().longValue() == phase.getId().longValue()
         && c.getInstitution().getId().equals(projectPolicyCenter.getInstitution().getId()))

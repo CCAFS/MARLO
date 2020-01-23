@@ -55,7 +55,7 @@ public class ProjectPolicyCenter extends MarloBaseEntity implements java.io.Seri
     if (this.getClass() != obj.getClass()) {
       return false;
     }
-    ProjectPolicyCrp other = (ProjectPolicyCrp) obj;
+    ProjectPolicyCenter other = (ProjectPolicyCenter) obj;
     if (this.getId() == null) {
       if (other.getId() != null) {
         return false;

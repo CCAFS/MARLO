@@ -51,10 +51,6 @@ public class ProjectPolicyCrpManagerImpl implements ProjectPolicyCrpManager {
 
     ProjectPolicyCrp projectPolicyCrp = this.getProjectPolicyCrpById(projectPolicyCrpId);
 
-    if (projectPolicyCrp.getPhase().getNext() != null) {
-      this.deleteProjectPolicyCrpPhase(projectPolicyCrp.getPhase().getNext(),
-        projectPolicyCrp.getProjectPolicy().getId(), projectPolicyCrp);
-    }
 
     // Conditions to Project Policy Works In AR phase and Upkeep Phase
     if (projectPolicyCrp.getPhase().getDescription().equals(APConstants.PLANNING)
