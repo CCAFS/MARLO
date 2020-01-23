@@ -21,7 +21,6 @@ package org.cgiar.ccafs.marlo.data.dao.mysql;
 
 import org.cgiar.ccafs.marlo.data.dao.ProjectInnovationCenterDAO;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCenter;
-import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCrp;
 
 import java.util.List;
 
@@ -63,7 +62,7 @@ public class ProjectInnovationCenterMySQLDAO extends AbstractMarloDAO<ProjectInn
 
   @Override
   public List<ProjectInnovationCenter> findAll() {
-    String query = "from " + ProjectInnovationCrp.class.getName();
+    String query = "from " + ProjectInnovationCenter.class.getName();
     List<ProjectInnovationCenter> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
