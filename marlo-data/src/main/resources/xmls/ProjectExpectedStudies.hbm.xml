@@ -186,5 +186,13 @@
       <one-to-many
         class="org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyGeographicScope" />
     </set>
+    <set name="projectExpectedStudyCenters" table="project_expected_study_centers"
+      inverse="true" lazy="true" fetch="select">
+      <key>
+        <column name="expected_id" />
+      </key>
+      <one-to-many
+        class="org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyCenter" />
+    </set>
 	</class>
 </hibernate-mapping>

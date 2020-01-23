@@ -55,7 +55,7 @@ public class ProjectExpectedStudyCenter extends MarloBaseEntity implements java.
     if (this.getClass() != obj.getClass()) {
       return false;
     }
-    ProjectExpectedStudyCrp other = (ProjectExpectedStudyCrp) obj;
+    ProjectExpectedStudyCenter other = (ProjectExpectedStudyCenter) obj;
     if (this.getId() == null) {
       if (other.getId() != null) {
         return false;
