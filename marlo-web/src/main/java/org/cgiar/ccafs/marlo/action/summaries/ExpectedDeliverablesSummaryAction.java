@@ -775,13 +775,6 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
 					}
 				}
 
-				/*
-				 * if (managingResponsible.isEmpty()) { managingResponsible +=
-				 * "<span style='font-family: Segoe UI;font-size: 10" + color + "'>" +
-				 * institution + "</span>"; } else { managingResponsible +=
-				 * ", <span style='font-family: Segoe UI;font-size: 10" + color + "'>" +
-				 * institution + "</span>"; }
-				 */
 			}
 			if (managingResponsible.isEmpty()) {
 				managingResponsible = null;
