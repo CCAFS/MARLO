@@ -72,6 +72,7 @@ import org.cgiar.ccafs.marlo.data.model.RepIndOrganizationType;
 import org.cgiar.ccafs.marlo.data.model.RepIndPhaseResearchPartnership;
 import org.cgiar.ccafs.marlo.data.model.RepIndRegion;
 import org.cgiar.ccafs.marlo.data.model.RepIndStageInnovation;
+import org.cgiar.ccafs.marlo.rest.controller.v2.controllist.Institutions;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
@@ -159,6 +160,7 @@ public class ProjectInnovationAction extends BaseAction {
   private List<Project> myProjects;
   private ProjectInnovationValidator validator;
   private Boolean clearLead;
+  private List<Institutions> centers;
 
   @Inject
   public ProjectInnovationAction(APConfig config, GlobalUnitManager globalUnitManager,
@@ -265,6 +267,10 @@ public class ProjectInnovationAction extends BaseAction {
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
+  public List<Institutions> getCenters() {
+    return centers;
+  }
+
   public List<RepIndContributionOfCrp> getContributionCrpList() {
     return contributionCrpList;
   }
@@ -306,6 +312,7 @@ public class ProjectInnovationAction extends BaseAction {
     return innovationID;
   }
 
+
   public List<RepIndInnovationType> getInnovationTypeList() {
     return innovationTypeList;
   }
@@ -314,7 +321,6 @@ public class ProjectInnovationAction extends BaseAction {
   public List<Institution> getInstitutions() {
     return institutions;
   }
-
 
   public GlobalUnit getLoggedCrp() {
     return loggedCrp;
@@ -332,10 +338,10 @@ public class ProjectInnovationAction extends BaseAction {
     return phaseResearchList;
   }
 
+
   public Project getProject() {
     return project;
   }
-
 
   public long getProjectID() {
     return projectID;
@@ -360,6 +366,7 @@ public class ProjectInnovationAction extends BaseAction {
   public Boolean isClearLead() {
     return clearLead;
   }
+
 
   @Override
   public void prepare() throws Exception {
@@ -828,7 +835,6 @@ public class ProjectInnovationAction extends BaseAction {
     }
   }
 
-
   @Override
   public String save() {
     if (this.hasPermission("canEdit")) {
@@ -1121,6 +1127,7 @@ public class ProjectInnovationAction extends BaseAction {
     }
   }
 
+
   public void saveDeliverables(ProjectInnovation projectInnovation, Phase phase) {
 
     // Search and deleted form Information
@@ -1204,7 +1211,6 @@ public class ProjectInnovationAction extends BaseAction {
     }
   }
 
-
   /**
    * Save Project Innovation Organization Information
    * 
@@ -1248,6 +1254,7 @@ public class ProjectInnovationAction extends BaseAction {
       }
     }
   }
+
 
   /**
    * Save Innovations Shared Projects Information
@@ -1295,7 +1302,6 @@ public class ProjectInnovationAction extends BaseAction {
 
   }
 
-
   /**
    * Save Project Innovation Region Information
    * 
@@ -1339,6 +1345,10 @@ public class ProjectInnovationAction extends BaseAction {
     }
   }
 
+  public void setCenters(List<Institutions> centers) {
+    this.centers = centers;
+  }
+
   public void setClearLead(Boolean clearLead) {
     this.clearLead = clearLead;
   }
@@ -1359,6 +1369,7 @@ public class ProjectInnovationAction extends BaseAction {
     this.degreeInnovationList = degreeInnovationList;
   }
 
+
   public void setDeliverableList(List<Deliverable> deliverableList) {
     this.deliverableList = deliverableList;
   }
@@ -1366,7 +1377,6 @@ public class ProjectInnovationAction extends BaseAction {
   public void setExpectedStudyList(List<ProjectExpectedStudy> expectedStudyList) {
     this.expectedStudyList = expectedStudyList;
   }
-
 
   public void setFocusLevelList(List<RepIndGenderYouthFocusLevel> focusLevelList) {
     this.focusLevelList = focusLevelList;
@@ -1424,9 +1434,11 @@ public class ProjectInnovationAction extends BaseAction {
     this.regions = regions;
   }
 
+
   public void setStageInnovationList(List<RepIndStageInnovation> stageInnovationList) {
     this.stageInnovationList = stageInnovationList;
   }
+
 
   public void setTransaction(String transaction) {
     this.transaction = transaction;
