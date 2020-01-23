@@ -75,13 +75,13 @@ public class ProjectInnovationCenterManagerImpl implements ProjectInnovationCent
     ProjectInnovationCenter projectInnovationCenter) {
     Phase phase = phaseDAO.find(next.getId());
 
-    List<ProjectInnovationCenter> projectInnovationCrps = projectInnovationCenterDAO.findAll().stream()
+    List<ProjectInnovationCenter> projectInnovationCenters = projectInnovationCenterDAO.findAll().stream()
       .filter(c -> c.isActive() && c.getPhase().getId().longValue() == phase.getId().longValue()
         && c.getProjectInnovation().getId().longValue() == innovationID
         && c.getInstitution().getId().equals(projectInnovationCenter.getInstitution().getId()))
       .collect(Collectors.toList());
 
-    for (ProjectInnovationCenter projectInnovationCenterDB : projectInnovationCrps) {
+    for (ProjectInnovationCenter projectInnovationCenterDB : projectInnovationCenters) {
       projectInnovationCenterDAO.deleteProjectInnovationCenter(projectInnovationCenterDB.getId());
     }
 
@@ -115,10 +115,12 @@ public class ProjectInnovationCenterManagerImpl implements ProjectInnovationCent
 
     Phase phase = phaseDAO.find(next.getId());
 
-    List<ProjectInnovationCenter> projectInnovatioCenters = projectInnovationCenterDAO.findAll().stream()
-      .filter(c -> c.getProjectInnovation().getId().longValue() == innovationid
-        && c.getInstitution().getId().equals(projectInnovationCenter.getInstitution().getId()))
-      .collect(Collectors.toList());
+    List<ProjectInnovationCenter> projectInnovatioCenters =
+      projectInnovationCenterDAO.findAll().stream()
+        .filter(c -> c.getProjectInnovation().getId().longValue() == innovationid
+          && c.getPhase().getId().equals(phase.getId())
+          && c.getInstitution().getId().equals(projectInnovationCenter.getInstitution().getId()))
+        .collect(Collectors.toList());
 
     if (projectInnovatioCenters.isEmpty()) {
       ProjectInnovationCenter projectInnovationCenterAdd = new ProjectInnovationCenter();
